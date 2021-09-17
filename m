@@ -2,164 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7C4B40FE0D
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 18:41:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2B0740FE16
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 18:43:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238708AbhIQQnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 12:43:17 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:36454
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229456AbhIQQnR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 12:43:17 -0400
-Received: from [10.172.193.212] (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id B22B93F10B;
-        Fri, 17 Sep 2021 16:41:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1631896913;
-        bh=S22coCr6Wjd8NapIAlG5oFT9F+VCIs9qkVZ9L++/fzM=;
-        h=To:Cc:From:Subject:Message-ID:Date:MIME-Version:Content-Type;
-        b=uiNbLNuZfKEoZUD5pzc5T6FQV+YxTd9nR0Id/2ISTxmI1kXQbUEG+QnYNMNDpd7mU
-         qjIujQVvnDsdvyW4H+/nhYpD+NQF6fGh6yy5lPMmv120tt1nV/GpMNPUMQS1qFLiKC
-         vO4ntgBXMmT+BznNvyJhgWQwHCBuClGiQKlt3U6hNIeleNYEkQlACIXXOxvMcde5ny
-         zHetd7jhvaF5Chi6SJk7ejshoGZX8fgJuQ9P8k1TKbICgZ2Sb0iDK9SbVEjdrvcLYi
-         6D63al46cdv/DIwRppacBpoj1VDsaoIK3+yy/CpEQxcukhBiT9NL9IUUkfceIBMMnZ
-         32znQ8ej2UOPw==
-To:     Shaohua Li <shli@fb.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Subject: potential null pointer dereference in ip6_xmit
-Message-ID: <516b6617-ab5e-4601-55e4-0f9844f9a49e@canonical.com>
-Date:   Fri, 17 Sep 2021 17:41:53 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S238962AbhIQQob (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 12:44:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32986 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238807AbhIQQoa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Sep 2021 12:44:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D4C6461100
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 16:43:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631896987;
+        bh=e58R4BpoE3fqAf6lRt0Q/+77YblKnxrNLid9gNHZRl4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=c0tXYHyqbNwrebcMdnNroQOuwuW9sCHbM/pHAFqowpzBolqdtigmbSUp+v2BW3mII
+         RPEsQjPVgHG7TO4TfaVLZhxs6+EwytU4tlZ+8L2JyYXihnuOEeofCDcVkiZzueFrTO
+         wpmjY7n0nsU4zfYf8uxrV3odvqNvP6byMheIbnafRL/b1BlejTdZfmUjR4SufrOecr
+         bluXaSuLVfC7BcLgkcvSZINaBuQ5okYHaAAhpKUmIZ4hTQ12CTH2/U7K7R1bF11tLG
+         V5am1Q9eI2deGfRitf1dcXxurqBegDrwlVDWn63oohL+YedpOBCLL2H64wWBVZWPrB
+         Z5nBuhW4kyElA==
+Received: by mail-ed1-f47.google.com with SMTP id g21so32305158edw.4
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 09:43:07 -0700 (PDT)
+X-Gm-Message-State: AOAM5308AdBgKvPuBclFoavQwTqt6El6Rf49VPZPu3If4axGusGeo/gD
+        9Wo/g0Vlhmj3eIqHufzremMrMW4QWg8r6PumpGm8XA==
+X-Google-Smtp-Source: ABdhPJyr2Dku3RVW2nmU54gU6k/2YwwitND/BB5XTm5pP51/YXlA2crL1Q8l2uEd3hXyPGt21d4ynNpFsW2/tUPaIKE=
+X-Received: by 2002:a17:906:3fd7:: with SMTP id k23mr12946326ejj.176.1631896986418;
+ Fri, 17 Sep 2021 09:43:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210916032104.35822-1-alexei.starovoitov@gmail.com>
+ <87bl4s7bgw.fsf@meer.lwn.net> <CAADnVQ+y5hmCmxM6jKY=TqpM0cGE-uSO=mObZ=LDxiVd9YUzuQ@mail.gmail.com>
+In-Reply-To: <CAADnVQ+y5hmCmxM6jKY=TqpM0cGE-uSO=mObZ=LDxiVd9YUzuQ@mail.gmail.com>
+From:   KP Singh <kpsingh@kernel.org>
+Date:   Fri, 17 Sep 2021 18:42:55 +0200
+X-Gmail-Original-Message-ID: <CACYkzJ7HEsFno4fVJ8--An+dPEbqnLY1-y2Px1nFrCyoDGkTJQ@mail.gmail.com>
+Message-ID: <CACYkzJ7HEsFno4fVJ8--An+dPEbqnLY1-y2Px1nFrCyoDGkTJQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Document BPF licensing.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Sep 16, 2021 at 10:49 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Thu, Sep 16, 2021 at 9:05 AM Jonathan Corbet <corbet@lwn.net> wrote:
+> >
+> > Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> >
+> > > From: Alexei Starovoitov <ast@kernel.org>
+> > >
+> > > Document and clarify BPF licensing.
+> >
+> > Two trivial things that have nothing to do with the actual content...
+> >
+> > > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> > > Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> > > Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+> > > Acked-by: Joe Stringer <joe@cilium.io>
+> > > Acked-by: Lorenz Bauer <lmb@cloudflare.com>
+> > > Acked-by: Dave Thaler <dthaler@microsoft.com>
 
-Static analysis with Coverity detected a potential null pointer
-deference in ip6_xmit, net/ipv6/ip6_output.c, I believe it may have been
-introduced by the following commit:
+Thanks for writing this up!
 
-commit 513674b5a2c9c7a67501506419da5c3c77ac6f08
-Author: Shaohua Li <shli@fb.com>
-Date:   Wed Dec 20 12:10:21 2017 -0800
-
-    net: reevalulate autoflowlabel setting after sysctl setting
-
-The analysis is as follows:
-
-239 /*
-240  * xmit an sk_buff (used by TCP, SCTP and DCCP)
-241  * Note : socket lock is not held for SYNACK packets, but might be
-modified
-242 * by calls to skb_set_owner_w() and ipv6_local_error(),
-243 * which are using proper atomic operations or spinlocks.
-244 */
-245 int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct
-flowi6 *fl6,
-246             __u32 mark, struct ipv6_txoptions *opt, int tclass, u32
-priority)
-247 {
-248        struct net *net = sock_net(sk);
-249        const struct ipv6_pinfo *np = inet6_sk(sk);
-250        struct in6_addr *first_hop = &fl6->daddr;
-251        struct dst_entry *dst = skb_dst(skb);
-252        struct net_device *dev = dst->dev;
-253        struct inet6_dev *idev = ip6_dst_idev(dst);
-254        unsigned int head_room;
-255        struct ipv6hdr *hdr;
-256        u8  proto = fl6->flowi6_proto;
-257        int seg_len = skb->len;
-258        int hlimit = -1;
-259        u32 mtu;
-260
-261        head_room = sizeof(struct ipv6hdr) + LL_RESERVED_SPACE(dev);
-
-   1. Condition opt, taking true branch.
-
-262        if (opt)
-263                head_room += opt->opt_nflen + opt->opt_flen;
-264
-
-   2. Condition !!(head_room > skb_headroom(skb)), taking true branch.
-
-265        if (unlikely(head_room > skb_headroom(skb))) {
-266                skb = skb_expand_head(skb, head_room);
-
-   3. Condition !skb, taking false branch.
-
-267                if (!skb) {
-268                        IP6_INC_STATS(net, idev,
-IPSTATS_MIB_OUTDISCARDS);
-269                        return -ENOBUFS;
-270                }
-271        }
-272
-
-   4. Condition opt, taking true branch.
-
-273        if (opt) {
-274                seg_len += opt->opt_nflen + opt->opt_flen;
-275
-
-   5. Condition opt->opt_flen, taking true branch.
-
-276                if (opt->opt_flen)
-277                        ipv6_push_frag_opts(skb, opt, &proto);
-278
-
-   6. Condition opt->opt_nflen, taking true branch.
-
-279                if (opt->opt_nflen)
-280                        ipv6_push_nfrag_opts(skb, opt, &proto,
-&first_hop,
-281                                             &fl6->saddr);
-282        }
-283
-284        skb_push(skb, sizeof(struct ipv6hdr));
-285        skb_reset_network_header(skb);
-286        hdr = ipv6_hdr(skb);
-287
-288        /*
-289         *      Fill in the IPv6 header
-290         */
-
-   7. Condition np, taking false branch.
-   8. var_compare_op: Comparing np to null implies that np might be null.
-
-291        if (np)
-292                hlimit = np->hop_limit;
-
-   9. Condition hlimit < 0, taking true branch.
-
-293        if (hlimit < 0)
-294                hlimit = ip6_dst_hoplimit(dst);
-295
-
-   Dereference after null check (FORWARD_NULL)10. var_deref_model:
-Passing null pointer np to ip6_autoflowlabel, which dereferences it.
-
-296        ip6_flow_hdr(hdr, tclass, ip6_make_flowlabel(net, skb,
-fl6->flowlabel,
-297                                ip6_autoflowlabel(net, np), fl6));
-298
-
-There is a null check on np on line 291, so potentially np could be null
-on the call on line 296 where a null is passed to the function
-ip6_autoflowlabel that dereferences the null np.
-
-Colin
+Acked-by: KP Singh <kpsingh@kernel.org>
