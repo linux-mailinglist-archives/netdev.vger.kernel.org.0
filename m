@@ -2,100 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16B8540FF02
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 20:07:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D177840FFBD
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 21:25:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233022AbhIQSIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 14:08:49 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:50994 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233801AbhIQSIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 14:08:48 -0400
-Received: by mail-il1-f198.google.com with SMTP id x4-20020a92b004000000b0022b3cb3b4deso8570753ilh.17
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 11:07:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=TSZSZYxRds2+v+DyZXxz8vq0C1X5lx7/z+SNdhYa2qI=;
-        b=kKUgxMkCVzEQEs3OriXPRCy4lSm4iLdihJ1TWOw5My4FUAnVYMNttF8NtgGLH+TXOn
-         nc69/MKTP7Mw0pr8BUKykR9zg1Qlxo48dp1CfJLfx/qSxiYBJ9anN6EDRFsmXqggWUhW
-         Kc4C8qhpVB/2P2QXic+7zTncbTSLFD1u0Xa1qAOkwFrK8+b3SR38prYuo23XowqcgHSk
-         uIsr5ohf53590iwA6HG9QqR8UqJAW/Lk/YOQZ9A58QV/FcgP/tuYs1bgrJhDnHiBvCth
-         XDZdAjkjzIMOal47owMqVy5nVJ7XJfrdcltKEjtmZvYkGPB8oVxA37zDVVLM++yv6SfW
-         0Egw==
-X-Gm-Message-State: AOAM531PZ6BUV9MSYegPHWiySPuIo19IaPL+mYGuZs8qJKIuncH0LCac
-        GvUp/nlcd//qgFfDV/jq+ByNhNk5eYKgZReLP97M7Rg+vWiJ
-X-Google-Smtp-Source: ABdhPJzq3LakqqA6s4gtmSLjWU6hgTJToKDRLiwWqAif0Ml2YZJorB1DgEPdL3y/z5AKnqvEJSS2buA3w9P5aBfCrQLqrxu1My8g
+        id S242969AbhIQT0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 15:26:30 -0400
+Received: from 2.mo2.mail-out.ovh.net ([188.165.53.149]:51567 "EHLO
+        2.mo2.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231864AbhIQT03 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 15:26:29 -0400
+X-Greylist: delayed 2400 seconds by postgrey-1.27 at vger.kernel.org; Fri, 17 Sep 2021 15:26:29 EDT
+Received: from player734.ha.ovh.net (unknown [10.109.156.62])
+        by mo2.mail-out.ovh.net (Postfix) with ESMTP id 5DB6A21981A
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 20:09:15 +0200 (CEST)
+Received: from RCM-web7.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player734.ha.ovh.net (Postfix) with ESMTPSA id D11E72215290D;
+        Fri, 17 Sep 2021 18:09:07 +0000 (UTC)
 MIME-Version: 1.0
-X-Received: by 2002:a92:cdad:: with SMTP id g13mr97999ild.103.1631902045500;
- Fri, 17 Sep 2021 11:07:25 -0700 (PDT)
-Date:   Fri, 17 Sep 2021 11:07:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000baf9fa05cc34cda8@google.com>
-Subject: [syzbot] WARNING: refcount bug in sco_sock_timeout
-From:   syzbot <syzbot+0d58aed5b04e25a9b5a7@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Date:   Fri, 17 Sep 2021 20:09:07 +0200
+From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: bcm_sf2: Fix array overrun in
+ bcm_sf2_num_active_ports()
+In-Reply-To: <20210916213336.1710044-1-f.fainelli@gmail.com>
+References: <20210916213336.1710044-1-f.fainelli@gmail.com>
+User-Agent: Roundcube Webmail/1.4.10
+Message-ID: <69b4ba48ff1278337048412d76574beb@milecki.pl>
+X-Sender: rafal@milecki.pl
+X-Originating-IP: 194.187.74.233
+X-Webmail-UserID: rafal@milecki.pl
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 15693637330723711963
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvtddrudehiedgudduiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeggfffhvffujghffgfkgihitgfgsehtkehjtddtreejnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeejffdufffgjefgvdeigedukefffeevheejueeikeehudeiudehvdeifeduteehieenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpqdhouhhtpdhhvghlohepphhlrgihvghrjeefgedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehrrghfrghlsehmihhlvggtkhhirdhplhdprhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 2021-09-16 23:33, Florian Fainelli wrote:
+> After d12e1c464988 ("net: dsa: b53: Set correct number of ports in the
+> DSA struct") we stopped setting dsa_switch::num_ports to DSA_MAX_PORTS,
+> which created an off by one error between the statically allocated
+> bcm_sf2_priv::port_sts array (of size DSA_MAX_PORTS). When
+> dsa_is_cpu_port() is used, we end-up accessing an out of bounds member
+> and causing a NPD.
+> 
+> Fix this by iterating with the appropriate port count using
+> ds->num_ports.
+> 
+> Fixes: d12e1c464988 ("net: dsa: b53: Set correct number of ports in
+> the DSA struct")
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
-syzbot found the following issue on:
-
-HEAD commit:    29ce8f970107 Merge git://git.kernel.org/pub/scm/linux/kern..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12f40133300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d2f9d4c9ff8c5ae7
-dashboard link: https://syzkaller.appspot.com/bug?extid=0d58aed5b04e25a9b5a7
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+0d58aed5b04e25a9b5a7@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-refcount_t: addition on 0; use-after-free.
-WARNING: CPU: 0 PID: 10451 at lib/refcount.c:25 refcount_warn_saturate+0x169/0x1e0 lib/refcount.c:25
-Modules linked in:
-CPU: 0 PID: 10451 Comm: kworker/0:8 Not tainted 5.14.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events sco_sock_timeout
-RIP: 0010:refcount_warn_saturate+0x169/0x1e0 lib/refcount.c:25
-Code: 09 31 ff 89 de e8 d7 c9 9e fd 84 db 0f 85 36 ff ff ff e8 8a c3 9e fd 48 c7 c7 20 8f e3 89 c6 05 e8 7f 81 09 01 e8 f0 98 16 05 <0f> 0b e9 17 ff ff ff e8 6b c3 9e fd 0f b6 1d cd 7f 81 09 31 ff 89
-RSP: 0018:ffffc9001766fce8 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88802cea3880 RSI: ffffffff815d87a5 RDI: fffff52002ecdf8f
-RBP: 0000000000000002 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815d25de R11: 0000000000000000 R12: ffff88806d23ce08
-R13: ffff8880712c8080 R14: ffff88802edf4500 R15: ffff8880b9c51240
-FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f3748c20000 CR3: 0000000017644000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __refcount_add include/linux/refcount.h:199 [inline]
- __refcount_inc include/linux/refcount.h:250 [inline]
- refcount_inc include/linux/refcount.h:267 [inline]
- sock_hold include/net/sock.h:702 [inline]
- sco_sock_timeout+0x216/0x290 net/bluetooth/sco.c:88
- process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
- kthread+0x3e5/0x4d0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+Tested-by: Rafał Miłecki <rafal@milecki.pl>
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+This fixes:
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+[    0.515409] Unable to handle kernel read from unreadable memory at 
+virtual address 0000000000000028
+[    0.524659] Mem abort info:
+[    0.527522]   ESR = 0x96000005
+[    0.530656]   EC = 0x25: DABT (current EL), IL = 32 bits
+[    0.536119]   SET = 0, FnV = 0
+[    0.539262]   EA = 0, S1PTW = 0
+[    0.542481] Data abort info:
+[    0.545438]   ISV = 0, ISS = 0x00000005
+[    0.549383]   CM = 0, WnR = 0
+[    0.552427] [0000000000000028] user address but active_mm is swapper
+[    0.558973] Internal error: Oops: 96000005 [#1] SMP
+[    0.563986] Modules linked in:
+[    0.567125] CPU: 1 PID: 24 Comm: kworker/1:1 Not tainted 5.10.64 #0
+[    0.573573] Hardware name: Netgear R8000P (DT)
+[    0.578155] Workqueue: events deferred_probe_work_func
+[    0.583431] pstate: 60400005 (nZCv daif +PAN -UAO -TCO BTYPE=--)
+[    0.589617] pc : bcm_sf2_recalc_clock+0x58/0xe4
+[    0.594271] lr : bcm_sf2_port_setup+0xc0/0x2ac
+[    0.598840] sp : ffffffc0109bb980
+[    0.602244] x29: ffffffc0109bb980 x28: ffffff801fef6f60
+[    0.607710] x27: ffffff8001242b30 x26: 0000000000039040
+[    0.613175] x25: 0000000000002380 x24: 0000000000000003
+[    0.618641] x23: ffffff800125f880 x22: 0000000000000003
+[    0.624107] x21: 0000000000000000 x20: 0000000000000000
+[    0.629572] x19: ffffff8001398280 x18: 0000002437b29c0a
+[    0.635039] x17: 00008cad14430a3a x16: 0000000000000008
+[    0.640503] x15: 0000000000000000 x14: 6863746977732d74
+[    0.645969] x13: 656e72656874652e x12: 3030303038303038
+[    0.651435] x11: 0002001d00000000 x10: 6d726f6674616c70
+[    0.656900] x9 : ffffff800125f880 x8 : ffffff8001398800
+[    0.662366] x7 : ffffff80013989b8 x6 : 0000000000000001
+[    0.667832] x5 : ffffff800125f97c x4 : ffffff8001242b30
+[    0.673297] x3 : 0000000000000009 x2 : ffffff8001242b30
+[    0.678763] x1 : 0000000000000000 x0 : ffffff8001398280
+[    0.684230] Call trace:
+[    0.686740]  bcm_sf2_recalc_clock+0x58/0xe4
