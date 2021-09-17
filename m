@@ -2,53 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C2740FA75
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 16:41:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C79440FAAA
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 16:45:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243803AbhIQOmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 10:42:21 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46438 "EHLO vps0.lunn.ch"
+        id S233248AbhIQOrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 10:47:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46466 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245637AbhIQOmS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 10:42:18 -0400
+        id S230009AbhIQOqk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Sep 2021 10:46:40 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=2062cCGvF8+jF8e3c5ODMD+rtu44bTlOTpxGwdtZHSI=; b=2mvtwv2Rm4cAvMS0gUzIOzug0P
-        iB/VkGT/Xnstgq4o2IQp9ShDSdCl73Jb/ZLsFZA8ikN6DpByRwAS/Hqc1YUqKoSP66pTqhywooNeg
-        pmlx0gdTCKHEAItzxVPE1MMMrV6xRm+E/afrrrJc/NZrTDpibO5nLRBOtOSuBb5YXXLg=;
+        bh=SJmSYEZ9zU3MqEbDt3zgJ+gHfjq80okIxKSVKSJdKT8=; b=JGKwN34Bg7sU5R35hxo+3VFr3V
+        0z2WA+/pxQkAIuhxUTICNbOPaK5whbOQYEczFLdYA/yPO8tlyVfbGfdV46cO986l674fF4O1qsJg7
+        MlFBA+YPbRLONxPabVgMB4qTY4AJi5KYPIqk/tS4OS06aXRM1s+AP7E/n5Hlm+hyleoA=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1mRF2l-0075AB-5O; Fri, 17 Sep 2021 16:40:47 +0200
-Date:   Fri, 17 Sep 2021 16:40:47 +0200
+        id 1mRF6t-0075Dg-PP; Fri, 17 Sep 2021 16:45:03 +0200
+Date:   Fri, 17 Sep 2021 16:45:03 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     nicolas.ferre@microchip.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] net: macb: enable mii on rgmii for sama7g5
-Message-ID: <YUSo7wIyfzOuwdzJ@lunn.ch>
-References: <20210917132615.16183-1-claudiu.beznea@microchip.com>
- <20210917132615.16183-5-claudiu.beznea@microchip.com>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Marek Beh__n <kabel@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: phy: marvell10g: add downshift tunable
+ support
+Message-ID: <YUSp78o/vfZNFCJw@lunn.ch>
+References: <E1mREEN-001yxo-Da@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210917132615.16183-5-claudiu.beznea@microchip.com>
+In-Reply-To: <E1mREEN-001yxo-Da@rmk-PC.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 17, 2021 at 04:26:15PM +0300, Claudiu Beznea wrote:
-> Both MAC IPs available on SAMA7G5 support MII on RGMII feature.
-> Enable these by adding proper capability to proper macb_config
-> objects.
-> 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> +static int mv3310_set_downshift(struct phy_device *phydev, u8 ds)
+> +{
+> +	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
+> +	u16 val;
+> +	int err;
+> +
+> +	if (!priv->has_downshift)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (ds == DOWNSHIFT_DEV_DISABLE)
+> +		return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
+> +					  MV_PCS_DSC1_ENABLE);
+> +
+> +	/* FIXME: The default is disabled, so should we disable? */
+> +	if (ds == DOWNSHIFT_DEV_DEFAULT_COUNT)
+> +		ds = 2;
 
-Thanks for adding this.
+Hi Russell
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Rather than a FIXME, maybe just document that the hardware default is
+disabled, which does not make too much sense, so default to 2 attempts?
 
-    Andrew
+      Andrew
 
