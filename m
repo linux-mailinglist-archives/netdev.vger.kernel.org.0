@@ -2,178 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A92E40F9A3
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 15:55:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 761A740F9E3
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 16:03:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241589AbhIQN4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 09:56:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37188 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235669AbhIQN4d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 09:56:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 82034611C3;
-        Fri, 17 Sep 2021 13:55:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631886911;
-        bh=c+1/5v3W6h8KgmWxYsyBGxKIVtsLsWwfXcuinAfdwX0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pP4ep/EEJhEDCU7kg2oVkSWjf9bpNP69kg/JLEsxEKm3CGbCg9c/XQoEW3WgPYC72
-         Odg879w15XREpXHV6Rn8jRIoWHQAUrLVTALi+kaLl+iwv/o5tZfz4MIRO9GXZ2wbfb
-         hDkCcry2Qc/UIKYvmgBHhUfASiDjInE8bjBimDYC41qa9W6Zw3ukNt6JuXtVf6lPKJ
-         erFGzS8nvnZs52hdxMMqH4ACLJjaaaPsQIvq9h5nkeNa7/ZqIVgfNKT+na0t5rpHdI
-         qhyLXZo4ORON8MpbX3jNSgrVMpqSOK21nruqpyLSLU0sWismVkwctHJfcD/x57ndMs
-         YHeL45xmtTwCQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net, xiyou.wangcong@gmail.com
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, jiri@resnulli.us,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>
-Subject: [PATCH net-next] net: sched: move and reuse mq_change_real_num_tx()
-Date:   Fri, 17 Sep 2021 06:55:06 -0700
-Message-Id: <20210917135506.1408151-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S240708AbhIQOFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 10:05:09 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9890 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237812AbhIQOFI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 10:05:08 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4H9wYH4cV1z8xfX;
+        Fri, 17 Sep 2021 21:59:15 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Fri, 17 Sep 2021 22:03:44 +0800
+Received: from [10.174.176.117] (10.174.176.117) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Fri, 17 Sep 2021 22:03:43 +0800
+Subject: Re: [PATCH 3/3] bpf/selftests: add test for writable bare tracepoint
+To:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+References: <20210916135511.3787194-1-houtao1@huawei.com>
+ <20210916135511.3787194-4-houtao1@huawei.com>
+ <c70c0a07-a337-1710-fae7-41ab77f75544@fb.com>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <24ffb298-7638-4771-1f3b-5415258ad768@huawei.com>
+Date:   Fri, 17 Sep 2021 22:03:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <c70c0a07-a337-1710-fae7-41ab77f75544@fb.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.174.176.117]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The code for handling active queue changes is identical
-between mq and mqprio, reuse it.
+Hi,
 
-Suggested-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- include/net/sch_generic.h |  2 ++
- net/sched/sch_generic.c   | 24 ++++++++++++++++++++++++
- net/sched/sch_mq.c        | 23 -----------------------
- net/sched/sch_mqprio.c    | 24 +-----------------------
- 4 files changed, 27 insertions(+), 46 deletions(-)
-
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 8c2d611639fc..5a011f8d394e 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -1345,6 +1345,8 @@ void mini_qdisc_pair_init(struct mini_Qdisc_pair *miniqp, struct Qdisc *qdisc,
- void mini_qdisc_pair_block_init(struct mini_Qdisc_pair *miniqp,
- 				struct tcf_block *block);
- 
-+void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx);
-+
- int sch_frag_xmit_hook(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb));
- 
- #endif
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 66d2fbe9ef50..8c64a552a64f 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1339,6 +1339,30 @@ void dev_qdisc_change_real_num_tx(struct net_device *dev,
- 		qdisc->ops->change_real_num_tx(qdisc, new_real_tx);
- }
- 
-+void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx)
-+{
-+#ifdef CONFIG_NET_SCHED
-+	struct net_device *dev = qdisc_dev(sch);
-+	struct Qdisc *qdisc;
-+	unsigned int i;
-+
-+	for (i = new_real_tx; i < dev->real_num_tx_queues; i++) {
-+		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
-+		/* Only update the default qdiscs we created,
-+		 * qdiscs with handles are always hashed.
-+		 */
-+		if (qdisc != &noop_qdisc && !qdisc->handle)
-+			qdisc_hash_del(qdisc);
-+	}
-+	for (i = dev->real_num_tx_queues; i < new_real_tx; i++) {
-+		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
-+		if (qdisc != &noop_qdisc && !qdisc->handle)
-+			qdisc_hash_add(qdisc, false);
-+	}
-+#endif
-+}
-+EXPORT_SYMBOL(mq_change_real_num_tx);
-+
- int dev_qdisc_change_tx_queue_len(struct net_device *dev)
- {
- 	bool up = dev->flags & IFF_UP;
-diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
-index db18d8a860f9..e04f1a87642b 100644
---- a/net/sched/sch_mq.c
-+++ b/net/sched/sch_mq.c
-@@ -125,29 +125,6 @@ static void mq_attach(struct Qdisc *sch)
- 	priv->qdiscs = NULL;
- }
- 
--static void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx)
--{
--#ifdef CONFIG_NET_SCHED
--	struct net_device *dev = qdisc_dev(sch);
--	struct Qdisc *qdisc;
--	unsigned int i;
--
--	for (i = new_real_tx; i < dev->real_num_tx_queues; i++) {
--		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
--		/* Only update the default qdiscs we created,
--		 * qdiscs with handles are always hashed.
--		 */
--		if (qdisc != &noop_qdisc && !qdisc->handle)
--			qdisc_hash_del(qdisc);
--	}
--	for (i = dev->real_num_tx_queues; i < new_real_tx; i++) {
--		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
--		if (qdisc != &noop_qdisc && !qdisc->handle)
--			qdisc_hash_add(qdisc, false);
--	}
--#endif
--}
--
- static int mq_dump(struct Qdisc *sch, struct sk_buff *skb)
- {
- 	struct net_device *dev = qdisc_dev(sch);
-diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index 7f23a92849d5..0bc10234e306 100644
---- a/net/sched/sch_mqprio.c
-+++ b/net/sched/sch_mqprio.c
-@@ -306,28 +306,6 @@ static void mqprio_attach(struct Qdisc *sch)
- 	priv->qdiscs = NULL;
- }
- 
--static void mqprio_change_real_num_tx(struct Qdisc *sch,
--				      unsigned int new_real_tx)
--{
--	struct net_device *dev = qdisc_dev(sch);
--	struct Qdisc *qdisc;
--	unsigned int i;
--
--	for (i = new_real_tx; i < dev->real_num_tx_queues; i++) {
--		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
--		/* Only update the default qdiscs we created,
--		 * qdiscs with handles are always hashed.
--		 */
--		if (qdisc != &noop_qdisc && !qdisc->handle)
--			qdisc_hash_del(qdisc);
--	}
--	for (i = dev->real_num_tx_queues; i < new_real_tx; i++) {
--		qdisc = netdev_get_tx_queue(dev, i)->qdisc_sleeping;
--		if (qdisc != &noop_qdisc && !qdisc->handle)
--			qdisc_hash_add(qdisc, false);
--	}
--}
--
- static struct netdev_queue *mqprio_queue_get(struct Qdisc *sch,
- 					     unsigned long cl)
- {
-@@ -645,7 +623,7 @@ static struct Qdisc_ops mqprio_qdisc_ops __read_mostly = {
- 	.init		= mqprio_init,
- 	.destroy	= mqprio_destroy,
- 	.attach		= mqprio_attach,
--	.change_real_num_tx = mqprio_change_real_num_tx,
-+	.change_real_num_tx = mq_change_real_num_tx,
- 	.dump		= mqprio_dump,
- 	.owner		= THIS_MODULE,
- };
--- 
-2.31.1
+On 9/17/2021 7:46 AM, Yonghong Song wrote:
+>
+>
+> On 9/16/21 6:55 AM, Hou Tao wrote:
+>> Add a writable bare tracepoint in bpf_testmod module, and
+>> trigger its calling when reading /sys/kernel/bpf_testmod
+>> with a specific buffer length.
+>
+> The patch cannot be applied cleanly with bpf-next tree.
+> Please rebase and resubmit.
+Will do
+>
+>>
+>> Signed-off-by: Hou Tao <houtao1@huawei.com>
+>> ---
+>>   .../bpf/bpf_testmod/bpf_testmod-events.h      | 15 +++++++
+>>   .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 10 +++++
+>>   .../selftests/bpf/bpf_testmod/bpf_testmod.h   |  5 +++
+>>   .../selftests/bpf/prog_tests/module_attach.c  | 40 ++++++++++++++++++-
+>>   .../selftests/bpf/progs/test_module_attach.c  | 14 +++++++
+>>   5 files changed, 82 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
+>> b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
+>> index 89c6d58e5dd6..11ee801e75e7 100644
+>> --- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
+>> +++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
+>> @@ -34,6 +34,21 @@ DECLARE_TRACE(bpf_testmod_test_write_bare,
+>>       TP_ARGS(task, ctx)
+>>   );
+>>   +#undef BPF_TESTMOD_DECLARE_TRACE
+>> +#ifdef DECLARE_TRACE_WRITABLE
+>> +#define BPF_TESTMOD_DECLARE_TRACE(call, proto, args, size) \
+>> +    DECLARE_TRACE_WRITABLE(call, PARAMS(proto), PARAMS(args), size)
+>> +#else
+>> +#define BPF_TESTMOD_DECLARE_TRACE(call, proto, args, size) \
+>> +    DECLARE_TRACE(call, PARAMS(proto), PARAMS(args))
+>> +#endif
+>> +
+>> +BPF_TESTMOD_DECLARE_TRACE(bpf_testmod_test_writable_bare,
+>> +    TP_PROTO(struct bpf_testmod_test_writable_ctx *ctx),
+>> +    TP_ARGS(ctx),
+>> +    sizeof(struct bpf_testmod_test_writable_ctx)
+>> +);
+>> +
+>>   #endif /* _BPF_TESTMOD_EVENTS_H */
+>>     #undef TRACE_INCLUDE_PATH
+>> diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+>> b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+>> index 141d8da687d2..3d3fb16eaf8c 100644
+>> --- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+>> +++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+>> @@ -26,6 +26,16 @@ bpf_testmod_test_read(struct file *file, struct kobject
+>> *kobj,
+>>         trace_bpf_testmod_test_read(current, &ctx);
+>>   +    /* Magic number to enable writable tp */
+>> +    if (len == 1024) {
+>> +        struct bpf_testmod_test_writable_ctx writable = {
+>> +            .val = 1024,
+>> +        };
+>> +        trace_bpf_testmod_test_writable_bare(&writable);
+>> +        if (writable.ret)
+>> +            return snprintf(buf, len, "%d\n", writable.val);
+>> +    }
+>> +
+>>       return -EIO; /* always fail */
+>>   }
+>>   EXPORT_SYMBOL(bpf_testmod_test_read);
+>> diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
+>> b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
+>> index b3892dc40111..553d94214aa6 100644
+>> --- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
+>> +++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
+>> @@ -17,4 +17,9 @@ struct bpf_testmod_test_write_ctx {
+>>       size_t len;
+>>   };
+>>   +struct bpf_testmod_test_writable_ctx {
+>> +    bool ret;
+>> +    int val;
+>> +};
+>> +
+>>   #endif /* _BPF_TESTMOD_H */
+>> diff --git a/tools/testing/selftests/bpf/prog_tests/module_attach.c
+>> b/tools/testing/selftests/bpf/prog_tests/module_attach.c
+>> index d85a69b7ce44..5565bcab1531 100644
+>> --- a/tools/testing/selftests/bpf/prog_tests/module_attach.c
+>> +++ b/tools/testing/selftests/bpf/prog_tests/module_attach.c
+>> @@ -6,11 +6,39 @@
+>>     static int duration;
+>>   +#define BPF_TESTMOD_PATH "/sys/kernel/bpf_testmod"
+>> +
+>> +static int trigger_module_test_writable(int *val)
+>> +{
+>> +    int fd, err;
+>> +    char buf[1025];
+>
+> Not critical, but do you need such a big stack size?
+> Maybe smaller one?
+65 is also fine.
+>
+>> +    ssize_t rd;
+>> +
+>> +    fd = open(BPF_TESTMOD_PATH, O_RDONLY);
+>> +    err = -errno;
+>> +    if (CHECK(fd < 0, "testmod_file_open", "failed: %d\n", err))
+>> +        return err;
+>> +
+>> +    rd = read(fd, buf, sizeof(buf) - 1);
+>> +    err = rd < 0 ? -errno : -EIO;
+>> +    if (CHECK(rd <= 0, "testmod_file_read", "failed: %d\n", err)) {
+>
+> Please use ASSERT_* macros. You can take a look at other self tests.
+The reason using CHECK instead of ASSERT is we can output the errno
+if read() fails.
+>> +        close(fd);
+>> +        return err;
+>> +    }
+>
+> Put one blank line here and remove the following three blank lines.
+Will do.
+>
+>> +    buf[rd] = '\0';
+>> +
+>> +    *val = strtol(buf, NULL, 0);
+>> +
+>> +    close(fd);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>>   static int trigger_module_test_read(int read_sz)
+>>   {
+>>       int fd, err;
+>>   -    fd = open("/sys/kernel/bpf_testmod", O_RDONLY);
+>> +    fd = open(BPF_TESTMOD_PATH, O_RDONLY);
+>>       err = -errno;
+>>       if (CHECK(fd < 0, "testmod_file_open", "failed: %d\n", err))
+>>           return err;
+>> @@ -32,7 +60,7 @@ static int trigger_module_test_write(int write_sz)
+>>       memset(buf, 'a', write_sz);
+>>       buf[write_sz-1] = '\0';
+>>   -    fd = open("/sys/kernel/bpf_testmod", O_WRONLY);
+>> +    fd = open(BPF_TESTMOD_PATH, O_WRONLY);
+>>       err = -errno;
+>>       if (CHECK(fd < 0, "testmod_file_open", "failed: %d\n", err)) {
+>>           free(buf);
+>> @@ -58,6 +86,7 @@ void test_module_attach(void)
+>>       struct test_module_attach__bss *bss;
+>>       struct bpf_link *link;
+>>       int err;
+>> +    int writable_val;
+>>         skel = test_module_attach__open();
+>>       if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
+>> @@ -90,6 +119,13 @@ void test_module_attach(void)
+>>       ASSERT_EQ(bss->fexit_ret, -EIO, "fexit_tet");
+>>       ASSERT_EQ(bss->fmod_ret_read_sz, READ_SZ, "fmod_ret");
+>>   +    bss->raw_tp_writable_bare_ret = 1;
+>> +    bss->raw_tp_writable_bare_val = 511;
+>> +    writable_val = 0;
+>> +    ASSERT_OK(trigger_module_test_writable(&writable_val), "trigger_writable");
+>> +    ASSERT_EQ(bss->raw_tp_writable_bare_in_val, 1024, "writable_test");
+>> +    ASSERT_EQ(bss->raw_tp_writable_bare_val, writable_val, "writable_test");
+>> +
+>>       test_module_attach__detach(skel);
+>>         /* attach fentry/fexit and make sure it get's module reference */
+>> diff --git a/tools/testing/selftests/bpf/progs/test_module_attach.c
+>> b/tools/testing/selftests/bpf/progs/test_module_attach.c
+>> index bd37ceec5587..4f5c780fcd21 100644
+>> --- a/tools/testing/selftests/bpf/progs/test_module_attach.c
+>> +++ b/tools/testing/selftests/bpf/progs/test_module_attach.c
+>> @@ -27,6 +27,20 @@ int BPF_PROG(handle_raw_tp_bare,
+>>       return 0;
+>>   }
+>>   +int raw_tp_writable_bare_in_val = 0;
+>> +int raw_tp_writable_bare_ret = 0;
+>> +int raw_tp_writable_bare_val = 0;
+>> +
+>> +SEC("raw_tp_writable/bpf_testmod_test_writable_bare")
+>> +int BPF_PROG(handle_raw_tp_writable_bare,
+>> +         struct bpf_testmod_test_writable_ctx *writable)
+>> +{
+>> +    raw_tp_writable_bare_in_val = writable->val;
+>> +    writable->ret = raw_tp_writable_bare_ret;
+>> +    writable->val = raw_tp_writable_bare_val;
+>> +    return 0;
+>> +}
+>> +
+>>   __u32 tp_btf_read_sz = 0;
+>>     SEC("tp_btf/bpf_testmod_test_read")
+>>
+> .
 
