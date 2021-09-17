@@ -2,97 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70B5640FE69
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 19:15:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FCF840FE83
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 19:18:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241558AbhIQRQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 13:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47012 "EHLO
+        id S234934AbhIQRTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 13:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232742AbhIQRQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 13:16:43 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A151C061574
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 10:15:21 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id p4so19627610qki.3
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 10:15:21 -0700 (PDT)
+        with ESMTP id S232173AbhIQRTU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 13:19:20 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FADFC061574;
+        Fri, 17 Sep 2021 10:17:58 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id c7so14146442qka.2;
+        Fri, 17 Sep 2021 10:17:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=31egVMi24lDCbHI3jFMIkOXoiTXKDonx8R+d3mlekEo=;
-        b=Sn8kQwXNPPtiWG9B1L9+6PjSSZUNmC6js1psKOUHWNcEfq18Toda5YbBqKyT7xHN09
-         Mb8Suauob5buttvKHblSJ9LIwPBLMINj4E1lNd6xJtjAKGWv3Io4N0jVIVMuZrN8e6l1
-         26f0L6vpE+wGdqEc8fQiIqddLCk8y9BVu3/V1wmJIjEg9ULWROyLzkYOp4yA+28oL9an
-         pxuiyM/eV+bFZaKK8QZv/4yzOKytNUOoL1DKA+cnzC5vdoYk7o7yfdnnUZFXmMdd96IF
-         MGbk84H1o6TpLSIGhGeE3CJ9eav6gADNavFW4yEtCxWHz9uO/aph/8EVLIHNmmwmXN4r
-         KqOQ==
+        bh=40fDEg3fABnjTm2Jeh1ku9dFDScBQkyGxaPi+SrGI08=;
+        b=GbjCn6xIGP18QKsyjQ75a+2uuzkA7jodKc8CftKHKkWgQWG2S6k7S7GRF5cwQC43Tw
+         x4EiDuMqtlpoXk87DL2KldWpMbR1KJpcfTPBRj/2ztLH2Ejhd7+CekUaOPOp6zmK9D+V
+         HO0PTMr3/bRqoBSFdO7kAujOnhHi0GiKmidc63hbCW+Q9yrEwiR9Z13Kzd3RaOGVSRjL
+         87WHiPeEtbQkV4FPHug+fkK1ZnjnHeBfKzG9JJACkJHvQHY/7p+n7ucDfuvKoVYrTQd2
+         7Zx20w0zYEbnNZ7moeuE1VQBwQcWmTTaYkkR6BmeNIuyEqdvE1riMUxABU8xUxlMKxky
+         Fzhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=31egVMi24lDCbHI3jFMIkOXoiTXKDonx8R+d3mlekEo=;
-        b=P0u0WA/NfwdoXmxrPRfPLywf1Y0fE7jDgeEo5Aa7a6tcZa0D2f4nV5+m5stTL+STcn
-         YfAOOiNPmFdIdBQEUJmWMiTZeZ6iY6IZ/RjfgQV9RnVKheQ+nFoNol20R+v+H9a6z7ll
-         MwmLqQw5TO0Z4jyO8BFsbW1RoYr1FOSmAHH4F39/julrF+Gllu/+BFMxkQAQsP9oMtm5
-         i12Me+JQBK266xFqpmsmBegT+2etChfa7mqJwsB758kQiT4TpLWF6hEyBZ2xf267nr46
-         xRnaFFfXT4sZnfRxpLLMnZAyeLp9oOROFNXi/pxPbz6l0o3/A5uYwEzmT4ZPUp8EBCfF
-         +Puw==
-X-Gm-Message-State: AOAM531Mjujuo1Xlgw23ay1MeUtm3Dmw1SYwOa5keKCGimMd5io+inrB
-        OdNAgpFEGwdK9lS1tKyAHgU47F8NSsu55Ux5Em7cqA==
-X-Google-Smtp-Source: ABdhPJwp3wXCoSJNtPctZeW3Dp/LYB2c9U1aSTCyvZZr/msVyK8FduVRnIbyIRdj43sqgMe8v9yzgLDLH8UAsz7bUH4=
-X-Received: by 2002:a25:b28a:: with SMTP id k10mr15863396ybj.398.1631898920023;
- Fri, 17 Sep 2021 10:15:20 -0700 (PDT)
+        bh=40fDEg3fABnjTm2Jeh1ku9dFDScBQkyGxaPi+SrGI08=;
+        b=Z1mVBN8BgDtgw6G45Abazg4OjGh7rJ1/hWPNq8G+Fk04AAJRDibDRuFVbA9SW+S7j0
+         vYYUHwPPGF+s6GKQNUKIAqY65Ur714hX+5t+zkownBORQ1hNhdtfvUZlwisof8izeM9m
+         jz6nxVSazgh4vStHJQj/WWVRpSiLKICcVhNLXgLN5UgZXpBBzqs3pccDgZJlUOWyduMw
+         ASdgHBx8UXIIaLkMrFNvqtX9WkaoLrtkmsH0KZKKwHf2dL2mehnrQJbdNkVoPiSBRohZ
+         Cj94kScSj/zb2RMN7taqQQr5ApDcIWB89zlqbJmZDisv/GOPm/YZu/yVU9vO35SSi8Ha
+         5T3g==
+X-Gm-Message-State: AOAM532aY4EX5OJumpTAvjTyXqqFCuvbjWIZK5agdX1VY+aEPxtsmic1
+        mT2rPdwtc20y7yoggjZsg7ZwWR7HxlNlBPjVm9L1S8Dm
+X-Google-Smtp-Source: ABdhPJyGl6QvysJfh5QnTncuKTK9qBA1RXZO68+G0cToZkCIWY3mJF0VImgBstLSGjhj9D27kdeyXXB+1Azs2dHhsgw=
+X-Received: by 2002:a25:fc5:: with SMTP id 188mr14498879ybp.51.1631899077169;
+ Fri, 17 Sep 2021 10:17:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210914121114.28559-1-linyunsheng@huawei.com>
- <20210914121114.28559-4-linyunsheng@huawei.com> <CAKgT0Ud7NXpHghiPeGzRg=83jYAP1Dx75z3ZE0qV8mT0zNMDhA@mail.gmail.com>
- <9467ec14-af34-bba4-1ece-6f5ea199ec97@huawei.com> <YUHtf+lI8ktBdjsQ@apalos.home>
- <0337e2f6-5428-2c75-71a5-6db31c60650a@redhat.com> <fef7d148-95d6-4893-8924-1071ed43ff1b@huawei.com>
-In-Reply-To: <fef7d148-95d6-4893-8924-1071ed43ff1b@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 17 Sep 2021 10:15:08 -0700
-Message-ID: <CANn89iLWo_03b=9WYi1401gFCLXnNrjeFJJaZXJkh0E2Bw-yYQ@mail.gmail.com>
-Subject: Re: [Linuxarm] Re: [PATCH net-next v2 3/3] skbuff: keep track of pp
- page when __skb_frag_ref() is called
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        David Miller <davem@davemloft.net>,
+References: <cover.1631785820.git.mchehab+huawei@kernel.org> <803e3a74d7f9b5fe23e4f8222af0e6629d1cd76a.1631785820.git.mchehab+huawei@kernel.org>
+In-Reply-To: <803e3a74d7f9b5fe23e4f8222af0e6629d1cd76a.1631785820.git.mchehab+huawei@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 17 Sep 2021 10:17:46 -0700
+Message-ID: <CAEf4BzaULanV_QFbZxA=f-vYZ5LrFZji1Nwq3xn68qO08AHQpw@mail.gmail.com>
+Subject: Re: [PATCH v2 09/23] tools: bpftool: update bpftool-map.rst reference
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Beckett <david.beckett@netronome.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Marco Elver <elver@google.com>, memxor@gmail.com,
-        David Ahern <dsahern@gmail.com>
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 7:05 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
-
-> As memtioned before, Tx recycling is based on page_pool instance per socket.
-> it shares the page_pool instance with rx.
+On Thu, Sep 16, 2021 at 2:55 AM Mauro Carvalho Chehab
+<mchehab+huawei@kernel.org> wrote:
 >
-> Anyway, based on feedback from edumazet and dsahern, I am still trying to
-> see if the page pool is meaningful for tx.
+> The file name: Documentation/bpftool-map.rst
+> should be, instead: tools/bpf/bpftool/Documentation/bpftool-map.rst.
 >
+> Update its cross-reference accordingly.
+>
+> Fixes: a2b5944fb4e0 ("selftests/bpf: Check consistency between bpftool source, doc, completion")
+> Fixes: ff69c21a85a4 ("tools: bpftool: add documentation")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> ---
+>  tools/testing/selftests/bpf/test_bpftool_synctypes.py | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/bpf/test_bpftool_synctypes.py b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> index 27a2c369a798..2d7eb683bd5a 100755
+> --- a/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> +++ b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> @@ -383,7 +383,7 @@ class ManMapExtractor(ManPageExtractor):
+>      """
+>      An extractor for bpftool-map.rst.
+>      """
+> -    filename = os.path.join(BPFTOOL_DIR, 'Documentation/bpftool-map.rst')
+> +    filename = os.path.join(BPFTOOL_DIR, 'tools/bpf/bpftool/Documentation/bpftool-map.rst')
 
-It is not for generic linux TCP stack, but perhaps for benchmarks.
+this is wrong, BPFTOOL_DIR already includes "tools/bpf/bpftool" part.
+Did you test this? There are many places where BPFTOOL_DIR is joined
+with bpftool-local file paths, you haven't updated them. So I assume
+this was done blindly with some sort of script? Please be careful with
+such changes.
 
-Unless you dedicate one TX/RX pair per TCP socket ?
-
-Most high performance TCP flows are using zerocopy, I am really not
-sure why we would
-need to 'optimize' the path that is wasting cpu cycles doing
-user->kernel copies anyway,
-at the cost of insane complexity.
+>
+>      def get_map_types(self):
+>          return self.get_rst_list('TYPE')
+> --
+> 2.31.1
+>
