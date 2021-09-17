@@ -2,293 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 104B340F284
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 08:38:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FE8D40F291
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 08:42:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235213AbhIQGjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 02:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41218 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234935AbhIQGj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 02:39:27 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35111C061767
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 23:38:06 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id d207-20020a1c1dd8000000b00307e2d1ec1aso6110943wmd.5
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 23:38:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FwESuS+Kh0JYha0mJK0tNrlmndza4It54ay0fJKb+x8=;
-        b=Z7QZP/tNIa99vmfyMrSkI4rOs7NAyESjVFjMjaaYG8VfLALzjZzK2Haha/QAcoE5bT
-         GshM9bjJjfDgQaQxk6T2Dhgh3F0m5ojPKlk1DuPnrALSc2NgCj4szyU/tUIY3kafKj8N
-         qyXKOn72f29lAJIVnw6h0f5B/4Wd7lVfq5IG5zmg7ppLZuihRX3WXDtw5hJeZE2i3UyT
-         scVfP4/vkOpKTd6eVvCBgHPfLOh1a9yVSVdT6CqCAbVBEqy65Gs+NTFxoQN/INdpcOTc
-         O3m8AM1NXbou1cHDFuSX4Ur6Qxb0J79rvDu4SqrBB7Tarq+ATEnbVCloS4BWI0rXduqP
-         BxlQ==
+        id S236629AbhIQGnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 02:43:39 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:35439 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234526AbhIQGni (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 02:43:38 -0400
+Received: by mail-io1-f72.google.com with SMTP id g14-20020a6be60e000000b005b62a0c2a41so18673001ioh.2
+        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 23:42:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FwESuS+Kh0JYha0mJK0tNrlmndza4It54ay0fJKb+x8=;
-        b=zP7IPA1QjTme/vokYQKCUF05tM6mNyuL6RO6uTDe9+6Xfkn/5v5DyAvHD8WKSMIc9W
-         VmQ8KqCOXRlRxx+8g1aydmNoI+krJwZuinxh4x5E2exGxbH0d7jq/gpUwCBYQjfTkLNA
-         6Y7rRyG+2we29qJn3RUjSSg6mRkgqF3dEFdupCtXirc9ur2Iydqvpg+DZE8ZqJdhyCo3
-         D9MDWstSRsa6+p5T0zxAo59DYL6kFb76wZ5EWSBeUdZJHLlTFQgv9xomldeCFT4nxFCo
-         LrIIeGamorwVUWSfCLX63BB2VfEvpAyWrKK5TcgoEBfXUx+54VXOcnjjsgDwlLwcRb24
-         JZqQ==
-X-Gm-Message-State: AOAM531nbGVCY1l2FV5+uncSe0shaD9is8r1tV+1oNv4XxkSlKBuVFwf
-        WjYB1tjyY+rOOmfUkx9Y0C2FXg==
-X-Google-Smtp-Source: ABdhPJzmOpp10tAZLicy1SJeDSt5vM7SEtSK6iRIcqk+h+3OGz9bqC5HzvYWucrsALxftMC8fQOyYA==
-X-Received: by 2002:a1c:4b15:: with SMTP id y21mr8422129wma.183.1631860684658;
-        Thu, 16 Sep 2021 23:38:04 -0700 (PDT)
-Received: from apalos.home (ppp-94-66-220-137.home.otenet.gr. [94.66.220.137])
-        by smtp.gmail.com with ESMTPSA id k22sm6139578wrd.59.2021.09.16.23.38.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Sep 2021 23:38:04 -0700 (PDT)
-Date:   Fri, 17 Sep 2021 09:38:01 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>, brouer@redhat.com,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        hawk@kernel.org, jonathan.lemon@gmail.com, alobakin@pm.me,
-        willemb@google.com, cong.wang@bytedance.com, pabeni@redhat.com,
-        haokexin@gmail.com, nogikh@google.com, elver@google.com,
-        memxor@gmail.com, edumazet@google.com, dsahern@gmail.com
-Subject: Re: Re: [PATCH net-next v2 3/3] skbuff: keep track of pp page when
- __skb_frag_ref() is called
-Message-ID: <YUQ3ySFxc/DWzsMy@apalos.home>
-References: <9467ec14-af34-bba4-1ece-6f5ea199ec97@huawei.com>
- <YUHtf+lI8ktBdjsQ@apalos.home>
- <0337e2f6-5428-2c75-71a5-6db31c60650a@redhat.com>
- <fef7d148-95d6-4893-8924-1071ed43ff1b@huawei.com>
- <YUMD2v7ffs1xAjaW@apalos.home>
- <ac16cc82-8d98-6a2c-b0a6-7c186808c72c@huawei.com>
- <YUMelDd16Aw8w5ZH@apalos.home>
- <e2e127be-c9e4-5236-ba3c-28fdb53aa29b@huawei.com>
- <YUMxKhzm+9MDR0jW@apalos.home>
- <36676c07-c2ca-bbd2-972c-95b4027c424f@huawei.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=FaoZno129C8GFyBk4ix5P7D2itiXjSt/ZhFzhqspXr0=;
+        b=hCXmFQ4A5GX9zWHekHeVoV3JrEW4uIAeFlc5A8IxKWEa+iXeI6ApIj5VGCkoa+dl4Q
+         qLuDvDZvbTEDpHQZx2hnCvVM86rmb8PVvkzAwbgJYPNlPR1eukCGSKExLEZrftPBwsJh
+         6pmejPNbdbPTgoGfRHfpFzKPmAsVCCA+TCBlR0qBZeShHvE5Cbl4sJ+MEksYWY+DXQ7f
+         MM9NdFjZMDUHvb44+LFWMgy4TcRFjwTvm1dYtnbBdvId8Ma9IwO42SL/L25ilGuEIIUS
+         YfLxrRuUXjDxyUtsTJ29SY3co91uWfWuiHXtV+SWaeiXoX1vT2tVYQWEFxbaOQhCXu6O
+         r4Zw==
+X-Gm-Message-State: AOAM5301rvbV0sVg02DbYdfQ4uf1pdxxJDXllvwDNjEfctMyfJq8ixfs
+        sSY3iBVJ1khGz9i0Z47WEK5h+4dGjhDv9zHFoUIn3U9KMH+g
+X-Google-Smtp-Source: ABdhPJxYipYPUKmwSZFF6pKrMTMgbtGQPFKjFsL3O0DEo81+zy8JktxXTubKF0jVhkROzIbD0jE4ktGOzqVGZJwzBg2rHEp+dSID
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <36676c07-c2ca-bbd2-972c-95b4027c424f@huawei.com>
+X-Received: by 2002:a92:2a10:: with SMTP id r16mr6775041ile.309.1631860936501;
+ Thu, 16 Sep 2021 23:42:16 -0700 (PDT)
+Date:   Thu, 16 Sep 2021 23:42:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007171a105cc2b3b92@google.com>
+Subject: [syzbot] general protection fault in nf_tables_dump_rules
+From:   syzbot <syzbot+bd637e7821f7afda67c4@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yunsheng,
+Hello,
 
-[...]
-> >>>>>> I am not sure "pp_recycle_bit was introduced to make the checking faster" is a
-> >>>>>> valid. The size of "struct page" is only about 9 words(36/72 bytes), which is
-> >>>>>> mostly to be in the same cache line, and both standard path and recycle path have
-> >>>>>> been touching the "struct page", so it seems the overhead for checking signature
-> >>>>>> seems minimal.
-> >>>>>>
-> >>>>>> I agree that we need to be cautious and measure potential regression on the
-> >>>>>> standard path.
-> >>>>>
-> >>>>> well pp_recycle is on the same cache line boundary with the head_frag we
-> >>>>> need to decide on recycling. After that we start checking page signatures
-> >>>>> etc,  which means the default release path remains mostly unaffected.  
-> >>>>>
-> >>>>> I guess what you are saying here, is that 'struct page' is going to be
-> >>>>> accessed eventually by the default network path,  so there won't be any 
-> >>>>> noticeable performance hit?  What about the other usecases we have
-> >>>>
-> >>>> Yes.
-> >>>
-> >>> In that case you'd need to call virt_to_head_page() early though, get it
-> >>> and then compare the signature.   I guess that's avoidable by using 
-> >>> frag->bv_page for the fragments?
-> >>
-> >> If a page of a skb frag is from page pool, It seems frag->bv_page is
-> >> always point to head_page of a compound page, so the calling of
-> >> virt_to_head_page() does not seems necessary.
-> >>
-> > 
-> > I was mostly referring to the skb head here and how would you trigger the
-> > recycling path. 
-> > 
-> > I think we are talking about different things here.  
-> > One idea is to use the last bit of frag->bv_page to identify fragments
-> > allocated from page_pool, which is done today with the signature.
-> > 
-> > The signature however exists in the head page so my question was, can we rid
-> > of that without having a performance penalty?
-> 
-> As both skb frag and head page is eventually operated on the head page
-> of a compound page(if it is a compound page) for normal case too, maybe
-> we can refactor the code to get the head page of a compound page before
-> the signature checking without doing a second virt_to_head_page() or
-> compound_head() call?
+syzbot found the following issue on:
 
-Yea that's doable, but my concern is different here.  If we do that the
-standard network stack, even for drivers that don't use page_pool,  will
-have to do a virt_to_head_page() -> check signature, to decide if it has to
-try recycling the packet.  That's the performance part I am worried about,
-since it happens for every packet. 
+HEAD commit:    78e709522d2c Merge tag 'for_linus' of git://git.kernel.org..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=170ed963300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2150ebd7e72fa695
+dashboard link: https://syzkaller.appspot.com/bug?extid=bd637e7821f7afda67c4
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
 
-> 
-> > 
-> > IOW in skb_free_head() an we replace:
-> > 
-> > if (skb_pp_recycle(skb, head)) 
-> > with
-> > if (page->pp_magic & ~0x3UL) == PP_SIGNATURE)
-> > and get rid of the 'bool recycle' argument in __skb_frag_unref()?
-> 
-> For the frag page of a skb, it seems ok to get rid of the 'bool recycle'
-> argument in __skb_frag_unref(), as __skb_frag_unref() and __skb_frag_ref()
-> is symmetrically called to put/get a page.
-> 
-> For the head page of a skb, we might need to make sure the head page
-> passed to __build_skb_around() meet below condition:
-> do pp_frag_count incrementing instead of _refcount incrementing when
-> the head page is not newly allocated and it is from page pool.
-> It seems hard to audit that?
+Unfortunately, I don't have any reproducer for this issue yet.
 
-Yea that seems a bit weird at least to me and I am not sure, it's the only
-place we'll have to go and do that.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+bd637e7821f7afda67c4@syzkaller.appspotmail.com
 
-> 
-> 
-> > 
-> >> bit 0 of frag->bv_page is different way of indicatior for a pp page,
-> >> it is better we do not confuse with the page signature way. Using
-> >> a bit 0 may give us a free word in 'struct page' if we manage to
-> >> use skb->pp_recycle to indicate a head page of the skb uniquely, meaning
-> >> page->pp_magic can be used for future feature.
-> >>
-> >>
-> >>>
-> >>>>
-> >>>>> for pp_recycle right now?  __skb_frag_unref() in skb_shift() or
-> >>>>> skb_try_coalesce() (the latter can probably be removed tbh).
-> >>>>
-> >>>> If we decide to go with accurate indicator of a pp page, we just need
-> >>>> to make sure network stack use __skb_frag_unref() and __skb_frag_ref()
-> >>>> to put and get a page frag, the indicator checking need only done in
-> >>>> __skb_frag_unref() and __skb_frag_ref(), so the skb_shift() and
-> >>>> skb_try_coalesce() should be fine too.
-> >>>>
-> >>>>>
-> >>>>>>
-> >>>>>> Another way is to use the bit 0 of frag->bv_page ptr to indicate if a frag
-> >>>>>> page is from page pool.
-> >>>>>
-> >>>>> Instead of the 'struct page' signature?  And the pp_recycle bit will
-> >>>>> continue to exist?  
-> >>>>
-> >>>> pp_recycle bit might only exist or is only used for the head page for the skb.
-> >>>> The bit 0 of frag->bv_page ptr can be used to indicate a frag page uniquely.
-> >>>> Doing a memcpying of shinfo or "*fragto = *fragfrom" automatically pass the
-> >>>> indicator to the new shinfo before doing a __skb_frag_ref(), and __skb_frag_ref()
-> >>>> will increment the _refcount or pp_frag_count according to the bit 0 of
-> >>>> frag->bv_page.
-> >>>>
-> >>>> By the way, I also prototype the above idea, and it seems to work well too.
-> >>>>
-> >>>
-> >>> As long as no one else touches this, it's just another way of identifying a
-> >>> page_pool allocated page.  But are we gaining by that?  Not using
-> >>> virt_to_head_page() as stated above? But in that case you still need to
-> >>> keep pp_recycle around. 
-> >>
-> >> No, we do not need the pp_recycle, as long as the we make sure __skb_frag_ref()
-> >> is called after memcpying the shinfo or doing "*fragto = *fragfrom".
-> > 
-> > But we'll have to keep it for the skb head in this case.
-> 
-> As above, I am not really look into skb head case:)
+general protection fault, probably for non-canonical address 0xfbd59c000000005a: 0000 [#1] PREEMPT SMP KASAN
+KASAN: maybe wild-memory-access in range [0xdead0000000002d0-0xdead0000000002d7]
+CPU: 1 PID: 6020 Comm: syz-executor.5 Not tainted 5.14.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:nf_tables_dump_rules+0x52f/0xbc0 net/netfilter/nf_tables_api.c:3015
+Code: 4c 8b 28 4d 85 ed 0f 84 65 01 00 00 e8 3a 0e 07 fa 49 8d bc 24 d0 01 00 00 48 be 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <80> 3c 30 00 0f 85 d2 05 00 00 49 8b b4 24 d0 01 00 00 4c 89 ef e8
+RSP: 0018:ffffc9000c897128 EFLAGS: 00010a06
+RAX: 1bd5a0000000005a RBX: ffff88807913cc00 RCX: ffffc90018d44000
+RDX: 0000000000040000 RSI: dffffc0000000000 RDI: dead0000000002d0
+RBP: ffff88803ace5548 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff876efd52 R11: 0000000000000000 R12: dead000000000100
+R13: ffff88806e74adc0 R14: ffff88801c078a00 R15: ffff88803ace55c8
+FS:  00007f5c96649700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b2fc22000 CR3: 000000007c8d6000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ netlink_dump+0x4b9/0xb70 net/netlink/af_netlink.c:2278
+ __netlink_dump_start+0x642/0x900 net/netlink/af_netlink.c:2383
+ netlink_dump_start include/linux/netlink.h:258 [inline]
+ nft_netlink_dump_start_rcu+0x83/0x1c0 net/netfilter/nf_tables_api.c:859
+ nf_tables_getrule+0x76b/0x8d0 net/netfilter/nf_tables_api.c:3119
+ nfnetlink_rcv_msg+0x659/0x13f0 net/netfilter/nfnetlink.c:285
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+ nfnetlink_rcv+0x1ac/0x420 net/netfilter/nfnetlink.c:654
+ netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+ netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+ __sys_sendmsg+0xf3/0x1c0 net/socket.c:2492
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4665f9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f5c96649188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000056bf80 RCX: 00000000004665f9
+RDX: 0000000000000000 RSI: 0000000020000480 RDI: 0000000000000005
+RBP: 00000000004bfcc4 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf80
+R13: 0000000000a9fb1f R14: 00007f5c96649300 R15: 0000000000022000
+Modules linked in:
+---[ end trace 1944f3a07850fa30 ]---
+RIP: 0010:nf_tables_dump_rules+0x52f/0xbc0 net/netfilter/nf_tables_api.c:3015
+Code: 4c 8b 28 4d 85 ed 0f 84 65 01 00 00 e8 3a 0e 07 fa 49 8d bc 24 d0 01 00 00 48 be 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <80> 3c 30 00 0f 85 d2 05 00 00 49 8b b4 24 d0 01 00 00 4c 89 ef e8
+RSP: 0018:ffffc9000c897128 EFLAGS: 00010a06
+RAX: 1bd5a0000000005a RBX: ffff88807913cc00 RCX: ffffc90018d44000
+RDX: 0000000000040000 RSI: dffffc0000000000 RDI: dead0000000002d0
+RBP: ffff88803ace5548 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff876efd52 R11: 0000000000000000 R12: dead000000000100
+R13: ffff88806e74adc0 R14: ffff88801c078a00 R15: ffff88803ace55c8
+FS:  00007f5c96649700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005605fa2f23d8 CR3: 000000007c8d6000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	4c 8b 28             	mov    (%rax),%r13
+   3:	4d 85 ed             	test   %r13,%r13
+   6:	0f 84 65 01 00 00    	je     0x171
+   c:	e8 3a 0e 07 fa       	callq  0xfa070e4b
+  11:	49 8d bc 24 d0 01 00 	lea    0x1d0(%r12),%rdi
+  18:	00
+  19:	48 be 00 00 00 00 00 	movabs $0xdffffc0000000000,%rsi
+  20:	fc ff df
+  23:	48 89 f8             	mov    %rdi,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	80 3c 30 00          	cmpb   $0x0,(%rax,%rsi,1) <-- trapping instruction
+  2e:	0f 85 d2 05 00 00    	jne    0x606
+  34:	49 8b b4 24 d0 01 00 	mov    0x1d0(%r12),%rsi
+  3b:	00
+  3c:	4c 89 ef             	mov    %r13,%rdi
+  3f:	e8                   	.byte 0xe8
 
-Let me take a step back here, because I think we drifted a bit. 
-The page signature was introduced in order to be able to identify skb
-fragments. The problem was that you couldn't rely on the pp_recycle bit of
-the skb head,  since fragments could come from anywhere.  So you use the
-skb bit as a hint for skb frags, and you eventually decide using the page
-signature.
 
-So we got 3 options (Anything I've missed ?)
-- try to remove pp_recycle bit, since the page signature is enough for the
-  skb head and fragments.  That in my opinion is the cleanest option,  as
-  long as we can prove there's no performance hit on the standard network
-  path.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-- Replace the page signature with frag->bv_page bit0.  In that case we
-  still have to keep the pp_recycle bit,  but we do have an 'easier'
-  indication that a skb frag comes from page_pool.  That's still pretty
-  safe, since you now have unique identifiers for the skb and page
-  fragments and you can be sure of their origin (page pool or not).
-  What I am missing here, is what do we get out of this?  I think the
-  advantage is not having to call virt_to_head_page() for frags ?
-
-- Keep all of them(?) and use frag->bv_page bit0 similarly to pp_recycle
-  bit?  I don't see much value on this one,  I am just keeping it here for
-  completeness.
-
-Thanks
-/Ilias
-
-> 
-> > 
-> > Regards
-> > /Ilias
-> > 
-> >>
-> >>>
-> >>>>> .
-> >>>>> Right now the 'naive' explanation on the recycling decision is something like:
-> >>>>>
-> >>>>> if (pp_recycle) <--- recycling bit is set
-> >>>>>     (check page signature) <--- signature matches page pool
-> >>>>> 		(check fragment refcnt) <--- If frags are enabled and is the last consumer
-> >>>>> 			recycle
-> >>>>>
-> >>>>> If we can proove the performance is unaffected when we eliminate the first if,
-> >>>>> then obviously we should remove it.  I'll try running that test here and see,
-> >>>>> but keep in mind I am only testing on an 1GB interface.  Any chance we can get 
-> >>>>> measurements on a beefier hardware using hns3 ?
-> >>>>
-> >>>> Sure, I will try it.
-> >>>> As the kind of performance overhead is small, any performance testcase in mind?
-> >>>>
-> >>>
-> >>> 'eliminate the first if' wasn't accurate.  I meant switch the first if and
-> >>> check the struct page signature instead.  That would be the best solution
-> >>> imho.  We effectively have a single rule to check if a packet comes from
-> >>> page_pool or not.
-> >>
-> >> I am not sure what does "switch " means here, if the page signature can
-> >> indicate a pp page uniquely, the "if (pp_recycle)" checking can be removed.
-> >>
-> >>>
-> >>> You can start by sending a lot of packets and dropping those immediately.
-> >>> That should put enough stress on the receive path and the allocators and it
-> >>> should give us a rough idea. 
-> >>>
-> >>>>>
-> >>>>>>
-> >>>>>>>
-> >>>>>>>> But in general,  I'd be happier if we only had a simple logic in our
-> >>>>>>>> testing for the pages we have to recycle.  Debugging and understanding this
-> >>>>>>>> otherwise will end up being a mess.
-> >>>>>>>
-> >>>>>>>
-> >>>>>
-> >>>>> [...]
-> >>>>>
-> >>>>> Regards
-> >>>>> /Ilias
-> >>>>> .
-> >>>>>
-> >>>
-> >>> Regards
-> >>> /Ilias
-> >>> .
-> >>>
-> > .
-> > 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
