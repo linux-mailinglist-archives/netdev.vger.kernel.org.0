@@ -2,106 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D177840FFBD
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 21:25:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2697140FF0C
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 20:11:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242969AbhIQT0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 15:26:30 -0400
-Received: from 2.mo2.mail-out.ovh.net ([188.165.53.149]:51567 "EHLO
-        2.mo2.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231864AbhIQT03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 15:26:29 -0400
-X-Greylist: delayed 2400 seconds by postgrey-1.27 at vger.kernel.org; Fri, 17 Sep 2021 15:26:29 EDT
-Received: from player734.ha.ovh.net (unknown [10.109.156.62])
-        by mo2.mail-out.ovh.net (Postfix) with ESMTP id 5DB6A21981A
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 20:09:15 +0200 (CEST)
-Received: from RCM-web7.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player734.ha.ovh.net (Postfix) with ESMTPSA id D11E72215290D;
-        Fri, 17 Sep 2021 18:09:07 +0000 (UTC)
-MIME-Version: 1.0
-Date:   Fri, 17 Sep 2021 20:09:07 +0200
-From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
-To:     Florian Fainelli <f.fainelli@gmail.com>
+        id S1343754AbhIQSMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 14:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233022AbhIQSMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 14:12:22 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC93C061574;
+        Fri, 17 Sep 2021 11:11:00 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id c4so6701620pls.6;
+        Fri, 17 Sep 2021 11:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=j19W3k0UxVY88rp02NOZtY+ypRE1blCAPpTIKIHSJS8=;
+        b=dWF91zoBQIbPkhGCiZrX5h6hbAUvWQ+lWE2PTlNr0sRDf2mlU8FpoDoaSeD2cm9VZs
+         vVXToZUcZ2c2QglOwr6rDyrcqGSfj03nM4CE5CEFxh0cVKZyTwkixMh1ifst0d0fxB5b
+         YbWUmjyJk9fODeTpaub7L61djgtF1PAsos28+lVY49nvClHjOp9zZnnzALZTHmvpInuL
+         3n68reRnoAAlxQxYVwAy9ZqQrNn5Xn5WFEfDcPDzWhJwetdtgrGo/zfKsCazyJXHRZf0
+         JER8FiqzfflXgdSUxxY/4sjieaRHvafKMo3BdOSkt0NJv1QwbJD3x0dsEXjoo0a/u/n1
+         c0jQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=j19W3k0UxVY88rp02NOZtY+ypRE1blCAPpTIKIHSJS8=;
+        b=s709Z/oytEysYmlUQQLzlp0AvsyOqkcOI7+egj8UCo2WMgLfyyFFK9PQGs0QxdlFS3
+         s6JwOpR6t8dbUaA1rULb0fDOfGao/fo3Eux83NB+SF8Xt4N8wpzihFOW6VbmeOGV0mQS
+         wmL9rkk7qjwgNe/Ting+zvf8FaTdwTy/GINO0TPQExqWc/bS9lLQZnya5we5+Rla57zG
+         u2WVgCFKfgY3LZffmutUVH1fCvqCTrrHvsWGj6YNz9b3VGfCPE/uwjNP6/HvsMFOJSw7
+         D5zZO2k4DQ0w7rW43mUUr3SksAmwSVgzoqZViBLPibeDr+8BhNdll2ZRVOA5NjdhEjHH
+         EkDQ==
+X-Gm-Message-State: AOAM531Z9+9hDyV3V5ma9p7VeVZAARnRFulDG0MwM6PKdFDFQOnFM1Be
+        BrBAWqndCdw+z4fDHGOticNynxnmdws=
+X-Google-Smtp-Source: ABdhPJzArJx9Jto0WhTT+o9nJ+ILTrOnKn1ZMg/LgJgJUGHjXxfcozm1dbjgmbBNetC0bwhPKwBGfQ==
+X-Received: by 2002:a17:90a:2b88:: with SMTP id u8mr22806072pjd.216.1631902259260;
+        Fri, 17 Sep 2021 11:10:59 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id g13sm7023201pfi.176.2021.09.17.11.10.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Sep 2021 11:10:58 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: phy: bcm7xxx: Add EPHY entry for 72165
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
 Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: bcm_sf2: Fix array overrun in
- bcm_sf2_num_active_ports()
-In-Reply-To: <20210916213336.1710044-1-f.fainelli@gmail.com>
-References: <20210916213336.1710044-1-f.fainelli@gmail.com>
-User-Agent: Roundcube Webmail/1.4.10
-Message-ID: <69b4ba48ff1278337048412d76574beb@milecki.pl>
-X-Sender: rafal@milecki.pl
-X-Originating-IP: 194.187.74.233
-X-Webmail-UserID: rafal@milecki.pl
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 15693637330723711963
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvtddrudehiedgudduiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeggfffhvffujghffgfkgihitgfgsehtkehjtddtreejnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeejffdufffgjefgvdeigedukefffeevheejueeikeehudeiudehvdeifeduteehieenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpqdhouhhtpdhhvghlohepphhlrgihvghrjeefgedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehrrghfrghlsehmihhlvggtkhhirdhplhdprhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+        "open list:BROADCOM ETHERNET PHY DRIVERS" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20210914224042.418365-1-f.fainelli@gmail.com>
+ <20210915144716.12998b33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <373865cd-469d-78ab-12ed-d84de63c6295@gmail.com>
+Date:   Fri, 17 Sep 2021 11:10:57 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+MIME-Version: 1.0
+In-Reply-To: <20210915144716.12998b33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-09-16 23:33, Florian Fainelli wrote:
-> After d12e1c464988 ("net: dsa: b53: Set correct number of ports in the
-> DSA struct") we stopped setting dsa_switch::num_ports to DSA_MAX_PORTS,
-> which created an off by one error between the statically allocated
-> bcm_sf2_priv::port_sts array (of size DSA_MAX_PORTS). When
-> dsa_is_cpu_port() is used, we end-up accessing an out of bounds member
-> and causing a NPD.
+On 9/15/21 2:47 PM, Jakub Kicinski wrote:
+> On Tue, 14 Sep 2021 15:40:41 -0700 Florian Fainelli wrote:
+>> 72165 is a 16nm process SoC with a 10/100 integrated Ethernet PHY,
+>> create a new macro and set of functions for this different process type.
+>>
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+>> ---
+>>  drivers/net/phy/bcm7xxx.c | 200 ++++++++++++++++++++++++++++++++++++++
+>>  include/linux/brcmphy.h   |   1 +
+>>  2 files changed, 201 insertions(+)
+>>
+>> diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/bcm7xxx.c
+>> index e79297a4bae8..f6912a77a378 100644
+>> --- a/drivers/net/phy/bcm7xxx.c
+>> +++ b/drivers/net/phy/bcm7xxx.c
+>> @@ -398,6 +398,189 @@ static int bcm7xxx_28nm_ephy_config_init(struct phy_device *phydev)
+>>  	return bcm7xxx_28nm_ephy_apd_enable(phydev);
+>>  }
+>>  
+>> +static int bcm7xxx_16nm_ephy_afe_config(struct phy_device *phydev)
+>> +{
+>> +	int tmp, rcalcode, rcalnewcodelp, rcalnewcode11, rcalnewcode11d2;
+>> +
+>> +	/* Reset PHY */
+>> +	tmp = genphy_soft_reset(phydev);
+>> +	if (tmp)
+>> +		return tmp;
+>> +
+>> +	/* Reset AFE and PLL */
+>> +	bcm_phy_write_exp_sel(phydev, 0x0003, 0x0006);
+>> +	/* Clear reset */
+>> +	bcm_phy_write_exp_sel(phydev, 0x0003, 0x0000);
+>> +
+>> +	/* Write PLL/AFE control register to select 54MHz crystal */
+>> +	bcm_phy_write_misc(phydev, 0x0030, 0x0001, 0x0000);
+>> +	bcm_phy_write_misc(phydev, 0x0031, 0x0000, 0x044a);
+>> +
+>> +	/* Change Ka,Kp,Ki to pdiv=1 */
+>> +	bcm_phy_write_misc(phydev, 0x0033, 0x0002, 0x71a1);
+>> +	/* Configuration override */
+>> +	bcm_phy_write_misc(phydev, 0x0033, 0x0001, 0x8000);
+>> +
+>> +	/* Change PLL_NDIV and PLL_NUDGE */
+>> +	bcm_phy_write_misc(phydev, 0x0031, 0x0001, 0x2f68);
+>> +	bcm_phy_write_misc(phydev, 0x0031, 0x0002, 0x0000);
+>> +
+>> +	/* Reference frequency is 54Mhz, config_mode[15:14] = 3 (low
+>> +	 * phase) */
 > 
-> Fix this by iterating with the appropriate port count using
-> ds->num_ports.
+> Checkpatch points out:
 > 
-> Fixes: d12e1c464988 ("net: dsa: b53: Set correct number of ports in
-> the DSA struct")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> WARNING: Block comments use a trailing */ on a separate line
+> #55: FILE: drivers/net/phy/bcm7xxx.c:429:
+> +	 * phase) */
 
-Tested-by: Rafał Miłecki <rafal@milecki.pl>
+Yes indeed, sorry about that.
 
+> 
+>> +	/* Drop LSB */
+>> +	rcalnewcode11d2 = (rcalnewcode11 & 0xfffe) / 2;
+>> +	tmp = bcm_phy_read_misc(phydev, 0x003d, 0x0001);
+>> +	/* Clear bits [11:5] */
+>> +	tmp &= ~0xfe0;
+>> +	/* set txcfg_ch0<5>=1 (enable + set local rcal) */
+>> +	tmp |= 0x0020 | (rcalnewcode11d2 * 64);
+>> +	bcm_phy_write_misc(phydev, 0x003d, 0x0001, tmp);
+>> +	bcm_phy_write_misc(phydev, 0x003d, 0x0002, tmp);
+>> +
+>> +	tmp = bcm_phy_read_misc(phydev, 0x003d, 0x0000);
+>> +	/* set txcfg<45:44>=11 (enable Rextra + invert fullscaledetect)
+>> +	 */
+>> +	tmp &= ~0x3000;
+>> +	tmp |= 0x3000;
+> 
+> Clearing then setting the same bits looks a little strange. Especially
+> since from the comment it sounds like these are two separate bits, not
+> a bitfield which is cleared and set as a whole. Anyway, up to you, just
+> jumped out when I was looking thru to see if the use of signed tmp may
+> cause any trouble...
 
-This fixes:
-
-[    0.515409] Unable to handle kernel read from unreadable memory at 
-virtual address 0000000000000028
-[    0.524659] Mem abort info:
-[    0.527522]   ESR = 0x96000005
-[    0.530656]   EC = 0x25: DABT (current EL), IL = 32 bits
-[    0.536119]   SET = 0, FnV = 0
-[    0.539262]   EA = 0, S1PTW = 0
-[    0.542481] Data abort info:
-[    0.545438]   ISV = 0, ISS = 0x00000005
-[    0.549383]   CM = 0, WnR = 0
-[    0.552427] [0000000000000028] user address but active_mm is swapper
-[    0.558973] Internal error: Oops: 96000005 [#1] SMP
-[    0.563986] Modules linked in:
-[    0.567125] CPU: 1 PID: 24 Comm: kworker/1:1 Not tainted 5.10.64 #0
-[    0.573573] Hardware name: Netgear R8000P (DT)
-[    0.578155] Workqueue: events deferred_probe_work_func
-[    0.583431] pstate: 60400005 (nZCv daif +PAN -UAO -TCO BTYPE=--)
-[    0.589617] pc : bcm_sf2_recalc_clock+0x58/0xe4
-[    0.594271] lr : bcm_sf2_port_setup+0xc0/0x2ac
-[    0.598840] sp : ffffffc0109bb980
-[    0.602244] x29: ffffffc0109bb980 x28: ffffff801fef6f60
-[    0.607710] x27: ffffff8001242b30 x26: 0000000000039040
-[    0.613175] x25: 0000000000002380 x24: 0000000000000003
-[    0.618641] x23: ffffff800125f880 x22: 0000000000000003
-[    0.624107] x21: 0000000000000000 x20: 0000000000000000
-[    0.629572] x19: ffffff8001398280 x18: 0000002437b29c0a
-[    0.635039] x17: 00008cad14430a3a x16: 0000000000000008
-[    0.640503] x15: 0000000000000000 x14: 6863746977732d74
-[    0.645969] x13: 656e72656874652e x12: 3030303038303038
-[    0.651435] x11: 0002001d00000000 x10: 6d726f6674616c70
-[    0.656900] x9 : ffffff800125f880 x8 : ffffff8001398800
-[    0.662366] x7 : ffffff80013989b8 x6 : 0000000000000001
-[    0.667832] x5 : ffffff800125f97c x4 : ffffff8001242b30
-[    0.673297] x3 : 0000000000000009 x2 : ffffff8001242b30
-[    0.678763] x1 : 0000000000000000 x0 : ffffff8001398280
-[    0.684230] Call trace:
-[    0.686740]  bcm_sf2_recalc_clock+0x58/0xe4
+I will keep it for now if you don't mind because there is a good chance
+that we will need to change that in the future. For the most part the
+programming sequence is automated based on a script provided by the
+design team, the less manual updates I have to do the better.
+-- 
+Florian
