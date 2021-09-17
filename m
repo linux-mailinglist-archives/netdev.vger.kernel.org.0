@@ -2,102 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A26BF40FFD2
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 21:26:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50EAD40FFE1
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 21:30:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243499AbhIQT1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 15:27:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48336 "EHLO
+        id S1343833AbhIQTbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 15:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243124AbhIQT1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 15:27:39 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E94C061764
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 12:26:17 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id h20so11366222ilj.13
-        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 12:26:17 -0700 (PDT)
+        with ESMTP id S1343785AbhIQTbn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 15:31:43 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F685C061764
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 12:30:21 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id b15so11396476ils.10
+        for <netdev@vger.kernel.org>; Fri, 17 Sep 2021 12:30:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LfjPbohhavkhWKwUH/1kohR8OTnMGA2qFf1xFiq2UHI=;
-        b=Lo+woY7Spj8UgYNNeMHQdnMWU2klrZ/GBMQ5e6FdAoGYqsYn5+G5X8wBnUoZFSsJEe
-         poHOvO/0mVPmln7opKC0a5Wib3EmkEzGmvUPq+Rb/RqI9chpE4ieOOAxd5r73EHJ/OMl
-         PQntOfNV9bLZZyW2qHGIH98GfWG8TXul36wUI=
+        d=ojab.ru; s=ojab;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ojecROmdoKkDHQugVR33EyjeLmCBRcyr3oOr5dKqIQg=;
+        b=Ep0ZieCcO4BsRRbYVJprHD1D0tCQbXTeINo5K+rm/qMUe5lOMFaqTIx5rLAbUK3MZ0
+         iU2JgBpLlUxdCT9DhLA8cvosIVBG7Fyjz4cZ9HLY48P5FGCV2UgWZRTVuMIdBE0GX8ti
+         7coXIdlvUVOHrZ+ClGUILKUxAj0c5kbBFTiGEJtQPf+NkVrZijx4GqSF3O67JGs4GWVg
+         bmIk6weEl1jaxtmRgq/wlX8dMuxRcgHhMoKCZUd+RSJNEsaLtfSt0MX6Sqo4aWrVfTEF
+         /h0nUj+npLuTlV4j0AVc/PyneJXT1JaXpPxQ8Xycxrcxmsfi5XmsLZ212M+v5pMtFIG6
+         VhDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LfjPbohhavkhWKwUH/1kohR8OTnMGA2qFf1xFiq2UHI=;
-        b=iQ+q8nBpKBRMZxS5lbS+oGrBhy93X8LzNS0e4t0zRmusgDFMXLxRPJLM/RzkbTIYWy
-         wnXEEkoaHIo0VFrSKSZeIqDqwnyZ6gNBC9xHqjOZFKQGhBovTLWDySQ1sNZ+FIZowMaK
-         gq/Ay78wYyL+X+VXm/kQjDo003ZqQO3W8VdmuSlN0KdkTQ32xClwdRLOSy9iji9kCLk9
-         zH0hyrHVcuB2tT+zOa1rD9sdIptNALNwpKgXQSE0sMtrljBM6XXE57t6O3r6QGlwyJ50
-         ibz/3WaF4IYfStokyLwg1qkTkaTnD2ZhkZrJUypgUYP4Opr2cRQkrGnzeVv4y2RKTmCX
-         qg1A==
-X-Gm-Message-State: AOAM5321O6wGc3MGkoY45IQ+hTV4kK3PKPhgNa3wbagNpuTmQQ5OYtOV
-        Ugue874FZ+RBqxoAKKkXLbnTxw==
-X-Google-Smtp-Source: ABdhPJyM9NIWQgoA1uI3YhwlV9QCsoV76t9AMOguXV/oSCSoFT/5S3blhepGLBj6aij3GGKOp05Z5A==
-X-Received: by 2002:a92:c145:: with SMTP id b5mr8896077ilh.203.1631906776241;
-        Fri, 17 Sep 2021 12:26:16 -0700 (PDT)
-Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id 9sm4049208ily.9.2021.09.17.12.26.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Sep 2021 12:26:15 -0700 (PDT)
-From:   Shuah Khan <skhan@linuxfoundation.org>
-To:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests: net: af_unix: Fix incorrect args in test result msg
-Date:   Fri, 17 Sep 2021 13:26:14 -0600
-Message-Id: <20210917192614.24862-1-skhan@linuxfoundation.org>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ojecROmdoKkDHQugVR33EyjeLmCBRcyr3oOr5dKqIQg=;
+        b=v9E4/2ltxQdecfSOH0c4LXmvi+Jvs9Qo7DHp5FKPLGISBUp5lSOOVFGVPDB2p2ufLO
+         1qQTcrvQYhbAbAVVzl/NpNC2DhWQ90u8jTnKrMgdKZuBswuXpetqy9Qmv6zKirK0p3w7
+         yWWAdB7KlQbPBAv1lVbaRH+WGENRKEjal27Yu+S97qQAVuAO7Dmvjoh/oTnFMGG+bVCw
+         zlBzhwcyvMUFe6UxPb0MKQPudYQOIJG4pCj9Lkkt1vh6I3rZeR87aagmO+EjEyig+1is
+         x63I5J35eayZD7Ylmd24Pbm+NL61NtL+xgIWB9d96jK+jnjIIIE7DzwXD5uYNLOo2+bh
+         Rcxg==
+X-Gm-Message-State: AOAM532C2NNoieJU1LmLBJxal7Xmb1j94A7HNZycX1VXK8y6lKNcgTPL
+        PuxB3May4mgfvi8cUGNl6iEcHjhYMsc6f/0d9hS9IA==
+X-Google-Smtp-Source: ABdhPJzNhc+5vT8caUkTVnUoJ+e8ww4JroaL2iushz0B5BOIkm3zxnf+CYp3OJLGCdj3n2OSueskKdNmYpHTP0qsN6g=
+X-Received: by 2002:a05:6e02:1bc3:: with SMTP id x3mr9490382ilv.113.1631907020457;
+ Fri, 17 Sep 2021 12:30:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20210722193459.7474-1-ojab@ojab.ru> <CAKzrAgRt0jRFyFNjF-uq=feG-9nhCx=tTztCgCEitj1cpMk_Xg@mail.gmail.com>
+ <CAKzrAgQgsN6=Cu4SvjSSFoJOqAkU2t8cjt7sgEsJdNhvM8f7jg@mail.gmail.com>
+In-Reply-To: <CAKzrAgQgsN6=Cu4SvjSSFoJOqAkU2t8cjt7sgEsJdNhvM8f7jg@mail.gmail.com>
+From:   "ojab //" <ojab@ojab.ru>
+Date:   Fri, 17 Sep 2021 22:30:09 +0300
+Message-ID: <CAKzrAgSEiq-qOgetzryaE3JyBUe3URYjr=Fn0kz9sF7ZryQ5pA@mail.gmail.com>
+Subject: Re: [PATCH V2] ath10k: don't fail if IRAM write fails
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     ath10k@lists.infradead.org,
+        Linux Wireless <linux-wireless@vger.kernel.org>,
+        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the args to fprintf(). Splitting the message ends up passing
-incorrect arg for "sigurg %d" and an extra arg overall. The test
-result message ends up incorrect.
+._.
 
-test_unix_oob.c: In function ‘main’:
-test_unix_oob.c:274:43: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘char *’ [-Wformat=]
-  274 |   fprintf(stderr, "Test 3 failed, sigurg %d len %d OOB %c ",
-      |                                          ~^
-      |                                           |
-      |                                           int
-      |                                          %s
-  275 |   "atmark %d\n", signal_recvd, len, oob, atmark);
-      |   ~~~~~~~~~~~~~
-      |   |
-      |   char *
-test_unix_oob.c:274:19: warning: too many arguments for format [-Wformat-extra-args]
-  274 |   fprintf(stderr, "Test 3 failed, sigurg %d len %d OOB %c ",
+//wbr ojab
 
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
----
- tools/testing/selftests/net/af_unix/test_unix_oob.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/net/af_unix/test_unix_oob.c b/tools/testing/selftests/net/af_unix/test_unix_oob.c
-index 0f3e3763f4f8..3dece8b29253 100644
---- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
-+++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
-@@ -271,8 +271,9 @@ main(int argc, char **argv)
- 	read_oob(pfd, &oob);
- 
- 	if (!signal_recvd || len != 127 || oob != '%' || atmark != 1) {
--		fprintf(stderr, "Test 3 failed, sigurg %d len %d OOB %c ",
--		"atmark %d\n", signal_recvd, len, oob, atmark);
-+		fprintf(stderr,
-+			"Test 3 failed, sigurg %d len %d OOB %c atmark %d\n",
-+			signal_recvd, len, oob, atmark);
- 		die(1);
- 	}
- 
--- 
-2.30.2
-
+On Thu, 9 Sept 2021 at 02:42, ojab // <ojab@ojab.ru> wrote:
+>
+> Gentle ping.
+>
+> //wbr ojab
+>
+> On Wed, 25 Aug 2021 at 19:15, ojab // <ojab@ojab.ru> wrote:
+> >
+> > Can I haz it merged?
+> >
+> > //wbr ojab
+> >
+> > On Thu, 22 Jul 2021 at 22:36, ojab <ojab@ojab.ru> wrote:
+> > >
+> > > After reboot with kernel & firmware updates I found `failed to copy
+> > > target iram contents:` in dmesg and missing wlan interfaces for both
+> > > of my QCA9984 compex cards. Rolling back kernel/firmware didn't fixed
+> > > it, so while I have no idea what's actually happening, I don't see why
+> > > we should fail in this case, looks like some optional firmware ability
+> > > that could be skipped.
+> > >
+> > > Also with additional logging there is
+> > > ```
+> > > [    6.839858] ath10k_pci 0000:04:00.0: No hardware memory
+> > > [    6.841205] ath10k_pci 0000:04:00.0: failed to copy target iram contents: -12
+> > > [    6.873578] ath10k_pci 0000:07:00.0: No hardware memory
+> > > [    6.875052] ath10k_pci 0000:07:00.0: failed to copy target iram contents: -12
+> > > ```
+> > > so exact branch could be seen.
+> > >
+> > > Signed-off-by: Slava Kardakov <ojab@ojab.ru>
+> > > ---
+> > >  Of course I forgot to sing off, since I don't use it by default because I
+> > >  hate my real name and kernel requires it
+> > >
+> > >  drivers/net/wireless/ath/ath10k/core.c | 9 ++++++---
+> > >  1 file changed, 6 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
+> > > index 2f9be182fbfb..d9fd5294e142 100644
+> > > --- a/drivers/net/wireless/ath/ath10k/core.c
+> > > +++ b/drivers/net/wireless/ath/ath10k/core.c
+> > > @@ -2691,8 +2691,10 @@ static int ath10k_core_copy_target_iram(struct ath10k *ar)
+> > >         u32 len, remaining_len;
+> > >
+> > >         hw_mem = ath10k_coredump_get_mem_layout(ar);
+> > > -       if (!hw_mem)
+> > > +       if (!hw_mem) {
+> > > +               ath10k_warn(ar, "No hardware memory");
+> > >                 return -ENOMEM;
+> > > +       }
+> > >
+> > >         for (i = 0; i < hw_mem->region_table.size; i++) {
+> > >                 tmp = &hw_mem->region_table.regions[i];
+> > > @@ -2702,8 +2704,10 @@ static int ath10k_core_copy_target_iram(struct ath10k *ar)
+> > >                 }
+> > >         }
+> > >
+> > > -       if (!mem_region)
+> > > +       if (!mem_region) {
+> > > +               ath10k_warn(ar, "No memory region");
+> > >                 return -ENOMEM;
+> > > +       }
+> > >
+> > >         for (i = 0; i < ar->wmi.num_mem_chunks; i++) {
+> > >                 if (ar->wmi.mem_chunks[i].req_id ==
+> > > @@ -2917,7 +2921,6 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode,
+> > >                 if (status) {
+> > >                         ath10k_warn(ar, "failed to copy target iram contents: %d",
+> > >                                     status);
+> > > -                       goto err_hif_stop;
+> > >                 }
+> > >         }
+> > >
+> > > --
+> > > 2.32.0
