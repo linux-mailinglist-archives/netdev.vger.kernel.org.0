@@ -2,296 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF4F740FD9A
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 18:11:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D797840FDAD
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 18:14:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243443AbhIQQMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 12:12:23 -0400
-Received: from pegase2.c-s.fr ([93.17.235.10]:35207 "EHLO pegase2.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242637AbhIQQMV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 12:12:21 -0400
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4H9zTG4GLWz9sTL;
-        Fri, 17 Sep 2021 18:10:58 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id uHgBiDyHP1Bt; Fri, 17 Sep 2021 18:10:58 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4H9zTG369Kz9sSX;
-        Fri, 17 Sep 2021 18:10:58 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5667D8B799;
-        Fri, 17 Sep 2021 18:10:58 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id NlpBolU4rfbX; Fri, 17 Sep 2021 18:10:58 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.36])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1DBE48B768;
-        Fri, 17 Sep 2021 18:10:57 +0200 (CEST)
-Subject: Re: [PATCH v2 3/8] bpf powerpc: refactor JIT compiler code
-To:     Hari Bathini <hbathini@linux.ibm.com>, naveen.n.rao@linux.ibm.com,
-        mpe@ellerman.id.au, ast@kernel.org, daniel@iogearbox.net
-Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
+        id S243515AbhIQQQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 12:16:02 -0400
+Received: from mail-eopbgr120075.outbound.protection.outlook.com ([40.107.12.75]:41374
+        "EHLO FRA01-PR2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S238457AbhIQQPx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Sep 2021 12:15:53 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NNKD/A2/H11spXtrO293T5YBj/coB2ySUg4Eg9UknkSaJlRnFFb76l9FOCaz596PrMgq7ZlhqioudBYs40tnDE5YLqWcywtfXYvntB6C37p02vOCTQ+AnhYSQ1aaX11J0QgDVY+h6fNINIKgSs749lwnCj+wx0H8iD8mbWfNTK/Zgd648dCJnITouJX64sOTmByJiYqBCwPi1DikcqC8Pm0Jfl5rzNFbECn9/zLtj8DLOVEc4P3wi/wyYNOxoq3YiIQ3nK+8b8DCCVzKCeOM8UbznSj9Y9M+VdmFuXU1y4M4CmS/1wKIS51T6zAdwu1zVORZKjV+nFBMpk2VvBgZnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=evnTjW/RL3rzZZbjxVR9KX66QaaxotVct2y1Xb768gk=;
+ b=Eu9i4bKMWDOOHCLMlsFX6pqA9eW1QNTqr/aqGnEHpkSrXo1bwjd7BbDpAycov0DlBsHyRyWxqfToEyAw3xp8PR71XtNseMMvcJEw6ZA2kIoZvTAba0htsHAAytu82H7M6WOK+cUx4naslxfvDAgz+RV1JXLGQcGbobBorraEn/iLie1Q/gh6Kafl08K+xs+f5UU58jY6j1neDf2sRrzghybA3Q3W2PASbTnJ3o19lEnPWdsVnAeM4HBzxg503U9wdhnKuVDs957IyZnZ9Fl3jAdDKXwwVE0/+0LSMW13sLbujxkW52xeBQ2DPTb8OZnmyjHvvXO2znlS65HoAieQcw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MRZP264MB1734.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:e::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Fri, 17 Sep
+ 2021 16:14:29 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::488a:db7:19ae:d1ff]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::488a:db7:19ae:d1ff%6]) with mapi id 15.20.4523.017; Fri, 17 Sep 2021
+ 16:14:29 +0000
+From:   LEROY Christophe <christophe.leroy@csgroup.eu>
+To:     Hari Bathini <hbathini@linux.ibm.com>,
+        "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+CC:     "paulus@samba.org" <paulus@samba.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH v2 4/8] powerpc/ppc-opcode: introduce PPC_RAW_BRANCH()
+ macro
+Thread-Topic: [PATCH v2 4/8] powerpc/ppc-opcode: introduce PPC_RAW_BRANCH()
+ macro
+Thread-Index: AQHXq9ksV7iD3kWRZESwiVNJ6huR9quoZnqA
+Date:   Fri, 17 Sep 2021 16:14:29 +0000
+Message-ID: <ff2a1595-3021-b199-c608-559e3c289b02@csgroup.eu>
 References: <20210917153047.177141-1-hbathini@linux.ibm.com>
- <20210917153047.177141-4-hbathini@linux.ibm.com>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Message-ID: <b73d67d5-3ec3-c618-7f4c-ffdd71650e7e@csgroup.eu>
-Date:   Fri, 17 Sep 2021 18:10:56 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ <20210917153047.177141-5-hbathini@linux.ibm.com>
+In-Reply-To: <20210917153047.177141-5-hbathini@linux.ibm.com>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: linux.ibm.com; dkim=none (message not signed)
+ header.d=none;linux.ibm.com; dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5b2d84fc-bde0-4539-3fd9-08d979f63a0c
+x-ms-traffictypediagnostic: MRZP264MB1734:
+x-microsoft-antispam-prvs: <MRZP264MB1734D8EE72917B761F79A857EDDD9@MRZP264MB1734.FRAP264.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:3383;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BO3r4BctpgrCR2nVSFciTkLl40aBY879IeC8mWKtShDOXGZuFNL7NSuFgmKYzUropoicNYSor/5Qydenf18UoKodAxPR6d0w+VvldON6FJaYUgaKBAwCoxVPOfqDc1ah1LxprweFGLYQOpPKHq6uReDCAqc5eerx9ee+1jFKM4PBT0AdcKvaWVLJbmwq5nCLPJCcu6NWZKXKLCU/LCwRNtC42lPh7p1XvpY6FE/43cobsMCr7vYm4gmI5yMm+sKiB38HPzkLRKpGX5imS/AAcPBd5Qrq/yjOo2KyGhzUUcTxh8WL8s51Y1OfKACqwzAlUNzZx92SAkRiPkrqAuUTmHhhBwu2iQa50XAo+RG5MtAeMkiHAsy65U0w476fwTqqQBbW8LasppaLjxYQWg5F6K0SLSfAf3SwdMx1VrP2cu6A5rIjgpLi4n/eWh+YudZk4lLJ2ACZhzOiC44zq6kJQgQS5prqaghuBunDKUs1mLUvJCHonvFXSk/LCWruY5K/0xR6yv2DyWzEQjsWnRNz+eqrnbFqxmXS6l2wYGZ/cVpnpU78dyU3x5yubKDEaVmN0tZlJ9e4H7kjeunULfwymSrhtMR/0oBxpuho6819LhljhpxMwOqpY1Jan1YAYGw46S7BQzZ/xKjsSBZShdhRp+Z/+OSZAuccIiRPqqzGB8rLFq7sAcz4E9UUInXmRQjPckWiRS1EIT1O/NUQRXEGaoi7XgGbdVOPb7XPhZFR1e0NrqQuMGMLZ7wIO/x+gVG6
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(91956017)(38070700005)(36756003)(76116006)(5660300002)(7416002)(26005)(8936002)(8676002)(31696002)(66476007)(66556008)(83380400001)(71200400001)(86362001)(31686004)(508600001)(64756008)(2906002)(66446008)(4326008)(110136005)(316002)(6486002)(186003)(38100700002)(122000001)(6512007)(2616005)(6506007)(54906003)(66946007)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?T3FqQUw4MVBuSWRrdSsvZlp0NnR6MDlIelRKUnI5d3ZUOEprRkR5bDhXNkgr?=
+ =?utf-8?B?MGlSSndXaS85enh5ai9JdDRXWHAzNHZoSUVTM3NvSkFzQVpVdTBsNlVGV1gw?=
+ =?utf-8?B?RllEOHF5ZmI0QStWSW5jaFl1dDhqTmlmd3Z6WGpid1NOUUxGdWZLakUxaUMw?=
+ =?utf-8?B?ZHBhR3JRSlY4NVdMYks2M2FOYVViU1Y3RmFlK1JDRWgxdFp6bVgxSFJ1QkdT?=
+ =?utf-8?B?UmFrR0c4OWZYUmhLTVZ2UUVUNEJwb3NQRlZyT0s0WTVndjkwOEppVEhJM0Nv?=
+ =?utf-8?B?cHVYUWQ0dGNpZXc4dnV4U29rdndXVnU1UFhQQUIvblRxbHdleWVCQ29HMFAy?=
+ =?utf-8?B?bTdOcnVyWUU0Nnd3VjltVUp5bUd5dnRveWpvYkJsdkp2ZTlNcERxNStMQ2R2?=
+ =?utf-8?B?QkxZaXJldVdVODI5citjd05TcThrVWRBendOQzZCSGN4ZGt1cS9wbUpaNTFU?=
+ =?utf-8?B?Z2hwYWMyWXhQVWUwZnBQZjBYeEJ3SzkvdkhCZDRqclpsTUxSK0pXYVpsQmZB?=
+ =?utf-8?B?RTlGUXp5aSthbkljUjBlMTZhdWJTOVRDRHA3Vko4VGM2Zjl2YlNBMHZjdVJM?=
+ =?utf-8?B?ai96NnVZU25rNWR2ZFhVZXlVSFlmTDNPeXgvWG5rSVBGbXlwYWp6bVhJTHRy?=
+ =?utf-8?B?TmdxdG4yVUYxWklTR0d0dTRUM1c1WkdFTFM0YWExUkpYeTVpbXA3S3FyMUZW?=
+ =?utf-8?B?dUtSek9xSm9mdmpNK0MyOVUvam8xazF1WmpSWm9RSHAya3ZDVFlJVGc2WW5t?=
+ =?utf-8?B?eHNZbjdWb1luckV4Vlhyb3lwSU5qZWVjNHpZMHhlZ3h2RXE1YTcrWUU5TGZ3?=
+ =?utf-8?B?MGFGRmU2WXQwR1dNVWRRTXN0dmQ4ak9jYkVFWGNORm5SbjVnTUgzenlpVElq?=
+ =?utf-8?B?SzNpQXdCNFFNZmhPbjI1M20yM0g2cEtFZW5hbFNVQnRvZ0VUdDhyRFdnbHVk?=
+ =?utf-8?B?K0FNVUlkZFZXOGFvaGJ0Nkd6WUZUU3pHcjlFZmZZNEtxVlFhT0ZjVGxzaTBo?=
+ =?utf-8?B?VkhjVHNTZ2hFVDNlVTlsb2srUkk3MnJwUU5jdnZLVmpJdHo4emRkZzRPWUMy?=
+ =?utf-8?B?ekJNSWFjTkpYcEZwNkpNNmhWeFRPYXliT0xxMTZmQ0h2TWJkWURpWkJsUlN6?=
+ =?utf-8?B?eDRHVmZFMWVQZUJaMXFCMFk4RWtYc1c5SWJzTmFRNzE1OU1kdWhvUmN2YlhR?=
+ =?utf-8?B?WExZT3psTWRnSks2OVRQTHByVUc0WGJOTjVaLyttcktEak9NUFdLVmR0OFJp?=
+ =?utf-8?B?a1pHc0xpWndDMTh0T0h3ZVdleUhEU0YzcWcwb0w2SUxtTjBheE9rYWwvV05z?=
+ =?utf-8?B?WjJHbk9zRVEwWWp4ZStUMndXVFpjUFdVckJmSXZHNXN5WGJTRXd4NENBbk9z?=
+ =?utf-8?B?VCtxQkVvUUc5b1kzWDZsdy9FVEhHT1JITjNBUWQ0cEJmS2E1RFFCS1JWVHZD?=
+ =?utf-8?B?bXlhTWtWNW1BdHdKb1l0MWhoRDhpS0h2UFZReWsyUzBIa0Z3cjlLdFhKWXlh?=
+ =?utf-8?B?SnlKTFZza1FoVTFLZ0loaitWZTltTUVHWDZUU3UvNWhtMmE5NjRKZ280OWRW?=
+ =?utf-8?B?bkIwK3MwK1UxMWlvY2xaamRUMkhwSW9nRVdndkcwY3B6T1ZiT3NEa1FzSmVU?=
+ =?utf-8?B?WUQ3aVZQZ2dUM2VIY2FJWXVvTnBGcEFVV29xRXB5T2lnVzJQNUE4bnpzU1V2?=
+ =?utf-8?B?cVdJR3poUVNJRHB4MzJQY0U0N2lhb3hIYUc5bXR1c2U4UytZdytRdUpJVzJ1?=
+ =?utf-8?B?Q3dNVW91TkhDMTJEeS9QaEhrQXVybkpXT0VQSmdFZm1odjFpckZHOVk2ZUxm?=
+ =?utf-8?B?cmNMYzFUYUx3czdlZFVwQT09?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <1E448700B1B7B145B047764190ED8F8B@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20210917153047.177141-4-hbathini@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr-FR
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b2d84fc-bde0-4539-3fd9-08d979f63a0c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Sep 2021 16:14:29.1516
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OWHQm7/iGIXF8WBKY3JT3ykbUBk5APjXZ6ov5Yku/kiorHFdbpo8xADS+zRtE2JZlk1omPNILVB6BtYyIljAfH+gRZjUeWE3f5JFndUtf6A=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MRZP264MB1734
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-Le 17/09/2021 à 17:30, Hari Bathini a écrit :
-> Refactor powerpc JITing. This simplifies adding BPF_PROBE_MEM support.
-
-Could you describe a bit more what you are refactoring exactly ?
-
-
-> 
-> Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-> ---
-> 
-> Changes in v2:
-> * New patch to refactor a bit of JITing code.
-> 
-> 
->   arch/powerpc/net/bpf_jit_comp32.c | 50 +++++++++++---------
->   arch/powerpc/net/bpf_jit_comp64.c | 76 ++++++++++++++++---------------
->   2 files changed, 68 insertions(+), 58 deletions(-)
-> 
-> diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
-> index b60b59426a24..c8ae14c316e3 100644
-> --- a/arch/powerpc/net/bpf_jit_comp32.c
-> +++ b/arch/powerpc/net/bpf_jit_comp32.c
-> @@ -276,17 +276,17 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   	u32 exit_addr = addrs[flen];
->   
->   	for (i = 0; i < flen; i++) {
-> -		u32 code = insn[i].code;
->   		u32 dst_reg = bpf_to_ppc(ctx, insn[i].dst_reg);
-> -		u32 dst_reg_h = dst_reg - 1;
->   		u32 src_reg = bpf_to_ppc(ctx, insn[i].src_reg);
-> -		u32 src_reg_h = src_reg - 1;
->   		u32 tmp_reg = bpf_to_ppc(ctx, TMP_REG);
-> +		u32 true_cond, code = insn[i].code;
-> +		u32 dst_reg_h = dst_reg - 1;
-> +		u32 src_reg_h = src_reg - 1;
-
-All changes above seems unneeded and not linked to the current patch. 
-Please leave cosmetic changes outside and focus on necessary changes.
-
-> +		u32 size = BPF_SIZE(code);
->   		s16 off = insn[i].off;
->   		s32 imm = insn[i].imm;
->   		bool func_addr_fixed;
->   		u64 func_addr;
-> -		u32 true_cond;
->   
->   		/*
->   		 * addrs[] maps a BPF bytecode address into a real offset from
-> @@ -809,25 +809,33 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   		/*
->   		 * BPF_LDX
->   		 */
-> -		case BPF_LDX | BPF_MEM | BPF_B: /* dst = *(u8 *)(ul) (src + off) */
-> -			EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
-> -			if (!fp->aux->verifier_zext)
-> -				EMIT(PPC_RAW_LI(dst_reg_h, 0));
-> -			break;
-> -		case BPF_LDX | BPF_MEM | BPF_H: /* dst = *(u16 *)(ul) (src + off) */
-> -			EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
-> -			if (!fp->aux->verifier_zext)
-> -				EMIT(PPC_RAW_LI(dst_reg_h, 0));
-> -			break;
-> -		case BPF_LDX | BPF_MEM | BPF_W: /* dst = *(u32 *)(ul) (src + off) */
-> -			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
-> -			if (!fp->aux->verifier_zext)
-> +		/* dst = *(u8 *)(ul) (src + off) */
-> +		case BPF_LDX | BPF_MEM | BPF_B:
-> +		/* dst = *(u16 *)(ul) (src + off) */
-> +		case BPF_LDX | BPF_MEM | BPF_H:
-> +		/* dst = *(u32 *)(ul) (src + off) */
-> +		case BPF_LDX | BPF_MEM | BPF_W:
-> +		/* dst = *(u64 *)(ul) (src + off) */
-> +		case BPF_LDX | BPF_MEM | BPF_DW:
-Why changing the location of the comments ? I found it more readable before.
-
-> +			switch (size) {
-> +			case BPF_B:
-> +				EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_H:
-> +				EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_W:
-> +				EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_DW:
-> +				EMIT(PPC_RAW_LWZ(dst_reg_h, src_reg, off));
-> +				EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off + 4));
-> +				break;
-> +			}
-
-BPF_B, BPF_H, ... are not part of an enum. Are you sure GCC is happy to 
-have no default ?
-
-> +
-> +			if ((size != BPF_DW) && !fp->aux->verifier_zext)
-
-You don't need () around size != BPF_DW
-
->   				EMIT(PPC_RAW_LI(dst_reg_h, 0));
->   			break;
-> -		case BPF_LDX | BPF_MEM | BPF_DW: /* dst = *(u64 *)(ul) (src + off) */
-> -			EMIT(PPC_RAW_LWZ(dst_reg_h, src_reg, off));
-> -			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off + 4));
-> -			break;
->   
->   		/*
->   		 * Doubleword load
-> diff --git a/arch/powerpc/net/bpf_jit_comp64.c b/arch/powerpc/net/bpf_jit_comp64.c
-> index 2a87da50d9a4..78b28f25555c 100644
-> --- a/arch/powerpc/net/bpf_jit_comp64.c
-> +++ b/arch/powerpc/net/bpf_jit_comp64.c
-> @@ -282,16 +282,15 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   	u32 exit_addr = addrs[flen];
->   
->   	for (i = 0; i < flen; i++) {
-> -		u32 code = insn[i].code;
->   		u32 dst_reg = b2p[insn[i].dst_reg];
->   		u32 src_reg = b2p[insn[i].src_reg];
-> +		u32 tmp_idx, code = insn[i].code;
-> +		u32 size = BPF_SIZE(code);
->   		s16 off = insn[i].off;
->   		s32 imm = insn[i].imm;
->   		bool func_addr_fixed;
-> -		u64 func_addr;
-> -		u64 imm64;
-> +		u64 func_addr, imm64;
->   		u32 true_cond;
-> -		u32 tmp_idx;
-
-All changes other than the addition of 'size' seems unneeded and not 
-linked to the current patch.
-
->   
->   		/*
->   		 * addrs[] maps a BPF bytecode address into a real offset from
-> @@ -638,35 +637,34 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   		 */
->   		case BPF_STX | BPF_MEM | BPF_B: /* *(u8 *)(dst + off) = src */
->   		case BPF_ST | BPF_MEM | BPF_B: /* *(u8 *)(dst + off) = imm */
-> -			if (BPF_CLASS(code) == BPF_ST) {
-> -				EMIT(PPC_RAW_LI(b2p[TMP_REG_1], imm));
-> -				src_reg = b2p[TMP_REG_1];
-> -			}
-> -			EMIT(PPC_RAW_STB(src_reg, dst_reg, off));
-> -			break;
->   		case BPF_STX | BPF_MEM | BPF_H: /* (u16 *)(dst + off) = src */
->   		case BPF_ST | BPF_MEM | BPF_H: /* (u16 *)(dst + off) = imm */
-> -			if (BPF_CLASS(code) == BPF_ST) {
-> -				EMIT(PPC_RAW_LI(b2p[TMP_REG_1], imm));
-> -				src_reg = b2p[TMP_REG_1];
-> -			}
-> -			EMIT(PPC_RAW_STH(src_reg, dst_reg, off));
-> -			break;
->   		case BPF_STX | BPF_MEM | BPF_W: /* *(u32 *)(dst + off) = src */
->   		case BPF_ST | BPF_MEM | BPF_W: /* *(u32 *)(dst + off) = imm */
-> -			if (BPF_CLASS(code) == BPF_ST) {
-> -				PPC_LI32(b2p[TMP_REG_1], imm);
-> -				src_reg = b2p[TMP_REG_1];
-> -			}
-> -			EMIT(PPC_RAW_STW(src_reg, dst_reg, off));
-> -			break;
->   		case BPF_STX | BPF_MEM | BPF_DW: /* (u64 *)(dst + off) = src */
->   		case BPF_ST | BPF_MEM | BPF_DW: /* *(u64 *)(dst + off) = imm */
->   			if (BPF_CLASS(code) == BPF_ST) {
-> -				PPC_LI32(b2p[TMP_REG_1], imm);
-> +				if ((size == BPF_B) || (size == BPF_H))
-> +					EMIT(PPC_RAW_LI(b2p[TMP_REG_1], imm));
-> +				else /* size == BPF_W || size == BPF_DW */
-> +					PPC_LI32(b2p[TMP_REG_1], imm);
-
-I think you can use PPC_LI32() for all cases, it should generate the 
-same code.
-
->   				src_reg = b2p[TMP_REG_1];
->   			}
-> -			PPC_BPF_STL(src_reg, dst_reg, off);
-> +
-> +			switch (size) {
-> +			case BPF_B:
-> +				EMIT(PPC_RAW_STB(src_reg, dst_reg, off));
-> +				break;
-> +			case BPF_H:
-> +				EMIT(PPC_RAW_STH(src_reg, dst_reg, off));
-> +				break;
-> +			case BPF_W:
-> +				EMIT(PPC_RAW_STW(src_reg, dst_reg, off));
-> +				break;
-> +			case BPF_DW:
-> +				PPC_BPF_STL(src_reg, dst_reg, off);
-> +				break;
-> +			}
->   			break;
->   
->   		/*
-> @@ -716,25 +714,29 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   		 */
->   		/* dst = *(u8 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_B:
-> -			EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
-> -			if (insn_is_zext(&insn[i + 1]))
-> -				addrs[++i] = ctx->idx * 4;
-> -			break;
->   		/* dst = *(u16 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_H:
-> -			EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
-> -			if (insn_is_zext(&insn[i + 1]))
-> -				addrs[++i] = ctx->idx * 4;
-> -			break;
->   		/* dst = *(u32 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_W:
-> -			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
-> -			if (insn_is_zext(&insn[i + 1]))
-> -				addrs[++i] = ctx->idx * 4;
-> -			break;
->   		/* dst = *(u64 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_DW:
-> -			PPC_BPF_LL(dst_reg, src_reg, off);
-> +			switch (size) {
-> +			case BPF_B:
-> +				EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_H:
-> +				EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_W:
-> +				EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
-> +				break;
-> +			case BPF_DW:
-> +				PPC_BPF_LL(dst_reg, src_reg, off);
-> +				break;
-> +			}
-> +
-> +			if ((size != BPF_DW) && insn_is_zext(&insn[i + 1]))
-> +				addrs[++i] = ctx->idx * 4;
->   			break;
->   
->   		/*
-> 
+DQoNCkxlIDE3LzA5LzIwMjEgw6AgMTc6MzAsIEhhcmkgQmF0aGluaSBhIMOpY3JpdMKgOg0KPiBE
+ZWZpbmUgYW5kIHVzZSBQUENfUkFXX0JSQU5DSCgpIG1hY3JvIGluc3RlYWQgb2Ygb3BlbiBjb2Rp
+bmcgaXQuIFRoaXMNCj4gbWFjcm8gaXMgdXNlZCB3aGlsZSBhZGRpbmcgQlBGX1BST0JFX01FTSBz
+dXBwb3J0Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogSGFyaSBCYXRoaW5pIDxoYmF0aGluaUBsaW51
+eC5pYm0uY29tPg0KDQpSZXZpZXdlZC1ieTogQ2hyaXN0b3BoZSBMZXJveSA8Y2hyaXN0b3BoZS5s
+ZXJveUBjc2dyb3VwLmV1Pg0KDQo+IC0tLQ0KPiANCj4gQ2hhbmdlcyBpbiB2MjoNCj4gKiBOZXcg
+cGF0Y2ggdG8gaW50cm9kdWNlIFBQQ19SQVdfQlJBTkNIKCkgbWFjcm8uDQo+IA0KPiANCj4gICBh
+cmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vcHBjLW9wY29kZS5oIHwgMiArKw0KPiAgIGFyY2gvcG93
+ZXJwYy9uZXQvYnBmX2ppdC5oICAgICAgICAgICAgfCA0ICsrLS0NCj4gICAyIGZpbGVzIGNoYW5n
+ZWQsIDQgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9h
+cmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vcHBjLW9wY29kZS5oIGIvYXJjaC9wb3dlcnBjL2luY2x1
+ZGUvYXNtL3BwYy1vcGNvZGUuaA0KPiBpbmRleCBiYWVhNjU3YmM4NjguLmY1MDIxM2UyYTNlMCAx
+MDA2NDQNCj4gLS0tIGEvYXJjaC9wb3dlcnBjL2luY2x1ZGUvYXNtL3BwYy1vcGNvZGUuaA0KPiAr
+KysgYi9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vcHBjLW9wY29kZS5oDQo+IEBAIC01NjYsNiAr
+NTY2LDggQEANCj4gICAjZGVmaW5lIFBQQ19SQVdfTVRTUFIoc3ByLCBkKQkJKDB4N2MwMDAzYTYg
+fCBfX19QUENfUlMoZCkgfCBfX1BQQ19TUFIoc3ByKSkNCj4gICAjZGVmaW5lIFBQQ19SQVdfRUlF
+SU8oKQkJCSgweDdjMDAwNmFjKQ0KPiAgIA0KPiArI2RlZmluZSBQUENfUkFXX0JSQU5DSChhZGRy
+KQkJKFBQQ19JTlNUX0JSQU5DSCB8ICgoYWRkcikgJiAweDAzZmZmZmZjKSkNCj4gKw0KPiAgIC8q
+IERlYWwgd2l0aCBpbnN0cnVjdGlvbnMgdGhhdCBvbGRlciBhc3NlbWJsZXJzIGFyZW4ndCBhd2Fy
+ZSBvZiAqLw0KPiAgICNkZWZpbmUJUFBDX0JDQ1RSX0ZMVVNICQlzdHJpbmdpZnlfaW5fYygubG9u
+ZyBQUENfSU5TVF9CQ0NUUl9GTFVTSCkNCj4gICAjZGVmaW5lCVBQQ19DUF9BQk9SVAkJc3RyaW5n
+aWZ5X2luX2MoLmxvbmcgUFBDX1JBV19DUF9BQk9SVCkNCj4gZGlmZiAtLWdpdCBhL2FyY2gvcG93
+ZXJwYy9uZXQvYnBmX2ppdC5oIGIvYXJjaC9wb3dlcnBjL25ldC9icGZfaml0LmgNCj4gaW5kZXgg
+NDExYzYzZDk0NWM3Li4wYzhmODg1YjhmNDggMTAwNjQ0DQo+IC0tLSBhL2FyY2gvcG93ZXJwYy9u
+ZXQvYnBmX2ppdC5oDQo+ICsrKyBiL2FyY2gvcG93ZXJwYy9uZXQvYnBmX2ppdC5oDQo+IEBAIC0y
+NCw4ICsyNCw4IEBADQo+ICAgI2RlZmluZSBFTUlUKGluc3RyKQkJUExBTlRfSU5TVFIoaW1hZ2Us
+IGN0eC0+aWR4LCBpbnN0cikNCj4gICANCj4gICAvKiBMb25nIGp1bXA7ICh1bmNvbmRpdGlvbmFs
+ICdicmFuY2gnKSAqLw0KPiAtI2RlZmluZSBQUENfSk1QKGRlc3QpCQlFTUlUKFBQQ19JTlNUX0JS
+QU5DSCB8CQkJICAgICAgXA0KPiAtCQkJCSAgICAgKCgoZGVzdCkgLSAoY3R4LT5pZHggKiA0KSkg
+JiAweDAzZmZmZmZjKSkNCj4gKyNkZWZpbmUgUFBDX0pNUChkZXN0KQkJRU1JVChQUENfUkFXX0JS
+QU5DSCgoZGVzdCkgLSAoY3R4LT5pZHggKiA0KSkpDQo+ICsNCj4gICAvKiBibHI7ICh1bmNvbmRp
+dGlvbmFsICdicmFuY2gnIHdpdGggbGluaykgdG8gYWJzb2x1dGUgYWRkcmVzcyAqLw0KPiAgICNk
+ZWZpbmUgUFBDX0JMX0FCUyhkZXN0KQlFTUlUKFBQQ19JTlNUX0JMIHwJCQkgICAgICBcDQo+ICAg
+CQkJCSAgICAgKCgoZGVzdCkgLSAodW5zaWduZWQgbG9uZykoaW1hZ2UgKyBjdHgtPmlkeCkpICYg
+MHgwM2ZmZmZmYykpDQo+IA==
