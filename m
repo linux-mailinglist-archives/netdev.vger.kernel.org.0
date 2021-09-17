@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3251A40FA78
+	by mail.lfdr.de (Postfix) with ESMTP id AA20F40FA79
 	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 16:41:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343701AbhIQOmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 10:42:25 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:46429 "EHLO
+        id S242867AbhIQOm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 10:42:26 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:55029 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343687AbhIQOmX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 10:42:23 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 507335C021D;
-        Fri, 17 Sep 2021 10:40:59 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S1343695AbhIQOmY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 10:42:24 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id CCF495C021E;
+        Fri, 17 Sep 2021 10:41:01 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 17 Sep 2021 10:40:59 -0400
+  by compute6.internal (MEProxy); Fri, 17 Sep 2021 10:41:01 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=k0VuJVseJk8EiPmzf
-        T1+LZH15xIAXa6ooxZiPnNbTEc=; b=oBNWh016Zy4IqLGfba5WGoxA4xAMdkQBU
-        CFaq72PhqXhwYaPonCZFkFTAU+XH4xR+VWrq25y1sZTS87oil1xNxwyTObEq0kSz
-        rZoLHCKc2la6f6LLwKXThmdmribMrheZozrOi/dlUa6DfpsBz9tFrgJvUfbW23PP
-        JJAlf25b0LTqIcRNQNlz+W2LP5hHUXc2scDK5qViUzyJBvsiFr+P6GaU0WjACrJF
-        SQxvPcJMU6zASf62iNfzfooW2dLYOiFoAXku02Ood6IZaH5czID91Fc7EF7C0/1w
-        mWg3OuI1jAhQVVg+AwuUjQMRRKAQRG5bzGynOvTxdS/2NhJYHHBgg==
-X-ME-Sender: <xms:-qhEYUSuqQrvjLFa7D_XSyHXlDYcC2D9Y3c2lH_ei56eUfI7FT_Ukg>
-    <xme:-qhEYRxnduMvf7ILeVFkTRCv2b2Y0KZeHNVH9llXmPDJWVQe1VT9Iso9ZrSmxxk11
-    Y57j_CZJmHFL2Y>
-X-ME-Received: <xmr:-qhEYR1nPYe1Bt9Q1dNIGWVRkeGn3hq3eGDPIzAgZq3M-Lry3YKWTyNEUqMftl1Gxg5Bq2yzjST0DqloBlM6BsTkiMARd9hKGg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudehiedgjeegucetufdoteggodetrfdotf
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=4pki6aSXrAcSkuV+lNxXgLLin8sdbB2exH8Az+G4kiQ=; b=iLlLHub8
+        L2Es/Kiy57KAC4+FdPF6Z/XExBwUzA3Hw5MLgv+GXHYj+dfHX+4Ld0o3K9L60g18
+        yZZe9Johr0b0qcc4/ZAR1EXM5ihfaZAhfXmw/+n33UdaaPLMJBU3yLn6532KWYnd
+        WSUtBUOT6PTuhPaLsG5zcC7w3T/HSPSm1xLsiIsdyEJa7qGsdWP+BbhRkLMDZ+6h
+        wOFkgXvKINxmKNxM0Zy5MZy1MAuM8P7bwXnFEd4q30YbK4Tb/WohwYG9XdgJKpeG
+        pmlxcXg/B66Un0zgw+RLVMCHzLvGGTO3u2OkUnIt1IgV68KofVYxQA8Yq9MC0rNx
+        LXLO99yJiT3gBQ==
+X-ME-Sender: <xms:_ahEYf8uxJ_AdIpR30P5QnrVQtujE_7qSZdIuuAg9XtZjSyhK_82UQ>
+    <xme:_ahEYbs4ywX1H0h-QN7nfdsyjk10i8giKR2NN6Kay1nXbfRszI5tL1_0eRh5Iy1Ny
+    EZF6WpWDS-umFY>
+X-ME-Received: <xmr:_ahEYdCBQ3o0uWC1YZYhIXamNbVWZhmvpwBOTBJCw7nUBo3Ng9pBlfeSJAlTbA5MwIHDjYG0LeBsHMweoLzEZ80eKlWIp_SKLQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudehiedgjeehucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghr
-    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:-qhEYYBhaDmedLPXam7f4M4_sGTAjelraCQlQEREfDgaYZNoNGg7lg>
-    <xmx:-qhEYdhHTleV9hc7qLMqvdlbA3BBUz1bJNiSp0UvoyDAOpAl4n_ugA>
-    <xmx:-qhEYUpD54w50NOVLtKmg2tm8drMl__BYCjIXfRwHNEnmlfCCKmcHw>
-    <xmx:-6hEYde74oTNV1p2VCFuO1QszFUUDkXvNmO5rpFeGJZB_6Ja2ObDTg>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:_ahEYbeRAgbu6LeZ79ksqRneBWKFtWxKAnzrGp8IEAKjVB7sNB-v-Q>
+    <xmx:_ahEYUM5-iBc2miQlp3knyrTmNAfTqFJc8Qy1RCw5ZqsZdIzbqwhhw>
+    <xmx:_ahEYdkvpz52hzq0pJrIDEsXn1x2JEAfuAYIl6xGGC6MJSEja2D7Kg>
+    <xmx:_ahEYRpI5_179NDJaXdZmL23ijXUzh7yjfuVZjMXq8T0ydZZv23V5Q>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 17 Sep 2021 10:40:56 -0400 (EDT)
+ 17 Sep 2021 10:40:59 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     mkubecek@suse.cz, vadimp@nvidia.com, moshe@nvidia.com,
         popadrian1996@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool-next 0/7] ethtool: Small EEPROM changes
-Date:   Fri, 17 Sep 2021 17:40:36 +0300
-Message-Id: <20210917144043.566049-1-idosch@idosch.org>
+Subject: [PATCH ethtool-next 1/7] cmis: Fix CLEI code parsing
+Date:   Fri, 17 Sep 2021 17:40:37 +0300
+Message-Id: <20210917144043.566049-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210917144043.566049-1-idosch@idosch.org>
+References: <20210917144043.566049-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -60,23 +63,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-This patchset contains small patches for various issues I noticed while
-working on the module EEPROM parsing code.
+In CMIS, unlike SFF-8636, there is no presence indication for the CLEI
+code (Common Language Equipment Identification) field. The field is
+always present, but might not be supported. In which case, "a value of
+all ASCII 20h (spaces) shall be entered".
 
-Ido Schimmel (7):
-  cmis: Fix CLEI code parsing
-  cmis: Fix wrong define name
-  cmis: Correct comment
-  sff-8636: Remove incorrect comment
-  sff-8636: Fix incorrect function name
-  sff-8636: Convert if statement to switch-case
-  sff-8636: Remove extra blank lines
+Therefore, remove the erroneous check which seems to be influenced from
+SFF-8636 and only print the string if it is supported and has a non-zero
+length.
 
- cmis.c | 12 +++++++-----
- cmis.h |  5 ++---
- qsfp.c | 18 +++++++++---------
- 3 files changed, 18 insertions(+), 17 deletions(-)
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ cmis.c | 8 +++++---
+ cmis.h | 3 +--
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
+diff --git a/cmis.c b/cmis.c
+index 1a91e798e4b8..2a48c1a1d56a 100644
+--- a/cmis.c
++++ b/cmis.c
+@@ -307,6 +307,8 @@ static void cmis_show_link_len(const __u8 *id)
+  */
+ static void cmis_show_vendor_info(const __u8 *id)
+ {
++	const char *clei = (const char *)(id + CMIS_CLEI_START_OFFSET);
++
+ 	sff_show_ascii(id, CMIS_VENDOR_NAME_START_OFFSET,
+ 		       CMIS_VENDOR_NAME_END_OFFSET, "Vendor name");
+ 	cmis_show_oui(id);
+@@ -319,9 +321,9 @@ static void cmis_show_vendor_info(const __u8 *id)
+ 	sff_show_ascii(id, CMIS_DATE_YEAR_OFFSET,
+ 		       CMIS_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
+ 
+-	if (id[CMIS_CLEI_PRESENT_BYTE] & CMIS_CLEI_PRESENT_MASK)
+-		sff_show_ascii(id, CMIS_CLEI_START_OFFSET,
+-			       CMIS_CLEI_END_OFFSET, "CLEI code");
++	if (strlen(clei) && strcmp(clei, CMIS_CLEI_BLANK))
++		sff_show_ascii(id, CMIS_CLEI_START_OFFSET, CMIS_CLEI_END_OFFSET,
++			       "CLEI code");
+ }
+ 
+ void qsfp_dd_show_all(const __u8 *id)
+diff --git a/cmis.h b/cmis.h
+index 78ee1495bc33..d365252baa48 100644
+--- a/cmis.h
++++ b/cmis.h
+@@ -34,10 +34,9 @@
+ #define CMIS_DATE_VENDOR_LOT_OFFSET		0xBC
+ 
+ /* CLEI Code (Page 0) */
+-#define CMIS_CLEI_PRESENT_BYTE			0x02
+-#define CMIS_CLEI_PRESENT_MASK			0x20
+ #define CMIS_CLEI_START_OFFSET			0xBE
+ #define CMIS_CLEI_END_OFFSET			0xC7
++#define CMIS_CLEI_BLANK				"          "
+ 
+ /* Cable assembly length */
+ #define CMIS_CBL_ASM_LEN_OFFSET			0xCA
 -- 
 2.31.1
 
