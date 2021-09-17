@@ -2,129 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32DB640F1BC
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 07:46:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40D0840F1DE
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 08:07:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244613AbhIQFsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 01:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231237AbhIQFsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 01:48:15 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A721C061574
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 22:46:54 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id k23-20020a17090a591700b001976d2db364so6552487pji.2
-        for <netdev@vger.kernel.org>; Thu, 16 Sep 2021 22:46:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v5mbwJz1odNy/ykJXb9ZQ7wE8P1tliZYE55MzD70ZWY=;
-        b=k/bPyvX0+UHTeHgz0xTR4ahxZO8F7dohaHIt3pvDpytmbAzROCKgiIc1xpUOM/0fCM
-         JipbaraVTG+OpllrmUUzSvKAg6abwhD0Rn3sqoPtSNcNoebH6yzFpf8/6c+Zg2MF77Bj
-         ohv+g/MYlNP6eiMxLmRKu9UHct6aKDmnVTS0m6hYoYO0LlVpZ519p2SjVfwu+ttcPmPN
-         nO9wqMk5m41efXRtbrHvfzMbC5IpFXulrKrjbZKjO/cADf0a5fRa2RyAosCBPcSafeOx
-         9/2cTsUXXX9thYQPErdTtDlLAmvok/3jIstpQa0jSEdQKH7twjQpZ2dDGEVVoldb1OSK
-         8gSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v5mbwJz1odNy/ykJXb9ZQ7wE8P1tliZYE55MzD70ZWY=;
-        b=eAClv0MTNFjghuOgaIOT4XEAhqSnFjP7v9nmVCZQnou2u1ok20cgj8YNT5Fier+KoF
-         vjmnWQq5fnnGM6WPivgLwoiyGAvsr6N4mOz/TUaOAXKA42I+OTWge2o8NRXGKZSGWZau
-         F4LoXbP8WJHgvX1CoCW+B93gBrsnf2lVzECfeDEU+geYjVY7bMd/7mznRH/ZDkPIATJV
-         ttuS1L8rTncprfoQFEMMCG+ydugKg3JHhCaK0Bx+sVqnYYRAWVEwpOmLx8OYRpXrOTmI
-         vh9sN0D/45muBI/n9B3t3nglpmhnWnhrLLbuJ9S0ANtHemkcPr486AAaboqA4jhde+Co
-         1wGw==
-X-Gm-Message-State: AOAM5338Zt72OkspkhV1D5tXoSjALlpW9Jub01XWHUm4Z/r0oswjfPkU
-        W8z5n/an27IjTW/Z/uWfFsuEUTF7g1HZ7osgXrQ=
-X-Google-Smtp-Source: ABdhPJyj1tN1gbh991CsOzX2JgpFMbed13/0ZztYT20sm4MKqUPRjwHZBPL08IL6+S/12DHaNmzVJ10+Fu81/qd/H3U=
-X-Received: by 2002:a17:902:c408:b0:138:e3df:e999 with SMTP id
- k8-20020a170902c40800b00138e3dfe999mr7951220plk.30.1631857613828; Thu, 16 Sep
- 2021 22:46:53 -0700 (PDT)
+        id S244956AbhIQGIY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 17 Sep 2021 02:08:24 -0400
+Received: from mail1.bemta26.messagelabs.com ([85.158.142.4]:35161 "EHLO
+        mail1.bemta26.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232726AbhIQGIX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 02:08:23 -0400
+Received: from [100.113.2.146] (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256 bits))
+        by server-4.bemta.az-a.eu-central-1.aws.symcld.net id 1C/CB-29868-58034416; Fri, 17 Sep 2021 06:07:01 +0000
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrMKsWRWlGSWpSXmKPExsWi1/P8kG6LgUu
+  iwYm5hhbn7x5itvj17gi7xaL3M1gtji0Qc2Dx2DnrLrvHzh2fmTw+b5ILYI5izcxLyq9IYM34
+  s2sBU8Eq0Yol97exNTDuFuxi5OIQEljJKHF6zQlmCGczo8TJM4vYuhg5OdgEdCSOdU5iBLFFB
+  BQkppz8wwpSxCwwhVFi5tulzCAJYQFviZ1fdzJDFPlIrGzuZoKwrSSenDnJDmKzCKhKPHqyGm
+  goBwevgKPE/seCIGEhgViJz5OPgu3iFFCX2D5zCguIzSggK9F34ghYnFlAXGLTs++sILaEgID
+  Ekj3nmSFsUYmXj/+xgoyUENCQWHrZCyIsIbFvdy8bhG0gsXXpPhYIW15i9owbUHFOie5/j6HG
+  60gs2P0JytaWWLbwNdh4XgFBiZMzn7BMYJSYheSKWUhaZiFpmYWkZQEjyypGy6SizPSMktzEz
+  BxdQwMDXUNDY10DXSNTI73EKt1EvdRS3eTUvJKiRKCsXmJ5sV5xZW5yTopeXmrJJkZgHKcUMv
+  zZwbj6zQe9Q4ySHExKorz1yi6JQnxJ+SmVGYnFGfFFpTmpxYcYZTg4lCR4N+sA5QSLUtNTK9I
+  yc4ApBSYtwcGjJMLLB5LmLS5IzC3OTIdInWK05Jjwcu4iZo6DR+cBybknFi9iFmLJy89LlRLn
+  na4H1CAA0pBRmgc3Dpb2LjHKSgnzMjIwMAjxFKQW5WaWoMq/YhTnYFQS5tUHmcKTmVcCt/UV0
+  EFMQAcd2e8AclBJIkJKqoEpMuyjrmeLn1po4U5lmWYZbS/1XaEnP83mF05J1WL4cDT13Isvau
+  2/P7xuO9tceOL2XdPuBZq3opoOXkpbuPfJ2+Dsd9Pvb/t1QOvlkgd509x+//H1SZSQ/Zc9+YF
+  geeyH5hnbus8x3Xxx7If4sZVb5s1JvbQy4urC3+/fLpp/1onh28nPwnefHs47I77v44TWrpLG
+  wC2lKlsnht2LE/QI5VwsxFrFZPCDz3DXja/mmkU3N21ZyBp2I2WrdGj+5D/qZnuPLtoaurqey
+  ezKtDSnL2d4BdVnGvw01HukGfLC7nrv7H/PghhXyq73r556vMyqja8668x+mXVBDG6e265qfD
+  tQ8UJ6T9n+notPT/jl6iqxFGckGmoxFxUnAgDZKosz9gMAAA==
+X-Env-Sender: Walter.Stoll@duagon.com
+X-Msg-Ref: server-2.tower-233.messagelabs.com!1631858820!265226!1
+X-Originating-IP: [46.140.231.194]
+X-SYMC-ESS-Client-Auth: outbound-route-from=pass
+X-StarScan-Received: 
+X-StarScan-Version: 9.81.4; banners=-,-,-
+X-VirusChecked: Checked
+Received: (qmail 12465 invoked from network); 17 Sep 2021 06:07:00 -0000
+Received: from 46-140-231-194.static.upc.ch (HELO chdua14.duagon.ads) (46.140.231.194)
+  by server-2.tower-233.messagelabs.com with ECDHE-RSA-AES256-SHA384 encrypted SMTP; 17 Sep 2021 06:07:00 -0000
+Received: from chdua14.duagon.ads (172.16.90.14) by chdua14.duagon.ads
+ (172.16.90.14) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Fri, 17 Sep
+ 2021 08:07:00 +0200
+Received: from chdua14.duagon.ads ([fe80::4058:63e9:621d:cb5]) by
+ chdua14.duagon.ads ([fe80::4058:63e9:621d:cb5%12]) with mapi id
+ 15.00.1497.023; Fri, 17 Sep 2021 08:07:00 +0200
+From:   Walter Stoll <Walter.Stoll@duagon.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: AW: [BUG] net/phy: ethtool versus phy_state_machine race condition
+Thread-Topic: [BUG] net/phy: ethtool versus phy_state_machine race condition
+Thread-Index: Adeq+zlOM+IIDk7fQpuG9NCcUwJ8ZgAQnvGAABLV5zA=
+Date:   Fri, 17 Sep 2021 06:07:00 +0000
+Message-ID: <addb830174704f3c9dcfea1323ed8ec8@chdua14.duagon.ads>
+References: <0a11298161d641eb8bd203daeac38db1@chdua14.duagon.ads>
+ <YUPMQ1HZDBEELnz0@lunn.ch>
+In-Reply-To: <YUPMQ1HZDBEELnz0@lunn.ch>
+Accept-Language: en-US, de-CH
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-codetwo-clientsignature-inserted: true
+x-codetwoprocessed: true
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.17.0.41]
+x-loop: 1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20210913225332.662291-1-kuba@kernel.org> <20210913225332.662291-2-kuba@kernel.org>
- <CAM_iQpVec_FY-71n3VUUgo8YCcn00+QzBBck9h1RGNaFzXX_ig@mail.gmail.com> <20210915123642.218f7f11@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210915123642.218f7f11@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 16 Sep 2021 22:46:42 -0700
-Message-ID: <CAM_iQpW553fnxXxC+BLkhzsGixoufNrjzRTrhFKo_gsE9xPwbQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] net: sched: update default qdisc visibility
- after Tx queue cnt changes
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Eric Dumazet <edumazet@google.com>,
-        Matthew Massey <matthewmassey@fb.com>,
-        Dave Taht <dave.taht@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 15, 2021 at 12:36 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 15 Sep 2021 09:31:08 -0700 Cong Wang wrote:
-> > On Mon, Sep 13, 2021 at 3:53 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index 74fd402d26dd..f930329f0dc2 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -2921,6 +2921,8 @@ int netif_set_real_num_tx_queues(struct net_device *dev, unsigned int txq)
-> > >                 if (dev->num_tc)
-> > >                         netif_setup_tc(dev, txq);
-> > >
-> > > +               dev_qdisc_change_real_num_tx(dev, txq);
-> > > +
+> Von: Andrew Lunn <andrew@lunn.ch>
+> Gesendet: Freitag, 17. September 2021 00:59
+> An: Walter Stoll <Walter.Stoll@duagon.com>
+> Cc: f.fainelli@gmail.com; hkallweit1@gmail.com; netdev@vger.kernel.org
+> Betreff: Re: [BUG] net/phy: ethtool versus phy_state_machine race condition
+> 
+> On Thu, Sep 16, 2021 at 01:08:21PM +0000, Walter Stoll wrote:
+> > Effect observed
+> > ---------------
 > >
-> > Don't we need to flip the device with dev_deactivate()+dev_activate()?
-> > It looks like the only thing this function resets is qdisc itself, and only
-> > partially.
->
-> We're only making the qdiscs visible, there should be
-> no datapath-visible change.
-
-Isn't every qdisc under mq visible to datapath?
-
-Packets can be pending in qdisc's, and qdisc's can be scheduled
-in TX softirq, so essentially we need to flip the device like other
-places.
-
->
-> > >                 dev->real_num_tx_queues = txq;
-> > >
-> > >                 if (disabling) {
->
-> > > diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
-> > > index e79f1afe0cfd..db18d8a860f9 100644
-> > > --- a/net/sched/sch_mq.c
-> > > +++ b/net/sched/sch_mq.c
-> > > @@ -125,6 +125,29 @@ static void mq_attach(struct Qdisc *sch)
-> > >         priv->qdiscs = NULL;
-> > >  }
-> > >
-> > > +static void mq_change_real_num_tx(struct Qdisc *sch, unsigned int new_real_tx)
+> > During final test of one of our products, we use ethtool to set the mode of
+> > the ethernet port eth0 as follows:
 > >
-> > This is nearly identical to mqprio_change_real_num_tx(), can we reuse
-> > it?
->
-> Indeed, I was a little unsure where best to place the helper.
-> Since mq is always built if mqprio is my instinct would be to
-> export mq_change_real_num_tx and use it in mqprio. But I didn't
-> see any existing exports (mq_attach(), mq_queue_get() are also
-> identical and are not shared) so I just copy&pasted the logic.
+> > ethtool -s eth0 speed 100 duplex full autoneg off
+> >
+> > However, very rarely the command does not work as expected. Even though the
+> > command executes without error, the port is not set accordingly. As a result,
+> > the test fails.
+> >
+> > We observed the effect with kernel version v5.4.138-rt62. However, we think
+> > that the most recent kernel exhibits the same behavior because the structure of
+> > the sources in question (see below) did not change. This also holds for the non
+> > realtime kernel.
+> >
+> >
+> > Root cause
+> > ----------
+> >
+> > We found that there exists a race condition between ethtool and the PHY state-
+> > machine.
+> >
+> > Execution of the ethtool command involves the phy_ethtool_ksettings_set()
+> > function being executed, see
+> > https://elixir.bootlin.com/linux/v5.4.138/source/drivers/net/phy/phy.c#L315
+> >
+> > Here the mode is stored in the phydev structure. The phy_start_aneg() function
+> > then takes the mode from the phydev structure and finally stores the mode into
+> > the PHY.
+> >
+> > However, the phy_ethtool_ksettings_set() function can be interrupted by the
+> > phy_state_machine() worker thread. If this happens just before the
+> > phy_start_aneg() function is called, then the new settings are overwritten by
+> > the current settings of the PHY. This is because the phy_state_machine()
+> > function reads back the PHY settings, see
+> > https://elixir.bootlin.com/linux/v5.4.138/source/drivers/net/phy/phy.c#L918
+> >
+> > This is exactly what happens in our case. We were able to proof this by
+> > inserting various dev_info() calls in the code.
+> 
+> Hi Walter
+> 
+> This makes sense.  We have a similar problem with MAC code calling
+> phy_read_status() without holding the PHY lock as well. I have some
+> patches for that, which i need to rebase. I will see if your proposed
+> fixed can be added to that, or if it should be a separate series.
+> 
+>       Andrew
 
-What about net/sched/sch_generic.c?
+Hi Andrew
 
->
-> LMK if (a) that's fine; (b) I should share the new code;
-> (c) I should post a patch to share all the code that's identical;...
+Thanks a lot for your immediate response. Please note that I am not a kernel
+developer. Therefore I think, the patch eventually applied will look differently
+from what I proposed. Please let me know whenever you have something to test.
 
-I think you can put the code in net/sched/sch_generic.c and export
-it for mqprio (mq is built-in so can just call it).
-
-Thanks.
+Walter
