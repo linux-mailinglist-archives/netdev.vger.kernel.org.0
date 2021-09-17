@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCBA140FCB9
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 17:39:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC7D740FCBA
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 17:39:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242637AbhIQPke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 11:40:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36242 "EHLO
+        id S243420AbhIQPkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 11:40:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47711 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241898AbhIQPkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 11:40:32 -0400
+        by vger.kernel.org with ESMTP id S243330AbhIQPke (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 11:40:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631893150;
+        s=mimecast20190719; t=1631893152;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Zhpqnvr5P0Rs3k/q+nqsF3Dii07E6KFJrmbpNgKLJMM=;
-        b=giMNmk51t3asTiwspgB5eCMJMthXD5bCXRdNJCWolJI2fxWCOJ8C8x8dHfZTwGlSGV677n
-        RrmRZB6NtufhyqhNw9+KckWBWpEgUt01JoxmhSfBQyALZKpcOoq74fL76k1wBnwAp3nj5O
-        hIKEve0vdFXMdWTeQppWHVY/aQtMB5Y=
+        bh=U0a5YPbzRj7T4EnLfI6lSnZlEAhSaB116OUK3rRIgso=;
+        b=cJVhN1nwjMpGtC0dtzE2XmUnNbFLh9529EcdLBx+OxXPGQ2o81hDYH0OYBxVBBl38hGNrn
+        3QiTA+ki7FmMDFxxRb+C0LieVgVBPZdGprrnPH2q0ABLKlrv/VvP/qdG2u9JIcJqNMcy9l
+        M7Pv9kZuDgJ5gNMkx8RwtSFPYgpCUvI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-156-RLcskn4CMtySgKIJaomz7w-1; Fri, 17 Sep 2021 11:39:06 -0400
-X-MC-Unique: RLcskn4CMtySgKIJaomz7w-1
+ us-mta-456-Du287dFVPguyIu4BSOdiEg-1; Fri, 17 Sep 2021 11:39:08 -0400
+X-MC-Unique: Du287dFVPguyIu4BSOdiEg-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 94560101F007;
-        Fri, 17 Sep 2021 15:39:05 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8C5D350751;
+        Fri, 17 Sep 2021 15:39:07 +0000 (UTC)
 Received: from gerbillo.redhat.com (unknown [10.39.192.44])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D87DC18A8F;
-        Fri, 17 Sep 2021 15:39:03 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E706A69CAD;
+        Fri, 17 Sep 2021 15:39:05 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -40,9 +40,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Ayush Sawal <ayush.sawal@chelsio.com>,
         Eric Dumazet <edumazet@google.com>, mptcp@lists.linux.dev
-Subject: [RFC PATCH 1/5] chtls: rename skb_entail() to chtls_skb_entail()
-Date:   Fri, 17 Sep 2021 17:38:36 +0200
-Message-Id: <04d1b3ce3e139be5114c1fd89eb64a7e0b0df810.1631888517.git.pabeni@redhat.com>
+Subject: [RFC PATCH 2/5] tcp: expose the tcp_mark_push() and skb_entail() helpers
+Date:   Fri, 17 Sep 2021 17:38:37 +0200
+Message-Id: <07fd053d2c2239e70b20b105ff6f33d299dabea7.1631888517.git.pabeni@redhat.com>
 In-Reply-To: <cover.1631888517.git.pabeni@redhat.com>
 References: <cover.1631888517.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -52,87 +52,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The next patch will expose the core TCP helper with the same
-name. It looks like we can't trivially re-use it in chtls, so
-remame the driver specific's one to avoid name conflicts.
+They will be used by the next patch.
 
-Reported-by: kernel test robot <lkp@intel.com>
 Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- .../net/ethernet/chelsio/inline_crypto/chtls/chtls.h   |  2 +-
- .../ethernet/chelsio/inline_crypto/chtls/chtls_cm.c    |  2 +-
- .../ethernet/chelsio/inline_crypto/chtls/chtls_io.c    | 10 +++++-----
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ include/net/tcp.h | 2 ++
+ net/ipv4/tcp.c    | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
-index 9e2378013642..4b57e58845b0 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
-@@ -580,7 +580,7 @@ void chtls_set_tcb_field_rpl_skb(struct sock *sk, u16 word,
- 				 int through_l2t);
- int chtls_setkey(struct chtls_sock *csk, u32 keylen, u32 mode, int cipher_type);
- void chtls_set_quiesce_ctrl(struct sock *sk, int val);
--void skb_entail(struct sock *sk, struct sk_buff *skb, int flags);
-+void chtls_skb_entail(struct sock *sk, struct sk_buff *skb, int flags);
- unsigned int keyid_to_addr(int start_addr, int keyid);
- void free_tls_keyid(struct sock *sk);
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 3166dc15d7d6..dc52ea8adfc7 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -581,6 +581,8 @@ __u32 cookie_v6_init_sequence(const struct sk_buff *skb, __u16 *mss);
  #endif
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-index bcad69c48074..dfa2bfc9638e 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-@@ -317,7 +317,7 @@ static void chtls_close_conn(struct sock *sk)
- 	OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_CLOSE_CON_REQ, tid));
+ /* tcp_output.c */
  
- 	tcp_uncork(sk);
--	skb_entail(sk, skb, ULPCB_FLAG_NO_HDR | ULPCB_FLAG_NO_APPEND);
-+	chtls_skb_entail(sk, skb, ULPCB_FLAG_NO_HDR | ULPCB_FLAG_NO_APPEND);
- 	if (sk->sk_state != TCP_SYN_SENT)
- 		chtls_push_frames(csk, 1);
++void skb_entail(struct sock *sk, struct sk_buff *skb);
++void tcp_mark_push(struct tcp_sock *tp, struct sk_buff *skb);
+ void __tcp_push_pending_frames(struct sock *sk, unsigned int cur_mss,
+ 			       int nonagle);
+ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index e8b48df73c85..7a3e632b0048 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -647,7 +647,7 @@ int tcp_ioctl(struct sock *sk, int cmd, unsigned long arg)
  }
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
-index c320cc8ca68d..05cf45098462 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
-@@ -119,8 +119,8 @@ static int send_flowc_wr(struct sock *sk, struct fw_flowc_wr *flowc,
- 		if (!skb)
- 			return -ENOMEM;
+ EXPORT_SYMBOL(tcp_ioctl);
  
--		skb_entail(sk, skb,
--			   ULPCB_FLAG_NO_HDR | ULPCB_FLAG_NO_APPEND);
-+		chtls_skb_entail(sk, skb,
-+				 ULPCB_FLAG_NO_HDR | ULPCB_FLAG_NO_APPEND);
- 		return 0;
- 	}
- 
-@@ -816,7 +816,7 @@ static int select_size(struct sock *sk, int io_len, int flags, int len)
- 	return io_len;
- }
- 
--void skb_entail(struct sock *sk, struct sk_buff *skb, int flags)
-+void chtls_skb_entail(struct sock *sk, struct sk_buff *skb, int flags)
+-static inline void tcp_mark_push(struct tcp_sock *tp, struct sk_buff *skb)
++void tcp_mark_push(struct tcp_sock *tp, struct sk_buff *skb)
  {
- 	struct chtls_sock *csk = rcu_dereference_sk_user_data(sk);
+ 	TCP_SKB_CB(skb)->tcp_flags |= TCPHDR_PSH;
+ 	tp->pushed_seq = tp->write_seq;
+@@ -658,7 +658,7 @@ static inline bool forced_push(const struct tcp_sock *tp)
+ 	return after(tp->write_seq, tp->pushed_seq + (tp->max_window >> 1));
+ }
+ 
+-static void skb_entail(struct sock *sk, struct sk_buff *skb)
++void skb_entail(struct sock *sk, struct sk_buff *skb)
+ {
  	struct tcp_sock *tp = tcp_sk(sk);
-@@ -840,7 +840,7 @@ static struct sk_buff *get_tx_skb(struct sock *sk, int size)
- 	skb = alloc_skb(size + TX_HEADER_LEN, sk->sk_allocation);
- 	if (likely(skb)) {
- 		skb_reserve(skb, TX_HEADER_LEN);
--		skb_entail(sk, skb, ULPCB_FLAG_NEED_HDR);
-+		chtls_skb_entail(sk, skb, ULPCB_FLAG_NEED_HDR);
- 		skb_reset_transport_header(skb);
- 	}
- 	return skb;
-@@ -857,7 +857,7 @@ static struct sk_buff *get_record_skb(struct sock *sk, int size, bool zcopy)
- 	if (likely(skb)) {
- 		skb_reserve(skb, (TX_TLSHDR_LEN +
- 			    KEY_ON_MEM_SZ + max_ivs_size(sk, size)));
--		skb_entail(sk, skb, ULPCB_FLAG_NEED_HDR);
-+		chtls_skb_entail(sk, skb, ULPCB_FLAG_NEED_HDR);
- 		skb_reset_transport_header(skb);
- 		ULP_SKB_CB(skb)->ulp.tls.ofld = 1;
- 		ULP_SKB_CB(skb)->ulp.tls.type = csk->tlshws.type;
+ 	struct tcp_skb_cb *tcb = TCP_SKB_CB(skb);
 -- 
 2.26.3
 
