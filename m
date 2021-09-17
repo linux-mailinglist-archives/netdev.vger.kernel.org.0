@@ -2,68 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF8940FFED
-	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 21:40:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8295141000C
+	for <lists+netdev@lfdr.de>; Fri, 17 Sep 2021 21:50:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343783AbhIQTla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Sep 2021 15:41:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60342 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235944AbhIQTl3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Sep 2021 15:41:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6ED656124B;
-        Fri, 17 Sep 2021 19:40:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631907607;
-        bh=wzRHjxYCN/4GHZmAMgf78sjNXMOockw16gW2hTPTBJ8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZS7yoS8bSyy7I0tVJDvx6dHZLZcKLavw8Y50Nm8l9H+dpZPzlueybWbeHtaI5Nrb2
-         cEqnqnM5yEkF5YO7rPd0XKub33l5AhT8R5h2fiUF+b9i6uU2hGpBr6jfpXdeEcvVVu
-         DiBqwe5pOvUg7GokfMnim6xUTWtPbZkxmAMgVEfCFylsBqmTJVHChMwppWhyKi5P0L
-         YD9Eg5jmRQwzGjoyzoizMzHvulF2QGV06X/h1zLPzFG01s/Zv96PmgO/jfmq3zmEUo
-         mouuLo5fFOkid9UiyYnO6o6AsOlYr7BoTNgVBiZLnBzzEgfS1/jmgRVwrn2/Fjq7lq
-         pMMabyVcEMJ8g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5360D609AD;
-        Fri, 17 Sep 2021 19:40:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] net: phy: bcm7xxx: Add EPHY entry for 72165
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163190760733.22479.5241027515857294065.git-patchwork-notify@kernel.org>
-Date:   Fri, 17 Sep 2021 19:40:07 +0000
-References: <20210917181551.2836036-1-f.fainelli@gmail.com>
-In-Reply-To: <20210917181551.2836036-1-f.fainelli@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
+        id S1344904AbhIQTvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Sep 2021 15:51:51 -0400
+Received: from mail-oo1-f49.google.com ([209.85.161.49]:35532 "EHLO
+        mail-oo1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242818AbhIQTu3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Sep 2021 15:50:29 -0400
+Received: by mail-oo1-f49.google.com with SMTP id y3-20020a4ab403000000b00290e2a52c71so3573728oon.2;
+        Fri, 17 Sep 2021 12:49:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=lIqQeQXnK4cjptHyGskWDQAslLOSJliGOSjwEw/Um2w=;
+        b=Brr7/osIWtBSectNOwa3Tgwe2h5niCj8QpU/mMKAIaCfIUuIRohOLM0H7VflsZBnB2
+         EBNFb0pr3sXGlrgALxWItEViWJk97ybVnD5Wr5Vnj2AxGrHGnwlt/jaE8wT4HFV+Ijxu
+         ZhgnTeaVviK1fUZm1tJKJYcmKIIwhUZSkd3/uxbY5rtQyV0Vo8cyrJ6HS8FjI4tBUzSB
+         whVhvrVMmhAJKr8usgu/103h3I6sC+B3rumGlIL1A1aXEXQJTwEfyX1DCJHBlr9HZQdo
+         vxlWe+cteOQUF7XR7bAdGCgnmuHmah0k5rG6EAEWTK28ZQEsJWBrcNw+XhC/Mn0Mi3R5
+         +krg==
+X-Gm-Message-State: AOAM531ZvNkxdgXqrZNKl2fbzE98dox0qRaUxXl6/PgxNt6brBCrSlVY
+        wG5VgtZ+adZAVkhP9EzOFA==
+X-Google-Smtp-Source: ABdhPJxjY1Cr2X0gISlUEjpmrUwwPiPDDmYHTOQoeNCD+4D0iRzlv5pQ4zTOB4Md3k7uJKuLJjPi6Q==
+X-Received: by 2002:a4a:dcd0:: with SMTP id h16mr10363770oou.44.1631908144964;
+        Fri, 17 Sep 2021 12:49:04 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id z7sm1766832oti.65.2021.09.17.12.49.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Sep 2021 12:49:03 -0700 (PDT)
+Received: (nullmailer pid 2025337 invoked by uid 1000);
+        Fri, 17 Sep 2021 19:48:54 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devel@driverdev.osuosl.org, devicetree@vger.kernel.org,
+        =?utf-8?b?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-mmc@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?utf-8?q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20210917151401.2274772-3-Jerome.Pouiller@silabs.com>
+References: <20210917151401.2274772-1-Jerome.Pouiller@silabs.com> <20210917151401.2274772-3-Jerome.Pouiller@silabs.com>
+Subject: Re: [PATCH v6 02/24] dt-bindings: introduce silabs,wfx.yaml
+Date:   Fri, 17 Sep 2021 14:48:54 -0500
+Message-Id: <1631908134.353915.2025336.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Fri, 17 Sep 2021 11:15:50 -0700 you wrote:
-> 72165 is a 16nm process SoC with a 10/100 integrated Ethernet PHY,
-> create a new macro and set of functions for this different process type.
+On Fri, 17 Sep 2021 17:13:38 +0200, Jerome Pouiller wrote:
+> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
 > 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Prepare the inclusion of the wfx driver in the kernel.
+> 
+> Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
 > ---
-> Changes in v2:
+>  .../bindings/net/wireless/silabs,wfx.yaml     | 133 ++++++++++++++++++
+>  1 file changed, 133 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
 > 
-> [...]
 
-Here is the summary with links:
-  - [net-next,v2] net: phy: bcm7xxx: Add EPHY entry for 72165
-    https://git.kernel.org/netdev/net-next/c/f68d08c437f9
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+yamllint warnings/errors:
 
+dtschema/dtc warnings/errors:
+
+
+doc reference errors (make refcheckdocs):
+Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml: Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.txt
+
+See https://patchwork.ozlabs.org/patch/1529457
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
