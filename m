@@ -2,120 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA00A41048A
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 08:57:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E474104AA
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 09:19:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240490AbhIRG6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 02:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239917AbhIRG6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 02:58:35 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA31CC061574;
-        Fri, 17 Sep 2021 23:57:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=zytGosLqW2wfFrKu1mAwI9TGDUzHhR58aTgQdttyjj4=; b=Kp2BSvBYJhKuJ7h7QA0bvkAiHt
-        IL20N4owGPJjRZRAZWm9jhjGZU8sQ9M6qeYrO76hCse6aWskcRit9kbjWw05aX9y6Th4lPf6i7XVy
-        gc+atN9/uXdLCWJlut//LpLu+VRz8naOutjvScNwNc7n8bqNBZu4KRWyR+85gGaOGSyetpa1p1fjV
-        0RK/Arw3UddjT7gOPR65WcYv4ZUjkFuAruS/gqCgbvF78vcvnS33wIh8tH+5qevqHZGR5R5I70VBv
-        bz7WPGwldoxoz2n93ojLv86JnowzXFCfLg2qqb16GmmIjSDsyp4v6aPJWxodcTyAqY/oxGmh7VcKz
-        Ze/1gLOg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mRUHL-0042Er-Ru; Sat, 18 Sep 2021 06:56:52 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id ED5B3300260;
-        Sat, 18 Sep 2021 08:56:50 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B00082BDA5D63; Sat, 18 Sep 2021 08:56:50 +0200 (CEST)
-Date:   Sat, 18 Sep 2021 08:56:50 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     =?utf-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S234362AbhIRHU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 03:20:29 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9893 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230509AbhIRHU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 03:20:27 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HBMWr6xPNz8yXN;
+        Sat, 18 Sep 2021 15:14:32 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Sat, 18 Sep 2021 15:19:01 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Sat, 18 Sep
+ 2021 15:19:01 +0800
+Subject: Re: [PATCH net] napi: fix race inside napi_enable
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, <netdev@vger.kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
-        <linux-perf-users@vger.kernel.org>,
-        "open list:PERFORMANCE EVENTS SUBSYSTEM" 
-        <linux-kernel@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, jroedel@suse.de, x86@kernel.org,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH] x86/dumpstack/64: Add guard pages to stack_info
-Message-ID: <YUWNsu4BAFVVAqDo@hirez.programming.kicks-ass.net>
-References: <3f26f7a2-0a09-056a-3a7a-4795b6723b60@linux.alibaba.com>
- <YUIOgmOfnOqPrE+z@hirez.programming.kicks-ass.net>
- <76de02b7-4d87-4a3a-e4d4-048829749887@linux.alibaba.com>
- <YUL5j/lY0mtx4NMq@hirez.programming.kicks-ass.net>
- <YUL6R5AH6WNxu5sH@hirez.programming.kicks-ass.net>
- <YUMWLdijs8vSkRjo@hirez.programming.kicks-ass.net>
- <a11f43d2-f12e-18c2-65d4-debd8d085fa8@linux.alibaba.com>
- <YURsJGaB0vKgPT8x@hirez.programming.kicks-ass.net>
- <YUTE/NuqnaWbST8n@hirez.programming.kicks-ass.net>
- <89f8281f-b778-5bf5-13e0-2bda613d963c@linux.alibaba.com>
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        "Wei Wang" <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        <dust.li@linux.alibaba.com>
+References: <20210918064822.58208-1-xuanzhuo@linux.alibaba.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <d9c86150-94e7-b812-5b23-56a2c5cbeeb6@huawei.com>
+Date:   Sat, 18 Sep 2021 15:19:01 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <89f8281f-b778-5bf5-13e0-2bda613d963c@linux.alibaba.com>
+In-Reply-To: <20210918064822.58208-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme702-chm.china.huawei.com (10.1.199.98) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 18, 2021 at 10:30:42AM +0800, 王贇 wrote:
-> > Andy suggested something like this.
+On 2021/9/18 14:48, Xuan Zhuo wrote:
+> The process will cause napi.state to contain NAPI_STATE_SCHED and
+> not in the poll_list, which will cause napi_disable() to get stuck.
 > 
-> Now it seem like working well :-)
+> The prefix "NAPI_STATE_" is removed in the figure below, and
+> NAPI_STATE_HASHED is ignored in napi.state.
+> 
+>                       CPU0       |                   CPU1       | napi.state
+> ===============================================================================
+> napi_disable()                   |                              | SCHED | NPSVC
+> napi_enable()                    |                              |
+> {                                |                              |
+>     smp_mb__before_atomic();     |                              |
+>     clear_bit(SCHED, &n->state); |                              | NPSVC
+>                                  | napi_schedule_prep()         | SCHED | NPSVC
+>                                  | napi_poll()                  |
+>                                  |   napi_complete_done()       |
+>                                  |   {                          |
+>                                  |      if (n->state & (NPSVC | | (1)
+>                                  |               _BUSY_POLL)))  |
+>                                  |           return false;      |
+>                                  |     ................         |
+>                                  |   }                          | SCHED | NPSVC
+>                                  |                              |
+>     clear_bit(NPSVC, &n->state); |                              | SCHED
+> }                                |                              |
+>                                  |                              |
+> napi_schedule_prep()             |                              | SCHED | MISSED (2)
+> 
+> (1) Here return direct. Because of NAPI_STATE_NPSVC exists.
+> (2) NAPI_STATE_SCHED exists. So not add napi.poll_list to sd->poll_list
+> 
+> Since NAPI_STATE_SCHED already exists and napi is not in the
+> sd->poll_list queue, NAPI_STATE_SCHED cannot be cleared and will always
+> exist.
+> 
+> 1. This will cause this queue to no longer receive packets.
+> 2. If you encounter napi_disable under the protection of rtnl_lock, it
+>    will cause the entire rtnl_lock to be locked, affecting the overall
+>    system.
+> 
+> This patch uses cmpxchg to implement napi_enable(), which ensures that
+> there will be no race due to the separation of clear two bits.
+> 
 
-Thanks for sticking with it and testing all that over and over!
+a Fixes tag is needed here.
 
-> [  193.100475][    C0] BUG: NMI stack guard page was hit at 0000000085fd977b (stack is 000000003a55b09e..00000000d8cce1a5)
-> [  193.100493][    C0] stack guard page: 0000 [#1] SMP PTI
-> [  193.100499][    C0] CPU: 0 PID: 968 Comm: a.out Not tainted 5.14.0-next-20210913+ #548
-> [  193.100506][    C0] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-> [  193.100510][    C0] RIP: 0010:perf_swevent_get_recursion_context+0x0/0x70
-> [  193.100523][    C0] Code: 48 03 43 28 48 8b 0c 24 bb 01 00 00 00 4c 29 f0 48 39 c8 48 0f 47 c1 49 89 45 08 e9 48 ff ff ff 66 2e 0f 1f 84 00 00 00 00 00 <55> 53 e8 09 20 f2 ff 48 c7 c2 20 4d 03 00 65 48 03 15 5a 3b d2 7e
-> [  193.100529][    C0] RSP: 0018:fffffe000000b000 EFLAGS: 00010046
-> [  193.100535][    C0] RAX: 0000000080120006 RBX: fffffe000000b050 RCX: 0000000000000000
-> [  193.100540][    C0] RDX: ffff88810de82180 RSI: ffffffff81269031 RDI: 000000000000001c
-> [  193.100544][    C0] RBP: 000000000000001c R08: 0000000000000001 R09: 0000000000000000
-> [  193.100548][    C0] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> [  193.100551][    C0] R13: fffffe000000b044 R14: 0000000000000001 R15: 0000000000000009
-> [  193.100556][    C0] FS:  00007fa18c42d740(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
-> [  193.100562][    C0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  193.100566][    C0] CR2: fffffe000000aff8 CR3: 00000001160ac005 CR4: 00000000003606f0
-> [  193.100570][    C0] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [  193.100574][    C0] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [  193.100578][    C0] Call Trace:
-> [  193.100581][    C0]  <NMI>
-> [  193.100584][    C0]  perf_trace_buf_alloc+0x26/0xd0
-> [  193.100597][    C0]  ? is_prefetch.isra.25+0x260/0x260
-> [  193.100605][    C0]  ? __bad_area_nosemaphore+0x1b8/0x280
-> [  193.100611][    C0]  perf_ftrace_function_call+0x18f/0x2e0
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> ---
+>  net/core/dev.c | 17 ++++++++++++-----
+>  1 file changed, 12 insertions(+), 5 deletions(-)
 > 
-> 
-> Tested-by: Michael Wang <yun.wang@linux.alibaba.com>
-> 
-> BTW, would you like to apply the other patch which increasing exception
-> stack size after this one?
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 74fd402d26dd..3457ae964b8c 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -6923,12 +6923,19 @@ EXPORT_SYMBOL(napi_disable);
+>   */
+>  void napi_enable(struct napi_struct *n)
+>  {
+> +	unsigned long val, new;
+> +
+>  	BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
+> -	smp_mb__before_atomic();
+> -	clear_bit(NAPI_STATE_SCHED, &n->state);
+> -	clear_bit(NAPI_STATE_NPSVC, &n->state);
+> -	if (n->dev->threaded && n->thread)
+> -		set_bit(NAPI_STATE_THREADED, &n->state);
+> +
+> +	do {
+> +		val = READ_ONCE(n->state);
 
-Yes, I have that queued behind it :-)
+It seems we might need to move the above BUG_ON here to preserve
+the orginial BUG_ON behavior?
+
+> +
+> +		new = val & ~(NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC);
+> +
+> +		if (n->dev->threaded && n->thread)
+> +			new |= NAPIF_STATE_THREADED;
+> +
+> +	} while (cmpxchg(&n->state, val, new) != val);
+>  }
+>  EXPORT_SYMBOL(napi_enable);
+>  
+> 
