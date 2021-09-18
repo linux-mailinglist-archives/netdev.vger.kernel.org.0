@@ -2,246 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED417410677
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 14:42:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38BC84106E8
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 15:51:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236191AbhIRMoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 08:44:01 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:60200 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232440AbhIRMoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 08:44:01 -0400
-Message-ID: <20210918114626.399467843@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1631968956;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=J2RutnZvEXhSJ6T/g1cOHESFLEKUpYsSz4YSNZ3M8Rw=;
-        b=bJQVMWPEJZQzx5OUwGwdRiUKc1XSnnVTpJ+BUP4CclD9Mm55SuS37iE4vb0kfk2lgJyO8B
-        rtv/F5NR4BTQ68dkgzQMHmUADyqPqWs7kkPZJlqTUdgGpRW+IG8yXXyvywy0DY+xpTCHdi
-        nFsBK9IkctovqsEKcCZub8w2Qgok6Gk5L4nsuiPpBkwBYiEuNfA+tN/X+uNi6fSM4fAkBp
-        5fE2uCmQbiIS1XIE4rRbPCbgrohf7BR4d6+VMe+uv5u3WmBGD2cdEzqTdimLkwfMzAJA8c
-        pUTno8Kq1oqp0srN1Gy+lniu1JHzfUNrSiDchioWPCAxYfUHidc1WT1Zlfl0IA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1631968956;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=J2RutnZvEXhSJ6T/g1cOHESFLEKUpYsSz4YSNZ3M8Rw=;
-        b=eboITd1In7x0cYr0ROqPphLW3St7A9ODsDuVU4zBikdGAw7ICFDF31QCWEMCIN4wU2iP6i
-        Vp8FxS8awv73PKBA==
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Sebastian Siewior <bigeasy@linutronix.de>
-Subject: [patch] net: core: Correct the sock::sk_lock.owned lockdep annotations
+        id S236629AbhIRNw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 09:52:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236010AbhIRNw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 09:52:56 -0400
+X-Greylist: delayed 2387 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 18 Sep 2021 06:51:33 PDT
+Received: from wp441.webpack.hosteurope.de (wp441.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:85d2::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01374C061574;
+        Sat, 18 Sep 2021 06:51:32 -0700 (PDT)
+Received: from [2a03:7846:b79f:101:21c:c4ff:fe1f:fd93] (helo=valdese.nms.ulrich-teichert.org); authenticated
+        by wp441.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1mRa7q-0001YE-NU; Sat, 18 Sep 2021 15:11:26 +0200
+Received: from valdese.nms.ulrich-teichert.org (localhost [127.0.0.1])
+        by valdese.nms.ulrich-teichert.org (8.15.2/8.15.2/Debian-8+deb9u1) with ESMTPS id 18IDBPWt005217
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 18 Sep 2021 15:11:25 +0200
+Received: (from ut@localhost)
+        by valdese.nms.ulrich-teichert.org (8.15.2/8.15.2/Submit) id 18IDBKQB005215;
+        Sat, 18 Sep 2021 15:11:20 +0200
+Message-Id: <202109181311.18IDBKQB005215@valdese.nms.ulrich-teichert.org>
+Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
+To:     mcree@orcon.net.nz (Michael Cree)
+Date:   Sat, 18 Sep 2021 15:11:20 +0200 (CEST)
+Cc:     torvalds@linux-foundation.org (Linus Torvalds),
+        linux@roeck-us.net (Guenter Roeck),
+        rth@twiddle.net (Richard Henderson),
+        ink@jurassic.park.msu.ru (Ivan Kokshaysky),
+        mattst88@gmail.com (Matt Turner),
+        James.Bottomley@hansenpartnership.com (James E . J . Bottomley),
+        deller@gmx.de (Helge Deller),
+        davem@davemloft.net (David S . Miller),
+        kuba@kernel.org (Jakub Kicinski),
+        linux-alpha@vger.kernel.org (alpha),
+        geert@linux-m68k.org (Geert Uytterhoeven),
+        linux-kernel@vger.kernel.org (Linux Kernel Mailing List),
+        linux-parisc@vger.kernel.org, netdev@vger.kernel.org (Netdev),
+        linux-sparse@vger.kernel.org (Sparse Mailing-list)
+In-Reply-To: <20210918095134.GA5001@tower>
+From:   Ulrich Teichert <krypton@ulrich-teichert.org>
+X-Mailer: ELM [version 2.5 PL8]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Date:   Sat, 18 Sep 2021 14:42:35 +0200 (CEST)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;ut@ulrich-teichert.org;1631973093;f71a9507;
+X-HE-SMSGID: 1mRa7q-0001YE-NU
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-lock_sock_fast() and lock_sock_nested() contain lockdep annotations for the
-sock::sk_lock.owned 'mutex'. sock::sk_lock.owned is not a regular mutex. It
-is just lockdep wise equivalent. In fact it's an open coded trivial mutex
-implementation with some interesting features.
+Hi,
 
-sock::sk_lock.slock is a regular spinlock protecting the 'mutex'
-representation sock::sk_lock.owned which is a plain boolean. If 'owned' is
-true, then some other task holds the 'mutex', otherwise it is uncontended.
-As this locking construct is obviously endangered by lock ordering issues as
-any other locking primitive it got lockdep annotated via a dedicated
-dependency map sock::sk_lock.dep_map which has to be updated at the lock
-and unlock sites.
+> 
+> On Thu, Sep 16, 2021 at 11:35:36AM -0700, Linus Torvalds wrote:
+> > On Wed, Sep 15, 2021 at 3:33 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> > >
+> > > drivers/net/ethernet/3com/3c515.c: In function 'corkscrew_start_xmit':
+> > > drivers/net/ethernet/3com/3c515.c:1053:22: error:
+> > >         cast from pointer to integer of different size
+> > >
+> > > That is a typecast from a pointer to an int, which is then sent to an
+> > > i/o port. That driver should probably be disabled for 64-bit builds.
+> > 
+> > Naah. I think the Jensen actually had an ISA slot. Came with a
+> > whopping 8MB too, so the ISA DMA should work just fine.
+> > 
+> > Or maybe it was EISA only? I really don't remember.
 
-lock_sock_nested() is a straight forward 'mutex' lock operation:
+It's EISA only. I've made some pictures of a somewhat dusty inside of
+a Jensen with 4 EISA cards (from bottom to top: SCSI, video, 2x network):
 
-  might_sleep();
-  spin_lock_bh(sock::sk_lock.slock)
-  while (!try_lock(sock::sk_lock.owned)) {
-      spin_unlock_bh(sock::sk_lock.slock);
-      wait_for_release();
-      spin_lock_bh(sock::sk_lock.slock);
-  }
+http://alpha.ulrich-teichert.org/
 
-The lockdep annotation for sock::sk_lock.owned is for unknown reasons
-_after_ the lock has been acquired, i.e. after the code block above and
-after releasing sock::sk_lock.slock, but inside the bottom halves disabled
-region:
+(don't worry about the loose cable on one of the pictures, that's just
+my crude RTC battery replacment)
 
-  spin_unlock(sock::sk_lock.slock);
-  mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
-  local_bh_enable();
+> > I have no way - or interest - to test that on real hardware, but I did
+> > check that if I relax the config I can at least build it cleanly on
+> > x86-64 with that change.
 
-The placement after the unlock is obvious because otherwise the
-mutex_acquire() would nest into the spin lock held region.
+I could not get a recent kernel to boot, but it's booting ancient kernels
+just fine:
 
-But that's from the lockdep perspective still the wrong place:
+Linux version 2.4.27-2-generic (tretkowski@bastille) (gcc version 3.3.5 (Debian 1:3.3.5-12)) #1 Sun May 29 18:40:58 UTC 2005
+Booting GENERIC on Jensen using machine vector Jensen from SRM
+Major Options: LEGACY_START 
+Command line: ro  root=/dev/sda3
+memcluster 0, usage 1, start        0, end      256
+memcluster 1, usage 0, start      256, end     8192
+freeing pages 256:384
+freeing pages 757:8192
+reserving pages 757:758
+Initial ramdisk at: 0xfffffc00039d2000 (5308416 bytes)
+Max ASN from HWRPB is bad (0xf)
+On node 0 totalpages: 8192
+zone(0): 8192 pages.
+zone(1): 0 pages.
+zone(2): 0 pages.
+Kernel command line: ro  root=/dev/sda3
+...
 
- 1) The mutex_acquire() is issued _after_ the successful acquisition which
-    is pointless because in a dead lock scenario this point is never
-    reached which means that if the deadlock is the first instance of
-    exposing the wrong lock order lockdep does not have a chance to detect
-    it.
+> > It can't make matters worse, and it's the RightThing(tm).
+> > 
+> > Since Micheal replied about that other alpha issue, maybe he knows
+> > about the ISA slot situation too?
+> 
+> Ah, yeah, not really.  I am not familiar with the Jensen hardware,
+> and have never played around with the EISA slot on the Alphas I do
+> have.
 
- 2) It only works because lockdep is rather lax on the context from which
-    the mutex_acquire() is issued. Acquiring a mutex inside a bottom halves
-    and therefore non-preemptible region is obviously invalid, except for a
-    trylock which is clearly not the case here.
+I know the feeling.... So many computers, so little time...
+While we're at it, during my vain attempts to get new kernels to boot,
+I tried to disable PCI support to make the kernels smaller (after all,
+the Jensen has only EISA, so what good would PCI support for?) and
+got it to compile with the attached patch (which fixes some warnings,
+too). Should apply cleanly to Linus tree.
 
-    This 'works' stops working on RT enabled kernels where the bottom halves
-    serialization is done via a local lock, which exposes this misplacement
-    because the 'mutex' and the local lock nest the wrong way around and
-    lockdep complains rightfully about a lock inversion.
+Enable compile for the Jensen without PCI support.
 
-The placement is wrong since the initial commit a5b5bb9a053a ("[PATCH]
-lockdep: annotate sk_locks") which introduced this.
-
-Fix it by moving the mutex_acquire() in front of the actual lock
-acquisition, which is what the regular mutex_lock() operation does as well.
-
-lock_sock_fast() is not that straight forward. It looks at the first glance
-like a convoluted trylock operation:
-
-  spin_lock_bh(sock::sk_lock.slock)
-  if (!sock::sk_lock.owned)
-      return false;
-  while (!try_lock(sock::sk_lock.owned)) {
-      spin_unlock_bh(sock::sk_lock.slock);
-      wait_for_release();
-      spin_lock_bh(sock::sk_lock.slock);
-  }
-  spin_unlock(sock::sk_lock.slock);
-  mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
-  local_bh_enable();
-  return true;
-
-But that's not the case: lock_sock_fast() is an interesting optimization
-for short critical sections which can run with bottom halves disabled and
-sock::sk_lock.slock held. This allows to shortcut the 'mutex' operation in
-the non contended case by preventing other lockers to acquire
-sock::sk_lock.owned because they are blocked on sock::sk_lock.slock, which
-in turn avoids the overhead of doing the heavy processing in release_sock()
-including waking up wait queue waiters.
-
-In the contended case, i.e. when sock::sk_lock.owned == true the behavior
-is the same as lock_sock_nested().
-
-Semantically this shortcut means, that the task acquired the 'mutex' even
-if it does not touch the sock::sk_lock.owned field in the non-contended
-case. Not telling lockdep about this shortcut acquisition is hiding
-potential lock ordering violations in the fast path.
-
-As a consequence the same reasoning as for the above lock_sock_nested()
-case vs. the placement of the lockdep annotation applies. 
-
-The current placement of the lockdep annotation was just copied from
-the original lock_sock(), now renamed to lock_sock_nested(),
-implementation.
-
-Fix this by moving the mutex_acquire() in front of the actual lock
-acquisition and adding the corresponding mutex_release() into
-unlock_sock_fast(). Also document the fast path return case with a comment.
-
-Reported-by: Sebastian Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: netdev@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Ulrich Teichert <ulrich.teichert@gmx.de>
 ---
+ arch/alpha/include/asm/jensen.h | 8 ++++----
+ arch/alpha/kernel/sys_jensen.c  | 2 +-
+ include/asm-generic/pci_iomap.h | 6 +++++-
+ 3 files changed, 10 insertions(+), 6 deletions(-)
 
-The basic network testing I was able to do did not expose any lockdep
-complaints and as the probability that a potential lock order violation is
-hidden by the fact that the slowpath in lock_sock_fast() is never
-taken is low, I'm not expecting to see much fallout of this.
-
----
- include/net/sock.h |    1 +
- net/core/sock.c    |   37 +++++++++++++++++++++++--------------
- 2 files changed, 24 insertions(+), 14 deletions(-)
----
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1640,6 +1640,7 @@ static inline void unlock_sock_fast(stru
- 		release_sock(sk);
- 		__release(&sk->sk_lock.slock);
- 	} else {
-+		mutex_release(&sk->sk_lock.dep_map, _RET_IP_);
- 		spin_unlock_bh(&sk->sk_lock.slock);
- 	}
- }
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -3179,17 +3179,15 @@ EXPORT_SYMBOL(sock_init_data);
- 
- void lock_sock_nested(struct sock *sk, int subclass)
- {
-+	/* The sk_lock has mutex_lock() semantics here. */
-+	mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
-+
- 	might_sleep();
- 	spin_lock_bh(&sk->sk_lock.slock);
- 	if (sk->sk_lock.owned)
- 		__lock_sock(sk);
- 	sk->sk_lock.owned = 1;
--	spin_unlock(&sk->sk_lock.slock);
--	/*
--	 * The sk_lock has mutex_lock() semantics here:
--	 */
--	mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
--	local_bh_enable();
-+	spin_unlock_bh(&sk->sk_lock.slock);
- }
- EXPORT_SYMBOL(lock_sock_nested);
- 
-@@ -3227,24 +3225,35 @@ EXPORT_SYMBOL(release_sock);
+diff --git a/arch/alpha/include/asm/jensen.h b/arch/alpha/include/asm/jensen.h
+index 916895155a88..1c4131453db2 100644
+--- a/arch/alpha/include/asm/jensen.h
++++ b/arch/alpha/include/asm/jensen.h
+@@ -111,18 +111,18 @@ __EXTERN_INLINE void jensen_set_hae(unsigned long addr)
+  * convinced that I need one of the newer machines.
   */
- bool lock_sock_fast(struct sock *sk) __acquires(&sk->sk_lock.slock)
+ 
+-static inline unsigned int jensen_local_inb(unsigned long addr)
++__EXTERN_INLINE unsigned int jensen_local_inb(unsigned long addr)
  {
-+	/* The sk_lock has mutex_lock() semantics here. */
-+	mutex_acquire(&sk->sk_lock.dep_map, 0, 0, _RET_IP_);
-+
- 	might_sleep();
- 	spin_lock_bh(&sk->sk_lock.slock);
- 
--	if (!sk->sk_lock.owned)
-+	if (!sk->sk_lock.owned) {
- 		/*
--		 * Note : We must disable BH
-+		 * Fast path return with bottom halves disabled and
-+		 * sock::sk_lock.slock held.
-+		 *
-+		 * The 'mutex' is not contended and holding
-+		 * sock::sk_lock.slock prevents all other lockers to
-+		 * proceed so the corresponding unlock_sock_fast() can
-+		 * avoid the slow path of release_sock() completely and
-+		 * just release slock.
-+		 *
-+		 * From a semantical POV this is equivalent to 'acquiring'
-+		 * the 'mutex', hence the corresponding lockdep
-+		 * mutex_release() has to happen in the fast path of
-+		 * unlock_sock_fast().
- 		 */
- 		return false;
-+	}
- 
- 	__lock_sock(sk);
- 	sk->sk_lock.owned = 1;
--	spin_unlock(&sk->sk_lock.slock);
--	/*
--	 * The sk_lock has mutex_lock() semantics here:
--	 */
--	mutex_acquire(&sk->sk_lock.dep_map, 0, 0, _RET_IP_);
- 	__acquire(&sk->sk_lock.slock);
--	local_bh_enable();
-+	spin_unlock_bh(&sk->sk_lock.slock);
- 	return true;
+ 	return 0xff & *(vuip)((addr << 9) + EISA_VL82C106);
  }
- EXPORT_SYMBOL(lock_sock_fast);
+ 
+-static inline void jensen_local_outb(u8 b, unsigned long addr)
++__EXTERN_INLINE void jensen_local_outb(u8 b, unsigned long addr)
+ {
+ 	*(vuip)((addr << 9) + EISA_VL82C106) = b;
+ 	mb();
+ }
+ 
+-static inline unsigned int jensen_bus_inb(unsigned long addr)
++__EXTERN_INLINE unsigned int jensen_bus_inb(unsigned long addr)
+ {
+ 	long result;
+ 
+@@ -131,7 +131,7 @@ static inline unsigned int jensen_bus_inb(unsigned long addr)
+ 	return __kernel_extbl(result, addr & 3);
+ }
+ 
+-static inline void jensen_bus_outb(u8 b, unsigned long addr)
++__EXTERN_INLINE void jensen_bus_outb(u8 b, unsigned long addr)
+ {
+ 	jensen_set_hae(0);
+ 	*(vuip)((addr << 7) + EISA_IO + 0x00) = b * 0x01010101;
+diff --git a/arch/alpha/kernel/sys_jensen.c b/arch/alpha/kernel/sys_jensen.c
+index e5d870ff225f..40db6c3d9690 100644
+--- a/arch/alpha/kernel/sys_jensen.c
++++ b/arch/alpha/kernel/sys_jensen.c
+@@ -17,7 +17,7 @@
+ 
+ #include <asm/ptrace.h>
+ 
+-#define __EXTERN_INLINE inline
++#define __EXTERN_INLINE extern inline
+ #include <asm/io.h>
+ #include <asm/jensen.h>
+ #undef  __EXTERN_INLINE
+diff --git a/include/asm-generic/pci_iomap.h b/include/asm-generic/pci_iomap.h
+index df636c6d8e6c..446a0c576b33 100644
+--- a/include/asm-generic/pci_iomap.h
++++ b/include/asm-generic/pci_iomap.h
+@@ -18,6 +18,7 @@ extern void __iomem *pci_iomap_range(struct pci_dev *dev, int bar,
+ extern void __iomem *pci_iomap_wc_range(struct pci_dev *dev, int bar,
+ 					unsigned long offset,
+ 					unsigned long maxlen);
++extern void pci_iounmap(struct pci_dev *dev, void __iomem *p);
+ /* Create a virtual mapping cookie for a port on a given PCI device.
+  * Do not call this directly, it exists to make it easier for architectures
+  * to override */
+@@ -28,7 +29,7 @@ extern void __iomem *__pci_ioport_map(struct pci_dev *dev, unsigned long port,
+ #define __pci_ioport_map(dev, port, nr) ioport_map((port), (nr))
+ #endif
+ 
+-#elif defined(CONFIG_GENERIC_PCI_IOMAP)
++#elif defined(CONFIG_GENERIC_PCI_IOMAP) || !defined(CONFIG_PCI)
+ static inline void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max)
+ {
+ 	return NULL;
+@@ -50,6 +51,9 @@ static inline void __iomem *pci_iomap_wc_range(struct pci_dev *dev, int bar,
+ {
+ 	return NULL;
+ }
++static inline void pci_iounmap(struct pci_dev *dev, void __iomem *p)
++{
++}
+ #endif
+ 
+ #endif /* __ASM_GENERIC_PCI_IOMAP_H */
 
+-- 
+Dipl. Inf. Ulrich Teichert|e-mail: Ulrich.Teichert@gmx.de | Listening to:
+Stormweg 24               |Eat Lipstick: Dirty Little Secret, The Baboon Show:
+24539 Neumuenster, Germany|Work Work Work, The Bellrays: Bad Reaction
