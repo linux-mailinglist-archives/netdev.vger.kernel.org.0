@@ -2,154 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 609DF4106EE
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 15:52:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47460410712
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 16:39:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237550AbhIRNxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 09:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237074AbhIRNxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 09:53:20 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8520CC061766
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 06:51:56 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id y4so10374359pfe.5
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 06:51:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:user-agent:in-reply-to:references
-         :message-id:mime-version:content-transfer-encoding;
-        bh=miV8uugxK2l0+TxTl0bYFsYjBqHnegb6tYLIO2c+/pQ=;
-        b=VKw24EWmI8tJCg4PHVON7yyfJEQYhqptyNWjyqSgsFi2IVS6iZif5B1uZsuSDvQJQx
-         +SLIrVCrSDmIzh61Ekf1bB13WKURTAlrae0zpyW9LPkrZhrxOTmbsf6XQShfyz4Em/fS
-         wf5x9/lw0kRW0qR2yJUr6fJ35kuYwP3X2e7dA=
+        id S238165AbhIROkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 10:40:21 -0400
+Received: from mail-ot1-f52.google.com ([209.85.210.52]:42705 "EHLO
+        mail-ot1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231676AbhIROkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 10:40:18 -0400
+Received: by mail-ot1-f52.google.com with SMTP id 67-20020a9d0449000000b00546e5a8062aso4892230otc.9;
+        Sat, 18 Sep 2021 07:38:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
-         :references:message-id:mime-version:content-transfer-encoding;
-        bh=miV8uugxK2l0+TxTl0bYFsYjBqHnegb6tYLIO2c+/pQ=;
-        b=E659RrH2xFSwVCtHm0iMv13olOozsXIX81G5bMcBsEh0Sb+mYn/NbT+EVkQJxAqEUY
-         KBB7mlzBq4KxqmOVTQtE4XooDBt6ex/7Xj3LZYGQfRmEkBB1tA2MHk9a3+ypCa56kfFU
-         4T9bLAQWv/jN4Df6ypdggOKu/nLTpqnSgTZj3swu//Fa6pOgaxaGdEI1xwhTntE8XB8f
-         Btg5G1pSJHw7dcjs6r5ylG7cC5k2w8fOThBiMwSkytPysUXWHzKpk+RXLDgPUBAYU4kM
-         O4b4a1Cqw9ZXk222XSN73EnVWjuhXSITFvNsJAt24Zvov7Fx/kwMSRtRr9c7dFIk8oys
-         LQTg==
-X-Gm-Message-State: AOAM530lOANVqV9VUNA22YRRxKknMJzCRMA9a1pSgJd0p6lBOCJ7QjuR
-        IPg5+ZNawDgsOTbHJ68ceOetag==
-X-Google-Smtp-Source: ABdhPJyS2QSKmMpzTd7MmHyqFtqie45S/kXPdQTs6m3qND4U8eV1/DVEXDB+DPoyXL97BCM+ZzgQOA==
-X-Received: by 2002:a63:2011:: with SMTP id g17mr14710533pgg.379.1631973115834;
-        Sat, 18 Sep 2021 06:51:55 -0700 (PDT)
-Received: from [127.0.0.1] (173-164-112-133-Oregon.hfc.comcastbusiness.net. [173.164.112.133])
-        by smtp.gmail.com with ESMTPSA id k29sm9351614pfp.200.2021.09.18.06.51.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Sep 2021 06:51:54 -0700 (PDT)
-Date:   Sat, 18 Sep 2021 06:51:51 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Len Baker <len.baker@gmx.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?ISO-8859-1?Q?Christian_K=F6nig?= <christian.koenig@amd.com>
-CC:     Colin Ian King <colin.king@canonical.com>,
-        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH] net: mana: Prefer struct_size over open coded arithmetic
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20210918132010.GA15999@titan>
-References: <20210911102818.3804-1-len.baker@gmx.com> <20210918132010.GA15999@titan>
-Message-ID: <D81D1EE2-92A0-42D5-9238-9B05E4BDE230@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gZJEYCVEBx8sBImAvvT2WV4qs0yfviZDu0/wBlsAicI=;
+        b=qis65Hug5TVuUHnsvqvOhVn9BySyTfoBgBP8XiBNwZ1/3RHOIX/JlG5TYwfrE+Y8QS
+         zHHucC8fZHNQcnrl1hiv5qSUAcV2svldFa11KNedC/KKCWmk4fcggjddvzGnTuOlM1dX
+         PuDveAyU3soGu9iyaV0iGLZeJ9RGapQ6WnaJpGlyNiubz0Ztv940glOqYpv4DomsMQBz
+         mDG7XkfK83IVbLG58USVwbV0ot+dhxoK1iB7ce9A4cnjBWHoUOUNRkwhh5R5E4xufyGy
+         i2426vfMhJczHcHw3rdW3ikRteVhVSGBD/WMoCGRExd9TxiThZQT9PYyboLPrzP2gUqR
+         sUrw==
+X-Gm-Message-State: AOAM531LGyhsFGkSAZHF2QGAwcAwK+Lnz+IH3Z9aO14Tcvx/tRIiRRgh
+        xtwpjc6C4Fe5SZNGrVDiFuGHNd/qPAPLzUwYIv8=
+X-Google-Smtp-Source: ABdhPJzS6kQn2cn4I13oE+77M60tyFIAacrtZLX5Byjw07mAFfev8XsHX0wa+PG/1pvvnuyz77reTuJdKh+oSXcyvsg=
+X-Received: by 2002:a05:6830:34b:: with SMTP id h11mr14254121ote.319.1631975934194;
+ Sat, 18 Sep 2021 07:38:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20210915170940.617415-1-saravanak@google.com> <20210915170940.617415-2-saravanak@google.com>
+In-Reply-To: <20210915170940.617415-2-saravanak@google.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Sat, 18 Sep 2021 16:38:42 +0200
+Message-ID: <CAJZ5v0iM6U9_xuXjghDR+8upHA+SdZdmp2nGaOhaLTPR54BhmA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] driver core: fw_devlink: Improve handling of
+ cyclic dependencies
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Sep 15, 2021 at 7:09 PM Saravana Kannan <saravanak@google.com> wrote:
+>
+> When we have a dependency of the form:
+>
+> Device-A -> Device-C
+>         Device-B
+>
+> Device-C -> Device-B
+>
+> Where,
+> * Indentation denotes "child of" parent in previous line.
+> * X -> Y denotes X is consumer of Y based on firmware (Eg: DT).
+>
+> We have cyclic dependency: device-A -> device-C -> device-B -> device-A
+>
+> fw_devlink current treats device-C -> device-B dependency as an invalid
+> dependency and doesn't enforce it but leaves the rest of the
+> dependencies as is.
+>
+> While the current behavior is necessary, it is not sufficient if the
+> false dependency in this example is actually device-A -> device-C. When
+> this is the case, device-C will correctly probe defer waiting for
+> device-B to be added, but device-A will be incorrectly probe deferred by
+> fw_devlink waiting on device-C to probe successfully. Due to this, none
+> of the devices in the cycle will end up probing.
+>
+> To fix this, we need to go relax all the dependencies in the cycle like
+> we already do in the other instances where fw_devlink detects cycles.
+> A real world example of this was reported[1] and analyzed[2].
+>
+> [1] - https://lore.kernel.org/lkml/0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com/
+> [2] - https://lore.kernel.org/lkml/CAGETcx8peaew90SWiux=TyvuGgvTQOmO4BFALz7aj0Za5QdNFQ@mail.gmail.com/
+> Fixes: f9aa460672c9 ("driver core: Refactor fw_devlink feature")
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  drivers/base/core.c | 17 ++++++++++++-----
+>  1 file changed, 12 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/base/core.c b/drivers/base/core.c
+> index e65dd803a453..316df6027093 100644
+> --- a/drivers/base/core.c
+> +++ b/drivers/base/core.c
+> @@ -1772,14 +1772,21 @@ static int fw_devlink_create_devlink(struct device *con,
+>          * be broken by applying logic. Check for these types of cycles and
+>          * break them so that devices in the cycle probe properly.
+>          *
+> -        * If the supplier's parent is dependent on the consumer, then
+> -        * the consumer-supplier dependency is a false dependency. So,
+> -        * treat it as an invalid link.
+> +        * If the supplier's parent is dependent on the consumer, then the
+> +        * consumer and supplier have a cyclic dependency. Since fw_devlink
+> +        * can't tell which of the inferred dependencies are incorrect, don't
+> +        * enforce probe ordering between any of the devices in this cyclic
+> +        * dependency. Do this by relaxing all the fw_devlink device links in
+> +        * this cycle and by treating the fwnode link between the consumer and
+> +        * the supplier as an invalid dependency.
+>          */
+>         sup_dev = fwnode_get_next_parent_dev(sup_handle);
+>         if (sup_dev && device_is_dependent(con, sup_dev)) {
+> -               dev_dbg(con, "Not linking to %pfwP - False link\n",
+> -                       sup_handle);
+> +               dev_info(con, "Fixing up cyclic dependency with %pfwP (%s)\n",
+> +                        sup_handle, dev_name(sup_dev));
 
+Why not dev_dbg()?
 
-On September 18, 2021 6:20:10 AM PDT, Len Baker <len=2Ebaker@gmx=2Ecom> wr=
-ote:
->Hi,
->
->On Sat, Sep 11, 2021 at 12:28:18PM +0200, Len Baker wrote:
->> As noted in the "Deprecated Interfaces, Language Features, Attributes,
->> and Conventions" documentation [1], size calculations (especially
->> multiplication) should not be performed in memory allocator (or similar=
-)
->> function arguments due to the risk of them overflowing=2E This could le=
-ad
->> to values wrapping around and a smaller allocation being made than the
->> caller was expecting=2E Using those allocations could lead to linear
->> overflows of heap memory and other misbehaviors=2E
->>
->> So, use the struct_size() helper to do the arithmetic instead of the
->> argument "size + count * size" in the kzalloc() function=2E
->>
->> [1] https://www=2Ekernel=2Eorg/doc/html/v5=2E14/process/deprecated=2Eht=
-ml#open-coded-arithmetic-in-allocator-arguments
->>
->> Signed-off-by: Len Baker <len=2Ebaker@gmx=2Ecom>
->> ---
->>  drivers/net/ethernet/microsoft/mana/hw_channel=2Ec | 4 +---
->>  1 file changed, 1 insertion(+), 3 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel=2Ec b/drive=
-rs/net/ethernet/microsoft/mana/hw_channel=2Ec
->> index 1a923fd99990=2E=2E0efdc6c3c32a 100644
->> --- a/drivers/net/ethernet/microsoft/mana/hw_channel=2Ec
->> +++ b/drivers/net/ethernet/microsoft/mana/hw_channel=2Ec
->> @@ -398,9 +398,7 @@ static int mana_hwc_alloc_dma_buf(struct hw_channel=
-_context *hwc, u16 q_depth,
->>  	int err;
->>  	u16 i;
->>
->> -	dma_buf =3D kzalloc(sizeof(*dma_buf) +
->> -			  q_depth * sizeof(struct hwc_work_request),
->> -			  GFP_KERNEL);
->> +	dma_buf =3D kzalloc(struct_size(dma_buf, reqs, q_depth), GFP_KERNEL);
->>  	if (!dma_buf)
->>  		return -ENOMEM;
->>
->> --
->> 2=2E25=2E1
->>
->
->I have received a email from the linux-media subsystem telling that this
->patch is not applicable=2E The email is the following:
->
->Hello,
->
->The following patch (submitted by you) has been updated in Patchwork:
->
-> * linux-media: net: mana: Prefer struct_size over open coded arithmetic
->     - http://patchwork=2Elinuxtv=2Eorg/project/linux-media/patch/2021091=
-1102818=2E3804-1-len=2Ebaker@gmx=2Ecom/
->     - for: Linux Media kernel patches
->    was: New
->    now: Not Applicable
->
->This email is a notification only - you do not need to respond=2E
->
->The question is: Why it is not applicable?=2E I have no received any bad =
-comment
->and a "Reviewed-by:" tag from Haiyang Zhang=2E So, what is the reason for=
- the
->"Not Applicable" state?=2E
+Other than this, the change makes sense to me.
 
-That is the "Media" subsystem patch tracker=2E The patch appears to be for=
- networking, so the Media tracker has marked it as "not applicable [to the =
-media subsystem]"=2E
-
-The CC list for this patch seems rather wide (media, dri)=2E I would have =
-expected only netdev=2E Were you using scripts/get_maintainer=2Epl for gett=
-ing addresses?
-
--Kees
+> +               device_links_write_lock();
+> +               fw_devlink_relax_cycle(con, sup_dev);
+> +               device_links_write_unlock();
+>                 ret = -EINVAL;
+>         } else {
+>                 /*
+> --
+> 2.33.0.309.g3052b89438-goog
+>
