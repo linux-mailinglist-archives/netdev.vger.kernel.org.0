@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB81F4108A3
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 22:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D8864108AB
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 23:12:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239147AbhIRUxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 16:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42666 "EHLO
+        id S239290AbhIRVOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 17:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233074AbhIRUxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 16:53:17 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FD8C061574
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 13:51:53 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id g41so15263666lfv.1
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 13:51:53 -0700 (PDT)
+        with ESMTP id S239274AbhIRVOB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 17:14:01 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B39C061757
+        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 14:12:36 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id z24so22307547lfu.13
+        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 14:12:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=EgyQSOoQGXbqZDY5vmTdmtdWclji1aa8k4Dg+pV0f0o=;
-        b=SEpYwuptd5hG3QJm95kYyoOdykEPWmWM41H04iYKD9x+gej2hvZLmI9MuQSd8s9QNq
-         BFtt8Khl1a0U7BIzOb2mMeUeYORXvw3f1yoKo69QHfJASnbgDxK63qWoaCvmswBFSfMk
-         A/FZp+Rl5zIq56YhAZEa2tHT6K7SetPgVBSjc=
+        bh=yVZJu4t/IugUGV+W6kU+ykKkbEaLVPP4RIQU42du5mE=;
+        b=NO0esR917j83JwTOpZQWYClId3457L6NJIf6fJ7Evei4pDJ6w9tdhLXDN3IinOEvW+
+         VMthkeYirKlrzLR7LCf4USQHGLJ9wmo5a/QkxpfY9+CPatz4XjsnDZX+q2dIqcXYIANe
+         4/RbL5IIz9wKXWQ+bU6E9Y8mF2Wc3GAB8iq/w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EgyQSOoQGXbqZDY5vmTdmtdWclji1aa8k4Dg+pV0f0o=;
-        b=G08OL79gXKG2JPihJd7EhBZYFJhk6o9TbEns/a4PoZiz7YqaZGQ3puFmHlwVQQMXNf
-         zjIoCjfMRiw0sjLZTXqVCwV9TyPLXCWGKqhydC9X0UChIlJ2S1KpmAKLOH7So2lQHx9j
-         5taemJ1he55gR0vWtsBfiGjlCgUI/5yI9VE23YUD7pJrDM+eeoIMv80bBGSND9fyn72o
-         LHVer/m5nlDMM2YOHrcCeIDq/aIJYe+SVnrGtiKzzjlmp4c8CEVHsX2wFJDEI0R4UXB5
-         X3AS5KhO3c2VL1+S8pGIta7hQhHAikTMT5gOEV3HXvJwr5wAJYIKrmZTdOl5bh2oOfOD
-         JGkg==
-X-Gm-Message-State: AOAM532UJ8a9nkjf1us2Log1Y5WDqdnOUm38893IuRlx1b48zlcDGD3q
-        lcXUtN6IjzxCOE0WZ1b3xMvujYe4AFKq5iAH7po=
-X-Google-Smtp-Source: ABdhPJyiZmQSyzJSDdMLGThWvciyhEWEwtprVwNuar/OKgG6njmJIhnsAOI+xU00+9347glaiPnJXA==
-X-Received: by 2002:a2e:7616:: with SMTP id r22mr15214526ljc.387.1631998311187;
-        Sat, 18 Sep 2021 13:51:51 -0700 (PDT)
+        bh=yVZJu4t/IugUGV+W6kU+ykKkbEaLVPP4RIQU42du5mE=;
+        b=VqOik6RFuNqYuxYwkyGN+fxLhJ+yOGl4xDYUwpn8Y1A7nQPoUC9aqOWrLCezxGAQsc
+         o3g1VETM2YyFFbbYQoc5UB1Sh/+kV9HZDm6i54hqvayyXocWVeEqUyR2R81JCb52oe23
+         BilZetQZL+dyFzqMW8JVm9i/U0nXqWnEIguZ6rLM6jIOFJPq+YoIC59QVHqGoo/6Robd
+         olhvD8t7i1XTUR3nzQ0G1htiiztqeok4ZmeXHH2sQ/wI+Mb8dXOlowXRLvzhYiTuRAnt
+         VIPAAvMyd/ldmCpDkbQ4gRkiqMi8o420r3gd2bYC3AJDdRH48zLDMkUV5PAZgXrwhIR0
+         7Rwg==
+X-Gm-Message-State: AOAM531mhLMi4/99wpHRbrHnWfTZElR+XHRSNm1bIPuXFRnb3bDke1be
+        r3lg0tDQSTdod2oXdaGrzPUELNy0jdOpUIwr3Rk=
+X-Google-Smtp-Source: ABdhPJzI3TZPCg/9LvihxBSodn2YPZA1wuMRDARv4+jK2/+AlmwvXOIiRwsm0eIcIT56HuZgaQ9Pww==
+X-Received: by 2002:a2e:2201:: with SMTP id i1mr15321143lji.483.1631999554820;
+        Sat, 18 Sep 2021 14:12:34 -0700 (PDT)
 Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
-        by smtp.gmail.com with ESMTPSA id e24sm854745lfs.212.2021.09.18.13.51.50
+        by smtp.gmail.com with ESMTPSA id w16sm852927lfd.295.2021.09.18.14.12.32
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Sep 2021 13:51:51 -0700 (PDT)
-Received: by mail-lf1-f51.google.com with SMTP id e15so10099655lfr.10
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 13:51:50 -0700 (PDT)
-X-Received: by 2002:a05:6512:2611:: with SMTP id bt17mr13595935lfb.141.1631997986070;
- Sat, 18 Sep 2021 13:46:26 -0700 (PDT)
+        Sat, 18 Sep 2021 14:12:33 -0700 (PDT)
+Received: by mail-lf1-f51.google.com with SMTP id z24so22307204lfu.13
+        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 14:12:32 -0700 (PDT)
+X-Received: by 2002:a2e:8107:: with SMTP id d7mr16412051ljg.68.1631999551766;
+ Sat, 18 Sep 2021 14:12:31 -0700 (PDT)
 MIME-Version: 1.0
 References: <CAHk-=whY5mLggPSr2U00mqgUbRJYnYSxtNZm4FnEtQrHftYr8Q@mail.gmail.com>
- <202109182026.18IKQLng003683@valdese.nms.ulrich-teichert.org>
-In-Reply-To: <202109182026.18IKQLng003683@valdese.nms.ulrich-teichert.org>
+ <202109182026.18IKQLng003683@valdese.nms.ulrich-teichert.org> <CAHk-=wjZukwHDpm6PUP=cFTi8wWQs6Z5Np7xv7SRphNqvm0FPw@mail.gmail.com>
+In-Reply-To: <CAHk-=wjZukwHDpm6PUP=cFTi8wWQs6Z5Np7xv7SRphNqvm0FPw@mail.gmail.com>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 18 Sep 2021 13:46:10 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjZukwHDpm6PUP=cFTi8wWQs6Z5Np7xv7SRphNqvm0FPw@mail.gmail.com>
-Message-ID: <CAHk-=wjZukwHDpm6PUP=cFTi8wWQs6Z5Np7xv7SRphNqvm0FPw@mail.gmail.com>
+Date:   Sat, 18 Sep 2021 14:12:15 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whswL8vPtdVphebUwdDd2Y-9j2d8XAd35bB+mqrhc0YTA@mail.gmail.com>
+Message-ID: <CAHk-=whswL8vPtdVphebUwdDd2Y-9j2d8XAd35bB+mqrhc0YTA@mail.gmail.com>
 Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
 To:     Ulrich Teichert <krypton@ulrich-teichert.org>
 Cc:     Michael Cree <mcree@orcon.net.nz>,
@@ -78,35 +78,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 18, 2021 at 1:26 PM Ulrich Teichert
-<krypton@ulrich-teichert.org> wrote:
+On Sat, Sep 18, 2021 at 1:46 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> >
-> > (I forget which alpha I had. For some reason I want to think I had an
-> > EISA machine and probably Jensen. Maybe upgraded to a 164 later?)
->
-> Well, as this was way back in 1995, it was perhaps a Multia? Also
-> named UDB, a small "booksize" model.
+> But your config shows _other_ errors with the IO functions, so I guess
+> I'll need to look at that one too.
 
-No, that came later. I had one of the very original ones.
+Oh, and all those games with
 
-I'm pretty sure it was that Jensen platform, but I'm too lazy to go
-back and look.
+   #define __EXTERN_INLINE
+   #include <asm/io.h>
+   #include <asm/jensen.h>
+   #undef  __EXTERN_INLINE
 
-> > Can you send me your Jensen config?
->
-> Sure, attached here. I don't know if it helps - I can't tell you why I
-> used 4.18-rc5 for it, that was in 2018... Oh man, I am spending too much
-> time at work...
+don't actually work, because there's the usual multiple-inclusion
+protection on top of asm/jensen.h:
 
-I ended up hacking something up which was enough to show the build
-problems, and then some.
+   #ifndef __ALPHA_JENSEN_H
+   #define __ALPHA_JENSEN_H
 
-But your config shows _other_ errors with the IO functions, so I guess
-I'll need to look at that one too.
+and this include of <asm/jensen.h> is entirely unused, because we
+ended up getting the one *without* that empty __EXTERN_INLINE #define
+from an earlier include of
 
-There's clearly a reason that Jensen was marked BROKEN in the Kconfig,
-the whole situation with the IO accessor functions on that platform is
-a disaster.
+  #include <linux/interrupt.h>
 
-              Linus
+that caused asm/io.h and asm/jensen.h to be included earlier.
+
+The *other* machine files know to do their includes at the top of the file.
+
+But then I end up getting
+
+     ERROR: modpost: "__udiv_qrnnd" [lib/mpi/mpi.ko] undefined!
+
+because CONFIG_MATHEMU wasn't set and the crypto stuff wants the MPI code.
+
+So there seems to be other alpha Kconfig issues in there, and they
+aren't all actually Jensen-specific.
+
+Oh well. I guess can fix things up, since I did get tthe
+cross-compiler environment..
+
+          Linus
