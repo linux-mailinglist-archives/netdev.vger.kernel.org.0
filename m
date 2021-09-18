@@ -2,135 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E42BD4107B9
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 19:06:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 772E64107C3
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 19:12:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238054AbhIRRHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 13:07:48 -0400
-Received: from mail-oln040093003015.outbound.protection.outlook.com ([40.93.3.15]:4559
-        "EHLO na01-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233210AbhIRRHo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Sep 2021 13:07:44 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EzYtJ6ZJEZF4X6Kd6HcT0jFs6OZgzrBzv9QlZ9e/gFU5VuWyH3TzWgVmFQNo/lvdM8sqU8C6q6MsTf4RbpN9ZF2UVkj5GC7Eyaw31yLfYTSvQWJJPaIUBGoVEFzrEuS3ejaulhJs2HDLXkJSpk8vdLQOwbOVnzEDS2OhhbqbpGQOoryRrtgSiAYpc5ckBdsm7QeqYrroAN4P8dU4rCJmi0XhyuAow0a+sAw3fdBA8hmJSL2ogTXFZdEgw7FqL3XU9r8UaPYAsPACK/yvq7wDE8zuGR8jCBUh8gDTKFYCDDoQ7ob+4b5MFsQ6ASpr7HCfVUfvfiyioDQ+g46ju4E3aA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=XO/weqKAmKC2sogCtXWVk1NVPOtDM6CB+7KbNm4DiGw=;
- b=OAqZcN4itxyFlueL8gS7zopBI4XY1FXbJMd/7gnKvp377zqBsmwo8eX06JsxhJ9e8n8SQSKqO9lyef3uGvycM44OkJV05SAFFLqDVZvcIETN72jjiu1hk7yAHUeRf/KbOZh1EWpX8LN+t8FCxoP72l9Mtdx5zV2zDwi2iKkMZ25f1wxgNStXp4HFDLXwL2fU7NO0YvzVSJV5vJzVDM0wnQYDzCcXehsW3HK+N7+HjI6WhQyokhF/lIz9reoea79qSUKm3ZS4tRN+3BO1w6TqGT46oZJoArlyZejbl+pqJVa50tzL8xHfeQeYcn6Gm+PvAHJoWbi+46l0QhFhMsxA6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XO/weqKAmKC2sogCtXWVk1NVPOtDM6CB+7KbNm4DiGw=;
- b=NunsGhn3H62eBbxXz3W0INPY29LV/N67oGtMhURLNjvTrQvpkvXfV6/QMXYggSv5hvpWXyLkeDbfLNU2aFiOFg0KnEmaoJ9zyx0h9C4r/wlgJ1+Y6ao1RJzexaFgo3e49kbhjPEi0g+5UuiL1cuWFVCyfPy1mN8wu/v141M+7ok=
-Received: from BYAPR21MB1270.namprd21.prod.outlook.com (2603:10b6:a03:105::15)
- by BYAPR21MB1142.namprd21.prod.outlook.com (2603:10b6:a03:102::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.9; Sat, 18 Sep
- 2021 17:06:17 +0000
-Received: from BYAPR21MB1270.namprd21.prod.outlook.com
- ([fe80::e56b:9b01:9633:78c0]) by BYAPR21MB1270.namprd21.prod.outlook.com
- ([fe80::e56b:9b01:9633:78c0%7]) with mapi id 15.20.4544.011; Sat, 18 Sep 2021
- 17:06:16 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Len Baker <len.baker@gmx.com>, KY Srinivasan <kys@microsoft.com>,
+        id S238337AbhIRRNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 13:13:45 -0400
+Received: from mout.gmx.net ([212.227.15.19]:44729 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233210AbhIRRNo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Sep 2021 13:13:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1631985125;
+        bh=HaaOH1N5B34fUsGwuYxHkOP8Bmo2FI+Nxh0L4luHKr8=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=VB7DZQsSQo3NdthY+tY5Lzk2zptqyURBOMmdUSo5Agucie2GLm8aROBoioKi0lKvD
+         Ld0DnLhHissWEqrg7drrzOVbytBJyYGOyLxJ3qg2tzLEjpw/pEc89piEVlG0qFH81L
+         TTNjPM3g0mTe/KElMKvOXjWbqSwUF9dVX+7en8AU=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from titan ([79.150.72.99]) by mail.gmx.net (mrgmx005
+ [212.227.17.184]) with ESMTPSA (Nemesis) id 1M8hV5-1mWIaL2lUX-004l1v; Sat, 18
+ Sep 2021 19:12:04 +0200
+Date:   Sat, 18 Sep 2021 19:11:47 +0200
+From:   Len Baker <len.baker@gmx.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Len Baker <len.baker@gmx.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
         Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Sumit Semwal <sumit.semwal@linaro.org>,
-        =?iso-8859-1?Q?Christian_K=F6nig?= <christian.koenig@amd.com>,
-        Kees Cook <keescook@chromium.org>
-CC:     Colin Ian King <colin.king@canonical.com>,
-        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>
-Subject: RE: [PATCH] net: mana: Prefer struct_size over open coded arithmetic
-Thread-Topic: [PATCH] net: mana: Prefer struct_size over open coded arithmetic
-Thread-Index: AQHXrI/1VJuJVYedPEudSKeULZsdEKuqBYFA
-Date:   Sat, 18 Sep 2021 17:06:16 +0000
-Message-ID: <BYAPR21MB1270797B518555DF5DC87871BFDE9@BYAPR21MB1270.namprd21.prod.outlook.com>
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org
+Subject: Re: [PATCH] net: mana: Prefer struct_size over open coded arithmetic
+Message-ID: <20210918152604.GB15999@titan>
 References: <20210911102818.3804-1-len.baker@gmx.com>
  <20210918132010.GA15999@titan>
-In-Reply-To: <20210918132010.GA15999@titan>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=7f8b8111-1a02-4b74-b775-c4b2eac605e3;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-09-18T17:05:00Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f4abae2d-1ce2-42cf-2acb-08d97ac6a0b6
-x-ms-traffictypediagnostic: BYAPR21MB1142:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR21MB114246C70ED794714AFEB6CEBFDE9@BYAPR21MB1142.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:257;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VD/G3To4uTnw8rnJvDjYKA5A+WGouct77MFHuuEq3hu28oV850Nt8w9W6CM6PzzYbsZNeiI//i2Q6ZiMJz9im/nJyLTei+juLPEd6NaCVJqw3CTkZ2rnH0NyKvPgDxB+vvNGXvdcwK6GlnxWElg66Fo27fld977SOmCeeSSaPNModti3CPH0A7xYT+U6VCvd4KO1xofGmpHIEmzDesjoT20s3ck2aSA5M9OzpX2nJQ4jyibrp4ugcgdcVpe5BeqVUT9zNoXfIV0RCiDe58Clh4ARTfpVbApedQkVbGXtaC9f4WyUVzNqQ9FyMG2kNB1/b2nBiNyVOhLbjkMMCyQ/gRnQODdynqkha/cDq6mS/soAB4NFxCqZFwzR2mGvNZA6vyopxDfXmtamplz4BcWkcrv+/RqNvMCsCOVLzPojhipgAuFhDNvShmv2An5R1V4WEjlv1TnzD8FowIw79q9xjwbmhZEr/5h7UxbQOhBx1HDam0/Ntw304wkXRPfxSZNPll3yEwhu394JtVuRxB+C+U4vH/xiJy0JcAs30IDtEolF4jXBd4wabOXyP1FT6JcDHc2LUMbisXaD9qs5S1zBA48Di2eHoQYEQKSVbkc6JKDiLXxjbaFsG+zbTqnl3gh64kC20y9PdrGOGPpA4RFMd7IrOAlqtJLO0AELH7ExlG/xA0Icb8qGsrRNq9n7uLh81HYs8rl7a7xLPyaC8y47ex9EaCWOt3ryYxPnheo2pvJpW+MvFcW4Ee8D4Q/34tfiUWPnzAYfoD4zwyKKYEUx0GcYvdR2nanx4fFa5lPHpEGYWjoNBYCAr/iPawOXY9xG
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1270.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4744005)(316002)(8936002)(9686003)(26005)(66446008)(55016002)(8990500004)(4326008)(8676002)(66946007)(7416002)(38070700005)(71200400001)(54906003)(7696005)(64756008)(66476007)(66556008)(6506007)(110136005)(2906002)(10290500003)(966005)(76116006)(52536014)(921005)(86362001)(508600001)(122000001)(186003)(82960400001)(33656002)(82950400001)(5660300002)(38100700002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?fgKLOm0FDaNO33FytolhtJVqpkmk4aEDBn4BIZj0ikyjT49KcCLUBM9tKu?=
- =?iso-8859-1?Q?T63AA3SAHY3/qOxHXS4XyAhxFh+RyTp1vveVsOqcc04ECX/LtL4hVsLVjO?=
- =?iso-8859-1?Q?9jM0LWao8a0HnKdjNah3aY95M0FIpTxqxaRyCJ3bQeRaz4LOhalr9AdOkP?=
- =?iso-8859-1?Q?kujqVJityVh/BpACmuPbjWMk41mQO3GTifhfGXkIdEdD8FGVqTHiYJS4tw?=
- =?iso-8859-1?Q?kRp6LaINPT5HWTC9Deyb/i1LafMve7y54b13dh4suiBJcotq7cINHhUp1b?=
- =?iso-8859-1?Q?tRSsuOrWtcmK4b4JbjdUBHEntsqHwUgVeS426tbXe6UfHABe1kLJli9yqS?=
- =?iso-8859-1?Q?f3BVymziVYUkd7VMqdEIKSOvIN2QJnjigyqw2XEKp3vBAxwpSgwngqz4fL?=
- =?iso-8859-1?Q?/5tffWDjkeS85lMgjlX4yyFzp9eR0azhaVy480bVaXABQXyxeK1BP0CieE?=
- =?iso-8859-1?Q?hLF72SlGhhUmBFwqPFMYK+d4mAmiFuXkQ7fGPnOB46ApAECG1CAD/xJAuw?=
- =?iso-8859-1?Q?ikx6PF31ThYG5MgjcoH3lyMhHO5+f95GnsxXDDkiFcnVDzMbdSCehA2sVx?=
- =?iso-8859-1?Q?5om9ySHcuoKPmgTxslX3aoUyhdIrwuVZ6eCieoPUeKZD24JyuArOpO/Gdy?=
- =?iso-8859-1?Q?tzsCdIkndnBNE/X164KmSz7zUFySIzMdb/qF98KevIAvWq47lDTntZLeGG?=
- =?iso-8859-1?Q?wGyQsTSOZoEBnnyzIz3CInzgX4g2dL9LXoVHC0xeh0MKKfV3p9ZSmRVXCQ?=
- =?iso-8859-1?Q?T5n7riJLL0+NY1Zm1wBgPbP64VKJ1krjo+PESpYk8Lqm63pCj7sxMP2MG+?=
- =?iso-8859-1?Q?wKk0BHaTtTsOSAK+ylDiOA08m+M8xeEyufZCO+h92Ur8VNeKmmvjKovt2N?=
- =?iso-8859-1?Q?6tw5hQtWdsZaw1F/8k93yx2z3X001/GmUHiGN2Nq1o0lFXpDfbtAsS1UEv?=
- =?iso-8859-1?Q?YOmEAUyMDkOd4yWZThSzfrFGTCYf2Xk9PiCS+FpZPZgCKnX3NnKhEkI458?=
- =?iso-8859-1?Q?gCkOSnRuLBQKi/UPPfILvYR7emcqzzsRtE+PwcyxlWZfa2UbG0Y5Y+4f7P?=
- =?iso-8859-1?Q?GqVxMX6fMdQXdy9vpSUW1rGLKeTa4p3gVGq9ydS654qUptWpN4i4XN9tKN?=
- =?iso-8859-1?Q?d056yjmNiByK3mi+0rXwUn35xO4dIjx5gOXnvg35L/b87FPad4PUkvNt4A?=
- =?iso-8859-1?Q?lz0XlxQtNWmzq8CQP1KzYqarVLVDgXhOXE8KUtKJ1d+qXWU3y/vptB5Qba?=
- =?iso-8859-1?Q?6Z5jpn8hlLytkg0YCzxGs0tj/ktfduek2kfY6LKXbCGTCA9ipkUOx/Koor?=
- =?iso-8859-1?Q?GzwmbzJr3+yyaA9CdwEzG+KV849kto1cgbDs6OH3nAmoAOJgBfqPUc8KZP?=
- =?iso-8859-1?Q?ou4Xcg2e9M?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+ <D81D1EE2-92A0-42D5-9238-9B05E4BDE230@chromium.org>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1270.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f4abae2d-1ce2-42cf-2acb-08d97ac6a0b6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Sep 2021 17:06:16.6043
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EQl2uMC5qrAZ/iENv2zUWc8Q2LISpyYvPuUOIf6mxZA33uwkbVnlqdtqMqRNtFZq+Fjf91ktU29mYk1E8ndVmA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR21MB1142
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <D81D1EE2-92A0-42D5-9238-9B05E4BDE230@chromium.org>
+X-Provags-ID: V03:K1:/jOFZgiazp1Mu4q1yJZMZHCqZguWrTCVgOiUcRwDstkREyaTGYs
+ UBQwp8eIVfvNPaQRfAJFF6LevZRZFI3xZ7MwzMmBLXd1W+g/m5XnL7waXh0U0kTdndpmAi0
+ ep8beAtJmIfSZXxkf5ZwEUPtSYRTGnVO38vTd3E9Hlc/eloGCAHpZj4eeqnyIixDxUm7vwb
+ h6tbGt6bwtugEagOhPyqw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:4M+R8W0zYpQ=:FygVzFs7OR1agH0Yq+kqbo
+ 4yXp3xJ45NY4137+M42bmwT+MbhbJ0gdkcvFzqOqph1/eLu8KfjQNG6U4FE9XtJiC1sSCxdNW
+ EaufVRWhjFaqnoorFfuL9EVRZH7P7TkwnjcfrDZFLcu/1h1zopwG6y4FkcZOZkxk0juI65Y4A
+ WjzLJj+NfCR10KLu37ov9IZGJ+Q/30nFgC0dQ/gQXYcMxe9e784tPXZN0/kdwrjB0nfu6XRXQ
+ 2ZuzQIcW7PNfpl+RwMalhB8F+zffRXsJKZPc32CwByUD9+FLsMRUWEJv1IK3VdZzjXFL0mhBD
+ U9be7KyiyTTldxEjrJPDRSgWcNLDb/zr5cpMo827V1uzexubCxYgrbX5+gigQQ/p0cBfUs421
+ qvxH+F10bxectyJ9DisLbsYTx04tO36WbLKZ1dtN4QvcbzMeDsiUTVcTWBzPEM93Il2ERzZDN
+ 93wmvaFCe3p38Ihg6h+E75ndNbMScdzS1PInTaJ7GAh0rsxMqdUuc27M7qzsqJcWFV0LAis+V
+ TWXqh1Uf7wk6dQ9rpiAHZjsfZrO9bTkD5a/faEQbpkH1vC4AHtydAbNzwTY5uubOj8uLZ9MbY
+ 6anjM+JsE0XYCGgvaxeQoFkdbW+TP3LO6i6NeQ4ifONktoaMAjW8D+8hGzSIuyoYJ9SHgRLc/
+ VIyr/mORl/sE1edb5tClgyOVEyaXz6/pHdD5QjpzT91ISUXJdtMsqpEsX24DQaO/Jhh/7m2Rt
+ tmNp3MoQeutCBpKxwWBjy1mTBUnPkG1lHUiWWpC3vm9mZPgsVoHTuC7RkZ0h2XcqE82B3mOOV
+ cfRegKZakpuFCCJ4vtOe6Pm7Q68C5wFFCRmPnfQcprgnnIECvazOq2VEaS/YEtctIV+08BSjs
+ 1FOxrecBbk0+gCKqzDR2w8D+2kvagp+vz+VJvR2+LwWRPjHgJW+Q/JjylBMEK8Bj56dNMkydi
+ TBKvRa7/lp1mUKg4Aak9PeyvqUFz/GZK1sYg3JAnmEyKgADMCV3MSyW6KWijB9lxp9fJtI+bZ
+ 2Z3i4YDjxzyt+SfTI18TVMJ8NW2ti2a1PussYNfR0/ZxbZteypJI16nT5m5IGWPzZJi4l0o8A
+ ze7E3OPLoamLG0=
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Len Baker <len.baker@gmx.com>
-> Sent: Saturday, September 18, 2021 6:20 AM
->  ...
-> I have received a email from the linux-media subsystem telling that this
-> patch is not applicable. The email is the following:
->=20
-> Regards,
-> Len
+Hi Kees,
 
-The patch is already in the net-next tree:
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/=
-?id=3Df11ee2ad25b22c2ee587045dd6999434375532f7
+On Sat, Sep 18, 2021 at 06:51:51AM -0700, Kees Cook wrote:
+>
+>
+> On September 18, 2021 6:20:10 AM PDT, Len Baker <len.baker@gmx.com> wrot=
+e:
+> >Hi,
+> >
+> >On Sat, Sep 11, 2021 at 12:28:18PM +0200, Len Baker wrote:
+> >> As noted in the "Deprecated Interfaces, Language Features, Attributes=
+,
+> >> and Conventions" documentation [1], size calculations (especially
+> >> multiplication) should not be performed in memory allocator (or simil=
+ar)
+> >> function arguments due to the risk of them overflowing. This could le=
+ad
+> >> to values wrapping around and a smaller allocation being made than th=
+e
+> >> caller was expecting. Using those allocations could lead to linear
+> >> overflows of heap memory and other misbehaviors.
+> >>
+> >> So, use the struct_size() helper to do the arithmetic instead of the
+> >> argument "size + count * size" in the kzalloc() function.
+> >>
+> >> [1] https://www.kernel.org/doc/html/v5.14/process/deprecated.html#ope=
+n-coded-arithmetic-in-allocator-arguments
+> >>
+> >> Signed-off-by: Len Baker <len.baker@gmx.com>
+> >> ---
+> >>  drivers/net/ethernet/microsoft/mana/hw_channel.c | 4 +---
+> >>  1 file changed, 1 insertion(+), 3 deletions(-)
+> >>
+> >> diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c b/drive=
+rs/net/ethernet/microsoft/mana/hw_channel.c
+> >> index 1a923fd99990..0efdc6c3c32a 100644
+> >> --- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
+> >> +++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
+> >> @@ -398,9 +398,7 @@ static int mana_hwc_alloc_dma_buf(struct hw_chann=
+el_context *hwc, u16 q_depth,
+> >>  	int err;
+> >>  	u16 i;
+> >>
+> >> -	dma_buf =3D kzalloc(sizeof(*dma_buf) +
+> >> -			  q_depth * sizeof(struct hwc_work_request),
+> >> -			  GFP_KERNEL);
+> >> +	dma_buf =3D kzalloc(struct_size(dma_buf, reqs, q_depth), GFP_KERNEL=
+);
+> >>  	if (!dma_buf)
+> >>  		return -ENOMEM;
+> >>
+> >> --
+> >> 2.25.1
+> >>
+> >
+> >I have received a email from the linux-media subsystem telling that thi=
+s
+> >patch is not applicable. The email is the following:
+> >
+> >Hello,
+> >
+> >The following patch (submitted by you) has been updated in Patchwork:
+> >
+> > * linux-media: net: mana: Prefer struct_size over open coded arithmeti=
+c
+> >     - http://patchwork.linuxtv.org/project/linux-media/patch/202109111=
+02818.3804-1-len.baker@gmx.com/
+> >     - for: Linux Media kernel patches
+> >    was: New
+> >    now: Not Applicable
+> >
+> >This email is a notification only - you do not need to respond.
+> >
+> >The question is: Why it is not applicable?. I have no received any bad =
+comment
+> >and a "Reviewed-by:" tag from Haiyang Zhang. So, what is the reason for=
+ the
+> >"Not Applicable" state?.
+>
+> That is the "Media" subsystem patch tracker. The patch appears to be for=
+ networking, so the Media tracker has marked it as "not applicable [to the=
+ media subsystem]".
+>
+> The CC list for this patch seems rather wide (media, dri). I would have =
+expected only netdev. Were you using scripts/get_maintainer.pl for getting=
+ addresses?
+
+Yes, my workflow is scripts/checkpatch.pl and then scripts/get_maintainer.=
+pl
+before sending any patch :)
+
+Regards,
+Len
+>
+> -Kees
