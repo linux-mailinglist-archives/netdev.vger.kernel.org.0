@@ -2,98 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78DA1410763
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 17:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A894C4107BF
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 19:09:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239779AbhIRPrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 11:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33132 "EHLO
+        id S238151AbhIRRLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 13:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbhIRPro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 11:47:44 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4A5C061574
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 08:46:20 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id t189so5909995oie.7
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 08:46:20 -0700 (PDT)
+        with ESMTP id S233210AbhIRRLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 13:11:17 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB13C061574
+        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 10:09:53 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id bq5so47102515lfb.9
+        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 10:09:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=GE6cCY/0hnI+CqkRsz34r3mZcz58ATQdIipjSK1xhAQ=;
-        b=Vxp1kE7cd1StoHeMhzP5eAVLWr5jnmtE21iSjjQ9iH8QrXE7KPcvo3NdT/uGnQCBkT
-         rmm/pVtglQodO8wWOQFB8YG9OXSwse/j2VS0+yir5wBmS7DxsOFzUwgaFlSHFX9w45H5
-         +qd5FYYIY+/YmpmHUBAJ30k6Y0EG4QGkQIQb7AE+GGU44YXqBbpCxdZej6ipVNnHkONb
-         FUorEgoG/EkyVni1FVHSM5jGGGAVETtqTaIaellx63h0tKiv0fsFQn/tpR6HDxJmN25b
-         10NXPoGwOiaEXgv9IRm9i5tMGhuoR8QK2dQLTJecv1on71CrNBhPpHfwd8Kt8CRt9l+K
-         1bfg==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=StUaahVx5e7+NokI5/qGGzRBPBdQYp4qliDoUWcQ+NI=;
+        b=O2VVgZ/0BYoSNWucGr1isvjpQO49OJDF6pzVPSwvw//fNoDVP6xUldb1YiKIncajMB
+         iQJJAmxcMdy4SuMhhkT7Zk59C6pD0MGNxyFFsrHY6L3H6c56+67tvszfXITs496M24VY
+         8lGb3v+QzA+t9z0ONhrXILrIVYnVmAonIk2YQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=GE6cCY/0hnI+CqkRsz34r3mZcz58ATQdIipjSK1xhAQ=;
-        b=6UvaqYItxqjR6WP8bvODU6zNBQYUmkN8HM0N4vCE67dFtLBo6RAjsWKJGYdYC/cWJO
-         D59praCi15NKGKmTS37pYjUDlj02EtyLGl2Ihnk/DhKOzRwEEx17wh/xfixvPLyAqVuu
-         V3s++bBDIDV9hy44eX/er1BVolcxZsd2vhCbQ8Fswa8hABTrAiX7sOtVQFqLao+wk9/W
-         1lhNfSwuGHPlLPkpXXtBJqRMvcCaXWjuK+B77MQ7lM9P1WoF7q/R1rvMuXZGdPcvmlIf
-         5/FlNIAT20Tr67CXjIEOenHkSS6WcZqeF6Tximo60krkYc+9xnziJoqDgGZbhZ3D4DW6
-         BVXQ==
-X-Gm-Message-State: AOAM5310C+Wa+xnuFJL6thbZwzHboY8/UeqsIDs2adkf54FTd1ZoR9sX
-        aAmUU/1Ev6UYxvcMPXJMxvIZU/z2eLFd+OM/jHQ=
-X-Google-Smtp-Source: ABdhPJyl08+8Xp63qOr1W/L84+FFd63wHRIdjl4OQb5cgxo6vrySH8QUczk4HMIosSyGWhoWLs1ffRE8T0alDeuxBEE=
-X-Received: by 2002:aca:2116:: with SMTP id 22mr17258194oiz.170.1631979980226;
- Sat, 18 Sep 2021 08:46:20 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=StUaahVx5e7+NokI5/qGGzRBPBdQYp4qliDoUWcQ+NI=;
+        b=WGSfOf4Ly48vMrKGjV2BmT957eDxpEGEISwiqlP9TfVtSsCLhT2UolOSCkk0jmDMhn
+         fqsapTw8bgJUiEriGiBlQ89bPrpycX5fYsotAdLfDcC04DAsY+LwDnJsxipWY8HAUeMl
+         Vu8aKmLedu4w+v9AdXyolpfRu6sjIABn2Q07d61JpjNkVzPDlxdlCzwncRiXoratOg3Z
+         dQzg6/apsZDwfXqN/C+2kprdPVbLoNg6TDZoc42A3W7ZdXQsickXe+8C0FpufJTRHa0a
+         SzqDWr6dWFnP7tZl19ZVbY4GIZw++XF/cPmZMzKFLyFjBfpmRDfLbMkRCTfSAbxTMfM0
+         VGtA==
+X-Gm-Message-State: AOAM531V4ADFfw0Hs0i6p0WR76o3jdvv7MyH9A9QihScRi7Btfnd/gWe
+        aDZEl5r+HC7dG31WxcrSV2scNrUxIbkNzreZQD0=
+X-Google-Smtp-Source: ABdhPJxiYxkkVybEHHQbtFBP6bBrsFdnPphVKLTT7BNxO5tFVxI3NbFtDS0atck6Cnlw81kelGQeSw==
+X-Received: by 2002:a2e:86d1:: with SMTP id n17mr15569975ljj.237.1631984991042;
+        Sat, 18 Sep 2021 10:09:51 -0700 (PDT)
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com. [209.85.167.44])
+        by smtp.gmail.com with ESMTPSA id a18sm1088756ljd.4.2021.09.18.10.09.50
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 18 Sep 2021 10:09:50 -0700 (PDT)
+Received: by mail-lf1-f44.google.com with SMTP id c8so46769918lfi.3
+        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 10:09:50 -0700 (PDT)
+X-Received: by 2002:a2e:7f1c:: with SMTP id a28mr14383582ljd.56.1631984677088;
+ Sat, 18 Sep 2021 10:04:37 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a4a:96d3:0:0:0:0:0 with HTTP; Sat, 18 Sep 2021 08:46:19
- -0700 (PDT)
-Reply-To: drabrarzebadiyah@gmail.com
-From:   "dr.Abrar Zebadiyah" <zarztoisn@gmail.com>
-Date:   Sat, 18 Sep 2021 08:46:19 -0700
-Message-ID: <CACwuaXEqqbixCBdgCQESRdUYgg1np3oU=28ztCHmbp3s1c2MAg@mail.gmail.com>
-Subject: HELLO
-To:     undisclosed-recipients:;
+References: <20210918095134.GA5001@tower> <202109181311.18IDBKQB005215@valdese.nms.ulrich-teichert.org>
+In-Reply-To: <202109181311.18IDBKQB005215@valdese.nms.ulrich-teichert.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 18 Sep 2021 10:04:20 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whY5mLggPSr2U00mqgUbRJYnYSxtNZm4FnEtQrHftYr8Q@mail.gmail.com>
+Message-ID: <CAHk-=whY5mLggPSr2U00mqgUbRJYnYSxtNZm4FnEtQrHftYr8Q@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
+To:     Ulrich Teichert <krypton@ulrich-teichert.org>
+Cc:     Michael Cree <mcree@orcon.net.nz>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Sparse Mailing-list <linux-sparse@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-My Dear Friend.
+On Sat, Sep 18, 2021 at 6:11 AM Ulrich Teichert
+<krypton@ulrich-teichert.org> wrote:
+>
+> Hi,
+>
+> >
+> > On Thu, Sep 16, 2021 at 11:35:36AM -0700, Linus Torvalds wrote:
+> > > Naah. I think the Jensen actually had an ISA slot. Came with a
+> > > whopping 8MB too, so the ISA DMA should work just fine.
+> > >
+> > > Or maybe it was EISA only? I really don't remember.
+>
+> It's EISA only. I've made some pictures of a somewhat dusty inside of
+> a Jensen with 4 EISA cards (from bottom to top: SCSI, video, 2x network):
 
-How are you and your family Today? I hope all is well, and I am happy
-to share this transaction with you ,but you must keep everything as
-secret and very confidential.
+Ok.
 
-I have a very lucrative business transaction which requires your
-utmost discretion. Please understand that you and me, are to work as
-one team to inherit this fund, hence I am your insider in the bank as
-the transaction commence. I advise you to feel free with me for all is
-going to be well with us. This business is 100% risk free.
+Looking around the config options, there _are_ systems with ISA slots,
+but it's not the old Jensen one. It's apparently some evaluation
+boards but also the "AlphaPC64" one.
 
-Though, I know it would come to you at uttermost surprise unbelief
-because it is virtually impossible to know who is trustworthy and who
-to believed I am dr.Abrar Zebadiyah sum of $10.5 million is lying in
-our bank without claim i want you to help me to claim and receive it
-to your account in your country for our benefit.
+So we do want CONFIG_ISA for alpha, even if not Jensen.
 
-I am aware of the unsafe nature of the internet, and was compelled to
-use this medium due to the nature of this project.I have access to
-every vital information that can be used to transfer this huge amount
-of money, which may culminate into the investment of the said funds
-into your account or any lucrative company in your country.
+(I forget which alpha I had. For some reason I want to think I had an
+EISA machine and probably Jensen. Maybe upgraded to a 164 later?)
 
-If you will like to assist me as a partner then indicate your
-interest, after which we shall both discuss the modalities and the
-sharing percentage. Upon receipt of your reply on your expression of
-interest, I will give you full details on how the business will be
-executed. I am open for negotiation,
+> I could not get a recent kernel to boot, but it's booting ancient kernels
+> just fine:
+>
+> Linux version 2.4.27-2-generic (tretkowski@bastille) (gcc version 3.3.5 (Debian 1:3.3.5-12)) #1 Sun May 29 18:40:58 UTC 2005
 
-Thanks for your anticipated cooperation.Note you might receive this
-message in your inbox or spam folder, depends on your web host or
-server network
+Ouch. Without having some kind of bisection, I guess we'll never know.
+And I assume it's not really been tested since, so it could be
+multiple reasons, including compiler updates causing dodgy code to not
+work etc etc.
 
-Contact my private email only if you are interested (drabrarzebadiyah@gmail.com)
+> While we're at it, during my vain attempts to get new kernels to boot,
+> I tried to disable PCI support to make the kernels smaller (after all,
+> the Jensen has only EISA, so what good would PCI support for?) and
+> got it to compile with the attached patch (which fixes some warnings,
+> too).
 
-Compliment of the day,
-Regards,
+Can you send me your Jensen config?
 
-dr.Abrar Zebadiyah
+I do not see why you should be using that horrible __EXERN_INLINE. It
+will cause gcc to sometimes not inline at all, and not generate the
+out-of-line body either.
+
+Sometimes that is what you want: you want to generate one single body
+of the function, and particularly one that is _different_ from the
+inlining case (ie for inlining you want to do the simple thing, for
+out-of-line you do something fancier).
+
+But that isn't the case here, so this looks like a workaround for
+something else. But this code does end up using preprocessor
+concatenation etc, so I might be missing some case.
+
+             Linus
