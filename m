@@ -2,96 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C36CA4107DB
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 19:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE4D4107D4
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 19:26:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240045AbhIRRbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 13:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55758 "EHLO
+        id S239439AbhIRR2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 13:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235682AbhIRRbo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 13:31:44 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44162C061574
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 10:30:20 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id v24so42630450eda.3
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 10:30:20 -0700 (PDT)
+        with ESMTP id S236861AbhIRR17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 13:27:59 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8BC0C061574
+        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 10:26:35 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id z184-20020a1c7ec1000000b003065f0bc631so12402646wmc.0
+        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 10:26:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=VJ9K4Ss0fO8sq3w3fi+s1XQy4Iv3mwXh4Uemm8nutng=;
-        b=HtuwRZUCtjojC6VdTZELWNXgY00qcbptQey5+LTejhwWo5g8CMmknjSym9G74RH6Ma
-         oPcVOCFM0bvoDz0JDWFOmLoHw2mzTecjQrEShzwr3fyltdeg/Yk3k9bXEJyFI8+DILmo
-         Zn76QBbRztSInJyQGaDYETcYPmfh81XD1W72o=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uIXzIXgdUYqhwvmKzpjDhIHlxjzpeck0H6TcPCSjnJI=;
+        b=ANbk3iqIPgNL+0qbg4mgInziCUrLhFbxZeEGXHz8X5MCgkOog+F47HfZsfXt4q8kCd
+         jNr6OglziA6qLqjldrRYLyvUYHVQBa9xxvbNNVbxcPebuYuo+HKVUk3e7bMQJXy5iEj8
+         hoslYoiAhAQrO0Dl00JtMJwlVsQzYl19Gm96M5z/OedRqGcbzhCTiJaPYYAmmyJFpyAj
+         kRu1boruvNtuUfsbHWLsGM/Mmh5hFp/QuEGqu+9ztybnD/xZbFV2cCa5opMIJl6GezP7
+         GZC66bzevSfYBNEQfU71ZydwooF9wXwQ65VSqGb6m3XmyUEpT42M44olaCQV5JLyDP2v
+         lUkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VJ9K4Ss0fO8sq3w3fi+s1XQy4Iv3mwXh4Uemm8nutng=;
-        b=7t2b5wDCvyLSrTmtuc+wV51/qQ0swoH5Un7olkyQ2RWIKGCAXaCOdUOVtj9d1+2nnd
-         sXcq3Of96jxVWdKXUZGbPKQDerxKvd8Ow030GcQMWB2UtReU8tp6Fm/Ys0lwvKwBW0r9
-         iB5ZfsvQvhS2ZvfHlLqF8vDpLYTqR4G8p7fWnlhBFdXj80GNRfcRyg4Nyh0XGs4lPs0L
-         yLbNYwUBN4AUHtPDB8nmwHowozIWaUefOwxZcanD3DLSxIZAhqh6jsUSoSA0bAJtRCzK
-         bI6tt7KX6XK9JzgWary+w9fHknjqBqN/+QIlXv5/g7EaG2dMef9VjkIpHkSSHy9B8vJ8
-         aVjg==
-X-Gm-Message-State: AOAM5310Y8PzDWCUVvFgslkPzIrVJ++nEPLx+9SPbeUbGS69EMh4tY6I
-        HTzYOYYVmTPpuIxDs5Z84At0tbcY1Y3C/hSTu3o=
-X-Google-Smtp-Source: ABdhPJxt/CAFEjGVxlodo4otfX6swiSP8165TBDDkIsAuY2PFp4Rdqyb/j4DqbHGET96fbOv9CP3Wg==
-X-Received: by 2002:a17:906:c1c9:: with SMTP id bw9mr19325102ejb.3.1631986218662;
-        Sat, 18 Sep 2021 10:30:18 -0700 (PDT)
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com. [209.85.208.54])
-        by smtp.gmail.com with ESMTPSA id a5sm4675625edm.37.2021.09.18.10.30.18
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Sep 2021 10:30:18 -0700 (PDT)
-Received: by mail-ed1-f54.google.com with SMTP id eg28so19768290edb.1
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 10:30:18 -0700 (PDT)
-X-Received: by 2002:a05:6512:94e:: with SMTP id u14mr12398440lft.173.1631985720656;
- Sat, 18 Sep 2021 10:22:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210918095134.GA5001@tower> <202109181311.18IDBKQB005215@valdese.nms.ulrich-teichert.org>
- <CAHk-=whY5mLggPSr2U00mqgUbRJYnYSxtNZm4FnEtQrHftYr8Q@mail.gmail.com> <56956079-19c3-d67e-d3f-92e475c71f6b@tarent.de>
-In-Reply-To: <56956079-19c3-d67e-d3f-92e475c71f6b@tarent.de>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 18 Sep 2021 10:21:44 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgj=fFDt6mkiOmRs7pdcYJSibqpVvwcG9_0rbVJEjBCsw@mail.gmail.com>
-Message-ID: <CAHk-=wgj=fFDt6mkiOmRs7pdcYJSibqpVvwcG9_0rbVJEjBCsw@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-To:     Thorsten Glaser <t.glaser@tarent.de>
-Cc:     Ulrich Teichert <krypton@ulrich-teichert.org>,
-        Michael Cree <mcree@orcon.net.nz>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uIXzIXgdUYqhwvmKzpjDhIHlxjzpeck0H6TcPCSjnJI=;
+        b=a3XXJlWRxvTPDqm5T1sz/21faUrjrUm26oYQKVanXF2i809gcls/ykHc0NSE3Gx4Cf
+         CqVhwqT1llUTnohNtAZumJyN/FZYczEJ2hoN6oFtgPDohQYPZErkwS3yImdFjfdjux3b
+         jKHIeVs7H9TeN6PH4WXjJkcMjjVWHIVu2o7aeVA3foW9jAP/fz3mHrxh2J/YEPrc6FCM
+         WqsCKI9ELJajEwt6/bow6jGl/DDk++kg2mL4Hjff/ZsHaJ1hh1HSLi4c7tsek7J75e+5
+         TO/KDmIyeNBeysAyaOr2zDQyF6Illq6RuuuUX5E7ASQQlCw66soEr/cBcfYeWLNkgFsT
+         VsDg==
+X-Gm-Message-State: AOAM531jAwGIyvM6Us+x4zfARE+7O6q8lXKRtK1gED4Ayhxd8W7tJv4G
+        rlXQYMt4FRJPsKuL2XDWSD0OQ8liZM4=
+X-Google-Smtp-Source: ABdhPJyUlFojfO+1k6VeDSrqZtFGfwZHZ2uVzObmGbJZYGmNQNFGyLi74CH1dBQf/ZE2HMNFHa3lmQ==
+X-Received: by 2002:a7b:c191:: with SMTP id y17mr16328994wmi.122.1631985993479;
+        Sat, 18 Sep 2021 10:26:33 -0700 (PDT)
+Received: from debian64.daheim (p200300d5ff45c400d63d7efffebde96e.dip0.t-ipconnect.de. [2003:d5:ff45:c400:d63d:7eff:febd:e96e])
+        by smtp.gmail.com with ESMTPSA id d8sm10808738wrv.20.2021.09.18.10.26.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Sep 2021 10:26:33 -0700 (PDT)
+Received: from chuck by debian64.daheim with local (Exim 4.95-RC2)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1mRe6i-007uub-Hu;
+        Sat, 18 Sep 2021 19:26:32 +0200
+From:   Christian Lamparter <chunkeey@gmail.com>
+To:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Sparse Mailing-list <linux-sparse@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH] net: bgmac-bcma: handle deferred probe error due to mac-address
+Date:   Sat, 18 Sep 2021 19:26:32 +0200
+Message-Id: <20210918172632.1887059-1-chunkeey@gmail.com>
+X-Mailer: git-send-email 2.33.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 18, 2021 at 10:17 AM Thorsten Glaser <t.glaser@tarent.de> wrote=
-:
->
-> Considering you can actually put ISA cards, 8 and 16 bit both,
-> into EISA slots, I=E2=80=99d have assumed so. I don=E2=80=99t understand =
-the
-> =E2=80=9CEISA only=E2=80=9D question above.
+Since the inclusion of nvmem into the helper function
+of_get_mac_address() by
+commit d01f449c008a ("of_net: add NVMEM support to of_get_mac_address")
+it has been possible to receive a -EPROBE_DEFER return code during boot.
+Previously, this resulted in setting a random ethernet address.
 
-Oh, it's so long since I had one of those machines I didn't even
-remember that EISA took ISA cards too.
+This exact issue happened on my Meraki MR32. This is because the nvmem
+provider is an EEPROM (at24) which gets instantiated once the module
+driver is loaded... which of course happens much later when the
+filesystem becomes available.
 
-But yeah, there are also apparently PCI-based alpha machines with
-actual ISA card slots.
+With this patch, the probe will propagate this error code. The
+driver subsystem will reschedule the probe at a later time,
+once the nvmem is in place and ready to deliver the requested
+mac-address.
 
-            Linus
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bgmac-bcma.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+index 85fa0ab7201c..9513cfb5ba58 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
++++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+@@ -129,6 +129,8 @@ static int bgmac_probe(struct bcma_device *core)
+ 	bcma_set_drvdata(core, bgmac);
+ 
+ 	err = of_get_mac_address(bgmac->dev->of_node, bgmac->net_dev->dev_addr);
++	if (err == -EPROBE_DEFER)
++		return err;
+ 
+ 	/* If no MAC address assigned via device tree, check SPROM */
+ 	if (err) {
+-- 
+2.33.0
+
