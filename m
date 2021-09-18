@@ -2,185 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0AC04105BE
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 11:57:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08CD04105C1
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 11:57:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239654AbhIRJ63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 05:58:29 -0400
-Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:61300 "EHLO
+        id S242710AbhIRJ6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 05:58:40 -0400
+Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:50662 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232518AbhIRJ62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 05:58:28 -0400
+        with ESMTP id S244179AbhIRJ6g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 05:58:36 -0400
 Received: from tomoyo.flets-east.jp ([114.149.34.46])
         by smtp.orange.fr with ESMTPA
-        id RX5Zmuh4X1yYBRX5hm0kCs; Sat, 18 Sep 2021 11:57:03 +0200
+        id RX5Zmuh4X1yYBRX5qm0kE0; Sat, 18 Sep 2021 11:57:12 +0200
 X-ME-Helo: tomoyo.flets-east.jp
 X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
-X-ME-Date: Sat, 18 Sep 2021 11:57:03 +0200
+X-ME-Date: Sat, 18 Sep 2021 11:57:12 +0200
 X-ME-IP: 114.149.34.46
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Stefan=20M=C3=A4tje?= <Stefan.Maetje@esd.eu>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v6 0/6] add the netlink interface for CAN-FD Transmitter Delay Compensation (TDC)
-Date:   Sat, 18 Sep 2021 18:56:31 +0900
-Message-Id: <20210918095637.20108-1-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v6 1/6] can: bittiming: allow TDC{V,O} to be zero and add can_tdc_const::tdc{v,o,f}_min
+Date:   Sat, 18 Sep 2021 18:56:32 +0900
+Message-Id: <20210918095637.20108-2-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210918095637.20108-1-mailhol.vincent@wanadoo.fr>
+References: <20210918095637.20108-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The main goal of this series is to add a netlink interface for the TDC
-parameters using netlink nested attributes. The series also contains a
-few fix on the current TDC implementation.
+ISO 11898-1 specifies in section 11.3.3 "Transmitter delay
+compensation" that "the configuration range for [the] SSP position
+shall be at least 0 to 63 minimum time quanta."
 
-This series completes the implementation of the Transmitter Delay
-Compensation (TDC) in the kernel which started in March with those two
-patches:
-  - commit 289ea9e4ae59 ("can: add new CAN FD bittiming parameters:
-    Transmitter Delay Compensation (TDC)")
-  - commit c25cc7993243 ("can: bittiming: add calculation for CAN FD
-    Transmitter Delay Compensation (TDC)")
+Because SSP = TDCV + TDCO, it means that we should allow both TDCV and
+TDCO to hold zero value in order to honor SSP's minimum possible
+value.
 
-The netlink interface was missing from this series because the initial
-patch needed rework in order to make it more flexible for future
-changes.
+However, current implementation assigned special meaning to TDCV and
+TDCO's zero values:
+  * TDCV = 0 -> TDCV is automatically measured by the transceiver.
+  * TDCO = 0 -> TDC is off.
 
-At that time, Marc suggested to take inspiration from the recently
-released ethtool-netlink interface (Ref [1]).
+In order to allow for those values to really be zero and to maintain
+current features, we introduce two new flags:
+  * CAN_CTRLMODE_TDC_AUTO indicates that the controller support
+    automatic measurement of TDCV.
+  * CAN_CTRLMODE_TDC_MANUAL indicates that the controller support
+    manual configuration of TDCV. N.B.: current implementation failed
+    to provide an option for the driver to indicate that only manual
+    mode was supported.
 
-ethtool uses nested attributes (c.f. NLA_NESTED type in validation
-policy). A bit of trivia: the NLA_NESTED type was introduced in
-version 2.6.15 of the kernel and thus actually predates Socket CAN.
-Ref: commit bfa83a9e03cf ("[NETLINK]: Type-safe netlink
-messages/attributes interface")
+TDC is disabled if both CAN_CTRLMODE_TDC_AUTO and
+CAN_CTRLMODE_TDC_MANUAL flags are off, c.f. the helper function
+can_tdc_is_enabled() which is also introduced in this patch.
 
-Since then, Stephan shared additional remarks for improvement which
-are addressed in revision v4 of this series [2].
+Also, this patch adds three fields: tdcv_min, tdco_min and tdcf_min to
+struct can_tdc_const. While we are not convinced that those three
+fields could be anything else than zero, we can imagine that some
+controllers might specify a lower bound on these. Thus, those minimums
+are really added "just in case".
 
-The first patch allows TDCV and TDCO to be zero. Previously, those
-zero values were assigned a special meaning. The replace that special
-meaning, two additional ctrmode flags are added: CAN_CTRLMODE_TDC_AUTO
-and CAN_CTRLMODE_TDC_MANUAL.
+Comments of struct can_tdc and can_tdc_const are updated accordingly.
 
-The second patch fixes the unit of the TDC parameters. In fact, those
-should be measured in clock period (a.k.a. minimum time quantum) and
-not in time quantum as it is done in current implementation.
+Finally, the changes are applied to the etas_es58x driver.
 
-The third patch modifies the prototype of can_calc_tdco() so that the
-data bittiming struct is passed as an argument instead of retrieving
-it from priv. This will prevent inconsistent configuration from
-occurring in case of early return.
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+ drivers/net/can/dev/bittiming.c           | 10 ++--
+ drivers/net/can/usb/etas_es58x/es58x_fd.c |  7 ++-
+ include/linux/can/bittiming.h             | 64 +++++++++++++++++------
+ include/linux/can/dev.h                   |  4 ++
+ include/uapi/linux/can/netlink.h          |  2 +
+ 5 files changed, 65 insertions(+), 22 deletions(-)
 
-The fourth patch is the real thing: the TDC netlink interface.
-
-The fifth patch allows to retrieve TDCV from the device when in
-TDC_AUTO mode. This is done through a callback function.
-
-The sixth and last patch addresses the concerns of Marc and Stefan
-that some devices which use a TDCO value relative to the Sample Point
-(so far, the TDC implementation used the formula SSP = TDCV +
-TDCO). To do so, an helper function to convert TDCO from an absolute
-value to a value relative to the sample point is added.
-
-
-I prepared another patch series for iproute2-next. The series is
-available at [3] and can be helpful for tests.
-
-
-[1] https://lore.kernel.org/linux-can/20210407081557.m3sotnepbgasarri@pengutronix.de/
-[2] https://lore.kernel.org/linux-can/75fa87a71a3f5fd7d7407a2c514b71690e56eb4e.camel@esd.eu/
-[3] https://lore.kernel.org/linux-can/20210814101728.75334-1-mailhol.vincent@wanadoo.fr
-
-** Changelog **
-
-v5 -> v6:
-
-  - fix a typo (double space) in
-    include/linux-can/dev.h:can_get_relative_tdco().
-  - clear garbage values in struct can_tdc. Under certain conditions,
-    some of the TDC parameters are irrelevant (example: can_tdc::tdcv
-    when in auto mode). In the previous patch, those parameters were
-    left untouched. We now clear any of the parameters which become
-    irrelevant.
-  - fix a bug which allowed to have both CAN_CTRLMODE_TDC_AUTO and
-    CAN_CTRLMODE_TDC_MANUAL to be set at the same time. Now, each time
-    one of those flag is provided, we make sure to turn the other one
-    off.
-  - in drivers/net/can/netlink.c:can_tdc_changelink(), store all the
-    TDC parameters in a temporary structure and copy them all at once
-    at the end of the function. This prevent TDC to be in an
-    inconsistent state if the function had to return early due to out
-    of bands parameters.
-  - similarly to above fix: clear the TDC flags
-    (CAN_CTRLMODE_TDC_{AUTO,MANUAL}) if
-    drivers/net/can/netlink.c:can_tdc_changelink() return an error
-    code. This way, we are not left with inconsistent value.
-  - removed the first and last patch of the series because those have
-    already been accepted in below pull request:
-    https://lore.kernel.org/linux-can/162939960964.18233.15653984142298230559.git-patchwork-notify@kernel.org/T/#t
-  - do not modify the TDC parameters if the databittiming parameters
-    are not provided. The new logic is now as follow:
-      * data bittiming not provided: TDC parameters unchanged
-      * data bittiming provided: (unchanged from current behavior)
-          + tdc-mode not provided: do can_calc_tdco (fully automated)
-          + tdc-mode auto and tdco provided: TDC_AUTO
-          + tdc-mode manual and both of tdcv and tdco provided: TDC_MANUAL
-
-Link: https://lore.kernel.org/linux-can/20210815033248.98111-1-mailhol.vincent@wanadoo.fr/T/#t
-
-v4 -> v5:
-  - move to can_validate() all of the checks on TDC parameters that do
-    not need access to priv.
-  - in can_tdc_get_size(), field IFLA_CAN_TDCV was not taken in
-    account for size calculation when in automatic mode.
-  - if can_tdc_is_enabled(priv) returns true, we know that one of
-    either CAN_CTRLMODE_TDC_AUTO or CAN_CTRLMODE_TDC_MANUAL is
-    set. After confirming that CAN_CTRLMODE_TDC_MANUAL if off, we then
-    implicitly know that CAN_CTRLMODE_TDC_AUTO is set and do not need
-    to check it again. Remove such redundant check in
-    can_tdc_fill_info().
-
-v3 -> v4:
-  - add a patch to the series to change the unit from time quantum to
-    clock period (a.k.a. minimum time quantum).
-  - add a callback function to retrieve TDCV from the device.
-
-v2 -> v3:
-  - allows both TDCV and TDCO to be zero.
-  - introduce the can_tdc_get_relative_tdco() helper function
-  - other path of the series modified accordingly to above changes.
-
-RFC v1 -> v2:
-  The v2 fixes several issue in can_tdc_get_size() and
-  can_tdc_fill_info(). Namely: can_tdc_get_size() returned an
-  incorrect size if TDC was not implemented and can_tdc_fill_info()
-  did not include a fail path with nla_nest_cancel().
-
-Vincent Mailhol (6):
-  can: bittiming: allow TDC{V,O} to be zero and add
-    can_tdc_const::tdc{v,o,f}_min
-  can: bittiming: change unit of TDC parameters to clock periods
-  can: bittiming: change can_calc_tdco()'s prototype to not directly
-    modify priv
-  can: netlink: add interface for CAN-FD Transmitter Delay Compensation
-    (TDC)
-  can: netlink: add can_priv::do_get_auto_tdcv() to retrieve tdcv from
-    device
-  can: dev: add can_tdc_get_relative_tdco() helper function
-
- drivers/net/can/dev/bittiming.c           |  28 +--
- drivers/net/can/dev/netlink.c             | 221 +++++++++++++++++++++-
- drivers/net/can/usb/etas_es58x/es58x_fd.c |   7 +-
- include/linux/can/bittiming.h             |  89 ++++++---
- include/linux/can/dev.h                   |  34 ++++
- include/uapi/linux/can/netlink.h          |  31 ++-
- 6 files changed, 365 insertions(+), 45 deletions(-)
-
+diff --git a/drivers/net/can/dev/bittiming.c b/drivers/net/can/dev/bittiming.c
+index f49170eadd54..7dbda411915a 100644
+--- a/drivers/net/can/dev/bittiming.c
++++ b/drivers/net/can/dev/bittiming.c
+@@ -182,9 +182,12 @@ void can_calc_tdco(struct net_device *dev)
+ 	struct can_tdc *tdc = &priv->tdc;
+ 	const struct can_tdc_const *tdc_const = priv->tdc_const;
+ 
+-	if (!tdc_const)
++	if (!tdc_const ||
++	    !(priv->ctrlmode_supported & CAN_CTRLMODE_TDC_AUTO))
+ 		return;
+ 
++	priv->ctrlmode &= ~CAN_CTRLMODE_TDC_MASK;
++
+ 	/* As specified in ISO 11898-1 section 11.3.3 "Transmitter
+ 	 * delay compensation" (TDC) is only applicable if data BRP is
+ 	 * one or two.
+@@ -193,9 +196,10 @@ void can_calc_tdco(struct net_device *dev)
+ 		/* Reuse "normal" sample point and convert it to time quanta */
+ 		u32 sample_point_in_tq = can_bit_time(dbt) * dbt->sample_point / 1000;
+ 
++		if (sample_point_in_tq < tdc_const->tdco_min)
++			return;
+ 		tdc->tdco = min(sample_point_in_tq, tdc_const->tdco_max);
+-	} else {
+-		tdc->tdco = 0;
++		priv->ctrlmode |= CAN_CTRLMODE_TDC_AUTO;
+ 	}
+ }
+ #endif /* CONFIG_CAN_CALC_BITTIMING */
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.c b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+index af042aa55f59..4f0cae29f4d8 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_fd.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+@@ -428,7 +428,7 @@ static int es58x_fd_enable_channel(struct es58x_priv *priv)
+ 		es58x_fd_convert_bittiming(&tx_conf_msg.data_bittiming,
+ 					   &priv->can.data_bittiming);
+ 
+-		if (priv->can.tdc.tdco) {
++		if (can_tdc_is_enabled(&priv->can)) {
+ 			tx_conf_msg.tdc_enabled = 1;
+ 			tx_conf_msg.tdco = cpu_to_le16(priv->can.tdc.tdco);
+ 			tx_conf_msg.tdcf = cpu_to_le16(priv->can.tdc.tdcf);
+@@ -505,8 +505,11 @@ static const struct can_bittiming_const es58x_fd_data_bittiming_const = {
+  * Register" from Microchip.
+  */
+ static const struct can_tdc_const es58x_tdc_const = {
++	.tdcv_min = 0,
+ 	.tdcv_max = 0, /* Manual mode not supported. */
++	.tdco_min = 0,
+ 	.tdco_max = 127,
++	.tdcf_min = 0,
+ 	.tdcf_max = 127
+ };
+ 
+@@ -523,7 +526,7 @@ const struct es58x_parameters es58x_fd_param = {
+ 	.clock = {.freq = 80 * CAN_MHZ},
+ 	.ctrlmode_supported = CAN_CTRLMODE_LOOPBACK | CAN_CTRLMODE_LISTENONLY |
+ 	    CAN_CTRLMODE_3_SAMPLES | CAN_CTRLMODE_FD | CAN_CTRLMODE_FD_NON_ISO |
+-	    CAN_CTRLMODE_CC_LEN8_DLC,
++	    CAN_CTRLMODE_CC_LEN8_DLC | CAN_CTRLMODE_TDC_AUTO,
+ 	.tx_start_of_frame = 0xCEFA,	/* FACE in little endian */
+ 	.rx_start_of_frame = 0xFECA,	/* CAFE in little endian */
+ 	.tx_urb_cmd_max_len = ES58X_FD_TX_URB_CMD_MAX_LEN,
+diff --git a/include/linux/can/bittiming.h b/include/linux/can/bittiming.h
+index 9de6e9053e34..9e20260611cc 100644
+--- a/include/linux/can/bittiming.h
++++ b/include/linux/can/bittiming.h
+@@ -19,6 +19,9 @@
+ /* Megahertz */
+ #define CAN_MHZ 1000000UL
+ 
++#define CAN_CTRLMODE_TDC_MASK					\
++	(CAN_CTRLMODE_TDC_AUTO | CAN_CTRLMODE_TDC_MANUAL)
++
+ /*
+  * struct can_tdc - CAN FD Transmission Delay Compensation parameters
+  *
+@@ -33,29 +36,43 @@
+  *
+  * This structure contains the parameters to calculate that SSP.
+  *
+- * @tdcv: Transmitter Delay Compensation Value. Distance, in time
+- *	quanta, from when the bit is sent on the TX pin to when it is
+- *	received on the RX pin of the transmitter. Possible options:
++ * -+----------- one bit ----------+-- TX pin
++ *  |<--- Sample Point --->|
++ *
++ *                         --+----------- one bit ----------+-- RX pin
++ *  |<-------- TDCV -------->|
++ *                           |<------- TDCO ------->|
++ *  |<----------- Secondary Sample Point ---------->|
++ *
++ * @tdcv: Transmitter Delay Compensation Value. The time needed for
++ *	the signal to propagate, i.e. the distance, in time quanta,
++ *	from the start of the bit on the TX pin to when it is received
++ *	on the RX pin. @tdcv depends on the controller modes:
++ *
++ *	  CAN_CTRLMODE_TDC_AUTO is set: The transceiver dynamically
++ *	  measures @tdcv for each transmitted CAN FD frame and the
++ *	  value provided here should be ignored.
+  *
+- *	  0: automatic mode. The controller dynamically measures @tdcv
+- *	  for each transmitted CAN FD frame.
++ *	  CAN_CTRLMODE_TDC_MANUAL is set: use the fixed provided @tdcv
++ *	  value.
+  *
+- *	  Other values: manual mode. Use the fixed provided value.
++ *	N.B. CAN_CTRLMODE_TDC_AUTO and CAN_CTRLMODE_TDC_MANUAL are
++ *	mutually exclusive. Only one can be set at a time. If both
++ *	CAN_TDC_CTRLMODE_AUTO and CAN_TDC_CTRLMODE_MANUAL are unset,
++ *	TDC is disabled and all the values of this structure should be
++ *	ignored.
+  *
+  * @tdco: Transmitter Delay Compensation Offset. Offset value, in time
+  *	quanta, defining the distance between the start of the bit
+  *	reception on the RX pin of the transceiver and the SSP
+  *	position such that SSP = @tdcv + @tdco.
+  *
+- *	If @tdco is zero, then TDC is disabled and both @tdcv and
+- *	@tdcf should be ignored.
+- *
+  * @tdcf: Transmitter Delay Compensation Filter window. Defines the
+- *	minimum value for the SSP position in time quanta. If SSP is
+- *	less than @tdcf, then no delay compensations occur and the
+- *	normal sampling point is used instead. The feature is enabled
+- *	if and only if @tdcv is set to zero (automatic mode) and @tdcf
+- *	is configured to a value greater than @tdco.
++ *	minimum value for the SSP position in time quanta. If the SSP
++ *	position is less than @tdcf, then no delay compensations occur
++ *	and the normal sampling point is used instead. The feature is
++ *	enabled if and only if @tdcv is set to zero (automatic mode)
++ *	and @tdcf is configured to a value greater than @tdco.
+  */
+ struct can_tdc {
+ 	u32 tdcv;
+@@ -67,19 +84,32 @@ struct can_tdc {
+  * struct can_tdc_const - CAN hardware-dependent constant for
+  *	Transmission Delay Compensation
+  *
+- * @tdcv_max: Transmitter Delay Compensation Value maximum value.
+- *	Should be set to zero if the controller does not support
+- *	manual mode for tdcv.
++ * @tdcv_min: Transmitter Delay Compensation Value minimum value. If
++ *	the controller does not support manual mode for tdcv
++ *	(c.f. flag CAN_CTRLMODE_TDC_MANUAL) then this value is
++ *	ignored.
++ * @tdcv_max: Transmitter Delay Compensation Value maximum value. If
++ *	the controller does not support manual mode for tdcv
++ *	(c.f. flag CAN_CTRLMODE_TDC_MANUAL) then this value is
++ *	ignored.
++ *
++ * @tdco_min: Transmitter Delay Compensation Offset minimum value.
+  * @tdco_max: Transmitter Delay Compensation Offset maximum value.
+  *	Should not be zero. If the controller does not support TDC,
+  *	then the pointer to this structure should be NULL.
++ *
++ * @tdcf_min: Transmitter Delay Compensation Filter window minimum
++ *	value. If @tdcf_max is zero, this value is ignored.
+  * @tdcf_max: Transmitter Delay Compensation Filter window maximum
+  *	value. Should be set to zero if the controller does not
+  *	support this feature.
+  */
+ struct can_tdc_const {
++	u32 tdcv_min;
+ 	u32 tdcv_max;
++	u32 tdco_min;
+ 	u32 tdco_max;
++	u32 tdcf_min;
+ 	u32 tdcf_max;
+ };
+ 
+diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
+index 2413253e54c7..6dacbbb41e68 100644
+--- a/include/linux/can/dev.h
++++ b/include/linux/can/dev.h
+@@ -96,6 +96,10 @@ struct can_priv {
+ #endif
+ };
+ 
++static inline bool can_tdc_is_enabled(const struct can_priv *priv)
++{
++	return !!(priv->ctrlmode & CAN_CTRLMODE_TDC_MASK);
++}
+ 
+ /* helper to define static CAN controller features at device creation time */
+ static inline void can_set_static_ctrlmode(struct net_device *dev,
+diff --git a/include/uapi/linux/can/netlink.h b/include/uapi/linux/can/netlink.h
+index f730d443b918..004cd09a7d49 100644
+--- a/include/uapi/linux/can/netlink.h
++++ b/include/uapi/linux/can/netlink.h
+@@ -101,6 +101,8 @@ struct can_ctrlmode {
+ #define CAN_CTRLMODE_PRESUME_ACK	0x40	/* Ignore missing CAN ACKs */
+ #define CAN_CTRLMODE_FD_NON_ISO		0x80	/* CAN FD in non-ISO mode */
+ #define CAN_CTRLMODE_CC_LEN8_DLC	0x100	/* Classic CAN DLC option */
++#define CAN_CTRLMODE_TDC_AUTO		0x200	/* CAN transiver automatically calculates TDCV */
++#define CAN_CTRLMODE_TDC_MANUAL		0x400	/* TDCV is manually set up by user */
+ 
+ /*
+  * CAN device statistics
 -- 
 2.32.0
 
