@@ -2,169 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D1614105E8
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 12:14:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 523D04105FA
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 12:53:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235290AbhIRKON (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 06:14:13 -0400
-Received: from mout.gmx.net ([212.227.17.21]:58827 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231649AbhIRKOK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Sep 2021 06:14:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1631959945;
-        bh=H3tRWYxuhIRjBxTKOCfOX3TM81li5t9cdGykyOXsdlY=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=iziszq6x26jPVEEutUcYBZwRwAQjuDU29KssGkhRFyFnyvo5WN6DRG7mqsC36iTGT
-         kllFEULRrTksShzc6RNeWtQvxy2Z9aOkSUqVLw6/RHe4/QNlKhlKUhtC2tW/BK6v9p
-         bKmAFrvkvulrZ+iXkPQNvo7d5MEHiDkioDcIvXW8=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.1.100] ([79.206.231.202]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MK3Rm-1mBeND1QSc-00LSVW; Sat, 18
- Sep 2021 12:12:25 +0200
-Subject: Re: [PATCH V2] ath10k: don't fail if IRAM write fails
-To:     ojab // <ojab@ojab.ru>, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     ath10k@lists.infradead.org,
-        Linux Wireless <linux-wireless@vger.kernel.org>,
-        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-References: <20210722193459.7474-1-ojab@ojab.ru>
- <CAKzrAgRt0jRFyFNjF-uq=feG-9nhCx=tTztCgCEitj1cpMk_Xg@mail.gmail.com>
- <CAKzrAgQgsN6=Cu4SvjSSFoJOqAkU2t8cjt7sgEsJdNhvM8f7jg@mail.gmail.com>
- <CAKzrAgSEiq-qOgetzryaE3JyBUe3URYjr=Fn0kz9sF7ZryQ5pA@mail.gmail.com>
-From:   "sparks71@gmx.de" <sparks71@gmx.de>
-Message-ID: <538825a2-82f0-6102-01da-6e0385e53cf5@gmx.de>
-Date:   Sat, 18 Sep 2021 12:12:23 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S238559AbhIRKzH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 18 Sep 2021 06:55:07 -0400
+Received: from mail-vk1-f182.google.com ([209.85.221.182]:44011 "EHLO
+        mail-vk1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236901AbhIRKzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 06:55:06 -0400
+Received: by mail-vk1-f182.google.com with SMTP id d10so4691472vke.10
+        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 03:53:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=j6SGIPRPvG2STD4eLQd/s3WO7n19mDN54Smns2upm8k=;
+        b=rH8/cQ+9YErcExH/vGyxnyzKdteQP1WZjch7D6CxcjJ3d3b1wnoMrXgRtku9R/yMf7
+         z363wYzqBeP+/lNDKm2cd9nU+eVhIx+yPvhucrLLBKS0C7c9451u+dtgCZRa7TXQI/9c
+         BCrtLglt3FDeggheGNpSJ4mE4xcmgL+EBzosfYG7zw3Pa8lPj+Nj85x54b42XyhRH6hD
+         ExqY6yLLaT3nWGlqSOvgC64m2amo6zQCSzysM9NLlQ4s7ND5KAQe9XHTRTElCjIzzc9k
+         iGpIOni/bjsxRqDn7NJqahN9JZd6RbKD1N8raEHxgiPZWlXeLIgt9a3LRGsb01ZJ2Tpl
+         6TgA==
+X-Gm-Message-State: AOAM533A7TZH3y+vCMfShkQc+EZgcapE11B/9bG/K3Jwk1ZMzqiJyuVx
+        TAKgYAp39CGlF9SgFa4rZqAPvcfuNE8WL+1koGg=
+X-Google-Smtp-Source: ABdhPJyWueoUdgTkpfMcOneHG8RLUafDH5iJM1Lziq2WErWeC59SaJH2E0bFyBqlFgFhNW/9YNJzYJz7HkD5BCjszI0=
+X-Received: by 2002:a1f:5e14:: with SMTP id s20mr10927778vkb.7.1631962422446;
+ Sat, 18 Sep 2021 03:53:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAKzrAgSEiq-qOgetzryaE3JyBUe3URYjr=Fn0kz9sF7ZryQ5pA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Provags-ID: V03:K1:1k9yNyZFQRUsK6JEgczeDTsNx3bODEpJ6PC+mqth2f8vGpYaKMm
- lkjbw3qlT4/GqCYf0HRNe1KDOG3a09RL3UkNfDAbP2obIcTVrAJtKUaNTU0V4jqpehjxD1d
- P1Y4gSF6X4ioLhprb5WiZJ8+SIIHLbpdWgNn/uP4KwheX/0RDMkeXEGW/3D9yo8JhRQ09Zv
- y2jyQRs//V752d15SUMaA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:H1ORkNVaYGk=:vs366eiYFEibi+fOuzHOl/
- LvZpL6vFesTKdvA21FS9etpkDlWlhIDXgVDVIsgvxTOPq/lR+/wmYSzsjgjtqa2su3dsU4vzC
- VamO+xBd6SCLaIcRiHwCOZ02Wh94V2V0sNA9BgbCvDfy0p+NehNJnLabekOeBPO7I0yNDGQ8W
- 7BDQncNWYShloyV7u9vzUNdQ7IqfCkbVpg4JTm/b7dlqqkGIHREuxj7RcFngOFhvOcDH5U1Pd
- 44wLQb1orq2eroI/UyT6Yij9ZbOonod12RvukB7arGQgWUaLDO3YLvGnaHb6vMcLk9X35NpGX
- qBSb45k3z6dn7RRKXUwbAvmZMYmXXWyYK0nr1ee7B3JspoH6qGuCq1E6wGZDZ1RQU7+0yotBw
- NVIyj7no6t9bSjLWgQzzDE5z+v7Y6jmqJBJhvCIF9xRIp1eKOXyN/H+JQV2C/AYCZKZBS/cIq
- Ks5deRN/O0G23zA+2mtk6a3H6AI2zHURrZRY4vT9euyxpX9a95psKXkPrKiXwjQhWJiEhe901
- aGxRaWTeTmk71d8oACHOzfDejUHuPV7gOPVlHVfEdxGs+sqCE1RMfD/FX8YwOtGwoDBsHMf11
- USXNi65uTjAouZqSH7Vu6z5C2sVujqn5eIdi+bFv+WBBIYBa+T147alle2qtQxoBZXuDbHiKJ
- d92fv0k2PxnZVx7scQN3e7fKpLp5XNYwL2tEZe5m8UPX6S5Vq8Z5Bs9B1Td0T8us5Ph+4jMNx
- HmdmGFBFssNIkHKcKde5xl8HHoCv6iMDt3z36lJhlTXlbR+OKt9OyfAYqiHF7uq3ceX6ErD54
- x5IEVudfENLuq6NQZBvygvfO8rn7fH7nGafO3Y2jsYkd72nDd28KuX6GSsTQ+MJJebjxre6Cb
- Qje4hmM1H6+KCGf32WxNNppUuypJTkRw7O2qRAjgL8kYWF7NhASwh8TuYGW6m2/s9RbVrSWH+
- RR/3O7LOEvPVWTCBEHEJuWq8/Pu2/wRtEJlPfSXEdIRek9lGPgsX7rHxbvQFy+k0BPKfURbkK
- KOCkInhIC7Gw2CTCWI4W7Bs78g6lx9qWVxU5Cept4zEHWZf14o9YF0jXseR7CLz26m1WNFjjL
- fSoBNhgKSbhRJQ=
+References: <CANP3RGeaOqxOMwCFKb=3X5EFaXNG+k3N2CfV4YT-8NiY5GW3Tg@mail.gmail.com>
+ <20210917114924.2a7bda93@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210917114924.2a7bda93@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Sat, 18 Sep 2021 12:53:31 +0200
+Message-ID: <CAMuHMdUeoVZSkP24Uu7ni3pUf_9uQHsq2Xm3D6dHnzuQLXeOFA@mail.gmail.com>
+Subject: Re: nt: usb: USB_RTL8153_ECM should not default to y
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Maciej Zenczykowski <maze@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Have you seen the new patch?
+Hi Jakub,
 
-https://www.mail-archive.com/ath10k@lists.infradead.org/msg13784.html
-
-https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/commit/?h=master-pending&id=973de582639a1e45276e4e3e2f3c2d82a04ad0a6
-
-
-could probably have been communicated better
-
-
-best regards
-
-
-
-Am 17.09.21 um 21:30 schrieb ojab //:
-> ._.
+On Fri, Sep 17, 2021 at 8:49 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> On Fri, 17 Sep 2021 19:59:15 +0200 Maciej Żenczykowski wrote:
+> > I've been browsing some usb ethernet dongle related stuff in the
+> > kernel (trying to figure out which options to enable in Android 13
+> > 5.~15 kernels), and I've come across the following patch (see topic,
+> > full patch quoted below).
+> >
+> > Doesn't it entirely defeat the purpose of the patch it claims to fix
+> > (and the patch that fixed)?
+> > Certainly the reasoning provided (in general device drivers should not
+> > be enabled by default) doesn't jive with me.
+> > The device driver is CDC_ETHER and AFAICT this is just a compatibility
+> > option for it.
+> >
+> > Shouldn't it be reverted (ie. the 'default y' line be re-added) ?
+> >
+> > AFAICT the logic should be:
+> >   if we have CDC ETHER (aka. ECM), but we don't have R8152 then we
+> > need to have R8153_ECM.
+> >
+> > Alternatively, maybe there shouldn't be a config option for this at all?
+> >
+> > Instead r8153_ecm should simply be part of cdc_ether.ko iff r8152=n
+> >
+> > I'm not knowledgeable enough about Kconfig syntax to know how to
+> > phrase the logic...
+> > Maybe there shouldn't be a Kconfig option at all, and just some Makefile if'ery.
+> >
+> > Something like:
+> >
+> > obj-$(CONFIG_USB_RTL8152) += r8152.o
+> > obj-$(CONFIG_USB_NET_CDCETHER) += cdc_ether.o obj-
+> > ifndef CONFIG_USB_RTL8152
+> > obj-$(CONFIG_USB_NET_CDCETHER) += r8153_ecm.o
+> > endif
+> >
+> > Though it certainly would be nice to use 8153 devices with the
+> > CDCETHER driver even with the r8152 driver enabled...
 >
-> //wbr ojab
+> Yeah.. more context here:
 >
-> On Thu, 9 Sept 2021 at 02:42, ojab // <ojab@ojab.ru> wrote:
->> Gentle ping.
->>
->> //wbr ojab
->>
->> On Wed, 25 Aug 2021 at 19:15, ojab // <ojab@ojab.ru> wrote:
->>> Can I haz it merged?
->>>
->>> //wbr ojab
->>>
->>> On Thu, 22 Jul 2021 at 22:36, ojab <ojab@ojab.ru> wrote:
->>>> After reboot with kernel & firmware updates I found `failed to copy
->>>> target iram contents:` in dmesg and missing wlan interfaces for both
->>>> of my QCA9984 compex cards. Rolling back kernel/firmware didn't fixed
->>>> it, so while I have no idea what's actually happening, I don't see why
->>>> we should fail in this case, looks like some optional firmware ability
->>>> that could be skipped.
->>>>
->>>> Also with additional logging there is
->>>> ```
->>>> [    6.839858] ath10k_pci 0000:04:00.0: No hardware memory
->>>> [    6.841205] ath10k_pci 0000:04:00.0: failed to copy target iram contents: -12
->>>> [    6.873578] ath10k_pci 0000:07:00.0: No hardware memory
->>>> [    6.875052] ath10k_pci 0000:07:00.0: failed to copy target iram contents: -12
->>>> ```
->>>> so exact branch could be seen.
->>>>
->>>> Signed-off-by: Slava Kardakov <ojab@ojab.ru>
->>>> ---
->>>>   Of course I forgot to sing off, since I don't use it by default because I
->>>>   hate my real name and kernel requires it
->>>>
->>>>   drivers/net/wireless/ath/ath10k/core.c | 9 ++++++---
->>>>   1 file changed, 6 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
->>>> index 2f9be182fbfb..d9fd5294e142 100644
->>>> --- a/drivers/net/wireless/ath/ath10k/core.c
->>>> +++ b/drivers/net/wireless/ath/ath10k/core.c
->>>> @@ -2691,8 +2691,10 @@ static int ath10k_core_copy_target_iram(struct ath10k *ar)
->>>>          u32 len, remaining_len;
->>>>
->>>>          hw_mem = ath10k_coredump_get_mem_layout(ar);
->>>> -       if (!hw_mem)
->>>> +       if (!hw_mem) {
->>>> +               ath10k_warn(ar, "No hardware memory");
->>>>                  return -ENOMEM;
->>>> +       }
->>>>
->>>>          for (i = 0; i < hw_mem->region_table.size; i++) {
->>>>                  tmp = &hw_mem->region_table.regions[i];
->>>> @@ -2702,8 +2704,10 @@ static int ath10k_core_copy_target_iram(struct ath10k *ar)
->>>>                  }
->>>>          }
->>>>
->>>> -       if (!mem_region)
->>>> +       if (!mem_region) {
->>>> +               ath10k_warn(ar, "No memory region");
->>>>                  return -ENOMEM;
->>>> +       }
->>>>
->>>>          for (i = 0; i < ar->wmi.num_mem_chunks; i++) {
->>>>                  if (ar->wmi.mem_chunks[i].req_id ==
->>>> @@ -2917,7 +2921,6 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode,
->>>>                  if (status) {
->>>>                          ath10k_warn(ar, "failed to copy target iram contents: %d",
->>>>                                      status);
->>>> -                       goto err_hif_stop;
->>>>                  }
->>>>          }
->>>>
->>>> --
->>>> 2.32.0
-> _______________________________________________
-> ath10k mailing list
-> ath10k@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/ath10k
+> https://lore.kernel.org/all/7fd014f2-c9a5-e7ec-f1c6-b3e4bb0f6eb6@samsung.com/
 >
->
+> default !USB_RTL8152 would be my favorite but that probably doesn't
+> compute in kconfig land. Or perhaps bring back the 'y' but more clearly
+> mark it as a sub-option of CDCETHER? It's hard to blame people for
+> expecting drivers to default to n, we should make it clearer that this
+> is more of a "make driver X support variation Y", 'cause now it sounds
+> like a completely standalone driver from the Kconfig wording. At least
+> to a lay person like myself.
 
+If it can be a module (tristate), it must be a separate (sub)driver, right?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
