@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47460410712
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 16:39:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9EAD410739
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 17:03:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238165AbhIROkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 10:40:21 -0400
-Received: from mail-ot1-f52.google.com ([209.85.210.52]:42705 "EHLO
-        mail-ot1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231676AbhIROkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 10:40:18 -0400
-Received: by mail-ot1-f52.google.com with SMTP id 67-20020a9d0449000000b00546e5a8062aso4892230otc.9;
-        Sat, 18 Sep 2021 07:38:54 -0700 (PDT)
+        id S236670AbhIRPEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 11:04:43 -0400
+Received: from mail-oi1-f176.google.com ([209.85.167.176]:42910 "EHLO
+        mail-oi1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231336AbhIRPEm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 11:04:42 -0400
+Received: by mail-oi1-f176.google.com with SMTP id bi4so18274369oib.9;
+        Sat, 18 Sep 2021 08:03:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gZJEYCVEBx8sBImAvvT2WV4qs0yfviZDu0/wBlsAicI=;
-        b=qis65Hug5TVuUHnsvqvOhVn9BySyTfoBgBP8XiBNwZ1/3RHOIX/JlG5TYwfrE+Y8QS
-         zHHucC8fZHNQcnrl1hiv5qSUAcV2svldFa11KNedC/KKCWmk4fcggjddvzGnTuOlM1dX
-         PuDveAyU3soGu9iyaV0iGLZeJ9RGapQ6WnaJpGlyNiubz0Ztv940glOqYpv4DomsMQBz
-         mDG7XkfK83IVbLG58USVwbV0ot+dhxoK1iB7ce9A4cnjBWHoUOUNRkwhh5R5E4xufyGy
-         i2426vfMhJczHcHw3rdW3ikRteVhVSGBD/WMoCGRExd9TxiThZQT9PYyboLPrzP2gUqR
-         sUrw==
-X-Gm-Message-State: AOAM531LGyhsFGkSAZHF2QGAwcAwK+Lnz+IH3Z9aO14Tcvx/tRIiRRgh
-        xtwpjc6C4Fe5SZNGrVDiFuGHNd/qPAPLzUwYIv8=
-X-Google-Smtp-Source: ABdhPJzS6kQn2cn4I13oE+77M60tyFIAacrtZLX5Byjw07mAFfev8XsHX0wa+PG/1pvvnuyz77reTuJdKh+oSXcyvsg=
-X-Received: by 2002:a05:6830:34b:: with SMTP id h11mr14254121ote.319.1631975934194;
- Sat, 18 Sep 2021 07:38:54 -0700 (PDT)
+        bh=qF9YJTFb2QTzE7mXJCIub9h+/PjhBuWOCyut5wCaiw4=;
+        b=DHMFNKrfDuVUoL0UaS9x2P/k2/CJ7/aZJvZSzHbgslx7ukJfgUqjMdjjwmsXBDoFJp
+         ar+/8LAW63lgzV8wC4GUPgRS0zfuNH5n4uOxGrZgM8lk23ib/CWEc8UiQbIxEjie655N
+         q5ISj86kzd+kJ5PrTku5U4YI7wYuDRJyX26KLaVHEbQ2uCRkhtAJTKKmn+/857rAykPP
+         z1Fvxg6OHuq0LePaMUlr9OAxUpKPhs7EpjuDYDfe4iToxbG856mwIxgQW1WipjZJIHAv
+         9iATy5SSZZy3y/eQdC2DJDdasM1jcHwmG0NK9duRnykeNA11g87WlYLet8tOp36K8W3A
+         byUw==
+X-Gm-Message-State: AOAM533o4+lBekDbcYiy3dwxyKteRz8Um4uudphnUNgps0FUlTjln0KK
+        1lDwNJKoHkhHB7TU3idRLqZcRMVfoaVGH9RKSo0=
+X-Google-Smtp-Source: ABdhPJyKbRzDSF0qrXYIZqR0WY+s6cR+uKcKghvR41DFiSP6UPKnFqNzF4feaQpYNwh+35GtPJNeeAERuSz0et35sw4=
+X-Received: by 2002:a05:6808:10ce:: with SMTP id s14mr17623306ois.157.1631977397972;
+ Sat, 18 Sep 2021 08:03:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210915170940.617415-1-saravanak@google.com> <20210915170940.617415-2-saravanak@google.com>
-In-Reply-To: <20210915170940.617415-2-saravanak@google.com>
+References: <20210915170940.617415-1-saravanak@google.com> <20210915170940.617415-3-saravanak@google.com>
+In-Reply-To: <20210915170940.617415-3-saravanak@google.com>
 From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Sat, 18 Sep 2021 16:38:42 +0200
-Message-ID: <CAJZ5v0iM6U9_xuXjghDR+8upHA+SdZdmp2nGaOhaLTPR54BhmA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] driver core: fw_devlink: Improve handling of
- cyclic dependencies
+Date:   Sat, 18 Sep 2021 17:03:06 +0200
+Message-ID: <CAJZ5v0h11ts69FJh7LDzhsDs=BT2MrN8Le8dHi73k9dRKsG_4g@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] driver core: fw_devlink: Add support for FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
 To:     Saravana Kannan <saravanak@google.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -50,8 +49,7 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Cc: Android Kernel" <kernel-team@android.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -59,80 +57,98 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Sep 15, 2021 at 7:09 PM Saravana Kannan <saravanak@google.com> wrote:
 >
-> When we have a dependency of the form:
+> If a parent device is also a supplier to a child device, fw_devlink=on by
+> design delays the probe() of the child device until the probe() of the
+> parent finishes successfully.
 >
-> Device-A -> Device-C
->         Device-B
+> However, some drivers of such parent devices (where parent is also a
+> supplier) expect the child device to finish probing successfully as soon as
+> they are added using device_add() and before the probe() of the parent
+> device has completed successfully. One example of such a case is discussed
+> in the link mentioned below.
 >
-> Device-C -> Device-B
+> Add a flag to make fw_devlink=on not enforce these supplier-consumer
+> relationships, so these drivers can continue working.
 >
-> Where,
-> * Indentation denotes "child of" parent in previous line.
-> * X -> Y denotes X is consumer of Y based on firmware (Eg: DT).
->
-> We have cyclic dependency: device-A -> device-C -> device-B -> device-A
->
-> fw_devlink current treats device-C -> device-B dependency as an invalid
-> dependency and doesn't enforce it but leaves the rest of the
-> dependencies as is.
->
-> While the current behavior is necessary, it is not sufficient if the
-> false dependency in this example is actually device-A -> device-C. When
-> this is the case, device-C will correctly probe defer waiting for
-> device-B to be added, but device-A will be incorrectly probe deferred by
-> fw_devlink waiting on device-C to probe successfully. Due to this, none
-> of the devices in the cycle will end up probing.
->
-> To fix this, we need to go relax all the dependencies in the cycle like
-> we already do in the other instances where fw_devlink detects cycles.
-> A real world example of this was reported[1] and analyzed[2].
->
-> [1] - https://lore.kernel.org/lkml/0a2c4106-7f48-2bb5-048e-8c001a7c3fda@samsung.com/
-> [2] - https://lore.kernel.org/lkml/CAGETcx8peaew90SWiux=TyvuGgvTQOmO4BFALz7aj0Za5QdNFQ@mail.gmail.com/
-> Fixes: f9aa460672c9 ("driver core: Refactor fw_devlink feature")
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Link: https://lore.kernel.org/netdev/CAGETcx_uj0V4DChME-gy5HGKTYnxLBX=TH2rag29f_p=UcG+Tg@mail.gmail.com/
+> Fixes: ea718c699055 ("Revert "Revert "driver core: Set fw_devlink=on by default""")
 > Signed-off-by: Saravana Kannan <saravanak@google.com>
-> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 > ---
->  drivers/base/core.c | 17 ++++++++++++-----
->  1 file changed, 12 insertions(+), 5 deletions(-)
+>  drivers/base/core.c    | 19 +++++++++++++++++++
+>  include/linux/fwnode.h | 11 ++++++++---
+>  2 files changed, 27 insertions(+), 3 deletions(-)
 >
 > diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index e65dd803a453..316df6027093 100644
+> index 316df6027093..21d4cb5d3767 100644
 > --- a/drivers/base/core.c
 > +++ b/drivers/base/core.c
-> @@ -1772,14 +1772,21 @@ static int fw_devlink_create_devlink(struct device *con,
->          * be broken by applying logic. Check for these types of cycles and
->          * break them so that devices in the cycle probe properly.
->          *
-> -        * If the supplier's parent is dependent on the consumer, then
-> -        * the consumer-supplier dependency is a false dependency. So,
-> -        * treat it as an invalid link.
-> +        * If the supplier's parent is dependent on the consumer, then the
-> +        * consumer and supplier have a cyclic dependency. Since fw_devlink
-> +        * can't tell which of the inferred dependencies are incorrect, don't
-> +        * enforce probe ordering between any of the devices in this cyclic
-> +        * dependency. Do this by relaxing all the fw_devlink device links in
-> +        * this cycle and by treating the fwnode link between the consumer and
-> +        * the supplier as an invalid dependency.
->          */
->         sup_dev = fwnode_get_next_parent_dev(sup_handle);
->         if (sup_dev && device_is_dependent(con, sup_dev)) {
-> -               dev_dbg(con, "Not linking to %pfwP - False link\n",
-> -                       sup_handle);
-> +               dev_info(con, "Fixing up cyclic dependency with %pfwP (%s)\n",
-> +                        sup_handle, dev_name(sup_dev));
+> @@ -1722,6 +1722,25 @@ static int fw_devlink_create_devlink(struct device *con,
+>         struct device *sup_dev;
+>         int ret = 0;
+>
+> +       /*
+> +        * In some cases, a device P might also be a supplier to its child node
+> +        * C. However, this would defer the probe of C until the probe of P
+> +        * completes successfully. This is perfectly fine in the device driver
+> +        * model. device_add() doesn't guarantee probe completion of the device
+> +        * by the time it returns.
 
-Why not dev_dbg()?
+That's right.
 
-Other than this, the change makes sense to me.
+However, I don't quite see a point in device links where the supplier
+is a direct ancestor of the consumer.  From the PM perspective they
+are simply redundant and I'm not sure about any other use cases where
+they aren't.
 
-> +               device_links_write_lock();
-> +               fw_devlink_relax_cycle(con, sup_dev);
-> +               device_links_write_unlock();
->                 ret = -EINVAL;
->         } else {
+So what's the reason to add them in the first place?
+
+> +        *
+> +        * However, there are a few drivers that assume C will finish probing
+> +        * as soon as it's added and before P finishes probing. So, we provide
+> +        * a flag to let fw_devlink know not to delay the probe of C until the
+> +        * probe of P completes successfully.
+
+Well, who's expected to set that flag and when?  This needs to be
+mentioned here IMO.
+
+> +        *
+> +        * When such a flag is set, we can't create device links where P is the
+> +        * supplier of C as that would delay the probe of C.
+> +        */
+> +       if (sup_handle->flags & FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD &&
+> +           fwnode_is_ancestor_of(sup_handle, con->fwnode))
+> +               return -EINVAL;
+> +
+>         sup_dev = get_dev_from_fwnode(sup_handle);
+>         if (sup_dev) {
 >                 /*
+> diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
+> index 59828516ebaf..9f4ad719bfe3 100644
+> --- a/include/linux/fwnode.h
+> +++ b/include/linux/fwnode.h
+> @@ -22,10 +22,15 @@ struct device;
+>   * LINKS_ADDED:        The fwnode has already be parsed to add fwnode links.
+>   * NOT_DEVICE: The fwnode will never be populated as a struct device.
+>   * INITIALIZED: The hardware corresponding to fwnode has been initialized.
+> + * NEEDS_CHILD_BOUND_ON_ADD: For this fwnode/device to probe successfully, its
+> + *                          driver needs its child devices to be bound with
+> + *                          their respective drivers as soon as they are
+> + *                          added.
+
+The fact that this requires so much comment text here is a clear
+band-aid indication to me.
+
+>   */
+> -#define FWNODE_FLAG_LINKS_ADDED                BIT(0)
+> -#define FWNODE_FLAG_NOT_DEVICE         BIT(1)
+> -#define FWNODE_FLAG_INITIALIZED                BIT(2)
+> +#define FWNODE_FLAG_LINKS_ADDED                        BIT(0)
+> +#define FWNODE_FLAG_NOT_DEVICE                 BIT(1)
+> +#define FWNODE_FLAG_INITIALIZED                        BIT(2)
+> +#define FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD   BIT(3)
+>
+>  struct fwnode_handle {
+>         struct fwnode_handle *secondary;
 > --
 > 2.33.0.309.g3052b89438-goog
 >
