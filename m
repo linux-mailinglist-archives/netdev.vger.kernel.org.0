@@ -2,175 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DAC141061D
-	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 13:53:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED417410677
+	for <lists+netdev@lfdr.de>; Sat, 18 Sep 2021 14:42:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239299AbhIRLzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 07:55:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60076 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229793AbhIRLzG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 07:55:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631966022;
+        id S236191AbhIRMoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 08:44:01 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:60200 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232440AbhIRMoB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 08:44:01 -0400
+Message-ID: <20210918114626.399467843@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1631968956;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VnaGaXjjCBEiLXCmjPcYkqMcparcCyC5+vT8sErhl7o=;
-        b=UhwstEkZhsVjDPsF16RSRFm8Lq4h4PLYVKVp5gFqDPBdvukxn8z0ORpXdcKOq5HqAVowT2
-        AEYyAjszzHdrYHpY5aJg6ip2UBF8NG0UcqQGaXrbH83GO9JkLUVwUAti7W405V4jKWznCt
-        XiCndIgiHYRPZrfz8j0myG71AXrk7NU=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-71-cjguDsGUMDu2qaPlNMGhIA-1; Sat, 18 Sep 2021 07:53:41 -0400
-X-MC-Unique: cjguDsGUMDu2qaPlNMGhIA-1
-Received: by mail-ed1-f71.google.com with SMTP id ec14-20020a0564020d4e00b003cf5630c190so11642503edb.3
-        for <netdev@vger.kernel.org>; Sat, 18 Sep 2021 04:53:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=VnaGaXjjCBEiLXCmjPcYkqMcparcCyC5+vT8sErhl7o=;
-        b=Uvbs88zl0JNEsJ+BHsPwugragnnlA9L+ebnDaNwta8s5GqJyV6H6cKwuPZw4tJdZmB
-         9CJC5dvCjSSHnlm1dRn7iWxR3VxLl1it09oEW8TQZUbU5rG0pYMtd5NthjiYBiD/Gq0W
-         SeFVU+u2ChWdZuQykIZzTIA262ivWcMtX3LRfRL6c9CKmfon7JenQm7L+3oA7Bf6GlVN
-         znWES1fxbhIGNfLMxfJ0oiJdLnzjzZc6h8VtYyoC6oDZMyb+Vm5ssVxO2SnDTkeYeKNR
-         wPZsMoRbE2UaQIW6RpVLcRu8yzwpoAXwlbmF5nCShl/L2e65f7PaxAjdjYCUPv/6kch4
-         l7dQ==
-X-Gm-Message-State: AOAM530nCMUanP7MCDDdvxtcihcA6royJGMWk7bWtOjTqhVoDOAc9nWN
-        +xqYNjKRVBVD4sm3t0Xg0d2BKZPdCYVEgMOjagNQfxPzxxBZTVAvpKRf1NvMClEsD1KYtTmcOqm
-        O1vy0lihbEjYx+CS2
-X-Received: by 2002:a17:906:e20e:: with SMTP id gf14mr17982273ejb.244.1631966019762;
-        Sat, 18 Sep 2021 04:53:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwgqhI8Z18WdXPURotA3MO5BAt6pN98WCRAzL6H6OzvHGIh3wQK9uB4CUWrnkbr3wAj1UpyUw==
-X-Received: by 2002:a17:906:e20e:: with SMTP id gf14mr17982161ejb.244.1631966017953;
-        Sat, 18 Sep 2021 04:53:37 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id o23sm4116079eds.75.2021.09.18.04.53.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Sep 2021 04:53:37 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 44D5F18034A; Sat, 18 Sep 2021 13:53:35 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=J2RutnZvEXhSJ6T/g1cOHESFLEKUpYsSz4YSNZ3M8Rw=;
+        b=bJQVMWPEJZQzx5OUwGwdRiUKc1XSnnVTpJ+BUP4CclD9Mm55SuS37iE4vb0kfk2lgJyO8B
+        rtv/F5NR4BTQ68dkgzQMHmUADyqPqWs7kkPZJlqTUdgGpRW+IG8yXXyvywy0DY+xpTCHdi
+        nFsBK9IkctovqsEKcCZub8w2Qgok6Gk5L4nsuiPpBkwBYiEuNfA+tN/X+uNi6fSM4fAkBp
+        5fE2uCmQbiIS1XIE4rRbPCbgrohf7BR4d6+VMe+uv5u3WmBGD2cdEzqTdimLkwfMzAJA8c
+        pUTno8Kq1oqp0srN1Gy+lniu1JHzfUNrSiDchioWPCAxYfUHidc1WT1Zlfl0IA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1631968956;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=J2RutnZvEXhSJ6T/g1cOHESFLEKUpYsSz4YSNZ3M8Rw=;
+        b=eboITd1In7x0cYr0ROqPphLW3St7A9ODsDuVU4zBikdGAw7ICFDF31QCWEMCIN4wU2iP6i
+        Vp8FxS8awv73PKBA==
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     LKML <linux-kernel@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com
-Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer
- support
-In-Reply-To: <614511bc3408b_8d5120862@john-XPS-13-9370.notmuch>
-References: <cover.1631289870.git.lorenzo@kernel.org>
- <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YUSrWiWh57Ys7UdB@lore-desk>
- <20210917113310.4be9b586@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAADnVQL15NAqbswXedF0r2om8SOiMQE80OSjbyCA56s-B4y8zA@mail.gmail.com>
- <20210917120053.1ec617c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAADnVQKbrkOxfNoixUx-RLJEWULJLyhqjZ=M_X2cFG_APwNyCg@mail.gmail.com>
- <614511bc3408b_8d5120862@john-XPS-13-9370.notmuch>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 18 Sep 2021 13:53:35 +0200
-Message-ID: <8735q25ccg.fsf@toke.dk>
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sebastian Siewior <bigeasy@linutronix.de>
+Subject: [patch] net: core: Correct the sock::sk_lock.owned lockdep annotations
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Date:   Sat, 18 Sep 2021 14:42:35 +0200 (CEST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Fastabend <john.fastabend@gmail.com> writes:
+lock_sock_fast() and lock_sock_nested() contain lockdep annotations for the
+sock::sk_lock.owned 'mutex'. sock::sk_lock.owned is not a regular mutex. It
+is just lockdep wise equivalent. In fact it's an open coded trivial mutex
+implementation with some interesting features.
 
-> Alexei Starovoitov wrote:
->> On Fri, Sep 17, 2021 at 12:00 PM Jakub Kicinski <kuba@kernel.org> wrote:
->> >
->> > On Fri, 17 Sep 2021 11:43:07 -0700 Alexei Starovoitov wrote:
->> > > > If bpf_xdp_load_bytes() / bpf_xdp_store_bytes() works for most we
->> > > > can start with that. In all honesty I don't know what the exact
->> > > > use cases for looking at data are, either. I'm primarily worried
->> > > > about exposing the kernel internals too early.
->> > >
->> > > I don't mind the xdp equivalent of skb_load_bytes,
->> > > but skb_header_pointer() idea is superior.
->> > > When we did xdp with data/data_end there was no refine_retval_range
->> > > concept in the verifier (iirc or we just missed that opportunity).
->> > > We'd need something more advanced: a pointer with valid range
->> > > refined by input argument 'len' or NULL.
->> > > The verifier doesn't have such thing yet, but it fits as a combination of
->> > > value_or_null plus refine_retval_range.
->> > > The bpf_xdp_header_pointer() and bpf_skb_header_pointer()
->> > > would probably simplify bpf programs as well.
->> > > There would be no need to deal with data/data_end.
->> >
->> > What are your thoughts on inlining? Can we inline the common case
->> > of the header being in the "head"? Otherwise data/end comparisons
->> > would be faster.
->> 
->> Yeah. It can be inlined by the verifier.
->> It would still look like a call from bpf prog pov with llvm doing spill/fill
->> of scratched regs, but it's minor.
->> 
->> Also we can use the same bpf_header_pointer(ctx, ...)
->> helper for both xdp and skb program types. They will have different
->> implementation underneath, but this might make possible writing bpf
->> programs that could work in both xdp and skb context.
->> I believe cilium has fancy macros to achieve that.
->
-> Hi,
->
-> First a header_pointer() logic that works across skb and xdp seems like
-> a great idea to me. I wonder though if instead of doing the copy
-> into a new buffer for offset past the initial frag like what is done in
-> skb_header_pointer could we just walk the frags and point at the new offset.
-> This is what we do on the socket side with bpf_msg_pull-data() for example.
-> For XDP it should also work. The skb case would depend on clone state
-> and things so might be a bit more tricky there.
->
-> This has the advantage of only doing the copy when its necessary. This
-> can be useful for example when reading the tail of an IPsec packet. With
-> blind copy most packets will get hit with a copy. By just writing the
-> pkt->data and pkt->data_end we can avoid this case.
->
-> Lorenz originally implemented something similar earlier and we had the
-> refine retval logic. It failed on no-alu32 for some reason we could
-> revisit. I didn't mind the current help returning with data pointer set
-> to the start of the frag so we stopped following up on it.
->
-> I agree though the current implementation puts a lot on the BPF writer.
-> So getting both cases covered, I want to take pains in my BPF prog
-> to avoid copies and I just want these bytes handled behind a single
-> helper seems good to me.
+sock::sk_lock.slock is a regular spinlock protecting the 'mutex'
+representation sock::sk_lock.owned which is a plain boolean. If 'owned' is
+true, then some other task holds the 'mutex', otherwise it is uncontended.
+As this locking construct is obviously endangered by lock ordering issues as
+any other locking primitive it got lockdep annotated via a dedicated
+dependency map sock::sk_lock.dep_map which has to be updated at the lock
+and unlock sites.
 
-I'm OK with a bpf_header_pointer()-type helper - I quite like the
-in-kernel version of this for SKBs, so replicating it as a BPF helper
-would be great. But I'm a little worried about taking a performance hit.
+lock_sock_nested() is a straight forward 'mutex' lock operation:
 
-I.e., if you do:
+  might_sleep();
+  spin_lock_bh(sock::sk_lock.slock)
+  while (!try_lock(sock::sk_lock.owned)) {
+      spin_unlock_bh(sock::sk_lock.slock);
+      wait_for_release();
+      spin_lock_bh(sock::sk_lock.slock);
+  }
 
-ptr = bpf_header_pointer(pkt, offset, len, stack_ptr)
-*ptr = xxx;
+The lockdep annotation for sock::sk_lock.owned is for unknown reasons
+_after_ the lock has been acquired, i.e. after the code block above and
+after releasing sock::sk_lock.slock, but inside the bottom halves disabled
+region:
 
-then, if the helper ended up copying the data into the stack pointer,
-you didn't actually change anything in the packet, so you need to do a
-writeback.
+  spin_unlock(sock::sk_lock.slock);
+  mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
+  local_bh_enable();
 
-Jakub suggested up-thread that this should be done with some kind of
-flush() helper. But you don't know whether the header_pointer()-helper
-copied the data, so you always need to call the flush() helper, which
-will incur overhead. If the verifier can in-line the helpers that will
-lower it, but will it be enough to make it negligible?
+The placement after the unlock is obvious because otherwise the
+mutex_acquire() would nest into the spin lock held region.
 
--Toke
+But that's from the lockdep perspective still the wrong place:
+
+ 1) The mutex_acquire() is issued _after_ the successful acquisition which
+    is pointless because in a dead lock scenario this point is never
+    reached which means that if the deadlock is the first instance of
+    exposing the wrong lock order lockdep does not have a chance to detect
+    it.
+
+ 2) It only works because lockdep is rather lax on the context from which
+    the mutex_acquire() is issued. Acquiring a mutex inside a bottom halves
+    and therefore non-preemptible region is obviously invalid, except for a
+    trylock which is clearly not the case here.
+
+    This 'works' stops working on RT enabled kernels where the bottom halves
+    serialization is done via a local lock, which exposes this misplacement
+    because the 'mutex' and the local lock nest the wrong way around and
+    lockdep complains rightfully about a lock inversion.
+
+The placement is wrong since the initial commit a5b5bb9a053a ("[PATCH]
+lockdep: annotate sk_locks") which introduced this.
+
+Fix it by moving the mutex_acquire() in front of the actual lock
+acquisition, which is what the regular mutex_lock() operation does as well.
+
+lock_sock_fast() is not that straight forward. It looks at the first glance
+like a convoluted trylock operation:
+
+  spin_lock_bh(sock::sk_lock.slock)
+  if (!sock::sk_lock.owned)
+      return false;
+  while (!try_lock(sock::sk_lock.owned)) {
+      spin_unlock_bh(sock::sk_lock.slock);
+      wait_for_release();
+      spin_lock_bh(sock::sk_lock.slock);
+  }
+  spin_unlock(sock::sk_lock.slock);
+  mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
+  local_bh_enable();
+  return true;
+
+But that's not the case: lock_sock_fast() is an interesting optimization
+for short critical sections which can run with bottom halves disabled and
+sock::sk_lock.slock held. This allows to shortcut the 'mutex' operation in
+the non contended case by preventing other lockers to acquire
+sock::sk_lock.owned because they are blocked on sock::sk_lock.slock, which
+in turn avoids the overhead of doing the heavy processing in release_sock()
+including waking up wait queue waiters.
+
+In the contended case, i.e. when sock::sk_lock.owned == true the behavior
+is the same as lock_sock_nested().
+
+Semantically this shortcut means, that the task acquired the 'mutex' even
+if it does not touch the sock::sk_lock.owned field in the non-contended
+case. Not telling lockdep about this shortcut acquisition is hiding
+potential lock ordering violations in the fast path.
+
+As a consequence the same reasoning as for the above lock_sock_nested()
+case vs. the placement of the lockdep annotation applies. 
+
+The current placement of the lockdep annotation was just copied from
+the original lock_sock(), now renamed to lock_sock_nested(),
+implementation.
+
+Fix this by moving the mutex_acquire() in front of the actual lock
+acquisition and adding the corresponding mutex_release() into
+unlock_sock_fast(). Also document the fast path return case with a comment.
+
+Reported-by: Sebastian Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: netdev@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+---
+
+The basic network testing I was able to do did not expose any lockdep
+complaints and as the probability that a potential lock order violation is
+hidden by the fact that the slowpath in lock_sock_fast() is never
+taken is low, I'm not expecting to see much fallout of this.
+
+---
+ include/net/sock.h |    1 +
+ net/core/sock.c    |   37 +++++++++++++++++++++++--------------
+ 2 files changed, 24 insertions(+), 14 deletions(-)
+---
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1640,6 +1640,7 @@ static inline void unlock_sock_fast(stru
+ 		release_sock(sk);
+ 		__release(&sk->sk_lock.slock);
+ 	} else {
++		mutex_release(&sk->sk_lock.dep_map, _RET_IP_);
+ 		spin_unlock_bh(&sk->sk_lock.slock);
+ 	}
+ }
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3179,17 +3179,15 @@ EXPORT_SYMBOL(sock_init_data);
+ 
+ void lock_sock_nested(struct sock *sk, int subclass)
+ {
++	/* The sk_lock has mutex_lock() semantics here. */
++	mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
++
+ 	might_sleep();
+ 	spin_lock_bh(&sk->sk_lock.slock);
+ 	if (sk->sk_lock.owned)
+ 		__lock_sock(sk);
+ 	sk->sk_lock.owned = 1;
+-	spin_unlock(&sk->sk_lock.slock);
+-	/*
+-	 * The sk_lock has mutex_lock() semantics here:
+-	 */
+-	mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
+-	local_bh_enable();
++	spin_unlock_bh(&sk->sk_lock.slock);
+ }
+ EXPORT_SYMBOL(lock_sock_nested);
+ 
+@@ -3227,24 +3225,35 @@ EXPORT_SYMBOL(release_sock);
+  */
+ bool lock_sock_fast(struct sock *sk) __acquires(&sk->sk_lock.slock)
+ {
++	/* The sk_lock has mutex_lock() semantics here. */
++	mutex_acquire(&sk->sk_lock.dep_map, 0, 0, _RET_IP_);
++
+ 	might_sleep();
+ 	spin_lock_bh(&sk->sk_lock.slock);
+ 
+-	if (!sk->sk_lock.owned)
++	if (!sk->sk_lock.owned) {
+ 		/*
+-		 * Note : We must disable BH
++		 * Fast path return with bottom halves disabled and
++		 * sock::sk_lock.slock held.
++		 *
++		 * The 'mutex' is not contended and holding
++		 * sock::sk_lock.slock prevents all other lockers to
++		 * proceed so the corresponding unlock_sock_fast() can
++		 * avoid the slow path of release_sock() completely and
++		 * just release slock.
++		 *
++		 * From a semantical POV this is equivalent to 'acquiring'
++		 * the 'mutex', hence the corresponding lockdep
++		 * mutex_release() has to happen in the fast path of
++		 * unlock_sock_fast().
+ 		 */
+ 		return false;
++	}
+ 
+ 	__lock_sock(sk);
+ 	sk->sk_lock.owned = 1;
+-	spin_unlock(&sk->sk_lock.slock);
+-	/*
+-	 * The sk_lock has mutex_lock() semantics here:
+-	 */
+-	mutex_acquire(&sk->sk_lock.dep_map, 0, 0, _RET_IP_);
+ 	__acquire(&sk->sk_lock.slock);
+-	local_bh_enable();
++	spin_unlock_bh(&sk->sk_lock.slock);
+ 	return true;
+ }
+ EXPORT_SYMBOL(lock_sock_fast);
 
