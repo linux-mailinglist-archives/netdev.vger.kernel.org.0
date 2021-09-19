@@ -2,93 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95459410DAD
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 00:46:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF095410DB0
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 00:49:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233081AbhISWrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 18:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
+        id S233087AbhISWu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 18:50:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbhISWrw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Sep 2021 18:47:52 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC25C061574
-        for <netdev@vger.kernel.org>; Sun, 19 Sep 2021 15:46:26 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id a14so2214399qvb.6
-        for <netdev@vger.kernel.org>; Sun, 19 Sep 2021 15:46:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=WfrXUgSFI8fX3poHZCXyurnfnlLvKC2xRaygUoraNRE=;
-        b=UtBNyazqZjaqAKPpMSGc2+u8jyyOic5K5j99/OUle6rX+MFh+Pyd9Ru3xKsYA3G6iz
-         KqnnacCieEQPy+jAjMoZgGWml/yRGJNYnEBo748ViK03pZEO1f6XIbsT1fT2rwVz4X5m
-         gezmNaWK4jKDWFueujf1OWSInPUQEgS2iVp1UjBh4aejQXpi0ZYGZgtdCd2NzbNOr+66
-         FAUXaXiKj+aOJLLJ+u9K3fYO3A3ph6q76+20TuDhSviiwG4LQ6I2/t5xMzms3dv7Awu3
-         byriWQ+W4kOo0Fkr8VIuJmKJ73Z7ZLKkxMkrZoB4EPUdY9vhlltxYMotomXoMs5jDsOk
-         cVpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=WfrXUgSFI8fX3poHZCXyurnfnlLvKC2xRaygUoraNRE=;
-        b=LctwO4xhmqj4Ysp1M6DcZhlQYQDY9vp/Q2HNlIWNZ/tGsoprXO0pc2O/5iYrsc1YOt
-         E3K5D8ToK73B0/IoaAEjvjtRG78ofSOwTDw6LpWtH3fnCoylMG0K8XBmfHAFzHZ4QDRR
-         FVB6GBTPwhWjhRELTsFtn5hXlfrGeXG5IbRH09lX4VbE7jivz4VQjVlbNE5Ratksxp7U
-         cfmu0Ei2r1s+iNajrt/zlQS0YONR6I8ax2HXhVV8JkpPTgRJ2/CtEHR3f+KTAmayZQ8B
-         h9u6wZE/EGyFGpM/5fSXPnQYM7inwZWVvK55cC8ICTs6iW45L9oBM5a3IEyfubAr1Vb4
-         RZDg==
-X-Gm-Message-State: AOAM530MW+89vaxvAKeODmhkQHoDbtR0ju5f1UmrdPWcDue3iwX4HTx9
-        8ur6IaOqg1LHM6S04GW4UJddq6w/FCxuH8OWsSA=
-X-Google-Smtp-Source: ABdhPJyXHlJNEfajF22FxGuN9yAwm49Rk7UkwEeI/ViCs/YWbqkPUmgpEcJ/0FiDxvEaveaOXlzo+L+XwX5+r91Vi2A=
-X-Received: by 2002:a0c:b2d6:: with SMTP id d22mr22379671qvf.7.1632091585260;
- Sun, 19 Sep 2021 15:46:25 -0700 (PDT)
+        with ESMTP id S230007AbhISWu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Sep 2021 18:50:56 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB60C061574
+        for <netdev@vger.kernel.org>; Sun, 19 Sep 2021 15:49:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=opTTE7PsVA8myzPfZ4WSKUgVye0Zs2gZsnMqTgOV6hw=; b=Uwf2BJ8otgXtOSEBcMQSYcS4RE
+        cyJHCl9600vbt78IiEhyR7HWRBPoTXB2BJIUIVJ0sDOdz6/evo/w1Gw/SPbCqqIWl4crJzWXZ+nqh
+        jSw6CRCZafJCAPYxDQBDFyGlEfyaKLlzCzmfBXt+2fVsnpztAwKhs422R6Sk+Nyq8Y4gZJQRwRQPs
+        sLRv7h2Jnc2wp6NBhi04PGVaHfqiebgd8pB/QxAhu5D5UpT84ykOv50pBhg1LyhM7SmPlZb+PQBhs
+        tn9v/cBLEc9lSnWbgxUPoJ8tojXpauRkV5t1IJ8Oempmxxes0Do+qo8+GFbYmhqrKIZ3Z7/uxEr53
+        bWGE+FvA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54654)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mS5ck-00019f-2A; Sun, 19 Sep 2021 23:49:26 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mS5cg-0001hE-TJ; Sun, 19 Sep 2021 23:49:22 +0100
+Date:   Sun, 19 Sep 2021 23:49:22 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: sched: fix initialiser warning in sch_frag.c
+Message-ID: <YUe+cq0CLRIA2Pn2@shell.armlinux.org.uk>
+References: <E1mS5U9-002wsa-TC@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-Received: by 2002:ad4:4d50:0:0:0:0:0 with HTTP; Sun, 19 Sep 2021 15:46:24
- -0700 (PDT)
-Reply-To: inforiaantim@planetmail.net
-From:   Riaan Samson <sgtcollin.j@gmail.com>
-Date:   Mon, 20 Sep 2021 00:46:24 +0200
-Message-ID: <CAJucRCo6d9GwnZEkMJz-uXTnu_ojypSKd1a0WAFvawKFVFjm9g@mail.gmail.com>
-Subject: Inquiry
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1mS5U9-002wsa-TC@rmk-PC.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Sep 19, 2021 at 11:40:33PM +0100, Russell King (Oracle) wrote:
+> Debian gcc 10.2.1 complains thusly:
 
-It is my pleasure to contact you discreetly as to discuss a mutually
-beneficial business; I will want to have your trust and to go into
-partnership investment with you which must be built on confidentiality
-between us.
+Correction: this is with ARM gcc 4.9.4 with the 5.14 kernel which is
+no longer supported by 5.15-rc. Please ignore.
 
-I am the Contract Award Director of with a South African Government
-Department; my office is in charge of awarding contracts to
-international contractors, building and handling of government
-contract throughout the country.
+> 
+> net/sched/sch_frag.c:93:10: warning: missing braces around initializer [-Wmissing-braces]
+>    struct rtable sch_frag_rt = { 0 };
+>           ^
+> net/sched/sch_frag.c:93:10: warning: (near initialization for 'sch_frag_rt.dst') [-Wmissing-braces]
+> 
+> Fix it by removing the unnecessary '0' initialiser, leaving the
+> braces.
+> 
+> Fixes: 31fe34a0118e ("net/sched: sch_frag: fix stack OOB read while fragmenting IPv4 packets")
+> Suggested-by: Michael Ellerman <mpe@ellerman.id.au>
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> ---
+>  net/sched/sch_frag.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/sched/sch_frag.c b/net/sched/sch_frag.c
+> index 8c06381391d6..ab359d63287c 100644
+> --- a/net/sched/sch_frag.c
+> +++ b/net/sched/sch_frag.c
+> @@ -90,7 +90,7 @@ static int sch_fragment(struct net *net, struct sk_buff *skb,
+>  	}
+>  
+>  	if (skb_protocol(skb, true) == htons(ETH_P_IP)) {
+> -		struct rtable sch_frag_rt = { 0 };
+> +		struct rtable sch_frag_rt = { };
+>  		unsigned long orig_dst;
+>  
+>  		sch_frag_prepare_frag(skb, xmit);
+> -- 
+> 2.30.2
+> 
+> 
 
-I am in the position to transfer the sum of US$17M of which I have
-written a memo informing the Government that this fund belongs to a
-Contractor waiting to be paid his contract sum; I want to transfer and
-invest this fund into your company as an investment fund from South
-Africa to your country.
-
-The fund will be shared on the ratio of 60-40%; 40% for you on the
-assistance rendered. Please note that this fund will not be
-investigated or recalled in the near feature as all document to move
-this fund to your account will be legally obtained. You are to send me
-your company's name and address with your banking details where you
-want the fund to be transferred to.
-
-As soon as you agree to my proposition, I will send you my number to
-reach me. I want you to keep this private to yourself. Be assured that
-this is a legitimate fund and will be transferred legitimately.
-
-Thanks for your anticipated cooperation.
-
-Yours
-
-Mr. Riaan Tim Samson
-
-Note: Reply me through my private/secure email: inforiaantim@planetmail.net
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
