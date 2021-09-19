@@ -2,85 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1A26410CE2
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 20:27:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA76F410CD4
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 20:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231205AbhISS2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 14:28:11 -0400
-Received: from imsva.erbakan.edu.tr ([95.183.198.89]:35424 "EHLO
-        imsva.erbakan.edu.tr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbhISS2K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Sep 2021 14:28:10 -0400
-X-Greylist: delayed 1433 seconds by postgrey-1.27 at vger.kernel.org; Sun, 19 Sep 2021 14:28:10 EDT
-Received: from imsva.erbakan.edu.tr (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0046D124A00;
-        Sun, 19 Sep 2021 20:54:54 +0300 (+03)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=erbakan.edu.tr;
-        s=dkim; t=1632074094;
-        bh=GF0kCZVzMAbL+zC2eGZ6bprg0BK693Z+UfWbMwtUgEs=; h=Date:From:To;
-        b=tERvpswE0hDLQmheCApqRjkMGAiiBduPF5/NZDQ3NnlJy6/YHgKYqG1CAbAEtqygt
-         Xd+2KpNQ5jY4JAXc//axi3zo3tDjePY7uN7jt6aRaVkb7DB4nU3O+pseaHvCVkCp3u
-         nSjkfSaHq1oAsQN6KgVA4Dt3vJEkCls67TRTKR7g=
-Received: from imsva.erbakan.edu.tr (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E17E91249FD;
-        Sun, 19 Sep 2021 20:54:53 +0300 (+03)
-Received: from eposta.erbakan.edu.tr (unknown [172.42.40.30])
-        by imsva.erbakan.edu.tr (Postfix) with ESMTPS;
-        Sun, 19 Sep 2021 20:54:53 +0300 (+03)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by eposta.erbakan.edu.tr (Postfix) with ESMTP id 168861217BB77;
-        Sun, 19 Sep 2021 21:02:47 +0300 (+03)
-Received: from eposta.erbakan.edu.tr ([127.0.0.1])
-        by localhost (eposta.erbakan.edu.tr [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id VKR8s4R_7Z6R; Sun, 19 Sep 2021 21:02:47 +0300 (+03)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by eposta.erbakan.edu.tr (Postfix) with ESMTP id 89F251217BB58;
-        Sun, 19 Sep 2021 21:02:46 +0300 (+03)
-DKIM-Filter: OpenDKIM Filter v2.10.3 eposta.erbakan.edu.tr 89F251217BB58
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=erbakan.edu.tr;
-        s=9A114B22-0D17-11E9-AE7D-5CB170D0BDE7; t=1632074567;
-        bh=UE+6Rh6p+D/Q/qnCC1rilRTfAwcozVy4J0wYoa1QJws=;
-        h=Date:From:Message-ID:MIME-Version;
-        b=E8NDvWw5w//+3rb+gQEM61zGwnwNbPwanciplKuLw/AcTULygNmYJxQeTaNh/fzo1
-         mKv84RDwxy4vu401WyNIcV23xrTt2Pqz3wZBvsP5ym5Th/RlenJYt42cRRSKJTOgct
-         pIOnhIgJdqTb0IYO9l3NAvZQH0lKVrBXUJ5h56Q+ORisvFJ0evRSSfhACZCDFn7UTa
-         lmGCaEr/w/W9DJ0a9B97vxPyz/qFAUikpnsXi96XBB3qeW3m1YVOXaXYwGUw3vE9nn
-         XH7McwMJz+e1dwvtsTsmpKmIZp6m7u0yBElbyQLToA3saIi9YzSzaJGZJuKwdMHoUZ
-         fPKSMmRh+sWgg==
-X-Virus-Scanned: amavisd-new at eposta.erbakan.edu.tr
-Received: from eposta.erbakan.edu.tr ([127.0.0.1])
-        by localhost (eposta.erbakan.edu.tr [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id UXnWUy3F6Y7P; Sun, 19 Sep 2021 21:02:45 +0300 (+03)
-Received: from eposta.erbakan.edu.tr (eposta.konya.edu.tr [172.42.44.72])
-        by eposta.erbakan.edu.tr (Postfix) with ESMTP id 513491217BB06;
-        Sun, 19 Sep 2021 21:02:45 +0300 (+03)
-Date:   Sun, 19 Sep 2021 21:02:44 +0300 (EET)
-From:   =?utf-8?B?eWFyxLHFn21h?= gsf <yarismagsf@erbakan.edu.tr>
-Reply-To: =?utf-8?B?eWFyxLHFn21h?= gsf <oasisportfb@gmail.com>
-Message-ID: <1393078619.525573.1632074564836.JavaMail.zimbra@erbakan.edu.tr>
-Subject: Re: Instant approval
+        id S229650AbhISSRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 14:17:32 -0400
+Received: from mx3.wp.pl ([212.77.101.9]:54354 "EHLO mx3.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230503AbhISSRb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Sep 2021 14:17:31 -0400
+Received: (wp-smtpd smtp.wp.pl 25582 invoked from network); 19 Sep 2021 20:16:00 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1632075360; bh=dJtM2Sa5+w2q6qeeWG9EfeAq3LLnqFx6o7OMnGapbrM=;
+          h=Subject:To:From;
+          b=DYYXpBESq3wTWM0U1nQ0jRh5b96tSfpQzTHOmDVRo3JrRGdjVX6e8q05LQraP2Tdl
+           4ZJArJqkAJYIouZ74h5EyRMDxYSmCuu9EUT9ddaqv40TFunpsu1yOffj87vfGdPQ6N
+           UlwFMKYSEoRNNHXusj7tl8YxsG0M+MME1FuD3WK4=
+Received: from ip-5-172-255-97.free.aero2.net.pl (HELO [100.83.197.37]) (olek2@wp.pl@[5.172.255.97])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <linux-kernel@vger.kernel.org>; 19 Sep 2021 20:16:00 +0200
+Subject: Re: [PATCH net-next 5/8] net: lantiq: configure the burst length in
+ ethernet drivers
+To:     Hauke Mehrtens <hauke@hauke-m.de>, john@phrozen.org,
+        tsbogend@alpha.franken.de, maz@kernel.org, ralf@linux-mips.org,
+        ralph.hempel@lantiq.com, davem@davemloft.net, kuba@kernel.org,
+        robh+dt@kernel.org, dev@kresin.me, arnd@arndb.de, jgg@ziepe.ca,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210914212105.76186-1-olek2@wp.pl>
+ <20210914212105.76186-5-olek2@wp.pl>
+ <cdfd53e7-ea43-60a4-7150-11ad166ba2d1@hauke-m.de>
+From:   Aleksander Bajkowski <olek2@wp.pl>
+Message-ID: <98677485-0bdc-d628-6cc7-417c8ed1a334@wp.pl>
+Date:   Sun, 19 Sep 2021 20:16:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <cdfd53e7-ea43-60a4-7150-11ad166ba2d1@hauke-m.de>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Mailer: Zimbra 8.8.11_GA_3799 (ZimbraWebClient - GC92 (Win)/8.8.11_GA_3787)
-Thread-Index: Ss03EdyvqVI5U9XEzN3p4ScB4lzn6g==
-Thread-Topic: Instant approval
-To:     undisclosed-recipients:;
-X-TM-AS-GCONF: 00
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: 94f05cca218d0575efc7ebaffd909b85
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 000000B [IfOE]                               
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Oasis is offering quick loans, without credit check to old and new customers. We give Short or long term loan with a relatively low interest rate of about 0.2% on Instant approval.
-Oasis Fintech a onetime solution to all your financial need.
-Contact us today via email, oasisportfb@gmail.com,  and complete the loan form below....
-Your Full Name:
-Amount Required:
-Contact Phone #:
-Occupation:
-Loan Duration:
-Purpose:
-Location:
- 
-Ms. Bauer
-Contact us via: email:  oasisportfb@gmail.com
+Hi Hauke,
+
+On 9/15/21 12:36 AM, Hauke Mehrtens wrote:
+> On 9/14/21 11:21 PM, Aleksander Jan Bajkowski wrote:
+>> Configure the burst length in Ethernet drivers. This improves
+>> Ethernet performance by 58%. According to the vendor BSP,
+>> 8W burst length is supported by ar9 and newer SoCs.
+>>
+>> The NAT benchmark results on xRX200 (Down/Up):
+>> * 2W: 330 Mb/s
+>> * 4W: 432 Mb/s    372 Mb/s
+>> * 8W: 520 Mb/s    389 Mb/s
+>>
+>> Tested on xRX200 and xRX330.
+>>
+>> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+>> ---
+>>   drivers/net/ethernet/lantiq_etop.c   | 21 ++++++++++++++++++---
+>>   drivers/net/ethernet/lantiq_xrx200.c | 21 ++++++++++++++++++---
+>>   2 files changed, 36 insertions(+), 6 deletions(-)
+>>
+> .....
+>> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+>> index fb78f17d734f..5d96248ce83b 100644
+>> --- a/drivers/net/ethernet/lantiq_xrx200.c
+>> +++ b/drivers/net/ethernet/lantiq_xrx200.c
+>> @@ -71,6 +71,9 @@ struct xrx200_priv {
+>>       struct net_device *net_dev;
+>>       struct device *dev;
+>>   +    int tx_burst_len;
+>> +    int rx_burst_len;
+>> +
+>>       __iomem void *pmac_reg;
+>>   };
+>>   @@ -316,8 +319,8 @@ static netdev_tx_t xrx200_start_xmit(struct sk_buff *skb,
+>>       if (unlikely(dma_mapping_error(priv->dev, mapping)))
+>>           goto err_drop;
+>>   -    /* dma needs to start on a 16 byte aligned address */
+>> -    byte_offset = mapping % 16;
+>> +    /* dma needs to start on a burst length value aligned address */
+>> +    byte_offset = mapping % (priv->tx_burst_len * 4);
+>>         desc->addr = mapping - byte_offset;
+>>       /* Make sure the address is written before we give it to HW */
+>> @@ -369,7 +372,7 @@ static int xrx200_dma_init(struct xrx200_priv *priv)
+>>       int ret = 0;
+>>       int i;
+>>   -    ltq_dma_init_port(DMA_PORT_ETOP);
+>> +    ltq_dma_init_port(DMA_PORT_ETOP, priv->tx_burst_len, rx_burst_len);
+>>         ch_rx->dma.nr = XRX200_DMA_RX;
+>>       ch_rx->dma.dev = priv->dev;
+>> @@ -478,6 +481,18 @@ static int xrx200_probe(struct platform_device *pdev)
+>>       if (err)
+>>           eth_hw_addr_random(net_dev);
+>>   +    err = device_property_read_u32(dev, "lantiq,tx-burst-length", &priv->tx_burst_len);
+>> +    if (err < 0) {
+>> +        dev_err(dev, "unable to read tx-burst-length property\n");
+>> +        return err;
+>> +    }
+>> +
+>> +    err = device_property_read_u32(dev, "lantiq,rx-burst-length", &priv->rx_burst_len);
+>> +    if (err < 0) {
+>> +        dev_err(dev, "unable to read rx-burst-length property\n");
+>> +        return err;
+>> +    }
+>> +
+> 
+> I would prefer if you would hard code these values to 8 for the xrx200 driver. All SoCs with this IP block should support this.
+OK. I can hard code 8W burst length in the driver for xrx200. Burst length as a configurable parameter is really only needed in the lantiq_etop driver.
+> 
+>>       /* bring up the dma engine and IP core */
+>>       err = xrx200_dma_init(priv);
+>>       if (err)
+>>
+> 
+> Hauke
+Aleksander
