@@ -2,127 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA76F410CD4
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 20:16:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A15C410CDC
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 20:25:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbhISSRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 14:17:32 -0400
-Received: from mx3.wp.pl ([212.77.101.9]:54354 "EHLO mx3.wp.pl"
+        id S230213AbhISS0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 14:26:03 -0400
+Received: from mx3.wp.pl ([212.77.101.10]:18105 "EHLO mx3.wp.pl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230503AbhISSRb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Sep 2021 14:17:31 -0400
-Received: (wp-smtpd smtp.wp.pl 25582 invoked from network); 19 Sep 2021 20:16:00 +0200
+        id S229517AbhISS0B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Sep 2021 14:26:01 -0400
+Received: (wp-smtpd smtp.wp.pl 23801 invoked from network); 19 Sep 2021 20:24:34 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1632075360; bh=dJtM2Sa5+w2q6qeeWG9EfeAq3LLnqFx6o7OMnGapbrM=;
-          h=Subject:To:From;
-          b=DYYXpBESq3wTWM0U1nQ0jRh5b96tSfpQzTHOmDVRo3JrRGdjVX6e8q05LQraP2Tdl
-           4ZJArJqkAJYIouZ74h5EyRMDxYSmCuu9EUT9ddaqv40TFunpsu1yOffj87vfGdPQ6N
-           UlwFMKYSEoRNNHXusj7tl8YxsG0M+MME1FuD3WK4=
-Received: from ip-5-172-255-97.free.aero2.net.pl (HELO [100.83.197.37]) (olek2@wp.pl@[5.172.255.97])
+          t=1632075874; bh=CQZ3Xz5ypEo5tNFJ1b6YMO9RonHFHaA+9AocsR6YEaY=;
+          h=From:To:Cc:Subject;
+          b=NDeXFEAhJ3O7/ABPPAp20QTN+Zvgu2STTLA0Ibut0X9UmNaNcpKgqdrhRhspI/exP
+           OI8IZj4VMI3vjbQs6L0Rqp6pmAT7kGZE+w0aomk8S+PSdKkr35Jpw0DsejgcsN7mS6
+           fmhdRuds+1uctckHJEg98D3TpLrAfPulW0QJmqyo=
+Received: from ip-5-172-255-97.free.aero2.net.pl (HELO LAPTOP-OLEK.Free) (olek2@wp.pl@[5.172.255.97])
           (envelope-sender <olek2@wp.pl>)
           by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <linux-kernel@vger.kernel.org>; 19 Sep 2021 20:16:00 +0200
-Subject: Re: [PATCH net-next 5/8] net: lantiq: configure the burst length in
- ethernet drivers
-To:     Hauke Mehrtens <hauke@hauke-m.de>, john@phrozen.org,
-        tsbogend@alpha.franken.de, maz@kernel.org, ralf@linux-mips.org,
-        ralph.hempel@lantiq.com, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, dev@kresin.me, arnd@arndb.de, jgg@ziepe.ca,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210914212105.76186-1-olek2@wp.pl>
- <20210914212105.76186-5-olek2@wp.pl>
- <cdfd53e7-ea43-60a4-7150-11ad166ba2d1@hauke-m.de>
-From:   Aleksander Bajkowski <olek2@wp.pl>
-Message-ID: <98677485-0bdc-d628-6cc7-417c8ed1a334@wp.pl>
-Date:   Sun, 19 Sep 2021 20:16:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+          for <hauke@hauke-m.de>; 19 Sep 2021 20:24:34 +0200
+From:   Aleksander Jan Bajkowski <olek2@wp.pl>
+To:     hauke@hauke-m.de, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Aleksander Jan Bajkowski <olek2@wp.pl>
+Subject: [net-next] net: lantiq: add support for jumbo frames
+Date:   Sun, 19 Sep 2021 20:24:28 +0200
+Message-Id: <20210919182428.1075113-1-olek2@wp.pl>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <cdfd53e7-ea43-60a4-7150-11ad166ba2d1@hauke-m.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-WP-MailID: 94f05cca218d0575efc7ebaffd909b85
+X-WP-DKIM-Status: good (id: wp.pl)                                      
+X-WP-MailID: 17f12541ef02e16049d4fff3f964dc8f
 X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 000000B [IfOE]                               
+X-WP-SPAM: NO 0000000 [EcNk]                               
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hauke,
+Add support for jumbo frames. Full support for jumbo frames requires
+changes in the DSA switch driver (lantiq_gswip.c).
 
-On 9/15/21 12:36 AM, Hauke Mehrtens wrote:
-> On 9/14/21 11:21 PM, Aleksander Jan Bajkowski wrote:
->> Configure the burst length in Ethernet drivers. This improves
->> Ethernet performance by 58%. According to the vendor BSP,
->> 8W burst length is supported by ar9 and newer SoCs.
->>
->> The NAT benchmark results on xRX200 (Down/Up):
->> * 2W: 330 Mb/s
->> * 4W: 432 Mb/s    372 Mb/s
->> * 8W: 520 Mb/s    389 Mb/s
->>
->> Tested on xRX200 and xRX330.
->>
->> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
->> ---
->>   drivers/net/ethernet/lantiq_etop.c   | 21 ++++++++++++++++++---
->>   drivers/net/ethernet/lantiq_xrx200.c | 21 ++++++++++++++++++---
->>   2 files changed, 36 insertions(+), 6 deletions(-)
->>
-> .....
->> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
->> index fb78f17d734f..5d96248ce83b 100644
->> --- a/drivers/net/ethernet/lantiq_xrx200.c
->> +++ b/drivers/net/ethernet/lantiq_xrx200.c
->> @@ -71,6 +71,9 @@ struct xrx200_priv {
->>       struct net_device *net_dev;
->>       struct device *dev;
->>   +    int tx_burst_len;
->> +    int rx_burst_len;
->> +
->>       __iomem void *pmac_reg;
->>   };
->>   @@ -316,8 +319,8 @@ static netdev_tx_t xrx200_start_xmit(struct sk_buff *skb,
->>       if (unlikely(dma_mapping_error(priv->dev, mapping)))
->>           goto err_drop;
->>   -    /* dma needs to start on a 16 byte aligned address */
->> -    byte_offset = mapping % 16;
->> +    /* dma needs to start on a burst length value aligned address */
->> +    byte_offset = mapping % (priv->tx_burst_len * 4);
->>         desc->addr = mapping - byte_offset;
->>       /* Make sure the address is written before we give it to HW */
->> @@ -369,7 +372,7 @@ static int xrx200_dma_init(struct xrx200_priv *priv)
->>       int ret = 0;
->>       int i;
->>   -    ltq_dma_init_port(DMA_PORT_ETOP);
->> +    ltq_dma_init_port(DMA_PORT_ETOP, priv->tx_burst_len, rx_burst_len);
->>         ch_rx->dma.nr = XRX200_DMA_RX;
->>       ch_rx->dma.dev = priv->dev;
->> @@ -478,6 +481,18 @@ static int xrx200_probe(struct platform_device *pdev)
->>       if (err)
->>           eth_hw_addr_random(net_dev);
->>   +    err = device_property_read_u32(dev, "lantiq,tx-burst-length", &priv->tx_burst_len);
->> +    if (err < 0) {
->> +        dev_err(dev, "unable to read tx-burst-length property\n");
->> +        return err;
->> +    }
->> +
->> +    err = device_property_read_u32(dev, "lantiq,rx-burst-length", &priv->rx_burst_len);
->> +    if (err < 0) {
->> +        dev_err(dev, "unable to read rx-burst-length property\n");
->> +        return err;
->> +    }
->> +
-> 
-> I would prefer if you would hard code these values to 8 for the xrx200 driver. All SoCs with this IP block should support this.
-OK. I can hard code 8W burst length in the driver for xrx200. Burst length as a configurable parameter is really only needed in the lantiq_etop driver.
-> 
->>       /* bring up the dma engine and IP core */
->>       err = xrx200_dma_init(priv);
->>       if (err)
->>
-> 
-> Hauke
-Aleksander
+Tested on BT Hone Hub 5A.
+
+Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+---
+ drivers/net/ethernet/lantiq_xrx200.c | 64 +++++++++++++++++++++++++---
+ 1 file changed, 57 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+index fb78f17d734f..fd355e238ab6 100644
+--- a/drivers/net/ethernet/lantiq_xrx200.c
++++ b/drivers/net/ethernet/lantiq_xrx200.c
+@@ -14,13 +14,15 @@
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ 
++#include <linux/if_vlan.h>
++
+ #include <linux/of_net.h>
+ #include <linux/of_platform.h>
+ 
+ #include <xway_dma.h>
+ 
+ /* DMA */
+-#define XRX200_DMA_DATA_LEN	0x600
++#define XRX200_DMA_DATA_LEN	(SZ_64K - 1)
+ #define XRX200_DMA_RX		0
+ #define XRX200_DMA_TX		1
+ 
+@@ -106,7 +108,8 @@ static void xrx200_flush_dma(struct xrx200_chan *ch)
+ 			break;
+ 
+ 		desc->ctl = LTQ_DMA_OWN | LTQ_DMA_RX_OFFSET(NET_IP_ALIGN) |
+-			    XRX200_DMA_DATA_LEN;
++			    (ch->priv->net_dev->mtu + VLAN_ETH_HLEN +
++			     ETH_FCS_LEN);
+ 		ch->dma.desc++;
+ 		ch->dma.desc %= LTQ_DESC_NUM;
+ 	}
+@@ -154,19 +157,20 @@ static int xrx200_close(struct net_device *net_dev)
+ 
+ static int xrx200_alloc_skb(struct xrx200_chan *ch)
+ {
++	int len = ch->priv->net_dev->mtu + VLAN_ETH_HLEN + ETH_FCS_LEN;
+ 	struct sk_buff *skb = ch->skb[ch->dma.desc];
+ 	dma_addr_t mapping;
+ 	int ret = 0;
+ 
+ 	ch->skb[ch->dma.desc] = netdev_alloc_skb_ip_align(ch->priv->net_dev,
+-							  XRX200_DMA_DATA_LEN);
++							  len);
+ 	if (!ch->skb[ch->dma.desc]) {
+ 		ret = -ENOMEM;
+ 		goto skip;
+ 	}
+ 
+ 	mapping = dma_map_single(ch->priv->dev, ch->skb[ch->dma.desc]->data,
+-				 XRX200_DMA_DATA_LEN, DMA_FROM_DEVICE);
++				 len, DMA_FROM_DEVICE);
+ 	if (unlikely(dma_mapping_error(ch->priv->dev, mapping))) {
+ 		dev_kfree_skb_any(ch->skb[ch->dma.desc]);
+ 		ch->skb[ch->dma.desc] = skb;
+@@ -179,8 +183,7 @@ static int xrx200_alloc_skb(struct xrx200_chan *ch)
+ 	wmb();
+ skip:
+ 	ch->dma.desc_base[ch->dma.desc].ctl =
+-		LTQ_DMA_OWN | LTQ_DMA_RX_OFFSET(NET_IP_ALIGN) |
+-		XRX200_DMA_DATA_LEN;
++		LTQ_DMA_OWN | LTQ_DMA_RX_OFFSET(NET_IP_ALIGN) | len;
+ 
+ 	return ret;
+ }
+@@ -340,10 +343,57 @@ static netdev_tx_t xrx200_start_xmit(struct sk_buff *skb,
+ 	return NETDEV_TX_OK;
+ }
+ 
++static int
++xrx200_change_mtu(struct net_device *net_dev, int new_mtu)
++{
++	struct xrx200_priv *priv = netdev_priv(net_dev);
++	struct xrx200_chan *ch_rx = &priv->chan_rx;
++	int old_mtu = net_dev->mtu;
++	bool running = false;
++	struct sk_buff *skb;
++	int curr_desc;
++	int ret = 0;
++
++	net_dev->mtu = new_mtu;
++
++	if (new_mtu <= old_mtu)
++		return ret;
++
++	running = netif_running(net_dev);
++	if (running) {
++		napi_disable(&ch_rx->napi);
++		ltq_dma_close(&ch_rx->dma);
++	}
++
++	xrx200_poll_rx(&ch_rx->napi, LTQ_DESC_NUM);
++	curr_desc = ch_rx->dma.desc;
++
++	for (ch_rx->dma.desc = 0; ch_rx->dma.desc < LTQ_DESC_NUM;
++	     ch_rx->dma.desc++) {
++		skb = ch_rx->skb[ch_rx->dma.desc];
++		ret = xrx200_alloc_skb(ch_rx);
++		if (ret) {
++			net_dev->mtu = old_mtu;
++			break;
++		}
++		dev_kfree_skb_any(skb);
++	}
++
++	ch_rx->dma.desc = curr_desc;
++	if (running) {
++		napi_enable(&ch_rx->napi);
++		ltq_dma_open(&ch_rx->dma);
++		ltq_dma_enable_irq(&ch_rx->dma);
++	}
++
++	return ret;
++}
++
+ static const struct net_device_ops xrx200_netdev_ops = {
+ 	.ndo_open		= xrx200_open,
+ 	.ndo_stop		= xrx200_close,
+ 	.ndo_start_xmit		= xrx200_start_xmit,
++	.ndo_change_mtu		= xrx200_change_mtu,
+ 	.ndo_set_mac_address	= eth_mac_addr,
+ 	.ndo_validate_addr	= eth_validate_addr,
+ };
+@@ -453,7 +503,7 @@ static int xrx200_probe(struct platform_device *pdev)
+ 	net_dev->netdev_ops = &xrx200_netdev_ops;
+ 	SET_NETDEV_DEV(net_dev, dev);
+ 	net_dev->min_mtu = ETH_ZLEN;
+-	net_dev->max_mtu = XRX200_DMA_DATA_LEN;
++	net_dev->max_mtu = XRX200_DMA_DATA_LEN - VLAN_ETH_HLEN - ETH_FCS_LEN;
+ 
+ 	/* load the memory ranges */
+ 	priv->pmac_reg = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
+-- 
+2.30.2
+
