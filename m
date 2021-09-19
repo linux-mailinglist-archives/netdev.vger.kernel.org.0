@@ -2,140 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BA1B411739
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 16:36:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D07E4411734
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 16:36:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240681AbhITOhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 10:37:53 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:33213 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237264AbhITOhm (ORCPT
+        id S237471AbhITOho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 10:37:44 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:42139 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232884AbhITOhm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 10:37:42 -0400
 Received: from h7.dl5rb.org.uk (p5790756f.dip0.t-ipconnect.de [87.144.117.111])
         (Authenticated sender: ralf@linux-mips.org)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 8941B1BF214;
-        Mon, 20 Sep 2021 14:36:14 +0000 (UTC)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 16C3924000D;
+        Mon, 20 Sep 2021 14:36:13 +0000 (UTC)
 Received: from h7.dl5rb.org.uk (localhost [127.0.0.1])
-        by h7.dl5rb.org.uk (8.16.1/8.16.1) with ESMTPS id 18KEaDxf1202543
+        by h7.dl5rb.org.uk (8.16.1/8.16.1) with ESMTPS id 18KEaCoW1202523
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 20 Sep 2021 16:36:13 +0200
+        Mon, 20 Sep 2021 16:36:12 +0200
 Received: (from ralf@localhost)
-        by h7.dl5rb.org.uk (8.16.1/8.16.1/Submit) id 18KEaDRg1202542;
-        Mon, 20 Sep 2021 16:36:13 +0200
-Message-Id: <b913c3f92657e40ec762ae214deb0e4a5bdec6ca.1632059758.git.ralf@linux-mips.org>
-In-Reply-To: <cover.1632059758.git.ralf@linux-mips.org>
-References: <cover.1632059758.git.ralf@linux-mips.org>
+        by h7.dl5rb.org.uk (8.16.1/8.16.1/Submit) id 18KEa8AL1202520;
+        Mon, 20 Sep 2021 16:36:08 +0200
+Message-Id: <cover.1632059758.git.ralf@linux-mips.org>
 From:   Ralf Baechle <ralf@linux-mips.org>
-Date:   Sun, 19 Sep 2021 15:30:26 +0200
-Subject: [PATCH v2 5/6] ROSE: Add rose_ntop implementation.
+Date:   Sun, 19 Sep 2021 15:55:58 +0200
+Subject: [PATCH v2 0/6] iproute2: Add basic AX.25, NETROM and ROSE support.
 To:     Stephen Hemminger <stephen@networkplumber.org>
 Cc:     netdev@vger.kernel.org, linux-hams@vger.kernel.org
-Lines:  103
+Lines:  75
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ROSE addresses are ten digit numbers, basically like North American
-telephone numbers.
+net-tools contain support for these three protocol but are deprecated and
+no longer installed by default by many distributions.  Iproute2 otoh has
+no support at all and will dump the addresses of these protocols which
+actually are pretty human readable as hex numbers:
 
-Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
----
- Makefile        |  3 +++
- include/utils.h |  2 ++
- lib/rose_ntop.c | 56 +++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 61 insertions(+)
+# ip link show dev bpq0
+3: bpq0: <UP,LOWER_UP> mtu 256 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/ax25 88:98:60:a0:92:40:02 brd a2:a6:a8:40:40:40:00
+# ip link show dev nr0
+4: nr0: <NOARP,UP,LOWER_UP> mtu 236 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/netrom 88:98:60:a0:92:40:0a brd 00:00:00:00:00:00:00
+# ip link show dev rose0
+8: rose0: <NOARP,UP,LOWER_UP> mtu 249 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/rose 65:09:33:30:00 brd 00:00:00:00:00
+
+This series adds basic support for the three protocols to print addresses:
+
+# ip link show dev bpq0
+3: bpq0: <UP,LOWER_UP> mtu 256 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/ax25 DL0PI-1 brd QST-0
+# ip link show dev nr0
+4: nr0: <NOARP,UP,LOWER_UP> mtu 236 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/netrom DL0PI-5 brd *
+# ip link show dev rose0
+8: rose0: <NOARP,UP,LOWER_UP> mtu 249 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/rose 6509333000 brd 0000000000
+
+Ralf Baechle (6):
+  AX.25: Add ax25_ntop implementation.
+  AX.25: Print decoded addresses rather than hex numbers.
+  NETROM: Add netrom_ntop implementation.
+  NETROM: Print decoded addresses rather than hex numbers.
+  ROSE: Add rose_ntop implementation.
+  ROSE: Print decoded addresses rather than hex numbers.
+
+Changes in v2:
+ - reset commit dates.  The commit dates were still pointing back to the
+   ages of King Tutankhamun though the code is more recent and has been
+   tested based on latest iproute2.
+
+ Makefile          |  9 ++++++
+ include/utils.h   |  6 ++++
+ lib/ax25_ntop.c   | 82 +++++++++++++++++++++++++++++++++++++++++++++++
+ lib/ll_addr.c     |  6 ++++
+ lib/netrom_ntop.c | 23 +++++++++++++
+ lib/rose_ntop.c   | 56 ++++++++++++++++++++++++++++++++
+ 6 files changed, 182 insertions(+)
+ create mode 100644 lib/ax25_ntop.c
+ create mode 100644 lib/netrom_ntop.c
  create mode 100644 lib/rose_ntop.c
 
-diff --git a/Makefile b/Makefile
-index df894d54..5eddd504 100644
---- a/Makefile
-+++ b/Makefile
-@@ -43,6 +43,9 @@ DEFINES+=-DCONFDIR=\"$(CONFDIR)\" \
- #options for AX.25
- ADDLIB+=ax25_ntop.o
- 
-+#options for AX.25
-+ADDLIB+=rose_ntop.o
-+
- #options for mpls
- ADDLIB+=mpls_ntop.o mpls_pton.o
- 
-diff --git a/include/utils.h b/include/utils.h
-index 6ab2fa74..b6c468e9 100644
---- a/include/utils.h
-+++ b/include/utils.h
-@@ -200,6 +200,8 @@ int inet_addr_match_rta(const inet_prefix *m, const struct rtattr *rta);
- 
- const char *ax25_ntop(int af, const void *addr, char *str, socklen_t len);
- 
-+const char *rose_ntop(int af, const void *addr, char *buf, socklen_t buflen);
-+
- const char *mpls_ntop(int af, const void *addr, char *str, size_t len);
- int mpls_pton(int af, const char *src, void *addr, size_t alen);
- 
-diff --git a/lib/rose_ntop.c b/lib/rose_ntop.c
-new file mode 100644
-index 00000000..c9ba712c
---- /dev/null
-+++ b/lib/rose_ntop.c
-@@ -0,0 +1,56 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <unistd.h>
-+#include <fcntl.h>
-+#include <sys/ioctl.h>
-+#include <sys/socket.h>
-+#include <netinet/in.h>
-+#include <arpa/inet.h>
-+#include <string.h>
-+#include <errno.h>
-+
-+#include <linux/netdevice.h>
-+#include <linux/if_arp.h>
-+#include <linux/sockios.h>
-+#include <linux/rose.h>
-+
-+#include "rt_names.h"
-+#include "utils.h"
-+
-+static const char *rose_ntop1(const rose_address *src, char *dst,
-+			      socklen_t size)
-+{
-+	char *p = dst;
-+	int i;
-+
-+	if (size < 10)
-+		return NULL;
-+
-+	for (i = 0; i < 5; i++) {
-+		*p++ = '0' + ((src->rose_addr[i] >> 4) & 0xf);
-+		*p++ = '0' + ((src->rose_addr[i]     ) & 0xf);
-+	}
-+
-+	if (size == 10)
-+		return dst;
-+
-+	*p = '\0';
-+
-+	return dst;
-+}
-+
-+const char *rose_ntop(int af, const void *addr, char *buf, socklen_t buflen)
-+{
-+	switch (af) {
-+	case AF_ROSE:
-+		errno = 0;
-+		return rose_ntop1((rose_address *)addr, buf, buflen);
-+
-+	default:
-+		errno = EAFNOSUPPORT;
-+	}
-+
-+	return NULL;
-+}
 -- 
 2.31.1
 
+
+Ralf Baechle (6):
+  AX.25: Add ax25_ntop implementation.
+  AX.25: Print decoded addresses rather than hex numbers.
+  NETROM: Add netrom_ntop implementation.
+  NETROM: Print decoded addresses rather than hex numbers.
+  ROSE: Add rose_ntop implementation.
+  ROSE: Print decoded addresses rather than hex numbers.
+
+ Makefile          |  9 ++++++
+ include/utils.h   |  6 ++++
+ lib/ax25_ntop.c   | 82 +++++++++++++++++++++++++++++++++++++++++++++++
+ lib/ll_addr.c     |  6 ++++
+ lib/netrom_ntop.c | 23 +++++++++++++
+ lib/rose_ntop.c   | 56 ++++++++++++++++++++++++++++++++
+ 6 files changed, 182 insertions(+)
+ create mode 100644 lib/ax25_ntop.c
+ create mode 100644 lib/netrom_ntop.c
+ create mode 100644 lib/rose_ntop.c
+
+-- 
+2.31.1
 
