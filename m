@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA505410CA0
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 19:26:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43556410CA1
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 19:27:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbhISR2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 13:28:16 -0400
-Received: from mga18.intel.com ([134.134.136.126]:61773 "EHLO mga18.intel.com"
+        id S230071AbhISR3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 13:29:03 -0400
+Received: from mga02.intel.com ([134.134.136.20]:55377 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229574AbhISR2L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Sep 2021 13:28:11 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10112"; a="210114996"
+        id S229574AbhISR26 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Sep 2021 13:28:58 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10112"; a="210266357"
 X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; 
-   d="scan'208";a="210114996"
+   d="scan'208";a="210266357"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2021 10:26:45 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2021 10:27:33 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; 
-   d="scan'208";a="531936836"
+   d="scan'208";a="531936984"
 Received: from ccgwwan-adlp2.iind.intel.com ([10.224.174.127])
-  by fmsmga004.fm.intel.com with ESMTP; 19 Sep 2021 10:26:42 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 19 Sep 2021 10:27:29 -0700
 From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
         ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
         krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
-        linuxwwan@intel.com, dan.carpenter@oracle.com
-Subject: [PATCH V2 net-next 1/6] net: wwan: iosm: devlink registration
-Date:   Sun, 19 Sep 2021 22:56:18 +0530
-Message-Id: <20210919172618.25992-1-m.chetan.kumar@linux.intel.com>
+        linuxwwan@intel.com, cgel.zte@gmail.com
+Subject: [PATCH V2 net-next 2/6] net: wwan: iosm: fw flashing support
+Date:   Sun, 19 Sep 2021 22:57:05 +0530
+Message-Id: <20210919172705.26048-1-m.chetan.kumar@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -37,604 +37,863 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Register with devlink framework and implment callbacks required
-for fw flashing and coredump collection.
+Implements protocol for fw flashing and PSI injection for
+coredump collection.
 
 Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 ---
-v2:
-* Fixes memory leak in ipc_devlink_create_region().
-* Fixes NULL parameter deference in ipc_devlink_flash_update() reported by
-  smatch static checker.
+v2: Use kmemdup instead of kzalloc and memcpy in ipc_flash_boot_psi().
 ---
- drivers/net/wwan/iosm/iosm_ipc_devlink.c | 363 +++++++++++++++++++++++
- drivers/net/wwan/iosm/iosm_ipc_devlink.h | 207 +++++++++++++
- 2 files changed, 570 insertions(+)
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_devlink.c
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_devlink.h
+ drivers/net/wwan/iosm/iosm_ipc_flash.c | 561 +++++++++++++++++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_flash.h | 271 ++++++++++++
+ 2 files changed, 832 insertions(+)
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_flash.c
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_flash.h
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_devlink.c b/drivers/net/wwan/iosm/iosm_ipc_devlink.c
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_flash.c b/drivers/net/wwan/iosm/iosm_ipc_flash.c
 new file mode 100644
-index 000000000000..7fd7956cc61e
+index 000000000000..3d2f1ec6da00
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_devlink.c
-@@ -0,0 +1,363 @@
++++ b/drivers/net/wwan/iosm/iosm_ipc_flash.c
+@@ -0,0 +1,561 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (C) 2020-2021 Intel Corporation.
 + */
 +
-+#include "iosm_ipc_chnl_cfg.h"
 +#include "iosm_ipc_coredump.h"
 +#include "iosm_ipc_devlink.h"
 +#include "iosm_ipc_flash.h"
 +
-+/* Coredump list */
-+static struct iosm_coredump_file_info list[IOSM_NOF_CD_REGION] = {
-+	{"report.json", REPORT_JSON_SIZE,},
-+	{"coredump.fcd", COREDUMP_FCD_SIZE,},
-+	{"cdd.log", CDD_LOG_SIZE,},
-+	{"eeprom.bin", EEPROM_BIN_SIZE,},
-+	{"bootcore_trace.bin", BOOTCORE_TRC_BIN_SIZE,},
-+	{"bootcore_prev_trace.bin", BOOTCORE_PREV_TRC_BIN_SIZE,},
-+};
-+
-+/* Get the param values for the specific param ID's */
-+static int ipc_devlink_get_param(struct devlink *dl, u32 id,
-+				 struct devlink_param_gset_ctx *ctx)
-+{
-+	struct iosm_devlink *ipc_devlink = devlink_priv(dl);
-+	int rc = 0;
-+
-+	switch (id) {
-+	case IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH:
-+		ctx->val.vu8 = ipc_devlink->param.erase_full_flash;
-+		break;
-+
-+	case IOSM_DEVLINK_PARAM_ID_DOWNLOAD_REGION:
-+		ctx->val.vu8 = ipc_devlink->param.download_region;
-+		break;
-+
-+	case IOSM_DEVLINK_PARAM_ID_ADDRESS:
-+		ctx->val.vu32 = ipc_devlink->param.address;
-+		break;
-+
-+	case IOSM_DEVLINK_PARAM_ID_REGION_COUNT:
-+		ctx->val.vu8 = ipc_devlink->param.region_count;
-+		break;
-+
-+	default:
-+		rc = -EOPNOTSUPP;
-+		break;
-+	}
-+
-+	return rc;
-+}
-+
-+/* Set the param values for the specific param ID's */
-+static int ipc_devlink_set_param(struct devlink *dl, u32 id,
-+				 struct devlink_param_gset_ctx *ctx)
-+{
-+	struct iosm_devlink *ipc_devlink = devlink_priv(dl);
-+	int rc = 0;
-+
-+	switch (id) {
-+	case IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH:
-+		ipc_devlink->param.erase_full_flash = ctx->val.vu8;
-+		break;
-+
-+	case IOSM_DEVLINK_PARAM_ID_DOWNLOAD_REGION:
-+		ipc_devlink->param.download_region = ctx->val.vu8;
-+		break;
-+
-+	case IOSM_DEVLINK_PARAM_ID_ADDRESS:
-+		ipc_devlink->param.address = ctx->val.vu32;
-+		break;
-+
-+	case IOSM_DEVLINK_PARAM_ID_REGION_COUNT:
-+		ipc_devlink->param.region_count = ctx->val.vu8;
-+		break;
-+
-+	default:
-+		rc = -EOPNOTSUPP;
-+		break;
-+	}
-+
-+	return rc;
-+}
-+
-+/* Devlink param structure array */
-+static const struct devlink_param iosm_devlink_params[] = {
-+	DEVLINK_PARAM_DRIVER(IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH,
-+			     "erase_full_flash", DEVLINK_PARAM_TYPE_BOOL,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     ipc_devlink_get_param, ipc_devlink_set_param,
-+			     NULL),
-+	DEVLINK_PARAM_DRIVER(IOSM_DEVLINK_PARAM_ID_DOWNLOAD_REGION,
-+			     "download_region", DEVLINK_PARAM_TYPE_BOOL,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     ipc_devlink_get_param, ipc_devlink_set_param,
-+			     NULL),
-+	DEVLINK_PARAM_DRIVER(IOSM_DEVLINK_PARAM_ID_ADDRESS,
-+			     "address", DEVLINK_PARAM_TYPE_U32,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     ipc_devlink_get_param, ipc_devlink_set_param,
-+			     NULL),
-+	DEVLINK_PARAM_DRIVER(IOSM_DEVLINK_PARAM_ID_REGION_COUNT,
-+			     "region_count", DEVLINK_PARAM_TYPE_U8,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     ipc_devlink_get_param, ipc_devlink_set_param,
-+			     NULL),
-+};
-+
-+/* Get devlink flash component type */
-+static enum iosm_flash_comp_type
-+ipc_devlink_get_flash_comp_type(const char comp_str[], u32 len)
-+{
-+	enum iosm_flash_comp_type fls_type;
-+
-+	if (!strncmp("PSI", comp_str, len))
-+		fls_type = FLASH_COMP_TYPE_PSI;
-+	else if (!strncmp("EBL", comp_str, len))
-+		fls_type = FLASH_COMP_TYPE_EBL;
-+	else if (!strncmp("FLS", comp_str, len))
-+		fls_type = FLASH_COMP_TYPE_FLS;
-+	else
-+		fls_type = FLASH_COMP_TYPE_INVAL;
-+
-+	return fls_type;
-+}
-+
-+/* Function triggered on devlink flash command
-+ * Flash update function which calls multiple functions based on
-+ * component type specified in the flash command
++/* This function will pack the data to be sent to the modem using the
++ * payload, payload length and pack id
 + */
-+static int ipc_devlink_flash_update(struct devlink *devlink,
-+				    struct devlink_flash_update_params *params,
-+				    struct netlink_ext_ack *extack)
++static int ipc_flash_proc_format_ebl_pack(struct iosm_flash_data *flash_req,
++					  u32 pack_length, u16 pack_id,
++					  u8 *payload, u32 payload_length)
 +{
-+	struct iosm_devlink *ipc_devlink = devlink_priv(devlink);
-+	enum iosm_flash_comp_type fls_type;
-+	u32 rc = -EINVAL;
-+	u8 *mdm_rsp;
++	u16 checksum = pack_id;
++	u32 i;
 +
-+	if (!params->component)
-+		return rc;
++	if (payload_length + IOSM_EBL_HEAD_SIZE > pack_length)
++		return -EINVAL;
 +
-+	mdm_rsp = kzalloc(IOSM_EBL_DW_PACK_SIZE, GFP_KERNEL);
-+	if (!mdm_rsp)
++	flash_req->pack_id = cpu_to_le16(pack_id);
++	flash_req->msg_length = cpu_to_le32(payload_length);
++	checksum += (payload_length >> IOSM_EBL_PAYL_SHIFT) +
++		     (payload_length & IOSM_EBL_CKSM);
++
++	for (i = 0; i < payload_length; i++)
++		checksum += payload[i];
++
++	flash_req->checksum = cpu_to_le16(checksum);
++
++	return 0;
++}
++
++/* validate the response received from modem and
++ * check the type of errors received
++ */
++static int ipc_flash_proc_check_ebl_rsp(void *hdr_rsp, void *payload_rsp)
++{
++	struct iosm_ebl_error  *err_info = payload_rsp;
++	u16 *rsp_code = hdr_rsp;
++	int res = 0;
++	u32 i;
++
++	if (*rsp_code == IOSM_EBL_RSP_BUFF) {
++		for (i = 0; i < IOSM_MAX_ERRORS; i++) {
++			if (!err_info->error[i].error_code) {
++				pr_err("EBL: error_class = %d, error_code = %d",
++				       err_info->error[i].error_class,
++				       err_info->error[i].error_code);
++			}
++		}
++		res = -EINVAL;
++	}
++
++	return res;
++}
++
++/* Send data to the modem */
++static int ipc_flash_send_data(struct iosm_devlink *ipc_devlink, u32 size,
++			       u16 pack_id, u8 *payload, u32 payload_length)
++{
++	struct iosm_flash_data flash_req;
++	int ret;
++
++	ret = ipc_flash_proc_format_ebl_pack(&flash_req, size,
++					     pack_id, payload, payload_length);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "EBL2 pack failed for pack_id:%d",
++			pack_id);
++		goto ipc_free_payload;
++	}
++
++	ret = ipc_imem_sys_devlink_write(ipc_devlink, (u8 *)&flash_req,
++					 IOSM_EBL_HEAD_SIZE);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "EBL Header write failed for Id:%x",
++			pack_id);
++		goto ipc_free_payload;
++	}
++
++	ret = ipc_imem_sys_devlink_write(ipc_devlink, payload, payload_length);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "EBL Payload write failed for Id:%x",
++			pack_id);
++	}
++
++ipc_free_payload:
++	return ret;
++}
++
++/* Allocate flash channel and read LER data from modem */
++int ipc_flash_link_establish(struct iosm_imem *ipc_imem)
++{
++	u8 ler_data[IOSM_LER_RSP_SIZE];
++	u32 bytes_read;
++
++	/* Allocate channel for flashing/cd collection */
++	ipc_imem->ipc_devlink->devlink_sio.channel =
++					ipc_imem_sys_devlink_open(ipc_imem);
++
++	if (!ipc_imem->ipc_devlink->devlink_sio.channel)
++		goto chl_open_fail;
++
++	if (ipc_imem_sys_devlink_read(ipc_imem->ipc_devlink, ler_data,
++				      IOSM_LER_RSP_SIZE, &bytes_read))
++		goto devlink_read_fail;
++
++	if (bytes_read != IOSM_LER_RSP_SIZE)
++		goto devlink_read_fail;
++	return 0;
++
++devlink_read_fail:
++	ipc_imem_sys_devlink_close(ipc_imem->ipc_devlink);
++chl_open_fail:
++	return -EIO;
++}
++
++/* Receive data from the modem */
++static int ipc_flash_receive_data(struct iosm_devlink *ipc_devlink, u32 size,
++				  u8 *mdm_rsp)
++{
++	u8 mdm_rsp_hdr[IOSM_EBL_HEAD_SIZE];
++	u32 bytes_read;
++	int ret;
++
++	ret = ipc_imem_sys_devlink_read(ipc_devlink, mdm_rsp_hdr,
++					IOSM_EBL_HEAD_SIZE, &bytes_read);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "EBL rsp to read %d bytes failed",
++			IOSM_EBL_HEAD_SIZE);
++		goto ipc_flash_recv_err;
++	}
++
++	if (bytes_read != IOSM_EBL_HEAD_SIZE) {
++		ret = -EINVAL;
++		goto ipc_flash_recv_err;
++	}
++
++	ret = ipc_imem_sys_devlink_read(ipc_devlink, mdm_rsp, size,
++					&bytes_read);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "EBL rsp to read %d bytes failed",
++			size);
++		goto ipc_flash_recv_err;
++	}
++
++	if (bytes_read != size) {
++		ret = -EINVAL;
++		goto ipc_flash_recv_err;
++	}
++
++	ret = ipc_flash_proc_check_ebl_rsp(mdm_rsp_hdr + 2, mdm_rsp);
++
++ipc_flash_recv_err:
++	return ret;
++}
++
++/* Function to send command to modem and receive response */
++static int ipc_flash_send_receive(struct iosm_devlink *ipc_devlink, u16 pack_id,
++				  u8 *payload, u32 payload_length, u8 *mdm_rsp)
++{
++	size_t frame_len = IOSM_EBL_DW_PACK_SIZE;
++	int ret;
++
++	if (pack_id == FLASH_SET_PROT_CONF)
++		frame_len = IOSM_EBL_W_PACK_SIZE;
++
++	ret = ipc_flash_send_data(ipc_devlink, frame_len, pack_id, payload,
++				  payload_length);
++	if (ret)
++		goto ipc_flash_send_rcv;
++
++	ret = ipc_flash_receive_data(ipc_devlink,
++				     frame_len - IOSM_EBL_HEAD_SIZE, mdm_rsp);
++
++ipc_flash_send_rcv:
++	return ret;
++}
++
++/* Set the capabilities for the EBL */
++int ipc_flash_boot_set_capabilities(struct iosm_devlink *ipc_devlink,
++				    u8 *mdm_rsp)
++{
++	int ret;
++
++	ipc_devlink->ebl_ctx.ebl_sw_info_version =
++			ipc_devlink->ebl_ctx.m_ebl_resp[EBL_RSP_SW_INFO_VER];
++	ipc_devlink->ebl_ctx.m_ebl_resp[EBL_SKIP_ERASE] = IOSM_CAP_NOT_ENHANCED;
++	ipc_devlink->ebl_ctx.m_ebl_resp[EBL_SKIP_CRC] = IOSM_CAP_NOT_ENHANCED;
++
++	if (ipc_devlink->ebl_ctx.m_ebl_resp[EBL_CAPS_FLAG] &
++							IOSM_CAP_USE_EXT_CAP) {
++		if (ipc_devlink->param.erase_full_flash)
++			ipc_devlink->ebl_ctx.m_ebl_resp[EBL_OOS_CONFIG] &=
++				~((u8)IOSM_EXT_CAP_ERASE_ALL);
++		else
++			ipc_devlink->ebl_ctx.m_ebl_resp[EBL_OOS_CONFIG] &=
++				~((u8)IOSM_EXT_CAP_COMMIT_ALL);
++		ipc_devlink->ebl_ctx.m_ebl_resp[EBL_EXT_CAPS_HANDLED] =
++				IOSM_CAP_USE_EXT_CAP;
++	}
++
++	/* Write back the EBL capability to modem
++	 * Request Set Protcnf command
++	 */
++	ret = ipc_flash_send_receive(ipc_devlink, FLASH_SET_PROT_CONF,
++				     ipc_devlink->ebl_ctx.m_ebl_resp,
++				     IOSM_EBL_RSP_SIZE, mdm_rsp);
++	return ret;
++}
++
++/* Read the SWID type and SWID value from the EBL */
++int ipc_flash_read_swid(struct iosm_devlink *ipc_devlink, u8 *mdm_rsp)
++{
++	struct iosm_flash_msg_control cmd_msg;
++	struct iosm_swid_table *swid;
++	char ebl_swid[IOSM_SWID_STR];
++	int ret;
++
++	if (ipc_devlink->ebl_ctx.ebl_sw_info_version !=
++			IOSM_EXT_CAP_SWID_OOS_PACK)
++		return -EINVAL;
++
++	cmd_msg.action = cpu_to_le32(FLASH_OOSC_ACTION_READ);
++	cmd_msg.type = cpu_to_le32(FLASH_OOSC_TYPE_SWID_TABLE);
++	cmd_msg.length = cpu_to_le32(IOSM_MSG_LEN_ARG);
++	cmd_msg.arguments = cpu_to_le32(IOSM_MSG_LEN_ARG);
++
++	ret = ipc_flash_send_receive(ipc_devlink, FLASH_OOS_CONTROL,
++				     (u8 *)&cmd_msg, IOSM_MDM_SEND_16, mdm_rsp);
++	if (ret)
++		goto ipc_swid_err;
++
++	cmd_msg.action = cpu_to_le32(*((u32 *)mdm_rsp));
++
++	ret = ipc_flash_send_receive(ipc_devlink, FLASH_OOS_DATA_READ,
++				     (u8 *)&cmd_msg, IOSM_MDM_SEND_4, mdm_rsp);
++	if (ret)
++		goto ipc_swid_err;
++
++	swid = (struct iosm_swid_table *)mdm_rsp;
++	dev_dbg(ipc_devlink->dev, "SWID %x RF_ENGINE_ID %x", swid->sw_id_val,
++		swid->rf_engine_id_val);
++
++	snprintf(ebl_swid, sizeof(ebl_swid), "SWID: %x, RF_ENGINE_ID: %x",
++		 swid->sw_id_val, swid->rf_engine_id_val);
++
++	devlink_flash_update_status_notify(ipc_devlink->devlink_ctx, ebl_swid,
++					   NULL, 0, 0);
++ipc_swid_err:
++	return ret;
++}
++
++/* Function to check if full erase or conditional erase was successful */
++static int ipc_flash_erase_check(struct iosm_devlink *ipc_devlink, u8 *mdm_rsp)
++{
++	int ret, count = 0;
++	u16 mdm_rsp_data;
++
++	/* Request Flash Erase Check */
++	do {
++		mdm_rsp_data = IOSM_MDM_SEND_DATA;
++		ret = ipc_flash_send_receive(ipc_devlink, FLASH_ERASE_CHECK,
++					     (u8 *)&mdm_rsp_data,
++					     IOSM_MDM_SEND_2, mdm_rsp);
++		if (ret)
++			goto ipc_erase_chk_err;
++
++		mdm_rsp_data = *((u16 *)mdm_rsp);
++		if (mdm_rsp_data > IOSM_MDM_ERASE_RSP) {
++			dev_err(ipc_devlink->dev,
++				"Flash Erase Check resp wrong 0x%04X",
++				mdm_rsp_data);
++			ret = -EINVAL;
++			goto ipc_erase_chk_err;
++		}
++		count++;
++		msleep(IOSM_FLASH_ERASE_CHECK_INTERVAL);
++	} while ((mdm_rsp_data != IOSM_MDM_ERASE_RSP) &&
++		(count < (IOSM_FLASH_ERASE_CHECK_TIMEOUT /
++		IOSM_FLASH_ERASE_CHECK_INTERVAL)));
++
++	if (mdm_rsp_data != IOSM_MDM_ERASE_RSP) {
++		dev_err(ipc_devlink->dev, "Modem erase check timeout failure!");
++		ret = -ETIMEDOUT;
++	}
++
++ipc_erase_chk_err:
++	return ret;
++}
++
++/* Full erase function which will erase the nand flash through EBL command */
++static int ipc_flash_full_erase(struct iosm_devlink *ipc_devlink, u8 *mdm_rsp)
++{
++	u32 erase_address = IOSM_ERASE_START_ADDR;
++	struct iosm_flash_msg_control cmd_msg;
++	u32 erase_length = IOSM_ERASE_LEN;
++	int ret;
++
++	dev_dbg(ipc_devlink->dev, "Erase full nand flash");
++	cmd_msg.action = cpu_to_le32(FLASH_OOSC_ACTION_ERASE);
++	cmd_msg.type = cpu_to_le32(FLASH_OOSC_TYPE_ALL_FLASH);
++	cmd_msg.length = cpu_to_le32(erase_length);
++	cmd_msg.arguments = cpu_to_le32(erase_address);
++
++	ret = ipc_flash_send_receive(ipc_devlink, FLASH_OOS_CONTROL,
++				     (unsigned char *)&cmd_msg,
++				     IOSM_MDM_SEND_16, mdm_rsp);
++	if (ret)
++		goto ipc_flash_erase_err;
++
++	ipc_devlink->param.erase_full_flash_done = IOSM_SET_FLAG;
++	ret = ipc_flash_erase_check(ipc_devlink, mdm_rsp);
++
++ipc_flash_erase_err:
++	return ret;
++}
++
++/* Logic for flashing all the Loadmaps available for individual fls file */
++static int ipc_flash_download_region(struct iosm_devlink *ipc_devlink,
++				     const struct firmware *fw, u8 *mdm_rsp)
++{
++	__le32 reg_info[2]; /* 0th position region address, 1st position size */
++	char *file_ptr;
++	u32 rest_len;
++	u32 raw_len;
++	int ret;
++
++	file_ptr = (char *)fw->data;
++	reg_info[0] = cpu_to_le32(ipc_devlink->param.address);
++
++	if (!ipc_devlink->param.erase_full_flash_done) {
++		reg_info[1] = cpu_to_le32(ipc_devlink->param.address +
++					  fw->size - 2);
++		ret = ipc_flash_send_receive(ipc_devlink, FLASH_ERASE_START,
++					     (u8 *)reg_info, IOSM_MDM_SEND_8,
++					     mdm_rsp);
++		if (ret)
++			goto dl_region_fail;
++
++		ret = ipc_flash_erase_check(ipc_devlink, mdm_rsp);
++		if (ret)
++			goto dl_region_fail;
++	}
++
++	/* Request Flash Set Address */
++	ret = ipc_flash_send_receive(ipc_devlink, FLASH_SET_ADDRESS,
++				     (u8 *)reg_info, IOSM_MDM_SEND_4, mdm_rsp);
++	if (ret)
++		goto dl_region_fail;
++
++	rest_len = fw->size;
++
++	/* Request Flash Write Raw Image */
++	ret = ipc_flash_send_data(ipc_devlink, IOSM_EBL_DW_PACK_SIZE,
++				  FLASH_WRITE_IMAGE_RAW, (u8 *)&rest_len,
++				  IOSM_MDM_SEND_4);
++	if (ret)
++		goto dl_region_fail;
++
++	do {
++		raw_len = (rest_len > IOSM_FLS_BUF_SIZE) ? IOSM_FLS_BUF_SIZE :
++				rest_len;
++		ret = ipc_imem_sys_devlink_write(ipc_devlink, file_ptr,
++						 raw_len);
++		if (ret) {
++			dev_err(ipc_devlink->dev, "Image write failed");
++			goto dl_region_fail;
++		}
++		file_ptr += raw_len;
++		rest_len -= raw_len;
++	} while (rest_len);
++
++	ret = ipc_flash_receive_data(ipc_devlink, IOSM_EBL_DW_PAYL_SIZE,
++				     mdm_rsp);
++
++dl_region_fail:
++	return ret;
++}
++
++/* Flash the individual fls files */
++int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
++		       const struct firmware *fw, u8 *mdm_rsp)
++{
++	u16 flash_cmd;
++	int ret;
++
++	if (ipc_devlink->param.erase_full_flash) {
++		ipc_devlink->param.erase_full_flash = false;
++		ret = ipc_flash_full_erase(ipc_devlink, mdm_rsp);
++		if (ret)
++			goto ipc_flash_err;
++	}
++
++	/* Request Sec Start */
++	if (!ipc_devlink->param.download_region) {
++		ret = ipc_flash_send_receive(ipc_devlink, FLASH_SEC_START,
++					     (u8 *)fw->data, fw->size, mdm_rsp);
++		if (ret)
++			goto ipc_flash_err;
++	} else {
++		/* Download regions */
++		ipc_devlink->param.region_count -= IOSM_SET_FLAG;
++		ret = ipc_flash_download_region(ipc_devlink, fw, mdm_rsp);
++		if (ret)
++			goto ipc_flash_err;
++
++		if (!ipc_devlink->param.region_count) {
++			/* Request Sec End */
++			flash_cmd = IOSM_MDM_SEND_DATA;
++			ret = ipc_flash_send_receive(ipc_devlink, FLASH_SEC_END,
++						     (u8 *)&flash_cmd,
++						     IOSM_MDM_SEND_2, mdm_rsp);
++		}
++	}
++
++ipc_flash_err:
++	return ret;
++}
++
++/* Inject RPSI */
++int ipc_flash_boot_psi(struct iosm_devlink *ipc_devlink,
++		       const struct firmware *fw)
++{
++	u8 psi_ack_byte[IOSM_PSI_ACK], read_data[2];
++	u32 bytes_read;
++	u8 *psi_code;
++	int ret;
++
++	dev_dbg(ipc_devlink->dev, "Boot transfer PSI");
++	psi_code = kmemdup(fw->data, fw->size, GFP_KERNEL);
++	if (!psi_code)
 +		return -ENOMEM;
 +
-+	fls_type = ipc_devlink_get_flash_comp_type(params->component,
-+						   strlen(params->component));
-+
-+	switch (fls_type) {
-+	case FLASH_COMP_TYPE_PSI:
-+		rc = ipc_flash_boot_psi(ipc_devlink, params->fw);
-+		break;
-+	case FLASH_COMP_TYPE_EBL:
-+		rc = ipc_flash_boot_ebl(ipc_devlink, params->fw);
-+		if (!rc)
-+			rc = ipc_flash_boot_set_capabilities(ipc_devlink,
-+							     mdm_rsp);
-+		if (!rc)
-+			rc = ipc_flash_read_swid(ipc_devlink, mdm_rsp);
-+		break;
-+	case FLASH_COMP_TYPE_FLS:
-+		rc = ipc_flash_send_fls(ipc_devlink, params->fw, mdm_rsp);
-+		break;
-+	default:
-+		devlink_flash_update_status_notify(devlink, "Invalid component",
-+						   params->component, 0, 0);
-+		break;
++	ret = ipc_imem_sys_devlink_write(ipc_devlink, psi_code, fw->size);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "RPSI Image write failed");
++		goto ipc_flash_psi_free;
 +	}
 +
-+	if (!rc)
-+		devlink_flash_update_status_notify(devlink, "Flashing success",
-+						   params->component, 0, 0);
-+	else
-+		devlink_flash_update_status_notify(devlink, "Flashing failed",
-+						   params->component, 0, 0);
++	ret = ipc_imem_sys_devlink_read(ipc_devlink, read_data,
++					IOSM_LER_ACK_SIZE, &bytes_read);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "ipc_devlink_sio_read ACK failed");
++		goto ipc_flash_psi_free;
++	}
 +
-+	kfree(mdm_rsp);
-+	return rc;
++	if (bytes_read != IOSM_LER_ACK_SIZE) {
++		ret = -EINVAL;
++		goto ipc_flash_psi_free;
++	}
++
++	snprintf(psi_ack_byte, sizeof(psi_ack_byte), "%x%x", read_data[0],
++		 read_data[1]);
++	devlink_flash_update_status_notify(ipc_devlink->devlink_ctx,
++					   psi_ack_byte, "PSI ACK", 0, 0);
++
++	if (read_data[0] == 0x00 && read_data[1] == 0xCD) {
++		dev_dbg(ipc_devlink->dev, "Coredump detected");
++		ret = ipc_coredump_get_list(ipc_devlink,
++					    rpsi_cmd_coredump_start);
++		if (ret)
++			dev_err(ipc_devlink->dev, "Failed to get cd list");
++	}
++
++ipc_flash_psi_free:
++	kfree(psi_code);
++	return ret;
 +}
 +
-+/* Call back function for devlink ops */
-+static const struct devlink_ops devlink_flash_ops = {
-+	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT,
-+	.flash_update = ipc_devlink_flash_update,
-+};
-+
-+/* Send command to modem to collect data */
-+int ipc_devlink_send_cmd(struct iosm_devlink *ipc_devlink, u16 cmd, u32 entry)
++/* Inject EBL */
++int ipc_flash_boot_ebl(struct iosm_devlink *ipc_devlink,
++		       const struct firmware *fw)
 +{
-+	struct iosm_rpsi_cmd rpsi_cmd;
++	u32 ebl_size = fw->size;
++	u8 read_data[2];
++	u32 bytes_read;
++	int ret;
 +
-+	rpsi_cmd.param.dword = cpu_to_le32(entry);
-+	rpsi_cmd.cmd = cpu_to_le16(cmd);
-+	rpsi_cmd.crc = rpsi_cmd.param.word[0] ^ rpsi_cmd.param.word[1] ^
-+		       rpsi_cmd.cmd;
++	if (ipc_mmio_get_exec_stage(ipc_devlink->pcie->imem->mmio) !=
++				    IPC_MEM_EXEC_STAGE_PSI) {
++		devlink_flash_update_status_notify(ipc_devlink->devlink_ctx,
++						   "Invalid execution stage",
++						   NULL, 0, 0);
++		return -EINVAL;
++	}
 +
-+	return ipc_imem_sys_devlink_write(ipc_devlink, (u8 *)&rpsi_cmd,
-+					  sizeof(rpsi_cmd));
++	dev_dbg(ipc_devlink->dev, "Boot transfer EBL");
++	ret = ipc_devlink_send_cmd(ipc_devlink, rpsi_cmd_code_ebl,
++				   IOSM_RPSI_LOAD_SIZE);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "Sending rpsi_cmd_code_ebl failed");
++		goto ipc_flash_ebl_err;
++	}
++
++	ret = ipc_imem_sys_devlink_read(ipc_devlink, read_data, IOSM_READ_SIZE,
++					&bytes_read);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "rpsi_cmd_code_ebl read failed");
++		goto ipc_flash_ebl_err;
++	}
++
++	if (bytes_read != IOSM_READ_SIZE) {
++		ret = -EINVAL;
++		goto ipc_flash_ebl_err;
++	}
++
++	ret = ipc_imem_sys_devlink_write(ipc_devlink, (u8 *)&ebl_size,
++					 sizeof(ebl_size));
++	if (ret) {
++		dev_err(ipc_devlink->dev, "EBL length write failed");
++		goto ipc_flash_ebl_err;
++	}
++
++	ret = ipc_imem_sys_devlink_read(ipc_devlink, read_data, IOSM_READ_SIZE,
++					&bytes_read);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "EBL read failed");
++		goto ipc_flash_ebl_err;
++	}
++
++	if (bytes_read != IOSM_READ_SIZE) {
++		ret = -EINVAL;
++		goto ipc_flash_ebl_err;
++	}
++
++	ret = ipc_imem_sys_devlink_write(ipc_devlink, (unsigned char *)fw->data,
++					 fw->size);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "EBL data transfer failed");
++		goto ipc_flash_ebl_err;
++	}
++
++	ret = ipc_imem_sys_devlink_read(ipc_devlink, read_data, IOSM_READ_SIZE,
++					&bytes_read);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "EBL read failed");
++		goto ipc_flash_ebl_err;
++	}
++
++	if (bytes_read != IOSM_READ_SIZE) {
++		ret = -EINVAL;
++		goto ipc_flash_ebl_err;
++	}
++
++	ret = ipc_imem_sys_devlink_read(ipc_devlink,
++					ipc_devlink->ebl_ctx.m_ebl_resp,
++					IOSM_EBL_RSP_SIZE, &bytes_read);
++	if (ret) {
++		dev_err(ipc_devlink->dev, "EBL response read failed");
++		goto ipc_flash_ebl_err;
++	}
++
++	if (bytes_read != IOSM_EBL_RSP_SIZE)
++		ret = -EINVAL;
++
++ipc_flash_ebl_err:
++	return ret;
 +}
-+
-+static int ipc_devlink_coredump_snapshot(struct devlink *dl,
-+					 const struct devlink_region_ops *ops,
-+					 struct netlink_ext_ack *extack,
-+					 u8 **data)
-+{
-+	struct iosm_devlink *ipc_devlink = devlink_priv(dl);
-+	struct iosm_coredump_file_info *cd_list = ops->priv;
-+	u32 region_size;
-+	int rc;
-+
-+	dev_dbg(ipc_devlink->dev, "Region:%s, ID:%d", ops->name,
-+		cd_list->entry);
-+	region_size = cd_list->default_size;
-+	rc = ipc_coredump_collect(ipc_devlink, data, cd_list->entry,
-+				  region_size);
-+	if (rc) {
-+		dev_err(ipc_devlink->dev, "Fail to create snapshot,err %d", rc);
-+		goto coredump_collect_err;
-+	}
-+
-+	/* Send coredump end cmd indicating end of coredump collection */
-+	if (cd_list->entry == (IOSM_NOF_CD_REGION - 1))
-+		ipc_coredump_get_list(ipc_devlink, rpsi_cmd_coredump_end);
-+
-+	return rc;
-+coredump_collect_err:
-+	ipc_coredump_get_list(ipc_devlink, rpsi_cmd_coredump_end);
-+	return rc;
-+}
-+
-+/* To create regions for coredump files */
-+static int ipc_devlink_create_region(struct iosm_devlink *devlink)
-+{
-+	struct devlink_region_ops *mdm_coredump;
-+	int rc = 0;
-+	int i;
-+
-+	mdm_coredump = devlink->iosm_devlink_mdm_coredump;
-+	for (i = 0; i < IOSM_NOF_CD_REGION; i++) {
-+		mdm_coredump[i].name = list[i].filename;
-+		mdm_coredump[i].snapshot = ipc_devlink_coredump_snapshot;
-+		mdm_coredump[i].destructor = vfree;
-+		devlink->cd_regions[i] =
-+			devlink_region_create(devlink->devlink_ctx,
-+					      &mdm_coredump[i], MAX_SNAPSHOTS,
-+					      list[i].default_size);
-+
-+		if (IS_ERR(devlink->cd_regions[i])) {
-+			rc = PTR_ERR(devlink->cd_regions[i]);
-+			dev_err(devlink->dev, "Devlink region fail,err %d", rc);
-+			/* Delete previously created regions */
-+			for ( ; i >= 0; i--)
-+				devlink_region_destroy(devlink->cd_regions[i]);
-+			goto region_create_fail;
-+		}
-+		list[i].entry = i;
-+		mdm_coredump[i].priv = list + i;
-+	}
-+region_create_fail:
-+	return rc;
-+}
-+
-+/* To Destroy devlink regions */
-+static void ipc_devlink_destroy_region(struct iosm_devlink *ipc_devlink)
-+{
-+	u8 i;
-+
-+	for (i = 0; i < IOSM_NOF_CD_REGION; i++)
-+		devlink_region_destroy(ipc_devlink->cd_regions[i]);
-+}
-+
-+/* Handle registration to devlink framework */
-+struct iosm_devlink *ipc_devlink_init(struct iosm_imem *ipc_imem)
-+{
-+	struct ipc_chnl_cfg chnl_cfg_flash = { 0 };
-+	struct iosm_devlink *ipc_devlink;
-+	struct devlink *devlink_ctx;
-+	int rc;
-+
-+	devlink_ctx = devlink_alloc(&devlink_flash_ops,
-+				    sizeof(struct iosm_devlink),
-+				    ipc_imem->dev);
-+	if (!devlink_ctx) {
-+		dev_err(ipc_imem->dev, "devlink_alloc failed");
-+		goto devlink_alloc_fail;
-+	}
-+
-+	ipc_devlink = devlink_priv(devlink_ctx);
-+	ipc_devlink->devlink_ctx = devlink_ctx;
-+	ipc_devlink->pcie = ipc_imem->pcie;
-+	ipc_devlink->dev = ipc_imem->dev;
-+	rc = devlink_register(devlink_ctx);
-+	if (rc) {
-+		dev_err(ipc_devlink->dev, "devlink_register failed rc %d", rc);
-+		goto free_dl;
-+	}
-+
-+	rc = devlink_params_register(devlink_ctx, iosm_devlink_params,
-+				     ARRAY_SIZE(iosm_devlink_params));
-+	if (rc) {
-+		dev_err(ipc_devlink->dev,
-+			"devlink_params_register failed. rc %d", rc);
-+		goto param_reg_fail;
-+	}
-+
-+	devlink_params_publish(devlink_ctx);
-+	ipc_devlink->cd_file_info = list;
-+
-+	rc = ipc_devlink_create_region(ipc_devlink);
-+	if (rc) {
-+		dev_err(ipc_devlink->dev, "Devlink Region create failed, rc %d",
-+			rc);
-+		goto region_create_fail;
-+	}
-+
-+	if (ipc_chnl_cfg_get(&chnl_cfg_flash, IPC_MEM_CTRL_CHL_ID_7) < 0)
-+		goto chnl_get_fail;
-+
-+	ipc_imem_channel_init(ipc_imem, IPC_CTYPE_CTRL,
-+			      chnl_cfg_flash, IRQ_MOD_OFF);
-+
-+	init_completion(&ipc_devlink->devlink_sio.read_sem);
-+	skb_queue_head_init(&ipc_devlink->devlink_sio.rx_list);
-+
-+	dev_dbg(ipc_devlink->dev, "iosm devlink register success");
-+
-+	return ipc_devlink;
-+
-+chnl_get_fail:
-+	ipc_devlink_destroy_region(ipc_devlink);
-+region_create_fail:
-+	devlink_params_unpublish(devlink_ctx);
-+	devlink_params_unregister(devlink_ctx, iosm_devlink_params,
-+				  ARRAY_SIZE(iosm_devlink_params));
-+param_reg_fail:
-+	devlink_unregister(devlink_ctx);
-+free_dl:
-+	devlink_free(devlink_ctx);
-+devlink_alloc_fail:
-+	return NULL;
-+}
-+
-+/* Handle unregistration of devlink */
-+void ipc_devlink_deinit(struct iosm_devlink *ipc_devlink)
-+{
-+	struct devlink *devlink_ctx = ipc_devlink->devlink_ctx;
-+
-+	ipc_devlink_destroy_region(ipc_devlink);
-+	devlink_params_unpublish(devlink_ctx);
-+	devlink_params_unregister(devlink_ctx, iosm_devlink_params,
-+				  ARRAY_SIZE(iosm_devlink_params));
-+	if (ipc_devlink->devlink_sio.devlink_read_pend) {
-+		complete(&ipc_devlink->devlink_sio.read_sem);
-+		complete(&ipc_devlink->devlink_sio.channel->ul_sem);
-+	}
-+	if (!ipc_devlink->devlink_sio.devlink_read_pend)
-+		skb_queue_purge(&ipc_devlink->devlink_sio.rx_list);
-+
-+	ipc_imem_sys_devlink_close(ipc_devlink);
-+	devlink_unregister(devlink_ctx);
-+	devlink_free(devlink_ctx);
-+}
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_devlink.h b/drivers/net/wwan/iosm/iosm_ipc_devlink.h
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_flash.h b/drivers/net/wwan/iosm/iosm_ipc_flash.h
 new file mode 100644
-index 000000000000..392735080cb3
+index 000000000000..aee848927228
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_devlink.h
-@@ -0,0 +1,207 @@
++++ b/drivers/net/wwan/iosm/iosm_ipc_flash.h
+@@ -0,0 +1,271 @@
 +/* SPDX-License-Identifier: GPL-2.0-only
 + *
 + * Copyright (C) 2020-2021 Intel Corporation.
 + */
 +
-+#ifndef _IOSM_IPC_DEVLINK_H_
-+#define _IOSM_IPC_DEVLINK_H_
++#ifndef _IOSM_IPC_FLASH_H
++#define _IOSM_IPC_FLASH_H
 +
-+#include <net/devlink.h>
-+
-+#include "iosm_ipc_imem.h"
-+#include "iosm_ipc_imem_ops.h"
-+#include "iosm_ipc_pcie.h"
-+
-+/* MAX file name length */
-+#define IOSM_MAX_FILENAME_LEN 32
-+/* EBL response size */
-+#define IOSM_EBL_RSP_SIZE 76
-+/* MAX number of regions supported */
-+#define IOSM_NOF_CD_REGION 6
-+/* MAX number of SNAPSHOTS supported */
-+#define MAX_SNAPSHOTS 1
-+/* Default Coredump file size */
-+#define REPORT_JSON_SIZE 0x800
-+#define COREDUMP_FCD_SIZE 0x10E00000
-+#define CDD_LOG_SIZE 0x30000
-+#define EEPROM_BIN_SIZE 0x10000
-+#define BOOTCORE_TRC_BIN_SIZE 0x8000
-+#define BOOTCORE_PREV_TRC_BIN_SIZE 0x20000
++/* Buffer size used to read the fls image */
++#define IOSM_FLS_BUF_SIZE 0x00100000
++/* Full erase start address */
++#define IOSM_ERASE_START_ADDR 0x00000000
++/* Erase length for NAND flash */
++#define IOSM_ERASE_LEN 0xFFFFFFFF
++/* EBL response Header size */
++#define IOSM_EBL_HEAD_SIZE  8
++/* EBL payload size */
++#define IOSM_EBL_W_PAYL_SIZE  2048
++/* Total EBL pack size */
++#define IOSM_EBL_W_PACK_SIZE  (IOSM_EBL_HEAD_SIZE + IOSM_EBL_W_PAYL_SIZE)
++/* EBL payload size */
++#define IOSM_EBL_DW_PAYL_SIZE  16384
++/* Total EBL pack size */
++#define IOSM_EBL_DW_PACK_SIZE  (IOSM_EBL_HEAD_SIZE + IOSM_EBL_DW_PAYL_SIZE)
++/* EBL name size */
++#define IOSM_EBL_NAME  32
++/* Maximum supported error types */
++#define IOSM_MAX_ERRORS 8
++/* Read size for RPSI/EBL response */
++#define IOSM_READ_SIZE 2
++/* Link establishment response ack size */
++#define IOSM_LER_ACK_SIZE 2
++/* PSI ACK len */
++#define IOSM_PSI_ACK 8
++/* SWID capability for packed swid type */
++#define IOSM_EXT_CAP_SWID_OOS_PACK     0x02
++/* EBL error response buffer */
++#define IOSM_EBL_RSP_BUFF 0x0041
++/* SWID string length */
++#define IOSM_SWID_STR 64
++/* Load EBL command size */
++#define IOSM_RPSI_LOAD_SIZE 0
++/* EBL payload checksum */
++#define IOSM_EBL_CKSM 0x0000FFFF
++/* SWID msg len and argument */
++#define IOSM_MSG_LEN_ARG 0
++/* Data to be sent to modem */
++#define IOSM_MDM_SEND_DATA 0x0000
++/* Data received from modem as part of erase check */
++#define IOSM_MDM_ERASE_RSP 0x0001
++/* Bit shift to calculate Checksum */
++#define IOSM_EBL_PAYL_SHIFT 16
++/* Flag To be set */
++#define IOSM_SET_FLAG 1
++/* Set flash erase check timeout to 100 msec */
++#define IOSM_FLASH_ERASE_CHECK_TIMEOUT 100
++/* Set flash erase check interval to 20 msec */
++#define IOSM_FLASH_ERASE_CHECK_INTERVAL 20
++/* Link establishment response ack size */
++#define IOSM_LER_RSP_SIZE 60
 +
 +/**
-+ * enum iosm_devlink_param_id - Enum type to different devlink params
-+ * @IOSM_DEVLINK_PARAM_ID_BASE:			Devlink param base ID
-+ * @IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH:     Set if full erase required
-+ * @IOSM_DEVLINK_PARAM_ID_DOWNLOAD_REGION:	Set if fls file to be
-+ *						flashed is Loadmap/region file
-+ * @IOSM_DEVLINK_PARAM_ID_ADDRESS:		Address of the region to be
-+ *						flashed
-+ * @IOSM_DEVLINK_PARAM_ID_REGION_COUNT:		Max region count
++ * enum iosm_flash_package_type -	Enum for the flashing operations
++ * @FLASH_SET_PROT_CONF:	Write EBL capabilities
++ * @FLASH_SEC_START:		Start writing the secpack
++ * @FLASH_SEC_END:		Validate secpack end
++ * @FLASH_SET_ADDRESS:		Set the address for flashing
++ * @FLASH_ERASE_START:		Start erase before flashing
++ * @FLASH_ERASE_CHECK:		Validate the erase functionality
++ * @FLASH_OOS_CONTROL:		Retrieve data based on oos actions
++ * @FLASH_OOS_DATA_READ:	Read data from EBL
++ * @FLASH_WRITE_IMAGE_RAW:	Write the raw image to flash
 + */
-+
-+enum iosm_devlink_param_id {
-+	IOSM_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
-+	IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH,
-+	IOSM_DEVLINK_PARAM_ID_DOWNLOAD_REGION,
-+	IOSM_DEVLINK_PARAM_ID_ADDRESS,
-+	IOSM_DEVLINK_PARAM_ID_REGION_COUNT,
++enum iosm_flash_package_type {
++	FLASH_SET_PROT_CONF = 0x0086,
++	FLASH_SEC_START = 0x0204,
++	FLASH_SEC_END,
++	FLASH_SET_ADDRESS = 0x0802,
++	FLASH_ERASE_START = 0x0805,
++	FLASH_ERASE_CHECK,
++	FLASH_OOS_CONTROL = 0x080C,
++	FLASH_OOS_DATA_READ = 0x080E,
++	FLASH_WRITE_IMAGE_RAW,
 +};
 +
 +/**
-+ * enum iosm_rpsi_cmd_code - Enum type for RPSI command list
-+ * @rpsi_cmd_code_ebl:		Command to load ebl
-+ * @rpsi_cmd_coredump_start:    Command to get list of files and
-+ *				file size info from PSI
-+ * @rpsi_cmd_coredump_get:      Command to get the coredump data
-+ * @rpsi_cmd_coredump_end:      Command to stop receiving the coredump
++ * enum iosm_out_of_session_action -	Actions possible over the
++ *					OutOfSession command interface
++ * @FLASH_OOSC_ACTION_READ:		Read data according to its type
++ * @FLASH_OOSC_ACTION_ERASE:		Erase data according to its type
 + */
-+enum iosm_rpsi_cmd_code {
-+	rpsi_cmd_code_ebl = 0x02,
-+	rpsi_cmd_coredump_start = 0x10,
-+	rpsi_cmd_coredump_get   = 0x11,
-+	rpsi_cmd_coredump_end   = 0x12,
++enum iosm_out_of_session_action {
++	FLASH_OOSC_ACTION_READ = 2,
++	FLASH_OOSC_ACTION_ERASE = 3,
 +};
 +
 +/**
-+ * enum iosm_flash_comp_type - Enum for different flash component types
-+ * @FLASH_COMP_TYPE_PSI:	PSI flash comp type
-+ * @FLASH_COMP_TYPE_EBL:	EBL flash comp type
-+ * @FLASH_COMP_TYPE_FLS:	FLS flash comp type
-+ * @FLASH_COMP_TYPE_INVAL:	Invalid flash comp type
++ * enum iosm_out_of_session_type -	Data types that can be handled over the
++ *					Out Of Session command Interface
++ * @FLASH_OOSC_TYPE_ALL_FLASH:		The whole flash area
++ * @FLASH_OOSC_TYPE_SWID_TABLE:		Read the swid table from the target
 + */
-+enum iosm_flash_comp_type {
-+	FLASH_COMP_TYPE_PSI,
-+	FLASH_COMP_TYPE_EBL,
-+	FLASH_COMP_TYPE_FLS,
-+	FLASH_COMP_TYPE_INVAL,
++enum iosm_out_of_session_type {
++	FLASH_OOSC_TYPE_ALL_FLASH = 8,
++	FLASH_OOSC_TYPE_SWID_TABLE = 16,
 +};
 +
 +/**
-+ * struct iosm_devlink_sio - SIO instance
-+ * @rx_list:	Downlink skbuf list received from CP
-+ * @read_sem:	Needed for the blocking read or downlink transfer
-+ * @channel_id: Reserved channel id for flashing/CD collection to RAM
-+ * @channel:	Channel instance for flashing and coredump
-+ * @devlink_read_pend: Check if read is pending
++ * enum iosm_ebl_caps -	EBL capability settings
++ * @IOSM_CAP_NOT_ENHANCED:	If capability not supported
++ * @IOSM_CAP_USE_EXT_CAP:	To be set if extended capability is set
++ * @IOSM_EXT_CAP_ERASE_ALL:	Set Erase all capability
++ * @IOSM_EXT_CAP_COMMIT_ALL:	Set the commit all capability
 + */
-+struct iosm_devlink_sio {
-+	struct sk_buff_head rx_list;
-+	struct completion read_sem;
-+	int channel_id;
-+	struct ipc_mem_channel *channel;
-+	u32 devlink_read_pend;
++enum iosm_ebl_caps {
++	IOSM_CAP_NOT_ENHANCED = 0x00,
++	IOSM_CAP_USE_EXT_CAP = 0x01,
++	IOSM_EXT_CAP_ERASE_ALL = 0x08,
++	IOSM_EXT_CAP_COMMIT_ALL = 0x20,
 +};
 +
 +/**
-+ * struct iosm_flash_params - List of flash params required for flashing
-+ * @address:		Address of the region file to be flashed
-+ * @region_count:	Maximum no of regions for each fls file
-+ * @download_region:	To be set if region is being flashed
-+ * @erase_full_flash:   To set the flashing mode
-+ *                      erase_full_flash = 1; full erase
-+ *                      erase_full_flash = 0; no erase
-+ * @erase_full_flash_done: Flag to check if it is a full erase
++ * enum iosm_ebl_rsp -  EBL response field
++ * @EBL_CAPS_FLAG:	EBL capability flag
++ * @EBL_SKIP_ERASE:	EBL skip erase flag
++ * @EBL_SKIP_CRC:	EBL skip wr_pack crc
++ * @EBL_EXT_CAPS_HANDLED:	EBL extended capability handled flag
++ * @EBL_OOS_CONFIG:	EBL oos configuration
++ * @EBL_RSP_SW_INFO_VER: EBL SW info version
 + */
-+struct iosm_flash_params {
-+	u32 address;
-+	u8 region_count;
-+	u8 download_region;
-+	u8 erase_full_flash;
-+	u8 erase_full_flash_done;
++enum iosm_ebl_rsp {
++	EBL_CAPS_FLAG = 50,
++	EBL_SKIP_ERASE = 54,
++	EBL_SKIP_CRC = 55,
++	EBL_EXT_CAPS_HANDLED = 57,
++	EBL_OOS_CONFIG = 64,
++	EBL_RSP_SW_INFO_VER = 70,
 +};
 +
 +/**
-+ * struct iosm_ebl_ctx_data -  EBL ctx data used during flashing
-+ * @ebl_sw_info_version: SWID version info obtained from EBL
-+ * @m_ebl_resp:         Buffer used to read and write the ebl data
++ * enum iosm_mdm_send_recv_data - Data to send to modem
++ * @IOSM_MDM_SEND_2:	Send 2 bytes of payload
++ * @IOSM_MDM_SEND_4:	Send 4 bytes of payload
++ * @IOSM_MDM_SEND_8:	Send 8 bytes of payload
++ * @IOSM_MDM_SEND_16:	Send 16 bytes of payload
 + */
-+struct iosm_ebl_ctx_data {
-+	u8 ebl_sw_info_version;
-+	u8 m_ebl_resp[IOSM_EBL_RSP_SIZE];
++enum iosm_mdm_send_recv_data {
++	IOSM_MDM_SEND_2 = 2,
++	IOSM_MDM_SEND_4 = 4,
++	IOSM_MDM_SEND_8 = 8,
++	IOSM_MDM_SEND_16 = 16,
 +};
 +
 +/**
-+ * struct iosm_coredump_file_info -  Coredump file info
-+ * @filename:		Name of coredump file
-+ * @default_size:	Default size of coredump file
-+ * @actual_size:	Actual size of coredump file
-+ * @entry:		Index of the coredump file
++ * struct iosm_ebl_one_error -	Structure containing error details
++ * @error_class:		Error type- standard, security and text error
++ * @error_code:			Specific error from error type
 + */
-+struct iosm_coredump_file_info {
-+	char filename[IOSM_MAX_FILENAME_LEN];
-+	u32 default_size;
-+	u32 actual_size;
-+	u32 entry;
++struct iosm_ebl_one_error {
++	u16 error_class;
++	u16 error_code;
 +};
 +
 +/**
-+ * struct iosm_devlink - IOSM Devlink structure
-+ * @devlink_sio:        SIO instance for read/write functionality
-+ * @pcie:               Pointer to PCIe component
-+ * @dev:                Pointer to device struct
-+ * @devlink_ctx:	Pointer to devlink context
-+ * @param:		Params required for flashing
-+ * @ebl_ctx:		Data to be read and written to Modem
-+ * @cd_file_info:	coredump file info
-+ * @iosm_devlink_mdm_coredump:	region ops for coredump collection
-+ * @cd_regions:		coredump regions
++ * struct iosm_ebl_error- Structure with max error type supported
++ * @error:		Array of one_error structure with max errors
 + */
-+struct iosm_devlink {
-+	struct iosm_devlink_sio devlink_sio;
-+	struct iosm_pcie *pcie;
-+	struct device *dev;
-+	struct devlink *devlink_ctx;
-+	struct iosm_flash_params param;
-+	struct iosm_ebl_ctx_data ebl_ctx;
-+	struct iosm_coredump_file_info *cd_file_info;
-+	struct devlink_region_ops iosm_devlink_mdm_coredump[IOSM_NOF_CD_REGION];
-+	struct devlink_region *cd_regions[IOSM_NOF_CD_REGION];
++struct iosm_ebl_error {
++	struct iosm_ebl_one_error error[IOSM_MAX_ERRORS];
 +};
 +
 +/**
-+ * union iosm_rpsi_param_u - RPSI cmd param for CRC calculation
-+ * @word:	Words member used in CRC calculation
-+ * @dword:	Actual data
++ * struct iosm_swid_table - SWID table data for modem
++ * @number_of_data_sets:	Number of swid types
++ * @sw_id_type:			SWID type - SWID
++ * @sw_id_val:			SWID value
++ * @rf_engine_id_type:		RF engine ID type - RF_ENGINE_ID
++ * @rf_engine_id_val:		RF engine ID value
 + */
-+union iosm_rpsi_param_u {
-+	__le16 word[2];
-+	__le32 dword;
++struct iosm_swid_table {
++	u32 number_of_data_sets;
++	char sw_id_type[IOSM_EBL_NAME];
++	u32 sw_id_val;
++	char rf_engine_id_type[IOSM_EBL_NAME];
++	u32 rf_engine_id_val;
 +};
 +
 +/**
-+ * struct iosm_rpsi_cmd - Structure for RPSI Command
-+ * @param:      Used to calculate CRC
-+ * @cmd:        Stores the RPSI command
-+ * @crc:        Stores the CRC value
++ * struct iosm_flash_msg_control - Data sent to modem
++ * @action:	Action to be performed
++ * @type:	Type of action
++ * @length:	Length of the action
++ * @arguments:	Argument value sent to modem
 + */
-+struct iosm_rpsi_cmd {
-+	union iosm_rpsi_param_u param;
-+	__le16	cmd;
-+	__le16	crc;
++struct iosm_flash_msg_control {
++	__le32 action;
++	__le32 type;
++	__le32 length;
++	__le32 arguments;
 +};
 +
 +/**
-+ * ipc_devlink_init - To initialize the devlink to IOSM driver
-+ * @ipc_imem:	Pointer to struct iosm_imem
++ * struct iosm_flash_data -  Header Data to be sent to modem
++ * @checksum:	Checksum value calculated for the payload data
++ * @pack_id:	Flash Action type
++ * @msg_length:	Payload length
++ */
++struct iosm_flash_data {
++	__le16  checksum;
++	__le16  pack_id;
++	__le32  msg_length;
++};
++
++/**
++ * ipc_flash_boot_psi - Inject PSI image
++ * @ipc_devlink:	Pointer to devlink structure
++ * @fw:			FW image
 + *
-+ * Returns:	Pointer to iosm_devlink on success and NULL on failure
++ * Returns:             0 on success and failure value on error
 + */
-+struct iosm_devlink *ipc_devlink_init(struct iosm_imem *ipc_imem);
++int ipc_flash_boot_psi(struct iosm_devlink *ipc_devlink,
++		       const struct firmware *fw);
 +
 +/**
-+ * ipc_devlink_deinit - To unintialize the devlink from IOSM driver.
-+ * @ipc_devlink:	Devlink instance
-+ */
-+void ipc_devlink_deinit(struct iosm_devlink *ipc_devlink);
-+
-+/**
-+ * ipc_devlink_send_cmd - Send command to Modem
-+ * @ipc_devlink: Pointer to struct iosm_devlink
-+ * @cmd:	 Command to be sent to modem
-+ * @entry:	 Command entry number
++ * ipc_flash_boot_ebl  - Inject EBL image
++ * @ipc_devlink:        Pointer to devlink structure
++ * @fw:			FW image
 + *
-+ * Returns:	 0 on success and failure value on error
++ * Returns:             0 on success and failure value on error
 + */
-+int ipc_devlink_send_cmd(struct iosm_devlink *ipc_devlink, u16 cmd, u32 entry);
++int ipc_flash_boot_ebl(struct iosm_devlink *ipc_devlink,
++		       const struct firmware *fw);
 +
-+#endif /* _IOSM_IPC_DEVLINK_H */
++/**
++ * ipc_flash_boot_set_capabilities  - Set modem bool capabilities in flash
++ * @ipc_devlink:        Pointer to devlink structure
++ * @mdm_rsp:		Pointer to modem response buffer
++ *
++ * Returns:             0 on success and failure value on error
++ */
++int ipc_flash_boot_set_capabilities(struct iosm_devlink *ipc_devlink,
++				    u8 *mdm_rsp);
++
++/**
++ * ipc_flash_link_establish - Flash link establishment
++ * @ipc_imem:		Pointer to struct iosm_imem
++ *
++ * Returns:	0 on success and failure value on error
++ */
++int ipc_flash_link_establish(struct iosm_imem *ipc_imem);
++
++/**
++ * ipc_flash_read_swid - Get swid during flash phase
++ * @ipc_devlink:        Pointer to devlink structure
++ * @mdm_rsp:		Pointer to modem response buffer
++ *
++ * Returns:             0 on success and failure value on error
++ */
++int ipc_flash_read_swid(struct iosm_devlink *ipc_devlink, u8 *mdm_rsp);
++
++/**
++ * ipc_flash_send_fls  - Inject Modem subsystem fls file to device
++ * @ipc_devlink:        Pointer to devlink structure
++ * @fw:			FW image
++ * @mdm_rsp:		Pointer to modem response buffer
++ *
++ * Returns:             0 on success and failure value on error
++ */
++int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
++		       const struct firmware *fw, u8 *mdm_rsp);
++#endif
 -- 
 2.25.1
 
