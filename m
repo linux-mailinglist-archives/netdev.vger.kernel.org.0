@@ -2,97 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68BCF410C3B
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 17:44:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9704D410C76
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 19:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233840AbhISPpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 11:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60752 "EHLO
+        id S234162AbhISRBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 13:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233783AbhISPpa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Sep 2021 11:45:30 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2BB9C061757;
-        Sun, 19 Sep 2021 08:44:04 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id 194so9147913qkj.11;
-        Sun, 19 Sep 2021 08:44:04 -0700 (PDT)
+        with ESMTP id S229701AbhISRBu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Sep 2021 13:01:50 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 943C3C061574;
+        Sun, 19 Sep 2021 10:00:24 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id h17so51255090edj.6;
+        Sun, 19 Sep 2021 10:00:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=HDkakuhEl/Dan5KAuhVlwRPEvRkbpGxHTjJ5gNV/EIk=;
-        b=WVeaQ9SrUmuZi0cz8l2Sq/poppYj+QuHxhOuKQXs67o20rWjkzR/ki56QVKdliuUKT
-         hCEWO7y3AmTgt9our3tVgZrxgmutzSam9XQ+4VuwGKE6CkKc6Q28F7Bfd03i5R7Gpr47
-         XSNpIqhIoVgNc2zCyYmtjV6B/9ouGlG1unCUypji9x5ZmaBrPBDHD1nDrku9yYxEVZlE
-         cQfHBnZhvamFFgnr4iQmicx3yfmX/NMb4L1X7DTdBIHRXtsOgpkt4YFFZXXpUpOO0dnK
-         nGbsTtLts2AkRWooJ6cwjigp+z6/SfysKNpeCoHvuHe5NV8oPwdPCJSwJPSP7/4+xSxW
-         U42g==
+        bh=nVoyvvbClTh7u6Tn5R605abQeeTor6E9GHrbW/X2BVs=;
+        b=Jwngxk3TLKOIX9ruU6rI7Aouc84xiNlN+YhUMZVpbzQVh7E79QSWbps23mNDjyFDRD
+         lsNvpOTEVgCZGe1diZQHvjBiuHLb8YunPgLlPybIxGk19UZX3Vu1qepPkoe01cA8dK2+
+         MVCqGQo+sYQgESBOfQmgH6sfxYduPhimmQkENZfPp1fXhD8KDV5Jq6+asDoOZA+4EI/g
+         38PoVfa8KYYCzlHWVqAmELdA4+MnIkUXMKT05M9Lu2DDfg3Mgrwfnk3XN2LSxzK3tGR7
+         CBGlbDaMDy0OfrPwKtF4o7GPVUsamQCUzZ+FvqaeVvYAyhnkexRUxAj0XUs1166paHAY
+         TdgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=HDkakuhEl/Dan5KAuhVlwRPEvRkbpGxHTjJ5gNV/EIk=;
-        b=AG2LNCZB9O9eOnoWU3MjHEOcN2P0ZCPqCmJQ3dBYq8EfTSqJ/c8Exr1DGE8ra7oKfl
-         VqtoG35QSM25ORIkfZPMeA+3fsMa10UmV0d91/76EBvXk/ByNDGRrsPxjm0bT5Tf7FPo
-         FThTrQ5jCX0Ohj+OFObo5MmPldnKEsHDn3xRK9FIuH/I6HpviH9Lc/4r8QqET2diTeMR
-         nZgMXkzA6M15uCg974ChqJ0e/8ynTotavgJzfDhjNP269b4Kz346rwRHeIR1XtUBw7jc
-         BjGy72yU1lteeXIZrQRmSvPPiOw1bsB00L/1Bjj5y1rqqfAbur1r4LJuYfkqFkZIvxCy
-         +WZA==
-X-Gm-Message-State: AOAM531O0ZyPfrjD2yLi7uf+20X97MvBTbi/Chuz6Wx4h8jcequXhbIG
-        CE7KhAS13YBaFXYO+oJ50IWZYFmC8YDCgA==
-X-Google-Smtp-Source: ABdhPJwFOaJ1dD3KlhVVHe2LD/Lu3ChbAnuIgPKC8VCKqyEwsmv1k4YQYtrBi/2iqVcEbEVelG+RJw==
-X-Received: by 2002:a37:e17:: with SMTP id 23mr18365389qko.301.1632066244022;
-        Sun, 19 Sep 2021 08:44:04 -0700 (PDT)
-Received: from luigi.stachecki.net (pool-96-246-29-33.nycmny.fios.verizon.net. [96.246.29.33])
-        by smtp.gmail.com with ESMTPSA id bl36sm8849057qkb.37.2021.09.19.08.44.03
+        bh=nVoyvvbClTh7u6Tn5R605abQeeTor6E9GHrbW/X2BVs=;
+        b=LiKXJsjFWFZGz6EyxYvXGIenCZLlqtLIONZdzLLHO32qSjv0/Ctw3fkZlS7v+peKqq
+         rKeJwDM/FgSvCSfMDx6SjcHs5H0vOJtrFsQE43PTtx0/LY+I0rx5pppHFIGsTaZyIgeq
+         5++1pqzumhEVJ6VwPt7VD3gS2rQcC91D7kqNW7bah41Yusj0YdxKiIHF6XcYujqt5XCI
+         bp0mZC1dc1QsTF+tO53wiReeHTRE5TxL0/E4LxcLzICDxEGczsRLUXiRTMAkUkj9aJa8
+         h0nd8CpynSJP98gJv8U4DbdsLEXhqDuuaVoLvWqLlDprCY8IM68nXME5WWeKcnL++H9t
+         mzTA==
+X-Gm-Message-State: AOAM531AzBOlT2OkWi/3EKBXH/nS7zgfkO6xO7xwIvHiYWBK3h51brTr
+        l+hRvQyzMDbHgzcNN3RAE24=
+X-Google-Smtp-Source: ABdhPJwMt716RzcwKkrdTAZ0M+nfkDLiU6OG6uxDg67egWEwa1RE5N3XL2Vm9PfQwsnIBo+vcYAXHw==
+X-Received: by 2002:a17:906:c014:: with SMTP id e20mr15574730ejz.166.1632070823023;
+        Sun, 19 Sep 2021 10:00:23 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-67-254.ip85.fastwebnet.it. [93.42.67.254])
+        by smtp.googlemail.com with ESMTPSA id a15sm6101760edr.2.2021.09.19.10.00.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Sep 2021 08:44:03 -0700 (PDT)
-From:   "Tyler J. Stachecki" <stachecki.tyler@gmail.com>
-Cc:     fankaixi.li@bytedance.com, stachecki.tyler@gmail.com,
-        xiexiaohui.xxh@bytedance.com, cong.wang@bytedance.com,
-        Pravin B Shelar <pshelar@ovn.org>,
+        Sun, 19 Sep 2021 10:00:22 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ovs: Only clear tstamp when changing namespaces
-Date:   Sun, 19 Sep 2021 11:43:37 -0400
-Message-Id: <20210919154337.9243-1-stachecki.tyler@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 0/3] Improve support for qca8327 internal
+Date:   Sun, 19 Sep 2021 18:28:14 +0200
+Message-Id: <20210919162817.26924-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As of "ovs: clear skb->tstamp in forwarding path", the
-tstamp is now being cleared unconditionally to fix fq qdisc
-operation with ovs vports.
+With more test with the qca8327 switch, it was discovered that the
+internal phy can have 2 different phy id based on the switch serial
+code. This patch address this and report the 2 different variant.
+Also adds support for resume/suspend as it was requested in another
+patch and improve the spacing and naming following how other phy are
+defined in the same driver.
 
-While this is mostly correct and fixes forwarding for that
-use case, a slight adjustment is necessary to ensure that
-the tstamp is cleared *only when the forwarding is across
-namespaces*.
+v2:
+- Adds cover letter
+- use genphy_suspend/resume generic function
 
-Signed-off-by: Tyler J. Stachecki <stachecki.tyler@gmail.com>
----
- net/openvswitch/vport.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Ansuel Smith (3):
+  net: phy: at803x: add support for qca 8327 A variant internal phy
+  net: phy: at803x: add resume/suspend function to qca83xx phy
+  net: phy: at803x: fix spacing and improve name for 83xx phy
 
-diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
-index cf2ce5812489..c2d32a5c3697 100644
---- a/net/openvswitch/vport.c
-+++ b/net/openvswitch/vport.c
-@@ -507,7 +507,8 @@ void ovs_vport_send(struct vport *vport, struct sk_buff *skb, u8 mac_proto)
- 	}
- 
- 	skb->dev = vport->dev;
--	skb->tstamp = 0;
-+	if (dev_net(skb->dev))
-+		skb->tstamp = 0;
- 	vport->ops->send(skb);
- 	return;
- 
+ drivers/net/phy/at803x.c | 67 ++++++++++++++++++++++++++--------------
+ 1 file changed, 44 insertions(+), 23 deletions(-)
+
 -- 
-2.20.1
+2.32.0
 
