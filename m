@@ -2,157 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17B9E4108FF
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 03:03:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65E7C410905
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 03:07:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232766AbhISAx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 20:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231209AbhISAx1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 20:53:27 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07ADCC061574;
-        Sat, 18 Sep 2021 17:52:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:
-        Subject:Sender:Reply-To:Cc:Content-ID:Content-Description;
-        bh=accl2MgqfP3qdr09Pgm9dinoAsoAKLBfkJVqtGx7U/U=; b=Og4HwgheCFomwy2m9lTjBGvYwm
-        XmfVAVZjeFemANjNMYftY9cA1AGcK93gsO9CGCgvFlRYzmUbzp2nOKtWqe6mhrhPO83lzJbKtpLtl
-        4Qzflnc+hYVhIcJLuwQKkwTGwUU598mmLHfethnrWYgevnjE1HSjrr5XmsVaM4Yo+GRNjC3mnRuXN
-        kZt1EPs6GExNhwDCsJXAkPxWLW2jnVtxK8eZK2kuvPjEkjKH9fNfT8zxTS5NE8R7MM9LkhLblrPZz
-        6fnw5NAQfysAE48iPeJePNavM8hE12VsQNlyfTOkkzSkW4Z3WZE55QOHNxcTvc7rM464AFpYz8QQB
-        vrOMUK8g==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mRl3q-00GY5s-Aa; Sun, 19 Sep 2021 00:52:02 +0000
-Subject: Re: ethtool_get_rxnfc: Buffer overflow detected (8 < 192)!
-To:     Kelly Anderson <kelly@xilka.com>, linux-kernel@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>
-References: <5756374.lOV4Wx5bFT@comer.internal>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <c428cdd7-cba2-b292-4fe0-5b71c87558de@infradead.org>
-Date:   Sat, 18 Sep 2021 17:52:00 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S240861AbhISBJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 21:09:00 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47994 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238518AbhISBI7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Sep 2021 21:08:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=nL18oKTsJnXMuI7Uj1KcorP98hu2ZVKA/UF04jm1Rog=; b=IuJ5+f6CvGjzl2+XUSTeNtkIHP
+        NVU6JQbZ3Zn2K8TjobQWj4uiiLaTKJSe+47n5iou3CbxcDZ9YSBnksW1ISma5c8rBBRYqApjO9DvX
+        QfE0DHqj3Xd03QvzqucTqPEv4SKL4WtJGwFYom+c+wcnglzjK+joce6iiRn0eGPBgbcA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mRlIs-007HSt-2f; Sun, 19 Sep 2021 03:07:34 +0200
+Date:   Sun, 19 Sep 2021 03:07:34 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [RFC PATCH net-next] ipmr: ip6mr: APIs to support adding more
+ than MAXVIFS/MAXMIFS
+Message-ID: <YUaNVvSGoQ1+vcoa@lunn.ch>
+References: <20210917224123.410009-1-ssuryaextr@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <5756374.lOV4Wx5bFT@comer.internal>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210917224123.410009-1-ssuryaextr@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-W2FkZGluZyBuZXRkZXZdDQoNCk9uIDkvMTgvMjEgNToxNiBQTSwgS2VsbHkgQW5kZXJzb24g
-d3JvdGU6DQo+IE5ldyBwYXRjaGVzIGluIDUuMTQuNiBjYXVzZSBhIHByb2JsZW0gaW4gZXRo
-dG9vbF9nZXRfcnhuZmMuDQo+IA0KPiBJdCBzZWVtcyBzb21lb25lIGhhcyBhbGxvY2F0ZWQg
-YSB2YXJpYWJsZSBsZW5ndGggc3RydWN0IEA5NTg6aW9jdGwuYzogc3RydWN0IGV0aHRvb2xf
-cnhuZmMgaW5mby4NCj4gVW5mb3J0dW5hdGVseSBkZXBlbmRpbmcgb24gdGhlIGNhbGxzIGJl
-aW5nIG1hZGUgdGhlIHN0cnVjdCBjYW5ub3QgaG9sZCB0aGUgdmFyaWFibGUgbGVuZ3RoIHBh
-cnQgb2YgdGhlIGRhdGEuDQo+IEx1Y2tpbHkgdGhlIGVycm9yIGNoZWNraW5nIGNhdWdodCB0
-aGlzLCBvdGhlcndpc2UgaXQgd291bGQgYmUgbWVzc2luZyB1cCB0aGUgc3RhY2suDQo+IA0K
-PiANCj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IEJ1ZmZlciBvdmVy
-ZmxvdyBkZXRlY3RlZCAoOCA8IDE5MikhDQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJu
-YWwga2VybmVsOiBXQVJOSU5HOiBDUFU6IDQgUElEOiAxNDM0IGF0IGluY2x1ZGUvbGludXgv
-dGhyZWFkX2luZm8uaDoyMDAgZXRodG9vbF9yeG5mY19jb3B5X3RvX3VzZXIrMHgyNi8weGEw
-DQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBNb2R1bGVzIGxpbmtl
-ZCBpbjogeHRfQ0hFQ0tTVU0geHRfTUFTUVVFUkFERSBpcHRfUkVKRUNUIG5mX3JlamVjdF9p
-cHY0IGlwNnRhYmxlX21hbmdsZSBpcDZ0YWJsZV9uYXQgaXB0YWJsZV9tYW5nbGUgaXB0YWJs
-ZV9uYXQgbmZfbmF0IGlwNnRhYmxlX2ZpbHRlciBpcDZfdGFibGVzIHh0X3RjcHVkcCB4dF9z
-ZXQgeHRfTE9HIG5mX2xvZ19zeXNsb2cgeHRfY29ubnRyYWNrIG5mX2Nvbm50cmFjayBuZl9k
-ZWZyYWdfaXB2NiBuZl9kZWZyYWdfaXB2NCBpcHRhYmxlX2ZpbHRlciBicGZpbHRlciBpcF9z
-ZXRfaGFzaF9pcHBvcnQgaXBfc2V0X2xpc3Rfc2V0IGlwX3NldF9oYXNoX25ldCBpcF9zZXRf
-aGFzaF9pcCBpcF9zZXQgbmZuZXRsaW5rIGFtZGdwdSBpb21tdV92MiBncHVfc2NoZWQgc25k
-X2hkYV9jb2RlY19yZWFsdGVrIHNuZF9oZGFfY29kZWNfZ2VuZXJpYyBsZWR0cmlnX2F1ZGlv
-IHNuZF9oZGFfY29kZWNfaGRtaSB3bWlfYm1vZiBteG1fd21pIHNwNTEwMF90Y28gY3JjdDEw
-ZGlmX3BjbG11bCBnaGFzaF9jbG11bG5pX2ludGVsIHBjc3BrciBmYW0xNWhfcG93ZXIgazEw
-dGVtcCByYWRlb24gaXhnYmUgaTJjX3BpaXg0IHB0cCBpMmNfYWxnb19iaXQgZHJtX3R0bV9o
-ZWxwZXIgc25kX2hkYV9pbnRlbCBwcHNfY29yZSB0dG0gc25kX2ludGVsX2RzcGNmZyBtZGlv
-IHNuZF9pbnRlbF9zZHdfYWNwaSBkY2EgZHJtX2ttc19oZWxwZXIgc25kX2hkYV9jb2RlYyB4
-aGNpX3BjaSB4aGNpX3BjaV9yZW5lc2FzIHNuZF9oZGFfY29yZSBjZWMgc25kX3BjbSBmYl9z
-eXNfZm9wcyBzbmRfdGltZXIgc3lzY29weWFyZWEgc3lzZmlsbHJlY3Qgc25kIHN5c2ltZ2Js
-dCBzb3VuZGNvcmUgd21pIGV2ZGV2IHNjaF9mcV9jb2RlbCB4dF9saW1pdCB2aG9zdF9uZXQg
-dmhvc3Qgdmhvc3RfaW90bGIgdGFwIHR1biBzaGE1MTJfc3NzZTMgc2hhMV9zc3NlMyBzZyBy
-cGNzZWNfZ3NzX2tyYjUgcjgxNjkgcmVhbHRlayBtZGlvX2RldnJlcyBsaWJwaHkgbWFjdmxh
-bg0KPiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogIGt2bV9hbWQgY2Nw
-IHJuZ19jb3JlIGt2bSBpcnFieXBhc3MgaXQ4NyBod21vbl92aWQgaHdtb24gbXNyIGZ0ZGlf
-c2lvIGNwdWlkIGNhbWVsbGlhX2Flc25pX2F2eF94ODZfNjQgY2FtZWxsaWFfeDg2XzY0IGJy
-X25ldGZpbHRlciBicmlkZ2Ugc3RwIGxsYyBhZXNuaV9pbnRlbCBjcnlwdG9fc2ltZCBjcnlw
-dGQgZHJtIG5mc2QgY29uZmlnZnMgaXBfdGFibGVzIHhfdGFibGVzDQo+IFNlcCAxOCAxNTox
-MToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBDUFU6IDQgUElEOiAxNDM0IENvbW06IG5tYmQg
-VGFpbnRlZDogRyAgICAgICAgICAgICAgICBUIDUuMTQuNiAjMQ0KPiBTZXAgMTggMTU6MTE6
-MjcgYmJiLmludGVybmFsIGtlcm5lbDogSGFyZHdhcmUgbmFtZTogVG8gYmUgZmlsbGVkIGJ5
-IE8uRS5NLiBUbyBiZSBmaWxsZWQgYnkgTy5FLk0uL1NBQkVSVE9PVEggOTkwRlggUjIuMCwg
-QklPUyAyOTAxIDA1LzA0LzIwMTYNCj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBr
-ZXJuZWw6IFJJUDogMDAxMDpldGh0b29sX3J4bmZjX2NvcHlfdG9fdXNlcisweDI2LzB4YTAN
-Cj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IENvZGU6IGZmIDBmIDFm
-IDAwIDQxIDU1IDY1IDQ4IDhiIDA0IDI1IDAwIDZkIDAxIDAwIDQxIDU0IDU1IDUzIGY2IDQw
-IDEwIDAyIDc1IDIzIGJlIDA4IDAwIDAwIDAwIDQ4IGM3IGM3IDY4IDE2IDMwIGFhIGU4IDAx
-IDg1IDEzIDAwIDwwZj4gMGIgNDEgYmMgZjIgZmYgZmYgZmYgNWIgNDQgODkgZTAgNWQgNDEg
-NWMgNDEgNWQgYzMgNDggODkgZmIgNDkNCj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5h
-bCBrZXJuZWw6IFJTUDogMDAxODpmZmZmYjljYTgxOWJiYjEwIEVGTEFHUzogMDAwMTAyODIN
-Cj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IFJBWDogMDAwMDAwMDAw
-MDAwMDAwMCBSQlg6IGZmZmZmZmZmYzA3MWE0NDAgUkNYOiAwMDAwMDAwMDAwMDAwMDI3DQo+
-IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBSRFg6IGZmZmY5ZDc4ZGVk
-MTc1MDggUlNJOiAwMDAwMDAwMDAwMDAwMDAxIFJESTogZmZmZjlkNzhkZWQxNzUwMA0KPiBT
-ZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogUkJQOiBmZmZmYjljYTgxOWJi
-YjQwIFIwODogMDAwMDAwMDAwMDAwMDAwMCBSMDk6IGZmZmZiOWNhODE5YmI5NDgNCj4gU2Vw
-IDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IFIxMDogZmZmZmI5Y2E4MTliYjk0
-MCBSMTE6IGZmZmZmZmZmYWE2YmVkYTggUjEyOiAwMDAwMDAwMDAwMDAwMDAwDQo+IFNlcCAx
-OCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBSMTM6IDAwMDA3ZmZlMWI0NTg5ODAg
-UjE0OiAwMDAwMDAwMDAwMDAwMDAwIFIxNTogZmZmZjlkNzFjN2UwODAwMA0KPiBTZXAgMTgg
-MTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogRlM6ICAwMDAwN2ZjZDg0YzU1YTQwKDAw
-MDApIEdTOmZmZmY5ZDc4ZGVkMDAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMA0K
-PiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogQ1M6ICAwMDEwIERTOiAw
-MDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMw0KPiBTZXAgMTggMTU6MTE6Mjcg
-YmJiLmludGVybmFsIGtlcm5lbDogQ1IyOiAwMDAwNTU3NjcyMGYxNGQ4IENSMzogMDAwMDAw
-MDI0Mzg5MjAwMCBDUjQ6IDAwMDAwMDAwMDAwNDA2ZTANCj4gU2VwIDE4IDE1OjExOjI3IGJi
-Yi5pbnRlcm5hbCBrZXJuZWw6IENhbGwgVHJhY2U6DQo+IFNlcCAxOCAxNToxMToyNyBiYmIu
-aW50ZXJuYWwga2VybmVsOiAgZXRodG9vbF9nZXRfcnhuZmMrMHhjZS8weDFiMA0KPiBTZXAg
-MTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogIGRldl9ldGh0b29sKzB4YzI2LzB4
-MmQ5MA0KPiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogID8gaW5ldF9p
-b2N0bCsweGU1LzB4MjEwDQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVs
-OiAgZGV2X2lvY3RsKzB4MTg4LzB4NDkwDQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJu
-YWwga2VybmVsOiAgc29ja19kb19pb2N0bCsweGU5LzB4MTgwDQo+IFNlcCAxOCAxNToxMToy
-NyBiYmIuaW50ZXJuYWwga2VybmVsOiAgc29ja19pb2N0bCsweDI3My8weDM3MA0KPiBTZXAg
-MTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogIF9feDY0X3N5c19pb2N0bCsweDdj
-LzB4YjANCj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6ICBkb19zeXNj
-YWxsXzY0KzB4NjQvMHg5MA0KPiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5l
-bDogID8gc29ja19hbGxvY19maWxlKzB4NTYvMHhhMA0KPiBTZXAgMTggMTU6MTE6MjcgYmJi
-LmludGVybmFsIGtlcm5lbDogID8gZ2V0X3Z0aW1lX2RlbHRhKzB4YS8weGIwDQo+IFNlcCAx
-OCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiAgPyB2dGltZV91c2VyX2VudGVyKzB4
-MTcvMHg3MA0KPiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogID8gX19j
-b250ZXh0X3RyYWNraW5nX2VudGVyKzB4NWMvMHg2MA0KPiBTZXAgMTggMTU6MTE6MjcgYmJi
-LmludGVybmFsIGtlcm5lbDogID8gc3lzY2FsbF9leGl0X3RvX3VzZXJfbW9kZSsweDM5LzB4
-NDANCj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6ICA/IGRvX3N5c2Nh
-bGxfNjQrMHg3MS8weDkwDQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVs
-OiAgPyBzeXNjYWxsX2V4aXRfdG9fdXNlcl9tb2RlKzB4MzkvMHg0MA0KPiBTZXAgMTggMTU6
-MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogID8gZG9fc3lzY2FsbF82NCsweDcxLzB4OTAN
-Cj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6ICA/IHZ0aW1lX3VzZXJf
-ZW50ZXIrMHgxNy8weDcwDQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVs
-OiAgPyBfX2NvbnRleHRfdHJhY2tpbmdfZW50ZXIrMHg1Yy8weDYwDQo+IFNlcCAxOCAxNTox
-MToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiAgZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2Zy
-YW1lKzB4NDQvMHhhZQ0KPiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDog
-UklQOiAwMDMzOjB4N2ZjZDg0YjFhNzY3DQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJu
-YWwga2VybmVsOiBDb2RlOiAzYyAxYyBlOCAyYyBmZiBmZiBmZiA4NSBjMCA3OSA5NyA0OSBj
-NyBjNCBmZiBmZiBmZiBmZiA1YiA1ZCA0YyA4OSBlMCA0MSA1YyBjMyA2NiAwZiAxZiA4NCAw
-MCAwMCAwMCAwMCAwMCBiOCAxMCAwMCAwMCAwMCAwZiAwNSA8NDg+IDNkIDAxIGYwIGZmIGZm
-IDczIDAxIGMzIDQ4IDhiIDBkIDk5IDE2IDBmIDAwIGY3IGQ4IDY0IDg5IDAxIDQ4DQo+IFNl
-cCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBSU1A6IDAwMmI6MDAwMDdmZmUx
-YjQ1ODkzOCBFRkxBR1M6IDAwMDAwMjQ2IE9SSUdfUkFYOiAwMDAwMDAwMDAwMDAwMDEwDQo+
-IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBSQVg6IGZmZmZmZmZmZmZm
-ZmZmZGEgUkJYOiAwMDAwNTU3NjcyMGYwMTYwIFJDWDogMDAwMDdmY2Q4NGIxYTc2Nw0KPiBT
-ZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogUkRYOiAwMDAwN2ZmZTFiNDU4
-OTUwIFJTSTogMDAwMDAwMDAwMDAwODk0NiBSREk6IDAwMDAwMDAwMDAwMDAwMGYNCj4gU2Vw
-IDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IFJCUDogMDAwMDdmZmUxYjQ1OGE1
-MCBSMDg6IDAwMDAwMDAwMDAwMDAwMDAgUjA5OiAwMDAwN2ZjZDg0YjZlMDcwDQo+IFNlcCAx
-OCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBSMTA6IDAwMDAwMDAwMDAwMDAwNDAg
-UjExOiAwMDAwMDAwMDAwMDAwMjQ2IFIxMjogMDAwMDdmZmUxYjQ1OGVlOA0KPiBTZXAgMTgg
-MTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogUjEzOiAwMDAwNTU3NjcwMmM5NjQ5IFIx
-NDogMDAwMDdmY2Q4NTE4N2M0MCBSMTU6IDAwMDA1NTc2NzAzMGEzNTANCj4gU2VwIDE4IDE1
-OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IC0tLVsgZW5kIHRyYWNlIGQ0OGY1MGFmYzU3
-NTJiYjIgXS0tLQ0KPiANCj4gDQo+IA0KDQoNCi0tIA0KflJhbmR5DQpSZXBvcnRlZC1ieTog
-UmFuZHkgRHVubGFwIDxyZHVubGFwQGluZnJhZGVhZC5vcmc+DQpodHRwczovL3Blb3BsZS5r
-ZXJuZWwub3JnL3RnbHgvbm90ZXMtYWJvdXQtbmV0aXF1ZXR0ZQ0K
+On Fri, Sep 17, 2021 at 06:41:23PM -0400, Stephen Suryaputra wrote:
+> MAXVIFS and MAXMIFS are too small (32) for certain applications. But
+> they are defined in user header files  So, use a different definition
+> CONFIG_IP_MROUTE_EXT_MAXVIFS that is configurable and different ioctl
+> requests (MRT_xyz_EXT and MRT6_xyz_EXT) as well as a different structure
+> for adding MFC (mfcctl_ext).
+> 
+> CONFIG_IP_MROUTE_EXT_MAXVIFS is bounded by the IF_SETSIZE (256) in
+> mroute6.h.
+> 
+> This patch is extending the following RFC:
+> http://patchwork.ozlabs.org/project/netdev/patch/m1eiis8uc6.fsf@fess.ebiederm.org/
+
+Quoting the above URL:
+
+> My goal is an API that works with just a recompile of existing
+> applications, and an ABI that continues to work for old applications.
+
+Does this really work? Does the distribution version of mrouted use
+the kernel UAPI headers of the running kernel? Can i upgrade to a
+newer kernel, with newer headers, and it automagically pulls in a new
+mrouted built using the new kernel headers? I think not. ethtool has
+its own copy of the kernel headers. mrouted uses
+/usr/include/linux/mroute.h which is provided by
+linux-libc-dev:amd64. That is not tied to the running kernel. What
+about quagga?
+
+So in effect, you have to ask the running kernel, what value is it
+using for MAXVIFS? Which means it is much more than just a recompile.
+So i doubt think you can achieve this goal.
+
+Given that, i really think you should spend the time to do a proper
+solution. Add a netlink based API, which does not have the 32 limit.
+Make the kernel implementation be based on a linked list. Have the
+ioctl interface simply return the first 32 entries and ignore anything
+above that.
+
+      Andrew
