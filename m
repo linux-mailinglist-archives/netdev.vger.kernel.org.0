@@ -2,67 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CAF1410B3E
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 13:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E394410B3B
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 13:20:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231244AbhISLVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 07:21:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57604 "EHLO mail.kernel.org"
+        id S231133AbhISLVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 07:21:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57596 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230394AbhISLVe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230392AbhISLVe (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 19 Sep 2021 07:21:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 28D8F6127A;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 18F7B61268;
         Sun, 19 Sep 2021 11:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632050409;
-        bh=GFuBb8jeLo4ZFDR8a5L/gzcKPFTKzvG9UpzJQAskWs4=;
+        bh=YR2ospmGzJIdN6tfHN8jrcW1D+cYzlSbU2st2GqCN9A=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PKQPyI8B6gTZqJ2/t/IDWA6LS9bjW4zwrwM3T3b3tMylWw4W4KlJ3B6IYJYxU+t6g
-         0dT7FXCRoeglVqYLsvbJeauFpCQ5S4kNxesm3a4zKF0LAwO8Jc/2DYyBzIX7qHwhYO
-         zl1hK6dPyWE7tsp/j5hzqYyWJXCf3n+P8FxM6UjkkdXGM4/7effGomwYeQWpzvNztx
-         jOgwXR0xASiR25cZWjYTrOu7vW60POe/J3lHcCSydmlte6LLpGEdvb7q1EBh9Dd/LX
-         O6CyVBVy535KipGE76cOI3jkPM0BLhqMQMVn6F3Qu57tulnWqjMwNc5FZ6TQPYcBxi
-         IT3mo9mMcrHig==
+        b=IvXHEU2lNJdNoLWcslPMthZBWBQ3ieUisX41if15k0+nnYREgiysKs1e9WoIdrSdw
+         9WErVgZ4+TimbNUrp7oiW2fWdFu5eX3msovbfIFIVtPye4zHNozZ85EzEu1Xccjl6Y
+         +7iYPI23SwlDWa6m+fD5bx9gSfwDCvdZUbaB8qMarYDFMQrSw7+OKwtNDvysorigMj
+         Nc0xr64TGd4LF7DIwNZ/jD5PtSQEqiygpYDWLQCInTm+5hNHST2b8cA30PEipGwy4S
+         PaLJ7SU+vhECvQN9mMt8S228HBhJUoHtvHg1Har3BPFCqStOL89JvfDkpWvWI9zajn
+         n2B4VR91lzqpQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1B48960A3A;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 02AA360A53;
         Sun, 19 Sep 2021 11:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] virtio-net: fix pages leaking when building skb in big
- mode
+Subject: Re: [PATCH v2 net 0/5] Make DSA switch drivers compatible with masters
+ which unregister on shutdown
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163205040910.14261.17888342837389121003.git-patchwork-notify@kernel.org>
+Message-Id: <163205040900.14261.5733686295786706203.git-patchwork-notify@kernel.org>
 Date:   Sun, 19 Sep 2021 11:20:09 +0000
-References: <20210917083406.75602-1-jasowang@redhat.com>
-In-Reply-To: <20210917083406.75602-1-jasowang@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xuanzhuo@linux.alibaba.com
+References: <20210917133436.553995-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210917133436.553995-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, kurt@linutronix.de, hauke@hauke-m.de,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        sean.wang@mediatek.com, Landen.Chao@mediatek.com, dqfext@gmail.com,
+        matthias.bgg@gmail.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, linus.walleij@linaro.org,
+        george.mccollister@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, linux@rempel-privat.de,
+        m.grzeschik@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, LinoSanfilippo@gmx.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 17 Sep 2021 16:34:06 +0800 you wrote:
-> We try to use build_skb() if we had sufficient tailroom. But we forget
-> to release the unused pages chained via private in big mode which will
-> leak pages. Fixing this by release the pages after building the skb in
-> big mode.
+On Fri, 17 Sep 2021 16:34:31 +0300 you wrote:
+> Changes in v2:
+> - fix build for b53_mmap
+> - use unregister_netdevice_many
 > 
-> Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> It was reported by Lino here:
+> 
+> https://lore.kernel.org/netdev/20210909095324.12978-1-LinoSanfilippo@gmx.de/
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] virtio-net: fix pages leaking when building skb in big mode
-    https://git.kernel.org/netdev/net/c/afd92d82c9d7
+  - [v2,net,1/5] net: mdio: introduce a shutdown method to mdio device drivers
+    https://git.kernel.org/netdev/net/c/cf9579976f72
+  - [v2,net,2/5] net: dsa: be compatible with masters which unregister on shutdown
+    https://git.kernel.org/netdev/net/c/0650bf52b31f
+  - [v2,net,3/5] net: dsa: hellcreek: be compatible with masters which unregister on shutdown
+    https://git.kernel.org/netdev/net/c/46baae56e100
+  - [v2,net,4/5] net: dsa: microchip: ksz8863: be compatible with masters which unregister on shutdown
+    https://git.kernel.org/netdev/net/c/fe4053078cd0
+  - [v2,net,5/5] net: dsa: xrs700x: be compatible with masters which unregister on shutdown
+    https://git.kernel.org/netdev/net/c/a68e9da48568
 
 You are awesome, thank you!
 --
