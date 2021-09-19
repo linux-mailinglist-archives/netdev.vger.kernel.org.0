@@ -2,53 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA840410C92
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 19:09:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA16410C9D
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 19:26:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbhISRK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 13:10:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48600 "EHLO vps0.lunn.ch"
+        id S229912AbhISR00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 13:26:26 -0400
+Received: from mga02.intel.com ([134.134.136.20]:39250 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230060AbhISRKW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Sep 2021 13:10:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=8Y+OpDNn+ugZGReZXtFXn4IRPD8QQNtJuVSEb6ILLLg=; b=a2sZKB6rLhXDLHdgfrf498JosX
-        Ul5WnYXxZzr759Msv/5ZZcS6CjYeaphI4ZUwHB4uu+Olg9CfyVCLwqMFZuKd6S9fTJ8NAukPBt1J5
-        K3nP1jmO/GOSIvD0yZFtmxbm33kWUjXLkinpk3rEmcd9t6Qg42vFIYZ+v+vgoNvCyBnE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mS0JB-007MiU-L6; Sun, 19 Sep 2021 19:08:53 +0200
-Date:   Sun, 19 Sep 2021 19:08:53 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v2 3/3] net: phy: at803x: fix spacing and
- improve name for 83xx phy
-Message-ID: <YUdupavAO7CPEme6@lunn.ch>
-References: <20210919162817.26924-1-ansuelsmth@gmail.com>
- <20210919162817.26924-4-ansuelsmth@gmail.com>
+        id S229574AbhISR0Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Sep 2021 13:26:25 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10112"; a="210266256"
+X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; 
+   d="scan'208";a="210266256"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2021 10:24:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; 
+   d="scan'208";a="531936508"
+Received: from ccgwwan-adlp2.iind.intel.com ([10.224.174.127])
+  by fmsmga004.fm.intel.com with ESMTP; 19 Sep 2021 10:24:56 -0700
+From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
+        linuxwwan@intel.com
+Subject: [PATCH V2 net-next 0/6] net: wwan: iosm: fw flashing & cd collection
+Date:   Sun, 19 Sep 2021 22:54:24 +0530
+Message-Id: <20210919172424.25764-1-m.chetan.kumar@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210919162817.26924-4-ansuelsmth@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 19, 2021 at 06:28:17PM +0200, Ansuel Smith wrote:
-> Fix spacing and improve name for 83xx phy following other phy in the
-> same driver.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+This patch series brings-in support for M.2 7560 Device firmware flashing &
+coredump collection using devlink.
+- Driver Registers with Devlink framework.
+- Register devlink params callback for configuring device params
+  required in flashing or coredump flow.
+- Implements devlink ops flash_update callback that programs modem
+  firmware.
+- Creates region & snapshot required for device coredump log collection.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+On early detection of device in boot rom stage. Driver registers with
+Devlink framework and establish transport channel for PSI (Primary Signed
+Image) injection. Once PSI is injected to device, the device execution
+stage details are read to determine whether device is in flash or
+exception mode. The collected information is reported to devlink user
+space application & based on this informationi, application proceeds with
+either modem firmware flashing or coredump collection.
 
-    Andrew
+Refer to iosm devlink documentation for details on Devlink Params, flash
+update and coredump collection command usage.
+
+Note: Patches are interdependent. Need to apply complete patch series for
+compilation.
+
+Changes since v1:
+  * Break down single patch into multiple patches.
+  * IOSM Driver devlink documentation.
+  * Fixes NULL parameter deference in ipc_devlink_flash_update() reported
+    by smatch static checker.
+  * Fixes memory leak in ipc_devlink_create_region().
+  * Use kmemdup instead of kzalloc and memcpy in ipc_flash_boot_psi().
+  * Fixes linux-net build error.
+
+M Chetan Kumar (6):
+  net: wwan: iosm: devlink registration
+  net: wwan: iosm: fw flashing support
+  net: wwan: iosm: coredump collection support
+  net: wwan: iosm: transport layer support for fw flashing/cd
+  net: wwan: iosm: devlink fw flashing & cd collection documentation
+  net: wwan: iosm: fw flashing & cd collection infrastructure changes
+
+ Documentation/networking/devlink/index.rst |   1 +
+ Documentation/networking/devlink/iosm.rst  | 182 +++++++
+ drivers/net/wwan/Kconfig                   |   1 +
+ drivers/net/wwan/iosm/Makefile             |   5 +-
+ drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.c  |   6 +-
+ drivers/net/wwan/iosm/iosm_ipc_chnl_cfg.h  |   1 +
+ drivers/net/wwan/iosm/iosm_ipc_coredump.c  | 110 ++++
+ drivers/net/wwan/iosm/iosm_ipc_coredump.h  |  75 +++
+ drivers/net/wwan/iosm/iosm_ipc_devlink.c   | 363 +++++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_devlink.h   | 207 ++++++++
+ drivers/net/wwan/iosm/iosm_ipc_flash.c     | 561 +++++++++++++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_flash.h     | 271 ++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_imem.c      | 103 +++-
+ drivers/net/wwan/iosm/iosm_ipc_imem.h      |  18 +-
+ drivers/net/wwan/iosm/iosm_ipc_imem_ops.c  | 317 ++++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_imem_ops.h  |  49 +-
+ 16 files changed, 2239 insertions(+), 31 deletions(-)
+ create mode 100644 Documentation/networking/devlink/iosm.rst
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_coredump.c
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_coredump.h
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_devlink.c
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_devlink.h
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_flash.c
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_flash.h
+
+-- 
+2.25.1
+
