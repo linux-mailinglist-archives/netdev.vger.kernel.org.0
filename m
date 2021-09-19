@@ -2,103 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5208E410BA9
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 14:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B970B410BAD
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 14:59:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232901AbhISM6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 08:58:17 -0400
-Received: from mout.perfora.net ([74.208.4.196]:38849 "EHLO mout.perfora.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232657AbhISM6G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Sep 2021 08:58:06 -0400
-Received: from localhost.localdomain ([81.221.236.183]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MeTLU-1n0BFb0iWK-00aRCp;
- Sun, 19 Sep 2021 14:56:07 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pascal Zimmermann <pzimmermann@dh-electronics.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v3 6/9] ARM: imx_v6_v7_defconfig: enable bpf syscall and cgroup bpf
-Date:   Sun, 19 Sep 2021 14:55:33 +0200
-Message-Id: <20210919125536.117743-7-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210919125536.117743-1-marcel@ziswiler.com>
-References: <20210919125536.117743-1-marcel@ziswiler.com>
+        id S230047AbhISNAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 09:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229576AbhISNAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Sep 2021 09:00:54 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DBBC061574
+        for <netdev@vger.kernel.org>; Sun, 19 Sep 2021 05:59:29 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id z14-20020a17090a8b8e00b0019cc29ceef1so929332pjn.1
+        for <netdev@vger.kernel.org>; Sun, 19 Sep 2021 05:59:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=l5mEJkuEiwt69n27DH8U6Hc4V9C+CVzteIU8pmw0YMg=;
+        b=fLc9HZotfQ0fKk4x7CLydbfPNdKzuvqQfZsel99dOlB+XQWafiNCXP2XVCVsbRzjNt
+         lj7wAbakU8uFfGGqVyJcWw3JjE5ja4TRskm+i8bh2V2RYEWnn60677AR9cLfnJP+AWQs
+         rGb/CMy+o/bCjY1MxGnOGBvwgg0nGQ/KrWQSd1t9xdprpjUnut54boSCTuzyw2ZHJ4gj
+         SxydbZQ2Cmw2XjXHLCqlN0X6MzBoPOdZJJ5FMbAwrPG2hk3ElE3Uc1TY7mlBox3kWCHe
+         bbDIv9qKO8RvwUWlldHCfb/Zp5+WRloGF6Z13sZuB+3wi6xM38O4jfGXj0J8ZsSMtXS0
+         Gazg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=l5mEJkuEiwt69n27DH8U6Hc4V9C+CVzteIU8pmw0YMg=;
+        b=pTyqhX+Mr65/rVIb/+XeNEk2Mjx8NedzkR21F0Lld4h2ykjGvLRCFlvQNNYJvNzmtf
+         o0JpLQ3eyFFQXEcryTNBMYWNndTA8e1F94bNDl0KBljZlivRF3a+jaYAA+WoP9Q53HU+
+         lKf5olJA0WJjacUDdnkMqT3yc1WdLZM3MDQYQcog88IPj9eOaJg4aUO7Kf7qgpB1NJgG
+         keLA3tKdmxyQkV/LHQ0DUTrRzIy3wk85MO7RxP0Bzf3Gvup/f6pdE7x72gBXwByCDSGh
+         O9z3L4ZuIpSAWDnXEWyRWl2T6YkrY3nmLstKxARjofx/EwH+OjZguA9JGj0hD01KX6yn
+         aEhg==
+X-Gm-Message-State: AOAM531g3B0OaQlzLOqrHgiyEP7DA11QV2isCZ977UWQZ2h0D7vNl650
+        y3xrZ2VLbBB1hWGqJVWz40lYEpaR98kh7gnMbeU=
+X-Google-Smtp-Source: ABdhPJwd1V1W2z+qP2O2C/pY9QiX+bmkufqOTeDChB9zuvAD7CaTIe6JWalthdbBulJxvyanIg0PyK4Du63ckpQEA5k=
+X-Received: by 2002:a17:90a:ef0b:: with SMTP id k11mr32427527pjz.209.1632056368527;
+ Sun, 19 Sep 2021 05:59:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:+VBnRis98zcdV6WVmH3U6Ds8PFwpf7Oa04080dUQcU2SoolRPbK
- SBs4+ojGeBqo4XnJfm0B5x/x3KKktm1s7e8X8Q5q/3wT2A1pCMWDb4iuy3nWz1jwWzFyFCm
- 4jXNqisBRjhplwLzBJLzpjL72fQP+Q8HS4N1aX2aekh1bGJiMe36txRvbKimZ2TYueuj5nO
- QXLlcj0A9F6/PKBjwg9jg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:v1wr9QEbVnU=:tquITxXuvT4ruWgyYvyhnX
- l4JWoVUSBRleA96u8Am+Rpso/bnbh/10jkvEL7P5p9y4px/UhoOoT24DnzXM+Sm7+eLeFffDS
- 2jxTEmf6qyWMvdIPC2qoa9a1LBpJ6YhYFW/0qZfcSSnicDYT4/AYvGg/FTgTuv97uJn3xZ88b
- jr0qb1PqBdAYUNTNibWPySxsIck3EGYBbg6F2Yui85ZMh+uWRZm5DM7raCvU0j39diIjwHvLd
- anaMoxVF0SEtNG6P26OO/h5EwNGPAKo61Midw1oVfe9jXTu0i6jfuFOAubE8sdg+wmDAXTBXx
- N7RdqJGbvbh1vXOwgLwgumSJggRnhECQ4BLBwl8TcJyOSJAfUJQ8HQ03qWoRgzlxpRBihAHvU
- aOqqOJsel/z3RWHWtEsGSahe3Iiz0quXr29nGzYWGGZu6wTCVZavIVPwBEyUkU4dzYq+oSvJs
- mWBbAUxW43Wi0aHMQ5YxPyXqEUaYesAw1uJXCXxdFdGsLhgoxxHV6GpPpa8od9bNhqr1BZDhs
- vkDwGdzoz9MTqNkHtvne8+Fx9HiMQQrTEdN/v0IqZW3RY+WboTxVTNEz3+rmSllmRJYvLa4CI
- +nAElaSFrfVKYTCjUWn07aTnchEGWbxiA0ZsCTZVuo3wuRviiAsLv08KtiyLw4PvM4VkfYiFW
- U4l7kMxYQm5zLYkXSDT1T/BtnBNV6VEDVedjn2bqZopmN8omwg7r9i9wQD6SGz0ISPefuWue8
- mzTamRoRRd3akTCUm1FI8GI9VNlC4Jp1ha5qdw==
+Received: by 2002:a17:90a:b794:0:0:0:0 with HTTP; Sun, 19 Sep 2021 05:59:28
+ -0700 (PDT)
+Reply-To: sroomf70@gmail.com
+From:   "Prof. Dr Diane" <mrsfazal739@gmail.com>
+Date:   Sun, 19 Sep 2021 05:59:28 -0700
+Message-ID: <CAOvGKq4Z0XfzNVa87c7hWhw1YsZUDXkLy9v=xT-nUsN5BZjaSg@mail.gmail.com>
+Subject: Greetings,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-
-Enable CONFIG_BPF_SYSCALL and CONFIG_CGROUP_BPF to allow for systemd
-interoperability. This avoids the following failure on boot:
-
-[   10.615914] systemd[1]: system-getty.slice: unit configures an IP
- firewall, but the local system does not support BPF/cgroup firewalling.
-
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-
----
-
-Changes in v3:
-- Add Fabio's reviewed-by. Thanks!
-
- arch/arm/configs/imx_v6_v7_defconfig | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/arm/configs/imx_v6_v7_defconfig b/arch/arm/configs/imx_v6_v7_defconfig
-index c0008b7faf2ce..3e58c76763563 100644
---- a/arch/arm/configs/imx_v6_v7_defconfig
-+++ b/arch/arm/configs/imx_v6_v7_defconfig
-@@ -2,11 +2,13 @@ CONFIG_KERNEL_LZO=y
- CONFIG_SYSVIPC=y
- CONFIG_NO_HZ=y
- CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_BPF_SYSCALL=y
- CONFIG_PREEMPT_VOLUNTARY=y
- CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
- CONFIG_LOG_BUF_SHIFT=18
- CONFIG_CGROUPS=y
-+CONFIG_CGROUP_BPF=y
- CONFIG_RELAY=y
- CONFIG_BLK_DEV_INITRD=y
- CONFIG_EXPERT=y
 -- 
-2.26.2
+From Prof. Dr Diane, please a huge amount of payment was made into
+your account. as soon as your respond is noted the payment
+confirmation slip will immediately send to you.  please do not
+hesitate to reply as soon as you receive this message. awaiting your
+urgent reply please.
 
+Best regards
+Prof. Dr Diane
