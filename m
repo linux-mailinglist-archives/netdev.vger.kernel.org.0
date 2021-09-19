@@ -2,73 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8D04410B79
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 14:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F165B410B7A
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 14:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230266AbhISMLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 08:11:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42516 "EHLO mail.kernel.org"
+        id S231876AbhISMLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 08:11:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42522 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229638AbhISMLd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229662AbhISMLd (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 19 Sep 2021 08:11:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6374A6127B;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7009961283;
         Sun, 19 Sep 2021 12:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632053408;
-        bh=tJpTymouqGkRGzxlt+rfk0Az13JptJoFnLz5XQqwGTU=;
+        bh=1hkcgje5jrmk0YrF6UzQWueVG8tXzuS1tnwkK5Ovq7g=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=To2lJkyu0XseE5GxrnKg3izcq/Cr4MTii5vd/ROZG3VEFtvcEfGogTkDPldvdFzmY
-         O9srd4MoigzKd/Kfbi9x4NAg53iVDcploCtyB29UA1PGyjCMkreG5+OYlbJktUNwTQ
-         XRuh78zmDMfFL1Lmgv/DYeQeubBxtWr0jZNGE8k0jmPe0SAAompSFSmacvdtb0ePAm
-         j4NQ9kT6yQdjgSAIWUYNnoBRDiMfXchhQ2SuVnlXM4Mk08hyOEWvZFv8g7WOIPgrnh
-         Mnzfv3afMNHBpMP4YmlkOLpDL/dQVpOt/TKgHXjre857NT7Q0a5KI5Wgt8vz/DgZ5O
-         WioaxXPwp+7Vw==
+        b=Ll8MSQqID8Bk8W5ygWJFyDnCLI1M4IcFjPvHofQdmzO7voJLt+ISrnlxRS3zNqJk+
+         9GZNZMltl7XPqapFeTu4F4v9m/MU1M2MZS5kJXu0MljY2u9PwsXG1oXHWAZtIB/kvD
+         yYn01DF/AImnEUqUp5Iii9pK0KMqRcl+e9+hKvuG55O+UWHyCpPT6qldKkc6Ay7Qc+
+         IJ1p/yNyR08p8OczudBdsmS9trQJXqRAYiIgNRPPNxXIZjr4nQ7273bHNqtiMIeVzl
+         I/TKvBT05Hf2Gdu6TlWJP8JOdlAX7yrLqQDsv+0RGXJjiTNn5AxKUmTsq2xBitDyIQ
+         qeMlf3yNBsjLg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 47EA660A37;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 518F760A53;
         Sun, 19 Sep 2021 12:10:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 net 0/2] ocelot phylink fixes
+Subject: Re: [PATCH v2 net] net: dsa: tear down devlink port regions when tearing
+ down the devlink port on error
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163205340828.3254.3027678837058017593.git-patchwork-notify@kernel.org>
+Message-Id: <163205340833.3254.3994725403915466356.git-patchwork-notify@kernel.org>
 Date:   Sun, 19 Sep 2021 12:10:08 +0000
-References: <20210917153905.1173010-1-colin.foster@in-advantage.com>
-In-Reply-To: <20210917153905.1173010-1-colin.foster@in-advantage.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, kuba@kernel.org
+References: <20210917142916.688090-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210917142916.688090-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 17 Sep 2021 08:39:03 -0700 you wrote:
-> When the ocelot driver was migrated to phylink, e6e12df625f2 ("net:
-> mscc: ocelot: convert to phylink") there were two additional writes to
-> registers that became stale. One write was to DEV_CLOCK_CFG and one was
-> to ANA_PFC_PCF_CFG.
+On Fri, 17 Sep 2021 17:29:16 +0300 you wrote:
+> Commit 86f8b1c01a0a ("net: dsa: Do not make user port errors fatal")
+> decided it was fine to ignore errors on certain ports that fail to
+> probe, and go on with the ports that do probe fine.
 > 
-> Both of these writes referenced the variable "speed" which originally
-> was set to OCELOT_SPEED_{10,100,1000,2500}. These macros expand to
-> values of 3, 2, 1, or 0, respectively. After the update, the variable
-> speed is set to SPEED_{10,100,1000,2500} which expand to 10, 100, 1000,
-> and 2500. So invalid values were getting written to the two registers,
-> which would lead to either a lack of functionality or undefined
-> funcationality.
+> Commit fb6ec87f7229 ("net: dsa: Fix type was not set for devlink port")
+> noticed that devlink_port_type_eth_set(dlp, dp->slave); does not get
+> called, and devlink notices after a timeout of 3600 seconds and prints a
+> WARN_ON. So it went ahead to unregister the devlink port. And because
+> there exists an UNUSED port flavour, we actually re-register the devlink
+> port as UNUSED.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v3,net,1/2] net: mscc: ocelot: remove buggy and useless write to ANA_PFC_PFC_CFG
-    https://git.kernel.org/netdev/net/c/163957c43d96
-  - [v3,net,2/2] net: mscc: ocelot: remove buggy duplicate write to DEV_CLOCK_CFG
-    https://git.kernel.org/netdev/net/c/ba68e9941984
+  - [v2,net] net: dsa: tear down devlink port regions when tearing down the devlink port on error
+    https://git.kernel.org/netdev/net/c/fd292c189a97
 
 You are awesome, thank you!
 --
