@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E8F410B87
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 14:21:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 827F4410B86
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 14:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbhISMVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 08:21:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48414 "EHLO mail.kernel.org"
+        id S231730AbhISMVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 08:21:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48420 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229662AbhISMVc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230158AbhISMVc (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 19 Sep 2021 08:21:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id AD80061244;
+Received: by mail.kernel.org (Postfix) with ESMTPS id BD9CA61074;
         Sun, 19 Sep 2021 12:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632054007;
-        bh=uGLpunTH8J/q0phcSslz+22SrYggmT5KqhgSg6Q0V4o=;
+        bh=juJaSv0GiyOfkymwzpKe+oRrnnW9W6D26nuvMHCibgU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VsF0theuRC87H+ye7ESXPrYPgyKk/dKgGfiH4ePImJV7HsOVkHAvFFDroNYL620yx
-         Jzhb2WZr+pOMtCopOp18zISzp9opw3nzNsTi1ukUsu90apJaqtvU1qvN/KWn8stF2Y
-         H9ky+zck+2ihRr+UzZGtvk1gWJ9x1tePPsBNRx9gLgPJ3Ar5YYFRKMTydZScdDjc0H
-         IqfnZDH/9ojZu3UjXzFowV3e0OUWXLWrqRMZhzEQy/hCKQsKZzv6ns92RKFdmcTysQ
-         VDG7tohVB8a1yHJ4RfTPfEgpq+BEobdw2tQJ/kwYAQtvGQAcNfzxS6yNwKNNudsfVl
-         VOy27AR0t4wdQ==
+        b=CyLJQ59Z27l7gSQGmek1ivVkfZKgwcjvqjLjBMHsBwmJyjGyMSzMGzZtVkpwrFTUI
+         H/EICPqni/qN2QiGIiC4iCejXq7VZhFyU5p74HtojlxGGd4VJwyRC2zxD3lkPZNiLE
+         xIM85SH47zvsaDPws1Sxn6aZAcvZSd/7I11APH8Tttc6sR5vJ3HI+zA+HkwdqWHoz2
+         QOk14y/8dz6RTC57SnKSRU0PtUPiT7oG5gSjJhb7y8dkZR/mhOwWFQXdGAcU/nxy9m
+         YkwmLzKFtPzMndJIZZP1i8zqKmgIsn9HaYstwmrTbqoHfmemkhK2/Kc3Lap/gKihXV
+         /qOGUdCNTQiHg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A0BC060A37;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id ABA17608B9;
         Sun, 19 Sep 2021 12:20:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net: bgmac-bcma: handle deferred probe error due to
- mac-address
+Subject: Re: [PATCH] selftests: net: af_unix: Fix incorrect args in test result
+ msg
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163205400765.8407.16517970098611627389.git-patchwork-notify@kernel.org>
+Message-Id: <163205400769.8407.15151406750714105944.git-patchwork-notify@kernel.org>
 Date:   Sun, 19 Sep 2021 12:20:07 +0000
-References: <20210919115725.29064-1-chunkeey@gmail.com>
-In-Reply-To: <20210919115725.29064-1-chunkeey@gmail.com>
-To:     Christian Lamparter <chunkeey@gmail.com>
-Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        andrew@lunn.ch, kuba@kernel.org, davem@davemloft.net,
-        rafal@milecki.pl, ynezz@true.cz, michael@walle.cc
+References: <20210917192614.24862-1-skhan@linuxfoundation.org>
+In-Reply-To: <20210917192614.24862-1-skhan@linuxfoundation.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,22 +48,30 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Sun, 19 Sep 2021 13:57:25 +0200 you wrote:
-> Due to the inclusion of nvmem handling into the mac-address getter
-> function of_get_mac_address() by
-> commit d01f449c008a ("of_net: add NVMEM support to of_get_mac_address")
-> it is now possible to get a -EPROBE_DEFER return code. Which did cause
-> bgmac to assign a random ethernet address.
+On Fri, 17 Sep 2021 13:26:14 -0600 you wrote:
+> Fix the args to fprintf(). Splitting the message ends up passing
+> incorrect arg for "sigurg %d" and an extra arg overall. The test
+> result message ends up incorrect.
 > 
-> This exact issue happened on my Meraki MR32. The nvmem provider is
-> an EEPROM (at24c64) which gets instantiated once the module
-> driver is loaded... This happens once the filesystem becomes available.
+> test_unix_oob.c: In function ‘main’:
+> test_unix_oob.c:274:43: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘char *’ [-Wformat=]
+>   274 |   fprintf(stderr, "Test 3 failed, sigurg %d len %d OOB %c ",
+>       |                                          ~^
+>       |                                           |
+>       |                                           int
+>       |                                          %s
+>   275 |   "atmark %d\n", signal_recvd, len, oob, atmark);
+>       |   ~~~~~~~~~~~~~
+>       |   |
+>       |   char *
+> test_unix_oob.c:274:19: warning: too many arguments for format [-Wformat-extra-args]
+>   274 |   fprintf(stderr, "Test 3 failed, sigurg %d len %d OOB %c ",
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2] net: bgmac-bcma: handle deferred probe error due to mac-address
-    https://git.kernel.org/netdev/net/c/029497e66bdc
+  - selftests: net: af_unix: Fix incorrect args in test result msg
+    https://git.kernel.org/netdev/net/c/48514a223330
 
 You are awesome, thank you!
 --
