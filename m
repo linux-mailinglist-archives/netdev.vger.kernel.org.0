@@ -2,285 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 856664108F9
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 02:30:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17B9E4108FF
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 03:03:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240815AbhISAb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 20:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
+        id S232766AbhISAx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 20:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236065AbhISAbX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 20:31:23 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03AE9C061574;
-        Sat, 18 Sep 2021 17:29:58 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id q11so21691412wrr.9;
-        Sat, 18 Sep 2021 17:29:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=efHwgn1z4RteyV4ql0ZA6ztNaqWpYcvVwfsasgyFfC4=;
-        b=MnEMBldHfF/+JJ1QiORduqfsyiDhCt0bE2Pr6zJZ23h+CcSpHi04fmR87pi7g3W2QV
-         r1bTnb79ZFXTzZya7CnImz4MFSmt2gwZEde9cGJlewEigWmp2p3bvKA1ceo/d2Prc9A3
-         za+cRsE/LtpNPfQ8Hzp0NtVBwETz4F7YWq70pX2CUV72j8RvN6e+GZv77Y69692L/VKx
-         4/nxSyW9qbEaZ85XaKZnbkENlkxmRTcEsO/2DdkNqsoVJIH7r5hCif8yBYW4/b5PmNTs
-         Ajh192XeUkp2K/YMkWDuBrmk35PK9doGCgJ72olBu2WcLDIQVHiVNG4f+ywcAwDlb9bF
-         WJWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=efHwgn1z4RteyV4ql0ZA6ztNaqWpYcvVwfsasgyFfC4=;
-        b=cAfm0gMFj5DNI4v/NGPnq4ian+4n+qp2GrSjU87sa0JJII0mURJ4bhHacuoy8qUTIu
-         FZZ+jbyc0fLhmNPSkUaA95lBrRy6oDMk9fSI5sQlAau+9/BXWCveNxVsCSo56SqGxl4O
-         A+4BraX351MheZzjOq2qzlM+J5aOwqp+ywSU6LAi7IYbu3YE773OMdY0xR+J53VkLZWk
-         zfofXTuhcVKD8w2qmuCblFFYKrdhXBiMhl+uL6LcOMFxXgl4xS1ykHeOvTOLJT53tIYy
-         jUulOfB9XteKpUEZi2z1QJ+VnHFrLZXvx5E2pe7Kzjk+4vhuB10hGe34ie5Ik0zjmLNd
-         w4BQ==
-X-Gm-Message-State: AOAM5328J9/cObohw/bQZEI6sbRn7hftBsxIqmVrtJ1xBHxVtd0dz3we
-        bI5lsee/aUDIVgtsyTI5zUOOnSCb300=
-X-Google-Smtp-Source: ABdhPJxiSlvoFxmlVMF9BqduartIAmtwf9IQxgmSNuhklVFDLRckNGn9AYFgvubq0EvAWU6ijbsFuw==
-X-Received: by 2002:a5d:54cf:: with SMTP id x15mr20789094wrv.27.1632011397393;
-        Sat, 18 Sep 2021 17:29:57 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id l21sm10374421wmh.31.2021.09.18.17.29.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Sep 2021 17:29:57 -0700 (PDT)
-Date:   Sun, 19 Sep 2021 03:29:55 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Saravana Kannan <saravanak@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, p.rosenberger@kunbus.com,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        vivien.didelot@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] Fix for KSZ DSA switch shutdown
-Message-ID: <20210919002955.mobrtmfxnj2hgbcs@skbuf>
-References: <20210910145852.4te2zjkchnajb3qw@skbuf>
- <53f2509f-b648-b33d-1542-17a2c9d69966@gmx.de>
- <20210912202913.mu3o5u2l64j7mpwe@skbuf>
- <trinity-e5b95a34-015c-451d-bbfc-83bfb0bdecad-1631529134448@3c-app-gmx-bs55>
- <20210913104400.oyib42rfq5x2vc56@skbuf>
- <trinity-6fefc142-df4d-47af-b2bd-84c8212e5b1c-1631530880741@3c-app-gmx-bs55>
- <20210914184856.vmqv3je4oz5elxvp@skbuf>
- <69b914bb-de19-e168-fe9c-61e125410fb6@gmx.de>
- <241a75e4-2322-8937-2bde-97a383284976@gmx.de>
- <20210918220412.keknt4ycnyafkf5b@skbuf>
+        with ESMTP id S231209AbhISAx1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Sep 2021 20:53:27 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07ADCC061574;
+        Sat, 18 Sep 2021 17:52:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:
+        Subject:Sender:Reply-To:Cc:Content-ID:Content-Description;
+        bh=accl2MgqfP3qdr09Pgm9dinoAsoAKLBfkJVqtGx7U/U=; b=Og4HwgheCFomwy2m9lTjBGvYwm
+        XmfVAVZjeFemANjNMYftY9cA1AGcK93gsO9CGCgvFlRYzmUbzp2nOKtWqe6mhrhPO83lzJbKtpLtl
+        4Qzflnc+hYVhIcJLuwQKkwTGwUU598mmLHfethnrWYgevnjE1HSjrr5XmsVaM4Yo+GRNjC3mnRuXN
+        kZt1EPs6GExNhwDCsJXAkPxWLW2jnVtxK8eZK2kuvPjEkjKH9fNfT8zxTS5NE8R7MM9LkhLblrPZz
+        6fnw5NAQfysAE48iPeJePNavM8hE12VsQNlyfTOkkzSkW4Z3WZE55QOHNxcTvc7rM464AFpYz8QQB
+        vrOMUK8g==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mRl3q-00GY5s-Aa; Sun, 19 Sep 2021 00:52:02 +0000
+Subject: Re: ethtool_get_rxnfc: Buffer overflow detected (8 < 192)!
+To:     Kelly Anderson <kelly@xilka.com>, linux-kernel@vger.kernel.org,
+        Netdev <netdev@vger.kernel.org>
+References: <5756374.lOV4Wx5bFT@comer.internal>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <c428cdd7-cba2-b292-4fe0-5b71c87558de@infradead.org>
+Date:   Sat, 18 Sep 2021 17:52:00 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210918220412.keknt4ycnyafkf5b@skbuf>
+In-Reply-To: <5756374.lOV4Wx5bFT@comer.internal>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 19, 2021 at 01:04:12AM +0300, Vladimir Oltean wrote:
-> On Sat, Sep 18, 2021 at 09:37:17PM +0200, Lino Sanfilippo wrote:
-> > Hi Vladimir,
-> > 
-> > On 15.09.21 at 07:42, Lino Sanfilippo wrote:
-> > > On 14.09.21 at 20:48, Vladimir Oltean wrote:
-> > >> On Mon, Sep 13, 2021 at 01:01:20PM +0200, Lino Sanfilippo wrote:
-> > >>>>>> Could you post the full kernel output? The picture you've posted is
-> > >>>>>> truncated and only shows a WARN_ON in rpi_firmware_transaction and is
-> > >>>>>> probably a symptom and not the issue (which is above and not shown).
-> > >>>>>>
-> > >>>>>
-> > >>>>> Unfortunately I dont see anything in the kernel log. The console output is all I get,
-> > >>>>> thats why I made the photo.
-> > >>>>
-> > >>>> To clarify, are you saying nothing above this line gets printed? Because
-> > >>>> the part of the log you've posted in the picture is pretty much
-> > >>>> unworkable:
-> > >>>>
-> > >>>> [   99.375389] [<bf0dc56c>] (bcm2835_spi_shutdown [spi_bcm2835]) from [<c0863ca0>] (platform_drv_shutdown+0x2c/0x30)
-> > >>>>
-> > >>>> How do you access the device's serial console? Use a program with a
-> > >>>> scrollback buffer like GNU screen or something.
-> > >>>>
-> > >>>
-> > >>> Ah no, this is not over a serial console. This is what I see via hdmi. I do not have a working serial connection yet.
-> > >>> Sorry I know this trace part is not very useful, I will try to get a full dump.
-> > >>
-> > >> Lino, are you going to provide a kernel output so I could look at your new breakage?
-> > >> If you could set up a pstore logger with a ramoops region, you could
-> > >> dump the log after the fact. Or if HDMI is all you have, you could use
-> > >> an HDMI capture card to record it. Or just record the screen you're
-> > >> looking at, as long as you don't have very shaky hands, whatever...
-> > >>
-> > >
-> > > Yes, I will try to get something useful. I have already set up a serial connection
-> > > now. I still see the shutdown stopping with your patch but I have not seen the
-> > > kernel dump any more. I will try further and provide a dump as soon as I am successful.
-> > >
-> > 
-> > Sorry for the delay. I was finally able to do some tests and get a dump via the serial console.
-> > I tested with the latest Raspberry Pi kernel 5.10.y. Based on commit
-> > 4117cba235d24a7c4630dc38cb55cc80a04f5cf3. I applied your patches and got the following result
-> > at shutdown:
-> > 
-> > raspberrypi login: [   58.754533] ------------[ cut here ]------------
-> > [   58.760053] kernel BUG at drivers/net/phy/mdio_bus.c:651!
-> > [   58.766361] Internal error: Oops - BUG: 0 [#1] SMP ARM
-> > [   58.772376] Modules linked in: 8021q garp at24 tag_ksz tpm_tis_spi ksz9477_spi tpm_tis_core ksz9477 ksz_common tpm rts
-> > [   58.837539] CPU: 3 PID: 1 Comm: systemd-shutdow Tainted: G         C        5.10.63-RP_PURE_510_VLADFIX+ #3
-> > [   58.848388] Hardware name: BCM2711
-> > [   58.852875] PC is at mdiobus_free+0x4c/0x50
-> > [   58.858143] LR is at devm_mdiobus_free+0x1c/0x20
-> > [   58.863853] pc : [<c08c9218>]    lr : [<c08c1898>]    psr: 80000013
-> > [   58.871212] sp : c18fdc38  ip : c18fdc48  fp : c18fdc44
-> > [   58.877505] r10: 00000000  r9 : c0867104  r8 : c18fdc5c
-> > [   58.883823] r7 : 00000013  r6 : c31c8000  r5 : c3a50000  r4 : c379db80
-> > [   58.891442] r3 : c2ab4000  r2 : 00000002  r1 : c379dbc0  r0 : c2ab4000
-> > [   58.899037] Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
-> > [   58.907297] Control: 30c5383d  Table: 03ac92c0  DAC: 55555555
-> > [   58.914139] Process systemd-shutdow (pid: 1, stack limit = 0xff8113c1)
-> > [   58.921774] Stack: (0xc18fdc38 to 0xc18fe000)
-> > [   58.927285] dc20:                                                       c18fdc54 c18fdc48
-> > [   58.936601] dc40: c08c1898 c08c91d8 c18fdc94 c18fdc58 c0866dac c08c1888 c31c819c c3527180
-> > [   58.945921] dc60: c332d200 c1405048 c32f8800 c31c8000 00000000 bf191010 00000000 c32f8800
-> > [   58.955289] dc80: c1095f3c c1aa6454 c18fdcac c18fdc98 c086715c c0866be8 c31c8000 00000000
-> > [   58.964644] dca0: c18fdccc c18fdcb0 c0862c7c c0867128 c1a42e30 c31c8000 c14f7cf0 00000000
-> > [   58.974018] dcc0: c18fdcdc c18fdcd0 c0862d40 c0862b68 c18fdcfc c18fdce0 c08613dc c0862d2c
-> > [   58.983391] dce0: c31c8000 00000a68 c08ba6cc 00000000 c18fdd44 c18fdd00 c085c710 c086130c
-> > [   58.992778] dd00: c0331394 c0332604 60000013 c18fdd74 c3656294 c1405048 c31c8000 c31c8000
-> > [   59.002140] dd20: 00000000 c08ba6cc c160657c c155c018 c1095f3c c1aa6454 c18fdd5c c18fdd48
-> > [   59.011521] dd40: c08ba6a8 c085c58c 00000000 00000000 c18fdd6c c18fdd60 c08ba6e4 c08ba670
-> > [   59.020921] dd60: c18fdd9c c18fdd70 c085bc84 c08ba6d8 c18fdd8c c3656200 c3656394 c1405048
-> > [   59.030334] dd80: c18fdda4 c32f8800 c32f8800 00000003 c18fddbc c18fdda0 c08bab7c c085bc20
-> > [   59.039737] dda0: c32f8b80 c32f8800 00000000 c160657c c18fdddc c18fddc0 bf182554 c08bab4c
-> > [   59.049164] ddc0: c1aa6400 c1a6e810 c1aa6410 c160657c c18fddf4 c18fdde0 bf1825a8 bf18252c
-> > [   59.058602] dde0: c1aa6414 c1a6e810 c18fde04 c18fddf8 c0863dec bf182598 c18fde3c c18fde08
-> > [   59.068057] de00: c085fd9c c0863dcc c18fde3c c1095f2c c024865c 00000000 00000000 620bef00
-> > [   59.077487] de20: c140f510 fee1dead c18fc000 00000058 c18fde4c c18fde40 c0249c84 c085fc0c
-> > [   59.086920] de40: c18fde64 c18fde50 c0249d74 c0249c4c 01234567 00000000 c18fdf94 c18fde68
-> > [   59.096386] de60: c024a018 c0249d64 c18fded4 c31b0c00 00000024 c18fdf58 00000005 c0441cec
-> > [   59.105852] de80: c18fdec4 c18fde90 c0441b30 c049852c 00000000 c18fdea0 c073ad04 00000024
-> > [   59.115330] dea0: c31b0c00 c18fdf58 c18fded4 c31b0c00 00000005 00000000 c18fdf4c c18fdec8
-> > [   59.124821] dec0: c0441cec c0425cb0 c18fded0 c18fded4 00000000 00000005 00000000 00000024
-> > [   59.134317] dee0: c18fdeec 00000005 c0200074 bec45250 00000004 bec45f62 00000010 bec45264
-> > [   59.143792] df00: 00000005 bec4531c 0000000a b6d10040 00000001 c0200e70 ffffe000 c1546a80
-> > [   59.153282] df20: 00000000 c0467268 c18fdf4c c1405048 c31b0c00 bec4528c 00000000 00000000
-> > [   59.162787] df40: c18fdf94 c18fdf50 c0441e6c c0441c50 00000000 00000000 00000000 00000000
-> > [   59.172269] df60: c18fdf94 c1405048 c0331394 c1405048 bec4531c 00000000 00000000 00000000
-> > [   59.181763] df80: 00000058 c0200204 c18fdfa4 c18fdf98 c024a16c c0249f10 00000000 c18fdfa8
-> > [   59.191250] dfa0: c0200040 c024a160 00000000 00000000 fee1dead 28121969 01234567 620bef00
-> > [   59.200735] dfc0: 00000000 00000000 00000000 00000058 00000fff bec45be8 00000000 00476b80
-> > [   59.210245] dfe0: 00488e3c bec45b68 004734a8 b6e4ca38 60000010 fee1dead 00000000 00000000
-> > [   59.219759] Backtrace:
-> > [   59.223546] [<c08c91cc>] (mdiobus_free) from [<c08c1898>] (devm_mdiobus_free+0x1c/0x20)
-> > [   59.232909] [<c08c187c>] (devm_mdiobus_free) from [<c0866dac>] (release_nodes+0x1d0/0x220)
-> > [   59.242551] [<c0866bdc>] (release_nodes) from [<c086715c>] (devres_release_all+0x40/0x60)
-> > [   59.252132]  r10:c1aa6454 r9:c1095f3c r8:c32f8800 r7:00000000 r6:bf191010 r5:00000000
-> > [   59.261338]  r4:c31c8000
-> > [   59.265239] [<c086711c>] (devres_release_all) from [<c0862c7c>] (device_release_driver_internal+0x120/0x1c4)
-> > [   59.276479]  r5:00000000 r4:c31c8000
-> > [   59.281440] [<c0862b5c>] (device_release_driver_internal) from [<c0862d40>] (device_release_driver+0x20/0x24)
-> > [   59.292802]  r7:00000000 r6:c14f7cf0 r5:c31c8000 r4:c1a42e30
-> > [   59.299900] [<c0862d20>] (device_release_driver) from [<c08613dc>] (bus_remove_device+0xdc/0x108)
-> > [   59.310267] [<c0861300>] (bus_remove_device) from [<c085c710>] (device_del+0x190/0x428)
-> > [   59.319748]  r7:00000000 r6:c08ba6cc r5:00000a68 r4:c31c8000
-> > [   59.326896] [<c085c580>] (device_del) from [<c08ba6a8>] (spi_unregister_device+0x44/0x68)
-> > [   59.336583]  r10:c1aa6454 r9:c1095f3c r8:c155c018 r7:c160657c r6:c08ba6cc r5:00000000
-> > [   59.345924]  r4:c31c8000
-> > [   59.349971] [<c08ba664>] (spi_unregister_device) from [<c08ba6e4>] (__unregister+0x18/0x20)
-> > [   59.359870]  r5:00000000 r4:00000000
-> > [   59.364972] [<c08ba6cc>] (__unregister) from [<c085bc84>] (device_for_each_child+0x70/0xb4)
-> > [   59.374899] [<c085bc14>] (device_for_each_child) from [<c08bab7c>] (spi_unregister_controller+0x3c/0x128)
-> > [   59.385979]  r6:00000003 r5:c32f8800 r4:c32f8800
-> > [   59.392086] [<c08bab40>] (spi_unregister_controller) from [<bf182554>] (bcm2835_spi_remove+0x34/0x6c [spi_bcm2835])
-> > [   59.404000]  r7:c160657c r6:00000000 r5:c32f8800 r4:c32f8b80
-> > [   59.411084] [<bf182520>] (bcm2835_spi_remove [spi_bcm2835]) from [<bf1825a8>] (bcm2835_spi_shutdown+0x1c/0x38 [spi_bc)
-> > [   59.423755]  r7:c160657c r6:c1aa6410 r5:c1a6e810 r4:c1aa6400
-> > [   59.430847] [<bf18258c>] (bcm2835_spi_shutdown [spi_bcm2835]) from [<c0863dec>] (platform_drv_shutdown+0x2c/0x30)
-> > [   59.442613]  r5:c1a6e810 r4:c1aa6414
-> > [   59.447635] [<c0863dc0>] (platform_drv_shutdown) from [<c085fd9c>] (device_shutdown+0x19c/0x24c)
-> > [   59.457932] [<c085fc00>] (device_shutdown) from [<c0249c84>] (kernel_restart_prepare+0x44/0x48)
-> > [   59.468135]  r10:00000058 r9:c18fc000 r8:fee1dead r7:c140f510 r6:620bef00 r5:00000000
-> > [   59.477470]  r4:00000000
-> > [   59.481509] [<c0249c40>] (kernel_restart_prepare) from [<c0249d74>] (kernel_restart+0x1c/0x60)
-> > [   59.491653] [<c0249d58>] (kernel_restart) from [<c024a018>] (__do_sys_reboot+0x114/0x1f8)
-> > [   59.501359]  r5:00000000 r4:01234567
-> > [   59.506447] [<c0249f04>] (__do_sys_reboot) from [<c024a16c>] (sys_reboot+0x18/0x1c)
-> > [   59.515628]  r8:c0200204 r7:00000058 r6:00000000 r5:00000000 r4:00000000
-> > [   59.523857] [<c024a154>] (sys_reboot) from [<c0200040>] (ret_fast_syscall+0x0/0x28)
-> > [   59.533038] Exception stack(0xc18fdfa8 to 0xc18fdff0)
-> > [   59.539607] dfa0:                   00000000 00000000 fee1dead 28121969 01234567 620bef00
-> > [   59.549318] dfc0: 00000000 00000000 00000000 00000058 00000fff bec45be8 00000000 00476b80
-> > [   59.559026] dfe0: 00488e3c bec45b68 004734a8 b6e4ca38
-> > [   59.565596] Code: ebfe49f5 e89da800 ebed72a3 e89da800 (e7f001f2)
-> > [   59.573246] ---[ end trace 7d800ce7b5664bb6 ]---
-> > [   59.579413] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
-> > [   59.588634] Rebooting in 10 seconds..
-> > 
-> > The concerning source code line 651 is in my case:
-> > 
-> > void mdiobus_free(struct mii_bus *bus)
-> > {
-> > 	/* For compatibility with error handling in drivers. */
-> > 	if (bus->state == MDIOBUS_ALLOCATED) {
-> > 		kfree(bus);
-> > 		return;
-> > 	}
-> > 
-> > 651<	BUG_ON(bus->state != MDIOBUS_UNREGISTERED);
-> > 	bus->state = MDIOBUS_RELEASED;
-> > 
-> > 	put_device(&bus->dev);
-> > }
-> > EXPORT_SYMBOL(mdiobus_free);
-> > 
-> > I tested with both versions of your patchset, with the same result. I also tested
-> > with a RP 5.14 kernel (the latest RP kernel) but I did not see the original issue
-> > (i.e. the system hang) here for some reason.
-> > 
-> > I then tried to get the net-next kernel running on my system but without success so far. So for
-> > now the result with the RP 5.10 is all I can offer. I hope that helps a bit nevertheless.
-> 
-> Thank you Lino, this is a very valuable report. I will send a v3 soon (not sure if today).
-
-Actually, no, I will not send a v3, because the fact that devres can now
-call devm_mdiobus_free without devm_mdiobus_unregister has nothing to do
-with this series and touches much more than DSA, it is an issue introduced by
-commit ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()").
-
-I will deal with it separately, the basic idea being that
-devm_mdiobus_alloc + plain mdiobus_register is bonkers, and Bartosz
-didn't care enough to fix the existing users of that pattern before he
-just went ahead to make _devm_mdiobus_free stop calling mdiobus_unregister.
-
-In fact, this patch really got me wondering at the time, was the rtl8366
-driver so broken at the time?
-https://patchwork.kernel.org/project/netdevbpf/patch/20210822193145.1312668-2-alvin@pqrs.dk/
-No, it stems from the exact same patch from Bartosz, devres used to
-unregister MDIO buses when freeing them, now it isn't.
-
-So while I don't disagree with Bartosz' overall idea, the execution kinda sucks.
-In your case, what happens is that your driver's ->shutdown method gets
-called, and this (as discussed) means that your driver's ->remove method
-will be a no-op (to avoid unregistering DSA structures twice). But since
-SPI bus drivers which implement their own ->shutdown as ->remove are a
-thing, the fact that you don't run anything on ->remove means you won't
-unregister an MDIO bus structure that was allocated under devres. Even
-worse, the ksz9477_spi driver does _not_ allocate any MDIO bus structure
-under devres, but the DSA core does, it's that pesky ds->slave_mii_bus
-for which DSA is too helpful for its own good. Unregistering that MDIO
-bus happens only from the dsa_unregister_switch call path, not from
-dsa_switch_shutdown. But even if your SPI device driver does a no-op on
-->remove, it doesn't mean the device_del on it won't be called. And we
-can't stop the devres callbacks from running, which inevitably means
-that an MDIO bus structure which is still registered will get freed.
-
-My personal conclusion is that either you go with devres all the way
-(devm_mdiobus_alloc + devm_mdiobus_register) or with no devres all the
-way (mdiobus_alloc + mdiobus_register), otherwise you've just signed up
-to learning things you never really wanted to learn. The pattern of
-devres for the mdiobus_alloc and then no devres for the mdiobus_register
-is very old, which explains why devm_mdiobus_register was only added
-very recently (between kernel v5.7 and v5.8). It used to be fine in the
-sense that it worked, but now it's completely broken. Some poor soul
-needs to audit that pattern across the whole kernel after Bartosz'
-patch, and it looks like that somebody is me...
+W2FkZGluZyBuZXRkZXZdDQoNCk9uIDkvMTgvMjEgNToxNiBQTSwgS2VsbHkgQW5kZXJzb24g
+d3JvdGU6DQo+IE5ldyBwYXRjaGVzIGluIDUuMTQuNiBjYXVzZSBhIHByb2JsZW0gaW4gZXRo
+dG9vbF9nZXRfcnhuZmMuDQo+IA0KPiBJdCBzZWVtcyBzb21lb25lIGhhcyBhbGxvY2F0ZWQg
+YSB2YXJpYWJsZSBsZW5ndGggc3RydWN0IEA5NTg6aW9jdGwuYzogc3RydWN0IGV0aHRvb2xf
+cnhuZmMgaW5mby4NCj4gVW5mb3J0dW5hdGVseSBkZXBlbmRpbmcgb24gdGhlIGNhbGxzIGJl
+aW5nIG1hZGUgdGhlIHN0cnVjdCBjYW5ub3QgaG9sZCB0aGUgdmFyaWFibGUgbGVuZ3RoIHBh
+cnQgb2YgdGhlIGRhdGEuDQo+IEx1Y2tpbHkgdGhlIGVycm9yIGNoZWNraW5nIGNhdWdodCB0
+aGlzLCBvdGhlcndpc2UgaXQgd291bGQgYmUgbWVzc2luZyB1cCB0aGUgc3RhY2suDQo+IA0K
+PiANCj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IEJ1ZmZlciBvdmVy
+ZmxvdyBkZXRlY3RlZCAoOCA8IDE5MikhDQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJu
+YWwga2VybmVsOiBXQVJOSU5HOiBDUFU6IDQgUElEOiAxNDM0IGF0IGluY2x1ZGUvbGludXgv
+dGhyZWFkX2luZm8uaDoyMDAgZXRodG9vbF9yeG5mY19jb3B5X3RvX3VzZXIrMHgyNi8weGEw
+DQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBNb2R1bGVzIGxpbmtl
+ZCBpbjogeHRfQ0hFQ0tTVU0geHRfTUFTUVVFUkFERSBpcHRfUkVKRUNUIG5mX3JlamVjdF9p
+cHY0IGlwNnRhYmxlX21hbmdsZSBpcDZ0YWJsZV9uYXQgaXB0YWJsZV9tYW5nbGUgaXB0YWJs
+ZV9uYXQgbmZfbmF0IGlwNnRhYmxlX2ZpbHRlciBpcDZfdGFibGVzIHh0X3RjcHVkcCB4dF9z
+ZXQgeHRfTE9HIG5mX2xvZ19zeXNsb2cgeHRfY29ubnRyYWNrIG5mX2Nvbm50cmFjayBuZl9k
+ZWZyYWdfaXB2NiBuZl9kZWZyYWdfaXB2NCBpcHRhYmxlX2ZpbHRlciBicGZpbHRlciBpcF9z
+ZXRfaGFzaF9pcHBvcnQgaXBfc2V0X2xpc3Rfc2V0IGlwX3NldF9oYXNoX25ldCBpcF9zZXRf
+aGFzaF9pcCBpcF9zZXQgbmZuZXRsaW5rIGFtZGdwdSBpb21tdV92MiBncHVfc2NoZWQgc25k
+X2hkYV9jb2RlY19yZWFsdGVrIHNuZF9oZGFfY29kZWNfZ2VuZXJpYyBsZWR0cmlnX2F1ZGlv
+IHNuZF9oZGFfY29kZWNfaGRtaSB3bWlfYm1vZiBteG1fd21pIHNwNTEwMF90Y28gY3JjdDEw
+ZGlmX3BjbG11bCBnaGFzaF9jbG11bG5pX2ludGVsIHBjc3BrciBmYW0xNWhfcG93ZXIgazEw
+dGVtcCByYWRlb24gaXhnYmUgaTJjX3BpaXg0IHB0cCBpMmNfYWxnb19iaXQgZHJtX3R0bV9o
+ZWxwZXIgc25kX2hkYV9pbnRlbCBwcHNfY29yZSB0dG0gc25kX2ludGVsX2RzcGNmZyBtZGlv
+IHNuZF9pbnRlbF9zZHdfYWNwaSBkY2EgZHJtX2ttc19oZWxwZXIgc25kX2hkYV9jb2RlYyB4
+aGNpX3BjaSB4aGNpX3BjaV9yZW5lc2FzIHNuZF9oZGFfY29yZSBjZWMgc25kX3BjbSBmYl9z
+eXNfZm9wcyBzbmRfdGltZXIgc3lzY29weWFyZWEgc3lzZmlsbHJlY3Qgc25kIHN5c2ltZ2Js
+dCBzb3VuZGNvcmUgd21pIGV2ZGV2IHNjaF9mcV9jb2RlbCB4dF9saW1pdCB2aG9zdF9uZXQg
+dmhvc3Qgdmhvc3RfaW90bGIgdGFwIHR1biBzaGE1MTJfc3NzZTMgc2hhMV9zc3NlMyBzZyBy
+cGNzZWNfZ3NzX2tyYjUgcjgxNjkgcmVhbHRlayBtZGlvX2RldnJlcyBsaWJwaHkgbWFjdmxh
+bg0KPiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogIGt2bV9hbWQgY2Nw
+IHJuZ19jb3JlIGt2bSBpcnFieXBhc3MgaXQ4NyBod21vbl92aWQgaHdtb24gbXNyIGZ0ZGlf
+c2lvIGNwdWlkIGNhbWVsbGlhX2Flc25pX2F2eF94ODZfNjQgY2FtZWxsaWFfeDg2XzY0IGJy
+X25ldGZpbHRlciBicmlkZ2Ugc3RwIGxsYyBhZXNuaV9pbnRlbCBjcnlwdG9fc2ltZCBjcnlw
+dGQgZHJtIG5mc2QgY29uZmlnZnMgaXBfdGFibGVzIHhfdGFibGVzDQo+IFNlcCAxOCAxNTox
+MToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBDUFU6IDQgUElEOiAxNDM0IENvbW06IG5tYmQg
+VGFpbnRlZDogRyAgICAgICAgICAgICAgICBUIDUuMTQuNiAjMQ0KPiBTZXAgMTggMTU6MTE6
+MjcgYmJiLmludGVybmFsIGtlcm5lbDogSGFyZHdhcmUgbmFtZTogVG8gYmUgZmlsbGVkIGJ5
+IE8uRS5NLiBUbyBiZSBmaWxsZWQgYnkgTy5FLk0uL1NBQkVSVE9PVEggOTkwRlggUjIuMCwg
+QklPUyAyOTAxIDA1LzA0LzIwMTYNCj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBr
+ZXJuZWw6IFJJUDogMDAxMDpldGh0b29sX3J4bmZjX2NvcHlfdG9fdXNlcisweDI2LzB4YTAN
+Cj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IENvZGU6IGZmIDBmIDFm
+IDAwIDQxIDU1IDY1IDQ4IDhiIDA0IDI1IDAwIDZkIDAxIDAwIDQxIDU0IDU1IDUzIGY2IDQw
+IDEwIDAyIDc1IDIzIGJlIDA4IDAwIDAwIDAwIDQ4IGM3IGM3IDY4IDE2IDMwIGFhIGU4IDAx
+IDg1IDEzIDAwIDwwZj4gMGIgNDEgYmMgZjIgZmYgZmYgZmYgNWIgNDQgODkgZTAgNWQgNDEg
+NWMgNDEgNWQgYzMgNDggODkgZmIgNDkNCj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5h
+bCBrZXJuZWw6IFJTUDogMDAxODpmZmZmYjljYTgxOWJiYjEwIEVGTEFHUzogMDAwMTAyODIN
+Cj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IFJBWDogMDAwMDAwMDAw
+MDAwMDAwMCBSQlg6IGZmZmZmZmZmYzA3MWE0NDAgUkNYOiAwMDAwMDAwMDAwMDAwMDI3DQo+
+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBSRFg6IGZmZmY5ZDc4ZGVk
+MTc1MDggUlNJOiAwMDAwMDAwMDAwMDAwMDAxIFJESTogZmZmZjlkNzhkZWQxNzUwMA0KPiBT
+ZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogUkJQOiBmZmZmYjljYTgxOWJi
+YjQwIFIwODogMDAwMDAwMDAwMDAwMDAwMCBSMDk6IGZmZmZiOWNhODE5YmI5NDgNCj4gU2Vw
+IDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IFIxMDogZmZmZmI5Y2E4MTliYjk0
+MCBSMTE6IGZmZmZmZmZmYWE2YmVkYTggUjEyOiAwMDAwMDAwMDAwMDAwMDAwDQo+IFNlcCAx
+OCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBSMTM6IDAwMDA3ZmZlMWI0NTg5ODAg
+UjE0OiAwMDAwMDAwMDAwMDAwMDAwIFIxNTogZmZmZjlkNzFjN2UwODAwMA0KPiBTZXAgMTgg
+MTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogRlM6ICAwMDAwN2ZjZDg0YzU1YTQwKDAw
+MDApIEdTOmZmZmY5ZDc4ZGVkMDAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMA0K
+PiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogQ1M6ICAwMDEwIERTOiAw
+MDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMw0KPiBTZXAgMTggMTU6MTE6Mjcg
+YmJiLmludGVybmFsIGtlcm5lbDogQ1IyOiAwMDAwNTU3NjcyMGYxNGQ4IENSMzogMDAwMDAw
+MDI0Mzg5MjAwMCBDUjQ6IDAwMDAwMDAwMDAwNDA2ZTANCj4gU2VwIDE4IDE1OjExOjI3IGJi
+Yi5pbnRlcm5hbCBrZXJuZWw6IENhbGwgVHJhY2U6DQo+IFNlcCAxOCAxNToxMToyNyBiYmIu
+aW50ZXJuYWwga2VybmVsOiAgZXRodG9vbF9nZXRfcnhuZmMrMHhjZS8weDFiMA0KPiBTZXAg
+MTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogIGRldl9ldGh0b29sKzB4YzI2LzB4
+MmQ5MA0KPiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogID8gaW5ldF9p
+b2N0bCsweGU1LzB4MjEwDQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVs
+OiAgZGV2X2lvY3RsKzB4MTg4LzB4NDkwDQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJu
+YWwga2VybmVsOiAgc29ja19kb19pb2N0bCsweGU5LzB4MTgwDQo+IFNlcCAxOCAxNToxMToy
+NyBiYmIuaW50ZXJuYWwga2VybmVsOiAgc29ja19pb2N0bCsweDI3My8weDM3MA0KPiBTZXAg
+MTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogIF9feDY0X3N5c19pb2N0bCsweDdj
+LzB4YjANCj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6ICBkb19zeXNj
+YWxsXzY0KzB4NjQvMHg5MA0KPiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5l
+bDogID8gc29ja19hbGxvY19maWxlKzB4NTYvMHhhMA0KPiBTZXAgMTggMTU6MTE6MjcgYmJi
+LmludGVybmFsIGtlcm5lbDogID8gZ2V0X3Z0aW1lX2RlbHRhKzB4YS8weGIwDQo+IFNlcCAx
+OCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiAgPyB2dGltZV91c2VyX2VudGVyKzB4
+MTcvMHg3MA0KPiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogID8gX19j
+b250ZXh0X3RyYWNraW5nX2VudGVyKzB4NWMvMHg2MA0KPiBTZXAgMTggMTU6MTE6MjcgYmJi
+LmludGVybmFsIGtlcm5lbDogID8gc3lzY2FsbF9leGl0X3RvX3VzZXJfbW9kZSsweDM5LzB4
+NDANCj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6ICA/IGRvX3N5c2Nh
+bGxfNjQrMHg3MS8weDkwDQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVs
+OiAgPyBzeXNjYWxsX2V4aXRfdG9fdXNlcl9tb2RlKzB4MzkvMHg0MA0KPiBTZXAgMTggMTU6
+MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogID8gZG9fc3lzY2FsbF82NCsweDcxLzB4OTAN
+Cj4gU2VwIDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6ICA/IHZ0aW1lX3VzZXJf
+ZW50ZXIrMHgxNy8weDcwDQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVs
+OiAgPyBfX2NvbnRleHRfdHJhY2tpbmdfZW50ZXIrMHg1Yy8weDYwDQo+IFNlcCAxOCAxNTox
+MToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiAgZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2Zy
+YW1lKzB4NDQvMHhhZQ0KPiBTZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDog
+UklQOiAwMDMzOjB4N2ZjZDg0YjFhNzY3DQo+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJu
+YWwga2VybmVsOiBDb2RlOiAzYyAxYyBlOCAyYyBmZiBmZiBmZiA4NSBjMCA3OSA5NyA0OSBj
+NyBjNCBmZiBmZiBmZiBmZiA1YiA1ZCA0YyA4OSBlMCA0MSA1YyBjMyA2NiAwZiAxZiA4NCAw
+MCAwMCAwMCAwMCAwMCBiOCAxMCAwMCAwMCAwMCAwZiAwNSA8NDg+IDNkIDAxIGYwIGZmIGZm
+IDczIDAxIGMzIDQ4IDhiIDBkIDk5IDE2IDBmIDAwIGY3IGQ4IDY0IDg5IDAxIDQ4DQo+IFNl
+cCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBSU1A6IDAwMmI6MDAwMDdmZmUx
+YjQ1ODkzOCBFRkxBR1M6IDAwMDAwMjQ2IE9SSUdfUkFYOiAwMDAwMDAwMDAwMDAwMDEwDQo+
+IFNlcCAxOCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBSQVg6IGZmZmZmZmZmZmZm
+ZmZmZGEgUkJYOiAwMDAwNTU3NjcyMGYwMTYwIFJDWDogMDAwMDdmY2Q4NGIxYTc2Nw0KPiBT
+ZXAgMTggMTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogUkRYOiAwMDAwN2ZmZTFiNDU4
+OTUwIFJTSTogMDAwMDAwMDAwMDAwODk0NiBSREk6IDAwMDAwMDAwMDAwMDAwMGYNCj4gU2Vw
+IDE4IDE1OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IFJCUDogMDAwMDdmZmUxYjQ1OGE1
+MCBSMDg6IDAwMDAwMDAwMDAwMDAwMDAgUjA5OiAwMDAwN2ZjZDg0YjZlMDcwDQo+IFNlcCAx
+OCAxNToxMToyNyBiYmIuaW50ZXJuYWwga2VybmVsOiBSMTA6IDAwMDAwMDAwMDAwMDAwNDAg
+UjExOiAwMDAwMDAwMDAwMDAwMjQ2IFIxMjogMDAwMDdmZmUxYjQ1OGVlOA0KPiBTZXAgMTgg
+MTU6MTE6MjcgYmJiLmludGVybmFsIGtlcm5lbDogUjEzOiAwMDAwNTU3NjcwMmM5NjQ5IFIx
+NDogMDAwMDdmY2Q4NTE4N2M0MCBSMTU6IDAwMDA1NTc2NzAzMGEzNTANCj4gU2VwIDE4IDE1
+OjExOjI3IGJiYi5pbnRlcm5hbCBrZXJuZWw6IC0tLVsgZW5kIHRyYWNlIGQ0OGY1MGFmYzU3
+NTJiYjIgXS0tLQ0KPiANCj4gDQo+IA0KDQoNCi0tIA0KflJhbmR5DQpSZXBvcnRlZC1ieTog
+UmFuZHkgRHVubGFwIDxyZHVubGFwQGluZnJhZGVhZC5vcmc+DQpodHRwczovL3Blb3BsZS5r
+ZXJuZWwub3JnL3RnbHgvbm90ZXMtYWJvdXQtbmV0aXF1ZXR0ZQ0K
