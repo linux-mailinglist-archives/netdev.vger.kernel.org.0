@@ -2,77 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65E7C410905
-	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 03:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24A7E410908
+	for <lists+netdev@lfdr.de>; Sun, 19 Sep 2021 03:16:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240861AbhISBJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Sep 2021 21:09:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47994 "EHLO vps0.lunn.ch"
+        id S232465AbhISBSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Sep 2021 21:18:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48018 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238518AbhISBI7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Sep 2021 21:08:59 -0400
+        id S229664AbhISBSM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Sep 2021 21:18:12 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=nL18oKTsJnXMuI7Uj1KcorP98hu2ZVKA/UF04jm1Rog=; b=IuJ5+f6CvGjzl2+XUSTeNtkIHP
-        NVU6JQbZ3Zn2K8TjobQWj4uiiLaTKJSe+47n5iou3CbxcDZ9YSBnksW1ISma5c8rBBRYqApjO9DvX
-        QfE0DHqj3Xd03QvzqucTqPEv4SKL4WtJGwFYom+c+wcnglzjK+joce6iiRn0eGPBgbcA=;
+        bh=toGy0eeronL8ztqB49+haoMucITk/GOL/Fh2CzRXSD4=; b=hVRH4o1YLVKCKJln+fRBwsXHg5
+        PuTC81a1lAunb9blTdkRvyXUOCEp1FL1/IqKFaqxI6I/zFutdkRYf9psEvKfh2qotaYZRhWxpDjK2
+        4HDS/UkU49DtYDZ+iRkSYyPt9+f0E41MxthF0zNjraplxvAZsEV39C6G9R1ZsLw7MrZw=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1mRlIs-007HSt-2f; Sun, 19 Sep 2021 03:07:34 +0200
-Date:   Sun, 19 Sep 2021 03:07:34 +0200
+        id 1mRlRa-007HXJ-Gw; Sun, 19 Sep 2021 03:16:34 +0200
+Date:   Sun, 19 Sep 2021 03:16:34 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [RFC PATCH net-next] ipmr: ip6mr: APIs to support adding more
- than MAXVIFS/MAXMIFS
-Message-ID: <YUaNVvSGoQ1+vcoa@lunn.ch>
-References: <20210917224123.410009-1-ssuryaextr@gmail.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Saravana Kannan <saravanak@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Subject: Re: [PATCH v3 2/3] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
+Message-ID: <YUaPcgc03r/Dw0yk@lunn.ch>
+References: <20210915170940.617415-1-saravanak@google.com>
+ <20210915170940.617415-3-saravanak@google.com>
+ <CAJZ5v0h11ts69FJh7LDzhsDs=BT2MrN8Le8dHi73k9dRKsG_4g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210917224123.410009-1-ssuryaextr@gmail.com>
+In-Reply-To: <CAJZ5v0h11ts69FJh7LDzhsDs=BT2MrN8Le8dHi73k9dRKsG_4g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 17, 2021 at 06:41:23PM -0400, Stephen Suryaputra wrote:
-> MAXVIFS and MAXMIFS are too small (32) for certain applications. But
-> they are defined in user header files  So, use a different definition
-> CONFIG_IP_MROUTE_EXT_MAXVIFS that is configurable and different ioctl
-> requests (MRT_xyz_EXT and MRT6_xyz_EXT) as well as a different structure
-> for adding MFC (mfcctl_ext).
+> > diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
+> > index 59828516ebaf..9f4ad719bfe3 100644
+> > --- a/include/linux/fwnode.h
+> > +++ b/include/linux/fwnode.h
+> > @@ -22,10 +22,15 @@ struct device;
+> >   * LINKS_ADDED:        The fwnode has already be parsed to add fwnode links.
+> >   * NOT_DEVICE: The fwnode will never be populated as a struct device.
+> >   * INITIALIZED: The hardware corresponding to fwnode has been initialized.
+> > + * NEEDS_CHILD_BOUND_ON_ADD: For this fwnode/device to probe successfully, its
+> > + *                          driver needs its child devices to be bound with
+> > + *                          their respective drivers as soon as they are
+> > + *                          added.
 > 
-> CONFIG_IP_MROUTE_EXT_MAXVIFS is bounded by the IF_SETSIZE (256) in
-> mroute6.h.
-> 
-> This patch is extending the following RFC:
-> http://patchwork.ozlabs.org/project/netdev/patch/m1eiis8uc6.fsf@fess.ebiederm.org/
+> The fact that this requires so much comment text here is a clear
+> band-aid indication to me.
 
-Quoting the above URL:
+This whole patchset is a band aid, but it is for stable, to fix things
+which are currently broken. So we need to answer the question, is a
+bad aid good enough for stable, with the assumption a real fix will
+come along later?
 
-> My goal is an API that works with just a recompile of existing
-> applications, and an ABI that continues to work for old applications.
-
-Does this really work? Does the distribution version of mrouted use
-the kernel UAPI headers of the running kernel? Can i upgrade to a
-newer kernel, with newer headers, and it automagically pulls in a new
-mrouted built using the new kernel headers? I think not. ethtool has
-its own copy of the kernel headers. mrouted uses
-/usr/include/linux/mroute.h which is provided by
-linux-libc-dev:amd64. That is not tied to the running kernel. What
-about quagga?
-
-So in effect, you have to ask the running kernel, what value is it
-using for MAXVIFS? Which means it is much more than just a recompile.
-So i doubt think you can achieve this goal.
-
-Given that, i really think you should spend the time to do a proper
-solution. Add a netlink based API, which does not have the 32 limit.
-Make the kernel implementation be based on a linked list. Have the
-ioctl interface simply return the first 32 entries and ignore anything
-above that.
-
-      Andrew
+     Andrew
