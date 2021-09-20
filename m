@@ -2,75 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 376344114C7
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CADA4114DE
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238603AbhITMqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 08:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234491AbhITMqQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 08:46:16 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DBAC061574
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 05:44:50 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id i132so13524059qke.1
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 05:44:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=rwyepsfXk+e118OLepqKAMOl+UdykyLbS8FI7BT8xRI=;
-        b=p+EAb2l1+xq0+AcSTCYu8a9fHqoeJu9ScscnOewMZovJS62rHs6CcRlVbpGu4/5gvN
-         Kn0ky0jQrO+trkMomtuBZ/NsW5htq0YZ9mVsvHEXYqt8sUxnITmv4HgEDhFm04cUOECG
-         iI5/UPbxUplQDDTVymt0SiN2LUBDW8/OeOGkhb20kAitzcZpI02Orkv6VB6VIlp++FRz
-         MiEUZ/mJkzaCxly65lfQieDn47u5NbvIpL748HqxJKIJiPQemZH06jkKQCqr8Brlyeyb
-         9JX2sv2KOo4fjlThjGwAs2oL+Z64j8aFLdjLuMTxU81V0XQgM3YKPeCGvi0kQQ8271lu
-         HRmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=rwyepsfXk+e118OLepqKAMOl+UdykyLbS8FI7BT8xRI=;
-        b=YnJGKX4HmjUosxjmc7OyjD6guYkqEZ36D2LXRzKrj5d1IeMxum9xFLXx8GVxu77oPh
-         PCHU3OXouO3QHBB9kwQ7TCqFXtFQA6ghklnwHzWY/847PegtRvHeZRE/v7wfajFK/D/T
-         vGKOunyjrTcZFJurkqiKD6tAZmFxqyKFnPBecYsjrunSjb8kB0Mv9CAbDKB3IBYJoR37
-         b6XtrLNzXcI0xmLgd7Zb2P1cJogE/jOxWlx+kS9KNE48EEk3EcYvmWOb4G+AiUESnAiy
-         GkIQNGvgCFbdPGyAVXmrNMsMHrQHRAF/6lLbN4/veJJAE0r6oW+fUlKiC9LRDzj9e1lB
-         a+ZA==
-X-Gm-Message-State: AOAM532ytrjLVJa3oLWzlIbp+Rj/UqNoLiW9qjrmX+JX+GIh08f3e6uE
-        NbrfC5+MqqytZXm5c8HYnYh3yhZg+4Fge+SA+4U=
-X-Google-Smtp-Source: ABdhPJwsjNYmjw3sEZnFjpXqOtlrOFLl1rVXhaHVbeQMPE+ndOneKDI9rcyg3WogSbuoq1ojb4JNJLsCaYkZGAmxoQ0=
-X-Received: by 2002:a25:b5ce:: with SMTP id d14mr30780743ybg.415.1632141889046;
- Mon, 20 Sep 2021 05:44:49 -0700 (PDT)
+        id S237920AbhITMuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 08:50:17 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:53197 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234086AbhITMuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 08:50:15 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1632142128; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=oXH2r2YAvNR0xujgASmm26KkyFaQDUEkr4gUUo/Kmwg=; b=hM8HwFMGS85+BthQAQ51stwie8rcFasfrMNMyCSSTsinxAmENKuVy+qlvVeH0Jko+eIOfm1Y
+ 2hVvmTnkEoTwoz8hFfJz8DS0s9Xc4R/BTt/65p0o1mSwN6zFKAcCnKdFlW5cXUviJWnYs021
+ FdnSucuUtr5/BGKimqVInlOwQao=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 6148831165c3cc8c639e283a (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 20 Sep 2021 12:48:17
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 2EC55C4338F; Mon, 20 Sep 2021 12:48:17 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 038A9C4338F;
+        Mon, 20 Sep 2021 12:48:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 038A9C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Bob Copeland <me@bobcopeland.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [v2] ath5k: fix building with LEDS=m
+References: <20210920122359.353810-1-arnd@kernel.org>
+Date:   Mon, 20 Sep 2021 15:48:10 +0300
+In-Reply-To: <20210920122359.353810-1-arnd@kernel.org> (Arnd Bergmann's
+        message of "Mon, 20 Sep 2021 14:23:44 +0200")
+Message-ID: <87sfxzwgz9.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Date:   Mon, 20 Sep 2021 14:44:38 +0200
-Message-ID: <CACna6ryn-gmGm0uKEd_gfNgLkGTNdKi=J=Akz5tp4nZGcZB9gQ@mail.gmail.com>
-Subject: bgmac regression: hang while probing on BCM47189
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Arnd Bergmann <arnd@kernel.org> writes:
 
-commit 34322615cbaa ("net: bgmac: Mask interrupts during probe")
-caused a regression on my Tenda AC9 router (BCM47189 SoC that belongs
-to the BCM53573 family).
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> Randconfig builds still show a failure for the ath5k driver,
+> similar to the one that was fixed for ath9k earlier:
+>
+> WARNING: unmet direct dependencies detected for MAC80211_LEDS
+>   Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
+>   Selected by [m]:
+>   - ATH5K [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_ATH [=y] && (PCI [=y] || ATH25) && MAC80211 [=y]
+> net/mac80211/led.c: In function 'ieee80211_alloc_led_names':
+> net/mac80211/led.c:34:22: error: 'struct led_trigger' has no member named 'name'
+>    34 |         local->rx_led.name = kasprintf(GFP_KERNEL, "%srx",
+>       |                      ^
+>
+> Copying the same logic from my ath9k patch makes this one work
+> as well, stubbing out the calls to the LED subsystem.
+>
+> Fixes: b64acb28da83 ("ath9k: fix build error with LEDS_CLASS=m")
+> Fixes: 72cdab808714 ("ath9k: Do not select MAC80211_LEDS by default")
+> Fixes: 3a078876caee ("ath5k: convert LED code to use mac80211 triggers")
+> Link: https://lore.kernel.org/all/20210722105501.1000781-1-arnd@kernel.org/
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> Changes in v2:
+> - avoid link failure when NEW_LEDS is disabled
 
-Calling bgmac_chip_intrs_off() that early in a probe function - for
-the *second* eth interface - simply hangs my device.
+I'll queue this to v5.15.
 
-I didn't see any problems caused by not having that call in the first place=
-.
-A solution seems to be also to call bgmac_clk_enable() *first*.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Should that call to the bgmac_chip_intrs_off() be conditional? Or
-should we reorder bgmac_chip_intrs_off() and bgmac_clk_enable()?
-
---=20
-Rafa=C5=82
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
