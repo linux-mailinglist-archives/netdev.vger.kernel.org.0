@@ -2,98 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 597F2412BD6
+	by mail.lfdr.de (Postfix) with ESMTP id 09A70412BD5
 	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350955AbhIUCij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 22:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40868 "EHLO
+        id S1347846AbhIUCif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 22:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349303AbhIUCZr (ORCPT
+        with ESMTP id S1349307AbhIUCZr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:25:47 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE493C0A88DE
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 11:58:59 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id eg28so42500855edb.1
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 11:58:59 -0700 (PDT)
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CA0C0A88E0;
+        Mon, 20 Sep 2021 11:59:19 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id eg28so42503949edb.1;
+        Mon, 20 Sep 2021 11:59:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6exHgK6vGzAOEpe1ocoQSvp6Lvs/E+5qV0A++5q/Iqk=;
-        b=Cx782PC/TMmkVC0GOVBe5SmMzh2krQUt91kXVnGtUd4tc4FGsSR8j8jMP/WKThKE2l
-         PSyis9Qd5sgbA6Fwk6cdc90Dikgp8aHCjgl/dvD4HQNEgjDnbcMTh1aAsZ5pZH1y1Cg2
-         byrcj9C2D6BkOMpnMTL/lCXTqE4GHlrzbNRlII26nO6Uwjl4IsRrG/WNvhsPg2AM08H/
-         iYJIjWWW1jaHSOm0vRqeyYGWtezLqgMgKRzBpH1ZCFPELku+NCHGw4IZfe4hLiv4Et0w
-         jFufukAkUnXb6gxiDxG6GlD7oLVpFh8aOU6vfb4vlxeTAEkSXQtjmxFhYpJxIjAybxLm
-         u39A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KgXM9Th44hJC0qez5EJQ9s1ObnIV+weJgRGKAcr82g8=;
+        b=quPDK389xaGRi271X34gczU43zPLPDabIu81jvCHn/M5IHU2FTJUIT64jiAqLjhQHn
+         83m4r4jEF8AHte22C7CtxKUBlHOHFoXZdz5gyD+rK1kw+1b+DvyS/tjnfMwOKMqRPUoh
+         sbxYmElfUJnDILvPNJa1ST03mAZz7IVC7FiSJJVIFOZIDqNVZ0MSJnrQj7y3K6VGWotd
+         625IA7oKNQEs77/DPghUg+CVwpf9DcB2nfT/0oOXC+zFEBpwgS8b5nVeEZVt/Za9NEFt
+         jvFpxVV/08Zz/C9bCmxJ8iS84h8RVamEZSYwjwvoCTVBNGZsgv8+IoUvT3PTuQWQ7KFC
+         Nhmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6exHgK6vGzAOEpe1ocoQSvp6Lvs/E+5qV0A++5q/Iqk=;
-        b=0AqYZ4lxs1qc2ZFYN50jI7gR/wIMEoUydsG9//Yc7ocnFGpJTNQYq9jCly71t4iVS3
-         Mp7nq2w9ymEJvqJlPPDqBAF/03S9c5NBgQSTPBomjHsxqqC5t+3SfU/fXb3+eFfaKzhG
-         vUEHyBy4D3EvQa9mQckmnvZ9+RcFcCA4w5U2GxfKayllBTIcXkZv21qTNV4+GcTOPqFX
-         gvLRISVi2eGPRKkHasgSA8DVN/cRp5CrjfmB4xMpbPrNI1TnNMQN0z/Q9yiR/iYbU16y
-         mNBMGGj8V5XIQDL9kuhYLAXAr7eG4pWU3glhSl79Egj0QWPYbjYdNvZ1JWEkXjQogpWR
-         pa6Q==
-X-Gm-Message-State: AOAM533kTmBhg0d3IRQhaGLE3XHzun1bjUlnZmIBeyKJoHK44wckbR+B
-        BIsc9INFZ0Fbot5L0bOxT04=
-X-Google-Smtp-Source: ABdhPJyCaYQMrC4jUgnsT3g0zODNYmLSd6K4OdsBQvUhjrXO6PYbJ7eJ4mN/Bzlz+Ugms427Wxr0EQ==
-X-Received: by 2002:a17:906:c1d0:: with SMTP id bw16mr31062856ejb.146.1632164338426;
-        Mon, 20 Sep 2021 11:58:58 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id w13sm7894882ede.24.2021.09.20.11.58.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Sep 2021 11:58:57 -0700 (PDT)
-Date:   Mon, 20 Sep 2021 21:58:56 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: Re: Race between "Generic PHY" and "bcm53xx" drivers after
- -EPROBE_DEFER
-Message-ID: <20210920185856.4mffcj7rifslxyil@skbuf>
-References: <3639116e-9292-03ca-b9d9-d741118a4541@gmail.com>
- <4648f65c-4d38-dbe9-a902-783e6dfb9cbd@gmail.com>
- <20210920170348.o7u66gpwnh7bczu2@skbuf>
- <11994990-11f2-8701-f0a4-25cb35393595@gmail.com>
- <20210920174022.uc42krhj2on3afud@skbuf>
- <25e4d46a-5aaf-1d69-162c-2746559b4487@gmail.com>
- <20210920180240.tyi6v3e647rx7dkm@skbuf>
- <e010a9da-417d-e4b2-0f2f-b35f92b0812f@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KgXM9Th44hJC0qez5EJQ9s1ObnIV+weJgRGKAcr82g8=;
+        b=ZdOztD5oeN4VcUSvdUlXAa8Yx607HWeN+o6fL/ntPue0lL3VMbNuC5JtZe7XXAYKlF
+         9Y5W1idnBQP1AjQMF+ApysKqPSVXxAVCHEiiqaaQSEHOif1p8M6ILZfvauvH1elpd0Ve
+         rGiuSehlzxJOlqeEwg9mfNlDmtQ8h+Lfb1o8/wmLTkZM6hhRZ9ZfBWNkyDlqoORvyhxg
+         GjZuC/UgWbJFdjvolrVqj5tpONyTWsycgaEkS+or31RcPdH7oLo5iOcQRyrkDqVcVRKb
+         clW07tRYPsCbppqnPxWX+jWoXvW5lOqgN6PVtN+LW0dzMPwsgTN8pCtJhQIL1l4uNjOa
+         ohqQ==
+X-Gm-Message-State: AOAM530XgBrpFQlF6z3yjuufZgp46oXOZES4vAfq12Gud7eS02if6e9F
+        ceY7HOqbcI2hOF/a0kWRuYyrM+nUBVlqUSad7JA=
+X-Google-Smtp-Source: ABdhPJw70KtDAp1z7hhGqFMPHNlalXDeT7HMcvVLZgJ0yKkl3ivDBmuevxvoLjYSp6M2ugvuD1fqDP1tuO0DvvRf7V4=
+X-Received: by 2002:a17:906:a08d:: with SMTP id q13mr29946771ejy.465.1632164357541;
+ Mon, 20 Sep 2021 11:59:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e010a9da-417d-e4b2-0f2f-b35f92b0812f@gmail.com>
+References: <CAHk-=wh-=tMO9iCA4v+WgPSd+Gbowe5kptwo+okahihnO2fAOA@mail.gmail.com>
+ <202109201825.18KIPsV4026066@valdese.nms.ulrich-teichert.org> <CAHk-=wibRWoy4-ZkSVXUoGsUw5wKovPvRhS7r6VM+_GeBYZw1A@mail.gmail.com>
+In-Reply-To: <CAHk-=wibRWoy4-ZkSVXUoGsUw5wKovPvRhS7r6VM+_GeBYZw1A@mail.gmail.com>
+From:   Matt Turner <mattst88@gmail.com>
+Date:   Mon, 20 Sep 2021 11:59:05 -0700
+Message-ID: <CAEdQ38HeUPDyiZhhriHqdA+Qeyrb3M=FoKWKgs0dZaEjbcpVUQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Ulrich Teichert <krypton@ulrich-teichert.org>,
+        Michael Cree <mcree@orcon.net.nz>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-parisc <linux-parisc@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Sparse Mailing-list <linux-sparse@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 20, 2021 at 11:10:39AM -0700, Florian Fainelli wrote:
-> > But even so, what's a "pseudo PHY" exactly? I think that's at the bottom
-> > of this issue. In the Linux device model, a device has a single driver.
-> > In this case, the same MDIO device either has a switch driver, if you
-> > accept it's a switch, or a PHY driver, if you accept it's a PHY.
-> > I said it's "broken" because the expectation seems to be that it's a switch,
-> > but it looks like it's treated otherwise. Simply put, the same device
-> > can't be both a switch and a PHY.
-> 
-> A pseudo-PHY is a device that can snoop and respond to MDIO bus
-> requests. I understand it cannot be both, just explaining to you how the
-> people at Broadcom have been seeing the world from their perspective.
-> Anything that is found at MDIO address 0x1e/30 is considered a MDIO
-> attached switch, that's all.
+On Mon, Sep 20, 2021 at 11:46 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Mon, Sep 20, 2021 at 11:26 AM Ulrich Teichert
+> <krypton@ulrich-teichert.org> wrote:
+> >
+> > The main trouble is that my system has only 64MB of memory and the smallest
+> > kernel image with all drivers I need was about 105MB big.
+>
+> Are you sure you aren't looking at some debug image?
+>
+> I just tried building something based on your Jensen config (lots of
+> new questions, you sent your old config from 4.18.0-rc5 time), and I
+> get
+>
+>   [torvalds@ryzen linux]$ ll -h arch/alpha/boot/vmlinux*
+>   -rwxr-xr-x. 1 torvalds torvalds 5.4M Sep 20 11:32 arch/alpha/boot/vmlinux
+>   -rw-r--r--. 1 torvalds torvalds 2.3M Sep 20 11:32 arch/alpha/boot/vmlinux.gz
+>
+> so yeah, it's not exactly tiny, but at 5.4MB it's certainly not 105MB.
+>
+> The "vmlinux" file itself is huge, but that's due to CONFIG_DEBUG_INFO=y.
+>
+> You can easily disable DEBUG_INFO entirely (or at least do
+> DEBUG_INFO_REDUCED), and get much smaller files.
+>
+> With the attached config, the vmlinux file is just 7MB (but the actual
+> one you boot is that same 5.4M file because it's been stripped).
+>
+> NOTE! The attached config is basically just the one you sent me, with
+> "make defconfig" done and DEBUG_INFO removed. It might have drivers
+> missing, or extraneous code that you don't need because of all the
+> changes in config variables since that very old one.
+>
+> It would be very interesting to hear whether this all still boots. I
+> do think people still occasionally boot-test some other alpha
+> configurations, but maybe not.
 
-Nothing wrong with that per se, at NXP we've been thinking about RevMII
-as well, and having a switch expose itself as a PHY over MDIO, in any
-case something a bit richer/more interactive than a fixed-link.
+I test on a couple of alpha configurations with some regularity:
+Marvel (AlphaServer ES47) and Nautilus (UP1500). I have more systems I
+could test but I'd need to get a lot more organized to make space.
 
-One way to bypass that limitation is to access the switch registers
-through a different device compared to the PHY device. At the very
-least, a different MDIO address. Even better, not over MDIO at all, but
-something faster, SPI, PCIe etc.
+In the decade plus I've been around Linux on alpha I've don't actually
+recall hearing of anyone using Linux on a Jensen system before :)
