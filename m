@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A58F34126A6
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 21:16:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2559C4126A9
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 21:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347498AbhITTRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 15:17:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48566 "EHLO mail.kernel.org"
+        id S1347725AbhITTSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 15:18:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50214 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243382AbhITTPw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 15:15:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 277DF60FC1;
-        Mon, 20 Sep 2021 19:14:25 +0000 (UTC)
+        id S1346556AbhITTQw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Sep 2021 15:16:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 415126109E;
+        Mon, 20 Sep 2021 19:15:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632165265;
-        bh=0g8QTHavk1g8jErThgF8Kwdgu3c5ORY2nZ9iZPtiABA=;
+        s=k20201202; t=1632165324;
+        bh=NgWYGuW8aQKhfdhD/69amt2tnbkaADFk26vm/M64g/k=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Xb1d8KAlERK0ejLDz2t1CulG4RHyauoH7X35DNDDYLPdUzuR9oUWYQfVDItv76Wus
-         lRfs+/lJvBDZifXUFQ4pNgSu9BCaeg0R1Z6yRF0hanOkZ+rSlqVjSg+gQboN7vXVCj
-         e5xz4B1xMXyqzLkLz1VWPocTg10fwVPYdYQUjjwnJ0tLIe42oPKHWiIWgGW4dVtTIs
-         M6eVJIdcojX6SvoUfuYNU3wbbesNiNZZ0JA8zF2WTZuWIBlzg8lBEwFd4yAw14ZPNo
-         rQYOMana294NcpG59hUS5P1xCt5p/BrA27tABKZZritX7JCZQfc5CL9SxWAapX1yoq
-         vV2brQN3tMvog==
-Date:   Mon, 20 Sep 2021 12:14:24 -0700
+        b=jctbjdKF8E8SqzjydPNVwAYBSW7B/cjVeYM5gp1AhwSjFOWq+yobVS1NdpVnyUMZI
+         eg0Baiz4NUT9F3cukov80oQH6aa/Te0G4mwPpXoRbhRtZW8GTYS0910sAqR3q144Ll
+         M9Xpi8lw4CXqSEGEM6Ir3vLcwn4pfTpoNsVkdb8fkUK6TB7Ik6y3oQ+92XQybKMnZK
+         RIqJ/dG4r7eg2YUdo9BKlHJaJeDSdpk8+chYjcD3jTV9QMyWHaHSHZNeTQaKTTPILe
+         ya59P5N13j6uTDYrkAJbAhbmi5TUDcmfLVrHtQRq1b2mkj3mEBDMcawmnX2UqkWTnb
+         7OXyH9fBYCdOQ==
+Date:   Mon, 20 Sep 2021 12:15:23 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Min Li <min.li.xe@renesas.com>
-Cc:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH net v2 2/2] ptp: idt82p33: implement double dco time
- correction
-Message-ID: <20210920121424.212c7df8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <OS3PR01MB65935EC20F350036340F3348BAA09@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-References: <1631889589-26941-1-git-send-email-min.li.xe@renesas.com>
-        <1631889589-26941-2-git-send-email-min.li.xe@renesas.com>
-        <20210917125401.6e22ae13@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <OS3PR01MB65936ADCEF63D966B44C5FEFBADD9@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-        <20210917140631.696aadc9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <OS3PR01MB65935EC20F350036340F3348BAA09@OS3PR01MB6593.jpnprd01.prod.outlook.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <zenczykowski@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Maciej Zenczykowski <maze@google.com>
+Subject: Re: nt: usb: USB_RTL8153_ECM should not default to y
+Message-ID: <20210920121523.7da6f53d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAMuHMdUeoVZSkP24Uu7ni3pUf_9uQHsq2Xm3D6dHnzuQLXeOFA@mail.gmail.com>
+References: <CANP3RGeaOqxOMwCFKb=3X5EFaXNG+k3N2CfV4YT-8NiY5GW3Tg@mail.gmail.com>
+        <20210917114924.2a7bda93@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAMuHMdUeoVZSkP24Uu7ni3pUf_9uQHsq2Xm3D6dHnzuQLXeOFA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -47,25 +45,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Sep 2021 14:08:37 +0000 Min Li wrote:
-> > > We use this parameter to specify firmware so that module can be
-> > > autoloaded /etc/modprobe.d/modname.conf  
-> > 
-> > Sorry, I don't understand. The firmware is in /lib/firmware.
-> > Previously you used a card coded name (whatever FW_FILENAME is,
-> > "idt82p33xxx.bin"?). This patch adds the ability to change the firmware file
-> > name by a module param.
-> > 
-> > Now let me repeat the question - what's the point of user changing the
-> > requested firmware name if they can simply rename the file?  
+On Sat, 18 Sep 2021 12:53:31 +0200 Geert Uytterhoeven wrote:
+> > Yeah.. more context here:
+> >
+> > https://lore.kernel.org/all/7fd014f2-c9a5-e7ec-f1c6-b3e4bb0f6eb6@samsung.com/
+> >
+> > default !USB_RTL8152 would be my favorite but that probably doesn't
+> > compute in kconfig land. Or perhaps bring back the 'y' but more clearly
+> > mark it as a sub-option of CDCETHER? It's hard to blame people for
+> > expecting drivers to default to n, we should make it clearer that this
+> > is more of a "make driver X support variation Y", 'cause now it sounds
+> > like a completely standalone driver from the Kconfig wording. At least
+> > to a lay person like myself.  
 > 
-> We have different firmware named after different 1588 profiles. If we
-> rename firmware, it would make every profile  look same and
-> confusing.
+> If it can be a module (tristate), it must be a separate (sub)driver, right?
 
-You can use symlinks to "choose" which FW will be loaded by the kernel:
-
-ls -sn $real_fw_filename $FW_FILENAME
-
-> On the other hand, with this module parameter, we can have
-> phc module auto start with correct firmware.
+Fair point.
