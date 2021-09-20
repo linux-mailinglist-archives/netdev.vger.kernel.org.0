@@ -2,62 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2559C4126A9
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 21:17:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 608F54126C6
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 21:20:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347725AbhITTSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 15:18:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50214 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346556AbhITTQw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 15:16:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 415126109E;
-        Mon, 20 Sep 2021 19:15:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632165324;
-        bh=NgWYGuW8aQKhfdhD/69amt2tnbkaADFk26vm/M64g/k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jctbjdKF8E8SqzjydPNVwAYBSW7B/cjVeYM5gp1AhwSjFOWq+yobVS1NdpVnyUMZI
-         eg0Baiz4NUT9F3cukov80oQH6aa/Te0G4mwPpXoRbhRtZW8GTYS0910sAqR3q144Ll
-         M9Xpi8lw4CXqSEGEM6Ir3vLcwn4pfTpoNsVkdb8fkUK6TB7Ik6y3oQ+92XQybKMnZK
-         RIqJ/dG4r7eg2YUdo9BKlHJaJeDSdpk8+chYjcD3jTV9QMyWHaHSHZNeTQaKTTPILe
-         ya59P5N13j6uTDYrkAJbAhbmi5TUDcmfLVrHtQRq1b2mkj3mEBDMcawmnX2UqkWTnb
-         7OXyH9fBYCdOQ==
-Date:   Mon, 20 Sep 2021 12:15:23 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <zenczykowski@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Hayes Wang <hayeswang@realtek.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Maciej Zenczykowski <maze@google.com>
-Subject: Re: nt: usb: USB_RTL8153_ECM should not default to y
-Message-ID: <20210920121523.7da6f53d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAMuHMdUeoVZSkP24Uu7ni3pUf_9uQHsq2Xm3D6dHnzuQLXeOFA@mail.gmail.com>
-References: <CANP3RGeaOqxOMwCFKb=3X5EFaXNG+k3N2CfV4YT-8NiY5GW3Tg@mail.gmail.com>
-        <20210917114924.2a7bda93@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAMuHMdUeoVZSkP24Uu7ni3pUf_9uQHsq2Xm3D6dHnzuQLXeOFA@mail.gmail.com>
+        id S1350634AbhITTWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 15:22:09 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:50043 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1344007AbhITTUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 15:20:06 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18KJGDFW001160;
+        Mon, 20 Sep 2021 15:18:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=JhH0yiehiovZ8/rC9hSwkWTdsVLNXTs8QUHXiqRPuQY=;
+ b=sEi1BjiGUn55TPcTyRme50mRiHgHpxNt7zuQXTSbB/La0MckdLVWebrUoXuiLgGdNw2E
+ M4dBJ4oPs6sjGBvo2HuR39J2KMywOL152oggWgVY9PjuqzdLPWlpL/dh1FaKN8sDvN7h
+ 0CGjtkEqWRVIeg6HWaU1Xec+Nsw5PeUDsQCNG3glLVYxJRy6Mnad7qShuAhXsaMlCffQ
+ Gl0T1GdRPQ2rfBlTOscQWCPvsmNiBLpAhrcRkLkrlEigx7PMIRqW/mTAZHCpbaMctCbA
+ +WpbhNsUix92qrfqlUXDrp2TILXHByD849Z/0qZJ3ijfhGDdTYdWnHiTWosG0pr2yADa tw== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3b5w0pkfbv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 20 Sep 2021 15:18:36 -0400
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18KJ3BBt024695;
+        Mon, 20 Sep 2021 19:18:35 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3b57r8ujkv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 20 Sep 2021 19:18:35 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18KJDjuJ59310362
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 20 Sep 2021 19:13:45 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4A1B911C052;
+        Mon, 20 Sep 2021 19:18:31 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E62C511C054;
+        Mon, 20 Sep 2021 19:18:30 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 20 Sep 2021 19:18:30 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Guvenc Gulce <guvenc@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net 0/2] net/smc: fixes 2021-09-20
+Date:   Mon, 20 Sep 2021 21:18:13 +0200
+Message-Id: <20210920191815.2919121-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: BY2GGuRs36ChpeBrqkDKjNxIaGRLvtYO
+X-Proofpoint-GUID: BY2GGuRs36ChpeBrqkDKjNxIaGRLvtYO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-20_07,2021-09-20_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
+ mlxscore=0 lowpriorityscore=0 suspectscore=0 mlxlogscore=643 spamscore=0
+ clxscore=1015 priorityscore=1501 malwarescore=0 impostorscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109200111
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 18 Sep 2021 12:53:31 +0200 Geert Uytterhoeven wrote:
-> > Yeah.. more context here:
-> >
-> > https://lore.kernel.org/all/7fd014f2-c9a5-e7ec-f1c6-b3e4bb0f6eb6@samsung.com/
-> >
-> > default !USB_RTL8152 would be my favorite but that probably doesn't
-> > compute in kconfig land. Or perhaps bring back the 'y' but more clearly
-> > mark it as a sub-option of CDCETHER? It's hard to blame people for
-> > expecting drivers to default to n, we should make it clearer that this
-> > is more of a "make driver X support variation Y", 'cause now it sounds
-> > like a completely standalone driver from the Kconfig wording. At least
-> > to a lay person like myself.  
-> 
-> If it can be a module (tristate), it must be a separate (sub)driver, right?
+Please apply the following patches for smc to netdev's net tree.
 
-Fair point.
+The first patch adds a missing error check, and the second patch
+fixes a possible leak of a lock in a worker.
+
+Karsten Graul (2):
+  net/smc: add missing error check in smc_clc_prfx_set()
+  net/smc: fix 'workqueue leaked lock' in smc_conn_abort_work
+
+ net/smc/smc_clc.c  | 3 ++-
+ net/smc/smc_core.c | 2 ++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+-- 
+2.25.1
+
