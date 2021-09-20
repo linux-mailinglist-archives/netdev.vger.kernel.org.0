@@ -2,84 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 829464115FF
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 15:42:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 976FF411602
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 15:42:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239573AbhITNnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 09:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40550 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233575AbhITNnl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 09:43:41 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C17C061574;
-        Mon, 20 Sep 2021 06:42:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=OH+GVeIdWaM8bBkd2TRp9ZRcX+WrRFhYL3tYwyLWkNA=; b=Vmy7EZ4gJpyBgHMkhiDI4D6tQn
-        2cZxulJfBY9SbhZtdCy0RZK8B9ll5ravy32Idxqz1rJjkB1u8NNzT4psWza1dWZHZDaIgLUr6Fc6C
-        bnAglaIe6lxAVKS0bS4KUB6aXVcP+VxNij2+PefTZANkpz13YCXYAZKpVD7MiyZ1Vgq4pWNEhABhE
-        c+yVAbi08PCLM20tm/U43SwHi1Nw62OQkf/snmoi2fYBGXHSswwed4LgsOIb/KWMXaWdPbrCYvefw
-        VQ0aVAFf5u5vLsK3C4E90/6f8C6pIwnllJHC5HzwentXAYBrN8a3gPOAUqM8tZ+w4wcrHp3FpUf3i
-        XbsDyQaA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54670)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mSJYX-0001f9-SA; Mon, 20 Sep 2021 14:42:01 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mSJYW-0002L7-0w; Mon, 20 Sep 2021 14:42:00 +0100
-Date:   Mon, 20 Sep 2021 14:42:00 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        andrew@lunn.ch, f.fainelli@gmail.com,
-        alexandre.belloni@bootlin.com, vladimir.oltean@nxp.com,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-pm@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 03/12] phy: Add lan966x ethernet serdes PHY
- driver
-Message-ID: <YUiPqJjsoBg99VbR@shell.armlinux.org.uk>
-References: <20210920095218.1108151-1-horatiu.vultur@microchip.com>
- <20210920095218.1108151-4-horatiu.vultur@microchip.com>
+        id S239618AbhITNn5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Sep 2021 09:43:57 -0400
+Received: from mail1.shanghaitech.edu.cn ([119.78.254.90]:31900 "EHLO
+        mail.shanghaitech.edu.cn" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232644AbhITNnz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 09:43:55 -0400
+Received: from [10.15.44.216] by mail.shanghaitech.edu.cn with MESSAGESEC ESMTP id 456895189764503;
+        Mon, 20 Sep 2021 21:42:07 +0800 (CST)
+Received: from DESKTOP-U066CHB.localdomain (10.15.44.220) by
+ smtp.shanghaitech.edu.cn (10.15.44.216) with Microsoft SMTP Server (TLS) id
+ 14.3.399.0; Mon, 20 Sep 2021 21:42:09 +0800
+From:   Mianhan Liu <liumh1@shanghaitech.edu.cn>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+CC:     Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Mianhan Liu <liumh1@shanghaitech.edu.cn>
+Subject: [PATCH -next] net/ipv4/sysctl_net_ipv4.c: remove superfluous header files from sysctl_net_ipv4.c
+Date:   Mon, 20 Sep 2021 21:42:00 +0800
+Message-ID: <20210920134200.31481-1-liumh1@shanghaitech.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210920095218.1108151-4-horatiu.vultur@microchip.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
+X-Originating-IP: [10.15.44.220]
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 20, 2021 at 11:52:09AM +0200, Horatiu Vultur wrote:
-> +static int lan966x_calc_sd6g40_setup_lane(struct lan966x_sd6g40_setup_args config,
-> +					  struct lan966x_sd6g40_setup *ret_val)
-> +{
-> +	struct lan966x_sd6g40_mode_args sd6g40_mode;
-> +	struct lan966x_sd6g40_mode_args *mode_args = &sd6g40_mode;
-> +
-> +	if (lan966x_sd6g40_get_conf_from_mode(config.mode, config.refclk125M,
-> +					      mode_args))
-> +		return -1;
+sysctl_net_ipv4.c hasn't use any macro or function declared in mm.h, module.h,
+igmp.h, inetdevice.h, swap.h, slab.h, nsproxy.h, snmp.h, route.h and inet_frag.h. 
+Thus, these files can be removed from sysctl_net_ipv4.c safely without affecting
+the compilation of the net module.
 
-This needs fixing to be a real negative error number.
-lan966x_sd6g40_setup_lane() propagates this functions non-zero
-return value, which is then propagated through lan966x_sd6g40_setup(),
-and then through serdes_set_mode() to the PHY layer.
+Signed-off-by: Mianhan Liu <liumh1@shanghaitech.edu.cn>
 
-In general, I would suggest that _all_ int-returning functions in the
-kernel that return a negative failure value _should_ _always_ return a
-negative error code, so that your reviewers don't have to chase code
-paths to work out whether a mistake such as the above exists.
+---
+ net/ipv4/sysctl_net_ipv4.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-To put it another way: never use "return -1" in the kernel.
-
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 6f1e64d49..f8e39d00b 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -6,25 +6,15 @@
+  * Added /proc/sys/net/ipv4 directory entry (empty =) ). [MS]
+  */
+ 
+-#include <linux/mm.h>
+-#include <linux/module.h>
+ #include <linux/sysctl.h>
+-#include <linux/igmp.h>
+-#include <linux/inetdevice.h>
+ #include <linux/seqlock.h>
+ #include <linux/init.h>
+-#include <linux/slab.h>
+-#include <linux/nsproxy.h>
+-#include <linux/swap.h>
+-#include <net/snmp.h>
+ #include <net/icmp.h>
+ #include <net/ip.h>
+ #include <net/ip_fib.h>
+-#include <net/route.h>
+ #include <net/tcp.h>
+ #include <net/udp.h>
+ #include <net/cipso_ipv4.h>
+-#include <net/inet_frag.h>
+ #include <net/ping.h>
+ #include <net/protocol.h>
+ #include <net/netevent.h>
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
+
