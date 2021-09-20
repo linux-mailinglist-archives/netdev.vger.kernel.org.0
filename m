@@ -2,138 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 103B8412610
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 20:51:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4AAC41260C
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 20:51:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353988AbhITSxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 14:53:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38258 "EHLO mail.kernel.org"
+        id S1353812AbhITSwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 14:52:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38256 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1385893AbhITSwh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1385896AbhITSwh (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 20 Sep 2021 14:52:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2D955611AE;
-        Mon, 20 Sep 2021 18:02:17 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9917561245;
+        Mon, 20 Sep 2021 18:13:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632160937;
-        bh=as2gxVfvnJaxy4koQagKxvEP7kyTEN8JfpEklpWnlp0=;
+        s=k20201202; t=1632161580;
+        bh=BTFUxJdX1hY0RCDSw/MYkhqvEyalCtcTZ06jVH+EaBc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Q0n9A9GEUlQmIbkRUHCSHnVJseX4zDUujb6T+1aOhk/8Vo33P7W1mnucZEQ+50qh0
-         jYxG+4nqRxyVT3rJXI10DHLC24Qzl9fZwh5KxETz5mRMkxS9dXqtJaHYi4Y0PQtS71
-         AMLIcj5y7I/nTZ4YnuqAq3JzBUn/+N16P8vTKVzkPPPEB4rOoSje8ZfhxDCXNBjy9d
-         ZkMVDtNRwywAQhndFj57TErGvkVYuQzg4GSYkEm5kSc/mwPz/xK0y/iNcZD9ko6cNI
-         BZXtgpm+mcbG/VFvlUFeVmosB4BD+AJl1WE+VusgFJaHKLPjXXPUMD2ezLMMVQ0eb1
-         q79Wm7dDsZbdQ==
-Date:   Mon, 20 Sep 2021 11:02:16 -0700
+        b=pHLpyoEaYbGLeiy+MgEQlB7qjzDEzYqd8Cy9B+ZyLIOD3PXxurkO5b93YMJCHewsd
+         9RyHSnDwC8hYkN7pypn/t7Km8+B6xZBwAQk+pWMTQFkebHJVBL6ylEK4wklKW/flAE
+         EpceAzmO0iU33bUHTvJIgBGnzl7q52j+9CXVikSpr7zNjdGRvyODeTDVZy/CX0WxIz
+         MC3UeisCT+iDYLYR3nwsD/lCNYu+r3euqtC5Lk3ECXwF4+wieTA/Mct/yMOlB08UDa
+         vnCaRX9o7bVRhT84U3Jh0Nm0c3PW61TvT7j6YVleFV4BKV7tmYeXTNR4seLWgGSHzt
+         dYoo2wNzgpnLA==
+Date:   Mon, 20 Sep 2021 11:12:59 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com
-Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer
- support
-Message-ID: <20210920110216.4c54c9a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <8735q25ccg.fsf@toke.dk>
-References: <cover.1631289870.git.lorenzo@kernel.org>
-        <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YUSrWiWh57Ys7UdB@lore-desk>
-        <20210917113310.4be9b586@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAADnVQL15NAqbswXedF0r2om8SOiMQE80OSjbyCA56s-B4y8zA@mail.gmail.com>
-        <20210917120053.1ec617c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAADnVQKbrkOxfNoixUx-RLJEWULJLyhqjZ=M_X2cFG_APwNyCg@mail.gmail.com>
-        <614511bc3408b_8d5120862@john-XPS-13-9370.notmuch>
-        <8735q25ccg.fsf@toke.dk>
+To:     Vasily Averin <vvs@virtuozzo.com>
+Cc:     eric.dumazet@gmail.com, netdev@vger.kernel.org,
+        Christoph Paasch <christoph.paasch@gmail.com>,
+        Hao Sun <sunhao.th@gmail.com>
+Subject: Re: [RFC net v7] net: skb_expand_head() adjust skb->truesize
+ incorrectly
+Message-ID: <20210920111259.18f9cc01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <b38881fc-7dbf-8c5f-92b8-5fa1afaade0c@virtuozzo.com>
+References: <20210917162418.1437772-1-kuba@kernel.org>
+        <b38881fc-7dbf-8c5f-92b8-5fa1afaade0c@virtuozzo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 18 Sep 2021 13:53:35 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> I'm OK with a bpf_header_pointer()-type helper - I quite like the
-> in-kernel version of this for SKBs, so replicating it as a BPF helper
-> would be great. But I'm a little worried about taking a performance hit.
->=20
-> I.e., if you do:
->=20
-> ptr =3D bpf_header_pointer(pkt, offset, len, stack_ptr)
-> *ptr =3D xxx;
->=20
-> then, if the helper ended up copying the data into the stack pointer,
-> you didn't actually change anything in the packet, so you need to do a
-> writeback.
->=20
-> Jakub suggested up-thread that this should be done with some kind of
-> flush() helper. But you don't know whether the header_pointer()-helper
-> copied the data, so you always need to call the flush() helper, which
-> will incur overhead. If the verifier can in-line the helpers that will
-> lower it, but will it be enough to make it negligible?
+On Sat, 18 Sep 2021 13:05:28 +0300 Vasily Averin wrote:
+> On 9/17/21 7:24 PM, Jakub Kicinski wrote:
+> > From: Vasily Averin <vvs@virtuozzo.com>
+> > 
+> > Christoph Paasch reports [1] about incorrect skb->truesize
+> > after skb_expand_head() call in ip6_xmit.
+> > This may happen because of two reasons:
+> >  - skb_set_owner_w() for newly cloned skb is called too early,
+> >    before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
+> >  - pskb_expand_head() does not adjust truesize in (skb->sk) case.
+> >    In this case sk->sk_wmem_alloc should be adjusted too.
+> > 
+> > Eric cautions us against increasing sk_wmem_alloc if the old
+> > skb did not hold any wmem references.
 
-Depends on the assumptions the program otherwise makes, right?
+> > @@ -1810,21 +1829,28 @@ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
+> >  	if (skb_shared(skb)) {
+> >  		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
+> >  
+> > -		if (likely(nskb)) {
+> > -			if (skb->sk)
+> > -				skb_set_owner_w(nskb, skb->sk);
+> > -			consume_skb(skb);
+> > -		} else {
+> > -			kfree_skb(skb);
+> > -		}
+> > +		if (unlikely(!nskb))
+> > +			goto err_free;
+> > +
+> > +		skb_owner_inherit(nskb, skb);
+> > +		consume_skb(skb);
+> >  		skb = nskb;
+> >  	}
+> > -	if (skb &&
+> > -	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
+> > -		kfree_skb(skb);
+> > -		skb = NULL;
+> > -	}
+> > +
+> > +	if (pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC))
+> > +		goto err_free;
+> > +	delta = skb_end_offset(skb) - osize;
+> > +
+> > +	/* pskb_expand_head() will adjust truesize itself for non-sk cases
+> > +	 * todo: move the adjustment there at some point?
+> > +	 */
+> > +	if (skb->sk && skb->destructor != sock_edemux)
+> > +		skb_increase_truesize(skb, delta);  
+> 
+> I think it is wrong.
+> 1) there are a few skb destructors called sock_wfree inside. I've found: 
+>    tpacket_destruct_skb, sctp_wfree, unix_destruct_scm and xsk_destruct_skb.
+>    If any such skb can be use here it will not adjust sk_wmem_alloc.   I afraid there might be other similar destructors, out of tree,
+>    so we cannot have full white list for wfree-compatible destructors.
+> 
+> 2) in fact you increase truesize here for all skb types.
+>    If it is acceptable it could be done directly inside pskb_expand_head().
+>    However it isn't.  As you pointed sock_rfree case is handled incorrectly. 
+>    I've found other similar destructors: sock_rmem_free, netlink_skb_destructor,
+>    kcm_rfree, sock_ofree. They will be handled incorrectly too, but even without WARN_ON.
+>    Few other descriptors seems should not fail but do not require truesize update.
+> 
+> From my POV v6 patch version works correctly in any cases. If necessary it calls
+> original destructor, correctly set up new one and correctly adjust truesize
+> and sk_wmem_alloc.
+> If you still have doubts, we can just go back and clone non-wmem skb, 
+> like we did before.
 
-For reading I'd expect a *layout-independent* TC program would=20
-replace approximately:
+Thanks for taking a look. I would prefer not to bake any ideas about
+the skb's function into generic functions. Enumerating every destructor
+callback in generic code is impossible (technically so, since the code
+may reside in modules).
 
-ptr =3D <some_ptr>;
-if (ptr + CONST >=3D md->ptr_end)
-	if (bpf_pull_data(md, off + CONST))
-		return DROP;
-	ptr =3D <some_ptr>;
-	if (ptr + CONST >=3D md->ptr_end)
-		return DROP; /* da hell? */
-}
-
-With this (pre-inlining):
-
-ptr =3D bpf_header_pointer(md, offset, len, stack);
-if (!ptr)
-	return DROP;
-
-Post-inlining (assuming static validation of args to prevent wraps):
-
-if (md->ptr + args->off + args->len < md->ptr_end)
-	ptr =3D md->ptr + args->off;
-else
-	ptr =3D __bpf_header_pointer(md, offset, len, stack);
-if (!ptr)
-	return DROP;
-
-But that's based on guesswork so perhaps I'm off base.
-
-
-Regarding the flush() I was expecting that most progs will not modify
-the packet (or at least won't modify most headers they load) so no
-point paying the price of tracking changes auto-magically.
-
-In fact I don't think there is anything infra can do better for
-flushing than the prog itself:
-
-	bool mod =3D false;
-
-	ptr =3D bpf_header_pointer(...);
-	...
-	if (some_cond(...)) {
-		change_packet(...);
-		mod =3D true;
-	}
-	...
-	if (mod)
-		bpf_header_pointer_flush();
-
-
-is simple enough.. to me.
+Let me think about it. Perhaps we can extend sock callbacks with
+skb_sock_inherit, and skb_adjust_trusize? That'd transfer the onus of
+handling the adjustments done on splitting to the protocols. I'll see
+if that's feasible unless someone can immediately call this path
+ghastly.
