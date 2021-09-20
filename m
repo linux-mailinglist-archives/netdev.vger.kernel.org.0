@@ -2,107 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EFAC412ACA
+	by mail.lfdr.de (Postfix) with ESMTP id 8D69F412ACB
 	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 03:56:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238868AbhIUB6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 21:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
+        id S238896AbhIUB6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 21:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236343AbhIUBuH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 21:50:07 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B435C06AB1D;
-        Mon, 20 Sep 2021 14:56:47 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id g184so18742098pgc.6;
-        Mon, 20 Sep 2021 14:56:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kY/4eMbED4CLtz6FkJE/bYjN2trJmqcJcBgHfiCqU6o=;
-        b=bOO4yQ0nZzQgEuX1DLTzV9WniMTMSauFJDXNpUhKe7qX4Qy9rVoUV8W4RWWhgPbNQI
-         +7dZyowGszGTR8YabQ5aWV2weDZb5+RK6oHgmO3u9A2Gwz36c8F5KvSR4GZHvUuo2FwC
-         qaj2s+ZV4Q412NuIFPsvVHjAv3+IMnXR1ZbjHHuBHFKbqsTXLwUWrwHdIeLBaLCiRLSV
-         5O9cdT4FPGre+whF+uMGz/HBSFfM1PtIpFHXP7ComNKLO07Rl+IJA3UTkAywtg82N1sJ
-         LIUTbcxD7KR84EOI+z/HJm5zb8qYQ9ZWFvmCsnur2LNBYcKznrBCbOx7ZUo6IzYg2P2O
-         Tqag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kY/4eMbED4CLtz6FkJE/bYjN2trJmqcJcBgHfiCqU6o=;
-        b=vtSdXte1db8SJdv1l8ZiLdklqhh43OdKdB0dZlyeW4QRAjGKlAST2gzcSYC6DKamps
-         /UIDanZ8RGv7X0M8HvXD1OJkz1n+wr+xUdR7pIqbA7YsP1MwBY2qxG754OS4QdN3ZnLz
-         uXeasgPMZCcHTDRdJbdel1hVr6HioJ9g7fxUaXwU+mVBAFNs9Y0eruJH2g3BI3qd7IiT
-         glv+dHZQ8zJQGOU6sDfL4Ug3BKa/K1jI6gobsKw+wvTQ0bvJP9yjoVc3KqsJk3+cC9dS
-         78k3xHvr4Ghn8oTDTtrWKuUKR6OxKbsXgQxnJ/Y8lIHNat8m8j44ODzvR3lIQxJqz8GL
-         JV4g==
-X-Gm-Message-State: AOAM530fluLxg8v5LDNDgINHxlenf+2Q81ufEmwcOdX+NJesEuF7JIEV
-        iSY1rrrEdms+I3w54N3CiFY=
-X-Google-Smtp-Source: ABdhPJxQ8au0fvrMAOuU6/c0e4rCbbkPKrRZ9f6h4RiRmI2S+b1nnyXx4Y5P4zhFV1yekAos2s8zdQ==
-X-Received: by 2002:a63:35cc:: with SMTP id c195mr25143261pga.373.1632175006686;
-        Mon, 20 Sep 2021 14:56:46 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id i12sm356346pjv.19.2021.09.20.14.56.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Sep 2021 14:56:45 -0700 (PDT)
-Subject: Re: [PATCH 7/9] net: mdio: mdio-bcm-iproc: simplify getting
- .driver_data
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-renesas-soc@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20210920090522.23784-1-wsa+renesas@sang-engineering.com>
- <20210920090522.23784-8-wsa+renesas@sang-engineering.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <6a8ffcab-4534-1692-5f6a-8a7906d07a09@gmail.com>
-Date:   Mon, 20 Sep 2021 14:56:44 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        with ESMTP id S236374AbhIUBuK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 21:50:10 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404BBC0698FE;
+        Mon, 20 Sep 2021 15:02:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=yy0EwQ7J0sMHzSOPWcbFHFKHWeUukuqykjyt5I+NDUo=; b=c8ZwljTjtslpLLghi95Cqy1/Hk
+        +Yu0waLRiRkg6H9rbFRN+VMHIJtVt7AIv0NX7aD2Zxg+WTo4aIrL6ma+oPWOwgeGusYXsw7OwAlkx
+        IhrswmJoiAvUAOKqgARM9OaT+CpqaAzyIT2BvFmlN7YW3WBIlGIk0WIBo9/Hf/FH1h1W4s1o9ci1P
+        Z6m7moIAwWub//99wTuoNA6EABZh8wGAsrjxhRp9aClp7olPq89oJmR2XyGPoBvK/TkysYHTP+R0d
+        S5shbYSilOSOaPGSP+4crgkPbescejHhV9c5BIg0rX+4+BEgPCjsyo907BEdHB6bR7DnYGcILYA9x
+        9yOZyurw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mSRLg-003IEY-VT; Mon, 20 Sep 2021 22:01:23 +0000
+Date:   Mon, 20 Sep 2021 23:01:16 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     linux-mm@kvack.org, Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>,
+        John Garry <john.garry@huawei.com>,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC v2 PATCH] mm, sl[au]b: Introduce lockless cache
+Message-ID: <YUkErK1vVZMht4s8@casper.infradead.org>
+References: <20210920154816.31832-1-42.hyeyoo@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210920090522.23784-8-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210920154816.31832-1-42.hyeyoo@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/20/21 2:05 AM, Wolfram Sang wrote:
-> We should get 'driver_data' from 'struct device' directly. Going via
-> platform_device is an unneeded step back and forth.
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
-> 
-> Build tested only. buildbot is happy.
-> 
->  drivers/net/mdio/mdio-bcm-iproc.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/mdio/mdio-bcm-iproc.c b/drivers/net/mdio/mdio-bcm-iproc.c
-> index 77fc970cdfde..5666cfab15b9 100644
-> --- a/drivers/net/mdio/mdio-bcm-iproc.c
-> +++ b/drivers/net/mdio/mdio-bcm-iproc.c
-> @@ -181,8 +181,7 @@ static int iproc_mdio_remove(struct platform_device *pdev)
->  #ifdef CONFIG_PM_SLEEP
->  static int iproc_mdio_resume(struct device *dev)
->  {
-> -	struct platform_device *pdev = to_platform_device(dev);
-> -	struct iproc_mdio_priv *priv = platform_get_drvdata(pdev);
-> +	struct iproc_mdio_priv *priv = dev_get_drvdata(dev);
+On Mon, Sep 20, 2021 at 03:48:16PM +0000, Hyeonggon Yoo wrote:
+> +#define KMEM_LOCKLESS_CACHE_QUEUE_SIZE 64
 
-The change looks good to me, however if you change from
-platform_get_drvdata() to dev_get_drvdata(), you might also want to
-change from using platform_set_drvdata() to dev_set_drvdata() for
-symmetry no? If not, then maybe this patch should be dropped?
--- 
-Florian
+I would suggest that, to be nice to the percpu allocator, this be
+one less than 2^n.
+
+> +struct kmem_lockless_cache {
+> +	void *queue[KMEM_LOCKLESS_CACHE_QUEUE_SIZE];
+> +	unsigned int size;
+> +};
+
+I would also suggest that 'size' be first as it is going to be accessed
+every time, and then there's a reasonable chance that queue[size - 1] will
+be in the same cacheline.  CPUs will tend to handle that better.
+
+> +/**
+> + * kmem_cache_alloc_cached - try to allocate from cache without lock
+> + * @s: slab cache
+> + * @flags: SLAB flags
+> + *
+> + * Try to allocate from cache without lock. If fails, fill the lockless cache
+> + * using bulk alloc API
+> + *
+> + * Be sure that there's no race condition.
+> + * Must create slab cache with SLAB_LOCKLESS_CACHE flag to use this function.
+> + *
+> + * Return: a pointer to free object on allocation success, NULL on failure.
+> + */
+> +void *kmem_cache_alloc_cached(struct kmem_cache *s, gfp_t gfpflags)
+> +{
+> +	struct kmem_lockless_cache *cache = this_cpu_ptr(s->cache);
+> +
+> +	BUG_ON(!(s->flags & SLAB_LOCKLESS_CACHE));
+> +
+> +	if (cache->size) /* fastpath without lock */
+> +		return cache->queue[--cache->size];
+> +
+> +	/* slowpath */
+> +	cache->size = kmem_cache_alloc_bulk(s, gfpflags,
+> +			KMEM_LOCKLESS_CACHE_QUEUE_SIZE, cache->queue);
+
+Go back to the Bonwick paper and look at the magazine section again.
+You have to allocate _half_ the size of the queue, otherwise you get
+into pathological situations where you start to free and allocate
+every time.
+
+> +void kmem_cache_free_cached(struct kmem_cache *s, void *p)
+> +{
+> +	struct kmem_lockless_cache *cache = this_cpu_ptr(s->cache);
+> +
+> +	BUG_ON(!(s->flags & SLAB_LOCKLESS_CACHE));
+> +
+> +	/* Is there better way to do this? */
+> +	if (cache->size == KMEM_LOCKLESS_CACHE_QUEUE_SIZE)
+> +		kmem_cache_free(s, cache->queue[--cache->size]);
+
+Yes.
+
+	if (cache->size == KMEM_LOCKLESS_CACHE_QUEUE_SIZE) {
+		kmem_cache_free_bulk(s, KMEM_LOCKLESS_CACHE_QUEUE_SIZE / 2,
+			&cache->queue[KMEM_LOCKLESS_CACHE_QUEUE_SIZE / 2));
+		cache->size = KMEM_LOCKLESS_CACHE_QUEUE_SIZE / 2;
+
+(check the maths on that; it might have some off-by-one)
+
