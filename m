@@ -2,197 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0FE4410E8F
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 05:08:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0665410E92
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 05:08:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230037AbhITDKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Sep 2021 23:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39462 "EHLO
+        id S231865AbhITDKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Sep 2021 23:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbhITDKA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Sep 2021 23:10:00 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6FDC061574;
-        Sun, 19 Sep 2021 20:08:34 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id c13-20020a17090a558d00b00198e6497a4fso14143959pji.4;
-        Sun, 19 Sep 2021 20:08:34 -0700 (PDT)
+        with ESMTP id S229626AbhITDKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Sep 2021 23:10:05 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67FDC061574;
+        Sun, 19 Sep 2021 20:08:38 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id on12-20020a17090b1d0c00b001997c60aa29so11114061pjb.1;
+        Sun, 19 Sep 2021 20:08:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rO+ZOlTwEBd/AcnBDdDoiaM1CRFNKUyFZNyT5m5yUgE=;
-        b=IBUb1XKhsWtsS6Y9qBHqFe2dBA9Uhbob5oSNQ1TAwxq41t+TqnSVy9dZHFfms18ErD
-         PmpQIIVjbySYtuPFsZyx8SLs+BnwGwJsdGqE57HeMrk8M23QcBytOBjdspJZJm65BLc9
-         TE632PJ3YGo3Gf3goXNshs0vowJPiIQDlTgfZ4ToMuqAopN161Op5RFbyJp71yhg4Yhl
-         pS5RtaFiD4UmY0QjQzD5coXO8FM1Jk9u5qEoiogm4W3HNmXOD8sE6uxEgVGsr1kavYcF
-         50poIY4ADhslFLrLpZApZP2uFgZhOEa3dRueHlJC27e4Gu+k7NddlBfqd+ZdxNwARDAA
-         OxDg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zmMZOAHgTdh616hp06L3sF5WAAO2pLT5BUpQivYWsdg=;
+        b=Nos1fs8WfPVA9K4ec57AGhj3TGrFCLXzxE17ag5vbX43KyJxhSUO+SwS3S0aErW+bG
+         FyaNh16pPjKUFl1rwTenwJpqTi/+E5kpo86+oUWHTRhrldhSejRQNbwtOaWUPdMQicIp
+         pgFWAu07E8hRGdq3vKzKLhWR2zvimM/mI8rsIErWdO6t9wFuxhWmBy6Hwo32kI6s6lO1
+         HEuw/Wt6LoDXeXGRtUccc37riJlYPqIcDXFfXJjHsMXWfLBOq/KesyP+rr0Tg8Oh5pnf
+         28kpFn1wDVnhiWeldCUAlrkK6qrrVzFoQ8iEbNW8a0GbXRV+jnDilfHBAUmcctvNM3rh
+         d23w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rO+ZOlTwEBd/AcnBDdDoiaM1CRFNKUyFZNyT5m5yUgE=;
-        b=Hq2SdFGRv+hA34OzTsjC0rhAXrs7myIXFMY7KqQpTKvbD6pKbiOVqh4dGgdfm9U8Tv
-         zvWwPxTD7nra+3JjAV6iq9xGMNWq6tLCIbb9u/x9r5/voTCoUYjnfiHIgJIBoLXoQKGR
-         ElvCEVGuItjtfT8YQ7Qt4MpQaeHm8DGZY5ZQy/qZiSPLBQlM3ADMYwQsPKAsHFXcDU8f
-         eFyg6b9XNFlxEr6VAE70S92bvP/m9NxrdyhcND6p3JZRUSXp/SbFMSIdmwPWgHNga3JH
-         n7RvK3L6gpgMy6qbNSbBSn5evAZp9Tp48+r3TvpvahPe7XKkzGC+2yxZJsu0YqInuyDW
-         yJ9Q==
-X-Gm-Message-State: AOAM531bP09u8A/IoZzQGLgnzsCVxUMNc46uoGTjcGzwzHEYivbcr+PM
-        BjmMGuUtaQGFqhWxZSQbqhAeZErC6DOY+7OE
-X-Google-Smtp-Source: ABdhPJyiXoJbPvsEsClfPBzFv2uhMkZZbBlp3eYS6N+Xjyv3hVOj4rPW5tNkA9Sscdob1ekxriN62w==
-X-Received: by 2002:a17:90b:150:: with SMTP id em16mr34893167pjb.63.1632107313461;
-        Sun, 19 Sep 2021 20:08:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zmMZOAHgTdh616hp06L3sF5WAAO2pLT5BUpQivYWsdg=;
+        b=CGqe0lC9/mFXLpKHBIkvmZC45Rw66vcb0Pts8jMNLZRna+WBSWFyoJxFFM6WJaQsrN
+         YTRitBq0nIWD0uoCb+m0ZYVUeLDdOFEC0wEkU//Fn7hQkCh4PmjdmdTd/9nLZ+8XSbYn
+         uwXx9pF57SHZ4MhFh1WUNRx+omTDqaxF9Z/g29fGHEvgrWgGtTD0fAlZGcYyyVzSLycY
+         m1x26VnPrxEjxbZpstsCLe9lO0i4+YN6f/V9yp93zHLamht2iexMZ7fo4cKvw1+7rIYx
+         PHPeq5cdG0TmXyl0DNwSDJR8ltk/X3Pp1OD1dmMVlX16o4u2tke5iBiLSAnBIz9BABxd
+         nKRw==
+X-Gm-Message-State: AOAM530ISfbPg4Y1Jah9HLpL8aaaPFUO6N9ZZeqe4ioSAF8p7y8rEg5C
+        m+Lr+kmHfP8KhhSDXpbdHM06jNiscynUX7Ot
+X-Google-Smtp-Source: ABdhPJwWZzgDwh6RqSj8/TuWxlcFs/Rq5lYyCOnoRVrwKswqHtJV4OWrbmKUvidSkEeTdQ0dMzVHWA==
+X-Received: by 2002:a17:90b:38cf:: with SMTP id nn15mr4677301pjb.81.1632107318285;
+        Sun, 19 Sep 2021 20:08:38 -0700 (PDT)
 Received: from skynet-linux.local ([106.201.127.154])
-        by smtp.googlemail.com with ESMTPSA id l11sm16295065pjg.22.2021.09.19.20.08.30
+        by smtp.googlemail.com with ESMTPSA id l11sm16295065pjg.22.2021.09.19.20.08.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Sep 2021 20:08:33 -0700 (PDT)
+        Sun, 19 Sep 2021 20:08:38 -0700 (PDT)
 From:   Sireesh Kodali <sireeshkodali1@gmail.com>
 To:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, elder@kernel.org
-Cc:     Sireesh Kodali <sireeshkodali1@gmail.com>
-Subject: [RFC PATCH 00/17] net: ipa: Add support for IPA v2.x
-Date:   Mon, 20 Sep 2021 08:37:54 +0530
-Message-Id: <20210920030811.57273-1-sireeshkodali1@gmail.com>
+Cc:     Vladimir Lypak <vladimir.lypak@gmail.com>,
+        Sireesh Kodali <sireeshkodali1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [RFC PATCH 01/17] net: ipa: Correct ipa_status_opcode enumeration
+Date:   Mon, 20 Sep 2021 08:37:55 +0530
+Message-Id: <20210920030811.57273-2-sireeshkodali1@gmail.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20210920030811.57273-1-sireeshkodali1@gmail.com>
+References: <20210920030811.57273-1-sireeshkodali1@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Vladimir Lypak <vladimir.lypak@gmail.com>
 
-This RFC patch series adds support for IPA v2, v2.5 and v2.6L
-(collectively referred to as IPA v2.x).
+The values in the enumaration were defined as bitmasks (base 2 exponents of
+actual opcodes). Meanwhile, it's used not as bitmask
+ipa_endpoint_status_skip and ipa_status_formet_packet functions (compared
+directly with opcode from status packet). This commit converts these values
+to actual hardware constansts.
 
-Basic description:
-IPA v2.x is the older version of the IPA hardware found on Qualcomm
-SoCs. The biggest differences between v2.x and later versions are:
-- 32 bit hardware (the IPA microcontroler is 32 bit)
-- BAM (as opposed to GSI as a DMA transport)
-- Changes to the QMI init sequence (described in the commit message)
+Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
+Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+---
+ drivers/net/ipa/ipa_endpoint.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-The fact that IPA v2.x are 32 bit only affects us directly in the table
-init code. However, its impact is felt in other parts of the code, as it
-changes the size of fields of various structs (e.g. in the commands that
-can be sent).
-
-BAM support is already present in the mainline kernel, however it lacks
-two things:
-- Support for DMA metadata, to pass the size of the transaction from the
-  hardware to the dma client
-- Support for immediate commands, which are needed to pass commands from
-  the driver to the microcontroller
-
-Separate patch series have been created to deal with these (linked in
-the end)
-
-This patch series adds support for BAM as a transport by refactoring the
-current GSI code to create an abstract uniform API on top. This API
-allows the rest of the driver to handle DMA without worrying about the
-IPA version.
-
-The final thing that hasn't been touched by this patch series is the IPA
-resource manager. On the downstream CAF kernel, the driver seems to
-share the resource code between IPA v2.x and IPA v3.x, which should mean
-all it would take to add support for resources on IPA v2.x would be to
-add the definitions in the ipa_data.
-
-Testing:
-This patch series was tested on kernel version 5.13 on a phone with
-SDM625 (IPA v2.6L), and a phone with MSM8996 (IPA v2.5). The phone with
-IPA v2.5 was able to get an IP address using modem-manager, although
-sending/receiving packets was not tested. The phone with IPA v2.6L was
-able to get an IP, but was unable to send/receive packets. Its modem
-also relies on IPA v2.6l's compression/decompression support, and
-without this patch series, the modem simply crashes and restarts,
-waiting for the IPA block to come up.
-
-This patch series is based on code from the downstream CAF kernel v4.9
-
-There are some things in this patch series that would obviously not get
-accepted in their current form:
-- All IPA 2.x data is in a single file
-- Some stray printks might still be around
-- Some values have been hardcoded (e.g. the filter_map)
-Please excuse these
-
-Lastly, this patch series depends upon the following patches for BAM:
-[0]: https://lkml.org/lkml/2021/9/19/126
-[1]: https://lkml.org/lkml/2021/9/19/135
-
-Regards,
-Sireesh Kodali
-
-Sireesh Kodali (10):
-  net: ipa: Add IPA v2.x register definitions
-  net: ipa: Add support for using BAM as a DMA transport
-  net: ipa: Add support for IPA v2.x commands and table init
-  net: ipa: Add support for IPA v2.x endpoints
-  net: ipa: Add support for IPA v2.x memory map
-  net: ipa: Add support for IPA v2.x in the driver's QMI interface
-  net: ipa: Add support for IPA v2 microcontroller
-  net: ipa: Add IPA v2.6L initialization sequence support
-  net: ipa: Add hw config describing IPA v2.x hardware
-  dt-bindings: net: qcom,ipa: Add support for MSM8953 and MSM8996 IPA
-
-Vladimir Lypak (7):
-  net: ipa: Correct ipa_status_opcode enumeration
-  net: ipa: revert to IPA_TABLE_ENTRY_SIZE for 32-bit IPA support
-  net: ipa: Refactor GSI code
-  net: ipa: Establish ipa_dma interface
-  net: ipa: Check interrupts for availability
-  net: ipa: Add timeout for ipa_cmd_pipeline_clear_wait
-  net: ipa: Add support for IPA v2.x interrupts
-
- .../devicetree/bindings/net/qcom,ipa.yaml     |   2 +
- drivers/net/ipa/Makefile                      |  11 +-
- drivers/net/ipa/bam.c                         | 525 ++++++++++++++++++
- drivers/net/ipa/gsi.c                         | 322 ++++++-----
- drivers/net/ipa/ipa.h                         |   8 +-
- drivers/net/ipa/ipa_cmd.c                     | 244 +++++---
- drivers/net/ipa/ipa_cmd.h                     |  20 +-
- drivers/net/ipa/ipa_data-v2.c                 | 369 ++++++++++++
- drivers/net/ipa/ipa_data-v3.1.c               |   2 +-
- drivers/net/ipa/ipa_data-v3.5.1.c             |   2 +-
- drivers/net/ipa/ipa_data-v4.11.c              |   2 +-
- drivers/net/ipa/ipa_data-v4.2.c               |   2 +-
- drivers/net/ipa/ipa_data-v4.5.c               |   2 +-
- drivers/net/ipa/ipa_data-v4.9.c               |   2 +-
- drivers/net/ipa/ipa_data.h                    |   4 +
- drivers/net/ipa/{gsi.h => ipa_dma.h}          | 179 +++---
- .../ipa/{gsi_private.h => ipa_dma_private.h}  |  46 +-
- drivers/net/ipa/ipa_endpoint.c                | 188 ++++---
- drivers/net/ipa/ipa_endpoint.h                |   6 +-
- drivers/net/ipa/ipa_gsi.c                     |  18 +-
- drivers/net/ipa/ipa_gsi.h                     |  12 +-
- drivers/net/ipa/ipa_interrupt.c               |  36 +-
- drivers/net/ipa/ipa_main.c                    |  82 ++-
- drivers/net/ipa/ipa_mem.c                     |  55 +-
- drivers/net/ipa/ipa_mem.h                     |   5 +-
- drivers/net/ipa/ipa_power.c                   |   4 +-
- drivers/net/ipa/ipa_qmi.c                     |  37 +-
- drivers/net/ipa/ipa_qmi.h                     |  10 +
- drivers/net/ipa/ipa_reg.h                     | 184 +++++-
- drivers/net/ipa/ipa_resource.c                |   3 +
- drivers/net/ipa/ipa_smp2p.c                   |  11 +-
- drivers/net/ipa/ipa_sysfs.c                   |   6 +
- drivers/net/ipa/ipa_table.c                   |  86 +--
- drivers/net/ipa/ipa_table.h                   |   6 +-
- drivers/net/ipa/{gsi_trans.c => ipa_trans.c}  | 182 +++---
- drivers/net/ipa/{gsi_trans.h => ipa_trans.h}  |  78 +--
- drivers/net/ipa/ipa_uc.c                      |  96 ++--
- drivers/net/ipa/ipa_version.h                 |  12 +
- 38 files changed, 2133 insertions(+), 726 deletions(-)
- create mode 100644 drivers/net/ipa/bam.c
- create mode 100644 drivers/net/ipa/ipa_data-v2.c
- rename drivers/net/ipa/{gsi.h => ipa_dma.h} (57%)
- rename drivers/net/ipa/{gsi_private.h => ipa_dma_private.h} (66%)
- rename drivers/net/ipa/{gsi_trans.c => ipa_trans.c} (80%)
- rename drivers/net/ipa/{gsi_trans.h => ipa_trans.h} (71%)
-
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index 5528d97110d5..29227de6661f 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -41,10 +41,10 @@
+ 
+ /** enum ipa_status_opcode - status element opcode hardware values */
+ enum ipa_status_opcode {
+-	IPA_STATUS_OPCODE_PACKET		= 0x01,
+-	IPA_STATUS_OPCODE_DROPPED_PACKET	= 0x04,
+-	IPA_STATUS_OPCODE_SUSPENDED_PACKET	= 0x08,
+-	IPA_STATUS_OPCODE_PACKET_2ND_PASS	= 0x40,
++	IPA_STATUS_OPCODE_PACKET		= 0,
++	IPA_STATUS_OPCODE_DROPPED_PACKET	= 2,
++	IPA_STATUS_OPCODE_SUSPENDED_PACKET	= 3,
++	IPA_STATUS_OPCODE_PACKET_2ND_PASS	= 6,
+ };
+ 
+ /** enum ipa_status_exception - status element exception type */
 -- 
 2.33.0
 
