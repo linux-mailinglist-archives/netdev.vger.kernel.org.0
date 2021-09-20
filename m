@@ -2,122 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11449412A51
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 03:34:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6F9A412A58
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 03:39:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230271AbhIUBft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 21:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57958 "EHLO
+        id S231757AbhIUBk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 21:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbhIUBfr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 21:35:47 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595ACC08ED73
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 11:25:01 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id u21so16493569qtw.8
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 11:25:01 -0700 (PDT)
+        with ESMTP id S231624AbhIUBiX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 21:38:23 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0A8C0F26EF;
+        Mon, 20 Sep 2021 12:19:20 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id q26so32659859wrc.7;
+        Mon, 20 Sep 2021 12:19:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Q2KgoUsajj4wTgr9qfoWd6Zmonitax7OMB9+YAOC8a4=;
-        b=F7Cn0wsoXgZ9GJ4ecH1+8+fBc/Ah1Sj/FTRx8HssGHuO3taYBUvT3f13PaSDMMiMX/
-         Mw3PJE69ediSsWyMuzCCVsyDREqhdMZBzrEQhN76d4A3+uZyGAqsyFJPts7X68BUaIcy
-         c0z4Is46vqs+6mDTIMyJ6mTTo168C5D0LAMSZXi6PpPpTeV0nVXkOrJiazuanZ7OhAPI
-         /JE2lfxEfKpBxmNnFAkaeG48Re0TdEkIAtwmEZBzKLBA7SnStfl2TnIddob6o82UPSZP
-         CzideVxotVokgTQa/4n/wxzPTxl1OGvcgPjuPq4FHxhclrre5EB/nDbu0y0wdLgrFjGd
-         etDg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zn6E5ZQEnhBIjrLqGG2ocBWfZkloXRG9O89ektDdbwo=;
+        b=YxbzXV0depQzsyfE8ap8QQxP+ftYOMD0mmb8wr17aRDOymorLXOpANYKCHtEwV8/hK
+         WJpoSCHhf+Seni9te2sTvK12otX6FGTvK6blNSkFYHnUxaB+CO9ViQ24O9RXGeEEaDYL
+         2/Cb6oG8fKht3BLsUYMQ7Yu606aLy+OTaWsO7TQLOw+4YTaWunWzNdWvL+rJBgQBi9dp
+         ghVhZVuwLrDdab0oFOfvK54qF6mEJ4bqvo/uDr8ubBH/S5mxvec2pbml+FEACgDVyYzm
+         Nihu01lQaf/LbH41FYYGuG3RFXZxCFUlczb/sumQvcIT1nR4jI2U5bDEcgvKeGi9LhXb
+         OxMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Q2KgoUsajj4wTgr9qfoWd6Zmonitax7OMB9+YAOC8a4=;
-        b=JV379B2jH94qbINJx+w89Xcd5bg8wClB2/x1F3KJmc395K9EkDSbkXpGqUvBpLaqMu
-         1tqMWsz3ibDlQefelUDe7yxb4W+pdOYSYMzKNKcROdN/HPTlfLTJIqdvM9kzS/M5qnu2
-         3tYchYJJSLcKr5INehwQtQBy4tWyi+DyTAHNK6LymiMiYU8eYNWz2JmvOSwG/KumBI68
-         EsehiFB2vtfibstHuNRgRLxOH2EB1gqwjXdGc+jLx6KzOne5crafgeVIyOYzIRRenazq
-         fUd9Wb5sZITZDZtr2G8uHjBEmA95Yw37X/t2AOJs6oMv1AkKHRFN24KdBcIi1UMWWD9c
-         otKw==
-X-Gm-Message-State: AOAM5308RxYSlcRyJvuJAVWBRyDD/jsgP8m6MWBPUIAhIR74K4acU4Uh
-        IEvyy6DuZodsnbOsadRzKLRfpID0AQ==
-X-Google-Smtp-Source: ABdhPJxaYdmrXe4EVKLJTPUh4l9DXqpUBqNvGgU5fWWAJjVgwmfnyM2JOS4Nw6u3VSWRvLadVy6KQQ==
-X-Received: by 2002:ac8:71cd:: with SMTP id i13mr7333266qtp.159.1632162300504;
-        Mon, 20 Sep 2021 11:25:00 -0700 (PDT)
-Received: from ssuryadesk ([136.56.65.87])
-        by smtp.gmail.com with ESMTPSA id v201sm7918203qkb.29.2021.09.20.11.24.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Sep 2021 11:25:00 -0700 (PDT)
-Date:   Mon, 20 Sep 2021 14:24:53 -0400
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [RFC PATCH net-next] ipmr: ip6mr: APIs to support adding more
- than MAXVIFS/MAXMIFS
-Message-ID: <20210920182453.GA5695@ssuryadesk>
-References: <20210917224123.410009-1-ssuryaextr@gmail.com>
- <YUaNVvSGoQ1+vcoa@lunn.ch>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zn6E5ZQEnhBIjrLqGG2ocBWfZkloXRG9O89ektDdbwo=;
+        b=S7czhRJsnCcQony00Wr6lN6SWeRd+0PHg/Lt0IfF83fcenVMZfwpdhkjCIeTFfEpU6
+         ImOHq8nP9tphjR3KwuzHP0zZWFlTrIesE8u3N7P/QlNY7e2oMjCeFgtE0tNDCFeSRbN8
+         RNGAbYVgy3tDTYdr6SsaficY9gxz4DVbRvmQlxfUm9TKwkZJTvekaiaBE2c/qT0AaBvA
+         R+3ojtBWdMkuI4VKyZRUZnVc9rK34xKREV0BCL0/7LjcBlXYTCvuYFpI3n1Gub8vqqnW
+         RC0yoYL0yNJKfkt4/YzgbG4TQAzTBRq+PsmN0OWmgAFoQ+hWni9/tcJUZfS4bAeJrMUs
+         ngXw==
+X-Gm-Message-State: AOAM532TjvHW4oOXLUxAbgo6uZkRERIOVIePDe7pvMnOHe/L426Qu4uM
+        MnSqrPSlr+ZSGcb5Tyt0zFXeKZ1HWTU=
+X-Google-Smtp-Source: ABdhPJwpuJHnG6wEweu0AG1zY54nGYq1Lt4P+waYA/46JzJc04ww9oNMUDPQ43PSx2iIlxEcllEbMQ==
+X-Received: by 2002:a5d:4481:: with SMTP id j1mr7818486wrq.6.1632165559183;
+        Mon, 20 Sep 2021 12:19:19 -0700 (PDT)
+Received: from [10.8.0.102] ([195.53.121.100])
+        by smtp.gmail.com with ESMTPSA id v191sm377637wme.36.2021.09.20.12.19.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Sep 2021 12:19:18 -0700 (PDT)
+Subject: Re: [PATCH v2] packet.7: Describe SOCK_PACKET netif name length
+ issues and workarounds.
+To:     Ralf Baechle <ralf@linux-mips.org>
+Cc:     netdev@vger.kernel.org, linux-hams@vger.kernel.org,
+        Thomas Osterried <thomas@osterried.de>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        linux-man@vger.kernel.org
+References: <YUNIz64en4QslhL6@linux-mips.org>
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Message-ID: <4ab8a2b2-069f-9950-7e2c-ce2cc815dd01@gmail.com>
+Date:   Mon, 20 Sep 2021 21:19:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YUaNVvSGoQ1+vcoa@lunn.ch>
+In-Reply-To: <YUNIz64en4QslhL6@linux-mips.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 19, 2021 at 03:07:34AM +0200, Andrew Lunn wrote:
-> On Fri, Sep 17, 2021 at 06:41:23PM -0400, Stephen Suryaputra wrote:
-> > MAXVIFS and MAXMIFS are too small (32) for certain applications. But
-> > they are defined in user header files  So, use a different definition
-> > CONFIG_IP_MROUTE_EXT_MAXVIFS that is configurable and different ioctl
-> > requests (MRT_xyz_EXT and MRT6_xyz_EXT) as well as a different structure
-> > for adding MFC (mfcctl_ext).
-> > 
-> > CONFIG_IP_MROUTE_EXT_MAXVIFS is bounded by the IF_SETSIZE (256) in
-> > mroute6.h.
-> > 
-> > This patch is extending the following RFC:
-> > http://patchwork.ozlabs.org/project/netdev/patch/m1eiis8uc6.fsf@fess.ebiederm.org/
-> 
-> Quoting the above URL:
-> 
-> > My goal is an API that works with just a recompile of existing
-> > applications, and an ABI that continues to work for old applications.
-> 
-> Does this really work? Does the distribution version of mrouted use
-> the kernel UAPI headers of the running kernel? Can i upgrade to a
-> newer kernel, with newer headers, and it automagically pulls in a new
-> mrouted built using the new kernel headers? I think not. ethtool has
-> its own copy of the kernel headers. mrouted uses
-> /usr/include/linux/mroute.h which is provided by
-> linux-libc-dev:amd64. That is not tied to the running kernel. What
-> about quagga?
+Hi Ralf,
 
-That particular goal by Eric isn't exactly my goal. I extended his
-approach to be more inline with the latest feedback he got. My
-application is written for an embedded router and for it
-/usr/include/linux/mroute.h is coming from the
-include/uapi/linux/mroute.h. So, the new structure mfcctl_ext can be
-used by the application.
+On 9/16/21 3:38 PM, Ralf Baechle wrote:
+> Describe the issues with SOCK_PACKET possibly truncating network interface
+> names in results, solutions and possible workarounds.
 > 
-> So in effect, you have to ask the running kernel, what value is it
-> using for MAXVIFS? Which means it is much more than just a recompile.
-> So i doubt think you can achieve this goal.
+> While the issue is known for a long time it appears to have never been
+> properly documented is has started to bite software antiques including
+> the AX.25 userland badly since the introduction of Predictable Network
+> Interface Names.  So let's document it.
 > 
-> Given that, i really think you should spend the time to do a proper
-> solution. Add a netlink based API, which does not have the 32 limit.
-> Make the kernel implementation be based on a linked list. Have the
-> ioctl interface simply return the first 32 entries and ignore anything
-> above that.
+> Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
 
-This proposal doesn't change any existing ones such as MRT_ADD_MFC,
-MRT_ADD_VIF, MRT6_ADD_MFC and MRT6_ADD_MIF as they are still using the
-unchanged MAXVIFS. So, if the applications such as quagga still use the
-existing mroute.h it should still be working with the 32 vifs
-limitation.
+Patch applied!
 
-To use more than 32 vifs, then MRT_ADD_MFC_EXT, etc can be used. But for
-that the applications need to be modified and be using the updated
-mroute.h and mroute6.h.
+Thanks,
 
-Regards,
-Stephen.
+Alex
+
+> ---
+>   man7/packet.7 | 39 ++++++++++++++++++++++++++++++++++++---
+>   1 file changed, 36 insertions(+), 3 deletions(-)
+> 
+> Changes in v2: Correct issues raised by Alejandro Colomar in review of v1.
+> 
+> diff --git a/man7/packet.7 b/man7/packet.7
+> index 706efbb54..fa022bee8 100644
+> --- a/man7/packet.7
+> +++ b/man7/packet.7
+> @@ -616,10 +616,10 @@ is the device name as a null-terminated string, for example, eth0.
+>   .PP
+>   This structure is obsolete and should not be used in new code.
+>   .SH BUGS
+> +.SS LLC header handling
+>   The IEEE 802.2/803.3 LLC handling could be considered as a bug.
+>   .PP
+> -Socket filters are not documented.
+> -.PP
+> +.SS MSG_TRUNC issues
+>   The
+>   .B MSG_TRUNC
+>   .BR recvmsg (2)
+> @@ -627,6 +627,38 @@ extension is an ugly hack and should be replaced by a control message.
+>   There is currently no way to get the original destination address of
+>   packets via
+>   .BR SOCK_DGRAM .
+> +.PP
+> +.SS spkt_device device name truncation
+> +The
+> +.I spkt_device
+> +field of
+> +.I sockaddr_pkt
+> +has a size of 14 bytes which is less than the constant
+> +.B IFNAMSIZ
+> +defined in
+> +.I <net/if.h>
+> +which is 16 bytes and describes the system limit for a network interface name.
+> +This means the names of network devices longer than 14 bytes will be truncated
+> +to fit into
+> +.IR spkt_device .
+> +All these lengths include the terminating null byte (\(aq\e0\(aq)).
+> +.PP
+> +Issues from this with old code typically show up with very long interface
+> +names used by the
+> +.B Predictable Network Interface Names
+> +feature enabled by default in many modern Linux distributions.
+> +.PP
+> +The preferred solution is to rewrite code to avoid
+> +.BR SOCK_PACKET .
+> +Possible user solutions are to disable
+> +.B Predictable Network Interface Names
+> +or to rename the interface to a name of at most 13 bytes, for example using
+> +the
+> +.BR ip (8)
+> +tool.
+> +.PP
+> +.SS Documentation issues
+> +Socket filters are not documented.
+>   .\" .SH CREDITS
+>   .\" This man page was written by Andi Kleen with help from Matthew Wilcox.
+>   .\" AF_PACKET in Linux 2.2 was implemented
+> @@ -637,7 +669,8 @@ packets via
+>   .BR capabilities (7),
+>   .BR ip (7),
+>   .BR raw (7),
+> -.BR socket (7)
+> +.BR socket (7),
+> +.BR ip (8),
+>   .PP
+>   RFC\ 894 for the standard IP Ethernet encapsulation.
+>   RFC\ 1700 for the IEEE 802.3 IP encapsulation.
+> 
+
+
+-- 
+Alejandro Colomar
+Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+http://www.alejandro-colomar.es/
