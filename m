@@ -2,31 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFEE94113D6
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 13:56:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B98574113DE
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 13:59:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237322AbhITL5j convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Sep 2021 07:57:39 -0400
-Received: from mail.shanghaitech.edu.cn ([119.78.254.11]:55823 "EHLO
-        mail.shanghaitech.edu.cn" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237316AbhITL5g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 07:57:36 -0400
-Received: from [10.15.44.215] by mail.shanghaitech.edu.cn with MESSAGESEC ESMTP id 480405297546506;
-        Mon, 20 Sep 2021 19:55:59 +0800 (CST)
+        id S237322AbhITMAu convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Sep 2021 08:00:50 -0400
+Received: from mail1.shanghaitech.edu.cn ([119.78.254.90]:34565 "EHLO
+        mail.shanghaitech.edu.cn" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232033AbhITMAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 08:00:49 -0400
+Received: from [10.15.44.215] by mail.shanghaitech.edu.cn with MESSAGESEC ESMTP id 456898266535065;
+        Mon, 20 Sep 2021 19:58:37 +0800 (CST)
 Received: from DESKTOP-U066CHB.localdomain (10.15.44.220) by
  smtp.shanghaitech.edu.cn (10.15.44.215) with Microsoft SMTP Server (TLS) id
- 14.3.399.0; Mon, 20 Sep 2021 19:55:59 +0800
+ 14.3.399.0; Mon, 20 Sep 2021 19:58:39 +0800
 From:   Mianhan Liu <liumh1@shanghaitech.edu.cn>
-To:     Eric Dumazet <edumazet@google.com>,
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "David S. Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>
 CC:     Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Mianhan Liu <liumh1@shanghaitech.edu.cn>
-Subject: [PATCH -next] net/ipv4/tcp_minisocks.c: remove superfluous header files from tcp_minisocks.c
-Date:   Mon, 20 Sep 2021 19:55:36 +0800
-Message-ID: <20210920115536.28250-1-liumh1@shanghaitech.edu.cn>
+Subject: [PATCH] net/ipv4/xfrm4_tunnel.c: remove superfluous header files from xfrm4_tunnel.c
+Date:   Mon, 20 Sep 2021 19:58:31 +0800
+Message-ID: <20210920115831.29802-1-liumh1@shanghaitech.edu.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
@@ -36,36 +37,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tcp_minisocks.c hasn't use any macro or function declared in mm.h, module.h,
-slab.h, sysctl.h, workqueue.h, static_key.h and inet_common.h. Thus, these
-files can be removed from tcp_minisocks.c safely without affecting the
-compilation of the net module.
+xfrm4_tunnel.c hasn't use any macro or function declared in mutex.h and ip.h
+Thus, these files can be removed from xfrm4_tunnel.c safely without affecting
+the compilation of the net module.
 
 Signed-off-by: Mianhan Liu <liumh1@shanghaitech.edu.cn>
-
 ---
- net/ipv4/tcp_minisocks.c | 7 -------
- 1 file changed, 7 deletions(-)
+ net/ipv4/xfrm4_tunnel.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 0a4f3f161..cf913a66d 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -19,14 +19,7 @@
-  *		Jorge Cwik, <jorge@laser.satlink.net>
-  */
+diff --git a/net/ipv4/xfrm4_tunnel.c b/net/ipv4/xfrm4_tunnel.c
+index f4555a88f..9d4f418f1 100644
+--- a/net/ipv4/xfrm4_tunnel.c
++++ b/net/ipv4/xfrm4_tunnel.c
+@@ -8,9 +8,7 @@
  
--#include <linux/mm.h>
--#include <linux/module.h>
--#include <linux/slab.h>
--#include <linux/sysctl.h>
--#include <linux/workqueue.h>
--#include <linux/static_key.h>
- #include <net/tcp.h>
--#include <net/inet_common.h>
+ #include <linux/skbuff.h>
+ #include <linux/module.h>
+-#include <linux/mutex.h>
  #include <net/xfrm.h>
- #include <net/busy_poll.h>
+-#include <net/ip.h>
+ #include <net/protocol.h>
  
+ static int ipip_output(struct xfrm_state *x, struct sk_buff *skb)
 -- 
 2.25.1
 
