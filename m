@@ -2,123 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBA3F411460
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D4B1411462
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:28:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237991AbhITM3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 08:29:25 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:33806 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238014AbhITM3O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 08:29:14 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 18KCRV2w096304;
-        Mon, 20 Sep 2021 07:27:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1632140851;
-        bh=Erojbu1vwKmzBzelkzrhStA2bExSaaOLLg+P/ih+xv0=;
-        h=Subject:CC:References:From:Date:In-Reply-To;
-        b=IPxqJTWKih5LqVW2TjpybjTnwXOz28SJoWMhyaXZiNoTLz5QT5p0iNNcZgMm2ZqDx
-         CQU6s6fAye3vCYiZJ+VBaZ438pPVMlhmxOPD9FFdLLX2n7TYzabMNrM+2dTYPezIwG
-         rh/f+6jXDTPVb4MOCnhatvacdUBU6YFrHiVQWoTo=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 18KCRUqA116059
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 20 Sep 2021 07:27:30 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 20
- Sep 2021 07:27:30 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 20 Sep 2021 07:27:30 -0500
-Received: from [10.250.232.51] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 18KCRQeH092456;
-        Mon, 20 Sep 2021 07:27:27 -0500
-Subject: Re: [PATCH] can: m_can: m_can_platform: Fix iomap_read_fifo() and
- iomap_write_fifo()
-CC:     Lokesh Vutla <lokeshvutla@ti.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matt Kline <matt@bitbashing.io>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20210920122610.570-1-a-govindraju@ti.com>
-From:   Aswath Govindraju <a-govindraju@ti.com>
-Message-ID: <2f34d1bf-48d1-ed6e-b789-b5930a8effaa@ti.com>
-Date:   Mon, 20 Sep 2021 17:57:26 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S238141AbhITM3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 08:29:55 -0400
+Received: from out0.migadu.com ([94.23.1.103]:44819 "EHLO out0.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238078AbhITM3x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Sep 2021 08:29:53 -0400
+Date:   Mon, 20 Sep 2021 20:28:18 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1632140901;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=j+ZOYvpSYWGun6+n61peyKcXmP4Xhe25A8WioqPIZts=;
+        b=iNoy8r9u6HBJGVrOBMZsrf4WTkmosH9Gb3ZD3nqIkpFVWN1inprGN54vdG8gbZP/M+wdih
+        rk8VtrwOtCBceOTV3+miGPaB7j9wdr21o+UOarnwqnxHXUhI32E28/xuVynNtpAEyPWYHS
+        bEWYuGyKYZE77I51dhqn8y3U1oVqQHc=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   "yajun.deng@linux.dev" <yajun.deng@linux.dev>
+To:     "Cong Wang" <xiyou.wangcong@gmail.com>
+Cc:     kuba <kuba@kernel.org>, davem <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: Re: [PATCH net-next] net: socket: add the case sock_no_xxx support
+References: <20210916122943.19849-1-yajun.deng@linux.dev>, 
+        <20210917183311.2db5f332@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>, 
+        <87275ec67ed69d077e0265bc01acd8a2@linux.dev>, 
+        <CAM_iQpXcqpEFpnyX=wLQFTWJBjWiAMofighQkpnrV2a0Fh83AQ@mail.gmail.com>
+X-Priority: 3
+X-GUID: 5C0D9E54-6F82-4349-80B9-7DF832FCB95A
+X-Has-Attach: no
 MIME-Version: 1.0
-In-Reply-To: <20210920122610.570-1-a-govindraju@ti.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+Message-ID: <202109202028152977817@linux.dev>
+Content-Type: text/plain;
+        charset="UTF-8"
+Content-Transfer-Encoding: base64
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
-
-On 20/09/21 5:56 pm, Aswath Govindraju wrote:
-> The read an writes from the fifo are from a buffer with various fields and
-> data at predefined offsets. So, they reads and writes should not be done to
-> the same address(or port) in case of val_count greater than 1. Therefore,
-> fix this by using iowrite32/ioread32 instead of ioread32_rep/iowrite32_rep.
-> 
-> Also, the write into fifo must be performed with an offset from the message
-> ram base address. Therefore, fix the base address to mram_base.
-> 
-> Fixes: e39381770ec9 ("can: m_can: Disable IRQs on FIFO bus errors")
-> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
-> ---
-
-Please ignore this patch sent it my mistake. Sorry for the inconvenience.
-
-Thanks,
-Aswath
-
->  drivers/net/can/m_can/m_can_platform.c | 14 ++++++++++++--
->  1 file changed, 12 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-> index 308d4f2fff00..eee47bad0592 100644
-> --- a/drivers/net/can/m_can/m_can_platform.c
-> +++ b/drivers/net/can/m_can/m_can_platform.c
-> @@ -32,8 +32,13 @@ static u32 iomap_read_reg(struct m_can_classdev *cdev, int reg)
->  static int iomap_read_fifo(struct m_can_classdev *cdev, int offset, void *val, size_t val_count)
->  {
->  	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
-> +	void __iomem *src = priv->mram_base + offset;
->  
-> -	ioread32_rep(priv->mram_base + offset, val, val_count);
-> +	while (val_count--) {
-> +		*(unsigned int *)val = ioread32(src);
-> +		val += 4;
-> +		src += 4;
-> +	}
->  
->  	return 0;
->  }
-> @@ -51,8 +56,13 @@ static int iomap_write_fifo(struct m_can_classdev *cdev, int offset,
->  			    const void *val, size_t val_count)
->  {
->  	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
-> +	void __iomem *dst = priv->mram_base + offset;
->  
-> -	iowrite32_rep(priv->base + offset, val, val_count);
-> +	while (val_count--) {
-> +		iowrite32(*(unsigned int *)val, dst);
-> +		val += 4;
-> +		dst += 4;
-> +	}
->  
->  	return 0;
->  }
-> 
+RnJvbTrCoENvbmcgV2FuZwpEYXRlOsKgMjAyMS0wOS0yMMKgMDc6NTIKVG86wqBZYWp1biBEZW5n
+CkNDOsKgSmFrdWIgS2ljaW5za2k7IERhdmlkIE1pbGxlcjsgTGludXggS2VybmVsIE5ldHdvcmsg
+RGV2ZWxvcGVyczsgTEtNTApTdWJqZWN0OsKgUmU6IFtQQVRDSCBuZXQtbmV4dF0gbmV0OiBzb2Nr
+ZXQ6IGFkZCB0aGUgY2FzZSBzb2NrX25vX3h4eCBzdXBwb3J0Ck9uIFNhdCwgU2VwIDE4LCAyMDIx
+IGF0IDU6MTEgQU0gPHlhanVuLmRlbmdAbGludXguZGV2PiB3cm90ZToKPgo+IFNlcHRlbWJlciAx
+OCwgMjAyMSA5OjMzIEFNLCAiSmFrdWIgS2ljaW5za2kiIDxrdWJhQGtlcm5lbC5vcmc+IHdyb3Rl
+Ogo+Cj4gPiBPbiBUaHUsIDE2IFNlcCAyMDIxIDIwOjI5OjQzICswODAwIFlhanVuIERlbmcgd3Jv
+dGU6Cj4gPgo+ID4+IFRob3NlIHNvY2tfbm9fe21tYXAsIHNvY2tldHBhaXIsIGxpc3RlbiwgYWNj
+ZXB0LCBjb25uZWN0LCBzaHV0ZG93biwKPiA+PiBzZW5kcGFnZX0gZnVuY3Rpb25zIGFyZSB1c2Vk
+IG1hbnkgdGltZXMgaW4gc3RydWN0IHByb3RvX29wcywgYnV0IHRoZXkgYXJlCj4gPj4gbWVhbmlu
+Z2xlc3MuIFNvIHdlIGNhbiBhZGQgdGhlbSBzdXBwb3J0IGluIHNvY2tldCBhbmQgZGVsZXRlIHRo
+ZW0gaW4gc3RydWN0Cj4gPj4gcHJvdG9fb3BzLgo+ID4KPiA+IFNvIHRoZSByZWFzb24gdG8gZG8g
+dGhpcyBpcy4uIHdoYXQgZXhhY3RseT8KPiA+Cj4gPiBSZW1vdmluZyBhIGNvdXBsZSBlbXB0eSBo
+ZWxwZXJzICh3aGljaCBpcyBub3QgZXZlbiBwYXJ0IG9mIHRoaXMgcGF0Y2gpPwo+ID4KPiA+IEkn
+bSBub3Qgc29sZCwgc29ycnkuCj4KPiBXaGVuIHdlIGRlZmluZSBhIHN0cnVjdCBwcm90b19vcHMg
+eHh4LCB3ZSBvbmx5IG5lZWQgdG8gYXNzaWduIG1lYW5pbmdmdWwgbWVtYmVyIHZhcmlhYmxlcyB0
+aGF0IHdlIG5lZWQuCj4gVGhvc2Uge21tYXAsIHNvY2tldHBhaXIsIGxpc3RlbiwgYWNjZXB0LCBj
+b25uZWN0LCBzaHV0ZG93biwgc2VuZHBhZ2V9IG1lbWJlcnMgd2UgZG9uJ3QgbmVlZCBhc3NpZ24K
+PiBpdCBpZiB3ZSBkb24ndCBuZWVkLiBXZSBqdXN0IG5lZWQgZG8gb25jZSBpbiBzb2NrZXQsIG5v
+dCBpbiBldmVyeSBzdHJ1Y3QgcHJvdG9fb3BzLgo+Cj4gVGhlc2UgbWVtYmVycyBhcmUgYXNzaWdu
+ZWQgbWVhbmluZ2xlc3MgdmFsdWVzIGZhciBtb3JlIG9mdGVuIHRoYW4gbWVhbmluZ2Z1bCBvbmVz
+LCBzbyB0aGlzIHBhdGNoIEkgdXNlZCBsaWtlbHkoISFzb2NrLT5vcHMtPnh4eCkgZm9yIHRoaXMg
+Y2FzZS4gVGhpcyBpcyB0aGUgcmVhc29uIHdoeSBJIHNlbmQgdGhpcyBwYXRjaC4KwqAKQnV0IHlv
+dSBlbmQgdXAgYWRkaW5nIG1vcmUgY29kZToKwqAKMSBmaWxlIGNoYW5nZWQsIDU4IGluc2VydGlv
+bnMoKyksIDEzIGRlbGV0aW9ucygtKSAKClllc++8jFRoaXMgd291bGQgYWRkIG1vcmUgY29kZSzC
+oGJ1dCB0aGlzIGlzIGF0IHRoZSBjb3N0IG9mIHJlZHVjaW5nIG90aGVyIGNvZGVzLsKgQXQgdGhl
+IHNhbWUgdGltZSwgdGhlIGNvZGUgd2lsbCBvbmx5IHJ1biDCoGxpa2VseSghc29jay0+b3BzLT54
+eHgpIGluIG1vc3QgY2FzZXMuIMKgRG9u4oCZdCB5b3UgdGhpbmsgdGhhdCB0aGlzIGtpbmQgb2Yg
+bWVhbmluZ2xlc3MgdGhpbmcgc2hvdWxkbuKAmXQgYmUgZG9uZSBieSBzb2NrZXQ/CsKgCkkgZG9u
+J3Qgc2VlIHRoaXMgYXMgYSBnYWluIGZyb20gYW55IHBlcnNwZWN0aXZlLgrCoApUaGFua3Mu
 
