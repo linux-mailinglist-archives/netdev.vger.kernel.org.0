@@ -2,94 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 732B94119AB
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 18:19:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 665844119D8
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 18:33:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243699AbhITQVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 12:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
+        id S234801AbhITQet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 12:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243150AbhITQVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 12:21:12 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3695DC061793
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 09:18:24 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id r1so1775554qta.12
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 09:18:24 -0700 (PDT)
+        with ESMTP id S229993AbhITQes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 12:34:48 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D78AC061574;
+        Mon, 20 Sep 2021 09:33:21 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id mv7-20020a17090b198700b0019c843e7233so366898pjb.4;
+        Mon, 20 Sep 2021 09:33:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=AWvXMa408PjHHvha/V61oKCGPQqxFghOZQyM06Xkvag=;
-        b=qvtPjyW8CyfuqA4yPg4MFrXdGTBkDciWEEqwkK4KpcTUVLjHWOAkEA29e8X0aWisAh
-         C5OmKPeEYXero56wMloxzqMbXu+ih5yQObXFo8KSqvfTO0zOHTXuesJ+6Wl6h+ne/2WM
-         hpWlZNp6el9bkXb8y4i4tQWYUkuYx35V+y9owPmtexDFrOuuBnCgJ0kS83a+aYI4N69l
-         lXQx5z8BqwkzMYyXCcDO+ZAFUdKIRWo9ib4m41StYjHLMKCZkXz0oEblmwRXwRy2yRcj
-         AAH7vJNvRQYIcIalgUz7jxCPH5mEfqp/5LWdCtB/cAgGtfTgxeRahYzbS0A3kOlGS4tg
-         cyiA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=YVcspMNftAsxUFRvxnT+9Gw5sEXFW56A4jnlNsbowNE=;
+        b=Ejfq6rlRJmiwgpL+WjIgdKHbBRpViduhVUDS5G+DOeMixkPZJppAI2ObsEuCDNb4xC
+         Zh4Lk+TjiMNMdAydUm1wbY2hAM4NwYAdZwzVyRfwE6LEWoJh2oP307qKYhyvtbxQWBf2
+         TYgIGfbsCyf51B72IiJmOCGgpulhdc3IQgLCC2HqIm2HTzAEy0EnsIgNSEvp4Ji5lvSj
+         3dPkC8qJvLaeGBJJZMSeNcTG/eDDqFjc2pMEe62AouApgBc5vrsuHS2MgyNGqsYzbKni
+         KW8zS6I7iuUO364KMgjgailkHE1Vrnhhr1mOCX72tKOFbi/5LQpHO1pPWJc+OW99iG8t
+         jH+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=AWvXMa408PjHHvha/V61oKCGPQqxFghOZQyM06Xkvag=;
-        b=hR9suKf1w76UvDAg9m8jZQM0a9tQzia5o/kEsjZTUFpbgVAHDT77WEE0rYQ30GHUdo
-         gT5kL2UW/TrmyqgkNB9Ls0WwAB6BIITccgiepi42yuauCSHtwVEC4YPMHjZol/p3RWJk
-         9QqyLtyM7t+SA623VM06YHRgQuglkpQSAHIs0pyJIDXdzy3lGL0hM/OGZZbCyYpUOEvX
-         sBKKvxfXf2y9D1ytUM17VitYCaMDv/wwHYBOMewx7bIXFkjlzifOuvmUnuSQdtXNyP1w
-         v2xasectmxPuQWXngXa27O+zWhVHdp/lrYznyr5oT5PHZqVv+tQotNkhnNpqljg2RGNV
-         S4Hw==
-X-Gm-Message-State: AOAM5310XaLwkyuiXy69VcKme0euzKw06xKddm8nZ9yynuqPM9MzGN31
-        ZrVr+kd8xRxptKPbTLcIKeT6qJHLzmGPVLX3uyI=
-X-Google-Smtp-Source: ABdhPJwY+yoTt4GWToaMo9VolKEMR6uVnqLq8qKeLOom//6mf2pAahjr4xSyqlewht2Cmo/5IaIckiYVkW5I+XX7hoc=
-X-Received: by 2002:ac8:490c:: with SMTP id e12mr19921055qtq.200.1632154703217;
- Mon, 20 Sep 2021 09:18:23 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YVcspMNftAsxUFRvxnT+9Gw5sEXFW56A4jnlNsbowNE=;
+        b=U1mq5H2lZShFwDs+Id5zBnWJQ5aBMfpsgEQxIm/43BhZso1yc1ihe3OFb6gS0PkFXn
+         Nef8OLzPTjbqQDQKi+AYgGeVukr0T2effjoV+/uR3/qgvmJ4VLPcGUxbHNXctu+//z2d
+         90aOcQF5UxI2OMvVFYpUVPm7xjv694IViOIXL8iR8dVtoMLEvm+0Y9usDUQJjIi01y2I
+         rA21xfsR9I7UoRYwrtFMJnVxMsPP666mjvFlsfVix8BBoIJUFn4JWxQ6H0C5aHfEh/09
+         w53x52NDPEFFyrVg34XKlht+UoExMX/rb+MroUZjtbrX7jkkKFIWA4bag34W+nJMGz+F
+         grSg==
+X-Gm-Message-State: AOAM531tBSSCkN2pJ/M1/1nUn2tpLZb8XJJN8sDApHOR9pGnxdLtJ3dR
+        t0+bhbA7NtSff41trfRV3islpfVnjXUJ8Q3NA4dz5fad
+X-Google-Smtp-Source: ABdhPJzwAEBxfVDDXWphEd7DTrS5TKQngb3H8wDsIQGOVfijDexmW0wFjcYhtCXZ21h4zGGIeNWv5uAqmyjVPmjygSE=
+X-Received: by 2002:a17:902:e282:b0:13a:45b7:d2cd with SMTP id
+ o2-20020a170902e28200b0013a45b7d2cdmr23507984plc.86.1632155600523; Mon, 20
+ Sep 2021 09:33:20 -0700 (PDT)
 MIME-Version: 1.0
-Sender: barristeragbokenkrumah1971@gmail.com
-Received: by 2002:ad4:5b86:0:0:0:0:0 with HTTP; Mon, 20 Sep 2021 09:18:22
- -0700 (PDT)
-From:   Mrs Francisca John Carlsen <franciscacarlsen20@gmail.com>
-Date:   Mon, 20 Sep 2021 17:18:22 +0100
-X-Google-Sender-Auth: t32nd3mgWlkuU26OOofjsvZtMeo
-Message-ID: <CAEYnOn4X2CeU-7_0kx3MxSKSyi4bDYwg9gxw6JmSRewdO6YATA@mail.gmail.com>
-Subject: Hello My Dear,
-To:     undisclosed-recipients:;
+References: <20210916122943.19849-1-yajun.deng@linux.dev> <20210917183311.2db5f332@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <87275ec67ed69d077e0265bc01acd8a2@linux.dev> <CAM_iQpXcqpEFpnyX=wLQFTWJBjWiAMofighQkpnrV2a0Fh83AQ@mail.gmail.com>
+ <202109202028152977817@linux.dev>
+In-Reply-To: <202109202028152977817@linux.dev>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 20 Sep 2021 09:33:09 -0700
+Message-ID: <CAM_iQpV4eaiD6msaiYNAOYE9Eoy2AjnGrSSwihhCO-yPb-61ww@mail.gmail.com>
+Subject: Re: Re: [PATCH net-next] net: socket: add the case sock_no_xxx support
+To:     "yajun.deng@linux.dev" <yajun.deng@linux.dev>
+Cc:     kuba <kuba@kernel.org>, davem <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello My Dear,
+On Mon, Sep 20, 2021 at 5:28 AM yajun.deng@linux.dev
+<yajun.deng@linux.dev> wrote:
+>
+> From: Cong Wang
+> Date: 2021-09-20 07:52
+> To: Yajun Deng
+> CC: Jakub Kicinski; David Miller; Linux Kernel Network Developers; LKML
+> Subject: Re: [PATCH net-next] net: socket: add the case sock_no_xxx suppo=
+rt
+> On Sat, Sep 18, 2021 at 5:11 AM <yajun.deng@linux.dev> wrote:
+> >
+> > September 18, 2021 9:33 AM, "Jakub Kicinski" <kuba@kernel.org> wrote:
+> >
+> > > On Thu, 16 Sep 2021 20:29:43 +0800 Yajun Deng wrote:
+> > >
+> > >> Those sock_no_{mmap, socketpair, listen, accept, connect, shutdown,
+> > >> sendpage} functions are used many times in struct proto_ops, but the=
+y are
+> > >> meaningless. So we can add them support in socket and delete them in=
+ struct
+> > >> proto_ops.
+> > >
+> > > So the reason to do this is.. what exactly?
+> > >
+> > > Removing a couple empty helpers (which is not even part of this patch=
+)?
+> > >
+> > > I'm not sold, sorry.
+> >
+> > When we define a struct proto_ops xxx, we only need to assign meaningfu=
+l member variables that we need.
+> > Those {mmap, socketpair, listen, accept, connect, shutdown, sendpage} m=
+embers we don't need assign
+> > it if we don't need. We just need do once in socket, not in every struc=
+t proto_ops.
+> >
+> > These members are assigned meaningless values far more often than meani=
+ngful ones, so this patch I used likely(!!sock->ops->xxx) for this case. Th=
+is is the reason why I send this patch.
+>
+> But you end up adding more code:
+>
+> 1 file changed, 58 insertions(+), 13 deletions(-)
+>
+> Yes=EF=BC=8CThis would add more code, but this is at the cost of reducing=
+ other codes. At the same time, the code will only run  likely(!sock->ops->=
+xxx) in most cases.  Don=E2=80=99t you think that this kind of meaningless =
+thing shouldn=E2=80=99t be done by socket?
 
-  It is with deep consideration that I am writing this letter of
-proposal to you, I know that this message may be a very big surprise
-to you,  Please do not feel disturbed for contacting  you in this
-regards. I sent this mail praying it will found you in a good
-condition of health, since I myself are in a very critical health
-condition in which I  sleep every night without knowing if I may be
-alive to see the next day. I am Mrs. Francisca  Carlsen from Denmark
-wife of late Mr John Carlsen, a widow suffering from long time
-illness. I have some funds I inherited from my late husband, the sum
-of (eleven million dollars) my Doctor told me recently that I have
-serious sickness which is cancer problem. What disturbs me most is my
-stroke sickness.
+I have no idea why you call it reducing code while adding 45 lines
+of code. So this does not make sense to me.
 
-Having known my condition, I decided to donate this fund to a good
-person that will utilize it the way i am going to instruct herein. I
-need a very honest and God fearing person who can claim this money and
-use it for Charity works, for orphanages, widows and also build
-schools for less privileges that will be named after my late husband
-if possible and to promote the word of God and the effort that the
-house of God is maintained.
-
-I do not want a situation where this money will be used in an ungodly
-manner. That's why I'm taking this decision. I'm not afraid of death,
-so I know where I'm going. I accept this decision because I do not
-have any child who will inherit this money after I die. Please I want
-your sincerely and urgent answer to know if you will be able to
-execute this project, and I will give you more information on how the
-fund will be transferred to your bank account. I am waiting for your
-reply.
-
-May God bless you and your family.
-
-Best Regards,
-Mrs. Francisca John  Carlsen.
+Thanks.
