@@ -2,107 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8BF0411855
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 17:34:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8EB941185F
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 17:38:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232771AbhITPgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 11:36:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60086 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231953AbhITPgY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 11:36:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D9FF560F58;
-        Mon, 20 Sep 2021 15:34:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632152097;
-        bh=m96GjiApW4p/KxA61hjTobtxuW+MVptKA8i0ZuexASg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TDSQlhEroh4a2XiVC1gaXP0aR1mYssZAewrXs98Mx3jzEPslBI6FbBleb0l3KfpSk
-         NP946HTLQPa05uOG05waAuuyDWmIdAjSPB0meGD1CwFrWW204q1RpLySsMJovz8b9e
-         SrC4k1JUSKdqnaMWevrfqPwvhXW1yfon5tkADSzFx9B4vsUHpokxxQqPZCZnhivknq
-         p4yWU5fqU5uGfnGRKo+RVSqpg8o5MTsEoO80CmO5aqeeehFLXaaHVvo/yztyJczrOO
-         UpTcQqjRzOAENbQ8S3Rxvg4b/awgOSeRTEP1OMdop9VS7UEXO18vSmn/kX8TmDEbQ/
-         KihasuvfWuQrA==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org, pshelar@ovn.org,
-        dsahern@kernel.org
-Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
-        dev@openvswitch.org, ltomasbo@redhat.com, echaudro@redhat.com
-Subject: [PATCH net-next] openvswitch: allow linking a VRF to an OVS bridge
-Date:   Mon, 20 Sep 2021 17:34:54 +0200
-Message-Id: <20210920153454.433252-1-atenart@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S241561AbhITPj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 11:39:27 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:60066 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237313AbhITPjZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 11:39:25 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 18KFbXDV047343;
+        Mon, 20 Sep 2021 10:37:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1632152253;
+        bh=m8/oyTnbOL/hoQNXxgC/ec52PrS/GRlMDgPzmOaD8mg=;
+        h=From:To:CC:Subject:Date;
+        b=NJeYQd1srPBz066/+cvmDF9qcxhqHM9cCt6Vup4db+8ndZdj7k2RVzSbIOngOKea1
+         bn46E+8Xp/wiHFVhXCpId4BE2nNiczq/p8Oqtxionhl1vB2yMuyIdrZ/JihUy8oe2G
+         dSUEnqdww0RAu3lv6qJn6z7ePHMNAr+di04+W/+0=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 18KFbW2N012097
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 20 Sep 2021 10:37:32 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 20
+ Sep 2021 10:37:32 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 20 Sep 2021 10:37:32 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 18KFbPJi104098;
+        Mon, 20 Sep 2021 10:37:26 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+Subject: [PATCH v3 0/6] CAN: Add support for CAN in AM65,J721e and AM64
+Date:   Mon, 20 Sep 2021 21:07:17 +0530
+Message-ID: <20210920153724.20203-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VRF devices are prevented from being added to upper devices since commit
-1017e0987117 ("vrf: prevent adding upper devices") as they set the
-IFF_NO_RX_HANDLER flag. However attaching a VRF to an OVS bridge is a
-valid use case[1].
+The following series of patches add support for CAN in SoC's AM65, J721e
+and AM64.
 
-Allow a VRF device to be attached to an OVS bridge by having an OVS
-specific tweak. This approach allows not to change a valid logic
-elsewhere and the IFF_NO_RX_HANDLER limitation still applies for non-OVS
-upper devices, even after a VRF was unlinked from an OVS bridge.
 
-(Patch not sent as a fix as the commit introducing the limitation is not
-recent).
+The following series is dependent on,
+https://patchwork.kernel.org/project/netdevbpf/patch/20210920123344.2320-1-a-govindraju@ti.com/
 
-[1] https://ltomasbo.wordpress.com/2021/06/25/openstack-networking-with-evpn/
+changes since v2 -
+- correct the dtbs_check errors. clock names order and interrupts
+  property added in the dt bindings
+- added support for main mcan instances on common processor board
+  for j721e
+- rebased the series on top of latest linux-next head
 
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
+changes since v1 -
+- changed the message ram configuration to use the maximum value
+  in each field, for better performance.
 
-Hi all,
+Aswath Govindraju (3):
+  arm64: dts: ti: am654-base-board/am65-iot2050-common: Disable mcan
+    nodes
+  arm64: dts: ti: k3-am64-main: Add support for MCAN
+  arm64: dts: ti: k3-am642-evm/sk: Add support for main domain mcan
+    nodes in EVM and disable them on SK
 
-I thought about other ways to fix this but did not want to add yet
-another flag, nor to add specific logic outside of net/openvswitch/. A
-custom netdev_rx_handler_register having priv_flags as a parameter could
-also have been added, but again that seemed a bit invasive.
+Faiz Abbas (3):
+  arm64: dts: ti: k3-am65-mcu: Add Support for MCAN
+  arm64: dts: ti: k3-j721e: Add support for MCAN nodes
+  arm64: dts: ti: k3-j721e-common-proc-board: Add support for mcu and
+    main mcan nodes
 
-There might be questions about the setup in which a VRF is linked to an
-OVS bridge; I cc'ed Luis Tomás who wrote the article.
+ arch/arm64/boot/dts/ti/k3-am64-main.dtsi      |  28 +++
+ arch/arm64/boot/dts/ti/k3-am642-evm.dts       |  40 ++++
+ arch/arm64/boot/dts/ti/k3-am642-sk.dts        |   8 +
+ .../boot/dts/ti/k3-am65-iot2050-common.dtsi   |   8 +
+ arch/arm64/boot/dts/ti/k3-am65-mcu.dtsi       |  30 +++
+ .../arm64/boot/dts/ti/k3-am654-base-board.dts |   8 +
+ .../dts/ti/k3-j721e-common-proc-board.dts     | 155 ++++++++++++++
+ arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     | 196 ++++++++++++++++++
+ .../boot/dts/ti/k3-j721e-mcu-wakeup.dtsi      |  28 +++
+ 9 files changed, 501 insertions(+)
 
-Thanks,
-Antoine
-
- net/openvswitch/vport-netdev.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/net/openvswitch/vport-netdev.c b/net/openvswitch/vport-netdev.c
-index 8e1a88f13622..e76b2477d384 100644
---- a/net/openvswitch/vport-netdev.c
-+++ b/net/openvswitch/vport-netdev.c
-@@ -75,6 +75,7 @@ static struct net_device *get_dpdev(const struct datapath *dp)
- 
- struct vport *ovs_netdev_link(struct vport *vport, const char *name)
- {
-+	unsigned int saved_flags;
- 	int err;
- 
- 	vport->dev = dev_get_by_name(ovs_dp_get_net(vport->dp), name);
-@@ -98,8 +99,17 @@ struct vport *ovs_netdev_link(struct vport *vport, const char *name)
- 	if (err)
- 		goto error_unlock;
- 
-+	/* While IFF_NO_RX_HANDLER is rightly set for l3 masters (VRF) as they
-+	 * don't work with upper devices, they can be attached to OVS bridges.
-+	 */
-+	saved_flags = vport->dev->priv_flags;
-+	if (netif_is_l3_master(vport->dev))
-+		vport->dev->priv_flags &= ~IFF_NO_RX_HANDLER;
-+
- 	err = netdev_rx_handler_register(vport->dev, netdev_frame_hook,
- 					 vport);
-+	vport->dev->priv_flags = saved_flags;
-+
- 	if (err)
- 		goto error_master_upper_dev_unlink;
- 
 -- 
-2.31.1
+2.17.1
 
