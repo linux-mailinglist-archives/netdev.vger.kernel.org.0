@@ -2,141 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 581ED412BD8
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:37:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC2FE412BD9
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:37:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351032AbhIUCiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 22:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41402 "EHLO
+        id S231316AbhIUCix (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 22:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230473AbhIUC2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:28:43 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0C9C0F344E;
-        Mon, 20 Sep 2021 12:24:04 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id x6so32694036wrv.13;
-        Mon, 20 Sep 2021 12:24:04 -0700 (PDT)
+        with ESMTP id S243960AbhIUCbL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:31:11 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D115CC0610D0;
+        Mon, 20 Sep 2021 13:11:26 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id v5so64666174edc.2;
+        Mon, 20 Sep 2021 13:11:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YmGPZteYFbIZ2nRx8xuxHgT2azyXIam+Snq0MYad3PA=;
-        b=lDqYhmdr3cu9apoGHWl+DD06++JvQoBI7Y96RPZRQRRr24BX9WG/CRIUEneowIlC80
-         sDExEbfY/bhH9xRbhIOHU9CeBqDY4YlwiDspiU/fS8AX7ka8GP13kZ1HEM6YZ3QTR1JC
-         FOv4mDAbafes0HqV2zPFUaMEKWTISbdYV06vOVj2UC1w/czxLbytcqCqFZQaIudbNCvY
-         kLATbbgVxfcNnTHBEEtO9hEzr6rvFMriRWPi26BXj7i0JcH2wF6ghBoRPQPGR0Eud47+
-         gRsEfYIH2DeC0RfJ3n9YgDvUFGf2so50viAHOuzVE6p6MmdMZJ4KyXx7NtPQSqdoaGgR
-         cwLA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=98Yd/K1Bh/3/kN/u7n+eWpJ4IriwcVmS+sgj8ZHAVhE=;
+        b=SaQJims3Q66u4dkNl16L3kFOTCHhK2QjTatEpa7vXYYTv5uK1xApAIYBiqdxMsJDUo
+         KseyA5OIRPnu0REy/i2AlO47+/QvbGy8J20RTdc/PLBgC8j3/NbW/xZZDQbb9BP3CroC
+         gkueHKOWSGeOo+TsJCz2cR5VJ3xx4E4WgLzWvyE+sv7IlBQTRlcuAFSYYnDC/dEB3euQ
+         zl9X2P0MGWCGq1Qjc9D8JpLKaTNrMvo5SIFBEjDQfZz6MqOpCmW05P5o0DJv6r5c4buV
+         wjw+3Jf0+CpPd3Q4Yo47GyfCbrjEwE/z1f/6wPORer5DN8dAMMe8BKf08lzwFFFWlYxr
+         rFPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YmGPZteYFbIZ2nRx8xuxHgT2azyXIam+Snq0MYad3PA=;
-        b=n9KjmFauCDypHl7ju3DZ6ZRVnEkqiwXEl6OlectJf34oQ54dliyCrbcX1DmXnzexZI
-         Z8Et0KMLsJah4ywmqWtAYctjHEOHAV9zXUTgZydiYysV9qoguWiI7NnE4H9CnV9gtbaU
-         gzR34PDVQiICYpbofv5BZ2g4oLZz1Yy2VbKnp8kirLurzfbwgfmV+hwq9ubHTqfKekmy
-         FO3yO0N1NuBdXfuVg9UK1PkYnc/IB4D9PK7YO0bnxaDU/kXih0zLF/CaSX5cWt+4WwGl
-         jF+DR/qFDplWdvuJPworUDDXqtWbDzgNJfOBtWoK3iRo2O71AIVWVAXihc6kFlk3c3tz
-         V6dg==
-X-Gm-Message-State: AOAM532pV/UILGt5eBJoYnNLHsyML+WFH1zDqt65lcafT0FqMFStNNHP
-        TWMeoEy+2QKky8d/m7tbzyU=
-X-Google-Smtp-Source: ABdhPJwkl/VpP9H9CGjqpJnO1QJGJyx9Xap8AwmiTR6DTQFg/rkuHzwEEdwOXyKb3JxbJsEWdQgRVA==
-X-Received: by 2002:a7b:cb49:: with SMTP id v9mr675793wmj.76.1632165843627;
-        Mon, 20 Sep 2021 12:24:03 -0700 (PDT)
-Received: from [10.8.0.102] ([195.53.121.100])
-        by smtp.gmail.com with ESMTPSA id w1sm425445wmc.19.2021.09.20.12.24.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Sep 2021 12:24:03 -0700 (PDT)
-Subject: Re: [patch v2] send.2: Add MSG_FASTOPEN flag
-To:     Wei Wang <weiwan@google.com>, linux-man@vger.kernel.org,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Cc:     netdev@vger.kernel.org, Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <edumazet@google.com>
-References: <20210917041606.167192-1-weiwan@google.com>
-From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Message-ID: <082801bf-a641-1483-600a-cc46eb580afe@gmail.com>
-Date:   Mon, 20 Sep 2021 21:24:01 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=98Yd/K1Bh/3/kN/u7n+eWpJ4IriwcVmS+sgj8ZHAVhE=;
+        b=FhoXPVm7o/M8Lcj3lVf6XzBjZwSiqkBrCNoGIVh+OTIphg+Fs28+3zxCr0PidM1PjT
+         2iOVCzcyId4MwNgDtB9gCo/LlixQBDfhHZqGPKDZtIqja9XP6688L7EH1juf7E/m0cyb
+         i+p/ClK1LirZvWOJELrSB+cOL0i3W812u2cthmrPdRWM3qNz8LjjXwGVY7vCO4J7L//x
+         xLd8X4iCdcXu21tUzgMt+hXJmhtlGSJVZqjccih6wLkjzkWQyoR7DY1MZ2OpIVUBVkUC
+         aVaz6upiAnKlWrUSjJqS/5qrWk7RLkyUZdlY8e5jaM6KnFm7TTCoSEUL54NcVU6ZnOgD
+         eGCQ==
+X-Gm-Message-State: AOAM532oDxNEa7O2PrvbFUWHrVPpuyrHt6laniLp9KLIzyx3hvQYXh7o
+        8y/77BauyjMzmtZiDCmOUbo=
+X-Google-Smtp-Source: ABdhPJzSfDNUL+PuZQPM6mZ3V3eB07yEHRLqMiP/E6jMcq9ks9IncSRyBxrB4mm/7j9AVhRA61nejQ==
+X-Received: by 2002:a50:9d8e:: with SMTP id w14mr8056745ede.74.1632168685035;
+        Mon, 20 Sep 2021 13:11:25 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-67-254.ip85.fastwebnet.it. [93.42.67.254])
+        by smtp.gmail.com with ESMTPSA id m10sm6385451ejx.76.2021.09.20.13.11.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Sep 2021 13:11:24 -0700 (PDT)
+Date:   Mon, 20 Sep 2021 22:11:00 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 1/2] drivers: net: dsa: qca8k: add support
+ for led config
+Message-ID: <YUjq1Al7s5fP7PBa@Ansuel-xps.localdomain>
+References: <20210920180851.30762-1-ansuelsmth@gmail.com>
+ <YUjZNA1Swo6Bv3/Q@lunn.ch>
+ <YUja1JsFJNwh8hXr@Ansuel-xps.localdomain>
+ <YUjesc5nLItkUNxy@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20210917041606.167192-1-weiwan@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YUjesc5nLItkUNxy@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Wei,
-
-On 9/17/21 6:16 AM, Wei Wang wrote:
-> MSG_FASTOPEN flag is available since Linux 3.7. Add detailed description
-> in the manpage according to RFC7413.
+On Mon, Sep 20, 2021 at 09:19:13PM +0200, Andrew Lunn wrote:
+> > Yes, can you point me to the discussion?
 > 
-> Signed-off-by: Wei Wang <weiwan@google.com>
-> Reviewed-by: Yuchung Cheng <ycheng@google.com>
-> Reviewed-by: Eric Dumazet <edumazet@google.com>
-
-Patch applied!
-
-Thanks (and to the reviewers too!),
-
-Alex
-
-> ---
-> Change in v2: corrected some format issues
+> It has gone through many cycles :-(
 > 
->   man2/send.2 | 32 ++++++++++++++++++++++++++++++++
->   1 file changed, 32 insertions(+)
+> The linux-led list is probably the better archive to look through, it
+> is a lot lower volume than netdev.
 > 
-> diff --git a/man2/send.2 b/man2/send.2
-> index fd28fed90..acaa05be9 100644
-> --- a/man2/send.2
-> +++ b/man2/send.2
-> @@ -252,6 +252,38 @@ data on sockets that support this notion (e.g., of type
->   the underlying protocol must also support
->   .I out-of-band
->   data.
-> +.TP
-> +.BR MSG_FASTOPEN " (since Linux 3.7)"
-> +Attempts TCP Fast Open (RFC7413) and sends data in the SYN like a
-> +combination of
-> +.BR connect (2)
-> +and
-> +.BR write (2),
-> +by performing an implicit
-> +.BR connect (2)
-> +operation.
-> +It blocks until the data is buffered and the handshake has completed.
-> +For a non-blocking socket,
-> +it returns the number of bytes buffered and sent in the SYN packet.
-> +If the cookie is not available locally,
-> +it returns
-> +.BR EINPROGRESS ,
-> +and sends a SYN with a Fast Open cookie request automatically.
-> +The caller needs to write the data again when the socket is connected.
-> +On errors,
-> +it sets the same
-> +.I errno
-> +as
-> +.BR connect (2)
-> +if the handshake fails.
-> +This flag requires enabling TCP Fast Open client support on sysctl
-> +.IR net.ipv4.tcp_fastopen .
-> +.IP
-> +Refer to
-> +.B TCP_FASTOPEN_CONNECT
-> +socket option in
-> +.BR tcp (7)
-> +for an alternative approach.
->   .SS sendmsg()
->   The definition of the
->   .I msghdr
+> https://www.spinics.net/lists/linux-leds/msg18652.html
+> 
+> https://www.spinics.net/lists/linux-leds/msg18527.html
+> 
 > 
 
+Thanks for the links.
 
--- 
-Alejandro Colomar
-Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
-http://www.alejandro-colomar.es/
+> > I post this as RFC for this exact reason... I read somehwere that there
+> > was a discussion on how to implementd leds for switch but never ever
+> > found it.
+> 
+> Most of the discussion so far has been about PHY LEDs, where the PHY
+> driver controls the LEDs. However some Ethernet switches also have LED
+> controls, which are not part of the PHY. And then there are some MAC
+> drivers which control the PHY in firmware, and have firmware calls for
+> controlling the LEDs. We need a generic solution which scales across
+> all this. And it needs to work without DT, or at least, not block ACPI
+> being added later.
+> 
+> But progress is slow. I hope that the PHY use case will drive things
+> forward, get the ABI defined. We can then scale it out to include
+> switches, maybe with a bit of code refactoring.
+> 
+> 	  Andrew
+
+Wow... What a mess. Tell me if I'm wrong but it seems progress is stuck.
+I can see the api proposal patch had no review from June. Should I put a
+message there to try to move things up?
+
