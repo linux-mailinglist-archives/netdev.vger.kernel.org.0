@@ -2,183 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1E06411181
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 11:01:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7917D411191
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 11:06:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234554AbhITJCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 05:02:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41537 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231731AbhITJCY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 05:02:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632128457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ju367aRX9daAFB55Pl+E11CkvQ2XuQw+N3D3dliMf0E=;
-        b=g8sGNXoq2Co1QxKVElX9uPD7+bfkPFM8Lq4UexiQQ5A9vixEStFSjKL7RbfksuByPNuf4c
-        OB3MQ0dp5KEMLuDHFnzWukLLTqTRGrnWeXTd/KJy61lZZZQTKv+Y1bdLSYIBU/lm4CAfiK
-        Zv17zW+ikVumlUXnmuCSb/9r9ND2V8Y=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-331-NSpm71DKNIG8ij83Oh8PKQ-1; Mon, 20 Sep 2021 05:00:55 -0400
-X-MC-Unique: NSpm71DKNIG8ij83Oh8PKQ-1
-Received: by mail-wm1-f71.google.com with SMTP id n3-20020a7bcbc3000000b0030b68c4de38so2460317wmi.8
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 02:00:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ju367aRX9daAFB55Pl+E11CkvQ2XuQw+N3D3dliMf0E=;
-        b=rDYtAtZYm9dpnv7dyYebDmKWHMo/QCVlbFAwDmwjAFL5cuJ7vUhpDy46LbEiz40tFv
-         iasWYAz3BxqUax4ZkB65cwfIFFWgz7aVCdsaBKM2Y++2pLEH+PPZ7fAnfrWP+3eWvvVP
-         dq3fA3QkWh2TLxD19V5aokbLMVqViQ1+VLOC4ZPCzol69a457x8uKUuZ+zxOecn7QgxT
-         sOyAOajQSmDOXeoZsDakYsv5Jyx2WfbcoeFzgOJ3gX8n45GBaTkA6dijMNmWxnTNM56e
-         UF8DTrpEVc8kKFDkK6pf6FWGqLzO5WfKnMmeq6nDeH6GD1WqKEA4srtvr/RthG1+pGfU
-         BDCA==
-X-Gm-Message-State: AOAM531e9iKNywyXU0QQe+bAw+oI6lJgioNHPLPAumZAfNBGDfyo3eMP
-        A2i2B6kEdPkBYGn3WyLZPzdS3iH51y9elejBxHkNxqxspqXbtlzWXFFIKYarvnyOxZC5j1lT9xC
-        Ii6YBjhRGYpOXmLkE
-X-Received: by 2002:a5d:6ca2:: with SMTP id a2mr26826209wra.291.1632128454752;
-        Mon, 20 Sep 2021 02:00:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxNcljVIFqRYAqHd7LWRT6RWEaunVjTAB8yjK3pe7IEWKWVvNLdXBuwNOzXSVIkngtq2cCoBA==
-X-Received: by 2002:a5d:6ca2:: with SMTP id a2mr26826160wra.291.1632128454511;
-        Mon, 20 Sep 2021 02:00:54 -0700 (PDT)
-Received: from localhost (net-130-25-199-50.cust.vodafonedsl.it. [130.25.199.50])
-        by smtp.gmail.com with ESMTPSA id h18sm14969558wrb.33.2021.09.20.02.00.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Sep 2021 02:00:54 -0700 (PDT)
-Date:   Mon, 20 Sep 2021 11:00:52 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Shay Agroskin <shayagr@amazon.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
-        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
-        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v14 bpf-next 03/18] net: mvneta: update mb bit before
- passing the xdp buffer to eBPF layer
-Message-ID: <YUhNxKE3bde3MbVl@lore-desk>
-References: <cover.1631289870.git.lorenzo@kernel.org>
- <f11d8399e17bc82f9ffcb613da0a457a96f56fec.1631289870.git.lorenzo@kernel.org>
- <pj41zlh7ef8xgt.fsf@u570694869fb251.ant.amazon.com>
- <YUhIQEIJxLRPpaRP@lore-desk>
- <pj41zlee9j8wkf.fsf@u570694869fb251.ant.amazon.com>
+        id S236096AbhITJH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 05:07:29 -0400
+Received: from www.zeus03.de ([194.117.254.33]:54170 "EHLO mail.zeus03.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236076AbhITJHI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Sep 2021 05:07:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=8Ic7rPl8wS6tSUDgDBOpnPfgXT8
+        diIPVuuJEV7+3x14=; b=y3zScd6qLqQkIP3VZO9fvHA8J6/TlWpstJuxEWG+2wh
+        RSUW1mVxF26O2U33Dq6EbBJ3XmayRck4KWgT5z4BxcgklO7B+9wEmZO5zVAmdCUU
+        eq691H+mkSBSVXJ5b+Z4iTQ6tBhA1RnGtNmi7NlL+YGjQ7U1KmJ/dc6bhwHIpZnk
+        =
+Received: (qmail 2412526 invoked from network); 20 Sep 2021 11:05:23 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 20 Sep 2021 11:05:23 +0200
+X-UD-Smtp-Session: l3s3148p1@Lz7AlGnMBosgAwDPXwlxANIWpbLKE1Uh
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org
+Subject: [PATCH 0/9] treewide: simplify getting .driver_data
+Date:   Mon, 20 Sep 2021 11:05:12 +0200
+Message-Id: <20210920090522.23784-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Tvov7bkZFn1T08h3"
-Content-Disposition: inline
-In-Reply-To: <pj41zlee9j8wkf.fsf@u570694869fb251.ant.amazon.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+I got tired of fixing this in Renesas drivers manually, so I took the big
+hammer. Remove this cumbersome code pattern which got copy-pasted too much
+already:
 
---Tvov7bkZFn1T08h3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+-	struct platform_device *pdev = to_platform_device(dev);
+-	struct ep93xx_keypad *keypad = platform_get_drvdata(pdev);
++	struct ep93xx_keypad *keypad = dev_get_drvdata(dev);
 
->=20
-> Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
->=20
-> > >=20
-> > > Lorenzo Bianconi <lorenzo@kernel.org> writes:
-> > >=20
-> > > > ...
-> > > > diff --git a/drivers/net/ethernet/marvell/mvneta.c
-> > > > b/drivers/net/ethernet/marvell/mvneta.c
-> > > > index 9d460a270601..0c7b84ca6efc 100644
-> > > > --- a/drivers/net/ethernet/marvell/mvneta.c
-> > > > +++ b/drivers/net/ethernet/marvell/mvneta.c
-> > > > ...
-> > > > @@ -2320,8 +2325,12 @@ mvneta_swbm_build_skb(struct > mvneta_port
-> > > *pp,
-> > > > struct page_pool *pool,
-> > > >  		      struct xdp_buff *xdp, u32 desc_status)
-> > > >  {
-> > > >  	struct skb_shared_info *sinfo =3D >
-> > > xdp_get_shared_info_from_buff(xdp);
-> > > > -	int i, num_frags =3D sinfo->nr_frags;
-> > > >  	struct sk_buff *skb;
-> > > > +	u8 num_frags;
-> > > > +	int i;
-> > > > +
-> > > > +	if (unlikely(xdp_buff_is_mb(xdp)))
-> > > > +		num_frags =3D sinfo->nr_frags;
-> > >=20
-> > > Hi,
-> > > nit, it seems that the num_frags assignment can be moved after the
-> > > other
-> > > 'if' condition you added (right before the 'for' for num_frags), or
-> > > even be
-> > > eliminated completely so that sinfo->nr_frags is used directly.
-> > > Either way it looks like you can remove one 'if'.
-> > >=20
-> > > Shay
-> >=20
-> > Hi Shay,
-> >=20
-> > we can't move nr_frags assignement after build_skb() since this field
-> > will be
-> > overwritten by that call.
-> >=20
-> > Regards,
-> > Lorenzo
-> >=20
->=20
-> Sorry, silly mistake of me.
->=20
-> Guess this assignment can be done anyway since there doesn't seem to be n=
-ew
-> cache misses introduced by it.
-> Anyway, nice catch, sorry for misleading you
+A branch, tested by buildbot, can be found here:
 
-actually we probably have a cache miss in this case for the single-buffer u=
-se case
-since skb_shared_info will not be in the same cache-line.
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git coccinelle/get_drvdata
 
-Regards,
-Lorenzo
+I am open for other comments, suggestions, too, of course.
 
->=20
-> > >=20
-> > > >  	skb =3D build_skb(xdp->data_hard_start, PAGE_SIZE);
-> > > >  	if (!skb)
-> > > > @@ -2333,6 +2342,9 @@ mvneta_swbm_build_skb(struct > mvneta_port
-> > > *pp,
-> > > > struct page_pool *pool,
-> > > >  	skb_put(skb, xdp->data_end - xdp->data);
-> > > >  	skb->ip_summed =3D mvneta_rx_csum(pp, desc_status);
-> > > > +	if (likely(!xdp_buff_is_mb(xdp)))
-> > > > +		goto out;
-> > > > +
-> > > >  	for (i =3D 0; i < num_frags; i++) {
-> > > >  		skb_frag_t *frag =3D &sinfo->frags[i];
-> > > >   @@ -2341,6 +2353,7 @@ mvneta_swbm_build_skb(struct >
-> > > mvneta_port *pp,
-> > > > struct page_pool *pool,
-> > > >  				skb_frag_size(frag), PAGE_SIZE);
-> > > >  	}
-> > > > +out:
-> > > >  	return skb;
-> > > >  }
-> > >=20
->=20
+Here is the cocci-script I created:
 
---Tvov7bkZFn1T08h3
-Content-Type: application/pgp-signature; name="signature.asc"
+@@
+struct device* d;
+identifier pdev;
+expression *ptr;
+@@
+(
+-	struct platform_device *pdev = to_platform_device(d);
+|
+-	struct platform_device *pdev;
+	...
+-	pdev = to_platform_device(d);
+)
+	<... when != pdev
+-	&pdev->dev
++	d
+	...>
 
------BEGIN PGP SIGNATURE-----
+	ptr =
+-	platform_get_drvdata(pdev)
++	dev_get_drvdata(d)
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYUhNxAAKCRA6cBh0uS2t
-rIGCAQCakzPGt+lCzTB99QrjLZqskd6wxv2K/et0+2lpidBr7AEAvzAzE9ZRJbxt
-om6PYHwYYWa/iCuuxSLUiNa/vAJ9NQA=
-=skGR
------END PGP SIGNATURE-----
+	<... when != pdev
+-	&pdev->dev
++	d
+	...>
 
---Tvov7bkZFn1T08h3--
+Kind regards,
+
+   Wolfram
+
+
+Wolfram Sang (9):
+  dmaengine: stm32-dmamux: simplify getting .driver_data
+  firmware: meson: simplify getting .driver_data
+  gpio: xilinx: simplify getting .driver_data
+  drm/msm: simplify getting .driver_data
+  drm/panfrost: simplify getting .driver_data
+  iio: common: cros_ec_sensors: simplify getting .driver_data
+  net: mdio: mdio-bcm-iproc: simplify getting .driver_data
+  platform: chrome: cros_ec_sensorhub: simplify getting .driver_data
+  remoteproc: omap_remoteproc: simplify getting .driver_data
+
+ drivers/dma/stm32-dmamux.c                         | 14 +++++---------
+ drivers/firmware/meson/meson_sm.c                  |  3 +--
+ drivers/gpio/gpio-xilinx.c                         |  6 ++----
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            | 13 +++++--------
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c           |  6 ++----
+ drivers/gpu/drm/msm/dp/dp_display.c                |  6 ++----
+ drivers/gpu/drm/msm/dsi/dsi_host.c                 |  6 ++----
+ drivers/gpu/drm/msm/msm_drv.c                      |  3 +--
+ drivers/gpu/drm/panfrost/panfrost_device.c         |  6 ++----
+ .../common/cros_ec_sensors/cros_ec_sensors_core.c  |  3 +--
+ drivers/net/mdio/mdio-bcm-iproc.c                  |  3 +--
+ drivers/platform/chrome/cros_ec_sensorhub.c        |  6 ++----
+ drivers/remoteproc/omap_remoteproc.c               |  6 ++----
+ 13 files changed, 28 insertions(+), 53 deletions(-)
+
+-- 
+2.30.2
 
