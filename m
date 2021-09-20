@@ -2,396 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FDE4412945
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 01:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F2E34128A4
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 00:06:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239024AbhITXOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 19:14:09 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:48451 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232690AbhITXKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 19:10:52 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from asmaa@mellanox.com)
-        with SMTP; 21 Sep 2021 00:22:39 +0300
-Received: from farm-0002.mtbu.labs.mlnx (farm-0002.mtbu.labs.mlnx [10.15.2.32])
-        by mtbu-labmailer.labs.mlnx (8.14.4/8.14.4) with ESMTP id 18KLMd2Z030017;
-        Mon, 20 Sep 2021 17:22:39 -0400
-Received: (from asmaa@localhost)
-        by farm-0002.mtbu.labs.mlnx (8.14.7/8.13.8/Submit) id 18KLMdLu019407;
-        Mon, 20 Sep 2021 17:22:39 -0400
-From:   Asmaa Mnebhi <asmaa@nvidia.com>
-To:     andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Cc:     Asmaa Mnebhi <asmaa@nvidia.com>, andrew@lunn.ch, kuba@kernel.org,
-        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
-        davem@davemloft.net, rjw@rjwysocki.net, davthompson@nvidia.com
-Subject: [PATCH v2 2/2] net: mellanox: mlxbf_gige: Replace non-standard interrupt handling
-Date:   Mon, 20 Sep 2021 17:22:27 -0400
-Message-Id: <20210920212227.19358-3-asmaa@nvidia.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210920212227.19358-1-asmaa@nvidia.com>
-References: <20210920212227.19358-1-asmaa@nvidia.com>
+        id S232608AbhITWIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 18:08:02 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:33682 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229742AbhITWGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 18:06:01 -0400
+Received: by mail-io1-f72.google.com with SMTP id g2-20020a6b7602000000b005be59530196so44656605iom.0
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 15:04:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Ooqjh+UYLi3OQs32zgOKcf+yaAx3ZjhTbREeYysl+go=;
+        b=b/tEVprKsFtB6AUWD8w4jOEam+iuKvrcdYQLA83sv1VIlzFgfxGIHI4NG+2K7uBp9M
+         K/Wa5mFjRNNTZMO6FcxcJBrb+YqE0CzTjarPscii5qhNCFHpiI/0L1Zzp829hBoJzdfR
+         KiGZV7DXRwnB35lzDa2ZIx1Cd+fRw65FRrK6TTkQHG0R+vlkr/fsjvv8gOVc/1QdwuDD
+         U+9wnuuxGn4qZXqmF1RR6w/KJm534Dykby5Kk0tjwwpySrCpwgSZmwG1Y86y+nv/SE6J
+         5Z07n4nxl4kbFJ3uUMsQFqGMMg6Zwng9fDRhNT8XIto268jzxC6CkvP8JBPL9JVpbovR
+         Mjug==
+X-Gm-Message-State: AOAM531uHSjglSwJyQ3ruAJhDXIzeT7GYHYrCIfWijTZ/sP6X+ACjU0B
+        Vu+jrTML5ifl3QPnjXZi2TUgPfiyCpAuGn8Zb+M/+CHhh7vp
+X-Google-Smtp-Source: ABdhPJwm5MsXEJa6v+U2g9eVQkAZNj0a7Sm3oDJySgJjTKMpzEZHeRyH7VNjcWqIif5/IzX3TwcX0/TcwLaL77VzcAOvuT33r9YZ
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:24d4:: with SMTP id y20mr21502264jat.27.1632175473655;
+ Mon, 20 Sep 2021 15:04:33 -0700 (PDT)
+Date:   Mon, 20 Sep 2021 15:04:33 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005183b005cc74779a@google.com>
+Subject: [syzbot] possible deadlock in mptcp_close
+From:   syzbot <syzbot+1dd53f7a89b299d59eaf@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, fw@strlen.de,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the GPIO driver (gpio-mlxbf2.c) supports interrupt
-handling, replace the custom routine with simple IRQ
-request.
+Hello,
 
-Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
+syzbot found the following issue on:
+
+HEAD commit:    e30cd812dffa selftests: net: af_unix: Fix makefile to use ..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=1689d3e7300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6d93fe4341f98704
+dashboard link: https://syzkaller.appspot.com/bug?extid=1dd53f7a89b299d59eaf
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11adc1d7300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14a351ab300000
+
+The issue was bisected to:
+
+commit 2dcb96bacce36021c2f3eaae0cef607b5bb71ede
+Author: Thomas Gleixner <tglx@linutronix.de>
+Date:   Sat Sep 18 12:42:35 2021 +0000
+
+    net: core: Correct the sock::sk_lock.owned lockdep annotations
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15a511f3300000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=17a511f3300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13a511f3300000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+1dd53f7a89b299d59eaf@syzkaller.appspotmail.com
+Fixes: 2dcb96bacce3 ("net: core: Correct the sock::sk_lock.owned lockdep annotations")
+
+MPTCP: kernel_bind error, err=-98
+============================================
+WARNING: possible recursive locking detected
+5.15.0-rc1-syzkaller #0 Not tainted
+--------------------------------------------
+syz-executor998/6520 is trying to acquire lock:
+ffff8880795718a0 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: mptcp_close+0x267/0x7b0 net/mptcp/protocol.c:2738
+
+but task is already holding lock:
+ffff8880787c8c60 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1612 [inline]
+ffff8880787c8c60 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: mptcp_close+0x23/0x7b0 net/mptcp/protocol.c:2720
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(k-sk_lock-AF_INET);
+  lock(k-sk_lock-AF_INET);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+3 locks held by syz-executor998/6520:
+ #0: ffffffff8d176c50 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:802
+ #1: ffffffff8d176d08 (genl_mutex){+.+.}-{3:3}, at: genl_lock net/netlink/genetlink.c:33 [inline]
+ #1: ffffffff8d176d08 (genl_mutex){+.+.}-{3:3}, at: genl_rcv_msg+0x3e0/0x580 net/netlink/genetlink.c:790
+ #2: ffff8880787c8c60 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1612 [inline]
+ #2: ffff8880787c8c60 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: mptcp_close+0x23/0x7b0 net/mptcp/protocol.c:2720
+
+stack backtrace:
+CPU: 1 PID: 6520 Comm: syz-executor998 Not tainted 5.15.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_deadlock_bug kernel/locking/lockdep.c:2944 [inline]
+ check_deadlock kernel/locking/lockdep.c:2987 [inline]
+ validate_chain kernel/locking/lockdep.c:3776 [inline]
+ __lock_acquire.cold+0x149/0x3ab kernel/locking/lockdep.c:5015
+ lock_acquire kernel/locking/lockdep.c:5625 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5590
+ lock_sock_fast+0x36/0x100 net/core/sock.c:3229
+ mptcp_close+0x267/0x7b0 net/mptcp/protocol.c:2738
+ inet_release+0x12e/0x280 net/ipv4/af_inet.c:431
+ __sock_release net/socket.c:649 [inline]
+ sock_release+0x87/0x1b0 net/socket.c:677
+ mptcp_pm_nl_create_listen_socket+0x238/0x2c0 net/mptcp/pm_netlink.c:900
+ mptcp_nl_cmd_add_addr+0x359/0x930 net/mptcp/pm_netlink.c:1170
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
+ genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
+ netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+ netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ sock_no_sendpage+0x101/0x150 net/core/sock.c:2980
+ kernel_sendpage.part.0+0x1a0/0x340 net/socket.c:3504
+ kernel_sendpage net/socket.c:3501 [inline]
+ sock_sendpage+0xe5/0x140 net/socket.c:1003
+ pipe_to_sendpage+0x2ad/0x380 fs/splice.c:364
+ splice_from_pipe_feed fs/splice.c:418 [inline]
+ __splice_from_pipe+0x43e/0x8a0 fs/splice.c:562
+ splice_from_pipe fs/splice.c:597 [inline]
+ generic_splice_sendpage+0xd4/0x140 fs/splice.c:746
+ do_splice_from fs/splice.c:767 [inline]
+ direct_splice_actor+0x110/0x180 fs/splice.c:936
+ splice_direct_to_actor+0x34b/0x8c0 fs/splice.c:891
+ do_splice_direct+0x1b3/0x280 fs/splice.c:979
+ do_sendfile+0xae9/0x1240 fs/read_write.c:1249
+ __do_sys_sendfile64 fs/read_write.c:1314 [inline]
+ __se_sys_sendfile64 fs/read_write.c:1300 [inline]
+ __x64_sys_sendfile64+0x1cc/0x210 fs/read_write.c:1300
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f215cb69969
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc96bb3868 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
+RAX: ffffffffffffffda RBX: 00007f215cbad072 RCX: 00007f215cb69969
+RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000000005
+RBP: 0000000000000000 R08: 00007ffc96bb3a08 R09: 00007ffc96bb3a08
+R10: 0000000100000002 R11: 0000000000000246 R12: 00007ffc96bb387c
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+
+
 ---
- .../net/ethernet/mellanox/mlxbf_gige/Makefile |   1 -
- .../ethernet/mellanox/mlxbf_gige/mlxbf_gige.h |  12 -
- .../mellanox/mlxbf_gige/mlxbf_gige_gpio.c     | 212 ------------------
- .../mellanox/mlxbf_gige/mlxbf_gige_main.c     |  22 +-
- 4 files changed, 9 insertions(+), 238 deletions(-)
- delete mode 100644 drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_gpio.c
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/Makefile b/drivers/net/ethernet/mellanox/mlxbf_gige/Makefile
-index e57c1375f236..a97c2bef846b 100644
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlxbf_gige/Makefile
-@@ -3,7 +3,6 @@
- obj-$(CONFIG_MLXBF_GIGE) += mlxbf_gige.o
- 
- mlxbf_gige-y := mlxbf_gige_ethtool.o \
--		mlxbf_gige_gpio.o \
- 		mlxbf_gige_intr.o \
- 		mlxbf_gige_main.o \
- 		mlxbf_gige_mdio.o \
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h
-index e3509e69ed1c..86826a70f9dd 100644
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h
-+++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h
-@@ -51,11 +51,6 @@
- #define MLXBF_GIGE_ERROR_INTR_IDX       0
- #define MLXBF_GIGE_RECEIVE_PKT_INTR_IDX 1
- #define MLXBF_GIGE_LLU_PLU_INTR_IDX     2
--#define MLXBF_GIGE_PHY_INT_N            3
--
--#define MLXBF_GIGE_MDIO_DEFAULT_PHY_ADDR 0x3
--
--#define MLXBF_GIGE_DEFAULT_PHY_INT_GPIO 12
- 
- struct mlxbf_gige_stats {
- 	u64 hw_access_errors;
-@@ -81,11 +76,7 @@ struct mlxbf_gige {
- 	struct platform_device *pdev;
- 	void __iomem *mdio_io;
- 	struct mii_bus *mdiobus;
--	void __iomem *gpio_io;
--	struct irq_domain *irqdomain;
--	u32 phy_int_gpio_mask;
- 	spinlock_t lock;      /* for packet processing indices */
--	spinlock_t gpio_lock; /* for GPIO bus access */
- 	u16 rx_q_entries;
- 	u16 tx_q_entries;
- 	u64 *tx_wqe_base;
-@@ -184,7 +175,4 @@ int mlxbf_gige_poll(struct napi_struct *napi, int budget);
- extern const struct ethtool_ops mlxbf_gige_ethtool_ops;
- void mlxbf_gige_update_tx_wqe_next(struct mlxbf_gige *priv);
- 
--int mlxbf_gige_gpio_init(struct platform_device *pdev, struct mlxbf_gige *priv);
--void mlxbf_gige_gpio_free(struct mlxbf_gige *priv);
--
- #endif /* !defined(__MLXBF_GIGE_H__) */
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_gpio.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_gpio.c
-deleted file mode 100644
-index a8d966db5715..000000000000
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_gpio.c
-+++ /dev/null
-@@ -1,212 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause
--
--/* Initialize and handle GPIO interrupt triggered by INT_N PHY signal.
-- * This GPIO interrupt triggers the PHY state machine to bring the link
-- * up/down.
-- *
-- * Copyright (C) 2021 NVIDIA CORPORATION & AFFILIATES
-- */
--
--#include <linux/acpi.h>
--#include <linux/bitfield.h>
--#include <linux/device.h>
--#include <linux/err.h>
--#include <linux/gpio/driver.h>
--#include <linux/interrupt.h>
--#include <linux/io.h>
--#include <linux/irq.h>
--#include <linux/irqdomain.h>
--#include <linux/irqreturn.h>
--#include <linux/platform_device.h>
--#include <linux/property.h>
--
--#include "mlxbf_gige.h"
--#include "mlxbf_gige_regs.h"
--
--#define MLXBF_GIGE_GPIO_CAUSE_FALL_EN		0x48
--#define MLXBF_GIGE_GPIO_CAUSE_OR_CAUSE_EVTEN0	0x80
--#define MLXBF_GIGE_GPIO_CAUSE_OR_EVTEN0		0x94
--#define MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE	0x98
--
--static void mlxbf_gige_gpio_enable(struct mlxbf_gige *priv)
--{
--	unsigned long flags;
--	u32 val;
--
--	spin_lock_irqsave(&priv->gpio_lock, flags);
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE);
--	val |= priv->phy_int_gpio_mask;
--	writel(val, priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE);
--
--	/* The INT_N interrupt level is active low.
--	 * So enable cause fall bit to detect when GPIO
--	 * state goes low.
--	 */
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_FALL_EN);
--	val |= priv->phy_int_gpio_mask;
--	writel(val, priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_FALL_EN);
--
--	/* Enable PHY interrupt by setting the priority level */
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_EVTEN0);
--	val |= priv->phy_int_gpio_mask;
--	writel(val, priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_EVTEN0);
--	spin_unlock_irqrestore(&priv->gpio_lock, flags);
--}
--
--static void mlxbf_gige_gpio_disable(struct mlxbf_gige *priv)
--{
--	unsigned long flags;
--	u32 val;
--
--	spin_lock_irqsave(&priv->gpio_lock, flags);
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_EVTEN0);
--	val &= ~priv->phy_int_gpio_mask;
--	writel(val, priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_EVTEN0);
--	spin_unlock_irqrestore(&priv->gpio_lock, flags);
--}
--
--static irqreturn_t mlxbf_gige_gpio_handler(int irq, void *ptr)
--{
--	struct mlxbf_gige *priv;
--	u32 val;
--
--	priv = ptr;
--
--	/* Check if this interrupt is from PHY device.
--	 * Return if it is not.
--	 */
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_CAUSE_EVTEN0);
--	if (!(val & priv->phy_int_gpio_mask))
--		return IRQ_NONE;
--
--	/* Clear interrupt when done, otherwise, no further interrupt
--	 * will be triggered.
--	 */
--	val = readl(priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE);
--	val |= priv->phy_int_gpio_mask;
--	writel(val, priv->gpio_io + MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE);
--
--	generic_handle_irq(priv->phy_irq);
--
--	return IRQ_HANDLED;
--}
--
--static void mlxbf_gige_gpio_mask(struct irq_data *irqd)
--{
--	struct mlxbf_gige *priv = irq_data_get_irq_chip_data(irqd);
--
--	mlxbf_gige_gpio_disable(priv);
--}
--
--static void mlxbf_gige_gpio_unmask(struct irq_data *irqd)
--{
--	struct mlxbf_gige *priv = irq_data_get_irq_chip_data(irqd);
--
--	mlxbf_gige_gpio_enable(priv);
--}
--
--static struct irq_chip mlxbf_gige_gpio_chip = {
--	.name			= "mlxbf_gige_phy",
--	.irq_mask		= mlxbf_gige_gpio_mask,
--	.irq_unmask		= mlxbf_gige_gpio_unmask,
--};
--
--static int mlxbf_gige_gpio_domain_map(struct irq_domain *d,
--				      unsigned int irq,
--				      irq_hw_number_t hwirq)
--{
--	irq_set_chip_data(irq, d->host_data);
--	irq_set_chip_and_handler(irq, &mlxbf_gige_gpio_chip, handle_simple_irq);
--	irq_set_noprobe(irq);
--
--	return 0;
--}
--
--static const struct irq_domain_ops mlxbf_gige_gpio_domain_ops = {
--	.map    = mlxbf_gige_gpio_domain_map,
--	.xlate	= irq_domain_xlate_twocell,
--};
--
--#ifdef CONFIG_ACPI
--static int mlxbf_gige_gpio_resources(struct acpi_resource *ares,
--				     void *data)
--{
--	struct acpi_resource_gpio *gpio;
--	u32 *phy_int_gpio = data;
--
--	if (ares->type == ACPI_RESOURCE_TYPE_GPIO) {
--		gpio = &ares->data.gpio;
--		*phy_int_gpio = gpio->pin_table[0];
--	}
--
--	return 1;
--}
--#endif
--
--void mlxbf_gige_gpio_free(struct mlxbf_gige *priv)
--{
--	irq_dispose_mapping(priv->phy_irq);
--	irq_domain_remove(priv->irqdomain);
--}
--
--int mlxbf_gige_gpio_init(struct platform_device *pdev,
--			 struct mlxbf_gige *priv)
--{
--	struct device *dev = &pdev->dev;
--	struct resource *res;
--	u32 phy_int_gpio = 0;
--	int ret;
--
--	LIST_HEAD(resources);
--
--	res = platform_get_resource(pdev, IORESOURCE_MEM, MLXBF_GIGE_RES_GPIO0);
--	if (!res)
--		return -ENODEV;
--
--	priv->gpio_io = devm_ioremap(dev, res->start, resource_size(res));
--	if (!priv->gpio_io)
--		return -ENOMEM;
--
--#ifdef CONFIG_ACPI
--	ret = acpi_dev_get_resources(ACPI_COMPANION(dev),
--				     &resources, mlxbf_gige_gpio_resources,
--				     &phy_int_gpio);
--	acpi_dev_free_resource_list(&resources);
--	if (ret < 0 || !phy_int_gpio) {
--		dev_err(dev, "Error retrieving the gpio phy pin");
--		return -EINVAL;
--	}
--#endif
--
--	priv->phy_int_gpio_mask = BIT(phy_int_gpio);
--
--	mlxbf_gige_gpio_disable(priv);
--
--	priv->hw_phy_irq = platform_get_irq(pdev, MLXBF_GIGE_PHY_INT_N);
--
--	priv->irqdomain = irq_domain_add_simple(NULL, 1, 0,
--						&mlxbf_gige_gpio_domain_ops,
--						priv);
--	if (!priv->irqdomain) {
--		dev_err(dev, "Failed to add IRQ domain\n");
--		return -ENOMEM;
--	}
--
--	priv->phy_irq = irq_create_mapping(priv->irqdomain, 0);
--	if (!priv->phy_irq) {
--		irq_domain_remove(priv->irqdomain);
--		priv->irqdomain = NULL;
--		dev_err(dev, "Error mapping PHY IRQ\n");
--		return -EINVAL;
--	}
--
--	ret = devm_request_irq(dev, priv->hw_phy_irq, mlxbf_gige_gpio_handler,
--			       IRQF_ONESHOT | IRQF_SHARED, "mlxbf_gige_phy", priv);
--	if (ret) {
--		dev_err(dev, "Failed to request PHY IRQ");
--		mlxbf_gige_gpio_free(priv);
--		return ret;
--	}
--
--	return ret;
--}
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-index 3e85b17f5857..4382ec8f7d64 100644
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-+++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_main.c
-@@ -273,8 +273,8 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
- 	void __iomem *llu_base;
- 	void __iomem *plu_base;
- 	void __iomem *base;
-+	int addr, phy_irq;
- 	u64 control;
--	int addr;
- 	int err;
- 
- 	base = devm_platform_ioremap_resource(pdev, MLXBF_GIGE_RES_MAC);
-@@ -309,20 +309,12 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
- 	priv->pdev = pdev;
- 
- 	spin_lock_init(&priv->lock);
--	spin_lock_init(&priv->gpio_lock);
- 
- 	/* Attach MDIO device */
- 	err = mlxbf_gige_mdio_probe(pdev, priv);
- 	if (err)
- 		return err;
- 
--	err = mlxbf_gige_gpio_init(pdev, priv);
--	if (err) {
--		dev_err(&pdev->dev, "PHY IRQ initialization failed\n");
--		mlxbf_gige_mdio_remove(priv);
--		return -ENODEV;
--	}
--
- 	priv->base = base;
- 	priv->llu_base = llu_base;
- 	priv->plu_base = plu_base;
-@@ -343,6 +335,12 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
- 	priv->rx_irq = platform_get_irq(pdev, MLXBF_GIGE_RECEIVE_PKT_INTR_IDX);
- 	priv->llu_plu_irq = platform_get_irq(pdev, MLXBF_GIGE_LLU_PLU_INTR_IDX);
- 
-+	phy_irq = acpi_dev_gpio_irq_get_by(ACPI_COMPANION(&pdev->dev), "phy-gpios", 0);
-+	if (phy_irq < 0) {
-+		dev_err(&pdev->dev, "Error getting PHY irq. Use polling instead");
-+		phy_irq = PHY_POLL;
-+	}
-+
- 	phydev = phy_find_first(priv->mdiobus);
- 	if (!phydev) {
- 		err = -ENODEV;
-@@ -350,8 +348,8 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
- 	}
- 
- 	addr = phydev->mdio.addr;
--	priv->mdiobus->irq[addr] = priv->phy_irq;
--	phydev->irq = priv->phy_irq;
-+	priv->mdiobus->irq[addr] = phy_irq;
-+	phydev->irq = phy_irq;
- 
- 	err = phy_connect_direct(netdev, phydev,
- 				 mlxbf_gige_adjust_link,
-@@ -387,7 +385,6 @@ static int mlxbf_gige_probe(struct platform_device *pdev)
- 	return 0;
- 
- out:
--	mlxbf_gige_gpio_free(priv);
- 	mlxbf_gige_mdio_remove(priv);
- 	return err;
- }
-@@ -398,7 +395,6 @@ static int mlxbf_gige_remove(struct platform_device *pdev)
- 
- 	unregister_netdev(priv->netdev);
- 	phy_disconnect(priv->netdev->phydev);
--	mlxbf_gige_gpio_free(priv);
- 	mlxbf_gige_mdio_remove(priv);
- 	platform_set_drvdata(pdev, NULL);
- 
--- 
-2.30.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
