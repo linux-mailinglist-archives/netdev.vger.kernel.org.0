@@ -2,118 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C248341147E
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:30:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E329E41148E
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbhITMcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 08:32:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54968 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238306AbhITMcQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 08:32:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7FA0760F58;
-        Mon, 20 Sep 2021 12:30:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632141049;
-        bh=fiiOgJh7EqR6CDg1SraGUGYNQfeg02MhMllonKVAqBY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=umVoqvb4jL6F3VLNlC6Vd7QpKwQd0cY6wW5Y7UMHVx0D9oazhIJMcFdxa/B3IB3IH
-         mGvZHcjHbVg2UxtTiFvu6/uaDpsJjTL7gt+NxLBzuQY3QdvMiVOSRCU9WE1qo3j9iv
-         D5n+F6c5rtaRmznaqW4q1A+srU65Ryf1O+DDTbmbkqEhe+q8evejrZUj/fYXc94gbI
-         hIMpv/ptgwfw+V7QmSUFrcZj44lGnwFygzY1cwa7zCFkkaY58ep410F3A7AMwOHvkw
-         BASk+iKcQX8/EZCiMIE720UrcMjls101kA+XNvHlED3nFI8flpj4R7tLRS+6wyOLwh
-         KgVHAVGFa0VjQ==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        id S238383AbhITMfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 08:35:31 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:35062 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233066AbhITMfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 08:35:30 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 18KCXqMP098780;
+        Mon, 20 Sep 2021 07:33:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1632141232;
+        bh=0qDxJRZQTjlN4ImylXnG13bIrn2pKRdM3+BUIaf+tN0=;
+        h=From:To:CC:Subject:Date;
+        b=cTAq1l4BEjbIH6si+3oGNsExaUAyd47Gjs/rqW/TsahJjzeJUhMi1Fi/tK7i4U+Ud
+         IR/WG6Om2lsT0VxC5fRpYjpT3C22oWgjd7C8qp0Mn9HU1irBYlZzx9dizVRP4dCKN0
+         NppnjLT8dBML+8tZeraH441DkNTWNxeXEAx7t/A8=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 18KCXqfl125518
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 20 Sep 2021 07:33:52 -0500
+Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 20
+ Sep 2021 07:33:51 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 20 Sep 2021 07:33:51 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 18KCXl5l085969;
+        Mon, 20 Sep 2021 07:33:48 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     Lokesh Vutla <lokeshvutla@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
         Wolfgang Grandegger <wg@grandegger.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] can: etas_es58x: avoid -Wzero-length-bounds warning
-Date:   Mon, 20 Sep 2021 14:30:29 +0200
-Message-Id: <20210920123045.795228-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Jakub Kicinski <kuba@kernel.org>,
+        Matt Kline <matt@bitbashing.io>, <linux-can@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] can: m_can: m_can_platform: Fix iomap_read_fifo() and iomap_write_fifo()
+Date:   Mon, 20 Sep 2021 18:03:43 +0530
+Message-ID: <20210920123344.2320-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+The read and writes from the fifo are from a buffer, with various fields
+and data at predefined offsets. So, they should not be done to the same
+address(or port) in case of val_count greater than 1. Therefore, fix this
+by using iowrite32/ioread32 instead of ioread32_rep/iowrite32_rep.
 
-gcc complains when writing into a zero-length array:
+Also, the write into fifo must be performed with an offset from the message
+ram base address. Therefore, fix the base address to mram_base.
 
-drivers/net/can/usb/etas_es58x/es581_4.c: In function 'es581_4_tx_can_msg':
-drivers/net/can/usb/etas_es58x/es581_4.c:374:42: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'u8[0]' {aka 'unsigned char[]'} [-Wzero-length-bounds]
-  374 |         tx_can_msg = (typeof(tx_can_msg))&es581_4_urb_cmd->raw_msg[msg_len];
-      |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from drivers/net/can/usb/etas_es58x/es58x_core.h:21,
-                 from drivers/net/can/usb/etas_es58x/es581_4.c:15:
-drivers/net/can/usb/etas_es58x/es581_4.h:195:20: note: while referencing 'raw_msg'
-  195 |                 u8 raw_msg[0];
-      |                    ^~~~~~~
-  CC [M]  drivers/net/can/usb/etas_es58x/es58x_fd.o
-drivers/net/can/usb/etas_es58x/es58x_fd.c: In function 'es58x_fd_tx_can_msg':
-drivers/net/can/usb/etas_es58x/es58x_fd.c:360:42: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'u8[0]' {aka 'unsigned char[]'} [-Wzero-length-bounds]
-  360 |         tx_can_msg = (typeof(tx_can_msg))&es58x_fd_urb_cmd->raw_msg[msg_len];
-      |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from drivers/net/can/usb/etas_es58x/es58x_core.h:22,
-                 from drivers/net/can/usb/etas_es58x/es58x_fd.c:17:
-drivers/net/can/usb/etas_es58x/es58x_fd.h:222:20: note: while referencing 'raw_msg'
-  222 |                 u8 raw_msg[0];
-      |                    ^~~~~~~
-
-The solution is usually to use a flexible-array member the struct, but
-we can't directly have that inside of a union, nor can it be the only
-member of a struct, so add a dummy struct with another zero-length
-member to get the intended behavior.
-
-If someone has a better workaround, let me know and I can send a new
-patch, as this version is rather ugly.
-
-Fixes: f4f5247daa45 ("can: etas_es58x: rewrite the message cast in es58{1,_fd}_tx_can_msg to increase readability")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: e39381770ec9 ("can: m_can: Disable IRQs on FIFO bus errors")
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 ---
- drivers/net/can/usb/etas_es58x/es581_4.h  | 5 ++++-
- drivers/net/can/usb/etas_es58x/es58x_fd.h | 5 ++++-
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/can/m_can/m_can_platform.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/usb/etas_es58x/es581_4.h b/drivers/net/can/usb/etas_es58x/es581_4.h
-index 4bc60a6df697..ac5ef88db565 100644
---- a/drivers/net/can/usb/etas_es58x/es581_4.h
-+++ b/drivers/net/can/usb/etas_es58x/es581_4.h
-@@ -192,7 +192,10 @@ struct es581_4_urb_cmd {
- 		struct es581_4_rx_cmd_ret rx_cmd_ret;
- 		__le64 timestamp;
- 		u8 rx_cmd_ret_u8;
--		u8 raw_msg[0];
-+		struct {
-+			u8 __pad[0];
-+			u8 raw_msg[];
-+		};
- 	} __packed;
+diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
+index 308d4f2fff00..eee47bad0592 100644
+--- a/drivers/net/can/m_can/m_can_platform.c
++++ b/drivers/net/can/m_can/m_can_platform.c
+@@ -32,8 +32,13 @@ static u32 iomap_read_reg(struct m_can_classdev *cdev, int reg)
+ static int iomap_read_fifo(struct m_can_classdev *cdev, int offset, void *val, size_t val_count)
+ {
+ 	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
++	void __iomem *src = priv->mram_base + offset;
  
- 	__le16 reserved_for_crc16_do_not_use;
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.h b/drivers/net/can/usb/etas_es58x/es58x_fd.h
-index a191891b8777..253e7bafd0b6 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_fd.h
-+++ b/drivers/net/can/usb/etas_es58x/es58x_fd.h
-@@ -219,7 +219,10 @@ struct es58x_fd_urb_cmd {
- 		struct es58x_fd_tx_ack_msg tx_ack_msg;
- 		__le64 timestamp;
- 		__le32 rx_cmd_ret_le32;
--		u8 raw_msg[0];
-+		struct {
-+			u8 __pad[0];
-+			u8 raw_msg[];
-+		};
- 	} __packed;
+-	ioread32_rep(priv->mram_base + offset, val, val_count);
++	while (val_count--) {
++		*(unsigned int *)val = ioread32(src);
++		val += 4;
++		src += 4;
++	}
  
- 	__le16 reserved_for_crc16_do_not_use;
+ 	return 0;
+ }
+@@ -51,8 +56,13 @@ static int iomap_write_fifo(struct m_can_classdev *cdev, int offset,
+ 			    const void *val, size_t val_count)
+ {
+ 	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
++	void __iomem *dst = priv->mram_base + offset;
+ 
+-	iowrite32_rep(priv->base + offset, val, val_count);
++	while (val_count--) {
++		iowrite32(*(unsigned int *)val, dst);
++		val += 4;
++		dst += 4;
++	}
+ 
+ 	return 0;
+ }
 -- 
-2.29.2
+2.17.1
 
