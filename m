@@ -2,144 +2,736 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 356F0411665
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 16:08:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B5A411680
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 16:12:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233670AbhITOKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 10:10:08 -0400
-Received: from mail-eopbgr1400137.outbound.protection.outlook.com ([40.107.140.137]:52672
-        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229667AbhITOKH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 10:10:07 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PV0zL0dHqkL65dw6DLp/gMttvUdhHQyRqEmiOjW69GQh6BUZkdaCt6/QO8U32dzWYETPUjnhf6PH5hx9uOK3+EEfYqCAoQ39rkArnYgHL2F43t6j/GpzhF8YNLPsx/4Aw+cK66lY0cNPQJlzBYk1tDFXO/8XUXt88NUmoWUykXrYlP1U+Z3p4jjzJ/B0e6fAp2sIQA5a6uKHkSNFKrlD3LxnLQKRa/Uu1CPNWX+TSBdM913XuZQpc1ORBG8Kz4C+JoU0kWEdji+eOXUq4GareTiAp/26kzjusHcqR1YWaBGqRt2vLkOZ3DtgETGsUMrslhdsQ/zNoTIe3AqPMxaOZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=hdv5dNxEZFUB2AwYNzTVb09Fb1JrHqWwaq6/2mwsQsQ=;
- b=Ue5isJtVooQlA6hPaLkn/3DTXoOLbxwfy1axZ2GaudAsW8KNup8BHfnNWLWtaGyXlTZXRD/IPuxnv+eTJjsE+G/VyBWGbZza5zuXxkIj3RGL80zvIDh3G+CBdtuiBBUB5OV5cxAmwL9nukxjUKE0hzWTlznOV31k3WA1LsMm3izOw59pKwgfiupF7ahG4C7O0KqUyscxoraBkJ7kp008CUKEheyCSqW1pgA8BAkhhIPSgP8ZeQ8JwL9UEllO0r84ouauS9qKP+1PI/J8fdE8KoVNQ+OUyFWkjlQMXs2wkfuUbT58I2a7Tg+mp4iv6aWzhsxIASyUd6bnUKNheRdHqQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hdv5dNxEZFUB2AwYNzTVb09Fb1JrHqWwaq6/2mwsQsQ=;
- b=j+KZGy+q5xSkZVtcrL5R7TPyd1bZhLYgRlaV/2P2GvOP4mudl2aFL/aX5ZiLQ41LXWbMD8xanFEa33Cbnee4saV4Dd49W7y1w2Rz3vtulc2w7fT3uB8PZxRAF/HOme46yZMiNG/v+bSKi4YzvVl1vfGjZuZUciKT1v8p6aZDMR0=
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
- by OSYPR01MB5301.jpnprd01.prod.outlook.com (2603:1096:604:84::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Mon, 20 Sep
- 2021 14:08:37 +0000
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::84ad:ad49:6f8:1312]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::84ad:ad49:6f8:1312%6]) with mapi id 15.20.4523.018; Mon, 20 Sep 2021
- 14:08:37 +0000
-From:   Min Li <min.li.xe@renesas.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: RE: [PATCH net v2 2/2] ptp: idt82p33: implement double dco time
- correction
-Thread-Topic: [PATCH net v2 2/2] ptp: idt82p33: implement double dco time
- correction
-Thread-Index: AQHXq9Hw5KOUR0ss3UKvyfLSiPV3fKuoo+GAgAAE1HCAAA9tgIAENlNw
-Date:   Mon, 20 Sep 2021 14:08:37 +0000
-Message-ID: <OS3PR01MB65935EC20F350036340F3348BAA09@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-References: <1631889589-26941-1-git-send-email-min.li.xe@renesas.com>
-        <1631889589-26941-2-git-send-email-min.li.xe@renesas.com>
-        <20210917125401.6e22ae13@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <OS3PR01MB65936ADCEF63D966B44C5FEFBADD9@OS3PR01MB6593.jpnprd01.prod.outlook.com>
- <20210917140631.696aadc9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210917140631.696aadc9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-CA, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9037e0b2-6a69-46da-8478-08d97c402434
-x-ms-traffictypediagnostic: OSYPR01MB5301:
-x-microsoft-antispam-prvs: <OSYPR01MB530192EE2E07E170F07B73B3BAA09@OSYPR01MB5301.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: f7ttWuAgB+j4KmqOsrt3Isl+o4i9tlz0zKS2Iwbt4SqtHc/WByqoIHeXVnphKtfNZe1QlzOx0nVGPzY7Gn+LnmAq+eEwmu0OS/nS1WC+5E6MoVLVV4lszMWEQu5UjF99sLx88eddmf31Ibs7wVB3SGmfE5vWSAz6bOdyod3n/5yVHGQL7Y6oZrBWIbCoFA56WGq9GIl74lJIrCTmUWMit5isT3VAy09ZyEh9QYpTxR92DjLSGz37sWBO6tyy/EYXdETXJFutWFdGTLJRIGXSJvyJct/c024j6tIcw4l4zOMIqyvlEbkdgR0q3hAHjefSDNgqV3Kh1jOXlKKsAKLKfMaMZrLb6t3zzzamjUXJBGekaavc2/ojaDvElgyF/9loBMR9cuZ5rKckAZ39dkcHn49AAerRimbKHYsAkUBJ1qRNFRgOrGztTR1s3EWlS0Sz05XeHGRoLHqIxjtLtbdEpIZgcdlB2bq9jVO1l4E1UMaig2oYi69etjpHPlWQWMx19A2DRhKTZat/G+/dkWlg2BDfiXC3Un3tCmpn6PzKBM2fYOHdPFssiVCjJtYd4kWlXltzvg+P0kTRA9Tz7bZEclqACxwmfUxRYkFsS0g7vHMOnf4+8Y99AdN7bxFh0tGHX/JpnTlRbyKR1ewE6n8H8VBh7Q2+1S/sVgUoHZ5CuIx239Q/uljGgORLHe8DfYPPo5tndSdKXjiZFMyVESD6Hg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(396003)(39860400002)(136003)(366004)(8676002)(64756008)(66556008)(8936002)(66476007)(66946007)(7696005)(54906003)(6916009)(33656002)(316002)(478600001)(76116006)(122000001)(66446008)(38070700005)(2906002)(26005)(52536014)(4326008)(6506007)(83380400001)(38100700002)(5660300002)(55016002)(86362001)(71200400001)(9686003)(186003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?38bxnzEhYNrpxt8cD2TPFxuNtbfPDURuDOEMP9p/g8W2IKG2WF+MGARpLgfH?=
- =?us-ascii?Q?jH9rZ0/eoIJQLZbK3R8j1ZU+R0rww+UIQpLcrA7TWhuhS6RIkRhk4+ozuMSt?=
- =?us-ascii?Q?6zKBHEcKOFAbZBDMps15m/IK2qCKnUT2d8YpHbIRCvGF+GZT8wi00hS50KZQ?=
- =?us-ascii?Q?iExOxdozzWamgNQp+RePJ1kV9wcHJXC8Gp9TshlGoyuQ/uVvXVG4m1izG4ZC?=
- =?us-ascii?Q?R8oY4pxb0SDTQphgEZnfa9lUtyMCX/7e77XvQYYUISAf0J9BiNhY8Nszv9Y7?=
- =?us-ascii?Q?SHrCFVYWl+HOMgaAJhzq0bSILP3ESvzY/jnd+B89fg3SKaH76L0/ypbOwisl?=
- =?us-ascii?Q?BdR4gcbVpB1Glt3672Ed97MD6aNs1tCuZPJ4CuhyWAjfVrSN4T8z/ti1qdY5?=
- =?us-ascii?Q?O1l9iGFnH3XHj3AW5Jr4ESh/AlZGo9JVItcg2AafBesiwhuwSAE3RrR/h5Kh?=
- =?us-ascii?Q?BIIls5rOMS72W6dLjyZw2HwLjh7OqrTIa7dTyxEuvY2xe5u2Uhz4/DeHMaWl?=
- =?us-ascii?Q?NK7hvvXVKskchjQsBSd5/TFEc9Ik72aNIhVUFDQuzCqBE6DRfFl6Qb3qWFE6?=
- =?us-ascii?Q?Tjiz+hx6YOGII+PFI54BMBaeiq2WoD1KydqZayjxC03PH6cVQIUXyRMzoKjX?=
- =?us-ascii?Q?0FtLknnhNwswONX8kq7HuyifKeZR+ScBeTXfyuCCttNMXt+7Jp0IM/cMlafY?=
- =?us-ascii?Q?ePhzoUA/akK2Ow8tfITq7gBYTNHslc19DRiq2DT4dEguxse5twPXY1REmIXA?=
- =?us-ascii?Q?Zn4H+pJm3NrZlekGTw/9sCsU7pYWtxOq2E8PA2C17WrTMSXQ74v94tCFVNbU?=
- =?us-ascii?Q?dJ0dhIIsVvkZPq5QUo7Zejg1IfNIwxrnmt5N04JXJe+cz/TJM92VmXcihnnP?=
- =?us-ascii?Q?poXWVeG7+KIEWKwFOBTFlj72ZgmLyTFTeFIMAkap3XDSN8J6npkXQ0syWv6o?=
- =?us-ascii?Q?CWNc/f+126Xd2M2JS6biTNusYEnX34GXemKIP0PJmUvULftZKMAhNk9Ci6Lc?=
- =?us-ascii?Q?MfZfG+ENMvJ0ZDXltZOE5aTPEa8G72n6MR67yBr/+H8PUgTguYj/4/RQs6p+?=
- =?us-ascii?Q?2m+SxlHqxYIb4tSMlugL1B+fEF5OPWlgt8tCV+BNpcf6GBDFSFRBumRWAdN6?=
- =?us-ascii?Q?jkskUqj4Y+Xa/g31rB43EHkdEvNeDF20nOJj0ke1cGQy+BEBZUW+TGap8vXc?=
- =?us-ascii?Q?eQesm8gPPgi7w8yQWqgSnP3vgua623C3gnR/2DoYgzOLBW7R4IUGm4AEZuRz?=
- =?us-ascii?Q?B55x9waSC2IoGiZ07Q4UT6Hb8uCGAaumyGSVRALxaGvCYL5nb+lPskqPmucf?=
- =?us-ascii?Q?tKYZqddD6SHXwbbwe3qaY/GC?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S235337AbhITOOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 10:14:01 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:58374 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234845AbhITONz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Sep 2021 10:13:55 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1632147148; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=xEUPffocEcLd0zxK99tRaqOOXGj+H2f2r9+78rm0ZNQ=; b=B9+BpOoXpWyip/lORYVQoTEfk+cTDipMqFQbPAT0p2fJzG72auiHMXhqA1tG99bxCJ5Biuq8
+ NkAKaGQw5zZjPfYVuzcWgFNmFk510e0pDkbgXr1n1Wo40cI8nx/8sKcjQ53I8pe69QeFyUK+
+ KqJt/y8Obwarc5LfCZkiYU9TUh8=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
+ 614896b4b585cc7d24424a21 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 20 Sep 2021 14:12:04
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id AD935C4360D; Mon, 20 Sep 2021 14:12:04 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2240BC43460;
+        Mon, 20 Sep 2021 14:12:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 2240BC43460
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Srinivasan Raju <srini.raju@purelifi.com>
+Cc:     mostafa.afgani@purelifi.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org (open list),
+        linux-wireless@vger.kernel.org (open list:NETWORKING DRIVERS (WIRELESS)),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
+Subject: Re: [PATCH] [v15] wireless: Initial driver submission for pureLiFi STA devices
+References: <20210226130810.119216-1-srini.raju@purelifi.com>
+        <20210818141343.7833-1-srini.raju@purelifi.com>
+Date:   Mon, 20 Sep 2021 17:11:58 +0300
+In-Reply-To: <20210818141343.7833-1-srini.raju@purelifi.com> (Srinivasan
+        Raju's message of "Wed, 18 Aug 2021 15:13:00 +0100")
+Message-ID: <87a6k7wd3l.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9037e0b2-6a69-46da-8478-08d97c402434
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2021 14:08:37.5414
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3Z1Zsh+EsDT9sWnJmsLUa0wVDhsGLlJPmWo02mMrB59VrjMHYvOtCHh8wdykTJoZ17Jt21HXSlrxrpgvzI3Krw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSYPR01MB5301
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->   > On Fri, Jun 25, 2021 at 02:24:24PM +0000, Min Li wrote:
->   > > How would you suggest to implement the change that make the new
-> driver behavior optional?
->   > I would say, module parameter or debugfs knob.
->=20
-> Aright, in which case devlink or debugfs, please.
->=20
-> > > What's the point of this? Just rename the file in the filesystem.
-> >
-> > We use this parameter to specify firmware so that module can be
-> > autoloaded /etc/modprobe.d/modname.conf
->=20
-> Sorry, I don't understand. The firmware is in /lib/firmware.
-> Previously you used a card coded name (whatever FW_FILENAME is,
-> "idt82p33xxx.bin"?). This patch adds the ability to change the firmware f=
-ile
-> name by a module param.
->=20
-> Now let me repeat the question - what's the point of user changing the
-> requested firmware name if they can simply rename the file?
+Srinivasan Raju <srini.raju@purelifi.com> writes:
 
-We have different firmware named after different 1588 profiles. If we renam=
-e firmware, it would make
-every profile  look same and confusing. On the other hand, with this module=
- parameter, we can have phc
-module auto start with correct firmware.
+> This introduces the pureLiFi LiFi driver for LiFi-X, LiFi-XC
+> and LiFi-XL USB devices.
+>
+> This driver implementation has been based on the zd1211rw driver.
+>
+> Driver is based on 802.11 softMAC Architecture and uses
+> native 802.11 for configuration and management.
+>
+> The driver is compiled and tested in ARM, x86 architectures and
+> compiled in powerpc architecture.
+>
+> Signed-off-by: Srinivasan Raju <srini.raju@purelifi.com>
 
-Thanks
+[...]
 
-Min
+> +int purelifi_set_beacon_interval(struct purelifi_chip *chip, u16 interval,
+> +				 u8 dtim_period, int type)
+> +{
+> +	if (!interval ||
+> +	    (chip->beacon_set &&
+> +	     le16_to_cpu(chip->beacon_interval) == interval))
+> +		return 0;
+> +
+> +	chip->beacon_interval = cpu_to_le16(interval);
+> +	chip->beacon_set = true;
+> +	return plf_usb_wreq((const u8 *)&chip->beacon_interval,
+> +			     sizeof(chip->beacon_interval),
+> +			     USB_REQ_BEACON_INTERVAL_WR);
+
+Can't you make plf_usb_wreq() to a void pointer? Then that ugly "const
+u8 *" cast is not needed.
+
+> --- /dev/null
+> +++ b/drivers/net/wireless/purelifi/plfxlc/chip.h
+> @@ -0,0 +1,84 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2021 pureLiFi
+> + */
+> +
+> +#ifndef _LF_X_CHIP_H
+> +#define _LF_X_CHIP_H
+> +
+> +#include <net/mac80211.h>
+> +
+> +#include "usb.h"
+> +
+> +enum unit_type_t {
+> +	STA = 0,
+> +	AP = 1,
+> +};
+
+unit_type_t -> unit_type
+
+> +struct purelifi_chip {
+> +	struct purelifi_usb usb;
+> +	struct mutex mutex; /* lock to protect chip data */
+> +	enum unit_type_t unit_type;
+> +	u16 link_led;
+> +	u8  beacon_set;
+
+Extra space after u8.
+
+> +int download_fpga(struct usb_interface *intf)
+> +{
+> +#define PLF_VNDR_FPGA_STATE_REQ 0x30
+> +#define PLF_VNDR_FPGA_SET_REQ 0x33
+> +#define PLF_VNDR_FPGA_SET_CMD 0x34
+> +#define PLF_VNDR_FPGA_STATE_CMD 0x35
+
+Please move these to a .h file.
+
+> +	kfree(fpga_dmabuff);/* free PLF_FPGA_STATUS_LEN*/
+
+Pointless comment.
+
+> +	fpga_dmabuff = NULL;
+> +	fpga_dmabuff = kmalloc(PLF_FPGA_STATE_LEN, GFP_KERNEL);
+
+No need to assign fpga_dmabuff to NULL.
+
+> +int download_xl_firmware(struct usb_interface *intf)
+> +{
+> +#define PLF_VNDR_XL_FW_CMD 0x80
+> +#define PLF_VNDR_XL_DATA_CMD 0x81
+> +#define PLF_VNDR_XL_FILE_CMD 0x82
+> +#define PLF_VNDR_XL_EX_CMD 0x83
+
+Please move these to a .h file.
+
+> +struct flash_t {
+> +	unsigned char enabled;
+> +	unsigned int sector_size;
+> +	unsigned int sectors;
+> +	unsigned char ec;
+> +};
+
+Remove all _t suffixes in names.
+
+> +int upload_mac_and_serial(struct usb_interface *intf,
+> +			  unsigned char *hw_address,
+> +			  unsigned char *serial_number)
+> +{
+> +#define PLF_MAC_VENDOR_REQUEST 0x36
+> +#define PLF_SERIAL_NUMBER_VENDOR_REQUEST 0x37
+> +#define PLF_FIRMWARE_VERSION_VENDOR_REQUEST 0x39
+> +#define PLF_SERIAL_LEN 14
+> +#define PLF_FW_VER_LEN 8
+
+Move to .h file.
+
+> +void purelifi_block_queue(struct purelifi_usb *usb, bool block)
+> +{
+> +	if (block)
+> +		ieee80211_stop_queues(purelifi_usb_to_hw(usb));
+> +	else
+> +		ieee80211_wake_queues(purelifi_usb_to_hw(usb));
+> +}
+
+Looks like a useless abstraction to me, just use ieee80211_stop_queues()
+and ieee80211_wake_queues() directly.
+
+> +/**
+> + * purelifi_mac_tx_status: reports tx status of a packet if required
+> + * @hw: a &struct ieee80211_hw pointer
+> + * @skb: a sk-buffer
+> + * @flags: extra flags to set in the TX status info
+> + * @ackssi: ACK signal strength
+> + * @success: True for successful transmission of the frame
+> + *
+> + * This information calls ieee80211_tx_status_irqsafe() if required by the
+> + * control information. It copies the control information into the status
+> + * information.
+> + *
+> + */
+
+I'm against this kind of documentation in wireless drivers, they get out
+of date so easily.
+
+> +	/*check if 32 bit aligned and align data*/
+
+Correct format is:
+
+/* check if 32 bit aligned and align data */
+
+> +	/* check if not multiple of 512 and align data*/
+
+/* check if not multiple of 512 and align data */
+
+> +int purelifi_mac_rx(struct ieee80211_hw *hw, const u8 *buffer,
+> +		    unsigned int length)
+> +{
+> +	struct purelifi_mac *mac = purelifi_hw_mac(hw);
+> +	struct ieee80211_rx_status stats;
+> +	const struct rx_status *status;
+> +	struct sk_buff *skb;
+> +	int bad_frame = 0;
+> +	__le16 fc;
+> +	int need_padding;
+> +	unsigned int payload_length;
+> +	static unsigned short int min_exp_seq_nmb;
+
+No static variables, "static const" are only exceptions. Otherwise two
+devices on the same host won't work correctly.
+
+> +	switch (buffer[0]) {
+> +	unsigned short int seq_nmb;
+
+Please move the variable declaration to the beginning of the function.
+
+> +	case IEEE80211_STYPE_PROBE_REQ:
+> +		dev_dbg(purelifi_mac_dev(mac), "Probe request\n");
+> +		break;
+> +	case IEEE80211_STYPE_ASSOC_REQ:
+> +		dev_dbg(purelifi_mac_dev(mac), "Association request\n");
+> +		break;
+> +	case IEEE80211_STYPE_AUTH:
+> +		dev_dbg(purelifi_mac_dev(mac), "Authentication req\n");
+> +		min_exp_seq_nmb = 0;
+> +		break;
+> +	case IEEE80211_FTYPE_DATA:
+> +		seq_nmb = (buffer[23] << 4) | ((buffer[22] & 0xF0) >> 4);
+
+No magic numbers, please.
+
+> +		if (seq_nmb < min_exp_seq_nmb &&
+> +		    ((min_exp_seq_nmb - seq_nmb) < 3000))
+> +			dev_dbg(purelifi_mac_dev(mac), "seq_nmb < min_exp\n");
+> +		else
+> +			min_exp_seq_nmb = (seq_nmb + 1) % 4096;
+> +		break;
+
+Here are also 3000 and 4096.
+
+> +static const struct ieee80211_ops purelifi_ops = {
+> +	.tx                 = purelifi_op_tx,
+> +	.start              = purelifi_op_start,
+> +	.stop               = purelifi_op_stop,
+> +	.add_interface      = purelifi_op_add_interface,
+> +	.remove_interface   = purelifi_op_remove_interface,
+> +	.set_rts_threshold  = purelifi_set_rts_threshold,
+> +	.config             = purelifi_op_config,
+> +	.configure_filter   = purelifi_op_configure_filter,
+> +	.bss_info_changed   = purelifi_op_bss_info_changed,
+> +	.get_stats          = purelifi_get_stats,
+> +	.get_et_sset_count  = purelifi_get_et_sset_count,
+> +	.get_et_stats       = purelifi_get_et_stats,
+> +	.get_et_strings     = purelifi_get_et_strings,
+
+AFAICS, purelife is the vendor and plfxlc is the driver, so you should
+"plfxlc_" as the prefix here.
+
+> +	hw->extra_tx_headroom = sizeof(struct purelifi_ctrlset) + 4;
+> +	/* 4 for 32 bit alignment if no tailroom */
+
+Move the comment before the actual code.
+
+> +#define purelifi_mac_dev(mac) (purelifi_chip_dev(&(mac)->chip))
+
+Isn't the parenthesis unnecessary?
+
+> +
+> +#define PURELIFI_MAC_STATS_BUFFER_SIZE 16
+> +#define PURELIFI_MAC_MAX_ACK_WAITERS 50
+> +
+> +struct purelifi_ctrlset {
+> +	__be32		id;/*should be usb_req_enum_t*/
+
+Move the comment to a separate line, above this line. And fix the
+comment format.
+
+> +	__be32		len;
+> +	u8              modulation;
+> +	u8              control;
+> +	u8              service;
+> +	u8		pad;
+> +	__le16		packet_length;
+> +	__le16		current_length;
+> +	__le16		next_frame_length;
+> +	__le16		tx_length;
+> +	__be32		payload_len_nw;
+> +} __packed;
+> +
+> +/*overlay*/
+
+Fix comment format.
+
+> +	/* whether to pass frames with CRC errors to stack */
+> +	unsigned int pass_failed_fcs:1;
+> +
+> +	/* whether to pass control frames to stack */
+> +	unsigned int pass_ctrl:1;
+> +
+> +	/* whether we have received a 802.11 ACK that is pending */
+> +	bool ack_pending;
+
+Inconsistent use of flags/booleans, either use unsigned int or bool.
+
+> +static atomic_t data_queue_flag;
+
+No static variables.
+
+> +/*Tx retry backoff timer (in milliseconds).*/
+
+I'm going to stop commenting about comment format now, you should know
+by now.
+
+> +# define TX_RETRY_BACKOFF_MS 10
+> +# define STA_QUEUE_CLEANUP_MS 5000
+
+No space after #. Applies to all usage in the driver.
+
+
+> +static struct usb_device_id usb_ids[] = {
+
+static const
+
+> +	{ USB_DEVICE(PURELIFI_X_VENDOR_ID_0, PURELIFI_X_PRODUCT_ID_0),
+> +	  .driver_info = DEVICE_LIFI_X },
+> +	{ USB_DEVICE(PURELIFI_XC_VENDOR_ID_0, PURELIFI_XC_PRODUCT_ID_0),
+> +	  .driver_info = DEVICE_LIFI_XC },
+> +	{ USB_DEVICE(PURELIFI_XL_VENDOR_ID_0, PURELIFI_XL_PRODUCT_ID_0),
+> +	  .driver_info = DEVICE_LIFI_XL },
+> +	{}
+> +};
+> +
+> +static struct usb_interface *ez_usb_interface;
+
+No static variables.
+
+> +#define STATION_FIFO_ALMOST_FULL_MESSAGE     0
+> +#define STATION_FIFO_ALMOST_FULL_NOT_MESSAGE 1
+> +#define STATION_CONNECT_MESSAGE              2
+> +#define STATION_DISCONNECT_MESSAGE           3
+
+Move to a .h file.
+
+> +static void rx_urb_complete(struct urb *urb)
+> +{
+> +	int r;
+> +	static u8 retry;
+
+No static variables.
+
+> +	struct purelifi_usb *usb;
+> +	struct purelifi_usb_tx *tx;
+> +	const u8 *buffer;
+> +	static u8 fpga_link_connection_f;
+
+Ditto.
+
+> +	unsigned int length;
+> +	u16 status;
+> +	u8 sidx;
+> +
+> +	if (!urb) {
+> +		dev_err(purelifi_usb_dev(usb), "urb is NULL.\n");
+> +		return;
+> +	} else if (!urb->context) {
+> +		dev_err(purelifi_usb_dev(usb), "urb ctx is NULL.\n");
+> +		return;
+> +	}
+> +	usb = urb->context;
+> +
+> +	if (usb->initialized != 1)
+> +		return;
+> +
+> +	switch (urb->status) {
+> +	case 0:
+> +		break;
+> +	case -ESHUTDOWN:
+> +	case -EINVAL:
+> +	case -ENODEV:
+> +	case -ENOENT:
+> +	case -ECONNRESET:
+> +	case -EPIPE:
+> +		dev_dbg(urb_dev(urb), "urb %p error %d\n", urb, urb->status);
+> +		return;
+> +	default:
+> +		dev_dbg(urb_dev(urb), "urb %p error %d\n", urb, urb->status);
+> +		if (retry++ < PURELIFI_URB_RETRY_MAX) {
+> +			dev_dbg(urb_dev(urb), "urb %p resubmit %d", urb, retry);
+> +			goto resubmit;
+> +		} else {
+> +			dev_dbg(urb_dev(urb), "urb %p  max resubmits reached", urb);
+> +			retry = 0;
+> +			return;
+> +		}
+> +	}
+> +
+> +	buffer = urb->transfer_buffer;
+> +	length = (*(u32 *)(buffer + sizeof(struct rx_status)))
+
+This does not look endian safe.
+
+> +		 + sizeof(u32);
+> +
+> +	tx = &usb->tx;
+> +
+> +	if (urb->actual_length != 8) {
+
+Magic value.
+
+> +		if (usb->initialized && fpga_link_connection_f)
+> +			handle_rx_packet(usb, buffer, length);
+> +		goto resubmit;
+> +	}
+> +
+> +	status = buffer[7];
+
+Magic value. A proper struct for these 8 bytes would be the best way to
+document and access it.
+
+> +
+> +	dev_dbg(&usb->intf->dev, "Recv status=%u\n", status);
+> +	dev_dbg(&usb->intf->dev, "Tx packet MAC=%x:%x:%x:%x:%x:%x\n",
+> +		buffer[0], buffer[1], buffer[2], buffer[3],
+> +		buffer[4], buffer[5]);
+
+Ok, so that struct should start with a mac address.
+
+> +
+> +	switch (status) {
+> +	case STATION_FIFO_ALMOST_FULL_NOT_MESSAGE:
+> +		dev_dbg(&usb->intf->dev,
+> +			"FIFO full not packet receipt\n");
+> +		tx->mac_fifo_full = 1;
+> +		for (sidx = 0; sidx < MAX_STA_NUM; sidx++)
+> +			tx->station[sidx].flag |= STATION_FIFO_FULL_FLAG;
+> +		break;
+> +	case STATION_FIFO_ALMOST_FULL_MESSAGE:
+> +		dev_dbg(&usb->intf->dev, "FIFO full packet receipt\n");
+> +
+> +		for (sidx = 0; sidx < MAX_STA_NUM; sidx++)
+> +			tx->station[sidx].flag &= 0xFD;
+
+Magic value.
+
+> +
+> +		purelifi_send_packet_from_data_queue(usb);
+> +		break;
+> +	case STATION_CONNECT_MESSAGE:
+> +		fpga_link_connection_f = 1;
+
+I remember if I said this already, but no "_f" style of naming. What
+does it even mean, a flag?
+
+> +	for (i = 0; i < RX_URBS_COUNT; i++) {
+> +		r = usb_submit_urb(urbs[i], GFP_KERNEL);
+> +		if (r)
+> +			goto error_submit;
+> +	}
+> +
+> +	return 0; /*no error return*/
+
+A useless comment.
+
+> +void purelifi_usb_disable_tx(struct purelifi_usb *usb)
+> +{
+> +	struct purelifi_usb_tx *tx = &usb->tx;
+> +	unsigned long flags;
+> +
+> +	atomic_set(&tx->enabled, 0);
+
+I didn't check, but I suspect you are misusing atomic variables here.
+Just use SET_BIT() & co.
+
+> +void tx_urb_complete(struct urb *urb)
+> +{
+> +	struct sk_buff *skb;
+> +	struct ieee80211_tx_info *info;
+> +	struct purelifi_usb *usb;
+> +
+> +	skb = (struct sk_buff *)urb->context;
+
+urb->context is a void pointer, no need to cast it.
+
+> +int purelifi_usb_tx(struct purelifi_usb *usb, struct sk_buff *skb)
+> +{
+> +	int r;
+> +	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
+> +	struct usb_device *udev = purelifi_usb_to_usbdev(usb);
+> +	struct urb *urb;
+> +	struct purelifi_usb_tx *tx = &usb->tx;
+> +
+> +	if (!atomic_read(&tx->enabled)) {
+
+Yeah, just use TEST_BIT().
+
+> +void purelifi_usb_init(struct purelifi_usb *usb, struct ieee80211_hw *hw,
+> +		       struct usb_interface *intf)
+> +{
+> +	memset(usb, 0, sizeof(*usb));
+> +	usb->intf = usb_get_intf(intf);
+> +	usb_set_intfdata(usb->intf, hw);
+> +	hw->conf.chandef.width = NL80211_CHAN_WIDTH_20;
+
+I was expecting to set the width in mac.c.
+
+> +static void get_usb_req(struct usb_device *udev, const u8 *buffer,
+> +			u32 buffer_len, enum usb_req_enum_t usb_req_id,
+> +			struct usb_req_t *usb_req)
+> +{
+> +	u8 *buffer_dst_p = usb_req->buf;
+
+No "_p" naming either. Is that hungarian notation or what? Anyway, we
+don't use that in upstream.
+
+> +static int probe(struct usb_interface *intf,
+> +		 const struct usb_device_id *id)
+> +{
+> +	int r = 0;
+> +	struct purelifi_chip *chip;
+> +	struct purelifi_usb *usb;
+> +	struct purelifi_usb_tx *tx;
+> +	struct ieee80211_hw *hw = NULL;
+> +	static u8 hw_address[ETH_ALEN];
+> +	static u8 serial_number[PURELIFI_SERIAL_LEN];
+
+No static variables.
+
+> +	unsigned int i;
+> +
+> +	ez_usb_interface = intf;
+> +
+> +	hw = purelifi_mac_alloc_hw(intf);
+> +
+> +	if (!hw) {
+> +		r = -ENOMEM;
+> +		goto error;
+> +	}
+> +
+> +	chip = &purelifi_hw_mac(hw)->chip;
+> +	usb = &chip->usb;
+> +	tx = &usb->tx;
+> +
+> +	r = upload_mac_and_serial(intf, hw_address, serial_number);
+> +
+> +	if (r) {
+> +		dev_err(&intf->dev, "MAC and Serial upload failed (%d)\n", r);
+> +		goto error;
+> +	}
+> +	chip->unit_type = STA;
+> +	dev_dbg(&intf->dev, "unit type is station");
+> +
+> +	r = purelifi_mac_preinit_hw(hw, hw_address);
+> +	if (r) {
+> +		dev_dbg(&intf->dev, "init mac failed (%d)\n", r);
+> +		goto error;
+> +	}
+> +
+> +	r = ieee80211_register_hw(hw);
+> +	if (r) {
+> +		dev_dbg(&intf->dev, "register device failed (%d)\n", r);
+> +		goto error;
+> +	}
+> +	dev_info(&intf->dev, "%s\n", wiphy_name(hw->wiphy));
+
+Looks like a pointless info message to me, please remove.
+
+> +	if ((le16_to_cpu(interface_to_usbdev(intf)->descriptor.idVendor) ==
+> +				PURELIFI_XL_VENDOR_ID_0) &&
+> +	    (le16_to_cpu(interface_to_usbdev(intf)->descriptor.idProduct) ==
+> +				PURELIFI_XL_PRODUCT_ID_0)) {
+> +		r = download_xl_firmware(intf);
+> +	} else {
+> +		r = download_fpga(intf);
+> +	}
+> +	if (r != 0) {
+> +		dev_err(&intf->dev, "FPGA download failed (%d)\n", r);
+> +		goto error;
+> +	}
+> +
+> +	tx->mac_fifo_full = 0;
+> +	spin_lock_init(&tx->lock);
+> +
+> +	msleep(PLF_MSLEEP_TIME);
+> +	r = purelifi_usb_init_hw(usb);
+> +	if (r < 0) {
+> +		dev_dbg(&intf->dev, "usb_init_hw failed (%d)\n", r);
+> +		goto error;
+> +	}
+> +
+> +	msleep(PLF_MSLEEP_TIME);
+> +	r = purelifi_chip_switch_radio(chip, 1); /* Switch ON Radio */
+
+A pointless comment. You can change the integer to an enum
+(PLFXLC_RADIO_ON) if you want to document clearly when it's turned on.
+
+> +	if (r < 0) {
+> +		dev_dbg(&intf->dev, "chip_switch_radio_on failed (%d)\n", r);
+> +		goto error;
+> +	}
+> +
+> +	msleep(PLF_MSLEEP_TIME);
+> +	r = purelifi_chip_set_rate(chip, 8);
+> +	if (r < 0) {
+> +		dev_dbg(&intf->dev, "chip_set_rate failed (%d)\n", r);
+> +		goto error;
+> +	}
+> +
+> +	msleep(PLF_MSLEEP_TIME);
+> +	r = plf_usb_wreq(hw_address, ETH_ALEN, USB_REQ_MAC_WR);
+> +	if (r < 0) {
+> +		dev_dbg(&intf->dev, "MAC_WR failure (%d)\n", r);
+> +		goto error;
+> +	}
+> +
+> +	purelifi_chip_enable_rxtx(chip);
+> +
+> +	/* Initialise the data plane Tx queue */
+> +	atomic_set(&data_queue_flag, 1);
+
+Misuse of atomic variables again, SET_BIT().
+
+> +static struct workqueue_struct *purelifi_workqueue;
+
+This static variable actually might be ok as it's called only from
+usb_init() and usb_exit(). Just rename it to plfxlc_workqueue.
+
+> +static int __init usb_init(void)
+> +{
+> +	int r;
+> +
+> +	purelifi_workqueue = create_singlethread_workqueue(driver.name);
+> +	if (!purelifi_workqueue) {
+> +		pr_err("%s couldn't create workqueue\n", driver.name);
+> +		r = -ENOMEM;
+> +		goto error;
+> +	}
+> +
+> +	r = usb_register(&driver);
+> +	if (r) {
+> +		destroy_workqueue(purelifi_workqueue);
+> +		pr_err("%s usb_register() failed %d\n", driver.name, r);
+> +		return r;
+> +	}
+> +
+> +	pr_debug("Driver initialized :%s\n", driver.name);
+> +	return 0;
+> +
+> +error:
+> +	return r;
+> +}
+> +
+> +static void __exit usb_exit(void)
+> +{
+> +	usb_deregister(&driver);
+> +	destroy_workqueue(purelifi_workqueue);
+> +	pr_debug("%s %s\n", driver.name, __func__);
+> +}
+> +
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("USB driver for pureLiFi devices");
+> +MODULE_AUTHOR("pureLiFi");
+> +MODULE_VERSION("1.0");
+> +MODULE_FIRMWARE("plfxlc/lifi-x.bin");
+> +MODULE_DEVICE_TABLE(usb, usb_ids);
+> +module_init(usb_init);
+> +module_exit(usb_exit);
+
+I see that you have MODULE_LICENSE() three times:
+
+chip.c.97:MODULE_LICENSE("GPL");
+mac.c.841:MODULE_LICENSE("GPL");
+usb.c.1006:MODULE_LICENSE("GPL");
+
+But you only have one module. So remove MODULE_LICENSE() from chip.c and
+mac.c, and leave it only here.
+
+> +/* USB interrupt */
+> +struct purelifi_usb_interrupt {
+
+A useless comment.
+
+> +	spinlock_t lock;/* spin lock for usb interrupt buffer */
+
+Add space before the comment.
+
+> +	struct urb *urb;
+> +	void *buffer;
+> +	int interval;
+> +};
+> +
+> +#define RX_URBS_COUNT 5
+> +
+> +struct purelifi_usb_rx {
+> +	spinlock_t lock;/* spin lock for rx urb */
+
+Here too.
+
+> +	struct mutex setup_mutex; /* mutex lockt for rx urb */
+> +	u8 fragment[2 * USB_MAX_RX_SIZE];
+> +	unsigned int fragment_length;
+> +	unsigned int usb_packet_size;
+> +	struct urb **urbs;
+> +	int urbs_count;
+> +};
+> +
+> +struct station_t {
+> +   //  7...3    |    2      |     1     |     0	    |
+> +   // Reserved  | Heartbeat | FIFO full | Connected |
+
+No C++ comments, please.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
