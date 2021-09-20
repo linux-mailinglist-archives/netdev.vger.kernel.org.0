@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 871F0412854
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 23:43:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA7AB412858
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 23:43:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240269AbhITVo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 17:44:57 -0400
-Received: from relay.sw.ru ([185.231.240.75]:36772 "EHLO relay.sw.ru"
+        id S245079AbhITVpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 17:45:12 -0400
+Received: from relay.sw.ru ([185.231.240.75]:36816 "EHLO relay.sw.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233543AbhITVmo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 17:42:44 -0400
+        id S231410AbhITVnI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Sep 2021 17:43:08 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=8rK8W2Vd3scYVv5BGnvaNbmY0E+bS3ovyAG03FyVVFk=; b=VDI8fnQ5XIs1uERh1
-        QxMeLIz7QqR9aU30cY27PhxxTb0B+W+3AORPbmQv1bXiaNvwb1kXzNfHh5aK1Pdr0SsrYKHYh1oaq
-        VshclcZ0VW0KocPbX76JilZFpEWWFrVrCPVADkRUQyk+5taJ6/hR9zxVhkgVT0RpS3S7aQdY6wono
-        =;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
+        :From; bh=iaWR+4csH3XbjqwDPZ9H83JOs8k0zel2izzxGA+L4jw=; b=m+3c9VtjwnBJLKpiMU5
+        Eu6KEofV2PKAsRB9yqIj6ub8pZCOW0RoxkKggiizpvxpNSw6VWbKb3DSTL4ykdokDWvvpLtweVXDZ
+        GL/4oLPYHbFo5CfzChKGqXMen5Cum9+Rnya7gyYRhWOekfWmVOhMphedM+sUy097qmkZTQKommc=;
 Received: from [10.93.0.56]
         by relay.sw.ru with esmtp (Exim 4.94.2)
         (envelope-from <vvs@virtuozzo.com>)
-        id 1mSR2J-002eA0-GC; Tue, 21 Sep 2021 00:41:15 +0300
-Subject: Re: [RFC net v7] net: skb_expand_head() adjust skb->truesize
- incorrectly
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     eric.dumazet@gmail.com, netdev@vger.kernel.org,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        Hao Sun <sunhao.th@gmail.com>
-References: <20210917162418.1437772-1-kuba@kernel.org>
- <b38881fc-7dbf-8c5f-92b8-5fa1afaade0c@virtuozzo.com>
- <20210920111259.18f9cc01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id 1mSR2d-002eAC-5C; Tue, 21 Sep 2021 00:41:35 +0300
 From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <c4d204a5-f3f1-e505-4206-26dfd1c097f1@virtuozzo.com>
-Date:   Tue, 21 Sep 2021 00:41:15 +0300
+Subject: [PATCH net v8] skb_expand_head() adjust skb->truesize incorrectly
+To:     Christoph Paasch <christoph.paasch@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        kernel@openvz.org, Julian Wiedmann <jwi@linux.ibm.com>
+References: <20210920111259.18f9cc01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <be927ca4-6fd7-ce89-e472-bb1e5a0dc2a9@virtuozzo.com>
+Date:   Tue, 21 Sep 2021 00:41:34 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
@@ -44,92 +44,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/20/21 9:12 PM, Jakub Kicinski wrote:
-> On Sat, 18 Sep 2021 13:05:28 +0300 Vasily Averin wrote:
->> On 9/17/21 7:24 PM, Jakub Kicinski wrote:
->>> From: Vasily Averin <vvs@virtuozzo.com>
->>>
->>> Christoph Paasch reports [1] about incorrect skb->truesize
->>> after skb_expand_head() call in ip6_xmit.
->>> This may happen because of two reasons:
->>>  - skb_set_owner_w() for newly cloned skb is called too early,
->>>    before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
->>>  - pskb_expand_head() does not adjust truesize in (skb->sk) case.
->>>    In this case sk->sk_wmem_alloc should be adjusted too.
->>>
->>> Eric cautions us against increasing sk_wmem_alloc if the old
->>> skb did not hold any wmem references.
-> 
->>> @@ -1810,21 +1829,28 @@ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
->>>  	if (skb_shared(skb)) {
->>>  		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
->>>  
->>> -		if (likely(nskb)) {
->>> -			if (skb->sk)
->>> -				skb_set_owner_w(nskb, skb->sk);
->>> -			consume_skb(skb);
->>> -		} else {
->>> -			kfree_skb(skb);
->>> -		}
->>> +		if (unlikely(!nskb))
->>> +			goto err_free;
->>> +
->>> +		skb_owner_inherit(nskb, skb);
->>> +		consume_skb(skb);
->>>  		skb = nskb;
->>>  	}
->>> -	if (skb &&
->>> -	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
->>> -		kfree_skb(skb);
->>> -		skb = NULL;
->>> -	}
->>> +
->>> +	if (pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC))
->>> +		goto err_free;
->>> +	delta = skb_end_offset(skb) - osize;
->>> +
->>> +	/* pskb_expand_head() will adjust truesize itself for non-sk cases
->>> +	 * todo: move the adjustment there at some point?
->>> +	 */
->>> +	if (skb->sk && skb->destructor != sock_edemux)
->>> +		skb_increase_truesize(skb, delta);  
->>
->> I think it is wrong.
->> 1) there are a few skb destructors called sock_wfree inside. I've found: 
->>    tpacket_destruct_skb, sctp_wfree, unix_destruct_scm and xsk_destruct_skb.
->>    If any such skb can be use here it will not adjust sk_wmem_alloc.   I afraid there might be other similar destructors, out of tree,
->>    so we cannot have full white list for wfree-compatible destructors.
->>
->> 2) in fact you increase truesize here for all skb types.
->>    If it is acceptable it could be done directly inside pskb_expand_head().
->>    However it isn't.  As you pointed sock_rfree case is handled incorrectly. 
->>    I've found other similar destructors: sock_rmem_free, netlink_skb_destructor,
->>    kcm_rfree, sock_ofree. They will be handled incorrectly too, but even without WARN_ON.
->>    Few other descriptors seems should not fail but do not require truesize update.
->>
->> From my POV v6 patch version works correctly in any cases. If necessary it calls
->> original destructor, correctly set up new one and correctly adjust truesize
->> and sk_wmem_alloc.
->> If you still have doubts, we can just go back and clone non-wmem skb, 
->> like we did before.
-> 
-> Thanks for taking a look. I would prefer not to bake any ideas about
-> the skb's function into generic functions. Enumerating every destructor
-> callback in generic code is impossible (technically so, since the code
-> may reside in modules).
-> 
-> Let me think about it. Perhaps we can extend sock callbacks with
-> skb_sock_inherit, and skb_adjust_trusize? That'd transfer the onus of
-> handling the adjustments done on splitting to the protocols. I'll see
-> if that's feasible unless someone can immediately call this path
-> ghastly.
+Christoph Paasch reports [1] about incorrect skb->truesize
+after skb_expand_head() call in ip6_xmit.
+This may happen because of two reasons:
+- skb_set_owner_w() for newly cloned skb is called too early,
+before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
+- pskb_expand_head() does not adjust truesize in (skb->sk) case.
+In this case sk->sk_wmem_alloc should be adjusted too.
 
-This is similar to Alexey Kuznetsov's suggestion for me, 
-see https://lkml.org/lkml/2021/8/27/460
+[1] https://lkml.org/lkml/2021/8/20/1082
 
-However I think we can do it later,
-right now we need to fix somehow broken skb_expand_head(),
-please take look at v8.
+Fixes: f1260ff15a71 ("skbuff: introduce skb_expand_head()")
+Fixes: 2d85a1b31dde ("ipv6: ip6_finish_output2: set sk into newly allocated nskb")
+Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
+Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+---
+v8: clone non-wmem skb
+V7 (from kuba@):
+    shift more magic into helpers,
+    follow Eric's advice and don't inherit non-wmem skbs for now
+v6: fixed delta,
+    improved comments
+v5: fixed else condition, thanks to Eric
+    reworked update of expanded skb,
+    added corresponding comments
+v4: decided to use is_skb_wmem() after pskb_expand_head() call
+    fixed 'return (EXPRESSION);' in os_skb_wmem according to Eric Dumazet
+v3: removed __pskb_expand_head(),
+    added is_skb_wmem() helper for skb with wmem-compatible destructors
+    there are 2 ways to use it:
+     - before pskb_expand_head(), to create skb clones
+     - after successfull pskb_expand_head() to change owner on extended skb.
+v2: based on patch version from Eric Dumazet,
+    added __pskb_expand_head() function, which can be forced
+    to adjust skb->truesize and sk->sk_wmem_alloc.
+---
+ include/net/sock.h |  1 +
+ net/core/skbuff.c  | 33 +++++++++++++++++++++------------
+ net/core/sock.c    |  8 ++++++++
+ 3 files changed, 30 insertions(+), 12 deletions(-)
 
-Thank you,
-	Vasily Averin
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 95b2577..173d58c 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1695,6 +1695,7 @@ struct sk_buff *sock_wmalloc(struct sock *sk, unsigned long size, int force,
+ 			     gfp_t priority);
+ void __sock_wfree(struct sk_buff *skb);
+ void sock_wfree(struct sk_buff *skb);
++bool is_skb_wmem(const struct sk_buff *skb);
+ struct sk_buff *sock_omalloc(struct sock *sk, unsigned long size,
+ 			     gfp_t priority);
+ void skb_orphan_partial(struct sk_buff *skb);
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index f931176..4b49f63 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1804,30 +1804,39 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
+ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
+ {
+ 	int delta = headroom - skb_headroom(skb);
++	int osize = skb_end_offset(skb);
++	struct sock *sk = skb->sk;
+ 
+ 	if (WARN_ONCE(delta <= 0,
+ 		      "%s is expecting an increase in the headroom", __func__))
+ 		return skb;
+ 
++	delta = SKB_DATA_ALIGN(delta);
+ 	/* pskb_expand_head() might crash, if skb is shared */
+-	if (skb_shared(skb)) {
++	if (skb_shared(skb) || !is_skb_wmem(skb)) {
+ 		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
+ 
+-		if (likely(nskb)) {
+-			if (skb->sk)
+-				skb_set_owner_w(nskb, skb->sk);
+-			consume_skb(skb);
+-		} else {
+-			kfree_skb(skb);
+-		}
++		if (unlikely(!nskb))
++			goto fail;
++
++		if (sk)
++			skb_set_owner_w(nskb, sk);
++		consume_skb(skb);
+ 		skb = nskb;
+ 	}
+-	if (skb &&
+-	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
+-		kfree_skb(skb);
+-		skb = NULL;
++	if (pskb_expand_head(skb, delta, 0, GFP_ATOMIC))
++		goto fail;
++
++	if (sk) {
++		delta = skb_end_offset(skb) - osize;
++		refcount_add(delta, &sk->sk_wmem_alloc);
++		skb->truesize += delta;
+ 	}
+ 	return skb;
++
++fail:
++	kfree_skb(skb);
++	return NULL;
+ }
+ EXPORT_SYMBOL(skb_expand_head);
+ 
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 950f1e7..6cbda43 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2227,6 +2227,14 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
+ }
+ EXPORT_SYMBOL(skb_set_owner_w);
+ 
++bool is_skb_wmem(const struct sk_buff *skb)
++{
++	return skb->destructor == sock_wfree ||
++	       skb->destructor == __sock_wfree ||
++	       (IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree);
++}
++EXPORT_SYMBOL(is_skb_wmem);
++
+ static bool can_skb_orphan_partial(const struct sk_buff *skb)
+ {
+ #ifdef CONFIG_TLS_DEVICE
+-- 
+1.8.3.1
+
