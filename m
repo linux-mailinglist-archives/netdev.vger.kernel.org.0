@@ -2,347 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 634A3412BC9
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:36:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCA16412BCA
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:36:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349991AbhIUChn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 22:37:43 -0400
+        id S1350042AbhIUChp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 22:37:45 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241021AbhIUCBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:01:16 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B84C02FF52;
-        Mon, 20 Sep 2021 11:09:16 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id t8so25221027wri.1;
-        Mon, 20 Sep 2021 11:09:16 -0700 (PDT)
+        with ESMTP id S241387AbhIUCBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:01:48 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475A5C12CD86
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 11:10:42 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id v19so12589914pjh.2
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 11:10:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=t94BhcQCEr5+Zru01oWCvt2gb3JR6v0ba0MU26fnZcM=;
-        b=DpkIdUw0YLbE60FB2DNkmwWI51/4a4e0bT8trDK3n3uJ7fOLbH2PXLNOMnXbzZbzXx
-         NmZSCqv64nAE2vBkT8gW0IXfI1dqOkON0l/LqNiypqhiQTwuWCXONRIw4q0oaZOfQiCW
-         p2lrEPGwq13CSmRMgdPtMvW25YYHEyP3CMHLV6zAOvVha67zZxNSOQWqJdygne2Yatld
-         qtKj6z6mFeX9411GpEWgaeEqJhVXSTqUOJF78yCRr09EVVOjFmCgsKa4d7cl6cmeEvTH
-         5za5cSwxnL/lNfPixGX1dGdLnmN8Q921XLX68Koxb6K2qrRCP729GL44TVMzOzEp7U5U
-         O8WQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fgqtNmpatBgFR85fXASaK6kxvl1UIOwk0ijHQjy2Eug=;
+        b=mc1BOAN/7+iM1YRLwWrRJMGeFucz/c5yNembX6Z8pYYLcV4IzGMVCY9CU1thgAVbxn
+         WsAjLV0fyO6TJciesyXa3VsP9Gs78uN4s2GJKQy7pHJ0pGZotP7uaABbUVeAkPGjd9hY
+         lOOW92m0dDQxkbru2t7vX7GVzi8HD3iflE0wLiYwHd6qzSmoWIe50NxtNjQuHVf1LfnO
+         m+v1ymnK9RFQmEJmHYYYO6PiZuXU1V34TvzHA43vsdphVhKZIOKueCG16dZOSGdh442L
+         MIWbe2S0bnHObvKi15Ih0dSFSgs1T3mDNonhBQO8qc+Aa6xM8tRlu7zeQdgZGQVB9VKF
+         skUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=t94BhcQCEr5+Zru01oWCvt2gb3JR6v0ba0MU26fnZcM=;
-        b=cfT4MgmpQYWv/smM2QaMmq1/KWniqrouKQLhNpmwgvLv8WYuGq7IXWMaSKWKWq5Dmm
-         FfGm86BpJZ6ygUJOynK0Z3SuvIDtbUiypfg69hnHDRlHqLZdp5lZLLi7UBkPlMSvTmOU
-         ssaD3g4ZbGx5coilGSzt+IeYY5BWUjapBHcXbTKUfVYHkb57Iq0xdy1sDw9L3Pw0lWhV
-         5unude8OjwJeSeDRvd66qKDosIx5xW5SpzK36sZ5GZq6kLREI9nY0sVayQ/9g9Sfw1c7
-         crCTvx2G37C3klvVy22a/ehgg89FMNdnqQ/Ytl3H7xPwRpEt+I1GPPyUl5Smkzih0fvH
-         ELAA==
-X-Gm-Message-State: AOAM530QwNjWM/3pvDMOri9ONCbhDs6WPvv66WD34IgiWmSrOfVGx7dk
-        2gGWWDnOTSI0Ovep221q7wc=
-X-Google-Smtp-Source: ABdhPJynredCh7mGqIuOol4IHH/74ST6tECEuvraaBmqd42g9xmexXNMWl4oI0EuI8uuOOSAKk2hPg==
-X-Received: by 2002:a5d:4cc6:: with SMTP id c6mr30059663wrt.108.1632161355359;
-        Mon, 20 Sep 2021 11:09:15 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-67-254.ip85.fastwebnet.it. [93.42.67.254])
-        by smtp.googlemail.com with ESMTPSA id w14sm16618646wro.8.2021.09.20.11.09.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Sep 2021 11:09:15 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next RFC PATCH 2/2] Documentation: devicetree: net: dsa: qca8k: document configurable led support
-Date:   Mon, 20 Sep 2021 20:08:51 +0200
-Message-Id: <20210920180851.30762-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210920180851.30762-1-ansuelsmth@gmail.com>
-References: <20210920180851.30762-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fgqtNmpatBgFR85fXASaK6kxvl1UIOwk0ijHQjy2Eug=;
+        b=jwXiNj2pCowyIB6SWjkIbo2u286pTADcGTZ+3wGUzWR6ytT7iuVzVaYsJKEi8sqk0r
+         CP4QMw2yBhXWLvNjo9Qpu1fS3pbrlGr/NnbQEI9FpDxDObNKk1ImOiIxloMQXtQHkH5A
+         bgUbiUY9ETePizkfqCYSrANUNa0EiFqHQGUCsVuq4IqXySvpa1lONXHcq30N+17ST9A0
+         PkSlEbgVZLC/E8m5RxtbmizOr0WFTl7pqP2j7i0A1zBSIuuemrbcjCadKFJWEWqPoszg
+         R/QW2l/cHrGmSLii9f/yR1/a0N9CDwxBb7IYdx+o0g3bayVBs6IHMX2OgISBD4Vs671Z
+         7Ayg==
+X-Gm-Message-State: AOAM53162DXTKLs3Mq6ihsntEDkEFrCnvzpeZoYl8HHBtrSR+MhC1QZz
+        Ck2d7wOJ6YNezKb445k2p8o=
+X-Google-Smtp-Source: ABdhPJxVHtYD8arD00VSDY3MnDWd8zC0J8U3SlvbSuK19dFg8fMlyRM3rWbyTCSQckDUorYp4gKVnA==
+X-Received: by 2002:a17:90b:4d07:: with SMTP id mw7mr365017pjb.66.1632161441674;
+        Mon, 20 Sep 2021 11:10:41 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id q15sm15434500pfl.18.2021.09.20.11.10.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Sep 2021 11:10:41 -0700 (PDT)
+Subject: Re: Race between "Generic PHY" and "bcm53xx" drivers after
+ -EPROBE_DEFER
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+References: <3639116e-9292-03ca-b9d9-d741118a4541@gmail.com>
+ <4648f65c-4d38-dbe9-a902-783e6dfb9cbd@gmail.com>
+ <20210920170348.o7u66gpwnh7bczu2@skbuf>
+ <11994990-11f2-8701-f0a4-25cb35393595@gmail.com>
+ <20210920174022.uc42krhj2on3afud@skbuf>
+ <25e4d46a-5aaf-1d69-162c-2746559b4487@gmail.com>
+ <20210920180240.tyi6v3e647rx7dkm@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <e010a9da-417d-e4b2-0f2f-b35f92b0812f@gmail.com>
+Date:   Mon, 20 Sep 2021 11:10:39 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210920180240.tyi6v3e647rx7dkm@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document binding for configurable led. Ports led can now be set on/off
-and the blink/on rules can be configured using the "qca,led_rules"
-binding. Refer to the Documentation on how to configure them.
+On 9/20/21 11:02 AM, Vladimir Oltean wrote:
+> On Mon, Sep 20, 2021 at 10:46:31AM -0700, Florian Fainelli wrote:
+>> On 9/20/21 10:40 AM, Vladimir Oltean wrote:
+>>> On Mon, Sep 20, 2021 at 10:14:48AM -0700, Florian Fainelli wrote:
+>>>> The SPROM is a piece of NVRAM that is intended to describe in a set of
+>>>> key/value pairs various platform configuration details. There can be up
+>>>> to 3 GMACs on the SoC which you can connect in a variety of ways towards
+>>>> internal/external PHYs or internal/external Ethernet switches. The SPROM
+>>>> is used to describe whether you connect to a regular PHY (not at PHY
+>>>> address 30 decimal, so not the Broadcom pseudo-PHY) or an Ethernet
+>>>> switch pseudo-PHY via MDIO.
+>>>>
+>>>> What appears to be missing here is that we should not be executing this
+>>>> block of code for phyaddr == BGMAC_PHY_NOREGS because we will not have a
+>>>> PHY device proper to begin with and this collides with registering the
+>>>> b53_mdio driver.
+>>>
+>>> Who provisions the SPROM exactly? It still seems pretty broken to me
+>>> that one of the GMACs has a bgmac->phyaddr pointing to a switch.
+>>
+>> The OEMs are typically responsible for that. It is not "broken" per-se,
+>> and you will find additional key/value pairs that e.g.: describe the
+>> initial switch configuration something like:
+>>
+>> vlan0ports="0 1 2 3 5t"
+>> vlan1ports="4 5t"
+>>
+>> So this has been used as a dumping ground of "how I want the device to
+>> be configured eventually". 0x1e/30 is sort of "universally" within
+>> Broadcom's own universe that this designates an Ethernet switch
+>> pseudo-PHY MDIO bus address, and we all know that nobody in their right
+>> mind would design a Wi-Fi router with a discrete Ethernet switch that is
+>> not from Broadcom, right?
+>>
+> 
+> But even so, what's a "pseudo PHY" exactly? I think that's at the bottom
+> of this issue. In the Linux device model, a device has a single driver.
+> In this case, the same MDIO device either has a switch driver, if you
+> accept it's a switch, or a PHY driver, if you accept it's a PHY.
+> I said it's "broken" because the expectation seems to be that it's a switch,
+> but it looks like it's treated otherwise. Simply put, the same device
+> can't be both a switch and a PHY.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../devicetree/bindings/net/dsa/qca8k.txt     | 249 ++++++++++++++++++
- 1 file changed, 249 insertions(+)
+A pseudo-PHY is a device that can snoop and respond to MDIO bus
+requests. I understand it cannot be both, just explaining to you how the
+people at Broadcom have been seeing the world from their perspective.
+Anything that is found at MDIO address 0x1e/30 is considered a MDIO
+attached switch, that's all.
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-index 8c73f67c43ca..233f02cd9e98 100644
---- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-@@ -29,6 +29,45 @@ the mdio MASTER is used as communication.
- Don't use mixed external and internal mdio-bus configurations, as this is
- not supported by the hardware.
- 
-+A leds subnode can be declared to configure leds port behaviour.
-+The leds subnode must declare the port with the mdio reg that will have the
-+attached led. Each port can have a max of 3 different leds. (Refer to example)
-+A led can have 4 different settings:
-+- Always off
-+- Always on
-+- Blink at 4hz
-+- Hw_mode: This special mode follow control_rule rules and blink based on switch
-+event.
-+A sysfs entry for control_rule and hw_mode is provided for each led.
-+Control rule for phy0-3 are shared and refer to the same reg. That means that
-+phy0-3 will blink based on the same rules. Phy4 have its dedicated control_rules.
-+
-+Each led can have the following binding:
-+The binding "default-state" can be declared to set them off by default or to
-+follow leds control_rule using the keep value. By default hw_mode is set as it's
-+the default switch setting.
-+The binding "qca,led_rules" can be used to declare the control_rule set on
-+switch setup. The following rules can be applied decalred in an array of string
-+in the dts:
-+- tx-blink: Led blink on tx traffic for the port
-+- rx-blink: Led blink on rx traffic for the port
-+- collision-blink: Led blink when a collision is detected for the port
-+- link-10M: Led is turned on when a link of 10M is detected for the port
-+- link-100M: Led is turned on when a link of 100M is detected for the port
-+- link-1000M: Led is turned on when a link of 1000M is detected for the port
-+- half-duplex: Led is turned on when a half-duplex link is detected for the port
-+- full-duplex: Led is turned on when a full-duplex link is detected for the port
-+- linkup-over: Led blinks only when the linkup led is on, ignore blink otherwise
-+- power-on-reset: Reset led on switch reset
-+- One of
-+	- blink-2hz: Led blinks at 2hz frequency
-+	- blink-4hz: Led blinks at 4hz frequency
-+	- blink-8hz: Led blinks at 8hz frequency
-+	- blink-auto: Led blinks at 2hz frequency with 10M, 4hz with 100M, 8hz
-+	  with 1000M
-+Due to the phy0-3 limitation, multiple use of 'qca8k_led_rules' will result in
-+the last defined one to be applied.
-+
- The CPU port of this switch is always port 0.
- 
- A CPU port node has the following optional node:
-@@ -213,3 +252,213 @@ for the internal master mdio-bus configuration:
- 			};
- 		};
- 	};
-+
-+for the leds declaration example:
-+
-+#include <dt-bindings/leds/common.h>
-+
-+	&mdio0 {
-+		switch@10 {
-+			compatible = "qca,qca8337";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			reset-gpios = <&gpio 42 GPIO_ACTIVE_LOW>;
-+			reg = <0x10>;
-+
-+			ports {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				port@0 {
-+					reg = <0>;
-+					label = "cpu";
-+					ethernet = <&gmac1>;
-+					phy-mode = "rgmii";
-+					fixed-link {
-+						speed = 1000;
-+						full-duplex;
-+					};
-+				};
-+
-+				port@1 {
-+					reg = <1>;
-+					label = "lan1";
-+					phy-mode = "internal";
-+					phy-handle = <&phy_port1>;
-+				};
-+
-+				port@2 {
-+					reg = <2>;
-+					label = "lan2";
-+					phy-mode = "internal";
-+					phy-handle = <&phy_port2>;
-+				};
-+
-+				port@3 {
-+					reg = <3>;
-+					label = "lan3";
-+					phy-mode = "internal";
-+					phy-handle = <&phy_port3>;
-+				};
-+
-+				port@4 {
-+					reg = <4>;
-+					label = "lan4";
-+					phy-mode = "internal";
-+					phy-handle = <&phy_port4>;
-+				};
-+
-+				port@5 {
-+					reg = <5>;
-+					label = "wan";
-+					phy-mode = "internal";
-+					phy-handle = <&phy_port5>;
-+				};
-+			};
-+
-+			mdio {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				phy_port1: phy@0 {
-+					reg = <0>;
-+				};
-+
-+				phy_port2: phy@1 {
-+					reg = <1>;
-+				};
-+
-+				phy_port3: phy@2 {
-+					reg = <2>;
-+				};
-+
-+				phy_port4: phy@3 {
-+					reg = <3>;
-+				};
-+
-+				phy_port5: phy@4 {
-+					reg = <4>;
-+				};
-+			};
-+
-+			leds {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				phy@0 {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+
-+					reg = <0>;
-+
-+					led@0 {
-+						reg = <0>;
-+						color = <LED_COLOR_ID_GREEN>;
-+						default-state = "keep";
-+						function = LED_FUNCTION_LAN;
-+						function-enumerator = <1>;
-+					};
-+
-+					led@1 {
-+						reg = <1>;
-+						color = <LED_COLOR_ID_AMBER>;
-+						default-state = "keep";
-+						function = LED_FUNCTION_LAN;
-+						function-enumerator = <1>;
-+					};
-+				};
-+
-+				phy@1 {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+
-+					reg = <1>;
-+
-+					led@0 {
-+						reg = <0>;
-+						color = <LED_COLOR_ID_GREEN>;
-+						default-state = "keep";
-+						function = LED_FUNCTION_LAN;
-+						function-enumerator = <2>;
-+					};
-+
-+					led@1 {
-+						reg = <1>;
-+						color = <LED_COLOR_ID_AMBER>;
-+						default-state = "keep";
-+						function = LED_FUNCTION_LAN;
-+						function-enumerator = <2>;
-+					};
-+				};
-+
-+				phy@2 {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+
-+					reg = <2>;
-+
-+					led@0 {
-+						reg = <0>;
-+						color = <LED_COLOR_ID_GREEN>;
-+						default-state = "keep";
-+						function = LED_FUNCTION_LAN;
-+						function-enumerator = <3>;
-+					};
-+
-+					led@1 {
-+						reg = <1>;
-+						color = <LED_COLOR_ID_AMBER>;
-+						default-state = "keep";
-+						function = LED_FUNCTION_LAN;
-+						function-enumerator = <3>;
-+					};
-+				};
-+
-+				phy@3 {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+
-+					reg = <3>;
-+
-+					led@0 {
-+						reg = <0>;
-+						color = <LED_COLOR_ID_GREEN>;
-+						default-state = "keep";
-+						function = LED_FUNCTION_LAN;
-+						function-enumerator = <4>;
-+					};
-+
-+					led@1 {
-+						reg = <1>;
-+						color = <LED_COLOR_ID_AMBER>;
-+						default-state = "keep";
-+						function = LED_FUNCTION_LAN;
-+						function-enumerator = <4>;
-+					};
-+				};
-+
-+				phy@4 {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+
-+					reg = <4>;
-+
-+					led@0 {
-+						reg = <0>;
-+						color = <LED_COLOR_ID_GREEN>;
-+						default-state = "keep";
-+						function = LED_FUNCTION_WAN;
-+						qca,led_rules = "tx-blink", "rx-blink", "link-1000M", "full-duplex", "linkup-over", "blink-8hz";
-+					};
-+
-+					led@1 {
-+						reg = <1>;
-+						color = <LED_COLOR_ID_AMBER>;
-+						default-state = "keep";
-+						function = LED_FUNCTION_WAN;
-+					};
-+				};
-+			};
-+		};
-+	};
-\ No newline at end of file
+> 
+> The issue is really in bcma_phy_connect. That is what force-binds the
+> generic PHY driver. Since the bgmac-bcma driver does not support fixed
+> links, it tries to make do the way it can. This will not work with DSA.
+
+Yes, I understand that.
+
+> 
+>>> Special-casing the Broadcom switch seems not enough, the same thing
+>>> could happen with a Marvell switch or others. How about looking up the
+>>> device tree whether the bgmac->mii_bus' OF node has any child with a
+>>> "reg" of bgmac->phyaddr, and if it does, whether of_mdiobus_child_is_phy
+>>> actually returns true for it?
+>>
+>> We could do that, however I don't know whether this will break the
+>> arch/mips/bcm47xx devices which are still in active use by the OpenWrt
+>> community and for which there is no Device Tree (no technical
+>> limitation, just no motivation since devices are EOL'd), but maybe out
+>> of tree patches can be carried in the OpenWrt tree to revert anything
+>> that upstream came up with.
+> 
+> By OpenWRT do you mean swconfig or actual DSA?
+
+Yes, swconfig in that case with the b53 swconfig driver trying to
+register as a PHY device.
+
+> 
+> I think Rafal is using device tree, so the check can be conditionally
+> made based on the presence of an OF node corresponding to the MDIO bus.
+> That would still work, unless the OpenWRT people want to use DSA without
+> device tree too...
+> 
+
+All I am saying is that there is not really any need to come up with a
+Device Tree-based solution since you can inspect the mdio_device and
+find out whether it is an Ethernet PHY or a MDIO device proper, and that
+ought to cover all cases that I can think of.
 -- 
-2.32.0
-
+Florian
