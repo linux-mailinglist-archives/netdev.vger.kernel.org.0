@@ -2,138 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02789411452
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:24:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D79A41145A
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:26:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237874AbhITMZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 08:25:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51020 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235204AbhITMZc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 08:25:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0EC6A60F58;
-        Mon, 20 Sep 2021 12:24:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632140645;
-        bh=QAFA1wMFi/Pt4kxfmYpb2lbYqcOVrXCfBWOndEjPAec=;
-        h=From:To:Cc:Subject:Date:From;
-        b=KNmdjrKewHJ7XmsH64GBGGbmuCbR9yFQsMo5kVFKh7gos0w4bh4CnC4ceeFYThhy6
-         p7QXI1HcpmIhmILsF51Km2dgWxLHy88eZHnqxWzyLMSk2/iGj+Vj4Gfxvs+zQLwLMa
-         ssgWJuICSY0zJVQsn3rYmcm+I1tMgzlx1G8ez1EKTWN1xd/XgcFK+2IKqauengYrq6
-         POlT0HCl9zqiCfZyq8zCmLDvHMU9EWhRBIcN4O8nAMAGqpph3cgsDNKuthDjdO0Rqv
-         Z5wixoL3kGZarkZMeyxtWFJmKDX8V4HB+Hlb46Amhp9E/FGtNjeK9rHglHbYGHiSea
-         ZJREI+jT7XGDA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S237977AbhITM2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 08:28:08 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:55066 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237874AbhITM2H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 08:28:07 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 18KCQI7q054664;
+        Mon, 20 Sep 2021 07:26:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1632140778;
+        bh=uoLqJWA/mbkEh22Zl2N2FiNXqHqq0zWF36kfTH7wEtE=;
+        h=From:To:CC:Subject:Date;
+        b=VpE5AdCk0JSdEevVu+bslIysvGd3sQgBP4WegOoreDkliBgwM7XV9cNDTWFEdWIHx
+         uvLWqfZEKNJ2s6yVNPU81g2IIqKVzwKCB8jLc43xNmhiVfQ69s4it/aZe7ApQubPqt
+         x2tvk802WtLR1aFjpUy3yMXeRTRnsBceG+HCLvCc=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 18KCQIed003862
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 20 Sep 2021 07:26:18 -0500
+Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 20
+ Sep 2021 07:26:17 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 20 Sep 2021 07:26:18 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 18KCQDhr003602;
+        Mon, 20 Sep 2021 07:26:14 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     Lokesh Vutla <lokeshvutla@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Bob Copeland <me@bobcopeland.com>,
-        "John W. Linville" <linville@tuxdriver.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] [v2] ath5k: fix building with LEDS=m
-Date:   Mon, 20 Sep 2021 14:23:44 +0200
-Message-Id: <20210920122359.353810-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Matt Kline <matt@bitbashing.io>, <linux-can@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] can: m_can: m_can_platform: Fix iomap_read_fifo() and iomap_write_fifo()
+Date:   Mon, 20 Sep 2021 17:56:10 +0530
+Message-ID: <20210920122610.570-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+The read an writes from the fifo are from a buffer with various fields and
+data at predefined offsets. So, they reads and writes should not be done to
+the same address(or port) in case of val_count greater than 1. Therefore,
+fix this by using iowrite32/ioread32 instead of ioread32_rep/iowrite32_rep.
 
-Randconfig builds still show a failure for the ath5k driver,
-similar to the one that was fixed for ath9k earlier:
+Also, the write into fifo must be performed with an offset from the message
+ram base address. Therefore, fix the base address to mram_base.
 
-WARNING: unmet direct dependencies detected for MAC80211_LEDS
-  Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
-  Selected by [m]:
-  - ATH5K [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_ATH [=y] && (PCI [=y] || ATH25) && MAC80211 [=y]
-net/mac80211/led.c: In function 'ieee80211_alloc_led_names':
-net/mac80211/led.c:34:22: error: 'struct led_trigger' has no member named 'name'
-   34 |         local->rx_led.name = kasprintf(GFP_KERNEL, "%srx",
-      |                      ^
-
-Copying the same logic from my ath9k patch makes this one work
-as well, stubbing out the calls to the LED subsystem.
-
-Fixes: b64acb28da83 ("ath9k: fix build error with LEDS_CLASS=m")
-Fixes: 72cdab808714 ("ath9k: Do not select MAC80211_LEDS by default")
-Fixes: 3a078876caee ("ath5k: convert LED code to use mac80211 triggers")
-Link: https://lore.kernel.org/all/20210722105501.1000781-1-arnd@kernel.org/
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: e39381770ec9 ("can: m_can: Disable IRQs on FIFO bus errors")
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 ---
-Changes in v2:
-- avoid link failure when NEW_LEDS is disabled
----
- drivers/net/wireless/ath/ath5k/Kconfig |  4 +---
- drivers/net/wireless/ath/ath5k/led.c   | 10 ++++++----
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/can/m_can/m_can_platform.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath5k/Kconfig b/drivers/net/wireless/ath/ath5k/Kconfig
-index f35cd8de228e..6914b37bb0fb 100644
---- a/drivers/net/wireless/ath/ath5k/Kconfig
-+++ b/drivers/net/wireless/ath/ath5k/Kconfig
-@@ -3,9 +3,7 @@ config ATH5K
- 	tristate "Atheros 5xxx wireless cards support"
- 	depends on (PCI || ATH25) && MAC80211
- 	select ATH_COMMON
--	select MAC80211_LEDS
--	select LEDS_CLASS
--	select NEW_LEDS
-+	select MAC80211_LEDS if LEDS_CLASS=y || LEDS_CLASS=MAC80211
- 	select ATH5K_AHB if ATH25
- 	select ATH5K_PCI if !ATH25
- 	help
-diff --git a/drivers/net/wireless/ath/ath5k/led.c b/drivers/net/wireless/ath/ath5k/led.c
-index 6a2a16856763..33e9928af363 100644
---- a/drivers/net/wireless/ath/ath5k/led.c
-+++ b/drivers/net/wireless/ath/ath5k/led.c
-@@ -89,7 +89,8 @@ static const struct pci_device_id ath5k_led_devices[] = {
- 
- void ath5k_led_enable(struct ath5k_hw *ah)
+diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
+index 308d4f2fff00..eee47bad0592 100644
+--- a/drivers/net/can/m_can/m_can_platform.c
++++ b/drivers/net/can/m_can/m_can_platform.c
+@@ -32,8 +32,13 @@ static u32 iomap_read_reg(struct m_can_classdev *cdev, int reg)
+ static int iomap_read_fifo(struct m_can_classdev *cdev, int offset, void *val, size_t val_count)
  {
--	if (test_bit(ATH_STAT_LEDSOFT, ah->status)) {
-+	if (IS_ENABLED(CONFIG_MAC80211_LEDS) &&
-+	    test_bit(ATH_STAT_LEDSOFT, ah->status)) {
- 		ath5k_hw_set_gpio_output(ah, ah->led_pin);
- 		ath5k_led_off(ah);
- 	}
-@@ -104,7 +105,8 @@ static void ath5k_led_on(struct ath5k_hw *ah)
+ 	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
++	void __iomem *src = priv->mram_base + offset;
  
- void ath5k_led_off(struct ath5k_hw *ah)
- {
--	if (!test_bit(ATH_STAT_LEDSOFT, ah->status))
-+	if (!IS_ENABLED(CONFIG_MAC80211_LEDS) ||
-+	    !test_bit(ATH_STAT_LEDSOFT, ah->status))
- 		return;
- 	ath5k_hw_set_gpio(ah, ah->led_pin, !ah->led_on);
+-	ioread32_rep(priv->mram_base + offset, val, val_count);
++	while (val_count--) {
++		*(unsigned int *)val = ioread32(src);
++		val += 4;
++		src += 4;
++	}
+ 
+ 	return 0;
  }
-@@ -146,7 +148,7 @@ ath5k_register_led(struct ath5k_hw *ah, struct ath5k_led *led,
- static void
- ath5k_unregister_led(struct ath5k_led *led)
+@@ -51,8 +56,13 @@ static int iomap_write_fifo(struct m_can_classdev *cdev, int offset,
+ 			    const void *val, size_t val_count)
  {
--	if (!led->ah)
-+	if (!IS_ENABLED(CONFIG_MAC80211_LEDS) || !led->ah)
- 		return;
- 	led_classdev_unregister(&led->led_dev);
- 	ath5k_led_off(led->ah);
-@@ -169,7 +171,7 @@ int ath5k_init_leds(struct ath5k_hw *ah)
- 	char name[ATH5K_LED_MAX_NAME_LEN + 1];
- 	const struct pci_device_id *match;
+ 	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
++	void __iomem *dst = priv->mram_base + offset;
  
--	if (!ah->pdev)
-+	if (!IS_ENABLED(CONFIG_MAC80211_LEDS) || !ah->pdev)
- 		return 0;
+-	iowrite32_rep(priv->base + offset, val, val_count);
++	while (val_count--) {
++		iowrite32(*(unsigned int *)val, dst);
++		val += 4;
++		dst += 4;
++	}
  
- #ifdef CONFIG_ATH5K_AHB
+ 	return 0;
+ }
 -- 
-2.29.2
+2.17.1
 
