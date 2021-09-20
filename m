@@ -2,168 +2,360 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F7DC412BCC
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 849C0412BCD
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:36:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237708AbhIUCht (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 22:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36318 "EHLO
+        id S238634AbhIUChx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 22:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235400AbhIUCFA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:05:00 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DF8C08EC73
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 11:17:30 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id t6so64485913edi.9
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 11:17:30 -0700 (PDT)
+        with ESMTP id S243867AbhIUCH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:07:29 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D09CC149D2F;
+        Mon, 20 Sep 2021 11:21:32 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id t18so32377907wrb.0;
+        Mon, 20 Sep 2021 11:21:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3fI+/GA/BEXVOskXPdNJoDL+dl+bl+KjTxdfOujq8v0=;
-        b=OGCZBH20h6DDVEm1fdQcp+wAcVdfLj2kx0PagPYTHgqeeNvsliHbCPvseMT5TQWGaw
-         GiqgkfCooLpAlufvjkDNoJfQCX/FNyIQecgj6cvtXjfkq39hNuipVBgutgBxnTnFtQ5n
-         QnTCkk0Y6mZhiugWtCQYLIFkn7A9FjKbiISivczkDWWVHb2mGU2u83gbNsPD4xRzDWrn
-         1A/lOW6O0GtLalSbg4300UAucWJdM85TXYbvsQ+TYSUSbxgRURFvCM3aCbT2WH+doE/e
-         M7KS35ChnjPNZ2YRD0R0ZQMsQMyydu6uT7jB3DB5DLOoUhssEL0SXBa+VHvQ24DLbZT/
-         1bMA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=in6nB46XnLRlHzi1EwnutXYu/6O5iCcpBRbZqrM+JCg=;
+        b=X08l0686Cw6k7npd7fGamdwfwEYkltVxl/C2XA+FWeo7ovdgHkfO3K0ChX6dnIRrrS
+         AuTssieyFN3JQhTXuPy2vnG63+42inVYmXiCAOhWzc3E1EP7Qlyzc2PtR54Naa6vW7fZ
+         BclKByXM/H4cLJF5aTkd5z4pjPwyr2JrNZazoxUNxHjGyE8Mtcp+BVFq4voEPf2FUzzi
+         hsp6tFm/OaMvMl2DTFJoZnIoSw71wonqX4ziGYMwH2xNRKQ9OXFvYmuxW4BbSRQJu/zU
+         98Q0MBBgUrdAcNyqtVY/UNkW/s3jkDLV48bUbMrENe0pO+ldv3GqrB5XWzy51Dw+WjPl
+         Er4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3fI+/GA/BEXVOskXPdNJoDL+dl+bl+KjTxdfOujq8v0=;
-        b=FcxM74zVtzDhhddB9IWsUSqcferdQmXOdydE8z7RxYUOUH4i1d9dgOn6TWeAxPNe0p
-         fyuldoAIk9/IOK3sp6xEf4vSO2gf24jhDXFh5TlbO7J0qzPJwAjAfjVqQcqWwPqfvmuQ
-         6KCkBH2hYqe+Xj3Fm6JgeH3ri6EGPTzNU0byjKddjOWePIO2S1GwqKf1LzdCJdrXwo5I
-         6vF4IMgW6b6JsT5mf1UDW/HsKde1zNMBAzlWN1NuGDGu+bZFyMxIUPMsyj32lGLkg/xO
-         EhvJhbhsMevDYPLz0J3tvdbVoL3vdvis9MImtg+PK+gVJ7mfBeQSJt2HPmfVsl9T4SpO
-         6pXQ==
-X-Gm-Message-State: AOAM530Fsh9KOij9qoihNB8R3/6EXJVH1oaNnVdOuKjFEkTBSDeTL2Qs
-        fWmF566/MsACx6xaHgz3B4I=
-X-Google-Smtp-Source: ABdhPJzsU4omKtPJ2ma+v6WyzOonbU1tO1bEHR6xi4vCkTeHLEGWUPcospCG5ZeZz2ceDi7MEV3yiA==
-X-Received: by 2002:a05:6402:358a:: with SMTP id y10mr29877426edc.238.1632161849149;
-        Mon, 20 Sep 2021 11:17:29 -0700 (PDT)
-Received: from skbuf ([82.78.148.104])
-        by smtp.gmail.com with ESMTPSA id n18sm6432211ejg.36.2021.09.20.11.17.28
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=in6nB46XnLRlHzi1EwnutXYu/6O5iCcpBRbZqrM+JCg=;
+        b=4MnnAIFnsL+5ynZoFXLnwuu7KCpUdNJffiOcOV25gAwItLstesXsrsggCiU4QK3lCU
+         RujosFOznMytHAG+G7xIn/C3nXtOBuWThG841pMKzjlMvObegRaKXBap39zQQxeDEGZ3
+         M8f68d/LYmGPB/Y75AIv9GKNSi2S4p29lpeOsiNCNNavlqKDyIpzLcOwEOqeJ5x2BsK9
+         VrV56f2OVg6oJc7rtnvR9DubAP5ROkUKrMLsPQtyZe8izpxhgZVJ49nWnnXNDE9nP5ex
+         6k2YSPO1S7F/ah0HYLJEcMyEdFyeAo+fpVlnaRK9Ysj79wazCBUEClLn4V0loQhVjOTH
+         oTqA==
+X-Gm-Message-State: AOAM530whrDVVW9jPVqH30N6B3fQLm6VOti8JhczcYzNK7cqaN18hqRe
+        PS+7HH7VxM/cKbY2FIkQrjEw29QusDs=
+X-Google-Smtp-Source: ABdhPJwE5ccPxdDhwBVgPEWvJC/WptXGN8tkndZFPvr2BLM9XCz10YbME9ruAU4Nscc4cHmhZDuy7g==
+X-Received: by 2002:a5d:58e9:: with SMTP id f9mr30663080wrd.325.1632162090632;
+        Mon, 20 Sep 2021 11:21:30 -0700 (PDT)
+Received: from ubuntu.localdomain ([213.226.141.115])
+        by smtp.googlemail.com with ESMTPSA id d5sm17375883wra.38.2021.09.20.11.21.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Sep 2021 11:17:28 -0700 (PDT)
-Date:   Mon, 20 Sep 2021 21:17:27 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: Re: Race between "Generic PHY" and "bcm53xx" drivers after
- -EPROBE_DEFER
-Message-ID: <20210920181727.al66xrvjmgqwyuz2@skbuf>
-References: <3639116e-9292-03ca-b9d9-d741118a4541@gmail.com>
- <4648f65c-4d38-dbe9-a902-783e6dfb9cbd@gmail.com>
- <20210920170348.o7u66gpwnh7bczu2@skbuf>
- <11994990-11f2-8701-f0a4-25cb35393595@gmail.com>
- <20210920174022.uc42krhj2on3afud@skbuf>
- <25e4d46a-5aaf-1d69-162c-2746559b4487@gmail.com>
- <20210920180240.tyi6v3e647rx7dkm@skbuf>
- <e010a9da-417d-e4b2-0f2f-b35f92b0812f@gmail.com>
+        Mon, 20 Sep 2021 11:21:30 -0700 (PDT)
+From:   Toms Atteka <cpp.code.lv@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org,
+        Toms Atteka <cpp.code.lv@gmail.com>
+Subject: [PATCH net-next v5] net: openvswitch: IPv6: Add IPv6 extension header support
+Date:   Mon, 20 Sep 2021 11:20:38 -0700
+Message-Id: <20210920182038.1510501-1-cpp.code.lv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e010a9da-417d-e4b2-0f2f-b35f92b0812f@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 20, 2021 at 11:10:39AM -0700, Florian Fainelli wrote:
-> On 9/20/21 11:02 AM, Vladimir Oltean wrote:
-> > On Mon, Sep 20, 2021 at 10:46:31AM -0700, Florian Fainelli wrote:
-> >> On 9/20/21 10:40 AM, Vladimir Oltean wrote:
-> >>> On Mon, Sep 20, 2021 at 10:14:48AM -0700, Florian Fainelli wrote:
-> >>>> The SPROM is a piece of NVRAM that is intended to describe in a set of
-> >>>> key/value pairs various platform configuration details. There can be up
-> >>>> to 3 GMACs on the SoC which you can connect in a variety of ways towards
-> >>>> internal/external PHYs or internal/external Ethernet switches. The SPROM
-> >>>> is used to describe whether you connect to a regular PHY (not at PHY
-> >>>> address 30 decimal, so not the Broadcom pseudo-PHY) or an Ethernet
-> >>>> switch pseudo-PHY via MDIO.
-> >>>>
-> >>>> What appears to be missing here is that we should not be executing this
-> >>>> block of code for phyaddr == BGMAC_PHY_NOREGS because we will not have a
-> >>>> PHY device proper to begin with and this collides with registering the
-> >>>> b53_mdio driver.
-> >>>
-> >>> Who provisions the SPROM exactly? It still seems pretty broken to me
-> >>> that one of the GMACs has a bgmac->phyaddr pointing to a switch.
-> >>
-> >> The OEMs are typically responsible for that. It is not "broken" per-se,
-> >> and you will find additional key/value pairs that e.g.: describe the
-> >> initial switch configuration something like:
-> >>
-> >> vlan0ports="0 1 2 3 5t"
-> >> vlan1ports="4 5t"
-> >>
-> >> So this has been used as a dumping ground of "how I want the device to
-> >> be configured eventually". 0x1e/30 is sort of "universally" within
-> >> Broadcom's own universe that this designates an Ethernet switch
-> >> pseudo-PHY MDIO bus address, and we all know that nobody in their right
-> >> mind would design a Wi-Fi router with a discrete Ethernet switch that is
-> >> not from Broadcom, right?
-> >>
-> > 
-> > But even so, what's a "pseudo PHY" exactly? I think that's at the bottom
-> > of this issue. In the Linux device model, a device has a single driver.
-> > In this case, the same MDIO device either has a switch driver, if you
-> > accept it's a switch, or a PHY driver, if you accept it's a PHY.
-> > I said it's "broken" because the expectation seems to be that it's a switch,
-> > but it looks like it's treated otherwise. Simply put, the same device
-> > can't be both a switch and a PHY.
-> 
-> A pseudo-PHY is a device that can snoop and respond to MDIO bus
-> requests. I understand it cannot be both, just explaining to you how the
-> people at Broadcom have been seeing the world from their perspective.
-> Anything that is found at MDIO address 0x1e/30 is considered a MDIO
-> attached switch, that's all.
-> 
-> > 
-> > The issue is really in bcma_phy_connect. That is what force-binds the
-> > generic PHY driver. Since the bgmac-bcma driver does not support fixed
-> > links, it tries to make do the way it can. This will not work with DSA.
-> 
-> Yes, I understand that.
-> 
-> > 
-> >>> Special-casing the Broadcom switch seems not enough, the same thing
-> >>> could happen with a Marvell switch or others. How about looking up the
-> >>> device tree whether the bgmac->mii_bus' OF node has any child with a
-> >>> "reg" of bgmac->phyaddr, and if it does, whether of_mdiobus_child_is_phy
-> >>> actually returns true for it?
-> >>
-> >> We could do that, however I don't know whether this will break the
-> >> arch/mips/bcm47xx devices which are still in active use by the OpenWrt
-> >> community and for which there is no Device Tree (no technical
-> >> limitation, just no motivation since devices are EOL'd), but maybe out
-> >> of tree patches can be carried in the OpenWrt tree to revert anything
-> >> that upstream came up with.
-> > 
-> > By OpenWRT do you mean swconfig or actual DSA?
-> 
-> Yes, swconfig in that case with the b53 swconfig driver trying to
-> register as a PHY device.
-> 
-> > 
-> > I think Rafal is using device tree, so the check can be conditionally
-> > made based on the presence of an OF node corresponding to the MDIO bus.
-> > That would still work, unless the OpenWRT people want to use DSA without
-> > device tree too...
-> > 
-> 
-> All I am saying is that there is not really any need to come up with a
-> Device Tree-based solution since you can inspect the mdio_device and
-> find out whether it is an Ethernet PHY or a MDIO device proper, and that
-> ought to cover all cases that I can think of.
+This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
+packets can be filtered using ipv6_ext flag.
 
-Okay, but where's the problem? I guess we're on the same page, and
-you're saying that we should not be calling bcma_mdio_mii_register, and
-assigning the result to bgmac->mii_bus, because that makes us call
-bcma_phy_connect instead of bgmac_phy_connect_direct. But based on what
-condition? Simply if bgmac->phyaddr == BGMAC_PHY_NOREGS?
+Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
+---
+ include/uapi/linux/openvswitch.h |  12 +++
+ net/openvswitch/flow.c           | 140 +++++++++++++++++++++++++++++++
+ net/openvswitch/flow.h           |  14 ++++
+ net/openvswitch/flow_netlink.c   |  24 +++++-
+ 4 files changed, 189 insertions(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+index a87b44cd5590..dc6eb5f6399f 100644
+--- a/include/uapi/linux/openvswitch.h
++++ b/include/uapi/linux/openvswitch.h
+@@ -346,6 +346,13 @@ enum ovs_key_attr {
+ #ifdef __KERNEL__
+ 	OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+ #endif
++
++#ifndef __KERNEL__
++	PADDING,  /* Padding so kernel and non kernel field count would match */
++#endif
++
++	OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
++
+ 	__OVS_KEY_ATTR_MAX
+ };
+ 
+@@ -421,6 +428,11 @@ struct ovs_key_ipv6 {
+ 	__u8   ipv6_frag;	/* One of OVS_FRAG_TYPE_*. */
+ };
+ 
++/* separate structure to support backward compatibility with older user space */
++struct ovs_key_ipv6_exthdrs {
++	__u16  hdrs;
++};
++
+ struct ovs_key_tcp {
+ 	__be16 tcp_src;
+ 	__be16 tcp_dst;
+diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+index 9d375e74b607..6c78169867fe 100644
+--- a/net/openvswitch/flow.c
++++ b/net/openvswitch/flow.c
+@@ -239,6 +239,144 @@ static bool icmphdr_ok(struct sk_buff *skb)
+ 				  sizeof(struct icmphdr));
+ }
+ 
++/**
++ * Parses packet and sets IPv6 extension header flags.
++ *
++ * @skb: buffer where extension header data starts in packet
++ * @nh: ipv6 header
++ * @ext_hdrs: flags are stored here
++ *
++ * OFPIEH12_UNREP is set if more than one of a given IPv6 extension header
++ * is unexpectedly encountered. (Two destination options headers may be
++ * expected and would not cause this bit to be set.)
++ *
++ * OFPIEH12_UNSEQ is set if IPv6 extension headers were not in the order
++ * preferred (but not required) by RFC 2460:
++ *
++ * When more than one extension header is used in the same packet, it is
++ * recommended that those headers appear in the following order:
++ *      IPv6 header
++ *      Hop-by-Hop Options header
++ *      Destination Options header
++ *      Routing header
++ *      Fragment header
++ *      Authentication header
++ *      Encapsulating Security Payload header
++ *      Destination Options header
++ *      upper-layer header
++ */
++static void get_ipv6_ext_hdrs(struct sk_buff *skb, struct ipv6hdr *nh,
++			      u16 *ext_hdrs)
++{
++	u8 next_type = nh->nexthdr;
++	unsigned int start = skb_network_offset(skb) + sizeof(struct ipv6hdr);
++	int dest_options_header_count = 0;
++
++	*ext_hdrs = 0;
++
++	while (ipv6_ext_hdr(next_type)) {
++		struct ipv6_opt_hdr _hdr, *hp;
++
++		switch (next_type) {
++		case IPPROTO_NONE:
++			*ext_hdrs |= OFPIEH12_NONEXT;
++			/* stop parsing */
++			return;
++
++		case IPPROTO_ESP:
++			if (*ext_hdrs & OFPIEH12_ESP)
++				*ext_hdrs |= OFPIEH12_UNREP;
++			if ((*ext_hdrs & ~(OFPIEH12_HOP | OFPIEH12_DEST |
++					   OFPIEH12_ROUTER | IPPROTO_FRAGMENT |
++					   OFPIEH12_AUTH | OFPIEH12_UNREP)) ||
++			    dest_options_header_count >= 2) {
++				*ext_hdrs |= OFPIEH12_UNSEQ;
++			}
++			*ext_hdrs |= OFPIEH12_ESP;
++			break;
++
++		case IPPROTO_AH:
++			if (*ext_hdrs & OFPIEH12_AUTH)
++				*ext_hdrs |= OFPIEH12_UNREP;
++			if ((*ext_hdrs &
++			     ~(OFPIEH12_HOP | OFPIEH12_DEST | OFPIEH12_ROUTER |
++			       IPPROTO_FRAGMENT | OFPIEH12_UNREP)) ||
++			    dest_options_header_count >= 2) {
++				*ext_hdrs |= OFPIEH12_UNSEQ;
++			}
++			*ext_hdrs |= OFPIEH12_AUTH;
++			break;
++
++		case IPPROTO_DSTOPTS:
++			if (dest_options_header_count == 0) {
++				if (*ext_hdrs &
++				    ~(OFPIEH12_HOP | OFPIEH12_UNREP))
++					*ext_hdrs |= OFPIEH12_UNSEQ;
++				*ext_hdrs |= OFPIEH12_DEST;
++			} else if (dest_options_header_count == 1) {
++				if (*ext_hdrs &
++				    ~(OFPIEH12_HOP | OFPIEH12_DEST |
++				      OFPIEH12_ROUTER | OFPIEH12_FRAG |
++				      OFPIEH12_AUTH | OFPIEH12_ESP |
++				      OFPIEH12_UNREP)) {
++					*ext_hdrs |= OFPIEH12_UNSEQ;
++				}
++			} else {
++				*ext_hdrs |= OFPIEH12_UNREP;
++			}
++			dest_options_header_count++;
++			break;
++
++		case IPPROTO_FRAGMENT:
++			if (*ext_hdrs & OFPIEH12_FRAG)
++				*ext_hdrs |= OFPIEH12_UNREP;
++			if ((*ext_hdrs & ~(OFPIEH12_HOP |
++					   OFPIEH12_DEST |
++					   OFPIEH12_ROUTER |
++					   OFPIEH12_UNREP)) ||
++			    dest_options_header_count >= 2) {
++				*ext_hdrs |= OFPIEH12_UNSEQ;
++			}
++			*ext_hdrs |= OFPIEH12_FRAG;
++			break;
++
++		case IPPROTO_ROUTING:
++			if (*ext_hdrs & OFPIEH12_ROUTER)
++				*ext_hdrs |= OFPIEH12_UNREP;
++			if ((*ext_hdrs & ~(OFPIEH12_HOP |
++					   OFPIEH12_DEST |
++					   OFPIEH12_UNREP)) ||
++			    dest_options_header_count >= 2) {
++				*ext_hdrs |= OFPIEH12_UNSEQ;
++			}
++			*ext_hdrs |= OFPIEH12_ROUTER;
++			break;
++
++		case IPPROTO_HOPOPTS:
++			if (*ext_hdrs & OFPIEH12_HOP)
++				*ext_hdrs |= OFPIEH12_UNREP;
++			/* OFPIEH12_HOP is set to 1 if a hop-by-hop IPv6
++			 * extension header is present as the first
++			 * extension header in the packet.
++			 */
++			if (*ext_hdrs == 0)
++				*ext_hdrs |= OFPIEH12_HOP;
++			else
++				*ext_hdrs |= OFPIEH12_UNSEQ;
++			break;
++
++		default:
++			return;
++		}
++
++		hp = skb_header_pointer(skb, start, sizeof(_hdr), &_hdr);
++		if (!hp)
++			break;
++		next_type = hp->nexthdr;
++		start += ipv6_optlen(hp);
++	};
++}
++
+ static int parse_ipv6hdr(struct sk_buff *skb, struct sw_flow_key *key)
+ {
+ 	unsigned short frag_off;
+@@ -254,6 +392,8 @@ static int parse_ipv6hdr(struct sk_buff *skb, struct sw_flow_key *key)
+ 
+ 	nh = ipv6_hdr(skb);
+ 
++	get_ipv6_ext_hdrs(skb, nh, &key->ipv6.exthdrs);
++
+ 	key->ip.proto = NEXTHDR_NONE;
+ 	key->ip.tos = ipv6_get_dsfield(nh);
+ 	key->ip.ttl = nh->hop_limit;
+diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
+index 758a8c77f736..073ab73ffeaa 100644
+--- a/net/openvswitch/flow.h
++++ b/net/openvswitch/flow.h
+@@ -32,6 +32,19 @@ enum sw_flow_mac_proto {
+ #define SW_FLOW_KEY_INVALID	0x80
+ #define MPLS_LABEL_DEPTH       3
+ 
++/* Bit definitions for IPv6 Extension Header pseudo-field. */
++enum ofp12_ipv6exthdr_flags {
++	OFPIEH12_NONEXT = 1 << 0,   /* "No next header" encountered. */
++	OFPIEH12_ESP    = 1 << 1,   /* Encrypted Sec Payload header present. */
++	OFPIEH12_AUTH   = 1 << 2,   /* Authentication header present. */
++	OFPIEH12_DEST   = 1 << 3,   /* 1 or 2 dest headers present. */
++	OFPIEH12_FRAG   = 1 << 4,   /* Fragment header present. */
++	OFPIEH12_ROUTER = 1 << 5,   /* Router header present. */
++	OFPIEH12_HOP    = 1 << 6,   /* Hop-by-hop header present. */
++	OFPIEH12_UNREP  = 1 << 7,   /* Unexpected repeats encountered. */
++	OFPIEH12_UNSEQ  = 1 << 8    /* Unexpected sequencing encountered. */
++};
++
+ /* Store options at the end of the array if they are less than the
+  * maximum size. This allows us to get the benefits of variable length
+  * matching for small options.
+@@ -121,6 +134,7 @@ struct sw_flow_key {
+ 				struct in6_addr dst;	/* IPv6 destination address. */
+ 			} addr;
+ 			__be32 label;			/* IPv6 flow label. */
++			u16 exthdrs;	/* IPv6 extension header flags */
+ 			union {
+ 				struct {
+ 					struct in6_addr src;
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index 65c2e3458ff5..2fbf324fcfff 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -367,7 +367,8 @@ size_t ovs_key_attr_size(void)
+ 		+ nla_total_size(2)   /* OVS_KEY_ATTR_ETHERTYPE */
+ 		+ nla_total_size(40)  /* OVS_KEY_ATTR_IPV6 */
+ 		+ nla_total_size(2)   /* OVS_KEY_ATTR_ICMPV6 */
+-		+ nla_total_size(28); /* OVS_KEY_ATTR_ND */
++		+ nla_total_size(28)  /* OVS_KEY_ATTR_ND */
++		+ nla_total_size(2);  /* OVS_KEY_ATTR_IPV6_EXTHDRS */
+ }
+ 
+ static const struct ovs_len_tbl ovs_vxlan_ext_key_lens[OVS_VXLAN_EXT_MAX + 1] = {
+@@ -435,6 +436,8 @@ static const struct ovs_len_tbl ovs_key_lens[OVS_KEY_ATTR_MAX + 1] = {
+ 		.len = sizeof(struct ovs_key_ct_tuple_ipv6) },
+ 	[OVS_KEY_ATTR_NSH]       = { .len = OVS_ATTR_NESTED,
+ 				     .next = ovs_nsh_key_attr_lens, },
++	[OVS_KEY_ATTR_IPV6_EXTHDRS] = {
++		.len = sizeof(struct ovs_key_ipv6_exthdrs) },
+ };
+ 
+ static bool check_attr_len(unsigned int attr_len, unsigned int expected_len)
+@@ -1595,6 +1598,17 @@ static int ovs_key_from_nlattrs(struct net *net, struct sw_flow_match *match,
+ 		attrs &= ~(1 << OVS_KEY_ATTR_IPV6);
+ 	}
+ 
++	if (attrs & (1ULL << OVS_KEY_ATTR_IPV6_EXTHDRS)) {
++		const struct ovs_key_ipv6_exthdrs *ipv6_exthdrs_key;
++
++		ipv6_exthdrs_key = nla_data(a[OVS_KEY_ATTR_IPV6_EXTHDRS]);
++
++		SW_FLOW_KEY_PUT(match, ipv6.exthdrs,
++				ipv6_exthdrs_key->hdrs, is_mask);
++
++		attrs &= ~(1ULL << OVS_KEY_ATTR_IPV6_EXTHDRS);
++	}
++
+ 	if (attrs & (1 << OVS_KEY_ATTR_ARP)) {
+ 		const struct ovs_key_arp *arp_key;
+ 
+@@ -2097,6 +2111,7 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
+ 		ipv4_key->ipv4_frag = output->ip.frag;
+ 	} else if (swkey->eth.type == htons(ETH_P_IPV6)) {
+ 		struct ovs_key_ipv6 *ipv6_key;
++		struct ovs_key_ipv6_exthdrs *ipv6_exthdrs_key;
+ 
+ 		nla = nla_reserve(skb, OVS_KEY_ATTR_IPV6, sizeof(*ipv6_key));
+ 		if (!nla)
+@@ -2111,6 +2126,13 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
+ 		ipv6_key->ipv6_tclass = output->ip.tos;
+ 		ipv6_key->ipv6_hlimit = output->ip.ttl;
+ 		ipv6_key->ipv6_frag = output->ip.frag;
++
++		nla = nla_reserve(skb, OVS_KEY_ATTR_IPV6_EXTHDRS,
++				  sizeof(*ipv6_exthdrs_key));
++		if (!nla)
++			goto nla_put_failure;
++		ipv6_exthdrs_key = nla_data(nla);
++		ipv6_exthdrs_key->hdrs = output->ipv6.exthdrs;
+ 	} else if (swkey->eth.type == htons(ETH_P_NSH)) {
+ 		if (nsh_key_to_nlattr(&output->nsh, is_mask, skb))
+ 			goto nla_put_failure;
+-- 
+2.25.1
+
