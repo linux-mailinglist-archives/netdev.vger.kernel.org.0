@@ -2,64 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04BF84113D0
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 13:52:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFEE94113D6
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 13:56:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237306AbhITLyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 07:54:06 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49940 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230037AbhITLyF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 07:54:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=yGE8gpbmE7JEaUwJzRYJcDw6OeJj0fv2qAbkqApHilU=; b=v8ypol8CHDW+nq/kmj6lcE3eP5
-        IqSiooPJCsz5hzR9c7OrsObf4jclmAW9+rLtNr1Vea8nQaCEyfoXMLkfYzfDIRsjpQuNpP8n5IxjF
-        ba4WqRbR9MAKoZxT66EtLc569vI/AV0bbLjbyhC1iIzVgQ92D1F9StzFQOYn+ANSfxPo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mSHqA-007UX0-Ba; Mon, 20 Sep 2021 13:52:06 +0200
-Date:   Mon, 20 Sep 2021 13:52:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        linux@armlinux.org.uk, f.fainelli@gmail.com,
-        alexandre.belloni@bootlin.com, vladimir.oltean@nxp.com,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-pm@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 01/12] net: mdio: mscc-miim: Fix the mdio
- controller
-Message-ID: <YUh15ieAzBiCVeX9@lunn.ch>
-References: <20210920095218.1108151-1-horatiu.vultur@microchip.com>
- <20210920095218.1108151-2-horatiu.vultur@microchip.com>
+        id S237322AbhITL5j convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Sep 2021 07:57:39 -0400
+Received: from mail.shanghaitech.edu.cn ([119.78.254.11]:55823 "EHLO
+        mail.shanghaitech.edu.cn" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237316AbhITL5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 07:57:36 -0400
+Received: from [10.15.44.215] by mail.shanghaitech.edu.cn with MESSAGESEC ESMTP id 480405297546506;
+        Mon, 20 Sep 2021 19:55:59 +0800 (CST)
+Received: from DESKTOP-U066CHB.localdomain (10.15.44.220) by
+ smtp.shanghaitech.edu.cn (10.15.44.215) with Microsoft SMTP Server (TLS) id
+ 14.3.399.0; Mon, 20 Sep 2021 19:55:59 +0800
+From:   Mianhan Liu <liumh1@shanghaitech.edu.cn>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+CC:     Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Mianhan Liu <liumh1@shanghaitech.edu.cn>
+Subject: [PATCH -next] net/ipv4/tcp_minisocks.c: remove superfluous header files from tcp_minisocks.c
+Date:   Mon, 20 Sep 2021 19:55:36 +0800
+Message-ID: <20210920115536.28250-1-liumh1@shanghaitech.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210920095218.1108151-2-horatiu.vultur@microchip.com>
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
+X-Originating-IP: [10.15.44.220]
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 20, 2021 at 11:52:07AM +0200, Horatiu Vultur wrote:
-> According to the documentation the second resource is optional. But the
-> blamed commit ignores that and if the resource is not there it just
-> fails.
-> 
-> This patch reverts that to still allow the second resource to be
-> optional because other SoC have the some MDIO controller and doesn't
-> need to second resource.
-> 
-> Fixes: 672a1c394950 ("net: mdio: mscc-miim: Make use of the helper function devm_platform_ioremap_resource()")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+tcp_minisocks.c hasn't use any macro or function declared in mm.h, module.h,
+slab.h, sysctl.h, workqueue.h, static_key.h and inet_common.h. Thus, these
+files can be removed from tcp_minisocks.c safely without affecting the
+compilation of the net module.
 
-Hi Moratiu
+Signed-off-by: Mianhan Liu <liumh1@shanghaitech.edu.cn>
 
-The script kiddies might come long and 'fix' this again. Maybe
-consider adding devm_platform_ioremap_resource_optional(), following
-the pattern of other _optional() API calls. Otherwise add a comment.
+---
+ net/ipv4/tcp_minisocks.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-    Andrew
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index 0a4f3f161..cf913a66d 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -19,14 +19,7 @@
+  *		Jorge Cwik, <jorge@laser.satlink.net>
+  */
+ 
+-#include <linux/mm.h>
+-#include <linux/module.h>
+-#include <linux/slab.h>
+-#include <linux/sysctl.h>
+-#include <linux/workqueue.h>
+-#include <linux/static_key.h>
+ #include <net/tcp.h>
+-#include <net/inet_common.h>
+ #include <net/xfrm.h>
+ #include <net/busy_poll.h>
+ 
+-- 
+2.25.1
+
+
