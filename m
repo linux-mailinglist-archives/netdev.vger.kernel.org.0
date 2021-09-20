@@ -2,120 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46870412BCF
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D80412BD0
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:36:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbhIUCiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 22:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37552 "EHLO
+        id S1348579AbhIUCiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 22:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245504AbhIUCKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:10:33 -0400
-Received: from wp441.webpack.hosteurope.de (wp441.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:85d2::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45810C14D205;
-        Mon, 20 Sep 2021 11:26:11 -0700 (PDT)
-Received: from [2a03:7846:b79f:101:21c:c4ff:fe1f:fd93] (helo=valdese.nms.ulrich-teichert.org); authenticated
-        by wp441.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1mSNzM-00027j-Q1; Mon, 20 Sep 2021 20:26:00 +0200
-Received: from valdese.nms.ulrich-teichert.org (localhost [127.0.0.1])
-        by valdese.nms.ulrich-teichert.org (8.15.2/8.15.2/Debian-8+deb9u1) with ESMTPS id 18KIPwvw026068
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 20 Sep 2021 20:25:58 +0200
-Received: (from ut@localhost)
-        by valdese.nms.ulrich-teichert.org (8.15.2/8.15.2/Submit) id 18KIPsV4026066;
-        Mon, 20 Sep 2021 20:25:54 +0200
-Message-Id: <202109201825.18KIPsV4026066@valdese.nms.ulrich-teichert.org>
-Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-To:     torvalds@linux-foundation.org (Linus Torvalds)
-Date:   Mon, 20 Sep 2021 20:25:54 +0200 (CEST)
-Cc:     krypton@ulrich-teichert.org (Ulrich Teichert),
-        mcree@orcon.net.nz (Michael Cree),
-        linux@roeck-us.net (Guenter Roeck),
-        rth@twiddle.net (Richard Henderson),
-        ink@jurassic.park.msu.ru (Ivan Kokshaysky),
-        mattst88@gmail.com (Matt Turner),
-        James.Bottomley@hansenpartnership.com (James E . J . Bottomley),
-        deller@gmx.de (Helge Deller),
-        davem@davemloft.net (David S . Miller),
-        kuba@kernel.org (Jakub Kicinski),
-        linux-alpha@vger.kernel.org (alpha),
-        geert@linux-m68k.org (Geert Uytterhoeven),
-        linux-kernel@vger.kernel.org (Linux Kernel Mailing List),
-        linux-parisc@vger.kernel.org, netdev@vger.kernel.org (Netdev),
-        linux-sparse@vger.kernel.org (Sparse Mailing-list)
-In-Reply-To: <CAHk-=wh-=tMO9iCA4v+WgPSd+Gbowe5kptwo+okahihnO2fAOA@mail.gmail.com>
-From:   Ulrich Teichert <krypton@ulrich-teichert.org>
-X-Mailer: ELM [version 2.5 PL8]
+        with ESMTP id S1344752AbhIUCO0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:14:26 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EBBC09B056
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 11:31:22 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id me5-20020a17090b17c500b0019af76b7bb4so104962pjb.2
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 11:31:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dCI+dwLK0kWL/6b3AEDy1gjunCmBBosDhWlhnEbopa4=;
+        b=VbffzBgPjDiDQhwpar/31zifCBQOnuI8WPWggE1lqz2ey5vZjN69V9/hd7coQ09Xib
+         r1Lm/esf3ulSIxIzaQg9sv6YZtAMcPKXNoFMIpuE2Y1snrCYkfFKBC6xxumtcRmceg70
+         9YSWa+H6JBjaCbvFurNxwHhF2fa+xdayCM09ShGZ00R1XHl5JPu4fL7SQmNeSfC8oGqn
+         i01yqe+DQN0xn3jucAoVcKAcMVZTueJcukdOPMYzzaTlaK52C5T5MwrD9PRnqMnW9HkY
+         l4zWhojSxE70+PJBAMmlhbwgHib9Ndpsl3G6O65SalEeuHK9ZJI/ufF+wwMSKU1MeDJb
+         01JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dCI+dwLK0kWL/6b3AEDy1gjunCmBBosDhWlhnEbopa4=;
+        b=326MbNeomT7qHUvQfT1TmCxsItBuFjCFku0cxFrn06nSnAE2GaPs4TfpZArqwbVwSa
+         yDhhHAvhE0c5eEH4BG0LcExDQ9CjIt4B6W/1ZbH+F1ykNMah57GArX8dER+GpZ6ZLJOR
+         CWUm+dNAMtotMRu7LOsSxvHMEphE2cCoOmEb+gksBJol2eJPHMY6Gc20UeNu/Tny5q4A
+         wFF2PX+lk9nfDqfgmjxDNVQ7fE5CGlwVU31nVzu0+Wyxk91KymcC05OGtciJCRV4GcRf
+         l/+CVlTuKmDfURiKqR15+mHKxdvfuZ34nSgx+KNCka2sQ+IPuRyyLRbUWtGl94S65WZ6
+         76vg==
+X-Gm-Message-State: AOAM531CQ1ljSjbzMzN5kYcuam3qAEfyNJtEcU+GRE/IwvrUXWA7cj5O
+        FcULy0pgDpbZH1OCArVnAdKJKxq6mUmqUqwccEg0B1ql
+X-Google-Smtp-Source: ABdhPJycTASPqbs9O9+PRxx8oOWORtJsNn32elhk24uPKsQG1hjbgGW2AQl7g5kGpYYgO2iV5WT9/XONVQAgK0g0xxQ=
+X-Received: by 2002:a17:903:102:b0:13a:66a8:f28 with SMTP id
+ y2-20020a170903010200b0013a66a80f28mr23879291plc.62.1632162682500; Mon, 20
+ Sep 2021 11:31:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;ut@ulrich-teichert.org;1632162371;b2cd99ed;
-X-HE-SMSGID: 1mSNzM-00027j-Q1
+References: <cover.1632133123.git.lucien.xin@gmail.com> <13c7b29126171310739195264d5e619b62d27f92.1632133123.git.lucien.xin@gmail.com>
+In-Reply-To: <13c7b29126171310739195264d5e619b62d27f92.1632133123.git.lucien.xin@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 20 Sep 2021 11:31:11 -0700
+Message-ID: <CAM_iQpW53DGw5bXNXot4kV3qSHf5wgD33AFU3=zz0b69mJwNkw@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] net: sched: drop ct for the packets toward
+ ingress only in act_mirred
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Mon, Sep 20, 2021 at 7:12 AM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> nf_reset_ct() called in tcf_mirred_act() is supposed to drop ct for
+> those packets that are mirred or redirected to only ingress, not
+> ingress and egress.
 
-[sorry for the late answer, I was sick yesterday with digestive
-system trouble, but nothing serious, just painful....]
-> On Sat, Sep 18, 2021 at 1:26 PM Ulrich Teichert
-> <krypton@ulrich-teichert.org> wrote:
-> >
-> > I was just tinkering with it to get it compiled without warning,
-> > I certainly didn't get the big picture :-/
-> 
-> Ok, you shamed me into some tinkering too, and I fixed a couple of
-> issues with the alpha build.
-> 
-> The whole "pci_iounmap()" mess is not something I solved (you were
-> cc'd on the email I sent out about that), but I did test a few
-> different Jensen configurations and fixed a couple of uglies.
-> 
-> So at least _some_ Jensen configurations build cleanly once more, and
-> I re-enabled JENSEN as a valid machine target.
+Any reason behind this? I think we at least need to reset it when
+redirecting from ingress to egress as well? That is, when changing
+directions?
 
-Yes, I was able to build a minimal Jensen config without any warning
-after pulling today, thanks! I think investing a bit in cleaning up
-non-PCI configurations may help as soon as PCIe will be obsoleted
-by the next bus system ;-)
-
-> But if it doesn't boot, it's all fairly moot. And those things are a
-> pain to debug, and if the last booting kernel was years and years ago,
-> I don't think it realistically will necessarily ever be fixed.
-
-The main trouble is that my system has only 64MB of memory and the smallest
-kernel image with all drivers I need was about 105MB big. According
-to: http://users.bart.nl/~geerten/FAQ-9.html
-the Jensen can take up to 128MB of RAM and the required PS/2 SIMMs
-with partity are still available on ebay, so I just bought 4x32 MB SIMMs.
-After setting CONFIG_CC_OPTIMIZE_FOR_SIZE the kernel image was still
-93MB big, but with 128MB I should be able to boot it. Let's see....
-
-> Oh well. I have an odd love-hate relationship with alpha.
-> 
-> I think it's one of the worst architectures ever designed (memory
-> ordering is completely broken, and the lack of byte operations in the
-> original specs were a big reason for the initial problems and eventual
-> failure).
-
-I didn't had the money for an Alpha at that time, but as soon as
-cheap systems were available on ebay, I took the opportunity. At the
-time I bought them, I considered the Miatas (the "Personal Workstations"
-from DEC) as quite fast - that must have been around 2004/2006.
-
-> But at the same time, I really did enjoy it back in the day, and it
-> _was_ the first port I did, and the first truly integrated kernel
-> architecture (the original Linux m68k port that preceded it was a
-> "hack up and replace" job rather than "integrate")
-
-My experience is that each port is good for code quality, but I can
-only state that for user space applications, not having done much kernel
-work,
-
-CU,
-Uli
--- 
-Dipl. Inf. Ulrich Teichert|e-mail: Ulrich.Teichert@gmx.de | Listening to:
-Stormweg 24               |Eat Lipstick: Dirty Little Secret, The Baboon Show:
-24539 Neumuenster, Germany|Work Work Work, The Bellrays: Bad Reaction
+Thanks.
