@@ -2,124 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72E00411791
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 16:51:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F76C41178D
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 16:51:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241205AbhITOwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 10:52:34 -0400
-Received: from mout.perfora.net ([74.208.4.197]:50803 "EHLO mout.perfora.net"
+        id S241127AbhITOw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 10:52:29 -0400
+Received: from mout.perfora.net ([74.208.4.196]:54421 "EHLO mout.perfora.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240883AbhITOwQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 10:52:16 -0400
+        id S241028AbhITOwM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Sep 2021 10:52:12 -0400
 Received: from toolbox.cardiotech.int ([81.221.236.183]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1Mlebm-1nAlzH1HYg-00iiwu;
- Mon, 20 Sep 2021 16:49:53 +0200
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1Mjjrb-1n8q2D1Ot1-00lCrF;
+ Mon, 20 Sep 2021 16:50:10 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Andreas Kemnade <andreas@kemnade.info>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Fabio Estevam <festevam@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>, Marek Vasut <marex@denx.de>,
-        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Olof Johansson <olof@lixom.net>,
         Otavio Salvador <otavio@ossystems.com.br>,
         Pascal Zimmermann <pzimmermann@dh-electronics.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Stefan Riedmueller <s.riedmueller@phytec.de>,
-        Tim Harvey <tharvey@gateworks.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        soc@kernel.org
-Subject: [PATCH v4 0/9] ARM: prepare and add colibri imx6ull 1gb (emmc) support
-Date:   Mon, 20 Sep 2021 16:49:29 +0200
-Message-Id: <20210920144938.314588-1-marcel@ziswiler.com>
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v4 6/9] ARM: imx_v6_v7_defconfig: enable bpf syscall and cgroup bpf
+Date:   Mon, 20 Sep 2021 16:49:35 +0200
+Message-Id: <20210920144938.314588-7-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210920144938.314588-1-marcel@ziswiler.com>
+References: <20210920144938.314588-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:W6WlD/PhwB5NKuiFUpbq9zYXddxkmRhEsbCoDh36Mxeat1DlEON
- baYPgNMQaaOYRUD+sjfJeTz3qWJ01lWwfhmedyQgI81Cc9YzB8yAvWb8UxLBabvhAcu0Mkh
- 6meI6GczvELssYAKhp0LPVMZ63JDbHWphKK8GMUEb4nYy6D/+Uiu3wv7ubFJQkwgXZB72L4
- qHcmClI6P8P2DPy7I9raA==
+X-Provags-ID: V03:K1:2X/SNXi3Lmk1Ia0b42n9eWIMa40a0ZupsaW5tY7CHbXXHbe9eAF
+ v/DBKmFy02usMjtk/gojrg8Ca+ReMNg/FZFr03O1lJXU2Kf5U0c+mS7cdiHzErEWGuJ/izz
+ jxZEc2CWt5bTcehJamguMU+3YR4fV3L3BpPWWD1sIc+82dx4AtUc+Z1GX2BLqlFeiAxGFRs
+ Nku6I6DqsT3ArLvxAuwaw==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:0npW3v9eBkk=:KYQSawvhWHVPhlqfYWAzeX
- zOK7+7ySLA9b0HdYea0hY+vHNh2EH5t5HAf1MJu/1luyhmjsFjmA4xAq7W1zpGSr7spPmyL57
- HQEMrZVjI2pbEGKad6Z4kCr9OQdJ7X0WMUIva9GcogKlEcnCaEg1JSRJ2rCHfwRTN7unBbXW6
- oK8M+z06biE7Lm0mfO2E/gBl8P8cU00HOLjN71NPhkndUW5avCXaAgnYzRqi1ovBr2Iqgbfkc
- Tg9+aY2vlvt9eqbflEKgz8yvPo+dLkMp519Mm9eNLWFT9pw2EQTKorK0njhy8za/lxXEgp9EJ
- 8BiwRdxscZnGPWRCbxk8395r7s1bsr5PU6bLl2wT9Xat3DGPPl3iIDiZhNYlk4K3hiMvxVPcR
- X5Fpnx8qwtQZnj7UaOs8NFTcmGYsujamupIzkDRM6Q6MwivKVHNMAHbP86EbiNmrbPNmyn/pI
- UIjHlASeWULAcRAuAUp14PUI53qHJ1A+qL5s7SUsfTUdP+lLzwvewTeYLbnLLIIgx1TjKSaDY
- o9t8SHTUN44B49oBPo14yg/Qlzn7EzdnJrGCsU99Bjb5xkX5XkydumMuozCrRMYR3d6xM0rpF
- Pr80aH4hPaqKVauv892c/i4zrAs/BWmjH92wL2JqFWACLrn2p7cyTUmstlwvSHVhZLo+0d13J
- Oldr9nLrIGuGYakMSmIucmD7LGakCZshBNhj12D191do5ou0zQ9qBCs9mZdwPxpMuP+DM4Fd5
- gTdElzTYNgYxaMJgPn+d8OgpgiawbszJbKIkVA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:x+gGuuTIlMY=:8+TA1j6FYwJXvc+iFXc1fe
+ viLxkkSVK6LDO46ypj5VT+h8IeRXfAvxSKeQlQxgeSD73oeGP0uzJtH7Boe8eugdcH4W27vb3
+ 3LriU7IWTnuiYkxPPjDkda8Nh/DiTQSBr20ggclD05Vrf2Y/22QaikpiQtBnnOCpndl5V5l9V
+ j6WFA2YMaMXepfl4lNn+s4pYR1qQ0iPkli+F4pLTdMh8jYJfQJActxaD250gKAsDocvF9yfgs
+ c8Qy4mezCN1noBGjJmCJVCXxJ8O91oWHhEV8lz2vHQXnxVDpJEDDkr44ks/yD5zL73sFQHHlA
+ n9DihAV/KPgtQeihRLFhldvBbX57C6NwxKQ8mrnxNjoZhUzntlX/uI+2KITT/FpREjdK4uMyP
+ 4CklpCCMcg9p1MTQtspq/fkcN1S8plZtK/MxlzCWvKpHWEVAcRTFmU6Vytkir47ELVTJtvCBe
+ pk97U0QIFe7Um5tlq5Hd5neZ/kTNCUrFPWbuRjPGbuGZ0/69EqkNQhxzMzNPIlOgaoo/CMutO
+ 9V3Tl0+VOW3huVXMRZNIFNIrX5bwDQ8b2mly8JmnVH9hzsf1sbJyAxCXCcqfTv+ZWG+RQm/zV
+ fafscOJzZFiIBPTQAfSTznmCbOjivW+Oc1bxQaUERVNCIEaKqQTu64gcMwEGbj7Gmz6sj8vsz
+ 8GG9cj1n8OH1Wg+fC4QNlrwlAzwRDdSpBeOei2NTBUqbO7agGxIdMbxh5yyaW9bktRFqcwHHt
+ Il+Tfmic7Qd4gSXQWqQsAnAoeP7Yp4otqoyeHQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
+Enable CONFIG_BPF_SYSCALL and CONFIG_CGROUP_BPF to allow for systemd
+interoperability. This avoids the following failure on boot:
 
-Clean-up imx_v6_v7_defconfig and then add support for the new Colibri
-iMX6ULL 1GB (eMMC) which builds on the success of the existing Colibri
-iMX6ULL SKUs using raw NAND but replaces this with more RAM (1 GB) and
-an eMMC (4 GB).
+[   10.615914] systemd[1]: system-getty.slice: unit configures an IP
+ firewall, but the local system does not support BPF/cgroup firewalling.
 
-Changes in v4:
-- Fix dt_binding_check line too long warnings as pointed out by Rob.
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+
+---
+
+(no changes since v3)
 
 Changes in v3:
 - Add Fabio's reviewed-by. Thanks!
-- Added fixes tag as pointed out by Stefan and Fabio. Thanks!
-- Add Rob's ack. Thanks!
 
-Changes in v2:
-- New patch cleaning-up dt-bindings documentation.
-- Fix indentation.
-- Use latest agreed upon SPDX-License-Identifier GPL-2.0+ OR MIT.
-- Drop AG in our copyright statement as recommended by our legal.
-- New patch documenting dt-bindings.
+ arch/arm/configs/imx_v6_v7_defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Marcel Ziswiler (8):
-  ARM: imx_v6_v7_defconfig: enable mtd physmap
-  ARM: imx_v6_v7_defconfig: enable fb
-  ARM: imx_v6_v7_defconfig: change snd soc tlv320aic3x to i2c variant
-  ARM: imx_v6_v7_defconfig: rebuild default configuration
-  ARM: imx_v6_v7_defconfig: build imx sdma driver as module
-  ARM: imx_v6_v7_defconfig: enable bpf syscall and cgroup bpf
-  dt-bindings: arm: fsl: clean-up all toradex boards/modules
-  dt-bindings: arm: fsl: add toradex,colibri-imx6ull-emmc
-
-Max Krummenacher (1):
-  ARM: dts: colibri-imx6ull-emmc: add device tree
-
- .../devicetree/bindings/arm/fsl.yaml          |  87 ++++----
- arch/arm/boot/dts/Makefile                    |   1 +
- .../boot/dts/imx6ull-colibri-emmc-eval-v3.dts |  17 ++
- .../dts/imx6ull-colibri-emmc-nonwifi.dtsi     | 185 ++++++++++++++++++
- arch/arm/boot/dts/imx6ull-colibri.dtsi        |  32 ++-
- arch/arm/configs/imx_v6_v7_defconfig          |  46 ++---
- 6 files changed, 299 insertions(+), 69 deletions(-)
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-eval-v3.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-nonwifi.dtsi
-
+diff --git a/arch/arm/configs/imx_v6_v7_defconfig b/arch/arm/configs/imx_v6_v7_defconfig
+index c0008b7faf2ce..3e58c76763563 100644
+--- a/arch/arm/configs/imx_v6_v7_defconfig
++++ b/arch/arm/configs/imx_v6_v7_defconfig
+@@ -2,11 +2,13 @@ CONFIG_KERNEL_LZO=y
+ CONFIG_SYSVIPC=y
+ CONFIG_NO_HZ=y
+ CONFIG_HIGH_RES_TIMERS=y
++CONFIG_BPF_SYSCALL=y
+ CONFIG_PREEMPT_VOLUNTARY=y
+ CONFIG_IKCONFIG=y
+ CONFIG_IKCONFIG_PROC=y
+ CONFIG_LOG_BUF_SHIFT=18
+ CONFIG_CGROUPS=y
++CONFIG_CGROUP_BPF=y
+ CONFIG_RELAY=y
+ CONFIG_BLK_DEV_INITRD=y
+ CONFIG_EXPERT=y
 -- 
 2.26.2
 
