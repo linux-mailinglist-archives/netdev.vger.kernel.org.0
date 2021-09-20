@@ -2,71 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ED694112C9
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 12:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A6A4113BF
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 13:47:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235848AbhITKVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 06:21:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51832 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235703AbhITKVd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 06:21:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 33D4160F9B;
-        Mon, 20 Sep 2021 10:20:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632133207;
-        bh=WYLbjZ99bbLDVMoTu46T5EKDC2PuyHOC7Ihz+GrCQLM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VgpHB090SBIiprLFDSc+k1fyaGAmqMuLEdMNCPWOQq+bu0KFdryc2m8ZdgFW3p/sY
-         yD8HlDF4DkgsrSzM08l4dJ98pl1yYzXmJ/NfFSEMMYmk1u6ghN5lZ2ZmRVgcBtCIhv
-         pQPhwwHmue6I8EKtKuHXXtbokOHBZxzXAxE2n8/ynWPHaJRHrypk9mqFzR8aT86wL6
-         ErSysbBLISMqrx1LnGguDx4XY4hfiVKFFstknPoV32d2zoRdLoluxX4kLO4lGA3FTk
-         a7o2Z5LnYQR5u521WuJJDdciAzO6Ljz37bqFV97OyTMuJ4EVek29QRZARuQNWfenjI
-         GD2E10be67ewA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 21B5A60A3A;
-        Mon, 20 Sep 2021 10:20:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S237221AbhITLtF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Sep 2021 07:49:05 -0400
+Received: from mail1.shanghaitech.edu.cn ([119.78.254.90]:33703 "EHLO
+        mail.shanghaitech.edu.cn" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S237077AbhITLtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 07:49:04 -0400
+Received: from [10.15.44.215] by mail.shanghaitech.edu.cn with MESSAGESEC ESMTP id 456895189764503;
+        Mon, 20 Sep 2021 19:32:06 +0800 (CST)
+Received: from DESKTOP-U066CHB.localdomain (10.15.44.220) by
+ smtp.shanghaitech.edu.cn (10.15.44.215) with Microsoft SMTP Server (TLS) id
+ 14.3.399.0; Mon, 20 Sep 2021 19:32:08 +0800
+From:   Mianhan Liu <liumh1@shanghaitech.edu.cn>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+CC:     Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Mianhan Liu <liumh1@shanghaitech.edu.cn>
+Subject: [PATCH -next] net/ipv4/route.c: remove superfluous header files from route.c
+Date:   Mon, 20 Sep 2021 19:31:37 +0800
+Message-ID: <20210920113137.25121-1-liumh1@shanghaitech.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ptp: ocp: add COMMON_CLK dependency
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163213320713.12173.7292329912675651576.git-patchwork-notify@kernel.org>
-Date:   Mon, 20 Sep 2021 10:20:07 +0000
-References: <20210920095807.1237902-1-arnd@kernel.org>
-In-Reply-To: <20210920095807.1237902-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     richardcochran@gmail.com, jonathan.lemon@gmail.com,
-        kuba@kernel.org, arnd@arndb.de, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
+X-Originating-IP: [10.15.44.220]
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+route.c hasn't use any macro or function declared in uaccess.h, types.h,
+string.h, sockios.h, times.h, protocol.h, arp.h and l3mdev.h. Thus, these
+files can be removed from route.c safely without affecting the compilation
+of the net module.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Signed-off-by: Mianhan Liu <liumh1@shanghaitech.edu.cn>
 
-On Mon, 20 Sep 2021 11:57:49 +0200 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> Without CONFIG_COMMON_CLK, this fails to link:
-> 
-> arm-linux-gnueabi-ld: drivers/ptp/ptp_ocp.o: in function `ptp_ocp_register_i2c':
-> ptp_ocp.c:(.text+0xcc0): undefined reference to `__clk_hw_register_fixed_rate'
-> arm-linux-gnueabi-ld: ptp_ocp.c:(.text+0xcf4): undefined reference to `devm_clk_hw_register_clkdev'
-> arm-linux-gnueabi-ld: drivers/ptp/ptp_ocp.o: in function `ptp_ocp_detach':
-> ptp_ocp.c:(.text+0x1c24): undefined reference to `clk_hw_unregister_fixed_rate'
-> 
-> [...]
+---
+ net/ipv4/route.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-Here is the summary with links:
-  - ptp: ocp: add COMMON_CLK dependency
-    https://git.kernel.org/netdev/net/c/42a99a0be307
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index d6899ab5f..0b4103b1e 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -61,15 +61,11 @@
+ #define pr_fmt(fmt) "IPv4: " fmt
+ 
+ #include <linux/module.h>
+-#include <linux/uaccess.h>
+ #include <linux/bitops.h>
+-#include <linux/types.h>
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/memblock.h>
+-#include <linux/string.h>
+ #include <linux/socket.h>
+-#include <linux/sockios.h>
+ #include <linux/errno.h>
+ #include <linux/in.h>
+ #include <linux/inet.h>
+@@ -84,20 +80,17 @@
+ #include <linux/netfilter_ipv4.h>
+ #include <linux/random.h>
+ #include <linux/rcupdate.h>
+-#include <linux/times.h>
+ #include <linux/slab.h>
+ #include <linux/jhash.h>
+ #include <net/dst.h>
+ #include <net/dst_metadata.h>
+ #include <net/net_namespace.h>
+-#include <net/protocol.h>
+ #include <net/ip.h>
+ #include <net/route.h>
+ #include <net/inetpeer.h>
+ #include <net/sock.h>
+ #include <net/ip_fib.h>
+ #include <net/nexthop.h>
+-#include <net/arp.h>
+ #include <net/tcp.h>
+ #include <net/icmp.h>
+ #include <net/xfrm.h>
+@@ -109,7 +102,6 @@
+ #endif
+ #include <net/secure_seq.h>
+ #include <net/ip_tunnels.h>
+-#include <net/l3mdev.h>
+ 
+ #include "fib_lookup.h"
+ 
+-- 
+2.25.1
 
 
