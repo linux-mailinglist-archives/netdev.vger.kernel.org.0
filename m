@@ -2,211 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD8FE4115CD
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 15:29:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BEF6411609
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 15:44:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239629AbhITNar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 09:30:47 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:37122 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237112AbhITNai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 09:30:38 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18KDD1mC022010;
-        Mon, 20 Sep 2021 09:28:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=xgT5YD3UxBnXVsri9sxzcL9itRY6pX+a3Msv567DtkM=;
- b=SMD7ir+JALlj8+aC7tSkZPH3Wj2jvIYaSZJ73Pg5vToZMbDgUxKUaGD2PRbDJTHy11Gs
- fO2e9aDC1+KB0xQN8ld3V2QD3/Pj1GN+ipYzvUTSfeMcLltOYwasFe46bS3bXd4fuEo5
- JLRr4wGR3uIpOU5AYL+JIYvt8OFNH91ZXjWKl4Yq3PMvM+3xatY46TlI0vLnW/6OqBn5
- ypXZJBqH2XSnv6vaPQeq+4R+Yz55Td6MrfpbJC2M0BDazQvtvm2qmePXm6EtXhN/+2Ui
- +zoHVNv8Dc/GnvKS73Mkj3ZZ6omJJD3pAQcOAw0PF7jNouhtb+TN+9t7BaaLXD7pPpcy xw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3b6rfrkn5x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 20 Sep 2021 09:28:40 -0400
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 18KDD5Dm022569;
-        Mon, 20 Sep 2021 09:28:39 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3b6rfrkn4u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 20 Sep 2021 09:28:39 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18KDD6Ij012146;
-        Mon, 20 Sep 2021 13:28:37 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3b57r8gwfc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 20 Sep 2021 13:28:37 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18KDSYMh29884746
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 20 Sep 2021 13:28:34 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 98FE9A406D;
-        Mon, 20 Sep 2021 13:28:34 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 942F5A404D;
-        Mon, 20 Sep 2021 13:28:29 +0000 (GMT)
-Received: from [9.43.114.206] (unknown [9.43.114.206])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 20 Sep 2021 13:28:29 +0000 (GMT)
-Message-ID: <4710b971-12f0-e6cc-545a-9c7ee96d6057@linux.ibm.com>
-Date:   Mon, 20 Sep 2021 18:58:28 +0530
+        id S239618AbhITNqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 09:46:17 -0400
+Received: from sender11-of-o53.zoho.eu ([31.186.226.239]:21829 "EHLO
+        sender11-of-o53.zoho.eu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236385AbhITNqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 09:46:17 -0400
+X-Greylist: delayed 904 seconds by postgrey-1.27 at vger.kernel.org; Mon, 20 Sep 2021 09:46:16 EDT
+ARC-Seal: i=1; a=rsa-sha256; t=1632144584; cv=none; 
+        d=zohomail.eu; s=zohoarc; 
+        b=afLQNKiajY4FEd5q/QKtZbXRZBUfhrokPf57jtc9EyAV20Z/pECmRWqGjTXGJieMxZPXvqRJ7sef6Juw/AwEaOHgBaMnhAPDiNuqZzIT0Ez+brh9XLiZhX/HRAKhG+V4hNgy6OF2KJh61iIMdzZWWggzhaSXSojrIJNztyWSLJM=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
+        t=1632144584; h=Content-Type:Content-Transfer-Encoding:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=HsRYjw0G15xnBFBys7SWjXT5SnHkIbqIR2bB/qrELUU=; 
+        b=PFAMPoaAXaIatToxFl2+XPAqrMtCfrmHAK2hjUs+AO/UK6CJcgx2SIYaxoEb2twubfpBcQvVwHbbP2z1z/DSRmAYUo2hhl0nvhok1tAGa7oHUHSnJQcjryqsq6jA+jLFhShMq6DhSzL8KK+TmYA2s9Uj/FMzpZv/dC4nzc7dhQY=
+ARC-Authentication-Results: i=1; mx.zohomail.eu;
+        dkim=pass  header.i=bursov.com;
+        spf=pass  smtp.mailfrom=vitaly@bursov.com;
+        dmarc=pass header.from=<vitaly@bursov.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1632144584;
+        s=zoho; d=bursov.com; i=vitaly@bursov.com;
+        h=To:From:Subject:Message-ID:Date:MIME-Version:Content-Type:Content-Transfer-Encoding;
+        bh=HsRYjw0G15xnBFBys7SWjXT5SnHkIbqIR2bB/qrELUU=;
+        b=Pkkb2t+x4i+1dkib/GpUgseVzBhpZJYbxuLgJtH5lM/PFlUX34OmUdOlQcaTxi5g
+        lmS3x5Xx8nm38PpxZVdEkW6w5KBTUkq09AzaOwwrJleIeLd6EPPyhRyofQjfem2FJyZ
+        F6NGdfrJ3LUbkyGtLBx0CTVfg1bwih34cVkIiD3Y=
+Received: from [192.168.11.99] (31.133.98.254 [31.133.98.254]) by mx.zoho.eu
+        with SMTPS id 1632144582600975.4708918501769; Mon, 20 Sep 2021 15:29:42 +0200 (CEST)
+To:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>, netdev@vger.kernel.org
+From:   Vitaly Bursov <vitaly@bursov.com>
+Subject: tg3 RX packet re-order in queue 0 with RSS
+Message-ID: <0a1d6421-b618-9fea-9787-330a18311ec0@bursov.com>
+Date:   Mon, 20 Sep 2021 16:29:42 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH v2 3/8] bpf powerpc: refactor JIT compiler code
-Content-Language: en-US
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        naveen.n.rao@linux.ibm.com, mpe@ellerman.id.au, ast@kernel.org,
-        daniel@iogearbox.net
-Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-References: <20210917153047.177141-1-hbathini@linux.ibm.com>
- <20210917153047.177141-4-hbathini@linux.ibm.com>
- <b73d67d5-3ec3-c618-7f4c-ffdd71650e7e@csgroup.eu>
-From:   Hari Bathini <hbathini@linux.ibm.com>
-In-Reply-To: <b73d67d5-3ec3-c618-7f4c-ffdd71650e7e@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Xh5bJFO4xu8Jz_AF2mhhttQ4q-7NC0PV
-X-Proofpoint-ORIG-GUID: _19XF3e6ajpK5myoVRHFjw2ul01moovs
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-20_07,2021-09-20_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- priorityscore=1501 spamscore=0 phishscore=0 impostorscore=0
- lowpriorityscore=0 mlxscore=0 adultscore=0 clxscore=1015 bulkscore=0
- suspectscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2109030001 definitions=main-2109200084
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: ru-RU
+Content-Transfer-Encoding: 7bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christophe,
+Hi,
 
-Thanks for reviewing the series.
+We found a occassional and random (sometimes happens, sometimes not)
+packet re-order when NIC is involved in UDP multicast reception, which
+is sensitive to a packet re-order. Network capture with tcpdump
+sometimes shows the packet re-order, sometimes not (e.g. no re-order on
+a host, re-order in a container at the same time). In a pcap file
+re-ordered packets have a correct timestamp - delayed packet had a more
+earlier timestamp compared to a previous packet:
+     1.00s packet1
+     1.20s packet3
+     1.10s packet2
+     1.30s packet4
 
-On 17/09/21 9:40 pm, Christophe Leroy wrote:
-> 
-> 
-> Le 17/09/2021 à 17:30, Hari Bathini a écrit :
->> Refactor powerpc JITing. This simplifies adding BPF_PROBE_MEM support.
-> 
-> Could you describe a bit more what you are refactoring exactly ?
+There's about 300Mbps of traffic on this NIC, and server is busy
+(hyper-threading enabled, about 50% overall idle) with its
+computational application work.
 
-I am trying to do more than BPF_PROBE_MEM needs. Will keep the changes 
-minimal (BPF_PROBE_MEM specific) and update the changelog..
+NIC is HPE's 4-port 331i adapter - BCM5719, in a default ring and
+coalescing configuration, 1 TX queue, 4 RX queues.
 
-> 
-> 
->>
->> Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
->> ---
->>
->> Changes in v2:
->> * New patch to refactor a bit of JITing code.
->>
->>
->>   arch/powerpc/net/bpf_jit_comp32.c | 50 +++++++++++---------
->>   arch/powerpc/net/bpf_jit_comp64.c | 76 ++++++++++++++++---------------
->>   2 files changed, 68 insertions(+), 58 deletions(-)
->>
->> diff --git a/arch/powerpc/net/bpf_jit_comp32.c 
->> b/arch/powerpc/net/bpf_jit_comp32.c
->> index b60b59426a24..c8ae14c316e3 100644
->> --- a/arch/powerpc/net/bpf_jit_comp32.c
->> +++ b/arch/powerpc/net/bpf_jit_comp32.c
->> @@ -276,17 +276,17 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 
->> *image, struct codegen_context *
->>       u32 exit_addr = addrs[flen];
->>       for (i = 0; i < flen; i++) {
->> -        u32 code = insn[i].code;
->>           u32 dst_reg = bpf_to_ppc(ctx, insn[i].dst_reg);
->> -        u32 dst_reg_h = dst_reg - 1;
->>           u32 src_reg = bpf_to_ppc(ctx, insn[i].src_reg);
->> -        u32 src_reg_h = src_reg - 1;
->>           u32 tmp_reg = bpf_to_ppc(ctx, TMP_REG);
->> +        u32 true_cond, code = insn[i].code;
->> +        u32 dst_reg_h = dst_reg - 1;
->> +        u32 src_reg_h = src_reg - 1;
-> 
-> All changes above seems unneeded and not linked to the current patch. 
-> Please leave cosmetic changes outside and focus on necessary changes.
-> 
->> +        u32 size = BPF_SIZE(code);
->>           s16 off = insn[i].off;
->>           s32 imm = insn[i].imm;
->>           bool func_addr_fixed;
->>           u64 func_addr;
->> -        u32 true_cond;
->>           /*
->>            * addrs[] maps a BPF bytecode address into a real offset from
->> @@ -809,25 +809,33 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 
->> *image, struct codegen_context *
->>           /*
->>            * BPF_LDX
->>            */
->> -        case BPF_LDX | BPF_MEM | BPF_B: /* dst = *(u8 *)(ul) (src + 
->> off) */
->> -            EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
->> -            if (!fp->aux->verifier_zext)
->> -                EMIT(PPC_RAW_LI(dst_reg_h, 0));
->> -            break;
->> -        case BPF_LDX | BPF_MEM | BPF_H: /* dst = *(u16 *)(ul) (src + 
->> off) */
->> -            EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
->> -            if (!fp->aux->verifier_zext)
->> -                EMIT(PPC_RAW_LI(dst_reg_h, 0));
->> -            break;
->> -        case BPF_LDX | BPF_MEM | BPF_W: /* dst = *(u32 *)(ul) (src + 
->> off) */
->> -            EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
->> -            if (!fp->aux->verifier_zext)
->> +        /* dst = *(u8 *)(ul) (src + off) */
->> +        case BPF_LDX | BPF_MEM | BPF_B:
->> +        /* dst = *(u16 *)(ul) (src + off) */
->> +        case BPF_LDX | BPF_MEM | BPF_H:
->> +        /* dst = *(u32 *)(ul) (src + off) */
->> +        case BPF_LDX | BPF_MEM | BPF_W:
->> +        /* dst = *(u64 *)(ul) (src + off) */
->> +        case BPF_LDX | BPF_MEM | BPF_DW:
-> Why changing the location of the comments ? I found it more readable 
-> before.
+After further investigation, I believe that there are two separate
+issues in tg3.c driver. Issues can be reproduced with iperf3, and
+unicast UDP.
 
-Sure. I will revert that change.
+Here are the details of how I understand this behavior.
 
->> +            switch (size) {
->> +            case BPF_B:
->> +                EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
->> +                break;
->> +            case BPF_H:
->> +                EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
->> +                break;
->> +            case BPF_W:
->> +                EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
->> +                break;
->> +            case BPF_DW:
->> +                EMIT(PPC_RAW_LWZ(dst_reg_h, src_reg, off));
->> +                EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off + 4));
->> +                break;
->> +            }
-> 
-> BPF_B, BPF_H, ... are not part of an enum. Are you sure GCC is happy to 
-> have no default ?
+1. Packet re-order.
 
-I used gcc 10.3 for ppc32 & gcc 8.3 for ppc64. No warnings.
-Though, no harm adding the below, I guess..
+Driver calls napi_schedule(&tnapi->napi) when handling the interrupt,
+however, sometimes it calls napi_schedule(&tp->napi[1].napi), which
+handles RX queue 0 too:
 
-	default:
-		break;
+     https://github.com/torvalds/linux/blob/master/drivers/net/ethernet/broadcom/tg3.c#L6802-L7007
 
+     static int tg3_rx(struct tg3_napi *tnapi, int budget)
+     {
+             struct tg3 *tp = tnapi->tp;
+
+             ...
+
+             /* Refill RX ring(s). */
+             if (!tg3_flag(tp, ENABLE_RSS)) {
+                     ....
+             } else if (work_mask) {
+                     ...
+
+                     if (tnapi != &tp->napi[1]) {
+                             tp->rx_refill = true;
+                             napi_schedule(&tp->napi[1].napi);
+                     }
+             }
+             ...
+     }
+
+ From napi_schedule() code, it should schedure RX 0 traffic handling on
+a current CPU, which handles queues RX1-3 right now.
+
+At least two traffic flows are required - one on RX queue 0, and the
+other on any other queue (1-3). Re-ordering may happend only on flow
+from queue 0, the second flow will work fine.
+
+No idea how to fix this.
+
+There are two ways to mitigate this:
+
+   1. Enable RPS by writting any non-zero mask to
+      /sys/class/net/enp2s0f0/queues/rx-0/rps_cpus This encorces CPU
+      when processing traffic, and overrides whatever "current" CPU for
+      RX queue 0 is in this moment.
+
+   2. Configure RX hash flow redirection with: ethtool -X enp2s0f0
+      weight 0 1 1 1 to exclude RX queue 0 from handling the traffic.
+
+
+2. RPS configuration
+
+Before napi_gro_receive() call, there's no call to skb_record_rx_queue():
+
+     static int tg3_rx(struct tg3_napi *tnapi, int budget)
+     {
+             struct tg3 *tp = tnapi->tp;
+             u32 work_mask, rx_std_posted = 0;
+             u32 std_prod_idx, jmb_prod_idx;
+             u32 sw_idx = tnapi->rx_rcb_ptr;
+             u16 hw_idx;
+             int received;
+             struct tg3_rx_prodring_set *tpr = &tnapi->prodring;
+
+             ...
+
+                     napi_gro_receive(&tnapi->napi, skb);
+
+
+                     received++;
+                     budget--;
+             ...
+
+
+As a result, queue_mapping is always 0/not set, and RPS handles all
+traffic as originating from queue 0.
+
+           <idle>-0     [013] ..s. 14030782.234664: napi_gro_receive_entry: dev=enp2s0f0 napi_id=0x0 queue_mapping=0 ...
+
+RPS configuration for rx-1 to to rx-3 has no effect.
+
+
+NIC:
+02:00.0 Ethernet controller: Broadcom Inc. and subsidiaries NetXtreme BCM5719 Gigabit Ethernet PCIe (rev 01)
+     Subsystem: Hewlett-Packard Company Ethernet 1Gb 4-port 331i Adapter
+     Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR+ FastB2B- DisINTx+
+     Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+     Latency: 0, Cache Line Size: 64 bytes
+     Interrupt: pin A routed to IRQ 16
+     NUMA node: 0
+     Region 0: Memory at d9d90000 (64-bit, prefetchable) [size=64K]
+     Region 2: Memory at d9da0000 (64-bit, prefetchable) [size=64K]
+     Region 4: Memory at d9db0000 (64-bit, prefetchable) [size=64K]
+     [virtual] Expansion ROM at d9c00000 [disabled] [size=256K]
+     Capabilities: <access denied>
+     Kernel driver in use: tg3
+     Kernel modules: tg3
+
+Linux kernel:
+     CentOS 7 - 3.10.0-1160.15.2
+     Ubuntu - 5.4.0-80.90
+
+Network configuration:
+     iperf3 (sender) - [LAN] - NIC (enp2s0f0) - Bridge (br0) - veth (v1) - namespace veth (v2) - iperf3 (receiver 1)
+
+     brctl addbr br0
+     ip l set up dev br0
+     ip a a 10.10.10.10/24 dev br0
+     ip r a default via 10.10.10.1 dev br0
+     ip l set dev enp2s0f0 master br0
+     ip l set up dev enp2s0f0
+
+     ip netns add n1
+     ip link add v1 type veth peer name v2
+     ip l set up dev v1
+     ip l set dev v1 master br0
+     ip l set dev v2 netns n1
+
+     ip netns exec n1 bash
+     ip l set up dev lo
+     ip l set up dev v2
+     ip a a 10.10.10.11/24 dev v2
+
+     "receiver 2" has the same configuration but different IP and different namespace.
+
+Iperf3:
+
+     Sender runs iperfs: iperf3 -s -p 5201 & iperf3 -s -p 5202 &
+     Receiver's iperf3 -c 10.10.10.1 -R -p 5201 -u -l 163 -b 200M -t 300
+
+-- 
 Thanks
-Hari
+Vitalii
+
