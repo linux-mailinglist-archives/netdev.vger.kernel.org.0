@@ -2,111 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C89F04114DF
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EED604114E8
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:52:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236053AbhITMvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 08:51:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56450 "EHLO
+        id S236174AbhITMxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 08:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236007AbhITMvC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 08:51:02 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9537DC061574
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 05:49:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=zPbk7FSzoDNjkUglXnkYbQsblfsq5zLr1n7fNPKCYI8=; b=1rfo8yqR11OR1uPNFPpoiWblGP
-        G8rr7FvWvm8S2rRA+/1XHHCKS89Up+Xw7I2nj5GFDEEvA8aiYss9hfJg97TI+YjiaQkPM1qnI1gmj
-        m17k68bmqGBV7RRHE/S70aiO4BnmoH5BCfWb40AtCGzCrhsxWY7BwcpFTi21DpdxGig2yPXPCeefT
-        SIeJLzfnCu4QoiHMnphlp6s3VjohUpzrptOFtKapNDv9GPqqgHrHf894PGKPt0Ezui6dk4fh6Q4E8
-        +NtTXFWxPLyCGg3gCqmUJSe1700IiFA71fqEBA+q8bxDNxUJ0EAvvUokq6V4sDIy3mwRxnm5r7iAk
-        MgxvMlwA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54668)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mSIje-0001dE-FM; Mon, 20 Sep 2021 13:49:26 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mSIjb-0002J2-6X; Mon, 20 Sep 2021 13:49:23 +0100
-Date:   Mon, 20 Sep 2021 13:49:23 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: sched: fix initialiser warning in sch_frag.c
-Message-ID: <YUiDU9mT71M8r7E6@shell.armlinux.org.uk>
-References: <E1mS5U9-002wsa-TC@rmk-PC.armlinux.org.uk>
- <YUhPpaas69u4vZdp@dcaratti.users.ipa.redhat.com>
+        with ESMTP id S234397AbhITMxa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 08:53:30 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32D5C061574
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 05:52:03 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id m3so65138909lfu.2
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 05:52:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=E904xOxlmrAlkCYm3uRuC+Psli2AnMQfVkiRa2z6Iqc=;
+        b=Aa/4TC7evj/dtcowvH4DX4JJMaHz3nbiSSqJb+lj8vnMoUQ/AjX0Sgg5Hbl9qwaoJn
+         JG+3kq5uq8gNv107vgc3bip6mFLRVpHgwNb/PfE4ip+963YILPFL1YRZcLhEkxY/CdlP
+         RKtN9lgOjhOFPsu62Pa5m6ezNFnJ3j4blwALluotOIta71LrMh6laQyDvRoFx6R9evs2
+         sLGw7LjWinnQMpVDjlgO1MV2eTa6QV4URHkNIwFzj+JZ6YxWBCs32yMqqWX5mL2jVcTU
+         9gzswVYyOyOfS1aDhDd4wSwV2wJZQf3y5n75z/eSJ0csZ5llcipClll/Li4zBMHoKqPV
+         oeag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=E904xOxlmrAlkCYm3uRuC+Psli2AnMQfVkiRa2z6Iqc=;
+        b=5Z4f8mKv5zSCkKNuq2UfGtTsE4wVjAw8NjoRAgwVOpJYvxw9ltQkXofD2yEExI8vwF
+         npo2jsF679bH4piOY1lJNxia4qaIf+tpeAb4vp7GF3PulweKgM5G2OTSEhFiMQGGInAc
+         BuNB5dNydmJwfwFj/bPJ6oBUxwFN4VfMJXg/0A+ZKHHIYpsydVor5Q2oGpQhkl8O0blb
+         2WzoIq27ifNXAidSUrsRC2YAJbcXYkL6RrhCrfZh4cHMsH26wFOWFkTtwo2rFS38jyzT
+         EeZ+dWjCIBjteKEb1lkUCMKQr52P9NsxSwMStHXyJNjqQ9yRdIJx1SnLkxC7zN75VsOH
+         54tg==
+X-Gm-Message-State: AOAM531/N0BEekG9fCEcpuwLL22Ig4TSBznPAS0zdypVTpPwOg1I90zq
+        VTN97BOkDKuW+OtgMj3b81g=
+X-Google-Smtp-Source: ABdhPJzX6yz9d/cz1/qiLjw5TKmHockyirf2ttoiObC8FrnSIrvdLycY6/P53DGTPH6Az1wl7/fXMg==
+X-Received: by 2002:a2e:b894:: with SMTP id r20mr22360848ljp.291.1632142322194;
+        Mon, 20 Sep 2021 05:52:02 -0700 (PDT)
+Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id r3sm1268275lfc.169.2021.09.20.05.52.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Sep 2021 05:52:01 -0700 (PDT)
+To:     Network Development <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Subject: Race between "Generic PHY" and "bcm53xx" drivers after -EPROBE_DEFER
+Message-ID: <3639116e-9292-03ca-b9d9-d741118a4541@gmail.com>
+Date:   Mon, 20 Sep 2021 14:52:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YUhPpaas69u4vZdp@dcaratti.users.ipa.redhat.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 20, 2021 at 11:08:53AM +0200, Davide Caratti wrote:
-> On Sun, Sep 19, 2021 at 11:40:33PM +0100, Russell King (Oracle) wrote:
-> > Debian gcc 10.2.1 complains thusly:
-> > 
-> > net/sched/sch_frag.c:93:10: warning: missing braces around initializer [-Wmissing-braces]
-> >    struct rtable sch_frag_rt = { 0 };
-> >           ^
-> > net/sched/sch_frag.c:93:10: warning: (near initialization for 'sch_frag_rt.dst') [-Wmissing-braces]
-> > 
-> > Fix it by removing the unnecessary '0' initialiser, leaving the
-> > braces.
-> 
-> hello Russell, thanks a lot for reporting!
->  
-> > diff --git a/net/sched/sch_frag.c b/net/sched/sch_frag.c
-> > index 8c06381391d6..ab359d63287c 100644
-> > --- a/net/sched/sch_frag.c
-> > +++ b/net/sched/sch_frag.c
-> > @@ -90,7 +90,7 @@ static int sch_fragment(struct net *net, struct sk_buff *skb,
-> >  	}
-> >  
-> >  	if (skb_protocol(skb, true) == htons(ETH_P_IP)) {
-> > -		struct rtable sch_frag_rt = { 0 };
-> > +		struct rtable sch_frag_rt = { };
-> 
-> this surely fixes the -Wmissing-braces, but then -Wpedantic
-> would complain about usage of GNU extension (I just tried on godbolt
-> with x86_64 gcc 11.2):
-> 
-> warning: ISO C forbids empty initializer braces [-Wpedantic]
-> 
-> While we are fixing this, probably the best thing is to initialize the
-> 'dst' struct member  to 0: in my understanding this should be sufficient
-> to let the compiler fill all the struct members with 0.
-> 
-> Oh, and I might have inserted a similar thing in openvswitch kernel
-> module (see [1]), if you agree I will send a patch that fixes this as
-> well. WDYT?
+I have problem using a switch b53 MDIO driver with an Ethernet bgmac
+driver.
 
-ISO C may forbid it, but the kernel build uses -std=gnu89 - which is
-c89 with GNU extensions. One of the GNU extensions is to allow the
-empty initialiser, which means "initialise all members of this struct
-to zero".
+bgmac registers MDIO bus before registering Ethernet controller. That
+results in kernel probing switch (available as MDIO device) early which
+results in dsa_port_parse_of() returning -EPROBE_DEFER.
 
-However, as I say, this was found using gcc 4.9.4 under 5.14, where
-4.9.4 is a permissable compiler. However, under 5.15-rc it is no
-longer so the patch should not be applied to development kernels.
-It leaves the question open whether it should be fixed in stable or
-not, since stable kernels _do_ permit gcc 4.9.4.
+It's OK so far but then in goes like this:
+
+[    1.306884] bus: 'bcma': driver_probe_device: matched device bcma0:5 with driver bgmac_bcma
+[    1.315427] bus: 'bcma': really_probe: probing driver bgmac_bcma with device bcma0:5
+[    1.323468] bgmac_bcma bcma0:5: Found PHY addr: 30 (NOREGS)
+[    1.329722] libphy: bcma_mdio mii bus: probed
+[    1.334468] bus: 'mdio_bus': driver_probe_device: matched device bcma_mdio-0-0:1e with driver bcm53xx
+[    1.343877] bus: 'mdio_bus': really_probe: probing driver bcm53xx with device bcma_mdio-0-0:1e
+[    1.353174] bcm53xx bcma_mdio-0-0:1e: found switch: BCM53125, rev 4
+[    1.359595] bcm53xx bcma_mdio-0-0:1e: failed to register switch: -517
+[    1.366212] mdio_bus bcma_mdio-0-0:1e: Driver bcm53xx requests probe deferral
+[    1.373499] mdio_bus bcma_mdio-0-0:1e: Added to deferred list
+[    1.379362] bgmac_bcma bcma0:5: Support for Roboswitch not implemented
+[    1.387067] bgmac_bcma bcma0:5: Timeout waiting for reg 0x1E0
+[    1.393600] driver: 'Generic PHY': driver_bound: bound to device 'bcma_mdio-0-0:1e'
+[    1.401390] Generic PHY bcma_mdio-0-0:1e: Removed from deferred list
+
+I can't drop "Generic PHY" driver as it's required for non-CPU switch
+ports. I just need kernel to prefer b53 MDIO driver over the "Generic
+PHY" one.
+
+Can someone help me fix that, please?
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Rafał
