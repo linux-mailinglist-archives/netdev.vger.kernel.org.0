@@ -2,70 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C93A84111B8
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 11:12:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C8D94111B9
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 11:12:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237156AbhITJNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 05:13:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51548 "EHLO mail.kernel.org"
+        id S236181AbhITJNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 05:13:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51578 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236795AbhITJLf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 05:11:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 53D31610A3;
-        Mon, 20 Sep 2021 09:10:07 +0000 (UTC)
+        id S236820AbhITJLh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Sep 2021 05:11:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 70DD4610F9;
+        Mon, 20 Sep 2021 09:10:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632129007;
-        bh=n3gK4PXJzv5qshjhhOwuA5JycgoExSXFHzw8XPtI/oM=;
+        s=k20201202; t=1632129011;
+        bh=iiBHOnWdxnx2/aPPv3IhuZMddGrOHrwuThCwhWSmCgw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mXCFbLD5ctS5ikXD8o4S4pt94qVql8pl9CMbYTEV8GC9zswy7y5CL+TEPNnKs1wqt
-         pYl8AcI1h55EJOcJPH1SnaO9PSBGXFSyv/t/FVrzbJ9ht4u2rrY3A4pu3l0Mg3MzRq
-         Z7ZysgLCNywjQAvJx92zxugKQdgjfABWJlbY63ZjJK9tjG54V3ZQAnJSSBmcK3D82p
-         JNPa34iykayPiwfzP8Uju92K+HKZS0XU4uAnMTsTK2ToMRZVsmCUdInt/goLTq1Fix
-         2TEAaqYI9FlxlwBgNVG8BJV3V/ievGLrYJJTjc8r1qbOvEP84c4B+dtv4yDBGTpPs5
-         EV1axw2MH3hYg==
+        b=tx+B1rXF5ixQ6rETWrNdyeMowgBB4cP/rACpfMqem5a6O4CuLocE+NRe60GSoDofE
+         2CuMwGXBN1DdzpHVOekLrzGscMLImsLxdMKxP8vESAsrsCSROy3xQS/z3taUDjFCsM
+         it9WojwD6fVUy1V2PPbXjBCkViaKJ4h+Bt770cP3lDhn0FCHv2AZ6WBKAJXs18Okny
+         1tx3cuuXsgkfk/YD9AhnE24mBvLBSoGVzro3vh/ReS8XbhykPqZH4N6Ku5je2+7gZj
+         D2/tv3quYZ5lRmVChumnPkhy8I3TTDSwoxq7lWXCLgSP8G6H/lVQzry9JJDzt0XRP/
+         Dt/LxwrHw3FHQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 48F0D60A53;
-        Mon, 20 Sep 2021 09:10:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6B63260A53;
+        Mon, 20 Sep 2021 09:10:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] bnxt_en: Fix TX timeout when TX ring size is set to the
- smallest
+Subject: Re: [PATCH V2 net-next 0/6] net: wwan: iosm: fw flashing & cd collection
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163212900729.27858.970634646008254924.git-patchwork-notify@kernel.org>
-Date:   Mon, 20 Sep 2021 09:10:07 +0000
-References: <1632120712-17410-1-git-send-email-michael.chan@broadcom.com>
-In-Reply-To: <1632120712-17410-1-git-send-email-michael.chan@broadcom.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        gospo@broadcom.com
+Message-Id: <163212901143.27858.1001521725257769247.git-patchwork-notify@kernel.org>
+Date:   Mon, 20 Sep 2021 09:10:11 +0000
+References: <20210919172424.25764-1-m.chetan.kumar@linux.intel.com>
+In-Reply-To: <20210919172424.25764-1-m.chetan.kumar@linux.intel.com>
+To:     M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, krishna.c.sudi@intel.com,
+        m.chetan.kumar@intel.com, linuxwwan@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 20 Sep 2021 02:51:52 -0400 you wrote:
-> The smallest TX ring size we support must fit a TX SKB with MAX_SKB_FRAGS
-> + 1.  Because the first TX BD for a packet is always a long TX BD, we
-> need an extra TX BD to fit this packet.  Define BNXT_MIN_TX_DESC_CNT with
-> this value to make this more clear.  The current code uses a minimum
-> that is off by 1.  Fix it using this constant.
-> 
-> The tx_wake_thresh to determine when to wake up the TX queue is half the
-> ring size but we must have at least BNXT_MIN_TX_DESC_CNT for the next
-> packet which may have maximum fragments.  So the comparison of the
-> available TX BDs with tx_wake_thresh should be >= instead of > in the
-> current code.  Otherwise, at the smallest ring size, we will never wake
-> up the TX queue and will cause TX timeout.
+On Sun, 19 Sep 2021 22:54:24 +0530 you wrote:
+> This patch series brings-in support for M.2 7560 Device firmware flashing &
+> coredump collection using devlink.
+> - Driver Registers with Devlink framework.
+> - Register devlink params callback for configuring device params
+>   required in flashing or coredump flow.
+> - Implements devlink ops flash_update callback that programs modem
+>   firmware.
+> - Creates region & snapshot required for device coredump log collection.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] bnxt_en: Fix TX timeout when TX ring size is set to the smallest
-    https://git.kernel.org/netdev/net/c/5bed8b0704c9
+  - [V2,net-next,1/6] net: wwan: iosm: devlink registration
+    https://git.kernel.org/netdev/net-next/c/4dcd183fbd67
+  - [V2,net-next,2/6] net: wwan: iosm: fw flashing support
+    https://git.kernel.org/netdev/net-next/c/b55734745568
+  - [V2,net-next,3/6] net: wwan: iosm: coredump collection support
+    https://git.kernel.org/netdev/net-next/c/09e7b002ff67
+  - [V2,net-next,4/6] net: wwan: iosm: transport layer support for fw flashing/cd
+    https://git.kernel.org/netdev/net-next/c/8d9be0634181
+  - [V2,net-next,5/6] net: wwan: iosm: devlink fw flashing & cd collection documentation
+    https://git.kernel.org/netdev/net-next/c/64302024bce5
+  - [V2,net-next,6/6] net: wwan: iosm: fw flashing & cd collection infrastructure changes
+    https://git.kernel.org/netdev/net-next/c/607d574aba6e
 
 You are awesome, thank you!
 --
