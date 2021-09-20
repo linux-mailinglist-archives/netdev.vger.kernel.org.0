@@ -2,157 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEEEC4122BD
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 20:15:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22404412225
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 20:11:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347195AbhITSRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 14:17:06 -0400
-Received: from lizzy.crudebyte.com ([91.194.90.13]:44745 "EHLO
-        lizzy.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376713AbhITSOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 14:14:20 -0400
-X-Greylist: delayed 3422 seconds by postgrey-1.27 at vger.kernel.org; Mon, 20 Sep 2021 14:12:11 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
-        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=ePbeAywu/lY42TIL8si/nKq6WPM1V/jO+mL9Ww5/new=; b=MbwlD
-        X4dDCdWuky707UY47kJQkOgqtqEUYEQnJmwp7/03ZtMNBzCeUEg59cBGkT+q+TKRTNNqH6Y+KsjFY
-        ZKNm9h1o7JSKQQu9HpTXSGocK3sro9fFp9HsR9LoAPvU72ixDkjG2Xgf+cu4ZEdjx5nwkeNN0pwt5
-        2iZC9wm3jcOJ8E3Pdrx+3LR3B8RsLFYRfYBQBx7yQTNePujiPP7QAMzXpzlNWnUqD+H9risWMky3v
-        Q97bnyBjEF29zs3gkP1isdrfbLxZg8eYqQaa9OuAqRMxeEkAAl1QTeA341kpgPJYy79NKERrz9aZD
-        nkOgMWmMIZmq008e7NXQjvf7L6tBw==;
-Message-Id: <0a2c16b9acf580a679f38354b5d60a68c5fb6c99.1632156835.git.linux_oss@crudebyte.com>
-In-Reply-To: <cover.1632156835.git.linux_oss@crudebyte.com>
-References: <cover.1632156835.git.linux_oss@crudebyte.com>
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Mon, 20 Sep 2021 18:44:20 +0200
-Subject: [PATCH v2 7/7] 9p/trans_virtio: resize sg lists to whatever is
- possible
-To:     v9fs-developer@lists.sourceforge.net
-Cc:     netdev@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
+        id S1347849AbhITSNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 14:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356720AbhITSKn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 14:10:43 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A292CC03403E;
+        Mon, 20 Sep 2021 09:59:01 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id v2so11472039plp.8;
+        Mon, 20 Sep 2021 09:59:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IBSoeVVLnWYAGPb1SKm3z5sRdwBHeGdklFJrhwdB0Fk=;
+        b=mxpwn2lSSJ3JeF+MV9cVwjvjo2x+lsjCqILuSHO3fItLmVLbvGdWPgCfwpOhhTCVte
+         JfrJCqruUjbiRw3++8TJ5LGoAlVOjnhWEgb0/hs3VusIXpMs3gXoeInjf4R8JCVU8lVM
+         32ddI6pgI+0Jktv+nvvMPz53Yo1wCUTc9N2aDD1BgM0jsH3nMdU9Ag+EaUJ+eLvOutP2
+         tVEjdBwmFW3gqVmtlJpdocAv4DsUgW2+vdPqdAk6X1b5F/c9sJVBhBP/3q/2bnI2O2rn
+         y0UJKOmxMXSkDoDvE7U4JjWKF2BW9Cl7nJWUiY4o/T5MGOd2zLfs/ipxPIjXxPpielz3
+         Ljpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IBSoeVVLnWYAGPb1SKm3z5sRdwBHeGdklFJrhwdB0Fk=;
+        b=xbbZe+Ala7WDr14ucNu+j+RQITAWhHVZvQmMaar085FW1dDW3Ob5HIDpkgFB1kbR4n
+         CJ2o5BDgJUHFctRL86SjJvzNdbmguxAux2rub5OY1Qycpv9RPV0V6Lqms+hQEEtJGQ0m
+         uO39C9xZwTzIBWtWX3m+puGAaxpb0yl6H8FtDUdoV5EMOApyLQB2o5oxAgISshdD4Lwk
+         +wT996y+pCjJ5r2UeLQuMGLBj/zWC2dCmiayPES1Ab6VLF3el5vprt1ZxYMLGd/fUKGk
+         ItMaIdPEpTR4wXAifXGmyi46ShboTWt6G2nTcKphRS67ydHATlDKZtgGuBUV0LALu4RG
+         3XsQ==
+X-Gm-Message-State: AOAM531p14CLmUyTvY4f0NNBIkCiIA5rs44z5lWVAq5nPMBJPOyiLPtj
+        VHOLUQOZ1ju32djpzU4jxVCvVno9DOC/f1NKjPvauyS2F6k=
+X-Google-Smtp-Source: ABdhPJyE7NkKOF+WWXx0CNmVPrF3VW+8E2Z1M9gR0RHHAnTZAjdq0Exz4rP/3zC2M+V3qgTRcXldquMCoCUJruenex4=
+X-Received: by 2002:a17:90a:2945:: with SMTP id x5mr23757549pjf.225.1632157141127;
+ Mon, 20 Sep 2021 09:59:01 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210904064044.125549-1-yan2228598786@gmail.com>
+ <CAM_iQpWCRYXc1PAOTehgMztfbmSVF=RqudOjhZhGeP_huaKjZw@mail.gmail.com> <CALcyL7h=vS_Nmg4GfRe-SD9ZSZopCM5p6U1mojn1gncw1Nds6g@mail.gmail.com>
+In-Reply-To: <CALcyL7h=vS_Nmg4GfRe-SD9ZSZopCM5p6U1mojn1gncw1Nds6g@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 20 Sep 2021 09:58:50 -0700
+Message-ID: <CAM_iQpVB97-t+J+zEF5xzLi07+YPK6O+Ph-NyTxAHV-2=cY93Q@mail.gmail.com>
+Subject: Re: [PATCH] net: tcp_drop adds `reason` and SNMP parameters for
+ tracing v4
+To:     Zhongya Yan <yan2228598786@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, hengqi.chen@gmail.com,
+        Yonghong Song <yhs@fb.com>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Zhongya Yan <2228598786@qq.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Right now vq_sg_resize() used a lazy implementation following
-the all-or-nothing princible. So it either resized exactly to
-the requested new amount of sg lists, or it did not resize at
-all.
+On Sat, Sep 4, 2021 at 7:51 PM Zhongya Yan <yan2228598786@gmail.com> wrote:
+> Thanks for the tip!
+> See reason:https://github.com/iovisor/bcc/issues/3533
 
-The problem with this is if a user supplies a very large msize
-value, resize would simply fail and the user would stick to
-the default maximum msize supported by the virtio transport.
+This link only explains why TCP needs it, my question is why not
+do it for other protocols too, therefore neither this link nor you
+answers it.
 
-To resolve this potential issue, change vq_sg_resize() to resize
-the passed sg list to whatever is possible on the machine.
+BTW, net/core/drop_monitor.c is based on kfree_skb() tracepoint
+too, in case you are only interested in tracepoints not other things.
 
-Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
----
- net/9p/trans_virtio.c | 65 ++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 55 insertions(+), 10 deletions(-)
-
-diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index 4cb75f45aa15..b9bab7ed2768 100644
---- a/net/9p/trans_virtio.c
-+++ b/net/9p/trans_virtio.c
-@@ -205,24 +205,66 @@ static struct virtqueue_sg *vq_sg_alloc(unsigned int nsgl)
-  * amount of lists
-  * @_vq_sg: scatter/gather lists to be resized
-  * @nsgl: new amount of scatter/gather lists
-+ *
-+ * Old scatter/gather lists are retained. Only growing the size is supported.
-+ * If the requested amount cannot be satisfied, then lists are increased to
-+ * whatever is possible.
-  */
- static int vq_sg_resize(struct virtqueue_sg **_vq_sg, unsigned int nsgl)
- {
- 	struct virtqueue_sg *vq_sg;
-+	unsigned int i;
-+	size_t sz;
-+	int ret = 0;
- 
- 	BUG_ON(!_vq_sg || !nsgl);
- 	vq_sg = *_vq_sg;
-+	if (nsgl > VIRTQUEUE_SG_NSGL_MAX)
-+		nsgl = VIRTQUEUE_SG_NSGL_MAX;
- 	if (vq_sg->nsgl == nsgl)
- 		return 0;
-+	if (vq_sg->nsgl > nsgl)
-+		return -ENOTSUPP;
-+
-+	vq_sg = kzalloc(sizeof(struct virtqueue_sg) +
-+			nsgl * sizeof(struct scatterlist *),
-+			GFP_KERNEL);
- 
--	/* lazy resize implementation for now */
--	vq_sg = vq_sg_alloc(nsgl);
- 	if (!vq_sg)
- 		return -ENOMEM;
- 
--	kfree(*_vq_sg);
-+	/* copy over old scatter gather lists */
-+	sz = sizeof(struct virtqueue_sg) +
-+		(*_vq_sg)->nsgl * sizeof(struct scatterlist *);
-+	memcpy(vq_sg, *_vq_sg, sz);
-+
-+	vq_sg->nsgl = nsgl;
-+
-+	for (i = (*_vq_sg)->nsgl; i < nsgl; ++i) {
-+		vq_sg->sgl[i] = kmalloc_array(
-+			SG_MAX_SINGLE_ALLOC, sizeof(struct scatterlist),
-+			GFP_KERNEL
-+		);
-+		/*
-+		 * handle failed allocation as soft error, we take whatever
-+		 * we get
-+		 */
-+		if (!vq_sg->sgl[i]) {
-+			ret = -ENOMEM;
-+			vq_sg->nsgl = nsgl = i;
-+			break;
-+		}
-+		sg_init_table(vq_sg->sgl[i], SG_MAX_SINGLE_ALLOC);
-+		if (i) {
-+			/* chain the lists */
-+			sg_chain(vq_sg->sgl[i - 1], SG_MAX_SINGLE_ALLOC,
-+				 vq_sg->sgl[i]);
-+		}
-+	}
-+	sg_mark_end(&vq_sg->sgl[nsgl - 1][SG_MAX_SINGLE_ALLOC - 1]);
-+
- 	*_vq_sg = vq_sg;
--	return 0;
-+	return ret;
- }
- 
- /**
-@@ -839,13 +881,16 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
- 		if (nsgl > chan->vq_sg->nsgl) {
- 			/*
- 			 * if resize fails, no big deal, then just
--			 * continue with default msize instead
-+			 * continue with whatever we got
- 			 */
--			if (!vq_sg_resize(&chan->vq_sg, nsgl)) {
--				client->trans_maxsize =
--					PAGE_SIZE *
--					((nsgl * SG_USER_PAGES_PER_LIST) - 3);
--			}
-+			vq_sg_resize(&chan->vq_sg, nsgl);
-+			/*
-+			 * actual allocation size might be less than
-+			 * requested, so use vq_sg->nsgl instead of nsgl
-+			 */
-+			client->trans_maxsize =
-+				PAGE_SIZE * ((chan->vq_sg->nsgl *
-+				SG_USER_PAGES_PER_LIST) - 3);
- 		}
- #endif /* CONFIG_ARCH_NO_SG_CHAIN */
- 	}
--- 
-2.20.1
-
+Thanks.
