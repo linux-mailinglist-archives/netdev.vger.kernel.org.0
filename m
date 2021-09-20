@@ -2,205 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 990784119FC
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 18:42:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B2DD411B79
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 18:57:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239189AbhITQoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 12:44:08 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:39836 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239111AbhITQnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 12:43:53 -0400
-Received: by mail-il1-f200.google.com with SMTP id x7-20020a920607000000b002302afca41bso40908332ilg.6
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 09:42:26 -0700 (PDT)
+        id S1344422AbhITQ64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 12:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244744AbhITQ4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 12:56:46 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E05C0611C1;
+        Mon, 20 Sep 2021 09:47:57 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id c22so63562838edn.12;
+        Mon, 20 Sep 2021 09:47:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OmC4mkSbBxwC8kLlx6/wM2R6XpjuEwyOodXYfjGgidE=;
+        b=mF2Lp/wVAzjMME5ltM9Lkmv9+xWZFC1kVr+719bJYLuDlQEN8nOGBkRMEawLQhiuG0
+         skGs47cHh+4zDwTXMCT7SFpbBTbd6f0wgJPvIwn08BN7qm7RtqTrdQpGFGauAUwAIxcM
+         UzAmqLxi9kmpXUJnj/BEtYAkvy8+ok5PBwCZ+Rbl1jBMKgVyAfeWcGxD2ot5XkYXYrU9
+         PbAXoB4/IzQZYQAzgSK+4oSF2ANernNCnbJeCX7Gqv9vVTed9DieL20pP+9jZC3w93yQ
+         M/dC8C/Qo6pun2c1BAlvHlQcPwr5vg3Gju/QgsSIQRFD8CEtZRf/uUfANmbWzaCVqmMM
+         sB5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=C9bgPJJAKHZiTjYRUGh1pKnUCuslcmnrFsmX6UN6yz8=;
-        b=0IYAnca0KKbBMMNcm2tRl+2pUHS2txzKzLo0Ps3ZujVS7zAlCbMx2d4GAIiWhLmbc0
-         IzC3sBBzd43kc4smiXGSx+P1aSVRXNOFivQ6dEYOiNBQkQ4cqSkZeGM1qx3snArktyMa
-         ulWdyKc+qoW3iGHykXqjzc9BtQcMiMtX4XJNpAlqj9cg8mXSUZZIKkF1OfPiujQZOg1P
-         4na+5lOWeRHa3hcuseW+MwfdJyMDJI3CgFYPXohoU3dn5L2B6wrLLf3wLR0Sny9xdlTw
-         E8uqwrANdmCQak8/NBoMOgSFo/wVHyXaB54S41eyWE8hG1AmH5JwfigCypQeMzS5Tm/6
-         Q5pA==
-X-Gm-Message-State: AOAM533ffAXdTLR3QPKC/EYSnEOgYJzYD70+gsmmsw/2rrWEx+eCqQSg
-        QHZG6mUIjaHKYJ4o9qr9eCvxnSa171ZBSiqLjSycl9hZ5rDx
-X-Google-Smtp-Source: ABdhPJzSwr9wgDAY+h7m1h+cIo2EGzmzJEkTDbW+AkixhabT/QDe4yuZWFgW1FMalsYYogbJDrNztfGD1xu4tRIgH/FcZIU7C7K+
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OmC4mkSbBxwC8kLlx6/wM2R6XpjuEwyOodXYfjGgidE=;
+        b=inTXyHhaToR3SvE87vTuCpva1GGLhGmCJlow5/IM/gs8vMfdg6MzBwx9tlalnDJUBV
+         eDc2DzATlrwLny23HPJ0Fe/bzdDu7jlNyQVFlIriytFsdRH847Vn9CJ4NqCIjuDbd3Wf
+         oA5/4mdNUT+Fb6CNg97BdP4O+U7Mk3bkbSKCc1rja+ZZ4p+U0e1aZUIRV23Amo0FU5Ix
+         3dJpt5Vl9zeRfqRbmV+PH53hhB7s3WIbCM93mW+m31c/3ya0EOdtJzoDagCnHzhoN+YO
+         JRBnMP2uyXTitQpqgNh1VKjdALlYua0DFqcg6Riv0WJ1xg8mCtXpZRrO/oRSHPJUMXbP
+         jZNQ==
+X-Gm-Message-State: AOAM532jhs8Xd8jlOfdd8Jq3JTNfhfB+czBPzl5oPkROdadJDMQwj92n
+        DJn7UzJ+FtUlQn7j0D3sf/8=
+X-Google-Smtp-Source: ABdhPJw5/Agktydvv4Utlp8p45PSSck6BL+WgUQ5syHxOcwNNIn/9LMS9wmFpelueiLTYFB/m6WCWA==
+X-Received: by 2002:a17:907:1b06:: with SMTP id mp6mr28517224ejc.188.1632156475572;
+        Mon, 20 Sep 2021 09:47:55 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-67-254.ip85.fastwebnet.it. [93.42.67.254])
+        by smtp.googlemail.com with ESMTPSA id 6sm6385232ejx.82.2021.09.20.09.47.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Sep 2021 09:47:55 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [net-next PATCH 0/1] Sgmii fix for qca8k qca8327 switch
+Date:   Mon, 20 Sep 2021 18:47:44 +0200
+Message-Id: <20210920164745.30162-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8715:: with SMTP id u21mr19933674iom.1.1632156146651;
- Mon, 20 Sep 2021 09:42:26 -0700 (PDT)
-Date:   Mon, 20 Sep 2021 09:42:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000056d7e405cc6ff799@google.com>
-Subject: [syzbot] possible deadlock in rlb_choose_channel
-From:   syzbot <syzbot+0d07f7d98d8d2774f1ce@syzkaller.appspotmail.com>
-To:     andy@greyhouse.net, davem@davemloft.net, j.vosburgh@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        vfalico@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Some background for this. As stated in other patch, we are testing
+qca8327 switch in various device. We tought this was a specific
+configuration of the switch and needed special binding to disable pll on
+sgmii port. With a better analysis of the original qca driver it was
+discovered that pll was only enabled on switch revision 1.
 
-syzbot found the following issue on:
+By testing the same configuration with a qca8337 switch that have a
+revision 2, using the secondary cpu port (set as sgmii) as primary
+(removed the first cpu port from dts and updated the driver to use the
+secondary cpu port port6 for everything) confirmed that pll enabled is
+not actually needed and all works correctly.
+Different case for another router with a qca8327 switch that with the
+extra option enabled doesn't work at all and no traffic can be detected.
 
-HEAD commit:    02319bf15acf net: dsa: bcm_sf2: Fix array overrun in bcm_s..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=129d5527300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6d93fe4341f98704
-dashboard link: https://syzkaller.appspot.com/bug?extid=0d07f7d98d8d2774f1ce
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Also in the original driver the signal detection (SD bit 4) is never
+enabled. Having that enabled doesn't seems to give any problem so i
+won't disable that, but i'm just pointing this out to think about it.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Don't know if that should be disabled or not but the pll changes is
+absolutely needed as in some case it cause the malfunction of the entire
+connection.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+0d07f7d98d8d2774f1ce@syzkaller.appspotmail.com
+Ansuel Smith (1):
+  drivers: net: dsa: qca8k: fix sgmii with some specific switch revision
 
-============================================
-WARNING: possible recursive locking detected
-5.15.0-rc1-syzkaller #0 Not tainted
---------------------------------------------
-syz-executor.3/31558 is trying to acquire lock:
-ffff88802cb74cd8 (&bond->mode_lock){+.-.}-{2:2}, at: spin_lock include/linux/spinlock.h:363 [inline]
-ffff88802cb74cd8 (&bond->mode_lock){+.-.}-{2:2}, at: rlb_choose_channel+0x2e/0x12e0 drivers/net/bonding/bond_alb.c:560
+ drivers/net/dsa/qca8k.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-but task is already holding lock:
-ffff8880789f4cd8 (&bond->mode_lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:368 [inline]
-ffff8880789f4cd8 (&bond->mode_lock){+.-.}-{2:2}, at: bond_3ad_unbind_slave+0xae/0x1fe0 drivers/net/bonding/bond_3ad.c:2104
+-- 
+2.32.0
 
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&bond->mode_lock);
-  lock(&bond->mode_lock);
-
- *** DEADLOCK ***
-
- May be due to missing lock nesting notation
-
-8 locks held by syz-executor.3/31558:
- #0: ffffffff8d0e38e8 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
- #0: ffffffff8d0e38e8 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3be/0xb80 net/core/rtnetlink.c:5569
- #1: ffff8880789f4cd8 (&bond->mode_lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:368 [inline]
- #1: ffff8880789f4cd8 (&bond->mode_lock){+.-.}-{2:2}, at: bond_3ad_unbind_slave+0xae/0x1fe0 drivers/net/bonding/bond_3ad.c:2104
- #2: ffffffff8b97fdc0 (rcu_read_lock_bh){....}-{1:2}, at: __dev_queue_xmit+0x1d5/0x36e0 net/core/dev.c:4136
- #3: ffff888075d89258 (dev->qdisc_tx_busylock ?: &qdisc_tx_busylock){+.-.}-{2:2}, at: spin_trylock include/linux/spinlock.h:373 [inline]
- #3: ffff888075d89258 (dev->qdisc_tx_busylock ?: &qdisc_tx_busylock){+.-.}-{2:2}, at: qdisc_run_begin include/net/sch_generic.h:173 [inline]
- #3: ffff888075d89258 (dev->qdisc_tx_busylock ?: &qdisc_tx_busylock){+.-.}-{2:2}, at: __dev_xmit_skb net/core/dev.c:3790 [inline]
- #3: ffff888075d89258 (dev->qdisc_tx_busylock ?: &qdisc_tx_busylock){+.-.}-{2:2}, at: __dev_queue_xmit+0x1222/0x36e0 net/core/dev.c:4170
- #4: ffffffff8b97fdc0 (rcu_read_lock_bh){....}-{1:2}, at: lwtunnel_xmit_redirect include/net/lwtunnel.h:95 [inline]
- #4: ffffffff8b97fdc0 (rcu_read_lock_bh){....}-{1:2}, at: ip_finish_output2+0x28b/0x2140 net/ipv4/ip_output.c:207
- #5: ffffffff8b97fdc0 (rcu_read_lock_bh){....}-{1:2}, at: __dev_queue_xmit+0x1d5/0x36e0 net/core/dev.c:4136
- #6: ffff888019d8e148 (dev->qdisc_running_key ?: &qdisc_running_key){+...}-{0:0}, at: arp_xmit_finish net/ipv4/arp.c:632 [inline]
- #6: ffff888019d8e148 (dev->qdisc_running_key ?: &qdisc_running_key){+...}-{0:0}, at: NF_HOOK include/linux/netfilter.h:307 [inline]
- #6: ffff888019d8e148 (dev->qdisc_running_key ?: &qdisc_running_key){+...}-{0:0}, at: NF_HOOK include/linux/netfilter.h:301 [inline]
- #6: ffff888019d8e148 (dev->qdisc_running_key ?: &qdisc_running_key){+...}-{0:0}, at: arp_xmit+0x8d/0xc0 net/ipv4/arp.c:641
- #7: ffffffff8b97fe20 (rcu_read_lock){....}-{1:2}, at: is_netpoll_tx_blocked include/net/bonding.h:109 [inline]
- #7: ffffffff8b97fe20 (rcu_read_lock){....}-{1:2}, at: bond_start_xmit+0x88/0x1220 drivers/net/bonding/bond_main.c:5091
-
-stack backtrace:
-CPU: 1 PID: 31558 Comm: syz-executor.3 Not tainted 5.15.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_deadlock_bug kernel/locking/lockdep.c:2944 [inline]
- check_deadlock kernel/locking/lockdep.c:2987 [inline]
- validate_chain kernel/locking/lockdep.c:3776 [inline]
- __lock_acquire.cold+0x149/0x3ab kernel/locking/lockdep.c:5015
- lock_acquire kernel/locking/lockdep.c:5625 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5590
- __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
- _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
- spin_lock include/linux/spinlock.h:363 [inline]
- rlb_choose_channel+0x2e/0x12e0 drivers/net/bonding/bond_alb.c:560
- rlb_arp_xmit drivers/net/bonding/bond_alb.c:680 [inline]
- bond_xmit_alb_slave_get+0x794/0x1ae0 drivers/net/bonding/bond_alb.c:1457
- bond_alb_xmit+0x20/0x40 drivers/net/bonding/bond_alb.c:1492
- __bond_start_xmit drivers/net/bonding/bond_main.c:5072 [inline]
- bond_start_xmit+0xaad/0x1220 drivers/net/bonding/bond_main.c:5096
- __netdev_start_xmit include/linux/netdevice.h:4988 [inline]
- netdev_start_xmit include/linux/netdevice.h:5002 [inline]
- xmit_one net/core/dev.c:3576 [inline]
- dev_hard_start_xmit+0x1eb/0x920 net/core/dev.c:3592
- sch_direct_xmit+0x19f/0xbc0 net/sched/sch_generic.c:342
- qdisc_restart net/sched/sch_generic.c:407 [inline]
- __qdisc_run+0x4bc/0x1700 net/sched/sch_generic.c:415
- __dev_xmit_skb net/core/dev.c:3861 [inline]
- __dev_queue_xmit+0x1f9c/0x36e0 net/core/dev.c:4170
- arp_xmit_finish net/ipv4/arp.c:632 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- NF_HOOK include/linux/netfilter.h:301 [inline]
- arp_xmit+0x8d/0xc0 net/ipv4/arp.c:641
- arp_send_dst net/ipv4/arp.c:319 [inline]
- arp_send_dst+0x1f2/0x230 net/ipv4/arp.c:300
- arp_solicit+0x471/0x1230 net/ipv4/arp.c:391
- neigh_probe+0xc2/0x110 net/core/neighbour.c:1011
- __neigh_event_send+0x37d/0x1570 net/core/neighbour.c:1172
- neigh_event_send include/net/neighbour.h:444 [inline]
- neigh_resolve_output+0x538/0x820 net/core/neighbour.c:1476
- neigh_output include/net/neighbour.h:510 [inline]
- ip_finish_output2+0x813/0x2140 net/ipv4/ip_output.c:221
- __ip_finish_output net/ipv4/ip_output.c:299 [inline]
- __ip_finish_output+0x396/0x640 net/ipv4/ip_output.c:281
- ip_finish_output+0x32/0x200 net/ipv4/ip_output.c:309
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip_output+0x196/0x310 net/ipv4/ip_output.c:423
- dst_output include/net/dst.h:450 [inline]
- ip_local_out+0xaf/0x1a0 net/ipv4/ip_output.c:126
- iptunnel_xmit+0x628/0xa50 net/ipv4/ip_tunnel_core.c:82
- ip_tunnel_xmit+0x10a6/0x2b60 net/ipv4/ip_tunnel.c:810
- gre_tap_xmit+0x4ff/0x630 net/ipv4/ip_gre.c:740
- __netdev_start_xmit include/linux/netdevice.h:4988 [inline]
- netdev_start_xmit include/linux/netdevice.h:5002 [inline]
- xmit_one net/core/dev.c:3576 [inline]
- dev_hard_start_xmit+0x1eb/0x920 net/core/dev.c:3592
- sch_direct_xmit+0x19f/0xbc0 net/sched/sch_generic.c:342
- __dev_xmit_skb net/core/dev.c:3803 [inline]
- __dev_queue_xmit+0x1489/0x36e0 net/core/dev.c:4170
- ad_lacpdu_send+0x577/0x6c0 drivers/net/bonding/bond_3ad.c:869
- bond_3ad_unbind_slave+0x88c/0x1fe0 drivers/net/bonding/bond_3ad.c:2123
- __bond_release_one+0x52a/0x5f0 drivers/net/bonding/bond_main.c:2333
- bond_uninit+0x107/0x170 drivers/net/bonding/bond_main.c:5456
- unregister_netdevice_many+0xc85/0x1790 net/core/dev.c:11056
- rtnl_delete_link net/core/rtnetlink.c:3063 [inline]
- rtnl_dellink+0x354/0xa80 net/core/rtnetlink.c:3115
- rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5572
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
- __sys_sendmsg+0xf3/0x1c0 net/socket.c:2492
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fb82d9dc739
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb82aef0188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fb82dae11a8 RCX: 00007fb82d9dc739
-RDX: 0000000000000000 RSI: 00000000200002c0 RDI: 0000000000000006
-RBP: 00007fb82da36cc4 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fb82dae11a8
-R13: 00007ffd300c52ef R14: 00007fb82aef0300 R15: 0000000000022000
-bond9 (unregistering): (slave gretap1): Releasing backup interface
-bond9 (unregistering): Released all slaves
-syz-executor.3 (31558) used greatest stack depth: 20712 bytes left
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
