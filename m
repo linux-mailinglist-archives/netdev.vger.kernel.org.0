@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F76C41178D
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 16:51:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCD9D4117D8
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 17:08:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241127AbhITOw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 10:52:29 -0400
-Received: from mout.perfora.net ([74.208.4.196]:54421 "EHLO mout.perfora.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241028AbhITOwM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 10:52:12 -0400
-Received: from toolbox.cardiotech.int ([81.221.236.183]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1Mjjrb-1n8q2D1Ot1-00lCrF;
- Mon, 20 Sep 2021 16:50:10 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Otavio Salvador <otavio@ossystems.com.br>,
-        Pascal Zimmermann <pzimmermann@dh-electronics.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v4 6/9] ARM: imx_v6_v7_defconfig: enable bpf syscall and cgroup bpf
-Date:   Mon, 20 Sep 2021 16:49:35 +0200
-Message-Id: <20210920144938.314588-7-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210920144938.314588-1-marcel@ziswiler.com>
-References: <20210920144938.314588-1-marcel@ziswiler.com>
+        id S241141AbhITPKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 11:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235723AbhITPKV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 11:10:21 -0400
+X-Greylist: delayed 516 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 20 Sep 2021 08:08:54 PDT
+Received: from mx0a-00190b01.pphosted.com (mx0a-00190b01.pphosted.com [IPv6:2620:100:9001:583::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A7EC061574
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 08:08:54 -0700 (PDT)
+Received: from pps.filterd (m0122332.ppops.net [127.0.0.1])
+        by mx0a-00190b01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18KCk5mJ014016;
+        Mon, 20 Sep 2021 16:00:15 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=jan2016.eng; bh=hhQbPMwcmJgmRIkBudZtpb385Xq0TgP2uCYZ+G1IAQc=;
+ b=FrJqB+HefseuW+H2EXeXInc6BbICEhaXOBPulqJ2OLroEbywrYz20s8AgbU8hONp9XMO
+ fxWJth9EenmD4Xfc31fPeso/QbmuqnGpziWoWXU0Bzp8YNeZ8qQMmMu+HQ5AF+Yew5Ez
+ TH8vBIAvuJcwKh670KJZJ/4rsxo9v/tZKVKQR0oedck+Vwhra5q1BnpYUkqPNeSJR52r
+ +QzSwIPgisKf8COCaAa5A36qKHptWloEwk2kHvLBzr+mHTV8epoUFj1Em9h5Hr6oN4hI
+ UZurmNDivWHep8ctpTyNX7t2amJX4ecqt4qfMKdXSa2gGiu1ZajRSsFb0KeZIuYJKJhn +Q== 
+Received: from prod-mail-ppoint3 (a72-247-45-31.deploy.static.akamaitechnologies.com [72.247.45.31] (may be forged))
+        by mx0a-00190b01.pphosted.com with ESMTP id 3b6fa8rvp2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 20 Sep 2021 16:00:14 +0100
+Received: from pps.filterd (prod-mail-ppoint3.akamai.com [127.0.0.1])
+        by prod-mail-ppoint3.akamai.com (8.16.1.2/8.16.1.2) with SMTP id 18KEns9T027277;
+        Mon, 20 Sep 2021 11:00:03 -0400
+Received: from prod-mail-relay19.dfw02.corp.akamai.com ([172.27.165.173])
+        by prod-mail-ppoint3.akamai.com with ESMTP id 3b5wd78jqp-1;
+        Mon, 20 Sep 2021 11:00:03 -0400
+Received: from bos-mpr1x.145bw.corp.akamai.com (bos-mpr1x.bos01.corp.akamai.com [172.19.44.209])
+        by prod-mail-relay19.dfw02.corp.akamai.com (Postfix) with ESMTP id 60822601E3;
+        Mon, 20 Sep 2021 15:00:03 +0000 (GMT)
+From:   Puneet Sharma <pusharma@akamai.com>
+To:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        dsahern@kernel.org
+Cc:     amritha.nambiar@intel.com
+Subject: [PATCH iproute2] tc/f_flower: fix port range parsing
+Date:   Mon, 20 Sep 2021 11:00:01 -0400
+Message-Id: <20210920150001.40823-1-pusharma@akamai.com>
+X-Mailer: git-send-email 2.24.1 (Apple Git-126)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:2X/SNXi3Lmk1Ia0b42n9eWIMa40a0ZupsaW5tY7CHbXXHbe9eAF
- v/DBKmFy02usMjtk/gojrg8Ca+ReMNg/FZFr03O1lJXU2Kf5U0c+mS7cdiHzErEWGuJ/izz
- jxZEc2CWt5bTcehJamguMU+3YR4fV3L3BpPWWD1sIc+82dx4AtUc+Z1GX2BLqlFeiAxGFRs
- Nku6I6DqsT3ArLvxAuwaw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:x+gGuuTIlMY=:8+TA1j6FYwJXvc+iFXc1fe
- viLxkkSVK6LDO46ypj5VT+h8IeRXfAvxSKeQlQxgeSD73oeGP0uzJtH7Boe8eugdcH4W27vb3
- 3LriU7IWTnuiYkxPPjDkda8Nh/DiTQSBr20ggclD05Vrf2Y/22QaikpiQtBnnOCpndl5V5l9V
- j6WFA2YMaMXepfl4lNn+s4pYR1qQ0iPkli+F4pLTdMh8jYJfQJActxaD250gKAsDocvF9yfgs
- c8Qy4mezCN1noBGjJmCJVCXxJ8O91oWHhEV8lz2vHQXnxVDpJEDDkr44ks/yD5zL73sFQHHlA
- n9DihAV/KPgtQeihRLFhldvBbX57C6NwxKQ8mrnxNjoZhUzntlX/uI+2KITT/FpREjdK4uMyP
- 4CklpCCMcg9p1MTQtspq/fkcN1S8plZtK/MxlzCWvKpHWEVAcRTFmU6Vytkir47ELVTJtvCBe
- pk97U0QIFe7Um5tlq5Hd5neZ/kTNCUrFPWbuRjPGbuGZ0/69EqkNQhxzMzNPIlOgaoo/CMutO
- 9V3Tl0+VOW3huVXMRZNIFNIrX5bwDQ8b2mly8JmnVH9hzsf1sbJyAxCXCcqfTv+ZWG+RQm/zV
- fafscOJzZFiIBPTQAfSTznmCbOjivW+Oc1bxQaUERVNCIEaKqQTu64gcMwEGbj7Gmz6sj8vsz
- 8GG9cj1n8OH1Wg+fC4QNlrwlAzwRDdSpBeOei2NTBUqbO7agGxIdMbxh5yyaW9bktRFqcwHHt
- Il+Tfmic7Qd4gSXQWqQsAnAoeP7Yp4otqoyeHQ==
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-09-20_07:2021-09-20,2021-09-20 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=2 bulkscore=0
+ mlxlogscore=999 suspectscore=0 phishscore=0 malwarescore=0 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109200095
+X-Proofpoint-GUID: MEDqXjXvBigk0qn4JemeStUkiu2DJ7G7
+X-Proofpoint-ORIG-GUID: MEDqXjXvBigk0qn4JemeStUkiu2DJ7G7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-20_07,2021-09-20_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=1 impostorscore=0
+ lowpriorityscore=0 mlxlogscore=999 malwarescore=0 suspectscore=0
+ mlxscore=0 spamscore=0 clxscore=1031 phishscore=0 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109200096
+X-Agari-Authentication-Results: mx.akamai.com; spf=${SPFResult} (sender IP is 72.247.45.31)
+ smtp.mailfrom=pusharma@akamai.com smtp.helo=prod-mail-ppoint3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Provided port range in tc rule are parsed incorrectly.
+Even though range is passed as min-max. It throws an error.
 
-Enable CONFIG_BPF_SYSCALL and CONFIG_CGROUP_BPF to allow for systemd
-interoperability. This avoids the following failure on boot:
+$ tc filter add dev eth0 ingress handle 100 priority 10000 protocol ipv4 flower ip_proto tcp dst_port 10368-61000 action pass
+max value should be greater than min value
+Illegal "dst_port"
 
-[   10.615914] systemd[1]: system-getty.slice: unit configures an IP
- firewall, but the local system does not support BPF/cgroup firewalling.
-
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-
+Fixes: 8930840e678b ("tc: flower: Classify packets based port ranges")
+Signed-off-by: Puneet Sharma pusharma@akamai.com
 ---
+ tc/f_flower.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-(no changes since v3)
-
-Changes in v3:
-- Add Fabio's reviewed-by. Thanks!
-
- arch/arm/configs/imx_v6_v7_defconfig | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/arm/configs/imx_v6_v7_defconfig b/arch/arm/configs/imx_v6_v7_defconfig
-index c0008b7faf2ce..3e58c76763563 100644
---- a/arch/arm/configs/imx_v6_v7_defconfig
-+++ b/arch/arm/configs/imx_v6_v7_defconfig
-@@ -2,11 +2,13 @@ CONFIG_KERNEL_LZO=y
- CONFIG_SYSVIPC=y
- CONFIG_NO_HZ=y
- CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_BPF_SYSCALL=y
- CONFIG_PREEMPT_VOLUNTARY=y
- CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
- CONFIG_LOG_BUF_SHIFT=18
- CONFIG_CGROUPS=y
-+CONFIG_CGROUP_BPF=y
- CONFIG_RELAY=y
- CONFIG_BLK_DEV_INITRD=y
- CONFIG_EXPERT=y
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 53822a95..3af820a6 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -724,7 +724,7 @@ static int flower_parse_port(char *str, __u8 ip_proto,
+ 	if (min && max) {
+ 		__be16 min_port_type, max_port_type;
+ 
+-		if (max <= min) {
++		if (ntohs(max) <= ntohs(min)) {
+ 			fprintf(stderr, "max value should be greater than min value\n");
+ 			return -1;
+ 		}
 -- 
-2.26.2
+2.24.1 (Apple Git-126)
 
