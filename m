@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB32D411239
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 11:52:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10AF641123E
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 11:52:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236979AbhITJxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 05:53:34 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:11415 "EHLO
+        id S236556AbhITJxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 05:53:40 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:34025 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236534AbhITJw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 05:52:59 -0400
+        with ESMTP id S236564AbhITJxC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 05:53:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1632131492; x=1663667492;
+  t=1632131496; x=1663667496;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ZEHpommCSL8ojew2FKcV/eSvyPSOisfjZXiNWmXORXQ=;
-  b=uAxNDDin+q8p2ErUHeNFaepLceXUxu4NJkNTk7Hc5hF0Qtz05/JsKYXY
-   qauiAuzbaxGC0sTtdK+Ht3kr9nS7oPKRsgTaLTBsj7kCxrZUwJFHCrAfy
-   TfY6vdMIhbKQXYJ4FwHFtKPyGblhGBsX/lRPeLOL5Sv6ZB0hIWVGcPsT0
-   l1YroYFFAzs8gUbB4fxqkzrZwZLdEsOovO0QHetWXv7ZZAkbuk/YTTqlr
-   xlohoi5dL6jdmQ9qr/u5L2MQGRGIC7k7YDREY0HNV4eqRH8F3neI9ir3U
-   tfMfpYGM41mkIn/LMjVQtUFoq11dQACq6/FLhx2EIQtfkDTc9SKNY91fA
-   w==;
-IronPort-SDR: /VIa/E1EPeAc4amqqBCs797uYYeQ+iKJohFqTZvxAroYcVpxBMbeOkpgo292OGc3PMDu71kYZ1
- U03DqAils8YMz5lDMtCUjWg8/gxs56rcJBiIruPTIOI4+UrDi1Njpmn7mEiYAU1DTI6t4+9HZX
- o7ZCp8EpBlYpC16ddMldHeonBlQZVMzQQqDFhGKG0yuOH+F/sy+DvYBtwLueRguTD2Ulg7ryVN
- sQTl5n7X3jNDuB09rCIppRhF7lj3dqHabddfb0II40yH0b7qz01PcHMdI/CHHYky4usJgHPFge
- +1wI3BT7DaGSVuJJTAbIlkKF
+  bh=V0cRVTs8okspyQRslFZu0Mma4o7oiAMrkzAAMlvxVPM=;
+  b=rf21rt38Wnuqvvov3xlpOJFV8cu21D05Vv/Uet/Yws7AI8Xd1O9KB2c3
+   69u/6hF+jY0Ru07sdrC/OLGCgD2mn+rqq/onOtd9+p4U8l3FyR5Eh4bDa
+   6V4qcLqFs6rqpN8iDzIAKK8jiEPjC6bTUCoQO6/oBz2ZS8skA/XgBBWtX
+   6hsZzMMxUTFetn0/9R88JFyZeN4YSm/s+EPcD9fvzNd66iOQkuZP/ZjKA
+   RYaiobMSwMkdHgNM5goA7NHF2rlp0AUmhfmyvJ4p8HPluTajMdYXmAWjb
+   RG2WVpIQdUXb9Mo6FJPkDH1XjELxWFmr26qJBVqSe7BUKVWVFhxe9Xyp4
+   g==;
+IronPort-SDR: XN/p8TY7fE99+HQpujKoIm22iH0+Fx/3OaJVNsR9dx7iK9eXeYwObLGCXNEgkO/JYorAdxS0X8
+ Doze4XnidpLfc4rgpuv0wAZW5NIqzVholGlE8SjYrzEdvaqtMkX12n5wsTmkLs6CpX7+bszQ8C
+ GIg7HGyxtdw8yswSeebA0SkOeySJFKgz8PzB9Bsokth5b863i9/d3tlw6sFWnG2HEB/2cReJwf
+ W4MquQUrM0xcZmOFkN+VnKm4JTf3okMXJoGj+o5SXRIPsXBy1EJLdsgpIk4pUJbh+NsoIP98/Q
+ 3JrbkpUS24n0beCgXOU1OXdD
 X-IronPort-AV: E=Sophos;i="5.85,308,1624345200"; 
-   d="scan'208";a="137192394"
+   d="scan'208";a="136598682"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Sep 2021 02:51:31 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Sep 2021 02:51:35 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Mon, 20 Sep 2021 02:51:31 -0700
+ 15.1.2176.14; Mon, 20 Sep 2021 02:51:34 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Mon, 20 Sep 2021 02:51:28 -0700
+ 15.1.2176.14 via Frontend Transport; Mon, 20 Sep 2021 02:51:31 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
         <andrew@lunn.ch>, <linux@armlinux.org.uk>, <f.fainelli@gmail.com>,
@@ -48,9 +48,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-phy@lists.infradead.org>, <linux-pm@vger.kernel.org>
 CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [RFC PATCH net-next 06/12] dt-bindings: reset: Add lan966x power reset bindings
-Date:   Mon, 20 Sep 2021 11:52:12 +0200
-Message-ID: <20210920095218.1108151-7-horatiu.vultur@microchip.com>
+Subject: [RFC PATCH net-next 07/12] power: reset: Add lan966x power reset driver
+Date:   Mon, 20 Sep 2021 11:52:13 +0200
+Message-ID: <20210920095218.1108151-8-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210920095218.1108151-1-horatiu.vultur@microchip.com>
 References: <20210920095218.1108151-1-horatiu.vultur@microchip.com>
@@ -61,69 +61,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document the lan966x power reset device driver bindings
+This adds a driver for lan966x to allow a software reset.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- .../bindings/power/lan966x,power.yaml         | 49 +++++++++++++++++++
- 1 file changed, 49 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/power/lan966x,power.yaml
+ drivers/power/reset/Kconfig         |  6 ++
+ drivers/power/reset/Makefile        |  1 +
+ drivers/power/reset/lan966x-reset.c | 90 +++++++++++++++++++++++++++++
+ 3 files changed, 97 insertions(+)
+ create mode 100644 drivers/power/reset/lan966x-reset.c
 
-diff --git a/Documentation/devicetree/bindings/power/lan966x,power.yaml b/Documentation/devicetree/bindings/power/lan966x,power.yaml
+diff --git a/drivers/power/reset/Kconfig b/drivers/power/reset/Kconfig
+index 4b563db3ab3e..755b60c143da 100644
+--- a/drivers/power/reset/Kconfig
++++ b/drivers/power/reset/Kconfig
+@@ -158,6 +158,12 @@ config POWER_RESET_PIIX4_POWEROFF
+ 	  southbridge SOff state is entered in response to a request to
+ 	  power off the system.
+ 
++config POWER_RESET_LAN966X
++	bool "Microchip Lan966x reset driver"
++	select MFD_SYSCON
++	help
++	  This driver supports restart for Microchip Lan966x.
++
+ config POWER_RESET_LTC2952
+ 	bool "LTC2952 PowerPath power-off driver"
+ 	depends on OF_GPIO
+diff --git a/drivers/power/reset/Makefile b/drivers/power/reset/Makefile
+index f606a2f60539..0fbc817c4eb6 100644
+--- a/drivers/power/reset/Makefile
++++ b/drivers/power/reset/Makefile
+@@ -18,6 +18,7 @@ obj-$(CONFIG_POWER_RESET_OXNAS) += oxnas-restart.o
+ obj-$(CONFIG_POWER_RESET_QCOM_PON) += qcom-pon.o
+ obj-$(CONFIG_POWER_RESET_OCELOT_RESET) += ocelot-reset.o
+ obj-$(CONFIG_POWER_RESET_PIIX4_POWEROFF) += piix4-poweroff.o
++obj-$(CONFIG_POWER_RESET_LAN966X) += lan966x-reset.o
+ obj-$(CONFIG_POWER_RESET_LTC2952) += ltc2952-poweroff.o
+ obj-$(CONFIG_POWER_RESET_QNAP) += qnap-poweroff.o
+ obj-$(CONFIG_POWER_RESET_REGULATOR) += regulator-poweroff.o
+diff --git a/drivers/power/reset/lan966x-reset.c b/drivers/power/reset/lan966x-reset.c
 new file mode 100644
-index 000000000000..d10eec10089b
+index 000000000000..612705b680fe
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/power/lan966x,power.yaml
-@@ -0,0 +1,49 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/power/lan966x,power.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++++ b/drivers/power/reset/lan966x-reset.c
+@@ -0,0 +1,90 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * License: Dual MIT/GPL
++ * Copyright (c) 2020 Microchip Corporation
++ */
++#include <linux/delay.h>
++#include <linux/io.h>
++#include <linux/notifier.h>
++#include <linux/mfd/syscon.h>
++#include <linux/of_address.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <linux/reboot.h>
++#include <linux/regmap.h>
 +
-+title: Microchip Lan966x Power Reset Controller
++static const char *cpu_syscon = "microchip,lan966x-cpu-syscon";
++static const char *gcb_syscon = "microchip,lan966x-switch-syscon";
 +
-+maintainers:
-+  - Horatiu Vultur <horatiu.vultur@microchip.com>
-+  - UNGLinuxDriver@microchip.com
++struct lan966x_reset_context {
++	struct regmap *gcb_ctrl;
++	struct regmap *cpu_ctrl;
++	struct notifier_block restart_handler;
++};
 +
-+description: |
-+  The Microchip Lan966x SoC provides power reset control.
++#define PROTECT_REG    0x88
++#define PROTECT_BIT    BIT(5)
++#define SOFT_RESET_REG 0x00
++#define SOFT_RESET_BIT BIT(1)
 +
-+properties:
-+  $nodename:
-+    pattern: "^chip-controller$"
++static int lan966x_restart_handle(struct notifier_block *this,
++				  unsigned long mode, void *cmd)
++{
++	struct lan966x_reset_context *ctx = container_of(this, struct lan966x_reset_context,
++							restart_handler);
 +
-+  compatible:
-+    const: microchip,lan966x-chip-reset
++	/* Make sure the core is not protected from reset */
++	regmap_update_bits(ctx->cpu_ctrl, PROTECT_REG, PROTECT_BIT, 0);
 +
-+  "#reset-cells":
-+    const: 1
++	pr_emerg("Resetting SoC\n");
 +
-+  cpu-syscon:
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+    description: syscon used to access CPU reset
++	regmap_write(ctx->gcb_ctrl, SOFT_RESET_REG, SOFT_RESET_BIT);
 +
-+  switch-syscon:
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+    description: syscon used to access SWITCH reset
++	pr_emerg("Unable to restart system\n");
++	return NOTIFY_DONE;
++}
 +
-+required:
-+  - compatible
-+  - "#reset-cells"
-+  - cpu-syscon
-+  - switch-syscon
++static int lan966x_reset_probe(struct platform_device *pdev)
++{
++	struct lan966x_reset_context *ctx;
++	struct device *dev = &pdev->dev;
++	int err;
 +
-+additionalProperties: false
++	ctx = devm_kzalloc(&pdev->dev, sizeof(*ctx), GFP_KERNEL);
++	if (!ctx)
++		return -ENOMEM;
 +
-+examples:
-+  - |
-+    reset: chip-controller {
-+        compatible = "microchip,lan966x-chip-reset";
-+        #reset-cells = <1>;
-+        cpu-syscon = <&cpu_ctrl>;
-+        switch-syscon = <&switch_ctrl>;
-+    };
++	ctx->gcb_ctrl = syscon_regmap_lookup_by_compatible(gcb_syscon);
++	if (IS_ERR(ctx->gcb_ctrl)) {
++		dev_err(dev, "No gcb_syscon map: %s\n", gcb_syscon);
++		return PTR_ERR(ctx->gcb_ctrl);
++	}
++
++	ctx->cpu_ctrl = syscon_regmap_lookup_by_compatible(cpu_syscon);
++	if (IS_ERR(ctx->cpu_ctrl)) {
++		dev_err(dev, "No cpu_syscon map: %s\n", cpu_syscon);
++		return PTR_ERR(ctx->cpu_ctrl);
++	}
++
++	ctx->restart_handler.notifier_call = lan966x_restart_handle;
++	ctx->restart_handler.priority = 192;
++	err = register_restart_handler(&ctx->restart_handler);
++	if (err)
++		dev_err(dev, "can't register restart notifier (err=%d)\n", err);
++
++	return err;
++}
++
++static const struct of_device_id lan966x_reset_of_match[] = {
++	{ .compatible = "microchip,lan966x-chip-reset", },
++	{ /*sentinel*/ }
++};
++
++static struct platform_driver lan966x_reset_driver = {
++	.probe = lan966x_reset_probe,
++	.driver = {
++		.name = "lan966x-chip-reset",
++		.of_match_table = lan966x_reset_of_match,
++	},
++};
++builtin_platform_driver(lan966x_reset_driver);
 -- 
 2.31.1
 
