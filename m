@@ -2,110 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E329E41148E
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:34:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC01A411495
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 14:34:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238383AbhITMfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 08:35:31 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:35062 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233066AbhITMfa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 08:35:30 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 18KCXqMP098780;
-        Mon, 20 Sep 2021 07:33:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1632141232;
-        bh=0qDxJRZQTjlN4ImylXnG13bIrn2pKRdM3+BUIaf+tN0=;
-        h=From:To:CC:Subject:Date;
-        b=cTAq1l4BEjbIH6si+3oGNsExaUAyd47Gjs/rqW/TsahJjzeJUhMi1Fi/tK7i4U+Ud
-         IR/WG6Om2lsT0VxC5fRpYjpT3C22oWgjd7C8qp0Mn9HU1irBYlZzx9dizVRP4dCKN0
-         NppnjLT8dBML+8tZeraH441DkNTWNxeXEAx7t/A8=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 18KCXqfl125518
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 20 Sep 2021 07:33:52 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 20
- Sep 2021 07:33:51 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 20 Sep 2021 07:33:51 -0500
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 18KCXl5l085969;
-        Mon, 20 Sep 2021 07:33:48 -0500
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     Lokesh Vutla <lokeshvutla@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matt Kline <matt@bitbashing.io>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] can: m_can: m_can_platform: Fix iomap_read_fifo() and iomap_write_fifo()
-Date:   Mon, 20 Sep 2021 18:03:43 +0530
-Message-ID: <20210920123344.2320-1-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S238456AbhITMgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 08:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233550AbhITMgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 08:36:20 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17757C061574;
+        Mon, 20 Sep 2021 05:34:53 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id b20so8506203lfv.3;
+        Mon, 20 Sep 2021 05:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HpQQkC1AOfzWHJl9ss8L2S0RA1Z9VdPx4YiHlvPnYPk=;
+        b=jW9QUFzX611Lorga+kmJBdS+JIGjVmywVW5bBnJGaBpp3+Anh2WycRQICKHYmqpVBN
+         U9FYZ1XWoTLI9CIjubM787kA6WYtphzt6V87poWVdLTvXbDTN/JRnFYuXYyt6gIcat3I
+         97ukMTN+9Ye/mhLgZQ3D4FcCIpAEJ/YSd8Y48HysBz5VKvMgC61FTfxHTG0nYg2mz1Y1
+         YuCgAXqLBLGBhYzz2pyT/PlDrt6qNHnJnPrCw4rYv0OA8bQ0bsmXxySabfg5j2WhLUk3
+         0eFius8QQdvVosYEjkrxqF6liOb6fOVjOS9zz6P45Feg0XKPcNoAS0iQnH1h5bvphZul
+         8vLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HpQQkC1AOfzWHJl9ss8L2S0RA1Z9VdPx4YiHlvPnYPk=;
+        b=JO6x0t4/IBOFzKrdgNojR935QBHg8jD6xAAgbK0AHUFOJdXMYo42OfDf1GIF/RL+D6
+         OawEyqDUYqKXXo8y2NIDh+BHBvfXZAXhVq31aJZoS/u3pwhasHAPieL+eOP2DGMw8gKf
+         Ef69pIhRhtQXTzXEE6T6E5IknxLSY3PO8Vf941cnv/uneikdgVAr+HZwzP3z6Fvc+NS/
+         6TzQimhMDTXSy67EpY9u+ZmhZhPQb6pf8yxRWOyrk2eJ4YYbiLLLDPDHi5YK8Pc+DzCB
+         2j7IYXlybGiXYwFEDYIuKnIZ3lGQkUeGopEFejKHpjdEWLRZiOxz/7NhPrV/nRk7k5B/
+         py6Q==
+X-Gm-Message-State: AOAM532531DbYOfvOuQw60ffzvS89j/VHI36xtSdd52Sa7RvKVRceKTv
+        x7Ef1K5s1SXi4znsu9oGvJ8=
+X-Google-Smtp-Source: ABdhPJxXbr1B932hVzp57IlvjUhWt3JLlpqlZgVyIKEKjcn7W0FHEUSKK3NsNtRsdaVL+hccgrvEiw==
+X-Received: by 2002:a05:6512:1049:: with SMTP id c9mr5237881lfb.283.1632141291208;
+        Mon, 20 Sep 2021 05:34:51 -0700 (PDT)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id b26sm1748454lji.128.2021.09.20.05.34.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Sep 2021 05:34:49 -0700 (PDT)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH net-next] net: bgmac: support MDIO described in DT
+Date:   Mon, 20 Sep 2021 14:34:41 +0200
+Message-Id: <20210920123441.9088-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The read and writes from the fifo are from a buffer, with various fields
-and data at predefined offsets. So, they should not be done to the same
-address(or port) in case of val_count greater than 1. Therefore, fix this
-by using iowrite32/ioread32 instead of ioread32_rep/iowrite32_rep.
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Also, the write into fifo must be performed with an offset from the message
-ram base address. Therefore, fix the base address to mram_base.
+Check ethernet controller DT node for "mdio" subnode and use it with
+of_mdiobus_register() when present. That allows specifying MDIO and its
+PHY devices in a standard DT based way.
 
-Fixes: e39381770ec9 ("can: m_can: Disable IRQs on FIFO bus errors")
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+This is required for BCM53573 SoC support which has an MDIO attached
+switch.
+
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- drivers/net/can/m_can/m_can_platform.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index 308d4f2fff00..eee47bad0592 100644
---- a/drivers/net/can/m_can/m_can_platform.c
-+++ b/drivers/net/can/m_can/m_can_platform.c
-@@ -32,8 +32,13 @@ static u32 iomap_read_reg(struct m_can_classdev *cdev, int reg)
- static int iomap_read_fifo(struct m_can_classdev *cdev, int offset, void *val, size_t val_count)
+diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
+index 6ce80cbcb48e..086739e4f40a 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
++++ b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
+@@ -10,6 +10,7 @@
+ 
+ #include <linux/bcma/bcma.h>
+ #include <linux/brcmphy.h>
++#include <linux/of_mdio.h>
+ #include "bgmac.h"
+ 
+ static bool bcma_mdio_wait_value(struct bcma_device *core, u16 reg, u32 mask,
+@@ -211,6 +212,7 @@ struct mii_bus *bcma_mdio_mii_register(struct bgmac *bgmac)
  {
- 	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
-+	void __iomem *src = priv->mram_base + offset;
+ 	struct bcma_device *core = bgmac->bcma.core;
+ 	struct mii_bus *mii_bus;
++	struct device_node *np;
+ 	int err;
  
--	ioread32_rep(priv->mram_base + offset, val, val_count);
-+	while (val_count--) {
-+		*(unsigned int *)val = ioread32(src);
-+		val += 4;
-+		src += 4;
-+	}
+ 	mii_bus = mdiobus_alloc();
+@@ -229,7 +231,9 @@ struct mii_bus *bcma_mdio_mii_register(struct bgmac *bgmac)
+ 	mii_bus->parent = &core->dev;
+ 	mii_bus->phy_mask = ~(1 << bgmac->phyaddr);
  
- 	return 0;
- }
-@@ -51,8 +56,13 @@ static int iomap_write_fifo(struct m_can_classdev *cdev, int offset,
- 			    const void *val, size_t val_count)
- {
- 	struct m_can_plat_priv *priv = cdev_to_priv(cdev);
-+	void __iomem *dst = priv->mram_base + offset;
- 
--	iowrite32_rep(priv->base + offset, val, val_count);
-+	while (val_count--) {
-+		iowrite32(*(unsigned int *)val, dst);
-+		val += 4;
-+		dst += 4;
-+	}
- 
- 	return 0;
- }
+-	err = mdiobus_register(mii_bus);
++	np = of_get_child_by_name(core->dev.of_node, "mdio");
++
++	err = of_mdiobus_register(mii_bus, np);
+ 	if (err) {
+ 		dev_err(&core->dev, "Registration of mii bus failed\n");
+ 		goto err_free_bus;
 -- 
-2.17.1
+2.26.2
 
