@@ -2,132 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 716944129F7
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 02:25:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 296CA412A0B
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 02:47:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232975AbhIUA0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 20:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42042 "EHLO
+        id S233699AbhIUAsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 20:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239772AbhIUAYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 20:24:39 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7E5C08E9BF
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 10:55:25 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id i132so17082807qke.1
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 10:55:25 -0700 (PDT)
+        with ESMTP id S233120AbhIUAqx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 20:46:53 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113FFC10283C
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 10:56:58 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id m4so19667238ilj.9
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 10:56:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=yclSDDK5oTzUs7EESk7d4cCngmAGln2DbKeUzN8pN1Q=;
-        b=gEndKsxfPGxmHP9Pq2PECNpZexrMPtR0GJlrsGS+ytAceIceT6vYuxhmuBvOOexih1
-         CGUPVJfv92scFcNlZ+sfuvW/DIVufbmQyWUutx2eeQoBFyZPqwjtLn14k8Tp36T+FtQ+
-         OZ73BmQmbnaPMSfXRXtlMdLGf+ar1Un3OUdL0=
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=3wkEvdDsA93uJkMbeya4MB7/fNphoNKqIARQ78GMIUU=;
+        b=K/UhCDOIfruEF5ZIaJBaply433JWvcYjqHmF4mr2GllntK6K2EVqpilTmcIb5Gg+HT
+         gc53HMEzVai7RWNhn/GXnAc/QUtRnFM9sDxZvAbWmDLF4fiPc1ZpsFSnTuOoz3/uFf6U
+         rrvnRp/SP+BQuciEFGUmAK3zYPtiXQIN4Ns2TxQwNKUYGmuC4drWidrJiUKd/eA1vE1f
+         yk6iSARysBVcsi57IGlE5wwFqGYRrzFQGK2mN/c2ymtwM8lBOzAMi+H2YdWnLCCKu5DS
+         THJpX/KAzy+9v8CPzxEZUr0WjniwSEHmFXvz2ajNMqCPxI83llDNfW/kMbOpyRgzCFDr
+         IcGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yclSDDK5oTzUs7EESk7d4cCngmAGln2DbKeUzN8pN1Q=;
-        b=a88iIBgjSpkLhm3VUr88Te0JJc+HM2U2x2luBh8qgqYvLj1vBnpFfRKVNHaOflI+fG
-         o27crBDCPSfuKNy15HhLv7rlbE8pFmiUHzwC0uk9TJ1Or6GwLgKZ1GwsxCgjOEPX/1wQ
-         eFvf/nJ/OD8kuEPUHjOzk4X8KqRiGW5CnBUAmo04BjohOXejQPhptoY1vpEmQWbpPpJz
-         t6mrZzQUE2D79JrwACpldx6yS8QLWkSxJ3YXf/EDHO8B0IXHKScH7R9eE+V24Z8ppTIb
-         wKV8Da/bTYxZwCWw43Bhi7LDm9gLnaT2pnNAqGB4dnI3DVm7pMp8bUMrv6dsxa6LAmPV
-         Rzcw==
-X-Gm-Message-State: AOAM531XV/Q0Mih+fPjw6Q00Vt2CBmjqTUI5uKgObopiY4av2pxfNbyW
-        oGHCqfefoI2ykOWKdmB5S5Ry7zOgCpzUtuLS
-X-Google-Smtp-Source: ABdhPJz7/9K1YtGeXZSXi7lzWUiISvrOKEgxbLogjmSiPYWXgw8/RgZy3Ndtzpw24VTru5oLQ/T1Qw==
-X-Received: by 2002:a37:6146:: with SMTP id v67mr2878979qkb.242.1632160524119;
-        Mon, 20 Sep 2021 10:55:24 -0700 (PDT)
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com. [209.85.222.182])
-        by smtp.gmail.com with ESMTPSA id o20sm2763777qtw.92.2021.09.20.10.55.23
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Sep 2021 10:55:23 -0700 (PDT)
-Received: by mail-qk1-f182.google.com with SMTP id d207so20207312qkg.0
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 10:55:23 -0700 (PDT)
-X-Received: by 2002:a9d:7483:: with SMTP id t3mr21162684otk.3.1632160112361;
- Mon, 20 Sep 2021 10:48:32 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=3wkEvdDsA93uJkMbeya4MB7/fNphoNKqIARQ78GMIUU=;
+        b=bhbDXiNyzAYeOAUN9Ux2pxNL+PaDWPVmpHQKUDZo7/xhjzIO4fQ93dP8mxkyvA1XXP
+         iHbMejToX2nob4R2KMlTFCjTNkFfMiLPukg8XDd5tqTJxD4TRXJdWn/5k9xh6i1WCuLf
+         07oIPXRx0Tk7P13UpwN2Ih+g8d9erV8fRuQOB4Im/d4rlNJiZ1tBZl7D39ISe5oM9QeQ
+         00bbdXw+BvkRVRaBMpVil/hdl/32tD6eO6QdMVLPWQSvJxX6UiuDFTMjXy4vmk4M3T1k
+         FPawA4iJqDibWgVhUpJELzZ3NyN1nPB2Q60YMvTEjw58DTzhJ09AEDTvVfde3yGMQ+ik
+         LK7g==
+X-Gm-Message-State: AOAM532mEoDzpiNgjHYqOxc+Kr4BrtBezFo2GD0Mj1hDMJc0+q99fb45
+        VPXeE0EzvSLRFEVAccJFrIUwMU273v+GybuvgH8=
+X-Google-Smtp-Source: ABdhPJwjCB9Ql2HIKoidvqeTRJRvINUZQbmwXw6FQg0wUZZwrUxYRcv8Q6dWFE7rw+drJrQaQaRd0w9v0xaRGpHRl6M=
+X-Received: by 2002:a92:c548:: with SMTP id a8mr11105089ilj.295.1632160617472;
+ Mon, 20 Sep 2021 10:56:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210830123704.221494-1-verdre@v0yd.nl> <20210830123704.221494-2-verdre@v0yd.nl>
- <CA+ASDXPKZ0i5Bi11Q=qqppY8OCgw=7m0dnPn0s+y+GAvvQodog@mail.gmail.com>
- <CAHp75VdR4VC+Ojy9NjAtewAaPAgowq-3rffrr3uAdOeiN8gN-A@mail.gmail.com>
- <CA+ASDXNGR2=sQ+w1LkMiY_UCfaYgQ5tcu2pbBn46R2asv83sSQ@mail.gmail.com>
- <YS/rn8b0O3FPBbtm@google.com> <0ce93e7c-b041-d322-90cd-40ff5e0e8ef0@v0yd.nl>
-In-Reply-To: <0ce93e7c-b041-d322-90cd-40ff5e0e8ef0@v0yd.nl>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Mon, 20 Sep 2021 10:48:21 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXNMhrxX-nFrr6kBo0a0c-25+Ge2gBP2uTjE8UWJMeQO2A@mail.gmail.com>
-Message-ID: <CA+ASDXNMhrxX-nFrr6kBo0a0c-25+Ge2gBP2uTjE8UWJMeQO2A@mail.gmail.com>
-Subject: Re: [PATCH 1/2] mwifiex: Use non-posted PCI register writes
-To:     =?UTF-8?Q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Received: by 2002:a05:6638:58b:0:0:0:0 with HTTP; Mon, 20 Sep 2021 10:56:57
+ -0700 (PDT)
+Reply-To: moneyramg036@gmail.com
+From:   Mr John Peter <bntnkathy@gmail.com>
+Date:   Mon, 20 Sep 2021 18:56:57 +0100
+Message-ID: <CAFB7kLa=o25v+-uXdD5N0ZcBSwOUoWjmvNMg9SwVoXs7OvFwkg@mail.gmail.com>
+Subject: CONTACT MONEY GRAM PAYMENT
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 18, 2021 at 12:37 AM Jonas Dre=C3=9Fler <verdre@v0yd.nl> wrote:
-> Thanks for the pointer to that commit Brian, it turns out this is
-> actually the change that causes the "Firmware wakeup failed" issues that
-> I'm trying to fix with the second patch here.
+CONTACT MONEY GRAM PAYMENT
 
-Huh. That's interesting, although I guess it makes some sense given
-your theory of "dropped writes". FWIW, this strategy (post a single
-write, then wait for wakeup) is the same used by some other
-chips/drivers too (e.g., ath10k/pci), although in those cases card
-wakeup is much much faster. But if the bus was dropping writes
-somehow, those strategies would fail too.
+ATTENTION BENEFICIARY
 
-> Also my approach is a lot messier than just reverting
-> 062e008a6e83e7c4da7df0a9c6aefdbc849e2bb3 and also appears to be blocking
-> even longer...
+It is my pleasure to inform you that your funds are deposited in Money
+Gram remitting office here and we hereby write to inform you that we
+have sent your full compensation payment of US4.8 through money gram
+and you will be receiving $5000 usd Per day and we have sent you the
+first payment. So, contact our manager Mr John Peter and ask him to give
+you the money gram payment information so that you can be able to pick
+up your First payment of your funds through money gram without any
+problem.
 
-For the record, in case you're talking about my data ("blocking even
-longer"): I was only testing patch 1. Patch 2 isn't really relevant to
-my particular systems (Rockchip RK3399 + Marvell 8997/PCIe), because
-(a) I'm pretty sure my system isn't "dropping" any reads or writes
-(b) all my delay is in the read-back; the Rockchip PCIe bus is waiting
-indefinitely for the card to wake up, instead of timing out and
-reporting all-1's like many x86 systems appear to do (I've tested
-this).
+Contact person Mr John Peter
+Email: moneyramg036@gmail.com
+Contact Phone +22967168545 Or +22990425593
 
-So, the 6ms delay is entirely sitting in the ioread32(), not a delay loop.
+AND CONTACT HIM WITH YOUR FULL INFORMATION SUCH AS
 
-I haven't yet tried your version 2 (which avoids the blocking read to
-wake up; good!), but it sounds like in theory it could solve your
-problem while avoiding 6ms delays for me. I intend to test your v2
-this week.
+1. Full name .........
+2. Country............
+3. Contact Address....
+4. Telephone Number ..
+5. Marital Status ....
+6. Occupation ........
+7. Company ...........
+8. Age................
+9 You Photos Copy................
 
-> Does anyone have an idea what could be the reason for the posted write
-> not going through, or could that also be a potential firmware bug in the
-> chip?
+Call:+22967168545 Or +22990425593 or email him now so that He can
+provide the money gram information
 
-I have no clue about that. That does sound downright horrible, but so
-are many things when dealing with this family of hardware/firmware.
-I'm not sure how to prove out whether this is a host bus problem, or
-an endpoint/firmware problem, other than perhaps trying the same
-module/firmware on another system, if that's possible.
-
-Anyway, to reiterate: I'm not fundamentally opposed to v2 (pending a
-test run here), even if it is a bit ugly and perhaps not 100%
-understood.
-
-Brian
+Thanks and remainsns
