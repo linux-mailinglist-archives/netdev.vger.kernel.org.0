@@ -2,39 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C514A4127B5
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 23:04:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1024F4127BB
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 23:06:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234951AbhITVGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 17:06:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58674 "EHLO mail.kernel.org"
+        id S237457AbhITVHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 17:07:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59162 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232273AbhITVED (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 17:04:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 02B2361107;
-        Mon, 20 Sep 2021 21:02:35 +0000 (UTC)
+        id S232859AbhITVFh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Sep 2021 17:05:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AB76B61159;
+        Mon, 20 Sep 2021 21:04:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632171756;
-        bh=yhw6MJGdpGrujZvqXR9hMEFV24CcnnxvNrfXDRNVGdU=;
+        s=k20201202; t=1632171850;
+        bh=PqdFM5XpCW4SO8VwVFeVL8/W3ovMxPa8/cSLHK/1cCU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IeFVef4xe6+fbrMgbNzoKSGTUtC+6Sm70dWJlI+zDrFly+TkL1qs844wYpvA3wF8X
-         ifmYicMFMFAA7GMsErtEeoeopKnfcAAjg2zpvBYOP4o9VI/xxTAZWPJDy8YZxCLyCo
-         xzbppS3ndw1jpV/vFQkKu+wjAqPGEgDKqd0TsYQ72XAC4bd89ege7ktgefYcSaxInT
-         DtvOFQ9S00n9T2MCzcpG6WP7+8UtZ/LDtyZrVXcUUkXaAlMQXELoPYX4ABiX5fAI0K
-         e1owMedN8czGJv9HiBFGewMe0ccz2Ad6s1csmOFopq3IbirTRmsZuQYDTdqj1LpqEO
-         gYmMgYr2gho6Q==
-Date:   Mon, 20 Sep 2021 14:02:35 -0700
+        b=l4hTPB4s2MuadFq2p5e6Xplm6rWChHn0TAe148keYBM4PyhsT4Z0dnrIVf4x/yUrW
+         TvJNAHPIAWaiTrxwhZP6PjK5F01TpWMMxEJxSL5YmcFiv4SSbVUbrrQeuDWiUNgj6w
+         dOitjMtSyPq5FUu0W9nnZU/e1BI2V6ZFfsIn0zAowC7cN5qZaRb9YgUmUZHBtokOKA
+         Sg0JzWzyV4CyUUiAVLRJR5PotXNmfupXMRQum0qomXQ8OQvbh/E3LGEGB3qd6Zqwbt
+         sXDu5phtaLCaLXsfYXXjpW92B+QfVofmgWfVAGj9rugEoExMyHyr4E3uskHK2JwC8c
+         VEhwLWOugkKRQ==
+Date:   Mon, 20 Sep 2021 14:04:07 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Mianhan Liu <liumh1@shanghaitech.edu.cn>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH -next] net/ipv4/sysctl_net_ipv4.c: remove superfluous
- header files from sysctl_net_ipv4.c
-Message-ID: <20210920140235.49b887fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210920134200.31481-1-liumh1@shanghaitech.edu.cn>
-References: <20210920134200.31481-1-liumh1@shanghaitech.edu.cn>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        hariprasad <hkelam@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
+        Manish Chopra <manishc@marvell.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Simon Horman <simon.horman@corigine.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next] devlink: Make devlink_register to be void
+Message-ID: <20210920140407.0732b3d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210920133915.59ddfeef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <2e089a45e03db31bf451d768fc588c02a2f781e8.1632148852.git.leonro@nvidia.com>
+        <20210920133915.59ddfeef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,46 +80,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Sep 2021 21:42:00 +0800 Mianhan Liu wrote:
-> sysctl_net_ipv4.c hasn't use any macro or function declared in mm.h, module.h,
-> igmp.h, inetdevice.h, swap.h, slab.h, nsproxy.h, snmp.h, route.h and inet_frag.h. 
-> Thus, these files can be removed from sysctl_net_ipv4.c safely without affecting
-> the compilation of the net module.
+On Mon, 20 Sep 2021 13:39:15 -0700 Jakub Kicinski wrote:
+> On Mon, 20 Sep 2021 17:41:44 +0300 Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > devlink_register() can't fail and always returns success, but all drivers
+> > are obligated to check returned status anyway. This adds a lot of boilerplate
+> > code to handle impossible flow.
+> > 
+> > Make devlink_register() void and simplify the drivers that use that
+> > API call.  
+> 
+> Unlike unused functions bringing back error handling may be
+> non-trivial. I'd rather you deferred such cleanups until you're 
+> ready to post your full rework and therefore give us some confidence 
+> the revert will not be needed.
 
-How did you arrive at this conclusion? It certainly uses linux/slab.h
-as it calls kmalloc(). Please don't introduce dependencies on
-second-order includes. If file uses a function, define, struct etc.
-from a header it should directly include that header. Just because the
-code still compiles doesn't mean the change is for good.
-
-> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-> index 6f1e64d49..f8e39d00b 100644
-> --- a/net/ipv4/sysctl_net_ipv4.c
-> +++ b/net/ipv4/sysctl_net_ipv4.c
-> @@ -6,25 +6,15 @@
->   * Added /proc/sys/net/ipv4 directory entry (empty =) ). [MS]
->   */
->  
-> -#include <linux/mm.h>
-> -#include <linux/module.h>
->  #include <linux/sysctl.h>
-> -#include <linux/igmp.h>
-> -#include <linux/inetdevice.h>
->  #include <linux/seqlock.h>
->  #include <linux/init.h>
-> -#include <linux/slab.h>
-> -#include <linux/nsproxy.h>
-> -#include <linux/swap.h>
-> -#include <net/snmp.h>
->  #include <net/icmp.h>
->  #include <net/ip.h>
->  #include <net/ip_fib.h>
-> -#include <net/route.h>
->  #include <net/tcp.h>
->  #include <net/udp.h>
->  #include <net/cipso_ipv4.h>
-> -#include <net/inet_frag.h>
->  #include <net/ping.h>
->  #include <net/protocol.h>
->  #include <net/netevent.h>
-
+If you disagree you gotta repost, new devlink_register call got added
+in the meantime.
