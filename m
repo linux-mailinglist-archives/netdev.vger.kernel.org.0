@@ -2,89 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D5F24110C2
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 10:15:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB7F24110E9
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 10:26:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235534AbhITIQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 04:16:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235464AbhITIQu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 04:16:50 -0400
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE1BC061760
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 01:15:24 -0700 (PDT)
-Received: by mail-ot1-x32f.google.com with SMTP id k12-20020a056830150c00b0051abe7f680bso22549636otp.1
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 01:15:24 -0700 (PDT)
+        id S235723AbhITI1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 04:27:49 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:35629 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234143AbhITI1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 04:27:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=21r3SlBBRDN7c0GadObCkHwMNcefKesbIlR1sAlPsLQ=;
-        b=SQWorY7ZsfFtuloE/lG1ja9FAvI18dl+3bl39aMZLpZxDz27fU31wFPgbMvWVtOdh/
-         jH5lPNVNUsKGROWbTpJVqcFsltAcTwYq6aD3Qr+5PAA7SeVT1zKKDMSLqv7v81XUiv42
-         tLQKsYubNAudAduG3VA2BvmY5PzrTUH32YWZwuT/we2r/LH7pP++EwPC4RvZPzD5CBWU
-         zTEXxcBJcgaf4n199H6aPWL/uU67ZsIRMgZaPcf/PHYjRcVI5MVqZIKnhwPKag68NCqD
-         koCbJjQKlGy7LSty428a/2+jF10JJS8pdJV/zHpNGg+z9pTFoUePAAxc/broobCeL+ga
-         pNPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=21r3SlBBRDN7c0GadObCkHwMNcefKesbIlR1sAlPsLQ=;
-        b=WgThlYoQOLYWWN3eZg9/+6z8aGMG7GjcjmB2GlsOSnAfCq0by0ETZbk0fA8+JcUdg8
-         tB9uVm3Ri3As0CkSORSwEHBnT1+YP8rGU0+58RJpqdJ35rXbTBJztSbrV8V3grJ4VofY
-         zwvQgbWzOul2ear0KIkjBOrjlSTOA3CUr2BWz1KnOgBSCtGtCeYd2jcrJc6CDSovadaZ
-         9rOd+rdoWuRHGtSXpzIIBd3ZtA2JtMPlvJuviLSfUzFuTb7Cf8Dt7SRAxZkwE0SceBVN
-         2wPoAB2VLQM/CWwJba9nNvxP1isUFIW3Wb76E+w8FNW5Ov7aXsUgbVV2hI01V5uSojgm
-         A65w==
-X-Gm-Message-State: AOAM532ET0/qu2lQUVml5kmxdiWxklTiOTLIlA0r9+srngN5KmDQUG2i
-        awt42e6rmz6RvY5kSsQX58QJ/HEcKiN5DlS1W/86L9GUVXGUSg==
-X-Google-Smtp-Source: ABdhPJzEDVSSzCivHfiy0IzQdQlADqrjIknyU8CHTYUeZMc4g90+xJaP6rpoqArVDCE1Y9MpCoy2Dueb/K4l59izd04=
-X-Received: by 2002:a9d:2f28:: with SMTP id h37mr10592929otb.196.1632125723220;
- Mon, 20 Sep 2021 01:15:23 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1632126382; x=1663662382;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=na1RttgUzSinIsRSHmrEfJEw3Fayx2xrkJqLJcO6Q3Q=;
+  b=WEOIKNvCSxxS+l5QO28ESp6OAnqEaWj77j7RHYBXrCrKOkwYZSjIZrBm
+   b8fxe17E5JO2gQSP1jSSVH3GYW59Skf5zlKf64HJn+67ZjocWRnbT9GVR
+   GoK+6y3bh5ZjjzGm0+M7i0D3kFrJaFYfEoNVU5nhBIKG18TzsxSiFTYHf
+   k=;
+X-IronPort-AV: E=Sophos;i="5.85,307,1624320000"; 
+   d="scan'208";a="138411144"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 20 Sep 2021 08:26:13 +0000
+Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com (Postfix) with ESMTPS id 7531A861E7;
+        Mon, 20 Sep 2021 08:26:08 +0000 (UTC)
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.162.211) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Mon, 20 Sep 2021 08:25:59 +0000
+References: <cover.1631289870.git.lorenzo@kernel.org>
+ <f11d8399e17bc82f9ffcb613da0a457a96f56fec.1631289870.git.lorenzo@kernel.org>
+User-agent: mu4e 1.4.15; emacs 28.0.50
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <lorenzo.bianconi@redhat.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <dsahern@kernel.org>,
+        <brouer@redhat.com>, <echaudro@redhat.com>, <jasowang@redhat.com>,
+        <alexander.duyck@gmail.com>, <saeed@kernel.org>,
+        <maciej.fijalkowski@intel.com>, <magnus.karlsson@intel.com>,
+        <tirthendu.sarkar@intel.com>, <toke@redhat.com>
+Subject: Re: [PATCH v14 bpf-next 03/18] net: mvneta: update mb bit before
+ passing the xdp buffer to eBPF layer
+In-Reply-To: <f11d8399e17bc82f9ffcb613da0a457a96f56fec.1631289870.git.lorenzo@kernel.org>
+Date:   Mon, 20 Sep 2021 11:25:54 +0300
+Message-ID: <pj41zlh7ef8xgt.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-References: <0ddad8d7-03c2-4432-64a4-b717bbc90fb4@gmail.com> <000000000000526fb105cc1d3f5b@google.com>
-In-Reply-To: <000000000000526fb105cc1d3f5b@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 20 Sep 2021 10:15:12 +0200
-Message-ID: <CACT4Y+bdXWBBXc9PfpU09d=zAGvKmMVuq=etQJ3b5WLgRwjGHg@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in __percpu_ref_exit (2)
-To:     syzbot <syzbot+d6218cb2fae0b2411e9d@syzkaller.appspotmail.com>
-Cc:     asml.silence@gmail.com, axboe@kernel.dk, coreteam@netfilter.org,
-        davem@davemloft.net, dsahern@kernel.org, fw@strlen.de,
-        hdanton@sina.com, io-uring@vger.kernel.org, kadlec@netfilter.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org, ming.lei@redhat.com,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.162.211]
+X-ClientProxiedBy: EX13P01UWA003.ant.amazon.com (10.43.160.197) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Sept 2021 at 16:01, syzbot
-<syzbot+d6218cb2fae0b2411e9d@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot has tested the proposed patch and the reproducer did not trigger any issue:
->
-> Reported-and-tested-by: syzbot+d6218cb2fae0b2411e9d@syzkaller.appspotmail.com
->
-> Tested on:
->
-> commit:         5318e5b9 io_uring: quiesce files reg
-> git tree:       https://github.com/isilence/linux.git syz_test_quiesce_files
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=f7d9f99709463d21
-> dashboard link: https://syzkaller.appspot.com/bug?extid=d6218cb2fae0b2411e9d
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
->
-> Note: testing is done by a robot and is best-effort only.
 
-OK, since it's not failing, I assume we can say:
+Lorenzo Bianconi <lorenzo@kernel.org> writes:
 
-#syz fix: io_uring: fix link timeout refs
+> ...
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c 
+> b/drivers/net/ethernet/marvell/mvneta.c
+> index 9d460a270601..0c7b84ca6efc 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> ...
+> @@ -2320,8 +2325,12 @@ mvneta_swbm_build_skb(struct mvneta_port 
+> *pp, struct page_pool *pool,
+>  		      struct xdp_buff *xdp, u32 desc_status)
+>  {
+>  	struct skb_shared_info *sinfo = 
+>  xdp_get_shared_info_from_buff(xdp);
+> -	int i, num_frags = sinfo->nr_frags;
+>  	struct sk_buff *skb;
+> +	u8 num_frags;
+> +	int i;
+> +
+> +	if (unlikely(xdp_buff_is_mb(xdp)))
+> +		num_frags = sinfo->nr_frags;
 
-(and it's better to close it with a wrong fix, then to keep it open
-forever anyway)
+Hi,
+nit, it seems that the num_frags assignment can be moved after the 
+other 'if' condition you added (right before the 'for' for 
+num_frags), or even be eliminated completely so that 
+sinfo->nr_frags is used directly.
+Either way it looks like you can remove one 'if'.
+
+Shay
+
+>  
+>  	skb = build_skb(xdp->data_hard_start, PAGE_SIZE);
+>  	if (!skb)
+> @@ -2333,6 +2342,9 @@ mvneta_swbm_build_skb(struct mvneta_port 
+> *pp, struct page_pool *pool,
+>  	skb_put(skb, xdp->data_end - xdp->data);
+>  	skb->ip_summed = mvneta_rx_csum(pp, desc_status);
+>  
+> +	if (likely(!xdp_buff_is_mb(xdp)))
+> +		goto out;
+> +
+>  	for (i = 0; i < num_frags; i++) {
+>  		skb_frag_t *frag = &sinfo->frags[i];
+>  
+> @@ -2341,6 +2353,7 @@ mvneta_swbm_build_skb(struct mvneta_port 
+> *pp, struct page_pool *pool,
+>  				skb_frag_size(frag), PAGE_SIZE);
+>  	}
+>  
+> +out:
+>  	return skb;
+>  }
+
