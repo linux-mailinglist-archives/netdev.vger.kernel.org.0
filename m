@@ -2,88 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2B5F411156
-	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 10:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40CB141117E
+	for <lists+netdev@lfdr.de>; Mon, 20 Sep 2021 11:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233773AbhITIvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 04:51:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46830 "EHLO mail.kernel.org"
+        id S234397AbhITJBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 05:01:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48816 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229844AbhITIvd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 04:51:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6C53C60E9C;
-        Mon, 20 Sep 2021 08:50:07 +0000 (UTC)
+        id S231731AbhITJBe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Sep 2021 05:01:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 46373606A5;
+        Mon, 20 Sep 2021 09:00:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632127807;
-        bh=PMAu1SOCeXgbCyPAs6Jl9+PJeHOyDhaKXgIITm59uEI=;
+        s=k20201202; t=1632128407;
+        bh=Q4/WHtF6XZKLPVnHPQFHZpDo6MP4Tu1TnOZW46rowWc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TOWTy5cYwraiIIxiVVvmiTp0s5b4DeEt4tAkV5IqntRLjCuRhG6Ke7mNzIRvxgwAo
-         kioXLRzXjV4JRurclAXW7u1Q2huHlHtaCBmTN4SLyGhv9XwhfKttLuCtLxkreX+7mX
-         1GnkO7BRnQaMLftgGA7INGe+uQtPrdLD44/MPm2A09ACXctJ0li/3cS+lzXBg5st9j
-         M8j9R7mBKhSQzvxfDl+3Ztu4cP+ZpueuTZJ9UP1ppjR5iiic3BjxhG3pX9D6XJn5/h
-         Za5ZMCIf/vCnPis3k3IxrS2q4SLcOIwWEvL7mDI7YAHSAxt1DosxhOfGWdp1keO6G3
-         BbuESYPda033g==
+        b=KuabqWxBZnb1af2G9QSWtwXcwmGIVTjRJeL/qr8rBzQ3fFmyNP27QizYAC8FThRxQ
+         HGsbcjsV3ifG9JFxlFt7qeqq20oeNX/l9RGexuLJ/EfkHfNlZccUEV1GipeYl86vhJ
+         lqqpuG6TDMrFDSpSi2K5Tzm6PfmNnFRy5zahW2SSZqf+eSeG/SrYtOQCpUQ1zzr56e
+         jwzZN/zUGemZjml3JhnCT6CIQjl4EWVV5hTiLZHrDe7j8pgEOg9wHZ59mWY3xJ8S2g
+         4QJBT2y3O3sJXquy/IIE7N72ujAuTD/pXPuXr2SHSZtj2Gv49qF0McgY63lB8Vn1ww
+         7A/ekVfmOsn1g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 57E7460A3A;
-        Mon, 20 Sep 2021 08:50:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 33E1160A53;
+        Mon, 20 Sep 2021 09:00:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] napi: fix race inside napi_enable
+Subject: Re: [net-next PATCH v2 0/3] Improve support for qca8327 internal
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163212780735.18640.4066785038039010628.git-patchwork-notify@kernel.org>
-Date:   Mon, 20 Sep 2021 08:50:07 +0000
-References: <20210918085232.71436-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20210918085232.71436-1-xuanzhuo@linux.alibaba.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, linyunsheng@huawei.com,
-        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        daniel@iogearbox.net, atenart@kernel.org, alobakin@pm.me,
-        weiwan@google.com, ap420073@gmail.com, bjorn@kernel.org,
-        arnd@arndb.de, memxor@gmail.com, nhorman@redhat.com,
-        dust.li@linux.alibaba.com
+Message-Id: <163212840720.23095.12575289730466674498.git-patchwork-notify@kernel.org>
+Date:   Mon, 20 Sep 2021 09:00:07 +0000
+References: <20210919162817.26924-1-ansuelsmth@gmail.com>
+In-Reply-To: <20210919162817.26924-1-ansuelsmth@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Sat, 18 Sep 2021 16:52:32 +0800 you wrote:
-> The process will cause napi.state to contain NAPI_STATE_SCHED and
-> not in the poll_list, which will cause napi_disable() to get stuck.
-> 
-> The prefix "NAPI_STATE_" is removed in the figure below, and
-> NAPI_STATE_HASHED is ignored in napi.state.
-> 
->                       CPU0       |                   CPU1       | napi.state
-> ===============================================================================
-> napi_disable()                   |                              | SCHED | NPSVC
-> napi_enable()                    |                              |
-> {                                |                              |
->     smp_mb__before_atomic();     |                              |
->     clear_bit(SCHED, &n->state); |                              | NPSVC
->                                  | napi_schedule_prep()         | SCHED | NPSVC
->                                  | napi_poll()                  |
->                                  |   napi_complete_done()       |
->                                  |   {                          |
->                                  |      if (n->state & (NPSVC | | (1)
->                                  |               _BUSY_POLL)))  |
->                                  |           return false;      |
->                                  |     ................         |
->                                  |   }                          | SCHED | NPSVC
->                                  |                              |
->     clear_bit(NPSVC, &n->state); |                              | SCHED
-> }                                |                              |
->                                  |                              |
-> napi_schedule_prep()             |                              | SCHED | MISSED (2)
+On Sun, 19 Sep 2021 18:28:14 +0200 you wrote:
+> With more test with the qca8327 switch, it was discovered that the
+> internal phy can have 2 different phy id based on the switch serial
+> code. This patch address this and report the 2 different variant.
+> Also adds support for resume/suspend as it was requested in another
+> patch and improve the spacing and naming following how other phy are
+> defined in the same driver.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2] napi: fix race inside napi_enable
-    https://git.kernel.org/netdev/net/c/3765996e4f0b
+  - [net-next,v2,1/3] net: phy: at803x: add support for qca 8327 A variant internal phy
+    https://git.kernel.org/netdev/net-next/c/b4df02b562f4
+  - [net-next,v2,2/3] net: phy: at803x: add resume/suspend function to qca83xx phy
+    https://git.kernel.org/netdev/net-next/c/15b9df4ece17
+  - [net-next,v2,3/3] net: phy: at803x: fix spacing and improve name for 83xx phy
+    https://git.kernel.org/netdev/net-next/c/d44fd8604a4a
 
 You are awesome, thank you!
 --
