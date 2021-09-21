@@ -2,101 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98D06412E2D
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 07:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CA7E412E28
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 07:21:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229568AbhIUF0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 01:26:52 -0400
-Received: from relmlor2.renesas.com ([210.160.252.172]:12316 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229471AbhIUF0w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 01:26:52 -0400
-X-IronPort-AV: E=Sophos;i="5.85,310,1624287600"; 
-   d="scan'208";a="94654052"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 21 Sep 2021 14:25:23 +0900
-Received: from localhost.localdomain (unknown [10.166.14.185])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 3129541C799A;
-        Tue, 21 Sep 2021 14:25:23 +0900 (JST)
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     wg@grandegger.com, mkl@pengutronix.de
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Ayumi Nakamichi <ayumi.nakamichi.kf@renesas.com>
-Subject: [PATCH] can: rcar_can: Fix suspend/resume
-Date:   Tue, 21 Sep 2021 14:19:59 +0900
-Message-Id: <20210921051959.50309-1-yoshihiro.shimoda.uh@renesas.com>
-X-Mailer: git-send-email 2.25.1
+        id S229537AbhIUFWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 01:22:52 -0400
+Received: from relay.sw.ru ([185.231.240.75]:36384 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229528AbhIUFWv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Sep 2021 01:22:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
+        Subject; bh=k2wEloV+gDUmpEy0mWyhFLWFK1xSjbaF8EJQW1Uahrc=; b=A2uB0Wpldjhr4Vc52
+        YVUjgm4pK1wNxVIZCrvkaM02N2lcOvtaYpUN80eNlnzavQv4LeVQJqroKJRecCQ9ORGyEOMA0U7HX
+        wBJZBpqK092aBtQ7eYBDtqQMZD/PV+2hSlmXAH0em24V8BA97hLvmXYYMrAKz9UCCzdbPnU0SpRVc
+        =;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1mSYDT-002fYJ-DS; Tue, 21 Sep 2021 08:21:15 +0300
+Subject: Re: [PATCH net v8] skb_expand_head() adjust skb->truesize incorrectly
+From:   Vasily Averin <vvs@virtuozzo.com>
+To:     Christoph Paasch <christoph.paasch@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        kernel@openvz.org, Julian Wiedmann <jwi@linux.ibm.com>
+References: <20210920111259.18f9cc01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <be927ca4-6fd7-ce89-e472-bb1e5a0dc2a9@virtuozzo.com>
+Message-ID: <45b3cb13-8c6e-25a3-f568-921ab6f1ca8f@virtuozzo.com>
+Date:   Tue, 21 Sep 2021 08:21:14 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <be927ca4-6fd7-ce89-e472-bb1e5a0dc2a9@virtuozzo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the driver was not opened, rcar_can_suspend() should not call
-clk_disable() because the clock was not enabled.
-
-Fixes: fd1159318e55 ("can: add Renesas R-Car CAN driver")
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Tested-by: Ayumi Nakamichi <ayumi.nakamichi.kf@renesas.com>
----
- drivers/net/can/rcar/rcar_can.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/can/rcar/rcar_can.c b/drivers/net/can/rcar/rcar_can.c
-index 00e4533c8bdd..6b4eefb03044 100644
---- a/drivers/net/can/rcar/rcar_can.c
-+++ b/drivers/net/can/rcar/rcar_can.c
-@@ -846,10 +846,12 @@ static int __maybe_unused rcar_can_suspend(struct device *dev)
- 	struct rcar_can_priv *priv = netdev_priv(ndev);
- 	u16 ctlr;
- 
--	if (netif_running(ndev)) {
--		netif_stop_queue(ndev);
--		netif_device_detach(ndev);
--	}
-+	if (!netif_running(ndev))
-+		return 0;
-+
-+	netif_stop_queue(ndev);
-+	netif_device_detach(ndev);
-+
- 	ctlr = readw(&priv->regs->ctlr);
- 	ctlr |= RCAR_CAN_CTLR_CANM_HALT;
- 	writew(ctlr, &priv->regs->ctlr);
-@@ -858,6 +860,7 @@ static int __maybe_unused rcar_can_suspend(struct device *dev)
- 	priv->can.state = CAN_STATE_SLEEPING;
- 
- 	clk_disable(priv->clk);
-+
- 	return 0;
- }
- 
-@@ -868,6 +871,9 @@ static int __maybe_unused rcar_can_resume(struct device *dev)
- 	u16 ctlr;
- 	int err;
- 
-+	if (!netif_running(ndev))
-+		return 0;
-+
- 	err = clk_enable(priv->clk);
- 	if (err) {
- 		netdev_err(ndev, "clk_enable() failed, error %d\n", err);
-@@ -881,10 +887,9 @@ static int __maybe_unused rcar_can_resume(struct device *dev)
- 	writew(ctlr, &priv->regs->ctlr);
- 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
- 
--	if (netif_running(ndev)) {
--		netif_device_attach(ndev);
--		netif_start_queue(ndev);
--	}
-+	netif_device_attach(ndev);
-+	netif_start_queue(ndev);
-+
- 	return 0;
- }
- 
--- 
-2.25.1
+On 9/21/21 12:41 AM, Vasily Averin wrote:
+> Christoph Paasch reports [1] about incorrect skb->truesize
+> after skb_expand_head() call in ip6_xmit.
+> This may happen because of two reasons:
+> - skb_set_owner_w() for newly cloned skb is called too early,
+> before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
+> - pskb_expand_head() does not adjust truesize in (skb->sk) case.
+> In this case sk->sk_wmem_alloc should be adjusted too.
+> 
+> [1] https://lkml.org/lkml/2021/8/20/1082
+> 
+> Fixes: f1260ff15a71 ("skbuff: introduce skb_expand_head()")
+> Fixes: 2d85a1b31dde ("ipv6: ip6_finish_output2: set sk into newly allocated nskb")
+> Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
+> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+> ---
+> v8: clone non-wmem skb
+> V7 (from kuba@):
+>     shift more magic into helpers,
+>     follow Eric's advice and don't inherit non-wmem skbs for now
+> v6: fixed delta,
+>     improved comments
+> v5: fixed else condition, thanks to Eric
+>     reworked update of expanded skb,
+>     added corresponding comments
+> v4: decided to use is_skb_wmem() after pskb_expand_head() call
+>     fixed 'return (EXPRESSION);' in os_skb_wmem according to Eric Dumazet
+> v3: removed __pskb_expand_head(),
+>     added is_skb_wmem() helper for skb with wmem-compatible destructors
+>     there are 2 ways to use it:
+>      - before pskb_expand_head(), to create skb clones
+>      - after successfull pskb_expand_head() to change owner on extended skb.
+> v2: based on patch version from Eric Dumazet,
+>     added __pskb_expand_head() function, which can be forced
+>     to adjust skb->truesize and sk->sk_wmem_alloc.
+> ---
+>  include/net/sock.h |  1 +
+>  net/core/skbuff.c  | 33 +++++++++++++++++++++------------
+>  net/core/sock.c    |  8 ++++++++
+>  3 files changed, 30 insertions(+), 12 deletions(-)
+> 
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index 95b2577..173d58c 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -1695,6 +1695,7 @@ struct sk_buff *sock_wmalloc(struct sock *sk, unsigned long size, int force,
+>  			     gfp_t priority);
+>  void __sock_wfree(struct sk_buff *skb);
+>  void sock_wfree(struct sk_buff *skb);
+> +bool is_skb_wmem(const struct sk_buff *skb);
+>  struct sk_buff *sock_omalloc(struct sock *sk, unsigned long size,
+>  			     gfp_t priority);
+>  void skb_orphan_partial(struct sk_buff *skb);
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index f931176..4b49f63 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -1804,30 +1804,39 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
+>  struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
+>  {
+>  	int delta = headroom - skb_headroom(skb);
+> +	int osize = skb_end_offset(skb);
+> +	struct sock *sk = skb->sk;
+>  
+>  	if (WARN_ONCE(delta <= 0,
+>  		      "%s is expecting an increase in the headroom", __func__))
+>  		return skb;
+>  
+> +	delta = SKB_DATA_ALIGN(delta);
+>  	/* pskb_expand_head() might crash, if skb is shared */
+> -	if (skb_shared(skb)) {
+> +	if (skb_shared(skb) || !is_skb_wmem(skb)) {
+>  		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
+>  
+> -		if (likely(nskb)) {
+> -			if (skb->sk)
+> -				skb_set_owner_w(nskb, skb->sk);
+> -			consume_skb(skb);
+> -		} else {
+> -			kfree_skb(skb);
+> -		}
+> +		if (unlikely(!nskb))
+> +			goto fail;
+> +
+> +		if (sk)
+> +			skb_set_owner_w(nskb, sk);
+> +		consume_skb(skb);
+>  		skb = nskb;
+>  	}
+> -	if (skb &&
+> -	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
+> -		kfree_skb(skb);
+> -		skb = NULL;
+> +	if (pskb_expand_head(skb, delta, 0, GFP_ATOMIC))
+> +		goto fail;
+> +
+> +	if (sk) {
+sock_edemux check is still required here too.
+> +		delta = skb_end_offset(skb) - osize;
+> +		refcount_add(delta, &sk->sk_wmem_alloc);
+> +		skb->truesize += delta;
+>  	}
+>  	return skb;
+> +
+> +fail:
+> +	kfree_skb(skb);
+> +	return NULL;
+>  }
+>  EXPORT_SYMBOL(skb_expand_head);
+>  
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 950f1e7..6cbda43 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -2227,6 +2227,14 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
+>  }
+>  EXPORT_SYMBOL(skb_set_owner_w);
+>  
+> +bool is_skb_wmem(const struct sk_buff *skb)
+> +{
+> +	return skb->destructor == sock_wfree ||
+> +	       skb->destructor == __sock_wfree ||
+> +	       (IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree);
+> +}
+> +EXPORT_SYMBOL(is_skb_wmem);
+> +
+>  static bool can_skb_orphan_partial(const struct sk_buff *skb)
+>  {
+>  #ifdef CONFIG_TLS_DEVICE
+> 
 
