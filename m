@@ -2,135 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D19A7413B14
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 22:07:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F08413B1D
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 22:12:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233669AbhIUUJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 16:09:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58638 "EHLO
+        id S233145AbhIUUNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 16:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbhIUUJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 16:09:13 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E88C061574
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 13:07:44 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id 194so1178922qkj.11
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 13:07:44 -0700 (PDT)
+        with ESMTP id S229736AbhIUUNp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 16:13:45 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8E7C061574;
+        Tue, 21 Sep 2021 13:12:17 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 17so234480pgp.4;
+        Tue, 21 Sep 2021 13:12:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a7H6cT4mga6MKA/FBc1vFkMxBKchnSYc7FysSEACUIw=;
-        b=oO5gtDS9BY3BSstkJ+QPf/LV2JA8+SMU9apCIHCpWaaHBK4sK9k6NAjTmStfTzCYIh
-         tt5bVN0Ma/yc+3/wWZVtdTNGljvUMfEHO0WoiM8JORORa3iLBBhdcEK/9EGCafdjQKig
-         7Qa7QFhyM0l3WXGzCGNFgJSBZsVQggKQIBp4FzV7o9i4IMqXszTEM+ObIgxb9F9du+6Z
-         hfsOB5t6fckzqI2icwRndg0wA2CillJM1YqDcn6ph8w+fCKoL9bS1ajVxhPwFVtk0LT/
-         1Xxa8X2nuY9L69Wkhf8yi1RC8/ANYWfjT9UsNXqUYeEpGidjV9vNlucI/nF4d4ipqHJn
-         Tv4A==
+         :cc:content-transfer-encoding;
+        bh=p61fV+YPNEywapwVLSX3U6IkS8bYclMoOHe7cYi5X18=;
+        b=eIy54y+X5rgzItP7ZeWNXNshPCqA+89uCpiYem2Hhf29ySBVE3JPvC0IBj/zg6NEcz
+         RM6t6f5jaNo1Zbo/OrdJxxef5tuXOSk9m2sjb08mgBowxwXV4FMBcVzZkUUWiQzWWaBe
+         MOmblvVkMFYmlihUphw/7/NvX8GpP7VVjCBv3YgPB//ROnQwRC/v3LurUtOKRM+m+gzU
+         p1qFcsTqYsk+eT7FXDFPDZWYLAgPpZfsL9D5RJg11gLR+7lggtCII+YSsGoOADNZhClN
+         0TcHnp7tSKqGc+HYX/9gI7yUKEEjDHfPj0WPMeYtjTy4kdQ698TbtLRDFiZmoUbgWiez
+         sskQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a7H6cT4mga6MKA/FBc1vFkMxBKchnSYc7FysSEACUIw=;
-        b=tFy3fsquqsQwfVbO2FOxjMVMiRuGNle6VRfLxEwXicPF08xhEObOrRGYe+PJxmhARU
-         KDHlpmj/LDeuuksVvzxY6hMjsOHtHjPT1kJkq1OjDxIF+qsPRsNy8i116hiDGIBtZHLI
-         KfGCVIRnzpLq9CaypKvlnI/GAEAo/zlE0gx0bj0p15jy6n0Db8eRjI2sp/4jCf8Yl/Br
-         VseeilpYlR5DfJERObblK21IXeT/e12OizslVSTXhPF1T47XmoRojoYxBT3evcDGnGNA
-         HP9veguBKzNjtrF7vouHq/sNvc4BVd47ZLNY2RWLHgL9ePfElfIoU9NXG6PCCCQgWCNL
-         XIJw==
-X-Gm-Message-State: AOAM531raTS8ZiL4/zZa3RBQBOefRCORxOJZsPMHxoDvNMKileqVqtrI
-        zOXOrcOMXi0rhDGpFqpBjVWkkhX9HGHDMLYhNDKFSA==
-X-Google-Smtp-Source: ABdhPJy9sNWQpdC4UGhnYJap6j/FXL1c2YwO59wStPm6nzmkO6twNV+NIee+jWrz1uIESPFs1cj6U4d5PwFvh5XrCtI=
-X-Received: by 2002:a25:e750:: with SMTP id e77mr12175923ybh.23.1632254863554;
- Tue, 21 Sep 2021 13:07:43 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=p61fV+YPNEywapwVLSX3U6IkS8bYclMoOHe7cYi5X18=;
+        b=2XVjJB+YmhTWh1ckswSiCAS4b5qYHIQVtkK64SZwwqyHd+SgUtB/W99egvRBU5+ViU
+         n/V0bZcAAShmF03cbMc3Ng7ZWLMyAao+0k0KBirRpWLioGry87cuEwo5bWxve+Yy8VTs
+         prI4COPEtNLHpK5DBwEZkgKtgerIlk/Sux74iTobGFPyO5kWWHBd00xOLDeMhtwUtwQx
+         lUIvGJ33HOl56yW8TA8+vDSPnqCCqEtyJnI0asIK86ozG21BxGpj3L31g1if6TKYYUui
+         55Beqx6HPxRaK9K96BFFbPBBKE1AeHYMYgaLLIQi0TUU/NkLwYCIzlu3KbrhDPwlrU1j
+         jeKA==
+X-Gm-Message-State: AOAM531qz6Y28uk/mOjG64fPjk9OP0mawbkk/XD6JnPlpssnlOXBmPDQ
+        jUQfC7LwpuhXaORmgOz03uCkjqNCVSFlAGX07OM=
+X-Google-Smtp-Source: ABdhPJwSwTZ/v7tYZwxP/eM3wDvQUMohzR0Zg4VWVjePKQEqDpo6w9XNyrOfaoDKf0yf82Hoamb32jTBX+xN+eVpm2o=
+X-Received: by 2002:a63:5c51:: with SMTP id n17mr29849307pgm.376.1632255136460;
+ Tue, 21 Sep 2021 13:12:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210915170940.617415-1-saravanak@google.com> <20210915170940.617415-3-saravanak@google.com>
- <CAJZ5v0h11ts69FJh7LDzhsDs=BT2MrN8Le8dHi73k9dRKsG_4g@mail.gmail.com>
- <YUaPcgc03r/Dw0yk@lunn.ch> <YUoFFXtWFAhLvIoH@kroah.com> <CAJZ5v0jjvf6eeEKMtRJ-XP1QbOmjEWG=DmODbMhAFuemNn4rZg@mail.gmail.com>
- <YUocuMM4/VKzNMXq@lunn.ch> <CAJZ5v0iU3SGqrw909GLtuLwAxdyOy=pe2avxpDW+f4dP4ArhaQ@mail.gmail.com>
- <YUo3kD9jgx6eNadX@lunn.ch>
-In-Reply-To: <YUo3kD9jgx6eNadX@lunn.ch>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 21 Sep 2021 13:07:07 -0700
-Message-ID: <CAGETcx9hTFhY4+fHd71zYUsWW223GfUWBp8xxFCb2SNR6YUQ4Q@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] driver core: fw_devlink: Add support for FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+References: <87o88l3oc4.fsf@toke.dk> <CAC1LvL1xgFMjjE+3wHH79_9rumwjNqDAS2Yg2NpSvmewHsYScA@mail.gmail.com>
+ <87ilyt3i0y.fsf@toke.dk>
+In-Reply-To: <87ilyt3i0y.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 21 Sep 2021 13:12:05 -0700
+Message-ID: <CAADnVQKi_u6yZnsxEagNTv-XWXtLPpXwURJH0FnGFRgt6weiww@mail.gmail.com>
+Subject: Re: Redux: Backwards compatibility for XDP multi-buff
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Zvi Effron <zeffron@riotgames.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Lorenzo Bianconi <lbianconi@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry I've been busy with LPC and some other stuff and could respond earlier.
-
-On Tue, Sep 21, 2021 at 12:50 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On Tue, Sep 21, 2021 at 11:23 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
 >
-> > It works at a device level, so it doesn't know about resources.  The
-> > only information it has is of the "this device may depend on that
-> > other device" type and it uses that information to figure out a usable
-> > probe ordering for drivers.
+> Zvi Effron <zeffron@riotgames.com> writes:
 >
-> And that simplification is the problem. A phandle does not point to a
-> device, it points to a resource of a device. It should really be doing
-> what the driver would do, follow the phandle to the resource and see
-> if it exists yet. If it does not exist then yes it can defer the
-> probe. If the resource does exist, allow the driver to probe.
+> > On Tue, Sep 21, 2021 at 9:06 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+> >>
+> >> Hi Lorenz (Cc. the other people who participated in today's discussion=
+)
+> >>
+> >> Following our discussion at the LPC session today, I dug up my previou=
+s
+> >> summary of the issue and some possible solutions[0]. Seems no on
+> >> actually replied last time, which is why we went with the "do nothing"
+> >> approach, I suppose. I'm including the full text of the original email
+> >> below; please take a look, and let's see if we can converge on a
+> >> consensus here.
+> >>
+> >> First off, a problem description: If an existing XDP program is expose=
+d
+> >> to an xdp_buff that is really a multi-buffer, while it will continue t=
+o
+> >> run, it may end up with subtle and hard-to-debug bugs: If it's parsing
+> >> the packet it'll only see part of the payload and not be aware of that
+> >> fact, and if it's calculating the packet length, that will also only b=
+e
+> >> wrong (only counting the first fragment).
+> >>
+> >> So what to do about this? First of all, to do anything about it, XDP
+> >> programs need to be able to declare themselves "multi-buffer aware" (b=
+ut
+> >> see point 1 below). We could try to auto-detect it in the verifier by
+> >> which helpers the program is using, but since existing programs could =
+be
+> >> perfectly happy to just keep running, it probably needs to be somethin=
+g
+> >> the program communicates explicitly. One option is to use the
+> >> expected_attach_type to encode this; programs can then declare it in t=
+he
+> >> source by section name, or the userspace loader can set the type for
+> >> existing programs if needed.
+> >>
+> >> With this, the kernel will know if a given XDP program is multi-buff
+> >> aware and can decide what to do with that information. For this we cam=
+e
+> >> up with basically three options:
+> >>
+> >> 1. Do nothing. This would make it up to users / sysadmins to avoid
+> >>    anything breaking by manually making sure to not enable multi-buffe=
+r
+> >>    support while loading any XDP programs that will malfunction if
+> >>    presented with an mb frame. This will probably break in interesting
+> >>    ways, but it's nice and simple from an implementation PoV. With thi=
+s
+> >>    we don't need the declaration discussed above either.
+> >>
+> >> 2. Add a check at runtime and drop the frames if they are mb-enabled a=
+nd
+> >>    the program doesn't understand it. This is relatively simple to
+> >>    implement, but it also makes for difficult-to-understand issues (wh=
+y
+> >>    are my packets suddenly being dropped?), and it will incur runtime
+> >>    overhead.
+> >>
+> >> 3. Reject loading of programs that are not MB-aware when running in an
+> >>    MB-enabled mode. This would make things break in more obvious ways,
+> >>    and still allow a userspace loader to declare a program "MB-aware" =
+to
+> >>    force it to run if necessary. The problem then becomes at what leve=
+l
+> >>    to block this?
+> >>
+> >
+> > I think there's another potential problem with this as well: what happe=
+ns to
+> > already loaded programs that are not MB-aware? Are they forcibly unload=
+ed?
 >
-> > Also if the probe has already started, it may still return
-> > -EPROBE_DEFER at any time in theory
+> I'd say probably the opposite: You can't toggle whatever switch we end
+> up with if there are any non-MB-aware programs (you'd have to unload
+> them first)...
 >
-> Sure it can, and does. And any driver which is not broken will
-> unregister its resources on the error path. And that causes users of
-> the resources to release them. It all nicely unravels, and then tries
-> again later. This all works, it is what these drivers do.
-
-One of the points of fw_devlink=on is to avoid the pointless deferred
-probes that'd happen in this situation. So saying "let this happen"
-when fw_devlink=on kinda beats the point of it. See further below.
-
+> >>    Doing this at the driver level is not enough: while a particular
+> >>    driver knows if it's running in multi-buff mode, we can't know for
+> >>    sure if a particular XDP program is multi-buff aware at attach time=
+:
+> >>    it could be tail-calling other programs, or redirecting packets to
+> >>    another interface where it will be processed by a non-MB aware
+> >>    program.
+> >>
+> >>    So another option is to make it a global toggle: e.g., create a new
+> >>    sysctl to enable multi-buffer. If this is set, reject loading any X=
+DP
+> >>    program that doesn't support multi-buffer mode, and if it's unset,
+> >>    disable multi-buffer mode in all drivers. This will make it explici=
+t
+> >>    when the multi-buffer mode is used, and prevent any accidental subt=
+le
+> >>    malfunction of existing XDP programs. The drawback is that it's a
+> >>    mode switch, so more configuration complexity.
+> >>
+> >
+> > Could we combine the last two bits here into a global toggle that doesn=
+'t
+> > require a sysctl? If any driver is put into multi-buffer mode, then the=
+ system
+> > switches to requiring all programs be multi-buffer? When the last multi=
+-buffer
+> > enabled driver switches out of multi-buffer, remove the system-wide
+> > restriction?
 >
-> > However, making children wait for their parents to complete probing is
-> > generally artificial, especially in the cases when the children are
-> > registered by the parent's driver.  So waiting should be an exception
-> > in these cases, not a rule.
+> Well, the trouble here is that we don't necessarily have an explicit
+> "multi-buf mode" for devices. For instance, you could raise the MTU of a
+> device without it necessarily involving any XDP multi-buffer stuff (if
+> you're not running XDP on that device). So if we did turn "raising the
+> MTU" into such a mode switch, we would end up blocking any MTU changes
+> if any XDP programs are loaded. Or having an MTU change cause a
+> force-unload of all XDP programs.
 
-Rafael,
+MTU change that bumps driver into multi-buf mode or enable
+the header split that also bumps it into multi-buf mode
+probably shouldn't be allowed when non-mb aware xdp prog is attached.
+That would be the simplest and least surprising behavior.
+Force unload could cause security issues.
 
-There are cases where the children try to probe too quickly (before
-the parent has had time to set up all the resources it's setting up)
-and the child defers the probe. Even Andrew had an example of that
-with some ethernet driver where the deferred probe is attempted
-multiple times wasting time and then it eventually succeeds.
+> Neither of those are desirable outcomes, I think; and if we add a
+> separate "XDP multi-buff" switch, we might as well make it system-wide?
 
-Considering there's no guarantee that a device_add() will result in
-the device being bound immediately, why shouldn't we make the child
-device wait until the parent has completely probed and we know all the
-resources from the parent are guaranteed to be available? Why can't we
-treat drivers that assume a device will get bound as soon as it's
-added as the exception (because we don't guarantee that anyway)?
-
-Also, this assumption that the child will be bound successfully upon
-addition forces the parent/child drivers to play initcall chicken --
-the child's driver has to be registered before the parent's driver. We
-should be getting away from those by fixing the parent driver that's
-making these assumptions (I'll be glad to help with that). We need to
-be moving towards reducing pointless deferred probes and initcall
-ordering requirements instead of saying "this bad assumption used to
-work, so allow me to continue doing that".
-
--Saravana
-
-> So are you suggesting that fw_devlink core needs to change, recognise
-> the dependency on a parent, and allow the probe? Works for me. Gets us
-> back to before fw_devlink.
+If we have an internal flag 'this driver supports multi-buf xdp' cannot we
+make xdp_redirect to linearize in case the packet is being redirected
+to non multi-buf aware driver (potentially with corresponding non mb aware =
+xdp
+progs attached) from mb aware driver?
