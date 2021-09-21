@@ -2,123 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11EE5412BD3
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:37:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C146412D62
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 05:24:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350889AbhIUCib (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 22:38:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46118 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344291AbhIUCUi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Sep 2021 22:20:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 946B461245;
-        Tue, 21 Sep 2021 02:19:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632190750;
-        bh=Z+11tE516+e0V1bcSE+sqc/byA+rMuk9RbFhyqq7PYk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d90ZZKy8uQqKCKsdlcPvk8V+Wg37YRYMGkKcES9+Dp7tMmqpK2DNANFneNOaJcTI2
-         b4ZDwbRcpjJEi59AMJct89FFTyI2XQW4U9OVG94kCpYOwKDtoGxIhrZlFEkfukoQmJ
-         LVcx4Of36Y+mtMne9kJFCnfjgN6NS0kQnG+SRqLlC01hSPA4UAKh2FaFK8hmeTPGr4
-         u4KgNPsbR2urWO0se7ZrGB+6/jd1GfpBe2FRo9FVU6f1MJIb8X2jCdbh8Sv1pDd+Hl
-         i4qvy5Uyr2VqLXN8sv0VpTZHYtbCOGjhcAZDU/DJTWaGXnZQbwKgVg+ZCO8QyLw+Wy
-         Mqc3qkth7VV4g==
-Date:   Tue, 21 Sep 2021 05:19:06 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        hariprasad <hkelam@marvell.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
-        Manish Chopra <manishc@marvell.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Simon Horman <simon.horman@corigine.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: Re: [PATCH net-next] devlink: Make devlink_register to be void
-Message-ID: <YUlBGk2Mq3iYhtku@unreal>
-References: <2e089a45e03db31bf451d768fc588c02a2f781e8.1632148852.git.leonro@nvidia.com>
- <20210920133915.59ddfeef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210920140407.0732b3d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S232260AbhIUD0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 23:26:17 -0400
+Received: from mail-lf1-f45.google.com ([209.85.167.45]:38566 "EHLO
+        mail-lf1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352791AbhIUCzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:55:03 -0400
+Received: by mail-lf1-f45.google.com with SMTP id x27so75642318lfu.5;
+        Mon, 20 Sep 2021 19:53:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IC0pg/XX+TI+s5bIXMNwch4sO7j1nEoBLODd5HuH4zo=;
+        b=nA84a7kTHr4gQHJosCqtcn8rA1p1+oJf9gjAblY1sajKurT8QteAyV8qutsAvhQrg+
+         Sao5l79ccRXA44NvSb4E7qu2zsci+QJyhu7OHc0G+2YoX5R8nVb/5+fXi95w1y75gjjR
+         pLxWBKO8UeOmEpIyDMJgpUUsdrtDY85K+hryRwI44WqVFyS5084SYQBhImmwG58W8YNc
+         3X7EVfJSFn32LVmmsAIyywY6xtNnjQABDHDFuEv5BqUXa9C0Mx8Sibb4xC2M3nIyhvjG
+         Zxa/H4tGKNrngBbzWQj1HWjty5ivO+81OmHVv/j3SKSGwLVI5Im7SpEMtfLF6UGhMOC+
+         W5nw==
+X-Gm-Message-State: AOAM531WFM4ps+OGUdmKG/z5T9XzNX3zNj0YdxINR4NFqtzacb24jHIm
+        5gxkx7IpzoNJcZSYNSopgPFp7KkY0Shj7zmrrGY=
+X-Google-Smtp-Source: ABdhPJxBcBj27N0TTO69dgMarQ2SCYu+PhTbfemZzP4y8lLoYVpqH62I91YWXTrklj655Qn1US/umvEUN/gNtO1y80c=
+X-Received: by 2002:a2e:a782:: with SMTP id c2mr25735230ljf.388.1632192814113;
+ Mon, 20 Sep 2021 19:53:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210920140407.0732b3d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210920123045.795228-1-arnd@kernel.org>
+In-Reply-To: <20210920123045.795228-1-arnd@kernel.org>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 21 Sep 2021 11:53:22 +0900
+Message-ID: <CAMZ6Rq+pfOHGshH=U3ZtzooD9sHvAz+=i2vdEcqF8Xv=q4eexQ@mail.gmail.com>
+Subject: Re: [PATCH] can: etas_es58x: avoid -Wzero-length-bounds warning
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
+        linux-can <linux-can@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 20, 2021 at 02:04:07PM -0700, Jakub Kicinski wrote:
-> On Mon, 20 Sep 2021 13:39:15 -0700 Jakub Kicinski wrote:
-> > On Mon, 20 Sep 2021 17:41:44 +0300 Leon Romanovsky wrote:
-> > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > 
-> > > devlink_register() can't fail and always returns success, but all drivers
-> > > are obligated to check returned status anyway. This adds a lot of boilerplate
-> > > code to handle impossible flow.
-> > > 
-> > > Make devlink_register() void and simplify the drivers that use that
-> > > API call.  
-> > 
-> > Unlike unused functions bringing back error handling may be
-> > non-trivial. I'd rather you deferred such cleanups until you're 
-> > ready to post your full rework and therefore give us some confidence 
-> > the revert will not be needed.
-> 
-> If you disagree you gotta repost, new devlink_register call got added
-> in the meantime.
+Hi Arnd,
++CC: Kees Cook
 
-This is exactly what I afraid, new devlink API users are added faster
-than I can cleanup them.
+On Mon. 20 Sep 2021 at 21:30, Arnd Bergmann <arnd@kernel.org> wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> gcc complains when writing into a zero-length array:
+>
+> drivers/net/can/usb/etas_es58x/es581_4.c: In function 'es581_4_tx_can_msg':
+> drivers/net/can/usb/etas_es58x/es581_4.c:374:42: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'u8[0]' {aka 'unsigned char[]'} [-Wzero-length-bounds]
+>   374 |         tx_can_msg = (typeof(tx_can_msg))&es581_4_urb_cmd->raw_msg[msg_len];
+>       |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In file included from drivers/net/can/usb/etas_es58x/es58x_core.h:21,
+>                  from drivers/net/can/usb/etas_es58x/es581_4.c:15:
+> drivers/net/can/usb/etas_es58x/es581_4.h:195:20: note: while referencing 'raw_msg'
+>   195 |                 u8 raw_msg[0];
+>       |                    ^~~~~~~
+>   CC [M]  drivers/net/can/usb/etas_es58x/es58x_fd.o
+> drivers/net/can/usb/etas_es58x/es58x_fd.c: In function 'es58x_fd_tx_can_msg':
+> drivers/net/can/usb/etas_es58x/es58x_fd.c:360:42: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'u8[0]' {aka 'unsigned char[]'} [-Wzero-length-bounds]
+>   360 |         tx_can_msg = (typeof(tx_can_msg))&es58x_fd_urb_cmd->raw_msg[msg_len];
+>       |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In file included from drivers/net/can/usb/etas_es58x/es58x_core.h:22,
+>                  from drivers/net/can/usb/etas_es58x/es58x_fd.c:17:
+> drivers/net/can/usb/etas_es58x/es58x_fd.h:222:20: note: while referencing 'raw_msg'
+>   222 |                 u8 raw_msg[0];
+>       |                    ^~~~~~~
+>
+> The solution is usually to use a flexible-array member the struct, but
+> we can't directly have that inside of a union, nor can it be the only
+> member of a struct, so add a dummy struct with another zero-length
+> member to get the intended behavior.
+>
+> If someone has a better workaround, let me know and I can send a new
+> patch, as this version is rather ugly.
 
-For example, let's take a look on newly added ipc_devlink_init(), it is
-called conditionally "if (stage == IPC_MEM_EXEC_STAGE_BOOT) {". How can
-it be different stage if we are in driver .probe() routine?
+Actually, there is one. Kees Cook introduced a new macro,
+DECLARE_FLEX_ARRAY(), to do this in a more elegant way:
+https://lkml.org/lkml/2021/8/27/524
 
-They also introduced devlink_sio.devlink_read_pend and
-devlink_sio.read_sem to protect from something that right position of
-devlink_register() will fix. I also have serious doubts that their
-current protection is correct, once they called to devlink_params_publish()
-the user can crash the system, because he can access the parameters before
-they initialized their protection.
+The same series also fixes the warning in the etas_es58x driver:
+https://lkml.org/lkml/2021/8/27/523
 
-So yes, I disagree. We will need to make sure that devlink_register()
-can't fail and it will make life easier for everyone (no need to unwind)
-while we put that command  being last in probe sequence.
+So we only need to wait for Kees's series to get merged :)
 
-If I repost, will you take it? I don't want to waste anyone time if it
-is not.
 
-Thanks
+Yours sincerely,
+Vincent Mailhol
