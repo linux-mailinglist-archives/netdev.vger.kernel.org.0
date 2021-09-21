@@ -2,49 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7605B412D63
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 05:24:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 220E6412D65
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 05:25:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232294AbhIUD0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 23:26:22 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:49819 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350622AbhIUC4o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:56:44 -0400
-Received: by mail-io1-f70.google.com with SMTP id h19-20020a056602155300b005d5f622706aso16885427iow.16
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 19:55:16 -0700 (PDT)
+        id S232312AbhIUD00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 23:26:26 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:41713 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353000AbhIUC5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:57:44 -0400
+Received: by mail-io1-f72.google.com with SMTP id 142-20020a6b1494000000b005d324a4f7c9so37470477iou.8
+        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 19:56:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=d4R5QGLQnupcbebS30Lcro4CL6kMk66LcNL9QFcysXs=;
-        b=HVeyrkkf3hWUHazN0/+LqCWAc/MfCtU2TkcDg8kFFJelczRw7er5YN7gR0VaU5lLZZ
-         aYNWCM5xlw8rq8IG1688lvMC4mOPp+nHtKEwmQIJ1R73c4cKKgaNdC8d4b9WtjtusQSG
-         yxA3sJb6cL0GQwDfF2dPx7qYDfhfxMWpEXCwIpASCNk9JcnyJTURLVdsB1sJmQ2MRVLE
-         //Q9f5jvDietqJQNp6xYg/IzLOggP6eaPQdIMPT+z3QWTtCPTAM8SMJcRL3wX3GHGq8x
-         xPQigSCe7HxfLCCOh69kIRA9Tj1RCuVhynor3a+cF/iHitvD2W6lvUlE8KRuacri5atr
-         cSXw==
-X-Gm-Message-State: AOAM531s7vjcKe81ynk/HCGapknB6KDrIXJ3XHg0MO1aIqk5p2YDvSy9
-        u7Uoeh0A/kvXtZ4B0mznChMzEz6ntlP4y4i7jZoREuSOlrxB
-X-Google-Smtp-Source: ABdhPJxjQX+yYzhafgAjaMFJ03bOgjxKloEmWs+8OY099wS939ETUUWYN0x0IvXskOzSD8IlBoE6IQDOZV/5Pa/LMRPwkA/m4z6v
+        bh=MNpadMHNgZjbL+VRdgzRTRIiaLJg27YWyIUZKCU8PDs=;
+        b=iXwwU/xe404ssbraHwEwetzvWQRbqz4ARxKZmeabIxw2dRykoAAOr/ut7ULu5NrjeO
+         Bbrtr+HobM8otmiKRV0jhMyB5DpyNOorN932ocw1GK/hUp4yuPNUGd8dAyeBDgDqxL+3
+         A2eUHvakjLqFKmpVJ5fGnnzpWnIjOWLvJMT6Q2lAIRZaTRvvgonVMd6q3hu8dE8KoW0B
+         TIC5BtV3zQAyehbwjKHK5ym5JBv5jneJChWCYkyudiiSLPT58UTob+piLz+FuB/TcYzF
+         +WbrYX4ChrSw8hF6OWRI9nNi3LnvEXkhscXIRNuVmOrdfhwawI49w7ZWSkwNKBI9JrVb
+         /ipg==
+X-Gm-Message-State: AOAM533MPyyJWrSjoZ6PVTneYTTPWfx8r37zdi78Vhi7wMbgXcufhcTK
+        7Yhn9n9yzTWVCJyHHCIsMEt7XkNqQdIa6D7JP96UsdXkK2v+
+X-Google-Smtp-Source: ABdhPJzFElshIctAq247vtysjG+pyJtpXZZ/wOxOpzGbONGpgTNUb5NF2MHpKQSxm3n1vcSiwDCoYNJorvbRQwcecfroXErtUPAo
 MIME-Version: 1.0
-X-Received: by 2002:a6b:7710:: with SMTP id n16mr20889883iom.101.1632192916142;
- Mon, 20 Sep 2021 19:55:16 -0700 (PDT)
-Date:   Mon, 20 Sep 2021 19:55:16 -0700
+X-Received: by 2002:a05:6e02:134e:: with SMTP id k14mr19895623ilr.39.1632192977063;
+ Mon, 20 Sep 2021 19:56:17 -0700 (PDT)
+Date:   Mon, 20 Sep 2021 19:56:17 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f8be2b05cc788686@google.com>
-Subject: [syzbot] general protection fault in percpu_ref_put
-From:   syzbot <syzbot+533f389d4026d86a2a95@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, axboe@kernel.dk,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org,
-        christian.brauner@ubuntu.com, christian@brauner.io,
-        daniel@iogearbox.net, dkadashev@gmail.com, hannes@cmpxchg.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lizefan.x@bytedance.com, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
-        tj@kernel.org, torvalds@linux-foundation.org,
-        viro@zeniv.linux.org.uk, yhs@fb.com
+Message-ID: <0000000000009a53cd05cc788a95@google.com>
+Subject: [syzbot] general protection fault in sctp_rcv
+From:   syzbot <syzbot+581aff2ae6b860625116@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -54,118 +48,106 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    4357f03d6611 Merge tag 'pm-5.15-rc2' of git://git.kernel.o..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=173e2d27300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ccfb8533b1cbe3b1
-dashboard link: https://syzkaller.appspot.com/bug?extid=533f389d4026d86a2a95
-compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1395c6f1300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11568cad300000
+HEAD commit:    98dc68f8b0c2 selftests: nci: replace unsigned int with int
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=11fd443d300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c31c0936547df9ea
+dashboard link: https://syzkaller.appspot.com/bug?extid=581aff2ae6b860625116
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-The issue was bisected to:
-
-commit 020250f31c4c75ac7687a673e29c00786582a5f4
-Author: Dmitry Kadashev <dkadashev@gmail.com>
-Date:   Thu Jul 8 06:34:43 2021 +0000
-
-    namei: make do_linkat() take struct filename
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=137e8a4b300000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=10fe8a4b300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=177e8a4b300000
+Unfortunately, I don't have any reproducer for this issue yet.
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+533f389d4026d86a2a95@syzkaller.appspotmail.com
-Fixes: 020250f31c4c ("namei: make do_linkat() take struct filename")
+Reported-by: syzbot+581aff2ae6b860625116@syzkaller.appspotmail.com
 
-general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
-CPU: 1 PID: 148 Comm: kworker/u4:2 Not tainted 5.15.0-rc1-syzkaller #0
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 0 PID: 11205 Comm: kworker/0:12 Not tainted 5.14.0-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-RIP: 0010:__ref_is_percpu include/linux/percpu-refcount.h:174 [inline]
-RIP: 0010:percpu_ref_put_many include/linux/percpu-refcount.h:319 [inline]
-RIP: 0010:percpu_ref_put+0x93/0x1d0 include/linux/percpu-refcount.h:338
-Code: 01 48 c7 c7 40 58 52 8a be b1 02 00 00 48 c7 c2 80 58 52 8a e8 fe 18 e9 ff 49 bd 00 00 00 00 00 fc ff df 48 89 d8 48 c1 e8 03 <42> 80 3c 28 00 74 08 48 89 df e8 9e 73 52 00 48 8b 2b 48 89 ee 48
-RSP: 0018:ffffc90000dc0b30 EFLAGS: 00010206
-RAX: 0000000000000182 RBX: 0000000000000c10 RCX: ffff888016781c80
-RDX: 0000000080000100 RSI: 0000000000000004 RDI: ffff8880b9d32508
-RBP: 000000000000003f R08: dffffc0000000000 R09: ffffed10173a64a2
-R10: ffffed10173a64a2 R11: 0000000000000000 R12: ffff88806df0a000
-R13: dffffc0000000000 R14: 0000000000000000 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+Workqueue: ipv6_addrconf addrconf_dad_work
+RIP: 0010:sctp_rcv_ootb net/sctp/input.c:705 [inline]
+RIP: 0010:sctp_rcv+0x1d84/0x3220 net/sctp/input.c:196
+Code: fb 03 0f 8e 51 01 00 00 e8 99 ac 17 f9 4c 01 ed e8 91 ac 17 f9 48 8d 7d 02 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <0f> b6 14 08 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 ea
+RSP: 0018:ffffc900000079c8 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 00000000fffffff2 RCX: dffffc0000000000
+RDX: ffff88803d790000 RSI: ffffffff885e62cf RDI: 0000000000000002
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff885e6448 R11: 0000000000000000 R12: 000000000000050c
+R13: ffff88803f42a0e4 R14: 0000000000000510 R15: ffff888070e2c500
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f853d75b740 CR3: 00000000702e7000 CR4: 00000000001506e0
+CR2: 00007f0dce1763ad CR3: 0000000027250000 CR4: 00000000001506f0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
  <IRQ>
- cgroup_bpf_put include/linux/cgroup.h:926 [inline]
- cgroup_sk_free+0x3c/0xa0 kernel/cgroup/cgroup.c:6613
- sk_prot_free net/core/sock.c:1852 [inline]
- __sk_destruct+0x541/0x820 net/core/sock.c:1943
- call_timer_fn+0xf6/0x210 kernel/time/timer.c:1421
- expire_timers kernel/time/timer.c:1466 [inline]
- __run_timers+0x71a/0x910 kernel/time/timer.c:1734
- run_timer_softirq+0x63/0xf0 kernel/time/timer.c:1747
- __do_softirq+0x392/0x7a3 kernel/softirq.c:558
- __irq_exit_rcu+0xec/0x170 kernel/softirq.c:636
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:648
- sysvec_apic_timer_interrupt+0x91/0xb0 arch/x86/kernel/apic/apic.c:1097
+ sctp6_rcv+0x38/0x60 net/sctp/ipv6.c:1109
+ ip6_protocol_deliver_rcu+0x2e9/0x1ca0 net/ipv6/ip6_input.c:422
+ ip6_input_finish+0x62/0x170 net/ipv6/ip6_input.c:463
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ip6_input+0x9c/0xd0 net/ipv6/ip6_input.c:472
+ dst_input include/net/dst.h:460 [inline]
+ ip6_rcv_finish net/ipv6/ip6_input.c:76 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ipv6_rcv+0x28c/0x3c0 net/ipv6/ip6_input.c:297
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5436
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5550
+ process_backlog+0x2a5/0x6c0 net/core/dev.c:6427
+ __napi_poll+0xaf/0x440 net/core/dev.c:6982
+ napi_poll net/core/dev.c:7049 [inline]
+ net_rx_action+0x801/0xb40 net/core/dev.c:7136
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ do_softirq.part.0+0xde/0x130 kernel/softirq.c:459
  </IRQ>
- asm_sysvec_apic_timer_interrupt+0x12/0x20
-RIP: 0010:lock_acquire+0x21f/0x4d0 kernel/locking/lockdep.c:5629
-Code: 08 4c 89 f7 e8 c2 d1 69 00 f6 84 24 81 00 00 00 02 0f 85 13 02 00 00 41 f7 c4 00 02 00 00 74 01 fb 48 c7 44 24 40 0e 36 e0 45 <4b> c7 04 2f 00 00 00 00 43 c7 44 2f 09 00 00 00 00 43 c7 44 2f 11
-RSP: 0018:ffffc9000170f8e0 EFLAGS: 00000206
-RAX: 0000000000000001 RBX: 1ffff920002e1f2c RCX: ffff888016782670
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffc9000170fa40 R08: dffffc0000000000 R09: fffffbfff1fa2fc1
-R10: fffffbfff1fa2fc1 R11: 0000000000000000 R12: 0000000000000246
-R13: 1ffff920002e1f24 R14: ffffc9000170f960 R15: dffffc0000000000
- rcu_lock_acquire+0x2a/0x30 include/linux/rcupdate.h:267
- rcu_read_lock include/linux/rcupdate.h:687 [inline]
- inet_twsk_purge+0x11b/0x890 net/ipv4/inet_timewait_sock.c:268
- ops_exit_list net/core/net_namespace.c:171 [inline]
- cleanup_net+0x7ec/0xc50 net/core/net_namespace.c:591
- process_one_work+0x853/0x1140 kernel/workqueue.c:2297
- worker_thread+0xac1/0x1320 kernel/workqueue.c:2444
- kthread+0x453/0x480 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30
+ do_softirq kernel/softirq.c:451 [inline]
+ __local_bh_enable_ip+0x102/0x120 kernel/softirq.c:383
+ spin_unlock_bh include/linux/spinlock.h:408 [inline]
+ addrconf_dad_work+0x474/0x1340 net/ipv6/addrconf.c:4077
+ process_one_work+0x9bf/0x16b0 kernel/workqueue.c:2297
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2444
+ kthread+0x3e5/0x4d0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
 Modules linked in:
----[ end trace 6ae4e3b5aac552a5 ]---
-RIP: 0010:__ref_is_percpu include/linux/percpu-refcount.h:174 [inline]
-RIP: 0010:percpu_ref_put_many include/linux/percpu-refcount.h:319 [inline]
-RIP: 0010:percpu_ref_put+0x93/0x1d0 include/linux/percpu-refcount.h:338
-Code: 01 48 c7 c7 40 58 52 8a be b1 02 00 00 48 c7 c2 80 58 52 8a e8 fe 18 e9 ff 49 bd 00 00 00 00 00 fc ff df 48 89 d8 48 c1 e8 03 <42> 80 3c 28 00 74 08 48 89 df e8 9e 73 52 00 48 8b 2b 48 89 ee 48
-RSP: 0018:ffffc90000dc0b30 EFLAGS: 00010206
-RAX: 0000000000000182 RBX: 0000000000000c10 RCX: ffff888016781c80
-RDX: 0000000080000100 RSI: 0000000000000004 RDI: ffff8880b9d32508
-RBP: 000000000000003f R08: dffffc0000000000 R09: ffffed10173a64a2
-R10: ffffed10173a64a2 R11: 0000000000000000 R12: ffff88806df0a000
-R13: dffffc0000000000 R14: 0000000000000000 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+---[ end trace 80d76c5102c944b0 ]---
+RIP: 0010:sctp_rcv_ootb net/sctp/input.c:705 [inline]
+RIP: 0010:sctp_rcv+0x1d84/0x3220 net/sctp/input.c:196
+Code: fb 03 0f 8e 51 01 00 00 e8 99 ac 17 f9 4c 01 ed e8 91 ac 17 f9 48 8d 7d 02 48 b9 00 00 00 00 00 fc ff df 48 89 f8 48 c1 e8 03 <0f> b6 14 08 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 ea
+RSP: 0018:ffffc900000079c8 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 00000000fffffff2 RCX: dffffc0000000000
+RDX: ffff88803d790000 RSI: ffffffff885e62cf RDI: 0000000000000002
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff885e6448 R11: 0000000000000000 R12: 000000000000050c
+R13: ffff88803f42a0e4 R14: 0000000000000510 R15: ffff888070e2c500
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f853d75b740 CR3: 000000000c68e000 CR4: 00000000001506e0
+CR2: 00007f0dce1763ad CR3: 0000000027250000 CR4: 00000000001506f0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 ----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	48 c7 c7 40 58 52 8a 	mov    $0xffffffff8a525840,%rdi
-   7:	be b1 02 00 00       	mov    $0x2b1,%esi
-   c:	48 c7 c2 80 58 52 8a 	mov    $0xffffffff8a525880,%rdx
-  13:	e8 fe 18 e9 ff       	callq  0xffe91916
-  18:	49 bd 00 00 00 00 00 	movabs $0xdffffc0000000000,%r13
-  1f:	fc ff df
-  22:	48 89 d8             	mov    %rbx,%rax
-  25:	48 c1 e8 03          	shr    $0x3,%rax
-* 29:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1) <-- trapping instruction
-  2e:	74 08                	je     0x38
-  30:	48 89 df             	mov    %rbx,%rdi
-  33:	e8 9e 73 52 00       	callq  0x5273d6
-  38:	48 8b 2b             	mov    (%rbx),%rbp
-  3b:	48 89 ee             	mov    %rbp,%rsi
-  3e:	48                   	rex.W
+Code disassembly (best guess):
+   0:	fb                   	sti
+   1:	03 0f                	add    (%rdi),%ecx
+   3:	8e 51 01             	mov    0x1(%rcx),%ss
+   6:	00 00                	add    %al,(%rax)
+   8:	e8 99 ac 17 f9       	callq  0xf917aca6
+   d:	4c 01 ed             	add    %r13,%rbp
+  10:	e8 91 ac 17 f9       	callq  0xf917aca6
+  15:	48 8d 7d 02          	lea    0x2(%rbp),%rdi
+  19:	48 b9 00 00 00 00 00 	movabs $0xdffffc0000000000,%rcx
+  20:	fc ff df
+  23:	48 89 f8             	mov    %rdi,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	0f b6 14 08          	movzbl (%rax,%rcx,1),%edx <-- trapping instruction
+  2e:	48 89 f8             	mov    %rdi,%rax
+  31:	83 e0 07             	and    $0x7,%eax
+  34:	83 c0 01             	add    $0x1,%eax
+  37:	38 d0                	cmp    %dl,%al
+  39:	7c 08                	jl     0x43
+  3b:	84 d2                	test   %dl,%dl
+  3d:	0f                   	.byte 0xf
+  3e:	85 ea                	test   %ebp,%edx
 
 
 ---
@@ -175,6 +157,3 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
