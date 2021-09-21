@@ -2,75 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39B2F413778
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 18:22:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DBBB413784
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 18:23:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233796AbhIUQXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 12:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
+        id S233796AbhIUQYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 12:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231297AbhIUQXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 12:23:37 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EF0C061574;
-        Tue, 21 Sep 2021 09:22:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=9/YVI0YfDL2V4vcHeVmIRPEOUQt1TJerDuRFTwKveSE=; b=AVS/5IVt0MCm2i6EdN5eEegLQo
-        y4M1Ea3I0Vii+1zNHmWuCVaMY72NHXxis7XkhIug7SJCSHUJk6gUwX7A8DwjBMrKyoJg7iAWec7OC
-        HV8Bc4tHIM5Of2fmfhIQZarEfk/f5KLKmSpSHBZMvTO76TzWlHhIGnj6i9Auoi4vhN/NizQVQWbuu
-        NFnOYCQZOkgB4KEHzmWWgP/FY3zHJ2D1EBKX3oTEh2sojbj7wjNEpernXSyfyw6Bsjk5hqJXdBAiZ
-        J8zqJb6fNxwgSxO/qnWezM10SOUMPPTyYKldhdco+ZnmPf69EFrzyWdoIzYGrL7WRGt88kWkIMxb0
-        MCgeNkCw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mSiS6-003xNv-8T; Tue, 21 Sep 2021 16:18:00 +0000
-Date:   Tue, 21 Sep 2021 17:17:02 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     linux-mm@kvack.org, Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>,
-        John Garry <john.garry@huawei.com>,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC v2 PATCH] mm, sl[au]b: Introduce lockless cache
-Message-ID: <YUoFfrQBmOdPEKpJ@casper.infradead.org>
-References: <20210920154816.31832-1-42.hyeyoo@gmail.com>
- <YUkErK1vVZMht4s8@casper.infradead.org>
- <20210921154239.GA5092@kvm.asia-northeast3-a.c.our-ratio-313919.internal>
+        with ESMTP id S233587AbhIUQYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 12:24:42 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4F7C061574
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 09:23:13 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id x27so83553957lfu.5
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 09:23:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uGB3KIWuUU5+UMhmxjUiQs+FGymSex7dUZpVcp4T9dw=;
+        b=Bm1nRp21JyJReP1yYlxUgMG25ALeM66YI75gB0J79CC1/LkBaEYPn5GboYdTp2+8O6
+         l3V+kkTUQ++qJPJx+n418dXu/OyorhyEGaTAIt0J3e7hk+q7gnVz3HA8Dr5OuOjgQWc2
+         cx073pHVSY+BSKqpb/ytvZQRPksBCgnpeRRojL8Yq9aA3EroFA9nj966+8FoJo+mcffI
+         ZsNKlICnlaA9wwmcBxxzX7+rMmooJoggwzu90+NA+pYEfjxGy0JO2MycIpzqiHm37uht
+         CN4bX0alHqojNa+kKMDloU8pPe2HtmuFZRuJbOpjcal88HwJ5+RImVWr5IGteHJNL2wx
+         ab9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uGB3KIWuUU5+UMhmxjUiQs+FGymSex7dUZpVcp4T9dw=;
+        b=zeMD3nCarR6/SP6jYzDQAED+i/ohFhtlIg0CAMcbO0YlLHDAAGiZFkKpjmu6t3Hq5y
+         GJqG4xLJY8Fv7pqbB0oDShRmvzQ4LLI4cCCrua7nnHaT8Qengwjo+rEC3GhYQvSezqwy
+         8Zw6XYcgmuJloKLZrfjqGKov3ucr6V9+bkloiJSWVCxe0Y8KvB7wK4tnjv82XT/QdJlV
+         AiVzlvGhNnPMCxg9JyMmFJ7dwGsUrZLehF09lGnrw5tsYlv8MNR+VPgpya1z2X7VNtsS
+         VSwZMe9qpwWEzB5clgJvylyDQ5Cof5AiDiN5UEAOoVwuJYmYpmszoCWk3HDppAjkUxL0
+         KnWw==
+X-Gm-Message-State: AOAM532aHnSL9ycNPyKwP8GAn7jEZNTrsd6fLGDqNAsVaQfXPu1ZZd0J
+        gMw2R/QI+XL0h8a0U//Spbn1NXUW9JpISr6bOGI23Q==
+X-Google-Smtp-Source: ABdhPJzKaepZfzeZo+OmR86T4T1kRGRS8Fl4K7TWvr5VSuyb/bkqERay8zcuxyXKtRA4wwTwhqTm3YxYntrkQhU0Z/4=
+X-Received: by 2002:a2e:4c19:: with SMTP id z25mr22499331lja.145.1632241388707;
+ Tue, 21 Sep 2021 09:23:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210921154239.GA5092@kvm.asia-northeast3-a.c.our-ratio-313919.internal>
+References: <20210920214209.1733768-1-vladimir.oltean@nxp.com> <20210920214209.1733768-3-vladimir.oltean@nxp.com>
+In-Reply-To: <20210920214209.1733768-3-vladimir.oltean@nxp.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 21 Sep 2021 18:22:57 +0200
+Message-ID: <CACRpkdZ085p_qUOXUGiA5jru8fsj-ZqbEFtANGvaO-=FevktDA@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] net: dsa: realtek: register the MDIO bus under devres
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 21, 2021 at 03:42:39PM +0000, Hyeonggon Yoo wrote:
-> > > +	/* slowpath */
-> > > +	cache->size = kmem_cache_alloc_bulk(s, gfpflags,
-> > > +			KMEM_LOCKLESS_CACHE_QUEUE_SIZE, cache->queue);
-> > 
-> > Go back to the Bonwick paper and look at the magazine section again.
-> > You have to allocate _half_ the size of the queue, otherwise you get
-> > into pathological situations where you start to free and allocate
-> > every time.
-> 
-> I want to ask you where idea of allocating 'half' the size of queue came from.
-> the paper you sent does not work with single queue(magazine). Instead,
-> it manages pool of magazines.
-> 
-> And after reading the paper, I see managing pool of magazine (where M is
-> an boot parameter) is valid approach to reduce hitting slowpath.
+On Mon, Sep 20, 2021 at 11:42 PM Vladimir Oltean
+<vladimir.oltean@nxp.com> wrote:
 
-Bonwick uses two magazines per cpu; if both are empty, one is replaced
-with a full one.  If both are full, one is replaced with an empty one.
-Our slab implementation doesn't provide magazine allocation, but it does
-provide bulk allocation.  So translating the Bonwick implementation to
-our implementation, we need to bulk-allocate or bulk-free half of the
-array at any time.
+> Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_regist=
+er()")
+> Reported-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> Reported-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
