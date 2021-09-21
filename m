@@ -2,104 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0908A412EA9
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 08:36:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA9E6412EB8
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 08:41:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbhIUGh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 02:37:59 -0400
-Received: from relay.sw.ru ([185.231.240.75]:44442 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229624AbhIUGh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Sep 2021 02:37:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=MSuTQJ+XQxWeuIZJRE3xX1lmPJnwKi6ysthqUZAK1Js=; b=FNowpGRcKINeeavHp
-        DfvzWb1dF2TYIeWXPZsZgURzWaCBhHhxg3Fy9yP163pko6Tpx1zWahglJ3TpKr2gE6Fn+dEV5wLQE
-        Enn/t8ibLcjIJJ0RTcaU5ljvsp3ZKS7kfLzEA35LwGpUSH1KWHPsy37yEjsbxhSG1NADzwJ+LM0DY
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mSZOE-002fjh-Ua; Tue, 21 Sep 2021 09:36:26 +0300
-Subject: Re: [RFC net v7] net: skb_expand_head() adjust skb->truesize
- incorrectly
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        Hao Sun <sunhao.th@gmail.com>, kernel@openvz.org
-References: <20210917162418.1437772-1-kuba@kernel.org>
- <b38881fc-7dbf-8c5f-92b8-5fa1afaade0c@virtuozzo.com>
- <20210920111259.18f9cc01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <c4d204a5-f3f1-e505-4206-26dfd1c097f1@virtuozzo.com>
- <20210920173949.7e060848@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <5ed3cdb8-0a72-9dfb-ecdd-d59411f63653@virtuozzo.com>
-Date:   Tue, 21 Sep 2021 09:36:26 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S229904AbhIUGm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 02:42:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229763AbhIUGmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 02:42:55 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B460AC061574;
+        Mon, 20 Sep 2021 23:41:27 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id t4so12743869plo.0;
+        Mon, 20 Sep 2021 23:41:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RDY/CygsuDGr2VxPOJrYoRC69tTkJlPaA3/ke6daSf0=;
+        b=abtdr9HPjC1t7faBledJZIwT3FO22vN7xT97L0vm71+p3bZwqPk3Cu8KJGUNy71vhM
+         VC5CR9QQ5OH06KG0W7lz37bUyFvEgrsUfkNSPOBQepJxPUKPDnRbIDTYexbOjXmEctwF
+         jmZuGDjPCCEDP3yhABGNhgRf7KrRItZ+VHeXW0y48o+n9D02B13jh7JkETslbbpmds4/
+         iZrb1dovtD3/J9c+D3l87ujbMjqac6fwthB2cggkYmvqoojCpS9mmdAkLLnu9psHuTHb
+         w1xdvYnAbSYZBZF6bbdlYYuDb0cWfZatTdzms4YFwWQY1TWwG37DO+UDfG17t8DqgMld
+         zBFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RDY/CygsuDGr2VxPOJrYoRC69tTkJlPaA3/ke6daSf0=;
+        b=LmIlhAHxc+IMIeNavCTqnYeHX6DOBeJ5KkB/Qbb2NCvYO8Xboi+DJ8fH5J0rfaRmHs
+         ECS+rrxdT1NTaXUJO36A5fBQS1YIff0yKo/wCtr+VgVGLFJI+09vfbeKlkcFSkPqMWEM
+         JuekODNpmTdwjvo7m8TeSurHC9O6DO4AH6TvfJGKutTfxCvImA9Sm5tPwNXi4nn/uiow
+         e4VZC/HaeyJ7nBX5tDJzmcj4pf/m/UdegQV3VtA98ehECyxcCPM6BX647pvaiOiKSygF
+         OWJ8sfQqtzAAXKWlMBsWs6F4EHSeenNJaFW7Z3bl8VOYJVN/NXN0E4MrdDE1oxpvC4qs
+         R1KA==
+X-Gm-Message-State: AOAM530l+70EBv+u11Vd0sH101/74h2nsq38Hav/GvFcv1vIoRM2vXTr
+        +rwGi7750vFzb3vOu9Mf110=
+X-Google-Smtp-Source: ABdhPJwgDQTvgVWPoPaDVdxQa0Czy9qxk3RR168T002Vs62HkMDtg5JeT7zgZB21KvxWk30yqWe+DQ==
+X-Received: by 2002:a17:903:246:b0:13a:8c8:8a31 with SMTP id j6-20020a170903024600b0013a08c88a31mr25624046plh.87.1632206487131;
+        Mon, 20 Sep 2021 23:41:27 -0700 (PDT)
+Received: from masabert ([202.12.244.3])
+        by smtp.gmail.com with ESMTPSA id w206sm10760488pfc.45.2021.09.20.23.41.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Sep 2021 23:41:26 -0700 (PDT)
+Received: by masabert (Postfix, from userid 1000)
+        id A9C712360A48; Tue, 21 Sep 2021 15:41:24 +0900 (JST)
+From:   Masanari Iida <standby24x7@gmail.com>
+To:     linux-kernel@vger.kernel.org, corbet@lwn.net,
+        linux-doc@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+Cc:     Masanari Iida <standby24x7@gmail.com>
+Subject: [PATCH] Doc: networking: Fox a typo in ice.rst
+Date:   Tue, 21 Sep 2021 15:41:23 +0900
+Message-Id: <20210921064123.251742-1-standby24x7@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-In-Reply-To: <20210920173949.7e060848@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/21/21 3:39 AM, Jakub Kicinski wrote:
-> On Tue, 21 Sep 2021 00:41:15 +0300 Vasily Averin wrote:
->>> Thanks for taking a look. I would prefer not to bake any ideas about
->>> the skb's function into generic functions. Enumerating every destructor
->>> callback in generic code is impossible (technically so, since the code
->>> may reside in modules).
->>>
->>> Let me think about it. Perhaps we can extend sock callbacks with
->>> skb_sock_inherit, and skb_adjust_trusize? That'd transfer the onus of
->>> handling the adjustments done on splitting to the protocols. I'll see
->>> if that's feasible unless someone can immediately call this path
->>> ghastly.  
->>
->> This is similar to Alexey Kuznetsov's suggestion for me, 
->> see https://lkml.org/lkml/2021/8/27/460
-> 
-> Interesting, I wasn't thinking of keeping the ops pointer in every skb.
-> 
->> However I think we can do it later,
->> right now we need to fix somehow broken skb_expand_head(),
->> please take look at v8.
-> 
-> I think v8 still has the issue that Eric was explaining over and over.
+This patch fixes a spelling typo in ice.rst
 
-I've missed sock_edemux check, however I do not see any other issues.
-Could you please explain what problem you talking about?
+Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+---
+ Documentation/networking/device_drivers/ethernet/intel/ice.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Eric said:
-"it is not valid to call skb_set_owner_w(skb, sk) on all kind of sockets",
-because socket might have been closed already.
+diff --git a/Documentation/networking/device_drivers/ethernet/intel/ice.rst b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
+index e7d9cbff771b..67b7a701ce9e 100644
+--- a/Documentation/networking/device_drivers/ethernet/intel/ice.rst
++++ b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
+@@ -851,7 +851,7 @@ NOTES:
+ - 0x88A8 traffic will not be received unless VLAN stripping is disabled with
+   the following command::
+ 
+-    # ethool -K <ethX> rxvlan off
++    # ethtool -K <ethX> rxvlan off
+ 
+ - 0x88A8/0x8100 double VLANs cannot be used with 0x8100 or 0x8100/0x8100 VLANS
+   configured on the same port. 0x88a8/0x8100 traffic will not be received if
+-- 
+2.25.0
 
-Before the call we have old skb with sk reference, so sk is not closed yet
-and have nonzero sk->sk_wmem_alloc.
-
-During the call, skb_set_owner_w calls skb_orphan that calls old skb destructor.
-Yes, it can decrement last sk reference and release the socket, 
-and I think this is exactly the problem that Eric was pointing out: 
-now sk access is unsafe.
-
-However it can be prevented in at least 2 ways:
-a) clone old skb and call skb_set_owner_w(nskb, sk) before skb_consume(oskb).
-   In this case, skb_orphan does not call old destructor, because at this point
-   nskb->sk = NULL and nskb->destructor = NULL, and sk reference is kept by oskb.  
-   This is widely used in current code (ppp_xmit, ipip6_tunnel_xmit, 
-   ip_vs_prepare_tunneled_skb and so on).
-   This is used in v8 too.
-b) Alternatively, extra refs on sk->sk_wmem_alloc and sk->sk_refcnt can be
-   carefully taken before skb_set_owner_w() call. These references will not allow
-   to release sk during old destructor's execution. 
-   This was used in v6, and I think this should works correctly too. 
-
-Could you please explain where I am wrong?
-Do you talking about some other issue perhaps?
-
-Thank you,
-	Vasily Averin
