@@ -2,401 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27E304136CC
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 17:58:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35B3E4136F4
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 18:06:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234306AbhIUP7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 11:59:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57182 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234308AbhIUP7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 11:59:22 -0400
-Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E9BC061574
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 08:57:53 -0700 (PDT)
-Received: by mail-qk1-x74a.google.com with SMTP id bj32-20020a05620a192000b00433162e24d3so101395521qkb.8
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 08:57:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=T7anISc7/uSEkQXpkVxCntKRxcDqej9hluZQlCHI5OQ=;
-        b=mMbZJVA3NPe/Hb4MiG/8zCGkBeXVAYznBhfCkrz45nSDxVUedTzyDhsShf7Eh/qJrB
-         ya2+MtKEIO4TZQUmkGWGHLewsnzZHPHavMXalBy57noJBxelQE9hXakKimAnGMFVfnnl
-         CTMmfGKdvzy/rFyHIPeccM7GbEQRMD7MSg3TxeDcg7cm3vnGKplnL0PCKa4/0vbUmwQ+
-         LUZMNG2zj0S/UtBf5Bos7UQ0Y8A6sGlgVO+CePcnmtl+FhMlAD03H98jI/vHb02zkngy
-         qz+RGJRWPbYsqUmyq8V8Mn7Yi2WuMwLhLqMvCkNakB+iyCBcWp7HDkfiwlRaRXfhKLlV
-         R9ow==
+        id S233798AbhIUQIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 12:08:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47267 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233587AbhIUQIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 12:08:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632240403;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=e6HK/BwJ2W5unsWLoV5gYLpF0WRIoMgAw8WXLr0AbN4=;
+        b=A0c+yeiADW6vltvBUpyZDbZ+CKg77cF9f+JG9bKXTbEk+98paZ9mHt4l4itpkh4DNQ64hm
+        NaDUaerMrJCpncedcI7cnfU79dxcXpWPGcYZTBiiol400qEQKcVdzytY3ARRwiUrD79Id/
+        uQBZPNzm7AH5zUW/Vge577DDYsph2N8=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-412-Ng1A41o2NZWl8ai70dYQfQ-1; Tue, 21 Sep 2021 12:06:42 -0400
+X-MC-Unique: Ng1A41o2NZWl8ai70dYQfQ-1
+Received: by mail-ed1-f69.google.com with SMTP id b7-20020a50e787000000b003d59cb1a923so18603877edn.5
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 09:06:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=T7anISc7/uSEkQXpkVxCntKRxcDqej9hluZQlCHI5OQ=;
-        b=J8HiDvXsxVwNgYDXdL8vZjwe0bjxIHml16KkDzrymngpN1dBeviW9isu+dnJ5jQ4yL
-         nLA2+MoXR4ift2afA+XJlt/nU74Ety42wdZgm6ZHJ4fNfZslt2qG/lTcxgQfkg2BAG1s
-         lEbeZS5brgtelLJr+3I6lyj9N2/illuwVNwl6sg3lMnvoPiqfTOrzmDzhVnOiVaczimM
-         RPtbTUdkBAQVMQzg3HRlbdsCBJ1xDmuUd4lBCOuzkXPdxKRz3QpmCgWa7EuF+gdXSJWN
-         SIiY/P2LxT5YUMi8XEXt1LFeR8zS6omNha6eSedYPdPGPFiTw6xWKK9E9Kt37W4LI4gU
-         iM2Q==
-X-Gm-Message-State: AOAM533Fat1vJhtCVkr+q2NstpF4aZRqNr6SB641rS5590MG3Y9QDvLx
-        vSxd7zRGntAUheN59JKQKVYKpqegIFzZ/w==
-X-Google-Smtp-Source: ABdhPJyC82nU9YjbfXpQlDUJr7edQiAeRYvXuzm6zmEmhWlSfy3xIsYlfpBuns5LkACs330Iqf4WNr3rbQkcSw==
-X-Received: from mmandlik.mtv.corp.google.com ([2620:15c:202:201:c2de:a92c:e275:5bdf])
- (user=mmandlik job=sendgmr) by 2002:a25:8505:: with SMTP id
- w5mr7790318ybk.185.1632239872820; Tue, 21 Sep 2021 08:57:52 -0700 (PDT)
-Date:   Tue, 21 Sep 2021 08:57:22 -0700
-Message-Id: <20210921085652.v2.1.Ib31940aba2253e3f25cbca09a2d977d27170e163@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.33.0.464.g1972c5931b-goog
-Subject: [PATCH v2] bluetooth: Fix Advertisement Monitor Suspend/Resume
-From:   Manish Mandlik <mmandlik@google.com>
-To:     marcel@holtmann.org, luiz.dentz@gmail.com
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        linux-bluetooth@vger.kernel.org,
-        Manish Mandlik <mmandlik@google.com>,
-        Archie Pusaka <apusaka@google.com>,
-        Miao-chen Chou <mcchou@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
+        bh=e6HK/BwJ2W5unsWLoV5gYLpF0WRIoMgAw8WXLr0AbN4=;
+        b=dOWqtT3l3ovF2wZ7kNw6DocCzhjSMimWQmPtLT5uU+2+VCLeHT1x0fnQuy1AVHVBqZ
+         I4z/mV41Fuqwe754ZV34eMOxgxoTSE0C1y7xvSF3paFjpoXIS8HfSYNCLZ4shYxUQRTg
+         S9mL7YVFNY6gtvmKtnZ9zZbal4KjOZ1z9ni52o8qUh3WBe5u0XPXGXcJ6D//VycTk/PQ
+         HL89IhHbeISoJu8f9/sklsauXMPvwIZcoNc3mhbcpqdWpBgvf3SW0MfFOk2v2cSyb2FU
+         FnhlRrNC2uIN8eOUrOEsXaXsthEN2e3Csl8kIUe+JOe5wkmIUHUE0HWb4s8lAwriUKxI
+         Rbog==
+X-Gm-Message-State: AOAM530QkTsDthG9JFv4ybQ+L+TEManOrMSK87DQijATOzRc3/8bDUDF
+        LMTess54wIXsM9xfcPVJ8aACBnXzqEXcsCZAnLbe/y0TvZgXjkDFAZcZoPRLZ+CFhHX6mHlfkwl
+        usIQLhJyDgXoeM07d
+X-Received: by 2002:a17:906:c252:: with SMTP id bl18mr35058510ejb.519.1632240399565;
+        Tue, 21 Sep 2021 09:06:39 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxKP5JCN4i445M+rwwYicc3/SOuXpCZJ0UAvZ30Yoj+JRFzogTvICCiMUFiFaJcF1lReqTxqA==
+X-Received: by 2002:a17:906:c252:: with SMTP id bl18mr35058327ejb.519.1632240397230;
+        Tue, 21 Sep 2021 09:06:37 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id l7sm9045577edb.26.2021.09.21.09.06.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Sep 2021 09:06:36 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 67B2918034A; Tue, 21 Sep 2021 18:06:35 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Lorenzo Bianconi <lbianconi@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Redux: Backwards compatibility for XDP multi-buff
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 21 Sep 2021 18:06:35 +0200
+Message-ID: <87o88l3oc4.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During system suspend, advertisement monitoring is disabled by setting
-the=C2=A0HCI_VS_MSFT_LE_Set_Advertisement_Filter_Enable to False. This
-disables the monitoring during suspend, however, if the controller is
-monitoring a device, it sends HCI_VS_MSFT_LE_Monitor_Device_Event to
-indicate that the monitoring has been stopped for that particular
-device. This event may occur after suspend depending on the
-low_threshold_timeout and peer device advertisement frequency, which
-causes early wake up.
+Hi Lorenz (Cc. the other people who participated in today's discussion)
 
-Right way to disable the monitoring for suspend is by removing all the
-monitors before suspend and re-monitor after resume to ensure no events
-are received=C2=A0during suspend. This patch fixes this suspend/resume issu=
-e.
+Following our discussion at the LPC session today, I dug up my previous
+summary of the issue and some possible solutions[0]. Seems no on
+actually replied last time, which is why we went with the "do nothing"
+approach, I suppose. I'm including the full text of the original email
+below; please take a look, and let's see if we can converge on a
+consensus here.
 
-Following tests are performed:
-- Add monitors before suspend and make sure DeviceFound gets triggered
-- Suspend the system and verify that all monitors are removed by kernel
-  but not Released by bluetoothd
-- Wake up and verify that all monitors are added again and DeviceFound
-  gets triggered
+First off, a problem description: If an existing XDP program is exposed
+to an xdp_buff that is really a multi-buffer, while it will continue to
+run, it may end up with subtle and hard-to-debug bugs: If it's parsing
+the packet it'll only see part of the payload and not be aware of that
+fact, and if it's calculating the packet length, that will also only be
+wrong (only counting the first fragment).
 
-Signed-off-by: Manish Mandlik <mmandlik@google.com>
-Reviewed-by: Archie Pusaka <apusaka@google.com>
-Reviewed-by: Miao-chen Chou <mcchou@google.com>
----
+So what to do about this? First of all, to do anything about it, XDP
+programs need to be able to declare themselves "multi-buffer aware" (but
+see point 1 below). We could try to auto-detect it in the verifier by
+which helpers the program is using, but since existing programs could be
+perfectly happy to just keep running, it probably needs to be something
+the program communicates explicitly. One option is to use the
+expected_attach_type to encode this; programs can then declare it in the
+source by section name, or the userspace loader can set the type for
+existing programs if needed.
 
-Changes in v2:
-- Updated the Reviewd-by names
+With this, the kernel will know if a given XDP program is multi-buff
+aware and can decide what to do with that information. For this we came
+up with basically three options:
 
- net/bluetooth/hci_request.c |  15 +++--
- net/bluetooth/msft.c        | 117 +++++++++++++++++++++++++++++++-----
- net/bluetooth/msft.h        |   5 ++
- 3 files changed, 116 insertions(+), 21 deletions(-)
+1. Do nothing. This would make it up to users / sysadmins to avoid
+   anything breaking by manually making sure to not enable multi-buffer
+   support while loading any XDP programs that will malfunction if
+   presented with an mb frame. This will probably break in interesting
+   ways, but it's nice and simple from an implementation PoV. With this
+   we don't need the declaration discussed above either.
 
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 47fb665277d4..c018a172ced3 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1281,21 +1281,24 @@ static void suspend_req_complete(struct hci_dev *hd=
-ev, u8 status, u16 opcode)
- 	}
- }
-=20
--static void hci_req_add_set_adv_filter_enable(struct hci_request *req,
--					      bool enable)
-+static void hci_req_prepare_adv_monitor_suspend(struct hci_request *req,
-+						bool suspending)
- {
- 	struct hci_dev *hdev =3D req->hdev;
-=20
- 	switch (hci_get_adv_monitor_offload_ext(hdev)) {
- 	case HCI_ADV_MONITOR_EXT_MSFT:
--		msft_req_add_set_filter_enable(req, enable);
-+		if (suspending)
-+			msft_remove_all_monitors_on_suspend(hdev);
-+		else
-+			msft_reregister_monitors_on_resume(hdev);
- 		break;
- 	default:
- 		return;
- 	}
-=20
- 	/* No need to block when enabling since it's on resume path */
--	if (hdev->suspended && !enable)
-+	if (hdev->suspended && suspending)
- 		set_bit(SUSPEND_SET_ADV_FILTER, hdev->suspend_tasks);
- }
-=20
-@@ -1362,7 +1365,7 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, en=
-um suspended_state next)
- 		}
-=20
- 		/* Disable advertisement filters */
--		hci_req_add_set_adv_filter_enable(&req, false);
-+		hci_req_prepare_adv_monitor_suspend(&req, true);
-=20
- 		/* Prevent disconnects from causing scanning to be re-enabled */
- 		hdev->scanning_paused =3D true;
-@@ -1404,7 +1407,7 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, en=
-um suspended_state next)
- 		/* Reset passive/background scanning to normal */
- 		__hci_update_background_scan(&req);
- 		/* Enable all of the advertisement filters */
--		hci_req_add_set_adv_filter_enable(&req, true);
-+		hci_req_prepare_adv_monitor_suspend(&req, false);
-=20
- 		/* Unpause directed advertising */
- 		hdev->advertising_paused =3D false;
-diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index 21b1787e7893..328d5e341f9a 100644
---- a/net/bluetooth/msft.c
-+++ b/net/bluetooth/msft.c
-@@ -94,11 +94,14 @@ struct msft_data {
- 	__u16 pending_add_handle;
- 	__u16 pending_remove_handle;
- 	__u8 reregistering;
-+	__u8 suspending;
- 	__u8 filter_enabled;
- };
-=20
- static int __msft_add_monitor_pattern(struct hci_dev *hdev,
- 				      struct adv_monitor *monitor);
-+static int __msft_remove_monitor(struct hci_dev *hdev,
-+				 struct adv_monitor *monitor, u16 handle);
-=20
- bool msft_monitor_supported(struct hci_dev *hdev)
- {
-@@ -154,7 +157,7 @@ static bool read_supported_features(struct hci_dev *hde=
-v,
- }
-=20
- /* This function requires the caller holds hdev->lock */
--static void reregister_monitor_on_restart(struct hci_dev *hdev, int handle=
-)
-+static void reregister_monitor(struct hci_dev *hdev, int handle)
- {
- 	struct adv_monitor *monitor;
- 	struct msft_data *msft =3D hdev->msft_data;
-@@ -182,6 +185,69 @@ static void reregister_monitor_on_restart(struct hci_d=
-ev *hdev, int handle)
- 	}
- }
-=20
-+/* This function requires the caller holds hdev->lock */
-+static void remove_monitor_on_suspend(struct hci_dev *hdev, int handle)
-+{
-+	struct adv_monitor *monitor;
-+	struct msft_data *msft =3D hdev->msft_data;
-+	int err;
-+
-+	while (1) {
-+		monitor =3D idr_get_next(&hdev->adv_monitors_idr, &handle);
-+		if (!monitor) {
-+			/* All monitors have been removed */
-+			msft->suspending =3D false;
-+			hci_update_background_scan(hdev);
-+			return;
-+		}
-+
-+		msft->pending_remove_handle =3D (u16)handle;
-+		err =3D __msft_remove_monitor(hdev, monitor, handle);
-+
-+		/* If success, return and wait for monitor removed callback */
-+		if (!err)
-+			return;
-+
-+		/* Otherwise free the monitor and keep removing */
-+		hci_free_adv_monitor(hdev, monitor);
-+		handle++;
-+	}
-+}
-+
-+/* This function requires the caller holds hdev->lock */
-+void msft_remove_all_monitors_on_suspend(struct hci_dev *hdev)
-+{
-+	struct msft_data *msft =3D hdev->msft_data;
-+
-+	if (!msft)
-+		return;
-+
-+	if (msft_monitor_supported(hdev)) {
-+		msft->suspending =3D true;
-+		/* Quitely remove all monitors on suspend to avoid waking up
-+		 * the system.
-+		 */
-+		remove_monitor_on_suspend(hdev, 0);
-+	}
-+}
-+
-+/* This function requires the caller holds hdev->lock */
-+void msft_reregister_monitors_on_resume(struct hci_dev *hdev)
-+{
-+	struct msft_data *msft =3D hdev->msft_data;
-+
-+	if (!msft)
-+		return;
-+
-+	if (msft_monitor_supported(hdev)) {
-+		msft->reregistering =3D true;
-+		/* Monitors are removed on suspend, so we need to add all
-+		 * monitors on resume.
-+		 */
-+		reregister_monitor(hdev, 0);
-+	}
-+}
-+
- void msft_do_open(struct hci_dev *hdev)
- {
- 	struct msft_data *msft =3D hdev->msft_data;
-@@ -214,7 +280,7 @@ void msft_do_open(struct hci_dev *hdev)
- 		/* Monitors get removed on power off, so we need to explicitly
- 		 * tell the controller to re-monitor.
- 		 */
--		reregister_monitor_on_restart(hdev, 0);
-+		reregister_monitor(hdev, 0);
- 	}
- }
-=20
-@@ -382,8 +448,7 @@ static void msft_le_monitor_advertisement_cb(struct hci=
-_dev *hdev,
-=20
- 	/* If in restart/reregister sequence, keep registering. */
- 	if (msft->reregistering)
--		reregister_monitor_on_restart(hdev,
--					      msft->pending_add_handle + 1);
-+		reregister_monitor(hdev, msft->pending_add_handle + 1);
-=20
- 	hci_dev_unlock(hdev);
-=20
-@@ -420,13 +485,25 @@ static void msft_le_cancel_monitor_advertisement_cb(s=
-truct hci_dev *hdev,
- 	if (handle_data) {
- 		monitor =3D idr_find(&hdev->adv_monitors_idr,
- 				   handle_data->mgmt_handle);
--		if (monitor)
-+
-+		if (monitor && monitor->state =3D=3D ADV_MONITOR_STATE_OFFLOADED)
-+			monitor->state =3D ADV_MONITOR_STATE_REGISTERED;
-+
-+		/* Do not free the monitor if it is being removed due to
-+		 * suspend. It will be re-monitored on resume.
-+		 */
-+		if (monitor && !msft->suspending)
- 			hci_free_adv_monitor(hdev, monitor);
-=20
- 		list_del(&handle_data->list);
- 		kfree(handle_data);
- 	}
-=20
-+	/* If in suspend/remove sequence, keep removing. */
-+	if (msft->suspending)
-+		remove_monitor_on_suspend(hdev,
-+					  msft->pending_remove_handle + 1);
-+
- 	/* If remove all monitors is required, we need to continue the process
- 	 * here because the earlier it was paused when waiting for the
- 	 * response from controller.
-@@ -445,7 +522,8 @@ static void msft_le_cancel_monitor_advertisement_cb(str=
-uct hci_dev *hdev,
- 	hci_dev_unlock(hdev);
-=20
- done:
--	hci_remove_adv_monitor_complete(hdev, status);
-+	if (!msft->suspending)
-+		hci_remove_adv_monitor_complete(hdev, status);
- }
-=20
- static void msft_le_set_advertisement_filter_enable_cb(struct hci_dev *hde=
-v,
-@@ -578,15 +656,15 @@ int msft_add_monitor_pattern(struct hci_dev *hdev, st=
-ruct adv_monitor *monitor)
- 	if (!msft)
- 		return -EOPNOTSUPP;
-=20
--	if (msft->reregistering)
-+	if (msft->reregistering || msft->suspending)
- 		return -EBUSY;
-=20
- 	return __msft_add_monitor_pattern(hdev, monitor);
- }
-=20
- /* This function requires the caller holds hdev->lock */
--int msft_remove_monitor(struct hci_dev *hdev, struct adv_monitor *monitor,
--			u16 handle)
-+static int __msft_remove_monitor(struct hci_dev *hdev,
-+				 struct adv_monitor *monitor, u16 handle)
- {
- 	struct msft_cp_le_cancel_monitor_advertisement cp;
- 	struct msft_monitor_advertisement_handle_data *handle_data;
-@@ -594,12 +672,6 @@ int msft_remove_monitor(struct hci_dev *hdev, struct a=
-dv_monitor *monitor,
- 	struct msft_data *msft =3D hdev->msft_data;
- 	int err =3D 0;
-=20
--	if (!msft)
--		return -EOPNOTSUPP;
--
--	if (msft->reregistering)
--		return -EBUSY;
--
- 	handle_data =3D msft_find_handle_data(hdev, monitor->handle, true);
-=20
- 	/* If no matched handle, just remove without telling controller */
-@@ -619,6 +691,21 @@ int msft_remove_monitor(struct hci_dev *hdev, struct a=
-dv_monitor *monitor,
- 	return err;
- }
-=20
-+/* This function requires the caller holds hdev->lock */
-+int msft_remove_monitor(struct hci_dev *hdev, struct adv_monitor *monitor,
-+			u16 handle)
-+{
-+	struct msft_data *msft =3D hdev->msft_data;
-+
-+	if (!msft)
-+		return -EOPNOTSUPP;
-+
-+	if (msft->reregistering || msft->suspending)
-+		return -EBUSY;
-+
-+	return __msft_remove_monitor(hdev, monitor, handle);
-+}
-+
- void msft_req_add_set_filter_enable(struct hci_request *req, bool enable)
- {
- 	struct hci_dev *hdev =3D req->hdev;
-diff --git a/net/bluetooth/msft.h b/net/bluetooth/msft.h
-index 8018948c5975..6ec843b94d16 100644
---- a/net/bluetooth/msft.h
-+++ b/net/bluetooth/msft.h
-@@ -24,6 +24,8 @@ int msft_remove_monitor(struct hci_dev *hdev, struct adv_=
-monitor *monitor,
- 			u16 handle);
- void msft_req_add_set_filter_enable(struct hci_request *req, bool enable);
- int msft_set_filter_enable(struct hci_dev *hdev, bool enable);
-+void msft_remove_all_monitors_on_suspend(struct hci_dev *hdev);
-+void msft_reregister_monitors_on_resume(struct hci_dev *hdev);
- bool msft_curve_validity(struct hci_dev *hdev);
-=20
- #else
-@@ -59,6 +61,9 @@ static inline int msft_set_filter_enable(struct hci_dev *=
-hdev, bool enable)
- 	return -EOPNOTSUPP;
- }
-=20
-+void msft_remove_all_monitors_on_suspend(struct hci_dev *hdev) {}
-+void msft_reregister_monitors_on_resume(struct hci_dev *hdev) {}
-+
- static inline bool msft_curve_validity(struct hci_dev *hdev)
- {
- 	return false;
---=20
-2.33.0.464.g1972c5931b-goog
+2. Add a check at runtime and drop the frames if they are mb-enabled and
+   the program doesn't understand it. This is relatively simple to
+   implement, but it also makes for difficult-to-understand issues (why
+   are my packets suddenly being dropped?), and it will incur runtime
+   overhead.
+
+3. Reject loading of programs that are not MB-aware when running in an
+   MB-enabled mode. This would make things break in more obvious ways,
+   and still allow a userspace loader to declare a program "MB-aware" to
+   force it to run if necessary. The problem then becomes at what level
+   to block this?
+
+   Doing this at the driver level is not enough: while a particular
+   driver knows if it's running in multi-buff mode, we can't know for
+   sure if a particular XDP program is multi-buff aware at attach time:
+   it could be tail-calling other programs, or redirecting packets to
+   another interface where it will be processed by a non-MB aware
+   program.
+
+   So another option is to make it a global toggle: e.g., create a new
+   sysctl to enable multi-buffer. If this is set, reject loading any XDP
+   program that doesn't support multi-buffer mode, and if it's unset,
+   disable multi-buffer mode in all drivers. This will make it explicit
+   when the multi-buffer mode is used, and prevent any accidental subtle
+   malfunction of existing XDP programs. The drawback is that it's a
+   mode switch, so more configuration complexity.
+
+None of these options are ideal, of course, but I hope the above
+explanation at least makes sense. If anyone has any better ideas (or can
+spot any flaws in the reasoning above) please don't hesitate to let us
+know!
+
+-Toke
+
+[0] https://lore.kernel.org/r/8735srxglb.fsf@toke.dk
 
