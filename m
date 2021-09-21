@@ -2,155 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3C2141385C
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 19:34:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5700C413944
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 19:54:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230466AbhIURgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 13:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231326AbhIURdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 13:33:11 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6731C061574
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 10:31:42 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id r5so7334053edi.10
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 10:31:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riotgames.com; s=riotgames;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=egCBE6Ndap/i6qoLfQddqiPMRtsk6XZbUrnUwtD9K90=;
-        b=b8rgGDOlssfxwzIoeHREhUk4Qq1SQjz/cSgJealYXs7G7bMMRm2wmcCK12hfbaQLbi
-         DvLNoMz9tBerBUq872rnm4NabJNTLfKGOEvHZfrUTIJsU/SZv10khczddK96DOYtqv21
-         DP1VWGknpf4/f5DkxwC/ejeT3jsFfJg/c4OuA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=egCBE6Ndap/i6qoLfQddqiPMRtsk6XZbUrnUwtD9K90=;
-        b=g/NFocTKMP0jWRTbFZTQ2uk5gBN3nywaa5OPNQtzYnaWKxQS/tJipr06LhYeKcMnTP
-         z/YVFSJK5RLWRuBznR42dHaKRUuTjhMiuBL1KtcsfRpgvqkh2eCVX+L1WAln2VplJcYE
-         YPv5efpbBCaLvZPUWjsz6Ck3cqfGPsnIgux0HTg90yxQkdBzVLHfCDSJhZ65iIJBweDQ
-         DuLTeBP+4cFRTFGWa4wXG9Y1A1uLRye8/y64Tli+CexeMBRYxikk1YZLNyoIswJUbl6K
-         FUG/CWkKa/TJLM799Q+QZKvtR4ZW5s1UhbKXhgMrDQrQyBKLBweqJqJWB5eQKGnYJRFr
-         4nzA==
-X-Gm-Message-State: AOAM532GODWAC6e1a1Z2qzliY9T6bSv66l7J40rF+UnkXs5OvAAG+60M
-        4YstQ+4ACm1QVNWw7dIcIt5TPKoNNUuqdqYpxSMBQDWEtksT0DmA
-X-Google-Smtp-Source: ABdhPJzSNL5MT9GVv5s7RGXO5yBKLcNDppD1qUsjy9B3K77eX7CRVaMYFbt6yaEAhnqdBrgHko5oKGF+0XCKUHuvmT8=
-X-Received: by 2002:a50:e145:: with SMTP id i5mr22438306edl.16.1632245496241;
- Tue, 21 Sep 2021 10:31:36 -0700 (PDT)
+        id S231888AbhIURzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 13:55:38 -0400
+Received: from gateway32.websitewelcome.com ([192.185.145.108]:20265 "EHLO
+        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231153AbhIURze (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 13:55:34 -0400
+X-Greylist: delayed 1243 seconds by postgrey-1.27 at vger.kernel.org; Tue, 21 Sep 2021 13:55:34 EDT
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway32.websitewelcome.com (Postfix) with ESMTP id 2B692164081
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 12:33:18 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id Sjdtm490YrJtZSjdummcxv; Tue, 21 Sep 2021 12:33:18 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=V2ipY4XW+WZzd2kUAeQUYTq4ml6dgf93+kXUdm7z19M=; b=uCdk5SkXATJvZwBhALindVcIZ+
+        G9SvSKo4+wJcEcKSkAEo088pgDm703ewCmXelXXjYmsHtKM8OKBfMOs1084XJK6WbFPPYAYk3DcOf
+        2+GmBsEC5yoIkCRONsbY/2VRljJAyILeyR6zUOgkLvw+NJgH1FgL26MscJVzW6XVYRnAVJa4aAH/i
+        bSe0BUYk+KG/yZ3F+Toq0CyLeDMGfpLk9imeD3jOavWoPeFjdMRYKPdOKAkyyKjg9l7z85LBjNnVT
+        ELwvmFTj1HW184N0fpNuuNrBqcKMTFXDfvMWGjBMzbgh/CfW5LD9+sdPk1psogh1CHHEv5dNESTKk
+        +w+h2/rg==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:36190 helo=[192.168.15.9])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1mSjds-003xVQ-T2; Tue, 21 Sep 2021 12:33:16 -0500
+Subject: Re: [PATCH] brcmfmac: Replace zero-length array with flexible array
+ member
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Len Baker <len.baker@gmx.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210904092217.2848-1-len.baker@gmx.com>
+ <20210912191536.GB146608@embeddedor> <87o88sy2gk.fsf@codeaurora.org>
+ <871r5iwjyo.fsf@codeaurora.org>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <b8f06e6d-02e9-a82d-a9ae-448372e0f9cf@embeddedor.com>
+Date:   Tue, 21 Sep 2021 12:37:05 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <87o88l3oc4.fsf@toke.dk>
-In-Reply-To: <87o88l3oc4.fsf@toke.dk>
-From:   Zvi Effron <zeffron@riotgames.com>
-Date:   Tue, 21 Sep 2021 10:31:24 -0700
-Message-ID: <CAC1LvL1xgFMjjE+3wHH79_9rumwjNqDAS2Yg2NpSvmewHsYScA@mail.gmail.com>
-Subject: Re: Redux: Backwards compatibility for XDP multi-buff
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        Lorenzo Bianconi <lbianconi@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <871r5iwjyo.fsf@codeaurora.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1mSjds-003xVQ-T2
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.9]) [187.162.31.110]:36190
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 17
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 21, 2021 at 9:06 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Hi Lorenz (Cc. the other people who participated in today's discussion)
->
-> Following our discussion at the LPC session today, I dug up my previous
-> summary of the issue and some possible solutions[0]. Seems no on
-> actually replied last time, which is why we went with the "do nothing"
-> approach, I suppose. I'm including the full text of the original email
-> below; please take a look, and let's see if we can converge on a
-> consensus here.
->
-> First off, a problem description: If an existing XDP program is exposed
-> to an xdp_buff that is really a multi-buffer, while it will continue to
-> run, it may end up with subtle and hard-to-debug bugs: If it's parsing
-> the packet it'll only see part of the payload and not be aware of that
-> fact, and if it's calculating the packet length, that will also only be
-> wrong (only counting the first fragment).
->
-> So what to do about this? First of all, to do anything about it, XDP
-> programs need to be able to declare themselves "multi-buffer aware" (but
-> see point 1 below). We could try to auto-detect it in the verifier by
-> which helpers the program is using, but since existing programs could be
-> perfectly happy to just keep running, it probably needs to be something
-> the program communicates explicitly. One option is to use the
-> expected_attach_type to encode this; programs can then declare it in the
-> source by section name, or the userspace loader can set the type for
-> existing programs if needed.
->
-> With this, the kernel will know if a given XDP program is multi-buff
-> aware and can decide what to do with that information. For this we came
-> up with basically three options:
->
-> 1. Do nothing. This would make it up to users / sysadmins to avoid
->    anything breaking by manually making sure to not enable multi-buffer
->    support while loading any XDP programs that will malfunction if
->    presented with an mb frame. This will probably break in interesting
->    ways, but it's nice and simple from an implementation PoV. With this
->    we don't need the declaration discussed above either.
->
-> 2. Add a check at runtime and drop the frames if they are mb-enabled and
->    the program doesn't understand it. This is relatively simple to
->    implement, but it also makes for difficult-to-understand issues (why
->    are my packets suddenly being dropped?), and it will incur runtime
->    overhead.
->
-> 3. Reject loading of programs that are not MB-aware when running in an
->    MB-enabled mode. This would make things break in more obvious ways,
->    and still allow a userspace loader to declare a program "MB-aware" to
->    force it to run if necessary. The problem then becomes at what level
->    to block this?
->
 
-I think there's another potential problem with this as well: what happens t=
-o
-already loaded programs that are not MB-aware? Are they forcibly unloaded?
 
->    Doing this at the driver level is not enough: while a particular
->    driver knows if it's running in multi-buff mode, we can't know for
->    sure if a particular XDP program is multi-buff aware at attach time:
->    it could be tail-calling other programs, or redirecting packets to
->    another interface where it will be processed by a non-MB aware
->    program.
->
->    So another option is to make it a global toggle: e.g., create a new
->    sysctl to enable multi-buffer. If this is set, reject loading any XDP
->    program that doesn't support multi-buffer mode, and if it's unset,
->    disable multi-buffer mode in all drivers. This will make it explicit
->    when the multi-buffer mode is used, and prevent any accidental subtle
->    malfunction of existing XDP programs. The drawback is that it's a
->    mode switch, so more configuration complexity.
->
+On 9/21/21 00:55, Kalle Valo wrote:
 
-Could we combine the last two bits here into a global toggle that doesn't
-require a sysctl? If any driver is put into multi-buffer mode, then the sys=
-tem
-switches to requiring all programs be multi-buffer? When the last multi-buf=
-fer
-enabled driver switches out of multi-buffer, remove the system-wide
-restriction?
+> Gustavo, so have you dropped this from your tree now? I do not want to
+> get any conflicts because of this.
 
-Regarding my above question, if non-MB-aware XDP programs are not forcibly
-unloaded, then a global toggle is also insufficient. An existing non-MB-awa=
-re
-XDP program would still beed to be rejected at attach time by the driver.
+It's not on my tree.
 
-> None of these options are ideal, of course, but I hope the above
-> explanation at least makes sense. If anyone has any better ideas (or can
-> spot any flaws in the reasoning above) please don't hesitate to let us
-> know!
->
-> -Toke
->
-> [0] https://lore.kernel.org/r/8735srxglb.fsf@toke.dk
->
+> 
+> I'll reiterate again: do not take any patches touching
+> drivers/net/wireless unless I have acked them.
+
+Got it.
+
+--
+Gustavo
