@@ -2,115 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F76C4135F6
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 17:14:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DE5B413615
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 17:23:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233852AbhIUPP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 11:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46960 "EHLO
+        id S233999AbhIUPYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 11:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231196AbhIUPP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 11:15:58 -0400
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12742C061574
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 08:14:30 -0700 (PDT)
-Received: by mail-oo1-xc32.google.com with SMTP id p22-20020a4a8156000000b002a8c9ea1858so3213270oog.11
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 08:14:30 -0700 (PDT)
+        with ESMTP id S232909AbhIUPYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 11:24:37 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B76BC061574;
+        Tue, 21 Sep 2021 08:23:09 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id w206so18519347oiw.4;
+        Tue, 21 Sep 2021 08:23:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PjdLoqecbdDxdob1KT/H3n5++XqKN56OaqXD3htpcyc=;
-        b=Lz53KVU026TyGdCqX/SRPjI0GtigVYJ3SmJzXmiOZ7C4FKjxJMkF29oNQq6Y1kOSQm
-         eCBHVdKtuP+N6k8QJXWohVS5WNGfmTTDO1TtPIiekHN9C6U2LfD2IHcBQM+CosDEH+OG
-         yD1i6z208MZ+bbYP3zF9IXZAsD/4ngq9I4gX4CYFHOEAOjH0Uy4u/zU4LQalknF+60Ky
-         HRZ6QLU86DUlyYgCNLCP4aORdhv23pJSZnjxa6NX19b7YJvjD41VGu7rzG4bW+KpWMci
-         4Q1n9eg1rkn6JGoHEqoHV4hhvWF9FSfw+l7fs5gXCSSxrasy3QtyEAYTMIEZ2NMa8HSj
-         R4hQ==
+        bh=/nZ9bK/KbbxK+2a5wmYlOp5pst8k2IWMXVVFmr6mHHU=;
+        b=Im81TSZrnxJ1+fVdIFIMF/XvZvzMeN6crXi6vW28iaAuatTckrsthRL6Cy/086Y9gL
+         n+84zdt5ZO1xstGt2Vbe7aIfALQ9+utPFtGXXJTi0zW4e6R96MxjhwwEu+04dcjNk/Hv
+         BfBKQQkuF09iAVcYKpyLZtDRq1sdpHpX2+IzyBjLXy9y7bZS7d0WjH6pemlwk0TinJtE
+         iZoWapaPqy7GaEq3lvP/BiXgksdNgM4pzy11IJ47NbThtKnqHVNbSSI6FdX/d60WYMJM
+         osrINTiLX2tS1Yt/xW0t9YvyGQz5cRD4vULsWbSt0Q9KvO6XZ96OPSBe7bswmxiwe6i0
+         cfeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=PjdLoqecbdDxdob1KT/H3n5++XqKN56OaqXD3htpcyc=;
-        b=QfwAOOHqBqRkvr4v8pagKfO45ptoWXdBi3jJGsbI+8WHI3CSUodayULs+f22rmMGji
-         3yAOeteTIx5a/HeN42cGXC9ahmg+ClVOdcR7o+pj+g4JQqKq07BDzcluutwGIGuM+g69
-         SWg5uiopcPQhGtxO7keIKr5bPeoRBZe5PCU/Zl80FT4KuybTvZcxtA7zQAHLEt8+NuUY
-         +GeZSnhttDg4rAO0qFSwkB5b3B/osDuv84Y2byG8BWkZw5h+vcChh48slXuWnk9TfFP8
-         z5wA2nq0JdcVdPsG+a2mHTw5GuMUQrIPm8uQ4QhuxnbVXeLgJkUuNtNbXjxreQo3qkFl
-         zmFQ==
-X-Gm-Message-State: AOAM532RT/rvRt9YScUiSVllntlfdVGRdO4aZQZeopnTfduDoyl9YfEa
-        1bCjv/QVGFNq0xxgRK7QVaA=
-X-Google-Smtp-Source: ABdhPJxXb3tlR1ExsfK7mei7L6zxUOTkjg9LT9SKlA3Y3Huf5c9LxnWtOZ7CVAo1O3eagGL7fvbX4w==
-X-Received: by 2002:a05:6820:410:: with SMTP id o16mr7977472oou.36.1632237268872;
-        Tue, 21 Sep 2021 08:14:28 -0700 (PDT)
+        bh=/nZ9bK/KbbxK+2a5wmYlOp5pst8k2IWMXVVFmr6mHHU=;
+        b=dShStEe/OZ162KJMBwqB1cHq9gPf1h3nJ5FVZxT1WydQEazBxSrgtmU1UOEd2vvMXU
+         8nAikMtNRUB5V5mQM56fF5+q7kCIBSLjDvHkQVdjGZVV/5S3aej87mbDwz2dXTlgy8XS
+         Nx3EuIjdF3kbdH66B7epIc7wtylhSCFauz9/PH0whqDJiq74AM3ilE2yZDnBmAA82K0P
+         r7WzOnPGlB0RRY5ogvmGXAuPb/RcUqml248uummjbxH3TTdtItJAe1n7pC/JL6VchQld
+         8nEpmOuq7x4F25ch+mKRrtrQfdkSb5rpyLKe/trGpjTedkH6XXR60SixD12+Nk7cSpNx
+         h/sA==
+X-Gm-Message-State: AOAM533PJ0YhUeUZEKE3rLjlJ4KOInGrpKFvCRx1DcErDsMnMAB6hyNk
+        r6Azrp8GL2R9Tpq2JV7rydZ/+iNAWZlGuw==
+X-Google-Smtp-Source: ABdhPJw+SF+y87IYH4zUOVA//TZ1O8MRBishh5hrpmpXE5ahu4Pz6OCR6M57X4TJqeDH/VCIi1y20A==
+X-Received: by 2002:aca:1703:: with SMTP id j3mr4106112oii.116.1632237788408;
+        Tue, 21 Sep 2021 08:23:08 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id k2sm793603oog.5.2021.09.21.08.14.27
+        by smtp.googlemail.com with ESMTPSA id h5sm279100oti.58.2021.09.21.08.23.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Sep 2021 08:14:27 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next] lib: bpf_legacy: add prog name, load time,
- uid and btf id in prog info dump
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Gokul Sivakumar <gokulkumar792@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-References: <20210917202338.1810837-1-gokulkumar792@gmail.com>
- <056ea304-13e9-e92e-ccfd-7be2312f6d1f@gmail.com> <87sfxy2ckt.fsf@toke.dk>
+        Tue, 21 Sep 2021 08:23:07 -0700 (PDT)
+Subject: Re: [PATCH bpf-next] seltests: bpf: test_tunnel: use ip neigh
+To:     Jiri Benc <jbenc@redhat.com>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        William Tu <u9012063@gmail.com>, netdev@vger.kernel.org
+References: <40f24b9d3f0f53b5c44471b452f9a11f4d13b7af.1632236133.git.jbenc@redhat.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <80ae956d-8840-be0d-7a2b-44ceefcea3e5@gmail.com>
-Date:   Tue, 21 Sep 2021 09:14:26 -0600
+Message-ID: <2f9554d2-c9c7-5c37-7df0-d011d80d7460@gmail.com>
+Date:   Tue, 21 Sep 2021 09:23:06 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <87sfxy2ckt.fsf@toke.dk>
+In-Reply-To: <40f24b9d3f0f53b5c44471b452f9a11f4d13b7af.1632236133.git.jbenc@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/21/21 9:05 AM, Toke Høiland-Jørgensen wrote:
-> David Ahern <dsahern@gmail.com> writes:
+On 9/21/21 8:59 AM, Jiri Benc wrote:
+> The 'arp' command is deprecated and is another dependency of the selftest.
+> Just use 'ip neigh', the test depends on iproute2 already.
 > 
->> On 9/17/21 2:23 PM, Gokul Sivakumar wrote:
->>> The BPF program name is included when dumping the BPF program info and the
->>> kernel only stores the first (BPF_PROG_NAME_LEN - 1) bytes for the program
->>> name.
->>>
->>> $ sudo ip link show dev docker0
->>> 4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdpgeneric qdisc noqueue state UP mode DEFAULT group default
->>>     link/ether 02:42:4c:df:a4:54 brd ff:ff:ff:ff:ff:ff
->>>     prog/xdp id 789 name xdp_drop_func tag 57cd311f2e27366b jited
->>>
->>> The BPF program load time (ns since boottime), UID of the user who loaded
->>> the program and the BTF ID are also included when dumping the BPF program
->>> information when the user expects a detailed ip link info output.
->>>
->>> $ sudo ip -details link show dev docker0
->>> 4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdpgeneric qdisc noqueue state UP mode DEFAULT group default
->>>     link/ether 02:42:4c:df:a4:54 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 68 maxmtu 65535
->>>     bridge forward_delay 1500 hello_time 200 max_age 2000 ageing_time 30000 stp_state 0 priority 32768 vlan_filt
->>> ering 0 vlan_protocol 802.1Q bridge_id 8000.2:42:4c:df:a4:54 designated_root 8000.2:42:4c:df:a4:54 root_port 0 r
->>> oot_path_cost 0 topology_change 0 topology_change_detected 0 hello_timer    0.00 tcn_timer    0.00 topology_chan
->>> ge_timer    0.00 gc_timer  265.36 vlan_default_pvid 1 vlan_stats_enabled 0 vlan_stats_per_port 0 group_fwd_mask
->>> 0 group_address 01:80:c2:00:00:00 mcast_snooping 1 mcast_router 1 mcast_query_use_ifaddr 0 mcast_querier 0 mcast
->>> _hash_elasticity 16 mcast_hash_max 4096 mcast_last_member_count 2 mcast_startup_query_count 2 mcast_last_member_
->>> interval 100 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query
->>> _response_interval 1000 mcast_startup_query_interval 3124 mcast_stats_enabled 0 mcast_igmp_version 2 mcast_mld_v
->>> ersion 1 nf_call_iptables 0 nf_call_ip6tables 0 nf_call_arptables 0 addrgenmode eui64 numtxqueues 1 numrxqueues
->>> 1 gso_max_size 65536 gso_max_segs 65535
->>>     prog/xdp id 789 name xdp_drop_func tag 57cd311f2e27366b jited load_time 2676682607316255 created_by_uid 0 btf_id 708
->>
->> what kernel is this? I was not aware bridge devices support XDP and do
->> not see that support in net-next.
+> Signed-off-by: Jiri Benc <jbenc@redhat.com>
+> ---
+>  tools/testing/selftests/bpf/test_tunnel.sh | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> It's loaded in generic mode (note 'xdpgeneric') :)
-> 
+> diff --git a/tools/testing/selftests/bpf/test_tunnel.sh b/tools/testing/selftests/bpf/test_tunnel.sh
+> index 1ccbe804e8e1..ca1372924023 100755
+> --- a/tools/testing/selftests/bpf/test_tunnel.sh
+> +++ b/tools/testing/selftests/bpf/test_tunnel.sh
+> @@ -168,14 +168,15 @@ add_vxlan_tunnel()
+>  	ip netns exec at_ns0 \
+>  		ip link set dev $DEV_NS address 52:54:00:d9:01:00 up
+>  	ip netns exec at_ns0 ip addr add dev $DEV_NS 10.1.1.100/24
+> -	ip netns exec at_ns0 arp -s 10.1.1.200 52:54:00:d9:02:00
+> +	ip netns exec at_ns0 \
+> +		ip neigh add 10.1.1.200 lladdr 52:54:00:d9:02:00 dev $DEV_NS
 
-ah, thanks for the reminder. I keep forgetting about xdpgeneric (brain
-is pretending it does not exist ?!? :-)).
+I realize you are just following suit with this change, but ip can
+change namespaces internally:
 
-There's a lot of distance -- and characters -- between 'xdpgeneric' and
-the 'prog/xdp' line. :-(
+ip -netns at_ns0 neigh add 10.1.1.200 lladdr 52:54:00:d9:02:00 dev $DEV_NS
+
+All of the 'ip netns exec ... ip ...' commands can be simplified.
+
+
+>  	ip netns exec at_ns0 iptables -A OUTPUT -j MARK --set-mark 0x800FF
+>  
+>  	# root namespace
+>  	ip link add dev $DEV type $TYPE external gbp dstport 4789
+>  	ip link set dev $DEV address 52:54:00:d9:02:00 up
+>  	ip addr add dev $DEV 10.1.1.200/24
+> -	arp -s 10.1.1.100 52:54:00:d9:01:00
+> +	ip neigh add 10.1.1.100 lladdr 52:54:00:d9:01:00 dev $DEV
+>  }
+>  
+>  add_ip6vxlan_tunnel()
+> 
 
