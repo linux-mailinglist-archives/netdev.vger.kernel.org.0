@@ -2,68 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79C45413BD9
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 22:55:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60FCD413BE8
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 23:03:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235176AbhIUU5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 16:57:05 -0400
-Received: from mail-oi1-f179.google.com ([209.85.167.179]:37571 "EHLO
-        mail-oi1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234707AbhIUU5F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 16:57:05 -0400
-Received: by mail-oi1-f179.google.com with SMTP id w206so1107206oiw.4;
-        Tue, 21 Sep 2021 13:55:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sHoBdlJO01sxOMRM+J4Stj1FzbSZtHaqO294d5ta4QQ=;
-        b=bmEX71q5Q33d1sJwFv8lkrhAXODioXSVkMopi1g6h7Fuy9BRz6M9a2ukTdvANWNHj2
-         lCcXukUd3qjO9PEo4WxUAY+4099c/uas5X9qVaT83qMIq4+IPJ1rCcDp/mZKVDm0zrr2
-         +EwBIaLGL28icnHTGs9Rg4hwPdNFyvAiCzxDxhssI3W9wR46HnLQwnKPwqVNf88XtoAr
-         mVLIw8rNtpw6sPKmtATJRCHubBWcJvwVXxg5sz5dk4b0XwccdDY0f+aIoIAzzqYMZd38
-         7FLzWgc2RukWhHGklJ2Pkqp0sNa9zg/rrzAhv9gjnPRQcoc3ipKVHgSY6XiZe3+Og3Zl
-         mQiw==
-X-Gm-Message-State: AOAM533tFNYCHAqBZmLbbdY1STCc4lXCHN9UEM/yYUgGI7qIzoYYdwx1
-        /ekKxbmbnoRhpt7r8l0VZg==
-X-Google-Smtp-Source: ABdhPJzEj5QvACfG7FbAsfxxHQOz2neHdHjywbpPOexWfWS6iBsECUWogZBo4qSsJCCmSJqMGipTGg==
-X-Received: by 2002:a05:6808:618:: with SMTP id y24mr5377435oih.25.1632257736198;
-        Tue, 21 Sep 2021 13:55:36 -0700 (PDT)
-Received: from robh.at.kernel.org (rrcs-192-154-179-36.sw.biz.rr.com. [192.154.179.36])
-        by smtp.gmail.com with ESMTPSA id 14sm21514oiy.53.2021.09.21.13.55.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Sep 2021 13:55:35 -0700 (PDT)
-Received: (nullmailer pid 3310957 invoked by uid 1000);
-        Tue, 21 Sep 2021 20:55:34 -0000
-Date:   Tue, 21 Sep 2021 15:55:34 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Michael Heimpold <michael.heimpold@in-tech.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, jimmy.shen@vertexcom.com
-Subject: Re: [PATCH RFC 1/3] dt-bindings: add vendor Vertexcom
-Message-ID: <YUpGxqcFjcFJYCTm@robh.at.kernel.org>
-References: <20210914151717.12232-1-stefan.wahren@i2se.com>
- <20210914151717.12232-2-stefan.wahren@i2se.com>
+        id S235183AbhIUVEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 17:04:44 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52850 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233740AbhIUVEi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Sep 2021 17:04:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=prpIZcxjvdXTKyMRNo5Wbn7PrK6WuARtzohRlOC6YHU=; b=2WvwaUkUIq1tNnXUQuhHTtZ5wd
+        fBMTVNrGTpiogLWrUqRBTgeI7zYujZQ5bu+Zs84B3OyGCrlZf2nDBbVs3ZkkZomRO920dAGLU58dh
+        Z9q52nNVmVyvnHYRRy8heqQGFXL/DuZi6snFXMtvluRXE28LHJwk/gAHvGf1lInesPS4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mSmun-007gZb-UF; Tue, 21 Sep 2021 23:02:57 +0200
+Date:   Tue, 21 Sep 2021 23:02:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Subject: Re: [PATCH v3 2/3] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
+Message-ID: <YUpIgTqyrDRXMUyC@lunn.ch>
+References: <20210915170940.617415-1-saravanak@google.com>
+ <20210915170940.617415-3-saravanak@google.com>
+ <CAJZ5v0h11ts69FJh7LDzhsDs=BT2MrN8Le8dHi73k9dRKsG_4g@mail.gmail.com>
+ <YUaPcgc03r/Dw0yk@lunn.ch>
+ <YUoFFXtWFAhLvIoH@kroah.com>
+ <CAJZ5v0jjvf6eeEKMtRJ-XP1QbOmjEWG=DmODbMhAFuemNn4rZg@mail.gmail.com>
+ <YUocuMM4/VKzNMXq@lunn.ch>
+ <CAJZ5v0iU3SGqrw909GLtuLwAxdyOy=pe2avxpDW+f4dP4ArhaQ@mail.gmail.com>
+ <YUo3kD9jgx6eNadX@lunn.ch>
+ <CAGETcx9hTFhY4+fHd71zYUsWW223GfUWBp8xxFCb2SNR6YUQ4Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210914151717.12232-2-stefan.wahren@i2se.com>
+In-Reply-To: <CAGETcx9hTFhY4+fHd71zYUsWW223GfUWBp8xxFCb2SNR6YUQ4Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Sep 2021 17:17:15 +0200, Stefan Wahren wrote:
-> Add vendor prefix for Vertexcom Technologies, Inc [1].
-> 
-> [1] - http://www.vertexcom.com/
-> 
-> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+> There are cases where the children try to probe too quickly (before
+> the parent has had time to set up all the resources it's setting up)
+> and the child defers the probe. Even Andrew had an example of that
+> with some ethernet driver where the deferred probe is attempted
+> multiple times wasting time and then it eventually succeeds.
 
-Acked-by: Rob Herring <robh@kernel.org>
+And i prefer an occasional EPROBE_DEFER over a broken Ethernet switch,
+which is the current state. I'm happy to see optimisations, but not at
+the expense of breaking working stuff.
+
+> Also, this assumption that the child will be bound successfully upon
+> addition forces the parent/child drivers to play initcall chicken
+
+We have never had any initcall chicken problems. The switch drivers
+all are standard mdio_module_driver, module_platform_driver,
+module_i2c_driver, module_pci_driver. Nothing special here. Things
+load in whatever order they load, and it all works out, maybe with an
+EPROBE_DEFER cycle. Which is good, we get our error paths tested, and
+sometimes find bugs that way.
+
+     Andrew
