@@ -2,141 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9225413549
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 16:27:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAD9C4135A6
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 16:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbhIUO2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 10:28:48 -0400
-Received: from pegase2.c-s.fr ([93.17.235.10]:36569 "EHLO pegase2.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229577AbhIUO2r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Sep 2021 10:28:47 -0400
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4HDNzn6y2Kz9sT9;
-        Tue, 21 Sep 2021 16:27:17 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id BEkzd5toiTVu; Tue, 21 Sep 2021 16:27:17 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4HDNzl2k51z9sTR;
-        Tue, 21 Sep 2021 16:27:15 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 48CC18B765;
-        Tue, 21 Sep 2021 16:27:15 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id KS9e_7RDtzCp; Tue, 21 Sep 2021 16:27:15 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.127])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 2715B8B763;
-        Tue, 21 Sep 2021 16:27:14 +0200 (CEST)
-Subject: Re: [PATCH v3 8/8] bpf ppc32: Access only if addr is kernel address
-To:     Hari Bathini <hbathini@linux.ibm.com>, naveen.n.rao@linux.ibm.com,
-        mpe@ellerman.id.au, ast@kernel.org, daniel@iogearbox.net
-Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-References: <20210921132943.489732-1-hbathini@linux.ibm.com>
- <20210921132943.489732-9-hbathini@linux.ibm.com>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Message-ID: <f35f8859-5c6d-47ca-72ce-c1710171aafa@csgroup.eu>
-Date:   Tue, 21 Sep 2021 16:27:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S233806AbhIUOx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 10:53:59 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:19448 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233759AbhIUOx5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 10:53:57 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18LEiaOJ023308;
+        Tue, 21 Sep 2021 10:52:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=/inWloo3KMEInsk2lG3CJ7Yo4z3jULf4AXDwwfskk/w=;
+ b=m5f03ae4t68kZMdd1NIj3a7klhTTgBu3eBXKgZTXaLswPv43Aj7AMcSO0f0+hTT+P/2Y
+ b66fkuPUFlM6ax7BN9aoimgyR0K3GRwknsoJa+w09bzAKQkw2td+DFhMCCbVdJHYtxyO
+ wXPqUQ1yRg5cEV08XhCsVYQj4YHNWDx70W1h1edH+2AOmlTu4pLZwKyQqrjJyBvV0T3/
+ jiFGVKYHLqIndpArhVu3WhBf1Af6EEE+M8usnd4SXVeuTzzDdiWPuZgtntTSrYmvPj7J
+ yW+XvpfP9O5kj4n0IMaWf1zE/Wgo/DqczZdwKf3HtkcRDKLkVE54aCik3aUgQvOY5Um9 Yw== 
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3b7f69cmfd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Sep 2021 10:52:25 -0400
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18LEnHXd008101;
+        Tue, 21 Sep 2021 14:52:23 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3b57r9ddhf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Sep 2021 14:52:23 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18LElVmf55181744
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 21 Sep 2021 14:47:31 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B47BD52050;
+        Tue, 21 Sep 2021 14:52:18 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 598A352063;
+        Tue, 21 Sep 2021 14:52:18 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>
+Subject: [PATCH net 0/3] s390/qeth: fixes 2021-09-21
+Date:   Tue, 21 Sep 2021 16:52:14 +0200
+Message-Id: <20210921145217.1584654-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210921132943.489732-9-hbathini@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr-FR
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 0wrBOi6d2jtmnbZRGsCfUrKn3GREkzRP
+X-Proofpoint-ORIG-GUID: 0wrBOi6d2jtmnbZRGsCfUrKn3GREkzRP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-21_04,2021-09-20_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
+ priorityscore=1501 mlxscore=0 lowpriorityscore=0 malwarescore=0
+ impostorscore=0 adultscore=0 mlxlogscore=661 clxscore=1011 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109210089
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Dave & Jakub,
 
+please apply the following patch series for qeth to netdev's net tree.
 
-Le 21/09/2021 à 15:29, Hari Bathini a écrit :
-> With KUAP enabled, any kernel code which wants to access userspace
-> needs to be surrounded by disable-enable KUAP. But that is not
-> happening for BPF_PROBE_MEM load instruction. Though PPC32 does not
-> support read protection, considering the fact that PTR_TO_BTF_ID
-> (which uses BPF_PROBE_MEM mode) could either be a valid kernel pointer
-> or NULL but should never be a pointer to userspace address, execute
-> BPF_PROBE_MEM load only if addr is kernel address, otherwise set
-> dst_reg=0 and move on.
-> 
-> This will catch NULL, valid or invalid userspace pointers. Only bad
-> kernel pointer will be handled by BPF exception table.
-> 
-> [Alexei suggested for x86]
-> Suggested-by: Alexei Starovoitov <ast@kernel.org>
-> Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-> ---
-> 
-> Changes in v3:
-> * Updated jump for PPC_BCC to always be the same while emitting
->    a NOP instruction when needed.
-> 
-> 
->   arch/powerpc/net/bpf_jit_comp32.c | 35 +++++++++++++++++++++++++++++++
->   1 file changed, 35 insertions(+)
-> 
-> diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
-> index 1239643f532c..59849e1230d2 100644
-> --- a/arch/powerpc/net/bpf_jit_comp32.c
-> +++ b/arch/powerpc/net/bpf_jit_comp32.c
-> @@ -825,6 +825,41 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   		case BPF_LDX | BPF_MEM | BPF_DW: /* dst = *(u64 *)(ul) (src + off) */
->   			fallthrough;
->   		case BPF_LDX | BPF_PROBE_MEM | BPF_DW:
-> +			/*
-> +			 * As PTR_TO_BTF_ID that uses BPF_PROBE_MEM mode could either be a valid
-> +			 * kernel pointer or NULL but not a userspace address, execute BPF_PROBE_MEM
-> +			 * load only if addr is kernel address (see is_kernel_addr()), otherwise
-> +			 * set dst_reg=0 and move on.
-> +			 */
-> +			if (BPF_MODE(code) == BPF_PROBE_MEM) {
-> +				EMIT(PPC_RAW_ADDI(b2p[TMP_REG], src_reg, off));
-> +				PPC_LI32(_R0, TASK_SIZE);
-> +				EMIT(PPC_RAW_CMPLW(b2p[TMP_REG], _R0));
+This brings two fixes for deadlocks when a device is removed while it
+has certain types of async work pending. And one additional fix for a
+missing NULL check in an error case.
 
-You may drop the ADDI and do:
+Thanks,
+Julian
 
-			PPC_LI32(_R0, TASK_SIZE - off);
-			EMIT(PPC_RAW_CMPLW(src_reg, _R0));
+Alexandra Winter (2):
+  s390/qeth: Fix deadlock in remove_discipline
+  s390/qeth: fix deadlock during failing recovery
 
+Julian Wiedmann (1):
+  s390/qeth: fix NULL deref in qeth_clear_working_pool_list()
 
-It will likely be the same number of instructions because now the 
-PPC_LI32 will generate two instruction, but it avoids the use of TMP_REG.
+ arch/s390/include/asm/ccwgroup.h  |  2 +-
+ drivers/s390/cio/ccwgroup.c       | 10 ++++++++--
+ drivers/s390/net/qeth_core.h      |  1 -
+ drivers/s390/net/qeth_core_main.c | 22 +++++++++-------------
+ drivers/s390/net/qeth_l2_main.c   |  1 -
+ drivers/s390/net/qeth_l3_main.c   |  1 -
+ 6 files changed, 18 insertions(+), 19 deletions(-)
 
+-- 
+2.25.1
 
-> +				PPC_BCC(COND_GT, (ctx->idx + 5) * 4);
-> +				EMIT(PPC_RAW_LI(dst_reg, 0));
-> +				/*
-> +				 * For BPF_DW case, "li reg_h,0" would be needed when
-> +				 * !fp->aux->verifier_zext. Emit NOP otherwise.
-> +				 *
-> +				 * Note that "li reg_h,0" is emitted for BPF_B/H/W case,
-> +				 * if necessary. So, jump there insted of emitting an
-> +				 * additional "li reg_h,0" instruction.
-> +				 */
-> +				if (size == BPF_DW && !fp->aux->verifier_zext)
-> +					EMIT(PPC_RAW_LI(dst_reg_h, 0));
-> +				else
-> +					EMIT(PPC_RAW_NOP());
-> +				/*
-> +				 * Need to jump two instructions instead of one for BPF_DW case
-> +				 * as there are two load instructions for dst_reg_h & dst_reg
-> +				 * respectively.
-> +				 */
-> +				if (size == BPF_DW)
-> +					PPC_JMP((ctx->idx + 3) * 4);
-> +				else
-> +					PPC_JMP((ctx->idx + 2) * 4);
-> +			}
-> +
->   			switch (size) {
->   			case BPF_B:
->   				EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
-> 
