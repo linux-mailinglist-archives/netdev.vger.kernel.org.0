@@ -2,75 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6A42412E8D
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 08:22:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD90E412E92
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 08:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbhIUGX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 02:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbhIUGX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 02:23:58 -0400
-Received: from forwardcorp1j.mail.yandex.net (forwardcorp1j.mail.yandex.net [IPv6:2a02:6b8:0:1619::183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCAA9C061574
-        for <netdev@vger.kernel.org>; Mon, 20 Sep 2021 23:22:29 -0700 (PDT)
-Received: from myt5-23f0be3aa648.qloud-c.yandex.net (myt5-23f0be3aa648.qloud-c.yandex.net [IPv6:2a02:6b8:c12:3e29:0:640:23f0:be3a])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 23BD32E0AD5
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 09:22:26 +0300 (MSK)
-Received: from myt6-76f0a6db1a7e.qloud-c.yandex.net (myt6-76f0a6db1a7e.qloud-c.yandex.net [2a02:6b8:c12:422d:0:640:76f0:a6db])
-        by myt5-23f0be3aa648.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id 7QvbdJF8NT-MPtqS5Gl;
-        Tue, 21 Sep 2021 09:22:26 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1632205346; bh=tDh7itUeuauH/cuowx/B1dvLSD67Lci4VwWjcEU54+Y=;
-        h=Message-Id:Date:Subject:To:From:Cc;
-        b=kMwO6UpmnW5CuE7syhvhyrxv5t9UZnMOR0+P8b0bYf+0g5IgOCbXyizpC3OeiuaM2
-         NpaJMUEnpF7akVaoubpQqltUU3oByI0aJ6LOxtUj8JLTlpj4G+o3N5QttmMHmWUUNl
-         5vmbs6mq5GOvEEt4F9GvTGiSrZmB+JjfTCsmKmNU=
-Authentication-Results: myt5-23f0be3aa648.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from dynamic-vpn.dhcp.yndx.net (dynamic-vpn.dhcp.yndx.net [2a02:6b8:b081:6508::1:e])
-        by myt6-76f0a6db1a7e.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id RWbKCyglHP-MP0qxJMB;
-        Tue, 21 Sep 2021 09:22:25 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-From:   Alexander Kuznetsov <wwfq@yandex-team.ru>
-To:     netdev@vger.kernel.org
-Cc:     zeil@yandex-team.ru
-Subject: [PATCH] ipv6: enable net.ipv6.route sysctls in network namespace
-Date:   Tue, 21 Sep 2021 09:22:04 +0300
-Message-Id: <20210921062204.16571-1-wwfq@yandex-team.ru>
+        id S229882AbhIUGYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 02:24:55 -0400
+Received: from zeniv-ca.linux.org.uk ([142.44.231.140]:51744 "EHLO
+        zeniv-ca.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229849AbhIUGYy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 02:24:54 -0400
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mSZBV-0064HG-Dp; Tue, 21 Sep 2021 06:23:17 +0000
+Date:   Tue, 21 Sep 2021 06:23:17 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     syzbot <syzbot+533f389d4026d86a2a95@syzkaller.appspotmail.com>
+Cc:     andrii@kernel.org, ast@kernel.org, axboe@kernel.dk,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org,
+        christian.brauner@ubuntu.com, christian@brauner.io,
+        daniel@iogearbox.net, dkadashev@gmail.com, hannes@cmpxchg.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lizefan.x@bytedance.com, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        tj@kernel.org, torvalds@linux-foundation.org, yhs@fb.com
+Subject: Re: [syzbot] general protection fault in percpu_ref_put
+Message-ID: <YUl6VZhPHBqAx+6g@zeniv-ca.linux.org.uk>
+References: <000000000000f8be2b05cc788686@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000f8be2b05cc788686@google.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We want to increase route cache size in network namespace
-created with user namespace. Currently ipv6 route settings
-are disabled for non-initial network namespaces.
-Since routes are per network namespace it is safe
-to enable these sysctls.
+On Mon, Sep 20, 2021 at 07:55:16PM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    4357f03d6611 Merge tag 'pm-5.15-rc2' of git://git.kernel.o..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=173e2d27300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=ccfb8533b1cbe3b1
+> dashboard link: https://syzkaller.appspot.com/bug?extid=533f389d4026d86a2a95
+> compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1395c6f1300000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11568cad300000
+> 
+> The issue was bisected to:
+> 
+> commit 020250f31c4c75ac7687a673e29c00786582a5f4
+> Author: Dmitry Kadashev <dkadashev@gmail.com>
+> Date:   Thu Jul 8 06:34:43 2021 +0000
+> 
+>     namei: make do_linkat() take struct filename
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=137e8a4b300000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=10fe8a4b300000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=177e8a4b300000
 
-Signed-off-by: Alexander Kuznetsov <wwfq@yandex-team.ru>
-Acked-by: Dmitry Yakunin <zeil@yandex-team.ru>
----
- net/ipv6/route.c | 4 ----
- 1 file changed, 4 deletions(-)
+I would be very surprised if that was true.  After the first step of bisect
+you've traded one oops for another, and *that* went to do_linkat() breakage.
+Which should be fixed by fdfc346302a7.
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index b6ddf23..de85e3b 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -6415,10 +6415,6 @@ struct ctl_table * __net_init ipv6_route_sysctl_init(struct net *net)
- 		table[8].data = &net->ipv6.sysctl.ip6_rt_min_advmss;
- 		table[9].data = &net->ipv6.sysctl.ip6_rt_gc_min_interval;
- 		table[10].data = &net->ipv6.sysctl.skip_notify_on_dev_down;
--
--		/* Don't export sysctls to unprivileged users */
--		if (net->user_ns != &init_user_ns)
--			table[0].procname = NULL;
- 	}
- 
- 	return table;
--- 
-2.7.4
-
+Look at the oopsen - initial and final ones look very different.
