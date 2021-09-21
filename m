@@ -2,584 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11DED4139E1
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 20:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C641B413A09
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 20:23:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbhIUSSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 14:18:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43132 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232465AbhIUSSI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Sep 2021 14:18:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8FBB860F48;
-        Tue, 21 Sep 2021 18:16:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632248199;
-        bh=CZ1jS1fbgx8mv8FGFJWF9Qe/+BOAki1/dRRl8GRTDK4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=j21R1nTKkra6hmoia4Sro3lz8h1arqw2MZ96VJMvTmsrtDmn1lATQSqRhny78o3Zu
-         al75kpmnfzZb8jQcuvJDvZ0TSffZVZ96Zr/afkV09QBWFJDvbLpSPW+9W/JE/19WP7
-         LbcCTDCUztM/Et5ZZQJ2wv9hNZXionyyU9cemI1tnkltKkUJnPtMI3S+T5bcTYQPFM
-         51XB3fsFHaxpSUiFSDUbF9+pd71YfzoBPnlOcnfPwHcJ2mojR7o/n1EJIVcaw+58/f
-         vps8ew1TUPKDLUzE0wkYOqzQQNnW8uUzPOlmZDF5sNf1qreauEtGNTexdr+ArkqOYz
-         sZft78ubw3thg==
-Date:   Tue, 21 Sep 2021 20:16:33 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Anton Vorontsov <anton@enomsg.org>,
-        Colin Cross <ccross@android.com>,
+        id S232865AbhIUSYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 14:24:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52509 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232729AbhIUSYa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 14:24:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632248581;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fCioJD4GXQ8rL7BZ9hZH89l38r2D+NX3fPR72Eu5Xs4=;
+        b=iNghnsdLyIUMOYVls5OwNsyn7eWPJuG9nbeNxvY6eVh39O3+rKXaQyyjqMkvm+HtO6wLi6
+        0jj4dNu/WpdM4Mx8y3sYTOovBzjqRSHT9KWxa6rTtI+JV56ijyKNDfoj9sYlTHzGUlhydM
+        74S8STpH/eumctgQYqh6+S0I+yXBFJM=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-236-acAhHqi4NYqxXJwBgrFvmA-1; Tue, 21 Sep 2021 14:22:59 -0400
+X-MC-Unique: acAhHqi4NYqxXJwBgrFvmA-1
+Received: by mail-ed1-f69.google.com with SMTP id h24-20020a50cdd8000000b003d8005fe2f8so15845051edj.6
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 11:22:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=fCioJD4GXQ8rL7BZ9hZH89l38r2D+NX3fPR72Eu5Xs4=;
+        b=i8SlYHWzXnMoJccjMLqTGlXFbnw3L2On4Z1ZV2o0KFz+PAV40DkVzM6FYb+Y9iX5qu
+         3URxvQKRpYtlVNnU8gQawMEDXMVY2kW6nDAvYhG+Wca0mwb4TQAZV2tOhgSeY7Oaj7q7
+         sy8JTj9eCvMMxjDtRx2P6zdVkvuhnm1C6vdpnf4rSTwSxUdNhyJZhnIphg7x0HCXCXXa
+         16zU9wjh5S7VYR0LVFVqKEqLbZl5Pc3QkgO+KkLSQ91Tk/vQxVob44H9L51pd+C5/ZN+
+         JUEHvQl4YMmP4/nNPSStgKI3cD9albIDL8YnY3qA+7O12czDhw6JdOP6YsNLRnwrjdck
+         U2/Q==
+X-Gm-Message-State: AOAM5321jW2D2+F19G/3AFpb1eWzgK0diOS2sK2NdexPhfesC9gpEjQS
+        MQHarHvy75MWYMLOpJgmyA5EE/RlqCDoXlhDwecVwPBKNDYfv+plwLDH/yeAzHk1hE+lyr3AHK6
+        E5+3GC572hxqjuhin
+X-Received: by 2002:a05:6402:c8b:: with SMTP id cm11mr36945301edb.368.1632248577187;
+        Tue, 21 Sep 2021 11:22:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxWZnPEEIEkqbkx5GE9LEeskOMg0msXbBPJpqTSqI4kp6TMb1xb7FdR2kHCNqXGcCixoh2+nw==
+X-Received: by 2002:a05:6402:c8b:: with SMTP id cm11mr36945152edb.368.1632248575740;
+        Tue, 21 Sep 2021 11:22:55 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id c17sm8760153edu.11.2021.09.21.11.22.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Sep 2021 11:22:55 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 87F3118034A; Tue, 21 Sep 2021 20:22:53 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Zvi Effron <zeffron@riotgames.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
+        Lorenzo Bianconi <lbianconi@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Tony Luck <tony.luck@intel.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 0/7] get_abi.pl: Check for missing symbols at the ABI
- specs
-Message-ID: <20210921201633.5e6128a0@coco.lan>
-In-Reply-To: <YUoN2m/OYHVLPrSl@kroah.com>
-References: <cover.1631957565.git.mchehab+huawei@kernel.org>
-        <YUoN2m/OYHVLPrSl@kroah.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-redhat-linux-gnu)
+        netdev@vger.kernel.org, bpf <bpf@vger.kernel.org>
+Subject: Re: Redux: Backwards compatibility for XDP multi-buff
+In-Reply-To: <CAC1LvL1xgFMjjE+3wHH79_9rumwjNqDAS2Yg2NpSvmewHsYScA@mail.gmail.com>
+References: <87o88l3oc4.fsf@toke.dk>
+ <CAC1LvL1xgFMjjE+3wHH79_9rumwjNqDAS2Yg2NpSvmewHsYScA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 21 Sep 2021 20:22:53 +0200
+Message-ID: <87ilyt3i0y.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Tue, 21 Sep 2021 18:52:42 +0200
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> escreveu:
+Zvi Effron <zeffron@riotgames.com> writes:
 
-> On Sat, Sep 18, 2021 at 11:52:10AM +0200, Mauro Carvalho Chehab wrote:
-> > Hi Greg,
-> >=20
-> > Add a new feature at get_abi.pl to optionally check for existing symbols
-> > under /sys that won't match a "What:" inside Documentation/ABI.
-> >=20
-> > Such feature is very useful to detect missing documentation for ABI.
-> >=20
-> > This series brings a major speedup, plus it fixes a few border cases wh=
-en
-> > matching regexes that end with a ".*" or \d+.
-> >=20
-> > patch 1 changes get_abi.pl logic to handle multiple What: lines, in
-> > order to make the script more robust;
-> >=20
-> > patch 2 adds the basic logic. It runs really quicky (up to 2
-> > seconds), but it doesn't use sysfs softlinks.
-> >=20
-> > Patch 3 adds support for parsing softlinks. It makes the script a
-> > lot slower, making it take a couple of minutes to process the entire
-> > sysfs files. It could be optimized in the future by using a graph,
-> > but, for now, let's keep it simple.
-> >=20
-> > Patch 4 adds an optional parameter to allow filtering the results
-> > using a regex given by the user. When this parameter is used
-> > (which should be the normal usecase), it will only try to find softlinks
-> > if the sysfs node matches a regex.
-> >=20
-> > Patch 5 improves the report by avoiding it to ignore What: that
-> > ends with a wildcard.
-> >=20
-> > Patch 6 is a minor speedup.  On a Dell Precision 5820, after patch 6,=20
-> > results are:
-> >=20
-> > 	$ time ./scripts/get_abi.pl undefined |sort >undefined && cat undefine=
-d| perl -ne 'print "$1\n" if (m#.*/(\S+) not found#)'|sort|uniq -c|sort -nr=
- >undefined_symbols; wc -l undefined; wc -l undefined_symbols
-> >=20
-> > 	real	2m35.563s
-> > 	user	2m34.346s
-> > 	sys	0m1.220s
-> > 	7595 undefined
-> > 	896 undefined_symbols
-> >=20
-> > Patch 7 makes a *huge* speedup: it basically switches a linear O(n^3)
-> > search for links by a logic which handle symlinks using BFS. It
-> > also addresses a border case that was making 'msi-irqs/\d+' regex to
-> > be misparsed.=20
-> >=20
-> > After patch 7, it is 11 times faster:
-> >=20
-> > 	$ time ./scripts/get_abi.pl undefined |sort >undefined && cat undefine=
-d| perl -ne 'print "$1\n" if (m#.*/(\S+) not found#)'|sort|uniq -c|sort -nr=
- >undefined_symbols; wc -l undefined; wc -l undefined_symbols
-> >=20
-> > 	real	0m14.137s
-> > 	user	0m12.795s
-> > 	sys	0m1.348s
-> > 	7030 undefined
-> > 	794 undefined_symbols
-> >=20
-> > (the difference on the number of undefined symbols are due to the fix f=
-or
-> > it to properly handle 'msi-irqs/\d+' regex)
-> >=20
-> > -
-> >=20
-> > While this series is independent from Documentation/ABI changes, it
-> > works best when applied from this tree, which also contain ABI fixes
-> > and a couple of additions of frequent missed symbols on my machine:
-> >=20
-> >     https://git.kernel.org/pub/scm/linux/kernel/git/mchehab/devel.git/l=
-og/?h=3Dget_undefined_abi_v3 =20
->=20
-> I've taken all of these, but get_abi.pl seems to be stuck in an endless
-> loop or something.  I gave up and stopped it after 14 minutes.  It had
-> stopped printing out anything after finding all of the pci attributes
-> that are not documented :)
-
-It is probably not an endless loop, just there are too many vars to
-check on your system, which could make it really slow.
-
-The way the search algorithm works is that reduces the number of regex=20
-expressions that will be checked for a given file entry at sysfs. It=20
-does that by looking at the devnode name. For instance, when it checks for
-this file:
-
-	/sys/bus/pci/drivers/iosf_mbi_pci/bind
-
-The logic will seek only the "What:" expressions that end with "bind".
-Currently, there are just two What expressions for it[1]:
-
-	What: /sys/bus/fsl\-mc/drivers/.*/bind
-	What: /sys/bus/pci/drivers/.*/bind
-
-It will then run an O(n=C2=B2) algorithm to seek:
-
-		foreach my $a (@names) {
-                       foreach my $w (split /\xac/, $what) {
-                               if ($a =3D~ m#^$w$#) {
-					exact =3D 1;
-                                        last;
-                                }
-			}
-		}
-
-Which runs quickly, when there are few regexs to seek. There are,=20
-however, some What: expressions that end with a wildcard. Those are
-harder to process. Right now, they're all grouped together, which
-makes them slower. Most of the processing time are spent on those.
-
-I'm working right now on some strategy to also speed up the search=20
-for them. Once I get something better, I'll send a patch series.
-
---
-
-[1] On a side note, there are currently some problems with the What:
-    definitions for bind/unbind, as:
-
-	- it doesn't match all PCI devices;
-	- it doesn't match ACPI and other buses that also export
-	  bind/unbind.
-
->=20
-> Anything I can do to help debug this?
+> On Tue, Sep 21, 2021 at 9:06 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Hi Lorenz (Cc. the other people who participated in today's discussion)
+>>
+>> Following our discussion at the LPC session today, I dug up my previous
+>> summary of the issue and some possible solutions[0]. Seems no on
+>> actually replied last time, which is why we went with the "do nothing"
+>> approach, I suppose. I'm including the full text of the original email
+>> below; please take a look, and let's see if we can converge on a
+>> consensus here.
+>>
+>> First off, a problem description: If an existing XDP program is exposed
+>> to an xdp_buff that is really a multi-buffer, while it will continue to
+>> run, it may end up with subtle and hard-to-debug bugs: If it's parsing
+>> the packet it'll only see part of the payload and not be aware of that
+>> fact, and if it's calculating the packet length, that will also only be
+>> wrong (only counting the first fragment).
+>>
+>> So what to do about this? First of all, to do anything about it, XDP
+>> programs need to be able to declare themselves "multi-buffer aware" (but
+>> see point 1 below). We could try to auto-detect it in the verifier by
+>> which helpers the program is using, but since existing programs could be
+>> perfectly happy to just keep running, it probably needs to be something
+>> the program communicates explicitly. One option is to use the
+>> expected_attach_type to encode this; programs can then declare it in the
+>> source by section name, or the userspace loader can set the type for
+>> existing programs if needed.
+>>
+>> With this, the kernel will know if a given XDP program is multi-buff
+>> aware and can decide what to do with that information. For this we came
+>> up with basically three options:
+>>
+>> 1. Do nothing. This would make it up to users / sysadmins to avoid
+>>    anything breaking by manually making sure to not enable multi-buffer
+>>    support while loading any XDP programs that will malfunction if
+>>    presented with an mb frame. This will probably break in interesting
+>>    ways, but it's nice and simple from an implementation PoV. With this
+>>    we don't need the declaration discussed above either.
+>>
+>> 2. Add a check at runtime and drop the frames if they are mb-enabled and
+>>    the program doesn't understand it. This is relatively simple to
+>>    implement, but it also makes for difficult-to-understand issues (why
+>>    are my packets suddenly being dropped?), and it will incur runtime
+>>    overhead.
+>>
+>> 3. Reject loading of programs that are not MB-aware when running in an
+>>    MB-enabled mode. This would make things break in more obvious ways,
+>>    and still allow a userspace loader to declare a program "MB-aware" to
+>>    force it to run if necessary. The problem then becomes at what level
+>>    to block this?
+>>
 >
+> I think there's another potential problem with this as well: what happens=
+ to
+> already loaded programs that are not MB-aware? Are they forcibly unloaded?
 
-There are two parameters that can help to identify the issue:
+I'd say probably the opposite: You can't toggle whatever switch we end
+up with if there are any non-MB-aware programs (you'd have to unload
+them first)...
 
-a) You can add a "--show-hints" parameter. This turns on some=20
-   prints that may help to identify what the script is doing.
-   It is not really a debug option, but it helps to identify
-   when some regexes are failing.
+>>    Doing this at the driver level is not enough: while a particular
+>>    driver knows if it's running in multi-buff mode, we can't know for
+>>    sure if a particular XDP program is multi-buff aware at attach time:
+>>    it could be tail-calling other programs, or redirecting packets to
+>>    another interface where it will be processed by a non-MB aware
+>>    program.
+>>
+>>    So another option is to make it a global toggle: e.g., create a new
+>>    sysctl to enable multi-buffer. If this is set, reject loading any XDP
+>>    program that doesn't support multi-buffer mode, and if it's unset,
+>>    disable multi-buffer mode in all drivers. This will make it explicit
+>>    when the multi-buffer mode is used, and prevent any accidental subtle
+>>    malfunction of existing XDP programs. The drawback is that it's a
+>>    mode switch, so more configuration complexity.
+>>
+>
+> Could we combine the last two bits here into a global toggle that doesn't
+> require a sysctl? If any driver is put into multi-buffer mode, then the s=
+ystem
+> switches to requiring all programs be multi-buffer? When the last multi-b=
+uffer
+> enabled driver switches out of multi-buffer, remove the system-wide
+> restriction?
 
-b) You can limit the What expressions that will be parsed with:
-	   --search-string <something>
+Well, the trouble here is that we don't necessarily have an explicit
+"multi-buf mode" for devices. For instance, you could raise the MTU of a
+device without it necessarily involving any XDP multi-buffer stuff (if
+you're not running XDP on that device). So if we did turn "raising the
+MTU" into such a mode switch, we would end up blocking any MTU changes
+if any XDP programs are loaded. Or having an MTU change cause a
+force-unload of all XDP programs.
 
-You can combine both. For instance, if you want to make it
-a lot more verbose, you could run it as:
+Neither of those are desirable outcomes, I think; and if we add a
+separate "XDP multi-buff" switch, we might as well make it system-wide?
 
-	./scripts/get_abi.pl undefined --search-string /sys --show-hints
+> Regarding my above question, if non-MB-aware XDP programs are not forcibly
+> unloaded, then a global toggle is also insufficient. An existing non-MB-a=
+ware
+> XDP program would still beed to be rejected at attach time by the
+> driver.
 
-The script will then print all regexes that will be checked, and when
-actually checking for the missing vars, it will print all names for
-a given entry at sysfs.
+See above.
 
-So, if you want to know how an i2c bind has been validated, you
-could do:
-
-	$ ./scripts/get_abi.pl undefined --search-string i2c/.*/bind --show-hints
-	--> /sys/bus/i2c/drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-3=
-/i2c-14/subsystem/drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-4=
-/i2c-15/subsystem/drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0036/subsystem/drivers/=
-dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0037/driver/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-2=
-/i2c-13/subsystem/drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0050/subsystem/drivers/=
-dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-10/subsystem/dri=
-vers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-5/subsystem/drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-3/subsystem/drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-1/subsystem/=
-drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-1=
-/i2c-12/subsystem/drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0037/subsystem/drivers/=
-dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-8/subsystem/driv=
-ers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-9/subsystem/driv=
-ers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:15.2/i2c_designware.2/i2c-2/subsystem/=
-drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-0/subsystem/=
-drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0036/driver/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/subsystem/drivers/dummy/bi=
-nd
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-7/subsystem/driv=
-ers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-6/subsystem/driv=
-ers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-4/subsystem/drivers/dummy/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-11/subsystem/dri=
-vers/dummy/bind
-	    more likely regexes:
-		/sys/bus/fsl\-mc/drivers/.*/bind
-		/sys/bus/pci/drivers/.*/bind
-	--> /sys/bus/i2c/drivers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-3=
-/i2c-14/subsystem/drivers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-4=
-/i2c-15/subsystem/drivers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0036/subsystem/drivers/=
-axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-2=
-/i2c-13/subsystem/drivers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0050/subsystem/drivers/=
-axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-10/subsystem/dri=
-vers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-5/subsystem/drivers/axp20x-i2=
-c/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-3/subsystem/drivers/axp20x-i2=
-c/bind
-	--> /sys/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-1/subsystem/=
-drivers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-1=
-/i2c-12/subsystem/drivers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0037/subsystem/drivers/=
-axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-8/subsystem/driv=
-ers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-9/subsystem/driv=
-ers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:15.2/i2c_designware.2/i2c-2/subsystem/=
-drivers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-0/subsystem/=
-drivers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/subsystem/drivers/axp20x-i=
-2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-7/subsystem/driv=
-ers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-6/subsystem/driv=
-ers/axp20x-i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-4/subsystem/drivers/axp20x-i2=
-c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-11/subsystem/dri=
-vers/axp20x-i2c/bind
-	    more likely regexes:
-		/sys/bus/fsl\-mc/drivers/.*/bind
-		/sys/bus/pci/drivers/.*/bind
-	--> /sys/bus/i2c/drivers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-3=
-/i2c-14/subsystem/drivers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-4=
-/i2c-15/subsystem/drivers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0036/subsystem/drivers/=
-smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-2=
-/i2c-13/subsystem/drivers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0050/subsystem/drivers/=
-smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-10/subsystem/dri=
-vers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-5/subsystem/drivers/smbus_ale=
-rt/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-3/subsystem/drivers/smbus_ale=
-rt/bind
-	--> /sys/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-1/subsystem/=
-drivers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-1=
-/i2c-12/subsystem/drivers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0037/subsystem/drivers/=
-smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-8/subsystem/driv=
-ers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-9/subsystem/driv=
-ers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:15.2/i2c_designware.2/i2c-2/subsystem/=
-drivers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-0/subsystem/=
-drivers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/subsystem/drivers/smbus_al=
-ert/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-7/subsystem/driv=
-ers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-6/subsystem/driv=
-ers/smbus_alert/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-4/subsystem/drivers/smbus_ale=
-rt/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-11/subsystem/dri=
-vers/smbus_alert/bind
-	--> /sys/module/i2c_smbus/drivers/i2c:smbus_alert/bind
-	    more likely regexes:
-		/sys/bus/fsl\-mc/drivers/.*/bind
-		/sys/bus/pci/drivers/.*/bind
-	--> /sys/bus/i2c/drivers/ee1004/bind
-	--> /sys/module/ee1004/drivers/i2c:ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-3=
-/i2c-14/subsystem/drivers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-4=
-/i2c-15/subsystem/drivers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0036/subsystem/drivers/=
-ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-2=
-/i2c-13/subsystem/drivers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0050/subsystem/drivers/=
-ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-10/subsystem/dri=
-vers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-5/subsystem/drivers/ee1004/bi=
-nd
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-3/subsystem/drivers/ee1004/bi=
-nd
-	--> /sys/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-1/subsystem/=
-drivers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-1=
-/i2c-12/subsystem/drivers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0037/subsystem/drivers/=
-ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-8/subsystem/driv=
-ers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-9/subsystem/driv=
-ers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:15.2/i2c_designware.2/i2c-2/subsystem/=
-drivers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-0/subsystem/=
-drivers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/subsystem/drivers/ee1004/b=
-ind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-7/subsystem/driv=
-ers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-6/subsystem/driv=
-ers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-4/subsystem/drivers/ee1004/bi=
-nd
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-11/subsystem/dri=
-vers/ee1004/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0050/driver/bind
-	    more likely regexes:
-		/sys/bus/fsl\-mc/drivers/.*/bind
-		/sys/bus/pci/drivers/.*/bind
-	--> /sys/bus/i2c/drivers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-3=
-/i2c-14/subsystem/drivers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-4=
-/i2c-15/subsystem/drivers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0036/subsystem/drivers/=
-intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-2=
-/i2c-13/subsystem/drivers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0050/subsystem/drivers/=
-intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-10/subsystem/dri=
-vers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-5/subsystem/drivers/intel_soc=
-_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-3/subsystem/drivers/intel_soc=
-_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-1/subsystem/=
-drivers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-1=
-/i2c-12/subsystem/drivers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0037/subsystem/drivers/=
-intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-8/subsystem/driv=
-ers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-9/subsystem/driv=
-ers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:15.2/i2c_designware.2/i2c-2/subsystem/=
-drivers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-0/subsystem/=
-drivers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/subsystem/drivers/intel_so=
-c_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-7/subsystem/driv=
-ers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-6/subsystem/driv=
-ers/intel_soc_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-4/subsystem/drivers/intel_soc=
-_pmic_i2c/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-11/subsystem/dri=
-vers/intel_soc_pmic_i2c/bind
-	    more likely regexes:
-		/sys/bus/fsl\-mc/drivers/.*/bind
-		/sys/bus/pci/drivers/.*/bind
-	--> /sys/bus/i2c/drivers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-3=
-/i2c-14/subsystem/drivers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-4=
-/i2c-15/subsystem/drivers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0036/subsystem/drivers/=
-tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-2=
-/i2c-13/subsystem/drivers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0050/subsystem/drivers/=
-tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-10/subsystem/dri=
-vers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-5/subsystem/drivers/tps68470/=
-bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-3/subsystem/drivers/tps68470/=
-bind
-	--> /sys/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-1/subsystem/=
-drivers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-1=
-/i2c-12/subsystem/drivers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0037/subsystem/drivers/=
-tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-8/subsystem/driv=
-ers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-9/subsystem/driv=
-ers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:15.2/i2c_designware.2/i2c-2/subsystem/=
-drivers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-0/subsystem/=
-drivers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/subsystem/drivers/tps68470=
-/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-7/subsystem/driv=
-ers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-6/subsystem/driv=
-ers/tps68470/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-4/subsystem/drivers/tps68470/=
-bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-11/subsystem/dri=
-vers/tps68470/bind
-	    more likely regexes:
-		/sys/bus/fsl\-mc/drivers/.*/bind
-		/sys/bus/pci/drivers/.*/bind
-	--> /sys/bus/i2c/drivers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-3=
-/i2c-14/subsystem/drivers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-4=
-/i2c-15/subsystem/drivers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0036/subsystem/drivers/=
-CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-2=
-/i2c-13/subsystem/drivers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0050/subsystem/drivers/=
-CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-10/subsystem/dri=
-vers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-5/subsystem/drivers/CHT Whisk=
-ey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-3/subsystem/drivers/CHT Whisk=
-ey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-1/subsystem/=
-drivers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/drm/card1/card1-DP-1=
-/i2c-12/subsystem/drivers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/16-0037/subsystem/drivers/=
-CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-8/subsystem/driv=
-ers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-9/subsystem/driv=
-ers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:15.2/i2c_designware.2/i2c-2/subsystem/=
-drivers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-0/subsystem/=
-drivers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:1f.4/i2c-16/subsystem/drivers/CHT Whis=
-key Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-7/subsystem/driv=
-ers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-6/subsystem/driv=
-ers/CHT Whiskey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:02.0/i2c-4/subsystem/drivers/CHT Whisk=
-ey Cove PMIC/bind
-	--> /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/i2c-11/subsystem/dri=
-vers/CHT Whiskey Cove PMIC/bind
-	    more likely regexes:
-		/sys/bus/fsl\-mc/drivers/.*/bind
-		/sys/bus/pci/drivers/.*/bind
-
-Btw, on the above example, I have already a patch addressing it
-(see enclosed). I intend to submit it on a newer patch series.
-
-Thanks,
-Mauro
-
-[PATCH] ABI: sysfs-bus-pci: add a alternative What fields
-
-There are some PCI ABI that aren't shown under:
-
-	/sys/bus/pci/drivers/.../
-
-Because they're registered with a different class. That's
-the case of, for instance:
-
-	/sys/bus/i2c/drivers/CHT Whiskey Cove PMIC/unbind
-
-This one is not present under /sys/bus/pci:
-
-	$ find /sys/bus/pci -name 'CHT Whiskey Cove PMIC'
-
-Although clearly this is provided by a PCI driver:
-
-	/sys/devices/pci0000:00/0000:00:02.0/i2c-4/subsystem/drivers/CHT Whiskey C=
-ove PMIC/unbind
-
-So, add an altertate What location in order to match bind/unbind
-to such devices.
-
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/te=
-sting/sysfs-bus-pci
-index 1da4c8db3a9e..f4efbcb0b18c 100644
---- a/Documentation/ABI/testing/sysfs-bus-pci
-+++ b/Documentation/ABI/testing/sysfs-bus-pci
-@@ -1,4 +1,5 @@
- What:		/sys/bus/pci/drivers/.../bind
-+What:		/sys/devices/pciX/.../bind
- Date:		December 2003
- Contact:	linux-pci@vger.kernel.org
- Description:
-@@ -14,6 +15,7 @@ Description:
- 		(Note: kernels before 2.6.28 may require echo -n).
-=20
- What:		/sys/bus/pci/drivers/.../unbind
-+What:		/sys/devices/pciX/.../unbind
- Date:		December 2003
- Contact:	linux-pci@vger.kernel.org
- Description:
-@@ -29,6 +31,7 @@ Description:
- 		(Note: kernels before 2.6.28 may require echo -n).
-=20
- What:		/sys/bus/pci/drivers/.../new_id
-+What:		/sys/devices/pciX/.../new_id
- Date:		December 2003
- Contact:	linux-pci@vger.kernel.org
- Description:
-@@ -47,6 +50,7 @@ Description:
- 		  # echo "8086 10f5" > /sys/bus/pci/drivers/foo/new_id
-=20
- What:		/sys/bus/pci/drivers/.../remove_id
-+What:		/sys/devices/pciX/.../remove_id
- Date:		February 2009
- Contact:	Chris Wright <chrisw@sous-sol.org>
- Description:
-
+-Toke
 
