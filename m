@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51BCD4135C3
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 17:03:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 665144135CE
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 17:04:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233841AbhIUPEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 11:04:54 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:44638 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233809AbhIUPEw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 11:04:52 -0400
+        id S233789AbhIUPGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 11:06:06 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:40177 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232540AbhIUPGF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Sep 2021 11:06:05 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1632236603; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1632236677; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=bsSyjO77usODxPNl9U4WuLitIVjcU7QWauyIkVpnW1I=;
- b=HwqzLQwpVJVaX9d5w73r8xYPTjZRk4kyo3Rjyv4KrwgY/GUIh7thSuZ8lj9Nfi2Xn0yOa3mS
- 0lmoX/RXKPcDcSHn58PLH15R63uwCVYbJmw6REN/qROmeXZBXj54nwIzdavKVCtKLs8WAAl9
- dhz4G6DC9FfhpLw4pq0PguA87Lk=
-X-Mailgun-Sending-Ip: 198.61.254.9
+ Content-Type: Sender; bh=kKeGMSBk1nf9nhoNt1xIaAgqlBzdmnInIfZ2mQ9acs0=;
+ b=nWhxF0qFhX2P5j2lGufKlkCbLr2R/8hVXxA1hUIoZcJRn86gMbUuNFeOEjnoWKZh25xIQzh/
+ 1WBYDeeJWI05b+XTYFRac/+aVSO3d4lrnU28cEkslkEykOwj9gkhcD9SBeJIdr+IlArmyvBH
+ YaKuOqmrkKtqLKF4WtlpwV35XTs=
+X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 6149f41fbd6681d8edec436f (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 21 Sep 2021 15:02:55
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 6149f475bd6681d8edf0567a (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 21 Sep 2021 15:04:21
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E59F6C4361B; Tue, 21 Sep 2021 15:02:54 +0000 (UTC)
+        id 4660BC43637; Tue, 21 Sep 2021 15:04:20 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -39,67 +39,76 @@ Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8888AC4338F;
-        Tue, 21 Sep 2021 15:02:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 8888AC4338F
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E5344C43616;
+        Tue, 21 Sep 2021 15:04:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org E5344C43616
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/9] mwifiex: Small cleanup for handling virtual interface
- type changes
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2] rsi: Fix module dev_oper_mode parameter description
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210914195909.36035-2-verdre@v0yd.nl>
-References: <20210914195909.36035-2-verdre@v0yd.nl>
-To:     =?utf-8?q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+In-Reply-To: <20210916144245.10181-1-marex@denx.de>
+References: <20210916144245.10181-1-marex@denx.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     linux-wireless@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Angus Ainslie <angus@akkea.ca>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        =?utf-8?q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?utf-8?q?Pali_Roh?= =?utf-8?q?=C3=A1r?= <pali@kernel.org>
+        Karun Eagalapati <karun256@gmail.com>,
+        Martin Fuzzey <martin.fuzzey@flowbird.group>,
+        Martin Kepplinger <martink@posteo.de>,
+        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org,
+        stable@vger.kernel.org
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210921150254.E59F6C4361B@smtp.codeaurora.org>
-Date:   Tue, 21 Sep 2021 15:02:54 +0000 (UTC)
+Message-Id: <20210921150420.4660BC43637@smtp.codeaurora.org>
+Date:   Tue, 21 Sep 2021 15:04:20 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jonas Dreßler <verdre@v0yd.nl> wrote:
+Marek Vasut <marex@denx.de> wrote:
 
-> Handle the obvious invalid virtual interface type changes with a general
-> check instead of looking at the individual change.
+> The module parameters are missing dev_oper_mode 12, BT classic alone,
+> add it. Moreover, the parameters encode newlines, which ends up being
+> printed malformed e.g. by modinfo, so fix that too.
 > 
-> For type changes from P2P_CLIENT to P2P_GO and the other way round, this
-> changes the behavior slightly: We now still do nothing, but return
-> -EOPNOTSUPP instead of 0. Now that behavior was incorrect before and
-> still is, because type changes between these two types are actually
-> possible and supported, which we'll fix in a following commit.
+> However, the module parameter string is duplicated in both USB and SDIO
+> modules and the dev_oper_mode mode enumeration in those module parameters
+> is a duplicate of macros used by the driver. Furthermore, the enumeration
+> is confusing.
 > 
-> Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
+> So, deduplicate the module parameter string and use __stringify() to
+> encode the correct mode enumeration values into the module parameter
+> string. Finally, replace 'Wi-Fi' with 'Wi-Fi alone' and 'BT' with
+> 'BT classic alone' to clarify what those modes really mean.
+> 
+> Fixes: 898b255339310 ("rsi: add module parameter operating mode")
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
+> Cc: Angus Ainslie <angus@akkea.ca>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: Karun Eagalapati <karun256@gmail.com>
+> Cc: Martin Fuzzey <martin.fuzzey@flowbird.group>
+> Cc: Martin Kepplinger <martink@posteo.de>
+> Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
+> Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+> Cc: Siva Rebbagondla <siva8118@gmail.com>
+> Cc: netdev@vger.kernel.org
+> Cc: <stable@vger.kernel.org> # 4.17+
 
-9 patches applied to wireless-drivers-next.git, thanks.
+Patch applied to wireless-drivers-next.git, thanks.
 
-babe2a332dc4 mwifiex: Small cleanup for handling virtual interface type changes
-abe3a2c9ead8 mwifiex: Use function to check whether interface type change is allowed
-c2e9666cdffd mwifiex: Run SET_BSS_MODE when changing from P2P to STATION vif-type
-54350dac4e6a mwifiex: Use helper function for counting interface types
-fae2aac8c740 mwifiex: Update virtual interface counters right after setting bss_type
-25bbec30a2c7 mwifiex: Allow switching interface type from P2P_CLIENT to P2P_GO
-5e2e1a4bf4a1 mwifiex: Handle interface type changes from AP to STATION
-c606008b7062 mwifiex: Properly initialize private structure on interface type changes
-72e717500f99 mwifiex: Fix copy-paste mistake when creating virtual interface
+31f97cf9f0c3 rsi: Fix module dev_oper_mode parameter description
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210914195909.36035-2-verdre@v0yd.nl/
+https://patchwork.kernel.org/project/linux-wireless/patch/20210916144245.10181-1-marex@denx.de/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
