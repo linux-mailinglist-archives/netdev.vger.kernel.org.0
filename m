@@ -2,89 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1FBE412EEF
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 09:02:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C906F412EF5
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 09:02:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbhIUHDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 03:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
+        id S230035AbhIUHDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 03:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230027AbhIUHDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 03:03:34 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0E8C061574
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 00:02:05 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id d21so36079528wra.12
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 00:02:05 -0700 (PDT)
+        with ESMTP id S230027AbhIUHDy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 03:03:54 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BD2C061575
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 00:02:26 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id d21so36081963wra.12
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 00:02:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HfIARBfVCCT7vPYMtN3+SPdDH+ThIQoGLpcaGKSdVGk=;
-        b=Zb0d2wP/g3UAFvd0gS+m37e/oOVwbP75x9esu0xGEAip7KPW3+UYmPJDaLBxNrtKx1
-         P38XhXNCMA2Us8TcDAcMXfGUNWfzCAn6/Xm3PDu/G7IOqNAlJh484WdSkBMdi+UpoxQq
-         9BaUqzw2MhweiGIx2a58sy3hN88u8H7VQXDZe3epIajSLRfJNiTS2CK3CqTNZQRt009O
-         RTaZwHW4BSwvdp/XCdMRxubZjSrh+3rsSBhhvzfAZ+A9aexIj2jSFq2VQsSbwQFx+php
-         y9hfRnrIkQL7yAw+rRCwiHyuJeGFjzOUjXSa40WZzDfUBXMMuCrdKaUTwnCOHbOkyAgt
-         J7AQ==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fusWwRhGhDwMDvQIF2rL+xIXyvzxwvV+7P1DjBX2OMs=;
+        b=17ypAGfGNToM0JSjgeiOeGU851YZP0qvqVdPT5/wmSGdUXJ3vAdN4BAOh9A7cDHB5a
+         AnweVmVoZRkGEn+GBVrYIQJd5My/8znNb84Dvybfp4W0w9vScptNps5QF4U38ECx8tco
+         2CUiLk/agsteCVIQEkd6qe8/ZujmvYC530UJdreb3wyzUMUX856xFPlfx76NWSoFwnG1
+         TJ/Ec8u3HAEpAo2vhZp3kkGaHNZllUxLafsuh5no2ljfi6wB0kQS2njBg3M1W6AX7AaO
+         aSE5wCot9OdHYI6j7SWUcVGhTfLuNKk3qPN4/rl2YtlAcak1FryT5nuJWc9hr7UMCrut
+         ETNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HfIARBfVCCT7vPYMtN3+SPdDH+ThIQoGLpcaGKSdVGk=;
-        b=icGX8KaLZv97cUDjBaToZiRzsmZ6LxoeZdb32YugS1uSsz92O3jpGCBLz4kb7xo4bo
-         dm9bE44JDNLfCssIlPy0a9BcNyocUvLTtToQRDNMHmoidW9olLDgawhYEN1xOymmhXbP
-         RmkQsh8SsRnWnxh/nVZuBHQsUfvIlRX09ezw4NRjQo/uMMa7xe3zcJQaK5PUMOrvhnR4
-         BV0N4UwNJ8GTo+QqY1QSLKl0g8LmwQr4ewfHmWolqEhH193RP/gKHLC/SHmHiEmTxQdS
-         YcUSnWkNu15jh6FdD9iJdkyd6n9a3s/mp+adwx/gRGkuaHOWCexjTNa+9EKeYqz8zRXE
-         EyKQ==
-X-Gm-Message-State: AOAM532TLogEybCDSYKNDd4o/+FbBzxZAGSJPUAWFcrsizV2q0coB9k2
-        Ciz7edsZJ7rfmDl5QHXeanEis4JSp9NZImXuksvfm9it+yNmHw==
-X-Google-Smtp-Source: ABdhPJxAPCkhTzDAZ336WwmL8b7wBL8zKg+mjYsC/mtlam85cyLYzQ5iKF95uQewNeFpWVrRQe2CbP1VGkmnheKe8N0=
-X-Received: by 2002:a05:6000:104e:: with SMTP id c14mr32732165wrx.130.1632207723041;
- Tue, 21 Sep 2021 00:02:03 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fusWwRhGhDwMDvQIF2rL+xIXyvzxwvV+7P1DjBX2OMs=;
+        b=UphGAob+eOy9UNjhdVc07SEvuzzJg4JcNRZShP/eYVUtjaagfEbMSxuRJRwwyPYGEc
+         qym2afuPuMfvfww0ek40tNGlszxsatJMzopMzdWbQaFvfxc7o5ygyiYDg97ONzcoDzPl
+         k7bpyEw1FKC0xQjrTMDknSCBDPJhw1292Xb50ryn2sMZsS1De3dIo16SouAccDJlfSiK
+         dJ2SPb/lUhrOn2S8nHZ1n9CApaFZOqw8Oz0EatAWt8ejRyZKFnt9tHQVFjG4QW/2K1wX
+         svkhypAh4uqyrxSbxySnNlIx+rI5e2OweuqMNbI6OF5YxJRLGZxBe0kvnKakHReeIdvX
+         +viA==
+X-Gm-Message-State: AOAM5305oXTSDQ4fATmlrCoQpWXzZr/PoUCKval410FbuqXs7KGx5brT
+        4kKWlQrRC2I+fu6xEQ4TnsQchg==
+X-Google-Smtp-Source: ABdhPJz0OlMS4q0UvEdCzO4nXU7/PwGZ8ozvQmNUB80OlTlbJwb+ceMDZjLzoyimOSm5UKvaW2UlrA==
+X-Received: by 2002:a5d:6c6d:: with SMTP id r13mr17856595wrz.439.1632207745235;
+        Tue, 21 Sep 2021 00:02:25 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id r25sm19674308wrc.26.2021.09.21.00.02.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Sep 2021 00:02:24 -0700 (PDT)
+Date:   Tue, 21 Sep 2021 09:02:23 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        hariprasad <hkelam@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
+        Manish Chopra <manishc@marvell.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Simon Horman <simon.horman@corigine.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next] devlink: Make devlink_register to be void
+Message-ID: <YUmDf3KdLS/4FwoT@nanopsycho>
+References: <2e089a45e03db31bf451d768fc588c02a2f781e8.1632148852.git.leonro@nvidia.com>
+ <20210920133915.59ddfeef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <cover.1632133123.git.lucien.xin@gmail.com> <a1253d4c38990854e5369074e4cbc9cd2098c532.1632133123.git.lucien.xin@gmail.com>
- <CAM_iQpVvZY2QrQ83FzkmmEe_sG8B86i+w_0qwp6M9WaehEW+Zg@mail.gmail.com>
-In-Reply-To: <CAM_iQpVvZY2QrQ83FzkmmEe_sG8B86i+w_0qwp6M9WaehEW+Zg@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 21 Sep 2021 15:01:52 +0800
-Message-ID: <CADvbK_c_C+z6aaz0a+NFPRRZLhR-hMvFMXvaNyXpd84qzPFKUg@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] net: sched: also drop dst for the packets toward
- ingress in act_mirred
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210920133915.59ddfeef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 21, 2021 at 2:34 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+Mon, Sep 20, 2021 at 10:39:15PM CEST, kuba@kernel.org wrote:
+>On Mon, 20 Sep 2021 17:41:44 +0300 Leon Romanovsky wrote:
+>> From: Leon Romanovsky <leonro@nvidia.com>
+>> 
+>> devlink_register() can't fail and always returns success, but all drivers
+>> are obligated to check returned status anyway. This adds a lot of boilerplate
+>> code to handle impossible flow.
+>> 
+>> Make devlink_register() void and simplify the drivers that use that
+>> API call.
 >
-> On Mon, Sep 20, 2021 at 7:12 AM Xin Long <lucien.xin@gmail.com> wrote:
-> >
-> > Without dropping dst, the packets sent from local mirred/redirected
-> > to ingress will may still use the old dst. ip_rcv() will drop it as
-> > the old dst is for output and its .input is dst_discard.
-> >
-> > This patch is to fix by also dropping dst for those packets that are
-> > mirred or redirected to ingress in act_mirred.
->
-> Similar question: what about redirecting from ingress to egress?
-We can do it IF there's any user case needing it.
-But for now, The problem I've met occurred in ip_rcv() for the user case.
+>Unlike unused functions bringing back error handling may be
+>non-trivial. I'd rather you deferred such cleanups until you're 
+>ready to post your full rework and therefore give us some confidence 
+>the revert will not be needed.
 
->
-> BTW, please CC TC maintainers for TC patches.
-added Jamal and Jiri.
-
-Thanks.
->
-> Thanks.
+Well, that was the original reason why I made it to return int, so the
+drivers are prepared. But truth is that given the time this is on and
+the need to return int never really materialized, I tend to ack with the
+cleanup.
