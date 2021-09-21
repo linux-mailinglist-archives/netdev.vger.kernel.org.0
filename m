@@ -2,88 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA9E6412EB8
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 08:41:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCC16412EEE
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 09:02:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbhIUGm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 02:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
+        id S230022AbhIUHDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 03:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbhIUGmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 02:42:55 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B460AC061574;
-        Mon, 20 Sep 2021 23:41:27 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id t4so12743869plo.0;
-        Mon, 20 Sep 2021 23:41:27 -0700 (PDT)
+        with ESMTP id S229917AbhIUHD3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 03:03:29 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271A4C061574
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 00:02:01 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id d6so35982001wrc.11
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 00:02:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RDY/CygsuDGr2VxPOJrYoRC69tTkJlPaA3/ke6daSf0=;
-        b=abtdr9HPjC1t7faBledJZIwT3FO22vN7xT97L0vm71+p3bZwqPk3Cu8KJGUNy71vhM
-         VC5CR9QQ5OH06KG0W7lz37bUyFvEgrsUfkNSPOBQepJxPUKPDnRbIDTYexbOjXmEctwF
-         jmZuGDjPCCEDP3yhABGNhgRf7KrRItZ+VHeXW0y48o+n9D02B13jh7JkETslbbpmds4/
-         iZrb1dovtD3/J9c+D3l87ujbMjqac6fwthB2cggkYmvqoojCpS9mmdAkLLnu9psHuTHb
-         w1xdvYnAbSYZBZF6bbdlYYuDb0cWfZatTdzms4YFwWQY1TWwG37DO+UDfG17t8DqgMld
-         zBFg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vn3RHd2aOZ8iaFVExrbcrdfcQGvP7FIcYl5vAUxzZSE=;
+        b=ZsemtIPdi3bYvE29RP4suz5psYBOaqVFZBtBsiEhoHCVg69ena6+FZOC/MttYMOngw
+         S2nGzQn8yoS4bI06SudBoyKTRgsBhL6A+utWxM1xLC9iGa0xcOKtvA7QHX3XpcXvtq5e
+         Wll7JAAF4vAmzYLBOPQPfdQEi0EpIozIwUVf6E5H+vXHdCYpSUJGHdT3y0rfKmoicMpk
+         x64VpwQQ4pO+8g3DUEVH3/HMu8tPkXfZlKWUajwmABZQOi72Tz3efdHAYFd+ks6r+Nh3
+         btff/rp0lRo6rXK6cLKVS+OvIPYu7cfLDp3DF91jWZVgJyYs/sSL3D1YwAEnHHCb0SkQ
+         owHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RDY/CygsuDGr2VxPOJrYoRC69tTkJlPaA3/ke6daSf0=;
-        b=LmIlhAHxc+IMIeNavCTqnYeHX6DOBeJ5KkB/Qbb2NCvYO8Xboi+DJ8fH5J0rfaRmHs
-         ECS+rrxdT1NTaXUJO36A5fBQS1YIff0yKo/wCtr+VgVGLFJI+09vfbeKlkcFSkPqMWEM
-         JuekODNpmTdwjvo7m8TeSurHC9O6DO4AH6TvfJGKutTfxCvImA9Sm5tPwNXi4nn/uiow
-         e4VZC/HaeyJ7nBX5tDJzmcj4pf/m/UdegQV3VtA98ehECyxcCPM6BX647pvaiOiKSygF
-         OWJ8sfQqtzAAXKWlMBsWs6F4EHSeenNJaFW7Z3bl8VOYJVN/NXN0E4MrdDE1oxpvC4qs
-         R1KA==
-X-Gm-Message-State: AOAM530l+70EBv+u11Vd0sH101/74h2nsq38Hav/GvFcv1vIoRM2vXTr
-        +rwGi7750vFzb3vOu9Mf110=
-X-Google-Smtp-Source: ABdhPJwgDQTvgVWPoPaDVdxQa0Czy9qxk3RR168T002Vs62HkMDtg5JeT7zgZB21KvxWk30yqWe+DQ==
-X-Received: by 2002:a17:903:246:b0:13a:8c8:8a31 with SMTP id j6-20020a170903024600b0013a08c88a31mr25624046plh.87.1632206487131;
-        Mon, 20 Sep 2021 23:41:27 -0700 (PDT)
-Received: from masabert ([202.12.244.3])
-        by smtp.gmail.com with ESMTPSA id w206sm10760488pfc.45.2021.09.20.23.41.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Sep 2021 23:41:26 -0700 (PDT)
-Received: by masabert (Postfix, from userid 1000)
-        id A9C712360A48; Tue, 21 Sep 2021 15:41:24 +0900 (JST)
-From:   Masanari Iida <standby24x7@gmail.com>
-To:     linux-kernel@vger.kernel.org, corbet@lwn.net,
-        linux-doc@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org
-Cc:     Masanari Iida <standby24x7@gmail.com>
-Subject: [PATCH] Doc: networking: Fox a typo in ice.rst
-Date:   Tue, 21 Sep 2021 15:41:23 +0900
-Message-Id: <20210921064123.251742-1-standby24x7@gmail.com>
-X-Mailer: git-send-email 2.25.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vn3RHd2aOZ8iaFVExrbcrdfcQGvP7FIcYl5vAUxzZSE=;
+        b=nS7s4nusVUDwYU9iKOYchgf38NOmGPaClkURv3Oa9gGUsDxmruWe+HN/j3/rfPHVqh
+         bt1+E25A9ARHtfgzBAZzJ3cMuiAlF68PvRcHaQisi4UvRutBZbwLfVzfCr+qAayYB5sb
+         wBqysZLFCeRZvp25R4QdUvUddVorewKnSQx4wu4BAPTJIKROmbGRFZgVRU8hBt52WBIJ
+         1+6KpFThvBFsI/WNHPFJliQ6YRv3ON22dSfhFgt/BFtHqk2TcA8dtXSUVtthLqNZSk2o
+         QWfy9qQEIaKVREMxxGph7MFY05/NPusZ5rVxTM4pyStJcw+RizPp940OSjGO7Q6IMqWN
+         gnkQ==
+X-Gm-Message-State: AOAM533bMGLH0vFX3ezWOYbzzObK9tUYzNex6PbTBdL8I/pn1JNYDFZH
+        HtBntC/UoAcouF/+qrUjps48idwjtcFZMgaJTtN2VIM8tpRdZw==
+X-Google-Smtp-Source: ABdhPJxi7FFuqlCym4vftMNQMtrl9jHCyEoT13KqIJAecr0kh0VWMpJLAHJGSELKlqfYFog46KmlnpJtTha2Gv6FdQA=
+X-Received: by 2002:a1c:f713:: with SMTP id v19mr2763864wmh.188.1632207719791;
+ Tue, 21 Sep 2021 00:01:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1632133123.git.lucien.xin@gmail.com> <13c7b29126171310739195264d5e619b62d27f92.1632133123.git.lucien.xin@gmail.com>
+ <CAM_iQpW53DGw5bXNXot4kV3qSHf5wgD33AFU3=zz0b69mJwNkw@mail.gmail.com>
+In-Reply-To: <CAM_iQpW53DGw5bXNXot4kV3qSHf5wgD33AFU3=zz0b69mJwNkw@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 21 Sep 2021 15:01:48 +0800
+Message-ID: <CADvbK_dSw=H-pVK26tMwpdfkjd3dKGcCrATaRvXqzRwJFoKoyg@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] net: sched: drop ct for the packets toward
+ ingress only in act_mirred
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a spelling typo in ice.rst
+On Tue, Sep 21, 2021 at 2:31 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Mon, Sep 20, 2021 at 7:12 AM Xin Long <lucien.xin@gmail.com> wrote:
+> >
+> > nf_reset_ct() called in tcf_mirred_act() is supposed to drop ct for
+> > those packets that are mirred or redirected to only ingress, not
+> > ingress and egress.
+>
+> Any reason behind this? I think we at least need to reset it when
+> redirecting from ingress to egress as well? That is, when changing
+> directions?
+For the reason why ct should be reset, it's said in
+d09c548dbf3b ("net: sched: act_mirred: Reset ct info when mirror").
+The user case is OVS HWOL using TC to do NAT and then redirecting
+the NATed skb back to the ingress of one local dev, it's ingress only, this
+patch is more like to minimize the side effect of d09c548dbf3b IF there is.
 
-Signed-off-by: Masanari Iida <standby24x7@gmail.com>
----
- Documentation/networking/device_drivers/ethernet/intel/ice.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Not sure if it's too much to do for that from ingress to egress.
+What I was thinking is this should happen on rx path(ingress), like it
+does in internal_dev_recv() in the OVS kernel module. But IF there is
+any user case needing doing this for ingress to egress, I would add it.
 
-diff --git a/Documentation/networking/device_drivers/ethernet/intel/ice.rst b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
-index e7d9cbff771b..67b7a701ce9e 100644
---- a/Documentation/networking/device_drivers/ethernet/intel/ice.rst
-+++ b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
-@@ -851,7 +851,7 @@ NOTES:
- - 0x88A8 traffic will not be received unless VLAN stripping is disabled with
-   the following command::
- 
--    # ethool -K <ethX> rxvlan off
-+    # ethtool -K <ethX> rxvlan off
- 
- - 0x88A8/0x8100 double VLANs cannot be used with 0x8100 or 0x8100/0x8100 VLANS
-   configured on the same port. 0x88a8/0x8100 traffic will not be received if
--- 
-2.25.0
-
+>
+> Thanks.
