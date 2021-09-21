@@ -2,132 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FD774130E4
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 11:45:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5380413122
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 12:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbhIUJrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 05:47:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231446AbhIUJrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 05:47:15 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B97C061756
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 02:45:47 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id y28so77403554lfb.0
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 02:45:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tkxo73GWUy/uIB8IfADrAIFsQogVyvL7nJnT5aa13Qo=;
-        b=MRYLQIRGxCmSDURlQqf94WUF7867KHz9sks1FZ2i40OsVGR6+M43URUjzyD0ABOZsS
-         cKg+pDKFV6tvzhMF8tiRF3+xCxv1i56TdjFF2zmljrbmlV6Y8dto7Ht+rEHEU2FwIF/7
-         FPn1qcvAmHLiDPCHxh/JjGBF1vbF51sQQTFBzyfQsD4Vrj2AaD4cw2kHlx9/2udWeTSf
-         iTbeAznS73wlVM4Y02c0gy6HJ1ErT0wVH8DFrwKdZqwD7hW/PlRD8f/p06nemhW1O4rC
-         CGgpgmik0u553c2uJojZNtFlhO+TaMK4jLPtPWiJl3Xp1aOloazuF12ljmijq40mZkTA
-         J6Vw==
+        id S231555AbhIUKFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 06:05:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49687 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229600AbhIUKF3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 06:05:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632218641;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=i8WXelVxVEtcB236AlZ3RJ7jb6WwUywUxojDqr4AaxI=;
+        b=XKZam6FKJ+YoBcBJFKs2HkvBq6IP/5zaWuP0FG5JazXwyiHL6yRnMyqUMiUOKSju7ZszlF
+        Z6z3tYYzkJ/UAMRtchAa+lwk7+z4ABCyjn4N/5K+3WelhJBuYm/3jgVz3nIyjz/o6nzCB4
+        fbxbCr6hky+k4ZeDM3sx1h0ZKq91U8Q=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-302-ry3JADqdOzai-_WOGD3Psg-1; Tue, 21 Sep 2021 06:04:00 -0400
+X-MC-Unique: ry3JADqdOzai-_WOGD3Psg-1
+Received: by mail-ed1-f71.google.com with SMTP id n5-20020a05640206c500b003cf53f7cef2so15789672edy.12
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 03:03:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tkxo73GWUy/uIB8IfADrAIFsQogVyvL7nJnT5aa13Qo=;
-        b=rIh2sM/ffD68chD0kms+mO6JOE5hMSqrwZJIkt858GSHFtc8o9pBQUodm/X72BrrrT
-         y34eiPIemYJUgkdu0HZlJ/I5lm7pYHpzCBPu+GsPemWEnN6ovq5/dyuYQm6iUTnXl+Qd
-         Z29H3Cj7rkqq0Lvx+SnXZP33OVVFhBhe7fEMqYEkzhwKZ2PO1oei9l5aqjVuq8ATx4ZN
-         BYbyaf48QEXNpz2oixtB3ALSgpGOswZbPg+TXvwQVKc7Mb8MkYMOytahU51B64p91SHY
-         ljSrfudCShFmv1psQxkGZlM5zwJdkzp999Q5MHI/tkjeyuTjhQFXULZ6g6TwJ0KcoAPj
-         KE/Q==
-X-Gm-Message-State: AOAM532JIxFOKJGC6+QXMRwcDbnsVUgM2wwqkvFdULPDRODxzMWzoWhM
-        sZIQORQFpXcl56VxURXlNrl0Y/4CS8U=
-X-Google-Smtp-Source: ABdhPJwVjEe1jPJvOLLxxTl0TCb4E5rB0kqlQEzVIofpKA5NyL7T4DfcUR3HSXBL5v2Ay/u5OyY7EQ==
-X-Received: by 2002:a2e:131a:: with SMTP id 26mr26485770ljt.46.1632217545703;
-        Tue, 21 Sep 2021 02:45:45 -0700 (PDT)
-Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id n26sm1483939lfe.72.2021.09.21.02.45.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Sep 2021 02:45:45 -0700 (PDT)
-Subject: Re: Race between "Generic PHY" and "bcm53xx" drivers after
- -EPROBE_DEFER
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-References: <3639116e-9292-03ca-b9d9-d741118a4541@gmail.com>
- <4648f65c-4d38-dbe9-a902-783e6dfb9cbd@gmail.com>
- <20210920170348.o7u66gpwnh7bczu2@skbuf>
- <11994990-11f2-8701-f0a4-25cb35393595@gmail.com>
- <20210920174022.uc42krhj2on3afud@skbuf>
- <25e4d46a-5aaf-1d69-162c-2746559b4487@gmail.com>
- <20210920180240.tyi6v3e647rx7dkm@skbuf>
- <e010a9da-417d-e4b2-0f2f-b35f92b0812f@gmail.com>
- <20210920181727.al66xrvjmgqwyuz2@skbuf>
- <d2c7a300-656f-ffec-fb14-2b4e99f28081@gmail.com>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Message-ID: <9a9b648c-2867-bdf8-8f6b-086d459419a8@gmail.com>
-Date:   Tue, 21 Sep 2021 11:45:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=i8WXelVxVEtcB236AlZ3RJ7jb6WwUywUxojDqr4AaxI=;
+        b=QpbYE8/fHGLkn/SS/LOWxIJbjpET61RzhzpuJLtfm+6pywVSEFUu9UigKGQCYWfmYH
+         r5OnTi0Qni9nb8IX2Bp9wlZK28a9zw5DFXgi58qW3zMTIU6otoUVucrfwggsvahSSwQI
+         brYMjaDig7xo7RCH1t0vw0kS0DyQhX9/HMt2NsFqEoGsngq9pQz+K7ID0eVeFpiOxZEI
+         WhNitn/D4hPJI6YOAxMsuZZr+AX3fivLO9NuF0YN3xrQPoaXHI+ZfkvgtIra9qL7Tt87
+         aC6bGoaRcNzl7rAWfB1Gsnjl1qx/sv4jsatvgWPhNFh0Wtv1RWbHt21ZqptKLb9/FB3o
+         yd9Q==
+X-Gm-Message-State: AOAM531Eby7L0ykFCB7we7iZtaF9dkrp5z914F9MDcOCtfysld24QRmK
+        UcFU74yc70bBqejiklt+PaUA/eDZCOJVvNMHE/r8kwsKlEspmBs6wq5IdoXfiYA3hYKM1o5jsPO
+        lCU4OhCxCCx/u3e5P
+X-Received: by 2002:a50:c949:: with SMTP id p9mr35186736edh.326.1632218638629;
+        Tue, 21 Sep 2021 03:03:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxr8wPz04E9dTEncwS9JYdZz2YKXnnPGf+BcL4OmkSrX4uJABVjfdghdv+cVHBpU1MOoUQ+kg==
+X-Received: by 2002:a50:c949:: with SMTP id p9mr35186706edh.326.1632218638362;
+        Tue, 21 Sep 2021 03:03:58 -0700 (PDT)
+Received: from [10.39.193.103] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
+        by smtp.gmail.com with ESMTPSA id q6sm7091042ejm.106.2021.09.21.03.03.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 Sep 2021 03:03:57 -0700 (PDT)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer support
+Date:   Tue, 21 Sep 2021 12:03:56 +0200
+X-Mailer: MailMate (1.14r5820)
+Message-ID: <2C4CB8CA-1234-4761-8F74-49A198F94880@redhat.com>
+In-Reply-To: <87ilyu50kl.fsf@toke.dk>
+References: <cover.1631289870.git.lorenzo@kernel.org>
+ <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YUSrWiWh57Ys7UdB@lore-desk>
+ <20210917113310.4be9b586@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAADnVQL15NAqbswXedF0r2om8SOiMQE80OSjbyCA56s-B4y8zA@mail.gmail.com>
+ <20210917120053.1ec617c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAADnVQKbrkOxfNoixUx-RLJEWULJLyhqjZ=M_X2cFG_APwNyCg@mail.gmail.com>
+ <614511bc3408b_8d5120862@john-XPS-13-9370.notmuch> <8735q25ccg.fsf@toke.dk>
+ <20210920110216.4c54c9a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <87lf3r3qrn.fsf@toke.dk>
+ <20210920142542.7b451b78@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <87ilyu50kl.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <d2c7a300-656f-ffec-fb14-2b4e99f28081@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.09.2021 20:25, Florian Fainelli wrote:
-> On 9/20/21 11:17 AM, Vladimir Oltean wrote:
-> [snip]
->>> All I am saying is that there is not really any need to come up with a
->>> Device Tree-based solution since you can inspect the mdio_device and
->>> find out whether it is an Ethernet PHY or a MDIO device proper, and that
->>> ought to cover all cases that I can think of.
+
+
+On 21 Sep 2021, at 0:44, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+
+> Jakub Kicinski <kuba@kernel.org> writes:
+>
+>> On Mon, 20 Sep 2021 23:01:48 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wr=
+ote:
+>>>> In fact I don't think there is anything infra can do better for
+>>>> flushing than the prog itself:
+>>>>
+>>>> 	bool mod =3D false;
+>>>>
+>>>> 	ptr =3D bpf_header_pointer(...);
+>>>> 	...
+>>>> 	if (some_cond(...)) {
+>>>> 		change_packet(...);
+>>>> 		mod =3D true;
+>>>> 	}
+>>>> 	...
+>>>> 	if (mod)
+>>>
+>>> to have an additional check like:
+>>>
+>>> if (mod && ptr =3D=3D stack)
+>>>
+>>> (or something to that effect). No?
 >>
->> Okay, but where's the problem? I guess we're on the same page, and
->> you're saying that we should not be calling bcma_mdio_mii_register, and
->> assigning the result to bgmac->mii_bus, because that makes us call
->> bcma_phy_connect instead of bgmac_phy_connect_direct. But based on what
->> condition? Simply if bgmac->phyaddr == BGMAC_PHY_NOREGS?
-> 
-> Yes simply that condition, I really believe it ought to be enough for
-> the space these devices are in use.
+>> Good point. Do you think we should have the kernel add/inline this
+>> optimization or have the user do it explicitly.
+>
+> Hmm, good question. On the one hand it seems like an easy optimisation
+> to add, but on the other hand maybe the caller has other logic that can=
 
-I'm afraid I got lost somewhere in this discussion.
+> better know how/when to omit the check.
+>
+> Hmm, but the helper needs to check it anyway, doesn't it? At least it
+> can't just blindly memcpy() if the source and destination would be the
+> same...
+>
+>> The draft API was:
+>>
+>> void *xdp_mb_pointer_flush(struct xdp_buff *xdp_md, u32 flags,
+>>                            u32 offset, u32 len, void *stack_buf)
+>>
+>> Which does not take the ptr returned by header_pointer(), but that's
+>> easy to add (well, easy other than the fact it'd be the 6th arg).
+>
+> I guess we could play some trickery with stuffing offset/len/flags into=
 
-If we don't call bcma_mdio_mii_register() (as suggested in quoted
-e-mail) then MDIO device 0x1e won't get created and "bcm53xx"
-(b53_mdio.c) won't ever load.
+> one or two u64s to save an argument or two?
+>
+>> BTW I drafted the API this way to cater to the case where flush()
+>> is called without a prior call to header_pointer(). For when packet
+>> trailer or header is populated directly from a map value. Dunno if
+>> that's actually useful, either.
+>
+> Ah, didn't think of that; so then it really becomes a generic
+> xdp_store_bytes()-type helper? Might be useful, I suppose. Adding
+> headers is certainly a fairly common occurrence, but dunno to what
+> extent they'd be copied wholesale from a map (hadn't thought about doin=
+g
+> that before either).
 
-We need b53 to load to support the switch.
+
+Sorry for commenting late but I was busy and had to catch up on emails...=
 
 
-On 20.09.2021 19:03, Vladimir Oltean wrote:
- > On Mon, Sep 20, 2021 at 09:36:23AM -0700, Florian Fainelli wrote:
- >> Given that the MDIO node does have a compatible string which is not in
- >> the form of an Ethernet PHY's compatible string, I wonder if we can
- >> somewhat break the circular dependency using that information.
- >
- > I think you're talking about:
- >
- > of_mdiobus_register
- > -> of_mdiobus_child_is_phy
- >
- > but as mentioned, that code path should not be creating PHY devices.
+I like the idea, as these APIs are exactly what I proposed in April, http=
+s://lore.kernel.org/bpf/FD3E6E08-DE78-4FBA-96F6-646C93E88631@redhat.com/
 
-With the following patch [1] applied:
-[PATCH net-next] net: bgmac: support MDIO described in DT
-https://lore.kernel.org/linux-devicetree/20210920123441.9088-1-zajec5@gmail.com/
+I did not call it flush, as it can be used as a general function to copy =
+data to a specific location.
 
-of_mdiobus_register() finds MDIO bus child at 0x1e from:
-[PATCH 1/2] ARM: dts: BCM53573: Describe on-SoC BCM53125 rev 4 switch
-https://lore.kernel.org/linux-devicetree/20210920141024.1409-1-zajec5@gmail.com/
 
-and it calls of_mdiobus_register_device().
+//Eelco
 
-For that MDIO device kernel first tries to load "bcm53xx" (b53_mdio.c)
-which returns -EPROBE_DEFER and then kernel loads "Generic PHY".
