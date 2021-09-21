@@ -2,69 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2704130AA
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 11:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77E804130AF
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 11:21:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231390AbhIUJVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 05:21:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53494 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230508AbhIUJVf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Sep 2021 05:21:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E7FC861002;
-        Tue, 21 Sep 2021 09:20:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632216007;
-        bh=0a9/sBKXwcSvxZo/o+HOpnfFXtR7nz8zAJ+52Jf/ZIU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lp3lavSkkoRgOXakfQWiTjlXELz3u2iAla8/42QN8C/VqyVzLChI8G0swg1RtF66O
-         3Rim5hXhZdx+gKlWbdD+KegCT24Y9EEPvoZPRdvyAqqNTZNYVAoun/fI8m8sTYcfyK
-         Z5CVkb6t0dY8rrA5vOB4+NPMt077mMRIlov2YOqRNIS08JIVzqV34I9/WoTWUuH2jX
-         ymiXBjkDWsufImP+jQNbBSbfM8/75dtzRKRfVw/RqhZn3ital65Qas0p0fq2UdjVVA
-         ZXsHgcLy6cAd4vIWGQWsUPaMqMB+VJmT9mFbrBCvyOmFj11uku0xTOir4UJIMgOWHH
-         l7M4PVbVqi2CA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DC08F60A5B;
-        Tue, 21 Sep 2021 09:20:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231421AbhIUJWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 05:22:52 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:52381 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231428AbhIUJWo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 05:22:44 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1632216076; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=OMY3JiSinJsecAd6FsgSgZC/tu3ABFVOkx6GKyh9kOA=; b=NKafI2ciPcpEnsbVJSD5j0sx6O2DZWeeQvAXWhUHAKg62l04fFpROu3rmWaRJ690FSwn+S1h
+ j2h2qRt0SEXByCuiuklblSgVqwHx5EJ86reKBzJ8Zs4h0YkOx7CrUJt+nKHs5nJ+VSST9v3s
+ o4PE/2uwS6Nfr+bnS0xDaznPwhU=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 6149a3d7507800c8804db641 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 21 Sep 2021 09:20:23
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 62615C4361B; Tue, 21 Sep 2021 09:20:22 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D5C3BC4338F;
+        Tue, 21 Sep 2021 09:20:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org D5C3BC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Shawn Guo <shawn.guo@linaro.org>
+Cc:     Soeren Moch <smoch@web.de>,
+        =?utf-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel\@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-rockchip\@lists.infradead.org" 
+        <linux-rockchip@lists.infradead.org>
+Subject: Re: [BUG] Re: [PATCH] brcmfmac: use ISO3166 country code and 0 rev as fallback
+References: <20210425110200.3050-1-shawn.guo@linaro.org>
+        <cb7ac252-3356-8ef7-fcf9-eb017f5f161f@web.de>
+        <20210908010057.GB25255@dragon>
+        <100f5bef-936c-43f1-9b3e-a477a0640d84@web.de>
+        <20210909022033.GC25255@dragon>
+        <56e9a81a-4e05-cf5e-a8df-782ac75fdbe6@web.de>
+        <20210912015137.GD25255@dragon>
+Date:   Tue, 21 Sep 2021 12:20:13 +0300
+In-Reply-To: <20210912015137.GD25255@dragon> (Shawn Guo's message of "Sun, 12
+        Sep 2021 09:51:38 +0800")
+Message-ID: <87pmt2uvxu.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] net/ipv4/udp_tunnel_core.c: remove superfluous header
- files from udp_tunnel_core.c
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163221600689.26608.11644575606463934734.git-patchwork-notify@kernel.org>
-Date:   Tue, 21 Sep 2021 09:20:06 +0000
-References: <20210920122957.11264-1-liumh1@shanghaitech.edu.cn>
-In-Reply-To: <20210920122957.11264-1-liumh1@shanghaitech.edu.cn>
-To:     Mianhan Liu <liumh1@shanghaitech.edu.cn>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Shawn Guo <shawn.guo@linaro.org> writes:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+>> Is this not the usual DT policy, that missing optional properties should
+>> not prevent a device to work, that old dtbs should still work when new
+>> properties are added?
+>> 
+>> I'm not sure what's the best way forward. A plain revert of this patch
+>> would at least bring back wifi support for RockPro64 devices with
+>> existing dtbs. Maybe someone else has a better proposal how to proceed.
+>
+> Go ahead to revert if we do not hear a better solution, I would say.
 
-On Mon, 20 Sep 2021 20:29:57 +0800 you wrote:
-> udp_tunnel_core.c hasn't use any macro or function declared in udp.h, types.h,
-> and net_namespace.h. Thus, these files can be removed from udp_tunnel_core.c
-> safely without affecting the compilation of the net module.
-> 
-> Signed-off-by: Mianhan Liu <liumh1@shanghaitech.edu.cn>
-> 
-> 
-> [...]
+Yes, please do send a revert. And remember to explain the regression in
+the commit log.
 
-Here is the summary with links:
-  - [-next] net/ipv4/udp_tunnel_core.c: remove superfluous header files from udp_tunnel_core.c
-    https://git.kernel.org/netdev/net-next/c/bea714581a31
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
