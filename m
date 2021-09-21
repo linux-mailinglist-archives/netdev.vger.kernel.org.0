@@ -2,72 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68050413328
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 14:08:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F56F41335F
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 14:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231523AbhIUMKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 08:10:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52032 "EHLO vps0.lunn.ch"
+        id S232744AbhIUMcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 08:32:48 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:56605 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230508AbhIUMKG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Sep 2021 08:10:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=iCImnUfXT17o0CrqUznHCtc6sRwsT4dKLhyo05K3eJQ=; b=rgkspaPwLqX7Ui/t2xa0mmRvaF
-        RM/aUSUdueBzzt/emlHO9E4G7HukyH4A1tIhs7lQfNxo09fn2u1XDiQoObhRgv7WyXJkxWj7dzXCW
-        OAa10mimpQQdHSLpTkD3jnGIfAL9L5+k0cfKVC6V9eYarmix7ae43tiC8CSjOnBCNfJs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mSeZg-007cjQ-EC; Tue, 21 Sep 2021 14:08:36 +0200
-Date:   Tue, 21 Sep 2021 14:08:36 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Bas Vermeulen <bvermeul@blackstar.nl>
-Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com
-Subject: Re: mv88e6xxx: 88ae6321 not learning bridge mac address
-Message-ID: <YUnLRDQuxUZJQQqM@lunn.ch>
-References: <e58f4594-b73b-6681-cb2e-fa1ce56f22e1@blackstar.nl>
+        id S232674AbhIUMcr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Sep 2021 08:32:47 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1632227479; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=EvHed1ChX9m4yVKaphMHzv0lmYykdQIwXZ2pn9R/wGo=; b=Jbtzzf9szumsBQOeTZmIlLcY5LwH7IRUnmZkbk3hPFIyBCG1+2TtofCumIsVoe97/B+eiSVA
+ BJR1+LA5XMdEXguOw8MtNkwfv5tXDN4iAGVSuSajud15TZMccyencJNBrXieXKmsWI9rdksc
+ xpnBSbumu0Z1LPA7rimpdCv3dCY=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 6149d06ce0f78151d660d973 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 21 Sep 2021 12:30:36
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 5F690C4360D; Tue, 21 Sep 2021 12:30:36 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0ED48C4338F;
+        Tue, 21 Sep 2021 12:30:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 0ED48C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Srinivasan Raju <srini.raju@purelifi.com>
+Cc:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list\:NETWORKING DRIVERS \(WIRELESS\)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [EXTERNAL] Re: [PATCH] [v15] wireless: Initial driver submission for pureLiFi STA devices
+References: <20210226130810.119216-1-srini.raju@purelifi.com>
+        <20210818141343.7833-1-srini.raju@purelifi.com>
+        <87o88nwg74.fsf@codeaurora.org>
+        <CWLP265MB3217BB5AA5F102629A3AD204E0A19@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
+Date:   Tue, 21 Sep 2021 15:30:31 +0300
+In-Reply-To: <CWLP265MB3217BB5AA5F102629A3AD204E0A19@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
+        (Srinivasan Raju's message of "Tue, 21 Sep 2021 09:14:46 +0000")
+Message-ID: <87ee9iun4o.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e58f4594-b73b-6681-cb2e-fa1ce56f22e1@blackstar.nl>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 21, 2021 at 11:02:43AM +0200, Bas Vermeulen wrote:
-> Hi,
-> 
-> I am working on a custom i.MX8 board using a Marvell 88ae6321 switch. We're
-> not using the latest kernel unfortunately, but 5.4.70 with patches from NXP
-> and ourselves.
-> 
-> The switch is connected as follows:
-> 
-> CPU - fec ethernet -> 88ae6321 on port 5, with external PHYs on port 1, 2
-> and 6, and using the internal PHY on port 3 and 4.
-> 
-> We set up a bridge with swp1, swp2, swp3, swp4, and swp6. Traffic from the
-> various ports all learn correctly, with the exception of the bridge itself
-> (and probably the CPU port?).
-> 
-> If I ping the bridge address from one of the clients, the switch floods the
-> ping request to all ports.
-> If I ping a client from the bridge address, the ping request goes to that
-> client, the reply goes to all connected ports. This also happens if I use
-> iperf3 to test the bandwidth, and will limit the bandwidth available when
-> sending from the client to the lowest link on the switch.
-> 
-> Anyone have an idea how to fix this? It's possible I've misconfigured
-> something, but I'm not sure what it could be. If there is a way to teach the
-> 88ae6321 that a mac address is available on the CPU port, that would fix it,
-> for instance. I tried adding the switch mac address with bridge fdb add, but
-> that didn't work.
+Srinivasan Raju <srini.raju@purelifi.com> writes:
 
-There has been work on this area recently. Please try a modern kernel
-and see if it works. If it does, you can then decide if you want to
-backport the changes, or upgrade your kernel.
+> Thanks for reviewing the patch.
+>
+>>> +     hw->wiphy->bands[NL80211_BAND_2GHZ] = &mac->band;
+>
+>> Johannes comment about piggy-backing NL80211_BAND_2GHZ is not yet addressed:
+>
+>> I agree with Johannes, a Li-Fi driver should not claim to be a regular
+>> 2.4 GHz Wi-Fi device.
+>
+> Yes, I agree, As LiFi is not standardized yet we are using the
+> existing wireless frameworks. For now, piggy backing with 2.4GHz is
+> seamless for users. We will undertake band and other wider change once
+> IEEE 802.11bb is standardized.
 
-	 Andrew
+I don't see why the IEEE standard needs to be final before adding the
+band. Much better to add a band which is in draft stage compared to
+giving false information to the user space.
+
+BTW do not use HTML mail, our lists drop those.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
