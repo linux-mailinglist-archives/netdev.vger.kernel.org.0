@@ -2,113 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B923413836
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 19:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3C2141385C
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 19:34:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229915AbhIURYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 13:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48672 "EHLO
+        id S230466AbhIURgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 13:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbhIURX7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 13:23:59 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8E1C061575
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 10:22:31 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id h3-20020a17090a580300b0019ce70f8243so2480319pji.4
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 10:22:31 -0700 (PDT)
+        with ESMTP id S231326AbhIURdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 13:33:11 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6731C061574
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 10:31:42 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id r5so7334053edi.10
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 10:31:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6fNJZGTYbWt1FDVZnIfaIJu93NNlXsUhzn7NiJ74lnM=;
-        b=qhf+cenA+lpe9kDF+vyCnQ7c5sbyKwJTngsEimzMi/D52L22DkiigHInOtRaAPlWMf
-         cAvmCYun4TNv48GKPJymwvwTXiY9Byfbt2d1npSFRgsDiJ3OCUv3UE9BEQHtZM/Iq2tq
-         3QD1B1Gufzr1rNvgSnH2TL5wPSS/TPmWs17T+t+HAdwkBr16TJHeodCHil8Md4AcYqnf
-         bEYhFYYFKR38OctiQqfhPtkARqXQWFiDwpa+DJ/BUhPEHz6VqObhNhCT9XqlDXW+ZZUs
-         7ZclIe3+Vmw3s34X8vQwsUM9SqBeeYiJfuGbndUNKcV8FCzJMwHbPdh2Kf52RYN1GWY9
-         YPcA==
+        d=riotgames.com; s=riotgames;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=egCBE6Ndap/i6qoLfQddqiPMRtsk6XZbUrnUwtD9K90=;
+        b=b8rgGDOlssfxwzIoeHREhUk4Qq1SQjz/cSgJealYXs7G7bMMRm2wmcCK12hfbaQLbi
+         DvLNoMz9tBerBUq872rnm4NabJNTLfKGOEvHZfrUTIJsU/SZv10khczddK96DOYtqv21
+         DP1VWGknpf4/f5DkxwC/ejeT3jsFfJg/c4OuA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6fNJZGTYbWt1FDVZnIfaIJu93NNlXsUhzn7NiJ74lnM=;
-        b=AeKnSK5xUvvxU6ZYK4+USK9ieVqxdIMJPlI7UWzHK9UwhAhX0u8QHHw4OVRsrmpMke
-         j8gp5ARHovmMrI10yIabzQUo7wxhy7MRgF6LXnssX2TKEx6sbT/m+5kUVspGaOQA/a9U
-         ImCc3DNrBB+3NkdkCn9GrS8qfZiUT2eB/dJZxIROYG1BbdpBOKxOUO4o3FkON6de1JEe
-         GsnXQcyl1QSn2HWLXB51ukMPlzkw7qVwYoHCW17+rlu1VMPtDG+DwtSPf6SMYnVTrgX9
-         RZRhE/fMqkfwomcZ/TriUwOmMBXb5UnXb2Ci7rJFLV/mwzj8+KpqmdIhWnJKfGXkUyuG
-         Veag==
-X-Gm-Message-State: AOAM533MIICw3dsPyCkRNMcg7oIvU5ojdTOIW81DU819gPoO13GqJohp
-        TLuexFNfwYjLqqdlUJDSuR/ioGQds1GVew==
-X-Google-Smtp-Source: ABdhPJzETGP5tm0PmGLvSiHBVB8cgM6jbBQ6Tls2B2ii41RBnOhpxGqqKl4FY+cWU9sBt5fgtyyDrw==
-X-Received: by 2002:a17:90a:19d2:: with SMTP id 18mr6506281pjj.217.1632244950547;
-        Tue, 21 Sep 2021 10:22:30 -0700 (PDT)
-Received: from lattitude ([49.206.117.224])
-        by smtp.gmail.com with ESMTPSA id b85sm18769014pfb.0.2021.09.21.10.22.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Sep 2021 10:22:29 -0700 (PDT)
-Date:   Tue, 21 Sep 2021 22:52:04 +0530
-From:   Gokul Sivakumar <gokulkumar792@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [iproute2] concern regarding the color option usage in "bridge"
- & "tc" cmd
-Message-ID: <20210921172204.GA96823@lattitude>
-References: <20210829094953.GA59211@lattitude>
- <e1cfb620-7c87-ce63-2bb4-6e9b3df0863e@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=egCBE6Ndap/i6qoLfQddqiPMRtsk6XZbUrnUwtD9K90=;
+        b=g/NFocTKMP0jWRTbFZTQ2uk5gBN3nywaa5OPNQtzYnaWKxQS/tJipr06LhYeKcMnTP
+         z/YVFSJK5RLWRuBznR42dHaKRUuTjhMiuBL1KtcsfRpgvqkh2eCVX+L1WAln2VplJcYE
+         YPv5efpbBCaLvZPUWjsz6Ck3cqfGPsnIgux0HTg90yxQkdBzVLHfCDSJhZ65iIJBweDQ
+         DuLTeBP+4cFRTFGWa4wXG9Y1A1uLRye8/y64Tli+CexeMBRYxikk1YZLNyoIswJUbl6K
+         FUG/CWkKa/TJLM799Q+QZKvtR4ZW5s1UhbKXhgMrDQrQyBKLBweqJqJWB5eQKGnYJRFr
+         4nzA==
+X-Gm-Message-State: AOAM532GODWAC6e1a1Z2qzliY9T6bSv66l7J40rF+UnkXs5OvAAG+60M
+        4YstQ+4ACm1QVNWw7dIcIt5TPKoNNUuqdqYpxSMBQDWEtksT0DmA
+X-Google-Smtp-Source: ABdhPJzSNL5MT9GVv5s7RGXO5yBKLcNDppD1qUsjy9B3K77eX7CRVaMYFbt6yaEAhnqdBrgHko5oKGF+0XCKUHuvmT8=
+X-Received: by 2002:a50:e145:: with SMTP id i5mr22438306edl.16.1632245496241;
+ Tue, 21 Sep 2021 10:31:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e1cfb620-7c87-ce63-2bb4-6e9b3df0863e@gmail.com>
+References: <87o88l3oc4.fsf@toke.dk>
+In-Reply-To: <87o88l3oc4.fsf@toke.dk>
+From:   Zvi Effron <zeffron@riotgames.com>
+Date:   Tue, 21 Sep 2021 10:31:24 -0700
+Message-ID: <CAC1LvL1xgFMjjE+3wHH79_9rumwjNqDAS2Yg2NpSvmewHsYScA@mail.gmail.com>
+Subject: Re: Redux: Backwards compatibility for XDP multi-buff
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
+        Lorenzo Bianconi <lbianconi@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 31, 2021 at 08:41:01PM -0700, David Ahern wrote:
-> On 8/29/21 2:49 AM, Gokul Sivakumar wrote:
-> > Hi Stephen, David,
-> > 
-> > Recently I have added a commit 82149efee9 ("bridge: reorder cmd line arg parsing
-> > to let "-c" detected as "color" option") in iproute2 tree bridge.c which aligns
-> > the behaviour of the "bridge" cmd with the "bridge" man page description w.r.t
-> > the color option usage. Now I have stumbled upon a commit f38e278b8446 ("bridge:
-> > make -c match -compressvlans first instead of -color") that was added back in
-> > 2018 which says that "there are apps and network interface managers out there
-> > that are already using -c to prepresent compressed vlans".
-> > 
-> > So after finding the commit f38e278b8446, now I think the man page should have
-> > fixed instead of changing the bridge.c to align the behaviour of the "bridge" cmd
-> > with the man page. Do you think we can revert the bridge.c changes 82149efee9,
-> > so that the "bridge" cmd detects "-c" as "-compressedvlans" instead of "-color"?
-> > 
-> > If we are reverting the commit 82149efee9, then "-c" will be detected as
-> > "-compressedvlans" and I will send out a patch to change the "bridge" man page
-> > to reflect the new "bridge" cmd behaviour. If we are not reverting the commit
-> > 82149efee9, then "-c" will be detected as "-color" and I will send a out a patch
-> > to change the "bridge" cmd help menu to reflect the current "bridge" cmd behaviour.
-> > Please share your thoughts.
-> > 
-> > And also regarding the "tc" cmd, in the man/man8/tc.8 man page, the "-c" option
-> > is mentioned to be used as a shorthand option for "-color", but instead it is
-> > detected as "-conf". So here also, we need to decide between fixing the man page
-> > and fixing the "tc" cmd behaviour w.r.t to color option usage.
-> > 
-> > I understand that "matches()" gives a lot of trouble and I see that you both are
-> > now preferring full "strcmp()" over "matches()" for newly added cmd line options.
-> > 
-> 
-> 
-> Stephen: This should be reverted for 5.14 release given the change in
-> behavior. I will take a wild guess that ifupdown2 is the interface
-> manager that will notice.
+On Tue, Sep 21, 2021 at 9:06 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Hi Lorenz (Cc. the other people who participated in today's discussion)
+>
+> Following our discussion at the LPC session today, I dug up my previous
+> summary of the issue and some possible solutions[0]. Seems no on
+> actually replied last time, which is why we went with the "do nothing"
+> approach, I suppose. I'm including the full text of the original email
+> below; please take a look, and let's see if we can converge on a
+> consensus here.
+>
+> First off, a problem description: If an existing XDP program is exposed
+> to an xdp_buff that is really a multi-buffer, while it will continue to
+> run, it may end up with subtle and hard-to-debug bugs: If it's parsing
+> the packet it'll only see part of the payload and not be aware of that
+> fact, and if it's calculating the packet length, that will also only be
+> wrong (only counting the first fragment).
+>
+> So what to do about this? First of all, to do anything about it, XDP
+> programs need to be able to declare themselves "multi-buffer aware" (but
+> see point 1 below). We could try to auto-detect it in the verifier by
+> which helpers the program is using, but since existing programs could be
+> perfectly happy to just keep running, it probably needs to be something
+> the program communicates explicitly. One option is to use the
+> expected_attach_type to encode this; programs can then declare it in the
+> source by section name, or the userspace loader can set the type for
+> existing programs if needed.
+>
+> With this, the kernel will know if a given XDP program is multi-buff
+> aware and can decide what to do with that information. For this we came
+> up with basically three options:
+>
+> 1. Do nothing. This would make it up to users / sysadmins to avoid
+>    anything breaking by manually making sure to not enable multi-buffer
+>    support while loading any XDP programs that will malfunction if
+>    presented with an mb frame. This will probably break in interesting
+>    ways, but it's nice and simple from an implementation PoV. With this
+>    we don't need the declaration discussed above either.
+>
+> 2. Add a check at runtime and drop the frames if they are mb-enabled and
+>    the program doesn't understand it. This is relatively simple to
+>    implement, but it also makes for difficult-to-understand issues (why
+>    are my packets suddenly being dropped?), and it will incur runtime
+>    overhead.
+>
+> 3. Reject loading of programs that are not MB-aware when running in an
+>    MB-enabled mode. This would make things break in more obvious ways,
+>    and still allow a userspace loader to declare a program "MB-aware" to
+>    force it to run if necessary. The problem then becomes at what level
+>    to block this?
+>
 
-Thanks David.
+I think there's another potential problem with this as well: what happens t=
+o
+already loaded programs that are not MB-aware? Are they forcibly unloaded?
 
-Hi Stephen, I see that the iproute2 5.14 got released before reverting the
-commit 82149efee9. I would like to bring my concern regarding "the color
-option usage" to your notice in case if you have missed this email thread
-earlier.
+>    Doing this at the driver level is not enough: while a particular
+>    driver knows if it's running in multi-buff mode, we can't know for
+>    sure if a particular XDP program is multi-buff aware at attach time:
+>    it could be tail-calling other programs, or redirecting packets to
+>    another interface where it will be processed by a non-MB aware
+>    program.
+>
+>    So another option is to make it a global toggle: e.g., create a new
+>    sysctl to enable multi-buffer. If this is set, reject loading any XDP
+>    program that doesn't support multi-buffer mode, and if it's unset,
+>    disable multi-buffer mode in all drivers. This will make it explicit
+>    when the multi-buffer mode is used, and prevent any accidental subtle
+>    malfunction of existing XDP programs. The drawback is that it's a
+>    mode switch, so more configuration complexity.
+>
 
-Gokul
+Could we combine the last two bits here into a global toggle that doesn't
+require a sysctl? If any driver is put into multi-buffer mode, then the sys=
+tem
+switches to requiring all programs be multi-buffer? When the last multi-buf=
+fer
+enabled driver switches out of multi-buffer, remove the system-wide
+restriction?
+
+Regarding my above question, if non-MB-aware XDP programs are not forcibly
+unloaded, then a global toggle is also insufficient. An existing non-MB-awa=
+re
+XDP program would still beed to be rejected at attach time by the driver.
+
+> None of these options are ideal, of course, but I hope the above
+> explanation at least makes sense. If anyone has any better ideas (or can
+> spot any flaws in the reasoning above) please don't hesitate to let us
+> know!
+>
+> -Toke
+>
+> [0] https://lore.kernel.org/r/8735srxglb.fsf@toke.dk
+>
