@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A156641374F
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 18:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AC44413731
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 18:17:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234829AbhIUQTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 12:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
+        id S234497AbhIUQSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 12:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234508AbhIUQSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 12:18:30 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2273C061762;
-        Tue, 21 Sep 2021 09:17:00 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id h17so76523564edj.6;
-        Tue, 21 Sep 2021 09:17:00 -0700 (PDT)
+        with ESMTP id S234503AbhIUQSX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 12:18:23 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A3BC061574;
+        Tue, 21 Sep 2021 09:16:55 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id u27so4133195edi.9;
+        Tue, 21 Sep 2021 09:16:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qzSzcBiAygB368FHnqyMm4HmQ/+EU21PkgWKIufGPUI=;
-        b=N9w751/z5zSxSkpIR7c39xPDws3A/lhRJVP+XVDvwejBnoghB60u6DRTczpsQHRzlD
-         lfoeyTw1HuZ9NQAy6Sa07aJnOAa105W4jvlPXtH22OwLUqz5Pdm4bsfN/lc7nfWkS+cv
-         qGqGtIZdsbg3sWgUkoXWzvCtmL+JbpVDx9e55Eha67olftneHLq+JcfQYykxydv7Ftyw
-         tuHio+onX/zgr4WeJeHwfZGgzMHA/mAwJJryQ6ZR7u/vxWlCqyxptc5V+Jz5g667M5Wu
-         fCvbBIaCwSUGwVv6FjFE7JeUci7v9Qjgu1Fs3gC//ughBOf3p+oyKHE6m/SWsjURZ/Qj
-         eZcA==
+        bh=SFcfoPPel7lTojPt9vUi/iKxjORTRUrzm14vPDBAPlA=;
+        b=okRVqlfk3og9Jtrd65RJID0/aJeYAm8Va0Lr+okgjWMwqTXGx8DVjyHOHkK+b/NiQP
+         q5APFtRbieLYz9xoXUUMkS3abJcj87JDvZ3CQwQF0dUHW3h978iey/xnsoSjfkHFIu1q
+         qCvEreqfh2tG9hwJEelcHFLg11U6WS1xDD5v4UBkbJ0VU4zSPYrql+J8W8Y6JPFNX7wq
+         uQJsPkD8nb9TfyLK7HjKh6LFSY0NnNJkzlzSYbuaHDMGR8f2vo1r/bsUwmpDkoi9fYla
+         MzQvdCiF69MeXRU4RMWIt+P3Gdb5rfgCHot7/VfCJqKs9Hig/A/ZawmpbjumbQcUHRiN
+         im3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qzSzcBiAygB368FHnqyMm4HmQ/+EU21PkgWKIufGPUI=;
-        b=KcqY9ifKXvH+oJY2SIJnaj1MlmoEs4hkV3KD5uo96PONXBHcCHwBP++Pe2RuFZcM61
-         FYVH2PQWqda5t3wQqIji4Lmw20N0I1PpTE9x+9K+Yown24gJjWx7PRDQCKe428X49mjj
-         IrpDw3jJWmYOIqKz019jk3YgUh5R6U1P3jP7GQClIECJ6NiS/+4nTcFyhmZ3HrPeGK7p
-         Rme2R3ysAusCpI85Cqwi6oEgPOwovtWVJwXXT8YRNY0V0sN+iKfbUGZZJFGF51BoeSNz
-         kBrZ+ULF2GJCSg/tt373cc3e8yCQUxLyvrIqbUZUhZjMVE87Wnyrh9FFB/x7MkSzWSxD
-         C1wg==
-X-Gm-Message-State: AOAM532XuQyvuVHWW036H6rYhNS1DWwgqz8saN1a5A6YsyAhKDVeIZ61
-        8FSf3IMSD8Djv9qAu7NmeQ4=
-X-Google-Smtp-Source: ABdhPJxQRtR6CUvuGguGGsL9kDkUgBeyz49aPVCISKh47OYKF0j0wGgG/BgifNGX1gZNQjKywCqMjQ==
-X-Received: by 2002:a17:906:7802:: with SMTP id u2mr35684454ejm.325.1632240944668;
-        Tue, 21 Sep 2021 09:15:44 -0700 (PDT)
+        bh=SFcfoPPel7lTojPt9vUi/iKxjORTRUrzm14vPDBAPlA=;
+        b=mXM9DdlnZm2wIa8N+hgnv/WD5jXEtPBQjs5Nw2JyEH7YmHA4Vd9v7K8ynt0PIy30jF
+         V+N5IvhOdoU4K6xSboozKvdxpR9I0+Rm932uURqF68R9kHx8xOl/ZMdXwiqhA3Nm/uZZ
+         SH+5S/FGKxmwA0Fw1DxAsmnrvd+8WhIj6MEgG1/+mFb4jAOaABtBv7QQsnypRC07CGCA
+         ldv50n0K+YH27z4eQqRwztGeb0sqbapkiON4NBFo+d3rq5hBdf8ZD+Z6lYb5eANpNkuD
+         0khE60BpLeYB2zC07Zo1YS3ylCH/zBZpVfNGSdcJ4CwsfrB5WD0mqvbdhYcDzoFO/cZb
+         Qlxg==
+X-Gm-Message-State: AOAM532vG+c/Z9uQo0H3NpOgn4svNJvyG54ww3dIRkAAFlB/ZqE6223s
+        Uy+re3ExF28cd01J60vILnY=
+X-Google-Smtp-Source: ABdhPJyFtJiRAGfWkAT2Olxg6++rMn+qLhemQeDmBPRpx4WcxDa3mjb5C0+/K4EraLJEu6/zZF8dkg==
+X-Received: by 2002:a17:907:760d:: with SMTP id jx13mr33129121ejc.194.1632240946508;
+        Tue, 21 Sep 2021 09:15:46 -0700 (PDT)
 Received: from pinky.lan ([2a04:241e:502:1df0:b065:9bdf:4016:277])
-        by smtp.gmail.com with ESMTPSA id kx17sm7674075ejc.51.2021.09.21.09.15.42
+        by smtp.gmail.com with ESMTPSA id kx17sm7674075ejc.51.2021.09.21.09.15.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Sep 2021 09:15:44 -0700 (PDT)
+        Tue, 21 Sep 2021 09:15:46 -0700 (PDT)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     Dmitry Safonov <0x7f454c46@gmail.com>,
         David Ahern <dsahern@kernel.org>, Shuah Khan <shuah@kernel.org>
@@ -65,9 +65,9 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Menglong Dong <dong.menglong@zte.com.cn>,
         netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 16/19] selftests: Initial tcp_authopt support for fcnal-test
-Date:   Tue, 21 Sep 2021 19:14:59 +0300
-Message-Id: <694da73ec4367c97cbaf9c17eec0db4edfe25c48.1632240523.git.cdleonard@gmail.com>
+Subject: [PATCH 17/19] selftests: Add -t tcp_authopt option for fcnal-test.sh
+Date:   Tue, 21 Sep 2021 19:15:00 +0300
+Message-Id: <c52733a1cd9a7bd16aea0b6e056fad9dd1cc5aed.1632240523.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1632240523.git.cdleonard@gmail.com>
 References: <cover.1632240523.git.cdleonard@gmail.com>
@@ -77,62 +77,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just test that a correct password is passed or otherwise a timeout is
-obtained.
+This script is otherwise very slow to run!
 
 Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ tools/testing/selftests/net/fcnal-test.sh | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 13350cd5c8ac..74a7580b6bde 100755
+index 74a7580b6bde..484734db708f 100755
 --- a/tools/testing/selftests/net/fcnal-test.sh
 +++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -791,10 +791,31 @@ ipv4_ping()
+@@ -1331,10 +1331,21 @@ ipv4_tcp()
+ 	log_subsection "With VRF"
+ 	setup "yes"
+ 	ipv4_tcp_vrf
  }
  
- ################################################################################
- # IPv4 TCP
- 
-+#
-+# TCP Authentication Option Tests
-+#
-+ipv4_tcp_authopt()
-+{
-+	# basic use case
-+	log_start
-+	run_cmd nettest -s -A ${MD5_PW} &
-+	sleep 1
-+	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_PW}
-+	log_test $? 0 "AO: Simple password"
 +
-+	# wrong password
-+	log_start
-+	show_hint "Should timeout since client uses wrong password"
-+	run_cmd nettest -s -A ${MD5_PW} &
-+	sleep 1
-+	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_WRONG_PW}
-+	log_test $? 2 "AO: Client uses wrong password"
++only_tcp_authopt()
++{
++	log_section "TCP Authentication"
++	setup
++	set_sysctl net.ipv4.tcp_l3mdev_accept=0
++	log_subsection "IPv4 no VRF"
++	ipv4_tcp_authopt
 +}
 +
- #
- # MD5 tests without VRF
- #
- ipv4_tcp_md5_novrf()
- {
-@@ -1122,10 +1143,11 @@ ipv4_tcp_novrf()
- 	show_hint "Should fail 'Connection refused'"
- 	run_cmd nettest -d ${NSA_DEV} -r ${a}
- 	log_test_addr ${a} $? 1 "No server, device client, local conn"
++
+ ################################################################################
+ # IPv4 UDP
  
- 	ipv4_tcp_md5_novrf
-+	ipv4_tcp_authopt
- }
- 
- ipv4_tcp_vrf()
+ ipv4_udp_novrf()
  {
- 	local a
+@@ -4021,10 +4032,11 @@ do
+ 	ipv6_bind|bind6) ipv6_addr_bind;;
+ 	ipv6_runtime)    ipv6_runtime;;
+ 	ipv6_netfilter)  ipv6_netfilter;;
+ 
+ 	use_cases)       use_cases;;
++	tcp_authopt)     only_tcp_authopt;;
+ 
+ 	# setup namespaces and config, but do not run any tests
+ 	setup)		 setup; exit 0;;
+ 	vrf_setup)	 setup "yes"; exit 0;;
+ 
 -- 
 2.25.1
 
