@@ -2,143 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E7B412BDE
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 04:38:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B673412D61
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 05:24:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351273AbhIUCja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Sep 2021 22:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43160 "EHLO
+        id S232194AbhIUD0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Sep 2021 23:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242050AbhIUCh3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:37:29 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8960AC061366;
-        Mon, 20 Sep 2021 18:48:54 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id q11so34645922wrr.9;
-        Mon, 20 Sep 2021 18:48:54 -0700 (PDT)
+        with ESMTP id S1351595AbhIUCkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Sep 2021 22:40:04 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A501C08E935;
+        Mon, 20 Sep 2021 19:16:25 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id r2so19283507pgl.10;
+        Mon, 20 Sep 2021 19:16:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XsbOPmeOKB/570fbfbzFbflSwEFMGZGM2JzXwh8J1SQ=;
-        b=pssQgPnotXBLiLGXJUuGMURrg1xKMcKmrpCXmtAcY2GYBOzsCuKP+xX11XK2r2aiLT
-         MjV2jXi6JjNruUvbh7FQaHBmXMfJKoxj/JTGPltimWzKuR5aJRVPYMH28yXgvjuFKwKO
-         lml2O1C26GGPYHORcYSoIqEUYkKG+2Dw50rUyyv7e7/O9sNvtgrlXdBB041iTPl+sZFl
-         hQ+O1qQnZBmGHa7XiXrJXv1uQ7f6Z99qqJa8eZSqHk6aE/C9XC9RACMVoPwSv0qZ9CVl
-         SJD3uZGlreym4GSclGdAmG/R+qNc9beDSzHcX4zP32TCqC+rJ9O06qp0NaYw3tR4BoPN
-         fizg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gEQUmF5qAOUpNTdIXxk8/9tLYK1uPImf5fKr1IDf3wE=;
+        b=dH71tSrltEBunSDXVlVaU3sPJQ4lHi6n+2yF3QjOwBDKUzoF7Jx6HB4peLJNylBGZ4
+         6fwkElgfomgWmhSd48/TOlahdYZND3eC9W3qEko1I55O9Xc0Mh9bCBGyus6Rgon4TEFI
+         cPC+JJlQgpe7uaow4flJcD0FcyPRngvJMjF07a2VShhdRmbsBqZosVzDhjWweBpTbcJz
+         TuAM802/bo5an0K6xx6KKjwnjW5bMwJC7oinbh0Xanq/HRYJSTRJA6diz+kF1QkcSGU5
+         bSE+UdOkrOir2Nc+lgKyZ7B0/iK2L7mZnaQpS6FlO2fSk/5g8X33iVlHdtNtvwPsPOiv
+         WQdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XsbOPmeOKB/570fbfbzFbflSwEFMGZGM2JzXwh8J1SQ=;
-        b=dNyLeKNtJcmufAAXLzdObSR28da2lClG9iSFlXq7cLFDXX3WE7QrxbMPU0EVjf4Oi5
-         MoDHYImSsdcSKHHvxuefE46iZLZ7YAknGQ/elUPi6oAWMaMN6P+/Nhf6iFSnrVW3b4jk
-         anmmwoblnAg5kR4qMfXNbYI904/7JeesAjE2UYc030Tk7yn2JuOMRUY9ggN8RqTgIJrf
-         sJTEcm9d/bvaIKfjQWUGeWemYoSjyXvGVSejsMaJuUz6tFQKdB0uw7zbcwDZpePoyuu+
-         J5JT7Zs7B0bcQrErAOZKcAkJuAKQ4T3CYMONRzle0D/wAERzQyfMlc9LOidtF1yUBpDe
-         ELYw==
-X-Gm-Message-State: AOAM5310dsiUCJ2g7BsO3ln3ta5nTpy6S/2cIVldA3WiGKWZAolsmXHI
-        7RQy/I7+FwxUQvcZf2tJves8/3kX1XuyONyEE7o=
-X-Google-Smtp-Source: ABdhPJwY/pTvSi440fBtEY6yKwYEz81tNiEbE21xK0cTxa5Gyw8yPp6zppGev3v5wMUQOilFGAoPhpOa/lHkhMwxf1o=
-X-Received: by 2002:a5d:5610:: with SMTP id l16mr32093271wrv.102.1632188933081;
- Mon, 20 Sep 2021 18:48:53 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gEQUmF5qAOUpNTdIXxk8/9tLYK1uPImf5fKr1IDf3wE=;
+        b=OJHBRr6JLXh+38fosNShgZPtJGjZ6gPO0mHZOCaaItJw7D3c04m4SaoFiqXTHbwwH9
+         4PgXYNYO3u6DKkGxmTkJKbOrpEn56XaW3iN/mTMEIbldcMA4fdd3HAVeRjojTVvCQPfO
+         Cl6y3waad+j2k/rYP1iJUS5vVPv7GW9zKTP9K0P7YyvDETOxkORfoGWSdotff2RxqrqL
+         G6DHsrCBWqxFO9zh/jkONb7Ngv0UX5uofBr2me25bkfUYSH36vNu35Ky3xyv8fVJgjtP
+         vfAy2salKo3PAlhe6ZKi413NCslLQm10hfSmXxyPATDVvakEV6UakhdJPHKqPsX6cKCQ
+         mT2w==
+X-Gm-Message-State: AOAM531HmyGRqAelcVyT2THggiAZz3d9BBJvOW+kW0WRe66Zj6kZBRKV
+        HCEU4V5p3X+U1g9mK45hzYo=
+X-Google-Smtp-Source: ABdhPJwnjvH24pjyfzqJg0BEyKsBsGTpNfTMz2JSfhhUmz9D38nJnvCvThJdrs3xEgf+qu1l5tIDBQ==
+X-Received: by 2002:a63:2047:: with SMTP id r7mr25616446pgm.398.1632190584450;
+        Mon, 20 Sep 2021 19:16:24 -0700 (PDT)
+Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id n15sm624615pjj.36.2021.09.20.19.16.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Sep 2021 19:16:23 -0700 (PDT)
+Message-ID: <4c552594-5923-ba55-af2f-8a0f86936fca@gmail.com>
+Date:   Mon, 20 Sep 2021 19:16:15 -0700
 MIME-Version: 1.0
-References: <20210920174713.4998-1-l4stpr0gr4m@gmail.com> <20210920135027.5ec63a05@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210920135027.5ec63a05@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Kangmin Park <l4stpr0gr4m@gmail.com>
-Date:   Tue, 21 Sep 2021 10:48:40 +0900
-Message-ID: <CAKW4uUxperg41z8Lu5QYsS-YEGt1anuD1CuiUqXC0ANFqJBosQ@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next] Introducing lockless cache built on top of
- slab allocator
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.1
+Subject: Re: [PATCH net 1/2] net: dsa: don't allocate the slave_mii_bus using
+ devres
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+References: <20210920214209.1733768-1-vladimir.oltean@nxp.com>
+ <20210920214209.1733768-2-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20210920214209.1733768-2-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021=EB=85=84 9=EC=9B=94 21=EC=9D=BC (=ED=99=94) =EC=98=A4=EC=A0=84 5:50, J=
-akub Kicinski <kuba@kernel.org>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
->
-> On Tue, 21 Sep 2021 02:47:13 +0900 Kangmin Park wrote:
-> > It is just introducing and proof of concept.
-> > The patch code is based on other RFC patches. So, the code is not
-> > correct yet, it is just simple proof of concept.
-> >
-> > Recently block layer implemented percpu, lockless cache on the top
-> > of slab allocator. It can be used for IO polling.
-> >
-> > Link: https://lwn.net/Articles/868070/
-> > Link: https://www.spinics.net/lists/linux-block/msg71964.html
-> >
-> > It gained some IOPS increase (performance increased by about 10%
-> > on the block layer).
-> >
-> > And there are attempts to implement the percpu, lockless cache.
-> >
-> > Link: https://lore.kernel.org/linux-mm/20210920154816.31832-1-42.hyeyoo=
-@gmail.com/T/#u
-> >
-> > If this cache is implemented successfully,
-> > how about use this cache to allocate skb instead of kmem_cache_alloc_bu=
-lk()
-> > in napi_skb_cache_get()?
-> >
-> > I want your comment/opinion.
->
-> Please take a look at skb cache in struct napi_alloc_cache.
-> That should be your target here.
->
 
-Oh, thanks for the advice.
-I'll send you a v2 patch to replace/improve napi_alloc_cache
-when progress is made in implementing the lockless cache.
 
-Best Regards,
-Kangmin Park
+On 9/20/2021 2:42 PM, Vladimir Oltean wrote:
+> The Linux device model permits both the ->shutdown and ->remove driver
+> methods to get called during a shutdown procedure. Example: a DSA switch
+> which sits on an SPI bus, and the SPI bus driver calls this on its
+> ->shutdown method:
+> 
+> spi_unregister_controller
+> -> device_for_each_child(&ctlr->dev, NULL, __unregister);
+>     -> spi_unregister_device(to_spi_device(dev));
+>        -> device_del(&spi->dev);
+> 
+> So this is a simple pattern which can theoretically appear on any bus,
+> although the only other buses on which I've been able to find it are
+> I2C:
+> 
+> i2c_del_adapter
+> -> device_for_each_child(&adap->dev, NULL, __unregister_client);
+>     -> i2c_unregister_device(client);
+>        -> device_unregister(&client->dev);
+> 
+> The implication of this pattern is that devices on these buses can be
+> unregistered after having been shut down. The drivers for these devices
+> might choose to return early either from ->remove or ->shutdown if the
+> other callback has already run once, and they might choose that the
+> ->shutdown method should only perform a subset of the teardown done by
+> ->remove (to avoid unnecessary delays when rebooting).
+> 
+> So in other words, the device driver may choose on ->remove to not
+> do anything (therefore to not unregister an MDIO bus it has registered
+> on ->probe), because this ->remove is actually triggered by the
+> device_shutdown path, and its ->shutdown method has already run and done
+> the minimally required cleanup.
+> 
+> This used to be fine until the blamed commit, but now, the following
+> BUG_ON triggers:
+> 
+> void mdiobus_free(struct mii_bus *bus)
+> {
+> 	/* For compatibility with error handling in drivers. */
+> 	if (bus->state == MDIOBUS_ALLOCATED) {
+> 		kfree(bus);
+> 		return;
+> 	}
+> 
+> 	BUG_ON(bus->state != MDIOBUS_UNREGISTERED);
+> 	bus->state = MDIOBUS_RELEASED;
+> 
+> 	put_device(&bus->dev);
+> }
+> 
+> In other words, there is an attempt to free an MDIO bus which was not
+> unregistered. The attempt to free it comes from the devres release
+> callbacks of the SPI device, which are executed after the device is
+> unregistered.
+> 
+> I'm not saying that the fact that MDIO buses allocated using devres
+> would automatically get unregistered wasn't strange. I'm just saying
+> that the commit didn't care about auditing existing call paths in the
+> kernel, and now, the following code sequences are potentially buggy:
+> 
+> (a) devm_mdiobus_alloc followed by plain mdiobus_register, for a device
+>      located on a bus that unregisters its children on shutdown. After
+>      the blamed patch, either both the alloc and the register should use
+>      devres, or none should.
+> 
+> (b) devm_mdiobus_alloc followed by plain mdiobus_register, and then no
+>      mdiobus_unregister at all in the remove path. After the blamed
+>      patch, nobody unregisters the MDIO bus anymore, so this is even more
+>      buggy than the previous case which needs a specific bus
+>      configuration to be seen, this one is an unconditional bug.
+> 
+> In this case, DSA falls into category (a), it tries to be helpful and
+> registers an MDIO bus on behalf of the switch, which might be on such a
+> bus. I've no idea why it does it under devres.
+> 
+> It does this on probe:
+> 
+> 	if (!ds->slave_mii_bus && ds->ops->phy_read)
+> 		alloc and register mdio bus
+> 
+> and this on remove:
+> 
+> 	if (ds->slave_mii_bus && ds->ops->phy_read)
+> 		unregister mdio bus
+> 
+> I _could_ imagine using devres because the condition used on remove is
+> different than the condition used on probe. So strictly speaking, DSA
+> cannot determine whether the ds->slave_mii_bus it sees on remove is the
+> ds->slave_mii_bus that _it_ has allocated on probe. Using devres would
+> have solved that problem. But nonetheless, the existing code already
+> proceeds to unregister the MDIO bus, even though it might be
+> unregistering an MDIO bus it has never registered. So I can only guess
+> that no driver that implements ds->ops->phy_read also allocates and
+> registers ds->slave_mii_bus itself.
+> 
+> So in that case, if unregistering is fine, freeing must be fine too.
+> 
+> Stop using devres and free the MDIO bus manually. This will make devres
+> stop attempting to free a still registered MDIO bus on ->shutdown.
+> 
+> Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+> Reported-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> > Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
-> > ---
-> >  net/core/skbuff.c | 14 +++++++++-----
-> >  1 file changed, 9 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index 7c2ab27fcbf9..f9a9deca423d 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -170,11 +170,15 @@ static struct sk_buff *napi_skb_cache_get(void)
-> >       struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
-> >       struct sk_buff *skb;
-> >
-> > -     if (unlikely(!nc->skb_count))
-> > -             nc->skb_count =3D kmem_cache_alloc_bulk(skbuff_head_cache=
-,
-> > -                                                   GFP_ATOMIC,
-> > -                                                   NAPI_SKB_CACHE_BULK=
-,
-> > -                                                   nc->skb_cache);
-> > +     if (unlikely(!nc->skb_count)) {
-> > +             /* kmem_cache_alloc_cached should be changed to return th=
-e size of
-> > +              * the allocated cache
-> > +              */
-> > +             nc->skb_cache =3D kmem_cache_alloc_cached(skbuff_head_cac=
-he,
-> > +                                                     GFP_ATOMIC | SLB_=
-LOCKLESS_CACHE);
-> > +             nc->skb_count =3D this_cpu_ptr(skbuff_head_cache)->size;
-> > +     }
-> > +
-> >       if (unlikely(!nc->skb_count))
-> >               return NULL;
-> >
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
