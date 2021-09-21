@@ -2,84 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DBBB413784
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 18:23:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E331413798
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 18:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233796AbhIUQYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 12:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233587AbhIUQYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 12:24:42 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4F7C061574
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 09:23:13 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id x27so83553957lfu.5
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 09:23:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=uGB3KIWuUU5+UMhmxjUiQs+FGymSex7dUZpVcp4T9dw=;
-        b=Bm1nRp21JyJReP1yYlxUgMG25ALeM66YI75gB0J79CC1/LkBaEYPn5GboYdTp2+8O6
-         l3V+kkTUQ++qJPJx+n418dXu/OyorhyEGaTAIt0J3e7hk+q7gnVz3HA8Dr5OuOjgQWc2
-         cx073pHVSY+BSKqpb/ytvZQRPksBCgnpeRRojL8Yq9aA3EroFA9nj966+8FoJo+mcffI
-         ZsNKlICnlaA9wwmcBxxzX7+rMmooJoggwzu90+NA+pYEfjxGy0JO2MycIpzqiHm37uht
-         CN4bX0alHqojNa+kKMDloU8pPe2HtmuFZRuJbOpjcal88HwJ5+RImVWr5IGteHJNL2wx
-         ab9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=uGB3KIWuUU5+UMhmxjUiQs+FGymSex7dUZpVcp4T9dw=;
-        b=zeMD3nCarR6/SP6jYzDQAED+i/ohFhtlIg0CAMcbO0YlLHDAAGiZFkKpjmu6t3Hq5y
-         GJqG4xLJY8Fv7pqbB0oDShRmvzQ4LLI4cCCrua7nnHaT8Qengwjo+rEC3GhYQvSezqwy
-         8Zw6XYcgmuJloKLZrfjqGKov3ucr6V9+bkloiJSWVCxe0Y8KvB7wK4tnjv82XT/QdJlV
-         AiVzlvGhNnPMCxg9JyMmFJ7dwGsUrZLehF09lGnrw5tsYlv8MNR+VPgpya1z2X7VNtsS
-         VSwZMe9qpwWEzB5clgJvylyDQ5Cof5AiDiN5UEAOoVwuJYmYpmszoCWk3HDppAjkUxL0
-         KnWw==
-X-Gm-Message-State: AOAM532aHnSL9ycNPyKwP8GAn7jEZNTrsd6fLGDqNAsVaQfXPu1ZZd0J
-        gMw2R/QI+XL0h8a0U//Spbn1NXUW9JpISr6bOGI23Q==
-X-Google-Smtp-Source: ABdhPJzKaepZfzeZo+OmR86T4T1kRGRS8Fl4K7TWvr5VSuyb/bkqERay8zcuxyXKtRA4wwTwhqTm3YxYntrkQhU0Z/4=
-X-Received: by 2002:a2e:4c19:: with SMTP id z25mr22499331lja.145.1632241388707;
- Tue, 21 Sep 2021 09:23:08 -0700 (PDT)
+        id S229507AbhIUQdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 12:33:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:42133 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229448AbhIUQde (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 12:33:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632241925;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4FzVI0NgAL+4GbDA10ag57a7YP2ulK19sMtingEyh9g=;
+        b=Nm+58HzWrrRMyaQJSAwlJpxBhF77xOUHLzaH7Citw9kiF/6fv9bCR/jOOomJlWYrymDa+g
+        e492q5u9w5YCi4XUmkUzer/Lu3rkFmH+5RzyIk9jViuTOaNJMX10l2qd+amw6ajiXhkzhN
+        yU+S8fiRWlAMGfq56b1wWNNFxKl9R28=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-470-DStJG2FmOzm3kPvqT-wuMg-1; Tue, 21 Sep 2021 12:32:04 -0400
+X-MC-Unique: DStJG2FmOzm3kPvqT-wuMg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CED9A9126F;
+        Tue, 21 Sep 2021 16:32:02 +0000 (UTC)
+Received: from localhost (unknown [10.40.194.136])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4C16A6D985;
+        Tue, 21 Sep 2021 16:32:01 +0000 (UTC)
+Date:   Tue, 21 Sep 2021 18:31:59 +0200
+From:   Jiri Benc <jbenc@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        William Tu <u9012063@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next] seltests: bpf: test_tunnel: use ip neigh
+Message-ID: <20210921183159.596a2662@redhat.com>
+In-Reply-To: <2f9554d2-c9c7-5c37-7df0-d011d80d7460@gmail.com>
+References: <40f24b9d3f0f53b5c44471b452f9a11f4d13b7af.1632236133.git.jbenc@redhat.com>
+        <2f9554d2-c9c7-5c37-7df0-d011d80d7460@gmail.com>
 MIME-Version: 1.0
-References: <20210920214209.1733768-1-vladimir.oltean@nxp.com> <20210920214209.1733768-3-vladimir.oltean@nxp.com>
-In-Reply-To: <20210920214209.1733768-3-vladimir.oltean@nxp.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 21 Sep 2021 18:22:57 +0200
-Message-ID: <CACRpkdZ085p_qUOXUGiA5jru8fsj-ZqbEFtANGvaO-=FevktDA@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] net: dsa: realtek: register the MDIO bus under devres
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 20, 2021 at 11:42 PM Vladimir Oltean
-<vladimir.oltean@nxp.com> wrote:
+On Tue, 21 Sep 2021 09:23:06 -0600, David Ahern wrote:
+> I realize you are just following suit with this change, but ip can
+> change namespaces internally:
+> 
+> ip -netns at_ns0 neigh add 10.1.1.200 lladdr 52:54:00:d9:02:00 dev $DEV_NS
+> 
+> All of the 'ip netns exec ... ip ...' commands can be simplified.
 
-> Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_regist=
-er()")
-> Reported-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-> Reported-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+I know and I don't like the superfluous exec, either. But that's
+something for a different patch. As you said, I'm just following what's
+already there. There's ton of different stuff that can be cleaned up in
+this and other selftests, unfortunately.
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+ Jiri
 
-Yours,
-Linus Walleij
