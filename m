@@ -2,57 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC10D4132B7
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 13:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59F3E413306
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 13:58:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232374AbhIULlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 07:41:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51216 "EHLO mail.kernel.org"
+        id S232503AbhIUMAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 08:00:09 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51992 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232115AbhIULls (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Sep 2021 07:41:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D96736115A;
-        Tue, 21 Sep 2021 11:40:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632224420;
-        bh=U5CruyhS2HsZTpcTta2Z+/TfdC5ERxNSC/UJutHMLK4=;
-        h=In-Reply-To:References:Subject:Cc:To:From:Date:From;
-        b=AbvFzTvvkLTF81FJPLjWj0NigTb2stzKcwGO5Qug/ufdbSaLkXsUmreoZhdFc59YD
-         IRROiY6JFOlovOjGO2zvtTSK+3sqPKQ5sUHlLyT0/q8xx8BdESItTHRjvXgE+vW44X
-         PSv43HKBLhIPozrhHbVO0vrj5LDnCTSmHDsSgCVTXy//PR+Zz3ow5s8x+fvOQV5guW
-         GWuOvZp0NaeuJtSZu1FcSR1RK+jG4zkZ3n0teM5x8qLatjv10JrVbYKIjy2F1koKIF
-         SRTjoqjOSQcJurNdCPdq16406x0Jhwv0aseJJZkY9en9yfkqy47g3tBHNr1tjgG2/O
-         LE9tuD7MORq1w==
-Content-Type: text/plain; charset="utf-8"
+        id S231778AbhIUMAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Sep 2021 08:00:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=dLUlmsxFMiY2KzC0hGB1G/U8+5+iNP4GLzXqVcqKqZ0=; b=LiqIYBHKDmeo8Q5povwZGOdALH
+        7dW6J1YHU7y/NYRS97lVV/A3NrI1Vm5vCqVgEmfQpyI/7tKfXgjzeNwUy1S1yYCRiRISq0694iBSa
+        79OiY6alYUtH/Hnopgf0RPqevenl7Gt+coUCPGGWJoexMA8VSDtEwNV50iMTxsl1TnOM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mSePs-007ce4-Bm; Tue, 21 Sep 2021 13:58:28 +0200
+Date:   Tue, 21 Sep 2021 13:58:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH net 1/2] net: dsa: don't allocate the slave_mii_bus using
+ devres
+Message-ID: <YUnI5JnKHLW05/Ux@lunn.ch>
+References: <20210920214209.1733768-1-vladimir.oltean@nxp.com>
+ <20210920214209.1733768-2-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAAxCcbsBTey=tSznn55BanA2H5PXitgfuC8DFg543nYjT0-igQ@mail.gmail.com>
-References: <20210920153454.433252-1-atenart@kernel.org> <b3bee3ec-72c0-0cbf-d1ce-65796907812f@gmail.com> <CAAxCcbsrjvp=vP_0Nz+pYCVMDWSxnDAjdVXWYczNZfaAtc6kZw@mail.gmail.com> <CAAxCcbsBTey=tSznn55BanA2H5PXitgfuC8DFg543nYjT0-igQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] openvswitch: allow linking a VRF to an OVS bridge
-Cc:     davem@davemloft.net, kuba@kernel.org, pshelar@ovn.org,
-        dsahern@kernel.org, dev@openvswitch.org, netdev@vger.kernel.org,
-        Eelco Chaudron <echaudro@redhat.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Luis Tomas Bolivar <ltomasbo@redhat.com>
-From:   Antoine Tenart <atenart@kernel.org>
-Message-ID: <163222441764.4283.10232352821657503551@kwain>
-Date:   Tue, 21 Sep 2021 13:40:17 +0200
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210920214209.1733768-2-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> I _could_ imagine using devres because the condition used on remove is
+> different than the condition used on probe. So strictly speaking, DSA
+> cannot determine whether the ds->slave_mii_bus it sees on remove is the
+> ds->slave_mii_bus that _it_ has allocated on probe. Using devres would
+> have solved that problem. But nonetheless, the existing code already
+> proceeds to unregister the MDIO bus, even though it might be
+> unregistering an MDIO bus it has never registered. So I can only guess
+> that no driver that implements ds->ops->phy_read also allocates and
+> registers ds->slave_mii_bus itself.
 
-Quoting Luis Tomas Bolivar (2021-09-21 13:20:08)
->=20
-> Follow up on this. I found the mistake I was making on the veth-pair
-> addition configuration (ovs flow was setting the wrong mac address
-> before sending the traffic through the veth device to the vrf). And it
-> indeed works connecting the VRF to the OVS bridge by using a veth pair
-> instead of directly plugin the VRF device as an OVS port.
+That should not happen. It should be either/or.
 
-Great! This means there is no need for this patch I believe, OVS bridge
-is not different in the end.
+But there is no enforcement of that.
 
-Thanks,
-Antoine
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
