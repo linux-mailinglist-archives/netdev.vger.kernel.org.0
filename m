@@ -2,82 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1307E413203
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 12:56:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D32C6413271
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 13:20:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232192AbhIUK5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 06:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231956AbhIUK5f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 06:57:35 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B415C061574;
-        Tue, 21 Sep 2021 03:56:07 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id t4so13126079plo.0;
-        Tue, 21 Sep 2021 03:56:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=y7LURbSsGsDLVF+thUJ2ISGPY7TGQ+JWR2GJD3gQl74=;
-        b=Zn+V9OroQ+EvS2kYx+2MQAXc1/lL+8Nh/fK2eyp67nOYVbL6w7j5TDZjaRU3Ys9fZ2
-         nySpBS+1drMi7MiROt1+cLz95IAl6+UGcwByaqw+G0AmUA0jFOmPKUp9PfEH7MvJePgt
-         rHOEuphF9qvBfkSeA6/CcoUbSPLtM6+F9jianHTHSyAKHJwtzFhUEHrNWNg1uddkr02k
-         Xbj/8O5nx+qfHfiuf7hKe+MjKDSWOJFF1dvHjIWffPgQm5pRQzuBKA4PsbAN39zSQYpg
-         OuGKUGEkeq8mNB/7vXUE361/tCV5qCWO/l4aNU/HfdmoAA6Z6JbmkZ3J8Kr1Q3oPPKQ7
-         xU/A==
+        id S232372AbhIULVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 07:21:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21044 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232229AbhIULVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 07:21:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632223221;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wlp4l6KsMSE4UIALBbO+kUAmjYb5DxVcjPiEbtC7FII=;
+        b=KRfpJX7g6r0y2TlltU1a1oV9Bh51JsXL9mNYuwSbEuEf5sIwTRwudk+ZY1CVMJ7upHcVq/
+        zJz95KiuVnSe38gHhTQRjxRK7Vgf1AoCtkQVoB4vKYrrcA3isK1u5wOYoyJwB7Cw9y6elc
+        aP5mzezC0gwX/cMHkkTwob4057/JX3I=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-53--EE-DnP3OFSsn3hb7BcfXw-1; Tue, 21 Sep 2021 07:20:20 -0400
+X-MC-Unique: -EE-DnP3OFSsn3hb7BcfXw-1
+Received: by mail-qk1-f197.google.com with SMTP id s18-20020a05620a255200b00433885d4fa7so3664066qko.4
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 04:20:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=y7LURbSsGsDLVF+thUJ2ISGPY7TGQ+JWR2GJD3gQl74=;
-        b=gnNOKZ4OU22KKAUH/eMzSAJL/q9EfI5cKHJvqFMewbX41mkaKoC87BOuvC1+KB9bO5
-         1vwFzg3OGugNdg5tZnO1q39DUHtM7Schx3/HpGpeDLuN0ys6TWmgSFC+L4Kn5PYWSCnR
-         OP1T7D4K66uetJPKruq3npHKsFR0MnUFhuP8SBuMqEQs5uALgPO8Zeoq0Z1GDEnv/rJB
-         PjaQfTuzfOvKQUEMmt71uWnD+qiolKf9KUbs5Sm5umJjUKlhAKjLZUyGJqG+dkWVheqD
-         gzOaV2IQhOtEuQbDSN7eHhxlNKZ1tSQrgwwRoWnLau/I2gNAabAkN94ZKvBoEAS0S70T
-         BA6w==
-X-Gm-Message-State: AOAM533iBh7bR/lpqOlK9/gxu2N1RkzPlTgNnyjY6uVHh1PSxrnVqZ+z
-        T80siKL8or0QUmKiDcqME28=
-X-Google-Smtp-Source: ABdhPJwvzFa3P9dyBNmtq5bhtLhCGwRi18+b7ku5ZrFRQr7sb0n8C8DlXibxPdegCQqRaS7/BAcRyw==
-X-Received: by 2002:a17:90b:3b41:: with SMTP id ot1mr4564161pjb.186.1632221766670;
-        Tue, 21 Sep 2021 03:56:06 -0700 (PDT)
-Received: from kvm.asia-northeast3-a.c.our-ratio-313919.internal (252.229.64.34.bc.googleusercontent.com. [34.64.229.252])
-        by smtp.gmail.com with ESMTPSA id z9sm3083784pfr.124.2021.09.21.03.56.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Sep 2021 03:56:06 -0700 (PDT)
-Date:   Tue, 21 Sep 2021 10:56:01 +0000
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     linux-mm@kvack.org, Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>,
-        John Garry <john.garry@huawei.com>,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC v2 PATCH] mm, sl[au]b: Introduce lockless cache
-Message-ID: <20210921105601.GA3121@kvm.asia-northeast3-a.c.our-ratio-313919.internal>
-References: <20210920154816.31832-1-42.hyeyoo@gmail.com>
- <YUkErK1vVZMht4s8@casper.infradead.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=wlp4l6KsMSE4UIALBbO+kUAmjYb5DxVcjPiEbtC7FII=;
+        b=YXuO3YbDmrwaaI2nm5IQl3C8mkgT+LRn/kOQpEFIyumEahOitYW3VSe47X4cvcMKjz
+         iCr/mrNYEjWjq/ID6GyA3i6XOd2kItYsHLG6yJTH6Pdr7FwDpC7ormtplztgjQCmCpRW
+         gLAGx6yeHhIlMfis71QSFW8LTOn9S8GE5AC8uZRgMxvYghP4mUXADQnQGeukVsRyD1+E
+         x3q30IxBH7ZePeKP4iJuvzOERGfHSBV6G44Y/fL3miUoeH3c7EwgXHRNcsL016FFu6gg
+         pXsavGMCQpC4Se0RuYcVZrGwpb0scZacg8H5TDbLZZ36vjP2vLRiGRAUY5eye+8f9gYa
+         9Q8A==
+X-Gm-Message-State: AOAM530sTNORXiF0yOwPPFLYKa1tNiGhQyF/bwNzP92DgpOKzoVXw8FP
+        JMELqsHpsnpUyo4vqSWP+yGbmcqFsWMpGFU88mV96EHWAemoga1pwIU7n//siT1cDHmvE7mk2Gf
+        0DgPA32PUPy+Z2QyqegfAHxE6RrGQhgQ7
+X-Received: by 2002:a05:620a:1354:: with SMTP id c20mr28894051qkl.335.1632223219458;
+        Tue, 21 Sep 2021 04:20:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwIRh35UekDw9jlkp6FcbQKeoUs9fcolR5OZ9lLt2R0t6MZu/zfN1TeDsSlrFa0xBPAQY8cl76imliYQAWYjJk=
+X-Received: by 2002:a05:620a:1354:: with SMTP id c20mr28894026qkl.335.1632223219158;
+ Tue, 21 Sep 2021 04:20:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YUkErK1vVZMht4s8@casper.infradead.org>
+References: <20210920153454.433252-1-atenart@kernel.org> <b3bee3ec-72c0-0cbf-d1ce-65796907812f@gmail.com>
+ <CAAxCcbsrjvp=vP_0Nz+pYCVMDWSxnDAjdVXWYczNZfaAtc6kZw@mail.gmail.com>
+In-Reply-To: <CAAxCcbsrjvp=vP_0Nz+pYCVMDWSxnDAjdVXWYczNZfaAtc6kZw@mail.gmail.com>
+From:   Luis Tomas Bolivar <ltomasbo@redhat.com>
+Date:   Tue, 21 Sep 2021 13:20:08 +0200
+Message-ID: <CAAxCcbsBTey=tSznn55BanA2H5PXitgfuC8DFg543nYjT0-igQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] openvswitch: allow linking a VRF to an OVS bridge
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Antoine Tenart <atenart@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, pshelar@ovn.org, dsahern@kernel.org,
+        dev@openvswitch.org, netdev@vger.kernel.org,
+        Eelco Chaudron <echaudro@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Matthew,
-I love your suggestion to make it more cache-friendly (and batch
-allocation) and it sounds good to me. I appreciate it so much.
+On Tue, Sep 21, 2021 at 10:12 AM Luis Tomas Bolivar <ltomasbo@redhat.com> w=
+rote:
+>
+> On Mon, Sep 20, 2021 at 5:45 PM David Ahern <dsahern@gmail.com> wrote:
+> >
+> > On 9/20/21 9:34 AM, Antoine Tenart wrote:
+> > > There might be questions about the setup in which a VRF is linked to =
+an
+> > > OVS bridge; I cc'ed Luis Tom=C3=A1s who wrote the article.
+> >
+> > My head just exploded. You want to make an L3 device a port of an L2
+> > device.
+> >
+> > Can someone explain how this is supposed to work and why it is even
+> > needed? ie., given how an OVS bridge handles packets and the point of a
+> > VRF device (to direct lookups to a table), the 2 are at odds in my head=
+.
+> >
+>
+> Hi David,
+>
+> Thanks for your comment. And yes you are right, this probably is a bit
+> of an odd setup. That said, OVS is not pure L2 as it knows about IPs
+> and it is doing virtual routing too (we can say it is 2.5 xD)
+>
+> What we want to achieve is something similar to what is shown in slide 10=
+0
+> here http://schd.ws/hosted_files/ossna2017/fe/vrf-tutorial-oss.pdf, but i=
+nstead
+> of connecting the VRF bridge directly to containers, we have a single ovs
+> bridge (where the OpenStack VMs are connected to) where we connect the
+> vrfs in different (ovs) ports (so that the traffic in the way out of OVS =
+can be
+> redirected to the right VRF).
+>
+> The initial part is pretty much the same as in the slide 100:
+> 1) creating the vrf
+>    - ip link add vrf-1001 type vrf table 1001
+> 2) vxlan device, in our case associated to the loopback,
+> for ECMP (instead of associate both nics/vlan devices to the VRF)
+>    - ip link add vxlan-1001 type vxlan id 1001 dstport 4789 local L_IP
+> nolearning
+> 3) create the linux bridge device
+>    - ip link add name br-1001 type bridge stp_state 0
+> 4) link the 3 above
+>    - ip link set br-1001 master vrf-1001 (bridge to vrf)
+>    - ip link set vxlan-1001 master br-1001 (vxlan to bridge)
+>
+> Then, I'm attaching the vrf device also as an ovs bridge port, so that
+> traffic (together with some ip routes in the vrf routing table) can be
+> redirected
+> to OVS, and the (OpenStack) virtual networking happens there
+> (br-ex is the ovs bridge)
+>    - ovs-vsctl add-port br-ex vrf-1001
+>    - ip route show vrf vrf-1001
+>        10.0.0.0/26 via 172.24.4.146 dev br-ex
+>        (redirect traffic to OpenStack subnet 10.0.0.0/26 to br-ex)
+>        172.24.4.146 dev br-ex scope link
+>
+> Perhaps there is a better way of connecting this?
+> I tried (without success) to create a veth device and set one end on
+> the linux bridge and the other on the OVS bridge.
 
-But give me some time (from just one to few days) to
-read relevant papers. and then I'll reply to your suggestions
-and send v3 with your suggestions in mind.
+Follow up on this. I found the mistake I was making on the veth-pair
+addition configuration (ovs flow was setting the wrong mac address
+before sending the traffic through the veth device to the vrf). And it
+indeed works connecting the VRF to the OVS bridge by using a veth pair
+instead of directly plugin the VRF device as an OVS port.
 
-Cheers,
-Hyeonggon
+>
+> Best regards,
+> Luis
+
+
+
+--=20
+LUIS TOM=C3=81S BOL=C3=8DVAR
+Principal Software Engineer
+Red Hat
+Madrid, Spain
+ltomasbo@redhat.com
+
