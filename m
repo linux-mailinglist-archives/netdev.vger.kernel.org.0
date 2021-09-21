@@ -2,121 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FEE8412FFD
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 10:12:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A416C412FFE
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 10:13:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230502AbhIUIOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 04:14:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27904 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230508AbhIUIOL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 04:14:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632211962;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PwBUVVtsJHhOv14YYtGqRLEtGD/RYWBYKUPNk/X9piI=;
-        b=YiTCsVFioP5tO393ok7jjv1JcWN/GOqx4weEUFjWh1GHUUaWrQaEYb2sFZVEr4CCgcgE/Z
-        gRYaqaChQ2TOhL+z3fKFoGLjz7Wd0Gwj6OAL036LPPrfxYzWvkjlDsAswnOo5QtR8HiEH6
-        K/irTRBWVZEe7hi7nXfPlfbc5cZEspY=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-408-mkHfYcSpM-KlP51_WX0bBw-1; Tue, 21 Sep 2021 04:12:41 -0400
-X-MC-Unique: mkHfYcSpM-KlP51_WX0bBw-1
-Received: by mail-qv1-f72.google.com with SMTP id z8-20020a056214040800b00380dea65c01so6766052qvx.4
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 01:12:41 -0700 (PDT)
+        id S230516AbhIUIPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 04:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35158 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230488AbhIUIPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 04:15:17 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEB9C061574
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 01:13:49 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id g41so45660801lfv.1
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 01:13:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=xt9NixbDlO4ly8UWM5eIsYVpoy/oBTbBcPkc2ZpSd6k=;
+        b=qpLsGPm6ZTJoeOsdcYxy/vJei72q7miI8lME0wKRV1s14zBwyDnMraDjWu7cCGM9Ie
+         Ktp8DqByiqDmtLJISqT7kIY5ZzrEKBr3i6LG8pkh7wvPo+PNURBXCdwE1mBaQD0NsQ8O
+         Q80Rj3GmX/u3GFXaE92sMlFjq5SpglLqhiVscQSmNlYelEmz/fKak7JBtBMIG0A0kRFt
+         Jl3SW/q7LJ3UgbwIFzUewA1NV+oyeV4qcPzz0Bn53UL9nEHGqE7wsq+MV6hewDsN8ZMH
+         4wZ9IOsLI1U6R4pfRJ+txAU3uiv/HMZtiLr8gDC5GO3/vCjwhodfKpBXQc/PMt+Q903j
+         nO8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=PwBUVVtsJHhOv14YYtGqRLEtGD/RYWBYKUPNk/X9piI=;
-        b=rTIjzEf44s9CfV+FrLhJlx0QM+yuumtdFukomooeJGUhBwYOuig1fQ7Fxdfh259/xZ
-         /zz69UAKBKqCFNZJ6+XAB7srx3uPD947S1iH0Pop42n3hA9YaXafna/ogyLJ50UQhb6P
-         iXG7kn5Bo6NbqPgakNzntBsNrWDZ9ELS1IXZM5jzNT8TlqiW8S8T7Te83ixLVlC09xXb
-         M3UhX5ncYyaGZunkzhfimvHGCjo54nhP5uXhhyknEyob9zrgrz6Fglks3qN3lydfzPZ4
-         9ffw4TxjHGj9fzvJlpXsrlIl3NHzxcclt7dLV8xOGYpOMSEeDP7cPpRDh9sNmnOUNt08
-         /C3g==
-X-Gm-Message-State: AOAM533umTBnDnnswasIG9JbC2cAVhFZ1KHmVwaIQRdBoSbfv2kGw9AV
-        1ZRaWQ1KhzSI2y21B3SrCXoC0ScMCTySLPSh6R/8k8xng6pKs6qOw3MAZ3ARJ7NmH1PFQ1+IvzN
-        1evxDy/VfwxzzVPqBxfzhU8tgvTupCsXp
-X-Received: by 2002:ac8:3d51:: with SMTP id u17mr27469822qtf.348.1632211960708;
-        Tue, 21 Sep 2021 01:12:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJykGtL87jR6HlwGG1KM0K5tu/IUnpv4qtvZ/EBDUgXAtneNUt3VnhKya9wydlzFXccpzoDa1GzYD8lEO8xS6io=
-X-Received: by 2002:ac8:3d51:: with SMTP id u17mr27469802qtf.348.1632211960380;
- Tue, 21 Sep 2021 01:12:40 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=xt9NixbDlO4ly8UWM5eIsYVpoy/oBTbBcPkc2ZpSd6k=;
+        b=YSzpZKiFMz6elUKHdwEXC683XIi6BCqibETW12NcVFKLoieXYB+I5VG5k0fgdpddrw
+         NEilRNuYyuzZ5L9jT5E3sYZ0ud6a7uMEY3634V2tdySkR6aNXXXHLo1hfb0Jtj9dQkQF
+         1/h2hGzLog7S0+OcdZ/m60pyz0gd8Bcidqlxa3opssLkBNBqE6AzsEpz6YJEO3mkWq4P
+         7ikF97U678+TkoVLzIzFVRF3S0HE9KOOI7s+IFX78zK79WYn7VPfwWaZlx2R0otFNTJW
+         yi9AtBEZGkQMw+YbdrEQb/WRciXUj4U0zaDPu7BDFj1/mVqBxU6w9q9f9DUuWRbOaRVV
+         W5PQ==
+X-Gm-Message-State: AOAM531wDO+ZBmXIdFS3HmPa83XDE0K/MhorrFDKHYi9gNY6wUhdZVmV
+        axlUh2mCb3x2Ddx9EpE9KcUIxgVbIC1HOwTUBDk=
+X-Google-Smtp-Source: ABdhPJxGWhe0fONgykW0i7C4o+XQ4/H/OX8qhBb2zsX0Cpnasg1xKNFJJh3UvhsKmofzS/+kN25QvavUEgNYJITeQrI=
+X-Received: by 2002:a2e:390c:: with SMTP id g12mr26795909lja.366.1632212027516;
+ Tue, 21 Sep 2021 01:13:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210920153454.433252-1-atenart@kernel.org> <b3bee3ec-72c0-0cbf-d1ce-65796907812f@gmail.com>
-In-Reply-To: <b3bee3ec-72c0-0cbf-d1ce-65796907812f@gmail.com>
-From:   Luis Tomas Bolivar <ltomasbo@redhat.com>
-Date:   Tue, 21 Sep 2021 10:12:29 +0200
-Message-ID: <CAAxCcbsrjvp=vP_0Nz+pYCVMDWSxnDAjdVXWYczNZfaAtc6kZw@mail.gmail.com>
-Subject: Re: [PATCH net-next] openvswitch: allow linking a VRF to an OVS bridge
-To:     netdev@vger.kernel.org
+Received: by 2002:a9a:4c46:0:b0:138:c00e:d29b with HTTP; Tue, 21 Sep 2021
+ 01:13:46 -0700 (PDT)
+Reply-To: fatimakhaledconfirm@gmail.com
+From:   "Mrs. Fatima Khaled" <jacobmoore.moores41@gmail.com>
+Date:   Tue, 21 Sep 2021 01:13:46 -0700
+Message-ID: <CAEedSLfRK5nqi-eedkYdTr4fYfTcZ92FkZO6-XxOAS=gQ0vyRA@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 20, 2021 at 5:45 PM David Ahern <dsahern@gmail.com> wrote:
->
-> On 9/20/21 9:34 AM, Antoine Tenart wrote:
-> > There might be questions about the setup in which a VRF is linked to an
-> > OVS bridge; I cc'ed Luis Tom=C3=A1s who wrote the article.
->
-> My head just exploded. You want to make an L3 device a port of an L2
-> device.
->
-> Can someone explain how this is supposed to work and why it is even
-> needed? ie., given how an OVS bridge handles packets and the point of a
-> VRF device (to direct lookups to a table), the 2 are at odds in my head.
->
+-- 
+Hello everyone, are you looking for a financial source without any
+upfront fees for a new apartment, construction, refinancing, debt
+consolidation, personal or business purpose? Small or large scale?
+Here is an open opportunity. We offer investment opportunities for
+each eligible person (s). * Borrow from  $5,000 dollars to  $
+80,000,000.00 Dollars, * Interest rate 0.2% Reply with the following
+information. Name: Amount Required: Loan Duration: Purpose, Reason:
+Location:Monthly income:Telephone number:, Yours sincerely. Interested
+parties should contact us at : fatimakhaledconfirm@gmail.com
 
-Hi David,
 
-Thanks for your comment. And yes you are right, this probably is a bit
-of an odd setup. That said, OVS is not pure L2 as it knows about IPs
-and it is doing virtual routing too (we can say it is 2.5 xD)
-
-What we want to achieve is something similar to what is shown in slide 100
-here http://schd.ws/hosted_files/ossna2017/fe/vrf-tutorial-oss.pdf, but ins=
-tead
-of connecting the VRF bridge directly to containers, we have a single ovs
-bridge (where the OpenStack VMs are connected to) where we connect the
-vrfs in different (ovs) ports (so that the traffic in the way out of OVS ca=
-n be
-redirected to the right VRF).
-
-The initial part is pretty much the same as in the slide 100:
-1) creating the vrf
-   - ip link add vrf-1001 type vrf table 1001
-2) vxlan device, in our case associated to the loopback,
-for ECMP (instead of associate both nics/vlan devices to the VRF)
-   - ip link add vxlan-1001 type vxlan id 1001 dstport 4789 local L_IP
-nolearning
-3) create the linux bridge device
-   - ip link add name br-1001 type bridge stp_state 0
-4) link the 3 above
-   - ip link set br-1001 master vrf-1001 (bridge to vrf)
-   - ip link set vxlan-1001 master br-1001 (vxlan to bridge)
-
-Then, I'm attaching the vrf device also as an ovs bridge port, so that
-traffic (together with some ip routes in the vrf routing table) can be
-redirected
-to OVS, and the (OpenStack) virtual networking happens there
-(br-ex is the ovs bridge)
-   - ovs-vsctl add-port br-ex vrf-1001
-   - ip route show vrf vrf-1001
-       10.0.0.0/26 via 172.24.4.146 dev br-ex
-       (redirect traffic to OpenStack subnet 10.0.0.0/26 to br-ex)
-       172.24.4.146 dev br-ex scope link
-
-Perhaps there is a better way of connecting this?
-I tried (without success) to create a veth device and set one end on
-the linux bridge and the other on the OVS bridge.
-
-Best regards,
-Luis
-
+Yours faithfully
+contact Mrs.  Fatima Khaled
+Finance Director
+call phone +1 (204) 410 4624
+WhatsApp: +1 (204) 410 4624
+contact Email: fatimakhaledconfirm@gmail.com
