@@ -2,99 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 282324135AB
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 16:53:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A38C4135B6
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 16:58:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233786AbhIUOyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 10:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233784AbhIUOyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 10:54:36 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C685C061574
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 07:53:08 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id c8-20020a9d6c88000000b00517cd06302dso28614505otr.13
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 07:53:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7xG1fmTIeRkvO4a2pmdD01LPy7OxyV6G+13/yncA2zM=;
-        b=SAHrU6tO4lq1qsEYhkh6h6BoXjQX32JMVFunPgjB0RfJmwVETKlenKHDpd6HhqWmUZ
-         oN7LUAaLO7OezqkuJ2Ooz0FlOSMSuhFPyMwYJEsDpvqb+KTf89qEk2c2GyhTPOFWMP+3
-         ZjjCwW42aPlgsXhgRqRQnB9fry4yFoYqNRSdVJz1BedSiuscWPK6sEioyXjsKvVhGxJX
-         2VBGnz9orAdOL1F2AkEYWo8yTj5Dgd9LFiQYbwut2momF3keHVewBWt+8qfS0YZ5wPO/
-         vdZ6F54Uh4uHKdP458iAID2ngU27VziClO7m3PbGtXADtmI2bUWhKl631Vt1iJtypBkG
-         ZFvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7xG1fmTIeRkvO4a2pmdD01LPy7OxyV6G+13/yncA2zM=;
-        b=UiKImx0M9kyX2L4FJujsqWJR3OpmwBUIrC+1bcYu0pA1OTxSpLV0OWYzzai2/kO+kG
-         +/QBwEyzNK5qDa8adpSx2x7V5Y4iO+Gke4JJ6bb5j8mQJcjxai3bE5jiiPwPZDTja/cv
-         isDgqrxhhRQslTDsIJ4FITPm+NchN9thVGuur+vD9D3Orv5zK0cSw3Nc5Q1WlK3pC+H4
-         3VhmjrwlZO9be9ikiVuWt5pAKRQjrDrKqH5Bo27qSVHu9j1+78knsEB/xnZQYm+NNtGr
-         VQ47NSb3jOPBKWAxtLdwvS9onb3uEYIf5+haN9IHn1NurypWZbd9/lo9wvhyX0wl4fWa
-         sHzA==
-X-Gm-Message-State: AOAM531ZisEVdYk0BruYAYlLvyMxJXZyTP1qBfL3FTWv4Czke7Jni5e9
-        W8sEyCsOI9DHvqu14yw7ujdNSu7GVHLynQ==
-X-Google-Smtp-Source: ABdhPJxndeHbFZ841zivqPLZntg/QZZz++S++KpzXSv6RMpQDAuK/cRwqzmQYg/g4xFP3fnl5Wn1vA==
-X-Received: by 2002:a05:6830:50:: with SMTP id d16mr24108262otp.231.1632235987943;
-        Tue, 21 Sep 2021 07:53:07 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id v11sm4208821oto.22.2021.09.21.07.53.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Sep 2021 07:53:07 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next] lib: bpf_legacy: add prog name, load time,
- uid and btf id in prog info dump
-To:     Gokul Sivakumar <gokulkumar792@gmail.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-References: <20210917202338.1810837-1-gokulkumar792@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <056ea304-13e9-e92e-ccfd-7be2312f6d1f@gmail.com>
-Date:   Tue, 21 Sep 2021 08:53:06 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S233798AbhIUO7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 10:59:41 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:44231 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233647AbhIUO7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 10:59:40 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id D4F7E320206D;
+        Tue, 21 Sep 2021 10:58:10 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Tue, 21 Sep 2021 10:58:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=KZuaBl
+        egpZxrGOGjpqS/zX1ucSsSnWc4YVGlN/BrIWM=; b=JYCZDZYKxSwrWU+k2+2nY0
+        YRTjvElQBszX9Qm8a8UZY71PG0yFOUK3Fr4lBgXlEHu9nuXPZIh8nrWZoWTwhHXE
+        bY2eFEgMJd5XP45Rk4pzGJhnVGpUA4lBC03hz9EeXFHQoY8JxBqDv5elgu8yipyF
+        mOrNeEwLHLUVaQLoFWHKzE0fQbybxTqFl3CFmKXK0+3XLh+RKY7aJ9suA7Hy0bG4
+        fu0iXNWA9HiX5TIiXTq93N2hr7fh9VidBQdHmfBuGpwKYH8Mq+LCjs6FGwveRpo5
+        DTqh4HkjdmLYU7hH0uBlbMIDpQw0o2n8BtKvSBuEfFthPd81B85xdApzP2Aku6IA
+        ==
+X-ME-Sender: <xms:AfNJYTg4nIBlpLqlDgCc2r29dlitU7FCqmCDSB85hWGjBs7adYow9g>
+    <xme:AfNJYQBcnMgo2JUGVK8sysNiPlQaNQrGKx82YvFtY2w7bJT50-1zSbuWMwPFV4_W2
+    0JAibyvaLY1dHA>
+X-ME-Received: <xmr:AfNJYTGEm6yda2njY-dKd1KIN16HryHYm_N0c9bNUf-1oZ7NQyy49Noq-TudjYcyOsQNSZ2Vs0G_R8CaTAAKMC4erKj_1A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudeigedgkeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeduveetjeegkeevtdffudethedvveejjeeuueekueeitdefvdfhhfelgfehveef
+    hfenucffohhmrghinheprhgvnhgvshgrshdrtghomhenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:AfNJYQS7Ctffl2-5_tC1IcSges4-IrjAJThbPT3OgBRXn79_DDSH4A>
+    <xmx:AfNJYQz9ik9FVmD9l9BUiblpqqed47_nYQm-kNiq5068VH0DmcebSA>
+    <xmx:AfNJYW4ife3lNGYdkgkCGdrE4sHPskIGv5THq5Be5puP9ma2P6d8gw>
+    <xmx:AvNJYXkb6AT1960SS9S5DrFnuwWZ_VdQKlUYXFMrk4Ai8phAfXvC5Q>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 21 Sep 2021 10:58:08 -0400 (EDT)
+Date:   Tue, 21 Sep 2021 17:58:05 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
+ to get SyncE status
+Message-ID: <YUny/edqnbdTFnBS@shredder>
+References: <20210903151436.529478-1-maciej.machnikowski@intel.com>
+ <20210903151436.529478-2-maciej.machnikowski@intel.com>
+ <YUnbCzBOPP9hWQ5c@shredder>
+ <PH0PR11MB4951E98FCEC0F1EA230BA1DAEAA19@PH0PR11MB4951.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20210917202338.1810837-1-gokulkumar792@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR11MB4951E98FCEC0F1EA230BA1DAEAA19@PH0PR11MB4951.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/17/21 2:23 PM, Gokul Sivakumar wrote:
-> The BPF program name is included when dumping the BPF program info and the
-> kernel only stores the first (BPF_PROG_NAME_LEN - 1) bytes for the program
-> name.
+On Tue, Sep 21, 2021 at 01:37:37PM +0000, Machnikowski, Maciej wrote:
+> > -----Original Message-----
+> > From: Ido Schimmel <idosch@idosch.org>
+> > Sent: Tuesday, September 21, 2021 3:16 PM
+> > To: Machnikowski, Maciej <maciej.machnikowski@intel.com>
+> > Subject: Re: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE
+> > message to get SyncE status
+> > 
+> > On Fri, Sep 03, 2021 at 05:14:35PM +0200, Maciej Machnikowski wrote:
+> > > diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> > > index eebd3894fe89..78a8a5af8cd8 100644
+> > > --- a/include/uapi/linux/if_link.h
+> > > +++ b/include/uapi/linux/if_link.h
+> > > @@ -1273,4 +1273,35 @@ enum {
+> > >
+> > >  #define IFLA_MCTP_MAX (__IFLA_MCTP_MAX - 1)
+> > >
+> > > +/* SyncE section */
+> > > +
+> > > +enum if_eec_state {
+> > > +	IF_EEC_STATE_INVALID = 0,
+> > > +	IF_EEC_STATE_FREERUN,
+> > > +	IF_EEC_STATE_LOCKACQ,
+> > > +	IF_EEC_STATE_LOCKREC,
+> > > +	IF_EEC_STATE_LOCKED,
+> > > +	IF_EEC_STATE_HOLDOVER,
+> > > +	IF_EEC_STATE_OPEN_LOOP,
+> > > +	__IF_EEC_STATE_MAX,
+> > 
+> > Can you document these states? I'm not clear on what LOCKACQ, LOCKREC
+> > and OPEN_LOOP mean. I also don't see ice using them and it's not really
+> > a good practice to add new uAPI without any current users.
+> > 
 > 
-> $ sudo ip link show dev docker0
-> 4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdpgeneric qdisc noqueue state UP mode DEFAULT group default
->     link/ether 02:42:4c:df:a4:54 brd ff:ff:ff:ff:ff:ff
->     prog/xdp id 789 name xdp_drop_func tag 57cd311f2e27366b jited
-> 
-> The BPF program load time (ns since boottime), UID of the user who loaded
-> the program and the BTF ID are also included when dumping the BPF program
-> information when the user expects a detailed ip link info output.
-> 
-> $ sudo ip -details link show dev docker0
-> 4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdpgeneric qdisc noqueue state UP mode DEFAULT group default
->     link/ether 02:42:4c:df:a4:54 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 68 maxmtu 65535
->     bridge forward_delay 1500 hello_time 200 max_age 2000 ageing_time 30000 stp_state 0 priority 32768 vlan_filt
-> ering 0 vlan_protocol 802.1Q bridge_id 8000.2:42:4c:df:a4:54 designated_root 8000.2:42:4c:df:a4:54 root_port 0 r
-> oot_path_cost 0 topology_change 0 topology_change_detected 0 hello_timer    0.00 tcn_timer    0.00 topology_chan
-> ge_timer    0.00 gc_timer  265.36 vlan_default_pvid 1 vlan_stats_enabled 0 vlan_stats_per_port 0 group_fwd_mask
-> 0 group_address 01:80:c2:00:00:00 mcast_snooping 1 mcast_router 1 mcast_query_use_ifaddr 0 mcast_querier 0 mcast
-> _hash_elasticity 16 mcast_hash_max 4096 mcast_last_member_count 2 mcast_startup_query_count 2 mcast_last_member_
-> interval 100 mcast_membership_interval 26000 mcast_querier_interval 25500 mcast_query_interval 12500 mcast_query
-> _response_interval 1000 mcast_startup_query_interval 3124 mcast_stats_enabled 0 mcast_igmp_version 2 mcast_mld_v
-> ersion 1 nf_call_iptables 0 nf_call_ip6tables 0 nf_call_arptables 0 addrgenmode eui64 numtxqueues 1 numrxqueues
-> 1 gso_max_size 65536 gso_max_segs 65535
->     prog/xdp id 789 name xdp_drop_func tag 57cd311f2e27366b jited load_time 2676682607316255 created_by_uid 0 btf_id 708
+> I'll fix that enum to use generic states defined in G.781 which are limited to:
+> - Freerun
+> - LockedACQ (locked, acquiring holdover memory)
+> - Locked (locked with holdover acquired)
+> - Holdover
 
-what kernel is this? I was not aware bridge devices support XDP and do
-not see that support in net-next.
+Thanks, it is good to conform to a standard.
+
+Can ice distinguish between LockedACQ and Locked? From G.781 I
+understand that the former is a transient state. Is the distinction
+between the two important for user space / the selection operation? If
+not, maybe we only need Locked?
+
+> 
+> > From v1 I understand that these states were copied from commit
+> > 797d3186544f ("ptp: ptp_clockmatrix: Add wait_for_sys_apll_dpll_lock.")
+> > from Renesas.
+> > 
+> > Figure 11 in the following PDF describes the states, but it seems
+> > specific to the particular device and probably shouldn't be exposed to
+> > user space as-is:
+> > https://www.renesas.com/us/en/document/dst/8a34041-datasheet
+> > 
+> > I have a few questions about this being a per-netdev attribute:
+> > 
+> > 1. My understanding is that in the multi-port adapter you are working
+> > with you have a single EEC that is used to set the Tx frequency of all
+> > the ports. Is that correct?
+> 
+> That's correct.
+>  
+> > 2. Assuming the above is correct, is it possible that one port is in
+> > LOCKED state and another (for some reason) is in HOLDOVER state? If yes,
+> > then I agree about this being a per-netdev attribute. The interface can
+> > also be extended with another attribute specifying the HOLDOVER reason.
+> > For example, netdev being down.
+> 
+> All ports driven by a single EEC will report the same state.
+
+So maybe we just need to report via ethtool the association between the
+EEC and the netdev and expose the state as an attribute of the EEC
+(along with the selected source and other info)?
+
+This is similar to how PHC/netdev association is queried via ethtool.
+For a given netdev, TSINFO_GET will report the PTP hw clock index via
+ETHTOOL_A_TSINFO_PHC_INDEX. See Documentation/networking/ethtool-netlink.rst
+
+> 
+> > Regardless, I agree with previous comments made about this belonging in
+> > ethtool rather than rtnetlink.
+> 
+> Will take a look at it - as it will require support in linuxptp as well.
+> 
+> > > +};
+> > > +
+> > > +#define IF_EEC_STATE_MAX	(__IF_EEC_STATE_MAX - 1)
+> > > +#define EEC_SRC_PORT		(1 << 0) /* recovered clock from the
+> > port is
+> > > +					  * currently the source for the EEC
+> > > +					  */
+> > 
+> > I'm not sure about this one. If we are going to expose this as a
+> > per-netdev attribute (see more below), any reason it can't be added as
+> > another state (e.g., IF_EEC_STATE_LOCKED_SRC)?
+> 
+> OK! That's a great idea! Yet we'll need LOCKED_SRC and LOCKED_ACQ_SRC,
+> but still sounds good.
+> 
+> > IIUC, in the common case of a simple NE the source of the EEC is always
+> > one of the ports, but in the case of a PRC the source is most likely
+> > external (e.g., GPS).
+> 
+> True
+> 
+> > If so, I think we need a way to represent the EEC as a separate object
+> > with the ability to set its source and report it via the same interface.
+> > I'm unclear on how exactly an external source looks like, but for the
+> > netdev case maybe something like this:
+> > 
+> > devlink clock show [ dev clock CLOCK ]
+> > devlink clock set DEV clock CLOCK [ { src_type SRC_TYPE } ]
+> > SRC_TYPE : = { port DEV/PORT_INDEX }
+> 
+> Unfortunately, EEC lives in 2 worlds - it belongs to a netdev (in very simple
+> deployments the EEC may be a part of the PHY and only allow synchronizing
+> the TX frequency to a single lane/port), but also can go outside of netdev
+> and be a boar-wise frequency source.
+> 
+> > The only source type above is 'port' with the ability to set the
+> > relevant port, but more can be added. Obviously, 'devlink clock show'
+> > will give you the current source in addition to other information such
+> > as frequency difference with respect to the input frequency.
+> 
+> We considered devlink interface for configuring the clock/DPLL, but a
+> new concept was born at the list to add a DPLL subsystem that will
+> cover more use cases, like a TimeCard.
+
+The reason I suggested devlink is that it is suited for device-wide
+configuration and it is already used by both MAC drivers and the
+TimeCard driver. If we have a good reason to create a new generic
+netlink family for this stuff, then OK.
+
+> 
+> > Finally, can you share more info about the relation to the PHC? My
+> > understanding is that one of the primary use cases for SyncE is to drive
+> > all the PHCs in the network using the same frequency. How do you imagine
+> > this configuration is going to look like? Can the above interface be
+> > extended for that?
+> 
+> That would be a configurable parameter/option of the PTP program.
+> Just like it can check the existence of link on a given port, it'll also be
+> able to check if we use EEC and it's locked. If it is, and is a source of
+> PHC frequency - the ptp tool can decide to not apply frequency corrections
+> to the PHC, just like the ptp4l does when nullf servo is used, but can do that
+> dynamically.
+
+The part I don't understand is "is a source of PHC frequency". How do we
+configure / query that?
