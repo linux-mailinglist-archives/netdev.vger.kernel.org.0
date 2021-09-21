@@ -2,113 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1B84413D13
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 23:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B998413D16
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 23:55:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235922AbhIUVzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 17:55:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55210 "EHLO
+        id S235673AbhIUV4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 17:56:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235827AbhIUVzQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 17:55:16 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B595EC0613E0;
-        Tue, 21 Sep 2021 14:53:40 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id c7so2656687qka.2;
-        Tue, 21 Sep 2021 14:53:40 -0700 (PDT)
+        with ESMTP id S235553AbhIUV4y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 17:56:54 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE22C061756
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 14:55:24 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id t4so2253190qkb.9
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 14:55:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JuZKNp3WhYi3DR7rWgOF+IrjERPbP8+GlVOGLjF2wg8=;
-        b=I1bWPamr9byNu+TXuCSjpcBvbqVnLblH8O/4HbHCfZPBaxUzOpFLPfaplTshTVE1w5
-         euu14xzCl14Vs3JJzyOkNVnNYFIjvPS9rXnJYSPV48LOVurjgLcimQcW9oWEqhwqMzUX
-         uGHjP/fhRYHU2CfTrPXMmxYvL6zB28vj6d1D62eebcgsdlQDhqGeHQxgEku6gzyCRgw+
-         w3VhFoGTJgCqKdFKxqdJkdQV+y8PXqclUtA30LAFbtDx6bzhgnRDfRhoCt3y6XBCKpr4
-         m8g76m3niOeD8nOxuwv9ZduLzeTJv1O6l/9+WKf6F6zM0xA8QkHtr2H4N7vyzo2OkOKL
-         a7qw==
+        bh=3QuvBAGlkAnIUdz8/4QcTPLHogNGT+8cLD8sfAqgRaI=;
+        b=V/0T0H3IJ6X8dlNuc6qpX89jWAM5yewNgjQ1UjzHLcUvnJGkVi+ok8TBzHinfDg+6C
+         nx1cofDHKBZxRHZtMAjzH3yfdPwyRtV8XutB4hK4yC8NJ+GsY7BBjXDFS6WHy6n355aA
+         nBteNwfVRtTCtGi3zBW3rSYs7bqxF0lcb8d5RXlPydJXYWv4ai3u8MSu95kL4qSOLOKF
+         /RkgsNsh3LohKkXZTAfM5YQDZLFIZhs2fEEsStDYzFdZpAsqTXNRVSzCK+BAFkZoKGo2
+         oD/D7ClMe8v8sKnTyE728GSpaQ7ZkAcfyRD04f8/fhX3dj3yB0GFAdZU+/aoFnoa3bxS
+         rZHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JuZKNp3WhYi3DR7rWgOF+IrjERPbP8+GlVOGLjF2wg8=;
-        b=w500GvDHWqpsmATLkSH6DPn+d0Yp5hdcEZD/4ziocfn7ABfc14KK+8oZFtgEP8g/bI
-         Q9qRPHB3uAQ5fFHxJTZYshYX9sRUcmT+KpiDeKdORDVG+ftBJkEnZ6O6rw/XZwP6KnWV
-         XtCJr5yCpkCmCaIAZ8BQrr1199Wov72yZyHEDwiQDbIM6n9i4LnCuGY5ycCzM5UBO41q
-         GCwomlnTodtTTevxAoxOzDtPHSwCeG+Oubd3+CErQiEmTXmrvYf+Ztj5Qx7QQ/GLOxgE
-         UZoPUZhXzY/61KFHWhe+UZhvIZPaSyT7HTbTekS9XIwwZyzAbJOWiNB/DGzccftbvmcu
-         9GZw==
-X-Gm-Message-State: AOAM5315Mbl0Ylfr+7Y8yqCX8OhlCF1yC5LSthX4KQDzz0xKXM/v3E4c
-        fyDtr2FspR+rDeox11YFGJ86nt35Urwisqd3kyzrobH7720=
-X-Google-Smtp-Source: ABdhPJwck3quzywdfaTdDtVJvU3YI5hKnN+XHO0+UnqxN/IrDD9LYBFkIn1HuEsC4KgEEf08AtFBuL/MoYtNXKr8KR0=
-X-Received: by 2002:a25:afcd:: with SMTP id d13mr41577491ybj.504.1632261219941;
- Tue, 21 Sep 2021 14:53:39 -0700 (PDT)
+        bh=3QuvBAGlkAnIUdz8/4QcTPLHogNGT+8cLD8sfAqgRaI=;
+        b=mqa1W0jPjtU5ZdDZ45wdUEONASCWVq73niYB9TCx1KUqkFZXppd2qDGAoUJyX4Axid
+         xfr5PtozSLArAykA4AxZl1fNPSxJv4V0t1cYJzwpsJcf+qgkLnQOKg/kM/5Yzn0DNkdC
+         wkYkzYjD5TTNMX3EObfoeGCjgIj7PqXL0vqzNoTYYsWd0Ff4wZ3CmsVrl+DgJ1Mq0Dec
+         uE2nz+xEr1z85ANR9whJNitVYO8JfEyb0hjFe9Eev2FRDjb070vfI3/YR/re3hbVpstL
+         ny3sHBDuhLWG0OL3wWVgpAQbF0ZhawP8wuT/v4uJfZAvAaGgfu1cM42iz+t2/KYAeerT
+         4R+g==
+X-Gm-Message-State: AOAM533+Ee9yFUfumaoscu3BHdVUPJkxfz2PfKcvzlWTOoOtkZAj/aeW
+        p2yAigdRQ495DJhbk+OoYUsE8/DNsaQtWV7eFcaPbA==
+X-Google-Smtp-Source: ABdhPJwz9vBg4o7xVrIBJamIjkbjr8iOf/eD5UB2SSYihAir8Cuj20gAsEPMZGoiMDbFBm4ogQZaaHC34VNOiDocbeM=
+X-Received: by 2002:a25:e750:: with SMTP id e77mr12672722ybh.23.1632261323912;
+ Tue, 21 Sep 2021 14:55:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210918020958.1167652-1-houtao1@huawei.com> <20210918020958.1167652-4-houtao1@huawei.com>
-In-Reply-To: <20210918020958.1167652-4-houtao1@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 21 Sep 2021 14:53:28 -0700
-Message-ID: <CAEf4BzbstXqV+oH8uBHDDSgSzOY722jv3SsYt+cZCW9Ebwk8+g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 3/3] bpf/selftests: add test for writable bare tracepoint
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20210915170940.617415-1-saravanak@google.com> <20210915170940.617415-3-saravanak@google.com>
+ <CAJZ5v0h11ts69FJh7LDzhsDs=BT2MrN8Le8dHi73k9dRKsG_4g@mail.gmail.com>
+ <YUaPcgc03r/Dw0yk@lunn.ch> <YUoFFXtWFAhLvIoH@kroah.com> <CAJZ5v0jjvf6eeEKMtRJ-XP1QbOmjEWG=DmODbMhAFuemNn4rZg@mail.gmail.com>
+ <YUocuMM4/VKzNMXq@lunn.ch> <CAJZ5v0iU3SGqrw909GLtuLwAxdyOy=pe2avxpDW+f4dP4ArhaQ@mail.gmail.com>
+ <YUo3kD9jgx6eNadX@lunn.ch> <CAGETcx9hTFhY4+fHd71zYUsWW223GfUWBp8xxFCb2SNR6YUQ4Q@mail.gmail.com>
+ <YUpIgTqyrDRXMUyC@lunn.ch>
+In-Reply-To: <YUpIgTqyrDRXMUyC@lunn.ch>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Tue, 21 Sep 2021 14:54:47 -0700
+Message-ID: <CAGETcx_50KQuj0L+MCcf2Se8kpFfZwJBKP0juh_T7w+ZCs2p+g@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] driver core: fw_devlink: Add support for FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 17, 2021 at 6:56 PM Hou Tao <houtao1@huawei.com> wrote:
+On Tue, Sep 21, 2021 at 2:03 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> Add a writable bare tracepoint in bpf_testmod module, and
-> trigger its calling when reading /sys/kernel/bpf_testmod
-> with a specific buffer length. The reading will return
-> the value in writable context if the early return flag
-> is enabled in writable context.
+> > There are cases where the children try to probe too quickly (before
+> > the parent has had time to set up all the resources it's setting up)
+> > and the child defers the probe. Even Andrew had an example of that
+> > with some ethernet driver where the deferred probe is attempted
+> > multiple times wasting time and then it eventually succeeds.
 >
-> Signed-off-by: Hou Tao <houtao1@huawei.com>
-> ---
->  .../bpf/bpf_testmod/bpf_testmod-events.h      | 15 ++++++++
->  .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 10 ++++++
->  .../selftests/bpf/bpf_testmod/bpf_testmod.h   |  5 +++
->  .../selftests/bpf/prog_tests/module_attach.c  | 36 +++++++++++++++++++
->  .../selftests/bpf/progs/test_module_attach.c  | 14 ++++++++
->  5 files changed, 80 insertions(+)
+> And i prefer an occasional EPROBE_DEFER over a broken Ethernet switch,
+> which is the current state. I'm happy to see optimisations, but not at
+> the expense of breaking working stuff.
+
+Right, but in that case, the long term solution should be to make
+changes so we don't expect the child to be bound as soon as it's
+added. Not disable the optimization. Agree?
+
 >
+> > Also, this assumption that the child will be bound successfully upon
+> > addition forces the parent/child drivers to play initcall chicken
+>
+> We have never had any initcall chicken problems. The switch drivers
+> all are standard mdio_module_driver, module_platform_driver,
+> module_i2c_driver, module_pci_driver. Nothing special here. Things
+> load in whatever order they load, and it all works out, maybe with an
+> EPROBE_DEFER cycle. Which is good, we get our error paths tested, and
+> sometimes find bugs that way.
 
-[...]
+My comment was a general comment about parent drives that expect the
+child drivers to be bound on addition -- not specific to DSA.
 
-> +static int trigger_module_test_writable(int *val)
-> +{
-> +       int fd, err;
-> +       char buf[65];
-> +       ssize_t rd;
-> +
-> +       fd = open("/sys/kernel/bpf_testmod", O_RDONLY);
-> +       err = -errno;
-> +       if (CHECK(fd < 0, "testmod_file_open", "failed: %d\n", err))
-> +               return err;
-> +
-> +       rd = read(fd, buf, sizeof(buf) - 1);
-> +       err = rd < 0 ? -errno : -ENODATA;
-> +       if (CHECK(rd <= 0, "testmod_file_rd_val", "failed: rd %zd errno %d\n",
-> +                 rd, errno)) {
-> +               close(fd);
-> +               return err;
-> +       }
-> +
+But even in the DSA case, not playing initcall chicken means if you
+change the order of driver registration, things should still work.
+However, as it stands, if you register the switch driver before the
+PHY drivers are registered, you are going to force bind the PHYs to
+the generic driver.
 
-please use ASSERT_xxx() consistently
-
-> +       buf[rd] = '\0';
-> +       *val = strtol(buf, NULL, 0);
-> +       close(fd);
-> +
-> +       return 0;
-> +}
-> +
-
-[...]
+-Saravana
