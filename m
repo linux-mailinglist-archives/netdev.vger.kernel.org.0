@@ -2,75 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D6A4133A5
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 15:00:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A84014133BC
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 15:06:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232406AbhIUNBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 09:01:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230052AbhIUNBf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Sep 2021 09:01:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D353E6109E;
-        Tue, 21 Sep 2021 13:00:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632229206;
-        bh=afuelZ0mDk8o98TQu5CD6xMPqi0ZYEVN8DEyTwDKTGo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nweRsb+Vga6MJHueyAImhZCHyLKMNGt+fHOV2Q3AsmapSaLAgjx6XQl3fMoxRSWAu
-         e1GBRlJVJzPlTc6Q/UiHSTPP6IH2NPY3+PifdI8jrEEFWO31z7ZRbVi2aiomYnO0JU
-         pu6PiymVyEGs3nWLXLJPwHyhaOLzW08CK3jFLFBrFaz7z7AVgg5fpwb2KKawF06j60
-         /SRTahGRibkMZmPAhP1m63lQTexMXYXwk6Q65TbPDulKOAsJ8T7vpTxW1NcGE97bpB
-         +rULtC2Mw9+SphfFcqbR2C2Y7RlyaBO/0lYn4KCZaWRFIOPo413lx1Nd3M6y5Kp1c7
-         ZRQpNrSASEJiA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C185660A6B;
-        Tue, 21 Sep 2021 13:00:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232907AbhIUNIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 09:08:10 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:64959 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232344AbhIUNIH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 09:08:07 -0400
+Received: from fsav415.sakura.ne.jp (fsav415.sakura.ne.jp [133.242.250.114])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 18LD6Rk8084339;
+        Tue, 21 Sep 2021 22:06:27 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav415.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav415.sakura.ne.jp);
+ Tue, 21 Sep 2021 22:06:27 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav415.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 18LD6Qoo084332
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 21 Sep 2021 22:06:27 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Subject: [PATCH 1/2 (RESEND)] ath9k_htc: fix NULL pointer dereference at
+ ath9k_htc_rxep()
+Message-ID: <2b88f416-b2cb-7a18-d688-951e6dc3fe92@i-love.sakura.ne.jp>
+Date:   Tue, 21 Sep 2021 22:06:23 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] Fix mdiobus users with devres
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163222920678.21952.11910181167162155116.git-patchwork-notify@kernel.org>
-Date:   Tue, 21 Sep 2021 13:00:06 +0000
-References: <20210920214209.1733768-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20210920214209.1733768-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, bgolaszewski@baylibre.com,
-        wsa@kernel.org, linux-i2c@vger.kernel.org, broonie@kernel.org,
-        linux-spi@vger.kernel.org, alsi@bang-olufsen.dk,
-        LinoSanfilippo@gmx.de
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+syzbot is reporting lockdep warning followed by kernel panic at
+ath9k_htc_rxep() [1], for ath9k_htc_rxep() depends on ath9k_rx_init()
+being already completed.
 
-This series was applied to netdev/net.git (refs/heads/master):
+Since ath9k_htc_rxep() is set by ath9k_htc_connect_svc(WMI_BEACON_SVC)
+ from ath9k_init_htc_services(), it is possible that ath9k_htc_rxep() is
+called via timer interrupt before ath9k_rx_init() from ath9k_init_device()
+is called.
 
-On Tue, 21 Sep 2021 00:42:07 +0300 you wrote:
-> Commit ac3a68d56651 ("net: phy: don't abuse devres in
-> devm_mdiobus_register()") by Bartosz Golaszewski has introduced two
-> classes of potential bugs by making the devres callback of
-> devm_mdiobus_alloc stop calling mdiobus_unregister.
-> 
-> The exact buggy circumstances are presented in the individual commit
-> messages. I have searched the tree for other occurrences, but at the
-> moment:
-> 
-> [...]
+Since we can't call ath9k_init_device() before ath9k_init_htc_services(),
+let's hold ath9k_htc_rxep() no-op until ath9k_rx_init() completes.
 
-Here is the summary with links:
-  - [net,1/2] net: dsa: don't allocate the slave_mii_bus using devres
-    https://git.kernel.org/netdev/net/c/5135e96a3dd2
-  - [net,2/2] net: dsa: realtek: register the MDIO bus under devres
-    https://git.kernel.org/netdev/net/c/74b6d7d13307
+Link: https://syzkaller.appspot.com/bug?extid=4d2d56175b934b9a7bf9 [1]
+Reported-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Tested-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
+---
+ drivers/net/wireless/ath/ath9k/htc.h          | 1 +
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 0a1634238e67..4f71e962279a 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -281,6 +281,7 @@ struct ath9k_htc_rxbuf {
+ struct ath9k_htc_rx {
+ 	struct list_head rxbuf;
+ 	spinlock_t rxbuflock;
++	bool initialized;
+ };
+ 
+ #define ATH9K_HTC_TX_CLEANUP_INTERVAL 50 /* ms */
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+index 8e69e8989f6d..0d4595ee51ba 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -1130,6 +1130,9 @@ void ath9k_htc_rxep(void *drv_priv, struct sk_buff *skb,
+ 	struct ath9k_htc_rxbuf *rxbuf = NULL, *tmp_buf = NULL;
+ 	unsigned long flags;
+ 
++	/* Check if ath9k_rx_init() completed. */
++	if (!data_race(priv->rx.initialized))
++		goto err;
+ 	spin_lock_irqsave(&priv->rx.rxbuflock, flags);
+ 	list_for_each_entry(tmp_buf, &priv->rx.rxbuf, list) {
+ 		if (!tmp_buf->in_process) {
+@@ -1185,6 +1188,9 @@ int ath9k_rx_init(struct ath9k_htc_priv *priv)
+ 		list_add_tail(&rxbuf->list, &priv->rx.rxbuf);
+ 	}
+ 
++	/* Allow ath9k_htc_rxep() to operate. */
++	smp_wmb();
++	priv->rx.initialized = true;
+ 	return 0;
+ 
+ err:
+-- 
+2.18.4
