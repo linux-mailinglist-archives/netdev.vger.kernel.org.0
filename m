@@ -2,458 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AF3C4137CA
-	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 18:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 382AD4137E1
+	for <lists+netdev@lfdr.de>; Tue, 21 Sep 2021 18:52:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbhIUQtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 12:49:49 -0400
-Received: from mga01.intel.com ([192.55.52.88]:15362 "EHLO mga01.intel.com"
+        id S229985AbhIUQyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 12:54:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229601AbhIUQts (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Sep 2021 12:49:48 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10114"; a="245833796"
-X-IronPort-AV: E=Sophos;i="5.85,311,1624345200"; 
-   d="scan'208";a="245833796"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2021 09:48:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,311,1624345200"; 
-   d="scan'208";a="518275815"
-Received: from ccgwwan-adlp2.iind.intel.com ([10.224.174.127])
-  by orsmga001.jf.intel.com with ESMTP; 21 Sep 2021 09:48:16 -0700
-From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
-        linuxwwan@intel.com
-Subject: [PATCH net-next] net: wwan: iosm: fw flashing and cd improvements
-Date:   Tue, 21 Sep 2021 22:17:36 +0530
-Message-Id: <20210921164736.5047-1-m.chetan.kumar@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S229601AbhIUQyN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Sep 2021 12:54:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1A4F861166;
+        Tue, 21 Sep 2021 16:52:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1632243164;
+        bh=B5TaZlSoiexuf9JW+GmbDksGW7N2p8txxfttQp+ewy8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mYIFUnjrhRTELU5t43Xmf8hspCMjsPiLg27aU+C1iYWgeRF7977b8u4ZF3WR4g3i0
+         N6A+q9t7a5vR8dY7qxnAGk374Lafpf/HPOqBZQpvsyMlZ9YiGEocn917fRJeJnzBhj
+         IquKGrfKWTCavP/HN16EiS6PsGhbfnC50MSIPhGs=
+Date:   Tue, 21 Sep 2021 18:52:42 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Colin Cross <ccross@android.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Tony Luck <tony.luck@intel.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 0/7] get_abi.pl: Check for missing symbols at the ABI
+ specs
+Message-ID: <YUoN2m/OYHVLPrSl@kroah.com>
+References: <cover.1631957565.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1631957565.git.mchehab+huawei@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1> Function comments moved to .c file.
-2> Use literals in return to improve readability.
-3> Do error handling check instead of success check.
-4> Redundant ret assignment removed.
+On Sat, Sep 18, 2021 at 11:52:10AM +0200, Mauro Carvalho Chehab wrote:
+> Hi Greg,
+> 
+> Add a new feature at get_abi.pl to optionally check for existing symbols
+> under /sys that won't match a "What:" inside Documentation/ABI.
+> 
+> Such feature is very useful to detect missing documentation for ABI.
+> 
+> This series brings a major speedup, plus it fixes a few border cases when
+> matching regexes that end with a ".*" or \d+.
+> 
+> patch 1 changes get_abi.pl logic to handle multiple What: lines, in
+> order to make the script more robust;
+> 
+> patch 2 adds the basic logic. It runs really quicky (up to 2
+> seconds), but it doesn't use sysfs softlinks.
+> 
+> Patch 3 adds support for parsing softlinks. It makes the script a
+> lot slower, making it take a couple of minutes to process the entire
+> sysfs files. It could be optimized in the future by using a graph,
+> but, for now, let's keep it simple.
+> 
+> Patch 4 adds an optional parameter to allow filtering the results
+> using a regex given by the user. When this parameter is used
+> (which should be the normal usecase), it will only try to find softlinks
+> if the sysfs node matches a regex.
+> 
+> Patch 5 improves the report by avoiding it to ignore What: that
+> ends with a wildcard.
+> 
+> Patch 6 is a minor speedup.  On a Dell Precision 5820, after patch 6, 
+> results are:
+> 
+> 	$ time ./scripts/get_abi.pl undefined |sort >undefined && cat undefined| perl -ne 'print "$1\n" if (m#.*/(\S+) not found#)'|sort|uniq -c|sort -nr >undefined_symbols; wc -l undefined; wc -l undefined_symbols
+> 
+> 	real	2m35.563s
+> 	user	2m34.346s
+> 	sys	0m1.220s
+> 	7595 undefined
+> 	896 undefined_symbols
+> 
+> Patch 7 makes a *huge* speedup: it basically switches a linear O(n^3)
+> search for links by a logic which handle symlinks using BFS. It
+> also addresses a border case that was making 'msi-irqs/\d+' regex to
+> be misparsed. 
+> 
+> After patch 7, it is 11 times faster:
+> 
+> 	$ time ./scripts/get_abi.pl undefined |sort >undefined && cat undefined| perl -ne 'print "$1\n" if (m#.*/(\S+) not found#)'|sort|uniq -c|sort -nr >undefined_symbols; wc -l undefined; wc -l undefined_symbols
+> 
+> 	real	0m14.137s
+> 	user	0m12.795s
+> 	sys	0m1.348s
+> 	7030 undefined
+> 	794 undefined_symbols
+> 
+> (the difference on the number of undefined symbols are due to the fix for
+> it to properly handle 'msi-irqs/\d+' regex)
+> 
+> -
+> 
+> While this series is independent from Documentation/ABI changes, it
+> works best when applied from this tree, which also contain ABI fixes
+> and a couple of additions of frequent missed symbols on my machine:
+> 
+>     https://git.kernel.org/pub/scm/linux/kernel/git/mchehab/devel.git/log/?h=get_undefined_abi_v3
 
-Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
----
- drivers/net/wwan/iosm/iosm_ipc_coredump.c | 23 ++++++++--
- drivers/net/wwan/iosm/iosm_ipc_coredump.h | 16 -------
- drivers/net/wwan/iosm/iosm_ipc_devlink.c  | 40 +++++++++++++-----
- drivers/net/wwan/iosm/iosm_ipc_devlink.h  | 18 --------
- drivers/net/wwan/iosm/iosm_ipc_flash.c    | 51 +++++++++++++++++------
- drivers/net/wwan/iosm/iosm_ipc_flash.h    | 42 -------------------
- 6 files changed, 87 insertions(+), 103 deletions(-)
+I've taken all of these, but get_abi.pl seems to be stuck in an endless
+loop or something.  I gave up and stopped it after 14 minutes.  It had
+stopped printing out anything after finding all of the pci attributes
+that are not documented :)
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_coredump.c b/drivers/net/wwan/iosm/iosm_ipc_coredump.c
-index fba3c3454e80..9acd87724c9d 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_coredump.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_coredump.c
-@@ -5,7 +5,15 @@
- 
- #include "iosm_ipc_coredump.h"
- 
--/* Collect coredump data from modem */
-+/**
-+ * ipc_coredump_collect - To collect coredump
-+ * @devlink:            Pointer to devlink instance.
-+ * @data:               Pointer to snapshot
-+ * @entry:              ID of requested snapshot
-+ * @region_size:        Region size
-+ *
-+ * Returns: 0 on success, error on failure
-+ */
- int ipc_coredump_collect(struct iosm_devlink *devlink, u8 **data, int entry,
- 			 u32 region_size)
- {
-@@ -38,20 +46,27 @@ int ipc_coredump_collect(struct iosm_devlink *devlink, u8 **data, int entry,
- 
- 	*data = data_ptr;
- 
--	return ret;
-+	return 0;
-+
- get_cd_fail:
- 	vfree(data_ptr);
- 	return ret;
- }
- 
--/* Get coredump list to be collected from modem */
-+/**
-+ * ipc_coredump_get_list - Get coredump list from modem
-+ * @devlink:         Pointer to devlink instance.
-+ * @cmd:             RPSI command to be sent
-+ *
-+ * Returns: 0 on success, error on failure
-+ */
- int ipc_coredump_get_list(struct iosm_devlink *devlink, u16 cmd)
- {
- 	u32 byte_read, num_entries, file_size;
- 	struct iosm_cd_table *cd_table;
- 	u8 size[MAX_SIZE_LEN], i;
- 	char *filename;
--	int ret = 0;
-+	int ret;
- 
- 	cd_table = kzalloc(MAX_CD_LIST_SIZE, GFP_KERNEL);
- 	if (!cd_table) {
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_coredump.h b/drivers/net/wwan/iosm/iosm_ipc_coredump.h
-index d5028153c8d1..0809ba664276 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_coredump.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_coredump.h
-@@ -51,25 +51,9 @@ struct iosm_cd_table {
- 	struct iosm_cd_list list;
- } __packed;
- 
--/**
-- * ipc_coredump_collect - To collect coredump
-- * @devlink:		Pointer to devlink instance.
-- * @data:		Pointer to snapshot
-- * @entry:		ID of requested snapshot
-- * @region_size:	Region size
-- *
-- * Returns: 0 on success, error on failure
-- */
- int ipc_coredump_collect(struct iosm_devlink *devlink, u8 **data, int entry,
- 			 u32 region_size);
- 
--/**
-- * ipc_coredump_get_list - Get coredump list
-- * @devlink:         Pointer to devlink instance.
-- * @cmd:	     RPSI command to be sent
-- *
-- * Returns: 0 on success, error on failure
-- */
- int ipc_coredump_get_list(struct iosm_devlink *devlink, u16 cmd);
- 
- #endif /* _IOSM_IPC_COREDUMP_H_ */
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_devlink.c b/drivers/net/wwan/iosm/iosm_ipc_devlink.c
-index 7fd7956cc61e..eb96e7356868 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_devlink.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_devlink.c
-@@ -134,11 +134,11 @@ static int ipc_devlink_flash_update(struct devlink *devlink,
- {
- 	struct iosm_devlink *ipc_devlink = devlink_priv(devlink);
- 	enum iosm_flash_comp_type fls_type;
--	u32 rc = -EINVAL;
-+	int rc = -EINVAL;
- 	u8 *mdm_rsp;
- 
- 	if (!params->component)
--		return rc;
-+		return -EINVAL;
- 
- 	mdm_rsp = kzalloc(IOSM_EBL_DW_PACK_SIZE, GFP_KERNEL);
- 	if (!mdm_rsp)
-@@ -153,11 +153,12 @@ static int ipc_devlink_flash_update(struct devlink *devlink,
- 		break;
- 	case FLASH_COMP_TYPE_EBL:
- 		rc = ipc_flash_boot_ebl(ipc_devlink, params->fw);
--		if (!rc)
--			rc = ipc_flash_boot_set_capabilities(ipc_devlink,
--							     mdm_rsp);
--		if (!rc)
--			rc = ipc_flash_read_swid(ipc_devlink, mdm_rsp);
-+		if (rc)
-+			break;
-+		rc = ipc_flash_boot_set_capabilities(ipc_devlink, mdm_rsp);
-+		if (rc)
-+			break;
-+		rc = ipc_flash_read_swid(ipc_devlink, mdm_rsp);
- 		break;
- 	case FLASH_COMP_TYPE_FLS:
- 		rc = ipc_flash_send_fls(ipc_devlink, params->fw, mdm_rsp);
-@@ -185,7 +186,14 @@ static const struct devlink_ops devlink_flash_ops = {
- 	.flash_update = ipc_devlink_flash_update,
- };
- 
--/* Send command to modem to collect data */
-+/**
-+ * ipc_devlink_send_cmd - Send command to Modem
-+ * @ipc_devlink: Pointer to struct iosm_devlink
-+ * @cmd:         Command to be sent to modem
-+ * @entry:       Command entry number
-+ *
-+ * Returns:      0 on success and failure value on error
-+ */
- int ipc_devlink_send_cmd(struct iosm_devlink *ipc_devlink, u16 cmd, u32 entry)
- {
- 	struct iosm_rpsi_cmd rpsi_cmd;
-@@ -199,6 +207,7 @@ int ipc_devlink_send_cmd(struct iosm_devlink *ipc_devlink, u16 cmd, u32 entry)
- 					  sizeof(rpsi_cmd));
- }
- 
-+/* Function to create snapshot */
- static int ipc_devlink_coredump_snapshot(struct devlink *dl,
- 					 const struct devlink_region_ops *ops,
- 					 struct netlink_ext_ack *extack,
-@@ -223,7 +232,8 @@ static int ipc_devlink_coredump_snapshot(struct devlink *dl,
- 	if (cd_list->entry == (IOSM_NOF_CD_REGION - 1))
- 		ipc_coredump_get_list(ipc_devlink, rpsi_cmd_coredump_end);
- 
--	return rc;
-+	return 0;
-+
- coredump_collect_err:
- 	ipc_coredump_get_list(ipc_devlink, rpsi_cmd_coredump_end);
- 	return rc;
-@@ -270,7 +280,12 @@ static void ipc_devlink_destroy_region(struct iosm_devlink *ipc_devlink)
- 		devlink_region_destroy(ipc_devlink->cd_regions[i]);
- }
- 
--/* Handle registration to devlink framework */
-+/**
-+ * ipc_devlink_init - Initialize/register devlink to IOSM driver
-+ * @ipc_imem:   Pointer to struct iosm_imem
-+ *
-+ * Returns:     Pointer to iosm_devlink on success and NULL on failure
-+ */
- struct iosm_devlink *ipc_devlink_init(struct iosm_imem *ipc_imem)
- {
- 	struct ipc_chnl_cfg chnl_cfg_flash = { 0 };
-@@ -341,7 +356,10 @@ struct iosm_devlink *ipc_devlink_init(struct iosm_imem *ipc_imem)
- 	return NULL;
- }
- 
--/* Handle unregistration of devlink */
-+/**
-+ * ipc_devlink_deinit - To unintialize the devlink from IOSM driver.
-+ * @ipc_devlink:        Devlink instance
-+ */
- void ipc_devlink_deinit(struct iosm_devlink *ipc_devlink)
- {
- 	struct devlink *devlink_ctx = ipc_devlink->devlink_ctx;
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_devlink.h b/drivers/net/wwan/iosm/iosm_ipc_devlink.h
-index 392735080cb3..fa2b388a2f8a 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_devlink.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_devlink.h
-@@ -180,28 +180,10 @@ struct iosm_rpsi_cmd {
- 	__le16	crc;
- };
- 
--/**
-- * ipc_devlink_init - To initialize the devlink to IOSM driver
-- * @ipc_imem:	Pointer to struct iosm_imem
-- *
-- * Returns:	Pointer to iosm_devlink on success and NULL on failure
-- */
- struct iosm_devlink *ipc_devlink_init(struct iosm_imem *ipc_imem);
- 
--/**
-- * ipc_devlink_deinit - To unintialize the devlink from IOSM driver.
-- * @ipc_devlink:	Devlink instance
-- */
- void ipc_devlink_deinit(struct iosm_devlink *ipc_devlink);
- 
--/**
-- * ipc_devlink_send_cmd - Send command to Modem
-- * @ipc_devlink: Pointer to struct iosm_devlink
-- * @cmd:	 Command to be sent to modem
-- * @entry:	 Command entry number
-- *
-- * Returns:	 0 on success and failure value on error
-- */
- int ipc_devlink_send_cmd(struct iosm_devlink *ipc_devlink, u16 cmd, u32 entry);
- 
- #endif /* _IOSM_IPC_DEVLINK_H */
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_flash.c b/drivers/net/wwan/iosm/iosm_ipc_flash.c
-index 3d2f1ec6da00..ebceedf7c9f5 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_flash.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_flash.c
-@@ -40,7 +40,6 @@ static int ipc_flash_proc_check_ebl_rsp(void *hdr_rsp, void *payload_rsp)
- {
- 	struct iosm_ebl_error  *err_info = payload_rsp;
- 	u16 *rsp_code = hdr_rsp;
--	int res = 0;
- 	u32 i;
- 
- 	if (*rsp_code == IOSM_EBL_RSP_BUFF) {
-@@ -51,10 +50,10 @@ static int ipc_flash_proc_check_ebl_rsp(void *hdr_rsp, void *payload_rsp)
- 				       err_info->error[i].error_code);
- 			}
- 		}
--		res = -EINVAL;
-+		return -EINVAL;
- 	}
- 
--	return res;
-+	return 0;
- }
- 
- /* Send data to the modem */
-@@ -90,7 +89,12 @@ static int ipc_flash_send_data(struct iosm_devlink *ipc_devlink, u32 size,
- 	return ret;
- }
- 
--/* Allocate flash channel and read LER data from modem */
-+/**
-+ * ipc_flash_link_establish - Flash link establishment
-+ * @ipc_imem:           Pointer to struct iosm_imem
-+ *
-+ * Returns:     0 on success and failure value on error
-+ */
- int ipc_flash_link_establish(struct iosm_imem *ipc_imem)
- {
- 	u8 ler_data[IOSM_LER_RSP_SIZE];
-@@ -109,6 +113,7 @@ int ipc_flash_link_establish(struct iosm_imem *ipc_imem)
- 
- 	if (bytes_read != IOSM_LER_RSP_SIZE)
- 		goto devlink_read_fail;
-+
- 	return 0;
- 
- devlink_read_fail:
-@@ -179,12 +184,16 @@ static int ipc_flash_send_receive(struct iosm_devlink *ipc_devlink, u16 pack_id,
- 	return ret;
- }
- 
--/* Set the capabilities for the EBL */
-+/**
-+ * ipc_flash_boot_set_capabilities  - Set modem boot capabilities in flash
-+ * @ipc_devlink:        Pointer to devlink structure
-+ * @mdm_rsp:            Pointer to modem response buffer
-+ *
-+ * Returns:             0 on success and failure value on error
-+ */
- int ipc_flash_boot_set_capabilities(struct iosm_devlink *ipc_devlink,
- 				    u8 *mdm_rsp)
- {
--	int ret;
--
- 	ipc_devlink->ebl_ctx.ebl_sw_info_version =
- 			ipc_devlink->ebl_ctx.m_ebl_resp[EBL_RSP_SW_INFO_VER];
- 	ipc_devlink->ebl_ctx.m_ebl_resp[EBL_SKIP_ERASE] = IOSM_CAP_NOT_ENHANCED;
-@@ -205,10 +214,9 @@ int ipc_flash_boot_set_capabilities(struct iosm_devlink *ipc_devlink,
- 	/* Write back the EBL capability to modem
- 	 * Request Set Protcnf command
- 	 */
--	ret = ipc_flash_send_receive(ipc_devlink, FLASH_SET_PROT_CONF,
-+	return ipc_flash_send_receive(ipc_devlink, FLASH_SET_PROT_CONF,
- 				     ipc_devlink->ebl_ctx.m_ebl_resp,
- 				     IOSM_EBL_RSP_SIZE, mdm_rsp);
--	return ret;
- }
- 
- /* Read the SWID type and SWID value from the EBL */
-@@ -380,7 +388,14 @@ static int ipc_flash_download_region(struct iosm_devlink *ipc_devlink,
- 	return ret;
- }
- 
--/* Flash the individual fls files */
-+/**
-+ * ipc_flash_send_fls  - Inject Modem subsystem fls file to device
-+ * @ipc_devlink:        Pointer to devlink structure
-+ * @fw:                 FW image
-+ * @mdm_rsp:            Pointer to modem response buffer
-+ *
-+ * Returns:             0 on success and failure value on error
-+ */
- int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
- 		       const struct firmware *fw, u8 *mdm_rsp)
- {
-@@ -420,7 +435,13 @@ int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
- 	return ret;
- }
- 
--/* Inject RPSI */
-+/**
-+ * ipc_flash_boot_psi - Inject PSI image
-+ * @ipc_devlink:        Pointer to devlink structure
-+ * @fw:                 FW image
-+ *
-+ * Returns:             0 on success and failure value on error
-+ */
- int ipc_flash_boot_psi(struct iosm_devlink *ipc_devlink,
- 		       const struct firmware *fw)
- {
-@@ -470,7 +491,13 @@ int ipc_flash_boot_psi(struct iosm_devlink *ipc_devlink,
- 	return ret;
- }
- 
--/* Inject EBL */
-+/**
-+ * ipc_flash_boot_ebl  - Inject EBL image
-+ * @ipc_devlink:        Pointer to devlink structure
-+ * @fw:                 FW image
-+ *
-+ * Returns:             0 on success and failure value on error
-+ */
- int ipc_flash_boot_ebl(struct iosm_devlink *ipc_devlink,
- 		       const struct firmware *fw)
- {
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_flash.h b/drivers/net/wwan/iosm/iosm_ipc_flash.h
-index aee848927228..132d59d60fbe 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_flash.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_flash.h
-@@ -211,61 +211,19 @@ struct iosm_flash_data {
- 	__le32  msg_length;
- };
- 
--/**
-- * ipc_flash_boot_psi - Inject PSI image
-- * @ipc_devlink:	Pointer to devlink structure
-- * @fw:			FW image
-- *
-- * Returns:             0 on success and failure value on error
-- */
- int ipc_flash_boot_psi(struct iosm_devlink *ipc_devlink,
- 		       const struct firmware *fw);
- 
--/**
-- * ipc_flash_boot_ebl  - Inject EBL image
-- * @ipc_devlink:        Pointer to devlink structure
-- * @fw:			FW image
-- *
-- * Returns:             0 on success and failure value on error
-- */
- int ipc_flash_boot_ebl(struct iosm_devlink *ipc_devlink,
- 		       const struct firmware *fw);
- 
--/**
-- * ipc_flash_boot_set_capabilities  - Set modem bool capabilities in flash
-- * @ipc_devlink:        Pointer to devlink structure
-- * @mdm_rsp:		Pointer to modem response buffer
-- *
-- * Returns:             0 on success and failure value on error
-- */
- int ipc_flash_boot_set_capabilities(struct iosm_devlink *ipc_devlink,
- 				    u8 *mdm_rsp);
- 
--/**
-- * ipc_flash_link_establish - Flash link establishment
-- * @ipc_imem:		Pointer to struct iosm_imem
-- *
-- * Returns:	0 on success and failure value on error
-- */
- int ipc_flash_link_establish(struct iosm_imem *ipc_imem);
- 
--/**
-- * ipc_flash_read_swid - Get swid during flash phase
-- * @ipc_devlink:        Pointer to devlink structure
-- * @mdm_rsp:		Pointer to modem response buffer
-- *
-- * Returns:             0 on success and failure value on error
-- */
- int ipc_flash_read_swid(struct iosm_devlink *ipc_devlink, u8 *mdm_rsp);
- 
--/**
-- * ipc_flash_send_fls  - Inject Modem subsystem fls file to device
-- * @ipc_devlink:        Pointer to devlink structure
-- * @fw:			FW image
-- * @mdm_rsp:		Pointer to modem response buffer
-- *
-- * Returns:             0 on success and failure value on error
-- */
- int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
- 		       const struct firmware *fw, u8 *mdm_rsp);
- #endif
--- 
-2.25.1
+Anything I can do to help debug this?
 
+thanks,
+
+greg k-h
