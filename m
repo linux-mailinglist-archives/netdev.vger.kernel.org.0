@@ -2,213 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA0041461E
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 12:26:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B914841467B
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 12:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234692AbhIVK1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 06:27:37 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:55435 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229651AbhIVK1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 06:27:36 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 719BD5C009C;
-        Wed, 22 Sep 2021 06:26:06 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 22 Sep 2021 06:26:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=ZqL05DzhAo8e0+vl6
-        2ZDDSJDGZl2VPAts3xSPMZDdU0=; b=S6YuflkhkfmR1A8O/8TDNyVhPUE67AKSz
-        8SneRl0ZIPzCBgfx8uc8M9ZwsVoRMrfWjyYVh07jqQBi3pYaDxlcCeUnrsb30dHb
-        gvd44VZUkC6gRbDklEGOmvqf4fvG/Yiq9gGBW6JhqfOVOJkxyuc82rb2/kBhRtTV
-        7snkkOOkR2DXXrvUw4CBHPMkytguvXXgAZJ4RJ9/ZQ6U7DffdVetr1TSlRszPyqy
-        8qxKz8GaCUUHEQrjtuh9zIOz6CXWEcBqTS09Y5vh3/iL2N603Ejs+uHOZSM3/8jW
-        OPUryUuHq+ZgMz8JRx5VJmqnK3ORdexJ7yK/JNbGTkq/WvepTfOlQ==
-X-ME-Sender: <xms:vQRLYZWJ747h57gafusnZmmBbxhi6TLBlhcpzRGRk8Mxc9OXBJVl3Q>
-    <xme:vQRLYZmO62Rak9riaYb8pjGaWss16IJu7fqn9xOS0vOe_P83fhEka7-Vgg9AkuoQP
-    Wqqwv1NZccVo_I>
-X-ME-Received: <xmr:vQRLYVaF1bTkpAmExZ0H6mM6BYdI-rXvw8i4NbHZHwBCgl1E6DqItkNvBUHek3J0CLJ2KkxjvB8uKgYRE7E2P6r5hhR4rmwyCU2Zs_zHOvWNYA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudeijedgvdejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghr
-    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:vQRLYcV14JhrRgZHybDnpR2vEZtE-atWm6uWlavIhSjc2iI4mQhWwg>
-    <xmx:vQRLYTnnQGX6QuXvQ1SvhIA2fhZnymIrqGKEho1vZLKSOfOfE4C8rQ>
-    <xmx:vQRLYZdF0oPZ1jvnx-MBJHrMQ9Ag7YleqvK99NqsuAd2E-rT1f3XpA>
-    <xmx:vgRLYRZ-1gy1g6XORXSBtHf2bc0mcHWy2o0oNM1Fc8ITrsWd6PzzJg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 22 Sep 2021 06:26:03 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, petrm@nvidia.com, jiri@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net] nexthop: Fix memory leaks in nexthop notification chain listeners
-Date:   Wed, 22 Sep 2021 13:25:40 +0300
-Message-Id: <20210922102540.808211-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
+        id S235053AbhIVKeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 06:34:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36813 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235001AbhIVKek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 06:34:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632306790;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eSL0RGR02+ETLFprPy9AGNzZ8i/AOq/enLbPN5MAacg=;
+        b=Q84LFqrdq7lYkvmDsmSrpdmCVYJ8yNcoyxXMZNsJrUl3CbjT66An8iIKOcwf+/DCjshbaP
+        O4fLji4cFUFhczWq7z+Fui7qiwcvA/LVnONstQ/Abg3DWWLrLzoKoj19giNlKpT6ifNQMe
+        1LotWivxfGqouuY7VtI7r31eQz4RxY4=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-541-nr0FpaaHPQ6wS-S51JOccw-1; Wed, 22 Sep 2021 06:32:59 -0400
+X-MC-Unique: nr0FpaaHPQ6wS-S51JOccw-1
+Received: by mail-wr1-f69.google.com with SMTP id m18-20020adfe952000000b0015b0aa32fd6so1726297wrn.12
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 03:32:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=eSL0RGR02+ETLFprPy9AGNzZ8i/AOq/enLbPN5MAacg=;
+        b=XwXH9tefpYxJcWp7YOhZ81xoi29cftHNqKFl170hJNIPvYojbXT4/lX1rwPmHHkl0J
+         IqEskN4HhCmDOQ/OnjVb8jBTo2EDF7jLtPzi5TWVgczXc+QttK+KNkJf+qaOrea9DS/p
+         jMZ2ICoFZtyTDPDcFQzkUhEzmTlXmPun9uXDOa45cR2OK6/rW4+Vk2vrr0U1BVyMTKtD
+         ZCdnzq3c9vVpJ6UKmutpqWXPaMiQElQ2/Bm+mbiSMiBt5tLPWAn1LQYqnU6Dv1SJlYZQ
+         7Eb3bEfWvsfoMBQ/eJd21YN0X2BKkdGl/FEcKzAPA/NSXL8FIvcssQuH2UeyyGBu+SLO
+         zeNg==
+X-Gm-Message-State: AOAM531BJMLZlwt56ea2fJRzCEvqMR0bHZII+1tuZg8kE7y9xt0LtYLI
+        EfKkK5B4dIZ3asK6AgQ5VC08BX5YZ2GqmfVLINTEOPfDyohcG8KLRZ7fMXs3Wxzsa3UbhyoNcNE
+        cLR0oc6kKPmSghoMA
+X-Received: by 2002:a5d:404b:: with SMTP id w11mr40359288wrp.437.1632306778478;
+        Wed, 22 Sep 2021 03:32:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzCNKW1oFUoHevtzLoWvSCH7OLS39ZQzOJ4rhBh7tlsl9vJfben8sgiyRTsICuwBK7jRIBY2g==
+X-Received: by 2002:a5d:404b:: with SMTP id w11mr40359269wrp.437.1632306778237;
+        Wed, 22 Sep 2021 03:32:58 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-102-46.dyn.eolo.it. [146.241.102.46])
+        by smtp.gmail.com with ESMTPSA id y197sm6589927wmc.18.2021.09.22.03.32.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Sep 2021 03:32:57 -0700 (PDT)
+Message-ID: <7de92627f85522bf5640defe16eee6c8825f5c55.camel@redhat.com>
+Subject: Re: [syzbot] WARNING in mptcp_sendmsg_frag
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     syzbot <syzbot+263a248eec3e875baa7b@syzkaller.appspotmail.com>,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Date:   Wed, 22 Sep 2021 12:32:56 +0200
+In-Reply-To: <00000000000015991c05cc43a736@google.com>
+References: <00000000000015991c05cc43a736@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+On Sat, 2021-09-18 at 04:50 -0700, syzbot wrote:
+> syzbot has found a reproducer for the following issue on:
+> 
+> HEAD commit:    02319bf15acf net: dsa: bcm_sf2: Fix array overrun in bcm_s..
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=170f9e27300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=6d93fe4341f98704
+> dashboard link: https://syzkaller.appspot.com/bug?extid=263a248eec3e875baa7b
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1507cd8d300000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=174c8017300000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+263a248eec3e875baa7b@syzkaller.appspotmail.com
+> 
+> ------------[ cut here ]------------
+> WARNING: CPU: 0 PID: 7032 at net/mptcp/protocol.c:1366 mptcp_sendmsg_frag+0x1362/0x1bc0 net/mptcp/protocol.c:1366
+> Modules linked in:
+> CPU: 1 PID: 7032 Comm: syz-executor845 Not tainted 5.15.0-rc1-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:mptcp_sendmsg_frag+0x1362/0x1bc0 net/mptcp/protocol.c:1366
+> Code: ff 4c 8b 74 24 50 48 8b 5c 24 58 e9 0f fb ff ff e8 83 40 8b f8 4c 89 e7 45 31 ed e8 88 57 2e fe e9 81 f4 ff ff e8 6e 40 8b f8 <0f> 0b 41 bd ea ff ff ff e9 6f f4 ff ff 4c 89 e7 e8 b9 89 d2 f8 e9
+> RSP: 0018:ffffc90003acf830 EFLAGS: 00010293
+> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> RDX: ffff888072918000 RSI: ffffffff88eacb72 RDI: 0000000000000003
+> RBP: ffff88807a182580 R08: 0000000000000000 R09: 0000000000000000
+> R10: ffffffff88eac1a7 R11: 0000000000000000 R12: ffff88801a08a000
+> R13: 0000000000000000 R14: ffff888018cb9b80 R15: ffff88801b4f2340
+> FS:  000055555723b300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000000020000380 CR3: 000000007bebe000 CR4: 00000000001506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  __mptcp_push_pending+0x1fb/0x6b0 net/mptcp/protocol.c:1547
+>  mptcp_sendmsg+0xc29/0x1bc0 net/mptcp/protocol.c:1748
+>  inet6_sendmsg+0x99/0xe0 net/ipv6/af_inet6.c:643
+>  sock_sendmsg_nosec net/socket.c:704 [inline]
+>  sock_sendmsg+0xcf/0x120 net/socket.c:724
+>  sock_write_iter+0x2a0/0x3e0 net/socket.c:1057
+>  call_write_iter include/linux/fs.h:2163 [inline]
+>  new_sync_write+0x40b/0x640 fs/read_write.c:507
+>  vfs_write+0x7cf/0xae0 fs/read_write.c:594
+>  ksys_write+0x1ee/0x250 fs/read_write.c:647
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7f40ee3c4fb9
+> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007ffd96b7a0f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f40ee3c4fb9
+> RDX: 00000000000e7b78 RSI: 0000000020000000 RDI: 0000000000000003
+> RBP: 0000000000000000 R08: 0000000000f0b5ff R09: 0000000000f0b5ff
+> R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000012096
+> R13: 00007ffd96b7a120 R14: 00007ffd96b7a110 R15: 00007ffd96b7a104
 
-syzkaller discovered memory leaks [1] that can be reduced to the
-following commands:
+#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
 
- # ip nexthop add id 1 blackhole
- # devlink dev reload pci/0000:06:00.0
+The debug code helped a bit. It looks like we have singed/unsigned
+comparisons issue
 
-As part of the reload flow, mlxsw will unregister its netdevs and then
-unregister from the nexthop notification chain. Before unregistering
-from the notification chain, mlxsw will receive delete notifications for
-nexthop objects using netdevs registered by mlxsw or their uppers. mlxsw
-will not receive notifications for nexthops using netdevs that are not
-dismantled as part of the reload flow. For example, the blackhole
-nexthop above that internally uses the loopback netdev as its nexthop
-device.
-
-One way to fix this problem is to have listeners flush their nexthop
-tables after unregistering from the notification chain. This is
-error-prone as evident by this patch and also not symmetric with the
-registration path where a listener receives a dump of all the existing
-nexthops.
-
-Therefore, fix this problem by replaying delete notifications for the
-listener being unregistered. This is symmetric to the registration path
-and also consistent with the netdev notification chain.
-
-The above means that unregister_nexthop_notifier(), like
-register_nexthop_notifier(), will have to take RTNL in order to iterate
-over the existing nexthops and that any callers of the function cannot
-hold RTNL. This is true for mlxsw and netdevsim, but not for the VXLAN
-driver. To avoid a deadlock, change the latter to unregister its nexthop
-listener without holding RTNL, making it symmetric to the registration
-path.
-
-[1]
-unreferenced object 0xffff88806173d600 (size 512):
-  comm "syz-executor.0", pid 1290, jiffies 4295583142 (age 143.507s)
-  hex dump (first 32 bytes):
-    41 9d 1e 60 80 88 ff ff 08 d6 73 61 80 88 ff ff  A..`......sa....
-    08 d6 73 61 80 88 ff ff 01 00 00 00 00 00 00 00  ..sa............
-  backtrace:
-    [<ffffffff81a6b576>] kmemleak_alloc_recursive include/linux/kmemleak.h:43 [inline]
-    [<ffffffff81a6b576>] slab_post_alloc_hook+0x96/0x490 mm/slab.h:522
-    [<ffffffff81a716d3>] slab_alloc_node mm/slub.c:3206 [inline]
-    [<ffffffff81a716d3>] slab_alloc mm/slub.c:3214 [inline]
-    [<ffffffff81a716d3>] kmem_cache_alloc_trace+0x163/0x370 mm/slub.c:3231
-    [<ffffffff82e8681a>] kmalloc include/linux/slab.h:591 [inline]
-    [<ffffffff82e8681a>] kzalloc include/linux/slab.h:721 [inline]
-    [<ffffffff82e8681a>] mlxsw_sp_nexthop_obj_group_create drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c:4918 [inline]
-    [<ffffffff82e8681a>] mlxsw_sp_nexthop_obj_new drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c:5054 [inline]
-    [<ffffffff82e8681a>] mlxsw_sp_nexthop_obj_event+0x59a/0x2910 drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c:5239
-    [<ffffffff813ef67d>] notifier_call_chain+0xbd/0x210 kernel/notifier.c:83
-    [<ffffffff813f0662>] blocking_notifier_call_chain kernel/notifier.c:318 [inline]
-    [<ffffffff813f0662>] blocking_notifier_call_chain+0x72/0xa0 kernel/notifier.c:306
-    [<ffffffff8384b9c6>] call_nexthop_notifiers+0x156/0x310 net/ipv4/nexthop.c:244
-    [<ffffffff83852bd8>] insert_nexthop net/ipv4/nexthop.c:2336 [inline]
-    [<ffffffff83852bd8>] nexthop_add net/ipv4/nexthop.c:2644 [inline]
-    [<ffffffff83852bd8>] rtm_new_nexthop+0x14e8/0x4d10 net/ipv4/nexthop.c:2913
-    [<ffffffff833e9a78>] rtnetlink_rcv_msg+0x448/0xbf0 net/core/rtnetlink.c:5572
-    [<ffffffff83608703>] netlink_rcv_skb+0x173/0x480 net/netlink/af_netlink.c:2504
-    [<ffffffff833de032>] rtnetlink_rcv+0x22/0x30 net/core/rtnetlink.c:5590
-    [<ffffffff836069de>] netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
-    [<ffffffff836069de>] netlink_unicast+0x5ae/0x7f0 net/netlink/af_netlink.c:1340
-    [<ffffffff83607501>] netlink_sendmsg+0x8e1/0xe30 net/netlink/af_netlink.c:1929
-    [<ffffffff832fde84>] sock_sendmsg_nosec net/socket.c:704 [inline]
-    [<ffffffff832fde84>] sock_sendmsg net/socket.c:724 [inline]
-    [<ffffffff832fde84>] ____sys_sendmsg+0x874/0x9f0 net/socket.c:2409
-    [<ffffffff83304a44>] ___sys_sendmsg+0x104/0x170 net/socket.c:2463
-    [<ffffffff83304c01>] __sys_sendmsg+0x111/0x1f0 net/socket.c:2492
-    [<ffffffff83304d5d>] __do_sys_sendmsg net/socket.c:2501 [inline]
-    [<ffffffff83304d5d>] __se_sys_sendmsg net/socket.c:2499 [inline]
-    [<ffffffff83304d5d>] __x64_sys_sendmsg+0x7d/0xc0 net/socket.c:2499
-
-Fixes: 2a014b200bbd ("mlxsw: spectrum_router: Add support for nexthop objects")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
+Tentative patch, plus debug code
 ---
- drivers/net/vxlan.c |  2 +-
- net/ipv4/nexthop.c  | 19 ++++++++++++++-----
- 2 files changed, 15 insertions(+), 6 deletions(-)
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 2602f1386160..c38506c5ea05 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1316,7 +1316,7 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 			goto alloc_skb;
+ 		}
+ 
+-		must_collapse = (info->size_goal - skb->len > 0) &&
++		must_collapse = (info->size_goal > skb->len) &&
+ 				(skb_shinfo(skb)->nr_frags < sysctl_max_skb_frags);
+ 		if (must_collapse) {
+ 			size_bias = skb->len;
+@@ -1325,7 +1325,7 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 	}
+ 
+ alloc_skb:
+-	if (!must_collapse && !ssk->sk_tx_skb_cache &&
++	if (!must_collapse &&
+ 	    !mptcp_alloc_tx_skb(sk, ssk, info->data_lock_held))
+ 		return 0;
+ 
+@@ -1363,6 +1363,10 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 	}
+ 
+ 	mpext = skb_ext_find(tail, SKB_EXT_MPTCP);
++	if (!mpext)
++		pr_warn("must_collapse=%d old skb=%p:%d avail_size=%d:%d state=%d",
++			must_collapse, skb, skb ? skb->len:0, info->size_goal, avail_size,
++			ssk->sk_state);
+ 	if (WARN_ON_ONCE(!mpext)) {
+ 		/* should never reach here, stream corrupted */
+ 		return -EINVAL;
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 5a8df5a195cb..141635a35c28 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -4756,12 +4756,12 @@ static void __net_exit vxlan_exit_batch_net(struct list_head *net_list)
- 	LIST_HEAD(list);
- 	unsigned int h;
- 
--	rtnl_lock();
- 	list_for_each_entry(net, net_list, exit_list) {
- 		struct vxlan_net *vn = net_generic(net, vxlan_net_id);
- 
- 		unregister_nexthop_notifier(net, &vn->nexthop_notifier_block);
- 	}
-+	rtnl_lock();
- 	list_for_each_entry(net, net_list, exit_list)
- 		vxlan_destroy_tunnels(net, &list);
- 
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 0e75fd3e57b4..9e8100728d46 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -3567,6 +3567,7 @@ static struct notifier_block nh_netdev_notifier = {
- };
- 
- static int nexthops_dump(struct net *net, struct notifier_block *nb,
-+			 enum nexthop_event_type event_type,
- 			 struct netlink_ext_ack *extack)
- {
- 	struct rb_root *root = &net->nexthop.rb_root;
-@@ -3577,8 +3578,7 @@ static int nexthops_dump(struct net *net, struct notifier_block *nb,
- 		struct nexthop *nh;
- 
- 		nh = rb_entry(node, struct nexthop, rb_node);
--		err = call_nexthop_notifier(nb, net, NEXTHOP_EVENT_REPLACE, nh,
--					    extack);
-+		err = call_nexthop_notifier(nb, net, event_type, nh, extack);
- 		if (err)
- 			break;
- 	}
-@@ -3592,7 +3592,7 @@ int register_nexthop_notifier(struct net *net, struct notifier_block *nb,
- 	int err;
- 
- 	rtnl_lock();
--	err = nexthops_dump(net, nb, extack);
-+	err = nexthops_dump(net, nb, NEXTHOP_EVENT_REPLACE, extack);
- 	if (err)
- 		goto unlock;
- 	err = blocking_notifier_chain_register(&net->nexthop.notifier_chain,
-@@ -3605,8 +3605,17 @@ EXPORT_SYMBOL(register_nexthop_notifier);
- 
- int unregister_nexthop_notifier(struct net *net, struct notifier_block *nb)
- {
--	return blocking_notifier_chain_unregister(&net->nexthop.notifier_chain,
--						  nb);
-+	int err;
-+
-+	rtnl_lock();
-+	err = blocking_notifier_chain_unregister(&net->nexthop.notifier_chain,
-+						 nb);
-+	if (err)
-+		goto unlock;
-+	nexthops_dump(net, nb, NEXTHOP_EVENT_DEL, NULL);
-+unlock:
-+	rtnl_unlock();
-+	return err;
- }
- EXPORT_SYMBOL(unregister_nexthop_notifier);
- 
--- 
-2.31.1
+
+
 
