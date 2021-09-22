@@ -2,90 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E97BD4151A2
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 22:50:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F26D415254
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 23:04:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237751AbhIVUwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 16:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32844 "EHLO
+        id S237807AbhIVVFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 17:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237592AbhIVUwO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 16:52:14 -0400
-Received: from wp441.webpack.hosteurope.de (wp441.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:85d2::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2859FC061574;
-        Wed, 22 Sep 2021 13:50:44 -0700 (PDT)
-Received: from [2a03:7846:b79f:101:21c:c4ff:fe1f:fd93] (helo=valdese.nms.ulrich-teichert.org); authenticated
-        by wp441.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1mT9CG-0005WO-MM; Wed, 22 Sep 2021 22:50:28 +0200
-Received: from valdese.nms.ulrich-teichert.org (localhost [127.0.0.1])
-        by valdese.nms.ulrich-teichert.org (8.15.2/8.15.2/Debian-8+deb9u1) with ESMTPS id 18MKoRqo007275
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Sep 2021 22:50:27 +0200
-Received: (from ut@localhost)
-        by valdese.nms.ulrich-teichert.org (8.15.2/8.15.2/Submit) id 18MKoNUh007272;
-        Wed, 22 Sep 2021 22:50:23 +0200
-Message-Id: <202109222050.18MKoNUh007272@valdese.nms.ulrich-teichert.org>
-Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-To:     torvalds@linux-foundation.org (Linus Torvalds)
-Date:   Wed, 22 Sep 2021 22:50:23 +0200 (CEST)
-Cc:     krypton@ulrich-teichert.org (Ulrich Teichert),
-        mcree@orcon.net.nz (Michael Cree),
-        linux@roeck-us.net (Guenter Roeck),
-        rth@twiddle.net (Richard Henderson),
-        ink@jurassic.park.msu.ru (Ivan Kokshaysky),
-        mattst88@gmail.com (Matt Turner),
-        James.Bottomley@hansenpartnership.com (James E . J . Bottomley),
-        deller@gmx.de (Helge Deller),
-        davem@davemloft.net (David S . Miller),
-        kuba@kernel.org (Jakub Kicinski),
-        linux-alpha@vger.kernel.org (alpha),
-        geert@linux-m68k.org (Geert Uytterhoeven),
-        linux-kernel@vger.kernel.org (Linux Kernel Mailing List),
-        linux-parisc@vger.kernel.org (linux-parisc),
-        netdev@vger.kernel.org (Netdev),
-        linux-sparse@vger.kernel.org (Sparse Mailing-list)
-In-Reply-To: <CAHk-=whwreptD=WByMRNsv-gfqR3oUu4v33i5Swd2dyeLObyRw@mail.gmail.com>
-From:   Ulrich Teichert <krypton@ulrich-teichert.org>
-X-Mailer: ELM [version 2.5 PL8]
+        with ESMTP id S237818AbhIVVFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 17:05:45 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F263CC061757
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 14:04:14 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id t4so14374400qkb.9
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 14:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=ijKrByR1/KtEp2Ut8Wj0vMi00kBZm/A/r1gPwOEYZIg=;
+        b=BAOKSPHIhTE7JigSclXus+jJ1kNL8ics+Pg0rEnP+ebpTVh2+qU+AUKjsqXG0/zCqu
+         H/YMq6AgyP4kWJRe7WyE7qydtoC2BIIGupm1dgufMMb7A6J/kOd6ziS6BAP/ItJ58eKO
+         br8Ozq3eikGhXV/7zngBscUFVGAIaY02qqNblxprNVAJvy4njcoB9jZBDO9NGMFJ4bAy
+         jDdy9s/pHXsMns5LWLoOlNyryAi4VFhF7YQjUE3GXAMIYH4oipKibKtNe5PP+4hywIe0
+         +fnEhxbIFYBCMN+Z9UDSOWDDS7+d+bNlXLnONuH9IcK4cORgRSMiV5LGZTskduhQqpK3
+         5xKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=ijKrByR1/KtEp2Ut8Wj0vMi00kBZm/A/r1gPwOEYZIg=;
+        b=oY7o6yxjgXRVXIbiVmM+5l4RAaK72GV0fIKjnh6icmQ3BXSxK16miLRtO3nHGG6LJT
+         YoiTHeu+4kBcNRIsT7ZMYSs/HK0Qe9anijBHjFzGezL0BJ7FDWDUkkdY4NGe8brKmTRF
+         YO0L45xJm85DPhvWRZEGfCl4KupWO40cll07Ws9q9XdR8qJ7cJsnbzFGeJmIZSbX+86V
+         NTn/1o/8huQIc55zkjoQisRFyDNYXIDvnH4yfXzONUA6e8AS0jHS0LQv25HLHFeCBzee
+         L1gfskp391GlrFIxYG/x2K1LQMC6uBaP5lKbiJJWcI8KET0wikUkR3KAttGX59dqLtw3
+         WKvQ==
+X-Gm-Message-State: AOAM533TtgTtp/1WWJhaRBiSHi9E06v1Fk6QkwLa0jwJuhPq1ZYg8qjy
+        C8MIOg8Wo4iJez0Eajxa4dBfpRTLNbHHSo6zceg=
+X-Google-Smtp-Source: ABdhPJwmrAIbGdz9BviSOHy6qOJ8mbG8Pj/ADRJ5wdO5mRLVz83jTgvLf4/yeI7sxO1dP9cc3p5a2JiBT70aO4CY/rw=
+X-Received: by 2002:a25:cd89:: with SMTP id d131mr1431503ybf.542.1632344654026;
+ Wed, 22 Sep 2021 14:04:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;ut@ulrich-teichert.org;1632343844;1aa4b7df;
-X-HE-SMSGID: 1mT9CG-0005WO-MM
+Sender: okalapab@gmail.com
+Received: by 2002:a05:7110:8224:b0:f6:e178:3ae6 with HTTP; Wed, 22 Sep 2021
+ 14:04:13 -0700 (PDT)
+From:   Aisha Al-Qaddafi <aisha.gdaff21@gmail.com>
+Date:   Wed, 22 Sep 2021 22:04:13 +0100
+X-Google-Sender-Auth: Db5LnAy1VKCWAJk-1dh4-AGq-CA
+Message-ID: <CAP_P75Sd-xrs3-AjczVhnk+MZcaWM4vv7kKTgP_ZpVJkek1CPQ@mail.gmail.com>
+Subject: My Dear Friend
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-> > I would try the SRM bootimage (make bootimage), but the build is broken:
-> 
-> The attached patch is too ugly for words, and there's no way I will
-> commit anything like this.
-> 
-> But it at least builds for and seems to successfully make an alpha
-> bootimage even when cross-compiling on x86-64.
-> 
-> So something to test, perhaps..
-
-Sure, I burned it to a CDROM and booted from that per SRM. The screen
-went black for a second, then the SRM console came back with:
-
-?05 HLT INSTR
-PC=00000000.20000014 PSL= 00000000.00000007
-
-I wonder if we would be able to see more on a serial line - I can try
-that perhaps tomorrow or at the weekend. To find out to what code the
-PC is pointing to, I would need to understand to what point in memory SRM
-loads the image into.... But this way, the process of loading the kernel
-definitely worked - I still don't understand why aboot can load the
-old kernel but not the new one. I'll have a look at the aboot sources,
-perhaps there's a certain limit on kernel size?
-
-I'm not sure if we can call this progress,
-CU,
-Uli
--- 
-Dipl. Inf. Ulrich Teichert|e-mail: Ulrich.Teichert@gmx.de | Listening to:
-Stormweg 24               |Eat Lipstick: Dirty Little Secret, The Baboon Show:
-24539 Neumuenster, Germany|Work Work Work, The Bellrays: Bad Reaction
+Assalamu alaikum,
+I came across your e-mail contact prior to a private search while in
+need of your assistance. I am Aisha Al-Qaddafi, the only biological,
+Daughter of Former President of Libya Col. Muammar Al-Qaddafi. Am a
+single Mother and a Widow with three Children. I have investment funds
+worth Twenty Seven Million Five Hundred Thousand United State Dollar
+($27.500.000.00 ) and i need a trusted  investment Manager/Partner
+because of my current refugee status, however, I am interested in you
+for investment project assistance in your country. If you are willing
+to handle this project on my behalf kindly reply urgently to enable me
+to provide you more information about the investment
+funds.
+Best Regards
