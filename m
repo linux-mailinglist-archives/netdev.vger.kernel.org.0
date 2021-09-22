@@ -2,136 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 894E94149A8
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 14:51:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 870094149BC
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 14:53:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236108AbhIVMwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 08:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33518 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236101AbhIVMwP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 08:52:15 -0400
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C22C061574;
-        Wed, 22 Sep 2021 05:50:45 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4HDynv2hbMzQk9R;
-        Wed, 22 Sep 2021 14:50:43 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Subject: Re: [PATCH 1/2] mwifiex: Use non-posted PCI register writes
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S236181AbhIVMyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 08:54:50 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54348 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236001AbhIVMym (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 08:54:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ZWdV3Ywl5E2tBReyRKkp3nub36ib8xsMWJxoWC+tqZM=; b=EFXR3GlnMnGHIw2VtBsFrp4XLU
+        5ZmpUW7Pwnd7V9z7BtVI69IYgbLKkBa6YZlMCO7gwM/msu3eBMkA6D41LWrWhJ8CTUtZbu05jLBzF
+        wZNctlNM1G4dtdIURdc7QizcwaF+yTZLSOARQwfIhJGz8+sZ5pgpyDnZ0Fwt0UrZRNTg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mT1k9-007mXu-9X; Wed, 22 Sep 2021 14:52:57 +0200
+Date:   Wed, 22 Sep 2021 14:52:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-References: <20210830123704.221494-1-verdre@v0yd.nl>
- <20210830123704.221494-2-verdre@v0yd.nl>
- <CA+ASDXPKZ0i5Bi11Q=qqppY8OCgw=7m0dnPn0s+y+GAvvQodog@mail.gmail.com>
- <CAHp75VdR4VC+Ojy9NjAtewAaPAgowq-3rffrr3uAdOeiN8gN-A@mail.gmail.com>
- <CA+ASDXNGR2=sQ+w1LkMiY_UCfaYgQ5tcu2pbBn46R2asv83sSQ@mail.gmail.com>
- <YS/rn8b0O3FPBbtm@google.com> <0ce93e7c-b041-d322-90cd-40ff5e0e8ef0@v0yd.nl>
- <CA+ASDXNMhrxX-nFrr6kBo0a0c-25+Ge2gBP2uTjE8UWJMeQO2A@mail.gmail.com>
-From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
-Message-ID: <bd64c142-93d0-c348-834c-34ed80c460f9@v0yd.nl>
-Date:   Wed, 22 Sep 2021 14:50:33 +0200
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Subject: Re: [PATCH v3 2/3] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
+Message-ID: <YUsnKX1pYc9K8f95@lunn.ch>
+References: <YUocuMM4/VKzNMXq@lunn.ch>
+ <CAJZ5v0iU3SGqrw909GLtuLwAxdyOy=pe2avxpDW+f4dP4ArhaQ@mail.gmail.com>
+ <YUo3kD9jgx6eNadX@lunn.ch>
+ <CAGETcx9hTFhY4+fHd71zYUsWW223GfUWBp8xxFCb2SNR6YUQ4Q@mail.gmail.com>
+ <YUpIgTqyrDRXMUyC@lunn.ch>
+ <CAGETcx_50KQuj0L+MCcf2Se8kpFfZwJBKP0juh_T7w+ZCs2p+g@mail.gmail.com>
+ <YUpW9LIcrcok8rBa@lunn.ch>
+ <CAGETcx_CNyKU-tXT+1_089MpVHQaBoNiZs6K__MrRXzWSi6P8g@mail.gmail.com>
+ <YUp8vu1zUzBTz6WP@lunn.ch>
+ <CAGETcx9YPZ3nSF7ghjiaALa_DMJXqkR45-VL5SA+xT_jd7V+zQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CA+ASDXNMhrxX-nFrr6kBo0a0c-25+Ge2gBP2uTjE8UWJMeQO2A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 5C450188F
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx9YPZ3nSF7ghjiaALa_DMJXqkR45-VL5SA+xT_jd7V+zQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/20/21 7:48 PM, Brian Norris wrote:
-> On Sat, Sep 18, 2021 at 12:37 AM Jonas Dreßler <verdre@v0yd.nl> wrote:
->> Thanks for the pointer to that commit Brian, it turns out this is
->> actually the change that causes the "Firmware wakeup failed" issues that
->> I'm trying to fix with the second patch here.
+> That goes back to Rafael's reply (and I agree):
 > 
-> Huh. That's interesting, although I guess it makes some sense given
-> your theory of "dropped writes". FWIW, this strategy (post a single
-> write, then wait for wakeup) is the same used by some other
-> chips/drivers too (e.g., ath10k/pci), although in those cases card
-> wakeup is much much faster. But if the bus was dropping writes
-> somehow, those strategies would fail too.
+> "Also if the probe has already started, it may still return
+> -EPROBE_DEFER at any time in theory, so as a rule the dependency is
+> actually known to be satisfied when the probe has successfully
+> completed."
 > 
->> Also my approach is a lot messier than just reverting
->> 062e008a6e83e7c4da7df0a9c6aefdbc849e2bb3 and also appears to be blocking
->> even longer...
-> 
-> For the record, in case you're talking about my data ("blocking even
-> longer"): I was only testing patch 1. Patch 2 isn't really relevant to
-> my particular systems (Rockchip RK3399 + Marvell 8997/PCIe), because
-> (a) I'm pretty sure my system isn't "dropping" any reads or writes
-> (b) all my delay is in the read-back; the Rockchip PCIe bus is waiting
-> indefinitely for the card to wake up, instead of timing out and
-> reporting all-1's like many x86 systems appear to do (I've tested
-> this).
-> 
-> So, the 6ms delay is entirely sitting in the ioread32(), not a delay loop.
-> 
-> I haven't yet tried your version 2 (which avoids the blocking read to
-> wake up; good!), but it sounds like in theory it could solve your
-> problem while avoiding 6ms delays for me. I intend to test your v2
-> this week.
-> 
+> So waiting for the probe to finish is the right behavior/intentional
+> for fw_devlink.
 
-With "blocking even longer" I meant that (on my system) the delay-loop 
-blocks even longer than waking up the card via mwifiex_read_reg() (both 
-are in the orders of milliseconds). And given that in certain cases the 
-card wakeup (or a write getting through to the card, I have no idea) can 
-take extremely long, I'd feel more confident going with the 
-mwifiex_read_reg() method to wake up the card.
+But differs to how things actually work in the driver model. The
+driver model does not care if a driver has finished probing, you can
+use a resource as soon as it is registered. Hence this whole
+problem/discussion.
 
-Anyway, you know what's even weirder with all this: I've been testing 
-the first commit of patch v2 (so just the single read-back instead of 
-the big hammer) together with 062e008a6e83e7c4da7df0a9c6aefdbc849e2bb3 
-reverted for a good week now and haven't seen any wakeup failure yet. 
-Otoh I'm fairly sure the big hammer with reading back every write wasn't 
-enough to fix the wakeup failures, otherwise I wouldn't even have 
-started working on the second commit.
-
-So that would mean there's a difference between writing and then reading 
-back vs only reading to wake up the card: Only the latter fixes the 
-wakeup failures.
-
->> Does anyone have an idea what could be the reason for the posted write
->> not going through, or could that also be a potential firmware bug in the
->> chip?
-> 
-> I have no clue about that. That does sound downright horrible, but so
-> are many things when dealing with this family of hardware/firmware.
-> I'm not sure how to prove out whether this is a host bus problem, or
-> an endpoint/firmware problem, other than perhaps trying the same
-> module/firmware on another system, if that's possible.
-> 
-> Anyway, to reiterate: I'm not fundamentally opposed to v2 (pending a
-> test run here), even if it is a bit ugly and perhaps not 100%
-> understood.
-> 
-
-I'm not 100% sure about all this yet, I think I'm gonna try to confirm 
-my older findings once again now and then we'll see. FTR, would you be 
-fine with using the mwifiex_read_reg() method to wake up the card and 
-somehow quirking your system to use write_reg()?
-
-> Brian
-> 
-
+	Andrew
