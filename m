@@ -2,138 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 899C44146D8
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 12:42:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5713C4146FE
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 12:54:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235356AbhIVKoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 06:44:09 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:47196 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235388AbhIVKn6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 06:43:58 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id EFF621A140C;
-        Wed, 22 Sep 2021 12:42:26 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 8D53A1A23F5;
-        Wed, 22 Sep 2021 12:42:26 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 2A6F2183ACDC;
-        Wed, 22 Sep 2021 18:42:24 +0800 (+08)
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
-        UNGLinuxDriver@microchip.com, vinicius.gomes@intel.com,
-        michael.chan@broadcom.com, vishal@chelsio.com, saeedm@mellanox.com,
-        jiri@mellanox.com, idosch@mellanox.com,
-        alexandre.belloni@bootlin.com, kuba@kernel.org,
-        xiaoliang.yang_1@nxp.com, po.liu@nxp.com, vladimir.oltean@nxp.com,
-        leoyang.li@nxp.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, claudiu.manoil@nxp.com
-Subject: [PATCH v4 net-next 8/8] net: dsa: felix: use vcap policer to set flow meter for psfp
-Date:   Wed, 22 Sep 2021 18:52:02 +0800
-Message-Id: <20210922105202.12134-9-xiaoliang.yang_1@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210922105202.12134-1-xiaoliang.yang_1@nxp.com>
-References: <20210922105202.12134-1-xiaoliang.yang_1@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S235070AbhIVKz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 06:55:27 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:6520 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234760AbhIVKz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 06:55:26 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18M6IRPq013649;
+        Wed, 22 Sep 2021 03:53:52 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=HeLzvEv+OHXq6mfxXu9+zfgFI2D5BDVxLkosP+DdywY=;
+ b=i14IIWdC2AKrx4PAdf08oP1RzXohRH1c6xdnlLpUdhugMKYPPkUXOceDW+iTLKfdAjg5
+ q9Xd2GKBJkuo9GcIuU6T6A00AzslUlpbq0HCnYLhveXxGGFWB2YsK/1CS0HbWDdvLCpP
+ +RrvPbXCQj/LAu/QoPa8gCuWkBP2BhZjPYjKgGGOZ9ZKrdFZbhUHSBXF3NJp5X/TcwGk
+ d6f1/3oPSLx4yweyb5KXlwdNP3Fh8bvzsmCZWZrPRh3YGuRq/a4nss1Fl0lmpao1owxY
+ X2SdxuklEjV5oMj5ViCRkHEMqqvyJKMmf27vr+50gHAUWpjHAREQNGOec6YkmB0Ac/JL pA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3b7q5djduc-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 22 Sep 2021 03:53:52 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 22 Sep
+ 2021 03:53:51 -0700
+Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
+ DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server id
+ 15.0.1497.18 via Frontend Transport; Wed, 22 Sep 2021 03:53:48 -0700
+From:   Shai Malin <smalin@marvell.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <linux-rdma@vger.kernel.org>, <jgg@ziepe.ca>, <leon@kernel.org>,
+        <aelior@marvell.com>, <smalin@marvell.com>, <malin1024@gmail.com>,
+        "Michal Kalderon" <mkalderon@marvell.com>
+Subject: [PATCH net v3] qed: rdma - don't wait for resources under hw error recovery flow
+Date:   Wed, 22 Sep 2021 13:53:26 +0300
+Message-ID: <20210922105326.10653-1-smalin@marvell.com>
+X-Mailer: git-send-email 2.16.6
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-GUID: x0ATHPK60dcjE8UiX5bAH7RSlhbNTra-
+X-Proofpoint-ORIG-GUID: x0ATHPK60dcjE8UiX5bAH7RSlhbNTra-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-22_03,2021-09-20_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add police action to set flow meter table which is defined
-in IEEE802.1Qci. Flow metering is two rates two buckets and three color
-marker to policing the frames, we only enable one rate one bucket in
-this patch.
+If the HW device is during recovery, the HW resources will never return,
+hence we shouldn't wait for the CID (HW context ID) bitmaps to clear.
+This fix speeds up the error recovery flow.
 
-Flow metering shares a same policer pool with VCAP policers, so the PSFP
-policer calls ocelot_vcap_policer_add() and ocelot_vcap_policer_del() to
-set flow meter police.
-
-Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Fixes: 64515dc899df ("qed: Add infrastructure for error detection and recovery")
+Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Shai Malin <smalin@marvell.com>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c | 32 +++++++++++++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
+Changes since v1:
+- Fix race condition (thanks to Leon Romanovsky).
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 1418d2a66bd6..1118101d0ee8 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1343,6 +1343,7 @@ static int vsc9959_port_setup_tc(struct dsa_switch *ds, int port,
+Changes since v2:
+- Comment fix.
+---
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 8 ++++++++
+ drivers/net/ethernet/qlogic/qed/qed_roce.c  | 8 ++++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+index fc8b3e64f153..186d0048a9d1 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+@@ -1297,6 +1297,14 @@ qed_iwarp_wait_cid_map_cleared(struct qed_hwfn *p_hwfn, struct qed_bmap *bmap)
+ 	prev_weight = weight;
  
- #define VSC9959_PSFP_SFID_MAX			175
- #define VSC9959_PSFP_GATE_ID_MAX		183
-+#define VSC9959_PSFP_POLICER_BASE		63
- #define VSC9959_PSFP_POLICER_MAX		383
- #define VSC9959_PSFP_GATE_LIST_NUM		4
- #define VSC9959_PSFP_GATE_CYCLETIME_MIN		5000
-@@ -1854,7 +1855,10 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot,
- 	struct felix_stream stream = {0};
- 	struct felix_stream_gate *sgi;
- 	struct ocelot_psfp_list *psfp;
-+	struct ocelot_policer pol;
- 	int ret, i, size;
-+	u64 rate, burst;
-+	u32 index;
- 
- 	psfp = &ocelot->psfp;
- 
-@@ -1873,13 +1877,33 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot,
- 			ret = vsc9959_psfp_sgi_table_add(ocelot, sgi);
- 			if (ret) {
- 				kfree(sgi);
--				return ret;
-+				goto err;
- 			}
- 			sfi.sg_valid = 1;
- 			sfi.sgid = sgi->index;
- 			kfree(sgi);
- 			break;
- 		case FLOW_ACTION_POLICE:
-+			index = a->police.index + VSC9959_PSFP_POLICER_BASE;
-+			if (index > VSC9959_PSFP_POLICER_MAX) {
-+				ret = -EINVAL;
-+				goto err;
-+			}
+ 	while (weight) {
++		/* If the HW device is during recovery, all resources are
++		 * immediately reset without receiving a per-cid indication
++		 * from HW. In this case we don't expect the cid_map to be
++		 * cleared.
++		 */
++		if (p_hwfn->cdev->recov_in_prog)
++			return 0;
 +
-+			rate = a->police.rate_bytes_ps;
-+			burst = rate * PSCHED_NS2TICKS(a->police.burst);
-+			pol = (struct ocelot_policer) {
-+				.burst = div_u64(burst, PSCHED_TICKS_PER_SEC),
-+				.rate = div_u64(rate, 1000) * 8,
-+			};
-+			ret = ocelot_vcap_policer_add(ocelot, index, &pol);
-+			if (ret)
-+				goto err;
+ 		msleep(QED_IWARP_MAX_CID_CLEAN_TIME);
+ 
+ 		weight = bitmap_weight(bmap->bitmap, bmap->max_count);
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+index f16a157bb95a..cf5baa5e59bc 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+@@ -77,6 +77,14 @@ void qed_roce_stop(struct qed_hwfn *p_hwfn)
+ 	 * Beyond the added delay we clear the bitmap anyway.
+ 	 */
+ 	while (bitmap_weight(rcid_map->bitmap, rcid_map->max_count)) {
++		/* If the HW device is during recovery, all resources are
++		 * immediately reset without receiving a per-cid indication
++		 * from HW. In this case we don't expect the cid bitmap to be
++		 * cleared.
++		 */
++		if (p_hwfn->cdev->recov_in_prog)
++			return;
 +
-+			sfi.fm_valid = 1;
-+			sfi.fmid = index;
-+			sfi.maxsdu = a->police.mtu;
-+			break;
- 		default:
- 			return -EOPNOTSUPP;
- 		}
-@@ -1916,6 +1940,9 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot,
- 	if (sfi.sg_valid)
- 		vsc9959_psfp_sgi_table_del(ocelot, sfi.sgid);
- 
-+	if (sfi.fm_valid)
-+		ocelot_vcap_policer_del(ocelot, sfi.fmid);
-+
- 	return ret;
- }
- 
-@@ -1939,6 +1966,9 @@ static int vsc9959_psfp_filter_del(struct ocelot *ocelot,
- 	if (sfi->sg_valid)
- 		vsc9959_psfp_sgi_table_del(ocelot, sfi->sgid);
- 
-+	if (sfi->fm_valid)
-+		ocelot_vcap_policer_del(ocelot, sfi->fmid);
-+
- 	vsc9959_psfp_sfi_table_del(ocelot, stream->sfid);
- 
- 	stream->sfid_valid = 0;
+ 		msleep(100);
+ 		if (wait_count++ > 20) {
+ 			DP_NOTICE(p_hwfn, "cid bitmap wait timed out\n");
 -- 
-2.17.1
+2.27.0
 
