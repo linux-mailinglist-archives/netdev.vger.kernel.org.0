@@ -2,95 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F36C4143AC
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 10:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 367854143C2
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 10:28:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233760AbhIVIYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 04:24:30 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:42170 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233349AbhIVIY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 04:24:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1632298980; x=1663834980;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xjW/845tnWGlXhM5QyPda/qgpHmpay631ISWld/+EpU=;
-  b=XP9iqA020aY470g8CV1uQUix7oTDsFCRyFbckNGxDP1WT53dsRhwI/pi
-   fbcunYzyx23l5pJi/UhW/mJTqooMZ0iNmcjg+bCQXChFn+tyJ76C2DvTB
-   yT1gtkq8+LXwmGWiXWjuX60M/Ia8SnOD17Q1UZi40/gB5m2E5rFGcuRyx
-   CHxCquof1VgH2yDMOWkF781lXM6H2zaKM2/GIICE9dMWzQswWz0uUlBd7
-   6wUqjW9/fopDba8Dnwo0ZHtkcZHmbZFXjXnYxBbVbT0ce32ThCiXg1igX
-   EaIT1HPmObgusy3BNwgh37pdNOnKyAi/MQyBhKN7KvWS2eKL2/E2eZFAF
-   w==;
-IronPort-SDR: Io11DU1oxCoW9DJBhO9Z0Tpvl9wTYnln0Mf/81sY/iYrOHQnGAb5KM0qJ/dXkef68bAa+ShXJb
- gMwGJXFfqocdln2uBliOmoA9IhRUxCUF/6WQdCvea6NEG0+oKRGxap7tvtsvCaFv+RwhCbbPeg
- SuTRI6u1DTzynxEshLUjcaF91oH/1wdA/Z0Ld3i9AsAXSC6KZ3gbstMZ/2sZKFaWPK8cxZGrcK
- GLtZt0ZZOxUgOY9EGKqsEXD4cb+iIMaztN0cAFVVJ/FMUd1Fe9q3MZr/KPdTuE8jwf1bBx6IBH
- 6TbVug5MtabHNU5QekKfZfPt
-X-IronPort-AV: E=Sophos;i="5.85,313,1624345200"; 
-   d="scan'208";a="132701188"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Sep 2021 01:22:55 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 22 Sep 2021 01:22:50 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Wed, 22 Sep 2021 01:22:49 -0700
-Date:   Wed, 22 Sep 2021 10:24:18 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <linux@armlinux.org.uk>, <f.fainelli@gmail.com>,
-        <alexandre.belloni@bootlin.com>, <vladimir.oltean@nxp.com>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-pm@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 01/12] net: mdio: mscc-miim: Fix the mdio
- controller
-Message-ID: <20210922082418.xagkhx2aw2yxfwg7@soft-dev3-1.localhost>
-References: <20210920095218.1108151-1-horatiu.vultur@microchip.com>
- <20210920095218.1108151-2-horatiu.vultur@microchip.com>
- <YUh15ieAzBiCVeX9@lunn.ch>
+        id S233756AbhIVIa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 04:30:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59700 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233349AbhIVIa0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 04:30:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D606461100;
+        Wed, 22 Sep 2021 08:28:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632299336;
+        bh=eniBOaVikcYR0yncdShWM0iESsHAaLW49bxHbWlKMmU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=A/hwgpGjVJV4n0kSuX840O/p+IGzCekgSTuOpR5XHXjjiaJPAogwBSuYFy4Atvf21
+         JeXPyuy4iDr3fKxak8SNOsuPY3ij0FmwoRqGYxjAe48QrnmwBxrtCfVvy/tXiIkmE+
+         XOv3rD2MP/FWTlscLZXhcqQpATbIuTzXkLRML9z4fcnusZss+Mk2mWUQFwI3WoqgaL
+         ue0lkqUg0CKcZWaovAy+fFo7RRvSP53ueXp+HAwrepw3xi2Lubv3engBEWVzlSwTSS
+         12e6ywfSlFIlUAoAPHV1AICWS2b+VdXAz1Il8emkQrxVgHGZ3nXs13ey6LbDGisWTr
+         VeodOgl7erARw==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
+        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>
+Subject: [PATCH rdma-next v1 0/2] Extend UAR to have DevX UID
+Date:   Wed, 22 Sep 2021 11:28:49 +0300
+Message-Id: <cover.1632299184.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YUh15ieAzBiCVeX9@lunn.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 09/20/2021 13:52, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On Mon, Sep 20, 2021 at 11:52:07AM +0200, Horatiu Vultur wrote:
-> > According to the documentation the second resource is optional. But the
-> > blamed commit ignores that and if the resource is not there it just
-> > fails.
-> >
-> > This patch reverts that to still allow the second resource to be
-> > optional because other SoC have the some MDIO controller and doesn't
-> > need to second resource.
-> >
-> > Fixes: 672a1c394950 ("net: mdio: mscc-miim: Make use of the helper function devm_platform_ioremap_resource()")
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Hi Andrew,
-> 
-> Hi Moratiu
-> 
-> The script kiddies might come long and 'fix' this again. Maybe
-> consider adding devm_platform_ioremap_resource_optional(), following
-> the pattern of other _optional() API calls. Otherwise add a comment.
+Changelog:
+v1:
+ * Renamed functions and unexport mlx5_core uar calls.
+v0: https://lore.kernel.org/all/cover.1631660943.git.leonro@nvidia.com
+----------------------------------------------------------------------
 
-Initially I think I will go with the comment. Because this patch
-actually needs to go on net.
+Hi,
 
-> 
->     Andrew
+This is short series from Meir that adds DevX UID to the UAR.
+
+Thanks
+
+Meir Lichtinger (2):
+  net/mlx5: Add uid field to UAR allocation structures
+  IB/mlx5: Enable UAR to have DevX UID
+
+ drivers/infiniband/hw/mlx5/cmd.c              | 26 +++++++++
+ drivers/infiniband/hw/mlx5/cmd.h              |  2 +
+ drivers/infiniband/hw/mlx5/main.c             | 55 +++++++++++--------
+ drivers/net/ethernet/mellanox/mlx5/core/uar.c | 14 ++---
+ include/linux/mlx5/driver.h                   |  2 -
+ include/linux/mlx5/mlx5_ifc.h                 |  4 +-
+ 6 files changed, 68 insertions(+), 35 deletions(-)
 
 -- 
-/Horatiu
+2.31.1
+
