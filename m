@@ -2,140 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF94C414789
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 13:14:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D8DD4147A8
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 13:18:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235457AbhIVLQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 07:16:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30443 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235596AbhIVLPD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 07:15:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632309213;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=6MJLzs3RgOnGd2L26lolcdYpa0Z0q7F8vXIXjzaJmCk=;
-        b=ZAsNvscnqk2bTH2MEkITn7GyX/hHJ0hh3LjVD2J3Mn56/CveqCIgOI6m/sffeirl/LrxqB
-        Y6KSnGwpsFPdC+0bxS3xhxzurNKzkfld3wJ4a+RH7Gtqah0ef1ZkS/v0JOzDaDv/FMaLoq
-        eEaoo0Csc+GEYVKuWx0Ae61coHAp1lE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-403-3y-DDXdjMzqehddmkTJ4lQ-1; Wed, 22 Sep 2021 07:13:31 -0400
-X-MC-Unique: 3y-DDXdjMzqehddmkTJ4lQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 63021108468D;
-        Wed, 22 Sep 2021 11:13:30 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.193.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D392B12D4A;
-        Wed, 22 Sep 2021 11:13:28 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        id S235484AbhIVLTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 07:19:33 -0400
+Received: from mga18.intel.com ([134.134.136.126]:65341 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230171AbhIVLTc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 07:19:32 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10114"; a="210649436"
+X-IronPort-AV: E=Sophos;i="5.85,313,1624345200"; 
+   d="scan'208";a="210649436"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2021 04:18:00 -0700
+X-IronPort-AV: E=Sophos;i="5.85,313,1624345200"; 
+   d="scan'208";a="474522094"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2021 04:17:53 -0700
+Received: from andy by smile with local (Exim 4.95-RC2)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1mT0G6-004ANk-OB;
+        Wed, 22 Sep 2021 14:17:50 +0300
+Date:   Wed, 22 Sep 2021 14:17:50 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonas =?iso-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.linux.dev
-Subject: [PATCH net] mptcp: ensure tx skbs always have the MPTCP ext
-Date:   Wed, 22 Sep 2021 13:12:17 +0200
-Message-Id: <706c577fde04fbb8285c8fc078a2c6d0a4bf9564.1632309038.git.pabeni@redhat.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Brian Norris <briannorris@chromium.org>, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] mwifiex: Use non-posted PCI write when setting TX
+ ring write pointer
+Message-ID: <YUsQ3jU1RuThUYn8@smile.fi.intel.com>
+References: <20210914114813.15404-1-verdre@v0yd.nl>
+ <20210914114813.15404-2-verdre@v0yd.nl>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20210914114813.15404-2-verdre@v0yd.nl>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Due to signed/unsigned comparison, the expression:
+On Tue, Sep 14, 2021 at 01:48:12PM +0200, Jonas Dreﬂler wrote:
+> On the 88W8897 card it's very important the TX ring write pointer is
+> updated correctly to its new value before setting the TX ready
+> interrupt, otherwise the firmware appears to crash (probably because
+> it's trying to DMA-read from the wrong place). The issue is present in
+> the latest firmware version 15.68.19.p21 of the pcie+usb card.
 
-	info->size_goal - skb->len > 0
+Please, be consistent in the commit message(s) and the code (esp. if the term
+comes from a specification).
 
-evaluates to true when the size goal is smaller than the
-skb size. That results in lack of tx cache refill, so that
-the skb allocated by the core TCP code lacks the required
-MPTCP skb extensions.
+Here, PCIe (same in the code, at least that I have noticed, but should be done
+everywhere).
 
-Due to the above, syzbot is able to trigger the following WARN_ON():
+> Since PCI uses "posted writes" when writing to a register, it's not
+> guaranteed that a write will happen immediately. That means the pointer
+> might be outdated when setting the TX ready interrupt, leading to
+> firmware crashes especially when ASPM L1 and L1 substates are enabled
+> (because of the higher link latency, the write will probably take
+> longer).
+> 
+> So fix those firmware crashes by always using a non-posted write for
+> this specific register write. We do that by simply reading back the
+> register after writing it, just as a few other PCI drivers do.
+> 
+> This fixes a bug where during rx/tx traffic and with ASPM L1 substates
 
-WARNING: CPU: 1 PID: 810 at net/mptcp/protocol.c:1366 mptcp_sendmsg_frag+0x1362/0x1bc0 net/mptcp/protocol.c:1366
-Modules linked in:
-CPU: 1 PID: 810 Comm: syz-executor.4 Not tainted 5.14.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:mptcp_sendmsg_frag+0x1362/0x1bc0 net/mptcp/protocol.c:1366
-Code: ff 4c 8b 74 24 50 48 8b 5c 24 58 e9 0f fb ff ff e8 13 44 8b f8 4c 89 e7 45 31 ed e8 98 57 2e fe e9 81 f4 ff ff e8 fe 43 8b f8 <0f> 0b 41 bd ea ff ff ff e9 6f f4 ff ff 4c 89 e7 e8 b9 8e d2 f8 e9
-RSP: 0018:ffffc9000531f6a0 EFLAGS: 00010216
-RAX: 000000000000697f RBX: 0000000000000000 RCX: ffffc90012107000
-RDX: 0000000000040000 RSI: ffffffff88eac9e2 RDI: 0000000000000003
-RBP: ffff888078b15780 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff88eac017 R11: 0000000000000000 R12: ffff88801de0a280
-R13: 0000000000006b58 R14: ffff888066278280 R15: ffff88803c2fe9c0
-FS:  00007fd9f866e700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007faebcb2f718 CR3: 00000000267cb000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __mptcp_push_pending+0x1fb/0x6b0 net/mptcp/protocol.c:1547
- mptcp_release_cb+0xfe/0x210 net/mptcp/protocol.c:3003
- release_sock+0xb4/0x1b0 net/core/sock.c:3206
- sk_stream_wait_memory+0x604/0xed0 net/core/stream.c:145
- mptcp_sendmsg+0xc39/0x1bc0 net/mptcp/protocol.c:1749
- inet6_sendmsg+0x99/0xe0 net/ipv6/af_inet6.c:643
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- sock_write_iter+0x2a0/0x3e0 net/socket.c:1057
- call_write_iter include/linux/fs.h:2163 [inline]
- new_sync_write+0x40b/0x640 fs/read_write.c:507
- vfs_write+0x7cf/0xae0 fs/read_write.c:594
- ksys_write+0x1ee/0x250 fs/read_write.c:647
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665f9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fd9f866e188 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 000000000056c038 RCX: 00000000004665f9
-RDX: 00000000000e7b78 RSI: 0000000020000000 RDI: 0000000000000003
-RBP: 00000000004bfcc4 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056c038
-R13: 0000000000a9fb1f R14: 00007fd9f866e300 R15: 0000000000022000
+Ditto. TX/RX.
 
-Fix the issue rewriting the relevant expression to avoid
-sign-related problems - note: size_goal is always >= 0.
+> enabled (the enabled substates are platform dependent), the firmware
+> crashes and eventually a command timeout appears in the logs.
 
-Additionally, ensure that the skb in the tx cache always carries
-the relevant extension.
+Should it have a Fixes tag?
 
-Reported-and-tested-by: syzbot+263a248eec3e875baa7b@syzkaller.appspotmail.com
-Fixes: 1094c6fe7280 ("mptcp: fix possible divide by zero")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/protocol.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Jonas Dreﬂler <verdre@v0yd.nl>
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 2602f1386160..dbcebf56798f 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1316,7 +1316,7 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
- 			goto alloc_skb;
- 		}
- 
--		must_collapse = (info->size_goal - skb->len > 0) &&
-+		must_collapse = (info->size_goal > skb->len) &&
- 				(skb_shinfo(skb)->nr_frags < sysctl_max_skb_frags);
- 		if (must_collapse) {
- 			size_bias = skb->len;
-@@ -1325,7 +1325,7 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
- 	}
- 
- alloc_skb:
--	if (!must_collapse && !ssk->sk_tx_skb_cache &&
-+	if (!must_collapse &&
- 	    !mptcp_alloc_tx_skb(sk, ssk, info->data_lock_held))
- 		return 0;
- 
+...
+
+> -		/* Write the TX ring write pointer in to reg->tx_wrptr */
+> -		if (mwifiex_write_reg(adapter, reg->tx_wrptr,
+> -				      card->txbd_wrptr | rx_val)) {
+> +		/* Write the TX ring write pointer in to reg->tx_wrptr.
+> +		 * The firmware (latest version 15.68.19.p21) of the 88W8897
+> +		 * pcie+usb card seems to crash when getting the TX ready
+> +		 * interrupt but the TX ring write pointer points to an outdated
+> +		 * address, so it's important we do a non-posted write here to
+> +		 * force the completion of the write.
+> +		 */
+> +		if (mwifiex_write_reg_np(adapter, reg->tx_wrptr,
+> +				        card->txbd_wrptr | rx_val)) {
+
+>  			mwifiex_dbg(adapter, ERROR,
+>  				    "SEND DATA: failed to write reg->tx_wrptr\n");
+>  			ret = -1;
+
+I'm not sure how this is not a dead code.
+
+On top of that, I would rather to call old function and explicitly put the
+dummy read after it.
+
+		/* Write the TX ring write pointer in to reg->tx_wrptr */
+		if (mwifiex_write_reg(adapter, reg->tx_wrptr,
+				      card->txbd_wrptr | rx_val)) {
+			...eliminate dead code in the following patch(es)...
+		}
+
++		/* The firmware (latest version 15.68.19.p21) of the 88W8897
++		 * pcie+usb card seems to crash when getting the TX ready
++		 * interrupt but the TX ring write pointer points to an outdated
++		 * address, so it's important we do a non-posted write here to
++		 * force the completion of the write.
++		 */
+		mwifiex_read_reg(...);
+
+Now, since I found the dummy read function to be present, perhaps you need to
+dive more into the code and understand why it exists.
+
 -- 
-2.26.3
+With Best Regards,
+Andy Shevchenko
+
 
