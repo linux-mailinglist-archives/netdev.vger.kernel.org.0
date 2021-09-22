@@ -2,133 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C93B414ECB
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 19:08:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6D28414EF2
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 19:21:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236734AbhIVRJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 13:09:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25881 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236697AbhIVRJy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 13:09:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632330504;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vWqUMA4PsVlJ2pPT1/p24HsUIkcdO8iEjqhCU7s0cfo=;
-        b=bkTLNgLBxGzHpFMHZ4g3GzBxJUpbhLg0u12UX9mW2L3nGFYFqH9xoLu/wL3ChgVAtoLXU2
-        XpgQ9UmowW/2gulbe6v3JmPOnqbxQQxy7obcCRNxyLAx0r0t58uStxlDIYv9eCmOUnGA78
-        rQXxHgTu3xBzfG5mEimB78S4ZOeTRNI=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-16-cvVsLwseNbSDpF6hlEr-9A-1; Wed, 22 Sep 2021 13:08:20 -0400
-X-MC-Unique: cvVsLwseNbSDpF6hlEr-9A-1
-Received: by mail-wr1-f69.google.com with SMTP id j16-20020adfa550000000b0016012acc443so2761785wrb.14
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 10:08:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=vWqUMA4PsVlJ2pPT1/p24HsUIkcdO8iEjqhCU7s0cfo=;
-        b=E7AD9jworiKsC8G1ZFX2GcDRD5B6Qf4Dauql60uQ+KTV//mEWe8cURRqMVGRFKYMXO
-         qEkURCaRaERjz9ic3GpX5QgHUTX3E5qYVi28whWN+BoFcRS/P/1rZikZH9kKkYGsJFq2
-         AhVJPxi2NOfTpnxtbbCVjh596K2KXB3SmFUbwy2iImvvyK5gZpTT8qaRlPNOyA5KUsGS
-         NImjT196/VWGQtAKGJv/CVHFDXvtyvg5Y3g4e9OjnMz9j+7d7fEAS9nDmVAxOJW/d74u
-         NqBIGpatrRV1llSrZW+Vf4RSqWURaoxThfzrxZlrv3JdlYHNXjz+TfOLEJcrcI4Oop6W
-         NAGA==
-X-Gm-Message-State: AOAM5318hhwjR7SYCMpVHQJnePvSJUkDPDMOkhNtJcdkJ7BJUBPhY+8l
-        5N424mdo/CTMw11tjNDw9etq7eRCqGGx4tdTZ7pkfQKE+S2HdLuY8kxHks1G0Zsrtj2HtnWJZNt
-        +aXicvQBVEtG8PN7G
-X-Received: by 2002:a5d:6545:: with SMTP id z5mr67133wrv.90.1632330499528;
-        Wed, 22 Sep 2021 10:08:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzEoCMdETBf0ZFsulv49iZD/disD0Q/Hgy56XYmufPeu3oyo6LTtFACq/qEWxa6hE3xyuys2Q==
-X-Received: by 2002:a5d:6545:: with SMTP id z5mr67076wrv.90.1632330499184;
-        Wed, 22 Sep 2021 10:08:19 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-102-46.dyn.eolo.it. [146.241.102.46])
-        by smtp.gmail.com with ESMTPSA id g22sm6079241wmp.39.2021.09.22.10.08.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Sep 2021 10:08:18 -0700 (PDT)
-Message-ID: <4e6db6e09ed2baa536f2badf2798daf3591bbd5a.camel@redhat.com>
-Subject: Re: [syzbot] possible deadlock in mptcp_close
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        syzbot <syzbot+1dd53f7a89b299d59eaf@syzkaller.appspotmail.com>,
-        davem@davemloft.net, edumazet@google.com, fw@strlen.de,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        Peter Zijlstra <peterz@infradead.org>
-Date:   Wed, 22 Sep 2021 19:07:56 +0200
-In-Reply-To: <87zgs4habc.ffs@tglx>
-References: <0000000000005183b005cc74779a@google.com> <87zgs4habc.ffs@tglx>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S236747AbhIVRXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 13:23:09 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:57404 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S236701AbhIVRXI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 13:23:08 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18MH9gnt018529;
+        Wed, 22 Sep 2021 13:21:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=GbQtfpd2tsEbXEXXhPYCa3aqqGdu9jYMnwZTtyh2fts=;
+ b=EVI/5RMqr4X/XFHgjuf3B3o+9d+XfKu5jfBQw8nv+QPqdcT1B2WlC99YcAwMRB+syV7y
+ qswiwP8Cuzvm2MnJsjRwZOSItkAy5Rw04e3odzSkC3kJD9VeVmQzz7UOcqMOq6CtT1Ix
+ 8OyqU7mDLzfomfezA8+s/EdDXlToawGErtPAOtJIi/dUFU9oxXwcTpAzL7LHiPnCsGBe
+ 5jTracUWeKW2XBIDI4CCouZreJEB2jqEVEyk1vw0bzjXh/ctyW9aI6y+Y/udYwztNLIj
+ Pb0Fmxso/Z4XdY+O4xxjwV0EoRB9YaURUYtAuxl1nzmdh6JMkibl/6IMFN5z+dJWbcij Rw== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3b87mr1puy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Sep 2021 13:21:35 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18MH1xjp015408;
+        Wed, 22 Sep 2021 17:21:33 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 3b7q6r1hqv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Sep 2021 17:21:33 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18MHLT4H57541088
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 22 Sep 2021 17:21:30 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D14E042042;
+        Wed, 22 Sep 2021 17:21:29 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 75AEB4204B;
+        Wed, 22 Sep 2021 17:21:29 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 22 Sep 2021 17:21:29 +0000 (GMT)
+From:   Guvenc Gulce <guvenc@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net] MAINTAINERS: remove Guvenc Gulce as net/smc maintainer
+Date:   Wed, 22 Sep 2021 19:21:29 +0200
+Message-Id: <20210922172129.773374-1-guvenc@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 6gwdX00Fn6_uVr3VJmOeedYyioZTtvr2
+X-Proofpoint-ORIG-GUID: 6gwdX00Fn6_uVr3VJmOeedYyioZTtvr2
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-22_06,2021-09-22_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ mlxscore=0 phishscore=0 impostorscore=0 mlxlogscore=714 priorityscore=1501
+ adultscore=0 bulkscore=0 lowpriorityscore=0 clxscore=1015 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2109200000
+ definitions=main-2109220114
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-09-22 at 17:57 +0200, Thomas Gleixner wrote:
-> On Mon, Sep 20 2021 at 15:04, syzbot wrote:
-> > The issue was bisected to:
-> > 
-> > commit 2dcb96bacce36021c2f3eaae0cef607b5bb71ede
-> > Author: Thomas Gleixner <tglx@linutronix.de>
-> > Date:   Sat Sep 18 12:42:35 2021 +0000
-> > 
-> >     net: core: Correct the sock::sk_lock.owned lockdep annotations
-> 
-> Shooting the messenger...
-> 
-> > MPTCP: kernel_bind error, err=-98
-> > ============================================
-> > WARNING: possible recursive locking detected
-> > 5.15.0-rc1-syzkaller #0 Not tainted
-> > --------------------------------------------
-> > syz-executor998/6520 is trying to acquire lock:
-> > ffff8880795718a0 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: mptcp_close+0x267/0x7b0 net/mptcp/protocol.c:2738
-> > 
-> > but task is already holding lock:
-> > ffff8880787c8c60 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1612 [inline]
-> > ffff8880787c8c60 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: mptcp_close+0x23/0x7b0 net/mptcp/protocol.c:2720
-> 
-> So this is a lock nesting issue and looking at the stack trace this
-> comes from:
-> 
-> >  lock_sock_fast+0x36/0x100 net/core/sock.c:3229
-> 
-> which does not support lockdep nesting. So from a lockdep POV this is
-> recursive locking the same lock class. And it's the case I was worried
-> about that lockdep testing never takes the slow path. The original
-> lockdep annotation would have produced exactly the same splat in the
-> slow path case.
-> 
-> So it's not a new problem. It's just visible by moving the lockdep
-> annotations to a place where they actually can detect issues which were
-> not reported before.
-> 
-> See also https://lore.kernel.org/lkml/874kacu248.ffs@tglx/
-> 
-> There are two ways to address this mptcp one:
-> 
->   1) Teach lock_sock_fast() about lock nesting
-> 
->   2) Use lock_sock_nested() in mptcp_close() as that should not be
->      really a hotpath. See patch below.
+Remove myself as net/smc maintainer, as I am
+leaving IBM soon and can not maintain net/smc anymore.
 
-Thank you for looking into this! I agree this specific case is not
-fastpath, so definitely the proposed patch LGTM.
+Cc: Julian Wiedmann <jwi@linux.ibm.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+Signed-off-by: Guvenc Gulce <guvenc@linux.ibm.com>
+---
+ MAINTAINERS | 1 -
+ 1 file changed, 1 deletion(-)
 
-I fear there could be other similar cases in the MPTCP code, in more
-time critical paths, and perhaps there are other relevant use-case, so
-I'd like to experiment too with a lock_sock_fast_nested() variant - if
-I find enough coffee ;)
-
-Thanks,
-
-Paolo
+diff --git a/MAINTAINERS b/MAINTAINERS
+index eeb4c70b3d5b..3c814976443e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16955,7 +16955,6 @@ F:	drivers/misc/sgi-xp/
+ 
+ SHARED MEMORY COMMUNICATIONS (SMC) SOCKETS
+ M:	Karsten Graul <kgraul@linux.ibm.com>
+-M:	Guvenc Gulce <guvenc@linux.ibm.com>
+ L:	linux-s390@vger.kernel.org
+ S:	Supported
+ W:	http://www.ibm.com/developerworks/linux/linux390/
+-- 
+2.25.1
 
