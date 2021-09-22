@@ -2,86 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1898A414DC8
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 18:10:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12050414E0A
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 18:24:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231712AbhIVQLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 12:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52930 "EHLO
+        id S236590AbhIVQ0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 12:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236568AbhIVQLh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 12:11:37 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF01EC061574
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 09:10:07 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id j15so655023plh.7
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 09:10:07 -0700 (PDT)
+        with ESMTP id S232357AbhIVQ0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 12:26:17 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A8D8C061574
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 09:24:46 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id v10so7385627edj.10
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 09:24:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6yIzAKDKHvIM1DVT8xTcKq4w3iUCl1AEsIyruztrenI=;
-        b=nmSTPvjoSOWEniS/1shEpYAKlnc+C1lnKNHQ8w6dxX2ohQPM/g56kF/76tftfl+vMQ
-         aDLIwb19Q0qOt9eu8pD90BlI3G/BFw34Syra9/l4Ia/hXaMoIWFQHhUOkHkxdeWfU8YJ
-         VKOWoifbn2nQVsTnZtY10kU9PCJXat1WJ9Sz5ImxyR8il8bCrEIcjZQPlFlOQXAnk1rV
-         NcCEh1+wYHa2uNdUBl2oJdqbYWLxiZHqAtYBlZJ8sLD3Yw6jUOYcmabxloLYpZ7X3GQp
-         X9OfBLtRp8/Q8SYn2Qp4eiNJ8bUoClhtTxSP4B6itvq3XAu6LHPCTfaz3BLKpPCava2U
-         NqCA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rYx9tpV+Ej9Q++kgzks0EzOx0Y+3Lur5m1197OCQNr0=;
+        b=V0jnq054Eh/HYG+o4JOhMyRahZ/TSn/+TWlgT42s394CdPnZIok9PjNNMgMiUXJNe+
+         D4WkURNzF8kDJExnpyuQ4Cl542D9o+ShIvlhe9pPSSuGnnlg7vGtCQkIHDflFQoLYtdh
+         TV/VCn53wBornw2MK9dldfkHQTBMasDPQEFuL1+Efm4/LmGpRm23654oW/ZOJnntztFp
+         OdHhhRBbXgZJ9yrDtEGw0hpPAd2U72AQHls7GA3Oi322o3jaS9ovw12d/wCWdUwpB+i/
+         pwxYtD6d8mpdJxdFUk2IZ8fGph6P442ekMLlAbiHX6MQqG1PIudPWQQqNGEeiqdpKHBw
+         waGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6yIzAKDKHvIM1DVT8xTcKq4w3iUCl1AEsIyruztrenI=;
-        b=nNVKnzX13iM0aW+KDTFLuqfncQPa6DEHz3YGkXCvICvSYJPBOKAUgwl1J8wmeuJjuy
-         8N6G1MEzy4upRPS1h5Z7u1q57lDULfSMY7pTyG57LhOHYcxN6+DfJAkfuD6s12j3b9qp
-         5b4J9IXx9IrZyqmo2llE4HZZQB/ZP9T0QevmAXN3yycONdXhCc/Jq/OhTz8j8ajp5tnG
-         nDJHNrtdHvUtpQwbZfFirw6WMDi/Gu+pKAn7Q4V0RnkgEOV4PBfvAgbAQV1ZtqEEZPj9
-         lgPz/BInnUUf6HR/kZ/9s1jRZtBzGMZsL362DhZZ11OgdJXNiR15ekO370wXDz1RqWRP
-         UnHA==
-X-Gm-Message-State: AOAM532F6QKm7kR30yZVxCmMBAoevJvIVpgno2cFJIL6Ra6CknqRUrNK
-        Umt4JE543wgmn8J9BOtXvzo=
-X-Google-Smtp-Source: ABdhPJx5KSedBZY6AK9HC8Q6APIApHbG0Cp9WmVpnVNO9SDugOuYLeWQSqySowLty7M6Ch+MYdX/ag==
-X-Received: by 2002:a17:90a:11:: with SMTP id 17mr200436pja.238.1632327007465;
-        Wed, 22 Sep 2021 09:10:07 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id b3sm2911998pfo.23.2021.09.22.09.10.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Sep 2021 09:10:07 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: dsa: sja1105: stop using priv->vlan_aware
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rYx9tpV+Ej9Q++kgzks0EzOx0Y+3Lur5m1197OCQNr0=;
+        b=NiRK1TaG4poeWJ4/FXSwS1ZPZKHRD0bqyrDs8HHmFzzvy4guOtaWNm2Btl70Xgn79+
+         H2SGk5GzXmUzMDnDm/eRZYYPm3MBZbs7cp9vXnmorK8Es7Fw6nCnmXcUJ3wxWHDeOhri
+         AGL8LB/JTyUEI4nHXlqvt64/X8rvHG70U8DJAKdXrApfq0i6EJO0YSM5LX4ySRTzFu/n
+         BTJUfLquHDjxzEh1CRq3+jnEhmdJ5lDeWRR6AabkV0RMHCF+PnFuWtzrCBK9A5rq3n4N
+         EQ2jxvr/+yEOtBftB2qMZ9tKW9zid7ZAKUTKWl/zxj+24asYhrFLPVoAqtm2d/sC80OW
+         vI0Q==
+X-Gm-Message-State: AOAM531enMYl9LiRty7NwG6Ss5TjmEA0RgREoX4kB4AfALLM1iapk6qt
+        HXeCCKnYJxUpCeUfDcvK626q3xXjoOQ=
+X-Google-Smtp-Source: ABdhPJzOWWDrlEt6O7aTx7/suZsojTaaXIi9HFP5bV6Vt+A98CGmQ3Tpv6XAw1VMpOZXhlrrPZyVYQ==
+X-Received: by 2002:a17:906:cc0e:: with SMTP id ml14mr417242ejb.395.1632327884893;
+        Wed, 22 Sep 2021 09:24:44 -0700 (PDT)
+Received: from skbuf ([188.26.53.217])
+        by smtp.gmail.com with ESMTPSA id t4sm1532665edc.2.2021.09.22.09.24.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Sep 2021 09:24:44 -0700 (PDT)
+Date:   Wed, 22 Sep 2021 19:24:43 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: dsa: sja1105: stop using priv->vlan_aware
+Message-ID: <20210922162443.rdwyp4phk6cwpmm3@skbuf>
 References: <20210922144401.2445527-1-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <2132c4bb-dac0-b2c7-50b0-31a9873006e2@gmail.com>
-Date:   Wed, 22 Sep 2021 09:10:05 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <20210922144401.2445527-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/22/21 7:44 AM, Vladimir Oltean wrote:
-> Now that the sja1105 driver is finally sane enough again to stop having
-> a ternary VLAN awareness state, we can remove priv->vlan_aware and query
-> DSA for the ds->vlan_filtering value (for SJA1105, VLAN filtering is a
-> global property).
-> 
-> Also drop the paranoid checking that DSA calls ->port_vlan_filtering
-> multiple times without the VLAN awareness state changing. It doesn't,
-> the same check is present inside dsa_port_vlan_filtering too.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Wed, Sep 22, 2021 at 05:44:01PM +0300, Vladimir Oltean wrote:
+> +	if (!dsa_port_is_vlan_filtering(ds, port) &&
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+omg, what did I just send....
+I amended the commit a few times but forgot to format-patch it again.
+The dsa_port_is_vlan_filtering prototype takes a "dp" argument, this
+patch doesn't even build. Please toss it to the bin where it belongs.
