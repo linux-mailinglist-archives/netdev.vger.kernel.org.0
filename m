@@ -2,234 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E107041456B
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 11:43:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA32A414583
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 11:49:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234586AbhIVJon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 05:44:43 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:19999 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234381AbhIVJod (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 05:44:33 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HDtXV706Tzbmh5;
-        Wed, 22 Sep 2021 17:38:50 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Wed, 22 Sep 2021 17:43:02 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Wed, 22 Sep 2021 17:43:02 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@openeuler.org>, <hawk@kernel.org>,
-        <ilias.apalodimas@linaro.org>, <jonathan.lemon@gmail.com>,
-        <alobakin@pm.me>, <willemb@google.com>, <cong.wang@bytedance.com>,
-        <pabeni@redhat.com>, <haokexin@gmail.com>, <nogikh@google.com>,
-        <elver@google.com>, <memxor@gmail.com>, <edumazet@google.com>,
-        <alexander.duyck@gmail.com>, <dsahern@gmail.com>
-Subject: [PATCH net-next 7/7] skbuff: remove unused skb->pp_recycle
-Date:   Wed, 22 Sep 2021 17:41:31 +0800
-Message-ID: <20210922094131.15625-8-linyunsheng@huawei.com>
+        id S234421AbhIVJvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 05:51:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47246 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234387AbhIVJvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 05:51:05 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65765C061574
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 02:49:34 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id lb1-20020a17090b4a4100b001993f863df2so1818336pjb.5
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 02:49:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HhcP5q0wOaPjd7oSpAPTSn+qyDdm/T12elKB63DT/Tk=;
+        b=enWZ5C/d9FCYrcwhbkjAqxAUBaEiRlqE0TmsM+bplsGajINygsitizD+yrH0YZLMiq
+         pWIrW/M3HN81fcV8G4NkgYfTGNbX4JTFWgWM32/FF4CPWfCQy6YFMhqDa8jkDXvGx15N
+         guh5PLueCQFEwpuaoNnqXVA+2/O2Sw08rJfr4h6EbIHb5YEJh9VoJgim+aGphIraIERu
+         SQVlXQC7Xyr+enmbj2eGmjZB39InNLG3CyezRqVHi56yxFjaw8+Zp/xqHncDSfmXiJHa
+         n2rBgBS5XckEut8bfb2xdhn9Ug/1QwDTl4Qpp1wii9fVOlmYLINGGQqSsWRQRQXIa6e/
+         6PuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HhcP5q0wOaPjd7oSpAPTSn+qyDdm/T12elKB63DT/Tk=;
+        b=X+Ky8vUagE90oxTAXl9ijxe2770d2qX8lmjNsgB3KVkLBFiZUSEsS7BuzFJySzrVkR
+         9YAtnCg4sTesH+AdQco6fpSDv2lQ3w1SrzB6YRsjx755e7aYlZARuwhFFrXn4RO4wkXm
+         TQ/OQvWOKTVSdc1GGKzYhtiXpA99b0sobwLJw0WPNCdkby1QxvndGknZU+b0AEVWJsfp
+         zWelAM9Zqv7v26ObOah7eOi+EphGTJm5K4S9rmPlEfkU4EiFAQ5zursiO6QmDFf19utG
+         LvCKGwOxSotI+/gxXkkVE94pgNb8wT7dV0MGFfAI1TZeHkyds6+kUZ3Kkwn6r/9mXrQb
+         apYw==
+X-Gm-Message-State: AOAM532agIQ+r5r0meBGJHjFAvbUtKb3UpIOBalZmF4Qh3SHp6vWefPZ
+        wVbfz4cQYhopK0mYRPZ+4mJ/kJPLgOqZsg==
+X-Google-Smtp-Source: ABdhPJweHmYizvGi0Fv1z16DZTAwuuQXWXUeqBBnx69ntr6SQ5OY5cfzUX10uUPS+MCM+bU+uoj8IQ==
+X-Received: by 2002:a17:90a:7342:: with SMTP id j2mr10417751pjs.59.1632304173703;
+        Wed, 22 Sep 2021 02:49:33 -0700 (PDT)
+Received: from nova-ws.. ([103.29.142.250])
+        by smtp.gmail.com with ESMTPSA id cp17sm1722727pjb.3.2021.09.22.02.49.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Sep 2021 02:49:33 -0700 (PDT)
+From:   Xiao Liang <shaw.leon@gmail.com>
+To:     netdev <netdev@vger.kernel.org>
+Cc:     Xiao Liang <shaw.leon@gmail.com>
+Subject: [PATCH] net: ipv4: Fix rtnexthop len when RTA_FLOW is present
+Date:   Wed, 22 Sep 2021 17:49:35 +0800
+Message-Id: <20210922094935.7582-1-shaw.leon@gmail.com>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20210922094131.15625-1-linyunsheng@huawei.com>
-References: <20210922094131.15625-1-linyunsheng@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As we have used pp_magic to identify pp page for the head
-and frag page of a skb, the skb->pp_recycle is not used, so
-remove it.
+Multipath RTA_FLOW is embedded in nexthop, thus add it to rtnexthop
+length.
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Fixes: b0f60193632e ("ipv4: Refactor nexthop attributes in fib_dump_info")
+Signed-off-by: Xiao Liang <shaw.leon@gmail.com>
 ---
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  6 ------
- drivers/net/ethernet/marvell/mvneta.c         |  2 --
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  4 +---
- drivers/net/ethernet/ti/cpsw.c                |  2 --
- drivers/net/ethernet/ti/cpsw_new.c            |  2 --
- include/linux/skbuff.h                        | 12 +----------
- net/core/skbuff.c                             | 21 +------------------
- 7 files changed, 3 insertions(+), 46 deletions(-)
+ net/ipv4/fib_semantics.c | 30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 22af3d6ce178..5331e0f2cee4 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -3864,9 +3864,6 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		return 0;
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index b42c429cebbe..62b74edb5240 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -1660,8 +1660,9 @@ int fib_nexthop_info(struct sk_buff *skb, const struct fib_nh_common *nhc,
+ EXPORT_SYMBOL_GPL(fib_nexthop_info);
+ 
+ #if IS_ENABLED(CONFIG_IP_ROUTE_MULTIPATH) || IS_ENABLED(CONFIG_IPV6)
+-int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
+-		    int nh_weight, u8 rt_family)
++static struct rtnexthop *__fib_add_nexthop(struct sk_buff *skb,
++					   const struct fib_nh_common *nhc,
++					   int nh_weight, u8 rt_family)
+ {
+ 	const struct net_device *dev = nhc->nhc_dev;
+ 	struct rtnexthop *rtnh;
+@@ -1682,10 +1683,17 @@ int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
+ 	/* length of rtnetlink header + attributes */
+ 	rtnh->rtnh_len = nlmsg_get_pos(skb) - (void *)rtnh;
+ 
+-	return 0;
++	return rtnh;
+ 
+ nla_put_failure:
+-	return -EMSGSIZE;
++	return ERR_PTR(-EMSGSIZE);
++}
++
++int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
++		    int nh_weight, u8 rt_family)
++{
++	return PTR_ERR_OR_ZERO(__fib_add_nexthop(skb, nhc, nh_weight,
++						 rt_family));
+ }
+ EXPORT_SYMBOL_GPL(fib_add_nexthop);
+ #endif
+@@ -1706,13 +1714,17 @@ static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi)
  	}
  
--	if (ring->page_pool)
--		skb_mark_for_recycle(skb);
--
- 	u64_stats_update_begin(&ring->syncp);
- 	ring->stats.seg_pkt_cnt++;
- 	u64_stats_update_end(&ring->syncp);
-@@ -3906,9 +3903,6 @@ static int hns3_add_frag(struct hns3_enet_ring *ring)
- 				return -ENXIO;
- 			}
- 
--			if (ring->page_pool)
--				skb_mark_for_recycle(new_skb);
--
- 			ring->frag_num = 0;
- 
- 			if (ring->tail_skb) {
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 9d460a270601..c852e0dd6d38 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2327,8 +2327,6 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
- 	if (!skb)
- 		return ERR_PTR(-ENOMEM);
- 
--	skb_mark_for_recycle(skb);
--
- 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	skb_put(skb, xdp->data_end - xdp->data);
- 	skb->ip_summed = mvneta_rx_csum(pp, desc_status);
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index d5c92e43f89e..bacae115c6c6 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3994,9 +3994,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 			goto err_drop_frame;
- 		}
- 
--		if (pp)
--			skb_mark_for_recycle(skb);
--		else
-+		if (!pp)
- 			dma_unmap_single_attrs(dev->dev.parent, dma_addr,
- 					       bm_pool->buf_size, DMA_FROM_DEVICE,
- 					       DMA_ATTR_SKIP_CPU_SYNC);
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index 66f7ddd9b1f9..2fb5a4545b8b 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -430,8 +430,6 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 		cpts_rx_timestamp(cpsw->cpts, skb);
- 	skb->protocol = eth_type_trans(skb, ndev);
- 
--	/* mark skb for recycling */
--	skb_mark_for_recycle(skb);
- 	netif_receive_skb(skb);
- 
- 	ndev->stats.rx_bytes += len;
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 7968f24d99c8..1e74d484852d 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -374,8 +374,6 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 		cpts_rx_timestamp(cpsw->cpts, skb);
- 	skb->protocol = eth_type_trans(skb, ndev);
- 
--	/* mark skb for recycling */
--	skb_mark_for_recycle(skb);
- 	netif_receive_skb(skb);
- 
- 	ndev->stats.rx_bytes += len;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index b77ee060b64d..d4bb0e160fef 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -668,8 +668,6 @@ typedef unsigned char *sk_buff_data_t;
-  *	@head_frag: skb was allocated from page fragments,
-  *		not allocated by kmalloc() or vmalloc().
-  *	@pfmemalloc: skbuff was allocated from PFMEMALLOC reserves
-- *	@pp_recycle: mark the packet for recycling instead of freeing (implies
-- *		page_pool support on driver)
-  *	@active_extensions: active extensions (skb_ext_id types)
-  *	@ndisc_nodetype: router type (from link layer)
-  *	@ooo_okay: allow the mapping of a socket to a queue to be changed
-@@ -795,8 +793,7 @@ struct sk_buff {
- 				fclone:2,
- 				peeked:1,
- 				head_frag:1,
--				pfmemalloc:1,
--				pp_recycle:1; /* page_pool recycle indicator */
-+				pfmemalloc:1;
- #ifdef CONFIG_SKB_EXTENSIONS
- 	__u8			active_extensions;
+ 	for_nexthops(fi) {
+-		if (fib_add_nexthop(skb, &nh->nh_common, nh->fib_nh_weight,
+-				    AF_INET) < 0)
++		struct rtnexthop *rtnh = __fib_add_nexthop(skb, &nh->nh_common,
++							   nh->fib_nh_weight,
++							   AF_INET);
++		if (IS_ERR(rtnh))
+ 			goto nla_put_failure;
+ #ifdef CONFIG_IP_ROUTE_CLASSID
+-		if (nh->nh_tclassid &&
+-		    nla_put_u32(skb, RTA_FLOW, nh->nh_tclassid))
+-			goto nla_put_failure;
++		if (nh->nh_tclassid) {
++			if (nla_put_u32(skb, RTA_FLOW, nh->nh_tclassid))
++				goto nla_put_failure;
++			rtnh->rtnh_len += nla_total_size(4);
++		}
  #endif
-@@ -4721,12 +4718,5 @@ static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
- #endif
- }
+ 	} endfor_nexthops(fi);
  
--#ifdef CONFIG_PAGE_POOL
--static inline void skb_mark_for_recycle(struct sk_buff *skb)
--{
--	skb->pp_recycle = 1;
--}
--#endif
--
- #endif	/* __KERNEL__ */
- #endif	/* _LINUX_SKBUFF_H */
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 3718898da499..85ae59f4349a 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -670,7 +670,7 @@ static void skb_release_data(struct sk_buff *skb)
- 	if (skb->cloned &&
- 	    atomic_sub_return(skb->nohdr ? (1 << SKB_DATAREF_SHIFT) + 1 : 1,
- 			      &shinfo->dataref))
--		goto exit;
-+		return;
- 
- 	skb_zcopy_clear(skb, true);
- 
-@@ -681,17 +681,6 @@ static void skb_release_data(struct sk_buff *skb)
- 		kfree_skb_list(shinfo->frag_list);
- 
- 	skb_free_head(skb);
--exit:
--	/* When we clone an SKB we copy the reycling bit. The pp_recycle
--	 * bit is only set on the head though, so in order to avoid races
--	 * while trying to recycle fragments on __skb_frag_unref() we need
--	 * to make one SKB responsible for triggering the recycle path.
--	 * So disable the recycling bit if an SKB is cloned and we have
--	 * additional references to to the fragmented part of the SKB.
--	 * Eventually the last SKB will have the recycling bit set and it's
--	 * dataref set to 0, which will trigger the recycling
--	 */
--	skb->pp_recycle = 0;
- }
- 
- /*
-@@ -1073,7 +1062,6 @@ static struct sk_buff *__skb_clone(struct sk_buff *n, struct sk_buff *skb)
- 	n->nohdr = 0;
- 	n->peeked = 0;
- 	C(pfmemalloc);
--	C(pp_recycle);
- 	n->destructor = NULL;
- 	C(tail);
- 	C(end);
-@@ -5368,13 +5356,6 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
- 	if (skb_cloned(to))
- 		return false;
- 
--	/* The page pool signature of struct page will eventually figure out
--	 * which pages can be recycled or not but for now let's prohibit slab
--	 * allocated and page_pool allocated SKBs from being coalesced.
--	 */
--	if (to->pp_recycle != from->pp_recycle)
--		return false;
--
- 	if (len <= skb_tailroom(to)) {
- 		if (len)
- 			BUG_ON(skb_copy_bits(from, 0, skb_put(to, len), len));
 -- 
 2.33.0
 
