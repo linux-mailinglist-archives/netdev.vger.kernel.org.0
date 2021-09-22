@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3F18414308
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:56:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A776841430A
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233512AbhIVH6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 03:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
+        id S233540AbhIVH60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 03:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233473AbhIVH6T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:58:19 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37429C061574;
-        Wed, 22 Sep 2021 00:56:50 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id w29so4057380wra.8;
-        Wed, 22 Sep 2021 00:56:50 -0700 (PDT)
+        with ESMTP id S233478AbhIVH6V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:58:21 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6654C061574;
+        Wed, 22 Sep 2021 00:56:51 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id q26so4085869wrc.7;
+        Wed, 22 Sep 2021 00:56:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aYY93TLMcBSAyVY5AhUUIXk9y2G1cIIvKCD5QoFrSJM=;
-        b=KJ8cxFmqcyxZz3hTebLLKKRGXjsCaAG0fmjw+PM5rvykQeym12H14NLzfBwbULeEMW
-         4bODH8uvkgZCvSI4gCeGLNxFksppdclIOXkMtGCJclBVoWn8aUJVsbBqy+0vGsqNBqhP
-         S4ZjuBqqoDbLHlRmbhqfit0bg/V+beVC4xc5uEW1sOhLPkTbFNm1nRCCdezKciNokRfp
-         VQAL2A3frVmjtB0IWh0AkJWd6G0f4kS/wntRw9uc1V+BkS4bm/tibSEGTTnzmfZnXNlJ
-         MewPqrSL8N4pnK+l7jOWDwHhu5P4GGmdl5Dp84VxRU17rCAwgoBPD27ZpI2mhj9Ih6j1
-         GoFw==
+        bh=3t5veB220zYZE70cSKcxGubsSW7TFiEF2zf4SCZTIFM=;
+        b=ZlKvcwRmptAAusziFGYWFZd6+0t56xD879ljwjHhOZP1eqZXfFq2gwfrj2hV23NfVe
+         p28PJI4Oa8hU2KPbNvg8o9wCBJkU8SUYYH+ate3IAoVW4QW4lSjDLoEOeciNSjZRiXPP
+         4Pgp8xFeOSzIfJigjkMLN+YftOe6lQMJFlp3uu2XFFtGWRIZDgiGK6FVnQyqjrNJJtdU
+         N/mPew4zU81iFaYqrEfRAe5XEkex18huBI8JXHgQLwj8XGyW1L0YUBGVLddbrSNsMwH9
+         oQcBVgh0cpsVagWLaxldUmteumHL8HUGN0KkAs33jDYUnEd0FAb6di5gj8spExiZnOOv
+         9ahw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aYY93TLMcBSAyVY5AhUUIXk9y2G1cIIvKCD5QoFrSJM=;
-        b=fOLTIFLEMN1+UTE4OReuou/Ei6PRHN96hNU+xpgUbTpbMwfZH6fQPMJzb0XGrvld7d
-         HfU4Tr1dhOvRdd4qD09vv6nsedXDVWBlwcvEPC7ysf1d2Aetdv3DfENjpJSAeHgFiaVL
-         hXRz2LFHs5vpAeNsPX0dXXVEJPSFcKhw76coUM0qRPbgtBUV2goaQ6WnGbtPbs4bFaXH
-         Oilcb/vpzTkvRg51VktJESEXDEpONnYwRe1MttpjWqHTdKnc1urBt6b8XhA/sLAqa4zX
-         QLjC8dkT87/I2PR+QDScOGfCYw24qpA3vI5yYYzlL62rZ6RcbIM+WtGl73731ieAbX6h
-         ZxOQ==
-X-Gm-Message-State: AOAM531qQoV+fVst/4k5T8BqrJARy8Mz9wrYZctBXHygBpkR0vNXwwtC
-        yU/NuRwrcjZCFO2slZmRl20XxzjAxupEMX0+
-X-Google-Smtp-Source: ABdhPJy8BnAu69nYxy5rJUc5NGRZhnIp94JkSF2phstaFBo4tYca3lFVP4y1TDNSCtAT4fxyCtPTCw==
-X-Received: by 2002:a05:600c:2144:: with SMTP id v4mr8873856wml.80.1632297408770;
-        Wed, 22 Sep 2021 00:56:48 -0700 (PDT)
+        bh=3t5veB220zYZE70cSKcxGubsSW7TFiEF2zf4SCZTIFM=;
+        b=CFL3X8BNhjuHbrIp64jeSHyX/E/XmSzHKXadGTPwdMxCLy5i8bPjTkyJgo4cYNGuh9
+         HIJqXKQLLtgD2pdjGiStIZXNA5HDMzS7WJr4QPaYujAF0nDF+VPJ9+hmXST6BrWmU5cr
+         P/Byzzhc8Kgn2qtlHkJRD28+r4Mat4EfBDWiEvJWJNkHYe9GwW/vfVZW+9wq3rPtA/T9
+         B+OHglQwMbb8ikiNCscDPu61AGP5t5VzfFZhIlfZ0k8StJ+QL/xo3rFIM1okD2b2Matf
+         y7YIG6VDzEjqSNLzKer0wg+y9xNIlrsC+R+Uh/kSVemPAYKenbuzkqULoTuuro8laDLg
+         QoqA==
+X-Gm-Message-State: AOAM533Jo7MC0i49/yBPguJOPD/5ZtVLkCYeJK3egp6Cjs1mBknQ54rQ
+        +yONLaQQIqMjE7bDyIaV4XQ=
+X-Google-Smtp-Source: ABdhPJxT6ET/yIqZHeqn/uvG6e2gYACzWizjKJCqYXWifuv9GxZ5MSZIQgdox2jnKp0VQQZwQRy6kg==
+X-Received: by 2002:a05:600c:3797:: with SMTP id o23mr8931742wmr.111.1632297410247;
+        Wed, 22 Sep 2021 00:56:50 -0700 (PDT)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id j7sm1673087wrr.27.2021.09.22.00.56.47
+        by smtp.gmail.com with ESMTPSA id j7sm1673087wrr.27.2021.09.22.00.56.48
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Sep 2021 00:56:48 -0700 (PDT)
+        Wed, 22 Sep 2021 00:56:49 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         maciej.fijalkowski@intel.com, ciara.loftus@intel.com
 Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org,
         anthony.l.nguyen@intel.com
-Subject: [PATCH bpf-next 05/13] i40e: use the xsk batched rx allocation interface
-Date:   Wed, 22 Sep 2021 09:56:05 +0200
-Message-Id: <20210922075613.12186-6-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next 06/13] xsk: optimize for aligned case
+Date:   Wed, 22 Sep 2021 09:56:06 +0200
+Message-Id: <20210922075613.12186-7-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210922075613.12186-1-magnus.karlsson@gmail.com>
 References: <20210922075613.12186-1-magnus.karlsson@gmail.com>
@@ -67,101 +67,263 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Use the new xsk batched rx allocation interface for the zero-copy data
-path. As the array of struct xdp_buff pointers kept by the driver is
-really a ring that wraps, the allocation routine is modified to detect
-a wrap and in that case call the allocation function twice. The
-allocation function cannot deal with wrapped rings, only arrays. As we
-now know exactly how many buffers we get and that there is no
-wrapping, the allocation function can be simplified even more as all
-if-statements in the allocation loop can be removed, improving
-performance.
+Optimize for the aligned case by precomputing the parameter values of
+the xdp_buff_xsk and xdp_buff structures in the heads array. We can do
+this as the heads array size is equal to the number of chunks in the
+umem for the aligned case. Then every entry in this array will reflect
+a certain chunk/frame and can therefore be prepopulated with the
+correct values and we can drop the use of the free_heads stack. Note
+that it is not possible to allocate more buffers than what has been
+allocated in the aligned case since each chunk can only contain a
+single buffer.
+
+We can unfortunately not do this in the unaligned case as one chunk
+might contain multiple buffers. In this case, we keep the old scheme
+of populating a heads entry every time it is used and using
+the free_heads stack.
+
+Also move xp_release() and xp_get_handle() to xsk_buff_pool.h. They
+were for some reason in xsk.c even though they are buffer pool
+operations.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 52 +++++++++++-----------
- 1 file changed, 25 insertions(+), 27 deletions(-)
+ include/net/xsk_buff_pool.h | 46 +++++++++++++++++++++++++++++-
+ net/xdp/xsk.c               | 15 ----------
+ net/xdp/xsk_buff_pool.c     | 56 ++++++++++++++++++++++---------------
+ 3 files changed, 79 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index e7e778ca074c..6f85879ba993 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -193,42 +193,40 @@ bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 count)
- {
- 	u16 ntu = rx_ring->next_to_use;
- 	union i40e_rx_desc *rx_desc;
--	struct xdp_buff **bi, *xdp;
-+	struct xdp_buff **xdp;
-+	u32 nb_buffs, i;
- 	dma_addr_t dma;
--	bool ok = true;
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index b7068f97639f..ddeefc4a1040 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -7,6 +7,7 @@
+ #include <linux/if_xdp.h>
+ #include <linux/types.h>
+ #include <linux/dma-mapping.h>
++#include <linux/bpf.h>
+ #include <net/xdp.h>
  
- 	rx_desc = I40E_RX_DESC(rx_ring, ntu);
--	bi = i40e_rx_bi(rx_ring, ntu);
--	do {
--		xdp = xsk_buff_alloc(rx_ring->xsk_pool);
--		if (!xdp) {
--			ok = false;
--			goto no_buffers;
--		}
--		*bi = xdp;
--		dma = xsk_buff_xdp_get_dma(xdp);
-+	xdp = i40e_rx_bi(rx_ring, ntu);
+ struct xsk_buff_pool;
+@@ -66,6 +67,7 @@ struct xsk_buff_pool {
+ 	u32 free_heads_cnt;
+ 	u32 headroom;
+ 	u32 chunk_size;
++	u32 chunk_shift;
+ 	u32 frame_len;
+ 	u8 cached_need_wakeup;
+ 	bool uses_need_wakeup;
+@@ -80,6 +82,13 @@ struct xsk_buff_pool {
+ 	struct xdp_buff_xsk *free_heads[];
+ };
+ 
++/* Masks for xdp_umem_page flags.
++ * The low 12-bits of the addr will be 0 since this is the page address, so we
++ * can use them for flags.
++ */
++#define XSK_NEXT_PG_CONTIG_SHIFT 0
++#define XSK_NEXT_PG_CONTIG_MASK BIT_ULL(XSK_NEXT_PG_CONTIG_SHIFT)
 +
-+	nb_buffs = min_t(u16, count, rx_ring->count - ntu);
-+	nb_buffs = xsk_buff_alloc_batch(rx_ring->xsk_pool, xdp, nb_buffs);
-+	if (!nb_buffs)
-+		return false;
+ /* AF_XDP core. */
+ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+ 						struct xdp_umem *umem);
+@@ -88,7 +97,6 @@ int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
+ int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
+ 			 struct net_device *dev, u16 queue_id);
+ void xp_destroy(struct xsk_buff_pool *pool);
+-void xp_release(struct xdp_buff_xsk *xskb);
+ void xp_get_pool(struct xsk_buff_pool *pool);
+ bool xp_put_pool(struct xsk_buff_pool *pool);
+ void xp_clear_dev(struct xsk_buff_pool *pool);
+@@ -98,6 +106,21 @@ void xp_del_xsk(struct xsk_buff_pool *pool, struct xdp_sock *xs);
+ /* AF_XDP, and XDP core. */
+ void xp_free(struct xdp_buff_xsk *xskb);
+ 
++static inline void xp_init_xskb_addr(struct xdp_buff_xsk *xskb, struct xsk_buff_pool *pool,
++				     u64 addr)
++{
++	xskb->orig_addr = addr;
++	xskb->xdp.data_hard_start = pool->addrs + addr + pool->headroom;
++}
 +
-+	i = nb_buffs;
-+	while (i--) {
-+		dma = xsk_buff_xdp_get_dma(*xdp);
- 		rx_desc->read.pkt_addr = cpu_to_le64(dma);
- 		rx_desc->read.hdr_addr = 0;
- 
- 		rx_desc++;
--		bi++;
--		ntu++;
--
--		if (unlikely(ntu == rx_ring->count)) {
--			rx_desc = I40E_RX_DESC(rx_ring, 0);
--			bi = i40e_rx_bi(rx_ring, 0);
--			ntu = 0;
--		}
--	} while (--count);
-+		xdp++;
-+	}
- 
--no_buffers:
--	if (rx_ring->next_to_use != ntu) {
--		/* clear the status bits for the next_to_use descriptor */
--		rx_desc->wb.qword1.status_error_len = 0;
--		i40e_release_rx_desc(rx_ring, ntu);
-+	ntu += nb_buffs;
-+	if (ntu == rx_ring->count) {
-+		rx_desc = I40E_RX_DESC(rx_ring, 0);
-+		xdp = i40e_rx_bi(rx_ring, 0);
-+		ntu = 0;
- 	}
- 
--	return ok;
-+	/* clear the status bits for the next_to_use descriptor */
-+	rx_desc->wb.qword1.status_error_len = 0;
-+	i40e_release_rx_desc(rx_ring, ntu);
++static inline void xp_init_xskb_dma(struct xdp_buff_xsk *xskb, struct xsk_buff_pool *pool,
++				    dma_addr_t *dma_pages, u64 addr)
++{
++	xskb->frame_dma = (dma_pages[addr >> PAGE_SHIFT] & ~XSK_NEXT_PG_CONTIG_MASK) +
++		(addr & ~PAGE_MASK);
++	xskb->dma = xskb->frame_dma + pool->headroom + XDP_PACKET_HEADROOM;
++}
 +
-+	return count == nb_buffs ? true : false;
+ /* AF_XDP ZC drivers, via xdp_sock_buff.h */
+ void xp_set_rxq_info(struct xsk_buff_pool *pool, struct xdp_rxq_info *rxq);
+ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
+@@ -180,4 +203,25 @@ static inline u64 xp_unaligned_add_offset_to_addr(u64 addr)
+ 		xp_unaligned_extract_offset(addr);
  }
  
- /**
-@@ -365,7 +363,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
- 			break;
++static inline u32 xp_aligned_extract_idx(struct xsk_buff_pool *pool, u64 addr)
++{
++	return xp_aligned_extract_addr(pool, addr) >> pool->chunk_shift;
++}
++
++static inline void xp_release(struct xdp_buff_xsk *xskb)
++{
++	if (xskb->pool->unaligned)
++		xskb->pool->free_heads[xskb->pool->free_heads_cnt++] = xskb;
++}
++
++static inline u64 xp_get_handle(struct xdp_buff_xsk *xskb)
++{
++	u64 offset = xskb->xdp.data - xskb->xdp.data_hard_start;
++
++	offset += xskb->pool->headroom;
++	if (!xskb->pool->unaligned)
++		return xskb->orig_addr + offset;
++	return xskb->orig_addr + (offset << XSK_UNALIGNED_BUF_OFFSET_SHIFT);
++}
++
+ #endif /* XSK_BUFF_POOL_H_ */
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index d6b500dc4208..f16074eb53c7 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -134,21 +134,6 @@ int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
+ 	return 0;
+ }
  
- 		bi = *i40e_rx_bi(rx_ring, next_to_clean);
--		bi->data_end = bi->data + size;
-+		xsk_buff_set_size(bi, size);
- 		xsk_buff_dma_sync_for_cpu(bi, rx_ring->xsk_pool);
+-void xp_release(struct xdp_buff_xsk *xskb)
+-{
+-	xskb->pool->free_heads[xskb->pool->free_heads_cnt++] = xskb;
+-}
+-
+-static u64 xp_get_handle(struct xdp_buff_xsk *xskb)
+-{
+-	u64 offset = xskb->xdp.data - xskb->xdp.data_hard_start;
+-
+-	offset += xskb->pool->headroom;
+-	if (!xskb->pool->unaligned)
+-		return xskb->orig_addr + offset;
+-	return xskb->orig_addr + (offset << XSK_UNALIGNED_BUF_OFFSET_SHIFT);
+-}
+-
+ static int __xsk_rcv_zc(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
+ {
+ 	struct xdp_buff_xsk *xskb = container_of(xdp, struct xdp_buff_xsk, xdp);
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 884d95d70f5e..96b14e51ba7e 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -44,12 +44,13 @@ void xp_destroy(struct xsk_buff_pool *pool)
+ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+ 						struct xdp_umem *umem)
+ {
++	bool unaligned = umem->flags & XDP_UMEM_UNALIGNED_CHUNK_FLAG;
+ 	struct xsk_buff_pool *pool;
+ 	struct xdp_buff_xsk *xskb;
+-	u32 i;
++	u32 i, entries;
  
- 		xdp_res = i40e_run_xdp_zc(rx_ring, bi);
+-	pool = kvzalloc(struct_size(pool, free_heads, umem->chunks),
+-			GFP_KERNEL);
++	entries = unaligned ? umem->chunks : 0;
++	pool = kvzalloc(struct_size(pool, free_heads, entries),	GFP_KERNEL);
+ 	if (!pool)
+ 		goto out;
+ 
+@@ -63,7 +64,8 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+ 	pool->free_heads_cnt = umem->chunks;
+ 	pool->headroom = umem->headroom;
+ 	pool->chunk_size = umem->chunk_size;
+-	pool->unaligned = umem->flags & XDP_UMEM_UNALIGNED_CHUNK_FLAG;
++	pool->chunk_shift = ffs(umem->chunk_size) - 1;
++	pool->unaligned = unaligned;
+ 	pool->frame_len = umem->chunk_size - umem->headroom -
+ 		XDP_PACKET_HEADROOM;
+ 	pool->umem = umem;
+@@ -81,7 +83,10 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+ 		xskb = &pool->heads[i];
+ 		xskb->pool = pool;
+ 		xskb->xdp.frame_sz = umem->chunk_size - umem->headroom;
+-		pool->free_heads[i] = xskb;
++		if (pool->unaligned)
++			pool->free_heads[i] = xskb;
++		else
++			xp_init_xskb_addr(xskb, pool, i * pool->chunk_size);
+ 	}
+ 
+ 	return pool;
+@@ -406,6 +411,12 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
+ 
+ 	if (pool->unaligned)
+ 		xp_check_dma_contiguity(dma_map);
++	else
++		for (i = 0; i < pool->heads_cnt; i++) {
++			struct xdp_buff_xsk *xskb = &pool->heads[i];
++
++			xp_init_xskb_dma(xskb, pool, dma_map->dma_pages, xskb->orig_addr);
++		}
+ 
+ 	err = xp_init_dma_info(pool, dma_map);
+ 	if (err) {
+@@ -448,8 +459,6 @@ static struct xdp_buff_xsk *__xp_alloc(struct xsk_buff_pool *pool)
+ 	if (pool->free_heads_cnt == 0)
+ 		return NULL;
+ 
+-	xskb = pool->free_heads[--pool->free_heads_cnt];
+-
+ 	for (;;) {
+ 		if (!xskq_cons_peek_addr_unchecked(pool->fq, &addr)) {
+ 			pool->fq->queue_empty_descs++;
+@@ -466,17 +475,17 @@ static struct xdp_buff_xsk *__xp_alloc(struct xsk_buff_pool *pool)
+ 		}
+ 		break;
+ 	}
+-	xskq_cons_release(pool->fq);
+ 
+-	xskb->orig_addr = addr;
+-	xskb->xdp.data_hard_start = pool->addrs + addr + pool->headroom;
+-	if (pool->dma_pages_cnt) {
+-		xskb->frame_dma = (pool->dma_pages[addr >> PAGE_SHIFT] &
+-				   ~XSK_NEXT_PG_CONTIG_MASK) +
+-				  (addr & ~PAGE_MASK);
+-		xskb->dma = xskb->frame_dma + pool->headroom +
+-			    XDP_PACKET_HEADROOM;
++	if (pool->unaligned) {
++		xskb = pool->free_heads[--pool->free_heads_cnt];
++		xp_init_xskb_addr(xskb, pool, addr);
++		if (pool->dma_pages_cnt)
++			xp_init_xskb_dma(xskb, pool, pool->dma_pages, addr);
++	} else {
++		xskb = &pool->heads[xp_aligned_extract_idx(pool, addr)];
+ 	}
++
++	xskq_cons_release(pool->fq);
+ 	return xskb;
+ }
+ 
+@@ -533,13 +542,16 @@ static u32 xp_alloc_new_from_fq(struct xsk_buff_pool *pool, struct xdp_buff **xd
+ 			continue;
+ 		}
+ 
+-		xskb = pool->free_heads[--pool->free_heads_cnt];
++		if (pool->unaligned) {
++			xskb = pool->free_heads[--pool->free_heads_cnt];
++			xp_init_xskb_addr(xskb, pool, addr);
++			if (pool->dma_pages_cnt)
++				xp_init_xskb_dma(xskb, pool, pool->dma_pages, addr);
++		} else {
++			xskb = &pool->heads[xp_aligned_extract_idx(pool, addr)];
++		}
++
+ 		*xdp = &xskb->xdp;
+-		xskb->orig_addr = addr;
+-		xskb->xdp.data_hard_start = pool->addrs + addr + pool->headroom;
+-		xskb->frame_dma = (pool->dma_pages[addr >> PAGE_SHIFT] &
+-				   ~XSK_NEXT_PG_CONTIG_MASK) + (addr & ~PAGE_MASK);
+-		xskb->dma = xskb->frame_dma + pool->headroom + XDP_PACKET_HEADROOM;
+ 		xdp++;
+ 	}
+ 
 -- 
 2.29.0
 
