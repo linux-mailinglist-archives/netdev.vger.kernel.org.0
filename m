@@ -2,180 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6964415261
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 23:06:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF11E415279
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 23:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237801AbhIVVIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 17:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
+        id S237984AbhIVVNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 17:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237759AbhIVVIS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 17:08:18 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E6F1C061574
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 14:06:48 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id w8so4109853pgf.5
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 14:06:48 -0700 (PDT)
+        with ESMTP id S237840AbhIVVNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 17:13:21 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7335FC061574
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 14:11:50 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id v24so15215451eda.3
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 14:11:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sipanda-io.20210112.gappssmtp.com; s=20210112;
+        d=riotgames.com; s=riotgames;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qv9V6JpyQiY/s0BTR68U+rPnVJ5jwhXnd3bbLe2hYms=;
-        b=8Te3FHUI0dnSNSDemxgfAaHLdgR/gm23vh9xtpxcklIPjY2abrgRh74qjk4o8KwuVR
-         a5s1Bb3c5fNWyIqph9vlk/5+Q0fsBVNBh/9JpYXGIp6J3D3tv3yCx2G2M4NMDzqCSr/2
-         adOm2MfJ9bCdcezEabNecECZvfNzfZ9F/laRoekZkq59PRx9YqE8K5pgRY8FC90TspVL
-         fBqf2WaMFRiGtegJDN7xyoO1yTqUicVlVTHfwbBW9lI06fJRzJrMfYNbM1b0beQV8rtS
-         XNrip3ZG3Q/QHgLRcot9m/kis+FuhfsvPksjW37WVsXRM2oEJ3qYqlH9i3KPbaFPlgZN
-         tibw==
+         :cc:content-transfer-encoding;
+        bh=5DX723n6IP6GeCbvXQpEmevbv8UGmwY9B8RvTiyRPpI=;
+        b=Rx1Fek6sRB7nW63T6T1IP011SLwGoqtqbzW4/Tg9UNS2/X/bh+UtLTscoVtQOvLA/X
+         rzRlvsj/aV6SlbiDQWSH+W82eFvmg+KFWxT7FuB1QI3gEMkMrp8aEGAoGWs8hvXXki3m
+         uoCIFYhJIyF8L/rP0o21ftuFLzaEG7CsiC4fk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qv9V6JpyQiY/s0BTR68U+rPnVJ5jwhXnd3bbLe2hYms=;
-        b=UDOtEBPH6IhJYjHGxRZoWrQBjfehUw7SrDvrNw468Ojmw8vV8+BzoOrnGBrjIlYtVK
-         EYixuoQHfYg0BGYE4wBfIx80/itB1jTC5mkF8t742FRCCYIeg6DW/fuwFUwlM+6Ha6qO
-         8I58IyhihsbcyQMut1v9sac/DiFuS4OZ3vy6DwpncWX4Fd5jne5dlscMeCx3eW0ohBMY
-         clKll616gsvL6bljWy9oAjDDM5PTqsg3i/5Z59TIN+/SQVhYBltjceRQfQuX6eb0qUzz
-         X7SzJAiVZNynQqwbRSGUM1elHOPurdbe9LyrDmzNc75nwKJKcXG2+iMk3Hdu09IcoV8F
-         iirw==
-X-Gm-Message-State: AOAM531Tx+8modAB1kIP0qERsXlb/FGXpitKO3Qld7khrxDuOo8/d3PG
-        Z9GSysYG0wVfFw/VMnccURg3XPMJ9zbIvlL/zRWVQA==
-X-Google-Smtp-Source: ABdhPJyc1Det6K9GfrCUrVhpS49Xt/jgnGZLshvau/mMHx65v7i67p5TK/fVBaBiMq6uDxgJ84NikCbwoVjRaLqxqcE=
-X-Received: by 2002:a63:1f5b:: with SMTP id q27mr889415pgm.324.1632344807834;
- Wed, 22 Sep 2021 14:06:47 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=5DX723n6IP6GeCbvXQpEmevbv8UGmwY9B8RvTiyRPpI=;
+        b=0gfw9+GLIq+DGaWLJ2EYSZLTMYgWNVyabALAyXd/sgN0lwIoVFt1LxB2ywXHvjRMPX
+         tocRmx904/jnOlN6q6G72rYnZgublq4BaSRBAwPyDxEQ9N/TCro3KbqZbRb/9cZVPTWQ
+         fqxRpeQjl6R8EuwNUGUgKfMfC2li9Pi6l2hzRIls5TcktwudGJ9Suc0H80vYGJ1vuoH6
+         XBiq2VbSBSJrJEjQWtbKYyVayhRW4rm6bETsBoGh9phb3J4U6n037IpuX/iLN6uebxLl
+         77K2KfOuPMD+ZKEH606AfO19EnnmyxWl7f0b+IyeyMLg35Fjhg6O9m1B88jHB7XpQ8p1
+         kquw==
+X-Gm-Message-State: AOAM531FlbDvVqZzzp6NPS9sjrA6caD6oXxVluFtC+eHsiE20ucb0muK
+        lU7zg19+xaRz+5/2zAhbmyU/N2vBhXHwSUYyqnHVNw==
+X-Google-Smtp-Source: ABdhPJy6p1+FBqINeYnptOfsAWRm2e1H4Q50vMZ09xCOBNWmY/bf4fMZsTW8md7hgcisw8EEhqhL4K/vkLYH1rrxWG0=
+X-Received: by 2002:a17:906:1146:: with SMTP id i6mr1476321eja.12.1632345109000;
+ Wed, 22 Sep 2021 14:11:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210916200041.810-1-felipe@expertise.dev> <CAM_iQpUkdz_EjiuPRF_qKBp_ZHok_c8+pr4skCWGs_QTeLWpwA@mail.gmail.com>
- <YUq1Ez1g8nBvA8Ad@nanopsycho> <CAOuuhY8KA99mV7qBHwX79xP31tqtc9EggSNZ-=j4Z+awJUosdQ@mail.gmail.com>
- <20210922154929.GA31100@corigine.com> <CAOuuhY9NPy+cEkBx3B=74A6ef0xfT_YFLASEOB4uvRn=W-tB5A@mail.gmail.com>
- <20210922180022.GA2168@corigine.com>
-In-Reply-To: <20210922180022.GA2168@corigine.com>
-From:   Tom Herbert <tom@sipanda.io>
-Date:   Wed, 22 Sep 2021 14:06:37 -0700
-Message-ID: <CAOuuhY9oGRgFn_D3TSwvAsMmAnahuPyws8uEZoPtpPiZwJ2GFw@mail.gmail.com>
-Subject: Re: [PATCH RFC net-next 0/2] net:sched: Introduce tc flower2
- classifier based on PANDA parser in kernel
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Felipe Magno de Almeida <felipe@sipanda.io>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Boris Sukholitko <boris.sukholitko@broadcom.com>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Ido Schimmel <idosch@idosch.org>, paulb@nvidia.com,
-        Davide Caratti <dcaratti@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+References: <87o88l3oc4.fsf@toke.dk> <20210921155443.507a8479@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <87k0j81iq5.fsf@toke.dk>
+In-Reply-To: <87k0j81iq5.fsf@toke.dk>
+From:   Zvi Effron <zeffron@riotgames.com>
+Date:   Wed, 22 Sep 2021 14:11:37 -0700
+Message-ID: <CAC1LvL11QfiuLq3YGLsJn2meLuo5jXivFf2v-y10-ax7p7sjXQ@mail.gmail.com>
+Subject: Re: Redux: Backwards compatibility for XDP multi-buff
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Lorenzo Bianconi <lbianconi@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 22, 2021 at 11:00 AM Simon Horman <simon.horman@corigine.com> wrote:
+On Wed, Sep 22, 2021 at 1:03 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> On Wed, Sep 22, 2021 at 10:28:41AM -0700, Tom Herbert wrote:
-> > On Wed, Sep 22, 2021 at 8:49 AM Simon Horman <simon.horman@corigine.com> wrote:
-> > >
-> > > On Wed, Sep 22, 2021 at 07:42:58AM -0700, Tom Herbert wrote:
-> > > > On Tue, Sep 21, 2021 at 9:46 PM Jiri Pirko <jiri@resnulli.us> wrote:
-> > > > >
-> > > > > Wed, Sep 22, 2021 at 06:38:20AM CEST, xiyou.wangcong@gmail.com wrote:
-> > > > > >On Thu, Sep 16, 2021 at 1:02 PM Felipe Magno de Almeida
-> > > > > ><felipe@sipanda.io> wrote:
-> > > > > >>
-> > > > > >> The PANDA parser, introduced in [1], addresses most of these problems
-> > > > > >> and introduces a developer friendly highly maintainable approach to
-> > > > > >> adding extensions to the parser. This RFC patch takes a known consumer
-> > > > > >> of flow dissector - tc flower - and  shows how it could make use of
-> > > > > >> the PANDA Parser by mostly cutnpaste of the flower code. The new
-> > > > > >> classifier is called "flower2". The control semantics of flower are
-> > > > > >> maintained but the flow dissector parser is replaced with a PANDA
-> > > > > >> Parser. The iproute2 patch is sent separately - but you'll notice
-> > > > > >> other than replacing the user space tc commands with "flower2"  the
-> > > > > >> syntax is exactly the same. To illustrate the flexibility of PANDA we
-> > > > > >> show a simple use case of the issues described in [2] when flower
-> > > > > >> consumes PANDA. The PANDA Parser is part of the PANDA programming
-> > > > > >> model for network datapaths, this is described in
-> > > > > >> https://github.com/panda-net/panda.
-> > > > > >
-> > > > > >My only concern is that is there any way to reuse flower code instead
-> > > > > >of duplicating most of them? Especially when you specifically mentioned
-> > > > > >flower2 has the same user-space syntax as flower, this makes code
-> > > > > >reusing more reasonable.
-> > > > >
-> > > > > Exactly. I believe it is wrong to introduce new classifier which would
-> > > > > basically behave exacly the same as flower, only has different parser
-> > > > > implementation under the hood.
-> > > > >
-> > > > > Could you please explore the possibility to replace flow_dissector by
-> > > > > your dissector optionally at first (kernel config for example)? And I'm
-> > > > > not talking only about flower, but about the rest of the flow_dissector
-> > > > > users too.
-> > >
-> > > +1
-> > >
-> > > > Hi Jiri,
-> > > >
-> > > > Yes, the intent is to replace flow dissector with a parser that is
-> > > > more extensible, more manageable and can be accelerated in hardware
-> > > > (good luck trying to HW accelerate flow dissector as is ;-) ). I did a
-> > > > presentation on this topic at the last Netdev conf:
-> > > > https://www.youtube.com/watch?v=zVnmVDSEoXc. FIrst introducing this
-> > > > with a kernel config is a good idea.
-> > >
-> > > Can we drop hyperbole? There are several examples of hardware that
-> > > offload (a subset of) flower. That the current kernel implementation has
-> > > the properties you describe is pretty much irrelevant for current hw
-> > > offload use-cases.
+> Jakub Kicinski <kuba@kernel.org> writes:
+>
+> > On Tue, 21 Sep 2021 18:06:35 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wro=
+te:
+> >> 1. Do nothing. This would make it up to users / sysadmins to avoid
+> >> anything breaking by manually making sure to not enable multi-buffer
+> >> support while loading any XDP programs that will malfunction if
+> >> presented with an mb frame. This will probably break in interesting
+> >> ways, but it's nice and simple from an implementation PoV. With this
+> >> we don't need the declaration discussed above either.
+> >>
+> >> 2. Add a check at runtime and drop the frames if they are mb-enabled a=
+nd
+> >> the program doesn't understand it. This is relatively simple to
+> >> implement, but it also makes for difficult-to-understand issues (why
+> >> are my packets suddenly being dropped?), and it will incur runtime
+> >> overhead.
+> >>
+> >> 3. Reject loading of programs that are not MB-aware when running in an
+> >> MB-enabled mode. This would make things break in more obvious ways,
+> >> and still allow a userspace loader to declare a program "MB-aware" to
+> >> force it to run if necessary. The problem then becomes at what level
+> >> to block this?
+> >>
+> >> Doing this at the driver level is not enough: while a particular
+> >> driver knows if it's running in multi-buff mode, we can't know for
+> >> sure if a particular XDP program is multi-buff aware at attach time:
+> >> it could be tail-calling other programs, or redirecting packets to
+> >> another interface where it will be processed by a non-MB aware
+> >> program.
+> >>
+> >> So another option is to make it a global toggle: e.g., create a new
+> >> sysctl to enable multi-buffer. If this is set, reject loading any XDP
+> >> program that doesn't support multi-buffer mode, and if it's unset,
+> >> disable multi-buffer mode in all drivers. This will make it explicit
+> >> when the multi-buffer mode is used, and prevent any accidental subtle
+> >> malfunction of existing XDP programs. The drawback is that it's a
+> >> mode switch, so more configuration complexity.
 > >
-> > Simon,
+> > 4. Add new program type, XDP_MB. Do not allow mixing of XDP vs XDP_MB
+> > thru tail calls.
 > >
-> > "current hw offload use-cases" is the problem; these models offer no
-> > extensibility. For instance, if a new protocol appears or a user wants
-> > to support their own custom protocol in things like tc-flower there is
-> > no feasible way to do this. Unfortunately, as of today it seems, we
-> > are still bound by the marketing department at hardware vendors that
-> > pick and choose the protocols that they think their customers want and
-> > are willing to invest in-- we need to get past this once and for all!
-> > IMO, what we need is a common way to extend the kernel, tc, and other
-> > applications for new protocols and features, but also be able to apply
-> > that method to extend to the hardware which is _offloading_ kernel
-> > functionality which in this case is flow dissector. The technology is
-> > there to do this as programmable NICs for instance are the rage, but
-> > we do need to create common APIs to be able to do that. Note this
-> > isn't just tc, but a whole space of features; for instance, XDP hints
-> > is nice idea for the NIC to provide information about protocols in a
-> > packet, but unless/until there is a way to program the device to pull
-> > out arbitrary information that the user cares about like something
-> > from their custom protocol, then it's very limited utility...
+> > IMHO that's very simple and covers majority of use cases.
 >
-> ... the NIC could run a BPF program if its programmable to that extent.
+> Using the program type (or maybe the expected_attach_type) was how I was
+> imagining we'd encode the "I am MB aware" flag, yes. I hadn't actually
+> considered that this could be used to also restrict tail call/freplace
+> attachment, but that's a good point. So this leaves just the redirect
+> issue, then, see my other reply.
 >
-Simon,
 
-True, but that implies that the NIC would just be running code in one
-CPU instead of another-- i.e., that is doing offload and not
-acceleration. Hardware parses are more likely to be very specialized
-and might look something like a parameterized FSM that runs 10x faster
-than software in a CPU. In order to be able to accelerate, we need to
-start with a parser representation that is more declarative than
-imperative. This is what PANDA provides, the user writes a parser in a
-declarative representation (but still in C). Given the front end
-representation is declarative, we can compile that to a type of byte
-code that is digestible to instantiate a reasonably programmable
-hardware parser. This fits well with eBPF where the byte code is
-domain specific instructions to eBPF, so when the eBPF program runs
-they can be JIT compiled into CPU instructions for running on the
-host, but they can be given to driver that can translate or JIT
-compile the byte code into their hardware parser (coud JIT compile to
-P4 backend for instance).
+I really like this apporoach as well, but before we commit to it, how likel=
+y
+are we to encounter this type of situation (where we need to indicate wheth=
+er
+an XDP program supports a new capability) again in the future. And if we do=
+,
+are we willing to require that all programs supporting that new feature are
+also mb-aware? Essentially, the suboptimal case I'm envisioning is needing =
+to
+have XDP_MB, XD_MB_NEW_THING, XDP_NEW_THING, and XDP all as program types. =
+That
+leads to exponential explosion in program types.
 
-Tom
+Also, every time we add a program type to encode a feature (instead of a tr=
+uly
+new type), we're essentially forcing a recompilation (and redeployment) of =
+all
+existing programs that take advantage of the libbpf section name program
+typing. (I'm sure there are tools that can rename a section in an ELF file
+without recompilation, but recompilation seems the simplest way to correct =
+the
+ELF files for most people.)
 
-> But ok, I accept your point that it would be good to facilitate
-> more flexible use in both sw and hw.
+If we think this is a one-off, it's probably fine, but if we think it'll ha=
+ppen
+again, is it worth it to find a solution that will work for future cases no=
+w,
+instead of having XDP, XDP_MB, and then having to find a solution for futur=
+e
+cases?
+
+--Zvi
+
+> -Toke
+>
