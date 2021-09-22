@@ -2,342 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E6D4143C5
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 10:29:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CACF4143D6
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 10:32:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbhIVIaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 04:30:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59748 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233349AbhIVIaa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 04:30:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DDE0361131;
-        Wed, 22 Sep 2021 08:28:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632299340;
-        bh=8KWEcauObr9ykdjsoBFmoMHzvYdrUByTjEfPf29I2bM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YKBcFTwoOVrhTevAD7pagyBRQuKcrjkxuVpOGWC95wberFhGRnAeOcsMoQEf6umNt
-         hATmqRwiTBIJPtQDZGX0v0kKaQsZcxx8TbZB+JGPfjl2scz3C6ugqJENxL08XAkqU1
-         h327fZaTMWphLmxSwQ5O/bEdQXq7Me1MWaIImA89scrvJx+xF1ZSzAyZHlPSWiuc0L
-         +MIPk/oD4hZ1QclCtv8Qu6Miq32vO2kvt6lqTbJKe7Au4hWn92c3X6/K+oApPH1RUh
-         3pbPQHQ+/EqqI5apGLnGDdAkXLzHoOzJCjV538l5nvDQ7VEhJkRhruAbdNMTmwMMZv
-         2NjFpxRD1+rtA==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Meir Lichtinger <meirl@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>
-Subject: [PATCH mlx5-next v1 2/2] IB/mlx5: Enable UAR to have DevX UID
-Date:   Wed, 22 Sep 2021 11:28:51 +0300
-Message-Id: <a4b0e182b806908867e3c00d45d8e2cdace3be68.1632299184.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1632299184.git.leonro@nvidia.com>
-References: <cover.1632299184.git.leonro@nvidia.com>
+        id S233920AbhIVIeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 04:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233437AbhIVIeE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 04:34:04 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED785C061574;
+        Wed, 22 Sep 2021 01:32:34 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id w11so1234202plz.13;
+        Wed, 22 Sep 2021 01:32:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1vngS2lLFpX3T2rXXyf0bdb29JPkoUdlNBskWHD774k=;
+        b=OxLvV2bRCQYkP9+l2Vlws5bL2v+cR5gRM7Z01D+2/5+LnXLYJK6CeI8mhHfLHPeMAS
+         UIFpcdXsFiAbqRNtxbxdaW7CE7CbS+cIlyV3YrXIK8QkH7uJtWpLgytBnN5hWYVSl/i3
+         TfZj5nRgu/h9EYjEj4WHb9MOYXvpq6lDudCL8FJ6hMmv9cYSX1rlNKyG9HoiWPwJmwPT
+         DIevCepsGiwzpJJ4l8cJNWuW5bcfV5P6zvWOZhT/zIjBf47x6PXN0wgJ5dpNM1YhkHo3
+         zTsIl6zNC+CMtW0uVrXEba5HGBjYH3zT4QfjrOzLOUig0Llzovl73gfliMeSpTVXPXdp
+         RrwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1vngS2lLFpX3T2rXXyf0bdb29JPkoUdlNBskWHD774k=;
+        b=S4m9o1tK3fW2Za1b6AHKBw4ie+DuJsSW/gk89r240wLn+hD+SMAau0+5cDT716m1os
+         PYWHJ6rHkmXXRxjsECg1abn9DnTojwrgk4gAAMm8wukV19EwxsglHJs4r/xVPngkQxTe
+         zU6n60hq3Tfqbc+dOA2eb+DkvHqtivOK+FfUVZmw7eX0m9R/lbDzriBc8EtSiKu8AJ57
+         XXaqak5A4u3xfi0bjiGMsXar4/xhcey1GgQOJs1XG3H6POMl1G/vB5F9z0nSa+lXmBl5
+         nVsHqOIRyxMdG9oq8Pnu5OG/2krBE16SiJpgpt07yyYXFFKOwlAfh1t+hwhqxbYfycyl
+         rn6w==
+X-Gm-Message-State: AOAM530XsiMuNw7LTcISwzhFugAqOx64x7LP5MS/ZLm/k95gLmXCmBdp
+        jzA4JrdMmzfWx/1AyIQtRMc=
+X-Google-Smtp-Source: ABdhPJw/BLSytIi3rtAX6V4TCQIMXbjagraOTa5pwNL7yhu5hVmfxY8eLMphBzyOFF80+jG2ykYaRA==
+X-Received: by 2002:a17:902:dcd5:b0:13d:97c6:c480 with SMTP id t21-20020a170902dcd500b0013d97c6c480mr21343565pll.70.1632299554488;
+        Wed, 22 Sep 2021 01:32:34 -0700 (PDT)
+Received: from kvm.asia-northeast3-a.c.our-ratio-313919.internal (252.229.64.34.bc.googleusercontent.com. [34.64.229.252])
+        by smtp.gmail.com with ESMTPSA id k14sm1820644pgg.92.2021.09.22.01.32.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Sep 2021 01:32:34 -0700 (PDT)
+Date:   Wed, 22 Sep 2021 08:32:28 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-mm@kvack.org, Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>,
+        John Garry <john.garry@huawei.com>,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC v2 PATCH] mm, sl[au]b: Introduce lockless cache
+Message-ID: <20210922083228.GA79355@kvm.asia-northeast3-a.c.our-ratio-313919.internal>
+References: <20210920154816.31832-1-42.hyeyoo@gmail.com>
+ <YUkErK1vVZMht4s8@casper.infradead.org>
+ <20210921154239.GA5092@kvm.asia-northeast3-a.c.our-ratio-313919.internal>
+ <YUoFfrQBmOdPEKpJ@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YUoFfrQBmOdPEKpJ@casper.infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Meir Lichtinger <meirl@nvidia.com>
+Hello Matthew.
+There's good news.
 
-UID field was added to alloc_uar and dealloc_uar PRM command, to specify
-DevX UID for UAR. This change enables firmware validating user access to
-its own UAR resources.
+in v3 (work in progress now), I fixed some bugs (I hate kernel panics!)
+And for test, made NAPI use it. it works pretty well.
 
-For the kernel allocated UARs the UID will stay 0 as of today.
+On Tue, Sep 21, 2021 at 05:17:02PM +0100, Matthew Wilcox wrote:
+> On Tue, Sep 21, 2021 at 03:42:39PM +0000, Hyeonggon Yoo wrote:
+> > > > +	/* slowpath */
+> > > > +	cache->size = kmem_cache_alloc_bulk(s, gfpflags,
+> > > > +			KMEM_LOCKLESS_CACHE_QUEUE_SIZE, cache->queue);
+> > > 
+> > > Go back to the Bonwick paper and look at the magazine section again.
+> > > You have to allocate _half_ the size of the queue, otherwise you get
+> > > into pathological situations where you start to free and allocate
+> > > every time.
+> > 
+> > I want to ask you where idea of allocating 'half' the size of queue came from.
+> > the paper you sent does not work with single queue(magazine). Instead,
+> > it manages pool of magazines.
+> > 
+> > And after reading the paper, I see managing pool of magazine (where M is
+> > an boot parameter) is valid approach to reduce hitting slowpath.
+> 
+> Bonwick uses two magazines per cpu; if both are empty, one is replaced
+> with a full one.  If both are full, one is replaced with an empty one.
+> Our slab implementation doesn't provide magazine allocation, but it does
+> provide bulk allocation.
+> So translating the Bonwick implementation to
+> our implementation, we need to bulk-allocate or bulk-free half of the
+> array at any time.
 
-Signed-off-by: Meir Lichtinger <meirl@nvidia.com>
-Reviewed-by: Yishai Hadas <yishaih@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/infiniband/hw/mlx5/cmd.c              | 26 +++++++++
- drivers/infiniband/hw/mlx5/cmd.h              |  2 +
- drivers/infiniband/hw/mlx5/main.c             | 55 +++++++++++--------
- drivers/net/ethernet/mellanox/mlx5/core/uar.c | 14 ++---
- include/linux/mlx5/driver.h                   |  2 -
- 5 files changed, 66 insertions(+), 33 deletions(-)
+Is there a reason that the number should be 'half'?
 
-diff --git a/drivers/infiniband/hw/mlx5/cmd.c b/drivers/infiniband/hw/mlx5/cmd.c
-index a8db8a051170..ff3742b0460a 100644
---- a/drivers/infiniband/hw/mlx5/cmd.c
-+++ b/drivers/infiniband/hw/mlx5/cmd.c
-@@ -206,3 +206,29 @@ int mlx5_cmd_mad_ifc(struct mlx5_core_dev *dev, const void *inb, void *outb,
- 	kfree(in);
- 	return err;
- }
-+
-+int mlx5_cmd_uar_alloc(struct mlx5_core_dev *dev, u32 *uarn, u16 uid)
-+{
-+	u32 out[MLX5_ST_SZ_DW(alloc_uar_out)] = {};
-+	u32 in[MLX5_ST_SZ_DW(alloc_uar_in)] = {};
-+	int err;
-+
-+	MLX5_SET(alloc_uar_in, in, opcode, MLX5_CMD_OP_ALLOC_UAR);
-+	MLX5_SET(alloc_uar_in, in, uid, uid);
-+	err = mlx5_cmd_exec_inout(dev, alloc_uar, in, out);
-+	if (err)
-+		return err;
-+
-+	*uarn = MLX5_GET(alloc_uar_out, out, uar);
-+	return 0;
-+}
-+
-+int mlx5_cmd_uar_dealloc(struct mlx5_core_dev *dev, u32 uarn, u16 uid)
-+{
-+	u32 in[MLX5_ST_SZ_DW(dealloc_uar_in)] = {};
-+
-+	MLX5_SET(dealloc_uar_in, in, opcode, MLX5_CMD_OP_DEALLOC_UAR);
-+	MLX5_SET(dealloc_uar_in, in, uar, uarn);
-+	MLX5_SET(dealloc_uar_in, in, uid, uid);
-+	return mlx5_cmd_exec_in(dev, dealloc_uar, in);
-+}
-diff --git a/drivers/infiniband/hw/mlx5/cmd.h b/drivers/infiniband/hw/mlx5/cmd.h
-index 66c96292ed43..ee46638db5de 100644
---- a/drivers/infiniband/hw/mlx5/cmd.h
-+++ b/drivers/infiniband/hw/mlx5/cmd.h
-@@ -57,4 +57,6 @@ int mlx5_cmd_xrcd_alloc(struct mlx5_core_dev *dev, u32 *xrcdn, u16 uid);
- int mlx5_cmd_xrcd_dealloc(struct mlx5_core_dev *dev, u32 xrcdn, u16 uid);
- int mlx5_cmd_mad_ifc(struct mlx5_core_dev *dev, const void *inb, void *outb,
- 		     u16 opmod, u8 port);
-+int mlx5_cmd_uar_alloc(struct mlx5_core_dev *dev, u32 *uarn, u16 uid);
-+int mlx5_cmd_uar_dealloc(struct mlx5_core_dev *dev, u32 uarn, u16 uid);
- #endif /* MLX5_IB_CMD_H */
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index 8664bcf6d3f5..5ec8bd2f0b2f 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -1643,7 +1643,8 @@ static int allocate_uars(struct mlx5_ib_dev *dev, struct mlx5_ib_ucontext *conte
- 
- 	bfregi = &context->bfregi;
- 	for (i = 0; i < bfregi->num_static_sys_pages; i++) {
--		err = mlx5_cmd_alloc_uar(dev->mdev, &bfregi->sys_pages[i]);
-+		err = mlx5_cmd_uar_alloc(dev->mdev, &bfregi->sys_pages[i],
-+					 context->devx_uid);
- 		if (err)
- 			goto error;
- 
-@@ -1657,7 +1658,8 @@ static int allocate_uars(struct mlx5_ib_dev *dev, struct mlx5_ib_ucontext *conte
- 
- error:
- 	for (--i; i >= 0; i--)
--		if (mlx5_cmd_free_uar(dev->mdev, bfregi->sys_pages[i]))
-+		if (mlx5_cmd_uar_dealloc(dev->mdev, bfregi->sys_pages[i],
-+					 context->devx_uid))
- 			mlx5_ib_warn(dev, "failed to free uar %d\n", i);
- 
- 	return err;
-@@ -1673,7 +1675,8 @@ static void deallocate_uars(struct mlx5_ib_dev *dev,
- 	for (i = 0; i < bfregi->num_sys_pages; i++)
- 		if (i < bfregi->num_static_sys_pages ||
- 		    bfregi->sys_pages[i] != MLX5_IB_INVALID_UAR_INDEX)
--			mlx5_cmd_free_uar(dev->mdev, bfregi->sys_pages[i]);
-+			mlx5_cmd_uar_dealloc(dev->mdev, bfregi->sys_pages[i],
-+					     context->devx_uid);
- }
- 
- int mlx5_ib_enable_lb(struct mlx5_ib_dev *dev, bool td, bool qp)
-@@ -1891,6 +1894,13 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 	if (req.num_low_latency_bfregs > req.total_num_bfregs - 1)
- 		return -EINVAL;
- 
-+	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX) {
-+		err = mlx5_ib_devx_create(dev, true);
-+		if (err < 0)
-+			goto out_ctx;
-+		context->devx_uid = err;
-+	}
-+
- 	lib_uar_4k = req.lib_caps & MLX5_LIB_CAP_4K_UAR;
- 	lib_uar_dyn = req.lib_caps & MLX5_LIB_CAP_DYN_UAR;
- 	bfregi = &context->bfregi;
-@@ -1903,7 +1913,7 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 	/* updates req->total_num_bfregs */
- 	err = calc_total_bfregs(dev, lib_uar_4k, &req, bfregi);
- 	if (err)
--		goto out_ctx;
-+		goto out_devx;
- 
- 	mutex_init(&bfregi->lock);
- 	bfregi->lib_uar_4k = lib_uar_4k;
-@@ -1911,7 +1921,7 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 				GFP_KERNEL);
- 	if (!bfregi->count) {
- 		err = -ENOMEM;
--		goto out_ctx;
-+		goto out_devx;
- 	}
- 
- 	bfregi->sys_pages = kcalloc(bfregi->num_sys_pages,
-@@ -1927,17 +1937,10 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 		goto out_sys_pages;
- 
- uar_done:
--	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX) {
--		err = mlx5_ib_devx_create(dev, true);
--		if (err < 0)
--			goto out_uars;
--		context->devx_uid = err;
--	}
+what about something like this:
+
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 884d3311cd8e..f32736302d53 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -455,12 +455,13 @@ void *kmem_cache_alloc_cached(struct kmem_cache *s, gfp_t gfpflags)
+        }
+
+        cache = get_cpu_ptr(s->cache);
+-       if (cache->size) /* fastpath without lock */
++       if (cache->size) /* fastpath without lock */
+                p = cache->queue[--cache->size];
+        else {
+                /* slowpath */
+-               cache->size = kmem_cache_alloc_bulk(s, gfpflags,
+-                               KMEM_LOCKLESS_CACHE_QUEUE_SIZE, cache->queue);
++               cache->size += kmem_cache_alloc_bulk(s, gfpflags,
++                               KMEM_LOCKLESS_CACHE_BATCHCOUNT,
++                               cache->queue);
+                if (cache->size)
+                        p = cache->queue[--cache->size];
+                else
+@@ -491,13 +492,13 @@ void kmem_cache_free_cached(struct kmem_cache *s, void *p)
+        cache = get_cpu_ptr(s->cache);
+        if (cache->size < KMEM_LOCKLESS_CACHE_QUEUE_SIZE) {
+                cache->queue[cache->size++] = p;
+-               put_cpu_ptr(s->cache);
+-               return ;
++       } else {
++               kmem_cache_free_bulk(s,
++                               KMEM_LOCKLESS_CACHE_BATCHCOUNT,
++                               cache->queue - KMEM_LOCKLESS_CACHE_BATCHCOUNT);
++               cache->size -= KMEM_LOCKLESS_CACHE_BATCHCOUNT;
+        }
+        put_cpu_ptr(s->cache);
 -
- 	err = mlx5_ib_alloc_transport_domain(dev, &context->tdn,
- 					     context->devx_uid);
- 	if (err)
--		goto out_devx;
-+		goto out_uars;
- 
- 	INIT_LIST_HEAD(&context->db_page_list);
- 	mutex_init(&context->db_page_mutex);
-@@ -1972,9 +1975,6 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 
- out_mdev:
- 	mlx5_ib_dealloc_transport_domain(dev, context->tdn, context->devx_uid);
--out_devx:
--	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX)
--		mlx5_ib_devx_destroy(dev, context->devx_uid);
- 
- out_uars:
- 	deallocate_uars(dev, context);
-@@ -1985,6 +1985,10 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- out_count:
- 	kfree(bfregi->count);
- 
-+out_devx:
-+	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX)
-+		mlx5_ib_devx_destroy(dev, context->devx_uid);
-+
- out_ctx:
- 	return err;
+-       /* Is there better way to do this? */
+-       kmem_cache_free(s, p);
  }
-@@ -2021,12 +2025,12 @@ static void mlx5_ib_dealloc_ucontext(struct ib_ucontext *ibcontext)
- 	bfregi = &context->bfregi;
- 	mlx5_ib_dealloc_transport_domain(dev, context->tdn, context->devx_uid);
- 
--	if (context->devx_uid)
--		mlx5_ib_devx_destroy(dev, context->devx_uid);
--
- 	deallocate_uars(dev, context);
- 	kfree(bfregi->sys_pages);
- 	kfree(bfregi->count);
-+
-+	if (context->devx_uid)
-+		mlx5_ib_devx_destroy(dev, context->devx_uid);
- }
- 
- static phys_addr_t uar_index2pfn(struct mlx5_ib_dev *dev,
-@@ -2119,6 +2123,7 @@ static void mlx5_ib_mmap_free(struct rdma_user_mmap_entry *entry)
- 	struct mlx5_user_mmap_entry *mentry = to_mmmap(entry);
- 	struct mlx5_ib_dev *dev = to_mdev(entry->ucontext->device);
- 	struct mlx5_var_table *var_table = &dev->var_table;
-+	struct mlx5_ib_ucontext *context = to_mucontext(entry->ucontext);
- 
- 	switch (mentry->mmap_flag) {
- 	case MLX5_IB_MMAP_TYPE_MEMIC:
-@@ -2133,7 +2138,8 @@ static void mlx5_ib_mmap_free(struct rdma_user_mmap_entry *entry)
- 		break;
- 	case MLX5_IB_MMAP_TYPE_UAR_WC:
- 	case MLX5_IB_MMAP_TYPE_UAR_NC:
--		mlx5_cmd_free_uar(dev->mdev, mentry->page_idx);
-+		mlx5_cmd_uar_dealloc(dev->mdev, mentry->page_idx,
-+				     context->devx_uid);
- 		kfree(mentry);
- 		break;
- 	default:
-@@ -2211,7 +2217,8 @@ static int uar_mmap(struct mlx5_ib_dev *dev, enum mlx5_ib_mmap_cmd cmd,
- 		bfregi->count[bfreg_dyn_idx]++;
- 		mutex_unlock(&bfregi->lock);
- 
--		err = mlx5_cmd_alloc_uar(dev->mdev, &uar_index);
-+		err = mlx5_cmd_uar_alloc(dev->mdev, &uar_index,
-+					 context->devx_uid);
- 		if (err) {
- 			mlx5_ib_warn(dev, "UAR alloc failed\n");
- 			goto free_bfreg;
-@@ -2240,7 +2247,7 @@ static int uar_mmap(struct mlx5_ib_dev *dev, enum mlx5_ib_mmap_cmd cmd,
- 	if (!dyn_uar)
- 		return err;
- 
--	mlx5_cmd_free_uar(dev->mdev, idx);
-+	mlx5_cmd_uar_dealloc(dev->mdev, idx, context->devx_uid);
- 
- free_bfreg:
- 	mlx5_ib_free_bfreg(dev, bfregi, bfreg_dyn_idx);
-@@ -3489,7 +3496,7 @@ alloc_uar_entry(struct mlx5_ib_ucontext *c,
- 		return ERR_PTR(-ENOMEM);
- 
- 	dev = to_mdev(c->ibucontext.device);
--	err = mlx5_cmd_alloc_uar(dev->mdev, &uar_index);
-+	err = mlx5_cmd_uar_alloc(dev->mdev, &uar_index, c->devx_uid);
- 	if (err)
- 		goto end;
- 
-@@ -3507,7 +3514,7 @@ alloc_uar_entry(struct mlx5_ib_ucontext *c,
- 	return entry;
- 
- err_insert:
--	mlx5_cmd_free_uar(dev->mdev, uar_index);
-+	mlx5_cmd_uar_dealloc(dev->mdev, uar_index, c->devx_uid);
- end:
- 	kfree(entry);
- 	return ERR_PTR(err);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/uar.c b/drivers/net/ethernet/mellanox/mlx5/core/uar.c
-index da481a7c12f4..01e9c412977c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/uar.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/uar.c
-@@ -36,7 +36,7 @@
- #include <linux/mlx5/driver.h>
- #include "mlx5_core.h"
- 
--int mlx5_cmd_alloc_uar(struct mlx5_core_dev *dev, u32 *uarn)
-+static int mlx5_cmd_alloc_uar(struct mlx5_core_dev *dev, u32 *uarn)
- {
- 	u32 out[MLX5_ST_SZ_DW(alloc_uar_out)] = {};
- 	u32 in[MLX5_ST_SZ_DW(alloc_uar_in)] = {};
-@@ -44,13 +44,14 @@ int mlx5_cmd_alloc_uar(struct mlx5_core_dev *dev, u32 *uarn)
- 
- 	MLX5_SET(alloc_uar_in, in, opcode, MLX5_CMD_OP_ALLOC_UAR);
- 	err = mlx5_cmd_exec_inout(dev, alloc_uar, in, out);
--	if (!err)
--		*uarn = MLX5_GET(alloc_uar_out, out, uar);
--	return err;
-+	if (err)
-+		return err;
-+
-+	*uarn = MLX5_GET(alloc_uar_out, out, uar);
-+	return 0;
- }
--EXPORT_SYMBOL(mlx5_cmd_alloc_uar);
- 
--int mlx5_cmd_free_uar(struct mlx5_core_dev *dev, u32 uarn)
-+static int mlx5_cmd_free_uar(struct mlx5_core_dev *dev, u32 uarn)
- {
- 	u32 in[MLX5_ST_SZ_DW(dealloc_uar_in)] = {};
- 
-@@ -58,7 +59,6 @@ int mlx5_cmd_free_uar(struct mlx5_core_dev *dev, u32 uarn)
- 	MLX5_SET(dealloc_uar_in, in, uar, uarn);
- 	return mlx5_cmd_exec_in(dev, dealloc_uar, in);
- }
--EXPORT_SYMBOL(mlx5_cmd_free_uar);
- 
- static int uars_per_sys_page(struct mlx5_core_dev *mdev)
- {
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index e23417424373..1b8bae246b28 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -1005,8 +1005,6 @@ void mlx5_cmd_mbox_status(void *out, u8 *status, u32 *syndrome);
- bool mlx5_cmd_is_down(struct mlx5_core_dev *dev);
- 
- int mlx5_core_get_caps(struct mlx5_core_dev *dev, enum mlx5_cap_type cap_type);
--int mlx5_cmd_alloc_uar(struct mlx5_core_dev *dev, u32 *uarn);
--int mlx5_cmd_free_uar(struct mlx5_core_dev *dev, u32 uarn);
- void mlx5_health_flush(struct mlx5_core_dev *dev);
- void mlx5_health_cleanup(struct mlx5_core_dev *dev);
- int mlx5_health_init(struct mlx5_core_dev *dev);
--- 
-2.31.1
-
+ EXPORT_SYMBOL(kmem_cache_free_cached);
