@@ -2,131 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D576F413E7A
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 02:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E546413EB2
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 02:46:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbhIVAPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 20:15:00 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:52094 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231497AbhIVAO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 20:14:58 -0400
-Received: by mail-il1-f200.google.com with SMTP id f16-20020a92cb50000000b002376905517dso824790ilq.18
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 17:13:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=36Y4nAKN32n1w9NWTI9hpGFl6g88aixbRegqHcy5Ivk=;
-        b=g5r9dnEJBLBNdbnqqhkGhBuzQYg8b5ajifR2DCgtaFveLN12tnS1wenSQpHoTVJHei
-         kuVtM+5GXiGJfJxc8b8db7DW3tARpSj/baG3QAr001k1aghZXAUskG0j7qEYZNA6/UWH
-         lVai34TL5zqxnOq4hcFMI2wXkBtatt93CFRnjkRMCMWoqp9GSr36AscMruyefG0XEjso
-         jhG/uOaOea43P4oOYkT2SfWbDpHPUttw40nDHmC9K7xwPFBozOQkvdW5o/nPGr+WmZ4L
-         OF5ACECfIJ6LxU43NG4xvorlWmV/5EPNypmunSH+/CDAbAs8uo4XNdlIc+kD7k3wWyK0
-         z4mQ==
-X-Gm-Message-State: AOAM533HC5E/QatRJ1u429fbU9Bpv0byOxfuhmxUh6pu9En4aJBiEGN0
-        W6pIlvT8hQweQ8ztBlq9n4I9SAyGzXWD+c2uKB062oFL1Qpe
-X-Google-Smtp-Source: ABdhPJzbez2ug3iTghF3AFgg4gvHcU3Mu9uYitHwwJPYKDFWRzqEVzwML2sHZaUBudS1cMXwYIldB8bxesS4TA+2GpU1pGP+V1TX
+        id S229908AbhIVAri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 20:47:38 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53272 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229480AbhIVArh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Sep 2021 20:47:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=SsDk/XrP1AwPSiOD71NDEDCySTD+v4MTOEa9mTcxVkA=; b=wzcVZDrvuFZ9HHKwDn+nJtKT8m
+        7A0yhl//EQd0moVGdM+TM1Yf2QudwgBtq7zuNsoMtkO7l+Syh3zeQbiQ+JVNHMUgAF+UboXxiJ//l
+        HeDzAvzk+Lv/6WmclCH1d60nfClokjYNFXRyo7hEuYVIlEvjv9CTollsaTSPrK5ARiMQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mSqOU-007hwP-WB; Wed, 22 Sep 2021 02:45:51 +0200
+Date:   Wed, 22 Sep 2021 02:45:50 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Subject: Re: [PATCH v3 2/3] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
+Message-ID: <YUp8vu1zUzBTz6WP@lunn.ch>
+References: <YUoFFXtWFAhLvIoH@kroah.com>
+ <CAJZ5v0jjvf6eeEKMtRJ-XP1QbOmjEWG=DmODbMhAFuemNn4rZg@mail.gmail.com>
+ <YUocuMM4/VKzNMXq@lunn.ch>
+ <CAJZ5v0iU3SGqrw909GLtuLwAxdyOy=pe2avxpDW+f4dP4ArhaQ@mail.gmail.com>
+ <YUo3kD9jgx6eNadX@lunn.ch>
+ <CAGETcx9hTFhY4+fHd71zYUsWW223GfUWBp8xxFCb2SNR6YUQ4Q@mail.gmail.com>
+ <YUpIgTqyrDRXMUyC@lunn.ch>
+ <CAGETcx_50KQuj0L+MCcf2Se8kpFfZwJBKP0juh_T7w+ZCs2p+g@mail.gmail.com>
+ <YUpW9LIcrcok8rBa@lunn.ch>
+ <CAGETcx_CNyKU-tXT+1_089MpVHQaBoNiZs6K__MrRXzWSi6P8g@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:a609:: with SMTP id q9mr2151666ioi.23.1632269608757;
- Tue, 21 Sep 2021 17:13:28 -0700 (PDT)
-Date:   Tue, 21 Sep 2021 17:13:28 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003533d205cc8a624b@google.com>
-Subject: [syzbot] WARNING: suspicious RCU usage in xfrm_set_default
-From:   syzbot <syzbot+3d9866419b4aa8f985d6@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        nicolas.dichtel@6wind.com, steffen.klassert@secunet.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx_CNyKU-tXT+1_089MpVHQaBoNiZs6K__MrRXzWSi6P8g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> Wait, what's the difference between a real fix vs a long term fix? To
+> me those are the same.
 
-syzbot found the following issue on:
+Maybe the long term fix is you follow the phandle to the actual
+resources, see it is present, and allow the probe? That brings you in
+line with how things actually work with devices probing against
+resources.
 
-HEAD commit:    1f77990c4b79 Add linux-next specific files for 20210920
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1581be9b300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ab1346371f2e6884
-dashboard link: https://syzkaller.appspot.com/bug?extid=3d9866419b4aa8f985d6
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13122c4b300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12c511f3300000
+I don't know how much work that is, since there is no uniform API to
+follow a phandle to a resource. I think each phandle type has its own
+helper. For an interrupt phandle you need to use of_irq_get(), for a
+gpio phandle maybe of_get_named_gpio_flags(), for a reset phandle
+__of_reset_control_get(), etc.
 
-The issue was bisected to:
+Because this does not sounds too simple, maybe you can find something
+simpler which is a real fix for now, good enough that it will get
+merged, and then you can implement this phandle following for the long
+term fix?
 
-commit 88d0adb5f13b1c52fbb7d755f6f79db18c2f0c2c
-Author: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Date:   Tue Sep 14 14:46:34 2021 +0000
-
-    xfrm: notify default policy on update
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1075f527300000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1275f527300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1475f527300000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+3d9866419b4aa8f985d6@syzkaller.appspotmail.com
-Fixes: 88d0adb5f13b ("xfrm: notify default policy on update")
-
-=============================
-WARNING: suspicious RCU usage
-5.15.0-rc2-next-20210920-syzkaller #0 Not tainted
------------------------------
-net/xfrm/xfrm_user.c:1157 suspicious rcu_dereference_check() usage!
-
-other info that might help us debug this:
-
-
-rcu_scheduler_active = 2, debug_locks = 1
-1 lock held by syz-executor917/6560:
- #0: ffffffff8d0d4818 (&net->xfrm.xfrm_cfg_mutex){+.+.}-{3:3}, at: xfrm_netlink_rcv+0x5c/0x90 net/xfrm/xfrm_user.c:2928
-
-stack backtrace:
-CPU: 0 PID: 6560 Comm: syz-executor917 Not tainted 5.15.0-rc2-next-20210920-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- xfrm_nlmsg_multicast net/xfrm/xfrm_user.c:1157 [inline]
- xfrm_notify_userpolicy net/xfrm/xfrm_user.c:1991 [inline]
- xfrm_set_default+0x789/0x8b0 net/xfrm/xfrm_user.c:2017
- xfrm_user_rcv_msg+0x430/0xa20 net/xfrm/xfrm_user.c:2907
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
- xfrm_netlink_rcv+0x6b/0x90 net/xfrm/xfrm_user.c:2929
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fe115dcd079
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffedbf3ee68 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe115dcd079
-RDX: 0000000000000000 RSI: 0000000020000280 RDI: 0000000000000003
-RBP: 00007fe115d91060 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fe115d910f0
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-unsupported nlmsg_t
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+	 Andrew
