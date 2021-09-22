@@ -2,175 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5E784142D1
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:37:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 554914142D8
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:42:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233374AbhIVHjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 03:39:09 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:41029 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233378AbhIVHi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:38:59 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3F71D5C00F4;
-        Wed, 22 Sep 2021 03:37:30 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 22 Sep 2021 03:37:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=T9ccrDsLvXdzPp69PBVosKBStq4hMuqrDBunQ3KTFc4=; b=pb3lHYGc
-        v84di4Blub31I9stfeMuanWRvVlGT5AeyVR/bLebSSwv+SrSZgeF2KtB40vOfPxr
-        a0XikEcCwqJkVF2sJzkIHmuI8DE/+WVBLvxVOGsQ/NxymXQ+kDWm6SDIwSA1ALoZ
-        tVERryyt2QORL8QAEF2JaKKSYQg82K+JeZ3pdRFIwN7zyav8Qo9ifBCvPQwfWVEm
-        KmgT5iM+iYd6mcfHUwyI8ROUpKysXdq0A4nVD6bSCo89twyoQ7++s4g0W0Vqyuum
-        eaAfsHFmOv++UrKN2yGP7Kij/KB+LDC4exX07YIDqWM7wFIat8ZW4fW8xhAoMmHT
-        RHYPW7DsE+y30w==
-X-ME-Sender: <xms:Ot1KYaKKSExyhXAmryJkfzHjLEGsTbBBzBHrdPotNef8gCFn-Ygrdg>
-    <xme:Ot1KYSKvvjhpu4T6yDSXvAikgjQLneysDnzA8XxHfR6eXeoll7kB0V5oPhi5WQAxg
-    hOr0xzUoXWatdM>
-X-ME-Received: <xmr:Ot1KYat1QWF3QPgmTl49bJ4XhrvzejOQvx6sBqRHuDOqGzuxr-NLRFQZekayyFYdKC7GaIDLkjiiBwgJsGhFsK2UTKy0a-dMzXLW8xq1DvxLjw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudeiiedgudduiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
-    ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedtnecu
-    rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:Ot1KYfYnHkGuTqQzn5eit5-g5OBLAceQ0-xMYiOKEC7VTjYIVTR0Bg>
-    <xmx:Ot1KYRbMyTjqfCB_5YCYHnC804KZJUVzJzu5bt21eTNcUpGk4y9rPQ>
-    <xmx:Ot1KYbBFdjSym2xZOUXyB2dHrLI3jii1neVVD7yV_B9K8Db6v420eA>
-    <xmx:Ot1KYVGxn4CtYv0Wv38gYaUXcSYin13VTCbLsGMAnA3pLe1VUBJyLw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 22 Sep 2021 03:37:28 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 2/2] mlxsw: spectrum_router: Start using new trap adjacency entry
-Date:   Wed, 22 Sep 2021 10:36:42 +0300
-Message-Id: <20210922073642.796559-3-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210922073642.796559-1-idosch@idosch.org>
-References: <20210922073642.796559-1-idosch@idosch.org>
+        id S233369AbhIVHn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 03:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233230AbhIVHn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:43:56 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995F0C061574
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 00:42:26 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id t8so4045282wrq.4
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 00:42:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=d55eamAySqf8b3clxNZoYmb1gYK8E1S3WLes7WqiIfs=;
+        b=En1Lrh7mJNVgVfiySVL3wAibVB+mnm4S6GcLAluUemGC1iyQv+uSCHQEaTfHVObjy8
+         XKOJ+SSfS5C8/i1rSH2QC4BBMkqkTQdNa2QXwdqkiMPCv9EyXNF3YE4Sl+gKkIvkobvv
+         hM+xBoJ6LP8jak9c+k7JBFdT2syJ00EnZ3UtZw42KWWR1W27AiX5A8RSLzMT+M/Nvvjp
+         t05X7P5wZmqhW3z+Byx/KoWs+YkCoYSQepiyQirmaBx9sGaSwagFKHkwqw4flL/V+U9H
+         jIr3FdUZSoMSvceDmnAoOvmt9le3rU1Jqu+jp0bCSGo+7PqOvs2MjD4peYfi2JvnnBzs
+         e2+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=d55eamAySqf8b3clxNZoYmb1gYK8E1S3WLes7WqiIfs=;
+        b=GS1ZiAkP5CyCrQE0wgWcLb7TmWqiLb9QA60yodQEr10SAqKF/PdsUu1TeB2uHfupam
+         LCdSL4YEcl9Lrv3LS7LftDoFWUQ+wkiRpiAqvtgIJ3157FSjrTgVuXKOqY+Izbh7qsHu
+         uzo3IJt6XAS1mCLVMIgRn2GIL1UwbaS+DE+yaifo4cqhFBHpoHIJrVAVkEZjxsU3LkOQ
+         0KTaQMPUev5KnGMaVqFg5xj6MUwTUTogmFPFawdLd+yZ2r6WOgOMkAruVnMaOuascpch
+         N9KJoEfG1tkzoiLDVhZYM/7dwnGTO4fdCIE5kjDcXy/FHLL6X7DRdcfFLt7+AIelQ7ja
+         v74g==
+X-Gm-Message-State: AOAM531hZ7+085Y3E2FGU43fEEhAK2QaD5DsiiFNq6OEO0A+iQAvUku5
+        pJbRWJcZFPAaYHvG+6Er0DIuRg==
+X-Google-Smtp-Source: ABdhPJwGkzewC3Vv9V1KSEEwR05eeenEIB8MnobkkJ+f5yCBcI7TqKeLe7zyybS4E80mygjrwaogpw==
+X-Received: by 2002:a05:6000:1186:: with SMTP id g6mr40525701wrx.126.1632296545202;
+        Wed, 22 Sep 2021 00:42:25 -0700 (PDT)
+Received: from google.com ([95.148.6.233])
+        by smtp.gmail.com with ESMTPSA id b207sm1129023wmb.29.2021.09.22.00.42.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Sep 2021 00:42:24 -0700 (PDT)
+Date:   Wed, 22 Sep 2021 08:42:23 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     min.li.xe@renesas.com
+Cc:     richardcochran@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] ptp: clockmatrix: use rsmu driver to access i2c/spi
+ bus
+Message-ID: <YUreX2Mzif7o0C1n@google.com>
+References: <1632251697-1928-1-git-send-email-min.li.xe@renesas.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <1632251697-1928-1-git-send-email-min.li.xe@renesas.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+On Tue, 21 Sep 2021, min.li.xe@renesas.com wrote:
 
-Start using the trap adjacency entry that was added in the previous
-patch and remove the existing one which is no longer needed.
+> From: Min Li <min.li.xe@renesas.com>
+> 
+> rsmu (Renesas Synchronization Management Unit ) driver is located in
+> drivers/mfd and responsible for creating multiple devices including
+> clockmatrix phc, which will then use the exposed regmap and mutex
+> handle to access i2c/spi bus.
+> 
+> Signed-off-by: Min Li <min.li.xe@renesas.com>
+> ---
+>  drivers/ptp/idt8a340_reg.h       | 783 ---------------------------------------
+>  drivers/ptp/ptp_clockmatrix.c    | 769 ++++++++++++++++++++------------------
+>  drivers/ptp/ptp_clockmatrix.h    | 117 +-----
 
-Note that the name of the old entry was inaccurate as the entry did not
-discard packets, but trapped them.
+>  include/linux/mfd/idt8a340_reg.h |  31 +-
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 51 +------------------
- .../ethernet/mellanox/mlxsw/spectrum_router.h |  2 -
- 2 files changed, 1 insertion(+), 52 deletions(-)
+Acked-by: Lee Jones <lee.jones@linaro.org>
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 00648e093351..331d26c1181e 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -5797,41 +5797,6 @@ static int mlxsw_sp_fib_entry_commit(struct mlxsw_sp *mlxsw_sp,
- 	return err;
- }
- 
--static int mlxsw_sp_adj_discard_write(struct mlxsw_sp *mlxsw_sp)
--{
--	enum mlxsw_reg_ratr_trap_action trap_action;
--	char ratr_pl[MLXSW_REG_RATR_LEN];
--	int err;
--
--	if (mlxsw_sp->router->adj_discard_index_valid)
--		return 0;
--
--	err = mlxsw_sp_kvdl_alloc(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ADJ, 1,
--				  &mlxsw_sp->router->adj_discard_index);
--	if (err)
--		return err;
--
--	trap_action = MLXSW_REG_RATR_TRAP_ACTION_TRAP;
--	mlxsw_reg_ratr_pack(ratr_pl, MLXSW_REG_RATR_OP_WRITE_WRITE_ENTRY, true,
--			    MLXSW_REG_RATR_TYPE_ETHERNET,
--			    mlxsw_sp->router->adj_discard_index,
--			    mlxsw_sp->router->lb_rif_index);
--	mlxsw_reg_ratr_trap_action_set(ratr_pl, trap_action);
--	mlxsw_reg_ratr_trap_id_set(ratr_pl, MLXSW_TRAP_ID_RTR_EGRESS0);
--	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ratr), ratr_pl);
--	if (err)
--		goto err_ratr_write;
--
--	mlxsw_sp->router->adj_discard_index_valid = true;
--
--	return 0;
--
--err_ratr_write:
--	mlxsw_sp_kvdl_free(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ADJ, 1,
--			   mlxsw_sp->router->adj_discard_index);
--	return err;
--}
--
- static int mlxsw_sp_fib_entry_op_remote(struct mlxsw_sp *mlxsw_sp,
- 					struct mlxsw_sp_fib_entry_op_ctx *op_ctx,
- 					struct mlxsw_sp_fib_entry *fib_entry,
-@@ -5844,7 +5809,6 @@ static int mlxsw_sp_fib_entry_op_remote(struct mlxsw_sp *mlxsw_sp,
- 	u16 trap_id = 0;
- 	u32 adjacency_index = 0;
- 	u16 ecmp_size = 0;
--	int err;
- 
- 	/* In case the nexthop group adjacency index is valid, use it
- 	 * with provided ECMP size. Otherwise, setup trap and pass
-@@ -5855,11 +5819,8 @@ static int mlxsw_sp_fib_entry_op_remote(struct mlxsw_sp *mlxsw_sp,
- 		adjacency_index = nhgi->adj_index;
- 		ecmp_size = nhgi->ecmp_size;
- 	} else if (!nhgi->adj_index_valid && nhgi->count && nhgi->nh_rif) {
--		err = mlxsw_sp_adj_discard_write(mlxsw_sp);
--		if (err)
--			return err;
- 		trap_action = MLXSW_REG_RALUE_TRAP_ACTION_NOP;
--		adjacency_index = mlxsw_sp->router->adj_discard_index;
-+		adjacency_index = mlxsw_sp->router->adj_trap_index;
- 		ecmp_size = 1;
- 	} else {
- 		trap_action = MLXSW_REG_RALUE_TRAP_ACTION_TRAP;
-@@ -7418,16 +7379,6 @@ static void mlxsw_sp_router_fib_flush(struct mlxsw_sp *mlxsw_sp)
- 			continue;
- 		mlxsw_sp_vr_fib_flush(mlxsw_sp, vr, MLXSW_SP_L3_PROTO_IPV6);
- 	}
--
--	/* After flushing all the routes, it is not possible anyone is still
--	 * using the adjacency index that is discarding packets, so free it in
--	 * case it was allocated.
--	 */
--	if (!mlxsw_sp->router->adj_discard_index_valid)
--		return;
--	mlxsw_sp_kvdl_free(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ADJ, 1,
--			   mlxsw_sp->router->adj_discard_index);
--	mlxsw_sp->router->adj_discard_index_valid = false;
- }
- 
- struct mlxsw_sp_fib6_event {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
-index 0c4f5bf4efd9..cc32d25c3bb2 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
-@@ -65,8 +65,6 @@ struct mlxsw_sp_router {
- 	struct notifier_block inet6addr_nb;
- 	const struct mlxsw_sp_rif_ops **rif_ops_arr;
- 	const struct mlxsw_sp_ipip_ops **ipip_ops_arr;
--	u32 adj_discard_index;
--	bool adj_discard_index_valid;
- 	struct mlxsw_sp_router_nve_decap nve_decap_config;
- 	struct mutex lock; /* Protects shared router resources */
- 	struct work_struct fib_event_work;
+>  4 files changed, 460 insertions(+), 1240 deletions(-)
+>  delete mode 100644 drivers/ptp/idt8a340_reg.h
+
 -- 
-2.31.1
-
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
