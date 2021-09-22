@@ -2,110 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FEC84142CB
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:36:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2793A4142CF
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:37:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233309AbhIVHiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 03:38:24 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:36060 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233059AbhIVHiT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:38:19 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18M7Xvls023412;
-        Wed, 22 Sep 2021 00:36:46 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=H2h4i5QnywBiltIrM26U6RNn2J9IeFNTywYLGHiONy4=;
- b=lVQiW/oaFLzhz0MVFngax3yObf88ahpY7XbDeedjuPPvwRWt6bMMUqopy2XC9aIHz3fc
- UhoWFXbM/3L1x1Oom3qHrd9oujv8Ov+cX4Aaxx8KXzhbkAxDUgEBBrNX80FappGo5zRU
- X9L8JjefaWIpweow2KdkSqfrlVuOb2hWXk82a1gNJqih49mVwphGDF8eD1YAaH/7YQbe
- nxwSIZqYkjZVAsalX3T4ZDD+OcuX5iPNR9OAOJgb10pGSVsfx9gBLpMwpPd52vdmGskI
- TbDs59ZkgnCjMPi1tUw5i+vMHorl4xztYTqCEWRIPtIFnl8gkv3S/zyEJfFRymvZJSGr Cg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3b7q5d9sju-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 22 Sep 2021 00:36:45 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 22 Sep
- 2021 00:36:44 -0700
-Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
- DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server id
- 15.0.1497.18 via Frontend Transport; Wed, 22 Sep 2021 00:36:42 -0700
-From:   Shai Malin <smalin@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-rdma@vger.kernel.org>, <jgg@ziepe.ca>, <leon@kernel.org>,
-        <aelior@marvell.com>, <smalin@marvell.com>, <malin1024@gmail.com>,
-        "Michal Kalderon" <mkalderon@marvell.com>
-Subject: [PATCH net v2] qed: rdma - don't wait for resources under hw error recovery flow
-Date:   Wed, 22 Sep 2021 10:36:31 +0300
-Message-ID: <20210922073631.31626-1-smalin@marvell.com>
-X-Mailer: git-send-email 2.16.6
+        id S233273AbhIVHi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 03:38:56 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:56577 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233059AbhIVHiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:38:54 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 5B44B5C00C2;
+        Wed, 22 Sep 2021 03:37:24 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Wed, 22 Sep 2021 03:37:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Z7nichfp0RqNTuBPz
+        O0y9b2HXZcvDZJlUtpwa/C4mek=; b=Z+42xpRye4FUcBtRgYPFG9mI/PWvfTTDY
+        wU93bIm7mDH2GZtofHskjG6xsPxovO4P/KA3Bsj8PTlUbSRkvGCMCozf7GvygHLD
+        2ueRM0U6GwM/wllj1JySgtpuxK0XIOPimkV9znhJ0SiiNktcqjNZpU8Y+Ay2anEA
+        sX1iGIAJEAQ/E9RAsUHXgtbdrDSezRfevbgWzeDAt4Ue/r8jw5OVDc+++5D+ewT+
+        zVo1dyVMdl50oLuIbbHK/KaH1kqeBZkCx6+jOUg9AP1KwKpmFmwtSRPVv7gWJxlD
+        IVMCKyBM5sakphjWOfIdWg+u2XALeitIZhszg6BTcdVp+tcTkRWtg==
+X-ME-Sender: <xms:NN1KYepNGuzTTYDEnCtut4czqqmw7xNEAuhTIFSp8HQ9y1kKfpuf9w>
+    <xme:NN1KYcqE4TA-p5hb17auiaG6Wh8af2ZsrxmYV1PbIQbDP8Zpt9fDqfdToZJ0ry8da
+    -Laf0-lYXcie98>
+X-ME-Received: <xmr:NN1KYTNe6_qZEwiXtt8FLkZx__3gmVHu0x1Qoa6mcEK2FZNAJpc2aaNHqCmr0yERRlm0Wx_SU0aF2cBypBoxn6JBbJjpIczW0rao0XL4E9dU9Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudeiiedgudduiecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeekkefgteeguedvtdegffeitefgueeiie
+    dutefhtdfhkeetteelgfevleetueeigeenucffohhmrghinhepghhithhhuhgsrdgtohhm
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:NN1KYd5ZwKL_QPjIrpgHkKc2fSS5CMobW1_de3RtT98f7bVrv9Us7g>
+    <xmx:NN1KYd57j7WMZpuIpP8ogOx89JJn314mWV4BgZjFT5B3xo_0K8F6Ag>
+    <xmx:NN1KYdjN72wWINiTH9vOndgMj_cPIrP5zUEqCzwDxwtbTb2zj6v5rQ>
+    <xmx:NN1KYXkWo8kCDfxtyIADAWnFDAkuaPvSq3fruMOQ8laBRQmkvobDcQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 22 Sep 2021 03:37:22 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/2] mlxsw: Alter trap adjacency entry allocation scheme
+Date:   Wed, 22 Sep 2021 10:36:40 +0300
+Message-Id: <20210922073642.796559-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: dLvSkQoqfyvzDtggDSyahM_vhlaeEsRq
-X-Proofpoint-ORIG-GUID: dLvSkQoqfyvzDtggDSyahM_vhlaeEsRq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-22_02,2021-09-20_01,2020-04-07_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the HW device is during recovery, the HW resources will never return,
-hence we shouldn't wait for the CID (HW context ID) bitmaps to clear.
-This fix speeds up the error recovery flow.
+From: Ido Schimmel <idosch@nvidia.com>
 
-Changes since v1:
-- Fix race condition (thanks to Leon Romanovsky).
+In commit 0c3cbbf96def ("mlxsw: Add specific trap for packets routed via
+invalid nexthops"), mlxsw started allocating a new adjacency entry
+during driver initialization, to trap packets routed via invalid
+nexthops.
 
-Fixes: 64515dc899df ("qed: Add infrastructure for error detection and recovery")
-Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 8 ++++++++
- drivers/net/ethernet/qlogic/qed/qed_roce.c  | 8 ++++++++
- 2 files changed, 16 insertions(+)
+This behavior was later altered in commit 983db6198f0d ("mlxsw:
+spectrum_router: Allocate discard adjacency entry when needed") to only
+allocate the entry upon the first route that requires it. The motivation
+for the change is explained in the commit message.
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-index fc8b3e64f153..186d0048a9d1 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-@@ -1297,6 +1297,14 @@ qed_iwarp_wait_cid_map_cleared(struct qed_hwfn *p_hwfn, struct qed_bmap *bmap)
- 	prev_weight = weight;
- 
- 	while (weight) {
-+		/* If the HW device is during recovery, all resources are
-+		 * immediately reset without receiving a per-cid indication
-+		 * from HW. In this case we don't expect the cid_map to be
-+		 * cleared.
-+		 */
-+		if (p_hwfn->cdev->recov_in_prog)
-+			return 0;
-+
- 		msleep(QED_IWARP_MAX_CID_CLEAN_TIME);
- 
- 		weight = bitmap_weight(bmap->bitmap, bmap->max_count);
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-index f16a157bb95a..cf5baa5e59bc 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-@@ -77,6 +77,14 @@ void qed_roce_stop(struct qed_hwfn *p_hwfn)
- 	 * Beyond the added delay we clear the bitmap anyway.
- 	 */
- 	while (bitmap_weight(rcid_map->bitmap, rcid_map->max_count)) {
-+		/* If the HW device is during recovery, all resources are
-+		 * immediately reset without receiving a per-cid indication
-+		 * from HW. In this case we don't expect the cid bitmap to be
-+		 * cleared.
-+		 */
-+		if (p_hwfn->cdev->recov_in_prog)
-+			return;
-+
- 		msleep(100);
- 		if (wait_count++ > 20) {
- 			DP_NOTICE(p_hwfn, "cid bitmap wait timed out\n");
+The problem with the current behavior is that the entry shows up as a
+"leak" in a new BPF resource monitoring tool [1]. This is caused by the
+asymmetry of the allocation/free scheme. While the entry is allocated
+upon the first route that requires it, it is only freed during
+de-initialization of the driver.
+
+Instead, this patchset tracks the number of active nexthop groups and
+allocates the adjacency entry upon the creation of the first group. The
+entry is freed when the number of active groups reaches zero.
+
+Patch #1 adds the new entry.
+
+Patch #2 converts mlxsw to start using the new entry and removes the old
+one.
+
+[1] https://github.com/Mellanox/mlxsw/tree/master/Debugging/libbpf-tools/resmon
+
+Ido Schimmel (2):
+  mlxsw: spectrum_router: Add trap adjacency entry upon first nexthop
+    group
+  mlxsw: spectrum_router: Start using new trap adjacency entry
+
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 129 +++++++++++-------
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |   4 +-
+ 2 files changed, 81 insertions(+), 52 deletions(-)
+
 -- 
-2.27.0
+2.31.1
 
