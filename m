@@ -2,101 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6D28414EF2
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 19:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B05414EFD
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 19:26:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236747AbhIVRXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 13:23:09 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:57404 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236701AbhIVRXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 13:23:08 -0400
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18MH9gnt018529;
-        Wed, 22 Sep 2021 13:21:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=GbQtfpd2tsEbXEXXhPYCa3aqqGdu9jYMnwZTtyh2fts=;
- b=EVI/5RMqr4X/XFHgjuf3B3o+9d+XfKu5jfBQw8nv+QPqdcT1B2WlC99YcAwMRB+syV7y
- qswiwP8Cuzvm2MnJsjRwZOSItkAy5Rw04e3odzSkC3kJD9VeVmQzz7UOcqMOq6CtT1Ix
- 8OyqU7mDLzfomfezA8+s/EdDXlToawGErtPAOtJIi/dUFU9oxXwcTpAzL7LHiPnCsGBe
- 5jTracUWeKW2XBIDI4CCouZreJEB2jqEVEyk1vw0bzjXh/ctyW9aI6y+Y/udYwztNLIj
- Pb0Fmxso/Z4XdY+O4xxjwV0EoRB9YaURUYtAuxl1nzmdh6JMkibl/6IMFN5z+dJWbcij Rw== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3b87mr1puy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Sep 2021 13:21:35 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18MH1xjp015408;
-        Wed, 22 Sep 2021 17:21:33 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma04ams.nl.ibm.com with ESMTP id 3b7q6r1hqv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Sep 2021 17:21:33 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18MHLT4H57541088
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 Sep 2021 17:21:30 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D14E042042;
-        Wed, 22 Sep 2021 17:21:29 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 75AEB4204B;
-        Wed, 22 Sep 2021 17:21:29 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 22 Sep 2021 17:21:29 +0000 (GMT)
-From:   Guvenc Gulce <guvenc@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net] MAINTAINERS: remove Guvenc Gulce as net/smc maintainer
-Date:   Wed, 22 Sep 2021 19:21:29 +0200
-Message-Id: <20210922172129.773374-1-guvenc@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 6gwdX00Fn6_uVr3VJmOeedYyioZTtvr2
-X-Proofpoint-ORIG-GUID: 6gwdX00Fn6_uVr3VJmOeedYyioZTtvr2
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S236826AbhIVR1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 13:27:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52364 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236716AbhIVR1g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 13:27:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632331565;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=25lGIVYtKt3kH1kWTNrr/qFisdmByWs8m8B7PEwB7yQ=;
+        b=abXgpKfHs2mXBli1SkJJRtQ4tSNB6ogaz7n/PGMMJx0gDUBzxhaGo9E7j89AmFokTi0ClL
+        mQWqxeE9ahZ0GfvrKJKDO0OjdzijYsdoNEfPEUgVKYM9KyAey9bBSWGnbizV2CO8zS2onq
+        Lj5jHFpi4ChOOKlJ/EhCR4fnF0hNZ0A=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-490-QM5rgveEOg-MnWOc20chRg-1; Wed, 22 Sep 2021 13:26:02 -0400
+X-MC-Unique: QM5rgveEOg-MnWOc20chRg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1E6DD814707;
+        Wed, 22 Sep 2021 17:26:00 +0000 (UTC)
+Received: from x2.localnet (unknown [10.22.9.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 169841972D;
+        Wed, 22 Sep 2021 17:25:31 +0000 (UTC)
+From:   Steve Grubb <sgrubb@redhat.com>
+To:     Eugene Syromiatnikov <esyr@redhat.com>,
+        Paul Cercueil <paul@crapouillou.net>
+Cc:     Cai Huoqing <caihuoqing@baidu.com>, linux-audit@redhat.com,
+        strace development discussions <strace-devel@lists.strace.io>,
+        linux-api@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, ldv@strace.io
+Subject: Re: [PATCH 1/2] net: Remove net/ipx.h and uapi/linux/ipx.h header files
+Date:   Wed, 22 Sep 2021 13:25:29 -0400
+Message-ID: <1710508.VLH7GnMWUR@x2>
+Organization: Red Hat
+In-Reply-To: <AZHUZQ.4E5G2GAEGJ0U@crapouillou.net>
+References: <20210813120803.101-1-caihuoqing@baidu.com> <20210902160840.GA2220@asgard.redhat.com> <AZHUZQ.4E5G2GAEGJ0U@crapouillou.net>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-22_06,2021-09-22_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- mlxscore=0 phishscore=0 impostorscore=0 mlxlogscore=714 priorityscore=1501
- adultscore=0 bulkscore=0 lowpriorityscore=0 clxscore=1015 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2109200000
- definitions=main-2109220114
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove myself as net/smc maintainer, as I am
-leaving IBM soon and can not maintain net/smc anymore.
+On Wednesday, September 22, 2021 1:01:58 PM EDT Paul Cercueil wrote:
+> >> IPX is marked obsolete for serveral years. so remove it and the
+> >> dependency in linux tree.
+> >> I'm sorry to not thinking about linux-audit and strace.
+> >> Might you remove the dependency or make the part of the code.
+> >> Many thanks.
+> > 
+> > Unfortunately, that is not how UAPI works.  That change breaks
+> > building
+> > of the existing code;  one cannot change already released versions
+> > of either audit, strace, or any other userspace program that happens
+> > to unconditionally include <linux/ipx.h> without any fallback (like
+> > <netipx/ipx.h> provided by glibc).
+> 
+> Also, the <netipx/ipx.h> fallback is only provided by glibc (and maybe
+> uclibc?). With this patch, it is now impossible to compile even the
+> very latest version of "strace" with a musl toolchain.
 
-Cc: Julian Wiedmann <jwi@linux.ibm.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: Guvenc Gulce <guvenc@linux.ibm.com>
----
- MAINTAINERS | 1 -
- 1 file changed, 1 deletion(-)
+I've made support for ipx optional in audit user space a couple weeks back. 
+It's no longer a problem for us.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index eeb4c70b3d5b..3c814976443e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16955,7 +16955,6 @@ F:	drivers/misc/sgi-xp/
- 
- SHARED MEMORY COMMUNICATIONS (SMC) SOCKETS
- M:	Karsten Graul <kgraul@linux.ibm.com>
--M:	Guvenc Gulce <guvenc@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
- S:	Supported
- W:	http://www.ibm.com/developerworks/linux/linux390/
--- 
-2.25.1
+-Steve
+
 
