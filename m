@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2CD9414313
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AAA8414318
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:57:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233546AbhIVH6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 03:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49140 "EHLO
+        id S233360AbhIVH6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 03:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233553AbhIVH6b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:58:31 -0400
+        with ESMTP id S233577AbhIVH6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:58:32 -0400
 Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EB5C0613DF;
-        Wed, 22 Sep 2021 00:56:58 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id d6so4018880wrc.11;
-        Wed, 22 Sep 2021 00:56:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFDDC0613E3;
+        Wed, 22 Sep 2021 00:57:00 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id t18so4316456wrb.0;
+        Wed, 22 Sep 2021 00:57:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tBzKMAyVJb7YNM6Gm5Xf+XBoiFAs3cTnmjv86MR3naQ=;
-        b=bjaxiGRjxfMFZ02bSC0igQ3URkBT4mALFICOcaHtVKrgzs4xLT+dPuKG50Gqhk4O0M
-         16ou3YB9AYKN1WwZ9CFvLbCrIhFuxdCOkjQwCzPtHAfT1YR2zpJY720pASXBSi7lOZoF
-         Xssi3eIpu+Tb8tAuLnVpxWVhV35of9Sx1ILg7w9QEdMNrTwRy6TK8fv7v6XApLupVAEv
-         YAw3UbQwkMpuqWOf01A3FB3fT2g4xzkl5IcDkZoZH/bvDTTXKwXSJJIx4Uz5IIz4DFQm
-         aFy4wBFK0Hlir7ag7Jl4Lw/wuF4StiBk/zEkoVpM53td3Ikg6zwDmK0GKivDcEoTLXaW
-         eArQ==
+        bh=hE7wLYt6S0eWPxLVOXggLGnZBoU+LaQoXkdBXrdKzPE=;
+        b=B9i91TF2Gc1eE5f/AhvPZCz+AtgRInom4SOJpwRm18MVzf3TSGoS/S2TiE5jppZo/5
+         kLdTTFQLCurwhvCbiRngBCbsiY0x23L6HXuczPKx+aD/18HkFgln3axJEtw98P+Dai7U
+         hY7alVisU+eG54zzpuv5G+PzvZRiqMXNnGfCZoJo6oRFJlkDhf3Op1wBp44U1BOSbxcj
+         tSSWlk1P2myVQqZMlxWKB9yjMWAVnk7bxDEpqZiB7B5E12a4g/9+LusBUnn+5oZV8WM3
+         kXyfQobtmm0brHrvJNO5RaZlay/0pZPbKrkSUHo3P3y8PVFGzcs22pZvhekyzgF4gZJt
+         LFDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tBzKMAyVJb7YNM6Gm5Xf+XBoiFAs3cTnmjv86MR3naQ=;
-        b=hqnrik4W1ybVwB1EmqMRCQEq46uKe3vvoIhUiaTRNmuEWE3p+hk22485RYWLFnDmr/
-         o5JdSNOt1nuFFbXZ6pdT4Xsh+zDzCPPx3LCabzq8LIv1yJBxn9fkGGqCsjK/QQ8DTGD0
-         BHDCvVz5IbMPFdi2fXXy4Gn20B9/puE2g8tB4mRSlU+kwbPrHqjN66hnZWj41F2aL7op
-         Ev0b09f5GYqsiZ5T7QxDueRE0DpPsCF+ioRoki0SgbcH/PisbVNg1o/2mH1S4txiZZvM
-         mek6amMeNb2URoJ48kaODnKkz4kvWQbNc9xaTUsnrpLuWU39NdHqfGgti/FT1tJNOwZ5
-         YhSA==
-X-Gm-Message-State: AOAM531KLQ0tuvoFECLdfwJsWqWDWKTmK97jzBeA0fSkReSbvAPseNeY
-        o/hyEncJ+NAq9Qq9yyp8Cx0=
-X-Google-Smtp-Source: ABdhPJwOrZQoysvFQu7Q4tsN4oyAmRsD/BzsBhq39109Ck4nOLYf6LH2/fljXEdCaCADRdu7rFAHVA==
-X-Received: by 2002:a05:600c:3790:: with SMTP id o16mr8880604wmr.157.1632297417219;
-        Wed, 22 Sep 2021 00:56:57 -0700 (PDT)
+        bh=hE7wLYt6S0eWPxLVOXggLGnZBoU+LaQoXkdBXrdKzPE=;
+        b=KJkrpy6QFmXpKX3kpGh4b49sXocw29J9Hb0dsN7X8u8g3doAmDPmjc/FlFErBBz72S
+         0KrkGN00HGKOH9CsLG397n6UE9APjmOEArswNHqIEJhWPpzMqZwDBtiwWoNMEiSuKnYz
+         1yCBd9xD0A/umURtGOKiDz/wa8k47yiCi4J76ZkuBVNQinV4Ev6TxMtCoTAuy6zWTCyp
+         +oOciNbxlujap1jq771pco3IvKst4ZeVrLahalAA8aCxIU98jhTR8xDlHYLyCuow8wtj
+         DQwVDHmh8A+2izw4B+9K3PFVszKHdzdZu2Xm26yfUd/e3MxOeSxnvuuM3Kk7PesI+5Iq
+         IE4A==
+X-Gm-Message-State: AOAM532gbowyCxART16gArKP/NYZ9l1HTGS0J0tyFwFA/7TXKrupCuXR
+        XtyB1nLMswoXbTjHvol5H32WXBeKzMMd5V1A
+X-Google-Smtp-Source: ABdhPJyeP4X/wjuMypYXc346j+Qm+YXZ4Clpi4+VXI6Vmn7WIt1dK6MErRftEh7XmzblQi5CQPYUqw==
+X-Received: by 2002:a5d:6d8a:: with SMTP id l10mr40271262wrs.121.1632297418622;
+        Wed, 22 Sep 2021 00:56:58 -0700 (PDT)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id j7sm1673087wrr.27.2021.09.22.00.56.55
+        by smtp.gmail.com with ESMTPSA id j7sm1673087wrr.27.2021.09.22.00.56.57
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Sep 2021 00:56:56 -0700 (PDT)
+        Wed, 22 Sep 2021 00:56:58 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         maciej.fijalkowski@intel.com, ciara.loftus@intel.com
 Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org,
         anthony.l.nguyen@intel.com
-Subject: [PATCH bpf-next 11/13] selftests: xsk: add single packet test
-Date:   Wed, 22 Sep 2021 09:56:11 +0200
-Message-Id: <20210922075613.12186-12-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next 12/13] selftests: xsk: change interleaving of packets in unaligned mode
+Date:   Wed, 22 Sep 2021 09:56:12 +0200
+Message-Id: <20210922075613.12186-13-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210922075613.12186-1-magnus.karlsson@gmail.com>
 References: <20210922075613.12186-1-magnus.karlsson@gmail.com>
@@ -67,61 +67,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Add a test where a single packet is sent and received. This might
-sound like a silly test, but since many of the interfaces in xsk are
-batched, it is important to be able to validate that we did not break
-something as fundamental as just receiving single packets, instead of
-batches of packets at high speed.
+Change the interleaving of packets in unaligned mode. With the current
+buffer addresses in the packet stream, the last buffer in the umem
+could not be used as a large packet could potentially write over the
+end of the umem. The kernel correctly threw this buffer address away
+and refused to use it. This is perfectly fine for all regular packet
+streams, but the ones used for unaligned mode have every other packet
+being at some different offset. As we will add checks for correct
+offsets in the next patch, this needs to be fixed. Just start these
+page-boundary straddling buffers one page earlier so that the last
+one is not on the last page of the umem, making all buffers valid.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 13 +++++++++++++
- tools/testing/selftests/bpf/xdpxceiver.h |  1 +
- 2 files changed, 14 insertions(+)
+ tools/testing/selftests/bpf/xdpxceiver.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 597fbe206026..3beea7531c8e 100644
+index 3beea7531c8e..fd620f8accfd 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.c
 +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -1217,6 +1217,15 @@ static bool testapp_unaligned(struct test_spec *test)
- 	return true;
+@@ -543,14 +543,14 @@ static void pkt_stream_replace(struct test_spec *test, u32 nb_pkts, u32 pkt_len)
+ 	test->ifobj_rx->pkt_stream = pkt_stream;
  }
  
-+static void testapp_single_pkt(struct test_spec *test)
-+{
-+	struct pkt pkts[] = {{0x1000, PKT_SIZE, 0, true}};
-+
-+	pkt_stream_generate_custom(test, pkts, ARRAY_SIZE(pkts));
-+	testapp_validate_traffic(test);
-+	pkt_stream_restore_default(test);
-+}
-+
- static void testapp_invalid_desc(struct test_spec *test)
+-static void pkt_stream_replace_half(struct test_spec *test, u32 pkt_len, u32 offset)
++static void pkt_stream_replace_half(struct test_spec *test, u32 pkt_len, int offset)
  {
- 	struct pkt pkts[] = {
-@@ -1298,6 +1307,10 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
- 		test_spec_set_name(test, "RUN_TO_COMPLETION");
- 		testapp_validate_traffic(test);
- 		break;
-+	case TEST_TYPE_RUN_TO_COMPLETION_SINGLE_PKT:
-+		test_spec_set_name(test, "RUN_TO_COMPLETION_SINGLE_PKT");
-+		testapp_single_pkt(test);
-+		break;
- 	case TEST_TYPE_RUN_TO_COMPLETION_2K_FRAME:
- 		test_spec_set_name(test, "RUN_TO_COMPLETION_2K_FRAME_SIZE");
- 		test->ifobj_tx->umem->frame_size = 2048;
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 00790c976f4f..d075192c95f8 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.h
-+++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -55,6 +55,7 @@ enum test_mode {
- enum test_type {
- 	TEST_TYPE_RUN_TO_COMPLETION,
- 	TEST_TYPE_RUN_TO_COMPLETION_2K_FRAME,
-+	TEST_TYPE_RUN_TO_COMPLETION_SINGLE_PKT,
- 	TEST_TYPE_POLL,
- 	TEST_TYPE_UNALIGNED,
- 	TEST_TYPE_ALIGNED_INV_DESC,
+ 	struct xsk_umem_info *umem = test->ifobj_tx->umem;
+ 	struct pkt_stream *pkt_stream;
+ 	u32 i;
+ 
+ 	pkt_stream = pkt_stream_clone(umem, test->pkt_stream_default);
+-	for (i = 0; i < test->pkt_stream_default->nb_pkts; i += 2) {
++	for (i = 1; i < test->pkt_stream_default->nb_pkts; i += 2) {
+ 		pkt_stream->pkts[i].addr = (i % umem->num_frames) * umem->frame_size + offset;
+ 		pkt_stream->pkts[i].len = pkt_len;
+ 	}
+@@ -1209,7 +1209,7 @@ static bool testapp_unaligned(struct test_spec *test)
+ 	test->ifobj_tx->umem->unaligned_mode = true;
+ 	test->ifobj_rx->umem->unaligned_mode = true;
+ 	/* Let half of the packets straddle a buffer boundrary */
+-	pkt_stream_replace_half(test, PKT_SIZE, test->ifobj_tx->umem->frame_size - 32);
++	pkt_stream_replace_half(test, PKT_SIZE, -PKT_SIZE / 2);
+ 	test->ifobj_rx->pkt_stream->use_addr_for_fill = true;
+ 	testapp_validate_traffic(test);
+ 
 -- 
 2.29.0
 
