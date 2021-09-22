@@ -2,67 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FF8C41410A
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 07:04:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9095541412C
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 07:17:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231896AbhIVFGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 01:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38480 "EHLO
+        id S231996AbhIVFSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 01:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231695AbhIVFGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 01:06:21 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E32DC061574
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 22:04:52 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id t8so3126837wri.1
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 22:04:52 -0700 (PDT)
+        with ESMTP id S231901AbhIVFSr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 01:18:47 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B50C061574
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 22:17:17 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id i23so3177927wrb.2
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 22:17:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=1Br/N6WhyVMlujnGsxiPG2oa5QW+rtf7KlXAbdHBbwA=;
-        b=NzOUXoBE4kKFwjcJ4T+03xEmkI6BDvtYRDzy5cNdElzpjovg41ZvPWiu1s6ZYl5hzY
-         +GZaUM/PR7IVYNfHqzwsj2+72ifEOKK9HFgLb+aPg4EC6ZPyyYIW/yCiRsdHe8++1YyQ
-         AkbuDmr2wy7KGPC0xFFOZ/6602WtE9HFh/z0+wYu87cRVTGgGCh5kjXbvDil0GvFBQzf
-         TtILr6Hoh151K+7XNnI2u/Zax6H338KVFQjpK1c3R3neRMjuz9vCA1HPsjbqg4ipWrO4
-         8iCDqqN7Ja59rpN6toZ7liyNuOy6EwfAejqi70EzgGI0chrKpTJ0L67x8xNUIvBAnLwx
-         G3lw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nZ6P5cxoG/lqjYqBHnA+r4ZbZAlV1S/dG0TgvhUQbQg=;
+        b=Ej3Z9bCWFQHPf5IPPZDQbc6r1mVtmk/jgxBsLeHhpM1G4luwbGmX3C7X2/gaJmMAxi
+         5Xa2Q700tzaaLGL3NkyFdcPAen/TNjuguRPaV00+PfbfomEGBWfGGGeNKOeCybLBSH35
+         +8M3HdB/h0fu1stxTQ+woFpcJn/1ucKm9KSrATiuJRTYtqntwHto+XgiuiYnULDPwPTR
+         wTOfjeo7lMdentovEPmyleaFhwcVBgPfnudVNWfr2hmHKXBmO3Tgb7kzyPdw/t5sOvYb
+         p4ex2FJLxS7hktn1rbPk7Rp3mYKiqLVCaTA/MuSwb9P1AshIZJLMpBT8iJzdeGOXGLXA
+         9Vog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=1Br/N6WhyVMlujnGsxiPG2oa5QW+rtf7KlXAbdHBbwA=;
-        b=5AZuRTy7vo2rjs2q5fQTjYCmP6R9LAlq/EPaQF2VQ0rY7F+76KvgMlj0z2W66Hrag8
-         GP+vxf7XUo6KYb/eoB5OqsU0XaH9Os/22ZV6XcxO9lhKCGnLTD5tbL+dMyetXn4oxfx5
-         2N3VOy5BsbL8Hk8SAFBDZlXLNQEVJkNRAs1IIVzLQNbyFmg+D16rnZ1ZH8+LwqMlBaEY
-         C7vWGf0XSmQVNPrjshGNFyEAeA6paqUf0ay8cILXoTnmLr2Rzb4AvnyTZ/Pp3xatVlor
-         vhyHNg6qorutyIltAbYO3dbRlmTfULPKJKZWNlK5DTO5sQPwl+KNA7kQVpOdVojNSuCt
-         SIlQ==
-X-Gm-Message-State: AOAM5326VhBd7Ue+g5N9ZpMWHLF06nqlQN3oWrb5KNcdUSo9o/deHJ94
-        Vt+UacJJCa+RxHIqJIcSp1/lmmjW3IjzGE2KaiE=
-X-Google-Smtp-Source: ABdhPJzv/IxtkODllYEi+H9vQNFAJVTrQ/4lZNp04SHJrhxDBs5wik9RwzPRTMNms5KZ05fRFCLHc9sfQ+nal7Kb1Ro=
-X-Received: by 2002:a5d:65ce:: with SMTP id e14mr39911067wrw.328.1632287091038;
- Tue, 21 Sep 2021 22:04:51 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nZ6P5cxoG/lqjYqBHnA+r4ZbZAlV1S/dG0TgvhUQbQg=;
+        b=I6glkLKzPudVxoNt88lpeZDB27B0vlFjCcJxO5SeSR7HzDNVo0UHWeryCrdUU3Z36O
+         k280kO1XS4114txwVRREgWKJt2AfmMw2ecXO2BSCevjLYlTG65yUFYDW2FRig9bx6unh
+         sVr2rjAFbjRDRU8eGsyTR8eyk1yNHnsrOfbwjzMG6NxzVoxP3W+d8iZndc/iWFjgASk2
+         Ytsl1EhHn3HH5epk+O9Iamx8L4VdnBLkzIZkkwk1/ZBuHBpAV1DLnrmGMWMPCUV5LnIr
+         dAmnnLMesGaot1xyVmnuCX+TIGdLP2iNCHXKQ0ZqXjMwHQxu/2k4q/zWqBaAc30P619o
+         QutA==
+X-Gm-Message-State: AOAM533SdtCLW8kihnkS0YMLwBYI/vlwRcetJTPKwaH78PixabjdhZtn
+        zTqkFQttbetpuRc9+yeZ5ne1w61kDtd9TNvLfD8=
+X-Google-Smtp-Source: ABdhPJwMB2YnH2vLkzX5MC/hvfe9lV9boc2b0m5OAg5584AKudTQBVDXhqVjDW64LBv1ZNyCv78OfdGt0UppSGSm7Mc=
+X-Received: by 2002:a1c:4486:: with SMTP id r128mr8490850wma.8.1632287836478;
+ Tue, 21 Sep 2021 22:17:16 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a7b:c8ca:0:0:0:0:0 with HTTP; Tue, 21 Sep 2021 22:04:50
- -0700 (PDT)
-Reply-To: mrsbillchantallawrence58@gmail.com
-From:   mrsbillchantal <mrs.minamusa@gmail.com>
-Date:   Wed, 22 Sep 2021 06:04:50 +0100
-Message-ID: <CAPdj26-pWHCxGqJz=64cLCE-KcE2WoqKug1tWpLcCCUxsKTXFQ@mail.gmail.com>
-Subject: Dear Friend, My present internet connection is very slow in case you
-To:     undisclosed-recipients:;
+References: <cover.1632133123.git.lucien.xin@gmail.com> <13c7b29126171310739195264d5e619b62d27f92.1632133123.git.lucien.xin@gmail.com>
+ <CAM_iQpW53DGw5bXNXot4kV3qSHf5wgD33AFU3=zz0b69mJwNkw@mail.gmail.com>
+ <CADvbK_dSw=H-pVK26tMwpdfkjd3dKGcCrATaRvXqzRwJFoKoyg@mail.gmail.com> <CAM_iQpULkRxRjMBWKn+7V51PZXLWW17iQBLr1N5vdJmFVZtJ4A@mail.gmail.com>
+In-Reply-To: <CAM_iQpULkRxRjMBWKn+7V51PZXLWW17iQBLr1N5vdJmFVZtJ4A@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 22 Sep 2021 13:17:05 +0800
+Message-ID: <CADvbK_dFyVdt3dU57_8=6eYH+bz3_M81=V4B_5sNd+kpXbnUHA@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] net: sched: drop ct for the packets toward
+ ingress only in act_mirred
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hello....
+On Wed, Sep 22, 2021 at 11:43 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Tue, Sep 21, 2021 at 12:02 AM Xin Long <lucien.xin@gmail.com> wrote:
+> >
+> > On Tue, Sep 21, 2021 at 2:31 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > >
+> > > On Mon, Sep 20, 2021 at 7:12 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > > >
+> > > > nf_reset_ct() called in tcf_mirred_act() is supposed to drop ct for
+> > > > those packets that are mirred or redirected to only ingress, not
+> > > > ingress and egress.
+> > >
+> > > Any reason behind this? I think we at least need to reset it when
+> > > redirecting from ingress to egress as well? That is, when changing
+> > > directions?
+> > For the reason why ct should be reset, it's said in
+> > d09c548dbf3b ("net: sched: act_mirred: Reset ct info when mirror").
+> > The user case is OVS HWOL using TC to do NAT and then redirecting
+> > the NATed skb back to the ingress of one local dev, it's ingress only, this
+> > patch is more like to minimize the side effect of d09c548dbf3b IF there is.
+>
+> What is the side effect here? Or what is wrong with resetting CT on
+> egress side?
+>
+> >
+> > Not sure if it's too much to do for that from ingress to egress.
+> > What I was thinking is this should happen on rx path(ingress), like it
+> > does in internal_dev_recv() in the OVS kernel module. But IF there is
+> > any user case needing doing this for ingress to egress, I would add it.
+>
+> If that is the case, then this patch is completely unnecessary. So
+> instead of going back and forth, please elaborate on why resetting
+> CT for egress is a problem here.
+What I'm afraid is: after resetting CT for the packets redirected to egress,
+the tc rules on the next dev egress that may need these CT will break.
 
-You have been compensated with the sum of 5.5 million dollars in this
-united nation the payment will be issue into atm visa card and send to
-you from the santander bank we need your address and your  Whatsapp
-this my email.ID (  mrsbillchantallawrence58@gmail.com)  contact  me
-
-Thanks my
-
-mrs chantal
+I can't give a use case right now, and just don't want to introduce extra
+change for which we don't see a use. If you think that's safe, I'm fine
+to do these resets when the direction is changed.
