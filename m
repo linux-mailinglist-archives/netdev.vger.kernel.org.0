@@ -2,104 +2,401 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7EB241419E
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 08:22:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC764141E6
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 08:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232670AbhIVGXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 02:23:41 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:57003 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232570AbhIVGXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 02:23:40 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.west.internal (Postfix) with ESMTP id 8EB733201CF8;
-        Wed, 22 Sep 2021 02:22:10 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Wed, 22 Sep 2021 02:22:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=FxOlqX
-        be295nOShnbwm0vH+4KEHmjGRkKffE/LvQIG8=; b=B/uKbHU/4yHRmy8ekiRoYo
-        y29eNFNK3C3MqHLZ/TpJHAe2tJP7was1/4rsbTMP0JXOhfp7eyWQAiMBPwkUalzP
-        lNlg/VMlhTEuf/GZ+iWwGUW357FwnHbMFL8a1odtUOiAqyoArvAJ8uCdgQZ3e7L4
-        YbS8sAeYxJ8QTObi4iKfWKybuHUUCzKkdy3Zftc3tqZZZwnhUtpozf+6zMj4YviH
-        vaVGwxhPfjEpQN6mZMihhG/yhc63D6mLx+UVtKdTFUu34iBqm8fNwEyT0MCzUiCi
-        Hvq/y5sTzv1DgW9xYlobhHZ2nhpcDuUNiHjVfJzfY5PFRUA/fb8gg7EdEo5MXOgg
-        ==
-X-ME-Sender: <xms:kctKYYlTbXyUEWhXxgnbAJKwzXAoauQ5Pp9GF3mns1-cZEcnT-mtJA>
-    <xme:kctKYX3D20vHMdOHDH-3opUa7dnlT3oGD9w2zC_YB53hETvwcxcD2YwmeePldzj8R
-    rF4wroRDh8DNQE>
-X-ME-Received: <xmr:kctKYWri0FKGOViCtNkz0u7GsVUXt6_DVOMJgpmJOmCb8FMGVDMwMO-kXgUVCrfz1oa4CBDBR4VYwQqrCoiFW3SNNHNCBg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudeiiedguddtudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:kctKYUkP99iOdwA7vV70_zpMp7duypnGQW9HuJO7Rx_Ov7XF-I1bDQ>
-    <xmx:kctKYW3cfPo64an5WdAI5FAfRi3GgQYDRUXqNGsn9Uuyko60W_Bf6Q>
-    <xmx:kctKYbtklhBX49WPf6wC2F1-loEhSG5OgHbN_VWifgUqOFHaM_41sQ>
-    <xmx:kstKYQqt6lfSuI-vuA9J7knt4heRYYZOyapQa09PZ2qlTRmZd_A_AQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 22 Sep 2021 02:22:08 -0400 (EDT)
-Date:   Wed, 22 Sep 2021 09:22:04 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "abyagowi@fb.com" <abyagowi@fb.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/2] rtnetlink: Add new RTM_GETEECSTATE message
- to get SyncE status
-Message-ID: <YUrLjGJwMc/UpqOK@shredder>
-References: <20210903151436.529478-1-maciej.machnikowski@intel.com>
- <20210903151436.529478-2-maciej.machnikowski@intel.com>
- <YUnbCzBOPP9hWQ5c@shredder>
- <PH0PR11MB4951E98FCEC0F1EA230BA1DAEAA19@PH0PR11MB4951.namprd11.prod.outlook.com>
- <YUny/edqnbdTFnBS@shredder>
- <20210921141445.24ae714e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S232881AbhIVGcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 02:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232820AbhIVGcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 02:32:04 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82435C061574;
+        Tue, 21 Sep 2021 23:30:35 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id me1so1308663pjb.4;
+        Tue, 21 Sep 2021 23:30:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=nHFhYUJ6B/4YeqHufr4leMFRNw4hMke7ve+3fc25HiI=;
+        b=aecqW/hrYtO6KsQY+RsAF/5onHS+iPKLmHeFXjN//yU7wcRbsiXl7iSnt+22kwoqFM
+         n0qD0vdtnGd8ZW0rxj7YANXL+fyI2C5PwN1Ms5YtnNxpNNO9UYvc68zixCuvPsvKo8DU
+         IGXDRKgrXASD15VJmuH1pMifoa2oNPRqNWT+m6dCol89RGL9lF0pkaWj/6q6eh1bPjj5
+         wBwep9QrVvNHaWjt64uFijnPumW0Wr4Kngjb1T6gHvoOaMzcAeveirZ7RnOOUDcZSoYo
+         KdhuiKsSZGvMRGdgNM7W1vJ9F1hWpt7Zzfc+dmUoKLEoQbgOhg8adv4dfMZfO4qe6TNK
+         gZ9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=nHFhYUJ6B/4YeqHufr4leMFRNw4hMke7ve+3fc25HiI=;
+        b=PK3m5MXkkfFO8MH4VFP5BCSai06bJ/0Qc6HHZ8pekL9/ouEz8upbkQrNLO2Fq05Rqw
+         oTb8Wf92bEZkNPCc7sUnjphg0JgKvVeO57sFf/3m1jcjwQ3kCvjazB4QSAazI9M+aQte
+         KeX0mVSvzxrLDhDHb6d/L286cA6LErXxojkogfEmyJO/DC452eLS35Imqut/V/C8g2pG
+         6Xy1m8FzwJ0pmhx91y778701hknRJGTQzXP9p+BkKAgteHduL1wCkyXBjRZO09e67WMo
+         3Z4zmPIEIHmy7Bou6hr4Jkpqa9AfBBE5uREdhnG0UHQaIhjT1TcAhIJaICgK2/Th1qJs
+         yHRQ==
+X-Gm-Message-State: AOAM532lk3xln9VGC9tojJtX4e2ULk7L8ZDKVViaqk4AFp9i1zGmS0A4
+        vBzrOC/wFNl1nV7VHs/H/4U=
+X-Google-Smtp-Source: ABdhPJzqQzR71FmIU2bDY7vBILxq0j5y9xgB13K2BAvUeQpz8txyLO2DFwcDXHQS+n6GlxzAUyvErg==
+X-Received: by 2002:a17:90a:eac4:: with SMTP id ev4mr9358633pjb.244.1632292234712;
+        Tue, 21 Sep 2021 23:30:34 -0700 (PDT)
+Received: from arn.com ([49.206.7.248])
+        by smtp.googlemail.com with ESMTPSA id k29sm1117902pfp.200.2021.09.21.23.30.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Sep 2021 23:30:34 -0700 (PDT)
+From:   Abhiram R N <abhiramrn@gmail.com>
+To:     roid@nvidia.com
+Cc:     arn@redhat.com, hakhande@redhat.com, saeedm@nvidia.com,
+        Abhiram R N <abhiramrn@gmail.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v6] net/mlx5e: Add extack msgs related to TC for better debug
+Date:   Wed, 22 Sep 2021 12:00:07 +0530
+Message-Id: <20210922063007.123136-1-abhiramrn@gmail.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <e91b2692-2f1c-5712-1e37-db7def52cb9a@nvidia.com>
+References: <e91b2692-2f1c-5712-1e37-db7def52cb9a@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210921141445.24ae714e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 21, 2021 at 02:14:45PM -0700, Jakub Kicinski wrote:
-> On Tue, 21 Sep 2021 17:58:05 +0300 Ido Schimmel wrote:
-> > > > The only source type above is 'port' with the ability to set the
-> > > > relevant port, but more can be added. Obviously, 'devlink clock show'
-> > > > will give you the current source in addition to other information such
-> > > > as frequency difference with respect to the input frequency.  
-> > > 
-> > > We considered devlink interface for configuring the clock/DPLL, but a
-> > > new concept was born at the list to add a DPLL subsystem that will
-> > > cover more use cases, like a TimeCard.  
-> > 
-> > The reason I suggested devlink is that it is suited for device-wide
-> > configuration and it is already used by both MAC drivers and the
-> > TimeCard driver. If we have a good reason to create a new generic
-> > netlink family for this stuff, then OK.
-> 
-> For NICs mapping between devlink instances and HW is not clear.
-> Most register devlink per PCI dev which usually maps to a Eth port.
-> So if we have one DPLL on a 2 port NIC mapping will get icky, no?
+As multiple places EOPNOTSUPP and EINVAL is returned from driver
+it becomes difficult to understand the reason only with error code.
+With the netlink extack message exact reason will be known and will
+aid in debugging.
 
-Yes, having to represent the same EEC in multiple devlink instances is
-not nice.
+Signed-off-by: Abhiram R N <abhiramrn@gmail.com>
+---
+V5->V6: Removed changelog from commit msg
+V4->V5: Addressed comments (Rephrasing of msgs)
+V3->V4: Rebased net-next (Fixed the merge conflicts in net-next branch)
+V2->V3: Addressed comments (Rephrasing of msgs)
+V1->V2: Addressed comments (Removed redundant msgs, rephrasing of msgs)
 
-> 
-> Is the motivation to save the boilerplate code associated with new
-> genetlink family or something more? 
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 106 +++++++++++++-----
+ 1 file changed, 76 insertions(+), 30 deletions(-)
 
-I don't mind either way. I simply wanted to understand the motivation
-for not using any existing framework. The above argument is convincing
-enough, IMO.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index ba8164792016..0fda231c07cd 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -1896,8 +1896,10 @@ static int parse_tunnel_attr(struct mlx5e_priv *priv,
+ 	bool needs_mapping, sets_mapping;
+ 	int err;
+ 
+-	if (!mlx5e_is_eswitch_flow(flow))
++	if (!mlx5e_is_eswitch_flow(flow)) {
++		NL_SET_ERR_MSG_MOD(extack, "Match on tunnel is not supported");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	needs_mapping = !!flow->attr->chain;
+ 	sets_mapping = flow_requires_tunnel_mapping(flow->attr->chain, f);
+@@ -2269,8 +2271,10 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 		addr_type = match.key->addr_type;
+ 
+ 		/* the HW doesn't support frag first/later */
+-		if (match.mask->flags & FLOW_DIS_FIRST_FRAG)
++		if (match.mask->flags & FLOW_DIS_FIRST_FRAG) {
++			NL_SET_ERR_MSG_MOD(extack, "Match on frag first/later is not supported");
+ 			return -EOPNOTSUPP;
++		}
+ 
+ 		if (match.mask->flags & FLOW_DIS_IS_FRAGMENT) {
+ 			MLX5_SET(fte_match_set_lyr_2_4, headers_c, frag, 1);
+@@ -2437,8 +2441,11 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 		switch (ip_proto) {
+ 		case IPPROTO_ICMP:
+ 			if (!(MLX5_CAP_GEN(priv->mdev, flex_parser_protocols) &
+-			      MLX5_FLEX_PROTO_ICMP))
++			      MLX5_FLEX_PROTO_ICMP)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Match on Flex protocols for ICMP is not supported");
+ 				return -EOPNOTSUPP;
++			}
+ 			MLX5_SET(fte_match_set_misc3, misc_c_3, icmp_type,
+ 				 match.mask->type);
+ 			MLX5_SET(fte_match_set_misc3, misc_v_3, icmp_type,
+@@ -2450,8 +2457,11 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 			break;
+ 		case IPPROTO_ICMPV6:
+ 			if (!(MLX5_CAP_GEN(priv->mdev, flex_parser_protocols) &
+-			      MLX5_FLEX_PROTO_ICMPV6))
++			      MLX5_FLEX_PROTO_ICMPV6)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Match on Flex protocols for ICMPV6 is not supported");
+ 				return -EOPNOTSUPP;
++			}
+ 			MLX5_SET(fte_match_set_misc3, misc_c_3, icmpv6_type,
+ 				 match.mask->type);
+ 			MLX5_SET(fte_match_set_misc3, misc_v_3, icmpv6_type,
+@@ -2557,15 +2567,19 @@ static int pedit_header_offsets[] = {
+ #define pedit_header(_ph, _htype) ((void *)(_ph) + pedit_header_offsets[_htype])
+ 
+ static int set_pedit_val(u8 hdr_type, u32 mask, u32 val, u32 offset,
+-			 struct pedit_headers_action *hdrs)
++			 struct pedit_headers_action *hdrs,
++			 struct netlink_ext_ack *extack)
+ {
+ 	u32 *curr_pmask, *curr_pval;
+ 
+ 	curr_pmask = (u32 *)(pedit_header(&hdrs->masks, hdr_type) + offset);
+ 	curr_pval  = (u32 *)(pedit_header(&hdrs->vals, hdr_type) + offset);
+ 
+-	if (*curr_pmask & mask)  /* disallow acting twice on the same location */
++	if (*curr_pmask & mask) { /* disallow acting twice on the same location */
++		NL_SET_ERR_MSG_MOD(extack,
++				   "curr_pmask and new mask same. Acting twice on same location");
+ 		goto out_err;
++	}
+ 
+ 	*curr_pmask |= mask;
+ 	*curr_pval  |= (val & mask);
+@@ -2898,7 +2912,7 @@ parse_pedit_to_modify_hdr(struct mlx5e_priv *priv,
+ 	val = act->mangle.val;
+ 	offset = act->mangle.offset;
+ 
+-	err = set_pedit_val(htype, ~mask, val, offset, &hdrs[cmd]);
++	err = set_pedit_val(htype, ~mask, val, offset, &hdrs[cmd], extack);
+ 	if (err)
+ 		goto out_err;
+ 
+@@ -2918,8 +2932,10 @@ parse_pedit_to_reformat(struct mlx5e_priv *priv,
+ 	u32 mask, val, offset;
+ 	u32 *p;
+ 
+-	if (act->id != FLOW_ACTION_MANGLE)
++	if (act->id != FLOW_ACTION_MANGLE) {
++		NL_SET_ERR_MSG_MOD(extack, "Unsupported action id");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	if (act->mangle.htype != FLOW_ACT_MANGLE_HDR_TYPE_ETH) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Only Ethernet modification is supported");
+@@ -3368,12 +3384,16 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
+ 	u32 action = 0;
+ 	int err, i;
+ 
+-	if (!flow_action_has_entries(flow_action))
++	if (!flow_action_has_entries(flow_action)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow action doesn't have any entries");
+ 		return -EINVAL;
++	}
+ 
+ 	if (!flow_action_hw_stats_check(flow_action, extack,
+-					FLOW_ACTION_HW_STATS_DELAYED_BIT))
++					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow action HW stats type is not supported");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	nic_attr = attr->nic_attr;
+ 	nic_attr->flow_tag = MLX5_FS_DEFAULT_FLOW_TAG;
+@@ -3462,7 +3482,8 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
+ 			flow_flag_set(flow, CT);
+ 			break;
+ 		default:
+-			NL_SET_ERR_MSG_MOD(extack, "The offload action is not supported");
++			NL_SET_ERR_MSG_MOD(extack,
++					   "The offload action is not supported in NIC action");
+ 			return -EOPNOTSUPP;
+ 		}
+ 	}
+@@ -3517,19 +3538,25 @@ static bool is_merged_eswitch_vfs(struct mlx5e_priv *priv,
+ static int parse_tc_vlan_action(struct mlx5e_priv *priv,
+ 				const struct flow_action_entry *act,
+ 				struct mlx5_esw_flow_attr *attr,
+-				u32 *action)
++				u32 *action,
++				struct netlink_ext_ack *extack)
+ {
+ 	u8 vlan_idx = attr->total_vlan;
+ 
+-	if (vlan_idx >= MLX5_FS_VLAN_DEPTH)
++	if (vlan_idx >= MLX5_FS_VLAN_DEPTH) {
++		NL_SET_ERR_MSG_MOD(extack, "Total vlans used is greater than supported");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	switch (act->id) {
+ 	case FLOW_ACTION_VLAN_POP:
+ 		if (vlan_idx) {
+ 			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev,
+-								 MLX5_FS_VLAN_DEPTH))
++								 MLX5_FS_VLAN_DEPTH)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "vlan pop action is not supported");
+ 				return -EOPNOTSUPP;
++			}
+ 
+ 			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_POP_2;
+ 		} else {
+@@ -3545,20 +3572,27 @@ static int parse_tc_vlan_action(struct mlx5e_priv *priv,
+ 
+ 		if (vlan_idx) {
+ 			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev,
+-								 MLX5_FS_VLAN_DEPTH))
++								 MLX5_FS_VLAN_DEPTH)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "vlan push action is not supported for vlan depth > 1");
+ 				return -EOPNOTSUPP;
++			}
+ 
+ 			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2;
+ 		} else {
+ 			if (!mlx5_eswitch_vlan_actions_supported(priv->mdev, 1) &&
+ 			    (act->vlan.proto != htons(ETH_P_8021Q) ||
+-			     act->vlan.prio))
++			     act->vlan.prio)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "vlan push action is not supported");
+ 				return -EOPNOTSUPP;
++			}
+ 
+ 			*action |= MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH;
+ 		}
+ 		break;
+ 	default:
++		NL_SET_ERR_MSG_MOD(extack, "Unexpected action id for VLAN");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -3592,7 +3626,8 @@ static struct net_device *get_fdb_out_dev(struct net_device *uplink_dev,
+ static int add_vlan_push_action(struct mlx5e_priv *priv,
+ 				struct mlx5_flow_attr *attr,
+ 				struct net_device **out_dev,
+-				u32 *action)
++				u32 *action,
++				struct netlink_ext_ack *extack)
+ {
+ 	struct net_device *vlan_dev = *out_dev;
+ 	struct flow_action_entry vlan_act = {
+@@ -3603,7 +3638,7 @@ static int add_vlan_push_action(struct mlx5e_priv *priv,
+ 	};
+ 	int err;
+ 
+-	err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action);
++	err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action, extack);
+ 	if (err)
+ 		return err;
+ 
+@@ -3614,14 +3649,15 @@ static int add_vlan_push_action(struct mlx5e_priv *priv,
+ 		return -ENODEV;
+ 
+ 	if (is_vlan_dev(*out_dev))
+-		err = add_vlan_push_action(priv, attr, out_dev, action);
++		err = add_vlan_push_action(priv, attr, out_dev, action, extack);
+ 
+ 	return err;
+ }
+ 
+ static int add_vlan_pop_action(struct mlx5e_priv *priv,
+ 			       struct mlx5_flow_attr *attr,
+-			       u32 *action)
++			       u32 *action,
++			       struct netlink_ext_ack *extack)
+ {
+ 	struct flow_action_entry vlan_act = {
+ 		.id = FLOW_ACTION_VLAN_POP,
+@@ -3631,7 +3667,7 @@ static int add_vlan_pop_action(struct mlx5e_priv *priv,
+ 	nest_level = attr->parse_attr->filter_dev->lower_level -
+ 						priv->netdev->lower_level;
+ 	while (nest_level--) {
+-		err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action);
++		err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -3753,12 +3789,16 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 	int err, i, if_count = 0;
+ 	bool mpls_push = false;
+ 
+-	if (!flow_action_has_entries(flow_action))
++	if (!flow_action_has_entries(flow_action)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow action doesn't have any entries");
+ 		return -EINVAL;
++	}
+ 
+ 	if (!flow_action_hw_stats_check(flow_action, extack,
+-					FLOW_ACTION_HW_STATS_DELAYED_BIT))
++					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow action HW stats type is not supported");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	esw_attr = attr->esw_attr;
+ 	parse_attr = attr->parse_attr;
+@@ -3902,14 +3942,14 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 				if (is_vlan_dev(out_dev)) {
+ 					err = add_vlan_push_action(priv, attr,
+ 								   &out_dev,
+-								   &action);
++								   &action, extack);
+ 					if (err)
+ 						return err;
+ 				}
+ 
+ 				if (is_vlan_dev(parse_attr->filter_dev)) {
+ 					err = add_vlan_pop_action(priv, attr,
+-								  &action);
++								  &action, extack);
+ 					if (err)
+ 						return err;
+ 				}
+@@ -3955,10 +3995,13 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 			break;
+ 		case FLOW_ACTION_TUNNEL_ENCAP:
+ 			info = act->tunnel;
+-			if (info)
++			if (info) {
+ 				encap = true;
+-			else
++			} else {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Zero tunnel attributes is not supported");
+ 				return -EOPNOTSUPP;
++			}
+ 
+ 			break;
+ 		case FLOW_ACTION_VLAN_PUSH:
+@@ -3972,7 +4015,7 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 							      act, parse_attr, hdrs,
+ 							      &action, extack);
+ 			} else {
+-				err = parse_tc_vlan_action(priv, act, esw_attr, &action);
++				err = parse_tc_vlan_action(priv, act, esw_attr, &action, extack);
+ 			}
+ 			if (err)
+ 				return err;
+@@ -4025,7 +4068,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 			flow_flag_set(flow, SAMPLE);
+ 			break;
+ 		default:
+-			NL_SET_ERR_MSG_MOD(extack, "The offload action is not supported");
++			NL_SET_ERR_MSG_MOD(extack,
++					   "The offload action is not supported in FDB action");
+ 			return -EOPNOTSUPP;
+ 		}
+ 	}
+@@ -4733,8 +4777,10 @@ static int scan_tc_matchall_fdb_actions(struct mlx5e_priv *priv,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	if (!flow_action_basic_hw_stats_check(flow_action, extack))
++	if (!flow_action_basic_hw_stats_check(flow_action, extack)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow action HW stats type is not supported");
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	flow_action_for_each(i, act, flow_action) {
+ 		switch (act->id) {
+-- 
+2.27.0
+
