@@ -2,182 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D96741483F
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 13:56:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1B9041484D
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 14:00:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235856AbhIVL5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 07:57:34 -0400
-Received: from kylie.crudebyte.com ([5.189.157.229]:57685 "EHLO
-        kylie.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235802AbhIVL5d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 07:57:33 -0400
+        id S235864AbhIVMCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 08:02:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49780 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235848AbhIVMCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 08:02:12 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1464C061574
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 05:00:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=OKfVFxrpko5QMAAtDRTPC75OYX8uz3xyIWxgAq8hnf8=; b=SR/90fyAUGmsJOYhzXLCnXiiEb
-        lzZAX/eD275hpQQGTlQumLEg9MgbjYj9FiWsCem6Im0Bs18reQGbCNATCTedi9A/rpBUxMfBR2QJ0
-        PuxrZ1O4njGlX1z/LSsURaIWf31Misbw7LsmrJcKvSwAXuTv3Z9FLRW5d67ynQTbarbRot7ggkKge
-        NX4Xfj2CmUPsKKM4Sjqsxe7kqzYfGF3YCWCVjA/KJS9OOwXaJ1RTpKukW6Pkoy6R1i5cC1eLnCoqh
-        K4seZ4R50H25J8Z0jYaRjq/L0KWZiU5KAHjaiG/s4FQdCYSNkBLohwmOWlrmfTnmzp8pRXjEymMER
-        Qm02o2F9946WCWUlGD9ds23LYjGgnwvX6+3j+doQ+2E8Mf2bQ/VwOTa+pj3lnQSfGNvyAiZ5ctFQ1
-        deN743UPT/Y/fvrvXmxh4kZEeJJ/qJt6OsxWEt62NxfGPAtCLPFv60yB1T3sMNHx3Nr0y5D6c+4GU
-        hf2J5O7n8y8Jd0e2SFCub+i3LwhRAm7BZCu9elzhY3NUhRfJvGvpgk9wuf8ZLh//7F8m21wSq2pI+
-        t3VS03fZzd3eIUoY2O4obt62u4gsUH/6QN6sNF3GcLeUWWWy89/2QlEFQ3RLQLC9YExUi7NtdMIL9
-        GXaQkd8dhHifmL3VoDWuxEFCffBkBKBhQ0fod3C3Q=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     v9fs-developer@lists.sourceforge.net
-Cc:     netdev@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
-Subject: Re: [PATCH v2 7/7] 9p/trans_virtio: resize sg lists to whatever is possible
-Date:   Wed, 22 Sep 2021 13:56:01 +0200
-Message-ID: <3557953.c9VYo6GAZX@silver>
-In-Reply-To: <0a2c16b9acf580a679f38354b5d60a68c5fb6c99.1632156835.git.linux_oss@crudebyte.com>
-References: <cover.1632156835.git.linux_oss@crudebyte.com> <0a2c16b9acf580a679f38354b5d60a68c5fb6c99.1632156835.git.linux_oss@crudebyte.com>
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=oL7UFvP7E1O4Nzz+acnjpl59PDo/1fqSLHJLaqoudo4=; b=p6LdMQYelcNiY99xXD8qasXYm7
+        ZonCtDjEG7prXB4U1cyVmtVhgVBCpum7HpAJatotxOejCrjfm0fYfO8AS+cwazQstt4hOecc9hGYH
+        bnGyiou9t9pD9Quom7spJJmdOXFVScC+C8NEgHWA3MJ4Q0izyMwHfAMMvnnVZNLIqsRIAfM8xpTQD
+        nYehfVNrxKpbBFNlVSWCui0CNtgb7PggvE8dUjfcXo9qEZIGeNVYwwhhQxM70RdgsU9K3OfzgzTqG
+        GMR41/joj8PsI/YW7C6evrw3wmGTW8yMGMvvFF87VGA6z+i4r2ibJbXUFVgDrl6Dx1wQzCETlLb8A
+        GXBx8xHg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54732)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mT0vR-0003p4-M5; Wed, 22 Sep 2021 13:00:33 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mT0vP-0004F6-Up; Wed, 22 Sep 2021 13:00:31 +0100
+Date:   Wed, 22 Sep 2021 13:00:31 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Marek Beh__n <kabel@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: phy: marvell10g: add downshift tunable
+ support
+Message-ID: <YUsa3z8KsuqS64k8@shell.armlinux.org.uk>
+References: <E1mREEN-001yxo-Da@rmk-PC.armlinux.org.uk>
+ <YUSp78o/vfZNFCJw@lunn.ch>
+ <YUSs+efLowuhL09Q@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YUSs+efLowuhL09Q@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Montag, 20. September 2021 18:44:20 CEST Christian Schoenebeck wrote:
-> Right now vq_sg_resize() used a lazy implementation following
-> the all-or-nothing princible. So it either resized exactly to
-> the requested new amount of sg lists, or it did not resize at
-> all.
+On Fri, Sep 17, 2021 at 03:58:01PM +0100, Russell King (Oracle) wrote:
+> On Fri, Sep 17, 2021 at 04:45:03PM +0200, Andrew Lunn wrote:
+> > > +static int mv3310_set_downshift(struct phy_device *phydev, u8 ds)
+> > > +{
+> > > +	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
+> > > +	u16 val;
+> > > +	int err;
+> > > +
+> > > +	if (!priv->has_downshift)
+> > > +		return -EOPNOTSUPP;
+> > > +
+> > > +	if (ds == DOWNSHIFT_DEV_DISABLE)
+> > > +		return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
+> > > +					  MV_PCS_DSC1_ENABLE);
+> > > +
+> > > +	/* FIXME: The default is disabled, so should we disable? */
+> > > +	if (ds == DOWNSHIFT_DEV_DEFAULT_COUNT)
+> > > +		ds = 2;
+> > 
+> > Hi Russell
+> > 
+> > Rather than a FIXME, maybe just document that the hardware default is
+> > disabled, which does not make too much sense, so default to 2 attempts?
 > 
-> The problem with this is if a user supplies a very large msize
-> value, resize would simply fail and the user would stick to
-> the default maximum msize supported by the virtio transport.
+> Sadly, the downshift parameters aren't documented at all in the kernel,
+> and one has to dig into the ethtool source to find out what they mean:
 > 
-> To resolve this potential issue, change vq_sg_resize() to resize
-> the passed sg list to whatever is possible on the machine.
+> DOWNSHIFT_DEV_DEFAULT_COUNT -
+> 	ethtool --set-phy-tunable ethN downshift on
+> DOWNSHIFT_DEV_DISABLE -
+> 	ethtool --set-phy-tunable ethN downshift off
+> otherwise:
+> 	ethtool --set-phy-tunable ethN downshift count N
 > 
-> Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
-> ---
->  net/9p/trans_virtio.c | 65 ++++++++++++++++++++++++++++++++++++-------
->  1 file changed, 55 insertions(+), 10 deletions(-)
-> 
-> diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-> index 4cb75f45aa15..b9bab7ed2768 100644
-> --- a/net/9p/trans_virtio.c
-> +++ b/net/9p/trans_virtio.c
-> @@ -205,24 +205,66 @@ static struct virtqueue_sg *vq_sg_alloc(unsigned int
-> nsgl) * amount of lists
->   * @_vq_sg: scatter/gather lists to be resized
->   * @nsgl: new amount of scatter/gather lists
-> + *
-> + * Old scatter/gather lists are retained. Only growing the size is
-> supported. + * If the requested amount cannot be satisfied, then lists are
-> increased to + * whatever is possible.
->   */
->  static int vq_sg_resize(struct virtqueue_sg **_vq_sg, unsigned int nsgl)
->  {
->  	struct virtqueue_sg *vq_sg;
-> +	unsigned int i;
-> +	size_t sz;
-> +	int ret = 0;
-> 
->  	BUG_ON(!_vq_sg || !nsgl);
->  	vq_sg = *_vq_sg;
-> +	if (nsgl > VIRTQUEUE_SG_NSGL_MAX)
-> +		nsgl = VIRTQUEUE_SG_NSGL_MAX;
->  	if (vq_sg->nsgl == nsgl)
->  		return 0;
-> +	if (vq_sg->nsgl > nsgl)
-> +		return -ENOTSUPP;
-> +
-> +	vq_sg = kzalloc(sizeof(struct virtqueue_sg) +
-> +			nsgl * sizeof(struct scatterlist *),
-> +			GFP_KERNEL);
-> 
-> -	/* lazy resize implementation for now */
-> -	vq_sg = vq_sg_alloc(nsgl);
->  	if (!vq_sg)
->  		return -ENOMEM;
-> 
-> -	kfree(*_vq_sg);
-> +	/* copy over old scatter gather lists */
-> +	sz = sizeof(struct virtqueue_sg) +
-> +		(*_vq_sg)->nsgl * sizeof(struct scatterlist *);
-> +	memcpy(vq_sg, *_vq_sg, sz);
+> This really needs to be documented somewhere in the kernel.
 
-Missing
+I was hoping that this would cause further discussion on what the
+exact meaning of "DOWNSHIFT_DEV_DEFAULT_COUNT" is. Clearly, it's
+meant to turn downshift on, but what does "default" actually mean?
 
-	kfree(*_vq_sg);
+If we define "default" as "whatever the hardware defaults to" then
+for this phy, that would be turning off downshift.
 
-here.
+So, should we rename "DOWNSHIFT_DEV_DEFAULT_COUNT" to be
+"DOWNSHIFT_DEV_ENABLE" rather than trying to imply that it's
+some kind of default that may need to be made up?
 
-> +
-> +	vq_sg->nsgl = nsgl;
-> +
-> +	for (i = (*_vq_sg)->nsgl; i < nsgl; ++i) {
-> +		vq_sg->sgl[i] = kmalloc_array(
-> +			SG_MAX_SINGLE_ALLOC, sizeof(struct scatterlist),
-> +			GFP_KERNEL
-> +		);
-> +		/*
-> +		 * handle failed allocation as soft error, we take whatever
-> +		 * we get
-> +		 */
-> +		if (!vq_sg->sgl[i]) {
-> +			ret = -ENOMEM;
-> +			vq_sg->nsgl = nsgl = i;
-> +			break;
-> +		}
-> +		sg_init_table(vq_sg->sgl[i], SG_MAX_SINGLE_ALLOC);
-> +		if (i) {
-> +			/* chain the lists */
-> +			sg_chain(vq_sg->sgl[i - 1], SG_MAX_SINGLE_ALLOC,
-> +				 vq_sg->sgl[i]);
-> +		}
-> +	}
-> +	sg_mark_end(&vq_sg->sgl[nsgl - 1][SG_MAX_SINGLE_ALLOC - 1]);
-> +
->  	*_vq_sg = vq_sg;
-> -	return 0;
-> +	return ret;
->  }
-> 
->  /**
-> @@ -839,13 +881,16 @@ p9_virtio_create(struct p9_client *client, const char
-> *devname, char *args) if (nsgl > chan->vq_sg->nsgl) {
->  			/*
->  			 * if resize fails, no big deal, then just
-> -			 * continue with default msize instead
-> +			 * continue with whatever we got
->  			 */
-> -			if (!vq_sg_resize(&chan->vq_sg, nsgl)) {
-> -				client->trans_maxsize =
-> -					PAGE_SIZE *
-> -					((nsgl * SG_USER_PAGES_PER_LIST) - 3);
-> -			}
-> +			vq_sg_resize(&chan->vq_sg, nsgl);
-> +			/*
-> +			 * actual allocation size might be less than
-> +			 * requested, so use vq_sg->nsgl instead of nsgl
-> +			 */
-> +			client->trans_maxsize =
-> +				PAGE_SIZE * ((chan->vq_sg->nsgl *
-> +				SG_USER_PAGES_PER_LIST) - 3);
-
-As with patch 6, here should probably be an additional
-
-		if (chan->vq_sg->nsgl < nsgl) {
-			pr_inf(...);
-		}
-
-to explain the user that not all required sg lists could be allocated suiting 
-user's requested msize option.
-
->  		}
->  #endif /* CONFIG_ARCH_NO_SG_CHAIN */
->  	}
-
-
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
