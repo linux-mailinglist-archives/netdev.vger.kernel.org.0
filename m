@@ -2,423 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F8464141E9
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 08:31:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECABD414206
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 08:40:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232898AbhIVGdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 02:33:05 -0400
-Received: from out0.migadu.com ([94.23.1.103]:56727 "EHLO out0.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232718AbhIVGdE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 02:33:04 -0400
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1632292289;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=DGP8miJEHYKD0hkPycIrBj1DMgw4/Uzx5V0Ha1WSIoM=;
-        b=II4znbMIqdIPPebzKdDar2H+m2MYDmIj7+0Pcc+7cEQLU3ag05SO9ksRFnCB9CHN2SyXOH
-        ok6CqYfzystU6ohRmqOvltL4NchOGihlddSaQBYg7rgEVXnWWgwbJZ1foO5nB/ZP/Ue6NB
-        PFMz6N7sWhSJ0bEUopHB9Y2gZ5R58BI=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH net-next] net: socket: integrate sockfd_lookup() and sockfd_lookup_light()
-Date:   Wed, 22 Sep 2021 14:31:06 +0800
-Message-Id: <20210922063106.4272-1-yajun.deng@linux.dev>
+        id S232870AbhIVGls (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 02:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232630AbhIVGlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 02:41:47 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E9CC061574
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 23:40:18 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id t18so3793095wrb.0
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 23:40:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wNZag5U/tLMPiN1+ewom7wIM35/vGQ1nlZIuvWVBCaE=;
+        b=GvI3eD/7TkNxJ49KSBsOsSvTEXN1BLZ3fE6fl/Xh8h8+8YRiAZR35pKJ/Ej+jgB0/X
+         T1cP4xhBtOTE0uJQo1jL5c1jfOhewJ+1jhNyUILKV0CNyR17l/HNMoFW8MJENoAdGLkG
+         wlTyBqk/ZEZl4SsSyjux3009MupLikVGmrsGg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wNZag5U/tLMPiN1+ewom7wIM35/vGQ1nlZIuvWVBCaE=;
+        b=n5u6CoovQhcLHiVwANHPKLYLfs2XtfI+i7qY7tFWiMlNyu9YbCSSROeVuO9hSd3rK9
+         5eQGB20gtifQ22XWcNDayHUrcptgZLtqhTawlq57SE+HAAVk0//G3mQkv9qYOR+Uz/ta
+         6pVE6apDUQpL3Dk6SSbYILUJ3DYOqzVRYzRD5XYYApmorybZTOXMLFYvxWW7aoNju6YT
+         /e3ykXtcVNY6CQXGDov/vyH9MKKJLvQHK4wZ4ZJ9lWbQh0bOOQpUoO4YQuV22/rKtF5d
+         3plXlqCOuZa4WuN9TrtaG0iQ8l2mWofZ6QVBLazyC6jxSaL1XW8bYOIWJ1kv4Ct+9lmk
+         EWxg==
+X-Gm-Message-State: AOAM533Qj4MtR2TETI74cpwfcpjl+bvuZ6hJigKPh7LzIo+vAK80sQmk
+        hr1Uy0z++Nv/5oFSu3Dz55APE+Oa9Q6SXVedR3hQWOIjDI4=
+X-Google-Smtp-Source: ABdhPJxWvIBElFPnshnlVHkf6T7Q3zgt/rYf0JlxG/JzvPBfZhpYqUN9vRBodg0O+kKUPn72yOfBd/tpjpmLLeNHuWk=
+X-Received: by 2002:a05:600c:22d4:: with SMTP id 20mr8493551wmg.177.1632292816589;
+ Tue, 21 Sep 2021 23:40:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+References: <0a1d6421-b618-9fea-9787-330a18311ec0@bursov.com>
+In-Reply-To: <0a1d6421-b618-9fea-9787-330a18311ec0@bursov.com>
+From:   Siva Reddy Kallam <siva.kallam@broadcom.com>
+Date:   Wed, 22 Sep 2021 12:10:05 +0530
+Message-ID: <CAMet4B4iJjQK6yX+XBD2CtH3B30oqECUAYDj3ZE3ysdJVu8O4w@mail.gmail.com>
+Subject: Re: tg3 RX packet re-order in queue 0 with RSS
+To:     Vitaly Bursov <vitaly@bursov.com>
+Cc:     Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As commit 6cb153cab92a("[NET]: use fget_light() in net/socket.c") said,
-sockfd_lookup_light() is lower load than sockfd_lookup(). So we can
-remove sockfd_lookup() but keep the name. As the same time, move flags
-to sockfd_put().
+Thank you for reporting this. Pavan(cc'd) from Broadcom looking into this issue.
+We will provide our feedback very soon on this.
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- include/linux/net.h |   8 +++-
- net/socket.c        | 101 +++++++++++++++++---------------------------
- 2 files changed, 46 insertions(+), 63 deletions(-)
-
-diff --git a/include/linux/net.h b/include/linux/net.h
-index ba736b457a06..63a179d4f760 100644
---- a/include/linux/net.h
-+++ b/include/linux/net.h
-@@ -238,8 +238,14 @@ int sock_recvmsg(struct socket *sock, struct msghdr *msg, int flags);
- struct file *sock_alloc_file(struct socket *sock, int flags, const char *dname);
- struct socket *sockfd_lookup(int fd, int *err);
- struct socket *sock_from_file(struct file *file);
--#define		     sockfd_put(sock) fput(sock->file)
- int net_ratelimit(void);
-+#define		     sockfd_put(sock)             \
-+do {                                              \
-+	struct fd *fd = (struct fd *)&sock->file; \
-+						  \
-+	if (fd->flags & FDPUT_FPUT)               \
-+		fput(sock->file);                 \
-+} while (0)
- 
- #define net_ratelimited_function(function, ...)			\
- do {								\
-diff --git a/net/socket.c b/net/socket.c
-index 7f64a6eccf63..ca8a05aee982 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -521,28 +521,7 @@ EXPORT_SYMBOL(sock_from_file);
-  *
-  *	On a success the socket object pointer is returned.
-  */
--
- struct socket *sockfd_lookup(int fd, int *err)
--{
--	struct file *file;
--	struct socket *sock;
--
--	file = fget(fd);
--	if (!file) {
--		*err = -EBADF;
--		return NULL;
--	}
--
--	sock = sock_from_file(file);
--	if (!sock) {
--		*err = -ENOTSOCK;
--		fput(file);
--	}
--	return sock;
--}
--EXPORT_SYMBOL(sockfd_lookup);
--
--static struct socket *sockfd_lookup_light(int fd, int *err, int *fput_needed)
- {
- 	struct fd f = fdget(fd);
- 	struct socket *sock;
-@@ -551,7 +530,6 @@ static struct socket *sockfd_lookup_light(int fd, int *err, int *fput_needed)
- 	if (f.file) {
- 		sock = sock_from_file(f.file);
- 		if (likely(sock)) {
--			*fput_needed = f.flags & FDPUT_FPUT;
- 			return sock;
- 		}
- 		*err = -ENOTSOCK;
-@@ -559,6 +537,7 @@ static struct socket *sockfd_lookup_light(int fd, int *err, int *fput_needed)
- 	}
- 	return NULL;
- }
-+EXPORT_SYMBOL(sockfd_lookup);
- 
- static ssize_t sockfs_listxattr(struct dentry *dentry, char *buffer,
- 				size_t size)
-@@ -1680,9 +1659,9 @@ int __sys_bind(int fd, struct sockaddr __user *umyaddr, int addrlen)
- {
- 	struct socket *sock;
- 	struct sockaddr_storage address;
--	int err, fput_needed;
-+	int err;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (sock) {
- 		err = move_addr_to_kernel(umyaddr, addrlen, &address);
- 		if (!err) {
-@@ -1694,7 +1673,7 @@ int __sys_bind(int fd, struct sockaddr __user *umyaddr, int addrlen)
- 						      (struct sockaddr *)
- 						      &address, addrlen);
- 		}
--		fput_light(sock->file, fput_needed);
-+		sockfd_put(sock);
- 	}
- 	return err;
- }
-@@ -1713,10 +1692,10 @@ SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
- int __sys_listen(int fd, int backlog)
- {
- 	struct socket *sock;
--	int err, fput_needed;
-+	int err;
- 	int somaxconn;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (sock) {
- 		somaxconn = sock_net(sock->sk)->core.sysctl_somaxconn;
- 		if ((unsigned int)backlog > somaxconn)
-@@ -1726,7 +1705,7 @@ int __sys_listen(int fd, int backlog)
- 		if (!err)
- 			err = sock->ops->listen(sock, backlog);
- 
--		fput_light(sock->file, fput_needed);
-+		sockfd_put(sock);
- 	}
- 	return err;
- }
-@@ -1933,9 +1912,9 @@ int __sys_getsockname(int fd, struct sockaddr __user *usockaddr,
- {
- 	struct socket *sock;
- 	struct sockaddr_storage address;
--	int err, fput_needed;
-+	int err;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
- 		goto out;
- 
-@@ -1950,7 +1929,7 @@ int __sys_getsockname(int fd, struct sockaddr __user *usockaddr,
- 	err = move_addr_to_user(&address, err, usockaddr, usockaddr_len);
- 
- out_put:
--	fput_light(sock->file, fput_needed);
-+	sockfd_put(sock);
- out:
- 	return err;
- }
-@@ -1971,13 +1950,13 @@ int __sys_getpeername(int fd, struct sockaddr __user *usockaddr,
- {
- 	struct socket *sock;
- 	struct sockaddr_storage address;
--	int err, fput_needed;
-+	int err;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (sock != NULL) {
- 		err = security_socket_getpeername(sock);
- 		if (err) {
--			fput_light(sock->file, fput_needed);
-+			sockfd_put(sock);
- 			return err;
- 		}
- 
-@@ -1986,7 +1965,7 @@ int __sys_getpeername(int fd, struct sockaddr __user *usockaddr,
- 			/* "err" is actually length in this case */
- 			err = move_addr_to_user(&address, err, usockaddr,
- 						usockaddr_len);
--		fput_light(sock->file, fput_needed);
-+		sockfd_put(sock);
- 	}
- 	return err;
- }
-@@ -2010,12 +1989,11 @@ int __sys_sendto(int fd, void __user *buff, size_t len, unsigned int flags,
- 	int err;
- 	struct msghdr msg;
- 	struct iovec iov;
--	int fput_needed;
- 
- 	err = import_single_range(WRITE, buff, len, &iov, &msg.msg_iter);
- 	if (unlikely(err))
- 		return err;
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
- 		goto out;
- 
-@@ -2036,7 +2014,7 @@ int __sys_sendto(int fd, void __user *buff, size_t len, unsigned int flags,
- 	err = sock_sendmsg(sock, &msg);
- 
- out_put:
--	fput_light(sock->file, fput_needed);
-+	sockfd_put(sock);
- out:
- 	return err;
- }
-@@ -2071,12 +2049,11 @@ int __sys_recvfrom(int fd, void __user *ubuf, size_t size, unsigned int flags,
- 	struct msghdr msg;
- 	struct sockaddr_storage address;
- 	int err, err2;
--	int fput_needed;
- 
- 	err = import_single_range(READ, ubuf, size, &iov, &msg.msg_iter);
- 	if (unlikely(err))
- 		return err;
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
- 		goto out;
- 
-@@ -2099,7 +2076,7 @@ int __sys_recvfrom(int fd, void __user *ubuf, size_t size, unsigned int flags,
- 			err = err2;
- 	}
- 
--	fput_light(sock->file, fput_needed);
-+	sockfd_put(sock);
- out:
- 	return err;
- }
-@@ -2141,13 +2118,13 @@ int __sys_setsockopt(int fd, int level, int optname, char __user *user_optval,
- {
- 	sockptr_t optval = USER_SOCKPTR(user_optval);
- 	char *kernel_optval = NULL;
--	int err, fput_needed;
-+	int err;
- 	struct socket *sock;
- 
- 	if (optlen < 0)
- 		return -EINVAL;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
- 		return err;
- 
-@@ -2177,7 +2154,7 @@ int __sys_setsockopt(int fd, int level, int optname, char __user *user_optval,
- 					    optlen);
- 	kfree(kernel_optval);
- out_put:
--	fput_light(sock->file, fput_needed);
-+	sockfd_put(sock);
- 	return err;
- }
- 
-@@ -2197,11 +2174,11 @@ INDIRECT_CALLABLE_DECLARE(bool tcp_bpf_bypass_getsockopt(int level,
- int __sys_getsockopt(int fd, int level, int optname, char __user *optval,
- 		int __user *optlen)
- {
--	int err, fput_needed;
-+	int err;
- 	struct socket *sock;
- 	int max_optlen;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
- 		return err;
- 
-@@ -2225,7 +2202,7 @@ int __sys_getsockopt(int fd, int level, int optname, char __user *optval,
- 						     optval, optlen, max_optlen,
- 						     err);
- out_put:
--	fput_light(sock->file, fput_needed);
-+	sockfd_put(sock);
- 	return err;
- }
- 
-@@ -2252,13 +2229,13 @@ int __sys_shutdown_sock(struct socket *sock, int how)
- 
- int __sys_shutdown(int fd, int how)
- {
--	int err, fput_needed;
-+	int err;
- 	struct socket *sock;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (sock != NULL) {
- 		err = __sys_shutdown_sock(sock, how);
--		fput_light(sock->file, fput_needed);
-+		sockfd_put(sock);
- 	}
- 	return err;
- }
-@@ -2478,20 +2455,20 @@ long __sys_sendmsg_sock(struct socket *sock, struct msghdr *msg,
- long __sys_sendmsg(int fd, struct user_msghdr __user *msg, unsigned int flags,
- 		   bool forbid_cmsg_compat)
- {
--	int fput_needed, err;
-+	int err;
- 	struct msghdr msg_sys;
- 	struct socket *sock;
- 
- 	if (forbid_cmsg_compat && (flags & MSG_CMSG_COMPAT))
- 		return -EINVAL;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
- 		goto out;
- 
- 	err = ___sys_sendmsg(sock, msg, &msg_sys, flags, NULL, 0);
- 
--	fput_light(sock->file, fput_needed);
-+	sockfd_put(sock);
- out:
- 	return err;
- }
-@@ -2508,7 +2485,7 @@ SYSCALL_DEFINE3(sendmsg, int, fd, struct user_msghdr __user *, msg, unsigned int
- int __sys_sendmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
- 		   unsigned int flags, bool forbid_cmsg_compat)
- {
--	int fput_needed, err, datagrams;
-+	int err, datagrams;
- 	struct socket *sock;
- 	struct mmsghdr __user *entry;
- 	struct compat_mmsghdr __user *compat_entry;
-@@ -2524,7 +2501,7 @@ int __sys_sendmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
- 
- 	datagrams = 0;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
- 		return err;
- 
-@@ -2563,7 +2540,7 @@ int __sys_sendmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
- 		cond_resched();
- 	}
- 
--	fput_light(sock->file, fput_needed);
-+	sockfd_put(sock);
- 
- 	/* We only return an error if no datagrams were able to be sent */
- 	if (datagrams != 0)
-@@ -2686,20 +2663,20 @@ long __sys_recvmsg_sock(struct socket *sock, struct msghdr *msg,
- long __sys_recvmsg(int fd, struct user_msghdr __user *msg, unsigned int flags,
- 		   bool forbid_cmsg_compat)
- {
--	int fput_needed, err;
-+	int err;
- 	struct msghdr msg_sys;
- 	struct socket *sock;
- 
- 	if (forbid_cmsg_compat && (flags & MSG_CMSG_COMPAT))
- 		return -EINVAL;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
- 		goto out;
- 
- 	err = ___sys_recvmsg(sock, msg, &msg_sys, flags, 0);
- 
--	fput_light(sock->file, fput_needed);
-+	sockfd_put(sock);
- out:
- 	return err;
- }
-@@ -2718,7 +2695,7 @@ static int do_recvmmsg(int fd, struct mmsghdr __user *mmsg,
- 			  unsigned int vlen, unsigned int flags,
- 			  struct timespec64 *timeout)
- {
--	int fput_needed, err, datagrams;
-+	int err, datagrams;
- 	struct socket *sock;
- 	struct mmsghdr __user *entry;
- 	struct compat_mmsghdr __user *compat_entry;
-@@ -2733,7 +2710,7 @@ static int do_recvmmsg(int fd, struct mmsghdr __user *mmsg,
- 
- 	datagrams = 0;
- 
--	sock = sockfd_lookup_light(fd, &err, &fput_needed);
-+	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
- 		return err;
- 
-@@ -2820,7 +2797,7 @@ static int do_recvmmsg(int fd, struct mmsghdr __user *mmsg,
- 		sock->sk->sk_err = -err;
- 	}
- out_put:
--	fput_light(sock->file, fput_needed);
-+	sockfd_put(sock);
- 
- 	return datagrams;
- }
--- 
-2.32.0
-
+On Mon, Sep 20, 2021 at 6:59 PM Vitaly Bursov <vitaly@bursov.com> wrote:
+>
+> Hi,
+>
+> We found a occassional and random (sometimes happens, sometimes not)
+> packet re-order when NIC is involved in UDP multicast reception, which
+> is sensitive to a packet re-order. Network capture with tcpdump
+> sometimes shows the packet re-order, sometimes not (e.g. no re-order on
+> a host, re-order in a container at the same time). In a pcap file
+> re-ordered packets have a correct timestamp - delayed packet had a more
+> earlier timestamp compared to a previous packet:
+>      1.00s packet1
+>      1.20s packet3
+>      1.10s packet2
+>      1.30s packet4
+>
+> There's about 300Mbps of traffic on this NIC, and server is busy
+> (hyper-threading enabled, about 50% overall idle) with its
+> computational application work.
+>
+> NIC is HPE's 4-port 331i adapter - BCM5719, in a default ring and
+> coalescing configuration, 1 TX queue, 4 RX queues.
+>
+> After further investigation, I believe that there are two separate
+> issues in tg3.c driver. Issues can be reproduced with iperf3, and
+> unicast UDP.
+>
+> Here are the details of how I understand this behavior.
+>
+> 1. Packet re-order.
+>
+> Driver calls napi_schedule(&tnapi->napi) when handling the interrupt,
+> however, sometimes it calls napi_schedule(&tp->napi[1].napi), which
+> handles RX queue 0 too:
+>
+>      https://github.com/torvalds/linux/blob/master/drivers/net/ethernet/broadcom/tg3.c#L6802-L7007
+>
+>      static int tg3_rx(struct tg3_napi *tnapi, int budget)
+>      {
+>              struct tg3 *tp = tnapi->tp;
+>
+>              ...
+>
+>              /* Refill RX ring(s). */
+>              if (!tg3_flag(tp, ENABLE_RSS)) {
+>                      ....
+>              } else if (work_mask) {
+>                      ...
+>
+>                      if (tnapi != &tp->napi[1]) {
+>                              tp->rx_refill = true;
+>                              napi_schedule(&tp->napi[1].napi);
+>                      }
+>              }
+>              ...
+>      }
+>
+>  From napi_schedule() code, it should schedure RX 0 traffic handling on
+> a current CPU, which handles queues RX1-3 right now.
+>
+> At least two traffic flows are required - one on RX queue 0, and the
+> other on any other queue (1-3). Re-ordering may happend only on flow
+> from queue 0, the second flow will work fine.
+>
+> No idea how to fix this.
+>
+> There are two ways to mitigate this:
+>
+>    1. Enable RPS by writting any non-zero mask to
+>       /sys/class/net/enp2s0f0/queues/rx-0/rps_cpus This encorces CPU
+>       when processing traffic, and overrides whatever "current" CPU for
+>       RX queue 0 is in this moment.
+>
+>    2. Configure RX hash flow redirection with: ethtool -X enp2s0f0
+>       weight 0 1 1 1 to exclude RX queue 0 from handling the traffic.
+>
+>
+> 2. RPS configuration
+>
+> Before napi_gro_receive() call, there's no call to skb_record_rx_queue():
+>
+>      static int tg3_rx(struct tg3_napi *tnapi, int budget)
+>      {
+>              struct tg3 *tp = tnapi->tp;
+>              u32 work_mask, rx_std_posted = 0;
+>              u32 std_prod_idx, jmb_prod_idx;
+>              u32 sw_idx = tnapi->rx_rcb_ptr;
+>              u16 hw_idx;
+>              int received;
+>              struct tg3_rx_prodring_set *tpr = &tnapi->prodring;
+>
+>              ...
+>
+>                      napi_gro_receive(&tnapi->napi, skb);
+>
+>
+>                      received++;
+>                      budget--;
+>              ...
+>
+>
+> As a result, queue_mapping is always 0/not set, and RPS handles all
+> traffic as originating from queue 0.
+>
+>            <idle>-0     [013] ..s. 14030782.234664: napi_gro_receive_entry: dev=enp2s0f0 napi_id=0x0 queue_mapping=0 ...
+>
+> RPS configuration for rx-1 to to rx-3 has no effect.
+>
+>
+> NIC:
+> 02:00.0 Ethernet controller: Broadcom Inc. and subsidiaries NetXtreme BCM5719 Gigabit Ethernet PCIe (rev 01)
+>      Subsystem: Hewlett-Packard Company Ethernet 1Gb 4-port 331i Adapter
+>      Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR+ FastB2B- DisINTx+
+>      Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+>      Latency: 0, Cache Line Size: 64 bytes
+>      Interrupt: pin A routed to IRQ 16
+>      NUMA node: 0
+>      Region 0: Memory at d9d90000 (64-bit, prefetchable) [size=64K]
+>      Region 2: Memory at d9da0000 (64-bit, prefetchable) [size=64K]
+>      Region 4: Memory at d9db0000 (64-bit, prefetchable) [size=64K]
+>      [virtual] Expansion ROM at d9c00000 [disabled] [size=256K]
+>      Capabilities: <access denied>
+>      Kernel driver in use: tg3
+>      Kernel modules: tg3
+>
+> Linux kernel:
+>      CentOS 7 - 3.10.0-1160.15.2
+>      Ubuntu - 5.4.0-80.90
+>
+> Network configuration:
+>      iperf3 (sender) - [LAN] - NIC (enp2s0f0) - Bridge (br0) - veth (v1) - namespace veth (v2) - iperf3 (receiver 1)
+>
+>      brctl addbr br0
+>      ip l set up dev br0
+>      ip a a 10.10.10.10/24 dev br0
+>      ip r a default via 10.10.10.1 dev br0
+>      ip l set dev enp2s0f0 master br0
+>      ip l set up dev enp2s0f0
+>
+>      ip netns add n1
+>      ip link add v1 type veth peer name v2
+>      ip l set up dev v1
+>      ip l set dev v1 master br0
+>      ip l set dev v2 netns n1
+>
+>      ip netns exec n1 bash
+>      ip l set up dev lo
+>      ip l set up dev v2
+>      ip a a 10.10.10.11/24 dev v2
+>
+>      "receiver 2" has the same configuration but different IP and different namespace.
+>
+> Iperf3:
+>
+>      Sender runs iperfs: iperf3 -s -p 5201 & iperf3 -s -p 5202 &
+>      Receiver's iperf3 -c 10.10.10.1 -R -p 5201 -u -l 163 -b 200M -t 300
+>
+> --
+> Thanks
+> Vitalii
+>
