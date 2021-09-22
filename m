@@ -2,155 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A1CC4152B2
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 23:23:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A89364152DE
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 23:31:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238041AbhIVVZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 17:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238001AbhIVVZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 17:25:06 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A05C061574
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 14:23:35 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id eg28so15432582edb.1
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 14:23:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riotgames.com; s=riotgames;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=coLA4okrdb9Cycw07iDUhgI7uwuXao45fzQXmKwYAJ8=;
-        b=pIx6ai+dWyiNkJRb9d0HcWQDgBaZTqbmOAFYQeXtZfRrngbqs/9Y/9YMKmRiwHlFbd
-         dmW2SjaEl2YM8+Yisl5Ksju/0gFAgzrWIQ2elIQ3aKfQbBpT7FKZGuuxpXFi+RdtvI4J
-         GvdI4N4jtxo8pSAmafSf9U2mSAvdbkQcJea8A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=coLA4okrdb9Cycw07iDUhgI7uwuXao45fzQXmKwYAJ8=;
-        b=NCJ3yllhu9LRQC3RMRu/My4v7lC5HmXsibvge531romKxM5B0wYmlqTLohf9I5KdcD
-         4NmkgS7l3bL+M+nWe99GVAialFz7Y0FPNvbZtQDMmc5W/L/NVX7ALFekhzESRmjSD9Sj
-         EvYlr0tqVQlaXvIRXsHiY2QQSE0Qt8MBscpmAyszH1qNS0KIMZztuACsYG3rTsLb1RsR
-         Xs2j2K0K+JYpfeF+rQZAYHulgEAETtDBClYf2CcdzvAbWg7yNJkHJcDe3IfAHJCQlp11
-         s2Zxrby6NoPsJ2vN40WcCRGRiJ7qn/Mx9JhMBGH48SVSV99R54YWTIX6TkEdouMAjutb
-         ztjQ==
-X-Gm-Message-State: AOAM532tIE524LnAR/1AkNW4Hxzn2FH7OcJw1ZDH0jJ8mXJ6lXaq6Bn+
-        pJlcfJ2mUoyYEBA4HC+nMLRwYP++OM58FmWslE19vg==
-X-Google-Smtp-Source: ABdhPJwGF7B1JqPQ51i/57mUcsLvTma1rQKmyY99kJh2ke24tnMzgf7XsYx3DYE4mTsm8cUdbaAm7AG1PKk0iJAPsoI=
-X-Received: by 2002:a17:907:2d0b:: with SMTP id gs11mr1416079ejc.151.1632345814468;
- Wed, 22 Sep 2021 14:23:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <87o88l3oc4.fsf@toke.dk> <CAC1LvL1xgFMjjE+3wHH79_9rumwjNqDAS2Yg2NpSvmewHsYScA@mail.gmail.com>
- <87ilyt3i0y.fsf@toke.dk> <CAADnVQKi_u6yZnsxEagNTv-XWXtLPpXwURJH0FnGFRgt6weiww@mail.gmail.com>
- <87czp13718.fsf@toke.dk> <20210921155118.439c0aa9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87mto41isy.fsf@toke.dk>
-In-Reply-To: <87mto41isy.fsf@toke.dk>
-From:   Zvi Effron <zeffron@riotgames.com>
-Date:   Wed, 22 Sep 2021 14:23:23 -0700
-Message-ID: <CAC1LvL2ZFHqqD4jkXdRNY0K-Sm-adb8OpQVcfv--aaQ+Z4j0EQ@mail.gmail.com>
-Subject: Re: Redux: Backwards compatibility for XDP multi-buff
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Lorenzo Bianconi <lbianconi@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S238226AbhIVVcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 17:32:51 -0400
+Received: from mail-eopbgr30067.outbound.protection.outlook.com ([40.107.3.67]:27635
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S238086AbhIVVcu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 17:32:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WJzLVp1fM8dgvxCJGNjjAm66CT5OAC/a4ZQhhwRWvd25VPSEJxMCbrirm5GGOKja6oeaHfHHeRXZjzSLatPkDQ2aIpZFHX95aF1qMljGyav+BfxcKGy6IWVPzu6XKsF1zJUX38FR6tcE7+018M4l1OMJ+jOXs2QMisC/KkM1Yfi8+Ewnc3fv/9xg4VhnzQ2vpI8np6L5D/TSkJQjAqOUWXqmVEvASq5LsvnFDizxkGw9R6Zs6vVaMeEe6CmyXXkleFtIdDaj2xM9aiv9QibDPkJRTM+ob+jQ4uDJmBhNTGgmqnJuzgWjUHnNpp5L7iLVRK5XBVMoHDj9AR0cg1+zJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=DgeFJzt/e0+iU8w1Wj/uGpjQeDzfrP/JlDS/qEiHe5k=;
+ b=PgMJj8Wl5NJuxOdbCCDWfR0bc6AcGO5p3upIxbfaxmbuli6PuXVxSFqNqfUmnRqjW0TESfXWBziOMfw9OCYrKnj8cdYSIXxtRUs1XFmNmknl29UC/tDGBgQ9FVH4/KvHZ3Cc3YAD04Fa3/hmmsyuzW/3IJ8mMIsyLUi7XuNZTNsEeogA1N65XuYN/iuNipT07YqzRZylVyEjo7jr9nH6pUpLrkSdHIPVq+G/MvJPoEFmfU0DXToC/Du/G/bFsKlMnA92sdZ5Up+UW9u20FjiadRfNawFnq4vHgS2x/wtigVnhTEUlmmNrfHHDwpsgI99E/PuZG7fBacpnWKhZ1Wbyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DgeFJzt/e0+iU8w1Wj/uGpjQeDzfrP/JlDS/qEiHe5k=;
+ b=e6ojudtKOt8/e9xShFOzlxqzb513oh7KaaCzFFtGqJAz0tbSr8BbkW4pa0pst1+ge3w+B49OmVLRqNgGMC5JlxhFz1481YVstBQVZwMzHxx1jCjF8fHNMfi3zaXAE+m9iEK5fJYomyg2oTkVrGnC2w4eqV6ADIfYznLA9BNgHs8=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB7104.eurprd04.prod.outlook.com (2603:10a6:800:126::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.14; Wed, 22 Sep
+ 2021 21:31:18 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4523.018; Wed, 22 Sep 2021
+ 21:31:17 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: Re: [RFC PATCH v3 net-next 2/6] net: phylink: introduce a generic
+ method for querying PHY in-band autoneg capability
+Thread-Topic: [RFC PATCH v3 net-next 2/6] net: phylink: introduce a generic
+ method for querying PHY in-band autoneg capability
+Thread-Index: AQHXr93LG5LHnXhXOUKrZr2QV4Zp96uwkB2AgAACgAA=
+Date:   Wed, 22 Sep 2021 21:31:17 +0000
+Message-ID: <20210922213116.7wlvnjfeqjltiecs@skbuf>
+References: <20210922181446.2677089-1-vladimir.oltean@nxp.com>
+ <20210922181446.2677089-3-vladimir.oltean@nxp.com>
+ <YUuei7Qnb6okURPE@shell.armlinux.org.uk>
+In-Reply-To: <YUuei7Qnb6okURPE@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 475ab158-69fc-46bf-9fbc-08d97e10502c
+x-ms-traffictypediagnostic: VI1PR04MB7104:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB71045AE10697D4DCB5503F6EE0A29@VI1PR04MB7104.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hx1rhWgG2ll8DIANA55LhkKUSr2W72LcDLoHKLnZJxw5CNmtJxMs5O2S6L0sxCsPljqmHKDZcWQVJz//KIBQ6/1Kwt4Em923gdhIu0i5P8finqcy9UgGjg3kNBkRnOOeuUcKpmPU4utvqeJqYATCP3t7J2C3uLBzivEuC21zMBqvRCkxWuOunhGocisflu/KkJyCv2hGwVjYvd1xBFbIoSRL65q4ZU9OlDsQ3w76qbeh4wsGdWfMYT0SLvX0rwiZZsXmSascSl45V1JgAwkQVANikii0tOpATa36P2Cv/TD3dycSe1VpLAX1KuGEuwKNxYi3QUzV0RldVfjPIqiRNP32cNHVpPghFdzpJA2eqd/0jw0ZR3JgbXISPIR+IjZYW/O3sEMLXxFypiQA/FSDuNvJCRZAckFzMQr1+OIMvLjRPRoaiNvtri+u2BQ/8dRp8/s5+M7z6hc8ArhbJUWzpTvn9xOTEY7MPj3Zj2wNAI+LBUMnLl+GwA9D/FQE6Cy2NcAqA9Bi6LNfrIS0YsUG6wocEczojZEgrNbk3eexDUk6nQ6H0o9hpd7jwWS1Y04UcZeytklFXT7uf2Z9TXKDKoVbFll58/XE6KztWQzSOlBtqc2YpfojHbD7rI04pLjzbP4EjraHqs1JIBmBljlNvnpfbiiyBCNVy0jwzQrX+CozNeuWG6P/eiqqH27e1gY6H2LP/nmPy5WnpHO26ifecStSpf9nzTSe5wTPJIZE8sI=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(86362001)(66946007)(91956017)(76116006)(54906003)(38070700005)(83380400001)(6916009)(66476007)(4326008)(66556008)(6486002)(66446008)(26005)(64756008)(7416002)(71200400001)(122000001)(6512007)(8936002)(9686003)(2906002)(6506007)(508600001)(38100700002)(5660300002)(1076003)(44832011)(186003)(316002)(8676002)(33716001)(41533002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?jwae9iMGr3str0h4kjaBZPZMDp33PrmWF02GekZMZwqRaDarsK0EMbRIDrqh?=
+ =?us-ascii?Q?C9/DEJg7lGqc6wolLoBmG+kyfox2w0NOdJ5elqLGocGIAAjhMj15wWHAVeb0?=
+ =?us-ascii?Q?ZZvj+P3IZqZdmMGWZxEZYInXDna9WJCUgkoXoOTVMKqZV0UIFz7LsRe4cvpn?=
+ =?us-ascii?Q?L/xQjiRsuorJXJuS2aSwS+wZrPph70vm0aEehVJifW4i7sb9J9LzBSRjAM9T?=
+ =?us-ascii?Q?Tv9VaVzGpV9AzGP63XkO9XABL//WHAMWmboIMHXPwjbENcSJHAx94oIAWOv0?=
+ =?us-ascii?Q?nxzmP2MIWGfteZxmHHAUsKtTuG/o6RAjOPDBqFZipcW66qiwfHWMcBcXeXaV?=
+ =?us-ascii?Q?B7hdMP6hWEGc4Kh0pXzHKKE50llLbFRvx1Y0/HjVZLgy3ZjoW3mIaLtotJqT?=
+ =?us-ascii?Q?4xqeqTtRyii3+RuNJZo6GD2Mr1MoCKiVWZanmvdCBV/4Z4UofVuKj5UmOyEl?=
+ =?us-ascii?Q?cs5vlGXRcSwkxZnla2eWkdVKBsnpusIU4JPaoeYQCZis7E7X4bQtV6XXeSWL?=
+ =?us-ascii?Q?dwejMr2tFpRocdxPLvdlKTGmRg9DXE3FwRCoUjBR18LwteaAh9QVDj9KRw0m?=
+ =?us-ascii?Q?XF97jbVBczmPjYHvSK/LaguHDZOJuXhQflV1jQhjrWWNM9Lb473oZAGbwp3e?=
+ =?us-ascii?Q?+/XM2O6JBIiNR6LN1hBFxdwO9LOFTsPr0VUklwIFDKqih3vnlEf5Eo5pTOy5?=
+ =?us-ascii?Q?pHEoAuFcV5LUVmA2R4IcR2zBhf7kvXaZ3Zjtx+Rkv5/qJ0lsCkBs4j8eSTZt?=
+ =?us-ascii?Q?v5qol5s3hZ46+EoAOBK2xaQ+GO1TTowX6SszVL5dKB1onqrCyur74flHW+1o?=
+ =?us-ascii?Q?pDRLKzwol5mf6Y15B7dILb1sW6ZUkk8XHDuJ/2KgGmiArR4GQ2VcJjz3j1Ht?=
+ =?us-ascii?Q?LmP9/a2JSBo4Po6nnBLXDAAO2sNoW1o0bMeINy4/FvF9Y9C4Uvq9gUlrSNQZ?=
+ =?us-ascii?Q?p+bjIz3XYMjCf/CpqWRg6JDYuIa0dyboTyWFewJsuTOTRHIi/TPyP0ZrMfiz?=
+ =?us-ascii?Q?wU08JFnwtho/pDeAwEbc27u+aKqd7AftiuoWYn2G9LJf1zvJRcqJCL5X6Tv6?=
+ =?us-ascii?Q?pLhUhv+CQc65JahqXl+1iM4MQkvkFi7vzQiZ0uHgwBXZOmKvgi0adSf5/tQA?=
+ =?us-ascii?Q?TcwLL91t8/nMenbosfdfjnuxH2/SM9eOZzltvvvM0p7ne/dpJSJzURBjGCq5?=
+ =?us-ascii?Q?8TzRT6wv9aO/R1l9UjrbDGC+sIsZRBYaiJDMCE2zxO1rSwjRsfVuDAWx8Jar?=
+ =?us-ascii?Q?LiI/7N2NArXH6JGCk0qzVAVqnmbc5GbUemlKjfqJWtY4g/UN/W9PUBMPErfW?=
+ =?us-ascii?Q?pvXEEv5tUVP222KHmOjHmBX/wFpm8CzEpnb84P310T7rqw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <CB3E1EC959C5DC4E96FB2AACAC8374AE@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 475ab158-69fc-46bf-9fbc-08d97e10502c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Sep 2021 21:31:17.7794
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: DtAXrMpzuWagbU4SrzPh8/W3onhuJkvtiO47TPyLK2FbqMMhYVcat/h7MJVXIYjs9OGGyE/UZnh5FTvMI7BwzQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 22, 2021 at 1:01 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Jakub Kicinski <kuba@kernel.org> writes:
->
-> > On Wed, 22 Sep 2021 00:20:19 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wro=
-te:
-> >> >> Neither of those are desirable outcomes, I think; and if we add a
-> >> >> separate "XDP multi-buff" switch, we might as well make it system-w=
-ide?
-> >> >
-> >> > If we have an internal flag 'this driver supports multi-buf xdp' can=
-not we
-> >> > make xdp_redirect to linearize in case the packet is being redirecte=
-d
-> >> > to non multi-buf aware driver (potentially with corresponding non mb=
- aware xdp
-> >> > progs attached) from mb aware driver?
-> >>
-> >> Hmm, the assumption that XDP frames take up at most one page has been
-> >> fundamental from the start of XDP. So what does linearise mean in this
-> >> context? If we get a 9k packet, should we dynamically allocate a
-> >> multi-page chunk of contiguous memory and copy the frame into that, or
-> >> were you thinking something else?
-> >
-> > My $.02 would be to not care about redirect at all.
-> >
-> > It's not like the user experience with redirect is anywhere close
-> > to amazing right now. Besides (with the exception of SW devices which
-> > will likely gain mb support quickly) mixed-HW setups are very rare.
-> > If the source of the redirect supports mb so will likely the target.
->
-> It's not about device support it's about XDP program support: If I run
-> an MB-aware XDP program on a physical interface and redirect the (MB)
-> frame into a container, and there's an XDP program running inside that
-> container that isn't MB-aware, bugs will ensue. Doesn't matter if the
-> veth driver itself supports MB...
->
-> We could leave that as a "don't do that, then" kind of thing, but that
-> was what we were proposing (as the "do nothing" option) and got some
-> pushback on, hence why we're having this conversation :)
->
-> -Toke
->
+On Wed, Sep 22, 2021 at 10:22:19PM +0100, Russell King (Oracle) wrote:
+> On Wed, Sep 22, 2021 at 09:14:42PM +0300, Vladimir Oltean wrote:
+> > +static unsigned int phylink_fixup_inband_aneg(struct phylink *pl,
+> > +					      struct phy_device *phy,
+> > +					      unsigned int mode)
+> > +{
+> > +	int ret;
+> > +
+> > +	ret =3D phy_validate_inband_aneg(phy, pl->link_interface);
+> > +	if (ret =3D=3D PHY_INBAND_ANEG_UNKNOWN) {
+> > +		phylink_dbg(pl,
+> > +			    "PHY driver does not report in-band autoneg capability, assumin=
+g %s\n",
+> > +			    phylink_autoneg_inband(mode) ? "true" : "false");
+> > +
+> > +		return mode;
+> > +	}
+> > +
+> > +	if (phylink_autoneg_inband(mode) && !(ret & PHY_INBAND_ANEG_ON)) {
+> > +		phylink_err(pl,
+> > +			    "Requested in-band autoneg but driver does not support this, di=
+sabling it.\n");
+>=20
+> If we add support to the BCM84881 driver to work with
+> phy_validate_inband_aneg(), then this will always return
+> PHY_INBAND_ANEG_OFF and never PHY_INBAND_ANEG_ON. Consequently,
+> this will always produce this "error". It is not an error in the
+> SFP case, but it is if firmware is misconfigured.
+>=20
+> So, this needs better handling - we should not be issuing an error-
+> level kernel message for something that is "normal".
 
-I hadn't even considered the case of redirecting to a veth pair on the same
-system. I'm assuming from your statement that the buffers are passed direct=
-ly
-to the ingress inside the container and don't go through the sort of egress
-process they would if leaving the system? And I'm assuming that's as an
-optimization?
+Is this better?
 
-I'm not sure that makes a difference, though. It's not about whether the
-driver's code is mb-capable, it's about whether the driver _as currently
-configured_ could generate multiple buffers. If it can, then only an mb-awa=
-re
-program should be able to be attached to it (and tail called from whatever'=
-s
-attached to it). If it can't, then there should be no way to have multiple
-buffers come to it.
-
-So in the situation you've described, either the veth driver should be in a
-state where it coalesces the multiple buffers into one, fragmenting the fra=
-me
-if necessary or drops the frame, or the program attached inside the contain=
-er
-would need to be mb-aware. I'm assuming with the veth driver as written, th=
-is
-might mean that all programs attached to the veth driver would need to be
-mb-aware, which is obviously undesirable.
-
-All of which significantly adds to the complexity to support mb-aware, so m=
-aybe
-this could be developed later? Initially we could have a sysctl toggling th=
-e
-state 0 single-buffer only, 1 multibuffer allowed. Then later we _could_ ad=
-d a
-state for dynamic control once all XDP supporting drivers support the neces=
-sary
-dynamic functionality (if ever). At that point we'd have actual experience =
-with
-the sysctl and could see how much of a burden having static control is.
-
-I may have been misinterpreting your use case though, and you were talking
-about the XDP program running on the egress side of the redirect? Is that w=
-hat
-you were talking about case?
-
---Zvi
+		phylink_printk(phy_on_sfp(phy) ? KERN_DEBUG : KERN_ERR, pl,
+			       "Requested in-band autoneg but driver does not support this, disa=
+bling it.\n");=
