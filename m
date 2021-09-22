@@ -2,234 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2105F414317
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:57:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E2F41434B
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 10:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233603AbhIVH6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 03:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49142 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233573AbhIVH6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:58:32 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809CFC061757;
-        Wed, 22 Sep 2021 00:57:01 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id q26so4087053wrc.7;
-        Wed, 22 Sep 2021 00:57:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5j/IuEsHJRpmgARTV2Ke6K0LjHZ6K5CZVPWjjGKacKw=;
-        b=WUrvjjNwfX1JtDiuzYJgYqD0CeIztDiN01/YiQhCD7WR4QedIhBQOJBRD1YiVizyFE
-         zlG9m/+v1rU7J1ou7OuiiO6vewcwIqV3NyagWUju6TTWcOPV1JYN2t4FMuNQXZZ+XiMn
-         x5Bj+hA4ehZ7zxLxDyQy47A+nU+tjpqetnHum8x1Kl0cFgKLMs4EFKNPrMcNrB2CFlmX
-         vE+EFdwb13bYnBfLlyLMyUbIcQTv96vgLM3P3p1sjwFwXqpLPZ/71tcURLTcb9qA6Ob3
-         HgTUeWyBqpI013CnWS782vfbD9rznmfINOrM6IAahTO9yBMe8LQeneO6GUy2J3UuIwQS
-         xjvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5j/IuEsHJRpmgARTV2Ke6K0LjHZ6K5CZVPWjjGKacKw=;
-        b=sPJYMPs7kotOrUw6d7GzrLzUk/sgBlTNQ50LTSLclEPpcT3Uw/XPSg4IljG1v/hZWk
-         O6C1GXKGjCCMsgJTk2COwksJkDkG4eWdSEeHyV8M5ObVVtwKo/1wzPHimRvg4F6/ya1W
-         1pQF+RTrKQfEMQjY0cGvvCHCpS80jhmPuGkr+Xy1qZNArfaU3mWQZi908v363W2cq6/e
-         8O+DgH4GvViPXn+zEb2nPMFeJdDKsBB/4O8i0JChTQCDLlEypEeaiiqDiYVB1zf69FuG
-         bb9G/NIUus/EPgjLxySAuorNS0h0/TStTdM/wUmZ/xgHvfVxOM3XBp29s9CJraBG+EDJ
-         YF8w==
-X-Gm-Message-State: AOAM530KbdmxdYGgPlnQKOlNn9yUtZ2PxK1s9uecAIYsyBs611yytEf9
-        5MR8IZBRt3KGkEbXQ3c2E4Ji5+uH/4YpW3zM
-X-Google-Smtp-Source: ABdhPJxp4TZ97F8DL0PdzYBT8nNdO9jre7rOQXj0IGZyCDjjOLzZgaZGuCLW5a709kSa/iwZjjKnFA==
-X-Received: by 2002:a1c:7f57:: with SMTP id a84mr8978607wmd.34.1632297420065;
-        Wed, 22 Sep 2021 00:57:00 -0700 (PDT)
-Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id j7sm1673087wrr.27.2021.09.22.00.56.58
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Sep 2021 00:56:59 -0700 (PDT)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, ciara.loftus@intel.com
-Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        anthony.l.nguyen@intel.com
-Subject: [PATCH bpf-next 13/13] selftests: xsk: add frame_headroom test
-Date:   Wed, 22 Sep 2021 09:56:13 +0200
-Message-Id: <20210922075613.12186-14-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <20210922075613.12186-1-magnus.karlsson@gmail.com>
-References: <20210922075613.12186-1-magnus.karlsson@gmail.com>
+        id S233610AbhIVIMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 04:12:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52772 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233560AbhIVIMe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 04:12:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5485D6124A;
+        Wed, 22 Sep 2021 08:11:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1632298265;
+        bh=UBNjFh25k6qXSc/zlMo01Z2HQMpP5ic2GGxHR7Keo5E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BYQbSyNzcGZlQ/y+vImNhxaALZw2YyFr0zOY400vtAxRSvxMYAhRoF6touX2Z+bqt
+         pDd1myR4jH+XQXgkjLCtEplQc4AKIC0jG09/7kB9hjWrYg1rHc+kbOz+AHohPtx2yB
+         PpekP1pLihmt2YkwTzxmTWt+vAiS6e8Fd++Wr1S0=
+Date:   Wed, 22 Sep 2021 10:11:02 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Colin Cross <ccross@android.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Tony Luck <tony.luck@intel.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 0/7] get_abi.pl: Check for missing symbols at the ABI
+ specs
+Message-ID: <YUrlFjotiFTYKXOV@kroah.com>
+References: <cover.1631957565.git.mchehab+huawei@kernel.org>
+ <YUoN2m/OYHVLPrSl@kroah.com>
+ <20210921201633.5e6128a0@coco.lan>
+ <YUrCjhEYGXWU6M13@kroah.com>
+ <YUrLqdCQyGaCc1XJ@kroah.com>
+ <20210922093609.34d7bbca@coco.lan>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210922093609.34d7bbca@coco.lan>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+On Wed, Sep 22, 2021 at 09:36:09AM +0200, Mauro Carvalho Chehab wrote:
+> Em Wed, 22 Sep 2021 08:22:33 +0200
+> Greg Kroah-Hartman <gregkh@linuxfoundation.org> escreveu:
+> 
+> > On Wed, Sep 22, 2021 at 07:43:42AM +0200, Greg Kroah-Hartman wrote:
+> > > On Tue, Sep 21, 2021 at 08:16:33PM +0200, Mauro Carvalho Chehab wrote:
+> > > > Em Tue, 21 Sep 2021 18:52:42 +0200
+> > > > Greg Kroah-Hartman <gregkh@linuxfoundation.org> escreveu:
+> > > > 
+> > > > > On Sat, Sep 18, 2021 at 11:52:10AM +0200, Mauro Carvalho Chehab wrote:
+> > > > > > Hi Greg,
+> > > > > > 
+> > > > > > Add a new feature at get_abi.pl to optionally check for existing symbols
+> > > > > > under /sys that won't match a "What:" inside Documentation/ABI.
+> > > > > > 
+> > > > > > Such feature is very useful to detect missing documentation for ABI.
+> > > > > > 
+> > > > > > This series brings a major speedup, plus it fixes a few border cases when
+> > > > > > matching regexes that end with a ".*" or \d+.
+> > > > > > 
+> > > > > > patch 1 changes get_abi.pl logic to handle multiple What: lines, in
+> > > > > > order to make the script more robust;
+> > > > > > 
+> > > > > > patch 2 adds the basic logic. It runs really quicky (up to 2
+> > > > > > seconds), but it doesn't use sysfs softlinks.
+> > > > > > 
+> > > > > > Patch 3 adds support for parsing softlinks. It makes the script a
+> > > > > > lot slower, making it take a couple of minutes to process the entire
+> > > > > > sysfs files. It could be optimized in the future by using a graph,
+> > > > > > but, for now, let's keep it simple.
+> > > > > > 
+> > > > > > Patch 4 adds an optional parameter to allow filtering the results
+> > > > > > using a regex given by the user. When this parameter is used
+> > > > > > (which should be the normal usecase), it will only try to find softlinks
+> > > > > > if the sysfs node matches a regex.
+> > > > > > 
+> > > > > > Patch 5 improves the report by avoiding it to ignore What: that
+> > > > > > ends with a wildcard.
+> > > > > > 
+> > > > > > Patch 6 is a minor speedup.  On a Dell Precision 5820, after patch 6, 
+> > > > > > results are:
+> > > > > > 
+> > > > > > 	$ time ./scripts/get_abi.pl undefined |sort >undefined && cat undefined| perl -ne 'print "$1\n" if (m#.*/(\S+) not found#)'|sort|uniq -c|sort -nr >undefined_symbols; wc -l undefined; wc -l undefined_symbols
+> > > > > > 
+> > > > > > 	real	2m35.563s
+> > > > > > 	user	2m34.346s
+> > > > > > 	sys	0m1.220s
+> > > > > > 	7595 undefined
+> > > > > > 	896 undefined_symbols
+> > > > > > 
+> > > > > > Patch 7 makes a *huge* speedup: it basically switches a linear O(n^3)
+> > > > > > search for links by a logic which handle symlinks using BFS. It
+> > > > > > also addresses a border case that was making 'msi-irqs/\d+' regex to
+> > > > > > be misparsed. 
+> > > > > > 
+> > > > > > After patch 7, it is 11 times faster:
+> > > > > > 
+> > > > > > 	$ time ./scripts/get_abi.pl undefined |sort >undefined && cat undefined| perl -ne 'print "$1\n" if (m#.*/(\S+) not found#)'|sort|uniq -c|sort -nr >undefined_symbols; wc -l undefined; wc -l undefined_symbols
+> > > > > > 
+> > > > > > 	real	0m14.137s
+> > > > > > 	user	0m12.795s
+> > > > > > 	sys	0m1.348s
+> > > > > > 	7030 undefined
+> > > > > > 	794 undefined_symbols
+> > > > > > 
+> > > > > > (the difference on the number of undefined symbols are due to the fix for
+> > > > > > it to properly handle 'msi-irqs/\d+' regex)
+> > > > > > 
+> > > > > > -
+> > > > > > 
+> > > > > > While this series is independent from Documentation/ABI changes, it
+> > > > > > works best when applied from this tree, which also contain ABI fixes
+> > > > > > and a couple of additions of frequent missed symbols on my machine:
+> > > > > > 
+> > > > > >     https://git.kernel.org/pub/scm/linux/kernel/git/mchehab/devel.git/log/?h=get_undefined_abi_v3  
+> > > > > 
+> > > > > I've taken all of these, but get_abi.pl seems to be stuck in an endless
+> > > > > loop or something.  I gave up and stopped it after 14 minutes.  It had
+> > > > > stopped printing out anything after finding all of the pci attributes
+> > > > > that are not documented :)
+> > > > 
+> > > > It is probably not an endless loop, just there are too many vars to
+> > > > check on your system, which could make it really slow.
+> > > 
+> > > Ah, yes, I ran it overnight and got the following:
+> > > 
+> > > $ time ./scripts/get_abi.pl undefined |sort >undefined && cat undefined| perl -ne 'print "$1\n" if (m#.*/(\S+) not found#)'|sort|uniq -c|sort -nr >undefined_symbols; wc -l undefined; wc -l undefined_symbols
+> > > 
+> > > real	29m39.503s
+> > > user	29m37.556s
+> > > sys	0m0.851s
+> > > 26669 undefined
+> > > 765 undefined_symbols
+> > > 
+> > > > The way the search algorithm works is that reduces the number of regex 
+> > > > expressions that will be checked for a given file entry at sysfs. It 
+> > > > does that by looking at the devnode name. For instance, when it checks for
+> > > > this file:
+> > > > 
+> > > > 	/sys/bus/pci/drivers/iosf_mbi_pci/bind
+> > > > 
+> > > > The logic will seek only the "What:" expressions that end with "bind".
+> > > > Currently, there are just two What expressions for it[1]:
+> > > > 
+> > > > 	What: /sys/bus/fsl\-mc/drivers/.*/bind
+> > > > 	What: /sys/bus/pci/drivers/.*/bind
+> > > > 
+> > > > It will then run an O(n²) algorithm to seek:
+> > > > 
+> > > > 		foreach my $a (@names) {
+> > > >                        foreach my $w (split /\xac/, $what) {
+> > > >                                if ($a =~ m#^$w$#) {
+> > > > 					exact = 1;
+> > > >                                         last;
+> > > >                                 }
+> > > > 			}
+> > > > 		}
+> > > > 
+> > > > Which runs quickly, when there are few regexs to seek. There are, 
+> > > > however, some What: expressions that end with a wildcard. Those are
+> > > > harder to process. Right now, they're all grouped together, which
+> > > > makes them slower. Most of the processing time are spent on those.
+> > > > 
+> > > > I'm working right now on some strategy to also speed up the search 
+> > > > for them. Once I get something better, I'll send a patch series.
+> > > > 
+> > > > --
+> > > > 
+> > > > [1] On a side note, there are currently some problems with the What:
+> > > >     definitions for bind/unbind, as:
+> > > > 
+> > > > 	- it doesn't match all PCI devices;
+> > > > 	- it doesn't match ACPI and other buses that also export
+> > > > 	  bind/unbind.
+> > > > 
+> > > > > 
+> > > > > Anything I can do to help debug this?
+> > > > >
+> > > > 
+> > > > There are two parameters that can help to identify the issue:
+> > > > 
+> > > > a) You can add a "--show-hints" parameter. This turns on some 
+> > > >    prints that may help to identify what the script is doing.
+> > > >    It is not really a debug option, but it helps to identify
+> > > >    when some regexes are failing.
+> > > > 
+> > > > b) You can limit the What expressions that will be parsed with:
+> > > > 	   --search-string <something>
+> > > > 
+> > > > You can combine both. For instance, if you want to make it
+> > > > a lot more verbose, you could run it as:
+> > > > 
+> > > > 	./scripts/get_abi.pl undefined --search-string /sys --show-hints
+> > > 
+> > > Let me run this and time stamp it to see where it is getting hung up on.
+> > > Give it another 30 minutes :)
+> > 
+> > Hm, that didn't make too much sense as to what it was stalled on.  I've
+> > attached the compressed file if you are curious.
+> 
+> Hmm...
+> 
+> 	[07:52:44] --> /sys/devices/pci0000:40/0000:40:01.3/0000:4a:00.1/iommu/amd-iommu/cap
+> 	[08:07:52] --> /sys/devices/pci0000:40/0000:40:01.1/0000:41:00.0/0000:42:05.0/iommu/amd-iommu/cap
+> 
+> It sounds it took quite a while handling iommu cap, which sounds weird, as
+> it should be looking just 3 What expressions:
+> 
+> 	[07:43:06] What: /sys/class/iommu/.*/amd\-iommu/cap
+> 	[07:43:06] What: /sys/class/iommu/.*/intel\-iommu/cap
+> 	[07:43:06] What: /sys/devices/pci.*.*.*.*\:.*.*/0000\:.*.*\:.*.*..*/dma/dma.*chan.*/quickdata/cap
+> 
+> Maybe there was a memory starvation while running the script, causing
+> swaps. Still, it is weird that it would happen there, as the hashes
+> and arrays used at the script are all allocated before it starts the
+> search logic. Here, the allocation part takes ~2 seconds.
 
-Add a test for the frame_headroom feature that can be set on the
-umem. The logic added validates that all offsets in all tests and
-packets are valid, not just the ones that have a specifically
-configured frame_headroom.
+No memory starvation here, this thing is a beast:
+	$ free -h
+	               total        used        free      shared  buff/cache   available
+	Mem:           251Gi        36Gi        13Gi       402Mi       202Gi       212Gi
+	Swap:          4.0Gi       182Mi       3.8Gi
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- tools/testing/selftests/bpf/xdpxceiver.c | 52 +++++++++++++++++++-----
- tools/testing/selftests/bpf/xdpxceiver.h |  3 +-
- 2 files changed, 44 insertions(+), 11 deletions(-)
+	$ nproc
+	64
 
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index fd620f8accfd..6c7cf8aadc79 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.c
-+++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -514,8 +514,7 @@ static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb
- 
- 	pkt_stream->nb_pkts = nb_pkts;
- 	for (i = 0; i < nb_pkts; i++) {
--		pkt_stream->pkts[i].addr = (i % umem->num_frames) * umem->frame_size +
--			DEFAULT_OFFSET;
-+		pkt_stream->pkts[i].addr = (i % umem->num_frames) * umem->frame_size;
- 		pkt_stream->pkts[i].len = pkt_len;
- 		pkt_stream->pkts[i].payload = i;
- 
-@@ -642,6 +641,25 @@ static void pkt_dump(void *pkt, u32 len)
- 	fprintf(stdout, "---------------------------------------\n");
- }
- 
-+static bool is_offset_correct(struct xsk_umem_info *umem, struct pkt_stream *pkt_stream, u64 addr,
-+			      u64 pkt_stream_addr)
-+{
-+	u32 headroom = umem->unaligned_mode ? 0 : umem->frame_headroom;
-+	u32 offset = addr % umem->frame_size, expected_offset = 0;
-+
-+	if (!pkt_stream->use_addr_for_fill)
-+		pkt_stream_addr = 0;
-+
-+	expected_offset += (pkt_stream_addr + headroom + XDP_PACKET_HEADROOM) % umem->frame_size;
-+
-+	if (offset == expected_offset)
-+		return true;
-+
-+	ksft_test_result_fail("ERROR: [%s] expected [%u], got [%u]\n", __func__, expected_offset,
-+			      offset);
-+	return false;
-+}
-+
- static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
- {
- 	void *data = xsk_umem__get_data(buffer, addr);
-@@ -724,6 +742,7 @@ static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *
- 			 struct pollfd *fds)
- {
- 	struct pkt *pkt = pkt_stream_get_next_rx_pkt(pkt_stream);
-+	struct xsk_umem_info *umem = xsk->umem;
- 	u32 idx_rx = 0, idx_fq = 0, rcvd, i;
- 	u32 total = 0;
- 	int ret;
-@@ -731,7 +750,7 @@ static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *
- 	while (pkt) {
- 		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
- 		if (!rcvd) {
--			if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
-+			if (xsk_ring_prod__needs_wakeup(&umem->fq)) {
- 				ret = poll(fds, 1, POLL_TMOUT);
- 				if (ret < 0)
- 					exit_with_error(-ret);
-@@ -739,16 +758,16 @@ static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *
- 			continue;
- 		}
- 
--		ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
-+		ret = xsk_ring_prod__reserve(&umem->fq, rcvd, &idx_fq);
- 		while (ret != rcvd) {
- 			if (ret < 0)
- 				exit_with_error(-ret);
--			if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
-+			if (xsk_ring_prod__needs_wakeup(&umem->fq)) {
- 				ret = poll(fds, 1, POLL_TMOUT);
- 				if (ret < 0)
- 					exit_with_error(-ret);
- 			}
--			ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
-+			ret = xsk_ring_prod__reserve(&umem->fq, rcvd, &idx_fq);
- 		}
- 
- 		for (i = 0; i < rcvd; i++) {
-@@ -765,14 +784,17 @@ static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *
- 
- 			orig = xsk_umem__extract_addr(addr);
- 			addr = xsk_umem__add_offset_to_addr(addr);
--			if (!is_pkt_valid(pkt, xsk->umem->buffer, addr, desc->len))
-+
-+			if (!is_pkt_valid(pkt, umem->buffer, addr, desc->len))
-+				return;
-+			if (!is_offset_correct(umem, pkt_stream, addr, pkt->addr))
- 				return;
- 
--			*xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) = orig;
-+			*xsk_ring_prod__fill_addr(&umem->fq, idx_fq++) = orig;
- 			pkt = pkt_stream_get_next_rx_pkt(pkt_stream);
- 		}
- 
--		xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
-+		xsk_ring_prod__submit(&umem->fq, rcvd);
- 		xsk_ring_cons__release(&xsk->rx, rcvd);
- 
- 		pthread_mutex_lock(&pacing_mutex);
-@@ -1011,7 +1033,7 @@ static void xsk_populate_fill_ring(struct xsk_umem_info *umem, struct pkt_stream
- 				break;
- 			addr = pkt->addr;
- 		} else {
--			addr = i * umem->frame_size + DEFAULT_OFFSET;
-+			addr = i * umem->frame_size;
- 		}
- 
- 		*xsk_ring_prod__fill_addr(&umem->fq, idx++) = addr;
-@@ -1134,6 +1156,13 @@ static void testapp_bpf_res(struct test_spec *test)
- 	testapp_validate_traffic(test);
- }
- 
-+static void testapp_headroom(struct test_spec *test)
-+{
-+	test_spec_set_name(test, "UMEM_HEADROOM");
-+	test->ifobj_rx->umem->frame_headroom = UMEM_HEADROOM_TEST_SIZE;
-+	testapp_validate_traffic(test);
-+}
-+
- static void testapp_stats(struct test_spec *test)
- {
- 	int i;
-@@ -1346,6 +1375,9 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
- 		if (!testapp_unaligned(test))
- 			return;
- 		break;
-+	case TEST_TYPE_HEADROOM:
-+		testapp_headroom(test);
-+		break;
- 	default:
- 		break;
- 	}
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index d075192c95f8..2f705f44b748 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.h
-+++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -41,7 +41,7 @@
- #define DEFAULT_UMEM_BUFFERS (DEFAULT_PKT_CNT / 4)
- #define UMEM_SIZE (DEFAULT_UMEM_BUFFERS * XSK_UMEM__DEFAULT_FRAME_SIZE)
- #define RX_FULL_RXQSIZE 32
--#define DEFAULT_OFFSET 256
-+#define UMEM_HEADROOM_TEST_SIZE 128
- #define XSK_UMEM__INVALID_FRAME_SIZE (XSK_UMEM__DEFAULT_FRAME_SIZE + 1)
- 
- #define print_verbose(x...) do { if (opt_verbose) ksft_print_msg(x); } while (0)
-@@ -61,6 +61,7 @@ enum test_type {
- 	TEST_TYPE_ALIGNED_INV_DESC,
- 	TEST_TYPE_ALIGNED_INV_DESC_2K_FRAME,
- 	TEST_TYPE_UNALIGNED_INV_DESC,
-+	TEST_TYPE_HEADROOM,
- 	TEST_TYPE_TEARDOWN,
- 	TEST_TYPE_BIDI,
- 	TEST_TYPE_STATS,
--- 
-2.29.0
 
+> At least on my Dell Precision 5820 (12 cpu threads), the amount of memory it
+> uses is not huge:
+> 
+>     $ /usr/bin/time -v ./scripts/get_abi.pl undefined >/dev/null
+> 	Command being timed: "./scripts/get_abi.pl undefined"
+> 	User time (seconds): 12.68
+> 	System time (seconds): 1.29
+> 	Percent of CPU this job got: 99%
+> 	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:13.98
+> 	Average shared text size (kbytes): 0
+> 	Average unshared data size (kbytes): 0
+> 	Average stack size (kbytes): 0
+> 	Average total size (kbytes): 0
+> 	Maximum resident set size (kbytes): 212608
+> 	Average resident set size (kbytes): 0
+> 	Major (requiring I/O) page faults: 0
+> 	Minor (reclaiming a frame) page faults: 52003
+> 	Voluntary context switches: 1
+> 	Involuntary context switches: 56
+> 	Swaps: 0
+> 	File system inputs: 0
+> 	File system outputs: 0
+> 	Socket messages sent: 0
+> 	Socket messages received: 0
+> 	Signals delivered: 0
+> 	Page size (bytes): 4096
+> 	Exit status: 0
+> 
+> Unfortunately, I don't have any amd-based machine here, but I'll
+> try to run it later on a big arm server and see how it behaves.
+
+I'll run that and get back to you in 30 minutes :)
+
+thanks,
+
+greg k-h
