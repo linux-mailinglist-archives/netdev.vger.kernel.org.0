@@ -2,143 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91FAE414B53
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 16:03:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDAF2414B5D
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 16:07:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234113AbhIVOFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 10:05:02 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:37111 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232709AbhIVOFB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 10:05:01 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-13-uoiUTMwGNhufnesDAn2asA-1; Wed, 22 Sep 2021 15:03:28 +0100
-X-MC-Unique: uoiUTMwGNhufnesDAn2asA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Wed, 22 Sep 2021 15:03:25 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Wed, 22 Sep 2021 15:03:25 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     =?utf-8?B?J0pvbmFzIERyZcOfbGVyJw==?= <verdre@v0yd.nl>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Tsuchiya Yuto <kitakar@gmail.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?utf-8?B?UGFsaSBSb2jDoXI=?= <pali@kernel.org>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Brian Norris <briannorris@chromium.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH v2 1/2] mwifiex: Use non-posted PCI write when setting TX
- ring write pointer
-Thread-Topic: [PATCH v2 1/2] mwifiex: Use non-posted PCI write when setting TX
- ring write pointer
-Thread-Index: AQHXqV6M5O4Kbg53iUSKSfgcb2dqbquwGdzg
-Date:   Wed, 22 Sep 2021 14:03:25 +0000
-Message-ID: <8f65f41a807c46d496bf1b45816077e4@AcuMS.aculab.com>
-References: <20210914114813.15404-1-verdre@v0yd.nl>
- <20210914114813.15404-2-verdre@v0yd.nl>
-In-Reply-To: <20210914114813.15404-2-verdre@v0yd.nl>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S233548AbhIVOIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 10:08:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232199AbhIVOIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 10:08:36 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA69C061574;
+        Wed, 22 Sep 2021 07:07:06 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id t4so9779355qkb.9;
+        Wed, 22 Sep 2021 07:07:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2hKItWeebPyvylBL8MhOaSAfJQALDyW9ilZEFB/W+xU=;
+        b=blmzMx6EJ1rbChe1i/uQHRQ13/AqrH6a2GtpuvelPr6oIiceiAAfALrlcFUKScFTbT
+         mSwbYHgvrmah4aVKKS0uR4vw4MOMLFFTMw2YbBeEk1wpLXa5c+GleW97eXB7csZmwfT8
+         +jbmiUL1TjW+0rFmpYkATc72KH/h1qchY86WZ6AtmUq1oThBfDfu+Qr5gDXgwQSMw/jf
+         bWFbA9PlYIAqhHi9fvI+dZK7lRqVw22kIksRCPeUTx/kRqjTakBVMSTyMy5cUEEbdKsp
+         408KvaGCSSD+XNbNTXdV5bCImE9nzeaEf/D6TX4rSbTxSaHuEESJ9329Ykyet9jN3QoR
+         pqhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2hKItWeebPyvylBL8MhOaSAfJQALDyW9ilZEFB/W+xU=;
+        b=y7jidg3sOkt0XBt2sJb559PQbW32Ir1vJh4r5SWRGvsV+WudDTPdHNfL6UM5LsjGzE
+         WP3hY2Pp3Q931UiuaAAKQgpEu7kdedRmGpS157ieWIGzycAzssZ4dRbAdol9/t5bfZje
+         c0U5f5hgFoWruvzcUV9BVy/I4xJaXAffen4pPppQ0HKuEoZ2+45Eaz6TvYLgA1DRNLoZ
+         75XO5JambnYHwTGHEsrq9UxWzqOQfEBvNWmpK/41xyxVvLVRPv+Syq6ajVDyJUYs2cAA
+         dyootyYPi0neLO2TsMtLemNwpfKVVnlqT64h56ansf0ntMCDtDagmpdEaUXuMehL5N4L
+         8xPQ==
+X-Gm-Message-State: AOAM5304Gv5NhdbNS+Y0drdQ1w09lVDx74I3jJM6rDqxghvwSQ4QEMZQ
+        U+VqKmj2yZ7+19hQ2YwxQxcGIruaucXqVA==
+X-Google-Smtp-Source: ABdhPJyQ6X8aT1eM2s4JNtsLKXfhcv7G0+CU0oQ3KfLBQP5ez5SVPAVG37HnYbncw3dCEgPkc5hKHg==
+X-Received: by 2002:a37:a413:: with SMTP id n19mr21802060qke.461.1632319624940;
+        Wed, 22 Sep 2021 07:07:04 -0700 (PDT)
+Received: from localhost.localdomain ([170.84.227.206])
+        by smtp.gmail.com with ESMTPSA id e16sm1392519qtx.7.2021.09.22.07.07.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Sep 2021 07:07:04 -0700 (PDT)
+From:   Ramon Fontes <ramonreisfontes@gmail.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Cc:     johannes@sipsolutions.net, kvalo@codeaurora.org,
+        davem@davemloft.net, Ramon Fontes <ramonreisfontes@gmail.com>
+Subject: [PATCH] mac80211_hwsim: enable 6GHz channels
+Date:   Wed, 22 Sep 2021 11:06:56 -0300
+Message-Id: <20210922140656.184304-1-ramonreisfontes@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSm9uYXMgRHJlw59sZXINCj4gU2VudDogMTQgU2VwdGVtYmVyIDIwMjEgMTI6NDgNCj4g
-DQo+IE9uIHRoZSA4OFc4ODk3IGNhcmQgaXQncyB2ZXJ5IGltcG9ydGFudCB0aGUgVFggcmluZyB3
-cml0ZSBwb2ludGVyIGlzDQo+IHVwZGF0ZWQgY29ycmVjdGx5IHRvIGl0cyBuZXcgdmFsdWUgYmVm
-b3JlIHNldHRpbmcgdGhlIFRYIHJlYWR5DQo+IGludGVycnVwdCwgb3RoZXJ3aXNlIHRoZSBmaXJt
-d2FyZSBhcHBlYXJzIHRvIGNyYXNoIChwcm9iYWJseSBiZWNhdXNlDQo+IGl0J3MgdHJ5aW5nIHRv
-IERNQS1yZWFkIGZyb20gdGhlIHdyb25nIHBsYWNlKS4gVGhlIGlzc3VlIGlzIHByZXNlbnQgaW4N
-Cj4gdGhlIGxhdGVzdCBmaXJtd2FyZSB2ZXJzaW9uIDE1LjY4LjE5LnAyMSBvZiB0aGUgcGNpZSt1
-c2IgY2FyZC4NCj4gDQo+IFNpbmNlIFBDSSB1c2VzICJwb3N0ZWQgd3JpdGVzIiB3aGVuIHdyaXRp
-bmcgdG8gYSByZWdpc3RlciwgaXQncyBub3QNCj4gZ3VhcmFudGVlZCB0aGF0IGEgd3JpdGUgd2ls
-bCBoYXBwZW4gaW1tZWRpYXRlbHkuIFRoYXQgbWVhbnMgdGhlIHBvaW50ZXINCj4gbWlnaHQgYmUg
-b3V0ZGF0ZWQgd2hlbiBzZXR0aW5nIHRoZSBUWCByZWFkeSBpbnRlcnJ1cHQsIGxlYWRpbmcgdG8N
-Cj4gZmlybXdhcmUgY3Jhc2hlcyBlc3BlY2lhbGx5IHdoZW4gQVNQTSBMMSBhbmQgTDEgc3Vic3Rh
-dGVzIGFyZSBlbmFibGVkDQo+IChiZWNhdXNlIG9mIHRoZSBoaWdoZXIgbGluayBsYXRlbmN5LCB0
-aGUgd3JpdGUgd2lsbCBwcm9iYWJseSB0YWtlDQo+IGxvbmdlcikuDQo+IA0KPiBTbyBmaXggdGhv
-c2UgZmlybXdhcmUgY3Jhc2hlcyBieSBhbHdheXMgdXNpbmcgYSBub24tcG9zdGVkIHdyaXRlIGZv
-cg0KPiB0aGlzIHNwZWNpZmljIHJlZ2lzdGVyIHdyaXRlLiBXZSBkbyB0aGF0IGJ5IHNpbXBseSBy
-ZWFkaW5nIGJhY2sgdGhlDQo+IHJlZ2lzdGVyIGFmdGVyIHdyaXRpbmcgaXQsIGp1c3QgYXMgYSBm
-ZXcgb3RoZXIgUENJIGRyaXZlcnMgZG8uDQo+IA0KPiBUaGlzIGZpeGVzIGEgYnVnIHdoZXJlIGR1
-cmluZyByeC90eCB0cmFmZmljIGFuZCB3aXRoIEFTUE0gTDEgc3Vic3RhdGVzDQo+IGVuYWJsZWQg
-KHRoZSBlbmFibGVkIHN1YnN0YXRlcyBhcmUgcGxhdGZvcm0gZGVwZW5kZW50KSwgdGhlIGZpcm13
-YXJlDQo+IGNyYXNoZXMgYW5kIGV2ZW50dWFsbHkgYSBjb21tYW5kIHRpbWVvdXQgYXBwZWFycyBp
-biB0aGUgbG9ncy4NCg0KSSB0aGluayB5b3UgbmVlZCB0byBjaGFuZ2UgeW91ciB0ZXJtaW5vbG9n
-eS4NClBDSWUgZG9lcyBoYXZlIHNvbWUgbm9uLXBvc3RlZCB3cml0ZSB0cmFuc2FjdGlvbnMgLSBi
-dXQgSSBjYW4ndA0KcmVtZW1iZXIgd2hlbiB0aGV5IGFyZSB1c2VkLg0KDQpXaGF0IHlvdSBuZWVk
-IHRvIHNheSBpcyB0aGF0IHlvdSBhcmUgZmx1c2hpbmcgdGhlIFBDSWUgcG9zdGVkDQp3cml0ZXMg
-aW4gb3JkZXIgdG8gYXZvaWQgYSB0aW1pbmcgJ2lzc3VlJyBzZXR0aW5nIHRoZSBUWCByaW5nDQp3
-cml0ZSBwb2ludGVyLg0KDQpRdWl0ZSB3aGVyZSB0aGUgYnVnIGlzLCBhbmQgd2h5IHRoZSByZWFk
-LWJhY2sgYWN0dWFsbHkgZml4ZXMNCml0IGlzIGFub3RoZXIgbWF0dGVyLg0KDQpBIHR5cGljYWwg
-ZXRoZXJuZXQgdHJhbnNtaXQgbmVlZHMgdGhyZWUgdGhpbmdzIHdyaXR0ZW4NCmluIHRoZSBjb3Jy
-ZWN0IG9yZGVyIChhcyBzZWVuIGJ5IHRoZSBoYXJkd2FyZSk6DQoNCjEpIFRoZSB0cmFuc21pdCBm
-cmFtZSBkYXRhLg0KMikgVGhlIGRlc2NyaXB0b3IgcmluZyBlbnRyeSByZWZlcnJpbmcgdG8gdGhl
-IGZyYW1lLg0KMykgVGhlICdwcm9kJyBvZiB0aGUgTUFDIGVuZ2luZSB0byBwcm9jZXNzIHRoZSBm
-cmFtZS4NCg0KWW91IHNlZW1zIHRvIGFsc28gaGF2ZToNCjIuNSkgV3JpdGUgdGhlIFRYIHJpbmcg
-d3JpdGUgcG9pbnRlciB0byB0aGUgTUFDIGVuZ2luZS4NCg0KVGhlIHVwZGF0ZXMgb2YgKDEpIGFu
-ZCAoMikgYXJlIG5vcm1hbGx5IGhhbmRsZXMgYnkgRE1BIGNvaGVyZW50DQptZW1vcnkgb3IgY2Fj
-aGUgZmx1c2hlcyBkb25lIGJ5IHVzaW5nIHRoZSBETUEgQVBJcy4NCg0KSWYgdGhlIHdyaXRlcyBm
-b3IgKDIuNSkgYW5kICgzKSBhcmUgYm90aCB3cml0aW5nIHRvIHRoZQ0KUENJZSBjYXJkICh3aGlj
-aCBzZWVtcyBsaWtlbHkpIHRoZW4gdGhlIFBDSWUgc3BlYyB3aWxsDQpndWFyYW50ZWUgdGhhdCB0
-aGV5IGhhcHBlbiBpbiB0aGUgY29ycmVjdCBvcmRlci4NCg0KVGhpcyBtZWFucyB0aGF0IHRoZSBQ
-Q0llIHJlYWRiYWNrIG9mIHRoZSAoMi41KSB3cml0ZSBkb2Vzbid0DQpoYXZlIGFueSBlZmZlY3Qg
-b24gdGhlIG9yZGVyIG9mIHRoZSBidXMgY3ljbGVzIHNlZW4gYnkgdGhlIGNhcmQuDQpTbyBmbHVz
-aGluZyB0aGUgUENJZSB3cml0ZSBpc24ndCB3aGF0IGZpeGVzIHlvdXIgcHJvYmxlbS4NCg0KVGhl
-IHJlYWRiYWNrIGJldHdlZW4gKDIuNSkgYW5kICgzKSBkb2VzIGhhdmUgdHdvIGVmZmVjdHM6DQph
-KSBpdCBhZGRzIGEgc2hvcnQgZGVsYXkgYmV0d2VlbiB0aGUgdHdvIHdyaXRlcy4NCmIpIGl0IChw
-cm9iYWJseSkgZm9yY2VzIHRoZSBmaXJzdCB3cml0ZSB0byBieSBmbHVzaGVkIHRocm91Z2gNCiAg
-IGFueSBwb3N0ZWQtd3JpdGUgYnVmZmVycyBvbiB0aGUgY2FyZCBpdHNlbGYuDQoNCkl0IG1heSB3
-ZWxsIGJlIHRoYXQgdGhlIGNhcmQgaGFzIHNlcGFyYXRlIHBvc3RlZCB3cml0ZSBidWZmZXJzDQpm
-b3IgZGlmZmVyZW50IHBhcnRzIG9mIHRoZSBoYXJkd2FyZS4NCkluIHRoYXQgY2FzZSB0aGUgd3Jp
-dGUgKDMpIG1pZ2h0IGdldCBhY3Rpb25lZCBiZWZvcmUgdGhlIHdyaXRlICgyLjUpLg0KT1RPSCB5
-b3UnZCBleHBlY3QgdGhhdCB0byBvbmx5IGNhdXNlIHBhY2tldCB0cmFuc21pdCB0byBiZSBkZWxh
-eWVkLg0KDQpJZiB0aGUgd3JpdGUgKDIuNSkgZW5kcyB1cCBiZWluZyBub24tYXRvbWljIChpZSBh
-IDY0Yml0IHdyaXRlDQpjb252ZXJ0ZWQgdG8gbXVsdGlwbGUgOCBiaXQgd3JpdGVzIGludGVybmFs
-bHkpIHRoZW4geW91J2xsIGhpdA0KcHJvYmxlbXMgaWYgdGhlIG1hYyBlbmdpbmUgbG9va3MgYXQg
-dGhlIHJlZ2lzdGVyIHdoaWxlIGl0IGlzDQpiZWluZyBjaGFuZ2VkIGp1c3QgYWZ0ZXIgdHJhbnNt
-aXR0aW5nIHRoZSBwcmV2aW91cyBwYWNrZXQuDQooaWUgd2hlbiB0aGUgdHggc3RhcnRzIGJlZm9y
-ZSB3cml0ZSAoMykgYmVjYXVzZSB0aGUgdHggbG9naWMNCmlzIGFjdGl2ZS4pDQoNClRoZSBvdGhl
-ciBob3JyaWQgcG9zc2liaWxpdHkgaXMgdGhhdCB5b3UgaGF2ZSBhIHRydWx5IGJyb2tlbg0KUENJ
-ZSBzbGF2ZSB0aGF0IGNvcnJ1cHRzIGl0cyBwb3N0ZWQtd3JpdGUgYnVmZmVyIHdoZW4gYSBzZWNv
-bmQNCndyaXRlIGFycml2ZXMuDQpJZiB0aGF0IGlzIGFjdHVhbGx5IHRydWUgdGhlbiB5b3UgbWF5
-IG5lZWQgdG8gYWxzbyBhZGQgbG9ja3MNCnRvIGVuc3VyZSB0aGF0IG11bHRpcGxlIHRocmVhZHMg
-Y2Fubm90IGRvIHdyaXRlcyBhdCB0aGUgc2FtZSB0aW1lLg0KT3IgZG8gYWxsIChhbmQgSSBtZWFu
-IGFsbCkgYWNjZXNzZXMgZnJvbSBhIHNpbmdsZSB0aHJlYWQvY29udGV4dC4NCg0KVGhlIGxhdHRl
-ciBwcm9ibGVtIHJlbWluZHMgbWUgb2YgYSBQQ0kgY2FyZCB0aGF0IGdvdCB0ZXJyaWJseQ0KY29u
-ZnVzZWQgaWYgaXQgc2F3IGEgcmVhZCByZXF1ZXN0IGZyb20gYSAybmQgY3B1IHdoaWxlIGdlbmVy
-YXRpbmcNCidjeWNsZSByZXJ1bicgcmVzcG9uc2VzIHRvIGFuIGVhcmxpZXIgcmVhZCByZXF1ZXN0
-Lg0KDQpNb3N0IGNvZGUgdGhhdCBmbHVzaGVzIHBvc3RlZCB3cml0ZXMgb25seSBuZWVkcyB0byBk
-byBzbyBmb3INCndyaXRlcyB0aGF0IGRyb3AgbGV2ZWwtc2Vuc2l0aXZlIGludGVycnVwdCByZXF1
-ZXN0cy4NCkZhaWx1cmUgdG8gZmx1c2ggdGhvc2UgY2FuIGxlYWQgdG8gdW5leHBlY3RlZCBpbnRl
-cnJ1cHRzLg0KVGhhdCBwcm9ibGVtIGdvZXMgYmFjayB0byBWTUVidXMgc3Vub3MgKGFtb25nc3Qg
-b3RoZXJzKS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJh
-bWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0
-cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+This adds 6 GHz capabilities and reject HT/VHT
+
+Signed-off-by: Ramon Fontes <ramonreisfontes@gmail.com>
+---
+ drivers/net/wireless/mac80211_hwsim.c | 150 +++++++++++++++++++++++---
+ 1 file changed, 137 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index ffa894f73..d36770db1 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -2988,6 +2988,118 @@ static const struct ieee80211_sband_iftype_data he_capa_5ghz[] = {
+ #endif
+ };
+ 
++static const struct ieee80211_sband_iftype_data he_capa_6ghz[] = {
++	{
++		/* TODO: should we support other types, e.g., P2P?*/
++		.types_mask = BIT(NL80211_IFTYPE_STATION) |
++			      BIT(NL80211_IFTYPE_AP),
++		.he_6ghz_capa = {
++			.capa = IEEE80211_HE_6GHZ_CAP_MIN_MPDU_START |
++			        IEEE80211_HE_6GHZ_CAP_MAX_AMPDU_LEN_EXP |
++			        IEEE80211_HE_6GHZ_CAP_MAX_MPDU_LEN |
++			        IEEE80211_HE_6GHZ_CAP_TX_ANTPAT_CONS |
++			        IEEE80211_HE_6GHZ_CAP_RX_ANTPAT_CONS,
++		},
++		.he_cap = {
++			.has_he = true,
++			.he_cap_elem = {
++				.mac_cap_info[0] =
++					IEEE80211_HE_MAC_CAP0_HTC_HE,
++				.mac_cap_info[1] =
++					IEEE80211_HE_MAC_CAP1_TF_MAC_PAD_DUR_16US |
++					IEEE80211_HE_MAC_CAP1_MULTI_TID_AGG_RX_QOS_8,
++				.mac_cap_info[2] =
++					IEEE80211_HE_MAC_CAP2_BSR |
++					IEEE80211_HE_MAC_CAP2_MU_CASCADING |
++					IEEE80211_HE_MAC_CAP2_ACK_EN,
++				.mac_cap_info[3] =
++					IEEE80211_HE_MAC_CAP3_OMI_CONTROL |
++					IEEE80211_HE_MAC_CAP3_MAX_AMPDU_LEN_EXP_EXT_3,
++				.mac_cap_info[4] = IEEE80211_HE_MAC_CAP4_AMSDU_IN_AMPDU,
++				.phy_cap_info[0] =
++					IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_40MHZ_80MHZ_IN_5G |
++					IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_160MHZ_IN_5G |
++					IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_80PLUS80_MHZ_IN_5G,
++				.phy_cap_info[1] =
++					IEEE80211_HE_PHY_CAP1_PREAMBLE_PUNC_RX_MASK |
++					IEEE80211_HE_PHY_CAP1_DEVICE_CLASS_A |
++					IEEE80211_HE_PHY_CAP1_LDPC_CODING_IN_PAYLOAD |
++					IEEE80211_HE_PHY_CAP1_MIDAMBLE_RX_TX_MAX_NSTS,
++				.phy_cap_info[2] =
++					IEEE80211_HE_PHY_CAP2_NDP_4x_LTF_AND_3_2US |
++					IEEE80211_HE_PHY_CAP2_STBC_TX_UNDER_80MHZ |
++					IEEE80211_HE_PHY_CAP2_STBC_RX_UNDER_80MHZ |
++					IEEE80211_HE_PHY_CAP2_UL_MU_FULL_MU_MIMO |
++					IEEE80211_HE_PHY_CAP2_UL_MU_PARTIAL_MU_MIMO,
++
++				/* Leave all the other PHY capability bytes
++				 * unset, as DCM, beam forming, RU and PPE
++				 * threshold information are not supported
++				 */
++			},
++			.he_mcs_nss_supp = {
++				.rx_mcs_80 = cpu_to_le16(0xfffa),
++				.tx_mcs_80 = cpu_to_le16(0xfffa),
++				.rx_mcs_160 = cpu_to_le16(0xfffa),
++				.tx_mcs_160 = cpu_to_le16(0xfffa),
++				.rx_mcs_80p80 = cpu_to_le16(0xfffa),
++				.tx_mcs_80p80 = cpu_to_le16(0xfffa),
++			},
++		},
++	},
++#ifdef CONFIG_MAC80211_MESH
++	{
++		/* TODO: should we support other types, e.g., IBSS?*/
++		.types_mask = BIT(NL80211_IFTYPE_MESH_POINT),
++		.he_6ghz_capa = {
++			.capa = IEEE80211_HE_6GHZ_CAP_MIN_MPDU_START |
++			        IEEE80211_HE_6GHZ_CAP_MAX_AMPDU_LEN_EXP |
++			        IEEE80211_HE_6GHZ_CAP_MAX_MPDU_LEN |
++			        IEEE80211_HE_6GHZ_CAP_TX_ANTPAT_CONS |
++			        IEEE80211_HE_6GHZ_CAP_RX_ANTPAT_CONS,
++		},
++		.he_cap = {
++			.has_he = true,
++			.he_cap_elem = {
++				.mac_cap_info[0] =
++					IEEE80211_HE_MAC_CAP0_HTC_HE,
++				.mac_cap_info[1] =
++					IEEE80211_HE_MAC_CAP1_MULTI_TID_AGG_RX_QOS_8,
++				.mac_cap_info[2] =
++					IEEE80211_HE_MAC_CAP2_ACK_EN,
++				.mac_cap_info[3] =
++					IEEE80211_HE_MAC_CAP3_OMI_CONTROL |
++					IEEE80211_HE_MAC_CAP3_MAX_AMPDU_LEN_EXP_EXT_3,
++				.mac_cap_info[4] = IEEE80211_HE_MAC_CAP4_AMSDU_IN_AMPDU,
++				.phy_cap_info[0] =
++					IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_40MHZ_80MHZ_IN_5G |
++					IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_160MHZ_IN_5G |
++					IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_80PLUS80_MHZ_IN_5G,
++				.phy_cap_info[1] =
++					IEEE80211_HE_PHY_CAP1_PREAMBLE_PUNC_RX_MASK |
++					IEEE80211_HE_PHY_CAP1_DEVICE_CLASS_A |
++					IEEE80211_HE_PHY_CAP1_LDPC_CODING_IN_PAYLOAD |
++					IEEE80211_HE_PHY_CAP1_MIDAMBLE_RX_TX_MAX_NSTS,
++				.phy_cap_info[2] = 0,
++
++				/* Leave all the other PHY capability bytes
++				 * unset, as DCM, beam forming, RU and PPE
++				 * threshold information are not supported
++				 */
++			},
++			.he_mcs_nss_supp = {
++				.rx_mcs_80 = cpu_to_le16(0xfffa),
++				.tx_mcs_80 = cpu_to_le16(0xfffa),
++				.rx_mcs_160 = cpu_to_le16(0xfffa),
++				.tx_mcs_160 = cpu_to_le16(0xfffa),
++				.rx_mcs_80p80 = cpu_to_le16(0xfffa),
++				.tx_mcs_80p80 = cpu_to_le16(0xfffa),
++			},
++		},
++	},
++#endif
++};
++
+ static void mac80211_hwsim_he_capab(struct ieee80211_supported_band *sband)
+ {
+ 	u16 n_iftype_data;
+@@ -3000,6 +3112,10 @@ static void mac80211_hwsim_he_capab(struct ieee80211_supported_band *sband)
+ 		n_iftype_data = ARRAY_SIZE(he_capa_5ghz);
+ 		sband->iftype_data =
+ 			(struct ieee80211_sband_iftype_data *)he_capa_5ghz;
++	} else if (sband->band == NL80211_BAND_6GHZ) {
++		n_iftype_data = ARRAY_SIZE(he_capa_6ghz);
++		sband->iftype_data =
++			(struct ieee80211_sband_iftype_data *)he_capa_6ghz;
+ 	} else {
+ 		return;
+ 	}
+@@ -3290,6 +3406,12 @@ static int mac80211_hwsim_new_radio(struct genl_info *info,
+ 			sband->vht_cap.vht_mcs.tx_mcs_map =
+ 				sband->vht_cap.vht_mcs.rx_mcs_map;
+ 			break;
++		case NL80211_BAND_6GHZ:
++			sband->channels = data->channels_6ghz;
++			sband->n_channels = ARRAY_SIZE(hwsim_channels_6ghz);
++			sband->bitrates = data->rates + 4;
++			sband->n_bitrates = ARRAY_SIZE(hwsim_rates) - 4;
++			break;
+ 		case NL80211_BAND_S1GHZ:
+ 			memcpy(&sband->s1g_cap, &hwsim_s1g_cap,
+ 			       sizeof(sband->s1g_cap));
+@@ -3300,19 +3422,21 @@ static int mac80211_hwsim_new_radio(struct genl_info *info,
+ 			continue;
+ 		}
+ 
+-		sband->ht_cap.ht_supported = true;
+-		sband->ht_cap.cap = IEEE80211_HT_CAP_SUP_WIDTH_20_40 |
+-				    IEEE80211_HT_CAP_GRN_FLD |
+-				    IEEE80211_HT_CAP_SGI_20 |
+-				    IEEE80211_HT_CAP_SGI_40 |
+-				    IEEE80211_HT_CAP_DSSSCCK40;
+-		sband->ht_cap.ampdu_factor = 0x3;
+-		sband->ht_cap.ampdu_density = 0x6;
+-		memset(&sband->ht_cap.mcs, 0,
+-		       sizeof(sband->ht_cap.mcs));
+-		sband->ht_cap.mcs.rx_mask[0] = 0xff;
+-		sband->ht_cap.mcs.rx_mask[1] = 0xff;
+-		sband->ht_cap.mcs.tx_params = IEEE80211_HT_MCS_TX_DEFINED;
++		if (band != NL80211_BAND_6GHZ){
++			sband->ht_cap.ht_supported = true;
++			sband->ht_cap.cap = IEEE80211_HT_CAP_SUP_WIDTH_20_40 |
++					    IEEE80211_HT_CAP_GRN_FLD |
++					    IEEE80211_HT_CAP_SGI_20 |
++					    IEEE80211_HT_CAP_SGI_40 |
++					    IEEE80211_HT_CAP_DSSSCCK40;
++			sband->ht_cap.ampdu_factor = 0x3;
++			sband->ht_cap.ampdu_density = 0x6;
++			memset(&sband->ht_cap.mcs, 0,
++			       sizeof(sband->ht_cap.mcs));
++			sband->ht_cap.mcs.rx_mask[0] = 0xff;
++			sband->ht_cap.mcs.rx_mask[1] = 0xff;
++			sband->ht_cap.mcs.tx_params = IEEE80211_HT_MCS_TX_DEFINED;
++		}
+ 
+ 		mac80211_hwsim_he_capab(sband);
+ 
+-- 
+2.25.1
 
