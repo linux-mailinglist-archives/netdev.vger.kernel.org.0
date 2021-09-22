@@ -2,100 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E52F4414B92
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 16:16:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 555EB414B9B
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 16:16:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235865AbhIVOSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 10:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232401AbhIVORz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 10:17:55 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C50AC061574;
-        Wed, 22 Sep 2021 07:16:25 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id r1so2727418qta.12;
-        Wed, 22 Sep 2021 07:16:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IuXIOcEoJLZm3JHNGPg8RoZZFJipAi9zCbRCXI1CFLE=;
-        b=ULd641Oiv+/i7cI8Q/Yn8PvBm7YDEf7KVUnkeQ4VK3WiKgwIfPykRoNewsQTr2PP/y
-         7HQyOIQd+RWlJpt+DVpkWk+3QHrraBYva2euDQFQASwfYGBJkiQK1mUgf8hNhN4h4rHJ
-         dmM6/sEvP5YB7PZwPV35sNogCKfgXZMXUgRf1janA+efa/kqrGZN7Ulce33nO/+m7crj
-         fJnh7jBe8H4x9/lcjWZFXdpptN4dNQ2LBWhC4N0k/JpmYcVNPFvNrF32AN71QtH3FaKC
-         IwPZviep9+codxTRfRyWd/8KkZOMS5nUcqfbr8x28tsvMYm8EE4/Xp6H1ree9EeVEAEa
-         /lgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IuXIOcEoJLZm3JHNGPg8RoZZFJipAi9zCbRCXI1CFLE=;
-        b=Fu0KAdTGmQLv7dZjIDTz3H9hWcR0AniJu7djy2u7Z+FkKdCh1afsDl/rCIxVptvtXC
-         MEvWGpMCYs7komKCuRf90SLtkdZM429PhxMtWvSgqK+blay4XwC8+D8CR5nXY4Jdrjgf
-         KUDaa/Hhn7Qb0aWWb7p3QkuvCAWZOPirb4Y4iWafSpTyI3sPL2STbX6zgPIFbLjOpwg0
-         ov8n/nWAb29A6UbMjiYnYsg5EgLDTlXd5oqm03/HB4OvhvmtOA4cUSs92Y5WF9gfbykq
-         gp4V+LauqLOjl+JJpCLIyKmvaHZLlxoXh2l9elS6tnTGUjykhGpZKyvC4yv7a5F9T9V3
-         1zbg==
-X-Gm-Message-State: AOAM531tnT2jzLIMzVvot04biZ+9lVXpLmhhIFRXR0STAqFebVWdqCQD
-        JeRv2xbkvKiUQ37jBsNvFsk/mrwnfZJ1+Q==
-X-Google-Smtp-Source: ABdhPJyeaUVIst5XKcgB9ufm77XgKHtZH+7uA7dVm9KtXjXFGvQ4ErNh9WgKtbIlWl3y+PmqAQ7o0Q==
-X-Received: by 2002:aed:204b:: with SMTP id 69mr32961757qta.24.1632320183881;
-        Wed, 22 Sep 2021 07:16:23 -0700 (PDT)
-Received: from localhost.localdomain ([170.84.227.206])
-        by smtp.gmail.com with ESMTPSA id w20sm1456275qtj.72.2021.09.22.07.16.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Sep 2021 07:16:23 -0700 (PDT)
-From:   Ramon Fontes <ramonreisfontes@gmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Cc:     johannes@sipsolutions.net, kvalo@codeaurora.org,
-        davem@davemloft.net, Ramon Fontes <ramonreisfontes@gmail.com>
-Subject: [PATCH] mac80211_hwsim: fix incorrect type in initializer
-Date:   Wed, 22 Sep 2021 11:16:17 -0300
-Message-Id: <20210922141617.189660-1-ramonreisfontes@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S236210AbhIVOSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 10:18:12 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:55912 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236217AbhIVOSK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 10:18:10 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1632320200;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XvyHaTGz7xjft1AZd1iLkPTxrlYErPr+mjlqSrCr8k0=;
+        b=b2Gp5N6YQ+hxvxz5It1ORdW7z36nMlV3aBe3zO7BCD86M7ZnjY59+qbjhQdj0+EK65RLjD
+        xHCIzywk4kzMvn7NPRaDQdTgTMOx7oaBhCTHznDgC3OHxCsC9Zti+FmzOPeLssj/1loSM4
+        VOqIKuzhMeD43GFD79YX/prPGoNShbs3ZS3gPTX0J+L2/JRsdf/VBIzpA7nTr5FFP2uviG
+        9CLqnn/MIDRgSPHk/qau8zG+m6AFvnw4br+lbOrevI0CrwgCXj+gdX8GYIFVwF0h/Jy/ww
+        J2BFSuhrVYmfmV5d1nJlyvh2/3aUhcdEl3xKKCWdqAXm1VMoNb/g0txixIXn2w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1632320200;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XvyHaTGz7xjft1AZd1iLkPTxrlYErPr+mjlqSrCr8k0=;
+        b=QjWU9EKTL8mkpU0lH81Bk8G1XP7HCzE7aM7SqL+WSCeGkWZuVV+2T87KhQg9kQXrfEUBNa
+        hcUSO0PJfi/iOGDQ==
+To:     syzbot <syzbot+7d51f807c81b190a127d@syzkaller.appspotmail.com>,
+        desmondcheongzx@gmail.com, edumazet@google.com, hdanton@sina.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] INFO: task can't die in __lock_sock
+In-Reply-To: <000000000000307a5205cc6f3c02@google.com>
+References: <000000000000307a5205cc6f3c02@google.com>
+Date:   Wed, 22 Sep 2021 16:16:39 +0200
+Message-ID: <874kacu248.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This issue was raised by patchwork at:
-https://patchwork.kernel.org/project/linux-wireless/patch/20210906175350.13461-1-ramonreisfontes@gmail.com/
+On Mon, Sep 20 2021 at 08:50, syzbot wrote:
+> syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+> possible deadlock in rfcomm_sk_state_change
+>
+> ============================================
+> WARNING: possible recursive locking detected
+> 5.15.0-rc2-syzkaller #0 Not tainted
+> --------------------------------------------
+> syz-executor.0/9050 is trying to acquire lock:
+> ffff88807ce5d120 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1612 [inline]
+> ffff88807ce5d120 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}, at: rfcomm_sk_state_change+0xb4/0x390 net/bluetooth/rfcomm/sock.c:73
+>
+> but task is already holding lock:
+> ffff88807ce5d120 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1612 [inline]
+> ffff88807ce5d120 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}, at: rfcomm_sock_shutdown+0x54/0x210 net/bluetooth/rfcomm/sock.c:928
 
-Signed-off-by: Ramon Fontes <ramonreisfontes@gmail.com>
----
- drivers/net/wireless/mac80211_hwsim.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+it's not only possible recursion. It's real. Same lock instance and the
+stack trace tells how this happens
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index d36770db1..e31770439 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2997,8 +2997,8 @@ static const struct ieee80211_sband_iftype_data he_capa_6ghz[] = {
- 			.capa = IEEE80211_HE_6GHZ_CAP_MIN_MPDU_START |
- 			        IEEE80211_HE_6GHZ_CAP_MAX_AMPDU_LEN_EXP |
- 			        IEEE80211_HE_6GHZ_CAP_MAX_MPDU_LEN |
--			        IEEE80211_HE_6GHZ_CAP_TX_ANTPAT_CONS |
--			        IEEE80211_HE_6GHZ_CAP_RX_ANTPAT_CONS,
-+			        cpu_to_le16(IEEE80211_HE_6GHZ_CAP_TX_ANTPAT_CONS |
-+			        IEEE80211_HE_6GHZ_CAP_RX_ANTPAT_CONS),
- 		},
- 		.he_cap = {
- 			.has_he = true,
-@@ -3055,8 +3055,8 @@ static const struct ieee80211_sband_iftype_data he_capa_6ghz[] = {
- 			.capa = IEEE80211_HE_6GHZ_CAP_MIN_MPDU_START |
- 			        IEEE80211_HE_6GHZ_CAP_MAX_AMPDU_LEN_EXP |
- 			        IEEE80211_HE_6GHZ_CAP_MAX_MPDU_LEN |
--			        IEEE80211_HE_6GHZ_CAP_TX_ANTPAT_CONS |
--			        IEEE80211_HE_6GHZ_CAP_RX_ANTPAT_CONS,
-+			        cpu_to_le16(IEEE80211_HE_6GHZ_CAP_TX_ANTPAT_CONS |
-+			        IEEE80211_HE_6GHZ_CAP_RX_ANTPAT_CONS),
- 		},
- 		.he_cap = {
- 			.has_he = true,
--- 
-2.25.1
+ lock_sock_nested+0x4e/0x140 net/core/sock.c:3183
+ lock_sock include/net/sock.h:1612 [inline]
+
+Lock is already held. See below.
+
+ rfcomm_sk_state_change+0xb4/0x390 net/bluetooth/rfcomm/sock.c:73
+ __rfcomm_dlc_close+0x1b6/0x8a0 net/bluetooth/rfcomm/core.c:489
+ rfcomm_dlc_close+0x1ea/0x240 net/bluetooth/rfcomm/core.c:520
+ __rfcomm_sock_close+0xac/0x260 net/bluetooth/rfcomm/sock.c:220
+
+sock lock is held from here.
+
+ rfcomm_sock_shutdown+0xe9/0x210 net/bluetooth/rfcomm/sock.c:931
+ rfcomm_sock_release+0x5f/0x140 net/bluetooth/rfcomm/sock.c:951
+ __sock_release+0xcd/0x280 net/socket.c:649
+ sock_close+0x18/0x20 net/socket.c:1314
+ __fput+0x288/0x9f0 fs/file_table.c:280
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+
+I assume that the lock_sock*() lockdep change was applied on top of
+Linus tree. The previous reports were showing lockups IIRC because
+lockdep had no chance to see that due to the placement of the acquire
+annotation.
+
+Thanks,
+
+        tglx
 
