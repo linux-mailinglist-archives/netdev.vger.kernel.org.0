@@ -2,117 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48135414223
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 08:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45C4D41425E
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:11:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233005AbhIVGtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 02:49:46 -0400
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:52059 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232835AbhIVGtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 02:49:41 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0UpCfwwN_1632293287;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UpCfwwN_1632293287)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 22 Sep 2021 14:48:08 +0800
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Message-Id: <1632293267.9421082-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net v2] napi: fix race inside napi_enable
-Date:   Wed, 22 Sep 2021 14:47:47 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     =?utf-8?q?netdev=40vger=2Ekernel=2Eorg=2C?=@vger.kernel.org,
-        =?utf-8?q?_linyunsheng=40huawei=2Ecom=2C?=@vger.kernel.org,
-        =?utf-8?q?_David_S=2E_Miller_=3Cdavem=40davemloft=2Enet=3E=2C?=@vger.kernel.org,
-        =?utf-8?q?_Eric_Dumazet_=3Cedumazet=40google=2Ecom=3E=2C?=@vger.kernel.org,
-        =?utf-8?q?_Daniel_Borkmann_=3Cdaniel=40iogearbox=2Enet=3E=2C?=@vger.kernel.org,
-        =?utf-8?q?_Antoine_Tenart_=3Catenart=40kernel=2Eorg=3E=2C?=@vger.kernel.org,
-        =?utf-8?q?_Alexander_Lobakin_=3Calobakin=40pm=2Eme=3E=2C?=@vger.kernel.org,
-        =?utf-8?q?_Wei_Wang_=3Cweiwan=40google=2Ecom=3E=2C?=@vger.kernel.org,
-        =?utf-8?q?_Taehee_Yoo_=3Cap420073=40gmail=2Ecom=3E=2C?=@vger.kernel.org,
-        =?utf-8?b?IEJqw7ZybiBUw7ZwZWwgPGJqb3JuQGtlcm5lbC5vcmc+LA==?=@vger.kernel.org,
-        =?utf-8?q?_Arnd_Bergmann_=3Carnd=40arndb=2Ede=3E=2C?=@vger.kernel.org,
-        =?utf-8?q?_Kumar_Kartikeya_Dwivedi_=3Cmemxor=40gmail=2Ecom=3E=2C?=@vger.kernel.org,
-        =?utf-8?q?_Neil_Horman_=3Cnhorman=40redhat=2Ecom=3E=2C?=@vger.kernel.org,
-        =?utf-8?q?_Dust_Li_=3Cdust=2Eli=40linux=2Ealibaba=2Ecom=3E?=@vger.kernel.org
-In-Reply-To: <20210920122024.283fe8b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S233149AbhIVHMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 03:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233024AbhIVHMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:12:46 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F160C061574;
+        Wed, 22 Sep 2021 00:11:16 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id a7so1168919plm.1;
+        Wed, 22 Sep 2021 00:11:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=fqJ4jD5mx43TaWCX1BAu8izvsG0/WJf0Cf7cwh5yNDA=;
+        b=OrPsNie/7vrJWG3sX0VWBvLZsHm34fXEpVcw3m41m+7XwhFaDkEXwlCPQcJKIJMJMH
+         5RXsNa0bUU/p1BHQYgMCtg1khBkBBMpy8RDV8o9J82NP8BNDLnJOYCwmGU33VybSLT+x
+         IaDtG9KQCEiSJpTjPeY6LCRGvPoeUGi93hVu3hIDprLIrGoMhSC/AdPo9VZEd5ZXbSCl
+         Pw2WzcOPNT5dlsHE9xzBvx7/8/qyWaQB58nwjKNVAU/rTWEyZ+nbbR1O9ADSzOBqggG+
+         R3+JWfcNgvys6L9mEzvzbDG511PpXV8QwXa0v7Biz8TWFcaqgOYig3J8IUSlB5oBlip/
+         wJyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=fqJ4jD5mx43TaWCX1BAu8izvsG0/WJf0Cf7cwh5yNDA=;
+        b=7fIJ7xLFrmFwGXmD58PPKIF9jAQHcm1lyK5xeuv+KLaeero8alwQq+JVMxJoSHkFNl
+         QFlRPvoYvHnrtYATTDoMmj1URRjoFwzhlldoaosvZ1SnB7ZQH2fnGNOpTuV7Zrx+ov/0
+         gPdCXkiEO/vTtrit26lsHIA+D50W4jBYkP2YbEmQMaxUsJzT6QfJF1C02i3VUHHE2HHY
+         nd6+taJpYfEzXBI+Qt4QvnUpltncicIr92OeOiz2rSuYQILjGLt4cFgzX5ITTTkLcEzC
+         KR7qcL0hIPRilmCXn8o5hhq3JguT/h3q7QVZa6KEQ3ihXNUoIQCgIVHa9kYib7EIcKlX
+         fEZg==
+X-Gm-Message-State: AOAM531nESjmi8VoBbhBOknsF4jPlcyZQl6s1j0IOpvYS2gOK3NzEzY6
+        TweNQQFXzNhSWxbeGJwcKLg=
+X-Google-Smtp-Source: ABdhPJx3TcRLNegmOyiuTZhauFgE1xz+jJkrnv7g2JCh3p9OyG+Knr4sL0vwzkgfMvBBkYfcUbSg3Q==
+X-Received: by 2002:a17:90a:1990:: with SMTP id 16mr9620620pji.11.1632294676110;
+        Wed, 22 Sep 2021 00:11:16 -0700 (PDT)
+Received: from u18.mshome.net ([167.220.238.132])
+        by smtp.gmail.com with ESMTPSA id o16sm1497554pgv.29.2021.09.22.00.11.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Sep 2021 00:11:15 -0700 (PDT)
+From:   Muhammad Falak R Wani <falakreyaz@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Muhammad Falak R Wani <falakreyaz@gmail.com>
+Subject: [PATCH v2 bpf-next] libbpf: Use sysconf to simplify libbpf_num_possible_cpus
+Date:   Wed, 22 Sep 2021 12:37:48 +0530
+Message-Id: <20210922070748.21614-1-falakreyaz@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Sep 2021 12:20:24 -0700, Jakub Kicinski <kuba@kernel.org> wrote:
-> On Sat, 18 Sep 2021 16:52:32 +0800 Xuan Zhuo wrote:
-> > The process will cause napi.state to contain NAPI_STATE_SCHED and
-> > not in the poll_list, which will cause napi_disable() to get stuck.
-> >
-> > The prefix "NAPI_STATE_" is removed in the figure below, and
-> > NAPI_STATE_HASHED is ignored in napi.state.
-> >
-> >                       CPU0       |                   CPU1       | napi.state
-> > ===============================================================================
-> > napi_disable()                   |                              | SCHED | NPSVC
-> > napi_enable()                    |                              |
-> > {                                |                              |
-> >     smp_mb__before_atomic();     |                              |
-> >     clear_bit(SCHED, &n->state); |                              | NPSVC
-> >                                  | napi_schedule_prep()         | SCHED | NPSVC
-> >                                  | napi_poll()                  |
-> >                                  |   napi_complete_done()       |
-> >                                  |   {                          |
-> >                                  |      if (n->state & (NPSVC | | (1)
-> >                                  |               _BUSY_POLL)))  |
-> >                                  |           return false;      |
-> >                                  |     ................         |
-> >                                  |   }                          | SCHED | NPSVC
-> >                                  |                              |
-> >     clear_bit(NPSVC, &n->state); |                              | SCHED
-> > }                                |                              |
-> >                                  |                              |
-> > napi_schedule_prep()             |                              | SCHED | MISSED (2)
-> >
-> > (1) Here return direct. Because of NAPI_STATE_NPSVC exists.
-> > (2) NAPI_STATE_SCHED exists. So not add napi.poll_list to sd->poll_list
-> >
-> > Since NAPI_STATE_SCHED already exists and napi is not in the
-> > sd->poll_list queue, NAPI_STATE_SCHED cannot be cleared and will always
-> > exist.
-> >
-> > 1. This will cause this queue to no longer receive packets.
-> > 2. If you encounter napi_disable under the protection of rtnl_lock, it
-> >    will cause the entire rtnl_lock to be locked, affecting the overall
-> >    system.
-> >
-> > This patch uses cmpxchg to implement napi_enable(), which ensures that
-> > there will be no race due to the separation of clear two bits.
-> >
-> > Fixes: 2d8bff12699abc ("netpoll: Close race condition between poll_one_napi and napi_disable")
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
->
-> Why don't you just invert the order of clearing the bits:
+Simplify libbpf_num_possible_cpus by using sysconf(_SC_NPROCESSORS_CONF)
+instead of parsing a file.
+This patch is a part ([0]) of libbpf-1.0 milestone.
 
-I think it should be an atomic operation. The original two-step clear itself is
-problematic. So from this perspective, it is not just a solution to this
-problem.
+[0] Closes: https://github.com/libbpf/libbpf/issues/383
 
-Thanks.
+Signed-off-by: Muhammad Falak R Wani <falakreyaz@gmail.com>
+---
+ tools/lib/bpf/libbpf.c | 17 ++++-------------
+ 1 file changed, 4 insertions(+), 13 deletions(-)
 
->
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index a796754f75cc..706eca8112c1 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -6953,8 +6953,8 @@ void napi_enable(struct napi_struct *n)
->  {
->         BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
->         smp_mb__before_atomic();
-> -       clear_bit(NAPI_STATE_SCHED, &n->state);
->         clear_bit(NAPI_STATE_NPSVC, &n->state);
-> +       clear_bit(NAPI_STATE_SCHED, &n->state);
->         if (n->dev->threaded && n->thread)
->                 set_bit(NAPI_STATE_THREADED, &n->state);
->  }
->
-> That's simpler and symmetric with the disable path.
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index ef5db34bf913..f1c0abe5b58d 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -10898,25 +10898,16 @@ int parse_cpu_mask_file(const char *fcpu, bool **mask, int *mask_sz)
+ 
+ int libbpf_num_possible_cpus(void)
+ {
+-	static const char *fcpu = "/sys/devices/system/cpu/possible";
+ 	static int cpus;
+-	int err, n, i, tmp_cpus;
+-	bool *mask;
++	int tmp_cpus;
+ 
+ 	tmp_cpus = READ_ONCE(cpus);
+ 	if (tmp_cpus > 0)
+ 		return tmp_cpus;
+ 
+-	err = parse_cpu_mask_file(fcpu, &mask, &n);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	tmp_cpus = 0;
+-	for (i = 0; i < n; i++) {
+-		if (mask[i])
+-			tmp_cpus++;
+-	}
+-	free(mask);
++	tmp_cpus = sysconf(_SC_NPROCESSORS_CONF);
++	if (tmp_cpus < 1)
++		return libbpf_err(-EINVAL);
+ 
+ 	WRITE_ONCE(cpus, tmp_cpus);
+ 	return tmp_cpus;
+-- 
+2.17.1
+
