@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B831B4146A8
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 12:39:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44A1E4146A4
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 12:39:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235024AbhIVKlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 06:41:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49154 "EHLO mail.kernel.org"
+        id S235255AbhIVKk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 06:40:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48978 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235036AbhIVKkw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 06:40:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6AC956127A;
-        Wed, 22 Sep 2021 10:39:21 +0000 (UTC)
+        id S235122AbhIVKkp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 06:40:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8BAD861267;
+        Wed, 22 Sep 2021 10:39:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632307162;
-        bh=z5oZXLI0h8Ek3djMH7ls/qPFRJgYxR58aLTQEnNJkhg=;
+        s=k20201202; t=1632307155;
+        bh=1qzyHXULrGHTwODUKDiWXKGr1uQ4+mGgIlC+7I0WkZo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OqoIKrKGHdmywiecobbj4FTQx26BxxNhYFCsTT/F3ZHD/XtJAj32GARC17NOcWsFM
-         NdhQEci0qF6TfLU/2kWetEyCx4KqSGSuJwqN6ur6J9IJTZEtW7WXOtMtwXQ7d8fHYo
-         Ypj/OGqdHPZwAoR7P4dbI2dn0j9oRa2wTeH6FFNRJ2793Ftf6/PLtahuAHtKm7TvDJ
-         +zBT4d9qC1fpaKkCKmS+LyrDT7DA6zqlYpA4rRM8PX4af7jV8DiUN0wa+QM0KfNCB2
-         E/9s4zz7TiD9/uTatsQniFYWspR55RysWsoqpfjdiKRZg2dmmDDEEZ+2eEkfLNpO4h
-         cYcPikqUkz+XQ==
+        b=dtgZQCZ1fSQg9R/3fhVf72zdgoHr/LyJzOvOjgYivRPWggxSsxp1SZfmTDdXXzvY2
+         Wqqnf/nHCGoJRzYKFQAmaGJOn8cY8U4Z0qMuXcdO+YRXwl4mMT+AWGnqk/3id8mT70
+         UFcdTPRcaFqAeBUAa/4a+g5Gdf67eerRwN0AVTYwzHFHfNsETNbjBwtVSg6K3NSFEc
+         MvytLUBiggfx1/WbmiAdS3ZLSpII4T6V4b7oZVng1sijHi5qG9/dlpZMiqcALe4nis
+         kbQXr4xdJUKjsGRxC2sCbACYhQRuoPCGjDHReq1iYSuYAaBXf2gYej9U6mLE/BjmAo
+         m5G4izsSg7MgA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
@@ -34,9 +34,9 @@ Cc:     Yishai Hadas <yishaih@nvidia.com>,
         linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH mlx5-next 4/7] net/mlx5: Introduce migration bits and structures
-Date:   Wed, 22 Sep 2021 13:38:53 +0300
-Message-Id: <be4ea343f1afd0d49afce7dccaa8fcadebd3fe8d.1632305919.git.leonro@nvidia.com>
+Subject: [PATCH mlx5-next 5/7] net/mlx5: Expose APIs to get/put the mlx5 core device
+Date:   Wed, 22 Sep 2021 13:38:54 +0300
+Message-Id: <25d023ef23ef78fcf9b99bf428244149e1f78e95.1632305919.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1632305919.git.leonro@nvidia.com>
 References: <cover.1632305919.git.leonro@nvidia.com>
@@ -48,182 +48,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yishai Hadas <yishaih@nvidia.com>
 
-Introduce migration IFC related stuff to enable migration commands.
+Expose an API to get the mlx5 core device from a given PCI device if
+mlx5_core is its driver.
+
+Upon the get API we stay with the intf_state_mutex locked to make sure
+that the device can't be gone/unloaded till the caller will complete
+its job over the device, this expects to be for a short period of time
+for any flow that the lock is taken.
+
+Upon the put API we unlock the intf_state_mutex.
+
+The use case for those APIs is the migration flow of a VF over VFIO PCI.
+In that case the VF doesn't ride on mlx5_core, because the device is
+driving *two* different PCI devices, the PF owned by mlx5_core and the
+VF owned by the vfio driver.
+
+The mlx5_core of the PF is accessed only during the narrow window of the
+VF's ioctl that requires its services.
+
+This allows the PF driver to be more independent of the VF driver, so
+long as it doesn't reset the FW.
 
 Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 145 +++++++++++++++++++++++++++++++++-
- 1 file changed, 144 insertions(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 43 +++++++++++++++++++
+ include/linux/mlx5/driver.h                   |  3 ++
+ 2 files changed, 46 insertions(+)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index d90a65b6824f..366c7b030eb7 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -126,6 +126,11 @@ enum {
- 	MLX5_CMD_OP_QUERY_SF_PARTITION            = 0x111,
- 	MLX5_CMD_OP_ALLOC_SF                      = 0x113,
- 	MLX5_CMD_OP_DEALLOC_SF                    = 0x114,
-+	MLX5_CMD_OP_SUSPEND_VHCA                  = 0x115,
-+	MLX5_CMD_OP_RESUME_VHCA                   = 0x116,
-+	MLX5_CMD_OP_QUERY_VHCA_MIGRATION_STATE    = 0x117,
-+	MLX5_CMD_OP_SAVE_VHCA_STATE               = 0x118,
-+	MLX5_CMD_OP_LOAD_VHCA_STATE               = 0x119,
- 	MLX5_CMD_OP_CREATE_MKEY                   = 0x200,
- 	MLX5_CMD_OP_QUERY_MKEY                    = 0x201,
- 	MLX5_CMD_OP_DESTROY_MKEY                  = 0x202,
-@@ -1719,7 +1724,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         reserved_at_682[0x1];
- 	u8         log_max_sf[0x5];
- 	u8         apu[0x1];
--	u8         reserved_at_689[0x7];
-+	u8         reserved_at_689[0x4];
-+	u8         migration[0x1];
-+	u8         reserved_at_68d[0x2];
- 	u8         log_min_sf_size[0x8];
- 	u8         max_num_sf_partitions[0x8];
- 
-@@ -11146,4 +11153,140 @@ enum {
- 	MLX5_MTT_PERM_RW	= MLX5_MTT_PERM_READ | MLX5_MTT_PERM_WRITE,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 79482824c64f..fcc8b7830421 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1795,6 +1795,49 @@ static struct pci_driver mlx5_core_driver = {
+ 	.sriov_set_msix_vec_count = mlx5_core_sriov_set_msix_vec_count,
  };
  
-+enum {
-+	MLX5_SUSPEND_VHCA_IN_OP_MOD_SUSPEND_MASTER  = 0x0,
-+	MLX5_SUSPEND_VHCA_IN_OP_MOD_SUSPEND_SLAVE   = 0x1,
-+};
++/**
++ * mlx5_get_core_dev - Get the mlx5 core device from a given PCI device if
++ *                     mlx5_core is its driver.
++ * @pdev: The associated PCI device.
++ *
++ * Upon return the interface state lock stay held to let caller uses it safely.
++ * Caller must ensure to use the returned mlx5 device for a narrow window
++ * and put it back with mlx5_put_core_dev() immediately once usage was over.
++ *
++ * Return: Pointer to the associated mlx5_core_dev or NULL.
++ */
++struct mlx5_core_dev *mlx5_get_core_dev(struct pci_dev *pdev)
++			__acquires(&mdev->intf_state_mutex)
++{
++	struct mlx5_core_dev *mdev;
 +
-+struct mlx5_ifc_suspend_vhca_in_bits {
-+	u8         opcode[0x10];
-+	u8         uid[0x10];
++	device_lock(&pdev->dev);
++	if (pdev->driver != &mlx5_core_driver) {
++		device_unlock(&pdev->dev);
++		return NULL;
++	}
 +
-+	u8         reserved_at_20[0x10];
-+	u8         op_mod[0x10];
++	mdev = pci_get_drvdata(pdev);
++	mutex_lock(&mdev->intf_state_mutex);
++	device_unlock(&pdev->dev);
 +
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
++	return mdev;
++}
++EXPORT_SYMBOL(mlx5_get_core_dev);
 +
-+	u8         reserved_at_60[0x20];
-+};
++/**
++ * mlx5_put_core_dev - Put the mlx5 core device back.
++ * @mdev: The mlx5 core device.
++ *
++ * Upon return the interface state lock is unlocked and caller should not
++ * access the mdev any more.
++ */
++void mlx5_put_core_dev(struct mlx5_core_dev *mdev)
++{
++	mutex_unlock(&mdev->intf_state_mutex);
++}
++EXPORT_SYMBOL(mlx5_put_core_dev);
 +
-+struct mlx5_ifc_suspend_vhca_out_bits {
-+	u8         status[0x8];
-+	u8         reserved_at_8[0x18];
+ static void mlx5_core_verify_params(void)
+ {
+ 	if (prof_sel >= ARRAY_SIZE(profile)) {
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 1b8bae246b28..e9a96904d6f1 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -1156,6 +1156,9 @@ int mlx5_dm_sw_icm_alloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
+ int mlx5_dm_sw_icm_dealloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
+ 			   u64 length, u16 uid, phys_addr_t addr, u32 obj_id);
+ 
++struct mlx5_core_dev *mlx5_get_core_dev(struct pci_dev *pdev);
++void mlx5_put_core_dev(struct mlx5_core_dev *mdev);
 +
-+	u8         syndrome[0x20];
-+
-+	u8         reserved_at_40[0x40];
-+};
-+
-+enum {
-+	MLX5_RESUME_VHCA_IN_OP_MOD_RESUME_SLAVE   = 0x0,
-+	MLX5_RESUME_VHCA_IN_OP_MOD_RESUME_MASTER  = 0x1,
-+};
-+
-+struct mlx5_ifc_resume_vhca_in_bits {
-+	u8         opcode[0x10];
-+	u8         uid[0x10];
-+
-+	u8         reserved_at_20[0x10];
-+	u8         op_mod[0x10];
-+
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
-+
-+	u8         reserved_at_60[0x20];
-+};
-+
-+struct mlx5_ifc_resume_vhca_out_bits {
-+	u8         status[0x8];
-+	u8         reserved_at_8[0x18];
-+
-+	u8         syndrome[0x20];
-+
-+	u8         reserved_at_40[0x40];
-+};
-+
-+struct mlx5_ifc_query_vhca_migration_state_in_bits {
-+	u8         opcode[0x10];
-+	u8         uid[0x10];
-+
-+	u8         reserved_at_20[0x10];
-+	u8         op_mod[0x10];
-+
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
-+
-+	u8         reserved_at_60[0x20];
-+};
-+
-+struct mlx5_ifc_query_vhca_migration_state_out_bits {
-+	u8         status[0x8];
-+	u8         reserved_at_8[0x18];
-+
-+	u8         syndrome[0x20];
-+
-+	u8         reserved_at_40[0x40];
-+
-+	u8         required_umem_size[0x20];
-+
-+	u8         reserved_at_a0[0x160];
-+};
-+
-+struct mlx5_ifc_save_vhca_state_in_bits {
-+	u8         opcode[0x10];
-+	u8         uid[0x10];
-+
-+	u8         reserved_at_20[0x10];
-+	u8         op_mod[0x10];
-+
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
-+
-+	u8         reserved_at_60[0x20];
-+
-+	u8         va[0x40];
-+
-+	u8         mkey[0x20];
-+
-+	u8         size[0x20];
-+};
-+
-+struct mlx5_ifc_save_vhca_state_out_bits {
-+	u8         status[0x8];
-+	u8         reserved_at_8[0x18];
-+
-+	u8         syndrome[0x20];
-+
-+	u8         reserved_at_40[0x40];
-+};
-+
-+struct mlx5_ifc_load_vhca_state_in_bits {
-+	u8         opcode[0x10];
-+	u8         uid[0x10];
-+
-+	u8         reserved_at_20[0x10];
-+	u8         op_mod[0x10];
-+
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
-+
-+	u8         reserved_at_60[0x20];
-+
-+	u8         va[0x40];
-+
-+	u8         mkey[0x20];
-+
-+	u8         size[0x20];
-+};
-+
-+struct mlx5_ifc_load_vhca_state_out_bits {
-+	u8         status[0x8];
-+	u8         reserved_at_8[0x18];
-+
-+	u8         syndrome[0x20];
-+
-+	u8         reserved_at_40[0x40];
-+};
-+
- #endif /* MLX5_IFC_H */
+ #ifdef CONFIG_MLX5_CORE_IPOIB
+ struct net_device *mlx5_rdma_netdev_alloc(struct mlx5_core_dev *mdev,
+ 					  struct ib_device *ibdev,
 -- 
 2.31.1
 
