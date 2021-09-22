@@ -2,75 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 870094149BC
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 14:53:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E444149E5
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 14:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236181AbhIVMyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 08:54:50 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54348 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236001AbhIVMym (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 08:54:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ZWdV3Ywl5E2tBReyRKkp3nub36ib8xsMWJxoWC+tqZM=; b=EFXR3GlnMnGHIw2VtBsFrp4XLU
-        5ZmpUW7Pwnd7V9z7BtVI69IYgbLKkBa6YZlMCO7gwM/msu3eBMkA6D41LWrWhJ8CTUtZbu05jLBzF
-        wZNctlNM1G4dtdIURdc7QizcwaF+yTZLSOARQwfIhJGz8+sZ5pgpyDnZ0Fwt0UrZRNTg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mT1k9-007mXu-9X; Wed, 22 Sep 2021 14:52:57 +0200
-Date:   Wed, 22 Sep 2021 14:52:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] driver core: fw_devlink: Add support for
- FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
-Message-ID: <YUsnKX1pYc9K8f95@lunn.ch>
-References: <YUocuMM4/VKzNMXq@lunn.ch>
- <CAJZ5v0iU3SGqrw909GLtuLwAxdyOy=pe2avxpDW+f4dP4ArhaQ@mail.gmail.com>
- <YUo3kD9jgx6eNadX@lunn.ch>
- <CAGETcx9hTFhY4+fHd71zYUsWW223GfUWBp8xxFCb2SNR6YUQ4Q@mail.gmail.com>
- <YUpIgTqyrDRXMUyC@lunn.ch>
- <CAGETcx_50KQuj0L+MCcf2Se8kpFfZwJBKP0juh_T7w+ZCs2p+g@mail.gmail.com>
- <YUpW9LIcrcok8rBa@lunn.ch>
- <CAGETcx_CNyKU-tXT+1_089MpVHQaBoNiZs6K__MrRXzWSi6P8g@mail.gmail.com>
- <YUp8vu1zUzBTz6WP@lunn.ch>
- <CAGETcx9YPZ3nSF7ghjiaALa_DMJXqkR45-VL5SA+xT_jd7V+zQ@mail.gmail.com>
+        id S229893AbhIVM7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 08:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35480 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229731AbhIVM7f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 08:59:35 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432E7C061757
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 05:58:05 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id p80so3149014iod.10
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 05:58:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=gQmTeeI9SmVhpWXFHOOADd2pL7AYSuP57rY9o9YQggQ=;
+        b=Q2bgtXzBfU+xjTojiQA8LyZH3763j5d7nj2Ly2NI76so2njbQUvzg65LJZQ092Wy2Q
+         VvI66chJiA5mW8ZKmmQsPO97CZjGqDrKG310YyKphE5+k8Rdf9i4Om2P4W1G37yidir4
+         UFEJ9aE6eZt/J6i4DDK5xKr3M5sI2V6LnQNKCaaWmfub3P6A/645tcH2MhHLZ0kGIUSL
+         sncKoAU3GnfWsFwnJJ62SEtAdDfoxELXKNZtsRWqQg49LrjqyKg2k7w9qJMFrnVCEQTN
+         kde1kyQFr20CU5Io6gXvfdSeoUqtEjyT8PN7Iy/RJBBqwLwYAW/Kaek+V/Odkc9++H9g
+         h8+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gQmTeeI9SmVhpWXFHOOADd2pL7AYSuP57rY9o9YQggQ=;
+        b=00yiXxFubUM1Sy4kBYABxG4xbsI4jvbRGK1kCFUp99txauB1EWrcivjCsjUGGGeYoJ
+         77vySNEURujC7aMhNcdnoriSq3uLyqoxdenchf1XV6AWvJQyAcIIEVi7b+VkJXMVSa8k
+         R3yjlSfB69bLLrEokbqDcSb+EoHAuEVWFG0tn7Q0fAmxhxvIkEdgivN52BtHmEqLhLUW
+         Pv2H3obrFpyelsmn/obIBSLa92xAUKu/lBR1K/bwUh01x3xDANtIMP73LxGw+4aDZpKN
+         9vnl+aZzVTCfDZoeQ+UepDKdA+mns+kCQg5F1Mj6gsArgazlmePprIgnt1sVmtBH7Wt3
+         N+Jg==
+X-Gm-Message-State: AOAM5306dEmFfsnhAbfeGPb5wpEnw/Rges5wxsedswCNzUXy+0AhdE/D
+        R1WHQBHfrIukFkltF/xQbDaqeiJzGUBO9A==
+X-Google-Smtp-Source: ABdhPJx2uF78lzrG6cPMKm0MQ8uI7yebjSSryN4YgHlkldLqtkdgq95l0JJCd72wzgvgPNAjZQOdOw==
+X-Received: by 2002:a05:6638:1389:: with SMTP id w9mr4665060jad.138.1632315484395;
+        Wed, 22 Sep 2021 05:58:04 -0700 (PDT)
+Received: from [192.168.1.116] ([66.219.217.159])
+        by smtp.gmail.com with ESMTPSA id y124sm996408iof.8.2021.09.22.05.58.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Sep 2021 05:58:04 -0700 (PDT)
+Subject: Re: [RFC v2 PATCH] mm, sl[au]b: Introduce lockless cache
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     linux-mm@kvack.org, Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        Matthew Wilcox <willy@infradead.org>,
+        John Garry <john.garry@huawei.com>,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org
+References: <20210920154816.31832-1-42.hyeyoo@gmail.com>
+ <ebea2af2-90d0-248f-8461-80f2e834dfea@kernel.dk>
+ <20210922081906.GA78305@kvm.asia-northeast3-a.c.our-ratio-313919.internal>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <688e6750-87e9-fb44-ce40-943bad072e48@kernel.dk>
+Date:   Wed, 22 Sep 2021 06:58:00 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGETcx9YPZ3nSF7ghjiaALa_DMJXqkR45-VL5SA+xT_jd7V+zQ@mail.gmail.com>
+In-Reply-To: <20210922081906.GA78305@kvm.asia-northeast3-a.c.our-ratio-313919.internal>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> That goes back to Rafael's reply (and I agree):
+On 9/22/21 2:19 AM, Hyeonggon Yoo wrote:
+> On Tue, Sep 21, 2021 at 09:37:40AM -0600, Jens Axboe wrote:
+>>> @@ -424,6 +431,57 @@ kmem_cache_create(const char *name, unsigned int size, unsigned int align,
+>>>  }
+>>>  EXPORT_SYMBOL(kmem_cache_create);
+>>>  
+>>> +/**
+>>> + * kmem_cache_alloc_cached - try to allocate from cache without lock
+>>> + * @s: slab cache
+>>> + * @flags: SLAB flags
+>>> + *
+>>> + * Try to allocate from cache without lock. If fails, fill the lockless cache
+>>> + * using bulk alloc API
+>>> + *
+>>> + * Be sure that there's no race condition.
+>>> + * Must create slab cache with SLAB_LOCKLESS_CACHE flag to use this function.
+>>> + *
+>>> + * Return: a pointer to free object on allocation success, NULL on failure.
+>>> + */
+>>> +void *kmem_cache_alloc_cached(struct kmem_cache *s, gfp_t gfpflags)
+>>> +{
+>>> +	struct kmem_lockless_cache *cache = this_cpu_ptr(s->cache);
+>>> +
+>>> +	BUG_ON(!(s->flags & SLAB_LOCKLESS_CACHE));
+>>> +
+>>> +	if (cache->size) /* fastpath without lock */
+>>> +		return cache->queue[--cache->size];
+>>> +
+>>> +	/* slowpath */
+>>> +	cache->size = kmem_cache_alloc_bulk(s, gfpflags,
+>>> +			KMEM_LOCKLESS_CACHE_QUEUE_SIZE, cache->queue);
+>>> +	if (cache->size)
+>>> +		return cache->queue[--cache->size];
+>>> +	else
+>>> +		return NULL;
+>>> +}
+>>> +EXPORT_SYMBOL(kmem_cache_alloc_cached);
 > 
-> "Also if the probe has already started, it may still return
-> -EPROBE_DEFER at any time in theory, so as a rule the dependency is
-> actually known to be satisfied when the probe has successfully
-> completed."
+> Hello Jens, I'm so happy that you gave comment.
 > 
-> So waiting for the probe to finish is the right behavior/intentional
-> for fw_devlink.
+>> What I implemented for IOPOLL doesn't need to care about interrupts,
+>> hence preemption disable is enough. But we do need that, at least.
+> 
+> To be honest, that was my mistake. I was mistakenly using percpu API.
+> it's a shame :> Thank you for pointing that.
+> 
+> Fixed it in v3 (work in progress now)
 
-But differs to how things actually work in the driver model. The
-driver model does not care if a driver has finished probing, you can
-use a resource as soon as it is registered. Hence this whole
-problem/discussion.
+Another thing to fix from there, just make it:
 
-	Andrew
+if (cache->size)
+	return cached item
+return NULL;
+
+No need for an if/else with the return.
+
+> 
+>> There are basically two types of use cases for this:
+>>
+>> 1) Freeing can happen from interrupts
+>> 2) Freeing cannot happen from interrupts
+>>
+> 
+> I considered only case 2) when writing code. Well, To support 1),
+> I think there are two ways:
+> 
+>  a) internally call kmem_cache_free when in_interrupt() is true
+>  b) caller must disable interrupt when freeing
+> 
+> I think a) is okay, how do you think?
+
+If the API doesn't support freeing from interrupts, then I'd make that
+the rule. Caller should know better if that can happen, and then just
+use kmem_cache_free() if in a problematic context. That avoids polluting
+the fast path with that check. I'd still make it a WARN_ON_ONCE() as
+described and it can get removed later, hopefully.
+
+But note it's not just the freeing side that would be problematic. If
+you do support from-irq freeing, then the alloc side would need
+local_irq_save/restore() instead of just basic preempt protection. That
+would make it more expensive all around.
+
+> note that b) can be problematic with kmem_cache_free_bulk
+> as it says interrupts must be enabled.
+
+Not sure that's actually true, apart from being bitrot.
+
+>> How does this work for preempt? You seem to assume that the function is
+>> invoked with preempt disabled, but then it could only be used with
+>> GFP_ATOMIC.
+> 
+> I wrote it just same prototype with kmem_cache_alloc, and the gfpflags
+> parameter is unnecessary as you said. Okay, let's remove it in v3.
+
+Please also run some actual comparitative benchmarks on this, with a
+real workload. You also need an internal user of this, a stand-alone
+feature isn't really useful. It needs someone using it, and the
+benchmarks would be based on that (or those) use cases.
+
+Another consideration - is it going to be OK to ignore slab pruning for
+this? Probably. But it needs to be thought about.
+
+In terms of API, not sure why these are separate functions. Creating the
+cache with SLAB_FOO should be enough, and then kmem_cache_alloc() tries
+the cache first. If nothing there, fallback to the regular path.
+Something like this would only be used for cases that have a high
+alloc+free rate, would seem like a shame to need two function calls for
+the case where you just want a piece of memory and the cache is empty.
+
+-- 
+Jens Axboe
+
