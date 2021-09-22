@@ -2,119 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C88A8415381
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 00:33:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A628A4153AB
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 00:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231347AbhIVWfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 18:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56858 "EHLO
+        id S238458AbhIVW6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 18:58:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbhIVWfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 18:35:03 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F7FC061574
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 15:33:32 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id w11so2709321plz.13
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 15:33:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=ueUIVWZtuVo7JRyI3K5iP8YUgY0UI0+lod+jGWGoO6s=;
-        b=N32bLN0ZOv/wt/PZun7Aik5LyQ8S1yQvhKsbGq1gzz7gPjs86h0G0dblK03HOfQWso
-         EUC9ee67V3BqvTTnHfnhJ2ga1BupGo7jMWlqMy6oFOHyl3WrPPAvv3i27yZMmjcfUtik
-         jzI3iZ08YjsmzcAbEytXy8Vtngo3/DAZNLbIMdW7mp0fIcgxfnrGNcyW5wxcT8mtOEX/
-         iUvTJjtuhXOVzfMhlz9u0Ev0PKihDF8RIEiYdpJWjaueQ4DYjqqVv04+L6FdA5BvKohN
-         X7bwdnc0CcfJLF6bQMvTFxz6FmUt+HHvTsU+cU8xoXY6GPgiUDpIorXu8NjoHkiSALCE
-         B4qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=ueUIVWZtuVo7JRyI3K5iP8YUgY0UI0+lod+jGWGoO6s=;
-        b=uleZ6+ZP8jiK7u2loXrqsiK32ScECeiU0tOY4nxBhyAAMk9rGGCJFSqQFfTUTeBNer
-         d5/Tr7zfU1dXOrm3X7AbxBZdqj2l2+aj+EPPzctn5qCCoZ6lkDUMIoP2fvLD/3M8l5ru
-         KEiVNPBnrsVAyis51h+RIaHOWiGnViUO7Z6AWpPkp/8DsrbHUHvkfCLeR5uUH5t93Afb
-         b5aR1pOgW21vYXrlYssgV2Q64VvhWBOpFj5QAI1w7wkrZKT7BTLOj5TePA9k3QH9DfPl
-         9HcVnaAnjwzI09RN1UvH3FEAw+S7cZZAGjuzG5HswqSivDMKNHbR1UcQbeO66WgzlYkP
-         RaZA==
-X-Gm-Message-State: AOAM533tTfI+qj5eyoF4izseZu2jRXzJb09dbRh9nyS3krXbzvyQS/Xy
-        67fM049xlX0Q7FW/FKiw3X5sq3QkgmKBIKMf5j0=
-X-Google-Smtp-Source: ABdhPJwNEPaUfSTq0SSs2rCAufaYMOFEnPH+TzRtEr2eZEYzkVOee6lDvZJ5DO8QJ5n1LDFkDITyV5ZD55y3mUVUz/8=
-X-Received: by 2002:a17:90b:1b0b:: with SMTP id nu11mr14036730pjb.74.1632350012239;
- Wed, 22 Sep 2021 15:33:32 -0700 (PDT)
+        with ESMTP id S238293AbhIVW6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 18:58:12 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AA6C061574;
+        Wed, 22 Sep 2021 15:56:41 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1632351400;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xXPSq+aEA0memaGjoDkKnyon7rNc+TqtiIdR44G/y5E=;
+        b=eGKyZywTXSTLv7yDSJNHd+ITjQyB11b9D9c7FQexGB1sGFe7UJCFJb+aIu5m/qYMGVaUBl
+        2L9xMhWsB8qkiNX5eqQI5DoDkvRfSBXCunOlf4W9hikaANuQJmz5S6qmSSBgYq72bRiHgT
+        yQUzOrZ/aMyqnd/TmOsI6G38B6q4LXYSuNavg6rcHkgYhtmSs2VASGH1W7HLTOzFT38tjw
+        Y0HqdiSidr4K2VZZxX0ItA5TgpAXwZZgUJRs95KKxdJTq6QBsvbN9lcsbj3Y2pmdrq7NGE
+        Ae6wy+Sm2teOEEOA+tcVGIfvkmUg43uX+ud3CVqKBNjeN3gxSiDpbd6K2yhrww==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1632351400;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xXPSq+aEA0memaGjoDkKnyon7rNc+TqtiIdR44G/y5E=;
+        b=rcfiayeW9SZ7jMCFHjqkATj4NnHhze6gH9lzeRTyCZ1/Psxjfx3PWI7bbtk70g1/UQL1GE
+        cjftc+ro+HTz1UAg==
+To:     syzbot <syzbot+a10a3d280be23be45d04@syzkaller.appspotmail.com>,
+        axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: [syzbot] WARNING: ODEBUG bug in blk_mq_hw_sysfs_release
+In-Reply-To: <000000000000bd3a8005cc78ce14@google.com>
+References: <000000000000bd3a8005cc78ce14@google.com>
+Date:   Thu, 23 Sep 2021 00:56:39 +0200
+Message-ID: <87mto4gqxk.ffs@tglx>
 MIME-Version: 1.0
-References: <CADZJnBbMmE-zktRyq-gZWPuEOHRLyuQRmheqKP1_HWuHRymK0g@mail.gmail.com>
- <YUuFfuowmumndWkI@lunn.ch>
-In-Reply-To: <YUuFfuowmumndWkI@lunn.ch>
-From:   John Smith <4eur0pe2006@gmail.com>
-Date:   Wed, 22 Sep 2021 15:33:21 -0700
-Message-ID: <CADZJnBaLPu=qhozN7gyof+vGGynVO=7cGfS05fEBbEj9Nmj67Q@mail.gmail.com>
-Subject: Re: stmmac: Disappointing or normal DMA performance?
-To:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 22, 2021 at 12:35 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On Mon, Sep 20 2021 at 20:15, syzbot wrote:
+
+Cc+: paulmck
+
+> Hello,
 >
-> On Wed, Sep 22, 2021 at 01:48:36AM -0700, John Smith wrote:
-> > I have a one-way 300Mbs traffic RGMII arriving at a stmmac version
-> > 3.7, in the form of 30000 1280-byte frames per second, evenly spread.
-> >
-> > In NAPI poll mode, at each DMA interrupt, I get around 10 frames. More
-> > precisely:
-> >
-> > In stmmac_rx of stmmac_main.c:
-> >
-> > static int stmmac_rx(struct stmmac_priv *priv, int limit) {
-> > ...
-> > while (count < limit)
-> >
-> > count is around 10 when NAPI limit/weight is 64. It means that I get
-> > 3000 DMA IRQs per second for my 30000 packets.
+> syzbot found the following issue on:
 >
-> I assume it exists the loop here:
+> HEAD commit:    85c698863c15 net/ipv4/tcp_minisocks.c: remove superfluous ..
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=13d9d3e7300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=6d93fe4341f98704
+> dashboard link: https://syzkaller.appspot.com/bug?extid=a10a3d280be23be45d04
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11bd98f7300000
 >
->                 /* check if managed by the DMA otherwise go ahead */
->                 if (unlikely(status & dma_own))
->                         break;
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+a10a3d280be23be45d04@syzkaller.appspotmail.com
 >
-> Calling stmmac_display_ring() every interrupt is too expensive, but
-> maybe do it every 1000. Extend the dump so it includes des0. You can
-> then check there really are 10 packets ready to be received, not more?
+> ------------[ cut here ]------------
+> ODEBUG: assert_init not available (active state 0) object type: timer_list hint: 0x0
+> WARNING: CPU: 0 PID: 3816 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+> Modules linked in:
+> CPU: 0 PID: 3816 Comm: syz-executor.0 Not tainted 5.15.0-rc1-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+> Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd c0 39 e4 89 4c 89 ee 48 c7 c7 c0 2d e4 89 e8 ef e3 14 05 <0f> 0b 83 05 35 09 91 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+> RSP: 0018:ffffc9000a6770f0 EFLAGS: 00010282
+> RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+> RDX: ffff88805b3db900 RSI: ffffffff815dbd88 RDI: fffff520014cee10
+> RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+> R10: ffffffff815d5b2e R11: 0000000000000000 R12: ffffffff898de180
+> R13: ffffffff89e43440 R14: ffffffff8164bae0 R15: 1ffff920014cee29
+> FS:  00007fee66b3a700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f362471f3a0 CR3: 00000000272af000 CR4: 00000000001506f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  debug_object_assert_init lib/debugobjects.c:895 [inline]
+>  debug_object_assert_init+0x1f4/0x2e0 lib/debugobjects.c:866
+>  debug_timer_assert_init kernel/time/timer.c:739 [inline]
+>  debug_assert_init kernel/time/timer.c:784 [inline]
+>  try_to_del_timer_sync+0x6d/0x110 kernel/time/timer.c:1229
+>  del_timer_sync+0x138/0x1b0 kernel/time/timer.c:1382
+>  cleanup_srcu_struct+0x14c/0x2f0 kernel/rcu/srcutree.c:379
+
+So cleanup_srcu_struct() tries to delete a timer which was never initialized....
+
+>  blk_mq_hw_sysfs_release+0x147/0x190 block/blk-mq-sysfs.c:40
+>  kobject_cleanup lib/kobject.c:705 [inline]
+>  kobject_release lib/kobject.c:736 [inline]
+>  kref_put include/linux/kref.h:65 [inline]
+>  kobject_put+0x1c8/0x540 lib/kobject.c:753
+>  blk_mq_release+0x259/0x430 block/blk-mq.c:3094
+>  blk_release_queue+0x2a7/0x4a0 block/blk-sysfs.c:823
+>  kobject_cleanup lib/kobject.c:705 [inline]
+>  kobject_release lib/kobject.c:736 [inline]
+>  kref_put include/linux/kref.h:65 [inline]
+>  kobject_put+0x1c8/0x540 lib/kobject.c:753
+>  __blk_mq_alloc_disk+0x12e/0x160 block/blk-mq.c:3142
+>  nbd_dev_add+0x3be/0xb90 drivers/block/nbd.c:1716
+>  nbd_genl_connect+0x11f3/0x1930 drivers/block/nbd.c:1884
+>  genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
+>  genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
+>  genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
+>  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+>  genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+>  sock_sendmsg_nosec net/socket.c:704 [inline]
+>  sock_sendmsg+0xcf/0x120 net/socket.c:724
+>  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
+>  ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+>  __sys_sendmsg+0xf3/0x1c0 net/socket.c:2492
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7fee673e4739
+> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fee66b3a188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007fee674e9038 RCX: 00007fee673e4739
+> RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000007
+> RBP: 00007fee6743ecc4 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 00007fee674e9038
+> R13: 00007ffe3695106f R14: 00007fee66b3a300 R15: 0000000000022000
 >
-> I suppose another interesting thing to try. Get the driver to do
-> nothing every other RX interrupt. Do you get the same number of frames
-> per second, but now 20 per stmmac_rx()? That will tell you if it is
-> some sort of hardware limit or not. I guess then check that interrupt
-> disable/enable is actually being performed, is it swapping between
-> interrupt driven and polling?
 >
->           Andrew
-
-Yes, the stmmac_rx returns at the dman_own test after 10 frames for
-each interrupt.
-
-I tried to override that line but obviously, it leads to crashes.
-
-The problem is that the hardware watchdog with its maximum value 0xff,
-returns after 326us generating the interrupt. I think that it's
-triggered when the internal rx fifo in the hardware block is full.
-
-If I understand well, your suggestion is to live with the interrupt
-but not do the heavy lifting in each callback, instead call stmmac_rx
-every 10 or 100 DMA callback. I have tried a simple hack but it
-doesn't seem to work. Perhaps I misunderstood the suggestion. I'm not
-sure it's going to work because the DMA buffer needs to be emptied and
-blanked at each interrupt otherwise data is going to be lost or the
-driver is going to be unhappy.
-
-Also, if I send frames of 1280x3, I get 1/3 interrupts so it really
-seems to be a FIFO depth limitation.
-
-Thank you for helping! I think that only the ST team knows the
-hardware limitation and they would have some ideas of a workaround for
-this specific case but they don't reply...
-
-John
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
