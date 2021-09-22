@@ -2,299 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 237B24142C8
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:36:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FEC84142CB
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 09:36:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233298AbhIVHhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 03:37:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43944 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233059AbhIVHhp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 03:37:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C0DB261168;
-        Wed, 22 Sep 2021 07:36:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632296175;
-        bh=RYczK9r2Lb24aXEBNUuXXiaaKvcxv63ZjxQqm1IKabM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CTKSvZWToZLIn1dx9lQeKlUM8YtZZFL0Tlnet+Hr42Qr4Dwh47akQ3n5LKMG7VYw4
-         tg06OxQNlB+ar15TnlfHMpP43tcOJhg3MZzwAqadhR3OfgUjIxfGPXrIluZeGhxPoR
-         nsOhxoR25LQD0kaXDThgIGynMNjWfJ/DS1J13tc4muM8kEo9CCe+KW/trgn1JgPkMs
-         tBFJtNxTgkr7z0NbDvd2Hke/G4iQP1b36TZhRwdvk3ele2NhWTwtxdBNseJGN8Y1ee
-         SbDaEA+w78DsCgMOwP25Bt2InxPYbgW5kroFNz+UZdnfuafz8c+dEfbWSILMxrIYRl
-         rQcFwz1Gze6lg==
-Date:   Wed, 22 Sep 2021 09:36:09 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Anton Vorontsov <anton@enomsg.org>,
-        Colin Cross <ccross@android.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Tony Luck <tony.luck@intel.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 0/7] get_abi.pl: Check for missing symbols at the ABI
- specs
-Message-ID: <20210922093609.34d7bbca@coco.lan>
-In-Reply-To: <YUrLqdCQyGaCc1XJ@kroah.com>
-References: <cover.1631957565.git.mchehab+huawei@kernel.org>
-        <YUoN2m/OYHVLPrSl@kroah.com>
-        <20210921201633.5e6128a0@coco.lan>
-        <YUrCjhEYGXWU6M13@kroah.com>
-        <YUrLqdCQyGaCc1XJ@kroah.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-redhat-linux-gnu)
+        id S233309AbhIVHiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 03:38:24 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:36060 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S233059AbhIVHiT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 03:38:19 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18M7Xvls023412;
+        Wed, 22 Sep 2021 00:36:46 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=H2h4i5QnywBiltIrM26U6RNn2J9IeFNTywYLGHiONy4=;
+ b=lVQiW/oaFLzhz0MVFngax3yObf88ahpY7XbDeedjuPPvwRWt6bMMUqopy2XC9aIHz3fc
+ UhoWFXbM/3L1x1Oom3qHrd9oujv8Ov+cX4Aaxx8KXzhbkAxDUgEBBrNX80FappGo5zRU
+ X9L8JjefaWIpweow2KdkSqfrlVuOb2hWXk82a1gNJqih49mVwphGDF8eD1YAaH/7YQbe
+ nxwSIZqYkjZVAsalX3T4ZDD+OcuX5iPNR9OAOJgb10pGSVsfx9gBLpMwpPd52vdmGskI
+ TbDs59ZkgnCjMPi1tUw5i+vMHorl4xztYTqCEWRIPtIFnl8gkv3S/zyEJfFRymvZJSGr Cg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3b7q5d9sju-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 22 Sep 2021 00:36:45 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 22 Sep
+ 2021 00:36:44 -0700
+Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
+ DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server id
+ 15.0.1497.18 via Frontend Transport; Wed, 22 Sep 2021 00:36:42 -0700
+From:   Shai Malin <smalin@marvell.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <linux-rdma@vger.kernel.org>, <jgg@ziepe.ca>, <leon@kernel.org>,
+        <aelior@marvell.com>, <smalin@marvell.com>, <malin1024@gmail.com>,
+        "Michal Kalderon" <mkalderon@marvell.com>
+Subject: [PATCH net v2] qed: rdma - don't wait for resources under hw error recovery flow
+Date:   Wed, 22 Sep 2021 10:36:31 +0300
+Message-ID: <20210922073631.31626-1-smalin@marvell.com>
+X-Mailer: git-send-email 2.16.6
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Proofpoint-GUID: dLvSkQoqfyvzDtggDSyahM_vhlaeEsRq
+X-Proofpoint-ORIG-GUID: dLvSkQoqfyvzDtggDSyahM_vhlaeEsRq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-22_02,2021-09-20_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Wed, 22 Sep 2021 08:22:33 +0200
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> escreveu:
+If the HW device is during recovery, the HW resources will never return,
+hence we shouldn't wait for the CID (HW context ID) bitmaps to clear.
+This fix speeds up the error recovery flow.
 
-> On Wed, Sep 22, 2021 at 07:43:42AM +0200, Greg Kroah-Hartman wrote:
-> > On Tue, Sep 21, 2021 at 08:16:33PM +0200, Mauro Carvalho Chehab wrote:
-> > > Em Tue, 21 Sep 2021 18:52:42 +0200
-> > > Greg Kroah-Hartman <gregkh@linuxfoundation.org> escreveu:
-> > >=20
-> > > > On Sat, Sep 18, 2021 at 11:52:10AM +0200, Mauro Carvalho Chehab wro=
-te:
-> > > > > Hi Greg,
-> > > > >=20
-> > > > > Add a new feature at get_abi.pl to optionally check for existing =
-symbols
-> > > > > under /sys that won't match a "What:" inside Documentation/ABI.
-> > > > >=20
-> > > > > Such feature is very useful to detect missing documentation for A=
-BI.
-> > > > >=20
-> > > > > This series brings a major speedup, plus it fixes a few border ca=
-ses when
-> > > > > matching regexes that end with a ".*" or \d+.
-> > > > >=20
-> > > > > patch 1 changes get_abi.pl logic to handle multiple What: lines, =
-in
-> > > > > order to make the script more robust;
-> > > > >=20
-> > > > > patch 2 adds the basic logic. It runs really quicky (up to 2
-> > > > > seconds), but it doesn't use sysfs softlinks.
-> > > > >=20
-> > > > > Patch 3 adds support for parsing softlinks. It makes the script a
-> > > > > lot slower, making it take a couple of minutes to process the ent=
-ire
-> > > > > sysfs files. It could be optimized in the future by using a graph,
-> > > > > but, for now, let's keep it simple.
-> > > > >=20
-> > > > > Patch 4 adds an optional parameter to allow filtering the results
-> > > > > using a regex given by the user. When this parameter is used
-> > > > > (which should be the normal usecase), it will only try to find so=
-ftlinks
-> > > > > if the sysfs node matches a regex.
-> > > > >=20
-> > > > > Patch 5 improves the report by avoiding it to ignore What: that
-> > > > > ends with a wildcard.
-> > > > >=20
-> > > > > Patch 6 is a minor speedup.  On a Dell Precision 5820, after patc=
-h 6,=20
-> > > > > results are:
-> > > > >=20
-> > > > > 	$ time ./scripts/get_abi.pl undefined |sort >undefined && cat un=
-defined| perl -ne 'print "$1\n" if (m#.*/(\S+) not found#)'|sort|uniq -c|so=
-rt -nr >undefined_symbols; wc -l undefined; wc -l undefined_symbols
-> > > > >=20
-> > > > > 	real	2m35.563s
-> > > > > 	user	2m34.346s
-> > > > > 	sys	0m1.220s
-> > > > > 	7595 undefined
-> > > > > 	896 undefined_symbols
-> > > > >=20
-> > > > > Patch 7 makes a *huge* speedup: it basically switches a linear O(=
-n^3)
-> > > > > search for links by a logic which handle symlinks using BFS. It
-> > > > > also addresses a border case that was making 'msi-irqs/\d+' regex=
- to
-> > > > > be misparsed.=20
-> > > > >=20
-> > > > > After patch 7, it is 11 times faster:
-> > > > >=20
-> > > > > 	$ time ./scripts/get_abi.pl undefined |sort >undefined && cat un=
-defined| perl -ne 'print "$1\n" if (m#.*/(\S+) not found#)'|sort|uniq -c|so=
-rt -nr >undefined_symbols; wc -l undefined; wc -l undefined_symbols
-> > > > >=20
-> > > > > 	real	0m14.137s
-> > > > > 	user	0m12.795s
-> > > > > 	sys	0m1.348s
-> > > > > 	7030 undefined
-> > > > > 	794 undefined_symbols
-> > > > >=20
-> > > > > (the difference on the number of undefined symbols are due to the=
- fix for
-> > > > > it to properly handle 'msi-irqs/\d+' regex)
-> > > > >=20
-> > > > > -
-> > > > >=20
-> > > > > While this series is independent from Documentation/ABI changes, =
-it
-> > > > > works best when applied from this tree, which also contain ABI fi=
-xes
-> > > > > and a couple of additions of frequent missed symbols on my machin=
-e:
-> > > > >=20
-> > > > >     https://git.kernel.org/pub/scm/linux/kernel/git/mchehab/devel=
-.git/log/?h=3Dget_undefined_abi_v3 =20
-> > > >=20
-> > > > I've taken all of these, but get_abi.pl seems to be stuck in an end=
-less
-> > > > loop or something.  I gave up and stopped it after 14 minutes.  It =
-had
-> > > > stopped printing out anything after finding all of the pci attribut=
-es
-> > > > that are not documented :)
-> > >=20
-> > > It is probably not an endless loop, just there are too many vars to
-> > > check on your system, which could make it really slow.
-> >=20
-> > Ah, yes, I ran it overnight and got the following:
-> >=20
-> > $ time ./scripts/get_abi.pl undefined |sort >undefined && cat undefined=
-| perl -ne 'print "$1\n" if (m#.*/(\S+) not found#)'|sort|uniq -c|sort -nr =
->undefined_symbols; wc -l undefined; wc -l undefined_symbols
-> >=20
-> > real	29m39.503s
-> > user	29m37.556s
-> > sys	0m0.851s
-> > 26669 undefined
-> > 765 undefined_symbols
-> >=20
-> > > The way the search algorithm works is that reduces the number of rege=
-x=20
-> > > expressions that will be checked for a given file entry at sysfs. It=
-=20
-> > > does that by looking at the devnode name. For instance, when it check=
-s for
-> > > this file:
-> > >=20
-> > > 	/sys/bus/pci/drivers/iosf_mbi_pci/bind
-> > >=20
-> > > The logic will seek only the "What:" expressions that end with "bind".
-> > > Currently, there are just two What expressions for it[1]:
-> > >=20
-> > > 	What: /sys/bus/fsl\-mc/drivers/.*/bind
-> > > 	What: /sys/bus/pci/drivers/.*/bind
-> > >=20
-> > > It will then run an O(n=C2=B2) algorithm to seek:
-> > >=20
-> > > 		foreach my $a (@names) {
-> > >                        foreach my $w (split /\xac/, $what) {
-> > >                                if ($a =3D~ m#^$w$#) {
-> > > 					exact =3D 1;
-> > >                                         last;
-> > >                                 }
-> > > 			}
-> > > 		}
-> > >=20
-> > > Which runs quickly, when there are few regexs to seek. There are,=20
-> > > however, some What: expressions that end with a wildcard. Those are
-> > > harder to process. Right now, they're all grouped together, which
-> > > makes them slower. Most of the processing time are spent on those.
-> > >=20
-> > > I'm working right now on some strategy to also speed up the search=20
-> > > for them. Once I get something better, I'll send a patch series.
-> > >=20
-> > > --
-> > >=20
-> > > [1] On a side note, there are currently some problems with the What:
-> > >     definitions for bind/unbind, as:
-> > >=20
-> > > 	- it doesn't match all PCI devices;
-> > > 	- it doesn't match ACPI and other buses that also export
-> > > 	  bind/unbind.
-> > >=20
-> > > >=20
-> > > > Anything I can do to help debug this?
-> > > >
-> > >=20
-> > > There are two parameters that can help to identify the issue:
-> > >=20
-> > > a) You can add a "--show-hints" parameter. This turns on some=20
-> > >    prints that may help to identify what the script is doing.
-> > >    It is not really a debug option, but it helps to identify
-> > >    when some regexes are failing.
-> > >=20
-> > > b) You can limit the What expressions that will be parsed with:
-> > > 	   --search-string <something>
-> > >=20
-> > > You can combine both. For instance, if you want to make it
-> > > a lot more verbose, you could run it as:
-> > >=20
-> > > 	./scripts/get_abi.pl undefined --search-string /sys --show-hints
-> >=20
-> > Let me run this and time stamp it to see where it is getting hung up on.
-> > Give it another 30 minutes :)
->=20
-> Hm, that didn't make too much sense as to what it was stalled on.  I've
-> attached the compressed file if you are curious.
+Changes since v1:
+- Fix race condition (thanks to Leon Romanovsky).
 
-Hmm...
+Fixes: 64515dc899df ("qed: Add infrastructure for error detection and recovery")
+Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Shai Malin <smalin@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 8 ++++++++
+ drivers/net/ethernet/qlogic/qed/qed_roce.c  | 8 ++++++++
+ 2 files changed, 16 insertions(+)
 
-	[07:52:44] --> /sys/devices/pci0000:40/0000:40:01.3/0000:4a:00.1/iommu/amd=
--iommu/cap
-	[08:07:52] --> /sys/devices/pci0000:40/0000:40:01.1/0000:41:00.0/0000:42:0=
-5.0/iommu/amd-iommu/cap
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+index fc8b3e64f153..186d0048a9d1 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+@@ -1297,6 +1297,14 @@ qed_iwarp_wait_cid_map_cleared(struct qed_hwfn *p_hwfn, struct qed_bmap *bmap)
+ 	prev_weight = weight;
+ 
+ 	while (weight) {
++		/* If the HW device is during recovery, all resources are
++		 * immediately reset without receiving a per-cid indication
++		 * from HW. In this case we don't expect the cid_map to be
++		 * cleared.
++		 */
++		if (p_hwfn->cdev->recov_in_prog)
++			return 0;
++
+ 		msleep(QED_IWARP_MAX_CID_CLEAN_TIME);
+ 
+ 		weight = bitmap_weight(bmap->bitmap, bmap->max_count);
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+index f16a157bb95a..cf5baa5e59bc 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+@@ -77,6 +77,14 @@ void qed_roce_stop(struct qed_hwfn *p_hwfn)
+ 	 * Beyond the added delay we clear the bitmap anyway.
+ 	 */
+ 	while (bitmap_weight(rcid_map->bitmap, rcid_map->max_count)) {
++		/* If the HW device is during recovery, all resources are
++		 * immediately reset without receiving a per-cid indication
++		 * from HW. In this case we don't expect the cid bitmap to be
++		 * cleared.
++		 */
++		if (p_hwfn->cdev->recov_in_prog)
++			return;
++
+ 		msleep(100);
+ 		if (wait_count++ > 20) {
+ 			DP_NOTICE(p_hwfn, "cid bitmap wait timed out\n");
+-- 
+2.27.0
 
-It sounds it took quite a while handling iommu cap, which sounds weird, as
-it should be looking just 3 What expressions:
-
-	[07:43:06] What: /sys/class/iommu/.*/amd\-iommu/cap
-	[07:43:06] What: /sys/class/iommu/.*/intel\-iommu/cap
-	[07:43:06] What: /sys/devices/pci.*.*.*.*\:.*.*/0000\:.*.*\:.*.*..*/dma/dm=
-a.*chan.*/quickdata/cap
-
-Maybe there was a memory starvation while running the script, causing
-swaps. Still, it is weird that it would happen there, as the hashes
-and arrays used at the script are all allocated before it starts the
-search logic. Here, the allocation part takes ~2 seconds.
-
-At least on my Dell Precision 5820 (12 cpu threads), the amount of memory it
-uses is not huge:
-
-    $ /usr/bin/time -v ./scripts/get_abi.pl undefined >/dev/null
-	Command being timed: "./scripts/get_abi.pl undefined"
-	User time (seconds): 12.68
-	System time (seconds): 1.29
-	Percent of CPU this job got: 99%
-	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:13.98
-	Average shared text size (kbytes): 0
-	Average unshared data size (kbytes): 0
-	Average stack size (kbytes): 0
-	Average total size (kbytes): 0
-	Maximum resident set size (kbytes): 212608
-	Average resident set size (kbytes): 0
-	Major (requiring I/O) page faults: 0
-	Minor (reclaiming a frame) page faults: 52003
-	Voluntary context switches: 1
-	Involuntary context switches: 56
-	Swaps: 0
-	File system inputs: 0
-	File system outputs: 0
-	Socket messages sent: 0
-	Socket messages received: 0
-	Signals delivered: 0
-	Page size (bytes): 4096
-	Exit status: 0
-
-Unfortunately, I don't have any amd-based machine here, but I'll
-try to run it later on a big arm server and see how it behaves.
-
-> Anyway, this is all in my tree now, and I'll gladly take patches to make
-> it go faster :)
-
-Ok!
-
-Thanks,
-Mauro
