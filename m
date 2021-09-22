@@ -2,245 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B2CE413E35
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 02:03:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BE00413E79
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 02:13:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231344AbhIVAFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Sep 2021 20:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56224 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbhIVAFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 20:05:07 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20486C061574;
-        Tue, 21 Sep 2021 17:03:38 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id c7so3705519qka.2;
-        Tue, 21 Sep 2021 17:03:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UxYYd55ASNSt9/O57xslV8YObI2tPN6o5gcq6U54bto=;
-        b=mZfBVOCobu6R4xxTyfK53j1+YmkoZqc+fkz/aIQcs5v6awnpsq7oiD/NubnC81hBsJ
-         al+pJZP2SWSCxeD9+i5FSxqXhj83fyzd8ZxXeHs+86UlA140cXyyKspxGWprEpwE6+d/
-         UKIMS0u0ZPfaTSbtIrzyl2I9wCXEkCSDpAaUEwlveyNa9JtYP2YMw/C+NdtwsMqwB+Hp
-         htI6GVuhaTzFakjJWKHSIO4Cm1istF3aeQYchfj9VHp9RvVVJnFdGSj+mxIrHjKkON2q
-         n3SBjbrIGQy8qJOxqLRCwYg1cRh1p5eWPZjaQa8myj0LY/idIBpZrsPKAWq1rYGyAx0q
-         gf+Q==
+        id S231646AbhIVAO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Sep 2021 20:14:58 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:35667 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231416AbhIVAO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Sep 2021 20:14:57 -0400
+Received: by mail-il1-f197.google.com with SMTP id f4-20020a056e0204c400b0022dbd3f8b18so949276ils.2
+        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 17:13:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UxYYd55ASNSt9/O57xslV8YObI2tPN6o5gcq6U54bto=;
-        b=2wFCVVOiX4lJ28YMAfy4iXDK5LXnjum22kWyQezqINh/YEyz7Lm6U3qrCzU6JNERWe
-         tHt19djULH7PM6rItM6xuyo/MJOJjTbJyjOdK+0hjDGIe2BwEbAHEsqFxXSTTlTEDUO1
-         aDL0R5CGm2BvNIDZudIbH8x6cDTZOdmFrLPR9JpFJ9Q/4c1B883C57hocilv391EpuYu
-         SbxcRj1zRSKp0OcveFlBQiGrjISTj+6bCzRImbxYGsWMecBOveG22j3hU3GMmcQY9jnW
-         uBI0syop8NbLZMwYfo807UUJ5GMkkQxEynwcVMFCeCU0yv42pr7vufKh3gWgE9ztUflO
-         GhAA==
-X-Gm-Message-State: AOAM530/HFpLv9CDpte/CKxOi5pSZVCvZAKtyKoqhCfkS2vsJhcMJMFl
-        vr2+uzsdBaInj8tiKDLRW11ptq/sefPW64p8sbM=
-X-Google-Smtp-Source: ABdhPJwUfEENLA8R6bxy4Ru8dZQpoNY0o4H0h+0dtxvoOrfvyWkHbCbo/Rek2CO2xl/fkLTqDCGili0QQ+rDBN+0jpo=
-X-Received: by 2002:a25:fc5:: with SMTP id 188mr40033588ybp.51.1632269017210;
- Tue, 21 Sep 2021 17:03:37 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=xTrUY2uA7AiKnyXvK/CrMXSVvhh4URRQOLghViNT4h0=;
+        b=JXrcNeZvJBIuLTUMprrPf3gOoUHpeMb8iWymx5gf+zaxPQXZnU5cUwVa4mRXPy0TZA
+         t4+PjVleq305yOFGqCOzW7s0JH3KiLTLh+8YAy2FgtQvBWe/LJzFykQ+4QIqme9uA3+I
+         AE7b/aoyX8OZhWhUkG2+rRfLiBWAKY3ifgUquJUOqGKCtiLtBX54XO8uxAa5oxAmE6S3
+         ybNNc7ouyDABhpUdNe6fWrVACLmp+dKgzkHJF06FbtzTYBCAR2WKBLk4RdrgcRcbp+E+
+         x8ZqtUvGitAAe0mToShoxqELG6GM0cYYZbGh6g0yBpUVbeVwHBqXJ0H4vRXGFvWJmP0V
+         fNZQ==
+X-Gm-Message-State: AOAM530nu65ONm3KkOQZs0hIZU0OEBUV3SQFO7vEuiFOdhx6Qj8ElVvI
+        RIwu+HS2Hrq3Ux1Y9WaVwakP88bMGQMsKKDImzMETe/aXv7K
+X-Google-Smtp-Source: ABdhPJyhYVQd+eTR5J4ZGA6HbK2Oc0fZ6PYdwyP0wRslcK+1bMXY+IU6se6h42t/BLv/dbgVdhhmfgJF7RAzhu4QyGT0ceblWyRH
 MIME-Version: 1.0
-References: <20210920141526.3940002-1-memxor@gmail.com> <20210920141526.3940002-12-memxor@gmail.com>
- <CAEf4Bza5GxHb+=PQUOKWQ=BD3kCCEOYjDLKSdsPRZu468KAePg@mail.gmail.com> <20210921231320.pgmbhmh4bjgvxwvp@apollo.localdomain>
-In-Reply-To: <20210921231320.pgmbhmh4bjgvxwvp@apollo.localdomain>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 21 Sep 2021 17:03:26 -0700
-Message-ID: <CAEf4BzaAjHNoEPFBCmPFQm_vqk_Tj0YYEF8X0ZX9RpmzeeJnhw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 11/11] bpf: selftests: Add selftests for
- module kfunc support
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
+X-Received: by 2002:a02:cd17:: with SMTP id g23mr2342168jaq.29.1632269608554;
+ Tue, 21 Sep 2021 17:13:28 -0700 (PDT)
+Date:   Tue, 21 Sep 2021 17:13:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003216d705cc8a62d6@google.com>
+Subject: [syzbot] INFO: rcu detected stall in sys_recvmmsg
+From:   syzbot <syzbot+3360da629681aa0d22fe@syzkaller.appspotmail.com>
+To:     axboe@kernel.dk, christian.brauner@ubuntu.com, davem@davemloft.net,
+        dkadashev@gmail.com, kuba@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
+        viro@zeniv.linux.org.uk
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 21, 2021 at 4:13 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> On Wed, Sep 22, 2021 at 04:30:32AM IST, Andrii Nakryiko wrote:
-> > On Mon, Sep 20, 2021 at 7:16 AM Kumar Kartikeya Dwivedi
-> > <memxor@gmail.com> wrote:
-> > >
-> > > This adds selftests that tests the success and failure path for modules
-> > > kfuncs (in presence of invalid kfunc calls) for both libbpf and
-> > > gen_loader. It also adds a prog_test kfunc_btf_id_list so that we can
-> > > add module BTF ID set from bpf_testmod.
-> > >
-> > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > > ---
-> > >  include/linux/btf.h                           |  2 +
-> > >  kernel/bpf/btf.c                              |  2 +
-> > >  net/bpf/test_run.c                            |  5 +-
-> > >  tools/testing/selftests/bpf/Makefile          |  5 +-
-> > >  .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 26 ++++++-
-> > >  .../selftests/bpf/prog_tests/ksyms_module.c   | 52 ++++++++++----
-> > >  .../bpf/prog_tests/ksyms_module_libbpf.c      | 44 ++++++++++++
-> > >  .../selftests/bpf/progs/test_ksyms_module.c   | 41 ++++++++---
-> > >  .../bpf/progs/test_ksyms_module_fail.c        | 29 ++++++++
-> > >  .../progs/test_ksyms_module_fail_toomany.c    | 19 +++++
-> > >  .../bpf/progs/test_ksyms_module_libbpf.c      | 71 +++++++++++++++++++
-> > >  .../bpf/progs/test_ksyms_module_util.h        | 48 +++++++++++++
-> > >  12 files changed, 317 insertions(+), 27 deletions(-)
-> > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
-> > >  create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module_fail.c
-> > >  create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module_fail_toomany.c
-> > >  create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module_libbpf.c
-> > >  create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module_util.h
-> > >
-> >
-> > [...]
-> >
-> > > @@ -243,7 +244,9 @@ BTF_SET_END(test_sk_kfunc_ids)
-> > >
-> > >  bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner)
-> > >  {
-> > > -       return btf_id_set_contains(&test_sk_kfunc_ids, kfunc_id);
-> > > +       if (btf_id_set_contains(&test_sk_kfunc_ids, kfunc_id))
-> > > +               return true;
-> > > +       return __bpf_check_prog_test_kfunc_call(kfunc_id, owner);
-> > >  }
-> > >
-> > >  static void *bpf_test_init(const union bpf_attr *kattr, u32 size,
-> > > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> > > index 326ea75ce99e..d20ff0563120 100644
-> > > --- a/tools/testing/selftests/bpf/Makefile
-> > > +++ b/tools/testing/selftests/bpf/Makefile
-> > > @@ -174,6 +174,7 @@ $(OUTPUT)/bpf_testmod.ko: $(VMLINUX_BTF) $(wildcard bpf_testmod/Makefile bpf_tes
-> > >         $(Q)$(RM) bpf_testmod/bpf_testmod.ko # force re-compilation
-> > >         $(Q)$(MAKE) $(submake_extras) -C bpf_testmod
-> > >         $(Q)cp bpf_testmod/bpf_testmod.ko $@
-> > > +       $(Q)$(RESOLVE_BTFIDS) -s ../../../../vmlinux bpf_testmod.ko
-> >
-> > $(VMLINUX_BTF) instead of "../../../../vmlinux", it will break
-> >
-> > >
-> > >  $(OUTPUT)/test_stub.o: test_stub.c $(BPFOBJ)
-> > >         $(call msg,CC,,$@)
-> > > @@ -315,8 +316,8 @@ LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h               \
-> > >                 linked_vars.skel.h linked_maps.skel.h
-> > >
-> > >  LSKELS := kfunc_call_test.c fentry_test.c fexit_test.c fexit_sleep.c \
-> > > -       test_ksyms_module.c test_ringbuf.c atomics.c trace_printk.c \
-> > > -       trace_vprintk.c
-> > > +       test_ksyms_module.c test_ksyms_module_fail.c test_ksyms_module_fail_toomany.c \
-> > > +       test_ringbuf.c atomics.c trace_printk.c trace_vprintk.c
-> > >  SKEL_BLACKLIST += $$(LSKELS)
-> > >
-> >
-> > [...]
-> >
-> > > diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_module_util.h b/tools/testing/selftests/bpf/progs/test_ksyms_module_util.h
-> > > new file mode 100644
-> > > index 000000000000..3afa74841ae0
-> > > --- /dev/null
-> > > +++ b/tools/testing/selftests/bpf/progs/test_ksyms_module_util.h
-> > > @@ -0,0 +1,48 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +#ifndef __KSYMS_MODULE_UTIL_H__
-> > > +#define __KSYMS_MODULE_UTIL_H__
-> > > +
-> > > +#define __KFUNC_NR_EXP(Y)                                                      \
-> > > +Y(0) Y(1) Y(2) Y(3) Y(4) Y(5) Y(6) Y(7) Y(8) Y(9) Y(10) Y(11) Y(12)            \
-> > > +Y(13) Y(14) Y(15) Y(16) Y(17) Y(18) Y(19) Y(20) Y(21) Y(22) Y(23)              \
-> > > +Y(24) Y(25) Y(26) Y(27) Y(28) Y(29) Y(30) Y(31) Y(32) Y(33) Y(34)              \
-> > > +Y(35) Y(36) Y(37) Y(38) Y(39) Y(40) Y(41) Y(42) Y(43) Y(44) Y(45)              \
-> > > +Y(46) Y(47) Y(48) Y(49) Y(50) Y(51) Y(52) Y(53) Y(54) Y(55) Y(56)              \
-> > > +Y(57) Y(58) Y(59) Y(60) Y(61) Y(62) Y(63) Y(64) Y(65) Y(66) Y(67)              \
-> > > +Y(68) Y(69) Y(70) Y(71) Y(72) Y(73) Y(74) Y(75) Y(76) Y(77) Y(78)              \
-> > > +Y(79) Y(80) Y(81) Y(82) Y(83) Y(84) Y(85) Y(86) Y(87) Y(88) Y(89)              \
-> > > +Y(90) Y(91) Y(92) Y(93) Y(94) Y(95) Y(96) Y(97) Y(98) Y(99) Y(100)             \
-> > > +Y(101) Y(102) Y(103) Y(104) Y(105) Y(106) Y(107) Y(108) Y(109) Y(110)          \
-> > > +Y(111) Y(112) Y(113) Y(114) Y(115) Y(116) Y(117) Y(118) Y(119) Y(120)          \
-> > > +Y(121) Y(122) Y(123) Y(124) Y(125) Y(126) Y(127) Y(128) Y(129) Y(130)          \
-> > > +Y(131) Y(132) Y(133) Y(134) Y(135) Y(136) Y(137) Y(138) Y(139) Y(140)          \
-> > > +Y(141) Y(142) Y(143) Y(144) Y(145) Y(146) Y(147) Y(148) Y(149) Y(150)          \
-> > > +Y(151) Y(152) Y(153) Y(154) Y(155) Y(156) Y(157) Y(158) Y(159) Y(160)          \
-> > > +Y(161) Y(162) Y(163) Y(164) Y(165) Y(166) Y(167) Y(168) Y(169) Y(170)          \
-> > > +Y(171) Y(172) Y(173) Y(174) Y(175) Y(176) Y(177) Y(178) Y(179) Y(180)          \
-> > > +Y(181) Y(182) Y(183) Y(184) Y(185) Y(186) Y(187) Y(188) Y(189) Y(190)          \
-> > > +Y(191) Y(192) Y(193) Y(194) Y(195) Y(196) Y(197) Y(198) Y(199) Y(200)          \
-> > > +Y(201) Y(202) Y(203) Y(204) Y(205) Y(206) Y(207) Y(208) Y(209) Y(210)          \
-> > > +Y(211) Y(212) Y(213) Y(214) Y(215) Y(216) Y(217) Y(218) Y(219) Y(220)          \
-> > > +Y(221) Y(222) Y(223) Y(224) Y(225) Y(226) Y(227) Y(228) Y(229) Y(230)          \
-> > > +Y(231) Y(232) Y(233) Y(234) Y(235) Y(236) Y(237) Y(238) Y(239) Y(240)          \
-> > > +Y(241) Y(242) Y(243) Y(244) Y(245) Y(246) Y(247) Y(248) Y(249) Y(250)          \
-> > > +Y(251) Y(252) Y(253) Y(254) Y(255)
-> > > +
-> > > +#define __KFUNC_A(nr) bpf_testmod_test_mod_kfunc_##nr();
-> > > +#define KFUNC_VALID_DISTINCT_256 __KFUNC_NR_EXP(__KFUNC_A)
-> > > +
-> > > +#define __KFUNC_B(nr) extern void bpf_testmod_test_mod_kfunc_##nr(void) __ksym;
-> > > +#define KFUNC_KSYM_DECLARE_VALID_DISTINCT_256 __KFUNC_NR_EXP(__KFUNC_B)
-> > > +
-> > > +#define __KFUNC_C(nr) noinline void bpf_testmod_test_mod_kfunc_##nr(void) {};
-> > > +#define KFUNC_DEFINE_VALID_DISTINCT_256 __KFUNC_NR_EXP(__KFUNC_C)
-> > > +
-> > > +#define __KFUNC_D(nr) BTF_ID(func, bpf_testmod_test_mod_kfunc_##nr)
-> > > +#define KFUNC_BTF_ID_VALID_DISTINCT_256 __KFUNC_NR_EXP(__KFUNC_D)
-> > > +
-> > > +#define __KFUNC_E(nr) bpf_testmod_test_mod_kfunc(nr);
-> > > +#define KFUNC_VALID_SAME_ONE __KFUNC_E(0)
-> > > +#define KFUNC_VALID_SAME_256 __KFUNC_NR_EXP(__KFUNC_E)
-> > > +
-> >
-> > This is pretty horrible... Wouldn't it be better to test limits like
->
-> Yeah, I actually thought about this a bit yesterday, we could also do:
-> (untested)
->
-> #define X_0(x)
-> #define X_1(x) x X_0(x)
-> #define X_2(x) x X_1(x)
-> #define X_3(x) x X_2(x)
-> #define X_4(x) x X_3(x)
-> #define X_5(x) x X_4(x)
-> #define X_6(x) x X_5(x)
-> #define X_7(x) x X_6(x)
-> #define X_8(x) x X_7(x)
-> #define X_9(x) x X_8(x)
-> #define X_10(x) x X_9(x)
->
-> Then, for generating 256 items
->
-> X_2(X_10(X_10(foo))) X_5(X_10(foo)) X_6(foo)
->
-> ... which looks much better.
->
-> > this using the test_verifier approach, where we can craft a *short*
-> > sequence of instructions that will test all these limits?...
-> >
->
-> Hmm, good idea, I'd just need to fill in the BTF id dynamically at runtime,
-> but that should be possible.
->
-> Though we still need to craft distinct calls (I am trying to test the limit
-> where insn->off is different for each case). Since we try to reuse index in both
-> gen_loader and libbpf, just generating same call 256 times would not be enough.
+Hello,
 
-You just need to generate one instruction with offset = 257 to test
-this. And separately one call with fd_array that has module BTF fd at
-fd_array[256] (to check that 256 is ok). Or am I missing something?
+syzbot found the following issue on:
 
->
-> Let me know which one of the two you prefer.
->
-> >
-> > > +#endif
-> > > --
-> > > 2.33.0
-> > >
->
-> --
-> Kartikeya
+HEAD commit:    1f77990c4b79 Add linux-next specific files for 20210920
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1383891d300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ab1346371f2e6884
+dashboard link: https://syzkaller.appspot.com/bug?extid=3360da629681aa0d22fe
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1625f1ab300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17eb1b3b300000
+
+The issue was bisected to:
+
+commit 020250f31c4c75ac7687a673e29c00786582a5f4
+Author: Dmitry Kadashev <dkadashev@gmail.com>
+Date:   Thu Jul 8 06:34:43 2021 +0000
+
+    namei: make do_linkat() take struct filename
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15f5ef77300000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=17f5ef77300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13f5ef77300000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+3360da629681aa0d22fe@syzkaller.appspotmail.com
+Fixes: 020250f31c4c ("namei: make do_linkat() take struct filename")
+
+rcu: INFO: rcu_preempt self-detected stall on CPU
+rcu: 	0-...!: (10499 ticks this GP) idle=0af/1/0x4000000000000000 softirq=10678/10678 fqs=1 
+	(t=10500 jiffies g=13089 q=109)
+rcu: rcu_preempt kthread starved for 10497 jiffies! g13089 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=1
+rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
+rcu: RCU grace-period kthread stack dump:
+task:rcu_preempt     state:R  running task     stack:28696 pid:   14 ppid:     2 flags:0x00004000
+Call Trace:
+ context_switch kernel/sched/core.c:4955 [inline]
+ __schedule+0x940/0x26f0 kernel/sched/core.c:6236
+ schedule+0xd3/0x270 kernel/sched/core.c:6315
+ schedule_timeout+0x14a/0x2a0 kernel/time/timer.c:1881
+ rcu_gp_fqs_loop+0x186/0x810 kernel/rcu/tree.c:1955
+ rcu_gp_kthread+0x1de/0x320 kernel/rcu/tree.c:2128
+ kthread+0x405/0x4f0 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+rcu: Stack dump where RCU GP kthread last ran:
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 PID: 8510 Comm: syz-executor827 Not tainted 5.15.0-rc2-next-20210920-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:bytes_is_nonzero mm/kasan/generic.c:84 [inline]
+RIP: 0010:memory_is_nonzero mm/kasan/generic.c:102 [inline]
+RIP: 0010:memory_is_poisoned_n mm/kasan/generic.c:128 [inline]
+RIP: 0010:memory_is_poisoned mm/kasan/generic.c:159 [inline]
+RIP: 0010:check_region_inline mm/kasan/generic.c:180 [inline]
+RIP: 0010:kasan_check_range+0xc8/0x180 mm/kasan/generic.c:189
+Code: 38 00 74 ed 48 8d 50 08 eb 09 48 83 c0 01 48 39 d0 74 7a 80 38 00 74 f2 48 89 c2 b8 01 00 00 00 48 85 d2 75 56 5b 5d 41 5c c3 <48> 85 d2 74 5e 48 01 ea eb 09 48 83 c0 01 48 39 d0 74 50 80 38 00
+RSP: 0018:ffffc9000cd676c8 EFLAGS: 00000283
+RAX: ffffed100e9a110e RBX: ffffed100e9a110f RCX: ffffffff88ea062a
+RDX: 0000000000000001 RSI: 0000000000000008 RDI: ffff888074d08870
+RBP: ffffed100e9a110e R08: 0000000000000001 R09: ffff888074d08877
+R10: ffffed100e9a110e R11: 0000000000000000 R12: ffff888074d08000
+R13: ffff888074d08000 R14: ffff888074d08088 R15: ffff888074d08000
+FS:  0000555556d8e300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000180 CR3: 0000000068909000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
+ test_and_clear_bit include/asm-generic/bitops/instrumented-atomic.h:83 [inline]
+ mptcp_release_cb+0x14a/0x210 net/mptcp/protocol.c:3016
+ release_sock+0xb4/0x1b0 net/core/sock.c:3204
+ mptcp_wait_data net/mptcp/protocol.c:1770 [inline]
+ mptcp_recvmsg+0xfd1/0x27b0 net/mptcp/protocol.c:2080
+ inet6_recvmsg+0x11b/0x5e0 net/ipv6/af_inet6.c:659
+ sock_recvmsg_nosec net/socket.c:944 [inline]
+ ____sys_recvmsg+0x527/0x600 net/socket.c:2626
+ ___sys_recvmsg+0x127/0x200 net/socket.c:2670
+ do_recvmmsg+0x24d/0x6d0 net/socket.c:2764
+ __sys_recvmmsg net/socket.c:2843 [inline]
+ __do_sys_recvmmsg net/socket.c:2866 [inline]
+ __se_sys_recvmmsg net/socket.c:2859 [inline]
+ __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2859
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fc200d2dc39
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc5758e5a8 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007fc200d2dc39
+RDX: 0000000000000002 RSI: 00000000200017c0 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000f0b5ff
+R10: 0000000000000100 R11: 0000000000000246 R12: 0000000000000003
+R13: 00007ffc5758e5d0 R14: 00007ffc5758e5c0 R15: 0000000000000003
+INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 1.444 msecs
+NMI backtrace for cpu 0
+CPU: 0 PID: 8509 Comm: syz-executor827 Not tainted 5.15.0-rc2-next-20210920-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:105
+ nmi_trigger_cpumask_backtrace+0x1ae/0x220 lib/nmi_backtrace.c:62
+ trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
+ rcu_dump_cpu_stacks+0x25e/0x3f0 kernel/rcu/tree_stall.h:343
+ print_cpu_stall kernel/rcu/tree_stall.h:627 [inline]
+ check_cpu_stall kernel/rcu/tree_stall.h:711 [inline]
+ rcu_pending kernel/rcu/tree.c:3878 [inline]
+ rcu_sched_clock_irq.cold+0x9d/0x746 kernel/rcu/tree.c:2597
+ update_process_times+0x16d/0x200 kernel/time/timer.c:1785
+ tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:226
+ tick_sched_timer+0x1b0/0x2d0 kernel/time/tick-sched.c:1428
+ __run_hrtimer kernel/time/hrtimer.c:1685 [inline]
+ __hrtimer_run_queues+0x1c0/0xe50 kernel/time/hrtimer.c:1749
+ hrtimer_interrupt+0x31c/0x790 kernel/time/hrtimer.c:1811
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1086 [inline]
+ __sysvec_apic_timer_interrupt+0x146/0x530 arch/x86/kernel/apic/apic.c:1103
+ sysvec_apic_timer_interrupt+0x8e/0xc0 arch/x86/kernel/apic/apic.c:1097
+ </IRQ>
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
+RIP: 0010:lock_release+0x3f1/0x720 kernel/locking/lockdep.c:5633
+Code: 7e 83 f8 01 0f 85 8d 01 00 00 9c 58 f6 c4 02 0f 85 78 01 00 00 48 f7 04 24 00 02 00 00 74 01 fb 48 b8 00 00 00 00 00 fc ff df <48> 01 c5 48 c7 45 00 00 00 00 00 c7 45 08 00 00 00 00 48 8b 84 24
+RSP: 0018:ffffc9000cde7660 EFLAGS: 00000206
+RAX: dffffc0000000000 RBX: 70dbee1ebc366ab9 RCX: ffffc9000cde76b0
+RDX: 1ffff11003a0bc2b RSI: 0000000000000201 RDI: 0000000000000000
+RBP: 1ffff920019bcece R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000443 R12: 0000000000000001
+R13: 0000000000000002 R14: ffff88801d05e160 R15: ffff88801d05d700
+ __raw_spin_unlock_bh include/linux/spinlock_api_smp.h:174 [inline]
+ _raw_spin_unlock_bh+0x12/0x30 kernel/locking/spinlock.c:210
+ spin_unlock_bh include/linux/spinlock.h:413 [inline]
+ unlock_sock_fast include/net/sock.h:1644 [inline]
+ unlock_sock_fast include/net/sock.h:1636 [inline]
+ mptcp_subflow_cleanup_rbuf net/mptcp/protocol.c:468 [inline]
+ mptcp_cleanup_rbuf net/mptcp/protocol.c:499 [inline]
+ mptcp_recvmsg+0xb8b/0x27b0 net/mptcp/protocol.c:2027
+ inet6_recvmsg+0x11b/0x5e0 net/ipv6/af_inet6.c:659
+ sock_recvmsg_nosec net/socket.c:944 [inline]
+ ____sys_recvmsg+0x527/0x600 net/socket.c:2626
+ ___sys_recvmsg+0x127/0x200 net/socket.c:2670
+ do_recvmmsg+0x24d/0x6d0 net/socket.c:2764
+ __sys_recvmmsg net/socket.c:2843 [inline]
+ __do_sys_recvmmsg net/socket.c:2866 [inline]
+ __se_sys_recvmmsg net/socket.c:2859 [inline]
+ __x64_sys_recvmmsg+0x20b/0x260 net/socket.c:2859
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fc200d2dc39
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc5758e5a8 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007fc200d2dc39
+RDX: 0000000000000002 RSI: 00000000200017c0 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000f0b5ff
+R10: 0000000000000100 R11: 0000000000000246 R12: 0000000000000003
+R13: 00007ffc5758e5d0 R14: 00007ffc5758e5c0 R15: 0000000000000003
+----------------
+Code disassembly (best guess):
+   0:	38 00                	cmp    %al,(%rax)
+   2:	74 ed                	je     0xfffffff1
+   4:	48 8d 50 08          	lea    0x8(%rax),%rdx
+   8:	eb 09                	jmp    0x13
+   a:	48 83 c0 01          	add    $0x1,%rax
+   e:	48 39 d0             	cmp    %rdx,%rax
+  11:	74 7a                	je     0x8d
+  13:	80 38 00             	cmpb   $0x0,(%rax)
+  16:	74 f2                	je     0xa
+  18:	48 89 c2             	mov    %rax,%rdx
+  1b:	b8 01 00 00 00       	mov    $0x1,%eax
+  20:	48 85 d2             	test   %rdx,%rdx
+  23:	75 56                	jne    0x7b
+  25:	5b                   	pop    %rbx
+  26:	5d                   	pop    %rbp
+  27:	41 5c                	pop    %r12
+  29:	c3                   	retq
+* 2a:	48 85 d2             	test   %rdx,%rdx <-- trapping instruction
+  2d:	74 5e                	je     0x8d
+  2f:	48 01 ea             	add    %rbp,%rdx
+  32:	eb 09                	jmp    0x3d
+  34:	48 83 c0 01          	add    $0x1,%rax
+  38:	48 39 d0             	cmp    %rdx,%rax
+  3b:	74 50                	je     0x8d
+  3d:	80 38 00             	cmpb   $0x0,(%rax)
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
