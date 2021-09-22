@@ -2,101 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 172394145B5
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 12:03:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 310504145FE
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 12:17:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234663AbhIVKEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 06:04:33 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:41944 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234585AbhIVKEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 06:04:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1632304982; x=1663840982;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=o84MUAaAl22mDdS3oZhqYx+P4ZTe4XQ7zU9iNgirFVY=;
-  b=MLRqOUFT9kEO8oDbXwjM0fzdt0hwECAj5ObSh37H5Us6cf5z3Q3iGMle
-   WlWIw0Rcxq2hUxWgTcCUp6i4SyTnXHmqZmoaCqPCM8GHgoQvyuHO9AHiF
-   MDK/1dZYceHQVHKZ4Xo/+36pwFUVGDA2o8KzAxJdh3KreJUuq+peHea0R
-   TR2qj6eZgld+EqfdWqvQGa8NtLxwtTMc8zX1ooBt04I0q7Mj0TAPZ8WIY
-   H6Mh5miu4xBxZX7+zIHvxiUh9TNZ0saMPapGQ39WhiDrxR9RKn9+tolfe
-   IlHvXI0J4BUshk/P5snk3Jh7fFJiHMyKx42YVvd1UEIdeFkAiI+ttMwPz
-   g==;
-IronPort-SDR: ibErfwqDhJ2fywgCsuET4CuoS29yy35I7mKoyFBQW1zywnFbkk+Yr2ECx85/edn8JqYt9AP9kK
- TIKixxgFOCBk89BZNjDdZ3Egk9JxiA77bBYa50SQKGAy9nJl75iGTRv0nE8HYjAo5zBMcRDfBh
- DMNk6F3O86owaY9pjc6ZMRic1MTZYgcm2aVdLD/byVg1MkN81qvoGsxxVbYfFcunyQRADFnUHW
- tiPtl31s3soIxQJTwI7dVJPts1sEO4klwtaDI1+kDO5/Hp8Ea6rO4oiZZ3H+bG6f7vljcmDy28
- BkItikD+KqPesWVE6CDRB//W
-X-IronPort-AV: E=Sophos;i="5.85,313,1624345200"; 
-   d="scan'208";a="132710408"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Sep 2021 03:03:00 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 22 Sep 2021 03:03:00 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Wed, 22 Sep 2021 03:03:00 -0700
-Date:   Wed, 22 Sep 2021 12:04:29 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <andrew@lunn.ch>, <f.fainelli@gmail.com>,
-        <alexandre.belloni@bootlin.com>, <vladimir.oltean@nxp.com>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-pm@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 03/12] phy: Add lan966x ethernet serdes PHY
- driver
-Message-ID: <20210922100429.pjrd2s4y3jbxpjjt@soft-dev3-1.localhost>
-References: <20210920095218.1108151-1-horatiu.vultur@microchip.com>
- <20210920095218.1108151-4-horatiu.vultur@microchip.com>
- <YUiPqJjsoBg99VbR@shell.armlinux.org.uk>
+        id S234788AbhIVKSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 06:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234722AbhIVKSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 06:18:30 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59740C061574
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 03:17:00 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id l6so1414415plh.9
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 03:17:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HhcP5q0wOaPjd7oSpAPTSn+qyDdm/T12elKB63DT/Tk=;
+        b=WWTlnE/sKZZV/ZzUNfcNIOsodEnfcPT/Ylq0KgXKIex9spGa2a2PACYk4g5duhEdAZ
+         zEN667D9NgUJIsBdirwoxsiPsO8DQrzO59FDvvgSUOIT99c0yrLmrNtv9MCrlqzRz7ri
+         TB940Z26lM0OPxVviiGWKBPA4l0IGzxZvgOL6BAvZW70kjdjK5gY3t0y4E63ubx47pFi
+         APfCJ4rbeXOWiEKVeJMKa3BQS9H4S+Pmv0rZkgJgS4MhuUrWmPLtLwIcSIv4+I2HWk2n
+         /timyw6lwh3G7D+QCJKEREUDO7nS82H51H9E6+sNagUC088ipb/ZYpHsuOhMQf5W+P2j
+         jATw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HhcP5q0wOaPjd7oSpAPTSn+qyDdm/T12elKB63DT/Tk=;
+        b=4pLJcBEz3dE7Bjo+ruRMH+2OxzwRtfAQJx4ZMMx1C6SL3oeYR2yRjzQO8uLaetYR9N
+         wCFEn7GJMGhXhHSeuxOyIh9lhy7cqzveYKahZfyyu8GbpjeHdxz0CzVdyTB6kBuraNd8
+         MW8PGTobsM5EVqtrC6MdC2a9VYOSi3t49WIqiJm1pe1trL+meEOPU5R5xZo6i5CjvY9C
+         dHAlqdlN18PiUGiwNG1BrYtA26DsZ9P2/iTV00mEB+ezKTARugfuRE8HaDRXgK/oAkoh
+         GA+MESD4aKy79XpHLUGhiUKiYggwAqJUcdQjT/Uf+Vy1wNwyTmn51YKNNGNMy9ikCZtO
+         b/kQ==
+X-Gm-Message-State: AOAM533Aw7aTNNbpV4N3C851xIhhXrO5ryM3DFu43sOT272GJaurEQWb
+        jhZBVIir22Km8xt204Y27yBsnen2yCI0T94D
+X-Google-Smtp-Source: ABdhPJxCFfn964bnjF3HbxbfeC8ibjBXrrn03OAwEu91c5szq41wuvTZZ87FMqiUlFTFHc04nCR5xw==
+X-Received: by 2002:a17:90b:4c05:: with SMTP id na5mr10570604pjb.49.1632305819816;
+        Wed, 22 Sep 2021 03:16:59 -0700 (PDT)
+Received: from nova-ws.. ([103.29.142.250])
+        by smtp.gmail.com with ESMTPSA id x18sm1980170pfq.130.2021.09.22.03.16.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Sep 2021 03:16:59 -0700 (PDT)
+From:   Xiao Liang <shaw.leon@gmail.com>
+To:     netdev <netdev@vger.kernel.org>
+Cc:     Xiao Liang <shaw.leon@gmail.com>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, davem@davemloft.net
+Subject: [PATCH net] net: ipv4: Fix rtnexthop len when RTA_FLOW is present
+Date:   Wed, 22 Sep 2021 18:16:54 +0800
+Message-Id: <20210922101654.7775-1-shaw.leon@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YUiPqJjsoBg99VbR@shell.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 09/20/2021 14:42, Russell King (Oracle) wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On Mon, Sep 20, 2021 at 11:52:09AM +0200, Horatiu Vultur wrote:
-> > +static int lan966x_calc_sd6g40_setup_lane(struct lan966x_sd6g40_setup_args config,
-> > +                                       struct lan966x_sd6g40_setup *ret_val)
-> > +{
-> > +     struct lan966x_sd6g40_mode_args sd6g40_mode;
-> > +     struct lan966x_sd6g40_mode_args *mode_args = &sd6g40_mode;
-> > +
-> > +     if (lan966x_sd6g40_get_conf_from_mode(config.mode, config.refclk125M,
-> > +                                           mode_args))
-> > +             return -1;
-> 
-> This needs fixing to be a real negative error number.
-> lan966x_sd6g40_setup_lane() propagates this functions non-zero
-> return value, which is then propagated through lan966x_sd6g40_setup(),
-> and then through serdes_set_mode() to the PHY layer.
-> 
-> In general, I would suggest that _all_ int-returning functions in the
-> kernel that return a negative failure value _should_ _always_ return a
-> negative error code, so that your reviewers don't have to chase code
-> paths to work out whether a mistake such as the above exists.
-> 
-> To put it another way: never use "return -1" in the kernel.
+Multipath RTA_FLOW is embedded in nexthop, thus add it to rtnexthop
+length.
 
-Hi Russell,
+Fixes: b0f60193632e ("ipv4: Refactor nexthop attributes in fib_dump_info")
+Signed-off-by: Xiao Liang <shaw.leon@gmail.com>
+---
+ net/ipv4/fib_semantics.c | 30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
 
-Thanks for the suggestion. I will fix this in the next version.
-
-> 
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
-
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index b42c429cebbe..62b74edb5240 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -1660,8 +1660,9 @@ int fib_nexthop_info(struct sk_buff *skb, const struct fib_nh_common *nhc,
+ EXPORT_SYMBOL_GPL(fib_nexthop_info);
+ 
+ #if IS_ENABLED(CONFIG_IP_ROUTE_MULTIPATH) || IS_ENABLED(CONFIG_IPV6)
+-int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
+-		    int nh_weight, u8 rt_family)
++static struct rtnexthop *__fib_add_nexthop(struct sk_buff *skb,
++					   const struct fib_nh_common *nhc,
++					   int nh_weight, u8 rt_family)
+ {
+ 	const struct net_device *dev = nhc->nhc_dev;
+ 	struct rtnexthop *rtnh;
+@@ -1682,10 +1683,17 @@ int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
+ 	/* length of rtnetlink header + attributes */
+ 	rtnh->rtnh_len = nlmsg_get_pos(skb) - (void *)rtnh;
+ 
+-	return 0;
++	return rtnh;
+ 
+ nla_put_failure:
+-	return -EMSGSIZE;
++	return ERR_PTR(-EMSGSIZE);
++}
++
++int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
++		    int nh_weight, u8 rt_family)
++{
++	return PTR_ERR_OR_ZERO(__fib_add_nexthop(skb, nhc, nh_weight,
++						 rt_family));
+ }
+ EXPORT_SYMBOL_GPL(fib_add_nexthop);
+ #endif
+@@ -1706,13 +1714,17 @@ static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi)
+ 	}
+ 
+ 	for_nexthops(fi) {
+-		if (fib_add_nexthop(skb, &nh->nh_common, nh->fib_nh_weight,
+-				    AF_INET) < 0)
++		struct rtnexthop *rtnh = __fib_add_nexthop(skb, &nh->nh_common,
++							   nh->fib_nh_weight,
++							   AF_INET);
++		if (IS_ERR(rtnh))
+ 			goto nla_put_failure;
+ #ifdef CONFIG_IP_ROUTE_CLASSID
+-		if (nh->nh_tclassid &&
+-		    nla_put_u32(skb, RTA_FLOW, nh->nh_tclassid))
+-			goto nla_put_failure;
++		if (nh->nh_tclassid) {
++			if (nla_put_u32(skb, RTA_FLOW, nh->nh_tclassid))
++				goto nla_put_failure;
++			rtnh->rtnh_len += nla_total_size(4);
++		}
+ #endif
+ 	} endfor_nexthops(fi);
+ 
 -- 
-/Horatiu
+2.33.0
+
