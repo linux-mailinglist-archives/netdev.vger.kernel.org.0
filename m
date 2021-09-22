@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78E93414ACF
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 15:40:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BE69414ACE
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 15:40:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233093AbhIVNlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 09:41:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55078 "EHLO mail.kernel.org"
+        id S233034AbhIVNlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 09:41:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55086 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232754AbhIVNlh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232760AbhIVNlh (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 22 Sep 2021 09:41:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CA7A7611EE;
+Received: by mail.kernel.org (Postfix) with ESMTPS id D4DCC6120E;
         Wed, 22 Sep 2021 13:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632318007;
-        bh=XtCfyNLtv9F2J71znzoANXN/A0DBmASQDItylGm6u54=;
+        bh=IlrBihCEbHcD0oKpG1Kq3cOeBZ3kR1NGR5qjp5maloU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qGUw8Jey7m7d7KxSIb/QgezwFUK+CBu56g21yZxOM8l0ww41cCFI3L1n/Gobl7MZy
-         m+aGPlVdnJ4wjdyxSQSGSJB/6+jCVR7Rtty9pqkYXYoqGt/dwD4HyznkcAIQtimLPd
-         q5DPoEZsUgY2aKuqZrLp9tvk3byIxn4fZ9SyEeK0skrW65hCqBve1dOZD/uyiFHb4g
-         zv4k/UTpmbpAhlCuvQfwU26Olf4IDqr7YSGEwT4YLVF9isvn61GDN9r63+2cc8lH3e
-         lHac5rastnLjziBivJ14cOGM4uBXvZTEyGG70I7QZbUS/KNkSM7KEy//IX30aIB2/a
-         0lKgmfGqD+faw==
+        b=kQDKcOEgBiiIpdIEYekyt+JzjdH40PI10+869i+XQAjBvMPAik92mrrKbYbMoKL2P
+         h5aWpHYZON+Z/tjunRyuScq3cv2gIh+9kd/HL8l8Gw1bY+nY1dtJF2r6SU4z3g2hGZ
+         IVPmqlJSjCoHFNx+Jraf4/TYETwFjg4j1doVwCwSC3X5xfG4SVA3FsKD03MyfxxzHi
+         edDNiaaKfZHjkIj1pPg5jmcaiaZ11rfNVw0MK5ESNyA2Z4waBXcRo43KLqIV8hKNWf
+         0481r+ch8tMP/Oe2bhPd6Z3JuwLtdsCKUm3Wx2hvVesR3IUr5i2mAH4YEr7Dwwrn01
+         AvqzhiIB6Bpzw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BF24360A6B;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C965560A9D;
         Wed, 22 Sep 2021 13:40:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] mlxsw: Alter trap adjacency entry allocation
- scheme
+Subject: Re: [PATCH net-next] net: wwan: iosm: fw flashing and cd improvements
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163231800777.24457.6344591772401894676.git-patchwork-notify@kernel.org>
+Message-Id: <163231800782.24457.13618473237641577779.git-patchwork-notify@kernel.org>
 Date:   Wed, 22 Sep 2021 13:40:07 +0000
-References: <20210922073642.796559-1-idosch@idosch.org>
-In-Reply-To: <20210922073642.796559-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, mlxsw@nvidia.com, idosch@nvidia.com
+References: <20210921164736.5047-1-m.chetan.kumar@linux.intel.com>
+In-Reply-To: <20210921164736.5047-1-m.chetan.kumar@linux.intel.com>
+To:     M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, krishna.c.sudi@intel.com,
+        m.chetan.kumar@intel.com, linuxwwan@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 22 Sep 2021 10:36:40 +0300 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
+On Tue, 21 Sep 2021 22:17:36 +0530 you wrote:
+> 1> Function comments moved to .c file.
+> 2> Use literals in return to improve readability.
+> 3> Do error handling check instead of success check.
+> 4> Redundant ret assignment removed.
 > 
-> In commit 0c3cbbf96def ("mlxsw: Add specific trap for packets routed via
-> invalid nexthops"), mlxsw started allocating a new adjacency entry
-> during driver initialization, to trap packets routed via invalid
-> nexthops.
+> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/2] mlxsw: spectrum_router: Add trap adjacency entry upon first nexthop group
-    https://git.kernel.org/netdev/net-next/c/4bdf80bcb79a
-  - [net-next,2/2] mlxsw: spectrum_router: Start using new trap adjacency entry
-    https://git.kernel.org/netdev/net-next/c/e3a3aae74d76
+  - [net-next] net: wwan: iosm: fw flashing and cd improvements
+    https://git.kernel.org/netdev/net-next/c/8bea96efa7c0
 
 You are awesome, thank you!
 --
