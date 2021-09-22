@@ -2,223 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 247C74153BA
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 01:05:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 084404153DF
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 01:27:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238338AbhIVXGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 19:06:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238293AbhIVXGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 19:06:41 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1050C061574
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 16:05:10 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id me1so3143776pjb.4
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 16:05:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sipanda-io.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O7Zio6oQZAXSF3Pf8dccht3lCgJqQPzlNLFT10MyAvI=;
-        b=Y3RWIZnhcZtmyIf7+nEOWbmB7kVBZF3BOztDYARYxOx0IBiCPc+eXHiVftkkgmYxW5
-         G+efMB7Y3jpvKHL/V/S+z3TY1TZMgIxtbGcUSwOLM++bMja86UiY0RXfoXeh//DTmSR2
-         xUcxegwryN0YRTE9GhGU5VbcUE9PJwgcHq48JSaAt834QiJLv57sgiqRpY0Nro1cIJi5
-         tHUJuT5cOP/H1IeWft6fRp5I/hdVxUH59zMCbDenLRYykZoKuvNTFnIqbmJgpm9ud3oD
-         5UXKv6zSw+3D9HbhA2lEKW2HuJALUoPAjPzxvJ8gZfoEQx6tJe3MEm5OARkj1AinTpoz
-         V6dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O7Zio6oQZAXSF3Pf8dccht3lCgJqQPzlNLFT10MyAvI=;
-        b=5qKdy+adgbieZU3FcGFbQbGhl+tE6QLGanul6xPmz6dEyB05K20kyCunIGHAdqT1l+
-         Rfkwa4iL4CJ8VsnEK33ekozwwWeHuFy+EBB06JaVrl4GRyr58buk9yqmCDAMZ9HRVgmu
-         sQkum+j6nMx/X2XgGDSO63fVPPj0+L/xrHrWJidKKr9qX54Yor5ItAHLf+iDWjxELQJ/
-         3njl3NlWg0ztzt5o7FSN2+FYZZjzj5Ijy6NMC67bBUfYm53otxgvsp2LIliMmtkrikrM
-         eeU8F3qro7SWhORurXtoalRR9/bQQ4W1pVolZ2K7o0Vpt/w8g7x5P8iwF0oK+TW8N/tY
-         tf0w==
-X-Gm-Message-State: AOAM533cxk0dvbMgRd0adL25eAJh8BL3txCDxNE0wXsMKOrlfxAHI6Li
-        Gl0yTyZYdmNSaQ/TJk+EarEjMGRJBfI8GC67AV2/7w==
-X-Google-Smtp-Source: ABdhPJyFoRK3yMSGexRq6/21UvzzaD8KOKEgO6OWmo5wyzsX5dfCwq7V9p503IEBxuZv/2aRJWv/OEhpjDkryd3ZQj4=
-X-Received: by 2002:a17:902:780f:b0:13a:3919:e365 with SMTP id
- p15-20020a170902780f00b0013a3919e365mr1099060pll.63.1632351910137; Wed, 22
- Sep 2021 16:05:10 -0700 (PDT)
+        id S238448AbhIVX2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 19:28:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52446 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231259AbhIVX2d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 19:28:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6FDEB6103C;
+        Wed, 22 Sep 2021 23:27:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632353222;
+        bh=B9wUq++BfpPdROLkDQ1ay+9OI8ABDBjLRzCN62l1Wa4=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=EFftjTbTT2QhB+RPyDX19kkr1eiNw15aoE2mHCvDroxRiaG+B03YAitAC5ggnqek+
+         7JivKA16Q52AlmRdQ4vs7AsDG9ZGWr/NeO6l6I2gByNTqgeSWXk7rkIZEKLgaHRzar
+         3Dr15PqqX22yajEXJ2G4dW6xZcRZ3HHKVA7H0iC1vwYVFQaCwoyMXywx3KTy2Sxd/Y
+         a8AYv49zG9mnmp2lRmBNDVxA0Hmv9GaQ/G6YOBkpEWuD2By6fKZyfZhenx1i79Xzxc
+         eZmM0JOb1c5Tnuc2qEc0spLs71+Jl3emWB2LC1ZdjSky1bhT1cVAk+SLE0RP8RX7r+
+         RJAQopNTghzfA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 2D52C5C1613; Wed, 22 Sep 2021 16:27:02 -0700 (PDT)
+Date:   Wed, 22 Sep 2021 16:27:02 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     syzbot <syzbot+a10a3d280be23be45d04@syzkaller.appspotmail.com>,
+        axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] WARNING: ODEBUG bug in blk_mq_hw_sysfs_release
+Message-ID: <20210922232702.GE880162@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <000000000000bd3a8005cc78ce14@google.com>
+ <87mto4gqxk.ffs@tglx>
 MIME-Version: 1.0
-References: <20210916200041.810-1-felipe@expertise.dev> <CAM_iQpUkdz_EjiuPRF_qKBp_ZHok_c8+pr4skCWGs_QTeLWpwA@mail.gmail.com>
- <YUq1Ez1g8nBvA8Ad@nanopsycho> <CAOuuhY8KA99mV7qBHwX79xP31tqtc9EggSNZ-=j4Z+awJUosdQ@mail.gmail.com>
- <20210922154929.GA31100@corigine.com> <CAOuuhY9NPy+cEkBx3B=74A6ef0xfT_YFLASEOB4uvRn=W-tB5A@mail.gmail.com>
- <YUuRUa67muprw7jS@t14s.localdomain>
-In-Reply-To: <YUuRUa67muprw7jS@t14s.localdomain>
-From:   Tom Herbert <tom@sipanda.io>
-Date:   Wed, 22 Sep 2021 16:04:59 -0700
-Message-ID: <CAOuuhY_PEE62_yjEQOKKrmn+cjPDz+imE4JNX30XT6-sP4jRLw@mail.gmail.com>
-Subject: Re: [PATCH RFC net-next 0/2] net:sched: Introduce tc flower2
- classifier based on PANDA parser in kernel
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Simon Horman <simon.horman@corigine.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Felipe Magno de Almeida <felipe@sipanda.io>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Boris Sukholitko <boris.sukholitko@broadcom.com>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Ido Schimmel <idosch@idosch.org>, paulb@nvidia.com,
-        Davide Caratti <dcaratti@redhat.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87mto4gqxk.ffs@tglx>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 22, 2021 at 3:32 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Wed, Sep 22, 2021 at 10:28:41AM -0700, Tom Herbert wrote:
-> > On Wed, Sep 22, 2021 at 8:49 AM Simon Horman <simon.horman@corigine.com> wrote:
-> > >
-> > > On Wed, Sep 22, 2021 at 07:42:58AM -0700, Tom Herbert wrote:
-> > > > On Tue, Sep 21, 2021 at 9:46 PM Jiri Pirko <jiri@resnulli.us> wrote:
-> > > > >
-> > > > > Wed, Sep 22, 2021 at 06:38:20AM CEST, xiyou.wangcong@gmail.com wrote:
-> > > > > >On Thu, Sep 16, 2021 at 1:02 PM Felipe Magno de Almeida
-> > > > > ><felipe@sipanda.io> wrote:
-> > > > > >>
-> > > > > >> The PANDA parser, introduced in [1], addresses most of these problems
-> > > > > >> and introduces a developer friendly highly maintainable approach to
-> > > > > >> adding extensions to the parser. This RFC patch takes a known consumer
-> > > > > >> of flow dissector - tc flower - and  shows how it could make use of
-> > > > > >> the PANDA Parser by mostly cutnpaste of the flower code. The new
-> > > > > >> classifier is called "flower2". The control semantics of flower are
-> > > > > >> maintained but the flow dissector parser is replaced with a PANDA
-> > > > > >> Parser. The iproute2 patch is sent separately - but you'll notice
-> > > > > >> other than replacing the user space tc commands with "flower2"  the
-> > > > > >> syntax is exactly the same. To illustrate the flexibility of PANDA we
-> > > > > >> show a simple use case of the issues described in [2] when flower
-> > > > > >> consumes PANDA. The PANDA Parser is part of the PANDA programming
-> > > > > >> model for network datapaths, this is described in
-> > > > > >> https://github.com/panda-net/panda.
-> > > > > >
-> > > > > >My only concern is that is there any way to reuse flower code instead
-> > > > > >of duplicating most of them? Especially when you specifically mentioned
-> > > > > >flower2 has the same user-space syntax as flower, this makes code
-> > > > > >reusing more reasonable.
-> > > > >
-> > > > > Exactly. I believe it is wrong to introduce new classifier which would
-> > > > > basically behave exacly the same as flower, only has different parser
-> > > > > implementation under the hood.
-> > > > >
-> > > > > Could you please explore the possibility to replace flow_dissector by
-> > > > > your dissector optionally at first (kernel config for example)? And I'm
-> > > > > not talking only about flower, but about the rest of the flow_dissector
-> > > > > users too.
-> > >
-> > > +1
-> > >
-> > > > Hi Jiri,
-> > > >
-> > > > Yes, the intent is to replace flow dissector with a parser that is
-> > > > more extensible, more manageable and can be accelerated in hardware
-> > > > (good luck trying to HW accelerate flow dissector as is ;-) ). I did a
-> > > > presentation on this topic at the last Netdev conf:
-> > > > https://www.youtube.com/watch?v=zVnmVDSEoXc. FIrst introducing this
-> > > > with a kernel config is a good idea.
-> > >
-> > > Can we drop hyperbole? There are several examples of hardware that
-> > > offload (a subset of) flower. That the current kernel implementation has
-> > > the properties you describe is pretty much irrelevant for current hw
-> > > offload use-cases.
+On Thu, Sep 23, 2021 at 12:56:39AM +0200, Thomas Gleixner wrote:
+> On Mon, Sep 20 2021 at 20:15, syzbot wrote:
+> 
+> Cc+: paulmck
+> 
+> > Hello,
 > >
-> > Simon,
+> > syzbot found the following issue on:
 > >
-> > "current hw offload use-cases" is the problem; these models offer no
-> > extensibility. For instance, if a new protocol appears or a user wants
-> > to support their own custom protocol in things like tc-flower there is
-> > no feasible way to do this. Unfortunately, as of today it seems, we
-> > are still bound by the marketing department at hardware vendors that
-> > pick and choose the protocols that they think their customers want and
-> > are willing to invest in-- we need to get past this once and for all!
->
-> Not that I don't agree with this, but I'm having a hard time seeing
-> how flower2 would be more flexible than current approach in this
-> sense. Say that someone wants to add support for IPv64. AFAICS it
-> would still require changes to iproute, cls_flower2, panda and
-> drivers, which is the complain that I usually hear about cls_flower
-> extensibility.
->
-Yes, flower2 is not sufficient and neither would be replacing the flow
-dissector with PANDA. In order to make this tc-flower truly extensible
-we need "generic tc-flower" which I touched upon in the Netdev. This
-really means that we need to coordinate three actors of TC
-application, kernel, and hardware for offloads. Adding a new protocol
-means that we have to be able to parse the packet before match rules
-can be created, so that means the parser is a first class citizen in
-making this work.
-
-> TCP options too, for example. The 1st patch has code like:
->
-> +#define PANDA_METADATA_tcp_options                                     \
-> +       struct {                                                        \
-> +               __u16 mss;                                              \
-> +               __u8 window_scaling;                                    \
-> +               struct {                                                \
-> +                       __u32 value;                                    \
-> +                       __u32 echo;                                     \
-> +               } timestamp;                                            \
-> +               struct {                                                \
-> +                       __u32 left_edge;                                \
-> +                       __u32 right_edge;                               \
-> +               } sack[PANDA_TCP_MAX_SACKS];                                    \
-> +       } tcp_options
->
-> ...
->
-> +#define PANDA_METADATA_TEMP_tcp_option_mss(NAME, STRUCT)               \
-> +static void NAME(const void *vopt, void *iframe,                       \
-> +                struct panda_ctrl_data ctrl)                           \
-> +{                                                                      \
-> +       const struct tcp_opt_union *opt = vopt;                         \
-> +       struct STRUCT *frame = iframe;                                  \
-> +                                                                       \
-> +       frame->tcp_options.mss = ntohs(opt->mss);                       \
-> +}
->
-> So if we have a new option on the game, what will need updating?
->
-It's a matter of adding new options to the parser program and then
-downloading the parser either to kernel or hardware for offload (again
-they really should be running identical programs). Given that we need
-to be able to set up rules for matching fields in the protocols which
-can be done by using offsets as the keys in an abstract way. The
-kernel and the user space application then need to be tightly
-coordinated such that they have agreement that they are talking about
-the same fields for a given value (BTF might help here). The last part
-of the equation is to dynamically create a TC CLI for the new fields,
-this could be derived from the input parser program that is annotated
-with human readable names for protocols and fields.
-
-Thanks,
-Tom
-
-
->   Marcelo
->
-> > IMO, what we need is a common way to extend the kernel, tc, and other
-> > applications for new protocols and features, but also be able to apply
-> > that method to extend to the hardware which is _offloading_ kernel
-> > functionality which in this case is flow dissector. The technology is
-> > there to do this as programmable NICs for instance are the rage, but
-> > we do need to create common APIs to be able to do that. Note this
-> > isn't just tc, but a whole space of features; for instance, XDP hints
-> > is nice idea for the NIC to provide information about protocols in a
-> > packet, but unless/until there is a way to program the device to pull
-> > out arbitrary information that the user cares about like something
-> > from their custom protocol, then it's very limited utility...
+> > HEAD commit:    85c698863c15 net/ipv4/tcp_minisocks.c: remove superfluous ..
+> > git tree:       net-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=13d9d3e7300000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=6d93fe4341f98704
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=a10a3d280be23be45d04
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11bd98f7300000
 > >
-> > Tom
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+a10a3d280be23be45d04@syzkaller.appspotmail.com
+> >
+> > ------------[ cut here ]------------
+> > ODEBUG: assert_init not available (active state 0) object type: timer_list hint: 0x0
+> > WARNING: CPU: 0 PID: 3816 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+> > Modules linked in:
+> > CPU: 0 PID: 3816 Comm: syz-executor.0 Not tainted 5.15.0-rc1-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+> > Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd c0 39 e4 89 4c 89 ee 48 c7 c7 c0 2d e4 89 e8 ef e3 14 05 <0f> 0b 83 05 35 09 91 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+> > RSP: 0018:ffffc9000a6770f0 EFLAGS: 00010282
+> > RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+> > RDX: ffff88805b3db900 RSI: ffffffff815dbd88 RDI: fffff520014cee10
+> > RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+> > R10: ffffffff815d5b2e R11: 0000000000000000 R12: ffffffff898de180
+> > R13: ffffffff89e43440 R14: ffffffff8164bae0 R15: 1ffff920014cee29
+> > FS:  00007fee66b3a700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 00007f362471f3a0 CR3: 00000000272af000 CR4: 00000000001506f0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >  debug_object_assert_init lib/debugobjects.c:895 [inline]
+> >  debug_object_assert_init+0x1f4/0x2e0 lib/debugobjects.c:866
+> >  debug_timer_assert_init kernel/time/timer.c:739 [inline]
+> >  debug_assert_init kernel/time/timer.c:784 [inline]
+> >  try_to_del_timer_sync+0x6d/0x110 kernel/time/timer.c:1229
+> >  del_timer_sync+0x138/0x1b0 kernel/time/timer.c:1382
+> >  cleanup_srcu_struct+0x14c/0x2f0 kernel/rcu/srcutree.c:379
+> 
+> So cleanup_srcu_struct() tries to delete a timer which was never initialized....
+
+That does not sound like a way to keep a kernel running...
+
+For dynamically allocated srcu_struct structures, what is supposed to
+happen is that init_srcu_struct() is invoked at some point before the
+first use.  Then init_srcu_struct() invokes init_srcu_struct_fields()
+which invokes init_srcu_struct_nodes() which initializes that timer.
+Unless the memory allocations in init_srcu_struct_fields() failed,
+in which case init_srcu_struct() should have handed you back a -ENOMEM.
+
+OK, there is a call to init_srcu_struct() in blk_mq_alloc_hctx().
+It does ignore the init_srcu_struct() return value, so maybe a
+WARN_ON_ONCE(init_srcu_struct(hctx->srcu)) would be good.
+
+The ->srcu field is declared as follows:
+
+	struct srcu_struct	srcu[];
+
+The blk_mq_hw_ctx_size() function adjusts the size.  All of this is
+controlled by a BLK_MQ_F_BLOCKING flag.  If this flag were to change,
+clearly bad things could happen.  The places where it is set look to me
+to be initialization time, but it might be good to have someone familiar
+with this code double-check this.  Or have a separate bit that records
+the state of BLK_MQ_F_BLOCKING at blk_mq_alloc_hctx() time and complain
+bitterly if there was a change at blk_mq_hw_sysfs_release() time.
+
+Other thoughts?
+
+							Thanx, Paul
+
+> >  blk_mq_hw_sysfs_release+0x147/0x190 block/blk-mq-sysfs.c:40
+> >  kobject_cleanup lib/kobject.c:705 [inline]
+> >  kobject_release lib/kobject.c:736 [inline]
+> >  kref_put include/linux/kref.h:65 [inline]
+> >  kobject_put+0x1c8/0x540 lib/kobject.c:753
+> >  blk_mq_release+0x259/0x430 block/blk-mq.c:3094
+> >  blk_release_queue+0x2a7/0x4a0 block/blk-sysfs.c:823
+> >  kobject_cleanup lib/kobject.c:705 [inline]
+> >  kobject_release lib/kobject.c:736 [inline]
+> >  kref_put include/linux/kref.h:65 [inline]
+> >  kobject_put+0x1c8/0x540 lib/kobject.c:753
+> >  __blk_mq_alloc_disk+0x12e/0x160 block/blk-mq.c:3142
+> >  nbd_dev_add+0x3be/0xb90 drivers/block/nbd.c:1716
+> >  nbd_genl_connect+0x11f3/0x1930 drivers/block/nbd.c:1884
+> >  genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
+> >  genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
+> >  genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
+> >  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+> >  genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
+> >  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+> >  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+> >  netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+> >  sock_sendmsg_nosec net/socket.c:704 [inline]
+> >  sock_sendmsg+0xcf/0x120 net/socket.c:724
+> >  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
+> >  ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
+> >  __sys_sendmsg+0xf3/0x1c0 net/socket.c:2492
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > RIP: 0033:0x7fee673e4739
+> > Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+> > RSP: 002b:00007fee66b3a188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> > RAX: ffffffffffffffda RBX: 00007fee674e9038 RCX: 00007fee673e4739
+> > RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000007
+> > RBP: 00007fee6743ecc4 R08: 0000000000000000 R09: 0000000000000000
+> > R10: 0000000000000000 R11: 0000000000000246 R12: 00007fee674e9038
+> > R13: 00007ffe3695106f R14: 00007fee66b3a300 R15: 0000000000022000
+> >
+> >
+> > ---
+> > This report is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> >
+> > syzbot will keep track of this issue. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > syzbot can test patches for this issue, for details see:
+> > https://goo.gl/tpsmEJ#testing-patches
