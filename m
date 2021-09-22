@@ -2,104 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC44E414560
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 11:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C2CB41456E
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 11:43:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234434AbhIVJlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 05:41:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53702 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234294AbhIVJlk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 05:41:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DC8EE61211;
-        Wed, 22 Sep 2021 09:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632303610;
-        bh=QQ1IBRI/vlB6loJudKjohvzWgOIaXu0mmiwtHhw2lZk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EIQcN6E/TlQeCRYVHhKUE9FoD38dR9lCmPQ8EdSpWzU6P4EP3E8V2LafHjCFSxZ+u
-         Sp0xgQDcxdlBgtFs0IsobwVdlK4rVwsKAN4Io5LPa/2UM3qSF/A9UUjDe1TEZ5lNq3
-         Ix7cH+sTb/CAUDRGDA36HOWCJLVbXcoU5adQjcaLP9vUmHOME3u6mwZWhAwu/VSTI3
-         eUw6znmUVxKGbL1CSbcTYMkWKAh4//N8Fz3pZBS//pP5KliivvMrv2PSCxnGs/NCTg
-         bPNxCNyqIJq3zt9t1wzy2Urn1xEjDakZ7L9CVfHJXPtyCg3pxZ9PZVRTzRfz2oTexs
-         Y3HsWzvZD/HjQ==
-Date:   Wed, 22 Sep 2021 12:40:06 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Shai Malin <smalin@marvell.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-rdma@vger.kernel.org, jgg@ziepe.ca, aelior@marvell.com,
-        malin1024@gmail.com, Michal Kalderon <mkalderon@marvell.com>
-Subject: Re: [PATCH net v2] qed: rdma - don't wait for resources under hw
- error recovery flow
-Message-ID: <YUr59luiezKbdOyW@unreal>
-References: <20210922073631.31626-1-smalin@marvell.com>
+        id S234429AbhIVJod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 05:44:33 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9902 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232258AbhIVJoc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 05:44:32 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HDtX46CQtz8yh9;
+        Wed, 22 Sep 2021 17:38:28 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Wed, 22 Sep 2021 17:43:01 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Wed, 22 Sep 2021 17:43:01 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <hawk@kernel.org>,
+        <ilias.apalodimas@linaro.org>, <jonathan.lemon@gmail.com>,
+        <alobakin@pm.me>, <willemb@google.com>, <cong.wang@bytedance.com>,
+        <pabeni@redhat.com>, <haokexin@gmail.com>, <nogikh@google.com>,
+        <elver@google.com>, <memxor@gmail.com>, <edumazet@google.com>,
+        <alexander.duyck@gmail.com>, <dsahern@gmail.com>
+Subject: [PATCH net-next 0/7] some optimization for page pool
+Date:   Wed, 22 Sep 2021 17:41:24 +0800
+Message-ID: <20210922094131.15625-1-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210922073631.31626-1-smalin@marvell.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 22, 2021 at 10:36:31AM +0300, Shai Malin wrote:
-> If the HW device is during recovery, the HW resources will never return,
-> hence we shouldn't wait for the CID (HW context ID) bitmaps to clear.
-> This fix speeds up the error recovery flow.
-> 
-> Changes since v1:
-> - Fix race condition (thanks to Leon Romanovsky).
+Patch 1: disable dma mapping support for 32-bit arch with 64-bit
+         DMA.
+Patch 2: support non-split page when PP_FLAG_PAGE_FRAG is set.
+patch 3: avoid calling compound_head() for skb frag page
+Patch 4-7: use pp_magic to identify pp page uniquely.
 
-Please put changelog under "---", there is a little value for them in the
-commit message.
+V3:
+    1. add patch 1/4/6/7.
+    2. use pp_magic to identify pp page uniquely too.
+    3. avoid unnecessary compound_head() calling.
 
-> 
-> Fixes: 64515dc899df ("qed: Add infrastructure for error detection and recovery")
-> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
-> ---
->  drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 8 ++++++++
->  drivers/net/ethernet/qlogic/qed/qed_roce.c  | 8 ++++++++
->  2 files changed, 16 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-> index fc8b3e64f153..186d0048a9d1 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-> @@ -1297,6 +1297,14 @@ qed_iwarp_wait_cid_map_cleared(struct qed_hwfn *p_hwfn, struct qed_bmap *bmap)
->  	prev_weight = weight;
->  
->  	while (weight) {
-> +		/* If the HW device is during recovery, all resources are
-> +		 * immediately reset without receiving a per-cid indication
-> +		 * from HW. In this case we don't expect the cid_map to be
-> +		 * cleared.
-> +		 */
-> +		if (p_hwfn->cdev->recov_in_prog)
-> +			return 0;
-> +
->  		msleep(QED_IWARP_MAX_CID_CLEAN_TIME);
->  
->  		weight = bitmap_weight(bmap->bitmap, bmap->max_count);
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-> index f16a157bb95a..cf5baa5e59bc 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-> @@ -77,6 +77,14 @@ void qed_roce_stop(struct qed_hwfn *p_hwfn)
->  	 * Beyond the added delay we clear the bitmap anyway.
->  	 */
->  	while (bitmap_weight(rcid_map->bitmap, rcid_map->max_count)) {
-> +		/* If the HW device is during recovery, all resources are
-> +		 * immediately reset without receiving a per-cid indication
-> +		 * from HW. In this case we don't expect the cid bitmap to be
-> +		 * cleared.
-> +		 */
-> +		if (p_hwfn->cdev->recov_in_prog)
-> +			return;
-> +
->  		msleep(100);
->  		if (wait_count++ > 20) {
->  			DP_NOTICE(p_hwfn, "cid bitmap wait timed out\n");
-> -- 
-> 2.27.0
-> 
+V2: add patch 2, adjust the commit log accroding to the discussion
+    in V1, and fix a compiler error reported by kernel test robot.
+
+Yunsheng Lin (7):
+  page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
+  page_pool: support non-split page with PP_FLAG_PAGE_FRAG
+  pool_pool: avoid calling compound_head() for skb frag page
+  page_pool: change BIAS_MAX to support incrementing
+  skbuff: keep track of pp page when __skb_frag_ref() is called
+  skbuff: only use pp_magic identifier for a skb' head page
+  skbuff: remove unused skb->pp_recycle
+
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  6 ---
+ drivers/net/ethernet/marvell/mvneta.c         |  2 -
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  4 +-
+ drivers/net/ethernet/marvell/sky2.c           |  2 +-
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  2 +-
+ drivers/net/ethernet/ti/cpsw.c                |  2 -
+ drivers/net/ethernet/ti/cpsw_new.c            |  2 -
+ include/linux/mm_types.h                      | 13 +-----
+ include/linux/skbuff.h                        | 39 ++++++++----------
+ include/net/page_pool.h                       | 31 ++++++++------
+ net/core/page_pool.c                          | 40 +++++++------------
+ net/core/skbuff.c                             | 36 ++++++-----------
+ net/tls/tls_device.c                          |  2 +-
+ 13 files changed, 67 insertions(+), 114 deletions(-)
+
+-- 
+2.33.0
+
