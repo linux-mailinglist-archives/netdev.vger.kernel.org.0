@@ -2,222 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECABD414206
-	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 08:40:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48135414223
+	for <lists+netdev@lfdr.de>; Wed, 22 Sep 2021 08:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232870AbhIVGls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 02:41:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232630AbhIVGlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 02:41:47 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E9CC061574
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 23:40:18 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id t18so3793095wrb.0
-        for <netdev@vger.kernel.org>; Tue, 21 Sep 2021 23:40:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wNZag5U/tLMPiN1+ewom7wIM35/vGQ1nlZIuvWVBCaE=;
-        b=GvI3eD/7TkNxJ49KSBsOsSvTEXN1BLZ3fE6fl/Xh8h8+8YRiAZR35pKJ/Ej+jgB0/X
-         T1cP4xhBtOTE0uJQo1jL5c1jfOhewJ+1jhNyUILKV0CNyR17l/HNMoFW8MJENoAdGLkG
-         wlTyBqk/ZEZl4SsSyjux3009MupLikVGmrsGg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wNZag5U/tLMPiN1+ewom7wIM35/vGQ1nlZIuvWVBCaE=;
-        b=n5u6CoovQhcLHiVwANHPKLYLfs2XtfI+i7qY7tFWiMlNyu9YbCSSROeVuO9hSd3rK9
-         5eQGB20gtifQ22XWcNDayHUrcptgZLtqhTawlq57SE+HAAVk0//G3mQkv9qYOR+Uz/ta
-         6pVE6apDUQpL3Dk6SSbYILUJ3DYOqzVRYzRD5XYYApmorybZTOXMLFYvxWW7aoNju6YT
-         /e3ykXtcVNY6CQXGDov/vyH9MKKJLvQHK4wZ4ZJ9lWbQh0bOOQpUoO4YQuV22/rKtF5d
-         3plXlqCOuZa4WuN9TrtaG0iQ8l2mWofZ6QVBLazyC6jxSaL1XW8bYOIWJ1kv4Ct+9lmk
-         EWxg==
-X-Gm-Message-State: AOAM533Qj4MtR2TETI74cpwfcpjl+bvuZ6hJigKPh7LzIo+vAK80sQmk
-        hr1Uy0z++Nv/5oFSu3Dz55APE+Oa9Q6SXVedR3hQWOIjDI4=
-X-Google-Smtp-Source: ABdhPJxWvIBElFPnshnlVHkf6T7Q3zgt/rYf0JlxG/JzvPBfZhpYqUN9vRBodg0O+kKUPn72yOfBd/tpjpmLLeNHuWk=
-X-Received: by 2002:a05:600c:22d4:: with SMTP id 20mr8493551wmg.177.1632292816589;
- Tue, 21 Sep 2021 23:40:16 -0700 (PDT)
+        id S233005AbhIVGtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 02:49:46 -0400
+Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:52059 "EHLO
+        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232835AbhIVGtl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 02:49:41 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0UpCfwwN_1632293287;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UpCfwwN_1632293287)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 22 Sep 2021 14:48:08 +0800
 MIME-Version: 1.0
-References: <0a1d6421-b618-9fea-9787-330a18311ec0@bursov.com>
-In-Reply-To: <0a1d6421-b618-9fea-9787-330a18311ec0@bursov.com>
-From:   Siva Reddy Kallam <siva.kallam@broadcom.com>
-Date:   Wed, 22 Sep 2021 12:10:05 +0530
-Message-ID: <CAMet4B4iJjQK6yX+XBD2CtH3B30oqECUAYDj3ZE3ysdJVu8O4w@mail.gmail.com>
-Subject: Re: tg3 RX packet re-order in queue 0 with RSS
-To:     Vitaly Bursov <vitaly@bursov.com>
-Cc:     Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Message-Id: <1632293267.9421082-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net v2] napi: fix race inside napi_enable
+Date:   Wed, 22 Sep 2021 14:47:47 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     =?utf-8?q?netdev=40vger=2Ekernel=2Eorg=2C?=@vger.kernel.org,
+        =?utf-8?q?_linyunsheng=40huawei=2Ecom=2C?=@vger.kernel.org,
+        =?utf-8?q?_David_S=2E_Miller_=3Cdavem=40davemloft=2Enet=3E=2C?=@vger.kernel.org,
+        =?utf-8?q?_Eric_Dumazet_=3Cedumazet=40google=2Ecom=3E=2C?=@vger.kernel.org,
+        =?utf-8?q?_Daniel_Borkmann_=3Cdaniel=40iogearbox=2Enet=3E=2C?=@vger.kernel.org,
+        =?utf-8?q?_Antoine_Tenart_=3Catenart=40kernel=2Eorg=3E=2C?=@vger.kernel.org,
+        =?utf-8?q?_Alexander_Lobakin_=3Calobakin=40pm=2Eme=3E=2C?=@vger.kernel.org,
+        =?utf-8?q?_Wei_Wang_=3Cweiwan=40google=2Ecom=3E=2C?=@vger.kernel.org,
+        =?utf-8?q?_Taehee_Yoo_=3Cap420073=40gmail=2Ecom=3E=2C?=@vger.kernel.org,
+        =?utf-8?b?IEJqw7ZybiBUw7ZwZWwgPGJqb3JuQGtlcm5lbC5vcmc+LA==?=@vger.kernel.org,
+        =?utf-8?q?_Arnd_Bergmann_=3Carnd=40arndb=2Ede=3E=2C?=@vger.kernel.org,
+        =?utf-8?q?_Kumar_Kartikeya_Dwivedi_=3Cmemxor=40gmail=2Ecom=3E=2C?=@vger.kernel.org,
+        =?utf-8?q?_Neil_Horman_=3Cnhorman=40redhat=2Ecom=3E=2C?=@vger.kernel.org,
+        =?utf-8?q?_Dust_Li_=3Cdust=2Eli=40linux=2Ealibaba=2Ecom=3E?=@vger.kernel.org
+In-Reply-To: <20210920122024.283fe8b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you for reporting this. Pavan(cc'd) from Broadcom looking into this issue.
-We will provide our feedback very soon on this.
+On Mon, 20 Sep 2021 12:20:24 -0700, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Sat, 18 Sep 2021 16:52:32 +0800 Xuan Zhuo wrote:
+> > The process will cause napi.state to contain NAPI_STATE_SCHED and
+> > not in the poll_list, which will cause napi_disable() to get stuck.
+> >
+> > The prefix "NAPI_STATE_" is removed in the figure below, and
+> > NAPI_STATE_HASHED is ignored in napi.state.
+> >
+> >                       CPU0       |                   CPU1       | napi.state
+> > ===============================================================================
+> > napi_disable()                   |                              | SCHED | NPSVC
+> > napi_enable()                    |                              |
+> > {                                |                              |
+> >     smp_mb__before_atomic();     |                              |
+> >     clear_bit(SCHED, &n->state); |                              | NPSVC
+> >                                  | napi_schedule_prep()         | SCHED | NPSVC
+> >                                  | napi_poll()                  |
+> >                                  |   napi_complete_done()       |
+> >                                  |   {                          |
+> >                                  |      if (n->state & (NPSVC | | (1)
+> >                                  |               _BUSY_POLL)))  |
+> >                                  |           return false;      |
+> >                                  |     ................         |
+> >                                  |   }                          | SCHED | NPSVC
+> >                                  |                              |
+> >     clear_bit(NPSVC, &n->state); |                              | SCHED
+> > }                                |                              |
+> >                                  |                              |
+> > napi_schedule_prep()             |                              | SCHED | MISSED (2)
+> >
+> > (1) Here return direct. Because of NAPI_STATE_NPSVC exists.
+> > (2) NAPI_STATE_SCHED exists. So not add napi.poll_list to sd->poll_list
+> >
+> > Since NAPI_STATE_SCHED already exists and napi is not in the
+> > sd->poll_list queue, NAPI_STATE_SCHED cannot be cleared and will always
+> > exist.
+> >
+> > 1. This will cause this queue to no longer receive packets.
+> > 2. If you encounter napi_disable under the protection of rtnl_lock, it
+> >    will cause the entire rtnl_lock to be locked, affecting the overall
+> >    system.
+> >
+> > This patch uses cmpxchg to implement napi_enable(), which ensures that
+> > there will be no race due to the separation of clear two bits.
+> >
+> > Fixes: 2d8bff12699abc ("netpoll: Close race condition between poll_one_napi and napi_disable")
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+>
+> Why don't you just invert the order of clearing the bits:
 
-On Mon, Sep 20, 2021 at 6:59 PM Vitaly Bursov <vitaly@bursov.com> wrote:
+I think it should be an atomic operation. The original two-step clear itself is
+problematic. So from this perspective, it is not just a solution to this
+problem.
+
+Thanks.
+
 >
-> Hi,
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index a796754f75cc..706eca8112c1 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -6953,8 +6953,8 @@ void napi_enable(struct napi_struct *n)
+>  {
+>         BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
+>         smp_mb__before_atomic();
+> -       clear_bit(NAPI_STATE_SCHED, &n->state);
+>         clear_bit(NAPI_STATE_NPSVC, &n->state);
+> +       clear_bit(NAPI_STATE_SCHED, &n->state);
+>         if (n->dev->threaded && n->thread)
+>                 set_bit(NAPI_STATE_THREADED, &n->state);
+>  }
 >
-> We found a occassional and random (sometimes happens, sometimes not)
-> packet re-order when NIC is involved in UDP multicast reception, which
-> is sensitive to a packet re-order. Network capture with tcpdump
-> sometimes shows the packet re-order, sometimes not (e.g. no re-order on
-> a host, re-order in a container at the same time). In a pcap file
-> re-ordered packets have a correct timestamp - delayed packet had a more
-> earlier timestamp compared to a previous packet:
->      1.00s packet1
->      1.20s packet3
->      1.10s packet2
->      1.30s packet4
->
-> There's about 300Mbps of traffic on this NIC, and server is busy
-> (hyper-threading enabled, about 50% overall idle) with its
-> computational application work.
->
-> NIC is HPE's 4-port 331i adapter - BCM5719, in a default ring and
-> coalescing configuration, 1 TX queue, 4 RX queues.
->
-> After further investigation, I believe that there are two separate
-> issues in tg3.c driver. Issues can be reproduced with iperf3, and
-> unicast UDP.
->
-> Here are the details of how I understand this behavior.
->
-> 1. Packet re-order.
->
-> Driver calls napi_schedule(&tnapi->napi) when handling the interrupt,
-> however, sometimes it calls napi_schedule(&tp->napi[1].napi), which
-> handles RX queue 0 too:
->
->      https://github.com/torvalds/linux/blob/master/drivers/net/ethernet/broadcom/tg3.c#L6802-L7007
->
->      static int tg3_rx(struct tg3_napi *tnapi, int budget)
->      {
->              struct tg3 *tp = tnapi->tp;
->
->              ...
->
->              /* Refill RX ring(s). */
->              if (!tg3_flag(tp, ENABLE_RSS)) {
->                      ....
->              } else if (work_mask) {
->                      ...
->
->                      if (tnapi != &tp->napi[1]) {
->                              tp->rx_refill = true;
->                              napi_schedule(&tp->napi[1].napi);
->                      }
->              }
->              ...
->      }
->
->  From napi_schedule() code, it should schedure RX 0 traffic handling on
-> a current CPU, which handles queues RX1-3 right now.
->
-> At least two traffic flows are required - one on RX queue 0, and the
-> other on any other queue (1-3). Re-ordering may happend only on flow
-> from queue 0, the second flow will work fine.
->
-> No idea how to fix this.
->
-> There are two ways to mitigate this:
->
->    1. Enable RPS by writting any non-zero mask to
->       /sys/class/net/enp2s0f0/queues/rx-0/rps_cpus This encorces CPU
->       when processing traffic, and overrides whatever "current" CPU for
->       RX queue 0 is in this moment.
->
->    2. Configure RX hash flow redirection with: ethtool -X enp2s0f0
->       weight 0 1 1 1 to exclude RX queue 0 from handling the traffic.
->
->
-> 2. RPS configuration
->
-> Before napi_gro_receive() call, there's no call to skb_record_rx_queue():
->
->      static int tg3_rx(struct tg3_napi *tnapi, int budget)
->      {
->              struct tg3 *tp = tnapi->tp;
->              u32 work_mask, rx_std_posted = 0;
->              u32 std_prod_idx, jmb_prod_idx;
->              u32 sw_idx = tnapi->rx_rcb_ptr;
->              u16 hw_idx;
->              int received;
->              struct tg3_rx_prodring_set *tpr = &tnapi->prodring;
->
->              ...
->
->                      napi_gro_receive(&tnapi->napi, skb);
->
->
->                      received++;
->                      budget--;
->              ...
->
->
-> As a result, queue_mapping is always 0/not set, and RPS handles all
-> traffic as originating from queue 0.
->
->            <idle>-0     [013] ..s. 14030782.234664: napi_gro_receive_entry: dev=enp2s0f0 napi_id=0x0 queue_mapping=0 ...
->
-> RPS configuration for rx-1 to to rx-3 has no effect.
->
->
-> NIC:
-> 02:00.0 Ethernet controller: Broadcom Inc. and subsidiaries NetXtreme BCM5719 Gigabit Ethernet PCIe (rev 01)
->      Subsystem: Hewlett-Packard Company Ethernet 1Gb 4-port 331i Adapter
->      Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR+ FastB2B- DisINTx+
->      Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
->      Latency: 0, Cache Line Size: 64 bytes
->      Interrupt: pin A routed to IRQ 16
->      NUMA node: 0
->      Region 0: Memory at d9d90000 (64-bit, prefetchable) [size=64K]
->      Region 2: Memory at d9da0000 (64-bit, prefetchable) [size=64K]
->      Region 4: Memory at d9db0000 (64-bit, prefetchable) [size=64K]
->      [virtual] Expansion ROM at d9c00000 [disabled] [size=256K]
->      Capabilities: <access denied>
->      Kernel driver in use: tg3
->      Kernel modules: tg3
->
-> Linux kernel:
->      CentOS 7 - 3.10.0-1160.15.2
->      Ubuntu - 5.4.0-80.90
->
-> Network configuration:
->      iperf3 (sender) - [LAN] - NIC (enp2s0f0) - Bridge (br0) - veth (v1) - namespace veth (v2) - iperf3 (receiver 1)
->
->      brctl addbr br0
->      ip l set up dev br0
->      ip a a 10.10.10.10/24 dev br0
->      ip r a default via 10.10.10.1 dev br0
->      ip l set dev enp2s0f0 master br0
->      ip l set up dev enp2s0f0
->
->      ip netns add n1
->      ip link add v1 type veth peer name v2
->      ip l set up dev v1
->      ip l set dev v1 master br0
->      ip l set dev v2 netns n1
->
->      ip netns exec n1 bash
->      ip l set up dev lo
->      ip l set up dev v2
->      ip a a 10.10.10.11/24 dev v2
->
->      "receiver 2" has the same configuration but different IP and different namespace.
->
-> Iperf3:
->
->      Sender runs iperfs: iperf3 -s -p 5201 & iperf3 -s -p 5202 &
->      Receiver's iperf3 -c 10.10.10.1 -R -p 5201 -u -l 163 -b 200M -t 300
->
-> --
-> Thanks
-> Vitalii
->
+> That's simpler and symmetric with the disable path.
