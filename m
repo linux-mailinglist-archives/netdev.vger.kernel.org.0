@@ -2,104 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0801D416292
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 18:01:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DC054162A4
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 18:04:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242358AbhIWQCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 12:02:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43678 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242216AbhIWQCb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Sep 2021 12:02:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F3FA96103C;
-        Thu, 23 Sep 2021 16:00:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632412855;
-        bh=t2uQw4IUnSroL2qa7OtzzDzhuyfqKYu6om0RRvVYBng=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=R7HsrqsZfQ8inJ8dYCEd4xFUBnAFopyFkc8aV0NoUyP0gyqd8MPPRp9uG1cEQKWUc
-         Wi3f7+DjKyZ/o8kZ09fqunINOXw/jVAdFgOTr2NOJIFTG4qDV1SQ4CyyuaJQd+c8p0
-         hLUquuq5ic0ns9yTn5mhaed99ARFjeb5BV+0f9cNqMbsjPti5rCavaiWHKdLdwBeO2
-         72pW2DCXV8CIHPweocK4S6JODrjy0KCLiVbJpG64MH3y8BwRvMHH/1tUMr62dbbn0X
-         js7UgzijNtR0qvjwIyrxf+b0zQgvBa4f5sjNngrLZrKz5sZYc82LK6klZA5vSkMz++
-         SSMQW/eFe3ZnQ==
-Date:   Thu, 23 Sep 2021 09:00:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        id S242362AbhIWQFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 12:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242363AbhIWQFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 12:05:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAF7C061574;
+        Thu, 23 Sep 2021 09:04:22 -0700 (PDT)
+Message-ID: <20210923153311.225307347@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1632413059;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=HKJ62ec0H3rRqwouVaEOlCdmeDwscUCB9fggww1qtqs=;
+        b=S9Sw4KaTyb9s7Z3KdYbFaJAvUzjpHUVpUTxvyQ3jFIhlWRMGgqgxLk8/cDw3/6XKvUpZZp
+        dhPkgsAfepaag4dai3tsQG8H1SEb6OcdSZOt4ZOJ+L5fXItf38KOz+VqvC3n7RURS0RvCQ
+        AOymsMXCjVfXsiR5+QYlShryPPOPagMf/WTMdP3bCxY4nDARQHkLdyUfBjfybnlnp7aDF4
+        +1FziWh42JVQop5OoCpYLsWFXx4DjgT4Pae3ReQR206O4iu4W5dBMixmm0/zU/iKuBBxQg
+        Lzba969dREamrSViMjsujMdwDyfjxU3YaUi5eaDsZEB1EpwUfhtSN4rB5GULJA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1632413059;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=HKJ62ec0H3rRqwouVaEOlCdmeDwscUCB9fggww1qtqs=;
+        b=qLgcomT0elm/TlKSiEwnkZ3rD3NJKvPZV3pfy2RnYzqCkiviMbALY7urqFmSkwiw4ven3n
+        7eMZvc1fRymbs4Dw==
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>, netdev@vger.kernel.org,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
-        "open list:TC subsystem" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net: prevent user from passing illegal stab size
-Message-ID: <20210923090054.3556deb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <da8bd5e9-0476-d75b-4669-0a21637663b2@linux.alibaba.com>
-References: <da8bd5e9-0476-d75b-4669-0a21637663b2@linux.alibaba.com>
+        Intel Corporation <linuxwwan@intel.com>,
+        alsa-devel@alsa-project.org, Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        intel-gfx@lists.freedesktop.org,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [patch 00/11] hrtimers: Cleanup hrtimer_forward() [ab]use
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Date:   Thu, 23 Sep 2021 18:04:18 +0200 (CEST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Sep 2021 17:08:13 +0800 =E7=8E=8B=E8=B4=87 wrote:
-> We observed below report when playing with netlink sock:
->=20
->   UBSAN: shift-out-of-bounds in net/sched/sch_api.c:580:10
->   shift exponent 249 is too large for 32-bit type
->   CPU: 0 PID: 685 Comm: a.out Not tainted
->   Call Trace:
->    dump_stack_lvl+0x8d/0xcf
->    ubsan_epilogue+0xa/0x4e
->    __ubsan_handle_shift_out_of_bounds+0x161/0x182
->    __qdisc_calculate_pkt_len+0xf0/0x190
->    __dev_queue_xmit+0x2ed/0x15b0
->=20
-> it seems like kernel won't check the stab size_log passing from
-> user, and will use the insane value later to calculate pkt_len.
->=20
-> This patch just add a check on the size_log to avoid insane
-> calculation.
->=20
-> Reported-by: Abaci <abaci@linux.alibaba.com>
-> Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
-> ---
->  include/uapi/linux/pkt_sched.h | 1 +
->  net/sched/sch_api.c            | 3 +++
->  2 files changed, 4 insertions(+)
->=20
-> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sche=
-d.h
-> index ec88590..fa194a0 100644
-> --- a/include/uapi/linux/pkt_sched.h
-> +++ b/include/uapi/linux/pkt_sched.h
-> @@ -98,6 +98,7 @@ struct tc_ratespec {
->  };
->=20
->  #define TC_RTAB_SIZE	1024
-> +#define TC_LOG_MAX	30
-
-Adding a uAPI define is not necessary.
-
->  struct tc_sizespec {
->  	unsigned char	cell_log;
-> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-> index 5e90e9b..1b6b8f8 100644
-> --- a/net/sched/sch_api.c
-> +++ b/net/sched/sch_api.c
-> @@ -513,6 +513,9 @@ static struct qdisc_size_table *qdisc_get_stab(struct=
- nlattr *opt,
->  		return stab;
->  	}
->=20
-> +	if (s->size_log > TC_LOG_MAX)
-> +		return ERR_PTR(-EINVAL);
-
-Looks sane, please add an extack message.
-
-Why not cover cell_log as well while at it?=20
-
->  	stab =3D kmalloc(sizeof(*stab) + tsize * sizeof(u16), GFP_KERNEL);
->  	if (!stab)
->  		return ERR_PTR(-ENOMEM);
-
+QSByZWNlbnQgc3l6Ym90IHJlcG9ydCB1bmVhcnRoZWQgYWJ1c2Ugb2YgaHJ0aW1lcl9mb3J3YXJk
+KCkgd2hpY2ggY2FuIGNhdXNlCnJ1bmF3YXkgdGltZXJzIGhvZ2dpbmcgdGhlIENQVSBpbiB0aW1l
+ciBleHBpcnkgY29udGV4dCBieSByZWFybWluZyB0aGUKdGltZXIgaW4gdGhlIHBhc3Qgb3ZlciBh
+bmQgb3Zlci4KClRoaXMgaGFwcGVucyB3aGVuIHRoZSBjYWxsZXIgdXNlcyB0aW1lci0+ZXhwaXJ5
+IGZvciB0aGUgJ25vdycgYXJndW1lbnQgb2YKaHJ0aW1lcl9mb3J3YXJkKCkuIFRoYXQgd29ya3Mg
+YXMgbG9uZyBhcyB0aGUgdGltZXIgZXhwaXJ5IGlzIG9uIHRpbWUsIGJ1dApjYW4gY2F1c2UgYSBs
+b25nIHBlcmlvZCBvZiByZWFybS9maXJlIGxvb3BzIHdoaWNoIGhvZyB0aGUgQ1BVLiBFeHBpcmlu
+ZwpsYXRlIGNhbiBoYXZlIHZhcmlvdXMgY2F1c2VzLCBidXQgb2J2aW91c2x5IHZpcnR1YWxpemF0
+aW9uIGlzIHByb25lIHRvIHRoYXQKZHVlIHRvIFZDUFUgc2NoZWR1bGluZy4KClRoZSBjb3JyZWN0
+IHVzYWdlIG9mIGhydGltZXJfZm9yd2FyZCgpIGlzIHRvIGhhbmQgdGhlIGN1cnJlbnQgdGltZSB0
+byB0aGUKJ25vdycgYXJndW1lbnQgd2hpY2ggZW5zdXJlcyB0aGF0IHRoZSBuZXh0IGV2ZW50IG9u
+IHRoZSBwZXJpb2RpYyB0aW1lIGxpbmUKaXMgcGFzdCBub3cuIFRoaXMgaXMgd2hhdCBocnRpbWVy
+X2ZvcndhcmRfbm93KCkgcHJvdmlkZXMuCgpUaGUgZm9sbG93aW5nIHNlcmllcyBhZGRyZXNzZXMg
+dGhpczoKCiAgICAxKSBBZGQgYSBkZWJ1ZyBtZWNoYW5pc20gdG8gdGhlIGhydGltZXIgZXhwaXJ5
+IGxvb3AKCiAgICAyKSBDb252ZXJ0IGFsbCBocnRpbWVyX2ZvcndhcmQoKSB1c2FnZSBvdXRzaWRl
+IG9mIGtlcm5lbC90aW1lLyB0bwogICAgICAgdXNlIGhydGltZXJfZm9yd2FyZF9ub3coKS4KCiAg
+ICAzKSBDb25maW5lIGhydGltZXJfZm9yd2FyZCgpIHRvIGtlcm5lbC90aW1lLyBjb3JlIGNvZGUu
+CgpUaGUgbWFjODAyMTFfaHdzaW0gcGF0Y2ggaGFzIGFscmVhZHkgYmVlbiBwaWNrZWQgdXAgYnkg
+dGhlIHdpcmVsZXNzCm1haW50YWluZXIgYW5kIGFsbCBvdGhlciBwYXRjaGVzIHdoaWNoIGFmZmVj
+dCB1c2FnZSBvdXRzaWRlIHRoZSBjb3JlIGNvZGUKY2FuIGJlIHBpY2tlZCB1cCBieSB0aGUgcmVs
+ZXZhbnQgc3Vic3lzdGVtcy4gSWYgYSBtYWludGFpbmVyIHdhbnRzIG1lIHRvCnBpY2sgYSBwYXJ0
+aWN1bGFyIHBhdGNoIHVwLCBwbGVhc2UgbGV0IG1lIGtub3cuCgpUaGUgbGFzdCBwYXRjaCB3aGlj
+aCBjb25maW5lcyBocnRpbWVyX2ZvcndhcmQoKSB3aWxsIGJlIHBvc3Rwb25lZCB1bnRpbCBhbGwK
+b3RoZXIgcGF0Y2hlcyBoYXZlIGJlZW4gbWVyZ2VkIGludG8gTGludXMgdHJlZS4KClRoZSBzZXJp
+ZXMgaXMgYWxzbyBhdmFpbGFibGUgZnJvbSBnaXQ6CgogICAgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcv
+cHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RnbHgvZGV2ZWwuZ2l0IGhydGltZXIKClRoYW5rcywK
+Cgl0Z2x4Ci0tLQogZHJpdmVycy9ncHUvZHJtL2k5MTUvaTkxNV9wbXUuYyAgICAgICAgfCAgICAy
+IC0KIGRyaXZlcnMvbmV0L3dpcmVsZXNzL21hYzgwMjExX2h3c2ltLmMgIHwgICAgNCArLQogZHJp
+dmVycy9uZXQvd3dhbi9pb3NtL2lvc21faXBjX2ltZW0uYyAgfCAgICA0ICstCiBkcml2ZXJzL3Bv
+d2VyL3Jlc2V0L2x0YzI5NTItcG93ZXJvZmYuYyB8ICAgIDQgLS0KIGluY2x1ZGUvbGludXgvaHJ0
+aW1lci5oICAgICAgICAgICAgICAgIHwgICAyNiAtLS0tLS0tLS0tLS0tLS0tLQogaW5jbHVkZS9s
+aW51eC9wb3NpeC10aW1lcnMuaCAgICAgICAgICAgfCAgICAzICsrCiBrZXJuZWwvc2lnbmFsLmMg
+ICAgICAgICAgICAgICAgICAgICAgICB8ICAgMTQgKy0tLS0tLS0tCiBrZXJuZWwvdGltZS9ocnRp
+bWVyLmMgICAgICAgICAgICAgICAgICB8ICAgNDggKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKystCiBrZXJuZWwvdGltZS9pdGltZXIuYyAgICAgICAgICAgICAgICAgICB8ICAgMTMgKysr
+KysrKysKIGtlcm5lbC90aW1lL3Bvc2l4LXRpbWVycy5jICAgICAgICAgICAgIHwgICA0MiArKysr
+KysrKysrKy0tLS0tLS0tLS0tLS0tLS0tCiBrZXJuZWwvdGltZS90aWNrLWludGVybmFsLmggICAg
+ICAgICAgICB8ICAgIDEgCiBuZXQvY2FuL2JjbS5jICAgICAgICAgICAgICAgICAgICAgICAgICB8
+ICAgIDIgLQogc291bmQvZHJpdmVycy9wY3NwL3Bjc3BfbGliLmMgICAgICAgICAgfCAgICAyIC0K
+IDEzIGZpbGVzIGNoYW5nZWQsIDkyIGluc2VydGlvbnMoKyksIDczIGRlbGV0aW9ucygtKQoK
