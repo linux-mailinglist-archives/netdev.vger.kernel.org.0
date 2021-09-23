@@ -2,79 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75B954162A8
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 18:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 136AF4162AA
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 18:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242424AbhIWQGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 12:06:03 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:35438 "EHLO
+        id S242431AbhIWQGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 12:06:06 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:35468 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242254AbhIWQF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 12:05:57 -0400
-Message-ID: <20210923153339.561136215@linutronix.de>
+        with ESMTP id S242406AbhIWQGA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 12:06:00 -0400
+Message-ID: <20210923153339.684546907@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1632413064;
+        s=2020; t=1632413067;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=/N572lnqpeKhSQ2LBWCWOVWDd83CspIx8lV7izCwEA0=;
-        b=eIBJeskyWPAmb8TYgU19ExmRAeOgUx7OHcGhSAlWk9cCln7QogXZTLyfq0nr+rXwvMS50J
-        RBFaFftxcfqhuR4kSOD8oGt3F5FWOJcIvPTK2wFXlm75TDOFHwbs1RG2vSAUfdH24dKXAT
-        i54a+r5sTek/vFvCJXbk/smkbiCv3Md/iayefkXgR0hByxhwEbTDPR0VO2KUKmvq1+OHSW
-        /oVOUIBe3A5XX6qUFHxGEoyof8DLvDNTa4a2NFAGh4zJo7tvin+CCYR4SdBz8SbCkGsfmH
-        WdGA/h3Od4fx86qgDmAujHoujBF5vIAbI3/H6W/L39nPiR0CHouOaxrdqTaJ9A==
+         references:references; bh=V+wcLznHEL6e40Q6X7LpkxWU7Zjc25v6soPUcFLqFBY=;
+        b=dVM4Xum+mQkFstydxFuGf5BisZe/c9O6s8w6jSuLA7aFJd64a6TX3rafQ7vbCLrtT/RRA6
+        gEO/cN+Q80Lw8ckbKyKPdtAyEhTVfHQNeRSRkDriW9nq5Hfgr5C8POOVqcqbu8bdu88eJO
+        j5QeAHVtuCQ12n3kSEYR9S3xZvBHuvkSxHTZ6HLo8CLhymUTm8p17YJMGuxRMqbNOHcNuy
+        MeMmKn7fUvaSw+XermL9Bmbx7npPdu3i4jNyhHgqxoGxDBBjTbxVeHgIqTxSd6OUpLdNAc
+        gtnHXiI0kzTRVIgvk63MJvpnghAzdCg6Hqv27hl+ub2eJNg2GFZsbow5p3os4g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1632413064;
+        s=2020e; t=1632413067;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=/N572lnqpeKhSQ2LBWCWOVWDd83CspIx8lV7izCwEA0=;
-        b=TH5AB5O/KXVllnKb65lhQoDM4Al+u7D1CMUk4+7DxzABLp3Y8BR2QQi2S35A2iCJrBo57e
-        mbckkC3mSOnSxbBg==
+         references:references; bh=V+wcLznHEL6e40Q6X7LpkxWU7Zjc25v6soPUcFLqFBY=;
+        b=ntmMbnkLf5fxazFGm6OXJkBz0j1nWLwzO+vpZ3AaiKb0kCzl1acxcdGqKpK2N87Ikus9f6
+        sSAAqtt7HpZ1EaBA==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Loic Poulain <loic.poulain@linaro.org>, netdev@vger.kernel.org,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Intel Corporation <linuxwwan@intel.com>
-Subject: [patch 03/11] net: iosm: Use hrtimer_forward_now()
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [patch 05/11] can: bcm: Use hrtimer_forward_now()
 References: <20210923153311.225307347@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 23 Sep 2021 18:04:23 +0200 (CEST)
+Date:   Thu, 23 Sep 2021 18:04:27 +0200 (CEST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hrtimer_forward_now() is providing the same functionality. Preparation for
-making hrtimer_forward() timer core code only.
+hrtimer_forward_now() provides the same functionality as the open coded
+hrimer_forward() invocation. Prepares for removal of hrtimer_forward() from
+the public interfaces.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Loic Poulain <loic.poulain@linaro.org>
+Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+Cc: linux-can@vger.kernel.org
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
 Cc: netdev@vger.kernel.org
-Cc: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: M Chetan Kumar <m.chetan.kumar@intel.com>
-Cc: Johannes Berg <johannes@sipsolutions.net>
 Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Intel Corporation <linuxwwan@intel.com>
 ---
- drivers/net/wwan/iosm/iosm_ipc_imem.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/can/bcm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wwan/iosm/iosm_ipc_imem.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-@@ -482,8 +482,8 @@ static enum hrtimer_restart ipc_imem_sta
- 		container_of(hr_timer, struct iosm_imem, startup_timer);
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -625,7 +625,7 @@ static enum hrtimer_restart bcm_rx_thr_h
+ 	struct bcm_op *op = container_of(hrtimer, struct bcm_op, thrtimer);
  
- 	if (ktime_to_ns(ipc_imem->hrtimer_period)) {
--		hrtimer_forward(&ipc_imem->startup_timer, ktime_get(),
--				ipc_imem->hrtimer_period);
-+		hrtimer_forward_now(&ipc_imem->startup_timer,
-+				    ipc_imem->hrtimer_period);
- 		result = HRTIMER_RESTART;
- 	}
- 
+ 	if (bcm_rx_thr_flush(op)) {
+-		hrtimer_forward(hrtimer, ktime_get(), op->kt_ival2);
++		hrtimer_forward_now(hrtimer, op->kt_ival2);
+ 		return HRTIMER_RESTART;
+ 	} else {
+ 		/* rearm throttle handling */
 
