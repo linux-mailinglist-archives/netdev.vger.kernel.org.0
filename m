@@ -2,137 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88BD34159F9
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 10:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 347F9415A11
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 10:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239881AbhIWIVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 04:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
+        id S239958AbhIWIfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 04:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237996AbhIWIVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 04:21:00 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC214C061574
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 01:19:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ao4ccLwyooufgrmk2CojZeNgKOy5V8GBM4YWvOAJKUM=; b=KCbXGLZVRx/0U40LJxg8X6WUaw
-        Ng53BaekUXu5RMEz6j4DHrm9QPCKeJOyAfIjvtCM7spa8m/k8uEpYN+QiP+3blwaE2aPQnG5Fn3zy
-        JwUcziyDj/r2lNDkfLV7Xe9rVZvxHU1deWmPTIjl7kXguxqD8jz+03iWAs2+FpqTHEQotY4SWPLAt
-        ZfOxHRQq33QjFs/QsEGB7ZiqRMAV7AGAe6dJVxgCSpAH9HmUBbDQdgSO3BFqlqtzcdrLgSEk231Zf
-        Wg3MOYyNXPHObeCL+LIENwpE0D68c0W0dsnwx04v6dhg1/NxJxprSBEqysBt5ug7D11xFVirnOho7
-        a+bW3J1w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54750)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mTJwx-0004lA-IZ; Thu, 23 Sep 2021 09:19:23 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mTJwv-000553-6G; Thu, 23 Sep 2021 09:19:21 +0100
-Date:   Thu, 23 Sep 2021 09:19:21 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Michael Walle <michael@walle.cc>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: Re: [RFC PATCH v3 net-next 2/6] net: phylink: introduce a generic
- method for querying PHY in-band autoneg capability
-Message-ID: <YUw4iTLblfpOrdwm@shell.armlinux.org.uk>
-References: <20210922181446.2677089-1-vladimir.oltean@nxp.com>
- <20210922181446.2677089-3-vladimir.oltean@nxp.com>
- <YUuei7Qnb6okURPE@shell.armlinux.org.uk>
- <20210922213116.7wlvnjfeqjltiecs@skbuf>
- <20210922214827.wczsgk3yw3vjsv5w@skbuf>
- <YUu2OlXElk5GR/3N@shell.armlinux.org.uk>
- <20210922235033.hoz4rbx2eid6snyc@skbuf>
+        with ESMTP id S239940AbhIWIfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 04:35:30 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C10C061756
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 01:33:59 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id t8so14887895wrq.4
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 01:33:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=G+mMJvGg8dU97lnDBzf9zom9gl16GdTi24rkzKfUcCU=;
+        b=zqLqQBKrpWABlzgNbc7GUNBBsOSQkkg4QZVJqxXLof6oZ7ZydK8rS3o4jKHk1C+AMj
+         cExCWhLm+EpoARU6N09MaNRL1xAiGRp1SW76vFLCsZIrNj78sShIpg5cfIxSmPYhbvjB
+         nBvV5Fnx4pmFib5kx7GAc2Lx06wzP87t2SgdzNEed4gRndX1Ju147IXrIEHuuafKysK1
+         3LgSmnovW/l8TgjFLQiGKHB3IGKWVSXW4P8SldByrlRNYblJeJCLUZTxM8qL0EWyBAvo
+         pt2Bn9OP85meZhAGEw8ABqHPWiCMIxf86ND4rOeTLRdwJUInHUmQhIN+rI62COtCjfCW
+         /AZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=G+mMJvGg8dU97lnDBzf9zom9gl16GdTi24rkzKfUcCU=;
+        b=xqv3cHfje1G7CC7hWk4V56QYAh2mIYot43VqYF48kfLnp6eX9BKYFSwl+I0XwgAe9H
+         8T/2ngCiMc6vRwTq5nxlzSxzaP2kzyE3C4eHty4NQQR7sEmICCIgSs49f615Xqt/OmO3
+         sa5IYzZcts8kcMfzYwwcRFAXLn+kXkf+6HfpluekqQhOcllKgVEscnwOHPttclkr0F07
+         4wvYFb5FQFexzUdiNQ6arkCZjs3hHcVbrJmiNNUXGGWnDfONit9tOOImM1bjR2c+svLP
+         BiUxOjnZQc/lKnJnfUN3UdMf4FDtGiJwhqrrFXAN0dICRH5Ren+NQn+KhBj8QrcopbRg
+         OfPA==
+X-Gm-Message-State: AOAM531JxDyRWv7FluwrUJR5i4aeD26fKQJayfTef7aHNJGhEAsNQnLQ
+        8oglLQTYGKEKIwarXe/63iP82w==
+X-Google-Smtp-Source: ABdhPJxTVpVPs6CFILXmVDenfushxErseoarwJ6xl+nXclCd3UICAw8lJ297gwlaCSBboxXUZxTDfQ==
+X-Received: by 2002:adf:8919:: with SMTP id s25mr3636692wrs.185.1632386037915;
+        Thu, 23 Sep 2021 01:33:57 -0700 (PDT)
+Received: from apalos.home (ppp-94-66-220-137.home.otenet.gr. [94.66.220.137])
+        by smtp.gmail.com with ESMTPSA id q10sm4374105wmq.12.2021.09.23.01.33.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Sep 2021 01:33:57 -0700 (PDT)
+Date:   Thu, 23 Sep 2021 11:33:54 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        hawk@kernel.org, jonathan.lemon@gmail.com, alobakin@pm.me,
+        willemb@google.com, cong.wang@bytedance.com, pabeni@redhat.com,
+        haokexin@gmail.com, nogikh@google.com, elver@google.com,
+        memxor@gmail.com, edumazet@google.com, alexander.duyck@gmail.com,
+        dsahern@gmail.com
+Subject: Re: [PATCH net-next 3/7] pool_pool: avoid calling compound_head()
+ for skb frag page
+Message-ID: <YUw78q4IrfR0D2/J@apalos.home>
+References: <20210922094131.15625-1-linyunsheng@huawei.com>
+ <20210922094131.15625-4-linyunsheng@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210922235033.hoz4rbx2eid6snyc@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20210922094131.15625-4-linyunsheng@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 22, 2021 at 11:50:34PM +0000, Vladimir Oltean wrote:
-> On Thu, Sep 23, 2021 at 12:03:22AM +0100, Russell King (Oracle) wrote:
-> > On Wed, Sep 22, 2021 at 09:48:28PM +0000, Vladimir Oltean wrote:
-> > > On Thu, Sep 23, 2021 at 12:31:16AM +0300, Vladimir Oltean wrote:
-> > > > On Wed, Sep 22, 2021 at 10:22:19PM +0100, Russell King (Oracle) wrote:
-> > > > > On Wed, Sep 22, 2021 at 09:14:42PM +0300, Vladimir Oltean wrote:
-> > > > > > +static unsigned int phylink_fixup_inband_aneg(struct phylink *pl,
-> > > > > > +					      struct phy_device *phy,
-> > > > > > +					      unsigned int mode)
-> > > > > > +{
-> > > > > > +	int ret;
-> > > > > > +
-> > > > > > +	ret = phy_validate_inband_aneg(phy, pl->link_interface);
-> > > > > > +	if (ret == PHY_INBAND_ANEG_UNKNOWN) {
-> > > > > > +		phylink_dbg(pl,
-> > > > > > +			    "PHY driver does not report in-band autoneg capability, assuming %s\n",
-> > > > > > +			    phylink_autoneg_inband(mode) ? "true" : "false");
-> > > > > > +
-> > > > > > +		return mode;
-> > > > > > +	}
-> > > > > > +
-> > > > > > +	if (phylink_autoneg_inband(mode) && !(ret & PHY_INBAND_ANEG_ON)) {
-> > > > > > +		phylink_err(pl,
-> > > > > > +			    "Requested in-band autoneg but driver does not support this, disabling it.\n");
-> > > > >
-> > > > > If we add support to the BCM84881 driver to work with
-> > > > > phy_validate_inband_aneg(), then this will always return
-> > > > > PHY_INBAND_ANEG_OFF and never PHY_INBAND_ANEG_ON. Consequently,
-> > > > > this will always produce this "error". It is not an error in the
-> > > > > SFP case, but it is if firmware is misconfigured.
-> > > > >
-> > > > > So, this needs better handling - we should not be issuing an error-
-> > > > > level kernel message for something that is "normal".
-> > > >
-> > > > Is this better?
-> > > >
-> > > > 		phylink_printk(phy_on_sfp(phy) ? KERN_DEBUG : KERN_ERR, pl,
-> > > > 			       "Requested in-band autoneg but driver does not support this, disabling it.\n");
-> > >
-> > > Ah, not sure whether that was a trick question or not, but
-> > > phylink_fixup_inband_aneg function does not get called for the SFP code
-> > > path, I even noted this in the commit message but forgot:
-> >
-> > No it wasn't a trick question. I thought you were calling
-> > phylink_fixup_inband_aneg() from phylink_sfp_config(), but I see now
-> > that you don't. That's what happens when you try and rush to review.
+On Wed, Sep 22, 2021 at 05:41:27PM +0800, Yunsheng Lin wrote:
+> As the pp page for a skb frag is always a head page, so make
+> sure skb_pp_recycle() passes a head page to avoid calling
+> compound_head() for skb frag page case.
+
+Doesn't that rely on the driver mostly (i.e what's passed in skb_frag_set_page() ? 
+None of the current netstack code assumes bv_page is the head page of a 
+compound page.  Since our page_pool allocator can will allocate compound
+pages for order > 0,  why should we rely on it ?
+
+Thanks
+/Ilias
 > 
-> How did I "rush to review" exactly? I waited for 24 days since the v2
-> for even a single review comment, with even a ping in between, before
-> resending the series largely unaltered, just with an extra patch appended.
-
-FFS. Are you intentionally trying to misinterpret everything I say?
-Who here is doing a review? You or me?
-
-"That's what happens when you try and rush to review." is a form of
-speech - clearly the "you" is not aimed at you Vladimir, but me.
-Let's put this a different way.
-
-I am blaming myself for rushing to review this last night.
-
-Is that more clear for you?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+>  include/linux/skbuff.h | 2 +-
+>  net/core/page_pool.c   | 2 --
+>  2 files changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 6bdb0db3e825..35eebc2310a5 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -4722,7 +4722,7 @@ static inline bool skb_pp_recycle(struct sk_buff *skb, void *data)
+>  {
+>  	if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
+>  		return false;
+> -	return page_pool_return_skb_page(virt_to_page(data));
+> +	return page_pool_return_skb_page(virt_to_head_page(data));
+>  }
+>  
+>  #endif	/* __KERNEL__ */
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index f7e71dcb6a2e..357fb53343a0 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -742,8 +742,6 @@ bool page_pool_return_skb_page(struct page *page)
+>  {
+>  	struct page_pool *pp;
+>  
+> -	page = compound_head(page);
+> -
+>  	/* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
+>  	 * in order to preserve any existing bits, such as bit 0 for the
+>  	 * head page of compound page and bit 1 for pfmemalloc page, so
+> -- 
+> 2.33.0
+> 
