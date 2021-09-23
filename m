@@ -2,142 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC5EC41676D
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 23:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 343704167C8
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 23:59:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243318AbhIWVZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 17:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59858 "EHLO
+        id S243393AbhIWWBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 18:01:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243277AbhIWVZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 17:25:47 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B7DC061756
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 14:24:15 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id b82so473974ybg.1
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 14:24:15 -0700 (PDT)
+        with ESMTP id S238517AbhIWWBV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 18:01:21 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6373DC061574
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 14:59:49 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id b20so32139476lfv.3
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 14:59:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4NFD50f4D8OM/NybzmgBINAYXaCydfgGt6oGYeUyWVM=;
-        b=a01KcFjfZE09aHK//1COGS+XgNwDx2f7ZNE1rGu2p5KFmmN7BH3qDdeknK+KiHCmF8
-         l8FgeRboJYMsUN2OmKIWF9+qycX0wTwfirMsltIADGBAYuiRn8JvgxQiJCksG6iyd6NC
-         7VNJFgLAbEll/y3DRc7wUIlZ9cWX089qCdBZ4=
+        bh=qRRNS2od1/Bexc5EY1FdiTqWnbjxMn9Xh7KI02U2j9k=;
+        b=TmY/VUwI6DUm8VQWMsGbqXsMtdVXqnD4mrJi9/FcqubvVyvh5U385sKNId1Du5Wdph
+         ovjmgvk1hL1rHMhyQH5vhWKx0o4qoAULMjj6Q1pgqZPwQgk/JIV4bgefzbjmIdP+bhNM
+         mYGqciCIZ1++CPksmM6tHb9sOz1goMqltG579OUq71YYbO6UKxrkRocG1o1A1tieTsu3
+         NneAndlTIxa6uQMCc9xrJsusap6rKiYAU9XUo8QQ0gtRQO0dCxy9qYXyFv5TeMPOaYi+
+         mNEvUUo2opx2nRdyM5JajxSyzF6K1uXzXibTJktiwye8Uir6w6Y8hXT8dfkaEpdMuUe9
+         jbdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4NFD50f4D8OM/NybzmgBINAYXaCydfgGt6oGYeUyWVM=;
-        b=EHk9g7jVEmwejYRr0mVKfI2Wckmlqj6izqXlxOo8yrgbx0Sa9ZpsZIqRoQ6yPBs7Z4
-         IjPR5T1uucd2UiJhWkMQX7S+8/LZ6IHryHFSWpb8OQgIJT+u+g03oZ+3aixqDT0N22Qd
-         EK+wgUWO2xq96hKW+bVc3faCSCqEdt1TxbbMbM1NRHjoZ39aqjGTnrfoOUTDalEvG0em
-         1BhmTQnh9QRsihACQFISrnsCAkixZ8nYJzvCbaynJkmXq+cLTtPUXwDQuiwJtgVbneKq
-         zSeTSgCj8nOY7Ep3cWBsZ2pAyfMN5SAZW7IC4d1j0w/RofGZq1ZJM5X8V13NnevJ+VvI
-         Gzog==
-X-Gm-Message-State: AOAM530zIy+ukbyRroSStBjwdBgG5XSONO3dRTurQqrHxrQbx6PwdV9b
-        xMILJagdbY2phOiAUwH69Uo7Vtuumow6sxcnBfzzUA==
-X-Google-Smtp-Source: ABdhPJyZItCG+2qGFbPGCky+CLR7O1xm1lchqIXJehrltvrT3SdTl4WvTGugSEg3MJCKJkRphhP5e6yaOzEESqTdIa0=
-X-Received: by 2002:a25:81c5:: with SMTP id n5mr8514500ybm.276.1632432254531;
- Thu, 23 Sep 2021 14:24:14 -0700 (PDT)
+        bh=qRRNS2od1/Bexc5EY1FdiTqWnbjxMn9Xh7KI02U2j9k=;
+        b=rBs56zE3V6QkASvRIp0kpy2jheX2QvvaUQIqqliTF1ZxHxn/P383GbmBh+5u1AY1TF
+         PHxPvtFtQyP/rKK23BohuWIougM0aSc4//4qJI1Ew1c80tULS8Q5cggDisrABp03aAdm
+         fhPwgwaJb0zNvn+VBZHTIRubXi17ajHxkHpimoABAaqFZvusYmyCXJrcaLzyusmiYIQ/
+         bk8szkxwqXu3VWUu7qe3WY5LFWFZHYy0Os7Nht1ZJQkR3MAPALbeWfKHkcBSYLMbi2QN
+         3KvO+NiwLzvnQgnDe461hbui1d+6r012VYRbWj23pat9wWqloXwNUmCDh7A25qM+XyhM
+         HE/Q==
+X-Gm-Message-State: AOAM532mRsjI5dqwLDJJGBdrpcEOjmHgntLy01lOPzPqznuIekUbE7k2
+        5J+C0W/LLFv4XM0bgSTEltOh4OmhRTxrhnHLlBOC5g==
+X-Google-Smtp-Source: ABdhPJyrnHJj3UeJN8VEGNUn+1Bnk8jQ0VFISmxBvHgOV4+6/lBDbQq2q1Py2RKZNNkPbqtKbbeT2IN6zNu4WE6qlH4=
+X-Received: by 2002:a2e:4c19:: with SMTP id z25mr7577149lja.145.1632434387711;
+ Thu, 23 Sep 2021 14:59:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1632420430.git.leonro@nvidia.com> <7b85ce0d2a5056af2c7e14dbd16c55d86aac659c.1632420431.git.leonro@nvidia.com>
-In-Reply-To: <7b85ce0d2a5056af2c7e14dbd16c55d86aac659c.1632420431.git.leonro@nvidia.com>
-From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Thu, 23 Sep 2021 14:23:38 -0700
-Message-ID: <CAKOOJTzz1Pp9CYCWAO=gi3099xy2oBtdREp8iOftVzKqEC0hvQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/6] bnxt_en: Properly remove port parameter support
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+References: <20210913143156.1264570-1-linus.walleij@linaro.org> <20210915071901.1315-1-dqfext@gmail.com>
+In-Reply-To: <20210915071901.1315-1-dqfext@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 23 Sep 2021 23:59:36 +0200
+Message-ID: <CACRpkdYu7Q5Y88YmBzcBBGycmW92dd0jVhJNUpDFyd65bBq52A@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: tag_rtl4_a: Drop bit 9 from egress frames
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        Ariel Elior <aelior@marvell.com>,
-        GR-everest-linux-l2@marvell.com,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        Igor Russkikh <irusskikh@marvell.com>,
-        intel-wired-lan@lists.osuosl.org,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Javed Hasan <jhasan@marvell.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-scsi@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        netdev <netdev@vger.kernel.org>,
-        Sathya Perla <sathya.perla@broadcom.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 23, 2021 at 11:13 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> From: Leon Romanovsky <leonro@nvidia.com>
->
-> This driver doesn't have any port parameters and registers
-> devlink port parameters with empty table. Remove the useless
-> calls to devlink_port_params_register and _unregister.
->
-> Fixes: da203dfa89ce ("Revert "devlink: Add a generic wake_on_lan port parameter"")
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 13 -------------
->  1 file changed, 13 deletions(-)
->
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> index dc0851f709f5..ed95e28d60ef 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> @@ -736,9 +736,6 @@ static const struct devlink_param bnxt_dl_params[] = {
->                              NULL),
->  };
->
-> -static const struct devlink_param bnxt_dl_port_params[] = {
-> -};
-> -
->  static int bnxt_dl_params_register(struct bnxt *bp)
->  {
->         int rc;
-> @@ -753,14 +750,6 @@ static int bnxt_dl_params_register(struct bnxt *bp)
->                             rc);
->                 return rc;
->         }
-> -       rc = devlink_port_params_register(&bp->dl_port, bnxt_dl_port_params,
-> -                                         ARRAY_SIZE(bnxt_dl_port_params));
-> -       if (rc) {
-> -               netdev_err(bp->dev, "devlink_port_params_register failed\n");
-> -               devlink_params_unregister(bp->dl, bnxt_dl_params,
-> -                                         ARRAY_SIZE(bnxt_dl_params));
-> -               return rc;
-> -       }
->         devlink_params_publish(bp->dl);
->
->         return 0;
-> @@ -773,8 +762,6 @@ static void bnxt_dl_params_unregister(struct bnxt *bp)
->
->         devlink_params_unregister(bp->dl, bnxt_dl_params,
->                                   ARRAY_SIZE(bnxt_dl_params));
-> -       devlink_port_params_unregister(&bp->dl_port, bnxt_dl_port_params,
-> -                                      ARRAY_SIZE(bnxt_dl_port_params));
->  }
->
->  int bnxt_dl_register(struct bnxt *bp)
-> --
-> 2.31.1
->
+On Wed, Sep 15, 2021 at 9:20 AM DENG Qingfang <dqfext@gmail.com> wrote:
+> On Mon, Sep 13, 2021 at 04:31:56PM +0200, Linus Walleij wrote:
 
-Ah, looks like the revert in da203dfa89ce wasn't complete. Thanks for
-the cleanup.
+> > This drops the code setting bit 9 on egress frames on the
+> > Realtek "type A" (RTL8366RB) frames.
+>
+> FYI, on RTL8366S, bit 9 on egress frames is disable learning.
+>
+> > This bit was set on ingress frames for unknown reason,
+>
+> I think it could be the reason why the frame is forwarded to the CPU.
 
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Hm I suspect it disable learning on RTL8366RB as well.
+Do we have some use for that feature in DSA taggers?
 
-Regards,
-Edwin Peer
+Yours,
+Linus Walleij
