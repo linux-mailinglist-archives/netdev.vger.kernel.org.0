@@ -2,141 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E76774166F0
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 22:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D7F9416700
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 22:57:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243139AbhIWUwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 16:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52068 "EHLO
+        id S243190AbhIWU7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 16:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbhIWUwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 16:52:39 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7127C061574;
-        Thu, 23 Sep 2021 13:51:07 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id pf3-20020a17090b1d8300b0019e081aa87bso5808803pjb.0;
-        Thu, 23 Sep 2021 13:51:07 -0700 (PDT)
+        with ESMTP id S229609AbhIWU7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 16:59:08 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA578C061574;
+        Thu, 23 Sep 2021 13:57:36 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id y8so6845016pfa.7;
+        Thu, 23 Sep 2021 13:57:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JVyWDXyJd0p/RNa9onFmHZlTQ0NybmhOAFf6WpHWxGQ=;
-        b=GNRv8zTp8ZUGr+/AYgW3Vqn6U2T+C9Sv4sDdXwbY/xdV69jYWqB72WtBUZ/PX2SNBG
-         wUytYY3W2JUT22XZY/GQ4lIJf1jNUxtseunspoHJTD5mKgBSHMcmTZqqWxJ8epv1b7bn
-         ylMfhYn6yufKiBO3m4HX8g6mRwYdYJDjdYvYHk/eoxQeL30tOdReJ3+R4wlrBdzLRA/T
-         jE5zE57xsM93/QcVXmC4DaIJUdmIxig3yem/sIuBgiI/FGNclnpCE18FFXLcObiuxV3P
-         VcJ278x2jyyzb0Z8jdG4C0YYwC+Tk7MM4j/5eeun950J7vDx/08wzSX3QbK/xkMxFGjU
-         Od1w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KHgOgmrouOYZZcqRYMh0usWhvdx5OfrwOvmD1G6LDZo=;
+        b=QXDmWv36pjZMnDchbHBhFidlKPULmI8gZTTf+Ilm5srTv79RULKDaP9b3xPYKgV/iI
+         3YOOggHXoDyX8buY0cXm1VmUDyrqTwkEMSqa77fuIqeANg+22TbkoPzoWrmpiQhyoKf7
+         V5Bf8GOMjzCBSfkrOX+qVNGJBXVC+f9e06ndS1t5ig+TGBD4DocX68eaovceQR5nsiJ8
+         MKcWvQdw/D2ZZfpTRgU4/86NfNhqjCrcYsoDe+gQGiCv6aYAD5CSQfZPHmKBLko0goiF
+         K4xviazouGy2EEQ9gNf4r4hVj28eU+HbbsExgDv/UMQX5IOxYqJ2s6VjZu2PVen7HZEn
+         2ZOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JVyWDXyJd0p/RNa9onFmHZlTQ0NybmhOAFf6WpHWxGQ=;
-        b=ndfHuL6b4kJwiCBvESG2KEO5AmBdO11h5SM4NkhS57U82k7qvmqAGdEGO66nZfipvp
-         4OpRRAS5Yf9fb/JDWdqrYMCHOQrWpgzPw4eC1g87WPNf9w/5sqI7QHzE1ovGT8G1huRs
-         JYwEunSGjIciO36KBiMC+yC3DuMJELmb2IyiIxUhh+99kXMONZq/VZkwY79pH3mcxina
-         ZHXPZB56c4luwjAW6ri7C7KTFUuD+m6GoOhammVM0xvQWMw/yBjWTycbCKuGF2eSG2t3
-         4xxfn03VxejttccoCPQ27kanupZwjdoBXE0rGeyxXPzlvnGPbImerMAh2jBm1jrtzPYj
-         IdTA==
-X-Gm-Message-State: AOAM5314vtzhvWrPv8N6hBvN0sqj5gLh3+rR8vEcfUAtlYpM/j2rMoIc
-        dheIvS/mjI13aptFmg+UKPmWiHQxQE0=
-X-Google-Smtp-Source: ABdhPJwM6jyjl8B8uwyiQG2P9mpTf8Q9+NBvT6KmUXBZTNw9hEED/93jXlydxJkYwU/LXfD1IRbuRA==
-X-Received: by 2002:a17:902:e88d:b0:13b:8ed2:9f42 with SMTP id w13-20020a170902e88d00b0013b8ed29f42mr5799842plg.67.1632430267307;
-        Thu, 23 Sep 2021 13:51:07 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:500::7:504a])
-        by smtp.gmail.com with ESMTPSA id i22sm5946342pjv.47.2021.09.23.13.51.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KHgOgmrouOYZZcqRYMh0usWhvdx5OfrwOvmD1G6LDZo=;
+        b=JIvpM3dpT19ztmUgrz5n6WPAb0SM0MSjlt2UhpxZqKmsGQ8sFCGbmaGqerN2Sqyq+z
+         /sBFJlZXI1fnr8I0CcwQPwyrt3NhTNP+n6bXOD09NtCi0JcRBni4RqTqL10jXk67yTP4
+         PiS0oLyRoWEJRLJprduF4porewonilaEjI4GCp4/R/Hn5SlgnHy0SgHd4WPvy8Vgj44n
+         rGP70HuWeiWEDLNw0oZTwjC/laZ4wTi08SS75xFTyIvVfyUSBXggAmGEL1XoDwILYGNx
+         LeCeJo8E7U8TfwtKQoXZJ5yIsk63wX/8HpRalQQr/DSG23nHeV1Gparq9Mx4zNEO7tZt
+         Upzg==
+X-Gm-Message-State: AOAM532SHhGZy9QVUxHYtqfi3I7Adx4sEYHb4zr1x6uraPQwg0/1DgHV
+        uiQxRcmOPuY7DMRHrALCLErKvM0ACsQ=
+X-Google-Smtp-Source: ABdhPJzldSPJZzniruXpuHn2U1KzSPnuaUfda3zFl3AXwtxZ12YtQFQpsWY9AX1ChKTTduvvnhiG8w==
+X-Received: by 2002:a62:407:0:b0:447:c104:2529 with SMTP id 7-20020a620407000000b00447c1042529mr6270072pfe.8.1632430655463;
+        Thu, 23 Sep 2021 13:57:35 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q21sm5873359pjg.55.2021.09.23.13.57.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Sep 2021 13:51:07 -0700 (PDT)
-Date:   Thu, 23 Sep 2021 13:51:05 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Dave Marchevsky <davemarchevsky@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Yonghong Song <yhs@fb.com>
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf: keep track of prog verification
- stats
-Message-ID: <20210923205105.zufadghli5772uma@ast-mbp>
-References: <20210920151112.3770991-1-davemarchevsky@fb.com>
+        Thu, 23 Sep 2021 13:57:34 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM ETHERNET PHY
+        DRIVERS), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: phy: broadcom: Fix PHY_BRCM_IDDQ_SUSPEND definition
+Date:   Thu, 23 Sep 2021 13:57:32 -0700
+Message-Id: <20210923205732.507795-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210920151112.3770991-1-davemarchevsky@fb.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 20, 2021 at 08:11:10AM -0700, Dave Marchevsky wrote:
-> The verifier currently logs some useful statistics in
-> print_verification_stats. Although the text log is an effective feedback
-> tool for an engineer iterating on a single application, it would also be
-> useful to enable tracking these stats in a more structured form for
-> fleetwide or historical analysis, which this patchset attempts to do.
-> 
-> A concrete motivating usecase which came up in recent weeks:
-> 
-> A team owns a complex BPF program, with various folks extending its
-> functionality over the years. An engineer tries to make a relatively
-> simple addition but encounters "BPF program is too large. Processed
-> 1000001 insn". 
-> 
-> Their changes bumped the processed insns from 700k to over the limit and
-> there's no obvious way to simplify. They must now consider a large
-> refactor in order to incorporate the new feature. What if there was some
-> previous change which bumped processed insns from 200k->700k which
-> _could_ be modified to stress verifier less? Tracking historical
-> verifier stats for each version of the program over the years would
-> reduce manual work necessary to find such a change.
-> 
-> 
-> Although parsing the text log could work for this scenario, a solution
-> that's resilient to log format and other verifier changes would be
-> preferable.
-> 
-> This patchset adds a bpf_prog_verif_stats struct - containing the same
-> data logged by print_verification_stats - which can be retrieved as part
-> of bpf_prog_info. Looking for general feedback on approach and a few
-> specific areas before fleshing it out further:
-> 
-> * None of my usecases require storing verif_stats for the lifetime of a
->   loaded prog, but adding to bpf_prog_aux felt more correct than trying
->   to pass verif_stats back as part of BPF_PROG_LOAD
-> * The verif_stats are probably not generally useful enough to warrant
->   inclusion in fdinfo, but hoping to get confirmation before removing
->   that change in patch 1
-> * processed_insn, verification_time, and total_states are immediately
->   useful for me, rest were added for parity with
-> 	print_verification_stats. Can remove.
-> * Perhaps a version field would be useful in verif_stats in case future
->   verifier changes make some current stats meaningless
-> * Note: stack_depth stat was intentionally skipped to keep patch 1
->   simple. Will add if approach looks good.
+An extraneous number was added during the inclusion of that change,
+correct that such that we use a single bit as is expected by the PHY
+driver.
 
-Sorry for the delay. LPC consumes a lot of mental energy :)
+Reported-by: Justin Chen <justinpopo6@gmail.com>
+Fixes: d6da08ed1425 ("net: phy: broadcom: Add IDDQ-SR mode")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ include/linux/brcmphy.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I see the value of exposing some of the verification stats as prog_info.
-Let's look at the list:
-struct bpf_prog_verif_stats {
-       __u64 verification_time;
-       __u32 insn_processed;
-       __u32 max_states_per_insn;
-       __u32 total_states;
-       __u32 peak_states;
-       __u32 longest_mark_read_walk;
-};
-verification_time is non deterministic. It varies with frequency
-and run-to-run. I don't see how alerting tools can use it.
+diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+index b119d6819d6c..27d9b6683f0e 100644
+--- a/include/linux/brcmphy.h
++++ b/include/linux/brcmphy.h
+@@ -67,7 +67,7 @@
+ #define PHY_BRCM_CLEAR_RGMII_MODE	0x00000004
+ #define PHY_BRCM_DIS_TXCRXC_NOENRGY	0x00000008
+ #define PHY_BRCM_EN_MASTER_MODE		0x00000010
+-#define PHY_BRCM_IDDQ_SUSPEND		0x000000220
++#define PHY_BRCM_IDDQ_SUSPEND		0x00000020
+ 
+ /* Broadcom BCM7xxx specific workarounds */
+ #define PHY_BRCM_7XXX_REV(x)		(((x) >> 8) & 0xff)
+-- 
+2.25.1
 
-insn_processed is indeed the main verification metric.
-By now it's well known and understood.
-
-max_states_per_insn, total_states, etc were the metrics I've studied
-carefully with pruning, back tracking and pretty much every significant
-change I did or reiviewed in the verifier. They're useful to humans
-and developers, but I don't see how alerting tools will use them.
-
-So it feels to me that insn_processed alone will be enough to address the
-monitoring goal.
-It can be exposed to fd_info and printed by bpftool.
-If/when it changes with some future verifier algorithm we should be able
-to approximate it.
