@@ -2,190 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43A1C416558
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 20:45:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C12416593
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 21:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242792AbhIWSrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 14:47:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58978 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242708AbhIWSrG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 14:47:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632422734;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mA1ZreymseI332A07co5Ore8q2n397KYZFqSr+ZrYaY=;
-        b=WJ73+gfJDZBtK5iEfAPrpmrjR+Mr7WUx5UqcRd89++VtJoa3ca+76aa8RLz/LNlMGiUsPV
-        /BTQ+1PfsPMRHahmxPJ8NivLhYMllSjXjQv86BIqwqYr7K8OkDvJ5qafPLCfKdZZ4NFpXZ
-        XQwMvD2h+ewJeRfKI5tToFKaQQG9jq0=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-90-xXl6ooijNeSASmNzTzjJFw-1; Thu, 23 Sep 2021 14:45:33 -0400
-X-MC-Unique: xXl6ooijNeSASmNzTzjJFw-1
-Received: by mail-ed1-f72.google.com with SMTP id m30-20020a50999e000000b003cdd7680c8cso7580727edb.11
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 11:45:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=mA1ZreymseI332A07co5Ore8q2n397KYZFqSr+ZrYaY=;
-        b=DSTBP7/oVaU5p5jBd/ZHnigS5nUb2R/Jp106v1AptvVfPRXsm1xl5HvIxxV/8+q/WF
-         WwbCkmJKJEubjUJ4cPgu6+MFYLlIUQV6miLFA7FjZKlgWfgOlbM5B9ZABjIzgIe3FCjO
-         6iwF1RymbGEmv9v+glx8iReVV/JOplXJvMylfJ5+HkucxBRQw84MED9JybNx/r4QAbNX
-         CV0ldgJhDUIP5L6xuHeEoKQDRONNwjBSEiQb4xZxdbIoU5ztJPSI/ibMUMo02xXAx+wA
-         8AC8bSD1blLQWamWqZFdWq/IRWMnT5m8NDSUiDSoaOctb8k1mq68eHlIFcrfiepsjtQT
-         IMXA==
-X-Gm-Message-State: AOAM533eKFiLa0BG9OKxcRLcxsxhyyjlxnpufHQeJWuD4ydEhAAOC/nN
-        JfqLalXCEg2hlF8mehhihlU5vhE3sKDodFWVe8ff8eb0ClMuxdYJ4ixGuz5XAlsWMfRYOU++f5C
-        mCs6DvkuPshWoU26j
-X-Received: by 2002:a05:6402:5163:: with SMTP id d3mr305532ede.220.1632422731387;
-        Thu, 23 Sep 2021 11:45:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJws5TTO6iFtjsNHDarjLxqk+CWOvGO6oHgPeX5nRB5K6/po3I8VSrFf7N4FmAK3FrNvCKPNTQ==
-X-Received: by 2002:a05:6402:5163:: with SMTP id d3mr305483ede.220.1632422731011;
-        Thu, 23 Sep 2021 11:45:31 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id z18sm4014413edq.29.2021.09.23.11.45.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Sep 2021 11:45:30 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id DA204180274; Thu, 23 Sep 2021 20:45:29 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Zvi Effron <zeffron@riotgames.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Lorenzo Bianconi <lbianconi@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: Redux: Backwards compatibility for XDP multi-buff
-In-Reply-To: <CAC1LvL2ZFHqqD4jkXdRNY0K-Sm-adb8OpQVcfv--aaQ+Z4j0EQ@mail.gmail.com>
-References: <87o88l3oc4.fsf@toke.dk>
- <CAC1LvL1xgFMjjE+3wHH79_9rumwjNqDAS2Yg2NpSvmewHsYScA@mail.gmail.com>
- <87ilyt3i0y.fsf@toke.dk>
- <CAADnVQKi_u6yZnsxEagNTv-XWXtLPpXwURJH0FnGFRgt6weiww@mail.gmail.com>
- <87czp13718.fsf@toke.dk>
- <20210921155118.439c0aa9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87mto41isy.fsf@toke.dk>
- <CAC1LvL2ZFHqqD4jkXdRNY0K-Sm-adb8OpQVcfv--aaQ+Z4j0EQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 23 Sep 2021 20:45:29 +0200
-Message-ID: <87bl4jyvue.fsf@toke.dk>
+        id S242801AbhIWTBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 15:01:49 -0400
+Received: from mxout04.lancloud.ru ([45.84.86.114]:33640 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232331AbhIWTBq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 15:01:46 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 55E7A20A61CC
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [RFC/PATCH 05/18] ravb: Exclude gPTP feature support for RZ/G2L
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
+ <20210923140813.13541-6-biju.das.jz@bp.renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <2b4acd15-4b46-4f63-d9e7-ba1b86311def@omp.ru>
+Date:   Thu, 23 Sep 2021 22:00:05 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210923140813.13541-6-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zvi Effron <zeffron@riotgames.com> writes:
+On 9/23/21 5:08 PM, Biju Das wrote:
 
-> On Wed, Sep 22, 2021 at 1:01 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> Jakub Kicinski <kuba@kernel.org> writes:
->>
->> > On Wed, 22 Sep 2021 00:20:19 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wr=
-ote:
->> >> >> Neither of those are desirable outcomes, I think; and if we add a
->> >> >> separate "XDP multi-buff" switch, we might as well make it system-=
-wide?
->> >> >
->> >> > If we have an internal flag 'this driver supports multi-buf xdp' ca=
-nnot we
->> >> > make xdp_redirect to linearize in case the packet is being redirect=
-ed
->> >> > to non multi-buf aware driver (potentially with corresponding non m=
-b aware xdp
->> >> > progs attached) from mb aware driver?
->> >>
->> >> Hmm, the assumption that XDP frames take up at most one page has been
->> >> fundamental from the start of XDP. So what does linearise mean in this
->> >> context? If we get a 9k packet, should we dynamically allocate a
->> >> multi-page chunk of contiguous memory and copy the frame into that, or
->> >> were you thinking something else?
->> >
->> > My $.02 would be to not care about redirect at all.
->> >
->> > It's not like the user experience with redirect is anywhere close
->> > to amazing right now. Besides (with the exception of SW devices which
->> > will likely gain mb support quickly) mixed-HW setups are very rare.
->> > If the source of the redirect supports mb so will likely the target.
->>
->> It's not about device support it's about XDP program support: If I run
->> an MB-aware XDP program on a physical interface and redirect the (MB)
->> frame into a container, and there's an XDP program running inside that
->> container that isn't MB-aware, bugs will ensue. Doesn't matter if the
->> veth driver itself supports MB...
->>
->> We could leave that as a "don't do that, then" kind of thing, but that
->> was what we were proposing (as the "do nothing" option) and got some
->> pushback on, hence why we're having this conversation :)
->>
->> -Toke
->>
->
-> I hadn't even considered the case of redirecting to a veth pair on the sa=
-me
-> system. I'm assuming from your statement that the buffers are passed dire=
-ctly
-> to the ingress inside the container and don't go through the sort of egre=
-ss
-> process they would if leaving the system? And I'm assuming that's as an
-> optimization?
+> R-Car supports gPTP feature whereas RZ/G2L does not support it.
+> This patch excludes gtp feature support for RZ/G2L by enabling
+> no_gptp feature bit.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+>  drivers/net/ethernet/renesas/ravb_main.c | 46 ++++++++++++++----------
+>  1 file changed, 28 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index d38fc33a8e93..8663d83507a0 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+[...]
+> @@ -953,7 +954,7 @@ static irqreturn_t ravb_interrupt(int irq, void *dev_id)
+>  	}
+>  
+>  	/* gPTP interrupt status summary */
+> -	if (iss & ISS_CGIS) {
 
-Yeah, if we redirect an XDP frame to a veth, the peer will get the same
-xdp_frame, without ever building an SKB.
+   Isn't this bit always 0 on RZ/G2L?
 
-> I'm not sure that makes a difference, though. It's not about whether the
-> driver's code is mb-capable, it's about whether the driver _as currently
-> configured_ could generate multiple buffers. If it can, then only an mb-a=
-ware
-> program should be able to be attached to it (and tail called from whateve=
-r's
-> attached to it). If it can't, then there should be no way to have multiple
-> buffers come to it.
->
-> So in the situation you've described, either the veth driver should be in=
- a
-> state where it coalesces the multiple buffers into one, fragmenting the f=
-rame
-> if necessary or drops the frame, or the program attached inside the conta=
-iner
-> would need to be mb-aware. I'm assuming with the veth driver as written, =
-this
-> might mean that all programs attached to the veth driver would need to be
-> mb-aware, which is obviously undesirable.
+> +	if (!info->no_gptp && (iss & ISS_CGIS)) {
+>  		ravb_ptp_interrupt(ndev);
+>  		result = IRQ_HANDLED;
+>  	}
+> @@ -1378,6 +1379,7 @@ static int ravb_get_ts_info(struct net_device *ndev,
+>  			    struct ethtool_ts_info *info)
+>  {
+>  	struct ravb_private *priv = netdev_priv(ndev);
+> +	const struct ravb_hw_info *hw_info = priv->info;
+>  
+>  	info->so_timestamping =
+>  		SOF_TIMESTAMPING_TX_SOFTWARE |
+> @@ -1391,7 +1393,8 @@ static int ravb_get_ts_info(struct net_device *ndev,
+>  		(1 << HWTSTAMP_FILTER_NONE) |
+>  		(1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
+>  		(1 << HWTSTAMP_FILTER_ALL);
+> -	info->phc_index = ptp_clock_index(priv->ptp.clock);
+> +	if (!hw_info->no_gptp)
+> +		info->phc_index = ptp_clock_index(priv->ptp.clock);
+>  
+>  	return 0;
+>  }
+> @@ -2116,6 +2119,7 @@ static const struct ravb_hw_info rgeth_hw_info = {
+>  	.emac_init = ravb_rgeth_emac_init,
+>  	.aligned_tx = 1,
+>  	.tx_counters = 1,
+> +	.no_gptp = 1,
 
-Hmm, I guess that as long as mb-frames only show up for large MTUs, the
-MTU of the veth device would be a limiting factor just like for physical
-devices, so we could just apply the same logic there. Not sure why I
-didn't consider that before :/
+   Mhm, I definitely don't like the way you "extend" the GbEthernet info structure. All the applicable flags
+should be set in the last patch of the series, not amidst of it.
 
-> All of which significantly adds to the complexity to support mb-aware, so=
- maybe
-> this could be developed later? Initially we could have a sysctl toggling =
-the
-> state 0 single-buffer only, 1 multibuffer allowed. Then later we _could_ =
-add a
-> state for dynamic control once all XDP supporting drivers support the nec=
-essary
-> dynamic functionality (if ever). At that point we'd have actual experienc=
-e with
-> the sysctl and could see how much of a burden having static control is.
->
-> I may have been misinterpreting your use case though, and you were talking
-> about the XDP program running on the egress side of the redirect? Is that=
- what
-> you were talking about case?
+[...]
 
-No I was talking about exactly what you outlined above. Although longer
-term, I also think we can use XDP mb as a way to avoid having to
-linearise SKBs when running XDP on them in veth (and for generic XDP) :)
-
--Toke
-
+MBR, Sergey
