@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0956415649
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:39:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29AE5415634
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:38:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239332AbhIWDke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 23:40:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40480 "EHLO mail.kernel.org"
+        id S239159AbhIWDkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 23:40:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40670 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239053AbhIWDkD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 23:40:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A10976103C;
-        Thu, 23 Sep 2021 03:38:28 +0000 (UTC)
+        id S239131AbhIWDkH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 23:40:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 03BCD6113E;
+        Thu, 23 Sep 2021 03:38:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632368309;
-        bh=VWgN7FryLmkJ6B+ik2/05VjLoBUTPqAzroxHp+wR8mw=;
+        s=k20201202; t=1632368315;
+        bh=crLakz6dp+PwUr/WqoV21bAV6tZr4/j8KpjawonXH5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XV2xAt6iSJbAM7HqIKLn3Q/z+jFTcDTuTdQZT7LlEeXRR4mU1OS98zu8msfuVf4fe
-         7CuGSpKGoB6BtokSspaA9SSLgy+j613PMAbQyj/4wBGLSrEN128dx3YLnY7V8+Arvd
-         a0i55hIPGrEn6jQzWQDK9fjicIe/YAm6nDkSZnhhdJv4eEcVxab08Rq08ww79+tvzy
-         qeM97eAr7EU77EC+MYCabRR2hHCdVBxbc0waNNU0e1XIZ83X+bpI25R48yp8mJyg1Q
-         p8OeR2438C4LV/MCNkwMf2orjfb81U3wBfsy0LuZ6bLLSExsytjOuZ/QebYqXEqadJ
-         Wcr/gK1iCZgWA==
+        b=tuMm7HXUizJTCEYnszLirXG5N63LdCfSd4dYYDbJTZheoNyrXWnfAOFFpfo7/xZFl
+         thglLfzM+8nRqcES/fdbd7fCSeteDM/aigXj/j/xnS09nIhW9ydvJX2VIoI8fmi1Tx
+         kFNWACTi7xUVQ/nNwLnOKtEZCLZvrq70HQjIz6X9VUZ+AUV5RBy3Pz4rTWDjZdrBkS
+         BVvMdHwxijo/cYERcofKUe1rXHrrBC9egGK3xD+Jz32zCEemJTZ+qUfFLXIScdLkOZ
+         70B3AQwXDIBTmJJf1IucroMGebNgDYkyGSC9e/VeNUhjcZzP99dGY5tSIJa8l3j1nl
+         bJLeGd45F30yw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jesper Nilsson <jesper.nilsson@axis.com>,
+Cc:     zhang kai <zhangkaiheb@126.com>, David Ahern <dsahern@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        kuba@kernel.org, mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.14 04/34] net: stmmac: allow CSR clock of 300MHz
-Date:   Wed, 22 Sep 2021 23:37:52 -0400
-Message-Id: <20210923033823.1420814-4-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.14 07/34] ipv6: delay fib6_sernum increase in fib6_add
+Date:   Wed, 22 Sep 2021 23:37:55 -0400
+Message-Id: <20210923033823.1420814-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210923033823.1420814-1-sashal@kernel.org>
 References: <20210923033823.1420814-1-sashal@kernel.org>
@@ -46,55 +43,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Nilsson <jesper.nilsson@axis.com>
+From: zhang kai <zhangkaiheb@126.com>
 
-[ Upstream commit 08dad2f4d541fcfe5e7bfda72cc6314bbfd2802f ]
+[ Upstream commit e87b5052271e39d62337ade531992b7e5d8c2cfa ]
 
-The Synopsys Ethernet IP uses the CSR clock as a base clock for MDC.
-The divisor used is set in the MAC_MDIO_Address register field CR
-(Clock Rate)
+only increase fib6_sernum in net namespace after add fib6_info
+successfully.
 
-The divisor is there to change the CSR clock into a clock that falls
-below the IEEE 802.3 specified max frequency of 2.5MHz.
-
-If the CSR clock is 300MHz, the code falls back to using the reset
-value in the MAC_MDIO_Address register, as described in the comment
-above this code.
-
-However, 300MHz is actually an allowed value and the proper divider
-can be estimated quite easily (it's just 1Hz difference!)
-
-A CSR frequency of 300MHz with the maximum clock rate value of 0x5
-(STMMAC_CSR_250_300M, a divisor of 124) gives somewhere around
-~2.42MHz which is below the IEEE 802.3 specified maximum.
-
-For the ARTPEC-8 SoC, the CSR clock is this problematic 300MHz,
-and unfortunately, the reset-value of the MAC_MDIO_Address CR field
-is 0x0.
-
-This leads to a clock rate of zero and a divisor of 42, and gives an
-MDC frequency of ~7.14MHz.
-
-Allow CSR clock of 300MHz by making the comparison inclusive.
-
-Signed-off-by: Jesper Nilsson <jesper.nilsson@axis.com>
+Signed-off-by: zhang kai <zhangkaiheb@126.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv6/ip6_fib.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 8a150cc462dc..425dff4a40a4 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -309,7 +309,7 @@ static void stmmac_clk_csr_set(struct stmmac_priv *priv)
- 			priv->clk_csr = STMMAC_CSR_100_150M;
- 		else if ((clk_rate >= CSR_F_150M) && (clk_rate < CSR_F_250M))
- 			priv->clk_csr = STMMAC_CSR_150_250M;
--		else if ((clk_rate >= CSR_F_250M) && (clk_rate < CSR_F_300M))
-+		else if ((clk_rate >= CSR_F_250M) && (clk_rate <= CSR_F_300M))
- 			priv->clk_csr = STMMAC_CSR_250_300M;
+diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+index ef75c9b05f17..68e94e9f5089 100644
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -1378,7 +1378,6 @@ int fib6_add(struct fib6_node *root, struct fib6_info *rt,
+ 	int err = -ENOMEM;
+ 	int allow_create = 1;
+ 	int replace_required = 0;
+-	int sernum = fib6_new_sernum(info->nl_net);
+ 
+ 	if (info->nlh) {
+ 		if (!(info->nlh->nlmsg_flags & NLM_F_CREATE))
+@@ -1478,7 +1477,7 @@ int fib6_add(struct fib6_node *root, struct fib6_info *rt,
+ 	if (!err) {
+ 		if (rt->nh)
+ 			list_add(&rt->nh_list, &rt->nh->f6i_list);
+-		__fib6_update_sernum_upto_root(rt, sernum);
++		__fib6_update_sernum_upto_root(rt, fib6_new_sernum(info->nl_net));
+ 		fib6_start_gc(info->nl_net, rt);
  	}
  
 -- 
