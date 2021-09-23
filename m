@@ -2,101 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F3A24167FE
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 00:26:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8F7A416803
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 00:28:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235302AbhIWW1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 18:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45792 "EHLO
+        id S243441AbhIWWaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 18:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243506AbhIWW1Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 18:27:24 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B05C061574
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 15:25:52 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id g8so28572462edt.7
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 15:25:52 -0700 (PDT)
+        with ESMTP id S239507AbhIWWaC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 18:30:02 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48850C061574;
+        Thu, 23 Sep 2021 15:28:30 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id s11so7772077pgr.11;
+        Thu, 23 Sep 2021 15:28:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oNgrCMKNNiWSykyU00Nw5xcA28hGOaU/qgdqoHugvj4=;
-        b=a/rxxMUtFQXcxi4+EFkgs9k8IORAS/NCOREfk6j7IeoQWRcM/j6VdX1iJcHe8xi5yB
-         1FldJ3pnHSBA+NE68RV1+Q9WyPHK/m7jaUuX1f7BfKjWrMUtzuJqGhcoeY0ExMO4X6Lg
-         iIDs6WOUMP4Jzm4YPSETh54xdSa2fARz153+qL2CF1AsSG6t3JVYAnBZNQrNYIIpxR1S
-         Q+WcERFFqnUGu+QnzOW/w/S4jRU/OOo8DiTj9X/gZLYX5dArnd+drMHQKp/V6mLjUYB7
-         dLszYLEy5oF2wGoEsIOKP9UPjoyJTs0bJvx85Q7xT1h3F6512Kh4imbkg74KT44Wo8mH
-         +cHA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NjGFClgphH4uTkcVbbvx9JSSPvqb15w479MfvY6Wezk=;
+        b=no//ku5b7snvMBl+1g518aa6fRx78zQ6g1vD3ki+ui5MOpQQfkuOypjKhAVZDTyvWe
+         mXnCTJ/pDREsuRoYbI5kSqGg3lDvJHTzhonj1wmZ97Bgc0zMnc3aMcS6OgWnusGwK2sf
+         NgKiQvV5Ni+3fmMuqnZdAD1pYAvFqPuEzgWMnSJv48hqjkNKj72rHF4C8VThbRJMbs8/
+         sWfExLKVEEiTdfSAQdbW5Klb67tio4u8ywzq0BABXKKwxpXjZxHNGclhPMPPBQ1eFwJF
+         HuO1BS3FwCR3KJuzWgqDRayU9EeMPBgEBBlhoxBnpSEDKb2G6WhwjAKLZnMTr0kL/aBa
+         4CZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oNgrCMKNNiWSykyU00Nw5xcA28hGOaU/qgdqoHugvj4=;
-        b=n7P18UCY5tamd727OsL1MDTQVh8x31EFlNIFJGrs32Ko8Z9SywSFbBbEooR+9HuLsV
-         TUAYDBY0u4rNy7Ax3IHgPOZ4OCp6UVTf3GZKtaLgPmIbxDjjQeBURXp9uXLjQnkIfIx0
-         EkxymKRMlx4QvAVxI9OAWiT/resmp8tR974cgDqLCB54++HfzlVnTUiqIE1cO9U1L3Ky
-         wYjeQ++jPki9HPHM4y8AH+4waykdINwiV2NkFyF05C9FrASEK7fCt6Ev2k1Ul2HDO8rF
-         sb+Xou2P7qSPjMQf3Kv4G5YSpHOpNkKpjILJx3PhjUexRV2HARkMzjUcQnFnhQPXwHGE
-         V0Xw==
-X-Gm-Message-State: AOAM533Ew1WD5tjc8u34iZlcys+a90roPyoiI/187TP/WNQDJJwZ5gB5
-        rX0YafynfDN6fCQGg5At6Ro=
-X-Google-Smtp-Source: ABdhPJyhR5YV3UOni0CIIPXWuzgkNsxtzjgEfRkR7mVHah0vtH5PBv2uox3NCNqROfcP6GHajyp/6w==
-X-Received: by 2002:a17:906:1557:: with SMTP id c23mr7398492ejd.371.1632435951080;
-        Thu, 23 Sep 2021 15:25:51 -0700 (PDT)
-Received: from skbuf ([188.26.53.217])
-        by smtp.gmail.com with ESMTPSA id ml12sm3804756ejb.29.2021.09.23.15.25.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Sep 2021 15:25:50 -0700 (PDT)
-Date:   Fri, 24 Sep 2021 01:25:49 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: dsa: tag_rtl4_a: Drop bit 9 from egress
- frames
-Message-ID: <20210923222549.byri6ch2kcvowtv4@skbuf>
-References: <20210913143156.1264570-1-linus.walleij@linaro.org>
- <20210915071901.1315-1-dqfext@gmail.com>
- <CACRpkdYu7Q5Y88YmBzcBBGycmW92dd0jVhJNUpDFyd65bBq52A@mail.gmail.com>
- <20210923221200.xygcmxujwqtxajqd@skbuf>
- <CACRpkdZJzHqmdfvR5kRgw1mWPQ68=-ky1xJ+VWX8v6hD_6bx6A@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NjGFClgphH4uTkcVbbvx9JSSPvqb15w479MfvY6Wezk=;
+        b=ZAbaOxQ3gTIHwVunnP3Bgnyfj9BBQFmlldPQ5G9QNtsRDIdGTivkFgbngVIZ/1KwHL
+         FRmuV0Mf7c9qNRcntxmw5JPNl4OuTKt3faFSh/MviZB88SJVhBG4JYJLbgsTUXfMUB+Y
+         XBr6CRyQPlNkFlaRcHq1garLEt9mWJrcBuyYtHOsX1M85ahkBoPt5adkIKU2iqApUcdq
+         1B6n2QXYZ9JJ+k3pYFrkIPYqSAGzNiHsqTm7G0Kt3MvrmiOK5j4QLPeNYNcQMsJ8arkT
+         fn7/wlB0k1goy8lKGiBYZxmDfrA0UqvdxFobFlsahRMyw1am5G9hBz8VZWQa8wl+LXqh
+         eZCA==
+X-Gm-Message-State: AOAM532gRCUrGx/uiJYTV8lCRPBMPSBXH9ylFzlXF4jnwmvQ6u2WFisP
+        gMt9gaxhSH2X88M2tq45ec6zXPDF2So=
+X-Google-Smtp-Source: ABdhPJyzhgFkF1eEIzYu1I4d7RfR6teqOQhwYLp2lU0kOIX1loIDvI/Mc+LOJNMKymdVps21FmH9Zw==
+X-Received: by 2002:a63:f84f:: with SMTP id v15mr967754pgj.204.1632436109271;
+        Thu, 23 Sep 2021 15:28:29 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id m186sm5192300pfb.165.2021.09.23.15.28.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Sep 2021 15:28:28 -0700 (PDT)
+Subject: Re: [PATCH v3 0/3] fw_devlink bug fixes
+To:     Saravana Kannan <saravanak@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Vladimir Oltean <olteanv@gmail.com>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+References: <20210915170940.617415-1-saravanak@google.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <6b36ad72-a65f-bd65-abae-c06b673e9154@gmail.com>
+Date:   Thu, 23 Sep 2021 15:28:27 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACRpkdZJzHqmdfvR5kRgw1mWPQ68=-ky1xJ+VWX8v6hD_6bx6A@mail.gmail.com>
+In-Reply-To: <20210915170940.617415-1-saravanak@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 24, 2021 at 12:21:39AM +0200, Linus Walleij wrote:
-> On Fri, Sep 24, 2021 at 12:12 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+On 9/15/21 10:09 AM, Saravana Kannan wrote:
+> Intended for 5.15.
 > 
-> > > Hm I suspect it disable learning on RTL8366RB as well.
-> >
-> > Suspicion based on what?
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Vladimir Oltean <olteanv@gmail.com>
 > 
-> I have a not yet finished patch that dumps the FDB :)
+> v1->v2:
+> - Added a few Reviewed-by and Tested-by tags
+> - Addressed Geert's comments in patches 3 and 5
+> - Dropped the fw_devlink.debug patch
+> - Added 2 more patches to the series to address other fw_devlink issues
 > 
-> The contents change around a bit under the patch
-> sets I have floating, but can certainly be determined
-> when I have time to test things properly.
+> v2->v3:
+> - Split the logging/debug changes into a separate series
+> 
+> Thanks,
+> Saravana
+> 
+> Saravana Kannan (3):
+>   driver core: fw_devlink: Improve handling of cyclic dependencies
+>   driver core: fw_devlink: Add support for
+>     FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD
+>   net: mdiobus: Set FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD for mdiobus
+>     parents
 
-To be clear, if bit 9 is a "disable learning" bit, address learning is a
-process that takes place on the ingress of a packet, and in this case
-the ingress port is the CPU port. But the ndo_fdb_dump works with net
-devices, of which CPU ports have none. So it seems unlikely that you
-would see any difference in the output of "bridge fdb" that could be
-attributed to that bit.
-
-> > > Do we have some use for that feature in DSA taggers?
-> >
-> > Yes.
-> 
-> OK I'll add it to my TODO, right now trying to fix up the base
-> of the RTL8366RB patch set to handle VLANs the right way.
-
-But you didn't ask what that use is...
+Andrew, did you get a chance to test this patch set on a ZII development
+board rev B or C by any chance?
+-- 
+Florian
