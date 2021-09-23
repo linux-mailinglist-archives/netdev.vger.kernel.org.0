@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E69A54156C8
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:42:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16D734156D5
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239918AbhIWDnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 23:43:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42104 "EHLO mail.kernel.org"
+        id S239690AbhIWDoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 23:44:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42362 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239418AbhIWDl6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 23:41:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EA174611C6;
-        Thu, 23 Sep 2021 03:40:01 +0000 (UTC)
+        id S239454AbhIWDmN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 23:42:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 354DC61250;
+        Thu, 23 Sep 2021 03:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632368403;
-        bh=rIk913HgaEmXfWdxZWioNzquyCgiINrZfN8N3BKkNzs=;
+        s=k20201202; t=1632368411;
+        bh=3pjs7J8x45aNUetkfjAhFIBfeyWD5urVsCkZ80PM/2A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SMXEsIeSN4JCW6VpdR5htNhMs0H6WneY6cPfy5YWAdxsmGviMN6kaE9hUt5cTtwd3
-         9DJi9+EEFdHHqxsDmKiEBf1ydduZCYvygiHEYRwY4JQVxH+i7Ku1Np3DvzWNXNcEc/
-         P22UE+Xo/4zITkek3dK0CrT9/KnOSwAjXYuuT/uDrEpuC/9T5aduH6Kn0iFZAwPbwU
-         ayn3mMl54Qdzebs3a4SLmPhoarigl+Y30xcmLS0ptTzGk6pmQje8YhCGEU66LKyN3S
-         qfkKDTyySMaNIpxE/wiCkox80uE74/4IQcnshSfKVV3L+vd3y1Y/I0rhxKx6e0Qhv9
-         0+FC3QXn89CYw==
+        b=O4JbFyvH1JjE6D241hoT2Wn7m9R+Q5ppW9jVOhJ19b7rynMD91Ss8fyQrgFG5Adu0
+         EF+LdpPQKdVq5fQD1ZAw8y+o2qItcE/PjZ/P4CgvKEe72BPsRgZJXkQ71oByMgv6/u
+         Lc/gD5xnxl+Op0d8+TMdUHMJD2RHyYyNjMqMy1XM1+8x6Z6ILO1Nr1szwk+8SCkJvo
+         zohIr51rOqxo0tYG4sgRVfFyLS5F5fAiJIja4AKO7erjjF6Uoma42C1Rdlp2awic89
+         2i8p5dBA1b1TS0D/U4eusG0BktCxHPph5Zd+/s66dQpaoBgrdv6imgWd4Xu6yn1sfs
+         cqHMgyOWGODXA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jesper Nilsson <jesper.nilsson@axis.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        kuba@kernel.org, mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 02/13] net: stmmac: allow CSR clock of 300MHz
-Date:   Wed, 22 Sep 2021 23:39:48 -0400
-Message-Id: <20210923033959.1421662-2-sashal@kernel.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, arnd@arndb.de, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 06/13] net: i825xx: Use absolute_pointer for memcpy from fixed memory location
+Date:   Wed, 22 Sep 2021 23:39:52 -0400
+Message-Id: <20210923033959.1421662-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210923033959.1421662-1-sashal@kernel.org>
 References: <20210923033959.1421662-1-sashal@kernel.org>
@@ -46,57 +44,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Nilsson <jesper.nilsson@axis.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit 08dad2f4d541fcfe5e7bfda72cc6314bbfd2802f ]
+[ Upstream commit dff2d13114f0beec448da9b3716204eb34b0cf41 ]
 
-The Synopsys Ethernet IP uses the CSR clock as a base clock for MDC.
-The divisor used is set in the MAC_MDIO_Address register field CR
-(Clock Rate)
+gcc 11.x reports the following compiler warning/error.
 
-The divisor is there to change the CSR clock into a clock that falls
-below the IEEE 802.3 specified max frequency of 2.5MHz.
+  drivers/net/ethernet/i825xx/82596.c: In function 'i82596_probe':
+  arch/m68k/include/asm/string.h:72:25: error:
+	'__builtin_memcpy' reading 6 bytes from a region of size 0 [-Werror=stringop-overread]
 
-If the CSR clock is 300MHz, the code falls back to using the reset
-value in the MAC_MDIO_Address register, as described in the comment
-above this code.
+Use absolute_pointer() to work around the problem.
 
-However, 300MHz is actually an allowed value and the proper divider
-can be estimated quite easily (it's just 1Hz difference!)
-
-A CSR frequency of 300MHz with the maximum clock rate value of 0x5
-(STMMAC_CSR_250_300M, a divisor of 124) gives somewhere around
-~2.42MHz which is below the IEEE 802.3 specified maximum.
-
-For the ARTPEC-8 SoC, the CSR clock is this problematic 300MHz,
-and unfortunately, the reset-value of the MAC_MDIO_Address CR field
-is 0x0.
-
-This leads to a clock rate of zero and a divisor of 42, and gives an
-MDC frequency of ~7.14MHz.
-
-Allow CSR clock of 300MHz by making the comparison inclusive.
-
-Signed-off-by: Jesper Nilsson <jesper.nilsson@axis.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+ drivers/net/ethernet/i825xx/82596.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index a7b30f060536..2be2b3055904 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -232,7 +232,7 @@ static void stmmac_clk_csr_set(struct stmmac_priv *priv)
- 			priv->clk_csr = STMMAC_CSR_100_150M;
- 		else if ((clk_rate >= CSR_F_150M) && (clk_rate < CSR_F_250M))
- 			priv->clk_csr = STMMAC_CSR_150_250M;
--		else if ((clk_rate >= CSR_F_250M) && (clk_rate < CSR_F_300M))
-+		else if ((clk_rate >= CSR_F_250M) && (clk_rate <= CSR_F_300M))
- 			priv->clk_csr = STMMAC_CSR_250_300M;
- 	}
- 
+diff --git a/drivers/net/ethernet/i825xx/82596.c b/drivers/net/ethernet/i825xx/82596.c
+index d719668a6684..8efcec305fc5 100644
+--- a/drivers/net/ethernet/i825xx/82596.c
++++ b/drivers/net/ethernet/i825xx/82596.c
+@@ -1155,7 +1155,7 @@ struct net_device * __init i82596_probe(int unit)
+ 			err = -ENODEV;
+ 			goto out;
+ 		}
+-		memcpy(eth_addr, (void *) 0xfffc1f2c, ETH_ALEN);	/* YUCK! Get addr from NOVRAM */
++		memcpy(eth_addr, absolute_pointer(0xfffc1f2c), ETH_ALEN); /* YUCK! Get addr from NOVRAM */
+ 		dev->base_addr = MVME_I596_BASE;
+ 		dev->irq = (unsigned) MVME16x_IRQ_I596;
+ 		goto found;
 -- 
 2.30.2
 
