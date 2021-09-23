@@ -2,168 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADF9F4158F7
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 09:22:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55AED4158FF
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 09:26:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239508AbhIWHYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 03:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33358 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234343AbhIWHYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 03:24:22 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09455C061574
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 00:22:51 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id v19so3845426pjh.2
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 00:22:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bghwosJlnRpEqG3QdyBeTnpcqPVy3npXwSyvsNk7E+4=;
-        b=DbmWzKOu5wAJmMo5HrABQkhIlq+bf4Ra1Yr5EdoTweyeEOL53M8NOaGF5ngudQW3F+
-         c7reFC0nwsE+MuVlyYnU+RhxTYdQRxl/vjY2Ja4HJ/9lvSf5cIepyene3RPuPPb4w9Cx
-         1xjcy8LrjnHTwro5gO/WgPQi8NfiFf+EhC9nHgDEOtd3NwE+m3udFfOkAzCcir4AfEAT
-         ywTMohSlu/2H0wahSnawjhQ9KmEHbJxhaaopLGnhsrcCscrNRkhzxpbgNeyhHfY79fnj
-         U/N9uZqU3uSgoPxo+BUKTEQKI0KSyqCPPArKPKwz9bLDH+/ffh+6FIEn4y0XpZSgRbAu
-         QbAQ==
+        id S239610AbhIWH22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 03:28:28 -0400
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:36252
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237853AbhIWH21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 03:28:27 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E4A0A402CF
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 07:26:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1632382014;
+        bh=BpYqFmvbKqI+/NfJqDUHrHumN6faQ7YSYJO5rWC5vl8=;
+        h=To:Cc:References:From:Subject:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=JLA85T/Sili9wPVSXEyh+eOx3qUFsAAlNJJY/lzJ5BwlnIkvSOMde5oQ4aJmUaQM5
+         qcVdUvF7aFDfEoSNibiI7O5opdVAxLvE8jhXTNs4Zt7pchCzZlrmqBGj2OOUkwBvAL
+         lcZLOdLOgV8sKDz07FofbLTXbr3CvUTVNVjh1cr8HRc7ogsTmR3ZJjgnYUFvwMefi9
+         Xx8QVw4l1j9CRI1puVB0vsdWe7c79pJImGOSE4vB1eYRExzikJb0EAJ47CKiQI2y3W
+         YB8BaljPYa3YMKh0KJC7It5JrKAe1Yhaam7Il6lVfQ7MXYw1uT3wrdyxdrNFU+uXJJ
+         2/SaCdDZ20x+w==
+Received: by mail-ed1-f70.google.com with SMTP id m30-20020a50999e000000b003cdd7680c8cso5880504edb.11
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 00:26:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=bghwosJlnRpEqG3QdyBeTnpcqPVy3npXwSyvsNk7E+4=;
-        b=cfwVso6BoJX7tnHiPrG0JbdOSAHQSuPCGzYlK6BggMQ8LmlHd1FSnTudQnLPj7T+Of
-         T/NWuopjDtuLJxjenOAz1Dlu0mWpR+lf9nhpa1lpIRDxlOUnjN91+E/px9eodSNdZEhu
-         c40ae4mCYRXw2htsUXnwGi08sOIHnB+opu4Ttipx7zvlwoexZvtOQCTCHyBxQp3OgADa
-         yjMa2gvNnwKFGfWl67474oaZOX9CeD+RxYc5hnOSJl+5jnNmlljVRG35Vw+p9SCbRYwd
-         Q0K+rg0180NPpvwo3sRBkpW4E4XVLLEXVDAMYQ9Rn1+uw8474Tt9wPW4jAYfugo/RwOz
-         VSZw==
-X-Gm-Message-State: AOAM531/5yMPP9mg1zKTIU3lZDWIoDJpfyW/ckWbXJblWh72LJGIG6rl
-        +6BDpnQyCpe9O9d4CXTsI88ePGt02aurFujS
-X-Google-Smtp-Source: ABdhPJzSDkeu/b4DKwUjZjbE/Zexabv5cqUodRqhG8eeV4aoFO9EfEzGjfp1ne+UqggiUS+dm8d6Rg==
-X-Received: by 2002:a17:90a:430f:: with SMTP id q15mr3621806pjg.2.1632381770286;
-        Thu, 23 Sep 2021 00:22:50 -0700 (PDT)
-Received: from nova-ws.. ([103.29.142.250])
-        by smtp.gmail.com with ESMTPSA id p16sm4169087pja.24.2021.09.23.00.22.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Sep 2021 00:22:49 -0700 (PDT)
-From:   Xiao Liang <shaw.leon@gmail.com>
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Xiao Liang <shaw.leon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        bh=BpYqFmvbKqI+/NfJqDUHrHumN6faQ7YSYJO5rWC5vl8=;
+        b=kML3jdY9L2WFvkQAWkUKRU0fkgysIcdHIwJg2MafjfePj9IxJg7pD1ZxuEEQh19GON
+         B4X1j2iwJydsdzFxZLqqHElnCeX5TmKxglHezH2G86d+cc4jNUpVQaW8BtOnpMzJUHCf
+         DMZuAkbnv6n2SvBK3pEb+H6LVhhoZ9auJR4Hc9Ej+qYfhtmisdJyoXIGnydQOC6stgHh
+         zK5ZjySvljRzG+tiZJ/4/g98HVFeJuXgDZh9WiduKkVl6Ji9ciVbf6abQOqBv560H6/5
+         SOfemnLMWWPneAJbcBzaTFLo/ghCSrc6kXqHf31YB4UD21WN7oZbtYBb8yO1vKeNPQC7
+         OAfg==
+X-Gm-Message-State: AOAM533pqDolCe4A4VLBUiL9P5Uq86by3wj0iiW0BtPNLXI+hOAnVmHz
+        hQACllDZTjzx+ND1rnnlAlOIJQEU0f9Evoq/13sWVlX/8Y0OvZGm55psdjl5tYF9B9x4U3BlUQg
+        hBNiWVLBfoR+6UICSONzDyPtqvj88uA5WSw==
+X-Received: by 2002:aa7:d7d5:: with SMTP id e21mr3906250eds.27.1632382013933;
+        Thu, 23 Sep 2021 00:26:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxxDwRjKrSA++cC1IQS3ul4nadXAHfLTPlUI4SQF66GujOefM3Z3K42W8P/6Lzto9Vc1VvnMg==
+X-Received: by 2002:aa7:d7d5:: with SMTP id e21mr3906217eds.27.1632382013674;
+        Thu, 23 Sep 2021 00:26:53 -0700 (PDT)
+Received: from [192.168.0.134] (lk.84.20.244.219.dc.cable.static.lj-kabel.net. [84.20.244.219])
+        by smtp.gmail.com with ESMTPSA id mm23sm2482065ejb.78.2021.09.23.00.26.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Sep 2021 00:26:52 -0700 (PDT)
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Samuel Ortiz <sameo@linux.intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: [PATCH net v2] net: ipv4: Fix rtnexthop len when RTA_FLOW is present
-Date:   Thu, 23 Sep 2021 15:22:46 +0800
-Message-Id: <20210923072246.351699-1-shaw.leon@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        "John W. Linville" <linville@tuxdriver.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <20210923065051.GA25122@kili>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH net] nfc: avoid potential race condition
+Message-ID: <3760c70c-299c-89bf-5a4a-22e8d564ef92@canonical.com>
+Date:   Thu, 23 Sep 2021 09:26:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
+In-Reply-To: <20210923065051.GA25122@kili>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Multipath RTA_FLOW is embedded in nexthop. Dump it in fib_add_nexthop()
-to get the length of rtnexthop correct.
+On 23/09/2021 08:50, Dan Carpenter wrote:
+> This from static analysis inspired by CVE-2021-26708 where there was a
+> race condition because it didn't lock_sock(sk) before saving
+> "vsk->transport".  Here it is saving "llcp_sock->local" but the concept
+> is the same that it needs to take the lock first.
 
-Fixes: b0f60193632e ("ipv4: Refactor nexthop attributes in fib_dump_info")
-Signed-off-by: Xiao Liang <shaw.leon@gmail.com>
----
- include/net/ip_fib.h     |  2 +-
- include/net/nexthop.h    |  2 +-
- net/ipv4/fib_semantics.c | 15 ++++++++-------
- net/ipv6/route.c         |  5 +++--
- 4 files changed, 13 insertions(+), 11 deletions(-)
+I think the difference between this llcp_sock code and above transport,
+is lack of writer to llcp_sock->local with whom you could race.
 
-diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-index 21c5386d4a6d..ab5348e57db1 100644
---- a/include/net/ip_fib.h
-+++ b/include/net/ip_fib.h
-@@ -597,5 +597,5 @@ int ip_valid_fib_dump_req(struct net *net, const struct nlmsghdr *nlh,
- int fib_nexthop_info(struct sk_buff *skb, const struct fib_nh_common *nh,
- 		     u8 rt_family, unsigned char *flags, bool skip_oif);
- int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nh,
--		    int nh_weight, u8 rt_family);
-+		    int nh_weight, u8 rt_family, u32 nh_tclassid);
- #endif  /* _NET_FIB_H */
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index 10e1777877e6..28085b995ddc 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -325,7 +325,7 @@ int nexthop_mpath_fill_node(struct sk_buff *skb, struct nexthop *nh,
- 		struct fib_nh_common *nhc = &nhi->fib_nhc;
- 		int weight = nhg->nh_entries[i].weight;
- 
--		if (fib_add_nexthop(skb, nhc, weight, rt_family) < 0)
-+		if (fib_add_nexthop(skb, nhc, weight, rt_family, 0) < 0)
- 			return -EMSGSIZE;
- 	}
- 
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index b42c429cebbe..e9818faaff4d 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1661,7 +1661,7 @@ EXPORT_SYMBOL_GPL(fib_nexthop_info);
- 
- #if IS_ENABLED(CONFIG_IP_ROUTE_MULTIPATH) || IS_ENABLED(CONFIG_IPV6)
- int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
--		    int nh_weight, u8 rt_family)
-+		    int nh_weight, u8 rt_family, u32 nh_tclassid)
- {
- 	const struct net_device *dev = nhc->nhc_dev;
- 	struct rtnexthop *rtnh;
-@@ -1679,6 +1679,12 @@ int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
- 
- 	rtnh->rtnh_flags = flags;
- 
-+#ifdef CONFIG_IP_ROUTE_CLASSID
-+	if (nh_tclassid &&
-+	    nla_put_u32(skb, RTA_FLOW, nh_tclassid))
-+		goto nla_put_failure;
-+#endif
-+
- 	/* length of rtnetlink header + attributes */
- 	rtnh->rtnh_len = nlmsg_get_pos(skb) - (void *)rtnh;
- 
-@@ -1707,13 +1713,8 @@ static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi)
- 
- 	for_nexthops(fi) {
- 		if (fib_add_nexthop(skb, &nh->nh_common, nh->fib_nh_weight,
--				    AF_INET) < 0)
-+				    AF_INET, nh->nh_tclassid) < 0)
- 			goto nla_put_failure;
--#ifdef CONFIG_IP_ROUTE_CLASSID
--		if (nh->nh_tclassid &&
--		    nla_put_u32(skb, RTA_FLOW, nh->nh_tclassid))
--			goto nla_put_failure;
--#endif
- 	} endfor_nexthops(fi);
- 
- mp_end:
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index dbc224023977..9b9ef09382ab 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5681,14 +5681,15 @@ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
- 			goto nla_put_failure;
- 
- 		if (fib_add_nexthop(skb, &rt->fib6_nh->nh_common,
--				    rt->fib6_nh->fib_nh_weight, AF_INET6) < 0)
-+				    rt->fib6_nh->fib_nh_weight, AF_INET6,
-+				    0) < 0)
- 			goto nla_put_failure;
- 
- 		list_for_each_entry_safe(sibling, next_sibling,
- 					 &rt->fib6_siblings, fib6_siblings) {
- 			if (fib_add_nexthop(skb, &sibling->fib6_nh->nh_common,
- 					    sibling->fib6_nh->fib_nh_weight,
--					    AF_INET6) < 0)
-+					    AF_INET6, 0) < 0)
- 				goto nla_put_failure;
- 		}
- 
--- 
-2.33.0
+Commits c0cfa2d8a788fcf4 and 6a2c0962105ae8ce causing the
+multi-transport race show nicely assigns to vsk->transport when module
+is unloaded.
+
+Here however there is no writer to llcp_sock->local, except bind and
+connect and their error paths. The readers which you modify here, have
+to happen after bind/connect. You cannot have getsockopt() or release()
+before bind/connect, can you? Unless you mean here the bind error path,
+where someone calls getsockopt() in the middle of bind()? Is it even
+possible?
+
+The code except this looks reasonable and since writer protects
+llcp_sock->local(), the reader I guess should do it as well... just
+wondering whether this is a real issue.
+
+
+Best regards,
+Krzysztof
+
+> 
+> Fixes: 00e856db49bb ("NFC: llcp: Fall back to local values when getting socket options")
+> Fixes: d646960f7986 ("NFC: Initial LLCP support")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>  net/nfc/llcp_sock.c | 15 +++++++++------
+>  1 file changed, 9 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/nfc/llcp_sock.c b/net/nfc/llcp_sock.c
+> index 6cfd30fc0798..74f4209c7144 100644
+> --- a/net/nfc/llcp_sock.c
+> +++ b/net/nfc/llcp_sock.c
+> @@ -314,14 +314,16 @@ static int nfc_llcp_getsockopt(struct socket *sock, int level, int optname,
+>  	if (get_user(len, optlen))
+>  		return -EFAULT;
+>  
+> -	local = llcp_sock->local;
+> -	if (!local)
+> -		return -ENODEV;
+> -
+>  	len = min_t(u32, len, sizeof(u32));
+>  
+>  	lock_sock(sk);
+>  
+> +	local = llcp_sock->local;
+> +	if (!local) {
+> +		release_sock(sk);
+> +		return -ENODEV;
+> +	}
+> +
+>  	switch (optname) {
+>  	case NFC_LLCP_RW:
+>  		rw = llcp_sock->rw > LLCP_MAX_RW ? local->rw : llcp_sock->rw;
+> @@ -598,14 +600,15 @@ static int llcp_sock_release(struct socket *sock)
+>  
+>  	pr_debug("%p\n", sk);
+>  
+> +	lock_sock(sk);
+> +
+>  	local = llcp_sock->local;
+>  	if (local == NULL) {
+> +		release_sock(sk);
+>  		err = -ENODEV;
+>  		goto out;
+>  	}
+>  
+> -	lock_sock(sk);
+> -
+>  	/* Send a DISC */
+>  	if (sk->sk_state == LLCP_CONNECTED)
+>  		nfc_llcp_send_disconnect(llcp_sock);
+> 
 
