@@ -2,94 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EC8A41573C
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A78941574B
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 06:05:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239112AbhIWD5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 23:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
+        id S229585AbhIWEGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 00:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232419AbhIWD5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Sep 2021 23:57:30 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46253C061574;
-        Wed, 22 Sep 2021 20:55:59 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id d13-20020a17090ad3cd00b0019e746f7bd4so768374pjw.0;
-        Wed, 22 Sep 2021 20:55:59 -0700 (PDT)
+        with ESMTP id S229436AbhIWEGj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 00:06:39 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D51C061574;
+        Wed, 22 Sep 2021 21:05:08 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id q26so13071191wrc.7;
+        Wed, 22 Sep 2021 21:05:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZFkGDmBfwTQemY7FBg23LWt2kzYZwvNOc/FK/5I0Trk=;
-        b=avkvJs9R7pHcZxUnnlsnTRRlHB7UHqrW9XaY5GRbHOZbTtzpoGy8/8SlJGxOEPtNhv
-         jOMmg7L4/rw7DRBnyRpttgQJomJxU9SL7mQkh0oXzbJgzqFZbvp+s0JkJF1VBqPM/D/x
-         4kA106OuenBYRQ9yFQsYPr09GRS3BSRfF6HYjptqGarKBcRK1MehDaZlwquLqK8CRBDR
-         Vokb3loIgUMdFWx55Bt9G86g/C1gRHXqtABNIGx13690DuykJRMMXkM7waqE9xXE9Gqk
-         XuBjXhTY8UWL3Y+OZXVoIU2Sg+dmBJS497DVdl/BqtiomfOE4QJ+9nE/iIpyTqQpEy1+
-         wLSw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9n7b6JE6XUS8B7KMsBIbTq7nC4Yv0zk+28FewktZ7M0=;
+        b=VbDMCxiBOWCtOhR4/6hWEdw+qiRR9Q/bHUGCg6CclPX+jJyNHjBZy28/e6zWBUV5xj
+         1dlnePMUt9l79r98nlpVhQr0SZsuXAU6nrVWus6iN05C6c6W5tDeKbpN+k7UML8nq0jp
+         GdY/0qhURuWS00IxOkI3jtN249RGkzYNP6adcvXfpBuXsuUba8WiBFM1SVZWGRcgM7ky
+         Gfb+fDzhsaHramFnliVqKPPs+Gcuz1ZeLqHrpk8JvT+l29YvLRcsYWPqwJlOQUQfC6WW
+         HJ4zSkQw9oKkgMmdcaPtwTEbEgmjAU5w71yk+J4tadxRu6zrgnwptVOzBLywfsR3GQ9f
+         Kngw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZFkGDmBfwTQemY7FBg23LWt2kzYZwvNOc/FK/5I0Trk=;
-        b=WK/Z3oQxuYADU/5vXgiP/P9ggbV87zBBYvpt3fwgU3E+KxlhkX3fkMXb0M0fpXlkRN
-         n85WO+AjtXVnDvWKMNsXPqytIE414+FdsZz7CasI0uYX2yVF/pmcV/GsIxCRdnAqg5xL
-         uKHzJEI+FIOd60KuGcCbBHlgovIgh3DjOV/E8b4MxXi4a15Qa9UPRKXwSqg//lemDeh8
-         kKz3jWFl6RKOeEOOJHwSZ8ihdW8mUNIkArSqiQJqlJjWsBzAMxxzaGsly5ceOYov/+MO
-         iAAfjtwHkq6BzIKPV4qmjb70K98ltGGLMBrnmq0rPPVnsX51PvEUpTNSJB84QNWtAYdf
-         noxw==
-X-Gm-Message-State: AOAM533qf8qwREFc9rqhn2amKfkX3M74vaS2u8DKwOYF1xMlTRfAIuFu
-        H262NzRjnOfLpC0gH4pV0aenXhMcnlc=
-X-Google-Smtp-Source: ABdhPJxyR0hq8wOolCA9Xzp8LEF8ocks743zdsq5UM2xcSS1vdTP+CJUieTrSwkOwvfy7KxPQ3NojQ==
-X-Received: by 2002:a17:90b:1e4d:: with SMTP id pi13mr15412337pjb.96.1632369358819;
-        Wed, 22 Sep 2021 20:55:58 -0700 (PDT)
-Received: from kvm.asia-northeast3-a.c.our-ratio-313919.internal (252.229.64.34.bc.googleusercontent.com. [34.64.229.252])
-        by smtp.gmail.com with ESMTPSA id l128sm3871716pfd.106.2021.09.22.20.55.55
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9n7b6JE6XUS8B7KMsBIbTq7nC4Yv0zk+28FewktZ7M0=;
+        b=zC6olqOaTHjhwKtDoOAbRHggA0rC57BiAxNsHL12tCG5jky+pCQ7LwMaivGw+k2YHT
+         +iyS9ARDgCubNncHZmXlGG5FY/FkKuREZqwg8IKG/Qqp2DBRccXqFU/vDyuWoCLlnRfy
+         BZSeL40y1xqeVAOrM3Ddz1DJQ56IgOOwPZYHUduwbGK+n3I0nzoBEtEDcwwUTqKGvXMF
+         f/QTvkZnOpSYjD6o8yUMG1NwzT65iUXLj+3fMppZ7FAoSvF1yIT5fwPcOYCRZqFq0ZpJ
+         qxm3ANkQxszMlZn3LXWKy28LdPBp/HAifuQDLORbJXe5dECxD4x6g1r13SX2j9SLVeWK
+         n85Q==
+X-Gm-Message-State: AOAM53012aNTH8Pvksj2M4SyeK8HCJVmKAfaSGtlCDHq3HQl6YB8YbkJ
+        aJa23AgARHxbr8YhipkrH9wcZwKcxkOlYQ==
+X-Google-Smtp-Source: ABdhPJynVBJ1kG++Hn4Az6MuWIRa7TQo52FO/vxGwWdI1la7Z38pilcEqmSc9m86GYI3ryjgrulFFQ==
+X-Received: by 2002:adf:f844:: with SMTP id d4mr2463591wrq.370.1632369907192;
+        Wed, 22 Sep 2021 21:05:07 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id f8sm3946659wrx.15.2021.09.22.21.05.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Sep 2021 20:55:58 -0700 (PDT)
-Date:   Thu, 23 Sep 2021 03:55:53 +0000
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     linux-mm@kvack.org
-Cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        Matthew Wilcox <willy@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        John Garry <john.garry@huawei.com>,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org
-Subject: Github link here
-Message-ID: <20210923035553.GA4247@kvm.asia-northeast3-a.c.our-ratio-313919.internal>
-References: <20210920154816.31832-1-42.hyeyoo@gmail.com>
+        Wed, 22 Sep 2021 21:05:06 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, linux-sctp@vger.kernel.org
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: [PATCH net] sctp: break out if skb_header_pointer returns NULL in sctp_rcv_ootb
+Date:   Thu, 23 Sep 2021 00:05:04 -0400
+Message-Id: <8f91703995c8de638695e330c06d17ecec8c9135.1632369904.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210920154816.31832-1-42.hyeyoo@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello there!
+We should always check if skb_header_pointer's return is NULL before
+using it, otherwise it may cause null-ptr-deref, as syzbot reported:
 
-In v1 and v2, I showed simple proof of concept of lockless cache.
-After some discussions, it turns out that there are some issues to solve.
-It will take some to solve them.
+  KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+  RIP: 0010:sctp_rcv_ootb net/sctp/input.c:705 [inline]
+  RIP: 0010:sctp_rcv+0x1d84/0x3220 net/sctp/input.c:196
+  Call Trace:
+  <IRQ>
+   sctp6_rcv+0x38/0x60 net/sctp/ipv6.c:1109
+   ip6_protocol_deliver_rcu+0x2e9/0x1ca0 net/ipv6/ip6_input.c:422
+   ip6_input_finish+0x62/0x170 net/ipv6/ip6_input.c:463
+   NF_HOOK include/linux/netfilter.h:307 [inline]
+   NF_HOOK include/linux/netfilter.h:301 [inline]
+   ip6_input+0x9c/0xd0 net/ipv6/ip6_input.c:472
+   dst_input include/net/dst.h:460 [inline]
+   ip6_rcv_finish net/ipv6/ip6_input.c:76 [inline]
+   NF_HOOK include/linux/netfilter.h:307 [inline]
+   NF_HOOK include/linux/netfilter.h:301 [inline]
+   ipv6_rcv+0x28c/0x3c0 net/ipv6/ip6_input.c:297
 
-I made git repository on github to share its progress:
-	https://github.com/hygoni/linux.git
+Fixes: 3acb50c18d8d ("sctp: delay as much as possible skb_linearize")
+Reported-by: syzbot+581aff2ae6b860625116@syzkaller.appspotmail.com
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/sctp/input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This is based on v5.15-rc2, and the main branch will be
-'lockless_cache'. There's *nothing* in the repo now and
-will be updated randomly. hopefully every 1-3 days, or every week.
-(note that I'm not full time kernel developer. it's hobby.)
+diff --git a/net/sctp/input.c b/net/sctp/input.c
+index 5ef86fdb1176..1f1786021d9c 100644
+--- a/net/sctp/input.c
++++ b/net/sctp/input.c
+@@ -702,7 +702,7 @@ static int sctp_rcv_ootb(struct sk_buff *skb)
+ 		ch = skb_header_pointer(skb, offset, sizeof(*ch), &_ch);
+ 
+ 		/* Break out if chunk length is less then minimal. */
+-		if (ntohs(ch->length) < sizeof(_ch))
++		if (!ch || ntohs(ch->length) < sizeof(_ch))
+ 			break;
+ 
+ 		ch_end = offset + SCTP_PAD4(ntohs(ch->length));
+-- 
+2.27.0
 
-I'll make use of 'issues' and 'discussions' tab (github feature to track
-issues and discussions).
-
-You can join if you're interested.
-Thank you for your interest on this project!
-
---
-Hyeonggon
