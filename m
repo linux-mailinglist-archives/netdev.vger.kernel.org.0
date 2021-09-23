@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9AB741639C
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 18:49:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF0704163E4
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 19:10:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235896AbhIWQvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 12:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52918 "EHLO
+        id S242352AbhIWRLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 13:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231564AbhIWQvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 12:51:23 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB47C061574;
-        Thu, 23 Sep 2021 09:49:51 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id a7so4418917plm.1;
-        Thu, 23 Sep 2021 09:49:51 -0700 (PDT)
+        with ESMTP id S242343AbhIWRK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 13:10:59 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16563C061574;
+        Thu, 23 Sep 2021 10:09:28 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 17so6996409pgp.4;
+        Thu, 23 Sep 2021 10:09:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+MhAQCN3MCef3eJJtF6/ulwUDJ61UOPaUB864XhY6hE=;
-        b=E6h0eAjLzztag0xmHm4rwsMjS/0omLXnEHKaP64ien169x1qhb7wHjy82xy4RWt16t
-         O4WtxrwNbsU5rMfw9Q/jG/UmihU093yEOGj62l/q088u7b0g6088/PxGzQZJcakCjLix
-         4TjuXiIrm12uHELiTguio2JjaXIc545CmfcTj59FmmEoWMH4urLSuUET2iP3wi5LPWdR
-         DnX04XoZSVLrY3O9NRvuODOdRxbhVUDkqyCJ7iadBDkCYdUAcrz5dUTDfRYyJif5AxQl
-         yFeA6po4Zh1zzrFxLMGLbutyKAz3L/VoBTlPW6p4NRH3nmm1OTfYPtwiJ4a/GYFIgrYk
-         r6Aw==
+        bh=mQOyTrPWpuoR0qjRwY2/Pk+PGAik9H+Dp0um2iO+NWk=;
+        b=AzeTNk4Xsxez7OMYnIujebqjThOfoyvbw7+K81cNzXRuS8/WSQHX5R3sHFuIGSsBPa
+         7Aa+ihvXF9NVEsmKlnxSzOn/aJhIiMuudgdRNKojjhRjBqE9mOmatyvqRu7sGyAiFYai
+         tXMyaRFr/GuqlOIE1QMSXk3QMWik9J9cFU9UjjGNA552qXjo/dQWMQcoXjvrjfH7qXXT
+         KRO/YuWReJPj29hE4LaAlE1Y9HM12YkgGR+ZiqfAzXy2RBzduY0q/3+oBawhqKeioDbd
+         kofU3RuH6BrDlFBZMbPTqx+OHoKcWBbhxnCo1wcN86tybrA7BtswJsu8z+GiQ03JAPb1
+         eC9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=+MhAQCN3MCef3eJJtF6/ulwUDJ61UOPaUB864XhY6hE=;
-        b=rbSu3fB2NEhA63Mf1r4eFJeme3rMYsgJTrkjcfjS1ABW8zONBQeOTeJ0qpBFVMUd1R
-         GW5T6I4Z38M+3S1EbNljkxaN5K4saQkezZ4qh7NUWmY7DhX063/R5mqGZKtkAHFV2e+5
-         hTzsSP5KkP6PfMXmnTlSw7QAQk3fmS22QWuF8hKnEV8mQYQh/fTk93yehPPUbCyajxyx
-         wYJ98zy89o2Mnnfv5uhEDnY4IIXBklSwi/pezaX5ftN2OYVmcC4wcHNU6C2nP1lCW5d6
-         INeujBw5Rp7LHgllAVTckYMvvTKed+C3niVgGOxqBhXKQI1iTYQgCCoLh83Z4BTYdWl+
-         g3yQ==
-X-Gm-Message-State: AOAM530gydtwZ4s6FCVsp131vfoV5ajYJT4ce14Inqo/Me2N5sc9kHFp
-        eqeksvzEJSBLDJ3w2wMgJayhTuoa6d4=
-X-Google-Smtp-Source: ABdhPJyIYDJ/7xNtXUZjb4UZO+bXii4P0gJq7epfVHL852Suf8ajpLowrePBQu4B2z+0PmnrN+fbUw==
-X-Received: by 2002:a17:902:6848:b0:13a:4ffd:202e with SMTP id f8-20020a170902684800b0013a4ffd202emr4566154pln.79.1632415791253;
-        Thu, 23 Sep 2021 09:49:51 -0700 (PDT)
+        bh=mQOyTrPWpuoR0qjRwY2/Pk+PGAik9H+Dp0um2iO+NWk=;
+        b=gN/rgYFxf24jsSntLDR7lZn31iyC1Pmcu9AFYKoIqqtS2lbRGQClzNQ9iBfsQNCBOV
+         0h9Q6Kj8dptTHz707I6KlPGhlB7go7vI/j12gKQjsxZwNCl00P9+9xdRrQ4f8hNp5TgB
+         AhMcgNYIcKl0nTS14BFJARfn15bgh8JfA/rhpD/7/r4OIm8OnmFtojGpBpTj4y4/G5JI
+         v6UnB2zVy2+i6+Rc2XSrrFMlCJs/NKs8wuBeptICs/vAenJX1T5+n0BOfX8LXsqm0ohr
+         vCBI6RNlVGNIpXsVtmjoQQvGTif9W+M04PLmzEvcYqDOp4rdvDlKtBqy+h6q7zvWrpUn
+         pWEw==
+X-Gm-Message-State: AOAM532enQcqKaSnXAdRFiVsYfcfsBgFOy1uPKiCh7pUhHTH43T1YZ1T
+        k/T4UuCMvRQBSCF3MY9QkG4NN2GLM4o=
+X-Google-Smtp-Source: ABdhPJzE1lualTU79piPX8UlNwZ68F8W1spoATcV9dMUVHXMzw2XVSk6BelCnHdh/PSKffkJ8eN/lA==
+X-Received: by 2002:a05:6a00:14c5:b0:447:aa13:b71f with SMTP id w5-20020a056a0014c500b00447aa13b71fmr5700154pfu.40.1632416967117;
+        Thu, 23 Sep 2021 10:09:27 -0700 (PDT)
 Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id 9sm10017046pjs.14.2021.09.23.09.49.50
+        by smtp.gmail.com with ESMTPSA id z25sm6230526pfj.199.2021.09.23.10.09.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Sep 2021 09:49:50 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: socket: integrate sockfd_lookup() and
- sockfd_lookup_light()
+        Thu, 23 Sep 2021 10:09:26 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: rtnetlink: convert rcu_assign_pointer to
+ RCU_INIT_POINTER
 To:     Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
         kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210922063106.4272-1-yajun.deng@linux.dev>
+References: <20210918063607.23681-1-yajun.deng@linux.dev>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <b6263d35-0d31-e4a8-a955-494ce2b36ad6@gmail.com>
-Date:   Thu, 23 Sep 2021 09:49:49 -0700
+Message-ID: <94c26a4b-4a39-fcc8-60e4-880fe80c4443@gmail.com>
+Date:   Thu, 23 Sep 2021 10:09:25 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20210922063106.4272-1-yajun.deng@linux.dev>
+In-Reply-To: <20210918063607.23681-1-yajun.deng@linux.dev>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,44 +70,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 9/21/21 11:31 PM, Yajun Deng wrote:
-> As commit 6cb153cab92a("[NET]: use fget_light() in net/socket.c") said,
-> sockfd_lookup_light() is lower load than sockfd_lookup(). So we can
-> remove sockfd_lookup() but keep the name. As the same time, move flags
-> to sockfd_put().
-
-???
-
+On 9/17/21 11:36 PM, Yajun Deng wrote:
+> It no need barrier when assigning a NULL value to an RCU protected
+> pointer. So use RCU_INIT_POINTER() instead for more fast.
 > 
 > Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
 > ---
->  include/linux/net.h |   8 +++-
->  net/socket.c        | 101 +++++++++++++++++---------------------------
->  2 files changed, 46 insertions(+), 63 deletions(-)
+>  net/core/rtnetlink.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/include/linux/net.h b/include/linux/net.h
-> index ba736b457a06..63a179d4f760 100644
-> --- a/include/linux/net.h
-> +++ b/include/linux/net.h
-> @@ -238,8 +238,14 @@ int sock_recvmsg(struct socket *sock, struct msghdr *msg, int flags);
->  struct file *sock_alloc_file(struct socket *sock, int flags, const char *dname);
->  struct socket *sockfd_lookup(int fd, int *err);
->  struct socket *sock_from_file(struct file *file);
-> -#define		     sockfd_put(sock) fput(sock->file)
->  int net_ratelimit(void);
-> +#define		     sockfd_put(sock)             \
-> +do {                                              \
-> +	struct fd *fd = (struct fd *)&sock->file; \
-> +						  \
-> +	if (fd->flags & FDPUT_FPUT)               \
-> +		fput(sock->file);                 \
-> +} while (0)
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index 972c8cb303a5..327ca6bc6e6d 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -301,7 +301,7 @@ int rtnl_unregister(int protocol, int msgtype)
+>  	}
 >  
+>  	link = rtnl_dereference(tab[msgindex]);
+> -	rcu_assign_pointer(tab[msgindex], NULL);
+> +	RCU_INIT_POINTER(tab[msgindex], NULL);
+>  	rtnl_unlock();
+>  
+>  	kfree_rcu(link, rcu);
+> @@ -337,7 +337,7 @@ void rtnl_unregister_all(int protocol)
+>  		if (!link)
+>  			continue;
+>  
+> -		rcu_assign_pointer(tab[msgindex], NULL);
+> +		RCU_INIT_POINTER(tab[msgindex], NULL);
+>  		kfree_rcu(link, rcu);
+>  	}
+>  	rtnl_unlock();
+> 
 
-Really ?
+FYI, there is no memory barrier involved in 
 
-I wonder how was this tested ?
+rcu_assign_pointer(tab[msgindex], NULL);
 
-We can not store FDPUT_FPUT in the sock itself, for obvious reasons.
-Each thread needs to keep this information private.
+This has been the case for the last 5 years.
 
+Your patch was not needed really.
