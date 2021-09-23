@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FEDE4164E7
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 20:13:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E897E4164EE
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 20:13:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242689AbhIWSOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 14:14:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39104 "EHLO mail.kernel.org"
+        id S242790AbhIWSOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 14:14:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39212 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242753AbhIWSOh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Sep 2021 14:14:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0F42560F43;
-        Thu, 23 Sep 2021 18:13:05 +0000 (UTC)
+        id S242752AbhIWSOk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Sep 2021 14:14:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D4FE61241;
+        Thu, 23 Sep 2021 18:13:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632420786;
-        bh=phlvYwzg+z96wp12+/KCpD7kPCOOA7sQ3Vr1eIwh1oc=;
+        s=k20201202; t=1632420789;
+        bh=hhGo+2kBrCwffbr0G/1kKyCktxsPkO5rYb4FUUgdUp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kVixVQifNuQ+a1vwDe8CUju46ubqxFK9G/N3i038TJuLbTFXwfkWZU9MzYSc1UXfW
-         UUGyUl9Fz33m9ndbOhB3cWY/Um0S++D5G0hqvNapVd7RrB4ul0zwC6qF8YjBu9EXrE
-         a4fZq8PrL+GaTILBAGIwhIIqMVjZqAmpOmxHrKwxZsxJQNS/UKABewn/yAOR63WoHW
-         8eocJUMMBzjQlY68HiQJ0L2IUHaFJTqXyerV+kJwCxlv4Z/N0+2ezMLuRYFGkNaU6O
-         UDqe6y2vM9HVtvVY5ibNOMzozUxplH8IJLkkuOWvWCXjIk5aPuK9BBiBcbkjrClxDr
-         3HgUmQlDH44JA==
+        b=oy1rxmMV33ee4OBVTxYvez+g0iyaEVjoxxgkMYmqShbH1Yg6AJbh+rpPJ4tsG7xSm
+         VaV/c7vi19v4xaesDvpYOtdstlr5lLncmKD2qLVsEFhrVQ862TN5jgKG+XAhjCsOPX
+         Z8hj4I9DNjbqYIcU1P/vscwF+5aav4RoieYN/kQrSqXOE45i8d8xObnS2MrS54H0K3
+         i3UCA9ztlOsDXACvak1skahIGft6DaeKxcQpGWt67uNZmO8wB3RqRfpk/IZ064zPqa
+         9O6p9BjEfVa5+AqV+JVKJXgnYVUYUmHCZeWiMyhXXC4A03FRNGTzGyCl5K4qlDI2AL
+         POAzrYuGIqQwg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -47,9 +47,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Saurav Kashyap <skashyap@marvell.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net-next 3/6] devlink: Delete not used port parameters APIs
-Date:   Thu, 23 Sep 2021 21:12:50 +0300
-Message-Id: <b4350cf5e246da8587a636857724fababa820dea.1632420431.git.leonro@nvidia.com>
+Subject: [PATCH net-next 4/6] devlink: Remove single line function obfuscations
+Date:   Thu, 23 Sep 2021 21:12:51 +0300
+Message-Id: <a56f5eece50f146ea170571a9dde24079522937f.1632420431.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1632420430.git.leonro@nvidia.com>
 References: <cover.1632420430.git.leonro@nvidia.com>
@@ -61,85 +61,137 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-There is no in-kernel users for the devlink port parameters API,
-so let's remove it.
+There is no need in extra one line functions to call relevant
+functions only once.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/net/devlink.h |  6 ------
- net/core/devlink.c    | 42 ------------------------------------------
- 2 files changed, 48 deletions(-)
+ net/core/devlink.c | 89 ++++++++++++++++++----------------------------
+ 1 file changed, 34 insertions(+), 55 deletions(-)
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index c902e8e5f012..a7852a257bf6 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1653,12 +1653,6 @@ void devlink_param_unregister(struct devlink *devlink,
- 			      const struct devlink_param *param);
- void devlink_params_publish(struct devlink *devlink);
- void devlink_params_unpublish(struct devlink *devlink);
--int devlink_port_params_register(struct devlink_port *devlink_port,
--				 const struct devlink_param *params,
--				 size_t params_count);
--void devlink_port_params_unregister(struct devlink_port *devlink_port,
--				    const struct devlink_param *params,
--				    size_t params_count);
- int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
- 				       union devlink_param_value *init_val);
- int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 7d975057c2a9..9c071f4e609f 100644
+index 9c071f4e609f..3ea33c689790 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -10117,48 +10117,6 @@ void devlink_params_unpublish(struct devlink *devlink)
+@@ -10117,13 +10117,26 @@ void devlink_params_unpublish(struct devlink *devlink)
  }
  EXPORT_SYMBOL_GPL(devlink_params_unpublish);
  
--/**
-- *	devlink_port_params_register - register port configuration parameters
-- *
-- *	@devlink_port: devlink port
-- *	@params: configuration parameters array
-- *	@params_count: number of parameters provided
-- *
-- *	Register the configuration parameters supported by the port.
-- */
--int devlink_port_params_register(struct devlink_port *devlink_port,
--				 const struct devlink_param *params,
--				 size_t params_count)
--{
--	return __devlink_params_register(devlink_port->devlink,
--					 devlink_port->index,
--					 &devlink_port->param_list, params,
--					 params_count,
--					 DEVLINK_CMD_PORT_PARAM_NEW,
--					 DEVLINK_CMD_PORT_PARAM_DEL);
--}
--EXPORT_SYMBOL_GPL(devlink_port_params_register);
+-static int
+-__devlink_param_driverinit_value_get(struct list_head *param_list, u32 param_id,
+-				     union devlink_param_value *init_val)
++/**
++ *	devlink_param_driverinit_value_get - get configuration parameter
++ *					     value for driver initializing
++ *
++ *	@devlink: devlink
++ *	@param_id: parameter ID
++ *	@init_val: value of parameter in driverinit configuration mode
++ *
++ *	This function should be used by the driver to get driverinit
++ *	configuration for initialization after reload command.
++ */
++int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
++				       union devlink_param_value *init_val)
+ {
+ 	struct devlink_param_item *param_item;
+ 
+-	param_item = devlink_param_find_by_id(param_list, param_id);
++	if (!devlink_reload_supported(devlink->ops))
++		return -EOPNOTSUPP;
++
++	param_item = devlink_param_find_by_id(&devlink->param_list, param_id);
+ 	if (!param_item)
+ 		return -EINVAL;
+ 
+@@ -10139,17 +10152,26 @@ __devlink_param_driverinit_value_get(struct list_head *param_list, u32 param_id,
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_get);
+ 
+-static int
+-__devlink_param_driverinit_value_set(struct devlink *devlink,
+-				     unsigned int port_index,
+-				     struct list_head *param_list, u32 param_id,
+-				     union devlink_param_value init_val,
+-				     enum devlink_command cmd)
++/**
++ *	devlink_param_driverinit_value_set - set value of configuration
++ *					     parameter for driverinit
++ *					     configuration mode
++ *
++ *	@devlink: devlink
++ *	@param_id: parameter ID
++ *	@init_val: value of parameter to set for driverinit configuration mode
++ *
++ *	This function should be used by the driver to set driverinit
++ *	configuration mode default value.
++ */
++int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
++				       union devlink_param_value init_val)
+ {
+ 	struct devlink_param_item *param_item;
+ 
+-	param_item = devlink_param_find_by_id(param_list, param_id);
++	param_item = devlink_param_find_by_id(&devlink->param_list, param_id);
+ 	if (!param_item)
+ 		return -EINVAL;
+ 
+@@ -10163,52 +10185,9 @@ __devlink_param_driverinit_value_set(struct devlink *devlink,
+ 		param_item->driverinit_value = init_val;
+ 	param_item->driverinit_value_valid = true;
+ 
+-	devlink_param_notify(devlink, port_index, param_item, cmd);
++	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_NEW);
+ 	return 0;
+ }
 -
 -/**
-- *	devlink_port_params_unregister - unregister port configuration
-- *	parameters
+- *	devlink_param_driverinit_value_get - get configuration parameter
+- *					     value for driver initializing
 - *
-- *	@devlink_port: devlink port
-- *	@params: configuration parameters array
-- *	@params_count: number of parameters provided
+- *	@devlink: devlink
+- *	@param_id: parameter ID
+- *	@init_val: value of parameter in driverinit configuration mode
+- *
+- *	This function should be used by the driver to get driverinit
+- *	configuration for initialization after reload command.
 - */
--void devlink_port_params_unregister(struct devlink_port *devlink_port,
--				    const struct devlink_param *params,
--				    size_t params_count)
+-int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
+-				       union devlink_param_value *init_val)
 -{
--	return __devlink_params_unregister(devlink_port->devlink,
--					   devlink_port->index,
--					   &devlink_port->param_list,
--					   params, params_count,
--					   DEVLINK_CMD_PORT_PARAM_DEL);
--}
--EXPORT_SYMBOL_GPL(devlink_port_params_unregister);
+-	if (!devlink_reload_supported(devlink->ops))
+-		return -EOPNOTSUPP;
 -
- static int
- __devlink_param_driverinit_value_get(struct list_head *param_list, u32 param_id,
- 				     union devlink_param_value *init_val)
+-	return __devlink_param_driverinit_value_get(&devlink->param_list,
+-						    param_id, init_val);
+-}
+-EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_get);
+-
+-/**
+- *	devlink_param_driverinit_value_set - set value of configuration
+- *					     parameter for driverinit
+- *					     configuration mode
+- *
+- *	@devlink: devlink
+- *	@param_id: parameter ID
+- *	@init_val: value of parameter to set for driverinit configuration mode
+- *
+- *	This function should be used by the driver to set driverinit
+- *	configuration mode default value.
+- */
+-int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+-				       union devlink_param_value init_val)
+-{
+-	return __devlink_param_driverinit_value_set(devlink, 0,
+-						    &devlink->param_list,
+-						    param_id, init_val,
+-						    DEVLINK_CMD_PARAM_NEW);
+-}
+ EXPORT_SYMBOL_GPL(devlink_param_driverinit_value_set);
+ 
+ /**
 -- 
 2.31.1
 
