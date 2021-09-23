@@ -2,88 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62D2141574E
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 06:13:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47387415762
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 06:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231910AbhIWEPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 00:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbhIWEPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 00:15:09 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF0BC061574
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 21:13:38 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id l7-20020a0568302b0700b0051c0181deebso6712462otv.12
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 21:13:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=msim7IOlD9QMDjiaL8dqk9yrskHNBR6eX3VGRhInoug=;
-        b=EFVky6EapFPVmM2fzti0rbI3M6z0QVoQSdyzLW8ED0PFQXGtr1qWMnRIJgUmdi/WyY
-         GyOG9Ogct+RHE3oJFQ0TpJ9xEQxqRZ1S4Cg6R0QVs4/vb9Mh0RetJJwFkjIocPYNg702
-         qrPLlJBBd+IdVSYX8vIODljgZqiiFsjuJJGvGUuR9OpgjpNjSJ85qXhfaCnRMC5sJc/Z
-         kTk/fIFF4kChKJLBmC8Kfdizkngagp/cmX65BSiHIdiL6rlfZyHM29AiUfTyUgeE0eFn
-         8elsJwTQduBzkF8xdVC8RJTdMlmC1chzf4x2mI7kCwRoHijTANPaujBEsUBKsYUWP3DW
-         Xw4Q==
+        id S239050AbhIWEXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 00:23:34 -0400
+Received: from mail-wr1-f44.google.com ([209.85.221.44]:36509 "EHLO
+        mail-wr1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229504AbhIWEXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 00:23:30 -0400
+Received: by mail-wr1-f44.google.com with SMTP id g16so13238364wrb.3;
+        Wed, 22 Sep 2021 21:21:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=msim7IOlD9QMDjiaL8dqk9yrskHNBR6eX3VGRhInoug=;
-        b=DcBpy4JBXOtgiAu2rrCGwVw6O7s55sDBLLEUIlVvSzQz4pXrwcdw0DWbXfyNb7i3gr
-         26XZkyeV4lrYOWlxaMw1bPkjD2sb+7gHZnzH5junz0Zt8R0xKiU1yEP/+nPTExmLMIeK
-         yjjlYGKo3HR0y7I1T45ZqXGTuaSaRL3XTZaqZmoko7inh+9+D+VbtE7QWfpdxCEp/lb3
-         RTFyfx1ORpQ37TdllD3Gsszl+A/8kHmhsIUmCAjH6uMfvnNlpUCHb/AtACSM7ZIYRAWu
-         G5EFD+foC7Pa8QSwawUVlKWHGUYhgen5Q9Qw7h0XPQr+mfkpx9Yx+v9+9JKMTTNwjtDJ
-         L7DA==
-X-Gm-Message-State: AOAM533I2j86twdRJJCvkka3TYnk4if6t3YZnoLkw2XDaWrTUZnWTlsS
-        9Pja7AH1p9CzVeRmNWYg4qo=
-X-Google-Smtp-Source: ABdhPJwV65y8lEKwvuIiN5cTFICGEfixiF0kGDa9AhMfinM2dMSNvzTcVKFlagWiFO3JKxaaRL1C1Q==
-X-Received: by 2002:a9d:6143:: with SMTP id c3mr1593628otk.124.1632370417685;
-        Wed, 22 Sep 2021 21:13:37 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id f17sm1103743ook.9.2021.09.22.21.13.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Sep 2021 21:13:37 -0700 (PDT)
-Subject: Re: [PATCH net] net: ipv4: Fix rtnexthop len when RTA_FLOW is present
-To:     Xiao Liang <shaw.leon@gmail.com>, netdev <netdev@vger.kernel.org>
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        davem@davemloft.net
-References: <20210922101654.7775-1-shaw.leon@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <adb4f9a5-6f3d-5aeb-a1e7-9ac04be925d5@gmail.com>
-Date:   Wed, 22 Sep 2021 22:13:36 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lz+dbdxsH1ZK2pJhZeOXoDpDI3RmHY4duyLP2ZtdPes=;
+        b=niROZRJZblJAKdI37jP2F2K37/sABAL9P2ptilWWr2Eb9o/B/0PyRJUswriK4MnMWu
+         ecK9Q/+naf4fjAeNvJkGQ8gw+8UeRS8HSSBRQ8mBCBSMW9IVNF0Fvys9wkM2hXBC27fm
+         VNVKn6rEr5qWM0FPXRDDeCMiUU336Y7hgHpdtZb3PIZSDWTzRKvzY/9vpU23XatoAizm
+         R1SYrEIk2vp7boHs81qjN63AsDSVYRsCUNyPpq3u1f1R4IBnbw8a6/Dx8iWKwj3J72ZL
+         X9i1wSGsNcnNEZ/iNFOLU663qjjx0sqoTSChEjluDqwW8x6cKaLFKtmiK7n7SYC++lKN
+         JhjA==
+X-Gm-Message-State: AOAM530Nn/yUuoOyu9CL6qSfHnnN1e5w1qOAFkP9vVZCpnsW4EzLgXiQ
+        COtqjacZzLx6G2PneGVB/yrR+sAlrU1zew==
+X-Google-Smtp-Source: ABdhPJz2YNKJT1U4yPmQDRoWT5cGQdrgZF6UEz/a9GlZwZUP4EthrMuQMXmFEee07caR0m4083vX1w==
+X-Received: by 2002:adf:f789:: with SMTP id q9mr2497783wrp.367.1632370918780;
+        Wed, 22 Sep 2021 21:21:58 -0700 (PDT)
+Received: from rocinante ([95.155.85.46])
+        by smtp.gmail.com with ESMTPSA id f19sm3765545wmf.11.2021.09.22.21.21.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Sep 2021 21:21:58 -0700 (PDT)
+Date:   Thu, 23 Sep 2021 06:21:57 +0200
+From:   Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+To:     Dongdong Liu <liudongdong3@huawei.com>
+Cc:     helgaas@kernel.org, hch@infradead.org, logang@deltatee.com,
+        leon@kernel.org, linux-pci@vger.kernel.org, rajur@chelsio.com,
+        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH V9 4/8] PCI/sysfs: Add a 10-Bit Tag sysfs file PCIe
+ Endpoint devices
+Message-ID: <YUwA5eC7wiDoHy0F@rocinante>
+References: <20210922133655.51811-1-liudongdong3@huawei.com>
+ <20210922133655.51811-5-liudongdong3@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20210922101654.7775-1-shaw.leon@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20210922133655.51811-5-liudongdong3@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/22/21 4:16 AM, Xiao Liang wrote:
-> @@ -1682,10 +1683,17 @@ int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
->  	/* length of rtnetlink header + attributes */
->  	rtnh->rtnh_len = nlmsg_get_pos(skb) - (void *)rtnh;
->  
-> -	return 0;
-> +	return rtnh;
->  
->  nla_put_failure:
-> -	return -EMSGSIZE;
-> +	return ERR_PTR(-EMSGSIZE);
-> +}
+Hi,
+
+Thank you for sending the patch over!  A few small comments below.
+
+[...]
+> +static ssize_t pci_10bit_tag_store(struct device *dev,
+> +				   struct device_attribute *attr,
+> +				   const char *buf, size_t count)
+> +{
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +	bool enable;
+
+Would you mind adding the following capabilities check here?
+
+	if (!capable(CAP_SYS_ADMIN))
+		return -EPERM;
+
+This is so we make sure that whatever user is going to use this sysfs
+attribute actually has enough permissions to update this value safely.
+
+> +	if (kstrtobool(buf, &enable) < 0)
+> +		return -EINVAL;
 > +
-> +int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
-> +		    int nh_weight, u8 rt_family)
+> +	if (pdev->driver)
+> +		return -EBUSY;
+> +
+> +	if (enable) {
+> +		if (!pcie_rp_10bit_tag_cmp_supported(pdev))
+> +			return -EPERM;
 
-Adding classid as an input to fib_add_nexthop and checking it for non-0
-before adding to the message is a better way to resolve this.
+Would it make sense to also verify 10-Bit Tag Completer support on the
+"disable" path too?   We won't be able to set a value if there is no
+support, but nothing will stop us from clearing it regardless - unless
+this would be safe to do?  What do you think?
 
+> +		pcie_capability_set_word(pdev, PCI_EXP_DEVCTL2,
+> +				PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
+> +	} else {
+> +		pcie_capability_clear_word(pdev, PCI_EXP_DEVCTL2,
+> +				   PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
+> +	}
+> +
+> +	return count;
+> +}
 
+[...]
+> +> +static umode_t pcie_dev_10bit_tag_attrs_are_visible(struct kobject *kobj,
+> +					  struct attribute *a, int n)
+
+The preferred function name for the .is_visible() callback in a case when
+there is only a single sysfs attribute being added would be:
+
+  pcie_dev_10bit_tag_attr_is_visible()
+
+Albeit, I appreciate that you followed the existing naming pattern.
+
+	Krzysztof
