@@ -2,118 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B169B4162C9
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 18:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E27F74162CD
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 18:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242338AbhIWQNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 12:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
+        id S234498AbhIWQQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 12:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231743AbhIWQNE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 12:13:04 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DE9C061574
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 09:11:32 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id q81so20144516qke.5
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 09:11:32 -0700 (PDT)
+        with ESMTP id S231233AbhIWQQ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 12:16:26 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACE7C061574
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 09:14:55 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id d13-20020a17090ad3cd00b0019e746f7bd4so2084672pjw.0
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 09:14:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=n5ixhpxm0waokBgCVSXGCN32QeN3+SHbupO5QWNGzHA=;
-        b=lM0q9po18QebMSEfFNPztY7TEHX0pQIkK+zuvQVJeYb6Oq+pyUzhCjZiAMLVTM75Z9
-         LsWvlK0vGjvUvNPg2B0vI/oWqB35osruMBbsaTRI/+Fb5hGP20O4CHrjD63XdsKrNjt1
-         eC0z6nzVTEROzweBFolWvNeX0e6pOkC9b6VQ+wBNwYS+0zbDf4pRO7L9XOgEan3ivCBB
-         E64abcBOUaZuzNBxwsetKxMoyfIwToGW5xB8G3S9dtqhyX8yx0oQ4NMA2XZqJpM/uvZr
-         LEldMhsgzJDwk/Ng/xIytiso6JLwOliPlCdwlSzFftOyRKbInJ8aMd7ol7Ck1hewrhPI
-         5ffw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VH8LLD+OqtW4aaSavuXc8s2jGxOuI3P3Z1v+yoIiDmI=;
+        b=hxTuSwazOmPt+vNZJrceILwqukBEeYT29Cf/bY96/6yqv5YHRTEveu8183GoNyyy9L
+         BkiCuyxq8xEJdGUW2GTlZ8Xb+SMSSyh9pQrv0ira7TjcGG7oP8+y12wcKrW8XQ24H+Bv
+         2U6OavPxhgRAJPD6CG3ZfMmcwVrpxjxKknHdD4XeYHGAMAlDQ2lvv5i20iXsZFCHJzBP
+         40TaVGsdXbT7wS7BM3F2R/MzXFagkC6HsLh2/8oVzw9C1rROLFxOZcU5B7FJnp4j6QeY
+         OsRsNSY4wTIJHlSWt7c3iR2o0A0egdWj6O6Ar6+Ih3DnK4/a0O/NC1hXvrbIMlmIaxhN
+         e/5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=n5ixhpxm0waokBgCVSXGCN32QeN3+SHbupO5QWNGzHA=;
-        b=pRlf6TUwQFTY/MyKBcDwJI1ZEnLnQyxO038JqfXEaDofhJ7xYik3WZeudnm2Mr8FZn
-         voVJmuvs30TIdf+pP49bUnLvJpEcKT5jaWrWLUUseLO1c4wF9Z9TtZbnlIWcKshWkvZr
-         scPUmC1j/Ys2MLvkX6+GvAPpb0O2YzoemraBupH5wjaY5fbZ9LchNigMgM9VTou3wXvk
-         94kR3DrMYidnsscz6I527cn5th/e4hmiIc5XtpI46Ek5plBw/8NA2hrnW7/G8mPT5LNB
-         qlaGTuz4QC6PUohSXqKZyKm7hWowhMepsireAm8rKMOKz3t3tvyi1rDaUw/TLaYUpW+T
-         femA==
-X-Gm-Message-State: AOAM53025HUj1xUkkFDMxtW9RJnQ/yigpNpulYjfVC4zobZNAmNC6lO9
-        z0yoHK/QU1bcXrH7aQN3dgU+8Sw3gAg=
-X-Google-Smtp-Source: ABdhPJw4Tb3wdvq/WvtFkRQl+vkTdxgttEW5IaIiNIDcILd9YzylkHgBLb5Q3vI3SJsgWld3l1509A==
-X-Received: by 2002:a37:be83:: with SMTP id o125mr3992159qkf.161.1632413491556;
-        Thu, 23 Sep 2021 09:11:31 -0700 (PDT)
-Received: from vpp.lan (h112.166.20.98.dynamic.ip.windstream.net. [98.20.166.112])
-        by smtp.gmail.com with ESMTPSA id s8sm3385922qta.48.2021.09.23.09.11.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Sep 2021 09:11:29 -0700 (PDT)
-From:   Joshua Roys <roysjosh@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Joshua Roys <roysjosh@gmail.com>
-Subject: [PATCH net-next] net: mlx4: Add support for XDP_REDIRECT
-Date:   Thu, 23 Sep 2021 12:10:34 -0400
-Message-Id: <20210923161034.18975-1-roysjosh@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        bh=VH8LLD+OqtW4aaSavuXc8s2jGxOuI3P3Z1v+yoIiDmI=;
+        b=cpQ4ShnEv3XZyzzH3BHZHQTxNiJmeEHAqxOkm5yfUIc9Oouc+sedMx/UA/EhhXYb61
+         q3OiWmXyR7CKI81dA7Xs/+aBZztEBq6LjvBIjxI3kJWWXzeq+6M9ZgR/OzFXuT/uqAn0
+         8gKLJchxnNWAWKp5sfG/T2iaphDy716Mo5IrsUkd6vPshDPP95fOefAH1+tRpSniikEK
+         OozcWQragyzdqJfgwuNvgw2hIikOxzOdrjGaVMmCffNfYf8DNB0u+A42jXBjFb2BrbHR
+         nmh1L6wkbpTZK54jtxXhllDye3C9eJ1l/wXJcpbvYraFk7HVfsDEEJE9Fy1ec9K2+HXz
+         TULg==
+X-Gm-Message-State: AOAM532NFc3mCChmm1svAclMDJXe6P+Wy+dBuCNUsD/5h0XHZBpq3D5t
+        DIoty4SDPFWVae49pSEFZyoxQeb56uM=
+X-Google-Smtp-Source: ABdhPJy4cCLyvzS4/BtiB+tdnK1XgomrbcaYwxnZ/8UpC9vk0XsLOXReOtrzvfEgyamtnTF6pa2mcQ==
+X-Received: by 2002:a17:903:2c2:b029:101:9c88:d928 with SMTP id s2-20020a17090302c2b02901019c88d928mr4572906plk.62.1632413694577;
+        Thu, 23 Sep 2021 09:14:54 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id d3sm10245954pjc.49.2021.09.23.09.14.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Sep 2021 09:14:54 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: dsa: felix: accept "ethernet-ports" OF node
+ name
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210923153541.2953384-1-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <3d3c5cb1-00e1-68bf-5358-70453d359065@gmail.com>
+Date:   Thu, 23 Sep 2021 09:14:47 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210923153541.2953384-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Joshua Roys <roysjosh@gmail.com>
----
- drivers/net/ethernet/mellanox/mlx4/en_rx.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+On 9/23/21 8:35 AM, Vladimir Oltean wrote:
+> Since both forms are accepted, let's search for both when we
+> pre-validate the PHY modes.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This is a pattern-match commit, based off of the mlx4 XDP_TX and other
-drivers' XDP_REDIRECT enablement patches. The goal was to get AF_XDP
-working in VPP and this was successful. Tested with a CX3.
-
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-index 7f6d3b82c29b..557d7daac2d3 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -669,6 +669,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 	struct bpf_prog *xdp_prog;
- 	int cq_ring = cq->ring;
- 	bool doorbell_pending;
-+	bool xdp_redir_flush;
- 	struct mlx4_cqe *cqe;
- 	struct xdp_buff xdp;
- 	int polled = 0;
-@@ -682,6 +683,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 	xdp_prog = rcu_dereference_bh(ring->xdp_prog);
- 	xdp_init_buff(&xdp, priv->frag_info[0].frag_stride, &ring->xdp_rxq);
- 	doorbell_pending = false;
-+	xdp_redir_flush = false;
- 
- 	/* We assume a 1:1 mapping between CQEs and Rx descriptors, so Rx
- 	 * descriptor offset can be deduced from the CQE index instead of
-@@ -790,6 +792,14 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 			switch (act) {
- 			case XDP_PASS:
- 				break;
-+			case XDP_REDIRECT:
-+				if (xdp_do_redirect(dev, &xdp, xdp_prog) >= 0) {
-+					xdp_redir_flush = true;
-+					frags[0].page = NULL;
-+					goto next;
-+				}
-+				trace_xdp_exception(dev, xdp_prog, act);
-+				goto xdp_drop_no_cnt;
- 			case XDP_TX:
- 				if (likely(!mlx4_en_xmit_frame(ring, frags, priv,
- 							length, cq_ring,
-@@ -897,6 +907,9 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 			break;
- 	}
- 
-+	if (xdp_redir_flush)
-+		xdp_do_flush();
-+
- 	if (likely(polled)) {
- 		if (doorbell_pending) {
- 			priv->tx_cq[TX_XDP][cq_ring]->xdp_busy = true;
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.31.1
-
+Florian
