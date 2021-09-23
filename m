@@ -2,119 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 347F9415A11
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 10:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DF4F415A2B
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 10:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239958AbhIWIfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 04:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49370 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239940AbhIWIfa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 04:35:30 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C10C061756
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 01:33:59 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id t8so14887895wrq.4
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 01:33:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=G+mMJvGg8dU97lnDBzf9zom9gl16GdTi24rkzKfUcCU=;
-        b=zqLqQBKrpWABlzgNbc7GUNBBsOSQkkg4QZVJqxXLof6oZ7ZydK8rS3o4jKHk1C+AMj
-         cExCWhLm+EpoARU6N09MaNRL1xAiGRp1SW76vFLCsZIrNj78sShIpg5cfIxSmPYhbvjB
-         nBvV5Fnx4pmFib5kx7GAc2Lx06wzP87t2SgdzNEed4gRndX1Ju147IXrIEHuuafKysK1
-         3LgSmnovW/l8TgjFLQiGKHB3IGKWVSXW4P8SldByrlRNYblJeJCLUZTxM8qL0EWyBAvo
-         pt2Bn9OP85meZhAGEw8ABqHPWiCMIxf86ND4rOeTLRdwJUInHUmQhIN+rI62COtCjfCW
-         /AZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=G+mMJvGg8dU97lnDBzf9zom9gl16GdTi24rkzKfUcCU=;
-        b=xqv3cHfje1G7CC7hWk4V56QYAh2mIYot43VqYF48kfLnp6eX9BKYFSwl+I0XwgAe9H
-         8T/2ngCiMc6vRwTq5nxlzSxzaP2kzyE3C4eHty4NQQR7sEmICCIgSs49f615Xqt/OmO3
-         sa5IYzZcts8kcMfzYwwcRFAXLn+kXkf+6HfpluekqQhOcllKgVEscnwOHPttclkr0F07
-         4wvYFb5FQFexzUdiNQ6arkCZjs3hHcVbrJmiNNUXGGWnDfONit9tOOImM1bjR2c+svLP
-         BiUxOjnZQc/lKnJnfUN3UdMf4FDtGiJwhqrrFXAN0dICRH5Ren+NQn+KhBj8QrcopbRg
-         OfPA==
-X-Gm-Message-State: AOAM531JxDyRWv7FluwrUJR5i4aeD26fKQJayfTef7aHNJGhEAsNQnLQ
-        8oglLQTYGKEKIwarXe/63iP82w==
-X-Google-Smtp-Source: ABdhPJxTVpVPs6CFILXmVDenfushxErseoarwJ6xl+nXclCd3UICAw8lJ297gwlaCSBboxXUZxTDfQ==
-X-Received: by 2002:adf:8919:: with SMTP id s25mr3636692wrs.185.1632386037915;
-        Thu, 23 Sep 2021 01:33:57 -0700 (PDT)
-Received: from apalos.home (ppp-94-66-220-137.home.otenet.gr. [94.66.220.137])
-        by smtp.gmail.com with ESMTPSA id q10sm4374105wmq.12.2021.09.23.01.33.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Sep 2021 01:33:57 -0700 (PDT)
-Date:   Thu, 23 Sep 2021 11:33:54 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        hawk@kernel.org, jonathan.lemon@gmail.com, alobakin@pm.me,
-        willemb@google.com, cong.wang@bytedance.com, pabeni@redhat.com,
-        haokexin@gmail.com, nogikh@google.com, elver@google.com,
-        memxor@gmail.com, edumazet@google.com, alexander.duyck@gmail.com,
-        dsahern@gmail.com
-Subject: Re: [PATCH net-next 3/7] pool_pool: avoid calling compound_head()
- for skb frag page
-Message-ID: <YUw78q4IrfR0D2/J@apalos.home>
-References: <20210922094131.15625-1-linyunsheng@huawei.com>
- <20210922094131.15625-4-linyunsheng@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210922094131.15625-4-linyunsheng@huawei.com>
+        id S240046AbhIWIm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 04:42:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46126 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240017AbhIWImW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 04:42:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632386451;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=9dF2fUEZWycIGwZ53hEpFFIfueXLgIP+J7ThTRLO4uA=;
+        b=fPVqOv5I8A8tLmxwIMMBBeMSFSX69JMpF/n3Y75kKrX07mhcWbLPbXyQY/QvDOU8E2IGzq
+        lJLc5cMa0GQvM4zGZXCdoxm9LL/X369TbgYO3s+B8XOP37xZ2p8d1AzLviK53Iyjth9gnH
+        C82KNQsPW2JXD+5b2cDCut9YffTkJIM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-553-NDmQ4V0aOGuX1Ft4LpDTpA-1; Thu, 23 Sep 2021 04:40:47 -0400
+X-MC-Unique: NDmQ4V0aOGuX1Ft4LpDTpA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A53ECC622;
+        Thu, 23 Sep 2021 08:40:46 +0000 (UTC)
+Received: from griffin.upir.cz (unknown [10.40.194.136])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 94FD860BF4;
+        Thu, 23 Sep 2021 08:40:44 +0000 (UTC)
+From:   Jiri Benc <jbenc@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Peter Oskolkov <posk@google.com>, netdev@vger.kernel.org
+Subject: [PATCH bpf] selftests: bpf: test_lwt_ip_encap: really disable rp_filter
+Date:   Thu, 23 Sep 2021 10:40:22 +0200
+Message-Id: <b1cdd9d469f09ea6e01e9c89a6071c79b7380f89.1632386362.git.jbenc@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 22, 2021 at 05:41:27PM +0800, Yunsheng Lin wrote:
-> As the pp page for a skb frag is always a head page, so make
-> sure skb_pp_recycle() passes a head page to avoid calling
-> compound_head() for skb frag page case.
+It's not enough to set net.ipv4.conf.all.rp_filter=0, that does not override
+a greater rp_filter value on the individual interfaces. We also need to set
+net.ipv4.conf.default.rp_filter=0 before creating the interfaces. That way,
+they'll also get their own rp_filter value of zero.
 
-Doesn't that rely on the driver mostly (i.e what's passed in skb_frag_set_page() ? 
-None of the current netstack code assumes bv_page is the head page of a 
-compound page.  Since our page_pool allocator can will allocate compound
-pages for order > 0,  why should we rely on it ?
+Fixes: 0fde56e4385b0 ("selftests: bpf: add test_lwt_ip_encap selftest")
+Signed-off-by: Jiri Benc <jbenc@redhat.com>
+---
+ tools/testing/selftests/bpf/test_lwt_ip_encap.sh | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-Thanks
-/Ilias
-> 
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> ---
->  include/linux/skbuff.h | 2 +-
->  net/core/page_pool.c   | 2 --
->  2 files changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 6bdb0db3e825..35eebc2310a5 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -4722,7 +4722,7 @@ static inline bool skb_pp_recycle(struct sk_buff *skb, void *data)
->  {
->  	if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
->  		return false;
-> -	return page_pool_return_skb_page(virt_to_page(data));
-> +	return page_pool_return_skb_page(virt_to_head_page(data));
->  }
->  
->  #endif	/* __KERNEL__ */
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index f7e71dcb6a2e..357fb53343a0 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -742,8 +742,6 @@ bool page_pool_return_skb_page(struct page *page)
->  {
->  	struct page_pool *pp;
->  
-> -	page = compound_head(page);
-> -
->  	/* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
->  	 * in order to preserve any existing bits, such as bit 0 for the
->  	 * head page of compound page and bit 1 for pfmemalloc page, so
-> -- 
-> 2.33.0
-> 
+diff --git a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
+index 59ea56945e6c..b497bb85b667 100755
+--- a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
++++ b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
+@@ -112,6 +112,14 @@ setup()
+ 	ip netns add "${NS2}"
+ 	ip netns add "${NS3}"
+ 
++	# rp_filter gets confused by what these tests are doing, so disable it
++	ip netns exec ${NS1} sysctl -wq net.ipv4.conf.all.rp_filter=0
++	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.all.rp_filter=0
++	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.all.rp_filter=0
++	ip netns exec ${NS1} sysctl -wq net.ipv4.conf.default.rp_filter=0
++	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.default.rp_filter=0
++	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.default.rp_filter=0
++
+ 	ip link add veth1 type veth peer name veth2
+ 	ip link add veth3 type veth peer name veth4
+ 	ip link add veth5 type veth peer name veth6
+@@ -236,11 +244,6 @@ setup()
+ 	ip -netns ${NS1} -6 route add ${IPv6_GRE}/128 dev veth5 via ${IPv6_6} ${VRF}
+ 	ip -netns ${NS2} -6 route add ${IPv6_GRE}/128 dev veth7 via ${IPv6_8} ${VRF}
+ 
+-	# rp_filter gets confused by what these tests are doing, so disable it
+-	ip netns exec ${NS1} sysctl -wq net.ipv4.conf.all.rp_filter=0
+-	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.all.rp_filter=0
+-	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.all.rp_filter=0
+-
+ 	TMPFILE=$(mktemp /tmp/test_lwt_ip_encap.XXXXXX)
+ 
+ 	sleep 1  # reduce flakiness
+-- 
+2.18.1
+
