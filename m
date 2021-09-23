@@ -2,131 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D036B415C64
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 13:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA1BC415C7D
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 13:04:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240474AbhIWLBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 07:01:55 -0400
-Received: from mail-ua1-f54.google.com ([209.85.222.54]:38520 "EHLO
-        mail-ua1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240442AbhIWLBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 07:01:54 -0400
-Received: by mail-ua1-f54.google.com with SMTP id 42so3984623uar.5;
-        Thu, 23 Sep 2021 04:00:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fgarIMV3d2Y0uwFmShy8IL/1sLsQ5s6li7/ed4hIYHE=;
-        b=vNCt0tctQuBgoPu79HfPx1vxj2ucdoymrVexqM5hc1vjNND9DP30a4qVrOKpjVuFfB
-         YIvycye8zAtn17fUktRNRZHRcBLQtzfz2jmoQtURWmg21Ig7pT2sOqP6imyov8PCrs5O
-         BN6YhSxFcjdh4u+ErF5nYTxPvtKt3EZpYFa1ylA5hZBMqWnSVei55LILs9k7QzuJ7qIY
-         LLVh7wPX6WS1U4RifZPimz9Tl4w/+vmRSHX8A2KwT8+95k7CZViNdqmUVkA5PmejQL+W
-         WkZQk5ForElxAEAUYv4IkuXGnsWFxsXrL1VHYgtgNNaMNTFbZuKzYWlhcAEECW3lBqVB
-         doDw==
-X-Gm-Message-State: AOAM532aYfCBSH2cJkr0TtbgvLBgLzDwXEE1bj3jax+PZmBTRlabm5oN
-        2K8wTuwyNh9QpgmIEG/c0AAjwGZTb+i39Jhqq4s=
-X-Google-Smtp-Source: ABdhPJzNWqI9ro9lFSqVuKoYP6xDJJtX9u6Rm1mWrFuto2PRgg1nm5xAY9/c30ZfqBFTvHFQ07vhKKJ438C3DRVONmA=
-X-Received: by 2002:a9f:30d8:: with SMTP id k24mr3267164uab.89.1632394822739;
- Thu, 23 Sep 2021 04:00:22 -0700 (PDT)
+        id S240516AbhIWLGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 07:06:10 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:37313 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240448AbhIWLGH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 07:06:07 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 367D35802D9;
+        Thu, 23 Sep 2021 07:04:35 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Thu, 23 Sep 2021 07:04:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=WiSiNj5Dd4L3sJtCbOLr5sy4Eh6
+        6vg0BdL+CDFeLWzI=; b=pKzs3k+1PkbeH5UZ1NglyqTY51nkSI+yHijyRhSHMjM
+        vUnz40shknrCSWW2jGz55dLprD+Wf1FuA62NFoinE1VLBn9kj3eG+kFJaA8iq/kG
+        IaWm/j8yAA++K4y9JRwAikmv6hkX8GhGvAa1p8KeRyvzyfqH0NaC15ZtGt0NcEqw
+        V/31aH/zPjl2LbXUg9AO8/N3VpiXbshqGELQb/h8nf01ykzzjtjGtHnY/yYAxI9p
+        HTvnsDt9PnWDJtxWBZlYU0VKpqiEijxaYt703hgPp2yW9c3pWFl4X8C37YSK8199
+        W0IppLz8Lj4ub87XxoTAgd89y2hJCp3rcCSutwN26rw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=WiSiNj
+        5Dd4L3sJtCbOLr5sy4Eh66vg0BdL+CDFeLWzI=; b=wwBNx0HfcIs+YJqH3e5oZA
+        Rp5Dk4lDQhaGlbEKuGwQkP0Aaw4jspJpjFQwMLxRE5Oxiu12Wp6yGso+wl3V5+o6
+        hGqD4TFyfPcnpFEbNWgv57zJl+MIBOktWNCrCzp+ApucEWDofn+n3hT+DJvO6ogp
+        faPXtTLkAOqHZyhO46XR+fx1t/r2BbA/dOhgJwXfyq508IuAOJii5vUXY7QNXpMR
+        71QAXp+wQHkkz2OqMvfTTnv4oVmsK2ysEzJk6QGWkYAkT4pDFG/egtYmx2xAiSx0
+        /hLyS/rQ5IorSFw6lkXU85HRJ4GFGEtICu/W8TqD1GDg05rVli5QnFsPMxK7aukQ
+        ==
+X-ME-Sender: <xms:Ql9MYXzyiYlX_ullhmfzGJGVkcU6S2a-N3jdLhMC0NvNiB1QT-a2fQ>
+    <xme:Ql9MYfTC3dlwWs97aTM_35lXQYhZRtYvLOjtH821fOoHuqdQ1hMg_L5Jl0MU6r6c8
+    0hn_C8j7feRAg>
+X-ME-Received: <xmr:Ql9MYRWS40hXiqlmp_VUga_SQf6fL_-JPs1w1-1Mn1Mespqpwj-m-DiGAbj4cuYgwqoUFrNE7XeZPf-CRl9tVn6LffzCvOYh>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudeiledgfeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeeiieevhf
+    ehtddvudefjeehffegtdfghfdvvdektdehueduleeiteffkefffedtheenucffohhmrghi
+    nhepuhhrlhguvghfvghnshgvrdgtohhmpdhkvghrnhgvlhdrohhrghenucevlhhushhtvg
+    hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdr
+    tghomh
+X-ME-Proxy: <xmx:Ql9MYRh9Y6RwzFdfGK3qIXezBsgXAtLpKnVYPFgMi8JPa7YUfAfU8A>
+    <xmx:Ql9MYZCXI7-qDW9Vj3FDtBAfS-3sJh8SGBmol4lLCWLUsmrGUHo5fA>
+    <xmx:Ql9MYaKE-XUbEw2BvyYvPXDh6KZyU92RdUEhW55LbGwQmm-Slhw4Tw>
+    <xmx:Q19MYR69HCpkknODMKDCxiIoXPCU7BaIncWlrqhwduJOGaluSmXOTA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 23 Sep 2021 07:04:34 -0400 (EDT)
+Date:   Thu, 23 Sep 2021 13:04:31 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Leon Romanovsky <leonro@nvidia.com>
+Cc:     Patrick.Mclean@sony.com, stable@vger.kernel.org,
+        regressions@lists.linux.dev, ayal@nvidia.com, saeedm@nvidia.com,
+        netdev@vger.kernel.org, Aaron.U'ren@sony.com,
+        Russell.Brown@sony.com, Victor.Payno@sony.com
+Subject: Re: mlx5_core 5.10 stable series regression starting at 5.10.65
+Message-ID: <YUxfP7K7jABqk6VE@kroah.com>
+References: <BY5PR13MB3604D3031E984CA34A57B7C9EEA09@BY5PR13MB3604.namprd13.prod.outlook.com>
+ <YUl8PKVz/em51KHR@kroah.com>
+ <BY5PR13MB3604527F4A98D0F86B02AC98EEA19@BY5PR13MB3604.namprd13.prod.outlook.com>
+ <YUrLfMhATS3u6jq5@unreal>
 MIME-Version: 1.0
-References: <cover.1631174218.git.geert+renesas@glider.be>
-In-Reply-To: <cover.1631174218.git.geert+renesas@glider.be>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 23 Sep 2021 13:00:11 +0200
-Message-ID: <CAMuHMdU6Mrfina3+2iW+RKaujk57JSRtmixRPn1b0d2w5dZ3eA@mail.gmail.com>
-Subject: Re: [PATCH 0/9] renesas: Add compatible properties to Ethernet PHY nodes
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Adam Ford <aford173@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YUrLfMhATS3u6jq5@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 9, 2021 at 10:49 AM Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
-> If an Ethernet PHY reset is asserted when the Ethernet driver is
-> initialized, the PHY cannot be probed:
->
->     mdio_bus ee700000.ethernet-ffffffff: MDIO device at address 1 is missing
->
-> This happens because the Linux PHY subsystem tries to read the PHY
-> Identifier registers before handling PHY reset.  Hence if the PHY reset
-> was asserted before, identification fails.
->
-> An easy way to reproduce this issue is by using kexec to launch a new
-> kernel (the PHY reset will be asserted before starting the new kernel),
-> or by unbinding and rebinding the Ethernet driver (the PHY reset will be
-> asserted during unbind), e.g. on koelsch:
->
->     echo ee700000.ethernet > /sys/bus/platform/drivers/sh-eth/unbind
->     $ echo ee700000.ethernet > /sys/bus/platform/drivers/sh-eth/bind
->
-> The recommended approach[1][2] seems to be working around this issue by
-> adding compatible values to all ethernet-phy nodes, so Linux can
-> identify the PHY at any time, without reading the PHY ID from the
-> device, and regardless of the state of the PHY reset line.
->
-> Hence this patch series adds such compatible values to all Ethernet PHY
-> subnodes representing PHYs on all boards with Renesas ARM and ARM64
-> SoCs.  For easier review, I have split the series in one patch per PHY
-> model.
->
-> On most boards, I could verify the actual PHY ID at runtime[3], on other
-> boards I had to resort to schematics.
->
-> Kexec and Ethernet driver rebind have been tested on Koelsch and
-> Salvator-XS.
->
-> I plan to queue these in renesas-devel for v5.16.
->
-> Thanks for your comments!
+On Wed, Sep 22, 2021 at 09:21:48AM +0300, Leon Romanovsky wrote:
+> On Tue, Sep 21, 2021 at 10:22:57PM +0000, Patrick.Mclean@sony.com wrote:
+> > > On Mon, Sep 20, 2021 at 08:22:44PM +0000, Patrick.Mclean@sony.com wrote:
+> > > > In 5.10 stable kernels since 5.10.65 certain mlx5 cards are no longer usable (relevant dmesg logs and lspci output are pasted below).
+> > > >
+> > > > Bisecting the problem tracks the problem down to this commit:
+> > > > https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-5.10.y&id=fe6322774ca28669868a7e231e173e09f7422118__;!!JmoZiZGBv3RvKRSx!phUrsR595UusBY2Q9eNJQS7-VNtnb72Rcvhe-W0QKDPir1WY9mvWOkLLfe63k-6Uvw$
+> > > >
+> > > > Here is how lscpi -nn identifies the cards:
+> > > > 41:00.0 Ethernet controller [0200]: Mellanox Technologies MT27800 Family [ConnectX-5] [15b3:1017]
+> > > > 41:00.1 Ethernet controller [0200]: Mellanox Technologies MT27800 Family [ConnectX-5] [15b3:1017]
+> > > >
+> > > > Here are the relevant dmesg logs:
+> > > > [   13.409473] mlx5_core 0000:41:00.0: firmware version: 16.31.1014
+> > > > [   13.415944] mlx5_core 0000:41:00.0: 126.016 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x16 link)
+> > > > [   13.707425] mlx5_core 0000:41:00.0: Rate limit: 127 rates are supported, range: 0Mbps to 24414Mbps
+> > > > [   13.718221] mlx5_core 0000:41:00.0: E-Switch: Total vports 2, per vport: max uc(128) max mc(2048)
+> > > > [   13.740607] mlx5_core 0000:41:00.0: Port module event: module 0, Cable plugged
+> > > > [   13.759857] mlx5_core 0000:41:00.0: mlx5_pcie_event:294:(pid 586): PCIe slot advertised sufficient power (75W).
+> > > > [   17.986973] mlx5_core 0000:41:00.0: E-Switch: cleanup
+> > > > [   18.686204] mlx5_core 0000:41:00.0: init_one:1371:(pid 803): mlx5_load_one failed with error code -22
+> > > > [   18.701352] mlx5_core: probe of 0000:41:00.0 failed with error -22
+> > > > [   18.727364] mlx5_core 0000:41:00.1: firmware version: 16.31.1014
+> > > > [   18.743853] mlx5_core 0000:41:00.1: 126.016 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x16 link)
+> > > > [   19.015349] mlx5_core 0000:41:00.1: Rate limit: 127 rates are supported, range: 0Mbps to 24414Mbps
+> > > > [   19.025157] mlx5_core 0000:41:00.1: E-Switch: Total vports 2, per vport: max uc(128) max mc(2048)
+> > > > [   19.053569] mlx5_core 0000:41:00.1: Port module event: module 1, Cable unplugged
+> > > > [   19.062093] mlx5_core 0000:41:00.1: mlx5_pcie_event:294:(pid 591): PCIe slot advertised sufficient power (75W).
+> > > > [   22.826932] mlx5_core 0000:41:00.1: E-Switch: cleanup
+> > > > [   23.544747] mlx5_core 0000:41:00.1: init_one:1371:(pid 803): mlx5_load_one failed with error code -22
+> > > > [   23.555071] mlx5_core: probe of 0000:41:00.1 failed with error -22
+> > > >
+> > > > Please let me know if I can provide any further information.
+> > > 
+> > > If you revert that single change, do things work properly?
+> > 
+> > Yes, things work properly after reverting that single change (tested with 5.10.67).
+> 
+> The stable@ kernel is missing commit 3d347b1b19da ("net/mlx5: Add support for devlink traps
+> in mlx5 core driver"), which added mlx5 devlink callbacks (.trap_init and .trap_fini).
 
-I'd be very grateful for comments (e.g. Acked-by) from the Ethernet
-PHY people.
-Thanks again!
+Ok, will go revert this now, thanks for confirming it and letting me
+know.
 
-> [1] "Re: [PATCH] RFC: net: phy: of phys probe/reset issue"
->     https://lore.kernel.org/r/ade12434-adf2-6ea7-24ce-ce45ad2e1b5e@gmail.com/
-> [2] "PHY reset may still be asserted during MDIO probe"
->     https://lore.kernel.org/r/CAMuHMdXno2OUHqsAfO0z43JmGkFehD+FJ2dEjEsr_P53oAAPxA@mail.gmail.com
-> [3] The easiest way to obtain the PHY ID is by adding a debug print to
->     drivers/net/phy/phy_device.c:get_phy_c22_id(), _before_ applying
->     this patch.
->
-> Geert Uytterhoeven (9):
->   ARM: dts: renesas: Add compatible properties to KSZ8041 Ethernet PHYs
->   ARM: dts: renesas: Add compatible properties to KSZ8081 Ethernet PHYs
->   ARM: dts: renesas: Add compatible properties to KSZ9031 Ethernet PHYs
->   iARM: dts: renesas: Add compatible properties to LAN8710A Ethernet
->     PHYs
->   ARM: dts: renesas: Add compatible properties to RTL8201FL Ethernet
->     PHYs
->   ARM: dts: renesas: Add compatible properties to uPD6061x Ethernet PHYs
->   arm64: dts: renesas: Add compatible properties to AR8031 Ethernet PHYs
->   arm64: dts: renesas: Add compatible properties to KSZ9031 Ethernet
->     PHYs
->   arm64: dts: renesas: Add compatible properties to RTL8211E Ethernet
->     PHYs
+> I don't know why the commit that you reverted was added to stable@ in
+> the first place. It doesn't fix any bug and has no Fixes tag.
 
-Gr{oetje,eeting}s,
+Looks like it was brought in as a dependancy for another fix that
+required it as the revert was not clean and I had to do it "by hand".
 
-                        Geert
+thanks,
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+greg k-h
