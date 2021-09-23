@@ -2,122 +2,253 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F33241647A
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 19:31:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 743B041648C
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 19:41:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242606AbhIWRdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 13:33:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242402AbhIWRdG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 13:33:06 -0400
-Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7837EC061574;
-        Thu, 23 Sep 2021 10:31:34 -0700 (PDT)
-Received: by mail-ua1-x936.google.com with SMTP id i8so2626533uae.7;
-        Thu, 23 Sep 2021 10:31:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+eLkYhNtPz468JECzicPH+55KzTJypaKR1YIxXBGKFA=;
-        b=dQZlVD8zeXrYwt3wy2PGOmtTCuGtQ2/Jgt3RefZ5d0GisMFUk4AgD5Z3HLJfw3vSVx
-         PaAWtDj9X68m9rDET0mUN9ga/1CQiB3uYOpYeAXdZBLYSukNgiEZeqgVcKx1C8UgvlwJ
-         5UPq5n2BKkqHaeL7eOsRI3opCiSAisnFEdY7S/OBx2nnSRuy4dszdTLdnwoTABR8FC2b
-         m875rdvSO7Qn4QzNzkKnDd38bZqpD0K0bcHtgpofgcGgUVgwSoUamTjy/8sFfaq/DU1f
-         x6bODSEZ+4GDo6PKd8b1S6hiaLxXMEdCeyxVAVYOf7Hsk3LaOmwaH4jZ0v6qip+jKNcR
-         2Zkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+eLkYhNtPz468JECzicPH+55KzTJypaKR1YIxXBGKFA=;
-        b=f0axcE2B8+EqSjVcHcPEbnpJ25NiRwsvQagHjEThuAF9W0wrtBvktqE1hLsv1WTc8U
-         GtypeY+FGYMYkg0XJA2cvGUjuwVDwl0+o/qgOCbt4B5f6Z7gjxaGbBMTdxvbYNdFNuHn
-         rBjETyPTlHy83S0lqacPwpZlpSdM4dyXjLsxypl67gZymz0UgIc5MVEGIAcKDTG0kP0j
-         bvaRRjIZ7/y2CC9MO/7F4kuSjaHjGitzSHVJvnaFz4wAfuk9MZnRF9PuER2m7J+pe37l
-         DVBtpEI4zTjNjp6I7Sl4v9Nzvl/B2owGA0WaDSXpeb1wGFPFdAeyGyPGxmYoaWDdwpgL
-         bwIA==
-X-Gm-Message-State: AOAM533XBRMkqR7X+sBLrD29uKtscW51eisFpv9WmNPngGS2zgzGchBT
-        QaHqeT7sbv2iyasI0U6vUPU5Ez3Kxh9g3hM6um7kZ649RDg=
-X-Google-Smtp-Source: ABdhPJydA+GP2gNnH2uFrnugHWkTR16KM7HKYgoKjZJUTpYhVa7u6TQrT6QRCt9S/Dqf/81OUokJ548XvLm90xwwUxc=
-X-Received: by 2002:ab0:284d:: with SMTP id c13mr5469553uaq.26.1632418293386;
- Thu, 23 Sep 2021 10:31:33 -0700 (PDT)
+        id S242530AbhIWRmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 13:42:44 -0400
+Received: from mxout01.lancloud.ru ([45.84.86.81]:53118 "EHLO
+        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233669AbhIWRmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 13:42:44 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 5463020972EF
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [RFC/PATCH 03/18] ravb: Initialize GbEthernet dmac
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
+ <20210923140813.13541-4-biju.das.jz@bp.renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <40b51655-bd61-e1ab-5d9a-2448f39cd1a7@omp.ru>
+Date:   Thu, 23 Sep 2021 20:41:08 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20210923161034.18975-1-roysjosh@gmail.com>
-In-Reply-To: <20210923161034.18975-1-roysjosh@gmail.com>
-From:   Joshua Roys <roysjosh@gmail.com>
-Date:   Thu, 23 Sep 2021 13:31:22 -0400
-Message-ID: <CANoNxL_E_+MLu=Re-71J4FfFUcpA0met0AMnjtK2+jw6hGKCJw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: mlx4: Add support for XDP_REDIRECT
-To:     netdev@vger.kernel.org
-Cc:     ast@kernel.org, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, daniel@iogearbox.net, kuba@kernel.org,
-        bpf@vger.kernel.org, tariqt@nvidia.com, linux-rdma@vger.kernel.org,
-        Joshua Roys <roysjosh@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210923140813.13541-4-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding requested maintainers to CC.
+On 9/23/21 5:07 PM, Biju Das wrote:
 
-On Thu, Sep 23, 2021 at 12:11 PM Joshua Roys <roysjosh@gmail.com> wrote:
->
-> Signed-off-by: Joshua Roys <roysjosh@gmail.com>
+> Initialize GbEthernet dmac found on RZ/G2L SoC.
+
+   DMAC (or AVB-DMAC).
+
+> This patch also renames ravb_rcar_dmac_init to ravb_dmac_init_rcar
+> to be consistent with the naming convention used in sh_eth driver.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 > ---
->  drivers/net/ethernet/mellanox/mlx4/en_rx.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->
-> This is a pattern-match commit, based off of the mlx4 XDP_TX and other
-> drivers' XDP_REDIRECT enablement patches. The goal was to get AF_XDP
-> working in VPP and this was successful. Tested with a CX3.
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> index 7f6d3b82c29b..557d7daac2d3 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> @@ -669,6 +669,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
->         struct bpf_prog *xdp_prog;
->         int cq_ring = cq->ring;
->         bool doorbell_pending;
-> +       bool xdp_redir_flush;
->         struct mlx4_cqe *cqe;
->         struct xdp_buff xdp;
->         int polled = 0;
-> @@ -682,6 +683,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
->         xdp_prog = rcu_dereference_bh(ring->xdp_prog);
->         xdp_init_buff(&xdp, priv->frag_info[0].frag_stride, &ring->xdp_rxq);
->         doorbell_pending = false;
-> +       xdp_redir_flush = false;
->
->         /* We assume a 1:1 mapping between CQEs and Rx descriptors, so Rx
->          * descriptor offset can be deduced from the CQE index instead of
-> @@ -790,6 +792,14 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
->                         switch (act) {
->                         case XDP_PASS:
->                                 break;
-> +                       case XDP_REDIRECT:
-> +                               if (xdp_do_redirect(dev, &xdp, xdp_prog) >= 0) {
-> +                                       xdp_redir_flush = true;
-> +                                       frags[0].page = NULL;
-> +                                       goto next;
-> +                               }
-> +                               trace_xdp_exception(dev, xdp_prog, act);
-> +                               goto xdp_drop_no_cnt;
->                         case XDP_TX:
->                                 if (likely(!mlx4_en_xmit_frame(ring, frags, priv,
->                                                         length, cq_ring,
-> @@ -897,6 +907,9 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
->                         break;
->         }
->
-> +       if (xdp_redir_flush)
-> +               xdp_do_flush();
+>  drivers/net/ethernet/renesas/ravb.h      |  4 ++
+>  drivers/net/ethernet/renesas/ravb_main.c | 84 +++++++++++++++++++++++-
+>  2 files changed, 85 insertions(+), 3 deletions(-)
+
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index 2422e74d9b4f..54c4d31a6950 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -83,6 +83,11 @@ static int ravb_config(struct net_device *ndev)
+>  	return error;
+>  }
+>  
+> +static void ravb_rgeth_set_rate(struct net_device *ndev)
+
+   What does 'rgeth' stand for? And why not the trailing part of the name, like the other cases? 
+
+> +{
+> +	/* Place holder */
+> +}
 > +
->         if (likely(polled)) {
->                 if (doorbell_pending) {
->                         priv->tx_cq[TX_XDP][cq_ring]->xdp_busy = true;
-> --
-> 2.31.1
->
+>  static void ravb_set_rate(struct net_device *ndev)
+>  {
+>  	struct ravb_private *priv = netdev_priv(ndev);
+> @@ -217,6 +222,11 @@ static int ravb_tx_free(struct net_device *ndev, int q, bool free_txed_only)
+>  	return free_num;
+>  }
+>  
+> +static void ravb_rx_ring_free_rgeth(struct net_device *ndev, int q)
+
+   rgeth?
+
+> +{
+> +	/* Place holder */
+> +}
+> +
+>  static void ravb_rx_ring_free(struct net_device *ndev, int q)
+>  {
+>  	struct ravb_private *priv = netdev_priv(ndev);
+> @@ -283,6 +293,11 @@ static void ravb_ring_free(struct net_device *ndev, int q)
+>  	priv->tx_skb[q] = NULL;
+>  }
+>  
+> +static void ravb_rx_ring_format_rgeth(struct net_device *ndev, int q)
+
+   rgeth?
+
+> +{
+> +	/* Place holder */
+> +}
+> +
+>  static void ravb_rx_ring_format(struct net_device *ndev, int q)
+>  {
+>  	struct ravb_private *priv = netdev_priv(ndev);
+> @@ -356,6 +371,12 @@ static void ravb_ring_format(struct net_device *ndev, int q)
+>  	desc->dptr = cpu_to_le32((u32)priv->tx_desc_dma[q]);
+>  }
+>  
+> +static void *ravb_rgeth_alloc_rx_desc(struct net_device *ndev, int q)
+
+   Again, why rgeth is not in the symbol's tail?
+
+> +{
+> +	/* Place holder */
+> +	return NULL;
+> +}
+> +
+>  static void *ravb_alloc_rx_desc(struct net_device *ndev, int q)
+>  {
+>  	struct ravb_private *priv = netdev_priv(ndev);
+> @@ -426,6 +447,11 @@ static int ravb_ring_init(struct net_device *ndev, int q)
+>  	return -ENOMEM;
+>  }
+>  
+> +static void ravb_rgeth_emac_init(struct net_device *ndev)
+
+   Same here...
+
+> +{
+> +	/* Place holder */
+> +}
+> +
+>  static void ravb_rcar_emac_init(struct net_device *ndev)
+>  {
+>  	/* Receive frame limit set register */
+> @@ -461,7 +487,32 @@ static void ravb_emac_init(struct net_device *ndev)
+>  	info->emac_init(ndev);
+>  }
+>  
+> -static void ravb_rcar_dmac_init(struct net_device *ndev)
+> +static void ravb_dmac_init_rgeth(struct net_device *ndev)
+> +{
+> +	/* Set AVB RX */
+> +	ravb_write(ndev, 0x60000000, RCR);
+> +
+> +	/* Set Max Frame Length (RTC) */
+> +	ravb_write(ndev, 0x7ffc0000 | RGETH_RX_BUFF_MAX, RTC);
+> +
+> +	/* Set FIFO size */
+> +	ravb_write(ndev, 0x00222200, TGC);
+> +
+> +	ravb_write(ndev, 0, TCCR);
+> +
+> +	/* Frame receive */
+> +	ravb_write(ndev, RIC0_FRE0, RIC0);
+> +	/* Disable FIFO full warning */
+> +	ravb_write(ndev, 0x0, RIC1);
+> +	/* Receive FIFO full error, descriptor empty */
+> +	ravb_write(ndev, RIC2_QFE0 | RIC2_RFFE, RIC2);
+> +
+> +	ravb_write(ndev, 0x0, RIC3);
+> +
+> +	ravb_write(ndev, TIC_FTE0, TIC);
+> +}
+
+   Ah, so 'rgeth' stands for GbEthernet... why not 'gbeth' then?
+
+[...]
+> @@ -579,6 +630,14 @@ static void ravb_rx_csum(struct sk_buff *skb)
+>  	skb_trim(skb, skb->len - sizeof(__sum16));
+>  }
+>  
+> +/* Packet receive function for Gigabit Ethernet */
+> +static bool ravb_rgeth_rx(struct net_device *ndev, int *quota, int q)
+> +{
+> +	/* Place holder */
+> +	return true;
+> +}
+> +
+> +/* Packet receive function for Ethernet AVB */
+>  static bool ravb_rcar_rx(struct net_device *ndev, int *quota, int q)
+>  {
+>  	struct ravb_private *priv = netdev_priv(ndev);
+> @@ -1918,6 +1977,13 @@ static void ravb_set_rx_csum(struct net_device *ndev, bool enable)
+>  	spin_unlock_irqrestore(&priv->lock, flags);
+>  }
+>  
+> +static int ravb_set_features_rgeth(struct net_device *ndev,
+> +				   netdev_features_t features)
+> +{
+> +	/* Place holder */
+> +	return 0;
+> +}
+> +
+>  static int ravb_set_features_rcar(struct net_device *ndev,
+>  				  netdev_features_t features)
+>  {
+> @@ -2007,7 +2073,7 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
+>  	.receive = ravb_rcar_rx,
+>  	.set_rate = ravb_set_rate,
+>  	.set_feature = ravb_set_features_rcar,
+> -	.dmac_init = ravb_rcar_dmac_init,
+> +	.dmac_init = ravb_dmac_init_rcar,
+>  	.emac_init = ravb_rcar_emac_init,
+>  	.gstrings_stats = ravb_gstrings_stats,
+>  	.gstrings_size = sizeof(ravb_gstrings_stats),
+> @@ -2028,7 +2094,7 @@ static const struct ravb_hw_info ravb_gen2_hw_info = {
+>  	.receive = ravb_rcar_rx,
+>  	.set_rate = ravb_set_rate,
+>  	.set_feature = ravb_set_features_rcar,
+> -	.dmac_init = ravb_rcar_dmac_init,
+> +	.dmac_init = ravb_dmac_init_rcar,
+>  	.emac_init = ravb_rcar_emac_init,
+>  	.gstrings_stats = ravb_gstrings_stats,
+>  	.gstrings_size = sizeof(ravb_gstrings_stats),
+> @@ -2039,12 +2105,24 @@ static const struct ravb_hw_info ravb_gen2_hw_info = {
+>  	.aligned_tx = 1,
+>  };
+>  
+> +static const struct ravb_hw_info rgeth_hw_info = {
+> +	.rx_ring_free = ravb_rx_ring_free_rgeth,
+> +	.rx_ring_format = ravb_rx_ring_format_rgeth,
+> +	.alloc_rx_desc = ravb_rgeth_alloc_rx_desc,
+> +	.receive = ravb_rgeth_rx,
+> +	.set_rate = ravb_rgeth_set_rate,
+> +	.set_feature = ravb_set_features_rgeth,
+> +	.dmac_init = ravb_dmac_init_rgeth,
+> +	.emac_init = ravb_rgeth_emac_init,
+> +};
+> +>  static const struct of_device_id ravb_match_table[] = {
+>  	{ .compatible = "renesas,etheravb-r8a7790", .data = &ravb_gen2_hw_info },
+>  	{ .compatible = "renesas,etheravb-r8a7794", .data = &ravb_gen2_hw_info },
+>  	{ .compatible = "renesas,etheravb-rcar-gen2", .data = &ravb_gen2_hw_info },
+>  	{ .compatible = "renesas,etheravb-r8a7795", .data = &ravb_gen3_hw_info },
+>  	{ .compatible = "renesas,etheravb-rcar-gen3", .data = &ravb_gen3_hw_info },
+> +	{ .compatible = "renesas,rzg2l-gbeth", .data = &rgeth_hw_info },
+
+    Mhm, I thought this parch should come lst of the series, without any placeholders...
+
+[...]
+
+MBR, Sergey
