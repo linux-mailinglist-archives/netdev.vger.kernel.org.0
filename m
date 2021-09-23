@@ -2,114 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24D9C41660D
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 21:41:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2BB3416614
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 21:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242901AbhIWTnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 15:43:16 -0400
-Received: from mxout03.lancloud.ru ([45.84.86.113]:46592 "EHLO
-        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242796AbhIWTnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 15:43:15 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru E0B10208EDBF
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC/PATCH 05/18] ravb: Exclude gPTP feature support for RZ/G2L
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        id S242951AbhIWTqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 15:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242796AbhIWTqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 15:46:24 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B37C061574;
+        Thu, 23 Sep 2021 12:44:52 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id eg28so27266845edb.1;
+        Thu, 23 Sep 2021 12:44:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=USB+c9NQPlFOCzOlELYb3av2B5sqofQxC78jD/L/Faw=;
+        b=Ivaw8/yqDkDtpnoa7KVXQ6wxjxdqq44QfO1qZ78DTS4rrjKcWcUFsPBm+ofL7L7x6R
+         2IACsu+wVJpiBby+hhKqcpWZLnWHlKEvodtRGQDwLTKo/+iTUpRyV4orTrIkN+h1qs2x
+         XUFHBmZvvYaLJUBBrNmrvpYHkQyUXQGvotwbfkSaL5r4SlgvnJbdPsJQEaDS3bwp4s5q
+         Z5hH+MZLx37l8cSs84HcbrBmhLPCPTxtFYukZpARcdxF3OeiqN7xVc3IwN52TsdwDd5D
+         1OOAqogeF0kZdBMcUcCFFAsC3sNLEFDQk9Po65bBJvriI7kqVh2dbE8SSZDliJeAGV4X
+         tdtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=USB+c9NQPlFOCzOlELYb3av2B5sqofQxC78jD/L/Faw=;
+        b=0aWe1kamQ1hIKWsd80gtCEsvOacMbj12KIzwWzKGIqVKNZDSMPz3yPSlKE9oyxb4Jm
+         ORvgII5ULJzXH9B7arHTm7LqEv3drXIKtm2pOzAMgrZzORlGmh/1njYVpxd/hhFLu3Xb
+         3q1JlMMzyvXHjRt4bHE09qFqYYHsAK52iz52jdCVd1vE/hNBD8V5NGHVR7KQg6NLPycs
+         jf64gaoDb6vI7pUucpx/0dEdBlWHyq7CDIntc6zGnJ/Axy3yvQg053TKX6SuCwCz6WHK
+         h74bj+4NFfMbFcs6GYmSQAUEelzAvJjmUgq1mvf73u1y0jHzkgSyukKqzAl4SfJP2VNR
+         I2Vg==
+X-Gm-Message-State: AOAM533zoBC2X6llCS+z8ecwMZVocozN04fNHpYSiBZ01sriHR1hrFXy
+        jpcgFz7oB0lIrCEPrXduqwI=
+X-Google-Smtp-Source: ABdhPJx47JRxPImn3bCOzzIp9JgZuhIzAfodEXn1mXk91Uklp1+eljNjL+So5E5m3okurvJieN/S6g==
+X-Received: by 2002:a50:cfc3:: with SMTP id i3mr656314edk.36.1632426290611;
+        Thu, 23 Sep 2021 12:44:50 -0700 (PDT)
+Received: from skbuf ([188.26.53.217])
+        by smtp.gmail.com with ESMTPSA id b38sm4101128edf.46.2021.09.23.12.44.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Sep 2021 12:44:50 -0700 (PDT)
+Date:   Thu, 23 Sep 2021 22:44:48 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Saravana Kannan <saravanak@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "Andrew Lunn" <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "Geert Uytterhoeven" <geert+renesas@glider.be>,
-        Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
- <20210923140813.13541-6-biju.das.jz@bp.renesas.com>
- <2b4acd15-4b46-4f63-d9e7-ba1b86311def@omp.ru>
- <OS0PR01MB5922F3EE90E79FDB0703BCEC86A39@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <484f6f91-c34d-935d-1f42-456d01e9b8ca@omp.ru>
-Date:   Thu, 23 Sep 2021 22:41:39 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        kernel-team@android.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] fw_devlink bug fixes
+Message-ID: <20210923194448.tnzkdvigknjrgoqn@skbuf>
+References: <20210915170940.617415-1-saravanak@google.com>
+ <YUy5nDMeWMg0sfGI@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <OS0PR01MB5922F3EE90E79FDB0703BCEC86A39@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YUy5nDMeWMg0sfGI@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/23/21 10:13 PM, Biju Das wrote:
+On Thu, Sep 23, 2021 at 07:30:04PM +0200, Greg Kroah-Hartman wrote:
+> It fixes the real problem where drivers were making the wrong assumption
+> that if they registered a device, it would be instantly bound to a
+> driver.  Drivers that did this were getting lucky, as this was never a
+> guarantee of the driver core (think about if you enabled async
+> probing, and the mess with the bus specific locks that should be
+> preventing much of this)
 
-[...]
->>> R-Car supports gPTP feature whereas RZ/G2L does not support it.
->>> This patch excludes gtp feature support for RZ/G2L by enabling no_gptp
->>> feature bit.
->>>
->>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
->>> ---
->>>  drivers/net/ethernet/renesas/ravb_main.c | 46
->>> ++++++++++++++----------
->>>  1 file changed, 28 insertions(+), 18 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c
->>> b/drivers/net/ethernet/renesas/ravb_main.c
->>> index d38fc33a8e93..8663d83507a0 100644
->>> --- a/drivers/net/ethernet/renesas/ravb_main.c
->>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
->> [...]
->>> @@ -953,7 +954,7 @@ static irqreturn_t ravb_interrupt(int irq, void
->> *dev_id)
->>>  	}
->>>
->>>  	/* gPTP interrupt status summary */
->>> -	if (iss & ISS_CGIS) {
->>
->>    Isn't this bit always 0 on RZ/G2L?
-> 
-> This CGIM bit(BIT13) which is present on R-Car Gen3 is not present in RZ/G2L. As per the HW manual
-> BIT13 is reserved bit and read is always 0.
-> 
->>
->>> +	if (!info->no_gptp && (iss & ISS_CGIS)) {
-
-   Then extending this check doesn't seem necessary?
-
->>>  		ravb_ptp_interrupt(ndev);
->>>  		result = IRQ_HANDLED;
->>>  	}
-[...]
->>> @@ -2116,6 +2119,7 @@ static const struct ravb_hw_info rgeth_hw_info = {
->>>  	.emac_init = ravb_rgeth_emac_init,
->>>  	.aligned_tx = 1,
->>>  	.tx_counters = 1,
->>> +	.no_gptp = 1,
->>
->>    Mhm, I definitely don't like the way you "extend" the GbEthernet info
->> structure. All the applicable flags should be set in the last patch of the
->> series, not amidst of it.
-> 
-> According to me, It is clearer with smaller patches like, what we have done with previous 2 patch sets for factorisation.
-> Please correct me, if any one have different opinion.
-
-   I'm afraid you'd get a partly functioning device with the RZ/G2 info introduced amidst of the series
-and then the necessary flags/values added to it. This should definitely be avoided.
-
-> Regards,
-> Biju
-
-MBR, Sergey
+Since commit d173a137c5bd ("driver-core: enable drivers to opt-out of
+async probe") it is possible to opt out of async probing, and PHY
+drivers do opt out of it, at the time of writing.
