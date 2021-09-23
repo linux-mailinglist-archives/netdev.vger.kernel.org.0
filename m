@@ -2,220 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F6E1416735
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 23:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DCEF416753
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 23:17:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243293AbhIWVNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 17:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56950 "EHLO
+        id S243265AbhIWVTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 17:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243247AbhIWVNt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 17:13:49 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA1DC061757
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 14:12:17 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id y16so1208872ybm.3
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 14:12:17 -0700 (PDT)
+        with ESMTP id S243174AbhIWVTY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 17:19:24 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93C5C061574
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 14:17:52 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id mv7-20020a17090b198700b0019c843e7233so5798554pjb.4
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 14:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e4I0eibrZ4QXFLaZnyg/T68NEGU52nG0wW6n1XbQIjQ=;
-        b=dG37ybSuZM/2PWO2WUAlCFTgei4CWvCR+/3V/ba5AqbouIgMtK6R/N88t2fL6e8ES2
-         HXlfmDfLIxlNVt61DT2aeO3iHi1ERInV9PLlsO/SPeZ8qseDFM20DxIJnOXzZymLl5ma
-         Sf4KMe1TIhD6jwCpVfOKcATIO++tuc9tkqgIc=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CoGqnc71bIzTRMAscp0HDPzEwuydiwhP+OmpAS43Y2E=;
+        b=XERv7qnlosdlJPBo1fAzrqDymqC7t3yXmgtZBAOk8FJ73S/7+tA5yzlso4ACSrXeDf
+         7NjEIGHIg6JAFMT+v01at7I/5mcbSe1j3VSI6S5BK7WQL5VJtEoORVbjb3mNKlZefpUN
+         iVzibHqytQvBDn/ne+kUn0Zo3OJmMPp95KxhR+rARd/M6920CqjHRmuErvTRQ2CXFChg
+         9ZG4xsm92eaVt2EVgFqrH7x2uEZL7IR4chQ49kxjpIurkxYk2R1QIOvwL3h7iruScQ0i
+         G7TnS/BcURBbzZkFv8OXhb+XvZSnZYG/2F0EG/r2F0G15dJSyJr/qbCpctRTIcPFqWBa
+         mgGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e4I0eibrZ4QXFLaZnyg/T68NEGU52nG0wW6n1XbQIjQ=;
-        b=a8ozUXWL+7gK/QH0gBny0LjDm5Fx/afoLUBizC7aExldW+xnj+cjFqZ5QY6n3JuydM
-         LwQMpInF/UKdlF6LN0a9D7nf+Jmeeir7rU8tpvYX9IF/spUagihbw5yzBV+TbnLTYEE2
-         O63VBffSpQDHhU+fjjxxouMNt2iIEg9D/wFkq3PzOH4298q9HxpbD+u3PHEaJ/42DTM8
-         gMBiWYdVfBChRk/bftES/jMzYrnj/BC8hnqyEZj7Twc4COFljgDdt05fmXAF0oOVpaVp
-         JRn5fmZGBOe2lm5o9qRdWcBfI6qsk/Yp6Mydk4zuuBYwHSn9r0J+hITIt5buooHxuYwd
-         3KQw==
-X-Gm-Message-State: AOAM530az/I7XNrFxu57hICHFMCZjNL5Ox8UGFKT9Wb6U+McErAZ27zH
-        xel3PnBUDxRLEj4NypnlUkJPgY58N0SJ+dD/H1p+ww==
-X-Google-Smtp-Source: ABdhPJzPbZJuTOrMwImBU82x1iGNKaxl7ZrrpRIXcHLQEZ89VXGY0DTN1rpeXB3OFka4syEsC81GUEXozb35nSZ2MSQ=
-X-Received: by 2002:a25:748c:: with SMTP id p134mr7788992ybc.361.1632431536689;
- Thu, 23 Sep 2021 14:12:16 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CoGqnc71bIzTRMAscp0HDPzEwuydiwhP+OmpAS43Y2E=;
+        b=y5sf9libZbbXqD7FNCr/BMCf0Rdrb1FN8GuMvdtVN6aSJq6e7oTNsKCXZ8jz7nswUS
+         G7bNpFNfa8KrggcEaKL/cz6rQK7dW2BGfT347WgW/yuVG4DETmEbdTBbYlJEZLHeL3EQ
+         y7BxSg0pthGah2JqrqMWI3N/huiyiywjvOW/mxdSQBSUnSi2y9+xASx/HELnsL0lAE7X
+         O4PogD1kS7uYL4/6W28jKYA5FGWFfPrddDJcPqthg9GhvttODkDANu3PQf16JavER0YR
+         b0zrjikVMjipf3Cr5n7qEv2NXXTQ/b+brCo5GuGziBprHR7gdyHOXJMn5du5JELRRchQ
+         Rlyg==
+X-Gm-Message-State: AOAM531bT7I6/M8VXmSnAguntbjPMNlN3h0cBYmSn2iPyRbPZGa30OO8
+        nZOzFeZibReNVa30rPcJ3cM=
+X-Google-Smtp-Source: ABdhPJzhML5NIOPszbG+RKOcBUYt0+815sWe1Pal6WjLoGwxZ2+Y+6yxkoVVM2TFZfVTjrJio1qJhA==
+X-Received: by 2002:a17:90a:734a:: with SMTP id j10mr7722700pjs.14.1632431872303;
+        Thu, 23 Sep 2021 14:17:52 -0700 (PDT)
+Received: from lukehsiao.c.googlers.com.com (190.40.105.34.bc.googleusercontent.com. [34.105.40.190])
+        by smtp.gmail.com with ESMTPSA id e12sm4003405pgv.82.2021.09.23.14.17.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Sep 2021 14:17:51 -0700 (PDT)
+From:   Luke Hsiao <luke.w.hsiao@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Yuchung Cheng <ycheng@google.com>,
+        Lawrence Brakmo <brakmo@fb.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Luke Hsiao <lukehsiao@google.com>
+Subject: [PATCH net-next] tcp: tracking packets with CE marks in BW rate sample
+Date:   Thu, 23 Sep 2021 21:17:07 +0000
+Message-Id: <20210923211706.2553282-1-luke.w.hsiao@gmail.com>
+X-Mailer: git-send-email 2.33.0.685.g46640cef36-goog
 MIME-Version: 1.0
-References: <cover.1632420430.git.leonro@nvidia.com> <e7708737fadf4fe6f152afc76145c728c201adad.1632420430.git.leonro@nvidia.com>
-In-Reply-To: <e7708737fadf4fe6f152afc76145c728c201adad.1632420430.git.leonro@nvidia.com>
-From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Thu, 23 Sep 2021 14:11:40 -0700
-Message-ID: <CAKOOJTz4A2ER8MQE1dW27Spocds09SYafjeuLcFDJ0nL6mKyOw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/6] bnxt_en: Check devlink allocation and
- registration status
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        Ariel Elior <aelior@marvell.com>,
-        GR-everest-linux-l2@marvell.com,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        Igor Russkikh <irusskikh@marvell.com>,
-        intel-wired-lan@lists.osuosl.org,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Javed Hasan <jhasan@marvell.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-scsi@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        netdev <netdev@vger.kernel.org>,
-        Sathya Perla <sathya.perla@broadcom.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 23, 2021 at 11:13 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> From: Leon Romanovsky <leonro@nvidia.com>
->
-> devlink is a software interface that doesn't depend on any hardware
-> capabilities. The failure in SW means memory issues, wrong parameters,
-> programmer error e.t.c.
->
-> Like any other such interface in the kernel, the returned status of
-> devlink APIs should be checked and propagated further and not ignored.
->
-> Fixes: 4ab0c6a8ffd7 ("bnxt_en: add support to enable VF-representors")
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  5 ++++-
->  drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 13 ++++++-------
->  drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h | 13 -------------
->  3 files changed, 10 insertions(+), 21 deletions(-)
->
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> index 037767b370d5..4c483fd91dbe 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> @@ -13370,7 +13370,9 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->         }
->
->         bnxt_inv_fw_health_reg(bp);
-> -       bnxt_dl_register(bp);
-> +       rc = bnxt_dl_register(bp);
-> +       if (rc)
-> +               goto init_err_dl;
->
->         rc = register_netdev(dev);
->         if (rc)
-> @@ -13390,6 +13392,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->
->  init_err_cleanup:
->         bnxt_dl_unregister(bp);
-> +init_err_dl:
->         bnxt_shutdown_tc(bp);
->         bnxt_clear_int_mode(bp);
->
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> index bf7d3c17049b..dc0851f709f5 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-> @@ -134,7 +134,7 @@ void bnxt_dl_fw_reporters_create(struct bnxt *bp)
->  {
->         struct bnxt_fw_health *health = bp->fw_health;
->
-> -       if (!bp->dl || !health)
-> +       if (!health)
->                 return;
->
->         if (!(bp->fw_cap & BNXT_FW_CAP_HOT_RESET) || health->fw_reset_reporter)
-> @@ -188,7 +188,7 @@ void bnxt_dl_fw_reporters_destroy(struct bnxt *bp, bool all)
->  {
->         struct bnxt_fw_health *health = bp->fw_health;
->
-> -       if (!bp->dl || !health)
-> +       if (!health)
->                 return;
->
->         if ((all || !(bp->fw_cap & BNXT_FW_CAP_HOT_RESET)) &&
-> @@ -781,6 +781,7 @@ int bnxt_dl_register(struct bnxt *bp)
->  {
->         const struct devlink_ops *devlink_ops;
->         struct devlink_port_attrs attrs = {};
-> +       struct bnxt_dl *bp_dl;
->         struct devlink *dl;
->         int rc;
->
-> @@ -795,7 +796,9 @@ int bnxt_dl_register(struct bnxt *bp)
->                 return -ENOMEM;
->         }
->
-> -       bnxt_link_bp_to_dl(bp, dl);
-> +       bp->dl = dl;
-> +       bp_dl = devlink_priv(dl);
-> +       bp_dl->bp = bp;
->
->         /* Add switchdev eswitch mode setting, if SRIOV supported */
->         if (pci_find_ext_capability(bp->pdev, PCI_EXT_CAP_ID_SRIOV) &&
-> @@ -826,7 +829,6 @@ int bnxt_dl_register(struct bnxt *bp)
->  err_dl_port_unreg:
->         devlink_port_unregister(&bp->dl_port);
->  err_dl_free:
-> -       bnxt_link_bp_to_dl(bp, NULL);
->         devlink_free(dl);
->         return rc;
->  }
-> @@ -835,9 +837,6 @@ void bnxt_dl_unregister(struct bnxt *bp)
->  {
->         struct devlink *dl = bp->dl;
->
-> -       if (!dl)
-> -               return;
-> -
+From: Yuchung Cheng <ycheng@google.com>
 
-minor nit: There's obviously nothing incorrect about doing this (and
-adding the additional error label in the cleanup code above), but bnxt
-has generally adopted a style of having cleanup functions being
-idempotent. It generally makes error handling simpler and less error
-prone.
+In order to track CE marks per rate sample (one round trip), TCP needs a
+per-skb header field to record the tp->delivered_ce count when the skb
+was sent. To make space, we replace the "last_in_flight" field which is
+used exclusively for NV congestion control. The stat needed by NV can be
+alternatively approximated by existing stats tcp_sock delivered and
+mss_cache.
 
->         if (BNXT_PF(bp)) {
->                 bnxt_dl_params_unregister(bp);
->                 devlink_port_unregister(&bp->dl_port);
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-> index d889f240da2b..406dc655a5fc 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-> @@ -20,19 +20,6 @@ static inline struct bnxt *bnxt_get_bp_from_dl(struct devlink *dl)
->         return ((struct bnxt_dl *)devlink_priv(dl))->bp;
->  }
->
-> -/* To clear devlink pointer from bp, pass NULL dl */
-> -static inline void bnxt_link_bp_to_dl(struct bnxt *bp, struct devlink *dl)
-> -{
-> -       bp->dl = dl;
-> -
-> -       /* add a back pointer in dl to bp */
-> -       if (dl) {
-> -               struct bnxt_dl *bp_dl = devlink_priv(dl);
-> -
-> -               bp_dl->bp = bp;
-> -       }
-> -}
-> -
->  #define NVM_OFF_MSIX_VEC_PER_PF_MAX    108
->  #define NVM_OFF_MSIX_VEC_PER_PF_MIN    114
->  #define NVM_OFF_IGNORE_ARI             164
-> --
-> 2.31.1
->
+This patch counts the number of packets delivered which have CE marks in
+the rate sample, using similar approach of delivery accounting.
 
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Cc: Lawrence Brakmo <brakmo@fb.com>
+Signed-off-by: Yuchung Cheng <ycheng@google.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Luke Hsiao <lukehsiao@google.com>
+---
+ include/net/tcp.h     |  9 ++++++---
+ net/ipv4/tcp_input.c  | 11 +++++------
+ net/ipv4/tcp_output.c |  2 --
+ net/ipv4/tcp_rate.c   |  6 ++++++
+ 4 files changed, 17 insertions(+), 11 deletions(-)
 
-Regards,
-Edwin Peer
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 673c3b01e287..32cf6c01f403 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -874,10 +874,11 @@ struct tcp_skb_cb {
+ 	__u32		ack_seq;	/* Sequence number ACK'd	*/
+ 	union {
+ 		struct {
++#define TCPCB_DELIVERED_CE_MASK ((1U<<20) - 1)
+ 			/* There is space for up to 24 bytes */
+-			__u32 in_flight:30,/* Bytes in flight at transmit */
+-			      is_app_limited:1, /* cwnd not fully used? */
+-			      unused:1;
++			__u32 is_app_limited:1, /* cwnd not fully used? */
++			      delivered_ce:20,
++			      unused:11;
+ 			/* pkts S/ACKed so far upon tx of skb, incl retrans: */
+ 			__u32 delivered;
+ 			/* start of send pipeline phase */
+@@ -1029,7 +1030,9 @@ struct ack_sample {
+ struct rate_sample {
+ 	u64  prior_mstamp; /* starting timestamp for interval */
+ 	u32  prior_delivered;	/* tp->delivered at "prior_mstamp" */
++	u32  prior_delivered_ce;/* tp->delivered_ce at "prior_mstamp" */
+ 	s32  delivered;		/* number of packets delivered over interval */
++	s32  delivered_ce;	/* number of packets delivered w/ CE marks*/
+ 	long interval_us;	/* time for tp->delivered to incr "delivered" */
+ 	u32 snd_interval_us;	/* snd interval for delivered packets */
+ 	u32 rcv_interval_us;	/* rcv interval for delivered packets */
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 141e85e6422b..53675e284841 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3221,7 +3221,6 @@ static int tcp_clean_rtx_queue(struct sock *sk, const struct sk_buff *ack_skb,
+ 	long seq_rtt_us = -1L;
+ 	long ca_rtt_us = -1L;
+ 	u32 pkts_acked = 0;
+-	u32 last_in_flight = 0;
+ 	bool rtt_update;
+ 	int flag = 0;
+ 
+@@ -3257,7 +3256,6 @@ static int tcp_clean_rtx_queue(struct sock *sk, const struct sk_buff *ack_skb,
+ 			if (!first_ackt)
+ 				first_ackt = last_ackt;
+ 
+-			last_in_flight = TCP_SKB_CB(skb)->tx.in_flight;
+ 			if (before(start_seq, reord))
+ 				reord = start_seq;
+ 			if (!after(scb->end_seq, tp->high_seq))
+@@ -3323,8 +3321,8 @@ static int tcp_clean_rtx_queue(struct sock *sk, const struct sk_buff *ack_skb,
+ 		seq_rtt_us = tcp_stamp_us_delta(tp->tcp_mstamp, first_ackt);
+ 		ca_rtt_us = tcp_stamp_us_delta(tp->tcp_mstamp, last_ackt);
+ 
+-		if (pkts_acked == 1 && last_in_flight < tp->mss_cache &&
+-		    last_in_flight && !prior_sacked && fully_acked &&
++		if (pkts_acked == 1 && fully_acked && !prior_sacked &&
++		    (tp->snd_una - prior_snd_una) < tp->mss_cache &&
+ 		    sack->rate->prior_delivered + 1 == tp->delivered &&
+ 		    !(flag & (FLAG_CA_ALERT | FLAG_SYN_ACKED))) {
+ 			/* Conservatively mark a delayed ACK. It's typically
+@@ -3381,9 +3379,10 @@ static int tcp_clean_rtx_queue(struct sock *sk, const struct sk_buff *ack_skb,
+ 
+ 	if (icsk->icsk_ca_ops->pkts_acked) {
+ 		struct ack_sample sample = { .pkts_acked = pkts_acked,
+-					     .rtt_us = sack->rate->rtt_us,
+-					     .in_flight = last_in_flight };
++					     .rtt_us = sack->rate->rtt_us };
+ 
++		sample.in_flight = tp->mss_cache *
++			(tp->delivered - sack->rate->prior_delivered);
+ 		icsk->icsk_ca_ops->pkts_acked(sk, &sample);
+ 	}
+ 
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 6d72f3ea48c4..fdc39b4fbbfa 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1256,8 +1256,6 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
+ 	tp->tcp_wstamp_ns = max(tp->tcp_wstamp_ns, tp->tcp_clock_cache);
+ 	skb->skb_mstamp_ns = tp->tcp_wstamp_ns;
+ 	if (clone_it) {
+-		TCP_SKB_CB(skb)->tx.in_flight = TCP_SKB_CB(skb)->end_seq
+-			- tp->snd_una;
+ 		oskb = skb;
+ 
+ 		tcp_skb_tsorted_save(oskb) {
+diff --git a/net/ipv4/tcp_rate.c b/net/ipv4/tcp_rate.c
+index 0de693565963..fbab921670cc 100644
+--- a/net/ipv4/tcp_rate.c
++++ b/net/ipv4/tcp_rate.c
+@@ -65,6 +65,7 @@ void tcp_rate_skb_sent(struct sock *sk, struct sk_buff *skb)
+ 	TCP_SKB_CB(skb)->tx.first_tx_mstamp	= tp->first_tx_mstamp;
+ 	TCP_SKB_CB(skb)->tx.delivered_mstamp	= tp->delivered_mstamp;
+ 	TCP_SKB_CB(skb)->tx.delivered		= tp->delivered;
++	TCP_SKB_CB(skb)->tx.delivered_ce	= tp->delivered_ce;
+ 	TCP_SKB_CB(skb)->tx.is_app_limited	= tp->app_limited ? 1 : 0;
+ }
+ 
+@@ -86,6 +87,7 @@ void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
+ 
+ 	if (!rs->prior_delivered ||
+ 	    after(scb->tx.delivered, rs->prior_delivered)) {
++		rs->prior_delivered_ce  = scb->tx.delivered_ce;
+ 		rs->prior_delivered  = scb->tx.delivered;
+ 		rs->prior_mstamp     = scb->tx.delivered_mstamp;
+ 		rs->is_app_limited   = scb->tx.is_app_limited;
+@@ -138,6 +140,10 @@ void tcp_rate_gen(struct sock *sk, u32 delivered, u32 lost,
+ 	}
+ 	rs->delivered   = tp->delivered - rs->prior_delivered;
+ 
++	rs->delivered_ce = tp->delivered_ce - rs->prior_delivered_ce;
++	/* delivered_ce occupies less than 32 bits in the skb control block */
++	rs->delivered_ce &= TCPCB_DELIVERED_CE_MASK;
++
+ 	/* Model sending data and receiving ACKs as separate pipeline phases
+ 	 * for a window. Usually the ACK phase is longer, but with ACK
+ 	 * compression the send phase can be longer. To be safe we use the
+-- 
+2.33.0.685.g46640cef36-goog
+
