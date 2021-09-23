@@ -2,40 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE7D8415690
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:40:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4792941569B
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:40:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239669AbhIWDmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 23:42:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41558 "EHLO mail.kernel.org"
+        id S239413AbhIWDmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 23:42:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42362 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239437AbhIWDk6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 23:40:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C4A5610A1;
-        Thu, 23 Sep 2021 03:39:26 +0000 (UTC)
+        id S239463AbhIWDlC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 23:41:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0A05961159;
+        Thu, 23 Sep 2021 03:39:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632368367;
-        bh=v+I8QNo3TKWMn6cbjdZKqsdAo0EcMoZ7bol0AcjFG0I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R8U2ZwY+TN18Kqb9A09OOOcR/bmuiXCvWAk+J1rHH/AEBjcsRZ4RXtEL8jBSblaRQ
-         r9rmwe1Zxk6u3CG8Zv4KFG4E5+bC4R9hs6yDiLQTH/PhpSJwscnlj2H7eM8eD0XUuB
-         7XeRSQWFQS4G4oK00cTHNadlX0nvOFNjxR3eRxBUH/DG9Y/vpduBQKWPRsm6nuPBD4
-         eimRI+W/6N01UY+izBLXBK6eZl8MCeofyoVPVpEHq5Pf4TKJr7B9ipYzGHj63FaB30
-         muAtX0pd5P279Nt1Rgu8vst5oLgxgBbZRoKxAZzr8OioICeICSWjZXBR/KMr9vl2vy
-         tmYJYsXiDgSNQ==
+        s=k20201202; t=1632368372;
+        bh=Q98ybQcWOxN8G81IMLn0gU6t4j12Of6eAZF3HnSzzaU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JVoSXeP9GQhyMspPo+2qd20lvUMDSOKr/JtUj5JYR2jEJzdiD574awf0A3dVSoRR/
+         3o2YaWY/7PN6FsZ7VyVzb+CmWDRgr1H2AYIqDpWFGej4xgTZAFYcAIXDzSgXg16NeF
+         L5vJGQiWPrvI3Uec01FczHlzY1+K4f8FQnlLtWIfgFMAikOfyY7Pn7AdH8VoLVq8lF
+         fRv8iNaTEQNOVocew2+zgPR3LJUCRYMMBuBMbhpoIcfOhphprolt4I1dBehoRC9qH6
+         0+GFT4tvrmY2v0LvY3EoV6OmpnZV/AgmSdqVSKjnj2vvglwHCykMp7YfeGO4quZvnN
+         HvOPG7T2mbq1A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, ajk@comnets.uni-bremen.de,
-        davem@davemloft.net, kuba@kernel.org, linux-hams@vger.kernel.org,
+Cc:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, mpe@ellerman.id.au,
+        drt@linux.ibm.com, kuba@kernel.org, linuxppc-dev@lists.ozlabs.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 18/19] net: 6pack: Fix tx timeout and slot time
-Date:   Wed, 22 Sep 2021 23:38:52 -0400
-Message-Id: <20210923033853.1421193-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 01/15] ibmvnic: check failover_pending in login response
+Date:   Wed, 22 Sep 2021 23:39:15 -0400
+Message-Id: <20210923033929.1421446-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210923033853.1421193-1-sashal@kernel.org>
-References: <20210923033853.1421193-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,57 +42,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-[ Upstream commit 3c0d2a46c0141913dc6fd126c57d0615677d946e ]
+[ Upstream commit d437f5aa23aa2b7bd07cd44b839d7546cc17166f ]
 
-tx timeout and slot time are currently specified in units of HZ.  On
-Alpha, HZ is defined as 1024.  When building alpha:allmodconfig, this
-results in the following error message.
+If a failover occurs before a login response is received, the login
+response buffer maybe undefined. Check that there was no failover
+before accessing the login response buffer.
 
-  drivers/net/hamradio/6pack.c: In function 'sixpack_open':
-  drivers/net/hamradio/6pack.c:71:41: error:
-  	unsigned conversion from 'int' to 'unsigned char'
-  	changes value from '256' to '0'
-
-In the 6PACK protocol, tx timeout is specified in units of 10 ms and
-transmitted over the wire:
-
-    https://www.linux-ax25.org/wiki/6PACK
-
-Defining a value dependent on HZ doesn't really make sense, and
-presumably comes from the (very historical) situation where HZ was
-originally 100.
-
-Note that the SIXP_SLOTTIME use explicitly is about 10ms granularity:
-
-        mod_timer(&sp->tx_t, jiffies + ((when + 1) * HZ) / 100);
-
-and the SIXP_TXDELAY walue is sent as a byte over the wire.
-
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hamradio/6pack.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
-index da13683d52d1..bd0beb16d68a 100644
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -68,9 +68,9 @@
- #define SIXP_DAMA_OFF		0
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 4008007c2e34..d97641b9928b 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -4038,6 +4038,14 @@ static int handle_login_rsp(union ibmvnic_crq *login_rsp_crq,
+ 		return 0;
+ 	}
  
- /* default level 2 parameters */
--#define SIXP_TXDELAY			(HZ/4)	/* in 1 s */
-+#define SIXP_TXDELAY			25	/* 250 ms */
- #define SIXP_PERSIST			50	/* in 256ths */
--#define SIXP_SLOTTIME			(HZ/10)	/* in 1 s */
-+#define SIXP_SLOTTIME			10	/* 100 ms */
- #define SIXP_INIT_RESYNC_TIMEOUT	(3*HZ/2) /* in 1 s */
- #define SIXP_RESYNC_TIMEOUT		5*HZ	/* in 1 s */
++	if (adapter->failover_pending) {
++		adapter->init_done_rc = -EAGAIN;
++		netdev_dbg(netdev, "Failover pending, ignoring login response\n");
++		complete(&adapter->init_done);
++		/* login response buffer will be released on reset */
++		return 0;
++	}
++
+ 	netdev->mtu = adapter->req_mtu - ETH_HLEN;
  
+ 	netdev_dbg(adapter->netdev, "Login Response Buffer:\n");
 -- 
 2.30.2
 
