@@ -2,283 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92C6D415821
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 08:13:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37577415846
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 08:35:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239276AbhIWGPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 02:15:19 -0400
-Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:53898 "EHLO
-        proxy.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S239226AbhIWGPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 02:15:18 -0400
-Received: from bretzel (unknown [10.16.0.57])
-        by proxy.6wind.com (Postfix) with ESMTPS id 89490B43FA8;
-        Thu, 23 Sep 2021 08:13:46 +0200 (CEST)
-Received: from dichtel by bretzel with local (Exim 4.92)
-        (envelope-from <dichtel@6wind.com>)
-        id 1mTHzO-0002Dh-G0; Thu, 23 Sep 2021 08:13:46 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        antony.antony@secunet.com, steffen.klassert@secunet.com,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH iproute2] xfrm: enable to manage default policies
-Date:   Thu, 23 Sep 2021 08:13:42 +0200
-Message-Id: <20210923061342.8522-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.33.0
+        id S239369AbhIWGhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 02:37:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44534 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239312AbhIWGhG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Sep 2021 02:37:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EFE0F6103D;
+        Thu, 23 Sep 2021 06:35:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632378935;
+        bh=DEKVsUEz3rB/lWfDPCmtwUG21EgoliQ4AdWEdVy1G4U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TYUzK6CIkvGFuMRyNE99h2HYsmLBhwlwdophnZordr6fK3vWI6QJ9YcWz2N4XDaab
+         3qUohiEm+tsTsS+R3ftMBKqBt3PIubaDE3FGnu5HRSE8GPA7wV3dDIC21aSAZihvgy
+         zO5z/S+AYuWJic/RgUSDTj8REgFAgMbf7xzxlOngNezsYacei0HI12BT1iGEAwqxmA
+         SPycfdhf0XK/VvZSWAu+cBsqq0pcpbo/BAj5tEVydyxYY/lfV9gJh5UZY+26l32f7B
+         z7gZwU5EHhV+G/MKWDkxzjHMhTXcV6EpKwLwsXLGymVQRSPXntArvr/W3vHeix2gLs
+         c+0W+FZoW5BMA==
+Date:   Thu, 23 Sep 2021 09:35:32 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>
+Subject: Re: [PATCH mlx5-next 1/7] PCI/IOV: Provide internal VF index
+Message-ID: <YUwgNPL++APsFJ49@unreal>
+References: <8d5bba9a6a1067989c3291fa2929528578812334.1632305919.git.leonro@nvidia.com>
+ <20210922215930.GA231505@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210922215930.GA231505@bhelgaas>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Two new commands to manage default policies:
- - ip xfrm policy setdefault
- - ip xfrm policy getdefault
+On Wed, Sep 22, 2021 at 04:59:30PM -0500, Bjorn Helgaas wrote:
+> On Wed, Sep 22, 2021 at 01:38:50PM +0300, Leon Romanovsky wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > 
+> > The PCI core uses the VF index internally, often called the vf_id,
+> > during the setup of the VF, eg pci_iov_add_virtfn().
+> > 
+> > This index is needed for device drivers that implement live migration
+> > for their internal operations that configure/control their VFs.
+> >
+> > Specifically, mlx5_vfio_pci driver that is introduced in coming patches
+> > from this series needs it and not the bus/device/function which is
+> > exposed today.
+> > 
+> > Add pci_iov_vf_id() which computes the vf_id by reversing the math that
+> > was used to create the bus/device/function.
+> > 
+> > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> 
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> 
+> mlx5_core_sriov_set_msix_vec_count() looks like it does basically the
+> same thing as pci_iov_vf_id() by iterating through VFs until it finds
+> one with a matching devfn (although it *doesn't* check for a matching
+> bus number, which seems like a bug).
+> 
+> Maybe that should use pci_iov_vf_id()?
 
-And the corresponding part in 'ip xfrm monitor'.
+Yes, I gave same comment internally and we decided to simply reduce the
+amount of changes in mlx5_core to have less distractions and submit as a
+followup. Most likely will add this hunk in v1.
 
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
- include/uapi/linux/xfrm.h |  15 +++--
- ip/xfrm.h                 |   1 +
- ip/xfrm_monitor.c         |   3 +
- ip/xfrm_policy.c          | 121 ++++++++++++++++++++++++++++++++++++++
- man/man8/ip-xfrm.8        |  12 ++++
- 5 files changed, 146 insertions(+), 6 deletions(-)
-
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index ecd06396eb16..378b4092f26a 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -213,13 +213,13 @@ enum {
- 	XFRM_MSG_GETSPDINFO,
- #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
- 
-+	XFRM_MSG_MAPPING,
-+#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
-+
- 	XFRM_MSG_SETDEFAULT,
- #define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
- 	XFRM_MSG_GETDEFAULT,
- #define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
+index e8185b69ac6c..b66be0b4244a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
+@@ -209,15 +209,8 @@ int mlx5_core_sriov_set_msix_vec_count(struct pci_dev *vf, int msix_vec_count)
+        /* Reversed translation of PCI VF function number to the internal
+         * function_id, which exists in the name of virtfn symlink.
+         */
+-       for (id = 0; id < pci_num_vf(pf); id++) {
+-               if (!sriov->vfs_ctx[id].enabled)
+-                       continue;
 -
--	XFRM_MSG_MAPPING,
--#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
- 	__XFRM_MSG_MAX
- };
- #define XFRM_MSG_MAX (__XFRM_MSG_MAX - 1)
-@@ -514,9 +514,12 @@ struct xfrm_user_offload {
- #define XFRM_OFFLOAD_INBOUND	2
- 
- struct xfrm_userpolicy_default {
--#define XFRM_USERPOLICY_DIRMASK_MAX	(sizeof(__u8) * 8)
--	__u8				dirmask;
--	__u8				action;
-+#define XFRM_USERPOLICY_UNSPEC	0
-+#define XFRM_USERPOLICY_BLOCK	1
-+#define XFRM_USERPOLICY_ACCEPT	2
-+	__u8				in;
-+	__u8				fwd;
-+	__u8				out;
- };
- 
- /* backwards compatibility for userspace */
-diff --git a/ip/xfrm.h b/ip/xfrm.h
-index 9ba5ca61d5e4..17dcf3fea83f 100644
---- a/ip/xfrm.h
-+++ b/ip/xfrm.h
-@@ -132,6 +132,7 @@ void xfrm_state_info_print(struct xfrm_usersa_info *xsinfo,
- void xfrm_policy_info_print(struct xfrm_userpolicy_info *xpinfo,
- 			    struct rtattr *tb[], FILE *fp, const char *prefix,
- 			    const char *title);
-+int xfrm_policy_default_print(struct nlmsghdr *n, FILE *fp);
- int xfrm_id_parse(xfrm_address_t *saddr, struct xfrm_id *id, __u16 *family,
- 		  int loose, int *argcp, char ***argvp);
- int xfrm_mode_parse(__u8 *mode, int *argcp, char ***argvp);
-diff --git a/ip/xfrm_monitor.c b/ip/xfrm_monitor.c
-index e34b5fbda130..f67424c5be06 100644
---- a/ip/xfrm_monitor.c
-+++ b/ip/xfrm_monitor.c
-@@ -323,6 +323,9 @@ static int xfrm_accept_msg(struct rtnl_ctrl_data *ctrl,
- 	case XFRM_MSG_MAPPING:
- 		xfrm_mapping_print(n, arg);
- 		return 0;
-+	case XFRM_MSG_GETDEFAULT:
-+		xfrm_policy_default_print(n, arg);
-+		return 0;
- 	default:
- 		break;
- 	}
-diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
-index 7cc00e7c2f5b..744f331ff564 100644
---- a/ip/xfrm_policy.c
-+++ b/ip/xfrm_policy.c
-@@ -66,6 +66,8 @@ static void usage(void)
- 		"Usage: ip xfrm policy flush [ ptype PTYPE ]\n"
- 		"Usage: ip xfrm policy count\n"
- 		"Usage: ip xfrm policy set [ hthresh4 LBITS RBITS ] [ hthresh6 LBITS RBITS ]\n"
-+		"Usage: ip xfrm policy setdefault DIR ACTION [ DIR ACTION ] [ DIR ACTION ]\n"
-+		"Usage: ip xfrm policy getdefault\n"
- 		"SELECTOR := [ src ADDR[/PLEN] ] [ dst ADDR[/PLEN] ] [ dev DEV ] [ UPSPEC ]\n"
- 		"UPSPEC := proto { { tcp | udp | sctp | dccp } [ sport PORT ] [ dport PORT ] |\n"
- 		"                  { icmp | ipv6-icmp | mobility-header } [ type NUMBER ] [ code NUMBER ] |\n"
-@@ -1124,6 +1126,121 @@ static int xfrm_spd_getinfo(int argc, char **argv)
- 	return 0;
- }
- 
-+static int xfrm_spd_setdefault(int argc, char **argv)
-+{
-+	struct rtnl_handle rth;
-+	struct {
-+		struct nlmsghdr			n;
-+		struct xfrm_userpolicy_default  up;
-+	} req = {
-+		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct xfrm_userpolicy_default)),
-+		.n.nlmsg_flags = NLM_F_REQUEST,
-+		.n.nlmsg_type = XFRM_MSG_SETDEFAULT,
-+	};
-+
-+	while (argc > 0) {
-+		if (strcmp(*argv, "in") == 0) {
-+			if (req.up.in)
-+				duparg("in", *argv);
-+
-+			NEXT_ARG();
-+			if (strcmp(*argv, "block") == 0)
-+				req.up.in = XFRM_USERPOLICY_BLOCK;
-+			else if (strcmp(*argv, "accept") == 0)
-+				req.up.in = XFRM_USERPOLICY_ACCEPT;
-+			else
-+				invarg("in policy value is invalid", *argv);
-+		} else if (strcmp(*argv, "fwd") == 0) {
-+			if (req.up.fwd)
-+				duparg("fwd", *argv);
-+
-+			NEXT_ARG();
-+			if (strcmp(*argv, "block") == 0)
-+				req.up.fwd = XFRM_USERPOLICY_BLOCK;
-+			else if (strcmp(*argv, "accept") == 0)
-+				req.up.fwd = XFRM_USERPOLICY_ACCEPT;
-+			else
-+				invarg("fwd policy value is invalid", *argv);
-+		} else if (strcmp(*argv, "out") == 0) {
-+			if (req.up.out)
-+				duparg("out", *argv);
-+
-+			NEXT_ARG();
-+			if (strcmp(*argv, "block") == 0)
-+				req.up.out = XFRM_USERPOLICY_BLOCK;
-+			else if (strcmp(*argv, "accept") == 0)
-+				req.up.out = XFRM_USERPOLICY_ACCEPT;
-+			else
-+				invarg("out policy value is invalid", *argv);
-+		} else {
-+			invarg("unknown direction", *argv);
-+		}
-+
-+		argc--; argv++;
-+	}
-+
-+	if (rtnl_open_byproto(&rth, 0, NETLINK_XFRM) < 0)
-+		exit(1);
-+
-+	if (rtnl_talk(&rth, &req.n, NULL) < 0)
-+		exit(2);
-+
-+	rtnl_close(&rth);
-+
-+	return 0;
-+}
-+
-+int xfrm_policy_default_print(struct nlmsghdr *n, FILE *fp)
-+{
-+	struct xfrm_userpolicy_default *up = NLMSG_DATA(n);
-+	int len = n->nlmsg_len - NLMSG_SPACE(sizeof(*up));
-+
-+	if (len < 0) {
-+		fprintf(stderr,
-+			"BUG: short nlmsg len %u (expect %lu) for XFRM_MSG_GETDEFAULT\n",
-+			n->nlmsg_len, NLMSG_SPACE(sizeof(*up)));
-+		return -1;
-+	}
-+
-+	fprintf(fp, "Default policies:\n");
-+	fprintf(fp, " in:  %s\n",
-+		up->in == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
-+	fprintf(fp, " fwd: %s\n",
-+		up->fwd == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
-+	fprintf(fp, " out: %s\n",
-+		up->out == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
-+	fflush(fp);
-+
-+	return 0;
-+}
-+
-+static int xfrm_spd_getdefault(int argc, char **argv)
-+{
-+	struct rtnl_handle rth;
-+	struct {
-+		struct nlmsghdr			n;
-+		struct xfrm_userpolicy_default  up;
-+	} req = {
-+		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct xfrm_userpolicy_default)),
-+		.n.nlmsg_flags = NLM_F_REQUEST,
-+		.n.nlmsg_type = XFRM_MSG_GETDEFAULT,
-+	};
-+	struct nlmsghdr *answer;
-+
-+	if (rtnl_open_byproto(&rth, 0, NETLINK_XFRM) < 0)
-+		exit(1);
-+
-+	if (rtnl_talk(&rth, &req.n, &answer) < 0)
-+		exit(2);
-+
-+	xfrm_policy_default_print(answer, (FILE *)stdout);
-+
-+	free(answer);
-+	rtnl_close(&rth);
-+
-+	return 0;
-+}
-+
- static int xfrm_policy_flush(int argc, char **argv)
- {
- 	struct rtnl_handle rth;
-@@ -1197,6 +1314,10 @@ int do_xfrm_policy(int argc, char **argv)
- 		return xfrm_spd_getinfo(argc, argv);
- 	if (matches(*argv, "set") == 0)
- 		return xfrm_spd_setinfo(argc-1, argv+1);
-+	if (matches(*argv, "setdefault") == 0)
-+		return xfrm_spd_setdefault(argc-1, argv+1);
-+	if (matches(*argv, "getdefault") == 0)
-+		return xfrm_spd_getdefault(argc-1, argv+1);
- 	if (matches(*argv, "help") == 0)
- 		usage();
- 	fprintf(stderr, "Command \"%s\" is unknown, try \"ip xfrm policy help\".\n", *argv);
-diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
-index 003f6c3d1c28..bf725cabb82d 100644
---- a/man/man8/ip-xfrm.8
-+++ b/man/man8/ip-xfrm.8
-@@ -298,6 +298,18 @@ ip-xfrm \- transform configuration
- .RB "[ " hthresh6
- .IR LBITS " " RBITS " ]"
- 
-+.ti -8
-+.B "ip xfrm policy setdefault"
-+.IR DIR
-+.IR ACTION " [ "
-+.IR DIR
-+.IR ACTION " ] [ "
-+.IR DIR
-+.IR ACTION " ]"
-+
-+.ti -8
-+.B "ip xfrm policy getdefault"
-+
- .ti -8
- .IR SELECTOR " :="
- .RB "[ " src
--- 
-2.33.0
+-               if (vf->devfn == pci_iov_virtfn_devfn(pf, id))
+-                       break;
+-       }
+-
+-       if (id == pci_num_vf(pf) || !sriov->vfs_ctx[id].enabled)
++       id = pci_iov_vf_id(vf);
++       if (id < 0 || !sriov->vfs_ctx[id].enabled)
+                return -EINVAL;
 
+        return mlx5_set_msix_vec_count(dev, id + 1, msix_vec_count);
+
+Thanks
+
+> 
+> > ---
+> >  drivers/pci/iov.c   | 14 ++++++++++++++
+> >  include/linux/pci.h |  7 ++++++-
+> >  2 files changed, 20 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
+> > index dafdc652fcd0..e7751fa3fe0b 100644
+> > --- a/drivers/pci/iov.c
+> > +++ b/drivers/pci/iov.c
+> > @@ -33,6 +33,20 @@ int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id)
+> >  }
+> >  EXPORT_SYMBOL_GPL(pci_iov_virtfn_devfn);
+> >  
+> > +int pci_iov_vf_id(struct pci_dev *dev)
+> > +{
+> > +	struct pci_dev *pf;
+> > +
+> > +	if (!dev->is_virtfn)
+> > +		return -EINVAL;
+> > +
+> > +	pf = pci_physfn(dev);
+> > +	return (((dev->bus->number << 8) + dev->devfn) -
+> > +		((pf->bus->number << 8) + pf->devfn + pf->sriov->offset)) /
+> > +	       pf->sriov->stride;
+> > +}
+> > +EXPORT_SYMBOL_GPL(pci_iov_vf_id);
+> > +
+> >  /*
+> >   * Per SR-IOV spec sec 3.3.10 and 3.3.11, First VF Offset and VF Stride may
+> >   * change when NumVFs changes.
+> > diff --git a/include/linux/pci.h b/include/linux/pci.h
+> > index cd8aa6fce204..4d6c73506e18 100644
+> > --- a/include/linux/pci.h
+> > +++ b/include/linux/pci.h
+> > @@ -2153,7 +2153,7 @@ void __iomem *pci_ioremap_wc_bar(struct pci_dev *pdev, int bar);
+> >  #ifdef CONFIG_PCI_IOV
+> >  int pci_iov_virtfn_bus(struct pci_dev *dev, int id);
+> >  int pci_iov_virtfn_devfn(struct pci_dev *dev, int id);
+> > -
+> > +int pci_iov_vf_id(struct pci_dev *dev);
+> >  int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn);
+> >  void pci_disable_sriov(struct pci_dev *dev);
+> >  
+> > @@ -2181,6 +2181,11 @@ static inline int pci_iov_virtfn_devfn(struct pci_dev *dev, int id)
+> >  {
+> >  	return -ENOSYS;
+> >  }
+> > +static inline int pci_iov_vf_id(struct pci_dev *dev)
+> > +{
+> > +	return -ENOSYS;
+> > +}
+> > +
+> 
+> Drop the blank line to match the surrounding stubs.
+
+Sure, thanks
+
+> 
+> >  static inline int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn)
+> >  { return -ENODEV; }
+> 
