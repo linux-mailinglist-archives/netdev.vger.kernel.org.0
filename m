@@ -2,210 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61C6B415F11
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 14:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A630C415F34
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 15:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241153AbhIWNBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 09:01:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27894 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235776AbhIWNBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 09:01:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632401976;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nj7KuKQYyiNPqoiOH3lAtPIlrtQ842d5NqTukqLDM40=;
-        b=a51aGTvOvaWmpRMEgFLGmcJ/z4xJbDBG3MKojCv7rfoBjXL7B2uipLc7obsDrsVxnE0fL5
-        yYhlupTYjuynUu0dIbGnkm7aMeWohGe+O1K+60d1rN4pLRYvgsf5oFCB4p8ytZzSTu884h
-        samW0dWtdOEem2ge6CFXRiNGIWB6GQE=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-379-rnYzs4RSPNCPoAF-MxgzoQ-1; Thu, 23 Sep 2021 08:59:35 -0400
-X-MC-Unique: rnYzs4RSPNCPoAF-MxgzoQ-1
-Received: by mail-ed1-f69.google.com with SMTP id q17-20020a50c351000000b003d81427d25cso6671984edb.15
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 05:59:35 -0700 (PDT)
+        id S232474AbhIWNJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 09:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232342AbhIWNJa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 09:09:30 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AA4C061574
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 06:07:58 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id d6so16910692wrc.11
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 06:07:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rE6nnZCkTUCQWXqTRzlILH190eg8HrCKfBnNZwDr1Zo=;
+        b=VV2tCq3SN8ulJhpc0E6jDm+p8kHvTGIWq0mPVdpqBKCELiHsCgpY8t7yIKoUsss3oA
+         9+FzKPqeQbvPha1ggffEuMX0eobcioNr0u/yhCbaX2f9zWv+bDZjx9dBH++SKlo/GxLc
+         r/TV9g24RrZRebJvy82+h3DzTxGoYH5F7+Sn5Zw4bRLh0zYEREy6tCiAdaVQQBLsMFqD
+         TEqeDIe/Uvm+ez7Bh9nbptOPACNTxy+kM8IRI6WEi9xScYcX+4S6ir5be7cL9yVqIsGg
+         RSh+2wA+u9a9HWrQj/GvFVZYhD2+kbSEJ2j9ibvs7yvNvEjIyMB+XR0cFnxNRP0LjALK
+         AhpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=nj7KuKQYyiNPqoiOH3lAtPIlrtQ842d5NqTukqLDM40=;
-        b=EK0ou52EBfSTKsWx22B22U0gL6wjtdMXIjfCHwyl1rDf31ULk8zQKnwaQATk1tH26h
-         /kfwhYdD0Qfj/ibpdhRqHBUc8/doXbEujKPo7W2eI9iwCAEI6EpAxM2DYCT9Uwvj96QV
-         /TofhUKNieFSbg14r8Go7dfXXfMv3khsS0+7EZ5lYX8svSEyvKNuzAKWAz8kosA/bHFY
-         cspv1kXER9C5/RoPrrcp8KRyNFWTRM+jDiQPBtxQkxlGoxS0PZeu0twOLx5Sono+HsR4
-         zIhYvrAnz8nThIMeYbXwRbde/vE/SMw35jnrt/v1lE0UNAoGM5usYdNpCcIWlB/3i69f
-         J7Fw==
-X-Gm-Message-State: AOAM531MdX21RzP1qYYPucGT001bUwl12CaetYnN4k+ZQ7LkZqc/2ewS
-        WHbMoHV2Cs03/kOWmTbx9mgihH6AzNAJgdt7NZkly22/TxvbFcrJduZhO2mOqqa88THqO8y3jGc
-        PkvvaCpNWD4+GMj7r
-X-Received: by 2002:a17:906:1299:: with SMTP id k25mr4919133ejb.139.1632401972036;
-        Thu, 23 Sep 2021 05:59:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzSEtfMW1r8x50L+dOj8aW76eBRZceTqQrafMa7fbJkbDfsPJfnlypgYDX7Y7inLV8GPuGt/A==
-X-Received: by 2002:a17:906:1299:: with SMTP id k25mr4919025ejb.139.1632401970857;
-        Thu, 23 Sep 2021 05:59:30 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id u4sm2949465ejc.19.2021.09.23.05.59.29
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rE6nnZCkTUCQWXqTRzlILH190eg8HrCKfBnNZwDr1Zo=;
+        b=7+OKftYJ6qc0WlEGTqU3UicCQMKqAf8tYhaikG6g6oNzUXDS7Qu5evoMzQ8txH1nim
+         T7bju5izu1d60HOOhkjxXheYfRWiGwqeENBME0fjfHd3bZqLt2Es/ux1xoNR/PaDj939
+         k6yeIYOPY0cM7w6jSvJjjUmEA8NBHsHI/wPu7a9iZ6Bj4dWe+4/gwi0C0Fz4tiNMY1p0
+         O0NiEiHQdW4UwtqwzhsdUc3O6HqkaTOfuZe3O7WHg0hEK5RuT4SnIObqysQnQl/55ITq
+         0jmDBlZd4D9j42FRcwGb+rrL3dEQ252QAaVtf9Hi1YZ1zR8qHIbVTZmMA/v0wSjjVoIG
+         yYEQ==
+X-Gm-Message-State: AOAM532cOQQhtmmw01MeZ2rbmSbn0G5SLB2Zs6ItExkJyLcdQEEejNQF
+        AVr+3dLeqOOgj7y9XrAqeLLmhg==
+X-Google-Smtp-Source: ABdhPJwuMnzsQggZhsSErxfF8pu9yl1541ldsvSrqOM8VzsHHyZLEe0lBR+TR8HxTw8LgR4Pqc47UQ==
+X-Received: by 2002:a1c:403:: with SMTP id 3mr4417280wme.161.1632402476975;
+        Thu, 23 Sep 2021 06:07:56 -0700 (PDT)
+Received: from apalos.home (ppp-94-66-220-137.home.otenet.gr. [94.66.220.137])
+        by smtp.gmail.com with ESMTPSA id b16sm5406560wrp.82.2021.09.23.06.07.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Sep 2021 05:59:30 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 28E06180274; Thu, 23 Sep 2021 14:59:29 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Lorenzo Bianconi <lbianconi@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: Redux: Backwards compatibility for XDP multi-buff
-In-Reply-To: <CACAyw99+KvsJGeqNE09VWHrZk9wKbQTg3h1h2LRmJADD5En2nQ@mail.gmail.com>
-References: <87o88l3oc4.fsf@toke.dk>
- <CACAyw99+KvsJGeqNE09VWHrZk9wKbQTg3h1h2LRmJADD5En2nQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 23 Sep 2021 14:59:29 +0200
-Message-ID: <87tuibzbv2.fsf@toke.dk>
+        Thu, 23 Sep 2021 06:07:56 -0700 (PDT)
+Date:   Thu, 23 Sep 2021 16:07:53 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linuxarm@openeuler.org, Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Marco Elver <elver@google.com>, memxor@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net-next 1/7] page_pool: disable dma mapping support for
+ 32-bit arch with 64-bit DMA
+Message-ID: <YUx8KZS5NPdTRkPS@apalos.home>
+References: <20210922094131.15625-1-linyunsheng@huawei.com>
+ <20210922094131.15625-2-linyunsheng@huawei.com>
+ <0ffa15a1-742d-a05d-3ea6-04ff25be6a29@redhat.com>
+ <CAC_iWjJLCQNHxgbQ-mzLC3OC-m2s7qj3YAtw7vPAKGG6WxywpA@mail.gmail.com>
+ <adb2687f-b501-9324-52b2-33ede1169007@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <adb2687f-b501-9324-52b2-33ede1169007@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenz Bauer <lmb@cloudflare.com> writes:
+On Thu, Sep 23, 2021 at 07:13:11PM +0800, Yunsheng Lin wrote:
+> On 2021/9/23 18:02, Ilias Apalodimas wrote:
+> > Hi Jesper,
+> > 
+> > On Thu, 23 Sept 2021 at 12:33, Jesper Dangaard Brouer
+> > <jbrouer@redhat.com> wrote:
+> >>
+> >>
+> >> On 22/09/2021 11.41, Yunsheng Lin wrote:
+> >>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> >>> index 1a6978427d6c..a65bd7972e37 100644
+> >>> --- a/net/core/page_pool.c
+> >>> +++ b/net/core/page_pool.c
+> >>> @@ -49,6 +49,12 @@ static int page_pool_init(struct page_pool *pool,
+> >>>        * which is the XDP_TX use-case.
+> >>>        */
+> >>>       if (pool->p.flags & PP_FLAG_DMA_MAP) {
+> >>> +             /* DMA-mapping is not supported on 32-bit systems with
+> >>> +              * 64-bit DMA mapping.
+> >>> +              */
+> >>> +             if (sizeof(dma_addr_t) > sizeof(unsigned long))
+> >>> +                     return -EINVAL;
+> >>
+> >> As I said before, can we please use another error than EINVAL.
+> >> We should give drivers a chance/ability to detect this error, and e.g.
+> >> fallback to doing DMA mappings inside driver instead.
+> >>
+> >> I suggest using EOPNOTSUPP 95 (Operation not supported).
+> 
+> Will change it to EOPNOTSUPP, thanks.
 
-> On Tue, 21 Sept 2021 at 17:06, Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
-hat.com> wrote:
->>
->> Hi Lorenz (Cc. the other people who participated in today's discussion)
->>
->> Following our discussion at the LPC session today, I dug up my previous
->> summary of the issue and some possible solutions[0]. Seems no on
->> actually replied last time, which is why we went with the "do nothing"
->> approach, I suppose. I'm including the full text of the original email
->> below; please take a look, and let's see if we can converge on a
->> consensus here.
->
-> Hi Toke,
->
-> Thanks for looping me in again. A bit of context what XDP at
-> Cloudflare looks like:
->
-> * We have a chain of XDP programs attached to a real network device.
-> This implements DDoS protection and L4 load balancing. This is
-> maintained by the team I am on.
-> * We have hundreds of network namespaces with veth that have XDP
-> attached to them. Traffic is routed from the root namespace into
-> these. This is maintained by the Magic Transit team, see this talk
-> from last year's LPC [1]
-> I'll try to summarise what I've picked up from the thread and add my
-> own 2c. Options being considered:
->
-> 1. Make sure mb-aware and mb-unaware programs don't mix.
+Mind sending this one separately (and you can keep my reviewed-by).  It
+fits nicely on it's own and since I am not sure about the rest of the
+changes yet, it would be nice to get this one in.
 
-I think I would rather state this as "make sure mb-unaware programs
-never encounter an mb frame". The programs can mix just fine in a
-single-buffer world since mb-aware programs are backwards compatible.
-All the multibuf helpers will also do the right thing even if there's
-only a single buffer in a given packet.
-
-> This could either be in the form of a sysctl or a dynamic property
-> similar to a refcount. We'd need to discern mb-aware from mb-unaware
-> somehow, most easily via a new program type. This means recompiling
-> existing programs (but then we expect that to be necessary anyways).
-
-Small nit here: while in most cases this property will  probably be set
-by recompilation, the loader can override it as well. So if you have a
-non-mb-aware program that you know won't break in an mb-setting (because
-it doesn't care about packet length, etc), your loader could just mark
-it as 'mb-aware'.
-
-Command-line loaders like xdp-loader and 'ip' would probably need a
-manual override switch to do this for the case where you have an old XDP
-program that you still want to run even though you've enabled MB mode.
-
-> We'd also have to be able to indicate "mb-awareness" for freplace
-> programs.
->
-> The implementation complexity seems OK, but operator UX is not good:
-> it's not possible to slowly migrate a system to mb-awareness, it has
-> to happen in one fell swoop.
-
-I don't think it has to be quite that bleak :)
-
-Specifically, there is no reason to block mb-aware programs from loading
-even when the multi-buffer mode is disabled. So a migration plan would
-look something like:
-
-1. Start out with the mb-sysctl toggled off. This will make the system
-   behave like it does today, i.e., XDP programs won't load on
-   interfaces with large MTUs.
-
-2. Start porting all your XDP programs to make them mb-aware, and switch
-   their program type as you do. In many cases this is just a matter of
-   checking that the programs don't care about packet length. While this
-   is ongoing you will have a mix of mb-aware and non-mb-aware programs
-   running, but there will be no actual mb frames.
-
-3. Once all your programs have been ported and marked as such, flip the
-   sysctl. This will make the system start refusing to load any XDP
-   programs that are not mb-aware.
-
-4. Actually raise the MTU of your interfaces :)
-
-> 2. Add a compatibility shim for mb-unaware programs receiving an mb frame.
->
-> We'd still need a way to indicate "MB-OK", but it could be a piece of
-> metadata on a bpf_prog. Whatever code dispatches to an XDP program
-> would have to include a prologue that linearises the xdp_buff if
-> necessary which implies allocating memory. I don't know how hard it is
-> to implement this.
-
-I think it would be somewhat non-trivial, and more importantly would
-absolutely slaughter performance. And if you're using XDP, presumably
-you care about that, so I'm not sure we're doing anyone any favours by
-implementing such a compatibility layer?
-
-> There is also the question of freplace: do we extend linearising to
-> them, or do they have to support MB?
-
-Well, today freplace programs just inherit the type of whatever they are
-attaching to, so we'd have to go out of our way to block this. I think
-logically it would be up to whatever loader is attaching freplace
-programs, because that's the one that knows the semantics. E.g.,
-something like libxdp that uses freplace to chain load programs would
-have to make sure that the dispatcher program is only marked as mb-aware
-if *all* the constituent programs are.
-
-> You raised an interesting point: couldn't we hit programs that can't
-> handle data_end - data being above a certain length? I think we (=3D
-> Cloudflare) actually have one of those, since we in some cases need to
-> traverse the entire buffer to calculate a checksum (we encapsulate
-> UDPv4 in IPv6, don't ask). Turns out it's actually really hard to
-> calculate the checksum on a variable length packet in BPF so we've had
-> to introduce limits. However, this case isn't too important: we made
-> this choice consciously, knowing that MTU changes would break it.
-
-Yeah, for this I think you're on your own ;)
-
-> Other than that I like this option a lot: mb-aware and mb-unaware
-> programs can co-exist, at the cost of performance. This allows
-> gradually migrating to our stack so that it can handle jumbo frames.
-
-See above re: coexisting.
-
-> 3. Make non-linearity invisible to the BPF program
->
-> Something I've wished for often is that I didn't have to deal with
-> nonlinearity at all, based on my experience with cls_redirect [2].
-> It's really hard to write a BPF program that handles non-linear skb,
-> especially when you have to call adjust_head, etc. which invalidates
-> packet buffers. This is probably impossible, but maybe someone has a
-> crazy idea? :)
-
-With the other helpers that we started discussing, I don't think you
-have to? I.e., with an xdp_load_bytes() or an xdp_data_pointer()-type
-helper that works across fragment boundaries I think you'd be fine, no?
-
--Toke
-
+Cheers
+/Ilias
+> 
+> > 
+> > I am fine with both.  In any case though the aforementioned driver can
+> > just remove PP_FLAG_DMA_MAP and do it's own mappings.
+> > 
+> > Regards
+> > /Ilias
+> >>
+> >> -Jesper
+> >>
+> > .
+> > 
