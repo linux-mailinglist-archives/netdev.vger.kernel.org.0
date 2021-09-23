@@ -2,185 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A224160BE
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 16:09:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 878214160C2
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 16:09:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241695AbhIWOLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 10:11:00 -0400
-Received: from relmlor2.renesas.com ([210.160.252.172]:16221 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S241698AbhIWOKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 10:10:52 -0400
-X-IronPort-AV: E=Sophos;i="5.85,316,1624287600"; 
-   d="scan'208";a="94936141"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 23 Sep 2021 23:09:20 +0900
-Received: from localhost.localdomain (unknown [10.226.92.2])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 310DB437F0B8;
-        Thu, 23 Sep 2021 23:09:17 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        id S241606AbhIWOLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 10:11:20 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56766 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241463AbhIWOLT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Sep 2021 10:11:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xQgxqK+Omh+ETGrdtsoUW3Gy+NDg808eHja9Ii9a27k=; b=aUgT2IAoRFPgCSOsS1DrMz/sxk
+        9KKSua9q2PVGi3AUTA4VapP2feVpP6qwKDMsBy+H58mdCL5jojpPFeLFbXAh5Vm07zxcMfgaSDwBD
+        e+wE/fpY8UV4go6pvI00WHKgt34XSBWB0cC4NL5MQwO4VratZbPAXsscbaSbv//DOgBk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mTPPr-007w1H-D7; Thu, 23 Sep 2021 16:09:35 +0200
+Date:   Thu, 23 Sep 2021 16:09:35 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-Subject: [RFC/PATCH 18/18] ravb: Add set_feature support for RZ/G2L
-Date:   Thu, 23 Sep 2021 15:08:13 +0100
-Message-Id: <20210923140813.13541-19-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
-References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH 0/9] renesas: Add compatible properties to Ethernet PHY
+ nodes
+Message-ID: <YUyKn19mJm8tizw+@lunn.ch>
+References: <cover.1631174218.git.geert+renesas@glider.be>
+ <CAMuHMdU6Mrfina3+2iW+RKaujk57JSRtmixRPn1b0d2w5dZ3eA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdU6Mrfina3+2iW+RKaujk57JSRtmixRPn1b0d2w5dZ3eA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds set_feature support for RZ/G2L.
+On Thu, Sep 23, 2021 at 01:00:11PM +0200, Geert Uytterhoeven wrote:
+> On Thu, Sep 9, 2021 at 10:49 AM Geert Uytterhoeven
+> <geert+renesas@glider.be> wrote:
+> > If an Ethernet PHY reset is asserted when the Ethernet driver is
+> > initialized, the PHY cannot be probed:
+> >
+> >     mdio_bus ee700000.ethernet-ffffffff: MDIO device at address 1 is missing
+> >
+> > This happens because the Linux PHY subsystem tries to read the PHY
+> > Identifier registers before handling PHY reset.  Hence if the PHY reset
+> > was asserted before, identification fails.
+> >
+> > An easy way to reproduce this issue is by using kexec to launch a new
+> > kernel (the PHY reset will be asserted before starting the new kernel),
+> > or by unbinding and rebinding the Ethernet driver (the PHY reset will be
+> > asserted during unbind), e.g. on koelsch:
+> >
+> >     echo ee700000.ethernet > /sys/bus/platform/drivers/sh-eth/unbind
+> >     $ echo ee700000.ethernet > /sys/bus/platform/drivers/sh-eth/bind
+> >
+> > The recommended approach[1][2] seems to be working around this issue by
+> > adding compatible values to all ethernet-phy nodes, so Linux can
+> > identify the PHY at any time, without reading the PHY ID from the
+> > device, and regardless of the state of the PHY reset line.
+> >
+> > Hence this patch series adds such compatible values to all Ethernet PHY
+> > subnodes representing PHYs on all boards with Renesas ARM and ARM64
+> > SoCs.  For easier review, I have split the series in one patch per PHY
+> > model.
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
- drivers/net/ethernet/renesas/ravb.h      | 32 ++++++++++++++
- drivers/net/ethernet/renesas/ravb_main.c | 56 +++++++++++++++++++++++-
- 2 files changed, 87 insertions(+), 1 deletion(-)
+It is a reasonable approach.
 
-diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-index d42e8ea981df..2275f27c0672 100644
---- a/drivers/net/ethernet/renesas/ravb.h
-+++ b/drivers/net/ethernet/renesas/ravb.h
-@@ -209,6 +209,8 @@ enum ravb_reg {
- 	CXR56	= 0x0770,	/* Documented for RZ/G2L only */
- 	MAFCR	= 0x0778,
- 	CSR0     = 0x0800,	/* Documented for RZ/G2L only */
-+	CSR1     = 0x0804,	/* Documented for RZ/G2L only */
-+	CSR2     = 0x0808,	/* Documented for RZ/G2L only */
- };
- 
- 
-@@ -978,6 +980,36 @@ enum CSR0_BIT {
- 	CSR0_RPE	= 0x00000020,
- };
- 
-+enum CSR1_BIT {
-+	CSR1_TIP4	= 0x00000001,
-+	CSR1_TTCP4	= 0x00000010,
-+	CSR1_TUDP4	= 0x00000020,
-+	CSR1_TICMP4	= 0x00000040,
-+	CSR1_TTCP6	= 0x00100000,
-+	CSR1_TUDP6	= 0x00200000,
-+	CSR1_TICMP6	= 0x00400000,
-+	CSR1_THOP	= 0x01000000,
-+	CSR1_TROUT	= 0x02000000,
-+	CSR1_TAHD	= 0x04000000,
-+	CSR1_TDHD	= 0x08000000,
-+	CSR1_ALL	= 0x0F700071,
-+};
-+
-+enum CSR2_BIT {
-+	CSR2_RIP4	= 0x00000001,
-+	CSR2_RTCP4	= 0x00000010,
-+	CSR2_RUDP4	= 0x00000020,
-+	CSR2_RICMP4	= 0x00000040,
-+	CSR2_RTCP6	= 0x00100000,
-+	CSR2_RUDP6	= 0x00200000,
-+	CSR2_RICMP6	= 0x00400000,
-+	CSR2_RHOP	= 0x01000000,
-+	CSR2_RROUT	= 0x02000000,
-+	CSR2_RAHD	= 0x04000000,
-+	CSR2_RDHD	= 0x08000000,
-+	CSR2_ALL	= 0x0F700071,
-+};
-+
- #define DBAT_ENTRY_NUM	22
- #define RX_QUEUE_OFFSET	4
- #define NUM_RX_QUEUE	2
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 72aea5875bc5..641ae5553b64 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -1506,6 +1506,24 @@ static void ravb_set_msglevel(struct net_device *ndev, u32 value)
- 	priv->msg_enable = value;
- }
- 
-+static const char ravb_gstrings_stats_rgeth[][ETH_GSTRING_LEN] = {
-+	"rx_queue_0_current",
-+	"tx_queue_0_current",
-+	"rx_queue_0_dirty",
-+	"tx_queue_0_dirty",
-+	"rx_queue_0_packets",
-+	"tx_queue_0_packets",
-+	"rx_queue_0_bytes",
-+	"tx_queue_0_bytes",
-+	"rx_queue_0_mcast_packets",
-+	"rx_queue_0_errors",
-+	"rx_queue_0_crc_errors",
-+	"rx_queue_0_frame_errors",
-+	"rx_queue_0_length_errors",
-+	"rx_queue_0_csum_offload_errors",
-+	"rx_queue_0_over_errors",
-+};
-+
- static const char ravb_gstrings_stats[][ETH_GSTRING_LEN] = {
- 	"rx_queue_0_current",
- 	"tx_queue_0_current",
-@@ -2290,7 +2308,38 @@ static void ravb_set_rx_csum(struct net_device *ndev, bool enable)
- static int ravb_set_features_rgeth(struct net_device *ndev,
- 				   netdev_features_t features)
- {
--	/* Place holder */
-+	netdev_features_t changed = features ^ ndev->features;
-+	unsigned int reg;
-+	int error;
-+
-+	reg = ravb_read(ndev, CSR0);
-+
-+	ravb_write(ndev, reg & ~(CSR0_RPE | CSR0_TPE), CSR0);
-+	error = ravb_wait(ndev, CSR0, CSR0_RPE | CSR0_TPE, 0);
-+	if (error) {
-+		ravb_write(ndev, reg, CSR0);
-+		return error;
-+	}
-+
-+	if (changed & NETIF_F_RXCSUM) {
-+		if (features & NETIF_F_RXCSUM)
-+			ravb_write(ndev, CSR2_ALL, CSR2);
-+		else
-+			ravb_write(ndev, 0, CSR2);
-+	}
-+
-+	if (changed & NETIF_F_HW_CSUM) {
-+		if (features & NETIF_F_HW_CSUM) {
-+			ravb_write(ndev, CSR1_ALL, CSR1);
-+			ndev->features |= NETIF_F_CSUM_MASK;
-+		} else {
-+			ravb_write(ndev, 0, CSR1);
-+		}
-+	}
-+	ravb_write(ndev, reg, CSR0);
-+
-+	ndev->features = features;
-+
- 	return 0;
- }
- 
-@@ -2432,6 +2481,11 @@ static const struct ravb_hw_info rgeth_hw_info = {
- 	.set_feature = ravb_set_features_rgeth,
- 	.dmac_init = ravb_dmac_init_rgeth,
- 	.emac_init = ravb_emac_init_rgeth,
-+	.net_hw_features = (NETIF_F_HW_CSUM | NETIF_F_RXCSUM),
-+	.gstrings_stats = ravb_gstrings_stats_rgeth,
-+	.gstrings_size = sizeof(ravb_gstrings_stats_rgeth),
-+	.stats_len = ARRAY_SIZE(ravb_gstrings_stats_rgeth),
-+	.max_rx_len = RGETH_RX_BUFF_MAX + RAVB_ALIGN - 1,
- 	.aligned_tx = 1,
- 	.tx_counters = 1,
- 	.no_gptp = 1,
--- 
-2.17.1
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
+    Andrew
