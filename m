@@ -2,169 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B6164161AB
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 17:03:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06C534161C3
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 17:10:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241895AbhIWPFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 11:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56284 "EHLO
+        id S241874AbhIWPMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 11:12:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241735AbhIWPFP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 11:05:15 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A759C061574
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 08:03:44 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id 5so4209993plo.5
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 08:03:44 -0700 (PDT)
+        with ESMTP id S241792AbhIWPL7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 11:11:59 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD41AC061574
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 08:10:27 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id 67-20020a9d0449000000b00546e5a8062aso8891985otc.9
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 08:10:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ExBixuEkV9jvQtJcn4iKj6YJlnqPBUdh7ZMXl9hPJBs=;
-        b=J21bMEZzXQ+HpkcA2K9xmHaFLXAV6mhLjkU/6ayeJKfxzSxTLK9JWj9a0xuxTsRxyL
-         KJBrF96Gn30u8uWyz0qMArltU2cursXzHDPaMI69+qmdnqaGsDeLjY3b5suU+c8o2qwX
-         HwwJrYn628S5IW0n+1c1Dwk8V/TpVzdjuaMjiN7p9eOgwurXJFBZMnut6JgfusPrekmA
-         xa1M9nqJ7CKdiGmTYfvYIx5DibOixUiTeJDzEGw9XaWFLt6x2YsAkEWBuS0RPkSI4U7/
-         EimBJyoreniX2jYUiOyi86gW7zwNKU17XE4rdd1kNECLRIF4ay0eWrAHya7oFP2npHH8
-         EXVQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sR+FPZ6feC/HJkRNXfbYmOL8Bok1T94jo/Ne/ioKryY=;
+        b=k7CdHHK90vN56r9sAAIM892j+keVCkXXaGMgOWduO90u1fR5/MnkIlT0SsGqyo00NQ
+         Zp1D5DvoJYgyatEFfN/q6jn+nnDJw9LmpK+RORFAdTPVXfyWBWHsqQUNNr5vbLAXcikH
+         R7fK6+aU75pUSurJ5XLYpdxNZ+mMcq9SCJRHtZ9Ro5nHN9Nc0IowyyKj5RFO6tuy16lg
+         o4/673r28+nkhLb5oVnWdWqGbeWPHcLLqANhqzVgV+MOjlS/Z/nV42PDWNcCxTiFG/Og
+         xNJ8BOa4/FmENGTeKzr9S7eIQE5FZYwtEJYhZkEuf+/CWUUgbeMsuLlPHdNzd2T7Pk9a
+         uM3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ExBixuEkV9jvQtJcn4iKj6YJlnqPBUdh7ZMXl9hPJBs=;
-        b=TgKyp7GBqOm83Pwi3XYj93YQ0n8S6rlCY++viuwwIzNAq9IMCQGKYlGoQHfSPILsMA
-         ofQfRZwCSnyG6VJGXVMJAn4eDOVv7X9cCUsRz26IopZt87Yak8+PIYuwc41lF72MqZQi
-         tTgi1XN/NCQ6EveXXtVUKCb6jiCqjboXagnNNBqBfVBFSiKE2ieaTO/hBPs+I09fzRoC
-         VH+T/SdoP0EWi23hvc4uUk+/gtQaZwPSYtOugg/jkxmLjbOE4RRnCRPIJh2Xg2ioij6z
-         9JUnz0XxWiT4pnNaSENzYBE4bCYHi1bARTjqQse6QFFF8UiQ9A6HIilsu43eLKvyTMFG
-         Xq+w==
-X-Gm-Message-State: AOAM532taKtzFfZBRI3Xc0EQdhmeKQP6QRzEgUPXzbNNSgwAfD6rJ9Zk
-        GzFKPSxiXc79Whf4CLESbjzXkY7C2MUu4tiP
-X-Google-Smtp-Source: ABdhPJzKsAlSNcUAPspR4AG+jdSUwxjtKtcr0a6mRO5Zr56glDdTm6+o8NUEVGAlZKwB9Fn5ocgp0A==
-X-Received: by 2002:a17:90a:f0cc:: with SMTP id fa12mr5867042pjb.215.1632409423687;
-        Thu, 23 Sep 2021 08:03:43 -0700 (PDT)
-Received: from nova-ws.. ([103.29.142.250])
-        by smtp.gmail.com with ESMTPSA id b3sm5998174pfo.23.2021.09.23.08.03.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Sep 2021 08:03:43 -0700 (PDT)
-From:   Xiao Liang <shaw.leon@gmail.com>
-To:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>
-Cc:     Xiao Liang <shaw.leon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        bh=sR+FPZ6feC/HJkRNXfbYmOL8Bok1T94jo/Ne/ioKryY=;
+        b=R4HtArFOe6t9PXpVHWSJ9T2mjV9rlVUnmrF3M14MbNI4P0dREjvGNERcVYE6FEHeIe
+         IYPv6DKAgEYHWF4Sj0nG83oRJew/xQvbPhMlZ4z0yhET+hmn/lZWuv7KcFTOFiYwh8SY
+         bSsgX61DA2uUmPsxXOJPWcdS+pOGzf3++lbYQ7MPmGLiW2jG6nyO1vomROhmv9ed1IGf
+         KvTZV9aeiOVdb9CAErO0lABwA5xj/Algz01N2aUW0LSSTt+Iy7alpwA2ZkmRPAwvIiU8
+         oXHfcX9WLHp+u2gV32NWcNPCIJPCj5nATwcOeudMcSVZO/duGLIMY5SdSB0oJKGci3ix
+         fr2Q==
+X-Gm-Message-State: AOAM5314d+gLxEdBf4/jI2lbXtQkzxd5RWjCejP3bLUcBLX1sf3vAaI7
+        oRiiaHkewWRdVWMLe2bP3V4=
+X-Google-Smtp-Source: ABdhPJxdqDvv0kBW5t9jg92XkXnwoZmUBvdV4UiU8fjmsli6PuYSwP5A9c9HwD7HmiKggg7mwEtyDQ==
+X-Received: by 2002:a05:6830:118a:: with SMTP id u10mr4835476otq.32.1632409827097;
+        Thu, 23 Sep 2021 08:10:27 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.50])
+        by smtp.googlemail.com with ESMTPSA id i23sm1131980oof.4.2021.09.23.08.10.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Sep 2021 08:10:26 -0700 (PDT)
+Subject: Re: [PATCH net v3] net: ipv4: Fix rtnexthop len when RTA_FLOW is
+ present
+To:     Xiao Liang <shaw.leon@gmail.com>, netdev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>
-Subject: [PATCH net v3] net: ipv4: Fix rtnexthop len when RTA_FLOW is present
-Date:   Thu, 23 Sep 2021 23:03:19 +0800
-Message-Id: <20210923150319.974-1-shaw.leon@gmail.com>
-X-Mailer: git-send-email 2.33.0
+References: <20210923150319.974-1-shaw.leon@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <83b55c4a-3564-ae55-534d-c1bc6f53084a@gmail.com>
+Date:   Thu, 23 Sep 2021 09:10:25 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210923150319.974-1-shaw.leon@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Multipath RTA_FLOW is embedded in nexthop. Dump it in fib_add_nexthop()
-to get the length of rtnexthop correct.
+On 9/23/21 9:03 AM, Xiao Liang wrote:
+> Multipath RTA_FLOW is embedded in nexthop. Dump it in fib_add_nexthop()
+> to get the length of rtnexthop correct.
+> 
+> Fixes: b0f60193632e ("ipv4: Refactor nexthop attributes in fib_dump_info")
+> Signed-off-by: Xiao Liang <shaw.leon@gmail.com>
+> ---
+>  include/net/ip_fib.h     |  2 +-
+>  include/net/nexthop.h    |  2 +-
+>  net/ipv4/fib_semantics.c | 16 +++++++++-------
+>  net/ipv6/route.c         |  5 +++--
+>  4 files changed, 14 insertions(+), 11 deletions(-)
+> 
 
-Fixes: b0f60193632e ("ipv4: Refactor nexthop attributes in fib_dump_info")
-Signed-off-by: Xiao Liang <shaw.leon@gmail.com>
----
- include/net/ip_fib.h     |  2 +-
- include/net/nexthop.h    |  2 +-
- net/ipv4/fib_semantics.c | 16 +++++++++-------
- net/ipv6/route.c         |  5 +++--
- 4 files changed, 14 insertions(+), 11 deletions(-)
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-index 21c5386d4a6d..ab5348e57db1 100644
---- a/include/net/ip_fib.h
-+++ b/include/net/ip_fib.h
-@@ -597,5 +597,5 @@ int ip_valid_fib_dump_req(struct net *net, const struct nlmsghdr *nlh,
- int fib_nexthop_info(struct sk_buff *skb, const struct fib_nh_common *nh,
- 		     u8 rt_family, unsigned char *flags, bool skip_oif);
- int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nh,
--		    int nh_weight, u8 rt_family);
-+		    int nh_weight, u8 rt_family, u32 nh_tclassid);
- #endif  /* _NET_FIB_H */
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index 10e1777877e6..28085b995ddc 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -325,7 +325,7 @@ int nexthop_mpath_fill_node(struct sk_buff *skb, struct nexthop *nh,
- 		struct fib_nh_common *nhc = &nhi->fib_nhc;
- 		int weight = nhg->nh_entries[i].weight;
- 
--		if (fib_add_nexthop(skb, nhc, weight, rt_family) < 0)
-+		if (fib_add_nexthop(skb, nhc, weight, rt_family, 0) < 0)
- 			return -EMSGSIZE;
- 	}
- 
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index b42c429cebbe..3364cb9c67e0 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1661,7 +1661,7 @@ EXPORT_SYMBOL_GPL(fib_nexthop_info);
- 
- #if IS_ENABLED(CONFIG_IP_ROUTE_MULTIPATH) || IS_ENABLED(CONFIG_IPV6)
- int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
--		    int nh_weight, u8 rt_family)
-+		    int nh_weight, u8 rt_family, u32 nh_tclassid)
- {
- 	const struct net_device *dev = nhc->nhc_dev;
- 	struct rtnexthop *rtnh;
-@@ -1679,6 +1679,9 @@ int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
- 
- 	rtnh->rtnh_flags = flags;
- 
-+	if (nh_tclassid && nla_put_u32(skb, RTA_FLOW, nh_tclassid))
-+		goto nla_put_failure;
-+
- 	/* length of rtnetlink header + attributes */
- 	rtnh->rtnh_len = nlmsg_get_pos(skb) - (void *)rtnh;
- 
-@@ -1706,14 +1709,13 @@ static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi)
- 	}
- 
- 	for_nexthops(fi) {
--		if (fib_add_nexthop(skb, &nh->nh_common, nh->fib_nh_weight,
--				    AF_INET) < 0)
--			goto nla_put_failure;
-+		u32 nh_tclassid = 0;
- #ifdef CONFIG_IP_ROUTE_CLASSID
--		if (nh->nh_tclassid &&
--		    nla_put_u32(skb, RTA_FLOW, nh->nh_tclassid))
--			goto nla_put_failure;
-+		nh_tclassid = nh->nh_tclassid;
- #endif
-+		if (fib_add_nexthop(skb, &nh->nh_common, nh->fib_nh_weight,
-+				    AF_INET, nh_tclassid) < 0)
-+			goto nla_put_failure;
- 	} endfor_nexthops(fi);
- 
- mp_end:
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index dbc224023977..9b9ef09382ab 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5681,14 +5681,15 @@ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
- 			goto nla_put_failure;
- 
- 		if (fib_add_nexthop(skb, &rt->fib6_nh->nh_common,
--				    rt->fib6_nh->fib_nh_weight, AF_INET6) < 0)
-+				    rt->fib6_nh->fib_nh_weight, AF_INET6,
-+				    0) < 0)
- 			goto nla_put_failure;
- 
- 		list_for_each_entry_safe(sibling, next_sibling,
- 					 &rt->fib6_siblings, fib6_siblings) {
- 			if (fib_add_nexthop(skb, &sibling->fib6_nh->nh_common,
- 					    sibling->fib6_nh->fib_nh_weight,
--					    AF_INET6) < 0)
-+					    AF_INET6, 0) < 0)
- 				goto nla_put_failure;
- 		}
- 
--- 
-2.33.0
 
