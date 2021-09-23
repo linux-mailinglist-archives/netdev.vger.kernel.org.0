@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8154156C1
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:42:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7C194156C5
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:42:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239597AbhIWDnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 23:43:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41350 "EHLO mail.kernel.org"
+        id S239452AbhIWDng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 23:43:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42110 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239217AbhIWDl6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S239408AbhIWDl6 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 22 Sep 2021 23:41:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C791F6127B;
-        Thu, 23 Sep 2021 03:39:55 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5AEB06127A;
+        Thu, 23 Sep 2021 03:40:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632368396;
-        bh=zCHqyRM/65Hegl52IheaNefuc3Is9JTlb17eflAq3fo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u6WWM2NuC/FFdpokxOVdAK4NXvEOU52kfwpG8tcbYyV6lOHWpgfoZGHKXDXoHCUUp
-         QAJoHnkTfRzKgQqKSRJzos4Cd7pYs3Uent8sWzX5JQcZI9X6yjeS8nMh1ZqOIu7XzB
-         cX8ibK9PsEfNkfz+5XSi+LDAwFjF/ukd/WGw8pRZpNZsZcAyuspUdSPYUBh9f+AMTf
-         wyFeR/7VGpOtTqLMdUlaDsvkKuVTQgFXwm24tuFyb4RUmmRWoTsrq3gFLsE4JIp7IM
-         EIY/Ew0AB5Try51ahhMwbcQRiqUdZ99Ihu+gfQI5zdjtlF2aQd98204Qy3knmWtpVl
-         dqf1U0qfqT8MA==
+        s=k20201202; t=1632368401;
+        bh=QCdupz/p0xeBKAVQUxU1xuzFKfxYn0azqyj/TQx2t4A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kowqR6ugbHeHYO+gw+TSR/pG4p8tnHiYh7zLeNoTf5dYuy1zMLVOR388CdQovTyj3
+         fx2U64lGFGV+3Kqbyp8e3gIPX8jw+eWziKj0MzSKKBklq3Yg3nOyoLEiuUGABtQqYq
+         sE0LuyIp3P/25o/Exd2Nt1zIogDA9RuEEc8ib5wnJ4b/8gW10QsA2AZrZQo1ut6KZh
+         oFBrwsUada2D0P/8XXVkPnuWs1drP94q8Pg6q4pFUiXEBjWECpO8SMFd4vrNZIxmQE
+         i/0DwcdKgoQZpZg6aodnguUzLbk2e6nbN9mBICGFlNwx9On3dBFwaoqYw2Rpnb0e3f
+         +Nk/O6I6uxgKw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, ajk@comnets.uni-bremen.de,
-        davem@davemloft.net, kuba@kernel.org, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 14/15] net: 6pack: Fix tx timeout and slot time
-Date:   Wed, 22 Sep 2021 23:39:28 -0400
-Message-Id: <20210923033929.1421446-14-sashal@kernel.org>
+Cc:     Tong Zhang <ztong0001@gmail.com>,
+        Nicolas Ferre <Nicolas.Ferre@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, claudiu.beznea@microchip.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 01/13] net: macb: fix use after free on rmmod
+Date:   Wed, 22 Sep 2021 23:39:47 -0400
+Message-Id: <20210923033959.1421662-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210923033929.1421446-1-sashal@kernel.org>
-References: <20210923033929.1421446-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,57 +43,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Tong Zhang <ztong0001@gmail.com>
 
-[ Upstream commit 3c0d2a46c0141913dc6fd126c57d0615677d946e ]
+[ Upstream commit d82d5303c4c539db86588ffb5dc5b26c3f1513e8 ]
 
-tx timeout and slot time are currently specified in units of HZ.  On
-Alpha, HZ is defined as 1024.  When building alpha:allmodconfig, this
-results in the following error message.
+plat_dev->dev->platform_data is released by platform_device_unregister(),
+use of pclk and hclk is a use-after-free. Since device unregister won't
+need a clk device we adjust the function call sequence to fix this issue.
 
-  drivers/net/hamradio/6pack.c: In function 'sixpack_open':
-  drivers/net/hamradio/6pack.c:71:41: error:
-  	unsigned conversion from 'int' to 'unsigned char'
-  	changes value from '256' to '0'
+[   31.261225] BUG: KASAN: use-after-free in macb_remove+0x77/0xc6 [macb_pci]
+[   31.275563] Freed by task 306:
+[   30.276782]  platform_device_release+0x25/0x80
 
-In the 6PACK protocol, tx timeout is specified in units of 10 ms and
-transmitted over the wire:
-
-    https://www.linux-ax25.org/wiki/6PACK
-
-Defining a value dependent on HZ doesn't really make sense, and
-presumably comes from the (very historical) situation where HZ was
-originally 100.
-
-Note that the SIXP_SLOTTIME use explicitly is about 10ms granularity:
-
-        mod_timer(&sp->tx_t, jiffies + ((when + 1) * HZ) / 100);
-
-and the SIXP_TXDELAY walue is sent as a byte over the wire.
-
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Suggested-by: Nicolas Ferre <Nicolas.Ferre@microchip.com>
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hamradio/6pack.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cadence/macb_pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
-index 1001e9a2edd4..af776d7be780 100644
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -68,9 +68,9 @@
- #define SIXP_DAMA_OFF		0
+diff --git a/drivers/net/ethernet/cadence/macb_pci.c b/drivers/net/ethernet/cadence/macb_pci.c
+index 248a8fc45069..f06fddf9919b 100644
+--- a/drivers/net/ethernet/cadence/macb_pci.c
++++ b/drivers/net/ethernet/cadence/macb_pci.c
+@@ -123,9 +123,9 @@ static void macb_remove(struct pci_dev *pdev)
+ 	struct platform_device *plat_dev = pci_get_drvdata(pdev);
+ 	struct macb_platform_data *plat_data = dev_get_platdata(&plat_dev->dev);
  
- /* default level 2 parameters */
--#define SIXP_TXDELAY			(HZ/4)	/* in 1 s */
-+#define SIXP_TXDELAY			25	/* 250 ms */
- #define SIXP_PERSIST			50	/* in 256ths */
--#define SIXP_SLOTTIME			(HZ/10)	/* in 1 s */
-+#define SIXP_SLOTTIME			10	/* 100 ms */
- #define SIXP_INIT_RESYNC_TIMEOUT	(3*HZ/2) /* in 1 s */
- #define SIXP_RESYNC_TIMEOUT		5*HZ	/* in 1 s */
+-	platform_device_unregister(plat_dev);
+ 	clk_unregister(plat_data->pclk);
+ 	clk_unregister(plat_data->hclk);
++	platform_device_unregister(plat_dev);
+ }
  
+ static const struct pci_device_id dev_id_table[] = {
 -- 
 2.30.2
 
