@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A78941574B
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 06:05:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D2141574E
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 06:13:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229585AbhIWEGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 00:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
+        id S231910AbhIWEPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 00:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbhIWEGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 00:06:39 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D51C061574;
-        Wed, 22 Sep 2021 21:05:08 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id q26so13071191wrc.7;
-        Wed, 22 Sep 2021 21:05:08 -0700 (PDT)
+        with ESMTP id S229436AbhIWEPJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 00:15:09 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF0BC061574
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 21:13:38 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id l7-20020a0568302b0700b0051c0181deebso6712462otv.12
+        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 21:13:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9n7b6JE6XUS8B7KMsBIbTq7nC4Yv0zk+28FewktZ7M0=;
-        b=VbDMCxiBOWCtOhR4/6hWEdw+qiRR9Q/bHUGCg6CclPX+jJyNHjBZy28/e6zWBUV5xj
-         1dlnePMUt9l79r98nlpVhQr0SZsuXAU6nrVWus6iN05C6c6W5tDeKbpN+k7UML8nq0jp
-         GdY/0qhURuWS00IxOkI3jtN249RGkzYNP6adcvXfpBuXsuUba8WiBFM1SVZWGRcgM7ky
-         Gfb+fDzhsaHramFnliVqKPPs+Gcuz1ZeLqHrpk8JvT+l29YvLRcsYWPqwJlOQUQfC6WW
-         HJ4zSkQw9oKkgMmdcaPtwTEbEgmjAU5w71yk+J4tadxRu6zrgnwptVOzBLywfsR3GQ9f
-         Kngw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=msim7IOlD9QMDjiaL8dqk9yrskHNBR6eX3VGRhInoug=;
+        b=EFVky6EapFPVmM2fzti0rbI3M6z0QVoQSdyzLW8ED0PFQXGtr1qWMnRIJgUmdi/WyY
+         GyOG9Ogct+RHE3oJFQ0TpJ9xEQxqRZ1S4Cg6R0QVs4/vb9Mh0RetJJwFkjIocPYNg702
+         qrPLlJBBd+IdVSYX8vIODljgZqiiFsjuJJGvGUuR9OpgjpNjSJ85qXhfaCnRMC5sJc/Z
+         kTk/fIFF4kChKJLBmC8Kfdizkngagp/cmX65BSiHIdiL6rlfZyHM29AiUfTyUgeE0eFn
+         8elsJwTQduBzkF8xdVC8RJTdMlmC1chzf4x2mI7kCwRoHijTANPaujBEsUBKsYUWP3DW
+         Xw4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=9n7b6JE6XUS8B7KMsBIbTq7nC4Yv0zk+28FewktZ7M0=;
-        b=zC6olqOaTHjhwKtDoOAbRHggA0rC57BiAxNsHL12tCG5jky+pCQ7LwMaivGw+k2YHT
-         +iyS9ARDgCubNncHZmXlGG5FY/FkKuREZqwg8IKG/Qqp2DBRccXqFU/vDyuWoCLlnRfy
-         BZSeL40y1xqeVAOrM3Ddz1DJQ56IgOOwPZYHUduwbGK+n3I0nzoBEtEDcwwUTqKGvXMF
-         f/QTvkZnOpSYjD6o8yUMG1NwzT65iUXLj+3fMppZ7FAoSvF1yIT5fwPcOYCRZqFq0ZpJ
-         qxm3ANkQxszMlZn3LXWKy28LdPBp/HAifuQDLORbJXe5dECxD4x6g1r13SX2j9SLVeWK
-         n85Q==
-X-Gm-Message-State: AOAM53012aNTH8Pvksj2M4SyeK8HCJVmKAfaSGtlCDHq3HQl6YB8YbkJ
-        aJa23AgARHxbr8YhipkrH9wcZwKcxkOlYQ==
-X-Google-Smtp-Source: ABdhPJynVBJ1kG++Hn4Az6MuWIRa7TQo52FO/vxGwWdI1la7Z38pilcEqmSc9m86GYI3ryjgrulFFQ==
-X-Received: by 2002:adf:f844:: with SMTP id d4mr2463591wrq.370.1632369907192;
-        Wed, 22 Sep 2021 21:05:07 -0700 (PDT)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id f8sm3946659wrx.15.2021.09.22.21.05.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Sep 2021 21:05:06 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, linux-sctp@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCH net] sctp: break out if skb_header_pointer returns NULL in sctp_rcv_ootb
-Date:   Thu, 23 Sep 2021 00:05:04 -0400
-Message-Id: <8f91703995c8de638695e330c06d17ecec8c9135.1632369904.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        bh=msim7IOlD9QMDjiaL8dqk9yrskHNBR6eX3VGRhInoug=;
+        b=DcBpy4JBXOtgiAu2rrCGwVw6O7s55sDBLLEUIlVvSzQz4pXrwcdw0DWbXfyNb7i3gr
+         26XZkyeV4lrYOWlxaMw1bPkjD2sb+7gHZnzH5junz0Zt8R0xKiU1yEP/+nPTExmLMIeK
+         yjjlYGKo3HR0y7I1T45ZqXGTuaSaRL3XTZaqZmoko7inh+9+D+VbtE7QWfpdxCEp/lb3
+         RTFyfx1ORpQ37TdllD3Gsszl+A/8kHmhsIUmCAjH6uMfvnNlpUCHb/AtACSM7ZIYRAWu
+         G5EFD+foC7Pa8QSwawUVlKWHGUYhgen5Q9Qw7h0XPQr+mfkpx9Yx+v9+9JKMTTNwjtDJ
+         L7DA==
+X-Gm-Message-State: AOAM533I2j86twdRJJCvkka3TYnk4if6t3YZnoLkw2XDaWrTUZnWTlsS
+        9Pja7AH1p9CzVeRmNWYg4qo=
+X-Google-Smtp-Source: ABdhPJwV65y8lEKwvuIiN5cTFICGEfixiF0kGDa9AhMfinM2dMSNvzTcVKFlagWiFO3JKxaaRL1C1Q==
+X-Received: by 2002:a9d:6143:: with SMTP id c3mr1593628otk.124.1632370417685;
+        Wed, 22 Sep 2021 21:13:37 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.50])
+        by smtp.googlemail.com with ESMTPSA id f17sm1103743ook.9.2021.09.22.21.13.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Sep 2021 21:13:37 -0700 (PDT)
+Subject: Re: [PATCH net] net: ipv4: Fix rtnexthop len when RTA_FLOW is present
+To:     Xiao Liang <shaw.leon@gmail.com>, netdev <netdev@vger.kernel.org>
+Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        davem@davemloft.net
+References: <20210922101654.7775-1-shaw.leon@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <adb4f9a5-6f3d-5aeb-a1e7-9ac04be925d5@gmail.com>
+Date:   Wed, 22 Sep 2021 22:13:36 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210922101654.7775-1-shaw.leon@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We should always check if skb_header_pointer's return is NULL before
-using it, otherwise it may cause null-ptr-deref, as syzbot reported:
+On 9/22/21 4:16 AM, Xiao Liang wrote:
+> @@ -1682,10 +1683,17 @@ int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
+>  	/* length of rtnetlink header + attributes */
+>  	rtnh->rtnh_len = nlmsg_get_pos(skb) - (void *)rtnh;
+>  
+> -	return 0;
+> +	return rtnh;
+>  
+>  nla_put_failure:
+> -	return -EMSGSIZE;
+> +	return ERR_PTR(-EMSGSIZE);
+> +}
+> +
+> +int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nhc,
+> +		    int nh_weight, u8 rt_family)
 
-  KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-  RIP: 0010:sctp_rcv_ootb net/sctp/input.c:705 [inline]
-  RIP: 0010:sctp_rcv+0x1d84/0x3220 net/sctp/input.c:196
-  Call Trace:
-  <IRQ>
-   sctp6_rcv+0x38/0x60 net/sctp/ipv6.c:1109
-   ip6_protocol_deliver_rcu+0x2e9/0x1ca0 net/ipv6/ip6_input.c:422
-   ip6_input_finish+0x62/0x170 net/ipv6/ip6_input.c:463
-   NF_HOOK include/linux/netfilter.h:307 [inline]
-   NF_HOOK include/linux/netfilter.h:301 [inline]
-   ip6_input+0x9c/0xd0 net/ipv6/ip6_input.c:472
-   dst_input include/net/dst.h:460 [inline]
-   ip6_rcv_finish net/ipv6/ip6_input.c:76 [inline]
-   NF_HOOK include/linux/netfilter.h:307 [inline]
-   NF_HOOK include/linux/netfilter.h:301 [inline]
-   ipv6_rcv+0x28c/0x3c0 net/ipv6/ip6_input.c:297
+Adding classid as an input to fib_add_nexthop and checking it for non-0
+before adding to the message is a better way to resolve this.
 
-Fixes: 3acb50c18d8d ("sctp: delay as much as possible skb_linearize")
-Reported-by: syzbot+581aff2ae6b860625116@syzkaller.appspotmail.com
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/sctp/input.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 5ef86fdb1176..1f1786021d9c 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -702,7 +702,7 @@ static int sctp_rcv_ootb(struct sk_buff *skb)
- 		ch = skb_header_pointer(skb, offset, sizeof(*ch), &_ch);
- 
- 		/* Break out if chunk length is less then minimal. */
--		if (ntohs(ch->length) < sizeof(_ch))
-+		if (!ch || ntohs(ch->length) < sizeof(_ch))
- 			break;
- 
- 		ch_end = offset + SCTP_PAD4(ntohs(ch->length));
--- 
-2.27.0
 
