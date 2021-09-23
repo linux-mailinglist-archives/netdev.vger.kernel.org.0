@@ -2,85 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C1D6416061
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 15:56:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF3A416066
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 15:57:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241530AbhIWN5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 09:57:19 -0400
-Received: from mail-bn7nam10on2047.outbound.protection.outlook.com ([40.107.92.47]:30762
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S241541AbhIWN7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 09:59:00 -0400
+Received: from mail-dm6nam08on2079.outbound.protection.outlook.com ([40.107.102.79]:43360
+        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231974AbhIWN5R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Sep 2021 09:57:17 -0400
+        id S235976AbhIWN66 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Sep 2021 09:58:58 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Dbx7Ks9i3Uhgzm8R6rKgAfh1v3A+1ZcC6ftHc+QdG48ROvqKKLpT78V5588uEPPTJ17l1Ll4sQIHMRUUYY0fli6suK6LDHTcZtbqCGfp9R90y87xCypBByOjYcAwn+OQhkZaEI22Sil/j95lP7NfPOAb2/nRwFXj87/iBB9150RBjnC6ysx3dYI7Gw02T5xIngVLqH4Io+o9gYwYRQI7iJI+oXq7PoIS0w9dIDOa8oWiG9ykxhBmgbOhPZC5zaK9Vr9DwbTePyfrSsm/YJBudYzko1xmlSRY9jO1xl62IHNYUZzS4VQeIOJbLJg+Bj4Hph7ROqC3JUSot5LPHlbjxQ==
+ b=Ed8fMpEkq6CnGe034dLBhiDiUTz1Yts+g4zQpjob1D2iU44znToKFFkfhXWejHEuhVqupEukeNOX7NlB4VmDw9+6ltlWkyJ5B8tZ8b4EgM7dbSwp1BzfQ+ic+nRVsD22igPxCRh25orKg71rUDtLFfh2IL6dna1mnB3lX5UphTHSNuduZNwPEVyMqwmNvzBktzYBcq9g7JAidUPmrm1aFUSoiUZyHPyxk3Q3e8Iv94YSh7kH/R9mPh6BBvqWDfYDFsTv2LLQitqfKuiBiYHA5u5TR/yTQEaLSW6S/Q4IFS5OeU1qfPXtUtX48BejpRo4edf9knKXmkLSBCZUQrb0kQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=uXNbn0g4xzMzyWf+BjpM9VY/3lEV/LNbIYeSWuJMylA=;
- b=IjgPnQu/Vb/rzwlJFE3Wit30AcgXXmLOGGcyqn6wKpbMgsx9sD/iv2+43ZMTjF+NhjfmABtNwE+4CFSPTRobhgh6wImnbddrSagJA4mvGItnLdFS0tvnZRKGDwFEXKEaPKTRrSmeq8BkueKkZEuvsR+O13xp6uj2D3gP/JchHmV31HPhxyb0WAxv278Zbq7XpKaDIl1X63R9VXeaNSQuk2OXontt+NOShqkWSUmOw4XEAw9NrLRcfN58QObrBbTZR245UaDP62VZ4GB2ihhrAgWbjot2VRjRkcy2GrQYzZmPAdagDV8UnELMm8ydRruxj+WZMzOvjhfr+it9XtiNjA==
+ bh=fuRrMtGUpJYB192uQ5rJqL2JRpK1mp70DkeCjo6MwvI=;
+ b=N108xyZtB78FzVXQqdnpv9QsFKlwYykm7Q6E6CK3VL0tDfifcINoIyQ4BEmmr/ftVMIn6YlwAOnIDZS1mMfrkjt9NibIST4cxV6ppeCan7uwZ7RAc6mAxjAjI2F2GMQx6aiKzppwrvsnaK8JPZs0MrGFuo9oPOtoxjOoSJyXjdLsJ4oU56dB/A1vyq4dOyjT8m/qTgC6sa3x2ugfXKZOj6HS1b/0z9qT1m+ag1OeMFbfUc0K7HP6pnKR86UBilszDQE+aqbnmlwQrPtLflvbDjPvn1lsJmc0iq+XKIMnk5STCm67/GGPqR2CL4YORRCdDfwrnAC5Qi8ge5H3aAmbmg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.112.36) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uXNbn0g4xzMzyWf+BjpM9VY/3lEV/LNbIYeSWuJMylA=;
- b=lzUdpsXqh5W9fuM7AWU0ZhusoRBmQq5xorylAGRtGdOMYxwuO1rI6XsW6Ew6oUnOV4oAHrTCljc60AdhK3O0LnIJg6PUa/JvGOU3Kr0E4ecTeVmVRPhURUWgUiLqafc4T7N5pnrfqDpifcHWYNX2ZEHCsG3z9sAL6FpQ+IkgzJr6rxU9VKw3cbyUeEu+qeFCPNRyCcEqPztifVZw2ylc4D1LGD6ISjmDJzi81KXEulGRU08w58VMSehs3xB3CaBYQ+aKag+M8sAEsFOEkjw4/1J0eEQt0NTo5f7vMB7x4wnei9dAiyvMuW6reL7FHfTwm5RqNvrRPuXHl7/ltEE+4A==
-Received: from DM5PR15CA0046.namprd15.prod.outlook.com (2603:10b6:4:4b::32) by
- MW2PR12MB2442.namprd12.prod.outlook.com (2603:10b6:907:4::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4544.15; Thu, 23 Sep 2021 13:55:43 +0000
-Received: from DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:4b:cafe::6e) by DM5PR15CA0046.outlook.office365.com
- (2603:10b6:4:4b::32) with Microsoft SMTP Server (version=TLS1_2,
+ bh=fuRrMtGUpJYB192uQ5rJqL2JRpK1mp70DkeCjo6MwvI=;
+ b=szZfX2jf0626s/zX+x2AVhd4d2ff78VJgfB6sYWbjMJma5fuAKxWT+mBL3/EEAa0AgFq4+0TuuGNHT3NoixrNLKaqP/bjcLwewk510q/P5b2DTYvCSUfg/4hTys+CpYX01nwC2hv+BSlGT3rey5yik9Cuzo7h2Tl5Cwm1O1SjnedmjYPSGw0YreJtuH9fQATKh71dHVcHLJBubHouMu7tCS17uyZrKyF9Sk8PCucnGwcf663051NQCWXqw+0G07WGJ2m2J+LFtO//5WDhGh7DBrKOT76S+GhqUX6yRToPWzE2um+vQDTbhVTiU3DUskBkNtMTVgmVEnCuOZmjm1GXw==
+Received: from DM5PR19CA0060.namprd19.prod.outlook.com (2603:10b6:3:116::22)
+ by BN6PR12MB1827.namprd12.prod.outlook.com (2603:10b6:404:fd::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Thu, 23 Sep
+ 2021 13:57:23 +0000
+Received: from DM6NAM11FT041.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:116:cafe::16) by DM5PR19CA0060.outlook.office365.com
+ (2603:10b6:3:116::22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13 via Frontend
- Transport; Thu, 23 Sep 2021 13:55:43 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
+ Transport; Thu, 23 Sep 2021 13:57:23 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
  smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- DM6NAM11FT064.mail.protection.outlook.com (10.13.172.234) with Microsoft SMTP
+ 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.36; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.36) by
+ DM6NAM11FT041.mail.protection.outlook.com (10.13.172.98) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4544.13 via Frontend Transport; Thu, 23 Sep 2021 13:55:43 +0000
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 23 Sep
- 2021 06:55:42 -0700
+ 15.20.4544.13 via Frontend Transport; Thu, 23 Sep 2021 13:57:22 +0000
+Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 23 Sep
+ 2021 13:57:22 +0000
 Received: from [172.27.15.96] (172.20.187.5) by DRHQMAIL107.nvidia.com
  (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 23 Sep
- 2021 13:55:37 +0000
-Subject: Re: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
- transition validity
+ 2021 13:57:18 +0000
+Subject: Re: [PATCH mlx5-next 3/7] vfio/pci_core: Make the region->release()
+ function optional
 To:     Leon Romanovsky <leon@kernel.org>,
-        Shameerali Kolothum Thodi 
-        <shameerali.kolothum.thodi@huawei.com>
-CC:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+CC:     Yishai Hadas <yishaih@nvidia.com>,
         Alex Williamson <alex.williamson@redhat.com>,
         Bjorn Helgaas <bhelgaas@google.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Kirti Wankhede" <kwankhede@nvidia.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Kirti Wankhede" <kwankhede@nvidia.com>, <kvm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
         Saeed Mahameed <saeedm@nvidia.com>
 References: <cover.1632305919.git.leonro@nvidia.com>
- <c87f55d6fec77a22b110d3c9611744e6b28bba46.1632305919.git.leonro@nvidia.com>
- <42729adc4df649f7b3ce5dc95e66e2dc@huawei.com> <YUxiPqShZT4bk0uL@unreal>
+ <a01c7bb01ac4b1930a428fa8a8cae89bb1c4327a.1632305919.git.leonro@nvidia.com>
 From:   Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <60989aa8-4231-0cdf-47bb-1e2026bd1f17@nvidia.com>
-Date:   Thu, 23 Sep 2021 16:55:35 +0300
+Message-ID: <60b22817-442f-c7ac-3dce-8f8a57c12c4b@nvidia.com>
+Date:   Thu, 23 Sep 2021 16:57:16 +0300
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <YUxiPqShZT4bk0uL@unreal>
+In-Reply-To: <a01c7bb01ac4b1930a428fa8a8cae89bb1c4327a.1632305919.git.leonro@nvidia.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
@@ -89,156 +84,66 @@ X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
  DRHQMAIL107.nvidia.com (10.27.9.16)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f30a9f56-c5a8-4e6e-5501-08d97e99d5d6
-X-MS-TrafficTypeDiagnostic: MW2PR12MB2442:
-X-Microsoft-Antispam-PRVS: <MW2PR12MB24421E989B84A991FF1517DCDEA39@MW2PR12MB2442.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Office365-Filtering-Correlation-Id: aefb4f5c-ff32-4044-3c8d-08d97e9a1171
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1827:
+X-Microsoft-Antispam-PRVS: <BN6PR12MB18272FD4B8118A581D89E8DDDEA39@BN6PR12MB1827.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gAU8FT/dUXNfzqNzckBFkbuMhCWslULbYgsGu7hYXcIGEr6f+tqYpnFRJEItW68TIeiHWy0SanQhk/rAvRP1QxBv8SP2oQal4jFOjwhk8Xf+Z/cZ1T4ggOwaQiIR2NV1XGgJHRDvPIzpKCOj+UYCkd4nbU9HF5A1QeGerpg/OHbK6uHn/IfyWKQkv1n29waMHsP2phyykcXqXwf+mFVQHPaB5zrcgXjHOgIAGmV7D8+X02YEhVSBrZeL2wSwSmPYrwqS7aH/tBk8/sUC5b59Lunb7dPockHNTQ7xLCuHU66Db9H3zMYxA5nF9KYmmIx3YR5xo/O1y/TvbChfDnZwfQAGluwMKAx0z+Ys3YDILCbpIxBF0dhhVsD/dRNw7YlxVlaMEsM9B+WsXn7+Jzwvu8BnLmMR8Pfhd5hNwBAJRAB0EJwep99bN8vf6HUqzNwINLZ4NecO1VNldTu68Q8xUMZnm+fCV05fdd5fRvGaCpTVfCZljRuUleLVaeyNQ0OowRDPkAKFW6a06HMZ5VAJiEsQOOh60osXd55fVuRe3/bf0b7xvsapHQ/cKXWmkX6NhKF00Z0j8Qr8n3BY1D6EiTD69MJSKjxpK/k5Y31IdFB+ginLzTm1NUAf905QF/KX5p1f+PETR9FOgIQGrxbjqu+/vJgore8O/+WfzlHDg7xR13nUq4c/5HfqrHSmJTyKdyUT2XRX48ExCiS3yM0/uqI6W5TzH94r7O/m8ewdkkI=
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(82310400003)(36860700001)(508600001)(70586007)(70206006)(31696002)(31686004)(426003)(54906003)(110136005)(316002)(5660300002)(86362001)(16576012)(107886003)(53546011)(4326008)(8936002)(2616005)(336012)(2906002)(16526019)(26005)(186003)(8676002)(83380400001)(7636003)(36756003)(356005)(47076005)(7416002)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: qM7GV6SyZiJBzuV+iXIb0HkaXd5weNSUaNsZSptBIHRR8IFqM4780pH7ctpHIUarRL05WHmd/SLQ/pEU+t9ZjNmXUmFVR0qHZb2XMqqNP3VeUe3netUfFePQME6VFzfu4s3A0e9dmIMEegQ+W0b/6ss4vMTNLfX/egxwLFfcdU/o3qoqdZE/zXNBSsJ4vNSc49WAU6o1SeHxvWrx5SnCMzYHUUl4y7oc7HyXTtNzqh7bEEMwjSIurL9veI5OL5C+2/PhfqlnNhjbjb5qHLMjK+C+lHN2SFwy4aCPXS9JMlPCNJRi+7pAWxi7K/gR0niDNM9h0ksnIQ5n4YKqxXhYu0iCxeHJh/oLtrLTfCcx8FGEzjVw/t/2qr6b7/tVosYfC1zbl+BnSSSTLwXMWHUoXCu6KDKu6akgVA8uNTsVOQP9T3ioModwmVngFS+RGVmD7U2Cg+01a+gKQvSta3Or9+k8IcAPLA7px/KSU5+Q7L5t5nZBeAgCQ6hMNi9icE8zyIVHBaEE2bnG1JTMo+Z08jwZcroUvbKfY4RYdVAy567bBrFPqvatQ341mu5+A6uLFG4kwjMWw+Yy+aKwiK00aSetAKHLbTeXU5fuTHa8R12mvBxmD2FlespQYbkOQnlMvRWkpfm+pOBqiN8UHsZlAYJWwyysOGsaZwTG40I6+G97DM70OKqxjc8HlcjTQaODXUjhgnsATbaF/cE3iZZhDWH3BPGTLYCP6ZqtjC0XDwY=
+X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(508600001)(83380400001)(186003)(53546011)(16526019)(356005)(336012)(36860700001)(82310400003)(26005)(7416002)(4326008)(31696002)(2906002)(31686004)(36906005)(8936002)(70586007)(8676002)(16576012)(316002)(54906003)(86362001)(2616005)(5660300002)(7636003)(70206006)(36756003)(110136005)(6636002)(107886003)(426003)(47076005)(43740500002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2021 13:55:43.1116
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2021 13:57:22.9574
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f30a9f56-c5a8-4e6e-5501-08d97e99d5d6
+X-MS-Exchange-CrossTenant-Network-Message-Id: aefb4f5c-ff32-4044-3c8d-08d97e9a1171
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT041.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2442
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1827
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 9/23/2021 2:17 PM, Leon Romanovsky wrote:
-> On Thu, Sep 23, 2021 at 10:33:10AM +0000, Shameerali Kolothum Thodi wrote:
->>
->>> -----Original Message-----
->>> From: Leon Romanovsky [mailto:leon@kernel.org]
->>> Sent: 22 September 2021 11:39
->>> To: Doug Ledford <dledford@redhat.com>; Jason Gunthorpe <jgg@nvidia.com>
->>> Cc: Yishai Hadas <yishaih@nvidia.com>; Alex Williamson
->>> <alex.williamson@redhat.com>; Bjorn Helgaas <bhelgaas@google.com>; David
->>> S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Kirti
->>> Wankhede <kwankhede@nvidia.com>; kvm@vger.kernel.org;
->>> linux-kernel@vger.kernel.org; linux-pci@vger.kernel.org;
->>> linux-rdma@vger.kernel.org; netdev@vger.kernel.org; Saeed Mahameed
->>> <saeedm@nvidia.com>
->>> Subject: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
->>> transition validity
->>>
->>> From: Yishai Hadas <yishaih@nvidia.com>
->>>
->>> Add an API in the core layer to check migration state transition validity
->>> as part of a migration flow.
->>>
->>> The valid transitions follow the expected usage as described in
->>> uapi/vfio.h and triggered by QEMU.
->>>
->>> This ensures that all migration implementations follow a consistent
->>> migration state machine.
->>>
->>> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
->>> Reviewed-by: Kirti Wankhede <kwankhede@nvidia.com>
->>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->>> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
->>> ---
->>>   drivers/vfio/vfio.c  | 41 +++++++++++++++++++++++++++++++++++++++++
->>>   include/linux/vfio.h |  1 +
->>>   2 files changed, 42 insertions(+)
->>>
->>> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
->>> index 3c034fe14ccb..c3ca33e513c8 100644
->>> --- a/drivers/vfio/vfio.c
->>> +++ b/drivers/vfio/vfio.c
->>> @@ -1664,6 +1664,47 @@ static int vfio_device_fops_release(struct inode
->>> *inode, struct file *filep)
->>>   	return 0;
->>>   }
->>>
->>> +/**
->>> + * vfio_change_migration_state_allowed - Checks whether a migration state
->>> + *   transition is valid.
->>> + * @new_state: The new state to move to.
->>> + * @old_state: The old state.
->>> + * Return: true if the transition is valid.
->>> + */
->>> +bool vfio_change_migration_state_allowed(u32 new_state, u32 old_state)
->>> +{
->>> +	enum { MAX_STATE = VFIO_DEVICE_STATE_RESUMING };
->>> +	static const u8 vfio_from_state_table[MAX_STATE + 1][MAX_STATE + 1] = {
->>> +		[VFIO_DEVICE_STATE_STOP] = {
->>> +			[VFIO_DEVICE_STATE_RUNNING] = 1,
->>> +			[VFIO_DEVICE_STATE_RESUMING] = 1,
->>> +		},
->>> +		[VFIO_DEVICE_STATE_RUNNING] = {
->>> +			[VFIO_DEVICE_STATE_STOP] = 1,
->>> +			[VFIO_DEVICE_STATE_SAVING] = 1,
->>> +			[VFIO_DEVICE_STATE_SAVING | VFIO_DEVICE_STATE_RUNNING]
->>> = 1,
->> Do we need to allow _RESUMING state here or not? As per the "State transitions"
->> section from uapi/linux/vfio.h,
-> It looks like we missed this state transition.
+On 9/22/2021 1:38 PM, Leon Romanovsky wrote:
+> From: Yishai Hadas <yishaih@nvidia.com>
 >
-> Thanks
-
-I'm not sure this state transition is valid.
-
-Kirti, When we would like to move from RUNNING to RESUMING ?
-
-Sameerali, can you please re-test and update if you see this transition ?
-
-
+> Make the region->release() function optional as in some cases there is
+> nothing to do by driver as part of it.
 >
->> " * 4. To start the resuming phase, the device state should be transitioned from
->>   *    the _RUNNING to the _RESUMING state."
->>
->> IIRC, I have seen that transition happening on the destination dev while testing the
->> HiSilicon ACC dev migration.
->>
->> Thanks,
->> Shameer
->>
->>> +		},
->>> +		[VFIO_DEVICE_STATE_SAVING] = {
->>> +			[VFIO_DEVICE_STATE_STOP] = 1,
->>> +			[VFIO_DEVICE_STATE_RUNNING] = 1,
->>> +		},
->>> +		[VFIO_DEVICE_STATE_SAVING | VFIO_DEVICE_STATE_RUNNING] = {
->>> +			[VFIO_DEVICE_STATE_RUNNING] = 1,
->>> +			[VFIO_DEVICE_STATE_SAVING] = 1,
->>> +		},
->>> +		[VFIO_DEVICE_STATE_RESUMING] = {
->>> +			[VFIO_DEVICE_STATE_RUNNING] = 1,
->>> +			[VFIO_DEVICE_STATE_STOP] = 1,
->>> +		},
->>> +	};
->>> +
->>> +	if (new_state > MAX_STATE || old_state > MAX_STATE)
->>> +		return false;
->>> +
->>> +	return vfio_from_state_table[old_state][new_state];
->>> +}
->>> +EXPORT_SYMBOL_GPL(vfio_change_migration_state_allowed);
->>> +
->>>   static long vfio_device_fops_unl_ioctl(struct file *filep,
->>>   				       unsigned int cmd, unsigned long arg)
->>>   {
->>> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
->>> index b53a9557884a..e65137a708f1 100644
->>> --- a/include/linux/vfio.h
->>> +++ b/include/linux/vfio.h
->>> @@ -83,6 +83,7 @@ extern struct vfio_device
->>> *vfio_device_get_from_dev(struct device *dev);
->>>   extern void vfio_device_put(struct vfio_device *device);
->>>
->>>   int vfio_assign_device_set(struct vfio_device *device, void *set_id);
->>> +bool vfio_change_migration_state_allowed(u32 new_state, u32 old_state);
->>>
->>>   /* events for the backend driver notify callback */
->>>   enum vfio_iommu_notify_type {
->>> --
->>> 2.31.1
+> This is needed for coming patch from this series once we add
+> mlx5_vfio_cpi driver to support live migration but we don't need a
+
+mlx5_vfio_pci *typo
+
+
+> migration release function.
+>
+> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>   drivers/vfio/pci/vfio_pci_core.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+> index 68198e0f2a63..3ddc3adb24de 100644
+> --- a/drivers/vfio/pci/vfio_pci_core.c
+> +++ b/drivers/vfio/pci/vfio_pci_core.c
+> @@ -341,7 +341,8 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
+>   	vdev->virq_disabled = false;
+>   
+>   	for (i = 0; i < vdev->num_regions; i++)
+> -		vdev->region[i].ops->release(vdev, &vdev->region[i]);
+> +		if (vdev->region[i].ops->release)
+> +			vdev->region[i].ops->release(vdev, &vdev->region[i]);
+>   
+>   	vdev->num_regions = 0;
+>   	kfree(vdev->region);
+
+Looks good,
+
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+
