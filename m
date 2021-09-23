@@ -2,44 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 017FE415C92
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 13:12:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F51E415C97
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 13:13:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240538AbhIWLON (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 07:14:13 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:9911 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240513AbhIWLON (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 07:14:13 -0400
+        id S240569AbhIWLPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 07:15:02 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:16286 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240498AbhIWLPB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 07:15:01 -0400
 Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HFXT254Tnz8ykM;
-        Thu, 23 Sep 2021 19:08:06 +0800 (CST)
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HFXZL6JGPz8tJf;
+        Thu, 23 Sep 2021 19:12:42 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
  dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Thu, 23 Sep 2021 19:12:28 +0800
+ 15.1.2308.8; Thu, 23 Sep 2021 19:13:12 +0800
 Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
  (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Thu, 23 Sep
- 2021 19:12:28 +0800
-Subject: Re: [PATCH net-next 0/7] some optimization for page pool
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <hawk@kernel.org>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <cong.wang@bytedance.com>,
-        <pabeni@redhat.com>, <haokexin@gmail.com>, <nogikh@google.com>,
-        <elver@google.com>, <memxor@gmail.com>, <edumazet@google.com>,
-        <alexander.duyck@gmail.com>, <dsahern@gmail.com>
+ 2021 19:13:12 +0800
+Subject: Re: [PATCH net-next 1/7] page_pool: disable dma mapping support for
+ 32-bit arch with 64-bit DMA
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, Jesper Dangaard Brouer <hawk@kernel.org>,
+        "Jonathan Lemon" <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        "Willem de Bruijn" <willemb@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        "Paolo Abeni" <pabeni@redhat.com>, Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Marco Elver <elver@google.com>, <memxor@gmail.com>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        David Ahern <dsahern@gmail.com>
 References: <20210922094131.15625-1-linyunsheng@huawei.com>
- <YUwnogBl/qbNbQ7X@apalos.home>
+ <20210922094131.15625-2-linyunsheng@huawei.com>
+ <0ffa15a1-742d-a05d-3ea6-04ff25be6a29@redhat.com>
+ <CAC_iWjJLCQNHxgbQ-mzLC3OC-m2s7qj3YAtw7vPAKGG6WxywpA@mail.gmail.com>
 From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <953f1319-ff1d-a5a0-9aa5-5ff5cf24e37a@huawei.com>
-Date:   Thu, 23 Sep 2021 19:12:28 +0800
+Message-ID: <adb2687f-b501-9324-52b2-33ede1169007@huawei.com>
+Date:   Thu, 23 Sep 2021 19:13:11 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
  Thunderbird/52.2.0
 MIME-Version: 1.0
-In-Reply-To: <YUwnogBl/qbNbQ7X@apalos.home>
+In-Reply-To: <CAC_iWjJLCQNHxgbQ-mzLC3OC-m2s7qj3YAtw7vPAKGG6WxywpA@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -51,82 +64,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/9/23 15:07, Ilias Apalodimas wrote:
-> Hi Yunsheng, 
+On 2021/9/23 18:02, Ilias Apalodimas wrote:
+> Hi Jesper,
 > 
-> On Wed, Sep 22, 2021 at 05:41:24PM +0800, Yunsheng Lin wrote:
->> Patch 1: disable dma mapping support for 32-bit arch with 64-bit
->>          DMA.
->> Patch 2: support non-split page when PP_FLAG_PAGE_FRAG is set.
->> patch 3: avoid calling compound_head() for skb frag page
->> Patch 4-7: use pp_magic to identify pp page uniquely.
-> 
-> There's some subtle changes in this patchset that might affect XDP.
-> 
-> What I forgot when I proposed removing the recycling bit,  is that it also
-> serves as an 'opt-in' mechanism for drivers that want to use page_pool but 
-> do the recycling internally.  With that removed we need to make sure
-> nothing bad happens to them.  In theory the page refcnt for mlx5
+> On Thu, 23 Sept 2021 at 12:33, Jesper Dangaard Brouer
+> <jbrouer@redhat.com> wrote:
+>>
+>>
+>> On 22/09/2021 11.41, Yunsheng Lin wrote:
+>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+>>> index 1a6978427d6c..a65bd7972e37 100644
+>>> --- a/net/core/page_pool.c
+>>> +++ b/net/core/page_pool.c
+>>> @@ -49,6 +49,12 @@ static int page_pool_init(struct page_pool *pool,
+>>>        * which is the XDP_TX use-case.
+>>>        */
+>>>       if (pool->p.flags & PP_FLAG_DMA_MAP) {
+>>> +             /* DMA-mapping is not supported on 32-bit systems with
+>>> +              * 64-bit DMA mapping.
+>>> +              */
+>>> +             if (sizeof(dma_addr_t) > sizeof(unsigned long))
+>>> +                     return -EINVAL;
+>>
+>> As I said before, can we please use another error than EINVAL.
+>> We should give drivers a chance/ability to detect this error, and e.g.
+>> fallback to doing DMA mappings inside driver instead.
+>>
+>> I suggest using EOPNOTSUPP 95 (Operation not supported).
 
-It seems odd that mlx5 is adding its own page cache on top of page pool,
-is it about support both "struct sk_buff" and "struct xdp_buff" for the
-same queue?
-
-> specifically will be elevated, so we'll just end up unmapping the buffer.
-> Arguably we could add a similar mechanism internally into page pool,  
-> which would allow us to enable and disable recycling,  but that's
-> an extra if per packet allocation and I don't know if we want that on the XDP 
-> case.
-
-Or we could change mlx5e_rx_cache_get() to check for "page->pp_frag_count
-== 1" too, and adjust mlx5e_page_release() accordingly?
-
-> A few numbers pre/post patch for XDP would help, but iirc hns3 doesn't have
-> XDP support yet?
-
-You are right, hns3 doesn't have XDP support yet.
+Will change it to EOPNOTSUPP, thanks.
 
 > 
-> It's plumbers week so I'll do some testing starting Monday.
+> I am fine with both.  In any case though the aforementioned driver can
+> just remove PP_FLAG_DMA_MAP and do it's own mappings.
 > 
-> Thanks
+> Regards
 > /Ilias
-> 
 >>
->> V3:
->>     1. add patch 1/4/6/7.
->>     2. use pp_magic to identify pp page uniquely too.
->>     3. avoid unnecessary compound_head() calling.
->>
->> V2: add patch 2, adjust the commit log accroding to the discussion
->>     in V1, and fix a compiler error reported by kernel test robot.
->>
->> Yunsheng Lin (7):
->>   page_pool: disable dma mapping support for 32-bit arch with 64-bit DMA
->>   page_pool: support non-split page with PP_FLAG_PAGE_FRAG
->>   pool_pool: avoid calling compound_head() for skb frag page
->>   page_pool: change BIAS_MAX to support incrementing
->>   skbuff: keep track of pp page when __skb_frag_ref() is called
->>   skbuff: only use pp_magic identifier for a skb' head page
->>   skbuff: remove unused skb->pp_recycle
->>
->>  .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  6 ---
->>  drivers/net/ethernet/marvell/mvneta.c         |  2 -
->>  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  4 +-
->>  drivers/net/ethernet/marvell/sky2.c           |  2 +-
->>  drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  2 +-
->>  drivers/net/ethernet/ti/cpsw.c                |  2 -
->>  drivers/net/ethernet/ti/cpsw_new.c            |  2 -
->>  include/linux/mm_types.h                      | 13 +-----
->>  include/linux/skbuff.h                        | 39 ++++++++----------
->>  include/net/page_pool.h                       | 31 ++++++++------
->>  net/core/page_pool.c                          | 40 +++++++------------
->>  net/core/skbuff.c                             | 36 ++++++-----------
->>  net/tls/tls_device.c                          |  2 +-
->>  13 files changed, 67 insertions(+), 114 deletions(-)
->>
->> -- 
->> 2.33.0
+>> -Jesper
 >>
 > .
 > 
