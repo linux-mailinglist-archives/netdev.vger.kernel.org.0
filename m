@@ -2,105 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D133D41580F
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 08:02:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92C6D415821
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 08:13:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239272AbhIWGES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 02:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239208AbhIWGER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 02:04:17 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B03D8C061756
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 23:02:46 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id i23so13845326wrb.2
-        for <netdev@vger.kernel.org>; Wed, 22 Sep 2021 23:02:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fgwahsTAg8KuN6NY+9uMhllAHmwKLjBVPsZvBLty6KM=;
-        b=dZFnSEILauy+orsjX6RvU01y4YVpvooFp7E9cGDWrj1T40VVfgCVE7L2tEfq1n6cKG
-         8z7ZfOPolyYJQYU4cr8S+EY8QPb9Q9DFJZTbjlkKgjs/lYCcMrvNjwDIuPA4k4LhZWnN
-         RIrFuPNSWNvjf5o5VddHz0ZrOSHU5Xpn7COLOEDDmXOe3VC7JgBMdu69uOc+Yv1/0ASx
-         Sh0kszrfF7cXW9ZOT+eeAq9sGaC/4WcXlw3hl5bG5NlBwUBkyiTMCaarRzX2WcSU+GT1
-         waD94qWHqeHo1IitWUOpAaiITE+eR/s50a+w0ImR6DnSjrSvPasf8XpGrwuGy5OedDI+
-         /i+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=fgwahsTAg8KuN6NY+9uMhllAHmwKLjBVPsZvBLty6KM=;
-        b=hDCx3Himm5+UNYaKk+4M2bB5hNUFWy+nnL+fcDAzMixzeN71m3+TihiD0mMLpB9fVf
-         xm8nKvw/kNDNFh/8vyLoQW67cHmvJzL6j/lfzUQLsOGhYhZExMwZbe4R004GaR6XT7M4
-         HuQgf4YgaWxJZQVQGOddB4niUqy79wgwsfBAzJeKKn69aLt9gaj6T3oPvYZNCmERDYLj
-         O7GpViEyRrIYBaFgIZPFAWKRcvl2FOA5+JYryPXq4EramRwIub2/ZYzAMI8Aw7iMgqZ4
-         iUuGT9y1jVHcfWk4rT6VWkDdelI8feYGNhV1eFeoXvXdbsDRuPLoY+6vWIRhAC9Erdyc
-         spXA==
-X-Gm-Message-State: AOAM532G6AmFJin+cXv0bWPD/Kiy29iQdGixcW8A/tCkdvkOVCXREkjx
-        WOBgZH2x89gqjVCL17fkaw2G8w==
-X-Google-Smtp-Source: ABdhPJzkXEe3am9jBRg6LgVFXpqmI4t8u4H9q8Pj20BOPC/zsrX0oRwMUFh6aErXV66LEF9ciWWoUA==
-X-Received: by 2002:a7b:cc96:: with SMTP id p22mr2438390wma.83.1632376965301;
-        Wed, 22 Sep 2021 23:02:45 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:88ab:30e5:cd:d558? ([2a01:e0a:410:bb00:88ab:30e5:cd:d558])
-        by smtp.gmail.com with ESMTPSA id o7sm5424039wro.45.2021.09.22.23.02.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Sep 2021 23:02:44 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next v5] net: openvswitch: IPv6: Add IPv6 extension
- header support
-To:     Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org
-Cc:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-References: <20210920182038.1510501-1-cpp.code.lv@gmail.com>
+        id S239276AbhIWGPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 02:15:19 -0400
+Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:53898 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S239226AbhIWGPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 02:15:18 -0400
+Received: from bretzel (unknown [10.16.0.57])
+        by proxy.6wind.com (Postfix) with ESMTPS id 89490B43FA8;
+        Thu, 23 Sep 2021 08:13:46 +0200 (CEST)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1mTHzO-0002Dh-G0; Thu, 23 Sep 2021 08:13:46 +0200
 From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <0d70b112-dc7a-7083-db8d-183782b8ef8f@6wind.com>
-Date:   Thu, 23 Sep 2021 08:02:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        antony.antony@secunet.com, steffen.klassert@secunet.com,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH iproute2] xfrm: enable to manage default policies
+Date:   Thu, 23 Sep 2021 08:13:42 +0200
+Message-Id: <20210923061342.8522-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <20210920182038.1510501-1-cpp.code.lv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 20/09/2021 à 20:20, Toms Atteka a écrit :
-> This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
-> packets can be filtered using ipv6_ext flag.
-> 
-> Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
-> ---
->  include/uapi/linux/openvswitch.h |  12 +++
->  net/openvswitch/flow.c           | 140 +++++++++++++++++++++++++++++++
->  net/openvswitch/flow.h           |  14 ++++
->  net/openvswitch/flow_netlink.c   |  24 +++++-
->  4 files changed, 189 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-> index a87b44cd5590..dc6eb5f6399f 100644
-> --- a/include/uapi/linux/openvswitch.h
-> +++ b/include/uapi/linux/openvswitch.h
-> @@ -346,6 +346,13 @@ enum ovs_key_attr {
->  #ifdef __KERNEL__
->  	OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
->  #endif
-> +
-> +#ifndef __KERNEL__
-> +	PADDING,  /* Padding so kernel and non kernel field count would match */
-> +#endif
-> +
-> +	OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
-Naive question, why not moving OVS_KEY_ATTR_IPV6_EXTHDRS above
-OVS_KEY_ATTR_TUNNEL_INFO?
+Two new commands to manage default policies:
+ - ip xfrm policy setdefault
+ - ip xfrm policy getdefault
 
+And the corresponding part in 'ip xfrm monitor'.
 
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
+ include/uapi/linux/xfrm.h |  15 +++--
+ ip/xfrm.h                 |   1 +
+ ip/xfrm_monitor.c         |   3 +
+ ip/xfrm_policy.c          | 121 ++++++++++++++++++++++++++++++++++++++
+ man/man8/ip-xfrm.8        |  12 ++++
+ 5 files changed, 146 insertions(+), 6 deletions(-)
 
-Regards,
-Nicolas
+diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
+index ecd06396eb16..378b4092f26a 100644
+--- a/include/uapi/linux/xfrm.h
++++ b/include/uapi/linux/xfrm.h
+@@ -213,13 +213,13 @@ enum {
+ 	XFRM_MSG_GETSPDINFO,
+ #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
+ 
++	XFRM_MSG_MAPPING,
++#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
++
+ 	XFRM_MSG_SETDEFAULT,
+ #define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
+ 	XFRM_MSG_GETDEFAULT,
+ #define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
+-
+-	XFRM_MSG_MAPPING,
+-#define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
+ 	__XFRM_MSG_MAX
+ };
+ #define XFRM_MSG_MAX (__XFRM_MSG_MAX - 1)
+@@ -514,9 +514,12 @@ struct xfrm_user_offload {
+ #define XFRM_OFFLOAD_INBOUND	2
+ 
+ struct xfrm_userpolicy_default {
+-#define XFRM_USERPOLICY_DIRMASK_MAX	(sizeof(__u8) * 8)
+-	__u8				dirmask;
+-	__u8				action;
++#define XFRM_USERPOLICY_UNSPEC	0
++#define XFRM_USERPOLICY_BLOCK	1
++#define XFRM_USERPOLICY_ACCEPT	2
++	__u8				in;
++	__u8				fwd;
++	__u8				out;
+ };
+ 
+ /* backwards compatibility for userspace */
+diff --git a/ip/xfrm.h b/ip/xfrm.h
+index 9ba5ca61d5e4..17dcf3fea83f 100644
+--- a/ip/xfrm.h
++++ b/ip/xfrm.h
+@@ -132,6 +132,7 @@ void xfrm_state_info_print(struct xfrm_usersa_info *xsinfo,
+ void xfrm_policy_info_print(struct xfrm_userpolicy_info *xpinfo,
+ 			    struct rtattr *tb[], FILE *fp, const char *prefix,
+ 			    const char *title);
++int xfrm_policy_default_print(struct nlmsghdr *n, FILE *fp);
+ int xfrm_id_parse(xfrm_address_t *saddr, struct xfrm_id *id, __u16 *family,
+ 		  int loose, int *argcp, char ***argvp);
+ int xfrm_mode_parse(__u8 *mode, int *argcp, char ***argvp);
+diff --git a/ip/xfrm_monitor.c b/ip/xfrm_monitor.c
+index e34b5fbda130..f67424c5be06 100644
+--- a/ip/xfrm_monitor.c
++++ b/ip/xfrm_monitor.c
+@@ -323,6 +323,9 @@ static int xfrm_accept_msg(struct rtnl_ctrl_data *ctrl,
+ 	case XFRM_MSG_MAPPING:
+ 		xfrm_mapping_print(n, arg);
+ 		return 0;
++	case XFRM_MSG_GETDEFAULT:
++		xfrm_policy_default_print(n, arg);
++		return 0;
+ 	default:
+ 		break;
+ 	}
+diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
+index 7cc00e7c2f5b..744f331ff564 100644
+--- a/ip/xfrm_policy.c
++++ b/ip/xfrm_policy.c
+@@ -66,6 +66,8 @@ static void usage(void)
+ 		"Usage: ip xfrm policy flush [ ptype PTYPE ]\n"
+ 		"Usage: ip xfrm policy count\n"
+ 		"Usage: ip xfrm policy set [ hthresh4 LBITS RBITS ] [ hthresh6 LBITS RBITS ]\n"
++		"Usage: ip xfrm policy setdefault DIR ACTION [ DIR ACTION ] [ DIR ACTION ]\n"
++		"Usage: ip xfrm policy getdefault\n"
+ 		"SELECTOR := [ src ADDR[/PLEN] ] [ dst ADDR[/PLEN] ] [ dev DEV ] [ UPSPEC ]\n"
+ 		"UPSPEC := proto { { tcp | udp | sctp | dccp } [ sport PORT ] [ dport PORT ] |\n"
+ 		"                  { icmp | ipv6-icmp | mobility-header } [ type NUMBER ] [ code NUMBER ] |\n"
+@@ -1124,6 +1126,121 @@ static int xfrm_spd_getinfo(int argc, char **argv)
+ 	return 0;
+ }
+ 
++static int xfrm_spd_setdefault(int argc, char **argv)
++{
++	struct rtnl_handle rth;
++	struct {
++		struct nlmsghdr			n;
++		struct xfrm_userpolicy_default  up;
++	} req = {
++		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct xfrm_userpolicy_default)),
++		.n.nlmsg_flags = NLM_F_REQUEST,
++		.n.nlmsg_type = XFRM_MSG_SETDEFAULT,
++	};
++
++	while (argc > 0) {
++		if (strcmp(*argv, "in") == 0) {
++			if (req.up.in)
++				duparg("in", *argv);
++
++			NEXT_ARG();
++			if (strcmp(*argv, "block") == 0)
++				req.up.in = XFRM_USERPOLICY_BLOCK;
++			else if (strcmp(*argv, "accept") == 0)
++				req.up.in = XFRM_USERPOLICY_ACCEPT;
++			else
++				invarg("in policy value is invalid", *argv);
++		} else if (strcmp(*argv, "fwd") == 0) {
++			if (req.up.fwd)
++				duparg("fwd", *argv);
++
++			NEXT_ARG();
++			if (strcmp(*argv, "block") == 0)
++				req.up.fwd = XFRM_USERPOLICY_BLOCK;
++			else if (strcmp(*argv, "accept") == 0)
++				req.up.fwd = XFRM_USERPOLICY_ACCEPT;
++			else
++				invarg("fwd policy value is invalid", *argv);
++		} else if (strcmp(*argv, "out") == 0) {
++			if (req.up.out)
++				duparg("out", *argv);
++
++			NEXT_ARG();
++			if (strcmp(*argv, "block") == 0)
++				req.up.out = XFRM_USERPOLICY_BLOCK;
++			else if (strcmp(*argv, "accept") == 0)
++				req.up.out = XFRM_USERPOLICY_ACCEPT;
++			else
++				invarg("out policy value is invalid", *argv);
++		} else {
++			invarg("unknown direction", *argv);
++		}
++
++		argc--; argv++;
++	}
++
++	if (rtnl_open_byproto(&rth, 0, NETLINK_XFRM) < 0)
++		exit(1);
++
++	if (rtnl_talk(&rth, &req.n, NULL) < 0)
++		exit(2);
++
++	rtnl_close(&rth);
++
++	return 0;
++}
++
++int xfrm_policy_default_print(struct nlmsghdr *n, FILE *fp)
++{
++	struct xfrm_userpolicy_default *up = NLMSG_DATA(n);
++	int len = n->nlmsg_len - NLMSG_SPACE(sizeof(*up));
++
++	if (len < 0) {
++		fprintf(stderr,
++			"BUG: short nlmsg len %u (expect %lu) for XFRM_MSG_GETDEFAULT\n",
++			n->nlmsg_len, NLMSG_SPACE(sizeof(*up)));
++		return -1;
++	}
++
++	fprintf(fp, "Default policies:\n");
++	fprintf(fp, " in:  %s\n",
++		up->in == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
++	fprintf(fp, " fwd: %s\n",
++		up->fwd == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
++	fprintf(fp, " out: %s\n",
++		up->out == XFRM_USERPOLICY_BLOCK ? "block" : "accept");
++	fflush(fp);
++
++	return 0;
++}
++
++static int xfrm_spd_getdefault(int argc, char **argv)
++{
++	struct rtnl_handle rth;
++	struct {
++		struct nlmsghdr			n;
++		struct xfrm_userpolicy_default  up;
++	} req = {
++		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct xfrm_userpolicy_default)),
++		.n.nlmsg_flags = NLM_F_REQUEST,
++		.n.nlmsg_type = XFRM_MSG_GETDEFAULT,
++	};
++	struct nlmsghdr *answer;
++
++	if (rtnl_open_byproto(&rth, 0, NETLINK_XFRM) < 0)
++		exit(1);
++
++	if (rtnl_talk(&rth, &req.n, &answer) < 0)
++		exit(2);
++
++	xfrm_policy_default_print(answer, (FILE *)stdout);
++
++	free(answer);
++	rtnl_close(&rth);
++
++	return 0;
++}
++
+ static int xfrm_policy_flush(int argc, char **argv)
+ {
+ 	struct rtnl_handle rth;
+@@ -1197,6 +1314,10 @@ int do_xfrm_policy(int argc, char **argv)
+ 		return xfrm_spd_getinfo(argc, argv);
+ 	if (matches(*argv, "set") == 0)
+ 		return xfrm_spd_setinfo(argc-1, argv+1);
++	if (matches(*argv, "setdefault") == 0)
++		return xfrm_spd_setdefault(argc-1, argv+1);
++	if (matches(*argv, "getdefault") == 0)
++		return xfrm_spd_getdefault(argc-1, argv+1);
+ 	if (matches(*argv, "help") == 0)
+ 		usage();
+ 	fprintf(stderr, "Command \"%s\" is unknown, try \"ip xfrm policy help\".\n", *argv);
+diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
+index 003f6c3d1c28..bf725cabb82d 100644
+--- a/man/man8/ip-xfrm.8
++++ b/man/man8/ip-xfrm.8
+@@ -298,6 +298,18 @@ ip-xfrm \- transform configuration
+ .RB "[ " hthresh6
+ .IR LBITS " " RBITS " ]"
+ 
++.ti -8
++.B "ip xfrm policy setdefault"
++.IR DIR
++.IR ACTION " [ "
++.IR DIR
++.IR ACTION " ] [ "
++.IR DIR
++.IR ACTION " ]"
++
++.ti -8
++.B "ip xfrm policy getdefault"
++
+ .ti -8
+ .IR SELECTOR " :="
+ .RB "[ " src
+-- 
+2.33.0
+
