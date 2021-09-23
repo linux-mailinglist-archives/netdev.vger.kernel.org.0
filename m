@@ -2,82 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7388416844
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 00:58:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 060D841685E
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 01:11:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243532AbhIWW7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 18:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243528AbhIWW7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 18:59:45 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE07CC061574
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 15:58:12 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id i25so32778089lfg.6
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 15:58:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pr/gwJqX8klbM6aGTx4kkC64u0tgRf43anQjHu/+yF4=;
-        b=L2EkZ1bXynul49lCBI1u99dRnCuH+QYmELTcu4v5y3XrppZ+aEMDzh+ras5/VSdjyD
-         rNza1lcQ8Lp+RDFq7PpyXAxo2C/rVuX5eMQdAJJIW2vVKvYj9X4PLPPUrkWrshsvE5fp
-         7BZcsuGBj240MTqvzRpMVOkBrvqX/wu2BSA9iqFy3XFwXT6ByDQrow9ZWjVGwvK2a2av
-         frToC1YQoz4s4DmxInfXFN4DcvTGzOJUdP/z2GnIsEJivUo/qKgRI+6DrjAxZcPfFb/D
-         PeoLIhMh/GF2M0T9lvHnZSMgyQ7mhXCKEEWXF4ePqamrAQQ0EgztmcD3rDSdMABggRw6
-         WC4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pr/gwJqX8klbM6aGTx4kkC64u0tgRf43anQjHu/+yF4=;
-        b=5FLcwhX0k/oUSMqTRgtOIyjUm8Irj7rkS30JmUAstLYZ2YxJbDeuxwo85eH+/sdY8P
-         ctyQB9aUNyLP4HMwwEbAfpdNpLBM5E2xK37CLAA9WZYQwxi+iHK7kl/xW5gJNvAgxMuO
-         5n3nIuzaMQFpyG75aY9Bh0Hfy9/EcFfLmd43mkbYAyspQmCU6Z47mEAlAddsL37atoEd
-         CO715JPgvJSJVAWeBJRnIMvBHAhobuhR/ZHr2gaMD2ZPdKXMKotgovNUy4uQPYBrb0/t
-         4ShFxPNrpzEppbc4NriLccygzAUKxgZCxhtSFDOsQmZvNwTD7SWZfEODuP2G0ANArfYv
-         wfhg==
-X-Gm-Message-State: AOAM5324+9xFxuQSoyNDsQ8yAq0DyjN2a/iGvOG5y4xucNUuyYKrGTXb
-        j9XtVkKEEAH7R02S5wsCv+5G2IEEkeaT/mrbRxuNSw==
-X-Google-Smtp-Source: ABdhPJzlPyV97zK4RLzVVRDg0bm7TDTSxUU84Hq7The8e9U/zhnTjN4eKvZKQ3wr5anYdVnl+k2HEsG5ysxVWocVEQI=
-X-Received: by 2002:a05:651c:4d2:: with SMTP id e18mr7940837lji.432.1632437891350;
- Thu, 23 Sep 2021 15:58:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210913143156.1264570-1-linus.walleij@linaro.org>
- <20210915071901.1315-1-dqfext@gmail.com> <CACRpkdYu7Q5Y88YmBzcBBGycmW92dd0jVhJNUpDFyd65bBq52A@mail.gmail.com>
- <20210923221200.xygcmxujwqtxajqd@skbuf> <CACRpkdZJzHqmdfvR5kRgw1mWPQ68=-ky1xJ+VWX8v6hD_6bx6A@mail.gmail.com>
- <20210923222549.byri6ch2kcvowtv4@skbuf>
-In-Reply-To: <20210923222549.byri6ch2kcvowtv4@skbuf>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 24 Sep 2021 00:58:00 +0200
-Message-ID: <CACRpkdYGy+tKUGudFLKL_U6DYpdJLnDxz1gh2gH=drOw9YdB6w@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: tag_rtl4_a: Drop bit 9 from egress frames
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S243561AbhIWXM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 19:12:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46392 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243533AbhIWXM6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Sep 2021 19:12:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BBA3D61107;
+        Thu, 23 Sep 2021 23:11:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632438683;
+        bh=ILJ6ftNnE9k3HLjd3767aM80d5dSXwBb9STyViQHsTU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=d6xb0sBmcLCsSN4o8Nmf9iBZmY6iH5GTHlUTZ4njs2oiGZTh3bnipzbuFqBILzhNF
+         5px5K9H0CcDO51xqA9JT5vbfYRvb9wt8A5YJkii6rglY3yLCjLi3U1TJCSOg6MH0ua
+         eJZMmO7dG0QNdxwpNvFnPdz7dCOh1N4ATR7X0vZuwImk2U5Q4n4mPV9UU118v2M8t+
+         eTKCfSnGGoRgXKY1yZ9mLmZFBh6XZmK0VDZwqFmrBtco2c20AVkDiryk+MiBSjAc7B
+         y2f/O2BPpkQuZ0h5UBgPN+RYTGDMXjGds1n4mYmeT1rGszU4aOEnTuVOV5KJjynLXJ
+         zEIphBay1IBcg==
+Date:   Fri, 24 Sep 2021 02:11:19 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Edwin Peer <edwin.peer@broadcom.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Alexander Lobakin <alobakin@pm.me>,
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        Igor Russkikh <irusskikh@marvell.com>,
+        intel-wired-lan@lists.osuosl.org,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Javed Hasan <jhasan@marvell.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-scsi@vger.kernel.org,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        netdev <netdev@vger.kernel.org>,
+        Sathya Perla <sathya.perla@broadcom.com>,
+        Saurav Kashyap <skashyap@marvell.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: Re: [PATCH net-next 1/6] bnxt_en: Check devlink allocation and
+ registration status
+Message-ID: <YU0JlzFOa7kpKgnd@unreal>
+References: <cover.1632420430.git.leonro@nvidia.com>
+ <e7708737fadf4fe6f152afc76145c728c201adad.1632420430.git.leonro@nvidia.com>
+ <CAKOOJTz4A2ER8MQE1dW27Spocds09SYafjeuLcFDJ0nL6mKyOw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKOOJTz4A2ER8MQE1dW27Spocds09SYafjeuLcFDJ0nL6mKyOw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 24, 2021 at 12:25 AM Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Fri, Sep 24, 2021 at 12:21:39AM +0200, Linus Walleij wrote:
-
-> > > > Do we have some use for that feature in DSA taggers?
-> > >
-> > > Yes.
+On Thu, Sep 23, 2021 at 02:11:40PM -0700, Edwin Peer wrote:
+> On Thu, Sep 23, 2021 at 11:13 AM Leon Romanovsky <leon@kernel.org> wrote:
 > >
-> > OK I'll add it to my TODO, right now trying to fix up the base
-> > of the RTL8366RB patch set to handle VLANs the right way.
->
-> But you didn't ask what that use is...
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> >
+> > devlink is a software interface that doesn't depend on any hardware
+> > capabilities. The failure in SW means memory issues, wrong parameters,
+> > programmer error e.t.c.
+> >
+> > Like any other such interface in the kernel, the returned status of
+> > devlink APIs should be checked and propagated further and not ignored.
+> >
+> > Fixes: 4ab0c6a8ffd7 ("bnxt_en: add support to enable VF-representors")
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  5 ++++-
+> >  drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 13 ++++++-------
+> >  drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h | 13 -------------
+> >  3 files changed, 10 insertions(+), 21 deletions(-)
 
-Allright spill the beans :D I might not be the most clever at times...
+<...>
 
-Yours,
-Linus Walleij
+> > @@ -835,9 +837,6 @@ void bnxt_dl_unregister(struct bnxt *bp)
+> >  {
+> >         struct devlink *dl = bp->dl;
+> >
+> > -       if (!dl)
+> > -               return;
+> > -
+> 
+> minor nit: There's obviously nothing incorrect about doing this (and
+> adding the additional error label in the cleanup code above), but bnxt
+> has generally adopted a style of having cleanup functions being
+> idempotent. It generally makes error handling simpler and less error
+> prone.
+
+I would argue that opposite is true. Such "impossible" checks hide unwind
+flow errors, missing releases e.t.c.
+
+<...>
+
+> >
+> 
+> Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+
+Thanks for the review.
+
+
+> 
+> Regards,
+> Edwin Peer
