@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11E10415E7A
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 14:38:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7860C415E7B
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 14:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241031AbhIWMjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 08:39:47 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:49033 "EHLO
+        id S241036AbhIWMjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 08:39:48 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:42179 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241015AbhIWMjl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 08:39:41 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 325745C009B;
-        Thu, 23 Sep 2021 08:38:10 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S240874AbhIWMjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 08:39:43 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailout.nyi.internal (Postfix) with ESMTP id 52FCF5C0120;
+        Thu, 23 Sep 2021 08:38:12 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Thu, 23 Sep 2021 08:38:10 -0400
+  by compute2.internal (MEProxy); Thu, 23 Sep 2021 08:38:12 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=RJKoKDBS2+gSgDjKrNZhLGPJEFmH4217antK37N29p8=; b=hg4G8KEc
-        3yLyRpYNoHg6VWCqKR/kwbgMf6MI5ZsExPBzly6MQN16Sd+Ar+Co1OnoVuTHGNvn
-        fEGuh08Mt/Z6MUeK2XJSDO2yfJ5ev34hmKI9GZK9teGHGXdQbrwRFM7+le1lg/Hu
-        tl5I3uH/PtI8KZb4Qnkfg9wQ74S9W+z4uxAECIMa4WOYop7lJLD5OE/gA8DVLkTx
-        j7Gkts3JkfTqJ2IyCOELbhAIkq5ov9+kM+loc0tNr0c6WkxgfkNlLpRbLj8O3aU2
-        07pD/8P67e0i1zwWeqwehLl0AKPl+9yPcLIrkrM+Hc6HjcfC39PHefOBa4dN/FRf
-        +Q2TG98/R+uGbg==
-X-ME-Sender: <xms:MnVMYSCBFW6nsxecRlqgATxSlN0-hAEw5osvAKFSA343wEsx_kS0TA>
-    <xme:MnVMYcjWoELv-0-ZgUkfNWcz3_3aVj5liuBLXAIayxU6rhN6RGp19r3064KNd8P2r
-    S-7F54W1SDmm0w>
-X-ME-Received: <xmr:MnVMYVl7M0dyP2hBDRm0RS6o8-3bLDOC80xWulUWm4V_C6vAFztS3TPSPcjzR8c6fwwNdA6iRs5S2t2KY4Y_xFSdW_6LaGhfBZ-C0rODzxh9lw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudeiledgheefucetufdoteggodetrfdotf
+        fm3; bh=EV5hjNqK/Vu6I6IrdZuln6wQ4H+xDFmLUmZ8Keta75I=; b=VzzsJEw0
+        uAdzFpgsKW9/6pzeYG+jtLPKqf84BKOQf/OomPkTQ47pGT6swxtZly6sL28bUDXa
+        b3aC+pWABxMrfFob2/2L1Iu6pAh6pmDSrVIjgdIuNdJibhU1lUK0JW/2MF4/iYKf
+        D5h2r0UmQs9lJjRlrg49VDHfi23wuFMqPmDNN0Kl4tRLlvetSnVVdi4WUuXT8VKQ
+        g2T4mssX1QCbrrOdP58b1JGtYFMAhekfKRIw1Ukrbir8G5pU5P9Frdkpp42EaZpW
+        8e3KSZtqZ3gm/ZFXp9VSwlxQ9fyuGHz5to1b7R2x4yAJ2W9HGQVsftwOQBQEL6fW
+        P3PCoPohxgHpEA==
+X-ME-Sender: <xms:NHVMYZZsJktn7T96rhWMMXyWLz5NeNXWHivQSZFakoBiC0EEHrhWSg>
+    <xme:NHVMYQYcKftQMb2PRztjgk9-j1H6e-MVgdz6D0Y2YJHm2o4MxuXW2i1ooX-ceAM3a
+    mosDi24k0wGED0>
+X-ME-Received: <xmr:NHVMYb-qluDG6QXpKzjAsN9gJiG3Awbo6p9M5BCC5_dIfa8E5J0EWra2-i-PG6s3TnvX6gpe7zA5GSd97_5k6HgqCQgx1lsFNbIq58NRa77J1Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudeiledgheegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:MnVMYQznrLo5h5rDGlSwoXOIqwVRBBTB26bIRgVkc9s_2Pd0PRQuVA>
-    <xmx:MnVMYXTshnYovu0gwtQavEIqrSMlWcNnJoifKkeciaSq3hysb2Kiug>
-    <xmx:MnVMYbaBucP6c_x2DtQt5gkqUp2pb29cRwzWlNMr4s_83G_VaM0ApQ>
-    <xmx:MnVMYYJqCVubfDJtZw2lU9H-yYkjT2Og0Bxe7YHACXPllCb9-P7aFQ>
+X-ME-Proxy: <xmx:NHVMYXq5hUwpepgF5s4daUjc9mjGytbYXqh3HzFaLaFyjSmTy1stiA>
+    <xmx:NHVMYUpZT765AEPoyG_keoJ_NVaHc55DD8O3D6rt-cLIfSbJLe3LVQ>
+    <xmx:NHVMYdQcIE-RqiehokZhrmx4cESxIXmX-9H_g4zE0HF3qs_1SBomjA>
+    <xmx:NHVMYZARk4h3z6mHnJQEQ5uvcFvhELLDuCOSBUsVA_0IRTuycDDZ9g>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 23 Sep 2021 08:38:08 -0400 (EDT)
+ 23 Sep 2021 08:38:10 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, amcohen@nvidia.com,
         petrm@nvidia.com, jiri@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 03/14] mlxsw: spectrum_router: Fix arguments alignment
-Date:   Thu, 23 Sep 2021 15:36:49 +0300
-Message-Id: <20210923123700.885466-4-idosch@idosch.org>
+Subject: [PATCH net-next 04/14] mlxsw: spectrum_ipip: Create common function for mlxsw_sp_ipip_ol_netdev_change_gre()
+Date:   Thu, 23 Sep 2021 15:36:50 +0300
+Message-Id: <20210923123700.885466-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210923123700.885466-1-idosch@idosch.org>
 References: <20210923123700.885466-1-idosch@idosch.org>
@@ -63,52 +63,210 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-Suppress the following checkpatch.pl check [1] by adding a variable to
-store the IP-in-IP options. Noticed while adding equivalent IPv6 code in
-subsequent patches.
+The function mlxsw_sp_ipip_ol_netdev_change_gre4() contains code that
+can be shared between IPv4 and IPv6.
+The only difference is the way that arguments are taken from tunnel
+parameters, which are different between IPv4 and IPv6.
 
-[1]
-CHECK: Alignment should match open parenthesis
-+               mlxsw_reg_ritr_loopback_ipip4_pack(ritr_pl, lb_cf.lb_ipipt,
-+
-+ MLXSW_REG_RITR_LOOPBACK_IPIP_OPTIONS_GRE_KEY_PRESET,
+For that, add structure 'mlxsw_sp_ipip_parms' to hold all the required
+parameters for the function and save it as part of
+'struct mlxsw_sp_ipip_entry' instead of the existing structure that is
+not shared between IPv4 and IPv6. Add new operation as part of
+'mlxsw_sp_ipip_ops' to initialize the new structure.
+
+Then mlxsw_sp_ipip_ol_netdev_change_gre{4,6}() will prepare the new
+structure and both will call the same function.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.c   | 69 ++++++++++++-------
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.h   | 16 ++++-
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 11 +--
+ 3 files changed, 59 insertions(+), 37 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
+index 9aeb6fe76c06..2164e940abba 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
+@@ -125,6 +125,21 @@ bool mlxsw_sp_l3addr_is_zero(union mlxsw_sp_l3addr addr)
+ 	return !memcmp(&addr, &naddr, sizeof(naddr));
+ }
+ 
++static struct mlxsw_sp_ipip_parms
++mlxsw_sp_ipip_netdev_parms_init_gre4(const struct net_device *ol_dev)
++{
++	struct ip_tunnel_parm parms = mlxsw_sp_ipip_netdev_parms4(ol_dev);
++
++	return (struct mlxsw_sp_ipip_parms) {
++		.proto = MLXSW_SP_L3_PROTO_IPV4,
++		.saddr = mlxsw_sp_ipip_parms4_saddr(&parms),
++		.daddr = mlxsw_sp_ipip_parms4_daddr(&parms),
++		.link = parms.link,
++		.ikey = mlxsw_sp_ipip_parms4_ikey(&parms),
++		.okey = mlxsw_sp_ipip_parms4_okey(&parms),
++	};
++}
++
+ static int
+ mlxsw_sp_ipip_nexthop_update_gre4(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
+ 				  struct mlxsw_sp_ipip_entry *ipip_entry,
+@@ -231,48 +246,39 @@ mlxsw_sp_ipip_ol_loopback_config_gre4(struct mlxsw_sp *mlxsw_sp,
+ }
+ 
+ static int
+-mlxsw_sp_ipip_ol_netdev_change_gre4(struct mlxsw_sp *mlxsw_sp,
+-				    struct mlxsw_sp_ipip_entry *ipip_entry,
+-				    struct netlink_ext_ack *extack)
++mlxsw_sp_ipip_ol_netdev_change_gre(struct mlxsw_sp *mlxsw_sp,
++				   struct mlxsw_sp_ipip_entry *ipip_entry,
++				   const struct mlxsw_sp_ipip_parms *new_parms,
++				   struct netlink_ext_ack *extack)
+ {
+-	union mlxsw_sp_l3addr old_saddr, new_saddr;
+-	union mlxsw_sp_l3addr old_daddr, new_daddr;
+-	struct ip_tunnel_parm new_parms;
++	const struct mlxsw_sp_ipip_parms *old_parms = &ipip_entry->parms;
+ 	bool update_tunnel = false;
+ 	bool update_decap = false;
+ 	bool update_nhs = false;
+ 	int err = 0;
+ 
+-	new_parms = mlxsw_sp_ipip_netdev_parms4(ipip_entry->ol_dev);
+-
+-	new_saddr = mlxsw_sp_ipip_parms4_saddr(&new_parms);
+-	old_saddr = mlxsw_sp_ipip_parms4_saddr(&ipip_entry->parms4);
+-	new_daddr = mlxsw_sp_ipip_parms4_daddr(&new_parms);
+-	old_daddr = mlxsw_sp_ipip_parms4_daddr(&ipip_entry->parms4);
+-
+-	if (!mlxsw_sp_l3addr_eq(&new_saddr, &old_saddr)) {
++	if (!mlxsw_sp_l3addr_eq(&new_parms->saddr, &old_parms->saddr)) {
+ 		u16 ul_tb_id = mlxsw_sp_ipip_dev_ul_tb_id(ipip_entry->ol_dev);
+ 
+ 		/* Since the local address has changed, if there is another
+ 		 * tunnel with a matching saddr, both need to be demoted.
+ 		 */
+ 		if (mlxsw_sp_ipip_demote_tunnel_by_saddr(mlxsw_sp,
+-							 MLXSW_SP_L3_PROTO_IPV4,
+-							 new_saddr, ul_tb_id,
++							 new_parms->proto,
++							 new_parms->saddr,
++							 ul_tb_id,
+ 							 ipip_entry)) {
+ 			mlxsw_sp_ipip_entry_demote_tunnel(mlxsw_sp, ipip_entry);
+ 			return 0;
+ 		}
+ 
+ 		update_tunnel = true;
+-	} else if ((mlxsw_sp_ipip_parms4_okey(&ipip_entry->parms4) !=
+-		    mlxsw_sp_ipip_parms4_okey(&new_parms)) ||
+-		   ipip_entry->parms4.link != new_parms.link) {
++	} else if (old_parms->okey != new_parms->okey ||
++		   old_parms->link != new_parms->link) {
+ 		update_tunnel = true;
+-	} else if (!mlxsw_sp_l3addr_eq(&new_daddr, &old_daddr)) {
++	} else if (!mlxsw_sp_l3addr_eq(&new_parms->daddr, &old_parms->daddr)) {
+ 		update_nhs = true;
+-	} else if (mlxsw_sp_ipip_parms4_ikey(&ipip_entry->parms4) !=
+-		   mlxsw_sp_ipip_parms4_ikey(&new_parms)) {
++	} else if (old_parms->ikey != new_parms->ikey) {
+ 		update_decap = true;
+ 	}
+ 
+@@ -288,14 +294,29 @@ mlxsw_sp_ipip_ol_netdev_change_gre4(struct mlxsw_sp *mlxsw_sp,
+ 		err = __mlxsw_sp_ipip_entry_update_tunnel(mlxsw_sp, ipip_entry,
+ 							  false, false, false,
+ 							  extack);
++	if (err)
++		return err;
++
++	ipip_entry->parms = *new_parms;
++	return 0;
++}
++
++static int
++mlxsw_sp_ipip_ol_netdev_change_gre4(struct mlxsw_sp *mlxsw_sp,
++				    struct mlxsw_sp_ipip_entry *ipip_entry,
++				    struct netlink_ext_ack *extack)
++{
++	struct mlxsw_sp_ipip_parms new_parms;
+ 
+-	ipip_entry->parms4 = new_parms;
+-	return err;
++	new_parms = mlxsw_sp_ipip_netdev_parms_init_gre4(ipip_entry->ol_dev);
++	return mlxsw_sp_ipip_ol_netdev_change_gre(mlxsw_sp, ipip_entry,
++						  &new_parms, extack);
+ }
+ 
+ static const struct mlxsw_sp_ipip_ops mlxsw_sp_ipip_gre4_ops = {
+ 	.dev_type = ARPHRD_IPGRE,
+ 	.ul_proto = MLXSW_SP_L3_PROTO_IPV4,
++	.parms_init = mlxsw_sp_ipip_netdev_parms_init_gre4,
+ 	.nexthop_update = mlxsw_sp_ipip_nexthop_update_gre4,
+ 	.decap_config = mlxsw_sp_ipip_decap_config_gre4,
+ 	.can_offload = mlxsw_sp_ipip_can_offload_gre4,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.h
+index f0837b42d1d6..bc6866d1c070 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.h
+@@ -24,21 +24,31 @@ enum mlxsw_sp_ipip_type {
+ 	MLXSW_SP_IPIP_TYPE_MAX,
+ };
+ 
++struct mlxsw_sp_ipip_parms {
++	enum mlxsw_sp_l3proto proto;
++	union mlxsw_sp_l3addr saddr;
++	union mlxsw_sp_l3addr daddr;
++	int link;
++	u32 ikey;
++	u32 okey;
++};
++
+ struct mlxsw_sp_ipip_entry {
+ 	enum mlxsw_sp_ipip_type ipipt;
+ 	struct net_device *ol_dev; /* Overlay. */
+ 	struct mlxsw_sp_rif_ipip_lb *ol_lb;
+ 	struct mlxsw_sp_fib_entry *decap_fib_entry;
+ 	struct list_head ipip_list_node;
+-	union {
+-		struct ip_tunnel_parm parms4;
+-	};
++	struct mlxsw_sp_ipip_parms parms;
+ };
+ 
+ struct mlxsw_sp_ipip_ops {
+ 	int dev_type;
+ 	enum mlxsw_sp_l3proto ul_proto; /* Underlay. */
+ 
++	struct mlxsw_sp_ipip_parms
++	(*parms_init)(const struct net_device *ol_dev);
++
+ 	int (*nexthop_update)(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
+ 			      struct mlxsw_sp_ipip_entry *ipip_entry,
+ 			      bool force, char *ratr_pl);
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 0454f3bc27d3..61f1e7d58128 100644
+index 61f1e7d58128..b79662048ef7 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -1536,19 +1536,22 @@ mlxsw_sp_rif_ipip_lb_op(struct mlxsw_sp_rif_ipip_lb *lb_rif, u16 ul_vr_id,
- 			u16 ul_rif_id, bool enable)
- {
- 	struct mlxsw_sp_rif_ipip_lb_config lb_cf = lb_rif->lb_config;
-+	enum mlxsw_reg_ritr_loopback_ipip_options ipip_options;
- 	struct mlxsw_sp_rif *rif = &lb_rif->common;
- 	struct mlxsw_sp *mlxsw_sp = rif->mlxsw_sp;
- 	char ritr_pl[MLXSW_REG_RITR_LEN];
- 	u32 saddr4;
+@@ -1131,16 +1131,7 @@ mlxsw_sp_ipip_entry_alloc(struct mlxsw_sp *mlxsw_sp,
  
-+	ipip_options = MLXSW_REG_RITR_LOOPBACK_IPIP_OPTIONS_GRE_KEY_PRESET;
- 	switch (lb_cf.ul_protocol) {
- 	case MLXSW_SP_L3_PROTO_IPV4:
- 		saddr4 = be32_to_cpu(lb_cf.saddr.addr4);
- 		mlxsw_reg_ritr_pack(ritr_pl, enable, MLXSW_REG_RITR_LOOPBACK_IF,
- 				    rif->rif_index, rif->vr_id, rif->dev->mtu);
- 		mlxsw_reg_ritr_loopback_ipip4_pack(ritr_pl, lb_cf.lb_ipipt,
--			    MLXSW_REG_RITR_LOOPBACK_IPIP_OPTIONS_GRE_KEY_PRESET,
--			    ul_vr_id, ul_rif_id, saddr4, lb_cf.okey);
-+						   ipip_options, ul_vr_id,
-+						   ul_rif_id, saddr4,
-+						   lb_cf.okey);
- 		break;
+ 	ipip_entry->ipipt = ipipt;
+ 	ipip_entry->ol_dev = ol_dev;
+-
+-	switch (ipip_ops->ul_proto) {
+-	case MLXSW_SP_L3_PROTO_IPV4:
+-		ipip_entry->parms4 = mlxsw_sp_ipip_netdev_parms4(ol_dev);
+-		break;
+-	case MLXSW_SP_L3_PROTO_IPV6:
+-		WARN_ON(1);
+-		break;
+-	}
+-
++	ipip_entry->parms = ipip_ops->parms_init(ol_dev);
+ 	return ipip_entry;
  
- 	case MLXSW_SP_L3_PROTO_IPV6:
+ err_ol_ipip_lb_create:
 -- 
 2.31.1
 
