@@ -2,101 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02A58416003
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 15:34:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2665741603B
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 15:46:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232653AbhIWNft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 09:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34882 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241486AbhIWNfo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 09:35:44 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E70C061768
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 06:34:09 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id y89so13026378ede.2
-        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 06:34:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sipanda-io.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mKBdQkxQIOMeRRADD+iGZvqKnqiJ6RXJ6xVlw9Ze2F0=;
-        b=K5BdS0Z8/xGyZ8RaYMdMKcc7tEPyLYF35P9RXkc6RkY8NcDkVzvHf8f3ZbazcrPomu
-         U/H7jky86HVy7L2Q2M+Ixo3oZySI6017vEg80wWQBnKk0H+ozufeXxoL5yaLOltZGBm9
-         iNVs21dUAHI0IKusRk/2WR3R/a9xH5JpItnkWNmJx6wE8gGki31XCk6sj66e1liwkCop
-         7xVlnGq/b00yyFBkN7vqCdyeyjm/ILcYxSVgFnLrJpvyU7hOL3J9nl2sZKAsFWdDsESd
-         wePicuxEldARKXAxtaJEDl2NVirGOCY4sa7iqAQeyDueoV18sVIMHf/f8xTCQoTlCYWj
-         6cbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mKBdQkxQIOMeRRADD+iGZvqKnqiJ6RXJ6xVlw9Ze2F0=;
-        b=2s/MzzVRtMMnidc5WDfEyw7BLjn4JyZTQmfI/VzxPzPmcWuUXXys6m8FTTlzRYpN++
-         gZvbY7SFaS0MyJAWsTShtBUE5EPKP7aXokgUDQdsbH0l6j9xHPGOZwm9qsDPftwpyoOe
-         W0MQUQdH8DOQeRwum7KyT88SnC/n0nbXNNzeC39k2bMa5by/uuuIALoqtOViY5iMRoaP
-         t/btzfCui8v76pbtlMUrUv9ZeLcHOGXUkHMnJ2OfArayyVW8SYcsvzYq7XK4pJ08wA1B
-         u1D2r9zmW+vNq8CJo7iaHGZ7zKdgIPBp4nwNAy+QQW5AEUKIxkRkcrCG4LVyAWtwhq9l
-         TgPQ==
-X-Gm-Message-State: AOAM531Z6j5tpkrZdGGlSb+MrQIhhxZ+zSxh4lpl6a5yIIOR1gCi4pFV
-        ijkt1ZbfwwCUOJiqFwfAf/f9rvATNi7rAMz9hvtzXu06q3C0vXhmgH4=
-X-Google-Smtp-Source: ABdhPJx2uNnEdysW+Sa6TWajKuZA+GBpKAXau42+cXhbjYlawD1laVhiVq8nc9P8vPgUQwq3r0xdkcAe0EB3jgX9UwU=
-X-Received: by 2002:a50:e081:: with SMTP id f1mr5594341edl.65.1632404048208;
- Thu, 23 Sep 2021 06:34:08 -0700 (PDT)
+        id S241435AbhIWNsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 09:48:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53542 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239161AbhIWNsH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Sep 2021 09:48:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1C3D460F4C;
+        Thu, 23 Sep 2021 13:46:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632404795;
+        bh=E3vKkaJAxKpAzbB/uHxsWlwQT6yjLMYYocu+uJNe8eU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Uvc/4dn9QaO1J2W+ujw3ATFIHyIHpviQRwKm1x5/FK7cBYTLa2LRNgJoGbV2NJ+0U
+         odbNeYkLT5C37wUuly/xhCbKWMcy1TkCd4Y1PSkxNoQqeGtzy0eaqUlZuJGK4tz3SF
+         2trF5SS+ZWjnhCFdvs3k1h5w3691CfWzrIe8M/3fX9ah9woOiA4eVbntfjN6uJmZw1
+         Ppk9RT1oSXuuRvyEoMqnDX5ljlUQ3bEXwOsgQnfAfTekmaTdEyoZieLGwsYsz9W9q1
+         blmebA76dU5o1NZ0hBdCWYcXi2NajDVqde0/ACeBnQeLa+oLazWbCRU+4T/oTl0AaD
+         Ek13FMjiiScgw==
+Date:   Thu, 23 Sep 2021 06:46:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Zvi Effron <zeffron@riotgames.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Lorenzo Bianconi <lbianconi@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: Redux: Backwards compatibility for XDP multi-buff
+Message-ID: <20210923064634.636ef48a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87mto41isy.fsf@toke.dk>
+References: <87o88l3oc4.fsf@toke.dk>
+        <CAC1LvL1xgFMjjE+3wHH79_9rumwjNqDAS2Yg2NpSvmewHsYScA@mail.gmail.com>
+        <87ilyt3i0y.fsf@toke.dk>
+        <CAADnVQKi_u6yZnsxEagNTv-XWXtLPpXwURJH0FnGFRgt6weiww@mail.gmail.com>
+        <87czp13718.fsf@toke.dk>
+        <20210921155118.439c0aa9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87mto41isy.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20210916200041.810-1-felipe@expertise.dev> <20210916200041.810-3-felipe@expertise.dev>
- <YUuTKVdtAV73OjVu@t14s.localdomain>
-In-Reply-To: <YUuTKVdtAV73OjVu@t14s.localdomain>
-From:   Felipe Magno de Almeida <felipe@sipanda.io>
-Date:   Thu, 23 Sep 2021 10:33:57 -0300
-Message-ID: <CAAPEopiv8pUHkHgh=WzkEyS-ZNxMnywxpDNLcdZDwTk9YYpyUQ@mail.gmail.com>
-Subject: Re: [PATCH RFC net-next 2/2] net/sched: Add flower2 packet classifier
- based on flower and PANDA parser
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
-        xiyou.wangcong@gmail.com, netdev@vger.kernel.org,
-        boris.sukholitko@broadcom.com, vadym.kochan@plvision.eu,
-        ilya.lifshits@broadcom.com, vladbu@nvidia.com, idosch@idosch.org,
-        paulb@nvidia.com, dcaratti@redhat.com, amritha.nambiar@intel.com,
-        sridhar.samudrala@intel.com, Tom Herbert <tom@sipanda.io>,
-        Pedro Tammela <pctammela@mojatatu.com>, eric.dumazet@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Marcelo,
+On Wed, 22 Sep 2021 22:01:17 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+> >> Hmm, the assumption that XDP frames take up at most one page has been
+> >> fundamental from the start of XDP. So what does linearise mean in this
+> >> context? If we get a 9k packet, should we dynamically allocate a
+> >> multi-page chunk of contiguous memory and copy the frame into that, or
+> >> were you thinking something else? =20
+> >
+> > My $.02 would be to not care about redirect at all.
+> >
+> > It's not like the user experience with redirect is anywhere close=20
+> > to amazing right now. Besides (with the exception of SW devices which
+> > will likely gain mb support quickly) mixed-HW setups are very rare.
+> > If the source of the redirect supports mb so will likely the target. =20
+>=20
+> It's not about device support it's about XDP program support: If I run
+> an MB-aware XDP program on a physical interface and redirect the (MB)
+> frame into a container, and there's an XDP program running inside that
+> container that isn't MB-aware, bugs will ensue. Doesn't matter if the
+> veth driver itself supports MB...
 
-On Wed, Sep 22, 2021 at 7:32 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Thu, Sep 16, 2021 at 05:00:41PM -0300, Felipe Magno de Almeida wrote:
-> > +int fl2_panda_parse(struct sk_buff *skb, struct fl2_flow_key* frame)
-> > +{
-> > +     int err;
-> > +     struct panda_parser_big_metadata_one mdata;
-> > +     void *data;
-> > +     size_t pktlen;
-> > +
-> > +     memset(&mdata, 0, sizeof(mdata.panda_data));
-> > +     memcpy(&mdata.frame, frame, sizeof(struct fl2_flow_key));
-> > +
-> > +     err = skb_linearize(skb);
->
-> Oh ow. Hopefully this is just for the RFC?
+Ah, I see now.
 
-Yes, this is just for the RFC. Our focus was showing how PANDA
-can easily replace flow dissector by using a useful and complex
-use-case (flower) and extending it easily. A proper submission
-would not linearize, but first we need feedback on how this
-submission should look like.
+> We could leave that as a "don't do that, then" kind of thing, but that
+> was what we were proposing (as the "do nothing" option) and got some
+> pushback on, hence why we're having this conversation :)
 
-Kind regards,
---
-Felipe Magno de Almeida
-Developer @ SiPanda
-Owner @ Expertise Solutions
-www: https://expertise.dev
-phone: +55 48 9 9681.0157
-LinkedIn: in/felipealmeida
+Let me make a general statement that we can't build large systems
+without division of responsibilities. Device specific logic has to
+be left to the driver. It's up to veth to apply its extra rules.
+
+As Zvi said, tho, this can be left for later. IMHO initial patches can
+drop all mb frames on redirect in the core, so we can make progress.
