@@ -2,169 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 795F4415ACD
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 11:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B21A8415B05
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 11:33:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240137AbhIWJYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 05:24:02 -0400
-Received: from mail-db8eur05on2063.outbound.protection.outlook.com ([40.107.20.63]:56609
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239965AbhIWJYB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Sep 2021 05:24:01 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Je8fPuE6cz9RaEXn4RcN8PS/vaNjnSFlEawI+gwUaFVZD3lFuzdQnRv5l1nfcm+iGdH4kGAxEHmO9x0H9LUvPccSD23G5sUM4lK95qIaFLpdhGYzwia9ppeyaEWsfeulgiWmhJvUtx70tiQJ1McEuOAfYbcnxrxJsb5bLM6zqicyNQtS610Js7uIeYyT632aYXjn1VvME6oJMMzKuZ9ZLclnBbQlRDTk+aGM46MjnZKXizuV71lBm7HHc4Je5LpCQ5oJWcbGoK1zVXLuUaZT1pKcN3Ouzqf1b2yogq0yDVgmP+gcHgfU+nYqKsBY9DHrY8OHxIcr+44404jogNf11Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=d7asa+ANrN335x6JDzeqNez+dXeZL8caMg6q4z6l+mo=;
- b=BBD7DJ1wjZ8PeZDKkLwTjdOr5JWtplic42yyvGaeXjsf3AwleXzHHEE2rC0Kr9ObC/+KGx2O5Wx70z/D27sJG0zStb/dqKD7ac3knMtklSiMcHGcDyOHiK5KFppJM0bJUZDQgKa81DZWfDv1SiWRGyVD1OROaOqLSWdEQvjG9N6xBjEGLIKNgdy8Sop/JHqINBBp2zsi+Ci03LMIXV9rKKTFn+D79qkuC3JJcHwjgkAvjGr7xSRpLAQ/MGeho5ijONFWdqV8RhcOVqohvDaXVKiuygIIjjwLc9P7aKytPpOU+PgXhuxUkukog3TI4rxxm5WjOTlDQ5SrC4Bh1Uy+xA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d7asa+ANrN335x6JDzeqNez+dXeZL8caMg6q4z6l+mo=;
- b=rPu63hZ3VMMa+8V75z0/1I5FPqG/Xmy9YFOU5A2AbVHjxg8UIzVYpB8f/a74BESYPZfzwJuS9dcxx5jStNpVuvGVjvjb9Dg6aNld+SuwTSAyFKN/WQo3z8NP7fd62omoR1H2fZnRYDZeZrF/AGTvcCh0GpQ0MfQ05aPz3YDXnVk=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB7326.eurprd04.prod.outlook.com (2603:10a6:800:1b0::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Thu, 23 Sep
- 2021 09:22:27 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4523.021; Thu, 23 Sep 2021
- 09:22:27 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
-        "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        "vishal@chelsio.com" <vishal@chelsio.com>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        "jiri@mellanox.com" <jiri@mellanox.com>,
-        "idosch@mellanox.com" <idosch@mellanox.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "kuba@kernel.org" <kuba@kernel.org>, Po Liu <po.liu@nxp.com>,
-        Leo Li <leoyang.li@nxp.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: Re: [PATCH v4 net-next 7/8] net: mscc: ocelot: use index to set vcap
- policer
-Thread-Topic: [PATCH v4 net-next 7/8] net: mscc: ocelot: use index to set vcap
- policer
-Thread-Index: AQHXr56I1X8k6Vdwpky9OCEV9EsRoauwCXaAgADSrACAAF6JgIAAHyMA
-Date:   Thu, 23 Sep 2021 09:22:27 +0000
-Message-ID: <20210923092226.nmin3abnrilmu6rj@skbuf>
-References: <20210922105202.12134-1-xiaoliang.yang_1@nxp.com>
- <20210922105202.12134-8-xiaoliang.yang_1@nxp.com>
- <20210922131837.ocuk34z3njf5k3yp@skbuf>
- <DB8PR04MB578599F04A8764034485CE89F0A39@DB8PR04MB5785.eurprd04.prod.outlook.com>
- <20210923073059.wbzukwaiyylel72x@soft-dev3-1.localhost>
-In-Reply-To: <20210923073059.wbzukwaiyylel72x@soft-dev3-1.localhost>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: microchip.com; dkim=none (message not signed)
- header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 82ce40f1-8c83-4d4d-4520-08d97e73a979
-x-ms-traffictypediagnostic: VE1PR04MB7326:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB7326717DC8759DC03F501350E0A39@VE1PR04MB7326.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1443;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qQHLUp7adKaYji8oo32HCTOaZFeFxS31VSz6GFgJECLpEbV06oBzchM2fZl98M3o5uYFeIP0KJLDfKp3Q0MkfBGdtPYYaJfn8u9mMfPS5JYYOtxsTkQtAOzoi1ZsRf8BKBd8FcErDJTOqDbb4kM0l46Uso9ZdbKw0QsTt4hkuSyuuAijRo9nLONOXWCR9vvdyGYgu7lp5zNU8MmiwLQASeVne9fO4xGk9jjGSLEE4yhp0uDTwUmolpHsQbAeTeyOouo+6nDsOgOUa7oEw8IQmqM33DLfKZnFdCfI2Zgj+71kwEVroJ28RLsGhpphHKi3RjJYeEkDoAxpoei3S6Z/1ryXYu7jNrK7StNNgy7AvxWPHTgaqXz4frq0j9sNxqrUfuzHMwrhj4d31uOXjNpRZBaGcOCNmhsfVeCCt4GHs8eNPA+8cSW+pgq9gQFk7szB7aIVhHjNQTfoQg0992aLyH335HLyz8uTSXy+yX7T7NVxXsmhOoX0YnM0K8k6tBFZ1mfjrQGa+Z2Y84RmJqt02Gz+bfm6uo7QgB79JrGeWyepC95JNfnlhqCkCadfl0mMS2nP8SBD2UR0s+YFfFgnOnXMNFIhAitilNKTNoWQXwhXtYy2I5HYNInC9fQDj8cQz/6aRzQAVPIs1/rRjIvSbXW5Fan2nd4phVFUmu5zd9dUpxDHQJaPEFPei8ee2Q5l1m6ub5+jGRZeiDPfB+X4cw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(44832011)(6486002)(4326008)(38070700005)(5660300002)(6506007)(2906002)(186003)(7416002)(86362001)(508600001)(26005)(6512007)(6916009)(9686003)(54906003)(66556008)(64756008)(71200400001)(8936002)(122000001)(38100700002)(76116006)(91956017)(66476007)(66446008)(66946007)(1076003)(8676002)(316002)(33716001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JyIGfU2bwlf1gFlOcKG1COvnrapo72JsXdz3UBhx/S4DaOF2BsZ38ElSfC/v?=
- =?us-ascii?Q?2C6H4PN6tvwz3KGwngUKERXql9q62YyA6FRJhuZMq3toSdHkuXJbfrNyCfLv?=
- =?us-ascii?Q?zmmeM6PLWOFXhidLflB9Zch1CQGb4fC2nMrgRv0azPZiFfOv6GPw0cyDFw4S?=
- =?us-ascii?Q?BXHrXWGpqUbcaVRtctDa0djnmODuj7umqRwzzwv7rJjXz+RnwiLd/MaLaFJ9?=
- =?us-ascii?Q?mCLDeXVBdaikd00qSrIdHPf1jRtVegxmOoorBMJh4lsGIo73Kpq5kO4MOMLx?=
- =?us-ascii?Q?ymSNMfCi7VUAaWBh19X7WNRj1OAIV47FDoI+PQ5qM9LYbIYTB5YhB6kDdyBw?=
- =?us-ascii?Q?eD7Ad/dv7hFnNZjqfvdx3/YLh8vKpovAm3I76n/o8gDzR+wonO+wsRF3xHAv?=
- =?us-ascii?Q?o5ld++DIXyyc+alRKvGJuKnRjvPwXKHvts/B02EpbRpKY1waYs9NnISw5Wwu?=
- =?us-ascii?Q?OJcD5B9YUAJM7F9r1nliT97vB7etrDVuI3zU4g7dFERkYHUBPGaQcTzQRE7G?=
- =?us-ascii?Q?+8RBo3HOsZUqCeWnmRODvZJK5lFv3caCK+/ye/JvgLiHaBWq85PDqS4CelBK?=
- =?us-ascii?Q?/txoKXa+A8K2G/B8zS+sT9VXIg9pRzK7pJL2nB686Lu3Mu2lsrXNRmyl6rED?=
- =?us-ascii?Q?NjARk2f7D/r6doh7SpcWEy7/s23pKraimLH+khHPnUd7dm2JmpctyXL81Mhj?=
- =?us-ascii?Q?CcdyViH+BAw53sD4XQ9a8bzD7EkDcd+jFa+RIPCMvJ22bM7ojhiWe/1pPOso?=
- =?us-ascii?Q?pZO+j/oCeiCy/l8bO1AnIisYoaumzwh7i10IzCoe8cTiUbrR1eCeNqgvj76l?=
- =?us-ascii?Q?wxxHuamwc6LQaJ+E1zM5zIn1zamtbq+9vPQisy/8FQUY0/mT5QHlxcWxvf7l?=
- =?us-ascii?Q?YxZ5TlzdvvIrPuL1NSO99OEKAkgNTP1KiytVaJajLjEgteoFjkJztAy+Z7kH?=
- =?us-ascii?Q?RBznARLl/Ufr4lxROAlOed+c9OyrvcnVlHAJ2G5agrOhIWTzERBwemfQbTK4?=
- =?us-ascii?Q?aGSIAY7UcDKGabFJDmA4f2AKI3NmDJZh86SJ60O5gvvzEn2y5yHAwyqMIt5t?=
- =?us-ascii?Q?DyopqzdycM+buCBf5zCPcCqtZv2Ja2Xu5ky5QX891Xjnl19XU+0NxiK1axF+?=
- =?us-ascii?Q?jGXH8A0vQHwndi8gVlS1eKCSBqxkNhOYZVTfdKzGJcHtK8IukklfYu7CZc+R?=
- =?us-ascii?Q?25NAze0t4SWYiDVKborsQ6x5D4qbFpG6poZmZy4a0O5UqqV+BvL8VppBKrvn?=
- =?us-ascii?Q?ZncJhTdvWR3R+tiMcsDJB7r7hrjrbHTnmOGnVH4V2kz5ocggnUOgouiHDdvR?=
- =?us-ascii?Q?qL36/i7Y1SPO4fUM7f9ohp0HgBp27mGGDydFLKri8KgTbw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A728646D2A885344A8536E10BA05F9C7@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S240188AbhIWJfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 05:35:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30326 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239965AbhIWJfH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 05:35:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632389615;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XltoywlcP0qDE+72KoAOrDLftsmJK5LttN10ijTFiP4=;
+        b=Q2kFvZU21Ka8euBWlKKeGGSrG2GH/D6npwAHvpshaaUzdgVc+fKsHGpjqKwF1aKhk7+cX0
+        DXqIsI5aXZoffO40Dis0mbAwdhCFmR8Jf/7ztq/DF/Vbj2J3PgbLYWvHLRQzZbRS/F6ZS3
+        jJfL3n8ySMVmt/njdOomgxLZ822evw4=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-520-tPMz4xtTOneRZMfZmo2rhg-1; Thu, 23 Sep 2021 05:33:32 -0400
+X-MC-Unique: tPMz4xtTOneRZMfZmo2rhg-1
+Received: by mail-lf1-f69.google.com with SMTP id c24-20020ac25318000000b003f257832dfdso5518953lfh.20
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 02:33:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:cc:subject:to:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XltoywlcP0qDE+72KoAOrDLftsmJK5LttN10ijTFiP4=;
+        b=aO6toBI0dEf1qwa9jAfUT0CjnxUZ5k+n8cuqb/vl722Fqhg9LWgM/yWvEXdytbHHDA
+         rp9tbVeaaye5yXUkUq8oz/4qC95INqVhBth8Ca/EJOHYWAtS9oU4qqeey4ZGss71+R0F
+         HihXql/ErpmibTeUR4HrshxlCzn0SVOOPNgj28c1rtGVJZ/C96k+rz224x8yMFqGdS34
+         B5VzJnzchK4/+KDU6GpHq4nFdpc+/+KQuWxe18OxjwuqQ0YQQb+wKTfZAoElPaeyKf76
+         SKs/CMWvu6cw0pry+glLfOADXO1z/CXCtlGO564sVvKqEiA6ApEAphvcLr6YUuJMSOfm
+         tmcw==
+X-Gm-Message-State: AOAM533oU3seehN31axKhKijrELF3tpVuZT5szELPogN7VZzojSWXtO+
+        dsB+3JkAjba7Ju1x/CTM2Rtp63xO4FJOrJYl3E6lmmfoL8ZHKDTRqGuCSG+R3J/lcnlUXq5fu8o
+        5U0e9iNlxV+FhUAS4
+X-Received: by 2002:a05:6512:3989:: with SMTP id j9mr3201283lfu.213.1632389610674;
+        Thu, 23 Sep 2021 02:33:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJytKnMM39tB7JQK3L+zYwqfi6+x3sfWqUxD/CHcooucnpp+0N9Ur94gTROEtpkmjTbbBGBwxg==
+X-Received: by 2002:a05:6512:3989:: with SMTP id j9mr3201243lfu.213.1632389610330;
+        Thu, 23 Sep 2021 02:33:30 -0700 (PDT)
+Received: from [192.168.42.238] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
+        by smtp.gmail.com with ESMTPSA id l9sm172205ljg.44.2021.09.23.02.33.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Sep 2021 02:33:29 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     brouer@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        hawk@kernel.org, ilias.apalodimas@linaro.org,
+        jonathan.lemon@gmail.com, alobakin@pm.me, willemb@google.com,
+        cong.wang@bytedance.com, pabeni@redhat.com, haokexin@gmail.com,
+        nogikh@google.com, elver@google.com, memxor@gmail.com,
+        edumazet@google.com, alexander.duyck@gmail.com, dsahern@gmail.com
+Subject: Re: [PATCH net-next 1/7] page_pool: disable dma mapping support for
+ 32-bit arch with 64-bit DMA
+To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+References: <20210922094131.15625-1-linyunsheng@huawei.com>
+ <20210922094131.15625-2-linyunsheng@huawei.com>
+Message-ID: <0ffa15a1-742d-a05d-3ea6-04ff25be6a29@redhat.com>
+Date:   Thu, 23 Sep 2021 11:33:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 82ce40f1-8c83-4d4d-4520-08d97e73a979
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2021 09:22:27.7312
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0DnpQFJTxz2HwzZOpo5LLSeSdzKwG26xXcF3XMVexuZEjDdrdZWYz7Nj2QNSX9FjDCbbqAUKN3jzMliU27jbNQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7326
+In-Reply-To: <20210922094131.15625-2-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 23, 2021 at 09:30:59AM +0200, Horatiu Vultur wrote:
-> > In commit commit b596229448dd ("net: mscc: ocelot: Add support for tcam=
-"), Horatiu Vultur define the max number of policers as 383:
-> > +#define OCELOT_POLICER_DISCARD 0x17f
-> > VCAP IS2 use this policer to set drop action. I did not change this and=
- set the VCAP policers with 128-191 according to the VSC7514 document.
-> >
-> > I don't know why 383 was used as the maximum value of policer in the or=
-iginal code. Can Microchip people check the code or the documentation for e=
-rrors?
->
-> It was defined as 383 because the HW actually support this number of
-> policers. But for this SKU it is recomended to use 191, but no one will
-> stop you from using 383.
 
-So if it is recommended to use 191, why did you use 383? Should Xiaoliang
-change that to 191, or leave it alone?
+On 22/09/2021 11.41, Yunsheng Lin wrote:
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 1a6978427d6c..a65bd7972e37 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -49,6 +49,12 @@ static int page_pool_init(struct page_pool *pool,
+>   	 * which is the XDP_TX use-case.
+>   	 */
+>   	if (pool->p.flags & PP_FLAG_DMA_MAP) {
+> +		/* DMA-mapping is not supported on 32-bit systems with
+> +		 * 64-bit DMA mapping.
+> +		 */
+> +		if (sizeof(dma_addr_t) > sizeof(unsigned long))
+> +			return -EINVAL;
 
-> > > Also, FWIW, Seville has this policer allocation:
-> > >
-> > >       0 ----+----------------------+
-> > >             |  Port Policers (11)  |
-> > >      11 ----+----------------------+
-> > >             |  VCAP Policers (21)  |
-> > >      32 ----+----------------------+
-> > >             |   QoS Policers (88)  |
-> > >     120 ----+----------------------+
-> > >             |  VCAP Policers (43)  |
-> > >     162 ----+----------------------+
-> >
-> > I didn't find Seville's document, if this allocation is right, I will a=
-dd it in Seville driver.
+As I said before, can we please use another error than EINVAL.
+We should give drivers a chance/ability to detect this error, and e.g. 
+fallback to doing DMA mappings inside driver instead.
 
-Strange enough, I don't remember having reports about the VCAP IS2
-policers on Seville not working, and of course being in the common code,
-we'd start with a count of 384 policers for that hardware too, and
-counting from the end. I think I even tested the policers when adding
-the VCAP IS2 constants, and they worked. Is there any sort of index
-wraparound that takes place?=
+I suggest using EOPNOTSUPP 95 (Operation not supported).
+
+-Jesper
+
