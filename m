@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 031D7415D10
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 13:50:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ACC1415D0D
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 13:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240719AbhIWLvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 07:51:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56754 "EHLO mail.kernel.org"
+        id S240683AbhIWLvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 07:51:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56738 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240697AbhIWLvj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S240695AbhIWLvj (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 23 Sep 2021 07:51:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A811F61216;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 94EFE610D1;
         Thu, 23 Sep 2021 11:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632397807;
-        bh=WC8J4fCV+i0UgzMcp98iWmv1Rq3SPVYV7fkZ1TPikEc=;
+        bh=RpnHpV71WO9Ths/0MPsFyIRLFMJMKsR1hMRR3Saaw1g=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pEgwPR39qGclZlmUrWFlgU+i1v6ti6CnZdZTjawPR+52PfIJF7bz+qOw7mRSB6LJD
-         3rP4ad9LZM/LldmUanR0OTKC9MyqdbGVcHjvgFRoV+RdxLPbbzfP1C2O2p3YgTBh2R
-         6JKvdIN/jMObs0B1utyKsN4bPzlWgupPMwdxi2VsoTiIlagM84kBM3sdA6z5XOAzg4
-         CMRk/WceVs1Ew3AS9G4d7Nb1ssPmMLL29OTAHG9g0bvLCaQPX7s++KKeGcirx2ahos
-         jd3Wp6ny1kv6KpIuRWxX7/CjxhaJDHZqfic3DBwzkhEvzbH/+OnUB/p1iZDgDayXV3
-         RDsLGIguu9npQ==
+        b=DhmPvLT5ncAruFU2fQt93Ggw4BSFqr8gMIJ+dO/QcTZ4ywnlWvq/OC2dweGDiF25R
+         ebz801U8lyaQNKyyHNy30YJn2mIKIliuLRD2hgpa65AzPESdZaX2OQzxrDLjW3dFBR
+         inLT/BXZ6k5ZwTmqiHb2MPSZZFt/pyz3lK1l8SRbZSpd0sxE735LsY0vP4r/hJS8Rm
+         IKX1Ts+2+bSACRSSs5IGLO18aaVkVc0+1MScm6qHRCRP70pjWv1G2BAn3oT2DfIGja
+         IP7Jg/L6IcTcWF4NfKirXj8hY7qi1KpPHQUDGxizrZw1AU35r+YVI6EXDBslRxW8ix
+         v8a2XucPMTE2g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9E6C760BBF;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 88BF160A88;
         Thu, 23 Sep 2021 11:50:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: dsa: sja1105: don't keep a persistent reference
- to the reset GPIO
+Subject: Re: [PATCH net 0/2] Fix circular dependency between sja1105 and
+ tag_sja1105
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163239780764.29089.9746743283000917805.git-patchwork-notify@kernel.org>
+Message-Id: <163239780755.29089.16121838570087217495.git-patchwork-notify@kernel.org>
 Date:   Thu, 23 Sep 2021 11:50:07 +0000
-References: <20210922151029.2457157-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20210922151029.2457157-1-vladimir.oltean@nxp.com>
+References: <20210922143726.2431036-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210922143726.2431036-1-vladimir.oltean@nxp.com>
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        olteanv@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 22 Sep 2021 18:10:29 +0300 you wrote:
-> The driver only needs the reset GPIO for a very brief period, so instead
-> of using devres and keeping the descriptor pointer inside priv, just use
-> that descriptor inside the sja1105_hw_reset function and then let go of
-> it.
+On Wed, 22 Sep 2021 17:37:24 +0300 you wrote:
+> As discussed here:
+> https://lore.kernel.org/netdev/20210908220834.d7gmtnwrorhharna@skbuf/
+> DSA tagging protocols cannot use symbols exported by switch drivers.
 > 
-> Also use gpiod_get_optional while at it, and error out on real errors
-> (bad flags etc).
+> Eliminate the two instances of that from tag_sja1105, and that allows us
+> to have a working setup with modules again.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: dsa: sja1105: don't keep a persistent reference to the reset GPIO
-    https://git.kernel.org/netdev/net-next/c/33e1501f5a5f
+  - [net,1/2] net: dsa: move sja1110_process_meta_tstamp inside the tagging protocol driver
+    https://git.kernel.org/netdev/net-next/c/6d709cadfde6
+  - [net,2/2] net: dsa: sja1105: break dependency between dsa_port_is_sja1105 and switch driver
+    https://git.kernel.org/netdev/net-next/c/f5aef4241592
 
 You are awesome, thank you!
 --
