@@ -2,90 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DF4F415A2B
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 10:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16594415A95
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 11:08:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240046AbhIWIm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 04:42:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46126 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240017AbhIWImW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 04:42:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632386451;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=9dF2fUEZWycIGwZ53hEpFFIfueXLgIP+J7ThTRLO4uA=;
-        b=fPVqOv5I8A8tLmxwIMMBBeMSFSX69JMpF/n3Y75kKrX07mhcWbLPbXyQY/QvDOU8E2IGzq
-        lJLc5cMa0GQvM4zGZXCdoxm9LL/X369TbgYO3s+B8XOP37xZ2p8d1AzLviK53Iyjth9gnH
-        C82KNQsPW2JXD+5b2cDCut9YffTkJIM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-553-NDmQ4V0aOGuX1Ft4LpDTpA-1; Thu, 23 Sep 2021 04:40:47 -0400
-X-MC-Unique: NDmQ4V0aOGuX1Ft4LpDTpA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A53ECC622;
-        Thu, 23 Sep 2021 08:40:46 +0000 (UTC)
-Received: from griffin.upir.cz (unknown [10.40.194.136])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 94FD860BF4;
-        Thu, 23 Sep 2021 08:40:44 +0000 (UTC)
-From:   Jiri Benc <jbenc@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Peter Oskolkov <posk@google.com>, netdev@vger.kernel.org
-Subject: [PATCH bpf] selftests: bpf: test_lwt_ip_encap: really disable rp_filter
-Date:   Thu, 23 Sep 2021 10:40:22 +0200
-Message-Id: <b1cdd9d469f09ea6e01e9c89a6071c79b7380f89.1632386362.git.jbenc@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+        id S240095AbhIWJJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 05:09:48 -0400
+Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:36872 "EHLO
+        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239985AbhIWJJr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 05:09:47 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UpJU6BM_1632388093;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UpJU6BM_1632388093)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 23 Sep 2021 17:08:14 +0800
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:TC subsystem" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Subject: [PATCH] net: prevent user from passing illegal stab size
+Message-ID: <da8bd5e9-0476-d75b-4669-0a21637663b2@linux.alibaba.com>
+Date:   Thu, 23 Sep 2021 17:08:13 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's not enough to set net.ipv4.conf.all.rp_filter=0, that does not override
-a greater rp_filter value on the individual interfaces. We also need to set
-net.ipv4.conf.default.rp_filter=0 before creating the interfaces. That way,
-they'll also get their own rp_filter value of zero.
+We observed below report when playing with netlink sock:
 
-Fixes: 0fde56e4385b0 ("selftests: bpf: add test_lwt_ip_encap selftest")
-Signed-off-by: Jiri Benc <jbenc@redhat.com>
+  UBSAN: shift-out-of-bounds in net/sched/sch_api.c:580:10
+  shift exponent 249 is too large for 32-bit type
+  CPU: 0 PID: 685 Comm: a.out Not tainted
+  Call Trace:
+   dump_stack_lvl+0x8d/0xcf
+   ubsan_epilogue+0xa/0x4e
+   __ubsan_handle_shift_out_of_bounds+0x161/0x182
+   __qdisc_calculate_pkt_len+0xf0/0x190
+   __dev_queue_xmit+0x2ed/0x15b0
+
+it seems like kernel won't check the stab size_log passing from
+user, and will use the insane value later to calculate pkt_len.
+
+This patch just add a check on the size_log to avoid insane
+calculation.
+
+Reported-by: Abaci <abaci@linux.alibaba.com>
+Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
 ---
- tools/testing/selftests/bpf/test_lwt_ip_encap.sh | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ include/uapi/linux/pkt_sched.h | 1 +
+ net/sched/sch_api.c            | 3 +++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-index 59ea56945e6c..b497bb85b667 100755
---- a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-+++ b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-@@ -112,6 +112,14 @@ setup()
- 	ip netns add "${NS2}"
- 	ip netns add "${NS3}"
- 
-+	# rp_filter gets confused by what these tests are doing, so disable it
-+	ip netns exec ${NS1} sysctl -wq net.ipv4.conf.all.rp_filter=0
-+	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.all.rp_filter=0
-+	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.all.rp_filter=0
-+	ip netns exec ${NS1} sysctl -wq net.ipv4.conf.default.rp_filter=0
-+	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.default.rp_filter=0
-+	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.default.rp_filter=0
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index ec88590..fa194a0 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -98,6 +98,7 @@ struct tc_ratespec {
+ };
+
+ #define TC_RTAB_SIZE	1024
++#define TC_LOG_MAX	30
+
+ struct tc_sizespec {
+ 	unsigned char	cell_log;
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index 5e90e9b..1b6b8f8 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -513,6 +513,9 @@ static struct qdisc_size_table *qdisc_get_stab(struct nlattr *opt,
+ 		return stab;
+ 	}
+
++	if (s->size_log > TC_LOG_MAX)
++		return ERR_PTR(-EINVAL);
 +
- 	ip link add veth1 type veth peer name veth2
- 	ip link add veth3 type veth peer name veth4
- 	ip link add veth5 type veth peer name veth6
-@@ -236,11 +244,6 @@ setup()
- 	ip -netns ${NS1} -6 route add ${IPv6_GRE}/128 dev veth5 via ${IPv6_6} ${VRF}
- 	ip -netns ${NS2} -6 route add ${IPv6_GRE}/128 dev veth7 via ${IPv6_8} ${VRF}
- 
--	# rp_filter gets confused by what these tests are doing, so disable it
--	ip netns exec ${NS1} sysctl -wq net.ipv4.conf.all.rp_filter=0
--	ip netns exec ${NS2} sysctl -wq net.ipv4.conf.all.rp_filter=0
--	ip netns exec ${NS3} sysctl -wq net.ipv4.conf.all.rp_filter=0
--
- 	TMPFILE=$(mktemp /tmp/test_lwt_ip_encap.XXXXXX)
- 
- 	sleep 1  # reduce flakiness
+ 	stab = kmalloc(sizeof(*stab) + tsize * sizeof(u16), GFP_KERNEL);
+ 	if (!stab)
+ 		return ERR_PTR(-ENOMEM);
 -- 
-2.18.1
+1.8.3.1
 
