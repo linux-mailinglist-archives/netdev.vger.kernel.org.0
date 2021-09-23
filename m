@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D734156D5
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDC454156E6
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:45:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239690AbhIWDoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 23:44:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42362 "EHLO mail.kernel.org"
+        id S239730AbhIWDoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 23:44:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42692 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239454AbhIWDmN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 23:42:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 354DC61250;
-        Thu, 23 Sep 2021 03:40:10 +0000 (UTC)
+        id S239168AbhIWDmW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 23:42:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 69B5661279;
+        Thu, 23 Sep 2021 03:40:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632368411;
-        bh=3pjs7J8x45aNUetkfjAhFIBfeyWD5urVsCkZ80PM/2A=;
+        s=k20201202; t=1632368425;
+        bh=niVNsvTHNQOxynlgP9zW1NsnCSqdnJpzqzPaJS1XBYk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O4JbFyvH1JjE6D241hoT2Wn7m9R+Q5ppW9jVOhJ19b7rynMD91Ss8fyQrgFG5Adu0
-         EF+LdpPQKdVq5fQD1ZAw8y+o2qItcE/PjZ/P4CgvKEe72BPsRgZJXkQ71oByMgv6/u
-         Lc/gD5xnxl+Op0d8+TMdUHMJD2RHyYyNjMqMy1XM1+8x6Z6ILO1Nr1szwk+8SCkJvo
-         zohIr51rOqxo0tYG4sgRVfFyLS5F5fAiJIja4AKO7erjjF6Uoma42C1Rdlp2awic89
-         2i8p5dBA1b1TS0D/U4eusG0BktCxHPph5Zd+/s66dQpaoBgrdv6imgWd4Xu6yn1sfs
-         cqHMgyOWGODXA==
+        b=bstQHVBhfoU6eBIUdgMIg8yTJdYF5Gn9WqnvhJXOxTzuoHOR4kH0/ilC9GQzEktTe
+         glNd/zl3nQMKiYTrdlo3im7NQY8f3t4eqJ8fzMlK7YW3pC3OZR+/NIPkhC7niaefXL
+         WkHlzGRD61IUNhhTCrYMFklbkSYEwVGDlXbEZQLU+H3F5GaOxp4TDE7FtMqhZi0bpB
+         aol7mv7RdQTI0SQt1jbsXE2j3cNZUHpXhPOFJ5V+gZOhzwPFG055kZ865fsWEky2jN
+         fk3HIUr4l3MTnad4Ai25LOeTxe8QP6IeX2ICdSuBV4N+o2MFnQCUGtmrGV5AOZHSAf
+         moVmKUzrFlFFg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, arnd@arndb.de, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 06/13] net: i825xx: Use absolute_pointer for memcpy from fixed memory location
-Date:   Wed, 22 Sep 2021 23:39:52 -0400
-Message-Id: <20210923033959.1421662-6-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, ajk@comnets.uni-bremen.de,
+        davem@davemloft.net, kuba@kernel.org, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 12/13] net: 6pack: Fix tx timeout and slot time
+Date:   Wed, 22 Sep 2021 23:39:58 -0400
+Message-Id: <20210923033959.1421662-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210923033959.1421662-1-sashal@kernel.org>
 References: <20210923033959.1421662-1-sashal@kernel.org>
@@ -46,38 +46,55 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit dff2d13114f0beec448da9b3716204eb34b0cf41 ]
+[ Upstream commit 3c0d2a46c0141913dc6fd126c57d0615677d946e ]
 
-gcc 11.x reports the following compiler warning/error.
+tx timeout and slot time are currently specified in units of HZ.  On
+Alpha, HZ is defined as 1024.  When building alpha:allmodconfig, this
+results in the following error message.
 
-  drivers/net/ethernet/i825xx/82596.c: In function 'i82596_probe':
-  arch/m68k/include/asm/string.h:72:25: error:
-	'__builtin_memcpy' reading 6 bytes from a region of size 0 [-Werror=stringop-overread]
+  drivers/net/hamradio/6pack.c: In function 'sixpack_open':
+  drivers/net/hamradio/6pack.c:71:41: error:
+  	unsigned conversion from 'int' to 'unsigned char'
+  	changes value from '256' to '0'
 
-Use absolute_pointer() to work around the problem.
+In the 6PACK protocol, tx timeout is specified in units of 10 ms and
+transmitted over the wire:
 
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+    https://www.linux-ax25.org/wiki/6PACK
+
+Defining a value dependent on HZ doesn't really make sense, and
+presumably comes from the (very historical) situation where HZ was
+originally 100.
+
+Note that the SIXP_SLOTTIME use explicitly is about 10ms granularity:
+
+        mod_timer(&sp->tx_t, jiffies + ((when + 1) * HZ) / 100);
+
+and the SIXP_TXDELAY walue is sent as a byte over the wire.
+
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/i825xx/82596.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/hamradio/6pack.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/i825xx/82596.c b/drivers/net/ethernet/i825xx/82596.c
-index d719668a6684..8efcec305fc5 100644
---- a/drivers/net/ethernet/i825xx/82596.c
-+++ b/drivers/net/ethernet/i825xx/82596.c
-@@ -1155,7 +1155,7 @@ struct net_device * __init i82596_probe(int unit)
- 			err = -ENODEV;
- 			goto out;
- 		}
--		memcpy(eth_addr, (void *) 0xfffc1f2c, ETH_ALEN);	/* YUCK! Get addr from NOVRAM */
-+		memcpy(eth_addr, absolute_pointer(0xfffc1f2c), ETH_ALEN); /* YUCK! Get addr from NOVRAM */
- 		dev->base_addr = MVME_I596_BASE;
- 		dev->irq = (unsigned) MVME16x_IRQ_I596;
- 		goto found;
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index 231eaef29266..7e430300818e 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -68,9 +68,9 @@
+ #define SIXP_DAMA_OFF		0
+ 
+ /* default level 2 parameters */
+-#define SIXP_TXDELAY			(HZ/4)	/* in 1 s */
++#define SIXP_TXDELAY			25	/* 250 ms */
+ #define SIXP_PERSIST			50	/* in 256ths */
+-#define SIXP_SLOTTIME			(HZ/10)	/* in 1 s */
++#define SIXP_SLOTTIME			10	/* 100 ms */
+ #define SIXP_INIT_RESYNC_TIMEOUT	(3*HZ/2) /* in 1 s */
+ #define SIXP_RESYNC_TIMEOUT		5*HZ	/* in 1 s */
+ 
 -- 
 2.30.2
 
