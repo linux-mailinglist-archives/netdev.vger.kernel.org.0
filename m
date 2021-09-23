@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E09BE41563C
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:39:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E643415640
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 05:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239199AbhIWDkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Sep 2021 23:40:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40848 "EHLO mail.kernel.org"
+        id S239190AbhIWDk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Sep 2021 23:40:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40950 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239168AbhIWDkM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Sep 2021 23:40:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D5D8C61038;
-        Thu, 23 Sep 2021 03:38:40 +0000 (UTC)
+        id S239163AbhIWDkO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Sep 2021 23:40:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6DB6961131;
+        Thu, 23 Sep 2021 03:38:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632368322;
-        bh=hZHaMiu+gLDldTVC+urs5OsK7YZeba4lgFn3zicp2To=;
-        h=From:To:Cc:Subject:Date:From;
-        b=niJYwXwydP12FJODAq5nJ0YtAeZMMmj+lz9k7HBWpcTqPUn5gwQW3Rp9C3/Ll7FLs
-         /chBEBCVWbcDguh80OYLWGVngxWvAnskqZGg3+epM6kNazbTBMEDcQxRZQoRmcu7by
-         oYxDJ5zGjT/3M5tH7DrCPLODvDIbwRn8k9a4mJCPu9fvP+2b3pTZcUUI19cGYspVum
-         59wqxUwMEHYOMQR9JI1esWZZMucR9Mq25MOsGNtumzDps8a3kElWs03qll5oKqNa2a
-         H/c9PXoRN+83adqCtXXe6kSFOK9+8E8cWBUmGVfXEb36k1goRzdKPO8X+zH8SZyAdv
-         9GNk3srotH1VQ==
+        s=k20201202; t=1632368323;
+        bh=/xCvYtCzl+jj1IQCvKJil7BqVpvLQT0j57gJUm2NydA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cKw1UUXgrNyb8omPMH3lxYhT7ZVmMX3OnFum5vQBp+79Uih2EO1oWcx2jAuSw71je
+         iV/5murOKNxaw5HAp+q6w9ECOfRVMTZxHc9cI0oMk7At8GPt+7RyEnz3ETUWrxc30l
+         kJVxF4rvRv7KTNS0iCen6Acs9Sn9OaqeluwMQG5FL5RNQL3ABJEcQYiFsbO9y4EeeY
+         2cxYO9NjtgsiUAKx/4QJmWKAMRdjpZhHzFIikINtf0f680kMvKxURKNdgEatwtV2Mi
+         gwXeAVULSmVSvQA1zvRlpwNMBk16uqi5bxk6UhsJ+iNQyRcBfweweqx1TUCn4YWzx2
+         m3uAnSyP/nlHw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+Cc:     Nathan Rossi <nathan.rossi@digi.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, drt@linux.ibm.com,
-        mpe@ellerman.id.au, kuba@kernel.org, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.10 01/26] ibmvnic: check failover_pending in login response
-Date:   Wed, 22 Sep 2021 23:38:14 -0400
-Message-Id: <20210923033839.1421034-1-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 02/26] net: phylink: Update SFP selected interface on advertising changes
+Date:   Wed, 22 Sep 2021 23:38:15 -0400
+Message-Id: <20210923033839.1421034-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210923033839.1421034-1-sashal@kernel.org>
+References: <20210923033839.1421034-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,40 +44,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Nathan Rossi <nathan.rossi@digi.com>
 
-[ Upstream commit d437f5aa23aa2b7bd07cd44b839d7546cc17166f ]
+[ Upstream commit ea269a6f720782ed94171fb962b14ce07c372138 ]
 
-If a failover occurs before a login response is received, the login
-response buffer maybe undefined. Check that there was no failover
-before accessing the login response buffer.
+Currently changes to the advertising state via ethtool do not cause any
+reselection of the configured interface mode after the SFP is already
+inserted and initially configured.
 
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+While it is not typical to change the advertised link modes for an
+interface using an SFP in certain use cases it is desirable. In the case
+of a SFP port that is capable of handling both SFP and SFP+ modules it
+will automatically select between 1G and 10G modes depending on the
+supported mode of the SFP. However if the SFP module is capable of
+working in multiple modes (e.g. a SFP+ DAC that can operate at 1G or
+10G), one end of the cable may be attached to a SFP 1000base-x port thus
+the SFP+ end must be manually configured to the 1000base-x mode in order
+for the link to be established.
+
+This change causes the ethtool setting of advertised mode changes to
+reselect the interface mode so that the link can be established.
+Additionally when a module is inserted the advertising mode is reset to
+match the supported modes of the module.
+
+Signed-off-by: Nathan Rossi <nathan.rossi@digi.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/phy/phylink.c | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 3134c1988db3..bb8d0a0f48ee 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -4478,6 +4478,14 @@ static int handle_login_rsp(union ibmvnic_crq *login_rsp_crq,
- 		return 0;
- 	}
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 6072e87ed6c3..025c3246f339 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1493,6 +1493,32 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
+ 	if (config.an_enabled && phylink_is_empty_linkmode(config.advertising))
+ 		return -EINVAL;
  
-+	if (adapter->failover_pending) {
-+		adapter->init_done_rc = -EAGAIN;
-+		netdev_dbg(netdev, "Failover pending, ignoring login response\n");
-+		complete(&adapter->init_done);
-+		/* login response buffer will be released on reset */
-+		return 0;
++	/* If this link is with an SFP, ensure that changes to advertised modes
++	 * also cause the associated interface to be selected such that the
++	 * link can be configured correctly.
++	 */
++	if (pl->sfp_port && pl->sfp_bus) {
++		config.interface = sfp_select_interface(pl->sfp_bus,
++							config.advertising);
++		if (config.interface == PHY_INTERFACE_MODE_NA) {
++			phylink_err(pl,
++				    "selection of interface failed, advertisement %*pb\n",
++				    __ETHTOOL_LINK_MODE_MASK_NBITS,
++				    config.advertising);
++			return -EINVAL;
++		}
++
++		/* Revalidate with the selected interface */
++		linkmode_copy(support, pl->supported);
++		if (phylink_validate(pl, support, &config)) {
++			phylink_err(pl, "validation of %s/%s with support %*pb failed\n",
++				    phylink_an_mode_str(pl->cur_link_an_mode),
++				    phy_modes(config.interface),
++				    __ETHTOOL_LINK_MODE_MASK_NBITS, support);
++			return -EINVAL;
++		}
 +	}
 +
- 	netdev->mtu = adapter->req_mtu - ETH_HLEN;
+ 	mutex_lock(&pl->state_mutex);
+ 	pl->link_config.speed = config.speed;
+ 	pl->link_config.duplex = config.duplex;
+@@ -2072,7 +2098,9 @@ static int phylink_sfp_config(struct phylink *pl, u8 mode,
+ 	if (phy_interface_mode_is_8023z(iface) && pl->phydev)
+ 		return -EINVAL;
  
- 	netdev_dbg(adapter->netdev, "Login Response Buffer:\n");
+-	changed = !linkmode_equal(pl->supported, support);
++	changed = !linkmode_equal(pl->supported, support) ||
++		  !linkmode_equal(pl->link_config.advertising,
++				  config.advertising);
+ 	if (changed) {
+ 		linkmode_copy(pl->supported, support);
+ 		linkmode_copy(pl->link_config.advertising, config.advertising);
 -- 
 2.30.2
 
