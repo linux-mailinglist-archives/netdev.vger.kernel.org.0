@@ -2,123 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE07415996
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 09:50:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E64B4159B5
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 10:02:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239692AbhIWHvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 03:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233011AbhIWHv3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 03:51:29 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFE3C061756;
-        Thu, 23 Sep 2021 00:49:57 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id dj4so20424671edb.5;
-        Thu, 23 Sep 2021 00:49:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RlhgwksuUm7dWwJH3Rb88cQWw5W+Xn4yAyWyU7jvE54=;
-        b=Ay9Rh+fTliF5ZQIByyU7Xrsxhp97ULNyfO7KxfkxXaUVD+uWWDRwCHid+EAA6mqs80
-         RodYmRCKORkwtceQ0Kx78YzgCarMJ/QWcsHNVhD2dy+gnskgpdeaQY+oq5b69bWibzmB
-         ziJ2hJ30te8zg3xkwOnm4hx8XNdmVAj6dnCO6bu8GhZA1XkvaqXuSE+tzqABWtsHo0ql
-         DlOaxG3Uj98xdj6TMg+mIaqHIlAEZj88FVGptt3xQhsrVVa8rX3J+FHyOM+x7DjL5JiX
-         WIKyppKzGchh70uUYamHDrJ7o6ygvUww4cXLnDVz9+233rrqTQVwpD52p8LKH3lfCj6G
-         1YFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RlhgwksuUm7dWwJH3Rb88cQWw5W+Xn4yAyWyU7jvE54=;
-        b=rd1tABzpjprG5plYijtQqSeT+2tHoiZAip1LSRouF4vu4z3HgyG0bIJZeg+PvgBW8e
-         LP95IPiWeS34Zb9tEk1l36o3PHuxeVYk8HffKv1DLYHdF2iaLs7WETMgEUH0towMIpfQ
-         K2WSuLD26ab2cBNp8jhx+F+h3ddeJexqzUFFG9J/uGo8tN6ci0yAt6VtMTZH9hVknWpX
-         JFcDv/uZmk+Y4krCoC1/hEcyg+Jk8twY1AYaY5Y6oa8lWCUEYx0inhlysTzdk3bk919Q
-         366vVYS6kp8bvj/2xfnrjvytCd8GOZWwa52KmAHMzmaCp+7goNqfPkKk0xz2QIik9BMi
-         27pQ==
-X-Gm-Message-State: AOAM532/vU7y2PgWY/a6/SrbuN1lYeyDicrZT4EnMDsRt1DvHAafj86a
-        EDM3MvPsOcXJGGKxwvIC/JdoeI6WucW0Oazum7Y=
-X-Google-Smtp-Source: ABdhPJxUZ2jSYNqD84zt5ylPGbyACX428FxSv/I4bXsNdNQVXXiV619+aQfuFev5Cjp/yLOmFOCumQ==
-X-Received: by 2002:a17:906:4fd6:: with SMTP id i22mr3507629ejw.92.1632383396175;
-        Thu, 23 Sep 2021 00:49:56 -0700 (PDT)
-Received: from ?IPv6:2a04:241e:501:3870:3080:ac6c:f9d1:39b4? ([2a04:241e:501:3870:3080:ac6c:f9d1:39b4])
-        by smtp.gmail.com with ESMTPSA id jl12sm2433435ejc.120.2021.09.23.00.49.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Sep 2021 00:49:55 -0700 (PDT)
-Subject: Re: [PATCH 00/19] tcp: Initial support for RFC5925 auth option
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Priyaranjan Jha <priyarjha@google.com>,
-        Menglong Dong <dong.menglong@zte.com.cn>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1632240523.git.cdleonard@gmail.com>
- <20210921161327.10b29c88@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-Message-ID: <f84a32c9-ee7e-6e72-ccb2-69ac0210dc34@gmail.com>
-Date:   Thu, 23 Sep 2021 10:49:53 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S239682AbhIWID5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 04:03:57 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:49480 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233651AbhIWIDQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 04:03:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1632384105; x=1663920105;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WYny+JtM14LGY8ybiycqCdBduZdzBrvRWNVNMawq9uo=;
+  b=N13o7zjOJ0LGMSi+CWTue1/2WoGKzA08/Wg8LOCWMnNN+LNDsokdb8XR
+   IF28skOd7JDb3TVpkz3PZg52lvYLqk98TTUU/D9/gVPRUkhSYdNQNaZHL
+   ZkSDEybmw4UVQbIemydiIU5ssM2/KYByowqqUcmHa66iA4e+PK7cCnZ1A
+   grahQ8+0WwXzVmJV2J1T/r2jItI1GIF9PVj+RaskRgf6Syc1mOpXK9Es5
+   92HJzVHGbGfcudlR1BNx6EWU0udWkai8E2HdKUXyZu/OMdvmt83a59/fA
+   C3bUmqLc+QCfmwX+PlaLeWxKbufUTK2wGBcILtN0HSvxFW+XJuKBSARvr
+   g==;
+IronPort-SDR: 8TQx98vnj7J6asqOL3DMtxQAVE6uI+QpIf/19c+/I5MxgRCG0Sd+QDGwV7jPbMaK+704azDPP8
+ uboc08sNjV05bqX72tFSVNUTIy3LycPf6HQJ3xGroq447wJWMfBdM5Tnq0FY2+YRUWy4l9uoKR
+ Yb9lJvTdeFdkWlyI3bAyDv8Yznji4nGq698fNOsV4j0+Bo8/wKojZUARNAXyJYgASyTjgpu77M
+ Nibn/AuWuZpqkk9G12g40lrnbYiyJKM25bdKBlSAGe4VYP3O47Tw38kcTs1d2gm8NNqGFDP+jr
+ rZ7ffdvJkdd5rjVyWBKBtKlr
+X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; 
+   d="scan'208";a="137634402"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Sep 2021 01:01:07 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 23 Sep 2021 01:01:07 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
+ Transport; Thu, 23 Sep 2021 01:01:07 -0700
+Date:   Thu, 23 Sep 2021 10:02:36 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        <alexandre.belloni@bootlin.com>, <vladimir.oltean@nxp.com>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-pm@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 10/12] net: lan966x: add port module support
+Message-ID: <20210923080236.mqnb7shs2x6rzmh2@soft-dev3-1.localhost>
+References: <20210920095218.1108151-1-horatiu.vultur@microchip.com>
+ <20210920095218.1108151-11-horatiu.vultur@microchip.com>
+ <YUiSkpRvvL0fvija@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20210921161327.10b29c88@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <YUiSkpRvvL0fvija@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/22/21 2:13 AM, Jakub Kicinski wrote:
-> On Tue, 21 Sep 2021 19:14:43 +0300 Leonard Crestez wrote:
->> This is similar to TCP MD5 in functionality but it's sufficiently
->> different that wire formats are incompatible. Compared to TCP-MD5 more
->> algorithms are supported and multiple keys can be used on the same
->> connection but there is still no negotiation mechanism.
+The 09/20/2021 14:54, Russell King (Oracle) wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+
+Hi Russell,
+
 > 
-> Hopefully there will be some feedback / discussion, but even if
-> everyone acks this you'll need to fix all the transient build
-> failures, and kdoc warnings added - and repost.
-> git rebase --exec='make' and scripts/kernel-doc are your allies.
+> On Mon, Sep 20, 2021 at 11:52:16AM +0200, Horatiu Vultur wrote:
+> > +static void lan966x_cleanup_ports(struct lan966x *lan966x)
+> > +{
+> > +     struct lan966x_port *port;
+> > +     int portno;
+> > +
+> > +     for (portno = 0; portno < lan966x->num_phys_ports; portno++) {
+> > +             port = lan966x->ports[portno];
+> > +             if (!port)
+> > +                     continue;
+> > +
+> > +             if (port->phylink) {
+> > +                     rtnl_lock();
+> > +                     lan966x_port_stop(port->dev);
+> > +                     rtnl_unlock();
+> > +                     port->phylink = NULL;
+> 
+> This leaks the phylink structure. You need to call phylink_destroy().
+> 
+> >  static int lan966x_probe_port(struct lan966x *lan966x, u8 port,
+> >                             phy_interface_t phy_mode)
+> >  {
+> >       struct lan966x_port *lan966x_port;
+> > +     struct phylink *phylink;
+> > +     struct net_device *dev;
+> > +     int err;
+> >
+> >       if (port >= lan966x->num_phys_ports)
+> >               return -EINVAL;
+> >
+> > -     lan966x_port = devm_kzalloc(lan966x->dev, sizeof(*lan966x_port),
+> > -                                 GFP_KERNEL);
+> > +     dev = devm_alloc_etherdev_mqs(lan966x->dev,
+> > +                                   sizeof(struct lan966x_port), 8, 1);
+> > +     if (!dev)
+> > +             return -ENOMEM;
+> >
+> > +     SET_NETDEV_DEV(dev, lan966x->dev);
+> > +     lan966x_port = netdev_priv(dev);
+> > +     lan966x_port->dev = dev;
+> >       lan966x_port->lan966x = lan966x;
+> >       lan966x_port->chip_port = port;
+> >       lan966x_port->pvid = PORT_PVID;
+> >       lan966x->ports[port] = lan966x_port;
+> >
+> > +     dev->max_mtu = ETH_MAX_MTU;
+> > +
+> > +     dev->netdev_ops = &lan966x_port_netdev_ops;
+> > +     dev->needed_headroom = IFH_LEN * sizeof(u32);
+> > +
+> > +     err = register_netdev(dev);
+> > +     if (err) {
+> > +             dev_err(lan966x->dev, "register_netdev failed\n");
+> > +             goto err_register_netdev;
+> > +     }
+> 
+> register_netdev() publishes the network device.
+> 
+> > +
+> > +     lan966x_port->phylink_config.dev = &lan966x_port->dev->dev;
+> > +     lan966x_port->phylink_config.type = PHYLINK_NETDEV;
+> > +     lan966x_port->phylink_config.pcs_poll = true;
+> > +
+> > +     phylink = phylink_create(&lan966x_port->phylink_config,
+> > +                              lan966x_port->fwnode,
+> > +                              phy_mode,
+> > +                              &lan966x_phylink_mac_ops);
+> 
+> phylink_create() should always be called _prior_ to the network device
+> being published. In any case...
+> 
+> > +     if (IS_ERR(phylink))
+> > +             return PTR_ERR(phylink);
+> 
+> If this fails, this function returns an error, but leaves the network
+> device published - which is a bug in itself.
 
-Hello,
+If this fails it should eventually call lan966x_cleaup_ports where the
+net_device will be unregister. But first I will need to make
+phylink_create() be called prior the network device.
 
-I already went through several round of testing with git rebase 
---exec='$test' but it seems I introduced a few new failures after 
-several rounds of squashing fixes. I'll need to check kernel-doc 
-comments for source files not referenced in documenation.
+> 
+> > +static void lan966x_phylink_mac_link_down(struct phylink_config *config,
+> > +                                       unsigned int mode,
+> > +                                       phy_interface_t interface)
+> > +{
+> 
+> Hmm? Shouldn't this do something?
 
-Many of the patch splits were artificially created in order to ease 
-review, for example "signing packets" doesn't do anything without also 
-"hooking in the tcp stack". Some static functions will trigger warnings 
-because they're unused until the next patch, not clear what the 
-preferred solution would be here. I could remove the "static" marker 
-until the next patch or reverse the order and have the initial "tcp 
-integration" patches call crypto code that just returns an error and 
-fills-in a signature of zeros.
+I don't think I need to do anything here. The current setup is that
+there is a PHY in front of the MAC.
+So when the link partner goes down, the PHY will go down and the MAC
+will still be up. Is this a problem?
+When we force the port to be set down, then in the function
+lan966x_port_stop we actually shutdown the port.
 
-A large amount of the code is just selftests and much of it is not 
-completely specific to TCP-AO. Maybe I could try to repost the parts 
-that verify handling of timewait corners and resets in a variant that 
-only handles "md5" and "unsigned"?
+> 
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
 
-I already tried posting my scapy implementation of TCP-AO and MD5 to 
-scapy upstream because it is not specific to linux .
-
---
-Regards,
-Leonard
+-- 
+/Horatiu
