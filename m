@@ -2,66 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4571415D61
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 14:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 108EC415D62
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 14:00:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240760AbhIWMBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 08:01:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33084 "EHLO mail.kernel.org"
+        id S240790AbhIWMBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 08:01:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33090 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240781AbhIWMBk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S240783AbhIWMBk (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 23 Sep 2021 08:01:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0D3E06121F;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1604C6124C;
         Thu, 23 Sep 2021 12:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632398409;
-        bh=5sC9aphyx/AvbD4jw23ILZU1e5Pv41H5EL6kPGnd9sc=;
+        bh=1H7uKKhJHWNSEcY8wVrZnw2klP2t4ALYFHM5mVIqJ6Q=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=C52Sf+bYBKOsu+TcxyrERdv4nVKxY4KYTbbgMcAI+ZSOvWDt6Brcom/0TvW5f/VlY
-         8iX3y9tXXKnRjmBIYajPB3YzjcFAu+fsRCBRJOGnd4X/fHtvBt4ogFOH11e11nbey6
-         gqjJVXyZ/hBTJCbEfnbU+4gRAAUroIkrjKFacwiiLcVngFV03HVLNORMLbJDGhvbXO
-         yIwSnHjCoBtQEFuokcB3K2+Vk/RegHYZgaATXz5woZ6+pkmjLCj4G0VF7bS/tXYpdN
-         IdZxCZWfkykwCqanj5Q/j5V3W9uyTOjhP9nee4jkglRo2kVCDrfPL5uPWhGdBFnkr0
-         gEH7OsTK1hG4g==
+        b=KAZAW/N+C9UhYBUg4Do5MN6wg65JbTSJLq/Q3Ulb/4v0/0QvEBmHUw25d0EYCf2Fr
+         xnawJv4xfnMyRi3/7tlNfSzzMVFcvMif8qEuotXHMmeYJEeEw392MYaSRBQ9qtwUYp
+         gweWhXOdQaaVYB5g9YuSkB3vvDZeLUoowmUvuYMOyuj72MF6eJw8/YZReDhxGgibry
+         6JextBym2kLyTx0BV2VMjS2KQfThqbmbRqnv3jz6UEapYKBWnJUrbxk9MfcGV0wyFE
+         8o57rz03oPuDRUPk8i9UcrijlSD+HO+1dos9wW+Yhrxd2WRngYzs/UkedLNcaUodok
+         H9xPc+Y8Aexnw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 06B6160A88;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0FB7660A3A;
         Thu, 23 Sep 2021 12:00:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next] net: dsa: sja1105: stop using priv->vlan_aware
+Subject: Re: [PATCH net-next 0/4] net: remove sk skb caches
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163239840902.772.1257187755849525778.git-patchwork-notify@kernel.org>
+Message-Id: <163239840906.772.15552905440434440410.git-patchwork-notify@kernel.org>
 Date:   Thu, 23 Sep 2021 12:00:09 +0000
-References: <20210922183655.2680551-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20210922183655.2680551-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
+References: <cover.1632318035.git.pabeni@redhat.com>
+In-Reply-To: <cover.1632318035.git.pabeni@redhat.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        mathew.j.martineau@linux.intel.com, edumazet@google.com,
+        mptcp@lists.linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 22 Sep 2021 21:36:55 +0300 you wrote:
-> Now that the sja1105 driver is finally sane enough again to stop having
-> a ternary VLAN awareness state, we can remove priv->vlan_aware and query
-> DSA for the ds->vlan_filtering value (for SJA1105, VLAN filtering is a
-> global property).
+On Wed, 22 Sep 2021 19:26:39 +0200 you wrote:
+> Eric noted we would be better off reverting the sk
+> skb caches.
 > 
-> Also drop the paranoid checking that DSA calls ->port_vlan_filtering
-> multiple times without the VLAN awareness state changing. It doesn't,
-> the same check is present inside dsa_port_vlan_filtering too.
+> MPTCP relies on such a feature, so we need a
+> little refactor of the MPTCP tx path before the mentioned
+> revert.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,net-next] net: dsa: sja1105: stop using priv->vlan_aware
-    https://git.kernel.org/netdev/net-next/c/9aad3e4ede9b
+  - [net-next,1/4] tcp: expose the tcp_mark_push() and tcp_skb_entail() helpers
+    https://git.kernel.org/netdev/net-next/c/04d8825c30b7
+  - [net-next,2/4] mptcp: stop relying on tcp_tx_skb_cache
+    https://git.kernel.org/netdev/net-next/c/f70cad1085d1
+  - [net-next,3/4] tcp: make tcp_build_frag() static
+    https://git.kernel.org/netdev/net-next/c/ff6fb083a07f
+  - [net-next,4/4] tcp: remove sk_{tr}x_skb_cache
+    https://git.kernel.org/netdev/net-next/c/d8b81175e412
 
 You are awesome, thank you!
 --
