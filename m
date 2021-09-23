@@ -2,105 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC05041668D
-	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 22:20:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60B4C416695
+	for <lists+netdev@lfdr.de>; Thu, 23 Sep 2021 22:22:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243141AbhIWUVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 16:21:30 -0400
-Received: from mxout01.lancloud.ru ([45.84.86.81]:57612 "EHLO
-        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243136AbhIWUV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 16:21:29 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru A9D3B20AB973
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC/PATCH 06/18] ravb: Add multi_tsrq to struct ravb_hw_info
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "Geert Uytterhoeven" <geert+renesas@glider.be>,
-        Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
- <20210923140813.13541-7-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <9aa57bf1-44a5-6016-5445-4f2b8518ddfe@omp.ru>
-Date:   Thu, 23 Sep 2021 23:19:53 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S243147AbhIWUXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 16:23:54 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:32999 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S242835AbhIWUXx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 16:23:53 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from asmaa@mellanox.com)
+        with SMTP; 23 Sep 2021 23:22:19 +0300
+Received: from farm-0002.mtbu.labs.mlnx (farm-0002.mtbu.labs.mlnx [10.15.2.32])
+        by mtbu-labmailer.labs.mlnx (8.14.4/8.14.4) with ESMTP id 18NKMIVw016873;
+        Thu, 23 Sep 2021 16:22:18 -0400
+Received: (from asmaa@localhost)
+        by farm-0002.mtbu.labs.mlnx (8.14.7/8.13.8/Submit) id 18NKMIMY016154;
+        Thu, 23 Sep 2021 16:22:18 -0400
+From:   Asmaa Mnebhi <asmaa@nvidia.com>
+To:     andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Cc:     Asmaa Mnebhi <asmaa@nvidia.com>, andrew@lunn.ch, kuba@kernel.org,
+        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
+        davem@davemloft.net, rjw@rjwysocki.net, davthompson@nvidia.com
+Subject: [PATCH v3 0/2] gpio: mlxbf2: Introduce proper interrupt handling
+Date:   Thu, 23 Sep 2021 16:22:14 -0400
+Message-Id: <20210923202216.16091-1-asmaa@nvidia.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-In-Reply-To: <20210923140813.13541-7-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/23/21 5:08 PM, Biju Das wrote:
+This is a follow up on a discussion regarding
+proper handling of GPIO interrupts within the
+gpio-mlxbf2.c driver.
 
-> R-Car AVB-DMAC has 4 Transmit start Request queues, whereas
-> RZ/G2L has only 1 Transmit start Request queue(Best Effort)
-> 
-> Add a multi_tsrq hw feature bit to struct ravb_hw_info to enable
-> this only for R-Car. This will allow us to add single TSRQ support for
-> RZ/G2L.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
->  drivers/net/ethernet/renesas/ravb.h      |  1 +
->  drivers/net/ethernet/renesas/ravb_main.c | 12 ++++++++++--
->  2 files changed, 11 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index bb92469d770e..c043ee555be4 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -1006,6 +1006,7 @@ struct ravb_hw_info {
->  	unsigned multi_irqs:1;		/* AVB-DMAC and E-MAC has multiple irqs */
->  	unsigned no_gptp:1;		/* AVB-DMAC does not support gPTP feature */
->  	unsigned ccc_gac:1;		/* AVB-DMAC has gPTP support active in config mode */
-> +	unsigned multi_tsrq:1;		/* AVB-DMAC has MULTI TSRQ */
+Link to discussion:
+https://lore.kernel.org/netdev/20210816115953.72533-7-andriy.shevchenko@linux.intel.com/T/
 
-   Maybe 'single_tx_q' instead?
+Patch 1 adds support to a GPIO IRQ handler in gpio-mlxbf2.c.
+Patch 2 is a follow up removal of custom GPIO IRQ handling
+from the mlxbf_gige driver and replacing it with a simple
+IRQ request. The ACPI table for the mlxbf_gige driver is
+responsible for instantiating the PHY GPIO interrupt via
+GpioInt.
 
->  };
->  
->  struct ravb_private {
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index 8663d83507a0..d37d73f6d984 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -776,11 +776,17 @@ static void ravb_rcv_snd_enable(struct net_device *ndev)
->  /* function for waiting dma process finished */
->  static int ravb_stop_dma(struct net_device *ndev)
->  {
-> +	struct ravb_private *priv = netdev_priv(ndev);
-> +	const struct ravb_hw_info *info = priv->info;
->  	int error;
->  
->  	/* Wait for stopping the hardware TX process */
-> -	error = ravb_wait(ndev, TCCR,
-> -			  TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3, 0);
-> +	if (info->multi_tsrq)
-> +		error = ravb_wait(ndev, TCCR,
-> +				  TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3, 0);
-> +	else
-> +		error = ravb_wait(ndev, TCCR, TCCR_TSRQ0, 0);
+Andy Shevchenko, could you please review this patch series.
 
-   Aren't the TSRQ1/2/3 bits reserved on RZ/G2L? If so, this new flag adds a little value, I think... unless
-you plan to use this flag further in the series?
+v3 vs. v2 patch:
+- Add IRQ_TYPE_LEVEL* back to mlxbf2_gpio_irq_set_type.
+  YU_GPIO_CAUSE_FALL_EN and YU_GPIO_CAUSE_RISE_EN
+  are configured in Both level and edge interrupts cases.
 
-MBR, Sergei
+Asmaa Mnebhi (2):
+  gpio: mlxbf2: Introduce IRQ support
+  net: mellanox: mlxbf_gige: Replace non-standard interrupt handling
+
+ drivers/gpio/gpio-mlxbf2.c                    | 150 ++++++++++++-
+ .../net/ethernet/mellanox/mlxbf_gige/Makefile |   1 -
+ .../ethernet/mellanox/mlxbf_gige/mlxbf_gige.h |  12 -
+ .../mellanox/mlxbf_gige/mlxbf_gige_gpio.c     | 212 ------------------
+ .../mellanox/mlxbf_gige/mlxbf_gige_main.c     |  22 +-
+ 5 files changed, 157 insertions(+), 240 deletions(-)
+ delete mode 100644 drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_gpio.c
+
+-- 
+2.30.1
+
