@@ -2,80 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AEC1417BD7
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 21:35:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1876417BDD
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 21:38:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345854AbhIXThW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 15:37:22 -0400
-Received: from mxout04.lancloud.ru ([45.84.86.114]:51002 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344824AbhIXThV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 15:37:21 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 1C1E2209D6E7
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC/PATCH 11/18] ravb: Add rx_2k_buffers to struct ravb_hw_info
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "Geert Uytterhoeven" <geert+renesas@glider.be>,
-        Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
- <20210923140813.13541-12-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <1e9d1d3c-0846-077e-8e1a-e06ff86c00fa@omp.ru>
-Date:   Fri, 24 Sep 2021 22:35:38 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S1345692AbhIXTjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 15:39:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:49783 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231756AbhIXTjr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 15:39:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632512293;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zKlIbx9VujkrEQw+yD79vCQNibEe3Cguf1xMuXO7LBA=;
+        b=TPGCnsbpTGj0XYiARvKKuLt5SRH2nDW+fQaM2L5t2BJ0Fbmajg1wgqYcdilj6kIC6cQsAd
+        b+WRMMYlYGJnrKEY9nmXHbYSbFdrzFo1qqrmkjnLHbZEgmcnCJwt1qFQQGKlVozEGJ2TP3
+        LYdGxVGRSpwTEtZ28Vg8uJVEDkskcTk=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-35-hUPwZcg6Niuy3SdjCedw7w-1; Fri, 24 Sep 2021 15:38:12 -0400
+X-MC-Unique: hUPwZcg6Niuy3SdjCedw7w-1
+Received: by mail-ed1-f70.google.com with SMTP id h6-20020a50c386000000b003da01adc065so11364569edf.7
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 12:38:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=zKlIbx9VujkrEQw+yD79vCQNibEe3Cguf1xMuXO7LBA=;
+        b=HndtLAV+2AVI9hbZN7zRg7If0qialG0R/TcKnhFzTYc93MAffuUBj4RuROGQnOAIxb
+         qRaxNIKP9Yj0hW0+fdxL/u7HbyXYfYFF1tOblLfcC20EYgBeY/lmN/+ugnRrTW6oLBh6
+         dboLh7yii1ujtVlo8j9oCr14MXKT9xK13t3ubeuR0zqbiYvaxI5ahrGs7Y/tC379QtrH
+         dhX30Qx9njWxcT+d87wfZWAMOhDOPfNbbUFJR6TX1+HJOA555h3IT256y4gJ5FqHOQYp
+         VHiyhfnUS8hwBtTYkcgPW2ZCISIhOPOnLcJvD6wv9wfsBhikJDSag5wMm/s+fxc6Ox3x
+         nTuw==
+X-Gm-Message-State: AOAM5331VKAW5lMpUWFysQ7wMeVCUekWCSgnnH8ET8XXRun4pEE7iYxk
+        Y93Qr7dsmYrHIkHVcMfAdeu0y67ZvxcduIyLWjxqfuOM7JGMdNS0TZNw1eR0DtVYAKpOHck1Np7
+        7Ilp/X9cWgVZtPRbn
+X-Received: by 2002:a50:cfc1:: with SMTP id i1mr6948389edk.251.1632512288685;
+        Fri, 24 Sep 2021 12:38:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy+XTJjpKCOlqLWm+xRwhpthEFRJV4BaMLMrPzkVns7mpTH7g1/5UjKMLMQ9ihHbVRmoPABZg==
+X-Received: by 2002:a50:cfc1:: with SMTP id i1mr6948285edk.251.1632512287255;
+        Fri, 24 Sep 2021 12:38:07 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id ck10sm6336943edb.43.2021.09.24.12.38.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Sep 2021 12:38:06 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 11EEE18034A; Fri, 24 Sep 2021 21:38:05 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Lorenzo Bianconi <lbianconi@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: Redux: Backwards compatibility for XDP multi-buff
+In-Reply-To: <CACAyw9_N2Jh651hXL=P=cFM7O-n7Z0NXWy_D9j0ztVpEm+OgNA@mail.gmail.com>
+References: <87o88l3oc4.fsf@toke.dk>
+ <CACAyw99+KvsJGeqNE09VWHrZk9wKbQTg3h1h2LRmJADD5En2nQ@mail.gmail.com>
+ <87tuibzbv2.fsf@toke.dk>
+ <CACAyw9_N2Jh651hXL=P=cFM7O-n7Z0NXWy_D9j0ztVpEm+OgNA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 24 Sep 2021 21:38:05 +0200
+Message-ID: <87tui9ydb6.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20210923140813.13541-12-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/23/21 5:08 PM, Biju Das wrote:
+Lorenz Bauer <lmb@cloudflare.com> writes:
 
-> R-Car AVB-DMAC has Maximum 2K size on RZ buffer.
-> We need to Allow for changing the MTU within the
-> limit of the maximum size of a descriptor (2048 bytes).
-> 
-> Add a rx_2k_buffers hw feature bit to struct ravb_hw_info
-> to add this constraint only for R-Car.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
->  drivers/net/ethernet/renesas/ravb.h      | 1 +
->  drivers/net/ethernet/renesas/ravb_main.c | 8 ++++++--
->  2 files changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index 7532cb51d7b8..ab4909244276 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -1033,6 +1033,7 @@ struct ravb_hw_info {
->  	unsigned magic_pkt:1;		/* E-MAC supports magic packet detection */
->  	unsigned mii_rgmii_selection:1;	/* E-MAC supports mii/rgmii selection */
->  	unsigned half_duplex:1;		/* E-MAC supports half duplex mode */
-> +	unsigned rx_2k_buffers:1;	/* AVB-DMAC has Max 2K buf size on RX */
+> On Thu, 23 Sept 2021 at 13:59, Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+>>
+>> I don't think it has to be quite that bleak :)
+>>
+>> Specifically, there is no reason to block mb-aware programs from loading
+>> even when the multi-buffer mode is disabled. So a migration plan would
+>> look something like:
+>
+> ...
+>
+>> 2. Start porting all your XDP programs to make them mb-aware, and switch
+>>    their program type as you do. In many cases this is just a matter of
+>>    checking that the programs don't care about packet length. [...]
+>
+> Porting is only easy if we are guaranteed that the first PAGE_SIZE
+> bytes (or whatever the current limit is) are available via ->data
+> without trickery. Otherwise we have to convert all direct packet
+> access to the new API, whatever that ends up being. It seemed to me
+> like you were saying there is no such guarantee, and it could be
+> driver dependent, which is the worst possible outcome imo. This is the
+> status quo for TC classifiers, which is a great source of hard to
+> diagnose bugs.
 
-   It seems more flexible to specify the buffer size, not just a bit like this...
+Well, for the changes we're proposing now it will certainly be the case
+that the first PAGE_SIZE will always be present. But once we have the
+capability, I would expect people would want to do more with it, so we
+can't really guarantee this in the future. We could require that any
+other use be opt-in at the driver level, I suppose, but not sure if that
+would be enough?
 
-[...]
+-Toke
 
-MBR, Sergey
