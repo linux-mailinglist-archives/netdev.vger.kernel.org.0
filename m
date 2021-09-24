@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA1D417514
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 15:13:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8D8D41750A
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 15:13:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346864AbhIXNOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 09:14:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38840 "EHLO mail.kernel.org"
+        id S1346760AbhIXNOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 09:14:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38844 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346896AbhIXNMN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Sep 2021 09:12:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C44F860F41;
+        id S1346921AbhIXNMO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Sep 2021 09:12:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id CD0B361107;
         Fri, 24 Sep 2021 13:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632489007;
-        bh=CA9RjA7zSPgs+dGwqupvLrY+FxaqcmLl7xArQkSgUrE=;
+        bh=UHXYWEwl3iCIu8JpZuPoXawNHyW1sFFmUuXapSS/vrg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mp/OHtOMQUrt1DKAO9T3OFdRNz51cCYOOP+y3Q8Hc8q3qF/6/+XW7r5er2zgcZkta
-         biugDcQErutKV5baauKdXrXqKmMGtMv/oyBxIrNredyecbtoeWtuWq6McXlSIG0+Ed
-         4/GYs9u1zllL55PGaubPz9sSjvxt9WDZsR8eS71iP0sDgYEy5ITH8+vYFTgQmDkD/l
-         F4tXHG/U6TBygRAhfMMgGR9QnS7rKKfD5Z6R4a6Qo55nZTc6BbmCnvj03hJKaI3UUc
-         OKBtnPtrbGKavdieRN17xTlVHpK8P1v+lTT4Kk113IyDceFyR/+2N1I9uaMclCNeCJ
-         l6M/X972uufJg==
+        b=Ag8zYqAgC0D5Q6mb7tIMzYYImcWnGbwInmZTlRJz0YUifrFYTDVDckrFpci8JshT9
+         Bsp8IbanpHX3BKZPqoN/hEaVgJagtRNpvjPysACkqSLf0/mUicdWzkuFbRIbInE5IM
+         FqgyTZw+cX9DydnNPwutKjNFoAXKK/bV+uOhmcmFoHsDsl0rfy089csjwBlnm7+ate
+         qgBAB8UErITAMKe7lcwUKmdkSkfU7yJ6g507c2WFtJ4YbJhjpF3dW7SIc4dbG11MZl
+         zLrFCtF9BbRbjasrKEzixXB1AjAbIAtmJH0Zj3KW+1Wnw/+B0u4QK/yA7Ygsw/MFP3
+         4N93JsD5YHfZg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A927160A6B;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B515860BC9;
         Fri, 24 Sep 2021 13:10:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3] net: ipv4: Fix rtnexthop len when RTA_FLOW is present
+Subject: Re: [PATCH net] net: enetc: fix the incorrect clearing of IF_MODE bits
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163248900768.23178.4654443647284577748.git-patchwork-notify@kernel.org>
+Message-Id: <163248900773.23178.3959977128709226870.git-patchwork-notify@kernel.org>
 Date:   Fri, 24 Sep 2021 13:10:07 +0000
-References: <20210923150319.974-1-shaw.leon@gmail.com>
-In-Reply-To: <20210923150319.974-1-shaw.leon@gmail.com>
-To:     Xiao Liang <shaw.leon@gmail.com>
-Cc:     netdev@vger.kernel.org, dsahern@kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, kafai@fb.com
+References: <20210923132333.2929379-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210923132333.2929379-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, claudiu.manoil@nxp.com,
+        davem@davemloft.net, kuba@kernel.org, rmk+kernel@armlinux.org.uk,
+        pavel@denx.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,22 +47,22 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 23 Sep 2021 23:03:19 +0800 you wrote:
-> Multipath RTA_FLOW is embedded in nexthop. Dump it in fib_add_nexthop()
-> to get the length of rtnexthop correct.
+On Thu, 23 Sep 2021 16:23:33 +0300 you wrote:
+> The enetc phylink .mac_config handler intends to clear the IFMODE field
+> (bits 1:0) of the PM0_IF_MODE register, but incorrectly clears all the
+> other fields instead.
 > 
-> Fixes: b0f60193632e ("ipv4: Refactor nexthop attributes in fib_dump_info")
-> Signed-off-by: Xiao Liang <shaw.leon@gmail.com>
-> ---
->  include/net/ip_fib.h     |  2 +-
->  include/net/nexthop.h    |  2 +-
->  net/ipv4/fib_semantics.c | 16 +++++++++-------
->  net/ipv6/route.c         |  5 +++--
->  4 files changed, 14 insertions(+), 11 deletions(-)
+> For normal operation, the bug was inconsequential, due to the fact that
+> we write the PM0_IF_MODE register in two stages, first in
+> phylink .mac_config (which incorrectly cleared out a bunch of stuff),
+> then we update the speed and duplex to the correct values in
+> phylink .mac_link_up.
+> 
+> [...]
 
 Here is the summary with links:
-  - [net,v3] net: ipv4: Fix rtnexthop len when RTA_FLOW is present
-    https://git.kernel.org/netdev/net/c/597aa16c7824
+  - [net] net: enetc: fix the incorrect clearing of IF_MODE bits
+    https://git.kernel.org/netdev/net/c/325fd36ae76a
 
 You are awesome, thank you!
 --
