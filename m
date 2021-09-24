@@ -2,77 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7975B417785
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 17:29:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60F244177AA
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 17:31:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347143AbhIXPaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 11:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233132AbhIXPai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 11:30:38 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8398DC061571;
-        Fri, 24 Sep 2021 08:29:05 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id y12so1338019edo.9;
-        Fri, 24 Sep 2021 08:29:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CQ4WoixwfLVdKjcnesh6NOhR1rMTQv8BrkQ4NsoRsXs=;
-        b=OXc/hyI9GTCK+r2jZvfkIM60vIrZpMtC9u++J3SvEMaAQRrQ5m7fIAlo1oqy7psWdO
-         u6TWGc77Nr3VHocHKcnAevVn2p2Ub19oWQrRpnih7yfCyR8YsyBjXveqsyaW9btPh3qw
-         0MeaQCqw1xFoZFMDAVMBFsEZqCH3XeJEXszzNBGLcbHVHgxaZtS9t97BwchXzjh87+pn
-         2MpRjZntoZxlgwVhYUebJ+CoQS+E5fv7kZSqrX1AIV/GUKXcO7Qnr/FZevJAubjUj0oK
-         bL/CYLX0y/VadO6EydhFGm/K8vc3FNw7CUjgzzH38+JvEJNSheR1d3ecPpSID0rfoASS
-         Y+uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CQ4WoixwfLVdKjcnesh6NOhR1rMTQv8BrkQ4NsoRsXs=;
-        b=a8e8dpb8NCulhx58amf8EiGMikNarPes8QdPQFTq00HJ0so29vSeZrT6DWHCqLQEc1
-         /kBudRmrx10RpLMqSp8qR4OsJoDXE5zROPFStOt6r3c5a5umyMRayhTHYpMmE0WLO43Y
-         stJwkKmy4z5FD/X1V47lsclwXWanPgRCw0JmeeFSVmIltxUOs9zm8lnfjBZieSvcghJW
-         vsoff9RiN6Fu/3HzPgWH04iCr91ssggPzr6MlxA8y/uiVurf0M2pRJU4e2klm6CjwZ78
-         JkNjRmQGFtuQ0z/Gfldo3DKGIYXJBPKL1Avz/w1bwfMSop242/+0SzWQebLNOMrz/ME4
-         bS1w==
-X-Gm-Message-State: AOAM530vYj/TiCiOcGEOLiqkAabR2aryS0gZWgWqk344ZfSRl6Z2YqPt
-        amZydyPQBMg9HkmD+vjeS5JbpQinsai5CmSGzrs=
-X-Google-Smtp-Source: ABdhPJx9Y0/DcbZ4SRmB6bUv2OExliUvt7b048hk331CiDBjNZuDrACJzzX6fRthwZYVv1rbZUpHKUdHO7EpdHOvxOM=
-X-Received: by 2002:a05:6402:21d0:: with SMTP id bi16mr1975909edb.124.1632497344106;
- Fri, 24 Sep 2021 08:29:04 -0700 (PDT)
+        id S1347195AbhIXPdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 11:33:13 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:31536 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347184AbhIXPdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 11:33:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1632497477;
+    s=strato-dkim-0002; d=fpond.eu;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=o/Eae15nEXB7pxT57PvHnusv6LvoGe1//m7VaRfqZYk=;
+    b=ljx+3VmAmtbqV27BACCcG7+YG8N/aC6tB4xcZNRNibjWM0f63WT4xX0mF39GzBe7Pe
+    lsybGYdgF1qxD9KeoswyYQfo1C6qDttmsanA3ASrbKUDGjcLyzvPwaxTa6YiK8bR9+VC
+    z1zyOdOzX1Fj01KYMsvIVot1zLYtPOvylhTcbHQvlLH8KSOifmoqNcExB7DB0l95Ghro
+    0NUT7h9ToJY4s3USI62Us4sWhcciIgIF+kUtlG3jRX4+R8/0Mt16slaTH4ht8txeQ2/2
+    2QFkF3wBN0yth5v7ApIq3+wJJDMYfIUAfrIkIRVyovFbW4Hmp7EaVjlHH3o1zqwuEKWV
+    d07g==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73dmm4I5W0/AvA67Ot4fvR92BEa52Otg=="
+X-RZG-CLASS-ID: mo00
+Received: from gummo.fritz.box
+    by smtp.strato.de (RZmta 47.33.8 DYNA|AUTH)
+    with ESMTPSA id c00f85x8OFVGN4P
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Fri, 24 Sep 2021 17:31:16 +0200 (CEST)
+From:   Ulrich Hecht <uli+renesas@fpond.eu>
+To:     linux-renesas-soc@vger.kernel.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-can@vger.kernel.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, wsa@kernel.org,
+        yoshihiro.shimoda.uh@renesas.com, wg@grandegger.com,
+        mkl@pengutronix.de, kuba@kernel.org, mailhol.vincent@wanadoo.fr,
+        socketcan@hartkopp.net, Ulrich Hecht <uli+renesas@fpond.eu>
+Subject: [PATCH 0/3] can: rcar_canfd: Add support for V3U flavor
+Date:   Fri, 24 Sep 2021 17:31:10 +0200
+Message-Id: <20210924153113.10046-1-uli+renesas@fpond.eu>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20210924095542.33697-1-lmb@cloudflare.com> <20210924095542.33697-2-lmb@cloudflare.com>
-In-Reply-To: <20210924095542.33697-2-lmb@cloudflare.com>
-From:   Luke Nelson <luke.r.nels@gmail.com>
-Date:   Fri, 24 Sep 2021 08:28:53 -0700
-Message-ID: <CAB-e3NQNkzcv6hNW1ga0Zhi_DcUVr2Q88WaE1m+CCXtKhHQcmw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] bpf: define bpf_jit_alloc_exec_limit for
- riscv JIT
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Xi Wang <xi.wang@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team@cloudflare.com, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Expose the maximum amount of useable memory from the sparcv JIT.
+Hi!
 
-sparcv -> riscv?
+This adds CANFD support for V3U (R8A779A0) SoCs. The V3U's IP supports up to
+eight channels and has some other minor differences to the Gen3 variety:
 
-Otherwise lgtm!
+- changes to some register offsets and layouts
+- absence of "classic CAN" registers, both modes are handled through the
+  CANFD register set
 
-Acked-by: Luke Nelson <luke.r.nels@gmail.com>
+This patch set tries to accommodate these changes in a minimally intrusive
+way. It follows the methods implemented in the BSP patch 745cdc4ea76af4
+("can: rcar_canfd: Add support for r8a779a0 SoC"), but has not been tested
+on an actual V3U device due to lack of hardware.
+
+One thing I'm not sure of is what to name the compatible string. ATM it
+looks to me like this controller cultivar is a one-off, so I named it
+"renesas,r8a779a0-canfd", but I would not be surprised if it showed up in
+future chips as well.
+
+CU
+Uli
+
+
+Ulrich Hecht (3):
+  can: rcar_canfd: Add support for r8a779a0 SoC
+  dt-bindings: can: renesas,rcar-canfd: Document r8a779a0 support
+  arm64: dts: r8a779a0: Add CANFD device node
+
+ .../bindings/net/can/renesas,rcar-canfd.yaml  |   1 +
+ arch/arm64/boot/dts/renesas/r8a779a0.dtsi     |  55 +++++
+ drivers/net/can/rcar/rcar_canfd.c             | 227 ++++++++++++------
+ 3 files changed, 208 insertions(+), 75 deletions(-)
+
+-- 
+2.20.1
+
