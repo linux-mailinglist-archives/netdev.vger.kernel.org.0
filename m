@@ -2,83 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB18C416ECA
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 11:21:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3762D416EDB
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 11:27:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244936AbhIXJWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 05:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51668 "EHLO
+        id S244964AbhIXJ2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 05:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244555AbhIXJWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 05:22:30 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC362C061574;
-        Fri, 24 Sep 2021 02:20:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=9GxW7f1PM4tlFV8GS6ENNCIsOWiZB1CGSgf0VxPfSxU=;
-        t=1632475257; x=1633684857; b=e078anP+jhgULPe4U63PVvoM+GFz5UJ/yXuNrvCEeTgl1ga
-        Ja6lV/8V6UseMEQw4SAG37s+gs3yiLDHjT6bDnliqT1SFEahJww/geeUmymE4OIDExNJ2HZx4Sihr
-        RYrWmN6vbsHJ5WtDd76kEgRXdiS2dudvqnpWDhxq08JkLXd3ogLZU1dgsR5UB69jm3wWuyqP/0nx5
-        iZz4/mP8crhWpX3T1Zr9f+ODm3Sm4p4yXgvlIrNSdz2qlmMcPBTccYQsSB0BRqpCsQRt9Kt2V9HT5
-        p152Wj+qHTckYXwQizwPX3JE59KKGfJ1xV5JCFHNF5hVOxTo/NsGuCUPetNQTAUw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95-RC2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1mThNz-00B89x-JN;
-        Fri, 24 Sep 2021 11:20:51 +0200
-Message-ID: <90d3c3c8cedcf5f8baa77b3b6e94b18656fcd0be.camel@sipsolutions.net>
-Subject: Re: [PATCH 2/3] mac80211: Add support to trigger sta disconnect on
- hardware restart
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Youghandhar Chintala <youghand@codeaurora.org>
-Cc:     Abhishek Kumar <kuabhs@chromium.org>, Felix Fietkau <nbd@nbd.name>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        Manikanta Pubbisetty <mpubbise@codeaurora.org>
-Date:   Fri, 24 Sep 2021 11:20:50 +0200
-In-Reply-To: <30fa98673ad816ec849f34853c9e1257@codeaurora.org>
-References: <20201215172352.5311-1-youghand@codeaurora.org>
-         <f2089f3c-db96-87bc-d678-199b440c05be@nbd.name>
-         <ba0e6a3b783722c22715ae21953b1036@codeaurora.org>
-         <CACTWRwt0F24rkueS9Ydq6gY3M-oouKGpaL3rhWngQ7cTP0xHMA@mail.gmail.com>
-         (sfid-20210205_225202_513086_43C9BBC9) <d5cfad1543f31b3e0d8e7a911d3741f3d5446c57.camel@sipsolutions.net>
-         <66ba0f836dba111b8c7692f78da3f079@codeaurora.org>
-         <5826123db4731bde01594212101ed5dbbea4d54f.camel@sipsolutions.net>
-         <30fa98673ad816ec849f34853c9e1257@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-malware-bazaar: not-scanned
+        with ESMTP id S244448AbhIXJ2f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 05:28:35 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C40E0C061574
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 02:27:02 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id s17so15046646edd.8
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 02:27:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=pwdn27noakX7t/4lkAC9y0R8DTcQut1TWzEnNLZLsYE=;
+        b=MnZmc0J0uJNcOrFPqAWxu+3iSMVQNl+zsfaSGdnYhuFq/9DahztihHvvXDZSehwsn7
+         E2oqW4RDUTs8y4/G3FjlAPnJ341Iiv6HjZlMcPNIrmv01YNGFO/nEJYYJdmpwGbV1E2A
+         hrmSBk2TK5WD7ycOhNpAoh8p9unQmOn1sKOq3FDAceJ5XaVS//t9W3/1jeIcJENqGJNF
+         5V7U5w9zlhQP7hv31Ujh+erDGaWvLWd31PtAc7fYRHcB2y5vWn5fIVpffLTY+bU5mDW+
+         IpN6LMd2pvw5VU2wIVSQmhWXbcXNop7LvrlPbYwzxu0RUjoFkPo9uEfHecHmmCebAOh8
+         9Ssw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=pwdn27noakX7t/4lkAC9y0R8DTcQut1TWzEnNLZLsYE=;
+        b=2/QPHvtoHfg67xo0QWHzlRdeDC6aEe69UNKzcEc82v7pT59jWfjm3D3YPEoU2655oh
+         DT4Vyc/tfVJ3fhHLgl7b47nmv1S/h9TUtsxzfOBzBTRVDI2G2br9RicCTb9+gHc/CE9R
+         wwql6a9PZr8/81oth2hvPCdvbDDhhMDQWoI0JLqHQwYM2e3l63uHn9MQ0C0+EOgq7OtN
+         cZE9hlA7IQiRuDw/3icclkjxl8wU/tINSivc9qqEjrlN0MuqDrjPnPK+e8Gs2LTsswTw
+         xlJJuY7ieLD7YOjEYC85dcft37Ws5Cmk0QoVTfLsmQc1HthdcU7j3hCpsuGG1qdLLAe/
+         fyLA==
+X-Gm-Message-State: AOAM533nHndOBQkViptTAkiqn48IdoC2wQWP2/UsQKa9juG13VXmuXSs
+        +6UmO/CPQXe1lNsAjZxF3cU9oRx7HjjS8w==
+X-Google-Smtp-Source: ABdhPJwpiRwaMu/pLQI2UNJAhGieCNxx3Mnepjruj04BwSWdrd6e5aWHt9VCEFehYAadWiyQ+xEvdQ==
+X-Received: by 2002:a17:906:90c9:: with SMTP id v9mr9844467ejw.356.1632475621185;
+        Fri, 24 Sep 2021 02:27:01 -0700 (PDT)
+Received: from LABNL-ITC-SW01.tmt.telital.com (static-82-85-31-68.clienti.tiscali.it. [82.85.31.68])
+        by smtp.gmail.com with ESMTPSA id b14sm5401350edy.56.2021.09.24.02.27.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Sep 2021 02:27:00 -0700 (PDT)
+From:   Daniele Palmas <dnlplm@gmail.com>
+To:     Loic Poulain <loic.poulain@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>
+Subject: [PATCH 1/1] drivers: net: mhi: fix error path in mhi_net_newlink
+Date:   Fri, 24 Sep 2021 11:26:52 +0200
+Message-Id: <20210924092652.3707-1-dnlplm@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Fix double free_netdev when mhi_prepare_for_transfer fails.
 
+Fixes: 3ffec6a14f24 ("net: Add mhi-net driver")
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+---
+ drivers/net/mhi_net.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-> We thought sending the delba would solve the problem as earlier thought 
-> but the actual problem is with TX PN in a secure mode.
-> It is not because of delba that the Seq number and TX PN are reset to 
-> zero.
-> It’s because of the HW restart, these parameters are reset to zero.
-> Since FW/HW is the one which decides the TX PN, when it goes through 
-> SSR, all these parameters are reset.
-
-Right, we solved this problem too - in a sense the driver reads the
-database (not just TX PN btw, also RX replay counters) when the firmware
-crashes, and sending it back after the restart. mac80211 has some hooks
-for that.
-
-johannes
-
+diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
+index d127eb6e9257..aaa628f859fd 100644
+--- a/drivers/net/mhi_net.c
++++ b/drivers/net/mhi_net.c
+@@ -321,7 +321,7 @@ static int mhi_net_newlink(struct mhi_device *mhi_dev, struct net_device *ndev)
+ 	/* Start MHI channels */
+ 	err = mhi_prepare_for_transfer(mhi_dev);
+ 	if (err)
+-		goto out_err;
++		return err;
+ 
+ 	/* Number of transfer descriptors determines size of the queue */
+ 	mhi_netdev->rx_queue_sz = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
+@@ -331,10 +331,6 @@ static int mhi_net_newlink(struct mhi_device *mhi_dev, struct net_device *ndev)
+ 		return err;
+ 
+ 	return 0;
+-
+-out_err:
+-	free_netdev(ndev);
+-	return err;
+ }
+ 
+ static void mhi_net_dellink(struct mhi_device *mhi_dev, struct net_device *ndev)
+-- 
+2.30.2
 
