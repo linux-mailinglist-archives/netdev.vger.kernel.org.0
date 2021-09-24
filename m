@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6480416CCC
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 09:28:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C201416CCE
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 09:29:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244336AbhIXH3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 03:29:33 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:48271 "EHLO
+        id S244365AbhIXH3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 03:29:34 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:39801 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244191AbhIXH3b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 03:29:31 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 7DF7E580F3A;
-        Fri, 24 Sep 2021 03:27:58 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Fri, 24 Sep 2021 03:27:58 -0400
+        by vger.kernel.org with ESMTP id S244332AbhIXH3d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 03:29:33 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 12D74580F3B;
+        Fri, 24 Sep 2021 03:28:00 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute6.internal (MEProxy); Fri, 24 Sep 2021 03:28:00 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=fm3; bh=8ZUo02dZnGgFgfTeHndvB1x9MZ
-        FJLT3D0GdIhBkBwqA=; b=Y7HfydDhDQlpA2UMLzUWZfR9q/1FwmMmDq7lXQwMc8
-        Vgush16WBed+1oEkjplnln/mJdYgRMx3iOOM8vt/MQeKRZrCVBtFJox+pBbm8iBP
-        0A7qgR8a5Wm8W3TwOD9z9/lVOYrqexvHXL81aU+c8ssytbgOa+kh1/wi2eG6Toa3
-        5iGsNkhUZ37tYo8k10GghgLE4yQPA+06d/1IrDOdTi0e/c+s6U3A6FnQOVU0Pv1r
-        PfodwK0OHsgyb+rrQNxK83j/rcUiztW+vIWAXZRFuw6V2SXWzBaF54ftEZ0uwR/Y
-        so3L6XLkuqoHg5F1VcTvD3wZX6+IuFKz6AaETl7+5n0Q==
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding; s=fm3; bh=LrL/waN/SgT3V
+        TwhPg9YFJlylmLY/yInMq39GRXzfHc=; b=wRl6gTgNdkkpkmljMq/il/PsUjN8J
+        F9L30b/ZftTb196XabAL62VYxMlU7cnFe/JbrWXY6im4mvNGAKGv0d9Ysr7Ma1BU
+        l31xAf6XYk6NgyPRWThuWGPjkPA5K6g1RFoTAv6gYiH5B21f/loGje6BCDxziRO2
+        WlSl7eCrAn1nmA8TgylNo5vjyXJs136VOlwFs8AGJFVnesVruSp3CcEbbkN4qwN6
+        YGEr4k21YV7YcS9YscEs8PjMQmM28A7HT/m4jEeo3BAfvDrurMWTUUyHkHcS4M7r
+        RhNnC9/5mW2ECnT9z4WVV2P2AcCSoVvnk48lHYg+Gt7io+h5IVwO9hOQw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=8ZUo02dZnGgFgfTeH
-        ndvB1x9MZFJLT3D0GdIhBkBwqA=; b=gPDpXF0YPJrqzAyjmx9B2GRxgd0RDhHoH
-        7JSGftdgB8x7MHaLCjQNwD95rh1IQplQO6cuwNDiqGMZ3QKl+GLKs2b5ciRcqfKD
-        p1Lg6ggkTsMySaq11gnGPxPS12VJjZustHPl2Rl8AQCYZsyEerJGH3u+bzUVRDZr
-        IawP40+7oLEHjBQdAj4/0NAJKath8rxPrI9Ne9d+DZZVNi9q+sJMgn4GzxA87QVI
-        /FvHfHZ2+/n96G9vkJa2xdJVUG2/C9sAbih8PSjY/Je5PHB5HfuycwLT5UbxPERZ
-        elC+SxzvSLER2t/FeabxIEDGbIakNtTyumiditzM3sHfeVINcD0NA==
-X-ME-Sender: <xms:_n1NYS25piSu6aQNUX9-ZKTAbTcKURCJwn1iDP7Uqz7r93SpYncOUA>
-    <xme:_n1NYVFizWhPfgGqVbvSoraCQh9BQHoXhVrz1p-oBOgslKKmtSNMy85ARD_NB_8jC
-    h4We4T2U4hZXPy_kXE>
-X-ME-Received: <xmr:_n1NYa760_0Oi_-rzUZnCT8-Ng8xEDExXlG72rDPSa4vc2j03KP2HwUjv5PvXdInXwBgEx1ReOHUY0vPS40uWOVtzkCWfHsKKsxM>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=LrL/waN/SgT3VTwhPg9YFJlylmLY/yInMq39GRXzfHc=; b=OEfUBfx5
+        x18QXXK0ib45TBQQvQbkyKXrQNVGAFPFbjZjzqJl6jS2JbQKSQkg04cF7XuCfz6n
+        yrzRIaK4zZ69ZPew2e5v2jEuzmmRtUiAX1DxFVIF8SMMFWEcnF7MjxPt4iSBSmzR
+        tLw91q86q7jLT+0pvMRzrfwA8uWdQe+MRxOfPKhUzLFlWLkw+mLVw99+QuRCwCUI
+        4BAJsJogXMKW2/bweL0r/YYjbRdfseZQA2naFCii2nxMEuIzAbkD59m59mO8z+Id
+        JCw0DksESaSUaM1+MyvyKiQGh68kmLHXjKMqtFbXKy02nV67jZtt0VxAscFu36eX
+        uVvPHp7VkdZlhg==
+X-ME-Sender: <xms:_31NYdTCtglCHHb6G9DE_aHaXijw1-HIQ-7G-RNfj3XsOhz83d98YQ>
+    <xme:_31NYWyIQRGQaAda1YHDLBHl3n2JS2pnyNR43tBcrfWk7vYJgL4fWSKe2rT-81SYN
+    fVU698lP3m71d1AoCY>
+X-ME-Received: <xmr:_31NYS12aJx8sr3OwSWeSn13e_MIiTB8iXZAp_AKOvCbdR1aSFhoP6i-3lhz37Pf8DjuDas7mg3tEBEJEqpUu1cq3zthOOtG3OSl>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudejtddguddujecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepofgrgihimhgv
-    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
-    gvrhhnpeejffehuddvvddvlefhgeelleffgfeijedvhefgieejtdeiueetjeetfeeukeej
-    geenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
-    igihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:_n1NYT18xcehf366GpSU2wuBKq3smR-RLnv9kSxbW3rVD1rcyKrosg>
-    <xmx:_n1NYVF4NCfwYnusLNPJIpgCK5kEgB3x4qvVDBZ2k5OiAVRpasszew>
-    <xmx:_n1NYc-cAn-KD5k-6fhHlk4PgoCrByf_AOCMR3WCQYvqKPn55S6DxQ>
-    <xmx:_n1NYU-BRTHo75mtAjxfF_y_CC9s7AsbbtlO_qpA6ehMaKsTtWibFQ>
+    enucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpedvkeelveefffekjefhffeuleetleefudeifeehuddugffghffhffehveev
+    heehvdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:_31NYVArBq-MD-V0QXJ_baI-vJvzFr0e5eSlz48i82VbP4xbZbgQNA>
+    <xmx:_31NYWgVjpqsOSojoezSXd6Zz_RP8A_FzBcUgpovQJcJAaqD9Nxhew>
+    <xmx:_31NYZopgeIx0V3mc4d24r88H0mRW_RqqwM1pcgKe38n_q5Qbz7LIg>
+    <xmx:AH5NYXba8fxRsq37LICaHcUD4vbmep3p0nI1iwgMkXp2E6VqIUGyYg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 24 Sep 2021 03:27:58 -0400 (EDT)
+ 24 Sep 2021 03:27:59 -0400 (EDT)
 From:   Maxime Ripard <maxime@cerno.tech>
 To:     Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <maxime@cerno.tech>,
         =?UTF-8?q?Jernej=20=C5=A0krabec?= <jernej.skrabec@gmail.com>,
@@ -60,95 +61,56 @@ To:     Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <maxime@cerno.tech>,
         Frank Rowand <frowand.list@gmail.com>
 Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-sunxi@lists.linux.dev,
+        Alistair Francis <alistair@alistair23.me>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
+        Vasily Khoruzhick <anarsoul@gmail.com>,
         Rob Herring <robh@kernel.org>
-Subject: [RESEND v2 1/4] dt-bindings: bluetooth: broadcom: Fix clocks check
-Date:   Fri, 24 Sep 2021 09:27:53 +0200
-Message-Id: <20210924072756.869731-1-maxime@cerno.tech>
+Subject: [RESEND v2 2/4] dt-bindings: bluetooth: realtek: Add missing max-speed
+Date:   Fri, 24 Sep 2021 09:27:54 +0200
+Message-Id: <20210924072756.869731-2-maxime@cerno.tech>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210924072756.869731-1-maxime@cerno.tech>
+References: <20210924072756.869731-1-maxime@cerno.tech>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The original binding was mentioning that valid values for the clocks and
-clock-names property were one or two clocks from extclk, txco and lpo,
-with extclk being deprecated in favor of txco.
+additionalProperties prevent any property not explicitly defined in the
+binding to be used. Yet, some serial properties like max-speed are valid
+and validated through the serial/serial.yaml binding.
 
-However, the current binding lists a valid array as extclk, txco and
-lpo, with either one or two items.
+Even though the ideal solution would be to use unevaluatedProperties
+instead, it's not pratical due to the way the bus bindings have been
+described. Let's add max-speed to remove the warning.
 
-While this looks similar, it actually enforces that all the device trees
-use either ["extclk"], or ["extclk", "txco"]. That doesn't make much
-sense, since the two clocks are said to be equivalent, with one
-superseeding the other.
-
-lpo is also not a valid clock anymore, and would be as the third clock
-of the list, while we could have only this clock in the previous binding
-(and in DTs).
-
-Let's rework the clock clause to allow to have either:
-
- - extclk, and mark it a deprecated
- - txco alone
- - lpo alone
- - txco, lpo
-
-While ["extclk", "lpo"] wouldn't be valid, it wasn't found in any device
-tree so it's not an issue in practice.
-
-Similarly, ["lpo", "txco"] is still considered invalid, but it's
-generally considered as a best practice to fix the order of clocks.
-
+Cc: Alistair Francis <alistair@alistair23.me>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: netdev@vger.kernel.org
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Cc: Vasily Khoruzhick <anarsoul@gmail.com>
+Reviewed-by: Alistair Francis <alistair@alistair23.me>
 Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 ---
- .../bindings/net/broadcom-bluetooth.yaml        | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/net/realtek-bluetooth.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-index fbdc2083bec4..5aac094fd217 100644
---- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-+++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-@@ -50,16 +50,29 @@ properties:
-       by interrupts and "host-wakeup" interrupt-names
+diff --git a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
+index 0634e69dd9a6..157d606bf9cb 100644
+--- a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
++++ b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
+@@ -34,6 +34,8 @@ properties:
+     maxItems: 1
+     description: GPIO specifier, used to wakeup the host processor
  
-   clocks:
-+    minItems: 1
-     maxItems: 2
-     description: 1 or 2 clocks as defined in clock-names below,
-       in that order
++  max-speed: true
++
+ required:
+   - compatible
  
-   clock-names:
-     description: Names of the 1 to 2 supplied clocks
--    items:
-+    oneOf:
-+      - const: extclk
-+        deprecated: true
-+        description: Deprecated in favor of txco
-+
-       - const: txco
-+        description: >
-+          external reference clock (not a standalone crystal)
-+
-       - const: lpo
--      - const: extclk
-+        description: >
-+          external low power 32.768 kHz clock
-+
-+      - items:
-+          - const: txco
-+          - const: lpo
- 
-   vbat-supply:
-     description: phandle to regulator supply for VBAT
 -- 
 2.31.1
 
