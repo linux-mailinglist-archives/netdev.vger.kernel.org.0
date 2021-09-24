@@ -2,95 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38A66416F2B
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 11:40:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A7C416F7A
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 11:49:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245291AbhIXJlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 05:41:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47670 "EHLO mail.kernel.org"
+        id S245346AbhIXJuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 05:50:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52366 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245241AbhIXJlm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Sep 2021 05:41:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 170D46105A;
-        Fri, 24 Sep 2021 09:40:10 +0000 (UTC)
+        id S245357AbhIXJus (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Sep 2021 05:50:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7571C61050;
+        Fri, 24 Sep 2021 09:49:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632476410;
-        bh=dcW20119vH1g7DvDy7ncF76BOF84GbJy27wK89ohvK8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QJdJKPwtmbOSUzKYIhFKDloVu4gEqGOL0otZK6zhQzsMEsTx0BDsRdrDUBugQ9CeU
-         hf77qOCPyQDwbXGP3tHxx/R/VULg1jMS8x8a/zi3K4yK7C8UCsp39d2y/KIAUA31M3
-         AU0Cwfk0blX8hw4T1mUh/f2O14Hwz1Ma5Gu+n+0hhiO9Zk0VZACUk0JRLB88f3MXty
-         Ex8HJZNbqzrQeu3zfopWJGPQuu1E+6vs74ou5X6JfwYKVq0OkYSS7I7J2lzopuLVue
-         rDn+378dtac4OS8XutXP/Cg2kFyZEWvgwhKiSG3tI2H3QerhEQPJNDu6hcQz/l4VV0
-         NN9PWu2zUNiQw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1040D60AA4;
-        Fri, 24 Sep 2021 09:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1632476955;
+        bh=UmlGe7qRwuHtn7L5yamuZOKZreKeYbx5LHLiWuDF55o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B7BTynlk4MSmVS5866aoqA0wm3a87LbLHMsrMBdcCdiZWny87RN9CFbempEs60rEI
+         +c69CzBQPKCFDpNzcJSk1280J9H42ywPqr4qlv9LLL3nj1CVMGhiBpGPUz36jduO4b
+         uHkd1y8Un8KbNWdfnM/Hc5F1lljausnnlsv4QcFb2ayyZdEXcj/DOW3YFXEGd5QAIn
+         l4iI30Ku/rQHpeTAultVBywLGZ2K2cWmQC5w9R6d8m8VUUoPK5xAKgGX21xFcATUAs
+         3IVgbiE/hhoZfxfq+IfxxpzbnsrLCZ4vH9xVPgvqRGPAt2KrQItGl5iH9GgvLjh+NO
+         /NIwDk7Zsk7Ng==
+Date:   Fri, 24 Sep 2021 15:19:09 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/1] drivers: net: mhi: fix error path in mhi_net_newlink
+Message-ID: <20210924094909.GA19050@workstation>
+References: <20210924092652.3707-1-dnlplm@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/14] mlxsw: Add support for IP-in-IP with IPv6
- underlay
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163247641006.26581.76537304639283935.git-patchwork-notify@kernel.org>
-Date:   Fri, 24 Sep 2021 09:40:10 +0000
-References: <20210923123700.885466-1-idosch@idosch.org>
-In-Reply-To: <20210923123700.885466-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        amcohen@nvidia.com, petrm@nvidia.com, jiri@nvidia.com,
-        mlxsw@nvidia.com, idosch@nvidia.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210924092652.3707-1-dnlplm@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 23 Sep 2021 15:36:46 +0300 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
+On Fri, Sep 24, 2021 at 11:26:52AM +0200, Daniele Palmas wrote:
+> Fix double free_netdev when mhi_prepare_for_transfer fails.
 > 
-> Currently, mlxsw only supports IP-in-IP with IPv4 underlay. Traffic
-> routed through 'gre' netdevs is encapsulated with IPv4 and GRE headers.
-> Similarly, incoming IPv4 GRE packets are decapsulated and routed in the
-> overlay VRF (which can be the same as the underlay VRF).
+> Fixes: 3ffec6a14f24 ("net: Add mhi-net driver")
+> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+
+I guess this patch should be backported to stable kernels. So please CC stable
+list.
+
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+
+Thanks,
+Mani
+
+> ---
+>  drivers/net/mhi_net.c | 6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
 > 
-> [...]
-
-Here is the summary with links:
-  - [net-next,01/14] mlxsw: spectrum_router: Create common function for fib_entry_type_unset() code
-    https://git.kernel.org/netdev/net-next/c/45bce5c99d46
-  - [net-next,02/14] mlxsw: spectrum_ipip: Pass IP tunnel parameters by reference and as 'const'
-    https://git.kernel.org/netdev/net-next/c/aa6fd8f177d6
-  - [net-next,03/14] mlxsw: spectrum_router: Fix arguments alignment
-    https://git.kernel.org/netdev/net-next/c/8aba32cea3f3
-  - [net-next,04/14] mlxsw: spectrum_ipip: Create common function for mlxsw_sp_ipip_ol_netdev_change_gre()
-    https://git.kernel.org/netdev/net-next/c/80ef2abcddbc
-  - [net-next,05/14] mlxsw: Take tunnel's type into account when searching underlay device
-    https://git.kernel.org/netdev/net-next/c/59bf980dd90f
-  - [net-next,06/14] mlxsw: reg: Add Router IP version Six Register
-    https://git.kernel.org/netdev/net-next/c/dd8a9552d484
-  - [net-next,07/14] mlxsw: reg: Add support for rtdp_ipip6_pack()
-    https://git.kernel.org/netdev/net-next/c/a917bb271d16
-  - [net-next,08/14] mlxsw: reg: Add support for ratr_ipip6_entry_pack()
-    https://git.kernel.org/netdev/net-next/c/c729ae8d6cbc
-  - [net-next,09/14] mlxsw: reg: Add support for ritr_loopback_ipip6_pack()
-    https://git.kernel.org/netdev/net-next/c/36c2ab890b8f
-  - [net-next,10/14] mlxsw: Create separate ipip_ops_arr for different ASICs
-    https://git.kernel.org/netdev/net-next/c/a82feba686e8
-  - [net-next,11/14] mlxsw: spectrum_ipip: Add mlxsw_sp_ipip_gre6_ops
-    https://git.kernel.org/netdev/net-next/c/713e8502fd3e
-  - [net-next,12/14] mlxsw: Add IPV6_ADDRESS kvdl entry type
-    https://git.kernel.org/netdev/net-next/c/53eedd61dea9
-  - [net-next,13/14] mlxsw: spectrum_router: Increase parsing depth for IPv6 decapsulation
-    https://git.kernel.org/netdev/net-next/c/8d4f10463cd6
-  - [net-next,14/14] mlxsw: Add support for IP-in-IP with IPv6 underlay for Spectrum-2 and above
-    https://git.kernel.org/netdev/net-next/c/ba1c71324bc2
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
+> index d127eb6e9257..aaa628f859fd 100644
+> --- a/drivers/net/mhi_net.c
+> +++ b/drivers/net/mhi_net.c
+> @@ -321,7 +321,7 @@ static int mhi_net_newlink(struct mhi_device *mhi_dev, struct net_device *ndev)
+>  	/* Start MHI channels */
+>  	err = mhi_prepare_for_transfer(mhi_dev);
+>  	if (err)
+> -		goto out_err;
+> +		return err;
+>  
+>  	/* Number of transfer descriptors determines size of the queue */
+>  	mhi_netdev->rx_queue_sz = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
+> @@ -331,10 +331,6 @@ static int mhi_net_newlink(struct mhi_device *mhi_dev, struct net_device *ndev)
+>  		return err;
+>  
+>  	return 0;
+> -
+> -out_err:
+> -	free_netdev(ndev);
+> -	return err;
+>  }
+>  
+>  static void mhi_net_dellink(struct mhi_device *mhi_dev, struct net_device *ndev)
+> -- 
+> 2.30.2
+> 
