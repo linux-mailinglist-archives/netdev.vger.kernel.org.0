@@ -2,84 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C176417E37
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 01:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93B4B417E56
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 01:38:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236992AbhIXXcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 19:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49872 "EHLO
+        id S238886AbhIXXkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 19:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231238AbhIXXcl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 19:32:41 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECB9C061571
-        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 16:31:07 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id c21so2291530wrb.13
-        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 16:31:07 -0700 (PDT)
+        with ESMTP id S230303AbhIXXkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 19:40:15 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2766C061571
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 16:38:41 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id z24so47582173lfu.13
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 16:38:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GqZeA34g+PTtS9vxOWyDlA/b9i9OPS+4sVJlXqOJs9A=;
-        b=C6ThtuoBmix6FYu83kbezzPSbfwJ28lbagMxmRVlfziBKJn1iYK0NQNSitYWfv7mlC
-         lGHL46fFshZgrbpNOFt3w2dl1kIAxO8uSXZmAGUUPIDlQCg+cKLyd2RHfl3EjHQr5l/+
-         FG2iqtc5epcU9ymLFf/mvoCGMwdg0esMPUQZTX9dFXSQv0jtfGe/TnOiuQffN5Z04DkM
-         7N5PD5iacdunFYG4QPp122xsb0+bBmdAcGb3yqWMlYozMrXj/wx7Revb9hOeE5lVKZPb
-         o8Czla5JiXvF+eLOqypYAVuUT+T8h6WrMB7KKfcz4bHiGMOlHHUT/lnFykRdqNG/OfHA
-         n0OQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k63O/QRHI/ki5XM7WE51igG+Sjtl20yBS/wZDy1yzu4=;
+        b=GpJwWK2QOL+Ad7QhatOG2J9lgJgz+aULDSApGKJnpJPFQF1ZigTsV3KddOTrie917X
+         xoX3GJlEriIZZr/iFxdDFmLpqhL0Bc819WJ6/vdjvHkyV5seLd1MLqRsNU2zI5R7qRFw
+         XYCY/JyDU0dRILT810WkF81lDJI/OKUrEYjDwqP4GvWiSlMZ+BMMew2b7rFMp8dXILyf
+         rU57P8IzobBxG9LF0zKIN3vg0a/BAzJlZUwGaU7nAD0A3NqEq3AtFjKFffV6swlvtwNB
+         5X5qOU8NljarxS9pLzrorlX25BhJBgV/0+3Ai+pUyQGAA4QNBW7TBvxnLqhTZLzXidJ6
+         daEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GqZeA34g+PTtS9vxOWyDlA/b9i9OPS+4sVJlXqOJs9A=;
-        b=x/lsiNKBX5UNkRA33t+wok3THFZgMOE9dBAYVDbwSVkg+6aMkL00LU5lKAuYlPT/I0
-         FufdmBBNzXsVPvnePaMNOUrTxX3QUVca+ptuB3PnW+8l2pGqWT0/CkFBy3oi3XyDM+dU
-         TG7mgpBa7V2OfmIzROPSJoK9s+bregqhCiUFqEC4E81hzVoP5dzs2ZwMZSYTJbCdTFlt
-         LKMjG7iKeenc0v4v9qT+9QnrlVtq3H+CfbGCmdQtgDsdf3n2mJN1epk2FzjEMZNXDlvB
-         jJ0scIEUbBmd4+HVzNPz2FR4HOfolr9cvP3KVF5jI9POr0fbzsAtiTtc62cPG3WNCRSi
-         FTGg==
-X-Gm-Message-State: AOAM532atuF8C+cETITcPlrTTF0kGBs45mhQpQ/ViPS/wkloNEoHckTm
-        sOhKxaC83SWldZJGxua4J4Qj7tgHFcf+iPsE2/hm6Q==
-X-Google-Smtp-Source: ABdhPJx8LIDoeKjlWKDfbaescxUb80+TVMp7FQQ2uFsOVoxrNgE4yc9Uy35zw5qUCRZ7CvR9zxAMTPbHGnzU1cux7pc=
-X-Received: by 2002:a7b:cd0d:: with SMTP id f13mr4431413wmj.183.1632526265933;
- Fri, 24 Sep 2021 16:31:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k63O/QRHI/ki5XM7WE51igG+Sjtl20yBS/wZDy1yzu4=;
+        b=7OC98d9KaBlp+avuopBbgrkutIV5GDLX/nHwEa5CZi0q7jno8p4pyOkNEvg3m7RU7s
+         MPC/A5lUglvuhVs4W4eui93oxr6sOOGNYguBDyaAF+YhFCvhofxTWNoikj+s95we6zDo
+         2K+l4uDBLDihQ+spA72WsxQzxhxOBIjc/hOekspux8qB+0prINOyxZe7CGC7pq9Z/svZ
+         3OF4AJZOFzvlluy8w0cU2d0jGV9D17b+oO/pTemePzoreus3XFZizSPgsN83Sxs10UIZ
+         b4STwrrr5+wH8+fTz4X7QINeHbmBQl9CYw5H+9mCtfz7qygfPWY7AdWWts6X9X/OhKqb
+         C0vw==
+X-Gm-Message-State: AOAM531r+GGsvL3gw+rvQtVl1rU/6EYzl1U2KgtDjLayBEwdX0KQOxTe
+        JWTS6klHDJPqqEaiOGmvYQfvxw==
+X-Google-Smtp-Source: ABdhPJxYZsuiB3cU4fJJ8rPQs1f2iIbtTl7zoBwi1iy1UeyKJHUM6EqGNMLvybK24S1MSzrw8bCjmw==
+X-Received: by 2002:a2e:530d:: with SMTP id h13mr13873349ljb.215.1632526720026;
+        Fri, 24 Sep 2021 16:38:40 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id k21sm1176652lji.81.2021.09.24.16.38.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Sep 2021 16:38:39 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH net-next 0/6 v5]  RTL8366(RB) cleanups part 1
+Date:   Sat, 25 Sep 2021 01:36:22 +0200
+Message-Id: <20210924233628.2016227-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210923211706.2553282-1-luke.w.hsiao@gmail.com> <20210924132005.264e4e2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210924132005.264e4e2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Yuchung Cheng <ycheng@google.com>
-Date:   Fri, 24 Sep 2021 16:30:28 -0700
-Message-ID: <CAK6E8=dH8JYrKcO8tAUbzy6nT=w0eqjAZCnNwWg8qKUMqcwHbQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: tracking packets with CE marks in BW rate sample
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Luke Hsiao <luke.w.hsiao@gmail.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Luke Hsiao <lukehsiao@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 24, 2021 at 1:20 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 23 Sep 2021 21:17:07 +0000 Luke Hsiao wrote:
-> > From: Yuchung Cheng <ycheng@google.com>
-> >
-> > In order to track CE marks per rate sample (one round trip), TCP needs a
-> > per-skb header field to record the tp->delivered_ce count when the skb
-> > was sent. To make space, we replace the "last_in_flight" field which is
-> > used exclusively for NV congestion control. The stat needed by NV can be
-> > alternatively approximated by existing stats tcp_sock delivered and
-> > mss_cache.
-> >
-> > This patch counts the number of packets delivered which have CE marks in
-> > the rate sample, using similar approach of delivery accounting.
->
-> Is this expected to be used from BPF CC? I don't see a user..
-Great question. Yes the commit message could be more clear that this
-intends for both ebpf-CC or other third party module that use ECN. For
-example bbr2 uses it heavily (bbr2 upstream WIP). This feature is
-useful for congestion control research which many use ECN as core
-signals now.
+This is a first set of patches making the RTL8366RB work out of
+the box with a default OpenWrt userspace.
+
+We achieve bridge port isolation with the first patch, and the
+next 5 patches removes the very weird VLAN set-up with one
+VLAN with PVID per port that has been in this driver in all
+vendor trees and in OpenWrt for years.
+
+The switch is now managed the way a modern bridge/DSA switch
+shall be managed.
+
+After these patches are merged, I will send the next set which
+adds new features, some which have circulated before.
+
+ChangeLog v4->v5:
+- Drop the patch disabling 4K VLAN.
+- Drop the patch forcing VLAN0 untagged.
+- Fix a semantic bug in the filer enablement code.
+
+DENG Qingfang (1):
+  net: dsa: rtl8366rb: Support bridge offloading
+
+Linus Walleij (5):
+  net: dsa: rtl8366: Drop custom VLAN set-up
+  net: dsa: rtl8366rb: Rewrite weird VLAN filering enablement
+  net: dsa: rtl8366rb: Fix off-by-one bug
+  net: dsa: rtl8366: Fix a bug in deleting VLANs
+  net: dsa: rtl8366: Drop and depromote pointless prints
+
+ drivers/net/dsa/realtek-smi-core.h |   3 -
+ drivers/net/dsa/rtl8366.c          |  96 ++--------------------
+ drivers/net/dsa/rtl8366rb.c        | 123 ++++++++++++++++++++++++++---
+ 3 files changed, 118 insertions(+), 104 deletions(-)
+
+-- 
+2.31.1
+
