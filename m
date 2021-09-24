@@ -2,118 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E3BC4170B1
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 13:12:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C3F24170C8
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 13:21:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245055AbhIXLNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 07:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245046AbhIXLNf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 07:13:35 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 647C4C061574
-        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 04:12:01 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id j13so9034253qtq.6
-        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 04:12:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hUhQpD5gfUt8U/g+dMoFW28FUgWxCl9mMUlqYJ6VrKg=;
-        b=buEbtztHD1qxRxJqNdGG6ZmPDZ5hX9sJ7fc8eaw0P/UoQbRuAXzcD5aXqGoGpzs4Tw
-         ogeBAILSRNmHgqFHR/t/djhB/Q2QLC/hEMYYCGpeeCt5GWWjGIWwttyesk3tEBLfK6Bg
-         ogRHRZZxqfLDV3nOS5DU+yzo6vvOTlBC0BzSLHootePK2gIewIydxJOVe+DozF1o2Tmz
-         9voFhXJHtNVr7WcIHzMToKSTMKZtntyk45grTCbqIcvFnft6bn9/N/EuRv9wS0BeVE+i
-         vkpMHjBrvBWM/tPDDjEkbReYfJrEE7Cry1oGBYz5FMoy6HkC3I/pRTUYahMx13908IDw
-         ITVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hUhQpD5gfUt8U/g+dMoFW28FUgWxCl9mMUlqYJ6VrKg=;
-        b=J++C7gd648Ni5EJ9qLlEEicNtF7gh5Ex5/1K/GCHZsVHRrBVLDTKL9HblUSUNEuwmM
-         M+Dlg+zxR30eJD5GP8MwDhwHCERmlCmvSY3Gpk32qzSmzMdU+2HeU+vTd2245/Hh6ZHL
-         mGUsRO3uPC49LK5lhh7r+dLcb/Im4FuCdIp+Pzm7Fst+kySqajAAcJPm6FcozhtuX2Vu
-         62VmUMP6HMV88L+Dalp0yXmP74G7tWW6sF4wSkP+evA26pJjhpI1fiGrxPoLoLCA3teO
-         xUIlpLlPTVU5DxSfdvQd+MjFifNkvOZjQcBcxHI1KFGGQPcleSidEmoy5HDF0gybQNcu
-         E2vQ==
-X-Gm-Message-State: AOAM532VbiKQahCel55u7Qe2bS6xqCzxdHFnHl7gEV9xyOxua2LDApBQ
-        jNfnQ6++w6z9/unwqnC7R3u/FqAkOfalUCyrUEM=
-X-Google-Smtp-Source: ABdhPJwQ43KT1loznByXlZpQKMYBBiPiwX+n2+a5OUiYE9NPGH4hjaTYSvvHXEbSDH3OgwvaEEBxkgqESCt9YDjBUlY=
-X-Received: by 2002:ac8:7008:: with SMTP id x8mr3441227qtm.397.1632481920431;
- Fri, 24 Sep 2021 04:12:00 -0700 (PDT)
+        id S245755AbhIXLXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 07:23:04 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:24037 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S245733AbhIXLXD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Sep 2021 07:23:03 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1632482491; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=gShVZAV951WQk1ddVvwaNuu/xkmgZ6qfMXYq5Lm7Zb8=;
+ b=F0N3futff3IDRoopiByAxfvDPIwgi3YnWeOOXrVyIARG5Wb0WOPdbw/ijDQJCUb1tzXAIK3w
+ 48T0voYzQnsL3RiyUQzQzQsvNpWikkJLsPZhKkMZhsH1DK9dUOck0nuLa3mJYn9s93p+yK+l
+ qamQqRAr/AtxoZyvxc6nDqdErMA=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 614db49cbd9e12ebc529341a (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 24 Sep 2021 11:21:00
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 72C03C4338F; Fri, 24 Sep 2021 11:20:59 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 19ACEC4338F;
+        Fri, 24 Sep 2021 11:20:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 19ACEC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210924092652.3707-1-dnlplm@gmail.com> <20210924094909.GA19050@workstation>
-In-Reply-To: <20210924094909.GA19050@workstation>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Fri, 24 Sep 2021 13:11:55 +0200
-Message-ID: <CAGRyCJF7M7wVFthr0MBQVuOo_xe=+mnYxBZ2eYFRZQTmnP8=Kg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] drivers: net: mhi: fix error path in mhi_net_newlink
-To:     Manivannan Sadhasivam <mani@kernel.org>
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] brcmfmac: Replace zero-length array with flexible array
+ member
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210904092217.2848-1-len.baker@gmx.com>
+References: <20210904092217.2848-1-len.baker@gmx.com>
+To:     Len Baker <len.baker@gmx.com>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Len Baker <len.baker@gmx.com>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210924112059.72C03C4338F@smtp.codeaurora.org>
+Date:   Fri, 24 Sep 2021 11:20:59 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mani,
+Len Baker <len.baker@gmx.com> wrote:
 
-Il giorno ven 24 set 2021 alle ore 11:49 Manivannan Sadhasivam
-<mani@kernel.org> ha scritto:
->
-> On Fri, Sep 24, 2021 at 11:26:52AM +0200, Daniele Palmas wrote:
-> > Fix double free_netdev when mhi_prepare_for_transfer fails.
-> >
-> > Fixes: 3ffec6a14f24 ("net: Add mhi-net driver")
-> > Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
->
-> I guess this patch should be backported to stable kernels. So please CC stable
-> list.
+> There is a regular need in the kernel to provide a way to declare
+> having a dynamically sized set of trailing elements in a structure.
+> Kernel code should always use "flexible array members"[1] for these
+> cases. The older style of one-element or zero-length arrays should
+> no longer be used[2].
+> 
+> Also, make use of the struct_size() helper in devm_kzalloc().
+> 
+> [1] https://en.wikipedia.org/wiki/Flexible_array_member
+> [2] https://www.kernel.org/doc/html/v5.14/process/deprecated.html#zero-length-and-one-element-arrays
+> 
+> Signed-off-by: Len Baker <len.baker@gmx.com>
+> Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Just v5.14.x seems to be affected by the same issue, but it requires a
-slightly different patch: I'll try to take care of that.
+Patch applied to wireless-drivers-next.git, thanks.
 
-Thanks,
-Daniele
+3fd445a4d49f brcmfmac: Replace zero-length array with flexible array member
 
->
-> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
->
-> Thanks,
-> Mani
->
-> > ---
-> >  drivers/net/mhi_net.c | 6 +-----
-> >  1 file changed, 1 insertion(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
-> > index d127eb6e9257..aaa628f859fd 100644
-> > --- a/drivers/net/mhi_net.c
-> > +++ b/drivers/net/mhi_net.c
-> > @@ -321,7 +321,7 @@ static int mhi_net_newlink(struct mhi_device *mhi_dev, struct net_device *ndev)
-> >       /* Start MHI channels */
-> >       err = mhi_prepare_for_transfer(mhi_dev);
-> >       if (err)
-> > -             goto out_err;
-> > +             return err;
-> >
-> >       /* Number of transfer descriptors determines size of the queue */
-> >       mhi_netdev->rx_queue_sz = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
-> > @@ -331,10 +331,6 @@ static int mhi_net_newlink(struct mhi_device *mhi_dev, struct net_device *ndev)
-> >               return err;
-> >
-> >       return 0;
-> > -
-> > -out_err:
-> > -     free_netdev(ndev);
-> > -     return err;
-> >  }
-> >
-> >  static void mhi_net_dellink(struct mhi_device *mhi_dev, struct net_device *ndev)
-> > --
-> > 2.30.2
-> >
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210904092217.2848-1-len.baker@gmx.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
