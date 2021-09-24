@@ -2,129 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6F7A416D4F
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 10:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7EE416D71
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 10:09:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244541AbhIXIFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 04:05:40 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:16235 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244543AbhIXIEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 04:04:24 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HG4G917Dcz1DH3m;
-        Fri, 24 Sep 2021 16:00:33 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Fri, 24 Sep 2021 16:01:45 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Fri, 24 Sep
- 2021 16:01:45 +0800
-Subject: Re: [PATCH net-next 1/7] page_pool: disable dma mapping support for
- 32-bit arch with 64-bit DMA
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Jesper Dangaard Brouer" <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        <linuxarm@openeuler.org>,
-        "Jesper Dangaard Brouer" <hawk@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Kevin Hao" <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Marco Elver <elver@google.com>, <memxor@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        David Ahern <dsahern@gmail.com>
-References: <20210922094131.15625-1-linyunsheng@huawei.com>
- <20210922094131.15625-2-linyunsheng@huawei.com>
- <0ffa15a1-742d-a05d-3ea6-04ff25be6a29@redhat.com>
- <CAC_iWjJLCQNHxgbQ-mzLC3OC-m2s7qj3YAtw7vPAKGG6WxywpA@mail.gmail.com>
- <adb2687f-b501-9324-52b2-33ede1169007@huawei.com>
- <YUx8KZS5NPdTRkPS@apalos.home>
- <27bc803a-1687-a583-fa6b-3691fef7552e@huawei.com>
- <CAC_iWj+dandMsja0qh4CYG1Wwhgg=MriL2O74T7=1hXeEKcfXA@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <001c1518-b5db-c1e3-0feb-657ecde61cdc@huawei.com>
-Date:   Fri, 24 Sep 2021 16:01:44 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S244616AbhIXIJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 04:09:19 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:20686 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244605AbhIXIJS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Sep 2021 04:09:18 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1632470866; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: Date: Subject: In-Reply-To: References: Cc:
+ To: From: Sender; bh=oagsw+UheuBzr8hFvh9igKPmwL4Ple1Gl74ol+OtCSE=; b=Vc5LByaufpwCcypNPgNtdzIpdiOPwGOzSd68JZ9QSvpSuG0lTdB9IUZ7irYrmFUzc0jWLIAN
+ Q109ff410QqIS06nX+dlpYbmIow+W7I3fxKh4r6v4J1WtRe15QVHKiHO3eJFNjJ/KQdZpnWq
+ vNwpDP3il7wEUW4E+6kaifzQc0g=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 614d8751ebab839292407c3c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 24 Sep 2021 08:07:45
+ GMT
+Sender: pillair=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D5512C4338F; Fri, 24 Sep 2021 08:07:44 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from PILLAIR1 (unknown [103.155.222.105])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: pillair)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 63179C43618;
+        Fri, 24 Sep 2021 08:07:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 63179C43618
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   <pillair@codeaurora.org>
+To:     "'Kalle Valo'" <kvalo@codeaurora.org>,
+        "'Stephen Boyd'" <swboyd@chromium.org>
+Cc:     <ath10k@lists.infradead.org>, <govinds@codeaurora.org>,
+        <kuabhs@chromium.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <youghand@codeaurora.org>
+References: <002501d7af73$ae0a7620$0a1f6260$@codeaurora.org>    <CAE-0n52DcCwcdR07fvMLrj=RJFtNthy0FdWmt1gBWiD9eLrOvQ@mail.gmail.com> <87bl4itnd8.fsf@codeaurora.org>
+In-Reply-To: <87bl4itnd8.fsf@codeaurora.org>
+Subject: RE: [PATCH] ath10k: Don't always treat modem stop events as crashes
+Date:   Fri, 24 Sep 2021 13:37:37 +0530
+Message-ID: <005101d7b11b$405bf280$c113d780$@codeaurora.org>
 MIME-Version: 1.0
-In-Reply-To: <CAC_iWj+dandMsja0qh4CYG1Wwhgg=MriL2O74T7=1hXeEKcfXA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme718-chm.china.huawei.com (10.1.199.114) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQIYJ9kKn6Tt/ByohP9gdNhIBlqrqgHHLrXjAbRpcN6rFgnMgA==
+Content-Language: en-us
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/9/24 15:25, Ilias Apalodimas wrote:
-> On Fri, 24 Sept 2021 at 10:04, Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>
->> On 2021/9/23 21:07, Ilias Apalodimas wrote:
->>> On Thu, Sep 23, 2021 at 07:13:11PM +0800, Yunsheng Lin wrote:
->>>> On 2021/9/23 18:02, Ilias Apalodimas wrote:
->>>>> Hi Jesper,
->>>>>
->>>>> On Thu, 23 Sept 2021 at 12:33, Jesper Dangaard Brouer
->>>>> <jbrouer@redhat.com> wrote:
->>>>>>
->>>>>>
->>>>>> On 22/09/2021 11.41, Yunsheng Lin wrote:
->>>>>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->>>>>>> index 1a6978427d6c..a65bd7972e37 100644
->>>>>>> --- a/net/core/page_pool.c
->>>>>>> +++ b/net/core/page_pool.c
->>>>>>> @@ -49,6 +49,12 @@ static int page_pool_init(struct page_pool *pool,
->>>>>>>        * which is the XDP_TX use-case.
->>>>>>>        */
->>>>>>>       if (pool->p.flags & PP_FLAG_DMA_MAP) {
->>>>>>> +             /* DMA-mapping is not supported on 32-bit systems with
->>>>>>> +              * 64-bit DMA mapping.
->>>>>>> +              */
->>>>>>> +             if (sizeof(dma_addr_t) > sizeof(unsigned long))
->>>>>>> +                     return -EINVAL;
->>>>>>
->>>>>> As I said before, can we please use another error than EINVAL.
->>>>>> We should give drivers a chance/ability to detect this error, and e.g.
->>>>>> fallback to doing DMA mappings inside driver instead.
->>>>>>
->>>>>> I suggest using EOPNOTSUPP 95 (Operation not supported).
->>>>
->>>> Will change it to EOPNOTSUPP, thanks.
->>>
->>> Mind sending this one separately (and you can keep my reviewed-by).  It
->>> fits nicely on it's own and since I am not sure about the rest of the
->>> changes yet, it would be nice to get this one in.
->>
->> I am not sure sending this one separately really makes sense, as it is
->> mainly used to make supporting the "keep track of pp page when __skb_frag_ref()
->> is called" in patch 5 easier.
-> 
-> It rips out support for devices that are 32bit and have 64bit dma and
-> make the whole code easier to follow.  I thought we agreed on removing
-> the support for those devices regardless didn't we?
-
-I am actually not convinced that the code about PAGE_POOL_DMA_USE_PP_FRAG_COUNT
-(maybe the name is somewhat confusiong) as it it now, but it is after adding patch
-5, and it seems we are not handing the skb_split() case in tso_fragment() for 32bit
-arch with 64bit dma too if we still keep PAGE_POOL_DMA_USE_PP_FRAG_COUNT macro.
 
 
+> -----Original Message-----
+> From: Kalle Valo <kvalo@codeaurora.org>
+> Sent: Friday, September 24, 2021 1:30 PM
+> To: Stephen Boyd <swboyd@chromium.org>
+> Cc: pillair@codeaurora.org; ath10k@lists.infradead.org;
+> govinds@codeaurora.org; kuabhs@chromium.org; linux-arm-
+> msm@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
+> wireless@vger.kernel.org; netdev@vger.kernel.org;
+> youghand@codeaurora.org
+> Subject: Re: [PATCH] ath10k: Don't always treat modem stop events as
+> crashes
 > 
-> Regards
-> /Ilias
-> .
+> Stephen Boyd <swboyd@chromium.org> writes:
 > 
+> > Quoting pillair@codeaurora.org (2021-09-21 22:35:34)
+> >> On 9/5/21 4:04 PM, Stephen Boyd wrote:
+> >>
+> >> > +static int ath10k_snoc_modem_notify(struct notifier_block *nb,
+> >> > +unsigned long
+> > [...]
+> >>
+> >> > +
+> >>
+> >> > +          return NOTIFY_OK;
+> >>
+> >> > +}
+> >>
+> >>
+> >>
+> >> Thanks for posting the patch. It would be preferable to use a
+> >> different flag instead of ATH10K_SNOC_FLAG_UNREGISTERING,
+> >>
+> >> since we are not unloading the ath10k driver.
+> 
+> Weird, I don't see pillair's email on patchwork[1] and not in the ath10k
+list
+> either. Was it sent as HTML or something?
+
+Hi Kalle,
+Yes, I replied via the "In-reply-to" from the patchworks[1] link.
+
+Thanks,
+Rakesh Pillai
+
+> 
+> [1] https://patchwork.kernel.org/project/linux-
+> wireless/patch/20210905210400.1157870-1-swboyd@chromium.org/
+> 
+> --
+> https://patchwork.kernel.org/project/linux-wireless/list/
+> 
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingp
+> atches
+
