@@ -2,111 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4912416863
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 01:16:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3DCB4168A7
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 02:04:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243555AbhIWXRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 19:17:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47546 "EHLO mail.kernel.org"
+        id S243609AbhIXAFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 20:05:51 -0400
+Received: from mga07.intel.com ([134.134.136.100]:42862 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236363AbhIWXRq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Sep 2021 19:17:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 56AA660E05;
-        Thu, 23 Sep 2021 23:16:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632438973;
-        bh=/ffRospjLf6815nzAX4J5r7pcOyGGKeM5iEwxXNbnZc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bVYYU2E4Ra2vKENV7uGbE5hTrseofLy5junHt7TELSxNeYh04XVq8eliin1OQDntW
-         rnIHqOkMYOCVQ4lDd7zcyIjVNlCElnsDxAf0PMxkHsC3sDQXDv1Dm75JKUk9jDD2r4
-         8sBW2vPWJkr1w0potE2PF1dcoiULy/awynRFT+5odYCliCseTMn7RQLsqTPsksuAAv
-         bYs8tqMffWKpg5NjeK4SVpfC99hUz4pB6eMQ9zvCut+RGfs90jnoQueEWNhefxsFI+
-         RmsDirQugKJfOip4CgihOzpRxjdNlEAHoe5WMFTEztsZydp0nnjyXoEvqkxCE1GHj8
-         tAqh+94otEF3Q==
-Date:   Fri, 24 Sep 2021 02:16:09 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        Ariel Elior <aelior@marvell.com>,
-        GR-everest-linux-l2@marvell.com,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        Igor Russkikh <irusskikh@marvell.com>,
-        intel-wired-lan@lists.osuosl.org,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Javed Hasan <jhasan@marvell.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        netdev@vger.kernel.org, Sathya Perla <sathya.perla@broadcom.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: Re: [PATCH net-next 0/6] Batch of devlink related fixes
-Message-ID: <YU0KubuG03l8isms@unreal>
-References: <cover.1632420430.git.leonro@nvidia.com>
- <20210923155547.248ab1aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S240701AbhIXAFu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Sep 2021 20:05:50 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10116"; a="287641070"
+X-IronPort-AV: E=Sophos;i="5.85,318,1624345200"; 
+   d="scan'208";a="287641070"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2021 17:04:18 -0700
+X-IronPort-AV: E=Sophos;i="5.85,318,1624345200"; 
+   d="scan'208";a="435989057"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.1.218])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2021 17:04:18 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev, fw@strlen.de, dcaratti@redhat.com,
+        pabeni@redhat.com, geliangtang@gmail.com
+Subject: [PATCH net 0/2] mptcp: Bug fixes
+Date:   Thu, 23 Sep 2021 17:04:10 -0700
+Message-Id: <20210924000413.89902-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210923155547.248ab1aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 23, 2021 at 03:55:47PM -0700, Jakub Kicinski wrote:
-> On Thu, 23 Sep 2021 21:12:47 +0300 Leon Romanovsky wrote:
-> > I'm asking to apply this batch of devlink fixes to net-next and not to
-> > net, because most if not all fixes are for old code or/and can be considered
-> > as cleanup.
-> > 
-> > It will cancel the need to deal with merge conflicts for my next devlink series :).
-> 
-> Not sure how Dave will feel about adding fixes to net-next,
-> we do merge the trees weekly after all.
+This patch set includes two separate fixes for the net tree:
 
-My almost ready submission queue is:
-➜  kernel git:(m/devlink) git l
-693c1a9ac5b3 (HEAD -> m/devlink) devlink: Delete reload enable/disable interface
-6d39354f8b44 net/mlx5: Register separate reload devlink ops for multiport device
-1ac4e8811fd5 devlink: Allow set specific ops callbacks dynamically
-de1849d3b348 devlink: Allow modification of devlink ops
-7439a45dce72 net: dsa: Move devlink registration to be last devlink command
-7dd23a327395 staging: qlge: Move devlink registration to be last devlink command
-77f074c98b0d ptp: ocp: Move devlink registration to be last devlink command
-fb3f4d40ad49 net: wwan: iosm: Move devlink_register to be last devlink command
-87e95ee9275b netdevsim: Move devlink registration to be last devlink command
-4173205af399 net: ethernet: ti: Move devlink registration to be last devlink command
-bc633a0759f6 qed: Move devlink registration to be last devlink command
-ead4e2027164 ionic: Move devlink registration to be last devlink command
-bc5272ccc378 nfp: Move delink_register to be last command
-a6521bf133d9 net: mscc: ocelot: delay devlink registration to the end
-e0ca9a29cc20 mlxsw: core: Register devlink instance last
-681ac1457516 net/mlx5: Accept devlink user input after driver initialization complete
-9b1a2f4abaef net/mlx4: Move devlink_register to be the last initialization command
-a3b2d9a95a51 net/prestera: Split devlink and traps registrations to separate routines
-bbdf4842432f octeontx2: Move devlink registration to be last devlink command
-5297e23f19e9 ice: Open devlink when device is ready
-18af77a99cea net: hinic: Open device for the user access when it is ready
-91a03cdc92e2 dpaa2-eth: Register devlink instance at the end of probe
-dd5af984e53c liquidio: Overcome missing device lock protection in init/remove flows
-efea109ba32e bnxt_en: Register devlink instance at the end devlink configuration
-6a2b139bcf01 devlink: Notify users when objects are accessible
+Patch 1 makes sure that MPTCP token searches are always limited to the
+appropriate net namespace.
 
-+ a couple of patches that removes "published" field from devlink parameters
-and fix of old devlink bug where parameters were netlink notifications
-were sent twice.
+Patch 2 allows userspace to always change the backup settings for 
+configured endpoints even if those endpoints are not currently in use.
 
-So it will be very helpful to keep this series in net-next.
 
-> 
-> Otherwise the patches look fine.
+Davide Caratti (1):
+  mptcp: allow changing the 'backup' bit when no sockets are open
 
-Thanks
+Florian Westphal (1):
+  mptcp: don't return sockets in foreign netns
+
+ net/mptcp/mptcp_diag.c |  2 +-
+ net/mptcp/pm_netlink.c |  4 +---
+ net/mptcp/protocol.h   |  2 +-
+ net/mptcp/subflow.c    |  2 +-
+ net/mptcp/syncookies.c | 13 +------------
+ net/mptcp/token.c      | 11 ++++++++---
+ net/mptcp/token_test.c | 14 ++++++++------
+ 7 files changed, 21 insertions(+), 27 deletions(-)
+
+
+base-commit: 9bc62afe03afdf33904f5e784e1ad68c50ff00bb
+-- 
+2.33.0
 
