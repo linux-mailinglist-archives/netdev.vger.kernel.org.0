@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BD50416F44
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 11:42:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBA4D416F46
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 11:43:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245300AbhIXJo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 05:44:28 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:53018 "EHLO inva021.nxp.com"
+        id S245324AbhIXJod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 05:44:33 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:53334 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245298AbhIXJoT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Sep 2021 05:44:19 -0400
+        id S245269AbhIXJoV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Sep 2021 05:44:21 -0400
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 2A3612030C4;
-        Fri, 24 Sep 2021 11:42:39 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 0716B204159;
+        Fri, 24 Sep 2021 11:42:42 +0200 (CEST)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E5A53203095;
-        Fri, 24 Sep 2021 11:42:38 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 647132030A9;
+        Fri, 24 Sep 2021 11:42:41 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 273FC183AC8B;
-        Fri, 24 Sep 2021 17:42:36 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 7C17E183AC89;
+        Fri, 24 Sep 2021 17:42:38 +0800 (+08)
 From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
@@ -34,68 +34,202 @@ Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
         linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, matthias.bgg@gmail.com,
         horatiu.vultur@microchip.com
-Subject: [PATCH v5 net-next 0/9] net: dsa: felix: psfp support on vsc9959
-Date:   Fri, 24 Sep 2021 17:52:17 +0800
-Message-Id: <20210924095226.38079-1-xiaoliang.yang_1@nxp.com>
+Subject: [PATCH v5 net-next 1/9] net: mscc: ocelot: serialize access to the MAC table
+Date:   Fri, 24 Sep 2021 17:52:18 +0800
+Message-Id: <20210924095226.38079-2-xiaoliang.yang_1@nxp.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210924095226.38079-1-xiaoliang.yang_1@nxp.com>
+References: <20210924095226.38079-1-xiaoliang.yang_1@nxp.com>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VSC9959 hardware supports Per-Stream Filtering and Policing(PSFP).
-This patch series add PSFP support on tc flower offload of ocelot
-driver. Use chain 30000 to distinguish PSFP from VCAP blocks. Add gate
-and police set to support PSFP in VSC9959 driver.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-v4->v5 changes:
- - Add MAC table lock patch, and move stream data write in
-   ocelot_mact_learn_streamdata().
- - Add two sections of VCAP policers to Seville platform.
+DSA would like to remove the rtnl_lock from its
+SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE handlers, and the felix driver uses
+the same MAC table functions as ocelot.
 
-v3->v4 changes:
- - Introduce vsc9959_psfp_sfi_table_get() function in patch where it is
-   used to fix compile warning.
- - Store MAC entry type before FRER set, and recover it after FRER
-   disabled.
+This means that the MAC table functions will no longer be implicitly
+serialized with respect to each other by the rtnl_mutex, we need to add
+a dedicated lock in ocelot for the non-atomic operations of selecting a
+MAC table row, reading/writing what we want and polling for completion.
 
-v2->v3 changes:
- - Reorder first two patches. Export struct ocelot_mact_entry, then add
-   ocelot_mact_lookup() and ocelot_mact_write() functions.
- - Add PSFP list to struct ocelot, and init it by using
-   ocelot->ops->psfp_init().
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/ethernet/mscc/ocelot.c | 53 +++++++++++++++++++++++-------
+ include/soc/mscc/ocelot.h          |  3 ++
+ 2 files changed, 44 insertions(+), 12 deletions(-)
 
-v1->v2 changes:
- - Use tc flower offload of ocelot driver to support PSFP add and delete.
- - Add PSFP tables add/del functions in felix_vsc9959.c.
-
-Vladimir Oltean (3):
-  net: mscc: ocelot: serialize access to the MAC table
-  net: mscc: ocelot: export struct ocelot_mact_entry
-  net: mscc: ocelot: add MAC table stream learn and lookup operations
-
-Xiaoliang Yang (6):
-  net: mscc: ocelot: set vcap IS2 chain to goto PSFP chain
-  net: mscc: ocelot: add gate and police action offload to PSFP
-  net: dsa: felix: support psfp filter on vsc9959
-  net: dsa: felix: add stream gate settings for psfp
-  net: mscc: ocelot: use index to set vcap policer
-  net: dsa: felix: use vcap policer to set flow meter for psfp
-
- drivers/net/dsa/ocelot/felix.c             |   4 +
- drivers/net/dsa/ocelot/felix.h             |   4 +
- drivers/net/dsa/ocelot/felix_vsc9959.c     | 695 ++++++++++++++++++++-
- drivers/net/dsa/ocelot/seville_vsc9953.c   |   8 +
- drivers/net/ethernet/mscc/ocelot.c         | 112 +++-
- drivers/net/ethernet/mscc/ocelot.h         |  13 -
- drivers/net/ethernet/mscc/ocelot_flower.c  |  84 ++-
- drivers/net/ethernet/mscc/ocelot_vcap.c    | 103 +--
- drivers/net/ethernet/mscc/ocelot_vsc7514.c |   7 +
- include/soc/mscc/ocelot.h                  |  54 +-
- include/soc/mscc/ocelot_ana.h              |  10 +
- include/soc/mscc/ocelot_vcap.h             |   1 +
- 12 files changed, 1011 insertions(+), 84 deletions(-)
-
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index c581b955efb3..9f481cf19931 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -20,11 +20,13 @@ struct ocelot_mact_entry {
+ 	enum macaccess_entry_type type;
+ };
+ 
++/* Must be called with &ocelot->mact_lock held */
+ static inline u32 ocelot_mact_read_macaccess(struct ocelot *ocelot)
+ {
+ 	return ocelot_read(ocelot, ANA_TABLES_MACACCESS);
+ }
+ 
++/* Must be called with &ocelot->mact_lock held */
+ static inline int ocelot_mact_wait_for_completion(struct ocelot *ocelot)
+ {
+ 	u32 val;
+@@ -36,6 +38,7 @@ static inline int ocelot_mact_wait_for_completion(struct ocelot *ocelot)
+ 		TABLE_UPDATE_SLEEP_US, TABLE_UPDATE_TIMEOUT_US);
+ }
+ 
++/* Must be called with &ocelot->mact_lock held */
+ static void ocelot_mact_select(struct ocelot *ocelot,
+ 			       const unsigned char mac[ETH_ALEN],
+ 			       unsigned int vid)
+@@ -67,6 +70,7 @@ int ocelot_mact_learn(struct ocelot *ocelot, int port,
+ 		ANA_TABLES_MACACCESS_ENTRYTYPE(type) |
+ 		ANA_TABLES_MACACCESS_MAC_TABLE_CMD(MACACCESS_CMD_LEARN);
+ 	unsigned int mc_ports;
++	int err;
+ 
+ 	/* Set MAC_CPU_COPY if the CPU port is used by a multicast entry */
+ 	if (type == ENTRYTYPE_MACv4)
+@@ -79,18 +83,28 @@ int ocelot_mact_learn(struct ocelot *ocelot, int port,
+ 	if (mc_ports & BIT(ocelot->num_phys_ports))
+ 		cmd |= ANA_TABLES_MACACCESS_MAC_CPU_COPY;
+ 
++	mutex_lock(&ocelot->mact_lock);
++
+ 	ocelot_mact_select(ocelot, mac, vid);
+ 
+ 	/* Issue a write command */
+ 	ocelot_write(ocelot, cmd, ANA_TABLES_MACACCESS);
+ 
+-	return ocelot_mact_wait_for_completion(ocelot);
++	err = ocelot_mact_wait_for_completion(ocelot);
++
++	mutex_unlock(&ocelot->mact_lock);
++
++	return err;
+ }
+ EXPORT_SYMBOL(ocelot_mact_learn);
+ 
+ int ocelot_mact_forget(struct ocelot *ocelot,
+ 		       const unsigned char mac[ETH_ALEN], unsigned int vid)
+ {
++	int err;
++
++	mutex_lock(&ocelot->mact_lock);
++
+ 	ocelot_mact_select(ocelot, mac, vid);
+ 
+ 	/* Issue a forget command */
+@@ -98,7 +112,11 @@ int ocelot_mact_forget(struct ocelot *ocelot,
+ 		     ANA_TABLES_MACACCESS_MAC_TABLE_CMD(MACACCESS_CMD_FORGET),
+ 		     ANA_TABLES_MACACCESS);
+ 
+-	return ocelot_mact_wait_for_completion(ocelot);
++	err = ocelot_mact_wait_for_completion(ocelot);
++
++	mutex_unlock(&ocelot->mact_lock);
++
++	return err;
+ }
+ EXPORT_SYMBOL(ocelot_mact_forget);
+ 
+@@ -114,7 +132,9 @@ static void ocelot_mact_init(struct ocelot *ocelot)
+ 		   | ANA_AGENCTRL_LEARN_IGNORE_VLAN,
+ 		   ANA_AGENCTRL);
+ 
+-	/* Clear the MAC table */
++	/* Clear the MAC table. We are not concurrent with anyone, so
++	 * holding &ocelot->mact_lock is pointless.
++	 */
+ 	ocelot_write(ocelot, MACACCESS_CMD_INIT, ANA_TABLES_MACACCESS);
+ }
+ 
+@@ -1028,6 +1048,7 @@ int ocelot_port_fdb_do_dump(const unsigned char *addr, u16 vid,
+ }
+ EXPORT_SYMBOL(ocelot_port_fdb_do_dump);
+ 
++/* Must be called with &ocelot->mact_lock held */
+ static int ocelot_mact_read(struct ocelot *ocelot, int port, int row, int col,
+ 			    struct ocelot_mact_entry *entry)
+ {
+@@ -1078,33 +1099,40 @@ static int ocelot_mact_read(struct ocelot *ocelot, int port, int row, int col,
+ int ocelot_fdb_dump(struct ocelot *ocelot, int port,
+ 		    dsa_fdb_dump_cb_t *cb, void *data)
+ {
++	int err = 0;
+ 	int i, j;
+ 
++	/* We could take the lock just around ocelot_mact_read, but doing so
++	 * thousands of times in a row seems rather pointless and inefficient.
++	 */
++	mutex_lock(&ocelot->mact_lock);
++
+ 	/* Loop through all the mac tables entries. */
+ 	for (i = 0; i < ocelot->num_mact_rows; i++) {
+ 		for (j = 0; j < 4; j++) {
+ 			struct ocelot_mact_entry entry;
+ 			bool is_static;
+-			int ret;
+ 
+-			ret = ocelot_mact_read(ocelot, port, i, j, &entry);
++			err = ocelot_mact_read(ocelot, port, i, j, &entry);
+ 			/* If the entry is invalid (wrong port, invalid...),
+ 			 * skip it.
+ 			 */
+-			if (ret == -EINVAL)
++			if (err == -EINVAL)
+ 				continue;
+-			else if (ret)
+-				return ret;
++			else if (err)
++				break;
+ 
+ 			is_static = (entry.type == ENTRYTYPE_LOCKED);
+ 
+-			ret = cb(entry.mac, entry.vid, is_static, data);
+-			if (ret)
+-				return ret;
++			err = cb(entry.mac, entry.vid, is_static, data);
++			if (err)
++				break;
+ 		}
+ 	}
+ 
+-	return 0;
++	mutex_unlock(&ocelot->mact_lock);
++
++	return err;
+ }
+ EXPORT_SYMBOL(ocelot_fdb_dump);
+ 
+@@ -2085,6 +2113,7 @@ int ocelot_init(struct ocelot *ocelot)
+ 
+ 	mutex_init(&ocelot->stats_lock);
+ 	mutex_init(&ocelot->ptp_lock);
++	mutex_init(&ocelot->mact_lock);
+ 	spin_lock_init(&ocelot->ptp_clock_lock);
+ 	snprintf(queue_name, sizeof(queue_name), "%s-stats",
+ 		 dev_name(ocelot->dev));
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 06706a9fd5b1..682cd058096c 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -674,6 +674,9 @@ struct ocelot {
+ 	struct delayed_work		stats_work;
+ 	struct workqueue_struct		*stats_queue;
+ 
++	/* Lock for serializing access to the MAC table */
++	struct mutex			mact_lock;
++
+ 	struct workqueue_struct		*owq;
+ 
+ 	u8				ptp:1;
 -- 
 2.17.1
 
