@@ -2,88 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 714EB41716B
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 14:00:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 119634171B3
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 14:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245273AbhIXMBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 08:01:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58374 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245069AbhIXMBb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Sep 2021 08:01:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=k62SIk6iB0ofAbWbmM8qVQP8XfyHSopwSGdFcY84pgw=; b=AwKgU7EVZ8cpWrCXUBmSdUPhBB
-        vVSoFGbqEw5/Ibiij9dPryUqmJWXGR6X4VxT/wCAEZX0CFGyhdA0RWSMelRnLuTKSLD5Z23JK0aex
-        rQKxapKf2tZBwrfvQ4TtrVKbcCFc7EZaVQ5wrlajpYRPgyJB53GSw3OZpHtDoB1Tb6K4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mTjru-0085OP-MB; Fri, 24 Sep 2021 13:59:54 +0200
-Date:   Fri, 24 Sep 2021 13:59:54 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Xu Liang <lxu@maxlinear.com>
-Cc:     hkallweit1@gmail.com, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, vee.khee.wong@linux.intel.com,
-        linux@armlinux.org.uk, hmehrtens@maxlinear.com,
-        tmohren@maxlinear.com, mohammad.athari.ismail@intel.com
-Subject: Re: [PATCH] net: phy: enhance GPY115 loopback disable function
-Message-ID: <YU29ulYZSlzKVtaE@lunn.ch>
-References: <20210924090537.48972-1-lxu@maxlinear.com>
+        id S245023AbhIXMXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 08:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244404AbhIXMXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 08:23:37 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37088C061756
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 05:22:04 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id y28so39299977lfb.0
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 05:22:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Nxac5QYLROyRUMFQp61d5aUplVDEPOjNKkJuYM/lJy8=;
+        b=PTAH8WCR6oy8VsihHfSmZWzoecRFWVHUvP1XmrZDBF8PulxjOkk7TS8J9ss7f1PV1l
+         +Dj+KmpW6eTl58hKsjY9iY2PboqXBdine0yuo6xqPX2cq1ulK5YXMgpH414JiP+4oaPB
+         Y6eoL6WQrRufszk6Zr8tk58nCUuNOfNRPf9mTp6k6daNpRW7Q85frCqN4pn4f3hVgHmD
+         TfpMO6nM+IaxY46R3n2P33fEHC5d9jUOjPqIlEUkrY93Rf5fIlWPMywMxAEIvCMMxI2Q
+         NDqxXREWWFQhViemsrAgvMzLw2NQSYogU3h2+L6LGsayP1BHZQCoHoTx8Ow94EfTWFM/
+         X5rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Nxac5QYLROyRUMFQp61d5aUplVDEPOjNKkJuYM/lJy8=;
+        b=FaA7yg5pO7KpZbAX0OvyC0lEV/3g9srukaDqrKgsFuStzNiXUXzpdp7Qnmwq4JdvZE
+         7hI84fe9dJngHYDRyxUZY/VlkSwgN4fSB3bRwImPoOYRwI1lD8QHhv/SQsz9AtAVI2AG
+         XmrdEA58acWUw9IcdpkxETUot25Thg5yeel5duM9M3jtCms8abBhd2fei2IQrcvff4Jf
+         CEoS78h2E8Robxit2okALTzG03p/lBK4wzCP+mIiOXdmrYwrY5FCwhy1xFoS5mkBBaLM
+         bH3BnOGjFk/1tRJVgPNSyM4KfglpqIOIIW0ipa8uqUgE6PMSKcQm1woll3As5B5v1PbU
+         laRw==
+X-Gm-Message-State: AOAM530/pWJNWnL8VlLJdOgYGX+2lnabda8blFhF4btUf4EYKgUHnM0F
+        +geggMErTQBUxLPQQdMjNdRCUg==
+X-Google-Smtp-Source: ABdhPJxzVMBe5XlLzFJTxjx7wrTW2bt544/Wz7Kmhisw8LTiD8f/VMsEYHwXultVAPb5fh+n4Z2Q6A==
+X-Received: by 2002:a2e:5111:: with SMTP id f17mr11003691ljb.409.1632486121932;
+        Fri, 24 Sep 2021 05:22:01 -0700 (PDT)
+Received: from localhost.localdomain (88-112-130-172.elisa-laajakaista.fi. [88.112.130.172])
+        by smtp.gmail.com with ESMTPSA id o19sm740508lfg.62.2021.09.24.05.22.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Sep 2021 05:22:01 -0700 (PDT)
+From:   Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+To:     Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Julien Wajsberg <felash@gmail.com>
+Subject: [PATCH v3] iwlwifi: pcie: add configuration of a Wi-Fi adapter on Dell XPS 15
+Date:   Fri, 24 Sep 2021 15:21:54 +0300
+Message-Id: <20210924122154.2376577-1-vladimir.zapolskiy@linaro.org>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210924090537.48972-1-lxu@maxlinear.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 24, 2021 at 05:05:37PM +0800, Xu Liang wrote:
-> GPY115 need reset PHY when it comes out from loopback mode if the firmware
-> version number (lower 8 bits) is equal to or below 0x76.
-> 
-> Signed-off-by: Xu Liang <lxu@maxlinear.com>
-> ---
->  drivers/net/phy/mxl-gpy.c | 30 ++++++++++++++++++++++++++++--
->  1 file changed, 28 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
-> index 2d5d5081c3b6..3ef62d5c4776 100644
-> --- a/drivers/net/phy/mxl-gpy.c
-> +++ b/drivers/net/phy/mxl-gpy.c
-> @@ -493,6 +493,32 @@ static int gpy_loopback(struct phy_device *phydev, bool enable)
->  	return ret;
->  }
->  
-> +static int gpy115_loopback(struct phy_device *phydev, bool enable)
-> +{
-> +	int ret;
-> +	int fw_minor;
-> +
-> +	if (enable)
-> +		return gpy_loopback(phydev, enable);
-> +
-> +	/* Show GPY PHY FW version in dmesg */
+There is a Killer AX1650 2x2 Wi-Fi 6 and Bluetooth 5.1 wireless adapter
+found on Dell XPS 15 (9510) laptop, its configuration was present on
+Linux v5.7, however accidentally it has been removed from the list of
+supported devices, let's add it back.
 
-You don't show anything.
+The problem is manifested on driver initialization:
 
-> +	ret = phy_read(phydev, PHY_FWV);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	fw_minor = FIELD_GET(PHY_FWV_MINOR_MASK, ret);
-> +	if (fw_minor > 0x0076)
-> +		return gpy_loopback(phydev, 0);
-> +
-> +	ret = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, BMCR_RESET);
-> +	if (!ret) {
-> +		/* Some delay for the reset complete. */
-> +		msleep(100);
-> +	}
+  Intel(R) Wireless WiFi driver for Linux
+  iwlwifi 0000:00:14.3: enabling device (0000 -> 0002)
+  iwlwifi: No config found for PCI dev 43f0/1651, rev=0x354, rfid=0x10a100
+  iwlwifi: probe of 0000:00:14.3 failed with error -22
 
-genphy_soft_reset() would be better. Does a soft reset clear the
-BMCR_LOOPBACK bit? It should do, according to C22.
+Bug: https://bugzilla.kernel.org/show_bug.cgi?id=213939
+Fixes: 3f910a25839b ("iwlwifi: pcie: convert all AX101 devices to the device tables")
+Cc: Julien Wajsberg <felash@gmail.com>
+Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+---
+Changes from v2 to v3:
+* specified names to the added wireless adapters.
 
-	      Andrew
+Changes from v1 to v2:
+* moved the added lines in a way to preserve a numerical order by devid.
+
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index 61b2797a34a8..e3996ff99bad 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -547,6 +547,8 @@ static const struct iwl_dev_info iwl_dev_info_table[] = {
+ 	IWL_DEV_INFO(0x43F0, 0x0074, iwl_ax201_cfg_qu_hr, NULL),
+ 	IWL_DEV_INFO(0x43F0, 0x0078, iwl_ax201_cfg_qu_hr, NULL),
+ 	IWL_DEV_INFO(0x43F0, 0x007C, iwl_ax201_cfg_qu_hr, NULL),
++	IWL_DEV_INFO(0x43F0, 0x1651, killer1650s_2ax_cfg_qu_b0_hr_b0, iwl_ax201_killer_1650s_name),
++	IWL_DEV_INFO(0x43F0, 0x1652, killer1650i_2ax_cfg_qu_b0_hr_b0, iwl_ax201_killer_1650i_name),
+ 	IWL_DEV_INFO(0x43F0, 0x2074, iwl_ax201_cfg_qu_hr, NULL),
+ 	IWL_DEV_INFO(0x43F0, 0x4070, iwl_ax201_cfg_qu_hr, NULL),
+ 	IWL_DEV_INFO(0xA0F0, 0x0070, iwl_ax201_cfg_qu_hr, NULL),
+-- 
+2.33.0
+
