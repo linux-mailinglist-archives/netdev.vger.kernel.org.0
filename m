@@ -2,180 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAE3A4169C7
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 04:03:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9C714169C5
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 04:02:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243851AbhIXCEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 22:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37752 "EHLO
+        id S243848AbhIXCE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 22:04:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243853AbhIXCEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 22:04:33 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC9BC061574;
-        Thu, 23 Sep 2021 19:03:01 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id f133so2457516yba.11;
-        Thu, 23 Sep 2021 19:03:01 -0700 (PDT)
+        with ESMTP id S243792AbhIXCE1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 22:04:27 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB81C061574
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 19:02:55 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id 24so12533858oix.0
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 19:02:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0wsZ86eDvq8rFmKfUftx4luAbwr+ZRtVm+Rx+YkpDik=;
-        b=ILfxGwVSmwzvNn+m6MCcdOhWfndmx2yG/ncNzHivTj6FQnNOf2u82alVQScQarghfT
-         ocpUpX4nkYkJUbTEYCoxE0hpXuC0d8nc1Kh+UvlONBIMdpwDt2NuPMXDy+Z7SfCxH1FI
-         w38SgUdsDYGv0ga/TVl6JrW89uZyyl0oJ36HzdxVndJEEdD8ZsmdrXVZ0/3318JwcRQ6
-         FrBOCsHIZHCzTZuDnjkoLpP6lPiimuUbNTX5OwbS7PgdTsVANkftp5m1/I6aP5/sbpXv
-         liomsi2g0BMqFfl85278dY/AAu+S/3ucrPgMX9smzTuIEdojrXI4WT/n2rtWivRThw7e
-         7Icg==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=dgpwPCQznEmVXGZRT9a+ot3RVGNTTHbl31G3nps7wKQ=;
+        b=hKz8RC3SOhSmX3zVPvb/WziL2fRzz11bqqCwdwIKBGBWnseUgqJten4tt5aDdGx6D2
+         JWC124Fx36Tofk0xpu+MmvaDd3nhv1ZdxcgMhpkIbQg10uU/58m3pWCg9slwm761Xvqk
+         W5cUhIk4PWiW1M8tOoFp9kTAWOImqngSysK0Det7DItxyk510Wf69dfz/pcP3RESSb/y
+         TYUT6Vr/B965YoepN560fzgxVfCWDxsOcVCHuF/JJegJheXI6CaxQBdhZZYX9SoqAj+m
+         ertbCyC3YWhCjgKOxxCMoTFaunR4D1hFXugAvmJvBXZGG/iZ5oK5OIpRur00V3F/sMOB
+         KTIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0wsZ86eDvq8rFmKfUftx4luAbwr+ZRtVm+Rx+YkpDik=;
-        b=mXMr5KXit5U777Wu+F9IDwlOrBvyP/0zGt4rgRUYBrRmwB2U3XgTKZ3KvfV+w7g5aT
-         GFuSVZWni6k9YUUHPIKZIyZYLj1AqQ4RaS4300gfhYgIWTr0LVvt0lozbYl5oBg0m1Vv
-         eYqvVsY1wFUBQ32dx0nL1nUDKJZwDo/YgHxDt1VtZcvQVwI8xFrvpz9/VgRAwf3q9FMz
-         x/feHPbF5BuF8jD7mrIN6K46GZGY8++SKY0Y6KGEe6cGEfQhZUCwMjj5KPVViahnWB0N
-         g08gE/Fvhfut4wOKBfO2h5LNYTQ+SwmpzuB9Du5abmNie9s65X+CGkz1tv4W4l/y4kFy
-         3meQ==
-X-Gm-Message-State: AOAM5317Xo+KmQCGcK8+VpkXgLihZ/P15/I4IzI9NmyOyFHQW4hhHdb4
-        Mdm9UawqaVAqV+uy40ZkrqALEM5vOf1TPs5yBIo=
-X-Google-Smtp-Source: ABdhPJwgf4bPVvwDo7YWfjkAmOWikv0CNiP00v/Ii6qpI2sJfFTUX7Gm7bQsINT2ksCcfQATPEY4ssUydQyzu/TkKpI=
-X-Received: by 2002:a25:47c4:: with SMTP id u187mr10023389yba.225.1632448980821;
- Thu, 23 Sep 2021 19:03:00 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=dgpwPCQznEmVXGZRT9a+ot3RVGNTTHbl31G3nps7wKQ=;
+        b=DvizuNjw5SoHG1J+UpcB0gBHNCpZr/s1dXfGhfZvv6lp55d+yh8RHzunsT0Od3Prmo
+         z5cD+aqA/huW682GyX2AFi/DEvk57h/Z1KsohNRK6SEM9MJHQqYmWizCLoEFj0xyFifi
+         aoxRJrjTsQY6gLJiqvXcHvjCuxSfhYU2kHohhprvLFSrBTT3e9Imgps+q/7bhmzQ8/3z
+         VPIoRQeCjIavO6EgkOUDwYhi3skFc0+nRY6ks5LhYXA71E/sV1eFm16n8T93V2/yyUUJ
+         MIDhhYb+iSf5ZzP8sGyhplElEe6hSSebf2EkLbnoZSturOWXTdQV+sGSxjWDVpcrkuKb
+         9heA==
+X-Gm-Message-State: AOAM532+gAPW4ZuibrFwBxomoiY1Dz10C9sJOf7u0ZJWuN1PryIzItNQ
+        CVpleSx+V5i1kddl3e9q8f8h8MHw4x3/ddHi9SynaKGUiCnVopnx
+X-Google-Smtp-Source: ABdhPJxhRvhZAiaGrHqCpHRLUm9YRKoxLqvPmBrUtkoyv/gYXlFw1veaYr9l1MVHMjyQ3M+zAjoE4zrWSUp+hk467GE=
+X-Received: by 2002:aca:604:: with SMTP id 4mr7830971oig.8.1632448974010; Thu,
+ 23 Sep 2021 19:02:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210920151112.3770991-1-davemarchevsky@fb.com>
- <20210923205105.zufadghli5772uma@ast-mbp> <35e837fb-ac22-3ea1-4624-2a890f6d0db0@fb.com>
-In-Reply-To: <35e837fb-ac22-3ea1-4624-2a890f6d0db0@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 23 Sep 2021 19:02:49 -0700
-Message-ID: <CAEf4Bzb+r5Fpu1YzGX01YY6BQb1xnZiMRW3hUF+uft4BsJCPoA@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf: keep track of prog verification stats
-To:     Dave Marchevsky <davemarchevsky@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Yonghong Song <yhs@fb.com>
+Received: by 2002:a4a:d587:0:0:0:0:0 with HTTP; Thu, 23 Sep 2021 19:02:52
+ -0700 (PDT)
+Reply-To: michaelrachid7@gmail.com
+From:   Michael Rachid <hamidfaith031@gmail.com>
+Date:   Fri, 24 Sep 2021 03:02:52 +0100
+Message-ID: <CAFepVPqmjP+vRtQnCs0Kg+AFw0D-gowEK=du206+gmrZ0iDY5Q@mail.gmail.com>
+Subject: =?UTF-8?B?7KCc7JWIIGplYW4vUHJvcG9zYWw=?=
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 23, 2021 at 6:27 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
->
-> On 9/23/21 4:51 PM, Alexei Starovoitov wrote:
-> > On Mon, Sep 20, 2021 at 08:11:10AM -0700, Dave Marchevsky wrote:
-> >> The verifier currently logs some useful statistics in
-> >> print_verification_stats. Although the text log is an effective feedback
-> >> tool for an engineer iterating on a single application, it would also be
-> >> useful to enable tracking these stats in a more structured form for
-> >> fleetwide or historical analysis, which this patchset attempts to do.
-> >>
-> >> A concrete motivating usecase which came up in recent weeks:
-> >>
-> >> A team owns a complex BPF program, with various folks extending its
-> >> functionality over the years. An engineer tries to make a relatively
-> >> simple addition but encounters "BPF program is too large. Processed
-> >> 1000001 insn".
-> >>
-> >> Their changes bumped the processed insns from 700k to over the limit and
-> >> there's no obvious way to simplify. They must now consider a large
-> >> refactor in order to incorporate the new feature. What if there was some
-> >> previous change which bumped processed insns from 200k->700k which
-> >> _could_ be modified to stress verifier less? Tracking historical
-> >> verifier stats for each version of the program over the years would
-> >> reduce manual work necessary to find such a change.
-> >>
-> >>
-> >> Although parsing the text log could work for this scenario, a solution
-> >> that's resilient to log format and other verifier changes would be
-> >> preferable.
-> >>
-> >> This patchset adds a bpf_prog_verif_stats struct - containing the same
-> >> data logged by print_verification_stats - which can be retrieved as part
-> >> of bpf_prog_info. Looking for general feedback on approach and a few
-> >> specific areas before fleshing it out further:
-> >>
-> >> * None of my usecases require storing verif_stats for the lifetime of a
-> >>   loaded prog, but adding to bpf_prog_aux felt more correct than trying
-> >>   to pass verif_stats back as part of BPF_PROG_LOAD
-> >> * The verif_stats are probably not generally useful enough to warrant
-> >>   inclusion in fdinfo, but hoping to get confirmation before removing
-> >>   that change in patch 1
-> >> * processed_insn, verification_time, and total_states are immediately
-> >>   useful for me, rest were added for parity with
-> >>      print_verification_stats. Can remove.
-> >> * Perhaps a version field would be useful in verif_stats in case future
-> >>   verifier changes make some current stats meaningless
-> >> * Note: stack_depth stat was intentionally skipped to keep patch 1
-> >>   simple. Will add if approach looks good.
-> >
-> > Sorry for the delay. LPC consumes a lot of mental energy :)
-> >
-> > I see the value of exposing some of the verification stats as prog_info.
-> > Let's look at the list:
-> > struct bpf_prog_verif_stats {
-> >        __u64 verification_time;
-> >        __u32 insn_processed;
-> >        __u32 max_states_per_insn;
-> >        __u32 total_states;
-> >        __u32 peak_states;
-> >        __u32 longest_mark_read_walk;
-> > };
-> > verification_time is non deterministic. It varies with frequency
-> > and run-to-run. I don't see how alerting tools can use it.
->
-> Makes sense to me, will get rid of it.
->
-> > insn_processed is indeed the main verification metric.
-> > By now it's well known and understood.
-> >
-> > max_states_per_insn, total_states, etc were the metrics I've studied
-> > carefully with pruning, back tracking and pretty much every significant
-> > change I did or reiviewed in the verifier. They're useful to humans
-> > and developers, but I don't see how alerting tools will use them.
-> >
-> > So it feels to me that insn_processed alone will be enough to address the
-> > monitoring goal.
->
-> For the concrete usecase in my original message insn_processed would be
-> enough. For the others - I thought there might be value in gathering
-> those "fleetwide" to inform verifier development, e.g.:
->
-> "Hmm, this team's libbpf program has been regressing total_states over
-> past few {kernel, llvm} rollouts, but they haven't been modifying it.
-> Let's try to get a minimal repro, send to bpf@vger, and contribute to
-> selftests if it is indeed hitting a weird verifier edge case"
->
-> So for those I'm not expecting them to be useful to alert on or be a
-> number that the average BPF program writer needs to care about.
->
-> Of course this is hypothetical as I haven't tried to gather such data
-> and look for interesting patterns. But these metrics being useful to
-> you when looking at significant verifier changes is a good sign.
-
-One reason to not add all those fields is to not end up with
-meaningless stats (in the future) in UAPI. One way to work around that
-is to make it "unstable" by providing it through raw_tracepoint as
-internal kernel struct.
-
-Basically, the proposal would be: add new tracepoint for when BPF
-program is verified, either successfully or not. As one of the
-parameters provide stats struct which is internal to BPF verifier and
-is not exposed through UAPI.
-
-Such tracepoint actually would be useful more generally as well, e.g.,
-to monitor which programs are verified in the fleet, what's the rate
-of success/failure (to detect verifier regression), what are the stats
-(verification time actually would be good to have there, again for
-stats and detecting regression), etc, etc.
-
-WDYT?
-
->
-> > It can be exposed to fd_info and printed by bpftool.
-> > If/when it changes with some future verifier algorithm we should be able
-> > to approximate it.
-> >
->
+7Lmc6rWs7JeQ6rKMLA0KDQrrgpjripQg64u57Iug6rO8IO2VqOq7mCDsspjrpqztlZjqs6Ag7Iu2
+7J2AIOyCrOyXhSDsoJzslYjsl5Ag64yA7ZW0IOyVjOumrOq4sCDsnITtlbQg6riA7J2EIOyUgeuL
+iOuLpC4NCjXsspzrp4wg64us65+s6rCAIO2IrOyeheuQqeuLiOuLpC4g66qo65OgIOqyg+ydtCDt
+lanrspXsoIHsnbTqs6Ag7JyE7ZeY7ZWY7KeAIOyViuycvOuLiCDslYjsi6ztlZjsi63si5zsmKQu
+DQrqtIDsi6zsnYQg7ZGc7Iuc7ZW0IOyjvOyLreyLnOyYpC4NCg0K66eI7J207YG0IOudvOyLnOuT
+nC4NCg0KY2hpbmd1ZWdlLA0KDQpuYW5ldW4gZGFuZ3Npbmd3YSBoYW1ra2UgY2hlb2xpaGFnbyBz
+aXAtZXVuIHNhLWVvYiBqZWFuLWUgZGFlaGFlDQphbGxpZ2kgd2loYWUgZ2V1bC1ldWwgc3NldWJu
+aWRhLg0KNWNoZW9ubWFuIGRhbGxlb2dhIHR1LWliZG9lYm5pZGEuIG1vZGV1biBnZW9zLWkgaGFi
+YmVvYmplb2ctaWdvDQp3aWhlb21oYWppIGFuaC1ldW5pIGFuc2ltaGFzaWJzaW8uDQpnd2Fuc2lt
+LWV1bCBweW9zaWhhZSBqdXNpYnNpby4NCg0KbWFpa2V1bCBsYXNpZGV1Lg0KDQoNCkRlYXIgZnJp
+ZW5kLA0KDQpJIHdyaXRlIHRvIGluZm9ybSB5b3UgYWJvdXQgYSBidXNpbmVzcyBwcm9wb3NhbCBJ
+IGhhdmUgd2hpY2ggSSB3b3VsZA0KbGlrZSB0byBoYW5kbGUgd2l0aCB5b3UuDQpGaWZ0eSBtaWxs
+aW9uIGRvbGxhcnMgaXMgaW52b2x2ZWQuIEJlIHJlc3QgYXNzdXJlZCB0aGF0IGV2ZXJ5dGhpbmcg
+aXMNCmxlZ2FsIGFuZCByaXNrIGZyZWUuDQpLaW5kbHkgaW5kaWNhdGUgeW91ciBpbnRlcmVzdC4N
+Cg0KTWljaGFlbCBSYWNoaWQuDQo=
