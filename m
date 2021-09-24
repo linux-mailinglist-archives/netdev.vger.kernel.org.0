@@ -2,97 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7164416A0C
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 04:36:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3538416A16
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 04:39:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243918AbhIXChf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 22:37:35 -0400
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:59721 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233314AbhIXChe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 22:37:34 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UpOL48y_1632450958;
-Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UpOL48y_1632450958)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 24 Sep 2021 10:35:59 +0800
-Subject: [PATCH v2] net: prevent user from passing illegal stab size
-From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:TC subsystem" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <da8bd5e9-0476-d75b-4669-0a21637663b2@linux.alibaba.com>
-Message-ID: <afa1a88b-e4c2-9ad9-939c-b2d1e71fca11@linux.alibaba.com>
-Date:   Fri, 24 Sep 2021 10:35:58 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S243934AbhIXClZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 22:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46036 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232976AbhIXClY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 22:41:24 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71822C061574;
+        Thu, 23 Sep 2021 19:39:52 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <da8bd5e9-0476-d75b-4669-0a21637663b2@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1632451190;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1pf6JHCeBw9ltmD5jCIx3FWgGbPQ5ydU17gpry5ETxc=;
+        b=tSHN14QdKppcl+snRQHoEd2N9gyTGDx9aZ8fS3PZ5wN+o2xSmJzLJe2zi2a5c3NrUbxDf3
+        oqjaEl37J7Xdk0kLpJfkwSZhpk5gbpcG6b5NtlGWjUVXTDIPo7VpDtiBIjAC+/TFMkb+2Y
+        r/oTlWjkL9xsrfXBsZVNXXLq7RT+lT0=
+Date:   Fri, 24 Sep 2021 02:39:49 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   yajun.deng@linux.dev
+Message-ID: <d03a2c604913430c8f83c84f02868e6d@linux.dev>
+Subject: Re: [PATCH net-next] net: socket: integrate sockfd_lookup() and
+ sockfd_lookup_light()
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20210923082453.42096cc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210923082453.42096cc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210922063106.4272-1-yajun.deng@linux.dev>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We observed below report when playing with netlink sock:
-
-  UBSAN: shift-out-of-bounds in net/sched/sch_api.c:580:10
-  shift exponent 249 is too large for 32-bit type
-  CPU: 0 PID: 685 Comm: a.out Not tainted
-  Call Trace:
-   dump_stack_lvl+0x8d/0xcf
-   ubsan_epilogue+0xa/0x4e
-   __ubsan_handle_shift_out_of_bounds+0x161/0x182
-   __qdisc_calculate_pkt_len+0xf0/0x190
-   __dev_queue_xmit+0x2ed/0x15b0
-
-it seems like kernel won't check the stab log value passing from
-user, and will use the insane value later to calculate pkt_len.
-
-This patch just add a check on the size/cell_log to avoid insane
-calculation.
-
-Reported-by: Abaci <abaci@linux.alibaba.com>
-Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
----
- include/net/pkt_sched.h | 1 +
- net/sched/sch_api.c     | 6 ++++++
- 2 files changed, 7 insertions(+)
-
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index 6d7b12c..bf79f3a 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -11,6 +11,7 @@
- #include <uapi/linux/pkt_sched.h>
-
- #define DEFAULT_TX_QUEUE_LEN	1000
-+#define STAB_SIZE_LOG_MAX	30
-
- struct qdisc_walker {
- 	int	stop;
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 5e90e9b..12f39a2 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -513,6 +513,12 @@ static struct qdisc_size_table *qdisc_get_stab(struct nlattr *opt,
- 		return stab;
- 	}
-
-+	if (s->size_log > STAB_SIZE_LOG_MAX ||
-+	    s->cell_log > STAB_SIZE_LOG_MAX) {
-+		NL_SET_ERR_MSG(extack, "Invalid logarithmic size of size table");
-+		return ERR_PTR(-EINVAL);
-+	}
-+
- 	stab = kmalloc(sizeof(*stab) + tsize * sizeof(u16), GFP_KERNEL);
- 	if (!stab)
- 		return ERR_PTR(-ENOMEM);
--- 
-1.8.3.1
-
-
+September 23, 2021 11:24 PM, "Jakub Kicinski" <kuba@kernel.org> wrote:=0A=
+=0A> On Wed, 22 Sep 2021 14:31:06 +0800 Yajun Deng wrote:=0A> =0A>> As co=
+mmit 6cb153cab92a("[NET]: use fget_light() in net/socket.c") said,=0A>> s=
+ockfd_lookup_light() is lower load than sockfd_lookup(). So we can=0A>> r=
+emove sockfd_lookup() but keep the name. As the same time, move flags=0A>=
+> to sockfd_put().=0A> =0A> You just assume that each caller of sockfd_lo=
+okup() already meets the=0A> criteria under which sockfd_lookup_light() c=
+an be used? Am I reading=0A> this right?=0A> =0AYes, this patch means eac=
+h caller of sockfd_lookup() can used sockfd_lookup_light() instead.=0A> P=
+lease extend the commit message clearly walking us thru why this is=0A> s=
+afe now (and perhaps why it wasn't in the past).=0A>=0AThe sockfd_lookup(=
+) and  sockfd_lookup_light() are both safe. The fact that they have been =
+around for so long is the best proof. sockfd_lookup_light() is just lower=
+ load than sockfd_lookup(). so we can used the lower load helper function=
+.=0A=0A>> static ssize_t sockfs_listxattr(struct dentry *dentry, char *bu=
+ffer,=0A>> size_t size)=0A>> @@ -1680,9 +1659,9 @@ int __sys_bind(int fd,=
+ struct sockaddr __user *umyaddr, int addrlen)=0A>> {=0A>> struct socket =
+*sock;=0A>> struct sockaddr_storage address;=0A>> - int err, fput_needed;=
+=0A>> + int err;=0A>> =0A>> - sock =3D sockfd_lookup_light(fd, &err, &fpu=
+t_needed);=0A>> + sock =3D sockfd_lookup(fd, &err);=0A>> if (sock) {=0A>>=
+ err =3D move_addr_to_kernel(umyaddr, addrlen, &address);=0A>> if (!err) =
+{=0A>> @@ -1694,7 +1673,7 @@ int __sys_bind(int fd, struct sockaddr __use=
+r *umyaddr, int addrlen)=0A>> (struct sockaddr *)=0A>> &address, addrlen)=
+;=0A>> }=0A>> - fput_light(sock->file, fput_needed);=0A>> + sockfd_put(so=
+ck);=0A> =0A> And we just replace fput_light() with fput() even tho the r=
+eference was=0A> taken with fdget()? fdget() =3D=3D __fget_light().=0A> =
+=0A> Maybe you missed fget() vs fdget()?=0A=0AIn fact, the sockfd_put() a=
+lready changed in this patch. Here is the modified:=0A#define            =
+         sockfd_put(sock)             \=0Ado {                           =
+                   \=0A       struct fd *fd =3D (struct fd *)&sock->file;=
+ \=0A                                                 \=0A       if (fd->=
+flags & FDPUT_FPUT)               \=0A               fput(sock->file);   =
+              \=0A}=0A=0A> =0A> All these changes do not immediately stri=
+ke me as correct.=0A> =0AThis is the information of this patch:=0A includ=
+e/linux/net.h |   8 +++-=0A net/socket.c        | 101 +++++++++++++++++--=
+-------------------------=0A 2 files changed, 46 insertions(+), 63 deleti=
+ons(-)=0A=0A>> }=0A>> return err;=0A>>=20}
