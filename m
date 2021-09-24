@@ -2,186 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20000416D06
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 09:45:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55A13416D10
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 09:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244461AbhIXHqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 03:46:14 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:9919 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235134AbhIXHqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 03:46:12 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HG3pW0xk5z8ymX;
-        Fri, 24 Sep 2021 15:40:03 +0800 (CST)
-Received: from kwepemm000008.china.huawei.com (7.193.23.125) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Fri, 24 Sep 2021 15:44:37 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- kwepemm000008.china.huawei.com (7.193.23.125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Fri, 24 Sep 2021 15:44:36 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2308.008; Fri, 24 Sep 2021 08:44:34 +0100
-From:   Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To:     Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-CC:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Kirti Wankhede" <kwankhede@nvidia.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        liulongfang <liulongfang@huawei.com>
-Subject: RE: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
- transition validity
-Thread-Topic: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
- transition validity
-Thread-Index: AQHXr54pt96rmXk0YUaXSN2Kf89+2auxakgA///+2wCAACw6gIABM1JQ
-Date:   Fri, 24 Sep 2021 07:44:34 +0000
-Message-ID: <164439bb579d41639edf9a01a538a5ef@huawei.com>
-References: <cover.1632305919.git.leonro@nvidia.com>
- <c87f55d6fec77a22b110d3c9611744e6b28bba46.1632305919.git.leonro@nvidia.com>
- <42729adc4df649f7b3ce5dc95e66e2dc@huawei.com> <YUxiPqShZT4bk0uL@unreal>
- <60989aa8-4231-0cdf-47bb-1e2026bd1f17@nvidia.com>
-In-Reply-To: <60989aa8-4231-0cdf-47bb-1e2026bd1f17@nvidia.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.91.242]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S244481AbhIXHq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 03:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57500 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244471AbhIXHq4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 03:46:56 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD15CC061574
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 00:45:23 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id w19so1167480ybs.3
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 00:45:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VzEkKbf+8GOBCumwF0wyu+zgn/fR7q1MOGRVll1HpEE=;
+        b=Y4P3G7O2QPVN5NTdV1SLpb3F6rsE77Q7DZp7bz5/ghgXpm1L8BiISMMeszO9RShG29
+         k+a7Wd4hRf1OuhxIIdG26DoE1veD+Tpmd20jFu68xmkzC+xgexUn1QSEf2lAJpxEi+Dm
+         0OaTyuACM1HcEmaLo3jc/eeWvSbKLl5TmOZ0gRVBi9gjAW/8CwQQ0oUuTXmBsib0P4Ib
+         pDrm3nvOUHgF0HttyvGzrwuncLxJR3ZX9FcfgqOG1/J1umDFy2aKgKxjNBRpFucPoTFI
+         xqnJqgE6uGvgvNZ4VPyHT8dXteYjvgFFZ/N+Uh8Gma01qEs/6b79FsP+3yuBagHr31B4
+         FQgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VzEkKbf+8GOBCumwF0wyu+zgn/fR7q1MOGRVll1HpEE=;
+        b=z6MQbXYYluoaGIVf8EcJ6lM8SFczerADumYS4caZvsOj7gHbcmevNWvvtw8TSyjTAi
+         cISwoHZlb3WXKo+ktV/M5vIwpGMLoDpp0KXhQzPUvGSRYPjFOI8kWryaaOzoTWCDJiSr
+         JYIiehQOmBlhcMOVoofwQ4GN03+MboKoNrSLedAuPwRvvwnFH4M9Op38RUtjj2X4BnQX
+         xvAotF4D873csVr4kKwPbrpkbB63DBjJ8iQEED4dYxIDePV/ydMQBnFfGTyDfowx0AY4
+         6itwNulEogzHCAlw/jgHbyXDHcSVNWf+5edwqE7N7Wdjkspd4WmatbkYSaWQkcwie215
+         rDAg==
+X-Gm-Message-State: AOAM530EbnLsnSs8TZfiB3rBZ7nohePn03JVVTJc230Vg10uiQ0Tl/QG
+        +xZidmq+Wcpx3i9keMlHwAL3ku7jGdw9X9d62hw2aw==
+X-Google-Smtp-Source: ABdhPJzS21gGDa1XBNNlPYyGIxrKBMF97rw5pxVDQdnj0H1xCXPrLQGbc4IMIgQBPmOHfOa0VImDVu73XqtR/pCZr4g=
+X-Received: by 2002:a25:2f48:: with SMTP id v69mr10662491ybv.339.1632469523150;
+ Fri, 24 Sep 2021 00:45:23 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20210922094131.15625-1-linyunsheng@huawei.com>
+ <20210922094131.15625-4-linyunsheng@huawei.com> <YUw78q4IrfR0D2/J@apalos.home>
+ <b2779d81-4cb3-5ccc-8e36-02cd633383f3@huawei.com> <CAC_iWj+yv8+=MaxtqLFkQh1Qb75vNZw30xcz2VTD-m37-RVp8A@mail.gmail.com>
+ <39e62727-6d9f-a0db-39b2-296ebd6972b3@huawei.com>
+In-Reply-To: <39e62727-6d9f-a0db-39b2-296ebd6972b3@huawei.com>
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date:   Fri, 24 Sep 2021 10:44:47 +0300
+Message-ID: <CAC_iWj+utC54sGFKfOMFx34Jk1SQWANxbkBRD_E2TeSLKkZRUg@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/7] pool_pool: avoid calling compound_head() for
+ skb frag page
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linuxarm@openeuler.org, Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Marco Elver <elver@google.com>, memxor@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWF4IEd1cnRvdm95IFtt
-YWlsdG86bWd1cnRvdm95QG52aWRpYS5jb21dDQo+IFNlbnQ6IDIzIFNlcHRlbWJlciAyMDIxIDE0
-OjU2DQo+IFRvOiBMZW9uIFJvbWFub3Zza3kgPGxlb25Aa2VybmVsLm9yZz47IFNoYW1lZXJhbGkg
-S29sb3RodW0gVGhvZGkNCj4gPHNoYW1lZXJhbGkua29sb3RodW0udGhvZGlAaHVhd2VpLmNvbT4N
-Cj4gQ2M6IERvdWcgTGVkZm9yZCA8ZGxlZGZvcmRAcmVkaGF0LmNvbT47IEphc29uIEd1bnRob3Jw
-ZQ0KPiA8amdnQG52aWRpYS5jb20+OyBZaXNoYWkgSGFkYXMgPHlpc2hhaWhAbnZpZGlhLmNvbT47
-IEFsZXggV2lsbGlhbXNvbg0KPiA8YWxleC53aWxsaWFtc29uQHJlZGhhdC5jb20+OyBCam9ybiBI
-ZWxnYWFzIDxiaGVsZ2Fhc0Bnb29nbGUuY29tPjsgRGF2aWQNCj4gUy4gTWlsbGVyIDxkYXZlbUBk
-YXZlbWxvZnQubmV0PjsgSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47IEtpcnRpDQo+
-IFdhbmtoZWRlIDxrd2Fua2hlZGVAbnZpZGlhLmNvbT47IGt2bUB2Z2VyLmtlcm5lbC5vcmc7DQo+
-IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LXBjaUB2Z2VyLmtlcm5lbC5vcmc7
-DQo+IGxpbnV4LXJkbWFAdmdlci5rZXJuZWwub3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBT
-YWVlZCBNYWhhbWVlZA0KPiA8c2FlZWRtQG52aWRpYS5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFU
-Q0ggbWx4NS1uZXh0IDIvN10gdmZpbzogQWRkIGFuIEFQSSB0byBjaGVjayBtaWdyYXRpb24gc3Rh
-dGUNCj4gdHJhbnNpdGlvbiB2YWxpZGl0eQ0KPiANCj4gDQo+IE9uIDkvMjMvMjAyMSAyOjE3IFBN
-LCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6DQo+ID4gT24gVGh1LCBTZXAgMjMsIDIwMjEgYXQgMTA6
-MzM6MTBBTSArMDAwMCwgU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaQ0KPiB3cm90ZToNCj4gPj4N
-Cj4gPj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+PiBGcm9tOiBMZW9uIFJvbWFu
-b3Zza3kgW21haWx0bzpsZW9uQGtlcm5lbC5vcmddDQo+ID4+PiBTZW50OiAyMiBTZXB0ZW1iZXIg
-MjAyMSAxMTozOQ0KPiA+Pj4gVG86IERvdWcgTGVkZm9yZCA8ZGxlZGZvcmRAcmVkaGF0LmNvbT47
-IEphc29uIEd1bnRob3JwZQ0KPiA8amdnQG52aWRpYS5jb20+DQo+ID4+PiBDYzogWWlzaGFpIEhh
-ZGFzIDx5aXNoYWloQG52aWRpYS5jb20+OyBBbGV4IFdpbGxpYW1zb24NCj4gPj4+IDxhbGV4Lndp
-bGxpYW1zb25AcmVkaGF0LmNvbT47IEJqb3JuIEhlbGdhYXMgPGJoZWxnYWFzQGdvb2dsZS5jb20+
-Ow0KPiBEYXZpZA0KPiA+Pj4gUy4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsgSmFrdWIg
-S2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47IEtpcnRpDQo+ID4+PiBXYW5raGVkZSA8a3dhbmto
-ZWRlQG52aWRpYS5jb20+OyBrdm1Admdlci5rZXJuZWwub3JnOw0KPiA+Pj4gbGludXgta2VybmVs
-QHZnZXIua2VybmVsLm9yZzsgbGludXgtcGNpQHZnZXIua2VybmVsLm9yZzsNCj4gPj4+IGxpbnV4
-LXJkbWFAdmdlci5rZXJuZWwub3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBTYWVlZCBNYWhh
-bWVlZA0KPiA+Pj4gPHNhZWVkbUBudmlkaWEuY29tPg0KPiA+Pj4gU3ViamVjdDogW1BBVENIIG1s
-eDUtbmV4dCAyLzddIHZmaW86IEFkZCBhbiBBUEkgdG8gY2hlY2sgbWlncmF0aW9uIHN0YXRlDQo+
-ID4+PiB0cmFuc2l0aW9uIHZhbGlkaXR5DQo+ID4+Pg0KPiA+Pj4gRnJvbTogWWlzaGFpIEhhZGFz
-IDx5aXNoYWloQG52aWRpYS5jb20+DQo+ID4+Pg0KPiA+Pj4gQWRkIGFuIEFQSSBpbiB0aGUgY29y
-ZSBsYXllciB0byBjaGVjayBtaWdyYXRpb24gc3RhdGUgdHJhbnNpdGlvbiB2YWxpZGl0eQ0KPiA+
-Pj4gYXMgcGFydCBvZiBhIG1pZ3JhdGlvbiBmbG93Lg0KPiA+Pj4NCj4gPj4+IFRoZSB2YWxpZCB0
-cmFuc2l0aW9ucyBmb2xsb3cgdGhlIGV4cGVjdGVkIHVzYWdlIGFzIGRlc2NyaWJlZCBpbg0KPiA+
-Pj4gdWFwaS92ZmlvLmggYW5kIHRyaWdnZXJlZCBieSBRRU1VLg0KPiA+Pj4NCj4gPj4+IFRoaXMg
-ZW5zdXJlcyB0aGF0IGFsbCBtaWdyYXRpb24gaW1wbGVtZW50YXRpb25zIGZvbGxvdyBhIGNvbnNp
-c3RlbnQNCj4gPj4+IG1pZ3JhdGlvbiBzdGF0ZSBtYWNoaW5lLg0KPiA+Pj4NCj4gPj4+IFNpZ25l
-ZC1vZmYtYnk6IFlpc2hhaSBIYWRhcyA8eWlzaGFpaEBudmlkaWEuY29tPg0KPiA+Pj4gUmV2aWV3
-ZWQtYnk6IEtpcnRpIFdhbmtoZWRlIDxrd2Fua2hlZGVAbnZpZGlhLmNvbT4NCj4gPj4+IFNpZ25l
-ZC1vZmYtYnk6IEphc29uIEd1bnRob3JwZSA8amdnQG52aWRpYS5jb20+DQo+ID4+PiBTaWduZWQt
-b2ZmLWJ5OiBMZW9uIFJvbWFub3Zza3kgPGxlb25yb0BudmlkaWEuY29tPg0KPiA+Pj4gLS0tDQo+
-ID4+PiAgIGRyaXZlcnMvdmZpby92ZmlvLmMgIHwgNDENCj4gKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysNCj4gPj4+ICAgaW5jbHVkZS9saW51eC92ZmlvLmggfCAgMSAr
-DQo+ID4+PiAgIDIgZmlsZXMgY2hhbmdlZCwgNDIgaW5zZXJ0aW9ucygrKQ0KPiA+Pj4NCj4gPj4+
-IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZmaW8vdmZpby5jIGIvZHJpdmVycy92ZmlvL3ZmaW8uYw0K
-PiA+Pj4gaW5kZXggM2MwMzRmZTE0Y2NiLi5jM2NhMzNlNTEzYzggMTAwNjQ0DQo+ID4+PiAtLS0g
-YS9kcml2ZXJzL3ZmaW8vdmZpby5jDQo+ID4+PiArKysgYi9kcml2ZXJzL3ZmaW8vdmZpby5jDQo+
-ID4+PiBAQCAtMTY2NCw2ICsxNjY0LDQ3IEBAIHN0YXRpYyBpbnQgdmZpb19kZXZpY2VfZm9wc19y
-ZWxlYXNlKHN0cnVjdA0KPiBpbm9kZQ0KPiA+Pj4gKmlub2RlLCBzdHJ1Y3QgZmlsZSAqZmlsZXAp
-DQo+ID4+PiAgIAlyZXR1cm4gMDsNCj4gPj4+ICAgfQ0KPiA+Pj4NCj4gPj4+ICsvKioNCj4gPj4+
-ICsgKiB2ZmlvX2NoYW5nZV9taWdyYXRpb25fc3RhdGVfYWxsb3dlZCAtIENoZWNrcyB3aGV0aGVy
-IGEgbWlncmF0aW9uDQo+IHN0YXRlDQo+ID4+PiArICogICB0cmFuc2l0aW9uIGlzIHZhbGlkLg0K
-PiA+Pj4gKyAqIEBuZXdfc3RhdGU6IFRoZSBuZXcgc3RhdGUgdG8gbW92ZSB0by4NCj4gPj4+ICsg
-KiBAb2xkX3N0YXRlOiBUaGUgb2xkIHN0YXRlLg0KPiA+Pj4gKyAqIFJldHVybjogdHJ1ZSBpZiB0
-aGUgdHJhbnNpdGlvbiBpcyB2YWxpZC4NCj4gPj4+ICsgKi8NCj4gPj4+ICtib29sIHZmaW9fY2hh
-bmdlX21pZ3JhdGlvbl9zdGF0ZV9hbGxvd2VkKHUzMiBuZXdfc3RhdGUsIHUzMg0KPiBvbGRfc3Rh
-dGUpDQo+ID4+PiArew0KPiA+Pj4gKwllbnVtIHsgTUFYX1NUQVRFID0gVkZJT19ERVZJQ0VfU1RB
-VEVfUkVTVU1JTkcgfTsNCj4gPj4+ICsJc3RhdGljIGNvbnN0IHU4IHZmaW9fZnJvbV9zdGF0ZV90
-YWJsZVtNQVhfU1RBVEUgKyAxXVtNQVhfU1RBVEUgKw0KPiAxXSA9IHsNCj4gPj4+ICsJCVtWRklP
-X0RFVklDRV9TVEFURV9TVE9QXSA9IHsNCj4gPj4+ICsJCQlbVkZJT19ERVZJQ0VfU1RBVEVfUlVO
-TklOR10gPSAxLA0KPiA+Pj4gKwkJCVtWRklPX0RFVklDRV9TVEFURV9SRVNVTUlOR10gPSAxLA0K
-PiA+Pj4gKwkJfSwNCj4gPj4+ICsJCVtWRklPX0RFVklDRV9TVEFURV9SVU5OSU5HXSA9IHsNCj4g
-Pj4+ICsJCQlbVkZJT19ERVZJQ0VfU1RBVEVfU1RPUF0gPSAxLA0KPiA+Pj4gKwkJCVtWRklPX0RF
-VklDRV9TVEFURV9TQVZJTkddID0gMSwNCj4gPj4+ICsJCQlbVkZJT19ERVZJQ0VfU1RBVEVfU0FW
-SU5HIHwNCj4gVkZJT19ERVZJQ0VfU1RBVEVfUlVOTklOR10NCj4gPj4+ID0gMSwNCj4gPj4gRG8g
-d2UgbmVlZCB0byBhbGxvdyBfUkVTVU1JTkcgc3RhdGUgaGVyZSBvciBub3Q/IEFzIHBlciB0aGUg
-IlN0YXRlDQo+IHRyYW5zaXRpb25zIg0KPiA+PiBzZWN0aW9uIGZyb20gdWFwaS9saW51eC92Zmlv
-LmgsDQo+ID4gSXQgbG9va3MgbGlrZSB3ZSBtaXNzZWQgdGhpcyBzdGF0ZSB0cmFuc2l0aW9uLg0K
-PiA+DQo+ID4gVGhhbmtzDQo+IA0KPiBJJ20gbm90IHN1cmUgdGhpcyBzdGF0ZSB0cmFuc2l0aW9u
-IGlzIHZhbGlkLg0KPiANCj4gS2lydGksIFdoZW4gd2Ugd291bGQgbGlrZSB0byBtb3ZlIGZyb20g
-UlVOTklORyB0byBSRVNVTUlORyA/DQoNCkkgZ3Vlc3MgaXQgZGVwZW5kcyBvbiB3aGF0IHlvdSBy
-ZXBvcnQgYXMgeW91ciBkZXYgZGVmYXVsdCBzdGF0ZS4gDQoNCkZvciBIaVNpbGljb24gQUNDIG1p
-Z3JhdGlvbiBkcml2ZXIsIHdlIHNldCB0aGUgZGVmYXVsdCB0byBfUlVOTklORy4NCg0KQW5kIHdo
-ZW4gdGhlIG1pZ3JhdGlvbiBzdGFydHMsIHRoZSBkZXN0aW5hdGlvbiBzaWRlIFFlbXUsIHNldCB0
-aGUgDQpkZXZpY2Ugc3RhdGUgdG8gX1JFU1VNSU5HKHZmaW9fbG9hZF9zdGF0ZSgpKS4NCg0KRnJv
-bSB0aGUgZG9jdW1lbnRhdGlvbiwgaXQgbG9va3MgbGlrZSB0aGUgYXNzdW1wdGlvbiBvbiBkZWZh
-dWx0IHN0YXRlIG9mDQp0aGUgVkZJTyBkZXYgaXMgX1JVTk5JTkcuDQoNCiINCiogIDAwMWIgPT4g
-RGV2aWNlIHJ1bm5pbmcsIHdoaWNoIGlzIHRoZSBkZWZhdWx0IHN0YXRlDQoiDQoNCj4gDQo+IFNh
-bWVlcmFsaSwgY2FuIHlvdSBwbGVhc2UgcmUtdGVzdCBhbmQgdXBkYXRlIGlmIHlvdSBzZWUgdGhp
-cyB0cmFuc2l0aW9uID8NCg0KWWVzLiBBbmQgaWYgSSBjaGFuZ2UgdGhlIGRlZmF1bHQgc3RhdGUg
-dG8gX1NUT1AsIHRoZW4gdGhlIHRyYW5zaXRpb24NCmlzIGZyb20gX1NUT1AgLS0+IF9SRVNVTUlO
-Ry4NCg0KQnV0IHRoZSBkb2N1bWVudGF0aW9uIG9uIFN0YXRlIHRyYW5zaXRpb25zIGRvZXNuJ3Qg
-aGF2ZSBfU1RPUCAtLT4gX1JFU1VNSU5HDQp0cmFuc2l0aW9uIGFzIHZhbGlkLg0KDQpUaGFua3Ms
-DQpTaGFtZWVyIA0KDQo+IA0KPiANCj4gPg0KPiA+PiAiICogNC4gVG8gc3RhcnQgdGhlIHJlc3Vt
-aW5nIHBoYXNlLCB0aGUgZGV2aWNlIHN0YXRlIHNob3VsZCBiZSB0cmFuc2l0aW9uZWQNCj4gZnJv
-bQ0KPiA+PiAgICogICAgdGhlIF9SVU5OSU5HIHRvIHRoZSBfUkVTVU1JTkcgc3RhdGUuIg0KPiA+
-Pg0KPiA+PiBJSVJDLCBJIGhhdmUgc2VlbiB0aGF0IHRyYW5zaXRpb24gaGFwcGVuaW5nIG9uIHRo
-ZSBkZXN0aW5hdGlvbiBkZXYgd2hpbGUNCj4gdGVzdGluZyB0aGUNCj4gPj4gSGlTaWxpY29uIEFD
-QyBkZXYgbWlncmF0aW9uLg0KPiA+Pg0KPiA+PiBUaGFua3MsDQo+ID4+IFNoYW1lZXINCj4gPj4N
-Cj4gPj4+ICsJCX0sDQo+ID4+PiArCQlbVkZJT19ERVZJQ0VfU1RBVEVfU0FWSU5HXSA9IHsNCj4g
-Pj4+ICsJCQlbVkZJT19ERVZJQ0VfU1RBVEVfU1RPUF0gPSAxLA0KPiA+Pj4gKwkJCVtWRklPX0RF
-VklDRV9TVEFURV9SVU5OSU5HXSA9IDEsDQo+ID4+PiArCQl9LA0KPiA+Pj4gKwkJW1ZGSU9fREVW
-SUNFX1NUQVRFX1NBVklORyB8IFZGSU9fREVWSUNFX1NUQVRFX1JVTk5JTkddDQo+ID0gew0KPiA+
-Pj4gKwkJCVtWRklPX0RFVklDRV9TVEFURV9SVU5OSU5HXSA9IDEsDQo+ID4+PiArCQkJW1ZGSU9f
-REVWSUNFX1NUQVRFX1NBVklOR10gPSAxLA0KPiA+Pj4gKwkJfSwNCj4gPj4+ICsJCVtWRklPX0RF
-VklDRV9TVEFURV9SRVNVTUlOR10gPSB7DQo+ID4+PiArCQkJW1ZGSU9fREVWSUNFX1NUQVRFX1JV
-Tk5JTkddID0gMSwNCj4gPj4+ICsJCQlbVkZJT19ERVZJQ0VfU1RBVEVfU1RPUF0gPSAxLA0KPiA+
-Pj4gKwkJfSwNCj4gPj4+ICsJfTsNCj4gPj4+ICsNCj4gPj4+ICsJaWYgKG5ld19zdGF0ZSA+IE1B
-WF9TVEFURSB8fCBvbGRfc3RhdGUgPiBNQVhfU1RBVEUpDQo+ID4+PiArCQlyZXR1cm4gZmFsc2U7
-DQo+ID4+PiArDQo+ID4+PiArCXJldHVybiB2ZmlvX2Zyb21fc3RhdGVfdGFibGVbb2xkX3N0YXRl
-XVtuZXdfc3RhdGVdOw0KPiA+Pj4gK30NCj4gPj4+ICtFWFBPUlRfU1lNQk9MX0dQTCh2ZmlvX2No
-YW5nZV9taWdyYXRpb25fc3RhdGVfYWxsb3dlZCk7DQo+ID4+PiArDQo+ID4+PiAgIHN0YXRpYyBs
-b25nIHZmaW9fZGV2aWNlX2ZvcHNfdW5sX2lvY3RsKHN0cnVjdCBmaWxlICpmaWxlcCwNCj4gPj4+
-ICAgCQkJCSAgICAgICB1bnNpZ25lZCBpbnQgY21kLCB1bnNpZ25lZCBsb25nIGFyZykNCj4gPj4+
-ICAgew0KPiA+Pj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvdmZpby5oIGIvaW5jbHVkZS9s
-aW51eC92ZmlvLmgNCj4gPj4+IGluZGV4IGI1M2E5NTU3ODg0YS4uZTY1MTM3YTcwOGYxIDEwMDY0
-NA0KPiA+Pj4gLS0tIGEvaW5jbHVkZS9saW51eC92ZmlvLmgNCj4gPj4+ICsrKyBiL2luY2x1ZGUv
-bGludXgvdmZpby5oDQo+ID4+PiBAQCAtODMsNiArODMsNyBAQCBleHRlcm4gc3RydWN0IHZmaW9f
-ZGV2aWNlDQo+ID4+PiAqdmZpb19kZXZpY2VfZ2V0X2Zyb21fZGV2KHN0cnVjdCBkZXZpY2UgKmRl
-dik7DQo+ID4+PiAgIGV4dGVybiB2b2lkIHZmaW9fZGV2aWNlX3B1dChzdHJ1Y3QgdmZpb19kZXZp
-Y2UgKmRldmljZSk7DQo+ID4+Pg0KPiA+Pj4gICBpbnQgdmZpb19hc3NpZ25fZGV2aWNlX3NldChz
-dHJ1Y3QgdmZpb19kZXZpY2UgKmRldmljZSwgdm9pZCAqc2V0X2lkKTsNCj4gPj4+ICtib29sIHZm
-aW9fY2hhbmdlX21pZ3JhdGlvbl9zdGF0ZV9hbGxvd2VkKHUzMiBuZXdfc3RhdGUsIHUzMg0KPiBv
-bGRfc3RhdGUpOw0KPiA+Pj4NCj4gPj4+ICAgLyogZXZlbnRzIGZvciB0aGUgYmFja2VuZCBkcml2
-ZXIgbm90aWZ5IGNhbGxiYWNrICovDQo+ID4+PiAgIGVudW0gdmZpb19pb21tdV9ub3RpZnlfdHlw
-ZSB7DQo+ID4+PiAtLQ0KPiA+Pj4gMi4zMS4xDQo=
+On Fri, 24 Sept 2021 at 10:33, Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>
+> On 2021/9/23 19:47, Ilias Apalodimas wrote:
+> > On Thu, 23 Sept 2021 at 14:24, Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> >>
+> >> On 2021/9/23 16:33, Ilias Apalodimas wrote:
+> >>> On Wed, Sep 22, 2021 at 05:41:27PM +0800, Yunsheng Lin wrote:
+> >>>> As the pp page for a skb frag is always a head page, so make
+> >>>> sure skb_pp_recycle() passes a head page to avoid calling
+> >>>> compound_head() for skb frag page case.
+> >>>
+> >>> Doesn't that rely on the driver mostly (i.e what's passed in skb_frag_set_page() ?
+> >>> None of the current netstack code assumes bv_page is the head page of a
+> >>> compound page.  Since our page_pool allocator can will allocate compound
+> >>> pages for order > 0,  why should we rely on it ?
+> >>
+> >> As the page pool alloc function return 'struct page *' to the caller, which
+> >> is the head page of a compound pages for order > 0, so I assume the caller
+> >> will pass that to skb_frag_set_page().
+> >
+> > Yea that's exactly the assumption I was afraid of.
+> > Sure not passing the head page might seem weird atm and the assumption
+> > stands, but the point is we shouldn't blow up the entire network stack
+> > if someone does that eventually.
+> >
+> >>
+> >> For non-pp page, I assume it is ok whether the page is a head page or tail
+> >> page, as the pp_magic for both of them are not set with PP_SIGNATURE.
+> >
+> > Yea that's true, although we removed the checking for coalescing
+> > recyclable and non-recyclable SKBs,   the next patch first checks the
+> > signature before trying to do anything with the skb.
+> >
+> >>
+> >> Or should we play safe here, and do the trick as skb_free_head() does in
+> >> patch 6?
+> >
+> > I don't think the &1 will even be measurable,  so I'd suggest just
+> > dropping this and play safe?
+>
+> I am not sure what does '&1' mean above.
+
+I meant the check compound_head() is doing before deciding on the head page.
+
+>
+> The one thing I am not sure about the trick done in patch 6 is that
+> if __page_frag_cache_drain() is right API to use here, I used it because
+> it is the only API that is expecting a head page.
+
+Yea seemed a bit funny to me in the first place, until I figured out
+what exactly it was doing.
+
+Regards
+/Ilias
+>
+> >
+> > Cheers
+> > /Ilias
+> >>
+> >>>
+> >>> Thanks
+> >>> /Ilias
+> >>>>
+> >>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> >>>> ---
+> >>>>  include/linux/skbuff.h | 2 +-
+> >>>>  net/core/page_pool.c   | 2 --
+> >>>>  2 files changed, 1 insertion(+), 3 deletions(-)
+> >>>>
+> >>>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> >>>> index 6bdb0db3e825..35eebc2310a5 100644
+> >>>> --- a/include/linux/skbuff.h
+> >>>> +++ b/include/linux/skbuff.h
+> >>>> @@ -4722,7 +4722,7 @@ static inline bool skb_pp_recycle(struct sk_buff *skb, void *data)
+> >>>>  {
+> >>>>      if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
+> >>>>              return false;
+> >>>> -    return page_pool_return_skb_page(virt_to_page(data));
+> >>>> +    return page_pool_return_skb_page(virt_to_head_page(data));
+> >>>>  }
+> >>>>
+> >>>>  #endif      /* __KERNEL__ */
+> >>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> >>>> index f7e71dcb6a2e..357fb53343a0 100644
+> >>>> --- a/net/core/page_pool.c
+> >>>> +++ b/net/core/page_pool.c
+> >>>> @@ -742,8 +742,6 @@ bool page_pool_return_skb_page(struct page *page)
+> >>>>  {
+> >>>>      struct page_pool *pp;
+> >>>>
+> >>>> -    page = compound_head(page);
+> >>>> -
+> >>>>      /* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
+> >>>>       * in order to preserve any existing bits, such as bit 0 for the
+> >>>>       * head page of compound page and bit 1 for pfmemalloc page, so
+> >>>> --
+> >>>> 2.33.0
+> >>>>
+> >>> .
+> >>>
+> > .
+> >
