@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E06D1417DA3
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 00:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DC9F417DA2
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 00:11:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345395AbhIXWNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 18:13:16 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:49784 "EHLO
+        id S1347547AbhIXWNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 18:13:15 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:49782 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345199AbhIXWM7 (ORCPT
+        with ESMTP id S1345149AbhIXWM7 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 18:12:59 -0400
 Received: from localhost.localdomain (unknown [78.30.35.141])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 876F063EB4;
+        by mail.netfilter.org (Postfix) with ESMTPSA id DD90C63EB7;
         Sat, 25 Sep 2021 00:10:03 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 07/15] selftests: netfilter: add selftest for directional zone support
-Date:   Sat, 25 Sep 2021 00:11:05 +0200
-Message-Id: <20210924221113.348767-8-pablo@netfilter.org>
+Subject: [PATCH net 08/15] selftests: netfilter: add zone stress test with colliding tuples
+Date:   Sat, 25 Sep 2021 00:11:06 +0200
+Message-Id: <20210924221113.348767-9-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210924221113.348767-1-pablo@netfilter.org>
 References: <20210924221113.348767-1-pablo@netfilter.org>
@@ -31,344 +31,187 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-Add a script to exercise NAT port clash resolution with directional zones.
+Add 20k entries to the connection tracking table, once from the
+data plane, once via ctnetlink.
 
-Add net namespaces that use the same IP address and connect them to a
-gateway.
+In both cases, each entry lives in a different conntrack zone
+and addresses/ports are identical.
 
-Gateway uses policy routing based on iif/mark and conntrack zones to
-isolate the client namespaces.  In server direction, same zone with NAT
-to single address is used.
+Expectation is that insertions work and occurs in constant time:
 
-Then, connect to a server from each client netns, using identical
-connection id, i.e.  saddr:sport -> daddr:dport.
+PASS: added 10000 entries in 1215 ms (now 10000 total, loop 1)
+PASS: added 10000 entries in 1214 ms (now 20000 total, loop 2)
+PASS: inserted 20000 entries from packet path in 2434 ms total
+PASS: added 10000 entries in 57631 ms (now 10000 total)
+PASS: added 10000 entries in 58572 ms (now 20000 total)
+PASS: inserted 20000 entries via ctnetlink in 116205 ms
 
-Expectation is for all connections to succeeed: NAT gatway is
-supposed to do port reallocation for each of the (clashing) connections.
-
-This is based on the description/use case provided in the commit message of
-deedb59039f111 ("netfilter: nf_conntrack: add direction support for zones").
-
-Cc: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- .../selftests/netfilter/nft_nat_zones.sh      | 309 ++++++++++++++++++
- 1 file changed, 309 insertions(+)
- create mode 100755 tools/testing/selftests/netfilter/nft_nat_zones.sh
+ .../selftests/netfilter/nft_zones_many.sh     | 156 ++++++++++++++++++
+ 1 file changed, 156 insertions(+)
+ create mode 100755 tools/testing/selftests/netfilter/nft_zones_many.sh
 
-diff --git a/tools/testing/selftests/netfilter/nft_nat_zones.sh b/tools/testing/selftests/netfilter/nft_nat_zones.sh
+diff --git a/tools/testing/selftests/netfilter/nft_zones_many.sh b/tools/testing/selftests/netfilter/nft_zones_many.sh
 new file mode 100755
-index 000000000000..b9ab37380f33
+index 000000000000..ac646376eb01
 --- /dev/null
-+++ b/tools/testing/selftests/netfilter/nft_nat_zones.sh
-@@ -0,0 +1,309 @@
++++ b/tools/testing/selftests/netfilter/nft_zones_many.sh
+@@ -0,0 +1,156 @@
 +#!/bin/bash
-+#
-+# Test connection tracking zone and NAT source port reallocation support.
-+#
++
++# Test insertion speed for packets with identical addresses/ports
++# that are all placed in distinct conntrack zones.
++
++sfx=$(mktemp -u "XXXXXXXX")
++ns="ns-$sfx"
 +
 +# Kselftest framework requirement - SKIP code is 4.
 +ksft_skip=4
 +
-+# Don't increase too much, 2000 clients should work
-+# just fine but script can then take several minutes with
-+# KASAN/debug builds.
-+maxclients=100
-+
-+have_iperf=1
++zones=20000
++have_ct_tool=0
 +ret=0
-+
-+# client1---.
-+#            veth1-.
-+#                  |
-+#               NAT Gateway --veth0--> Server
-+#                  | |
-+#            veth2-' |
-+# client2---'        |
-+#  ....              |
-+# clientX----vethX---'
-+
-+# All clients share identical IP address.
-+# NAT Gateway uses policy routing and conntrack zones to isolate client
-+# namespaces.  Each client connects to Server, each with colliding tuples:
-+#   clientsaddr:10000 -> serveraddr:dport
-+#   NAT Gateway is supposed to do port reallocation for each of the
-+#   connections.
-+
-+sfx=$(mktemp -u "XXXXXXXX")
-+gw="ns-gw-$sfx"
-+cl1="ns-cl1-$sfx"
-+cl2="ns-cl2-$sfx"
-+srv="ns-srv-$sfx"
-+
-+v4gc1=$(sysctl -n net.ipv4.neigh.default.gc_thresh1 2>/dev/null)
-+v4gc2=$(sysctl -n net.ipv4.neigh.default.gc_thresh2 2>/dev/null)
-+v4gc3=$(sysctl -n net.ipv4.neigh.default.gc_thresh3 2>/dev/null)
-+v6gc1=$(sysctl -n net.ipv6.neigh.default.gc_thresh1 2>/dev/null)
-+v6gc2=$(sysctl -n net.ipv6.neigh.default.gc_thresh2 2>/dev/null)
-+v6gc3=$(sysctl -n net.ipv6.neigh.default.gc_thresh3 2>/dev/null)
 +
 +cleanup()
 +{
-+	ip netns del $gw
-+	ip netns del $srv
-+	for i in $(seq 1 $maxclients); do
-+		ip netns del ns-cl$i-$sfx 2>/dev/null
-+	done
-+
-+	sysctl -q net.ipv4.neigh.default.gc_thresh1=$v4gc1 2>/dev/null
-+	sysctl -q net.ipv4.neigh.default.gc_thresh2=$v4gc2 2>/dev/null
-+	sysctl -q net.ipv4.neigh.default.gc_thresh3=$v4gc3 2>/dev/null
-+	sysctl -q net.ipv6.neigh.default.gc_thresh1=$v6gc1 2>/dev/null
-+	sysctl -q net.ipv6.neigh.default.gc_thresh2=$v6gc2 2>/dev/null
-+	sysctl -q net.ipv6.neigh.default.gc_thresh3=$v6gc3 2>/dev/null
++	ip netns del $ns
 +}
 +
-+nft --version > /dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not run test without nft tool"
-+	exit $ksft_skip
-+fi
-+
-+ip -Version > /dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not run test without ip tool"
-+	exit $ksft_skip
-+fi
-+
-+conntrack -V > /dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not run test without conntrack tool"
-+	exit $ksft_skip
-+fi
-+
-+iperf3 -v >/dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	have_iperf=0
-+fi
-+
-+ip netns add "$gw"
++ip netns add $ns
 +if [ $? -ne 0 ];then
 +	echo "SKIP: Could not create net namespace $gw"
 +	exit $ksft_skip
 +fi
-+ip -net "$gw" link set lo up
 +
 +trap cleanup EXIT
 +
-+ip netns add "$srv"
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not create server netns $srv"
-+	exit $ksft_skip
++conntrack -V > /dev/null 2>&1
++if [ $? -eq 0 ];then
++	have_ct_tool=1
 +fi
 +
-+ip link add veth0 netns "$gw" type veth peer name eth0 netns "$srv"
-+ip -net "$gw" link set veth0 up
-+ip -net "$srv" link set lo up
-+ip -net "$srv" link set eth0 up
++ip -net "$ns" link set lo up
 +
-+sysctl -q net.ipv6.neigh.default.gc_thresh1=512  2>/dev/null
-+sysctl -q net.ipv6.neigh.default.gc_thresh2=1024 2>/dev/null
-+sysctl -q net.ipv6.neigh.default.gc_thresh3=4096 2>/dev/null
-+sysctl -q net.ipv4.neigh.default.gc_thresh1=512  2>/dev/null
-+sysctl -q net.ipv4.neigh.default.gc_thresh2=1024 2>/dev/null
-+sysctl -q net.ipv4.neigh.default.gc_thresh3=4096 2>/dev/null
++test_zones() {
++	local max_zones=$1
 +
-+for i in $(seq 1 $maxclients);do
-+  cl="ns-cl$i-$sfx"
-+
-+  ip netns add "$cl"
-+  if [ $? -ne 0 ];then
-+     echo "SKIP: Could not create client netns $cl"
-+     exit $ksft_skip
-+  fi
-+  ip link add veth$i netns "$gw" type veth peer name eth0 netns "$cl" > /dev/null 2>&1
-+  if [ $? -ne 0 ];then
-+    echo "SKIP: No virtual ethernet pair device support in kernel"
-+    exit $ksft_skip
-+  fi
-+done
-+
-+for i in $(seq 1 $maxclients);do
-+  cl="ns-cl$i-$sfx"
-+  echo netns exec "$cl" ip link set lo up
-+  echo netns exec "$cl" ip link set eth0 up
-+  echo netns exec "$cl" sysctl -q net.ipv4.tcp_syn_retries=2
-+  echo netns exec "$gw" ip link set veth$i up
-+  echo netns exec "$gw" sysctl -q net.ipv4.conf.veth$i.arp_ignore=2
-+  echo netns exec "$gw" sysctl -q net.ipv4.conf.veth$i.rp_filter=0
-+
-+  # clients have same IP addresses.
-+  echo netns exec "$cl" ip addr add 10.1.0.3/24 dev eth0
-+  echo netns exec "$cl" ip addr add dead:1::3/64 dev eth0
-+  echo netns exec "$cl" ip route add default via 10.1.0.2 dev eth0
-+  echo netns exec "$cl" ip route add default via dead:1::2 dev eth0
-+
-+  # NB: same addresses on client-facing interfaces.
-+  echo netns exec "$gw" ip addr add 10.1.0.2/24 dev veth$i
-+  echo netns exec "$gw" ip addr add dead:1::2/64 dev veth$i
-+
-+  # gw: policy routing
-+  echo netns exec "$gw" ip route add 10.1.0.0/24 dev veth$i table $((1000+i))
-+  echo netns exec "$gw" ip route add dead:1::0/64 dev veth$i table $((1000+i))
-+  echo netns exec "$gw" ip route add 10.3.0.0/24 dev veth0 table $((1000+i))
-+  echo netns exec "$gw" ip route add dead:3::0/64 dev veth0 table $((1000+i))
-+  echo netns exec "$gw" ip rule add fwmark $i lookup $((1000+i))
-+done | ip -batch /dev/stdin
-+
-+ip -net "$gw" addr add 10.3.0.1/24 dev veth0
-+ip -net "$gw" addr add dead:3::1/64 dev veth0
-+
-+ip -net "$srv" addr add 10.3.0.99/24 dev eth0
-+ip -net "$srv" addr add dead:3::99/64 dev eth0
-+
-+ip netns exec $gw nft -f /dev/stdin<<EOF
++ip netns exec $ns sysctl -q net.netfilter.nf_conntrack_udp_timeout=3600
++ip netns exec $ns nft -f /dev/stdin<<EOF
++flush ruleset
 +table inet raw {
-+	map iiftomark {
-+		type ifname : mark
++	map rndzone {
++		typeof numgen inc mod $max_zones : ct zone
 +	}
 +
-+	map iiftozone {
-+		typeof iifname : ct zone
-+	}
-+
-+	set inicmp {
-+		flags dynamic
-+		type ipv4_addr . ifname . ipv4_addr
-+	}
-+	set inflows {
-+		flags dynamic
-+		type ipv4_addr . inet_service . ifname . ipv4_addr . inet_service
-+	}
-+
-+	set inflows6 {
-+		flags dynamic
-+		type ipv6_addr . inet_service . ifname . ipv6_addr . inet_service
-+	}
-+
-+	chain prerouting {
-+		type filter hook prerouting priority -64000; policy accept;
-+		ct original zone set meta iifname map @iiftozone
-+		meta mark set meta iifname map @iiftomark
-+
-+		tcp flags & (syn|ack) == ack add @inflows { ip saddr . tcp sport . meta iifname . ip daddr . tcp dport counter }
-+		add @inflows6 { ip6 saddr . tcp sport . meta iifname . ip6 daddr . tcp dport counter }
-+		ip protocol icmp add @inicmp { ip saddr . meta iifname . ip daddr counter }
-+	}
-+
-+	chain nat_postrouting {
-+		type nat hook postrouting priority 0; policy accept;
-+                ct mark set meta mark meta oifname veth0 masquerade
-+	}
-+
-+	chain mangle_prerouting {
-+		type filter hook prerouting priority -100; policy accept;
-+		ct direction reply meta mark set ct mark
++	chain output {
++		type filter hook output priority -64000; policy accept;
++		udp dport 12345  ct zone set numgen inc mod 65536 map @rndzone
 +	}
 +}
 +EOF
-+
-+( echo add element inet raw iiftomark \{
-+	for i in $(seq 1 $((maxclients-1))); do
-+		echo \"veth$i\" : $i,
++	(
++		echo "add element inet raw rndzone {"
++	for i in $(seq 1 $max_zones);do
++		echo -n "$i : $i"
++		if [ $i -lt $max_zones ]; then
++			echo ","
++		else
++			echo "}"
++		fi
 +	done
-+	echo \"veth$maxclients\" : $maxclients \}
-+	echo add element inet raw iiftozone \{
-+	for i in $(seq 1 $((maxclients-1))); do
-+		echo \"veth$i\" : $i,
++	) | ip netns exec $ns nft -f /dev/stdin
++
++	local i=0
++	local j=0
++	local outerstart=$(date +%s%3N)
++	local stop=$outerstart
++
++	while [ $i -lt $max_zones ]; do
++		local start=$(date +%s%3N)
++		i=$((i + 10000))
++		j=$((j + 1))
++		dd if=/dev/zero of=/dev/stdout bs=8k count=10000 2>/dev/null | ip netns exec "$ns" nc -w 1 -q 1 -u -p 12345 127.0.0.1 12345 > /dev/null
++		if [ $? -ne 0 ] ;then
++			ret=1
++			break
++		fi
++
++		stop=$(date +%s%3N)
++		local duration=$((stop-start))
++		echo "PASS: added 10000 entries in $duration ms (now $i total, loop $j)"
 +	done
-+	echo \"veth$maxclients\" : $maxclients \}
-+) | ip netns exec $gw nft -f /dev/stdin
 +
-+ip netns exec "$gw" sysctl -q net.ipv4.conf.all.forwarding=1 > /dev/null
-+ip netns exec "$gw" sysctl -q net.ipv6.conf.all.forwarding=1 > /dev/null
-+ip netns exec "$gw" sysctl -q net.ipv4.conf.all.rp_filter=0 >/dev/null
++	if [ $have_ct_tool -eq 1 ]; then
++		local count=$(ip netns exec "$ns" conntrack -C)
++		local duration=$((stop-outerstart))
 +
-+# useful for debugging: allows to use 'ping' from clients to gateway.
-+ip netns exec "$gw" sysctl -q net.ipv4.fwmark_reflect=1 > /dev/null
-+ip netns exec "$gw" sysctl -q net.ipv6.fwmark_reflect=1 > /dev/null
-+
-+for i in $(seq 1 $maxclients); do
-+  cl="ns-cl$i-$sfx"
-+  ip netns exec $cl ping -i 0.5 -q -c 3 10.3.0.99 > /dev/null 2>&1 &
-+  if [ $? -ne 0 ]; then
-+     echo FAIL: Ping failure from $cl 1>&2
-+     ret=1
-+     break
-+  fi
-+done
-+
-+wait
-+
-+for i in $(seq 1 $maxclients); do
-+   ip netns exec $gw nft get element inet raw inicmp "{ 10.1.0.3 . \"veth$i\" . 10.3.0.99 }" | grep -q "{ 10.1.0.3 . \"veth$i\" . 10.3.0.99 counter packets 3 bytes 252 }"
-+   if [ $? -ne 0 ];then
-+      ret=1
-+      echo "FAIL: counter icmp mismatch for veth$i" 1>&2
-+      ip netns exec $gw nft get element inet raw inicmp "{ 10.1.0.3 . \"veth$i\" . 10.3.0.99 }" 1>&2
-+      break
-+   fi
-+done
-+
-+ip netns exec $gw nft get element inet raw inicmp "{ 10.3.0.99 . \"veth0\" . 10.3.0.1 }" | grep -q "{ 10.3.0.99 . \"veth0\" . 10.3.0.1 counter packets $((3 * $maxclients)) bytes $((252 * $maxclients)) }"
-+if [ $? -ne 0 ];then
-+    ret=1
-+    echo "FAIL: counter icmp mismatch for veth0: { 10.3.0.99 . \"veth0\" . 10.3.0.1 counter packets $((3 * $maxclients)) bytes $((252 * $maxclients)) }"
-+    ip netns exec $gw nft get element inet raw inicmp "{ 10.3.99 . \"veth0\" . 10.3.0.1 }" 1>&2
-+fi
-+
-+if  [ $ret -eq 0 ]; then
-+	echo "PASS: ping test from all $maxclients namespaces"
-+fi
-+
-+if [ $have_iperf -eq 0 ];then
-+	echo "SKIP: iperf3 not installed"
-+	if [ $ret -ne 0 ];then
-+	    exit $ret
++		if [ $count -eq $max_zones ]; then
++			echo "PASS: inserted $count entries from packet path in $duration ms total"
++		else
++			ip netns exec $ns conntrack -S 1>&2
++			echo "FAIL: inserted $count entries from packet path in $duration ms total, expected $max_zones entries"
++			ret=1
++		fi
 +	fi
-+	exit $ksft_skip
-+fi
 +
-+ip netns exec $srv iperf3 -s > /dev/null 2>&1 &
-+iperfpid=$!
-+sleep 1
++	if [ $ret -ne 0 ];then
++		echo "FAIL: insert $max_zones entries from packet path" 1>&2
++	fi
++}
 +
-+for i in $(seq 1 $maxclients); do
-+  if [ $ret -ne 0 ]; then
-+     break
-+  fi
-+  cl="ns-cl$i-$sfx"
-+  ip netns exec $cl iperf3 -c 10.3.0.99 --cport 10000 -n 1 > /dev/null
-+  if [ $? -ne 0 ]; then
-+     echo FAIL: Failure to connect for $cl 1>&2
-+     ip netns exec $gw conntrack -S 1>&2
-+     ret=1
-+  fi
-+done
-+if [ $ret -eq 0 ];then
-+	echo "PASS: iperf3 connections for all $maxclients net namespaces"
-+fi
++test_conntrack_tool() {
++	local max_zones=$1
 +
-+kill $iperfpid
-+wait
++	ip netns exec $ns conntrack -F >/dev/null 2>/dev/null
 +
-+for i in $(seq 1 $maxclients); do
-+   ip netns exec $gw nft get element inet raw inflows "{ 10.1.0.3 . 10000 . \"veth$i\" . 10.3.0.99 . 5201 }" > /dev/null
-+   if [ $? -ne 0 ];then
-+      ret=1
-+      echo "FAIL: can't find expected tcp entry for veth$i" 1>&2
-+      break
-+   fi
-+done
-+if [ $ret -eq 0 ];then
-+	echo "PASS: Found client connection for all $maxclients net namespaces"
-+fi
++	local outerstart=$(date +%s%3N)
++	local start=$(date +%s%3N)
++	local stop=$start
++	local i=0
++	while [ $i -lt $max_zones ]; do
++		i=$((i + 1))
++		ip netns exec "$ns" conntrack -I -s 1.1.1.1 -d 2.2.2.2 --protonum 6 \
++	                 --timeout 3600 --state ESTABLISHED --sport 12345 --dport 1000 --zone $i >/dev/null 2>&1
++		if [ $? -ne 0 ];then
++			ip netns exec "$ns" conntrack -I -s 1.1.1.1 -d 2.2.2.2 --protonum 6 \
++	                 --timeout 3600 --state ESTABLISHED --sport 12345 --dport 1000 --zone $i > /dev/null
++			echo "FAIL: conntrack -I returned an error"
++			ret=1
++			break
++		fi
 +
-+ip netns exec $gw nft get element inet raw inflows "{ 10.3.0.99 . 5201 . \"veth0\" . 10.3.0.1 . 10000 }" > /dev/null
-+if [ $? -ne 0 ];then
-+    ret=1
-+    echo "FAIL: cannot find return entry on veth0" 1>&2
++		if [ $((i%10000)) -eq 0 ];then
++			stop=$(date +%s%3N)
++
++			local duration=$((stop-start))
++			echo "PASS: added 10000 entries in $duration ms (now $i total)"
++			start=$stop
++		fi
++	done
++
++	local count=$(ip netns exec "$ns" conntrack -C)
++	local duration=$((stop-outerstart))
++
++	if [ $count -eq $max_zones ]; then
++		echo "PASS: inserted $count entries via ctnetlink in $duration ms"
++	else
++		ip netns exec $ns conntrack -S 1>&2
++		echo "FAIL: inserted $count entries via ctnetlink in $duration ms, expected $max_zones entries ($duration ms)"
++		ret=1
++	fi
++}
++
++test_zones $zones
++
++if [ $have_ct_tool -eq 1 ];then
++	test_conntrack_tool $zones
++else
++	echo "SKIP: Could not run ctnetlink insertion test without conntrack tool"
++	if [ $ret -eq 0 ];then
++		exit $ksft_skip
++	fi
 +fi
 +
 +exit $ret
