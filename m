@@ -2,74 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47BBD416A60
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 05:19:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9523E416A71
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 05:33:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244010AbhIXDUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 23:20:41 -0400
-Received: from smtp21.cstnet.cn ([159.226.251.21]:37644 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231680AbhIXDUl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Sep 2021 23:20:41 -0400
-Received: from localhost.localdomain (unknown [124.16.138.128])
-        by APP-01 (Coremail) with SMTP id qwCowACnrQmRQ01hNyXQAA--.62110S2;
-        Fri, 24 Sep 2021 11:18:41 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     dhowells@redhat.com, marc.dionne@auristor.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-afs@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH 3/3] rxrpc: Fix _usecs_to_jiffies() by using usecs_to_jiffies()
-Date:   Fri, 24 Sep 2021 03:18:37 +0000
-Message-Id: <1632453517-782538-1-git-send-email-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: qwCowACnrQmRQ01hNyXQAA--.62110S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrtr1xtr43Gr4xWr4DZFyrZwb_yoWfZFb_ZF
-        WkJF17WayayFZ3uF42yr4rA3s8ury3uryFvr1SkFZrK3yY9rySy3y7WFn5Gr1YgrW2qFnx
-        ua1jva4xKr1fujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbcAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
-        1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
-        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8
-        GwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r
-        1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij
-        64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr
-        0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
-        IxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUnQ6pDUUUU
-X-Originating-IP: [124.16.138.128]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+        id S244017AbhIXDes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 23:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243927AbhIXDer (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 23:34:47 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86742C061574
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 20:33:15 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id a3so12678025oid.6
+        for <netdev@vger.kernel.org>; Thu, 23 Sep 2021 20:33:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8g1HntPwXofOZfAfceUHenxROe42qpNbAXrw7y59eUc=;
+        b=Ltw9t4U1qK32ZZdSbEQQ2IlHcGJnSSMWCDooKNwBdvbewxc27mS+9s+zQxzDppwQfF
+         dekHbdkmYbhtYPYcT+YcsrmS0y3QXxyAutcHt6OBgg+IpSinPPzRIjGzKBbaA0G6RLKg
+         eACEpRkqYTnWpWIxGk4QYQaqfXNs9YYB7zhX3dJcnZghd3dw6pa+mNCNHFtkqBOfssh0
+         dVvozpFNrnfxw5L7Dysl1OyxR9M8+rwxa5hFIIusPynMngLYYc5bOlVexV+IM36w8Xpg
+         52qlHXv75ZPbWSUuGNKrzlQ0DTdidEyWlZNKhYZ0NxthqoMlx3O5Ap62ach3fQGra0sJ
+         m8Zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8g1HntPwXofOZfAfceUHenxROe42qpNbAXrw7y59eUc=;
+        b=fIRIr2yYwj3S2ZmClwpbjHjZ7sM58GDPGDGeFLD9QCFOrxUwWlQu3j9p9ucRRWaVro
+         Zz9PfA2ymEVmC8IvkRZR3FBHI/M2dYMzXJQzesBxZe3SiygFjtiYLW2c0T02nigyXcMp
+         H/a9RmH1btTg5j1aVmKm0A2aUTzuou0veaQwGUn2020myQVbYkC+QYdt18jlkIQmz7ce
+         ET9KuJux1k4zizYRvKk7bzldVjXcsvW3Y2IuNaIl+2mjvdpVxOyHanxqtr+qv13RI1Ef
+         KZQcByeyS5xHIrAL78TpGaJ2zFi15rqehGAqqCNCUByh371q4bn1NaBWHKyq/yVFHEUE
+         VgJQ==
+X-Gm-Message-State: AOAM533IMW9x5/7ahJABGTF8Ycs+wcmnDc0mQvnkmZ0wOIYqyxGOWIdP
+        2T9njO6zjTQoqp+mmlQw3ri2o3kSOFEqPg==
+X-Google-Smtp-Source: ABdhPJy0x9xrM8UNnxjWuxCK6uZICnad57CnxtCly+5PZcfLoo3rNXIUhy432IDWOexciAR1h1VIeQ==
+X-Received: by 2002:aca:e142:: with SMTP id y63mr6589052oig.112.1632454394783;
+        Thu, 23 Sep 2021 20:33:14 -0700 (PDT)
+Received: from localhost.localdomain (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id d68sm103984otb.55.2021.09.23.20.33.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Sep 2021 20:33:14 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Daniele Palmas <dnlplm@gmail.com>, Alex Elder <elder@linaro.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH v2] iplink_rmnet: Allow passing IFLA_RMNET_FLAGS
+Date:   Thu, 23 Sep 2021 20:33:51 -0700
+Message-Id: <20210924033351.2878153-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Directly using _usecs_to_jiffies() might be unsafe, so it's
-better to use usecs_to_jiffies() instead.
-Because we can see that the result of _usecs_to_jiffies()
-could be larger than MAX_JIFFY_OFFSET values without the
-check of the input.
+Extend the rmnet option parser to allow enabling and disabling
+IFLA_RMNET_FLAGS using ip link and add the flags to the pint_op to allow
+inspecting the current settings.
 
-Fixes: c410bf01933e ("Fix the excessive initial retransmission timeout")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- net/rxrpc/rtt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/rxrpc/rtt.c b/net/rxrpc/rtt.c
-index 4e565ee..be61d6f 100644
---- a/net/rxrpc/rtt.c
-+++ b/net/rxrpc/rtt.c
-@@ -22,7 +22,7 @@ static u32 rxrpc_rto_min_us(struct rxrpc_peer *peer)
- 
- static u32 __rxrpc_set_rto(const struct rxrpc_peer *peer)
+Changes since v1:
+- Landed ABI change to allow setting/clearing individual bits
+- Changed parser to take on/off arguments
+- Added the new v5 chksum bits
+- Made print_flags fancier, with some inspiration from iplink_vlan
+
+ ip/iplink_rmnet.c | 97 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 97 insertions(+)
+
+diff --git a/ip/iplink_rmnet.c b/ip/iplink_rmnet.c
+index 1d16440c6900..f629ca9976d9 100644
+--- a/ip/iplink_rmnet.c
++++ b/ip/iplink_rmnet.c
+@@ -16,6 +16,12 @@ static void print_explain(FILE *f)
  {
--	return _usecs_to_jiffies((peer->srtt_us >> 3) + peer->rttvar_us);
-+	return usecs_to_jiffies((peer->srtt_us >> 3) + peer->rttvar_us);
+ 	fprintf(f,
+ 		"Usage: ... rmnet mux_id MUXID\n"
++		"                 [ingress-deaggregation { on | off } ]\n"
++		"                 [ingress-commands { on | off } ]\n"
++		"                 [ingress-chksumv4 { on | off } ]\n"
++		"                 [ingress-chksumv5 { on | off } ]\n"
++		"                 [egress-chksumv4 { on | off } ]\n"
++		"                 [egress-chksumv5 { on | off } ]\n"
+ 		"\n"
+ 		"MUXID := 1-254\n"
+ 	);
+@@ -26,9 +32,16 @@ static void explain(void)
+ 	print_explain(stderr);
  }
  
- static u32 rxrpc_bound_rto(u32 rto)
++static int on_off(const char *msg, const char *arg)
++{
++	fprintf(stderr, "Error: argument of \"%s\" must be \"on\" or \"off\", not \"%s\"\n", msg, arg);
++	return -1;
++}
++
+ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			   struct nlmsghdr *n)
+ {
++	struct ifla_rmnet_flags flags = { };
+ 	__u16 mux_id;
+ 
+ 	while (argc > 0) {
+@@ -37,6 +50,60 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			if (get_u16(&mux_id, *argv, 0))
+ 				invarg("mux_id is invalid", *argv);
+ 			addattr16(n, 1024, IFLA_RMNET_MUX_ID, mux_id);
++		} else if (matches(*argv, "ingress-deaggregation") == 0) {
++			NEXT_ARG();
++			flags.mask |= RMNET_FLAGS_INGRESS_DEAGGREGATION;
++			if (strcmp(*argv, "on") == 0)
++				flags.flags |= RMNET_FLAGS_INGRESS_DEAGGREGATION;
++			else if (strcmp(*argv, "off") == 0)
++				flags.flags &= ~RMNET_FLAGS_INGRESS_DEAGGREGATION;
++			else
++				return on_off("ingress-deaggregation", *argv);
++		} else if (matches(*argv, "ingress-commands") == 0) {
++			NEXT_ARG();
++			flags.mask |= RMNET_FLAGS_INGRESS_MAP_COMMANDS;
++			if (strcmp(*argv, "on") == 0)
++				flags.flags |= RMNET_FLAGS_INGRESS_MAP_COMMANDS;
++			else if (strcmp(*argv, "off") == 0)
++				flags.flags &= ~RMNET_FLAGS_INGRESS_MAP_COMMANDS;
++			else
++				return on_off("ingress-commands", *argv);
++		} else if (matches(*argv, "ingress-chksumv4") == 0) {
++			NEXT_ARG();
++			flags.mask |= RMNET_FLAGS_INGRESS_MAP_CKSUMV4;
++			if (strcmp(*argv, "on") == 0)
++				flags.flags |= RMNET_FLAGS_INGRESS_MAP_CKSUMV4;
++			else if (strcmp(*argv, "off") == 0)
++				flags.flags &= ~RMNET_FLAGS_INGRESS_MAP_CKSUMV4;
++			else
++				return on_off("ingress-chksumv4", *argv);
++		} else if (matches(*argv, "ingress-chksumv5") == 0) {
++			NEXT_ARG();
++			flags.mask |= RMNET_FLAGS_INGRESS_MAP_CKSUMV5;
++			if (strcmp(*argv, "on") == 0)
++				flags.flags |= RMNET_FLAGS_INGRESS_MAP_CKSUMV5;
++			else if (strcmp(*argv, "off") == 0)
++				flags.flags &= ~RMNET_FLAGS_INGRESS_MAP_CKSUMV5;
++			else
++				return on_off("ingress-chksumv5", *argv);
++		} else if (matches(*argv, "egress-chksumv4") == 0) {
++			NEXT_ARG();
++			flags.mask |= RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
++			if (strcmp(*argv, "on") == 0)
++				flags.flags |= RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
++			else if (strcmp(*argv, "off") == 0)
++				flags.flags &= ~RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
++			else
++				return on_off("egress-chksumv4", *argv);
++		} else if (matches(*argv, "egress-chksumv5") == 0) {
++			NEXT_ARG();
++			flags.mask |= RMNET_FLAGS_EGRESS_MAP_CKSUMV5;
++			if (strcmp(*argv, "on") == 0)
++				flags.flags |= RMNET_FLAGS_EGRESS_MAP_CKSUMV5;
++			else if (strcmp(*argv, "off") == 0)
++				flags.flags &= ~RMNET_FLAGS_EGRESS_MAP_CKSUMV5;
++			else
++				return on_off("egress-chksumv5", *argv);
+ 		} else if (matches(*argv, "help") == 0) {
+ 			explain();
+ 			return -1;
+@@ -48,11 +115,33 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+ 		argc--, argv++;
+ 	}
+ 
++	if (flags.mask)
++		addattr_l(n, 1024, IFLA_RMNET_FLAGS, &flags, sizeof(flags));
++
+ 	return 0;
+ }
+ 
++static void rmnet_print_flags(FILE *fp, __u32 flags)
++{
++	open_json_array(PRINT_ANY, is_json_context() ? "flags" : "<");
++#define _PF(f, s) if (flags & RMNET_FLAGS_##f) {			\
++		flags &= ~RMNET_FLAGS_##f;				\
++		print_string(PRINT_ANY, NULL, flags ? "%s," : "%s", s); \
++	}
++	_PF(INGRESS_DEAGGREGATION, "ingress-deaggregation");
++	_PF(INGRESS_MAP_COMMANDS, "ingress-commands");
++	_PF(INGRESS_MAP_CKSUMV4, "ingress-chksumv4");
++	_PF(INGRESS_MAP_CKSUMV5, "ingress-chksumv5");
++	_PF(EGRESS_MAP_CKSUMV4, "egress-chksumv4");
++	_PF(EGRESS_MAP_CKSUMV5, "egress-chksumv5");
++#undef _PF
++	close_json_array(PRINT_ANY, "> ");
++}
++
+ static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ {
++	struct ifla_vlan_flags *flags;
++
+ 	if (!tb)
+ 		return;
+ 
+@@ -64,6 +153,14 @@ static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 		   "mux_id",
+ 		   "mux_id %u ",
+ 		   rta_getattr_u16(tb[IFLA_RMNET_MUX_ID]));
++
++	if (tb[IFLA_RMNET_FLAGS]) {
++		if (RTA_PAYLOAD(tb[IFLA_RMNET_FLAGS]) < sizeof(*flags))
++			return;
++		flags = RTA_DATA(tb[IFLA_RMNET_FLAGS]);
++
++		rmnet_print_flags(f, flags->flags);
++	}
+ }
+ 
+ static void rmnet_print_help(struct link_util *lu, int argc, char **argv,
 -- 
-2.7.4
+2.33.0
 
