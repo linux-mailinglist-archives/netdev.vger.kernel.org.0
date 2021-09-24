@@ -2,157 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26CC7416CDD
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 09:34:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5882416CEA
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 09:37:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244372AbhIXHf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 03:35:29 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:16291 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231921AbhIXHf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 03:35:28 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HG3fV6Yr0z8tQ3;
-        Fri, 24 Sep 2021 15:33:06 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Fri, 24 Sep 2021 15:33:50 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Fri, 24 Sep
- 2021 15:33:49 +0800
-Subject: Re: [PATCH net-next 3/7] pool_pool: avoid calling compound_head() for
- skb frag page
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        <linuxarm@openeuler.org>,
-        "Jesper Dangaard Brouer" <hawk@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Kevin Hao" <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Marco Elver <elver@google.com>, <memxor@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        David Ahern <dsahern@gmail.com>
-References: <20210922094131.15625-1-linyunsheng@huawei.com>
- <20210922094131.15625-4-linyunsheng@huawei.com>
- <YUw78q4IrfR0D2/J@apalos.home>
- <b2779d81-4cb3-5ccc-8e36-02cd633383f3@huawei.com>
- <CAC_iWj+yv8+=MaxtqLFkQh1Qb75vNZw30xcz2VTD-m37-RVp8A@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <39e62727-6d9f-a0db-39b2-296ebd6972b3@huawei.com>
-Date:   Fri, 24 Sep 2021 15:33:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S244412AbhIXHio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 03:38:44 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:51779 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244398AbhIXHio (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Sep 2021 03:38:44 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1632469031; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=q3sgHaNoeo9y/c2zl8fCMwgMb5gjvNFL7fPrugk3DZA=;
+ b=bqI7TlZYOSFWzYw2MuZGYGVt4dN26Xv1XenleNkS4cK1aCinnmYr1p6bOLX5TP6KaH9+VN8B
+ DXChz+ikj/iytV/KygdtDuL4v7kQxUM2J7BxVJcQnkBxyDvkbvxLUrGiyYuQwde9DAS1yAB9
+ SizJ4t8SABVwT3yb1CObc6xJqzE=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 614d801eec62f57c9a559950 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 24 Sep 2021 07:37:02
+ GMT
+Sender: youghand=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 76A82C43616; Fri, 24 Sep 2021 07:37:01 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: youghand)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4A507C4338F;
+        Fri, 24 Sep 2021 07:37:00 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <CAC_iWj+yv8+=MaxtqLFkQh1Qb75vNZw30xcz2VTD-m37-RVp8A@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme707-chm.china.huawei.com (10.1.199.103) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Fri, 24 Sep 2021 13:07:00 +0530
+From:   Youghandhar Chintala <youghand@codeaurora.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Abhishek Kumar <kuabhs@chromium.org>, Felix Fietkau <nbd@nbd.name>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Rakesh Pillai <pillair@codeaurora.org>,
+        Manikanta Pubbisetty <mpubbise@codeaurora.org>
+Subject: Re: [PATCH 2/3] mac80211: Add support to trigger sta disconnect on
+ hardware restart
+In-Reply-To: <d5cfad1543f31b3e0d8e7a911d3741f3d5446c57.camel@sipsolutions.net>
+References: <20201215172352.5311-1-youghand@codeaurora.org>
+ <f2089f3c-db96-87bc-d678-199b440c05be@nbd.name>
+ <ba0e6a3b783722c22715ae21953b1036@codeaurora.org>
+ <CACTWRwt0F24rkueS9Ydq6gY3M-oouKGpaL3rhWngQ7cTP0xHMA@mail.gmail.com>
+ (sfid-20210205_225202_513086_43C9BBC9)
+ <d5cfad1543f31b3e0d8e7a911d3741f3d5446c57.camel@sipsolutions.net>
+Message-ID: <66ba0f836dba111b8c7692f78da3f079@codeaurora.org>
+X-Sender: youghand@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/9/23 19:47, Ilias Apalodimas wrote:
-> On Thu, 23 Sept 2021 at 14:24, Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>
->> On 2021/9/23 16:33, Ilias Apalodimas wrote:
->>> On Wed, Sep 22, 2021 at 05:41:27PM +0800, Yunsheng Lin wrote:
->>>> As the pp page for a skb frag is always a head page, so make
->>>> sure skb_pp_recycle() passes a head page to avoid calling
->>>> compound_head() for skb frag page case.
->>>
->>> Doesn't that rely on the driver mostly (i.e what's passed in skb_frag_set_page() ?
->>> None of the current netstack code assumes bv_page is the head page of a
->>> compound page.  Since our page_pool allocator can will allocate compound
->>> pages for order > 0,  why should we rely on it ?
->>
->> As the page pool alloc function return 'struct page *' to the caller, which
->> is the head page of a compound pages for order > 0, so I assume the caller
->> will pass that to skb_frag_set_page().
-> 
-> Yea that's exactly the assumption I was afraid of.
-> Sure not passing the head page might seem weird atm and the assumption
-> stands, but the point is we shouldn't blow up the entire network stack
-> if someone does that eventually.
-> 
->>
->> For non-pp page, I assume it is ok whether the page is a head page or tail
->> page, as the pp_magic for both of them are not set with PP_SIGNATURE.
-> 
-> Yea that's true, although we removed the checking for coalescing
-> recyclable and non-recyclable SKBs,   the next patch first checks the
-> signature before trying to do anything with the skb.
-> 
->>
->> Or should we play safe here, and do the trick as skb_free_head() does in
->> patch 6?
-> 
-> I don't think the &1 will even be measurable,  so I'd suggest just
-> dropping this and play safe?
+Hi Johannes and felix,
 
-I am not sure what does '&1' mean above.
+We have tested with DELBA experiment during post SSR, DUT packet seq 
+number and tx pn is resetting to 0 as expected but AP(Netgear R8000) is 
+not honoring the tx pn from DUT.
+Whereas when we tested with DELBA experiment by making Linux android 
+device as SAP and DUT as STA with which we don’t see any issue. Ping got 
+resumed post SSR without disconnect.
 
-The one thing I am not sure about the trick done in patch 6 is that
-if __page_frag_cache_drain() is right API to use here, I used it because
-it is the only API that is expecting a head page.
+Please find below logs collected during my test for reference.
 
+192.168.0.15(AtherosC_12:af:af)  ===> DUT IP and MAC
+192.168.0.55(Netgear_d2:93:3d)   ===> AP IP and MAC
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     474 22.186433      192.168.0.15          192.168.0.55          ICMP  
+    44         37              Data is protected                          
+                  0x000000000026                              0          
+Echo (ping) request  id=0x0d00, seq=256/1, ttl=64 (reply in 480)
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     480 22.188371      192.168.0.55          192.168.0.15          ICMP  
+    44         5               Data is protected                          
+                  0x000000000011                              6          
+Echo (ping) reply    id=0x0d00, seq=256/1, ttl=64 (request in 474)
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     483 22.246335      192.168.0.15          192.168.0.55          ICMP  
+    44         38              Data is protected                          
+                  0x000000000027                              0          
+Echo (ping) request  id=0x1258, seq=11/2816, ttl=64 (reply in 489)
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     489 22.248127      192.168.0.55          192.168.0.15          ICMP  
+    44         13              Data is protected                          
+                  0x000000000012                              0          
+Echo (ping) reply    id=0x1258, seq=11/2816, ttl=64 (request in 483)
+
+
+The above pings(with TID 0) are before SSR. As soon as DUT recovers 
+after SSR, DUT is sending DELBAs to AP.
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code       
+                     TID        Info
+     546 26.129127      AtherosC_12:af:af     Netgear_d2:93:3d      
+802.11   44         4               Data is not protected                
+                                                     Delete Block Ack     
+0x0       Action, SN=4, FN=0, Flags=........C
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code       
+                     TID        Info
+     548 26.129977      AtherosC_12:af:af     Netgear_d2:93:3d      
+802.11   44         5               Data is not protected                
+                                                      Delete Block Ack    
+0x6        Action, SN=5, FN=0, Flags=........C
+
+
+After SSR, we started ping traffic with TID 7 and 0. ping is successful 
+for TID 7 and failed for TID 0.
+For TID 0, ping requests tx PN is reset to 0 but it seems AP is not 
+reset its PN hence we see this ping failure for TID 0.
+Whereas TID 7 ping success because we started it after SSR.
+
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     557 26.355256      192.168.0.15          192.168.0.55          ICMP  
+    44         0               Data is protected                          
+                  0x000000000001                              0          
+Echo (ping) request  id=0x1258, seq=15/3840, ttl=64 (no response found!)
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     571 27.376895      192.168.0.15          192.168.0.55          ICMP  
+    44         1               Data is protected                          
+                  0x000000000002                              0          
+Echo (ping) request  id=0x1258, seq=16/4096, ttl=64 (no response found!)
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     588 28.400946      192.168.0.15          192.168.0.55          ICMP  
+    44         2               Data is protected                          
+                  0x000000000003                              0          
+Echo (ping) request  id=0x1258, seq=17/4352, ttl=64 (no response found!)
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     600 29.424881      192.168.0.15          192.168.0.55          ICMP  
+    44         3               Data is protected                          
+                  0x000000000004                              0          
+Echo (ping) request  id=0x1258, seq=18/4608, ttl=64 (no response found!)
+
+
+Below ping packets are with TID 7
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     622 30.898249      192.168.0.15          192.168.0.55          ICMP  
+    44         0               Data is protected                          
+                  0x000000000006                              7          
+Echo (ping) request  id=0x1276, seq=1/256, ttl=64 (reply in 626)
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     626 30.900015      192.168.0.55          192.168.0.15          ICMP  
+    44         0               Data is protected                          
+                  0x000000000013                              7          
+Echo (ping) reply    id=0x1276, seq=1/256, ttl=64 (request in 622)
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     644 31.897456      192.168.0.15          192.168.0.55          ICMP  
+    44         1               Data is protected                          
+                  0x000000000008                              7          
+Echo (ping) request  id=0x1276, seq=2/512, ttl=64 (reply in 648)
+
+No.     Time           Source                Destination           
+Protocol Channel    Sequence number Protected flag Block Ack Starting 
+Sequence Control (SSC) CCMP Ext. Initialization Vector Action code TID   
+      Info
+     648 31.899266      192.168.0.55          192.168.0.15          ICMP  
+    44         1               Data is protected                          
+                  0x000000000014                              7          
+Echo (ping) reply    id=0x1276, seq=2/512, ttl=64 (request in 644)
+
+Regards,
+Youghandhar
+
+
+On 2021-02-12 14:07, Johannes Berg wrote:
+> On Fri, 2021-02-05 at 13:51 -0800, Abhishek Kumar wrote:
+>> Since using DELBA frame to APs to re-establish BA session has a
+>> dependency on APs and also some APs may not honor the DELBA frame.
 > 
-> Cheers
-> /Ilias
->>
->>>
->>> Thanks
->>> /Ilias
->>>>
->>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->>>> ---
->>>>  include/linux/skbuff.h | 2 +-
->>>>  net/core/page_pool.c   | 2 --
->>>>  2 files changed, 1 insertion(+), 3 deletions(-)
->>>>
->>>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
->>>> index 6bdb0db3e825..35eebc2310a5 100644
->>>> --- a/include/linux/skbuff.h
->>>> +++ b/include/linux/skbuff.h
->>>> @@ -4722,7 +4722,7 @@ static inline bool skb_pp_recycle(struct sk_buff *skb, void *data)
->>>>  {
->>>>      if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
->>>>              return false;
->>>> -    return page_pool_return_skb_page(virt_to_page(data));
->>>> +    return page_pool_return_skb_page(virt_to_head_page(data));
->>>>  }
->>>>
->>>>  #endif      /* __KERNEL__ */
->>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->>>> index f7e71dcb6a2e..357fb53343a0 100644
->>>> --- a/net/core/page_pool.c
->>>> +++ b/net/core/page_pool.c
->>>> @@ -742,8 +742,6 @@ bool page_pool_return_skb_page(struct page *page)
->>>>  {
->>>>      struct page_pool *pp;
->>>>
->>>> -    page = compound_head(page);
->>>> -
->>>>      /* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
->>>>       * in order to preserve any existing bits, such as bit 0 for the
->>>>       * head page of compound page and bit 1 for pfmemalloc page, so
->>>> --
->>>> 2.33.0
->>>>
->>> .
->>>
-> .
 > 
+> That's completely out of spec ... Can you say which AP this was?
+> 
+> You could also try sending a BAR that updates the SN.
+> 
+> johannes
+
+Regards,
+Youghandhar
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
