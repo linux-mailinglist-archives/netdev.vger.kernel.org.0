@@ -2,125 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0AB5416E58
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 10:58:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C107416ECB
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 11:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245026AbhIXJAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 05:00:00 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:47056 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245007AbhIXI77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 04:59:59 -0400
-Received: by mail-io1-f71.google.com with SMTP id b13-20020a05660214cd00b005d6279b61fdso8926958iow.13
-        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 01:58:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=8npiF/jDNr/jkDotYVsh3O09j4eaE43P0hOP/9Ipagw=;
-        b=NV6pZSz85Q8BwtDatkC7cTOxWP4lnRPexU1nx1053q1Gw5uWUYV+mWpHl8jiHbio7y
-         IBHjuLBXUa5wS+/uEnxKwajtIlYLGpRWBixhaWKtzlUFZrD3k/RpbUWrmyl0B7yTyQQz
-         vS2RTD5LXU0vE3b8YPdPAqwNF7UnrN4kVXw86O+QIyuu6FFBhuKTFwOWOYT/QArm+6WO
-         ESE3H4t9QuMX1DRF0MnL9ns+oj/lFynD8DGZI93pCx0dy2tNaRGyaY8GSBxnLjsomwrN
-         Dpfsh+s8aZq7NHtEZXEbKs6doSkLclLSE6oswQMNyY0pHCVgu/jqbW2Hw2PGQ6ig6Wp4
-         DdLA==
-X-Gm-Message-State: AOAM532Y+61HpWc/jwAAN9Z+q2sKysyGWubdyaDlCwsglR7kRnt/WFYt
-        6rQA/nRQFnAscas53Bn7JaDIDXmRqahoYMQjBQVXFJJ7KzEc
-X-Google-Smtp-Source: ABdhPJzuAfXhZDMEaHvtLrVXHZVHFI359ZJSDK1BbS6qwQMvli/fg9gKolr6ohoKmJqo2bLB9YkLFZbP5xI7RoC8cl1cSmv/xn+K
+        id S244555AbhIXJWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 05:22:46 -0400
+Received: from us-smtp-delivery-115.mimecast.com ([170.10.129.115]:51617 "EHLO
+        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244963AbhIXJWo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 05:22:44 -0400
+X-Greylist: delayed 848 seconds by postgrey-1.27 at vger.kernel.org; Fri, 24 Sep 2021 05:22:44 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
+        s=selector; t=1632475270;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=uL5UOrW0xYwbJjFtc6QUKnjBL9JvrhVulPM0Kqr41gM=;
+        b=O1DNx66KtqK8TtP/egTmtYjzjBGV7tzqBm4V7Aas1fQTeFQFSyJHGb10OuirIHtnciB9K4
+        T2Wdltb+MLMyWSqMoDej71dlkYn6S5FkxnaSxaF/CzCmP0j1vib7g3/hjFXsx28hFftBXL
+        nOCNthktx048nxjBM1afDkeiLu5Q7aA=
+Received: from mail.maxlinear.com (174-47-1-84.static.ctl.one [174.47.1.84])
+ (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-580-ZjorimJoNZOdrDNLDVP-sw-1; Fri, 24 Sep 2021 05:05:48 -0400
+X-MC-Unique: ZjorimJoNZOdrDNLDVP-sw-1
+Received: from sgsxdev002.isng.phoenix.local (10.226.81.112) by
+ mail.maxlinear.com (10.23.38.119) with Microsoft SMTP Server id 15.1.2242.4;
+ Fri, 24 Sep 2021 02:05:43 -0700
+From:   Xu Liang <lxu@maxlinear.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <vee.khee.wong@linux.intel.com>
+CC:     <linux@armlinux.org.uk>, <hmehrtens@maxlinear.com>,
+        <tmohren@maxlinear.com>, <mohammad.athari.ismail@intel.com>,
+        Xu Liang <lxu@maxlinear.com>
+Subject: [PATCH] net: phy: enhance GPY115 loopback disable function
+Date:   Fri, 24 Sep 2021 17:05:37 +0800
+Message-ID: <20210924090537.48972-1-lxu@maxlinear.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:280f:: with SMTP id l15mr6929859ilf.74.1632473906530;
- Fri, 24 Sep 2021 01:58:26 -0700 (PDT)
-Date:   Fri, 24 Sep 2021 01:58:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004dcddc05ccb9f3a2@google.com>
-Subject: [syzbot] riscv/fixes test error: BUG: soft lockup in corrupted
-From:   syzbot <syzbot+bc48e05449f37d40eccf@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: maxlinear.com
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+GPY115 need reset PHY when it comes out from loopback mode if the firmware
+version number (lower 8 bits) is equal to or below 0x76.
 
-syzbot found the following issue on:
-
-HEAD commit:    7d2a07b76933 Linux 5.14
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
-console output: https://syzkaller.appspot.com/x/log.txt?x=1021b1f3300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f8211b06020972e8
-dashboard link: https://syzkaller.appspot.com/bug?extid=bc48e05449f37d40eccf
-compiler:       riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-userspace arch: riscv64
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+bc48e05449f37d40eccf@syzkaller.appspotmail.com
-
-watchdog: BUG: soft lockup - CPU#0 stuck for 430s! [kworker/0:3:3301]
-Modules linked in:
-irq event stamp: 128499
-hardirqs last  enabled at (128498): [<ffffffff800051a0>] restore_all+0x12/0x6e
-hardirqs last disabled at (128499): [<ffffffff80005094>] _save_context+0x80/0x90
-softirqs last  enabled at (45742): [<ffffffff82ba5a08>] softirq_handle_end kernel/softirq.c:401 [inline]
-softirqs last  enabled at (45742): [<ffffffff82ba5a08>] __do_softirq+0x628/0x90c kernel/softirq.c:587
-softirqs last disabled at (45749): [<ffffffff800369a0>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
-softirqs last disabled at (45749): [<ffffffff800369a0>] invoke_softirq kernel/softirq.c:439 [inline]
-softirqs last disabled at (45749): [<ffffffff800369a0>] __irq_exit_rcu kernel/softirq.c:636 [inline]
-softirqs last disabled at (45749): [<ffffffff800369a0>] irq_exit+0x1a0/0x1b6 kernel/softirq.c:660
-CPU: 0 PID: 3301 Comm: kworker/0:3 Not tainted 5.14.0-syzkaller #0
-Hardware name: riscv-virtio,qemu (DT)
-Workqueue: events nsim_dev_trap_report_work
-epc : arch_static_branch arch/riscv/include/asm/jump_label.h:20 [inline]
-epc : kfence_alloc include/linux/kfence.h:120 [inline]
-epc : slab_alloc_node mm/slub.c:2884 [inline]
-epc : __kmalloc_node_track_caller+0xaa/0x3d2 mm/slub.c:4653
- ra : slab_pre_alloc_hook mm/slab.h:494 [inline]
- ra : slab_alloc_node mm/slub.c:2880 [inline]
- ra : __kmalloc_node_track_caller+0x70/0x3d2 mm/slub.c:4653
-epc : ffffffff803e2a1a ra : ffffffff803e29e0 sp : ffffffe00e97f4d0
- gp : ffffffff83f967d8 tp : ffffffe0081a2f80 t0 : ffffffe008c0e728
- t1 : ffffffc7f07f2d69 t2 : 000000000545de2b s0 : ffffffe00e97f570
- s1 : ffffffe005601c80 a0 : 0000000000000000 a1 : 0000000000000007
- a2 : 1ffffffff07aa51f a3 : ffffffff80a9711a a4 : 0000000004000000
- a5 : 0000000000000000 a6 : 0000000000f00000 a7 : 7126f9b37a026000
- s2 : ffffffff83f96adc s3 : 0000000000082a20 s4 : 0000000000000200
- s5 : ffffffffffffffff s6 : ffffffff827d9302 s7 : ffffffff83f9a0d0
- s8 : 0000000000000000 s9 : 0000000000082a20 s10: ffffffffffffffff
- s11: 0000000000000000 t3 : 7126f9b37a026000 t4 : ffffffc7f07f2d69
- t5 : ffffffc7f07f2d6a t6 : ffffffe009428026
-status: 0000000000000120 badaddr: 0000000000000000 cause: 8000000000000005
-[<ffffffff803e2a1a>] slab_alloc_node mm/slub.c:2881 [inline]
-[<ffffffff803e2a1a>] __kmalloc_node_track_caller+0xaa/0x3d2 mm/slub.c:4653
-[<ffffffff821a8952>] kmalloc_reserve net/core/skbuff.c:355 [inline]
-[<ffffffff821a8952>] __alloc_skb+0xee/0x2e2 net/core/skbuff.c:426
-[<ffffffff827d9302>] alloc_skb include/linux/skbuff.h:1112 [inline]
-[<ffffffff827d9302>] ndisc_alloc_skb+0x9e/0x1a0 net/ipv6/ndisc.c:420
-[<ffffffff827e09d8>] ndisc_send_rs+0x24c/0x378 net/ipv6/ndisc.c:686
-[<ffffffff8279c322>] addrconf_rs_timer+0x2ac/0x4c4 net/ipv6/addrconf.c:3877
-[<ffffffff80123b68>] call_timer_fn+0x10e/0x654 kernel/time/timer.c:1421
-[<ffffffff8012448e>] expire_timers kernel/time/timer.c:1466 [inline]
-[<ffffffff8012448e>] __run_timers.part.0+0x3e0/0x442 kernel/time/timer.c:1734
-[<ffffffff80124566>] __run_timers kernel/time/timer.c:1715 [inline]
-[<ffffffff80124566>] run_timer_softirq+0x76/0xe0 kernel/time/timer.c:1747
-[<ffffffff82ba5650>] __do_softirq+0x270/0x90c kernel/softirq.c:558
-[<ffffffff800369a0>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
-[<ffffffff800369a0>] invoke_softirq kernel/softirq.c:439 [inline]
-[<ffffffff800369a0>] __irq_exit_rcu kernel/softirq.c:636 [inline]
-[<ffffffff800369a0>] irq_exit+0x1a0/0x1b6 kernel/softirq.c:660
-[<ffffffff800e88dc>] handle_domain_irq+0x106/0x178 kernel/irq/irqdesc.c:705
-[<ffffffff80af3486>] riscv_intc_irq+0x80/0xca drivers/irqchip/irq-riscv-intc.c:40
-[<ffffffff8000515e>] ret_from_exception+0x0/0x14
-[<ffffffff803e29e0>] slab_pre_alloc_hook mm/slab.h:494 [inline]
-[<ffffffff803e29e0>] slab_alloc_node mm/slub.c:2880 [inline]
-[<ffffffff803e29e0>] __kmalloc_node_track_caller+0x70/0x3d2 mm/slub.c:4653
-
-
+Signed-off-by: Xu Liang <lxu@maxlinear.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/net/phy/mxl-gpy.c | 30 ++++++++++++++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
+index 2d5d5081c3b6..3ef62d5c4776 100644
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -493,6 +493,32 @@ static int gpy_loopback(struct phy_device *phydev, boo=
+l enable)
+ =09return ret;
+ }
+=20
++static int gpy115_loopback(struct phy_device *phydev, bool enable)
++{
++=09int ret;
++=09int fw_minor;
++
++=09if (enable)
++=09=09return gpy_loopback(phydev, enable);
++
++=09/* Show GPY PHY FW version in dmesg */
++=09ret =3D phy_read(phydev, PHY_FWV);
++=09if (ret < 0)
++=09=09return ret;
++
++=09fw_minor =3D FIELD_GET(PHY_FWV_MINOR_MASK, ret);
++=09if (fw_minor > 0x0076)
++=09=09return gpy_loopback(phydev, 0);
++
++=09ret =3D phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, BMCR_RESET);
++=09if (!ret) {
++=09=09/* Some delay for the reset complete. */
++=09=09msleep(100);
++=09}
++
++=09return ret;
++}
++
+ static struct phy_driver gpy_drivers[] =3D {
+ =09{
+ =09=09PHY_ID_MATCH_MODEL(PHY_ID_GPY2xx),
+@@ -527,7 +553,7 @@ static struct phy_driver gpy_drivers[] =3D {
+ =09=09.handle_interrupt =3D gpy_handle_interrupt,
+ =09=09.set_wol=09=3D gpy_set_wol,
+ =09=09.get_wol=09=3D gpy_get_wol,
+-=09=09.set_loopback=09=3D gpy_loopback,
++=09=09.set_loopback=09=3D gpy115_loopback,
+ =09},
+ =09{
+ =09=09PHY_ID_MATCH_MODEL(PHY_ID_GPY115C),
+@@ -544,7 +570,7 @@ static struct phy_driver gpy_drivers[] =3D {
+ =09=09.handle_interrupt =3D gpy_handle_interrupt,
+ =09=09.set_wol=09=3D gpy_set_wol,
+ =09=09.get_wol=09=3D gpy_get_wol,
+-=09=09.set_loopback=09=3D gpy_loopback,
++=09=09.set_loopback=09=3D gpy115_loopback,
+ =09},
+ =09{
+ =09=09.phy_id=09=09=3D PHY_ID_GPY211B,
+--=20
+2.17.1
+
