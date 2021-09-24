@@ -2,118 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 042EE416EB2
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 11:15:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4853416EC2
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 11:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245161AbhIXJQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 05:16:31 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:63342 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244422AbhIXJQV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 05:16:21 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1632474889; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=8s7VVl139a3i809ATKepHde+IYqg4+OOS/K41mjPwTY=;
- b=t8elIktd4fNKqFnoiCoRxsO0Cuaj5vaT9RJmf33DRVZQnOk6c5Y4YgZ+rlYui8jUvNxkEZQ+
- BkYD9Hnu3zNmYQs1AdJNk3GhETpRoDeFpVb+l9G37jl8NpCmwGYW2LBFHo3OBFN/9wBnY5Yh
- 2/V0JeNHHmd73qDyvFJr2mWjcWg=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 614d96c644830700e1b5ee2a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 24 Sep 2021 09:13:42
- GMT
-Sender: youghand=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id B6A5CC43617; Fri, 24 Sep 2021 09:13:42 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: youghand)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 248A1C4338F;
-        Fri, 24 Sep 2021 09:13:42 +0000 (UTC)
+        id S244402AbhIXJVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 05:21:55 -0400
+Received: from mout.kundenserver.de ([212.227.126.133]:49321 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244460AbhIXJVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 05:21:51 -0400
+Received: from mail-wr1-f48.google.com ([209.85.221.48]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N7xml-1myivx0Xxb-014yY9; Fri, 24 Sep 2021 11:20:10 +0200
+Received: by mail-wr1-f48.google.com with SMTP id u18so25373704wrg.5;
+        Fri, 24 Sep 2021 02:20:10 -0700 (PDT)
+X-Gm-Message-State: AOAM531ZRidaFLxqjNvq8+5WzrW2DGyhvsdhV+Gt6CfEeVn3/rT2Tg7M
+        x9FA+F6Al1cZDkZLbqo5UDJk4GhhurJXCkjzKhs=
+X-Google-Smtp-Source: ABdhPJw/DaP5MFHWrAmrBawPKujxvaEy1saNan1Sv6h0Z1PGsCq9rfbxkvoJYM9RN7S6vpATkMqaPUC+Jg7uZduun2c=
+X-Received: by 2002:a1c:23cb:: with SMTP id j194mr956579wmj.1.1632475209761;
+ Fri, 24 Sep 2021 02:20:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Fri, 24 Sep 2021 14:43:42 +0530
-From:   Youghandhar Chintala <youghand@codeaurora.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Abhishek Kumar <kuabhs@chromium.org>, Felix Fietkau <nbd@nbd.name>,
+References: <CAFcO6XOvGQrRTaTkaJ0p3zR7y7nrAWD79r48=L_BbOyrK9X-vA@mail.gmail.com>
+In-Reply-To: <CAFcO6XOvGQrRTaTkaJ0p3zR7y7nrAWD79r48=L_BbOyrK9X-vA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 24 Sep 2021 11:19:53 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0kG_gdpaOoLb5H2qeq-T7orQ+2n19NNWQaRKgVNotDkw@mail.gmail.com>
+Message-ID: <CAK8P3a0kG_gdpaOoLb5H2qeq-T7orQ+2n19NNWQaRKgVNotDkw@mail.gmail.com>
+Subject: Re: There is an array-index-out-bounds bug in detach_capi_ctr in drivers/isdn/capi/kcapi.c
+To:     butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Cc:     Karsten Keil <isdn@linux-pingi.de>, Arnd Bergmann <arnd@arndb.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        Manikanta Pubbisetty <mpubbise@codeaurora.org>
-Subject: Re: [PATCH 2/3] mac80211: Add support to trigger sta disconnect on
- hardware restart
-In-Reply-To: <5826123db4731bde01594212101ed5dbbea4d54f.camel@sipsolutions.net>
-References: <20201215172352.5311-1-youghand@codeaurora.org>
- <f2089f3c-db96-87bc-d678-199b440c05be@nbd.name>
- <ba0e6a3b783722c22715ae21953b1036@codeaurora.org>
- <CACTWRwt0F24rkueS9Ydq6gY3M-oouKGpaL3rhWngQ7cTP0xHMA@mail.gmail.com>
- (sfid-20210205_225202_513086_43C9BBC9)
- <d5cfad1543f31b3e0d8e7a911d3741f3d5446c57.camel@sipsolutions.net>
- <66ba0f836dba111b8c7692f78da3f079@codeaurora.org>
- <5826123db4731bde01594212101ed5dbbea4d54f.camel@sipsolutions.net>
-Message-ID: <30fa98673ad816ec849f34853c9e1257@codeaurora.org>
-X-Sender: youghand@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:rnFoH1whtbLGVQn+3VN4wntYNHUQOXRXk7zPH9bvqtgXohY11vo
+ C8KTKSYUKDh0phjnjkHGaDp3bYqZwFi5F+NFKCl0lr5vwD0h8GENPyqLvWY7/wjAs1QDDcG
+ pCGGyggcEhaSCsMJNJwvGRBEyZmh0AepN6pd4wkEmja7dfN49d+zbS9+utqBHTa1nNKBx16
+ A1P1YpVScUt/T9rkbEGnw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:nvRV0zLpxWY=:yZFM86dTtJo1FCIewACwn9
+ Uwi0pwnOcovaVLfodk8KOnQoZ4f9Iti8kxWQaTMcawizc93f2HHXX7XkiOyVxdJkSsPEZbudB
+ +jD+KXcah4mW6Er0/ycH+FsBDwjwqib2g8ViLSHOenV95iKFx6qVFeZYujzv9mE3kp82TpKgr
+ aJffI2GIoOjMktFKcvja4wd1+MTYwLSLdomffWaefgpKWhezWx2z6Wo8x3HOdSdpCEvJQvXLs
+ eNdO+C6p0ffyoCicarMGG0kOwKe3PergOn2YhQX/YSiI/0fOrqgwIe3dWLw7uWsNaT/X5HVEp
+ PkvbbwIz7HAqq0ewYgGXaxofNr2qiz++3XcYTJzNSErnbaUXIAQYxcAGgNRKaHj5V0vX4KFA7
+ yEzO6D/W9dhwxeG2OqWZ2fvFlPxi+TrQ4R3MkqmdX4/x0r3dOfqz5ZWkOTurAOhWrEI4Y45ZD
+ TBGdj2Hx2rmpkot+Hu8BPf989/ebbTn+rIOREsWtjx/b5L7KsivdA7aMfCfYi+18GhyEXnI/2
+ xl4vh1xIlm9f2kSU3JvHhxVRsQaCw4ZwPpLXaQ1GnbKzIHuDEj+JqBYt28VSAfcnlX8z+0A+c
+ j5xVq+d0esx8b/yQ1s+aMb+YnX6fevnovQfBj/RfsNlCNCcEQTyO8wOE4saUXcrSnmr+p7NJP
+ IUtKXSIOvnHOLWGLLFb0izMrMKD8PNw/AjhOhgtg5lb+UA4FKlzxDLaaO4D1KwWQZ334+4I9r
+ EUz+46CAA6cH2EzrDuNHZLwiR3pkiRus7qIoUVHif6iKbhKlwNwTS1F5gIrCI66RKl6CmQE58
+ rYTjGfHo/P5MtY5lNrVR9R25NLV3sOq3zB/fPBDNw3AC8STLzLzNVzd+8Tsw/fW+BrSaoj2xz
+ qnY7lsajBFliz1oAa81Q==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Johannes
+On Fri, Sep 24, 2021 at 10:44 AM butt3rflyh4ck
+<butterflyhuangxx@gmail.com> wrote:
+>
+> Hi, there is an array-index-out-bounds bug in detach_capi_ctr in
+> drivers/isdn/capi/kcapi.c and I reproduce it on 5.15.0-rc2+.
 
-We thought sending the delba would solve the problem as earlier thought 
-but the actual problem is with TX PN in a secure mode.
-It is not because of delba that the Seq number and TX PN are reset to 
-zero.
-It’s because of the HW restart, these parameters are reset to zero.
-Since FW/HW is the one which decides the TX PN, when it goes through 
-SSR, all these parameters are reset.
-The other peer say an AP, it does not know anything about the SSR on the 
-peer device. It expects the next TX PN to be current PN + 1.
-Since TX PN starts from zero after SSR, PN check at AP will fail and it 
-will silently drop all the packets.
+Thank you for the detailed report!
 
-Regards,
-Youghandhar
+> ###Analyze
+>  we can call CMTPCONNADD ioctl and it would invoke
+> do_cmtp_sock_ioctl(), it would call cmtp_add_connection().
+> the chain of call is as follows.
+> ioctl(CMTPCONNADD)
+>    ->cmtp_sock_ioctl()
+>          -->do_cmtp_sock_ioctl()
+>             --->cmtp_add_connection()
+>                 ---->kthread_run()
+>                 ---->cmtp_attach_device()
+> the function would add a cmtp session to a controller. Let us see the code.
 
-On 2021-09-24 13:09, Johannes Berg wrote:
-> On Fri, 2021-09-24 at 13:07 +0530, Youghandhar Chintala wrote:
->> Hi Johannes and felix,
->> 
->> We have tested with DELBA experiment during post SSR, DUT packet seq
->> number and tx pn is resetting to 0 as expected but AP(Netgear R8000) 
->> is
->> not honoring the tx pn from DUT.
->> Whereas when we tested with DELBA experiment by making Linux android
->> device as SAP and DUT as STA with which we don’t see any issue. Ping 
->> got
->> resumed post SSR without disconnect.
-> 
-> Hm. That's a lot of data, and not a lot of explanation :)
-> 
-> I don't understand how DelBA and PN are related?
-> 
-> johannes
+When I last touched the capi code, I tried to remove it all, but we then
+left it in the kernel because the bluetooth cmtp code can still theoretically
+use it.
 
-Regards,
-Youghandhar
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+May I ask how you managed to run into this? Did you find the bug through
+inspection first and then produce it using cmtp, or did you actually use
+cmtp?
+
+If the only purpose of cmtp is now to be a target for exploits, then I
+would suggest we consider removing both cmtp and capi for
+good after backporting your fix to stable kernels. Obviously
+if it turns out that someone actually uses cmtp and/or capi, we
+should not remove it.
+
+> If the cmtp_add_connection() call cmtp_attach_device() not yet, the
+> cmtp_session->capi_ctr->cnr just is an ZERO.
+>
+> The capi_controller[-1] make no sense. so should check that the
+> cmtp_session->capi_ctr->cnr is not an ZERO
+
+I would consider that a problem in cmtp, not in capi, though making
+capi more robust as in your patch does address the immediate issue.
+
+> diff --git a/drivers/isdn/capi/kcapi.c b/drivers/isdn/capi/kcapi.c
+> index cb0afe897162..38502a955f13 100644
+> --- a/drivers/isdn/capi/kcapi.c
+> +++ b/drivers/isdn/capi/kcapi.c
+> @@ -480,7 +480,7 @@ int detach_capi_ctr(struct capi_ctr *ctr)
+>
+>         ctr_down(ctr, CAPI_CTR_DETACHED);
+>
+> -       if (capi_controller[ctr->cnr - 1] != ctr) {
+> +       if (!ctr->cnr || capi_controller[ctr->cnr - 1] != ctr) {
+>                 err = -EINVAL;
+>                 goto unlock_out;
+>         }
+
+I think the API that is meant to be used here is
+get_capi_ctr_by_nr(), which has that check.
+
+        Arnd
