@@ -2,125 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0CA4417E5C
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 01:39:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E982D417E61
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 01:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345192AbhIXXkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 19:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343603AbhIXXkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 19:40:32 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3C9C061571
-        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 16:38:58 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id z24so47584145lfu.13
-        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 16:38:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mYZoFK7FS+15PHZW0TzOGr7TcQmdt+hsCtzBIKDLxuQ=;
-        b=Y6q64wXQ1G+Q4gu4gMAGZQ0LHwi/3PTMcBtOV88cfQqyzw+97wAtPs1PXipSW+nijs
-         wAT/8DW7ygLjGHQKo6+PkpSMWlFqUYsuF2XBltHFRtNb6JVOYZq4jXZtDI0i6ylbKmCD
-         oKpXRMsX5VWksn8g+nZjjoKcNuHpQtPV/IZ8WAhQDPOwCxml6quWtnqRQu3IhmN3vqTJ
-         WTuhR6ftWjBSqfV3wB6BODqVOrwu8ieQTAI3FuuGWUYgNUp6BwqQCg4ogWjhq1ShedXQ
-         2TPNqCtyDhnY4nUYOwD49C67gYpcu70sWLIg6470zusM9e9rh9Q/D+FBujA+OZ5+VTiW
-         mdfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mYZoFK7FS+15PHZW0TzOGr7TcQmdt+hsCtzBIKDLxuQ=;
-        b=F9UbfGTld02w57Q7nouxrnwsD3Z4ZmNlQpx6oNYI1dezPRWqb+U0x8cDlVKNE0XTuw
-         zNJtPGYp48xpEWF2o5nme7B6ymYqLMXOo3z01v3aypqdsgeJOSy/IORQvHW8UbxQQD70
-         ONY3+B86M2D/Dj5ib19ziKw5iauAu7PaMPJkKaVGRod6Y6kPja6QpIi1tvAveuOcBHXA
-         zNXNHlqufTu+/dbAOagDxQbA+DYmNTSmtiG9jpeZucI0jo+Fp9HZwj5aXXQA8HGFFGSJ
-         qMQBlIfsq/Xpna6hVO9rP2cquMG663fJJVf+opZQbbrfmO1JlDIV4Nlo6MOwa+gdVEJx
-         zGgQ==
-X-Gm-Message-State: AOAM531rLYZWNo6i4o8JXOhzyR83Dhm49E72AkU5/EuL0bMW5dQPaWQZ
-        89zFusETDo69R4Z56oclXYZHYA==
-X-Google-Smtp-Source: ABdhPJzbhpzCZAyuG2Po5+/a0/HrGYRHYnqGHgQmhTHZTCMPCajP2fRZi2ckRKH+2YRcNwEzKiWjcQ==
-X-Received: by 2002:a05:6512:3d8b:: with SMTP id k11mr11720754lfv.633.1632526736845;
-        Fri, 24 Sep 2021 16:38:56 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id k21sm1176652lji.81.2021.09.24.16.38.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Sep 2021 16:38:56 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Mauri Sandberg <sandberg@mailfence.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: [PATCH net-next 6/6 v5] net: dsa: rtl8366: Drop and depromote pointless prints
-Date:   Sat, 25 Sep 2021 01:36:28 +0200
-Message-Id: <20210924233628.2016227-7-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210924233628.2016227-1-linus.walleij@linaro.org>
-References: <20210924233628.2016227-1-linus.walleij@linaro.org>
+        id S239455AbhIXXoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 19:44:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49606 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232358AbhIXXoR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Sep 2021 19:44:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 57A6F61212;
+        Fri, 24 Sep 2021 23:42:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632526963;
+        bh=6s1hS5Untl2+JJDSVN9cib3bTEm7YxZmSPA60nk/Cdg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Mt8i1zH/jOrw0gqFOqGpPf1Lxi2x/anboN8s32cY9gDOR9nsQxRZ5QKJshYUkiGdr
+         SaZpvOIG1e5VhjQ2Z5uY+0aeAq6Dgs3EBlaDuRWnU4wR4yfPPkOn4j5aEiJ5S42gzT
+         KRcVz+HYqFS15Rdj7Bb72oQnR2ClBtmACdJrRzV/4cTIp4aWxljtavju2YA4Pouxd1
+         86hc0vQSNmWDSs4AaWlOS2lXWamrCd1uISwea4hMKJ5ZyMfpQxFJ7T0cgDZ8HpP0FN
+         1T3zNCSKuJJNAiKcu75tKvY0xf5ejqTf9wyr4pD1bY7BwI9hqvRfgh7djlWBKzGb4t
+         NeFmto+YRZhBQ==
+Date:   Fri, 24 Sep 2021 16:42:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yuchung Cheng <ycheng@google.com>
+Cc:     Luke Hsiao <luke.w.hsiao@gmail.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Lawrence Brakmo <brakmo@fb.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Luke Hsiao <lukehsiao@google.com>
+Subject: Re: [PATCH net-next] tcp: tracking packets with CE marks in BW rate
+ sample
+Message-ID: <20210924164242.1095c674@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAK6E8=dH8JYrKcO8tAUbzy6nT=w0eqjAZCnNwWg8qKUMqcwHbQ@mail.gmail.com>
+References: <20210923211706.2553282-1-luke.w.hsiao@gmail.com>
+        <20210924132005.264e4e2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAK6E8=dH8JYrKcO8tAUbzy6nT=w0eqjAZCnNwWg8qKUMqcwHbQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We don't need a message for every VLAN association, dbg
-is fine. The message about adding the DSA or CPU
-port to a VLAN is directly misleading, this is perfectly
-fine.
+On Fri, 24 Sep 2021 16:30:28 -0700 Yuchung Cheng wrote:
+> On Fri, Sep 24, 2021 at 1:20 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Thu, 23 Sep 2021 21:17:07 +0000 Luke Hsiao wrote:  
+> > > From: Yuchung Cheng <ycheng@google.com>
+> > >
+> > > In order to track CE marks per rate sample (one round trip), TCP needs a
+> > > per-skb header field to record the tp->delivered_ce count when the skb
+> > > was sent. To make space, we replace the "last_in_flight" field which is
+> > > used exclusively for NV congestion control. The stat needed by NV can be
+> > > alternatively approximated by existing stats tcp_sock delivered and
+> > > mss_cache.
+> > >
+> > > This patch counts the number of packets delivered which have CE marks in
+> > > the rate sample, using similar approach of delivery accounting.  
+> >
+> > Is this expected to be used from BPF CC? I don't see a user..  
+> Great question. Yes the commit message could be more clear that this
+> intends for both ebpf-CC or other third party module that use ECN. For
+> example bbr2 uses it heavily (bbr2 upstream WIP). This feature is
+> useful for congestion control research which many use ECN as core
+> signals now.
 
-Cc: Vladimir Oltean <olteanv@gmail.com>
-Cc: Mauri Sandberg <sandberg@mailfence.com>
-Cc: Alvin Šipraga <alsi@bang-olufsen.dk>
-Cc: DENG Qingfang <dqfext@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v4->v5:
-- Collect Florians review tag.
-ChangeLog v1->v4:
-- New patch to deal with confusing messages and too talkative
-  DSA bridge.
----
- drivers/net/dsa/rtl8366.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-index f815cd16ad48..bb6189aedcd4 100644
---- a/drivers/net/dsa/rtl8366.c
-+++ b/drivers/net/dsa/rtl8366.c
-@@ -318,12 +318,9 @@ int rtl8366_vlan_add(struct dsa_switch *ds, int port,
- 		return ret;
- 	}
- 
--	dev_info(smi->dev, "add VLAN %d on port %d, %s, %s\n",
--		 vlan->vid, port, untagged ? "untagged" : "tagged",
--		 pvid ? " PVID" : "no PVID");
--
--	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
--		dev_err(smi->dev, "port is DSA or CPU port\n");
-+	dev_dbg(smi->dev, "add VLAN %d on port %d, %s, %s\n",
-+		vlan->vid, port, untagged ? "untagged" : "tagged",
-+		pvid ? " PVID" : "no PVID");
- 
- 	member |= BIT(port);
- 
-@@ -356,7 +353,7 @@ int rtl8366_vlan_del(struct dsa_switch *ds, int port,
- 	struct realtek_smi *smi = ds->priv;
- 	int ret, i;
- 
--	dev_info(smi->dev, "del VLAN %04x on port %d\n", vlan->vid, port);
-+	dev_dbg(smi->dev, "del VLAN %d on port %d\n", vlan->vid, port);
- 
- 	for (i = 0; i < smi->num_vlan_mc; i++) {
- 		struct rtl8366_vlan_mc vlanmc;
--- 
-2.31.1
-
+Interesting, thanks for explaining! :)
