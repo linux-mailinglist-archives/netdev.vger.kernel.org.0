@@ -2,140 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F66A416CC8
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 09:23:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB0CE416CC9
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 09:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244339AbhIXHYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 03:24:53 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:9918 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244191AbhIXHYw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 03:24:52 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HG3Kv1gx2z8yn0;
-        Fri, 24 Sep 2021 15:18:43 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Fri, 24 Sep 2021 15:23:17 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Fri, 24 Sep
- 2021 15:23:17 +0800
-Subject: Re: [PATCH net-next 2/7] page_pool: support non-split page with
- PP_FLAG_PAGE_FRAG
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <brouer@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <hawk@kernel.org>, <ilias.apalodimas@linaro.org>,
-        <jonathan.lemon@gmail.com>, <alobakin@pm.me>, <willemb@google.com>,
-        <cong.wang@bytedance.com>, <pabeni@redhat.com>,
-        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
-        <memxor@gmail.com>, <edumazet@google.com>,
-        <alexander.duyck@gmail.com>, <dsahern@gmail.com>
-References: <20210922094131.15625-1-linyunsheng@huawei.com>
- <20210922094131.15625-3-linyunsheng@huawei.com>
- <c85a4ecc-80bb-d78f-d72a-0f820fb02eb9@redhat.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <2f5a4b07-7acf-1838-cb42-fd8b5d4ba4c6@huawei.com>
-Date:   Fri, 24 Sep 2021 15:23:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S244392AbhIXH1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 03:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244371AbhIXH1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 03:27:38 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF3CC061574
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 00:26:05 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id s16so3804121ybe.0
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 00:26:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iXmaLP0QITpXmUm0I4qZk9+8cjo3bJJq44r9iD2yvFA=;
+        b=djWo2A2huCziuE3vkw6Kcd//eh6jk9/htSdh4LjU1JGjEtSHvS8QRtXEW2KkpnKL2+
+         DwEROspQZQ12JY53NJq8OwDShZTVt1MVxwUEL965Q/6TRpYiz73CJd4/e25+WxrVN+Az
+         Bhy2MgjEoJV3aYMdbFmdQCcEBtBl3Xiy6vza1/BMk40/rhl/S16nepKly03vmAVwGWqb
+         7R5Dc587Z0zyZ+vDDWfesGBUHj6uZuXywqVPzuTyU2Rkt06rx5G4XEV+0tKxtwwHW8Og
+         5jCjir894lkBHcCNlzahg8gvGek+mfCiPHWnCf61zgaemcNuPIHcvCnwuJOFJHsxDPxL
+         vtEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iXmaLP0QITpXmUm0I4qZk9+8cjo3bJJq44r9iD2yvFA=;
+        b=AhrcGZLGi5s0IwXti/gtE8kYkOHU7pSxY6ySWYGe7TWfdzwnXJW3ognKWNgJXCaPW8
+         LjfCD4KJZHoJ3/8rtWcfeG6usIR8aCeZnjppgjbJAD+yfL9/abbaQsWOGeAFmJjX2gKg
+         8UPgLPAd2svVRCdC3Xf6cSMK/qa82UiY1oeM5VYUSilrz5Z3b6Oq7MTiU4an3xNkslal
+         9eed8pCcjlzDWDQp+e1Y15XL+MCSUQkKkGKgcgZZIeFL65jqS6jfSB3acPS25MZT0K6L
+         pABbWzD71K1pznRvnARYP/GmWh4pVt/xeqxxjE2i4wlAhIqLioruw44u/mgaq09vsOYp
+         XIBg==
+X-Gm-Message-State: AOAM531/Df6zlfkBJtNTR0hFcC6kX5ZDdA7bj8YQV8FaJGfR0Nq9bGci
+        BItk+kSEo42/B6F2YRo4x0/LbEFqr5jSNDkb2NiarA==
+X-Google-Smtp-Source: ABdhPJx5lIljPuPkjF8AMt4OtZuAOPUJkxe0u7+wY9bLo39zNtO4ofyyMv+1yoKSHxceJs+i9Nc6DbrxH1Vdwc6rP9g=
+X-Received: by 2002:a25:2f48:: with SMTP id v69mr10584955ybv.339.1632468364546;
+ Fri, 24 Sep 2021 00:26:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <c85a4ecc-80bb-d78f-d72a-0f820fb02eb9@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme712-chm.china.huawei.com (10.1.199.108) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+References: <20210922094131.15625-1-linyunsheng@huawei.com>
+ <20210922094131.15625-2-linyunsheng@huawei.com> <0ffa15a1-742d-a05d-3ea6-04ff25be6a29@redhat.com>
+ <CAC_iWjJLCQNHxgbQ-mzLC3OC-m2s7qj3YAtw7vPAKGG6WxywpA@mail.gmail.com>
+ <adb2687f-b501-9324-52b2-33ede1169007@huawei.com> <YUx8KZS5NPdTRkPS@apalos.home>
+ <27bc803a-1687-a583-fa6b-3691fef7552e@huawei.com>
+In-Reply-To: <27bc803a-1687-a583-fa6b-3691fef7552e@huawei.com>
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date:   Fri, 24 Sep 2021 10:25:28 +0300
+Message-ID: <CAC_iWj+dandMsja0qh4CYG1Wwhgg=MriL2O74T7=1hXeEKcfXA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/7] page_pool: disable dma mapping support for
+ 32-bit arch with 64-bit DMA
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linuxarm@openeuler.org, Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Marco Elver <elver@google.com>, memxor@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/9/23 20:08, Jesper Dangaard Brouer wrote:
-> 
-> 
-> On 22/09/2021 11.41, Yunsheng Lin wrote:
->> Currently when PP_FLAG_PAGE_FRAG is set, the caller is not
->> expected to call page_pool_alloc_pages() directly because of
->> the PP_FLAG_PAGE_FRAG checking in __page_pool_put_page().
->>
->> The patch removes the above checking to enable non-split page
->> support when PP_FLAG_PAGE_FRAG is set.
->>
->> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->> ---
->>   net/core/page_pool.c | 12 +++++++-----
->>   1 file changed, 7 insertions(+), 5 deletions(-)
->>
->> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->> index a65bd7972e37..f7e71dcb6a2e 100644
->> --- a/net/core/page_pool.c
->> +++ b/net/core/page_pool.c
->> @@ -315,11 +315,14 @@ struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
->>         /* Fast-path: Get a page from cache */
->>       page = __page_pool_get_cached(pool);
->> -    if (page)
->> -        return page;
->>         /* Slow-path: cache empty, do real allocation */
->> -    page = __page_pool_alloc_pages_slow(pool, gfp);
->> +    if (!page)
->> +        page = __page_pool_alloc_pages_slow(pool, gfp);
->> +
->> +    if (likely(page))
->> +        page_pool_set_frag_count(page, 1);
->> +
-> 
-> I really don't like that you add one atomic_long_set operation per page alloc call.
-> This is a fast-path for XDP use-cases, which you are ignoring as you drivers doesn't implement XDP.
-> 
-> As I cannot ask you to run XDP benchmarks, I fortunately have some page_pool specific microbenchmarks you can run instead.
-> 
-> I will ask you to provide before and after results from running these benchmarks [1] and [2].
-> 
->  [1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_simple.c
-> 
->  [2] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_cross_cpu.c
-> 
-> How to use these module is documented here[3]:
->  [3] https://prototype-kernel.readthedocs.io/en/latest/prototype-kernel/build-process.html
+On Fri, 24 Sept 2021 at 10:04, Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>
+> On 2021/9/23 21:07, Ilias Apalodimas wrote:
+> > On Thu, Sep 23, 2021 at 07:13:11PM +0800, Yunsheng Lin wrote:
+> >> On 2021/9/23 18:02, Ilias Apalodimas wrote:
+> >>> Hi Jesper,
+> >>>
+> >>> On Thu, 23 Sept 2021 at 12:33, Jesper Dangaard Brouer
+> >>> <jbrouer@redhat.com> wrote:
+> >>>>
+> >>>>
+> >>>> On 22/09/2021 11.41, Yunsheng Lin wrote:
+> >>>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> >>>>> index 1a6978427d6c..a65bd7972e37 100644
+> >>>>> --- a/net/core/page_pool.c
+> >>>>> +++ b/net/core/page_pool.c
+> >>>>> @@ -49,6 +49,12 @@ static int page_pool_init(struct page_pool *pool,
+> >>>>>        * which is the XDP_TX use-case.
+> >>>>>        */
+> >>>>>       if (pool->p.flags & PP_FLAG_DMA_MAP) {
+> >>>>> +             /* DMA-mapping is not supported on 32-bit systems with
+> >>>>> +              * 64-bit DMA mapping.
+> >>>>> +              */
+> >>>>> +             if (sizeof(dma_addr_t) > sizeof(unsigned long))
+> >>>>> +                     return -EINVAL;
+> >>>>
+> >>>> As I said before, can we please use another error than EINVAL.
+> >>>> We should give drivers a chance/ability to detect this error, and e.g.
+> >>>> fallback to doing DMA mappings inside driver instead.
+> >>>>
+> >>>> I suggest using EOPNOTSUPP 95 (Operation not supported).
+> >>
+> >> Will change it to EOPNOTSUPP, thanks.
+> >
+> > Mind sending this one separately (and you can keep my reviewed-by).  It
+> > fits nicely on it's own and since I am not sure about the rest of the
+> > changes yet, it would be nice to get this one in.
+>
+> I am not sure sending this one separately really makes sense, as it is
+> mainly used to make supporting the "keep track of pp page when __skb_frag_ref()
+> is called" in patch 5 easier.
 
-Will running these benchmarks to see if any performance overhead noticable here,
-thanks for the benchmarks.
+It rips out support for devices that are 32bit and have 64bit dma and
+make the whole code easier to follow.  I thought we agreed on removing
+the support for those devices regardless didn't we?
 
-> 
->>       return page;
->>   }
->>   EXPORT_SYMBOL(page_pool_alloc_pages);
->> @@ -428,8 +431,7 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
->>                unsigned int dma_sync_size, bool allow_direct)
->>   {
->>       /* It is not the last user for the page frag case */
->> -    if (pool->p.flags & PP_FLAG_PAGE_FRAG &&
->> -        page_pool_atomic_sub_frag_count_return(page, 1))
->> +    if (page_pool_atomic_sub_frag_count_return(page, 1))
->>           return NULL;
-> 
-> This adds an atomic_long_read, even when PP_FLAG_PAGE_FRAG is not set.
-
-The point here is to have consistent handling for both PP_FLAG_PAGE_FRAG
-and non-PP_FLAG_PAGE_FRAG case in the following patch.
-
-As the page->_refcount is accessed in "page_ref_count(page) == 1" checking
-in __page_pool_put_page(), and page->pp_frag_count is most likely in the
-same cache line as the page->_refcount, So I am not expecting a noticable
-overhead here.
-
-Anyway, will use the above benchmarks as an example to verify it.
-
-
-> 
->>         /* This allocator is optimized for the XDP mode that uses
->>
-> 
-> .
-> 
+Regards
+/Ilias
