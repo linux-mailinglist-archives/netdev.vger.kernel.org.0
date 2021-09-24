@@ -2,161 +2,319 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 030D5417803
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 17:49:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7E4417874
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 18:22:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347171AbhIXPuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 11:50:24 -0400
-Received: from us-smtp-delivery-115.mimecast.com ([170.10.133.115]:54954 "EHLO
-        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233379AbhIXPuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 11:50:23 -0400
-X-Greylist: delayed 24180 seconds by postgrey-1.27 at vger.kernel.org; Fri, 24 Sep 2021 11:50:23 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
-        s=selector; t=1632498529;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mhE3ASJe6DxZAFE9NPoUPzpJP6n79kJO7pdRNTZKhcc=;
-        b=cct/WSqw3A3uCt0iTLU+RW5kT9vJYC59SZH2jMEcpCk+CI0xVETdB/vIj8tC7qSvDYejFl
-        yAJL0rYsAVCLJ/J5moGikU564/dNrAWIidbfE8DK+Az8D6DYyJG54ybw6jkiU9qeIojxv5
-        qlaOGvw+0FNUgElvD5rZLOncDGalmmo=
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com
- (mail-co1nam11lp2168.outbound.protection.outlook.com [104.47.56.168])
- (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-420-eZpqVhyBMXy-qcXW2OF9cw-2; Fri, 24 Sep 2021 11:48:48 -0400
-X-MC-Unique: eZpqVhyBMXy-qcXW2OF9cw-2
-Received: from PH0PR19MB5113.namprd19.prod.outlook.com (2603:10b6:510:90::23)
- by PH0PR19MB5066.namprd19.prod.outlook.com (2603:10b6:510:7b::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.14; Fri, 24 Sep
- 2021 15:48:43 +0000
-Received: from PH0PR19MB5113.namprd19.prod.outlook.com
- ([fe80::48e9:1dc2:d989:b9f2]) by PH0PR19MB5113.namprd19.prod.outlook.com
- ([fe80::48e9:1dc2:d989:b9f2%8]) with mapi id 15.20.4544.018; Fri, 24 Sep 2021
- 15:48:42 +0000
-From:   Liang Xu <lxu@maxlinear.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        Hauke Mehrtens <hmehrtens@maxlinear.com>,
-        Thomas Mohren <tmohren@maxlinear.com>,
-        "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
-Subject: Re: [PATCH] net: phy: enhance GPY115 loopback disable function
-Thread-Topic: [PATCH] net: phy: enhance GPY115 loopback disable function
-Thread-Index: AQHXsSNdw4MBIM5DFkCqF7LjgZ0AI6uzFRgAgAA/7IA=
-Date:   Fri, 24 Sep 2021 15:48:42 +0000
-Message-ID: <e722c4a0-2215-7ea4-db07-fb3445a737f8@maxlinear.com>
-References: <20210924090537.48972-1-lxu@maxlinear.com>
- <YU29ulYZSlzKVtaE@lunn.ch>
-In-Reply-To: <YU29ulYZSlzKVtaE@lunn.ch>
-Accept-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 25634c77-a557-4fba-7324-08d97f72c901
-x-ms-traffictypediagnostic: PH0PR19MB5066:
-x-ld-processed: dac28005-13e0-41b8-8280-7663835f2b1d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PH0PR19MB5066172C4EC822349FED9A8EBDA49@PH0PR19MB5066.namprd19.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0
-x-microsoft-antispam-message-info: uIphV5aouf5gj1ONVFui0j7anZF9sK+TJcAVNZUdrsa0OzN/8RM3OcVdnmantxJl396inb2nEDkVkBX4gwqqoe5U5ALZ5AEUWBjwGIUDhKC7g1pAZIi+JHy9pMYDZcFpsd7Fm5pIobCtJBJEo8svuXNX9tHpKeLcpp75pb52OuSxYmcDIF+hSNG77FVggCi5cijJGgNUltjz6vDnmE0p8fS85tjvfu9X7UclWWFXJNqv0Y2gpGQ5nNWEXQbNSVwOjFiKcIRAzN7EviTgh4mkH8O2ay9B8y0t0BzeQhSrGIUn728v4kiz+UW8wuzDBeZlCbVa9qc8sO0naG+TWJNR9mvd1OjqF6O+rB+Y6r4JLv1+zuVd38uT8MqDT9GGBgjeMKPXDXCKwQHp/cqq6nT6b5k9EiD9F2pJvKEA6UcxBcHxQ0fobRaaL4jEs+KItt1OD3sliJjP8W19r/IEsUwR34Z4AAdvrIOxaLDdQtwpI1GV4QuUo3KEd1wAxijfuBuxXWlFLw/VXiPP/GQ0QbLqJmg/lmKkFPLf8lEu0uk9xHvoinXvkuAmEMIF6z4jzxftu5oKs+IvGPHzAJewTr45KbX/2KrR3qLzNT36Hwv6gZNzC3eHiuN/guCbaqGf9oaSZklmBkL3bupTEhwIizdpggs0EedX3flQ0Zx4ePbwibIvOrZ2GD7rW3dJzg2ENY569CPQPA6ZX0b7z8u2ExSOr6b3dEq2ts2s72WyZIIHdYvhFveQc06puUZ5Spfx10tnj1vxs/0tG7x7LbOqrNgkkA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR19MB5113.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6916009)(86362001)(83380400001)(508600001)(91956017)(66476007)(64756008)(2616005)(38100700002)(36756003)(8676002)(26005)(122000001)(66556008)(31696002)(2906002)(38070700005)(66446008)(76116006)(6506007)(66946007)(5660300002)(8936002)(71200400001)(54906003)(186003)(4326008)(316002)(6486002)(31686004)(6512007)(53546011)(45980500001)(43740500002);DIR:OUT;SFP:1102
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?eHhIZGlvUkJOdDJMS04vcUI4MnUzQ08rZXN0VHpMaHVuVndiTkRrdDFUNlhL?=
- =?utf-8?B?U25pem1QK0dqQTE2N2RsT09LUlI0cWFMZTM4Y2JpbXdLTW9wV1NNZGhVSUZp?=
- =?utf-8?B?YS9BYmR0Z0toSzBqYTM3UFpCVHdnZktBK1QyWkNiRjRNQkJ4cG5udFhrN1I5?=
- =?utf-8?B?TnpoaUxOODBHRVRSRmdOeWN2My9yOGZjR3JCNDNNSVJpOThuWm1TK2NyUVVJ?=
- =?utf-8?B?V2c3cG44ak9lWW5jdWR5LzRnYk9wT0wrcGF0V2pXTVd5b3I3Z2hEdnhHMHQy?=
- =?utf-8?B?cGQ2eGNhVFlnOW5VRVpCSTd2YVR2bjJrN2w3TUM1UFNOUWo2Rjc2eVIyNDdX?=
- =?utf-8?B?Q1dGREoxWWpaLzQxZXRDRGRMTUx5V0EvTjc4bktCcTg1RnNPekNpdDMyRUtp?=
- =?utf-8?B?amYyRDZqbVdJcEMzRmFWVlhTaWdIbFBpaUtkZUU4M3g5VWxnM0ZpZVp1TGNP?=
- =?utf-8?B?am5OWnB1RDVpQUozVFd2bWxrTTdmdHpDZ0tnbXpKZDNvQy9uUTAvWjRTV2tW?=
- =?utf-8?B?RzJCVUtPSFlHUFN2ZmZodUxrdUV1am91Vm9ESWdPTHdqdDJwUTNBSVBjUkd2?=
- =?utf-8?B?RlYzZWNBcTQ3bkE1ZzByT3JJWkxONWhHWTdiREYrWExpZnJER0ZDSktGYTlp?=
- =?utf-8?B?ODVmZ0JJWE1yQWlsR2hnY1NwV1pSbEI2VlNIY2VBRkViaTlKb056MERxVnRE?=
- =?utf-8?B?TTJqcUg2VFNHVnhIK1ZRRHo2Ky9QV29ZZ2x6czJodk5Bd1ZiK3ZkWXI1SUxj?=
- =?utf-8?B?R0lFUTFORysrdlU2L3FUZDlaZUYxaFpuQ1huTUkvNmtKU3VCSzhBRTNjaUti?=
- =?utf-8?B?R0szZWlndXdZdVJ0eTdPblA4cTBKdzhqVENzdE51U0xkUUpWR1VtYlVHaEtw?=
- =?utf-8?B?NXU4K3U2cjIwQ0RJVUl2Z2ZDTThUcnl2UUpLVU1HaWxqdG44QWJaMkNNSGky?=
- =?utf-8?B?b0FLNWtmNG1JakNKTzZ3NGt5a0xxeXJGN3JKOHlyblhITFBkQzgwT1N0WG5L?=
- =?utf-8?B?RWJwRjlucnVTS1MxdUNPNmkwWHRJd0h4d1pKWGRvWnllSDUxbHZiNXFNb1Zz?=
- =?utf-8?B?OFZyUzlhTXdreGsvYXRlTTVkNk9sM1lJUEpBTGtKbUkxSHZlclJwWXBLRFc2?=
- =?utf-8?B?OG1tRmFoWk50QmdFWG4vdVV5ZG1FbFFLWUsvWmM0WjcrNkN6M05OekgvQ0Nm?=
- =?utf-8?B?dGlRdndNTElkS2V3TDBBYTJVRVBMOFFpeGpxY094RkJWb3hET0RNM3FKaENC?=
- =?utf-8?B?NEE2Z1ppeUthZXdRa3Q3L0JPY0xCc2hXTEo4SllrUkgwbEp6Q0huVGlYU3Rw?=
- =?utf-8?B?Z3VWYlpDcXZvL3NBLzRMZzN4clZYVHFlRUZ6Z1YvaDlhRGZOd3RBOFFEZ0Uz?=
- =?utf-8?B?cFhvQUIvd3FnTkVZOEMzWHhxZUIrMVFzYzBqc012cUo1QW9jbW9SSEpxNWoy?=
- =?utf-8?B?TzRucW5uL1E1eEVlUzZMUFhnbkIyNUxBT0l2dk9YakQ1dUtWL05rNmZGRnZn?=
- =?utf-8?B?cWxzUWQ3Y2ZqL0VpMm8vZkZpamduSm05L28wSmJKQXFWQnEzckkwQS9PaG96?=
- =?utf-8?B?bzNSSXNaeHdDNlYvQ0gwQWRiMWdBZ1ZUdUcvNlBTUVZ0dHNyQklCSW9XWGRS?=
- =?utf-8?B?SUtla0hxdmdYWXpDd1VMNFAxK0lzR0tDQ0FxdGpCUFcydndvMjIwZmtaZHZO?=
- =?utf-8?B?SmlnckVJWG9CYm5pejNjVUl2V29SQTZBdktOM0pob3V2RVpYeXp1blNndnpF?=
- =?utf-8?Q?TqSq+66ENfz7FbdbmM=3D?=
+        id S1347335AbhIXQXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 12:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233702AbhIXQXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 12:23:37 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE997C061571
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 09:22:03 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id v19so7333482pjh.2
+        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 09:22:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sipanda-io.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l2z+odZUmZR36plsI0oVp5O20QgAzzQIXa5eQtiTehw=;
+        b=yWlsnwpLIKNvk9pvI8lo2eXQZS83OZQCidsRlVHeBgpCxSvDfw20FXD/7zkJF2lHE2
+         lGXTvH2Lz9nz1qSqnIcaUtIzLSt5/06HA+BCWIaJVa/dKnYolLOTd6FcgIUXeL8DYy0q
+         PztduYpXrPlWc4tNN6IYoP2BL6UATEAl5nwGfo9MaHhsKqWX9yenAjpUTRfdBSTGRaip
+         LIfjSFdRqEkShCHF+J+6NRSO0k3v85Rc1G4b5kO7+Yn6TkIZCR99MJJRHp+rsVIVSH42
+         dX1peWfDHKjVS0/d2XO3vWfvpu0SPmIClFXj60uOpWKrdWyg5iWWQwF6Pq9XgoN3DnBK
+         thtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l2z+odZUmZR36plsI0oVp5O20QgAzzQIXa5eQtiTehw=;
+        b=xEXeeEewK2z+DgDAcMsN02e9VEfkFchfu5/9PU5CgkBqqlacZE5M1fW/trSf8CKN7V
+         skF6fBPHgaGY+4BK59AsKYFjeRWDB+jJX29qq2ww8/ZTYSO7ZMfJoPMj+6lJEFzOoaRb
+         XbqxtLKN5nmlw/KZik83/tPuL4gmtAvjbSzb8uAvYSgag9Y1x6VyufpM9QI/NZ3AxsQz
+         d39o3y2oHWxBbTGAarR4W3yA72SaZjks2QqS86+SVGxPdnfPeYxZDb7hVY67GaM9tOL3
+         sB1hN25YOFmCuwxB11MrJOixMYhhukeZJt0TOl+prUv7SrZogw9HBK455wYLqJBHH07o
+         h8BQ==
+X-Gm-Message-State: AOAM531KnOI6tCB8RzCWEnBU/BF5eDGsRCbd8t4KkgKffq6HPTDieYMH
+        glv6HRLMaWylC0KSTw8GCH46sVCfjRmKCxnZZwEZbA==
+X-Google-Smtp-Source: ABdhPJwo4WzCi2KfEairW/07B5r5doQ/EGp01Aib3Vgndu1h0GBw7oO+aAUnUQf5l1jPQl5iVKWMzI1KicZJ4b0MQrU=
+X-Received: by 2002:a17:902:780f:b0:13a:3919:e365 with SMTP id
+ p15-20020a170902780f00b0013a3919e365mr9732926pll.63.1632500523062; Fri, 24
+ Sep 2021 09:22:03 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: maxlinear.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR19MB5113.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 25634c77-a557-4fba-7324-08d97f72c901
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Sep 2021 15:48:42.3148
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: dac28005-13e0-41b8-8280-7663835f2b1d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QEKb4apy+L2w696pDRRtJzusfYDTLakW5vECwKknAF5UVgk8M+wG8GWeKf5kpXMyDKllEZajDWXRsHK9/PQnYA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR19MB5066
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: maxlinear.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-ID: <8EF3981A3EACAA45AF4370DFBC6D385D@namprd19.prod.outlook.com>
-Content-Transfer-Encoding: base64
+References: <20210916200041.810-1-felipe@expertise.dev> <CAM_iQpUkdz_EjiuPRF_qKBp_ZHok_c8+pr4skCWGs_QTeLWpwA@mail.gmail.com>
+ <YUq1Ez1g8nBvA8Ad@nanopsycho> <CAOuuhY8KA99mV7qBHwX79xP31tqtc9EggSNZ-=j4Z+awJUosdQ@mail.gmail.com>
+ <20210922154929.GA31100@corigine.com> <CAOuuhY9NPy+cEkBx3B=74A6ef0xfT_YFLASEOB4uvRn=W-tB5A@mail.gmail.com>
+ <20210922180022.GA2168@corigine.com> <CAOuuhY9oGRgFn_D3TSwvAsMmAnahuPyws8uEZoPtpPiZwJ2GFw@mail.gmail.com>
+ <614ba2e362c8e_b07c2208b0@john-XPS-13-9370.notmuch> <CAOuuhY_Z63qeWhJpqbvXyk3pK+sc5=7MfOpMju94pSjtsqyuOg@mail.gmail.com>
+ <614bd85690919_b58b72085d@john-XPS-13-9370.notmuch> <CAOuuhY-ujF_EPm6qeHAfgs6O0_-yyfZLMryYx4pS=Yd1XLor+A@mail.gmail.com>
+ <614bf3bc4850_b9b1a208e2@john-XPS-13-9370.notmuch> <e88e7925-db6b-97a3-bf30-aa2b286ab625@mojatatu.com>
+ <614d4c2954b0_dc7fd208aa@john-XPS-13-9370.notmuch>
+In-Reply-To: <614d4c2954b0_dc7fd208aa@john-XPS-13-9370.notmuch>
+From:   Tom Herbert <tom@sipanda.io>
+Date:   Fri, 24 Sep 2021 09:21:52 -0700
+Message-ID: <CAOuuhY_urma1VwZKX12c5bbbj1wwvGLuAjqqBOVpg3g01b0stA@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next 0/2] net:sched: Introduce tc flower2
+ classifier based on PANDA parser in kernel
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Felipe Magno de Almeida <felipe@sipanda.io>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Boris Sukholitko <boris.sukholitko@broadcom.com>,
+        Vadym Kochan <vadym.kochan@plvision.eu>,
+        Ilya Lifshits <ilya.lifshits@broadcom.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Ido Schimmel <idosch@idosch.org>, paulb@nvidia.com,
+        Davide Caratti <dcaratti@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Amritha Nambiar <amritha.nambiar@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMjQvOS8yMDIxIDc6NTkgcG0sIEFuZHJldyBMdW5uIHdyb3RlOg0KPiBUaGlzIGVtYWlsIHdh
-cyBzZW50IGZyb20gb3V0c2lkZSBvZiBNYXhMaW5lYXIuDQo+DQo+DQo+IE9uIEZyaSwgU2VwIDI0
-LCAyMDIxIGF0IDA1OjA1OjM3UE0gKzA4MDAsIFh1IExpYW5nIHdyb3RlOg0KPj4gR1BZMTE1IG5l
-ZWQgcmVzZXQgUEhZIHdoZW4gaXQgY29tZXMgb3V0IGZyb20gbG9vcGJhY2sgbW9kZSBpZiB0aGUg
-ZmlybXdhcmUNCj4+IHZlcnNpb24gbnVtYmVyIChsb3dlciA4IGJpdHMpIGlzIGVxdWFsIHRvIG9y
-IGJlbG93IDB4NzYuDQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogWHUgTGlhbmcgPGx4dUBtYXhsaW5l
-YXIuY29tPg0KPj4gLS0tDQo+PiAgIGRyaXZlcnMvbmV0L3BoeS9teGwtZ3B5LmMgfCAzMCArKysr
-KysrKysrKysrKysrKysrKysrKysrKysrLS0NCj4+ICAgMSBmaWxlIGNoYW5nZWQsIDI4IGluc2Vy
-dGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0
-L3BoeS9teGwtZ3B5LmMgYi9kcml2ZXJzL25ldC9waHkvbXhsLWdweS5jDQo+PiBpbmRleCAyZDVk
-NTA4MWMzYjYuLjNlZjYyZDVjNDc3NiAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvbmV0L3BoeS9t
-eGwtZ3B5LmMNCj4+ICsrKyBiL2RyaXZlcnMvbmV0L3BoeS9teGwtZ3B5LmMNCj4+IEBAIC00OTMs
-NiArNDkzLDMyIEBAIHN0YXRpYyBpbnQgZ3B5X2xvb3BiYWNrKHN0cnVjdCBwaHlfZGV2aWNlICpw
-aHlkZXYsIGJvb2wgZW5hYmxlKQ0KPj4gICAgICAgIHJldHVybiByZXQ7DQo+PiAgIH0NCj4+DQo+
-PiArc3RhdGljIGludCBncHkxMTVfbG9vcGJhY2soc3RydWN0IHBoeV9kZXZpY2UgKnBoeWRldiwg
-Ym9vbCBlbmFibGUpDQo+PiArew0KPj4gKyAgICAgaW50IHJldDsNCj4+ICsgICAgIGludCBmd19t
-aW5vcjsNCj4+ICsNCj4+ICsgICAgIGlmIChlbmFibGUpDQo+PiArICAgICAgICAgICAgIHJldHVy
-biBncHlfbG9vcGJhY2socGh5ZGV2LCBlbmFibGUpOw0KPj4gKw0KPj4gKyAgICAgLyogU2hvdyBH
-UFkgUEhZIEZXIHZlcnNpb24gaW4gZG1lc2cgKi8NCj4gWW91IGRvbid0IHNob3cgYW55dGhpbmcu
-DQpZb3UgYXJlIHJpZ2h0LiBTb3JyeSBpdCB3YXMgYSBtaXN0YWtlLiBJIHdpbGwgZml4IGl0Lg0K
-Pg0KPj4gKyAgICAgcmV0ID0gcGh5X3JlYWQocGh5ZGV2LCBQSFlfRldWKTsNCj4+ICsgICAgIGlm
-IChyZXQgPCAwKQ0KPj4gKyAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPj4gKw0KPj4gKyAgICAg
-ZndfbWlub3IgPSBGSUVMRF9HRVQoUEhZX0ZXVl9NSU5PUl9NQVNLLCByZXQpOw0KPj4gKyAgICAg
-aWYgKGZ3X21pbm9yID4gMHgwMDc2KQ0KPj4gKyAgICAgICAgICAgICByZXR1cm4gZ3B5X2xvb3Bi
-YWNrKHBoeWRldiwgMCk7DQo+PiArDQo+PiArICAgICByZXQgPSBwaHlfbW9kaWZ5KHBoeWRldiwg
-TUlJX0JNQ1IsIEJNQ1JfTE9PUEJBQ0ssIEJNQ1JfUkVTRVQpOw0KPj4gKyAgICAgaWYgKCFyZXQp
-IHsNCj4+ICsgICAgICAgICAgICAgLyogU29tZSBkZWxheSBmb3IgdGhlIHJlc2V0IGNvbXBsZXRl
-LiAqLw0KPj4gKyAgICAgICAgICAgICBtc2xlZXAoMTAwKTsNCj4+ICsgICAgIH0NCj4gZ2VucGh5
-X3NvZnRfcmVzZXQoKSB3b3VsZCBiZSBiZXR0ZXIuIERvZXMgYSBzb2Z0IHJlc2V0IGNsZWFyIHRo
-ZQ0KPiBCTUNSX0xPT1BCQUNLIGJpdD8gSXQgc2hvdWxkIGRvLCBhY2NvcmRpbmcgdG8gQzIyLg0K
-Pg0KPiAgICAgICAgICAgICAgICBBbmRyZXcNCj4NClllcywgSSB3aWxsIHVzZSBnZW5waHlfc29m
-dF9yZXNldCBpbnN0ZWFkLg0KDQoNClRoYW5rcyAmIFJlZ2FyZHMsDQoNClh1IExpYW5nDQoNCg==
+On Thu, Sep 23, 2021 at 8:55 PM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> Jamal Hadi Salim wrote:
+> > Geez, I missed all the fun ;->
+> >
+> > On 2021-09-22 11:25 p.m., John Fastabend wrote:
+> > > Tom Herbert wrote:
+> > >> On Wed, Sep 22, 2021, 6:29 PM John Fastabend <john.fastabend@gmail.com>
+> > >> wrote:
+> >
+> > [..]
+> >
+> > >> John,
+> > >>
+> > >> Please look at patch log, there are number of problems that have come up
+> > >> flow dissector over the years. Most of this is related to inherent
+> > >> inflexibility, limitations, missing support for fairly basic protocols, and
+> > >> there's a lot of information loss because of the fixed monolithic data
+> > >> structures. I've said it many times: skb_flow_dissect is the function we
+> > >> love to hate. Maybe it's arguable, bit I claim it's 2000 lines of spaghetti
+> > >> code. I don't think there's anyone to blame for that, this was a
+> > >> consequence of evolving very useful feature that isn't really amenable to
+> > >> being written in sequence of imperative instructions (if you recall it used
+> > >> to be even worse with something like 20 goto's scattered about that defied
+> > >> any semblance of logical program flow :-) ).
+> > >
+> > > OK, but if thats the goal then shouldn't this series target replacing the
+> > > flow_dissector code directly? I don't see any edits to ./net/core.
+> > >
+> >
+> > Agreed, replacement of flow dissector should be a focus. Jiri's
+> > suggestion of a followup patch which shows how the rest of the consumers
+> > of flow dissector could be made to use PANDA is a good idea.
+>
+> I'de almost propose starting with flow_dissector.c first so we see that the
+> ./net/core user for the SW only case looks good. Although I like the idea
+> of doing it all in BPF directly so could take a crack at that as well. Then
+> compare them.
 
+That's an interesting idea and the intent, but note that one of the
+reasons we are able to outperform flow dissectors is that
+flow_dissector is parameterized to be generalized whereas PANDA Parser
+would provide a customized instance for each use case. This is
+especially evident in the bits to configure what data fields extracts,
+in PANDA the extraction is explicit so a whole bunch of conditionals
+in the datapath are eliminated. Replacing flow dissectors might look
+more like creating a parser instance for each caller instead of
+calling one function that tries to solve all problems.
+
+>
+> >
+> > IMO (correct me if i am wrong Tom), flower2 was merely intended to
+> > illustrate how one would use PANDA i.e there are already two patches
+> > of which the first one is essentially PANDA...
+> > IOW,  it is just flower but with flow dissector replaced by PANDA.
+> >
+> > >>
+> > >> The equivalent code in PANDA is far simpler, extensible, and maintainable
+> > >> and there are opportunities for context aware optimizations that achieve
+> > >> higher performance (we'll post performance numbers showing that shortly).
+> > >> It's also portable to different environments both SW and HW.
+> > >
+> > > If so replace flow_dissector then I think and lets debate that.
+> > >
+> > > My first question as a flow dissector replacement would be the BPF
+> > > flow dissector was intended to solve the generic parsing problem.
+> >
+> > > Why would Panda be better? My assumption here is that BPF should
+> > > solve the generic parsing problem, but as we noted isn't very
+> > > friendly to HW offload. So we jumped immediately into HW offload
+> > > space. If the problem is tc_flower is not flexible enough
+> > > couldn't we make tc_flower use the BPF dissector? That should
+> > > still allow tc flower to do its offload above the sw BPF dissector
+> > > to hardware just fine.
+> > >
+> > > I guess my first level question is why did BPF flow dissector
+> > > program not solve the SW generic parsing problem. I read the commit
+> > > messages and didn't find the answer.
+> > >
+> >
+> > Sorry, you cant replace/flowdissector/BPF such that flower can
+> > consume it;-> You are going to face a huge path explosion with the
+> > verifier due to the required branching and then resort to all
+> > kinds of speacial-cased acrobatics.
+> > See some samples of XDP code going from trying to parse basic TCP
+> > options to resorting to tricking the verifier.
+> > For shits and giggles, as they say in Eastern Canada, try to do
+> > IPV6 full parsing with BPF (and handle all the variable length
+> > fields).
+>
+> We parse TLVs already and it works just fine. It requires some
+> careful consideration and clang does some dumb things here and
+> there, but it is doable. Sure verifier could maybe be improved
+> around a few cases and C frontend gets in the way sometimes,
+> but PANDA or P4 or other DSL could rewrite in LLVM-IR directly
+> to get the correct output.
+>
+Currently the kernel flow dissector doesn't parse TLVs, for instance
+Hop-by-Hop, DestOpts, IP options, and TCP options are just skipped.
+TLVs are also the bane of router vendors since they despise
+implementing protocols that require serialized processing over
+combinatorial collection of elements. We need to get past this since
+TLVs are a protocol extensibility which means they need to be a first
+class citizen in a programmable parser API. (to be clear I'm not
+saying anyone should add hardcordes TLV processing to
+__skb_flow_dissect, it's already bloated enough!)
+
+> > Generally:
+> > BPF is good for specific smaller parsing tasks; the ebpf flow dissector
+> > hook should be trivial to add to PANDA. And despite PANDA being able
+> > to generate EBPF - I would still say it depends on the depth of the
+> > parse tree to be sensible to use eBPF.
+>
+> Going to disagree. I'm fairly confident we could write a BPF
+> program to do the flow disection. Anyways we can always improve
+> the verifier as needed and this helps lots of things not
+> just this bit. Also flow dissector will be loaded once at early
+> boot most likely so we can allow it to take a bit longer or
+> pre-verify it. Just ideas.
+
+Yes, we already have a panda-compiler that converts PANDA-C in
+well-optimized eBPF code. Per Jamal's point, that did require breaking
+up the program into different tails calls. I believe once we hit four
+layers of protocols we do a tail call and also do a tail call for each
+instance of TLV processing. Note the
+tools/testing/selftests/bpf/progs/bpf_flow.c has to deal with this
+also and does this by statically making every L3 protocol into a tail
+call (result is more tail calls than equivalent code PANDA).
+
+>
+> >
+> > Earlier in the thread you said a couple of things that caught my
+> > attention:
+> >
+> >  > I don't think P4 or Panda should be in-kernel. The kernel has a BPF
+> >  > parser that can do arbitrary protocol parsing today. I don't see
+> >  > a reason to add another thing on the chance a hardware offload
+> >  > might come around. Anyways P4/Panda can compile to the BPF parser
+> >  > or flower if they want and do their DSL magic on top. And sure
+> >  > we might want to improve the clang backends, the existing flower
+> >  > classifier, and BPF verifier.
+> >  >
+> >  >
+> >  > Vendors have the ability to code up arbitrary hints today. They just
+> >  > haven't open sourced it or made it widely available. I don't see how
+> >  > a 'tc' interface would help with this. I suspect most hardware could
+> >  > prepend hints or put other arbitrary data in the descriptor or elsewhere.
+> >  > The compelling reason to open source it is missing.
+> >
+> > Please, please _lets not_ encourage vendors to continue
+> > keep things proprietary!
+>
+> Fair enough. Some frustration leaking in from my side knowing
+> the hardware has been around for years and we've seen multiple
+> proposals but only limited hardware backing. Tom mentioned
+> he was working on the hardware angle so perhaps its close.
+>
+I share that frustration!
+
+> > Statements like "I don't think P4 or Panda should be in-kernel..."
+> > are just too strong.
+>
+> Where I wanted to go with this is P4 and Panda are DSLs in my
+> mind. I think we should keep the kernel non-specific to any
+> one DSL. We should have a low level generic way to add them
+> to the kernel, I think this is BPF. Then we let users pick
+> whatever DSL they like and/or make up their own DSL.
+>
+> Is the counter-argument that Panda is not a DSL, but rather
+> a low-level parser builder pattern.
+
+Yes, PANDA is _not_ a DSL in the sense that it uses a new compiler,
+tool chain, or skill sets to write a program all of which are required
+for using P4. PANDA-C (just to make it look like the analogous CUDA-C
+:-) ) is inherently C code that has a program structure for the
+"low-level parser builder pattern".
+
+>
+> > Instead lets focus on how we can make P4 and other hardware offloads
+> > work in conjunction with the kernel (instead of totally bypassing
+> > it which is what vendors are doing enmasse already). There are
+> > billions of $ invested in these ASICs and lets welcome them into
+> > our world. It serves and helps grow the Linux community better.
+> > The efforts of switchdev and tc offloading have proven it is possible.
+> > Vendors (and i am going to call out Broadcom on the switching side here)
+> > are not partaking because they see it as an economical advantage not to
+> > partake.
+> >
+> > We have learnt a lot technically since switchdev/tc offloads happened.
+> > So it is doable.
+> > The first rule is: In order to get h/w offload to work lets also have
+> > digitally equivalent implementation in s/w.
+>
+> But there is a cost to this its yet another bit of software to
+> maintain and review and so on. I'm arguing we already have a generic
+> way to implement h/w equivalence and its BPF. So instead of inventing
+> another method to do software we can improve the BPF layer. If we need
+> to build semantics over it that look consumable to hw so be it.
+>
+> Also the other core question I still don't understand is how a
+> piece of hardware could consume a parse graph piece-meal through
+> an interface like proposed in flower2 and generate an arbitrary
+> parse graph? On the fly none the less. That feels like some very
+> powerful firmware to me.
+> And I would prefer open source userspace code (non-kernel) to
+> deep magic in firmware. At least then I can see it, patch it,
+> fix it, etc.
+
+An instance of a parser is inherently a parse graph, so it follows
+that the best representation for a parser is a declarative
+representation of the parse graph. There was a watershed paper on this
+by Nick McKeown and others in "Design principles for packet parsers".
+A common declarative representation is then amenable to instantiation
+in a hardware engine which is designed to consume that representation
+(i.e. hardware parsers are basically programmable FSMs), and it's
+equally straightforward to elicit a parser from a declarative
+representation into imperative code for running in CPU. In this
+regard, the only salient difference between P4 and PANDA-C is that the
+declarative representation can be coded in PANDA as a graph data
+structure in standard C, and in P4 the encoding is in an explicit
+language construct.
+
+>
+> Last thing, I'll point out I got back deep into the hardware debate.
+> I'm still not convinced its the right thing to rip out the flow
+> dissector piece and replace it with Panda.
+
+Hardware acceleration is one goal, but there are merits in just
+considering the software especially in regards to performance and
+usability. We'll highlight those benefits in future patch series.
+
+Tom
+
+>
+> Thanks!
+> John
