@@ -2,131 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D5F417032
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 12:19:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C85374170A3
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 13:09:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238398AbhIXKUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 06:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbhIXKUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 06:20:40 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78392C061757
-        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 03:19:07 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id b20so38558185lfv.3
-        for <netdev@vger.kernel.org>; Fri, 24 Sep 2021 03:19:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=E7oKwrwtYxMEEhZOh0zE+8kX5pr5fhY03A1Bl+EUH6I=;
-        b=dnrp+VDtboyOiOhKmk1Al/OD9agags9ctMZ9yC7wNU3AaKCMmzmyiDOJQ88eMQUyej
-         p1dTsM5yK/tXdcTjM5oCp6bunzPrquRT3eEyu1+GvHmKJY6g/eiOaviwjZcGbn7tSFoJ
-         MRfP5nYSr0sHq9hY4fnzzFnsU91od+StDQiBg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=E7oKwrwtYxMEEhZOh0zE+8kX5pr5fhY03A1Bl+EUH6I=;
-        b=6hOiBFzeiALFiT8RfMcUpA3mDo+DQCsdP2NIlDa750/kNYLOlneLnmONHmtGWGMv+O
-         QyTLzTjw1iJjURnmPBDmcrczw9FObCaNWzQVWp9utXCaF2Q1pEzLLUR7Hwr6W5YB8ysN
-         wA5fA/Mp2LISfaE+kQkOWf7tineqYFhJItGEpCvIrlkpyBoAqFEaVcroGmzPodwv9uxU
-         COSuWbdC56zTe9SgoX5juDOGnH67kalEQMzIg1gzc3X+7omqWxQmUN2cRRIqAR8Mvno4
-         nUfEY9vt0pP2gKo5MeADt+AfHeZy+Jj/V33UxzK9B8nOQwnU6xC889TsHIkcpBCHPqeP
-         Rn2g==
-X-Gm-Message-State: AOAM5329bCXP7RbsvlrgP7Vz4oZDZ5LETrDT/AvFeU3eVvGrgryAvbI6
-        kZJJKbvBnKqywvT1ssqt9vDTlN5RDy8BM4hLH5gikg==
-X-Google-Smtp-Source: ABdhPJxiGAPx7JunDK0fXRDbJiZS/STJ6yPF0LbSheYR1rzZbtO5pCYXgmeVIPoOSlJwGQLfxGjf33vfe/5AlOQ/Qew=
-X-Received: by 2002:a05:6512:118a:: with SMTP id g10mr8951215lfr.206.1632478745711;
- Fri, 24 Sep 2021 03:19:05 -0700 (PDT)
+        id S245706AbhIXLKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 07:10:36 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:20511 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244460AbhIXLKg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 07:10:36 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1632481743; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=6PEpuYItvKQKeYhp0TIEbF/yB5AlmPXVBivbxlY6pHU=;
+ b=SRHSD1m4HsugVDwwsTnO+3pT+A0CMOfciZCB2h5fYAfRRv35V2NFV7niyPBH06+iYDEXsmCQ
+ Wyfw2RKHXVgX0g4NlAYupvQTI66234nmnVH8h8Q+9wEajDpRJ5iPoQq7v0UWsaveNJp3ecbp
+ ar9kQXuD+x/ede+/+uTmJCWUJbQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 614db1a96c4c0e0dc3b1a71b (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 24 Sep 2021 11:08:25
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 428D9C43619; Fri, 24 Sep 2021 11:08:25 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 51D24C4338F;
+        Fri, 24 Sep 2021 11:08:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 51D24C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <87o88l3oc4.fsf@toke.dk> <CACAyw99+KvsJGeqNE09VWHrZk9wKbQTg3h1h2LRmJADD5En2nQ@mail.gmail.com>
- <87tuibzbv2.fsf@toke.dk>
-In-Reply-To: <87tuibzbv2.fsf@toke.dk>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Fri, 24 Sep 2021 11:18:54 +0100
-Message-ID: <CACAyw9_N2Jh651hXL=P=cFM7O-n7Z0NXWy_D9j0ztVpEm+OgNA@mail.gmail.com>
-Subject: Re: Redux: Backwards compatibility for XDP multi-buff
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Lorenzo Bianconi <lbianconi@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] [v2] ath5k: fix building with LEDS=m
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210920122359.353810-1-arnd@kernel.org>
+References: <20210920122359.353810-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Bob Copeland <me@bobcopeland.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210924110825.428D9C43619@smtp.codeaurora.org>
+Date:   Fri, 24 Sep 2021 11:08:25 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Sept 2021 at 13:59, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->
-> I don't think it has to be quite that bleak :)
->
-> Specifically, there is no reason to block mb-aware programs from loading
-> even when the multi-buffer mode is disabled. So a migration plan would
-> look something like:
+Arnd Bergmann <arnd@kernel.org> wrote:
 
-...
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> Randconfig builds still show a failure for the ath5k driver,
+> similar to the one that was fixed for ath9k earlier:
+> 
+> WARNING: unmet direct dependencies detected for MAC80211_LEDS
+>   Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
+>   Selected by [m]:
+>   - ATH5K [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_ATH [=y] && (PCI [=y] || ATH25) && MAC80211 [=y]
+> net/mac80211/led.c: In function 'ieee80211_alloc_led_names':
+> net/mac80211/led.c:34:22: error: 'struct led_trigger' has no member named 'name'
+>    34 |         local->rx_led.name = kasprintf(GFP_KERNEL, "%srx",
+>       |                      ^
+> 
+> Copying the same logic from my ath9k patch makes this one work
+> as well, stubbing out the calls to the LED subsystem.
+> 
+> Fixes: b64acb28da83 ("ath9k: fix build error with LEDS_CLASS=m")
+> Fixes: 72cdab808714 ("ath9k: Do not select MAC80211_LEDS by default")
+> Fixes: 3a078876caee ("ath5k: convert LED code to use mac80211 triggers")
+> Link: https://lore.kernel.org/all/20210722105501.1000781-1-arnd@kernel.org/
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-> 2. Start porting all your XDP programs to make them mb-aware, and switch
->    their program type as you do. In many cases this is just a matter of
->    checking that the programs don't care about packet length. [...]
+Patch applied to wireless-drivers.git, thanks.
 
-Porting is only easy if we are guaranteed that the first PAGE_SIZE
-bytes (or whatever the current limit is) are available via ->data
-without trickery. Otherwise we have to convert all direct packet
-access to the new API, whatever that ends up being. It seemed to me
-like you were saying there is no such guarantee, and it could be
-driver dependent, which is the worst possible outcome imo. This is the
-status quo for TC classifiers, which is a great source of hard to
-diagnose bugs.
+fb8c3a3c5240 ath5k: fix building with LEDS=m
 
-> 3. Once all your programs have been ported and marked as such, flip the
->    sysctl. This will make the system start refusing to load any XDP
->    programs that are not mb-aware.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210920122359.353810-1-arnd@kernel.org/
 
-By this you mean reboot the system and early in boot change the
-sysctl? That could work I guess.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-> > 2. Add a compatibility shim for mb-unaware programs receiving an mb fra=
-me.
-> >
-> > We'd still need a way to indicate "MB-OK", but it could be a piece of
-> > metadata on a bpf_prog. Whatever code dispatches to an XDP program
-> > would have to include a prologue that linearises the xdp_buff if
-> > necessary which implies allocating memory. I don't know how hard it is
-> > to implement this.
->
-> I think it would be somewhat non-trivial, and more importantly would
-> absolutely slaughter performance. And if you're using XDP, presumably
-> you care about that, so I'm not sure we're doing anyone any favours by
-> implementing such a compatibility layer?
-
-I see your point: having a single non-mb-aware program trash
-performance is bad for marketing. Better to not let people bump the
-MTU in that case.
-
-> > 3. Make non-linearity invisible to the BPF program
-> >
-> > Something I've wished for often is that I didn't have to deal with
-> > nonlinearity at all, based on my experience with cls_redirect [2].
-> > It's really hard to write a BPF program that handles non-linear skb,
-> > especially when you have to call adjust_head, etc. which invalidates
-> > packet buffers. This is probably impossible, but maybe someone has a
-> > crazy idea? :)
->
-> With the other helpers that we started discussing, I don't think you
-> have to? I.e., with an xdp_load_bytes() or an xdp_data_pointer()-type
-> helper that works across fragment boundaries I think you'd be fine, no?
-
-I'll take a look!
-
-Lorenz
-
---=20
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
