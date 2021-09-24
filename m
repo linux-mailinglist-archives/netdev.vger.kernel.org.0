@@ -2,104 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F1174169CD
-	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 04:05:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67C4A4169EE
+	for <lists+netdev@lfdr.de>; Fri, 24 Sep 2021 04:13:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243856AbhIXCG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Sep 2021 22:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243803AbhIXCG5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 22:06:57 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C3EC061574;
-        Thu, 23 Sep 2021 19:05:25 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id j11-20020a9d190b000000b00546fac94456so11194427ota.6;
-        Thu, 23 Sep 2021 19:05:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=axmcHWINwhbQqCEqpjgusrdckROoPW/Dup1z+bcXAK4=;
-        b=STxTG2T/Btd0AUZQsgGJGLl90actZCzfzSWJUSo6/KpF9GwPo7zs0KLdV/PlX5yCcA
-         NK/KOHUN07TolUi43Ae6bx4EsKeOfiGor49jwrCShr1JE6hKbcnGJH1wQjQgCjUxHGdW
-         8SmcFJ+aMMY8adnc5NWcLHyaeZJFlaxw9HpYh5pKlGkLqkq7X6cj2tf+TDLAcJBJ/k64
-         oMjyfkA+78jBuMWL94tA4xCffuQbQwz36/g2fi6HMbmu6tBuCujJLvjDQ6HuNoit1ufi
-         +SrLv8nu2RnDIL+/Ez9z113h43/yAgE9Mvr77wN+Tljez4wbXOjctu+X5ADv7hab1PmW
-         og7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=axmcHWINwhbQqCEqpjgusrdckROoPW/Dup1z+bcXAK4=;
-        b=eesdJOkkIGrNKCPI99n8Hx+esJ962EItkb8pkRCY2PKgHLdQ6i83CLB57vmLGmibK8
-         zkAYxpb4HXI+QKemHhqsiwqhYo1AHYA9BmVJZ4RCXh8+8v+xpnuLkhxYKB9KDdkdetXg
-         CfeAVFhL4vmG92+KuA0B3cZz3gYe6rm4mI42zk67T04DnOF7kKxAEQDg20CZSBS2DJVL
-         eONZaUIlKPf9GtazY1qn0jVYzFdQ4WTY0Ln/EwUO6ekNXym79hB+cMZ+UWjmqGNfHQDH
-         tIBvrPGbe5bJQ9n9mFNZyKumUsUHhLRTXeqdFShcHKRidDT3sCCliUeLYQAJ/czrtgld
-         OKng==
-X-Gm-Message-State: AOAM532mWgoPBS+rrYfRWyg864AvWom9JwnbIhWn0WvelIC/Rn03Aow2
-        CTChq39WE0jSxE4krVkWwb0pcmqz7Pi04Q==
-X-Google-Smtp-Source: ABdhPJz46xnTPNOVr8ZpBdtBjkO+1r919dkh/wxHjfJwibhtaHC4bQ3FtqUGeetS8XavWvxmIHxRSg==
-X-Received: by 2002:a9d:5887:: with SMTP id x7mr1671653otg.331.1632449124814;
-        Thu, 23 Sep 2021 19:05:24 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id a11sm1710075oiw.36.2021.09.23.19.05.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Sep 2021 19:05:24 -0700 (PDT)
-Subject: Re: [PATCH v2 0/6] iproute2: Add basic AX.25, NETROM and ROSE
- support.
-To:     Ralf Baechle <ralf@linux-mips.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, linux-hams@vger.kernel.org
-References: <cover.1632059758.git.ralf@linux-mips.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f5cc6ffe-0351-7b4d-4ae8-fea6485490b1@gmail.com>
-Date:   Thu, 23 Sep 2021 20:05:23 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+        id S243909AbhIXCPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Sep 2021 22:15:09 -0400
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:44783 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243850AbhIXCPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Sep 2021 22:15:08 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yun.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0UpNQJc7_1632449613;
+Received: from testdeMacBook-Pro.local(mailfrom:yun.wang@linux.alibaba.com fp:SMTPD_---0UpNQJc7_1632449613)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 24 Sep 2021 10:13:33 +0800
+Subject: Re: [PATCH] net: prevent user from passing illegal stab size
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:TC subsystem" <netdev@vger.kernel.org>
+References: <da8bd5e9-0476-d75b-4669-0a21637663b2@linux.alibaba.com>
+ <20210923090054.3556deb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Message-ID: <d124f8c3-b8b5-f086-330a-a4e5252778a5@linux.alibaba.com>
+Date:   Fri, 24 Sep 2021 10:13:33 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:78.0)
  Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <cover.1632059758.git.ralf@linux-mips.org>
+In-Reply-To: <20210923090054.3556deb0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/19/21 7:55 AM, Ralf Baechle wrote:
-> net-tools contain support for these three protocol but are deprecated and
-> no longer installed by default by many distributions.  Iproute2 otoh has
-> no support at all and will dump the addresses of these protocols which
-> actually are pretty human readable as hex numbers:
+
+
+On 2021/9/24 上午12:00, Jakub Kicinski wrote:
+> On Thu, 23 Sep 2021 17:08:13 +0800 王贇 wrote:
+>> We observed below report when playing with netlink sock:
+>>
+>>   UBSAN: shift-out-of-bounds in net/sched/sch_api.c:580:10
+>>   shift exponent 249 is too large for 32-bit type
+>>   CPU: 0 PID: 685 Comm: a.out Not tainted
+>>   Call Trace:
+>>    dump_stack_lvl+0x8d/0xcf
+>>    ubsan_epilogue+0xa/0x4e
+>>    __ubsan_handle_shift_out_of_bounds+0x161/0x182
+>>    __qdisc_calculate_pkt_len+0xf0/0x190
+>>    __dev_queue_xmit+0x2ed/0x15b0
+>>
+>> it seems like kernel won't check the stab size_log passing from
+>> user, and will use the insane value later to calculate pkt_len.
+>>
+>> This patch just add a check on the size_log to avoid insane
+>> calculation.
+>>
+>> Reported-by: Abaci <abaci@linux.alibaba.com>
+>> Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
+>> ---
+>>  include/uapi/linux/pkt_sched.h | 1 +
+>>  net/sched/sch_api.c            | 3 +++
+>>  2 files changed, 4 insertions(+)
+>>
+>> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+>> index ec88590..fa194a0 100644
+>> --- a/include/uapi/linux/pkt_sched.h
+>> +++ b/include/uapi/linux/pkt_sched.h
+>> @@ -98,6 +98,7 @@ struct tc_ratespec {
+>>  };
+>>
+>>  #define TC_RTAB_SIZE	1024
+>> +#define TC_LOG_MAX	30
 > 
-> # ip link show dev bpq0
-> 3: bpq0: <UP,LOWER_UP> mtu 256 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->     link/ax25 88:98:60:a0:92:40:02 brd a2:a6:a8:40:40:40:00
-> # ip link show dev nr0
-> 4: nr0: <NOARP,UP,LOWER_UP> mtu 236 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->     link/netrom 88:98:60:a0:92:40:0a brd 00:00:00:00:00:00:00
-> # ip link show dev rose0
-> 8: rose0: <NOARP,UP,LOWER_UP> mtu 249 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->     link/rose 65:09:33:30:00 brd 00:00:00:00:00
+> Adding a uAPI define is not necessary.
+
+Yes, I'll move this to somewhere else.
+
 > 
-> This series adds basic support for the three protocols to print addresses:
+>>  struct tc_sizespec {
+>>  	unsigned char	cell_log;
+>> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+>> index 5e90e9b..1b6b8f8 100644
+>> --- a/net/sched/sch_api.c
+>> +++ b/net/sched/sch_api.c
+>> @@ -513,6 +513,9 @@ static struct qdisc_size_table *qdisc_get_stab(struct nlattr *opt,
+>>  		return stab;
+>>  	}
+>>
+>> +	if (s->size_log > TC_LOG_MAX)
+>> +		return ERR_PTR(-EINVAL);
 > 
-> # ip link show dev bpq0
-> 3: bpq0: <UP,LOWER_UP> mtu 256 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->     link/ax25 DL0PI-1 brd QST-0
-> # ip link show dev nr0
-> 4: nr0: <NOARP,UP,LOWER_UP> mtu 236 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->     link/netrom DL0PI-5 brd *
-> # ip link show dev rose0
-
-# lines get removed by git; $ is a better prompt for commands
-
-> 8: rose0: <NOARP,UP,LOWER_UP> mtu 249 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->     link/rose 6509333000 brd 0000000000
+> Looks sane, please add an extack message.
 > 
+> Why not cover cell_log as well while at it? 
 
-applied to iproute2-next. Thanks,
+You're right, will add message and check this one too in v2 :-)
 
+Regards,
+Michael Wang
 
+> 
+>>  	stab = kmalloc(sizeof(*stab) + tsize * sizeof(u16), GFP_KERNEL);
+>>  	if (!stab)
+>>  		return ERR_PTR(-ENOMEM);
