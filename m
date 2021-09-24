@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E1A7417D79
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 00:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD40417D7B
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 00:05:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344818AbhIXWHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Sep 2021 18:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59026 "EHLO
+        id S1344827AbhIXWHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Sep 2021 18:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344739AbhIXWHB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 18:07:01 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFD4C061571;
-        Fri, 24 Sep 2021 15:05:28 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id c7so29999861qka.2;
-        Fri, 24 Sep 2021 15:05:28 -0700 (PDT)
+        with ESMTP id S1344814AbhIXWHC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Sep 2021 18:07:02 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD29C061571;
+        Fri, 24 Sep 2021 15:05:29 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id t13so4968057qtc.7;
+        Fri, 24 Sep 2021 15:05:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9AaGoiEPLlbptgntBN+mJpO46ns+attsaZXlwJ1z2hk=;
-        b=SwFdHxrA1axmOZxfJkxsuFkd/PYieFc5voQ0gOYYpQ069Rgiu2q4+vwGQc/ExNKVHL
-         NB4Imvcm6mSiuO5t3+NDfWvrsty73rQEGaTQZop+zPimvc8bcZ7sLybtYfDukpCYQA25
-         KGV8DK4Yy2Vqg0RR5Dkd/lxQinXUZfanHBokhf5QL8lrP4+mFu1IAvzUCpot5IMprfHN
-         vdpr6Isx512fGpGlrEYqJh3ZkLkaoTmupMoiDVRwkj5wjM0yI+WMhjLTdw7tS/1T25Y2
-         59xGh9UwlR5/MqvDsRy4J5mDWv+1f++oNuU6Tlf4M13K+lMKXLUrYVfWFM+RvuxbUWzB
-         I2Jg==
+        bh=D8GRaF+Cd4vVYumfiCzzhE1rcgBnfSGVXamJ55BCvaM=;
+        b=OZZLSyaqSJDyoWyRJjpJrBy6jcssEJuXeaxFzTDn519cyxpiuy4lzA1h+bDQbKuTVM
+         0Xh2k4k4dlG4DNZkXMdMFZskop+8id58l5dNWQrPI0MnpbrdmRXa9hxl3Dx74GIIXwdd
+         JEkYYJSBMiNciofawt2YghY3CgSN48xl835ZGR1H12QWfXC4ehp/KfaNfOpq7Qifd6nT
+         aKcj42pNnEtTNZmHR0mU0tX9kntB4KHLuTMBqcxbFOH55BERaFkqpx/MTSaneQbbfX9E
+         R7Szh5DGsvG+X2Uoo9iFTa1Mo6cN4zyneCqS1NGcYQAr0yaRcsp8fPKJ1TDxVZSf1SSk
+         3+KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9AaGoiEPLlbptgntBN+mJpO46ns+attsaZXlwJ1z2hk=;
-        b=DwM/uiBMR05ncnfPlVfN4FfYzeFYfO6OnI2OrbBaVUw2090AWToqUZ06GbWu8E6Hcp
-         f1xoxL2swHU15PqshNllQHJ3zkP330XSbnfdrk/mG8yerYMXYNcAqoIktIoqZGopVoaU
-         I6/vyk2phSz8gBF16E9/Uy3pyAKz2pSxh0geCjqPdXrNtp9t31E8mZhtMdG+ZcWxsh9e
-         WAnK/U7ffiINFQPPxbyVNYX/m2ZdZcDqJWjQA/Dpx0jXGSFEHAwv9vPA3aiOydxzIQmK
-         IWMpEZIGfV2dWNNHrrkhAxytC8kMNKvtVMP1my9YZxg5AK4osfRNThIwKGHDTD+/dpzQ
-         k/rA==
-X-Gm-Message-State: AOAM531ByKchsyJvO2VsuFReD8PtX9Zu7212jofPKbwFCEh9ycS2yMz6
-        Msjnc+SxIChLm1BmXoFhVRcPgURly0c=
-X-Google-Smtp-Source: ABdhPJwrhlm5tiahG/Rui/WhldLGX3vY7bPxj6GZQzeUfb359FqsO9hAKoDvoso6kE3KRtYnW9a/jg==
-X-Received: by 2002:a37:6596:: with SMTP id z144mr13295209qkb.292.1632521127163;
-        Fri, 24 Sep 2021 15:05:27 -0700 (PDT)
+        bh=D8GRaF+Cd4vVYumfiCzzhE1rcgBnfSGVXamJ55BCvaM=;
+        b=dTcdHIkzN7B0y9UBtJKmi82OTIIKMV2UHh2GVm5Nrsyc8longipXYL82qiyZTpGVXy
+         mZ3n3TfuesCKOC84kDvWbYEXBC/R2DjP7PoOfd0Bmo7cuv/keKxlHUpZaRGrg1JV68Gy
+         8ddMAVUMHvwV/4XLMgTMddHeF5bd4eWhG7URj+/AZ3FPGY7T5kVXmFBTobyhfwvnmzh9
+         0vstCByXlycqTr1EL2xllrRPn2Y3Ur1ab94/Lf0yPWDFbPaevpxkA3NQXgIjVTywOT1V
+         fxUqHHO0K9t/j1hUIGcdHcn8SgeTJPX+TUR85d1oaylMDrheE7Fy9OTbfdV9uuX+xUFp
+         fm0A==
+X-Gm-Message-State: AOAM532s2KRbymdctU9MN7uNDoufty1Qo45F8VSV1HPyZQXuDPwGee5z
+        B6DvqQIv65PoRelmoYRkEPiJndHFqvQ=
+X-Google-Smtp-Source: ABdhPJxFQOSpXr1uOAYl59s+XdY5R0Osn1u0EyhkocvSlUiwJuDXmBUWfkk8J1ckJHJ2rqcyI7IDqQ==
+X-Received: by 2002:ac8:6b98:: with SMTP id z24mr6895443qts.107.1632521128454;
+        Fri, 24 Sep 2021 15:05:28 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:c4dc:647c:f35b:bfc4])
-        by smtp.gmail.com with ESMTPSA id h2sm7895683qkf.106.2021.09.24.15.05.26
+        by smtp.gmail.com with ESMTPSA id h2sm7895683qkf.106.2021.09.24.15.05.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Sep 2021 15:05:26 -0700 (PDT)
+        Fri, 24 Sep 2021 15:05:28 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Yucong Sun <sunyucong@gmail.com>,
+Cc:     bpf@vger.kernel.org, Yucong Sun <sunyucong@gmail.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf 2/3] net: poll psock queues too for sockmap sockets
-Date:   Fri, 24 Sep 2021 15:05:06 -0700
-Message-Id: <20210924220507.24543-3-xiyou.wangcong@gmail.com>
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch bpf 3/3] selftests/bpf: use recv_timeout() instead of retries
+Date:   Fri, 24 Sep 2021 15:05:07 -0700
+Message-Id: <20210924220507.24543-4-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210924220507.24543-1-xiyou.wangcong@gmail.com>
 References: <20210924220507.24543-1-xiyou.wangcong@gmail.com>
@@ -67,150 +67,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+From: Yucong Sun <sunyucong@gmail.com>
 
-Yucong noticed we can't poll() sockets in sockmap even
-when they are the destination sockets of redirections.
-This is because we never poll any psock queues in ->poll().
-We can not overwrite ->poll() as it is in struct proto_ops,
-not in struct proto.
+We use non-blocking sockets in those tests, retrying for
+EAGAIN is ugly because there is no upper bound for the packet
+arrival time, at least in theory. After we fix ->poll() for
+sockmap sockets, now we can switch to select()+recv().
 
-So introduce sk_msg_poll() to poll psock ingress_msg queue
-and let sockets which support sockmap invoke it directly.
-
-Reported-by: Yucong Sun <sunyucong@gmail.com>
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
 Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Yucong Sun <sunyucong@gmail.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- include/linux/skmsg.h |  6 ++++++
- net/core/skmsg.c      | 15 +++++++++++++++
- net/ipv4/tcp.c        |  2 ++
- net/ipv4/udp.c        |  2 ++
- net/unix/af_unix.c    |  5 +++++
- 5 files changed, 30 insertions(+)
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 75 +++++--------------
+ 1 file changed, 20 insertions(+), 55 deletions(-)
 
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index d47097f2c8c0..163b0cc1703a 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -128,6 +128,7 @@ int sk_msg_memcopy_from_iter(struct sock *sk, struct iov_iter *from,
- 			     struct sk_msg *msg, u32 bytes);
- int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
- 		   int len, int flags);
-+__poll_t sk_msg_poll(struct sock *sk);
+diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+index 5c5979046523..d88bb65b74cc 100644
+--- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
++++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+@@ -949,7 +949,6 @@ static void redir_to_connected(int family, int sotype, int sock_mapfd,
+ 	int err, n;
+ 	u32 key;
+ 	char b;
+-	int retries = 100;
  
- static inline void sk_msg_check_to_free(struct sk_msg *msg, u32 i, u32 bytes)
- {
-@@ -562,5 +563,10 @@ static inline void skb_bpf_redirect_clear(struct sk_buff *skb)
- {
- 	skb->_sk_redir = 0;
- }
-+#else
-+static inline __poll_t sk_msg_poll(struct sock *sk)
-+{
-+	return 0;
-+}
- #endif /* CONFIG_NET_SOCK_MSG */
- #endif /* _LINUX_SKMSG_H */
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 2d6249b28928..8e6d7ea43eca 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -474,6 +474,21 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
- }
- EXPORT_SYMBOL_GPL(sk_msg_recvmsg);
+ 	zero_verdict_count(verd_mapfd);
  
-+__poll_t sk_msg_poll(struct sock *sk)
-+{
-+	struct sk_psock *psock;
-+	__poll_t mask = 0;
-+
-+	psock = sk_psock_get_checked(sk);
-+	if (IS_ERR_OR_NULL(psock))
-+		return 0;
-+	if (!sk_psock_queue_empty(psock))
-+		mask |= EPOLLIN | EPOLLRDNORM;
-+	sk_psock_put(sk, psock);
-+	return mask;
-+}
-+EXPORT_SYMBOL_GPL(sk_msg_poll);
-+
- static struct sk_msg *sk_psock_create_ingress_msg(struct sock *sk,
- 						  struct sk_buff *skb)
- {
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index e8b48df73c85..2eb1a87ba056 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -280,6 +280,7 @@
- #include <linux/uaccess.h>
- #include <asm/ioctls.h>
- #include <net/busy_poll.h>
-+#include <linux/skmsg.h>
+@@ -1002,17 +1001,11 @@ static void redir_to_connected(int family, int sotype, int sock_mapfd,
+ 		goto close_peer1;
+ 	if (pass != 1)
+ 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
+-again:
+-	n = read(c0, &b, 1);
+-	if (n < 0) {
+-		if (errno == EAGAIN && retries--) {
+-			usleep(1000);
+-			goto again;
+-		}
+-		FAIL_ERRNO("%s: read", log_prefix);
+-	}
++	n = recv_timeout(c0, &b, 1, 0, IO_TIMEOUT_SEC);
++	if (n < 0)
++		FAIL_ERRNO("%s: recv_timeout", log_prefix);
+ 	if (n == 0)
+-		FAIL("%s: incomplete read", log_prefix);
++		FAIL("%s: incomplete recv", log_prefix);
  
- /* Track pending CMSGs. */
- enum {
-@@ -563,6 +564,7 @@ __poll_t tcp_poll(struct file *file, struct socket *sock, poll_table *wait)
+ close_peer1:
+ 	xclose(p1);
+@@ -1571,7 +1564,6 @@ static void unix_redir_to_connected(int sotype, int sock_mapfd,
+ 	const char *log_prefix = redir_mode_str(mode);
+ 	int c0, c1, p0, p1;
+ 	unsigned int pass;
+-	int retries = 100;
+ 	int err, n;
+ 	int sfd[2];
+ 	u32 key;
+@@ -1606,17 +1598,11 @@ static void unix_redir_to_connected(int sotype, int sock_mapfd,
+ 	if (pass != 1)
+ 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
  
- 		if (tcp_stream_is_readable(sk, target))
- 			mask |= EPOLLIN | EPOLLRDNORM;
-+		mask |= sk_msg_poll(sk);
+-again:
+-	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
+-	if (n < 0) {
+-		if (errno == EAGAIN && retries--) {
+-			usleep(1000);
+-			goto again;
+-		}
+-		FAIL_ERRNO("%s: read", log_prefix);
+-	}
++	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
++	if (n < 0)
++		FAIL_ERRNO("%s: recv_timeout", log_prefix);
+ 	if (n == 0)
+-		FAIL("%s: incomplete read", log_prefix);
++		FAIL("%s: incomplete recv", log_prefix);
  
- 		if (!(sk->sk_shutdown & SEND_SHUTDOWN)) {
- 			if (__sk_stream_is_writeable(sk, 1)) {
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 8851c9463b4b..fbc989d27388 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -97,6 +97,7 @@
- #include <linux/skbuff.h>
- #include <linux/proc_fs.h>
- #include <linux/seq_file.h>
-+#include <linux/skmsg.h>
- #include <net/net_namespace.h>
- #include <net/icmp.h>
- #include <net/inet_hashtables.h>
-@@ -2866,6 +2867,7 @@ __poll_t udp_poll(struct file *file, struct socket *sock, poll_table *wait)
- 	    !(sk->sk_shutdown & RCV_SHUTDOWN) && first_packet_length(sk) == -1)
- 		mask &= ~(EPOLLIN | EPOLLRDNORM);
+ close:
+ 	xclose(c1);
+@@ -1748,7 +1734,6 @@ static void udp_redir_to_connected(int family, int sock_mapfd, int verd_mapfd,
+ 	const char *log_prefix = redir_mode_str(mode);
+ 	int c0, c1, p0, p1;
+ 	unsigned int pass;
+-	int retries = 100;
+ 	int err, n;
+ 	u32 key;
+ 	char b;
+@@ -1781,17 +1766,11 @@ static void udp_redir_to_connected(int family, int sock_mapfd, int verd_mapfd,
+ 	if (pass != 1)
+ 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
  
-+	mask |= sk_msg_poll(sk);
- 	return mask;
+-again:
+-	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
+-	if (n < 0) {
+-		if (errno == EAGAIN && retries--) {
+-			usleep(1000);
+-			goto again;
+-		}
+-		FAIL_ERRNO("%s: read", log_prefix);
+-	}
++	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
++	if (n < 0)
++		FAIL_ERRNO("%s: recv_timeout", log_prefix);
+ 	if (n == 0)
+-		FAIL("%s: incomplete read", log_prefix);
++		FAIL("%s: incomplete recv", log_prefix);
  
- }
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 92345c9bb60c..5d705541d082 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -114,6 +114,7 @@
- #include <linux/freezer.h>
- #include <linux/file.h>
- #include <linux/btf_ids.h>
-+#include <linux/skmsg.h>
+ close_cli1:
+ 	xclose(c1);
+@@ -1841,7 +1820,6 @@ static void inet_unix_redir_to_connected(int family, int type, int sock_mapfd,
+ 	const char *log_prefix = redir_mode_str(mode);
+ 	int c0, c1, p0, p1;
+ 	unsigned int pass;
+-	int retries = 100;
+ 	int err, n;
+ 	int sfd[2];
+ 	u32 key;
+@@ -1876,17 +1854,11 @@ static void inet_unix_redir_to_connected(int family, int type, int sock_mapfd,
+ 	if (pass != 1)
+ 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
  
- #include "scm.h"
+-again:
+-	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
+-	if (n < 0) {
+-		if (errno == EAGAIN && retries--) {
+-			usleep(1000);
+-			goto again;
+-		}
+-		FAIL_ERRNO("%s: read", log_prefix);
+-	}
++	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
++	if (n < 0)
++		FAIL_ERRNO("%s: recv_timeout", log_prefix);
+ 	if (n == 0)
+-		FAIL("%s: incomplete read", log_prefix);
++		FAIL("%s: incomplete recv", log_prefix);
  
-@@ -3015,6 +3016,8 @@ static __poll_t unix_poll(struct file *file, struct socket *sock, poll_table *wa
- 	if (!skb_queue_empty_lockless(&sk->sk_receive_queue))
- 		mask |= EPOLLIN | EPOLLRDNORM;
+ close_cli1:
+ 	xclose(c1);
+@@ -1932,7 +1904,6 @@ static void unix_inet_redir_to_connected(int family, int type, int sock_mapfd,
+ 	int sfd[2];
+ 	u32 key;
+ 	char b;
+-	int retries = 100;
  
-+	mask |= sk_msg_poll(sk);
-+
- 	/* Connection-based need to check for termination and startup */
- 	if ((sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET) &&
- 	    sk->sk_state == TCP_CLOSE)
-@@ -3054,6 +3057,8 @@ static __poll_t unix_dgram_poll(struct file *file, struct socket *sock,
- 	if (!skb_queue_empty_lockless(&sk->sk_receive_queue))
- 		mask |= EPOLLIN | EPOLLRDNORM;
+ 	zero_verdict_count(verd_mapfd);
  
-+	mask |= sk_msg_poll(sk);
-+
- 	/* Connection-based need to check for termination and startup */
- 	if (sk->sk_type == SOCK_SEQPACKET) {
- 		if (sk->sk_state == TCP_CLOSE)
+@@ -1963,17 +1934,11 @@ static void unix_inet_redir_to_connected(int family, int type, int sock_mapfd,
+ 	if (pass != 1)
+ 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
+ 
+-again:
+-	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
+-	if (n < 0) {
+-		if (errno == EAGAIN && retries--) {
+-			usleep(1000);
+-			goto again;
+-		}
+-		FAIL_ERRNO("%s: read", log_prefix);
+-	}
++	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
++	if (n < 0)
++		FAIL_ERRNO("%s: recv_timeout", log_prefix);
+ 	if (n == 0)
+-		FAIL("%s: incomplete read", log_prefix);
++		FAIL("%s: incomplete recv", log_prefix);
+ 
+ close:
+ 	xclose(c1);
 -- 
 2.30.2
 
