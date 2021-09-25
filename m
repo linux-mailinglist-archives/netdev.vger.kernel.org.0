@@ -2,72 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 773934182B2
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 16:26:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E39484182AE
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 16:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343704AbhIYO1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 10:27:39 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59944 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233738AbhIYO1i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 10:27:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GIoIFS8oysAVK606odyYm+NnfqhL/RtH/bn53TX3cfE=; b=HjJrUTCk9nfyUdYrqlQER55LNl
-        bK2GVwXRCiVF31kumJrOs6gqHBB9/PeEy7NrtM+93p77z4KxBGYzcZd/+ztTlel9UkRm55pZnVzod
-        d1irtnX0sGeuaFuLvHsE/w3/uvC0CvWl/pLbFP+c5opalejgRY1E0Vk3jnwAMDD0NweU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mU8cR-008DSx-Pv; Sat, 25 Sep 2021 16:25:35 +0200
-Date:   Sat, 25 Sep 2021 16:25:35 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Justin Chen <justinpopo6@gmail.com>
-Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S245756AbhIYO1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 10:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233738AbhIYO1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 10:27:13 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED1BC061570;
+        Sat, 25 Sep 2021 07:25:38 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id dj4so48165112edb.5;
+        Sat, 25 Sep 2021 07:25:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lU4nVuw7o1r/PfKx8aQqaO6GC4TAE1elqJfGU2aTcGE=;
+        b=Rmz2N0jm9/QxLpL2Oly7zCwxsgUgF04PXqkaYqMYe4BWHzH/XSDT5odLQlD/wQjjY7
+         1+2RHyHnxaPbM7EU/Qb2NjQiKFE4zFtcAdMpRZEWwgx0qKSnmaFteYJzOlPE3WB7r2Vu
+         PB/4egz7LywiX1DqFuTjjJLKHSQ9tVw7/eYKu6ANN5AkzfGjELD2poBwDTn+G/YlMcfK
+         denO4SP4AR1m54DRpUiIz3aUJ3bj0rI2yOC0Gf4xggvGGe+2738jv9awsRArP9509nSh
+         N/v5dfIqyiEKFF2WFI13owtaNLrgCLLpU6mmN0jNoq15KWJBnZDxKLoEdovnF8cgF1IH
+         juiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lU4nVuw7o1r/PfKx8aQqaO6GC4TAE1elqJfGU2aTcGE=;
+        b=ZuwI44BvDjiN3q57q7ylF7CIT5lrCRuSzcCIH/WBcJxST0s0uRDQbbXMxljXmsqUAc
+         B3lu1NGNibPsRoef1grdu8+O57u17TiHe9luezXhs2Jj8tICBTDOC6ChmmmwQokxnodZ
+         9eMrkHXQDuvyFzgq1BI1arkbA1t5k49SPO/6oCQFvjyRB5/k7NOkZOSesgdMnu5y8EjB
+         RtcGGH1QHw6PdeEW93F43WpCl4H7jWdeG42x+8sZctvq5jRz2V5S7dstnIVQnlQJ/muL
+         99c3oQ7yeeX/FgyvpVhpe6DWilZ7W1Zp3E0pV2z0WZGdNZNmtMTLkb07+Kqpxh42DrqF
+         oRXg==
+X-Gm-Message-State: AOAM533bymODMa65tUIAeuH/Hdmtp12kEix57xFdXRA7kliCi6dKOl7B
+        1Bw7JmVp4WxqfAntdwOXsARZglXE8crWJnc/CsM=
+X-Google-Smtp-Source: ABdhPJwRlM2aM6JJl+ufi6fYnlTvRj+JsiiDXQCeD/sOpio9OLevqAIj0qP4GFgcWYgr9jeHaWxN6w==
+X-Received: by 2002:a17:906:6b93:: with SMTP id l19mr17569763ejr.26.1632579937355;
+        Sat, 25 Sep 2021 07:25:37 -0700 (PDT)
+Received: from ?IPv6:2a04:241e:501:3800:55c:dc9d:9cc1:2c16? ([2a04:241e:501:3800:55c:dc9d:9cc1:2c16])
+        by smtp.gmail.com with ESMTPSA id u19sm7603020edv.40.2021.09.25.07.25.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Sep 2021 07:25:36 -0700 (PDT)
+Subject: Re: [PATCH 00/19] tcp: Initial support for RFC5925 auth option
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Doug Berger <opendmb@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:DMA BUFFER SHARING FRAMEWORK" 
-        <linux-media@vger.kernel.org>,
-        "open list:DMA BUFFER SHARING FRAMEWORK" 
-        <dri-devel@lists.freedesktop.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>
-Subject: Re: [PATCH net-next 0/5] brcm ASP 2.0 Ethernet controller
-Message-ID: <YU8xX0fUWAoEnmRR@lunn.ch>
-References: <1632519891-26510-1-git-send-email-justinpopo6@gmail.com>
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1632240523.git.cdleonard@gmail.com>
+ <20210921161327.10b29c88@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <f84a32c9-ee7e-6e72-ccb2-69ac0210dc34@gmail.com>
+ <20210923065803.744485ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+Message-ID: <f8e1d59f-5473-df7c-ee23-4c0a7a4d6f11@gmail.com>
+Date:   Sat, 25 Sep 2021 17:25:35 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1632519891-26510-1-git-send-email-justinpopo6@gmail.com>
+In-Reply-To: <20210923065803.744485ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 24, 2021 at 02:44:46PM -0700, Justin Chen wrote:
-> This patch set adds support for Broadcom's ASP 2.0 Ethernet controller.
 
 
-Hi Justin
+On 9/23/21 4:58 PM, Jakub Kicinski wrote:
+> On Thu, 23 Sep 2021 10:49:53 +0300 Leonard Crestez wrote:
+>> Many of the patch splits were artificially created in order to ease
+>> review, for example "signing packets" doesn't do anything without also
+>> "hooking in the tcp stack". Some static functions will trigger warnings
+>> because they're unused until the next patch, not clear what the
+>> preferred solution would be here. I could remove the "static" marker
+>> until the next patch or reverse the order and have the initial "tcp
+>> integration" patches call crypto code that just returns an error and
+>> fills-in a signature of zeros.
+> 
+> Ease of review is important, so although discouraged transient warnings
+> are acceptable if the code is much easier to read that way. The problem
+> here was that the build was also broken, but looking at it again I
+> think you're just missing exports, please make sure to build test with
+> IPV6 compiled as a module:
+> 
+> ERROR: modpost: "tcp_authopt_hash" [net/ipv6/ipv6.ko] undefined!
+> ERROR: modpost: "__tcp_authopt_select_key" [net/ipv6/ipv6.ko] undefined!
 
-Does the hardware support L2 switching between the two ports? I'm just
-wondering if later this is going to be modified into a switchdev
-driver?
+The kernel build robot sent me an email regarding IPv6=m last time, I 
+fixed that issue but introduced another. I check for IPv6=m specifically 
+but only did "make net/ipv4/ net/ipv6/" and missed the error.
 
-	Andrew
+I went through the series and solved checkpatch, kernel-doc and 
+compilation issues in a more systematic fashion, I will repost later.
+
+--
+Regards,
+Leonard
