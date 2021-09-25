@@ -2,137 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB4B0418279
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 15:56:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D766041828E
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 16:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245696AbhIYN5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 09:57:36 -0400
-Received: from mout.gmx.net ([212.227.17.21]:34479 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245152AbhIYN5g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 09:57:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1632578152;
-        bh=wsLjtxkpsN+vcmLOIIZnPLOCURQLRZMPI5INf/awxEU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=a0KSAWGbVgyDrvHU+aw7oricmm3bq/fKVC+FwtLNOfRlUcOLr3LOhojB5LeJWV78m
-         kfXv6/95MSE1czsBtO/zLtSVolX7HyAF7wd7K6gJFSRaMQ3i2cznJCVEU5zhKxgIhD
-         iSnmEzrdrmk4YHdDZX53UJLAgI6TPEcp6q67Zxks=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.localdomain ([79.150.72.99]) by mail.gmx.net
- (mrgmx104 [212.227.17.174]) with ESMTPSA (Nemesis) id
- 1MJE6F-1m9Z8F1XJr-00KkWl; Sat, 25 Sep 2021 15:55:52 +0200
-From:   Len Baker <len.baker@gmx.com>
-To:     Johannes Berg <johannes@sipsolutions.net>,
+        id S1343668AbhIYOQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 10:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233738AbhIYOQa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 10:16:30 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D47C061570;
+        Sat, 25 Sep 2021 07:14:55 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id ee50so47968737edb.13;
+        Sat, 25 Sep 2021 07:14:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hi5r/QTKc0hakYYPxOLmnUQF3xIEtGRWHl7PZ9tsfa4=;
+        b=ikUsUlqEpAEVeeQr8KpV9A0k3XvxLReCSOUdzvuL7OFNhnoMCW0fS/heeVX++tm2Fj
+         brF+FOgZdoHFcuHMCSXyDvtr67eA4uS+dsEschaOGJoxB6B02uXdMuqJdGOLMRGVxJU7
+         TnGK9Qs7FOVNDiU20Iim1oNxuMnj+OXttG3ZqpXXnG7elhu6vGz/Au4DAw9TcOd8Vv1s
+         eFc6w68nXOTpZfkBPAEUT1jot4nJW6OLJo9jAOThhBqHjdAe2uGfi5JBCG8e6f2UToMN
+         CSk3oSOvNIrfks3NLTSLOUSO0qPCQNSDWV6lwWc76oGn3cXpl4uwKjhsdUqzaxdltq7t
+         EWBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hi5r/QTKc0hakYYPxOLmnUQF3xIEtGRWHl7PZ9tsfa4=;
+        b=HyYjx2f5V9FgBh00ZdR78KAtyzuzneYMl/LHH89/seSCaQjgNk5RRKr2WBTYHPF20b
+         YZd/qfRDfrIxrJLQ29MCyRD3ZfVa2tWuTo1gpNFm6ot3qS7UqNTUUgZBeMEcYeaXWwoQ
+         8ZiheWx9uAgj3urW9o/rmLiy0BNihvZ15n17TmP9frXBfYBmcYAglXwEgj123kqftkGa
+         mWFRhkNBPKaq1kBzCXbbdE9NfLbq1+yRd6nbzD38gyNFFKdwv6HwJTaNIowfljuELTNy
+         5iRVilf+eiawGHU9FQDQ+M+c59eHu2AgcMFWQ90+5rMO2ASYWDeFKjMM0oL+wSG9z7PK
+         2QQQ==
+X-Gm-Message-State: AOAM532Eud2LAsk1GzmLE87kjMw3HZPBH0fDmE6xT2jgE+AMVQvO0Yp0
+        ruieUebJweEK0my1f4oskb1XDyXtRS/rhDWLSwk=
+X-Google-Smtp-Source: ABdhPJyw95qtw/Li2PyMyMyWxpjzmlZNuzkRi9jH/UEyb7cWbwy6LipocE7q899bLht3ndlmaN6Npg==
+X-Received: by 2002:a17:906:32c9:: with SMTP id k9mr17484811ejk.218.1632579293736;
+        Sat, 25 Sep 2021 07:14:53 -0700 (PDT)
+Received: from ?IPv6:2a04:241e:501:3800:55c:dc9d:9cc1:2c16? ([2a04:241e:501:3800:55c:dc9d:9cc1:2c16])
+        by smtp.gmail.com with ESMTPSA id e11sm6297928ejm.41.2021.09.25.07.14.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Sep 2021 07:14:53 -0700 (PDT)
+Subject: Re: [PATCH 08/19] tcp: authopt: Disable via sysctl by default
+To:     David Ahern <dsahern@gmail.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        David Ahern <dsahern@kernel.org>, Shuah Khan <shuah@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Len Baker <len.baker@gmx.com>, Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] nl80211: prefer struct_size over open coded arithmetic
-Date:   Sat, 25 Sep 2021 15:55:32 +0200
-Message-Id: <20210925135533.20522-1-len.baker@gmx.com>
-X-Mailer: git-send-email 2.25.1
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        Menglong Dong <dong.menglong@zte.com.cn>,
+        netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1632240523.git.cdleonard@gmail.com>
+ <b0abf2b789220708011a862a892c37b0fd76dc25.1632240523.git.cdleonard@gmail.com>
+ <cafecbeb-7d4d-489c-177d-29fff78eb4d1@gmail.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+Message-ID: <65ed79e3-bef1-19c4-ac1d-9d6833236a1c@gmail.com>
+Date:   Sat, 25 Sep 2021 17:14:50 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:DohsjkVrV1ahNMCZZNV9sE/acN7UW1Gkox/fR7Br9RXawj+VriF
- 6YRaaTzbV5pavlIxBxPQNcX0Zpr753PRYHT5BbDUD0BzMRp9A9yoyF+ZclvG3BSAF+8Tkt7
- vgtkQBhPrlY+1SCFM1Fy1IZ0oHzA11jrwGHJbbRT3B1WteQOnlJ57Vrcg8k6ba94iWgrZgz
- 73PzqeKdu2NFEAbwstfNw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:A1//LMqVrBI=:gvszn0LTXAZzyTbkRvC9h3
- y7ELRkA+DvbQxZweQIxHIq9T3y80fbAryfri4HXD5MIfyncO826GemAXuW64tproo5O9yOFte
- cEqhZWbYjz8M7XFfFnETm6kWHjex3ls4WqkDgwauAjl98wqwA6IdnLzYkqMEGU9hc+0RwbaWC
- 0cydLpr4cRdBDzvfOJerpE5/7oMJDR5ZQCiiUCB6HaaQ7+H2jJNMlPKd/PRCscnoWqvqOJFM/
- kOkSw/YRVI7QK2R5teuZpzjIekdqWYXMQz8E6RkehWZ7ODZyB/H9gqNfQeNTlBr03/Voo29aE
- jnLG3Qxdr75wL2RLzzlfi1WoFXzPoE1VIHSCJ7SnvxbcyGrsky07hY7W2TubOzY+E9ELHBk6M
- 7W/bL4eycX/bNzKPrvFfKSMeGIK8iSxKN22CtQ7dOa5rJb16eec+mzCZmIcbq4+dUGh17RAML
- KnWFzBMqJDz3+Gd2rFojwSPluD1tZ5WJ14KquuBMDRvmOPKBOQGV3pgaOOOvV4zF3msn7P8YE
- girAtbtVbtxG4sguh+EaDb0LG9k/Df+QSjVtATA7T22UX3mkLGm7N8s64i2G2njbsw+Wbo/hT
- EJEfby6/6YWvc22SLF71iKCndSH5qiedtG1PrHEN33Ztqso121wPCemdyIC5+OMZFY6r23KDc
- nrIZxgg+OY3YRmJUBnTnosI1CFbKvYTuEqbh9qUXFb9wwO1GMzlhKLQajhRiEg3kwEaP9/+HS
- Y+h/kTwXJBHnSmpL5dUmkdZl2xtz0VdB2w5nNnz1t0X6eH3XI3BZgCcQKycwsiYiEzuSW2Ezu
- TAQ/+BX7f1HNdzRmw9qEydtJ1x9GdpSLwo+kQqc6VThVdE7DQrn/7rc4ktJXly688uGJbJT9o
- 689l29WT0nhN6GjRk8YUhzPC0amanDY8onq/8PKf4tHyRCrolLoDzVEEJ6sLltYLt6E8/agTL
- y98TCP7kyO4eKi6jYwaQVcsE2/VKDjkrMOlQlEORQQ/8VQKRWYRaBHUG3cbQ9yYG8RSo68+I6
- dTEDrcVV6oefWGtyiWEdmk1DJVqrksrLFpC3v/t3Ij0M0GheKCmQlcSiSJZmNHXCOoq7xSYDK
- sT2xTWIJSUpmKA=
+In-Reply-To: <cafecbeb-7d4d-489c-177d-29fff78eb4d1@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As noted in the "Deprecated Interfaces, Language Features, Attributes,
-and Conventions" documentation [1], size calculations (especially
-multiplication) should not be performed in memory allocator (or similar)
-function arguments due to the risk of them overflowing. This could lead
-to values wrapping around and a smaller allocation being made than the
-caller was expecting. Using those allocations could lead to linear
-overflows of heap memory and other misbehaviors.
 
-So, use the struct_size() helper to do the arithmetic instead of the
-argument "size + count * size" in the kzalloc() functions.
 
-Also, take the opportunity to refactor the memcpy() call to use the
-flex_array_size() helper.
+On 9/25/21 4:57 AM, David Ahern wrote:
+> On 9/21/21 10:14 AM, Leonard Crestez wrote:
+>> This is mainly intended to protect against local privilege escalations
+>> through a rarely used feature so it is deliberately not namespaced.
+>>
+>> Enforcement is only at the setsockopt level, this should be enough to
+>> ensure that the tcp_authopt_needed static key never turns on.
+>>
+>> No effort is made to handle disabling when the feature is already in
+>> use.
+>>
+> 
+> MD5 does not require a sysctl to use it, so why should this auth mechanism?
 
-This code was detected with the help of Coccinelle and audited and fixed
-manually.
+I think it would make sense for both these features to be off by 
+default. They interact with TCP in complex ways and are available to all 
+unprivileged users but their real usecases are actually very limited.
 
-[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#open-co=
-ded-arithmetic-in-allocator-arguments
+Having to flip a few sysctls is very reasonable in the context of 
+setting up a router.
 
-Signed-off-by: Len Baker <len.baker@gmx.com>
-=2D--
-Changelog v1 -> v2
-- Rebase against v5.15-rc2
-- Remove the unnecessary "size" variable (Gustavo A. R. Silva).
-- Update the commit changelog to inform that this code was detected
-  using a Coccinelle script (Gustavo A. R. Silva).
+My concern is that this feature ends up in distro kernels and somebody 
+finds a way to use it for privilege escalation.
 
- net/wireless/nl80211.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+It also seems reasonable for "experimental" features to be off by default.
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index bf7cd4752547..fa7ff61c5b07 100644
-=2D-- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -11767,8 +11767,8 @@ static int nl80211_set_cqm_rssi(struct genl_info *=
-info,
- 	if (n_thresholds) {
- 		struct cfg80211_cqm_config *cqm_config;
-
--		cqm_config =3D kzalloc(sizeof(struct cfg80211_cqm_config) +
--				     n_thresholds * sizeof(s32), GFP_KERNEL);
-+		cqm_config =3D kzalloc(struct_size(cqm_config, rssi_thresholds,
-+						 n_thresholds), GFP_KERNEL);
- 		if (!cqm_config) {
- 			err =3D -ENOMEM;
- 			goto unlock;
-@@ -11777,7 +11777,8 @@ static int nl80211_set_cqm_rssi(struct genl_info *=
-info,
- 		cqm_config->rssi_hyst =3D hysteresis;
- 		cqm_config->n_rssi_thresholds =3D n_thresholds;
- 		memcpy(cqm_config->rssi_thresholds, thresholds,
--		       n_thresholds * sizeof(s32));
-+		       flex_array_size(cqm_config, rssi_thresholds,
-+				       n_thresholds));
-
- 		wdev->cqm_config =3D cqm_config;
- 	}
-@@ -15081,9 +15082,7 @@ static int nl80211_set_sar_specs(struct sk_buff *s=
-kb, struct genl_info *info)
- 	if (specs > rdev->wiphy.sar_capa->num_freq_ranges)
- 		return -EINVAL;
-
--	sar_spec =3D kzalloc(sizeof(*sar_spec) +
--			   specs * sizeof(struct cfg80211_sar_sub_specs),
--			   GFP_KERNEL);
-+	sar_spec =3D kzalloc(struct_size(sar_spec, sub_specs, specs), GFP_KERNEL=
-);
- 	if (!sar_spec)
- 		return -ENOMEM;
-
-=2D-
-2.25.1
-
+--
+Regards,
+Leonard
