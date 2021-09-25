@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 902BB418165
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:24:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50FA341815B
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:23:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245389AbhIYLZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 07:25:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56160 "EHLO mail.kernel.org"
+        id S245205AbhIYLZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 07:25:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55944 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244871AbhIYLZI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 07:25:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 17AC6610F7;
-        Sat, 25 Sep 2021 11:23:33 +0000 (UTC)
+        id S244930AbhIYLZB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 07:25:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 42CC86127A;
+        Sat, 25 Sep 2021 11:23:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632569014;
-        bh=l4ubO1iNO/eKHGDuYjGRafB4EwpXo5nxoxsjU5XAGKM=;
+        s=k20201202; t=1632569007;
+        bh=1Fnka8ps90Zylh+ydNx/A5aVv/Vtl8oI7QwGTBkxA5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ssn8r6T5ipfBUV1Bjq6AnhfL44IZyOMHmXeWU6/9hH1lTVCmQSiosocc/kJUbkg7Y
-         2ibqp53ysp4VfOvt0pQcVBcLBGi1uwBdc2dShLgM8OithU5F704lKTB7QVpgQDEKjC
-         xmoGjPqQuCIbs+A8gi2Xn5lorLDn3A7B3youjreW56czvxw13U73pZkmuVqZ04sCkz
-         ypZ5JISMkGCifzna5/Lo6ceMPQIjL0Wz/NZvKz7rozYwHq/LYCRWlYsOvw9BeKhkIu
-         yaZ08tgzL9k1IR8iSCJU4gK9wHDjHmylgObF4TNSoK+AUmkpzkf0/PSGQeyQ4+p2pj
-         19gPtbN90X9aw==
+        b=X/RREPSk0+dMrPt2ZhjQQE6yWhqRdBVusehpcFG2nS6PEjbiY1fkQqX5oNJSMq6l5
+         yjJHliByFUAzg3jr1HOGac7gBEFipVghPyyQg9UeqRZ6xTZNalYQP1kQwNu/Z9fJku
+         wz+Kh+NytJ1mpAo0fdujHFCyIeaORwISRAF3E4zwXEYSLUBkgFAZB3Pnibo5cQe+u+
+         IgLybrtUtt3EoigRgqXbOnGBmFH/Y9BTAnrnZ08U/ssToKdsANp9vwBxfjjrLs0KTm
+         cYvnLTAcsp65QzrliUDhNGLpg4GHwdwUF941D188Ic+EeR3yVitlX/9vcpDTRug49/
+         KqJEz5/5w/lAQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -70,9 +70,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v1 06/21] ice: Open devlink when device is ready
-Date:   Sat, 25 Sep 2021 14:22:46 +0300
-Message-Id: <23884bb7be2cc08ae00c551a6bb7d200a75b5117.1632565508.git.leonro@nvidia.com>
+Subject: [PATCH net-next v1 07/21] octeontx2: Move devlink registration to be last devlink command
+Date:   Sat, 25 Sep 2021 14:22:47 +0300
+Message-Id: <c711bbd0519dfdf3d28141cf9aa159d05f94aab7.1632565508.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1632565508.git.leonro@nvidia.com>
 References: <cover.1632565508.git.leonro@nvidia.com>
@@ -84,59 +84,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Move devlink_registration routine to be the last command, when the
-device is fully initialized.
+This change prevents from users to access device before devlink is fully
+configured. This change allows us to delete call to devlink_params_publish()
+and impossible check during unregister flow.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ .../ethernet/marvell/octeontx2/af/rvu_devlink.c   | 10 ++--------
+ .../ethernet/marvell/octeontx2/nic/otx2_devlink.c | 15 +++------------
+ 2 files changed, 5 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index aacc0b345bbe..627adf8fb89d 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4258,8 +4258,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 
- 	pf->msg_enable = netif_msg_init(debug, ICE_DFLT_NETIF_M);
- 
--	ice_devlink_register(pf);
--
- #ifndef CONFIG_DYNAMIC_DEBUG
- 	if (debug < -1)
- 		hw->debug_mask = debug;
-@@ -4493,6 +4491,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 		dev_warn(dev, "RDMA is not supported on this device\n");
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+index de9562acd04b..70bacd38a6d9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+@@ -1510,7 +1510,6 @@ int rvu_register_dl(struct rvu *rvu)
+ 		return -ENOMEM;
  	}
  
-+	ice_devlink_register(pf);
+-	devlink_register(dl);
+ 	rvu_dl = devlink_priv(dl);
+ 	rvu_dl->dl = dl;
+ 	rvu_dl->rvu = rvu;
+@@ -1531,13 +1530,11 @@ int rvu_register_dl(struct rvu *rvu)
+ 		goto err_dl_health;
+ 	}
+ 
+-	devlink_params_publish(dl);
+-
++	devlink_register(dl);
  	return 0;
  
- err_init_aux_unroll:
-@@ -4516,7 +4515,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 	ice_devlink_destroy_regions(pf);
- 	ice_deinit_hw(hw);
- err_exit_unroll:
--	ice_devlink_unregister(pf);
- 	pci_disable_pcie_error_reporting(pdev);
- 	pci_disable_device(pdev);
+ err_dl_health:
+ 	rvu_health_reporters_destroy(rvu);
+-	devlink_unregister(dl);
+ 	devlink_free(dl);
  	return err;
-@@ -4593,6 +4591,7 @@ static void ice_remove(struct pci_dev *pdev)
- 	struct ice_pf *pf = pci_get_drvdata(pdev);
- 	int i;
+ }
+@@ -1547,12 +1544,9 @@ void rvu_unregister_dl(struct rvu *rvu)
+ 	struct rvu_devlink *rvu_dl = rvu->rvu_dl;
+ 	struct devlink *dl = rvu_dl->dl;
  
-+	ice_devlink_unregister(pf);
- 	for (i = 0; i < ICE_MAX_RESET_WAIT; i++) {
- 		if (!ice_is_reset_in_progress(pf->state))
- 			break;
-@@ -4629,7 +4628,6 @@ static void ice_remove(struct pci_dev *pdev)
- 	ice_deinit_pf(pf);
- 	ice_devlink_destroy_regions(pf);
- 	ice_deinit_hw(&pf->hw);
--	ice_devlink_unregister(pf);
+-	if (!dl)
+-		return;
+-
++	devlink_unregister(dl);
+ 	devlink_params_unregister(dl, rvu_af_dl_params,
+ 				  ARRAY_SIZE(rvu_af_dl_params));
+ 	rvu_health_reporters_destroy(rvu);
+-	devlink_unregister(dl);
+ 	devlink_free(dl);
+ }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
+index 3de18f9433ae..777a27047c8e 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
+@@ -108,7 +108,6 @@ int otx2_register_dl(struct otx2_nic *pfvf)
+ 		return -ENOMEM;
+ 	}
  
- 	/* Issue a PFR as part of the prescribed driver unload flow.  Do not
- 	 * do it via ice_schedule_reset() since there is no need to rebuild
+-	devlink_register(dl);
+ 	otx2_dl = devlink_priv(dl);
+ 	otx2_dl->dl = dl;
+ 	otx2_dl->pfvf = pfvf;
+@@ -122,12 +121,10 @@ int otx2_register_dl(struct otx2_nic *pfvf)
+ 		goto err_dl;
+ 	}
+ 
+-	devlink_params_publish(dl);
+-
++	devlink_register(dl);
+ 	return 0;
+ 
+ err_dl:
+-	devlink_unregister(dl);
+ 	devlink_free(dl);
+ 	return err;
+ }
+@@ -135,16 +132,10 @@ int otx2_register_dl(struct otx2_nic *pfvf)
+ void otx2_unregister_dl(struct otx2_nic *pfvf)
+ {
+ 	struct otx2_devlink *otx2_dl = pfvf->dl;
+-	struct devlink *dl;
+-
+-	if (!otx2_dl || !otx2_dl->dl)
+-		return;
+-
+-	dl = otx2_dl->dl;
++	struct devlink *dl = otx2_dl->dl;
+ 
++	devlink_unregister(dl);
+ 	devlink_params_unregister(dl, otx2_dl_params,
+ 				  ARRAY_SIZE(otx2_dl_params));
+-
+-	devlink_unregister(dl);
+ 	devlink_free(dl);
+ }
 -- 
 2.31.1
 
