@@ -2,152 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B4B24181A1
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:25:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9FEE4181B1
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:41:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343931AbhIYL01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 07:26:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57524 "EHLO mail.kernel.org"
+        id S244687AbhIYLnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 07:43:02 -0400
+Received: from mail.kotidze.in ([185.117.119.164]:35226 "EHLO mail.kotidze.in"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244756AbhIYLZx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 07:25:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D1B0761352;
-        Sat, 25 Sep 2021 11:24:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632569058;
-        bh=iRLV6v3e7JYAyZzq3uX24jBWmOHmWur2DvK8Vt/2i+0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pR22exCjUS7YCkjkCvD8Rnb9sosGeBFWlArr/YA3QFWWrtyauBEi7+Tuhqd4afoJR
-         eRUaq5hWn2OMw9LPTV8rZEfeRlENaJNpc2E4GJnYKmRa7zvr8b5JTcEqZmvEYOvhf/
-         2YLSW8fytAdZTjkgmt/8HJ/SHvzIf7/eRAOikZt9Oa1UDm8a+EloI0pZzg2GkXLWp/
-         kbdu3Un5+qwR8prVYLnTt23VXb+LJjt7pgc76zL+oyZsh181Sb/7IqLOeqFUK9InuA
-         voqdYkfrjahsfJjF/DzkF/YIBNWKLGBMyC3/4eZXseBdGBO3ITOoLCyUVllM0CXPr8
-         8zF7KKkx596zg==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        hariprasad <hkelam@marvell.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Manish Chopra <manishc@marvell.com>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Simon Horman <simon.horman@corigine.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v1 21/21] net: dsa: Move devlink registration to be last devlink command
-Date:   Sat, 25 Sep 2021 14:23:01 +0300
-Message-Id: <66dd7979b44ac307711c382054f428f9287666a8.1632565508.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1632565508.git.leonro@nvidia.com>
-References: <cover.1632565508.git.leonro@nvidia.com>
+        id S238011AbhIYLnA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 07:43:00 -0400
+X-Greylist: delayed 538 seconds by postgrey-1.27 at vger.kernel.org; Sat, 25 Sep 2021 07:43:00 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vodka.home.kg;
+        s=vodka; t=1632569546;
+        bh=AiokuuoBMYrFsZjowcjSkgFl0nTv/A+t/ymFZiuMMpY=;
+        h=Date:From:To:Subject:From;
+        b=mJOpugoE20yMbCbH4pjoL2vpLkE2x0E/EYPz3BRwl+n+HohvxfeyU277TUNd2EfgQ
+         NnoomdHeYP2yA1Fe2/Jcf30pomCZvKWu3ZLFuIVhym84CyNCnCu2px5LUhX+X690Me
+         FJWUpANTkuxVmU0kHH0GO5uHI+kZkcuvYGN2FYnw=
+Date:   Sat, 25 Sep 2021 14:32:16 +0300
+From:   k@vodka.home.kg
+Message-ID: <1110422272.20210925143216@vodka.home.kg>
+To:     Felix Fietkau <nbd@openwrt.org>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org
+Subject: [MEDIATEK ETHERNET DRIVER] initialization failure on low ram systems
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Hi !
 
-This change prevents from users to access device before devlink
-is fully configured.
+I'm using openwrt 21.02 kernel 5.4.143 on Tp-link c6u device
+It's MT7621DAT based board with 128 MB RAM :
+https://openwrt.org/toh/hwdata/tp-link/tp-link_archer_c6u_v1_eu
+https://wikidevi.wi-cat.ru/MediaTek_MT7621
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- net/dsa/dsa2.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+I found that sometimes during network restart when mediatek chip gets reini=
+tialized
+kernel memory allocation fails and switch ports become unusable (some or al=
+l)
+leading to loss of ethernet access to the router
+ethtool reports no link
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index a020339e1973..8ca6a1170c9d 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -848,7 +848,6 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 	dl_priv = devlink_priv(ds->devlink);
- 	dl_priv->ds = ds;
- 
--	devlink_register(ds->devlink);
- 	/* Setup devlink port instances now, so that the switch
- 	 * setup() can register regions etc, against the ports
- 	 */
-@@ -874,8 +873,6 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 	if (err)
- 		goto teardown;
- 
--	devlink_params_publish(ds->devlink);
--
- 	if (!ds->slave_mii_bus && ds->ops->phy_read) {
- 		ds->slave_mii_bus = mdiobus_alloc();
- 		if (!ds->slave_mii_bus) {
-@@ -891,7 +888,7 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 	}
- 
- 	ds->setup = true;
--
-+	devlink_register(ds->devlink);
- 	return 0;
- 
- free_slave_mii_bus:
-@@ -906,7 +903,6 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 	list_for_each_entry(dp, &ds->dst->ports, list)
- 		if (dp->ds == ds)
- 			dsa_port_devlink_teardown(dp);
--	devlink_unregister(ds->devlink);
- 	devlink_free(ds->devlink);
- 	ds->devlink = NULL;
- 	return err;
-@@ -919,6 +915,9 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
- 	if (!ds->setup)
- 		return;
- 
-+	if (ds->devlink)
-+		devlink_unregister(ds->devlink);
-+
- 	if (ds->slave_mii_bus && ds->ops->phy_read) {
- 		mdiobus_unregister(ds->slave_mii_bus);
- 		mdiobus_free(ds->slave_mii_bus);
-@@ -934,7 +933,6 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
- 		list_for_each_entry(dp, &ds->dst->ports, list)
- 			if (dp->ds == ds)
- 				dsa_port_devlink_teardown(dp);
--		devlink_unregister(ds->devlink);
- 		devlink_free(ds->devlink);
- 		ds->devlink = NULL;
- 	}
--- 
-2.31.1
+Here is the kernel log :
+
+[10389.945893] netifd: page allocation failure: order:8, mode:0x40dc0(GFP_K=
+ERNEL|__GFP_COMP|__GFP_ZERO), nodemask=3D(null),cpuset=3D/,mems_allowed=3D0
+[10389.958689] CPU: 1 PID: 20444 Comm: netifd Not tainted 5.4.143 #0
+[10389.964763] Stack : 00000008 80082090 00000000 00000000 80730000 80738c9=
+c 80737960 86815b7c
+[10389.973104]         808f0000 80784da3 806b7a74 806b7a74 00000001 0000000=
+1 86815b20 00000007
+[10389.981438]         00000000 00000000 80930000 00000000 30232033 000018a=
+1 2e352064 34312e34
+[10389.989771]         00000000 00000204 00000000 000ea0e1 80000000 807a000=
+0 00000000 00040dc0
+[10389.998104]         807a0000 00000201 00000240 00040dc0 00000000 80381e0=
+8 00000004 808f0004
+[10390.006439]         ...
+[10390.008879] Call Trace:
+[10390.011344] [<8000b68c>] show_stack+0x30/0x100
+[10390.015800] [<805f1254>] dump_stack+0xa4/0xdc
+[10390.020167] [<80170c90>] warn_alloc+0xc0/0x138
+[10390.024602] [<80171af4>] __alloc_pages_nodemask+0xdec/0xeb8
+[10390.030161] [<8014bfb8>] kmalloc_order+0x2c/0x70
+[10390.034778] [<8040807c>] mtk_open+0x158/0x804
+[10390.039127] [<8045d5e4>] __dev_open+0xf4/0x188
+[10390.043559] [<8045da44>] __dev_change_flags+0x18c/0x1e4
+[10390.048768] [<8045dac4>] dev_change_flags+0x28/0x70
+[10390.053637] [<8048a364>] dev_ifsioc+0x2ac/0x34c
+[10390.058155] [<8048a5f0>] dev_ioctl+0xd4/0x3f8
+[10390.062510] [<804304ec>] sock_ioctl+0x354/0x4bc
+[10390.067040] [<801adbb4>] do_vfs_ioctl+0xb8/0x7c0
+[10390.071645] [<801ae30c>] ksys_ioctl+0x50/0xb4
+[10390.076000] [<80014598>] syscall_common+0x34/0x58
+[10390.080969] Mem-Info:
+[10390.083314] active_anon:6858 inactive_anon:6892 isolated_anon:32
+[10390.083314]  active_file:733 inactive_file:741 isolated_file:1
+[10390.083314]  unevictable:2 dirty:0 writeback:0 unstable:0
+[10390.083314]  slab_reclaimable:921 slab_unreclaimable:5251
+[10390.083314]  mapped:1082 shmem:0 pagetables:215 bounce:0
+[10390.083314]  free:3817 free_pcp:32 free_cma:0
+[10390.115576] Node 0 active_anon:27432kB inactive_anon:27848kB active_file=
+:2988kB inactive_file:3468kB unevictable:8kB isolated(anon):128kB isolated(=
+file):4kB mapped:4776kB dirty:0kB writeback:0kB shmem:0kB writeback_tmp:0kB=
+ unstable:0kB all_unreclaimable? no
+[10390.138417] Normal free:13876kB min:13312kB low:14336kB high:15360kB act=
+ive_anon:27432kB inactive_anon:27760kB active_file:2808kB inactive_file:350=
+8kB unevictable:8kB writepending:0kB present:131072kB managed:121444kB mloc=
+ked:8kB kernel_stack:1064kB pagetables:860kB bounce:0kB free_pcp:76kB local=
+_pcp:0kB free_cma:0kB
+
+
+I traced where alloc fails and found 1 MB memory allocation=20
+
+mtk_eth_soc.c  mtk_open()
+err =3D mtk_start_dma(eth); // err=3D-ENOMEM
+err =3D mtk_dma_init(eth); // err=3D-ENOMEM
+err =3D mtk_init_fq_dma(eth); // err=3D-ENOMEM
+eth->scratch_head =3D kcalloc(cnt, MTK_QDMA_PAGE_SIZE, GFP_KERNEL); // cnt=
+=3D512, MT_QDMA_PAGE_SIZE=3D2048. allocating 1 MB, *FAILS HERE*
+
+
+To reproduce I put the system to memory pressure condition using
+screen nice -n 10 stress --vm 1 --vm-bytes 71000000
+and then restart the chip : /etc/init.d/network restart
+Even after killing stress network restart often does not help to restore LA=
+N access
+
+From=20my point of view it's not a good idea to allocate large contiguous m=
+emory pieces in linux kernel
+on low RAM systems which most of the routers are. Free kernel memory may be=
+come fragmented.
+I tried decreaseing MTK_DMA_SIZE from 512 to 128 and it helped but not 100%
+MTK_DMA_SIZE=3D64 makes network unstable
 
