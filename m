@@ -2,110 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84CE24180F8
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 12:10:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41AA7418117
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 12:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244119AbhIYKMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 06:12:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34904 "EHLO mail.kernel.org"
+        id S244454AbhIYKlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 06:41:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43656 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235805AbhIYKMS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 06:12:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D64C7610C9;
-        Sat, 25 Sep 2021 10:10:42 +0000 (UTC)
+        id S237469AbhIYKln (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 06:41:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 617B161041;
+        Sat, 25 Sep 2021 10:40:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632564643;
-        bh=7g5nUt6S+63DfyoI33cOS6neqOn00oZEYSazRW7icKM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=e87ZqnKl688T/SQGcH9+jwjV014Tulyt7Hb3OxSjdxnCIm7oEZ/EpJ73lS0FYFky+
-         w/MwitlU/UyQB3xXw7YZVKNcVS1KmP9X01uvgwDkuwXB3yUvmCneQ2EumdVqaGD+I7
-         oibmJ1i0v7DyUubmNeADkZerUZmsr3tXNZMwt0s8MRMAeW7hHPrw4A+cQuh+Lqyp70
-         RjO6S23V10pYJOBLZ5Kht/XmdgA0nn9Dt2OR+EqVL/1QjYUirI/PZ/Zx+ct6/4fNyT
-         QALmldECZr9nyTMlqDDYKWOytn11twX33WlFOnstjzbJUB9Lv9EIXUppsidnGUqccs
-         g6W9kC9yAb3ew==
-Date:   Sat, 25 Sep 2021 13:10:39 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>
-Subject: Re: [PATCH mlx5-next 1/7] PCI/IOV: Provide internal VF index
-Message-ID: <YU71n4WSIztOdpbw@unreal>
-References: <YUwgNPL++APsFJ49@unreal>
- <20210924130845.GA410176@bhelgaas>
+        s=k20201202; t=1632566409;
+        bh=KdXe+7JL4i+wsQItX1IQqBsoUnBXaxZp3DQjAStl/s0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OUanBE/Uc16M/9j/KyRNgyVy/pdmUcariZHH7uVjJCR8o43I0IE9LEn/c+OGIRDAh
+         mPvqtu/Q4jur41YKSxmaiDErPHZz62NNc0q/e9dKlFKUr0cy6pSsf+wNcRzlDfVuvg
+         9AmZMHTSHXqDBJIee/3yzDn8GmHOTX7GaMuT1MEQtA8c9EyhHu7ILRU7J7JML53Iv3
+         eCXIEYD0I3pYv0OyI5CTPBmk3c+WsK7bmMYbgLRwFGu5c8M/ekI0sfvNFh7xCmIYl4
+         fXeSbFuVKUR81WIR/37VnqZ94ZSFCHgjxl5aQB0mdigXOzZ88F4vtrJG9d4VTdfjb6
+         rxf51T/z+tuxg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 58B7560989;
+        Sat, 25 Sep 2021 10:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210924130845.GA410176@bhelgaas>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/5] mptcp: Miscellaneous fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163256640935.24365.17356076433637422358.git-patchwork-notify@kernel.org>
+Date:   Sat, 25 Sep 2021 10:40:09 +0000
+References: <20210924211238.162509-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20210924211238.162509-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
+        pabeni@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 24, 2021 at 08:08:45AM -0500, Bjorn Helgaas wrote:
-> On Thu, Sep 23, 2021 at 09:35:32AM +0300, Leon Romanovsky wrote:
-> > On Wed, Sep 22, 2021 at 04:59:30PM -0500, Bjorn Helgaas wrote:
-> > > On Wed, Sep 22, 2021 at 01:38:50PM +0300, Leon Romanovsky wrote:
-> > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > 
-> > > > The PCI core uses the VF index internally, often called the vf_id,
-> > > > during the setup of the VF, eg pci_iov_add_virtfn().
-> > > > 
-> > > > This index is needed for device drivers that implement live migration
-> > > > for their internal operations that configure/control their VFs.
-> > > >
-> > > > Specifically, mlx5_vfio_pci driver that is introduced in coming patches
-> > > > from this series needs it and not the bus/device/function which is
-> > > > exposed today.
-> > > > 
-> > > > Add pci_iov_vf_id() which computes the vf_id by reversing the math that
-> > > > was used to create the bus/device/function.
-> > > > 
-> > > > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> > > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > 
-> > > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> > > 
-> > > mlx5_core_sriov_set_msix_vec_count() looks like it does basically the
-> > > same thing as pci_iov_vf_id() by iterating through VFs until it finds
-> > > one with a matching devfn (although it *doesn't* check for a matching
-> > > bus number, which seems like a bug).
-> > > 
-> > > Maybe that should use pci_iov_vf_id()?
-> > 
-> > Yes, I gave same comment internally and we decided to simply reduce the
-> > amount of changes in mlx5_core to have less distractions and submit as a
-> > followup. Most likely will add this hunk in v1.
+Hello:
+
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Fri, 24 Sep 2021 14:12:33 -0700 you wrote:
+> Here are five changes we've collected and tested in the mptcp-tree:
 > 
-> I guess it backfired as far as reducing distractions, because now it
-> just looks like a job half-done.
-
-Partially :)
-I didn't expect to see acceptance of this series in v0, we wanted to
-gather feedback as early as possible.
-
+> Patch 1 changes handling of the MPTCP-level snd_next value during the
+> recovery phase after a subflow link failure.
 > 
-> And it still looks like the existing code is buggy.  This is called
-> via sysfs, so if the PF is on bus X and the user writes to
-> sriov_vf_msix_count for a VF on bus X+1, it looks like
-> mlx5_core_sriov_set_msix_vec_count() will set the count for the wrong
-> VF.
-
-In mlx5_core_sriov_set_msix_vec_count(), we receive VF that is connected
-to PF which has "struct mlx5_core_dev". My expectation is that they share
-same bus as that PF was the one who created VFs. The mlx5 devices supports
-upto 256 VFs and it is far below the bus split mentioned in PCI spec.
-
-How can VF and their respective PF have different bus numbers?
-
-Thanks
-
+> Patches 2 and 3 are some small refactoring changes to replace some
+> open-coded bits.
 > 
-> Bjorn
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/5] mptcp: do not shrink snd_nxt when recovering
+    https://git.kernel.org/netdev/net-next/c/0d199e4363b4
+  - [net-next,2/5] mptcp: use OPTIONS_MPTCP_MPC
+    https://git.kernel.org/netdev/net-next/c/13ac17a32bf1
+  - [net-next,3/5] mptcp: use lockdep_assert_held_once() instead of open-coding it
+    https://git.kernel.org/netdev/net-next/c/765ff425528f
+  - [net-next,4/5] mptcp: remove tx_pending_data
+    https://git.kernel.org/netdev/net-next/c/9e65b6a5aaa3
+  - [net-next,5/5] mptcp: re-arm retransmit timer if data is pending
+    https://git.kernel.org/netdev/net-next/c/3241a9c02934
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
