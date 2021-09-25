@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C8C1418186
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:25:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0141941817D
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:24:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343732AbhIYL0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 07:26:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56278 "EHLO mail.kernel.org"
+        id S1343630AbhIYLZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 07:25:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56594 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245431AbhIYLZ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 07:25:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 291B1610F7;
-        Sat, 25 Sep 2021 11:23:54 +0000 (UTC)
+        id S245343AbhIYLZW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 07:25:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4D4856128B;
+        Sat, 25 Sep 2021 11:23:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632569035;
-        bh=8KdGOHxpJSC+PZ1rdlS7MYCY0+1MQwiYwEoCEiKpnEA=;
+        s=k20201202; t=1632569028;
+        bh=PMH85H5qipZOBKpjQUuS38xXXX8zD2iZVNUxRrzSq2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CK0GxpGxVjLr6RMM+yLXjKxbrpzgr1NnmO2ZnSXdEbzjFggId6zMbRa/xFtmvhjFN
-         mHKRHmRMWTn5ChvHLRZTYU+N7Q7pLuOMUtwQ6zn+pKMvS8zUMFcJGA2UcdEV1Fi8wM
-         +c4uZH2zSGoVvfTMbgqPCMGxTnbFCubhs5kpa1HJVcrcL7pJP3UkPHw4dGdT6rOHzZ
-         vWEjzOs1we9xOVQARO7alLjH6+/uytOgF3T8gLYPv/+La5k7Rs8Jacrqio9f7L7JMT
-         bxer9M0yfSRvZLSv+yTlkpTRGW7BuRn3qYcG2CV5E719HbqtOGSCHbvHuDasNw5RTr
-         DWyTQ/DNs4W6Q==
+        b=bl6F2XX2QrtGJ/goSxrWiZ4kTfaDRalUW+JX64R4+f5tX2MkVbudqMboMu4+2r17G
+         9ypRSr6/TbxTX5ORpt0WdmEFf4Q9lTCPiz+FKtPuz9OazWtk3RxYg4dOQIG3qJItpb
+         pbsdhwETQqV8zGIh6DTOueiiB6dX2qdXhef22O55T8LHb5HQ/oDZd4nwPrZj/bqO7m
+         JhHZtPN0ApEbgjNw6XG7w2GgfEOi/wJOq/MBu65oKBl7Ftd6PTsLr9J/BfEnVlCops
+         Kpqi2qjOoxhp/Ux5Aml2oWUSJR2F3fXuK8NnJcOU5kQF7HvO859ztbO8XzHL22qlxH
+         S0xx6v652WI1Q==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -70,9 +70,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v1 12/21] net: mscc: ocelot: delay devlink registration to the end
-Date:   Sat, 25 Sep 2021 14:22:52 +0300
-Message-Id: <6c20043398a8543fb69795be5ab1e200613fb881.1632565508.git.leonro@nvidia.com>
+Subject: [PATCH net-next v1 13/21] nfp: Move delink_register to be last command
+Date:   Sat, 25 Sep 2021 14:22:53 +0300
+Message-Id: <f393212ad3906808ee7eb5cff06ef2e053eb9d2b.1632565508.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1632565508.git.leonro@nvidia.com>
 References: <cover.1632565508.git.leonro@nvidia.com>
@@ -84,54 +84,78 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Open access to the devlink interface when the driver fully initialized.
+Open user space access to the devlink after driver is probed.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/netronome/nfp/devlink_param.c | 9 ++-------
+ drivers/net/ethernet/netronome/nfp/nfp_net_main.c  | 5 ++---
+ 2 files changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 2b8ea48d2fc4..5d01993f6be0 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -1134,7 +1134,6 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+diff --git a/drivers/net/ethernet/netronome/nfp/devlink_param.c b/drivers/net/ethernet/netronome/nfp/devlink_param.c
+index 36491835ac65..db297ee4d7ad 100644
+--- a/drivers/net/ethernet/netronome/nfp/devlink_param.c
++++ b/drivers/net/ethernet/netronome/nfp/devlink_param.c
+@@ -233,13 +233,8 @@ int nfp_devlink_params_register(struct nfp_pf *pf)
+ 	if (err <= 0)
+ 		return err;
+ 
+-	err = devlink_params_register(devlink, nfp_devlink_params,
+-				      ARRAY_SIZE(nfp_devlink_params));
+-	if (err)
+-		return err;
+-
+-	devlink_params_publish(devlink);
+-	return 0;
++	return devlink_params_register(devlink, nfp_devlink_params,
++				       ARRAY_SIZE(nfp_devlink_params));
+ }
+ 
+ void nfp_devlink_params_unregister(struct nfp_pf *pf)
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
+index 616872928ada..5fbb7c613ff1 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
+@@ -701,7 +701,6 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
  	if (err)
- 		goto out_put_ports;
+ 		goto err_unmap;
  
 -	devlink_register(devlink);
- 	err = mscc_ocelot_init_ports(pdev, ports);
+ 	err = nfp_shared_buf_register(pf);
  	if (err)
- 		goto out_ocelot_devlink_unregister;
-@@ -1157,6 +1156,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 	register_switchdev_blocking_notifier(&ocelot_switchdev_blocking_nb);
+ 		goto err_devlink_unreg;
+@@ -731,6 +730,7 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
+ 		goto err_stop_app;
  
- 	of_node_put(ports);
+ 	mutex_unlock(&pf->lock);
 +	devlink_register(devlink);
  
- 	dev_info(&pdev->dev, "Ocelot switch probed\n");
+ 	return 0;
  
-@@ -1166,7 +1166,6 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 	mscc_ocelot_release_ports(ocelot);
- 	mscc_ocelot_teardown_devlink_ports(ocelot);
- out_ocelot_devlink_unregister:
+@@ -748,7 +748,6 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
+ 	nfp_shared_buf_unregister(pf);
+ err_devlink_unreg:
+ 	cancel_work_sync(&pf->port_refresh_work);
 -	devlink_unregister(devlink);
- 	ocelot_deinit(ocelot);
- out_put_ports:
- 	of_node_put(ports);
-@@ -1179,11 +1178,11 @@ static int mscc_ocelot_remove(struct platform_device *pdev)
+ 	nfp_net_pf_app_clean(pf);
+ err_unmap:
+ 	nfp_net_pci_unmap_mem(pf);
+@@ -759,6 +758,7 @@ void nfp_net_pci_remove(struct nfp_pf *pf)
  {
- 	struct ocelot *ocelot = platform_get_drvdata(pdev);
+ 	struct nfp_net *nn, *next;
  
-+	devlink_unregister(ocelot->devlink);
- 	ocelot_deinit_timestamp(ocelot);
- 	ocelot_devlink_sb_unregister(ocelot);
- 	mscc_ocelot_release_ports(ocelot);
- 	mscc_ocelot_teardown_devlink_ports(ocelot);
--	devlink_unregister(ocelot->devlink);
- 	ocelot_deinit(ocelot);
- 	unregister_switchdev_blocking_notifier(&ocelot_switchdev_blocking_nb);
- 	unregister_switchdev_notifier(&ocelot_switchdev_nb);
++	devlink_unregister(priv_to_devlink(pf));
+ 	mutex_lock(&pf->lock);
+ 	list_for_each_entry_safe(nn, next, &pf->vnics, vnic_list) {
+ 		if (!nfp_net_is_data_vnic(nn))
+@@ -775,7 +775,6 @@ void nfp_net_pci_remove(struct nfp_pf *pf)
+ 
+ 	nfp_devlink_params_unregister(pf);
+ 	nfp_shared_buf_unregister(pf);
+-	devlink_unregister(priv_to_devlink(pf));
+ 
+ 	nfp_net_pf_free_irqs(pf);
+ 	nfp_net_pf_app_clean(pf);
 -- 
 2.31.1
 
