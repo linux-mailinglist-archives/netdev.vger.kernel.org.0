@@ -2,98 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 509CA41802C
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 09:27:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C429418033
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 09:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230259AbhIYH2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 03:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230029AbhIYH2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 03:28:15 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632F0C061570
-        for <netdev@vger.kernel.org>; Sat, 25 Sep 2021 00:26:41 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id s17so26517282edd.8
-        for <netdev@vger.kernel.org>; Sat, 25 Sep 2021 00:26:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=AinfZCh8ac/vZYlLKdS7z3P/2YMWdXg/jnFO8/k/MCQ=;
-        b=Qyngk2ocYg/gXjkx25lWsAlHH/Sw9tr9fJZRA1+Ep0kNCaFSBwDyoOwejIM6qyNxE3
-         ezyn+MgkItaaL4j8nPHCzi8Ys/EZlmHzVgGMtWoUcZN2BoxrGZJRDpSaWq04Kzj3CJKa
-         A9uaL5zju+w1uSCi6sCrnGi2yx3tOGT+W41Cqwc4kUWJsT9QvdHGWBMA2U0kc51afz8H
-         XRv1Bixn8N5zRA3pV7T4RqTAlE7ejhFTlZPGSCm9vDEYgZ43K1kuPNPTdNvRlRnWl8PT
-         pqwNtTgLpnIPlsrZlYc7+vyKDlbd9FHd6TCCA5/fDSINc8rRqCJ0V9uegduujMr/lJqq
-         W2Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=AinfZCh8ac/vZYlLKdS7z3P/2YMWdXg/jnFO8/k/MCQ=;
-        b=jpXy357x+mgJWSLTFTx1pTkVoEVj6t7lSNQt9q7EPzB6eiQjHYUdhq+Y7jWGi6eiA3
-         uc5QpEj/29223MCzANHGCjno9BAUZlhlJctqY0G04HYwEIMITmjlwc6Hn+Ltqgw4nGJk
-         Js/3NS5wTxbDVOSkkuV5kZcg1K4K7MpDrU6v0pPcYc4qj718DDI+EmRmEaOVLWFfAC0T
-         sTpDSuMcW4mHWWLz1Fm/4vB9MPeKp/2SyNJq5/sQsbBZbgBiu2A5LA/zxfqBJauRbKHd
-         TKI1ZzV4SacMpaDcWNqVequ/nCoXZypHDqt1EhL1WduglJgD/guRQh7roaP94LE6qBoD
-         dOAQ==
-X-Gm-Message-State: AOAM531+gQvtzy4l7KL/zqWiKhwoQdmzujilI1OBmaVRl2TuC3qxYcxX
-        h8rQEqXNPB8eZ/t4vbZ4TTVHPfPMti10Zw8zIrw=
-X-Google-Smtp-Source: ABdhPJxagVNXWOX9dbijTKqdF8Lx9FBWMdOHDo5OrNF38NhuYz8OGNojd1NuUuKn1OjC5MoJcHhFPy9XT9bcYgR/kTM=
-X-Received: by 2002:a05:6402:c96:: with SMTP id cm22mr9945745edb.314.1632554799690;
- Sat, 25 Sep 2021 00:26:39 -0700 (PDT)
+        id S232572AbhIYHaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 03:30:55 -0400
+Received: from mout.gmx.net ([212.227.15.15]:32783 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230029AbhIYHay (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 03:30:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1632554949;
+        bh=yFDb4A4/GKbkjkwFKbZYWrHFDEh/iWmCyJIjxuX4JRg=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=lQyskH9jAMoAMLP8KqTdBeTKpV2iLZwv9fcEazU1jz5jWCygaADc7xZwfFAZEjnLo
+         1jJYQTYic+gVR9HzrtX8ZkdhujDOT5frDs2ZcM2w4DjwxOVD2CffTpNRbLQ1XY2VX5
+         BhGKBvloCZNnLPiwdQ1srgr/fbFocg/0tWEFRWg8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from titan ([79.150.72.99]) by mail.gmx.net (mrgmx005
+ [212.227.17.184]) with ESMTPSA (Nemesis) id 1MPog5-1mGVJX2PCN-00Mpcl; Sat, 25
+ Sep 2021 09:29:08 +0200
+Date:   Sat, 25 Sep 2021 09:28:56 +0200
+From:   Len Baker <len.baker@gmx.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Len Baker <len.baker@gmx.com>, Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>,
+        Erez Shitrit <erezsh@nvidia.com>,
+        Jianbo Liu <jianbol@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-hardening@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/mlx5: DR, Prefer kcalloc over open coded arithmetic
+Message-ID: <20210925072856.GA1660@titan>
+References: <20210905074936.15723-1-len.baker@gmx.com>
+ <202109202105.9E901893@keescook>
 MIME-Version: 1.0
-References: <20210925061037.4555-1-shjy180909@gmail.com>
-In-Reply-To: <20210925061037.4555-1-shjy180909@gmail.com>
-From:   =?UTF-8?B?7KeE7ISx7Z2s?= <shjy180909@gmail.com>
-Date:   Sat, 25 Sep 2021 16:26:28 +0900
-Message-ID: <CAJg10r+VkaF-5fUtAOZwMxWs-VgRvGFUOZ-8oftFD8k44yosJw@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 0/3] check return value of rhashtable_init in
- mlx5e, ipv6, mac80211.
-To:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, johannes@sipsolutions.net
-Cc:     saeedm@nvidia.com, leon@kernel.org, roid@nvidia.com,
-        paulb@nvidia.com, ozsh@nvidia.com, vladbu@nvidia.com,
-        lariel@nvidia.com, cmi@nvidia.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202109202105.9E901893@keescook>
+X-Provags-ID: V03:K1:klFNjD6m3a+ozEsOsMiNydZCSb43iYDcQ8ER9QidygMym4OfgPs
+ D9DtkkRLi3ZZLQzUoPdPvUueBxaFGJ09EFhSOAnovKo0oykH/2m9ht2LYjSVkBHikPUR/NO
+ nwHLaiuNX4XKvYtw+U9zh58/aH0ruKUtDK/R+ySTuwYChsrS/OdTQn5vGO1WTIx1QZNEL9S
+ hrGDj9gq/rqkARZauO9VA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Mtn6d7yNuYc=:QIJZrerQqy1JFr3BD4QVi1
+ 8Hs+Gy7pD5ODJrHge8xFCB0aTtWpuEGp2Rm3LDZMAQOODunpOKMG4goWxz1pWF1dTJ5jjUR6T
+ iljjCjAmHCYgAbsVBtBuu5us00hz7bKnuimm4yAbuncpeS/IDHIJAKTfBBIkLPo0cIPQ81Z9p
+ IMCpUvtBaHVtNwIhHZuZQb1OOPt4/G9ExyJp+kj6+7Epg5Y5himx4sJkWaQuQpr2lHQeK81oD
+ gZ7r+JYhbfsl2m1HV0FXiMX6boItp5EEM+OWSo2JhYPNb4TP+WtbjsEf3gaciIPwWMGoOxTTi
+ pNBU8houNdiwCmqvUpLcM0I9aAAOSX8jzVfTIKrga3qiRNZpyTsKVy+Omg44DSSKr82kyIYHB
+ RjmUm5jhQxJ/rkJVRQ8Ug2ytlz71BF1pogB8+Xf9BiChyG4gWj6fkrQEXQ8GyrmASry+yXnSk
+ gpSFN9eHBC6rAfpDzpt5CGBdVbBUjkagDmjjJpDtYADRKxEhzU0OILeL/NgqrfeyLzU8400vk
+ 9WngvC8jeNhhzX00Xw7uq1QC50Og/z2n482Tm567np0uqPI0bCCplXWeZVNxe5q1yAIqyNUbb
+ 16BkZFRT49ejfWLW0+g94xe0jSYyKHjIPjl1Z6EZ+i0C9c4a+H49BtYw6pccvQziFbvTrcKmM
+ mndA//4qjzFP77acRB80LcuVyXGRrdQZNNCJj8bTDwrKbG/ZgM7mhrfg48C+inV116saPeWwk
+ gFVZObGd03nmRqC/9r5fPOPeH5OP4HjHhYi0K1CZawZlcfTXRUkh0QVwQCch0YPyj/3v/aT6m
+ 71kULj2Qy/IIm9HqDOsUA6eIIZfu4t6+xuV/JFiLro1uuW/K4upm2SjAJeW3hMy1gOaWket3V
+ dssrnEbJ855YZQ9RWyhJozq8mRrCbTzmDBXmWHjHEArDT3NbEa/EIUNf5yXcIgLpUGUui7pNv
+ 2L7FPM6s3cTdvMurH5cUUI4OQitLhtjrF5dlWDLB5qhbZoH2lxYws3UIiEoTdIMio3TOKpRhE
+ 6sQ2UP3LF0MBMTzowXUY7UPsJGF5cUxhvoj84DciCxH4fynRAC2bqqGMKBrg+KD1C34M5NS2R
+ bMIaeMkGzVJil0=
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021=EB=85=84 9=EC=9B=94 25=EC=9D=BC (=ED=86=A0) =EC=98=A4=ED=9B=84 3:10, M=
-ichelleJin <shjy180909@gmail.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
->
-> When rhashtable_init() fails, it returns -EINVAL.
-> However, since error return value of rhashtable_init is not checked,
-> it can cause use of uninitialized pointers.
-> So, fix unhandled errors of rhashtable_init.
-> The three patches are essentially the same logic.
->
-> v1->v2:
->  - change commit message
->  - fix possible memory leaks
-> v2->v3:
->  - split patch into mlx5e, ipv6, mac80211.
->
-> MichelleJin (3):
->   net/mlx5e: check return value of rhashtable_init
->   net: ipv6: check return value of rhashtable_init
->   net: mac80211: check return value of rhashtable_init
->
->  drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 14 +++++++++++---
->  net/ipv6/ila/ila_xlat.c                            |  6 +++++-
->  net/ipv6/seg6.c                                    |  6 +++++-
->  net/ipv6/seg6_hmac.c                               |  6 +++++-
->  net/mac80211/mesh_pathtbl.c                        |  5 ++++-
->  5 files changed, 30 insertions(+), 7 deletions(-)
->
-> --
-> 2.25.1
->
+Hi,
 
-There are new build warnings in net/ipv6/seg6.c.
-I'll fix it and send v4 soon.
+On Mon, Sep 20, 2021 at 09:06:35PM -0700, Kees Cook wrote:
+> >
+> > -	ref_actions =3D kzalloc(sizeof(*ref_actions) * num_of_dests * 2, GFP=
+_KERNEL);
+> > +	if (unlikely(check_mul_overflow(num_of_dests, 2u, &ref_act_cnt)))
+> > +		goto free_hw_dests;
+> > +
+> > +	ref_actions =3D kcalloc(ref_act_cnt, sizeof(*ref_actions), GFP_KERNE=
+L);
+>
+> In the future, consider array3_size(), but this is fine too. :)
 
-Thank you.
+Ok, thanks for the advise.
+
+Regards,
+Len
