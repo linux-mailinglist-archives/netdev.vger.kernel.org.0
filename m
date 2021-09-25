@@ -2,123 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9FEE4181B1
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:41:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48C8E4181AD
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:39:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244687AbhIYLnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 07:43:02 -0400
-Received: from mail.kotidze.in ([185.117.119.164]:35226 "EHLO mail.kotidze.in"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238011AbhIYLnA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 07:43:00 -0400
-X-Greylist: delayed 538 seconds by postgrey-1.27 at vger.kernel.org; Sat, 25 Sep 2021 07:43:00 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vodka.home.kg;
-        s=vodka; t=1632569546;
-        bh=AiokuuoBMYrFsZjowcjSkgFl0nTv/A+t/ymFZiuMMpY=;
-        h=Date:From:To:Subject:From;
-        b=mJOpugoE20yMbCbH4pjoL2vpLkE2x0E/EYPz3BRwl+n+HohvxfeyU277TUNd2EfgQ
-         NnoomdHeYP2yA1Fe2/Jcf30pomCZvKWu3ZLFuIVhym84CyNCnCu2px5LUhX+X690Me
-         FJWUpANTkuxVmU0kHH0GO5uHI+kZkcuvYGN2FYnw=
-Date:   Sat, 25 Sep 2021 14:32:16 +0300
-From:   k@vodka.home.kg
-Message-ID: <1110422272.20210925143216@vodka.home.kg>
-To:     Felix Fietkau <nbd@openwrt.org>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        id S244574AbhIYLk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 07:40:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230046AbhIYLk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 07:40:28 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202C1C061570;
+        Sat, 25 Sep 2021 04:38:54 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id i24so19496065wrc.9;
+        Sat, 25 Sep 2021 04:38:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kxpv1Vy6pYbyF1BOQEj3cs5wBqi8pHepFHdqGdQ/R9M=;
+        b=DPrpEgC0X7aTJh/sIZdIt5MciRnryOGZs90IJdyIGD9COAPJ5XjGHe9Yf0nPXONpGH
+         z9AahC6xjKwrllYvKDocn2ryrkmg8D0YoA3AQqWhoXhlNbEcTK7zfVZ1lDMchUiU40QI
+         eSafJvX3tthIsSieEmno0w1BOplCIF2GrOr4FZzyaXIl1dVI2dttLhANLE3QK8nZX8m2
+         FEn26ERfAnvpS4OdNd82IGJYl+1OJvKq50s8EQbDsiNi/0dWlLU1JUsNp29xDeGgW/ng
+         t/TVu4qurByoIWZjZ/6cb88uCLFTOEDUi5WXfBuQ88h4H1aYOlQFTXRFuN12d4vSK/82
+         hcdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kxpv1Vy6pYbyF1BOQEj3cs5wBqi8pHepFHdqGdQ/R9M=;
+        b=Ne6OTim7OacZyxe+Z6XaCb9HGcd0uQ9zi427UlcbV5FDVt8TLY6ZDPifZGDFuRoXPI
+         m/1a9K/6KIOkq8LP+/ou4mDGVXPN7MvWkX0p6wfskJAu13WDdmSvQFgW4K2advHv1bCy
+         JMrj0wJA4ROd7EsKL1E0Gz9LJS/PQCAnmiXyQ5dRqth4nb+k5sTUmzq5xJZbf6QY3isY
+         FWMoi4bsQqZFdeXX4GQQ/ENaNIPIt1yVzoRiDyd9+w6FmJAUJ7ANKloRwDLiFcuCHcem
+         v3IwiUEj0/cIpHKQ0R13woC/Yi/CCoMTSY/NRg6VUqDPCz6Ls3ziRQtBGtnxO/HhSm+C
+         0k5g==
+X-Gm-Message-State: AOAM532ysLtirinBgc9ZetA/IcHImRg3v51OaN20zSN+t8TNp8PfQOU+
+        pJHsAjNizLpMxbwBnEBYUnViWu3F/EW9cA==
+X-Google-Smtp-Source: ABdhPJx5jxuJqVl7h+NXrefCqjyk/PMZB73LL/GOidROgSIeMPukjqukX7oDQO/z+a3T9T97hl1oxA==
+X-Received: by 2002:a5d:5903:: with SMTP id v3mr16644354wrd.232.1632569932758;
+        Sat, 25 Sep 2021 04:38:52 -0700 (PDT)
+Received: from oci-gb-a1.vcn08061408.oraclevcn.com ([2603:c020:c001:7eff:7c7:9b76:193f:d476])
+        by smtp.googlemail.com with ESMTPSA id c4sm11033157wrt.23.2021.09.25.04.38.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Sep 2021 04:38:52 -0700 (PDT)
+From:   Matthew Hagan <mnhagan88@gmail.com>
+Cc:     Christian Lamparter <chunkeey@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Matthew Hagan <mnhagan88@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [MEDIATEK ETHERNET DRIVER] initialization failure on low ram systems
+Subject: [PATCH 1/2] net: bgmac-platform: handle mac-address deferral
+Date:   Sat, 25 Sep 2021 11:36:27 +0000
+Message-Id: <20210925113628.1044111-1-mnhagan88@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi !
+This patch is a replication of Christian Lamparter's "net: bgmac-bcma:
+handle deferred probe error due to mac-address" patch for the
+bgmac-platform driver [1].
 
-I'm using openwrt 21.02 kernel 5.4.143 on Tp-link c6u device
-It's MT7621DAT based board with 128 MB RAM :
-https://openwrt.org/toh/hwdata/tp-link/tp-link_archer_c6u_v1_eu
-https://wikidevi.wi-cat.ru/MediaTek_MT7621
+As is the case with the bgmac-bcma driver, this change is to cover the
+scenario where the MAC address cannot yet be discovered due to reliance
+on an nvmem provider which is yet to be instantiated, resulting in a
+random address being assigned that has to be manually overridden.
 
-I found that sometimes during network restart when mediatek chip gets reini=
-tialized
-kernel memory allocation fails and switch ports become unusable (some or al=
-l)
-leading to loss of ethernet access to the router
-ethtool reports no link
+[1] https://lore.kernel.org/netdev/20210919115725.29064-1-chunkeey@gmail.com
 
-Here is the kernel log :
+Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bgmac-platform.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-[10389.945893] netifd: page allocation failure: order:8, mode:0x40dc0(GFP_K=
-ERNEL|__GFP_COMP|__GFP_ZERO), nodemask=3D(null),cpuset=3D/,mems_allowed=3D0
-[10389.958689] CPU: 1 PID: 20444 Comm: netifd Not tainted 5.4.143 #0
-[10389.964763] Stack : 00000008 80082090 00000000 00000000 80730000 80738c9=
-c 80737960 86815b7c
-[10389.973104]         808f0000 80784da3 806b7a74 806b7a74 00000001 0000000=
-1 86815b20 00000007
-[10389.981438]         00000000 00000000 80930000 00000000 30232033 000018a=
-1 2e352064 34312e34
-[10389.989771]         00000000 00000204 00000000 000ea0e1 80000000 807a000=
-0 00000000 00040dc0
-[10389.998104]         807a0000 00000201 00000240 00040dc0 00000000 80381e0=
-8 00000004 808f0004
-[10390.006439]         ...
-[10390.008879] Call Trace:
-[10390.011344] [<8000b68c>] show_stack+0x30/0x100
-[10390.015800] [<805f1254>] dump_stack+0xa4/0xdc
-[10390.020167] [<80170c90>] warn_alloc+0xc0/0x138
-[10390.024602] [<80171af4>] __alloc_pages_nodemask+0xdec/0xeb8
-[10390.030161] [<8014bfb8>] kmalloc_order+0x2c/0x70
-[10390.034778] [<8040807c>] mtk_open+0x158/0x804
-[10390.039127] [<8045d5e4>] __dev_open+0xf4/0x188
-[10390.043559] [<8045da44>] __dev_change_flags+0x18c/0x1e4
-[10390.048768] [<8045dac4>] dev_change_flags+0x28/0x70
-[10390.053637] [<8048a364>] dev_ifsioc+0x2ac/0x34c
-[10390.058155] [<8048a5f0>] dev_ioctl+0xd4/0x3f8
-[10390.062510] [<804304ec>] sock_ioctl+0x354/0x4bc
-[10390.067040] [<801adbb4>] do_vfs_ioctl+0xb8/0x7c0
-[10390.071645] [<801ae30c>] ksys_ioctl+0x50/0xb4
-[10390.076000] [<80014598>] syscall_common+0x34/0x58
-[10390.080969] Mem-Info:
-[10390.083314] active_anon:6858 inactive_anon:6892 isolated_anon:32
-[10390.083314]  active_file:733 inactive_file:741 isolated_file:1
-[10390.083314]  unevictable:2 dirty:0 writeback:0 unstable:0
-[10390.083314]  slab_reclaimable:921 slab_unreclaimable:5251
-[10390.083314]  mapped:1082 shmem:0 pagetables:215 bounce:0
-[10390.083314]  free:3817 free_pcp:32 free_cma:0
-[10390.115576] Node 0 active_anon:27432kB inactive_anon:27848kB active_file=
-:2988kB inactive_file:3468kB unevictable:8kB isolated(anon):128kB isolated(=
-file):4kB mapped:4776kB dirty:0kB writeback:0kB shmem:0kB writeback_tmp:0kB=
- unstable:0kB all_unreclaimable? no
-[10390.138417] Normal free:13876kB min:13312kB low:14336kB high:15360kB act=
-ive_anon:27432kB inactive_anon:27760kB active_file:2808kB inactive_file:350=
-8kB unevictable:8kB writepending:0kB present:131072kB managed:121444kB mloc=
-ked:8kB kernel_stack:1064kB pagetables:860kB bounce:0kB free_pcp:76kB local=
-_pcp:0kB free_cma:0kB
-
-
-I traced where alloc fails and found 1 MB memory allocation=20
-
-mtk_eth_soc.c  mtk_open()
-err =3D mtk_start_dma(eth); // err=3D-ENOMEM
-err =3D mtk_dma_init(eth); // err=3D-ENOMEM
-err =3D mtk_init_fq_dma(eth); // err=3D-ENOMEM
-eth->scratch_head =3D kcalloc(cnt, MTK_QDMA_PAGE_SIZE, GFP_KERNEL); // cnt=
-=3D512, MT_QDMA_PAGE_SIZE=3D2048. allocating 1 MB, *FAILS HERE*
-
-
-To reproduce I put the system to memory pressure condition using
-screen nice -n 10 stress --vm 1 --vm-bytes 71000000
-and then restart the chip : /etc/init.d/network restart
-Even after killing stress network restart often does not help to restore LA=
-N access
-
-From=20my point of view it's not a good idea to allocate large contiguous m=
-emory pieces in linux kernel
-on low RAM systems which most of the routers are. Free kernel memory may be=
-come fragmented.
-I tried decreaseing MTK_DMA_SIZE from 512 to 128 and it helped but not 100%
-MTK_DMA_SIZE=3D64 makes network unstable
+diff --git a/drivers/net/ethernet/broadcom/bgmac-platform.c b/drivers/net/ethernet/broadcom/bgmac-platform.c
+index 4ab5bf64d353..df8ff839cc62 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-platform.c
++++ b/drivers/net/ethernet/broadcom/bgmac-platform.c
+@@ -192,6 +192,9 @@ static int bgmac_probe(struct platform_device *pdev)
+ 	bgmac->dma_dev = &pdev->dev;
+ 
+ 	ret = of_get_mac_address(np, bgmac->net_dev->dev_addr);
++	if (ret == -EPROBE_DEFER)
++		return ret;
++
+ 	if (ret)
+ 		dev_warn(&pdev->dev,
+ 			 "MAC address not present in device tree\n");
+-- 
+2.27.0
 
