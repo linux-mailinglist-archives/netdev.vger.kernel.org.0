@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0141941817D
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AD13418181
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:25:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343630AbhIYLZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 07:25:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56594 "EHLO mail.kernel.org"
+        id S1343683AbhIYLZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 07:25:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56760 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245343AbhIYLZW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 07:25:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4D4856128B;
-        Sat, 25 Sep 2021 11:23:47 +0000 (UTC)
+        id S244902AbhIYLZ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 07:25:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B775B6128C;
+        Sat, 25 Sep 2021 11:23:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632569028;
-        bh=PMH85H5qipZOBKpjQUuS38xXXX8zD2iZVNUxRrzSq2M=;
+        s=k20201202; t=1632569031;
+        bh=xa9GziJGjO+uYR+6TLvwaU0ghnPSlFl4J+UcvATj0rM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bl6F2XX2QrtGJ/goSxrWiZ4kTfaDRalUW+JX64R4+f5tX2MkVbudqMboMu4+2r17G
-         9ypRSr6/TbxTX5ORpt0WdmEFf4Q9lTCPiz+FKtPuz9OazWtk3RxYg4dOQIG3qJItpb
-         pbsdhwETQqV8zGIh6DTOueiiB6dX2qdXhef22O55T8LHb5HQ/oDZd4nwPrZj/bqO7m
-         JhHZtPN0ApEbgjNw6XG7w2GgfEOi/wJOq/MBu65oKBl7Ftd6PTsLr9J/BfEnVlCops
-         Kpqi2qjOoxhp/Ux5Aml2oWUSJR2F3fXuK8NnJcOU5kQF7HvO859ztbO8XzHL22qlxH
-         S0xx6v652WI1Q==
+        b=Sh5UCjWPwOf2FQDfkuASXPFp/fNpsJHp5uxIvwgGsrxq4+tYmgNyYTY30hIF2jbP0
+         FOZ80qEQnPV2vSc/Tv9uRTO+IDefIr7Ysc8W8FcVPJN+HViEyz0m7eIWHdt93GGo7a
+         HUrEErXyzrYmBaJadre4duxUrAj/tJVTh87LQS1CSQKHDIS5bxRigi/BGcuLTlSoS+
+         A2HJqVcXKjt75hbAM8bIVgc2/Si6Ibd7nFYBFjBLt18A+LxshbWa+yxcfHNJVBVQJI
+         xKOy57wtXFbtDXyaPBt9Cb5QkNXwWVIEDUXaffiJAl8dT224YWEEmPlxFFRh61STQw
+         jkPCR4A3oV7nA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -70,9 +70,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v1 13/21] nfp: Move delink_register to be last command
-Date:   Sat, 25 Sep 2021 14:22:53 +0300
-Message-Id: <f393212ad3906808ee7eb5cff06ef2e053eb9d2b.1632565508.git.leonro@nvidia.com>
+Subject: [PATCH net-next v1 14/21] ionic: Move devlink registration to be last devlink command
+Date:   Sat, 25 Sep 2021 14:22:54 +0300
+Message-Id: <cb187a035b75dbcc27f6dd10d72f18f1101bad44.1632565508.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1632565508.git.leonro@nvidia.com>
 References: <cover.1632565508.git.leonro@nvidia.com>
@@ -84,78 +84,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Open user space access to the devlink after driver is probed.
+This change prevents from users to access device before devlink is
+fully configured.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/ethernet/netronome/nfp/devlink_param.c | 9 ++-------
- drivers/net/ethernet/netronome/nfp/nfp_net_main.c  | 5 ++---
- 2 files changed, 4 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_devlink.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/devlink_param.c b/drivers/net/ethernet/netronome/nfp/devlink_param.c
-index 36491835ac65..db297ee4d7ad 100644
---- a/drivers/net/ethernet/netronome/nfp/devlink_param.c
-+++ b/drivers/net/ethernet/netronome/nfp/devlink_param.c
-@@ -233,13 +233,8 @@ int nfp_devlink_params_register(struct nfp_pf *pf)
- 	if (err <= 0)
- 		return err;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+index 93282394d332..2267da95640b 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+@@ -82,7 +82,6 @@ int ionic_devlink_register(struct ionic *ionic)
+ 	struct devlink_port_attrs attrs = {};
+ 	int err;
  
--	err = devlink_params_register(devlink, nfp_devlink_params,
--				      ARRAY_SIZE(nfp_devlink_params));
--	if (err)
--		return err;
--
--	devlink_params_publish(devlink);
--	return 0;
-+	return devlink_params_register(devlink, nfp_devlink_params,
-+				       ARRAY_SIZE(nfp_devlink_params));
+-	devlink_register(dl);
+ 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+ 	devlink_port_attrs_set(&ionic->dl_port, &attrs);
+ 	err = devlink_port_register(dl, &ionic->dl_port, 0);
+@@ -93,6 +92,7 @@ int ionic_devlink_register(struct ionic *ionic)
+ 	}
+ 
+ 	devlink_port_type_eth_set(&ionic->dl_port, ionic->lif->netdev);
++	devlink_register(dl);
+ 	return 0;
  }
  
- void nfp_devlink_params_unregister(struct nfp_pf *pf)
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-index 616872928ada..5fbb7c613ff1 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-@@ -701,7 +701,6 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
- 	if (err)
- 		goto err_unmap;
- 
--	devlink_register(devlink);
- 	err = nfp_shared_buf_register(pf);
- 	if (err)
- 		goto err_devlink_unreg;
-@@ -731,6 +730,7 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
- 		goto err_stop_app;
- 
- 	mutex_unlock(&pf->lock);
-+	devlink_register(devlink);
- 
- 	return 0;
- 
-@@ -748,7 +748,6 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
- 	nfp_shared_buf_unregister(pf);
- err_devlink_unreg:
- 	cancel_work_sync(&pf->port_refresh_work);
--	devlink_unregister(devlink);
- 	nfp_net_pf_app_clean(pf);
- err_unmap:
- 	nfp_net_pci_unmap_mem(pf);
-@@ -759,6 +758,7 @@ void nfp_net_pci_remove(struct nfp_pf *pf)
+@@ -100,6 +100,6 @@ void ionic_devlink_unregister(struct ionic *ionic)
  {
- 	struct nfp_net *nn, *next;
+ 	struct devlink *dl = priv_to_devlink(ionic);
  
-+	devlink_unregister(priv_to_devlink(pf));
- 	mutex_lock(&pf->lock);
- 	list_for_each_entry_safe(nn, next, &pf->vnics, vnic_list) {
- 		if (!nfp_net_is_data_vnic(nn))
-@@ -775,7 +775,6 @@ void nfp_net_pci_remove(struct nfp_pf *pf)
- 
- 	nfp_devlink_params_unregister(pf);
- 	nfp_shared_buf_unregister(pf);
--	devlink_unregister(priv_to_devlink(pf));
- 
- 	nfp_net_pf_free_irqs(pf);
- 	nfp_net_pf_app_clean(pf);
+-	devlink_port_unregister(&ionic->dl_port);
+ 	devlink_unregister(dl);
++	devlink_port_unregister(&ionic->dl_port);
+ }
 -- 
 2.31.1
 
