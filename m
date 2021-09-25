@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D98741815E
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:23:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C8CF418175
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244997AbhIYLZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 07:25:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56016 "EHLO mail.kernel.org"
+        id S245201AbhIYLZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 07:25:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56468 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245045AbhIYLZF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 07:25:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A281B6127C;
-        Sat, 25 Sep 2021 11:23:29 +0000 (UTC)
+        id S245264AbhIYLZT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 07:25:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 862F36128E;
+        Sat, 25 Sep 2021 11:23:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632569010;
-        bh=pc8zwS3r8HsfwOxk/n265zyCXchtl5rU8VYtSBAYXS0=;
+        s=k20201202; t=1632569024;
+        bh=PrFeKKukywHaBt62rZVuiu0/Btho0nWbpbcpWAnFbY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XYVdSyk4Nov6ULK/fPAslkGEtxWs0lZ0lQ/xfjQJBfscVFxRhWcOjoJwGYAe3satN
-         8otZtplAxDDhaNxERQKpq4F5wivWdImoSGdiUEjg4zXYIBpMRoa2bdDUpJGmNmgW71
-         hpwFL/LKTPg4zAqy+Vpi1KFY5mrg0eDX1+zEsBSyoYzlimYAkMM6nlCYEXnESWKD+5
-         hR7FPTAGNobhoUjByJKm8aaWrF0iFNv4F0o7emLxQvym3sK9pGu0/MhhTqiNbazSCD
-         5+t8qDq7tx8Mm/fxLtgCvBT4lUN+5qTi9rwAt7SWJcT5MuB7K5KAZ/tPg0jWvkOHAK
-         F+PsGCvrkN1fA==
+        b=Oa0/myPIOe/XULQJv4GvGl6mM8d548pm5n1JM2ZO4N/GjQ3/SuiSVVQurEYxdOB4t
+         cZavrhNx8GlJtSu+x4nmb8Qvyu+Rk1v7w7H71NzrI9xMf/ssB9cYB9TnrGB5M2suOR
+         Vat9GDPaYU2bERyJfmRXqyWB6h+dnwTtaTrkn5Q6SxLBsL5XEVF1ViKGb16wvvlRmz
+         oYUHPaJKGU9BCOODfK4K/2mNPBd5BekedAnYvyI+U4XbQRpNV3I/TzHLtLg4XjXbUA
+         3gb2u9jQ78tP5MnQQFI9e1+58aJKFPormH8cYFnoCewvS6S9P6VtOtPHaWiU4iR5ky
+         WySvKEg7HrWMQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -70,9 +70,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v1 08/21] net/prestera: Split devlink and traps registrations to separate routines
-Date:   Sat, 25 Sep 2021 14:22:48 +0300
-Message-Id: <0e3101259046a001c417415b84b834ca56d1bfd3.1632565508.git.leonro@nvidia.com>
+Subject: [PATCH net-next v1 09/21] net/mlx4: Move devlink_register to be the last initialization command
+Date:   Sat, 25 Sep 2021 14:22:49 +0300
+Message-Id: <486f4512a0d472b8732067018d2ec8c4f3f45763.1632565508.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1632565508.git.leonro@nvidia.com>
 References: <cover.1632565508.git.leonro@nvidia.com>
@@ -84,162 +84,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Separate devlink registrations and traps registrations so devlink will
-be registered when driver is fully initialized.
+Refactor the code to make sure that devlink_register() is the last
+command during initialization stage.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../marvell/prestera/prestera_devlink.c       | 29 ++++---------------
- .../marvell/prestera/prestera_devlink.h       |  4 ++-
- .../ethernet/marvell/prestera/prestera_main.c |  8 +++--
- 3 files changed, 14 insertions(+), 27 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/main.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-index 5cca007a3e17..06279cd6da67 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-@@ -345,8 +345,6 @@ static struct prestera_trap prestera_trap_items_arr[] = {
- 	},
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
+index 27ed4694fbea..9541f3a920c8 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/main.c
++++ b/drivers/net/ethernet/mellanox/mlx4/main.c
+@@ -4015,7 +4015,6 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	mutex_init(&dev->persist->interface_state_mutex);
+ 	mutex_init(&dev->persist->pci_status_mutex);
  
--static void prestera_devlink_traps_fini(struct prestera_switch *sw);
--
- static int prestera_drop_counter_get(struct devlink *devlink,
- 				     const struct devlink_trap *trap,
- 				     u64 *p_drops);
-@@ -381,8 +379,6 @@ static int prestera_trap_action_set(struct devlink *devlink,
- 				    enum devlink_trap_action action,
- 				    struct netlink_ext_ack *extack);
+-	devlink_register(devlink);
+ 	ret = devlink_params_register(devlink, mlx4_devlink_params,
+ 				      ARRAY_SIZE(mlx4_devlink_params));
+ 	if (ret)
+@@ -4025,16 +4024,15 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (ret)
+ 		goto err_params_unregister;
  
--static int prestera_devlink_traps_register(struct prestera_switch *sw);
--
- static const struct devlink_ops prestera_dl_ops = {
- 	.info_get = prestera_dl_info_get,
- 	.trap_init = prestera_trap_init,
-@@ -407,34 +403,18 @@ void prestera_devlink_free(struct prestera_switch *sw)
- 	devlink_free(dl);
- }
- 
--int prestera_devlink_register(struct prestera_switch *sw)
-+void prestera_devlink_register(struct prestera_switch *sw)
- {
- 	struct devlink *dl = priv_to_devlink(sw);
--	int err;
- 
- 	devlink_register(dl);
--
--	err = prestera_devlink_traps_register(sw);
--	if (err) {
--		devlink_unregister(dl);
--		dev_err(sw->dev->dev, "devlink_traps_register failed: %d\n",
--			err);
--		return err;
--	}
--
--	return 0;
- }
- 
- void prestera_devlink_unregister(struct prestera_switch *sw)
- {
--	struct prestera_trap_data *trap_data = sw->trap_data;
- 	struct devlink *dl = priv_to_devlink(sw);
- 
--	prestera_devlink_traps_fini(sw);
- 	devlink_unregister(dl);
--
--	kfree(trap_data->trap_items_arr);
--	kfree(trap_data);
- }
- 
- int prestera_devlink_port_register(struct prestera_port *port)
-@@ -482,7 +462,7 @@ struct devlink_port *prestera_devlink_get_port(struct net_device *dev)
- 	return &port->dl_port;
- }
- 
--static int prestera_devlink_traps_register(struct prestera_switch *sw)
-+int prestera_devlink_traps_register(struct prestera_switch *sw)
- {
- 	const u32 groups_count = ARRAY_SIZE(prestera_trap_groups_arr);
- 	const u32 traps_count = ARRAY_SIZE(prestera_trap_items_arr);
-@@ -621,8 +601,9 @@ static int prestera_drop_counter_get(struct devlink *devlink,
- 						 cpu_code_type, p_drops);
- }
- 
--static void prestera_devlink_traps_fini(struct prestera_switch *sw)
-+void prestera_devlink_traps_unregister(struct prestera_switch *sw)
- {
-+	struct prestera_trap_data *trap_data = sw->trap_data;
- 	struct devlink *dl = priv_to_devlink(sw);
- 	const struct devlink_trap *trap;
- 	int i;
-@@ -634,4 +615,6 @@ static void prestera_devlink_traps_fini(struct prestera_switch *sw)
- 
- 	devlink_trap_groups_unregister(dl, prestera_trap_groups_arr,
- 				       ARRAY_SIZE(prestera_trap_groups_arr));
-+	kfree(trap_data->trap_items_arr);
-+	kfree(trap_data);
- }
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.h b/drivers/net/ethernet/marvell/prestera/prestera_devlink.h
-index cc34c3db13a2..b322295bad3a 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_devlink.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.h
-@@ -9,7 +9,7 @@
- struct prestera_switch *prestera_devlink_alloc(struct prestera_device *dev);
- void prestera_devlink_free(struct prestera_switch *sw);
- 
--int prestera_devlink_register(struct prestera_switch *sw);
-+void prestera_devlink_register(struct prestera_switch *sw);
- void prestera_devlink_unregister(struct prestera_switch *sw);
- 
- int prestera_devlink_port_register(struct prestera_port *port);
-@@ -22,5 +22,7 @@ struct devlink_port *prestera_devlink_get_port(struct net_device *dev);
- 
- void prestera_devlink_trap_report(struct prestera_port *port,
- 				  struct sk_buff *skb, u8 cpu_code);
-+int prestera_devlink_traps_register(struct prestera_switch *sw);
-+void prestera_devlink_traps_unregister(struct prestera_switch *sw);
- 
- #endif /* _PRESTERA_DEVLINK_H_ */
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-index 44c670807fb3..78a7a00bce22 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-@@ -851,7 +851,7 @@ static int prestera_switch_init(struct prestera_switch *sw)
- 	if (err)
- 		goto err_span_init;
- 
--	err = prestera_devlink_register(sw);
-+	err = prestera_devlink_traps_register(sw);
- 	if (err)
- 		goto err_dl_register;
- 
-@@ -863,12 +863,13 @@ static int prestera_switch_init(struct prestera_switch *sw)
- 	if (err)
- 		goto err_ports_create;
- 
-+	prestera_devlink_register(sw);
+-	devlink_params_publish(devlink);
+-	devlink_reload_enable(devlink);
+ 	pci_save_state(pdev);
++	devlink_register(devlink);
++	devlink_reload_enable(devlink);
  	return 0;
  
- err_ports_create:
- 	prestera_lag_fini(sw);
- err_lag_init:
--	prestera_devlink_unregister(sw);
-+	prestera_devlink_traps_unregister(sw);
- err_dl_register:
- 	prestera_span_fini(sw);
- err_span_init:
-@@ -888,9 +889,10 @@ static int prestera_switch_init(struct prestera_switch *sw)
+ err_params_unregister:
+ 	devlink_params_unregister(devlink, mlx4_devlink_params,
+ 				  ARRAY_SIZE(mlx4_devlink_params));
+ err_devlink_unregister:
+-	devlink_unregister(devlink);
+ 	kfree(dev->persist);
+ err_devlink_free:
+ 	devlink_free(devlink);
+@@ -4138,6 +4136,7 @@ static void mlx4_remove_one(struct pci_dev *pdev)
+ 	int active_vfs = 0;
  
- static void prestera_switch_fini(struct prestera_switch *sw)
- {
-+	prestera_devlink_unregister(sw);
- 	prestera_destroy_ports(sw);
- 	prestera_lag_fini(sw);
--	prestera_devlink_unregister(sw);
-+	prestera_devlink_traps_unregister(sw);
- 	prestera_span_fini(sw);
- 	prestera_acl_fini(sw);
- 	prestera_event_handlers_unregister(sw);
+ 	devlink_reload_disable(devlink);
++	devlink_unregister(devlink);
+ 
+ 	if (mlx4_is_slave(dev))
+ 		persist->interface_state |= MLX4_INTERFACE_STATE_NOWAIT;
+@@ -4173,7 +4172,6 @@ static void mlx4_remove_one(struct pci_dev *pdev)
+ 	mlx4_pci_disable_device(dev);
+ 	devlink_params_unregister(devlink, mlx4_devlink_params,
+ 				  ARRAY_SIZE(mlx4_devlink_params));
+-	devlink_unregister(devlink);
+ 	kfree(dev->persist);
+ 	devlink_free(devlink);
+ }
 -- 
 2.31.1
 
