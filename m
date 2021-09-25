@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA5A94181A2
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:25:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E881418199
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:25:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344000AbhIYL03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 07:26:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57282 "EHLO mail.kernel.org"
+        id S245316AbhIYL0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 07:26:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57390 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245756AbhIYLZn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 07:25:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CC77061288;
-        Sat, 25 Sep 2021 11:24:07 +0000 (UTC)
+        id S245087AbhIYLZq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 07:25:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0ACD06128E;
+        Sat, 25 Sep 2021 11:24:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632569048;
-        bh=UGe1xR5nQjl5sitWRrZO39MCG615CkI/XgeO5EfkyHA=;
+        s=k20201202; t=1632569051;
+        bh=hIaU3zuCJ66VCcfkvkXkjfrXrZk0nBwoxqfW+xbNAI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXJnTqgMbORVHaUsGV03ryKJr6A1PfdhYoeVsyCNEges2Dn9WZ7FE4+7QH3xqJvR9
-         Mz5qz1HhsuOgoYQOxRRc2geSU+85mrlqpccGRTMS5HNtlTD9qpZiA6BDhj7DVZhKv7
-         sj2HzVf0JYXhCn2l9u3cBQBv5vEik7dYiF8tPoahtV6EPb5DdE99UK8bicH0CXAY1W
-         HNyqws6BMBbppxtt3484q7TdwfEfbBOeq/bgChcm6v6hSMl1crla5Ovo4z8W/DKqtc
-         ElB0gliFBoCj4F940uxkATHVFsfX4EYpq0KC0xZ9LpCNrkxbV9d5shVyGsAIldIE1K
-         SK3ShGOLcii1A==
+        b=hBZGKXwn8MuXnfyIESlBTW1o1wITt4RwTx900BqVAekSocAOEd7gZDaIl7tnVZv6M
+         q3Q21JYh+9eSN/awnLVNufvGKHgKSaIWRJy5ivfUktMueUS9g5/hLo0Uv9rxmHf4Ne
+         211pPeYPpZMV6Ds75i05viWIuvhchW2NqqBhX4a07FEQj6wHLw3UpJKiYkdxkk0lFm
+         bSZeh9Ke9vA+QngTRqW5Hu6S/Ti3v116zfBVCHrWYNiVgXRCmPHe0DYiSJ82TIpPaL
+         C4vY9albBFHKQVnNf6fAbGot8HbEqBfjq0pJUTWDackF/nuQF7xemq0NLd1sc8oYoz
+         jySHQjT6V/w9w==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -70,9 +70,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v1 19/21] ptp: ocp: Move devlink registration to be last devlink command
-Date:   Sat, 25 Sep 2021 14:22:59 +0300
-Message-Id: <1541e7cd8262ce9db7544669438d0f4360068dd2.1632565508.git.leonro@nvidia.com>
+Subject: [PATCH net-next v1 20/21] staging: qlge: Move devlink registration to be last devlink command
+Date:   Sat, 25 Sep 2021 14:23:00 +0300
+Message-Id: <87eb1893ae465eb0ec1ed726c9ca078edc8298ac.1632565508.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1632565508.git.leonro@nvidia.com>
 References: <cover.1632565508.git.leonro@nvidia.com>
@@ -89,51 +89,52 @@ fully configured.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/ptp/ptp_ocp.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/staging/qlge/qlge_main.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 4c25467198e3..34f943c8c9fd 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -2455,7 +2455,6 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		return -ENOMEM;
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 33539f6c254d..1dc849378a0f 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -4614,10 +4614,9 @@ static int qlge_probe(struct pci_dev *pdev,
+ 		goto netdev_free;
  	}
  
 -	devlink_register(devlink);
- 	err = pci_enable_device(pdev);
- 	if (err) {
- 		dev_err(&pdev->dev, "pci_enable_device\n");
-@@ -2497,7 +2496,7 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		goto out;
+ 	err = qlge_health_create_reporters(qdev);
+ 	if (err)
+-		goto devlink_unregister;
++		goto netdev_free;
  
- 	ptp_ocp_info(bp);
--
+ 	/* Start up the timer to trigger EEH if
+ 	 * the bus goes dead
+@@ -4628,10 +4627,9 @@ static int qlge_probe(struct pci_dev *pdev,
+ 	qlge_display_dev_info(ndev);
+ 	atomic_set(&qdev->lb_count, 0);
+ 	cards_found++;
 +	devlink_register(devlink);
  	return 0;
  
- out:
-@@ -2506,7 +2505,6 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- out_disable:
- 	pci_disable_device(pdev);
- out_unregister:
+-devlink_unregister:
 -	devlink_unregister(devlink);
- 	devlink_free(devlink);
- 	return err;
- }
-@@ -2517,11 +2515,11 @@ ptp_ocp_remove(struct pci_dev *pdev)
- 	struct ptp_ocp *bp = pci_get_drvdata(pdev);
- 	struct devlink *devlink = priv_to_devlink(bp);
+ netdev_free:
+ 	free_netdev(ndev);
+ devlink_free:
+@@ -4656,13 +4654,13 @@ static void qlge_remove(struct pci_dev *pdev)
+ 	struct net_device *ndev = qdev->ndev;
+ 	struct devlink *devlink = priv_to_devlink(qdev);
  
 +	devlink_unregister(devlink);
- 	ptp_ocp_detach(bp);
- 	pci_set_drvdata(pdev, NULL);
+ 	del_timer_sync(&qdev->timer);
+ 	qlge_cancel_all_work_sync(qdev);
+ 	unregister_netdev(ndev);
+ 	qlge_release_all(pdev);
  	pci_disable_device(pdev);
- 
+ 	devlink_health_reporter_destroy(qdev->reporter);
 -	devlink_unregister(devlink);
  	devlink_free(devlink);
+ 	free_netdev(ndev);
  }
- 
 -- 
 2.31.1
 
