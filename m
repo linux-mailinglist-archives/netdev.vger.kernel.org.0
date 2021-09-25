@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D73D41841D
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 21:19:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CBD8418424
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 21:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbhIYTVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 15:21:24 -0400
-Received: from mail-eopbgr80049.outbound.protection.outlook.com ([40.107.8.49]:56547
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S229825AbhIYT2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 15:28:47 -0400
+Received: from mail-vi1eur05on2066.outbound.protection.outlook.com ([40.107.21.66]:20416
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229711AbhIYTVX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 15:21:23 -0400
+        id S229711AbhIYT2q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 15:28:46 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=URlykwdO6xkVxV6tD6csZ5dophzAEj/vdR83lrtld3ASXQWpldt7pPwQzZOq2z7INO9LXnz6Pr1lmjO66eX/Ou/yd1zVeXDczkn3rOOPW+Icm3v0lKyNBTS2zeHV8iWycKM4CtwOu0/OWrj4BKnbdEf9AuDu3r6IY1DYHHmXwYv4ui996Km+anG/U78cGzN6UVPIs0pPxpRslR3bIbyTuwhcTMYcQ8MVYUrq+TI1yizlKNOP58MxbTfxmHxLYu79+DFT/UU0mhnqTqlNN758y+rT5X65sI643QdjYibtpQwB9XasdplaA0NvuUBgD6uHdkkKhNr9HFkvhSje5YQTMg==
+ b=XDMelngmLJsHMCElPmV7eixtK1VLDQuQ+wIYSb+O+jKtJiJOzl/Ix6NMn1fJwFtB/Q6p5dxPhfYlo5A3sPgBrtHEuqyVKuEO4pcenB1chDGI2W0w/+/2wLHLIqb/D8BOzU2CH+4WU2IcSuniQDH9Etwx+XV/phI3NRSQF3xKPJG3PhlzI3K1NE0U9Xg/8mu634uSbgv9kjt72i8L6JDXLcnN0lGXhnP428CEObwh2GSJtxxQq8bJpn00dm9C065qbbju1ufUyob5ZEAoEpdbOxLZSXE94pT6AY+KPZX8XhjHxnmBBxbuwqYvf6cpRMGeLNmdHnfqHT7wV0l3AJtroA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=zpNIBMUzL55PsPrg28NUadDPENpi3kkehZEPZN3VS3A=;
- b=Hv6QJ/qLtK4W0za89EBSb39QkI3hpXuUny7pYaHANzHsZY3e1UTB1aYxkdJf6ZwGtDQY6SwcvcGH2FIE4UH6i9019asryLYp/5CgEWh2BHxVWKxWme5eF0MEcL9IEzEPyyGQdzWoPOO0FzCQ8LE502gCo2QFz+wxYSUHjBpDHl0z/TnGx592hGeODNjCX++nH7EwIgCgHSEvcVrKFwehOyp0yVGtdinzxbDDVOpZytSvBRcLQtwBWv8zVpplTAQ9sJ8ejireluW8z3PUzyzdfM5qGY6og1mO8+IYGx0kF8hZY2lOnI55X2eOsnsDRcxIoE72cxNpL9zTG5xv67LZ0w==
+ bh=KJ1vMhSQLCphqvu3AfrZOTeAmOug2seu+xGc5s1iJok=;
+ b=No3z/u91VqkI8SjxGOfXbfYPoJJQcuBm+RfzN9nlpMvz3fGlahtCiKBv6GCKyfax5T5PdCYw/YRky4g34hT9+9ulDrz3i04ZZwu40irW5Aps7H8vEJH1G88Oev63rOmfCmHawZvkui8/E9HCMR5gfgKkoquHrsyrA0B6XpLqbxnl3At+Hoi+Hu3mHIE/X58qya+C4+MaoihAemdEq3zq3rWtXsYkDtX0jEH7LcCOqU/v9/UYqcsTs8W4v4HSUCUDoI+fuisiYbLPCZvwPN9JgsZOxe1SfDd3IIpecvyoUSlHeNbBl0CKRog3Wh0uk6xdkMG/okZ9jHL9bu6wbPDLQw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zpNIBMUzL55PsPrg28NUadDPENpi3kkehZEPZN3VS3A=;
- b=Z394On/3BqCLDWQoQlpmi8K7qwEnUUIBPVciYElIF2EOnO1H8IjxN0cijVSfxRGBHW4VepjIdpYjNp6YzddAGw4Zs2hLvvRZ7QGGRHRP4TZQ0LVbMRIwZdo+adtJ7BvDGKnkxWWjCDwA10G4eNlEeaZSTkueTvL/gY0oS/qtn84=
+ bh=KJ1vMhSQLCphqvu3AfrZOTeAmOug2seu+xGc5s1iJok=;
+ b=Su3dprtl6fo6xMGdb2Wf8zijVPcROxreDpDZ3clzEs4mdDepr7mfJF1ox6s0kLgWCTp+r70XQtNCfJDgLlILXT/K6q8nQNNejcX/Iwhf7lydfFrOEBET97sxxbTlvHQ3BRFYORO/BSET48qOwj7U7fzUu9Vo071dIPk0GYTdWG8=
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB4685.eurprd04.prod.outlook.com (2603:10a6:803:70::25) with
+ by VI1PR0402MB2863.eurprd04.prod.outlook.com (2603:10a6:800:af::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.18; Sat, 25 Sep
- 2021 19:19:46 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Sat, 25 Sep
+ 2021 19:26:59 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4544.020; Sat, 25 Sep 2021
- 19:19:46 +0000
+ 19:26:59 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 CC:     "davem@davemloft.net" <davem@davemloft.net>,
@@ -61,16 +61,16 @@ CC:     "davem@davemloft.net" <davem@davemloft.net>,
         <linux-arm-kernel@lists.infradead.org>,
         "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
         "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH v5 net-next 2/9] net: mscc: ocelot: export struct
- ocelot_mact_entry
-Thread-Topic: [PATCH v5 net-next 2/9] net: mscc: ocelot: export struct
- ocelot_mact_entry
-Thread-Index: AQHXsSiI4fkHFW2crUKhjuf/UEcWf6u1IkeA
-Date:   Sat, 25 Sep 2021 19:19:46 +0000
-Message-ID: <20210925191945.vivi35k2uxbsdeyf@skbuf>
+Subject: Re: [PATCH v5 net-next 3/9] net: mscc: ocelot: add MAC table stream
+ learn and lookup operations
+Thread-Topic: [PATCH v5 net-next 3/9] net: mscc: ocelot: add MAC table stream
+ learn and lookup operations
+Thread-Index: AQHXsSiIqyPSbQvi9k+5oHNKLiCyoqu1JEsA
+Date:   Sat, 25 Sep 2021 19:26:59 +0000
+Message-ID: <20210925192658.2wi6egpufqut5hsf@skbuf>
 References: <20210924095226.38079-1-xiaoliang.yang_1@nxp.com>
- <20210924095226.38079-3-xiaoliang.yang_1@nxp.com>
-In-Reply-To: <20210924095226.38079-3-xiaoliang.yang_1@nxp.com>
+ <20210924095226.38079-4-xiaoliang.yang_1@nxp.com>
+In-Reply-To: <20210924095226.38079-4-xiaoliang.yang_1@nxp.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -78,156 +78,193 @@ X-MS-TNEF-Correlator:
 authentication-results: nxp.com; dkim=none (message not signed)
  header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a16b1c44-c5fe-46c3-c003-08d980596fa8
-x-ms-traffictypediagnostic: VI1PR04MB4685:
+x-ms-office365-filtering-correlation-id: 1ad77a97-9411-4dd0-c111-08d9805a71e2
+x-ms-traffictypediagnostic: VI1PR0402MB2863:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB46859AD269A3CDEBAA0525C8E0A59@VI1PR04MB4685.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-microsoft-antispam-prvs: <VI1PR0402MB286373AD0E486608D7541111E0A59@VI1PR0402MB2863.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 76hzvFet22qcE/6UsZ+21DW1ddK9laFWWa9iK/+S3bCvQZpInAuq9rMjebn3xtAov7nDkotzE5cdnJLGYUh+MULShMtScz1AvnkKHHZ2CV4H+/tjMwQX9vN/+5UzoaL48C29Ft/+M7ptgiMM/1G0M3PmfYsGvikE1sKs1W1GN0vY97o9YG2WFymDaSWuZ82dH2Cwt4ws0UbeGJ1bjo44NGCVO/P6up/XR3y9gD8NkyGx0HnElPzDRSGptXMUKtUwB5GTDw5WBle5deRXbUT6GH8JsdPt0qmXupi6KRJgQ2Qafm+7L2UaYKUH+QUwiXFjiCeqAjE1npnN0WjTNxYmQDNXsohZrSly9stswlVRhzX1dRKyoi2L31GVAd0lsitY5i+nxl7Ur8QiQMV8m1b5jrASBqmg7+pp0TBmYMKWrk8Xf5pb4F0tvqLqKjhrLr5t1gmYZ6cHtC8jdAbCVxE/spCFGGTzf83EsdF/H7HAWsLJ8nqlgDzXSmHiN934HninapVVEWCLF2r35YC11aS99zVNFntIH2P42Bik8JX9uvHWU94uCDvIgcgcvY6p8nySSiqNX2qZu/bnXlyG9evAwC3O+GJj8u/tjCh96TdbP0MqVClRPn5MotbFqiQ/dSeS2GCp24ZZehcFt7LwJCENyFi53glzK5VNXKEUk6E3bqI5Z5/30d8Pr8JtEcvgERyP2oNTNm4jHJLtU4IPt30T/g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(6512007)(9686003)(83380400001)(316002)(5660300002)(122000001)(38070700005)(38100700002)(71200400001)(2906002)(6506007)(54906003)(7416002)(26005)(6486002)(6862004)(6636002)(186003)(4326008)(86362001)(8936002)(44832011)(66946007)(76116006)(91956017)(66446008)(64756008)(66556008)(66476007)(508600001)(33716001)(1076003)(8676002);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: oIaGUcwjl3TaMx4dqngSGST0G8CkRTsXs7+b/H5UFun972FKUDzmFBV4lnNj5PjMiz7D10sfKbj+1uq0Af1uJjEScdAilO3c38Fr04xQ6FIq/BeX1FPjNvMcGUbLZz4P1vVFHuT/mm9PSE5u/6Z9iycqpejySU+iM8Yg56aGuwKRtXGye3urH7k+4rOjUgLdbrOTp5VfYEoVlQmCF8CuuUs91hRhM2cIQBTBNal9Zr7vcBhzyN268HqtUulzHsj3yevwhX3sZOXCXYBDOXAQdHvRS8IfQm4TegXkw6P4XvDeM9U8wFyQo+2BglRXBCigG/VdsCciGvk0EWi/4TyTAQ+cHf+WTy1Mklq+ISew3KUBEX24VJSjVJIyBjeMXTAsFOxdnuAxJpINBxUlA0AoUKswkdDasK6jySOpjVkmthtnifYBkPhUU0FHBKll8XLvELh3oLTyd79+JpSuGGjEGix55KMiAwsE6a5f7gGX+z+vkZ2MS3ZSFQZETZMZLr82KSpyKv4nISCtvrjG4x2pcz0zASZw65VleXNq6bmtmbg6gTRDv59OoJ/wH3YYp/XhSM7Z6LZgQ5DWEPabQHexNPACdDw2Cn0VParC7OP+d/aKQb2ZszSz4xNPr3NEV+SEJRlvWIIhhLWMuGk+dCwVRywcsKbxfzSJTHKYCkwcJ9mC7ZmdMJz691rHn81dzgfJwtyUrk98PQ4t6YdD4JIEBA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(44832011)(54906003)(186003)(2906002)(38070700005)(6636002)(122000001)(26005)(86362001)(38100700002)(7416002)(66476007)(66556008)(64756008)(66446008)(91956017)(76116006)(4326008)(66946007)(71200400001)(5660300002)(8936002)(6512007)(6506007)(8676002)(9686003)(316002)(33716001)(508600001)(6486002)(83380400001)(1076003)(6862004);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?UjmJHhT7UZ/1Mg+wytI6Y6oAU47PhHOSeEm+GTp0zxO6qMQQkPSBFsEpfBk0?=
- =?us-ascii?Q?t0QMu+OpH9CXoh3rNZknwdmb2Ty/fJgYV3KnbO1B+Jbhg+rFMrz29+nWZKdT?=
- =?us-ascii?Q?/09QcM8pkFh0s1K9ruKrxLu0OvJZyx58P2BIGTdThNCpg53CSFpr5Bs4/Dlj?=
- =?us-ascii?Q?LgMDB/ZFZizCXy468OvPJtQyqP4jJCqyUphJWJkuVxhm5wbCRpte2M+u3vTT?=
- =?us-ascii?Q?+6u4XJaqjrazPb+E5S8d4Co3kTR9ivLZMXUjPTZxFkMvmwVOWzx3wIW5Hcse?=
- =?us-ascii?Q?fMfeOd5dYQeKW5wEN848TLUlRIuszw3XqB1HZ3IC9UXJIpUsgN77Zlv/8BMN?=
- =?us-ascii?Q?695h4R1SZ2dHqy09PgvRm6wlqjSuH8TiSavzA5k77X7h92CctBdU8gPVDijR?=
- =?us-ascii?Q?sG33HokITALvqJ4OxyDFUrF/sE2tSrS0O+0g/HFUMsMD/kBLa+DlLUZcoidw?=
- =?us-ascii?Q?BnxmU2wAGZWIwxBtW7fuRSq0CLQyOjuLJhZyCrPQ7sy+zyj77FY5c1z3XpGh?=
- =?us-ascii?Q?JRkx6yMLktvg1L9rGLXomQzjA2MWfeMP0tdmVHfmEZjuzIgCmF4gyiL/hZYv?=
- =?us-ascii?Q?8kpaJKbk5n6UemJkSbkuLPlAoYND7DNQsnUz1MMnCyh326LgQG9vINpQmIDn?=
- =?us-ascii?Q?0PyY6JbbKV2pLmAA/3S1OvTwwqK1y12M6v6WjbxcoaEMaqvpH1hsPwOIezlc?=
- =?us-ascii?Q?aaRuiZAKOsMGDnSRloYiUS/w0Ksx51XVPhkC6DX3be4YuVRybqrb8nhVcYQq?=
- =?us-ascii?Q?vj4hQXigoPMbtk0IjvaVACFLN5XxFh4KPAMyyfy/EUlmxrhazsnCSI6Dn/WB?=
- =?us-ascii?Q?4IRVLSso/8RtfRDz8HWWgI56hYJN5pcT7vWRhtFkwd+RlucgDkzM65S65cte?=
- =?us-ascii?Q?R0EkZs76x7VIAD73Tw1sg5TJWF5lxhPEvzOnpkJUIeiNDYJrRCO4KkpMJEBS?=
- =?us-ascii?Q?6ZXLXWN+k7epZOfux6lu1W4iedk6RXH4ueQyJloI0PTcgIyXl30Od94BxpKZ?=
- =?us-ascii?Q?6WgOAxAVKwb26jftEhlwkTmGmC2dpqrBfCKvKaJRrrdMac4Eep3qJbbamMEZ?=
- =?us-ascii?Q?QnP3kITE+TuogFMjGDh9ZgKqHppRwLTatBwlxkkgHAzkGXE5mky7VPhqDjoq?=
- =?us-ascii?Q?a1JMska96M/vyH0AQxzwlfqHypQ+T958yAvVFs4sysbV/z//MBX6Gt++s0Eo?=
- =?us-ascii?Q?nzAsoKheozmigfwVfRoIwXJF4ZEoepLBTu1uDs06iQN5ZUEDD5bt7EjC7tT+?=
- =?us-ascii?Q?qTkQsWc2osWfOvMC3KvG+C9/GCBAsArljlLwLBtMJlbIfYaYNUS3g9F5lN6m?=
- =?us-ascii?Q?HlN6CZDnD0yDXjMrCp9uVDcA?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?N8b9dXswWz7QD1ZNACeN1w5jGxQG8Vo8CPyk88MThe1D93E73ktM2yWidakm?=
+ =?us-ascii?Q?98UaVUfT+4hGv+fPKIlqr55H593GivacLrR8JdcVk4kqS1X7/cwZrlzNBN3F?=
+ =?us-ascii?Q?aKI4o5Vf/khfcVWsRUnCRfp0aew40eUK/KAXEcZKZe4KRWfviwWzl7xSWhxx?=
+ =?us-ascii?Q?MlqVhTbs4BHAgV8+L0TzTaOOe415wGBoYt4GekOFZf++lD6c8isS+YqwFV8b?=
+ =?us-ascii?Q?7OtWlWEJ2D7vUJZLJzrGa7prYWMxJsPX3EkmcHEFR4ICjcjBf846COF5Dz3n?=
+ =?us-ascii?Q?l+UNL+2o2DXl6ck+0OdZ6/fwn86hYNJCcSt9slfSFTsYrWJGF1e67SJO8EC9?=
+ =?us-ascii?Q?19LZL0TPcLEuXut6Y55R178jENUJPKLFNncAwiaXyPDMi8qF8dct9VH6p8oH?=
+ =?us-ascii?Q?8pOJxxa0rdp6P6XY2D6R6rdyTjQE6i95KMHs8iG+p0bRHBE2T4LWlUoNMwm1?=
+ =?us-ascii?Q?piipBOyjIiabO/6HnNf+BXc7kSA+i2quwHBZmeALzoeuwLmIX1iK5DRzj+1j?=
+ =?us-ascii?Q?/AO/o4iEkLOBXRBBa0svXsSPAiOHlIFkDLsxfzALsCCCeV8c7dPdvf3cIq+m?=
+ =?us-ascii?Q?PmJ2KQSUdoF1TLDtzHSH/yVt0sv1/fKT4XBSKmN4eiwN/0CmmYQRqedxgrnC?=
+ =?us-ascii?Q?eUl7X6rIbUIo6Vqn/eiKf/pd1SwIqzcVZqLNYTRmCMq7gVQ7DsMBLopnIjvb?=
+ =?us-ascii?Q?otsvOeaJJOqnvmMvuZfemAQkVkbDFvYQqcsIXVSFcYxwg14pEFEASREgpDJG?=
+ =?us-ascii?Q?lw/G8ipYPcL65GVmBOeNBizz0seXXSIqdK0FYl0KR4b5oHXgm20NCPPM4o/y?=
+ =?us-ascii?Q?yHtRgNapsHdsyvMa7SXJ1CU5U/Qn3HzgAa+9VmYRHknHMs/72C7xtfdWXypt?=
+ =?us-ascii?Q?f/6HRta6bZvvrBvKga0a4EuMTUtaieKZFfG884eCDnvwD5ozn2eHj+FJQ8nO?=
+ =?us-ascii?Q?WaeAKJcy1qKbbdFf1YO84jeoUlkVKUFUSBdArp0xeUvcxvvGYjcnb22YhkhC?=
+ =?us-ascii?Q?UpL+KJI3/1+Po6AocWVJ72HSS0M18CiZBByDyOWTVdFcgQaFIM0t3bcQF4XO?=
+ =?us-ascii?Q?k5PnftDeNf1YYbceXS+RBxC1UBe7MTP5GEwGcx1uG0RFJ/B4G1l8yIwp3QSE?=
+ =?us-ascii?Q?zFamiH3ct+0MWqD14NJGZdRqSuENAUEfGCDVpLCh40VkVpq+is7fUFcHK0Yg?=
+ =?us-ascii?Q?iPnVkAyjC698Y2SWpSvll45ZZ4XaqB518VayDcF3ebeE8scEtHzcBUJUsbmu?=
+ =?us-ascii?Q?JXK9qxG21R3kd1dvZPheFto2q2he3yNzg5SoUHqMzT8Z1HI9ilaTOQkLFiJT?=
+ =?us-ascii?Q?O2nWZE4fqAGYy76Y3xfmnhGw?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3370C30DDAB9574298E75A793F5C3737@eurprd04.prod.outlook.com>
+Content-ID: <F37D92A3A128C94D9A3FB75B25D5FE8A@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a16b1c44-c5fe-46c3-c003-08d980596fa8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Sep 2021 19:19:46.2661
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ad77a97-9411-4dd0-c111-08d9805a71e2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Sep 2021 19:26:59.4944
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LXB+KzmKxOn3vjapEjEY2q8Mv+09mmbGdpBxNS15seqjWk797yNsLNbEdjhgX/6tVSr4Afk88WnN7AAb0BP3og==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4685
+X-MS-Exchange-CrossTenant-userprincipalname: zHCGNlCc3hVzTMK/dfkU69+AhY7p27DatjAw7A02BscocurMKLGtr9k2sPY/C/Iq5AafJP+NvEt3lPWlLSU7qA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2863
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 24, 2021 at 05:52:19PM +0800, Xiaoliang Yang wrote:
+On Fri, Sep 24, 2021 at 05:52:20PM +0800, Xiaoliang Yang wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 >=20
-> Felix DSA needs to use this struct to export MAC table write and lookup
-> operations as well, for its stream identification functions, so export
-> them in preparation of that.
+> ocelot_mact_learn_streamdata() can be used in VSC9959 to overwrite an
+> FDB entry with stream data. The stream data includes SFID and SSID which
+> can be used for PSFP and FRER set.
+>=20
+> ocelot_mact_lookup() can be used to check if the given {DMAC, VID} FDB
+> entry is exist, and also can retrieve the DEST_IDX and entry type for
+> the FDB entry.
 >=20
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+
+This is most certainly not my patch either, so you can drop my name from it=
+.
+
 > ---
-
-I don't think this patch is my doing, is it? Can you please drop me from
-the author and the sign-off? Thanks.
-
->  drivers/net/ethernet/mscc/ocelot.c |  6 ------
->  drivers/net/ethernet/mscc/ocelot.h | 13 -------------
->  include/soc/mscc/ocelot.h          | 19 +++++++++++++++++++
->  3 files changed, 19 insertions(+), 19 deletions(-)
+>  drivers/net/ethernet/mscc/ocelot.c | 50 ++++++++++++++++++++++++++++++
+>  include/soc/mscc/ocelot.h          |  5 +++
+>  2 files changed, 55 insertions(+)
 >=20
 > diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/ms=
 cc/ocelot.c
-> index 9f481cf19931..35006b0fb963 100644
+> index 35006b0fb963..dc65247b91be 100644
 > --- a/drivers/net/ethernet/mscc/ocelot.c
 > +++ b/drivers/net/ethernet/mscc/ocelot.c
-> @@ -14,12 +14,6 @@
->  #define TABLE_UPDATE_SLEEP_US 10
->  #define TABLE_UPDATE_TIMEOUT_US 100000
+> @@ -114,6 +114,56 @@ int ocelot_mact_forget(struct ocelot *ocelot,
+>  }
+>  EXPORT_SYMBOL(ocelot_mact_forget);
 > =20
-> -struct ocelot_mact_entry {
-> -	u8 mac[ETH_ALEN];
-> -	u16 vid;
-> -	enum macaccess_entry_type type;
-> -};
-> -
->  /* Must be called with &ocelot->mact_lock held */
->  static inline u32 ocelot_mact_read_macaccess(struct ocelot *ocelot)
+> +int ocelot_mact_lookup(struct ocelot *ocelot, int *dst_idx,
+> +		       struct ocelot_mact_entry *entry)
+
+I think the arguments of this function can be improved.
+Currently, "entry" is an inout argument: entry->mac and entry->vid are
+input, and entry->type is output.
+
+I think it would be better if the argument list looked like this:
+
+int ocelot_mact_lookup(struct ocelot *ocelot, const unsigned char *addr,
+		       u16 vid, enum macaccess_entry_type *type, int *dst_idx)
+
+I think it's clearer this way which arguments are input and which are outpu=
+t.
+
+Additionally, you can stop exporting struct ocelot_mact_entry, if this
+is the only reason you needed it.
+
+> +{
+> +	int val;
+> +
+> +	mutex_lock(&ocelot->mact_lock);
+> +
+> +	ocelot_mact_select(ocelot, entry->mac, entry->vid);
+> +
+> +	/* Issue a read command with MACACCESS_VALID=3D1. */
+> +	ocelot_write(ocelot, ANA_TABLES_MACACCESS_VALID |
+> +		     ANA_TABLES_MACACCESS_MAC_TABLE_CMD(MACACCESS_CMD_READ),
+> +		     ANA_TABLES_MACACCESS);
+> +
+> +	if (ocelot_mact_wait_for_completion(ocelot)) {
+> +		mutex_unlock(&ocelot->mact_lock);
+> +		return -ETIMEDOUT;
+> +	}
+> +
+> +	/* Read back the entry flags */
+> +	val =3D ocelot_read(ocelot, ANA_TABLES_MACACCESS);
+> +
+> +	mutex_unlock(&ocelot->mact_lock);
+> +
+> +	if (!(val & ANA_TABLES_MACACCESS_VALID))
+> +		return -ENOENT;
+> +
+> +	*dst_idx =3D ANA_TABLES_MACACCESS_DEST_IDX_X(val);
+> +	entry->type =3D ANA_TABLES_MACACCESS_ENTRYTYPE_X(val);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(ocelot_mact_lookup);
+> +
+> +int ocelot_mact_learn_streamdata(struct ocelot *ocelot, int dst_idx,
+> +				 struct ocelot_mact_entry *entry, u32 data)
+
+It would be nice if ocelot_mact_learn_streamdata would follow the basic
+prototype of ocelot_mact_learn:
+
+int ocelot_mact_learn(struct ocelot *ocelot, int port,
+		      const unsigned char mac[ETH_ALEN],
+		      unsigned int vid, enum macaccess_entry_type type)
+
+just with the extra STREAMDATA argument at the end.
+Also, could we format the STREAMDATA nicer than a raw u32?
+
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&ocelot->mact_lock);
+> +	ocelot_write(ocelot, data, ANA_TABLES_STREAMDATA);
+> +	mutex_unlock(&ocelot->mact_lock);
+> +
+> +	ret =3D ocelot_mact_learn(ocelot, dst_idx, entry->mac, entry->vid,
+> +				entry->type);
+
+Hm, if you temporarily drop the lock just for ocelot_mact_learn to take
+it again, you allow somebody else to sneak in and learn another MAC
+table entry, and the STREAMDATA will get associated with that other guy
+and not with you, no?
+
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(ocelot_mact_learn_streamdata);
+> +
+>  static void ocelot_mact_init(struct ocelot *ocelot)
 >  {
-> diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/ms=
-cc/ocelot.h
-> index 1952d6a1b98a..a77050b13d18 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.h
-> +++ b/drivers/net/ethernet/mscc/ocelot.h
-> @@ -54,19 +54,6 @@ struct ocelot_dump_ctx {
->  	int idx;
->  };
-> =20
-> -/* MAC table entry types.
-> - * ENTRYTYPE_NORMAL is subject to aging.
-> - * ENTRYTYPE_LOCKED is not subject to aging.
-> - * ENTRYTYPE_MACv4 is not subject to aging. For IPv4 multicast.
-> - * ENTRYTYPE_MACv6 is not subject to aging. For IPv6 multicast.
-> - */
-> -enum macaccess_entry_type {
-> -	ENTRYTYPE_NORMAL =3D 0,
-> -	ENTRYTYPE_LOCKED,
-> -	ENTRYTYPE_MACv4,
-> -	ENTRYTYPE_MACv6,
-> -};
-> -
->  /* A (PGID) port mask structure, encoding the 2^ocelot->num_phys_ports
->   * possibilities of egress port masks for L2 multicast traffic.
->   * For a switch with 9 user ports, there are 512 possible port masks, bu=
-t the
+>  	/* Configure the learning mode entries attributes:
 > diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-> index 682cd058096c..e6773f4d09ce 100644
+> index e6773f4d09ce..455293652257 100644
 > --- a/include/soc/mscc/ocelot.h
 > +++ b/include/soc/mscc/ocelot.h
-> @@ -701,6 +701,25 @@ struct ocelot_skb_cb {
->  	u8 ts_id;
->  };
+> @@ -926,6 +926,11 @@ void ocelot_phylink_mac_link_up(struct ocelot *ocelo=
+t, int port,
+>  				bool tx_pause, bool rx_pause,
+>  				unsigned long quirks);
 > =20
-> +/* MAC table entry types.
-> + * ENTRYTYPE_NORMAL is subject to aging.
-> + * ENTRYTYPE_LOCKED is not subject to aging.
-> + * ENTRYTYPE_MACv4 is not subject to aging. For IPv4 multicast.
-> + * ENTRYTYPE_MACv6 is not subject to aging. For IPv6 multicast.
-> + */
-> +enum macaccess_entry_type {
-> +	ENTRYTYPE_NORMAL =3D 0,
-> +	ENTRYTYPE_LOCKED,
-> +	ENTRYTYPE_MACv4,
-> +	ENTRYTYPE_MACv6,
-> +};
+> +int ocelot_mact_lookup(struct ocelot *ocelot, int *dst_idx,
+> +		       struct ocelot_mact_entry *entry);
+> +int ocelot_mact_learn_streamdata(struct ocelot *ocelot, int dst_idx,
+> +				 struct ocelot_mact_entry *entry, u32 data);
 > +
-> +struct ocelot_mact_entry {
-> +	u8 mac[ETH_ALEN];
-> +	u16 vid;
-> +	enum macaccess_entry_type type;
-> +};
-> +
-
-Also, I am not sure that ocelot_mact_entry needs to be exported. More
-details in the next patch.
-
->  #define OCELOT_SKB_CB(skb) \
->  	((struct ocelot_skb_cb *)((skb)->cb))
-> =20
+>  #if IS_ENABLED(CONFIG_BRIDGE_MRP)
+>  int ocelot_mrp_add(struct ocelot *ocelot, int port,
+>  		   const struct switchdev_obj_mrp *mrp);
 > --=20
 > 2.17.1
 > =
