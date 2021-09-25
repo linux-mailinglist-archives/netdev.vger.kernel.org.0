@@ -2,41 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCA95418230
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 15:08:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75EBC418217
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 14:52:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245466AbhIYNJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 09:09:55 -0400
-Received: from mx22.baidu.com ([220.181.50.185]:56328 "EHLO baidu.com"
+        id S245155AbhIYMyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 08:54:02 -0400
+Received: from mx24.baidu.com ([111.206.215.185]:44488 "EHLO baidu.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S245112AbhIYNJw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 09:09:52 -0400
-Received: from BC-Mail-EX08.internal.baidu.com (unknown [172.31.51.48])
-        by Forcepoint Email with ESMTPS id 40FEFA9B5D149AE7CF6C;
-        Sat, 25 Sep 2021 20:51:04 +0800 (CST)
+        id S244836AbhIYMyB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 08:54:01 -0400
+Received: from BJHW-MAIL-EX04.internal.baidu.com (unknown [10.127.64.14])
+        by Forcepoint Email with ESMTPS id 0DF67B3AD95A37BB727A;
+        Sat, 25 Sep 2021 20:52:25 +0800 (CST)
 Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-EX08.internal.baidu.com (172.31.51.48) with Microsoft SMTP Server
+ BJHW-MAIL-EX04.internal.baidu.com (10.127.64.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Sat, 25 Sep 2021 20:51:03 +0800
+ 15.1.2308.14; Sat, 25 Sep 2021 20:52:24 +0800
 Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
  BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Sat, 25 Sep 2021 20:51:03 +0800
+ 15.1.2308.14; Sat, 25 Sep 2021 20:52:24 +0800
 From:   Cai Huoqing <caihuoqing@baidu.com>
 To:     <caihuoqing@baidu.com>
-CC:     Chris Snook <chris.snook@gmail.com>,
+CC:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Francois Romieu <romieu@fr.zoreil.com>,
-        "Steve Glendinning" <steve.glendinning@shawell.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 4/4] net: smsc: Fix function names in print messages and coments
-Date:   Sat, 25 Sep 2021 20:50:41 +0800
-Message-ID: <20210925125042.1629-4-caihuoqing@baidu.com>
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/2] FDDI: defxx: Fix function names in coments
+Date:   Sat, 25 Sep 2021 20:52:07 +0800
+Message-ID: <20210925125209.1700-1-caihuoqing@baidu.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210925125042.1629-1-caihuoqing@baidu.com>
-References: <20210925125042.1629-1-caihuoqing@baidu.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [172.31.63.8]
@@ -51,40 +46,40 @@ because the pci function wrappers are not called here.
 
 Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
 ---
- drivers/net/ethernet/smsc/smsc9420.c | 6 +++---
+ drivers/net/fddi/defxx.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/smsc/smsc9420.c b/drivers/net/ethernet/smsc/smsc9420.c
-index fdbd2a43e267..3d1176588f7d 100644
---- a/drivers/net/ethernet/smsc/smsc9420.c
-+++ b/drivers/net/ethernet/smsc/smsc9420.c
-@@ -788,7 +788,7 @@ static int smsc9420_alloc_rx_buffer(struct smsc9420_pdata *pd, int index)
- 				 PKT_BUF_SZ, DMA_FROM_DEVICE);
- 	if (dma_mapping_error(&pd->pdev->dev, mapping)) {
- 		dev_kfree_skb_any(skb);
--		netif_warn(pd, rx_err, pd->dev, "pci_map_single failed!\n");
-+		netif_warn(pd, rx_err, pd->dev, "dma_map_single failed!\n");
- 		return -ENOMEM;
- 	}
+diff --git a/drivers/net/fddi/defxx.c b/drivers/net/fddi/defxx.c
+index 6d1e3f49a3d3..5810e8473789 100644
+--- a/drivers/net/fddi/defxx.c
++++ b/drivers/net/fddi/defxx.c
+@@ -1028,7 +1028,7 @@ static void dfx_bus_config_check(DFX_board_t *bp)
+  *						or read adapter MAC address
+  *
+  * Assumptions:
+- *   Memory allocated from pci_alloc_consistent() call is physically
++ *   Memory allocated from dma_alloc_coherent() call is physically
+  *   contiguous, locked memory.
+  *
+  * Side Effects:
+@@ -3249,7 +3249,7 @@ static void dfx_rcv_queue_process(
+  *   is contained in a single physically contiguous buffer
+  *   in which the virtual address of the start of packet
+  *   (skb->data) can be converted to a physical address
+- *   by using pci_map_single().
++ *   by using dma_map_single().
+  *
+  *   Since the adapter architecture requires a three byte
+  *   packet request header to prepend the start of packet,
+@@ -3402,7 +3402,7 @@ static netdev_tx_t dfx_xmt_queue_pkt(struct sk_buff *skb,
+ 	 *			skb->data.
+ 	 *		 6. The physical address of the start of packet
+ 	 *			can be determined from the virtual address
+-	 *			by using pci_map_single() and is only 32-bits
++	 *			by using dma_map_single() and is only 32-bits
+ 	 *			wide.
+ 	 */
  
-@@ -940,7 +940,7 @@ static netdev_tx_t smsc9420_hard_start_xmit(struct sk_buff *skb,
- 				 DMA_TO_DEVICE);
- 	if (dma_mapping_error(&pd->pdev->dev, mapping)) {
- 		netif_warn(pd, tx_err, pd->dev,
--			   "pci_map_single failed, dropping packet\n");
-+			   "dma_map_single failed, dropping packet\n");
- 		return NETDEV_TX_BUSY;
- 	}
- 
-@@ -1551,7 +1551,7 @@ smsc9420_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (!pd->rx_ring)
- 		goto out_free_io_4;
- 
--	/* descriptors are aligned due to the nature of pci_alloc_consistent */
-+	/* descriptors are aligned due to the nature of dma_alloc_coherent */
- 	pd->tx_ring = (pd->rx_ring + RX_RING_SIZE);
- 	pd->tx_dma_addr = pd->rx_dma_addr +
- 	    sizeof(struct smsc9420_dma_desc) * RX_RING_SIZE;
 -- 
 2.25.1
 
