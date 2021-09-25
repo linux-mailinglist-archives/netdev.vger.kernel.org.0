@@ -2,116 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E7E04183B3
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 19:41:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D6A74183FC
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 20:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbhIYRm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 13:42:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47568 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229618AbhIYRmw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 13:42:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3341D60241;
-        Sat, 25 Sep 2021 17:41:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632591677;
-        bh=jTUPvgn+7lWrPPVxHKOZyH1EqRMOCPIGsd4h55JfcE4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=tAlz7+NpKpqNLtWHdEAXo6DHoiUUBVhBcckNBrk+EK8eA1NREarQlyYB8hXpAK+G1
-         yOMAlllPOMkHVxxHsFgEPoGXBdAmzhgJN2v6vEYAtK+ljKksnn3a2WeXvNFlm2Ncaw
-         noLW+i+3Q18f7m9LkPlTeglCwmIjdC2O2cc6fp6E2F89KA6yLHk2oAjfDf4zQ3rRLT
-         c5JaUlSc8aXtPEdnC8U9PfDfWE95KfqFqSiV1MWc8isBGOsB2dUs9qcjKsbgPZIYDq
-         iwaLJfAwRd3BRXuj3YfrI1wD/B85O8ZsbIf3/S6cW103ErvOZvBFmhG6gKQ1yHH1pm
-         CooTrE8rakAGg==
-Date:   Sat, 25 Sep 2021 12:41:15 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>
-Subject: Re: [PATCH mlx5-next 1/7] PCI/IOV: Provide internal VF index
-Message-ID: <20210925174115.GA511131@bhelgaas>
+        id S229722AbhIYSc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 14:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42440 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229711AbhIYScZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 14:32:25 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82E3C061570
+        for <netdev@vger.kernel.org>; Sat, 25 Sep 2021 11:30:50 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id l8so2217102edw.2
+        for <netdev@vger.kernel.org>; Sat, 25 Sep 2021 11:30:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=O5JwyRn1rbgSB0JM7MKHjqllh1/czrVl1yV1oflPmog=;
+        b=a7TeUSV5R1s+z12ce+d7orRQK2AZUdFgDSRGrLMHXU4Aaou3dJkPEF6aGB2dOCLE2F
+         3q+iNDusUWp9K3lg+03OPOyq4smgl/W51fqc2vq1S+mpSgWktmJSfBZUlZtXBojHFQ93
+         lpH9iCBlt9QKPQ8zadzBZcPnVLefqkbu2Xej2LwrjL0Cf40FAQKQimZZo5zrhEq1kkny
+         ptqJId9tCcnOuK9hwaXUS9nGWsWmqZsixyQIDTeu7Q7U0nrvSS1lAbkHVP/soNcJUYpF
+         5N4rcm2QGmhAIUuhBFnZ4CH3lWnSIMzTeW92a4QyH5ifB+bQMeUzMe9ydihlnKKcFqif
+         ZnKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=O5JwyRn1rbgSB0JM7MKHjqllh1/czrVl1yV1oflPmog=;
+        b=Uw+WaN2zi+HUe549QMTZfMbVuZSfSQC9aV99d1QLNc1BARtjFQopMMTvKKqLJyRCN1
+         TBP2kkVAdaeuI1MzcuE/zUZzViv8pNAEUQyc9w4UDf/3Ln3rmZ3duJ5o71q2apKBRF7R
+         et2BP4lVSR20AaTsQKPtWCXcT57acdIUItqG8Gg6ejlOsh13OEp+nmEmErfsFqSs3372
+         L1X96Cq71+ThYxwrDOa0xAkHZsuDPk3zWkXrjoAcAUUZbNKQT8Pm3oWo9voaWoPf+/E4
+         9g7Hhko18QvX0YK69Yz+ebqYPQeKn3pTNe23bMGljPXa48TxfzUOueNbelaBSFAhl7dz
+         ok8A==
+X-Gm-Message-State: AOAM530nVu2Ptf3R+GEmWS1dRnHZSOSsd0bScfEUUuL49FTdvre9Aaby
+        hLJLfAUrrGO7FzrJ0bmzrGc=
+X-Google-Smtp-Source: ABdhPJx1dAj5/O99zyD+BPEchcze4OHx6FX9S5PXAm5YPTnT/ZRogj2YNqFOsenrQDjNaYH1cm7a3g==
+X-Received: by 2002:a17:906:564e:: with SMTP id v14mr5414012ejr.424.1632594649312;
+        Sat, 25 Sep 2021 11:30:49 -0700 (PDT)
+Received: from skbuf ([188.26.53.217])
+        by smtp.gmail.com with ESMTPSA id d16sm6423770ejk.39.2021.09.25.11.30.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Sep 2021 11:30:48 -0700 (PDT)
+Date:   Sat, 25 Sep 2021 21:30:47 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        DENG Qingfang <dqfext@gmail.com>,
+        Mauri Sandberg <sandberg@mailfence.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>
+Subject: Re: [PATCH net-next 1/6 v6] net: dsa: rtl8366rb: Support bridge
+ offloading
+Message-ID: <20210925183047.pzeotver2nfjpevw@skbuf>
+References: <20210925132311.2040272-1-linus.walleij@linaro.org>
+ <20210925132311.2040272-2-linus.walleij@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YU71n4WSIztOdpbw@unreal>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210925132311.2040272-2-linus.walleij@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 25, 2021 at 01:10:39PM +0300, Leon Romanovsky wrote:
-> On Fri, Sep 24, 2021 at 08:08:45AM -0500, Bjorn Helgaas wrote:
-> > On Thu, Sep 23, 2021 at 09:35:32AM +0300, Leon Romanovsky wrote:
-> > > On Wed, Sep 22, 2021 at 04:59:30PM -0500, Bjorn Helgaas wrote:
-> > > > On Wed, Sep 22, 2021 at 01:38:50PM +0300, Leon Romanovsky wrote:
-> > > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > 
-> > > > > The PCI core uses the VF index internally, often called the vf_id,
-> > > > > during the setup of the VF, eg pci_iov_add_virtfn().
-> > > > > 
-> > > > > This index is needed for device drivers that implement live migration
-> > > > > for their internal operations that configure/control their VFs.
-> > > > >
-> > > > > Specifically, mlx5_vfio_pci driver that is introduced in coming patches
-> > > > > from this series needs it and not the bus/device/function which is
-> > > > > exposed today.
-> > > > > 
-> > > > > Add pci_iov_vf_id() which computes the vf_id by reversing the math that
-> > > > > was used to create the bus/device/function.
-> > > > > 
-> > > > > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> > > > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > 
-> > > > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> > > > 
-> > > > mlx5_core_sriov_set_msix_vec_count() looks like it does basically the
-> > > > same thing as pci_iov_vf_id() by iterating through VFs until it finds
-> > > > one with a matching devfn (although it *doesn't* check for a matching
-> > > > bus number, which seems like a bug).
-> ...
-
-> > And it still looks like the existing code is buggy.  This is called
-> > via sysfs, so if the PF is on bus X and the user writes to
-> > sriov_vf_msix_count for a VF on bus X+1, it looks like
-> > mlx5_core_sriov_set_msix_vec_count() will set the count for the wrong
-> > VF.
+On Sat, Sep 25, 2021 at 03:23:06PM +0200, Linus Walleij wrote:
+> From: DENG Qingfang <dqfext@gmail.com>
 > 
-> In mlx5_core_sriov_set_msix_vec_count(), we receive VF that is connected
-> to PF which has "struct mlx5_core_dev". My expectation is that they share
-> same bus as that PF was the one who created VFs. The mlx5 devices supports
-> upto 256 VFs and it is far below the bus split mentioned in PCI spec.
+> Use port isolation registers to configure bridge offloading.
 > 
-> How can VF and their respective PF have different bus numbers?
+> Tested on the D-Link DIR-685, switching between ports and
+> sniffing ports to make sure no packets leak.
+> 
+> Cc: Vladimir Oltean <olteanv@gmail.com>
+> Cc: Mauri Sandberg <sandberg@mailfence.com>
+> Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
 
-See PCIe r5.0, sec 9.2.1.2.  For example,
-
-  PF 0 on bus 20
-    First VF Offset   1
-    VF Stride         1
-    NumVFs          511
-  VF 0,1   through VF 0,255 on bus 20
-  VF 0,256 through VF 0,511 on bus 21
-
-This is implemented in pci_iov_add_virtfn(), which computes the bus
-number and devfn from the VF ID.
-
-pci_iov_virtfn_devfn(VF 0,1) == pci_iov_virtfn_devfn(VF 0,256), so if
-the user writes to sriov_vf_msix_count for VF 0,256, it looks like
-we'll call mlx5_set_msix_vec_count() for VF 0,1 instead of VF 0,256.
-
-The spec encourages devices that require no more than 256 devices to
-locate them all on the same bus number (PCIe r5.0, sec 9.1), so if you
-only have 255 VFs, you may avoid the problem.
-
-But in mlx5_core_sriov_set_msix_vec_count(), it's not obvious that it
-is safe to assume the bus number is the same.
-
-Bjorn
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
