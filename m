@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3257B41819E
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:25:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA5A94181A2
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:25:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343626AbhIYL00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 07:26:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57482 "EHLO mail.kernel.org"
+        id S1344000AbhIYL03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 07:26:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57282 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343583AbhIYLZt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 07:25:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C0A561350;
-        Sat, 25 Sep 2021 11:24:14 +0000 (UTC)
+        id S245756AbhIYLZn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 07:25:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CC77061288;
+        Sat, 25 Sep 2021 11:24:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632569055;
-        bh=7fuwMn0UcxFbiik3Z+N/XOLwJAq59/miUfWhpOwdqE0=;
+        s=k20201202; t=1632569048;
+        bh=UGe1xR5nQjl5sitWRrZO39MCG615CkI/XgeO5EfkyHA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ge34eptxt6ik9tM4bBGWV+EhWY2pUsDmBrBnZIJGDR8WqRukI42+ESfMMMV9+gmyk
-         NzOJ5DLBu2o6NL6oi1jrLFHILSXlbaTkjCziDiYsxegSE/Jrp/gGgvJVR7RaEimH2k
-         u2KZhp8p3Q+odnSJGYZYpzbjUOdLrNqJ2GAMUiwsAT61gUQdMMmLpIZkJsjPKLDgja
-         951E4DCRpAC2brIp9LRFyfkQegtVBAkmpGV+8JNtEYeEpLtKlgfwpF/3fdAikKH6yb
-         0nLBFwTJ2r2zmbCo8w91OLQqyLpu05TcH/BXTltlVcbcWo+yMP4awblDvVJZGPBPj9
-         feyG+jP8SLazQ==
+        b=eXJnTqgMbORVHaUsGV03ryKJr6A1PfdhYoeVsyCNEges2Dn9WZ7FE4+7QH3xqJvR9
+         Mz5qz1HhsuOgoYQOxRRc2geSU+85mrlqpccGRTMS5HNtlTD9qpZiA6BDhj7DVZhKv7
+         sj2HzVf0JYXhCn2l9u3cBQBv5vEik7dYiF8tPoahtV6EPb5DdE99UK8bicH0CXAY1W
+         HNyqws6BMBbppxtt3484q7TdwfEfbBOeq/bgChcm6v6hSMl1crla5Ovo4z8W/DKqtc
+         ElB0gliFBoCj4F940uxkATHVFsfX4EYpq0KC0xZ9LpCNrkxbV9d5shVyGsAIldIE1K
+         SK3ShGOLcii1A==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -70,9 +70,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v1 18/21] net: wwan: iosm: Move devlink_register to be last devlink command
-Date:   Sat, 25 Sep 2021 14:22:58 +0300
-Message-Id: <6a63d8f6484a46c9120155082a396b44ce86bd1c.1632565508.git.leonro@nvidia.com>
+Subject: [PATCH net-next v1 19/21] ptp: ocp: Move devlink registration to be last devlink command
+Date:   Sat, 25 Sep 2021 14:22:59 +0300
+Message-Id: <1541e7cd8262ce9db7544669438d0f4360068dd2.1632565508.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1632565508.git.leonro@nvidia.com>
 References: <cover.1632565508.git.leonro@nvidia.com>
@@ -85,68 +85,55 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Leon Romanovsky <leonro@nvidia.com>
 
 This change prevents from users to access device before devlink is
-fully configured. Indirectly this change fixes the commit mentioned
-below where devlink_unregister() was prematurely removed.
+fully configured.
 
-Fixes: db4278c55fa5 ("devlink: Make devlink_register to be void")
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/wwan/iosm/iosm_ipc_devlink.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/ptp/ptp_ocp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_devlink.c b/drivers/net/wwan/iosm/iosm_ipc_devlink.c
-index 42dbe7fe663c..6fe56f73011b 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_devlink.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_devlink.c
-@@ -305,7 +305,6 @@ struct iosm_devlink *ipc_devlink_init(struct iosm_imem *ipc_imem)
- 	ipc_devlink->devlink_ctx = devlink_ctx;
- 	ipc_devlink->pcie = ipc_imem->pcie;
- 	ipc_devlink->dev = ipc_imem->dev;
--	devlink_register(devlink_ctx);
- 
- 	rc = devlink_params_register(devlink_ctx, iosm_devlink_params,
- 				     ARRAY_SIZE(iosm_devlink_params));
-@@ -315,7 +314,6 @@ struct iosm_devlink *ipc_devlink_init(struct iosm_imem *ipc_imem)
- 		goto param_reg_fail;
+diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+index 4c25467198e3..34f943c8c9fd 100644
+--- a/drivers/ptp/ptp_ocp.c
++++ b/drivers/ptp/ptp_ocp.c
+@@ -2455,7 +2455,6 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		return -ENOMEM;
  	}
  
--	devlink_params_publish(devlink_ctx);
- 	ipc_devlink->cd_file_info = list;
+-	devlink_register(devlink);
+ 	err = pci_enable_device(pdev);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "pci_enable_device\n");
+@@ -2497,7 +2496,7 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		goto out;
  
- 	rc = ipc_devlink_create_region(ipc_devlink);
-@@ -334,6 +332,7 @@ struct iosm_devlink *ipc_devlink_init(struct iosm_imem *ipc_imem)
- 	init_completion(&ipc_devlink->devlink_sio.read_sem);
- 	skb_queue_head_init(&ipc_devlink->devlink_sio.rx_list);
+ 	ptp_ocp_info(bp);
+-
++	devlink_register(devlink);
+ 	return 0;
  
-+	devlink_register(devlink_ctx);
- 	dev_dbg(ipc_devlink->dev, "iosm devlink register success");
- 
- 	return ipc_devlink;
-@@ -341,7 +340,6 @@ struct iosm_devlink *ipc_devlink_init(struct iosm_imem *ipc_imem)
- chnl_get_fail:
- 	ipc_devlink_destroy_region(ipc_devlink);
- region_create_fail:
--	devlink_params_unpublish(devlink_ctx);
- 	devlink_params_unregister(devlink_ctx, iosm_devlink_params,
- 				  ARRAY_SIZE(iosm_devlink_params));
- param_reg_fail:
-@@ -358,8 +356,8 @@ void ipc_devlink_deinit(struct iosm_devlink *ipc_devlink)
- {
- 	struct devlink *devlink_ctx = ipc_devlink->devlink_ctx;
- 
-+	devlink_unregister(devlink_ctx);
- 	ipc_devlink_destroy_region(ipc_devlink);
--	devlink_params_unpublish(devlink_ctx);
- 	devlink_params_unregister(devlink_ctx, iosm_devlink_params,
- 				  ARRAY_SIZE(iosm_devlink_params));
- 	if (ipc_devlink->devlink_sio.devlink_read_pend) {
-@@ -370,6 +368,5 @@ void ipc_devlink_deinit(struct iosm_devlink *ipc_devlink)
- 		skb_queue_purge(&ipc_devlink->devlink_sio.rx_list);
- 
- 	ipc_imem_sys_devlink_close(ipc_devlink);
--	devlink_unregister(devlink_ctx);
- 	devlink_free(devlink_ctx);
+ out:
+@@ -2506,7 +2505,6 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ out_disable:
+ 	pci_disable_device(pdev);
+ out_unregister:
+-	devlink_unregister(devlink);
+ 	devlink_free(devlink);
+ 	return err;
  }
+@@ -2517,11 +2515,11 @@ ptp_ocp_remove(struct pci_dev *pdev)
+ 	struct ptp_ocp *bp = pci_get_drvdata(pdev);
+ 	struct devlink *devlink = priv_to_devlink(bp);
+ 
++	devlink_unregister(devlink);
+ 	ptp_ocp_detach(bp);
+ 	pci_set_drvdata(pdev, NULL);
+ 	pci_disable_device(pdev);
+ 
+-	devlink_unregister(devlink);
+ 	devlink_free(devlink);
+ }
+ 
 -- 
 2.31.1
 
