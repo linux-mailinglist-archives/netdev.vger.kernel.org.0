@@ -2,96 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EC0F4184E6
-	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 00:16:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B951E4184DF
+	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 00:16:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbhIYWSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 18:18:16 -0400
-Received: from mail-ot1-f51.google.com ([209.85.210.51]:33500 "EHLO
-        mail-ot1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbhIYWSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 18:18:11 -0400
-Received: by mail-ot1-f51.google.com with SMTP id s36-20020a05683043a400b0054d4c88353dso7640244otv.0;
-        Sat, 25 Sep 2021 15:16:35 -0700 (PDT)
+        id S230113AbhIYWSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 18:18:09 -0400
+Received: from mail-oi1-f173.google.com ([209.85.167.173]:42867 "EHLO
+        mail-oi1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230024AbhIYWSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 18:18:09 -0400
+Received: by mail-oi1-f173.google.com with SMTP id x124so19858915oix.9;
+        Sat, 25 Sep 2021 15:16:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=FpW3DBFCE8qk3/WrOETm+elC+ikU+jNmzXfQ4H1gg0E=;
-        b=KqhKeEHoT4kQfPilmY5UdZeU/J1UQPHt6hTHsZtRycm6nmzs1hNLk6DhXvacLcODPD
-         JWgdc12CPxQX4Bjehcxw4vFY9adk34g77vI1omRopMdPN3uRzrYOhxX1UptjP8mGXhzt
-         mfz/OXFr7gW8QWjAY85yQPvO2oJXbeiJUWC0VCAeZwvigKcmAytyvFff3z5ysuhhoKhi
-         l6MSv90PvNUqvtF7IdvPm8Y5701q/flwvrU69qeHdjH39MaEwKKKRyDeDtiTwm8MJlep
-         E9iF45pkgTYFkA79b61UfYu+Nmv8Vd4uKuRaEr9DN3w8JeIP4QqJchscIE1uOsLhiVxA
-         OpVQ==
-X-Gm-Message-State: AOAM531hGdLYjIu0ZNfYfXl3Te8iAEvDjDFxhmNkyA5P4TVcHAZAY2+z
-        S4FoG80HNosc1WyKPgowqw==
-X-Google-Smtp-Source: ABdhPJxDZmLtb6AEW6lYozXpuwFp7CVefOJn9HXZ8cCR5cQl8/2w5SChodyo8ByACA4nNEmpUmtxrw==
-X-Received: by 2002:a9d:6c52:: with SMTP id g18mr10068166otq.75.1632608195370;
-        Sat, 25 Sep 2021 15:16:35 -0700 (PDT)
+        bh=4zZa0pNx5SO7y8XUgl4L6wylE3A2MDP8EXBjRieRoGg=;
+        b=DIL9hY59O6orwZMpvlMeyNSHAA0DVnlYINIBsEJO8VjYmv/xaPluCcg2t5m1GffqPc
+         IZKiqrvJFHvAMdeiueazvnCaTPIKPvcPBjZyui+79oZI4F0m51Ehb/2SMC44s4Rx0saA
+         iRQlrWaar50SqRh9W+3ovNdR3NTk6+d2dZ4wkt9bqcqyifKyxbmwgKLxUXtPl/3/dSfO
+         YulnQArH/tVToZ8Wm2Ldb0wz33tf25DE2bWQHgUmLDLvd3jkTu5a24s/AqKiv9Op0FLf
+         jXHshwvG9wti9VlnI0eYxFaOTAwgRXoB3wMS6wxGcFVO3jU6JsDlp+u6U83JjmLz2748
+         k+dQ==
+X-Gm-Message-State: AOAM532EAGhPkh+Gg6YQ1mL2AVhc4zDuCSNMvMacdRQxbtXHt6mvmo54
+        VWzdSsU4loCKeGURglQPIA==
+X-Google-Smtp-Source: ABdhPJyxrl+MLrGaVMhZlIuZKpsBWIPx8RYrEaa/BgmMRqDJoT3O8C2TV3JX6WZQqreUbBZ5fKjhtQ==
+X-Received: by 2002:a05:6808:1a04:: with SMTP id bk4mr6680603oib.85.1632608193387;
+        Sat, 25 Sep 2021 15:16:33 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id 10sm587122oti.79.2021.09.25.15.16.33
+        by smtp.gmail.com with ESMTPSA id z17sm2305434ooz.38.2021.09.25.15.16.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Sep 2021 15:16:34 -0700 (PDT)
-Received: (nullmailer pid 3839366 invoked by uid 1000);
+        Sat, 25 Sep 2021 15:16:32 -0700 (PDT)
+Received: (nullmailer pid 3839363 invoked by uid 1000);
         Sat, 25 Sep 2021 22:16:30 -0000
 From:   Rob Herring <robh@kernel.org>
 To:     Justin Chen <justinpopo6@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-media@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-        devicetree@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, linaro-mm-sig@lists.linaro.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
+Cc:     netdev@vger.kernel.org,
         =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
         =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        devicetree@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Doug Berger <opendmb@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
         Michael Chan <michael.chan@broadcom.com>,
-        Russell King <linux@armlinux.org.uk>
-In-Reply-To: <1632519891-26510-3-git-send-email-justinpopo6@gmail.com>
-References: <1632519891-26510-1-git-send-email-justinpopo6@gmail.com> <1632519891-26510-3-git-send-email-justinpopo6@gmail.com>
-Subject: Re: [PATCH net-next 2/5] dt-bindings: net: brcm,unimac-mdio: Add asp-v2.0
+        bcm-kernel-feedback-list@broadcom.com,
+        Arnd Bergmann <arnd@arndb.de>, Andrew Lunn <andrew@lunn.ch>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        dri-devel@lists.freedesktop.org,
+        Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <1632519891-26510-2-git-send-email-justinpopo6@gmail.com>
+References: <1632519891-26510-1-git-send-email-justinpopo6@gmail.com> <1632519891-26510-2-git-send-email-justinpopo6@gmail.com>
+Subject: Re: [PATCH net-next 1/5] dt-bindings: net: Brcm ASP 2.0 Ethernet controller
 Date:   Sat, 25 Sep 2021 17:16:30 -0500
-Message-Id: <1632608190.786543.3839365.nullmailer@robh.at.kernel.org>
+Message-Id: <1632608190.772021.3839362.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Sep 2021 14:44:48 -0700, Justin Chen wrote:
-> The ASP 2.0 Ethernet controller uses a brcm unimac.
+On Fri, 24 Sep 2021 14:44:47 -0700, Justin Chen wrote:
+> From: Florian Fainelli <f.fainelli@gmail.com>
 > 
-> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+> Add a binding document for the Broadcom ASP 2.0 Ethernet controller.
+> 
 > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 > ---
->  Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml | 1 +
->  1 file changed, 1 insertion(+)
+>  .../devicetree/bindings/net/brcm,asp-v2.0.yaml     | 147 +++++++++++++++++++++
+>  1 file changed, 147 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
 > 
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml:79:10: [warning] wrong indentation: expected 10 but found 9 (indentation)
 
-Full log is available here: https://patchwork.ozlabs.org/patch/1532529
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/brcm,asp-v2.0.example.dt.yaml: asp@9c00000: 'mdio@c614', 'mdio@ce14' do not match any of the regexes: 'pinctrl-[0-9]+'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
+Documentation/devicetree/bindings/net/brcm,asp-v2.0.example.dt.yaml:0:0: /example-0/asp@9c00000/mdio@c614: failed to match any schema with compatible: ['brcm,asp-v2.0-mdio']
+Documentation/devicetree/bindings/net/brcm,asp-v2.0.example.dt.yaml:0:0: /example-0/asp@9c00000/mdio@ce14: failed to match any schema with compatible: ['brcm,asp-v2.0-mdio']
 
+doc reference errors (make refcheckdocs):
 
-mdio@e14: #address-cells:0:0: 1 was expected
-	arch/arm64/boot/dts/broadcom/bcm2711-rpi-400.dt.yaml
-	arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dt.yaml
-	arch/arm/boot/dts/bcm2711-rpi-400.dt.yaml
-	arch/arm/boot/dts/bcm2711-rpi-4-b.dt.yaml
+See https://patchwork.ozlabs.org/patch/1532528
 
-mdio@e14: #size-cells:0:0: 0 was expected
-	arch/arm64/boot/dts/broadcom/bcm2711-rpi-400.dt.yaml
-	arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dt.yaml
-	arch/arm/boot/dts/bcm2711-rpi-400.dt.yaml
-	arch/arm/boot/dts/bcm2711-rpi-4-b.dt.yaml
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
