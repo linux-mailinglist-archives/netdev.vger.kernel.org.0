@@ -2,109 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32F65418487
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 22:52:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EC0F4184E6
+	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 00:16:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229960AbhIYUyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 16:54:13 -0400
-Received: from mxout02.lancloud.ru ([45.84.86.82]:49614 "EHLO
-        mxout02.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbhIYUyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 16:54:12 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru 020C82084E96
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC/PATCH 12/18] ravb: Add timestamp to struct ravb_hw_info
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        id S230145AbhIYWSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 18:18:16 -0400
+Received: from mail-ot1-f51.google.com ([209.85.210.51]:33500 "EHLO
+        mail-ot1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230024AbhIYWSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 18:18:11 -0400
+Received: by mail-ot1-f51.google.com with SMTP id s36-20020a05683043a400b0054d4c88353dso7640244otv.0;
+        Sat, 25 Sep 2021 15:16:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=FpW3DBFCE8qk3/WrOETm+elC+ikU+jNmzXfQ4H1gg0E=;
+        b=KqhKeEHoT4kQfPilmY5UdZeU/J1UQPHt6hTHsZtRycm6nmzs1hNLk6DhXvacLcODPD
+         JWgdc12CPxQX4Bjehcxw4vFY9adk34g77vI1omRopMdPN3uRzrYOhxX1UptjP8mGXhzt
+         mfz/OXFr7gW8QWjAY85yQPvO2oJXbeiJUWC0VCAeZwvigKcmAytyvFff3z5ysuhhoKhi
+         l6MSv90PvNUqvtF7IdvPm8Y5701q/flwvrU69qeHdjH39MaEwKKKRyDeDtiTwm8MJlep
+         E9iF45pkgTYFkA79b61UfYu+Nmv8Vd4uKuRaEr9DN3w8JeIP4QqJchscIE1uOsLhiVxA
+         OpVQ==
+X-Gm-Message-State: AOAM531hGdLYjIu0ZNfYfXl3Te8iAEvDjDFxhmNkyA5P4TVcHAZAY2+z
+        S4FoG80HNosc1WyKPgowqw==
+X-Google-Smtp-Source: ABdhPJxDZmLtb6AEW6lYozXpuwFp7CVefOJn9HXZ8cCR5cQl8/2w5SChodyo8ByACA4nNEmpUmtxrw==
+X-Received: by 2002:a9d:6c52:: with SMTP id g18mr10068166otq.75.1632608195370;
+        Sat, 25 Sep 2021 15:16:35 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id 10sm587122oti.79.2021.09.25.15.16.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Sep 2021 15:16:34 -0700 (PDT)
+Received: (nullmailer pid 3839366 invoked by uid 1000);
+        Sat, 25 Sep 2021 22:16:30 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Justin Chen <justinpopo6@gmail.com>
+Cc:     dri-devel@lists.freedesktop.org, Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-media@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
+        devicetree@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "Geert Uytterhoeven" <geert+renesas@glider.be>,
-        Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
- <20210923140813.13541-13-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <ef7c0a4c-cd4d-817a-d5af-3af1c058964f@omp.ru>
-Date:   Sat, 25 Sep 2021 23:52:31 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-MIME-Version: 1.0
-In-Reply-To: <20210923140813.13541-13-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+        Andrew Lunn <andrew@lunn.ch>, linaro-mm-sig@lists.linaro.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Russell King <linux@armlinux.org.uk>
+In-Reply-To: <1632519891-26510-3-git-send-email-justinpopo6@gmail.com>
+References: <1632519891-26510-1-git-send-email-justinpopo6@gmail.com> <1632519891-26510-3-git-send-email-justinpopo6@gmail.com>
+Subject: Re: [PATCH net-next 2/5] dt-bindings: net: brcm,unimac-mdio: Add asp-v2.0
+Date:   Sat, 25 Sep 2021 17:16:30 -0500
+Message-Id: <1632608190.786543.3839365.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/23/21 5:08 PM, Biju Das wrote:
-
-> R-Car AVB-DMAC supports timestamp feature.
-> Add a timestamp hw feature bit to struct ravb_hw_info
-> to add this feature only for R-Car.
+On Fri, 24 Sep 2021 14:44:48 -0700, Justin Chen wrote:
+> The ASP 2.0 Ethernet controller uses a brcm unimac.
 > 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 > ---
->  drivers/net/ethernet/renesas/ravb.h      |  2 +
->  drivers/net/ethernet/renesas/ravb_main.c | 68 +++++++++++++++---------
->  2 files changed, 45 insertions(+), 25 deletions(-)
+>  Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index ab4909244276..2505de5d4a28 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -1034,6 +1034,7 @@ struct ravb_hw_info {
->  	unsigned mii_rgmii_selection:1;	/* E-MAC supports mii/rgmii selection */
->  	unsigned half_duplex:1;		/* E-MAC supports half duplex mode */
->  	unsigned rx_2k_buffers:1;	/* AVB-DMAC has Max 2K buf size on RX */
-> +	unsigned timestamp:1;		/* AVB-DMAC has timestamp */
 
-   Isn't this a matter of the gPTP support as well, i.e. no separate flag needed?
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-[...]
-> @@ -1089,6 +1090,7 @@ struct ravb_private {
->  	unsigned int num_tx_desc;	/* TX descriptors per packet */
->  
->  	int duplex;
-> +	struct ravb_rx_desc *rgeth_rx_ring[NUM_RX_QUEUE];
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-   Strange place to declare this...
+Full log is available here: https://patchwork.ozlabs.org/patch/1532529
 
->  
->  	const struct ravb_hw_info *info;
->  	struct reset_control *rstc;
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index 9c0d35f4b221..2c375002ebcb 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -949,11 +949,14 @@ static bool ravb_queue_interrupt(struct net_device *ndev, int q)
->  
->  static bool ravb_timestamp_interrupt(struct net_device *ndev)
->  {
-> +	struct ravb_private *priv = netdev_priv(ndev);
-> +	const struct ravb_hw_info *info = priv->info;
->  	u32 tis = ravb_read(ndev, TIS);
->  
->  	if (tis & TIS_TFUF) {
->  		ravb_write(ndev, ~(TIS_TFUF | TIS_RESERVED), TIS);
-> -		ravb_get_tx_tstamp(ndev);
-> +		if (info->timestamp)
-> +			ravb_get_tx_tstamp(ndev);
 
-   Shouldn't we just disable TIS.TFUF permanently instead for the non-gPTP case?
+mdio@e14: #address-cells:0:0: 1 was expected
+	arch/arm64/boot/dts/broadcom/bcm2711-rpi-400.dt.yaml
+	arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dt.yaml
+	arch/arm/boot/dts/bcm2711-rpi-400.dt.yaml
+	arch/arm/boot/dts/bcm2711-rpi-4-b.dt.yaml
 
-[...]
+mdio@e14: #size-cells:0:0: 0 was expected
+	arch/arm64/boot/dts/broadcom/bcm2711-rpi-400.dt.yaml
+	arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dt.yaml
+	arch/arm/boot/dts/bcm2711-rpi-400.dt.yaml
+	arch/arm/boot/dts/bcm2711-rpi-4-b.dt.yaml
 
-MBR, Sergey
