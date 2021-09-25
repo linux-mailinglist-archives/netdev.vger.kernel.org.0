@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95D3741814B
-	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:23:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24E2C41814F
+	for <lists+netdev@lfdr.de>; Sat, 25 Sep 2021 13:23:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244876AbhIYLY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 07:24:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55572 "EHLO mail.kernel.org"
+        id S244762AbhIYLZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 07:25:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55678 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244725AbhIYLYv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Sep 2021 07:24:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AD4986127C;
-        Sat, 25 Sep 2021 11:23:15 +0000 (UTC)
+        id S244666AbhIYLYy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Sep 2021 07:24:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1B42A61283;
+        Sat, 25 Sep 2021 11:23:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632568996;
-        bh=cCL9OPu7ylTp3lXAkUh0UgmGr0ZctC2d0EdfzXcuSDs=;
+        s=k20201202; t=1632569000;
+        bh=xRgZ3AWYE+cjw+AzmeqCWdR+bIHtvensmJ8uaJBAUps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c9YNQD+E2p1TmAdtqT0WIwmiJu5kmUIVN+O+nplzesA2lLLcARe0V/utgO/vGx8lF
-         DaZJnAMul9QUW5QGKzdFYXLss2DIlj4VOai0ic6LDtd7+26oCTBwNaeAJviNFDzSA1
-         COwBr7dTsUw7g0++Wj9lyb3LuPDjKcbnr2Dsrt7/p3VwD6QwP7Umb69VvNtd/6+TTj
-         mlM+hoVAKG9BTNPfXEH//VST0WH4AcLFAK8sbQQC0r1UH4mERsDgPC0j9YYFdoNvy1
-         4toONRoZ2+u/r7lz48dgmissq7azoDonbkAMJLJxFHBliNJx9qw8YM63YO2F/FeYr6
-         6JQgCJMr6c7Cw==
+        b=aymRkgQYkTzDBhqqTP79folPWNi8X49mHO2L2tqiqUk9wXUzZ0Di8bsa3ZfzLMbvC
+         20CfstwEKU6FWZb2AL+7WZrvdgnkYyVG5xwv0JRAUCRnSchtrfU6SOBVeT0UU6dT8q
+         AQSjWadd2bAEwdBC9j0iREfJ68uz9ce089/dDgLJag5I3c0/MQIHKZqVTSDDPSoLGq
+         XJox5pp0mYvE261+05t8Gbg0v0NBQmbQa1XuS/MNhD8Zzaqbvnwk7Nc467F0ItXvao
+         x7uUtwyzZoX4fJ2DL/t5c8uRX3UDaevYHaNGFK7uHak0Xh/vTGov1R5n1xA4TFKgsd
+         doi+Oq+vIj9Rw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -70,9 +70,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v1 04/21] dpaa2-eth: Register devlink instance at the end of probe
-Date:   Sat, 25 Sep 2021 14:22:44 +0300
-Message-Id: <c6abd202014523d6e685a97c0ec844d2756ffd34.1632565508.git.leonro@nvidia.com>
+Subject: [PATCH net-next v1 05/21] net: hinic: Open device for the user access when it is ready
+Date:   Sat, 25 Sep 2021 14:22:45 +0300
+Message-Id: <9956e9af5948084d725c547e307eb13656d569fc.1632565508.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1632565508.git.leonro@nvidia.com>
 References: <cover.1632565508.git.leonro@nvidia.com>
@@ -84,119 +84,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Move devlink_register to be the last command in the initialization
-sequence.
+Move devlink registration to be the last command in device activation,
+so it opens the driver to accept such devlink commands from the user
+when it is fully initialized.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../ethernet/freescale/dpaa2/dpaa2-eth-devlink.c   | 14 +++++++++++---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c   |  9 ++++++---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h   |  5 ++++-
- 3 files changed, 21 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.c
-index 426926fb6fc6..7fefe1574b6a 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.c
-@@ -189,7 +189,7 @@ static const struct devlink_ops dpaa2_eth_devlink_ops = {
- 	.trap_group_action_set = dpaa2_eth_dl_trap_group_action_set,
- };
- 
--int dpaa2_eth_dl_register(struct dpaa2_eth_priv *priv)
-+int dpaa2_eth_dl_alloc(struct dpaa2_eth_priv *priv)
- {
- 	struct net_device *net_dev = priv->net_dev;
- 	struct device *dev = net_dev->dev.parent;
-@@ -203,15 +203,23 @@ int dpaa2_eth_dl_register(struct dpaa2_eth_priv *priv)
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+index b2ece3adbc72..657a15447bd0 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+@@ -754,11 +754,9 @@ static int init_pfhwdev(struct hinic_pfhwdev *pfhwdev)
+ 		return err;
  	}
- 	dl_priv = devlink_priv(priv->devlink);
- 	dl_priv->dpaa2_priv = priv;
-+	return 0;
-+}
-+
-+void dpaa2_eth_dl_free(struct dpaa2_eth_priv *priv)
-+{
-+	devlink_free(priv->devlink);
-+}
-+
  
-+void dpaa2_eth_dl_register(struct dpaa2_eth_priv *priv)
-+{
- 	devlink_register(priv->devlink);
--	return 0;
- }
+-	hinic_devlink_register(hwdev->devlink_dev);
+ 	err = hinic_func_to_func_init(hwdev);
+ 	if (err) {
+ 		dev_err(&hwif->pdev->dev, "Failed to init mailbox\n");
+-		hinic_devlink_unregister(hwdev->devlink_dev);
+ 		hinic_pf_to_mgmt_free(&pfhwdev->pf_to_mgmt);
+ 		return err;
+ 	}
+@@ -781,7 +779,7 @@ static int init_pfhwdev(struct hinic_pfhwdev *pfhwdev)
+ 	}
  
- void dpaa2_eth_dl_unregister(struct dpaa2_eth_priv *priv)
- {
- 	devlink_unregister(priv->devlink);
--	devlink_free(priv->devlink);
- }
- 
- int dpaa2_eth_dl_port_add(struct dpaa2_eth_priv *priv)
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 7065c71ed7b8..03c168b1712f 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -4431,7 +4431,7 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
- 	if (err)
- 		goto err_connect_mac;
- 
--	err = dpaa2_eth_dl_register(priv);
-+	err = dpaa2_eth_dl_alloc(priv);
- 	if (err)
- 		goto err_dl_register;
- 
-@@ -4453,6 +4453,7 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
- 	dpaa2_dbg_add(priv);
- #endif
- 
-+	dpaa2_eth_dl_register(priv);
- 	dev_info(dev, "Probed interface %s\n", net_dev->name);
+ 	hinic_set_pf_action(hwif, HINIC_PF_MGMT_ACTIVE);
+-
++	hinic_devlink_register(hwdev->devlink_dev);
  	return 0;
+ }
  
-@@ -4461,7 +4462,7 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
- err_dl_port_add:
- 	dpaa2_eth_dl_traps_unregister(priv);
- err_dl_trap_register:
--	dpaa2_eth_dl_unregister(priv);
-+	dpaa2_eth_dl_free(priv);
- err_dl_register:
- 	dpaa2_eth_disconnect_mac(priv);
- err_connect_mac:
-@@ -4508,6 +4509,8 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
- 	net_dev = dev_get_drvdata(dev);
- 	priv = netdev_priv(net_dev);
+@@ -793,6 +791,7 @@ static void free_pfhwdev(struct hinic_pfhwdev *pfhwdev)
+ {
+ 	struct hinic_hwdev *hwdev = &pfhwdev->hwdev;
  
-+	dpaa2_eth_dl_unregister(priv);
-+
- #ifdef CONFIG_DEBUG_FS
- 	dpaa2_dbg_remove(priv);
- #endif
-@@ -4519,7 +4522,7 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
++	hinic_devlink_unregister(hwdev->devlink_dev);
+ 	hinic_set_pf_action(hwdev->hwif, HINIC_PF_MGMT_INIT);
  
- 	dpaa2_eth_dl_port_del(priv);
- 	dpaa2_eth_dl_traps_unregister(priv);
--	dpaa2_eth_dl_unregister(priv);
-+	dpaa2_eth_dl_free(priv);
+ 	if (!HINIC_IS_VF(hwdev->hwif)) {
+@@ -810,8 +809,6 @@ static void free_pfhwdev(struct hinic_pfhwdev *pfhwdev)
  
- 	if (priv->do_link_poll)
- 		kthread_stop(priv->poll_thread);
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index cdb623d5f2c1..628d2d45f045 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -725,7 +725,10 @@ void dpaa2_eth_set_rx_taildrop(struct dpaa2_eth_priv *priv,
+ 	hinic_func_to_func_free(hwdev);
  
- extern const struct dcbnl_rtnl_ops dpaa2_eth_dcbnl_ops;
+-	hinic_devlink_unregister(hwdev->devlink_dev);
+-
+ 	hinic_pf_to_mgmt_free(&pfhwdev->pf_to_mgmt);
+ }
  
--int dpaa2_eth_dl_register(struct dpaa2_eth_priv *priv);
-+int dpaa2_eth_dl_alloc(struct dpaa2_eth_priv *priv);
-+void dpaa2_eth_dl_free(struct dpaa2_eth_priv *priv);
-+
-+void dpaa2_eth_dl_register(struct dpaa2_eth_priv *priv);
- void dpaa2_eth_dl_unregister(struct dpaa2_eth_priv *priv);
- 
- int dpaa2_eth_dl_port_add(struct dpaa2_eth_priv *priv);
 -- 
 2.31.1
 
