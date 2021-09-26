@@ -2,125 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FAF5418AF8
-	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 22:23:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85A32418B04
+	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 22:34:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230074AbhIZUZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Sep 2021 16:25:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51630 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229894AbhIZUZU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Sep 2021 16:25:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AD45B60EE4;
-        Sun, 26 Sep 2021 20:23:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632687824;
-        bh=UyDa7RcM8FAe1YGnTgWQsVLHnoPiMluibSBU3LwwEYc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=E/WwhkU8QrirBHQB4gV+UmUP+1owZhhMt1FjHYxZVijY/PLiLZR45z/AznYyTrhdT
-         Dw5AkXWayukNM9G3BVDs8e6xBAso0arLQIEK0KePkyDQYVLNSIlZ02aZ/6nW2MMSY7
-         T8g283jfeQOhP7NPdUBuNr4fCMk2jQIkdJT366X1LNJVaoh+bXQEhiKKZoi3YAn3ZK
-         9SWDWaRBIcK/Dd6hLYzUA8WIOIhZjqpdyjWdmikI185j2jYLXWanKK5EKaIaZSz7yM
-         BYUi+/RPnMoGqp4BV1pI4dBMH/fqM1Hb0FVhSKBWMd/OxwEusX1iM8RXLrlZZQ5avh
-         Z1lLzxrLjb5OQ==
-Date:   Sun, 26 Sep 2021 15:23:41 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>
-Subject: Re: [PATCH mlx5-next 1/7] PCI/IOV: Provide internal VF index
-Message-ID: <20210926202341.GA588922@bhelgaas>
+        id S229894AbhIZUfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Sep 2021 16:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230040AbhIZUft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Sep 2021 16:35:49 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067A2C061570;
+        Sun, 26 Sep 2021 13:34:12 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id pf3-20020a17090b1d8300b0019e081aa87bso11745483pjb.0;
+        Sun, 26 Sep 2021 13:34:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=Ah83D4oj0M/ZPbuDGbaur+I2bIn3iVKDa23KqXHEA1A=;
+        b=MUvkwAw/J+JbJHhJu0xo7GVfmp6M77SaST9nJ6breN47wOtF87717R0gX2vViCAbOf
+         2UMo0i0nB7RA+gplPcnYCTxgpY9MRr4XVIUpSnUnRI3yryx/I1sYtpM7h+bKRQyjwkdt
+         4wv/a1DOrMaWzWDCvYTFDwEW/HOUeS8B2dRWh5LVttYTdIe+zB7Z5ni+Cq252p9in/Th
+         lsGKyONyrqpCC/jUvEQ13sg+Xq6fBgx6bp7ZFUzSp+zqErGHPh/SxQGXb+dDhpl+qv2H
+         qPad3VvWBEPYMyU9cPKGFxkkw4BDDjwKNFwsHOj5FZqFpL9WSQNR/A0SVkilXbuiGX9u
+         fGPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=Ah83D4oj0M/ZPbuDGbaur+I2bIn3iVKDa23KqXHEA1A=;
+        b=eo96Dm8JetjvUPAw11cNbD7bGbsZgQQhOx8h2M2F0s/6xXOTYEQiUj/xY13X+HvIGO
+         H3UdB5G2fqqFlkt8fwsLIoAdpAKHhIip/2tKhAUp0zbLbXoWa7NZaavSZlFhQFlKbirA
+         7qWj+eTJpB7D2/L+3LvICoN096ecTIE7hCrS8lITZQ36RmXOaBY7N3f7ojP3AEtuHWKr
+         X+uaY/f28Ja8f2Gg13NV88YE3l+Cu9PIy2zAGBrBP150FVPgYtlJenyVWWa5xVxkk92W
+         35h/zmoBMHr1/lTlJQga6qSKq/omF+mWhMWQZTkiGAOLfFwXTQoBZmjG+0zf/VniYT9d
+         yAJg==
+X-Gm-Message-State: AOAM532/hDzT/NNtUnDT9XNapI5vLtJBCBGd+5/L6LfyBwPqum1iwbJ3
+        c6WqBGZXCy1yIkdkugzZvsv7hAdt8yo=
+X-Google-Smtp-Source: ABdhPJzaL2wRw+PRl+hEe0bgART6GV0PgRMVqbxvEXhkXyrpOuDbBHMYlMCn4gzSkKH3mxn0yJMbeA==
+X-Received: by 2002:a17:902:6e02:b0:13a:41f5:1666 with SMTP id u2-20020a1709026e0200b0013a41f51666mr19411180plk.39.1632688452104;
+        Sun, 26 Sep 2021 13:34:12 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:3e55])
+        by smtp.gmail.com with ESMTPSA id 26sm18727150pgx.72.2021.09.26.13.34.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Sep 2021 13:34:11 -0700 (PDT)
+Date:   Sun, 26 Sep 2021 13:34:09 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     bpf@vger.kernel.org
+Subject: Happy birthday BPF!
+Message-ID: <20210926203409.kn3gzz2eaodflels@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YVAVAfU3aL6JJg3i@unreal>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 26, 2021 at 09:36:49AM +0300, Leon Romanovsky wrote:
-> On Sat, Sep 25, 2021 at 12:41:15PM -0500, Bjorn Helgaas wrote:
-> > On Sat, Sep 25, 2021 at 01:10:39PM +0300, Leon Romanovsky wrote:
-> > > On Fri, Sep 24, 2021 at 08:08:45AM -0500, Bjorn Helgaas wrote:
-> > > > On Thu, Sep 23, 2021 at 09:35:32AM +0300, Leon Romanovsky wrote:
-> > > > > On Wed, Sep 22, 2021 at 04:59:30PM -0500, Bjorn Helgaas wrote:
-> > > > > > On Wed, Sep 22, 2021 at 01:38:50PM +0300, Leon Romanovsky wrote:
-> > > > > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > > > 
-> > > > > > > The PCI core uses the VF index internally, often called the vf_id,
-> > > > > > > during the setup of the VF, eg pci_iov_add_virtfn().
-> > > > > > > 
-> > > > > > > This index is needed for device drivers that implement live migration
-> > > > > > > for their internal operations that configure/control their VFs.
-> > > > > > >
-> > > > > > > Specifically, mlx5_vfio_pci driver that is introduced in coming patches
-> > > > > > > from this series needs it and not the bus/device/function which is
-> > > > > > > exposed today.
-> > > > > > > 
-> > > > > > > Add pci_iov_vf_id() which computes the vf_id by reversing the math that
-> > > > > > > was used to create the bus/device/function.
-> > > > > > > 
-> > > > > > > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> > > > > > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > 
-> > > > > > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> > > > > > 
-> > > > > > mlx5_core_sriov_set_msix_vec_count() looks like it does basically the
-> > > > > > same thing as pci_iov_vf_id() by iterating through VFs until it finds
-> > > > > > one with a matching devfn (although it *doesn't* check for a matching
-> > > > > > bus number, which seems like a bug).
-> > > ...
-> > 
-> > > > And it still looks like the existing code is buggy.  This is called
-> > > > via sysfs, so if the PF is on bus X and the user writes to
-> > > > sriov_vf_msix_count for a VF on bus X+1, it looks like
-> > > > mlx5_core_sriov_set_msix_vec_count() will set the count for the wrong
-> > > > VF.
-> > > 
-> > > In mlx5_core_sriov_set_msix_vec_count(), we receive VF that is connected
-> > > to PF which has "struct mlx5_core_dev". My expectation is that they share
-> > > same bus as that PF was the one who created VFs. The mlx5 devices supports
-> > > upto 256 VFs and it is far below the bus split mentioned in PCI spec.
-> > > 
-> > > How can VF and their respective PF have different bus numbers?
-> > 
-> > See PCIe r5.0, sec 9.2.1.2.  For example,
-> > 
-> >   PF 0 on bus 20
-> >     First VF Offset   1
-> >     VF Stride         1
-> >     NumVFs          511
-> >   VF 0,1   through VF 0,255 on bus 20
-> >   VF 0,256 through VF 0,511 on bus 21
-> > 
-> > This is implemented in pci_iov_add_virtfn(), which computes the bus
-> > number and devfn from the VF ID.
-> > 
-> > pci_iov_virtfn_devfn(VF 0,1) == pci_iov_virtfn_devfn(VF 0,256), so if
-> > the user writes to sriov_vf_msix_count for VF 0,256, it looks like
-> > we'll call mlx5_set_msix_vec_count() for VF 0,1 instead of VF 0,256.
-> 
-> This is PCI spec split that I mentioned.
-> 
-> > 
-> > The spec encourages devices that require no more than 256 devices to
-> > locate them all on the same bus number (PCIe r5.0, sec 9.1), so if you
-> > only have 255 VFs, you may avoid the problem.
-> > 
-> > But in mlx5_core_sriov_set_msix_vec_count(), it's not obvious that it
-> > is safe to assume the bus number is the same.
-> 
-> No problem, we will make it more clear.
+Today BPF is 7 years old. On Sep 26, 2014
+the commit 99c55f7d47c0 ("bpf: introduce BPF syscall and maps")
+introduced the BPF system call. I’m very proud to say that BPF has grown from a
+Linux curiosity to a cornerstone of the way many technologies are built, but
+that hasn’t come without a fair amount of growing pain. 
 
-IMHO you should resolve it by using the new interface.  Better
-performing, unambiguous regardless of how many VFs the device
-supports.  What's the down side?
+We’ve been able to scale significantly by treating the first BPF
+implementations of runtime and tool chain as the reference, but with Windows
+and a number of new tool chains and libraries coming into the picture, we need
+to reconsider this approach to ensure that we avoid fragmentation and lose
+interoperability. Specific examples of potential divergence are all over the
+place. Libbpf equivalent libraries have been reimplemented at least twice in
+golang and rust. GCC and LLVM have BPF backends that are similar but not
+equivalent. There are implementations of BPF in DPDK and other user space
+frameworks. BPF can run in the Netronome NIC and was prototyped in HW for
+inclusion into general purpose CPUs. There are several verifiers (in the Linux
+Kernel, PREVAIL in user space, and experimental ExoBPF). There are many JITs
+for different architectures inside the Linux Kernel and in user space. BPF
+programs can be written in C, Rust, bpftrace, and various assembly languages.
+
+This diversity is a sign of healthy and rapidly growing ecosystem, but it leads
+to a confusing user experience. BPF implementations compete with each other.
+Despite books about BPF and pretty complete documentation at
+https://ebpf.io/what-is-ebpf, developers and users complain that the
+documentation is spread around.
+
+In response, we collectively created the BPF Foundation and BPF Steering
+Committee (out of the most active BPF developers) to strengthen the
+collaboration. Moving forward, we must all focus on maximizing growth while
+maintaining interoperability. While we will maintain the Linux kernel, libbpf,
+and LLVM as the reference implementations, it's not our goal to force every
+user to embrace each part of the reference stack. Hopefully the committee will
+add a bit of formal structure to coordinate collaboration.
+
+More specifically, these implementations define the de-facto standard for
+various parts of the BPF ecosystem:
+- The Linux Kernel verifier defines BPF instruction set, BTF format,
+  map and program types, helpers, hook points.
+- The libbpf defines ELF file format and CO-RE features.
+- The LLVM defines BPF C language.
+
+7 year old BPF is mature enough to put the standards before the implementations.
+
+For example:
+The kernel verifier shouldn't be a gatekeeper of new instructions in BPF. GCC
+added SDIV instruction. It's not implemented by LLVM and will be rejected by
+the verifier, but such new instruction has all rights to be a part of BPF
+instruction set standard even when some implementations don't support it. The
+BPF steering committee (BSC) could make such a vote.
+Can GCC continue inventing instructions without ever talking to BSC ? Sure, but
+once BSC agrees to this extension of the standard (whether it's a new
+instruction or new C language attribute((btf_tag))) it will give a technical
+direction to the whole BPF ecosystem. The creation of BSC hopefully will
+provide implementations a way to collaborate instead of competing for BPF
+users.
+
+If you are interested in joining this collaboration, there are many ways to
+reach developers in the Linux BPF community:
+- The bpf@vger mailing list was an excellent place for the collaboration
+  and probably should continue to be such a place.
+- When email is too slow the discussion can move to BPF office hours
+  (zoom call every Thursday at 9am PST).
+- There are Linux Plumbers and LSFMMBPF conferences to amplify the reach.
+- BPF slack channel https://ebpf.io/slack.
+
+Linux, Windows, Rust, Golang, GCC, LLVM folks,
+cheers to BPF birthday !
