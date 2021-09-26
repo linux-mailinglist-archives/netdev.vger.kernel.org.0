@@ -2,97 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F47A41870D
-	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 09:19:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65854418723
+	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 09:26:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231368AbhIZHUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Sep 2021 03:20:47 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:22997 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231328AbhIZHUY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Sep 2021 03:20:24 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HHH873kgDzbmpQ;
-        Sun, 26 Sep 2021 15:14:31 +0800 (CST)
-Received: from dggpeml500002.china.huawei.com (7.185.36.158) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Sun, 26 Sep 2021 15:18:46 +0800
-Received: from huawei.com (10.136.117.208) by dggpeml500002.china.huawei.com
- (7.185.36.158) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Sun, 26 Sep
- 2021 15:18:45 +0800
-From:   Qiumiao Zhang <zhangqiumiao1@huawei.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <stable@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sasha.levin@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        <netdev@vger.kernel.org>, <yanan@huawei.com>,
-        <rose.chen@huawei.com>
-Subject: [PATCH stable 4.19 4/4] tcp: adjust rto_base in retransmits_timed_out()
-Date:   Sun, 26 Sep 2021 15:18:42 +0800
-Message-ID: <20210926071842.1429-5-zhangqiumiao1@huawei.com>
-X-Mailer: git-send-email 2.28.0.windows.1
-In-Reply-To: <20210926071842.1429-1-zhangqiumiao1@huawei.com>
-References: <20210926071842.1429-1-zhangqiumiao1@huawei.com>
+        id S231222AbhIZH22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Sep 2021 03:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41562 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230035AbhIZH21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Sep 2021 03:28:27 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604B4C061570
+        for <netdev@vger.kernel.org>; Sun, 26 Sep 2021 00:26:51 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id v10so50188692edj.10
+        for <netdev@vger.kernel.org>; Sun, 26 Sep 2021 00:26:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=6sJObhDubOjt3m0e1lZZZ3v+mzCtoD8DuEdUF5auOqU=;
+        b=ml/7FKYrFSFByzGhbrm3pEm2vHc6eckZG+85KNWFpXncR70mvGYKQgwcHqVa1+VVNp
+         SqCsVRW4BpiI+tIenknrPyFdyeeOKs6getOwbWBudXcSHdNwT3pkyXzHWr8jrDMv35vz
+         Z0F4PzJF/doF6Kg0RO97uscReXAPfv47xNE2KIzx5P0GeR2WHoD+CaLKkUp/emuPai7i
+         ckxJ6bkM9XzAD09K+RuyirSIgZUZMFYsNtxQI8MXKzqLvbCf8kNzL6iTVLpRl+Gw+z5m
+         0Tpo2qLHEwR6N2BCIkY4XSCg8BAG9o3Whnrr02TGNBZQuDAz+jcBWHCvlSkjdxDHNT9y
+         Fnww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6sJObhDubOjt3m0e1lZZZ3v+mzCtoD8DuEdUF5auOqU=;
+        b=0GEVinJQsl4SpkUddyPnGKa4Op1LcFHzbpqHsYBI8XSjMIDtKbNXb+wBhcQmuZV4fR
+         bh2wqbUItH56zdJSkS2cesssRRxL6cxYZZHXSVojjgtzCNTq1NfaieC1nXuwVMzSmqo3
+         45YRQv8boI3odVEsEUmzdJkIa5aqaCu9Yct3VZTscxJMbx9mVFXR2XeD24A/eHgMvIJW
+         +NEigNfZ0XclWkvTaMS6Kb1KLIj9phglwgVOBqXLwf7S9wL7FzmwIMSnNU5vtSrEgq7E
+         f5kbH/Wgsu+Gk3W4AsbkxjKK/XVOH4i5bzOPx0LnLXl2g7MUDbdF6Kw2euy332Zl4vEv
+         XDSA==
+X-Gm-Message-State: AOAM532Zf13ldd7PlpOxguQROQnUENBelpphCyHurabhRoBwykArnGgn
+        o4Ls0i3WoIry+m+jmcvfhmiuFKcw1xQ=
+X-Google-Smtp-Source: ABdhPJyftt4J20YQqGFv0RZFJME6RW5SCEIFYkGFP/1X3gvxYhrAqnyIcc6Ob845Mf29wOJAwKR8Ig==
+X-Received: by 2002:a50:e04e:: with SMTP id g14mr16653823edl.168.1632641209896;
+        Sun, 26 Sep 2021 00:26:49 -0700 (PDT)
+Received: from [192.168.0.108] ([176.228.98.2])
+        by smtp.gmail.com with ESMTPSA id e28sm8517661edc.93.2021.09.26.00.26.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Sep 2021 00:26:49 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: mlx4: Add support for XDP_REDIRECT
+To:     Joshua Roys <roysjosh@gmail.com>, netdev@vger.kernel.org
+References: <20210923161034.18975-1-roysjosh@gmail.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+Message-ID: <8d7773a0-054a-84d5-e0b6-66a13509149e@gmail.com>
+Date:   Sun, 26 Sep 2021 10:26:47 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.136.117.208]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500002.china.huawei.com (7.185.36.158)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20210923161034.18975-1-roysjosh@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hi,
 
-commit 3256a2d6ab1f71f9a1bd2d7f6f18eb8108c48d17 upstream
+Thanks for your patch.
+It was submitted and accepted during the weekend, in our off-hours (we 
+work Sunday - Thursday).
+Please check my comments below.
 
-The cited commit exposed an old retransmits_timed_out() bug
-which assumed it could call tcp_model_timeout() with
-TCP_RTO_MIN as rto_base for all states.
+On 9/23/2021 7:10 PM, Joshua Roys wrote:
 
-But flows in SYN_SENT or SYN_RECV state uses a different
-RTO base (1 sec instead of 200 ms, unless BPF choses
-another value)
+Empty commit message? No feature description, motivation, performance 
+numbers, etc... That's bad.
 
-This caused a reduction of SYN retransmits from 6 to 4 with
-the default /proc/sys/net/ipv4/tcp_syn_retries value.
+> Signed-off-by: Joshua Roys <roysjosh@gmail.com>
+> ---
+>   drivers/net/ethernet/mellanox/mlx4/en_rx.c | 13 +++++++++++++
+>   1 file changed, 13 insertions(+)
+> 
+> This is a pattern-match commit, based off of the mlx4 XDP_TX and other
+> drivers' XDP_REDIRECT enablement patches. The goal was to get AF_XDP
+> working in VPP and this was successful. Tested with a CX3.
+> 
 
-Fixes: a41e8a88b06e ("tcp: better handle TCP_USER_TIMEOUT in SYN_SENT state")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Yuchung Cheng <ycheng@google.com>
-Cc: Marek Majkowski <marek@cloudflare.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Qiumiao Zhang <zhangqiumiao1@huawei.com>
----
- net/ipv4/tcp_timer.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Your comment here doesn't get into the git commit log. It can't replace 
+the patch description above.
 
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index 9e9507f125a2..d071ed6b8b9a 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -197,8 +197,13 @@ static bool retransmits_timed_out(struct sock *sk,
- 		return false;
- 
- 	start_ts = tcp_sk(sk)->retrans_stamp;
--	if (likely(timeout == 0))
--		timeout = tcp_model_timeout(sk, boundary, TCP_RTO_MIN);
-+	if (likely(timeout == 0)) {
-+		unsigned int rto_base = TCP_RTO_MIN;
-+
-+		if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV))
-+			rto_base = tcp_timeout_init(sk);
-+		timeout = tcp_model_timeout(sk, boundary, rto_base);
-+	}
- 
- 	return (s32)(tcp_time_stamp(tcp_sk(sk)) - start_ts - timeout) >= 0;
- }
--- 
-2.19.1
+> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> index 7f6d3b82c29b..557d7daac2d3 100644
+> --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> @@ -669,6 +669,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+>   	struct bpf_prog *xdp_prog;
+>   	int cq_ring = cq->ring;
+>   	bool doorbell_pending;
+> +	bool xdp_redir_flush;
+>   	struct mlx4_cqe *cqe;
+>   	struct xdp_buff xdp;
+>   	int polled = 0;
+> @@ -682,6 +683,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+>   	xdp_prog = rcu_dereference_bh(ring->xdp_prog);
+>   	xdp_init_buff(&xdp, priv->frag_info[0].frag_stride, &ring->xdp_rxq);
+>   	doorbell_pending = false;
+> +	xdp_redir_flush = false;
+>   
+>   	/* We assume a 1:1 mapping between CQEs and Rx descriptors, so Rx
+>   	 * descriptor offset can be deduced from the CQE index instead of
+> @@ -790,6 +792,14 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+>   			switch (act) {
+>   			case XDP_PASS:
+>   				break;
+> +			case XDP_REDIRECT:
+> +				if (xdp_do_redirect(dev, &xdp, xdp_prog) >= 0) {
 
+xdp_do_redirect returns a negative error code, or zero on success.
+The >= 0 comparison looks strange and doesn't fit to the code style.
+Simply use: "if (xdp_do_redirect(...))"
+
+
+> +					xdp_redir_flush = true;
+> +					frags[0].page = NULL;
+> +					goto next;
+> +				}
+> +				trace_xdp_exception(dev, xdp_prog, act);
+> +				goto xdp_drop_no_cnt;
+
+You didn't add the required stats to count packets going through the new 
+xdp_redirect flow. Every incoming packet *MUST* increase some counter. 
+Please add it.
+
+>   			case XDP_TX:
+>   				if (likely(!mlx4_en_xmit_frame(ring, frags, priv,
+>   							length, cq_ring,
+> @@ -897,6 +907,9 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+>   			break;
+>   	}
+>   
+> +	if (xdp_redir_flush)
+> +		xdp_do_flush();
+> +
+>   	if (likely(polled)) {
+>   		if (doorbell_pending) {
+>   			priv->tx_cq[TX_XDP][cq_ring]->xdp_busy = true;
+> 
+
+Thanks,
+Tariq
