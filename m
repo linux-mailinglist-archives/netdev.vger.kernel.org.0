@@ -2,141 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68520418AEE
-	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 22:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 688FE418AF3
+	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 22:21:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230048AbhIZUU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Sep 2021 16:20:59 -0400
-Received: from mout.web.de ([217.72.192.78]:55573 "EHLO mout.web.de"
+        id S230111AbhIZUWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Sep 2021 16:22:45 -0400
+Received: from mout.web.de ([212.227.15.4]:60423 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229894AbhIZUU5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Sep 2021 16:20:57 -0400
+        id S229894AbhIZUWo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Sep 2021 16:22:44 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1632687553;
-        bh=YAZx6uMTn8UHHnGn3OyHkQnyCYvNpVezM1nufQAewNI=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=ZYhkhKPSEha5vvIK8h/tNpBMZEJKvbi5TXZ5lrDWNAj6xOGL9plqfJi27gQnLyOUL
-         QIE6bAapGEBPnYH32f44IHALlGdtxO8RSYwce5wOyDVAb6ujPUzQhMpaM9cEM54E3d
-         r2Ol/2Ak4meAe67+7OWxLwLm/Z0OFYEZxfwCuW0g=
+        s=dbaedf251592; t=1632687651;
+        bh=9o/e66vAWG/z2ECjYL1NyiGoc7RJt52pRYvR60FMngk=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=jsP+1sFnoXMIb3sNNXYOutEgzo64bqRHeyQP60oS/RDRX/N6X3sKNI4se83ExgAxF
+         Z29gyHBDgKsiIAzLsA7In7FKxHhoBALP6GDsbO6zxcwkCH59ib4mllo/ufNTsoaPFi
+         Ofn373r0TB6efKE3YLc7epzlmGVdiidOg2/ZollI=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from platinum.fritz.box ([62.227.172.72]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0M9ons-1mfdFJ0C40-00B49Y; Sun, 26
- Sep 2021 22:19:13 +0200
-From:   Soeren Moch <smoch@web.de>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Soeren Moch <smoch@web.de>, stable@vger.kernel.org,
-        Shawn Guo <shawn.guo@linaro.org>,
+Received: from [10.9.8.2] ([62.227.172.72]) by smtp.web.de (mrweb006
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 1MmQYX-1nClDG0Owr-00iJRf; Sun, 26
+ Sep 2021 22:20:51 +0200
+Subject: Re: [BUG] Re: [PATCH] brcmfmac: use ISO3166 country code and 0 rev as
+ fallback
+To:     Kalle Valo <kvalo@codeaurora.org>, Shawn Guo <shawn.guo@linaro.org>
+Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
         Arend van Spriel <aspriel@gmail.com>,
         Franky Lin <franky.lin@broadcom.com>,
         Hante Meuleman <hante.meuleman@broadcom.com>,
         Chi-hsien Lin <chi-hsien.lin@infineon.com>,
         Wright Feng <wright.feng@infineon.com>,
         Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        linux-wireless@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Revert "brcmfmac: use ISO3166 country code and 0 rev as fallback"
-Date:   Sun, 26 Sep 2021 22:19:05 +0200
-Message-Id: <20210926201905.211605-1-smoch@web.de>
-X-Mailer: git-send-email 2.25.1
+        SHA-cyfmac-dev-list@infineon.com,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-rockchip@lists.infradead.org" 
+        <linux-rockchip@lists.infradead.org>
+References: <20210425110200.3050-1-shawn.guo@linaro.org>
+ <cb7ac252-3356-8ef7-fcf9-eb017f5f161f@web.de> <20210908010057.GB25255@dragon>
+ <100f5bef-936c-43f1-9b3e-a477a0640d84@web.de> <20210909022033.GC25255@dragon>
+ <56e9a81a-4e05-cf5e-a8df-782ac75fdbe6@web.de> <20210912015137.GD25255@dragon>
+ <87pmt2uvxu.fsf@codeaurora.org>
+From:   Soeren Moch <smoch@web.de>
+Message-ID: <ffe146e8-a393-2388-0f31-2bd030a75812@web.de>
+Date:   Sun, 26 Sep 2021 22:20:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:wiw80L1xb1bzJTo8zFLnmmlAzMynYyYcgNQTAAK6uC5sezFBB39
- hc7rOYZIBXhUo22/bStfWXbQeb6uwY8l6ilCCl8W/pu8oBqrzPGcftlMKnG95WLbH1g3LtH
- Bgz3tEfi3NJ/R/5s9qrOaIpLQEpw1DeJmmQ0qTI5/xaUEU+RYJjICwjHPB7ZET9GPdA56Kw
- Nxi0F3xE1bx88rrfXVGDA==
+In-Reply-To: <87pmt2uvxu.fsf@codeaurora.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
+X-Provags-ID: V03:K1:xaz3Z1xGU/FK/ErZ/VHwScYBHhAAf/Wz3uXzw3rKTjaX9jJKLnM
+ abFUKWeJORbgaPadeDVLaedD6HO25jRa3NmRorRM4IabQ87iQyb7m43idS7aaBex2cxc9/5
+ LxwgzS2ZSu3wCpyrpcPalFbVSgeb6LJ7wuYHpFnf+KD483grJJk4cIj3CCMH6SB7ygvo1Ei
+ kAOFSBHK48g/KzYTTZBvA==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:lYOL1DxY8Oo=:TBkCSv6ALwh/Fk2KN+eEa0
- GP33HqqrUK1Y8qTstTqSkaKBIlgTC1EQnZpH432/4FwtAxJbXGigC8B7MlHpDc0Z6SKCZgPxd
- XulJ+ju7ybJcABtskYOBgh1oiFrmEEf8R9onWHfkh8fZrtOf7q4sGia8lNADD0QKkRqqPWKtv
- +e+7vFRBtWONY+nsQNaheciSi/btSRxs8Sb3VgiKP8KcPzGpVuWUCWlP06kKZB+V09yxaVDPU
- /2qow3gWTtxGxdUqOWXqwHz/833PsqEK9I+LQTohQ2UI01335e/NlxrRdXNIazYxv92D4+46n
- kjEucKxSIYWTlGxr0XoN+ZkoQR/4xV0S4+ui9/dLxh3If2AjaFCBN46/EiCUBw4daVLgxlLnK
- ehmdBM6Q1EzLaCpWeYYfFblaOfOA3fnLMgEm5a5BbH+dpLZPkgvnIXx8MKKaWgt/UZii25whU
- V6qVTD1XUHL3mICzXur+IJLaHpEoC9aunIYf6GsAkJErN84lhdwvmqNvuP5+SB8yulZ4qvqBg
- knVLy1apj5pQUctaSqHfIBsu2Jh/NO4dX2hG8Vbgi4jJP5xx2cl3sS7UZ0Wa/AWRibPl8f5vd
- FfoK3Rt14THczvJWfZbvB/FrvEJIPT3y3rhrIalgA+0qWmKDjVWPwZ3GvaEXQ4MaV9DDpm2XO
- nfaZMsuYKx9t2O4jF5E6LQoDiji3jR5YzJEzsKWclJHY7s5DuNUBFt6rKL5CPPOuQ2qrDjLfw
- hz1pAEhdCKzN9fRBAVDAcJS7wF0al4fJml5GU8lm0WO9lXyky5KXYurMtbOaEmGRLLBviR1ns
- +pGGJvFasjwMxMHLmVy2MoA/DTc6fYUGcyptedPHfgdOqWd3k/fJZby/4ZhkuQ/i5LutxTHme
- 9V4fXjVx84jmM5P29IL0LOXQKKIWHWCGnZuriWCI/pb4vB0j1xf0xYDrgW0NoKH13g/HsL6oB
- FU9gUaH1MJAfKpKGtgVQ8kgw8VREIoKXJ55n+cFx+xnnn74TsYeAG7cmDkwzzaGum0VYwtZqq
- Ir2bKddjH4BzOJ7re+n7YyNw8mMrrB0dfcLF+g7ZrtfHHnz2zCY0kOkBkyfCAN6yZbiZrOu7Q
- 31mZqoh14eMIsc=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:DFz2lwZNGAw=:zbH7iSdhVjqiEUCj+tjfey
+ LD6rygIFVCROy4Nxe0esCXUx3Tl131W4RfZ5NLxPyiRqjltu6sI5DhPwHfklIN6vL6KjNf2F/
+ lJBCLiBPQJMQCzHIk7Gxycsyu63SCCnGX/EXmAe+aM9sqnL0fvUWy9cF8ucjMN1TB9K2UFp2g
+ 9lg+7/OPty1j0mwmPrFuUhOMby0ud8YSPK7J9VL/9UO3xrsam/8g635f0s+wyPCZJyC5G5Grc
+ 4fyWMi8IsBirwhoe3GPk928M9oWprhy2ZVkLKxjQtstoBwZzt/fBIEmz3zBgsZUauJDPnwmMv
+ hVRP6NDjRosoEPK5kNkA3EcM1bvvnG7k3T6KN0De9pbdFgndn0qzaVUs7NCQt4XLPdQH1xbXz
+ E+7jsRVTQ5xvHmG0Gz7n5tVwPORTkSk9yDRpEE1CASy0nt9DCRozCudszpC3w1QcyMrQYRDKE
+ tsMtTLe109nIv4LJt1xVoJ+6j5iLmipuekPeJFjA4+NcUGcO1tc6XO+oJ3OarNRRWpgzIvLcR
+ FBZ0yrZ1V7tMjCbK67TyfJA8XVL5NefVwUEHx5zhY9C1cIeWuHYphrQ8FD8TB7HVkwDA0CSiR
+ HpuBEHCjpYXHG8UmiF1bvupdIItI6Vaw5mwVX9Wob5/5eVc2Yc31ROdIvIZn0G9MxNeXU/DDI
+ hcDHFpjrp3N2BDo9xOc5etxemDCIgzLVD57KbgOVIXxwjYrUhZvVm0MUFBin8WKh4RuRYCJ0s
+ SiFItiYnLHzanGfItUOjEmW4kzN1Ei7UNroH9M91ME6f0N8XRLS8YPUyRB4gtJzE9Ia31zIUV
+ 7wfsYqejLN3Mv73OQGzQqWhlGeGOQrjEw70IIxwbj0t6QoygWzeAAGCr/yMV1jqUHc1vQesU7
+ pmufhAGzRCb1mNgZ4VDwz1rJLdX5x6DamnuTUE8BsL0ow7c3GUqi4UCswNuYWHmPPkUWpQmke
+ uPylkm+TOxmwDX0Mp932V/JlCX5Bk0ttXhR2E89KKFQIvgOXhFgzkgj+ckIzlQ84Y9aw6ggYc
+ IjhDjnRSHJBK4xUyarpshRVN7itmPa9doxWuFIe8URY/yssMa+3ugz3VUyohQAppWG8IWPJwr
+ OxYGYFZNOGZBnY=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit b0b524f079a23e440dd22b04e369368dde847533.
 
-Commit b0b524f079a2 ("brcmfmac: use ISO3166 country code and 0 rev
-as fallback") changes country setup to directly use ISO3166 country
-codes if no more specific code is configured. This was done under
-the assumption that brcmfmac firmwares can handle such simple
-direct mapping from country codes to firmware ccode values.
 
-Unfortunately this is not true for all chipset/firmware combinations.
-E.g. BCM4359/9 devices stop working as access point with this change,
-so revert the offending commit to avoid the regression.
+On 21.09.21 11:20, Kalle Valo wrote:
+> Shawn Guo <shawn.guo@linaro.org> writes:
+>
+>>> Is this not the usual DT policy, that missing optional properties should
+>>> not prevent a device to work, that old dtbs should still work when new
+>>> properties are added?
+>>>
+>>> I'm not sure what's the best way forward. A plain revert of this patch
+>>> would at least bring back wifi support for RockPro64 devices with
+>>> existing dtbs. Maybe someone else has a better proposal how to proceed.
+>> Go ahead to revert if we do not hear a better solution, I would say.
+> Yes, please do send a revert. And remember to explain the regression in
+> the commit log.
+>
+I sent a revert patch.
 
-Signed-off-by: Soeren Moch <smoch@web.de>
-Cc: stable@vger.kernel.org  # 5.14.x
-=2D-
-Cc: Shawn Guo <shawn.guo@linaro.org>
-Cc: Arend van Spriel <aspriel@gmail.com>
-Cc: Franky Lin <franky.lin@broadcom.com>
-Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-Cc: Chi-hsien Lin <chi-hsien.lin@infineon.com>
-Cc: Wright Feng <wright.feng@infineon.com>
-Cc: Chung-hsien Hsu <chung-hsien.hsu@infineon.com>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: brcm80211-dev-list.pdl@broadcom.com
-Cc: SHA-cyfmac-dev-list@infineon.com
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-=2D--
- .../broadcom/brcm80211/brcmfmac/cfg80211.c      | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b=
-/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index f7b96cd69242..9db12ffd2ff8 100644
-=2D-- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -7463,23 +7463,18 @@ static s32 brcmf_translate_country_code(struct brc=
-mf_pub *drvr, char alpha2[2],
- 	s32 found_index;
- 	int i;
-
-+	country_codes =3D drvr->settings->country_codes;
-+	if (!country_codes) {
-+		brcmf_dbg(TRACE, "No country codes configured for device\n");
-+		return -EINVAL;
-+	}
-+
- 	if ((alpha2[0] =3D=3D ccreq->country_abbrev[0]) &&
- 	    (alpha2[1] =3D=3D ccreq->country_abbrev[1])) {
- 		brcmf_dbg(TRACE, "Country code already set\n");
- 		return -EAGAIN;
- 	}
-
--	country_codes =3D drvr->settings->country_codes;
--	if (!country_codes) {
--		brcmf_dbg(TRACE, "No country codes configured for device, using ISO3166=
- code and 0 rev\n");
--		memset(ccreq, 0, sizeof(*ccreq));
--		ccreq->country_abbrev[0] =3D alpha2[0];
--		ccreq->country_abbrev[1] =3D alpha2[1];
--		ccreq->ccode[0] =3D alpha2[0];
--		ccreq->ccode[1] =3D alpha2[1];
--		return 0;
--	}
--
- 	found_index =3D -1;
- 	for (i =3D 0; i < country_codes->table_size; i++) {
- 		cc =3D &country_codes->table[i];
-=2D-
-2.25.1
-
+Sorry for the delay,
+Soeren
