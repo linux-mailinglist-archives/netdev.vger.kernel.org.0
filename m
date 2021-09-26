@@ -2,102 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 688FE418AF3
-	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 22:21:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FAF5418AF8
+	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 22:23:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230111AbhIZUWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Sep 2021 16:22:45 -0400
-Received: from mout.web.de ([212.227.15.4]:60423 "EHLO mout.web.de"
+        id S230074AbhIZUZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Sep 2021 16:25:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51630 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229894AbhIZUWo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Sep 2021 16:22:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1632687651;
-        bh=9o/e66vAWG/z2ECjYL1NyiGoc7RJt52pRYvR60FMngk=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=jsP+1sFnoXMIb3sNNXYOutEgzo64bqRHeyQP60oS/RDRX/N6X3sKNI4se83ExgAxF
-         Z29gyHBDgKsiIAzLsA7In7FKxHhoBALP6GDsbO6zxcwkCH59ib4mllo/ufNTsoaPFi
-         Ofn373r0TB6efKE3YLc7epzlmGVdiidOg2/ZollI=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [10.9.8.2] ([62.227.172.72]) by smtp.web.de (mrweb006
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1MmQYX-1nClDG0Owr-00iJRf; Sun, 26
- Sep 2021 22:20:51 +0200
-Subject: Re: [BUG] Re: [PATCH] brcmfmac: use ISO3166 country code and 0 rev as
- fallback
-To:     Kalle Valo <kvalo@codeaurora.org>, Shawn Guo <shawn.guo@linaro.org>
-Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-rockchip@lists.infradead.org" 
-        <linux-rockchip@lists.infradead.org>
-References: <20210425110200.3050-1-shawn.guo@linaro.org>
- <cb7ac252-3356-8ef7-fcf9-eb017f5f161f@web.de> <20210908010057.GB25255@dragon>
- <100f5bef-936c-43f1-9b3e-a477a0640d84@web.de> <20210909022033.GC25255@dragon>
- <56e9a81a-4e05-cf5e-a8df-782ac75fdbe6@web.de> <20210912015137.GD25255@dragon>
- <87pmt2uvxu.fsf@codeaurora.org>
-From:   Soeren Moch <smoch@web.de>
-Message-ID: <ffe146e8-a393-2388-0f31-2bd030a75812@web.de>
-Date:   Sun, 26 Sep 2021 22:20:48 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S229894AbhIZUZU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Sep 2021 16:25:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AD45B60EE4;
+        Sun, 26 Sep 2021 20:23:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632687824;
+        bh=UyDa7RcM8FAe1YGnTgWQsVLHnoPiMluibSBU3LwwEYc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=E/WwhkU8QrirBHQB4gV+UmUP+1owZhhMt1FjHYxZVijY/PLiLZR45z/AznYyTrhdT
+         Dw5AkXWayukNM9G3BVDs8e6xBAso0arLQIEK0KePkyDQYVLNSIlZ02aZ/6nW2MMSY7
+         T8g283jfeQOhP7NPdUBuNr4fCMk2jQIkdJT366X1LNJVaoh+bXQEhiKKZoi3YAn3ZK
+         9SWDWaRBIcK/Dd6hLYzUA8WIOIhZjqpdyjWdmikI185j2jYLXWanKK5EKaIaZSz7yM
+         BYUi+/RPnMoGqp4BV1pI4dBMH/fqM1Hb0FVhSKBWMd/OxwEusX1iM8RXLrlZZQ5avh
+         Z1lLzxrLjb5OQ==
+Date:   Sun, 26 Sep 2021 15:23:41 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>
+Subject: Re: [PATCH mlx5-next 1/7] PCI/IOV: Provide internal VF index
+Message-ID: <20210926202341.GA588922@bhelgaas>
 MIME-Version: 1.0
-In-Reply-To: <87pmt2uvxu.fsf@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Provags-ID: V03:K1:xaz3Z1xGU/FK/ErZ/VHwScYBHhAAf/Wz3uXzw3rKTjaX9jJKLnM
- abFUKWeJORbgaPadeDVLaedD6HO25jRa3NmRorRM4IabQ87iQyb7m43idS7aaBex2cxc9/5
- LxwgzS2ZSu3wCpyrpcPalFbVSgeb6LJ7wuYHpFnf+KD483grJJk4cIj3CCMH6SB7ygvo1Ei
- kAOFSBHK48g/KzYTTZBvA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:DFz2lwZNGAw=:zbH7iSdhVjqiEUCj+tjfey
- LD6rygIFVCROy4Nxe0esCXUx3Tl131W4RfZ5NLxPyiRqjltu6sI5DhPwHfklIN6vL6KjNf2F/
- lJBCLiBPQJMQCzHIk7Gxycsyu63SCCnGX/EXmAe+aM9sqnL0fvUWy9cF8ucjMN1TB9K2UFp2g
- 9lg+7/OPty1j0mwmPrFuUhOMby0ud8YSPK7J9VL/9UO3xrsam/8g635f0s+wyPCZJyC5G5Grc
- 4fyWMi8IsBirwhoe3GPk928M9oWprhy2ZVkLKxjQtstoBwZzt/fBIEmz3zBgsZUauJDPnwmMv
- hVRP6NDjRosoEPK5kNkA3EcM1bvvnG7k3T6KN0De9pbdFgndn0qzaVUs7NCQt4XLPdQH1xbXz
- E+7jsRVTQ5xvHmG0Gz7n5tVwPORTkSk9yDRpEE1CASy0nt9DCRozCudszpC3w1QcyMrQYRDKE
- tsMtTLe109nIv4LJt1xVoJ+6j5iLmipuekPeJFjA4+NcUGcO1tc6XO+oJ3OarNRRWpgzIvLcR
- FBZ0yrZ1V7tMjCbK67TyfJA8XVL5NefVwUEHx5zhY9C1cIeWuHYphrQ8FD8TB7HVkwDA0CSiR
- HpuBEHCjpYXHG8UmiF1bvupdIItI6Vaw5mwVX9Wob5/5eVc2Yc31ROdIvIZn0G9MxNeXU/DDI
- hcDHFpjrp3N2BDo9xOc5etxemDCIgzLVD57KbgOVIXxwjYrUhZvVm0MUFBin8WKh4RuRYCJ0s
- SiFItiYnLHzanGfItUOjEmW4kzN1Ei7UNroH9M91ME6f0N8XRLS8YPUyRB4gtJzE9Ia31zIUV
- 7wfsYqejLN3Mv73OQGzQqWhlGeGOQrjEw70IIxwbj0t6QoygWzeAAGCr/yMV1jqUHc1vQesU7
- pmufhAGzRCb1mNgZ4VDwz1rJLdX5x6DamnuTUE8BsL0ow7c3GUqi4UCswNuYWHmPPkUWpQmke
- uPylkm+TOxmwDX0Mp932V/JlCX5Bk0ttXhR2E89KKFQIvgOXhFgzkgj+ckIzlQ84Y9aw6ggYc
- IjhDjnRSHJBK4xUyarpshRVN7itmPa9doxWuFIe8URY/yssMa+3ugz3VUyohQAppWG8IWPJwr
- OxYGYFZNOGZBnY=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YVAVAfU3aL6JJg3i@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Sep 26, 2021 at 09:36:49AM +0300, Leon Romanovsky wrote:
+> On Sat, Sep 25, 2021 at 12:41:15PM -0500, Bjorn Helgaas wrote:
+> > On Sat, Sep 25, 2021 at 01:10:39PM +0300, Leon Romanovsky wrote:
+> > > On Fri, Sep 24, 2021 at 08:08:45AM -0500, Bjorn Helgaas wrote:
+> > > > On Thu, Sep 23, 2021 at 09:35:32AM +0300, Leon Romanovsky wrote:
+> > > > > On Wed, Sep 22, 2021 at 04:59:30PM -0500, Bjorn Helgaas wrote:
+> > > > > > On Wed, Sep 22, 2021 at 01:38:50PM +0300, Leon Romanovsky wrote:
+> > > > > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > > > > 
+> > > > > > > The PCI core uses the VF index internally, often called the vf_id,
+> > > > > > > during the setup of the VF, eg pci_iov_add_virtfn().
+> > > > > > > 
+> > > > > > > This index is needed for device drivers that implement live migration
+> > > > > > > for their internal operations that configure/control their VFs.
+> > > > > > >
+> > > > > > > Specifically, mlx5_vfio_pci driver that is introduced in coming patches
+> > > > > > > from this series needs it and not the bus/device/function which is
+> > > > > > > exposed today.
+> > > > > > > 
+> > > > > > > Add pci_iov_vf_id() which computes the vf_id by reversing the math that
+> > > > > > > was used to create the bus/device/function.
+> > > > > > > 
+> > > > > > > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> > > > > > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > > > > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > > > > 
+> > > > > > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> > > > > > 
+> > > > > > mlx5_core_sriov_set_msix_vec_count() looks like it does basically the
+> > > > > > same thing as pci_iov_vf_id() by iterating through VFs until it finds
+> > > > > > one with a matching devfn (although it *doesn't* check for a matching
+> > > > > > bus number, which seems like a bug).
+> > > ...
+> > 
+> > > > And it still looks like the existing code is buggy.  This is called
+> > > > via sysfs, so if the PF is on bus X and the user writes to
+> > > > sriov_vf_msix_count for a VF on bus X+1, it looks like
+> > > > mlx5_core_sriov_set_msix_vec_count() will set the count for the wrong
+> > > > VF.
+> > > 
+> > > In mlx5_core_sriov_set_msix_vec_count(), we receive VF that is connected
+> > > to PF which has "struct mlx5_core_dev". My expectation is that they share
+> > > same bus as that PF was the one who created VFs. The mlx5 devices supports
+> > > upto 256 VFs and it is far below the bus split mentioned in PCI spec.
+> > > 
+> > > How can VF and their respective PF have different bus numbers?
+> > 
+> > See PCIe r5.0, sec 9.2.1.2.  For example,
+> > 
+> >   PF 0 on bus 20
+> >     First VF Offset   1
+> >     VF Stride         1
+> >     NumVFs          511
+> >   VF 0,1   through VF 0,255 on bus 20
+> >   VF 0,256 through VF 0,511 on bus 21
+> > 
+> > This is implemented in pci_iov_add_virtfn(), which computes the bus
+> > number and devfn from the VF ID.
+> > 
+> > pci_iov_virtfn_devfn(VF 0,1) == pci_iov_virtfn_devfn(VF 0,256), so if
+> > the user writes to sriov_vf_msix_count for VF 0,256, it looks like
+> > we'll call mlx5_set_msix_vec_count() for VF 0,1 instead of VF 0,256.
+> 
+> This is PCI spec split that I mentioned.
+> 
+> > 
+> > The spec encourages devices that require no more than 256 devices to
+> > locate them all on the same bus number (PCIe r5.0, sec 9.1), so if you
+> > only have 255 VFs, you may avoid the problem.
+> > 
+> > But in mlx5_core_sriov_set_msix_vec_count(), it's not obvious that it
+> > is safe to assume the bus number is the same.
+> 
+> No problem, we will make it more clear.
 
-
-On 21.09.21 11:20, Kalle Valo wrote:
-> Shawn Guo <shawn.guo@linaro.org> writes:
->
->>> Is this not the usual DT policy, that missing optional properties should
->>> not prevent a device to work, that old dtbs should still work when new
->>> properties are added?
->>>
->>> I'm not sure what's the best way forward. A plain revert of this patch
->>> would at least bring back wifi support for RockPro64 devices with
->>> existing dtbs. Maybe someone else has a better proposal how to proceed.
->> Go ahead to revert if we do not hear a better solution, I would say.
-> Yes, please do send a revert. And remember to explain the regression in
-> the commit log.
->
-I sent a revert patch.
-
-Sorry for the delay,
-Soeren
+IMHO you should resolve it by using the new interface.  Better
+performing, unambiguous regardless of how many VFs the device
+supports.  What's the down side?
