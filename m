@@ -2,125 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3C824186BE
-	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 08:36:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57D8C4186C6
+	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 08:52:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbhIZGi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Sep 2021 02:38:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39858 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229578AbhIZGi2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Sep 2021 02:38:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 48DE660F93;
-        Sun, 26 Sep 2021 06:36:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632638213;
-        bh=28oArhi0u0AmWqG/AavBH4MgxWMN2/sjbeEH/mw3iKc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=alEjSWcDpCdzhQkOkBFYOPhQNwQERF9Tn/YsFDW8gnRwmMD+pV9bW5cH5Neq2KOKG
-         feKkdg4nYEaqHCdzrSBmjudBlqrHfUNzqA/NBZacoIuPCnOCNnEZZJaOmDfhXiGdRp
-         cjfrnBdpDn+fpbdHb3QBlYVip6+jiXHavCTr3ZKe2I2FT/IsWmceILP/hl8WaxWaar
-         621N16CbPuOt11ohNfn2B8Zqfh1doNB9mx1SJBFTljQOTpUxqX4zcW1wKqJaf650Ul
-         +BEjjEc7RNPpoBXJZDWU6uMW4HXRRNu/JIKh14FmoCK1LTis+0vc5W4socNPC5BeOq
-         Jd1mXdW/1pYvA==
-Date:   Sun, 26 Sep 2021 09:36:49 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        id S231163AbhIZGyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Sep 2021 02:54:03 -0400
+Received: from mx22.baidu.com ([220.181.50.185]:34918 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229879AbhIZGyA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Sep 2021 02:54:00 -0400
+Received: from BC-Mail-Ex11.internal.baidu.com (unknown [172.31.51.51])
+        by Forcepoint Email with ESMTPS id C07ABCB2A5B8EE19BD12;
+        Sun, 26 Sep 2021 14:52:22 +0800 (CST)
+Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
+ BC-Mail-Ex11.internal.baidu.com (172.31.51.51) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2242.12; Sun, 26 Sep 2021 14:52:22 +0800
+Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.14; Sun, 26 Sep 2021 14:52:21 +0800
+From:   Cai Huoqing <caihuoqing@baidu.com>
+To:     <caihuoqing@baidu.com>
+CC:     Cristobal Forno <cforno12@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        "Paul Mackerras" <paulus@samba.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>
-Subject: Re: [PATCH mlx5-next 1/7] PCI/IOV: Provide internal VF index
-Message-ID: <YVAVAfU3aL6JJg3i@unreal>
-References: <YU71n4WSIztOdpbw@unreal>
- <20210925174115.GA511131@bhelgaas>
+        "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2] ibmveth: Use dma_alloc_coherent() instead of kmalloc/dma_map_single()
+Date:   Sun, 26 Sep 2021 14:52:14 +0800
+Message-ID: <20210926065214.495-1-caihuoqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210925174115.GA511131@bhelgaas>
+Content-Type: text/plain
+X-Originating-IP: [172.31.63.8]
+X-ClientProxiedBy: BC-Mail-Ex13.internal.baidu.com (172.31.51.53) To
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 25, 2021 at 12:41:15PM -0500, Bjorn Helgaas wrote:
-> On Sat, Sep 25, 2021 at 01:10:39PM +0300, Leon Romanovsky wrote:
-> > On Fri, Sep 24, 2021 at 08:08:45AM -0500, Bjorn Helgaas wrote:
-> > > On Thu, Sep 23, 2021 at 09:35:32AM +0300, Leon Romanovsky wrote:
-> > > > On Wed, Sep 22, 2021 at 04:59:30PM -0500, Bjorn Helgaas wrote:
-> > > > > On Wed, Sep 22, 2021 at 01:38:50PM +0300, Leon Romanovsky wrote:
-> > > > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > > 
-> > > > > > The PCI core uses the VF index internally, often called the vf_id,
-> > > > > > during the setup of the VF, eg pci_iov_add_virtfn().
-> > > > > > 
-> > > > > > This index is needed for device drivers that implement live migration
-> > > > > > for their internal operations that configure/control their VFs.
-> > > > > >
-> > > > > > Specifically, mlx5_vfio_pci driver that is introduced in coming patches
-> > > > > > from this series needs it and not the bus/device/function which is
-> > > > > > exposed today.
-> > > > > > 
-> > > > > > Add pci_iov_vf_id() which computes the vf_id by reversing the math that
-> > > > > > was used to create the bus/device/function.
-> > > > > > 
-> > > > > > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> > > > > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > > 
-> > > > > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> > > > > 
-> > > > > mlx5_core_sriov_set_msix_vec_count() looks like it does basically the
-> > > > > same thing as pci_iov_vf_id() by iterating through VFs until it finds
-> > > > > one with a matching devfn (although it *doesn't* check for a matching
-> > > > > bus number, which seems like a bug).
-> > ...
-> 
-> > > And it still looks like the existing code is buggy.  This is called
-> > > via sysfs, so if the PF is on bus X and the user writes to
-> > > sriov_vf_msix_count for a VF on bus X+1, it looks like
-> > > mlx5_core_sriov_set_msix_vec_count() will set the count for the wrong
-> > > VF.
-> > 
-> > In mlx5_core_sriov_set_msix_vec_count(), we receive VF that is connected
-> > to PF which has "struct mlx5_core_dev". My expectation is that they share
-> > same bus as that PF was the one who created VFs. The mlx5 devices supports
-> > upto 256 VFs and it is far below the bus split mentioned in PCI spec.
-> > 
-> > How can VF and their respective PF have different bus numbers?
-> 
-> See PCIe r5.0, sec 9.2.1.2.  For example,
-> 
->   PF 0 on bus 20
->     First VF Offset   1
->     VF Stride         1
->     NumVFs          511
->   VF 0,1   through VF 0,255 on bus 20
->   VF 0,256 through VF 0,511 on bus 21
-> 
-> This is implemented in pci_iov_add_virtfn(), which computes the bus
-> number and devfn from the VF ID.
-> 
-> pci_iov_virtfn_devfn(VF 0,1) == pci_iov_virtfn_devfn(VF 0,256), so if
-> the user writes to sriov_vf_msix_count for VF 0,256, it looks like
-> we'll call mlx5_set_msix_vec_count() for VF 0,1 instead of VF 0,256.
+Replacing kmalloc/kfree/dma_map_single/dma_unmap_single()
+with dma_alloc_coherent/dma_free_coherent() helps to reduce
+code size, and simplify the code, and coherent DMA will not
+clear the cache every time.
 
-This is PCI spec split that I mentioned.
+Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+---
+v1->v2: Remove extra change in Kconfig
 
-> 
-> The spec encourages devices that require no more than 256 devices to
-> locate them all on the same bus number (PCIe r5.0, sec 9.1), so if you
-> only have 255 VFs, you may avoid the problem.
-> 
-> But in mlx5_core_sriov_set_msix_vec_count(), it's not obvious that it
-> is safe to assume the bus number is the same.
+ drivers/net/ethernet/ibm/ibmveth.c | 25 +++++++++----------------
+ 1 file changed, 9 insertions(+), 16 deletions(-)
 
-No problem, we will make it more clear.
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index 3d9b4f99d357..3aedb680adb8 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -605,17 +605,13 @@ static int ibmveth_open(struct net_device *netdev)
+ 	}
+ 
+ 	rc = -ENOMEM;
+-	adapter->bounce_buffer =
+-	    kmalloc(netdev->mtu + IBMVETH_BUFF_OH, GFP_KERNEL);
+-	if (!adapter->bounce_buffer)
+-		goto out_free_irq;
+ 
+-	adapter->bounce_buffer_dma =
+-	    dma_map_single(&adapter->vdev->dev, adapter->bounce_buffer,
+-			   netdev->mtu + IBMVETH_BUFF_OH, DMA_BIDIRECTIONAL);
+-	if (dma_mapping_error(dev, adapter->bounce_buffer_dma)) {
+-		netdev_err(netdev, "unable to map bounce buffer\n");
+-		goto out_free_bounce_buffer;
++	adapter->bounce_buffer = dma_alloc_coherent(&adapter->vdev->dev,
++						    netdev->mtu + IBMVETH_BUFF_OH,
++						    &adapter->bounce_buffer_dma, GFP_KERNEL);
++	if (!adapter->bounce_buffer) {
++		netdev_err(netdev, "unable to alloc bounce buffer\n");
++		goto out_free_irq;
+ 	}
+ 
+ 	netdev_dbg(netdev, "initial replenish cycle\n");
+@@ -627,8 +623,6 @@ static int ibmveth_open(struct net_device *netdev)
+ 
+ 	return 0;
+ 
+-out_free_bounce_buffer:
+-	kfree(adapter->bounce_buffer);
+ out_free_irq:
+ 	free_irq(netdev->irq, netdev);
+ out_free_buffer_pools:
+@@ -702,10 +696,9 @@ static int ibmveth_close(struct net_device *netdev)
+ 			ibmveth_free_buffer_pool(adapter,
+ 						 &adapter->rx_buff_pool[i]);
+ 
+-	dma_unmap_single(&adapter->vdev->dev, adapter->bounce_buffer_dma,
+-			 adapter->netdev->mtu + IBMVETH_BUFF_OH,
+-			 DMA_BIDIRECTIONAL);
+-	kfree(adapter->bounce_buffer);
++	dma_free_coherent(&adapter->vdev->dev,
++			  adapter->netdev->mtu + IBMVETH_BUFF_OH,
++			  adapter->bounce_buffer, adapter->bounce_buffer_dma);
+ 
+ 	netdev_dbg(netdev, "close complete\n");
+ 
+-- 
+2.25.1
 
-> 
-> Bjorn
