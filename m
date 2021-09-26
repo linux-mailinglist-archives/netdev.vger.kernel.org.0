@@ -2,131 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 435AA418519
-	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 01:02:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B8A5418591
+	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 04:21:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230226AbhIYXDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Sep 2021 19:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45110 "EHLO
+        id S230303AbhIZCWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Sep 2021 22:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230191AbhIYXDf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 19:03:35 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B69C06176A
-        for <netdev@vger.kernel.org>; Sat, 25 Sep 2021 16:01:59 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id u8so56651041lff.9
-        for <netdev@vger.kernel.org>; Sat, 25 Sep 2021 16:01:59 -0700 (PDT)
+        with ESMTP id S230205AbhIZCWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Sep 2021 22:22:52 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E60AC061570;
+        Sat, 25 Sep 2021 19:21:16 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id 11so8899766qvd.11;
+        Sat, 25 Sep 2021 19:21:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6VfYsnn3GVcEaA6EHi8p6QPzT7sjqJpMMo1EYwRS950=;
-        b=awT1mbnsCgJ6bB5yjKJgluu4r6q60V3FyC0vDLcXG6atpwJylnvWFnqIwWnC11k/JC
-         E4b6+v5mC2wDaFROYCO6ou/NUT4HVeHcgD4dIMxJY9Y0lNSUgXwmU7oHdcN20Q08Q3z8
-         gXVECa38nydF5oVExrwliDRPCem0dEJhi0rQO2kplwEQi5s8S+bg/WsHtqPBJb1QqSoe
-         VdZ0S8fk+fsPOyK83ClPCfbP2nZPQZLUM2OEMO1MgoBo5D4S3h/oBnfq0Umul4GIsRKO
-         MLAd+gn61diHU7IWykhI6WP0Iw891Bc7E5RvbjfNHGjxy/HLwXvYiUHDGYnK0W96Luk2
-         h9TA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=GIx+rSjxW/q6WpBhwC+tPZq1+myuly18nCZ9De5udkw=;
+        b=VOVxynHNZM9TAKcgH7Kr1qWH7M/LZZzUAhyQwgkZUn5BhYAkqpXbREgMimJy345ouJ
+         xvsIkI/CR+KRLvJN+nkjaT4xuXTb7lt6pQ3awRP3Dy/eR/i8w1DSVwQSaaxkD8NezEl5
+         80Sk+go1id7FmEP7L0vzlN8Sk2aPEThV77Uvji/gINo8ra/pXw7BYgCB1nHJu6SxglPO
+         QIRtalXAe/J9mX8KrwWizuczMN9zJRqXjtnmcL/FeL2eyvYgGhZoGL/7PEZRxKblavBT
+         QRAaq5hW4V8g7kHxtSQS6X5F8FS18o4q1A5zkKheOpso3jiUZrsNf9euFcIggfdi4c8p
+         WRWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6VfYsnn3GVcEaA6EHi8p6QPzT7sjqJpMMo1EYwRS950=;
-        b=f6cCR7uwu8M7ShEHpkoUiyoQaYtL9F7A2Dr4QpDv7DEu4A89boSWWDVxhVKEcEpFR9
-         HmiU2i/JkRE0pTBT+IMd+nZt9/ImSCgfoqcJVdFjofRBq7pNVoWj1NhCgojOmMVn3PCf
-         pq7THtkqL5O1BA/50v+4lfZH0U7QEbyUyjNrvmueIdqtYoVlYVsb3WeB6F9r+YWzmQBL
-         h8hmlPxf/Z+m2ytnETKOLsAaOg7JylGQ7VUXgZRuINiy21feL8EBzr8GfO4/c3GNB5M8
-         gW2KjyyuSMYIwd6UF+dOvUgV4ckGfO2rHRtbwpU/Gnh7PJZlR3HudFFclOomJUZas/xH
-         9XCQ==
-X-Gm-Message-State: AOAM530uFAAV1X6Qz9vTPzVkCFCOxc7VQMSJ0+Yub8HwGkkL9GCtQzxk
-        e/3sIYvZWf5RD9J794FKF2HhSg==
-X-Google-Smtp-Source: ABdhPJw+mO3m4HfC1XuJ4ON843Jg0ewWVhVzb7vRD85NA7eVnrUE38VyAjrwGGmvD5LvjCmDe6mHaw==
-X-Received: by 2002:ac2:4d48:: with SMTP id 8mr16221343lfp.394.1632610917748;
-        Sat, 25 Sep 2021 16:01:57 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id d27sm1448111ljo.119.2021.09.25.16.01.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Sep 2021 16:01:57 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Mauri Sandberg <sandberg@mailfence.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: [PATCH net-next 6/6 v7] net: dsa: rtl8366: Drop and depromote pointless prints
-Date:   Sun, 26 Sep 2021 00:59:29 +0200
-Message-Id: <20210925225929.2082046-7-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210925225929.2082046-1-linus.walleij@linaro.org>
-References: <20210925225929.2082046-1-linus.walleij@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GIx+rSjxW/q6WpBhwC+tPZq1+myuly18nCZ9De5udkw=;
+        b=y7ymFLJbixtgT8bDzGbweJNnRQ2IIN2rJ9aqQ0j9ZCdcygJxIw9kIPVg5M6Xps+svF
+         L4FYs1+rmFNOWRgni8h0paIzgz4LgL1RSeqli0CMY8PASQ8EemopYO7bwa+aRsKrdBmx
+         DpfCbdKODkIkvTVUFs9OAo8uUuArgQUotHq2rOu0ZASArXWgRuogpP5+eYh5rNn1Pily
+         UWz30GXPz9z5VY+Zw+BM+wI3Ssk3ajknC6h0pizhvtnKXZ13oqhbEbdWxuqSQOWmckC6
+         S0ZemIkwPCsAJFtaKF8qKZc5S0IpTvSVfq5H7miZV+U7rbZnkPLDCyurkQMgsOJWSA1U
+         ie0Q==
+X-Gm-Message-State: AOAM532mrqrLhLi4I+593R7ZPDtBvs+Z4rTXyt+f4dN6ziAv1yVnv2cW
+        03M4wdkKUwz/f2IJiHdO09k=
+X-Google-Smtp-Source: ABdhPJxE3HUPH44ibMZCt4AsnUMO2FTSWl3D0M1gK68DrjOEvF+0Bi4RxBMz9jj0vkMdIBeaUGmycA==
+X-Received: by 2002:a05:6214:3ac:: with SMTP id m12mr17851616qvy.9.1632622875721;
+        Sat, 25 Sep 2021 19:21:15 -0700 (PDT)
+Received: from ?IPV6:2600:1700:dfe0:49f0:a90f:da5:ff6e:aa3e? ([2600:1700:dfe0:49f0:a90f:da5:ff6e:aa3e])
+        by smtp.gmail.com with ESMTPSA id g19sm9315384qki.58.2021.09.25.19.21.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Sep 2021 19:21:15 -0700 (PDT)
+Message-ID: <05f4baaf-24cc-da1a-a23d-7f033ba528f1@gmail.com>
+Date:   Sat, 25 Sep 2021 19:21:12 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.1
+Subject: Re: [PATCH 1/2] net: bgmac-platform: handle mac-address deferral
+Content-Language: en-US
+To:     Matthew Hagan <mnhagan88@gmail.com>
+Cc:     Christian Lamparter <chunkeey@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Rob Herring <robh+dt@kernel.org>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20210925113628.1044111-1-mnhagan88@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20210925113628.1044111-1-mnhagan88@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We don't need a message for every VLAN association, dbg
-is fine. The message about adding the DSA or CPU
-port to a VLAN is directly misleading, this is perfectly
-fine.
 
-Cc: Vladimir Oltean <olteanv@gmail.com>
-Cc: Mauri Sandberg <sandberg@mailfence.com>
-Cc: DENG Qingfang <dqfext@gmail.com>
-Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+
+On 9/25/2021 4:36 AM, Matthew Hagan wrote:
+> This patch is a replication of Christian Lamparter's "net: bgmac-bcma:
+> handle deferred probe error due to mac-address" patch for the
+> bgmac-platform driver [1].
+> 
+> As is the case with the bgmac-bcma driver, this change is to cover the
+> scenario where the MAC address cannot yet be discovered due to reliance
+> on an nvmem provider which is yet to be instantiated, resulting in a
+> random address being assigned that has to be manually overridden.
+> 
+> [1] https://lore.kernel.org/netdev/20210919115725.29064-1-chunkeey@gmail.com
+> 
+> Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
+
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v6->v7:
-- Fix a small whitespace error in one of the debug messages.
-- Collect Alvin's review tag.
-ChangeLog v5->v6:
-- No changes just resending with the rest of the
-  patches.
-ChangeLog v4->v5:
-- Collect Florians review tag.
-ChangeLog v1->v4:
-- New patch to deal with confusing messages and too talkative
-  DSA bridge.
----
- drivers/net/dsa/rtl8366.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-index f815cd16ad48..bdb8d8d34880 100644
---- a/drivers/net/dsa/rtl8366.c
-+++ b/drivers/net/dsa/rtl8366.c
-@@ -318,12 +318,9 @@ int rtl8366_vlan_add(struct dsa_switch *ds, int port,
- 		return ret;
- 	}
- 
--	dev_info(smi->dev, "add VLAN %d on port %d, %s, %s\n",
--		 vlan->vid, port, untagged ? "untagged" : "tagged",
--		 pvid ? " PVID" : "no PVID");
--
--	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
--		dev_err(smi->dev, "port is DSA or CPU port\n");
-+	dev_dbg(smi->dev, "add VLAN %d on port %d, %s, %s\n",
-+		vlan->vid, port, untagged ? "untagged" : "tagged",
-+		pvid ? "PVID" : "no PVID");
- 
- 	member |= BIT(port);
- 
-@@ -356,7 +353,7 @@ int rtl8366_vlan_del(struct dsa_switch *ds, int port,
- 	struct realtek_smi *smi = ds->priv;
- 	int ret, i;
- 
--	dev_info(smi->dev, "del VLAN %04x on port %d\n", vlan->vid, port);
-+	dev_dbg(smi->dev, "del VLAN %d on port %d\n", vlan->vid, port);
- 
- 	for (i = 0; i < smi->num_vlan_mc; i++) {
- 		struct rtl8366_vlan_mc vlanmc;
 -- 
-2.31.1
-
+Florian
