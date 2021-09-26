@@ -2,128 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A32418B04
-	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 22:34:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA718418B09
+	for <lists+netdev@lfdr.de>; Sun, 26 Sep 2021 22:45:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbhIZUfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Sep 2021 16:35:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230040AbhIZUft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Sep 2021 16:35:49 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067A2C061570;
-        Sun, 26 Sep 2021 13:34:12 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id pf3-20020a17090b1d8300b0019e081aa87bso11745483pjb.0;
-        Sun, 26 Sep 2021 13:34:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=Ah83D4oj0M/ZPbuDGbaur+I2bIn3iVKDa23KqXHEA1A=;
-        b=MUvkwAw/J+JbJHhJu0xo7GVfmp6M77SaST9nJ6breN47wOtF87717R0gX2vViCAbOf
-         2UMo0i0nB7RA+gplPcnYCTxgpY9MRr4XVIUpSnUnRI3yryx/I1sYtpM7h+bKRQyjwkdt
-         4wv/a1DOrMaWzWDCvYTFDwEW/HOUeS8B2dRWh5LVttYTdIe+zB7Z5ni+Cq252p9in/Th
-         lsGKyONyrqpCC/jUvEQ13sg+Xq6fBgx6bp7ZFUzSp+zqErGHPh/SxQGXb+dDhpl+qv2H
-         qPad3VvWBEPYMyU9cPKGFxkkw4BDDjwKNFwsHOj5FZqFpL9WSQNR/A0SVkilXbuiGX9u
-         fGPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:content-transfer-encoding;
-        bh=Ah83D4oj0M/ZPbuDGbaur+I2bIn3iVKDa23KqXHEA1A=;
-        b=eo96Dm8JetjvUPAw11cNbD7bGbsZgQQhOx8h2M2F0s/6xXOTYEQiUj/xY13X+HvIGO
-         H3UdB5G2fqqFlkt8fwsLIoAdpAKHhIip/2tKhAUp0zbLbXoWa7NZaavSZlFhQFlKbirA
-         7qWj+eTJpB7D2/L+3LvICoN096ecTIE7hCrS8lITZQ36RmXOaBY7N3f7ojP3AEtuHWKr
-         X+uaY/f28Ja8f2Gg13NV88YE3l+Cu9PIy2zAGBrBP150FVPgYtlJenyVWWa5xVxkk92W
-         35h/zmoBMHr1/lTlJQga6qSKq/omF+mWhMWQZTkiGAOLfFwXTQoBZmjG+0zf/VniYT9d
-         yAJg==
-X-Gm-Message-State: AOAM532/hDzT/NNtUnDT9XNapI5vLtJBCBGd+5/L6LfyBwPqum1iwbJ3
-        c6WqBGZXCy1yIkdkugzZvsv7hAdt8yo=
-X-Google-Smtp-Source: ABdhPJzaL2wRw+PRl+hEe0bgART6GV0PgRMVqbxvEXhkXyrpOuDbBHMYlMCn4gzSkKH3mxn0yJMbeA==
-X-Received: by 2002:a17:902:6e02:b0:13a:41f5:1666 with SMTP id u2-20020a1709026e0200b0013a41f51666mr19411180plk.39.1632688452104;
-        Sun, 26 Sep 2021 13:34:12 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:3e55])
-        by smtp.gmail.com with ESMTPSA id 26sm18727150pgx.72.2021.09.26.13.34.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Sep 2021 13:34:11 -0700 (PDT)
-Date:   Sun, 26 Sep 2021 13:34:09 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     bpf@vger.kernel.org
-Subject: Happy birthday BPF!
-Message-ID: <20210926203409.kn3gzz2eaodflels@ast-mbp.dhcp.thefacebook.com>
+        id S230116AbhIZUrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Sep 2021 16:47:33 -0400
+Received: from mxout03.lancloud.ru ([45.84.86.113]:34712 "EHLO
+        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230052AbhIZUrd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Sep 2021 16:47:33 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru CCA82208DC33
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [RFC/PATCH 12/18] ravb: Add timestamp to struct ravb_hw_info
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "Andrew Lunn" <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
+ <20210923140813.13541-13-biju.das.jz@bp.renesas.com>
+ <ef7c0a4c-cd4d-817a-d5af-3af1c058964f@omp.ru>
+ <OS0PR01MB5922426AACFBDF176125A9AF86A69@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <45c1dedb-6804-444f-703e-2aa1788e4360@omp.ru>
+Date:   Sun, 26 Sep 2021 23:45:50 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <OS0PR01MB5922426AACFBDF176125A9AF86A69@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Today BPF is 7 years old. On Sep 26, 2014
-the commit 99c55f7d47c0 ("bpf: introduce BPF syscall and maps")
-introduced the BPF system call. I’m very proud to say that BPF has grown from a
-Linux curiosity to a cornerstone of the way many technologies are built, but
-that hasn’t come without a fair amount of growing pain. 
+On 9/26/21 9:34 AM, Biju Das wrote:
 
-We’ve been able to scale significantly by treating the first BPF
-implementations of runtime and tool chain as the reference, but with Windows
-and a number of new tool chains and libraries coming into the picture, we need
-to reconsider this approach to ensure that we avoid fragmentation and lose
-interoperability. Specific examples of potential divergence are all over the
-place. Libbpf equivalent libraries have been reimplemented at least twice in
-golang and rust. GCC and LLVM have BPF backends that are similar but not
-equivalent. There are implementations of BPF in DPDK and other user space
-frameworks. BPF can run in the Netronome NIC and was prototyped in HW for
-inclusion into general purpose CPUs. There are several verifiers (in the Linux
-Kernel, PREVAIL in user space, and experimental ExoBPF). There are many JITs
-for different architectures inside the Linux Kernel and in user space. BPF
-programs can be written in C, Rust, bpftrace, and various assembly languages.
+>> -----Original Message-----
+>> Subject: Re: [RFC/PATCH 12/18] ravb: Add timestamp to struct ravb_hw_info
+>>
+>> On 9/23/21 5:08 PM, Biju Das wrote:
+>>
+>>> R-Car AVB-DMAC supports timestamp feature.
+>>> Add a timestamp hw feature bit to struct ravb_hw_info to add this
+>>> feature only for R-Car.
+>>>
+>>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+>>> ---
+>>>  drivers/net/ethernet/renesas/ravb.h      |  2 +
+>>>  drivers/net/ethernet/renesas/ravb_main.c | 68
+>>> +++++++++++++++---------
+>>>  2 files changed, 45 insertions(+), 25 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/renesas/ravb.h
+>>> b/drivers/net/ethernet/renesas/ravb.h
+>>> index ab4909244276..2505de5d4a28 100644
+>>> --- a/drivers/net/ethernet/renesas/ravb.h
+>>> +++ b/drivers/net/ethernet/renesas/ravb.h
+>>> @@ -1034,6 +1034,7 @@ struct ravb_hw_info {
+>>>  	unsigned mii_rgmii_selection:1;	/* E-MAC supports mii/rgmii
+>> selection */
+>>>  	unsigned half_duplex:1;		/* E-MAC supports half duplex mode */
+>>>  	unsigned rx_2k_buffers:1;	/* AVB-DMAC has Max 2K buf size on RX
+>> */
+>>> +	unsigned timestamp:1;		/* AVB-DMAC has timestamp */
+>>
+>>    Isn't this a matter of the gPTP support as well, i.e. no separate flag
+>> needed?
+> 
+> Agreed. Previously it is suggested to use timestamp. I will change it to as part of gPTP support cases.
 
-This diversity is a sign of healthy and rapidly growing ecosystem, but it leads
-to a confusing user experience. BPF implementations compete with each other.
-Despite books about BPF and pretty complete documentation at
-https://ebpf.io/what-is-ebpf, developers and users complain that the
-documentation is spread around.
+   TIA. :-)
 
-In response, we collectively created the BPF Foundation and BPF Steering
-Committee (out of the most active BPF developers) to strengthen the
-collaboration. Moving forward, we must all focus on maximizing growth while
-maintaining interoperability. While we will maintain the Linux kernel, libbpf,
-and LLVM as the reference implementations, it's not our goal to force every
-user to embrace each part of the reference stack. Hopefully the committee will
-add a bit of formal structure to coordinate collaboration.
+>>
+>> [...]
+>>> @@ -1089,6 +1090,7 @@ struct ravb_private {
+>>>  	unsigned int num_tx_desc;	/* TX descriptors per packet */
+>>>
+>>>  	int duplex;
+>>> +	struct ravb_rx_desc *rgeth_rx_ring[NUM_RX_QUEUE];
+>>
+>>    Strange place to declare this...
+> 
+> Agreed. This has to be on later patch. Will move it.
 
-More specifically, these implementations define the de-facto standard for
-various parts of the BPF ecosystem:
-- The Linux Kernel verifier defines BPF instruction set, BTF format,
-  map and program types, helpers, hook points.
-- The libbpf defines ELF file format and CO-RE features.
-- The LLVM defines BPF C language.
+   I only meant that these fields should go together with rx_ring[]. Apparently
+we have a case of wrong patch ordering here (as this patch needs this field declared)...
 
-7 year old BPF is mature enough to put the standards before the implementations.
+>>>  	const struct ravb_hw_info *info;
+>>>  	struct reset_control *rstc;
+>>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c
+>>> b/drivers/net/ethernet/renesas/ravb_main.c
+>>> index 9c0d35f4b221..2c375002ebcb 100644
+>>> --- a/drivers/net/ethernet/renesas/ravb_main.c
+>>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+>>> @@ -949,11 +949,14 @@ static bool ravb_queue_interrupt(struct
+>>> net_device *ndev, int q)
+>>>
+>>>  static bool ravb_timestamp_interrupt(struct net_device *ndev)  {
+>>> +	struct ravb_private *priv = netdev_priv(ndev);
+>>> +	const struct ravb_hw_info *info = priv->info;
+>>>  	u32 tis = ravb_read(ndev, TIS);
+>>>
+>>>  	if (tis & TIS_TFUF) {
+>>>  		ravb_write(ndev, ~(TIS_TFUF | TIS_RESERVED), TIS);
+>>> -		ravb_get_tx_tstamp(ndev);
+>>> +		if (info->timestamp)
+>>> +			ravb_get_tx_tstamp(ndev);
+>>
+>>    Shouldn't we just disable TIS.TFUF permanently instead for the non-gPTP
+>> case?
+> 
+> Good catch. As ravb_dmac_init_rgeth(will be renamed to "ravb_dmac_init_gbeth") is not enabling this interrupt as it is not documented in RZ/G2L hardware manual.
+> So this function never gets called for non-gPTP case.
+> 
+> I will remove this check.
 
-For example:
-The kernel verifier shouldn't be a gatekeeper of new instructions in BPF. GCC
-added SDIV instruction. It's not implemented by LLVM and will be rejected by
-the verifier, but such new instruction has all rights to be a part of BPF
-instruction set standard even when some implementations don't support it. The
-BPF steering committee (BSC) could make such a vote.
-Can GCC continue inventing instructions without ever talking to BSC ? Sure, but
-once BSC agrees to this extension of the standard (whether it's a new
-instruction or new C language attribute((btf_tag))) it will give a technical
-direction to the whole BPF ecosystem. The creation of BSC hopefully will
-provide implementations a way to collaborate instead of competing for BPF
-users.
+   TIA!
 
-If you are interested in joining this collaboration, there are many ways to
-reach developers in the Linux BPF community:
-- The bpf@vger mailing list was an excellent place for the collaboration
-  and probably should continue to be such a place.
-- When email is too slow the discussion can move to BPF office hours
-  (zoom call every Thursday at 9am PST).
-- There are Linux Plumbers and LSFMMBPF conferences to amplify the reach.
-- BPF slack channel https://ebpf.io/slack.
+> Regards,
+> Biju
 
-Linux, Windows, Rust, Golang, GCC, LLVM folks,
-cheers to BPF birthday !
+MBR, Sergey
