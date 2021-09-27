@@ -2,95 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A10441A00C
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 22:21:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C4641A010
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 22:23:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236935AbhI0UXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 16:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
+        id S236966AbhI0UYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 16:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236887AbhI0UXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 16:23:22 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F5CC061575
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 13:21:43 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id t10so82573281lfd.8
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 13:21:43 -0700 (PDT)
+        with ESMTP id S236910AbhI0UYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 16:24:46 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A36CC061575;
+        Mon, 27 Sep 2021 13:23:08 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id n18so18826088pgm.12;
+        Mon, 27 Sep 2021 13:23:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Mwj4wlx7pJTq+sjObs1F2mI1VFoqVK6/+hi+p1jBXEk=;
-        b=gKkkCHqnSCZZTj2vq1G8M9uDMhNRm8MF4PretqKSg9tTcnMpqDfVNjfIRSpq2jtr8h
-         qCnblJ9/XMOYZidcpNfeLuyT7G6Nn3mANqBTowq4ZwbHtSj0J25lrlW0peEdWUS4d+bU
-         D7uEb80B8ZVEwNq0pn63gcD63GmeOGuEdG94q9ur6iRLx/E6M+sghZyOHn9tvfWvcd9E
-         d8mFAMHvkxQ6hT3/Qjot8AT9M+g+j0ZjgGOBWxIwLVe4MSPrFP1zrGmr3WUUyIui1nBp
-         7JxxwwZc50jbL+X+cEJX5CtVoWU1so+tEq3fNVQiHtjls2tddqzl8Xe+xdZZGcxlXJQw
-         ZN7w==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=V0i5nY3QH9iXcrKglZXlGRD0wtyYtp6y70pksa3skO4=;
+        b=qwewqIBSaLhc/bs3fxJK++SG+QNUWBZtG/3GwuqDOKqPpyTUlbxVGJDNXSTW/ejr8C
+         bapb2W9gCU8b/iQVZdRVUyw00zF8Y6HME1jl0H2Dzuj7PjsyfV46kIKpC4R8HMLvmiTW
+         0BOmj1CEF5EKopUo46JNhSAcobXpnM96fkT1hlT4YjGwSwwtFOw5p7C3jV51KORAevwM
+         a43/xmb5ytVpGG7KMJfq2pT3fkc2d+iiPZtbhC6Ebop1mE9vOc5wZ8/dQ2uMIIrn0BMk
+         76XaWtahqlv/I7N3fHZkzEny62TX+fNyDbEZCJ36K+4rt/kyAv/PBp+lZzoRJgeBE/Rw
+         Y4eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Mwj4wlx7pJTq+sjObs1F2mI1VFoqVK6/+hi+p1jBXEk=;
-        b=C7mFcLZ9Ik1a2XEIf9Py++cYHkaHw3ALF8jKCj8LjqHVqSYOS/T1qDVU4UOlNm6PjF
-         slqUGgEPrx2NXz6vt14V5NVUi198Zw6ffyV7p5o0mk2pzJ/KHupMQZrtcqntFwY+5Cyc
-         8i0+SKfN3sUEO8WmlKB3gRoDHXE92iMLLk86Y7CybEdVCa+wTPuA5l8fxHJALVGPUvVe
-         AKH8fJ8byUVp1ULdjqCb7k0gs7pX6bTxVWPufMhO3YbPne8at+Gp3vBwashOxMLBnxDi
-         hNwH44Ir/YsdTkfqKVVcNQSpoqZ5KcB7bsOTaxU9Ldi/wIliJxcSUytAo+cKALiEYd9T
-         kWlQ==
-X-Gm-Message-State: AOAM531vry0N0NQrzUrauZjESCKOAvp1JR2O7JSby59t3ZYdFL+E0GGa
-        BeV82qvzMntJMa5/wbXMw6/ZOxF4ZKE8fVOrByqi2Q==
-X-Google-Smtp-Source: ABdhPJwqh7Vuqs/4cTCIcQTnwLEMOPNAtSqsyICJmZ9PV2f9uEyYaeypxJqQsfGX/DJNIGcadAy9up+yk7jZ7rpuclI=
-X-Received: by 2002:a05:6512:3190:: with SMTP id i16mr1672241lfe.104.1632774101646;
- Mon, 27 Sep 2021 13:21:41 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=V0i5nY3QH9iXcrKglZXlGRD0wtyYtp6y70pksa3skO4=;
+        b=gOU8AgpT/NZOLJv8934BuQgnTmN7E4W78e20sHAg+KSlOgRwvksmFb6cQ+SYAHtBoJ
+         0OdxFikawiatOYsCGk/EJ0PclAVoTAP6YMb4KB72IZ4MH00rs7ydtWXJ9w1Kq+jPF7fH
+         YqV6qxH8szvYnhiW7/9Lf/jb6d/syhg9R78pr1b857iHB/2Cmo3Fz5zMMGq+5xY4BpjK
+         rqaA8oxhsBR0M3ZhJcdXZQ3tyIHqSSeHzKh1KvO+ZrSDJUxQt1fk7YZZ8Suor0/hkqEK
+         oYiPe3SkG95avrEhPXc8kzZZPnJVfew0QCbKRbtCgb/7gwx/Q3ZVPbroHK3O/8dgmFQG
+         E5Hg==
+X-Gm-Message-State: AOAM53282u5eNctdvPB3/vjcIi+k/nKl25nRdN5DB4RIpwzVGNdaFbbO
+        TZDts8LnX10VkMDDxfuwNz4=
+X-Google-Smtp-Source: ABdhPJxps7L5mrAo9cBFURpLQEOJJ3M/lpdPTfVDXKPcn6ITv/07nHWAGpB/imssYjn1RVIBDw5YRA==
+X-Received: by 2002:a65:4209:: with SMTP id c9mr1210484pgq.399.1632774187555;
+        Mon, 27 Sep 2021 13:23:07 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id n12sm10046806pff.166.2021.09.27.13.23.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Sep 2021 13:23:07 -0700 (PDT)
+Date:   Mon, 27 Sep 2021 13:23:04 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Sebastien Laveze <sebastien.laveze@oss.nxp.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yangbo.lu@nxp.com, yannick.vignon@oss.nxp.com,
+        rui.sousa@oss.nxp.com
+Subject: Re: [PATCH net-next] ptp: add vclock timestamp conversion IOCTL
+Message-ID: <20210927202304.GC11172@hoboy.vegasvil.org>
+References: <20210927093250.202131-1-sebastien.laveze@oss.nxp.com>
+ <20210927145916.GA9549@hoboy.vegasvil.org>
+ <b9397ec109ca1055af74bd8f20be8f64a7a1c961.camel@oss.nxp.com>
 MIME-Version: 1.0
-References: <20210723231957.1113800-1-bcf@google.com> <CAK8P3a1aGA+xqpUPOfGVtt3ch8bvDd75OP=xphN_FrUiuyuX+w@mail.gmail.com>
-In-Reply-To: <CAK8P3a1aGA+xqpUPOfGVtt3ch8bvDd75OP=xphN_FrUiuyuX+w@mail.gmail.com>
-From:   Bailey Forrest <bcf@google.com>
-Date:   Mon, 27 Sep 2021 13:21:30 -0700
-Message-ID: <CANH7hM7_brYnVu_x7=+vY34SGQNbc7GUGQmAqpYwXGgVP0RH6Q@mail.gmail.com>
-Subject: Re: [PATCH net] gve: DQO: Suppress unused var warnings
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b9397ec109ca1055af74bd8f20be8f64a7a1c961.camel@oss.nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Apologies, resending as text
+On Mon, Sep 27, 2021 at 06:00:08PM +0200, Sebastien Laveze wrote:
+> The "typically" was more a reference to this possible implementation of
+> AS-2020 using a common CMLDS layer and several domains using a single
+> socket.
+> 
+> So, without this IOCTL the design would be 1 socket for CMLDS layer
+> and 1 socket for each domain plus some specific filtering for each
+> socket to avoid processing the unwanted traffic.
+> 
+> With this IOCTL, the design would be 1 socket and 1 conversion for the
+> sync messages in the appropriate domain.
 
-On Mon, Sep 27, 2021 at 2:59 AM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> On Sat, Jul 24, 2021 at 1:19 AM Bailey Forrest <bcf@google.com> wrote:
-> >
-> > Some variables become unused when `CONFIG_NEED_DMA_MAP_STATE=n`.
-> >
-> > We only suppress when `CONFIG_NEED_DMA_MAP_STATE=n` in order to avoid
-> > false negatives.
-> >
-> > Fixes: a57e5de476be ("gve: DQO: Add TX path")
-> > Signed-off-by: Bailey Forrest <bcf@google.com>
->
-> Hi Bailey,
->
-> I see that the warning still exists in linux-5.15-rc3 and net-next,
-> I'm building with my original patch[1] to get around the -Werror
-> warnings.
->
-> Can you resend your patch, or should I resend mine after all?
->
->       Arnd
->
-> [1] https://lore.kernel.org/all/20210721151100.2042139-1-arnd@kernel.org/
+The ioctl solution is gross.  A program with eight vclocks should call
+recvmsg and parse the CMSG, then go and call ioctl seven times?  Yuck.
 
-Hi David/Jakub,
+What you really want is the socket to return more than one time stamp.
+So why not do that instead?
 
-Any thoughts on my patch? I'm open to alternative suggestions for how
-to resolve this.
+Right now, the SO_TIMESTAMPING has an array of
 
-This patch still works and merges cleanly on HEAD.
+   struct timespec ts[3] = 
+   [0] SOFTWARE
+   [1] LEGACY (unused)
+   [2] HARDWARE
+
+You can extend that to have
+
+   [0] SOFTWARE
+   [1] LEGACY (unused)
+   [2] HARDWARE (vclock 0)
+   [3] HARDWARE (vclock 1)
+   [4] HARDWARE (vclock 2)
+   ...
+   [N] HARDWARE (vclock N-2)
+
+You could store the selected vclocks in a bit mask associated with the socket.
+
+Hm?
 
 Thanks,
-Bailey
+Richard
