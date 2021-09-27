@@ -2,190 +2,379 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E81C419785
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 17:14:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E2654197CD
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 17:24:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235083AbhI0PQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 11:16:18 -0400
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:25232 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234972AbhI0PQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 11:16:17 -0400
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18REjPl3030088;
-        Mon, 27 Sep 2021 15:14:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=Naa14Vfuwhw59TzI5P+UOGrsc4gkaIjJSJ1f9cuG+cU=;
- b=xt0HE6G2f/QvkHgOyA0jkcY/HfGrC+W63ZUWmyAQbf299GHVGsFOm0gDFGeDyOek66Jd
- haSc80phaniPxDR18ngbY3EM0JI5mOupmOkzxKAY0e37A+Qrg9bjQ9ktOyWmJgCpBgA9
- zxElMQDOams7ck/Pxtd/dVr9+UWkfDXl3D/Bu94ix/HrzB7kZwBzFpyP5B30KNkGXRrg
- IE8xCifRiXi18GxYjTdiBDvCb5pKurDHlg7pvSWdenLyDec70Siw6S9+RDIil0x+JDVQ
- bHvl5OAkRDEGPCFv4lfUxM63ge0nnK7GryIsgyqy2VK3/cEzL1TuCKmKHKA4JbZ8gBED 2w== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3bbeje9dm3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 27 Sep 2021 15:14:04 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 18RFAL2W140612;
-        Mon, 27 Sep 2021 15:13:55 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2040.outbound.protection.outlook.com [104.47.66.40])
-        by userp3020.oracle.com with ESMTP id 3badhr5aby-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 27 Sep 2021 15:13:55 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iHXvhUazK20oTl7XJzaZkWPjaC+r1tcZLTdizFLyR5+qSUrmYAiPDO7HVTfFO9Ss+0jBO1lRTZnRkUHZbd1Ot/VZFU8ERmF/11EZvdQ6k7su3uWXqPLk7SaoMv2GV68Yp+bhHfouOxWjSds6cIYyp/INN0U73w22r+EzObh+eVeulOAjs0acNgcpm0DEGABQpGuVpTOHJoy4IjfWCGPqs6mR8aIe2JpHs95AnE7Tys3QrhKImJadOQUdl7TwpGexT7DKjYNsv6hPnEr2T33JwdfI5SGsCFqDt23yydcrX8p9tqdjFufGU9GFsItPXv8cniRfpX61f/0GgFs0H1l93g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=Naa14Vfuwhw59TzI5P+UOGrsc4gkaIjJSJ1f9cuG+cU=;
- b=EdKviQX0nyYtFSrm+Imdc4wRBQBzbJ0IvYgFu+bOXD8U4vrS5wqCNUkl74Lnh/zSHDz/XIu4LLHcqKpKX4vCGDKm4JSDJaQmh5+GEJ0UhXhpGr9LeGfHGJaWtOeTup+WZrNmlkEDsWs9wkSIhHb0qqPg6echV9enMlBT7Hk/BmsbTRgsQqXjlWgrtsj1+BVN0RQesXWvH4cgt1jfO7YkDZAW5cjdcemPibVY5uQsAjpejvVQSubxOP953SRGo0oPokOWOukKKkDJ8TP0h0zHgXsknN2P49A0TOb1ykfHhIifIbmogKQQZBNURLmdvRJk9K7oTyyUMemRlCEgy5uuzg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Naa14Vfuwhw59TzI5P+UOGrsc4gkaIjJSJ1f9cuG+cU=;
- b=WMy2BcLXwDQtoWttBMI0pAH5q1XCNXVd0jAFv1PEoI55sdeabEuMNUnWyXlE/lhj+8tQDOQN8hEpynseNGovUJUapfD2fjMYSOX3eYJveTjrk7hLKKVA+ucV8ltB+XYqWf0U3mEuTMsew3nJsxcOJfxc6m5QJZmyWkgZXN/P6QE=
-Authentication-Results: canonical.com; dkim=none (message not signed)
- header.d=none;canonical.com; dmarc=none action=none header.from=oracle.com;
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CO6PR10MB5570.namprd10.prod.outlook.com
- (2603:10b6:303:145::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Mon, 27 Sep
- 2021 15:13:53 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::d409:11b5:5eb2:6be9]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::d409:11b5:5eb2:6be9%5]) with mapi id 15.20.4544.021; Mon, 27 Sep 2021
- 15:13:53 +0000
-Date:   Mon, 27 Sep 2021 18:13:25 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Samuel Ortiz <sameo@linux.intel.com>,
+        id S235199AbhI0P0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 11:26:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33090 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235180AbhI0P0B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 11:26:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8856460FF2;
+        Mon, 27 Sep 2021 15:24:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632756263;
+        bh=Otnpkq3NEq12xc0VFCDH7tX4EZqJVFgDrmALVhZZY4k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tHcCdBKb2ZYYAtwc8J6MUjc17O5JFCvAEJIdyBQNtIERgFB250ipFD5HymM13Vej6
+         eG5RT1pA0cvIUdtnajP353EFi1Dcl2MtThzIcAeLXK1aIuzVgDcfodIuK/ayn2hg5m
+         FfoI8Tb2FlgSXuX+avNR/2tElBaCHjkAP+B4dLoLoQlO1HE9VOCFOQeIPhL38N+RAC
+         nph+xTX/OCm1xig6NKnNChzW8GNiI6vUb3y83pue1DYYxDfH3dv0xFdqZO6ghQkpOG
+         AwYGfdIicC4Y6DvdbbaN+WugrG/32wp1PPhBt5KcFI6uCDaDt/4bIx+WENKn4nkg0d
+         TORmqwgzVNpQw==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Alex Elder <elder@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] nfc: avoid potential race condition
-Message-ID: <20210927151325.GJ2083@kadam>
-References: <20210923065051.GA25122@kili>
- <3760c70c-299c-89bf-5a4a-22e8d564ef92@canonical.com>
- <20210923122220.GB2083@kadam>
- <47358bea-e761-b823-dfbd-cd8e0a2a69a6@canonical.com>
- <20210924131441.6598ba3a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <81b648d2-0e20-e5ac-e2ff-a1b8b8ea83a8@canonical.com>
- <20210927072605.45291daf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <1af270c3-8a4f-6c62-bb6c-b454a507f443@canonical.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1af270c3-8a4f-6c62-bb6c-b454a507f443@canonical.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0056.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::8)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Andy Gross <agross@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        iommu@lists.linux-foundation.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev
+Subject: [PATCH] [RFC] qcom_scm: hide Kconfig symbol
+Date:   Mon, 27 Sep 2021 17:22:13 +0200
+Message-Id: <20210927152412.2900928-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Received: from kadam (62.8.83.99) by JNAP275CA0056.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::8) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.14 via Frontend Transport; Mon, 27 Sep 2021 15:13:44 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a43f1ca7-1280-4629-5c80-08d981c96a07
-X-MS-TrafficTypeDiagnostic: CO6PR10MB5570:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <CO6PR10MB5570404E9623F5BE7305194B8EA79@CO6PR10MB5570.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ysRR2B4L0Ofug/wuufOz/KUORIwZDcZ1GX6bPCLWlvlFmBwN9Em2iiPNn0EnpIUUYclBxu1UPnXIOyQAnKiQ39R+LU6IoD++MMvBYrYRdUEA6K2HZwAok31HWkdRfmdbzfUpYGIrprukbEkcPABLUOXsfvL2nC5lUvLbVlkVmPSQJyZSKPR67+DCydt+jOGHfD2IaRM2Rgr0a5C8w1LxfAzCkCzR7ijKmgwjyu/nC1ytkVHLbnMzCyQ2PGd+PgaA2YIQ18XYEadhit4FrITtx4JJifD+u/TJYVN6/8swWe2yBHiQ8ds3T31gfzdV8smlAGKNsmzneYMkF9qAyYcC27781LZAXuuuKYJYRQqaIKmnZgpBVjFM/Vbp0j1n2E+wCzeEqeuzEjFd42UuA0m6ISy56yZc1FrMI1ZZFn5BfUlXinAnvMqzwX4JqtvYFg0AKQo1qdg0SCeEn9+/7LoXQWjBe+07dt9YlejCY42ISIRs5p0fPwxBEIxAmDHhFuYrKISsGBMY3kgvt2L/1odePXyfhcolQUkiczbp/rAok9w2il78R0l2xDv2/ebWoPVonwQksh6OvM78RhxqxNLpKfC61HY/l/vC89YFUee3Z5MPH5y/qbTMJeyjMFskFNV0EfjnB+fg6wxudSsTMMCbafac/pJDmmoIOCSL068EUTG75xCi8+7PXVO9G0bVhm9NItWRkWOmIlt8aCI1fTIFez1y/VW5v/otJmlK2f17zw3RH/MuduxMKdAo/Ymlj+j2n0pHviadEYss6IqxhDwzotGRvB+8BWwWyH807QkWF2U=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(83380400001)(966005)(316002)(6916009)(38350700002)(33656002)(44832011)(6496006)(33716001)(2906002)(4326008)(5660300002)(9686003)(66946007)(6666004)(52116002)(55016002)(54906003)(38100700002)(508600001)(8676002)(26005)(66476007)(956004)(86362001)(9576002)(53546011)(66556008)(8936002)(186003)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bV1L2vcoWKDcfSl+jE5B5e8R6QugUH9ff2AspnridTb5aW4tZbjcFlzfuRWe?=
- =?us-ascii?Q?wYKd4C2i3Io8I3T9z7zAl9n0HqjW4bXDjCPc50kpd+ml9+3eP1Z1S0I2ym2s?=
- =?us-ascii?Q?W9012mBkxa8SSCbHdaOx9mIcCMTGmKYPrshBofyvRwj3Q1EtFwf0hUyB2YCG?=
- =?us-ascii?Q?QDqUMeqQWy7vvzprpQabGWIp4nVurm3zcHDX/RKteVmStDBRZl0gPxRfvHqr?=
- =?us-ascii?Q?v3bzuke5oKUi/e4gx+yTtdGSuDpEyQnY/wsFg19OoWF2Sn6MhUd1pPV4FCf5?=
- =?us-ascii?Q?vuPoFxgg0FPeZT2RuudaUCitMgCQcOhkior2w2L0tuFL8dt8NB+7XnM2yAhc?=
- =?us-ascii?Q?IkHtzVoLDOPGZR2+MNbHae/qXhSqnzOssqMp1Sf0d8G5VG7VyldteJgxKMz0?=
- =?us-ascii?Q?H/WqryhY6+6o0K+C1dSMxQP8VsMtCHFuxUuVm5WG+NYq1hyt/ToOPl7SP+I0?=
- =?us-ascii?Q?JEu6yP38KVcq9b2vvoaRqPI/oMKhAUqjUtD54AnisAiLRq4JM7tWEnKtZE8b?=
- =?us-ascii?Q?SVgWPj7KJioYXFiMeEwcmB47IxyD2jPw33gaiGZXgNB3LVgoBn4kFhyv4Kk7?=
- =?us-ascii?Q?joJqxJbSKB/SrblQTKj9K7JQPWjhvZnXG6wrYDrtLvwqKOrTUL48E5NV4L7q?=
- =?us-ascii?Q?vjQRo2bp9nUhFLciJ7gpszI/1pSdYGRwd1CdAX2qhn1o5u1J6s6ESkX/wgSD?=
- =?us-ascii?Q?vqb6bvBaHNMqmAVlm9tQaNu7Jl0n45SFv9eolSI1nXspteXkt+OTOSHytObB?=
- =?us-ascii?Q?9MmYr67uT8y/nx/e8OuUcqkenPcfvWbkgTvwAEyYniSZjIetnObOyOYZZCwC?=
- =?us-ascii?Q?nA5AlYL54n8Cn1IlSwok8/QHNol2NGMfh3ZcKS/bRnzcfLsCt871txYBrjOO?=
- =?us-ascii?Q?Ds0Ms4y0xRpICBNH9PQkqnc3HTTOcErlt7Cjyvk+KQBW+VvkzJhhS2ceTXRI?=
- =?us-ascii?Q?AwwRjOkc7KJGfRdLKgMKYq/0zBxIraYnYqLQBHx195GuOhWqqKqXv53IcA8f?=
- =?us-ascii?Q?+Qu3Tu5CCGy2hDN89/Odm/1fpR3V5i9OuzRIFWljQtd1B6ljUExxnyPsO7YE?=
- =?us-ascii?Q?Pmy7zJsjPsvN8DB+6tNA63x5s3lQwdzvor83FyZsm3uuf5zALEyvatHBxTDd?=
- =?us-ascii?Q?OS4OhHr0/3L1tet7VYyZNGloxMb8MIkXw/ni/4e23QGBV8xxLs6Q5olDRGRW?=
- =?us-ascii?Q?pRD1yB+85smHQAKywA8luEyn8qdiZnkbheBr3sWfo1JomIE4R3v9fmocnsnV?=
- =?us-ascii?Q?7LdbPjftP61GwiLrceZoHD4wlN3kka9VKAZEZKTXuiZcMKjCNlfq/FXqu8QR?=
- =?us-ascii?Q?FMYbn0ukD1w/CPrHATUSSywW?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a43f1ca7-1280-4629-5c80-08d981c96a07
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2021 15:13:52.8725
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: X29v4KaJ1NnRw2m+Ku8vFNx+TmvJ2ZJpwpJm4m/wNpJ8o+x5kI1VH0wS1cXsk7qUUIo1OdqN7WXLDG4lIf2+s/of2ZTURnBsSO8JIN/PvOw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR10MB5570
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10120 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0
- malwarescore=0 spamscore=0 adultscore=0 bulkscore=0 mlxscore=0
- mlxlogscore=945 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2109270104
-X-Proofpoint-GUID: XV2WxNfYwYViJ-Zn-l-CdL4N4q4FkIHr
-X-Proofpoint-ORIG-GUID: XV2WxNfYwYViJ-Zn-l-CdL4N4q4FkIHr
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 27, 2021 at 04:58:45PM +0200, Krzysztof Kozlowski wrote:
-> On 27/09/2021 16:26, Jakub Kicinski wrote:
-> > On Mon, 27 Sep 2021 09:44:08 +0200 Krzysztof Kozlowski wrote:
-> >> On 24/09/2021 22:14, Jakub Kicinski wrote:
-> >>> On Fri, 24 Sep 2021 10:21:33 +0200 Krzysztof Kozlowski wrote:  
-> >>>> Indeed. The code looks reasonable, though, so even if race is not really
-> >>>> reproducible:
-> >>>>
-> >>>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>  
-> >>>
-> >>> Would you mind making a call if this is net (which will mean stable) or
-> >>> net-next material (without the Fixes tags) and reposting? Thanks! :)  
-> >>
-> >> Hi Jakub,
-> >>
-> >> Material is net-next. However I don't understand why it should be
-> >> without "Fixes" in such case?
-> >>
-> >> The material going to current release (RC, so I understood: net), should
-> >> fix only issues introduced in current merge window. Linus made it clear
-> >> several times.
-> > 
-> > Oh, really? I've never heard about this rule, would you be able to dig
-> > up references?
-> 
-> Not that easy to go through thousands of emails, but I'll try:
-> 
-> "One thing that does bother him is developers who send him fixes in the
-> -rc2 or -rc3 time frame for things that never worked in the first place.
-> If something never worked, then the fact that it doesn't work now is not
-> a regression, so the fixes should just wait for the next merge window.
-> Those fixes are, after all, essentially development work."
-> https://lwn.net/Articles/705245/ 
+From: Arnd Bergmann <arnd@arndb.de>
 
-Yes.  He's talking about fixes to new features which don't work at all.
+Now that SCM can be a loadable module, we have to add another
+dependency to avoid link failures when ipa or adreno-gpu are
+built-in:
 
-I once discovered a module that had a bug in probe() and it had never
-once been able to probe without crashing.  It had been in the kernel for
-ten years.  The developer was like, "Yeah.  We knew it was crap and
-wanted to delete it but that was before git and Linus lost the patch."
+aarch64-linux-ld: drivers/net/ipa/ipa_main.o: in function `ipa_probe':
+ipa_main.c:(.text+0xfc4): undefined reference to `qcom_scm_is_available'
 
-Anyway, this is a security bug (DoS at the minimum) so it should be
-merged into net and set to stable.
+ld.lld: error: undefined symbol: qcom_scm_is_available
+>>> referenced by adreno_gpu.c
+>>>               gpu/drm/msm/adreno/adreno_gpu.o:(adreno_zap_shader_load) in archive drivers/built-in.a
 
-regards,
-dan carpenter
+This can happen when CONFIG_ARCH_QCOM is disabled and we don't select
+QCOM_MDT_LOADER, but some other module selects QCOM_SCM. Ideally we'd
+use a similar dependency here to what we have for QCOM_RPROC_COMMON,
+but that causes dependency loops from other things selecting QCOM_SCM.
+
+This appears to be an endless problem, so try something different this
+time:
+
+ - CONFIG_QCOM_SCM becomes a hidden symbol that nothing 'depends on'
+   but that is simply selected by all of its users
+
+ - All the stubs in include/linux/qcom_scm.h can go away
+
+ - arm-smccc.h needs to provide a stub for __arm_smccc_smc() to
+   allow compile-testing QCOM_SCM on all architectures.
+
+ - To avoid a circular dependency chain involving RESET_CONTROLLER
+   and PINCTRL_SUNXI, change the 'depends on RESET_CONTROLLER' in
+   the latter one to 'select'.
+
+The last bit is rather annoying, as drivers should generally never
+'select' another subsystem, and about half the users of the reset
+controller interface do this anyway.
+
+Nevertheless, this version seems to pass all my randconfig tests
+and is more robust than any of the prior versions.
+
+Comments?
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/firmware/Kconfig                |  4 +-
+ drivers/gpu/drm/msm/Kconfig             |  4 +-
+ drivers/iommu/Kconfig                   |  2 +-
+ drivers/media/platform/Kconfig          |  2 +-
+ drivers/mmc/host/Kconfig                |  2 +-
+ drivers/net/ipa/Kconfig                 |  1 +
+ drivers/net/wireless/ath/ath10k/Kconfig |  2 +-
+ drivers/pinctrl/qcom/Kconfig            |  3 +-
+ drivers/pinctrl/sunxi/Kconfig           |  6 +--
+ include/linux/arm-smccc.h               | 10 ++++
+ include/linux/qcom_scm.h                | 71 -------------------------
+ 11 files changed, 23 insertions(+), 84 deletions(-)
+
+diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
+index 220a58cf0a44..f7dd82ef0b9c 100644
+--- a/drivers/firmware/Kconfig
++++ b/drivers/firmware/Kconfig
+@@ -203,9 +203,7 @@ config INTEL_STRATIX10_RSU
+ 	  Say Y here if you want Intel RSU support.
+ 
+ config QCOM_SCM
+-	tristate "Qcom SCM driver"
+-	depends on ARM || ARM64
+-	depends on HAVE_ARM_SMCCC
++	tristate
+ 	select RESET_CONTROLLER
+ 
+ config QCOM_SCM_DOWNLOAD_MODE_DEFAULT
+diff --git a/drivers/gpu/drm/msm/Kconfig b/drivers/gpu/drm/msm/Kconfig
+index e9c6af78b1d7..3ddf739a6f9b 100644
+--- a/drivers/gpu/drm/msm/Kconfig
++++ b/drivers/gpu/drm/msm/Kconfig
+@@ -17,7 +17,7 @@ config DRM_MSM
+ 	select DRM_SCHED
+ 	select SHMEM
+ 	select TMPFS
+-	select QCOM_SCM if ARCH_QCOM
++	select QCOM_SCM
+ 	select WANT_DEV_COREDUMP
+ 	select SND_SOC_HDMI_CODEC if SND_SOC
+ 	select SYNC_FILE
+@@ -55,7 +55,7 @@ config DRM_MSM_GPU_SUDO
+ 
+ config DRM_MSM_HDMI_HDCP
+ 	bool "Enable HDMI HDCP support in MSM DRM driver"
+-	depends on DRM_MSM && QCOM_SCM
++	depends on DRM_MSM
+ 	default y
+ 	help
+ 	  Choose this option to enable HDCP state machine
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 124c41adeca1..989c83acbfee 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -308,7 +308,7 @@ config APPLE_DART
+ config ARM_SMMU
+ 	tristate "ARM Ltd. System MMU (SMMU) Support"
+ 	depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
+-	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
++	select QCOM_SCM
+ 	select IOMMU_API
+ 	select IOMMU_IO_PGTABLE_LPAE
+ 	select ARM_DMA_USE_IOMMU if ARM
+diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
+index 157c924686e4..80321e03809a 100644
+--- a/drivers/media/platform/Kconfig
++++ b/drivers/media/platform/Kconfig
+@@ -565,7 +565,7 @@ config VIDEO_QCOM_VENUS
+ 	depends on VIDEO_DEV && VIDEO_V4L2 && QCOM_SMEM
+ 	depends on (ARCH_QCOM && IOMMU_DMA) || COMPILE_TEST
+ 	select QCOM_MDT_LOADER if ARCH_QCOM
+-	select QCOM_SCM if ARCH_QCOM
++	select QCOM_SCM
+ 	select VIDEOBUF2_DMA_CONTIG
+ 	select V4L2_MEM2MEM_DEV
+ 	help
+diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
+index 71313961cc54..95b3511b0560 100644
+--- a/drivers/mmc/host/Kconfig
++++ b/drivers/mmc/host/Kconfig
+@@ -547,7 +547,7 @@ config MMC_SDHCI_MSM
+ 	depends on MMC_SDHCI_PLTFM
+ 	select MMC_SDHCI_IO_ACCESSORS
+ 	select MMC_CQHCI
+-	select QCOM_SCM if MMC_CRYPTO && ARCH_QCOM
++	select QCOM_SCM if MMC_CRYPTO
+ 	help
+ 	  This selects the Secure Digital Host Controller Interface (SDHCI)
+ 	  support present in Qualcomm SOCs. The controller supports
+diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
+index 8f99cfa14680..d037682fb7ad 100644
+--- a/drivers/net/ipa/Kconfig
++++ b/drivers/net/ipa/Kconfig
+@@ -4,6 +4,7 @@ config QCOM_IPA
+ 	depends on ARCH_QCOM || COMPILE_TEST
+ 	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
+ 	select QCOM_MDT_LOADER if ARCH_QCOM
++	select QCOM_SCM
+ 	select QCOM_QMI_HELPERS
+ 	help
+ 	  Choose Y or M here to include support for the Qualcomm
+diff --git a/drivers/net/wireless/ath/ath10k/Kconfig b/drivers/net/wireless/ath/ath10k/Kconfig
+index 741289e385d5..ca007b800f75 100644
+--- a/drivers/net/wireless/ath/ath10k/Kconfig
++++ b/drivers/net/wireless/ath/ath10k/Kconfig
+@@ -44,7 +44,7 @@ config ATH10K_SNOC
+ 	tristate "Qualcomm ath10k SNOC support"
+ 	depends on ATH10K
+ 	depends on ARCH_QCOM || COMPILE_TEST
+-	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
++	select QCOM_SCM
+ 	select QCOM_QMI_HELPERS
+ 	help
+ 	  This module adds support for integrated WCN3990 chip connected
+diff --git a/drivers/pinctrl/qcom/Kconfig b/drivers/pinctrl/qcom/Kconfig
+index 32ea2a8ec02b..5ff4207df66e 100644
+--- a/drivers/pinctrl/qcom/Kconfig
++++ b/drivers/pinctrl/qcom/Kconfig
+@@ -3,7 +3,8 @@ if (ARCH_QCOM || COMPILE_TEST)
+ 
+ config PINCTRL_MSM
+ 	tristate "Qualcomm core pin controller driver"
+-	depends on GPIOLIB && (QCOM_SCM || !QCOM_SCM) #if QCOM_SCM=m this can't be =y
++	depends on GPIOLIB
++	select QCOM_SCM
+ 	select PINMUX
+ 	select PINCONF
+ 	select GENERIC_PINCONF
+diff --git a/drivers/pinctrl/sunxi/Kconfig b/drivers/pinctrl/sunxi/Kconfig
+index 33751a6a0757..3447d2744ca3 100644
+--- a/drivers/pinctrl/sunxi/Kconfig
++++ b/drivers/pinctrl/sunxi/Kconfig
+@@ -29,7 +29,7 @@ config PINCTRL_SUN6I_A31
+ config PINCTRL_SUN6I_A31_R
+ 	bool "Support for the Allwinner A31 R-PIO"
+ 	default MACH_SUN6I
+-	depends on RESET_CONTROLLER
++	select RESET_CONTROLLER
+ 	select PINCTRL_SUNXI
+ 
+ config PINCTRL_SUN8I_A23
+@@ -55,7 +55,7 @@ config PINCTRL_SUN8I_A83T_R
+ config PINCTRL_SUN8I_A23_R
+ 	bool "Support for the Allwinner A23 and A33 R-PIO"
+ 	default MACH_SUN8I
+-	depends on RESET_CONTROLLER
++	select RESET_CONTROLLER
+ 	select PINCTRL_SUNXI
+ 
+ config PINCTRL_SUN8I_H3
+@@ -81,7 +81,7 @@ config PINCTRL_SUN9I_A80
+ config PINCTRL_SUN9I_A80_R
+ 	bool "Support for the Allwinner A80 R-PIO"
+ 	default MACH_SUN9I
+-	depends on RESET_CONTROLLER
++	select RESET_CONTROLLER
+ 	select PINCTRL_SUNXI
+ 
+ config PINCTRL_SUN50I_A64
+diff --git a/include/linux/arm-smccc.h b/include/linux/arm-smccc.h
+index 7d1cabe15262..63ccb5252190 100644
+--- a/include/linux/arm-smccc.h
++++ b/include/linux/arm-smccc.h
+@@ -321,10 +321,20 @@ asmlinkage unsigned long __arm_smccc_sve_check(unsigned long x0);
+  * from register 0 to 3 on return from the SMC instruction.  An optional
+  * quirk structure provides vendor specific behavior.
+  */
++#ifdef CONFIG_HAVE_ARM_SMCCC
+ asmlinkage void __arm_smccc_smc(unsigned long a0, unsigned long a1,
+ 			unsigned long a2, unsigned long a3, unsigned long a4,
+ 			unsigned long a5, unsigned long a6, unsigned long a7,
+ 			struct arm_smccc_res *res, struct arm_smccc_quirk *quirk);
++#else
++static inline void __arm_smccc_smc(unsigned long a0, unsigned long a1,
++			unsigned long a2, unsigned long a3, unsigned long a4,
++			unsigned long a5, unsigned long a6, unsigned long a7,
++			struct arm_smccc_res *res, struct arm_smccc_quirk *quirk)
++{
++	*res = (struct arm_smccc_res){};
++}
++#endif
+ 
+ /**
+  * __arm_smccc_hvc() - make HVC calls
+diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
+index c0475d1c9885..81cad9e1e412 100644
+--- a/include/linux/qcom_scm.h
++++ b/include/linux/qcom_scm.h
+@@ -61,7 +61,6 @@ enum qcom_scm_ice_cipher {
+ #define QCOM_SCM_PERM_RW (QCOM_SCM_PERM_READ | QCOM_SCM_PERM_WRITE)
+ #define QCOM_SCM_PERM_RWX (QCOM_SCM_PERM_RW | QCOM_SCM_PERM_EXEC)
+ 
+-#if IS_ENABLED(CONFIG_QCOM_SCM)
+ extern bool qcom_scm_is_available(void);
+ 
+ extern int qcom_scm_set_cold_boot_addr(void *entry, const cpumask_t *cpus);
+@@ -115,74 +114,4 @@ extern int qcom_scm_lmh_dcvsh(u32 payload_fn, u32 payload_reg, u32 payload_val,
+ extern int qcom_scm_lmh_profile_change(u32 profile_id);
+ extern bool qcom_scm_lmh_dcvsh_available(void);
+ 
+-#else
+-
+-#include <linux/errno.h>
+-
+-static inline bool qcom_scm_is_available(void) { return false; }
+-
+-static inline int qcom_scm_set_cold_boot_addr(void *entry,
+-		const cpumask_t *cpus) { return -ENODEV; }
+-static inline int qcom_scm_set_warm_boot_addr(void *entry,
+-		const cpumask_t *cpus) { return -ENODEV; }
+-static inline void qcom_scm_cpu_power_down(u32 flags) {}
+-static inline u32 qcom_scm_set_remote_state(u32 state,u32 id)
+-		{ return -ENODEV; }
+-
+-static inline int qcom_scm_pas_init_image(u32 peripheral, const void *metadata,
+-		size_t size) { return -ENODEV; }
+-static inline int qcom_scm_pas_mem_setup(u32 peripheral, phys_addr_t addr,
+-		phys_addr_t size) { return -ENODEV; }
+-static inline int qcom_scm_pas_auth_and_reset(u32 peripheral)
+-		{ return -ENODEV; }
+-static inline int qcom_scm_pas_shutdown(u32 peripheral) { return -ENODEV; }
+-static inline bool qcom_scm_pas_supported(u32 peripheral) { return false; }
+-
+-static inline int qcom_scm_io_readl(phys_addr_t addr, unsigned int *val)
+-		{ return -ENODEV; }
+-static inline int qcom_scm_io_writel(phys_addr_t addr, unsigned int val)
+-		{ return -ENODEV; }
+-
+-static inline bool qcom_scm_restore_sec_cfg_available(void) { return false; }
+-static inline int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare)
+-		{ return -ENODEV; }
+-static inline int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size)
+-		{ return -ENODEV; }
+-static inline int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare)
+-		{ return -ENODEV; }
+-extern inline int qcom_scm_mem_protect_video_var(u32 cp_start, u32 cp_size,
+-						 u32 cp_nonpixel_start,
+-						 u32 cp_nonpixel_size)
+-		{ return -ENODEV; }
+-static inline int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
+-		unsigned int *src, const struct qcom_scm_vmperm *newvm,
+-		unsigned int dest_cnt) { return -ENODEV; }
+-
+-static inline bool qcom_scm_ocmem_lock_available(void) { return false; }
+-static inline int qcom_scm_ocmem_lock(enum qcom_scm_ocmem_client id, u32 offset,
+-		u32 size, u32 mode) { return -ENODEV; }
+-static inline int qcom_scm_ocmem_unlock(enum qcom_scm_ocmem_client id,
+-		u32 offset, u32 size) { return -ENODEV; }
+-
+-static inline bool qcom_scm_ice_available(void) { return false; }
+-static inline int qcom_scm_ice_invalidate_key(u32 index) { return -ENODEV; }
+-static inline int qcom_scm_ice_set_key(u32 index, const u8 *key, u32 key_size,
+-				       enum qcom_scm_ice_cipher cipher,
+-				       u32 data_unit_size) { return -ENODEV; }
+-
+-static inline bool qcom_scm_hdcp_available(void) { return false; }
+-static inline int qcom_scm_hdcp_req(struct qcom_scm_hdcp_req *req, u32 req_cnt,
+-		u32 *resp) { return -ENODEV; }
+-
+-static inline int qcom_scm_qsmmu500_wait_safe_toggle(bool en)
+-		{ return -ENODEV; }
+-
+-static inline int qcom_scm_lmh_dcvsh(u32 payload_fn, u32 payload_reg, u32 payload_val,
+-				     u64 limit_node, u32 node_id, u64 version)
+-		{ return -ENODEV; }
+-
+-static inline int qcom_scm_lmh_profile_change(u32 profile_id) { return -ENODEV; }
+-
+-static inline bool qcom_scm_lmh_dcvsh_available(void) { return -ENODEV; }
+-#endif
+ #endif
+-- 
+2.29.2
 
