@@ -2,99 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A165441963A
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 16:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A993F419647
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 16:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234844AbhI0OY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 10:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234804AbhI0OYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 10:24:42 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92AD8C06176D
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 07:23:04 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id bb10so11913511plb.2
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 07:23:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=qUh54W0B1/celFz/Sm7fg0RIIFoq+17jwQ/Vr2Rkb20=;
-        b=OPI7iVicwj+Z1bNsM1YvUZi+QGt2yNylkxWdF/+ajsoI2xmNR5fcD5Dbs41N0P7HHI
-         oemkww2s8T8+t3QBzhEzHSlC0rRogoWWPWnc1O+fkwMO8uToHXiv/tXQ2faxQh3BftDE
-         kEMA0XQAKBWM582qJWbcAL7Sb3Krl/xZ/mf0CKiNpNtvBj0cl3U6b4kS/Pp8KgrW64uO
-         4WeKDIEU/mvlbu5iyEAUik+VMfcsJQaqgNu6J0QdERXaFv8veB0MQZbILJ83UEwKlXVo
-         pJ7kG7ILHIEpBzymEYGN90h+yH9HfglTWoN1xbh95pF8t1t1TEY+sCRlM0pl2Dt/rD7W
-         zrUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=qUh54W0B1/celFz/Sm7fg0RIIFoq+17jwQ/Vr2Rkb20=;
-        b=cQnpG7XNulePrPJfdaR2HOjjGy873F3jVSoMe7InEzflNnO8XP2hrFLzZUBBPnJqoD
-         jPCrDN7nzucrjT7/W5ZnzgsmM4IHRP6iZ/aIpBifHf1D3TsFmHQhnS8n9xLRzg14OOfe
-         6/swMoKB7Cc7sngnLLjKc6/VjMHgTvsGeQ2GQW46Q6ZYnW1l2Y378zOgU4vMPKtT/ZJ/
-         DsYB4RsG+qWbtUbKpBf0TSfTNbN1tU28wVWazYb8mCuYVMujo/XA+tStOQef/mXnyFte
-         uGY/1BpWHABpBOeeH2a043EKUwbj1QdkYdjMuP99irItLoxDwSwd4XFMxcEJhXS877Ou
-         nbpg==
-X-Gm-Message-State: AOAM531W/mQ7VZymz/S2vSDvf9wD57Q1z6KLSMoIhKW8pIB/SoSTKiK1
-        aBbbBIrde5C0exhkJL7sVx9xnhnxz6om31X5HWQ=
-X-Google-Smtp-Source: ABdhPJzkuMqNQT1NW6nw/HQQwrrmuHE+tts4atEt0koUeFvMlou/2tj45EwQSaUIK/j1QbFJ9zlp0GzADUb/XL0OzAs=
-X-Received: by 2002:a17:90b:33c8:: with SMTP id lk8mr20193335pjb.241.1632752583655;
- Mon, 27 Sep 2021 07:23:03 -0700 (PDT)
+        id S234792AbhI0O1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 10:27:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36528 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234706AbhI0O1o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 10:27:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 131B7610A2;
+        Mon, 27 Sep 2021 14:26:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632752766;
+        bh=4zbOOUtxrR7msPE48PHiPXzfw63aLKDTKDuaRxP+2oU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vPBYw+GuINRrTLt22ZYAHpxTNP7FA5ARycV+ZzEa1EP79kpg4cVjoLL4/NWUrshlY
+         WCY3yM2nDl3S1C9vJQpCPjL6K0PKA2VXzi37K16/AY+dHfSw7cucSNOdlgZEGaXoOU
+         nsNZUkCy/YEoPFmxrh+pnKx+drfGMUsMDcRZAI5ra+XjtTgq9tpyM10KzNectkVOxh
+         y0kgceeLGunHKdpPnrBLbMSLolqb8UW+3X+RjIAZkygtPkCuyCblfkefuphc5oC8LO
+         Vcgb98S/l4zlPO+m3zLGxN60RI4ThYWK0XhiAZN/g/JapI61O7wctspgbgg8Znsbun
+         AnHWoIq+o7HZA==
+Date:   Mon, 27 Sep 2021 07:26:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Samuel Ortiz <sameo@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] nfc: avoid potential race condition
+Message-ID: <20210927072605.45291daf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <81b648d2-0e20-e5ac-e2ff-a1b8b8ea83a8@canonical.com>
+References: <20210923065051.GA25122@kili>
+        <3760c70c-299c-89bf-5a4a-22e8d564ef92@canonical.com>
+        <20210923122220.GB2083@kadam>
+        <47358bea-e761-b823-dfbd-cd8e0a2a69a6@canonical.com>
+        <20210924131441.6598ba3a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <81b648d2-0e20-e5ac-e2ff-a1b8b8ea83a8@canonical.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6a10:5d17:0:0:0:0 with HTTP; Mon, 27 Sep 2021 07:23:02
- -0700 (PDT)
-Reply-To: wvictor@gmx.at
-From:   willson victor <willsonvic3@gmail.com>
-Date:   Mon, 27 Sep 2021 15:23:02 +0100
-Message-ID: <CAPvEOSjzzWXYVum61SMjri_UAVcVnDbf708SFE0zJZuMmwpU=A@mail.gmail.com>
-Subject: Greeting from Abidjan
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
+On Mon, 27 Sep 2021 09:44:08 +0200 Krzysztof Kozlowski wrote:
+> On 24/09/2021 22:14, Jakub Kicinski wrote:
+> > On Fri, 24 Sep 2021 10:21:33 +0200 Krzysztof Kozlowski wrote:  
+> >> Indeed. The code looks reasonable, though, so even if race is not really
+> >> reproducible:
+> >>
+> >> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>  
+> > 
+> > Would you mind making a call if this is net (which will mean stable) or
+> > net-next material (without the Fixes tags) and reposting? Thanks! :)  
+> 
+> Hi Jakub,
+> 
+> Material is net-next. However I don't understand why it should be
+> without "Fixes" in such case?
+> 
+> The material going to current release (RC, so I understood: net), should
+> fix only issues introduced in current merge window. Linus made it clear
+> several times.
 
+Oh, really? I've never heard about this rule, would you be able to dig
+up references?
 
--- 
+This strikes me as odd, most fixes we merge are for previous releases.
+In fact when I write -rc pull requests to Linus I break them down by
+current release vs previous - and he never complained.
 
-I am a bank AUDITIOR GENERAL by profession,I am interested in
-transferring the funds to your country through the help of our bank
-insider whom is to make it happen, so we can invest the money in a
-good business of your choice in your country under your technical and
-managerial partnership, should you be inclined to be involved in this
-project, I will appreciate a prompt response from you through  my
-Private Email, so that you can provide your banking details even
-without any money in the account so we can quickly realize this
-transaction together.
+> The issue here was introduced long time ago, not in current merge
+> window, however it is still an issue to fix. It's still a bug which
+> should have a commit with "Fixes" for all the stable tress and
+> downstream distros relying on stable kernels. Also for some statistics
+> on LWN.
 
-The total amount involved is One hundred and sixty million US DOLLARS
-only [160,000.000.00 DOLLARS ] and we wish to transfer this money into
-a safe foreigners account abroad. But I don't know any foreigner; I am
-only contacting you as a foreigner because this money cannot be
-approved to a local person here, but to a foreigner who has
-information about the account, which I shall give to you upon your
-positive response. I am revealing this to you with believe in God that
-you will never let me down in this business.
-
-I guarantee you that this transaction will be executed under a
-legitimate arrangement that will protect you from any breach of the
-law. The bank official will destroy all documents of the transaction
-immediately you receive this money leaving no trace to any place. I
-will use my position and influence to obtain all legal approvals for
-onward transfer of this money to your account with appropriate
-clearance from the relevant ministries and foreign exchange
-departments, At the conclusion of this business, you will be given 30%
-of the total amount, 70% will be for us.
-
-PLEASE, TREAT THIS PROPOSAL AS TOP SECRET.
-
-I look forward to hear from you. contact me through my email address
-( wvictor@gmx.at ).
-
-
-Yours sincerely,
-Willson victor .
+Stable will not pull the commit from net-next, tho. Stable is more
+restrictive than rc (or at least so I think) so "we want it in stable,
+please merge it to net-next" does not compute with the preconceptions 
+I have.
