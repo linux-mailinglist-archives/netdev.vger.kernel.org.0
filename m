@@ -2,37 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C01784191A4
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 11:38:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44DC4191CD
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 11:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233736AbhI0Jjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 05:39:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45370 "EHLO mail.kernel.org"
+        id S233725AbhI0Jvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 05:51:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51534 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233722AbhI0Jjp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Sep 2021 05:39:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2650161157;
-        Mon, 27 Sep 2021 09:38:05 +0000 (UTC)
+        id S233680AbhI0Jvs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 05:51:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E0EB60F70;
+        Mon, 27 Sep 2021 09:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632735487;
-        bh=r3unqzpj0fOYnSoUg73JGoF/nR4E/IrF3UzNJJ94Uo0=;
+        s=k20201202; t=1632736211;
+        bh=KtQwfWlN6z5FTUvVzqtdfbSOfg7sCBGIIuVYv4bnZ3w=;
         h=From:To:Cc:Subject:Date:From;
-        b=nOGLAXutnF5xHS+z4e+lVuOVwFQVbpfJgMEeXfRc0oKyftVekmdLpju/822dj9Bkz
-         Y4CAR9PqjBSnWf36ZSUQ1ANnc/U0aI6mVlbkoVoxgNlMKz7RTunvfXCYu3XECMBe7V
-         Fl03K7orN2moG2+rvewTgJlElMXTHirV9FQpv7MoC8RzxktNPeY++odzjn9RwfZ2r+
-         U59jA5Uf4scfxk2xdZ0GM6vwbHwlGzBEhCF5B2/rcNU97Mud4JDcndVGBt99aYSboA
-         /Mr7fEhhl9MLByyRfQYSeLq7pa8GgG8g+BQR9QiUpyIZa2ySlxBtRwUmcxRcBOqrRq
-         B4MDgsuiAVI+Q==
+        b=j2wTL+cZYs1v6vTzwrd/UiAQ2VH9c5ySHLrMAo0w+GhBLH87jiejo5Nm+BgPed/pp
+         vOVce62at6PxEw8g+8Oyazob2aL3C/X4x/ULopOIVWnL26G+Pju1Yf/snTnYeWf0l7
+         4Wx5cnJVmtD3CGhoYVZYnm0y+VFFdS8dVajdTl8SwY4hdHcwCoEnF8M/+LC4pGIQkf
+         tZpduSADVwAooNALtbZDd1FwgZUH+lQn6L954EcWfeb8js4RVdzWwjbhaWwthfosAl
+         uu3N7KYkpizPTGlMTQrRk067fxR3WezmFHKu0heNH5VshsxowYZT1m8O+ehSJb1a50
+         ZJnpz0QXtNbMg==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH] am65-cpsw: avoid null pointer arithmetic
-Date:   Mon, 27 Sep 2021 11:37:57 +0200
-Message-Id: <20210927093803.474510-1-arnd@kernel.org>
+        Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Huazhong Tan <tanhuazhong@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>,
+        Jiaran Zhang <zhangjiaran@huawei.com>,
+        Jian Shen <shenjian15@huawei.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: hns3: fix hclge_dbg_dump_tm_pg() stack usage
+Date:   Mon, 27 Sep 2021 11:49:53 +0200
+Message-Id: <20210927095006.868305-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -42,36 +47,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-clang warns about arithmetic on NULL pointers:
+This function copies strings around between multiple buffers
+including a large on-stack array that causes a build warning
+on 32-bit systems:
 
-drivers/net/ethernet/ti/am65-cpsw-ethtool.c:71:2: error: performing pointer subtraction with a null pointer has undefined behavior [-Werror,-Wnull-pointer-subtraction]
-        AM65_CPSW_REGDUMP_REC(AM65_CPSW_REGDUMP_MOD_NUSS, 0x0, 0x1c),
-        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/ti/am65-cpsw-ethtool.c:64:29: note: expanded from macro 'AM65_CPSW_REGDUMP_REC'
-        .hdr.len = (((u32 *)(end)) - ((u32 *)(start)) + 1) * sizeof(u32) * 2 + \
-                                   ^ ~~~~~~~~~~~~~~~~
+drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c: In function 'hclge_dbg_dump_tm_pg':
+drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c:782:1: error: the frame size of 1424 bytes is larger than 1400 bytes [-Werror=frame-larger-than=]
 
-The expression here is easily changed to a calculation based on integers
-that is no less readable.
+The function can probably be cleaned up a lot, to go back to
+printing directly into the output buffer, but dynamically allocating
+the structure is a simpler workaround for now.
 
+Fixes: 04d96139ddb3 ("net: hns3: refine function hclge_dbg_dump_tm_pri()")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/ti/am65-cpsw-ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../hisilicon/hns3/hns3pf/hclge_debugfs.c     | 26 ++++++++++++++++---
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-ethtool.c b/drivers/net/ethernet/ti/am65-cpsw-ethtool.c
-index 6e4d4f9e32e0..b05de9b61ad6 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-ethtool.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-ethtool.c
-@@ -61,7 +61,7 @@ struct am65_cpsw_regdump_item {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index 87d96f82c318..3ed87814100a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -719,9 +719,9 @@ static void hclge_dbg_fill_shaper_content(struct hclge_tm_shaper_para *para,
+ 	sprintf(result[(*index)++], "%6u", para->rate);
+ }
  
- #define AM65_CPSW_REGDUMP_REC(mod, start, end) { \
- 	.hdr.module_id = (mod), \
--	.hdr.len = (((u32 *)(end)) - ((u32 *)(start)) + 1) * sizeof(u32) * 2 + \
-+	.hdr.len = (end + 4 - start) * 2 + \
- 		   sizeof(struct am65_cpsw_regdump_hdr), \
- 	.start_ofs = (start), \
- 	.end_ofs = end, \
+-static int hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *buf, int len)
++static int __hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *data_str,
++				  char *buf, int len)
+ {
+-	char data_str[ARRAY_SIZE(tm_pg_items)][HCLGE_DBG_DATA_STR_LEN];
+ 	struct hclge_tm_shaper_para c_shaper_para, p_shaper_para;
+ 	char *result[ARRAY_SIZE(tm_pg_items)], *sch_mode_str;
+ 	u8 pg_id, sch_mode, weight, pri_bit_map, i, j;
+@@ -729,8 +729,10 @@ static int hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *buf, int len)
+ 	int pos = 0;
+ 	int ret;
+ 
+-	for (i = 0; i < ARRAY_SIZE(tm_pg_items); i++)
+-		result[i] = &data_str[i][0];
++	for (i = 0; i < ARRAY_SIZE(tm_pg_items); i++) {
++		result[i] = data_str;
++		data_str += HCLGE_DBG_DATA_STR_LEN;
++	}
+ 
+ 	hclge_dbg_fill_content(content, sizeof(content), tm_pg_items,
+ 			       NULL, ARRAY_SIZE(tm_pg_items));
+@@ -781,6 +783,22 @@ static int hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *buf, int len)
+ 	return 0;
+ }
+ 
++static int hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *buf, int len)
++{
++	int ret;
++	char *data_str = kcalloc(ARRAY_SIZE(tm_pg_items),
++				 HCLGE_DBG_DATA_STR_LEN, GFP_KERNEL);
++
++	if (!data_str)
++		return -ENOMEM;
++
++	ret = __hclge_dbg_dump_tm_pg(hdev, data_str, buf, len);
++
++	kfree(data_str);
++
++	return ret;
++}
++
+ static int hclge_dbg_dump_tm_port(struct hclge_dev *hdev,  char *buf, int len)
+ {
+ 	struct hclge_tm_shaper_para shaper_para;
 -- 
 2.29.2
 
