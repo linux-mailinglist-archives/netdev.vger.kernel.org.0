@@ -2,159 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F2F4419882
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 18:07:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53B734198AB
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 18:13:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235395AbhI0QIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 12:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52472 "EHLO
+        id S235345AbhI0QP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 12:15:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235351AbhI0QIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 12:08:48 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D037C061575
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 09:07:10 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id x191so11310105pgd.9
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 09:07:10 -0700 (PDT)
+        with ESMTP id S235316AbhI0QP0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 12:15:26 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53982C061604
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 09:13:48 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id d207so37702227qkg.0
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 09:13:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=XTLDjg6tKpXO0n3tGXRecJAHRamIK6iZPCPoGCwwYoA=;
-        b=n+WFlH5sDsKJBIqbhXBL0q86YID/cm95Hb4Pn7OgXho2+PQI0nSIdRbWypwC1UKBDc
-         DLGkfkLNRgU/4Jp5PtjVk8wlNcPXFV82TekHIAWzakfClYLV1up37fwMMsaFds99YrVu
-         hNhlWvvXJ7s5t7jexJWYFgrPnilemlVeEY6QOZlKBD8momja0/KMxsagYQWYBX3Swb0R
-         IBff6ti5Yo9g23SYXpecR6u2VLeocqeAEBuEh7d2TS0npVBk3zwvJ6xEwnVe9dM1BC3A
-         QwKM/wGB/13xUZ8eKf1kP0LtQtr2a4f5cOQEzBeZGmRFBfWO/kxwb9qc8cB5gj0PVpiy
-         36Gw==
+        d=linuxfoundation.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/3GGkyrom3DTgS/bGXMlfCPlY5tmhfbrDIfBJ3BlpmI=;
+        b=FnU5pasGnw/t6IG/Vr00DXAOFAT91ktkE8GSkjIDWDGd4el/SSeNGKwBhAJyJws1d1
+         0JSayD7mKqUReGauA3ZZARDRXop/4eWNyewtHi+aTI52mqipxHWeAl5ZeYOOgQQH+2Y8
+         2ukDTTOHVOIp7BCmhCh50qQ7Rmm1wKipOgAmc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=XTLDjg6tKpXO0n3tGXRecJAHRamIK6iZPCPoGCwwYoA=;
-        b=C8DennJOKP01KQFfMWGTS4iQEzf5IDyfKGGMzqnCPcYFy5r+pDOhfRVkAtkzrDSkXc
-         5AF+HhflqGUztlPM+tbsYT62Hn4D+jBpL+bmTBEHuHKHTERWDv1hgvk3vUOeiNmI6W9d
-         og567juhrZeG9txo0I7EuqeNt4vBgNgO2P+g4rmv4vXhLXn/Uvy0jRLlwlLGgumS5+qE
-         t05Nrpye6iRgECA2EejjtZyYi8R8XV2gdA6iUOi426bY2XOb/rWYdYcmBFnhIwkyMx/A
-         QNhX8CNjMPoXOsxjg+Jtem71Vj1mXIy4vvKGwEEVeOixRQqEg3p78pbxjFN76wTj8cm7
-         j6gg==
-X-Gm-Message-State: AOAM5335NdnCPfDVTRK0I5B5XPIk4qBIRhnVfYMNV7gPFcR9p8bghwpn
-        jy3hN4tnwcfJk/eb/zZEzntzog==
-X-Google-Smtp-Source: ABdhPJwR7BDUtOf/PI25/vpcHZm+mNUz7FflOv5PSidwcLqI4zYdDEmizFXZbBjNUgQkz/U1dIeC3A==
-X-Received: by 2002:aa7:94aa:0:b0:43e:2cf:d326 with SMTP id a10-20020aa794aa000000b0043e02cfd326mr447025pfl.62.1632758829714;
-        Mon, 27 Sep 2021 09:07:09 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id 77sm17358967pfu.219.2021.09.27.09.07.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Sep 2021 09:07:09 -0700 (PDT)
-Subject: Re: [PATCH net-next v1 14/21] ionic: Move devlink registration to be
- last devlink command
-To:     Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        hariprasad <hkelam@marvell.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Manish Chopra <manishc@marvell.com>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <cover.1632565508.git.leonro@nvidia.com>
- <cb187a035b75dbcc27f6dd10d72f18f1101bad44.1632565508.git.leonro@nvidia.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <f1d3e167-a991-13cb-d263-6466110fa8c4@pensando.io>
-Date:   Mon, 27 Sep 2021 09:07:03 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/3GGkyrom3DTgS/bGXMlfCPlY5tmhfbrDIfBJ3BlpmI=;
+        b=yIiG9Qr+N54YoucRSKW6TOktpKBqbBJW0qMjrnsHFdwQCzzN5n2ZsmiQ9z1Ab309kQ
+         F50wgIqatEknopHTovKPUNoNwDX72UJPANQ8jdYctWBmvDADeWBBghsq3ygdEryLLwRO
+         21nXUcZGs71h82/yZXjOpVyJCQH1X2XlPN2G51fuKwRYWtzGNhJsO9mF6oQZJ3fVsH4a
+         1wcpZa6kt4i7Zq30krBMXKuUWmIfTQVRgexDfZ6hdj1Qjc0AjLjNoFaMSjkF75iAnhD8
+         Cifue8S9voV4ZM888nmMqjeXJ1I4IEwyL4Pz31xFshWsWG4UdosaXKSOo1yFc1cro2Fu
+         MKOA==
+X-Gm-Message-State: AOAM533FL8DrSioZa0odVf9Ontm6shsFbRyuLU1YCKbNtGPYPuMGYLqR
+        N9HtVLQ2nAZDWdpirJidWpo7SA==
+X-Google-Smtp-Source: ABdhPJzUroZeu4A0rF6c09CMGFFjlCShBOW4fzZGusJgcCXEuy8+TEU0EDJ0qgrs7Ht4b4Dxf8qxYA==
+X-Received: by 2002:a37:44ca:: with SMTP id r193mr804368qka.190.1632759227376;
+        Mon, 27 Sep 2021 09:13:47 -0700 (PDT)
+Received: from meerkat.local (bras-base-mtrlpq5031w-grc-32-216-209-220-181.dsl.bell.ca. [216.209.220.181])
+        by smtp.gmail.com with ESMTPSA id j14sm11375353qtv.36.2021.09.27.09.13.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Sep 2021 09:13:47 -0700 (PDT)
+Date:   Mon, 27 Sep 2021 12:13:45 -0400
+From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+To:     Christian Borntraeger <borntraeger@de.ibm.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>, warthog9@kernel.org
+Subject: Re: [PATCH RESEND bpf] bpf, s390: Fix potential memory leak about
+ jit_data
+Message-ID: <20210927161345.vh6w3jffo5w2z6t7@meerkat.local>
+References: <1632726374-7154-1-git-send-email-yangtiezhu@loongson.cn>
+ <e9665315bc2f244d50d026863476e72e3d9b8067.camel@linux.ibm.com>
+ <c02febfc-03e6-848a-8fb0-5bd6802c1869@iogearbox.net>
+ <0cc48f4d-f6c0-ab11-64b0-bc219fbfe777@de.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <cb187a035b75dbcc27f6dd10d72f18f1101bad44.1632565508.git.leonro@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <0cc48f4d-f6c0-ab11-64b0-bc219fbfe777@de.ibm.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/25/21 4:22 AM, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
->
-> This change prevents from users to access device before devlink is
-> fully configured.
->
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+On Mon, Sep 27, 2021 at 05:58:54PM +0200, Christian Borntraeger wrote:
+> Interestingly enough b4 cannot find the patch email on lore.
+> Looks like Tiezhu Yang has indeed connection issues with vger.
+> CC Konstantin, in case he knows something.
 
-Thanks for the work,
+I'm not actually in charge of vger, so I'm not able to help any further than
+adding John to the cc's.
 
-Acked-by: Shannon Nelson <snelson@pensando.io>
-
-
-> ---
->   drivers/net/ethernet/pensando/ionic/ionic_devlink.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> index 93282394d332..2267da95640b 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> @@ -82,7 +82,6 @@ int ionic_devlink_register(struct ionic *ionic)
->   	struct devlink_port_attrs attrs = {};
->   	int err;
->   
-> -	devlink_register(dl);
->   	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
->   	devlink_port_attrs_set(&ionic->dl_port, &attrs);
->   	err = devlink_port_register(dl, &ionic->dl_port, 0);
-> @@ -93,6 +92,7 @@ int ionic_devlink_register(struct ionic *ionic)
->   	}
->   
->   	devlink_port_type_eth_set(&ionic->dl_port, ionic->lif->netdev);
-> +	devlink_register(dl);
->   	return 0;
->   }
->   
-> @@ -100,6 +100,6 @@ void ionic_devlink_unregister(struct ionic *ionic)
->   {
->   	struct devlink *dl = priv_to_devlink(ionic);
->   
-> -	devlink_port_unregister(&ionic->dl_port);
->   	devlink_unregister(dl);
-> +	devlink_port_unregister(&ionic->dl_port);
->   }
-
+-K
