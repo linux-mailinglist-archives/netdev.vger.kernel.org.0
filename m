@@ -2,89 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BED2F41986F
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 18:02:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AFF941987D
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 18:07:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235376AbhI0QDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 12:03:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:20782 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235353AbhI0QDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 12:03:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632758532;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=jUaJ1IKQE0YFnAuJ4WfmBeV1UYM0Oan+ct0lDVq9/lw=;
-        b=R/h/BrmrHBwvhwnEXOqJmXvmffv5rYTMC9ZZ+EK7iYwMu5YkWIdBZIzvXlLeIoufCDcxgl
-        2gt9jckvpOYClpalwyL6yK9gX9ZSdLMTxDnEnaNmloJ4riHAbxNFy/AZBeIWENonrahI3o
-        lHSsEPWsT0GNxtxJArpgzR3Sizh3Pco=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-274-GKKlnJi1PHiE2vB-9pKQXw-1; Mon, 27 Sep 2021 12:02:10 -0400
-X-MC-Unique: GKKlnJi1PHiE2vB-9pKQXw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9194050753;
-        Mon, 27 Sep 2021 16:02:09 +0000 (UTC)
-Received: from griffin.upir.cz (unknown [10.40.193.118])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1106E1A26A;
-        Mon, 27 Sep 2021 16:02:07 +0000 (UTC)
-From:   Jiri Benc <jbenc@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org
-Subject: [PATCH bpf] selftests: bpf: fix makefile dependencies on libbpf
-Date:   Mon, 27 Sep 2021 18:01:36 +0200
-Message-Id: <ee84ab66436fba05a197f952af23c98d90eb6243.1632758415.git.jbenc@redhat.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+        id S235366AbhI0QIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 12:08:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235315AbhI0QIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 12:08:42 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB25C061604
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 09:07:04 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id z184so3066480iof.5
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 09:07:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UyGvdpL0yI/ULspuTPee70a1f1XcbYQ8D7yj9dqZP+U=;
+        b=ayizTBwZpPQvHFDReipVPZ70ewR4viJDyiBMwnqT/PUx4YvjYq6byIH/90VPbv9Tev
+         LdWGmYqF1ZXJzbK2PExHlScWSg/wGbYVbUsqjWEvV8v+B08jIlOFBzeZ16O+/KU0553c
+         sFK+IM6WxlqNp7Tk0PI44o9gTqmyYZV1AO8Fg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UyGvdpL0yI/ULspuTPee70a1f1XcbYQ8D7yj9dqZP+U=;
+        b=YmPcsrhbzDNrbL+ERoCBMIYz0JI8acpipGzex0m9RWqNjEm6JWZsGTx/JJYJyhNwHD
+         CuIu84f76eKUh4V+C2KxltOREH5cw/6flty6TysI1eiwKNfxy4tVZCR0ybeTO4Ca/xJ7
+         bsVm/XLCKDF7mMZoxaw4PdMd1Byw8oZuNJ4eoSJsZJzlYxYmFx5TWdJ+kpBCBP/PB9lY
+         K2e0d7KHy2V2CCaWmWpskcuI5oHZjbVZdkLbIU4rtNv/2HjyxQqShh8tAVJ7PdHxNp3s
+         d4kftgetoFvRimN3TXf5hhCZG9jUJG8QTtau+RyXNDrzLYzurK1fzg/qal/M6aokMH3D
+         qAXA==
+X-Gm-Message-State: AOAM531Hy0qi+O9aqFep3EHMVoiW1ifM7ZWAHmuQLIxEMiN+4tXXqLMB
+        7QlSlVUBx+8lrhkwecxu6GO+/pp+2+WiZg==
+X-Google-Smtp-Source: ABdhPJz3RxQB2d5HkgswYyLpu0bvTOTnMv+arPBIBIQLIFzeQdaL97l1wnArkVlnJ4jzEb6eIBhxbw==
+X-Received: by 2002:a6b:6a14:: with SMTP id x20mr331256iog.177.1632758824207;
+        Mon, 27 Sep 2021 09:07:04 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id r20sm8804331ioh.19.2021.09.27.09.07.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Sep 2021 09:07:03 -0700 (PDT)
+Subject: Re: [PATCH] net: ipa: Declare IPA firmware with MODULE_FIRMWARE()
+To:     Shawn Guo <shawn.guo@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Alex Elder <elder@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Steev Klimaszewski <steev@kali.org>, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210926065529.25956-1-shawn.guo@linaro.org>
+ <20210926134628.GC9901@dragon>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <706be34f-9306-0212-baca-6c8dd3f19829@ieee.org>
+Date:   Mon, 27 Sep 2021 11:07:02 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <20210926134628.GC9901@dragon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building bpf selftest with make -j, I'm randomly getting build failures
-such as this one:
+On 9/26/21 8:46 AM, Shawn Guo wrote:
+> Just reminded by Steev, .mdt file conventionally means we are using
+> split firmware.  Building only .mdt file into initramfs is not
+> sufficient.  So please disregard the patch.
+> 
+> Shawn
 
-> In file included from progs/bpf_flow.c:19:
-> [...]/tools/testing/selftests/bpf/tools/include/bpf/bpf_helpers.h:11:10: fatal error: 'bpf_helper_defs.h' file not found
-> #include "bpf_helper_defs.h"
->          ^~~~~~~~~~~~~~~~~~~
+OK, will disregard.  May I assume you are going to implement
+a patch that does the right thing?
 
-The file that fails the build varies between runs but it's always in the
-progs/ subdir.
+I had a note to myself to investigate using MODULE_FIRMWARE()
+but hadn't gotten to it yet; I'm glad to have you do that
+instead...
 
-The reason is a missing make dependency on libbpf for the .o files in
-progs/. There was a dependency before commit 3ac2e20fba07e but that commit
-removed it to prevent unneeded rebuilds. However, that only works if libbpf
-has been built already; the 'wildcard' prerequisite does not trigger when
-there's no bpf_helper_defs.h generated yet.
+Thank you.
 
-Keep the libbpf as an order-only prerequisite to satisfy both goals. It is
-always built before the progs/ objects but it does not trigger unnecessary
-rebuilds by itself.
-
-Fixes: 3ac2e20fba07e ("selftests/bpf: BPF object files should depend only on libbpf headers")
-Signed-off-by: Jiri Benc <jbenc@redhat.com>
----
- tools/testing/selftests/bpf/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 866531c08e4f..e7c42695dbbf 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -375,7 +375,8 @@ $(TRUNNER_BPF_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
- 		     $(TRUNNER_BPF_PROGS_DIR)/%.c			\
- 		     $(TRUNNER_BPF_PROGS_DIR)/*.h			\
- 		     $$(INCLUDE_DIR)/vmlinux.h				\
--		     $(wildcard $(BPFDIR)/bpf_*.h) | $(TRUNNER_OUTPUT)
-+		     $(wildcard $(BPFDIR)/bpf_*.h) | $(TRUNNER_OUTPUT)	\
-+		     $$(BPFOBJ)
- 	$$(call $(TRUNNER_BPF_BUILD_RULE),$$<,$$@,			\
- 					  $(TRUNNER_BPF_CFLAGS))
- 
--- 
-2.18.1
-
+					-Alex
