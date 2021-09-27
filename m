@@ -2,213 +2,325 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B0AE419E0A
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 20:20:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E787419E1D
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 20:24:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236077AbhI0SWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 14:22:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236012AbhI0SWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 14:22:05 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B85DC061575;
-        Mon, 27 Sep 2021 11:20:27 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id i13so20302677ilm.4;
-        Mon, 27 Sep 2021 11:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=rzX5wn63csK5u2gLG46ZNldaW0rbl/tJITLCPxp+274=;
-        b=A4sPcSiR/ZxxjVkAgWnm21qIBthsojmf07g4mBlInjQ7t3eDZ6Xes1KjtcAuJKiRpt
-         939hid92bEYXL4PXczzo2DDaA4VT7yxqPjs7/xHRfCBb+big3hJDh1Pxu01HPGe3qG2I
-         5WhBOKTVUBS5QdVgeq4Geha8xlRdvBuE73cpc2x30ME5UeG5MjfOA1hokai4Gazf+nbM
-         h8pU/E+QHv7UY7Z1dFutSC2lZ6KsRs8LAMVBt0h7ILDHMJr8z80Kb6yTzEql7ARYd7qp
-         e36ez7uC8t49ifv5Mm2GkMOWyYHpHPxSnC25fcTnWn2r1lgmKo8MacKiIehfOBC5JPmt
-         VFOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=rzX5wn63csK5u2gLG46ZNldaW0rbl/tJITLCPxp+274=;
-        b=1orNyGtiAMCZabsRbbEwu52pGcZtzYyqdvjAn3OI7yt0GX9K/kgM0BIu+P1yd1bfXC
-         vFsdXwfDChv249GOoiV9Dz+lFaRAJv04Z7N4f6n6OPPJd0u5SBYMu5aVeqqzmzEQR3ko
-         QBw+isM3Yn5U6H4weviSSQR8PkRTaXRWVStec2A2fU0yEseU4qYWZu/boBm51Qu81xOH
-         DNduMJd09nUi812kClEnxrUSRRJ6gG4+dGSTlsTfGU2R1niNFLKu0Jyg+fRwUQRT4niw
-         LNJB0PlXFxmZNL/KxjarrbQrZub5zy+aflXbAaztY0V5OHUN/TyXk20VzywPh/RVN8SY
-         q7SQ==
-X-Gm-Message-State: AOAM532UWZojMxTW3C2dFj+6RNTUVZeYlO7cCJ/I24nI7grsUOgDFSSk
-        EDOILRNCtF07lhwRDkpIfAU=
-X-Google-Smtp-Source: ABdhPJyMlBHphqPh55+uxLSWfLzuNOpRyBMvQek1N6NId3XJlrZf4JVQoSwem2aXsFR77aChU10Axg==
-X-Received: by 2002:a92:d382:: with SMTP id o2mr1071760ilo.67.1632766826911;
-        Mon, 27 Sep 2021 11:20:26 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id f7sm9496428ilc.82.2021.09.27.11.20.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Sep 2021 11:20:26 -0700 (PDT)
-Date:   Mon, 27 Sep 2021 11:20:18 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Dave Marchevsky <davemarchevsky@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Yonghong Song <yhs@fb.com>
-Message-ID: <61520b6224619_397f208d7@john-XPS-13-9370.notmuch>
-In-Reply-To: <761a02db-ff47-fc2f-b557-eff2b02ec941@fb.com>
-References: <20210920151112.3770991-1-davemarchevsky@fb.com>
- <20210923205105.zufadghli5772uma@ast-mbp>
- <35e837fb-ac22-3ea1-4624-2a890f6d0db0@fb.com>
- <CAEf4Bzb+r5Fpu1YzGX01YY6BQb1xnZiMRW3hUF+uft4BsJCPoA@mail.gmail.com>
- <761a02db-ff47-fc2f-b557-eff2b02ec941@fb.com>
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf: keep track of prog verification
- stats
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S236126AbhI0S0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 14:26:10 -0400
+Received: from mail-bn7nam10on2058.outbound.protection.outlook.com ([40.107.92.58]:60385
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229875AbhI0S0J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 14:26:09 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AI2bV0L1hohYsKZxnQwvSy9C59sU/wy2CiI8hqD5yisqAnskjnBzMmmWi9dkZM5YdaBd1xKFWwzn7MCyptm3wJQqlZZlK6WpvVwqvKy+aaEimlCtsdPD7V0WFJtVAvasXdaJLbSG3pjNrMcYQm4VU7ziutl4yHVxUvRpQuXURcaKSIxOh47oW7Hyy2nKPgSp12JwjiGmfrTFoJXC4SNwNVom15Q9iCYEIn4icDz0IxjghKwVl2RbdVXPd05ObJcXV85oFn82sws3gCsZ5gaFh1GQ5csmSGtA8MncXBmdc9uym8J96/G60KmqPn4DZTHQ93C4hp532fhpE+qYNWzZvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=PHt3hq2nxv0YrXnJSnwOZ1Mlq+SXuKPGkBl9Wd0FpAc=;
+ b=CFeNHE7eImb2iWb7vJ6VU8a2S+RkxjsOwwXL2cmzeqj76Ebo6S/6GtsvPsVLK5a50yAifiBG5+fOVDXEkP3OBr7tvIlRyOe/m8cVY8TLXEWUuTyBfjCloeHLHvSykuRYTMYxbR4l4v5p8sBFzqWjn1NuS05nWbIa1vEkHaHKWuZxtZb3gj7MiNcb1NMeGsDO7h5In+S3/KukJ2pgQS5SYYk7HPjq6fK397LD3nUUTEYrd90Zes0fQfzltZ5EZU3j/t2HoqrSBbYVMWyyiB1ci7fcxKzyxl9Fv9NOC0u5Vt2Cp8gp7As2KMZFH1eBbQ2j4jH60+i8V4IBFdO2WL15iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.36) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PHt3hq2nxv0YrXnJSnwOZ1Mlq+SXuKPGkBl9Wd0FpAc=;
+ b=CQS0zwu+GYAU9JnW9JhOsGqNHOOyWwoeiUNIcl0mcLDmq/W+2EFMOpcZ+vHMdbP4z1fpTEjXwv7aM0d1uIekfsSHqZRSP1Q/gRdyezfrtwnhlYhxGQv9Jt4hX2c2iD5keu1nSLfAzeaYTc/60n3jverRfPLLRxG8ygBvf7VQbbJgpL/IXlAn4w7dSKmIdf7f9vJ7vUehf5uoRmigWdfSoCTv7iDPitzRb8We+rbq4LS6zC/zeKfUKpB1M1Kyx1777StTWVziF/TkQr2JT+2pEVd4FgGy1vzs/3gt1K+P/3hWTnR3zvEFeCQACe2YmjIj40iquNdkGoOMvoO6Nl8xug==
+Received: from BN6PR22CA0065.namprd22.prod.outlook.com (2603:10b6:404:ca::27)
+ by MN2PR12MB3181.namprd12.prod.outlook.com (2603:10b6:208:ae::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Mon, 27 Sep
+ 2021 18:24:28 +0000
+Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:ca:cafe::a3) by BN6PR22CA0065.outlook.office365.com
+ (2603:10b6:404:ca::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.14 via Frontend
+ Transport; Mon, 27 Sep 2021 18:24:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
+ smtp.mailfrom=nvidia.com; huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.36; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.36) by
+ BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4544.13 via Frontend Transport; Mon, 27 Sep 2021 18:24:28 +0000
+Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 27 Sep
+ 2021 18:24:27 +0000
+Received: from [172.27.0.62] (172.20.187.5) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 27 Sep
+ 2021 18:24:22 +0000
+Subject: Re: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
+ transition validity
+To:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        "Leon Romanovsky" <leon@kernel.org>
+CC:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Kirti Wankhede" <kwankhede@nvidia.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        liulongfang <liulongfang@huawei.com>
+References: <cover.1632305919.git.leonro@nvidia.com>
+ <c87f55d6fec77a22b110d3c9611744e6b28bba46.1632305919.git.leonro@nvidia.com>
+ <42729adc4df649f7b3ce5dc95e66e2dc@huawei.com> <YUxiPqShZT4bk0uL@unreal>
+ <60989aa8-4231-0cdf-47bb-1e2026bd1f17@nvidia.com>
+ <164439bb579d41639edf9a01a538a5ef@huawei.com>
+ <078fc846-1f72-adc0-339c-1b638c6c6e33@nvidia.com>
+ <85743eabdae04d08bb5eba7b6857496e@huawei.com>
+From:   Max Gurtovoy <mgurtovoy@nvidia.com>
+Message-ID: <fb8adab1-3409-691a-d02c-552155e4b601@nvidia.com>
+Date:   Mon, 27 Sep 2021 21:24:19 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <85743eabdae04d08bb5eba7b6857496e@huawei.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [172.20.187.5]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ DRHQMAIL107.nvidia.com (10.27.9.16)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3fa588d8-2668-4158-d30e-08d981e40af1
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3181:
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3181B62C58A0884C477CCD67DEA79@MN2PR12MB3181.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HHbBeFpTakS162dBadK0Siz3lOm+SXBJcxBXRLjrTsXYs+Od9cxmjn5XwoAGa8nNJzZiFEAuRbmoxPTyqL7MkmZV2gyKzkyNfAaxarRAVhkxmUsk3IWybyUFE0qq0z/tycA5pc312dKpBoEuwTMSObtM/34S0/uv2wGSu2y4f/ByRXJjYUSF+CauM9LmD3QWuzZ2qDqZWP/T77WXJAR/KejGw1+hFhLo7Jefz9deBqYmbss6EIx4WnvuPgsNSJGMZzvJd39C5d8hZB/s7dRIWYnumqefbieFT6tkMRGOF+7XFLxfUe9j5c9uDn9fQUgWNOvsd72R/NhLM0j7KTKdx6O2EdTS+/dS1o8WoG8KfjADqxntbcjU9SQ/LNoxLL3RjeplUTUKO6wFRYk5Ob1LJ7/RkE2GaRajr9o7KGR6KWqm8NIJEGTmqmVpdUX5J7SDDYKwz4bsPO8k5lCW4BmOz8dg922GKcYQb01AArDZbLaWZn4LeM+HYETzwlrB4JsmL67BkJSgUvsS7Y9Rn43Vr4QuMWokZ8pQi2HirsE9luew0WLn8kFBmxGP8FxMvxcv2bBtKMJ7ZDHxJ+LQO+t3lbl7WQUua6mmVMUH4JqOa4HqNXPFzMftV333/S9PIn76LtQK8Ro3kNYCmE+tNoYILaaq3rtuanK7KtIfjUHJjwxnQujwmE0r+Z2bH6SKWNSXJPytdEcxAgZEHwXJWioLf5Yom0XQAfVpo9ZUBBG/TnQ=
+X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(110136005)(508600001)(8676002)(336012)(54906003)(70586007)(70206006)(2616005)(86362001)(36756003)(6666004)(16576012)(426003)(316002)(36906005)(31696002)(7636003)(356005)(31686004)(5660300002)(8936002)(186003)(53546011)(4326008)(82310400003)(16526019)(26005)(47076005)(7416002)(2906002)(83380400001)(36860700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2021 18:24:28.3534
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3fa588d8-2668-4158-d30e-08d981e40af1
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3181
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dave Marchevsky wrote:
-> On 9/23/21 10:02 PM, Andrii Nakryiko wrote:   
-> > On Thu, Sep 23, 2021 at 6:27 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
-> >>
-> >> On 9/23/21 4:51 PM, Alexei Starovoitov wrote:
-> >>> On Mon, Sep 20, 2021 at 08:11:10AM -0700, Dave Marchevsky wrote:
-> >>>> The verifier currently logs some useful statistics in
-> >>>> print_verification_stats. Although the text log is an effective feedback
-> >>>> tool for an engineer iterating on a single application, it would also be
-> >>>> useful to enable tracking these stats in a more structured form for
-> >>>> fleetwide or historical analysis, which this patchset attempts to do.
-> >>>>
-> >>>> A concrete motivating usecase which came up in recent weeks:
-> >>>>
-> >>>> A team owns a complex BPF program, with various folks extending its
-> >>>> functionality over the years. An engineer tries to make a relatively
-> >>>> simple addition but encounters "BPF program is too large. Processed
-> >>>> 1000001 insn".
-> >>>>
-> >>>> Their changes bumped the processed insns from 700k to over the limit and
-> >>>> there's no obvious way to simplify. They must now consider a large
-> >>>> refactor in order to incorporate the new feature. What if there was some
-> >>>> previous change which bumped processed insns from 200k->700k which
-> >>>> _could_ be modified to stress verifier less? Tracking historical
-> >>>> verifier stats for each version of the program over the years would
-> >>>> reduce manual work necessary to find such a change.
-> >>>>
-> >>>>
-> >>>> Although parsing the text log could work for this scenario, a solution
-> >>>> that's resilient to log format and other verifier changes would be
-> >>>> preferable.
-> >>>>
-> >>>> This patchset adds a bpf_prog_verif_stats struct - containing the same
-> >>>> data logged by print_verification_stats - which can be retrieved as part
-> >>>> of bpf_prog_info. Looking for general feedback on approach and a few
-> >>>> specific areas before fleshing it out further:
-> >>>>
-> >>>> * None of my usecases require storing verif_stats for the lifetime of a
-> >>>>   loaded prog, but adding to bpf_prog_aux felt more correct than trying
-> >>>>   to pass verif_stats back as part of BPF_PROG_LOAD
-> >>>> * The verif_stats are probably not generally useful enough to warrant
-> >>>>   inclusion in fdinfo, but hoping to get confirmation before removing
-> >>>>   that change in patch 1
-> >>>> * processed_insn, verification_time, and total_states are immediately
-> >>>>   useful for me, rest were added for parity with
-> >>>>      print_verification_stats. Can remove.
-> >>>> * Perhaps a version field would be useful in verif_stats in case future
-> >>>>   verifier changes make some current stats meaningless
-> >>>> * Note: stack_depth stat was intentionally skipped to keep patch 1
-> >>>>   simple. Will add if approach looks good.
-> >>>
-> >>> Sorry for the delay. LPC consumes a lot of mental energy :)
-> >>>
-> >>> I see the value of exposing some of the verification stats as prog_info.
-> >>> Let's look at the list:
-> >>> struct bpf_prog_verif_stats {
-> >>>        __u64 verification_time;
-> >>>        __u32 insn_processed;
-> >>>        __u32 max_states_per_insn;
-> >>>        __u32 total_states;
-> >>>        __u32 peak_states;
-> >>>        __u32 longest_mark_read_walk;
-> >>> };
-> >>> verification_time is non deterministic. It varies with frequency
-> >>> and run-to-run. I don't see how alerting tools can use it.
-> >>
-> >> Makes sense to me, will get rid of it.
-> >>
-> >>> insn_processed is indeed the main verification metric.
-> >>> By now it's well known and understood.
-> >>>
-> >>> max_states_per_insn, total_states, etc were the metrics I've studied
-> >>> carefully with pruning, back tracking and pretty much every significant
-> >>> change I did or reiviewed in the verifier. They're useful to humans
-> >>> and developers, but I don't see how alerting tools will use them.
-> >>>
-> >>> So it feels to me that insn_processed alone will be enough to address the
-> >>> monitoring goal.
-> >>
-> >> For the concrete usecase in my original message insn_processed would be
-> >> enough. For the others - I thought there might be value in gathering
-> >> those "fleetwide" to inform verifier development, e.g.:
-> >>
-> >> "Hmm, this team's libbpf program has been regressing total_states over
-> >> past few {kernel, llvm} rollouts, but they haven't been modifying it.
-> >> Let's try to get a minimal repro, send to bpf@vger, and contribute to
-> >> selftests if it is indeed hitting a weird verifier edge case"
-> >>
-> >> So for those I'm not expecting them to be useful to alert on or be a
-> >> number that the average BPF program writer needs to care about.
-> >>
-> >> Of course this is hypothetical as I haven't tried to gather such data
-> >> and look for interesting patterns. But these metrics being useful to
-> >> you when looking at significant verifier changes is a good sign.
-> > 
-> > One reason to not add all those fields is to not end up with
-> > meaningless stats (in the future) in UAPI. One way to work around that
-> > is to make it "unstable" by providing it through raw_tracepoint as
-> > internal kernel struct.
-> > 
-> > Basically, the proposal would be: add new tracepoint for when BPF
-> > program is verified, either successfully or not. As one of the
-> > parameters provide stats struct which is internal to BPF verifier and
-> > is not exposed through UAPI.
-> > 
-> > Such tracepoint actually would be useful more generally as well, e.g.,
-> > to monitor which programs are verified in the fleet, what's the rate
-> > of success/failure (to detect verifier regression), what are the stats
-> > (verification time actually would be good to have there, again for
-> > stats and detecting regression), etc, etc.
-> > 
-> > WDYT?
-> > 
-> 
-> Seems reasonable to me - and attaching a BPF program to the tracepoint to
-> grab data is delightfully meta :)
-> 
-> I'll do a pass on alternate implementation with _just_ tracepoint, no 
-> prog_info or fdinfo, can add minimal or full stats to those later if
-> necessary.
 
-We can also use a hook point here to enforce policy on allowing the
-BPF program to load or not using the stats here. For now basic
-insn is a good start to allow larger/smaller programs to be loaded,
-but we might add other info like call bitmask, features, types, etc.
-If one of the arguments is the bpf_attr struct we can just read
-lots of useful program info out directly.
+On 9/26/2021 7:17 PM, Shameerali Kolothum Thodi wrote:
+>
+>> -----Original Message-----
+>> From: Max Gurtovoy [mailto:mgurtovoy@nvidia.com]
+>> Sent: 26 September 2021 10:10
+>> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+>> Leon Romanovsky <leon@kernel.org>
+>> Cc: Doug Ledford <dledford@redhat.com>; Jason Gunthorpe
+>> <jgg@nvidia.com>; Yishai Hadas <yishaih@nvidia.com>; Alex Williamson
+>> <alex.williamson@redhat.com>; Bjorn Helgaas <bhelgaas@google.com>; David
+>> S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Kirti
+>> Wankhede <kwankhede@nvidia.com>; kvm@vger.kernel.org;
+>> linux-kernel@vger.kernel.org; linux-pci@vger.kernel.org;
+>> linux-rdma@vger.kernel.org; netdev@vger.kernel.org; Saeed Mahameed
+>> <saeedm@nvidia.com>; liulongfang <liulongfang@huawei.com>
+>> Subject: Re: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
+>> transition validity
+>>
+>>
+>> On 9/24/2021 10:44 AM, Shameerali Kolothum Thodi wrote:
+>>>> -----Original Message-----
+>>>> From: Max Gurtovoy [mailto:mgurtovoy@nvidia.com]
+>>>> Sent: 23 September 2021 14:56
+>>>> To: Leon Romanovsky <leon@kernel.org>; Shameerali Kolothum Thodi
+>>>> <shameerali.kolothum.thodi@huawei.com>
+>>>> Cc: Doug Ledford <dledford@redhat.com>; Jason Gunthorpe
+>>>> <jgg@nvidia.com>; Yishai Hadas <yishaih@nvidia.com>; Alex Williamson
+>>>> <alex.williamson@redhat.com>; Bjorn Helgaas <bhelgaas@google.com>;
+>>>> David S. Miller <davem@davemloft.net>; Jakub Kicinski
+>>>> <kuba@kernel.org>; Kirti Wankhede <kwankhede@nvidia.com>;
+>>>> kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
+>>>> linux-pci@vger.kernel.org; linux-rdma@vger.kernel.org;
+>>>> netdev@vger.kernel.org; Saeed Mahameed <saeedm@nvidia.com>
+>>>> Subject: Re: [PATCH mlx5-next 2/7] vfio: Add an API to check
+>>>> migration state transition validity
+>>>>
+>>>>
+>>>> On 9/23/2021 2:17 PM, Leon Romanovsky wrote:
+>>>>> On Thu, Sep 23, 2021 at 10:33:10AM +0000, Shameerali Kolothum Thodi
+>>>> wrote:
+>>>>>>> -----Original Message-----
+>>>>>>> From: Leon Romanovsky [mailto:leon@kernel.org]
+>>>>>>> Sent: 22 September 2021 11:39
+>>>>>>> To: Doug Ledford <dledford@redhat.com>; Jason Gunthorpe
+>>>> <jgg@nvidia.com>
+>>>>>>> Cc: Yishai Hadas <yishaih@nvidia.com>; Alex Williamson
+>>>>>>> <alex.williamson@redhat.com>; Bjorn Helgaas <bhelgaas@google.com>;
+>>>> David
+>>>>>>> S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>;
+>>>>>>> Kirti Wankhede <kwankhede@nvidia.com>; kvm@vger.kernel.org;
+>>>>>>> linux-kernel@vger.kernel.org; linux-pci@vger.kernel.org;
+>>>>>>> linux-rdma@vger.kernel.org; netdev@vger.kernel.org; Saeed Mahameed
+>>>>>>> <saeedm@nvidia.com>
+>>>>>>> Subject: [PATCH mlx5-next 2/7] vfio: Add an API to check migration
+>>>>>>> state transition validity
+>>>>>>>
+>>>>>>> From: Yishai Hadas <yishaih@nvidia.com>
+>>>>>>>
+>>>>>>> Add an API in the core layer to check migration state transition
+>>>>>>> validity as part of a migration flow.
+>>>>>>>
+>>>>>>> The valid transitions follow the expected usage as described in
+>>>>>>> uapi/vfio.h and triggered by QEMU.
+>>>>>>>
+>>>>>>> This ensures that all migration implementations follow a
+>>>>>>> consistent migration state machine.
+>>>>>>>
+>>>>>>> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+>>>>>>> Reviewed-by: Kirti Wankhede <kwankhede@nvidia.com>
+>>>>>>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>>>>>>> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+>>>>>>> ---
+>>>>>>>     drivers/vfio/vfio.c  | 41
+>>>> +++++++++++++++++++++++++++++++++++++++++
+>>>>>>>     include/linux/vfio.h |  1 +
+>>>>>>>     2 files changed, 42 insertions(+)
+>>>>>>>
+>>>>>>> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c index
+>>>>>>> 3c034fe14ccb..c3ca33e513c8 100644
+>>>>>>> --- a/drivers/vfio/vfio.c
+>>>>>>> +++ b/drivers/vfio/vfio.c
+>>>>>>> @@ -1664,6 +1664,47 @@ static int vfio_device_fops_release(struct
+>>>> inode
+>>>>>>> *inode, struct file *filep)
+>>>>>>>     	return 0;
+>>>>>>>     }
+>>>>>>>
+>>>>>>> +/**
+>>>>>>> + * vfio_change_migration_state_allowed - Checks whether a
+>>>>>>> +migration
+>>>> state
+>>>>>>> + *   transition is valid.
+>>>>>>> + * @new_state: The new state to move to.
+>>>>>>> + * @old_state: The old state.
+>>>>>>> + * Return: true if the transition is valid.
+>>>>>>> + */
+>>>>>>> +bool vfio_change_migration_state_allowed(u32 new_state, u32
+>>>> old_state)
+>>>>>>> +{
+>>>>>>> +	enum { MAX_STATE = VFIO_DEVICE_STATE_RESUMING };
+>>>>>>> +	static const u8 vfio_from_state_table[MAX_STATE + 1][MAX_STATE +
+>>>> 1] = {
+>>>>>>> +		[VFIO_DEVICE_STATE_STOP] = {
+>>>>>>> +			[VFIO_DEVICE_STATE_RUNNING] = 1,
+>>>>>>> +			[VFIO_DEVICE_STATE_RESUMING] = 1,
+>>>>>>> +		},
+>>>>>>> +		[VFIO_DEVICE_STATE_RUNNING] = {
+>>>>>>> +			[VFIO_DEVICE_STATE_STOP] = 1,
+>>>>>>> +			[VFIO_DEVICE_STATE_SAVING] = 1,
+>>>>>>> +			[VFIO_DEVICE_STATE_SAVING |
+>>>> VFIO_DEVICE_STATE_RUNNING]
+>>>>>>> = 1,
+>>>>>> Do we need to allow _RESUMING state here or not? As per the "State
+>>>> transitions"
+>>>>>> section from uapi/linux/vfio.h,
+>>>>> It looks like we missed this state transition.
+>>>>>
+>>>>> Thanks
+>>>> I'm not sure this state transition is valid.
+>>>>
+>>>> Kirti, When we would like to move from RUNNING to RESUMING ?
+>>> I guess it depends on what you report as your dev default state.
+>>>
+>>> For HiSilicon ACC migration driver, we set the default to _RUNNING.
+>> Where do you set it and report it ?
+> Currently, in _open_device() we set the device_state to _RUNNING.
 
-We would need something different from a tracepoint though to let
-it return a reject|accept code. How about a new hook type that
-has something similar to sockops that lets us just return an
-accept or reject code?
+Why do you do it ?
 
-By doing this we can check loader signatures here to be sure the
-loader is signed or otherwise has correct permissions to be loading
-whatever type of bpf program is here.
-
-Thanks,
-John
+>
+> I think in your case the default of vmig->vfio_dev_state == 0 (_STOP).
+>
+>>> And when the migration starts, the destination side Qemu, set the
+>>> device state to _RESUMING(vfio_load_state()).
+>>>
+>>>   From the documentation, it looks like the assumption on default state
+>>> of the VFIO dev is _RUNNING.
+>>>
+>>> "
+>>> *  001b => Device running, which is the default state "
+>>>
+>>>> Sameerali, can you please re-test and update if you see this transition ?
+>>> Yes. And if I change the default state to _STOP, then the transition
+>>> is from _STOP --> _RESUMING.
+>>>
+>>> But the documentation on State transitions doesn't have _STOP -->
+>>> _RESUMING transition as valid.
+>>>
+>>> Thanks,
+>>> Shameer
+>>>
+>>>>>> " * 4. To start the resuming phase, the device state should be
+>>>>>> transitioned
+>>>> from
+>>>>>>     *    the _RUNNING to the _RESUMING state."
+>>>>>>
+>>>>>> IIRC, I have seen that transition happening on the destination dev
+>>>>>> while
+>>>> testing the
+>>>>>> HiSilicon ACC dev migration.
+>>>>>>
+>>>>>> Thanks,
+>>>>>> Shameer
+>>>>>>
+>>>>>>> +		},
+>>>>>>> +		[VFIO_DEVICE_STATE_SAVING] = {
+>>>>>>> +			[VFIO_DEVICE_STATE_STOP] = 1,
+>>>>>>> +			[VFIO_DEVICE_STATE_RUNNING] = 1,
+>>>>>>> +		},
+>>>>>>> +		[VFIO_DEVICE_STATE_SAVING | VFIO_DEVICE_STATE_RUNNING]
+>>>> = {
+>>>>>>> +			[VFIO_DEVICE_STATE_RUNNING] = 1,
+>>>>>>> +			[VFIO_DEVICE_STATE_SAVING] = 1,
+>>>>>>> +		},
+>>>>>>> +		[VFIO_DEVICE_STATE_RESUMING] = {
+>>>>>>> +			[VFIO_DEVICE_STATE_RUNNING] = 1,
+>>>>>>> +			[VFIO_DEVICE_STATE_STOP] = 1,
+>>>>>>> +		},
+>>>>>>> +	};
+>>>>>>> +
+>>>>>>> +	if (new_state > MAX_STATE || old_state > MAX_STATE)
+>>>>>>> +		return false;
+>>>>>>> +
+>>>>>>> +	return vfio_from_state_table[old_state][new_state];
+>>>>>>> +}
+>>>>>>> +EXPORT_SYMBOL_GPL(vfio_change_migration_state_allowed);
+>>>>>>> +
+>>>>>>>     static long vfio_device_fops_unl_ioctl(struct file *filep,
+>>>>>>>     				       unsigned int cmd, unsigned long arg)
+>>>>>>>     {
+>>>>>>> diff --git a/include/linux/vfio.h b/include/linux/vfio.h index
+>>>>>>> b53a9557884a..e65137a708f1 100644
+>>>>>>> --- a/include/linux/vfio.h
+>>>>>>> +++ b/include/linux/vfio.h
+>>>>>>> @@ -83,6 +83,7 @@ extern struct vfio_device
+>>>>>>> *vfio_device_get_from_dev(struct device *dev);
+>>>>>>>     extern void vfio_device_put(struct vfio_device *device);
+>>>>>>>
+>>>>>>>     int vfio_assign_device_set(struct vfio_device *device, void
+>>>>>>> *set_id);
+>>>>>>> +bool vfio_change_migration_state_allowed(u32 new_state, u32
+>>>> old_state);
+>>>>>>>     /* events for the backend driver notify callback */
+>>>>>>>     enum vfio_iommu_notify_type {
+>>>>>>> --
+>>>>>>> 2.31.1
