@@ -2,122 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E16141A021
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 22:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E9DA41A02B
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 22:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236579AbhI0Uby (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 16:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236225AbhI0Ubw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 16:31:52 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4F1C061604
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 13:30:14 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id b15so20702057ils.10
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 13:30:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UZvcsU3jPC2Tqc7j/AtvwZ18MVpNDDVJOl1x3POhGbU=;
-        b=L0ILZT89coBxeIAX5+u1eqipNQmsiWIlNyIQph8LxnANRDb1MNnzzqFjDpYVwgm5PU
-         w45sz1eC1AXfSYaigrK0SPXIaDUUgvll5gfyvkgfBd0jfvCqbRliOKy5eacWnAs6Gc1f
-         VTem9J4OsUZrlmdW/RoKmnqHXWeCpgrkAnwTI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UZvcsU3jPC2Tqc7j/AtvwZ18MVpNDDVJOl1x3POhGbU=;
-        b=eN3//SgeU21bFv9cGa5mgqWWpZhnwassNlcmdmQfR/fy3X5W8zhZwYZ8pwLTNHld4+
-         j/LLm9D3Aa21E41ikUo8YpsgPTSndHRgxeLkzTh0agISmQLVVVf2e1e54QMBzM2t3fIA
-         liWfsNnPx/1pWIIveWuE4ZtoU3RubpFNYc1JO29KcCPsDM233R2Bzx6PrfYdIeq8Zl4C
-         L1t3qyJQqUYEVu7e9AYTnJuma1C5fA8WxAnCspiSn9C3CX+9qGBmCfPQTuGhS+9rzTu3
-         vEA6DhEHSCbXXU41sqWRGalUdnP/9ry8h+s7M6eSmNmfQ2Me/WZpHGFdRJH3VA0qHoTX
-         sJWQ==
-X-Gm-Message-State: AOAM531WvqckBhe7fbR9VITMq0M82o5uvsJL1Y6MzJBrTpor77OtCafi
-        iVVhAyKJujeR5CSNeerVwfOo+GZU8RhcFQ==
-X-Google-Smtp-Source: ABdhPJy3CIoP3cDu640nMRW1zwMO9LfH+7YzUyor3Xfei8wizLckYT/20eap+dGIf3Z7RnZqyF6COQ==
-X-Received: by 2002:a05:6e02:1c81:: with SMTP id w1mr1483057ill.112.1632774613587;
-        Mon, 27 Sep 2021 13:30:13 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id r11sm9439972ila.17.2021.09.27.13.30.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Sep 2021 13:30:12 -0700 (PDT)
-Subject: Re: [PATCH] net: ipa: Declare IPA firmware with MODULE_FIRMWARE()
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Shawn Guo <shawn.guo@linaro.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alex Elder <elder@kernel.org>,
-        Steev Klimaszewski <steev@kali.org>, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210926065529.25956-1-shawn.guo@linaro.org>
- <YVIc77g464EpLtyN@ripper>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <f85b8088-6efd-5f3b-d064-f61afd273a3b@ieee.org>
-Date:   Mon, 27 Sep 2021 15:30:11 -0500
+        id S236493AbhI0Uea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 16:34:30 -0400
+Received: from mxout01.lancloud.ru ([45.84.86.81]:56574 "EHLO
+        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236250AbhI0Ue3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 16:34:29 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 875082014E5E
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [RFC/PATCH 14/18] ravb: Add rx_ring_format function for
+ GbEthernet
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
+ <20210923140813.13541-15-biju.das.jz@bp.renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <c50f22d3-4741-f0a0-2664-34910d6c5ea4@omp.ru>
+Date:   Mon, 27 Sep 2021 23:32:48 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <YVIc77g464EpLtyN@ripper>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210923140813.13541-15-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/27/21 2:35 PM, Bjorn Andersson wrote:
-> On Sat 25 Sep 23:55 PDT 2021, Shawn Guo wrote:
+On 9/23/21 5:08 PM, Biju Das wrote:
+
+> This patch adds rx_ring_format function for GbEthernet found on
+> RZ/G2L SoC.
 > 
->> Declare IPA firmware with MODULE_FIRMWARE(), so that initramfs tools can
->> build the firmware into initramfs image or warn on missing of the
->> firmware.
->>
->> W: Possible missing firmware /lib/firmware/ipa_fws.mdt for module ipa
->>
->> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
->> ---
->>   drivers/net/ipa/ipa_main.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
->> index cdfa98a76e1f..264bebc78d1e 100644
->> --- a/drivers/net/ipa/ipa_main.c
->> +++ b/drivers/net/ipa/ipa_main.c
->> @@ -545,6 +545,8 @@ static int ipa_firmware_load(struct device *dev)
->>   	return ret;
->>   }
->>   
->> +MODULE_FIRMWARE(IPA_FW_PATH_DEFAULT);
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+>  drivers/net/ethernet/renesas/ravb.h      |  1 +
+>  drivers/net/ethernet/renesas/ravb_main.c | 27 +++++++++++++++++++++++-
+>  2 files changed, 27 insertions(+), 1 deletion(-)
 > 
-> I think it's fair to say that no device that is capable of running
-> mkinitcpio should actually use IPA_FW_PATH_DEFAULT, but rather some
-> device-specific firmware file.
+> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+> index 2505de5d4a28..b0e067a6a8ee 100644
+> --- a/drivers/net/ethernet/renesas/ravb.h
+> +++ b/drivers/net/ethernet/renesas/ravb.h
+> @@ -982,6 +982,7 @@ enum CSR0_BIT {
+>  #define RX_BUF_SZ	(2048 - ETH_FCS_LEN + sizeof(__sum16))
+>  
+>  #define RGETH_RX_BUFF_MAX 8192
+> +#define RGETH_RX_DESC_DATA_SIZE 4080
+>  
+>  struct ravb_tstamp_skb {
+>  	struct list_head list;
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index 038af36141bb..ee1066fedc4a 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -327,7 +327,32 @@ static void ravb_ring_free(struct net_device *ndev, int q)
+>  
+>  static void ravb_rx_ring_format_rgeth(struct net_device *ndev, int q)
+>  {
+> -	/* Place holder */
+> +	struct ravb_private *priv = netdev_priv(ndev);
+> +	struct ravb_rx_desc *rx_desc;
+> +	unsigned int rx_ring_size = sizeof(*rx_desc) * priv->num_rx_ring[q];
+> +	dma_addr_t dma_addr;
+> +	unsigned int i;
+> +
+> +	memset(priv->rgeth_rx_ring[q], 0, rx_ring_size);
+> +	/* Build RX ring buffer */
+> +	for (i = 0; i < priv->num_rx_ring[q]; i++) {
+> +		/* RX descriptor */
+> +		rx_desc = &priv->rgeth_rx_ring[q][i];
 
-Actually, yes, I should have thought of that too.
+   Looks like this patch shold come bafore the patch #12 as well...
 
-The default used here just specifies the path name
-used *if the firmware file name is not specified in
-the DTB*.
+> +		rx_desc->ds_cc = cpu_to_le16(RGETH_RX_DESC_DATA_SIZE);
+> +		dma_addr = dma_map_single(ndev->dev.parent, priv->rx_skb[q][i]->data,
+> +					  RGETH_RX_BUFF_MAX,
 
-So I don't think this is correct regardless of whether
-the MDT file is split or not.  I think that's what
-Bjorn is saying here.
+    Allocation buffer size more then the real data size? Does that make sense?
 
-					-Alex
+> +					  DMA_FROM_DEVICE);
+> +		/* We just set the data size to 0 for a failed mapping which
+> +		 * should prevent DMA from happening...
+> +		 */
+> +		if (dma_mapping_error(ndev->dev.parent, dma_addr))
+> +			rx_desc->ds_cc = cpu_to_le16(0);
+> +		rx_desc->dptr = cpu_to_le32(dma_addr);
+> +		rx_desc->die_dt = DT_FEMPTY;
+> +	}
+> +	rx_desc = &priv->rgeth_rx_ring[q][i];
+> +	rx_desc->dptr = cpu_to_le32((u32)priv->rx_desc_dma[q]);
+> +	rx_desc->die_dt = DT_LINKFIX; /* type */
+>  }
+>  
+>  static void ravb_rx_ring_format(struct net_device *ndev, int q)
 
-> 
-> Regards,
-> Bjorn
-> 
->> +
->>   static const struct of_device_id ipa_match[] = {
->>   	{
->>   		.compatible	= "qcom,msm8998-ipa",
->> -- 
->> 2.17.1
->>
-
+MBR, Sergey
