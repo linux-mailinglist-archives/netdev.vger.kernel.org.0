@@ -2,118 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26F3141A023
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 22:30:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E16141A021
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 22:30:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237013AbhI0Ub6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 16:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57910 "EHLO
+        id S236579AbhI0Uby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 16:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236942AbhI0Ubz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 16:31:55 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9366AC061765
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 13:30:17 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id s69so27141187oie.13
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 13:30:17 -0700 (PDT)
+        with ESMTP id S236225AbhI0Ubw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 16:31:52 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4F1C061604
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 13:30:14 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id b15so20702057ils.10
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 13:30:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TRuVFJezgwN1Idjgpz4O0hFQqZueH291tcl1IF5+cgc=;
-        b=iQNtNnFwObQlhz+wFxru4JWkG2kphRipmJodEdulqbsoyzNSwj+/FPb9Fu0EAj97v3
-         zoyagzdQm58H9623FC/TQC8mcz3eZqf+afXSavGJ7R4+S/BaahJhN5eS5XPVOB85fKtz
-         MZ14aHWwuOvvSgPITXXi+b7NKe90aAkaOcbXg=
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UZvcsU3jPC2Tqc7j/AtvwZ18MVpNDDVJOl1x3POhGbU=;
+        b=L0ILZT89coBxeIAX5+u1eqipNQmsiWIlNyIQph8LxnANRDb1MNnzzqFjDpYVwgm5PU
+         w45sz1eC1AXfSYaigrK0SPXIaDUUgvll5gfyvkgfBd0jfvCqbRliOKy5eacWnAs6Gc1f
+         VTem9J4OsUZrlmdW/RoKmnqHXWeCpgrkAnwTI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TRuVFJezgwN1Idjgpz4O0hFQqZueH291tcl1IF5+cgc=;
-        b=DrJJ5v8K1llMN3d5iEPW5TJ0/IIwybF0XcLh4ExAgk5WcLtoSXaUMWrwVHOicMALji
-         D96xg3Jot7EX2bKsoaZg2Gvei6uUaahWtXpBamD0lNtHruaT70hf8V/+pRD4x8dBtl2f
-         X7F1NhYcFN9J5Fel4S7D+Okt81RtgpViZm6kNPZa6N7GV7G+/25tXpY2ZRKb4B22xXm0
-         4mTenoK+Vnm//ZiBicIygZKZBLwVgR2p8w7AQEQdjpee9JmTbipKlkoqbNFXI/F0udYZ
-         ZyYj6ESQv8528NcYwS9YPJybfYVK72mKXzKASf3ir0reHfzBqCihVxbn8LTi7Ot9uc11
-         izrQ==
-X-Gm-Message-State: AOAM532iven+OUO4Mmru6LX5W9540oWlfU6YXeFLnLA/kuginfbvz3gu
-        osPTOfKdUPpcWYMmqZBVuyn2LDY1xkI46w==
-X-Google-Smtp-Source: ABdhPJwT8xEGKyPVvVdeS900rKwZfWmybc8cN6Ca2boVrBYYv3EgUdRB8ueYuAxatmX9UN6ze6nNrQ==
-X-Received: by 2002:a54:4e1d:: with SMTP id a29mr770984oiy.7.1632774616217;
-        Mon, 27 Sep 2021 13:30:16 -0700 (PDT)
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com. [209.85.161.44])
-        by smtp.gmail.com with ESMTPSA id g23sm4352286otn.40.2021.09.27.13.30.15
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UZvcsU3jPC2Tqc7j/AtvwZ18MVpNDDVJOl1x3POhGbU=;
+        b=eN3//SgeU21bFv9cGa5mgqWWpZhnwassNlcmdmQfR/fy3X5W8zhZwYZ8pwLTNHld4+
+         j/LLm9D3Aa21E41ikUo8YpsgPTSndHRgxeLkzTh0agISmQLVVVf2e1e54QMBzM2t3fIA
+         liWfsNnPx/1pWIIveWuE4ZtoU3RubpFNYc1JO29KcCPsDM233R2Bzx6PrfYdIeq8Zl4C
+         L1t3qyJQqUYEVu7e9AYTnJuma1C5fA8WxAnCspiSn9C3CX+9qGBmCfPQTuGhS+9rzTu3
+         vEA6DhEHSCbXXU41sqWRGalUdnP/9ry8h+s7M6eSmNmfQ2Me/WZpHGFdRJH3VA0qHoTX
+         sJWQ==
+X-Gm-Message-State: AOAM531WvqckBhe7fbR9VITMq0M82o5uvsJL1Y6MzJBrTpor77OtCafi
+        iVVhAyKJujeR5CSNeerVwfOo+GZU8RhcFQ==
+X-Google-Smtp-Source: ABdhPJy3CIoP3cDu640nMRW1zwMO9LfH+7YzUyor3Xfei8wizLckYT/20eap+dGIf3Z7RnZqyF6COQ==
+X-Received: by 2002:a05:6e02:1c81:: with SMTP id w1mr1483057ill.112.1632774613587;
+        Mon, 27 Sep 2021 13:30:13 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id r11sm9439972ila.17.2021.09.27.13.30.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Sep 2021 13:30:15 -0700 (PDT)
-Received: by mail-oo1-f44.google.com with SMTP id q26-20020a4adc5a000000b002918a69c8eeso6417952oov.13
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 13:30:15 -0700 (PDT)
-X-Received: by 2002:a4a:c18d:: with SMTP id w13mr1560416oop.15.1632774614785;
- Mon, 27 Sep 2021 13:30:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210914114813.15404-1-verdre@v0yd.nl>
-In-Reply-To: <20210914114813.15404-1-verdre@v0yd.nl>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Mon, 27 Sep 2021 13:30:03 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXN34u8mAVdhbfSK14pG_9qUcPvK4tFEywN4s2grqyu9=g@mail.gmail.com>
-Message-ID: <CA+ASDXN34u8mAVdhbfSK14pG_9qUcPvK4tFEywN4s2grqyu9=g@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] mwifiex: Work around firmware bugs on 88W8897 chip
-To:     =?UTF-8?Q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        Mon, 27 Sep 2021 13:30:12 -0700 (PDT)
+Subject: Re: [PATCH] net: ipa: Declare IPA firmware with MODULE_FIRMWARE()
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Shawn Guo <shawn.guo@linaro.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Alex Elder <elder@kernel.org>,
+        Steev Klimaszewski <steev@kali.org>, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210926065529.25956-1-shawn.guo@linaro.org>
+ <YVIc77g464EpLtyN@ripper>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <f85b8088-6efd-5f3b-d064-f61afd273a3b@ieee.org>
+Date:   Mon, 27 Sep 2021 15:30:11 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <YVIc77g464EpLtyN@ripper>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 14, 2021 at 4:48 AM Jonas Dre=C3=9Fler <verdre@v0yd.nl> wrote:
->
-> This is the second revision of the patch, the first one is here:
-> https://lore.kernel.org/linux-wireless/20210830123704.221494-1-verdre@v0y=
-d.nl/
->
-> Changes between v1 and v2:
->  - Only read-back the register write to the TX ring write pointer, not al=
-l writes
->  - Mention firmware version in commit message+code comment for future ref=
-erence
->  - Use -EIO return value in second patch
->  - Use definitions for waiting intervals in second patch
+On 9/27/21 2:35 PM, Bjorn Andersson wrote:
+> On Sat 25 Sep 23:55 PDT 2021, Shawn Guo wrote:
+> 
+>> Declare IPA firmware with MODULE_FIRMWARE(), so that initramfs tools can
+>> build the firmware into initramfs image or warn on missing of the
+>> firmware.
+>>
+>> W: Possible missing firmware /lib/firmware/ipa_fws.mdt for module ipa
+>>
+>> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+>> ---
+>>   drivers/net/ipa/ipa_main.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+>> index cdfa98a76e1f..264bebc78d1e 100644
+>> --- a/drivers/net/ipa/ipa_main.c
+>> +++ b/drivers/net/ipa/ipa_main.c
+>> @@ -545,6 +545,8 @@ static int ipa_firmware_load(struct device *dev)
+>>   	return ret;
+>>   }
+>>   
+>> +MODULE_FIRMWARE(IPA_FW_PATH_DEFAULT);
+> 
+> I think it's fair to say that no device that is capable of running
+> mkinitcpio should actually use IPA_FW_PATH_DEFAULT, but rather some
+> device-specific firmware file.
 
-I tested this version, and it doesn't have the same issues v1 had
-(regarding long-blocking reads, causing audio dropouts, etc.), so:
+Actually, yes, I should have thought of that too.
 
-Tested-by: Brian Norris <briannorris@chromium.org>
+The default used here just specifies the path name
+used *if the firmware file name is not specified in
+the DTB*.
 
-As suggested elsewhere, this polling loop approach is a little slower
-than just waiting for an interrupt instead (and that proves out; the
-wakeup latency seems to increase by ~1 "short" polling interval; so
-about half a millisecond). It seems like that could be optimized if
-needed, because you *are* still waiting for an interrupt anyway. But I
-haven't tried benchmarking anything that would really matter for this;
-when we're already waiting 6+ ms, another 0.5ms isn't the end of the
-world.
+So I don't think this is correct regardless of whether
+the MDT file is split or not.  I think that's what
+Bjorn is saying here.
 
-This doesn't really count as Reviewed-by. There are probably better
-improvements to the poling loop (e.g., Andy's existing suggestions);
-and frankly, I'd rather see if the dropped writes can be fixed
-somehow. But I'm not holding my breath for the latter, and don't have
-any good suggestions. So if this is the best we can do, so be it.
+					-Alex
 
-Regards,
-Brian
+> 
+> Regards,
+> Bjorn
+> 
+>> +
+>>   static const struct of_device_id ipa_match[] = {
+>>   	{
+>>   		.compatible	= "qcom,msm8998-ipa",
+>> -- 
+>> 2.17.1
+>>
+
