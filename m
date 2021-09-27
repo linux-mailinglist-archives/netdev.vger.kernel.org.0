@@ -2,77 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C59BA41A180
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 23:48:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4225F41A2CC
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 00:14:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237267AbhI0VuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 17:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237009AbhI0VuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 17:50:05 -0400
-Received: from bombadil.infradead.org (unknown [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7407BC061575
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 14:48:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=kmnCCl7YzOVDnM3V/AysBDGb3zIQhhYsnuxom0rubl8=; b=klH4b5MkAAq2Nyivz2uRzhvyMw
-        1so4XvGPcUvTjckDy+xfuzRHu7FpxMdHs80deRfLg7n5V2OmgShu0TyuHIzRBiHcYYsSi2Ow6ztE3
-        umQ8xzDBu1FdmGJslW1U2QZnWzHkVQ3MFSoWOGlfEiSYra3LB9RUsaAWqDOq3Q39qGR+86X9ETknj
-        8o8qaZzswr8JEsrJH7L2or2IxibGUp9MWeAyvvN0fuyImaEhPV6DS73NJEG82UYsBNPScMtzp2qNz
-        6N/wTaz68lY0WFjCiNCiAQCakM9sSPKhWhCkFs1g1p2SA5XnoFFmARRQune7ltYjR5+tBXQaDWXbW
-        igx+IVig==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mUyU4-004R2O-CW; Mon, 27 Sep 2021 21:48:24 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        id S237737AbhI0WQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 18:16:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45410 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237364AbhI0WQ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 18:16:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5AAB8610A2;
+        Mon, 27 Sep 2021 22:14:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632780890;
+        bh=I6vpnDbNhhUsp54rvz1mBOT9j/vZz9K4WQuPuoIW0Gs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=muuQ+/aAo1K+cXU1Ad0D5sMxg4AYcoyNKjkWotosE083Kh+Enxz9QlEcKd70i+Tfm
+         Jbcu/FpwvPemCIL7bivkKw2DNpd4/gYKnP6rijTmNsZuXejBBBxaypU4QN3mhvFgMg
+         j0S+WvEcAyP5RM37aLXFedMeCyFJamNmV9UysS36bKS+kLRnpV85lXLiW5SelEBeGX
+         Etxsi+pvTs7QWSsVgVU1wH41QOWxHKs4OY7SPDFZA3LQx13EGZw64pOEU7yD6mtNSV
+         XPfw2xS+OiBH3oofM92JnYVhblWm2aGMJWgoghOyWhdGbcwikOMMcHqcMAQ3KBqo16
+         jC26lV6WUkPpw==
+Date:   Mon, 27 Sep 2021 17:18:49 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Aaron Young <aaron.young@oracle.com>,
-        Rashmi Narasimhan <rashmi.narasimhan@oracle.com>
-Subject: [PATCH net] net: sun: SUNVNET_COMMON should depend on INET
-Date:   Mon, 27 Sep 2021 14:48:23 -0700
-Message-Id: <20210927214823.13683-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.31.1
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] net_sched: Use struct_size() and flex_array_size()
+ helpers
+Message-ID: <20210927221849.GA188050@embeddedor>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When CONFIG_INET is not set, there are failing references to IPv4
-functions, so make this driver depend on INET.
+Make use of the struct_size() and flex_array_size() helpers instead of
+an open-coded version, in order to avoid any potential type mistakes
+or integer overflows that, in the worse scenario, could lead to heap
+overflows.
 
-Fixes these build errors:
-
-sparc64-linux-ld: drivers/net/ethernet/sun/sunvnet_common.o: in function `sunvnet_start_xmit_common':
-sunvnet_common.c:(.text+0x1a68): undefined reference to `__icmp_send'
-sparc64-linux-ld: drivers/net/ethernet/sun/sunvnet_common.o: in function `sunvnet_poll_common':
-sunvnet_common.c:(.text+0x358c): undefined reference to `ip_send_check'
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Aaron Young <aaron.young@oracle.com>
-Cc: Rashmi Narasimhan <rashmi.narasimhan@oracle.com>
+Link: https://github.com/KSPP/linux/issues/160
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
-Fixes: prior to 31762eaa0d08 ("ldmvsw: Split sunvnet driver into common code")
-[I don't have enough git fu to go back beyond this.]
+ net/sched/sch_api.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
- drivers/net/ethernet/sun/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
-
---- linux-next-20210927.orig/drivers/net/ethernet/sun/Kconfig
-+++ linux-next-20210927/drivers/net/ethernet/sun/Kconfig
-@@ -73,6 +73,7 @@ config CASSINI
- config SUNVNET_COMMON
- 	tristate "Common routines to support Sun Virtual Networking"
- 	depends on SUN_LDOMS
-+	depends on INET
- 	default m
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index 12f39a2dffd4..91820f67275c 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -507,7 +507,8 @@ static struct qdisc_size_table *qdisc_get_stab(struct nlattr *opt,
+ 	list_for_each_entry(stab, &qdisc_stab_list, list) {
+ 		if (memcmp(&stab->szopts, s, sizeof(*s)))
+ 			continue;
+-		if (tsize > 0 && memcmp(stab->data, tab, tsize * sizeof(u16)))
++		if (tsize > 0 &&
++		    memcmp(stab->data, tab, flex_array_size(stab, data, tsize)))
+ 			continue;
+ 		stab->refcnt++;
+ 		return stab;
+@@ -519,14 +520,14 @@ static struct qdisc_size_table *qdisc_get_stab(struct nlattr *opt,
+ 		return ERR_PTR(-EINVAL);
+ 	}
  
- config SUNVNET
+-	stab = kmalloc(sizeof(*stab) + tsize * sizeof(u16), GFP_KERNEL);
++	stab = kmalloc(struct_size(stab, data, tsize), GFP_KERNEL);
+ 	if (!stab)
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	stab->refcnt = 1;
+ 	stab->szopts = *s;
+ 	if (tsize > 0)
+-		memcpy(stab->data, tab, tsize * sizeof(u16));
++		memcpy(stab->data, tab, flex_array_size(stab, data, tsize));
+ 
+ 	list_add_tail(&stab->list, &qdisc_stab_list);
+ 
+-- 
+2.27.0
+
