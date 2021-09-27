@@ -2,100 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B69994191F0
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 12:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB93841921F
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 12:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233773AbhI0KFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 06:05:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56918 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233703AbhI0KFV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Sep 2021 06:05:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C5A560F6C;
-        Mon, 27 Sep 2021 10:03:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632737021;
-        bh=rdXEK8Ftq/XptLnhBL3SXrY8D4WMnjNMPHUHRwbRgVY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lRoH0ZoBzJ+dFVQrfB+JzPVFwMBUuxUbjt9Ws5BWiRAAHSlQIqwV36x2NyaH1uOQr
-         3VS28YFgaFOugTBeM9bR8I2dXzFhuEBi4KbEfVhzh1U0SpTVRCqqGQQ7xvGoC1z6tA
-         fyDq/m8eohx7JtqGN6G5OnHM52e1ecNsQopFexcqFUULQEsQ/+qxOkDISnB5qN2a4y
-         +iH8uBehRs5HnZ2C+dZlwkQcYwr/k3OzLP84PGKqpKxjze1Mr0VyK0DzWOO7q4cGfv
-         XtmuQCDwBQpGnr/gbD9vy+WoOZ10TlZw4HoE1M3Uc6OOQiupHFMVLYSohLCtHJQHmU
-         givK5WhsYGcbQ==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] [RESEND] net: stmmac: fix gcc-10 -Wrestrict warning
-Date:   Mon, 27 Sep 2021 12:02:44 +0200
-Message-Id: <20210927100336.1334028-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        id S233798AbhI0KWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 06:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233757AbhI0KWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 06:22:38 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D1BC061575;
+        Mon, 27 Sep 2021 03:21:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
+        Resent-Message-ID:In-Reply-To:References;
+        bh=HbwYiyPrCUCdCR4r0G9Lbu1ysCwtS8TbwZ3arIhdYmU=; t=1632738061; x=1633947661; 
+        b=nJroi7iH/cQEPDBeyNmmaw46l97MOMDM9ym2RQl9b9hRYNPUBZqevOLaqAJoWY9sM4gFy9qAlRX
+        ilMWVrOWBrejlDtJUMyi/fWb8HSu4Ewd6R3wsKlmOsBqj8/6UjH7AQzjqtWQ1IcPXB7VALG5RKRTI
+        vJ3eyUACWBs2MeQcP7hxGW0BPjqrVtXcuewd7ZnLoYFc25NQa6N82hlxs1sD4w7TuT5MAL8ckdoPv
+        wXO88sAXx58VlEQlRX3+FauSGwJ2fbVOkwnnYG6WmfjuJdKKpg6SRWQCGkb9usSR2dk8rda3pNVFe
+        goDWxDRDF3oMA9KqKu9u+FvC6/spm5hAI8eQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95-RC2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1mUnkp-00CNSS-Je;
+        Mon, 27 Sep 2021 12:20:59 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211 2021-09-27
+Date:   Mon, 27 Sep 2021 12:20:56 +0200
+Message-Id: <20210927102057.45765-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Hi,
 
-gcc-10 and later warn about a theoretical array overrun when
-accessing priv->int_name_rx_irq[i] with an out of bounds value
-of 'i':
+So somehow this time around we ended up with a larger than
+usual set of fixes - see below.
 
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'stmmac_request_irq_multi_msi':
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3528:17: error: 'snprintf' argument 4 may overlap destination object 'dev' [-Werror=restrict]
- 3528 |                 snprintf(int_name, int_name_len, "%s:%s-%d", dev->name, "tx", i);
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3404:60: note: destination object referenced by 'restrict'-qualified argument 1 was declared here
- 3404 | static int stmmac_request_irq_multi_msi(struct net_device *dev)
-      |                                         ~~~~~~~~~~~~~~~~~~~^~~
+Please pull and let me know if there's any problem.
 
-The warning is a bit strange since it's not actually about the array
-bounds but rather about possible string operations with overlapping
-arguments, but it's not technically wrong.
+Thanks,
+johannes
 
-Avoid the warning by adding an extra bounds check.
 
-Fixes: 8532f613bc78 ("net: stmmac: introduce MSI Interrupt routines for mac, safety, RX & TX")
-Link: https://lore.kernel.org/all/20210421134743.3260921-1-arnd@kernel.org/
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 553c4403258a..640c0ffdff3d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3502,6 +3502,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- 
- 	/* Request Rx MSI irq */
- 	for (i = 0; i < priv->plat->rx_queues_to_use; i++) {
-+		if (i > MTL_MAX_RX_QUEUES)
-+			break;
- 		if (priv->rx_irq[i] == 0)
- 			continue;
- 
-@@ -3525,6 +3527,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- 
- 	/* Request Tx MSI irq */
- 	for (i = 0; i < priv->plat->tx_queues_to_use; i++) {
-+		if (i > MTL_MAX_TX_QUEUES)
-+			break;
- 		if (priv->tx_irq[i] == 0)
- 			continue;
- 
--- 
-2.29.2
+The following changes since commit 977d293e23b48a1129830d7968605f61c4af71a0:
+
+  mptcp: ensure tx skbs always have the MPTCP ext (2021-09-22 14:39:41 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2021-09-27
+
+for you to fetch changes up to 33092aca857bf35a8e9cac0e8340c685a4796e90:
+
+  mac80211: Fix Ptk0 rekey documentation (2021-09-27 12:02:54 +0200)
+
+----------------------------------------------------------------
+Some fixes:
+ * potential use-after-free in CCMP/GCMP RX processing
+ * potential use-after-free in TX A-MSDU processing
+ * revert to low data rates for no-ack as the commit
+   broke other things
+ * limit VHT MCS/NSS in radiotap injection
+ * drop frames with invalid addresses in IBSS mode
+ * check rhashtable_init() return value in mesh
+ * fix potentially unaligned access in mesh
+ * fix late beacon hrtimer handling in hwsim (syzbot)
+ * fix documentation for PTK0 rekeying
+
+----------------------------------------------------------------
+Alexander Wetzel (1):
+      mac80211: Fix Ptk0 rekey documentation
+
+Chih-Kang Chang (1):
+      mac80211: Fix ieee80211_amsdu_aggregate frag_tail bug
+
+Felix Fietkau (1):
+      Revert "mac80211: do not use low data rates for data frames with no ack flag"
+
+Johannes Berg (3):
+      mac80211: mesh: fix potentially unaligned access
+      mac80211-hwsim: fix late beacon hrtimer handling
+      mac80211: fix use-after-free in CCMP/GCMP RX
+
+Lorenzo Bianconi (1):
+      mac80211: limit injected vht mcs/nss in ieee80211_parse_tx_radiotap
+
+MichelleJin (1):
+      mac80211: check return value of rhashtable_init
+
+YueHaibing (1):
+      mac80211: Drop frames from invalid MAC address in ad-hoc mode
+
+ drivers/net/wireless/mac80211_hwsim.c |  4 ++--
+ include/net/mac80211.h                |  8 ++++----
+ net/mac80211/mesh_pathtbl.c           |  5 ++++-
+ net/mac80211/mesh_ps.c                |  3 ++-
+ net/mac80211/rate.c                   |  4 ----
+ net/mac80211/rx.c                     |  3 ++-
+ net/mac80211/tx.c                     | 12 ++++++++++++
+ net/mac80211/wpa.c                    |  6 ++++++
+ 8 files changed, 32 insertions(+), 13 deletions(-)
 
