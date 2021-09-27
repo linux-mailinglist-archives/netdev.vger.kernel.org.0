@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2070E4196E1
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 16:59:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEBBD4196E4
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 16:59:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234954AbhI0PBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 11:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36224 "EHLO
+        id S234958AbhI0PBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 11:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234873AbhI0PBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 11:01:24 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB8EC061575;
-        Mon, 27 Sep 2021 07:59:46 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id g2so12013017pfc.6;
-        Mon, 27 Sep 2021 07:59:46 -0700 (PDT)
+        with ESMTP id S234963AbhI0PB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 11:01:29 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DF7C061575;
+        Mon, 27 Sep 2021 07:59:49 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id g184so18058098pgc.6;
+        Mon, 27 Sep 2021 07:59:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=m+RwZlE1TfRdFyzl4vqV8idiKcqZEJlxqqylshlABQA=;
-        b=T1IR7Lwn2tm0XfBHf/ufiY2LZpP/61yuc4ajPqsh+d3tQ1/ck/YFRg3RNwWU09Oi9/
-         pUB7XesTKlLVjaXR3LWetJIyD3gOEbRiq1d9kqJWzqSt/sXYwdrYwDQ4ELJdjTexFbMI
-         AtWyoMA2r++eQF3K/dDARZYmxQ7+NPRdroFPK+laeXxX+4n3+b7tASReLzbBhM0qhfDB
-         dXgUPdWyvLdVuVrOXuGMXrtLcV8RF//J8h9yTG74pDZOc98e09Dt4OkBhZpyTZZT4Y3v
-         QjFVBKhmXfQdPGcDlJgBKxpigr7486Z64+SDJkRRixDhD/nEVZwRGmb9GHlFGxu75Fej
-         ANRw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UNZa4pX6CrOjmwpsRtuxbm3kwFwAQQHvu29MrD4kvsI=;
+        b=q6Rvtkfv1DsxI1EjbszB3fUgGbGKpiX1PdtQFndX6FmG5BVVSVsf2vwWTNiQDYx1Sg
+         u6ywc/sfS74CEx3+3JGogaEjPfkC59dzXJk2q2skE5MMsMT94C8E1e5BaEvPrcdYce1F
+         QYYzxByumv2FTnbVLavSJ3lLgRLT4W1puNFLjXX9fWa8OoeFKfiCAokD2/FLQxsxKCuL
+         WEcYRYqQJshL80h1ROPfM9OdpNqnP3m3IkNvUp1e+wpQlRS4arK6W3sTe9So4gqsPgYt
+         7aVV4SOZy8X9c+qF4LBfTAHwUOtskd4RJgOTwipeUaOcC8z9KCgNHCCFcanFVswosQsN
+         ahWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=m+RwZlE1TfRdFyzl4vqV8idiKcqZEJlxqqylshlABQA=;
-        b=IYi3Ixe8een2dVETJtpHzqKUJ1yhBCKN6Y9XY4cQdYlfrufbnVbRdzJ86DCFOWZ9lB
-         wEk/IpM037Npn6Zo2+4z14aTXv7wq9TsbDYLVWFhhLj6bnTGSkV0+hoow28lobQ2zIOM
-         mrljljNZ5S8sPv60SYNsN53mL5NQUsZjNSlLfZyvA9HYKSud4OtVvF2inSLFME1EIyY9
-         8Rv1Tnmo71ZFCpE5dH7V72k889em4dF3R8Vfba+/60txy5HsNmMOp4+iujQyMvDJEaKf
-         Iqo9c3waAJ4Htwf3pUfXNW+cLBnZH5pFLpi59w1FPrFmH1RssPyPAJQauNv1KuEFvEo8
-         Ctrg==
-X-Gm-Message-State: AOAM530HllSnmNOGIL3E1jM7vHNGuDu537SC5l2hrGutRE9hzPlseqpy
-        nuL1F+2zuZZ9OTp4REVK7agmccEw804=
-X-Google-Smtp-Source: ABdhPJxqdnASnjkHDFLEict0BDes1N6lVx/u099ou6AAslUXAd+O6yXYu0hnGK/GxKoExcEb+D4V0Q==
-X-Received: by 2002:aa7:95a1:0:b0:43d:dbc5:c0af with SMTP id a1-20020aa795a1000000b0043ddbc5c0afmr101630pfk.37.1632754785947;
-        Mon, 27 Sep 2021 07:59:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UNZa4pX6CrOjmwpsRtuxbm3kwFwAQQHvu29MrD4kvsI=;
+        b=R+xU4bDpxq9VpynfBbWxoAGuMoPJ3TXwtbOudtJbRhPcPJRCegEOl5N1Jw9/J72esA
+         E6rbGS0qL6RRfXjZ5M6yrs6+rfGe5Wjq/J/dVuw0wxcBG1dN7IfdG83nPFAEnuHCzwO8
+         796hbYvSYs9WarB15NkxMN34rOb1yXL8KqEFtdT0DHSS0ghVNvL9yFYPDsVdQXFIGihE
+         nX00JmaMotmWUQhcBFMtROiHPI9hbqLEfB5xOy4joQS3C31XN+Vn+vMzBm7Or2ovIx7R
+         xqTmFBr4oEILvSq5xkR2yK973AD17YnZ00zzBBI5leL7IFcUqbLpIqUHXHt6HaXVU3WL
+         iFtw==
+X-Gm-Message-State: AOAM530jGdC7WzJM1MdjiDOlp7tWYalPYC04enZ1y8QUfg4XGOgd69rM
+        QwQJh6h1Q69xy+kjbCKyUH5dP/YKLJI=
+X-Google-Smtp-Source: ABdhPJw8mGuY0fE3v5lTm0LXUCbH5OoEQwWFCCYz546ILKXeMu+8P1wVcrqj7/rbyGqVpGHKwBbqqQ==
+X-Received: by 2002:a63:b552:: with SMTP id u18mr97230pgo.223.1632754789148;
+        Mon, 27 Sep 2021 07:59:49 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id q3sm19318492pgf.18.2021.09.27.07.59.44
+        by smtp.gmail.com with ESMTPSA id v14sm17597522pfi.111.2021.09.27.07.59.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Sep 2021 07:59:45 -0700 (PDT)
+        Mon, 27 Sep 2021 07:59:48 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -58,139 +58,527 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v5 00/12] Support kernel module function calls from eBPF
-Date:   Mon, 27 Sep 2021 20:29:29 +0530
-Message-Id: <20210927145941.1383001-1-memxor@gmail.com>
+Subject: [PATCH bpf-next v5 01/12] bpf: Introduce BPF support for kernel module function calls
+Date:   Mon, 27 Sep 2021 20:29:30 +0530
+Message-Id: <20210927145941.1383001-2-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20210927145941.1383001-1-memxor@gmail.com>
+References: <20210927145941.1383001-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6157; h=from:subject; bh=03Rhe30ZtOxU1FO9morLGivR5y7v62SMP9lWkVuVUII=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhUdxOvyxifdqvGTY29i0FtjWOk/QX+ZTum0Srpsqg UV6jzDKJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYVHcTgAKCRBM4MiGSL8RykaOD/ 98uOmnEDlyDj8Szg6AFZieWCmv85mMqmcODOxN1U0rGLo0oTq0/put3qq4ojMAcnoXL35pPpa4D/f4 qLc+vCwoz4+hu6Hss3+KAKX3BXwLVy3HOBYUPGndJIF0NHH0DenrgZh0oQu/62ePt4QGSe23FfMWZN pEeMQO82nLloEi1VVKCsUa98Gcm6Zh7K/kjRJXIx9ZksPjRRDnNcfm+jfqK9OOy26rixF/F6N2RFts 7xILUC8WZ4hfSh5N1jA8s3upB7oeOLKEV8+Kg8xxK1pBPPpcm0ceaFtfEVr8RChg+2VoLUpXS8L95L Jnfl11J+TxG75/bkQX30sMJwvKnBlp3RtGVfvKykqKum9Nt63nBbVpjn/YiKAA1FYu9e0YEjrkiS53 3wCwbpsrW51qnjRJLuC5Oqzw9CtC0X7gKYv0hKegscoFFeWQJ4NKQxm814JYhHebSD0GRNaA483Yqp MghMPflVUKDXdYHB4bK7cuPPcnJGbe+SGhsk56nUoWEa26HWoDFJ+JlobH9rsqBaxFhrWStsye24kb KOBgCqcRbYuuyCHgL29HcHiDg9uZIXDtQ/TB3fiFJ44Ccm802yU8+2kFfEVdIQgwAV2PdleCCBRdTE 1invCv4pb+Aa+Bv2zFnlX75ylVrTT7z5M7MjOrSHHRZJFcuZi8XsrGBte8vg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=17853; h=from:subject; bh=PIEKGBvUcY+R+dN7C9VMbMtrGuMeXglfuoJ5Uhv1+wU=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhUdxOHr4oo+cc/yw1wDLqLxxlh1amT6SDbc7SjzZx JkJpxNaJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYVHcTgAKCRBM4MiGSL8RykRrEA CWdj7Pc+3ZT5QlmqehsifNX2uVznkP3XzaqhfOJxLHAYSUg5318nF6/VCGHPXOdCWpeshyb5xIS1no 95/CKhGtoProW159ZXqSuLzZbZuR8dLpW86NbEOORW8Q3ti0Kp5uD3NadwC44tJi4EzPQJ1d1xkNfE GgY1+T+gyttf+guR9bGkTDLjp2vTfL4tWv3l/k+e9PsPV+rVObucixjsVA3Fia2xWIy/C2frK+AO8Q HM5cUP+pQcPiMRoc0py83IlLW61q3ojQNrP/aM+VPSBkRHJ7TKlsnEvseNQVMwy9eYVgl1OS2pIEtX KmBq5smuU01BytnWalhBkorbk2ae+Wk+NulBpcEdMHoufVT0ZICT3LsmO0kLloTFn9KijEpf+RxbQO cyg/mIJfW6uljJOektsNH2GAZ0ZtjislMQ3lWNxPXPQKLnwqmGxqFYpzW91/xK/nkHkqTztgiULxiQ pot7GAFuEnZhAZAlDKraSbrDOXTFB53REWX2RRE+/7jVFbVoT4L9teQVi3nRBfM3ukF02VbPEImdhB utEhukoT6SC6J3aX0N7ChM5gTBfOjaOeIWJKslLqvN58pTN5WJfzTZlEqv9dEZ4loJCmy3n70HK2kp OUl8XRaA2WfxaIRtQthKSArgcau/GQHcb1XzvWgkJuEg/AnmwNKmn+AphOVA==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This set enables kernel module function calls, and also modifies verifier logic
-to permit invalid kernel function calls as long as they are pruned as part of
-dead code elimination. This is done to provide better runtime portability for
-BPF objects, which can conditionally disable parts of code that are pruned later
-by the verifier (e.g. const volatile vars, kconfig options). libbpf
-modifications are made along with kernel changes to support module function
-calls. The set includes gen_loader support for emitting kfunc relocations.
+This change adds support on the kernel side to allow for BPF programs to
+call kernel module functions. Userspace will prepare an array of module
+BTF fds that is passed in during BPF_PROG_LOAD using fd_array parameter.
+In the kernel, the module BTFs are placed in the auxilliary struct for
+bpf_prog, and loaded as needed.
 
-It also converts TCP congestion control objects to use the module kfunc support
-instead of relying on IS_BUILTIN ifdef.
+The verifier then uses insn->off to index into the fd_array. insn->off
+0 is reserved for vmlinux BTF (for backwards compat), so userspace must
+use an fd_array index > 0 for module kfunc support. kfunc_btf_tab is
+sorted based on offset in an array, and each offset corresponds to one
+descriptor, with a max limit up to 256 such module BTFs.
 
-Changelog:
-----------
-v4 -> v5
-v4: https://lore.kernel.org/bpf/20210920141526.3940002-1-memxor@gmail.com
+We also change existing kfunc_tab to distinguish each element based on
+imm, off pair as each such call will now be distinct.
 
- * Address comments from Alexei
-   * Use reserved fd_array area in loader map instead of creating a new map
-   * Drop selftest testing the 256 kfunc limit, however selftest testing reuse
-     of BTF fd for same kfunc in gen_loader and libbpf is kept
- * Address comments from Andrii
-   * Make --no-fail the default for resolve_btfids, i.e. only fail if we find
-     BTF section and cannot process it
-   * Use obj->btf_modules array to store index in the fd_array, so that we don't
-     have to do any searching to reuse the index, instead only set it the first
-     time a module BTF's fd is used
-   * Make find_ksym_btf_id to return struct module_btf * in last parameter
-   * Improve logging when index becomes bigger than INT16_MAX
-   * Add btf__find_by_name_kind_own internal helper to only start searching for
-     kfunc ID in module BTF, since find_ksym_btf_id already checks vmlinux BTF
-     before iterating over module BTFs.
-   * Fix various other nits
- * Fixes for failing selftests on BPF CI
- * Rearrange/cleanup selftests
-   * Avoid testing kfunc limit (Alexei)
-   * Do test gen_loader and libbpf BTF fd index dedup with 256 calls
-   * Move invalid kfunc failure test to verifier selftest
-   * Minimize duplication
- * Use consistent bpf_check_<type>_kfunc_call naming for module kfunc callback
- * Since we try to add fd using add_data while we can, cherry pick Alexei's
-   patch from CO-RE RFC series to align gen_loader data.
+Another change is to check_kfunc_call callback, which now include a
+struct module * pointer, this is to be used in later patch such that the
+kfunc_id and module pointer are matched for dynamically registered BTF
+sets from loadable modules, so that same kfunc_id in two modules doesn't
+lead to check_kfunc_call succeeding. For the duration of the
+check_kfunc_call, the reference to struct module exists, as it returns
+the pointer stored in kfunc_btf_tab.
 
-v3 -> v4
-v3: https://lore.kernel.org/bpf/20210915050943.679062-1-memxor@gmail.com
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+---
+ include/linux/bpf.h          |   8 +-
+ include/linux/bpf_verifier.h |   2 +
+ kernel/bpf/core.c            |   4 +
+ kernel/bpf/verifier.c        | 202 ++++++++++++++++++++++++++++++-----
+ net/bpf/test_run.c           |   2 +-
+ net/ipv4/bpf_tcp_ca.c        |   2 +-
+ 6 files changed, 188 insertions(+), 32 deletions(-)
 
- * Address comments from Alexei
-   * Drop MAX_BPF_STACK change, instead move map_fd and BTF fd to BPF array map
-     and pass fd_array using BPF_PSEUDO_MAP_IDX_VALUE
- * Address comments from Andrii
-   * Fix selftest to store to variable for observing function call instead of
-     printk and polluting CI logs
- * Drop use of raw_tp for testing, instead reuse classifier based prog_test_run
- * Drop index + 1 based insn->off convention for kfunc module calls
- * Expand selftests to cover more corner cases
- * Misc cleanups
-
-v2 -> v3
-v2: https://lore.kernel.org/bpf/20210914123750.460750-1-memxor@gmail.com
-
- * Fix issues pointed out by Kernel Test Robot
- * Fix find_kfunc_desc to also take offset into consideration when comparing
-
-RFC v1 -> v2
-v1: https://lore.kernel.org/bpf/20210830173424.1385796-1-memxor@gmail.com
-
- * Address comments from Alexei
-   * Reuse fd_array instead of introducing kfunc_btf_fds array
-   * Take btf and module reference as needed, instead of preloading
-   * Add BTF_KIND_FUNC relocation support to gen_loader infrastructure
- * Address comments from Andrii
-   * Drop hashmap in libbpf for finding index of existing BTF in fd_array
-   * Preserve invalid kfunc calls only when the symbol is weak
- * Adjust verifier selftests
-
-Alexei Starovoitov (1):
-  libbpf: Make gen_loader data aligned.
-
-Kumar Kartikeya Dwivedi (11):
-  bpf: Introduce BPF support for kernel module function calls
-  bpf: Be conservative while processing invalid kfunc calls
-  bpf: btf: Introduce helpers for dynamic BTF set registration
-  tools: Allow specifying base BTF file in resolve_btfids
-  bpf: Enable TCP congestion control kfunc from modules
-  libbpf: Support kernel module function calls
-  libbpf: Resolve invalid weak kfunc calls with imm = 0, off = 0
-  libbpf: Update gen_loader to emit BTF_KIND_FUNC relocations
-  libbpf: Fix skel_internal.h to set errno on loader retval < 0
-  bpf: selftests: Fix fd cleanup in get_branch_snapshot
-  bpf: selftests: Add selftests for module kfunc support
-
- include/linux/bpf.h                           |   8 +-
- include/linux/bpf_verifier.h                  |   2 +
- include/linux/bpfptr.h                        |   1 +
- include/linux/btf.h                           |  37 +++
- kernel/bpf/btf.c                              |  56 ++++
- kernel/bpf/core.c                             |   4 +
- kernel/bpf/verifier.c                         | 220 +++++++++++++--
- net/bpf/test_run.c                            |   7 +-
- net/ipv4/bpf_tcp_ca.c                         |  36 +--
- net/ipv4/tcp_bbr.c                            |  28 +-
- net/ipv4/tcp_cubic.c                          |  26 +-
- net/ipv4/tcp_dctcp.c                          |  26 +-
- scripts/Makefile.modfinal                     |   1 +
- tools/bpf/resolve_btfids/main.c               |  28 +-
- tools/lib/bpf/bpf.c                           |   1 +
- tools/lib/bpf/bpf_gen_internal.h              |  14 +-
- tools/lib/bpf/btf.c                           |  19 +-
- tools/lib/bpf/gen_loader.c                    | 250 +++++++++++++++---
- tools/lib/bpf/libbpf.c                        | 110 +++++---
- tools/lib/bpf/libbpf_internal.h               |   3 +
- tools/lib/bpf/skel_internal.h                 |   6 +-
- tools/testing/selftests/bpf/Makefile          |  10 +-
- .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  23 +-
- .../bpf/prog_tests/get_branch_snapshot.c      |   5 +-
- .../selftests/bpf/prog_tests/ksyms_module.c   |  29 +-
- .../bpf/prog_tests/ksyms_module_libbpf.c      |  28 ++
- .../selftests/bpf/progs/test_ksyms_module.c   |  46 +++-
- tools/testing/selftests/bpf/verifier/calls.c  |  23 ++
- 28 files changed, 860 insertions(+), 187 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module_libbpf.c
-
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index b6c45a6cbbba..81b1b3d0d546 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -511,7 +511,7 @@ struct bpf_verifier_ops {
+ 				 const struct btf_type *t, int off, int size,
+ 				 enum bpf_access_type atype,
+ 				 u32 *next_btf_id);
+-	bool (*check_kfunc_call)(u32 kfunc_btf_id);
++	bool (*check_kfunc_call)(u32 kfunc_btf_id, struct module *owner);
+ };
+ 
+ struct bpf_prog_offload_ops {
+@@ -874,6 +874,7 @@ struct bpf_prog_aux {
+ 	void *jit_data; /* JIT specific data. arch dependent */
+ 	struct bpf_jit_poke_descriptor *poke_tab;
+ 	struct bpf_kfunc_desc_tab *kfunc_tab;
++	struct bpf_kfunc_btf_tab *kfunc_btf_tab;
+ 	u32 size_poke_tab;
+ 	struct bpf_ksym ksym;
+ 	const struct bpf_prog_ops *ops;
+@@ -1636,7 +1637,7 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
+ int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog,
+ 				const union bpf_attr *kattr,
+ 				union bpf_attr __user *uattr);
+-bool bpf_prog_test_check_kfunc_call(u32 kfunc_id);
++bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner);
+ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		    const struct bpf_prog *prog,
+ 		    struct bpf_insn_access_aux *info);
+@@ -1857,7 +1858,8 @@ static inline int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog,
+ 	return -ENOTSUPP;
+ }
+ 
+-static inline bool bpf_prog_test_check_kfunc_call(u32 kfunc_id)
++static inline bool bpf_prog_test_check_kfunc_call(u32 kfunc_id,
++						  struct module *owner)
+ {
+ 	return false;
+ }
+diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+index 5424124dbe36..c8a78e830fca 100644
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -527,5 +527,7 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+ 			    const struct bpf_prog *tgt_prog,
+ 			    u32 btf_id,
+ 			    struct bpf_attach_target_info *tgt_info);
++void bpf_free_kfunc_btf_tab(struct bpf_kfunc_btf_tab *tab);
++
+ 
+ #endif /* _LINUX_BPF_VERIFIER_H */
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 6fddc13fe67f..084df01625cd 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -32,6 +32,7 @@
+ #include <linux/perf_event.h>
+ #include <linux/extable.h>
+ #include <linux/log2.h>
++#include <linux/bpf_verifier.h>
+ 
+ #include <asm/barrier.h>
+ #include <asm/unaligned.h>
+@@ -2255,6 +2256,9 @@ static void bpf_prog_free_deferred(struct work_struct *work)
+ 	int i;
+ 
+ 	aux = container_of(work, struct bpf_prog_aux, work);
++#ifdef CONFIG_BPF_SYSCALL
++	bpf_free_kfunc_btf_tab(aux->kfunc_btf_tab);
++#endif
+ 	bpf_free_used_maps(aux);
+ 	bpf_free_used_btfs(aux);
+ 	if (bpf_prog_is_dev_bound(aux))
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index e76b55917905..5b465d67cf65 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1626,52 +1626,173 @@ static int add_subprog(struct bpf_verifier_env *env, int off)
+ 	return env->subprog_cnt - 1;
+ }
+ 
++#define MAX_KFUNC_DESCS 256
++#define MAX_KFUNC_BTFS	256
++
+ struct bpf_kfunc_desc {
+ 	struct btf_func_model func_model;
+ 	u32 func_id;
+ 	s32 imm;
++	u16 offset;
++};
++
++struct bpf_kfunc_btf {
++	struct btf *btf;
++	struct module *module;
++	u16 offset;
+ };
+ 
+-#define MAX_KFUNC_DESCS 256
+ struct bpf_kfunc_desc_tab {
+ 	struct bpf_kfunc_desc descs[MAX_KFUNC_DESCS];
+ 	u32 nr_descs;
+ };
+ 
+-static int kfunc_desc_cmp_by_id(const void *a, const void *b)
++struct bpf_kfunc_btf_tab {
++	struct bpf_kfunc_btf descs[MAX_KFUNC_BTFS];
++	u32 nr_descs;
++};
++
++static int kfunc_desc_cmp_by_id_off(const void *a, const void *b)
+ {
+ 	const struct bpf_kfunc_desc *d0 = a;
+ 	const struct bpf_kfunc_desc *d1 = b;
+ 
+ 	/* func_id is not greater than BTF_MAX_TYPE */
+-	return d0->func_id - d1->func_id;
++	return d0->func_id - d1->func_id ?: d0->offset - d1->offset;
++}
++
++static int kfunc_btf_cmp_by_off(const void *a, const void *b)
++{
++	const struct bpf_kfunc_btf *d0 = a;
++	const struct bpf_kfunc_btf *d1 = b;
++
++	return d0->offset - d1->offset;
+ }
+ 
+ static const struct bpf_kfunc_desc *
+-find_kfunc_desc(const struct bpf_prog *prog, u32 func_id)
++find_kfunc_desc(const struct bpf_prog *prog, u32 func_id, u16 offset)
+ {
+ 	struct bpf_kfunc_desc desc = {
+ 		.func_id = func_id,
++		.offset = offset,
+ 	};
+ 	struct bpf_kfunc_desc_tab *tab;
+ 
+ 	tab = prog->aux->kfunc_tab;
+ 	return bsearch(&desc, tab->descs, tab->nr_descs,
+-		       sizeof(tab->descs[0]), kfunc_desc_cmp_by_id);
++		       sizeof(tab->descs[0]), kfunc_desc_cmp_by_id_off);
++}
++
++static struct btf *__find_kfunc_desc_btf(struct bpf_verifier_env *env,
++					 s16 offset, struct module **btf_modp)
++{
++	struct bpf_kfunc_btf kf_btf = { .offset = offset };
++	struct bpf_kfunc_btf_tab *tab;
++	struct bpf_kfunc_btf *b;
++	struct module *mod;
++	struct btf *btf;
++	int btf_fd;
++
++	tab = env->prog->aux->kfunc_btf_tab;
++	b = bsearch(&kf_btf, tab->descs, tab->nr_descs,
++		    sizeof(tab->descs[0]), kfunc_btf_cmp_by_off);
++	if (!b) {
++		if (tab->nr_descs == MAX_KFUNC_BTFS) {
++			verbose(env, "too many different module BTFs\n");
++			return ERR_PTR(-E2BIG);
++		}
++
++		if (bpfptr_is_null(env->fd_array)) {
++			verbose(env, "kfunc offset > 0 without fd_array is invalid\n");
++			return ERR_PTR(-EPROTO);
++		}
++
++		if (copy_from_bpfptr_offset(&btf_fd, env->fd_array,
++					    offset * sizeof(btf_fd),
++					    sizeof(btf_fd)))
++			return ERR_PTR(-EFAULT);
++
++		btf = btf_get_by_fd(btf_fd);
++		if (IS_ERR(btf))
++			return btf;
++
++		if (!btf_is_module(btf)) {
++			verbose(env, "BTF fd for kfunc is not a module BTF\n");
++			btf_put(btf);
++			return ERR_PTR(-EINVAL);
++		}
++
++		mod = btf_try_get_module(btf);
++		if (!mod) {
++			btf_put(btf);
++			return ERR_PTR(-ENXIO);
++		}
++
++		b = &tab->descs[tab->nr_descs++];
++		b->btf = btf;
++		b->module = mod;
++		b->offset = offset;
++
++		sort(tab->descs, tab->nr_descs, sizeof(tab->descs[0]),
++		     kfunc_btf_cmp_by_off, NULL);
++	}
++	if (btf_modp)
++		*btf_modp = b->module;
++	return b->btf;
+ }
+ 
+-static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id)
++void bpf_free_kfunc_btf_tab(struct bpf_kfunc_btf_tab *tab)
++{
++	if (!tab)
++		return;
++
++	while (tab->nr_descs--) {
++		module_put(tab->descs[tab->nr_descs].module);
++		btf_put(tab->descs[tab->nr_descs].btf);
++	}
++	kfree(tab);
++}
++
++static struct btf *find_kfunc_desc_btf(struct bpf_verifier_env *env,
++				       u32 func_id, s16 offset,
++				       struct module **btf_modp)
++{
++	struct btf *kfunc_btf;
++
++	if (offset) {
++		if (offset < 0) {
++			/* In the future, this can be allowed to increase limit
++			 * of fd index into fd_array, interpreted as u16.
++			 */
++			verbose(env, "negative offset disallowed for kernel module function call\n");
++			return ERR_PTR(-EINVAL);
++		}
++
++		kfunc_btf = __find_kfunc_desc_btf(env, offset, btf_modp);
++		if (IS_ERR_OR_NULL(kfunc_btf)) {
++			verbose(env, "cannot find module BTF for func_id %u\n", func_id);
++			return kfunc_btf ?: ERR_PTR(-ENOENT);
++		}
++		return kfunc_btf;
++	}
++	return btf_vmlinux ?: ERR_PTR(-ENOENT);
++}
++
++static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id, s16 offset)
+ {
+ 	const struct btf_type *func, *func_proto;
++	struct bpf_kfunc_btf_tab *btf_tab;
+ 	struct bpf_kfunc_desc_tab *tab;
+ 	struct bpf_prog_aux *prog_aux;
+ 	struct bpf_kfunc_desc *desc;
+ 	const char *func_name;
++	struct btf *desc_btf;
+ 	unsigned long addr;
+ 	int err;
+ 
+ 	prog_aux = env->prog->aux;
+ 	tab = prog_aux->kfunc_tab;
++	btf_tab = prog_aux->kfunc_btf_tab;
+ 	if (!tab) {
+ 		if (!btf_vmlinux) {
+ 			verbose(env, "calling kernel function is not supported without CONFIG_DEBUG_INFO_BTF\n");
+@@ -1699,7 +1820,20 @@ static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id)
+ 		prog_aux->kfunc_tab = tab;
+ 	}
+ 
+-	if (find_kfunc_desc(env->prog, func_id))
++	if (!btf_tab && offset) {
++		btf_tab = kzalloc(sizeof(*btf_tab), GFP_KERNEL);
++		if (!btf_tab)
++			return -ENOMEM;
++		prog_aux->kfunc_btf_tab = btf_tab;
++	}
++
++	desc_btf = find_kfunc_desc_btf(env, func_id, offset, NULL);
++	if (IS_ERR(desc_btf)) {
++		verbose(env, "failed to find BTF for kernel function\n");
++		return PTR_ERR(desc_btf);
++	}
++
++	if (find_kfunc_desc(env->prog, func_id, offset))
+ 		return 0;
+ 
+ 	if (tab->nr_descs == MAX_KFUNC_DESCS) {
+@@ -1707,20 +1841,20 @@ static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id)
+ 		return -E2BIG;
+ 	}
+ 
+-	func = btf_type_by_id(btf_vmlinux, func_id);
++	func = btf_type_by_id(desc_btf, func_id);
+ 	if (!func || !btf_type_is_func(func)) {
+ 		verbose(env, "kernel btf_id %u is not a function\n",
+ 			func_id);
+ 		return -EINVAL;
+ 	}
+-	func_proto = btf_type_by_id(btf_vmlinux, func->type);
++	func_proto = btf_type_by_id(desc_btf, func->type);
+ 	if (!func_proto || !btf_type_is_func_proto(func_proto)) {
+ 		verbose(env, "kernel function btf_id %u does not have a valid func_proto\n",
+ 			func_id);
+ 		return -EINVAL;
+ 	}
+ 
+-	func_name = btf_name_by_offset(btf_vmlinux, func->name_off);
++	func_name = btf_name_by_offset(desc_btf, func->name_off);
+ 	addr = kallsyms_lookup_name(func_name);
+ 	if (!addr) {
+ 		verbose(env, "cannot find address for kernel function %s\n",
+@@ -1731,12 +1865,13 @@ static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id)
+ 	desc = &tab->descs[tab->nr_descs++];
+ 	desc->func_id = func_id;
+ 	desc->imm = BPF_CAST_CALL(addr) - __bpf_call_base;
+-	err = btf_distill_func_proto(&env->log, btf_vmlinux,
++	desc->offset = offset;
++	err = btf_distill_func_proto(&env->log, desc_btf,
+ 				     func_proto, func_name,
+ 				     &desc->func_model);
+ 	if (!err)
+ 		sort(tab->descs, tab->nr_descs, sizeof(tab->descs[0]),
+-		     kfunc_desc_cmp_by_id, NULL);
++		     kfunc_desc_cmp_by_id_off, NULL);
+ 	return err;
+ }
+ 
+@@ -1815,7 +1950,7 @@ static int add_subprog_and_kfunc(struct bpf_verifier_env *env)
+ 		} else if (bpf_pseudo_call(insn)) {
+ 			ret = add_subprog(env, i + insn->imm + 1);
+ 		} else {
+-			ret = add_kfunc_call(env, insn->imm);
++			ret = add_kfunc_call(env, insn->imm, insn->off);
+ 		}
+ 
+ 		if (ret < 0)
+@@ -2152,12 +2287,17 @@ static int get_prev_insn_idx(struct bpf_verifier_state *st, int i,
+ static const char *disasm_kfunc_name(void *data, const struct bpf_insn *insn)
+ {
+ 	const struct btf_type *func;
++	struct btf *desc_btf;
+ 
+ 	if (insn->src_reg != BPF_PSEUDO_KFUNC_CALL)
+ 		return NULL;
+ 
+-	func = btf_type_by_id(btf_vmlinux, insn->imm);
+-	return btf_name_by_offset(btf_vmlinux, func->name_off);
++	desc_btf = find_kfunc_desc_btf(data, insn->imm, insn->off, NULL);
++	if (IS_ERR(desc_btf))
++		return "<error>";
++
++	func = btf_type_by_id(desc_btf, insn->imm);
++	return btf_name_by_offset(desc_btf, func->name_off);
+ }
+ 
+ /* For given verifier state backtrack_insn() is called from the last insn to
+@@ -6485,23 +6625,29 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 	struct bpf_reg_state *regs = cur_regs(env);
+ 	const char *func_name, *ptr_type_name;
+ 	u32 i, nargs, func_id, ptr_type_id;
++	struct module *btf_mod = NULL;
+ 	const struct btf_param *args;
++	struct btf *desc_btf;
+ 	int err;
+ 
++	desc_btf = find_kfunc_desc_btf(env, insn->imm, insn->off, &btf_mod);
++	if (IS_ERR(desc_btf))
++		return PTR_ERR(desc_btf);
++
+ 	func_id = insn->imm;
+-	func = btf_type_by_id(btf_vmlinux, func_id);
+-	func_name = btf_name_by_offset(btf_vmlinux, func->name_off);
+-	func_proto = btf_type_by_id(btf_vmlinux, func->type);
++	func = btf_type_by_id(desc_btf, func_id);
++	func_name = btf_name_by_offset(desc_btf, func->name_off);
++	func_proto = btf_type_by_id(desc_btf, func->type);
+ 
+ 	if (!env->ops->check_kfunc_call ||
+-	    !env->ops->check_kfunc_call(func_id)) {
++	    !env->ops->check_kfunc_call(func_id, btf_mod)) {
+ 		verbose(env, "calling kernel function %s is not allowed\n",
+ 			func_name);
+ 		return -EACCES;
+ 	}
+ 
+ 	/* Check the arguments */
+-	err = btf_check_kfunc_arg_match(env, btf_vmlinux, func_id, regs);
++	err = btf_check_kfunc_arg_match(env, desc_btf, func_id, regs);
+ 	if (err)
+ 		return err;
+ 
+@@ -6509,15 +6655,15 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 		mark_reg_not_init(env, regs, caller_saved[i]);
+ 
+ 	/* Check return type */
+-	t = btf_type_skip_modifiers(btf_vmlinux, func_proto->type, NULL);
++	t = btf_type_skip_modifiers(desc_btf, func_proto->type, NULL);
+ 	if (btf_type_is_scalar(t)) {
+ 		mark_reg_unknown(env, regs, BPF_REG_0);
+ 		mark_btf_func_reg_size(env, BPF_REG_0, t->size);
+ 	} else if (btf_type_is_ptr(t)) {
+-		ptr_type = btf_type_skip_modifiers(btf_vmlinux, t->type,
++		ptr_type = btf_type_skip_modifiers(desc_btf, t->type,
+ 						   &ptr_type_id);
+ 		if (!btf_type_is_struct(ptr_type)) {
+-			ptr_type_name = btf_name_by_offset(btf_vmlinux,
++			ptr_type_name = btf_name_by_offset(desc_btf,
+ 							   ptr_type->name_off);
+ 			verbose(env, "kernel function %s returns pointer type %s %s is not supported\n",
+ 				func_name, btf_type_str(ptr_type),
+@@ -6525,7 +6671,7 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 			return -EINVAL;
+ 		}
+ 		mark_reg_known_zero(env, regs, BPF_REG_0);
+-		regs[BPF_REG_0].btf = btf_vmlinux;
++		regs[BPF_REG_0].btf = desc_btf;
+ 		regs[BPF_REG_0].type = PTR_TO_BTF_ID;
+ 		regs[BPF_REG_0].btf_id = ptr_type_id;
+ 		mark_btf_func_reg_size(env, BPF_REG_0, sizeof(void *));
+@@ -6536,7 +6682,7 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 	for (i = 0; i < nargs; i++) {
+ 		u32 regno = i + 1;
+ 
+-		t = btf_type_skip_modifiers(btf_vmlinux, args[i].type, NULL);
++		t = btf_type_skip_modifiers(desc_btf, args[i].type, NULL);
+ 		if (btf_type_is_ptr(t))
+ 			mark_btf_func_reg_size(env, regno, sizeof(void *));
+ 		else
+@@ -11076,7 +11222,8 @@ static int do_check(struct bpf_verifier_env *env)
+ 			env->jmps_processed++;
+ 			if (opcode == BPF_CALL) {
+ 				if (BPF_SRC(insn->code) != BPF_K ||
+-				    insn->off != 0 ||
++				    (insn->src_reg != BPF_PSEUDO_KFUNC_CALL
++				     && insn->off != 0) ||
+ 				    (insn->src_reg != BPF_REG_0 &&
+ 				     insn->src_reg != BPF_PSEUDO_CALL &&
+ 				     insn->src_reg != BPF_PSEUDO_KFUNC_CALL) ||
+@@ -12432,6 +12579,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+ 		func[i]->aux->stack_depth = env->subprog_info[i].stack_depth;
+ 		func[i]->jit_requested = 1;
+ 		func[i]->aux->kfunc_tab = prog->aux->kfunc_tab;
++		func[i]->aux->kfunc_btf_tab = prog->aux->kfunc_btf_tab;
+ 		func[i]->aux->linfo = prog->aux->linfo;
+ 		func[i]->aux->nr_linfo = prog->aux->nr_linfo;
+ 		func[i]->aux->jited_linfo = prog->aux->jited_linfo;
+@@ -12621,7 +12769,7 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env,
+ 	/* insn->imm has the btf func_id. Replace it with
+ 	 * an address (relative to __bpf_base_call).
+ 	 */
+-	desc = find_kfunc_desc(env->prog, insn->imm);
++	desc = find_kfunc_desc(env->prog, insn->imm, insn->off);
+ 	if (!desc) {
+ 		verbose(env, "verifier internal error: kernel function descriptor not found for func_id %u\n",
+ 			insn->imm);
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index fcb2f493f710..fe5c34f414a2 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -241,7 +241,7 @@ BTF_ID(func, bpf_kfunc_call_test2)
+ BTF_ID(func, bpf_kfunc_call_test3)
+ BTF_SET_END(test_sk_kfunc_ids)
+ 
+-bool bpf_prog_test_check_kfunc_call(u32 kfunc_id)
++bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner)
+ {
+ 	return btf_id_set_contains(&test_sk_kfunc_ids, kfunc_id);
+ }
+diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
+index 0dcee9df1326..b3afd3361f34 100644
+--- a/net/ipv4/bpf_tcp_ca.c
++++ b/net/ipv4/bpf_tcp_ca.c
+@@ -255,7 +255,7 @@ BTF_ID(func, bbr_set_state)
+ #endif	/* CONFIG_X86 */
+ BTF_SET_END(bpf_tcp_ca_kfunc_ids)
+ 
+-static bool bpf_tcp_ca_check_kfunc_call(u32 kfunc_btf_id)
++static bool bpf_tcp_ca_check_kfunc_call(u32 kfunc_btf_id, struct module *owner)
+ {
+ 	return btf_id_set_contains(&bpf_tcp_ca_kfunc_ids, kfunc_btf_id);
+ }
 -- 
 2.33.0
 
