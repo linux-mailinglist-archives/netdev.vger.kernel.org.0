@@ -2,107 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E0941A2F7
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 00:30:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13C1741A2F6
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 00:30:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237787AbhI0Wbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 18:31:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60729 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237501AbhI0Wbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 18:31:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632781811;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=eCL0AZojEkxKxjkt+7Wlncn1gJOK+2tgTrPIC34EBbc=;
-        b=F7NLL47YIt4QFYMyfG9mA6LIRK8MDfmkWNDV/4Hrm88+O2xvbbS8et8Wem34J7WJk+HRwT
-        cUKqhczRQ4e8E2HllC40rphSb0Dqg3gXav8jG0PY3mvz39yKln+VQVrce8HHrpXTRCCH8a
-        1+e50a3vBAGFVgrAqSqtpXvzS4VcUQY=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-519-CprA7ANGM2G3ioPP_ElAEQ-1; Mon, 27 Sep 2021 18:30:10 -0400
-X-MC-Unique: CprA7ANGM2G3ioPP_ElAEQ-1
-Received: by mail-wm1-f72.google.com with SMTP id v21-20020a05600c215500b002fa7eb53754so480328wml.4
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 15:30:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=eCL0AZojEkxKxjkt+7Wlncn1gJOK+2tgTrPIC34EBbc=;
-        b=3PZgecS6QRgLq8uGtS4ELMDzVpSSlcScQphJZ/Zw8mcTmbT1tVkJb+Y9uMsauAx2Xa
-         3rrRSYtfi3RHh4qj7g+QZIi9lYMffJGRdz4A0Fp3/CvNPNoReqtFVCOgp7tvQ7oO4g/B
-         Kdch5zPJ7MTbcsVd/tV76cBAATr4rn754KJmk2mZ2bcuyJmGM8pWC2v+De0q3ubjR0ra
-         oJ5Ye/BYslgh7Lryxje10JABW5EwAY6z4WhAgrPPNyqhIBUD3VopYkmJKu6icXoTWKjL
-         H/x5/M2PwGre0HwtRwVI7ThkwwltWaUIO3w2JzDKX/hKZmnEYwwUAma84E2gN5z9OH2e
-         TGwQ==
-X-Gm-Message-State: AOAM530P5KtKGs1SlJ0Z6l/hBf7rRYcjoWldDnQeT62fwISyjeW+quVN
-        Hoc2wqY5PagzNS1EX/gRl/BRqg65zvYdxZgzOvQhM5mf4vIyGAuvmnJRGO9rAlCIxgmj/2Fj236
-        khbzpZqblg8DR493U
-X-Received: by 2002:a05:6000:d2:: with SMTP id q18mr2722615wrx.4.1632781809010;
-        Mon, 27 Sep 2021 15:30:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzrsPsib+hEYb8pFtjMLnI7CifdC97NAniAu5m3nBLmbR4U5TSkin30Vu44yOu2ox2ibxz4Yg==
-X-Received: by 2002:a05:6000:d2:: with SMTP id q18mr2722587wrx.4.1632781808842;
-        Mon, 27 Sep 2021 15:30:08 -0700 (PDT)
-Received: from redhat.com ([2.55.4.59])
-        by smtp.gmail.com with ESMTPSA id w18sm2490799wrt.79.2021.09.27.15.30.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Sep 2021 15:30:08 -0700 (PDT)
-Date:   Mon, 27 Sep 2021 18:30:03 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        aik@ozlabs.ru, arnd@arndb.de, dan.carpenter@oracle.com,
-        elic@nvidia.com, jasowang@redhat.com, linux@roeck-us.net,
-        mst@redhat.com, viresh.kumar@linaro.org, xieyongji@bytedance.com
-Subject: [GIT PULL] virtio,vdpa: fixes
-Message-ID: <20210927183003-mutt-send-email-mst@kernel.org>
+        id S237511AbhI0Wbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 18:31:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51404 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237501AbhI0Wbs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 18:31:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6849561058;
+        Mon, 27 Sep 2021 22:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632781810;
+        bh=P1ibG5tEs61yDknQ9hW4DIyNuABBlL7OHPnfYY6lmqY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FkFL60krfglcFoiuxORk1bkxP6rE3No81b9eN2yxE2mrBJ9MX0odzM0sTepwt6tCP
+         2h6LCx8U7ycZU9PEBbzQb1GrVr3IWCZxiL0zup76JKB/0RT0zCABIQbT+5D9LZYP3f
+         R+6BGcavfKsO90e8zTTumo35GF4NYmtDZLU7WdbflNi6Hj8YVVHIWhF7n4H+w32iCX
+         sz2aelexxfsoPoNZNHEaRpbmuAKc7G445Sdvp916e2a/wT6xc3BFDQ2fP55bXtLL+q
+         rqpKI4CScikfGUN3n7xIWdlMgnmk9wqQ3uUhva1MtJVL1ACNXQjqPulpJmteUgF6UI
+         K5TPQEQfhPphg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5BEB460A59;
+        Mon, 27 Sep 2021 22:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next 00/13] xsk: i40e: ice: introduce batching for Rx
+ buffer allocation
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163278181036.23478.12354330232651957432.git-patchwork-notify@kernel.org>
+Date:   Mon, 27 Sep 2021 22:30:10 +0000
+References: <20210922075613.12186-1-magnus.karlsson@gmail.com>
+In-Reply-To: <20210922075613.12186-1-magnus.karlsson@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, ciara.loftus@intel.com,
+        jonathan.lemon@gmail.com, bpf@vger.kernel.org,
+        anthony.l.nguyen@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 6880fa6c56601bb8ed59df6c30fd390cc5f6dd8f:
+Hello:
 
-  Linux 5.15-rc1 (2021-09-12 16:28:37 -0700)
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-are available in the Git repository at:
+On Wed, 22 Sep 2021 09:56:00 +0200 you wrote:
+> This patch set introduces a batched interface for Rx buffer allocation
+> in AF_XDP buffer pool. Instead of using xsk_buff_alloc(*pool), drivers
+> can now use xsk_buff_alloc_batch(*pool, **xdp_buff_array,
+> max). Instead of returning a pointer to an xdp_buff, it returns the
+> number of xdp_buffs it managed to allocate up to the maximum value of
+> the max parameter in the function call. Pointers to the allocated
+> xdp_buff:s are put in the xdp_buff_array supplied in the call. This
+> could be a SW ring that already exists in the driver or a new
+> structure that the driver has allocated.
+> 
+> [...]
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+Here is the summary with links:
+  - [bpf-next,01/13] xsk: get rid of unused entry in struct xdp_buff_xsk
+    https://git.kernel.org/bpf/bpf-next/c/10a5e009b93a
+  - [bpf-next,02/13] xsk: batched buffer allocation for the pool
+    https://git.kernel.org/bpf/bpf-next/c/47e4075df300
+  - [bpf-next,03/13] ice: use xdp_buf instead of rx_buf for xsk zero-copy
+    https://git.kernel.org/bpf/bpf-next/c/57f7f8b6bc0b
+  - [bpf-next,04/13] ice: use the xsk batched rx allocation interface
+    https://git.kernel.org/bpf/bpf-next/c/db804cfc21e9
+  - [bpf-next,05/13] i40e: use the xsk batched rx allocation interface
+    https://git.kernel.org/bpf/bpf-next/c/6aab0bb0c5cd
+  - [bpf-next,06/13] xsk: optimize for aligned case
+    https://git.kernel.org/bpf/bpf-next/c/94033cd8e73b
+  - [bpf-next,07/13] selftests: xsk: fix missing initialization
+    https://git.kernel.org/bpf/bpf-next/c/5b132056123d
+  - [bpf-next,08/13] selftests: xsk: put the same buffer only once in the fill ring
+    https://git.kernel.org/bpf/bpf-next/c/872a1184dbf2
+  - [bpf-next,09/13] selftests: xsk: fix socket creation retry
+    https://git.kernel.org/bpf/bpf-next/c/89013b8a2928
+  - [bpf-next,10/13] selftests: xsk: introduce pacing of traffic
+    https://git.kernel.org/bpf/bpf-next/c/1bf3649688c1
+  - [bpf-next,11/13] selftests: xsk: add single packet test
+    https://git.kernel.org/bpf/bpf-next/c/96a40678ce53
+  - [bpf-next,12/13] selftests: xsk: change interleaving of packets in unaligned mode
+    https://git.kernel.org/bpf/bpf-next/c/e4e9baf06a6e
+  - [bpf-next,13/13] selftests: xsk: add frame_headroom test
+    https://git.kernel.org/bpf/bpf-next/c/e34087fc00f4
 
-for you to fetch changes up to be9c6bad9b46451ba5bb8d366c51e2475f374981:
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-  vdpa: potential uninitialized return in vhost_vdpa_va_map() (2021-09-14 18:10:43 -0400)
-
-----------------------------------------------------------------
-virtio,vdpa: fixes
-
-Fixes up some issues in rc1.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Dan Carpenter (2):
-      vduse: missing error code in vduse_init()
-      vdpa: potential uninitialized return in vhost_vdpa_va_map()
-
-Eli Cohen (2):
-      vdpa/mlx5: Clear ready indication for control VQ
-      vdpa/mlx5: Avoid executing set_vq_ready() if device is reset
-
-Michael S. Tsirkin (1):
-      virtio: don't fail on !of_device_is_compatible
-
-Xie Yongji (1):
-      vduse: Cleanup the old kernel states after reset failure
-
- drivers/vdpa/mlx5/net/mlx5_vnet.c  |  5 +++++
- drivers/vdpa/vdpa_user/vduse_dev.c | 10 +++++-----
- drivers/vhost/vdpa.c               |  2 +-
- drivers/virtio/virtio.c            |  7 ++++++-
- 4 files changed, 17 insertions(+), 7 deletions(-)
 
