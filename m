@@ -2,118 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59BC941950D
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 15:26:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7199641952A
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 15:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234425AbhI0N2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 09:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234058AbhI0N2L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 09:28:11 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE0BC061575;
-        Mon, 27 Sep 2021 06:26:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=D69+WMYjsBza4pCHXiDUwD0y0AQnmhzf6CDyMOe/EuU=; b=ikyBuHzwSU4yHkTXEHatgY0pCC
-        D5KLVQhHXayUMSj5wV+7RwDYy1+H5DALN1ZCI5xMUjd0wMfjEapDwmXWXNlLv3RKP1XojtQtcQ3Xb
-        CxOPoSKq7GFCdK3iuMsGzCpSgtg+qj8g2sQxGwH9OyQMyWnzRy0QDNNK+2rSiNmuI3cgkK//mdEls
-        Y32ZTSJkShqGTQUtOAOjhQEpPLLwbywE0ql9Jwty2ID5sHS+HUYiEgUiCo3LmVOc/rUqwwb+W4o20
-        8NSNIaD/vLJIIKFkdfyL+nLmdEE0yoTnqEk7tq+GZodm/0E5lK2A42yqn8rYodDNfZ6dohUj9KK4T
-        1jBUGbQg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54812)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mUqe4-0008RG-2Z; Mon, 27 Sep 2021 14:26:12 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mUqdy-0000mU-U4; Mon, 27 Sep 2021 14:26:06 +0100
-Date:   Mon, 27 Sep 2021 14:26:06 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        id S234603AbhI0NgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 09:36:25 -0400
+Received: from www62.your-server.de ([213.133.104.62]:47212 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234500AbhI0NgY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 09:36:24 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mUqmH-0004tz-Hv; Mon, 27 Sep 2021 15:34:41 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mUqmH-0001qc-9p; Mon, 27 Sep 2021 15:34:41 +0200
+Subject: Re: [PATCH bpf-next 4/4] bpf: export bpf_jit_current
+To:     Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [RESEND] net: stmmac: fix gcc-10 -Wrestrict warning
-Message-ID: <YVHGblt9rYg7kbWR@shell.armlinux.org.uk>
-References: <20210927100336.1334028-1-arnd@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     kernel-team@cloudflare.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210924095542.33697-1-lmb@cloudflare.com>
+ <20210924095542.33697-5-lmb@cloudflare.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <a076398b-f1da-c939-3c71-ac157ad96939@iogearbox.net>
+Date:   Mon, 27 Sep 2021 15:34:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210927100336.1334028-1-arnd@kernel.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20210924095542.33697-5-lmb@cloudflare.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26305/Mon Sep 27 11:04:42 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 27, 2021 at 12:02:44PM +0200, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On 9/24/21 11:55 AM, Lorenz Bauer wrote:
+> Expose bpf_jit_current as a read only value via sysctl.
 > 
-> gcc-10 and later warn about a theoretical array overrun when
-> accessing priv->int_name_rx_irq[i] with an out of bounds value
-> of 'i':
-> 
-> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'stmmac_request_irq_multi_msi':
-> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3528:17: error: 'snprintf' argument 4 may overlap destination object 'dev' [-Werror=restrict]
->  3528 |                 snprintf(int_name, int_name_len, "%s:%s-%d", dev->name, "tx", i);
->       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3404:60: note: destination object referenced by 'restrict'-qualified argument 1 was declared here
->  3404 | static int stmmac_request_irq_multi_msi(struct net_device *dev)
->       |                                         ~~~~~~~~~~~~~~~~~~~^~~
-> 
-> The warning is a bit strange since it's not actually about the array
-> bounds but rather about possible string operations with overlapping
-> arguments, but it's not technically wrong.
-> 
-> Avoid the warning by adding an extra bounds check.
-> 
-> Fixes: 8532f613bc78 ("net: stmmac: introduce MSI Interrupt routines for mac, safety, RX & TX")
-> Link: https://lore.kernel.org/all/20210421134743.3260921-1-arnd@kernel.org/
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 > ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>   include/linux/filter.h     | 1 +
+>   kernel/bpf/core.c          | 3 +--
+>   net/core/sysctl_net_core.c | 7 +++++++
+>   3 files changed, 9 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 553c4403258a..640c0ffdff3d 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -3502,6 +3502,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
->  
->  	/* Request Rx MSI irq */
->  	for (i = 0; i < priv->plat->rx_queues_to_use; i++) {
-> +		if (i > MTL_MAX_RX_QUEUES)
-> +			break;
->  		if (priv->rx_irq[i] == 0)
->  			continue;
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index ef03ff34234d..b2143ad5ce00 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -1052,6 +1052,7 @@ extern int bpf_jit_harden;
+>   extern int bpf_jit_kallsyms;
+>   extern long bpf_jit_limit;
+>   extern long bpf_jit_limit_max;
+> +extern atomic_long_t bpf_jit_current;
+>   
+>   typedef void (*bpf_jit_fill_hole_t)(void *area, unsigned int size);
+>   
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index e844a2a4c99a..93f95e9ee8be 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -525,6 +525,7 @@ int bpf_jit_kallsyms __read_mostly = IS_BUILTIN(CONFIG_BPF_JIT_DEFAULT_ON);
+>   int bpf_jit_harden   __read_mostly;
+>   long bpf_jit_limit   __read_mostly;
+>   long bpf_jit_limit_max __read_mostly;
+> +atomic_long_t bpf_jit_current __read_mostly;
+>   
+>   static void
+>   bpf_prog_ksym_set_addr(struct bpf_prog *prog)
+> @@ -800,8 +801,6 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
+>   	return slot;
+>   }
+>   
+> -static atomic_long_t bpf_jit_current;
+> -
+>   /* Can be overridden by an arch's JIT compiler if it has a custom,
+>    * dedicated BPF backend memory area, or if neither of the two
+>    * below apply.
+> diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+> index 5f88526ad61c..674aac163b84 100644
+> --- a/net/core/sysctl_net_core.c
+> +++ b/net/core/sysctl_net_core.c
+> @@ -421,6 +421,13 @@ static struct ctl_table net_core_table[] = {
+>   		.extra1		= &long_one,
+>   		.extra2		= &bpf_jit_limit_max,
+>   	},
+> +	{
+> +		.procname	= "bpf_jit_current",
+> +		.data		= &bpf_jit_current,
+> +		.maxlen		= sizeof(long),
+> +		.mode		= 0400,
+> +		.proc_handler	= proc_dolongvec_minmax_bpf_restricted,
 
-This looks rather weird. rx_irq[] is defined as:
+Overall series looks good to me. The only nit I would have is that the above could (in theory)
+be subject to atomic_long_t vs long type confusion. I would rather prefer to have a small handler
+which properly reads out the atomic_long_t and then passes it onwards as a temporary/plain long
+to user space.
 
-        int rx_irq[MTL_MAX_RX_QUEUES];
+Thanks,
+Daniel
 
-If "i" were to become MTL_MAX_RX_QUEUES, then the above code overlows
-the array.
+> +	},
+>   #endif
+>   	{
+>   		.procname	= "netdev_tstamp_prequeue",
+> 
 
-So while this may stop gcc-10 complaining, I'd argue that making the
-new test ">=" rather than ">" would have also made it look correct.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
