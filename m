@@ -2,71 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC564194D9
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 15:10:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CA334194ED
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 15:17:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234570AbhI0NLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 09:11:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50226 "EHLO mail.kernel.org"
+        id S234569AbhI0NTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 09:19:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53938 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231506AbhI0NLp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Sep 2021 09:11:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 134276103B;
-        Mon, 27 Sep 2021 13:10:07 +0000 (UTC)
+        id S234421AbhI0NTN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 09:19:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 350CE60FED;
+        Mon, 27 Sep 2021 13:17:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632748207;
-        bh=oPJELZZlIkktUvT3mKf6uyN+sQK9W7flk5QCU8eLGk8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=diHMh6d9hVs2lSbgeHAWUtqQ4UJIhRgPw5Aug/I+uSlauhQ8gDrCJRszwm3l00hYg
-         tgpiZheT0ZeL+b5VZDlJvEegou/X0p5WE5dPH3OQ1u+VVWEgxWMavt9YKroBL7l5O4
-         KxEAKKB9d8uDTvmQQahnqqIfernX1vjIHfsazlRpj9ie/sBziOcUDkZNIq+LC0qHkC
-         ItENoEIET4Ho5zQaDrv65pZ0rnMokGHEtNyqfM0S4BZEYWbk2EbHWynhCpEcdHBA2y
-         wGlYOzLKtfkeSywCvLuoWfvLsniiWgm67WLgUlD8yuhoD3qRQA6hHtIQvX2DGA8pMG
-         GBUjKsFlCbmHQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 02E3B60A59;
-        Mon, 27 Sep 2021 13:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1632748655;
+        bh=42QBDntERyc+aM/df+V25KL01A6wcdArOVewCg/bvEI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZMT4sHluyoDMXrByXz8jEqUKG17f655yYSujAhmrAfe/ohZ+EHa4vZst23ImLwYo8
+         GGqvR8GVDb2G28tEx1/b+h10WqaEsONV4nj4p9ZcNwD492uFE6vP6tgDajlr1XngWc
+         O1eICLm0hWAtaDDqiW9VXwLVeLOItBaWUZ5/+9BHI/o91i+MA3gv+RuD8gLPVh7tqi
+         JJ7lMbJduHH3blDAvs00GtXpFIIps8skGinxVpSbNj/eGJIjI0WL1IAOiqRpief4jG
+         QQHuQd4sM3WhRQyk+prGv2e2belJYTJ60rNHoGgY+rcWk+YHQjtbsKzdDmqwENNRVb
+         AoXKwGlZ54DVg==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] igc: fix PTP dependency
+Date:   Mon, 27 Sep 2021 15:17:19 +0200
+Message-Id: <20210927131730.1587671-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] cxgb: avoid open-coded offsetof()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163274820700.19532.2923722207844060183.git-patchwork-notify@kernel.org>
-Date:   Mon, 27 Sep 2021 13:10:07 +0000
-References: <20210927121611.940046-1-arnd@kernel.org>
-In-Reply-To: <20210927121611.940046-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, arnd@arndb.de,
-        nathan@kernel.org, ndesaulniers@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Arnd Bergmann <arnd@arndb.de>
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+The igc driver was accidentally left out of the Kconfig rework for PTP,
+it needs the same dependency as the others:
 
-On Mon, 27 Sep 2021 14:16:04 +0200 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> clang-14 does not like the custom offsetof() macro in vsc7326:
-> 
-> drivers/net/ethernet/chelsio/cxgb/vsc7326.c:597:3: error: performing pointer subtraction with a null pointer has undefined behavior [-Werror,-Wnull-pointer-subtraction]
->                 HW_STAT(RxUnicast, RxUnicastFramesOK),
->                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/chelsio/cxgb/vsc7326.c:594:56: note: expanded from macro 'HW_STAT'
->         { reg, (&((struct cmac_statistics *)NULL)->stat_name) - (u64 *)NULL }
-> 
-> [...]
+arm-linux-gnueabi-ld: drivers/net/ethernet/intel/igc/igc_main.o: in function `igc_tsync_interrupt':
+igc_main.c:(.text+0x1b288): undefined reference to `ptp_clock_event'
+arm-linux-gnueabi-ld: igc_main.c:(.text+0x1b308): undefined reference to `ptp_clock_event'
+arm-linux-gnueabi-ld: igc_main.c:(.text+0x1b8cc): undefined reference to `ptp_clock_event'
+arm-linux-gnueabi-ld: drivers/net/ethernet/intel/igc/igc_ethtool.o: in function `igc_ethtool_get_ts_info':
 
-Here is the summary with links:
-  - cxgb: avoid open-coded offsetof()
-    https://git.kernel.org/netdev/net-next/c/ef5d6356e2ac
+Fixes: e5f31552674e ("ethernet: fix PTP_1588_CLOCK dependencies")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/ethernet/intel/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
+index b0b6f90deb7d..ed8ea63bb172 100644
+--- a/drivers/net/ethernet/intel/Kconfig
++++ b/drivers/net/ethernet/intel/Kconfig
+@@ -335,6 +335,7 @@ config IGC
+ 	tristate "Intel(R) Ethernet Controller I225-LM/I225-V support"
+ 	default n
+ 	depends on PCI
++	depends on PTP_1588_CLOCK_OPTIONAL
+ 	help
+ 	  This driver supports Intel(R) Ethernet Controller I225-LM/I225-V
+ 	  family of adapters.
+-- 
+2.29.2
 
