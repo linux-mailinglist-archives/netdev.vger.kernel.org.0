@@ -2,147 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70461419F29
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 21:29:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0F67419F3D
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 21:34:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236494AbhI0Taw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 15:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
+        id S236583AbhI0TgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 15:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236534AbhI0Tav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 15:30:51 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A255DC061575;
-        Mon, 27 Sep 2021 12:29:13 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id s18so11880442ybc.0;
-        Mon, 27 Sep 2021 12:29:13 -0700 (PDT)
+        with ESMTP id S236537AbhI0TgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 15:36:15 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70247C061604
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 12:34:37 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id w19so27011694oik.10
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 12:34:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4msJ1HHIBlUcoGgpNIkATRMbk+sBV85v1+nbCjy8JvU=;
-        b=Pdouc4j1vhNSSTfsaB1K7eTGbCtK4b3bn3/3rX3l6QkxKcEhcvW2lAWJ7fJlVc4dqT
-         7aMd/RHNlusCgCvr9ld9pIkjm0nNH+0DtTKoqq53aWet0mP/fx1TWmVjiuqXC2ISubpF
-         Z1NZRFhMsdRwS4yRR0/7sUqSZkiyV230WKB5BPmqsh/Vn1Q+bgCmGRKn6dj47xrUMK17
-         WGXVK5ozVgSZ/FKnGcWjgHawG/TbgD0BBAQVvoxg+yC9B6Lf0TEZFkFIUaf25to3eyOv
-         1+VIhKEGGMB+mVgoW8qcCjhIQ9zCkZnLYyugAG9M+dCvjRxs8MaCbdMTqUstNjijBBOi
-         OeRQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pdma3bMI5gliI9oqeEnm97FccftqJE98K0Dh887pnNQ=;
+        b=WVPFDQNK770vz+ck/y4hEWZ+49oN8ujdogKHg7gvnwprkeS3T1uJ+Ocgo2lFq+oPDX
+         i2m9fo8GJ/K+KmilUq/8i4m38zHDrcuh09qGqKvDiYOfXfjnYwitKW51ke/1FpmYO/eK
+         OSsEMx0fvjU1dPggkzmlQz+rfQg2M98FXeJoHCLRacKt48B/OnBmAqhHmuxYk12+3vqd
+         7yDFWM0bUIgzyqoYDrJMOHdINfWegOJhfrKzDi4RdXNgaUGPD+i7eLPeqsRuSfDW0DKO
+         UK2YGLVWGzpYAgypXBNzmmxOuVyy76ENPpybBGUGoyd4fISEMT7p/eYH6nIyTVq+Iq6G
+         sLtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4msJ1HHIBlUcoGgpNIkATRMbk+sBV85v1+nbCjy8JvU=;
-        b=TV0odwaG0L2alEBZVY+727XPfwaR6mttJhBbissehsGyLSvQyqNMsLZneBRwMH7MZI
-         PjjhetBvrtHvDbQlf7H7ZyHmtt+XymFBCz1YLoqMx1mYDxB8LN4AW3jLyttm8idmmViD
-         VGbixsGM04SR024HfEVFiefeOU/+lgJdARTs4bUKR5pvFhgR0O6kmDIMAfUAR9jUhJIm
-         4++28N2TkPvVWx7wOPcAUfD4gisHTseWpaOPVRQ1d+ThFKzIoKd06fpr2fgLZd6FmIVW
-         y9Un9If0wmM3rF7tjgZX//1VU9b7+vGHr7gmArB8RZwxT0XSS2XdMv+LO0+XKSHTL6dS
-         q2fg==
-X-Gm-Message-State: AOAM532u3GGH3UKsWfpgKiku6HiOPIuM1olkb62eliYcvN9ssHdt6fNo
-        8JSDpP+BduokBDixPJH8knKyBAbG66I4fCpECpk=
-X-Google-Smtp-Source: ABdhPJw7rtRFOV+Xuo5K1eRtWrK5rQe4usXVzfoVH4rh9L+xclm/WeUI6FX3ZVHSUs5MUpXrkRSVPBJXj5D9zrTrjNE=
-X-Received: by 2002:a25:bb0b:: with SMTP id z11mr2101099ybg.108.1632770952882;
- Mon, 27 Sep 2021 12:29:12 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pdma3bMI5gliI9oqeEnm97FccftqJE98K0Dh887pnNQ=;
+        b=xsD5y0HNIWzfNRofWIqtG8T915csGtnBi8Shvy6h5GM455FKxRy7bSPF/rb3csVq/W
+         0MKWP+FPhgAsGccIWD3tuODGpSTMSXDCSnfb7YeYQ0JADfbfK3KYu1b+bHBJ19Wg3orP
+         Sq8UgsgZwytpT4wPB/5j48+KTX3bAhiNU6kPhig3s19qmK7+UZIUMakYYm+9s2axXHUj
+         WoJKj8fEYHUu9nH0VpoVlZHXOlkoI+SxwB38pbesA/5+QTWyQZ2gT8LIyjW51Igtqr3a
+         k+L9eMhmkiIQzKeg9RqXVXVfm2Uj3II+yDzXDI9p7uTE6HCCf6yY90xTATFBVPw73Oin
+         BWRQ==
+X-Gm-Message-State: AOAM532JOnSY1/15kywWm4Jim0A8FNvNCO8MMDtJOdJqJwsv6j5E2KGV
+        HI562ZKSuW0exS8mFHic8kVTjw==
+X-Google-Smtp-Source: ABdhPJycD7BOLJ2aT0AvHZm7xpV9acfCi2Vp3tsj3NC9Tv9wqRTI1TLp6jpiF21h1ftBOvP9jYYS1g==
+X-Received: by 2002:aca:b7d6:: with SMTP id h205mr633473oif.84.1632771276788;
+        Mon, 27 Sep 2021 12:34:36 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id v2sm4304221ooh.28.2021.09.27.12.34.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Sep 2021 12:34:36 -0700 (PDT)
+Date:   Mon, 27 Sep 2021 12:35:11 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Shawn Guo <shawn.guo@linaro.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alex Elder <elder@kernel.org>,
+        Steev Klimaszewski <steev@kali.org>, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ipa: Declare IPA firmware with MODULE_FIRMWARE()
+Message-ID: <YVIc77g464EpLtyN@ripper>
+References: <20210926065529.25956-1-shawn.guo@linaro.org>
 MIME-Version: 1.0
-References: <20210924220507.24543-1-xiyou.wangcong@gmail.com>
- <20210924220507.24543-3-xiyou.wangcong@gmail.com> <6152085486e84_397f208e8@john-XPS-13-9370.notmuch>
-In-Reply-To: <6152085486e84_397f208e8@john-XPS-13-9370.notmuch>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 27 Sep 2021 12:29:01 -0700
-Message-ID: <CAM_iQpXtSYUKy3JRtFG3uuL9jwBiQzjoZt2ab-VOvEaygZh-VA@mail.gmail.com>
-Subject: Re: [Patch bpf 2/3] net: poll psock queues too for sockmap sockets
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Yucong Sun <sunyucong@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210926065529.25956-1-shawn.guo@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 27, 2021 at 11:07 AM John Fastabend
-<john.fastabend@gmail.com> wrote:
->
-> Cong Wang wrote:
-> > From: Cong Wang <cong.wang@bytedance.com>
-> >
-> > Yucong noticed we can't poll() sockets in sockmap even
-> > when they are the destination sockets of redirections.
-> > This is because we never poll any psock queues in ->poll().
-> > We can not overwrite ->poll() as it is in struct proto_ops,
-> > not in struct proto.
-> >
-> > So introduce sk_msg_poll() to poll psock ingress_msg queue
-> > and let sockets which support sockmap invoke it directly.
-> >
-> > Reported-by: Yucong Sun <sunyucong@gmail.com>
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > Cc: Lorenz Bauer <lmb@cloudflare.com>
-> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > ---
-> >  include/linux/skmsg.h |  6 ++++++
-> >  net/core/skmsg.c      | 15 +++++++++++++++
-> >  net/ipv4/tcp.c        |  2 ++
-> >  net/ipv4/udp.c        |  2 ++
-> >  net/unix/af_unix.c    |  5 +++++
-> >  5 files changed, 30 insertions(+)
-> >
->
-> [...]
->                                                   struct sk_buff *skb)
-> >  {
-> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > index e8b48df73c85..2eb1a87ba056 100644
-> > --- a/net/ipv4/tcp.c
-> > +++ b/net/ipv4/tcp.c
-> > @@ -280,6 +280,7 @@
-> >  #include <linux/uaccess.h>
-> >  #include <asm/ioctls.h>
-> >  #include <net/busy_poll.h>
-> > +#include <linux/skmsg.h>
-> >
-> >  /* Track pending CMSGs. */
-> >  enum {
-> > @@ -563,6 +564,7 @@ __poll_t tcp_poll(struct file *file, struct socket *sock, poll_table *wait)
-> >
-> >               if (tcp_stream_is_readable(sk, target))
-> >                       mask |= EPOLLIN | EPOLLRDNORM;
-> > +             mask |= sk_msg_poll(sk);
-> >
-> >               if (!(sk->sk_shutdown & SEND_SHUTDOWN)) {
-> >                       if (__sk_stream_is_writeable(sk, 1)) {
->
->
-> For TCP we implement the stream_memory_read() hook which we implement in
-> tcp_bpf.c with tcp_bpf_stream_read. This just checks psock->ingress_msg
-> list which should cover any redirect from skmsg into the ingress side
-> of another socket.
->
-> And the tcp_poll logic is using tcp_stream_is_readable() which is
-> checking for sk->sk_prot->stream_memory_read() and then calling it.
+On Sat 25 Sep 23:55 PDT 2021, Shawn Guo wrote:
 
-Ah, I missed it. It is better to have such a hook in struct proto,
-since we just can overwrite it with bpf hooks. Let me rename it
-for non-TCP and implement it for UDP and AF_UNIX too.
+> Declare IPA firmware with MODULE_FIRMWARE(), so that initramfs tools can
+> build the firmware into initramfs image or warn on missing of the
+> firmware.
+> 
+> W: Possible missing firmware /lib/firmware/ipa_fws.mdt for module ipa
+> 
+> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+> ---
+>  drivers/net/ipa/ipa_main.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+> index cdfa98a76e1f..264bebc78d1e 100644
+> --- a/drivers/net/ipa/ipa_main.c
+> +++ b/drivers/net/ipa/ipa_main.c
+> @@ -545,6 +545,8 @@ static int ipa_firmware_load(struct device *dev)
+>  	return ret;
+>  }
+>  
+> +MODULE_FIRMWARE(IPA_FW_PATH_DEFAULT);
 
->
-> The straight receive path, e.g. not redirected from a sender should
-> be covered by the normal tcp_epollin_ready() checks because this
-> would be after TCP does the normal updates to rcv_nxt, copied_seq,
-> etc.
+I think it's fair to say that no device that is capable of running
+mkinitcpio should actually use IPA_FW_PATH_DEFAULT, but rather some
+device-specific firmware file.
 
-Yes.
+Regards,
+Bjorn
 
->
-> So above is not in the TCP case by my reading. Did I miss a
-> case? We also have done tests with Envoy which I thought were polling
-> so I'll check on that as well.
-
-Right, all of these selftests in patch 3/3 are non-TCP.
-
-Thanks.
+> +
+>  static const struct of_device_id ipa_match[] = {
+>  	{
+>  		.compatible	= "qcom,msm8998-ipa",
+> -- 
+> 2.17.1
+> 
