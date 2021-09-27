@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A02B41943D
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 14:30:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20B57419441
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 14:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234362AbhI0Mbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 08:31:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50864 "EHLO mail.kernel.org"
+        id S234402AbhI0Mbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 08:31:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50884 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234293AbhI0Mbp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Sep 2021 08:31:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2D814611BD;
+        id S234317AbhI0Mbq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 08:31:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3E82D6113A;
         Mon, 27 Sep 2021 12:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632745808;
-        bh=S7Qf+eY+3sMPl8OAdZulqtSlPcsoZZspMj6T5mrlZRg=;
+        bh=sdejic/sjKL8DRmb1CPxbh8x/GjimBy+mhFca2uc4yQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ThDLPtDE9nJ4y7Ggv10uu1J/VQwBm28dlI6ifPjmX4GX6TuoMxrBC7LWnE4n9mrVN
-         qfaTA7BrpvEZrkIbXXpU9nV3CYB65gNdH8CVZXYeVc/rI95mUquwBEYRS2cR90zX9y
-         YABNtTlgJaeqBchKZ5xmpWTsldPy4juT1KoGrIQ7YUbLdNLMPSxjrNDPmS/G/AelXS
-         qVDLrVSVOdZnSZvzym47+MQZL5J/QDNNZJc6pwOE7RSZejhpZ32vXrQZX0R0fE7efz
-         Wb8+HBctMptpZ3l1/AD5kMizRVrWXWe9YXmz372LK73uFD1LQfqDXAL3FujBhgPatu
-         Xfc1Ykb0bv6/A==
+        b=oZJssV22oEhMr3uuQvILmbUMqPE7WyzILoFKEtL/y1dN/8CXisd7Hv4ZANXN21jgy
+         jaGHD+mxg2dApBPujkmj5/1UUiesS+K1VAluKK/ENG0iBSwv+/J9LirB18EIgfa9ze
+         drtn33/uLntf/N+7lQCHXMYvf1oBTJtp4EsyPhGaxEfldXxIPuCabpyjSuBliSw6uz
+         8PRyb7CvSynHOcCmglelSPamhAV3qt/upw8JS2CswxCaJlUUg/UObBBGPcRot10a0e
+         VHAfi9HQxas1WyCrT2cDOXLrqsMRaIfVpbkK/7NBFfzjxJ7qeicc3Kkvm3EqHdEfUm
+         E9z2Q6HTN6WkQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2328A609CF;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 381DB60A69;
         Mon, 27 Sep 2021 12:30:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v1] net: ethernet: emac: utilize of_net's
- of_get_mac_address()
+Subject: Re: [PATCH] net: sparx5: fix resource_size.cocci warnings
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163274580813.1790.3965607855360646825.git-patchwork-notify@kernel.org>
+Message-Id: <163274580822.1790.3621305152396378475.git-patchwork-notify@kernel.org>
 Date:   Mon, 27 Sep 2021 12:30:08 +0000
-References: <20210926095648.244445-1-chunkeey@gmail.com>
-In-Reply-To: <20210926095648.244445-1-chunkeey@gmail.com>
-To:     Christian Lamparter <chunkeey@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+References: <1632642132-79551-1-git-send-email-yang.lee@linux.alibaba.com>
+In-Reply-To: <1632642132-79551-1-git-send-email-yang.lee@linux.alibaba.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, lars.povlsen@microchip.com,
+        Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,20 +48,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sun, 26 Sep 2021 11:56:48 +0200 you wrote:
-> of_get_mac_address() reads the same "local-mac-address" property.
-> ... But goes above and beyond by checking the MAC value properly.
+On Sun, 26 Sep 2021 15:42:12 +0800 you wrote:
+> Use resource_size function on resource object
+> instead of explicit computation.
 > 
-> printk+message seems outdated too,
-> so let's put dev_err in the queue.
-> 
-> Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+> Clean up coccicheck warning:
+> ./drivers/net/ethernet/microchip/sparx5/sparx5_main.c:237:19-22: ERROR:
+> Missing resource_size with iores [ idx ]
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v1] net: ethernet: emac: utilize of_net's of_get_mac_address()
-    https://git.kernel.org/netdev/net-next/c/584351c31d19
+  - net: sparx5: fix resource_size.cocci warnings
+    https://git.kernel.org/netdev/net-next/c/867d1ac99f11
 
 You are awesome, thank you!
 --
