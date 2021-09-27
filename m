@@ -2,133 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E6704193B6
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 13:55:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA8D64193BD
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 13:58:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234194AbhI0L5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 07:57:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57874 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234051AbhI0L5F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Sep 2021 07:57:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4A39560F6C;
-        Mon, 27 Sep 2021 11:55:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632743728;
-        bh=ftp5e/Z+bgMoB8q+w6BD3W3PyXq/J5hOEt/FeFtg5iw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cLW1ZttLbuD8ca0mc7zREupyRk157igHo9VdiTVDhaf3Onjc0pcD/HvNPg7YbmCsn
-         LW/EATH3aCX2igPQ4OO8LiviYoPdGtFHVah24g3WvF0SLoWgRp9qG4NWSqXjvdeRF3
-         D+J+hjRPsIX5QAaVxMJGiZ+53icrKUmCg30kNuBBUoanCuNs+xAGsRt0DJsaXqsRbw
-         AOYpGw+FxTB9urNvntdLGc0cII98syp37ruqfkMb7f1GLuvSSpL0qC6PmXjx8EN3sx
-         OLWaYzi+rkD46JQOXBu8cswQQJwdeaHY0K15F4/315PoY7ERvyJfUQJsXa65Kf+fUe
-         QbtbjunK8uFcw==
-Date:   Mon, 27 Sep 2021 14:55:24 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        id S234155AbhI0MAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 08:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234051AbhI0MAF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 08:00:05 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D86C061575
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 04:58:27 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id e2-20020ad45582000000b0037e7bdc88d4so73850228qvx.2
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 04:58:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=FHQuGPAsx7HYP87vGVnx/78AZl3+QiedtSpkbOjt7EQ=;
+        b=PQ4wLEoHwibbQljKZZiGlG0QC+UQZ0CprAOKwd9fPGtN4DGicTZ+rV6TcK1FpX3B0r
+         dSW4x/IRQBcxSHKTlFm0edXdUh4XHcwxEu2l/+vzYtdaeQeQp18tGGGNjmG/drcRaq1L
+         lCU2NPYODwZkL/wtwQEPKbOhaL1rh0dwPIdophSYaLznP/0CNNXF+DFLffslQPwPWeD0
+         Y4uFtw5VeD2YFPiLADaxQjd1Ox8uhjgj9crlLO5aul80Y9FdHATm41JEzAarFEpg7akL
+         o6NAZtj+eD4CXXAB0CIf5BtovcNHAVjNhoeGlKR5yXibVTWx01pjTwALi/B4btMuJA65
+         3SCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=FHQuGPAsx7HYP87vGVnx/78AZl3+QiedtSpkbOjt7EQ=;
+        b=dDJKsriLJlbnwQuy/Vg8Yi9mhEIIYbUI7JNCRNv4J49EPgy+zNP/vBoxu5itiLemXG
+         ehH+qUxUYmGbJEQbC1ThyjPUkj2N7qFLEZoONOAYQS+n5PDaj7Gu8VnDfz+vF006dCbT
+         cGPctftAbyr57Actou/vLDTdOZW5+fvobyZBh6+JKReDyakWnVV427mKqVSNV5ond/qP
+         GiR41mAy3V1xt93u9N8ngVIjCYhAjJCfNmHJsKEadTZrG59UZV49Ud9mjsjly2vs1nAr
+         5aytqyk1Nbo03ZZlG6Zo02NVNuysOyN/R5RhbDnCFQVXoOYYRg27pQxFFP/VhjhrIvem
+         Fwhw==
+X-Gm-Message-State: AOAM530dSrE60fV7xRUZ+91XRdUN3uDCtBPUzLjVgLHsWoxSNNRnOypA
+        WAuE0YyQ2995ntsb7NaLAV3KnmhE6S7Fpb/nbA==
+X-Google-Smtp-Source: ABdhPJwxxL0oGSpJvwRblD9qlcbwwPQ+tDtlTTHiKbr8IQ3TpLAjYHO/AVzFhLwGY9EBaegrTxetCJayRzvfWAQQsA==
+X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:9751:55fe:4e2:1c04])
+ (user=howardchung job=sendgmr) by 2002:ad4:4989:: with SMTP id
+ t9mr22237qvx.29.1632743906497; Mon, 27 Sep 2021 04:58:26 -0700 (PDT)
+Date:   Mon, 27 Sep 2021 19:58:01 +0800
+Message-Id: <20210927195737.v1.1.Id56e280fc8cac32561e3ea49df34308d26d559c9@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.33.0.685.g46640cef36-goog
+Subject: [PATCH v1] Bluetooth: Fix wrong opcode when LL privacy enabled
+From:   Howard Chung <howardchung@google.com>
+To:     linux-bluetooth@vger.kernel.org
+Cc:     Yun-Hao Chung <howardchung@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>
-Subject: Re: [PATCH mlx5-next 1/7] PCI/IOV: Provide internal VF index
-Message-ID: <YVGxLH+hi1NN0oq5@unreal>
-References: <YVAVAfU3aL6JJg3i@unreal>
- <20210926202341.GA588922@bhelgaas>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210926202341.GA588922@bhelgaas>
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 26, 2021 at 03:23:41PM -0500, Bjorn Helgaas wrote:
-> On Sun, Sep 26, 2021 at 09:36:49AM +0300, Leon Romanovsky wrote:
-> > On Sat, Sep 25, 2021 at 12:41:15PM -0500, Bjorn Helgaas wrote:
-> > > On Sat, Sep 25, 2021 at 01:10:39PM +0300, Leon Romanovsky wrote:
-> > > > On Fri, Sep 24, 2021 at 08:08:45AM -0500, Bjorn Helgaas wrote:
-> > > > > On Thu, Sep 23, 2021 at 09:35:32AM +0300, Leon Romanovsky wrote:
-> > > > > > On Wed, Sep 22, 2021 at 04:59:30PM -0500, Bjorn Helgaas wrote:
-> > > > > > > On Wed, Sep 22, 2021 at 01:38:50PM +0300, Leon Romanovsky wrote:
-> > > > > > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > > > > 
-> > > > > > > > The PCI core uses the VF index internally, often called the vf_id,
-> > > > > > > > during the setup of the VF, eg pci_iov_add_virtfn().
-> > > > > > > > 
-> > > > > > > > This index is needed for device drivers that implement live migration
-> > > > > > > > for their internal operations that configure/control their VFs.
-> > > > > > > >
-> > > > > > > > Specifically, mlx5_vfio_pci driver that is introduced in coming patches
-> > > > > > > > from this series needs it and not the bus/device/function which is
-> > > > > > > > exposed today.
-> > > > > > > > 
-> > > > > > > > Add pci_iov_vf_id() which computes the vf_id by reversing the math that
-> > > > > > > > was used to create the bus/device/function.
-> > > > > > > > 
-> > > > > > > > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> > > > > > > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > > 
-> > > > > > > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> > > > > > > 
-> > > > > > > mlx5_core_sriov_set_msix_vec_count() looks like it does basically the
-> > > > > > > same thing as pci_iov_vf_id() by iterating through VFs until it finds
-> > > > > > > one with a matching devfn (although it *doesn't* check for a matching
-> > > > > > > bus number, which seems like a bug).
-> > > > ...
-> > > 
-> > > > > And it still looks like the existing code is buggy.  This is called
-> > > > > via sysfs, so if the PF is on bus X and the user writes to
-> > > > > sriov_vf_msix_count for a VF on bus X+1, it looks like
-> > > > > mlx5_core_sriov_set_msix_vec_count() will set the count for the wrong
-> > > > > VF.
-> > > > 
-> > > > In mlx5_core_sriov_set_msix_vec_count(), we receive VF that is connected
-> > > > to PF which has "struct mlx5_core_dev". My expectation is that they share
-> > > > same bus as that PF was the one who created VFs. The mlx5 devices supports
-> > > > upto 256 VFs and it is far below the bus split mentioned in PCI spec.
-> > > > 
-> > > > How can VF and their respective PF have different bus numbers?
-> > > 
-> > > See PCIe r5.0, sec 9.2.1.2.  For example,
-> > > 
-> > >   PF 0 on bus 20
-> > >     First VF Offset   1
-> > >     VF Stride         1
-> > >     NumVFs          511
-> > >   VF 0,1   through VF 0,255 on bus 20
-> > >   VF 0,256 through VF 0,511 on bus 21
-> > > 
-> > > This is implemented in pci_iov_add_virtfn(), which computes the bus
-> > > number and devfn from the VF ID.
-> > > 
-> > > pci_iov_virtfn_devfn(VF 0,1) == pci_iov_virtfn_devfn(VF 0,256), so if
-> > > the user writes to sriov_vf_msix_count for VF 0,256, it looks like
-> > > we'll call mlx5_set_msix_vec_count() for VF 0,1 instead of VF 0,256.
-> > 
-> > This is PCI spec split that I mentioned.
-> > 
-> > > 
-> > > The spec encourages devices that require no more than 256 devices to
-> > > locate them all on the same bus number (PCIe r5.0, sec 9.1), so if you
-> > > only have 255 VFs, you may avoid the problem.
-> > > 
-> > > But in mlx5_core_sriov_set_msix_vec_count(), it's not obvious that it
-> > > is safe to assume the bus number is the same.
-> > 
-> > No problem, we will make it more clear.
-> 
-> IMHO you should resolve it by using the new interface.  Better
-> performing, unambiguous regardless of how many VFs the device
-> supports.  What's the down side?
+From: Yun-Hao Chung <howardchung@chromium.org>
 
-I don't see any. My previous answer worth to be written.
-"No problem, we will make it more clear with this new function".
+The returned opcode of command status of remove_adv is
+wrong when LL privacy is enabled.
 
-Thanks
+Signed-off-by: Yun-Hao Chung <howardchung@chromium.org>
+---
+Test with following steps:
+1. btmgmt --index 0
+2. [btmgmt] power off; [btmgmt] exp-privacy on; [btmgmt] power on
+3. [btmgmt] rm-adv 1
+4. Check if the 'Not supported' message is present in terminal
+
+ net/bluetooth/mgmt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index cea01e275f1ea..87acf0d783a07 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -8222,7 +8222,7 @@ static int remove_advertising(struct sock *sk, struct hci_dev *hdev,
+ 	 * advertising.
+ 	 */
+ 	if (hci_dev_test_flag(hdev, HCI_ENABLE_LL_PRIVACY))
+-		return mgmt_cmd_status(sk, hdev->id, MGMT_OP_SET_ADVERTISING,
++		return mgmt_cmd_status(sk, hdev->id, MGMT_OP_REMOVE_ADVERTISING,
+ 				       MGMT_STATUS_NOT_SUPPORTED);
+ 
+ 	hci_dev_lock(hdev);
+-- 
+2.33.0.685.g46640cef36-goog
+
