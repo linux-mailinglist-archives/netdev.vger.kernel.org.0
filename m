@@ -2,69 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62CF64191E8
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 11:59:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B69994191F0
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 12:03:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233755AbhI0KAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 06:00:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55428 "EHLO mail.kernel.org"
+        id S233773AbhI0KFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 06:05:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56918 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233703AbhI0KAh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Sep 2021 06:00:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6456C60F43
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 09:58:59 +0000 (UTC)
+        id S233703AbhI0KFV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 06:05:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C5A560F6C;
+        Mon, 27 Sep 2021 10:03:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632736739;
-        bh=SoA7/TUXdS+d0oJCF/cTsqi0L4GYYaT5vD9ANx+qFHw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=BhE9VupGim4vn1SzuZbIEpKDG85PyptFiBT2uet+M1UtUVk5vcdrS3J36KM+j98bM
-         ZA1NUE/5RxfTITv27nrhW9T2Bk1kudJojA7a8MuCr0A7qDxMvuAHbmrD4yJB5Klh8J
-         JVvEw5SRaUoR3wsGoF3tUS8oHNG6hiKU49pG5T+r24W4OuBJxFaQ8ECuhL73m/yFSX
-         Y1ycLDUbh3OVVBuJr+nCrMv2ubgD+mr2kvS6F+x6m4FbAroV+LspFpU+6PZUW1S+LR
-         nKHVUyNx8xc3YX0u5EtM/cWqo663w6plIadrJ+pnBsJ4nBPeaMBbWNpsVkmCB9gpFx
-         S0QDqijRHN9MQ==
-Received: by mail-wr1-f46.google.com with SMTP id t18so50833905wrb.0
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 02:58:59 -0700 (PDT)
-X-Gm-Message-State: AOAM531T3tDPqYzGsMYXJO5MD0MM+q8h7Hr3uOWAdShgaCJv2DTUwxMd
-        gMxYal05PTtAEvjEZ156mddtjdayYlGwSuk9pe4=
-X-Google-Smtp-Source: ABdhPJxDPzCLWYQaXd7udwL3YLW3EwUfMD/ylr/9ES0fKJRHADzbENA3gObhpsoacIvzYzwXV9Gt3Aualem8nn62zAs=
-X-Received: by 2002:a5d:4b50:: with SMTP id w16mr26770643wrs.71.1632736738026;
- Mon, 27 Sep 2021 02:58:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210723231957.1113800-1-bcf@google.com>
-In-Reply-To: <20210723231957.1113800-1-bcf@google.com>
+        s=k20201202; t=1632737021;
+        bh=rdXEK8Ftq/XptLnhBL3SXrY8D4WMnjNMPHUHRwbRgVY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lRoH0ZoBzJ+dFVQrfB+JzPVFwMBUuxUbjt9Ws5BWiRAAHSlQIqwV36x2NyaH1uOQr
+         3VS28YFgaFOugTBeM9bR8I2dXzFhuEBi4KbEfVhzh1U0SpTVRCqqGQQ7xvGoC1z6tA
+         fyDq/m8eohx7JtqGN6G5OnHM52e1ecNsQopFexcqFUULQEsQ/+qxOkDISnB5qN2a4y
+         +iH8uBehRs5HnZ2C+dZlwkQcYwr/k3OzLP84PGKqpKxjze1Mr0VyK0DzWOO7q4cGfv
+         XtmuQCDwBQpGnr/gbD9vy+WoOZ10TlZw4HoE1M3Uc6OOQiupHFMVLYSohLCtHJQHmU
+         givK5WhsYGcbQ==
 From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Mon, 27 Sep 2021 11:58:42 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1aGA+xqpUPOfGVtt3ch8bvDd75OP=xphN_FrUiuyuX+w@mail.gmail.com>
-Message-ID: <CAK8P3a1aGA+xqpUPOfGVtt3ch8bvDd75OP=xphN_FrUiuyuX+w@mail.gmail.com>
-Subject: Re: [PATCH net] gve: DQO: Suppress unused var warnings
-To:     Bailey Forrest <bcf@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] [RESEND] net: stmmac: fix gcc-10 -Wrestrict warning
+Date:   Mon, 27 Sep 2021 12:02:44 +0200
+Message-Id: <20210927100336.1334028-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 24, 2021 at 1:19 AM Bailey Forrest <bcf@google.com> wrote:
->
-> Some variables become unused when `CONFIG_NEED_DMA_MAP_STATE=n`.
->
-> We only suppress when `CONFIG_NEED_DMA_MAP_STATE=n` in order to avoid
-> false negatives.
->
-> Fixes: a57e5de476be ("gve: DQO: Add TX path")
-> Signed-off-by: Bailey Forrest <bcf@google.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-Hi Bailey,
+gcc-10 and later warn about a theoretical array overrun when
+accessing priv->int_name_rx_irq[i] with an out of bounds value
+of 'i':
 
-I see that the warning still exists in linux-5.15-rc3 and net-next,
-I'm building with my original patch[1] to get around the -Werror
-warnings.
+drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'stmmac_request_irq_multi_msi':
+drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3528:17: error: 'snprintf' argument 4 may overlap destination object 'dev' [-Werror=restrict]
+ 3528 |                 snprintf(int_name, int_name_len, "%s:%s-%d", dev->name, "tx", i);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3404:60: note: destination object referenced by 'restrict'-qualified argument 1 was declared here
+ 3404 | static int stmmac_request_irq_multi_msi(struct net_device *dev)
+      |                                         ~~~~~~~~~~~~~~~~~~~^~~
 
-Can you resend your patch, or should I resend mine after all?
+The warning is a bit strange since it's not actually about the array
+bounds but rather about possible string operations with overlapping
+arguments, but it's not technically wrong.
 
-      Arnd
+Avoid the warning by adding an extra bounds check.
 
-[1] https://lore.kernel.org/all/20210721151100.2042139-1-arnd@kernel.org/
+Fixes: 8532f613bc78 ("net: stmmac: introduce MSI Interrupt routines for mac, safety, RX & TX")
+Link: https://lore.kernel.org/all/20210421134743.3260921-1-arnd@kernel.org/
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 553c4403258a..640c0ffdff3d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3502,6 +3502,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
+ 
+ 	/* Request Rx MSI irq */
+ 	for (i = 0; i < priv->plat->rx_queues_to_use; i++) {
++		if (i > MTL_MAX_RX_QUEUES)
++			break;
+ 		if (priv->rx_irq[i] == 0)
+ 			continue;
+ 
+@@ -3525,6 +3527,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
+ 
+ 	/* Request Tx MSI irq */
+ 	for (i = 0; i < priv->plat->tx_queues_to_use; i++) {
++		if (i > MTL_MAX_TX_QUEUES)
++			break;
+ 		if (priv->tx_irq[i] == 0)
+ 			continue;
+ 
+-- 
+2.29.2
+
