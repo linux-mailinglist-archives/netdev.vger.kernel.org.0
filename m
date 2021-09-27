@@ -2,162 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3E44419102
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 10:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D36C3419191
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 11:33:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233543AbhI0IlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 04:41:19 -0400
-Received: from mail-sn1anam02on2099.outbound.protection.outlook.com ([40.107.96.99]:21153
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        id S233691AbhI0JfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 05:35:02 -0400
+Received: from mail-eopbgr20061.outbound.protection.outlook.com ([40.107.2.61]:44702
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233337AbhI0IlQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Sep 2021 04:41:16 -0400
+        id S233587AbhI0JfA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 05:35:00 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h6w61T+XDjAtn6LWt1Yqe4zQL7o/b/NPx4psigNFsdIPb6YYL6BvjaV8Ts1fAtpqSpkjQCXJ8xPc4Adm+vdZ0BZzFyjbIlfoQiNFPA706gW0CnCV3QYXU7Ve2J406DRMtj42fWDN+dXiEBk7hjWA3wgY4EhcYaO1hiY5mtLoQ1T8Epe9dw0ZmXaOXogs0Pu5bqpD368KPmZPPoBi56oKKRyDwXfMeLzch3Y6hecS0mGGl8D1Wr78D0ws/wDCUobPsTbXXvgm0o3kwfgAHv8BGeW/eYCBzPbSmeEyt9AVghyF+dKclw2bmycPyLp9QuSdV8pffOChK/X4tR4WOiMRYQ==
+ b=gB/jtikJDOpUY67nznnsWIPtsImlOJgYHLL38u2tGrr26RjeGxYS/dJQ47doHz+clFlBwOyZ+S4uPROzxNOd/EJvT9irva7KzARcndxGHagImx0KlwvVk3/KXippaxlDP3gAyGOymPvvlXwbjYlJjN2zoI72Zl33ytY6pgyWYvPRWoAHjl41TbJW/YHDCJj3EC0KUCeCVdGLGJOAA/1OGxyBOSCnEU5UHs/4WO2+HXpkJ5j+SG5bCBYMYDc7SDx9jxTU4wwwFKEo84bS67ly8V+pkBUuhyOVAkNtpyjKQvuhRPuKPOtHvYyNCzLVgbyRp87Y6oZo0h2cWnLEVHPrnQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gIdmZOQCjDpO+zPvkEM5TmdlkH14ENLfJqaVvBh+bMY=;
- b=btuvwUPuW4mQRGrF2o8OmPczDsds3L6SaanbWn6HIZbAEfMvWM4S7LE9lKTRME9J3wJ2EpYB41cawuyarAh+md0/tBXPDPV52L+GrpJQhs3ExV6429PFBR4P4d6e4ssM1rowIqylvYx95j6W9IR1mEnG+zJXmUE743+zT+5UgScrGJlnD1V1NPnyjMIHfxjs4j9htFjCnDzuZyE5v6QobmPjgxCIZh0Cwkfe2c216CvaNThqyJBExpXt9v/nI0KgqnCXI3Xn85DN6Pi/eanPwyguwqavnTHy7DRJQu/REYWYwSRbj1Jhqwm7EX7i3QoE8//3/imdCa9U9kLXAU4CHQ==
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=g3x1h2RgIPyjwTEp8lyf37ZCTfk0Pu1+VsBcjmLN4aw=;
+ b=oAzIDBpTlb5TLCYbLVj29ndeKj0n1l9Wq7dl7xJ21m9irEjlZRNLInCsGJ+mGYYLLd/WIDGC5xOOq6yPn5Eyu1KP/D+Jr+VwI9nzH7gQ8sTOG4MDUX7x6QT7jRYtZ+qR6iH/8E/LdDUjJyi+XhXnafU5ONOxOM6gIsSpMzJMmCV7yaLmyJJHAWWhdFkmsDIfYfE/dHEGQFKrqLdG4VwRcLgraosDvkj48ww8c0tATFvnRrN/nNoxYdb1kgJcv3U3ah6HdJVBFPmDCdBYtBXiSXAhXYx/U9FTj2coos6yG3jHKD5gOJSvbOAy46ZqBLnlbqVtTdcDyxPKRx+57HyUag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gIdmZOQCjDpO+zPvkEM5TmdlkH14ENLfJqaVvBh+bMY=;
- b=ThIwLqOTvKqhVZ0vg+C9ysQkVHWUl3MUK0mTUvLNfVnwqBw6ErdDdcEe/keVYqfScigStqzDrMCC2AkULtTthN06gOfUGoUsOLZLiI+TQaGwUhuzRbsPfmOiR6HTom6ECKMa6V39AzDg2zRi8fKkiL8bLyS4aIeN/dUrUJNtllk=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH7PR13MB5552.namprd13.prod.outlook.com (2603:10b6:510:131::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.7; Mon, 27 Sep
- 2021 08:39:37 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::e1d9:64d0:cb4f:3e90]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::e1d9:64d0:cb4f:3e90%9]) with mapi id 15.20.4566.012; Mon, 27 Sep 2021
- 08:39:36 +0000
-Date:   Mon, 27 Sep 2021 10:39:24 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        hariprasad <hkelam@marvell.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Manish Chopra <manishc@marvell.com>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next v1 13/21] nfp: Move delink_register to be last
- command
-Message-ID: <20210927083923.GC17484@corigine.com>
-References: <cover.1632565508.git.leonro@nvidia.com>
- <f393212ad3906808ee7eb5cff06ef2e053eb9d2b.1632565508.git.leonro@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f393212ad3906808ee7eb5cff06ef2e053eb9d2b.1632565508.git.leonro@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: AM0PR01CA0120.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:168::25) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ bh=g3x1h2RgIPyjwTEp8lyf37ZCTfk0Pu1+VsBcjmLN4aw=;
+ b=EjHPzZgZaPnKJAeI0Gd8NmsM+16lVT/fnKZh0O+sra5G03m/MtzBK3q/Z/c+0bNSW5UwhESU4YCpf72gNDif26uDsuO1Xcg+ie0+s4855tDS+Q7b5aQipLbrixv6y5hlJ2tNSzYWmlvCWgC90iO+ql7oJ9+u7O+hwe54eKKn2ms=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=oss.nxp.com;
+Received: from VI1PR0401MB2671.eurprd04.prod.outlook.com
+ (2603:10a6:800:55::10) by VI1PR0401MB2493.eurprd04.prod.outlook.com
+ (2603:10a6:800:58::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.21; Mon, 27 Sep
+ 2021 09:33:18 +0000
+Received: from VI1PR0401MB2671.eurprd04.prod.outlook.com
+ ([fe80::2408:2b97:79ac:586b]) by VI1PR0401MB2671.eurprd04.prod.outlook.com
+ ([fe80::2408:2b97:79ac:586b%4]) with mapi id 15.20.4544.021; Mon, 27 Sep 2021
+ 09:33:18 +0000
+From:   Sebastien Laveze <sebastien.laveze@oss.nxp.com>
+To:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yangbo.lu@nxp.com
+Cc:     yannick.vignon@oss.nxp.com, rui.sousa@oss.nxp.com
+Subject: [PATCH net-next] ptp: add vclock timestamp conversion IOCTL
+Date:   Mon, 27 Sep 2021 11:32:50 +0200
+Message-Id: <20210927093250.202131-1-sebastien.laveze@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR10CA0129.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:e6::46) To VI1PR0401MB2671.eurprd04.prod.outlook.com
+ (2603:10a6:800:55::10)
 MIME-Version: 1.0
-Received: from corigine.com (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM0PR01CA0120.eurprd01.prod.exchangelabs.com (2603:10a6:208:168::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.15 via Frontend Transport; Mon, 27 Sep 2021 08:39:28 +0000
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (84.102.252.120) by AM0PR10CA0129.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:e6::46) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13 via Frontend Transport; Mon, 27 Sep 2021 09:33:17 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 73a8042b-dc1b-4068-935c-08d98192565c
-X-MS-TrafficTypeDiagnostic: PH7PR13MB5552:
+X-MS-Office365-Filtering-Correlation-Id: a96c0c1e-67da-4694-0935-08d98199d6a6
+X-MS-TrafficTypeDiagnostic: VI1PR0401MB2493:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH7PR13MB55523D49A228A31C33B1A01DE8A79@PH7PR13MB5552.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1850;
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB24930150E8D18E54C3F67249CDA79@VI1PR0401MB2493.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2201;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 50r4QUSBOxNDjWfUa1gtTG5JU0Vq4LuJU56Mp2/XLvqP7oXv3b6JfDq6W0jhn8bZdcvnqcQ3Vp4Sj7e10r0TSnL9jwZmind7QdI898XN6Sx24uJ0d0Bnq/x5hZQvGZDj0xP4gCbzH98zPwiY3RLx/B6xLtzTcYEla8JCBa2Rulkq4Lu1jeLAa6mt9e72SBKe+Khg4IR43oXcJUj9UoduCXpwd/Yq9+wWPnGZ+urpfvDPY5k2mzB2GO6ETIRqWfuDEHucQ7FmIn4IfVCOKMvWakTcI3OuwQexw1IEDfHon8On5+Ort2ydvs3UxmFAjzOKPxAxzOfxJzerNVsyf89fZDyUI91OJTPJXEKdURZgcfrThsNJPz/yvtQLUgR6naELfR+7XUdZZtvcXmboUHU1z0SweoGTSTEy8FGjlmBnE08P2nDbOyRYTUoL0z4+XTLU7Zz75JmitlxhNxxWgDW9Du1BHHgQWRw8g5dZ2pRBw64nGGT3oafjJFpx6dxa0e1rizVxpozmH2HNwA1LTliujmlHOuQCUw4xuYTPGOvfvicAdoi6eEP6YZhapFjeeRXWFenU7tK2n9AvRcoNgJl3MK0LUtnRTYrCHY/wNvxkqRv5rQ9wKL0PQ2rdolXw3EGS1WmrjroBx1sstj13NrPXoA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(136003)(346002)(396003)(39830400003)(366004)(6916009)(66946007)(55016002)(66556008)(2616005)(508600001)(8886007)(4326008)(186003)(8676002)(33656002)(8936002)(7696005)(66476007)(52116002)(6666004)(2906002)(83380400001)(558084003)(1076003)(7366002)(5660300002)(36756003)(7416002)(86362001)(7406005)(44832011)(54906003)(38100700002)(316002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: LCDx78bxFJeqPTG/MAze7IkyQP2dNrbTYKZLOgriM7cWDoNEfWx4kLNrUm7QnQsf4ZGaML9TJvs76nh49v3NCjy1vZJXnYfKsO7LYhlSM2bLcY5RTovmqnqmNkkFlC9E/WIUrTCkZBo+CK9GHGOoMQR5yCuJfZ5+SIgkiFwz1ilmCgHf9Y7O70Z7L0VK62cM4WhsE/tqiUUTzNTW4KwjLiHvODWf2CL15kf3hc4k3wHa/WRQtFEOO1gbGc2mVg11+ECdft+nI74uuqNQ1bYLr2Rbl10/QagbMboaI8uHxVouRyav7vxaslS0i0Df3mEfnOipQHHgbhUIxqZlZJkuCm/ZyaDvkE6iw/KFX93M0V0arxqqi67GayAvx+ja+AwBu1b43NUsf1yPMl9u5/ruHrRkBtJPUWNbHrlxxrBTgi+6U082blCD8uxbwdlrXdPBz37S3KAaa1IH+EkfGZuKZJ4TrpLmY9jt4IZiofzAi6jm9Rls4kQdd8+7+FitF5hK52ZAzGEJSjD2iEcp/FYLxztZ/HMDdMuwKt3TV7FGoOJ0y+owu3jqdltNETJjnyux/Q+BGZTDZhEtV+t4/bEHggpIxaDiQhs8TT8HWOu3ka5z4G2gw70vOxegMbtNtvSng6qyuev8YoNJFncfWL9t7zicHeYpDHl9Q5EtOZ2vVW2gjFM+OXWPDivklCnvko+egdJdQS2dONVfhPc3cFgtqQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0401MB2671.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6666004)(26005)(6486002)(44832011)(86362001)(66946007)(38100700002)(66556008)(8676002)(38350700002)(66476007)(1076003)(6506007)(8936002)(186003)(2616005)(4326008)(6512007)(956004)(83380400001)(5660300002)(52116002)(508600001)(316002)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MR1z9KoG+kajsxH185xcnkq9AgYihKkrXTsPol9YCizp9UyVcAoGsUMnT+51?=
- =?us-ascii?Q?5ufrrgMkLqhUAc6Y36WeCaXq78PSH9vhu/5O3/6JJN8bAHgyaHCvuC9R0sis?=
- =?us-ascii?Q?1/Ep3gx8Hg0iybk9j1sA+6uC9XhW6Iy9PEhEed/tMM8biPQv3BSfklCpECUn?=
- =?us-ascii?Q?8LENrreAk3LyDoWuieSMVMB2Hc7wcB0ErrVWmKwPbuVEUXEy72gHNR7G+6OA?=
- =?us-ascii?Q?CIeYM4+loxThVxdumQb/Se2+u1JRRmand11QEe1Ot4VIzXlcqrVNz2M+XxoS?=
- =?us-ascii?Q?9AA+5+lObbghalIdXZAtCvx5SNN0Yq+gLZMTKZe0CiS3PWltj8VGowt4aJ6t?=
- =?us-ascii?Q?+420IrmglFA+72bTDEayGE0BwTJBjGVvRMwaPZSkR41DjEHKmiLOr0HBsiJA?=
- =?us-ascii?Q?MEpheuWSNkp7WzTOSwWvc3fr7fotJHZxFWcmQWoNgy4/xT8F3GlxveH2z+we?=
- =?us-ascii?Q?sNLu/xWc0VxWRtgRVw5OrwcSZOz/6JlJ97yLL8tiJKzULweCOfah0aSgM4O2?=
- =?us-ascii?Q?RxKdAaEB8olel9D7qNoehnGItTGkLgMB8laDht9zpyuEzSJT4tG/k2Ms4HJO?=
- =?us-ascii?Q?hwFCXmdjVNu4EW+vB1pNfQUqc1bMWZ+z60vByPRHS/YZAj0jucWxNFw5ogxy?=
- =?us-ascii?Q?pNZuyTLS+4Ps/emdQTNjIXeW1Ib4oK527TRT8kRPjA7EKIrecGFpiHqAEfNZ?=
- =?us-ascii?Q?WxI/9HZtsj3rnsHbqIprwR/iZwg66l7fTIGMNSumo5PdatXYbNlHlpdhw0ok?=
- =?us-ascii?Q?UOBQBojBL5aN39tif3BN/GiCxe6S30HCIVdUVDL453GLQ7FhZ6ffRqFmgLzo?=
- =?us-ascii?Q?eryuRbvDlHGB8Nh5Qv6seeF4ksfxaiDxYKynaJvuNMAvxlUSRp3mryvUGlIJ?=
- =?us-ascii?Q?zHBD9yu0v2+1ulbauswzaucC+/RTKm66DaNdzXe4KagSKBNxu4a9ok9E1ad/?=
- =?us-ascii?Q?TvVyhYVXoUvcGVMnMfnbN4oLHusMYeE2VMGDosrG2SwKpByCoMEMBqJChpnh?=
- =?us-ascii?Q?EIp/76lP0NyTX6fxl1qEpUG5BXR7QZ+kjuE5k4D7dcX891nP8ic2ADEctCHS?=
- =?us-ascii?Q?/3Zjk+jUh/G4Z7dCP3JqfUQjQ9mRMcH2kJaV7YsiMITGt2T85QjdKk+KTih4?=
- =?us-ascii?Q?GVb8VjZ+CEB2moJI+lwTZZgDPJUpOsCCzkrPh9GmfS+8oCG2oh3ZBVBG1VEf?=
- =?us-ascii?Q?XVjxX9g9cN21Xr327zkhqgdknyjpWzQ/KNBAXetiDMxgnUF90t27Fy8+2rPk?=
- =?us-ascii?Q?jA9OxFBHSL39MPNFn2EMAbGZLBJbxf1JIVgf8nmd+AUGsBj5OdmwFaA2PNhj?=
- =?us-ascii?Q?uJNZt1PKZqbTR6t4lqyojfFwZ4SoTQyBxDlZyN+/FgUUY9IzETG1cte2WnS6?=
- =?us-ascii?Q?S5kOaZpTUGmm/VGA8GSuDOWDHwAv?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73a8042b-dc1b-4068-935c-08d98192565c
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rYctlM/ChoznVRqpcuZCy90zY9QrAavFpnoIVHEGUxj9GNGEFo2f6tc8VTII?=
+ =?us-ascii?Q?/9axHr7M5NjVfsq4UbdzmaTiHeyVGn7aevesZqeShRgSIV526aQ6fwBfSKcu?=
+ =?us-ascii?Q?9sp14u7aI0bCOWFayePzEypOqb7yz1yxO27jMwZmdiwAH+Fcj2qZgWQxQCCN?=
+ =?us-ascii?Q?wZkyuM8lQwn/5fANWqxHagZl3ObTsmt7ryomNtpdJw1xWt9db746owY06BwV?=
+ =?us-ascii?Q?RSTOiYO8jSrp9Tgml5Aj56J5dVOAPhpEnk+O1l5lRT2EFVTfQxOlXjkOz3ID?=
+ =?us-ascii?Q?Nfy4WHUJZSEtP/sowI6YskpmAiX8d5XyRbFvdw4xoGwa3qHQI7EmUidlqeLk?=
+ =?us-ascii?Q?rogBPAKld33tDhKYdW0hGzD+hXDmmRbnAXgIQJOzmGUKH29b5aT3SnpEgjVL?=
+ =?us-ascii?Q?P9k7MPDhhAkmyA7eZWLX+ID4aNWW5Jf2AivboHYISXNOCII6jIwkutTWR1tK?=
+ =?us-ascii?Q?EZeQ8AzgXlrsLDYyAo4LYxRILjmgld4iaY+hxqILBXqtBjicaKmsWQFRkrOy?=
+ =?us-ascii?Q?0Iw7u2qepgboH04gzJaKBc+KP8t+quShkxEzghGxZdGZFATwIZU3XSAzs+rA?=
+ =?us-ascii?Q?XgprlfvlcauVWElEQcyrszy2SzN3M6qRN6QWXD+GBAPMi6Td2pSQGzb33XdP?=
+ =?us-ascii?Q?cj3uAtjoJStLCLh2tuptKBrU6HtUNjDj4Qv69GuP2CS8o4to2IVLK+C3UkL4?=
+ =?us-ascii?Q?qf46dss8fwUaNXj5vMWkcb6/P2eaL3z7XwW1M7+3/dRkkIvsEePxX3P3Rl/P?=
+ =?us-ascii?Q?qdXEJ1+594T5r6YB78O/NiG8OANOmEvCR8898XWFy9aAN1/c5ZN+lk+abrg4?=
+ =?us-ascii?Q?wWFWxQLrvCISalz4vJa7rPVi91F/hxLXiDPSEwDZWEcel5pc6BqkaNq5eq54?=
+ =?us-ascii?Q?wI4ZNe2cptiIAOAP2CdcvkCIfzy108531Lfni5e/232a/UAcx7eAKKSY5cn2?=
+ =?us-ascii?Q?E1bLa9pYBEQnB4EtYqZQeWT6xxt61WGbl4lpbdbaOB9KTN+caz/OC4pgtR+R?=
+ =?us-ascii?Q?x90DrObFycyYfDbn2xMr9AXnc1kG5NsiFW2FyjIukOqyYO3pcw33AcX2do/s?=
+ =?us-ascii?Q?VijZO3uDhlUcyoiu5NvAgkV2WWYCnhi7Wd750xF+ajVeVo94mOYD4l4h8x9x?=
+ =?us-ascii?Q?Q9aGJ/pr/Xefo66yu18cQ4nM8La71tmHuIdqJSjQq4sSAmAZ40mln1oo8Lsd?=
+ =?us-ascii?Q?wIgXXFSX0bg1zrHq5xCvnro2juhdPdwHnpaF713IZjzIq0kHZpFWy178BlMn?=
+ =?us-ascii?Q?Ht3f5mHTX5Z8iWy9We9MbT2hanBOOPA4ibL13dQyVGMv/eujAiwUxW8QlwXV?=
+ =?us-ascii?Q?beJpzuBT+36mTAUeyr/nSOV9?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a96c0c1e-67da-4694-0935-08d98199d6a6
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0401MB2671.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2021 08:39:36.6260
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2021 09:33:18.5928
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HbD8PMEUDDXemMgJZpsAhRriXOPllWXSJK/YfPEi+lU9comg/zhgPgMLgdhfh7Cuc9Lf2kjj2o7vEWB1SltNrAE8d0/S/DgKGN7+Rvm8fm8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5552
+X-MS-Exchange-CrossTenant-UserPrincipalName: wZyrZ8y/DznMDHXNUsRFDDJaMT8J8k2bAXNnAAqZD+5OCslJGl5tjaNbi1L4OpvQLp6grPp441YoBs6QhpOqgxW7rsL095wmlIWWm4n2vPc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2493
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 25, 2021 at 02:22:53PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Open user space access to the devlink after driver is probed.
+From: Seb Laveze <sebastien.laveze@nxp.com>
 
-Hi Leon,
+Add an IOCTL to perform per-timestamp conversion, as an extension of the
+ptp virtual framework introduced in commit 5d43f951b1ac ("ptp: add ptp
+virtual clock driver framework").
 
-I think a description of why is warranted here.
+The original implementation allows binding a socket to a given virtual
+clock to perform the timestamps conversions. Commit 5d43f951b1ac ("ptp:
+add ptp virtual clock driver framework").
 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+This binding works well if the application requires all timestamps in the
+same domain but is not convenient when multiple domains need to be
+supported using a single socket.
+
+Typically, IEEE 802.1AS-2020 can be implemented using a single socket,
+the CMLDS layer using raw PHC timestamps and the domain specific
+timestamps converted in the appropriate gPTP domain using this IOCTL.
+
+Signed-off-by: Seb Laveze <sebastien.laveze@nxp.com>
+---
+ drivers/ptp/ptp_chardev.c      | 24 ++++++++++++++++++++++++
+ include/uapi/linux/ptp_clock.h |  1 +
+ 2 files changed, 25 insertions(+)
+
+diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+index af3bc65c4595..28c13098fcba 100644
+--- a/drivers/ptp/ptp_chardev.c
++++ b/drivers/ptp/ptp_chardev.c
+@@ -118,10 +118,13 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 	struct ptp_clock_request req;
+ 	struct ptp_clock_caps caps;
+ 	struct ptp_clock_time *pct;
++	struct ptp_vclock *vclock;
+ 	unsigned int i, pin_index;
+ 	struct ptp_pin_desc pd;
+ 	struct timespec64 ts;
++	unsigned long flags;
+ 	int enable, err = 0;
++	s64 ns;
+ 
+ 	switch (cmd) {
+ 
+@@ -418,6 +421,27 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		mutex_unlock(&ptp->pincfg_mux);
+ 		break;
+ 
++	case PTP_VCLOCK_CONV_TS:
++		if (!ptp->is_virtual_clock)
++			return -EINVAL;
++
++		vclock = info_to_vclock(ptp->info);
++
++		if (get_timespec64(&ts, (void __user *)arg))
++			return -EFAULT;
++
++		ns = timespec64_to_ns(&ts);
++
++		spin_lock_irqsave(&vclock->lock, flags);
++		ns = timecounter_cyc2time(&vclock->tc, ns);
++		spin_unlock_irqrestore(&vclock->lock, flags);
++
++		ts = ns_to_timespec64(ns);
++
++		if (put_timespec64(&ts, (void __user *)arg))
++			return -EFAULT;
++		break;
++
+ 	default:
+ 		err = -ENOTTY;
+ 		break;
+diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
+index 1d108d597f66..13147d454aa8 100644
+--- a/include/uapi/linux/ptp_clock.h
++++ b/include/uapi/linux/ptp_clock.h
+@@ -223,6 +223,7 @@ struct ptp_pin_desc {
+ 	_IOWR(PTP_CLK_MAGIC, 17, struct ptp_sys_offset_precise)
+ #define PTP_SYS_OFFSET_EXTENDED2 \
+ 	_IOWR(PTP_CLK_MAGIC, 18, struct ptp_sys_offset_extended)
++#define PTP_VCLOCK_CONV_TS  _IOWR(PTP_CLK_MAGIC, 19, struct __kernel_timespec)
+ 
+ struct ptp_extts_event {
+ 	struct ptp_clock_time t; /* Time event occured. */
+-- 
+2.25.1
+
