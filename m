@@ -2,67 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7E57418F13
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 08:41:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42CDA418FA6
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 09:03:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232982AbhI0GnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 02:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34152 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232969AbhI0GnH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 02:43:07 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6EF3C061570
-        for <netdev@vger.kernel.org>; Sun, 26 Sep 2021 23:41:29 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id bj3-20020a17090b088300b0019e6603fe89so11043044pjb.4
-        for <netdev@vger.kernel.org>; Sun, 26 Sep 2021 23:41:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=UKtJ8ZI/5dG6JfOjNevc2B7cAHynW8IYJSTVxExVW3g=;
-        b=lkil1L9HF+OtDyWi0RMkWZsyp+QjFq40zAropBsyo3uBGAymcKBUcRy5bAKjd+yfH9
-         O64rdTL1mb8R8WR+hxFG2c59I0giRwYdrM1QlnLGocsFxeOsxT/+wI9yK58SFr3VSUvT
-         kKud17H7SMDYo8dhGf/AGNK1I75awC3VaogaTqM2Oar/15DTomXdoW9p3kaUNS/zj+Au
-         mD24DA9ww/gWwSFpmwr7U/J6gInyLD+LMngteLemQZJuccP8ZEOFGh4F0ib//2PVxQDy
-         XWZEUZOLuI81MzOYs16Hw1pYzp4HRukkytx6dxJGT9+kFmAcI+37/A+mhSkKUgspsZSA
-         ANPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=UKtJ8ZI/5dG6JfOjNevc2B7cAHynW8IYJSTVxExVW3g=;
-        b=GhZJYpfxUGAxzIg56rQ5jc1PT/ndLiLORJn69o3e3T2I+/1Z/kDsCPWm4Udhmi32Tf
-         d4XiB2a9d570b3sVhpfKfvrDxiXy/kLimKGfKI6EPgNMgJaMN9mfeOm/MsN6/BjAALPv
-         FO9UHWwrJJfXHHK925j6UG37OwRWqu5SdxTp3G0kCi7eu9xYes4uh6EQCNy885AAi+xm
-         Kx7M0CFaGpG3gA+Dre0jQAFkxXEhzro3VvREDAMhX/Sl8FpV94GTRW2oKhBTyuv/QA6Z
-         ScLZ8T07baY5u8JcVxwgVMrR8yvGu0icYPFtw85rzslad4eXPTG/n+e/Zv4e3qUBFUME
-         6pgw==
-X-Gm-Message-State: AOAM531/WSRN2H1f6R19C4XrBQKpUtEgjjbQ36XVW1lV/KtFogwxgUaW
-        KIYD9hEYjrZmXxuv78HulON+4JUGiazkMpg0108=
-X-Google-Smtp-Source: ABdhPJzyvQEVnJ5UGMlySYGlKDnd8201b647xxznBGDm5zoZiYth8cMZ7hmVmMW6XN8aOEjLYMpEhnfHBSoCJAh33cI=
-X-Received: by 2002:a17:90b:1e09:: with SMTP id pg9mr18124727pjb.73.1632724889344;
- Sun, 26 Sep 2021 23:41:29 -0700 (PDT)
+        id S233181AbhI0HEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 03:04:54 -0400
+Received: from us-smtp-delivery-115.mimecast.com ([170.10.133.115]:34487 "EHLO
+        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233118AbhI0HEw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 03:04:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
+        s=selector; t=1632726193;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XLZNOfYfpC5ztNPOoufpucttZwj3ZH+y3LDmJu/eCr4=;
+        b=C5ThP+yZ+RmCf6qtBNGUDNyg+KHXtFsVdr7CJT1rQpebCKDPZdNCotAMOzvjA2VXDBJXxz
+        dBtvvoCvox5AGi+d8WdsKybnmgBaxjMkffUMDV3chVY/iuJDRW3BvlkmV+EQ35gtnRFqow
+        kHXpEADMDLVTlSzVgjZZ0BKGkOa/hjE=
+Received: from mail.maxlinear.com (174-47-1-84.static.ctl.one [174.47.1.84])
+ (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-352-OVPxP044PVmdKhfKB4-gzQ-1; Mon, 27 Sep 2021 03:03:11 -0400
+X-MC-Unique: OVPxP044PVmdKhfKB4-gzQ-1
+Received: from sgsxdev002.isng.phoenix.local (10.226.81.112) by
+ mail.maxlinear.com (10.23.38.119) with Microsoft SMTP Server id 15.1.2242.4;
+ Mon, 27 Sep 2021 00:03:06 -0700
+From:   Xu Liang <lxu@maxlinear.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <vee.khee.wong@linux.intel.com>
+CC:     <linux@armlinux.org.uk>, <hmehrtens@maxlinear.com>,
+        <tmohren@maxlinear.com>, <mohammad.athari.ismail@intel.com>,
+        Xu Liang <lxu@maxlinear.com>
+Subject: [PATCH v2] net: phy: enhance GPY115 loopback disable function
+Date:   Mon, 27 Sep 2021 15:03:02 +0800
+Message-ID: <20210927070302.27956-1-lxu@maxlinear.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Received: by 2002:a05:6a10:fda0:0:0:0:0 with HTTP; Sun, 26 Sep 2021 23:41:28
- -0700 (PDT)
-Reply-To: mg9594651@gmail.com
-From:   Matthew Gonzalez <info.hudson00@gmail.com>
-Date:   Mon, 27 Sep 2021 07:41:28 +0100
-Message-ID: <CAOH7Kr0Nc6YWhDeTy52VNdGb-KJW5prKHE1Q=VEm8oZt00vANg@mail.gmail.com>
-Subject: ASAP
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: maxlinear.com
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+GPY115 need reset PHY when it comes out from loopback mode if the firmware
+version number (lower 8 bits) is equal to or below 0x76.
 
-I trust that this message will reach you in good health? Please, I
-have something that I would like to share with you.
+Fixes: 7d901a1e878a ("net: phy: add Maxlinear GPY115/21x/24x driver")
+Signed-off-by: Xu Liang <lxu@maxlinear.com>
+---
+v2 changes:
+  Remove wrong comment.
+  Use genphy_soft_reset instead of modifying MII_BMCR register to trigger P=
+HY reset.
 
-Please, respond back to me for more details.
+ drivers/net/phy/mxl-gpy.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-Sincerely,
+diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
+index 2d5d5081c3b6..5ce1bf03bbd7 100644
+--- a/drivers/net/phy/mxl-gpy.c
++++ b/drivers/net/phy/mxl-gpy.c
+@@ -493,6 +493,25 @@ static int gpy_loopback(struct phy_device *phydev, boo=
+l enable)
+ =09return ret;
+ }
+=20
++static int gpy115_loopback(struct phy_device *phydev, bool enable)
++{
++=09int ret;
++=09int fw_minor;
++
++=09if (enable)
++=09=09return gpy_loopback(phydev, enable);
++
++=09ret =3D phy_read(phydev, PHY_FWV);
++=09if (ret < 0)
++=09=09return ret;
++
++=09fw_minor =3D FIELD_GET(PHY_FWV_MINOR_MASK, ret);
++=09if (fw_minor > 0x0076)
++=09=09return gpy_loopback(phydev, 0);
++
++=09return genphy_soft_reset(phydev);
++}
++
+ static struct phy_driver gpy_drivers[] =3D {
+ =09{
+ =09=09PHY_ID_MATCH_MODEL(PHY_ID_GPY2xx),
+@@ -527,7 +546,7 @@ static struct phy_driver gpy_drivers[] =3D {
+ =09=09.handle_interrupt =3D gpy_handle_interrupt,
+ =09=09.set_wol=09=3D gpy_set_wol,
+ =09=09.get_wol=09=3D gpy_get_wol,
+-=09=09.set_loopback=09=3D gpy_loopback,
++=09=09.set_loopback=09=3D gpy115_loopback,
+ =09},
+ =09{
+ =09=09PHY_ID_MATCH_MODEL(PHY_ID_GPY115C),
+@@ -544,7 +563,7 @@ static struct phy_driver gpy_drivers[] =3D {
+ =09=09.handle_interrupt =3D gpy_handle_interrupt,
+ =09=09.set_wol=09=3D gpy_set_wol,
+ =09=09.get_wol=09=3D gpy_get_wol,
+-=09=09.set_loopback=09=3D gpy_loopback,
++=09=09.set_loopback=09=3D gpy115_loopback,
+ =09},
+ =09{
+ =09=09.phy_id=09=09=3D PHY_ID_GPY211B,
+--=20
+2.17.1
 
-Matthew Gonzalez.
