@@ -2,158 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB51641980B
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 17:39:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E50B1419843
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 17:52:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235133AbhI0Pky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 11:40:54 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:49340 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235100AbhI0Pks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 11:40:48 -0400
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18RF5lUL032536;
-        Mon, 27 Sep 2021 15:38:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=BWK+Ljs2CAkKQ6fmkueH8N58Cio+BqoApS6vaqDoTIU=;
- b=YzVNmknVyzIJTN5bgpEV77Pbpyafgk8VuSuFSNLzAQt85dS7jpACMdGfnSQppqcqJpR3
- wVq6fCZt5tszBGHqG1smQ8szI2+2THTWV/qDWYaNIxlVfnvM04u+6FJJT/PV6zawx4Jl
- h9/314ImghO3xxGlMDtJu3CMC1V3NxObvqfnUgWYDe/gJEwmWzuU6DUUMnn4ieZsoPlQ
- KMMLCq8gK7JUVRLKC0KAWFBVD/OUJLzB1jAX54JM4/oKuOySs1+T08aT8m6tfbzN86M7
- Pjo5F9hLjIC0ZG/BuE/ENGgoxnQYYT/sB7o1IIaGvFbxbSoneoijShRG1UbUYq1i7UNu Ng== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3bbexcs91t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 27 Sep 2021 15:38:43 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 18RFaMwK082354;
-        Mon, 27 Sep 2021 15:38:42 GMT
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2045.outbound.protection.outlook.com [104.47.56.45])
-        by userp3020.oracle.com with ESMTP id 3badhr6m1h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 27 Sep 2021 15:38:41 +0000
+        id S235292AbhI0PyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 11:54:15 -0400
+Received: from mail-mw2nam08on2057.outbound.protection.outlook.com ([40.107.101.57]:9280
+        "EHLO NAM04-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235100AbhI0PyN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 11:54:13 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gQc+SwKm+5zSrCRY+Ceded+fyWlE8rTLckftSotOyK+zqMryH2hE4OLtsYC+hjyJ0G6pFe2c8NGHLUh8eF2sssBFuBAiHfM8YzIZSLPoxcZ3zb6GQrRFZpYdBXb2lewCastb8jtfoC+jsskW1Y0+C2LjLXEBZMBz26bkVARzNLS1h0KZyV8IN/WEuux4tUtjZOkHKU0Yr9yPOh50a9SPV4LgWJlR5piQ72uWbSqtGvjtMDhVPSZ5CKltF+FAEw7Cy90DjgEA/26YVhJhgVdHG+rISF52htIT41RIoHmj7zKNgVtTF26JeEag5gEDuExDuwaq31JhDqjPZ5WbSltTCw==
+ b=DxFsIeI9kZ5jiriXc15ShaH+fU6lrpC3s3+j8rnO86iPLW6hbUG5Y9bdAMzXPKG1xCveK5s5DpapqQHK6mkzFQxufmsvzVf1hPZmncKXbtr4A2qOOvcPa5P+Hb1bk3jFMzla9UlF6BIWfgo/TozL75Z2Z/eKvaFeusfED7SbBD4MKizlGHqlRe4AozyTyLpmSqALI89/TByW76swNO5KWZ9CCpTcO23m8hU43FSZK+zbwn4EfXlCYgGpyxa9LmoFTjqtofjTkrvywycuXG6fJFPwGo5Dm7FKl6Ezf2tazOOpocffV3zNr/HyZQzH3acutR6i6U8OeIKJPIr8NDG1lA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=BWK+Ljs2CAkKQ6fmkueH8N58Cio+BqoApS6vaqDoTIU=;
- b=iuSFU3T1yFVfs6g/xCNrRqZchLwcMCO51EO96d+3dkaR+miHsy96WN97Bd/xlRmlgpap564BsT5cE6AuiihRMV5cm1GBqo9Iff+twDqi2MOsSpMzZDuOe7c8JXM1pw7F6kp6H7iilV+ReNNCZfnsC96/nfp29aiTbSAg3gsNJYpI6nHY+Y/4XX+xNI6qiyP9z1WdidAHq1z9Ug3xi4Cxy49dFG82N+3p7DahXCQ6wrpj9plaQBcYdSOPK0MrLT3lHuFtu2lHUWySqkde2/g/w+3o0wcEcqbspl/sMDGZSsn7tC0m+FtDXQQCljq+aYcCwpDqtXqutS/1P4goqImKAA==
+ bh=fdEppgCzvKbB7RkJ3jtNVflS78pxJ0dPH6DSVbc8LTM=;
+ b=WzsU26C8dC5w5qlHkFN00jJR46+T0aFBjTUL2vGdPHcdofP4sdkG42txCw5ywJ1LZbjnJ5v4NKcmL5mISnQ3OMufVzkSvXOnorMDfPUyUHTX/sYoEowDWVYOEE8JGf2u7jbaJ3tB0JAN3KewdoQU+I4TMZF52YlzSneSEev58WUpG3CvJo47X+TkAqq1tzJt4YeIBZRzWLGVnXK9KslC4xigEBP7TkpJbeZ6W2/aeGy3rePOQCgBYgWF3DISBnhmiZRMPMZZ457NuuvHE8Ph3eYKXHISIl2DohXCxDxCtD7pVn6HPxf+Q4oOd4LSPz2SrT4jdZUoWmwaPf+PGBRpFQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BWK+Ljs2CAkKQ6fmkueH8N58Cio+BqoApS6vaqDoTIU=;
- b=l3jN5CwSYQtxUs61dqeQc0CTbFSUsMBSl7lts/WdC2lPViJxzMPqNY62wt1diMhu6nbozxhlk5o7w9WKGiz6jAeM6Gek++HL5BaprDkCiggAjgNFI2rzLxAHTautrCwnnrNbuh1/0bsk7h4Cpqa+MJBR+2WK3AUgLsHt1oJU/UI=
-Authentication-Results: canonical.com; dkim=none (message not signed)
- header.d=none;canonical.com; dmarc=none action=none header.from=oracle.com;
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CO1PR10MB4641.namprd10.prod.outlook.com
- (2603:10b6:303:6d::5) with Microsoft SMTP Server (version=TLS1_2,
+ bh=fdEppgCzvKbB7RkJ3jtNVflS78pxJ0dPH6DSVbc8LTM=;
+ b=G3wWMWM0ZeFQA821MIkizpqtvIHyjAl5x1MwNaYI8TRaJJd1HSurKJyZ/226SuNivFac/VFn3Qz80MOmXYfny0ov6uS19HL2sWGyzxn3dCOCPq3Z340foOlK4mLcS42Dp3jAy9WBzW6B/ShmuhQ6Ibt9oauZFQkrFzAK8ZKhAcSVBKw8XcroSLgcYQUtqirmPJtIAyxEIRztErUOzmiC5f6COivbkjNjPsYStSNo/m0X+CET91rRHOB4XwIQR8EuaClz9ZkygX6rqPl9KH59+qcmzjSvfk0aKNlfabRTFzEcngKPNwDM3jniWHahavdTt5SuHh/knHqRTMeU4D77Bg==
+Received: from CH2PR12MB3895.namprd12.prod.outlook.com (2603:10b6:610:2a::13)
+ by CH2PR12MB4939.namprd12.prod.outlook.com (2603:10b6:610:61::14) with
+ Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Mon, 27 Sep
- 2021 15:38:39 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::d409:11b5:5eb2:6be9]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::d409:11b5:5eb2:6be9%5]) with mapi id 15.20.4544.021; Mon, 27 Sep 2021
- 15:38:39 +0000
-Date:   Mon, 27 Sep 2021 18:38:22 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Samuel Ortiz <sameo@linux.intel.com>,
+ 2021 15:52:34 +0000
+Received: from CH2PR12MB3895.namprd12.prod.outlook.com
+ ([fe80::a46b:a8b7:59d:9142]) by CH2PR12MB3895.namprd12.prod.outlook.com
+ ([fe80::a46b:a8b7:59d:9142%5]) with mapi id 15.20.4544.021; Mon, 27 Sep 2021
+ 15:52:34 +0000
+From:   Asmaa Mnebhi <asmaa@nvidia.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         "David S. Miller" <davem@davemloft.net>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] nfc: avoid potential race condition
-Message-ID: <20210927153822.GH2048@kadam>
-References: <20210923065051.GA25122@kili>
- <3760c70c-299c-89bf-5a4a-22e8d564ef92@canonical.com>
- <20210923122220.GB2083@kadam>
- <47358bea-e761-b823-dfbd-cd8e0a2a69a6@canonical.com>
- <20210924131441.6598ba3a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <81b648d2-0e20-e5ac-e2ff-a1b8b8ea83a8@canonical.com>
- <20210927072605.45291daf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <1af270c3-8a4f-6c62-bb6c-b454a507f443@canonical.com>
- <20210927151325.GJ2083@kadam>
- <b05d4811-d207-1bfc-a56a-81b44808b7bf@canonical.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b05d4811-d207-1bfc-a56a-81b44808b7bf@canonical.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0016.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::28)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        David Thompson <davthompson@nvidia.com>
+Subject: RE: [PATCH v3 1/2] gpio: mlxbf2: Introduce IRQ support
+Thread-Topic: [PATCH v3 1/2] gpio: mlxbf2: Introduce IRQ support
+Thread-Index: AQHXsLi5/ezHFM2t80qMnoiP1wWjOauzEi0AgADJmACABBI7EIAAAriAgAACbtCAAAsjgIAAAWRQ
+Date:   Mon, 27 Sep 2021 15:52:34 +0000
+Message-ID: <CH2PR12MB3895E69636DDB3811C0EAE3DD7A79@CH2PR12MB3895.namprd12.prod.outlook.com>
+References: <20210923202216.16091-1-asmaa@nvidia.com>
+ <20210923202216.16091-2-asmaa@nvidia.com> <YU26lIUayYXU/x9l@lunn.ch>
+ <CACRpkdbUJF6VUPk9kCMPBvjeL3frJAbHq+h0-z7P-a1pSU+fiw@mail.gmail.com>
+ <CH2PR12MB38951F2326196AB5B573A73DD7A79@CH2PR12MB3895.namprd12.prod.outlook.com>
+ <YVHQQcv2M6soJR6u@lunn.ch>
+ <CH2PR12MB389585F7D5EFE5E2453593DBD7A79@CH2PR12MB3895.namprd12.prod.outlook.com>
+ <YVHbo/cJcHzxUk+d@lunn.ch>
+In-Reply-To: <YVHbo/cJcHzxUk+d@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9887c1d7-7177-42ec-3776-08d981ced278
+x-ms-traffictypediagnostic: CH2PR12MB4939:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH2PR12MB4939B2D66FC857E888881775D7A79@CH2PR12MB4939.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: DHKw0eXAHKd6vpumHz4hM/kFjBVKofVVGEmumvmIKAqW3FWuz5LteqFsltKF2M+BAhe9eYGhIAuxhstbhNaD4SPtr6gAOzYhUE3fbtDoIsWqhifSEsNZTaMxww6rOSA9Pexv+MbHOUiiAGHlR+sG0URoI0MSn1EXwZO3SYtr4RIe+gI1vQM+W3xIGRC0t0Z40Jo8pRGBe6NhhBH47EX8FxqgWdYeASbpGY0Yx2azklaKnnQHVh/t49aMHb5veSXqxjPa1esNOKxuwHteju3WFEb7eCAf57aCGLbFIShxM2XjOZCkPciuWdaDFprxK6WvhVyxwQpJ7PvE2eQH7Bo+ukay0VoNlrtDSiGk/C4NKBFA341jl4F5VJRfW4xwJwm/wCoehcFH0gduPlHN7rFxdHD4GLIT6y4fq8w9CIAdPLbpAcj0yD5eQCVYuKp4nBc6OH4IhSFcmU6AsA5poBpsdZ3P6CHRluey3dRKeXc943ds9Tv7gexP/vUAY7+nH5jotPQMRlCyVKyj8fdbh2uZDJCllY1fbfZ+XCFiWTJ0Rentb0xDcA1oAov1CRZ37doeW+C6/Wr9qnOWVT4wNN4y446fOplMXXoAIJmTb7liqA294XHxExKydcgIjNfQM01N2Ei4fNl5UGjYxJTmuA1TY6IhODpu4WSb2Dlpe/alS+CtCaYT6vIGjLDStQ2l1UxTOCKGnmUQXKP4+7s35w1Ekw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB3895.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(55016002)(9686003)(8676002)(54906003)(7696005)(38100700002)(71200400001)(2906002)(122000001)(8936002)(83380400001)(107886003)(508600001)(26005)(6506007)(186003)(86362001)(5660300002)(6916009)(33656002)(4326008)(38070700005)(66446008)(7416002)(76116006)(64756008)(66556008)(66476007)(66946007)(52536014)(316002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?GzshvBIYcFlmpHjl+ne4iMFCsB3bs2H5Of9OBX+euLpjHxW5BaKShkyCKYu6?=
+ =?us-ascii?Q?6pI/9M9VC5eDHuFueQ1zwAAU5itl+PmDMYlYCta31M0oEC30KyhGwp221SHZ?=
+ =?us-ascii?Q?Xz3q6T0PQqdYRfABXhjoVc2fFdm0VvRYnv0GAmDiTm1nIcafBBlKx0fNSh3z?=
+ =?us-ascii?Q?N3usHaMAmgubFSFT1OqFeTdiqjwaUgF1Y3FmntmvOkJWPIdsa7x6OpaRTZgo?=
+ =?us-ascii?Q?WfWFvjlbCq49CaJsmYwabmZawSFK4eknnY7uombwd4hwXB6KlzdK3ipgCqYa?=
+ =?us-ascii?Q?Bv9KzQ7MFnQVymuVdfGn9Zm+DuiXbs1XNgTDDiTAf+O6HZoIjZeKNiJu9Dsc?=
+ =?us-ascii?Q?nPQrNvyUlW+aPNzIeFisNoWx1Iq4frIbLL6SBLTdi42jmdzKJFmdr2iql33F?=
+ =?us-ascii?Q?jl+ZwtzSQveOIfHXgf5aocjinpTCLb/gcLC/3nOeBHoHYRZJbH0oYo7dkoRZ?=
+ =?us-ascii?Q?HmEYXzmSSGd+hfxCRHkSKWLsQrVrd6KllgzvSkypA09T3Yxt+uXyj4PdwRh3?=
+ =?us-ascii?Q?GANciIutc5Vso7HKD+x0VSsmS0ifxJXJdl6ADzgO9Gjd5lnEqf07B/ZKcm/+?=
+ =?us-ascii?Q?OKaEVcGC6vj2OiCYs8cpqxgR4JKaCsnpW394wYaIk+bzwBMvJBsnoOq135df?=
+ =?us-ascii?Q?mk9vJDecLE0O2odszZs9l0bneZ5LTnJolvFB0/x1QFhCTWz2tYTxVUuBkJD4?=
+ =?us-ascii?Q?JvUol/pIE75iygKso9vJKE+FoeTDQ9OIoH2XnZeBRlyHKa4CYHJ7j8wmWITy?=
+ =?us-ascii?Q?V6F1Brndri0kq5yVFfWpfgNXSeVt7COY1vIL90y/OeBJG23PaH9CS9QuYv8b?=
+ =?us-ascii?Q?C/Wp2IkUc4NH+odtwgx6pwA9rWktIq9Tb5XPLf6hU5BmyMtk4YWubwYeWhmB?=
+ =?us-ascii?Q?/ywdM3gcvtGrA//bTiazM2xjnlyFDyep33mmuwJYNmdZp26xEiUbH5KBGiZw?=
+ =?us-ascii?Q?7cSyyPnYDlBZpUN66ZDyt9J34XFeTBOgJCgYE0c2xapx0AXTqbhTlW/7MWdD?=
+ =?us-ascii?Q?W5F0FzeUm92G4lgt/PXZ9inTuijZXathbbKgtomBZ93LezBbsReSn7pSYfUO?=
+ =?us-ascii?Q?+M1hv19nnKlndTVGSkLyHaLqyjuxL9YQqmqQ94czDfHSdAX59QMZrm9faxxJ?=
+ =?us-ascii?Q?uEMecPUwaawOn+2WFN8ZlMDuDeRxsf3HY9/q3y9e/BV+jZdmFltN2n7a5NmN?=
+ =?us-ascii?Q?ZSZprfQpyo0v8CkNUtrTZr75M6ua4IBJnDR4KG0HwaaKbvHw3CM3v24dexRj?=
+ =?us-ascii?Q?v8lXBV2qita69diusbQtMX+yZ5h3n8+ss/VJF+kWMY97Qk0I5w02fNQTuumc?=
+ =?us-ascii?Q?seSGiG5TL5xHCHq1UbT2xpzT?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Received: from kadam (62.8.83.99) by JNXP275CA0016.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13 via Frontend Transport; Mon, 27 Sep 2021 15:38:35 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f4771086-a54e-4d61-8728-08d981cce088
-X-MS-TrafficTypeDiagnostic: CO1PR10MB4641:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <CO1PR10MB4641FF9CE53425C2C4039D498EA79@CO1PR10MB4641.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fHElI6ez2niS+Mp6IZxpxQVWLECtIcGIMmkwOACycy/uUZuKEXQhKCc01YSC2mnU3z/ERw9O9AKuaBPHDUz365IzT/BctIVLKCzL4lKOb53thVVH/82y0ZMsOjdZtFPac/9luG+R4w7KV7shPy8RF0VuDcrUJgSDZK85kDLdrgJXjDai3iuHYi6wTnephM5L+rIJ80oTOU5ZGYd+Bq2T0szBja+KJ5+KFcIIY7lUc1oIqc0lEeonpJF3fdZ+WR2yI4m/7+1DE2jo5OSuGKE2r0jHg6rZOCEW1wOvzqBpWU1499Dgvn0yYNpPx5wzJ1AHH9Yd4M1TL8wHsyQxNCJV2ydYVVmJvGtjy+xUQQi8J5wVHXpTcXJLwNy/MpXCNNI8CVRLPbvvGgZHIxc2SMWkmSuNpEkBJv491FRyt1lRFAOfKvyFRwUYPZkEL00Pq5IYlfJ1IWboJR33mgbN1TZILajU0f4HmUlaDQhV3it01dOaXKLr+5YEEMizV0LrsI7E5BuIzJSEmgb16QEToVJqaetBj7wZ/nn4jHThMsrsP0Uk+zabSgDK5SbHzgPps38tIGqm+MBUnZRc/AmCjTg+phKGoFVutHWGp15vgoljV0WpXF5EytdrdHEVD+sG2tG8/+mnWH1viOSrqqtbZ42Q1d/78BIqegWSyL3hT022vzHYnyn9CT4cIMMr25WElfIRNq5RJ0qU2TwgevaUTBk+LA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(66556008)(33716001)(508600001)(54906003)(66476007)(38100700002)(38350700002)(52116002)(186003)(316002)(66946007)(26005)(86362001)(33656002)(5660300002)(1076003)(6666004)(9576002)(6496006)(8936002)(8676002)(9686003)(44832011)(2906002)(956004)(4326008)(6916009)(55016002)(4744005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LFayv2/2VSdmYGhMsVbgAeEEYHs9kJepxl0v60gCCzgTY74d/24zSxZX7IcW?=
- =?us-ascii?Q?oGPNSC9kzJ+0gR2jU9U2QYceBo+gGukONfnFKVn4pSwdBkNma2t5TT75AnUy?=
- =?us-ascii?Q?Tx71ijUrxywc3wlmcE9GT52S2bw9Nw2I+HQwmSnkqXNQPvNwMzMdPMotvn9x?=
- =?us-ascii?Q?qytStCQhrqbyiprMKKZF+7+UtOUoQ2WqLWrguAd9tHVua7L1PAG2B2637sxH?=
- =?us-ascii?Q?4fHx5Lr8/QiJ28MBk1b9h15IJUeZl+nGMWk+7N1ysW6RIkRdJwybTgaaELr5?=
- =?us-ascii?Q?s4VjbhAc6h3xcG8y1gFzfeUzE0Rrn+8a163sKsC7CdncWMem4cEVzM/ncCtO?=
- =?us-ascii?Q?Ifqa4+Lwp/2xhKzGlCDFm7nzyOXAUiZR7c3kLJZKVCu+oLPWR37gDBITbY3a?=
- =?us-ascii?Q?mGB/lAkMil9labXQ+BLlTHcqtJTVuP103Eh5Khk/Lt1Rx1jdRnF8hWChVn5v?=
- =?us-ascii?Q?ZWrfbtzWNlHMUkcLWrxJkg/ohhO8CNdf/Qol5qKISctHhPq8DsEy2FPGjVNX?=
- =?us-ascii?Q?tOlp+9nQ4NzI2YiP9l5xxrceebgBWAiYt6IFtYvBubm76oLZhuc70IvK4GSP?=
- =?us-ascii?Q?lzQausdkOCE9/xAlDeRrfsvjSc74jhPCAczyZ20znvt6nF3LQ17DscqiWAtb?=
- =?us-ascii?Q?mJalngtCg3qKkSCeKNBCpDcx+DXfUDGPtpVmdf84TFQOBIwsTOSJtsEDlYwS?=
- =?us-ascii?Q?NKqdx4I0uMzYX71dROGo/24ZcUaK4uXxXKV4Nn9KLfZeezU4KrhvJg94QeuB?=
- =?us-ascii?Q?7hQHgyHIAHaj2ioNDc2N1j1l4HQNC3cfkdfiFMI6tSB7tQYp/RrLJo15tmQc?=
- =?us-ascii?Q?/6TEa14vLVUUHzR2TQYLqy94TiuJk6YFVx1+xuPt58/JpygzOxyv11/x0cyF?=
- =?us-ascii?Q?RTZNB42pD/FWQ9YO6T5aSqddtiMnqrj2r/dW8Zc6TGbz03BxlIZ4DNvXgSN8?=
- =?us-ascii?Q?/njQ38qaMyaGycvC6mYHzVvfsrtcE8VbHaYjlFAYRYoSguYQYLSPbCt4U8gu?=
- =?us-ascii?Q?is6Edrvuw2Yc7tKuxtcAEFoPS442OLAma7FKEVGKgRi49YUZAFd3lma5ue35?=
- =?us-ascii?Q?glTlCIlCjfX+YKTu3a5dH8xwScOzzoq4o6DtRRJ/16PWnhv4G2CTv1snrsU8?=
- =?us-ascii?Q?kFMe4vFx9/KB2lXmiATCkoRbIJWOe4rD61T+7c0Bk+mt/kWqGJT5rt8yCOxy?=
- =?us-ascii?Q?+tEp1BsPkKdK1Qcnop5SBx1URWCgg7rOua1YtZABLNj1479RtLnZhFCADA/I?=
- =?us-ascii?Q?UrSQxtOVK15LOYaYFMERiqis5HOXifWZRC63IBwfazdcRW0YCf4TbpUMvsEE?=
- =?us-ascii?Q?qrOE6EDLEiq+imzIj47ynGk3?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f4771086-a54e-4d61-8728-08d981cce088
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2021 15:38:39.4528
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB3895.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9887c1d7-7177-42ec-3776-08d981ced278
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Sep 2021 15:52:34.3066
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: a/w4P5dhA+0vGz6z9asDspVqpLtj6iHmmcCiZl0uuNFjm5SL/eZwYyeNpFIuleeOqN6m0EY7CGCuZyeOvEA/o3n8XFXvrevkgHFV9xVHRME=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4641
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10120 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0
- malwarescore=0 spamscore=0 adultscore=0 bulkscore=0 mlxscore=0
- mlxlogscore=937 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2109270106
-X-Proofpoint-ORIG-GUID: PzI_EPY0d9o7J6k-CyIrJD2xaBVQpwGs
-X-Proofpoint-GUID: PzI_EPY0d9o7J6k-CyIrJD2xaBVQpwGs
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 85g6gy8H4KOyFypJvboJDqSRxi70K2R8SQHrWM0bb8UblTxFrdBgPfMqs+Q1recyIHOFHFPbPFTVeGuVwD00RQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4939
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 27, 2021 at 05:27:18PM +0200, Krzysztof Kozlowski wrote:
-> I don't mind, just take in mind that Sasha Levin was also pointing out
-> that quality of fixes applied for RC is poor and usually does not
-> receive proper testing or settle time.
-> 
-> Someone tested this fix? I did not.
+On Mon, Sep 27, 2021 at 02:19:45PM +0000, Asmaa Mnebhi wrote:
+>=20
+> > The BlueField GPIO HW only support Edge interrupts.
+>=20
+> O.K. So please remove all level support from this driver, and return=20
+> -EINVAL if requested to do level.
+> This also means, you cannot use interrupts with the Ethernet PHY. The=20
+> PHY is using level interrupts.
+>=20
+> Why not? The HW folks said it is alright because they Do some internal=20
+> conversion of PHY signal and we have tested This extensively.
 
-I have not tested it.  I don't care when it reaches -stable just so long
-as it does eventually.
+So the PHY is level based. The PHY is combing multiple interrupt sources=20
+into one external interrupt. If any of those internal interrupt sources are=
+ active,
+the external interrupt is active. If there are multiple active sources at o=
+nce, the
+interrupt stays low, until they are all cleared. This means there is not an=
+ edge
+per interrupt. There is one edge when the first internal source occurs, and=
+ no
+more edges, even if there are more internal interrupts.
 
-regards,
-dan carpenter
+The general flow in the PHY interrupt handler is to read the interrupt stat=
+us
+register, which tells you which internal interrupts have fired.
+You then address these internal interrupts one by one. This can take some
+time, MDIO is a slow bus etc. While handling these interrupt sources,
+it could be another internal interrupt source triggers. This new internal
+interrupt source keeps the external interrupt active. But there has not
+been an edge, since the interrupt handler is still clearing the sources
+which caused the first interrupt. With level interrupts, this is not an
+issue. When the interrupt handler exits, the interrupt is re-enabled. Since
+it is still active, due to the unhandled internal interrupt sources,
+the level interrupt immediately fires again. the handler then sees this
+new interrupt and handles it. At that point the level interrupt goes inacti=
+ve.
+
+Now think about what happens if you are using an edge interrupt
+controller with a level interrupt. You get the first edge, and call the
+interrupt handler. And then there are no more edges, despite there
+being more interrupts. You not only loose the new interrupt, you
+never see any more interrupts. You PHY link can go up and down,
+it can try to report being over temperature, that it has detected
+power from the peer, cable tests have passed, etc. But since there
+is no edge, there is never an interrupt.
+
+So you say it has been extensively tested. Has it been extensively
+tested with multiple internal interrupt sources at the same time?
+And with slight timing variations, so that you trigger this race
+condition? It is not going to happen very often, but when it does,
+it is going to be very bad.
+
+Asmaa>> Thank you very much for the detailed and clear explanation!
+we only enable/support link up/down interrupts. QA has tested
+bringing up/down the network interface +200 times in a loop.
+I agree with you that the INT_N should be connected to a GPIO
+Pin which also supports level interrupt. From a software perspective,
+that HW interrupt flow is not visible/accessible to software.
+I was instructed by HW designers to enable the interrupt and set it as fall=
+ing.
+The software interrupt and handler is not registered
+based on the GPIO interrupt but rather a HW interrupt which is
+common to all GPIO pins (irrelevant here, but this is edge triggered):
+ret =3D devm_request_irq(dev, irq, mlxbf2_gpio_irq_handler,
+                                        IRQF_SHARED, name, gs);
+
 
