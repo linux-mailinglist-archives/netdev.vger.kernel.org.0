@@ -2,120 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 866424193A8
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 13:53:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6704193B6
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 13:55:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234138AbhI0LzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 07:55:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56210 "EHLO mail.kernel.org"
+        id S234194AbhI0L5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 07:57:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57874 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234015AbhI0LzG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Sep 2021 07:55:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BA30360F6C;
-        Mon, 27 Sep 2021 11:53:27 +0000 (UTC)
+        id S234051AbhI0L5F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 07:57:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4A39560F6C;
+        Mon, 27 Sep 2021 11:55:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632743608;
-        bh=Q2dHeySo3zRsXGknIbLs6i+yTpWx2dDgGoEFYPDr5/8=;
+        s=k20201202; t=1632743728;
+        bh=ftp5e/Z+bgMoB8q+w6BD3W3PyXq/J5hOEt/FeFtg5iw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YaUXTiQmxWntMdcP1V6UabAj5J8Y25L1/E0AYpGsph11k51k6VvuI8uPokBfxbcAk
-         m2uUNUxT0DP/R0xJf6IGUC8maz/OqFGDLCwx0qK2IoUljTtiFro1XMJp+GmLED5ssx
-         T1ku5NlihRu34GIj81fPeIw7ebnIWBENHWl+gsXCpbVoVK2JoPlPV9W9/7Ky2991FF
-         arzkdMMFq4EaH/2DLzzcuKPhUe4TrV024+K0jMiavouR22LFvA7VwYQ1mEsRJO8slE
-         0+cd42Ha63JskwWD96PNT2Osmj6PMhlOW5OdUO22AYB3Y6mybJGQC1TChNKODmw7Ew
-         1Cj5jreVMvoQQ==
-Date:   Mon, 27 Sep 2021 14:53:24 +0300
+        b=cLW1ZttLbuD8ca0mc7zREupyRk157igHo9VdiTVDhaf3Onjc0pcD/HvNPg7YbmCsn
+         LW/EATH3aCX2igPQ4OO8LiviYoPdGtFHVah24g3WvF0SLoWgRp9qG4NWSqXjvdeRF3
+         D+J+hjRPsIX5QAaVxMJGiZ+53icrKUmCg30kNuBBUoanCuNs+xAGsRt0DJsaXqsRbw
+         AOYpGw+FxTB9urNvntdLGc0cII98syp37ruqfkMb7f1GLuvSSpL0qC6PmXjx8EN3sx
+         OLWaYzi+rkD46JQOXBu8cswQQJwdeaHY0K15F4/315PoY7ERvyJfUQJsXa65Kf+fUe
+         QbtbjunK8uFcw==
+Date:   Mon, 27 Sep 2021 14:55:24 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        hariprasad <hkelam@marvell.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Manish Chopra <manishc@marvell.com>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Richard Cochran <richardcochran@gmail.com>,
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@nvidia.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next v1 13/21] nfp: Move delink_register to be last
- command
-Message-ID: <YVGwtNEcWSgYvyyV@unreal>
-References: <cover.1632565508.git.leonro@nvidia.com>
- <f393212ad3906808ee7eb5cff06ef2e053eb9d2b.1632565508.git.leonro@nvidia.com>
- <20210927083923.GC17484@corigine.com>
+        Yishai Hadas <yishaih@nvidia.com>
+Subject: Re: [PATCH mlx5-next 1/7] PCI/IOV: Provide internal VF index
+Message-ID: <YVGxLH+hi1NN0oq5@unreal>
+References: <YVAVAfU3aL6JJg3i@unreal>
+ <20210926202341.GA588922@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210927083923.GC17484@corigine.com>
+In-Reply-To: <20210926202341.GA588922@bhelgaas>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 27, 2021 at 10:39:24AM +0200, Simon Horman wrote:
-> On Sat, Sep 25, 2021 at 02:22:53PM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
+On Sun, Sep 26, 2021 at 03:23:41PM -0500, Bjorn Helgaas wrote:
+> On Sun, Sep 26, 2021 at 09:36:49AM +0300, Leon Romanovsky wrote:
+> > On Sat, Sep 25, 2021 at 12:41:15PM -0500, Bjorn Helgaas wrote:
+> > > On Sat, Sep 25, 2021 at 01:10:39PM +0300, Leon Romanovsky wrote:
+> > > > On Fri, Sep 24, 2021 at 08:08:45AM -0500, Bjorn Helgaas wrote:
+> > > > > On Thu, Sep 23, 2021 at 09:35:32AM +0300, Leon Romanovsky wrote:
+> > > > > > On Wed, Sep 22, 2021 at 04:59:30PM -0500, Bjorn Helgaas wrote:
+> > > > > > > On Wed, Sep 22, 2021 at 01:38:50PM +0300, Leon Romanovsky wrote:
+> > > > > > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > > > > > 
+> > > > > > > > The PCI core uses the VF index internally, often called the vf_id,
+> > > > > > > > during the setup of the VF, eg pci_iov_add_virtfn().
+> > > > > > > > 
+> > > > > > > > This index is needed for device drivers that implement live migration
+> > > > > > > > for their internal operations that configure/control their VFs.
+> > > > > > > >
+> > > > > > > > Specifically, mlx5_vfio_pci driver that is introduced in coming patches
+> > > > > > > > from this series needs it and not the bus/device/function which is
+> > > > > > > > exposed today.
+> > > > > > > > 
+> > > > > > > > Add pci_iov_vf_id() which computes the vf_id by reversing the math that
+> > > > > > > > was used to create the bus/device/function.
+> > > > > > > > 
+> > > > > > > > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> > > > > > > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > > > > > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > > > > > 
+> > > > > > > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> > > > > > > 
+> > > > > > > mlx5_core_sriov_set_msix_vec_count() looks like it does basically the
+> > > > > > > same thing as pci_iov_vf_id() by iterating through VFs until it finds
+> > > > > > > one with a matching devfn (although it *doesn't* check for a matching
+> > > > > > > bus number, which seems like a bug).
+> > > > ...
+> > > 
+> > > > > And it still looks like the existing code is buggy.  This is called
+> > > > > via sysfs, so if the PF is on bus X and the user writes to
+> > > > > sriov_vf_msix_count for a VF on bus X+1, it looks like
+> > > > > mlx5_core_sriov_set_msix_vec_count() will set the count for the wrong
+> > > > > VF.
+> > > > 
+> > > > In mlx5_core_sriov_set_msix_vec_count(), we receive VF that is connected
+> > > > to PF which has "struct mlx5_core_dev". My expectation is that they share
+> > > > same bus as that PF was the one who created VFs. The mlx5 devices supports
+> > > > upto 256 VFs and it is far below the bus split mentioned in PCI spec.
+> > > > 
+> > > > How can VF and their respective PF have different bus numbers?
+> > > 
+> > > See PCIe r5.0, sec 9.2.1.2.  For example,
+> > > 
+> > >   PF 0 on bus 20
+> > >     First VF Offset   1
+> > >     VF Stride         1
+> > >     NumVFs          511
+> > >   VF 0,1   through VF 0,255 on bus 20
+> > >   VF 0,256 through VF 0,511 on bus 21
+> > > 
+> > > This is implemented in pci_iov_add_virtfn(), which computes the bus
+> > > number and devfn from the VF ID.
+> > > 
+> > > pci_iov_virtfn_devfn(VF 0,1) == pci_iov_virtfn_devfn(VF 0,256), so if
+> > > the user writes to sriov_vf_msix_count for VF 0,256, it looks like
+> > > we'll call mlx5_set_msix_vec_count() for VF 0,1 instead of VF 0,256.
 > > 
-> > Open user space access to the devlink after driver is probed.
+> > This is PCI spec split that I mentioned.
+> > 
+> > > 
+> > > The spec encourages devices that require no more than 256 devices to
+> > > locate them all on the same bus number (PCIe r5.0, sec 9.1), so if you
+> > > only have 255 VFs, you may avoid the problem.
+> > > 
+> > > But in mlx5_core_sriov_set_msix_vec_count(), it's not obvious that it
+> > > is safe to assume the bus number is the same.
+> > 
+> > No problem, we will make it more clear.
 > 
-> Hi Leon,
-> 
-> I think a description of why is warranted here.
+> IMHO you should resolve it by using the new interface.  Better
+> performing, unambiguous regardless of how many VFs the device
+> supports.  What's the down side?
 
-After devlink_register(), users can send GET and SET netlink commands to
-the uninitialized driver. In some cases, nothing will happen, but not in
-all and hard to prove that ALL drivers are safe with such early access.
-
-It means that local users can (in theory for some and in practice for
-others) crash the system (or leverage permissions) with early devlink_register()
-by accessing internal to driver pointers that are not set yet.
-
-Like I said in the commit message, I'm not fixing all drivers.
-https://lore.kernel.org/netdev/cover.1632565508.git.leonro@nvidia.com/T/#m063eb4e67389bafcc3b3ddc07197bf43181b7209
-
-Because some of the driver authors made a wonderful job to obfuscate their
-driver and write completely unmanageable code.
-
-I do move devlink_register() to be last devlink command for all drivers,
-to allow me to clean devlink core locking and API in next series.
-
-This series should raise your eyebrow and trigger a question: "is my
-driver vulnerable too?". And the answer will depend on devlink_register()
-position in the .probe() call.
+I don't see any. My previous answer worth to be written.
+"No problem, we will make it more clear with this new function".
 
 Thanks
-
-> 
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
