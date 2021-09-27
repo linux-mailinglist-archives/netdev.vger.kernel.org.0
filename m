@@ -2,100 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4F30419331
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 13:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C5FC419328
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 13:33:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234018AbhI0LgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 07:36:06 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:18589 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234015AbhI0LgF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 07:36:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1632742333;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=A7jJT/r6/9Ett/t4hQhIi6ULJqWDgIKTPE7eELyiqA0=;
-    b=gLLYDycb0+GMF9cTOKAhHrpTom96pYzfDa6Smzs+0KzlPUD/fkrkeP5O+NZBhn/YGJ
-    Gj9y3rRzluIEXuEUHLRjHHg3p3mtK0MrMr4VbrFTyJOuCIKQlZD/H/YTcDEOXzjwaIaN
-    ygg5FEnhVdcbvG75lRr1m5SfOt7IXBWmKMk/Lys81wLK0ssAhn1xoebe0UQR2zsk6oGE
-    XR9Y2HWh2mPk5w1SEtbWCo2mjL7DrZ73cANFmITdcTmbFJO1sitJo8M4DoCWVjso8BZi
-    Dq8IAZP4xGibE/oTdoBGnrF7Ua3A6j7zDebmxpaQxc0A6Za4ELHtYSKuF72TmPU+9GOb
-    6pzg==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVvBOfXT2V6Q=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPv6:2a00:6020:1cfa:f904::b82]
-    by smtp.strato.de (RZmta 47.33.8 AUTH)
-    with ESMTPSA id 900f80x8RBWDHN5
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Mon, 27 Sep 2021 13:32:13 +0200 (CEST)
-Subject: Re: [PATCH net] can: isotp: add result check for
- wait_event_interruptible()
-To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Cc:     mkl@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-References: <20210918092819.156291-1-william.xuanziyang@huawei.com>
- <1fcfeb88-d49d-2a2a-1524-8504eb848123@huawei.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <e9607f21-f0d0-7b20-8d55-fad9cee7ee28@hartkopp.net>
-Date:   Mon, 27 Sep 2021 13:32:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S234076AbhI0LfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 07:35:15 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:45416 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233948AbhI0LfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 07:35:14 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18RBQov0027164;
+        Mon, 27 Sep 2021 07:33:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=Zh4ocPd5zq01wbH2VJDNCfT88s0EYVFeCQkN48p09Rc=;
+ b=HFxbLZtALlzLcIV513Gw+sxVwvyBy56n2YzyuwSn5PhVx+r78j+XpSTou4uCQxcVZnoE
+ ORBmrmCvRSJjDV+Ccv2/aAl0E0LKSqjtC7pEVYkcfhGs2gARhJrtNmpcMZLACj1l3H9e
+ wiOzzrnbeakRimBQKGiZG/vgljuMDfDH40vFu6QUIrDqxXQm0raGWFyPpAM+xNskL32L
+ cit9eG4DTS9wNpPPnwq/OiGUy3QfNwVJL1bvIFM7kz7dvrsv4WGOaJ2SSB2cnUlgVe2w
+ xizeUAt1Oo/0G6wIHGgXQzOY2Vejlh581H5hmUOcXLZvcVfbDeJx89csV2wfHViBPvSe YA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3bagv81unu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Sep 2021 07:33:18 -0400
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 18RBQVOH012751;
+        Mon, 27 Sep 2021 07:33:18 -0400
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3bagv81umx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Sep 2021 07:33:17 -0400
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18RBVJoX026969;
+        Mon, 27 Sep 2021 11:33:15 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma01fra.de.ibm.com with ESMTP id 3b9ud9b7y5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 27 Sep 2021 11:33:15 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18RBXBwa2294488
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 27 Sep 2021 11:33:11 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2EF8442094;
+        Mon, 27 Sep 2021 11:33:11 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7804D4205C;
+        Mon, 27 Sep 2021 11:33:10 +0000 (GMT)
+Received: from sig-9-145-45-184.uk.ibm.com (unknown [9.145.45.184])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 27 Sep 2021 11:33:10 +0000 (GMT)
+Message-ID: <e9665315bc2f244d50d026863476e72e3d9b8067.camel@linux.ibm.com>
+Subject: Re: [PATCH RESEND bpf] bpf, s390: Fix potential memory leak about
+ jit_data
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>
+Date:   Mon, 27 Sep 2021 13:33:10 +0200
+In-Reply-To: <1632726374-7154-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1632726374-7154-1-git-send-email-yangtiezhu@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-In-Reply-To: <1fcfeb88-d49d-2a2a-1524-8504eb848123@huawei.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: giYAHGJqTgpQ3DQJ2HWE-ISyvY6pZDkS
+X-Proofpoint-ORIG-GUID: hgcrE1P2X7C_h_hUHBTq5OFZJdaEnIUq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-27_04,2021-09-24_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ suspectscore=0 mlxlogscore=944 malwarescore=0 phishscore=0 adultscore=0
+ spamscore=0 impostorscore=0 priorityscore=1501 mlxscore=0 bulkscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2109270079
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 27.09.21 03:39, Ziyang Xuan (William) wrote:
->> Using wait_event_interruptible() to wait for complete transmission,
->> but do not check the result of wait_event_interruptible() which can
->> be interrupted. It will result in tx buffer has multiple accessers
->> and the later process interferes with the previous process.
->>
->> Following is one of the problems reported by syzbot.
->>
->> =============================================================
->> WARNING: CPU: 0 PID: 0 at net/can/isotp.c:840 isotp_tx_timer_handler+0x2e0/0x4c0
->> CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.13.0-rc7+ #68
->> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1 04/01/2014
->> RIP: 0010:isotp_tx_timer_handler+0x2e0/0x4c0
->> Call Trace:
->>   <IRQ>
->>   ? isotp_setsockopt+0x390/0x390
->>   __hrtimer_run_queues+0xb8/0x610
->>   hrtimer_run_softirq+0x91/0xd0
->>   ? rcu_read_lock_sched_held+0x4d/0x80
->>   __do_softirq+0xe8/0x553
->>   irq_exit_rcu+0xf8/0x100
->>   sysvec_apic_timer_interrupt+0x9e/0xc0
->>   </IRQ>
->>   asm_sysvec_apic_timer_interrupt+0x12/0x20
->>
->> Add result check for wait_event_interruptible() in isotp_sendmsg()
->> to avoid multiple accessers for tx buffer.
->>
->> Reported-by: syzbot+78bab6958a614b0c80b9@syzkaller.appspotmail.com
->> Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
->> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+On Mon, 2021-09-27 at 15:06 +0800, Tiezhu Yang wrote:
+> Make sure to free jit_data through kfree() in the error path.
 > 
-> Hi Oliver,
-> I send a new patch with this problem, ignore this patch please.
+> Fixes: 1c8f9b91c456 ("bpf: s390: add JIT support for multi-function
+> programs")
+> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> ---
 > 
-> Thank you!
+> RESEND due to the following reason:
+> [Can not connect to recipient's server because of unstable
+> network or firewall filter. rcpt handle timeout, last handle
+> info: Can not connect to vger.kernel.org]
 > 
+>  arch/s390/net/bpf_jit_comp.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-I was still pondering on this patch ;-)
+Nice catch, thanks!
 
-But I'll take a look on the update now.
+Acked-by: Ilya Leoshkevich <iii@linux.ibm.com>
 
-Thanks & best regards,
-Oliver
