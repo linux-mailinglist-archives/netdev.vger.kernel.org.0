@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE02141A13F
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 23:17:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E53C341A15C
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 23:34:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237153AbhI0VS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 17:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40896 "EHLO
+        id S237281AbhI0Vfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 17:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234848AbhI0VS6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 17:18:58 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C14C061604
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 14:17:19 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id x191so12057464pgd.9
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 14:17:19 -0700 (PDT)
+        with ESMTP id S237222AbhI0Vff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 17:35:35 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC41DC061575;
+        Mon, 27 Sep 2021 14:33:56 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id n23so14258377pfv.4;
+        Mon, 27 Sep 2021 14:33:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=llnw.com; s=google;
+        d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=JLK/sRP9I8Wlr+P16AIpY8iwsR/LeBc/3r2jJEyV9+M=;
-        b=MLsXgdgEfYiZnTCSOSviYe/vWLecYqTiMgSmbLz9hNdVt/iFfJjdDMe5Ki9FfF4+fi
-         piKeRePfkqMQijTnNQUp3p/EkmTknRbReMYjQp3rAT1CbNRyJ0/YOFjAIiQV6JzDlrK4
-         8FFMHNE+TQDURRnMyfOly21j523SG3sA40Yz+CcsjIi52NU6EJzKFPpHRR7MAF/Hcunm
-         dnI/VTHT3/GEMfd5MHEhA8YtTZQFAUVgsaNQusUCyoyQOYBmNFp2L8KOIJndLneeVCU9
-         PmXgFLHaDX8eDrgaZo8thJsfLXPbhYGxX2lWsNTUSO8zdEs0uRzXX1GKU2DvgDu3YR4R
-         VUoA==
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KRUntgfDBi53GMkxCXevXBnnvVff9jqBgaMDIpl5H9U=;
+        b=NZG3prOK6Mm7t4GMt7iudh91oMNsRrL3PwjYwvntsEwTdafFfnzHZbyLXzmrc+C1v6
+         2alNXGI3br9pd+zw1FoScE0y4hqEoggzGiIZugN3fija0q2BeMNutWmuGbIfcyurqUAC
+         BshrTpfMsuQ9+v4+s8EQHhQ+B72n5B54bCagkSmwetYr4SZf6s8WP83RWcdRqoebaydW
+         HByv7sJjahpqWiexJsTRXarwyDESHgvhEe2NOLnUqoLmicvtKw0l0bXCZQANLCAErMfL
+         x+oGylpo8KIc+1f1/cS4824fmQetsKrJJkkZi2ioVdrrPAoSHZjLL26ZrnzDLVAlqhjh
+         9YCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=JLK/sRP9I8Wlr+P16AIpY8iwsR/LeBc/3r2jJEyV9+M=;
-        b=3tejB5PpwiCM5RixxMDzwPnynrr4KZtlt8YRtHNvc00rFBA5nVCT+xrpCHjGCmKow+
-         uQHOeyac7o8IxdSWMUlopkvIm0rJ1EJE7zpY99lqaqC/E8XEJuQfFyvIO8D5amTErYOK
-         B2Bq1isAAEEPkPR2Gy3+wp6I96IotEnJMi078o49nbRl7Ok4QaV5CPlMEIP+p2NbwDxa
-         7KACs8v6+anGcYZt8jy5usoWEqCbqlb3B4BQwmVA9bZfu4IyvRUrtfKZdKkBLiyl/Xsb
-         lptmKTwnE+376JGeZBi6AntE9UIzsNZJbzkCKpryKn6brRiTkz5U3i+q6o0RmD1TGH1Y
-         BIKQ==
-X-Gm-Message-State: AOAM5328O6937XQ1lCkuAIXJMNss3BQUhaeJL0P9twcH1nT5zuNPof/F
-        l2/6Gu6kbbQosUlKOtO83Te4LQ==
-X-Google-Smtp-Source: ABdhPJxD0IrKG948IZYTdp1EHmpPNjp0LH3HT44kue1APLm8pe3Bt5IJ0OMxeKccvYGPC0RAW1G/lQ==
-X-Received: by 2002:a62:2c51:0:b029:329:932b:9484 with SMTP id s78-20020a622c510000b0290329932b9484mr1975282pfs.13.1632777438957;
-        Mon, 27 Sep 2021 14:17:18 -0700 (PDT)
-Received: from [10.50.24.214] (wsip-184-181-13-226.ph.ph.cox.net. [184.181.13.226])
-        by smtp.gmail.com with ESMTPSA id d18sm20267747pgk.24.2021.09.27.14.17.17
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KRUntgfDBi53GMkxCXevXBnnvVff9jqBgaMDIpl5H9U=;
+        b=hyPmH7EmAW1azNIwZKcjg1G0KTq6KOl91x34Ngp4WxuEOaoBqS/1v3G74PaMvP4R0l
+         Uj1rMIdWdFw+b18Q4GF4PgY55dijzeknSL/1wVjA4TpiqLGrFt5SxK/8W2YqETkFfwlp
+         OwvmGujZqAOM5eCf5yowRYhp/+lDIu9SOeB58NMln2eVTxnfzulz3k7LdX4mQbaPEv6y
+         Ne6TQmbOObia1yBUOX696JHdF7wag2GKH15VkM+jBZIIs2K4UJM875SUS8RLLx/lgdhk
+         14gqe0yLFes/9fzh4amEG4E/jUghcyirArhjkLWu4o9atTao3GNqEfqIFeFcTte8jMJz
+         km7Q==
+X-Gm-Message-State: AOAM532QG6V7eZ+4ZMTdR4nLHcwO0tJlFobPv7uIdbBS+EKt6M5kws83
+        TaFN/ll70B9fQ5PXCLbxjW4=
+X-Google-Smtp-Source: ABdhPJzQ3X/28Btcaf33Y7MrHc26PINFM5RCKbVGJsbtX2FhOsjKSFTNkptwiftzEbSfQyqpJlgecA==
+X-Received: by 2002:a63:ce52:: with SMTP id r18mr1470379pgi.350.1632778436358;
+        Mon, 27 Sep 2021 14:33:56 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id i24sm339788pjl.8.2021.09.27.14.33.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Sep 2021 14:17:18 -0700 (PDT)
+        Mon, 27 Sep 2021 14:33:55 -0700 (PDT)
 Subject: Re: [PATCH] fs: eventpoll: add empty event
-To:     Eric Dumazet <edumazet@google.com>
+To:     Johannes Lundberg <jlundberg@llnw.com>,
+        Eric Dumazet <edumazet@google.com>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -65,46 +66,61 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         Willem de Bruijn <willemb@google.com>
 References: <20210927202923.7360-1-jlundberg@llnw.com>
  <CANn89iJP7xpVnw6UnZwnixaAh=2+5f571CiqepYi2sy3-1MXmQ@mail.gmail.com>
-From:   Johannes Lundberg <jlundberg@llnw.com>
-Message-ID: <c675343d-a5bc-dce0-bcde-8a952682e698@llnw.com>
-Date:   Mon, 27 Sep 2021 14:17:16 -0700
+ <c675343d-a5bc-dce0-bcde-8a952682e698@llnw.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <dc5ddf13-b524-42a8-ed7a-5db91aaee4ef@gmail.com>
+Date:   Mon, 27 Sep 2021 14:33:53 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <CANn89iJP7xpVnw6UnZwnixaAh=2+5f571CiqepYi2sy3-1MXmQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <c675343d-a5bc-dce0-bcde-8a952682e698@llnw.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 9/27/21 1:47 PM, Eric Dumazet wrote:
-> On Mon, Sep 27, 2021 at 1:30 PM Johannes Lundberg <jlundberg@llnw.com> wrote:
->> The EPOLLEMPTY event will trigger when the TCP write buffer becomes
->> empty, i.e., when all outgoing data have been ACKed.
+
+On 9/27/21 2:17 PM, Johannes Lundberg wrote:
+> 
+> On 9/27/21 1:47 PM, Eric Dumazet wrote:
+>> On Mon, Sep 27, 2021 at 1:30 PM Johannes Lundberg <jlundberg@llnw.com> wrote:
+>>> The EPOLLEMPTY event will trigger when the TCP write buffer becomes
+>>> empty, i.e., when all outgoing data have been ACKed.
+>>>
+>>> The need for this functionality comes from a business requirement
+>>> of measuring with higher precision how much time is spent
+>>> transmitting data to a client. For reference, similar functionality
+>>> was previously added to FreeBSD as the kqueue event EVFILT_EMPTY.
 >>
->> The need for this functionality comes from a business requirement
->> of measuring with higher precision how much time is spent
->> transmitting data to a client. For reference, similar functionality
->> was previously added to FreeBSD as the kqueue event EVFILT_EMPTY.
->
-> Adding yet another indirect call [1] in TCP fast path, for something
-> (measuring with higher precision..)
-> which is already implemented differently in TCP stack [2] is not desirable.
->
-> Our timestamping infrastructure should be ported to FreeBSD instead :)
->
-> [1] CONFIG_RETPOLINE=y
->
-> [2] Refs :
->     commit e1c8a607b28190cd09a271508aa3025d3c2f312e
->        net-timestamp: ACK timestamp for bytestreams
->      tools/testing/selftests/net/txtimestamp.c
+>> Adding yet another indirect call [1] in TCP fast path, for something
+>> (measuring with higher precision..)
+>> which is already implemented differently in TCP stack [2] is not desirable.
+>>
+>> Our timestamping infrastructure should be ported to FreeBSD instead :)
+>>
+>> [1] CONFIG_RETPOLINE=y
+>>
+>> [2] Refs :
+>>     commit e1c8a607b28190cd09a271508aa3025d3c2f312e
+>>        net-timestamp: ACK timestamp for bytestreams
+>>      tools/testing/selftests/net/txtimestamp.c
+> 
+> Hi Eric
+> 
+> Thanks for the feedback! If there's a way to achieve the same thing with current Linux I'm all for it. I'll look into how to use timestamps for this.
+> 
 
-Hi Eric
+You are welcome !
 
-Thanks for the feedback! If there's a way to achieve the same thing with 
-current Linux I'm all for it. I'll look into how to use timestamps for this.
+Note that timestamping allows to trigger many events, even if write queue is not empty.
+
+This is particularly useful when an application does not want a write queue to be drained,
+since this would add transmit stalls.
+
+Also, since the events are time stamped exactly when the relevant ACK are processed,
+they are more accurate than something based on epoll, since I guess you would
+get timestamps after a thread wakeup.
 
