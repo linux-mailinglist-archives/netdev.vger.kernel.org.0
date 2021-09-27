@@ -2,169 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0D1419778
-	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 17:13:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E81A4196CE
+	for <lists+netdev@lfdr.de>; Mon, 27 Sep 2021 16:56:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235110AbhI0POf convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 27 Sep 2021 11:14:35 -0400
-Received: from molly.corsac.net ([82.66.73.9]:38764 "EHLO mail.corsac.net"
+        id S234927AbhI0O6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 10:58:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33900 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235079AbhI0POd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Sep 2021 11:14:33 -0400
-Received: from scapa.corsac.net (unknown [IPv6:2a01:e0a:2ff:c170:6af7:28ff:fe8d:2119])
-        by mail.corsac.net (Postfix) with ESMTPS id 1C7F09B
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 16:51:14 +0200 (CEST)
-Received: from corsac (uid 1000)
-        (envelope-from corsac@corsac.net)
-        id a01c9
-        by scapa.corsac.net (DragonFly Mail Agent v0.13);
-        Mon, 27 Sep 2021 16:51:13 +0200
-Message-ID: <eaccc3f66f4c616f3eecfc01c359ac03a5d92028.camel@corsac.net>
-Subject: Re: [PATCH] usbnet: ipheth: fix connectivity with iOS 14
-From:   Yves-Alexis Perez <corsac@corsac.net>
-To:     Sam Bingner <sam@bingner.com>, Oliver Neukum <oneukum@suse.com>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Martin Habets <mhabets@solarflare.com>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Matti Vuorela <matti.vuorela@bitfactor.fi>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Mon, 27 Sep 2021 16:51:13 +0200
-In-Reply-To: <79d05aaa5052408897aeb8039c6a1582@bingner.com>
-References: <370902e520c44890a44cb5dd0cb1595f@bingner.com>
-         <d61ad9565e29a07086e52bc984e8e629285ff8cf.camel@suse.com>
-         <79d05aaa5052408897aeb8039c6a1582@bingner.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        id S234782AbhI0O6Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Sep 2021 10:58:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=OSZSvQFG7O4SxG9se9x14daH7zm+W8BUgPWCOS3jbis=; b=b3ok4SdmPhMIWP3Ea5yrSayVu6
+        Z5GxVANQjdNDET/0Z0Oa54t+a8v88c1WMeFGSpgVM6Mp578phmrN8mDsHwJDgdze8PZLSWLd5u7LD
+        yjBA+YGCgLqmWmXjAYOy0wuA4cU3sg5iRKLEHVfEkzP/xknYrh/FpHM2/mlog6a1amZw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mUs3X-008S9d-7N; Mon, 27 Sep 2021 16:56:35 +0200
+Date:   Mon, 27 Sep 2021 16:56:35 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Asmaa Mnebhi <asmaa@nvidia.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        David Thompson <davthompson@nvidia.com>
+Subject: Re: [PATCH v3 1/2] gpio: mlxbf2: Introduce IRQ support
+Message-ID: <YVHbo/cJcHzxUk+d@lunn.ch>
+References: <20210923202216.16091-1-asmaa@nvidia.com>
+ <20210923202216.16091-2-asmaa@nvidia.com>
+ <YU26lIUayYXU/x9l@lunn.ch>
+ <CACRpkdbUJF6VUPk9kCMPBvjeL3frJAbHq+h0-z7P-a1pSU+fiw@mail.gmail.com>
+ <CH2PR12MB38951F2326196AB5B573A73DD7A79@CH2PR12MB3895.namprd12.prod.outlook.com>
+ <YVHQQcv2M6soJR6u@lunn.ch>
+ <CH2PR12MB389585F7D5EFE5E2453593DBD7A79@CH2PR12MB3895.namprd12.prod.outlook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CH2PR12MB389585F7D5EFE5E2453593DBD7A79@CH2PR12MB3895.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-09-22 at 20:11 +0000, Sam Bingner wrote:
-> Sorry I didn't have time to research this further to prove it was a
-> regression - but there is now somebody else who has done so and created a
-> patch.  I thought it might be good to give a link to it to you guys.  It
-> caused problems on all iOS versions AFAIK.  The patch and discussion is
-> available at:
+On Mon, Sep 27, 2021 at 02:19:45PM +0000, Asmaa Mnebhi wrote:
 > 
-> https://github.com/openwrt/openwrt/pull/4084
+> > The BlueField GPIO HW only support Edge interrupts.
+> 
+> O.K. So please remove all level support from this driver,
+> and return -EINVAL if requested to do level.
+> This also means, you cannot use interrupts with the
+> Ethernet PHY. The PHY is using level interrupts.
+> 
+> Why not? The HW folks said it is alright because they
+> Do some internal conversion of PHY signal and we have tested
+> This extensively.
 
-Hi Sam, sorry for the delay.
+So the PHY is level based. The PHY is combing multiple interrupt
+sources into one external interrupt. If any of those internal
+interrupt sources are active, the external interrupt is active. If
+there are multiple active sources at once, the interrupt stays low,
+until they are all cleared. This means there is not an edge per
+interrupt. There is one edge when the first internal source occurs,
+and no more edges, even if there are more internal interrupts.
 
-I've read the thread above and the patch. Unfortunately we don't have
-documentation on how the driver is supposed to work and how the iPhone part
-behave, everything was reverse engineered at the time and the people who did
-it seem long gone.
+The general flow in the PHY interrupt handler is to read the interrupt
+status register, which tells you which internal interrupts have
+fired. You then address these internal interrupts one by one. This can
+take some time, MDIO is a slow bus etc. While handling these interrupt
+sources, it could be another internal interrupt source triggers. This
+new internal interrupt source keeps the external interrupt active. But
+there has not been an edge, since the interrupt handler is still
+clearing the sources which caused the first interrupt. With level
+interrupts, this is not an issue. When the interrupt handler exits,
+the interrupt is re-enabled. Since it is still active, due to the
+unhandled internal interrupt sources, the level interrupt immediately
+fires again. the handler then sees this new interrupt and handles
+it. At that point the level interrupt goes inactive.
 
-As far as I understand it, when we experienced the “first” bug, it was noted
-that reducing the (TX) buffer size by 2 helped, and thus the patch changing
-IPHETH_BUF_SIZE to 1514 was committed, reducing both RX and TX buffer size.
+Now think about what happens if you are using an edge interrupt
+controller with a level interrupt. You get the first edge, and call
+the interrupt handler. And then there are no more edges, despite there
+being more interrupts. You not only loose the new interrupt, you never
+see any more interrupts. You PHY link can go up and down, it can try
+to report being over temperature, that it has detected power from the
+peer, cable tests have passed, etc. But since there is no edge, there
+is never an interrupt.
 
-During my testings I never experienced the subsequent bug (the
-ipheth_rcvbulk_callback: urb status: -75) but maybe I never received 1500b
-packets (it's a bit strange but maybe).
+So you say it has been extensively tested. Has it been extensively
+tested with multiple internal interrupt sources at the same time? And
+with slight timing variations, so that you trigger this race
+condition? It is not going to happen very often, but when it does, it
+is going to be very bad.
 
-Maybe the right fix would be to split IPHETH_BUF_SIZE to
-IPHETH_{RX,TX}_BUF_SIZE? Something like:
+	Andrew
 
-diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
-index 57d94b18ef33..005d2e31d97c 100644
---- a/drivers/net/usb/ipheth.c
-+++ b/drivers/net/usb/ipheth.c
-@@ -60,7 +60,9 @@
- #define IPHETH_USBINTF_PROTO    1
- 
- #define IPHETH_BUF_SIZE         1514
--#define IPHETH_IP_ALIGN		2	/* padding at front of URB */
-+#define IPHETH_IP_ALIGN		2	/* padding at front of URB on
-RX path */
-+#define IPHETH_TX_BUF_SIZE      IPHETH_BUF_SIZE
-+#define IPHETH_RX_BUF_SIZE      IPHETH_BUF_SIZE + IPHETH_IP_ALIGN
- #define IPHETH_TX_TIMEOUT       (5 * HZ)
- 
- #define IPHETH_INTFNUM          2
-@@ -116,12 +118,12 @@ static int ipheth_alloc_urbs(struct ipheth_device
-*iphone)
- 	if (rx_urb == NULL)
- 		goto free_tx_urb;
- 
--	tx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
-+	tx_buf = usb_alloc_coherent(iphone->udev, IPHETH_TX_BUF_SIZE,
- 				    GFP_KERNEL, &tx_urb->transfer_dma);
- 	if (tx_buf == NULL)
- 		goto free_rx_urb;
- 
--	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
-+	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_RX_BUF_SIZE,
- 				    GFP_KERNEL, &rx_urb->transfer_dma);
- 	if (rx_buf == NULL)
- 		goto free_tx_buf;
-@@ -134,7 +136,7 @@ static int ipheth_alloc_urbs(struct ipheth_device *iphone)
- 	return 0;
- 
- free_tx_buf:
--	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, tx_buf,
-+	usb_free_coherent(iphone->udev, IPHETH_TX_BUF_SIZE, tx_buf,
- 			  tx_urb->transfer_dma);
- free_rx_urb:
- 	usb_free_urb(rx_urb);
-@@ -146,9 +148,9 @@ static int ipheth_alloc_urbs(struct ipheth_device *iphone)
- 
- static void ipheth_free_urbs(struct ipheth_device *iphone)
- {
--	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->rx_buf,
-+	usb_free_coherent(iphone->udev, IPHETH_RX_BUF_SIZE, iphone->rx_buf,
- 			  iphone->rx_urb->transfer_dma);
--	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->tx_buf,
-+	usb_free_coherent(iphone->udev, IPHETH_TX_BUF_SIZE, iphone->tx_buf,
- 			  iphone->tx_urb->transfer_dma);
- 	usb_free_urb(iphone->rx_urb);
- 	usb_free_urb(iphone->tx_urb);
-@@ -317,7 +319,7 @@ static int ipheth_rx_submit(struct ipheth_device *dev,
-gfp_t mem_flags)
- 
- 	usb_fill_bulk_urb(dev->rx_urb, udev,
- 			  usb_rcvbulkpipe(udev, dev->bulk_in),
--			  dev->rx_buf, IPHETH_BUF_SIZE,
-+			  dev->rx_buf, IPHETH_RX_BUF_SIZE,
- 			  ipheth_rcvbulk_callback,
- 			  dev);
- 	dev->rx_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-@@ -381,7 +383,7 @@ static netdev_tx_t ipheth_tx(struct sk_buff *skb, struct
-net_device *net)
- 	int retval;
- 
- 	/* Paranoid */
--	if (skb->len > IPHETH_BUF_SIZE) {
-+	if (skb->len > IPHETH_TX_BUF_SIZE) {
- 		WARN(1, "%s: skb too large: %d bytes\n", __func__, skb->len);
- 		dev->net->stats.tx_dropped++;
- 		dev_kfree_skb_any(skb);
-@@ -389,12 +391,12 @@ static netdev_tx_t ipheth_tx(struct sk_buff *skb, struct
-net_device *net)
- 	}
- 
- 	memcpy(dev->tx_buf, skb->data, skb->len);
--	if (skb->len < IPHETH_BUF_SIZE)
--		memset(dev->tx_buf + skb->len, 0, IPHETH_BUF_SIZE - skb-
->len);
-+	if (skb->len < IPHETH_TX_BUF_SIZE)
-+		memset(dev->tx_buf + skb->len, 0, IPHETH_TX_BUF_SIZE - skb-
->len);
- 
- 	usb_fill_bulk_urb(dev->tx_urb, udev,
- 			  usb_sndbulkpipe(udev, dev->bulk_out),
--			  dev->tx_buf, IPHETH_BUF_SIZE,
-+			  dev->tx_buf, IPHETH_TX_BUF_SIZE,
- 			  ipheth_sndbulk_callback,
- 			  dev);
- 	dev->tx_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-
--- 
-Yves-Alexis
