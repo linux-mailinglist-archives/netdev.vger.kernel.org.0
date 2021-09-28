@@ -2,98 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B0CB41A74B
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 07:52:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0637641A778
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 07:55:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237059AbhI1FyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 01:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234207AbhI1FyF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 01:54:05 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0CCC061575;
-        Mon, 27 Sep 2021 22:52:26 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id m132so9200947ybf.8;
-        Mon, 27 Sep 2021 22:52:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e6RSWnN6k15haSaDV0km0zLY/zU+uT+FyT3eyQ+b4io=;
-        b=G44Q7JX6YuthrhC0K0mE/YTtXYTVmb2FA1ig1zH/MFG6LKYrsfBNvgGqs/kS8lxUt1
-         RSJxL0E6KdksGvLZ64Ita57Q/iLYqlUAybcXihGsMii2oZsr5YyS2jvnvDnE8tAa14v/
-         pTM8nODn9GjskSmsTdvN5onNlNdIFBBT51YKdkQhZFToTA8SwGwC/2PfxR+aJ+5b57HQ
-         SQngWtwW2+Kf26+JACZ2PKKWO5Qxe+W9XdqEfI2dQdU0xH0awkU6jpYrrOJgImpyVxdZ
-         lrEYG/chJ80n67VbTC7eWZDf3dEql/xvxyOd0DpTjcm0aljTSMdKexu5C80KyGbcyAB4
-         VY0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e6RSWnN6k15haSaDV0km0zLY/zU+uT+FyT3eyQ+b4io=;
-        b=r4CoVb4deAb5qLq+duaqVNf/Dkec7/EvdrFGDARUXi9Q4i1Sw2pK6PN/F8rf6RjSJF
-         chF7ojmDea0juQfMto209SLz+yKC29ZRnbvn5KABur3sLdGvLohMu1g+fr9XjenIbBu3
-         rzVY0ecGyOrBc4PahwllG95YU+gnP0apB/fZoEzWb0N6Y0Ex7nkW1RnJ8CuU4O9VxfCn
-         DYv+j4DVriPv0BwWcs4H7eNkOFz9nqzUDQc1lC8mGWoKN7iWhYLR30ipvmrhbXdBe1bu
-         eLoGcwMni57C3qfWjVpCS/7nWVPngZ/j8FL8wM/wCgzx2js55ksjWO6Zf7jG5M2GZges
-         YvhQ==
-X-Gm-Message-State: AOAM531bOjn248iOTkvh3Zs1fTgeyhxu36K+BmOdnUIJ5gPELpht6fo8
-        hc/xdE+WaER4MYRPX1MrVQ0t6NNHSL29H0nY+lg=
-X-Google-Smtp-Source: ABdhPJydKeMVM2mv8SaG1jgR/LtJ0SI70OGzxsTvbSnxqgeZKbAEO6xhWDHjRB5gax9+HSazl27WVAlkKUZWk0f1HoE=
-X-Received: by 2002:a25:af4a:: with SMTP id c10mr4634454ybj.482.1632808345815;
- Mon, 27 Sep 2021 22:52:25 -0700 (PDT)
+        id S238943AbhI1F5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 01:57:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47512 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238908AbhI1F5H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 01:57:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A45F3610E6;
+        Tue, 28 Sep 2021 05:55:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632808528;
+        bh=1Q9zkv9hvEGhiHeTzej8p7/NKlx/c2gGz6LQ7Bg1QQA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cbUZn2kixGhZg6rAqbJMy0SyNTvnzVoBKFKBdz3zFa+/W2Kc9lEPEmZBg8+MMnykD
+         41NrGZyuh2v/mWrDRexxflWIFA3HT06nN/Pft+p1/+4DymFo32D/g0viDakgfG59mH
+         gleCO4KQbjRjXEsSaVxw+3yPK79HhKws7iF2E4UsXIEps56rY4gOhv/ua5quiDezoV
+         qm2MgbBS432S0yGvkvPEAmPDHFZAoH8HLaPWlZ0R5+B2HTuhlIpJ+qRCyvMeUFZP1A
+         kpRUEHHB00dPYKUtniUqsHtzDQpHZMDiAFOwIMDAZfdFhC07GxaYuLPitwt6kd7P00
+         /OAhMlLUybBJw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.14 08/40] net: mdio: introduce a shutdown method to mdio device drivers
+Date:   Tue, 28 Sep 2021 01:54:52 -0400
+Message-Id: <20210928055524.172051-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20210928055524.172051-1-sashal@kernel.org>
+References: <20210928055524.172051-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20210922093259.164013-1-liujian56@huawei.com>
-In-Reply-To: <20210922093259.164013-1-liujian56@huawei.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 27 Sep 2021 22:52:14 -0700
-Message-ID: <CAM_iQpVDiA8-GHXYrNs8A4gBaDioWMPeQR=2u4OKn2ZCyzu8Lg@mail.gmail.com>
-Subject: Re: [PATCH v3] skmsg: lose offset info in sk_psock_skb_ingress
-To:     Liu Jian <liujian56@huawei.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 22, 2021 at 2:32 AM Liu Jian <liujian56@huawei.com> wrote:
->  static void sk_psock_skb_state(struct sk_psock *psock,
-> @@ -604,6 +608,9 @@ static void sk_psock_backlog(struct work_struct *work)
->  {
->         struct sk_psock *psock = container_of(work, struct sk_psock, work);
->         struct sk_psock_work_state *state = &psock->work_state;
-> +#if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
-> +       struct strp_msg *stm = NULL;
-> +#endif
->         struct sk_buff *skb = NULL;
->         bool ingress;
->         u32 len, off;
-> @@ -624,6 +631,13 @@ static void sk_psock_backlog(struct work_struct *work)
->         while ((skb = skb_dequeue(&psock->ingress_skb))) {
->                 len = skb->len;
->                 off = 0;
-> +#if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
-> +               if (skb_bpf_strparser(skb)) {
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-If CONFIG_BPF_STREAM_PARSER is disabled, this
-should always return false, hence you don't need this #ifdef.
-Or alternatively, you can at least define for nop for
-skb_bpf_strparser() if !CONFIG_BPF_STREAM_PARSER.
-And you can move the above "stm" down here too.
+[ Upstream commit cf9579976f724ad517cc15b7caadea728c7e245c ]
 
-(Ditto for the other place below.)
+MDIO-attached devices might have interrupts and other things that might
+need quiesced when we kexec into a new kernel. Things are even more
+creepy when those interrupt lines are shared, and in that case it is
+absolutely mandatory to disable all interrupt sources.
 
-Thanks.
+Moreover, MDIO devices might be DSA switches, and DSA needs its own
+shutdown method to unlink from the DSA master, which is a new
+requirement that appeared after commit 2f1e8ea726e9 ("net: dsa: link
+interfaces with the DSA master to get rid of lockdep warnings").
+
+So introduce a ->shutdown method in the MDIO device driver structure.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/phy/mdio_device.c | 11 +++++++++++
+ include/linux/mdio.h          |  3 +++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
+index c94cb5382dc9..250742ffdfd9 100644
+--- a/drivers/net/phy/mdio_device.c
++++ b/drivers/net/phy/mdio_device.c
+@@ -179,6 +179,16 @@ static int mdio_remove(struct device *dev)
+ 	return 0;
+ }
+ 
++static void mdio_shutdown(struct device *dev)
++{
++	struct mdio_device *mdiodev = to_mdio_device(dev);
++	struct device_driver *drv = mdiodev->dev.driver;
++	struct mdio_driver *mdiodrv = to_mdio_driver(drv);
++
++	if (mdiodrv->shutdown)
++		mdiodrv->shutdown(mdiodev);
++}
++
+ /**
+  * mdio_driver_register - register an mdio_driver with the MDIO layer
+  * @drv: new mdio_driver to register
+@@ -193,6 +203,7 @@ int mdio_driver_register(struct mdio_driver *drv)
+ 	mdiodrv->driver.bus = &mdio_bus_type;
+ 	mdiodrv->driver.probe = mdio_probe;
+ 	mdiodrv->driver.remove = mdio_remove;
++	mdiodrv->driver.shutdown = mdio_shutdown;
+ 
+ 	retval = driver_register(&mdiodrv->driver);
+ 	if (retval) {
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index ffb787d5ebde..5e6dc38f418e 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -80,6 +80,9 @@ struct mdio_driver {
+ 
+ 	/* Clears up any memory if needed */
+ 	void (*remove)(struct mdio_device *mdiodev);
++
++	/* Quiesces the device on system shutdown, turns off interrupts etc */
++	void (*shutdown)(struct mdio_device *mdiodev);
+ };
+ 
+ static inline struct mdio_driver *
+-- 
+2.33.0
+
