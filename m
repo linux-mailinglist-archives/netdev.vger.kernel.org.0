@@ -2,348 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16CAD41B1D7
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 16:15:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2734241B1E8
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 16:17:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241246AbhI1ORP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 10:17:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39128 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241191AbhI1ORO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 10:17:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 54DC2611CB;
-        Tue, 28 Sep 2021 14:15:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632838535;
-        bh=RePW3xfvUyaU3zA2Rj1Ae9YEiqElxuTFsF5LiqMkCHw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tGHMlMX3yt+6pC4yOvGEJoENWh/lolEkYGywFW0L8vSiSe/le1HG/MaxF+PGFVU/6
-         jExLdQjZFgh/UD9lzNjd2Kuc1bA56JKjYE04hTbQ12omJR4DYa+wgOOx4IZMXqqtH2
-         i+bc+J9oRF+MlM8Fgo9wK++M7BnTxyawbkbV8K8QJZfQYlQ/X9rNC+0Pq+nxaG45Ev
-         P/4qJYAE7107Zt4uO6DRlbQbccYKt4LJvb5ZUWcZC0Tcy6Aut/cZe5GQ4mAZShyiIa
-         9gXFjL/8wsPY0/sOKF2iM6x+vjPeKarta1n1Eqz/k8vKZmIyTienXmOO8cdUH4/sJy
-         UVUyMtPPhbRng==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Jeroen de Borst <jeroendb@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bailey Forrest <bcf@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Catherine Sullivan <csully@google.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        David Awogbemila <awogbemila@google.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] [v2] gve: DQO: avoid unused variable warnings
-Date:   Tue, 28 Sep 2021 16:15:13 +0200
-Message-Id: <20210928141530.256433-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        id S241069AbhI1OS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 10:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240488AbhI1OS6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 10:18:58 -0400
+Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6665C06161C;
+        Tue, 28 Sep 2021 07:17:18 -0700 (PDT)
+Received: by fieldses.org (Postfix, from userid 2815)
+        id 4509125FE; Tue, 28 Sep 2021 10:17:18 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 4509125FE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
+        s=default; t=1632838638;
+        bh=V1v25WDPu4S65BGeMIG9F3Uek6zupyB1HkMjnsUWjjY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BkT+hA8zMLrUfTIYhc0zv215cClyhWm3iXoQZNNGIYsf0mIpYGE6uzhPwrA2mkjvb
+         8VKXVmuP/J1NWFZAd7CmIEmmkgbbvRNe8Bs/fLZ3CeNB8jlsCmSBEmlH30Tse+jx+m
+         6x7Lg665vUxRR2jRpTa/NQFB3lVTFK2ursVK3fN0=
+Date:   Tue, 28 Sep 2021 10:17:18 -0400
+From:   "bfields@fieldses.org" <bfields@fieldses.org>
+To:     Trond Myklebust <trondmy@hammerspace.com>
+Cc:     "neilb@suse.com" <neilb@suse.com>,
+        "kolga@netapp.com" <kolga@netapp.com>,
+        "willy@infradead.org" <willy@infradead.org>,
+        "tyhicks@canonical.com" <tyhicks@canonical.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "wanghai38@huawei.com" <wanghai38@huawei.com>,
+        "nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "jlayton@kernel.org" <jlayton@kernel.org>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "christian.brauner@ubuntu.com" <christian.brauner@ubuntu.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "cong.wang@bytedance.com" <cong.wang@bytedance.com>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "kuniyu@amazon.co.jp" <kuniyu@amazon.co.jp>,
+        "timo@rothenpieler.org" <timo@rothenpieler.org>,
+        "jiang.wang@bytedance.com" <jiang.wang@bytedance.com>,
+        "wenbin.zeng@gmail.com" <wenbin.zeng@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Rao.Shoaib@oracle.com" <Rao.Shoaib@oracle.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "tom@talpey.com" <tom@talpey.com>
+Subject: Re: [PATCH net 2/2] auth_gss: Fix deadlock that blocks
+ rpcsec_gss_exit_net when use-gss-proxy==1
+Message-ID: <20210928141718.GC25415@fieldses.org>
+References: <20210928031440.2222303-1-wanghai38@huawei.com>
+ <20210928031440.2222303-3-wanghai38@huawei.com>
+ <a845b544c6592e58feeaff3be9271a717f53b383.camel@hammerspace.com>
+ <20210928134952.GA25415@fieldses.org>
+ <77051a059fa19a7ae2390fbda7f8ab6f09514dfc.camel@hammerspace.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <77051a059fa19a7ae2390fbda7f8ab6f09514dfc.camel@hammerspace.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Tue, Sep 28, 2021 at 02:04:49PM +0000, Trond Myklebust wrote:
+> On Tue, 2021-09-28 at 09:49 -0400, bfields@fieldses.org wrote:
+> > On Tue, Sep 28, 2021 at 01:30:17PM +0000, Trond Myklebust wrote:
+> > > On Tue, 2021-09-28 at 11:14 +0800, Wang Hai wrote:
+> > > > When use-gss-proxy is set to 1, write_gssp() creates a rpc client
+> > > > in
+> > > > gssp_rpc_create(), this increases the netns refcount by 2, these
+> > > > refcounts are supposed to be released in rpcsec_gss_exit_net(),
+> > > > but
+> > > > it
+> > > > will never happen because rpcsec_gss_exit_net() is triggered only
+> > > > when
+> > > > the netns refcount gets to 0, specifically:
+> > > >     refcount=0 -> cleanup_net() -> ops_exit_list ->
+> > > > rpcsec_gss_exit_net
+> > > > It is a deadlock situation here, refcount will never get to 0
+> > > > unless
+> > > > rpcsec_gss_exit_net() is called. So, in this case, the netns
+> > > > refcount
+> > > > should not be increased.
+> > > > 
+> > > > In this case, xprt will take a netns refcount which is not
+> > > > supposed
+> > > > to be taken. Add a new flag to rpc_create_args called
+> > > > RPC_CLNT_CREATE_NO_NET_REF for not increasing the netns refcount.
+> > > > 
+> > > > It is safe not to hold the netns refcount, because when
+> > > > cleanup_net(), it
+> > > > will hold the gssp_lock and then shut down the rpc client
+> > > > synchronously.
+> > > > 
+> > > > 
+> > > I don't like this solution at all. Adding this kind of flag is
+> > > going to
+> > > lead to problems down the road.
+> > > 
+> > > Is there any reason whatsoever why we need this RPC client to exist
+> > > when there is no active knfsd server? IOW: Is there any reason why
+> > > we
+> > > shouldn't defer creating this RPC client for when knfsd starts up
+> > > in
+> > > this net namespace, and why we can't shut it down when knfsd shuts
+> > > down?
+> > 
+> > The rpc create is done in the context of the process that writes to
+> > /proc/net/rpc/use-gss-proxy to get the right namespaces.  I don't
+> > know
+> > how hard it would be capture that information for a later create.
+> > 
+> 
+> svcauth_gss_proxy_init() uses the net namespace SVC_NET(rqstp) (i.e.
+> the knfsd namespace) in the call to gssp_accept_sec_context_upcall().
+> 
+> IOW: the net namespace used in the call to find the RPC client is the
+> one set up by knfsd, and so if use-gss-proxy was set in a different
+> namespace than the one used by knfsd, then it won't be found.
 
-The use of dma_unmap_addr()/dma_unmap_len() in the driver causes
-multiple warnings when these macros are defined as empty, e.g.
-in an ARCH=i386 allmodconfig build:
+Right.  If you've got multiple containers, you don't want to find a
+gss-proxy from a different container.
 
-drivers/net/ethernet/google/gve/gve_tx_dqo.c: In function 'gve_tx_add_skb_no_copy_dqo':
-drivers/net/ethernet/google/gve/gve_tx_dqo.c:494:40: error: unused variable 'buf' [-Werror=unused-variable]
-  494 |                 struct gve_tx_dma_buf *buf =
-
-This is not how the NEED_DMA_MAP_STATE macros are meant to work,
-as they rely on never using local variables or a temporary structure
-like gve_tx_dma_buf.
-
-Remote the gve_tx_dma_buf definition and open-code the contents
-in all places to avoid the warning. This causes some rather long
-lines but otherwise ends up making the driver slightly smaller.
-
-Fixes: a57e5de476be ("gve: DQO: Add TX path")
-Link: https://lore.kernel.org/netdev/20210723231957.1113800-1-bcf@google.com/
-Link: https://lore.kernel.org/netdev/20210721151100.2042139-1-arnd@kernel.org/
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-Changes in v2:
-- complete rewrite of v1
----
- drivers/net/ethernet/google/gve/gve.h        | 13 ++-
- drivers/net/ethernet/google/gve/gve_tx.c     | 23 +++---
- drivers/net/ethernet/google/gve/gve_tx_dqo.c | 84 +++++++++-----------
- 3 files changed, 54 insertions(+), 66 deletions(-)
-
-diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index 1d3188e8e3b3..85bf825606e8 100644
---- a/drivers/net/ethernet/google/gve/gve.h
-+++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -224,11 +224,6 @@ struct gve_tx_iovec {
- 	u32 iov_padding; /* padding associated with this segment */
- };
- 
--struct gve_tx_dma_buf {
--	DEFINE_DMA_UNMAP_ADDR(dma);
--	DEFINE_DMA_UNMAP_LEN(len);
--};
--
- /* Tracks the memory in the fifo occupied by the skb. Mapped 1:1 to a desc
-  * ring entry but only used for a pkt_desc not a seg_desc
-  */
-@@ -236,7 +231,10 @@ struct gve_tx_buffer_state {
- 	struct sk_buff *skb; /* skb for this pkt */
- 	union {
- 		struct gve_tx_iovec iov[GVE_TX_MAX_IOVEC]; /* segments of this pkt */
--		struct gve_tx_dma_buf buf;
-+		struct {
-+			DEFINE_DMA_UNMAP_ADDR(dma);
-+			DEFINE_DMA_UNMAP_LEN(len);
-+		};
- 	};
- };
- 
-@@ -280,7 +278,8 @@ struct gve_tx_pending_packet_dqo {
- 	 * All others correspond to `skb`'s frags and should be unmapped with
- 	 * `dma_unmap_page`.
- 	 */
--	struct gve_tx_dma_buf bufs[MAX_SKB_FRAGS + 1];
-+	DEFINE_DMA_UNMAP_ADDR(dma[MAX_SKB_FRAGS + 1]);
-+	DEFINE_DMA_UNMAP_LEN(len[MAX_SKB_FRAGS + 1]);
- 	u16 num_bufs;
- 
- 	/* Linked list index to next element in the list, or -1 if none */
-diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
-index 665ac795a1ad..9922ce46a635 100644
---- a/drivers/net/ethernet/google/gve/gve_tx.c
-+++ b/drivers/net/ethernet/google/gve/gve_tx.c
-@@ -303,15 +303,15 @@ static inline int gve_skb_fifo_bytes_required(struct gve_tx_ring *tx,
- static void gve_tx_unmap_buf(struct device *dev, struct gve_tx_buffer_state *info)
- {
- 	if (info->skb) {
--		dma_unmap_single(dev, dma_unmap_addr(&info->buf, dma),
--				 dma_unmap_len(&info->buf, len),
-+		dma_unmap_single(dev, dma_unmap_addr(info, dma),
-+				 dma_unmap_len(info, len),
- 				 DMA_TO_DEVICE);
--		dma_unmap_len_set(&info->buf, len, 0);
-+		dma_unmap_len_set(info, len, 0);
- 	} else {
--		dma_unmap_page(dev, dma_unmap_addr(&info->buf, dma),
--			       dma_unmap_len(&info->buf, len),
-+		dma_unmap_page(dev, dma_unmap_addr(info, dma),
-+			       dma_unmap_len(info, len),
- 			       DMA_TO_DEVICE);
--		dma_unmap_len_set(&info->buf, len, 0);
-+		dma_unmap_len_set(info, len, 0);
- 	}
- }
- 
-@@ -491,7 +491,6 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
- 	struct gve_tx_buffer_state *info;
- 	bool is_gso = skb_is_gso(skb);
- 	u32 idx = tx->req & tx->mask;
--	struct gve_tx_dma_buf *buf;
- 	u64 addr;
- 	u32 len;
- 	int i;
-@@ -515,9 +514,8 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
- 		tx->dma_mapping_error++;
- 		goto drop;
- 	}
--	buf = &info->buf;
--	dma_unmap_len_set(buf, len, len);
--	dma_unmap_addr_set(buf, dma, addr);
-+	dma_unmap_len_set(info, len, len);
-+	dma_unmap_addr_set(info, dma, addr);
- 
- 	payload_nfrags = shinfo->nr_frags;
- 	if (hlen < len) {
-@@ -549,10 +547,9 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
- 			tx->dma_mapping_error++;
- 			goto unmap_drop;
- 		}
--		buf = &tx->info[idx].buf;
- 		tx->info[idx].skb = NULL;
--		dma_unmap_len_set(buf, len, len);
--		dma_unmap_addr_set(buf, dma, addr);
-+		dma_unmap_len_set(&tx->info[idx], len, len);
-+		dma_unmap_addr_set(&tx->info[idx], dma, addr);
- 
- 		gve_tx_fill_seg_desc(seg_desc, skb, is_gso, len, addr);
- 	}
-diff --git a/drivers/net/ethernet/google/gve/gve_tx_dqo.c b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-index 05ddb6a75c38..ec394d991668 100644
---- a/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-+++ b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-@@ -85,18 +85,16 @@ static void gve_tx_clean_pending_packets(struct gve_tx_ring *tx)
- 		int j;
- 
- 		for (j = 0; j < cur_state->num_bufs; j++) {
--			struct gve_tx_dma_buf *buf = &cur_state->bufs[j];
--
- 			if (j == 0) {
- 				dma_unmap_single(tx->dev,
--						 dma_unmap_addr(buf, dma),
--						 dma_unmap_len(buf, len),
--						 DMA_TO_DEVICE);
-+					dma_unmap_addr(cur_state, dma[j]),
-+					dma_unmap_len(cur_state, len[j]),
-+					DMA_TO_DEVICE);
- 			} else {
- 				dma_unmap_page(tx->dev,
--					       dma_unmap_addr(buf, dma),
--					       dma_unmap_len(buf, len),
--					       DMA_TO_DEVICE);
-+					dma_unmap_addr(cur_state, dma[j]),
-+					dma_unmap_len(cur_state, len[j]),
-+					DMA_TO_DEVICE);
- 			}
- 		}
- 		if (cur_state->skb) {
-@@ -457,15 +455,15 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
- 	const bool is_gso = skb_is_gso(skb);
- 	u32 desc_idx = tx->dqo_tx.tail;
- 
--	struct gve_tx_pending_packet_dqo *pending_packet;
-+	struct gve_tx_pending_packet_dqo *pkt;
- 	struct gve_tx_metadata_dqo metadata;
- 	s16 completion_tag;
- 	int i;
- 
--	pending_packet = gve_alloc_pending_packet(tx);
--	pending_packet->skb = skb;
--	pending_packet->num_bufs = 0;
--	completion_tag = pending_packet - tx->dqo.pending_packets;
-+	pkt = gve_alloc_pending_packet(tx);
-+	pkt->skb = skb;
-+	pkt->num_bufs = 0;
-+	completion_tag = pkt - tx->dqo.pending_packets;
- 
- 	gve_extract_tx_metadata_dqo(skb, &metadata);
- 	if (is_gso) {
-@@ -493,8 +491,6 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
- 
- 	/* Map the linear portion of skb */
- 	{
--		struct gve_tx_dma_buf *buf =
--			&pending_packet->bufs[pending_packet->num_bufs];
- 		u32 len = skb_headlen(skb);
- 		dma_addr_t addr;
- 
-@@ -502,9 +498,9 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
- 		if (unlikely(dma_mapping_error(tx->dev, addr)))
- 			goto err;
- 
--		dma_unmap_len_set(buf, len, len);
--		dma_unmap_addr_set(buf, dma, addr);
--		++pending_packet->num_bufs;
-+		dma_unmap_len_set(pkt, len[pkt->num_bufs], len);
-+		dma_unmap_addr_set(pkt, dma[pkt->num_bufs], addr);
-+		++pkt->num_bufs;
- 
- 		gve_tx_fill_pkt_desc_dqo(tx, &desc_idx, skb, len, addr,
- 					 completion_tag,
-@@ -512,8 +508,6 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
- 	}
- 
- 	for (i = 0; i < shinfo->nr_frags; i++) {
--		struct gve_tx_dma_buf *buf =
--			&pending_packet->bufs[pending_packet->num_bufs];
- 		const skb_frag_t *frag = &shinfo->frags[i];
- 		bool is_eop = i == (shinfo->nr_frags - 1);
- 		u32 len = skb_frag_size(frag);
-@@ -523,9 +517,9 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
- 		if (unlikely(dma_mapping_error(tx->dev, addr)))
- 			goto err;
- 
--		dma_unmap_len_set(buf, len, len);
--		dma_unmap_addr_set(buf, dma, addr);
--		++pending_packet->num_bufs;
-+		dma_unmap_len_set(pkt, len[pkt->num_bufs], len);
-+		dma_unmap_addr_set(pkt, dma[pkt->num_bufs], addr);
-+		++pkt->num_bufs;
- 
- 		gve_tx_fill_pkt_desc_dqo(tx, &desc_idx, skb, len, addr,
- 					 completion_tag, is_eop, is_gso);
-@@ -552,22 +546,23 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
- 	return 0;
- 
- err:
--	for (i = 0; i < pending_packet->num_bufs; i++) {
--		struct gve_tx_dma_buf *buf = &pending_packet->bufs[i];
--
-+	for (i = 0; i < pkt->num_bufs; i++) {
- 		if (i == 0) {
--			dma_unmap_single(tx->dev, dma_unmap_addr(buf, dma),
--					 dma_unmap_len(buf, len),
-+			dma_unmap_single(tx->dev,
-+					 dma_unmap_addr(pkt, dma[i]),
-+					 dma_unmap_len(pkt, len[i]),
- 					 DMA_TO_DEVICE);
- 		} else {
--			dma_unmap_page(tx->dev, dma_unmap_addr(buf, dma),
--				       dma_unmap_len(buf, len), DMA_TO_DEVICE);
-+			dma_unmap_page(tx->dev,
-+				       dma_unmap_addr(pkt, dma[i]),
-+				       dma_unmap_len(pkt, len[i]),
-+				       DMA_TO_DEVICE);
- 		}
- 	}
- 
--	pending_packet->skb = NULL;
--	pending_packet->num_bufs = 0;
--	gve_free_pending_packet(tx, pending_packet);
-+	pkt->skb = NULL;
-+	pkt->num_bufs = 0;
-+	gve_free_pending_packet(tx, pkt);
- 
- 	return -1;
- }
-@@ -725,12 +720,12 @@ static void add_to_list(struct gve_tx_ring *tx, struct gve_index_list *list,
- 
- static void remove_from_list(struct gve_tx_ring *tx,
- 			     struct gve_index_list *list,
--			     struct gve_tx_pending_packet_dqo *pending_packet)
-+			     struct gve_tx_pending_packet_dqo *pkt)
- {
- 	s16 prev_index, next_index;
- 
--	prev_index = pending_packet->prev;
--	next_index = pending_packet->next;
-+	prev_index = pkt->prev;
-+	next_index = pkt->next;
- 
- 	if (prev_index == -1) {
- 		/* Node is head */
-@@ -747,21 +742,18 @@ static void remove_from_list(struct gve_tx_ring *tx,
- }
- 
- static void gve_unmap_packet(struct device *dev,
--			     struct gve_tx_pending_packet_dqo *pending_packet)
-+			     struct gve_tx_pending_packet_dqo *pkt)
- {
--	struct gve_tx_dma_buf *buf;
- 	int i;
- 
- 	/* SKB linear portion is guaranteed to be mapped */
--	buf = &pending_packet->bufs[0];
--	dma_unmap_single(dev, dma_unmap_addr(buf, dma),
--			 dma_unmap_len(buf, len), DMA_TO_DEVICE);
--	for (i = 1; i < pending_packet->num_bufs; i++) {
--		buf = &pending_packet->bufs[i];
--		dma_unmap_page(dev, dma_unmap_addr(buf, dma),
--			       dma_unmap_len(buf, len), DMA_TO_DEVICE);
-+	dma_unmap_single(dev, dma_unmap_addr(pkt, dma[0]),
-+			 dma_unmap_len(pkt, len[0]), DMA_TO_DEVICE);
-+	for (i = 1; i < pkt->num_bufs; i++) {
-+		dma_unmap_page(dev, dma_unmap_addr(pkt, dma[i]),
-+			       dma_unmap_len(pkt, len[i]), DMA_TO_DEVICE);
- 	}
--	pending_packet->num_bufs = 0;
-+	pkt->num_bufs = 0;
- }
- 
- /* Completion types and expected behavior:
--- 
-2.29.2
-
+--b.
