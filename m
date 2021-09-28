@@ -2,135 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5AD741A43A
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 02:29:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00FE541A442
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 02:42:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238314AbhI1AbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 20:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
+        id S238368AbhI1An3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 20:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238282AbhI1AbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 20:31:08 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A995C061575
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 17:29:28 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id om12-20020a17090b3a8c00b0019eff43daf5so1409054pjb.4
-        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 17:29:28 -0700 (PDT)
+        with ESMTP id S238236AbhI1An2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 20:43:28 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD6DC061575;
+        Mon, 27 Sep 2021 17:41:49 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id m70so28058388ybm.5;
+        Mon, 27 Sep 2021 17:41:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ye2xCLDiZvt0HOOeSzRiznhqE2LqS4D6rouHO3hQeTY=;
-        b=MhF2cn/PYfOH9vPVClZzSdxzyHoq5mjxxya61XGp9qtpgq2kbmxOag/keU3V+lhHi0
-         tlTuyCgzK4+vqthoY3gMy2+PtHGBu+VBWVOhQ2v14olSaUjBgEw/UC/7HQt0VJZxIkLa
-         btKwTsqJV82QaI6WDnNUDlM2tCJPiKz5GbH9H6QXkBM4T4UAKETHPcuabVoMEMk0EdLN
-         tGYGIkXJaXHzalXnYi48Ymsayn1WD7nCo+4I4kO44moJfHVVp0BNBWAgdrasQAAalpZR
-         E8LCtBlHtt0YLjvpwQGsOZm57mgWjF67nCWjFL4ErLR0duTDeNZjmOJA3Lb//08y94oH
-         t0Og==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kEUbUu/OyN7X0Fpm+BVMV//96K67b3V4xTMb6EH1M1g=;
+        b=hRNukkSHUdnt9Nu98I4S+Jm7/ProyAFkFSCL4/GIPJH6NjSxFgx2nqtedFPIEf4lqB
+         QvYMRvGTGr9nSHTLIaRhhSA1W3ZMXrMZ0awB0Pd0yF7ccg0ImoZNHHZS1arRi31ePCnA
+         DqGyaYjqfUPABY8chUzIJPZ4L4gj2fqdY7qjXl2+oBfDEVAozti+HY9EX5/clwP+WTpR
+         q3aTeHppejOuU8lh7xwG9207rg5Zfd3zqQLLc9Ue+apMRMT5+z4nsQR7br63UwUTley5
+         GanAr0PfB7Kjg92qpQSjkzkhL7JT1Xq4cP53ovI1eTAyLm6YQn78XNj1YHQtuKn4n3VZ
+         WGvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ye2xCLDiZvt0HOOeSzRiznhqE2LqS4D6rouHO3hQeTY=;
-        b=jhE4PuEWrFrx0KvPfitVGhtMssUoS1dTTp2N8DRwmy5e17mQBLO3SJtH28wbOxMVNY
-         0bgdybnz2s2hW/nzAukPepMiyq7ZlAsFNJEuVuq37hqcBbG+XXv1myJvQrpCkJhFtHQY
-         /YY6p9spZEtu//uve7ZNr9u97xKbEMflTFqXyclte9MH2et3JjZD6ZkTrpPa6gkIWOng
-         j6UwI4ks7blFWkSU/uDKuM/GCP1qNlbaPpsbyq749a+RcU/MV5LBuQLn/kl0ScQxWJaq
-         aKWfBnuVIE0tXS8YRU+uaQr9/Rdn+qIpeH6j+whOn986pKwp7PFCjyOeFLjHJUOLReOD
-         fJKg==
-X-Gm-Message-State: AOAM530v7z6xrlBeL/LrwXAwSe7B7AiLVYQHWnVAQViCOX6Xs+qq3ZDv
-        RIjXJBXCtWorZusHkRDBP4Q=
-X-Google-Smtp-Source: ABdhPJxsJZqZSXjOyWukZt5v9gDghp++cIOiXIZCPX4jHdsM/m3RqpNyxCQsCvUl86o4OsjpHe9qkw==
-X-Received: by 2002:a17:902:e54f:b0:13c:a004:bc86 with SMTP id n15-20020a170902e54f00b0013ca004bc86mr2441539plf.78.1632788968305;
-        Mon, 27 Sep 2021 17:29:28 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:3295:1b18:9da8:fc63])
-        by smtp.gmail.com with ESMTPSA id i19sm17983502pfo.101.2021.09.27.17.29.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Sep 2021 17:29:27 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net] net: udp: annotate data race around udp_sk(sk)->corkflag
-Date:   Mon, 27 Sep 2021 17:29:24 -0700
-Message-Id: <20210928002924.629469-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.33.0.685.g46640cef36-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kEUbUu/OyN7X0Fpm+BVMV//96K67b3V4xTMb6EH1M1g=;
+        b=eYAboo74BvtuujGNY+tdN1fJS/80b7YmCztYlCIBW/1YWkjGFrT+efwQZtKyGP6C18
+         J8ZDYLNoYAZosS9GGSpdiR5UDmlcodh+6j9IBpnmG38pb187LBNV9EoaWNgsFl/KExfz
+         V0ZZW9lgXInFc2HK5+3/xfx+pZXICAavhIduiHZyRyiyPAnYMCZs/cc9+s3q6ARFTB/u
+         MZomi7SWOsX9sZintclHqYs69RrgMnJcF6oAuCh0h33W72vSXGk4GaFILIKBzaHTRJrn
+         4/6Agf9Suh/82UQhpcJN60wzAoQiHu2G9n6xbGPY4fWEwffC3iQ7RrVzxXP4AW5+3D7/
+         YTZA==
+X-Gm-Message-State: AOAM532DSHvfqJ6QGXA3bafmdWUDZKuL8W/xeC6O/gVekgS367yYDf32
+        HnK5Dq5PG93mPMHEN43Bi9frHtVUL8gZrz2pjQ4=
+X-Google-Smtp-Source: ABdhPJyd2EApfAg6UHQPV5u+2UStN3+9mbcoUYVA9p00ksStZpwHwIwMpfUyF5bcjmWBqtxri31Kk+JznhSFAsCMmsI=
+X-Received: by 2002:a25:2d4e:: with SMTP id s14mr3192993ybe.2.1632789709098;
+ Mon, 27 Sep 2021 17:41:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210920151112.3770991-1-davemarchevsky@fb.com>
+ <20210923205105.zufadghli5772uma@ast-mbp> <35e837fb-ac22-3ea1-4624-2a890f6d0db0@fb.com>
+ <CAEf4Bzb+r5Fpu1YzGX01YY6BQb1xnZiMRW3hUF+uft4BsJCPoA@mail.gmail.com>
+ <761a02db-ff47-fc2f-b557-eff2b02ec941@fb.com> <61520b6224619_397f208d7@john-XPS-13-9370.notmuch>
+In-Reply-To: <61520b6224619_397f208d7@john-XPS-13-9370.notmuch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 27 Sep 2021 17:41:38 -0700
+Message-ID: <CAEf4BzbxYxnQND9JJ4SfQb4kxxkRtk4S4rR2iqkcz6bJ2jdFqw@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 0/2] bpf: keep track of prog verification stats
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Dave Marchevsky <davemarchevsky@fb.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Mon, Sep 27, 2021 at 11:20 AM John Fastabend
+<john.fastabend@gmail.com> wrote:
+>
+> Dave Marchevsky wrote:
+> > On 9/23/21 10:02 PM, Andrii Nakryiko wrote:
+> > > On Thu, Sep 23, 2021 at 6:27 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
+> > >>
+> > >> On 9/23/21 4:51 PM, Alexei Starovoitov wrote:
+> > >>> On Mon, Sep 20, 2021 at 08:11:10AM -0700, Dave Marchevsky wrote:
+> > >>>> The verifier currently logs some useful statistics in
+> > >>>> print_verification_stats. Although the text log is an effective feedback
+> > >>>> tool for an engineer iterating on a single application, it would also be
+> > >>>> useful to enable tracking these stats in a more structured form for
+> > >>>> fleetwide or historical analysis, which this patchset attempts to do.
+> > >>>>
+> > >>>> A concrete motivating usecase which came up in recent weeks:
+> > >>>>
+> > >>>> A team owns a complex BPF program, with various folks extending its
+> > >>>> functionality over the years. An engineer tries to make a relatively
+> > >>>> simple addition but encounters "BPF program is too large. Processed
+> > >>>> 1000001 insn".
+> > >>>>
+> > >>>> Their changes bumped the processed insns from 700k to over the limit and
+> > >>>> there's no obvious way to simplify. They must now consider a large
+> > >>>> refactor in order to incorporate the new feature. What if there was some
+> > >>>> previous change which bumped processed insns from 200k->700k which
+> > >>>> _could_ be modified to stress verifier less? Tracking historical
+> > >>>> verifier stats for each version of the program over the years would
+> > >>>> reduce manual work necessary to find such a change.
+> > >>>>
+> > >>>>
+> > >>>> Although parsing the text log could work for this scenario, a solution
+> > >>>> that's resilient to log format and other verifier changes would be
+> > >>>> preferable.
+> > >>>>
+> > >>>> This patchset adds a bpf_prog_verif_stats struct - containing the same
+> > >>>> data logged by print_verification_stats - which can be retrieved as part
+> > >>>> of bpf_prog_info. Looking for general feedback on approach and a few
+> > >>>> specific areas before fleshing it out further:
+> > >>>>
+> > >>>> * None of my usecases require storing verif_stats for the lifetime of a
+> > >>>>   loaded prog, but adding to bpf_prog_aux felt more correct than trying
+> > >>>>   to pass verif_stats back as part of BPF_PROG_LOAD
+> > >>>> * The verif_stats are probably not generally useful enough to warrant
+> > >>>>   inclusion in fdinfo, but hoping to get confirmation before removing
+> > >>>>   that change in patch 1
+> > >>>> * processed_insn, verification_time, and total_states are immediately
+> > >>>>   useful for me, rest were added for parity with
+> > >>>>      print_verification_stats. Can remove.
+> > >>>> * Perhaps a version field would be useful in verif_stats in case future
+> > >>>>   verifier changes make some current stats meaningless
+> > >>>> * Note: stack_depth stat was intentionally skipped to keep patch 1
+> > >>>>   simple. Will add if approach looks good.
+> > >>>
+> > >>> Sorry for the delay. LPC consumes a lot of mental energy :)
+> > >>>
+> > >>> I see the value of exposing some of the verification stats as prog_info.
+> > >>> Let's look at the list:
+> > >>> struct bpf_prog_verif_stats {
+> > >>>        __u64 verification_time;
+> > >>>        __u32 insn_processed;
+> > >>>        __u32 max_states_per_insn;
+> > >>>        __u32 total_states;
+> > >>>        __u32 peak_states;
+> > >>>        __u32 longest_mark_read_walk;
+> > >>> };
+> > >>> verification_time is non deterministic. It varies with frequency
+> > >>> and run-to-run. I don't see how alerting tools can use it.
+> > >>
+> > >> Makes sense to me, will get rid of it.
+> > >>
+> > >>> insn_processed is indeed the main verification metric.
+> > >>> By now it's well known and understood.
+> > >>>
+> > >>> max_states_per_insn, total_states, etc were the metrics I've studied
+> > >>> carefully with pruning, back tracking and pretty much every significant
+> > >>> change I did or reiviewed in the verifier. They're useful to humans
+> > >>> and developers, but I don't see how alerting tools will use them.
+> > >>>
+> > >>> So it feels to me that insn_processed alone will be enough to address the
+> > >>> monitoring goal.
+> > >>
+> > >> For the concrete usecase in my original message insn_processed would be
+> > >> enough. For the others - I thought there might be value in gathering
+> > >> those "fleetwide" to inform verifier development, e.g.:
+> > >>
+> > >> "Hmm, this team's libbpf program has been regressing total_states over
+> > >> past few {kernel, llvm} rollouts, but they haven't been modifying it.
+> > >> Let's try to get a minimal repro, send to bpf@vger, and contribute to
+> > >> selftests if it is indeed hitting a weird verifier edge case"
+> > >>
+> > >> So for those I'm not expecting them to be useful to alert on or be a
+> > >> number that the average BPF program writer needs to care about.
+> > >>
+> > >> Of course this is hypothetical as I haven't tried to gather such data
+> > >> and look for interesting patterns. But these metrics being useful to
+> > >> you when looking at significant verifier changes is a good sign.
+> > >
+> > > One reason to not add all those fields is to not end up with
+> > > meaningless stats (in the future) in UAPI. One way to work around that
+> > > is to make it "unstable" by providing it through raw_tracepoint as
+> > > internal kernel struct.
+> > >
+> > > Basically, the proposal would be: add new tracepoint for when BPF
+> > > program is verified, either successfully or not. As one of the
+> > > parameters provide stats struct which is internal to BPF verifier and
+> > > is not exposed through UAPI.
+> > >
+> > > Such tracepoint actually would be useful more generally as well, e.g.,
+> > > to monitor which programs are verified in the fleet, what's the rate
+> > > of success/failure (to detect verifier regression), what are the stats
+> > > (verification time actually would be good to have there, again for
+> > > stats and detecting regression), etc, etc.
+> > >
+> > > WDYT?
+> > >
+> >
+> > Seems reasonable to me - and attaching a BPF program to the tracepoint to
+> > grab data is delightfully meta :)
+> >
+> > I'll do a pass on alternate implementation with _just_ tracepoint, no
+> > prog_info or fdinfo, can add minimal or full stats to those later if
+> > necessary.
+>
+> We can also use a hook point here to enforce policy on allowing the
+> BPF program to load or not using the stats here. For now basic
+> insn is a good start to allow larger/smaller programs to be loaded,
+> but we might add other info like call bitmask, features, types, etc.
+> If one of the arguments is the bpf_attr struct we can just read
+> lots of useful program info out directly.
+>
+> We would need something different from a tracepoint though to let
+> it return a reject|accept code. How about a new hook type that
+> has something similar to sockops that lets us just return an
+> accept or reject code?
+>
+> By doing this we can check loader signatures here to be sure the
+> loader is signed or otherwise has correct permissions to be loading
+> whatever type of bpf program is here.
 
-up->corkflag field can be read or written without any lock.
-Annotate accesses to avoid possible syzbot/KCSAN reports.
+For signing and generally preventing some BPF programs from loading
+(e.g., if there is some malicious BPF program that takes tons of
+memory to be validated), wouldn't you want to check that before BPF
+verifier spent all those resources on verification? So maybe there
+will be another hook before BPF prog is validated for that? Basically,
+if you don't trust any BPF program unless it is signed, I'd expect you
+check signature before BPF verifier does its heavy job.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/udp.c | 10 +++++-----
- net/ipv6/udp.c |  2 +-
- 2 files changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 8851c9463b4b62c9017565f545250c4ffe22927c..2a7825a5b84254b70b2f06fc04d601719c2e0bc3 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1053,7 +1053,7 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	__be16 dport;
- 	u8  tos;
- 	int err, is_udplite = IS_UDPLITE(sk);
--	int corkreq = up->corkflag || msg->msg_flags&MSG_MORE;
-+	int corkreq = READ_ONCE(up->corkflag) || msg->msg_flags&MSG_MORE;
- 	int (*getfrag)(void *, char *, int, int, int, struct sk_buff *);
- 	struct sk_buff *skb;
- 	struct ip_options_data opt_copy;
-@@ -1361,7 +1361,7 @@ int udp_sendpage(struct sock *sk, struct page *page, int offset,
- 	}
- 
- 	up->len += size;
--	if (!(up->corkflag || (flags&MSG_MORE)))
-+	if (!(READ_ONCE(up->corkflag) || (flags&MSG_MORE)))
- 		ret = udp_push_pending_frames(sk);
- 	if (!ret)
- 		ret = size;
-@@ -2662,9 +2662,9 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
- 	switch (optname) {
- 	case UDP_CORK:
- 		if (val != 0) {
--			up->corkflag = 1;
-+			WRITE_ONCE(up->corkflag, 1);
- 		} else {
--			up->corkflag = 0;
-+			WRITE_ONCE(up->corkflag, 0);
- 			lock_sock(sk);
- 			push_pending_frames(sk);
- 			release_sock(sk);
-@@ -2787,7 +2787,7 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
- 
- 	switch (optname) {
- 	case UDP_CORK:
--		val = up->corkflag;
-+		val = READ_ONCE(up->corkflag);
- 		break;
- 
- 	case UDP_ENCAP:
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index ea53847b5b7e8b82f1898fa442327a9ce060085f..e505bb007e9f97995bf64a37702e0dc44a8c4a5c 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1303,7 +1303,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	int addr_len = msg->msg_namelen;
- 	bool connected = false;
- 	int ulen = len;
--	int corkreq = up->corkflag || msg->msg_flags&MSG_MORE;
-+	int corkreq = READ_ONCE(up->corkflag) || msg->msg_flags&MSG_MORE;
- 	int err;
- 	int is_udplite = IS_UDPLITE(sk);
- 	int (*getfrag)(void *, char *, int, int, int, struct sk_buff *);
--- 
-2.33.0.685.g46640cef36-goog
-
+>
+> Thanks,
+> John
