@@ -2,178 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2191441AE3B
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 13:52:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD3D41AE48
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 13:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240545AbhI1LyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 07:54:02 -0400
-Received: from mail-bn7nam10on2044.outbound.protection.outlook.com ([40.107.92.44]:6657
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240526AbhI1Lx6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 07:53:58 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mxbEkv+ZWaHOD6AUINYssiGoc6gBQfs41E8lTLD3nZxEFh/ETnLtJoRVUNnqOO0kkMBYwcomClsVMxN2XgtSQKAly6xanrksIiocZ+xXtop8a7gx0zbLq8ds+68yP6WU/0gzAchuq5bqXYYVcWatge1LW+uWsk64DDB/90SCLrAIAIqDujD+lzEZqhuPRJgDJy3uT/4iPkac8MUvA9xhV2H4TyJO73d1TGeATaIE2X5BWPyvKZ2g3nrQPcBt86QYUSruIZXEN82png8cRJofkS7i//rLE1Ko9QyNkFXZD8nFHfTife1Nso3nfH2sfMFZjeqou7AbEvf1IjFQ/wEEwg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=xdNmtEjB4JR4/ZJwOn+sfctmtD5sw2f6r8u2lKQj+TQ=;
- b=nJ3R21BxOuXK4P191AnI5/xW99gXl4Yd/ibUNNAMQnBxmUdiu5r3C6pmmXI6lWt1rzV19CVgcTVzwkXe7V0TkzUfQTwCcjJoAvKodmd3YRXqvXDTT17YWmQKVgQSU76ccfIA15/tdyVtzUd9Rn2Ko6z/zIbsROktv1Bh76KC+8RxlHCsl7kmiB2aIMPHN5dr90bdBho8Yka0VbJvN9yjKzCxYi/8hJbp3gVblTr3iS/0MzRWVax6rlLxjF6rUIrkm/tSrzxXflValDzOkoegxTe+59B3WB555CW3A/Lis8KD9viLqISSKy0fWP1roYcxnQckqBjEUNguJxNaW6Zwxw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xdNmtEjB4JR4/ZJwOn+sfctmtD5sw2f6r8u2lKQj+TQ=;
- b=JOg7kNerDeofX1prQ6ix1T54Xmh4pMARyijdo0H3beBB8o+bE7DLQ67jvW4PeCahPdqcD1qIwMTlh72fCmFyFZwaQIVHCLjKMCj0Rq/eLHZv5nPgVJ65azRMaS/nHK6BHZhHZMCDg7UA2iN2F3SeoM5CDAGNnbwVurHEN3yiWO6ct8OxUHWAz5ZNJkri9o6BJpO93IlAtSUXVymOaRXifwbKXbbd+5IwhVDJOGJXbm/adoL+8X8C2jz1z0UZufEg+E1IBBnnlIzcq6Acnv48ZEFQZMUXt7W+jowGgwrlWHX5GiwlL0apt8MIaMpJvGIrjWjwYKZekzozJRvG9F9C1g==
-Authentication-Results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5221.namprd12.prod.outlook.com (2603:10b6:208:30b::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14; Tue, 28 Sep
- 2021 11:52:18 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4544.022; Tue, 28 Sep 2021
- 11:52:18 +0000
-Date:   Tue, 28 Sep 2021 08:52:17 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Mark Zhang <markzhang@nvidia.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Aharon Landau <aharonl@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Gal Pressman <galpress@amazon.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        Neta Ostrovsky <netao@nvidia.com>, netdev@vger.kernel.org,
-        Potnuri Bharat Teja <bharat@chelsio.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH rdma-next v1 06/11] RDMA/nldev: Add support to get status
- of all counters
-Message-ID: <20210928115217.GI964074@nvidia.com>
-References: <cover.1631660727.git.leonro@nvidia.com>
- <86b8a508d7e782b003d60acb06536681f0d4c721.1631660727.git.leonro@nvidia.com>
- <20210927173001.GD1529966@nvidia.com>
- <d812f553-1fc5-f228-18cb-07dce02eeb85@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d812f553-1fc5-f228-18cb-07dce02eeb85@nvidia.com>
-X-ClientProxiedBy: BLAPR03CA0122.namprd03.prod.outlook.com
- (2603:10b6:208:32e::7) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
-MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by BLAPR03CA0122.namprd03.prod.outlook.com (2603:10b6:208:32e::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend Transport; Tue, 28 Sep 2021 11:52:17 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mVBej-006wv9-1Z; Tue, 28 Sep 2021 08:52:17 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7513c949-f6d9-46d4-3dee-08d982766be1
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5221:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5221E4487B1082970F1D11BBC2A89@BL1PR12MB5221.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 58tcowc4oc5eqEdzqXA3S6ouAeicaXdK4Bcf+1rP67+9ycSzRO09ptgaYbsA28gr4wKSX9059h4OSJj4/czMoSEip+Ta0PaI9SV0ARjzYkOw8iA6bXswqSS4saB+jqGSBU3ABuUF53LC3WsxC5vDHNOekXDxnHYI8oFZvkQsmo9GaybjkJhEfaa2ciCnJxx0wgaTheEwFvRUcM2piZRTigW/iOuS0NkDvnBfvCbK3yXwK2gazwI5BA4aMtUyDoQZKKj8aokebawsBvNm7Yj3MqyFM3E2rhS0k19pzwhEw3eeVue6ytVdsPW6HNY8hJQ/JCrqgjCjEWBMg1tvlDTQWEVWWN/elOc1tkwKrDk40InjlyBP/+bBzgLHoH0NuTOSARn/DDQSFfcOqX3IqE4jLpEuJ8DWoarIb1uCFJba8YQr6aKHrvrCGlEG+7HspXx+incvLBOtVO4SAoSSII4NnrPKY0VGcbXpHXZfVdC1EbrGcxDHmPDZzZYeVUXrCIpSyvZdoQ0udTtaZpRwrQTe+SUj0OVg1dPV/V7AWHwEXWy3fNV04w5zhE/AOy+uqcwJFIS4pTYLPHCK4Frl6/MUGitm8bORWxKCaA4vCGCsyEpC0QuoI4ICklXHfVgsJ4BmKnsiNvCagpWbB7naOC5TlL7E9LQ6aN1NTWOGvglwBaemZmviSRca0Dibp9Vs+P84
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(53546011)(54906003)(6636002)(508600001)(316002)(5660300002)(26005)(37006003)(1076003)(2906002)(186003)(4326008)(8936002)(8676002)(6862004)(7416002)(2616005)(66946007)(33656002)(86362001)(38100700002)(66476007)(66556008)(426003)(9786002)(36756003)(9746002)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RJpRVnA6yYDCjBTj/P+bmM0cV5Be7CDcXs5JSe/I9OltgMgQjAPgYFJRPhSd?=
- =?us-ascii?Q?/sYd3gmMiNa2Fod3Rza9cIld1e6+9RXHKN63JpybOnlPcEgBP3uTmTkIeWa4?=
- =?us-ascii?Q?BfKmg9Af1c6/67AO/Bn7+rQSPcPI495I5BtGTITU4nYOeBWZupIFcxcNTPW5?=
- =?us-ascii?Q?yfiD6ES9JnxP/w30kEC1bnusw9maQCfh1P/qfyI52baDYSxa7Cjmps616pcu?=
- =?us-ascii?Q?1e68I70lPN4IkV6+5wDs85ZG2fCINUQbZWI898li/V7TAV78L8NMtrY6P2TR?=
- =?us-ascii?Q?XAwK3JvzZZDwojbg4s5/gwTPfbBXo2GSdQpNFOAx/AT+JzXR2rnQv6ksB5IC?=
- =?us-ascii?Q?NyM1pmMOXllZOu+rXBMNl4Wwh7eWQzYnbZ1d5+MAZGeKDFQ7YqhhcuR6tnfP?=
- =?us-ascii?Q?7UvN3De1X256INYaFoJq2I5BL4/5YcV+C5JPiAvc0K8TTzjDxkh8vvtEjfLZ?=
- =?us-ascii?Q?ulTe8mNrv8oA2DBuPvVMoaXSeVOAzAQkhzDcy3GPcvj3bujyoHTJvhYOoGHI?=
- =?us-ascii?Q?qVuOcKqBZUEUX41mLU+Ei1D9dQSrYS1efnIhJ4jlqkl1EEJX78rwole/OwnL?=
- =?us-ascii?Q?UyT9BA9RofQKPMf6sSnxdlYmzrIlmQv00S2HSOgfEZNOQpXpuErt26xdL0IG?=
- =?us-ascii?Q?Q0hTFuzK65PqazCcUbzmz/Hr7/4BiYsnKOtn5R45SbnFt7BHSyUm0K0e9w/N?=
- =?us-ascii?Q?f/Pk5FH4AxoXzTRMUtlvEwRuQA6iQ4sMpwO0ZanVK1EFou0sdQ7l+Ioe/KpY?=
- =?us-ascii?Q?rxd246nw2mz3/hQXMYags6Ra8dRkfFoMW+iXGROscBZY8FDjg+4AD5b7fgP/?=
- =?us-ascii?Q?AMFZcGdKY6Js2j0tvSB7hWq4bZuOuRXS3RjLkgZoIMgapzXGtxHlg0Z0neAN?=
- =?us-ascii?Q?GnWio7f0QDb3+xcwRgvDMYMFdxPyTp5eq48l38o1sjqMqq3clbRs54Zg6n9j?=
- =?us-ascii?Q?pYT5RDhxVsra+P6kuf+QRb3af7pnke0uKH2xt246zXlmU5aN3YlVb+OrhM9a?=
- =?us-ascii?Q?wRn470fG/C1D7ULm4x9Vm3sqI5MX74PA+cT/CJgh4NXXHgzAZsRmM3fvlYzX?=
- =?us-ascii?Q?fG3ZrJGSTGIpv0i7XsMqfB0uIru0u25NWV8tb9qDGIWdWmk2G3yk+C+wauxi?=
- =?us-ascii?Q?C3XtW5228mmn8Da/OTED+wsV4u68HIPXAX3Ark0keHQARcOU24w77jwq6/CO?=
- =?us-ascii?Q?4m0jogtJWPodid63uYSHdGMroqQw99NGchfaM9KsKRtThFsvdhsV0bhQ4URI?=
- =?us-ascii?Q?kwb4IoL6zoFilZXoAuSNGSe7SMgXcqtpQFM6MsKEhzh5mvEVToNAekiRKYoX?=
- =?us-ascii?Q?hHFkVNmJDMakMphrYKseoCgj?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7513c949-f6d9-46d4-3dee-08d982766be1
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2021 11:52:17.9680
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h0Ug5dVo7DWGPM871W9V3eIzX8rrmp1CUxcLy0Ck280EqyKdgYGJW74Ogx19EZZT
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5221
+        id S240468AbhI1L6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 07:58:02 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:16048 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S240381AbhI1L6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 07:58:01 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18SAhwLG021117;
+        Tue, 28 Sep 2021 07:56:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : content-type : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=YBi+sa6x+Ukx7ROvjXfqdVTeRR6kTInI+uAkVTr6JYE=;
+ b=Q+f2oeEklst+6ADeH5FUn6nDndEp95mPSqfojXJwpZC/NKJvvS2oMmwXByTjmNYBlX+Y
+ 2PmI/Njszn9ejW+Hb7HSDnhzhJp6WHo5nkAP9j93KtmaiwaptDnB81qu14Jn+cOJPfah
+ fHZ15iDmmLz/Yq1Yk/4dJXEaCWI8icKrZwmENMA2lQcBoi35peitATQ67KBQSVHTkPIA
+ nVsup5AGIBBQZs6wp8Y9iCN4TDCJJ8/R5d+XEYYKUJjK68+4CqTm0uBPU4yymJ2fI1ta
+ oSryH7SiGTPGXPwtr/ki0h0ytGdvs/ZpCtku7iEqfQUzFbdCRUMT6dTQQJZE6V8TNjle YA== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3bby6qcj3q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Sep 2021 07:56:19 -0400
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18SBfqOM016195;
+        Tue, 28 Sep 2021 11:56:18 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04fra.de.ibm.com with ESMTP id 3b9ud9uvxv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 28 Sep 2021 11:56:18 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18SBpFq743516282
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 28 Sep 2021 11:51:15 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B657CA405B;
+        Tue, 28 Sep 2021 11:56:15 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 674EEA4062;
+        Tue, 28 Sep 2021 11:56:15 +0000 (GMT)
+Received: from sig-9-145-32-211.uk.ibm.com (unknown [9.145.32.211])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 28 Sep 2021 11:56:15 +0000 (GMT)
+Message-ID: <8e4bbd5c59de31db71f718556654c0aa077df03d.camel@linux.ibm.com>
+Subject: Oops in during sriov_enable with ixgbe driver
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     linux-acpi@vger.kernel.org, netdev@vger.kernel.org
+Date:   Tue, 28 Sep 2021 13:56:15 +0200
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-16.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: rgC2Qipdn5Zil2wwlNKu1joFdtorFLHm
+X-Proofpoint-ORIG-GUID: rgC2Qipdn5Zil2wwlNKu1joFdtorFLHm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-28_05,2021-09-28_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 mlxlogscore=548 impostorscore=0 suspectscore=0 phishscore=0
+ mlxscore=0 spamscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2109280065
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 05:12:39PM +0800, Mark Zhang wrote:
-> On 9/28/2021 1:30 AM, Jason Gunthorpe wrote:
-> > On Wed, Sep 15, 2021 at 02:07:25AM +0300, Leon Romanovsky wrote:
-> > > +static int stat_get_doit_default_counter(struct sk_buff *skb,
-> > > +					 struct nlmsghdr *nlh,
-> > > +					 struct netlink_ext_ack *extack,
-> > > +					 struct nlattr *tb[])
-> > > +{
-> > > +	struct rdma_hw_stats *stats;
-> > > +	struct ib_device *device;
-> > > +	u32 index, port;
-> > > +	int ret;
-> > > +
-> > > +	if (!tb[RDMA_NLDEV_ATTR_DEV_INDEX] || !tb[RDMA_NLDEV_ATTR_PORT_INDEX])
-> > > +		return -EINVAL;
-> > > +
-> > > +	index = nla_get_u32(tb[RDMA_NLDEV_ATTR_DEV_INDEX]);
-> > > +	device = ib_device_get_by_index(sock_net(skb->sk), index);
-> > > +	if (!device)
-> > > +		return -EINVAL;
-> > > +
-> > > +	port = nla_get_u32(tb[RDMA_NLDEV_ATTR_PORT_INDEX]);
-> > > +	if (!rdma_is_port_valid(device, port)) {
-> > > +		ret = -EINVAL;
-> > > +		goto end;
-> > > +	}
-> > > +
-> > > +	stats = ib_get_hw_stats_port(device, port);
-> > > +	if (!stats) {
-> > > +		ret = -EINVAL;
-> > > +		goto end;
-> > > +	}
-> > > +
-> > > +	if (tb[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_DYNAMIC])
-> > > +		ret = stat_get_doit_stats_list(skb, nlh, extack, tb,
-> > > +					       device, port, stats);
-> > > +	else
-> > > +		ret = stat_get_doit_stats_values(skb, nlh, extack, tb, device,
-> > > +						 port, stats);
-> > 
-> > This seems strange, why is the output of a get contingent on a ignored
-> > input attribute? Shouldn't the HWCOUNTER_DYNAMIC just always be
-> > emitted?
-> 
-> The CMD_STAT_GET is originally used to get the default hwcounter statistic
-> (the value of all hwstats), now we also want to use this command to get a
-> list of counters (just name and status), so kernel differentiates these 2
-> cases based on HWCOUNTER_DYNAMIC attr.
+Hi Jesse, Hi Tony,
 
-Don't do that, it is not how netlink works. Either the whole attribute
-should be returned or you need a new get command
+Since v5.15-rc1 I've been having problems with enabling SR-IOV VFs on
+my private workstation with an Intel 82599 NIC with the ixgbe driver. I
+haven't had time to bisect or look closer but since it still happens on
+v5.15-rc3 I wanted to at least check if you're aware of the problem as
+I couldn't find anything on the web.
 
-Jason 
+I get below Oops when trying "echo 2 > /sys/bus/pci/.../sriov_numvfs"
+and suspect that the earlier ACPI messages could have something to do
+with that, absolutely not an ACPI expert though. If there is a need I
+could do a bisect.
+
+Thanks,
+Niklas
+
+dmesg output:
+
+[    6.112738] ixgbe 0000:03:00.0: registered PHC device on enp3s0
+[    6.286041] ixgbe 0000:03:00.0 enp3s0: detected SFP+: 9
+[    6.954994] ACPI: \: failed to evaluate _DSM (0x1001)
+[    6.955000] ACPI: \: failed to evaluate _DSM (0x1001)
+[    6.955002] ACPI: \: failed to evaluate _DSM (0x1001)
+[    6.955003] ACPI: \: failed to evaluate _DSM (0x1001)
+[    7.155246] ACPI: \: failed to evaluate _DSM (0x1001)
+[    7.155251] ACPI: \: failed to evaluate _DSM (0x1001)
+[    7.155253] ACPI: \: failed to evaluate _DSM (0x1001)
+[    7.155254] ACPI: \: failed to evaluate _DSM (0x1001)
+...
+[  136.883365] ixgbe 0000:03:00.0 enp3s0: SR-IOV enabled with 2 VFs
+[  136.883489] ixgbe 0000:03:00.0: removed PHC on enp3s0
+[  136.983130] ixgbe 0000:03:00.0: Multiqueue Enabled: Rx Queue count =3D 4=
+, Tx Queue count =3D 4 XDP Queue count =3D 0
+[  137.003753] ixgbe 0000:03:00.0: registered PHC device on enp3s0
+[  137.179126] ixgbe 0000:03:00.0 enp3s0: detected SFP+: 9
+[  137.217508] BUG: kernel NULL pointer dereference, address: 0000000000000=
+298
+[  137.217515] #PF: supervisor read access in kernel mode
+[  137.217518] #PF: error_code(0x0000) - not-present page
+[  137.217520] PGD 0 P4D 0=20
+[  137.217523] Oops: 0000 [#1] PREEMPT SMP NOPTI
+[  137.217527] CPU: 19 PID: 1058 Comm: zsh Not tainted 5.15.0-rc3-niklas #2=
+5 ad1c778d4b5b0053fcbb87077df466d6ee92e65b
+[  137.217532] Hardware name: To Be Filled By O.E.M. To Be Filled By O.E.M.=
+/X570 Creator, BIOS P3.40 01/28/2021
+[  137.217534] RIP: 0010:acpi_pci_find_companion+0x9a/0x100
+[  137.217540] Code: 83 e0 07 41 c1 e5 0d 41 81 e5 00 00 1f 00 41 09 c5 0f =
+b6 83 79 ff ff ff 45 89 ee 83 e8 01 3c 01 48 8b 43 40 41 0f 96 c7 31 ed <4c=
+> 8b a0 98 02 00 00 4c 89 e7 e8 97 57 04 00 49 8d 7c 24 f0 44 89
+[  137.217543] RSP: 0018:ffffbb978392bb88 EFLAGS: 00010246
+[  137.217545] RAX: 0000000000000000 RBX: ffff9cb20c0b80d0 RCX: 00000000000=
+000a4
+[  137.217548] RDX: ffff9cb1cfdddf40 RSI: 0000000000000100 RDI: ffffffff897=
+474e0
+[  137.217549] RBP: 0000000000000000 R08: 0000000000000004 R09: ffffbb97839=
+2bb94
+[  137.217551] R10: ffff9cb1d3588900 R11: 0000000000000004 R12: ffff9cb20c0=
+b8000
+[  137.217552] R13: 0000000000100000 R14: 0000000000100000 R15: 00000000000=
+00000
+[  137.217555] FS:  00007f0f792de140(0000) GS:ffff9cc0eeec0000(0000) knlGS:=
+0000000000000000
+[  137.217557] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  137.217559] CR2: 0000000000000298 CR3: 0000000108492000 CR4: 00000000003=
+50ee0
+[  137.217561] Call Trace:
+[  137.217564]  pci_set_acpi_fwnode+0x34/0x60
+[  137.217567]  pci_setup_device+0xe1/0x270
+[  137.217572]  pci_iov_add_virtfn+0x27e/0x330
+[  137.217577]  sriov_enable+0x219/0x3e0
+[  137.217580]  ixgbe_pci_sriov_configure+0xf3/0x170 [ixgbe 7655574dbcea556=
+149b0aede65e6825fd4dfd120]
+[  137.217599]  sriov_numvfs_store+0xbe/0x130
+[  137.217603]  kernfs_fop_write_iter+0x11c/0x1b0
+[  137.217607]  new_sync_write+0x15c/0x1f0
+[  137.217612]  vfs_write+0x1eb/0x280
+[  137.217615]  ksys_write+0x67/0xe0
+[  137.217618]  do_syscall_64+0x5c/0x80
+[  137.217622]  ? syscall_exit_to_user_mode+0x23/0x40
+[  137.217626]  ? do_syscall_64+0x69/0x80
+[  137.217629]  ? syscall_exit_to_user_mode+0x23/0x40
+[  137.217632]  ? do_syscall_64+0x69/0x80
+[  137.217635]  ? syscall_exit_to_user_mode+0x23/0x40
+[  137.217638]  ? do_syscall_64+0x69/0x80
+[  137.217640]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  137.217645] RIP: 0033:0x7f0f793ce907
+[  137.217648] Code: 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f =
+00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f 05 <48=
+> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
+[  137.217650] RSP: 002b:00007ffdb6a8e7e8 EFLAGS: 00000246 ORIG_RAX: 000000=
+0000000001
+[  137.217652] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f0f793=
+ce907
+[  137.217654] RDX: 0000000000000002 RSI: 0000564d342b2240 RDI: 00000000000=
+00001
+[  137.217656] RBP: 0000564d342b2240 R08: 000000000000000a R09: 00000000000=
+00000
+[  137.217657] R10: 0000000000000000 R11: 0000000000000246 R12: 00000000000=
+00002
+[  137.217659] R13: 00007f0f794a0520 R14: 0000000000000002 R15: 00007f0f794=
+a0700
+[  137.217662] Modules linked in: xt_CHECKSUM xt_MASQUERADE xt_conntrack ip=
+t_REJECT nf_reject_ipv4 xt_tcpudp ip6table_mangle ip6table_nat ip6table_fil=
+ter ip6_tables iptable_mangle iptable_nat nf_nat nf_conntrack nf_defrag_ipv=
+6 nf_defrag_ipv4 iptable_filter bridge stp llc cmac algif_hash algif_skciph=
+er af_alg bnep nct6683 lm92 dm_multipath scsi_dh_rdac scsi_dh_emc scsi_dh_a=
+lua iwlmvm snd_hda_codec_realtek intel_rapl_msr snd_hda_codec_generic intel=
+_rapl_common amdgpu ledtrig_audio snd_hda_codec_hdmi snd_hda_intel edac_mce=
+_amd snd_intel_dspcfg gpu_sched snd_intel_sdw_acpi kvm_amd drm_ttm_helper m=
+ac80211 ttm snd_hda_codec snd_usb_audio btusb snd_usbmidi_lib kvm drm_kms_h=
+elper btrtl snd_rawmidi btbcm snd_seq_device snd_hda_core btintel mc snd_hw=
+dep wmi_bmof mxm_wmi intel_wmi_thunderbolt libarc4 snd_pcm irqbypass cec cr=
+ct10dif_pclmul crc32_pclmul iwlwifi ghash_clmulni_intel bluetooth agpgart s=
+nd_timer aesni_intel syscopyarea sp5100_tco sysfillrect crypto_simd atlanti=
+c ecdh_generic snd joydev
+[  137.217722]  cryptd ecc sysimgblt rapl dm_mod pcspkr k10temp ccp i2c_pii=
+x4 fb_sys_fops mousedev soundcore crc16 cfg80211 ixgbe macsec igb mdio_devr=
+es rfkill i2c_algo_bit libphy thunderbolt mdio wireguard dca curve25519_x86=
+_64 libchacha20poly1305 chacha_x86_64 poly1305_x86_64 tpm_crb libblake2s bl=
+ake2s_x86_64 libcurve25519_generic tpm_tis wmi tpm_tis_core libchacha libbl=
+ake2s_generic tpm ip6_udp_tunnel rng_core udp_tunnel pinctrl_amd mac_hid ac=
+pi_cpufreq usbip_host usbip_core sg drm crypto_user fuse bpf_preload ip_tab=
+les x_tables hid_logitech_hidpp hid_logitech_dj usbhid btrfs blake2b_generi=
+c libcrc32c crc32c_generic xor raid6_pq crc32c_intel sr_mod cdrom xhci_pci =
+xhci_pci_renesas vfat fat
+[  137.217772] CR2: 0000000000000298
+[  137.217774] ---[ end trace b5fd99c7b5c7e77b ]---
+[  137.217776] RIP: 0010:acpi_pci_find_companion+0x9a/0x100
+[  137.217779] Code: 83 e0 07 41 c1 e5 0d 41 81 e5 00 00 1f 00 41 09 c5 0f =
+b6 83 79 ff ff ff 45 89 ee 83 e8 01 3c 01 48 8b 43 40 41 0f 96 c7 31 ed <4c=
+> 8b a0 98 02 00 00 4c 89 e7 e8 97 57 04 00 49 8d 7c 24 f0 44 89
+[  137.217781] RSP: 0018:ffffbb978392bb88 EFLAGS: 00010246
+[  137.217783] RAX: 0000000000000000 RBX: ffff9cb20c0b80d0 RCX: 00000000000=
+000a4
+[  137.217784] RDX: ffff9cb1cfdddf40 RSI: 0000000000000100 RDI: ffffffff897=
+474e0
+[  137.217786] RBP: 0000000000000000 R08: 0000000000000004 R09: ffffbb97839=
+2bb94
+[  137.217788] R10: ffff9cb1d3588900 R11: 0000000000000004 R12: ffff9cb20c0=
+b8000
+[  137.217789] R13: 0000000000100000 R14: 0000000000100000 R15: 00000000000=
+00000
+[  137.217791] FS:  00007f0f792de140(0000) GS:ffff9cc0eeec0000(0000) knlGS:=
+0000000000000000
+[  137.217793] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  137.217795] CR2: 0000000000000298 CR3: 0000000108492000 CR4: 00000000003=
+50ee0
+
