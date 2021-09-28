@@ -2,137 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E22341AE0F
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 13:45:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B9B341AE18
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 13:48:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240408AbhI1LrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 07:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41228 "EHLO
+        id S240424AbhI1LuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 07:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240342AbhI1LrW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 07:47:22 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E363C061575;
-        Tue, 28 Sep 2021 04:45:43 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id z24so92308044lfu.13;
-        Tue, 28 Sep 2021 04:45:43 -0700 (PDT)
+        with ESMTP id S240380AbhI1LuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 07:50:19 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A21FC061575;
+        Tue, 28 Sep 2021 04:48:40 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id s16so18772048pfk.0;
+        Tue, 28 Sep 2021 04:48:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZFnfwEeJAq8qyzlUHZnHojA4Gqoqc8GcjCT1PQRuPlA=;
-        b=idCz1J7YZryuSGAEx0P8dtwU0pPDXZSyD85JKy8/tAEDtrtNW8CsbL9FR1EhFETBx6
-         ld+TQKPSWhcOHZ9tYz4UASudaTMxa9E2NPziVZMWXtc9w6UHcnaR2Gk9uaBF4S2cNTiZ
-         8xoeewE7Op8Z+MUcTC6HQ4nWOux71j3Lrqz9r6tVq3oIOakElzsgWU6JPzXYYeK1GTYK
-         Xec8xkx6CqAJ7o/HnURkNbZb+NQJvFoZHUvZ2FlPuFXVF4cpvdLatMuh6f09d2oqVYNV
-         2jVQh56T0/xEJ2jUItZAaa/tEzTARwAd0F35gkmvWBgHCGaAW5J4UHywJUgE3DCsp9Tz
-         8Z9A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=JodMN2j9NOHbjPYuUUfH/OzRsSQnzAOkc7uqM+MkDlw=;
+        b=bg4FwRg4CLUcOANGYPgDxb3Mkehm+nlYmJrCZqMohUXWZ1uZ2yPWko0PfVKxiqFjxx
+         YV9VHUe0CGh0m4PIqTjthvZStLYWdSfCwXuQ7r8XuYsjambL8zsuiz7L/fnQYYG5zhuW
+         ZDACNWywxkpQQEJxTMsavAhQMfWy+TCkIHazTz2BCXOdvKToM9hbFdiy6NbJPrnC/CKb
+         wEJ5hYLbc28Tyb8c5Rlrbet0Kpeze40a5M2NxhNZdG19Gl6TmkS7MwwqRunAnEU2Mw4K
+         /jL1yf3xgCstcZi2d9x8HEwnf7wvouSCXVbZsOA3C11VX3eaYWVgsy5GO6bYdG+Pwn5G
+         DbFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZFnfwEeJAq8qyzlUHZnHojA4Gqoqc8GcjCT1PQRuPlA=;
-        b=BXPBcSiSg28xp1/9g5ACT9NLPDKMhZssS1U4EFoW/EAB5dH+HL5Y9R6scBNltUxIe+
-         WBMfULyXc1X3oi0rRSAUW5sqseB/LyoAt8mvrEaPIbgmH0wXykjuCqG2SPIwpPkzIFE2
-         4GStXxBaQxJa9KcbLP6aqgAJZdfadLVcXXxsFxKBgeVeCS7lt8Rw57I0P9Jkh5EexQOs
-         v1hIFYJKDrRa7+N3yRSpc/khbojGh6ljOlKIiv8BkN5UtCHS8GlS62oVZtvy346ifxQz
-         hKN23hj0d6T/dXyIsQhNyZdgeZAso0WE3sNdQ9t4FmDyVYiFBkKhliASJ+70XIe5wW+l
-         nf4A==
-X-Gm-Message-State: AOAM530fZx1BIKvyBs8wHQiukmp3r4dbmOAxCR+ri9/38OoaEZBCnIJm
-        28JweUgNOwb0oik5A7JDfh0=
-X-Google-Smtp-Source: ABdhPJy6sGn1qi4kGTA9CrQHvb7Jw0OywQqebNn0vrF9RBO9rMSoEkeYLXg1VcSAz8Ty+k8jOWQOTQ==
-X-Received: by 2002:a05:6512:39c4:: with SMTP id k4mr5253195lfu.14.1632829541741;
-        Tue, 28 Sep 2021 04:45:41 -0700 (PDT)
-Received: from [172.28.2.233] ([46.61.204.60])
-        by smtp.gmail.com with ESMTPSA id y1sm1892679lfe.292.2021.09.28.04.45.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Sep 2021 04:45:41 -0700 (PDT)
-Message-ID: <c86fecd6-6412-fec8-1dce-81e99c059e38@gmail.com>
-Date:   Tue, 28 Sep 2021 14:45:39 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JodMN2j9NOHbjPYuUUfH/OzRsSQnzAOkc7uqM+MkDlw=;
+        b=yN7+qVKymTs92NBzf8lsv4+ZUln5hO/dlfRbMfn+1uqZYO7+DEOf0BZRzVy4WYcimL
+         3GL8Hmq/zCi/N+xQShXn7TbOyCmBlFvrTqsD7F67f3v5nnZBnltwrEGbd7VRemYija0L
+         hmwJk3PX/8nl/cIr6zMFUBbvpqq1DYpnv9MRIKVTvgxwKcwpugPG/dEw7dUYtO99y2b4
+         8N2qRo+sYkBon1VvAG9tZGrwRks3vJfvKTU5LL62oOBOmtqVqdr9B0BkumOfgxUJCg8D
+         QL/mBfHKSOcyLzJD9696GCbSk6ASE1pVcY1yzNOgZCnatdBnf1AAuvvHmKX23IN387/O
+         eG4Q==
+X-Gm-Message-State: AOAM5313HHGFd9Zpmorgg1gtIHQT52EcT7S27IEANkV84xcHD1gNA+T9
+        axvxUh4kJIYY/lsuGwD68KyoMHwTwl1CSa7V2n4LoqGEcn9V51EZ
+X-Google-Smtp-Source: ABdhPJyYR/tTuKSPcF/5j2sNBafOEkO9GArWHqPfDdq/61i20UZ3HLJiIBGVL+rJzM0POmK1BbmilFb/RrZWMXM1oZI=
+X-Received: by 2002:a63:e74b:: with SMTP id j11mr4229450pgk.322.1632829719992;
+ Tue, 28 Sep 2021 04:48:39 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH] net: mdiobus: Fix memory leak in __mdiobus_register
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Yanfei Xu <yanfei.xu@windriver.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, p.zabel@pengutronix.de,
-        syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-References: <20210926045313.2267655-1-yanfei.xu@windriver.com>
- <20210928085549.GA6559@kili> <20210928092657.GI2048@kadam>
- <6f90fa0f-6d3b-0ca7-e894-eb971b3b69fa@gmail.com>
- <20210928103908.GJ2048@kadam>
- <63b18426-c39e-d898-08fb-8bfd05b7be9e@gmail.com>
- <20210928105943.GL2083@kadam>
- <283d01f0-d5eb-914e-1bd2-baae0420073c@gmail.com>
- <f587da4b-09dd-4c32-4ee4-5ec8b9ad792f@gmail.com>
- <20210928113055.GN2083@kadam>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20210928113055.GN2083@kadam>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <cover.1631289870.git.lorenzo@kernel.org> <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YUSrWiWh57Ys7UdB@lore-desk> <20210917113310.4be9b586@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAADnVQL15NAqbswXedF0r2om8SOiMQE80OSjbyCA56s-B4y8zA@mail.gmail.com>
+ <20210917120053.1ec617c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAADnVQKbrkOxfNoixUx-RLJEWULJLyhqjZ=M_X2cFG_APwNyCg@mail.gmail.com>
+ <614511bc3408b_8d5120862@john-XPS-13-9370.notmuch> <8735q25ccg.fsf@toke.dk>
+ <20210920110216.4c54c9a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <87lf3r3qrn.fsf@toke.dk> <20210920142542.7b451b78@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <87ilyu50kl.fsf@toke.dk> <2C4CB8CA-1234-4761-8F74-49A198F94880@redhat.com>
+In-Reply-To: <2C4CB8CA-1234-4761-8F74-49A198F94880@redhat.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 28 Sep 2021 13:48:28 +0200
+Message-ID: <CAJ8uoz3Dfz=RGoF2zqhVBXYA+AfPYvVu_SqcrEnKZY1QHxNdJQ@mail.gmail.com>
+Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer support
+To:     Eelco Chaudron <echaudro@redhat.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/28/21 14:30, Dan Carpenter wrote:
-> On Tue, Sep 28, 2021 at 02:09:06PM +0300, Pavel Skripkin wrote:
->> On 9/28/21 14:06, Pavel Skripkin wrote:
->> > > It's not actually the same.  The state has to be set before the
->> > > device_register() or there is still a leak.
->> > > 
->> > Ah, I see... I forgot to handle possible device_register() error. Will
->> > send v2 soon, thank you
->> > 
->> > 
->> > 
->> Wait... Yanfei's patch is already applied to net tree and if I understand
->> correctly, calling put_device() 2 times will cause UAF or smth else.
->> 
-> 
-> Yes.  It causes a UAF.
-> 
-> Huh...  You're right that the log should say "failed to register".  But
-> I don't think that's the correct syzbot link for your patch either
-> because I don't think anyone calls mdiobus_free() if
-> __devm_mdiobus_register() fails.  I have looked at these callers.  It
-> would be a bug as well.
-> 
+On Tue, Sep 21, 2021 at 12:04 PM Eelco Chaudron <echaudro@redhat.com> wrote=
+:
+>
+>
+>
+> On 21 Sep 2021, at 0:44, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>
+> > Jakub Kicinski <kuba@kernel.org> writes:
+> >
+> >> On Mon, 20 Sep 2021 23:01:48 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wr=
+ote:
+> >>>> In fact I don't think there is anything infra can do better for
+> >>>> flushing than the prog itself:
+> >>>>
+> >>>>    bool mod =3D false;
+> >>>>
+> >>>>    ptr =3D bpf_header_pointer(...);
+> >>>>    ...
+> >>>>    if (some_cond(...)) {
+> >>>>            change_packet(...);
+> >>>>            mod =3D true;
+> >>>>    }
+> >>>>    ...
+> >>>>    if (mod)
+> >>>
+> >>> to have an additional check like:
+> >>>
+> >>> if (mod && ptr =3D=3D stack)
+> >>>
+> >>> (or something to that effect). No?
+> >>
+> >> Good point. Do you think we should have the kernel add/inline this
+> >> optimization or have the user do it explicitly.
+> >
+> > Hmm, good question. On the one hand it seems like an easy optimisation
+> > to add, but on the other hand maybe the caller has other logic that can
+> > better know how/when to omit the check.
+> >
+> > Hmm, but the helper needs to check it anyway, doesn't it? At least it
+> > can't just blindly memcpy() if the source and destination would be the
+> > same...
+> >
+> >> The draft API was:
+> >>
+> >> void *xdp_mb_pointer_flush(struct xdp_buff *xdp_md, u32 flags,
+> >>                            u32 offset, u32 len, void *stack_buf)
+> >>
+> >> Which does not take the ptr returned by header_pointer(), but that's
+> >> easy to add (well, easy other than the fact it'd be the 6th arg).
+> >
+> > I guess we could play some trickery with stuffing offset/len/flags into
+> > one or two u64s to save an argument or two?
+> >
+> >> BTW I drafted the API this way to cater to the case where flush()
+> >> is called without a prior call to header_pointer(). For when packet
+> >> trailer or header is populated directly from a map value. Dunno if
+> >> that's actually useful, either.
+> >
+> > Ah, didn't think of that; so then it really becomes a generic
+> > xdp_store_bytes()-type helper? Might be useful, I suppose. Adding
+> > headers is certainly a fairly common occurrence, but dunno to what
+> > extent they'd be copied wholesale from a map (hadn't thought about doin=
+g
+> > that before either).
+>
+>
+> Sorry for commenting late but I was busy and had to catch up on emails...
+>
+> I like the idea, as these APIs are exactly what I proposed in April, http=
+s://lore.kernel.org/bpf/FD3E6E08-DE78-4FBA-96F6-646C93E88631@redhat.com/
+>
+> I did not call it flush, as it can be used as a general function to copy =
+data to a specific location.
 
-mdiobus_free() is called in case of ->probe() failure, because devres 
-clean up function for bus is devm_mdiobus_free(). It simply calls 
-mdiobus_free().
+Here is some performance data (throughput) for this patch set on i40e
+(40 Gbit/s NIC). All using the xdp_rxq_info sample and NO multi-buffer
+packets.
 
+With v14 only:
 
-So, i imagine following calltrace:
+XDP_DROP: +4%
+XDP_TX: +1%
+XDP_PASS: -1%
 
-ax88772_bind
-   ax88772_init_mdio
-     devm_mdiobus_alloc() <- bus registered as devres
-     devm_mdiobus_register() <- fail (->probe failure)
+With v14 plus multi-buffer support implemented in i40e courtesy of Tirtha:
 
-...
+XDP_DROP: +3%
+XDP_TX: -1%
+XDP_PASS: -2%
 
-devres_release_all
-   mdiobus_free()
+/Magnus
 
-
-Also, syzbot has tested my patch :)
-
-> Anyway, your patch is required and the __devm_mdiobus_register()
-> function has leaks as well.  And perhaps there are more bugs we have not
-> discovered.
-> 
-> regards,
-> dan carpenter
-> 
-
-
-
-With regards,
-Pavel Skripkin
+>
+> //Eelco
+>
