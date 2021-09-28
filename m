@@ -2,200 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D89841B000
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 15:26:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2AC441B00A
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 15:29:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240859AbhI1N2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 09:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37416 "EHLO
+        id S240842AbhI1Nbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 09:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233878AbhI1N2c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 09:28:32 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A73C061575;
-        Tue, 28 Sep 2021 06:26:53 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id 138so40173963qko.10;
-        Tue, 28 Sep 2021 06:26:53 -0700 (PDT)
+        with ESMTP id S240830AbhI1Nbb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 09:31:31 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F8AC061740
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 06:29:52 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id x2so23343751ilm.2
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 06:29:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RHL6JZa8EAnILkEzg08qxNM2V7eltepufz30/GOy0a8=;
-        b=VNmAl3HuXqZ3h88WrHO6AEiHj5XNCYICoC6s9tx17Xj0cEk0kKv9bfJXwofrKSM65V
-         0HGCmrKwyInqFid1biTCpZM8cKNw3bSu9x5FH5M09Zv4CvD/7DHtw0IWgyQvfGuxXv8L
-         ywgk36aC8H2j0jQlYW0mXioqh/ZcDhngbBHQgG7lwGfhekom0PbZZhDwo7YtINfaqlct
-         UiO8p49TL+TPM3XihphVY9ICAmTP+hBiTnkNhchK8Up8mSvBjC0AvvR8WJQqYdwAHsK9
-         JdYlC2cSxOcgp4T7feQ4UXH6Y+N76tgBNm71gKvIb0xqMs/5aQEm+J7pd6Tv9AfSMZL6
-         QeuQ==
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KV5AEITggXzrcUqW0Pn0JDUCXvtzQQd7nfX6VcyNvh0=;
+        b=gsEil9aJ5ZOw0ASchzCW/AY/NlZwbg7FdvHHAbffANcuyVgNVj8F3r/I3y/OyqwIbk
+         QkY/gO8vfPAMQp75rG6vgEG7NkfLO4ZNSWbXrGEOjX3dKqow4MOof9p7GrAO13Ckl/VP
+         f8/C6WiPIW+rxE9R7UiZnONtD/dro2yaem2kM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RHL6JZa8EAnILkEzg08qxNM2V7eltepufz30/GOy0a8=;
-        b=mFj1l4K/nqBq8eH2YKxb4GgLtKQvjhajGeI2rhaF6F2flgci/ZIVviWtz67+veXw7w
-         6rVztm+c0vbLYoCfRo72yCUf388AocZDqVaeHTKavP5ztPP1g+8R3C3iw6D2BHWftB3+
-         3zLRRuU9phcVifocFa97ILGY+Vs1FIW68ys/UHJMOjLjpMvxBMV/fmGsuwU+Pefi+1pY
-         UJyT/SGzqaflomTgp8XOOU2h8mM1nBqv/xmdR5ESHFUS6eAwygvtH+vNFNKFQl0ZF1Nu
-         kvJmV/N0qXXhY/Mc5q2bpNzox5emarDHVh+zzlbxue8fySHrY2lXsPNX6pacMLy0CtCU
-         emyQ==
-X-Gm-Message-State: AOAM531e5VhIbITfIm4oUsuuRHrj/W///5lRyc4ha3Yo8OwFxy/jVSO2
-        U+D0rpAysfbbm3arzUPOy1sS19/UeKejCg==
-X-Google-Smtp-Source: ABdhPJztGAYHpMfCs90Rq3lMs0XN6uvUaNGsEGa5iW3IcORsJzUKJeTHxx8+8j4xyWqfSwNk8Xlh0g==
-X-Received: by 2002:a37:6895:: with SMTP id d143mr5275997qkc.217.1632835612125;
-        Tue, 28 Sep 2021 06:26:52 -0700 (PDT)
-Received: from vpp.lan (h112.166.20.98.dynamic.ip.windstream.net. [98.20.166.112])
-        by smtp.gmail.com with ESMTPSA id d82sm1673492qke.55.2021.09.28.06.26.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Sep 2021 06:26:51 -0700 (PDT)
-From:   Joshua Roys <roysjosh@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Joshua Roys <roysjosh@gmail.com>, ast@kernel.org,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        daniel@iogearbox.net, kuba@kernel.org, bpf@vger.kernel.org,
-        tariqt@nvidia.com, linux-rdma@vger.kernel.org
-Subject: [PATCH net-next] net: mlx4: Add XDP_REDIRECT statistics
-Date:   Tue, 28 Sep 2021 09:26:02 -0400
-Message-Id: <20210928132602.1488-1-roysjosh@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <8d7773a0-054a-84d5-e0b6-66a13509149e@gmail.com>
-References: <8d7773a0-054a-84d5-e0b6-66a13509149e@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KV5AEITggXzrcUqW0Pn0JDUCXvtzQQd7nfX6VcyNvh0=;
+        b=Eh/u+VL3JKSQBQ/pFa74+OZS6bsqRNMgUahJ7zyIC1WBDauWU4VDiKWV5lkFtQ0c8e
+         +I8KM0Jq2HUsIJi295l0bu8z6a7Y9yVncwWScVBwvDeu5ZTnodviQtYY5HtIZLkMLZwo
+         z61cdxLiC4cJPiQDNFHMKm9J7OPOyCg7SNN5VIRvX2IsSuIfrJhko5/KPth75g7PApEo
+         H3KlC57s/IskTn19D9gE09AalqhSTb2wm3PldlV7X+LPDTBlH19DgDWIxk2vW50Z0Imu
+         dUZT/veSYBY5Ryz5t+3ko4KocqTV9isvbXBZq1+kIAXrelXUTJCrQTxY53mub8iu06cZ
+         Qa9A==
+X-Gm-Message-State: AOAM531ag23rP2fIUZrazrMmB03PWX/k9LVe2kD/KL9ifts9EAlZTx36
+        nAeCEdiAtcbvoOQKDg4A9dc2mw==
+X-Google-Smtp-Source: ABdhPJz3qmL3tZ3U3XkVDcDl9dtP+yn06EspPEdsou0GIPYBieCdKEZlaSYFieS9Yrw1uFrX87cOuw==
+X-Received: by 2002:a92:c744:: with SMTP id y4mr4108077ilp.288.1632835791399;
+        Tue, 28 Sep 2021 06:29:51 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id m13sm11831997ilh.45.2021.09.28.06.29.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Sep 2021 06:29:50 -0700 (PDT)
+Subject: Re: [PATCH 2/2] [v2] qcom_scm: hide Kconfig symbol
+To:     Arnd Bergmann <arnd@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Simon Trimmer <simont@opensource.cirrus.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Joerg Roedel <joro@8bytes.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Alex Elder <elder@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, linux-gpio@vger.kernel.org
+References: <20210928075216.4193128-1-arnd@kernel.org>
+ <20210928075216.4193128-2-arnd@kernel.org>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <19bbc40d-3f13-7e9d-72c0-5d206b016bb7@ieee.org>
+Date:   Tue, 28 Sep 2021 08:29:48 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210928075216.4193128-2-arnd@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Address feedback for XDP_REDIRECT patch.
+On 9/28/21 2:50 AM, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> Now that SCM can be a loadable module, we have to add another
+> dependency to avoid link failures when ipa or adreno-gpu are
+> built-in:
+> 
+> aarch64-linux-ld: drivers/net/ipa/ipa_main.o: in function `ipa_probe':
+> ipa_main.c:(.text+0xfc4): undefined reference to `qcom_scm_is_available'
+> 
+> ld.lld: error: undefined symbol: qcom_scm_is_available
+>>>> referenced by adreno_gpu.c
+>>>>                gpu/drm/msm/adreno/adreno_gpu.o:(adreno_zap_shader_load) in archive drivers/built-in.a
+> 
+> This can happen when CONFIG_ARCH_QCOM is disabled and we don't select
+> QCOM_MDT_LOADER, but some other module selects QCOM_SCM. Ideally we'd
+> use a similar dependency here to what we have for QCOM_RPROC_COMMON,
+> but that causes dependency loops from other things selecting QCOM_SCM.
+> 
+> This appears to be an endless problem, so try something different this
+> time:
+> 
+>   - CONFIG_QCOM_SCM becomes a hidden symbol that nothing 'depends on'
+>     but that is simply selected by all of its users
+> 
+>   - All the stubs in include/linux/qcom_scm.h can go away
+> 
+>   - arm-smccc.h needs to provide a stub for __arm_smccc_smc() to
+>     allow compile-testing QCOM_SCM on all architectures.
+> 
+>   - To avoid a circular dependency chain involving RESET_CONTROLLER
+>     and PINCTRL_SUNXI, drop the 'select RESET_CONTROLLER' statement.
+>     According to my testing this still builds fine, and the QCOM
+>     platform selects this symbol already.
+> 
+> Acked-by: Kalle Valo <kvalo@codeaurora.org>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> Changes in v2:
+>    - drop the 'select RESET_CONTROLLER' line, rather than adding
+>      more of the same
+> ---
+>   drivers/firmware/Kconfig                |  5 +-
+>   drivers/gpu/drm/msm/Kconfig             |  4 +-
+>   drivers/iommu/Kconfig                   |  2 +-
+>   drivers/media/platform/Kconfig          |  2 +-
+>   drivers/mmc/host/Kconfig                |  2 +-
+>   drivers/net/ipa/Kconfig                 |  1 +
 
-Signed-off-by: Joshua Roys <roysjosh@gmail.com>
----
- .../net/ethernet/mellanox/mlx4/en_ethtool.c    |  8 ++++++++
- drivers/net/ethernet/mellanox/mlx4/en_port.c   | 18 +++++++++++-------
- drivers/net/ethernet/mellanox/mlx4/en_rx.c     |  4 +++-
- drivers/net/ethernet/mellanox/mlx4/mlx4_en.h   |  2 ++
- .../net/ethernet/mellanox/mlx4/mlx4_stats.h    |  4 +++-
- 5 files changed, 27 insertions(+), 9 deletions(-)
+For drivers/net/ipa/Kconfig, looks good to me.
+Nice simplification.
 
-Tested with VPP 21.06 on Fedora 34.
+Acked-by: Alex Elder <elder@linaro.org>
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-index ef518b1040f7..66c8ae29bc7a 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-@@ -197,6 +197,8 @@ static const char main_strings[][ETH_GSTRING_LEN] = {
- 
- 	/* xdp statistics */
- 	"rx_xdp_drop",
-+	"rx_xdp_redirect",
-+	"rx_xdp_redirect_fail",
- 	"rx_xdp_tx",
- 	"rx_xdp_tx_full",
- 
-@@ -428,6 +430,8 @@ static void mlx4_en_get_ethtool_stats(struct net_device *dev,
- 		data[index++] = priv->rx_ring[i]->bytes;
- 		data[index++] = priv->rx_ring[i]->dropped;
- 		data[index++] = priv->rx_ring[i]->xdp_drop;
-+		data[index++] = priv->rx_ring[i]->xdp_redirect;
-+		data[index++] = priv->rx_ring[i]->xdp_redirect_fail;
- 		data[index++] = priv->rx_ring[i]->xdp_tx;
- 		data[index++] = priv->rx_ring[i]->xdp_tx_full;
- 	}
-@@ -519,6 +523,10 @@ static void mlx4_en_get_strings(struct net_device *dev,
- 				"rx%d_dropped", i);
- 			sprintf(data + (index++) * ETH_GSTRING_LEN,
- 				"rx%d_xdp_drop", i);
-+			sprintf(data + (index++) * ETH_GSTRING_LEN,
-+				"rx%d_xdp_redirect", i);
-+			sprintf(data + (index++) * ETH_GSTRING_LEN,
-+				"rx%d_xdp_redirect_fail", i);
- 			sprintf(data + (index++) * ETH_GSTRING_LEN,
- 				"rx%d_xdp_tx", i);
- 			sprintf(data + (index++) * ETH_GSTRING_LEN,
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_port.c b/drivers/net/ethernet/mellanox/mlx4/en_port.c
-index 0158b88bea5b..043cc9d75b3e 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_port.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_port.c
-@@ -239,13 +239,15 @@ int mlx4_en_DUMP_ETH_STATS(struct mlx4_en_dev *mdev, u8 port, u8 reset)
- 
- 	mlx4_en_fold_software_stats(dev);
- 
--	priv->port_stats.rx_chksum_good = 0;
--	priv->port_stats.rx_chksum_none = 0;
--	priv->port_stats.rx_chksum_complete = 0;
--	priv->port_stats.rx_alloc_pages = 0;
--	priv->xdp_stats.rx_xdp_drop    = 0;
--	priv->xdp_stats.rx_xdp_tx      = 0;
--	priv->xdp_stats.rx_xdp_tx_full = 0;
-+	priv->port_stats.rx_chksum_good      = 0;
-+	priv->port_stats.rx_chksum_none      = 0;
-+	priv->port_stats.rx_chksum_complete  = 0;
-+	priv->port_stats.rx_alloc_pages      = 0;
-+	priv->xdp_stats.rx_xdp_drop          = 0;
-+	priv->xdp_stats.rx_xdp_redirect      = 0;
-+	priv->xdp_stats.rx_xdp_redirect_fail = 0;
-+	priv->xdp_stats.rx_xdp_tx            = 0;
-+	priv->xdp_stats.rx_xdp_tx_full       = 0;
- 	for (i = 0; i < priv->rx_ring_num; i++) {
- 		const struct mlx4_en_rx_ring *ring = priv->rx_ring[i];
- 
-@@ -255,6 +257,8 @@ int mlx4_en_DUMP_ETH_STATS(struct mlx4_en_dev *mdev, u8 port, u8 reset)
- 		priv->port_stats.rx_chksum_complete += READ_ONCE(ring->csum_complete);
- 		priv->port_stats.rx_alloc_pages += READ_ONCE(ring->rx_alloc_pages);
- 		priv->xdp_stats.rx_xdp_drop	+= READ_ONCE(ring->xdp_drop);
-+		priv->xdp_stats.rx_xdp_redirect += READ_ONCE(ring->xdp_redirect);
-+		priv->xdp_stats.rx_xdp_redirect_fail += READ_ONCE(ring->xdp_redirect_fail);
- 		priv->xdp_stats.rx_xdp_tx	+= READ_ONCE(ring->xdp_tx);
- 		priv->xdp_stats.rx_xdp_tx_full	+= READ_ONCE(ring->xdp_tx_full);
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-index 557d7daac2d3..8f09b1de4125 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -793,11 +793,13 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 			case XDP_PASS:
- 				break;
- 			case XDP_REDIRECT:
--				if (xdp_do_redirect(dev, &xdp, xdp_prog) >= 0) {
-+				if (!xdp_do_redirect(dev, &xdp, xdp_prog)) {
-+					ring->xdp_redirect++;
- 					xdp_redir_flush = true;
- 					frags[0].page = NULL;
- 					goto next;
- 				}
-+				ring->xdp_redirect_fail++;
- 				trace_xdp_exception(dev, xdp_prog, act);
- 				goto xdp_drop_no_cnt;
- 			case XDP_TX:
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-index f3d1a20201ef..f6c90e97b4cd 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-@@ -340,6 +340,8 @@ struct mlx4_en_rx_ring {
- 	unsigned long csum_complete;
- 	unsigned long rx_alloc_pages;
- 	unsigned long xdp_drop;
-+	unsigned long xdp_redirect;
-+	unsigned long xdp_redirect_fail;
- 	unsigned long xdp_tx;
- 	unsigned long xdp_tx_full;
- 	unsigned long dropped;
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h
-index 7b51ae8cf759..e9cd4bb6f83d 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h
-@@ -42,9 +42,11 @@ struct mlx4_en_port_stats {
- 
- struct mlx4_en_xdp_stats {
- 	unsigned long rx_xdp_drop;
-+	unsigned long rx_xdp_redirect;
-+	unsigned long rx_xdp_redirect_fail;
- 	unsigned long rx_xdp_tx;
- 	unsigned long rx_xdp_tx_full;
--#define NUM_XDP_STATS		3
-+#define NUM_XDP_STATS		5
- };
- 
- struct mlx4_en_phy_stats {
--- 
-2.31.1
+>   drivers/net/wireless/ath/ath10k/Kconfig |  2 +-
+>   drivers/pinctrl/qcom/Kconfig            |  3 +-
+>   include/linux/arm-smccc.h               | 10 ++++
+>   include/linux/qcom_scm.h                | 71 -------------------------
+>   10 files changed, 20 insertions(+), 82 deletions(-)
+> 
 
+. . .
