@@ -2,305 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA0C341A92D
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 08:59:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87D0D41A945
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 09:04:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239136AbhI1HAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 03:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239125AbhI1HAs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 03:00:48 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D760C061604;
-        Mon, 27 Sep 2021 23:59:09 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id s11so20149287pgr.11;
-        Mon, 27 Sep 2021 23:59:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=rB5ViCOzEE2Xa9uSqRfylCMGhvfsfQ80A7DvZwI1S28=;
-        b=nj52mrxpqNqOif05A2VEPmQwSsUdBbC6ERfCDJeo1wC73DA5L3h5Gyavyu89WuQQA7
-         GrXFRhbfZtACt5OMpC9ZKaxmTrczVxKmkRMm9a0lIQnEAzrPOd6QLbJSG6d0aW+x+QKt
-         8Uwq/wiwK3e+bZLvXXqVW8kN1XsX0w9bEoU5z5iOSZoZRfxVbK75oRidke9TpV6O/737
-         dlv8zTkYhJt80XQY2tPH0KzybVCYoi7xSxHDbqlKIZ73LKl8BQBSqSv58V7xckrK4gWE
-         SCvIwhxR9p4PdQouO/ij+mrt2UNYGPaOXhAiHfuIzet7yQhrU4WqsvivP4r9PnmP2WN3
-         VB3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=rB5ViCOzEE2Xa9uSqRfylCMGhvfsfQ80A7DvZwI1S28=;
-        b=V+sB6wb5NCEaA4v6aQxL1njv4vZ6CQb2UuWXqWOfe7YocjLZHGaP8Kjg3kCgZXIMc+
-         gRCiOrNQX0FafVYlCUfrKRRj53vJWQpjM0NXTxizopDOriV/y5D3Y6M6WEriIbqLWmvN
-         f7MFH29n9nMq8UFGUgp58snEEwHpEUlb7BHvTKSaY70KFPKHbn0CU0+lR2s5JueK04vs
-         7p00staOMf4Rfkxr3gtnRKMcW5LevlITo3ZP2QE6Hfax2+GnJfM3NDONoNjkdESl2ur5
-         xh20q6//6Prwsox42ZxP6QA++MAWCRvNdlYJ+CJqCIY0onlJ0Z5ZWXafp5u+knOCJiXY
-         EVuA==
-X-Gm-Message-State: AOAM531GQg5ByC1MMRlIm/B9SONZ+PIjek/XM1tG3SvLW/WV0/GVul3U
-        pUGTCXoqZJjTLbY4VKrpQTs=
-X-Google-Smtp-Source: ABdhPJxqim03NkUJjOx5q8YW4/WexvtpgVagPkFQLhF6lIihyBvbFiIMp//D1xDlwSfrLeese9W1Og==
-X-Received: by 2002:a63:4c0e:: with SMTP id z14mr3181447pga.427.1632812348812;
-        Mon, 27 Sep 2021 23:59:08 -0700 (PDT)
-Received: from xplor.waratah.dyndns.org (222-155-4-20-adsl.sparkbb.co.nz. [222.155.4.20])
-        by smtp.gmail.com with ESMTPSA id b17sm20352152pgl.61.2021.09.27.23.59.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Sep 2021 23:59:08 -0700 (PDT)
-Received: by xplor.waratah.dyndns.org (Postfix, from userid 1000)
-        id 1E4FE36042A; Tue, 28 Sep 2021 19:59:05 +1300 (NZDT)
-From:   Michael Schmitz <schmitzmic@gmail.com>
-To:     linux-m68k@vger.kernel.org, geert@linux-m68k.org
-Cc:     alex@kazik.de, Michael Schmitz <schmitzmic@gmail.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH v7 3/3] net/8390: apne.c - add 100 Mbit support to apne.c driver
-Date:   Tue, 28 Sep 2021 19:57:46 +1300
-Message-Id: <20210928065825.15533-4-schmitzmic@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210928065825.15533-1-schmitzmic@gmail.com>
-References: <20210928065825.15533-1-schmitzmic@gmail.com>
+        id S239144AbhI1HGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 03:06:17 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:11520 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238806AbhI1HGP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 03:06:15 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1632812677; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=mcC+NI9lbMYVHDFKxEvKMLG3JdbT8e+is/T3jV6QeT8=; b=awpsOCXcxIz28G6L0OYfJN0+ygKSX4H5JUNe0KRhD1nOyhmn8nolYLaQhNuSP368QrAmu5Co
+ poP0IRAzqN7MpNsDXxDRsrjvkR65tFPwLXoUfxYjRcEM1Rg4Y0sKgcqs5BWbuLjq4Ap2e86F
+ ob4yetTSRcu3p4p8Hp78nSK/GsE=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
+ 6152be4b605ecf100b924378 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 28 Sep 2021 07:03:39
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 30C25C4360C; Tue, 28 Sep 2021 07:03:39 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9DA53C4338F;
+        Tue, 28 Sep 2021 07:03:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 9DA53C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Alex Elder <elder@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        iommu@lists.linux-foundation.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH] [RFC] qcom_scm: hide Kconfig symbol
+References: <20210927152412.2900928-1-arnd@kernel.org>
+Date:   Tue, 28 Sep 2021 10:03:25 +0300
+In-Reply-To: <20210927152412.2900928-1-arnd@kernel.org> (Arnd Bergmann's
+        message of "Mon, 27 Sep 2021 17:22:13 +0200")
+Message-ID: <87k0j1qj0i.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add module parameter, IO mode autoprobe and PCMCIA reset code
-required to support 100 Mbit PCMCIA ethernet cards on Amiga.
+Arnd Bergmann <arnd@kernel.org> writes:
 
-Select core PCMCIA support modules for use by APNE driver.
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> Now that SCM can be a loadable module, we have to add another
+> dependency to avoid link failures when ipa or adreno-gpu are
+> built-in:
+>
+> aarch64-linux-ld: drivers/net/ipa/ipa_main.o: in function `ipa_probe':
+> ipa_main.c:(.text+0xfc4): undefined reference to `qcom_scm_is_available'
+>
+> ld.lld: error: undefined symbol: qcom_scm_is_available
+>>>> referenced by adreno_gpu.c
+>>>>               gpu/drm/msm/adreno/adreno_gpu.o:(adreno_zap_shader_load)
+>>>> in archive drivers/built-in.a
+>
+> This can happen when CONFIG_ARCH_QCOM is disabled and we don't select
+> QCOM_MDT_LOADER, but some other module selects QCOM_SCM. Ideally we'd
+> use a similar dependency here to what we have for QCOM_RPROC_COMMON,
+> but that causes dependency loops from other things selecting QCOM_SCM.
+>
+> This appears to be an endless problem, so try something different this
+> time:
+>
+>  - CONFIG_QCOM_SCM becomes a hidden symbol that nothing 'depends on'
+>    but that is simply selected by all of its users
+>
+>  - All the stubs in include/linux/qcom_scm.h can go away
+>
+>  - arm-smccc.h needs to provide a stub for __arm_smccc_smc() to
+>    allow compile-testing QCOM_SCM on all architectures.
+>
+>  - To avoid a circular dependency chain involving RESET_CONTROLLER
+>    and PINCTRL_SUNXI, change the 'depends on RESET_CONTROLLER' in
+>    the latter one to 'select'.
+>
+> The last bit is rather annoying, as drivers should generally never
+> 'select' another subsystem, and about half the users of the reset
+> controller interface do this anyway.
+>
+> Nevertheless, this version seems to pass all my randconfig tests
+> and is more robust than any of the prior versions.
+>
+> Comments?
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-10 Mbit and 100 Mbit mode are supported by the same module.
-Use the core PCMCIA cftable parser to detect 16 bit cards,
-and automatically enable 16 bit ISA IO access for those cards
-by changing isa_type at runtime. Code to reset the PCMCIA
-hardware required for 16 bit cards is also added to the driver
-probe.
+[...]
 
-An optional module parameter switches Amiga ISA IO accessors
-to 8 or 16 bit access in case autoprobe fails.
+> diff --git a/drivers/net/wireless/ath/ath10k/Kconfig b/drivers/net/wireless/ath/ath10k/Kconfig
+> index 741289e385d5..ca007b800f75 100644
+> --- a/drivers/net/wireless/ath/ath10k/Kconfig
+> +++ b/drivers/net/wireless/ath/ath10k/Kconfig
+> @@ -44,7 +44,7 @@ config ATH10K_SNOC
+>  	tristate "Qualcomm ath10k SNOC support"
+>  	depends on ATH10K
+>  	depends on ARCH_QCOM || COMPILE_TEST
+> -	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
+> +	select QCOM_SCM
+>  	select QCOM_QMI_HELPERS
+>  	help
+>  	  This module adds support for integrated WCN3990 chip connected
 
-Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
-100 MBit card support" submitted to netdev 2018/09/16 by Alex
-Kazik <alex@kazik.de>.
+I assume I can continue to build test ATH10K_SNOC with x86 as before?
+That's important for me. If yes, then:
 
-CC: netdev@vger.kernel.org
-Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
-Tested-by: Alex Kazik <alex@kazik.de>
-Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
 
---
-
-Changes from v7:
-
-- move 'select' for PCCARD and PCMCIA to 8390 Kconfig, so
-  Amiga pcmcia.c may remain built-in while core PCMCIA
-  code can be built as modules if APNE driver is a module.
-- move 16 bit mode autoprobe code from amiga/pcmcia.c to this
-  driver, to allow the core PCMCIA code we depend on to be
-  built as modules.
-- change module parameter type from bool to int to allow for
-  tri-state semantics (autoprobe, 8 bit, 16 bit).
-
-Changes from v6:
-
-- use 16 bit mode autoprobe based on PCMCIA config table data
-
-Changes from v5:
-
-- move autoprobe code to new patch in this series
-
-Geert Uytterhoeven:
-- reword Kconfig help text
-
-Finn Thain:
-- style fixes, use msec_to_jiffies in timeout calc
-
-Alex Kazik:
-- revert module parameter permission change
-
-Changes from v4:
-
-Geert Uytterhoeven:
-- remove APNE100MBIT config option, always include 16 bit support
-- change module parameter permissions
-- try autoprobing for 16 bit mode early on in device probe
-
-Changes from v3:
-
-- change module parameter name to match Kconfig help
-
-Finn Thain:
-- fix coding style in new card reset code block
-- allow reset of isa_type by module parameter
-
-Changes from v1:
-
-- fix module parameter name in Kconfig help text
-
-Alex Kazik:
-- change module parameter type to bool, fix module parameter
-  permission
-
-Changes from RFC:
-
-Geert Uytterhoeven:
-- change APNE_100MBIT to depend on APNE
-- change '---help---' to 'help' (former no longer supported)
-- fix whitespace errors
-- fix module_param_named() arg count
-- protect all added code by #ifdef CONFIG_APNE_100MBIT
-
-change module parameter - 0 for 8 bit, 1 for 16 bit, else autoprobe
----
- drivers/net/ethernet/8390/Kconfig |  9 ++++
- drivers/net/ethernet/8390/apne.c  | 69 +++++++++++++++++++++++++++++++
- 2 files changed, 78 insertions(+)
-
-diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
-index a4130e643342..b22c3cf96560 100644
---- a/drivers/net/ethernet/8390/Kconfig
-+++ b/drivers/net/ethernet/8390/Kconfig
-@@ -136,6 +136,8 @@ config NE2K_PCI
- config APNE
- 	tristate "PCMCIA NE2000 support"
- 	depends on AMIGA_PCMCIA
-+	select PCCARD
-+	select PCMCIA
- 	select CRC32
- 	help
- 	  If you have a PCMCIA NE2000 compatible adapter, say Y.  Otherwise,
-@@ -144,6 +146,13 @@ config APNE
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called apne.
- 
-+	  The driver also supports 10/100Mbit cards (e.g. Netgear FA411,
-+	  CNet Singlepoint). To activate 100 Mbit support, use the kernel
-+	  option apne.100mbit=1 (builtin) at boot time, or the apne.100mbit
-+	  module parameter. The driver will attempt to autoprobe 100 Mbit
-+	  mode, so this option may not be necessary. Use apne.100mbit=0
-+	  should autoprobe mis-detect a 100 Mbit card.
-+
- config PCMCIA_PCNET
- 	tristate "NE2000 compatible PCMCIA support"
- 	depends on PCMCIA
-diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
-index da1ae37a9d73..115c008a129c 100644
---- a/drivers/net/ethernet/8390/apne.c
-+++ b/drivers/net/ethernet/8390/apne.c
-@@ -38,6 +38,7 @@
- #include <linux/etherdevice.h>
- #include <linux/interrupt.h>
- #include <linux/jiffies.h>
-+#include <pcmcia/cistpl.h>
- 
- #include <asm/io.h>
- #include <asm/setup.h>
-@@ -87,6 +88,7 @@ static void apne_block_output(struct net_device *dev, const int count,
- static irqreturn_t apne_interrupt(int irq, void *dev_id);
- 
- static int init_pcmcia(void);
-+static int pcmcia_is_16bit(void);
- 
- /* IO base address used for nic */
- 
-@@ -119,6 +121,10 @@ static u32 apne_msg_enable;
- module_param_named(msg_enable, apne_msg_enable, uint, 0444);
- MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
- 
-+static u32 apne_100_mbit = -1;
-+module_param_named(100_mbit, apne_100_mbit, uint, 0444);
-+MODULE_PARM_DESC(100_mbit, "Enable 100 Mbit support");
-+
- static struct net_device * __init apne_probe(void)
- {
- 	struct net_device *dev;
-@@ -140,6 +146,13 @@ static struct net_device * __init apne_probe(void)
- 
- 	pr_info("Looking for PCMCIA ethernet card : ");
- 
-+	if (apne_100_mbit == 1)
-+		isa_type = ISA_TYPE_AG16;
-+	else if (apne_100_mbit == 0)
-+		isa_type = ISA_TYPE_AG;
-+	else
-+		pr_cont(" (autoprobing 16 bit mode) ");
-+
- 	/* check if a card is inserted */
- 	if (!(PCMCIA_INSERTED)) {
- 		pr_cont("NO PCMCIA card inserted\n");
-@@ -167,6 +180,14 @@ static struct net_device * __init apne_probe(void)
- 
- 	pr_cont("ethernet PCMCIA card inserted\n");
- 
-+#if IS_ENABLED(CONFIG_PCMCIA)
-+	if (apne_100_mbit < 0 && pcmcia_is_16bit()) {
-+		pr_info("16-bit PCMCIA card detected!\n");
-+		isa_type = ISA_TYPE_AG16;
-+		apne_100_mbit = 1;
-+	}
-+#endif
-+
- 	if (!init_pcmcia()) {
- 		/* XXX: shouldn't we re-enable irq here? */
- 		free_netdev(dev);
-@@ -583,6 +604,16 @@ static int init_pcmcia(void)
- #endif
- 	u_long offset;
- 
-+	/* reset card (idea taken from CardReset by Artur Pogoda) */
-+	if (isa_type == ISA_TYPE_AG16) {
-+		u_char tmp = gayle.intreq;
-+
-+		gayle.intreq = 0xff;
-+		mdelay(1);
-+		gayle.intreq = tmp;
-+		mdelay(300);
-+	}
-+
- 	pcmcia_reset();
- 	pcmcia_program_voltage(PCMCIA_0V);
- 	pcmcia_access_speed(PCMCIA_SPEED_250NS);
-@@ -616,4 +647,42 @@ static int init_pcmcia(void)
- 	return 1;
- }
- 
-+#if IS_ENABLED(CONFIG_PCMCIA)
-+static int pcmcia_is_16bit(void)
-+{
-+	u_char cftuple[258];
-+	int cftuple_len;
-+	tuple_t cftable_tuple;
-+	cistpl_cftable_entry_t cftable_entry;
-+
-+	cftuple_len = pcmcia_copy_tuple(CISTPL_CFTABLE_ENTRY, cftuple, 256);
-+	if (cftuple_len < 3)
-+		return 0;
-+#ifdef DEBUG
-+	else
-+		print_hex_dump(KERN_WARNING, "cftable: ", DUMP_PREFIX_NONE, 8,
-+			       sizeof(char), cftuple, cftuple_len, false);
-+#endif
-+
-+	/* build tuple_t struct and call pcmcia_parse_tuple */
-+	cftable_tuple.DesiredTuple = CISTPL_CFTABLE_ENTRY;
-+	cftable_tuple.TupleCode = CISTPL_CFTABLE_ENTRY;
-+	cftable_tuple.TupleData = &cftuple[2];
-+	cftable_tuple.TupleDataLen = cftuple_len - 2;
-+	cftable_tuple.TupleDataMax = cftuple_len - 2;
-+
-+	if (pcmcia_parse_tuple(&cftable_tuple, (cisparse_t *)&cftable_entry))
-+		return 0;
-+
-+#ifdef DEBUG
-+	pr_info("IO flags: %x\n", cftable_entry.io.flags);
-+#endif
-+
-+	if (cftable_entry.io.flags & CISTPL_IO_16BIT)
-+		return 1;
-+
-+	return 0;
-+}
-+#endif
-+
- MODULE_LICENSE("GPL");
 -- 
-2.17.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
