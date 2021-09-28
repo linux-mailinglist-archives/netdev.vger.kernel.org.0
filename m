@@ -2,81 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99AC241AB4A
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 10:58:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3D2E41AB4D
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 10:59:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239778AbhI1JAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 05:00:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42248 "EHLO mail.kernel.org"
+        id S239828AbhI1JA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 05:00:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42774 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239716AbhI1JAK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 05:00:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 688006113E;
-        Tue, 28 Sep 2021 08:58:31 +0000 (UTC)
+        id S239784AbhI1JAq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 05:00:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DCD7861159;
+        Tue, 28 Sep 2021 08:59:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632819511;
-        bh=/LGa6ol03F+gR8eOJlhzdRh431oy2qqGn62TyLrNt4o=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XmMzcsw8b72SmPUyhRK65YCZ/97MG+nocrjNEEgf/A3gRa+cNudoDirffGR1pjuX4
-         O+ufgxoA+7fe9PtZMGhr1KTOr7b00jc+F45hgM4lfGtgsJ1h3NXYrjHHi5P5BjOsLH
-         wPNqSVKqaXpO5+PTRC+IbBjfjjgI1eOk6tqh8xybZpCu7suJFQD8o1a1noqWee89yu
-         ogEXhgxxBqe5HWGi3YznACbZutfvp2CDAgyEKejH3Hxc+tjXjBAGbGXcbKxiLi9yeN
-         LyG1OBYCaO9X3prvvKC0NK4Xhles1YcJST4gFf9hIiVfIjXJQqQB2G5pJuiXVYIf4B
-         m5u6DWYHpbS1w==
-Received: by mail-wm1-f50.google.com with SMTP id r83-20020a1c4456000000b0030cfc00ca5fso1550109wma.2;
-        Tue, 28 Sep 2021 01:58:31 -0700 (PDT)
-X-Gm-Message-State: AOAM533Y5m5d0mT20QAlJWeUuKGB24yAFqROwnC71P0DkWctuiPxe4/f
-        sDwDoRWeW8Ofp0cEiSRBrbTTMKLcHfkPCNRVYd8=
-X-Google-Smtp-Source: ABdhPJwHL7ma7ruvWe4f8FDLT+xzDkJx2IKDXRF4dh9UuUVKdUU7m0I+UeX6VB0SdiIH8EQ1osGeh6QBupnZtyRQS7Q=
-X-Received: by 2002:a1c:4b0c:: with SMTP id y12mr3483320wma.35.1632819509973;
- Tue, 28 Sep 2021 01:58:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210927095006.868305-1-arnd@kernel.org> <bd4871e4-62e6-2cb2-26be-34bda8dcb7dd@huawei.com>
-In-Reply-To: <bd4871e4-62e6-2cb2-26be-34bda8dcb7dd@huawei.com>
+        s=k20201202; t=1632819546;
+        bh=en7nVuj1sD+c8w9l7DbdzPI52yWs3ggAogVXkWmvTkg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=d5Y/AYoGL1EaP0pg+ceT4RUNJ6EK7jtDoYxjgnhzt1s1haQvBmUFKmLUNs/8AfkRK
+         dI00AA5kV7G74I0l7974dEAxLE5ol/gE9OO2Ox2OLoFtqlpREQ2JOy3PCoEtHfG7Gq
+         S8rchhmS181CHTO6dyb+z3QmIGYI7NgbU6HPfDR+PrNqaAhUvi4ps+gQHpX2Bp5egS
+         7ZL5iKUdeE2iS+QTNXZ4e7MplHs5bdaRCl5Z8r3lKfnNasXnPOtfBpslyGuu7nYq3F
+         WNYUMp9buu7u25bl/QLf6CrIsgb9ZLllwtICTdu2Cl/P55r6wUzlxA8UqQtPrqrnTo
+         J9HTLrrXn5APw==
 From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 28 Sep 2021 10:58:14 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a22NhkuWLvFh2+UYEcvzVOf_9m_GdLREqfCCK-+=Q9tug@mail.gmail.com>
-Message-ID: <CAK8P3a22NhkuWLvFh2+UYEcvzVOf_9m_GdLREqfCCK-+=Q9tug@mail.gmail.com>
-Subject: Re: [PATCH] net: hns3: fix hclge_dbg_dump_tm_pg() stack usage
-To:     "huangguangbin (A)" <huangguangbin2@huawei.com>
-Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
         Salil Mehta <salil.mehta@huawei.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
         Yufeng Mo <moyufeng@huawei.com>,
         Jiaran Zhang <zhangjiaran@huawei.com>,
-        Jian Shen <shenjian15@huawei.com>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jian Shen <shenjian15@huawei.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] [v2] net: hns3: fix hclge_dbg_dump_tm_pg() stack usage
+Date:   Tue, 28 Sep 2021 10:58:34 +0200
+Message-Id: <20210928085900.2394697-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 10:34 AM huangguangbin (A)
-<huangguangbin2@huawei.com> wrote:
-> On 2021/9/27 17:49, Arnd Bergmann wrote: From: Arnd Bergmann <arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
 
-> > +static int hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *buf, int len)
-> > +{
-> > +     int ret;
-> > +     char *data_str = kcalloc(ARRAY_SIZE(tm_pg_items),
-> > +                              HCLGE_DBG_DATA_STR_LEN, GFP_KERNEL);
-> > +
-> Hi Arnd, thanks your modification, according to linux code style, should the code be written as follow?
->
->         char *data_str;
->         int ret;
->
->         data_str = kcalloc(ARRAY_SIZE(tm_pg_items),
->                            HCLGE_DBG_DATA_STR_LEN, GFP_KERNEL);
+This function copies strings around between multiple buffers
+including a large on-stack array that causes a build warning
+on 32-bit systems:
 
-That's actually one of the versions I tried, but I didn't really like
-any of them, so
-I went with the shorter version.
+drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c: In function 'hclge_dbg_dump_tm_pg':
+drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c:782:1: error: the frame size of 1424 bytes is larger than 1400 bytes [-Werror=frame-larger-than=]
 
-Sending a v2 now with that changed black.
+The function can probably be cleaned up a lot, to go back to
+printing directly into the output buffer, but dynamically allocating
+the structure is a simpler workaround for now.
 
-        Arnd
+Fixes: 04d96139ddb3 ("net: hns3: refine function hclge_dbg_dump_tm_pri()")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+Changes in v2:
+ - rearrange local variable as suggested by huangguangbin
+---
+ .../hisilicon/hns3/hns3pf/hclge_debugfs.c     | 28 ++++++++++++++++---
+ 1 file changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index 87d96f82c318..32f62cd2dd99 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -719,9 +719,9 @@ static void hclge_dbg_fill_shaper_content(struct hclge_tm_shaper_para *para,
+ 	sprintf(result[(*index)++], "%6u", para->rate);
+ }
+ 
+-static int hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *buf, int len)
++static int __hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *data_str,
++				  char *buf, int len)
+ {
+-	char data_str[ARRAY_SIZE(tm_pg_items)][HCLGE_DBG_DATA_STR_LEN];
+ 	struct hclge_tm_shaper_para c_shaper_para, p_shaper_para;
+ 	char *result[ARRAY_SIZE(tm_pg_items)], *sch_mode_str;
+ 	u8 pg_id, sch_mode, weight, pri_bit_map, i, j;
+@@ -729,8 +729,10 @@ static int hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *buf, int len)
+ 	int pos = 0;
+ 	int ret;
+ 
+-	for (i = 0; i < ARRAY_SIZE(tm_pg_items); i++)
+-		result[i] = &data_str[i][0];
++	for (i = 0; i < ARRAY_SIZE(tm_pg_items); i++) {
++		result[i] = data_str;
++		data_str += HCLGE_DBG_DATA_STR_LEN;
++	}
+ 
+ 	hclge_dbg_fill_content(content, sizeof(content), tm_pg_items,
+ 			       NULL, ARRAY_SIZE(tm_pg_items));
+@@ -781,6 +783,24 @@ static int hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *buf, int len)
+ 	return 0;
+ }
+ 
++static int hclge_dbg_dump_tm_pg(struct hclge_dev *hdev, char *buf, int len)
++{
++	char *data_str;
++	int ret;
++
++	data_str = kcalloc(ARRAY_SIZE(tm_pg_items),
++			   HCLGE_DBG_DATA_STR_LEN, GFP_KERNEL);
++
++	if (!data_str)
++		return -ENOMEM;
++
++	ret = __hclge_dbg_dump_tm_pg(hdev, data_str, buf, len);
++
++	kfree(data_str);
++
++	return ret;
++}
++
+ static int hclge_dbg_dump_tm_port(struct hclge_dev *hdev,  char *buf, int len)
+ {
+ 	struct hclge_tm_shaper_para shaper_para;
+-- 
+2.29.2
+
