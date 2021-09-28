@@ -2,120 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BCFE41AF5F
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:49:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE6D441AF64
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240826AbhI1MvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 08:51:02 -0400
-Received: from www62.your-server.de ([213.133.104.62]:48178 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240829AbhI1MvA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 08:51:00 -0400
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mVCXu-000169-LA; Tue, 28 Sep 2021 14:49:18 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2021-09-28
-Date:   Tue, 28 Sep 2021 14:49:18 +0200
-Message-Id: <20210928124918.19126-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S240829AbhI1Mvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 08:51:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45244 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240685AbhI1Mvq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 08:51:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 10689610E5;
+        Tue, 28 Sep 2021 12:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632833407;
+        bh=J/caRSgwiECfRbdXLv/qphbD2xZmdQFEavRPuIhTwvM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=iHbJQTS8MjWB9rUuSymu4pSxiS7PXTfvh1NFpHwSIq9XsMeT8sVW6uER/lY+qNTOj
+         zWAHj+o/lymLDxD8GkKDAzbAdwW0RZ25ukOvbkE907HQo6FJk8Y3shYFIvuhfJAzva
+         zrPgU708oUFWinWZ3GfgvadIp7WHdl/zhGZVgQ9wH6hOEvbNzsEAfcGBNyKkO71pBb
+         eXZUS4J9gDqnj4ij4y5fl0iJTxwzkBiiMmbkM1TBmqVcwG4YJ/2MxXq1zxoX+/MGRl
+         keWU/tgKUTv1Fe3e6y9oY7wh3IzUqTuIwpaCogpomyVCCQpXVCZ1io2pJIqakHbDxn
+         HhbPN0hA4vdRA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0494E60A59;
+        Tue, 28 Sep 2021 12:50:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26306/Tue Sep 28 11:05:37 2021)
+Subject: Re: [PATCH] [v2] net: hns3: fix hclge_dbg_dump_tm_pg() stack usage
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163283340701.16226.1349215678242492151.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Sep 2021 12:50:07 +0000
+References: <20210928085900.2394697-1-arnd@kernel.org>
+In-Reply-To: <20210928085900.2394697-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        davem@davemloft.net, kuba@kernel.org, arnd@arndb.de,
+        huangguangbin2@huawei.com, moyufeng@huawei.com,
+        zhangjiaran@huawei.com, shenjian15@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+Hello:
 
-The following pull-request contains BPF updates for your *net* tree.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-We've added 10 non-merge commits during the last 14 day(s) which contain
-a total of 11 files changed, 139 insertions(+), 53 deletions(-).
+On Tue, 28 Sep 2021 10:58:34 +0200 you wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> This function copies strings around between multiple buffers
+> including a large on-stack array that causes a build warning
+> on 32-bit systems:
+> 
+> drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c: In function 'hclge_dbg_dump_tm_pg':
+> drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c:782:1: error: the frame size of 1424 bytes is larger than 1400 bytes [-Werror=frame-larger-than=]
+> 
+> [...]
 
-The main changes are:
+Here is the summary with links:
+  - [v2] net: hns3: fix hclge_dbg_dump_tm_pg() stack usage
+    https://git.kernel.org/netdev/net/c/c894b51e2a23
 
-1) Fix MIPS JIT jump code emission for too large offsets, from Piotr Krysiuk.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-2) Fix x86 JIT atomic/fetch emission when dst reg maps to rax, from Johan Almbladh.
 
-3) Fix cgroup_sk_alloc corner case when called from interrupt, from Daniel Borkmann.
-
-4) Fix segfault in libbpf's linker for objects without BTF, from Kumar Kartikeya Dwivedi.
-
-5) Fix bpf_jit_charge_modmem for applications with CAP_BPF, from Lorenz Bauer.
-
-6) Fix return value handling for struct_ops BPF programs, from Hou Tao.
-
-7) Various fixes to BPF selftests, from Jiri Benc.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Alexei Starovoitov, Brendan Jackman, Johan Almbladh, Martin KaFai Lau, 
-Tejun Heo
-
-----------------------------------------------------------------
-
-The following changes since commit d198b27762644c71362e43a7533f89c92b115bcf:
-
-  Revert "Revert "ipv4: fix memory leaks in ip_cmsg_send() callers"" (2021-09-14 14:24:31 +0100)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to ced185824c89b60e65b5a2606954c098320cdfb8:
-
-  bpf, x86: Fix bpf mapping of atomic fetch implementation (2021-09-28 12:10:29 +0200)
-
-----------------------------------------------------------------
-Daniel Borkmann (2):
-      bpf, cgroup: Assign cgroup in cgroup_sk_alloc when called from interrupt
-      bpf, test, cgroup: Use sk_{alloc,free} for test cases
-
-Dave Marchevsky (1):
-      MAINTAINERS: Add btf headers to BPF
-
-Hou Tao (1):
-      bpf: Handle return value of BPF_PROG_TYPE_STRUCT_OPS prog
-
-Jiri Benc (2):
-      selftests, bpf: Fix makefile dependencies on libbpf
-      selftests, bpf: test_lwt_ip_encap: Really disable rp_filter
-
-Johan Almbladh (1):
-      bpf, x86: Fix bpf mapping of atomic fetch implementation
-
-Kumar Kartikeya Dwivedi (1):
-      libbpf: Fix segfault in static linker for objects without BTF
-
-Lorenz Bauer (1):
-      bpf: Exempt CAP_BPF from checks against bpf_jit_limit
-
-Piotr Krysiuk (1):
-      bpf, mips: Validate conditional branch offsets
-
- MAINTAINERS                                      |  2 +
- arch/mips/net/bpf_jit.c                          | 57 +++++++++++++++-----
- arch/x86/net/bpf_jit_comp.c                      | 66 +++++++++++++++++-------
- include/linux/bpf.h                              |  3 +-
- kernel/bpf/bpf_struct_ops.c                      |  7 ++-
- kernel/bpf/core.c                                |  2 +-
- kernel/cgroup/cgroup.c                           | 17 ++++--
- net/bpf/test_run.c                               | 14 +++--
- tools/lib/bpf/linker.c                           |  8 ++-
- tools/testing/selftests/bpf/Makefile             |  3 +-
- tools/testing/selftests/bpf/test_lwt_ip_encap.sh | 13 +++--
- 11 files changed, 139 insertions(+), 53 deletions(-)
