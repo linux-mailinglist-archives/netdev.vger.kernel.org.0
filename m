@@ -2,82 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D49D41AD8A
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 13:05:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6252841AD8E
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 13:06:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240356AbhI1LHB convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 28 Sep 2021 07:07:01 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:48518 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240328AbhI1LHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 07:07:00 -0400
-Received: from smtpclient.apple (p5b3d2185.dip0.t-ipconnect.de [91.61.33.133])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 1865ACECD9;
-        Tue, 28 Sep 2021 13:05:20 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [RFC] bt control interface out from debugfs
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <CAD8XO3Z3FDFdaJOgoXgjn=_Ly6AQp+wugKNDN01098EVJB4qEw@mail.gmail.com>
-Date:   Tue, 28 Sep 2021 13:05:19 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        =?utf-8?Q?Fran=C3=A7ois_Ozog?= <francois.ozog@linaro.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <98214D73-18D8-4A7E-BB66-6E69E8A608DB@holtmann.org>
-References: <CAD8XO3Z3FDFdaJOgoXgjn=_Ly6AQp+wugKNDN01098EVJB4qEw@mail.gmail.com>
-To:     Maxim Uvarov <maxim.uvarov@linaro.org>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+        id S240324AbhI1LIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 07:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240297AbhI1LIE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 07:08:04 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6906C061575;
+        Tue, 28 Sep 2021 04:06:24 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id y28so90490150lfb.0;
+        Tue, 28 Sep 2021 04:06:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nBjFzjWC4IRFGUtaFJjBkOTq/UnF6SfMPkVbWkqJ/wI=;
+        b=VqWDFLZqMtfHxYfXUNop5oqrfXktuM3ykAZIOWj9b0xLteSkHHGyZhaIE/xK5V1oJu
+         Um6U0bIXRoQoKoTI3nDGVn/5ggtpPv4tyXZhGgNd5CPklQuxf5WQhU2srIR+y7AjpeQS
+         Ugja7C//Vcw7Tis1XYit7/Wzmmv+mefrtAQhQaLn1WgPdsFOc7sf+HTsi81Rmmn8UxY/
+         c1Kk2wg8nyln6V7RFzpCTOWOd2YEbdpsskTgFDu40o4FzmDYuXfJVXgg7vW3E/aZq8Kt
+         GbEBA6lRMvLSUibegnXlBQvdcj9arOhIAeDds9r6Jt2/gU8hu8eOvoySvZGeiO6wvlM0
+         QFGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nBjFzjWC4IRFGUtaFJjBkOTq/UnF6SfMPkVbWkqJ/wI=;
+        b=AzaBTxgt6agWNFzv1EOVOFuhmLCVaLl8pGDR2bygbwN9t5xEqWvdkhyXEqe/CCkC6C
+         nlT9EKOkNTw86ZC59k2oOdNRmIJGx6EWrXbH55rWKO+6D6qafvGzWnNkL148owMzxbcm
+         BQ0km82hIWE2SaxEwpZtY2lP7V5KrUt2IvvJGlago8cOhxFiqo89LeUFdG/TfK+yAchA
+         BN8rFoKynqHd5PdIKuw+42wrEJn9vMC8uClkDIBHNU6FR/yKr8tnEGD+OkZylbl/A+ci
+         vF+AevIsRztfe2utMj+BmQimEvXKGzVUHLzd57k6GDph+3uamw6jVQQz/Rd0HFY7+wbV
+         wz3Q==
+X-Gm-Message-State: AOAM530IhNkTblnONefptiCVoxn38N7/aXHfNzP4Uw9s62q2zcIen9uH
+        YKg5BYiBYYlrmnjCG10fINA=
+X-Google-Smtp-Source: ABdhPJwIzsGInhBLwJ1DlMNSyo6mjxS12DwzrRjSNcjj2+UYDiz6e5iywGr4MqDiWLxqIYvgJFVdzg==
+X-Received: by 2002:a2e:9b98:: with SMTP id z24mr5034006lji.339.1632827181597;
+        Tue, 28 Sep 2021 04:06:21 -0700 (PDT)
+Received: from [172.28.2.233] ([46.61.204.60])
+        by smtp.gmail.com with ESMTPSA id m10sm1891225lfr.272.2021.09.28.04.06.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Sep 2021 04:06:21 -0700 (PDT)
+Message-ID: <283d01f0-d5eb-914e-1bd2-baae0420073c@gmail.com>
+Date:   Tue, 28 Sep 2021 14:06:20 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH] net: mdiobus: Fix memory leak in __mdiobus_register
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Yanfei Xu <yanfei.xu@windriver.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, p.zabel@pengutronix.de,
+        syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Dongliang Mu <mudongliangabcd@gmail.com>
+References: <20210926045313.2267655-1-yanfei.xu@windriver.com>
+ <20210928085549.GA6559@kili> <20210928092657.GI2048@kadam>
+ <6f90fa0f-6d3b-0ca7-e894-eb971b3b69fa@gmail.com>
+ <20210928103908.GJ2048@kadam>
+ <63b18426-c39e-d898-08fb-8bfd05b7be9e@gmail.com>
+ <20210928105943.GL2083@kadam>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20210928105943.GL2083@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maxim,
-
-> I think we need to move control for BT 6lowpan connection out of
-> kernel debugfs to user space tools. I.e. use hcitool or iproute2 and
-> add proper non debug kernel interface for the tools.
-> I would like to hear about some suggestions on what is the best interface here.
+On 9/28/21 13:59, Dan Carpenter wrote:
+> On Tue, Sep 28, 2021 at 01:46:56PM +0300, Pavel Skripkin wrote:
+>> > diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+>> > index ee8313a4ac71..c380a30a77bc 100644
+>> > --- a/drivers/net/phy/mdio_bus.c
+>> > +++ b/drivers/net/phy/mdio_bus.c
+>> > @@ -538,6 +538,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+>> >   	bus->dev.groups = NULL;
+>> >   	dev_set_name(&bus->dev, "%s", bus->id);
+>> > +	bus->state = MDIOBUS_UNREGISTERED;
+>> >   	err = device_register(&bus->dev);
+>> >   	if (err) {
+>> >   		pr_err("mii_bus %s failed to register\n", bus->id);
+>> > 
+>> > 
+>> yep, it's the same as mine, but I thought, that MDIOBUS_UNREGISTERED is not
+>> correct name for this state :) Anyway, thank you for suggestion
+>> 
 > 
-> Currently commands to setup connection are:
-> echo 1 > /sys/kernel/debug/bluetooth/6lowpan_enable
-> echo "connect 80:E1:26:1B:95:81 1" > /sys/kernel/debug/bluetooth/6lowpan_control
+> It's not actually the same.  The state has to be set before the
+> device_register() or there is still a leak.
 > 
-> It looks logical to enable 6lowpan inside hcitool. I.e. extend current
-> AF_BLUETOOTH socket protocol:
-> dd = socket(AF_BLUETOOTH, SOCK_RAW | SOCK_CLOEXEC, BTPROTO_HCI)
-> getsockopt(dd, SOL_HCI, HCI_FILTER, ..
-> add some HCI_6LOWPAN_ENABLE call.
-> What are your thoughts on that?
+Ah, I see... I forgot to handle possible device_register() error. Will 
+send v2 soon, thank you
 
-NAK.
 
-> 
-> Then we have an IP stack on top of the BT layer, and hcitool does not
-> intend to setup ip connection. iproute2 might be more suitable for
-> this case. Something like:
-> ip link connect dev bt0 type bt 80:E1:26:1B:95:81 type local
-> (type 1- local, 2- public) .
-> 
-> But here is the problem that "ip link connect" is missing in current
-> tools. And usually we just set up a local connection and connect from
-> the app using a socket.  With IP over BT connection is different  -
-> we should be connected before.
-> 
-> If we implement "ip link connect" then it will be possible to reuse it
-> for all other pear to pear connections like vpn wireguard.
-> 
-> Any thoughts on an interface here?
 
-Sure, give that a spin.
-
-Regards
-
-Marcel
-
+With regards,
+Pavel Skripkin
