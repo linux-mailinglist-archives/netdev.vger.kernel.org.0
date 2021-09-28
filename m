@@ -2,136 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5FAF41BAF9
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:25:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3A7541BAF8
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243167AbhI1X1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 19:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36014 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230349AbhI1X1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 19:27:22 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E08C06161C
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 16:25:42 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id n18so673573pgm.12
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 16:25:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=HFip4R/7tFfWmQjN2xcemyQnqxc3mRoX6ZNukuh1ZI0=;
-        b=bO5sU6S6tk7jQNNpAK8aOaN+bznZmVG39iSjGuVYtQyNTW9UCJLvFtjqNiBDH0bAYs
-         54QG2NYLEQ+B1EeDX03FMU1o8t+vbjTGO8jUeKDcH/i8Hn6AmNM2Ty/T3aaE2XLV+DF7
-         LlZTZhdDkL2EnnTOCkdYyWoRlWuG3NRwO+P7Q41jYDf0d1iqKy1gHWhjPptULvsiRiys
-         aRFWti5h9YkQABePn+1w/5yzNabuKXqu3B88ovZXy0VkL/pkrfc8nhZDK6nXAxJs28gC
-         ATC9kqRhUejTF2IsYVdjsLXi/BM4uLhvPfzZVfBWZJ76qaOBHIKqjIyS581pYw7ORshU
-         YhjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HFip4R/7tFfWmQjN2xcemyQnqxc3mRoX6ZNukuh1ZI0=;
-        b=N/kfBepRSJfrdvbuQg+zffu7IyyqI/vaDq7FqB/6/olwKfXS/1ApbPJXWVIUNcckzD
-         QQPEArVWTWGiOAnbwhATdQenzjet7GHZqdd2m5heAFNHwAkz2vkB/sF0rtEVm51uk6eb
-         gf7FVsSpLMchCUIh2RfWAHvvjGLTUa9lxtXip5yzxkEp1n95HjbWUgx/YpTk0Z+HYc3k
-         VueADxE7XzIRvEt1cLyzNsgUvcL/Q6rY5l0o+8IRv1BBI1Ghu4CnbI36Hozx4ZPG7/4a
-         3O4RpyB/0CLjNvlpxwD8gTQmlc+XcTvDM4ZlAaYIryFjhR+3InOTyfD79TiKNnFppzF8
-         LvIg==
-X-Gm-Message-State: AOAM532AYGu2PZJC7iNvVVywvxv9LpihN652d4LKK3TZ/b4ffrULw+3d
-        1uNjJQduMbAKs9RIGwuUuWx1YLmbY6k=
-X-Google-Smtp-Source: ABdhPJw80qZ8ksX/dnf8/13iTzq4E6VM8VMbLXCPZIFQKjLaO//ewFgQrUfU3oEx6hgRHLAJeNK3qw==
-X-Received: by 2002:a62:6d86:0:b0:448:152d:83a4 with SMTP id i128-20020a626d86000000b00448152d83a4mr8245472pfc.38.1632871541384;
-        Tue, 28 Sep 2021 16:25:41 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id p3sm204290pfq.67.2021.09.28.16.25.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Sep 2021 16:25:40 -0700 (PDT)
-Subject: Re: 5.15-rc3+ crash in fq-codel?
-To:     Ben Greear <greearb@candelatech.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-References: <dfa032f3-18f2-22a3-80bf-f0f570892478@candelatech.com>
- <b6e8155e-7fae-16b0-59f0-2a2e6f5142de@gmail.com>
- <00e495ba-391e-6ad8-94a2-930fbc826a37@candelatech.com>
- <296232ac-e7ed-6e3c-36b9-ed430a21f632@candelatech.com>
- <7e87883e-42f5-2341-ab67-9f1614fb8b86@candelatech.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <7f1d67f1-3a2c-2e74-bb86-c02a56370526@gmail.com>
-Date:   Tue, 28 Sep 2021 16:25:39 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S243216AbhI1XYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 19:24:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48672 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230349AbhI1XYd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 19:24:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D4B8A60F9D;
+        Tue, 28 Sep 2021 23:22:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632871373;
+        bh=RUvdqkjcjCLXJYTVx4LwzKIXoyGzG4G49JxCo/hG9UE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b0bvSnon4ygCWaCcre1ogN9xOp1YEiNIsifUIP7BAAuuzy5J6HCY4rlzq8282LJfY
+         xmNug5p1CA5Q0m6GFMJYQWwIndUChPgCKtAwvowZXxzgJi98Kw4V90NLkubJJY1ivT
+         Ds2FbrWuGWtidacUDHrFKa5ecqb5xuMIqdmLxgMd0hnRE7i1X9u0BxHzbnXJdVY1OK
+         +jkYVZ6GObvz4o+F6gIloMgs0jU978l7/88dek5DKCx92WjubEoNXOez+dVNRAVMzJ
+         yb0XClVr+d2v9NdCfKkvjKyyLDcGwR2lAEHOJeYs7Ijg5TUw1V4b79tUr0Pf7sDUNb
+         eKuRJeQP3fa4A==
+Date:   Tue, 28 Sep 2021 18:26:55 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 2/2] bpf: Replace callers of BPF_CAST_CALL
+ with proper function typedef
+Message-ID: <20210928232655.GA297501@embeddedor>
+References: <20210928230946.4062144-1-keescook@chromium.org>
+ <20210928230946.4062144-3-keescook@chromium.org>
 MIME-Version: 1.0
-In-Reply-To: <7e87883e-42f5-2341-ab67-9f1614fb8b86@candelatech.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210928230946.4062144-3-keescook@chromium.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/28/21 3:00 PM, Ben Greear wrote:
-> On 9/27/21 5:16 PM, Ben Greear wrote:
->> On 9/27/21 5:04 PM, Ben Greear wrote:
->>> On 9/27/21 4:49 PM, Eric Dumazet wrote:
->>>>
->>>>
->>>> On 9/27/21 4:30 PM, Ben Greear wrote:
->>>>> Hello,
->>>>>
->>>>> In a hacked upon kernel, I'm getting crashes in fq-codel when doing bi-directional
->>>>> pktgen traffic on top of mac-vlans.  Unfortunately for me, I've made big changes to
->>>>> pktgen so I cannot easily run this test on stock kernels, and there is some chance
->>>>> some of my hackings have caused this issue.
->>>>>
->>>>> But, in case others have seen similar, please let me know.  I shall go digging
->>>>> in the meantime...
->>>>>
->>>>> Looks to me like 'skb' is NULL in line 120 below.
->>>>
->>>>
->>>> pktgen must not be used in a mode where a single skb
->>>> is cloned and reused, if packet needs to be stored in a qdisc.
->>>>
->>>> qdisc of all sorts assume skb->next/prev can be used as
->>>> anchor in their list.
->>>>
->>>> If the same skb is queued multiple times, lists are corrupted.
->>>>
->>>> Please double check your clone_skb pktgen setup.
->>>>
->>>> I thought we had IFF_TX_SKB_SHARING for this, and that macvlan was properly clearing this bit.
->>>
->>> My pktgen config was not using any duplicated queueing in this case.
->>>
->>> I changed to pfifo fast and so far it is stable for ~10 minutes, where before it would crash
->>> within a minute.  I'll let it bake overnight....
->>
->> Still running stable.  I also notice we have been using fq-codel for a while and haven't noticed
->> this problem (next most recent kernel we might have run similar test on would be 5.13-ish).
->>
->> I'll duplicate this test on our older kernels tomorrow to see if it looks like a regression or
->> if we just haven't actually done this exact test in a while...
+On Tue, Sep 28, 2021 at 04:09:46PM -0700, Kees Cook wrote:
+> In order to keep ahead of cases in the kernel where Control Flow
+> Integrity (CFI) may trip over function call casts, enabling
+> -Wcast-function-type is helpful. To that end, BPF_CAST_CALL causes
+> various warnings and is one of the last places in the kernel
+> triggering this warning.
 > 
-> We can reproduce this crash as far back as 5.4 using fq-codel, with our pktgen driving mac-vlans.
-> We did not try any kernels older than 5.4.
-> We cannot reproduce with pfifo on 5.15-rc3 on an overnight run.
-> We cannot produce with user-space UDP traffic on any kernel/qdisc combination.
-> Our pktgen is configured for multi-skb of 0 (no multiple submits of the same skb)
+> For actual function calls, replace BPF_CAST_CALL() with a typedef, which
+> captures the same details about the given function pointers.
 > 
-> While looking briefly at fq-codel, I didn't notice any locking in the code that crashed.
-> Any chance that it makes assumptions that would be incorrect with pktgen running multiple
-> threads (one thread per mac-vlan) on top of a single qdisc belonging to the underlying NIC?
+> This change results in no object code difference.
 > 
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: KP Singh <kpsingh@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: bpf@vger.kernel.org
+> Cc: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Link: https://github.com/KSPP/linux/issues/20
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> Link: https://lore.kernel.org/lkml/CAEf4Bzb46=-J5Fxc3mMZ8JQPtK1uoE0q6+g6WPz53Cvx=CBEhw@mail.gmail.com
 
+Acked-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-qdisc are protected by a qdisc spinlock.
+Thanks
+--
+Gustavo
 
-fq-codel does not have to lock anything in its enqueue() and dequeue() methods.
-
-I guess your local changes to pktgen might be to blame.
-
-pfifo is much simpler than fq-codel, it uses less fields from skb.
+> ---
+>  include/linux/bpf.h    | 4 +++-
+>  include/linux/filter.h | 5 -----
+>  kernel/bpf/arraymap.c  | 7 +++----
+>  kernel/bpf/hashtab.c   | 7 +++----
+>  kernel/bpf/helpers.c   | 5 ++---
+>  5 files changed, 11 insertions(+), 17 deletions(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index b6c45a6cbbba..19735d59230a 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -48,6 +48,7 @@ extern struct idr btf_idr;
+>  extern spinlock_t btf_idr_lock;
+>  extern struct kobject *btf_kobj;
+>  
+> +typedef u64 (*bpf_callback_t)(u64, u64, u64, u64, u64);
+>  typedef int (*bpf_iter_init_seq_priv_t)(void *private_data,
+>  					struct bpf_iter_aux_info *aux);
+>  typedef void (*bpf_iter_fini_seq_priv_t)(void *private_data);
+> @@ -142,7 +143,8 @@ struct bpf_map_ops {
+>  	int (*map_set_for_each_callback_args)(struct bpf_verifier_env *env,
+>  					      struct bpf_func_state *caller,
+>  					      struct bpf_func_state *callee);
+> -	int (*map_for_each_callback)(struct bpf_map *map, void *callback_fn,
+> +	int (*map_for_each_callback)(struct bpf_map *map,
+> +				     bpf_callback_t callback_fn,
+>  				     void *callback_ctx, u64 flags);
+>  
+>  	/* BTF name and id of struct allocated by map_alloc */
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 6c247663d4ce..47f80adbe744 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -360,11 +360,6 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
+>  		.off   = 0,					\
+>  		.imm   = TGT })
+>  
+> -/* Function call */
+> -
+> -#define BPF_CAST_CALL(x)					\
+> -		((u64 (*)(u64, u64, u64, u64, u64))(x))
+> -
+>  /* Convert function address to BPF immediate */
+>  
+>  #define BPF_CALL_IMM(x)	((void *)(x) - (void *)__bpf_call_base)
+> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+> index cebd4fb06d19..5e1ccfae916b 100644
+> --- a/kernel/bpf/arraymap.c
+> +++ b/kernel/bpf/arraymap.c
+> @@ -645,7 +645,7 @@ static const struct bpf_iter_seq_info iter_seq_info = {
+>  	.seq_priv_size		= sizeof(struct bpf_iter_seq_array_map_info),
+>  };
+>  
+> -static int bpf_for_each_array_elem(struct bpf_map *map, void *callback_fn,
+> +static int bpf_for_each_array_elem(struct bpf_map *map, bpf_callback_t callback_fn,
+>  				   void *callback_ctx, u64 flags)
+>  {
+>  	u32 i, key, num_elems = 0;
+> @@ -668,9 +668,8 @@ static int bpf_for_each_array_elem(struct bpf_map *map, void *callback_fn,
+>  			val = array->value + array->elem_size * i;
+>  		num_elems++;
+>  		key = i;
+> -		ret = BPF_CAST_CALL(callback_fn)((u64)(long)map,
+> -					(u64)(long)&key, (u64)(long)val,
+> -					(u64)(long)callback_ctx, 0);
+> +		ret = callback_fn((u64)(long)map, (u64)(long)&key,
+> +				  (u64)(long)val, (u64)(long)callback_ctx, 0);
+>  		/* return value: 0 - continue, 1 - stop and return */
+>  		if (ret)
+>  			break;
+> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+> index 3d8f9d6997d5..d29af9988f37 100644
+> --- a/kernel/bpf/hashtab.c
+> +++ b/kernel/bpf/hashtab.c
+> @@ -2049,7 +2049,7 @@ static const struct bpf_iter_seq_info iter_seq_info = {
+>  	.seq_priv_size		= sizeof(struct bpf_iter_seq_hash_map_info),
+>  };
+>  
+> -static int bpf_for_each_hash_elem(struct bpf_map *map, void *callback_fn,
+> +static int bpf_for_each_hash_elem(struct bpf_map *map, bpf_callback_t callback_fn,
+>  				  void *callback_ctx, u64 flags)
+>  {
+>  	struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
+> @@ -2089,9 +2089,8 @@ static int bpf_for_each_hash_elem(struct bpf_map *map, void *callback_fn,
+>  				val = elem->key + roundup_key_size;
+>  			}
+>  			num_elems++;
+> -			ret = BPF_CAST_CALL(callback_fn)((u64)(long)map,
+> -					(u64)(long)key, (u64)(long)val,
+> -					(u64)(long)callback_ctx, 0);
+> +			ret = callback_fn((u64)(long)map, (u64)(long)key,
+> +					  (u64)(long)val, (u64)(long)callback_ctx, 0);
+>  			/* return value: 0 - continue, 1 - stop and return */
+>  			if (ret) {
+>  				rcu_read_unlock();
+> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> index 2c604ff8c7fb..1ffd469c217f 100644
+> --- a/kernel/bpf/helpers.c
+> +++ b/kernel/bpf/helpers.c
+> @@ -1056,7 +1056,7 @@ static enum hrtimer_restart bpf_timer_cb(struct hrtimer *hrtimer)
+>  	struct bpf_hrtimer *t = container_of(hrtimer, struct bpf_hrtimer, timer);
+>  	struct bpf_map *map = t->map;
+>  	void *value = t->value;
+> -	void *callback_fn;
+> +	bpf_callback_t callback_fn;
+>  	void *key;
+>  	u32 idx;
+>  
+> @@ -1081,8 +1081,7 @@ static enum hrtimer_restart bpf_timer_cb(struct hrtimer *hrtimer)
+>  		key = value - round_up(map->key_size, 8);
+>  	}
+>  
+> -	BPF_CAST_CALL(callback_fn)((u64)(long)map, (u64)(long)key,
+> -				   (u64)(long)value, 0, 0);
+> +	callback_fn((u64)(long)map, (u64)(long)key, (u64)(long)value, 0, 0);
+>  	/* The verifier checked that return value is zero. */
+>  
+>  	this_cpu_write(hrtimer_running, NULL);
+> -- 
+> 2.30.2
+> 
