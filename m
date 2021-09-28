@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D285841AECC
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:20:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BE6741AED2
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:20:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240599AbhI1MVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 08:21:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54516 "EHLO mail.kernel.org"
+        id S240735AbhI1MVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 08:21:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54580 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240559AbhI1MVq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 08:21:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 183F26101E;
+        id S240542AbhI1MVr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 08:21:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id EDE7F61215;
         Tue, 28 Sep 2021 12:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632831607;
-        bh=schGRFdjJDCpJQzMBQ5TEMEFyPj8xqlPF0C6UXv4JkU=;
+        s=k20201202; t=1632831608;
+        bh=vG2qww7/fBaTcUIO9cayzJ306WRf/XafF7x+qnpkPEE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EvdNabbju648TKg0aDuuD9wzlWUXaoXS4BTTolfoSSSFhMQwWEEtYMfqbq9RGy74H
-         P+PBI3UV6/qRhr9JVxjnpToqcKxtDPhgB5shPNcT7O0Lk/NVFS7fE9f3MY4byfd97t
-         ZM1GsGWp6X83Mt48KV6tb/wzuGBLD+BhENcPmg0lZwJ1EiX7caJAZ4MF+zevKwaVZZ
-         itqWuIxuTHe12oimEg6eK4Fc4pHHM9Cck7UUDmJcqVD9eK5CSwMKfPNFx68OfJ3ga2
-         iYV+IiP/B7gnHWbRNxUKq5tZ3rdqchDXNRpsIBMH5Rmg0dP2nGFJXJ4Vg2kuTY8ovG
-         bbw50sO1G8iXw==
+        b=iRHFsZm87ReU34CkEjqv4pnOm4p5NmYzhmqLNHh3GB7CoQHFeNk+CU4YJoX2jbKst
+         vwqWPNLBIkeNxKXUFp7LgFvjDUxH6ue0cSjmA7wYKGVT+vO+JAbWqGprYIJhc8gCf8
+         CNNEyeig5tuUUwypFHxf+ByaBqSkJqukU2/1zZIUMCpryzcTQ4AsweDJSoT1QPq8SP
+         /gA5RtCzGD+vzknvUITk8wP6K3YxJSXgOjPueqUm5dPD1cku9cjxok/tfKJ5DQwN5x
+         5sQ/21+3B0xt0FpoTsuAL2wuTJougFk3egFPy6YaZtroWekcBDwEhrNhXN4wWCAs0+
+         XrFvayPi20QxQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0BED360A7E;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E695260A59;
         Tue, 28 Sep 2021 12:20:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] [RESEND] net: ks8851: fix link error
+Subject: Re: [PATCH 1/2] net: ipv6: squash $(ipv6-offload) in Makefile
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163283160704.2416.5814873993469611911.git-patchwork-notify@kernel.org>
+Message-Id: <163283160793.2416.14163196262208999918.git-patchwork-notify@kernel.org>
 Date:   Tue, 28 Sep 2021 12:20:07 +0000
-References: <20210927141321.1598251-1-arnd@kernel.org>
-In-Reply-To: <20210927141321.1598251-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        marex@denx.de, arnd@arndb.de, jgg@ziepe.ca, netdev@vger.kernel.org,
+References: <20210927142840.13286-1-masahiroy@kernel.org>
+In-Reply-To: <20210927142840.13286-1-masahiroy@kernel.org>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org,
         linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -45,22 +45,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 27 Sep 2021 16:13:02 +0200 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Mon, 27 Sep 2021 23:28:39 +0900 you wrote:
+> Assign the objects directly to obj-$(CONFIG_INET).
 > 
-> An object file cannot be built for both loadable module and built-in
-> use at the same time:
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
 > 
-> arm-linux-gnueabi-ld: drivers/net/ethernet/micrel/ks8851_common.o: in function `ks8851_probe_common':
-> ks8851_common.c:(.text+0xf80): undefined reference to `__this_module'
-> 
-> [...]
+>  net/ipv6/Makefile | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 
 Here is the summary with links:
-  - [RESEND] net: ks8851: fix link error
-    https://git.kernel.org/netdev/net/c/51bb08dd04a0
+  - [1/2] net: ipv6: squash $(ipv6-offload) in Makefile
+    https://git.kernel.org/netdev/net-next/c/9a1213849a94
+  - [2/2] net: ipv6: use ipv6-y directly instead of ipv6-objs
+    https://git.kernel.org/netdev/net-next/c/1817750bdc67
 
 You are awesome, thank you!
 --
