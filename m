@@ -2,227 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CBC941BAEB
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:19:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE7B41BAF0
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243203AbhI1XVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 19:21:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230349AbhI1XVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 19:21:23 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D0EC06161C;
-        Tue, 28 Sep 2021 16:19:43 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id r4so1234333ybp.4;
-        Tue, 28 Sep 2021 16:19:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HlT73lfJxchf0zLuIWO8p+lD0FcseO53IgbxvuS6dZY=;
-        b=I/SfFlZkSgsd1YHG20/hJiPUV9oWeZZ83nhxZJdpT9Yr6JIloO/10JwNqTVVnYVJpq
-         b3hpyaWyZn1v1vRGuXx7xW4Ez5GtWrSXhbMo7uWMz9mfKWslR19Q87umwlU0m2OLQEdF
-         JhFtJQBUTtd2WTE4Kbfile6YF+5qS0vgXdL3rCgSLj46LAZ/Y/l3y4Y0PNaEjZYpJykH
-         J5Z8i4xYrGAi3ICnJZDrsi/7vgjJE2eNlIxm3NSPL+URsbEwLeMDNec8xLnqcfgq4QyK
-         qOUxuGUW8CAIK6PC8uK8mvbxdYXBpC7GtFZX4VDBRWKWbFNc7n/L89qvR5iCq4c7XPue
-         /ADA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HlT73lfJxchf0zLuIWO8p+lD0FcseO53IgbxvuS6dZY=;
-        b=c+0R2RBI9nGp2WsQhSmvIRrEzi5JuLDfB+focXzsPUnlFXJqdoKExo2lmQuRatLU54
-         unNKd7yvpwf8tSDKtw/YsQsGYoJCjprSRsU2e++UNv6TjEyJz3pCWaUOQ0YwUSZfqW6H
-         dOpSOupqU7QHjIifCeiFF9z0s/LPdEsfDVTn9fuUoKQ1kdwQKCDEJIUbOJTyvHwlxfsN
-         ypbVCn6vFQDe0o5P8slTjhFdeDfOtMjP++LuIf2TwlKKQgixsvbzO+lBIkGKpjpnrZgL
-         t2Ug4uZu8aiipGfWyRwjsLYwkrcxXRz9q7WDWy9LPOOa2M3NmXgeTrn3OGT/vUwH+J5o
-         jwPg==
-X-Gm-Message-State: AOAM533gnw+a52JRgNv/sSwi4Ab/S61YJjFQN7TrbRecuwU5icCZdzeb
-        tJv8jbJpy6dDlm5U0B6VELRcJ3r8sev1wcxpcV4=
-X-Google-Smtp-Source: ABdhPJzfZyvHv320oG9dGAYSUCqcdL/Dg5l8yJuxMg1Wd82mtrRa/UlgEqZCCIHmHFmE44zzM7aTK80t65CFltBsK6U=
-X-Received: by 2002:a25:2d4e:: with SMTP id s14mr9449341ybe.2.1632871182241;
- Tue, 28 Sep 2021 16:19:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210928025228.88673-1-houtao1@huawei.com> <20210928025228.88673-6-houtao1@huawei.com>
-In-Reply-To: <20210928025228.88673-6-houtao1@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Sep 2021 16:19:31 -0700
-Message-ID: <CAEf4BzaE4_c7fcMCfFe7nukivVrFgpPZcbr5z-FfSa=erNKiTw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/5] selftests/bpf: test return value handling
- for struct_ops prog
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S243239AbhI1XWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 19:22:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46212 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243224AbhI1XWw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 19:22:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9B25C613A9;
+        Tue, 28 Sep 2021 23:21:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632871272;
+        bh=Qpmjy3v3LXLoqwxdodHgDFx1iO63hAnMdM8VOKZGpXk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bjmMrQkaTwojf6QNFkY/FTOzBM3q0ptdF+4qIBCY9GeWM8sCEO5TYXfmBohl5jwuQ
+         YDSOPXZynWXBuvCcP8YF9n/qpvdDAsu0A1OrOyFVrTN+V9246BkDCEEPwKReJDb43X
+         NJQpiVzuFqnhUjjvWCafzB5DkNk0w/jCnvg9TLvUibjhnZIAWy8JGkVzKD7bEGScbS
+         S4n4hrHlwgfbO/4v93FBhh8evB1HDNH3JBo8ywTiS7F2oXRiMduCZCbtyi4HhZlusQ
+         JSxZEKaH3MjtyZXG2TAGJM8nTGr3B8CnB5KKIRnInY+L5mbLEno7ZLUBz3nCfnC1K6
+         IwmtKvJjE6jBw==
+Date:   Tue, 28 Sep 2021 18:25:14 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 1/2] bpf: Replace "want address" users of
+ BPF_CAST_CALL with BPF_CALL_IMM
+Message-ID: <20210928232514.GA297403@embeddedor>
+References: <20210928230946.4062144-1-keescook@chromium.org>
+ <20210928230946.4062144-2-keescook@chromium.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210928230946.4062144-2-keescook@chromium.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 27, 2021 at 7:38 PM Hou Tao <houtao1@huawei.com> wrote:
->
-> Running a BPF_PROG_TYPE_STRUCT_OPS prog for dummy_st_ops::init()
-> through bpf_prog_test_run(). Three test cases are added:
-> (1) attach dummy_st_ops should fail
-> (2) function return value of bpf_dummy_ops::init() is expected
-> (3) pointer argument of bpf_dummy_ops::init() works as expected
->
-> Signed-off-by: Hou Tao <houtao1@huawei.com>
+On Tue, Sep 28, 2021 at 04:09:45PM -0700, Kees Cook wrote:
+> In order to keep ahead of cases in the kernel where Control Flow
+> Integrity (CFI) may trip over function call casts, enabling
+> -Wcast-function-type is helpful. To that end, BPF_CAST_CALL causes
+> various warnings and is one of the last places in the kernel triggering
+> this warning.
+> 
+> Most places using BPF_CAST_CALL actually just want a void * to perform
+> math on. It's not actually performing a call, so just use a different
+> helper to get the void *, by way of the new BPF_CALL_IMM() helper, which
+> can clean up a common copy/paste idiom as well.
+> 
+> This change results in no object code difference.
+> 
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: KP Singh <kpsingh@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: bpf@vger.kernel.org
+> Cc: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Link: https://github.com/KSPP/linux/issues/20
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> Link: https://lore.kernel.org/lkml/CAEf4Bzb46=-J5Fxc3mMZ8JQPtK1uoE0q6+g6WPz53Cvx=CBEhw@mail.gmail.com
+
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+
+Thanks
+--
+Gustavo
+
 > ---
->  .../selftests/bpf/prog_tests/dummy_st_ops.c   | 81 +++++++++++++++++++
->  .../selftests/bpf/progs/dummy_st_ops.c        | 33 ++++++++
->  2 files changed, 114 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
->  create mode 100644 tools/testing/selftests/bpf/progs/dummy_st_ops.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c b/tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
-> new file mode 100644
-> index 000000000000..4b1b52b847e6
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
-> @@ -0,0 +1,81 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
-> +#include <test_progs.h>
-> +#include "dummy_st_ops.skel.h"
+>  include/linux/filter.h |  6 +++++-
+>  kernel/bpf/hashtab.c   |  6 +++---
+>  kernel/bpf/verifier.c  | 26 +++++++++-----------------
+>  lib/test_bpf.c         |  2 +-
+>  4 files changed, 18 insertions(+), 22 deletions(-)
+> 
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 4a93c12543ee..6c247663d4ce 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -365,13 +365,17 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
+>  #define BPF_CAST_CALL(x)					\
+>  		((u64 (*)(u64, u64, u64, u64, u64))(x))
+>  
+> +/* Convert function address to BPF immediate */
 > +
-> +/* Need to keep consistent with definitions in include/linux/bpf_dummy_ops.h */
-> +struct bpf_dummy_ops_state {
-> +       int val;
-> +};
+> +#define BPF_CALL_IMM(x)	((void *)(x) - (void *)__bpf_call_base)
 > +
-> +static void test_dummy_st_ops_attach(void)
-> +{
-> +       struct dummy_st_ops *skel;
-> +       struct bpf_link *link;
-> +
-> +       skel = dummy_st_ops__open_and_load();
-> +       if (!ASSERT_OK_PTR(skel, "dummy_st_ops_load"))
-> +               goto out;
-
-no need for __destroy() as we haven't created skeleton, so this could
-be just a return
-
-> +
-> +       link = bpf_map__attach_struct_ops(skel->maps.dummy_1);
-> +       if (!ASSERT_EQ(libbpf_get_error(link), -EOPNOTSUPP,
-> +                      "dummy_st_ops_attach"))
-> +               goto out;
-
-nit: unless you expect to add something here soon, probably doing
-ASSERT_EQ() and let it fall through to out: and destroy would be a bit
-more readable
-
-> +out:
-> +       dummy_st_ops__destroy(skel);
-> +}
-> +
-> +static void test_dummy_init_ret_value(void)
-> +{
-> +       struct dummy_st_ops *skel;
-> +       int err, fd;
-> +       __u32 duration = 0, retval = 0;
-> +
-> +       skel = dummy_st_ops__open_and_load();
-> +       if (!ASSERT_OK_PTR(skel, "dummy_st_ops_load"))
-> +               goto out;
-
-same, just return is fine and no need for out: label
-
-> +
-> +       fd = bpf_program__fd(skel->progs.init_1);
-> +       err = bpf_prog_test_run(fd, 1, NULL, 0,
-> +                               NULL, NULL, &retval, &duration);
-> +       ASSERT_OK(err, "test_run");
-> +       ASSERT_EQ(retval, 0xf2f3f4f5, "test_ret");
-> +out:
-> +       dummy_st_ops__destroy(skel);
-> +}
-> +
-> +static void test_dummy_init_ptr_arg(void)
-> +{
-> +       struct dummy_st_ops *skel;
-> +       int err, fd;
-> +       __u32 duration = 0, retval = 0;
-> +       struct bpf_dummy_ops_state in_state, out_state;
-> +       __u32 state_size;
-> +
-> +       skel = dummy_st_ops__open_and_load();
-> +       if (!ASSERT_OK_PTR(skel, "dummy_st_ops_load"))
-> +               goto out;
-
-here as well
-
-> +
-> +       fd = bpf_program__fd(skel->progs.init_1);
-> +       memset(&in_state, 0, sizeof(in_state));
-> +       in_state.val = 0xbeef;
-> +       memset(&out_state, 0, sizeof(out_state));
-> +       err = bpf_prog_test_run(fd, 1, &in_state, sizeof(in_state),
-> +                               &out_state, &state_size, &retval, &duration);
-> +       ASSERT_OK(err, "test_run");
-> +       ASSERT_EQ(state_size, sizeof(out_state), "test_data_out");
-> +       ASSERT_EQ(out_state.val, 0x5a, "test_ptr_ret");
-> +       ASSERT_EQ(retval, in_state.val, "test_ret");
-> +out:
-> +       dummy_st_ops__destroy(skel);
-> +}
-> +
-> +void test_dummy_st_ops(void)
-> +{
-> +       if (test__start_subtest("dummy_st_ops_attach"))
-> +               test_dummy_st_ops_attach();
-> +       if (test__start_subtest("dummy_init_ret_value"))
-> +               test_dummy_init_ret_value();
-> +       if (test__start_subtest("dummy_init_ptr_arg"))
-> +               test_dummy_init_ptr_arg();
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/dummy_st_ops.c b/tools/testing/selftests/bpf/progs/dummy_st_ops.c
-> new file mode 100644
-> index 000000000000..133c328f082a
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/dummy_st_ops.c
-> @@ -0,0 +1,33 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
-> +#include <linux/bpf.h>
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_tracing.h>
-> +
-> +struct bpf_dummy_ops_state {
-> +       int val;
-> +} __attribute__((preserve_access_index));
-> +
-> +struct bpf_dummy_ops {
-> +       int (*init)(struct bpf_dummy_ops_state *state);
-> +};
-> +
-> +char _liencse[] SEC("license") = "GPL";
-
-typo: _license (but it doesn't matter to libbpf, it looks at the
-section name only
-
-> +
-> +SEC("struct_ops/init_1")
-> +int BPF_PROG(init_1, struct bpf_dummy_ops_state *state)
-> +{
-> +       int ret;
-> +
-> +       if (!state)
-> +               return 0xf2f3f4f5;
-> +
-> +       ret = state->val;
-> +       state->val = 0x5a;
-> +       return ret;
-> +}
-> +
-> +SEC(".struct_ops")
-> +struct bpf_dummy_ops dummy_1 = {
-> +       .init = (void *)init_1,
-> +};
-> --
-> 2.29.2
->
+>  #define BPF_EMIT_CALL(FUNC)					\
+>  	((struct bpf_insn) {					\
+>  		.code  = BPF_JMP | BPF_CALL,			\
+>  		.dst_reg = 0,					\
+>  		.src_reg = 0,					\
+>  		.off   = 0,					\
+> -		.imm   = ((FUNC) - __bpf_call_base) })
+> +		.imm   = BPF_CALL_IMM(FUNC) })
+>  
+>  /* Raw code statement block */
+>  
+> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+> index 32471ba02708..3d8f9d6997d5 100644
+> --- a/kernel/bpf/hashtab.c
+> +++ b/kernel/bpf/hashtab.c
+> @@ -668,7 +668,7 @@ static int htab_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
+>  
+>  	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
+>  		     (void *(*)(struct bpf_map *map, void *key))NULL));
+> -	*insn++ = BPF_EMIT_CALL(BPF_CAST_CALL(__htab_map_lookup_elem));
+> +	*insn++ = BPF_EMIT_CALL(__htab_map_lookup_elem);
+>  	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 1);
+>  	*insn++ = BPF_ALU64_IMM(BPF_ADD, ret,
+>  				offsetof(struct htab_elem, key) +
+> @@ -709,7 +709,7 @@ static int htab_lru_map_gen_lookup(struct bpf_map *map,
+>  
+>  	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
+>  		     (void *(*)(struct bpf_map *map, void *key))NULL));
+> -	*insn++ = BPF_EMIT_CALL(BPF_CAST_CALL(__htab_map_lookup_elem));
+> +	*insn++ = BPF_EMIT_CALL(__htab_map_lookup_elem);
+>  	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 4);
+>  	*insn++ = BPF_LDX_MEM(BPF_B, ref_reg, ret,
+>  			      offsetof(struct htab_elem, lru_node) +
+> @@ -2397,7 +2397,7 @@ static int htab_of_map_gen_lookup(struct bpf_map *map,
+>  
+>  	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
+>  		     (void *(*)(struct bpf_map *map, void *key))NULL));
+> -	*insn++ = BPF_EMIT_CALL(BPF_CAST_CALL(__htab_map_lookup_elem));
+> +	*insn++ = BPF_EMIT_CALL(__htab_map_lookup_elem);
+>  	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 2);
+>  	*insn++ = BPF_ALU64_IMM(BPF_ADD, ret,
+>  				offsetof(struct htab_elem, key) +
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 7a8351604f67..1433752db740 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -1744,7 +1744,7 @@ static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id)
+>  
+>  	desc = &tab->descs[tab->nr_descs++];
+>  	desc->func_id = func_id;
+> -	desc->imm = BPF_CAST_CALL(addr) - __bpf_call_base;
+> +	desc->imm = BPF_CALL_IMM(addr);
+>  	err = btf_distill_func_proto(&env->log, btf_vmlinux,
+>  				     func_proto, func_name,
+>  				     &desc->func_model);
+> @@ -12514,8 +12514,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+>  			if (!bpf_pseudo_call(insn))
+>  				continue;
+>  			subprog = insn->off;
+> -			insn->imm = BPF_CAST_CALL(func[subprog]->bpf_func) -
+> -				    __bpf_call_base;
+> +			insn->imm = BPF_CALL_IMM(func[subprog]->bpf_func);
+>  		}
+>  
+>  		/* we use the aux data to keep a list of the start addresses
+> @@ -12995,32 +12994,25 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
+>  patch_map_ops_generic:
+>  			switch (insn->imm) {
+>  			case BPF_FUNC_map_lookup_elem:
+> -				insn->imm = BPF_CAST_CALL(ops->map_lookup_elem) -
+> -					    __bpf_call_base;
+> +				insn->imm = BPF_CALL_IMM(ops->map_lookup_elem);
+>  				continue;
+>  			case BPF_FUNC_map_update_elem:
+> -				insn->imm = BPF_CAST_CALL(ops->map_update_elem) -
+> -					    __bpf_call_base;
+> +				insn->imm = BPF_CALL_IMM(ops->map_update_elem);
+>  				continue;
+>  			case BPF_FUNC_map_delete_elem:
+> -				insn->imm = BPF_CAST_CALL(ops->map_delete_elem) -
+> -					    __bpf_call_base;
+> +				insn->imm = BPF_CALL_IMM(ops->map_delete_elem);
+>  				continue;
+>  			case BPF_FUNC_map_push_elem:
+> -				insn->imm = BPF_CAST_CALL(ops->map_push_elem) -
+> -					    __bpf_call_base;
+> +				insn->imm = BPF_CALL_IMM(ops->map_push_elem);
+>  				continue;
+>  			case BPF_FUNC_map_pop_elem:
+> -				insn->imm = BPF_CAST_CALL(ops->map_pop_elem) -
+> -					    __bpf_call_base;
+> +				insn->imm = BPF_CALL_IMM(ops->map_pop_elem);
+>  				continue;
+>  			case BPF_FUNC_map_peek_elem:
+> -				insn->imm = BPF_CAST_CALL(ops->map_peek_elem) -
+> -					    __bpf_call_base;
+> +				insn->imm = BPF_CALL_IMM(ops->map_peek_elem);
+>  				continue;
+>  			case BPF_FUNC_redirect_map:
+> -				insn->imm = BPF_CAST_CALL(ops->map_redirect) -
+> -					    __bpf_call_base;
+> +				insn->imm = BPF_CALL_IMM(ops->map_redirect);
+>  				continue;
+>  			}
+>  
+> diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+> index 08f438e6fe9e..21ea1ab253a1 100644
+> --- a/lib/test_bpf.c
+> +++ b/lib/test_bpf.c
+> @@ -12439,7 +12439,7 @@ static __init int prepare_tail_call_tests(struct bpf_array **pprogs)
+>  					err = -EFAULT;
+>  					goto out_err;
+>  				}
+> -				*insn = BPF_EMIT_CALL(BPF_CAST_CALL(addr));
+> +				*insn = BPF_EMIT_CALL(addr);
+>  				if ((long)__bpf_call_base + insn->imm != addr)
+>  					*insn = BPF_JMP_A(0); /* Skip: NOP */
+>  				break;
+> -- 
+> 2.30.2
+> 
