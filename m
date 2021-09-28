@@ -2,96 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A21241BAD6
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:11:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECD6C41BAE3
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:15:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243189AbhI1XNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 19:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbhI1XNQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 19:13:16 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A0DC06161C;
-        Tue, 28 Sep 2021 16:11:36 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id v10so1170623ybq.7;
-        Tue, 28 Sep 2021 16:11:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4jz6ukNrcNWaVNNA7EbFxCp/sg39OswbF5lQyqgIPJo=;
-        b=MAaYR0iuORFIKx+ElIMe1zDSthOqGF+AUWai8dbOpkxND7CVrt2iF3i6mzTjp+3Ncw
-         BJvRU9/wMYG3BUVCVsHDM2re1wMqWH52A+3WNNI0CdadN6HoUOv7Xzh84n/RgSJ99rBe
-         cKtHBjggQdkhQ3QxiIzA8VRZuCOOfMf9AdXO/CWx/OzZF6TzsbdY28tRlh1V4V0phLOk
-         Ng5M0ef84azdfIDdMDrOlr+URzIB+1mTw49fZYHdFOCkKXakIRvTY60j7MtgIn34JJr+
-         x+FW6jtd8H6hFqkTQQnk11/g7R39w9srVdhK8aW5bOZiKwV2xbG86ZhcSCAC8d/hcamH
-         PbMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4jz6ukNrcNWaVNNA7EbFxCp/sg39OswbF5lQyqgIPJo=;
-        b=J30qXdSwxb+rYkIFAR1vmlwFxhpVSCDUjU3S4Dy5fJQpi9t55aAUuBNCNW3meKZUOK
-         GsGOUFxmU/Z8UgwJk/O6BybSnOY3VN74DXFAun3tqXe5Pj50wdqDX0BHqkt6aZPyk8ic
-         bRnWchwR/rCNm/pSmwqAT/q2c3YBgrRrk/FPOeR7i4yntEvwQgVu8wcrjS3itmUIa3+c
-         IJDslF/RQzRptByQzrsK8xmVt7C9GnIdxilWHL+/V2XyNePFGIG6K8V4PkDFe5Lz1Xww
-         N2jyLkMHi9+1KYAorEyvlwXpC2k+gWyyxX3QyvNWPL+W1po7gEmUAUNMqeNK8K5/cAE7
-         ju+A==
-X-Gm-Message-State: AOAM530TTccbPYRfFKlqgKazYLyhmT79SJC1jXagQVnsKFq/Bya04CdA
-        DMUI1D8LgCWrV3VVDy/J0hUYvRP5hejTMmZkN55yTF1X
-X-Google-Smtp-Source: ABdhPJy8i7FUOCE4ZekVZBJNUV/kemXFjua+ACVthghjrGW9lPfaF82/BcVRwRzfeJ9/5EoGrQdT6f+u4XsYMoQLYxY=
-X-Received: by 2002:a25:2d4e:: with SMTP id s14mr9419488ybe.2.1632870695304;
- Tue, 28 Sep 2021 16:11:35 -0700 (PDT)
+        id S243207AbhI1XRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 19:17:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37414 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229952AbhI1XRH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 19:17:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 16B7661350;
+        Tue, 28 Sep 2021 23:15:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632870927;
+        bh=k7mvWJXkefJr5oLTs0BZ3zdxRTUmPf1MZiYeBJyA7XE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ocew+esxplXzgMhKYMhrSw5RjLI6sQPl1Tpiuz8hw6JSCq3j+N+XNUkVedyO993Vz
+         kB/Ij0uONZRhaKQ1ZZqXSnOBF2v/N41R+q0zq2sq2NxQ23yEfYDftUU4VR/G/OdTMH
+         oxm49bvwucnXPGvvMvoowjDmc+Q9umDv5WNjC8kj1JHt8ObHwSzQGcNYlVh1ez5xeN
+         mJiNFel0VlgIcQiY2L0+VJZsOkQBkdwCpihJ/x7cJEdneu0g15RAolcOsu81GTtT4G
+         EkbSXP3x3KS0H0lgcufVPniUi6iCcip81W7MXc2oH8u82Mr+tvpN3iGdV9NBgTKLYR
+         vCCYhS4Sz8W2g==
+Date:   Tue, 28 Sep 2021 16:15:21 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, ciara.loftus@intel.com,
+        jonathan.lemon@gmail.com, bpf@vger.kernel.org,
+        anthony.l.nguyen@intel.com, llvm@lists.linux.dev
+Subject: Re: [PATCH bpf-next 06/13] xsk: optimize for aligned case
+Message-ID: <YVOiCYXTL63R4Mu9@archlinux-ax161>
+References: <20210922075613.12186-1-magnus.karlsson@gmail.com>
+ <20210922075613.12186-7-magnus.karlsson@gmail.com>
 MIME-Version: 1.0
-References: <20210928140734.1274261-1-houtao1@huawei.com> <20210928140734.1274261-3-houtao1@huawei.com>
-In-Reply-To: <20210928140734.1274261-3-houtao1@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Sep 2021 16:11:24 -0700
-Message-ID: <CAEf4BzaVdU04yFWfunPRY0H=QeiFR8VbBb2ESX56SS6LbRt5mg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/3] libbpf: support detecting and attaching
- of writable tracepoint program
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210922075613.12186-7-magnus.karlsson@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 6:53 AM Hou Tao <houtao1@huawei.com> wrote:
->
-> Program on writable tracepoint is BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
-> but its attachment is the same as BPF_PROG_TYPE_RAW_TRACEPOINT.
->
-> Signed-off-by: Hou Tao <houtao1@huawei.com>
-> ---
->  tools/lib/bpf/libbpf.c | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index ef5db34bf913..b874c0179084 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -7976,6 +7976,10 @@ static const struct bpf_sec_def section_defs[] = {
->                 .attach_fn = attach_raw_tp),
->         SEC_DEF("raw_tp/", RAW_TRACEPOINT,
->                 .attach_fn = attach_raw_tp),
-> +       SEC_DEF("raw_tracepoint.w/", RAW_TRACEPOINT_WRITABLE,
-> +               .attach_fn = attach_raw_tp),
-> +       SEC_DEF("raw_tp.w/", RAW_TRACEPOINT_WRITABLE,
-> +               .attach_fn = attach_raw_tp),
+On Wed, Sep 22, 2021 at 09:56:06AM +0200, Magnus Karlsson wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Optimize for the aligned case by precomputing the parameter values of
+> the xdp_buff_xsk and xdp_buff structures in the heads array. We can do
+> this as the heads array size is equal to the number of chunks in the
+> umem for the aligned case. Then every entry in this array will reflect
+> a certain chunk/frame and can therefore be prepopulated with the
+> correct values and we can drop the use of the free_heads stack. Note
+> that it is not possible to allocate more buffers than what has been
+> allocated in the aligned case since each chunk can only contain a
+> single buffer.
+> 
+> We can unfortunately not do this in the unaligned case as one chunk
+> might contain multiple buffers. In this case, we keep the old scheme
+> of populating a heads entry every time it is used and using
+> the free_heads stack.
+> 
+> Also move xp_release() and xp_get_handle() to xsk_buff_pool.h. They
+> were for some reason in xsk.c even though they are buffer pool
+> operations.
+> 
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Unfortunately I just refactored these SEC_DEF() definitions, please
-rebase because this won't apply cleanly anymore. Otherwise it looks
-good to me.
+My apologies if this has already been reported (I have not seen a report
+on netdev nor a report from Intel around it) but this patch as
+commit 94033cd8e73b ("xsk: Optimize for aligned case") in -next causes
+the following build failure with clang + x86_64 allmodconfig:
 
->         SEC_DEF("tp_btf/", TRACING,
->                 .expected_attach_type = BPF_TRACE_RAW_TP,
->                 .is_attach_btf = true,
-> --
-> 2.29.2
->
+net/xdp/xsk_buff_pool.c:465:15: error: variable 'xskb' is uninitialized when used here [-Werror,-Wuninitialized]
+                        xp_release(xskb);
+                                   ^~~~
+net/xdp/xsk_buff_pool.c:455:27: note: initialize the variable 'xskb' to silence this warning
+        struct xdp_buff_xsk *xskb;
+                                 ^
+                                  = NULL
+1 error generated.
+
+Cheers,
+Nathan
