@@ -2,155 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87D0D41A945
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 09:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C10F741A94E
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 09:05:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239144AbhI1HGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 03:06:17 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:11520 "EHLO m43-7.mailgun.net"
+        id S239181AbhI1HHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 03:07:22 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:53211 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238806AbhI1HGP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 03:06:15 -0400
+        id S239078AbhI1HHO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 03:07:14 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1632812677; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=mcC+NI9lbMYVHDFKxEvKMLG3JdbT8e+is/T3jV6QeT8=; b=awpsOCXcxIz28G6L0OYfJN0+ygKSX4H5JUNe0KRhD1nOyhmn8nolYLaQhNuSP368QrAmu5Co
- poP0IRAzqN7MpNsDXxDRsrjvkR65tFPwLXoUfxYjRcEM1Rg4Y0sKgcqs5BWbuLjq4Ap2e86F
- ob4yetTSRcu3p4p8Hp78nSK/GsE=
+ s=smtp; t=1632812731; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=GdbR31SuXra+bALRWxjxzcr+dhVqDYEGV27jUVNwc80=;
+ b=BykueYJEEF+KseS16LunVPu6NS0rSEqMm7HHDL+d/pEMuMB1qqkgnPheDPdOj3xRxoFZaAna
+ UwXxvGBkLbPcquG4UHeksoaXfrwkUQUMCH/g0l+YRqBzrAtxrbUIuO0hr55bwS9mbaRaIGZV
+ UUXghLT5an0Ur61gFz/qxTS3b8U=
 X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
- 6152be4b605ecf100b924378 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 28 Sep 2021 07:03:39
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 6152beb91abbf21d34d297da (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 28 Sep 2021 07:05:29
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 30C25C4360C; Tue, 28 Sep 2021 07:03:39 +0000 (UTC)
+        id 12CE9C4360D; Tue, 28 Sep 2021 07:05:29 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9DA53C4338F;
-        Tue, 28 Sep 2021 07:03:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 9DA53C4338F
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E239AC4338F;
+        Tue, 28 Sep 2021 07:05:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org E239AC4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v3] iwlwifi: pcie: add configuration of a Wi-Fi adapter on
+ Dell XPS 15
 From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Alex Elder <elder@kernel.org>,
+In-Reply-To: <20210924122154.2376577-1-vladimir.zapolskiy@linaro.org>
+References: <20210924122154.2376577-1-vladimir.zapolskiy@linaro.org>
+To:     Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        iommu@lists.linux-foundation.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH] [RFC] qcom_scm: hide Kconfig symbol
-References: <20210927152412.2900928-1-arnd@kernel.org>
-Date:   Tue, 28 Sep 2021 10:03:25 +0300
-In-Reply-To: <20210927152412.2900928-1-arnd@kernel.org> (Arnd Bergmann's
-        message of "Mon, 27 Sep 2021 17:22:13 +0200")
-Message-ID: <87k0j1qj0i.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Julien Wajsberg <felash@gmail.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210928070529.12CE9C4360D@smtp.codeaurora.org>
+Date:   Tue, 28 Sep 2021 07:05:29 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@kernel.org> writes:
+Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org> wrote:
 
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> Now that SCM can be a loadable module, we have to add another
-> dependency to avoid link failures when ipa or adreno-gpu are
-> built-in:
->
-> aarch64-linux-ld: drivers/net/ipa/ipa_main.o: in function `ipa_probe':
-> ipa_main.c:(.text+0xfc4): undefined reference to `qcom_scm_is_available'
->
-> ld.lld: error: undefined symbol: qcom_scm_is_available
->>>> referenced by adreno_gpu.c
->>>>               gpu/drm/msm/adreno/adreno_gpu.o:(adreno_zap_shader_load)
->>>> in archive drivers/built-in.a
->
-> This can happen when CONFIG_ARCH_QCOM is disabled and we don't select
-> QCOM_MDT_LOADER, but some other module selects QCOM_SCM. Ideally we'd
-> use a similar dependency here to what we have for QCOM_RPROC_COMMON,
-> but that causes dependency loops from other things selecting QCOM_SCM.
->
-> This appears to be an endless problem, so try something different this
-> time:
->
->  - CONFIG_QCOM_SCM becomes a hidden symbol that nothing 'depends on'
->    but that is simply selected by all of its users
->
->  - All the stubs in include/linux/qcom_scm.h can go away
->
->  - arm-smccc.h needs to provide a stub for __arm_smccc_smc() to
->    allow compile-testing QCOM_SCM on all architectures.
->
->  - To avoid a circular dependency chain involving RESET_CONTROLLER
->    and PINCTRL_SUNXI, change the 'depends on RESET_CONTROLLER' in
->    the latter one to 'select'.
->
-> The last bit is rather annoying, as drivers should generally never
-> 'select' another subsystem, and about half the users of the reset
-> controller interface do this anyway.
->
-> Nevertheless, this version seems to pass all my randconfig tests
-> and is more robust than any of the prior versions.
->
-> Comments?
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> There is a Killer AX1650 2x2 Wi-Fi 6 and Bluetooth 5.1 wireless adapter
+> found on Dell XPS 15 (9510) laptop, its configuration was present on
+> Linux v5.7, however accidentally it has been removed from the list of
+> supported devices, let's add it back.
+> 
+> The problem is manifested on driver initialization:
+> 
+>   Intel(R) Wireless WiFi driver for Linux
+>   iwlwifi 0000:00:14.3: enabling device (0000 -> 0002)
+>   iwlwifi: No config found for PCI dev 43f0/1651, rev=0x354, rfid=0x10a100
+>   iwlwifi: probe of 0000:00:14.3 failed with error -22
+> 
+> Bug: https://bugzilla.kernel.org/show_bug.cgi?id=213939
+> Fixes: 3f910a25839b ("iwlwifi: pcie: convert all AX101 devices to the device tables")
+> Cc: Julien Wajsberg <felash@gmail.com>
+> Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+> Acked-by: Luca Coelho <luca@coelho.fi>
 
-[...]
+Patch applied to wireless-drivers.git, thanks.
 
-> diff --git a/drivers/net/wireless/ath/ath10k/Kconfig b/drivers/net/wireless/ath/ath10k/Kconfig
-> index 741289e385d5..ca007b800f75 100644
-> --- a/drivers/net/wireless/ath/ath10k/Kconfig
-> +++ b/drivers/net/wireless/ath/ath10k/Kconfig
-> @@ -44,7 +44,7 @@ config ATH10K_SNOC
->  	tristate "Qualcomm ath10k SNOC support"
->  	depends on ATH10K
->  	depends on ARCH_QCOM || COMPILE_TEST
-> -	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
-> +	select QCOM_SCM
->  	select QCOM_QMI_HELPERS
->  	help
->  	  This module adds support for integrated WCN3990 chip connected
-
-I assume I can continue to build test ATH10K_SNOC with x86 as before?
-That's important for me. If yes, then:
-
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
+fe5c735d0d47 iwlwifi: pcie: add configuration of a Wi-Fi adapter on Dell XPS 15
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+https://patchwork.kernel.org/project/linux-wireless/patch/20210924122154.2376577-1-vladimir.zapolskiy@linaro.org/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
