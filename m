@@ -2,114 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE1041A6D6
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 06:54:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3A7A41A6EF
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 07:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233336AbhI1Ezt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 00:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59040 "EHLO
+        id S234121AbhI1FN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 01:13:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbhI1Ezs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 00:55:48 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48713C061575;
-        Mon, 27 Sep 2021 21:54:09 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id s18so14476645ybc.0;
-        Mon, 27 Sep 2021 21:54:09 -0700 (PDT)
+        with ESMTP id S233360AbhI1FN1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 01:13:27 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A690C061575;
+        Mon, 27 Sep 2021 22:11:49 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id z5so29086659ybj.2;
+        Mon, 27 Sep 2021 22:11:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ftE+0CImZ4wvtObNvNqITwScfuIlULxxvwkkXNFZH8g=;
-        b=WNzkiWDadIPpdasbIFWXV7DZ6/rbPymEP2Ak28I8fYKTd1ZWXSqQoxzO5w06TN1SMG
-         jiFUFYrD2joqcaJK3NLsmtxzIFlOXf9/0q0zsaUWLwwDYf1XeZd0hIoc0nQwqjcisRlW
-         kxSMuCqn4IlE/TpS0EEptM2aNXjnxJnoqKbNJOMoxfn4PHSSHNSC7crzGwd8ItuSfUPj
-         0DP9IzkesmT1VeFNBEYrp3Wt0CjH1eGDNZ+d/E8IXRW3Nf+gRXVjBhW1RQEzSu5k8V3p
-         9NWNbVzfIo1nqFx/mFSIYaTJNZz1/F7wo+5F7MnUFGlCtIAQAjgn7cvVWuhoxRsShyS1
-         dfLw==
+         :cc:content-transfer-encoding;
+        bh=wNEfN9GmMm8ACv81lqq2HdxH7rVZO3hCMzGo5Sw7PQU=;
+        b=FIhRutqSFdUoxNQZ7x0XryqsiEDitpevaKU+YiBk+prwVwyUQdEhk3h79XNY6a+Mt3
+         Rpr/R2iexJsWzWiRFwcHQcEKgyYR2mBgebSflfxpIyC/rZqbJgc46rdvzLWce54okk4p
+         esSogxXFBqtwBhvG+MHu38LfXnNCqLbVCVmdghr/n8pUBhtM/eyuDABiF+tEzWq3f6V+
+         I2D2c1Vh7tfUu+Hg4JL7o3SGTAOeeeuxy1Xop3cmQCOFMOKIE5rl86ntdANAv2GlIx4O
+         K8DaTKTH7jlioBNbQpRKBZnN6Wse53TkENraJEQ+PnF+5s8Bb9jKPbpWaWBiIHUo3DnZ
+         TCGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ftE+0CImZ4wvtObNvNqITwScfuIlULxxvwkkXNFZH8g=;
-        b=M0EaLskdwHvOKpBou+pTLw6ucJy2bEJ+i/lN5fF6Pvg4Ahz4+BGE+Ie2o6/poufgp2
-         CdYV+XVN/UPTQhvLNzYBPo7dQBxY6cvLs/fgQWYd7ve11luPe9hlpxwPxOcPneq7BYwK
-         gIhHbIg5K7lZEKOrGq6FmQXmkSRwpSwP6TW63UqDIY41LMiwBj2miLTSa0prE2EpgpUu
-         8tbh6dEIeNQGlB/LmGb6cWk5H/BYl+B/CKphm3c5bNtmtth+aleGCw1owGh9SbX3aRB7
-         3I3zju+2yIjbbofVx+aeIAELEiVgFWrbAFdKTFu1h8srHzILQxRmZZnVkR6Go/FYgULx
-         ytzw==
-X-Gm-Message-State: AOAM530g0e79FFxdZc0ThKmIeImp3B/U/zI9E9CjBlhWgJZzXkS94eUz
-        mV40XsP6abAP6E++ijb0mgUodcHuwBr2RN/x0MI=
-X-Google-Smtp-Source: ABdhPJzZ43eQZJXXmKG0MAWW3hdSbUtsC5rpQQl8jDtAE1H+OjyyZHNFQJzGffBGYVZI1JVg9OqskCZppMf+71ogcr8=
-X-Received: by 2002:a25:2d4e:: with SMTP id s14mr4126581ybe.2.1632804848553;
- Mon, 27 Sep 2021 21:54:08 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=wNEfN9GmMm8ACv81lqq2HdxH7rVZO3hCMzGo5Sw7PQU=;
+        b=sVTdlmJCqqz80fVRdvvrJswlW3pka9/xHJXQTaMk18CLAvojPN5qmkkpiuEIGQEdDn
+         6+fhTmo4GSGMnoxh7HOktqK1a1CZ3+jTio0/ZNXU9A6BjwkDo8d3upiONU1BvTVl5JR7
+         oBYJte/9WQf2GiRu6E8QJUkUtJJfihKA508WTYzksDLq1o4LKhqmCXY7Bnwd/e16cTHU
+         zePLMr0LLsmzH1ZSSV0uTzErOpstSxcNs2wTBHoxJQEM18sfh3mqKqFZeL7kwsjdlTKz
+         BAQ5c8yHGw1+DbgiXmOgSAskgHEg83ux7zE28rMhQlqI881vsWmj3oiqcvtxJno8n7WE
+         DauA==
+X-Gm-Message-State: AOAM532ktqmb7Yx7AuEyhOZPmIAdad+3+c16gYLbmnEWkJDSH6dJA0LG
+        JxBmvU6mxP1sqKeF+UMLj3v8+YKJGztXE9/lDVE=
+X-Google-Smtp-Source: ABdhPJx8PfS0ekL23tdi9Cif7wuhcC5t+p7cVqHIL/D/je7dbzKITW8RmPJdgp4VsKaAsZfhn2t1fgxj/R39tcfkqiQ=
+X-Received: by 2002:a25:c88:: with SMTP id 130mr4196234ybm.176.1632805908028;
+ Mon, 27 Sep 2021 22:11:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <ee84ab66436fba05a197f952af23c98d90eb6243.1632758415.git.jbenc@redhat.com>
-In-Reply-To: <ee84ab66436fba05a197f952af23c98d90eb6243.1632758415.git.jbenc@redhat.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 27 Sep 2021 21:53:57 -0700
-Message-ID: <CAEf4Bza82pfB-DniE+Snb7nZLHXmPBmkgE7yj9qwkdYyOq_qXQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests: bpf: fix makefile dependencies on libbpf
-To:     Jiri Benc <jbenc@redhat.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>
+References: <cab456a9-680d-9791-599b-de003b88a9ea@linux.alibaba.com>
+In-Reply-To: <cab456a9-680d-9791-599b-de003b88a9ea@linux.alibaba.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 27 Sep 2021 22:11:37 -0700
+Message-ID: <CAM_iQpUuST2d0LZ5i7dqz=E1uL4Wiizf5WNbdJ=vc-9MR20SyQ@mail.gmail.com>
+Subject: Re: [RESEND PATCH v2] net: prevent user from passing illegal stab size
+To:     =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:TC subsystem" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 27, 2021 at 9:02 AM Jiri Benc <jbenc@redhat.com> wrote:
->
-> When building bpf selftest with make -j, I'm randomly getting build failures
-> such as this one:
->
-> > In file included from progs/bpf_flow.c:19:
-> > [...]/tools/testing/selftests/bpf/tools/include/bpf/bpf_helpers.h:11:10: fatal error: 'bpf_helper_defs.h' file not found
-> > #include "bpf_helper_defs.h"
-> >          ^~~~~~~~~~~~~~~~~~~
->
-> The file that fails the build varies between runs but it's always in the
-> progs/ subdir.
->
-> The reason is a missing make dependency on libbpf for the .o files in
-> progs/. There was a dependency before commit 3ac2e20fba07e but that commit
-> removed it to prevent unneeded rebuilds. However, that only works if libbpf
-> has been built already; the 'wildcard' prerequisite does not trigger when
-> there's no bpf_helper_defs.h generated yet.
->
-> Keep the libbpf as an order-only prerequisite to satisfy both goals. It is
-> always built before the progs/ objects but it does not trigger unnecessary
-> rebuilds by itself.
->
-> Fixes: 3ac2e20fba07e ("selftests/bpf: BPF object files should depend only on libbpf headers")
-> Signed-off-by: Jiri Benc <jbenc@redhat.com>
-> ---
->  tools/testing/selftests/bpf/Makefile | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 866531c08e4f..e7c42695dbbf 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -375,7 +375,8 @@ $(TRUNNER_BPF_OBJS): $(TRUNNER_OUTPUT)/%.o:                         \
->                      $(TRUNNER_BPF_PROGS_DIR)/%.c                       \
->                      $(TRUNNER_BPF_PROGS_DIR)/*.h                       \
->                      $$(INCLUDE_DIR)/vmlinux.h                          \
-> -                    $(wildcard $(BPFDIR)/bpf_*.h) | $(TRUNNER_OUTPUT)
-> +                    $(wildcard $(BPFDIR)/bpf_*.h) | $(TRUNNER_OUTPUT)  \
-> +                    $$(BPFOBJ)
+Hi,
 
+It has been applied, no need to resend.
 
-I've moved `| $(TRUNNER_OUTPUT)` into this new line so it's more
-obvious that both are order-only prerequisites. Applied to bpf,
-thanks.
+commit b193e15ac69d56f35e1d8e2b5d16cbd47764d053
+Author:     =E7=8E=8B=E8=B4=87 <yun.wang@linux.alibaba.com>
+AuthorDate: Fri Sep 24 10:35:58 2021 +0800
+Commit:     David S. Miller <davem@davemloft.net>
+CommitDate: Sun Sep 26 11:09:07 2021 +0100
 
->         $$(call $(TRUNNER_BPF_BUILD_RULE),$$<,$$@,                      \
->                                           $(TRUNNER_BPF_CFLAGS))
->
-> --
-> 2.18.1
->
+    net: prevent user from passing illegal stab size
+
+Thanks.
