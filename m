@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AAE141ADD1
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 13:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5629441ADD6
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 13:31:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240371AbhI1Lcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 07:32:53 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:52450 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S240349AbhI1Lcw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 07:32:52 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18SAHumr018449;
-        Tue, 28 Sep 2021 04:31:12 -0700
+        id S240373AbhI1LdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 07:33:11 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:13766 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240403AbhI1Lc7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 07:32:59 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18SAF40O019486;
+        Tue, 28 Sep 2021 04:31:16 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=qUzQHWO9sHcg00Wxfaw5WJIHDpsOo9veGrdtGdNVY18=;
- b=Yes2C0Cux9B96rzk1tg/WL1cYyQxi5JMXhS5y0WsFav/ugo2uC/5A4H2+mYsgDy5Up2L
- TZCfIAH6SUafYFQP+SWLcWLImSHrjxAur3K3Ci1yNK00O9OZNdkJHY/2A6roAz/yGZUS
- ibAaCE1roYkMITCdaU/DuO3norvFcCSwDRxvNqd5Z5HRGta+ov5PUKK892rSvOrWTUtV
- y3zuqx0F9mUoE99HlwLaOz3mOcZ9EbKk5oYB+qRUbgn/EhDXYQ1K34YESanhq8Evs91D
- ge7x5FUR1Fp+gkPvEhXOCVKXdqO8HCaCtK7KXRoSvCZZ1XwgC9a00KZMOm3rSpUbYIn/ +w== 
+ content-type; s=pfpt0220; bh=h8qwCY/mCXSD+qBUnWnzTDwk7i6bBuYJQV5dNb2cu2Q=;
+ b=Vo9unr8o9WB7IpbOudkGNZYg91YYFEBwdaqEs+vMkPIR043aOipFAJq7LPQP37+iTV0u
+ zQ+OzOXwjolmAm4CjRUw83aeMT9oeOWXOibUODZeM3XU6rLmrRZonsF3+kqgM+vqC4Pl
+ 3i0UtdLtDioZS9ekY9S+GGgm0B41DnlgYXSRy4OBCup3qiTplC04CZoXZQwXwVO7Emy0
+ J141K+02Nut4U+dfhVKYFTvWLSMRHlj1OyDJZeaLzAaseY45qLwBoN5BbvPHAURtCHqu
+ 69u6+g6nNFtBUv+IOIWPyKj3NRH3ch3AeYox3piKcsblmitM2tHwbvZEYfrb6YUCiRtU 3Q== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3bc16207k8-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 3bc14pr84b-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 28 Sep 2021 04:31:11 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+        Tue, 28 Sep 2021 04:31:16 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 28 Sep
- 2021 04:31:10 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 28 Sep 2021 04:31:10 -0700
+ 2021 04:31:14 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 28 Sep 2021 04:31:14 -0700
 Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id C40DB3F7099;
-        Tue, 28 Sep 2021 04:31:07 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 42AF13F709A;
+        Tue, 28 Sep 2021 04:31:11 -0700 (PDT)
 From:   Hariprasad Kelam <hkelam@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
         <sbhatta@marvell.com>, <hkelam@marvell.com>
-Subject: [net-next PATCH 1/4] octeontx2-af: Reset PTP config in FLR handler
-Date:   Tue, 28 Sep 2021 17:00:58 +0530
-Message-ID: <20210928113101.16580-2-hkelam@marvell.com>
+Subject: [net-next PATCH 2/4] octeontx2-af: cn10k: RPM hardware timestamp configuration
+Date:   Tue, 28 Sep 2021 17:00:59 +0530
+Message-ID: <20210928113101.16580-3-hkelam@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210928113101.16580-1-hkelam@marvell.com>
 References: <20210928113101.16580-1-hkelam@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: mMxZYIR7Bi8q3dGkAZVbXA1FLwyy2QKY
-X-Proofpoint-GUID: mMxZYIR7Bi8q3dGkAZVbXA1FLwyy2QKY
+X-Proofpoint-ORIG-GUID: MNRVLzAOFXHBo3ieu-ZYabhCGeKPPSWX
+X-Proofpoint-GUID: MNRVLzAOFXHBo3ieu-ZYabhCGeKPPSWX
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
  definitions=2021-09-28_05,2021-09-28_01,2020-04-07_01
@@ -57,89 +57,236 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Harman Kalra <hkalra@marvell.com>
+MAC on CN10K support hardware timestamping such that 8 bytes addition
+header is prepended to incoming packets. This patch does necessary
+configuration to enable Hardware time stamping upon receiving request
+from PF netdev interfaces.
 
-Upon receiving ptp config request from netdev interface , Octeontx2 MAC
-block CGX is configured to append timestamp to every incoming packet
-and NPC config is updated with DMAC offset change.
+Timestamp configuration is different on MAC (CGX) Octeontx2 silicon
+and MAC (RPM) OcteonTX3 CN10k. Based on silicon variant appropriate
+fn() pointer is called. Refactor MAC specific mbox messages to remove
+unnecessary gaps in mboxids.
 
-Currently this configuration is not reset in FLR handler. This patch
-resets the same.
-
-Signed-off-by: Harman Kalra <hkalra@marvell.com>
 Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  1 +
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  3 +++
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 14 ++++++++++++++
- 3 files changed, 18 insertions(+)
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   | 10 ++---
+ .../marvell/octeontx2/af/lmac_common.h        |  5 +++
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  | 41 ++++++++++---------
+ .../net/ethernet/marvell/octeontx2/af/rpm.c   | 17 ++++++++
+ .../net/ethernet/marvell/octeontx2/af/rpm.h   |  3 ++
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |  4 +-
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  4 +-
+ 7 files changed, 58 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 0128211806f9..95e807626a3e 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -220,6 +220,7 @@ struct rvu_pfvf {
- 	u16		maxlen;
- 	u16		minlen;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index 34a089b71e55..d379a35c4618 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -838,9 +838,6 @@ void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable)
+ 	if (!cgx)
+ 		return;
  
-+	bool		hw_rx_tstamp_en; /* Is rx_tstamp enabled */
- 	u8		mac_addr[ETH_ALEN]; /* MAC address of this PF/VF */
- 	u8		default_mac[ETH_ALEN]; /* MAC address from FWdata */
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 21e5906bcc37..a5c717ad12c1 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -694,6 +694,7 @@ int rvu_mbox_handler_cgx_promisc_disable(struct rvu *rvu, struct msg_req *req,
- 
- static int rvu_cgx_ptp_rx_cfg(struct rvu *rvu, u16 pcifunc, bool enable)
+-	if (is_dev_rpm(cgx))
+-		return;
+-
+ 	if (enable) {
+ 		/* Enable inbound PTP timestamping */
+ 		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
+@@ -1545,9 +1542,11 @@ static int cgx_lmac_exit(struct cgx *cgx)
+ static void cgx_populate_features(struct cgx *cgx)
  {
-+	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
- 	int pf = rvu_get_pf(pcifunc);
- 	u8 cgx_id, lmac_id;
- 	void *cgxd;
-@@ -718,6 +719,8 @@ static int rvu_cgx_ptp_rx_cfg(struct rvu *rvu, u16 pcifunc, bool enable)
- 	 */
- 	if (npc_config_ts_kpuaction(rvu, pf, pcifunc, enable))
- 		return -EINVAL;
-+	/* This flag is required to clean up CGX conf if app gets killed */
-+	pfvf->hw_rx_tstamp_en = enable;
+ 	if (is_dev_rpm(cgx))
+-		cgx->hw_features =  (RVU_MAC_RPM | RVU_LMAC_FEAT_FC);
++		cgx->hw_features = (RVU_LMAC_FEAT_DMACF | RVU_MAC_RPM |
++				    RVU_LMAC_FEAT_FC | RVU_LMAC_FEAT_PTP);
+ 	else
+-		cgx->hw_features = (RVU_LMAC_FEAT_FC | RVU_LMAC_FEAT_PTP);
++		cgx->hw_features = (RVU_LMAC_FEAT_FC  | RVU_LMAC_FEAT_HIGIG2 |
++				    RVU_LMAC_FEAT_PTP | RVU_LMAC_FEAT_DMACF);
+ }
+ 
+ static struct mac_ops	cgx_mac_ops    = {
+@@ -1571,6 +1570,7 @@ static struct mac_ops	cgx_mac_ops    = {
+ 	.mac_get_pause_frm_status =	cgx_lmac_get_pause_frm_status,
+ 	.mac_enadis_pause_frm =		cgx_lmac_enadis_pause_frm,
+ 	.mac_pause_frm_config =		cgx_lmac_pause_frm_config,
++	.mac_enadis_ptp_config =	cgx_lmac_ptp_config,
+ };
+ 
+ static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+index c38306b3384a..fc6e7423cbd8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+@@ -102,6 +102,11 @@ struct mac_ops {
+ 	void			(*mac_pause_frm_config)(void  *cgxd,
+ 							int lmac_id,
+ 							bool enable);
++
++	/* Enable/Disable Inbound PTP */
++	void			(*mac_enadis_ptp_config)(void  *cgxd,
++							 int lmac_id,
++							 bool enable);
+ };
+ 
+ struct cgx {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index cb48ddf54897..b5ee324d17c9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -154,23 +154,23 @@ M(CGX_PTP_RX_ENABLE,	0x20C, cgx_ptp_rx_enable, msg_req, msg_rsp)	\
+ M(CGX_PTP_RX_DISABLE,	0x20D, cgx_ptp_rx_disable, msg_req, msg_rsp)	\
+ M(CGX_CFG_PAUSE_FRM,	0x20E, cgx_cfg_pause_frm, cgx_pause_frm_cfg,	\
+ 			       cgx_pause_frm_cfg)			\
+-M(CGX_FEC_SET,		0x210, cgx_set_fec_param, fec_mode, fec_mode)   \
+-M(CGX_FEC_STATS,	0x211, cgx_fec_stats, msg_req, cgx_fec_stats_rsp) \
+-M(CGX_GET_PHY_FEC_STATS, 0x212, cgx_get_phy_fec_stats, msg_req, msg_rsp) \
+-M(CGX_FW_DATA_GET,	0x213, cgx_get_aux_link_info, msg_req, cgx_fw_data) \
+-M(CGX_SET_LINK_MODE,	0x214, cgx_set_link_mode, cgx_set_link_mode_req,\
+-			       cgx_set_link_mode_rsp)	\
+-M(CGX_FEATURES_GET,	0x215, cgx_features_get, msg_req,		\
+-			       cgx_features_info_msg)			\
+-M(RPM_STATS,		0x216, rpm_stats, msg_req, rpm_stats_rsp)	\
+-M(CGX_MAC_ADDR_ADD,	0x217, cgx_mac_addr_add, cgx_mac_addr_add_req,    \
+-			       cgx_mac_addr_add_rsp)		\
+-M(CGX_MAC_ADDR_DEL,	0x218, cgx_mac_addr_del, cgx_mac_addr_del_req,    \
++M(CGX_FW_DATA_GET,	0x20F, cgx_get_aux_link_info, msg_req, cgx_fw_data) \
++M(CGX_FEC_SET,		0x210, cgx_set_fec_param, fec_mode, fec_mode) \
++M(CGX_MAC_ADDR_ADD,	0x211, cgx_mac_addr_add, cgx_mac_addr_add_req,    \
++				cgx_mac_addr_add_rsp)		\
++M(CGX_MAC_ADDR_DEL,	0x212, cgx_mac_addr_del, cgx_mac_addr_del_req,    \
+ 			       msg_rsp)		\
+-M(CGX_MAC_MAX_ENTRIES_GET, 0x219, cgx_mac_max_entries_get, msg_req,    \
++M(CGX_MAC_MAX_ENTRIES_GET, 0x213, cgx_mac_max_entries_get, msg_req,    \
+ 				  cgx_max_dmac_entries_get_rsp)		\
+-M(CGX_MAC_ADDR_RESET,	0x21A, cgx_mac_addr_reset, msg_req, msg_rsp)	\
+-M(CGX_MAC_ADDR_UPDATE,	0x21B, cgx_mac_addr_update, cgx_mac_addr_update_req, \
++M(CGX_FEC_STATS,	0x217, cgx_fec_stats, msg_req, cgx_fec_stats_rsp) \
++M(CGX_SET_LINK_MODE,	0x218, cgx_set_link_mode, cgx_set_link_mode_req,\
++			       cgx_set_link_mode_rsp)	\
++M(CGX_GET_PHY_FEC_STATS, 0x219, cgx_get_phy_fec_stats, msg_req, msg_rsp) \
++M(CGX_FEATURES_GET,	0x21B, cgx_features_get, msg_req,		\
++			       cgx_features_info_msg)			\
++M(RPM_STATS,		0x21C, rpm_stats, msg_req, rpm_stats_rsp)	\
++M(CGX_MAC_ADDR_RESET,	0x21D, cgx_mac_addr_reset, msg_req, msg_rsp)	\
++M(CGX_MAC_ADDR_UPDATE,	0x21E, cgx_mac_addr_update, cgx_mac_addr_update_req, \
+ 			       msg_rsp)					\
+ /* NPA mbox IDs (range 0x400 - 0x5FF) */				\
+ M(NPA_LF_ALLOC,		0x400, npa_lf_alloc,				\
+@@ -583,10 +583,13 @@ struct cgx_mac_addr_update_req {
+ };
+ 
+ #define RVU_LMAC_FEAT_FC		BIT_ULL(0) /* pause frames */
+-#define RVU_LMAC_FEAT_PTP		BIT_ULL(1) /* precision time protocol */
+-#define RVU_MAC_VERSION			BIT_ULL(2)
+-#define RVU_MAC_CGX			BIT_ULL(3)
+-#define RVU_MAC_RPM			BIT_ULL(4)
++#define	RVU_LMAC_FEAT_HIGIG2		BIT_ULL(1)
++			/* flow control from physical link higig2 messages */
++#define RVU_LMAC_FEAT_PTP		BIT_ULL(2) /* precison time protocol */
++#define RVU_LMAC_FEAT_DMACF		BIT_ULL(3) /* DMAC FILTER */
++#define RVU_MAC_VERSION			BIT_ULL(4)
++#define RVU_MAC_CGX			BIT_ULL(5)
++#define RVU_MAC_RPM			BIT_ULL(6)
+ 
+ struct cgx_features_info_msg {
+ 	struct mbox_msghdr hdr;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+index 07b0eafccad8..e695fa0e82a9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+@@ -29,6 +29,7 @@ static struct mac_ops	rpm_mac_ops   = {
+ 	.mac_get_pause_frm_status =	rpm_lmac_get_pause_frm_status,
+ 	.mac_enadis_pause_frm =		rpm_lmac_enadis_pause_frm,
+ 	.mac_pause_frm_config =		rpm_lmac_pause_frm_config,
++	.mac_enadis_ptp_config =	rpm_lmac_ptp_config,
+ };
+ 
+ struct mac_ops *rpm_get_mac_ops(void)
+@@ -270,3 +271,19 @@ int rpm_lmac_internal_loopback(void *rpmd, int lmac_id, bool enable)
  
  	return 0;
  }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index e299ec13c7f1..601935a05921 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -4516,6 +4516,9 @@ void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int nixlf)
++
++void rpm_lmac_ptp_config(void *rpmd, int lmac_id, bool enable)
++{
++	rpm_t *rpm = rpmd;
++	u64 cfg;
++
++	if (!is_lmac_valid(rpm, lmac_id))
++		return;
++
++	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_CFG);
++	if (enable)
++		cfg |= RPMX_RX_TS_PREPEND;
++	else
++		cfg &= ~RPMX_RX_TS_PREPEND;
++	rpm_write(rpm, lmac_id, RPMX_CMRX_CFG, cfg);
++}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+index f0b069442dcc..57c8a687b488 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+@@ -14,6 +14,8 @@
+ #define PCI_DEVID_CN10K_RPM		0xA060
+ 
+ /* Registers */
++#define RPMX_CMRX_CFG			0x00
++#define RPMX_RX_TS_PREPEND              BIT_ULL(22)
+ #define RPMX_CMRX_SW_INT                0x180
+ #define RPMX_CMRX_SW_INT_W1S            0x188
+ #define RPMX_CMRX_SW_INT_ENA_W1S        0x198
+@@ -54,4 +56,5 @@ int rpm_lmac_enadis_pause_frm(void *rpmd, int lmac_id, u8 tx_pause,
+ 			      u8 rx_pause);
+ int rpm_get_tx_stats(void *rpmd, int lmac_id, int idx, u64 *tx_stat);
+ int rpm_get_rx_stats(void *rpmd, int lmac_id, int idx, u64 *rx_stat);
++void rpm_lmac_ptp_config(void *rpmd, int lmac_id, bool enable);
+ #endif /* RPM_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index a5c717ad12c1..5bdbc77aa721 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -696,6 +696,7 @@ static int rvu_cgx_ptp_rx_cfg(struct rvu *rvu, u16 pcifunc, bool enable)
  {
  	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
+ 	int pf = rvu_get_pf(pcifunc);
++	struct mac_ops *mac_ops;
+ 	u8 cgx_id, lmac_id;
+ 	void *cgxd;
+ 
+@@ -712,7 +713,8 @@ static int rvu_cgx_ptp_rx_cfg(struct rvu *rvu, u16 pcifunc, bool enable)
+ 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
+ 	cgxd = rvu_cgx_pdata(cgx_id, rvu);
+ 
+-	cgx_lmac_ptp_config(cgxd, lmac_id, enable);
++	mac_ops = get_mac_ops(cgxd);
++	mac_ops->mac_enadis_ptp_config(cgxd, lmac_id, true);
+ 	/* If PTP is enabled then inform NPC that packets to be
+ 	 * parsed by this PF will have their data shifted by 8 bytes
+ 	 * and if PTP is disabled then no shift is required
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 601935a05921..67feb26792e4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -4517,6 +4517,7 @@ void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int nixlf)
+ 	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
  	struct hwctx_disable_req ctx_req;
-+	int pf = rvu_get_pf(pcifunc);
-+	u8 cgx_id, lmac_id;
-+	void *cgxd;
+ 	int pf = rvu_get_pf(pcifunc);
++	struct mac_ops *mac_ops;
+ 	u8 cgx_id, lmac_id;
+ 	void *cgxd;
  	int err;
- 
- 	ctx_req.hdr.pcifunc = pcifunc;
-@@ -4556,6 +4559,17 @@ void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int nixlf)
- 	rvu_npc_set_parse_mode(rvu, pcifunc, OTX2_PRIV_FLAGS_DEFAULT,
- 			       (PKIND_TX | PKIND_RX), 0, 0, 0, 0);
- 
-+	/* Disabling CGX and NPC config done for PTP */
-+	if (pfvf->hw_rx_tstamp_en) {
-+		rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+		cgxd = rvu_cgx_pdata(cgx_id, rvu);
-+		cgx_lmac_ptp_config(cgxd, lmac_id, false);
-+		/* Undo NPC config done for PTP */
-+		if (npc_config_ts_kpuaction(rvu, pf, pcifunc, false))
-+			dev_err(rvu->dev, "NPC config for PTP failed\n");
-+		pfvf->hw_rx_tstamp_en = false;
-+	}
-+
- 	nix_ctx_free(rvu, pfvf);
- 
- 	nix_free_all_bandprof(rvu, pcifunc);
+@@ -4563,7 +4564,8 @@ void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int nixlf)
+ 	if (pfvf->hw_rx_tstamp_en) {
+ 		rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
+ 		cgxd = rvu_cgx_pdata(cgx_id, rvu);
+-		cgx_lmac_ptp_config(cgxd, lmac_id, false);
++		mac_ops = get_mac_ops(cgxd);
++		mac_ops->mac_enadis_ptp_config(cgxd, lmac_id, false);
+ 		/* Undo NPC config done for PTP */
+ 		if (npc_config_ts_kpuaction(rvu, pf, pcifunc, false))
+ 			dev_err(rvu->dev, "NPC config for PTP failed\n");
 -- 
 2.17.1
 
