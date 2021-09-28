@@ -2,117 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BDBB41B955
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 23:34:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EBF441B979
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 23:39:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242952AbhI1Vfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 17:35:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53008 "EHLO mail.kernel.org"
+        id S242942AbhI1VlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 17:41:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55724 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242943AbhI1Vfn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 17:35:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 24A1F6135F;
-        Tue, 28 Sep 2021 21:34:03 +0000 (UTC)
+        id S232358AbhI1VlB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 17:41:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1420D61288;
+        Tue, 28 Sep 2021 21:39:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632864843;
-        bh=2hOPqcyqypMpKLqdAQNJCW9CnAKsvTzqaAiKGYi0Y+Q=;
-        h=Date:From:To:Cc:Subject:From;
-        b=GH0E0UAGigSBp79hPgAZBz1cOI8i1bRzNKg8vSXYptJ1gc05+KL9u+CIokrcwwJxo
-         CAmGmAgKMB1fpwC5esV78h1pZAKX8KKFKJM1+iXxHpxhINm+lYEjz0n3JbZrwTGq0M
-         Ed1zzTr8OuyiwecoOLx80FIi1P8JhPBVTVIeNDOI2Y0r29PDZVkkgZYrx8sWojasuU
-         +wl84HpWV0rvBMHb+WlGHnaolqjIDvs9fJozXC0OND2IPsSjueIkvIlWzLZZBW3xac
-         7cJlyyyoXPMw/Gfen2xB9JE9/KHnYnPUmzvKiSS+POdndIznLZjOoSYqTad0rnGaTX
-         ffRry30oczBQQ==
-Date:   Tue, 28 Sep 2021 16:38:05 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][net-next] gve: Use kvcalloc() instead of kvzalloc()
-Message-ID: <20210928213805.GA273413@embeddedor>
+        s=k20201202; t=1632865161;
+        bh=R7f+KH6pTNCbXYq0x7I45wP33jRLWv//E0u0+Zdp0f4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=glQR3XmvwcUyQZRi5+DF7+AwSmCH4DXfMXEb5cv1Spr/5pw12umNjgkBoE/vpKMz9
+         1j2/qUxmMuKxVR61GFEqBulqZjafhhTwIlx2kmelUrGAAn8LZzYWjTyFfFaTxDk/Bp
+         p2s/8A0Z+kCbnttCnpU/KFjBq+mVdIbNrYP2ibce/D65zvFfdzWm+yH0r9pCFRttJG
+         7S0Jzod7S0NH7B6LGzRNG/jYWU29F70RjJ6NLdKJVosY4WCxTZ3RwVpfUldKOjn7US
+         9wc4HtR0JBq2H1QLDsyifRDQlcOEseSyZJNDvroaNYJ5h/5C7/7Lz/oQ/9HlrV94+U
+         5Tr5GDVGFB11A==
+Received: by pali.im (Postfix)
+        id 77B377E1; Tue, 28 Sep 2021 23:39:18 +0200 (CEST)
+Date:   Tue, 28 Sep 2021 23:39:18 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Scott Wood <oss@buserror.net>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] powerpc/fsl/dts: Fix phy-connection-type for fm1mac3
+Message-ID: <20210928213918.v4n3bzecbiltbktd@pali>
+References: <20210604233455.fwcu2chlsed2gwmu@pali>
+ <20210704134325.24842-1-pali@kernel.org>
+ <63a72f648297e96c140a1412c20bd3796398a932.camel@buserror.net>
+ <20210827113836.hvqvaln65gexg5ps@pali>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210827113836.hvqvaln65gexg5ps@pali>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use 2-factor argument form kvcalloc() instead of kvzalloc().
+On Friday 27 August 2021 13:38:36 Pali Rohár wrote:
+> On Wednesday 14 July 2021 12:11:49 Scott Wood wrote:
+> > On Sun, 2021-07-04 at 15:43 +0200, Pali Rohár wrote:
+> > > Property phy-connection-type contains invalid value "sgmii-2500" per scheme
+> > > defined in file ethernet-controller.yaml.
+> > > 
+> > > Correct phy-connection-type value should be "2500base-x".
+> > > 
+> > > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > > Fixes: 84e0f1c13806 ("powerpc/mpc85xx: Add MDIO bus muxing support to the
+> > > board device tree(s)")
+> > > ---
+> > >  arch/powerpc/boot/dts/fsl/t1023rdb.dts | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> > > b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> > > index 5ba6fbfca274..f82f85c65964 100644
+> > > --- a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> > > +++ b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> > > @@ -154,7 +154,7 @@
+> > >  
+> > >                         fm1mac3: ethernet@e4000 {
+> > >                                 phy-handle = <&sgmii_aqr_phy3>;
+> > > -                               phy-connection-type = "sgmii-2500";
+> > > +                               phy-connection-type = "2500base-x";
+> > >                                 sleep = <&rcpm 0x20000000>;
+> > >                         };
+> > >  
+> > 
+> > Acked-by: Scott Wood <oss@buserror.net>
+> > 
+> > -Scott
+> 
+> Hello! If there is not any objection, could you take this patch?
 
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/ethernet/google/gve/gve_main.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 099a2bc5ae67..cd9df68cc01e 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -268,7 +268,7 @@ static int gve_alloc_notify_blocks(struct gve_priv *priv)
- 	int i, j;
- 	int err;
- 
--	priv->msix_vectors = kvzalloc(num_vecs_requested *
-+	priv->msix_vectors = kvcalloc(num_vecs_requested,
- 				      sizeof(*priv->msix_vectors), GFP_KERNEL);
- 	if (!priv->msix_vectors)
- 		return -ENOMEM;
-@@ -628,7 +628,7 @@ static int gve_alloc_rings(struct gve_priv *priv)
- 	int err;
- 
- 	/* Setup tx rings */
--	priv->tx = kvzalloc(priv->tx_cfg.num_queues * sizeof(*priv->tx),
-+	priv->tx = kvcalloc(priv->tx_cfg.num_queues, sizeof(*priv->tx),
- 			    GFP_KERNEL);
- 	if (!priv->tx)
- 		return -ENOMEM;
-@@ -641,7 +641,7 @@ static int gve_alloc_rings(struct gve_priv *priv)
- 		goto free_tx;
- 
- 	/* Setup rx rings */
--	priv->rx = kvzalloc(priv->rx_cfg.num_queues * sizeof(*priv->rx),
-+	priv->rx = kvcalloc(priv->rx_cfg.num_queues, sizeof(*priv->rx),
- 			    GFP_KERNEL);
- 	if (!priv->rx) {
- 		err = -ENOMEM;
-@@ -764,12 +764,11 @@ static int gve_alloc_queue_page_list(struct gve_priv *priv, u32 id,
- 
- 	qpl->id = id;
- 	qpl->num_entries = 0;
--	qpl->pages = kvzalloc(pages * sizeof(*qpl->pages), GFP_KERNEL);
-+	qpl->pages = kvcalloc(pages, sizeof(*qpl->pages), GFP_KERNEL);
- 	/* caller handles clean up */
- 	if (!qpl->pages)
- 		return -ENOMEM;
--	qpl->page_buses = kvzalloc(pages * sizeof(*qpl->page_buses),
--				   GFP_KERNEL);
-+	qpl->page_buses = kvcalloc(pages, sizeof(*qpl->page_buses), GFP_KERNEL);
- 	/* caller handles clean up */
- 	if (!qpl->page_buses)
- 		return -ENOMEM;
-@@ -828,7 +827,7 @@ static int gve_alloc_qpls(struct gve_priv *priv)
- 	if (priv->queue_format == GVE_GQI_RDA_FORMAT)
- 		return 0;
- 
--	priv->qpls = kvzalloc(num_qpls * sizeof(*priv->qpls), GFP_KERNEL);
-+	priv->qpls = kvcalloc(num_qpls, sizeof(*priv->qpls), GFP_KERNEL);
- 	if (!priv->qpls)
- 		return -ENOMEM;
- 
-@@ -847,7 +846,7 @@ static int gve_alloc_qpls(struct gve_priv *priv)
- 
- 	priv->qpl_cfg.qpl_map_size = BITS_TO_LONGS(num_qpls) *
- 				     sizeof(unsigned long) * BITS_PER_BYTE;
--	priv->qpl_cfg.qpl_id_map = kvzalloc(BITS_TO_LONGS(num_qpls) *
-+	priv->qpl_cfg.qpl_id_map = kvcalloc(BITS_TO_LONGS(num_qpls),
- 					    sizeof(unsigned long), GFP_KERNEL);
- 	if (!priv->qpl_cfg.qpl_id_map) {
- 		err = -ENOMEM;
--- 
-2.27.0
-
+Hello! I would like to remind this patch.
