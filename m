@@ -2,104 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61E1441AECA
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:20:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0535E41AED1
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:20:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240626AbhI1MVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 08:21:40 -0400
-Received: from mx24.baidu.com ([111.206.215.185]:34492 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240598AbhI1MVj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 08:21:39 -0400
-Received: from BC-Mail-Ex07.internal.baidu.com (unknown [172.31.51.47])
-        by Forcepoint Email with ESMTPS id 0CAF91281473FE889426;
-        Tue, 28 Sep 2021 20:19:56 +0800 (CST)
-Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-EX07.internal.baidu.com (172.31.51.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Tue, 28 Sep 2021 20:19:55 +0800
-Received: from localhost (172.31.63.8) by BJHW-MAIL-EX27.internal.baidu.com
- (10.127.64.42) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 28
- Sep 2021 20:19:55 +0800
-Date:   Tue, 28 Sep 2021 20:19:54 +0800
-From:   Cai Huoqing <caihuoqing@baidu.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: mdio: mscc-miim: Fix the mdio controller
-Message-ID: <20210928121954.GA1845@LAPTOP-UKSR4ENP.internal.baidu.com>
-References: <20210928071720.2084666-1-horatiu.vultur@microchip.com>
-MIME-Version: 1.0
+        id S240717AbhI1MVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 08:21:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54510 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240529AbhI1MVq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 08:21:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0CE666101A;
+        Tue, 28 Sep 2021 12:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632831607;
+        bh=DaCu//g3isYBrUB+oTN5FtlME6iv9BMcwwGgCgULzoY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=I5Mu/8ZLP2sTHdN++wGRrOjeOGP2bFCdNhN4iIw+zgYwVsPPQa3krGvHJnmTmsikd
+         JFxspRx8PwxqG0GrmlF2KZ5BXsGd8u9ndZ1Y1pTZTtOznlW78B6eFpXRge70ZKdatE
+         PYswObEMpfUHW2sZgA7bBCmd6a3mUAtxqPhwLMqVhKK39hX14V0OIS8AYcf9ytl/Oc
+         hVI/+0FC3oyWhNAel1LprC+vf8vL5u/soTDaURmqCe2FGKSxvpruupM2JrSabBRsp7
+         rD/xpVZHrrUYCl/OeUrdYOOUHHHBhT0KcltITG2Y70qxZcimrtkDd8DTguAg8MtHp3
+         7yeUDK4fwxGQw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 010CF609D2;
+        Tue, 28 Sep 2021 12:20:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210928071720.2084666-1-horatiu.vultur@microchip.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Originating-IP: [172.31.63.8]
-X-ClientProxiedBy: BJHW-Mail-Ex05.internal.baidu.com (10.127.64.15) To
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
+Subject: Re: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates
+ 2021-09-27
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163283160699.2416.2539156319469157037.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Sep 2021 12:20:06 +0000
+References: <20210927171640.1842507-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20210927171640.1842507-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28 9月 21 09:17:20, Horatiu Vultur wrote:
-> According to the documentation the second resource is optional. But the
-> blamed commit ignores that and if the resource is not there it just
-> fails.
-> 
-> This patch reverts that to still allow the second resource to be
-> optional because other SoC have the some MDIO controller and doesn't
-> need to second resource.
-> 
-> Fixes: 672a1c394950 ("net: mdio: mscc-miim: Make use of the helper function devm_platform_ioremap_resource()")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Hello:
 
-Reviewed-by: Cai Huoqing <caihuoqing@baidu.com>
+This series was applied to netdev/net.git (refs/heads/master):
 
-> ---
->  drivers/net/mdio/mdio-mscc-miim.c | 15 ++++++++++-----
->  1 file changed, 10 insertions(+), 5 deletions(-)
+On Mon, 27 Sep 2021 10:16:38 -0700 you wrote:
+> This series contains updates to e100 driver only.
 > 
-> diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-> index 1ee592d3eae4..17f98f609ec8 100644
-> --- a/drivers/net/mdio/mdio-mscc-miim.c
-> +++ b/drivers/net/mdio/mdio-mscc-miim.c
-> @@ -134,8 +134,9 @@ static int mscc_miim_reset(struct mii_bus *bus)
->  
->  static int mscc_miim_probe(struct platform_device *pdev)
->  {
-> -	struct mii_bus *bus;
->  	struct mscc_miim_dev *dev;
-> +	struct resource *res;
-> +	struct mii_bus *bus;
->  	int ret;
->  
->  	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*dev));
-> @@ -156,10 +157,14 @@ static int mscc_miim_probe(struct platform_device *pdev)
->  		return PTR_ERR(dev->regs);
->  	}
->  
-> -	dev->phy_regs = devm_platform_ioremap_resource(pdev, 1);
-> -	if (IS_ERR(dev->phy_regs)) {
-> -		dev_err(&pdev->dev, "Unable to map internal phy registers\n");
-> -		return PTR_ERR(dev->phy_regs);
-> +	/* This resource is optional */
-Looks good to me,
+> Jake corrects under allocation of register buffer due to incorrect
+> calculations and fixes buffer overrun of register dump.
+> 
+> The following are changes since commit 3b1b6e82fb5e08e2cb355d7b2ee8644ec289de66:
+>   net: phy: enhance GPY115 loopback disable function
+> and are available in the git repository at:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 1GbE
+> 
+> [...]
 
-Thanks,
-Cai
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> +	if (res) {
-> +		dev->phy_regs = devm_ioremap_resource(&pdev->dev, res);
-> +		if (IS_ERR(dev->phy_regs)) {
-> +			dev_err(&pdev->dev, "Unable to map internal phy registers\n");
-> +			return PTR_ERR(dev->phy_regs);
-> +		}
->  	}
->  
->  	ret = of_mdiobus_register(bus, pdev->dev.of_node);
-> -- 
-> 2.33.0
-> 
+Here is the summary with links:
+  - [net,1/2] e100: fix length calculation in e100_get_regs_len
+    https://git.kernel.org/netdev/net/c/4329c8dc110b
+  - [net,2/2] e100: fix buffer overrun in e100_get_regs
+    https://git.kernel.org/netdev/net/c/51032e6f17ce
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
