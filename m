@@ -2,126 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E71FA41B7F3
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 22:04:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F89C41B7EA
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 22:02:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242590AbhI1UGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 16:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242568AbhI1UGA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 16:06:00 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CF2C06161C
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 13:04:20 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id g41so1057384lfv.1
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 13:04:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1/zLs3RNFvv9qAcMwG4i3AnfJwDfnbKcjNPWVWHR4go=;
-        b=CNhMLUj2HhGwUt7+zVIQXK0CGvgnqCvs0mF//amZs6bDElpmIjg218lvuwoWXB2ffQ
-         SE8XgfIg9jjYhiASPaZZuiYSeMtYPuk7mAGd8BGkKCp919pd6XiZcTGmtHFvmExUnOc0
-         LkbwoQJpNIsUt6dEy0G9cKedLq10vOWjKLkQCRzla6fC0DTR+Pk0/QWMLT0TSNd30TL9
-         M/jIIjF4v9hxuIvyZIhaf5ivL9i0RiWPVlRK4y6Vd4YUTjEkKoGsSi7RN/uAefFgorT1
-         8XpnghNax1eRwKr6Rv/eDJJFSS2am6IHVhtnndS+iePmqo2VM9o+W9WhfWQ+gLUXCBhS
-         /wVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1/zLs3RNFvv9qAcMwG4i3AnfJwDfnbKcjNPWVWHR4go=;
-        b=U/I/kHwiAUHn92pEZdGo48ucEl2Awxo0Y8Y/HAxi+RgU7JI0I5Tc/kEvBIOXWlsruT
-         cNW0Qd/IcAroVfZcrcNymXkQmJCKi0LnzZ5HP/79kCFb65FktAvoe9LTHSq25BiC8lME
-         5b4846j0hm+Y4/bEex9q2vPEpSPjIg9FQIPEU9ta+bjT88s23O8Qm0dsrtQK84Iz7Vk0
-         b/7TxkIjC0cSFaaIdAtf3+Pz6w3eJORnVIuKmtFaPMh0bVG7iRI/dNpXBY8K0J/8Po+k
-         K4vorh1+A4St98KmAHVsEzSyNmU0PDPcXdkCOrCFwN0/Agx+64woeUF7o9R+adblVji0
-         WDrg==
-X-Gm-Message-State: AOAM531Kgla+j8AvRsp8/vxpSDzP/rfCIeCQcJhChDOzXpG5AB58KVtr
-        t2PSGnth38jOTyQgl0DqfpU5rfa40fcNS5Pp8+ptFg==
-X-Google-Smtp-Source: ABdhPJy1t1eMFdnGEBlFY+4EYTRyRoO33zd6518w2esTRsO8Zu+7PcBsk2AtcTehXNF+rtnXj5xtoeqCtw3q3Bd0TuU=
-X-Received: by 2002:a2e:a406:: with SMTP id p6mr1947929ljn.258.1632859458487;
- Tue, 28 Sep 2021 13:04:18 -0700 (PDT)
+        id S242627AbhI1UE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 16:04:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36626 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242534AbhI1UEZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 16:04:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 74A6D610E6;
+        Tue, 28 Sep 2021 20:02:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632859365;
+        bh=JUbEawgwP2c3g8ePRDbJDUMS5ioHTfLNboJDo0lgTFU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Ux5mxk8+u9s/JuBAUe8lOapvH73pC8IDGMANlVx6y8oPhvgbvBvHWer4TncIe4O5P
+         zRAc9E+j11GMc534Us0lyChK0krofQdH61wQYT+tlB96ajEswJlW5LiB//1WTO2L5f
+         OMdrtwjp0duaQIPR+qZIqgAi6Qa8l2np6wXwolZtpIwLuqrEayWPXVgfeSukyRPcND
+         nY0jFdRZ4a8XxMmYjRaDR7p3FjeSk8z6pkePYifJt/My7UG/ldZJhgQVzS3VbSERG8
+         OBVMvKrRhltAQVgX/vRxXj76KXsBAURq7425SEWqtcbmF2tEpoF58LKK2rfiAYS5sI
+         9KKrJqsNYsFsw==
+Date:   Tue, 28 Sep 2021 15:06:47 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][net-next] netfilter: ebtables: use array_size() helper in
+ copy_{from,to}_user()
+Message-ID: <20210928200647.GA266402@embeddedor>
 MIME-Version: 1.0
-References: <20210723231957.1113800-1-bcf@google.com> <CAK8P3a1aGA+xqpUPOfGVtt3ch8bvDd75OP=xphN_FrUiuyuX+w@mail.gmail.com>
- <CANH7hM7_brYnVu_x7=+vY34SGQNbc7GUGQmAqpYwXGgVP0RH6Q@mail.gmail.com>
- <20210927162128.4686b57d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANH7hM4Y2gt9PW_1oZbMQfvT6Bih9U-Ckt7d-w4fKkLp2R-rKA@mail.gmail.com> <CAK8P3a1P9ZGBCub2s62OjrUa1Hwk66zHHESEj06MPY8qwjK7Ag@mail.gmail.com>
-In-Reply-To: <CAK8P3a1P9ZGBCub2s62OjrUa1Hwk66zHHESEj06MPY8qwjK7Ag@mail.gmail.com>
-From:   Bailey Forrest <bcf@google.com>
-Date:   Tue, 28 Sep 2021 13:04:07 -0700
-Message-ID: <CANH7hM65PdbPfk44Dp0UG=A5sambfnHGsJsW+Mnr1n4J5nc96A@mail.gmail.com>
-Subject: Re: [PATCH net] gve: DQO: Suppress unused var warnings
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 7:15 AM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> On Tue, Sep 28, 2021 at 2:00 AM Bailey Forrest <bcf@google.com> wrote:
-> > On Mon, Sep 27, 2021 at 4:21 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Mon, 27 Sep 2021 13:21:30 -0700 Bailey Forrest wrote:
-> > >
-> > > Looks like fixing this on the wrong end, dma_unmap_len_set()
-> > > and friends should always evaluate their arguments.
-> >
-> > That makes sense.
-> >
-> > Arnd, if you want to fix this inside of the dma_* macros, the
-> > following diff resolves the errors reported for this driver:
->
-> > diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> > index dca2b1355bb1..f51eee0f678e 100644
-> > --- a/include/linux/dma-mapping.h
-> > +++ b/include/linux/dma-mapping.h
-> > @@ -590,10 +590,21 @@ static inline int dma_mmap_wc(struct device *dev,
-> >  #else
-> >  #define DEFINE_DMA_UNMAP_ADDR(ADDR_NAME)
-> >  #define DEFINE_DMA_UNMAP_LEN(LEN_NAME)
-> > -#define dma_unmap_addr(PTR, ADDR_NAME)           (0)
-> > -#define dma_unmap_addr_set(PTR, ADDR_NAME, VAL)  do { } while (0)
-> > -#define dma_unmap_len(PTR, LEN_NAME)             (0)
-> > -#define dma_unmap_len_set(PTR, LEN_NAME, VAL)    do { } while (0)
-> > +
-> > +#define dma_unmap_addr(PTR, ADDR_NAME) ({ (void)PTR; 0; })
-> > +
-> > +#define dma_unmap_addr_set(PTR, ADDR_NAME, VAL) do { \
->
-> Unfortunately, this breaks every other driver using these macros, as the
-> point of them is that the unmap-address is not actually defined
-> and not taking up space in data structure. Referencing it by name
-> is a compile-time bug.
+Use array_size() helper instead of the open-coded version in
+copy_{from,to}_user().  These sorts of multiplication factors
+need to be wrapped in array_size().
 
-My patch works with a small modification:
+Link: https://github.com/KSPP/linux/issues/160
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ net/bridge/netfilter/ebtables.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-```
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index dca2b1355bb1..04ca5467562e 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -590,10 +590,10 @@ static inline int dma_mmap_wc(struct device *dev,
- #else
- #define DEFINE_DMA_UNMAP_ADDR(ADDR_NAME)
- #define DEFINE_DMA_UNMAP_LEN(LEN_NAME)
--#define dma_unmap_addr(PTR, ADDR_NAME)           (0)
--#define dma_unmap_addr_set(PTR, ADDR_NAME, VAL)  do { } while (0)
--#define dma_unmap_len(PTR, LEN_NAME)             (0)
--#define dma_unmap_len_set(PTR, LEN_NAME, VAL)    do { } while (0)
-+#define dma_unmap_addr(PTR, ADDR_NAME) ({ (void)PTR; 0; })
-+#define dma_unmap_addr_set(PTR, ADDR_NAME, VAL) do { (void)PTR; } while (0)
-+#define dma_unmap_len(PTR, LEN_NAME) ({ (void)PTR; 0; })
-+#define dma_unmap_len_set(PTR, LEN_NAME, VAL) do { (void)PTR; } while (0)
- #endif
+diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
+index 83d1798dfbb4..32fa05ec4a6d 100644
+--- a/net/bridge/netfilter/ebtables.c
++++ b/net/bridge/netfilter/ebtables.c
+@@ -1071,7 +1071,7 @@ static int do_replace_finish(struct net *net, struct ebt_replace *repl,
+ 	 */
+ 	if (repl->num_counters &&
+ 	   copy_to_user(repl->counters, counterstmp,
+-	   repl->num_counters * sizeof(struct ebt_counter))) {
++	   array_size(repl->num_counters, sizeof(struct ebt_counter)))) {
+ 		/* Silent error, can't fail, new table is already in place */
+ 		net_warn_ratelimited("ebtables: counters copy to user failed while replacing table\n");
+ 	}
+@@ -1399,7 +1399,8 @@ static int do_update_counters(struct net *net, const char *name,
+ 		goto unlock_mutex;
+ 	}
+ 
+-	if (copy_from_user(tmp, counters, num_counters * sizeof(*counters))) {
++	if (copy_from_user(tmp, counters,
++			   array_size(num_counters, sizeof(*counters)))) {
+ 		ret = -EFAULT;
+ 		goto unlock_mutex;
+ 	}
+@@ -1532,7 +1533,7 @@ static int copy_counters_to_user(struct ebt_table *t,
+ 	write_unlock_bh(&t->lock);
+ 
+ 	if (copy_to_user(user, counterstmp,
+-	   nentries * sizeof(struct ebt_counter)))
++	    array_size(nentries, sizeof(struct ebt_counter))))
+ 		ret = -EFAULT;
+ 	vfree(counterstmp);
+ 	return ret;
+-- 
+2.27.0
 
- #endif /* _LINUX_DMA_MAPPING_H */
-```
-
-
-To me, this is still the preferred solution. However, your latest
-patch looked fine to me.
