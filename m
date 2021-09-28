@@ -2,217 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00FE541A442
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 02:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 686BA41A443
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 02:43:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238368AbhI1An3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 20:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238236AbhI1An2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 20:43:28 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD6DC061575;
-        Mon, 27 Sep 2021 17:41:49 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id m70so28058388ybm.5;
-        Mon, 27 Sep 2021 17:41:49 -0700 (PDT)
+        id S238369AbhI1Aoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 20:44:30 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:30339 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238236AbhI1Ao3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 20:44:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kEUbUu/OyN7X0Fpm+BVMV//96K67b3V4xTMb6EH1M1g=;
-        b=hRNukkSHUdnt9Nu98I4S+Jm7/ProyAFkFSCL4/GIPJH6NjSxFgx2nqtedFPIEf4lqB
-         QvYMRvGTGr9nSHTLIaRhhSA1W3ZMXrMZ0awB0Pd0yF7ccg0ImoZNHHZS1arRi31ePCnA
-         DqGyaYjqfUPABY8chUzIJPZ4L4gj2fqdY7qjXl2+oBfDEVAozti+HY9EX5/clwP+WTpR
-         q3aTeHppejOuU8lh7xwG9207rg5Zfd3zqQLLc9Ue+apMRMT5+z4nsQR7br63UwUTley5
-         GanAr0PfB7Kjg92qpQSjkzkhL7JT1Xq4cP53ovI1eTAyLm6YQn78XNj1YHQtuKn4n3VZ
-         WGvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kEUbUu/OyN7X0Fpm+BVMV//96K67b3V4xTMb6EH1M1g=;
-        b=eYAboo74BvtuujGNY+tdN1fJS/80b7YmCztYlCIBW/1YWkjGFrT+efwQZtKyGP6C18
-         J8ZDYLNoYAZosS9GGSpdiR5UDmlcodh+6j9IBpnmG38pb187LBNV9EoaWNgsFl/KExfz
-         V0ZZW9lgXInFc2HK5+3/xfx+pZXICAavhIduiHZyRyiyPAnYMCZs/cc9+s3q6ARFTB/u
-         MZomi7SWOsX9sZintclHqYs69RrgMnJcF6oAuCh0h33W72vSXGk4GaFILIKBzaHTRJrn
-         4/6Agf9Suh/82UQhpcJN60wzAoQiHu2G9n6xbGPY4fWEwffC3iQ7RrVzxXP4AW5+3D7/
-         YTZA==
-X-Gm-Message-State: AOAM532DSHvfqJ6QGXA3bafmdWUDZKuL8W/xeC6O/gVekgS367yYDf32
-        HnK5Dq5PG93mPMHEN43Bi9frHtVUL8gZrz2pjQ4=
-X-Google-Smtp-Source: ABdhPJyd2EApfAg6UHQPV5u+2UStN3+9mbcoUYVA9p00ksStZpwHwIwMpfUyF5bcjmWBqtxri31Kk+JznhSFAsCMmsI=
-X-Received: by 2002:a25:2d4e:: with SMTP id s14mr3192993ybe.2.1632789709098;
- Mon, 27 Sep 2021 17:41:49 -0700 (PDT)
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1632789771; x=1664325771;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=5tv2Jrm2pOn/W9HYgUZaSRmXjgz2T2NfhUyxiIvx8h8=;
+  b=oH9qb5DW+ftKlnDtxYETWpHLXjuucVCDk8HE7yIaThbzpzDYH+tPE/ef
+   v8O+X8M1sbKkyAN9KQ2cw+Xsju7HjxHwrL50OL2PCjmOmW2QWb/VH1eWZ
+   NPGh4lNbXNNpQ2jmD7rA22o23kp49XnWj/PVOKhq7OKXdm6EowL3qb0ZX
+   M=;
+X-IronPort-AV: E=Sophos;i="5.85,328,1624320000"; 
+   d="scan'208";a="140484686"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-5a6d5c37.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 28 Sep 2021 00:42:51 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1d-5a6d5c37.us-east-1.amazon.com (Postfix) with ESMTPS id E87D2C1C20;
+        Tue, 28 Sep 2021 00:42:49 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Tue, 28 Sep 2021 00:42:49 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.137) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Tue, 28 Sep 2021 00:42:46 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Benjamin Herrenschmidt <benh@amazon.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH net] af_unix: Return errno instead of NULL in unix_create1().
+Date:   Tue, 28 Sep 2021 09:42:27 +0900
+Message-ID: <20210928004227.9440-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20210920151112.3770991-1-davemarchevsky@fb.com>
- <20210923205105.zufadghli5772uma@ast-mbp> <35e837fb-ac22-3ea1-4624-2a890f6d0db0@fb.com>
- <CAEf4Bzb+r5Fpu1YzGX01YY6BQb1xnZiMRW3hUF+uft4BsJCPoA@mail.gmail.com>
- <761a02db-ff47-fc2f-b557-eff2b02ec941@fb.com> <61520b6224619_397f208d7@john-XPS-13-9370.notmuch>
-In-Reply-To: <61520b6224619_397f208d7@john-XPS-13-9370.notmuch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 27 Sep 2021 17:41:38 -0700
-Message-ID: <CAEf4BzbxYxnQND9JJ4SfQb4kxxkRtk4S4rR2iqkcz6bJ2jdFqw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf: keep track of prog verification stats
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Dave Marchevsky <davemarchevsky@fb.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.137]
+X-ClientProxiedBy: EX13D19UWC003.ant.amazon.com (10.43.162.184) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 27, 2021 at 11:20 AM John Fastabend
-<john.fastabend@gmail.com> wrote:
->
-> Dave Marchevsky wrote:
-> > On 9/23/21 10:02 PM, Andrii Nakryiko wrote:
-> > > On Thu, Sep 23, 2021 at 6:27 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
-> > >>
-> > >> On 9/23/21 4:51 PM, Alexei Starovoitov wrote:
-> > >>> On Mon, Sep 20, 2021 at 08:11:10AM -0700, Dave Marchevsky wrote:
-> > >>>> The verifier currently logs some useful statistics in
-> > >>>> print_verification_stats. Although the text log is an effective feedback
-> > >>>> tool for an engineer iterating on a single application, it would also be
-> > >>>> useful to enable tracking these stats in a more structured form for
-> > >>>> fleetwide or historical analysis, which this patchset attempts to do.
-> > >>>>
-> > >>>> A concrete motivating usecase which came up in recent weeks:
-> > >>>>
-> > >>>> A team owns a complex BPF program, with various folks extending its
-> > >>>> functionality over the years. An engineer tries to make a relatively
-> > >>>> simple addition but encounters "BPF program is too large. Processed
-> > >>>> 1000001 insn".
-> > >>>>
-> > >>>> Their changes bumped the processed insns from 700k to over the limit and
-> > >>>> there's no obvious way to simplify. They must now consider a large
-> > >>>> refactor in order to incorporate the new feature. What if there was some
-> > >>>> previous change which bumped processed insns from 200k->700k which
-> > >>>> _could_ be modified to stress verifier less? Tracking historical
-> > >>>> verifier stats for each version of the program over the years would
-> > >>>> reduce manual work necessary to find such a change.
-> > >>>>
-> > >>>>
-> > >>>> Although parsing the text log could work for this scenario, a solution
-> > >>>> that's resilient to log format and other verifier changes would be
-> > >>>> preferable.
-> > >>>>
-> > >>>> This patchset adds a bpf_prog_verif_stats struct - containing the same
-> > >>>> data logged by print_verification_stats - which can be retrieved as part
-> > >>>> of bpf_prog_info. Looking for general feedback on approach and a few
-> > >>>> specific areas before fleshing it out further:
-> > >>>>
-> > >>>> * None of my usecases require storing verif_stats for the lifetime of a
-> > >>>>   loaded prog, but adding to bpf_prog_aux felt more correct than trying
-> > >>>>   to pass verif_stats back as part of BPF_PROG_LOAD
-> > >>>> * The verif_stats are probably not generally useful enough to warrant
-> > >>>>   inclusion in fdinfo, but hoping to get confirmation before removing
-> > >>>>   that change in patch 1
-> > >>>> * processed_insn, verification_time, and total_states are immediately
-> > >>>>   useful for me, rest were added for parity with
-> > >>>>      print_verification_stats. Can remove.
-> > >>>> * Perhaps a version field would be useful in verif_stats in case future
-> > >>>>   verifier changes make some current stats meaningless
-> > >>>> * Note: stack_depth stat was intentionally skipped to keep patch 1
-> > >>>>   simple. Will add if approach looks good.
-> > >>>
-> > >>> Sorry for the delay. LPC consumes a lot of mental energy :)
-> > >>>
-> > >>> I see the value of exposing some of the verification stats as prog_info.
-> > >>> Let's look at the list:
-> > >>> struct bpf_prog_verif_stats {
-> > >>>        __u64 verification_time;
-> > >>>        __u32 insn_processed;
-> > >>>        __u32 max_states_per_insn;
-> > >>>        __u32 total_states;
-> > >>>        __u32 peak_states;
-> > >>>        __u32 longest_mark_read_walk;
-> > >>> };
-> > >>> verification_time is non deterministic. It varies with frequency
-> > >>> and run-to-run. I don't see how alerting tools can use it.
-> > >>
-> > >> Makes sense to me, will get rid of it.
-> > >>
-> > >>> insn_processed is indeed the main verification metric.
-> > >>> By now it's well known and understood.
-> > >>>
-> > >>> max_states_per_insn, total_states, etc were the metrics I've studied
-> > >>> carefully with pruning, back tracking and pretty much every significant
-> > >>> change I did or reiviewed in the verifier. They're useful to humans
-> > >>> and developers, but I don't see how alerting tools will use them.
-> > >>>
-> > >>> So it feels to me that insn_processed alone will be enough to address the
-> > >>> monitoring goal.
-> > >>
-> > >> For the concrete usecase in my original message insn_processed would be
-> > >> enough. For the others - I thought there might be value in gathering
-> > >> those "fleetwide" to inform verifier development, e.g.:
-> > >>
-> > >> "Hmm, this team's libbpf program has been regressing total_states over
-> > >> past few {kernel, llvm} rollouts, but they haven't been modifying it.
-> > >> Let's try to get a minimal repro, send to bpf@vger, and contribute to
-> > >> selftests if it is indeed hitting a weird verifier edge case"
-> > >>
-> > >> So for those I'm not expecting them to be useful to alert on or be a
-> > >> number that the average BPF program writer needs to care about.
-> > >>
-> > >> Of course this is hypothetical as I haven't tried to gather such data
-> > >> and look for interesting patterns. But these metrics being useful to
-> > >> you when looking at significant verifier changes is a good sign.
-> > >
-> > > One reason to not add all those fields is to not end up with
-> > > meaningless stats (in the future) in UAPI. One way to work around that
-> > > is to make it "unstable" by providing it through raw_tracepoint as
-> > > internal kernel struct.
-> > >
-> > > Basically, the proposal would be: add new tracepoint for when BPF
-> > > program is verified, either successfully or not. As one of the
-> > > parameters provide stats struct which is internal to BPF verifier and
-> > > is not exposed through UAPI.
-> > >
-> > > Such tracepoint actually would be useful more generally as well, e.g.,
-> > > to monitor which programs are verified in the fleet, what's the rate
-> > > of success/failure (to detect verifier regression), what are the stats
-> > > (verification time actually would be good to have there, again for
-> > > stats and detecting regression), etc, etc.
-> > >
-> > > WDYT?
-> > >
-> >
-> > Seems reasonable to me - and attaching a BPF program to the tracepoint to
-> > grab data is delightfully meta :)
-> >
-> > I'll do a pass on alternate implementation with _just_ tracepoint, no
-> > prog_info or fdinfo, can add minimal or full stats to those later if
-> > necessary.
->
-> We can also use a hook point here to enforce policy on allowing the
-> BPF program to load or not using the stats here. For now basic
-> insn is a good start to allow larger/smaller programs to be loaded,
-> but we might add other info like call bitmask, features, types, etc.
-> If one of the arguments is the bpf_attr struct we can just read
-> lots of useful program info out directly.
->
-> We would need something different from a tracepoint though to let
-> it return a reject|accept code. How about a new hook type that
-> has something similar to sockops that lets us just return an
-> accept or reject code?
->
-> By doing this we can check loader signatures here to be sure the
-> loader is signed or otherwise has correct permissions to be loading
-> whatever type of bpf program is here.
+unix_create1() returns NULL on error, and the callers assume that it never
+fails for reasons other than out of memory.  So, the callers always return
+-ENOMEM when unix_create1() fails.
 
-For signing and generally preventing some BPF programs from loading
-(e.g., if there is some malicious BPF program that takes tons of
-memory to be validated), wouldn't you want to check that before BPF
-verifier spent all those resources on verification? So maybe there
-will be another hook before BPF prog is validated for that? Basically,
-if you don't trust any BPF program unless it is signed, I'd expect you
-check signature before BPF verifier does its heavy job.
+However, it also returns NULL when the number of af_unix sockets exceeds
+twice the limit controlled by sysctl: fs.file-max.  In this case, the
+callers should return -ENFILE like alloc_empty_file().
 
->
-> Thanks,
-> John
+This patch changes unix_create1() to return the correct error value instead
+of NULL on error.
+
+Out of curiosity, the assumption has been wrong since 1999 due to this
+change introduced in 2.2.4 [0].
+
+  diff -u --recursive --new-file v2.2.3/linux/net/unix/af_unix.c linux/net/unix/af_unix.c
+  --- v2.2.3/linux/net/unix/af_unix.c	Tue Jan 19 11:32:53 1999
+  +++ linux/net/unix/af_unix.c	Sun Mar 21 07:22:00 1999
+  @@ -388,6 +413,9 @@
+   {
+   	struct sock *sk;
+
+  +	if (atomic_read(&unix_nr_socks) >= 2*max_files)
+  +		return NULL;
+  +
+   	MOD_INC_USE_COUNT;
+   	sk = sk_alloc(PF_UNIX, GFP_KERNEL, 1);
+   	if (!sk) {
+
+[0]: https://cdn.kernel.org/pub/linux/kernel/v2.2/patch-2.2.4.gz
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+---
+ net/unix/af_unix.c | 49 ++++++++++++++++++++++++++++++----------------
+ 1 file changed, 32 insertions(+), 17 deletions(-)
+
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 92345c9bb60c..f505b89bda6a 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -828,20 +828,25 @@ struct proto unix_stream_proto = {
+ 
+ static struct sock *unix_create1(struct net *net, struct socket *sock, int kern, int type)
+ {
+-	struct sock *sk = NULL;
+ 	struct unix_sock *u;
++	struct sock *sk;
++	int err;
+ 
+ 	atomic_long_inc(&unix_nr_socks);
+-	if (atomic_long_read(&unix_nr_socks) > 2 * get_max_files())
+-		goto out;
++	if (atomic_long_read(&unix_nr_socks) > 2 * get_max_files()) {
++		err = -ENFILE;
++		goto err;
++	}
+ 
+ 	if (type == SOCK_STREAM)
+ 		sk = sk_alloc(net, PF_UNIX, GFP_KERNEL, &unix_stream_proto, kern);
+ 	else /*dgram and  seqpacket */
+ 		sk = sk_alloc(net, PF_UNIX, GFP_KERNEL, &unix_dgram_proto, kern);
+ 
+-	if (!sk)
+-		goto out;
++	if (!sk) {
++		err = -ENOMEM;
++		goto err;
++	}
+ 
+ 	sock_init_data(sock, sk);
+ 
+@@ -861,20 +866,23 @@ static struct sock *unix_create1(struct net *net, struct socket *sock, int kern,
+ 	init_waitqueue_func_entry(&u->peer_wake, unix_dgram_peer_wake_relay);
+ 	memset(&u->scm_stat, 0, sizeof(struct scm_stat));
+ 	unix_insert_socket(unix_sockets_unbound(sk), sk);
+-out:
+-	if (sk == NULL)
+-		atomic_long_dec(&unix_nr_socks);
+-	else {
+-		local_bh_disable();
+-		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
+-		local_bh_enable();
+-	}
++
++	local_bh_disable();
++	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
++	local_bh_enable();
++
+ 	return sk;
++
++err:
++	atomic_long_dec(&unix_nr_socks);
++	return ERR_PTR(err);
+ }
+ 
+ static int unix_create(struct net *net, struct socket *sock, int protocol,
+ 		       int kern)
+ {
++	struct sock *sk;
++
+ 	if (protocol && protocol != PF_UNIX)
+ 		return -EPROTONOSUPPORT;
+ 
+@@ -901,7 +909,11 @@ static int unix_create(struct net *net, struct socket *sock, int protocol,
+ 		return -ESOCKTNOSUPPORT;
+ 	}
+ 
+-	return unix_create1(net, sock, kern, sock->type) ? 0 : -ENOMEM;
++	sk = unix_create1(net, sock, kern, sock->type);
++	if (IS_ERR(sk))
++		return PTR_ERR(sk);
++
++	return 0;
+ }
+ 
+ static int unix_release(struct socket *sock)
+@@ -1314,12 +1326,15 @@ static int unix_stream_connect(struct socket *sock, struct sockaddr *uaddr,
+ 	   we will have to recheck all again in any case.
+ 	 */
+ 
+-	err = -ENOMEM;
+-
+ 	/* create new sock for complete connection */
+ 	newsk = unix_create1(sock_net(sk), NULL, 0, sock->type);
+-	if (newsk == NULL)
++	if (IS_ERR(newsk)) {
++		err = PTR_ERR(newsk);
++		newsk = NULL;
+ 		goto out;
++	}
++
++	err = -ENOMEM;
+ 
+ 	/* Allocate skb for sending to listening sock */
+ 	skb = sock_wmalloc(newsk, 1, 0, GFP_KERNEL);
+-- 
+2.30.2
+
