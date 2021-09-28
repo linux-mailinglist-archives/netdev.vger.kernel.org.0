@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D11D41B9DE
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 00:06:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8734F41B9E7
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 00:08:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242986AbhI1WIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 18:08:20 -0400
-Received: from clt-mbsout-01.mbs.boeing.net ([130.76.144.162]:34870 "EHLO
-        clt-mbsout-01.mbs.boeing.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242130AbhI1WIT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 18:08:19 -0400
-X-Greylist: delayed 349 seconds by postgrey-1.27 at vger.kernel.org; Tue, 28 Sep 2021 18:08:19 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by clt-mbsout-01.mbs.boeing.net (8.15.2/8.15.2/DOWNSTREAM_MBSOUT) with SMTP id 18SM0kue003445;
-        Tue, 28 Sep 2021 18:00:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=boeing.com;
-        s=boeing-s1912; t=1632866447;
-        bh=jGnTl+RmFuKPzvN1USmOwFn4l1rm+WXsMhWL0lQit4Y=;
-        h=From:To:Subject:Date:From;
-        b=dRsRQDThoUo1ohH5rWKGsrT0x2CcNAr6At8dm+vSjNp+1AC+ho/OEiyiWTHlunObr
-         QD1T3iVSNqqj17ghT93ddRnB7v0wcdPAM/dXp/BCL7sTW6oSt/yCp4iMNYvFwN2Pp6
-         nPndHW7h545wacrGLAvLtPp3Pq0gMj88juwMataSFaTonvyQ8ncu7Mx+cZnhDR7URj
-         PLCYA6pfGDquS/922R/LDfuh3JgktChBZ/aXwAkYdnu98EBWtuLVtf9sfF36+5wPel
-         TXnTmeVjOjSEGhnSgdK4ZzJqSKShEe6T7k5H0uVVVt0xKujatzTobjlQYirIYCsvRN
-         JUtIHq5MIDOHg==
-Received: from XCH16-07-09.nos.boeing.com (xch16-07-09.nos.boeing.com [144.115.66.111])
-        by clt-mbsout-01.mbs.boeing.net (8.15.2/8.15.2/8.15.2/UPSTREAM_MBSOUT) with ESMTPS id 18SM0acE003271
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 18:00:36 -0400
-Received: from XCH16-07-10.nos.boeing.com (144.115.66.112) by
- XCH16-07-09.nos.boeing.com (144.115.66.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.14; Tue, 28 Sep 2021 15:00:35 -0700
-Received: from XCH16-07-10.nos.boeing.com ([fe80::1522:f068:5766:53b5]) by
- XCH16-07-10.nos.boeing.com ([fe80::1522:f068:5766:53b5%2]) with mapi id
- 15.01.2308.014; Tue, 28 Sep 2021 15:00:35 -0700
-From:   "Templin (US), Fred L" <Fred.L.Templin@boeing.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Turn on net_dbg_ratelimited() diagnostics in linux-5.10.67 ?
-Thread-Topic: Turn on net_dbg_ratelimited() diagnostics in linux-5.10.67 ?
-Thread-Index: Ade0s4nZxuhCLpn+RL6xay6lH9EkLg==
-Date:   Tue, 28 Sep 2021 22:00:35 +0000
-Message-ID: <fa97ab66e9154a28b796436f21990c31@boeing.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [137.137.12.6]
-x-tm-snts-smtp: 1C786E1956D05F352960E5FA206845158C52AB7A1CA2A66C3B24CECF7A1D22692000:8
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S243049AbhI1WJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 18:09:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60702 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243003AbhI1WJf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 18:09:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6A62461357;
+        Tue, 28 Sep 2021 22:07:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632866875;
+        bh=bGJdsJGfySTNgdkIiC4cs97RHA14UA54yMOqudVCdzQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=BfdMLxcZc/xF1ud8tjWt4pwYBFEUtGCdKFqC+ambXqxza0WlPMs8FLuehzrvWywB5
+         CApDW9V9enr97KLolM9lgINnwcU6dunz1WGjYOV12l6S9XvCcRGu9ZLtCR0vTs2phJ
+         CxeFNewaP9SSFXbvKP2IwD9Ng7VXytZbNfBE3wa/dVIc/u68cP5Dc5H84w+DU3DfUH
+         Br2afPXEUFX7vAC1WcFsiNo8BCXLXvP1qCQtpL//MYzpOCl6sxf7VxiDKZX16LYqpw
+         spDlb59mKyIrxRYJALn31IvpPFSSgHUT1MkzQKO7sGxlo1GTJeMc42/6CRxrdNKjWh
+         pmrZBemVZASHg==
+Date:   Tue, 28 Sep 2021 17:11:57 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][net-next] net/mlx5: Use struct_size() helper in kvzalloc()
+Message-ID: <20210928221157.GA278221@embeddedor>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, it has been a while since I have delved into linux kernel networking in=
-ternals,
-and it appears that diagnostics-generation code has been significantly clea=
-ned up
-over the years since I last checked. I am working in linux-5.10.67, and I s=
-ee that
-network diagnostics are now generated by calls to "net_dbg_ratelimited()" b=
-ut
-that these seem to be disabled by default.
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worse scenario, could lead to heap overflows.
 
-How can I turn on net_dbg_ratelimited() diagnostics, and once enabled where
-do I go to see the diagnostics output?
+Link: https://github.com/KSPP/linux/issues/160
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Thanks - Fred
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
+index 18e5aec14641..f542a36be62c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
+@@ -497,8 +497,7 @@ static struct mlx5_fc_bulk *mlx5_fc_bulk_create(struct mlx5_core_dev *dev)
+ 	alloc_bitmask = MLX5_CAP_GEN(dev, flow_counter_bulk_alloc);
+ 	bulk_len = alloc_bitmask > 0 ? MLX5_FC_BULK_NUM_FCS(alloc_bitmask) : 1;
+ 
+-	bulk = kvzalloc(sizeof(*bulk) + bulk_len * sizeof(struct mlx5_fc),
+-			GFP_KERNEL);
++	bulk = kvzalloc(struct_size(bulk, fcs, bulk_len), GFP_KERNEL);
+ 	if (!bulk)
+ 		goto err_alloc_bulk;
+ 
+-- 
+2.27.0
+
