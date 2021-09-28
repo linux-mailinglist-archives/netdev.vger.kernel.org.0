@@ -2,96 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0D641AAF1
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 10:47:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9229941AB40
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 10:54:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239691AbhI1Itg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 04:49:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235918AbhI1Itf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 04:49:35 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276B8C061575
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 01:47:56 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id b20so89832606lfv.3
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 01:47:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=uJKoh2QybjdwEcBDFQWT745Mc7o3vbDoM1cNTlXAm8Y=;
-        b=eR1cmiyIiIapnh5XoFT/9vz3CdnXWcnVKIQLM0O6lBS2TkrAklYuIFWf4L39n5/Trf
-         69+Hg8oHO+fYu5FgxEYFf2RliqfYIuDslAZ73jfzu1++8VdBcLQNlmn4vR3ZijGXDH/M
-         bbGJlH3chxZDT2tm9pH/EklWsCCeKVzmt6RZU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=uJKoh2QybjdwEcBDFQWT745Mc7o3vbDoM1cNTlXAm8Y=;
-        b=3EwAU9r8Ix3tAfwUrZ4kKEB3WiSQPmDxDfnZ0jwoxXDLXJYiEMHRC4DvcLw+wFDqq8
-         ABjCkcf+uOHbgB84XxueKvrmqFKcnoFG7TfSM5Wp6X9lvc1VzPOSSt6z7guez2lUZkb1
-         Fn4CsSYQl0EfxqCuRir8KYdkTjFtTKOWQOsrLOxw70Ao6Bamuykymuld5u6nUJXX6mCU
-         R7Jj/IOisphfWTp0u5C0Zj9uI38m0dWxKCPV4l2Flcu8MZRZxYv/93tYOd8fa8Kii88Y
-         J3q1FKZ4SBVvpFaHWZ0RV79unNDqKUTjxo0zlpReeDjiGpi3XAbMgWT1eFZpDfdop0M8
-         h4hg==
-X-Gm-Message-State: AOAM531aPnNsnGBRBPUPdBZWJd5HNp9SdPzbRuq+bme4s5M9VnoKxFNU
-        Mj4q79EIEs4ALXdZn0sS7pYypPqyjj6APOMrIKOwpg==
-X-Google-Smtp-Source: ABdhPJzhGJtuezcFyjvFMOcWVc19yWqrGUn56e9swBelpJT9HRmsVePaLJPQcJpECOfRBTsRuL+qQ8g4YPcYG4MJDH8=
-X-Received: by 2002:ac2:5b10:: with SMTP id v16mr4277234lfn.331.1632818874513;
- Tue, 28 Sep 2021 01:47:54 -0700 (PDT)
+        id S239710AbhI1I4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 04:56:01 -0400
+Received: from mx22.baidu.com ([220.181.50.185]:34848 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235918AbhI1I4A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 04:56:00 -0400
+Received: from BC-Mail-Ex15.internal.baidu.com (unknown [172.31.51.55])
+        by Forcepoint Email with ESMTPS id E802520A90A62FF4BC50;
+        Tue, 28 Sep 2021 16:54:16 +0800 (CST)
+Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
+ BC-Mail-Ex15.internal.baidu.com (172.31.51.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2242.12; Tue, 28 Sep 2021 16:54:16 +0800
+Received: from localhost (172.31.63.8) by BJHW-MAIL-EX27.internal.baidu.com
+ (10.127.64.42) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 28
+ Sep 2021 16:54:16 +0800
+Date:   Tue, 28 Sep 2021 16:54:14 +0800
+From:   Cai Huoqing <caihuoqing@baidu.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <caihuoqing@baidu.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: [PATCH net] net: mdio: mscc-miim: Fix the mdio controller
+Message-ID: <20210928085414.GA1723@LAPTOP-UKSR4ENP.internal.baidu.com>
+References: <20210928071720.2084666-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-References: <87o88l3oc4.fsf@toke.dk> <CACAyw99+KvsJGeqNE09VWHrZk9wKbQTg3h1h2LRmJADD5En2nQ@mail.gmail.com>
- <87tuibzbv2.fsf@toke.dk> <CACAyw9_N2Jh651hXL=P=cFM7O-n7Z0NXWy_D9j0ztVpEm+OgNA@mail.gmail.com>
- <87tui9ydb6.fsf@toke.dk>
-In-Reply-To: <87tui9ydb6.fsf@toke.dk>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Tue, 28 Sep 2021 09:47:43 +0100
-Message-ID: <CACAyw9_grv4_c4gDntK7jT3hfBM+O0qSJZ7xFpaknd58e1PeQQ@mail.gmail.com>
-Subject: Re: Redux: Backwards compatibility for XDP multi-buff
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Lorenzo Bianconi <lbianconi@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210928071720.2084666-1-horatiu.vultur@microchip.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Originating-IP: [172.31.63.8]
+X-ClientProxiedBy: BC-Mail-Ex24.internal.baidu.com (172.31.51.18) To
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Sept 2021 at 20:38, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
-> >
-> > Porting is only easy if we are guaranteed that the first PAGE_SIZE
-> > bytes (or whatever the current limit is) are available via ->data
-> > without trickery. Otherwise we have to convert all direct packet
-> > access to the new API, whatever that ends up being. It seemed to me
-> > like you were saying there is no such guarantee, and it could be
-> > driver dependent, which is the worst possible outcome imo. This is the
-> > status quo for TC classifiers, which is a great source of hard to
-> > diagnose bugs.
->
-> Well, for the changes we're proposing now it will certainly be the case
-> that the first PAGE_SIZE will always be present. But once we have the
-> capability, I would expect people would want to do more with it, so we
-> can't really guarantee this in the future. We could require that any
-> other use be opt-in at the driver level, I suppose, but not sure if that
-> would be enough?
+On 28 9月 21 09:17:20, Horatiu Vultur wrote:
+Hi Horatiu,
 
-I'm not sure what you mean by "opt-in at driver level"? Make smaller
-initial fragments a feature on the driver? We shouldn't let drivers
-dictate the semantics of a program type, it defeats the purpose of the
-context abstraction. We're using XDP precisely because we don't want
-to deal with vendor specific network stack bypass, etc. I would prefer
-not specifying the first fragment size over the driver knob,
-unfortunately it invalidates your assumption that porting is going to
-be trivial.
+Thank for your feedback.
 
-Lorenz
+I'm sorry for this commit, my mistake.
 
---=20
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+After I have checked my recent submission history
 
-www.cloudflare.com
+the commit-
+commit fa14d03e014a130839f9dc1b97ea61fe598d873d
+drivers/net/mdio/mdio-ipq4019.c 225 line
+
+has the same issue, an optional phy-regs
+Are you willing to fix it at the same time:)
+
+Many thanks.
+
+> According to the documentation the second resource is optional. But the
+> blamed commit ignores that and if the resource is not there it just
+> fails.
+> 
+> This patch reverts that to still allow the second resource to be
+> optional because other SoC have the some MDIO controller and doesn't
+> need to second resource.
+> 
+> Fixes: 672a1c394950 ("net: mdio: mscc-miim: Make use of the helper function devm_platform_ioremap_resource()")
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
+>  drivers/net/mdio/mdio-mscc-miim.c | 15 ++++++++++-----
+>  1 file changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
+> index 1ee592d3eae4..17f98f609ec8 100644
+> --- a/drivers/net/mdio/mdio-mscc-miim.c
+> +++ b/drivers/net/mdio/mdio-mscc-miim.c
+> @@ -134,8 +134,9 @@ static int mscc_miim_reset(struct mii_bus *bus)
+>  
+>  static int mscc_miim_probe(struct platform_device *pdev)
+>  {
+> -	struct mii_bus *bus;
+>  	struct mscc_miim_dev *dev;
+> +	struct resource *res;
+> +	struct mii_bus *bus;
+>  	int ret;
+>  
+>  	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*dev));
+> @@ -156,10 +157,14 @@ static int mscc_miim_probe(struct platform_device *pdev)
+>  		return PTR_ERR(dev->regs);
+>  	}
+>  
+> -	dev->phy_regs = devm_platform_ioremap_resource(pdev, 1);
+> -	if (IS_ERR(dev->phy_regs)) {
+> -		dev_err(&pdev->dev, "Unable to map internal phy registers\n");
+> -		return PTR_ERR(dev->phy_regs);
+> +	/* This resource is optional */
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> +	if (res) {
+> +		dev->phy_regs = devm_ioremap_resource(&pdev->dev, res);
+> +		if (IS_ERR(dev->phy_regs)) {
+> +			dev_err(&pdev->dev, "Unable to map internal phy registers\n");
+> +			return PTR_ERR(dev->phy_regs);
+> +		}
+>  	}
+>  
+>  	ret = of_mdiobus_register(bus, pdev->dev.of_node);
+> -- 
+> 2.33.0
+> 
