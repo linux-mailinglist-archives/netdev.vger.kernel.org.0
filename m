@@ -2,110 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4111441B518
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 19:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B5F041B558
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 19:43:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242062AbhI1R0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 13:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242055AbhI1R0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 13:26:10 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE43C061745
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 10:24:30 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id d12-20020a05683025cc00b0054d8486c6b8so7848618otu.0
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 10:24:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Tz7rXxaL4F/0f9c2pv27juc+BGdU7ScDq2tqCmIv38Y=;
-        b=tR2pRCj/qKxjNExZrPW1JMusgHTkF217aDaxwmJWEm2fFtDA/r7cVLoE6t7EzHMG+j
-         4cnF8eefX32CXwbIWS6Fb2aNitjEQgYmhl/kiZWdzTtTEgr5BzM5bDrNr0xGoQcnHfo4
-         ukAyh1JNMGUrNsZ4ZRwG+Cz3NZM+zUpCggoPt4Asg9JC7DVN8QeAGxfMPgjNvvfvWI+o
-         VTDg52u12ACCsADmcqS7lLTm4+uCVoHSAG1DP1EAuiZkXe6vAFC8vMFuc33DT81Th2U9
-         zWszlzIR4HpkbUqmWejkpNV+2ZUU010wD19zv6P/NL6yj08YpU3BBQ76/wRQfklSWNK4
-         xWRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Tz7rXxaL4F/0f9c2pv27juc+BGdU7ScDq2tqCmIv38Y=;
-        b=5c5ZwccZQP4/c+VmHMOFecNpMLucXzDj5X3r+9iXqFV59bCd1nejtVd+5Id+0RmuEu
-         iDIb6/ATLE5S+TnlJkfTlwzYRA8a8ZbiMATP8D2Lszeawjbuc5stqgaIsJDMFZmJ+RKg
-         j08o29VF9BpdmH9aulxdkROKZU/U1QOCqrfcC6oFpApoYAosCqZ5cQZjMCg9PxJYXebN
-         BQRP4KvmE1pGzhhSM3RsGQhRYC6TgcJH1rG0nFu6Drv5gwNEKTuyDn2jGSc8fCHAb/bw
-         GPkRNdOYGkh/ItenUJeahCjY4VauGSZoj6RNXK2Q0ojtt5vTljg6/HZ1dJTh5AWLjVX5
-         Hg9Q==
-X-Gm-Message-State: AOAM530ib4AnLLKPpIAODfCZAGcmCTSLxBJU70Q0yJaPCNZBZ6xHZW29
-        rUTEAXmb5Lt8o+QBLQYmsF6W4w==
-X-Google-Smtp-Source: ABdhPJwIoTF2vk7NvGDYXmuN/1D5SS3NUp6rSCUQCZ5HX/Jvkr7HMFjXoFn7PWmdaYmAJBezNd8FNg==
-X-Received: by 2002:a05:6830:1d43:: with SMTP id p3mr5968746oth.80.1632849869862;
-        Tue, 28 Sep 2021 10:24:29 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id z1sm5225337ooj.25.2021.09.28.10.24.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Sep 2021 10:24:29 -0700 (PDT)
-Date:   Tue, 28 Sep 2021 12:24:27 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: qrtr: combine nameservice into main module
-Message-ID: <YVNPy+IAtLiKI19Q@builder.lan>
-References: <20210928171156.6353-1-luca@z3ntu.xyz>
+        id S242044AbhI1Rph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 13:45:37 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:10118 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S241438AbhI1Rpg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 13:45:36 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18SHQdZL008783;
+        Tue, 28 Sep 2021 10:43:53 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=vbkgzhZN0sAVFDDsp58RBo+1kkGXqFov6oAcUQccd8g=;
+ b=JaPeSrlzux4c9TKH0CAFEP617wFZArOiueVm8/rfPZ4hGw9NORjn2g8iq8oPP1NJXLs8
+ V862W5xHdkfnUcIfyNDUTm4EdZ52Lp2wYw6mN3l8M+oajtrdEFl/oUFxC1hzMYNeHYZN
+ jORNklXyAGS1khCMLghhwL70eZJniUPYaPDVxmJtnUYGvTSTkIjHDqgte0zA62qtfSq0
+ tZgNYnO5XTjfPljah5DamkrYygQZajwOEyk1RRz+HOHFL+bwEqI7IvvNuAuxICAHebdi
+ 4SoCR0iYs7i6jw2DRuTP60Y5NobZz9KjLY5gh58GRgtyK9WmrjD+mCq+KHP4cB/qsI73 yw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3bc7eyg2ep-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 28 Sep 2021 10:43:53 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 28 Sep
+ 2021 10:43:52 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 28 Sep 2021 10:43:51 -0700
+Received: from hyd1358.marvell.com (unknown [10.29.37.11])
+        by maili.marvell.com (Postfix) with ESMTP id D2DBE3F707E;
+        Tue, 28 Sep 2021 10:43:48 -0700 (PDT)
+From:   Subbaraya Sundeep <sbhatta@marvell.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <hkelam@marvell.com>, <gakula@marvell.com>,
+        <naveenm@marvell.com>, <rsaladi2@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [net-next PATCH 0/2] Add PTP support for VFs
+Date:   Tue, 28 Sep 2021 23:13:44 +0530
+Message-ID: <1632851026-5415-1-git-send-email-sbhatta@marvell.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210928171156.6353-1-luca@z3ntu.xyz>
+Content-Type: text/plain
+X-Proofpoint-GUID: k4KrG0HPESqUAh2p4bVz0ArCVHOcLt29
+X-Proofpoint-ORIG-GUID: k4KrG0HPESqUAh2p4bVz0ArCVHOcLt29
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-28_05,2021-09-28_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 28 Sep 12:11 CDT 2021, Luca Weiss wrote:
+PTP is a shared hardware block which can prepend
+RX timestamps to packets before directing packets to
+PFs or VFs and can notify the TX timestamps to PFs or VFs
+via TX completion queue descriptors. Hence adding PTP
+support for VFs is exactly similar to PFs with minimal changes.
+This patchset adds that PTP support for VFs.
 
-> Previously with CONFIG_QRTR=m a separate ns.ko would be built which
-> wasn't done on purpose and should be included in qrtr.ko.
-> 
-> Rename qrtr.c to af_qrtr.c so we can build a qrtr.ko with both af_qrtr.c
-> and ns.c.
-> 
+Patch 1 - When an interface is set in promisc/multicast
+the same setting is not retained when changing mtu or channels.
+This is due to toggling of the interface by driver but not
+calling set_rx_mode in the down-up sequence. Since setting
+an interface to multicast properly is required for ptp this is
+addressed in this patch.
 
-Nice, I don't think we ever intended to end up with "ns.ko" on its own.
+Patch 2 - Changes in VF driver for registering timestamping
+ethtool ops and ndo_ioctl. 
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Thanks,
+Sundeep
 
-Regards,
-Bjorn
 
-> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> ---
->  net/qrtr/Makefile              | 3 ++-
->  net/qrtr/{qrtr.c => af_qrtr.c} | 0
->  2 files changed, 2 insertions(+), 1 deletion(-)
->  rename net/qrtr/{qrtr.c => af_qrtr.c} (100%)
-> 
-> diff --git a/net/qrtr/Makefile b/net/qrtr/Makefile
-> index 1b1411d158a7..8e0605f88a73 100644
-> --- a/net/qrtr/Makefile
-> +++ b/net/qrtr/Makefile
-> @@ -1,5 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0-only
-> -obj-$(CONFIG_QRTR) := qrtr.o ns.o
-> +obj-$(CONFIG_QRTR) += qrtr.o
-> +qrtr-y	:= af_qrtr.o ns.o
->  
->  obj-$(CONFIG_QRTR_SMD) += qrtr-smd.o
->  qrtr-smd-y	:= smd.o
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/af_qrtr.c
-> similarity index 100%
-> rename from net/qrtr/qrtr.c
-> rename to net/qrtr/af_qrtr.c
-> -- 
-> 2.33.0
-> 
+Naveen Mamindlapalli (1):
+  octeontx2-nicvf: Add PTP hardware clock support to NIX VF
+
+Rakesh Babu (1):
+  octeontx2-pf: Enable promisc/allmulti match MCAM entries.
+
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  3 +
+ .../net/ethernet/marvell/octeontx2/nic/Makefile    |  2 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  3 +
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  1 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 84 ++++++++++++----------
+ .../net/ethernet/marvell/octeontx2/nic/otx2_ptp.c  |  5 ++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  6 ++
+ 7 files changed, 66 insertions(+), 38 deletions(-)
+
+-- 
+2.7.4
+
