@@ -2,121 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9242041AD3C
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 12:47:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD1BB41AD42
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 12:47:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240249AbhI1Ksk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 06:48:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55730 "EHLO
+        id S240276AbhI1KtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 06:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234543AbhI1Ksj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 06:48:39 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DBFC061575;
-        Tue, 28 Sep 2021 03:46:59 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id i25so91198178lfg.6;
-        Tue, 28 Sep 2021 03:46:59 -0700 (PDT)
+        with ESMTP id S240236AbhI1KtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 06:49:03 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D58C061740
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 03:47:24 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id ce20-20020a17090aff1400b0019f13f6a749so1150124pjb.4
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 03:47:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=u+2rVp9HeyOpAN4HdDwAIbJ9f2x7tP25BbeWtRbvMFE=;
-        b=G9A/A32stXBxe+cXhMiVnNYfPU/msoSHBgsdeemiQiGdnbInbJQwfcM6Pg2xvC/ktf
-         7yxWddK33mVVpwirj2Kf+aCWDl+76e/icTY+Ve3+81nd3vgIKfB3ih9o+PPIqnheVGUm
-         n7QCidpB6v+0KJNkiWeF8jbzMGpjgXC+XGs0/5OlgYLEym9HvOIcwd5aUI0xiSkSdKQv
-         Lk5eoUxYDkUluJR6w/BPtrwHi0iQPfSEGR4GbKSNCJYGhEOWNPEDqkxfPbUqJwiZ0x+M
-         afpbdSeLiRxZllwYYkIs6DXZ5gnoQr2UObZhlZlekdTyge4eJdj/4QlruzKOTMQ0G/qT
-         nP9g==
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=eZzDSGsAYfkw+wEKsnlQJRlSmK7/bRMQ18wGzqFBD6I=;
+        b=PkWbwF/J9iIJ7sJzsyUiv6w6MalTzywZPPvrvGf0ZOj0U3l/LR/OybE5+6l4Aw31+f
+         V+h7346pBl9GfR+RxMzVnBVMIg+kCdoyg9FrZhYFNod+CcBMK5P0diUf48iEozIl+Jg0
+         gN0BTphzVLor8OGbKCpR4Yqyyw/ffaHFfnooZEbzE4a7JLhmu2thSIJRIGh15U2IzHDG
+         8vOcIyIUjn+luDEEkaIJHCnzAb7PEzl3HEGPzGnIy58rL3MBSo2TCBOTyC6PGYLOjbL2
+         uHYz1BIYniC2uQaef0m2Oxj/mgzpnLjek5pWnDArAmzAXjCM+ge6vWc5KZeOhBd8CFsl
+         emSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=u+2rVp9HeyOpAN4HdDwAIbJ9f2x7tP25BbeWtRbvMFE=;
-        b=087jIG/cna5quZU2xi1VhIjdesUXMxhZm1t3b0UIHc+5mF8ZdoNtGJxouNL+yLDW2p
-         w5JjXRlVtMLAq66WRhviEoAKZNXX44Olvnw1FzXs7AvCYLDe8dXkp60J+1f8Xw5+Ebqr
-         AIxYlE/OnkYF9GCEp7K3vxPuEscFd2icRGWkiqwZsEXWOZy9KAZ6Rd5t70c+Di44LJU4
-         xtV5wJipyVP9hcewYipszdit7XVvFXYBZ0raY4KCw+Kd2eo21TDsgiXfguvH8lCjgzCf
-         7Y4ogDo53YW0cruA6pfrDnNhFffV8jkw2nGRrtwcQd9DvFNVnS+zsgCrEHaH2dC3E+Cb
-         6NlQ==
-X-Gm-Message-State: AOAM530cAgnLrbknoUz68IYrlvrkJd5aJBtMSbyEX0c/qle2D5pXmzob
-        6XHi57IikFGfu3XgCsEMJl0=
-X-Google-Smtp-Source: ABdhPJx3oAOzT7qu1PlKiE0mHTHD9qOJGegBN5ly3NOyz/5T9ETVUTt3ZwSEwTzbb/wSon/uRjuSJQ==
-X-Received: by 2002:ac2:5e83:: with SMTP id b3mr4988178lfq.305.1632826018046;
-        Tue, 28 Sep 2021 03:46:58 -0700 (PDT)
-Received: from [172.28.2.233] ([46.61.204.60])
-        by smtp.gmail.com with ESMTPSA id v9sm1500222lfr.148.2021.09.28.03.46.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Sep 2021 03:46:57 -0700 (PDT)
-Message-ID: <63b18426-c39e-d898-08fb-8bfd05b7be9e@gmail.com>
-Date:   Tue, 28 Sep 2021 13:46:56 +0300
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=eZzDSGsAYfkw+wEKsnlQJRlSmK7/bRMQ18wGzqFBD6I=;
+        b=TzSCRKvMuN/IuM7PjS987czhGZaKdzlkvvvIRwr/iIqXtIBQlyet487bMW7OooMvOv
+         mHQDGp9W5G6gFytGcT32ZsJRz22n2s8JtvnTvW4U71seumSCkoa6w53Vn3KZO70rflRj
+         RyLZSi9qRIanRBHddhg4lhwBCouS0Lq1KuFIaeHU/HzxBYUNrZmGZYZ8CiCK5r2gFct3
+         +0t5xsWr7CXE9NiL1Ps2/YfyJCtM1ayM5tVEfUxqkfDCOOaCvS6708MM6yCDrAmStaxU
+         icbROGJA6g+fiinZXw+x1lE+DqAkKKRFGMfqbEJPQ97Z2GXToLE0isk2bmVpOAMhJB/k
+         2Iww==
+X-Gm-Message-State: AOAM532tKTs7qesLf8e9b9tRKuQFtERvTYJvzJAwRuP+Kw0uSEVyNT8s
+        RyzCg43UD6W/Nd1WGGGJadSmdd7RYvDF6sUlcSyjrQ==
+X-Google-Smtp-Source: ABdhPJxhq8lQbGG0E285+/0QLOzqQYLsK/HeRGuS+o3ezMbOvem9+/gUNnt/AUUVlHN1TJiIIv/7y0uivWTDCNEf+aA=
+X-Received: by 2002:a17:902:7d95:b0:13e:1272:884a with SMTP id
+ a21-20020a1709027d9500b0013e1272884amr4491692plm.34.1632826043690; Tue, 28
+ Sep 2021 03:47:23 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH] net: mdiobus: Fix memory leak in __mdiobus_register
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Yanfei Xu <yanfei.xu@windriver.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, p.zabel@pengutronix.de,
-        syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-References: <20210926045313.2267655-1-yanfei.xu@windriver.com>
- <20210928085549.GA6559@kili> <20210928092657.GI2048@kadam>
- <6f90fa0f-6d3b-0ca7-e894-eb971b3b69fa@gmail.com>
- <20210928103908.GJ2048@kadam>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20210928103908.GJ2048@kadam>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From:   Maxim Uvarov <maxim.uvarov@linaro.org>
+Date:   Tue, 28 Sep 2021 13:47:13 +0300
+Message-ID: <CAD8XO3Z3FDFdaJOgoXgjn=_Ly6AQp+wugKNDN01098EVJB4qEw@mail.gmail.com>
+Subject: [RFC] bt control interface out from debugfs
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        =?UTF-8?Q?Fran=C3=A7ois_Ozog?= <francois.ozog@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/28/21 13:39, Dan Carpenter wrote:
-> No, the syzbot link was correct.
-> 
+Hello,
 
-Link is correct, but Yanfei's patch does not fix this bug. Syzbot 
-reported leak, that you described below, not the Yanfei one.
+I think we need to move control for BT 6lowpan connection out of
+kernel debugfs to user space tools. I.e. use hcitool or iproute2 and
+add proper non debug kernel interface for the tools.
+I would like to hear about some suggestions on what is the best interface here.
 
-> You gave me that link again but I think you must be complaining about
-> a different bug which involves mdiobus_free().  Your bug is something
-> like this:
-> 
-> drivers/staging/netlogic/xlr_net.c
->     838          err = mdiobus_register(priv->mii_bus);
->     839          if (err) {
->     840                  mdiobus_free(priv->mii_bus);
-> 
-> This error path will leak.
-> 
->     841                  pr_err("mdio bus registration failed\n");
->     842                  return err;
->     843          }
-> 
-> Your patch is more complicated than necessary...  Just do:
-> 
-> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> index ee8313a4ac71..c380a30a77bc 100644
-> --- a/drivers/net/phy/mdio_bus.c
-> +++ b/drivers/net/phy/mdio_bus.c
-> @@ -538,6 +538,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
->   	bus->dev.groups = NULL;
->   	dev_set_name(&bus->dev, "%s", bus->id);
->   
-> +	bus->state = MDIOBUS_UNREGISTERED;
->   	err = device_register(&bus->dev);
->   	if (err) {
->   		pr_err("mii_bus %s failed to register\n", bus->id);
-> 
-> 
-yep, it's the same as mine, but I thought, that MDIOBUS_UNREGISTERED is 
-not correct name for this state :) Anyway, thank you for suggestion
+Currently commands to setup connection are:
+echo 1 > /sys/kernel/debug/bluetooth/6lowpan_enable
+echo "connect 80:E1:26:1B:95:81 1" > /sys/kernel/debug/bluetooth/6lowpan_control
 
+It looks logical to enable 6lowpan inside hcitool. I.e. extend current
+AF_BLUETOOTH socket protocol:
+dd = socket(AF_BLUETOOTH, SOCK_RAW | SOCK_CLOEXEC, BTPROTO_HCI)
+getsockopt(dd, SOL_HCI, HCI_FILTER, ..
+add some HCI_6LOWPAN_ENABLE call.
+What are your thoughts on that?
 
+Then we have an IP stack on top of the BT layer, and hcitool does not
+intend to setup ip connection. iproute2 might be more suitable for
+this case. Something like:
+ip link connect dev bt0 type bt 80:E1:26:1B:95:81 type local
+(type 1- local, 2- public) .
 
-With regards,
-Pavel Skripkin
+But here is the problem that "ip link connect" is missing in current
+tools. And usually we just set up a local connection and connect from
+the app using a socket.  With IP over BT connection is different  -
+we should be connected before.
+
+If we implement "ip link connect" then it will be possible to reuse it
+for all other pear to pear connections like vpn wireguard.
+
+Any thoughts on an interface here?
+
+Links:  kernel: ./net/bluetooth/6lowpan.c line 1283
+
+Best regards,
+Maxim.
