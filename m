@@ -2,242 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F11641A42B
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 02:22:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5AD741A43A
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 02:29:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238345AbhI1AYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 20:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54770 "EHLO
+        id S238314AbhI1AbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 20:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238338AbhI1AYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 20:24:12 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E70C061575;
-        Mon, 27 Sep 2021 17:22:33 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id a14so12356867qvb.6;
-        Mon, 27 Sep 2021 17:22:33 -0700 (PDT)
+        with ESMTP id S238282AbhI1AbI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 20:31:08 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A995C061575
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 17:29:28 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id om12-20020a17090b3a8c00b0019eff43daf5so1409054pjb.4
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 17:29:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ysNfuXl1HWktNtOSEF03F01sMlIv53eUMXjaR2LS9EI=;
-        b=mfbvn6Qxb6H5yu9MBKFaH1blJHXyyl+qYEPAg/celuM9VfEGhGJ4m/qvS3DwYDqMQL
-         ejS+hVvVEgRFEPlpGr+Q/YTCHgXNfBv++uKaoa0RiyKK/Rzdt5s5kCBgQeAktpeAIO27
-         eWu7kd5fUCRkz4SAzZGR8N/d/gIO+d88L+T/Mhz2iIkopQeSXeHuv+f8v28XrFzBnW2X
-         s2NS4W6D71O+GE90VXGwmsQJKyqk2BKohRXPjnOmqRMsyY0Pv2FPMDJI8QvN/gq38EVj
-         ljn19XZCG794sldFHmsi9hTH8r1hyMm9ylbB3OwRaRhR/6VSGxhMBNqdXc+S+o6r3UKe
-         JxtA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ye2xCLDiZvt0HOOeSzRiznhqE2LqS4D6rouHO3hQeTY=;
+        b=MhF2cn/PYfOH9vPVClZzSdxzyHoq5mjxxya61XGp9qtpgq2kbmxOag/keU3V+lhHi0
+         tlTuyCgzK4+vqthoY3gMy2+PtHGBu+VBWVOhQ2v14olSaUjBgEw/UC/7HQt0VJZxIkLa
+         btKwTsqJV82QaI6WDnNUDlM2tCJPiKz5GbH9H6QXkBM4T4UAKETHPcuabVoMEMk0EdLN
+         tGYGIkXJaXHzalXnYi48Ymsayn1WD7nCo+4I4kO44moJfHVVp0BNBWAgdrasQAAalpZR
+         E8LCtBlHtt0YLjvpwQGsOZm57mgWjF67nCWjFL4ErLR0duTDeNZjmOJA3Lb//08y94oH
+         t0Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ysNfuXl1HWktNtOSEF03F01sMlIv53eUMXjaR2LS9EI=;
-        b=tFNlhNbK2X8H5hSmwGdt/O138rDhw1Am+IlDmCh2ccRW6+pU3Lzr9L1cagkOEZFNe+
-         BiBmdez8jJM7buujx5rJTBpru2F2wgGh47bf9XGCAZxs2wKTyQeb+KzKPzLYxWfO3fcR
-         gOdezfEcFwJlIbNk8SLd6ps4YK76nSjjT3up7qhqDt8qfngPHEFiWaxPwpAhSTN3B6Dg
-         hP9r7A/ajLLdbwmhYlcdkZNPKEwa3nObGtGdr8hr71yz0n1LDbIRAnlPYXFW2VzgIzF/
-         P0An4cw2IdyjHrHIPgBL/HWrM9fZ3wo0EI3pIS6UYMQAk4g9VNSF7oz2IRmQgqtZ+OxC
-         fLfw==
-X-Gm-Message-State: AOAM5305rLFZhaKmwuKPm/18Snx2fyQ6JtRIrjeCc6u0keJBNHTNLiQW
-        cRNAdseEqewDG2/EyAJCVpaYdbpqQtk=
-X-Google-Smtp-Source: ABdhPJym2LnHEd0GiuOeqwhiDRZsx3z9TI7/b3Dza6Owd2Zidjuvp+sEWx+V9mNAlY7NSLLxpA+Iaw==
-X-Received: by 2002:a0c:914f:: with SMTP id q73mr2935533qvq.39.1632788552978;
-        Mon, 27 Sep 2021 17:22:32 -0700 (PDT)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:1ce2:35c5:917e:20d7])
-        by smtp.gmail.com with ESMTPSA id 31sm5672308qtb.85.2021.09.27.17.22.31
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ye2xCLDiZvt0HOOeSzRiznhqE2LqS4D6rouHO3hQeTY=;
+        b=jhE4PuEWrFrx0KvPfitVGhtMssUoS1dTTp2N8DRwmy5e17mQBLO3SJtH28wbOxMVNY
+         0bgdybnz2s2hW/nzAukPepMiyq7ZlAsFNJEuVuq37hqcBbG+XXv1myJvQrpCkJhFtHQY
+         /YY6p9spZEtu//uve7ZNr9u97xKbEMflTFqXyclte9MH2et3JjZD6ZkTrpPa6gkIWOng
+         j6UwI4ks7blFWkSU/uDKuM/GCP1qNlbaPpsbyq749a+RcU/MV5LBuQLn/kl0ScQxWJaq
+         aKWfBnuVIE0tXS8YRU+uaQr9/Rdn+qIpeH6j+whOn986pKwp7PFCjyOeFLjHJUOLReOD
+         fJKg==
+X-Gm-Message-State: AOAM530v7z6xrlBeL/LrwXAwSe7B7AiLVYQHWnVAQViCOX6Xs+qq3ZDv
+        RIjXJBXCtWorZusHkRDBP4Q=
+X-Google-Smtp-Source: ABdhPJxsJZqZSXjOyWukZt5v9gDghp++cIOiXIZCPX4jHdsM/m3RqpNyxCQsCvUl86o4OsjpHe9qkw==
+X-Received: by 2002:a17:902:e54f:b0:13c:a004:bc86 with SMTP id n15-20020a170902e54f00b0013ca004bc86mr2441539plf.78.1632788968305;
+        Mon, 27 Sep 2021 17:29:28 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:3295:1b18:9da8:fc63])
+        by smtp.gmail.com with ESMTPSA id i19sm17983502pfo.101.2021.09.27.17.29.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Sep 2021 17:22:32 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Yucong Sun <sunyucong@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Cong Wang <cong.wang@bytedance.com>
-Subject: [Patch bpf v2 4/4] selftests/bpf: use recv_timeout() instead of retries
-Date:   Mon, 27 Sep 2021 17:22:12 -0700
-Message-Id: <20210928002212.14498-5-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210928002212.14498-1-xiyou.wangcong@gmail.com>
-References: <20210928002212.14498-1-xiyou.wangcong@gmail.com>
+        Mon, 27 Sep 2021 17:29:27 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net] net: udp: annotate data race around udp_sk(sk)->corkflag
+Date:   Mon, 27 Sep 2021 17:29:24 -0700
+Message-Id: <20210928002924.629469-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.33.0.685.g46640cef36-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yucong Sun <sunyucong@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-We use non-blocking sockets in those tests, retrying for
-EAGAIN is ugly because there is no upper bound for the packet
-arrival time, at least in theory. After we fix poll() on
-sockmap sockets, now we can switch to select()+recv().
+up->corkflag field can be read or written without any lock.
+Annotate accesses to avoid possible syzbot/KCSAN reports.
 
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jakub Sitnicki <jakub@cloudflare.com>
-Cc: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Yucong Sun <sunyucong@gmail.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- .../selftests/bpf/prog_tests/sockmap_listen.c | 75 +++++--------------
- 1 file changed, 20 insertions(+), 55 deletions(-)
+ net/ipv4/udp.c | 10 +++++-----
+ net/ipv6/udp.c |  2 +-
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index 5c5979046523..d88bb65b74cc 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -949,7 +949,6 @@ static void redir_to_connected(int family, int sotype, int sock_mapfd,
- 	int err, n;
- 	u32 key;
- 	char b;
--	int retries = 100;
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 8851c9463b4b62c9017565f545250c4ffe22927c..2a7825a5b84254b70b2f06fc04d601719c2e0bc3 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1053,7 +1053,7 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	__be16 dport;
+ 	u8  tos;
+ 	int err, is_udplite = IS_UDPLITE(sk);
+-	int corkreq = up->corkflag || msg->msg_flags&MSG_MORE;
++	int corkreq = READ_ONCE(up->corkflag) || msg->msg_flags&MSG_MORE;
+ 	int (*getfrag)(void *, char *, int, int, int, struct sk_buff *);
+ 	struct sk_buff *skb;
+ 	struct ip_options_data opt_copy;
+@@ -1361,7 +1361,7 @@ int udp_sendpage(struct sock *sk, struct page *page, int offset,
+ 	}
  
- 	zero_verdict_count(verd_mapfd);
+ 	up->len += size;
+-	if (!(up->corkflag || (flags&MSG_MORE)))
++	if (!(READ_ONCE(up->corkflag) || (flags&MSG_MORE)))
+ 		ret = udp_push_pending_frames(sk);
+ 	if (!ret)
+ 		ret = size;
+@@ -2662,9 +2662,9 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+ 	switch (optname) {
+ 	case UDP_CORK:
+ 		if (val != 0) {
+-			up->corkflag = 1;
++			WRITE_ONCE(up->corkflag, 1);
+ 		} else {
+-			up->corkflag = 0;
++			WRITE_ONCE(up->corkflag, 0);
+ 			lock_sock(sk);
+ 			push_pending_frames(sk);
+ 			release_sock(sk);
+@@ -2787,7 +2787,7 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
  
-@@ -1002,17 +1001,11 @@ static void redir_to_connected(int family, int sotype, int sock_mapfd,
- 		goto close_peer1;
- 	if (pass != 1)
- 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
--again:
--	n = read(c0, &b, 1);
--	if (n < 0) {
--		if (errno == EAGAIN && retries--) {
--			usleep(1000);
--			goto again;
--		}
--		FAIL_ERRNO("%s: read", log_prefix);
--	}
-+	n = recv_timeout(c0, &b, 1, 0, IO_TIMEOUT_SEC);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: recv_timeout", log_prefix);
- 	if (n == 0)
--		FAIL("%s: incomplete read", log_prefix);
-+		FAIL("%s: incomplete recv", log_prefix);
+ 	switch (optname) {
+ 	case UDP_CORK:
+-		val = up->corkflag;
++		val = READ_ONCE(up->corkflag);
+ 		break;
  
- close_peer1:
- 	xclose(p1);
-@@ -1571,7 +1564,6 @@ static void unix_redir_to_connected(int sotype, int sock_mapfd,
- 	const char *log_prefix = redir_mode_str(mode);
- 	int c0, c1, p0, p1;
- 	unsigned int pass;
--	int retries = 100;
- 	int err, n;
- 	int sfd[2];
- 	u32 key;
-@@ -1606,17 +1598,11 @@ static void unix_redir_to_connected(int sotype, int sock_mapfd,
- 	if (pass != 1)
- 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
- 
--again:
--	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
--	if (n < 0) {
--		if (errno == EAGAIN && retries--) {
--			usleep(1000);
--			goto again;
--		}
--		FAIL_ERRNO("%s: read", log_prefix);
--	}
-+	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: recv_timeout", log_prefix);
- 	if (n == 0)
--		FAIL("%s: incomplete read", log_prefix);
-+		FAIL("%s: incomplete recv", log_prefix);
- 
- close:
- 	xclose(c1);
-@@ -1748,7 +1734,6 @@ static void udp_redir_to_connected(int family, int sock_mapfd, int verd_mapfd,
- 	const char *log_prefix = redir_mode_str(mode);
- 	int c0, c1, p0, p1;
- 	unsigned int pass;
--	int retries = 100;
- 	int err, n;
- 	u32 key;
- 	char b;
-@@ -1781,17 +1766,11 @@ static void udp_redir_to_connected(int family, int sock_mapfd, int verd_mapfd,
- 	if (pass != 1)
- 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
- 
--again:
--	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
--	if (n < 0) {
--		if (errno == EAGAIN && retries--) {
--			usleep(1000);
--			goto again;
--		}
--		FAIL_ERRNO("%s: read", log_prefix);
--	}
-+	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: recv_timeout", log_prefix);
- 	if (n == 0)
--		FAIL("%s: incomplete read", log_prefix);
-+		FAIL("%s: incomplete recv", log_prefix);
- 
- close_cli1:
- 	xclose(c1);
-@@ -1841,7 +1820,6 @@ static void inet_unix_redir_to_connected(int family, int type, int sock_mapfd,
- 	const char *log_prefix = redir_mode_str(mode);
- 	int c0, c1, p0, p1;
- 	unsigned int pass;
--	int retries = 100;
- 	int err, n;
- 	int sfd[2];
- 	u32 key;
-@@ -1876,17 +1854,11 @@ static void inet_unix_redir_to_connected(int family, int type, int sock_mapfd,
- 	if (pass != 1)
- 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
- 
--again:
--	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
--	if (n < 0) {
--		if (errno == EAGAIN && retries--) {
--			usleep(1000);
--			goto again;
--		}
--		FAIL_ERRNO("%s: read", log_prefix);
--	}
-+	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: recv_timeout", log_prefix);
- 	if (n == 0)
--		FAIL("%s: incomplete read", log_prefix);
-+		FAIL("%s: incomplete recv", log_prefix);
- 
- close_cli1:
- 	xclose(c1);
-@@ -1932,7 +1904,6 @@ static void unix_inet_redir_to_connected(int family, int type, int sock_mapfd,
- 	int sfd[2];
- 	u32 key;
- 	char b;
--	int retries = 100;
- 
- 	zero_verdict_count(verd_mapfd);
- 
-@@ -1963,17 +1934,11 @@ static void unix_inet_redir_to_connected(int family, int type, int sock_mapfd,
- 	if (pass != 1)
- 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
- 
--again:
--	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
--	if (n < 0) {
--		if (errno == EAGAIN && retries--) {
--			usleep(1000);
--			goto again;
--		}
--		FAIL_ERRNO("%s: read", log_prefix);
--	}
-+	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: recv_timeout", log_prefix);
- 	if (n == 0)
--		FAIL("%s: incomplete read", log_prefix);
-+		FAIL("%s: incomplete recv", log_prefix);
- 
- close:
- 	xclose(c1);
+ 	case UDP_ENCAP:
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index ea53847b5b7e8b82f1898fa442327a9ce060085f..e505bb007e9f97995bf64a37702e0dc44a8c4a5c 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1303,7 +1303,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	int addr_len = msg->msg_namelen;
+ 	bool connected = false;
+ 	int ulen = len;
+-	int corkreq = up->corkflag || msg->msg_flags&MSG_MORE;
++	int corkreq = READ_ONCE(up->corkflag) || msg->msg_flags&MSG_MORE;
+ 	int err;
+ 	int is_udplite = IS_UDPLITE(sk);
+ 	int (*getfrag)(void *, char *, int, int, int, struct sk_buff *);
 -- 
-2.30.2
+2.33.0.685.g46640cef36-goog
 
