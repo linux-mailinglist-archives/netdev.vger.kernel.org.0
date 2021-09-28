@@ -2,249 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC9D41A5F9
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 05:15:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A27A41A600
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 05:19:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238855AbhI1DR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 23:17:28 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:22256 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238809AbhI1DRY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 23:17:24 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HJPkh4Q56z8tS3;
-        Tue, 28 Sep 2021 11:14:52 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Tue, 28 Sep 2021 11:15:43 +0800
-Received: from huawei.com (10.175.104.82) by kwepemm600001.china.huawei.com
- (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Tue, 28 Sep
- 2021 11:15:41 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <bfields@fieldses.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <wenbin.zeng@gmail.com>, <jlayton@kernel.org>, <dsahern@gmail.com>,
-        <nicolas.dichtel@6wind.com>, <viro@zeniv.linux.org.uk>,
-        <willy@infradead.org>, <jakub.kicinski@netronome.com>,
-        <tyhicks@canonical.com>, <cong.wang@bytedance.com>,
-        <ast@kernel.org>, <jiang.wang@bytedance.com>,
-        <christian.brauner@ubuntu.com>, <edumazet@google.com>,
-        <Rao.Shoaib@oracle.com>, <kuniyu@amazon.co.jp>,
-        <trond.myklebust@hammerspace.com>, <anna.schumaker@netapp.com>,
-        <chuck.lever@oracle.com>, <neilb@suse.com>, <kolga@netapp.com>,
-        <timo@rothenpieler.org>, <tom@talpey.com>
-CC:     <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net 2/2] auth_gss: Fix deadlock that blocks rpcsec_gss_exit_net when use-gss-proxy==1
-Date:   Tue, 28 Sep 2021 11:14:40 +0800
-Message-ID: <20210928031440.2222303-3-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210928031440.2222303-1-wanghai38@huawei.com>
-References: <20210928031440.2222303-1-wanghai38@huawei.com>
+        id S238810AbhI1DV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 23:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238795AbhI1DV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 23:21:26 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A6CC061575
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 20:19:47 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id w206so28362755oiw.4
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 20:19:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=I1exPvQ4B77S0VOR4eyouzKOwo05Gi3hRLSjBNXUtiE=;
+        b=gVXL9prAHEYvbN+pCDYxs6bluUJ0TQP2nDV1PXXZ48P9M8qBBSliDKZQ9NT6AVRYWz
+         JCB5484DivXA0fKXFTj8XI7p3yTJKwCOOhb/3QHEMot4CULCq7TM1JqYcqTtiY/3TphW
+         YSDOfafikqeVd1yOiYp33sQAcXJ04KtTegUatLWmf0/kfy9qI/wqrTu5nxhdapxMLyUA
+         t+YgHapHfOT7LglJzqlueUl99ouxnFMmonpKrbObDSl6gMcIg+HOj7uaYrCvieoIO0xl
+         J3YCjHVCZg8RbJHdJw/5aw0WAsQAZuUHSjMlMOP7L723qh7jjXggGSwWifSYXCBuqr6M
+         zfBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=I1exPvQ4B77S0VOR4eyouzKOwo05Gi3hRLSjBNXUtiE=;
+        b=Y+3KxOuD0tuktol38W/IfuVK18So6b5/yuAG7PyhUKxnIF7sRvBsCBaFH9hJ5DewjX
+         H2iXwoRI9hglNFFQVvan+pRhKK/h2/oDMXJAZz1k2kjR38KozpRhH4GRW8J3Uw4l8pFr
+         H9wnTykt5RZtLEp9rDngCNY2vB5HsCtEC1n7TCtQed9AUHZ+tT5Fa5w6vXJ5pe2W2LTf
+         Yb4++dZc+pwniO1HwfrfVJcc+ldkyQjodjN4RFzFr3zPmbtM9oB8O7SpuE2vWu5/ckRo
+         H5fUqPnhSAaXpv0UYkmvhNY/6LhydR9rKhHeP0KfeEdxdaNR+IZ77Nsi5R97K+KjSUwC
+         L6zQ==
+X-Gm-Message-State: AOAM531z5uI97cgVs1uGxu59fhnqXg7FbMFlB6TrwKVI3P6WQygC4ewm
+        WXjlzcljJj/oRSK9abHKzNToAY44L48=
+X-Google-Smtp-Source: ABdhPJyd4q87C/XwxpuuYQH1E5eNZWVh4lwNi0fwfTkr/aijTWfcRQ0mfIQpMasSoWxVs2y+7le0ww==
+X-Received: by 2002:a05:6808:1151:: with SMTP id u17mr1928063oiu.78.1632799186975;
+        Mon, 27 Sep 2021 20:19:46 -0700 (PDT)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:d7b8:b949:f514:88b1])
+        by smtp.gmail.com with ESMTPSA id g23sm4567192otn.40.2021.09.27.20.19.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Sep 2021 20:19:46 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     wireguard@lists.zx2c4.com, Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [Patch net] wireguard: preserve skb->mark on ingress side
+Date:   Mon, 27 Sep 2021 20:19:38 -0700
+Message-Id: <20210928031938.17902-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When use-gss-proxy is set to 1, write_gssp() creates a rpc client in
-gssp_rpc_create(), this increases the netns refcount by 2, these
-refcounts are supposed to be released in rpcsec_gss_exit_net(), but it
-will never happen because rpcsec_gss_exit_net() is triggered only when
-the netns refcount gets to 0, specifically:
-    refcount=0 -> cleanup_net() -> ops_exit_list -> rpcsec_gss_exit_net
-It is a deadlock situation here, refcount will never get to 0 unless
-rpcsec_gss_exit_net() is called. So, in this case, the netns refcount
-should not be increased.
+From: Cong Wang <cong.wang@bytedance.com>
 
-In this case, xprt will take a netns refcount which is not supposed
-to be taken. Add a new flag to rpc_create_args called
-RPC_CLNT_CREATE_NO_NET_REF for not increasing the netns refcount.
+On ingress side, wg_reset_packet() resets skb->mark twice: with
+skb_scrub_packet() (xnet==true) and with memset() following it. But
+skb->mark does not have to be cleared at least when staying in the
+same net namespace, and other tunnels preserve it too similarly,
+especially vxlan.
 
-It is safe not to hold the netns refcount, because when cleanup_net(), it
-will hold the gssp_lock and then shut down the rpc client synchronously.
+In our use case, we would like to preserve this skb->mark to
+distinguish which wireguard device the packets are routed from.
 
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Tested-by: Peilin Ye <peilin.ye@bytedance.com>
+Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- include/linux/sunrpc/clnt.h                |  1 +
- include/linux/sunrpc/xprt.h                |  6 ++++--
- net/sunrpc/auth_gss/gss_rpc_upcall.c       |  3 ++-
- net/sunrpc/clnt.c                          |  2 ++
- net/sunrpc/xprt.c                          | 13 +++++++++----
- net/sunrpc/xprtrdma/svc_rdma_backchannel.c |  2 +-
- net/sunrpc/xprtrdma/transport.c            |  2 +-
- net/sunrpc/xprtsock.c                      |  4 +++-
- 8 files changed, 23 insertions(+), 10 deletions(-)
+ drivers/net/wireguard/queueing.h | 9 +++++++--
+ drivers/net/wireguard/receive.c  | 2 +-
+ drivers/net/wireguard/send.c     | 2 +-
+ 3 files changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/sunrpc/clnt.h b/include/linux/sunrpc/clnt.h
-index a4661646adc9..6323518e7b1c 100644
---- a/include/linux/sunrpc/clnt.h
-+++ b/include/linux/sunrpc/clnt.h
-@@ -159,6 +159,7 @@ struct rpc_add_xprt_test {
- #define RPC_CLNT_CREATE_NO_RETRANS_TIMEOUT	(1UL << 9)
- #define RPC_CLNT_CREATE_SOFTERR		(1UL << 10)
- #define RPC_CLNT_CREATE_REUSEPORT	(1UL << 11)
-+#define RPC_CLNT_CREATE_NO_NET_REF	(1UL << 12)
- 
- struct rpc_clnt *rpc_create(struct rpc_create_args *args);
- struct rpc_clnt	*rpc_bind_new_program(struct rpc_clnt *,
-diff --git a/include/linux/sunrpc/xprt.h b/include/linux/sunrpc/xprt.h
-index 955ea4d7af0b..cc518a58b93c 100644
---- a/include/linux/sunrpc/xprt.h
-+++ b/include/linux/sunrpc/xprt.h
-@@ -284,6 +284,7 @@ struct rpc_xprt {
- 	} stat;
- 
- 	struct net		*xprt_net;
-+	bool			xprt_net_refcnt;
- 	const char		*servername;
- 	const char		*address_strings[RPC_DISPLAY_MAX];
- #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
-@@ -317,6 +318,7 @@ static inline int bc_prealloc(struct rpc_rqst *req)
- 
- #define XPRT_CREATE_INFINITE_SLOTS	(1U)
- #define XPRT_CREATE_NO_IDLE_TIMEOUT	(1U << 1)
-+#define XPRT_CREATE_NO_NET_REF		(1U << 2)
- 
- struct xprt_create {
- 	int			ident;		/* XPRT_TRANSPORT identifier */
-@@ -370,8 +372,8 @@ void			xprt_release(struct rpc_task *task);
- struct rpc_xprt *	xprt_get(struct rpc_xprt *xprt);
- void			xprt_put(struct rpc_xprt *xprt);
- struct rpc_xprt *	xprt_alloc(struct net *net, size_t size,
--				unsigned int num_prealloc,
--				unsigned int max_req);
-+				   unsigned int num_prealloc,
-+				   unsigned int max_req, bool xprt_net_refcnt);
- void			xprt_free(struct rpc_xprt *);
- void			xprt_add_backlog(struct rpc_xprt *xprt, struct rpc_task *task);
- bool			xprt_wake_up_backlog(struct rpc_xprt *xprt, struct rpc_rqst *req);
-diff --git a/net/sunrpc/auth_gss/gss_rpc_upcall.c b/net/sunrpc/auth_gss/gss_rpc_upcall.c
-index 61c276bddaf2..8c35805470d5 100644
---- a/net/sunrpc/auth_gss/gss_rpc_upcall.c
-+++ b/net/sunrpc/auth_gss/gss_rpc_upcall.c
-@@ -98,7 +98,8 @@ static int gssp_rpc_create(struct net *net, struct rpc_clnt **_clnt)
- 		 * done without the correct namespace:
- 		 */
- 		.flags		= RPC_CLNT_CREATE_NOPING |
--				  RPC_CLNT_CREATE_NO_IDLE_TIMEOUT
-+				  RPC_CLNT_CREATE_NO_IDLE_TIMEOUT |
-+				  RPC_CLNT_CREATE_NO_NET_REF
- 	};
- 	struct rpc_clnt *clnt;
- 	int result = 0;
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index f056ff931444..672bebae50ca 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -543,6 +543,8 @@ struct rpc_clnt *rpc_create(struct rpc_create_args *args)
- 		xprtargs.flags |= XPRT_CREATE_INFINITE_SLOTS;
- 	if (args->flags & RPC_CLNT_CREATE_NO_IDLE_TIMEOUT)
- 		xprtargs.flags |= XPRT_CREATE_NO_IDLE_TIMEOUT;
-+	if (args->flags & RPC_CLNT_CREATE_NO_NET_REF)
-+		xprtargs.flags |= XPRT_CREATE_NO_NET_REF;
- 	/*
- 	 * If the caller chooses not to specify a hostname, whip
- 	 * up a string representation of the passed-in address.
-diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
-index cfd681700d1a..ffa6de06f21b 100644
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -1794,8 +1794,8 @@ static void xprt_free_id(struct rpc_xprt *xprt)
+diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
+index 4ef2944a68bc..3516c1c59df0 100644
+--- a/drivers/net/wireguard/queueing.h
++++ b/drivers/net/wireguard/queueing.h
+@@ -73,15 +73,20 @@ static inline bool wg_check_packet_protocol(struct sk_buff *skb)
+ 	return real_protocol && skb->protocol == real_protocol;
  }
  
- struct rpc_xprt *xprt_alloc(struct net *net, size_t size,
--		unsigned int num_prealloc,
--		unsigned int max_alloc)
-+			    unsigned int num_prealloc,
-+			    unsigned int max_alloc, bool xprt_net_refcnt)
+-static inline void wg_reset_packet(struct sk_buff *skb, bool encapsulating)
++static inline void wg_reset_packet(struct sk_buff *skb, bool encapsulating,
++				   bool xnet)
  {
- 	struct rpc_xprt *xprt;
- 	struct rpc_rqst *req;
-@@ -1806,6 +1806,7 @@ struct rpc_xprt *xprt_alloc(struct net *net, size_t size,
- 		goto out;
+ 	u8 l4_hash = skb->l4_hash;
+ 	u8 sw_hash = skb->sw_hash;
+ 	u32 hash = skb->hash;
+-	skb_scrub_packet(skb, true);
++	u32 mark;
++
++	skb_scrub_packet(skb, xnet);
++	mark = skb->mark;
+ 	memset(&skb->headers_start, 0,
+ 	       offsetof(struct sk_buff, headers_end) -
+ 		       offsetof(struct sk_buff, headers_start));
++	skb->mark = mark;
+ 	if (encapsulating) {
+ 		skb->l4_hash = l4_hash;
+ 		skb->sw_hash = sw_hash;
+diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
+index 7dc84bcca261..385b2b60cfd9 100644
+--- a/drivers/net/wireguard/receive.c
++++ b/drivers/net/wireguard/receive.c
+@@ -476,7 +476,7 @@ int wg_packet_rx_poll(struct napi_struct *napi, int budget)
+ 		if (unlikely(wg_socket_endpoint_from_skb(&endpoint, skb)))
+ 			goto next;
  
- 	xprt_alloc_id(xprt);
-+	xprt->xprt_net_refcnt = xprt_net_refcnt;
- 	xprt_init(xprt, net);
+-		wg_reset_packet(skb, false);
++		wg_reset_packet(skb, false, !net_eq(dev_net(peer->device->dev), dev_net(skb->dev)));
+ 		wg_packet_consume_data_done(peer, skb, &endpoint);
+ 		free = false;
  
- 	for (i = 0; i < num_prealloc; i++) {
-@@ -1832,7 +1833,8 @@ EXPORT_SYMBOL_GPL(xprt_alloc);
- 
- void xprt_free(struct rpc_xprt *xprt)
- {
--	put_net(xprt->xprt_net);
-+	if (xprt->xprt_net_refcnt)
-+		put_net(xprt->xprt_net);
- 	xprt_free_all_slots(xprt);
- 	xprt_free_id(xprt);
- 	rpc_sysfs_xprt_destroy(xprt);
-@@ -2024,7 +2026,10 @@ static void xprt_init(struct rpc_xprt *xprt, struct net *net)
- 
- 	xprt_init_xid(xprt);
- 
--	xprt->xprt_net = get_net(net);
-+	if (xprt->xprt_net_refcnt)
-+		xprt->xprt_net = get_net(net);
-+	else
-+		xprt->xprt_net = net;
- }
- 
- /**
-diff --git a/net/sunrpc/xprtrdma/svc_rdma_backchannel.c b/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
-index 16897fcb659c..8cd7a38da0f0 100644
---- a/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
-+++ b/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
-@@ -251,7 +251,7 @@ xprt_setup_rdma_bc(struct xprt_create *args)
- 
- 	xprt = xprt_alloc(args->net, sizeof(*new_xprt),
- 			  RPCRDMA_MAX_BC_REQUESTS,
--			  RPCRDMA_MAX_BC_REQUESTS);
-+			  RPCRDMA_MAX_BC_REQUESTS, true);
- 	if (!xprt)
- 		return ERR_PTR(-ENOMEM);
- 
-diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
-index 16e5696314a4..f0f7faa571f6 100644
---- a/net/sunrpc/xprtrdma/transport.c
-+++ b/net/sunrpc/xprtrdma/transport.c
-@@ -323,7 +323,7 @@ xprt_setup_rdma(struct xprt_create *args)
- 		return ERR_PTR(-EIO);
- 
- 	xprt = xprt_alloc(args->net, sizeof(struct rpcrdma_xprt), 0,
--			  xprt_rdma_slot_table_entries);
-+			  xprt_rdma_slot_table_entries, true);
- 	if (!xprt) {
- 		module_put(THIS_MODULE);
- 		return ERR_PTR(-ENOMEM);
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 04f1b78bcbca..b6c15159992a 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -2740,6 +2740,8 @@ static struct rpc_xprt *xs_setup_xprt(struct xprt_create *args,
- {
- 	struct rpc_xprt *xprt;
- 	struct sock_xprt *new;
-+	bool xprt_net_refcnt = args->flags & XPRT_CREATE_NO_NET_REF ?
-+			       false : true;
- 
- 	if (args->addrlen > sizeof(xprt->addr)) {
- 		dprintk("RPC:       xs_setup_xprt: address too large\n");
-@@ -2747,7 +2749,7 @@ static struct rpc_xprt *xs_setup_xprt(struct xprt_create *args,
- 	}
- 
- 	xprt = xprt_alloc(args->net, sizeof(*new), slot_table_size,
--			max_slot_table_size);
-+			  max_slot_table_size, xprt_net_refcnt);
- 	if (xprt == NULL) {
- 		dprintk("RPC:       xs_setup_xprt: couldn't allocate "
- 				"rpc_xprt\n");
+diff --git a/drivers/net/wireguard/send.c b/drivers/net/wireguard/send.c
+index 5368f7c35b4b..c77ef0815c2e 100644
+--- a/drivers/net/wireguard/send.c
++++ b/drivers/net/wireguard/send.c
+@@ -296,7 +296,7 @@ void wg_packet_encrypt_worker(struct work_struct *work)
+ 		skb_list_walk_safe(first, skb, next) {
+ 			if (likely(encrypt_packet(skb,
+ 					PACKET_CB(first)->keypair))) {
+-				wg_reset_packet(skb, true);
++				wg_reset_packet(skb, true, true);
+ 			} else {
+ 				state = PACKET_STATE_DEAD;
+ 				break;
 -- 
-2.17.1
+2.30.2
 
