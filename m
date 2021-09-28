@@ -2,91 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07A1D41A90E
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 08:43:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0527741A91B
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 08:53:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239040AbhI1GpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 02:45:23 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:26135 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238940AbhI1GpW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 02:45:22 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1632811423; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=x8KORn26l3Mm682yXCu4AC83A+TMlzb+xY8KDLZycGs=; b=wAl4vX/Byu9gRtRuBn3usxdAQt92vGFokTjCxJ+C/FI96C6OmcbLyluS9t8lGRnM86xSEE/s
- xPG0+Gul6pB+/uSubwGKPNxfoFrm8zcAOqfF8Rtm0Xl0rGqFGo1KP1pug6G6k7ntRBPDCgYJ
- 4Axc95FsX1Alkx03HJcYhIaVJuA=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 6152b99c8578ef11edda797b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 28 Sep 2021 06:43:40
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4ED82C43617; Tue, 28 Sep 2021 06:43:39 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 71802C4338F;
-        Tue, 28 Sep 2021 06:43:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 71802C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH] mwifiex: avoid null-pointer-subtraction warning
-References: <20210927121656.940304-1-arnd@kernel.org>
-Date:   Tue, 28 Sep 2021 09:43:32 +0300
-In-Reply-To: <20210927121656.940304-1-arnd@kernel.org> (Arnd Bergmann's
-        message of "Mon, 27 Sep 2021 14:16:35 +0200")
-Message-ID: <87wnn1qjxn.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S239007AbhI1GzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 02:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231342AbhI1GzV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 02:55:21 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A07C061604
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 23:53:41 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id i4so88110791lfv.4
+        for <netdev@vger.kernel.org>; Mon, 27 Sep 2021 23:53:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=RkjMpeIuQ6aVWCs6FPMVIVUmVZwq7aWhwwHDvLPHoTA=;
+        b=SLi+XioDaqQmTbd630gCbmYjBtTXmeNWxear1oZVVOrDzXw485dutYdbXHdz3DwhhS
+         DFl7QLLqs0pOVMouWddiTvjlKMSJR/sgvGcxvsFLC7krX2zyYVYmUYTxBDBS9hxCz5JF
+         r+YUpLNU8JsswOVSZTX6BcTwyjFXcMg6pSMFWB/Uq+0vf9vdPDE3qCIwxe5zNzROPQF6
+         LnMZAw7gE2JZldtZ/c6rVoZGIttFZQjlltq1ACdnTaNIPn8mEPX3Mx9OZyz8wvcKZl/J
+         PiZKfIlXAI1dWvhJF0QKLh102kSv1IOlxArEcJAbvBFJObcSRjr2fbe5DHe+/+gz5XJm
+         cC5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=RkjMpeIuQ6aVWCs6FPMVIVUmVZwq7aWhwwHDvLPHoTA=;
+        b=EHPBnCQq+G7zY1gwUkZqzuduSbQGaRf5E5c1F86gwb7A/+eXL8onv9PI2R16ZbTO7h
+         Rojn83tEYPUBIanFJm/wPjwBAm1mJg3q2BUWV4z49aNuGD4Z6iA3KXtJ0fMv5j7uSM43
+         SR49iZEpHwunWE998dm7/j71Ivxgx+deehgq8AL7wDUknQh7axMO2Vmj8a7+nUy9Eauz
+         O1G2QZqtqk3ohR/1jrQ3oq6QaQVX0/mltg/Lam4693+51216AwjfPp57atUaJTCgXSnl
+         1+Hx7kEEUQjmDenPKw8MBdpg/Xi1BKVaeXjWy7W5sTAO6Uqmyflk2zlEu5qJP2BQqYEz
+         vdjg==
+X-Gm-Message-State: AOAM532MF8kTB352dgXikkq8ufJ+/lOpoVwchQgk7khgVowhA2tBfHxE
+        +nMAzBeou2aFKTvNtEjy7JdvR2MuUUY4uXWy02w=
+X-Google-Smtp-Source: ABdhPJxmfUqau1QxG28+nbebSaJEsTs13AS5vBA2TVnI644R0xpV3hOVPmfW5Ecy7q6/4kW/fVOTA+oOSuaVTq5+rPc=
+X-Received: by 2002:a2e:8603:: with SMTP id a3mr4273692lji.142.1632812020147;
+ Mon, 27 Sep 2021 23:53:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+Reply-To: mrsdaniella.kyle@yandex.com
+Sender: mrsrachealgoodluck1@gmail.com
+Received: by 2002:a9a:6c41:0:b0:147:34b8:29a8 with HTTP; Mon, 27 Sep 2021
+ 23:53:39 -0700 (PDT)
+From:   Mrs Daniella Kyle <mrsdaniellakyle6@gmail.com>
+Date:   Mon, 27 Sep 2021 23:53:39 -0700
+X-Google-Sender-Auth: Ue4yDyvuqd_Y9_0fcdE4K2iK1Xo
+Message-ID: <CAAQ9gCf9-W1fRoEy+zp_XLPiDkaMApbvugXGq8TdY2rkCBW-EQ@mail.gmail.com>
+Subject: Re:ATM Visa card compensation, Thanks for your past effort
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@kernel.org> writes:
+Good Day,
 
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> clang complains about some NULL pointer arithmetic in this driver:
->
-> drivers/net/wireless/marvell/mwifiex/sta_tx.c:65:59: error: performing pointer subtraction with a null pointer has undefined behavior [-Werror,-Wnull-pointer-subtraction]
->         pad = ((void *)skb->data - (sizeof(*local_tx_pd) + hroom)-
->                                                                  ^
-> drivers/net/wireless/marvell/mwifiex/uap_txrx.c:478:53: error: performing pointer subtraction with a null pointer has undefined behavior [-Werror,-Wnull-pointer-subtraction]
->         pad = ((void *)skb->data - (sizeof(*txpd) + hroom) - NULL) &
->
-> Rework that expression to do the same thing using a uintptr_t.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+This message may actually come to you as surprises today, To be very
+honest with you, It is a joyful moment for me and my family right now,
+so therefore am using this opportunity to inform you that have
+successfully move to Vietnam where am currently living with my
+business partner who assisted me to complete the transfer, but due to
+the willingness and acceptance you showed during my pain have decided
+to willingly compensated you and show my gratitude to you with these
+sum of $950,000.00 Nine Hundred and fifty Thousand US Dollars).
 
-I'll queue this to v5.15.
+I want you to accept this amount it=E2=80=99s from the bottom of my heart,
+have issued the check and instructed the bank to roll the fund on a
+master card for security reasons, you can use the card to withdraw
+money from any ATM machine worldwide with a maximum of US$10,000 per
+day. My bank account manager said you can receive the card and use it
+anywhere in this global world.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+ Go ahead contact the Global ATM Alliance directly with this below
+information. Email Address:   maastercarddeptme20@yahoo.com
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+The Company Name: ........... ....... Global Alliance Burkina Faso
+Company Address; ...... 01BP 23 Rue Des Grands Moulins.Ouagadougou, Burkina=
+ Faso
+Email Address: ..... [maastercarddeptme20@yahoo.com]
+Name of Manager In charge: Mrs Zoure Gueratou
+
+Presently, I am very busy here in Vietnam because of the investment
+projects which I and my new partner are having at hand, I have given
+instructions to the ATM Visa card office on your behalf to release the
+ATM card which I gave to you as compensation. Therefore feel free and
+get in touch with her and she will send the card and the pin code to
+you in your location in order for you to start withdrawing the
+compensation money without delay.
+
+Let me know as soon you received the card together with the pin code.
+
+Thank you
+Yours Sincerely
+Daniela Angelo Kyle
