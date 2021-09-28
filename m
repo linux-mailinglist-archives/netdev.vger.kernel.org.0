@@ -2,251 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE6FC41B865
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 22:33:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C35DB41B879
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 22:40:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242744AbhI1UfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 16:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
+        id S242777AbhI1Ulr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 16:41:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242016AbhI1UfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 16:35:06 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411E4C06161C;
-        Tue, 28 Sep 2021 13:33:26 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id g14so33078pfm.1;
-        Tue, 28 Sep 2021 13:33:26 -0700 (PDT)
+        with ESMTP id S242768AbhI1Ulp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 16:41:45 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A4EC06161C;
+        Tue, 28 Sep 2021 13:40:05 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id e15so1233225lfr.10;
+        Tue, 28 Sep 2021 13:40:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kySCmJwQTNBaLQ15HXjhSRvmbp4B7/SgTzjLTTphRIE=;
-        b=cG1uRxtTwyHB9fINlklztTvktw3SSGeRLBkU/arxqBqoMgHDRNInbC/2lU4DYZqNth
-         Lzz3WwQw0NUF2VJO+9ObEsx2hRo/3btLK48qaRO6cA9EaLYPS3NQUG+jysP5+cm+98e+
-         kN76/98poKMOYJ3vbDOh11bAqKtwNiqzM0FpD+N0fnBQuyBqStokwRBsI0sjAECBafqd
-         5yBZo8DR//r/aAtEij/hwZHsG6z/bVPS3blRaMW3aTAWglHJSIzbeWOo1mSovkBzhfhE
-         Z/G/THBvAGFmzOWhXuzy3rvUmiZr/Hr02ZB7pDyFrMt5ETDKsQvfOYwGE3RGE5weAL1A
-         k1Bw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=vBSw5+MqBmKzXLxWE7zwAHio1IPQp5qVLONa1LWZ798=;
+        b=aTcMG8hb2vdBQq92D6DPQ3yxHAoBbhSMGNLmY7UhR+6s4wWEd0JV3uUL44nq8599fU
+         niN3ZaUs59+HFd0n9VXnFa4Q/cOMviskMUI35UIle2U/Kb98dqnV6hSxSUT9zmocJSsY
+         mHOOJfFhIY+5nAS1TnaWPMrShOEzUGYk/t+UAz0XcFijkEO1TJGP/OgMaCvAtAo98Ov8
+         xcX7bxFDwk77Ry5UJcLkbg0fhl7sqJkCpFtMgceEPHqlU617I2msgQrLbzubHuj95ikB
+         5It8I3GOAnwEEvXYg45gPMQDE/YLWO9c6YhfoJyWWwbJ911ZmRw79HNAK9O0nYdQpm6F
+         Dkyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kySCmJwQTNBaLQ15HXjhSRvmbp4B7/SgTzjLTTphRIE=;
-        b=D08BWJcpw9/jduO5gEN6Lb5ZZQhqXitJep/Oh5LA51OlG69XwqvbmQoqDq09K1xqBk
-         feRMzFks7lAlBqCG2+OP8uTj+4YSTrjMwfyiRrJAQCijEOC91ifwe0k4SC+97BVBKGYV
-         t7neYD6xOzmG5EWT75m+Cej90ZEQPnZKuaZyPDliixgcBNf9+qhhXIFhPWBh455aAbhF
-         L0ODTrng59W54bdyrofOpVx4XTbyAlaxKLvkc1AH1S6H0Kv8XqWOVupWSeQadeppLamr
-         QJnbqp8zJ3ryZ7mYaUNWhf9+r/PYga4Q2jYRGXwf8SU1nSDD8CNs/4NoDR/NA31lA76a
-         jEhA==
-X-Gm-Message-State: AOAM531VspGYQB2ONVTdhz9EfQLvRymFozDbmvN6q3V5WILhbHpj9vPP
-        1HIPJkgEs9esusbojIkjDePE5AnZKJU=
-X-Google-Smtp-Source: ABdhPJwfBTstu7AyqljQX5sdzlT1IzK+lHH9KEQ82jcPnTn6659Bw1diPGORFkvKzDeqI8NIJ/haMQ==
-X-Received: by 2002:a63:e613:: with SMTP id g19mr6426470pgh.12.1632861205261;
-        Tue, 28 Sep 2021 13:33:25 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id e9sm18457pjl.41.2021.09.28.13.33.23
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=vBSw5+MqBmKzXLxWE7zwAHio1IPQp5qVLONa1LWZ798=;
+        b=Se30bQaYGZCIIROc0/3AtBeh13QDChL6gHRv5YyBPuj5SZ1Xw8/VYQmUujeHgrTtQg
+         ZSqnM4fG7PPwBEio3SqQs9FAbIui8g/lpF937obj1SZhcOOg+pnZd4OdlQzbIyEJ8D9I
+         9WzV9IZENHnd9jKzB7VLHfm0GTCK6mdZuGgbDijbt7xRHHmkwfwKCUrm563igaQSsMqp
+         ervi7eN04pUcLclIYVfW6PY7f4R0SrlRiEd99zq5DUz9Ha+G4n5TAvWKirbiFHPJMR7R
+         6rKb7WMgS5w9e7v/Vhxe1g6GagAopKEFlpgoD6URkPoTUosxDoE2yBl8D4dT2yaGi1Q4
+         2ceQ==
+X-Gm-Message-State: AOAM531a4Z/SkQEgj2iciOyGL8bUOG8jFMKXInWWgN937WtqYO2s+wtQ
+        Gf1VsknSHOyiTLrefwOYxmk=
+X-Google-Smtp-Source: ABdhPJwXpmy7rRsn+8NtEbNjk/pQkT0AVxg1q6xHz6+JXki4zWiRApkP4IBUHGZ6+3dnWxXTId5V0g==
+X-Received: by 2002:a2e:5450:: with SMTP id y16mr2133032ljd.21.1632861603652;
+        Tue, 28 Sep 2021 13:40:03 -0700 (PDT)
+Received: from localhost.localdomain ([217.117.245.149])
+        by smtp.gmail.com with ESMTPSA id e17sm19531ljk.133.2021.09.28.13.40.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Sep 2021 13:33:24 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Doug Berger <opendmb@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM ETHERNET PHY
-        DRIVERS), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: phy: bcm7xxx: Fixed indirect MMD operations
-Date:   Tue, 28 Sep 2021 13:32:33 -0700
-Message-Id: <20210928203234.772724-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 28 Sep 2021 13:40:03 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, buytenh@marvell.com,
+        afleming@freescale.com, dan.carpenter@oracle.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Yanfei Xu <yanfei.xu@windriver.com>
+Subject: [PATCH v2 1/2] Revert "net: mdiobus: Fix memory leak in __mdiobus_register"
+Date:   Tue, 28 Sep 2021 23:39:15 +0300
+Message-Id: <2324212c8d0a713eba0aae3c25635b3ca5c5243f.1632861239.git.paskripkin@gmail.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20210927112017.19108-1-paskripkin@gmail.com>
+References: <20210927112017.19108-1-paskripkin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When EEE support was added to the 28nm EPHY it was assumed that it would
-be able to support the standard clause 45 over clause 22 register access
-method. It turns out that the PHY does not support that, which is the
-very reason for using the indirect shadow mode 2 bank 3 access method.
+This reverts commit ab609f25d19858513919369ff3d9a63c02cd9e2e.
 
-Implement {read,write}_mmd to allow the standard PHY library routines
-pertaining to EEE querying and configuration to work correctly on these
-PHYs. This forces us to implement a __phy_set_clr_bits() function that
-does not grab the MDIO bus lock since the PHY driver's {read,write}_mmd
-functions are always called with that lock held.
+This patch is correct in the sense that we _should_ call device_put() in
+case of device_register() failure, but the problem in this code is more
+vast.
 
-Fixes: 83ee102a6998 ("net: phy: bcm7xxx: add support for 28nm EPHY")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+We need to set bus->state to UNMDIOBUS_REGISTERED before calling
+device_register() to correctly release the device in mdiobus_free().
+This patch prevents us from doing it, since in case of device_register()
+failure put_device() will be called 2 times and it will cause UAF or
+something else.
+
+Also, Reported-by: tag in revered commit was wrong, since syzbot
+reported different leak in same function.
+
+Link: https://lore.kernel.org/netdev/20210928092657.GI2048@kadam/
+Cc: Yanfei Xu <yanfei.xu@windriver.com>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- drivers/net/phy/bcm7xxx.c | 114 ++++++++++++++++++++++++++++++++++++--
- 1 file changed, 110 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/bcm7xxx.c
-index e79297a4bae8..27b6a3f507ae 100644
---- a/drivers/net/phy/bcm7xxx.c
-+++ b/drivers/net/phy/bcm7xxx.c
-@@ -27,7 +27,12 @@
- #define MII_BCM7XXX_SHD_2_ADDR_CTRL	0xe
- #define MII_BCM7XXX_SHD_2_CTRL_STAT	0xf
- #define MII_BCM7XXX_SHD_2_BIAS_TRIM	0x1a
-+#define MII_BCM7XXX_SHD_3_PCS_CTRL	0x0
-+#define MII_BCM7XXX_SHD_3_PCS_STATUS	0x1
-+#define MII_BCM7XXX_SHD_3_EEE_CAP	0x2
- #define MII_BCM7XXX_SHD_3_AN_EEE_ADV	0x3
-+#define MII_BCM7XXX_SHD_3_EEE_LP	0x4
-+#define MII_BCM7XXX_SHD_3_EEE_WK_ERR	0x5
- #define MII_BCM7XXX_SHD_3_PCS_CTRL_2	0x6
- #define  MII_BCM7XXX_PCS_CTRL_2_DEF	0x4400
- #define MII_BCM7XXX_SHD_3_AN_STAT	0xb
-@@ -216,25 +221,37 @@ static int bcm7xxx_28nm_resume(struct phy_device *phydev)
- 	return genphy_config_aneg(phydev);
- }
+Changes in v2:
+	Added this revert
+
+---
+ drivers/net/phy/mdio_bus.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 6f4b4e5df639..53f034fc2ef7 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -537,7 +537,6 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	err = device_register(&bus->dev);
+ 	if (err) {
+ 		pr_err("mii_bus %s failed to register\n", bus->id);
+-		put_device(&bus->dev);
+ 		return -EINVAL;
+ 	}
  
--static int phy_set_clr_bits(struct phy_device *dev, int location,
--					int set_mask, int clr_mask)
-+static int __phy_set_clr_bits(struct phy_device *dev, int location,
-+			      int set_mask, int clr_mask)
- {
- 	int v, ret;
- 
--	v = phy_read(dev, location);
-+	v = __phy_read(dev, location);
- 	if (v < 0)
- 		return v;
- 
- 	v &= ~clr_mask;
- 	v |= set_mask;
- 
--	ret = phy_write(dev, location, v);
-+	ret = __phy_write(dev, location, v);
- 	if (ret < 0)
- 		return ret;
- 
- 	return v;
- }
- 
-+static int phy_set_clr_bits(struct phy_device *dev, int location,
-+			    int set_mask, int clr_mask)
-+{
-+	int ret;
-+
-+	mutex_lock(&dev->mdio.bus->mdio_lock);
-+	ret = __phy_set_clr_bits(dev, location, set_mask, clr_mask);
-+	mutex_unlock(&dev->mdio.bus->mdio_lock);
-+
-+	return ret;
-+}
-+
- static int bcm7xxx_28nm_ephy_01_afe_config_init(struct phy_device *phydev)
- {
- 	int ret;
-@@ -398,6 +415,93 @@ static int bcm7xxx_28nm_ephy_config_init(struct phy_device *phydev)
- 	return bcm7xxx_28nm_ephy_apd_enable(phydev);
- }
- 
-+#define MII_BCM7XXX_REG_INVALID	0xff
-+
-+static u8 bcm7xxx_28nm_ephy_regnum_to_shd(u16 regnum)
-+{
-+	switch (regnum) {
-+	case MDIO_CTRL1:
-+		return MII_BCM7XXX_SHD_3_PCS_CTRL;
-+	case MDIO_STAT1:
-+		return MII_BCM7XXX_SHD_3_PCS_STATUS;
-+	case MDIO_PCS_EEE_ABLE:
-+		return MII_BCM7XXX_SHD_3_EEE_CAP;
-+	case MDIO_AN_EEE_ADV:
-+		return MII_BCM7XXX_SHD_3_AN_EEE_ADV;
-+	case MDIO_AN_EEE_LPABLE:
-+		return MII_BCM7XXX_SHD_3_EEE_LP;
-+	case MDIO_PCS_EEE_WK_ERR:
-+		return MII_BCM7XXX_SHD_3_EEE_WK_ERR;
-+	default:
-+		return MII_BCM7XXX_REG_INVALID;
-+	}
-+}
-+
-+static bool bcm7xxx_28nm_ephy_dev_valid(int devnum)
-+{
-+	return devnum == MDIO_MMD_AN || devnum == MDIO_MMD_PCS;
-+}
-+
-+static int bcm7xxx_28nm_ephy_read_mmd(struct phy_device *phydev,
-+				      int devnum, u16 regnum)
-+{
-+	u8 shd = bcm7xxx_28nm_ephy_regnum_to_shd(regnum);
-+	int ret;
-+
-+	if (!bcm7xxx_28nm_ephy_dev_valid(devnum) ||
-+	    shd == MII_BCM7XXX_REG_INVALID)
-+		return -EOPNOTSUPP;
-+
-+	/* set shadow mode 2 */
-+	ret = __phy_set_clr_bits(phydev, MII_BCM7XXX_TEST,
-+				 MII_BCM7XXX_SHD_MODE_2, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Access the desired shadow register address */
-+	ret = __phy_write(phydev, MII_BCM7XXX_SHD_2_ADDR_CTRL, shd);
-+	if (ret < 0)
-+		goto reset_shadow_mode;
-+
-+	ret = __phy_read(phydev, MII_BCM7XXX_SHD_2_CTRL_STAT);
-+
-+reset_shadow_mode:
-+	/* reset shadow mode 2 */
-+	__phy_set_clr_bits(phydev, MII_BCM7XXX_TEST, 0,
-+			   MII_BCM7XXX_SHD_MODE_2);
-+	return ret;
-+}
-+
-+static int bcm7xxx_28nm_ephy_write_mmd(struct phy_device *phydev,
-+				       int devnum, u16 regnum, u16 val)
-+{
-+	u8 shd = bcm7xxx_28nm_ephy_regnum_to_shd(regnum);
-+	int ret;
-+
-+	if (!bcm7xxx_28nm_ephy_dev_valid(devnum) ||
-+	    shd == MII_BCM7XXX_REG_INVALID)
-+		return -EOPNOTSUPP;
-+
-+	/* set shadow mode 2 */
-+	ret = __phy_set_clr_bits(phydev, MII_BCM7XXX_TEST,
-+				 MII_BCM7XXX_SHD_MODE_2, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Access the desired shadow register address */
-+	ret = __phy_write(phydev, MII_BCM7XXX_SHD_2_ADDR_CTRL, shd);
-+	if (ret < 0)
-+		goto reset_shadow_mode;
-+
-+	/* Write the desired value in the shadow register */
-+	__phy_write(phydev, MII_BCM7XXX_SHD_2_CTRL_STAT, val);
-+
-+reset_shadow_mode:
-+	/* reset shadow mode 2 */
-+	return __phy_set_clr_bits(phydev, MII_BCM7XXX_TEST, 0,
-+				  MII_BCM7XXX_SHD_MODE_2);
-+}
-+
- static int bcm7xxx_28nm_ephy_resume(struct phy_device *phydev)
- {
- 	int ret;
-@@ -595,6 +699,8 @@ static void bcm7xxx_28nm_remove(struct phy_device *phydev)
- 	.get_stats	= bcm7xxx_28nm_get_phy_stats,			\
- 	.probe		= bcm7xxx_28nm_probe,				\
- 	.remove		= bcm7xxx_28nm_remove,				\
-+	.read_mmd	= bcm7xxx_28nm_ephy_read_mmd,			\
-+	.write_mmd	= bcm7xxx_28nm_ephy_write_mmd,			\
- }
- 
- #define BCM7XXX_40NM_EPHY(_oui, _name)					\
 -- 
-2.25.1
+2.33.0
 
