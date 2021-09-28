@@ -2,96 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E0D841B24A
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 16:43:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22DA841B25D
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 16:51:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241270AbhI1Oo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 10:44:56 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:19209 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241152AbhI1Ooz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 10:44:55 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1632840196; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=1dZzT/O2EuqvWRhXR4fqGlJ/ncH11bxKPNZw5IankD8=;
- b=bwEKKEQGDt6aH4Ytyinf/rWtlHf+OfaZQv8l6a8KUuu6A8mo13sIcr7p0G6njUzZ5Rzxjc2B
- U7/gqIwiKQo30NMQCRqtf4t3xJQkaY7pWDxxakzN8DHxx0iXPRrZTQtYca2kCHtQVVoM7N81
- 7IaANT77ctSY7ERv/K4N69LLEqE=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 615329e0713d5d6f966a019a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 28 Sep 2021 14:42:40
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 8FE35C4361A; Tue, 28 Sep 2021 14:42:39 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9294AC4338F;
-        Tue, 28 Sep 2021 14:42:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 9294AC4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] mwifiex: avoid null-pointer-subtraction warning
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210927121656.940304-1-arnd@kernel.org>
-References: <20210927121656.940304-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
+        id S241413AbhI1Ox3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 10:53:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57732 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241294AbhI1OxZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 10:53:25 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C4EC061745
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 07:51:44 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id r83-20020a1c4456000000b0030cfc00ca5fso2528660wma.2
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 07:51:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8k4vzjTEvvF0RcP+mluO0fPYoFQpr61i483WOpfKr1k=;
+        b=TpeYbEuJJ4BseQvOvsvFWNckRy2BTd89M8cj9jh37927UcZldckqMJlKOP/SF4KkEy
+         CQPdqeyZbTIxb2pF0lgUpKUsXhXVEptfWKthyBYpNh+pPjkN5Dg+olzMgwSoRNV7QloU
+         LCtYS+3x50jkmVUMP6mR8Ci5d16ZUIN7/WE5kvjc1EAuMKc17IrCPEYtlpOLNAq9PI5E
+         s/yeti1LAQlHBI8WhQzlOwD7Efhby2VXhPz+7tfA38omrJDQxjzjBu0IL8unvJ0RObNJ
+         jOYXqz0QVbZW7uv2HbaVJS8BYkjwQzj6noZiofXvlQiZ3V2YZtY1yASn77l6YQki/mEQ
+         nPpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=8k4vzjTEvvF0RcP+mluO0fPYoFQpr61i483WOpfKr1k=;
+        b=Aivn5VxuWdS2jG9M6hFHCj2VeX7zLKXKrocuRGOhQjt1OAgPuDBDg+Aux2KJ84Kf/c
+         d4np1XhgBBhDGJHs/stbvNSKjL/NJs9Xrwd9JO/5S5yPffIcm2VEY6iZUQa/O8ZJ4Jaw
+         bBgfUD4jBgxWmWwXaKN7g+qBUFNV/hq7kcCX0kwPacfFJ5k4GpwwnyAve96hfB4bEe6j
+         VQDxPZQ336JIz5A8bJBlNDdAIW50I66T3XOoFFotBmUQjcc0+HSGfXYKQEE8/9rL1ndY
+         hwzy+iGkd9wjAOIUe5P3AaA10GYRBeq8elsyZGZCAcnGUQ4dOuBFJiRAKmS9wfbuy1Nk
+         U/GA==
+X-Gm-Message-State: AOAM533Wawa2N61HtwvVZbrgb5WcESs0AAEKtmjXDDFaofh0HsdwxNvU
+        CvRrciNrlD3BUTSBmenVJMz62A==
+X-Google-Smtp-Source: ABdhPJz2gMZyojYjj1eiZ6lXVK/hCRlmBB7ziEb6GpJ1kWQycNGC02kKJC0JGDUgmWJgxIeqecc3qA==
+X-Received: by 2002:a05:600c:22d6:: with SMTP id 22mr5266861wmg.17.1632840702114;
+        Tue, 28 Sep 2021 07:51:42 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:e0fd:c68f:ea32:2084? ([2a01:e0a:410:bb00:e0fd:c68f:ea32:2084])
+        by smtp.gmail.com with ESMTPSA id j19sm19877425wra.92.2021.09.28.07.51.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Sep 2021 07:51:41 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next v5] net: openvswitch: IPv6: Add IPv6 extension
+ header support
+To:     Cpp Code <cpp.code.lv@gmail.com>
+Cc:     netdev@vger.kernel.org, pshelar@ovn.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210928144239.8FE35C4361A@smtp.codeaurora.org>
-Date:   Tue, 28 Sep 2021 14:42:39 +0000 (UTC)
+        ovs dev <dev@openvswitch.org>, linux-kernel@vger.kernel.org
+References: <20210920182038.1510501-1-cpp.code.lv@gmail.com>
+ <0d70b112-dc7a-7083-db8d-183782b8ef8f@6wind.com>
+ <CAASuNyUWoZ1wToEUYbdehux=yVnWQ=suKDyRkQfRD-72DOLziw@mail.gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <e4bb09d1-8c8f-bfdf-1582-9dd8c560411b@6wind.com>
+Date:   Tue, 28 Sep 2021 16:51:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+MIME-Version: 1.0
+In-Reply-To: <CAASuNyUWoZ1wToEUYbdehux=yVnWQ=suKDyRkQfRD-72DOLziw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@kernel.org> wrote:
+Le 27/09/2021 à 21:12, Cpp Code a écrit :
+> To use this code there is a part of code in the userspace. We want to
+> keep compatibility when we only update userspace part code or only
+> kernel part code. This means we should have same values for constants
+> and we can only add new ones at the end of list.
+All attributes after OVS_KEY_ATTR_CT_STATE (ie 7 attributes) were added before
+OVS_KEY_ATTR_TUNNEL_INFO.
+Why is it not possible anymore?
 
-> From: Arnd Bergmann <arnd@arndb.de>
+
+Regards,
+Nicolas
+
 > 
-> clang complains about some NULL pointer arithmetic in this driver:
+> Best,
+> Tom
 > 
-> drivers/net/wireless/marvell/mwifiex/sta_tx.c:65:59: error: performing pointer subtraction with a null pointer has undefined behavior [-Werror,-Wnull-pointer-subtraction]
->         pad = ((void *)skb->data - (sizeof(*local_tx_pd) + hroom)-
->                                                                  ^
-> drivers/net/wireless/marvell/mwifiex/uap_txrx.c:478:53: error: performing pointer subtraction with a null pointer has undefined behavior [-Werror,-Wnull-pointer-subtraction]
->         pad = ((void *)skb->data - (sizeof(*txpd) + hroom) - NULL) &
-> 
-> Rework that expression to do the same thing using a uintptr_t.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
-Patch applied to wireless-drivers.git, thanks.
-
-603a1621caa0 mwifiex: avoid null-pointer-subtraction warning
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210927121656.940304-1-arnd@kernel.org/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+> On Wed, Sep 22, 2021 at 11:02 PM Nicolas Dichtel
+> <nicolas.dichtel@6wind.com> wrote:
+>>
+>> Le 20/09/2021 à 20:20, Toms Atteka a écrit :
+>>> This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
+>>> packets can be filtered using ipv6_ext flag.
+>>>
+>>> Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
+>>> ---
+>>>  include/uapi/linux/openvswitch.h |  12 +++
+>>>  net/openvswitch/flow.c           | 140 +++++++++++++++++++++++++++++++
+>>>  net/openvswitch/flow.h           |  14 ++++
+>>>  net/openvswitch/flow_netlink.c   |  24 +++++-
+>>>  4 files changed, 189 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+>>> index a87b44cd5590..dc6eb5f6399f 100644
+>>> --- a/include/uapi/linux/openvswitch.h
+>>> +++ b/include/uapi/linux/openvswitch.h
+>>> @@ -346,6 +346,13 @@ enum ovs_key_attr {
+>>>  #ifdef __KERNEL__
+>>>       OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+>>>  #endif
+>>> +
+>>> +#ifndef __KERNEL__
+>>> +     PADDING,  /* Padding so kernel and non kernel field count would match */
+>>> +#endif
+>>> +
+>>> +     OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+>> Naive question, why not moving OVS_KEY_ATTR_IPV6_EXTHDRS above
+>> OVS_KEY_ATTR_TUNNEL_INFO?
+>>
+>>
+>>
+>> Regards,
+>> Nicolas
