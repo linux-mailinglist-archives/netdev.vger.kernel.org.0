@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB70941BAD1
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A21241BAD6
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230520AbhI1XMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 19:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
+        id S243189AbhI1XNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 19:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243149AbhI1XMR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 19:12:17 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D288C06161C;
-        Tue, 28 Sep 2021 16:10:37 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id v195so722521ybb.0;
-        Tue, 28 Sep 2021 16:10:37 -0700 (PDT)
+        with ESMTP id S229771AbhI1XNQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 19:13:16 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A0DC06161C;
+        Tue, 28 Sep 2021 16:11:36 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id v10so1170623ybq.7;
+        Tue, 28 Sep 2021 16:11:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LTTs41NWTC6GrLI59f4t0uamvovFDQOj+/8t5xs/580=;
-        b=iyAAGK1uyuFNI+ZFyqyVOKY5uTpx8vyfeiftW2ibuC2k+kqhgpEqUNSz/fS8EcMV9Z
-         5BKIxhFjbQBWhpgD4CMnWKti4HO1JvmXpyOi9DYy4vSIT9Ofyt1W2n2GBsCpiB+p9fe1
-         G+FRxai4apmdgLgSDc2jG71ZgPMJ6StCj3YDq8svNTi2Jq2W9MQrMPWkVVD5KPsmcYHV
-         7ytly12Ql9GUIGIynvbHG06w0xjPE+wp1MTR23ysVYLhlJa8qCyVBm+I1C1LbwiOeFNj
-         yOxjvXjSr5EvZcV99ZYLQbAHugNV0yi5OJznggz5JWoBIid3Anp42n2JcS3WIUyf7Sdf
-         7j0Q==
+        bh=4jz6ukNrcNWaVNNA7EbFxCp/sg39OswbF5lQyqgIPJo=;
+        b=MAaYR0iuORFIKx+ElIMe1zDSthOqGF+AUWai8dbOpkxND7CVrt2iF3i6mzTjp+3Ncw
+         BJvRU9/wMYG3BUVCVsHDM2re1wMqWH52A+3WNNI0CdadN6HoUOv7Xzh84n/RgSJ99rBe
+         cKtHBjggQdkhQ3QxiIzA8VRZuCOOfMf9AdXO/CWx/OzZF6TzsbdY28tRlh1V4V0phLOk
+         Ng5M0ef84azdfIDdMDrOlr+URzIB+1mTw49fZYHdFOCkKXakIRvTY60j7MtgIn34JJr+
+         x+FW6jtd8H6hFqkTQQnk11/g7R39w9srVdhK8aW5bOZiKwV2xbG86ZhcSCAC8d/hcamH
+         PbMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LTTs41NWTC6GrLI59f4t0uamvovFDQOj+/8t5xs/580=;
-        b=Ksaqj+THeNMxy8rkoB7BIwaQ8i15yOupuIsZa5V3IihBC1qV2XY+zkaOi8tpdkl69M
-         bnWoWUWzgQJb+ngdQSrF2gTxeVVVGNV2fbSiypyX9jAIcOs66eU202a2F8u4M3I4+Pyo
-         wdOz1zdM1S7hxHXnudGFSM4HjRrjLfUn30GLmQeDayVXxhHv8rxjXBPKMKkMNDTae6x3
-         urAjZqetvc7zK8fmmpnrV4J7mgLNevuUoH3itiWgGtCgH8OliSE/Yk+ZOBsjHqgW3W12
-         vy/xZbteALzmFMub7kZ0qX+vTK+5S5Tg6z4iK6O7GBshTic2Xw1uUbG0+S1RDTZAojsg
-         YVCg==
-X-Gm-Message-State: AOAM530eLaejw/NNsIeQcvEuzrqpob7q1cqc+ni7QizLi8feJ22urrpX
-        43FgFpC5IVAKl2VcaoIy3wbDGyaKw/3LNJmOvmE=
-X-Google-Smtp-Source: ABdhPJxJjKXTIgMXnFWlc0qKisgYjwtpOTliTuY0fYLw9UYG8eOCtDK35NHuzbjuSeqK8rvT7cAFhZHKI9RbtXPm9zg=
-X-Received: by 2002:a25:7c42:: with SMTP id x63mr10731355ybc.225.1632870636623;
- Tue, 28 Sep 2021 16:10:36 -0700 (PDT)
+        bh=4jz6ukNrcNWaVNNA7EbFxCp/sg39OswbF5lQyqgIPJo=;
+        b=J30qXdSwxb+rYkIFAR1vmlwFxhpVSCDUjU3S4Dy5fJQpi9t55aAUuBNCNW3meKZUOK
+         GsGOUFxmU/Z8UgwJk/O6BybSnOY3VN74DXFAun3tqXe5Pj50wdqDX0BHqkt6aZPyk8ic
+         bRnWchwR/rCNm/pSmwqAT/q2c3YBgrRrk/FPOeR7i4yntEvwQgVu8wcrjS3itmUIa3+c
+         IJDslF/RQzRptByQzrsK8xmVt7C9GnIdxilWHL+/V2XyNePFGIG6K8V4PkDFe5Lz1Xww
+         N2jyLkMHi9+1KYAorEyvlwXpC2k+gWyyxX3QyvNWPL+W1po7gEmUAUNMqeNK8K5/cAE7
+         ju+A==
+X-Gm-Message-State: AOAM530TTccbPYRfFKlqgKazYLyhmT79SJC1jXagQVnsKFq/Bya04CdA
+        DMUI1D8LgCWrV3VVDy/J0hUYvRP5hejTMmZkN55yTF1X
+X-Google-Smtp-Source: ABdhPJy8i7FUOCE4ZekVZBJNUV/kemXFjua+ACVthghjrGW9lPfaF82/BcVRwRzfeJ9/5EoGrQdT6f+u4XsYMoQLYxY=
+X-Received: by 2002:a25:2d4e:: with SMTP id s14mr9419488ybe.2.1632870695304;
+ Tue, 28 Sep 2021 16:11:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210928140734.1274261-1-houtao1@huawei.com> <20210928140734.1274261-4-houtao1@huawei.com>
-In-Reply-To: <20210928140734.1274261-4-houtao1@huawei.com>
+References: <20210928140734.1274261-1-houtao1@huawei.com> <20210928140734.1274261-3-houtao1@huawei.com>
+In-Reply-To: <20210928140734.1274261-3-houtao1@huawei.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Sep 2021 16:10:25 -0700
-Message-ID: <CAEf4BzYAVhSAERpm7bSuFj1M6LLUWyA=T6fuVY3kbJiGMtr=gg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 3/3] bpf/selftests: add test for writable bare tracepoint
+Date:   Tue, 28 Sep 2021 16:11:24 -0700
+Message-ID: <CAEf4BzaVdU04yFWfunPRY0H=QeiFR8VbBb2ESX56SS6LbRt5mg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 2/3] libbpf: support detecting and attaching
+ of writable tracepoint program
 To:     Hou Tao <houtao1@huawei.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -63,28 +64,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, Sep 28, 2021 at 6:53 AM Hou Tao <houtao1@huawei.com> wrote:
 >
-> Add a writable bare tracepoint in bpf_testmod module, and
-> trigger its calling when reading /sys/kernel/bpf_testmod
-> with a specific buffer length. The reading will return
-> the value in writable context if the early return flag
-> is enabled in writable context.
+> Program on writable tracepoint is BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
+> but its attachment is the same as BPF_PROG_TYPE_RAW_TRACEPOINT.
 >
 > Signed-off-by: Hou Tao <houtao1@huawei.com>
 > ---
-
-
-LGTM.
-
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-
->  .../bpf/bpf_testmod/bpf_testmod-events.h      | 15 ++++++++
->  .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 10 ++++++
->  .../selftests/bpf/bpf_testmod/bpf_testmod.h   |  5 +++
->  .../selftests/bpf/prog_tests/module_attach.c  | 35 +++++++++++++++++++
->  .../selftests/bpf/progs/test_module_attach.c  | 14 ++++++++
->  tools/testing/selftests/bpf/test_progs.c      |  4 +--
->  tools/testing/selftests/bpf/test_progs.h      |  2 ++
->  7 files changed, 83 insertions(+), 2 deletions(-)
+>  tools/lib/bpf/libbpf.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 >
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index ef5db34bf913..b874c0179084 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -7976,6 +7976,10 @@ static const struct bpf_sec_def section_defs[] = {
+>                 .attach_fn = attach_raw_tp),
+>         SEC_DEF("raw_tp/", RAW_TRACEPOINT,
+>                 .attach_fn = attach_raw_tp),
+> +       SEC_DEF("raw_tracepoint.w/", RAW_TRACEPOINT_WRITABLE,
+> +               .attach_fn = attach_raw_tp),
+> +       SEC_DEF("raw_tp.w/", RAW_TRACEPOINT_WRITABLE,
+> +               .attach_fn = attach_raw_tp),
 
-[...]
+Unfortunately I just refactored these SEC_DEF() definitions, please
+rebase because this won't apply cleanly anymore. Otherwise it looks
+good to me.
+
+>         SEC_DEF("tp_btf/", TRACING,
+>                 .expected_attach_type = BPF_TRACE_RAW_TP,
+>                 .is_attach_btf = true,
+> --
+> 2.29.2
+>
