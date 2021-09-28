@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BACDE41A878
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 08:03:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 704FB41A87F
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 08:03:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239419AbhI1GFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 02:05:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49678 "EHLO mail.kernel.org"
+        id S239655AbhI1GFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 02:05:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239167AbhI1GA4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 02:00:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 13DC061374;
+        id S239648AbhI1GA5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 02:00:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 75145613A8;
         Tue, 28 Sep 2021 05:57:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632808648;
-        bh=KfotpKkme5bWhJkBoR5AxobkJU/KNbYopsgya2RvmVg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lubJt3jSqC+mYG6T5M077kry9+nwR7OnEA6WFDQbnQ8dDYP79272W2rcprSZaTYFv
-         +BqZZdmEnbANEiOjES/IKq6sMDUZjsGVmH/iBlapFbwJySiE8JuxCugucadbkUGNiJ
-         Fr13hHsb5Q4ASWnlu94vrr3TNvZHc+wquTawBreiqJ2MYAxrz0U2U4qrEYyxQ55n3v
-         p7VAL/2eotUrZCJG1jamyOcAQDhu314A8bfwXTn34qyOq7rfcGekdw7Fgj3O8/CAu6
-         FIWS+zAn6AStMqA35O+bxVUesMe8Y5UFNl8jTPQuXq6uaES8EEfFziG76ZxccpxtJC
-         jyhTeeTda1n5w==
+        bh=Y4XjyZvXYrLEKqhTcaGzcA+k3/KH2wAv3Jyuw9cGryI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EianYCz/trToiQ0TXG2H1NnHFQZTY1kgJilWnwCT3Z4LFArFBpurBeWfylHHn6rPa
+         pGvhqI+2F3gcEn7sV0ShN2bhRdDDM8MgVS5jtM3rl2CZ0J3sS2atKm4kCoe7SXOVQi
+         6rBESfxDeUxwYzFfqyDZhTiqaBgYonjgoIZom4CeNdBY31c6hjAoAoGglOjsbB6IEk
+         3xYLt9xaUEPU1V69+IQxsv+3cr0dN78lQmn+OpK5Gnr28Fx5G5bNIMMKr6YRWwUwk9
+         1ausbTrBXiCbGO4cuGDQGsXkanvhD2jEQxzQO8qMtMcFmnCnkWIAuYkA2GoMF6VZEc
+         Z2EFGwUtJA76A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Jan Beulich <jbeulich@suse.com>, Paul Durrant <paul@xen.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 1/8] net: mdio: introduce a shutdown method to mdio device drivers
-Date:   Tue, 28 Sep 2021 01:57:19 -0400
-Message-Id: <20210928055727.173078-1-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, wei.liu@kernel.org,
+        kuba@kernel.org, xen-devel@lists.xenproject.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 2/8] xen-netback: correct success/error reporting for the SKB-with-fraglist case
+Date:   Tue, 28 Sep 2021 01:57:20 -0400
+Message-Id: <20210928055727.173078-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20210928055727.173078-1-sashal@kernel.org>
+References: <20210928055727.173078-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,75 +44,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Jan Beulich <jbeulich@suse.com>
 
-[ Upstream commit cf9579976f724ad517cc15b7caadea728c7e245c ]
+[ Upstream commit 3ede7f84c7c21f93c5eac611d60eba3f2c765e0f ]
 
-MDIO-attached devices might have interrupts and other things that might
-need quiesced when we kexec into a new kernel. Things are even more
-creepy when those interrupt lines are shared, and in that case it is
-absolutely mandatory to disable all interrupt sources.
+When re-entering the main loop of xenvif_tx_check_gop() a 2nd time, the
+special considerations for the head of the SKB no longer apply. Don't
+mistakenly report ERROR to the frontend for the first entry in the list,
+even if - from all I can tell - this shouldn't matter much as the overall
+transmit will need to be considered failed anyway.
 
-Moreover, MDIO devices might be DSA switches, and DSA needs its own
-shutdown method to unlink from the DSA master, which is a new
-requirement that appeared after commit 2f1e8ea726e9 ("net: dsa: link
-interfaces with the DSA master to get rid of lockdep warnings").
-
-So introduce a ->shutdown method in the MDIO device driver structure.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Jan Beulich <jbeulich@suse.com>
+Reviewed-by: Paul Durrant <paul@xen.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/mdio_device.c | 11 +++++++++++
- include/linux/mdio.h          |  3 +++
- 2 files changed, 14 insertions(+)
+ drivers/net/xen-netback/netback.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
-index e24f28924af8..5265180251ea 100644
---- a/drivers/net/phy/mdio_device.c
-+++ b/drivers/net/phy/mdio_device.c
-@@ -146,6 +146,16 @@ static int mdio_remove(struct device *dev)
- 	return 0;
- }
- 
-+static void mdio_shutdown(struct device *dev)
-+{
-+	struct mdio_device *mdiodev = to_mdio_device(dev);
-+	struct device_driver *drv = mdiodev->dev.driver;
-+	struct mdio_driver *mdiodrv = to_mdio_driver(drv);
-+
-+	if (mdiodrv->shutdown)
-+		mdiodrv->shutdown(mdiodev);
-+}
-+
- /**
-  * mdio_driver_register - register an mdio_driver with the MDIO layer
-  * @new_driver: new mdio_driver to register
-@@ -160,6 +170,7 @@ int mdio_driver_register(struct mdio_driver *drv)
- 	mdiodrv->driver.bus = &mdio_bus_type;
- 	mdiodrv->driver.probe = mdio_probe;
- 	mdiodrv->driver.remove = mdio_remove;
-+	mdiodrv->driver.shutdown = mdio_shutdown;
- 
- 	retval = driver_register(&mdiodrv->driver);
- 	if (retval) {
-diff --git a/include/linux/mdio.h b/include/linux/mdio.h
-index ca08ab16ecdc..780c4859ce2d 100644
---- a/include/linux/mdio.h
-+++ b/include/linux/mdio.h
-@@ -63,6 +63,9 @@ struct mdio_driver {
- 
- 	/* Clears up any memory if needed */
- 	void (*remove)(struct mdio_device *mdiodev);
-+
-+	/* Quiesces the device on system shutdown, turns off interrupts etc */
-+	void (*shutdown)(struct mdio_device *mdiodev);
- };
- #define to_mdio_driver(d)						\
- 	container_of(to_mdio_common_driver(d), struct mdio_driver, mdiodrv)
+diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
+index ad555a9a3eca..e1d6dbb4b770 100644
+--- a/drivers/net/xen-netback/netback.c
++++ b/drivers/net/xen-netback/netback.c
+@@ -492,7 +492,7 @@ static int xenvif_tx_check_gop(struct xenvif_queue *queue,
+ 				 * the header's copy failed, and they are
+ 				 * sharing a slot, send an error
+ 				 */
+-				if (i == 0 && sharedslot)
++				if (i == 0 && !first_shinfo && sharedslot)
+ 					xenvif_idx_release(queue, pending_idx,
+ 							   XEN_NETIF_RSP_ERROR);
+ 				else
 -- 
 2.33.0
 
