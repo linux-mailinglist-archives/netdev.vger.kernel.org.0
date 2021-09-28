@@ -2,70 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE6C41AE5E
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:00:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4218341AE80
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240524AbhI1MCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 08:02:14 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35794 "EHLO vps0.lunn.ch"
+        id S240515AbhI1MLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 08:11:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48492 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240514AbhI1MCN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 08:02:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=THuN358noEt3fQeP4VpcOCHPfZXYMNW8DrJloNvgVT4=; b=VY
-        a6LHE1sW7G1eFvRUjwZiG3qkChUCGCFYwOzGXtr7i7sYHT4ckwvfKnHl48Det0NXQOBID8RvSGZUv
-        We/3H8RYUkLjXRizmD04E5uQtCc/k636NYVscmrFtj0A3dP+gswxmw2hUJ95wG0BIPwAynXDWidwg
-        htw5iTtEOOIG/Js=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mVBmO-008b4G-MV; Tue, 28 Sep 2021 14:00:12 +0200
-Date:   Tue, 28 Sep 2021 14:00:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Cai Huoqing <caihuoqing@baidu.com>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: mdio: mscc-miim: Fix the mdio controller
-Message-ID: <YVMDzAcQSjuiqoud@lunn.ch>
-References: <20210928071720.2084666-1-horatiu.vultur@microchip.com>
- <20210928085414.GA1723@LAPTOP-UKSR4ENP.internal.baidu.com>
+        id S240426AbhI1MLq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 08:11:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4E6DC611CA;
+        Tue, 28 Sep 2021 12:10:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632831007;
+        bh=23rdd0WogsR7w+UI5pIpK5WZ2pDnWsYLusLtnQ83bYo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZSpM7aG1iqto065pUCSSLsoEvhhj2djL762brf8VSj671jlV5NxFGsyO9+FFqOtbk
+         zx8idlW6guXuhk/+XAG3Sue+tDxNyp0h3wrT/LtoNU/7W5aKqqFihpLv80Lb5ClDZH
+         S3jzLtWbDf/9ISfrn6MCcNgm54XL+H/yM6lzyd/boyWYKtuv2LVZhnjnASpvg2dXzE
+         EmwC63/qHby+zAIpKKkHkpv2Da3LWsivLU92OBqsBqLmRdBfNtpcD8uRBup8RpaqXS
+         GJtRkH7tOMODCrJ1QqQE+Ehmpo99nNkuRkH3VXRgQyVXL2HXWDOxVhV17ocoJ0jwlo
+         52XpAGSfje7ag==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3F05C60A69;
+        Tue, 28 Sep 2021 12:10:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210928085414.GA1723@LAPTOP-UKSR4ENP.internal.baidu.com>
+Subject: Re: [PATCH net-next v4 0/3] check return value of rhashtable_init in
+ mlx5e, ipv6, mac80211
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163283100725.29415.17214439381941428620.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Sep 2021 12:10:07 +0000
+References: <20210927033457.1020967-1-shjy180909@gmail.com>
+In-Reply-To: <20210927033457.1020967-1-shjy180909@gmail.com>
+To:     MichelleJin <shjy180909@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, johannes@sipsolutions.net, saeedm@nvidia.com,
+        leon@kernel.org, roid@nvidia.com, paulb@nvidia.com,
+        ozsh@nvidia.com, lariel@nvidia.com, cmi@nvidia.com,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-wireless@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 04:54:14PM +0800, Cai Huoqing wrote:
-> On 28 9月 21 09:17:20, Horatiu Vultur wrote:
-> Hi Horatiu,
-> 
-> Thank for your feedback.
-> 
-> I'm sorry for this commit, my mistake.
-> 
-> After I have checked my recent submission history
-> 
-> the commit-
-> commit fa14d03e014a130839f9dc1b97ea61fe598d873d
-> drivers/net/mdio/mdio-ipq4019.c 225 line
-> 
-> has the same issue, an optional phy-regs
-> Are you willing to fix it at the same time:)
+Hello:
 
-Hi
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Since it was a separate patch which broken it, it should be a separate
-patch which fixes it.  Please send a fix.
+On Mon, 27 Sep 2021 03:34:54 +0000 you wrote:
+> When rhashtable_init() fails, it returns -EINVAL.
+> However, since error return value of rhashtable_init is not checked,
+> it can cause use of uninitialized pointers.
+> So, fix unhandled errors of rhashtable_init.
+> The three patches are essentially the same logic.
+> 
+> v1->v2:
+>  - change commit message
+>  - fix possible memory leaks
+> v2->v3:
+>  - split patch into mlx5e, ipv6, mac80211
+> v3->v4:
+>  - fix newly created warnings due to patches in net/ipv6/seg6.c
+> 
+> [...]
 
-You can also give a Reviewed-by: to Horatiu patch, if you think it is
-correct.
+Here is the summary with links:
+  - [net-next,v4,1/3] net/mlx5e: check return value of rhashtable_init
+    https://git.kernel.org/netdev/net-next/c/d7cade513752
+  - [net-next,v4,2/3] net: ipv6: check return value of rhashtable_init
+    https://git.kernel.org/netdev/net-next/c/f04ed7d277e8
+  - [net-next,v4,3/3] net: mac80211: check return value of rhashtable_init
+    https://git.kernel.org/netdev/net-next/c/f43bed7193a3
 
-Andrew
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
