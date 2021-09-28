@@ -2,201 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68FBE41BB13
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93B5F41BB7F
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:58:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243360AbhI1XjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 19:39:20 -0400
-Received: from mail-eopbgr40057.outbound.protection.outlook.com ([40.107.4.57]:11841
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243302AbhI1XjT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 19:39:19 -0400
+        id S243402AbhI1X76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 19:59:58 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:21860 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243371AbhI1X74 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 19:59:56 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18SM2Sh1003466;
+        Tue, 28 Sep 2021 16:58:16 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=zSRS9qDW4XM8L01lGwqXAMN4ZWo1KOgofrK1K4SZMwc=;
+ b=Djq9FdrRYg/swWMSkBjclHzwSlEpcIDcwwq48bDv/iabokmaIovPQM8vQzyD67CcF5rg
+ megswa400uD3Bfj8ItHTWZMeq39Bn4tpZemoopdWlTl9T+rKi5Fjjb+1+OvFd5xWwCx9
+ Fd4u3Qjrd0JIKMIiGAFZpD8kNVk4GaLNKzc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3bcbfhrmym-13
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 28 Sep 2021 16:58:16 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Tue, 28 Sep 2021 16:58:12 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C2VaHtzpoXxUSB/+HILsrxtPcczPEb3UWu+3ZlB3XBE/M8lzxuz6+4pw0M1ESjgF0fHKAHpRUbixAN9vlgVJw4F2/7GGcuz1buqh7dnwGWLAPvDRWjGALm9kX+KrTug1F8iRtgK3d2CtEdoPWYMt31Zh+lZ2dLpcQC9tHduDjYXa8qxhjS/3EitYmLkccDwMVCIMQj68BE2d88PbUkI5OqlOTnEWBh6yIRHl12aKjOXj70afR0tOIVm73wsDJQwZ3nM5VUh1pNtXHyOqQLIV3fyyCCLNrB/RMURs6B9kqJlhQRgi4Jfjsz/lOsoqsh9Aqw2N7YY63fD1yGwKQvBRBA==
+ b=m2EsXQ2dz+48r55vG93wpGCS/VusRhUaK0P1AVTvg43UQxPhzneaV1ne2F14/eLC9xryecxm10VMdCvo0wEEI5NTS9szvLhbE2wgYuaXtZWwUhc7Nf3QaTN6YgLW7gRMxhmkqHGbienLHS8rfLhkF3fOuHnnJZM9Qoj8mXtUz/e88IaLzNkdpMPHJI+G6+1LfjNBCFLaT5ALDDHXngShaMXBPADC/lYv9QW+YuQL8EkUqSsMDrAZvKXDHLZVt/g2sjZBpl4n2HsMkWXOguxNg/0x0UoYtg54Koh31yvCRj+w8hPSx9u4g5UrUpWc373B3u4ODklfSyKjg2fkQ4wZfQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=UnGG/TMEjaOQLvhnxZZkFYFMJwVKcuPMCHSvRQojnJs=;
- b=no2j2TJWO463EuC97n1i19znagsh/QujeE72WNfqGazdJH/6lRA2LGqSPQMbpopG0b4IMOAfF8ARZFDqg1+ZEIO8i08c9ioPtWUbArLuK0ycvw5EVxLfbpSYQHwC9qx9WHTgijLpWj5iZzGydP1i2EU3bGFr7iDaoIZck2I9uPCYNPOQsHLv59Bt8IethZv3fZbMZygZCHRnVMwLATFK7V5Aouc03ZFEhYAUJKA8Sutd+OYCwcj88rMDOKGT4eq605kooUFvBRW2yo1XFXMY65/WHPyzYd6Oju2IU5moyUyXojchG7P2WuLqwmdD5RvFIiEr7V3IxmY8S96Q7qQ4/g==
+ bh=zSRS9qDW4XM8L01lGwqXAMN4ZWo1KOgofrK1K4SZMwc=;
+ b=kVwwF+IXIGlnoO6C91nREt2wbGlef1NNpTlugVVzaEAfCJhPynaFv8gzbQpXPASM/6UtA0tb3js91gBiZIxxTX+LoRnVbuBk43wxmiJuz2NKA+WzQuRvLCKy5531CFvUBoGUqt/LGQ3MTrQHjEoL/0bxjgukRhn2jnJeRORvSsyMl8QNwzn6TOoq4z6nunFBoiKN5TBGgZjL0Gsp/ERoJgtfLIsHTb6MxSrlowfqHpuO8ckTpWSS18tGJlgLwQ8ev/ZvafNs0/PNcTZ/PKyiqzly6j3SlufhCdOwrszv89gXxkXhDUAU/Zp2mnJizepaATR0czKzyiu2dA4jHeCbGA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UnGG/TMEjaOQLvhnxZZkFYFMJwVKcuPMCHSvRQojnJs=;
- b=kB3mouKL8bADPEUILaddrTreSB6HC9oMWJ6WsDcJUzZjG4xRDxaxTvVsAH+jff8Cz0Dyc5vBUokVoBvPKFW5eDMJ+WcqewHTr6yA+9Bhb9aWqX1MX+YDkXszZIo8gloE/RBpufhM2K69HROnj1ijS7ijVqCqo20iMXG/TkpWjbE=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB6272.eurprd04.prod.outlook.com (2603:10a6:803:fe::23) with
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by SA1PR15MB5062.namprd15.prod.outlook.com (2603:10b6:806:1dd::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.15; Tue, 28 Sep
- 2021 23:37:37 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4544.021; Tue, 28 Sep 2021
- 23:37:36 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "Paul E . McKenney" <paulmck@kernel.org>,
-        rcu <rcu@vger.kernel.org>, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [RFC PATCH net] net: dsa: tag_dsa: fix suspicious rcu_dereference_check() with br_vlan_get_pvid_rcu
-Date:   Wed, 29 Sep 2021 02:37:08 +0300
-Message-Id: <20210928233708.1246774-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR05CA0091.eurprd05.prod.outlook.com
- (2603:10a6:207:1::17) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Tue, 28 Sep
+ 2021 23:58:11 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::7d66:9b36:b482:af0f]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::7d66:9b36:b482:af0f%8]) with mapi id 15.20.4544.022; Tue, 28 Sep 2021
+ 23:58:11 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Martin Lau" <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v5 11/12] bpf: selftests: Fix fd cleanup in
+ get_branch_snapshot
+Thread-Topic: [PATCH bpf-next v5 11/12] bpf: selftests: Fix fd cleanup in
+ get_branch_snapshot
+Thread-Index: AQHXs7ByHWpwilqmnUGjFDm9pSAk96u6If+A
+Date:   Tue, 28 Sep 2021 23:58:10 +0000
+Message-ID: <ECE882BB-B86B-41CB-AF2A-336DA95A5A4D@fb.com>
+References: <20210927145941.1383001-1-memxor@gmail.com>
+ <20210927145941.1383001-12-memxor@gmail.com>
+In-Reply-To: <20210927145941.1383001-12-memxor@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3654.120.0.1.13)
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6ba67c28-1748-42e1-a823-08d982dbd3ab
+x-ms-traffictypediagnostic: SA1PR15MB5062:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SA1PR15MB5062422438982253D7D7C446B3A89@SA1PR15MB5062.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:972;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: CfTgMktLz+faHU/O8VMgnEVB2WoL32PkbnO+0opwjgH9dlM5gT1bTJU0jpFb3/O31NziK5WsHvuFmWNRlvmWiH3Op6Gr8+M1YC9R0HWjsCPZN9EELB7N4CJs3eFInIGPY1uxg879vh68gByN2X+K7Ipg84PoaDH9fqVop17YRicOpzpSpepMXj5iaP22VIJJenGadthGgMjDp+h1dGu70K8mZXgYy+kcqiRde6u+Fq1BtjGZ/+3RDUFBsOcy802T9zUWR+tL+s1wR0grLU2vEp9kKWXhNjgvDX/PwpNStUv1hQAr7A+Abb1LHYfgnv3nB+coWCzCKieTIOXyy5FMo/MEQWoG7VLF0zJhkTdEKpqHiG6rIJ0n0Y1Z+M0XKmnLYi8nqT/ZtZNvFKDWmNicgRhDYVXUYaXim3sT2NCctmOTPSn+HcqIbXsaTyR9Cwv5lSdh2pUaBdLj9F4OJxm2OmXZgtlc1vcAIXvJx2CkxDrTLTFPoPsFPjFGF5cUuwnfvTqXSWeD/Mvue6NR6vvtucGlPzCwXHpZy/whap7Ib88n2YooIdQBFarfs5T+SkA+T0ihwFg1rEq75T9UmAzh7HoeauxogEgqrIsi8GzVE0bWY2VczDbXr6C++JVw/SY/sEgf2pVpmiK7/0MFbpw5JZAlkG0U8RXzwo0dsd9kf8kWkZL6OP8xRArn1nBUwWXI9TL7DY/jyMKlUaSKkuF0NmcLMYTYw1wFRNUX8Kh7KE08PkViZ7S3/fphUi2cpZVf
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2906002)(508600001)(6512007)(4326008)(38070700005)(122000001)(38100700002)(36756003)(5660300002)(186003)(66946007)(8936002)(86362001)(54906003)(8676002)(71200400001)(66476007)(66556008)(2616005)(76116006)(6506007)(6486002)(83380400001)(53546011)(91956017)(33656002)(316002)(6916009)(64756008)(66446008)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?QSCeU9AL1SU1GJh2UYd8ZtxOqeQ8gC8WB2fsOA3o5sg5FPOUQ9Dl17XrN0?=
+ =?iso-8859-1?Q?W4F8izcAsy9uimqaWmir3xHROGA7qEls+qTZX3fJ9fP+lp/uiDgzvJlOQc?=
+ =?iso-8859-1?Q?iGIs7fckfHFRPezURAyse56CVxLUUNR3eX6zVDkd/xmpuf7jTHiYC7R/uw?=
+ =?iso-8859-1?Q?KjNUpHjtyGN9BfaTfDaevgSTT+IUFhf78uvilZyNp+SQgUTwqyuIuA9AkB?=
+ =?iso-8859-1?Q?QM3v1H0qpNj6tm/Ej99tThZ2Yb8evaOSV8tL1wYpSLRJlfMXH0+cDJ9tuB?=
+ =?iso-8859-1?Q?HB3+quMf1kKcwSiw0+9icJ7eoL1ejdEFNwn2vbat+FQbI7/bGXmKFNpOlP?=
+ =?iso-8859-1?Q?VvHnFhrjar9X9PhdhbYaZzatt7cJICB8ZLxYfyAtcgVrUVkOThXClGbUmr?=
+ =?iso-8859-1?Q?ua+fBJsNaVG83bidB6J5ASyhDzyip1q7BCCK6dAUP6uSuFyEah72oEyIh7?=
+ =?iso-8859-1?Q?QPt8Zsai6Mo+607BT3sIQcpvCrFudopjRNEk/TysPc5gC7JuN0VK66onln?=
+ =?iso-8859-1?Q?qswzYYGXILALuFe2Mjhem13/kBePLQ7u4hElK9L9WJsnrSEJK6hmRyR2dA?=
+ =?iso-8859-1?Q?Sqm3cPhiLMEOX7VIv0EhsDuTxKRBgBwTndX6mAR9TyVt3VNEWpeHpThwcJ?=
+ =?iso-8859-1?Q?kaR2EyclLCufXjA9pbmZ/kKCtmf/SPQODk53eZ4XUZoSgZueNF+k0X4LK5?=
+ =?iso-8859-1?Q?tVp1IM3LYsQ+UECjrl8GaGNwT1Y5BIugtUmuMekj1mRIDYGwLFvZOBaJ8f?=
+ =?iso-8859-1?Q?cQNPfKLLNSPcE4kG1OootQ/MMvkvlM8Cc4nU8R4JcvYukncG3MBwLXa5F3?=
+ =?iso-8859-1?Q?q5W/CxNCkC6FMX6uwSYkk5N7e0rlj7s18gv5N5ulhcjNfJPvVXrTyLpsHQ?=
+ =?iso-8859-1?Q?FRh4PfgOTZFe5sTWK2vz5i/t8VBVJkl16ug5vmTGThTusvVH1ZqfgV5HBL?=
+ =?iso-8859-1?Q?Qvvu2hhcHfCR1bkAWDmpw8OLPDZlCDkI0B6OlHFVgfw7sPfjqsh8dC3PYh?=
+ =?iso-8859-1?Q?J+6p+rw5ac2Rk/IgNpnAsh4FJXW2iDrpURefO5UbistCaoFI4jn0cGKGvH?=
+ =?iso-8859-1?Q?9j77v9Pd64W0leXWnFtkitE24lMxa75xP8JIoUFyqhmtIIA94iMOPoAZhC?=
+ =?iso-8859-1?Q?LdpiOK3MGoL5uRIfFtb1S/YTOomdFMrKwky3biWTDC/6eV/deLtHXDSLVP?=
+ =?iso-8859-1?Q?EbtwJ3j0gbUtSyif3e3TSy4JC1W95KekIJC/eOVie5b8ExCYIlml1wWKkJ?=
+ =?iso-8859-1?Q?xzX6PtL1BeRLxfY3NWJfA2St4l1FmGR7fpkD0Cf8g8ZDdG06oCSybxtU41?=
+ =?iso-8859-1?Q?MPlPOziB/OmX9w1K+v2FO49IYqCoQqdJFgAZLZQ3BuZK0CdIp3Yb1MLAHI?=
+ =?iso-8859-1?Q?8dfd1xhdtEU552SzgWx2UWYBwZqpnxfFvYSMZ1+Apv8ujN/fKB2hE=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <B605783900807E46884BADE3FD8B67C2@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.26.53.217) by AM3PR05CA0091.eurprd05.prod.outlook.com (2603:10a6:207:1::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13 via Frontend Transport; Tue, 28 Sep 2021 23:37:35 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d3a8cf1b-a785-4c1d-dcde-08d982d8f3ef
-X-MS-TrafficTypeDiagnostic: VI1PR04MB6272:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB627266631EFF23834095EAF8E0A89@VI1PR04MB6272.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iYePN0jPeCf0yiPEbbUxFYvYo92hn/1mQ+zu8/CVohezzsnE9F6iV9E980PqXknN5r/Rc2MLMyw/lN4Xxg0ttsvmt9JELdkvQEUHavGArsZQh32BeXJDWUbpHWZxntayw6MJLsdwNpd8Dty+N18SIQlFPFIvI7ROn27ZQZs1Q3yHerN69Hs/ABy8Dpqj1H7m+jiVJfEkMl7/RZjrU89RYff5IpllvYwEWNicGGQ2XAjN2Yvv0p/VGSGdrgUKNCyy/vWgl+GsbFZSKuKbPerdf75rDq3EBrsviMnP7VQnqaqHSpkMgeJU5QzyTlQ+KMRS9fZG5PSwdcRDSCvurWwXI0dIcKC/CvvT3Wp/kbsGhISqchj/5b2QTgm8UwKZFj3YyRx4PjRl2mhaNjAUZdA2/eJd4KXhyqb0b+JZi7/Dr0pTb6eI1V/cv+KiLHKMfNh6C2bDIBzQqybd0mabu7OwnWnMAAK/DDXPAPppLpXSreU618N+rv2ZYoju9paSphg9GoA4+ou3CAjRjWQ0abU+Patf7zf4jyr0/z7ZJsNIOx0jcRGnYiooaN06LF+ia2cE1k5wF82WIrwa9Ghvx5mXHzKNQ6a+JlO+YRBG0z87G3QGHHMVVWDVFtD5POMSTKgrEG0MzkvQoj9cY43SQVYykx6eFoDeovbQyjAsj0XNh1TyDoFAfMfdwP/jV9CSXRpi36ABdkUglxdVTO8F+epRXZIfz0uHptDwxWEyl6QYXW+7vuvU6Bfau6NeWhGiinnmq0s9ls7DrCN0CMdvy9Oiqz3V2xKUlTO2JmXXvyQbyLE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8676002)(6916009)(316002)(44832011)(6486002)(86362001)(7416002)(66556008)(5660300002)(66946007)(66476007)(54906003)(2906002)(8936002)(6506007)(508600001)(186003)(38350700002)(38100700002)(36756003)(6512007)(4326008)(1076003)(966005)(956004)(2616005)(26005)(52116002)(6666004)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wSl1kTzpVjJmrVg65IRAZ+XgEuAWz9JnjOLRQD3bAaOLNWLP/uXkt6v7/nZX?=
- =?us-ascii?Q?2kVfODwm/s5dtuht6DqLi+SXGowvMxedJ5EsaGJoQ99UIc+HCmmFK2rmrA3X?=
- =?us-ascii?Q?IM3LM856ASteLMnF+s0y/zw7mQ4xUuVJ0etmQiHP6HGwjt98HFTgANZLwl6z?=
- =?us-ascii?Q?vGdBwCAhJtI7Jh51gr3HIW2zAYoZU3yUwTzclnDcBOud2ILEnms963sOgBEO?=
- =?us-ascii?Q?5z9PLgQc8mMfFJLktxCIUSd36NO5uT6bdeuadaprjWma8cbVJZR7EZlBFKy9?=
- =?us-ascii?Q?PAplHA+HVMEKa0F/gajWKLVEonbIe9OXlCO6qFoXVf+m32QEg1wHfheHx0we?=
- =?us-ascii?Q?mguPoqw57cK2aUKO6e1T2CM18RUekjOqKpuD/kdE/YHVtEaLQyglrxj+mWad?=
- =?us-ascii?Q?UIf+brm8C3f8e0koVOswqW3P7giuL3nKxpUIjIXLQyvzzGbrEHRsyjnBqn8L?=
- =?us-ascii?Q?oUz1heQ91fU2BFLar6aUTShqMmWZEfBimayTlCGv/1Z8IOLidk02he6IFbrz?=
- =?us-ascii?Q?lny65R0b5VU4vQrobNJaBsHqUGCKr69SJa1cauAWAIYPQ84155jjGGZircVc?=
- =?us-ascii?Q?dAv5oEhsyhNT+24VH8CWpiHjv/TK58jxwFj27J/L7on4CTsAFEjd19U9va5K?=
- =?us-ascii?Q?cLuYYkquV04zosaPSldiAJ1MVdY5BdqqKPbicLt2BsY9MJ6HnIuFcWaQPmn0?=
- =?us-ascii?Q?/KjN2Yz83hIoc5OovoB4WGZd2fcDIuOreEtdJGrGSm9pvaLu++oiWmC3ox//?=
- =?us-ascii?Q?m+OApSPqoxpFJhKG396O/EA2vUXdZ5tlWXHvzi0v57oDT/kB4LJ7Q0LzPYBq?=
- =?us-ascii?Q?TjAlNvQhqFLT9OiwkJP1WmDWmpLG/GIQx/5RftrH7pzisLLkQMi5QK2ahhFM?=
- =?us-ascii?Q?JmZYq6e6t3b1VUVgn5FJdVrLt/4sHogQ2e2+aUwJ7AoOAU7mb+E6dKUzGD+P?=
- =?us-ascii?Q?NghfF7+nRVs8XmHrLuhDTuBoQkW4y21rcry/XxvNYiFUzXRIpkonJGjF82w8?=
- =?us-ascii?Q?Ute4NcgAxcubIowWMrWl8nrbO2fPkw03FxPXRVmycbd6k7BdDNgOQySe5b4l?=
- =?us-ascii?Q?DRydNO+6IvEq/+4/ZAGj8MKZgWIYnOXYxu8mECArEXYlGz6y+HCbMyENdR9Q?=
- =?us-ascii?Q?zvIjhD3vkKhwyfuKMmLZ0+N3vGmw/fIjedJJ9BWhiu9y+ulWI4/jRMPIoDg1?=
- =?us-ascii?Q?hy/ODEbPnVi5rCGbVJ/4eBmEjjnMEQU8YmHEf9+pm/nCiAcWzKsiDxC3lQLU?=
- =?us-ascii?Q?4JC6zKvQcMLk9Qid6scjNaNEq0TfAdKDgV02xZx14DhdPibqEnNTSrn4gP7s?=
- =?us-ascii?Q?9a6YqH3tOq0rD+ZdvNz4mJGQ?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3a8cf1b-a785-4c1d-dcde-08d982d8f3ef
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2021 23:37:36.8344
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6ba67c28-1748-42e1-a823-08d982dbd3ab
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Sep 2021 23:58:10.8484
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vuLRibFRYBk62CaxrHjFWt16kOhGXkbJz4o9ffa3g4iQ8CS+zPrMzcoTG9QNbU0STUFENfWoLF4D4rfGQFAhHQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6272
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 90CosWt8S9fDLGO3ZTbasj7o3NyrddtIh5CsSQQIpTX1+2as17uM8C76ftRrVCmYch0ZCIrrrMKKhC0ftwOcOw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB5062
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: RjSKlrkq5-0pxbxbR5dubtGQhmTrtTGE
+X-Proofpoint-ORIG-GUID: RjSKlrkq5-0pxbxbR5dubtGQhmTrtTGE
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-09-28_11,2021-09-28_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ phishscore=0 lowpriorityscore=0 clxscore=1011 bulkscore=0 impostorscore=0
+ adultscore=0 priorityscore=1501 mlxlogscore=999 malwarescore=0 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2109280138
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__dev_queue_xmit(), which is our caller, does run under rcu_read_lock_bh(),
-but in my foolishness I had thought this would be enough to make the
-access, lockdep complains that rcu_read_lock() is not held.
 
-Which it isn't - as it turns out, RCU preempt and RCU-bh are two
-different flavors, and although Paul McKenney has consolidated
-synchronize_rcu() to wait for both preempt as well as bh read-side
-critical sections [1], the reader-side API is different, the lockdep
-maps and keys are different.
 
-The bridge calls synchronize_rcu() in br_vlan_flush(), and this does
-wait for our TX fastpath reader of the br_vlan_group_rcu to complete
-even though it is in an rcu-bh read side section. So even though this is
-in premise safe, to lockdep this is a case of "who are you? I don't know
-you, you're suspicious".
+> On Sep 27, 2021, at 7:59 AM, Kumar Kartikeya Dwivedi <memxor@gmail.com> w=
+rote:
+>=20
+> Cleanup code uses while (cpu++ < cpu_cnt) for closing fds, which means
+> it starts iterating from 1 for closing fds. If the first fd is -1, it
+> skips over it and closes garbage fds (typically zero) in the remaining
+> array. This leads to test failures for future tests when they end up
+> storing fd 0 (as the slot becomes free due to close(0)) in ldimm64's BTF
+> fd, ending up trying to match module BTF id with vmlinux.
+>=20
+> This was observed as spurious CI failure for the ksym_module_libbpf and
+> module_attach tests. The test ends up closing fd 0 and breaking libbpf's
+> assumption that module BTF fd will always be > 0, which leads to the
+> kernel thinking that we are pointing to a BTF ID in vmlinux BTF.
+>=20
+> Cc: Song Liu <songliubraving@fb.com>
+> Fixes: 025bd7c753aa (selftests/bpf: Add test for bpf_get_branch_snapshot)
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-Side note, I still don't really understand the different RCU flavors.
-For example, as far as I can see, the core network stack has never
-directly called synchronize_rcu_bh, not even once. Just the initial
-synchronize_kernel(), replaced later with the RCU preempt variant -
-synchronize_rcu(). Very very long story short, dev_queue_xmit has
-started calling this exact variant - rcu_read_lock_bh() - since [2], to
-make dev_deactivate properly wait for network interfaces with
-NETIF_F_LLTX to finish their dev_queue_xmit(). But that relied on an
-existing synchronize_rcu(), not synchronize_rcu_bh(). So does this mean
-that synchronize_net() never really waited for the rcu-bh critical
-section in dev_queue_xmit to finish? I've no idea.
+Thanks for the fix!
 
-So basically there are multiple options.
+Acked-by: Song Liu <songliubraving@fb.com>
 
-First would be to duplicate br_vlan_get_pvid_rcu() into a new
-br_vlan_get_pvid_rcu_bh() to appease lockdep for the TX path case. But
-this function already has another brother, br_vlan_get_pvid(), which is
-protected by the update-side rtnl_mutex. We don't want to grow the
-family too big too, especially since br_vlan_get_pvid_rcu_bh() would not
-be a function used by the bridge at all, just exported by it and used by
-the DSA layer.
-
-The option of getting to the bottom of why does __dev_queue_xmit use
-rcu-bh, and splitting that into local_bh_disable + rcu_read_lock, as it
-was before [3], might be impractical. There have been 15 years of
-development since then, and there are lots of code paths that use
-rcu_dereference_bh() in the TX path. Plus, with the consolidation work
-done in [1], I'm not even sure what are the practical benefits of rcu-bh
-any longer, if the whole point was for synchronize_rcu() to wait for
-everything in sight - how can spammy softirqs like networking paint
-themselves red any longer, and how can certain RCU updaters not wait for
-them now, in order to avoid denial of service? It doesn't appear
-possible from the distance from which I'm looking at the problem.
-So the effort of converting __dev_queue_xmit from rcu-bh to rcu-preempt
-would only appear justified if it went together with the complete
-elimination of rcu-bh. Also, it would appear to be quite a strange and
-roundabout way to fix a "suspicious RCU usage" lockdep message.
-
-Last, it appears possible to just give lockdep what it wants, and hold
-an rcu-preempt read-side critical section when calling br_vlan_get_pvid_rcu
-from the TX path. In terms of lines of code and amount of thought needed
-it is certainly the easiest path forward, even though it incurs a small
-(negligible) performance overhead (and avoidable, at that). This is what
-this patch does, in lack of a deeper understanding of lockdep, RCU or
-the network transmission process.
-
-[1] https://lwn.net/Articles/777036/
-[2] commit d4828d85d188 ("[NET]: Prevent transmission after dev_deactivate")
-[3] commit 43da55cbd54e ("[NET]: Do less atomic count changes in dev_queue_xmit.")
-
-Fixes: d82f8ab0d874 ("net: dsa: tag_dsa: offload the bridge forwarding process")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/tag_dsa.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index 77d0ce89ab77..178464cd2bdb 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -150,10 +150,9 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 		 * that's where the packets ingressed from.
- 		 */
- 		if (!br_vlan_enabled(br)) {
--			/* Safe because __dev_queue_xmit() runs under
--			 * rcu_read_lock_bh()
--			 */
-+			rcu_read_lock();
- 			err = br_vlan_get_pvid_rcu(br, &pvid);
-+			rcu_read_unlock();
- 			if (err)
- 				return NULL;
- 		}
--- 
-2.25.1
+> ---
+> tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c | 5 ++---
+> 1 file changed, 2 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c=
+ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> index f81db9135ae4..67e86f8d8677 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> @@ -38,10 +38,9 @@ static int create_perf_events(void)
+>=20
+> static void close_perf_events(void)
+> {
+> -	int cpu =3D 0;
+> -	int fd;
+> +	int cpu, fd;
+>=20
+> -	while (cpu++ < cpu_cnt) {
+> +	for (cpu =3D 0; cpu < cpu_cnt; cpu++) {
+> 		fd =3D pfd_array[cpu];
+> 		if (fd < 0)
+> 			break;
+> --=20
+> 2.33.0
+>=20
 
