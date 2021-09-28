@@ -2,149 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FDD941BA1D
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 00:19:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7165C41BA63
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 00:29:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243034AbhI1WVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 18:21:35 -0400
-Received: from mga09.intel.com ([134.134.136.24]:61585 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240687AbhI1WVe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 18:21:34 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="224855469"
-X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; 
-   d="scan'208";a="224855469"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2021 15:19:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; 
-   d="scan'208";a="655279845"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga005.jf.intel.com with ESMTP; 28 Sep 2021 15:19:54 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Feng Zhou <zhoufeng.zf@bytedance.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
-        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, bpf@vger.kernel.org,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [PATCH net 1/1] ixgbe: Fix NULL pointer dereference in ixgbe_xdp_setup
-Date:   Tue, 28 Sep 2021 15:23:59 -0700
-Message-Id: <20210928222359.3380825-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
+        id S243134AbhI1WbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 18:31:05 -0400
+Received: from mail-ot1-f45.google.com ([209.85.210.45]:37683 "EHLO
+        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243128AbhI1WbD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 18:31:03 -0400
+Received: by mail-ot1-f45.google.com with SMTP id r43-20020a05683044ab00b0054716b40005so432161otv.4;
+        Tue, 28 Sep 2021 15:29:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vwcHQF6/8HUIm1fObpnSG0aiSaXON6QZUe3Gw0ku0bk=;
+        b=UveUJOKNqA/XPlmllq1lNHiwUvg5j3CKTNtK+9TEaklBTBvZaZO0JU9SJ1hOmQjxVt
+         N4uo/9YDiVnM3sB2UPTfJRoCrHgECKRSCwO1vuvnd/4UEibwSl1lEG8Y407HC3OoYmYP
+         GF7M7SzOJjAyFqW9ZObVWij9Rf0JFvIbu1wDlRiLsdhCPINGfqUNf/RAcj6jB9HzbBB0
+         KO8HwR9iKd3MVfpQfh1Di2vEVSiogGakO9cRZ0xaQyIvYaw2p214KfH0v0DUlloVG7eI
+         xLGiE9OpN18kULGtBFPrRbq15IrXGnhZ7EqkP59qkb0n0DyOtINSPwNTd/eXAOHdAFX9
+         RmNQ==
+X-Gm-Message-State: AOAM530caI4grhCMJ4WQ/ZqA4c5GWtRFCfg3Bc4sPDUUJ7o6tlUgVx9N
+        SdMGQwzjK7uQ83nL7bUZswB/ryN+rw==
+X-Google-Smtp-Source: ABdhPJwIo8LpG9CqlCCSYyWBM2R+bXzVEo57GgT/4sLojNBA5cKROdiFakWw9bMvfnaBeZBHr5CWRA==
+X-Received: by 2002:a05:6830:25d1:: with SMTP id d17mr7302750otu.253.1632868162403;
+        Tue, 28 Sep 2021 15:29:22 -0700 (PDT)
+Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.googlemail.com with ESMTPSA id g4sm65460ooa.44.2021.09.28.15.29.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Sep 2021 15:29:21 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     devicetree@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Evgeniy Polyakov <zbr@ioremap.net>,
+        Marek Vasut <marex@denx.de>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Daniel Mack <zonque@gmail.com>,
+        dri-devel@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] dt-bindings: Drop more redundant 'maxItems'
+Date:   Tue, 28 Sep 2021 17:29:20 -0500
+Message-Id: <20210928222920.2204761-1-robh@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Feng Zhou <zhoufeng.zf@bytedance.com>
+Another round of removing redundant minItems/maxItems from new schema in
+the recent merge window.
 
-The ixgbe driver currently generates a NULL pointer dereference with
-some machine (online cpus < 63). This is due to the fact that the
-maximum value of num_xdp_queues is nr_cpu_ids. Code is in
-"ixgbe_set_rss_queues"".
+If a property has an 'items' list, then a 'minItems' or 'maxItems' with the
+same size as the list is redundant and can be dropped. Note that is DT
+schema specific behavior and not standard json-schema behavior. The tooling
+will fixup the final schema adding any unspecified minItems/maxItems.
 
-Here's how the problem repeats itself:
-Some machine (online cpus < 63), And user set num_queues to 63 through
-ethtool. Code is in the "ixgbe_set_channels",
-	adapter->ring_feature[RING_F_FDIR].limit = count;
-
-It becomes 63.
-
-When user use xdp, "ixgbe_set_rss_queues" will set queues num.
-	adapter->num_rx_queues = rss_i;
-	adapter->num_tx_queues = rss_i;
-	adapter->num_xdp_queues = ixgbe_xdp_queues(adapter);
-
-And rss_i's value is from
-	f = &adapter->ring_feature[RING_F_FDIR];
-	rss_i = f->indices = f->limit;
-
-So "num_rx_queues" > "num_xdp_queues", when run to "ixgbe_xdp_setup",
-	for (i = 0; i < adapter->num_rx_queues; i++)
-		if (adapter->xdp_ring[i]->xsk_umem)
-
-It leads to panic.
-
-Call trace:
-[exception RIP: ixgbe_xdp+368]
-RIP: ffffffffc02a76a0  RSP: ffff9fe16202f8d0  RFLAGS: 00010297
-RAX: 0000000000000000  RBX: 0000000000000020  RCX: 0000000000000000
-RDX: 0000000000000000  RSI: 000000000000001c  RDI: ffffffffa94ead90
-RBP: ffff92f8f24c0c18   R8: 0000000000000000   R9: 0000000000000000
-R10: ffff9fe16202f830  R11: 0000000000000000  R12: ffff92f8f24c0000
-R13: ffff9fe16202fc01  R14: 000000000000000a  R15: ffffffffc02a7530
-ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
- 7 [ffff9fe16202f8f0] dev_xdp_install at ffffffffa89fbbcc
- 8 [ffff9fe16202f920] dev_change_xdp_fd at ffffffffa8a08808
- 9 [ffff9fe16202f960] do_setlink at ffffffffa8a20235
-10 [ffff9fe16202fa88] rtnl_setlink at ffffffffa8a20384
-11 [ffff9fe16202fc78] rtnetlink_rcv_msg at ffffffffa8a1a8dd
-12 [ffff9fe16202fcf0] netlink_rcv_skb at ffffffffa8a717eb
-13 [ffff9fe16202fd40] netlink_unicast at ffffffffa8a70f88
-14 [ffff9fe16202fd80] netlink_sendmsg at ffffffffa8a71319
-15 [ffff9fe16202fdf0] sock_sendmsg at ffffffffa89df290
-16 [ffff9fe16202fe08] __sys_sendto at ffffffffa89e19c8
-17 [ffff9fe16202ff30] __x64_sys_sendto at ffffffffa89e1a64
-18 [ffff9fe16202ff38] do_syscall_64 at ffffffffa84042b9
-19 [ffff9fe16202ff50] entry_SYSCALL_64_after_hwframe at ffffffffa8c0008c
-
-So I fix ixgbe_max_channels so that it will not allow a setting of queues
-to be higher than the num_online_cpus(). And when run to ixgbe_xdp_setup,
-take the smaller value of num_rx_queues and num_xdp_queues.
-
-Fixes: 4a9b32f30f80 ("ixgbe: fix potential RX buffer starvation for AF_XDP")
-Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Evgeniy Polyakov <zbr@ioremap.net>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc: Daniel Mack <zonque@gmail.com>
+Cc: dri-devel@lists.freedesktop.org
+Cc: netdev@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c | 2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c    | 8 ++++++--
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/display/bridge/ti,sn65dsi83.yaml        | 2 --
+ Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml        | 1 -
+ Documentation/devicetree/bindings/w1/w1-gpio.yaml               | 1 -
+ 3 files changed, 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
-index fc26e4ddeb0d..beda8e0ef7d4 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
-@@ -3208,7 +3208,7 @@ static unsigned int ixgbe_max_channels(struct ixgbe_adapter *adapter)
- 		max_combined = ixgbe_max_rss_indices(adapter);
- 	}
+diff --git a/Documentation/devicetree/bindings/display/bridge/ti,sn65dsi83.yaml b/Documentation/devicetree/bindings/display/bridge/ti,sn65dsi83.yaml
+index 07b20383cbca..b446d0f0f1b4 100644
+--- a/Documentation/devicetree/bindings/display/bridge/ti,sn65dsi83.yaml
++++ b/Documentation/devicetree/bindings/display/bridge/ti,sn65dsi83.yaml
+@@ -50,7 +50,6 @@ properties:
+               data-lanes:
+                 description: array of physical DSI data lane indexes.
+                 minItems: 1
+-                maxItems: 4
+                 items:
+                   - const: 1
+                   - const: 2
+@@ -71,7 +70,6 @@ properties:
+               data-lanes:
+                 description: array of physical DSI data lane indexes.
+                 minItems: 1
+-                maxItems: 4
+                 items:
+                   - const: 1
+                   - const: 2
+diff --git a/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml b/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
+index 5629b2e4ccf8..ee4afe361fac 100644
+--- a/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
++++ b/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
+@@ -34,7 +34,6 @@ properties:
  
--	return max_combined;
-+	return min_t(int, max_combined, num_online_cpus());
- }
+   clocks:
+     minItems: 3
+-    maxItems: 5
+     items:
+       - description: MAC host clock
+       - description: MAC apb clock
+diff --git a/Documentation/devicetree/bindings/w1/w1-gpio.yaml b/Documentation/devicetree/bindings/w1/w1-gpio.yaml
+index 7ba1c2fd4722..8eef2380161b 100644
+--- a/Documentation/devicetree/bindings/w1/w1-gpio.yaml
++++ b/Documentation/devicetree/bindings/w1/w1-gpio.yaml
+@@ -15,7 +15,6 @@ properties:
  
- static void ixgbe_get_channels(struct net_device *dev,
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 24e06ba6f5e9..13c4782b920a 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -10112,6 +10112,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
- 	struct ixgbe_adapter *adapter = netdev_priv(dev);
- 	struct bpf_prog *old_prog;
- 	bool need_reset;
-+	int num_queues;
- 
- 	if (adapter->flags & IXGBE_FLAG_SRIOV_ENABLED)
- 		return -EINVAL;
-@@ -10161,11 +10162,14 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
- 	/* Kick start the NAPI context if there is an AF_XDP socket open
- 	 * on that queue id. This so that receiving will start.
- 	 */
--	if (need_reset && prog)
--		for (i = 0; i < adapter->num_rx_queues; i++)
-+	if (need_reset && prog) {
-+		num_queues = min_t(int, adapter->num_rx_queues,
-+				   adapter->num_xdp_queues);
-+		for (i = 0; i < num_queues; i++)
- 			if (adapter->xdp_ring[i]->xsk_pool)
- 				(void)ixgbe_xsk_wakeup(adapter->netdev, i,
- 						       XDP_WAKEUP_RX);
-+	}
- 
- 	return 0;
- }
+   gpios:
+     minItems: 1
+-    maxItems: 2
+     items:
+       - description: Data I/O pin
+       - description: Enable pin for an external pull-up resistor
 -- 
-2.26.2
+2.30.2
 
