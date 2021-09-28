@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DC5141AF12
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:30:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F8641AF0C
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240789AbhI1Mb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 08:31:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33570 "EHLO mail.kernel.org"
+        id S240723AbhI1Mbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 08:31:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33502 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240710AbhI1Mbr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S240546AbhI1Mbr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 28 Sep 2021 08:31:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 99D0A61215;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 280EA61159;
         Tue, 28 Sep 2021 12:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1632832208;
-        bh=i4wgzOUu7apIAnF5yKSN8IPgeFVwu12j32BHaG+rktU=;
+        bh=DsrtMerb5hAUgCpUVacvxFpmcBwQwV4JSST8V7osueI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nEDLNg1sO++I6pW78sVFA6Iyhk54vFwBVM59DP2rvfKMktBrdqblvNvXWRAhjoLCw
-         +XUmbpvdhJRw+kIHJp/kv0DR9WQHN/PPQRRbzJvm4nufgO56o+VTZLhjotPps+uPkc
-         BTKlh4o864M+un5WV2i/7DgGURoKRiF8GzjsCMcRJWfSRXW2kZnVQQOIbPA0xsgWzF
-         7Py7RnkpEvdoDAEShRSt3TLWX1NbPR+veGA3OQbbdsMDY+jUad7j5cMtEGHwcFv/SR
-         hZw+4uZ0k5a+7V6jJ+u4WzWa9IEyjcXXeocknDue2I85fTdcrxAvQNf7A1dP6E2ZeS
-         nU6EXlxHDHHEw==
+        b=U6sLXrq483tLDVVV5V0dkx52XfvM0xZIze+heRtPAZFc2AI/NqQ7KUUlAanpcVQxw
+         POp5Igmsglt3KWPp8wqcnCfwEldBjJxEJhz2FjOkExw+FzGh/biJw5FEjd/+Z70SeU
+         jqd/5Pl1/rvDhKgDq+R6UCYWE8bgpKIlYO1XHhWiufp2/XyNPVAKdMa55+0FP3ypmk
+         8oxdVfJK4lijnbrTVRkwsmHxwGNxoLVwmgZtnifVqKkBURE02Rz4JZiMSdqP6HcZpE
+         JbrylWFqktgbmjmal9NXYX77zfM0hj7VzgIUQcbKcjjO7ooSZ5kMUqR+asoG7wjWqP
+         QBYsaCxXtC87g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 92E5960A69;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1B25E60A69;
         Tue, 28 Sep 2021 12:30:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/tls: support SM4 CCM algorithm
+Subject: Re: [PATCH net] af_unix: Return errno instead of NULL in unix_create1().
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163283220859.6805.14594158516937512105.git-patchwork-notify@kernel.org>
+Message-Id: <163283220810.6805.821728319483888771.git-patchwork-notify@kernel.org>
 Date:   Tue, 28 Sep 2021 12:30:08 +0000
-References: <20210928062843.75283-1-tianjia.zhang@linux.alibaba.com>
-In-Reply-To: <20210928062843.75283-1-tianjia.zhang@linux.alibaba.com>
-To:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, borisp@nvidia.com,
-        john.fastabend@gmail.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210928004227.9440-1-kuniyu@amazon.co.jp>
+In-Reply-To: <20210928004227.9440-1-kuniyu@amazon.co.jp>
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     davem@davemloft.net, kuba@kernel.org, benh@amazon.com,
+        kuni1840@gmail.com, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 28 Sep 2021 14:28:43 +0800 you wrote:
-> The IV of CCM mode has special requirements, this patch supports CCM
-> mode of SM4 algorithm.
+On Tue, 28 Sep 2021 09:42:27 +0900 you wrote:
+> unix_create1() returns NULL on error, and the callers assume that it never
+> fails for reasons other than out of memory.  So, the callers always return
+> -ENOMEM when unix_create1() fails.
 > 
-> Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-> ---
->  include/net/tls.h |  3 ++-
->  net/tls/tls_sw.c  | 20 ++++++++++++++++----
->  2 files changed, 18 insertions(+), 5 deletions(-)
+> However, it also returns NULL when the number of af_unix sockets exceeds
+> twice the limit controlled by sysctl: fs.file-max.  In this case, the
+> callers should return -ENFILE like alloc_empty_file().
+> 
+> [...]
 
 Here is the summary with links:
-  - net/tls: support SM4 CCM algorithm
-    https://git.kernel.org/netdev/net-next/c/128cfb882e23
+  - [net] af_unix: Return errno instead of NULL in unix_create1().
+    https://git.kernel.org/netdev/net/c/f4bd73b5a950
 
 You are awesome, thank you!
 --
