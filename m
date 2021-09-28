@@ -2,58 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36CF841A424
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 02:22:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5BA141A426
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 02:22:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238313AbhI1AYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Sep 2021 20:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
+        id S238331AbhI1AYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Sep 2021 20:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238277AbhI1AYJ (ORCPT
+        with ESMTP id S238285AbhI1AYJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 27 Sep 2021 20:24:09 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D0EC061575;
-        Mon, 27 Sep 2021 17:22:29 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id a13so18405195qtw.10;
-        Mon, 27 Sep 2021 17:22:29 -0700 (PDT)
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1F1C061604;
+        Mon, 27 Sep 2021 17:22:30 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id m26so6884606qtn.1;
+        Mon, 27 Sep 2021 17:22:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OmwbKwAa4NtUUvxlecm7KLJeFKeLc1dSItdzmyjeSkk=;
-        b=hg1DpeNe7IS0Qe/3aezC2fS9R7I/KN5hZuhtsxCGRICkOpiYcHMZVSJvPYoUSmOHKs
-         C+0LJeVgZyTGb/CqQRjVma/Fd2N7weQ4bVdKUDNIYxN/KdHNlZm4BPK1bV0gATqOikoj
-         eDDQlcbEnrjiCB62tX9H6zWPLdENIZpN6Qi6+gXGLNTrsNwUMmyr+Vd5BhNbRlKAWvoP
-         GJNhKphEOCvfgptR/q+91vhuZMeudPH/yjRvcugZlqBWxGmyL3SPXIcJ1r1tEhI6vgTA
-         LjNH0kEYEO/4E4+MVEOUCpQXNfzPYzFEAUaztbtT59tcNRmlXgFSZ4TCik17r1j7iAh6
-         x2Nw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7aHTllO+4GQE/ab4vnYXQ8VX+caQ6dzLbRRdC+Fk314=;
+        b=oeu9Hi6PJUL4H0ZM5p1Sg97SUS0BAUzawkPj0QPTiHNXX22hw5LOa2ZnE0PBIk0typ
+         Ak4NLhYN/ws9A5O+gpN9bhysJGab+4TAJw+V3KGttkAmkF3DxbMtIgRARTy4CufyEMHu
+         1eZ3NBgHaoQQvUZK3dZqspK/uzcB2eply7KGdpfKYjyMdf2aVb3xmYYDYGrR7No77ZQF
+         PqG/UfMfku7UHGB/dAHV1Zyv+o3zWq5h6tGLHFmuPQ2sDEbFcznE8MMKydivJQTIW8vT
+         2AB1yq3wGf7OyRV0xiXVs3D8hVg3h8mPqJIdxg5ujOZFQfD2nKtElJikaQAC5uL3YGpZ
+         z7ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OmwbKwAa4NtUUvxlecm7KLJeFKeLc1dSItdzmyjeSkk=;
-        b=QvH9hINlL6kR2+6L/QMLWrzh/kxXEpXdeuBxzf8IRmWgCWi39xC0T/RgzX8Elmzu0t
-         T8kro6STTMpQeRrv5s/fpq577OG7oS96PimpVLUzeoRQgUMjLWlPBjA18Q2re2BOOeR9
-         OBkQ+re3S3aZa1jfNzyosTf+QoFpehwGnWU10+UBguIveVcZ0FBVNNMv4D1VZuQdB0e/
-         qTSETyrIOwUOyfRNWeoLU/L3GZ1zAoA1+Am+9/UOhQoJ1TPqvsDbJ2jIV/kBEtyJ87mY
-         XzolynRwujuamdlU0SH5q9Cox6h/nV6CkeYZ0IJmccFRVwRB7DxpOUx07apIyNwHzLGy
-         Hgkg==
-X-Gm-Message-State: AOAM531v8EPGD733SRVxHnryyfW74uFcjEefpWyy8dWq0357Y6n3R3QH
-        N5yEBa6a6Qt8IJiZCBieibUV+3D6rmE=
-X-Google-Smtp-Source: ABdhPJzronDtFrmS72gc2ZeFyaeLrZmDzMQtC3wncTTQiFObPcOte/gatbIVoXnZepg+QZx2F1OLzg==
-X-Received: by 2002:ac8:51ce:: with SMTP id d14mr2815571qtn.16.1632788548316;
-        Mon, 27 Sep 2021 17:22:28 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7aHTllO+4GQE/ab4vnYXQ8VX+caQ6dzLbRRdC+Fk314=;
+        b=mS0tc8s+45YBvO7J2MizRYrISjrqUbRaanXvZqnySNkXd8oawcEJqQJ3youkxCJZg6
+         xmQp163r5ofHoOEiRlt5MWF+KudX5a5Wv0+Mi0K6Z1ILIe9e2UR53X55jS7zlgzeJj3Q
+         AUPYhWvpX/28xnxdNt2cHvf/FhQudyDggkVSLBKKaCeBcftk5xtnq/1DdFhqSdh18gJ7
+         luHPmyDqGy4SJOEqSP9TQwIVmA+lt5O6wFdNczHnzvGkpR2r5Xu98+C2kMm2JM0KynPq
+         ToGjV+5Ax6Y99UhVfrdhHY+gdyu0+xXC1buskbPUvk/EBx+wCrPlJEFVtmI+hLLQcLOm
+         h/sw==
+X-Gm-Message-State: AOAM532I+gneHKN5dCuEIsfSv2ebSCA9M1XYeJ/GlhUH4QIe3PzAFKSQ
+        OsuaKRLKKBjQOFtFVA7YW2mUz0bcX3o=
+X-Google-Smtp-Source: ABdhPJzXLTYasYaUjU2yknE6Sz7sPnUnglDNB/P+jMp5FxnQtubwVV+IQnU81rwFnBZ4RwNeI2MR5A==
+X-Received: by 2002:ac8:490c:: with SMTP id e12mr2922058qtq.200.1632788549451;
+        Mon, 27 Sep 2021 17:22:29 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:1ce2:35c5:917e:20d7])
-        by smtp.gmail.com with ESMTPSA id 31sm5672308qtb.85.2021.09.27.17.22.27
+        by smtp.gmail.com with ESMTPSA id 31sm5672308qtb.85.2021.09.27.17.22.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Sep 2021 17:22:28 -0700 (PDT)
+        Mon, 27 Sep 2021 17:22:29 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
-Subject: [Patch bpf v2 0/4] sock_map: fix ->poll() and update selftests
-Date:   Mon, 27 Sep 2021 17:22:08 -0700
-Message-Id: <20210928002212.14498-1-xiyou.wangcong@gmail.com>
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: [Patch bpf v2 1/4] skmsg: introduce sk_psock_get_checked()
+Date:   Mon, 27 Sep 2021 17:22:09 -0700
+Message-Id: <20210928002212.14498-2-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210928002212.14498-1-xiyou.wangcong@gmail.com>
+References: <20210928002212.14498-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -62,37 +68,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-This patchset fixes ->poll() on sockmap sockets and update
-selftests accordingly with select(). Please check each patch
-for more details.
+Although we have sk_psock_get(), it assumes the psock
+retrieved from sk_user_data is for sockmap, this is not
+sufficient if we call it outside of sockmap, for example,
+reuseport_array.
+
+Fortunately sock_map_psock_get_checked() is more strict
+and checks for sock_map_close before using psock. So we can
+refactor it and rename it to sk_psock_get_checked(), which
+can be safely called outside of sockmap.
+
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jakub Sitnicki <jakub@cloudflare.com>
+Cc: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
-v2: rename and reuse ->stream_memory_read()
-    fix a compile error in sk_psock_get_checked()
+ include/linux/skmsg.h | 20 ++++++++++++++++++++
+ net/core/sock_map.c   | 22 +---------------------
+ 2 files changed, 21 insertions(+), 21 deletions(-)
 
-Cong Wang (3):
-  skmsg: introduce sk_psock_get_checked()
-  net: rename ->stream_memory_read to ->sock_is_readable
-  net: implement ->sock_is_readable for UDP and AF_UNIX
-
-Yucong Sun (1):
-  selftests/bpf: use recv_timeout() instead of retries
-
- include/linux/skmsg.h                         | 21 ++++++
- include/net/sock.h                            |  8 +-
- include/net/tls.h                             |  2 +-
- net/core/skmsg.c                              | 14 ++++
- net/core/sock_map.c                           | 22 +-----
- net/ipv4/tcp.c                                |  5 +-
- net/ipv4/tcp_bpf.c                            |  4 +-
- net/ipv4/udp.c                                |  2 +
- net/ipv4/udp_bpf.c                            |  1 +
- net/tls/tls_main.c                            |  4 +-
- net/tls/tls_sw.c                              |  2 +-
- net/unix/af_unix.c                            |  4 +
- net/unix/unix_bpf.c                           |  2 +
- .../selftests/bpf/prog_tests/sockmap_listen.c | 75 +++++--------------
- 14 files changed, 79 insertions(+), 87 deletions(-)
-
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 14ab0c0bc924..8f577739fc36 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -452,6 +452,26 @@ static inline struct sk_psock *sk_psock_get(struct sock *sk)
+ 	return psock;
+ }
+ 
++static inline struct sk_psock *sk_psock_get_checked(struct sock *sk)
++{
++	struct sk_psock *psock;
++
++	rcu_read_lock();
++	psock = sk_psock(sk);
++	if (psock) {
++#if defined(CONFIG_BPF_SYSCALL)
++		if (sk->sk_prot->close != sock_map_close) {
++			rcu_read_unlock();
++			return ERR_PTR(-EBUSY);
++		}
++#endif
++		if (!refcount_inc_not_zero(&psock->refcnt))
++			psock = ERR_PTR(-EBUSY);
++	}
++	rcu_read_unlock();
++	return psock;
++}
++
+ void sk_psock_drop(struct sock *sk, struct sk_psock *psock);
+ 
+ static inline void sk_psock_put(struct sock *sk, struct sk_psock *psock)
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index e252b8ec2b85..6612bb0b95b5 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -191,26 +191,6 @@ static int sock_map_init_proto(struct sock *sk, struct sk_psock *psock)
+ 	return sk->sk_prot->psock_update_sk_prot(sk, psock, false);
+ }
+ 
+-static struct sk_psock *sock_map_psock_get_checked(struct sock *sk)
+-{
+-	struct sk_psock *psock;
+-
+-	rcu_read_lock();
+-	psock = sk_psock(sk);
+-	if (psock) {
+-		if (sk->sk_prot->close != sock_map_close) {
+-			psock = ERR_PTR(-EBUSY);
+-			goto out;
+-		}
+-
+-		if (!refcount_inc_not_zero(&psock->refcnt))
+-			psock = ERR_PTR(-EBUSY);
+-	}
+-out:
+-	rcu_read_unlock();
+-	return psock;
+-}
+-
+ static int sock_map_link(struct bpf_map *map, struct sock *sk)
+ {
+ 	struct sk_psock_progs *progs = sock_map_progs(map);
+@@ -255,7 +235,7 @@ static int sock_map_link(struct bpf_map *map, struct sock *sk)
+ 		}
+ 	}
+ 
+-	psock = sock_map_psock_get_checked(sk);
++	psock = sk_psock_get_checked(sk);
+ 	if (IS_ERR(psock)) {
+ 		ret = PTR_ERR(psock);
+ 		goto out_progs;
 -- 
 2.30.2
 
