@@ -2,90 +2,348 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1009041B1D3
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 16:15:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16CAD41B1D7
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 16:15:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241181AbhI1ORE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 10:17:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39058 "EHLO mail.kernel.org"
+        id S241246AbhI1ORP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 10:17:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39128 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241003AbhI1ORD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 10:17:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 31062611CB
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 14:15:24 +0000 (UTC)
+        id S241191AbhI1ORO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 10:17:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 54DC2611CB;
+        Tue, 28 Sep 2021 14:15:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632838524;
-        bh=qNq0VvqQuRt5Li60uxhHCk6C3L40jBhgdnyLPJx19RA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=dNPuZVX8i67GY1b1K0CAdOppyouYuXT0Q48GeDT30Zmd7p2ocJr5RF/fJouarcLaX
-         eaxEZJGJAyzx+RVhCG+4b4Qnp7ui0snfA2ajulR5fDdYqbf1TGDRaUmLDe2MJbcV6S
-         tdJL9Lfwjq4IGftQOGG98le2Vi6dfen0LAMawNRNeCsgRgAuM7cWmbxQcazh5g8eHX
-         oz0NLPqYmnN9DgPSim120kU+EkP134Pmqo/jNahQDP0QzhR8v3XgNMEbumO1TLv5A2
-         SqvSrS6RLqxiMBc2SX1hr6Fh5JTUVR/+3XGC8bMKYvXwLfPhtJ/ZEQUMBSNMD0w7+2
-         9nuYjH74L/K4w==
-Received: by mail-wr1-f49.google.com with SMTP id d6so58174849wrc.11
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 07:15:24 -0700 (PDT)
-X-Gm-Message-State: AOAM531gW/QjZ1Pku22mCf1MzdFBsVcqXQ2I/EiD7E6D+gvAcpE7Fs7k
-        GNlsfrDIXUUC/VXJHYVHA+dT24Y9Ub1bcZdMO9s=
-X-Google-Smtp-Source: ABdhPJxXsOYMlADjmX7Gdtb1t5F38a8c96q02lTNAZUDa/e4CRFtL3sV6LtdCEpbYSHNNJjZmuUYGxagIf8BkzkH/MU=
-X-Received: by 2002:adf:f481:: with SMTP id l1mr223770wro.411.1632838522728;
- Tue, 28 Sep 2021 07:15:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210723231957.1113800-1-bcf@google.com> <CAK8P3a1aGA+xqpUPOfGVtt3ch8bvDd75OP=xphN_FrUiuyuX+w@mail.gmail.com>
- <CANH7hM7_brYnVu_x7=+vY34SGQNbc7GUGQmAqpYwXGgVP0RH6Q@mail.gmail.com>
- <20210927162128.4686b57d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CANH7hM4Y2gt9PW_1oZbMQfvT6Bih9U-Ckt7d-w4fKkLp2R-rKA@mail.gmail.com>
-In-Reply-To: <CANH7hM4Y2gt9PW_1oZbMQfvT6Bih9U-Ckt7d-w4fKkLp2R-rKA@mail.gmail.com>
+        s=k20201202; t=1632838535;
+        bh=RePW3xfvUyaU3zA2Rj1Ae9YEiqElxuTFsF5LiqMkCHw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tGHMlMX3yt+6pC4yOvGEJoENWh/lolEkYGywFW0L8vSiSe/le1HG/MaxF+PGFVU/6
+         jExLdQjZFgh/UD9lzNjd2Kuc1bA56JKjYE04hTbQ12omJR4DYa+wgOOx4IZMXqqtH2
+         i+bc+J9oRF+MlM8Fgo9wK++M7BnTxyawbkbV8K8QJZfQYlQ/X9rNC+0Pq+nxaG45Ev
+         P/4qJYAE7107Zt4uO6DRlbQbccYKt4LJvb5ZUWcZC0Tcy6Aut/cZe5GQ4mAZShyiIa
+         9gXFjL/8wsPY0/sOKF2iM6x+vjPeKarta1n1Eqz/k8vKZmIyTienXmOO8cdUH4/sJy
+         UVUyMtPPhbRng==
 From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 28 Sep 2021 16:15:06 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1P9ZGBCub2s62OjrUa1Hwk66zHHESEj06MPY8qwjK7Ag@mail.gmail.com>
-Message-ID: <CAK8P3a1P9ZGBCub2s62OjrUa1Hwk66zHHESEj06MPY8qwjK7Ag@mail.gmail.com>
-Subject: Re: [PATCH net] gve: DQO: Suppress unused var warnings
-To:     Bailey Forrest <bcf@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     Jeroen de Borst <jeroendb@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bailey Forrest <bcf@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Catherine Sullivan <csully@google.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        David Awogbemila <awogbemila@google.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] [v2] gve: DQO: avoid unused variable warnings
+Date:   Tue, 28 Sep 2021 16:15:13 +0200
+Message-Id: <20210928141530.256433-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 2:00 AM Bailey Forrest <bcf@google.com> wrote:
-> On Mon, Sep 27, 2021 at 4:21 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Mon, 27 Sep 2021 13:21:30 -0700 Bailey Forrest wrote:
-> >
-> > Looks like fixing this on the wrong end, dma_unmap_len_set()
-> > and friends should always evaluate their arguments.
->
-> That makes sense.
->
-> Arnd, if you want to fix this inside of the dma_* macros, the
-> following diff resolves the errors reported for this driver:
+From: Arnd Bergmann <arnd@arndb.de>
 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index dca2b1355bb1..f51eee0f678e 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -590,10 +590,21 @@ static inline int dma_mmap_wc(struct device *dev,
->  #else
->  #define DEFINE_DMA_UNMAP_ADDR(ADDR_NAME)
->  #define DEFINE_DMA_UNMAP_LEN(LEN_NAME)
-> -#define dma_unmap_addr(PTR, ADDR_NAME)           (0)
-> -#define dma_unmap_addr_set(PTR, ADDR_NAME, VAL)  do { } while (0)
-> -#define dma_unmap_len(PTR, LEN_NAME)             (0)
-> -#define dma_unmap_len_set(PTR, LEN_NAME, VAL)    do { } while (0)
-> +
-> +#define dma_unmap_addr(PTR, ADDR_NAME) ({ (void)PTR; 0; })
-> +
-> +#define dma_unmap_addr_set(PTR, ADDR_NAME, VAL) do { \
+The use of dma_unmap_addr()/dma_unmap_len() in the driver causes
+multiple warnings when these macros are defined as empty, e.g.
+in an ARCH=i386 allmodconfig build:
 
-Unfortunately, this breaks every other driver using these macros, as the
-point of them is that the unmap-address is not actually defined
-and not taking up space in data structure. Referencing it by name
-is a compile-time bug.
+drivers/net/ethernet/google/gve/gve_tx_dqo.c: In function 'gve_tx_add_skb_no_copy_dqo':
+drivers/net/ethernet/google/gve/gve_tx_dqo.c:494:40: error: unused variable 'buf' [-Werror=unused-variable]
+  494 |                 struct gve_tx_dma_buf *buf =
 
-I've come up with a new patch to gve that just removes the
-"struct gve_tx_dma_buf" and open-codes the access everywhere,
-sending that as v2 now. Feel free to take that and modify as needed
-before sending on, or doing yet another patch.
+This is not how the NEED_DMA_MAP_STATE macros are meant to work,
+as they rely on never using local variables or a temporary structure
+like gve_tx_dma_buf.
 
-        Arnd
+Remote the gve_tx_dma_buf definition and open-code the contents
+in all places to avoid the warning. This causes some rather long
+lines but otherwise ends up making the driver slightly smaller.
+
+Fixes: a57e5de476be ("gve: DQO: Add TX path")
+Link: https://lore.kernel.org/netdev/20210723231957.1113800-1-bcf@google.com/
+Link: https://lore.kernel.org/netdev/20210721151100.2042139-1-arnd@kernel.org/
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+Changes in v2:
+- complete rewrite of v1
+---
+ drivers/net/ethernet/google/gve/gve.h        | 13 ++-
+ drivers/net/ethernet/google/gve/gve_tx.c     | 23 +++---
+ drivers/net/ethernet/google/gve/gve_tx_dqo.c | 84 +++++++++-----------
+ 3 files changed, 54 insertions(+), 66 deletions(-)
+
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index 1d3188e8e3b3..85bf825606e8 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -224,11 +224,6 @@ struct gve_tx_iovec {
+ 	u32 iov_padding; /* padding associated with this segment */
+ };
+ 
+-struct gve_tx_dma_buf {
+-	DEFINE_DMA_UNMAP_ADDR(dma);
+-	DEFINE_DMA_UNMAP_LEN(len);
+-};
+-
+ /* Tracks the memory in the fifo occupied by the skb. Mapped 1:1 to a desc
+  * ring entry but only used for a pkt_desc not a seg_desc
+  */
+@@ -236,7 +231,10 @@ struct gve_tx_buffer_state {
+ 	struct sk_buff *skb; /* skb for this pkt */
+ 	union {
+ 		struct gve_tx_iovec iov[GVE_TX_MAX_IOVEC]; /* segments of this pkt */
+-		struct gve_tx_dma_buf buf;
++		struct {
++			DEFINE_DMA_UNMAP_ADDR(dma);
++			DEFINE_DMA_UNMAP_LEN(len);
++		};
+ 	};
+ };
+ 
+@@ -280,7 +278,8 @@ struct gve_tx_pending_packet_dqo {
+ 	 * All others correspond to `skb`'s frags and should be unmapped with
+ 	 * `dma_unmap_page`.
+ 	 */
+-	struct gve_tx_dma_buf bufs[MAX_SKB_FRAGS + 1];
++	DEFINE_DMA_UNMAP_ADDR(dma[MAX_SKB_FRAGS + 1]);
++	DEFINE_DMA_UNMAP_LEN(len[MAX_SKB_FRAGS + 1]);
+ 	u16 num_bufs;
+ 
+ 	/* Linked list index to next element in the list, or -1 if none */
+diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
+index 665ac795a1ad..9922ce46a635 100644
+--- a/drivers/net/ethernet/google/gve/gve_tx.c
++++ b/drivers/net/ethernet/google/gve/gve_tx.c
+@@ -303,15 +303,15 @@ static inline int gve_skb_fifo_bytes_required(struct gve_tx_ring *tx,
+ static void gve_tx_unmap_buf(struct device *dev, struct gve_tx_buffer_state *info)
+ {
+ 	if (info->skb) {
+-		dma_unmap_single(dev, dma_unmap_addr(&info->buf, dma),
+-				 dma_unmap_len(&info->buf, len),
++		dma_unmap_single(dev, dma_unmap_addr(info, dma),
++				 dma_unmap_len(info, len),
+ 				 DMA_TO_DEVICE);
+-		dma_unmap_len_set(&info->buf, len, 0);
++		dma_unmap_len_set(info, len, 0);
+ 	} else {
+-		dma_unmap_page(dev, dma_unmap_addr(&info->buf, dma),
+-			       dma_unmap_len(&info->buf, len),
++		dma_unmap_page(dev, dma_unmap_addr(info, dma),
++			       dma_unmap_len(info, len),
+ 			       DMA_TO_DEVICE);
+-		dma_unmap_len_set(&info->buf, len, 0);
++		dma_unmap_len_set(info, len, 0);
+ 	}
+ }
+ 
+@@ -491,7 +491,6 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
+ 	struct gve_tx_buffer_state *info;
+ 	bool is_gso = skb_is_gso(skb);
+ 	u32 idx = tx->req & tx->mask;
+-	struct gve_tx_dma_buf *buf;
+ 	u64 addr;
+ 	u32 len;
+ 	int i;
+@@ -515,9 +514,8 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
+ 		tx->dma_mapping_error++;
+ 		goto drop;
+ 	}
+-	buf = &info->buf;
+-	dma_unmap_len_set(buf, len, len);
+-	dma_unmap_addr_set(buf, dma, addr);
++	dma_unmap_len_set(info, len, len);
++	dma_unmap_addr_set(info, dma, addr);
+ 
+ 	payload_nfrags = shinfo->nr_frags;
+ 	if (hlen < len) {
+@@ -549,10 +547,9 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
+ 			tx->dma_mapping_error++;
+ 			goto unmap_drop;
+ 		}
+-		buf = &tx->info[idx].buf;
+ 		tx->info[idx].skb = NULL;
+-		dma_unmap_len_set(buf, len, len);
+-		dma_unmap_addr_set(buf, dma, addr);
++		dma_unmap_len_set(&tx->info[idx], len, len);
++		dma_unmap_addr_set(&tx->info[idx], dma, addr);
+ 
+ 		gve_tx_fill_seg_desc(seg_desc, skb, is_gso, len, addr);
+ 	}
+diff --git a/drivers/net/ethernet/google/gve/gve_tx_dqo.c b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
+index 05ddb6a75c38..ec394d991668 100644
+--- a/drivers/net/ethernet/google/gve/gve_tx_dqo.c
++++ b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
+@@ -85,18 +85,16 @@ static void gve_tx_clean_pending_packets(struct gve_tx_ring *tx)
+ 		int j;
+ 
+ 		for (j = 0; j < cur_state->num_bufs; j++) {
+-			struct gve_tx_dma_buf *buf = &cur_state->bufs[j];
+-
+ 			if (j == 0) {
+ 				dma_unmap_single(tx->dev,
+-						 dma_unmap_addr(buf, dma),
+-						 dma_unmap_len(buf, len),
+-						 DMA_TO_DEVICE);
++					dma_unmap_addr(cur_state, dma[j]),
++					dma_unmap_len(cur_state, len[j]),
++					DMA_TO_DEVICE);
+ 			} else {
+ 				dma_unmap_page(tx->dev,
+-					       dma_unmap_addr(buf, dma),
+-					       dma_unmap_len(buf, len),
+-					       DMA_TO_DEVICE);
++					dma_unmap_addr(cur_state, dma[j]),
++					dma_unmap_len(cur_state, len[j]),
++					DMA_TO_DEVICE);
+ 			}
+ 		}
+ 		if (cur_state->skb) {
+@@ -457,15 +455,15 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
+ 	const bool is_gso = skb_is_gso(skb);
+ 	u32 desc_idx = tx->dqo_tx.tail;
+ 
+-	struct gve_tx_pending_packet_dqo *pending_packet;
++	struct gve_tx_pending_packet_dqo *pkt;
+ 	struct gve_tx_metadata_dqo metadata;
+ 	s16 completion_tag;
+ 	int i;
+ 
+-	pending_packet = gve_alloc_pending_packet(tx);
+-	pending_packet->skb = skb;
+-	pending_packet->num_bufs = 0;
+-	completion_tag = pending_packet - tx->dqo.pending_packets;
++	pkt = gve_alloc_pending_packet(tx);
++	pkt->skb = skb;
++	pkt->num_bufs = 0;
++	completion_tag = pkt - tx->dqo.pending_packets;
+ 
+ 	gve_extract_tx_metadata_dqo(skb, &metadata);
+ 	if (is_gso) {
+@@ -493,8 +491,6 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
+ 
+ 	/* Map the linear portion of skb */
+ 	{
+-		struct gve_tx_dma_buf *buf =
+-			&pending_packet->bufs[pending_packet->num_bufs];
+ 		u32 len = skb_headlen(skb);
+ 		dma_addr_t addr;
+ 
+@@ -502,9 +498,9 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
+ 		if (unlikely(dma_mapping_error(tx->dev, addr)))
+ 			goto err;
+ 
+-		dma_unmap_len_set(buf, len, len);
+-		dma_unmap_addr_set(buf, dma, addr);
+-		++pending_packet->num_bufs;
++		dma_unmap_len_set(pkt, len[pkt->num_bufs], len);
++		dma_unmap_addr_set(pkt, dma[pkt->num_bufs], addr);
++		++pkt->num_bufs;
+ 
+ 		gve_tx_fill_pkt_desc_dqo(tx, &desc_idx, skb, len, addr,
+ 					 completion_tag,
+@@ -512,8 +508,6 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
+ 	}
+ 
+ 	for (i = 0; i < shinfo->nr_frags; i++) {
+-		struct gve_tx_dma_buf *buf =
+-			&pending_packet->bufs[pending_packet->num_bufs];
+ 		const skb_frag_t *frag = &shinfo->frags[i];
+ 		bool is_eop = i == (shinfo->nr_frags - 1);
+ 		u32 len = skb_frag_size(frag);
+@@ -523,9 +517,9 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
+ 		if (unlikely(dma_mapping_error(tx->dev, addr)))
+ 			goto err;
+ 
+-		dma_unmap_len_set(buf, len, len);
+-		dma_unmap_addr_set(buf, dma, addr);
+-		++pending_packet->num_bufs;
++		dma_unmap_len_set(pkt, len[pkt->num_bufs], len);
++		dma_unmap_addr_set(pkt, dma[pkt->num_bufs], addr);
++		++pkt->num_bufs;
+ 
+ 		gve_tx_fill_pkt_desc_dqo(tx, &desc_idx, skb, len, addr,
+ 					 completion_tag, is_eop, is_gso);
+@@ -552,22 +546,23 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
+ 	return 0;
+ 
+ err:
+-	for (i = 0; i < pending_packet->num_bufs; i++) {
+-		struct gve_tx_dma_buf *buf = &pending_packet->bufs[i];
+-
++	for (i = 0; i < pkt->num_bufs; i++) {
+ 		if (i == 0) {
+-			dma_unmap_single(tx->dev, dma_unmap_addr(buf, dma),
+-					 dma_unmap_len(buf, len),
++			dma_unmap_single(tx->dev,
++					 dma_unmap_addr(pkt, dma[i]),
++					 dma_unmap_len(pkt, len[i]),
+ 					 DMA_TO_DEVICE);
+ 		} else {
+-			dma_unmap_page(tx->dev, dma_unmap_addr(buf, dma),
+-				       dma_unmap_len(buf, len), DMA_TO_DEVICE);
++			dma_unmap_page(tx->dev,
++				       dma_unmap_addr(pkt, dma[i]),
++				       dma_unmap_len(pkt, len[i]),
++				       DMA_TO_DEVICE);
+ 		}
+ 	}
+ 
+-	pending_packet->skb = NULL;
+-	pending_packet->num_bufs = 0;
+-	gve_free_pending_packet(tx, pending_packet);
++	pkt->skb = NULL;
++	pkt->num_bufs = 0;
++	gve_free_pending_packet(tx, pkt);
+ 
+ 	return -1;
+ }
+@@ -725,12 +720,12 @@ static void add_to_list(struct gve_tx_ring *tx, struct gve_index_list *list,
+ 
+ static void remove_from_list(struct gve_tx_ring *tx,
+ 			     struct gve_index_list *list,
+-			     struct gve_tx_pending_packet_dqo *pending_packet)
++			     struct gve_tx_pending_packet_dqo *pkt)
+ {
+ 	s16 prev_index, next_index;
+ 
+-	prev_index = pending_packet->prev;
+-	next_index = pending_packet->next;
++	prev_index = pkt->prev;
++	next_index = pkt->next;
+ 
+ 	if (prev_index == -1) {
+ 		/* Node is head */
+@@ -747,21 +742,18 @@ static void remove_from_list(struct gve_tx_ring *tx,
+ }
+ 
+ static void gve_unmap_packet(struct device *dev,
+-			     struct gve_tx_pending_packet_dqo *pending_packet)
++			     struct gve_tx_pending_packet_dqo *pkt)
+ {
+-	struct gve_tx_dma_buf *buf;
+ 	int i;
+ 
+ 	/* SKB linear portion is guaranteed to be mapped */
+-	buf = &pending_packet->bufs[0];
+-	dma_unmap_single(dev, dma_unmap_addr(buf, dma),
+-			 dma_unmap_len(buf, len), DMA_TO_DEVICE);
+-	for (i = 1; i < pending_packet->num_bufs; i++) {
+-		buf = &pending_packet->bufs[i];
+-		dma_unmap_page(dev, dma_unmap_addr(buf, dma),
+-			       dma_unmap_len(buf, len), DMA_TO_DEVICE);
++	dma_unmap_single(dev, dma_unmap_addr(pkt, dma[0]),
++			 dma_unmap_len(pkt, len[0]), DMA_TO_DEVICE);
++	for (i = 1; i < pkt->num_bufs; i++) {
++		dma_unmap_page(dev, dma_unmap_addr(pkt, dma[i]),
++			       dma_unmap_len(pkt, len[i]), DMA_TO_DEVICE);
+ 	}
+-	pending_packet->num_bufs = 0;
++	pkt->num_bufs = 0;
+ }
+ 
+ /* Completion types and expected behavior:
+-- 
+2.29.2
+
