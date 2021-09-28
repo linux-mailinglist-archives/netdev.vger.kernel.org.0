@@ -2,165 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA3D841AC2C
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 11:45:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C0CB41AC67
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 11:55:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240015AbhI1JrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 05:47:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41166 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240000AbhI1JrA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 05:47:00 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E5E8C061575;
-        Tue, 28 Sep 2021 02:45:21 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id x27so5313129lfa.9;
-        Tue, 28 Sep 2021 02:45:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=5MxU6Fbjn/yvVlEfiCDpyfyuAEPctmlJ+a6oqrIoiwc=;
-        b=O18qPKcpfnQwoFTzcvCKjkwP4Wy3wYoSCm1oHlcr7VNklsET3C3dGelF58eOwJE2v4
-         h9QouLqcEZ9gGwo9MpjFmRAMFkGhZp4V9nR8Bud2Val3cHhCNXaERT68EMg7PhKU+vo0
-         BGjSrp7eXSZlWGj/ahb2QXu+HAeta3RMBYCsXHcFaLz3ZOru/hK4EPAFUAQ+Wp0w9TKu
-         J36xOLF7rfOk5w3RwDY1icOgfa4c+M7C1B+z2oUZlxt3WR1CCZIG9HtWheANup0LcdCu
-         27iEpgkWWFeTEriaWBnFxBE7wJ6DydqowmaBJ3uQCTGs4DrPX+lfs9bAnOFviW+WwGZp
-         WSUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=5MxU6Fbjn/yvVlEfiCDpyfyuAEPctmlJ+a6oqrIoiwc=;
-        b=Vspl3Fl4S2Jb4cLlLUf25ebc3oObHEHQyzJu5u9oKn+X9VDTB9BiMS8bHJRbfUL05U
-         7VuUtG+f+hxJOcQdnp7gWqaKToaW164utehoefrxm2Pcz0L576jDDq+tGPmRFKBpDjGY
-         YEWx+tN1YbfM6Cx3gIVm5JZ23Kv+jJWgVLl1uzdWJWM4Ur5CUUUA8oqsmtSEyeORFWsf
-         DMr4IB2+Ln9quWr9xhaToO8XftPuP0pAKYp3vWNuXJ3gqS+hV3hAx8zcGDXTBDzFkxFZ
-         kzUQwXvenTG7Huo798Og79kb/xYYLwY7PATnivmqw76O6Z36jGjg7isCd5DILwzPAXnp
-         bmfQ==
-X-Gm-Message-State: AOAM531Qyc0/cqNPytImkCUt5iVi2IeZ1d7hvY4kEhZiLwB2il1bxbuU
-        MHKfg1SGLMGwqe+tT0t08Tw=
-X-Google-Smtp-Source: ABdhPJy6V1iBnwydx/3qvfeqUikzf/XRl+AmQryuN2M8wIsL/QfcC+EkA0mF+zrE5Ov3qQaVcBdZtg==
-X-Received: by 2002:a05:6512:2090:: with SMTP id t16mr4815125lfr.119.1632822319787;
-        Tue, 28 Sep 2021 02:45:19 -0700 (PDT)
-Received: from [172.28.2.233] ([46.61.204.60])
-        by smtp.gmail.com with ESMTPSA id y9sm2055738lfl.240.2021.09.28.02.45.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Sep 2021 02:45:19 -0700 (PDT)
-Message-ID: <6f90fa0f-6d3b-0ca7-e894-eb971b3b69fa@gmail.com>
-Date:   Tue, 28 Sep 2021 12:45:18 +0300
+        id S240051AbhI1J51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 05:57:27 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:56906 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239872AbhI1J5Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 05:57:24 -0400
+Received: from localhost.localdomain (unknown [78.30.35.141])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 6878763EA4;
+        Tue, 28 Sep 2021 11:54:19 +0200 (CEST)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        lukas@wunner.de, daniel@iogearbox.net, kadlec@netfilter.org,
+        fw@strlen.de, ast@kernel.org, edumazet@google.com, tgraf@suug.ch,
+        nevola@gmail.com, john.fastabend@gmail.com, willemb@google.com
+Subject: [PATCH nf-next v5 0/6] Netfilter egress hook
+Date:   Tue, 28 Sep 2021 11:55:32 +0200
+Message-Id: <20210928095538.114207-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH] net: mdiobus: Fix memory leak in __mdiobus_register
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Yanfei Xu <yanfei.xu@windriver.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, p.zabel@pengutronix.de,
-        syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-References: <20210926045313.2267655-1-yanfei.xu@windriver.com>
- <20210928085549.GA6559@kili> <20210928092657.GI2048@kadam>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20210928092657.GI2048@kadam>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/28/21 12:26, Dan Carpenter wrote:
-> On Tue, Sep 28, 2021 at 11:55:49AM +0300, Dan Carpenter wrote:
->> I don't have a solution.  I have commented before that I hate kobjects
->> for this reason because they lead to unfixable memory leaks during
->> probe.  But this leak will only happen with fault injection and so it
->> doesn't affect real life.  And even if it did, a leak it preferable to a
->> crash.
-> 
-> The fix for this should have gone in devm_of_mdiobus_register() but it's
-> quite tricky.
-> 
-> drivers/net/phy/mdio_devres.c
->     106  int devm_of_mdiobus_register(struct device *dev, struct mii_bus *mdio,
->     107                               struct device_node *np)
->     108  {
->     109          struct mdiobus_devres *dr;
->     110          int ret;
->     111
->     112          if (WARN_ON(!devres_find(dev, devm_mdiobus_free,
->     113                                   mdiobus_devres_match, mdio)))
->     114                  return -EINVAL;
-> 
-> This leaks the bus.  Fix this leak by calling mdiobus_release(mdio);
-> 
->     115
->     116          dr = devres_alloc(devm_mdiobus_unregister, sizeof(*dr), GFP_KERNEL);
->     117          if (!dr)
->     118                  return -ENOMEM;
-> 
-> Fix this path by calling mdiobus_release(mdio);
-> 
->     119
->     120          ret = of_mdiobus_register(mdio, np);
->     121          if (ret) {
-> 
-> Ideally here we can could call device_put(mdio), but that won't work for
-> the one error path that occurs before device_initialize(). /* Do not
-> continue if the node is disabled */.
-> 
-> Maybe the code could be modified to call device_initialize() on the
-> error path?  Sort of ugly but it would work.
-> 
->     122                  devres_free(dr);
->     123                  return ret;
->     124          }
->     125
->     126          dr->mii = mdio;
->     127          devres_add(dev, dr);
->     128          return 0;
->     129  }
-> 
-> Then audit the callers, and there is only one which references the
-> mdio_bus after devm_of_mdiobus_register() fails.  It's
-> realtek_smi_setup_mdio().  Modify that debug statement.
-> 
-Thank you, Dan, for analysis, and it sounds reasonable to me.
+Hi,
 
-Back to bug reported by syzbot: error happened in other place:
+This patchset v5 that re-adds the Netfilter egress:
 
-int __mdiobus_register(struct mii_bus *bus, struct module *owner)
-{
-....
-	phydev = mdiobus_scan(bus, i);		<-- here
-	if (IS_ERR(phydev) && (PTR_ERR(phydev) != -ENODEV)) {
-		err = PTR_ERR(phydev);
-		goto error;
-	}
-....
-}
+1) Rename linux/netfilter_ingress.h to linux/netfilter_netdev.h
+   from Lukas Wunner.
 
-(You can take a look at the log [1] you won't find error message about 
-mii_bus registration failure. I found this place while debugging locally)
+2) Generalize ingress hook file to accomodate egress support,
+   from Lukas Wunner.
 
+3) Modularize Netfilter ingress hook into nf_tables_netdev: Daniel
+   Borkmann is requesting for a mechanism to allow to blacklist
+   Netfilter, this allows users to blacklist this new module that
+   includes ingress chain and the new egress chain for the netdev
+   family. There is no other in-tree user of the ingress and egress
+   hooks than this which might interfer with his matter.
 
-So, Yanfei's patch is completely unrelated to bug reported by syzkaller 
-and Reported-by tag is also wrong.
+4) Place the egress hook again before the tc egress hook as requested
+   by Daniel Borkmann. Patch to add egress hook from Lukas Wunner.
+   The Netfilter egress hook remains behind the static key, if unused
+   performance degradation is negligible.
 
-Can you, please, take a look at [2]. I think, I found the root case of 
-the reported bug. Thank you :)
+5) Add netfilter egress handling to af_packet.
 
+Arguably, distributors might decide to compile nf_tables_netdev
+built-in. Traditionally, distributors have compiled their kernels using
+the default configuration that Netfilter Kconfig provides (ie. use
+modules whenever possible). In any case, I consider that distributor
+policy is out of scope in this discussion, providing a mechanism to
+allow Daniel to prevent Netfilter ingress and egress chains to be loaded
+should be sufficient IMHO.
 
-[1] https://syzkaller.appspot.com/text?tag=CrashLog&x=131c754b300000
+Joint work with Lukas Wunner.
 
-[2] 
-https://lore.kernel.org/lkml/20210927112017.19108-1-paskripkin@gmail.com/
+Please review, thanks.
 
+Lukas Wunner (3):
+  netfilter: Rename ingress hook include file
+  netfilter: Generalize ingress hook include file
+  netfilter: Introduce egress hook
 
+Pablo Neira Ayuso (3):
+  netfilter: nf_tables: move netdev ingress filter chain to nf_tables_netdev.c
+  af_packet: Introduce egress hook
+  netfilter: nf_tables: add egress support
 
+ include/linux/netdevice.h         |   4 +
+ include/linux/netfilter_ingress.h |  58 ------------
+ include/linux/netfilter_netdev.h  | 112 ++++++++++++++++++++++
+ include/uapi/linux/netfilter.h    |   1 +
+ net/core/dev.c                    |  15 ++-
+ net/netfilter/Kconfig             |  10 +-
+ net/netfilter/Makefile            |   1 +
+ net/netfilter/core.c              |  34 ++++++-
+ net/netfilter/nf_tables_api.c     |   7 +-
+ net/netfilter/nf_tables_netdev.c  | 150 ++++++++++++++++++++++++++++++
+ net/netfilter/nft_chain_filter.c  | 143 ----------------------------
+ net/packet/af_packet.c            |  35 +++++++
+ 12 files changed, 358 insertions(+), 212 deletions(-)
+ delete mode 100644 include/linux/netfilter_ingress.h
+ create mode 100644 include/linux/netfilter_netdev.h
+ create mode 100644 net/netfilter/nf_tables_netdev.c
 
-With regards,
-Pavel Skripkin
+-- 
+2.30.2
+
