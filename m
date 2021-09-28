@@ -2,112 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE00741ABEE
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 11:31:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA3D841AC2C
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 11:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240020AbhI1JdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 05:33:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
+        id S240015AbhI1JrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 05:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240038AbhI1Jcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 05:32:54 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC64CC06176F
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 02:31:14 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id t18so56909489wrb.0
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 02:31:14 -0700 (PDT)
+        with ESMTP id S240000AbhI1JrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 05:47:00 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E5E8C061575;
+        Tue, 28 Sep 2021 02:45:21 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id x27so5313129lfa.9;
+        Tue, 28 Sep 2021 02:45:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qOQcHnRA4OzmDMrO4dM1TAmtC+v9d8Z05czXaJ/Qyps=;
-        b=j5i1ZfzTSkWC0KpfTPAm/d98mJ95ltf3LgMoqfjaiA9utXdmH1QA0a8v416ZV5yVsj
-         jmrW70W41xqy93PI0cMh95LsGCbEf1Ve2mqgcAEnOKlxhSvZv5Tok7fiyIbRjj1G5b/y
-         mR2T6ue+VFHxt9gk5aloFDAeBtrrCwW/KDazY=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=5MxU6Fbjn/yvVlEfiCDpyfyuAEPctmlJ+a6oqrIoiwc=;
+        b=O18qPKcpfnQwoFTzcvCKjkwP4Wy3wYoSCm1oHlcr7VNklsET3C3dGelF58eOwJE2v4
+         h9QouLqcEZ9gGwo9MpjFmRAMFkGhZp4V9nR8Bud2Val3cHhCNXaERT68EMg7PhKU+vo0
+         BGjSrp7eXSZlWGj/ahb2QXu+HAeta3RMBYCsXHcFaLz3ZOru/hK4EPAFUAQ+Wp0w9TKu
+         J36xOLF7rfOk5w3RwDY1icOgfa4c+M7C1B+z2oUZlxt3WR1CCZIG9HtWheANup0LcdCu
+         27iEpgkWWFeTEriaWBnFxBE7wJ6DydqowmaBJ3uQCTGs4DrPX+lfs9bAnOFviW+WwGZp
+         WSUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=qOQcHnRA4OzmDMrO4dM1TAmtC+v9d8Z05czXaJ/Qyps=;
-        b=nhnHRD32BFhbz/JPUUEm3eWv2jeoR8sbtgXWFWTs6DI3G3YTG+OIR8J3jFHTnyGQpu
-         o86gbzrd2crAqnOwe4HYkD45b65DaavnT7d82tj0t3VnoMPUitpIMnsZzzDqTfDhySjh
-         S1A3wW/KiL+oRdP9ROA9yhEbeITRUinpIuyorG1yfizm7V4ES4gpVS4RrMKZxOMfRN4N
-         Y9oYkKyt1NreLy2F2+4vhcoCi2c/6L0vrRQBScSoV9BIAjvQLrO3tq6OY1h90ikt+fvR
-         lCBOTXc3JwYh+RpAqlggxd7VDdt1Xw1Vcdft5pwQf7P6tqDLoa371wGuRjQmny7XoQhY
-         d+LA==
-X-Gm-Message-State: AOAM530wTbIWkO3ao1drD6/kP+IrdH+ncyaebG8n6/zYQM7WYAHfDJT1
-        43lz4k+9s+PUP/VrB+73qRf/1Q==
-X-Google-Smtp-Source: ABdhPJy2hW+MI4TO2xRyKlBg3FCAUNVxkc/LlMhgUA1ST4mFFFWUVCwLNNK41Meu19K4TI9a6Cf0aA==
-X-Received: by 2002:a5d:4eca:: with SMTP id s10mr5240117wrv.255.1632821473526;
-        Tue, 28 Sep 2021 02:31:13 -0700 (PDT)
-Received: from antares.. (7.2.8.5.7.4.1.5.9.1.3.d.e.b.3.5.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:53be:d319:5147:5827])
-        by smtp.gmail.com with ESMTPSA id h15sm18716206wrc.19.2021.09.28.02.31.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Sep 2021 02:31:13 -0700 (PDT)
-From:   Lorenz Bauer <lmb@cloudflare.com>
-To:     bjorn@kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next] bpf: do not invoke the XDP dispatcher for PROG_RUN with single repeat
-Date:   Tue, 28 Sep 2021 10:30:59 +0100
-Message-Id: <20210928093100.27124-1-lmb@cloudflare.com>
-X-Mailer: git-send-email 2.30.2
+        bh=5MxU6Fbjn/yvVlEfiCDpyfyuAEPctmlJ+a6oqrIoiwc=;
+        b=Vspl3Fl4S2Jb4cLlLUf25ebc3oObHEHQyzJu5u9oKn+X9VDTB9BiMS8bHJRbfUL05U
+         7VuUtG+f+hxJOcQdnp7gWqaKToaW164utehoefrxm2Pcz0L576jDDq+tGPmRFKBpDjGY
+         YEWx+tN1YbfM6Cx3gIVm5JZ23Kv+jJWgVLl1uzdWJWM4Ur5CUUUA8oqsmtSEyeORFWsf
+         DMr4IB2+Ln9quWr9xhaToO8XftPuP0pAKYp3vWNuXJ3gqS+hV3hAx8zcGDXTBDzFkxFZ
+         kzUQwXvenTG7Huo798Og79kb/xYYLwY7PATnivmqw76O6Z36jGjg7isCd5DILwzPAXnp
+         bmfQ==
+X-Gm-Message-State: AOAM531Qyc0/cqNPytImkCUt5iVi2IeZ1d7hvY4kEhZiLwB2il1bxbuU
+        MHKfg1SGLMGwqe+tT0t08Tw=
+X-Google-Smtp-Source: ABdhPJy6V1iBnwydx/3qvfeqUikzf/XRl+AmQryuN2M8wIsL/QfcC+EkA0mF+zrE5Ov3qQaVcBdZtg==
+X-Received: by 2002:a05:6512:2090:: with SMTP id t16mr4815125lfr.119.1632822319787;
+        Tue, 28 Sep 2021 02:45:19 -0700 (PDT)
+Received: from [172.28.2.233] ([46.61.204.60])
+        by smtp.gmail.com with ESMTPSA id y9sm2055738lfl.240.2021.09.28.02.45.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Sep 2021 02:45:19 -0700 (PDT)
+Message-ID: <6f90fa0f-6d3b-0ca7-e894-eb971b3b69fa@gmail.com>
+Date:   Tue, 28 Sep 2021 12:45:18 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH] net: mdiobus: Fix memory leak in __mdiobus_register
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Yanfei Xu <yanfei.xu@windriver.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, p.zabel@pengutronix.de,
+        syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Dongliang Mu <mudongliangabcd@gmail.com>
+References: <20210926045313.2267655-1-yanfei.xu@windriver.com>
+ <20210928085549.GA6559@kili> <20210928092657.GI2048@kadam>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20210928092657.GI2048@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have a unit test that invokes an XDP program with 1m different
-inputs, aka 1m BPF_PROG_RUN syscalls. We run this test concurrently
-with slight variations in how we generated the input.
+On 9/28/21 12:26, Dan Carpenter wrote:
+> On Tue, Sep 28, 2021 at 11:55:49AM +0300, Dan Carpenter wrote:
+>> I don't have a solution.  I have commented before that I hate kobjects
+>> for this reason because they lead to unfixable memory leaks during
+>> probe.  But this leak will only happen with fault injection and so it
+>> doesn't affect real life.  And even if it did, a leak it preferable to a
+>> crash.
+> 
+> The fix for this should have gone in devm_of_mdiobus_register() but it's
+> quite tricky.
+> 
+> drivers/net/phy/mdio_devres.c
+>     106  int devm_of_mdiobus_register(struct device *dev, struct mii_bus *mdio,
+>     107                               struct device_node *np)
+>     108  {
+>     109          struct mdiobus_devres *dr;
+>     110          int ret;
+>     111
+>     112          if (WARN_ON(!devres_find(dev, devm_mdiobus_free,
+>     113                                   mdiobus_devres_match, mdio)))
+>     114                  return -EINVAL;
+> 
+> This leaks the bus.  Fix this leak by calling mdiobus_release(mdio);
+> 
+>     115
+>     116          dr = devres_alloc(devm_mdiobus_unregister, sizeof(*dr), GFP_KERNEL);
+>     117          if (!dr)
+>     118                  return -ENOMEM;
+> 
+> Fix this path by calling mdiobus_release(mdio);
+> 
+>     119
+>     120          ret = of_mdiobus_register(mdio, np);
+>     121          if (ret) {
+> 
+> Ideally here we can could call device_put(mdio), but that won't work for
+> the one error path that occurs before device_initialize(). /* Do not
+> continue if the node is disabled */.
+> 
+> Maybe the code could be modified to call device_initialize() on the
+> error path?  Sort of ugly but it would work.
+> 
+>     122                  devres_free(dr);
+>     123                  return ret;
+>     124          }
+>     125
+>     126          dr->mii = mdio;
+>     127          devres_add(dev, dr);
+>     128          return 0;
+>     129  }
+> 
+> Then audit the callers, and there is only one which references the
+> mdio_bus after devm_of_mdiobus_register() fails.  It's
+> realtek_smi_setup_mdio().  Modify that debug statement.
+> 
+Thank you, Dan, for analysis, and it sounds reasonable to me.
 
-Since commit f23c4b3924d2 ("bpf: Start using the BPF dispatcher in BPF_TEST_RUN")
-the unit test has slowed down significantly. Digging deeper reveals that
-the concurrent tests are serialised in the kernel on the XDP dispatcher.
-This is a global resource that is protected by a mutex, on which we contend.
+Back to bug reported by syzbot: error happened in other place:
 
-Fix this by not calling into the XDP dispatcher if we only want to perform
-a single run of the BPF program.
+int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+{
+....
+	phydev = mdiobus_scan(bus, i);		<-- here
+	if (IS_ERR(phydev) && (PTR_ERR(phydev) != -ENODEV)) {
+		err = PTR_ERR(phydev);
+		goto error;
+	}
+....
+}
 
-See: https://lore.kernel.org/bpf/CACAyw9_y4QumOW35qpgTbLsJ532uGq-kVW-VESJzGyiZkypnvw@mail.gmail.com/
+(You can take a look at the log [1] you won't find error message about 
+mii_bus registration failure. I found this place while debugging locally)
 
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
----
- net/bpf/test_run.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index fcb2f493f710..6593a71dba5f 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -803,7 +803,8 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
- 	if (ret)
- 		goto free_data;
- 
--	bpf_prog_change_xdp(NULL, prog);
-+	if (repeat > 1)
-+		bpf_prog_change_xdp(NULL, prog);
- 	ret = bpf_test_run(prog, &xdp, repeat, &retval, &duration, true);
- 	/* We convert the xdp_buff back to an xdp_md before checking the return
- 	 * code so the reference count of any held netdevice will be decremented
-@@ -824,7 +825,8 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
- 				     sizeof(struct xdp_md));
- 
- out:
--	bpf_prog_change_xdp(prog, NULL);
-+	if (repeat > 1)
-+		bpf_prog_change_xdp(prog, NULL);
- free_data:
- 	kfree(data);
- free_ctx:
--- 
-2.30.2
+So, Yanfei's patch is completely unrelated to bug reported by syzkaller 
+and Reported-by tag is also wrong.
 
+Can you, please, take a look at [2]. I think, I found the root case of 
+the reported bug. Thank you :)
+
+
+[1] https://syzkaller.appspot.com/text?tag=CrashLog&x=131c754b300000
+
+[2] 
+https://lore.kernel.org/lkml/20210927112017.19108-1-paskripkin@gmail.com/
+
+
+
+
+With regards,
+Pavel Skripkin
