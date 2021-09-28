@@ -2,223 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EE7B41BAF0
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:21:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5FAF41BAF9
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 01:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243239AbhI1XWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 19:22:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46212 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243224AbhI1XWw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 19:22:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9B25C613A9;
-        Tue, 28 Sep 2021 23:21:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632871272;
-        bh=Qpmjy3v3LXLoqwxdodHgDFx1iO63hAnMdM8VOKZGpXk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bjmMrQkaTwojf6QNFkY/FTOzBM3q0ptdF+4qIBCY9GeWM8sCEO5TYXfmBohl5jwuQ
-         YDSOPXZynWXBuvCcP8YF9n/qpvdDAsu0A1OrOyFVrTN+V9246BkDCEEPwKReJDb43X
-         NJQpiVzuFqnhUjjvWCafzB5DkNk0w/jCnvg9TLvUibjhnZIAWy8JGkVzKD7bEGScbS
-         S4n4hrHlwgfbO/4v93FBhh8evB1HDNH3JBo8ywTiS7F2oXRiMduCZCbtyi4HhZlusQ
-         JSxZEKaH3MjtyZXG2TAGJM8nTGr3B8CnB5KKIRnInY+L5mbLEno7ZLUBz3nCfnC1K6
-         IwmtKvJjE6jBw==
-Date:   Tue, 28 Sep 2021 18:25:14 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 1/2] bpf: Replace "want address" users of
- BPF_CAST_CALL with BPF_CALL_IMM
-Message-ID: <20210928232514.GA297403@embeddedor>
-References: <20210928230946.4062144-1-keescook@chromium.org>
- <20210928230946.4062144-2-keescook@chromium.org>
+        id S243167AbhI1X1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 19:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230349AbhI1X1W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 19:27:22 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E08C06161C
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 16:25:42 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id n18so673573pgm.12
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 16:25:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=HFip4R/7tFfWmQjN2xcemyQnqxc3mRoX6ZNukuh1ZI0=;
+        b=bO5sU6S6tk7jQNNpAK8aOaN+bznZmVG39iSjGuVYtQyNTW9UCJLvFtjqNiBDH0bAYs
+         54QG2NYLEQ+B1EeDX03FMU1o8t+vbjTGO8jUeKDcH/i8Hn6AmNM2Ty/T3aaE2XLV+DF7
+         LlZTZhdDkL2EnnTOCkdYyWoRlWuG3NRwO+P7Q41jYDf0d1iqKy1gHWhjPptULvsiRiys
+         aRFWti5h9YkQABePn+1w/5yzNabuKXqu3B88ovZXy0VkL/pkrfc8nhZDK6nXAxJs28gC
+         ATC9kqRhUejTF2IsYVdjsLXi/BM4uLhvPfzZVfBWZJ76qaOBHIKqjIyS581pYw7ORshU
+         YhjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HFip4R/7tFfWmQjN2xcemyQnqxc3mRoX6ZNukuh1ZI0=;
+        b=N/kfBepRSJfrdvbuQg+zffu7IyyqI/vaDq7FqB/6/olwKfXS/1ApbPJXWVIUNcckzD
+         QQPEArVWTWGiOAnbwhATdQenzjet7GHZqdd2m5heAFNHwAkz2vkB/sF0rtEVm51uk6eb
+         gf7FVsSpLMchCUIh2RfWAHvvjGLTUa9lxtXip5yzxkEp1n95HjbWUgx/YpTk0Z+HYc3k
+         VueADxE7XzIRvEt1cLyzNsgUvcL/Q6rY5l0o+8IRv1BBI1Ghu4CnbI36Hozx4ZPG7/4a
+         3O4RpyB/0CLjNvlpxwD8gTQmlc+XcTvDM4ZlAaYIryFjhR+3InOTyfD79TiKNnFppzF8
+         LvIg==
+X-Gm-Message-State: AOAM532AYGu2PZJC7iNvVVywvxv9LpihN652d4LKK3TZ/b4ffrULw+3d
+        1uNjJQduMbAKs9RIGwuUuWx1YLmbY6k=
+X-Google-Smtp-Source: ABdhPJw80qZ8ksX/dnf8/13iTzq4E6VM8VMbLXCPZIFQKjLaO//ewFgQrUfU3oEx6hgRHLAJeNK3qw==
+X-Received: by 2002:a62:6d86:0:b0:448:152d:83a4 with SMTP id i128-20020a626d86000000b00448152d83a4mr8245472pfc.38.1632871541384;
+        Tue, 28 Sep 2021 16:25:41 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id p3sm204290pfq.67.2021.09.28.16.25.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Sep 2021 16:25:40 -0700 (PDT)
+Subject: Re: 5.15-rc3+ crash in fq-codel?
+To:     Ben Greear <greearb@candelatech.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+References: <dfa032f3-18f2-22a3-80bf-f0f570892478@candelatech.com>
+ <b6e8155e-7fae-16b0-59f0-2a2e6f5142de@gmail.com>
+ <00e495ba-391e-6ad8-94a2-930fbc826a37@candelatech.com>
+ <296232ac-e7ed-6e3c-36b9-ed430a21f632@candelatech.com>
+ <7e87883e-42f5-2341-ab67-9f1614fb8b86@candelatech.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7f1d67f1-3a2c-2e74-bb86-c02a56370526@gmail.com>
+Date:   Tue, 28 Sep 2021 16:25:39 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210928230946.4062144-2-keescook@chromium.org>
+In-Reply-To: <7e87883e-42f5-2341-ab67-9f1614fb8b86@candelatech.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 04:09:45PM -0700, Kees Cook wrote:
-> In order to keep ahead of cases in the kernel where Control Flow
-> Integrity (CFI) may trip over function call casts, enabling
-> -Wcast-function-type is helpful. To that end, BPF_CAST_CALL causes
-> various warnings and is one of the last places in the kernel triggering
-> this warning.
-> 
-> Most places using BPF_CAST_CALL actually just want a void * to perform
-> math on. It's not actually performing a call, so just use a different
-> helper to get the void *, by way of the new BPF_CALL_IMM() helper, which
-> can clean up a common copy/paste idiom as well.
-> 
-> This change results in no object code difference.
-> 
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Martin KaFai Lau <kafai@fb.com>
-> Cc: Song Liu <songliubraving@fb.com>
-> Cc: Yonghong Song <yhs@fb.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: KP Singh <kpsingh@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Cc: bpf@vger.kernel.org
-> Cc: Gustavo A. R. Silva <gustavoars@kernel.org>
-> Link: https://github.com/KSPP/linux/issues/20
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> Link: https://lore.kernel.org/lkml/CAEf4Bzb46=-J5Fxc3mMZ8JQPtK1uoE0q6+g6WPz53Cvx=CBEhw@mail.gmail.com
 
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Thanks
---
-Gustavo
+On 9/28/21 3:00 PM, Ben Greear wrote:
+> On 9/27/21 5:16 PM, Ben Greear wrote:
+>> On 9/27/21 5:04 PM, Ben Greear wrote:
+>>> On 9/27/21 4:49 PM, Eric Dumazet wrote:
+>>>>
+>>>>
+>>>> On 9/27/21 4:30 PM, Ben Greear wrote:
+>>>>> Hello,
+>>>>>
+>>>>> In a hacked upon kernel, I'm getting crashes in fq-codel when doing bi-directional
+>>>>> pktgen traffic on top of mac-vlans.  Unfortunately for me, I've made big changes to
+>>>>> pktgen so I cannot easily run this test on stock kernels, and there is some chance
+>>>>> some of my hackings have caused this issue.
+>>>>>
+>>>>> But, in case others have seen similar, please let me know.  I shall go digging
+>>>>> in the meantime...
+>>>>>
+>>>>> Looks to me like 'skb' is NULL in line 120 below.
+>>>>
+>>>>
+>>>> pktgen must not be used in a mode where a single skb
+>>>> is cloned and reused, if packet needs to be stored in a qdisc.
+>>>>
+>>>> qdisc of all sorts assume skb->next/prev can be used as
+>>>> anchor in their list.
+>>>>
+>>>> If the same skb is queued multiple times, lists are corrupted.
+>>>>
+>>>> Please double check your clone_skb pktgen setup.
+>>>>
+>>>> I thought we had IFF_TX_SKB_SHARING for this, and that macvlan was properly clearing this bit.
+>>>
+>>> My pktgen config was not using any duplicated queueing in this case.
+>>>
+>>> I changed to pfifo fast and so far it is stable for ~10 minutes, where before it would crash
+>>> within a minute.  I'll let it bake overnight....
+>>
+>> Still running stable.  I also notice we have been using fq-codel for a while and haven't noticed
+>> this problem (next most recent kernel we might have run similar test on would be 5.13-ish).
+>>
+>> I'll duplicate this test on our older kernels tomorrow to see if it looks like a regression or
+>> if we just haven't actually done this exact test in a while...
+> 
+> We can reproduce this crash as far back as 5.4 using fq-codel, with our pktgen driving mac-vlans.
+> We did not try any kernels older than 5.4.
+> We cannot reproduce with pfifo on 5.15-rc3 on an overnight run.
+> We cannot produce with user-space UDP traffic on any kernel/qdisc combination.
+> Our pktgen is configured for multi-skb of 0 (no multiple submits of the same skb)
+> 
+> While looking briefly at fq-codel, I didn't notice any locking in the code that crashed.
+> Any chance that it makes assumptions that would be incorrect with pktgen running multiple
+> threads (one thread per mac-vlan) on top of a single qdisc belonging to the underlying NIC?
+> 
 
-> ---
->  include/linux/filter.h |  6 +++++-
->  kernel/bpf/hashtab.c   |  6 +++---
->  kernel/bpf/verifier.c  | 26 +++++++++-----------------
->  lib/test_bpf.c         |  2 +-
->  4 files changed, 18 insertions(+), 22 deletions(-)
-> 
-> diff --git a/include/linux/filter.h b/include/linux/filter.h
-> index 4a93c12543ee..6c247663d4ce 100644
-> --- a/include/linux/filter.h
-> +++ b/include/linux/filter.h
-> @@ -365,13 +365,17 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
->  #define BPF_CAST_CALL(x)					\
->  		((u64 (*)(u64, u64, u64, u64, u64))(x))
->  
-> +/* Convert function address to BPF immediate */
-> +
-> +#define BPF_CALL_IMM(x)	((void *)(x) - (void *)__bpf_call_base)
-> +
->  #define BPF_EMIT_CALL(FUNC)					\
->  	((struct bpf_insn) {					\
->  		.code  = BPF_JMP | BPF_CALL,			\
->  		.dst_reg = 0,					\
->  		.src_reg = 0,					\
->  		.off   = 0,					\
-> -		.imm   = ((FUNC) - __bpf_call_base) })
-> +		.imm   = BPF_CALL_IMM(FUNC) })
->  
->  /* Raw code statement block */
->  
-> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> index 32471ba02708..3d8f9d6997d5 100644
-> --- a/kernel/bpf/hashtab.c
-> +++ b/kernel/bpf/hashtab.c
-> @@ -668,7 +668,7 @@ static int htab_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
->  
->  	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
->  		     (void *(*)(struct bpf_map *map, void *key))NULL));
-> -	*insn++ = BPF_EMIT_CALL(BPF_CAST_CALL(__htab_map_lookup_elem));
-> +	*insn++ = BPF_EMIT_CALL(__htab_map_lookup_elem);
->  	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 1);
->  	*insn++ = BPF_ALU64_IMM(BPF_ADD, ret,
->  				offsetof(struct htab_elem, key) +
-> @@ -709,7 +709,7 @@ static int htab_lru_map_gen_lookup(struct bpf_map *map,
->  
->  	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
->  		     (void *(*)(struct bpf_map *map, void *key))NULL));
-> -	*insn++ = BPF_EMIT_CALL(BPF_CAST_CALL(__htab_map_lookup_elem));
-> +	*insn++ = BPF_EMIT_CALL(__htab_map_lookup_elem);
->  	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 4);
->  	*insn++ = BPF_LDX_MEM(BPF_B, ref_reg, ret,
->  			      offsetof(struct htab_elem, lru_node) +
-> @@ -2397,7 +2397,7 @@ static int htab_of_map_gen_lookup(struct bpf_map *map,
->  
->  	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
->  		     (void *(*)(struct bpf_map *map, void *key))NULL));
-> -	*insn++ = BPF_EMIT_CALL(BPF_CAST_CALL(__htab_map_lookup_elem));
-> +	*insn++ = BPF_EMIT_CALL(__htab_map_lookup_elem);
->  	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 2);
->  	*insn++ = BPF_ALU64_IMM(BPF_ADD, ret,
->  				offsetof(struct htab_elem, key) +
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 7a8351604f67..1433752db740 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -1744,7 +1744,7 @@ static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id)
->  
->  	desc = &tab->descs[tab->nr_descs++];
->  	desc->func_id = func_id;
-> -	desc->imm = BPF_CAST_CALL(addr) - __bpf_call_base;
-> +	desc->imm = BPF_CALL_IMM(addr);
->  	err = btf_distill_func_proto(&env->log, btf_vmlinux,
->  				     func_proto, func_name,
->  				     &desc->func_model);
-> @@ -12514,8 +12514,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
->  			if (!bpf_pseudo_call(insn))
->  				continue;
->  			subprog = insn->off;
-> -			insn->imm = BPF_CAST_CALL(func[subprog]->bpf_func) -
-> -				    __bpf_call_base;
-> +			insn->imm = BPF_CALL_IMM(func[subprog]->bpf_func);
->  		}
->  
->  		/* we use the aux data to keep a list of the start addresses
-> @@ -12995,32 +12994,25 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
->  patch_map_ops_generic:
->  			switch (insn->imm) {
->  			case BPF_FUNC_map_lookup_elem:
-> -				insn->imm = BPF_CAST_CALL(ops->map_lookup_elem) -
-> -					    __bpf_call_base;
-> +				insn->imm = BPF_CALL_IMM(ops->map_lookup_elem);
->  				continue;
->  			case BPF_FUNC_map_update_elem:
-> -				insn->imm = BPF_CAST_CALL(ops->map_update_elem) -
-> -					    __bpf_call_base;
-> +				insn->imm = BPF_CALL_IMM(ops->map_update_elem);
->  				continue;
->  			case BPF_FUNC_map_delete_elem:
-> -				insn->imm = BPF_CAST_CALL(ops->map_delete_elem) -
-> -					    __bpf_call_base;
-> +				insn->imm = BPF_CALL_IMM(ops->map_delete_elem);
->  				continue;
->  			case BPF_FUNC_map_push_elem:
-> -				insn->imm = BPF_CAST_CALL(ops->map_push_elem) -
-> -					    __bpf_call_base;
-> +				insn->imm = BPF_CALL_IMM(ops->map_push_elem);
->  				continue;
->  			case BPF_FUNC_map_pop_elem:
-> -				insn->imm = BPF_CAST_CALL(ops->map_pop_elem) -
-> -					    __bpf_call_base;
-> +				insn->imm = BPF_CALL_IMM(ops->map_pop_elem);
->  				continue;
->  			case BPF_FUNC_map_peek_elem:
-> -				insn->imm = BPF_CAST_CALL(ops->map_peek_elem) -
-> -					    __bpf_call_base;
-> +				insn->imm = BPF_CALL_IMM(ops->map_peek_elem);
->  				continue;
->  			case BPF_FUNC_redirect_map:
-> -				insn->imm = BPF_CAST_CALL(ops->map_redirect) -
-> -					    __bpf_call_base;
-> +				insn->imm = BPF_CALL_IMM(ops->map_redirect);
->  				continue;
->  			}
->  
-> diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-> index 08f438e6fe9e..21ea1ab253a1 100644
-> --- a/lib/test_bpf.c
-> +++ b/lib/test_bpf.c
-> @@ -12439,7 +12439,7 @@ static __init int prepare_tail_call_tests(struct bpf_array **pprogs)
->  					err = -EFAULT;
->  					goto out_err;
->  				}
-> -				*insn = BPF_EMIT_CALL(BPF_CAST_CALL(addr));
-> +				*insn = BPF_EMIT_CALL(addr);
->  				if ((long)__bpf_call_base + insn->imm != addr)
->  					*insn = BPF_JMP_A(0); /* Skip: NOP */
->  				break;
-> -- 
-> 2.30.2
-> 
+
+qdisc are protected by a qdisc spinlock.
+
+fq-codel does not have to lock anything in its enqueue() and dequeue() methods.
+
+I guess your local changes to pktgen might be to blame.
+
+pfifo is much simpler than fq-codel, it uses less fields from skb.
