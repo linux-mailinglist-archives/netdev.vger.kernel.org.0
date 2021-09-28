@@ -2,75 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9B141AF91
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 15:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81F5F41AFAE
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 15:11:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240832AbhI1NBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 09:01:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49866 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240669AbhI1NBr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 09:01:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5FA8961266;
-        Tue, 28 Sep 2021 13:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632834008;
-        bh=KLqbuPZ3awNNYmQUgRZ2qZO8U8LeOPmjZWD6mYgN4Go=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VztWJL/RZqUW5yb4RAKLeJJ51WszqYwLK+Y1Pxm6uBHlUZLIXlBTBq5cF24xXbpgz
-         z8v0ODZh+dys3UgF3nJdC/pdNFf4VKtpj3ABZqndrJcPV82qNnwoqgWieg5yshCLAS
-         LWIgQQYihgaxzyfjo2LQFKOS2bzvINl0qEte/8AOJSNQYzIZMyGRRAySNoRxdOcmnR
-         ezy3myEKpZ5LVnI47L27t7x2XQJbOnvgP2U47Gd96FyQBdTp78T6IIzWmCpE7N2BC2
-         E45ySBtoYmilKYMvcTp808D0YsBUHDDkhXuYsnPd4AQ6n/tKlCWQkeezOf74dkyH9s
-         gETRoL2DLXtig==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 52BEC60A69;
-        Tue, 28 Sep 2021 13:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S240612AbhI1NMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 09:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235776AbhI1NMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 09:12:53 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC42C061575;
+        Tue, 28 Sep 2021 06:11:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=8Y4+qGyuCO6q39+CSQ6y4fo3O7zf87El/V8Z1fXLg+o=; b=hZMyLWbpDXk1dFAoVgKVJW6UM5
+        /7QaKqfb6x7Q5wHPPutTiLBI++SDHPaSdJDbsA9SucV/fdgGEVXZ5ClufUPGbJJl0hew3o0IKHwD4
+        Wi+HhA3ERsYP9a+6lPvW9rbaat4K3hJC8VLOXHq+uXY0LaBYNTpnsYCkxFf3M3b/CsXuJp4hnVbTz
+        7mN/w1syAaQM5nYuvw/r/5h3UW+aYG20kS+TKp1RhW1kRlrNo5n5W2rARuO1WQqgz7tAm+ixkR2F0
+        SoDGH2rRokPB9PyXRTOWIve0oGQeRs+IBgF/RKDwhOzLQIlx3kAc1lYDQeO7TQIUspuwYWouO+XvG
+        nzh55p7g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54830)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mVCsz-000191-Pc; Tue, 28 Sep 2021 14:11:05 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mVCsy-0001ma-1p; Tue, 28 Sep 2021 14:11:04 +0100
+Date:   Tue, 28 Sep 2021 14:11:04 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Yanfei Xu <yanfei.xu@windriver.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, p.zabel@pengutronix.de,
+        syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: mdiobus: Fix memory leak in __mdiobus_register
+Message-ID: <YVMUaClu3ypcLMDB@shell.armlinux.org.uk>
+References: <20210926045313.2267655-1-yanfei.xu@windriver.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next PATCH 0/4] Externel ptp clock support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163283400833.20418.1869935426050637692.git-patchwork-notify@kernel.org>
-Date:   Tue, 28 Sep 2021 13:00:08 +0000
-References: <20210928113101.16580-1-hkelam@marvell.com>
-In-Reply-To: <20210928113101.16580-1-hkelam@marvell.com>
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, sgoutham@marvell.com,
-        lcherian@marvell.com, gakula@marvell.com, jerinj@marvell.com,
-        sbhatta@marvell.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210926045313.2267655-1-yanfei.xu@windriver.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Tue, 28 Sep 2021 17:00:57 +0530 you wrote:
-> Externel ptp support is required in a scenario like connecting
-> a external timing device to the chip for time synchronization.
-> This series of patches adds support to ptp driver to use external
-> clock and enables PTP config in CN10K MAC block (RPM). Currently
-> PTP configuration is left unchanged in FLR handler these patches
-> addresses the same.
+On Sun, Sep 26, 2021 at 12:53:13PM +0800, Yanfei Xu wrote:
+> Once device_register() failed, we should call put_device() to
+> decrement reference count for cleanup. Or it will cause memory
+> leak.
 > 
-> [...]
+> BUG: memory leak
+> unreferenced object 0xffff888114032e00 (size 256):
+>   comm "kworker/1:3", pid 2960, jiffies 4294943572 (age 15.920s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 08 2e 03 14 81 88 ff ff  ................
+>     08 2e 03 14 81 88 ff ff 90 76 65 82 ff ff ff ff  .........ve.....
+>   backtrace:
+>     [<ffffffff8265cfab>] kmalloc include/linux/slab.h:591 [inline]
+>     [<ffffffff8265cfab>] kzalloc include/linux/slab.h:721 [inline]
+>     [<ffffffff8265cfab>] device_private_init drivers/base/core.c:3203 [inline]
+>     [<ffffffff8265cfab>] device_add+0x89b/0xdf0 drivers/base/core.c:3253
+>     [<ffffffff828dd643>] __mdiobus_register+0xc3/0x450 drivers/net/phy/mdio_bus.c:537
+>     [<ffffffff828cb835>] __devm_mdiobus_register+0x75/0xf0 drivers/net/phy/mdio_devres.c:87
+>     [<ffffffff82b92a00>] ax88772_init_mdio drivers/net/usb/asix_devices.c:676 [inline]
+>     [<ffffffff82b92a00>] ax88772_bind+0x330/0x480 drivers/net/usb/asix_devices.c:786
+>     [<ffffffff82baa33f>] usbnet_probe+0x3ff/0xdf0 drivers/net/usb/usbnet.c:1745
+>     [<ffffffff82c36e17>] usb_probe_interface+0x177/0x370 drivers/usb/core/driver.c:396
+>     [<ffffffff82661d17>] call_driver_probe drivers/base/dd.c:517 [inline]
+>     [<ffffffff82661d17>] really_probe.part.0+0xe7/0x380 drivers/base/dd.c:596
+>     [<ffffffff826620bc>] really_probe drivers/base/dd.c:558 [inline]
+>     [<ffffffff826620bc>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:751
+>     [<ffffffff826621ba>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:781
+>     [<ffffffff82662a26>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:898
+>     [<ffffffff8265eca7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+>     [<ffffffff826625a2>] __device_attach+0x122/0x260 drivers/base/dd.c:969
+>     [<ffffffff82660916>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+>     [<ffffffff8265cd0b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3359
+>     [<ffffffff82c343b9>] usb_set_configuration+0x9d9/0xb90 drivers/usb/core/message.c:2170
+>     [<ffffffff82c4473c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+> 
+> BUG: memory leak
+> unreferenced object 0xffff888116f06900 (size 32):
+>   comm "kworker/0:2", pid 2670, jiffies 4294944448 (age 7.160s)
+>   hex dump (first 32 bytes):
+>     75 73 62 2d 30 30 31 3a 30 30 33 00 00 00 00 00  usb-001:003.....
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<ffffffff81484516>] kstrdup+0x36/0x70 mm/util.c:60
+>     [<ffffffff814845a3>] kstrdup_const+0x53/0x80 mm/util.c:83
+>     [<ffffffff82296ba2>] kvasprintf_const+0xc2/0x110 lib/kasprintf.c:48
+>     [<ffffffff82358d4b>] kobject_set_name_vargs+0x3b/0xe0 lib/kobject.c:289
+>     [<ffffffff826575f3>] dev_set_name+0x63/0x90 drivers/base/core.c:3147
+>     [<ffffffff828dd63b>] __mdiobus_register+0xbb/0x450 drivers/net/phy/mdio_bus.c:535
+>     [<ffffffff828cb835>] __devm_mdiobus_register+0x75/0xf0 drivers/net/phy/mdio_devres.c:87
+>     [<ffffffff82b92a00>] ax88772_init_mdio drivers/net/usb/asix_devices.c:676 [inline]
+>     [<ffffffff82b92a00>] ax88772_bind+0x330/0x480 drivers/net/usb/asix_devices.c:786
+>     [<ffffffff82baa33f>] usbnet_probe+0x3ff/0xdf0 drivers/net/usb/usbnet.c:1745
+>     [<ffffffff82c36e17>] usb_probe_interface+0x177/0x370 drivers/usb/core/driver.c:396
+>     [<ffffffff82661d17>] call_driver_probe drivers/base/dd.c:517 [inline]
+>     [<ffffffff82661d17>] really_probe.part.0+0xe7/0x380 drivers/base/dd.c:596
+>     [<ffffffff826620bc>] really_probe drivers/base/dd.c:558 [inline]
+>     [<ffffffff826620bc>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:751
+>     [<ffffffff826621ba>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:781
+>     [<ffffffff82662a26>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:898
+>     [<ffffffff8265eca7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+>     [<ffffffff826625a2>] __device_attach+0x122/0x260 drivers/base/dd.c:969
+> 
+> Reported-by: syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com
+> Signed-off-by: Yanfei Xu <yanfei.xu@windriver.com>
+> ---
+>  drivers/net/phy/mdio_bus.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> index 53f034fc2ef7..6f4b4e5df639 100644
+> --- a/drivers/net/phy/mdio_bus.c
+> +++ b/drivers/net/phy/mdio_bus.c
+> @@ -537,6 +537,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+>  	err = device_register(&bus->dev);
+>  	if (err) {
+>  		pr_err("mii_bus %s failed to register\n", bus->id);
+> +		put_device(&bus->dev);
+>  		return -EINVAL;
+>  	}
 
-Here is the summary with links:
-  - [net-next,1/4] octeontx2-af: Reset PTP config in FLR handler
-    https://git.kernel.org/netdev/net-next/c/e37e08fffc37
-  - [net-next,2/4] octeontx2-af: cn10k: RPM hardware timestamp configuration
-    https://git.kernel.org/netdev/net-next/c/d1489208681d
-  - [net-next,3/4] octeontx2-af: Use ptp input clock info from firmware data
-    https://git.kernel.org/netdev/net-next/c/e266f6639396
-  - [net-next,4/4] octeontx2-af: Add external ptp input clock
-    https://git.kernel.org/netdev/net-next/c/99bbc4ae69b9
+This patch is incorrect:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+1) the reported failure does not involve this path.
+2) device_register() failing does not need a put_device() because
+   the contained device_add() undoes everything that it attempted to
+   do.
 
+The above backtraces occur because we have had a successful
+device_register() fall, but later call device_del() and then kfree()
+the mdiobus, which has an embedded the struct device that has pointers
+to memory that has not been cleaned up - because kfree() is the wrong
+way to handle this.
 
+bus->state needs to be set to indicate that the embedded struct device
+has been registered but no longer is registered if we fail after
+device_register() has been called.
+
+If device_register() fails, then there is no problem.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
