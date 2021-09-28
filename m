@@ -2,177 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20EAF41B272
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 16:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA23741B28A
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 17:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241411AbhI1O73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 10:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241176AbhI1O72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 10:59:28 -0400
-Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC005C06161C;
-        Tue, 28 Sep 2021 07:57:48 -0700 (PDT)
-Received: by fieldses.org (Postfix, from userid 2815)
-        id C42C7701E; Tue, 28 Sep 2021 10:57:47 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org C42C7701E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
-        s=default; t=1632841067;
-        bh=VV8iWrMyEn5Ds44I0VGMqI+X+W7JHc96OWu+qTBzoTY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ax/OmFJavGXbdY8TnzaodxZDJ7jjzD0gCRB7fKMdaL1c0bq5cAnt0vgrocnksF1oW
-         tBU2O+geCSK5yo61rgpXjXoBLX6nVc9W8pEsHKQ5/wxQEqY6kNna57hbqi4fzhWPWB
-         2iVoH/7tf7Ln7f0U34AEUdU0x47kUujUZXZoFnl4=
-Date:   Tue, 28 Sep 2021 10:57:47 -0400
-From:   "bfields@fieldses.org" <bfields@fieldses.org>
-To:     Trond Myklebust <trondmy@hammerspace.com>
-Cc:     "neilb@suse.com" <neilb@suse.com>,
-        "tom@talpey.com" <tom@talpey.com>,
-        "Rao.Shoaib@oracle.com" <Rao.Shoaib@oracle.com>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "tyhicks@canonical.com" <tyhicks@canonical.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "wanghai38@huawei.com" <wanghai38@huawei.com>,
-        "nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "jlayton@kernel.org" <jlayton@kernel.org>,
-        "christian.brauner@ubuntu.com" <christian.brauner@ubuntu.com>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "cong.wang@bytedance.com" <cong.wang@bytedance.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "timo@rothenpieler.org" <timo@rothenpieler.org>,
-        "jiang.wang@bytedance.com" <jiang.wang@bytedance.com>,
-        "kuniyu@amazon.co.jp" <kuniyu@amazon.co.jp>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "wenbin.zeng@gmail.com" <wenbin.zeng@gmail.com>,
-        "kolga@netapp.com" <kolga@netapp.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-Subject: Re: [PATCH net 2/2] auth_gss: Fix deadlock that blocks
- rpcsec_gss_exit_net when use-gss-proxy==1
-Message-ID: <20210928145747.GD25415@fieldses.org>
-References: <20210928031440.2222303-1-wanghai38@huawei.com>
- <20210928031440.2222303-3-wanghai38@huawei.com>
- <a845b544c6592e58feeaff3be9271a717f53b383.camel@hammerspace.com>
- <20210928134952.GA25415@fieldses.org>
- <77051a059fa19a7ae2390fbda7f8ab6f09514dfc.camel@hammerspace.com>
- <20210928141718.GC25415@fieldses.org>
- <cc92411f242290b85aa232e7220027b875942f30.camel@hammerspace.com>
+        id S241489AbhI1PDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 11:03:45 -0400
+Received: from mail-bn8nam11on2064.outbound.protection.outlook.com ([40.107.236.64]:26689
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S241400AbhI1PDo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 11:03:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bi3+BEzfcAkxq01R/a2jTYze8nO6lR3TREu853RFGg+YzHjIPAf5zcFlCyQ9t9jytxK981pAODVOLBnU0Zoo4KeqAKimheE9C+mfYNFMQGPDCNBGzRanlW8QCU+SkkMJjfYMivZA3k8GOC52NxRO+w4d19XTW0VGQQUDE3JMTCPmvCPKNSdWHKUpwPDHv6GJvGbdd+zL1Or+F9XewpoSw/chn92RSuLgftatHZBNsI6C0lsy8cCbVYa/ND9wjhQ0N7i9Zdg0U1sIINQvC9siCFXx8DS73YnIPqYGfV8RY8BYJzM6NWXVm9sAFmzl+NBnGEXbd1l8m1QcYTd4KjuIbw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=WI8MrPQWGI7rAbIIonR3452Qph1dPZtaq12b1WrLtIc=;
+ b=bEftNudVYddx+CoIXHW9N2bGE0liec5kOsaXZyUyzlN4RMC0VJg4F5jEKGlHLZ7yBdVHBpQ/9ZsURl2PHzxvdXkeYi/tFx/nGzYqh0mr2zMugtApn+S7OiWk8Svq2c4H6GdtoCqg888Y4APTYqcO6Du77mATbiWehbGeEkaR3jJwY+DbN+cw3BERmDV9RWtzx7wZ6U+MbIlYiQp7MdaW9dFWw32NG5C9Mi0SbLo24sO6YnZhCCAOaTec2MD67ZgoDJ3k47u02eV/8gLDmC2cWcRTOJQHy9QCm5FCHRZyAvBJJKRgIxvIAIyqU/3UzKYdPlL/5GUpCvObbsY3Qe+FLg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WI8MrPQWGI7rAbIIonR3452Qph1dPZtaq12b1WrLtIc=;
+ b=ubbsEKVFsqKepGRuQv6ci4FxXpPcpdys1VKu+cBi4XxTEKujMfnnG6uZAx+k+4EtpAh3VSdBsv/tPdXPp4BvIlFXgAUFppmVZWTjTsG6+LCkpoh8n7qUkrm0pUsDuzDhqrMt458VxQckwH8HidOL9o6zT6XA4vcW+/0wcaqGUuX1imQPucRQTbHZWhBqZLdIXi5ybbca2ZnQy0Y+KExfqhunGwN//Rlkjf6SgxpP3Q8Hkz4y1SSZSKMyi7Vwka+ENbcydZsrl9ZB1yvRYWTKFN/pStYT+ERIPOoC9IQUeKNvhfa9NeATAVi2OxkAFdnnHIxgzAf0X3tl0PMl0KM8oA==
+Received: from CH2PR12MB3895.namprd12.prod.outlook.com (2603:10b6:610:2a::13)
+ by CH2PR12MB4263.namprd12.prod.outlook.com (2603:10b6:610:a6::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.14; Tue, 28 Sep
+ 2021 15:02:03 +0000
+Received: from CH2PR12MB3895.namprd12.prod.outlook.com
+ ([fe80::a46b:a8b7:59d:9142]) by CH2PR12MB3895.namprd12.prod.outlook.com
+ ([fe80::a46b:a8b7:59d:9142%5]) with mapi id 15.20.4544.021; Tue, 28 Sep 2021
+ 15:02:03 +0000
+From:   Asmaa Mnebhi <asmaa@nvidia.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        David Thompson <davthompson@nvidia.com>
+Subject: RE: [PATCH v3 1/2] gpio: mlxbf2: Introduce IRQ support
+Thread-Topic: [PATCH v3 1/2] gpio: mlxbf2: Introduce IRQ support
+Thread-Index: AQHXsLi5/ezHFM2t80qMnoiP1wWjOauzEi0AgADJmACABBI7EIAAAriAgAACbtCAAAsjgIABjviQ
+Date:   Tue, 28 Sep 2021 15:02:02 +0000
+Message-ID: <CH2PR12MB389530F4A65840FE04DC8628D7A89@CH2PR12MB3895.namprd12.prod.outlook.com>
+References: <20210923202216.16091-1-asmaa@nvidia.com>
+ <20210923202216.16091-2-asmaa@nvidia.com> <YU26lIUayYXU/x9l@lunn.ch>
+ <CACRpkdbUJF6VUPk9kCMPBvjeL3frJAbHq+h0-z7P-a1pSU+fiw@mail.gmail.com>
+ <CH2PR12MB38951F2326196AB5B573A73DD7A79@CH2PR12MB3895.namprd12.prod.outlook.com>
+ <YVHQQcv2M6soJR6u@lunn.ch>
+ <CH2PR12MB389585F7D5EFE5E2453593DBD7A79@CH2PR12MB3895.namprd12.prod.outlook.com>
+ <YVHbo/cJcHzxUk+d@lunn.ch>
+In-Reply-To: <YVHbo/cJcHzxUk+d@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c27ebbb1-85cf-4da1-ee0f-08d98290ee0f
+x-ms-traffictypediagnostic: CH2PR12MB4263:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH2PR12MB42635D53D96EF1E1B9C56A0DD7A89@CH2PR12MB4263.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /GH/iNPdzKZ8ibhlPnENuKZeR3SRONuV5hYuX9hZ10Sd7ge6zATDP7tEyDTkznISm+h7rnAGA2YQrjUYSPj20crQGi2cn7/dS0CYcs9yPdDXvQcboI47RjkR1HjkCYQO34JK/uIv9IKdNAapFTNjbvY9vU9xUZ4RrG5r9liP0wSXz3DXfYhHynWF16ljdc8+lm7KC3pTdYyV4izhxZQiQqrtuEtmAnZ+3dTduCYOjUDidTIQW9hQT9XIH7SSuK6FSIJue3lQ4mw/IEU8MWGWAlxWEPQrS3fSsWaNwUl5YN58qSbw36VP8YIG6bDzAas7S+aunf1nVTyT7YNXi13yAyTTwiFCaOXqjMAVpDo8Z/xFvePtPveGYx0suYR6Wl+jZWzo6nSBhJMqkX6LsbIiIasU7MDle+MKdq32S0txZzERTYDnqhmBb/It7uQg6tppI6U7SKN6kFQ2amDi9c1XCq4qSdOcAldoElUbVYcK7Xk0/qOysMIGL6VCK1WVtlr34uO8wjdW6ZM9XKuMi28B8eahoNxH14mZ5LVoMAP16avUr7UxXJ2GXS1Qc4UQ2fCE4g3ZeJ6HhRv4eDdNyq474BoEeZ2HjnNGVj9KAAxYT342BWPAwTlHqMAjoZs7+yUGGY4r1NBzVvozeidA00BSJgHWNEJXFpQYQGfPmAPmESLJ6cymTjcP4FSZn2iz/XmtZJeXGjjzN39nasc1SWb0/A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB3895.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(55016002)(186003)(52536014)(86362001)(76116006)(7416002)(38070700005)(71200400001)(54906003)(83380400001)(5660300002)(9686003)(2906002)(316002)(8676002)(6916009)(122000001)(7696005)(66446008)(64756008)(66476007)(66946007)(66556008)(508600001)(38100700002)(6506007)(107886003)(4326008)(26005)(33656002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?+7PLm79hvOGPtGC3ThZExJR4LYiVed1Uxbv+PeNwforLJ7DDYbyCRjdNY3J0?=
+ =?us-ascii?Q?TxWT5iS+uljVP6J5YL38VoXDY9rwW11F1FXCj4Y11JxFnJ0kM1+lh2qrPH8d?=
+ =?us-ascii?Q?+taB8trdGllpNc6W3IxMKMe1pABgdKM6mea9iTg88g0fkhL7X3dpvYJP1Pfl?=
+ =?us-ascii?Q?D3b4aXjARzAPCVjZI9x9xjxzWqs3xushBpBqZJTH+fsjYlzOLrI+RhL+Aif7?=
+ =?us-ascii?Q?Fixmoue1lNgo85BTlJ73XOHDGkBdD+npnVJdrewTng2i011a/hv1B+QKzRRe?=
+ =?us-ascii?Q?LZJLcmix+yk7VKvYr4rDKxCEJkhnLuHfwHAP63xbsP0CigBDyNKBE0IkIOSQ?=
+ =?us-ascii?Q?5y4sA+Kp3I2Vqk1yrZqyrNUYVIoiZt37TJ1ICUHRRUcO0luhRmaF9cc+MBLq?=
+ =?us-ascii?Q?ztYWM5KAMEc/NTKdIeM1HNQ3PGXM2cdbUawzJaa4wkO88VAqrFYrvmTFyR6J?=
+ =?us-ascii?Q?QHfIoCrZqGtJAzzUWiLPTR7HQz12P8F7aaYrHmneEFJRacodPafeGo4kRnW0?=
+ =?us-ascii?Q?OYxDKL1VCBFV0y/u/hMLxyEXEAkNTum+dUBDokUYlEVSu0fSrMnaDVDbOJfm?=
+ =?us-ascii?Q?vvf2eablr9LNcBHavFSlOzTO9IwWLE24rdCSQE/j/KJzhuyrSBq82Qvp8SZO?=
+ =?us-ascii?Q?TJbxJwGN+9xJaXh9Dn3fHDxjzK+iRehy+CXHWnFegGObtuvCKZStxtrfGlo/?=
+ =?us-ascii?Q?9qts8P4S1q9xUxLcUEg5uPXF98fCoDWwHBXvp8A/k0TG3DUVsgLpnaa8z4xf?=
+ =?us-ascii?Q?z3eDpEwuSb7kK4NOZ8/CQXRCvnohJFbA7hkH8SwOJrLSxa0VDN6mn6BT85dD?=
+ =?us-ascii?Q?ixpsn+/gKhQxJsqwJkpT841GqNjM3UsDeBzzpPMTnGXtKP/oiE0Mj2CoPFEz?=
+ =?us-ascii?Q?ppY1cEOpnLkqmz2jIV+I1pbLAIYHjXHi1nEIuHeRBQAxxncC30x+VTDCZ/zC?=
+ =?us-ascii?Q?x4lqtmwMLz/pYoYN4m2dE95ekGuQg8j7VaTSpu8PFNRzyPxJOC+l4MoTmp98?=
+ =?us-ascii?Q?paZDG5NnSq7nA3Wii/r5W9Za09xTU4c/5EGdfWdIKWY7tqgSY2k5kjvHlwNm?=
+ =?us-ascii?Q?HP7hyX8uHk8WKspnkHYg12lRPLR13UQEZe1S2bahkwVHSO65J2GujvnkILou?=
+ =?us-ascii?Q?x4j/UyMOgxYpzrMAWaADtRsWTuGpGSW+/q4dUhoic2XIZIYtrsi/hIp3hD7r?=
+ =?us-ascii?Q?qm6veatCo0OPS8dnxcgJNhTzls5DdmKlLBrkxzm9K5dnKT2OrBkClDGXMBo/?=
+ =?us-ascii?Q?DCCmT/qxJB2JPRxUZBc3AAUQMCkNGGTYaVPHSolrg8yg3ZBZ1X5SZK7kX2ec?=
+ =?us-ascii?Q?I+pELnoIGPME0b70ZxbPKcZ0?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <cc92411f242290b85aa232e7220027b875942f30.camel@hammerspace.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB3895.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c27ebbb1-85cf-4da1-ee0f-08d98290ee0f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Sep 2021 15:02:02.9829
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZY2qjAT4VsnQvHdto9uJ+146gLLfvoAY04MBDSpvg0fk76Via7nRcdu0WdyU6tUupuImR8uZ/gXyh/n6ixaFtg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4263
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 02:27:33PM +0000, Trond Myklebust wrote:
-> On Tue, 2021-09-28 at 10:17 -0400, bfields@fieldses.org wrote:
-> > On Tue, Sep 28, 2021 at 02:04:49PM +0000, Trond Myklebust wrote:
-> > > On Tue, 2021-09-28 at 09:49 -0400, bfields@fieldses.org wrote:
-> > > > On Tue, Sep 28, 2021 at 01:30:17PM +0000, Trond Myklebust wrote:
-> > > > > On Tue, 2021-09-28 at 11:14 +0800, Wang Hai wrote:
-> > > > > > When use-gss-proxy is set to 1, write_gssp() creates a rpc
-> > > > > > client
-> > > > > > in
-> > > > > > gssp_rpc_create(), this increases the netns refcount by 2,
-> > > > > > these
-> > > > > > refcounts are supposed to be released in
-> > > > > > rpcsec_gss_exit_net(),
-> > > > > > but
-> > > > > > it
-> > > > > > will never happen because rpcsec_gss_exit_net() is triggered
-> > > > > > only
-> > > > > > when
-> > > > > > the netns refcount gets to 0, specifically:
-> > > > > >     refcount=0 -> cleanup_net() -> ops_exit_list ->
-> > > > > > rpcsec_gss_exit_net
-> > > > > > It is a deadlock situation here, refcount will never get to 0
-> > > > > > unless
-> > > > > > rpcsec_gss_exit_net() is called. So, in this case, the netns
-> > > > > > refcount
-> > > > > > should not be increased.
-> > > > > > 
-> > > > > > In this case, xprt will take a netns refcount which is not
-> > > > > > supposed
-> > > > > > to be taken. Add a new flag to rpc_create_args called
-> > > > > > RPC_CLNT_CREATE_NO_NET_REF for not increasing the netns
-> > > > > > refcount.
-> > > > > > 
-> > > > > > It is safe not to hold the netns refcount, because when
-> > > > > > cleanup_net(), it
-> > > > > > will hold the gssp_lock and then shut down the rpc client
-> > > > > > synchronously.
-> > > > > > 
-> > > > > > 
-> > > > > I don't like this solution at all. Adding this kind of flag is
-> > > > > going to
-> > > > > lead to problems down the road.
-> > > > > 
-> > > > > Is there any reason whatsoever why we need this RPC client to
-> > > > > exist
-> > > > > when there is no active knfsd server? IOW: Is there any reason
-> > > > > why
-> > > > > we
-> > > > > shouldn't defer creating this RPC client for when knfsd starts
-> > > > > up
-> > > > > in
-> > > > > this net namespace, and why we can't shut it down when knfsd
-> > > > > shuts
-> > > > > down?
-> > > > 
-> > > > The rpc create is done in the context of the process that writes
-> > > > to
-> > > > /proc/net/rpc/use-gss-proxy to get the right namespaces.  I don't
-> > > > know
-> > > > how hard it would be capture that information for a later create.
-> > > > 
-> > > 
-> > > svcauth_gss_proxy_init() uses the net namespace SVC_NET(rqstp)
-> > > (i.e.
-> > > the knfsd namespace) in the call to
-> > > gssp_accept_sec_context_upcall().
-> > > 
-> > > IOW: the net namespace used in the call to find the RPC client is
-> > > the
-> > > one set up by knfsd, and so if use-gss-proxy was set in a different
-> > > namespace than the one used by knfsd, then it won't be found.
-> > 
-> > Right.  If you've got multiple containers, you don't want to find a
-> > gss-proxy from a different container.
-> > 
-> 
-> Exactly. So there is no namespace context to capture in the RPC client
-> other than what's already in knfsd.
->
-> The RPC client doesn't capture any other process context. It can cache
-> a user cred in order to capture the user namespace, but that
-> information appears to be unused by this gssd RPC client.
+> So the PHY is level based. The PHY is combing multiple interrupt sources=
+=20
+> into one external interrupt. If any of those internal interrupt sources a=
+re
+> active, the external interrupt is active. If there are > multiple active =
+sources
+> at once, the interrupt stays low, until they are all cleared. This means
+> there is not an edge per interrupt. There is one edge when the first inte=
+rnal
+> source occurs, and no more edges, > even if there are more internal inter=
+rupts.
 
-OK, that's good to know, thanks.
+> The general flow in the PHY interrupt handler is to read the interrupt st=
+atus
+> register, which tells you which internal interrupts have fired. You then
+> address these internal interrupts one by one.
 
-It's doing a path lookup (it uses an AF_LOCAL socket), and I'm not
-assuming that will get the same result across containers.  Is there an
-easy way to do just that path lookup here and delay the res till knfsd
-startup?
+In KSZ9031, Register MII_KSZPHY_INTCS=3D0x1B reports all interrupt events a=
+nd
+clear on read. So if there are 4 different interrupts, once it is read once=
+, all 4 clear at once.
+The micrel.c driver has defined ack_interrupt to read the above reg and is =
+called every time the
+interrupt handler phy_interrupt is called. So in this case, we should be go=
+od.
+The code flow in our case would look like this:
+- 2 interrupt sources (for example, link down followed by link up) set in M=
+II_KSZPHY_INTCS
+- interrupt handler (phy_interrupt) reads MII_KSZPHY_INT which automaticall=
+y clears both
+interrupts
+- another internal source triggers and sets the register.
+- The second edge will be caught accordingly by the GPIO.
 
---b.
+> This can take some time, MDIO is a slow bus etc. While handling these int=
+errupt sources,
+> it could be another internal interrupt source triggers. This new internal=
+ interrupt source
+> keeps the external interrupt active. But there has not been an edge, sinc=
+e the interrupt=20
+> handler is still clearing the sources which caused the first interrupt. W=
+ith level interrupts,
+> this is not an issue. When the interrupt handler exits, the interrupt is =
+re-enabled. Since it
+> is still active, due to the unhandled internal interrupt sources, the lev=
+el interrupt
+> immediately fires again. the handler then sees this new interrupt and han=
+dles it.
+> At that point the level interrupt goes inactive.
 
-> 
-> So I'll repeat my question: Why can't we set this gssd RPC client up at
-> knfsd startup time, and tear it down when knfsd is shut down?
-> 
-> -- 
-> Trond Myklebust
-> Linux NFS client maintainer, Hammerspace
-> trond.myklebust@hammerspace.com
-> 
-> 
