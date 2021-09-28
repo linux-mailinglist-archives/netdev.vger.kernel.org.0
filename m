@@ -2,83 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4218341AE80
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:10:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABB2641AE83
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 14:12:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240515AbhI1MLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 08:11:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48492 "EHLO mail.kernel.org"
+        id S240523AbhI1MNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 08:13:48 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35816 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240426AbhI1MLq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 08:11:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4E6DC611CA;
-        Tue, 28 Sep 2021 12:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632831007;
-        bh=23rdd0WogsR7w+UI5pIpK5WZ2pDnWsYLusLtnQ83bYo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZSpM7aG1iqto065pUCSSLsoEvhhj2djL762brf8VSj671jlV5NxFGsyO9+FFqOtbk
-         zx8idlW6guXuhk/+XAG3Sue+tDxNyp0h3wrT/LtoNU/7W5aKqqFihpLv80Lb5ClDZH
-         S3jzLtWbDf/9ISfrn6MCcNgm54XL+H/yM6lzyd/boyWYKtuv2LVZhnjnASpvg2dXzE
-         EmwC63/qHby+zAIpKKkHkpv2Da3LWsivLU92OBqsBqLmRdBfNtpcD8uRBup8RpaqXS
-         GJtRkH7tOMODCrJ1QqQE+Ehmpo99nNkuRkH3VXRgQyVXL2HXWDOxVhV17ocoJ0jwlo
-         52XpAGSfje7ag==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3F05C60A69;
-        Tue, 28 Sep 2021 12:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S240426AbhI1MNs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 08:13:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=7Xp7mC54QxQOrkWuTBBJLRY+NahLSxuPBi641CqpyvQ=; b=DSH7LWZNl1UR87E8Hwx/l+sai5
+        2t2P8xnFIArmv/8kLYr3Ian/UByGBgUeaDfYAl9utYxEuBtEMrl+WBtywmQYi0GS0PfdpVQex8eBw
+        Y53MIN+8nWRyVeWym9D/pbhXk3SxuuFQeKbByocxhuZEBJv/c73k+UWFBWQJ+7YTrnH8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mVBxq-008b96-IF; Tue, 28 Sep 2021 14:12:02 +0200
+Date:   Tue, 28 Sep 2021 14:12:02 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: mchp: Add support for LAN8804 PHY
+Message-ID: <YVMGkmgwIQDMwldp@lunn.ch>
+References: <20210928073502.2108815-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v4 0/3] check return value of rhashtable_init in
- mlx5e, ipv6, mac80211
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163283100725.29415.17214439381941428620.git-patchwork-notify@kernel.org>
-Date:   Tue, 28 Sep 2021 12:10:07 +0000
-References: <20210927033457.1020967-1-shjy180909@gmail.com>
-In-Reply-To: <20210927033457.1020967-1-shjy180909@gmail.com>
-To:     MichelleJin <shjy180909@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, johannes@sipsolutions.net, saeedm@nvidia.com,
-        leon@kernel.org, roid@nvidia.com, paulb@nvidia.com,
-        ozsh@nvidia.com, lariel@nvidia.com, cmi@nvidia.com,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-wireless@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210928073502.2108815-1-horatiu.vultur@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Sep 28, 2021 at 09:35:02AM +0200, Horatiu Vultur wrote:
+> The LAN8804 PHY has same features as that of LAN8814 PHY except that it
+> doesn't support 1588, SyncE or Q-USGMII.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Sorry, i missed it first time. The subject line is wrong. There is no
+mchp driver in mainline.
 
-On Mon, 27 Sep 2021 03:34:54 +0000 you wrote:
-> When rhashtable_init() fails, it returns -EINVAL.
-> However, since error return value of rhashtable_init is not checked,
-> it can cause use of uninitialized pointers.
-> So, fix unhandled errors of rhashtable_init.
-> The three patches are essentially the same logic.
-> 
-> v1->v2:
->  - change commit message
->  - fix possible memory leaks
-> v2->v3:
->  - split patch into mlx5e, ipv6, mac80211
-> v3->v4:
->  - fix newly created warnings due to patches in net/ipv6/seg6.c
-> 
-> [...]
+When you fix it, please add my Reviewed-by.
 
-Here is the summary with links:
-  - [net-next,v4,1/3] net/mlx5e: check return value of rhashtable_init
-    https://git.kernel.org/netdev/net-next/c/d7cade513752
-  - [net-next,v4,2/3] net: ipv6: check return value of rhashtable_init
-    https://git.kernel.org/netdev/net-next/c/f04ed7d277e8
-  - [net-next,v4,3/3] net: mac80211: check return value of rhashtable_init
-    https://git.kernel.org/netdev/net-next/c/f43bed7193a3
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+     Andrew
