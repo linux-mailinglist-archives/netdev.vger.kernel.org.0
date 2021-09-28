@@ -2,458 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5FCF41B6DD
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 21:03:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C38E141B772
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 21:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242371AbhI1TFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 15:05:33 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:36831 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242315AbhI1TFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 15:05:31 -0400
-Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 7AC1E200DBA0;
-        Tue, 28 Sep 2021 21:03:49 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 7AC1E200DBA0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1632855829;
-        bh=P3gPIKwQ5JEPLAYy92QOamoOfJyqUWSexAN5K9o6ddQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JJ2c2jj5raL1TYKx/fuwcMJxiV0+BthZCR94nAlU3KWdusyPkA9lFUTSSpFb2xolf
-         nu+vh67cQ1uddBp9T7svC/4e7JYMjDdDLmNB84NySaUYUyNv407XGYbPLwUoLbIB3Z
-         M6G1cdtFvo7Z//KTrokXmrSKPN2dJREK+uKeD3kVOB7Y14qcFoEtGtWqc30hTBDe9X
-         1CXhMUsu6UPR8My4XSZO0633vTREn9gu0M5hxiYWsCo0wQ48cOL/vZDvSiqlaNTc80
-         DgM3ngiV1cNr6+eLuyDm+Qn3zflvGooL8xWqui7SG27beWo1B2DTiJycOVrYbCfuB8
-         B5PivadETB8NA==
-From:   Justin Iurman <justin.iurman@uliege.be>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, justin.iurman@uliege.be
-Subject: [PATCH net-next 2/2] selftests: net: Test for the IOAM encapsulation with IPv6
-Date:   Tue, 28 Sep 2021 21:03:28 +0200
-Message-Id: <20210928190328.24097-3-justin.iurman@uliege.be>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210928190328.24097-1-justin.iurman@uliege.be>
-References: <20210928190328.24097-1-justin.iurman@uliege.be>
+        id S242511AbhI1TVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 15:21:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:20764 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242492AbhI1TVn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 15:21:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632856802;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Za4UIa1i/i1OBgAuhO+2BMEIFPExsbIEIdBHDtNVqsI=;
+        b=MuwFUZrQJTDIJTf9afKrAoFZP+/MDVnwWTW/DtFTcpsydn1ipe0KcGMDel9Cq7ya1O+zg8
+        +VnD5/UX2rEkyKiJwbKb3ddtLhkWmI98CvjnOr2cHJvIz4TVLNKWueUk323VyPKoPGFjaP
+        kZmodv0G1tf9OPCJNztA+oAUD2t/Lfk=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-324-toItkLrIPXCxvowPXde_Nw-1; Tue, 28 Sep 2021 15:20:01 -0400
+X-MC-Unique: toItkLrIPXCxvowPXde_Nw-1
+Received: by mail-ot1-f69.google.com with SMTP id a19-20020a9d3e13000000b0054d67e67b64so14043867otd.22
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 12:20:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Za4UIa1i/i1OBgAuhO+2BMEIFPExsbIEIdBHDtNVqsI=;
+        b=RnHJytCrG757Fqo89oiokwmpdPrdhg19B0Ntfh233HFJnj8e05UHfT/H9y8E0zPDqj
+         lfro4pQcjjFPtFhEv2jDMXQqZgCaK21xCQsLcLmUSBZUg2qquLIgjjWyl896YV047ECS
+         /BMNOZ65Ghxn895F2n32bEnadlooAh2luOKh2Fwj9BpSwWXszK3SVPGnPGpU/3Oiq+Fo
+         LXtNAMN3gKS35z2B+1Ib5DmzHmQLMz1Xw6T+yamaB83kR7hyFI2LeFywEGyCwUEiFgYe
+         VPSKlFED94uwYV/bhkQy6/ZxhSVlsz3SDPTBKmPItVKp0NRjC3m8rdiOBuGb7M5Q8yWh
+         fIqw==
+X-Gm-Message-State: AOAM533Kq/Eb3A8A1Q9mNaBsophUYHsqqZN0RLwjMP9npNku0MnsgiN0
+        UEoLMGuKnSKLw9vOKsDrC3ZyudMt+kbJh7MCaWbtRA+V+evSPDlbAY8zQZJ/bNkdF26RE74sWQ5
+        XVePP8+Hsr8GBuJJw
+X-Received: by 2002:a54:410b:: with SMTP id l11mr4950317oic.74.1632856800917;
+        Tue, 28 Sep 2021 12:20:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwNb7SJKsY1fAhfMc6h0vwSeXSkbF/My4fjrvTWCd7Z2VSqxK1ptej7nonv6fRLJYXuWORlyA==
+X-Received: by 2002:a54:410b:: with SMTP id l11mr4950299oic.74.1632856800685;
+        Tue, 28 Sep 2021 12:20:00 -0700 (PDT)
+Received: from redhat.com ([198.99.80.109])
+        by smtp.gmail.com with ESMTPSA id u15sm5269230oon.35.2021.09.28.12.19.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Sep 2021 12:20:00 -0700 (PDT)
+Date:   Tue, 28 Sep 2021 13:19:58 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kirti Wankhede <kwankhede@nvidia.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Cornelia Huck <cohuck@redhat.com>
+Subject: Re: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
+ transition validity
+Message-ID: <20210928131958.61b3abec.alex.williamson@redhat.com>
+In-Reply-To: <20210927231239.GE3544071@ziepe.ca>
+References: <cover.1632305919.git.leonro@nvidia.com>
+        <c87f55d6fec77a22b110d3c9611744e6b28bba46.1632305919.git.leonro@nvidia.com>
+        <20210927164648.1e2d49ac.alex.williamson@redhat.com>
+        <20210927231239.GE3544071@ziepe.ca>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for testing the encap mode of IOAM.
+On Mon, 27 Sep 2021 20:12:39 -0300
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
 
-Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
----
- tools/testing/selftests/net/ioam6.sh | 209 ++++++++++++++++++++-------
- 1 file changed, 159 insertions(+), 50 deletions(-)
+> On Mon, Sep 27, 2021 at 04:46:48PM -0600, Alex Williamson wrote:
+> > > +	enum { MAX_STATE = VFIO_DEVICE_STATE_RESUMING };
+> > > +	static const u8 vfio_from_state_table[MAX_STATE + 1][MAX_STATE + 1] = {
+> > > +		[VFIO_DEVICE_STATE_STOP] = {
+> > > +			[VFIO_DEVICE_STATE_RUNNING] = 1,
+> > > +			[VFIO_DEVICE_STATE_RESUMING] = 1,
+> > > +		},  
+> > 
+> > Our state transition diagram is pretty weak on reachable transitions
+> > out of the _STOP state, why do we select only these two as valid?  
+> 
+> I have no particular opinion on specific states here, however adding
+> more states means more stuff for drivers to implement and more risk
+> driver writers will mess up this uAPI.
 
-diff --git a/tools/testing/selftests/net/ioam6.sh b/tools/testing/selftests/net/ioam6.sh
-index 3caf72bb9c6a..90700303d8a9 100755
---- a/tools/testing/selftests/net/ioam6.sh
-+++ b/tools/testing/selftests/net/ioam6.sh
-@@ -6,7 +6,7 @@
- # This script evaluates the IOAM insertion for IPv6 by checking the IOAM data
- # consistency directly inside packets on the receiver side. Tests are divided
- # into three categories: OUTPUT (evaluates the IOAM processing by the sender),
--# INPUT (evaluates the IOAM processing by the receiver) and GLOBAL (evaluates
-+# INPUT (evaluates the IOAM processing by a receiver) and GLOBAL (evaluates
- # wider use cases that do not fall into the other two categories). Both OUTPUT
- # and INPUT tests only use a two-node topology (alpha and beta), while GLOBAL
- # tests use the entire three-node topology (alpha, beta, gamma). Each test is
-@@ -200,7 +200,7 @@ check_kernel_compatibility()
-   ip -netns ioam-tmp-node link set veth0 up
-   ip -netns ioam-tmp-node link set veth1 up
- 
--  ip -netns ioam-tmp-node ioam namespace add 0 &>/dev/null
-+  ip -netns ioam-tmp-node ioam namespace add 0
-   ns_ad=$?
- 
-   ip -netns ioam-tmp-node ioam namespace show | grep -q "namespace 0"
-@@ -214,11 +214,11 @@ check_kernel_compatibility()
-     exit 1
-   fi
- 
--  ip -netns ioam-tmp-node route add db02::/64 encap ioam6 trace prealloc \
--         type 0x800000 ns 0 size 4 dev veth0 &>/dev/null
-+  ip -netns ioam-tmp-node route add db02::/64 encap ioam6 mode inline \
-+         trace prealloc type 0x800000 ns 0 size 4 dev veth0
-   tr_ad=$?
- 
--  ip -netns ioam-tmp-node -6 route | grep -q "encap ioam6 trace"
-+  ip -netns ioam-tmp-node -6 route | grep -q "encap ioam6"
-   tr_sh=$?
- 
-   if [[ $tr_ad != 0 || $tr_sh != 0 ]]
-@@ -232,6 +232,30 @@ check_kernel_compatibility()
- 
-   ip link del veth0 2>/dev/null || true
-   ip netns del ioam-tmp-node || true
-+
-+  lsmod | grep -q "ip6_tunnel"
-+  ip6tnl_loaded=$?
-+
-+  if [ $ip6tnl_loaded = 0 ]
-+  then
-+    encap_tests=0
-+  else
-+    modprobe ip6_tunnel &>/dev/null
-+    lsmod | grep -q "ip6_tunnel"
-+    encap_tests=$?
-+
-+    if [ $encap_tests != 0 ]
-+    then
-+      ip a | grep -q "ip6tnl0"
-+      encap_tests=$?
-+
-+      if [ $encap_tests != 0 ]
-+      then
-+        echo "Note: ip6_tunnel not found neither as a module nor inside the" \
-+             "kernel, tests that require it (encap mode) will be omitted"
-+      fi
-+    fi
-+  fi
- }
- 
- cleanup()
-@@ -242,6 +266,11 @@ cleanup()
-   ip netns del ioam-node-alpha || true
-   ip netns del ioam-node-beta || true
-   ip netns del ioam-node-gamma || true
-+
-+  if [ $ip6tnl_loaded != 0 ]
-+  then
-+    modprobe -r ip6_tunnel 2>/dev/null || true
-+  fi
- }
- 
- setup()
-@@ -329,6 +358,12 @@ log_test_failed()
-   printf "TEST: %-60s  [FAIL]\n" "${desc}"
- }
- 
-+log_results()
-+{
-+  echo "- Tests passed: ${npassed}"
-+  echo "- Tests failed: ${nfailed}"
-+}
-+
- run_test()
- {
-   local name=$1
-@@ -349,16 +384,26 @@ run_test()
-   ip netns exec $node_src ping6 -t 64 -c 1 -W 1 $ip6_dst &>/dev/null
-   if [ $? != 0 ]
-   then
-+    nfailed=$((nfailed+1))
-     log_test_failed "${desc}"
-     kill -2 $spid &>/dev/null
-   else
-     wait $spid
--    [ $? = 0 ] && log_test_passed "${desc}" || log_test_failed "${desc}"
-+    if [ $? = 0 ]
-+    then
-+      npassed=$((npassed+1))
-+      log_test_passed "${desc}"
-+    else
-+      nfailed=$((nfailed+1))
-+      log_test_failed "${desc}"
-+    fi
-   fi
- }
- 
- run()
- {
-+  echo
-+  printf "%0.s-" {1..74}
-   echo
-   echo "OUTPUT tests"
-   printf "%0.s-" {1..74}
-@@ -369,7 +414,8 @@ run()
- 
-   for t in $TESTS_OUTPUT
-   do
--    $t
-+    $t "inline"
-+    [ $encap_tests = 0 ] && $t "encap"
-   done
- 
-   # clean OUTPUT settings
-@@ -377,6 +423,8 @@ run()
-   ip -netns ioam-node-alpha route change db01::/64 dev veth0
- 
- 
-+  echo
-+  printf "%0.s-" {1..74}
-   echo
-   echo "INPUT tests"
-   printf "%0.s-" {1..74}
-@@ -387,7 +435,8 @@ run()
- 
-   for t in $TESTS_INPUT
-   do
--    $t
-+    $t "inline"
-+    [ $encap_tests = 0 ] && $t "encap"
-   done
- 
-   # clean INPUT settings
-@@ -396,7 +445,8 @@ run()
-   ip -netns ioam-node-alpha ioam namespace set 123 schema ${ALPHA[8]}
-   ip -netns ioam-node-alpha route change db01::/64 dev veth0
- 
--
-+  echo
-+  printf "%0.s-" {1..74}
-   echo
-   echo "GLOBAL tests"
-   printf "%0.s-" {1..74}
-@@ -404,8 +454,12 @@ run()
- 
-   for t in $TESTS_GLOBAL
-   do
--    $t
-+    $t "inline"
-+    [ $encap_tests = 0 ] && $t "encap"
-   done
-+
-+  echo
-+  log_results
- }
- 
- bit2type=(
-@@ -431,11 +485,16 @@ out_undef_ns()
-   ##############################################################################
-   local desc="Unknown IOAM namespace"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0x800000 ns 0 size 4 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0x800000 ns 0 size 4 dev veth0
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0x800000 0
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0x800000 0
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- out_no_room()
-@@ -446,11 +505,16 @@ out_no_room()
-   ##############################################################################
-   local desc="Missing trace room"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0xc00000 ns 123 size 4 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xc00000 ns 123 size 4 dev veth0
-+
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0xc00000 123
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0xc00000 123
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- out_bits()
-@@ -465,15 +529,21 @@ out_bits()
-   local tmp=${bit2size[22]}
-   bit2size[22]=$(( $tmp + ${#ALPHA[9]} + ((4 - (${#ALPHA[9]} % 4)) % 4) ))
- 
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-   for i in {0..22}
-   do
--    ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace \
--           prealloc type ${bit2type[$i]} ns 123 size ${bit2size[$i]} dev veth0
-+    ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+           trace prealloc type ${bit2type[$i]} ns 123 size ${bit2size[$i]} \
-+           dev veth0
- 
--    run_test "out_bit$i" "${desc/<n>/$i}" ioam-node-alpha ioam-node-beta \
--           db01::2 db01::1 veth0 ${bit2type[$i]} 123
-+    run_test "out_bit$i" "${desc/<n>/$i} ($1 mode)" ioam-node-alpha \
-+           ioam-node-beta db01::2 db01::1 veth0 ${bit2type[$i]} 123
-   done
- 
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
-+
-   bit2size[22]=$tmp
- }
- 
-@@ -485,11 +555,16 @@ out_full_supp_trace()
-   ##############################################################################
-   local desc="Full supported trace"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0xfff002 ns 123 size 100 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0xfff002 123
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xfff002 ns 123 size 100 dev veth0
-+
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0xfff002 123
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- 
-@@ -510,11 +585,16 @@ in_undef_ns()
-   ##############################################################################
-   local desc="Unknown IOAM namespace"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0x800000 ns 0 size 4 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0x800000 ns 0 size 4 dev veth0
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0x800000 0
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0x800000 0
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- in_no_room()
-@@ -525,11 +605,16 @@ in_no_room()
-   ##############################################################################
-   local desc="Missing trace room"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0xc00000 ns 123 size 4 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xc00000 ns 123 size 4 dev veth0
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0xc00000 123
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0xc00000 123
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- in_bits()
-@@ -544,15 +629,21 @@ in_bits()
-   local tmp=${bit2size[22]}
-   bit2size[22]=$(( $tmp + ${#BETA[9]} + ((4 - (${#BETA[9]} % 4)) % 4) ))
- 
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-   for i in {0..22}
-   do
--    ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace \
--           prealloc type ${bit2type[$i]} ns 123 size ${bit2size[$i]} dev veth0
-+    ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+           trace prealloc type ${bit2type[$i]} ns 123 size ${bit2size[$i]} \
-+           dev veth0
- 
--    run_test "in_bit$i" "${desc/<n>/$i}" ioam-node-alpha ioam-node-beta \
--           db01::2 db01::1 veth0 ${bit2type[$i]} 123
-+    run_test "in_bit$i" "${desc/<n>/$i} ($1 mode)" ioam-node-alpha \
-+           ioam-node-beta db01::2 db01::1 veth0 ${bit2type[$i]} 123
-   done
- 
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
-+
-   bit2size[22]=$tmp
- }
- 
-@@ -569,11 +660,16 @@ in_oflag()
-   #   back the IOAM namespace that was previously configured on the sender.
-   ip -netns ioam-node-alpha ioam namespace add 123
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0xc00000 ns 123 size 4 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xc00000 ns 123 size 4 dev veth0
-+
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0xc00000 123
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0xc00000 123
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- 
-   # And we clean the exception for this test to get things back to normal for
-   # other INPUT tests
-@@ -588,11 +684,16 @@ in_full_supp_trace()
-   ##############################################################################
-   local desc="Full supported trace"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0xfff002 ns 123 size 80 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0xfff002 123
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xfff002 ns 123 size 80 dev veth0
-+
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0xfff002 123
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- 
-@@ -611,11 +712,16 @@ fwd_full_supp_trace()
-   ##############################################################################
-   local desc="Forward - Full supported trace"
- 
--  ip -netns ioam-node-alpha route change db02::/64 encap ioam6 trace prealloc \
--         type 0xfff002 ns 123 size 244 via db01::1 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db02::2" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-gamma link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db02::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xfff002 ns 123 size 244 via db01::1 dev veth0
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-gamma db01::2 \
--         db02::2 veth0 0xfff002 123
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-gamma \
-+         db01::2 db02::2 veth0 0xfff002 123
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-gamma link set ip6tnl0 down
- }
- 
- 
-@@ -625,6 +731,9 @@ fwd_full_supp_trace()
- #                                                                              #
- ################################################################################
- 
-+npassed=0
-+nfailed=0
-+
- if [ "$(id -u)" -ne 0 ]
- then
-   echo "SKIP: Need root privileges"
--- 
-2.25.1
+It looks like state transitions were largely discussed in v9 and v10 of
+the migration proposals:
+
+https://lore.kernel.org/all/1573578220-7530-2-git-send-email-kwankhede@nvidia.com/
+https://lore.kernel.org/all/1576527700-21805-2-git-send-email-kwankhede@nvidia.com/
+
+I'm not seeing that we really excluded many transitions there.
+
+> So only on those grounds I'd suggest to keep this to the minimum
+> needed instead of the maximum logically possible..
+> 
+> Also, probably the FSM comment from the uapi header file should be
+> moved into a function comment above this function?
+
+It's not clear this function shouldn't be anything more than:
+
+	if (new_state > MAX_STATE || old_state > MAX_STATE)
+		return false;	/* exited via device reset, */
+				/* entered via transition fault */
+
+	return true;
+
+That's still only 5 fully interconnected states to work between, and
+potentially a 6th if we decide _RESUMING|_RUNNING is valid for a device
+supporting post-copy.
+
+In defining the device state, we tried to steer away from defining it
+in terms of the QEMU migration API, but rather as a set of controls
+that could be used to support that API to leave us some degree of
+independence that QEMU implementation might evolve.
+
+To that extent, it actually seems easier for a device implementation to
+focus on bit definition rather than the state machine node.
+
+I'd also vote that any clarification of state validity and transitions
+belongs in the uAPI header and a transition test function should
+reference that header as the source of truth, rather than the other way
+around.  Thanks,
+
+Alex
 
