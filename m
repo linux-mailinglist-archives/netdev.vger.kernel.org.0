@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B499041B253
-	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 16:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDA8541B252
+	for <lists+netdev@lfdr.de>; Tue, 28 Sep 2021 16:45:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241422AbhI1Oqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 10:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56250 "EHLO
+        id S241408AbhI1Oqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 10:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241427AbhI1Oql (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 10:46:41 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD339C061749
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 07:45:01 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id u18so91950015lfd.12
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 07:45:01 -0700 (PDT)
+        with ESMTP id S241411AbhI1Oqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 10:46:37 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4AF3C06161C
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 07:44:57 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id y28so93049605lfb.0
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 07:44:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PIgf3DsDMzPlEkL+3qloth/cat7utuH+OdIdrgmjoIs=;
-        b=JLcmRMCcF7wdaVnVYrobu2efL0u0TCbuxotlva05T572L0moE+PORETze3VzZxLooH
-         TrruhDuQ4+N/1YePqgvvhukM4t4/Db01LPiFYT23PQ7u9x7OSqysXRNk31sohcXslyGR
-         Ib+ssGQVeev/zAYuEhr4GUEFM7h60kA86A+6+ttpB28Pj+PreFbwjw2NHMw/xa0y568Q
-         skN6zgYU9RXn1wy5oGW6zEqaKN3VGY+vPPvzedyP9wMQq9MNAVxLxJWUMFkD6afHrEeR
-         ELVpdZN+eqSeCDourf2YiW8KCvvANDxp7cUHHcpgif8ZDRr52XcFYuWEuh4Yq0PzU2hR
-         I4KA==
+        bh=SyJepoAP9gqp9xgp/GjgHi1fMuvyMC7LLl2uqf6Q+6k=;
+        b=GVHGXwAsDT/eVNmLUaxXkb9bjMePwv2tWQbge/wagGCzMLSae4sqS0CySacAC3PTh4
+         285PCkzi699QZd4DIy7CG0iwk0WdVHDWs/Vp+i3qr24hGAVYAG62UBICdpXelLCT3Qik
+         s0BhL7ULHKUPCGYNV4nCRDnJFSAztBNtP6vyI3ykMM6Fys3ssNSnq+GkVUUv0i26zEKQ
+         bkyEchtrURiEcpMI/AdiegbCPy5UVV78n8IA3hTOlWggL5jkjmRNzTs3WsNT4lHPcDq2
+         cREOlrl1s/wETHpTW0Qq7D2z2MAcY1Ao3WVA0cSKjwGnyh+QWLHu2sJOakF16U3oepJb
+         HhAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PIgf3DsDMzPlEkL+3qloth/cat7utuH+OdIdrgmjoIs=;
-        b=2PwEwn9HGSEmZZMTl/abET2G3uM3jSLsbPotk0fYq+olt/fmTZyny7Xspq+mt/B0uT
-         d77TSWplPmMuoM0Y/PBL3BgksSy9gY+yfhEGZvrF6+eaQm4b7Am1SIdNj2Ds6QpbFffQ
-         bOx3K4Tt7b1CP1y7TE+5QpRyvKmos01ZIFnOUYhoPpRrc/sw5Cgnd6RtCdKzL1XYzN7p
-         xuPLWM+Jc6xoLY6iaUY4sJ/m1PFIjNkhGXT3rnCFcNWCx+lJ+1c1FVdV8CXiB+1tuhKl
-         i6ktGS/yoz0LIKHZwiB1Nakan1NQF/+c8VPlBMnd9e/2zmJZXpewQnlrTLSFlR2FpTJR
-         JMng==
-X-Gm-Message-State: AOAM5309Gx3SJxBXEHImFl3e3T9k9TC7/MhObwZmtCJFf846lA/1x3IC
-        5EYLZznRj3PHE0j++UktCoXy2Q==
-X-Google-Smtp-Source: ABdhPJznXyUDeS0Z/DhQhBouIFuMuam0TvcIHmo7WZLP8dRgPdQ7NsIONirVvli07OVOXOGBRLjv0Q==
-X-Received: by 2002:ac2:5387:: with SMTP id g7mr6011190lfh.541.1632840291460;
-        Tue, 28 Sep 2021 07:44:51 -0700 (PDT)
+        bh=SyJepoAP9gqp9xgp/GjgHi1fMuvyMC7LLl2uqf6Q+6k=;
+        b=3X5Vclnx/+ZQtZb7Oy3ZKmH/3kzIfTAwnpcKwrfpysqkWtHnvEY1loXemDZO8FDUN7
+         LK+bhgYNdWrT6kKhY+Qklvht+0L8ikfsMM8ePjB6tHK8FaknrpUqLP0WCZY3beyZoeXj
+         gAO7HrieCmCnSR5HMurw0fvbYi0su6kwWqOFlzXjvSDFKK6Q5zd29YGVe8+zc61zzNPk
+         WZ8zQW9UTDaSAKELvvSdi1+PIJy2K24PlxIVMsZYwOyWkCloz0eHxcPp/BMLfMdnfr5e
+         OTcvmhhJjWdrRvLmLTyMfgaNPDhqwmdN9En7+LzpfABy5vjnqnJJioObo31EzQBDE1op
+         HA7w==
+X-Gm-Message-State: AOAM532Ic6XBb0ze/c5emx3RACvLQX2pJfSfcL9HKxqtuG2sWk+LCyMO
+        7aGAqVB50CZ5o1XPU7Siy6Qibg==
+X-Google-Smtp-Source: ABdhPJz2ASAtwsAG1gh2UlbgkFrOEhSKwpIUUFKYNhCwpiWrrVZ+EIKe+ZQA2WlxHOECbdIAjus5Dg==
+X-Received: by 2002:a05:6512:1303:: with SMTP id x3mr6083260lfu.291.1632840293564;
+        Tue, 28 Sep 2021 07:44:53 -0700 (PDT)
 Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id x23sm1933462lfd.136.2021.09.28.07.44.50
+        by smtp.gmail.com with ESMTPSA id x23sm1933462lfd.136.2021.09.28.07.44.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Sep 2021 07:44:50 -0700 (PDT)
+        Tue, 28 Sep 2021 07:44:52 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -58,9 +58,9 @@ Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
         Mauri Sandberg <sandberg@mailfence.com>,
         DENG Qingfang <dqfext@gmail.com>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: [PATCH net-next 4/6 v8] net: dsa: rtl8366rb: Fix off-by-one bug
-Date:   Tue, 28 Sep 2021 16:41:47 +0200
-Message-Id: <20210928144149.84612-5-linus.walleij@linaro.org>
+Subject: [PATCH net-next 5/6 v8] net: dsa: rtl8366: Fix a bug in deleting VLANs
+Date:   Tue, 28 Sep 2021 16:41:48 +0200
+Message-Id: <20210928144149.84612-6-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210928144149.84612-1-linus.walleij@linaro.org>
 References: <20210928144149.84612-1-linus.walleij@linaro.org>
@@ -71,51 +71,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The max VLAN number with non-4K VLAN activated is 15, and the
-range is 0..15. Not 16.
+We were checking that the MC (member config) was != 0
+for some reason, all we need to check is that the config
+has no ports, i.e. no members. Then it can be recycled.
+This must be some misunderstanding.
 
-The impact should be low since we by default have 4K VLAN and
-thus have 4095 VLANs to play with in this switch. There will
-not be a problem unless the code is rewritten to only use
-16 VLANs.
-
-Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
+Fixes: 4ddcaf1ebb5e ("net: dsa: rtl8366: Properly clear member config")
 Cc: Mauri Sandberg <sandberg@mailfence.com>
 Cc: DENG Qingfang <dqfext@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v7->v8:
-- Collect Florian's review tag.
+- No changes just resending with the rest of the
+  patches.
 ChangeLog v6->v7:
 - Collect Alvin's and Vladimir's review tags.
 ChangeLog v5->v6:
 - No changes just resending with the rest of the
   patches.
 ChangeLog v4->v5:
-- Add some more text describing that this is not a critical bug.
+- Collect Florians review tag
 - Add Fixes tag
 ChangeLog v1->v4:
-- New patch for a bug discovered when fixing the other issues.
+- New patch for a bug found while fixing the other issues.
 ---
- drivers/net/dsa/rtl8366rb.c | 2 +-
+ drivers/net/dsa/rtl8366.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index b565074b0462..bb9d017c2f9f 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -1515,7 +1515,7 @@ static int rtl8366rb_set_mc_index(struct realtek_smi *smi, int port, int index)
- 
- static bool rtl8366rb_is_vlan_valid(struct realtek_smi *smi, unsigned int vlan)
- {
--	unsigned int max = RTL8366RB_NUM_VLANS;
-+	unsigned int max = RTL8366RB_NUM_VLANS - 1;
- 
- 	if (smi->vlan4k_enabled)
- 		max = RTL8366RB_NUM_VIDS - 1;
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
+index 0672dd56c698..f815cd16ad48 100644
+--- a/drivers/net/dsa/rtl8366.c
++++ b/drivers/net/dsa/rtl8366.c
+@@ -374,7 +374,7 @@ int rtl8366_vlan_del(struct dsa_switch *ds, int port,
+ 			 * anymore then clear the whole member
+ 			 * config so it can be reused.
+ 			 */
+-			if (!vlanmc.member && vlanmc.untag) {
++			if (!vlanmc.member) {
+ 				vlanmc.vid = 0;
+ 				vlanmc.priority = 0;
+ 				vlanmc.fid = 0;
 -- 
 2.31.1
 
