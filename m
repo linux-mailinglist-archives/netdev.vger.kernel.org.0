@@ -2,91 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E4841C233
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 12:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BB0141C23F
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 12:05:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245265AbhI2KFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 06:05:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243962AbhI2KFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 06:05:08 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5F7C06161C
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 03:03:27 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id c73-20020a1c9a4c000000b0030d040bb895so1305111wme.2
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 03:03:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zRRZyq+Isj97NaLUmilazNyX72THo/jLK0dOBO7bemA=;
-        b=BoE4FG3UrOye+158kkGi/BYp+VzyYVuu5a3ZEuAhaPL8I3dvs7aBCmt24Mj4wy8E6W
-         ynQqklwru6Yvo96nt3vhhwwNoXUgNsuroSOWqFKwepxegzJouPFFKH/lzLRZuGu5nbGS
-         zCHeoMfAYAxHXg6TZG67x4ZmsWceQDKR2nEQlk9qvCVbfLeUgmp9An86X4n3w0/GPoF7
-         5jZUc3R5nVmL2HAfH1DVnDsmLs1mkm6ABV/kageImXLET//OAz3a+5HjRYokkiNstvO3
-         kDvKT/zW1YBR+0Fj4dawXA17VIODWgCSnjH4I4G5cRO7/klgdCOrZct4CjDE3cwdYUX3
-         e/Eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zRRZyq+Isj97NaLUmilazNyX72THo/jLK0dOBO7bemA=;
-        b=fnghaxWtfGZggo1cgJEOe25Y5MYdHBV5ST1rsMrLzPqVSZnuO0kprCFV65QNZjB8GN
-         2QdoRfyf303Z+rw+1bM1G2WtydymNxRQ0wCzD6xSWSR21qAH1C+00LOZOF2rA2MEKfgd
-         ZLVLlguwdn1o8qAIBWXpFdoctUU4sq3tiW7bFdhk841wUga+2qd0FRdsqGJWgl0Pb/ca
-         6SNl/tgLizFjIsuDtj/KBXR8cVWZq9edC9gh2uK2SUvp12Fn9bYZs6S3ybm9xS7t05xV
-         YT5LRze32RnrNOMEHqODA3PqqQI3nsuu7WSXvmcF2RnscEqrXFgBuUY2nSGpNQSDofuc
-         DrYg==
-X-Gm-Message-State: AOAM531k3h0rhHb93uUWdGPLNsXR5F7nr/gKVpCTaRPYedGWp63q7iTR
-        nULXQ31EnS7lu8uEJgnWf57m9czsUps=
-X-Google-Smtp-Source: ABdhPJxrFjXE8Q0oyxPybBq1p/17M/2m19pahqPv0OvbAh7D0yIzob53Zok0w4oXgpoiT/rVqCyiVQ==
-X-Received: by 2002:a05:600c:1d16:: with SMTP id l22mr9385529wms.44.1632909805963;
-        Wed, 29 Sep 2021 03:03:25 -0700 (PDT)
-Received: from [192.168.1.24] ([213.57.138.125])
-        by smtp.gmail.com with ESMTPSA id d16sm1088720wmb.2.2021.09.29.03.03.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Sep 2021 03:03:25 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 0/3] support "flow-based" datapath in l2tp
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     jchapman@katalix.com, netdev@vger.kernel.org
-References: <20210929094514.15048-1-tparkin@katalix.com>
-From:   Eyal Birger <eyal.birger@gmail.com>
-Message-ID: <1fe9bf2a-0650-a9ee-b91d-febcf3d22612@gmail.com>
-Date:   Wed, 29 Sep 2021 13:03:21 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S245287AbhI2KHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 06:07:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44624 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S245248AbhI2KGz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 06:06:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3326B61439;
+        Wed, 29 Sep 2021 10:05:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632909914;
+        bh=Xxn9/SD1dYhlDwttos3PuGBQ5U/2yCNeeOkyqW/lvMU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ORjEaY8oVoBe/kc1cZJj2pdtkHjlj8HbwEZxZTWQ2RJxE3GmpxNBmdNmOnphEgvSX
+         ZOxvvBYGhy3vPJuqA7LfPTEfGfZd04jb5pa8GODKkdyshK6wcZoWwPGMWC+MS9U+hB
+         xbVhK4m/Jq2Iwa6W/3givlEv93HsBHlrwK8xareW519JavUdMcvSDsFayE2ZD0oN8U
+         pIltEb8rvFoy0z9I8Y2vMLwBlDucBVUKGTbifrVUXnBcQOBZxHm/pShHiIlrwCdByI
+         22paW8ns7SMXCobLPJLkLp0xaLAaB7vuo8aCGQL+Oy4kg80h0CJMOIrD0tYnYvfS9M
+         gE71ALaohzM2g==
+Received: by mail-wm1-f54.google.com with SMTP id z184-20020a1c7ec1000000b003065f0bc631so4803714wmc.0;
+        Wed, 29 Sep 2021 03:05:14 -0700 (PDT)
+X-Gm-Message-State: AOAM532yZxt2Ugc20fx35XlU9lIw+2q6Dr19g/YRF6FloXm4Uy/5/Wnj
+        SBExSeBq1sMLRQCFM4vh42Bvw3zFo4f0jCdPZvo=
+X-Google-Smtp-Source: ABdhPJxj45zzIMnN/HHyq+6nU2KpFjlg3Tr2+Q2ZpxFzEZguNBmccSscTdNWt05AmI9I9AwUnU3a/laQUUwcLa8ETFA=
+X-Received: by 2002:a05:600c:896:: with SMTP id l22mr9378065wmp.173.1632909912585;
+ Wed, 29 Sep 2021 03:05:12 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210929094514.15048-1-tparkin@katalix.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210927152412.2900928-1-arnd@kernel.org> <20210929095107.GA21057@willie-the-truck>
+In-Reply-To: <20210929095107.GA21057@willie-the-truck>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 29 Sep 2021 12:04:55 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2QnJkYCoEWhziYYXQusb-25_wUhA5ZTGtBsyfFx3NWzQ@mail.gmail.com>
+Message-ID: <CAK8P3a2QnJkYCoEWhziYYXQusb-25_wUhA5ZTGtBsyfFx3NWzQ@mail.gmail.com>
+Subject: Re: [PATCH] [RFC] qcom_scm: hide Kconfig symbol
+To:     Will Deacon <will@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Joerg Roedel <joro@8bytes.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Alex Elder <elder@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Andy Gross <agross@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tom,
+On Wed, Sep 29, 2021 at 11:51 AM Will Deacon <will@kernel.org> wrote:
+> On Mon, Sep 27, 2021 at 05:22:13PM +0200, Arnd Bergmann wrote:
+> >
+> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > index 124c41adeca1..989c83acbfee 100644
+> > --- a/drivers/iommu/Kconfig
+> > +++ b/drivers/iommu/Kconfig
+> > @@ -308,7 +308,7 @@ config APPLE_DART
+> >  config ARM_SMMU
+> >       tristate "ARM Ltd. System MMU (SMMU) Support"
+> >       depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
+> > -     depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
+> > +     select QCOM_SCM
+> >       select IOMMU_API
+> >       select IOMMU_IO_PGTABLE_LPAE
+> >       select ARM_DMA_USE_IOMMU if ARM
+>
+> I don't want to get in the way of this patch because I'm also tired of the
+> randconfig failures caused by QCOM_SCM. However, ARM_SMMU is applicable to
+> a wide variety of (non-qcom) SoCs and so it seems a shame to require the
+> QCOM_SCM code to be included for all of those when it's not strictly needed
+> at all.
 
-On 29/09/2021 12:45, Tom Parkin wrote:
-...
->        The skb is then redirected to the tunnel virtual netdev: tc rules
->        can then be added to match traffic based on the session ID and
->        redirect it to the correct interface:
-> 
->              tc qdisc add dev l2tpt1 handle ffff: ingress
->              tc filter add dev l2tpt1 \
->                      parent ffff: \
->                      flower enc_key_id 1 \
->                      action mirred egress redirect dev eth0
-> 
->        In the case that no tc rule matches an incoming packet, the tunnel
->        virtual device implements an rx handler which swallows the packet
->        in order to prevent it continuing through the network stack.
+Good point, I agree that needs to be fixed. I think this additional
+change should do the trick:
 
-There are other ways to utilize the tunnel key on rx, e.g. in ip rules.
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -308,7 +308,6 @@ config APPLE_DART
+ config ARM_SMMU
+        tristate "ARM Ltd. System MMU (SMMU) Support"
+        depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
+-       select QCOM_SCM
+        select IOMMU_API
+        select IOMMU_IO_PGTABLE_LPAE
+        select ARM_DMA_USE_IOMMU if ARM
+@@ -438,7 +437,7 @@ config QCOM_IOMMU
+        # Note: iommu drivers cannot (yet?) be built as modules
+        bool "Qualcomm IOMMU Support"
+        depends on ARCH_QCOM || (COMPILE_TEST && !GENERIC_ATOMIC64)
+-       depends on QCOM_SCM=y
++       select QCOM_SCM
+        select IOMMU_API
+        select IOMMU_IO_PGTABLE_LPAE
+        select ARM_DMA_USE_IOMMU
 
-IMHO it'd be nicer if the decision to drop would be an administrator 
-decision which they can implement using a designated tc drop rule.
+I'll see if that causes any problems for the randconfig builds.
 
-Eyal.
+       Arnd
