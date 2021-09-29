@@ -2,217 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 652C241CB62
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 19:57:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0F0D41CB85
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 20:08:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345594AbhI2R63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 13:58:29 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:64698 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245152AbhI2R62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 13:58:28 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18THeTF6024051;
-        Wed, 29 Sep 2021 10:56:27 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=9FdTLOwU1Oz5jYEG2qDmpNkB64HPm+O39f6lvffLXFI=;
- b=XtsYr4FK9XLMi0o2yua5oZutfzN7SFFDiDGzZXGBrEP3COtU6sFgfSVivuON48frEG4t
- tbx5a5rKGyt/riG/4Y246E8SnSHKY6VVF0U1soW5m1rJZJshVB3m9ykqFL55YAe8Nmzr
- GMRUmALkdu9zB00os0PQGfcD5Ywg6/66p0o= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3bcvrh83te-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 29 Sep 2021 10:56:26 -0700
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Wed, 29 Sep 2021 10:56:25 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eNomr+FNMB5kRytc31Da6ztk27Y/ZZJ6BamoNhD3+D+jCnlRDbkAZmnejZ0DRvd8ECQ+vi2OaWirGOg93bUQeZCatOQTRUsrHS+4ZLFxgo50x37Sjyp3yZzKidj+F9nue3upz/gEH7hpyIq3Tyqv9itDwGid6E7vB7NeItHnnuEe6Eq4oQ/Q/1jTikaaSP+NeqVQMCWYx0j7BgMQGtuyrN7HHDE3OitPr8dsIkZdXmqCD/cv9T60U9YtT/PVVR9mnn2ZWdRb4ALLuqjAsz5sFZYc7fjdXVe+9RMLOIMWk5mzvW5Z6c1ywimlfSbr6kF33lxFpo6cYCrZQftX+CjSYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=9FdTLOwU1Oz5jYEG2qDmpNkB64HPm+O39f6lvffLXFI=;
- b=Ye45BE0lzgVsQ1ddm/eeX5UsrZl4Y/XTVkaNi/CBk2CrRdrev0AFyXm5pFYJ0kDx7I3BWZ174Bxx1Mxh7PyuwTDHo0el5hjCf2/ULUTxyRUc7x1k1dXK3fzptVL8+PeGaw7KsfJnf0yHbGcs0vqiRyAu0J244jCa35OhrOCu7qBxdr8hBHp+DacnWDt0vKeQC0rLcW3tNYbo0LLxo3pq9hW5HdlTNFG1wTMISjzYpXB4IFM93Ul9wSjG/7SGHY5UtxhhnRroxm9BUoSJ5O96WIHfER0wRR05S/JDpvYU8DSP+IZ+lItdKEaXbBJ6zHVoqrP1WVTO7Ur5VCaqErDn5A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=fb.com;
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by SA0PR15MB3901.namprd15.prod.outlook.com (2603:10b6:806:8f::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14; Wed, 29 Sep
- 2021 17:56:24 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::6c34:bcb:51af:6160]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::6c34:bcb:51af:6160%6]) with mapi id 15.20.4566.015; Wed, 29 Sep 2021
- 17:56:24 +0000
-Date:   Wed, 29 Sep 2021 10:56:20 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Hou Tao <houtao1@huawei.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 2/5] bpf: factor out a helper to prepare
- trampoline for struct_ops prog
-Message-ID: <20210929175620.yi4jfpllhugys6eo@kafai-mbp.dhcp.thefacebook.com>
-References: <20210928025228.88673-1-houtao1@huawei.com>
- <20210928025228.88673-3-houtao1@huawei.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210928025228.88673-3-houtao1@huawei.com>
-X-ClientProxiedBy: SJ0PR03CA0210.namprd03.prod.outlook.com
- (2603:10b6:a03:2ef::35) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
+        id S1345657AbhI2SJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 14:09:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:53841 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1343623AbhI2SJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 14:09:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632938893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5fEUwAikCXlY0hPFc3Zca5cd4O3adbLSONrps+zhumI=;
+        b=ht8uvnXKCdWZuAy9nxzoazX76k9GlgprRr2w9TMdSMVnatHo+oC4yLRwtvjLOf9peh+YBv
+        YStkLFgQwHxSvn+aCPIQ7eon/XSA7//2u8/0GDYthCb7C79Oi3XIgkG9MbKyWg08yb7+DI
+        1G7WiLFvA9Ysbd3xTxD9+FvihnSNlZM=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-4-nzO7KVtnM0OH6LYp1DdikA-1; Wed, 29 Sep 2021 14:06:58 -0400
+X-MC-Unique: nzO7KVtnM0OH6LYp1DdikA-1
+Received: by mail-oo1-f71.google.com with SMTP id j26-20020a4a92da000000b002a80a30e964so2745537ooh.13
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 11:06:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5fEUwAikCXlY0hPFc3Zca5cd4O3adbLSONrps+zhumI=;
+        b=OzulJiI4NMwgdO6C41de/9GHPyT+jHI6pggVBlN7aCiZBzBhTaS+WGJqGssLbBeiOG
+         yVlcAs+xVexlah++U76G2CraExqUQUH+GyXrZgealO3uRWJkLOCRkiserh+hzEMiyfHI
+         8g0/48MlHufi7bqLkfABTV9bWh6nsUnm+qDkHGEj9ohLsOYA5pXuyPEHMHXtIOiEMBcZ
+         N+kDqdETTmTzKoE0r4XVnPOWK+9COIRJA3ftj0XoGm8ofn171WZUBaDUJxYNM8+XswQv
+         A9tC/6BPNEwJ7qlCadijfjx9MrVcSxeO000pG3CaG2aWWJE3KB9YwflbgzO66kZnW3Y+
+         l5BQ==
+X-Gm-Message-State: AOAM530YILJ1W8P0dx6r66AepWGfNn5OnmxL4XlozS7uW85BbwbqCSuA
+        NvQaZt7l54GusELiAlJjpowvwmpsBH10qxjyQtgeUL+7b5/LxUSCpTXnR3xHESkbAFl1daqGHUM
+        LnbeFNJpqX/NB4PXt
+X-Received: by 2002:a05:6808:243:: with SMTP id m3mr9254412oie.54.1632938817867;
+        Wed, 29 Sep 2021 11:06:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx4GoRfgX2CpzdS8TMOhpWJSHyKfLJHdPDeL1Co6stqHQwtNdJYf2fM7V3Ug9pt3k4WTpNfQA==
+X-Received: by 2002:a05:6808:243:: with SMTP id m3mr9254391oie.54.1632938817587;
+        Wed, 29 Sep 2021 11:06:57 -0700 (PDT)
+Received: from redhat.com ([198.99.80.109])
+        by smtp.gmail.com with ESMTPSA id k1sm97828otr.43.2021.09.29.11.06.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Sep 2021 11:06:57 -0700 (PDT)
+Date:   Wed, 29 Sep 2021 12:06:55 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kirti Wankhede <kwankhede@nvidia.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Cornelia Huck <cohuck@redhat.com>
+Subject: Re: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
+ transition validity
+Message-ID: <20210929120655.28e0b3a6.alex.williamson@redhat.com>
+In-Reply-To: <20210929161602.GA1805739@nvidia.com>
+References: <cover.1632305919.git.leonro@nvidia.com>
+        <c87f55d6fec77a22b110d3c9611744e6b28bba46.1632305919.git.leonro@nvidia.com>
+        <20210927164648.1e2d49ac.alex.williamson@redhat.com>
+        <20210927231239.GE3544071@ziepe.ca>
+        <20210928131958.61b3abec.alex.williamson@redhat.com>
+        <20210928193550.GR3544071@ziepe.ca>
+        <20210928141844.15cea787.alex.williamson@redhat.com>
+        <20210929161602.GA1805739@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:d4e0) by SJ0PR03CA0210.namprd03.prod.outlook.com (2603:10b6:a03:2ef::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.15 via Frontend Transport; Wed, 29 Sep 2021 17:56:23 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8bd87695-b79e-4d60-a329-08d9837273bb
-X-MS-TrafficTypeDiagnostic: SA0PR15MB3901:
-X-Microsoft-Antispam-PRVS: <SA0PR15MB39013E2B2FB4116C0FBACD24D5A99@SA0PR15MB3901.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:580;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: H0nDjqEADQy0O1sQaTbbyRfgtxKaLn7zjRKO7xQXxsvOyhiEPaSnC6AsZ7tDiAfAmW+JAyfLbR1j81fpHbKZ0q6oQxBK1/vCEbhom5iykVKXPyHq7m4NseHBbP1V+HgAYzKvnVm5bLCeA0STvxb/Mm4nvv1BjrF6KJctONKh5bxiO9AbTanU7huezeWYLSE7uZc1K8scZOQyJS6IQxwGZ6Z2xjPpgQjP79yoGBAfDZGf0Pe62GHhc8EbVwkDzfK2NeC+j1BO0ri67rM59xOFtoFTik4b5eA5tweGzmE6lKQqCTLkVBom7417QaLkwdHl7JFb29SYuB+35HUPlo2C8CO6VQS6XM8vI1Jt5BjZiuHyWLTvy3YrhwvTySRonFH1jLNNH/+8eVc7M9zZwYOt42Y1Dp+9nUVXDvHFy/eQfuXLCaoiO0VBzra2s8VeD1AyRaS8BNHoxCBiSPqUOq0vQ3mb4IH1Df0Kyldru1jGT+SSxjWkoPjlWYacC5OYxRa9feiDO8XRWDfVteWjqkyZfHqzqlcnqSLElMXqZxL7PPLFFkSNrHZi8K/ZRR1hMWzf5e4s1liEerb+yMOHTlLgD9Bza+IHFDgv/MK2ZAZ7MQouYvMMgluHb/UBS6gfw2V47GUnT/zn+FZ8LMfowp9kLQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(83380400001)(86362001)(508600001)(1076003)(316002)(9686003)(52116002)(66556008)(66476007)(7696005)(186003)(5660300002)(8676002)(54906003)(2906002)(38100700002)(8936002)(6916009)(55016002)(6506007)(4326008)(66946007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ki3XS5TVkpTP0W1gBYnOgqiJm0uXirKjF/7x5PileM4UOoFzi8+6AZVEHIeY?=
- =?us-ascii?Q?+Bv0v+q5HMl8pYD0Mqf8PDzK86U7ecyL6DuDXCdP7bsETpHoVqTit4WtqOwa?=
- =?us-ascii?Q?T2Ef4loA6Lb5m0UkHRXsBAu4bhovhQCiqHpSyvvldS+KYFv00bJjXtF8Nmwr?=
- =?us-ascii?Q?yCA/zTQIwbRT2iUjIdRXsMuoIdfaVvp87a6qMABodkuIVkMl5mkzoJcB+DGI?=
- =?us-ascii?Q?9+WLJvfbQKuOfKUAvs6ZuscCvXP03o9qbDywy971YXUpSJy75POwabJq1DAu?=
- =?us-ascii?Q?B/7v/gXsdNfWfhiH2xi1sYlYqBlxoWQaGA9znQEUHWRU/v9GyN761y9aB1v3?=
- =?us-ascii?Q?WPMBWkXqDmwyNLfgPMf9hs4wfm6jq/aXEzPDZL+KfdO9vzUkR5sYTG1ZdMIQ?=
- =?us-ascii?Q?Xs9G/UPW6xhHcMDl25cVNGdQr4PlupG0OaNcgnDZU/4Nz9LORlm3nYp4urgM?=
- =?us-ascii?Q?vKMP0e1jsh4md4aTOINcLZVnwS4h3BkRZperpeZVIcIh2bVoFHvOi7FKx7aZ?=
- =?us-ascii?Q?V1uWiPVPP5wtEIrPi6aWY2wEJdQoZgMEhnbMu7D5m8WCD1NCRhZyTxxgjD7K?=
- =?us-ascii?Q?ziKY0TYSqK/r80P6kKkALQ5FXSka//o0DupikHWNMY+e6P66kgEfjLN+whNO?=
- =?us-ascii?Q?BaMu2QePVDMf7ZoCWXqYqFbtCQq5pllWp0ydmVK/xsWUjX9ZPP3bwkuhHAHe?=
- =?us-ascii?Q?cSocfKJog08sfh3Z10l8Md0qZ/1+A4ObUPbIoYffF1yG5Im/ZKAh9ns4OepK?=
- =?us-ascii?Q?OIuJfdOwUVv3Dntko9quhUdHBbzu2DddFzbJK8srD3J28niDsI0SLtDM7fvC?=
- =?us-ascii?Q?qX6mB3YhYKdfk+z/o5XDi2de9J5rdZMJYuXP726keXVL/s+LtaPaoJkMYo/z?=
- =?us-ascii?Q?g0NMECrNdBEXQmy6KCn11tmzY6ZaNJCwuHftuYgLV8QEefwuVtbfjUatG+Lz?=
- =?us-ascii?Q?vZtmj4lk22B9T9qvUaxv461Nsl2W0s+f2rSvequlfEWYGrnnvVmIms+dG3Wt?=
- =?us-ascii?Q?PMMq14hwddcdN8ufMqxUa4NsL/skf1z2Bs11IBsxvm3viq7sF4C5Se7GHd9v?=
- =?us-ascii?Q?9vB/N0S6A6s3om4Jl/WsGA2scTPbcKaRj22i+MfsBfUt2iPaz7DKrnvbln5Q?=
- =?us-ascii?Q?kBX3gZIqkuCHTmlh6z3pfMC+V2mvrsOhYBWnxaINh77VwaEhh2E/x3FCoGiZ?=
- =?us-ascii?Q?KvW3JDk0cEYF7HCjVj5M0QoaQd5mDN7hHrXiVPrXdUGq8aOOpHBj988r1I+c?=
- =?us-ascii?Q?b67bjUn5EWsMGJDITq5fvwV6FBYj7Yh0oRStLz5TIQXZ1JxGvXrvXB6J0oHD?=
- =?us-ascii?Q?b/uUyCMZg6DI3ciYp5365hCGfpbdwzWB4tp2HSUT+Tpf8Q=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8bd87695-b79e-4d60-a329-08d9837273bb
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2021 17:56:24.2426
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y/meUo3eKENU6RGbAYgVlPopb25yQ1iQqV3scRm4Wn1HZ58Y00ifVspF31GfVUEb
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR15MB3901
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: W-eZ8d4Ruqo8IO3l2ET9-pFXz215VHej
-X-Proofpoint-ORIG-GUID: W-eZ8d4Ruqo8IO3l2ET9-pFXz215VHej
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-29_07,2021-09-29_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 suspectscore=0
- bulkscore=0 priorityscore=1501 malwarescore=0 clxscore=1015
- mlxlogscore=707 phishscore=0 lowpriorityscore=0 impostorscore=0
- spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2109290103
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 10:52:25AM +0800, Hou Tao wrote:
-> Factor out a helper bpf_prepare_st_ops_prog() to prepare trampoline
-> for BPF_PROG_TYPE_STRUCT_OPS prog. It will be used by .test_run
-> callback in following patch.
-Thanks for the patches.
+On Wed, 29 Sep 2021 13:16:02 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-This preparation change should be the first patch instead.
-
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 155dfcfb8923..002bbb2c8bc7 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -2224,4 +2224,9 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
->  			u32 **bin_buf, u32 num_args);
->  void bpf_bprintf_cleanup(void);
->  
-> +int bpf_prepare_st_ops_prog(struct bpf_tramp_progs *tprogs,
-> +			    struct bpf_prog *prog,
-> +			    const struct btf_func_model *model,
-> +			    void *image, void *image_end);
-Move it under where other bpf_struct_ops_.*() resides in bpf.h.
-
-> +
->  #endif /* _LINUX_BPF_H */
-> diff --git a/kernel/bpf/bpf_struct_ops.c b/kernel/bpf/bpf_struct_ops.c
-> index 9abcc33f02cf..ec3c25174923 100644
-> --- a/kernel/bpf/bpf_struct_ops.c
-> +++ b/kernel/bpf/bpf_struct_ops.c
-> @@ -312,6 +312,20 @@ static int check_zero_holes(const struct btf_type *t, void *data)
->  	return 0;
->  }
->  
-> +int bpf_prepare_st_ops_prog(struct bpf_tramp_progs *tprogs,
-> +			    struct bpf_prog *prog,
-> +			    const struct btf_func_model *model,
-> +			    void *image, void *image_end)
-The existing struct_ops functions in the kernel now have naming like
-bpf_struct_ops_.*().  How about renaming it to
-bpf_struct_ops_prepare_trampoline()?
-
-> +{
-> +	u32 flags;
-> +
-> +	tprogs[BPF_TRAMP_FENTRY].progs[0] = prog;
-> +	tprogs[BPF_TRAMP_FENTRY].nr_progs = 1;
-> +	flags = model->ret_size > 0 ? BPF_TRAMP_F_RET_FENTRY_RET : 0;
-> +	return arch_prepare_bpf_trampoline(NULL, image, image_end,
-> +					   model, flags, tprogs, NULL);
-> +}
-> +
->  static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
->  					  void *value, u64 flags)
->  {
-> @@ -368,7 +382,6 @@ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
->  		const struct btf_type *mtype, *ptype;
->  		struct bpf_prog *prog;
->  		u32 moff;
-> -		u32 flags;
->  
->  		moff = btf_member_bit_offset(t, member) / 8;
->  		ptype = btf_type_resolve_ptr(btf_vmlinux, member->type, NULL);
-> @@ -430,14 +443,9 @@ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
->  			goto reset_unlock;
->  		}
->  
-> -		tprogs[BPF_TRAMP_FENTRY].progs[0] = prog;
-> -		tprogs[BPF_TRAMP_FENTRY].nr_progs = 1;
-> -		flags = st_ops->func_models[i].ret_size > 0 ?
-> -			BPF_TRAMP_F_RET_FENTRY_RET : 0;
-This change can't apply to bpf-next now because
-commit 356ed64991c6 ("bpf: Handle return value of BPF_PROG_TYPE_STRUCT_OPS prog")
-is not pulled into bpf-next yet.  Please mention the dependency
-in the cover letter if it is still the case in v2.
-
-> -		err = arch_prepare_bpf_trampoline(NULL, image,
-> -						  st_map->image + PAGE_SIZE,
-> -						  &st_ops->func_models[i],
-> -						  flags, tprogs, NULL);
-> +		err = bpf_prepare_st_ops_prog(tprogs, prog,
-> +					      &st_ops->func_models[i],
-> +					      image, st_map->image + PAGE_SIZE);
->  		if (err < 0)
->  			goto reset_unlock;
->  
-> -- 
-> 2.29.2
+> On Tue, Sep 28, 2021 at 02:18:44PM -0600, Alex Williamson wrote:
+> > On Tue, 28 Sep 2021 16:35:50 -0300
+> > Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> >   
+> > > On Tue, Sep 28, 2021 at 01:19:58PM -0600, Alex Williamson wrote:
+> > >   
+> > > > In defining the device state, we tried to steer away from defining it
+> > > > in terms of the QEMU migration API, but rather as a set of controls
+> > > > that could be used to support that API to leave us some degree of
+> > > > independence that QEMU implementation might evolve.    
+> > > 
+> > > That is certainly a different perspective, it would have been
+> > > better to not express this idea as a FSM in that case...
+> > > 
+> > > So each state in mlx5vf_pci_set_device_state() should call the correct
+> > > combination of (un)freeze, (un)quiesce and so on so each state
+> > > reflects a defined operation of the device?  
+> > 
+> > I'd expect so, for instance the implementation of entering the _STOP
+> > state presumes a previous state that where the device is apparently
+> > already quiesced.  That doesn't support a direct _RUNNING -> _STOP
+> > transition where I argued in the linked threads that those states
+> > should be reachable from any other state.  Thanks,  
 > 
+> If we focus on mlx5 there are two device 'flags' to manage:
+>  - Device cannot issue DMAs
+>  - Device internal state cannot change (ie cannot receive DMAs)
+> 
+> This is necessary to co-ordinate across multiple devices that might be
+> doing peer to peer DMA between them. The whole multi-device complex
+> should be moved to "cannot issue DMA's" then the whole complex would
+> go to "state cannot change" and be serialized.
+
+Are you anticipating p2p from outside the VM?  The typical scenario
+here would be that p2p occurs only intra-VM, so all the devices would
+stop issuing DMA (modulo trying to quiesce devices simultaneously).
+
+> The expected sequence at the device is thus
+> 
+> Resuming
+>  full stop -> does not issue DMAs -> full operation
+> Suspend
+>  full operation -> does not issue DMAs -> full stop
+> 
+> Further the device has two actions
+>  - Trigger serializating the device state
+>  - Trigger de-serializing the device state
+> 
+> So, what is the behavior upon each state:
+> 
+>  *  000b => Device Stopped, not saving or resuming
+>      Does not issue DMAs
+>      Internal state cannot change
+> 
+>  *  001b => Device running, which is the default state
+>      Neither flags
+> 
+>  *  010b => Stop the device & save the device state, stop-and-copy state
+>      Does not issue DMAs
+>      Internal state cannot change
+> 
+>  *  011b => Device running and save the device state, pre-copy state
+>      Neither flags
+>      (future, DMA tracking turned on)
+> 
+>  *  100b => Device stopped and the device state is resuming
+>      Does not issue DMAs
+>      Internal state cannot change
+
+cannot change... other that as loaded via migration region.
+
+>      
+>  *  110b => Error state
+>     ???
+> 
+>  *  101b => Invalid state
+>  *  111b => Invalid state
+> 
+>     ???
+> 
+> What should the ??'s be? It looks like mlx5 doesn't use these, so it
+> should just refuse to enter these states in the first place..
+
+_SAVING and _RESUMING are considered mutually exclusive, therefore any
+combination of both of them is invalid.  We've chosen to use the
+combination of 110b as an error state to indicate the device state is
+undefined, but not _RUNNING.  This state is only reachable by an
+internal error of the driver during a state transition.
+
+The expected protocol is that if the user write to the device_state
+register returns an errno, the user reevaluates the device_state to
+determine if the desired transition is unavailable (previous state
+value is returned) or generated a fault (error state value returned).
+Due to the undefined state of the device, the only exit from the error
+state is to re-initialize the device state via a reset.  Therefore a
+successful device reset should always return the device to the 001b
+state.
+
+The 111b state is also considered unreachable through normal means due
+to the _SAVING | _RESUMING conflict, but suggests the device is also
+_RUNNING in this undefined state.  This combination has no currently
+defined use case and should not be reachable.
+
+The 101b state indicates _RUNNING while _RESUMING, which is simply not
+a mode that has been spec'd at this time as it would require some
+mechanism for the device to fault in state on demand.
+ 
+> The two actions:
+>  trigger serializing the device state
+>    Done when asked to go to 010b ?
+
+When the _SAVING bit is set.  The exact mechanics depends on the size
+and volatility of the device state.  A GPU might begin in pre-copy
+(011b) to transmit chunks of framebuffer data, recording hashes of
+blocks read by the user to avoid re-sending them during the
+stop-and-copy (010b) phase.  A device with a small internal state
+representation may choose to forgo providing data in the pre-copy phase
+and entirely serialize internal state at stop-and-copy.
+
+>  trigger de-serializing the device state
+>    Done when transition from 100b -> 000b ?
+
+100b -> 000b is not a required transition, generally this would be 100b
+-> 001b, ie. end state of _RUNNING vs _STOP.
+
+I think the requirement is that de-serialization is complete when the
+_RESUMING bit is cleared.  Whether the driver chooses to de-serialize
+piece-wise as each block of data is written to the device or in bulk
+from a buffer is left to the implementation.  In either case, the
+driver can fail the transition to !_RESUMING if the state is incomplete
+or otherwise corrupt.  It would again be the driver's discretion if
+the device enters the error state or remains in _RESUMING.  If the user
+has no valid state with which to exit the _RESUMING phase, a device
+reset should return the device to _RUNNING with a default initial state.
+
+> There is a missing state "Stop Active Transactions" which would be
+> only "does not issue DMAs". I've seen a proposal to add that.
+
+This would be to get all devices to stop issuing DMA while internal
+state can be modified to avoid the synchronization issue of trying to
+stop devices concurrently?  For PCI devices we obviously have the bus
+master bit to manage that, but I could see how a migration extension
+for such support (perhaps even just wired through to BM for PCI) could
+be useful.  Thanks,
+
+Alex
+
