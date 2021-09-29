@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA6A841C93C
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B54B41C949
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:02:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345904AbhI2QCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 12:02:51 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:13847 "EHLO
+        id S1346233AbhI2QDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 12:03:45 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:23328 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345528AbhI2P7z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:59:55 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKLWb4gk5z8ywC;
-        Wed, 29 Sep 2021 23:53:31 +0800 (CST)
+        with ESMTP id S1345591AbhI2QAC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 12:00:02 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKLX05jsGzQv3x;
+        Wed, 29 Sep 2021 23:53:52 +0800 (CST)
 Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.8; Wed, 29 Sep 2021 23:58:10 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Wed, 29 Sep 2021 23:58:09 +0800
+ 15.1.2308.8; Wed, 29 Sep 2021 23:58:10 +0800
 From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv2 net-next 095/167] net: qualcomm: use netdev feature helpers
-Date:   Wed, 29 Sep 2021 23:52:22 +0800
-Message-ID: <20210929155334.12454-96-shenjian15@huawei.com>
+Subject: [RFCv2 net-next 096/167] net: nvidia: use netdev feature helpers
+Date:   Wed, 29 Sep 2021 23:52:23 +0800
+Message-ID: <20210929155334.12454-97-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 References: <20210929155334.12454-1-shenjian15@huawei.com>
@@ -48,155 +48,167 @@ for netdev features.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/net/ethernet/qualcomm/emac/emac-mac.c |  6 +++--
- drivers/net/ethernet/qualcomm/emac/emac.c     | 25 +++++++++++--------
- .../ethernet/qualcomm/rmnet/rmnet_map_data.c  | 11 +++++---
- .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   | 10 +++++---
- 4 files changed, 32 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/nvidia/forcedeth.c | 60 +++++++++++++++----------
+ 1 file changed, 36 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/ethernet/qualcomm/emac/emac-mac.c b/drivers/net/ethernet/qualcomm/emac/emac-mac.c
-index 87b8c032195d..15a87e9de848 100644
---- a/drivers/net/ethernet/qualcomm/emac/emac-mac.c
-+++ b/drivers/net/ethernet/qualcomm/emac/emac-mac.c
-@@ -286,7 +286,8 @@ void emac_mac_mode_config(struct emac_adapter *adpt)
- 	mac = readl(adpt->base + EMAC_MAC_CTRL);
- 	mac &= ~(VLAN_STRIP | PROM_MODE | MULTI_ALL | MAC_LP_EN);
+diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
+index e1f16988cb75..48b253e54888 100644
+--- a/drivers/net/ethernet/nvidia/forcedeth.c
++++ b/drivers/net/ethernet/nvidia/forcedeth.c
+@@ -3052,7 +3052,8 @@ static int nv_rx_process_optimized(struct net_device *dev, int limit)
+ 			 * here. Even if vlan rx accel is disabled,
+ 			 * NV_RX3_VLAN_TAG_PRESENT is pseudo randomly set.
+ 			 */
+-			if (dev->features & NETIF_F_HW_VLAN_CTAG_RX &&
++			if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
++						    dev->features) &&
+ 			    vlanflags & NV_RX3_VLAN_TAG_PRESENT) {
+ 				u16 vid = vlanflags & NV_RX3_VLAN_TAG_MASK;
  
--	if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX)
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+				    netdev->features))
- 		mac |= VLAN_STRIP;
+@@ -4874,7 +4875,7 @@ static int nv_set_loopback(struct net_device *dev, netdev_features_t features)
  
- 	if (netdev->flags & IFF_PROMISC)
-@@ -1143,7 +1144,8 @@ void emac_mac_rx_process(struct emac_adapter *adpt, struct emac_rx_queue *rx_q,
- 		skb_put(skb, RRD_PKT_SIZE(&rrd) - ETH_FCS_LEN);
- 		skb->dev = netdev;
- 		skb->protocol = eth_type_trans(skb, skb->dev);
--		if (netdev->features & NETIF_F_RXCSUM)
-+		if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+					    netdev->features))
- 			skb->ip_summed = RRD_L4F(&rrd) ?
- 					  CHECKSUM_NONE : CHECKSUM_UNNECESSARY;
- 		else
-diff --git a/drivers/net/ethernet/qualcomm/emac/emac.c b/drivers/net/ethernet/qualcomm/emac/emac.c
-index 9015a38eaced..71c403cb5e6c 100644
---- a/drivers/net/ethernet/qualcomm/emac/emac.c
-+++ b/drivers/net/ethernet/qualcomm/emac/emac.c
-@@ -175,13 +175,16 @@ static irqreturn_t emac_isr(int _irq, void *data)
- static int emac_set_features(struct net_device *netdev,
- 			     netdev_features_t features)
+ 	spin_lock_irqsave(&np->lock, flags);
+ 	miicontrol = mii_rw(dev, np->phyaddr, MII_BMCR, MII_READ);
+-	if (features & NETIF_F_LOOPBACK) {
++	if (netdev_feature_test_bit(NETIF_F_LOOPBACK_BIT, features)) {
+ 		if (miicontrol & BMCR_LOOPBACK) {
+ 			spin_unlock_irqrestore(&np->lock, flags);
+ 			netdev_info(dev, "Loopback already enabled\n");
+@@ -4924,8 +4925,9 @@ static void nv_fix_features(struct net_device *dev,
+ 			    netdev_features_t *features)
  {
--	netdev_features_t changed = features ^ netdev->features;
- 	struct emac_adapter *adpt = netdev_priv(netdev);
-+	netdev_features_t changed;
-+
-+	netdev_feature_xor(&changed, features, netdev->features);
- 
- 	/* We only need to reprogram the hardware if the VLAN tag features
- 	 * have changed, and if it's already running.
- 	 */
--	if (!(changed & (NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX)))
-+	if (!netdev_feature_test_bits(NETIF_F_HW_VLAN_CTAG_TX |
-+				     NETIF_F_HW_VLAN_CTAG_RX, changed))
- 		return 0;
- 
- 	if (!netif_running(netdev))
-@@ -190,7 +193,7 @@ static int emac_set_features(struct net_device *netdev,
- 	/* emac_mac_mode_config() uses netdev->features to configure the EMAC,
- 	 * so make sure it's set first.
- 	 */
--	netdev->features = features;
-+	netdev_feature_copy(&netdev->features, features);
- 
- 	return emac_reinit_locked(adpt);
+ 	/* vlan is dependent on rx checksum offload */
+-	if (*features & (NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX))
+-		*features |= NETIF_F_RXCSUM;
++	if (netdev_feature_test_bits(NETIF_F_HW_VLAN_CTAG_TX |
++				     NETIF_F_HW_VLAN_CTAG_RX, *features))
++		netdev_feature_set_bit(NETIF_F_RXCSUM_BIT, features);
  }
-@@ -668,13 +671,15 @@ static int emac_probe(struct platform_device *pdev)
- 	}
  
- 	/* set hw features */
--	netdev->features = NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
--			NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_HW_VLAN_CTAG_RX |
--			NETIF_F_HW_VLAN_CTAG_TX;
--	netdev->hw_features = netdev->features;
--
--	netdev->vlan_features |= NETIF_F_SG | NETIF_F_HW_CSUM |
--				 NETIF_F_TSO | NETIF_F_TSO6;
-+	netdev_feature_zero(&netdev->features);
-+	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
-+				NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_HW_VLAN_CTAG_RX |
-+				NETIF_F_HW_VLAN_CTAG_TX, &netdev->features);
-+	netdev_feature_copy(&netdev->hw_features, netdev->features);
+ static void nv_vlan_mode(struct net_device *dev, netdev_features_t features)
+@@ -4934,12 +4936,12 @@ static void nv_vlan_mode(struct net_device *dev, netdev_features_t features)
+ 
+ 	spin_lock_irq(&np->lock);
+ 
+-	if (features & NETIF_F_HW_VLAN_CTAG_RX)
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, features))
+ 		np->txrxctl_bits |= NVREG_TXRXCTL_VLANSTRIP;
+ 	else
+ 		np->txrxctl_bits &= ~NVREG_TXRXCTL_VLANSTRIP;
+ 
+-	if (features & NETIF_F_HW_VLAN_CTAG_TX)
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT, features))
+ 		np->txrxctl_bits |= NVREG_TXRXCTL_VLANINS;
+ 	else
+ 		np->txrxctl_bits &= ~NVREG_TXRXCTL_VLANINS;
+@@ -4953,19 +4955,22 @@ static int nv_set_features(struct net_device *dev, netdev_features_t features)
+ {
+ 	struct fe_priv *np = netdev_priv(dev);
+ 	u8 __iomem *base = get_hwbase(dev);
+-	netdev_features_t changed = dev->features ^ features;
++	netdev_features_t changed;
+ 	int retval;
+ 
+-	if ((changed & NETIF_F_LOOPBACK) && netif_running(dev)) {
++	netdev_feature_xor(&changed, dev->features, features);
 +
-+	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_HW_CSUM |
-+				NETIF_F_TSO | NETIF_F_TSO6,
-+				&netdev->vlan_features);
- 
- 	/* MTU range: 46 - 9194 */
- 	netdev->min_mtu = EMAC_MIN_ETH_FRAME_SIZE -
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index 3676976c875b..45fb2dacaafa 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -406,7 +406,8 @@ int rmnet_map_checksum_downlink_packet(struct sk_buff *skb, u16 len)
- 	struct rmnet_priv *priv = netdev_priv(skb->dev);
- 	struct rmnet_map_dl_csum_trailer *csum_trailer;
- 
--	if (unlikely(!(skb->dev->features & NETIF_F_RXCSUM))) {
-+	if (unlikely(!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+					      skb->dev->features))) {
- 		priv->stats.csum_sw++;
- 		return -EOPNOTSUPP;
- 	}
-@@ -439,8 +440,9 @@ static void rmnet_map_v4_checksum_uplink_packet(struct sk_buff *skb,
- 	ul_header = (struct rmnet_map_ul_csum_header *)
- 		    skb_push(skb, sizeof(struct rmnet_map_ul_csum_header));
- 
--	if (unlikely(!(orig_dev->features &
--		     (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM))))
-+	if (unlikely(!netdev_feature_test_bits(NETIF_F_IP_CSUM |
-+					       NETIF_F_IPV6_CSUM,
-+					       orig_dev->features)))
- 		goto sw_csum;
- 
- 	if (skb->ip_summed != CHECKSUM_PARTIAL)
-@@ -506,7 +508,8 @@ int rmnet_map_process_next_hdr_packet(struct sk_buff *skb,
- 	if (nexthdr_type != RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD)
- 		return -EINVAL;
- 
--	if (unlikely(!(skb->dev->features & NETIF_F_RXCSUM))) {
-+	if (unlikely(!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+					      skb->dev->features))) {
- 		priv->stats.csum_sw++;
- 	} else if (next_hdr->csum_info & MAPV5_CSUMINFO_VALID_FLAG) {
- 		priv->stats.csum_ok++;
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-index 13d8eb43a485..d6d3dabe7c11 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-@@ -236,7 +236,7 @@ void rmnet_vnd_setup(struct net_device *rmnet_dev)
- 	rmnet_dev->needs_free_netdev = true;
- 	rmnet_dev->ethtool_ops = &rmnet_ethtool_ops;
- 
--	rmnet_dev->features |= NETIF_F_LLTX;
-+	netdev_feature_set_bit(NETIF_F_LLTX_BIT, &rmnet_dev->features);
- 
- 	/* This perm addr will be used as interface identifier by IPv6 */
- 	rmnet_dev->addr_assign_type = NET_ADDR_RANDOM;
-@@ -261,9 +261,11 @@ int rmnet_vnd_newlink(u8 id, struct net_device *rmnet_dev,
- 		return -EBUSY;
++	if (netdev_feature_test_bit(NETIF_F_LOOPBACK_BIT, changed) &&
++	    netif_running(dev)) {
+ 		retval = nv_set_loopback(dev, features);
+ 		if (retval != 0)
+ 			return retval;
  	}
  
--	rmnet_dev->hw_features = NETIF_F_RXCSUM;
--	rmnet_dev->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
--	rmnet_dev->hw_features |= NETIF_F_SG;
-+	netdev_feature_zero(&rmnet_dev->hw_features);
-+	netdev_feature_set_bit(NETIF_F_RXCSUM_BIT, &rmnet_dev->hw_features);
-+	netdev_feature_set_bits(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM,
-+				&rmnet_dev->hw_features);
-+	netdev_feature_set_bit(NETIF_F_SG_BIT, &rmnet_dev->hw_features);
+-	if (changed & NETIF_F_RXCSUM) {
++	if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, changed)) {
+ 		spin_lock_irq(&np->lock);
  
- 	priv->real_dev = real_dev;
+-		if (features & NETIF_F_RXCSUM)
++		if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, features))
+ 			np->txrxctl_bits |= NVREG_TXRXCTL_RXCHECK;
+ 		else
+ 			np->txrxctl_bits &= ~NVREG_TXRXCTL_RXCHECK;
+@@ -4976,7 +4981,8 @@ static int nv_set_features(struct net_device *dev, netdev_features_t features)
+ 		spin_unlock_irq(&np->lock);
+ 	}
  
+-	if (changed & (NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX))
++	if (netdev_feature_test_bits(NETIF_F_HW_VLAN_CTAG_TX |
++				     NETIF_F_HW_VLAN_CTAG_RX, changed))
+ 		nv_vlan_mode(dev, features);
+ 
+ 	return 0;
+@@ -5607,7 +5613,7 @@ static int nv_open(struct net_device *dev)
+ 	/* If the loopback feature was set while the device was down, make sure
+ 	 * that it's set correctly now.
+ 	 */
+-	if (dev->features & NETIF_F_LOOPBACK)
++	if (netdev_feature_test_bit(NETIF_F_LOOPBACK_BIT, dev->features))
+ 		nv_set_loopback(dev, dev->features);
+ 
+ 	return 0;
+@@ -5784,7 +5790,8 @@ static int nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
+ 				dev_info(&pci_dev->dev,
+ 					 "64-bit DMA failed, using 32-bit addressing\n");
+ 			else
+-				dev->features |= NETIF_F_HIGHDMA;
++				netdev_feature_set_bit(NETIF_F_HIGHDMA_BIT,
++						       &dev->features);
+ 		}
+ 	} else if (id->driver_data & DEV_HAS_LARGEDESC) {
+ 		/* packet format 2: supports jumbo frames */
+@@ -5802,21 +5809,23 @@ static int nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
+ 
+ 	if (id->driver_data & DEV_HAS_CHECKSUM) {
+ 		np->txrxctl_bits |= NVREG_TXRXCTL_RXCHECK;
+-		dev->hw_features |= NETIF_F_IP_CSUM | NETIF_F_SG |
+-			NETIF_F_TSO | NETIF_F_RXCSUM;
++		netdev_feature_set_bits(NETIF_F_IP_CSUM | NETIF_F_SG |
++					NETIF_F_TSO | NETIF_F_RXCSUM,
++					&dev->hw_features);
+ 	}
+ 
+ 	np->vlanctl_bits = 0;
+ 	if (id->driver_data & DEV_HAS_VLAN) {
+ 		np->vlanctl_bits = NVREG_VLANCONTROL_ENABLE;
+-		dev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX |
+-				    NETIF_F_HW_VLAN_CTAG_TX;
++		netdev_feature_set_bits(NETIF_F_HW_VLAN_CTAG_RX |
++					NETIF_F_HW_VLAN_CTAG_TX,
++					&dev->hw_features);
+ 	}
+ 
+-	dev->features |= dev->hw_features;
++	netdev_feature_or(&dev->features, dev->features, dev->hw_features);
+ 
+ 	/* Add loopback capability to the device. */
+-	dev->hw_features |= NETIF_F_LOOPBACK;
++	netdev_feature_set_bit(NETIF_F_LOOPBACK_BIT, &dev->hw_features);
+ 
+ 	/* MTU range: 64 - 1500 or 9100 */
+ 	dev->min_mtu = ETH_ZLEN + ETH_FCS_LEN;
+@@ -6107,13 +6116,16 @@ static int nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
+ 		 dev->name, np->phy_oui, np->phyaddr, dev->dev_addr);
+ 
+ 	dev_info(&pci_dev->dev, "%s%s%s%s%s%s%s%s%s%s%sdesc-v%u\n",
+-		 dev->features & NETIF_F_HIGHDMA ? "highdma " : "",
+-		 dev->features & (NETIF_F_IP_CSUM | NETIF_F_SG) ?
++		 netdev_feature_test_bit(NETIF_F_HIGHDMA_BIT, dev->features) ?
++			"highdma " : "",
++		 netdev_feature_test_bits(NETIF_F_IP_CSUM | NETIF_F_SG,
++					  dev->features) ?
+ 			"csum " : "",
+-		 dev->features & (NETIF_F_HW_VLAN_CTAG_RX |
+-				  NETIF_F_HW_VLAN_CTAG_TX) ?
++		 netdev_feature_test_bits(NETIF_F_HW_VLAN_CTAG_RX |
++					  NETIF_F_HW_VLAN_CTAG_TX,
++					  dev->features) ?
+ 			"vlan " : "",
+-		 dev->features & (NETIF_F_LOOPBACK) ?
++		 netdev_feature_test_bit(NETIF_F_LOOPBACK_BIT, dev->features) ?
+ 			"loopback " : "",
+ 		 id->driver_data & DEV_HAS_POWER_CNTRL ? "pwrctl " : "",
+ 		 id->driver_data & DEV_HAS_MGMT_UNIT ? "mgmt " : "",
 -- 
 2.33.0
 
