@@ -2,79 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D86241C1CD
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 11:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6618241C1E0
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 11:45:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245112AbhI2Jlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 05:41:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60982 "EHLO mail.kernel.org"
+        id S245137AbhI2JrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 05:47:06 -0400
+Received: from mail.katalix.com ([3.9.82.81]:53936 "EHLO mail.katalix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245070AbhI2Jlu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 05:41:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8002C613A9;
-        Wed, 29 Sep 2021 09:40:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632908408;
-        bh=3UuYp7x0md0g45SJB6ZntNn3VOuOn7BOrgGoWaqn61U=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GMmzV/DTZPOSyuUNv8yhsxSlECkuHN+qf5BzZveO8M3nyKnmtBkQtxQb/qHF1v57m
-         Kb5KSQDxrvhSs066cs9NkT/CXJMk8AiwhNwWYLdAJ5/qO16AOXW1/Pabb7tFDyZ30p
-         iV3c8RbbsVYdoR8TXynLhKzl8djWwkWCfCqha9G9N5jFkY4kzlVfBc0Oj+UWXmRSos
-         J6/mRBkSVvL+sKoeycJGNOV5QXfmOxr0VdAbjEHzgOebP3yMQY9oxE8SdG6hvxOOdB
-         ckxhipqY4GXZ+vcW7BVwrI6yPywqkq6eGeN+hS8FM/W0X5rmYqdufjqNcNX8L66/D4
-         SMW73qRGLefEA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6CD1560A7E;
-        Wed, 29 Sep 2021 09:40:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/6][pull request] 100GbE Intel Wired LAN Driver
- Updates 2021-09-28
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163290840844.357.9791606865749160465.git-patchwork-notify@kernel.org>
-Date:   Wed, 29 Sep 2021 09:40:08 +0000
-References: <20210928215757.3378414-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210928215757.3378414-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+        id S245124AbhI2JrE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 05:47:04 -0400
+Received: from jackdaw.fritz.box (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 313B07D434;
+        Wed, 29 Sep 2021 10:45:21 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1632908721; bh=8NwZyuzfyNSEzyoipmuWIZPQVe1CRmCUvngaK/1vHM8=;
+        h=From:To:Cc:Subject:Date:Message-Id:From;
+        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
+         rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
+         in@katalix.com>|Subject:=20[RFC=20PATCH=20net-next=200/3]=20suppor
+         t=20"flow-based"=20datapath=20in=20l2tp|Date:=20Wed,=2029=20Sep=20
+         2021=2010:45:11=20+0100|Message-Id:=20<20210929094514.15048-1-tpar
+         kin@katalix.com>;
+        b=0+Y8QQzX6eRkFv/7VeDOBmNtQbm4eIQSnvtF3kK5x8OhhsRMOJlFEHgmMTjfkzi3d
+         mYmp4PMoCHCv0NXoJlbGos3nF2wtfn+e0vMdAQEPoxNnUWdzQBVznEb6uD/RL7nLUp
+         gIZfgs1nF067ttTVwhMj4Eo9hIOu/B1atT1j1NwyTnqGA4SuqtNKkun9UPIPcKkdca
+         I9ztol/8zn7dS7vvYvkOpY3Y6x7pxnPDSA9h/y6xNT2SYZgJDYUSbYAtZaz9gSEOiE
+         56xQyWpEjyUQxhwgDgyOiQ1xpzG5GNX9HokR+ptYSoN8qkeGvmRppHd0RtLev/gsD+
+         Es1p6IJwgYL/w==
+From:   Tom Parkin <tparkin@katalix.com>
+To:     netdev@vger.kernel.org
+Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
+Subject: [RFC PATCH net-next 0/3] support "flow-based" datapath in l2tp
+Date:   Wed, 29 Sep 2021 10:45:11 +0100
+Message-Id: <20210929094514.15048-1-tparkin@katalix.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The traditional l2tp datapath in the kernel allocates of a netdev for
+each l2tp session.  For larger session populations this limits
+scalability.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Other protocols (such as geneve) support a mode whereby a single virtual
+netdev is used to manage packetflows for multiple logical sessions: a
+much more scalable solution.
 
-On Tue, 28 Sep 2021 14:57:51 -0700 you wrote:
-> This series contains updates to ice driver only.
-> 
-> Dave adds support for QoS DSCP allowing for DSCP to TC mapping via APP
-> TLVs.
-> 
-> Ani adds enforcement of DSCP to only supported devices with the
-> introduction of a feature bitmap and corrects messaging of unsupported
-> modules based on link mode.
-> 
-> [...]
+This RFC patch series extends l2tp to support this mode of operation:
 
-Here is the summary with links:
-  - [net-next,1/6] ice: Add DSCP support
-    https://git.kernel.org/netdev/net-next/c/2a87bd73e50d
-  - [net-next,2/6] ice: Add feature bitmap, helpers and a check for DSCP
-    https://git.kernel.org/netdev/net-next/c/40b247608bc5
-  - [net-next,3/6] ice: Fix link mode handling
-    https://git.kernel.org/netdev/net-next/c/4fc5fbee5cb7
-  - [net-next,4/6] ice: refactor devlink getter/fallback functions to void
-    https://git.kernel.org/netdev/net-next/c/0128cc6e928d
-  - [net-next,5/6] ice: Fix macro name for IPv4 fragment flag
-    https://git.kernel.org/netdev/net-next/c/b37e4e94c1a8
-  - [net-next,6/6] ice: Prefer kcalloc over open coded arithmetic
-    https://git.kernel.org/netdev/net-next/c/30cba287eb21
+    * On creation of a tunnel instance a new tunnel virtual device is
+      created (in this patch series it is named according to its ID for
+      ease of testing, but this is potentially racy: alternatives are
+      mentioned in the code comments).
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+    * For l2tp encapsulation, tc rules can be added to redirect traffic
+      to the virtual tunnel device, e.g.
 
+            tc qdisc add dev eth0 handle ffff: ingress
+            tc filter add dev eth0 \
+                    parent ffff: \
+                    matchall \
+                    action tunnel_key set \
+                            src_ip 0.0.0.1 \
+                            dst_ip 0.0.0.1 \
+                            id 1 \
+                    action mirred egress redirect dev l2tpt1
+
+      This series utilises the 'id' parameter to refer to session ID
+      within the tunnel, and the src_ip/dst_ip parameters are ignored.
+
+    * For l2tp decapsulation, a new session data path is implemented.
+
+      On receipt of an l2tp data packet on the tunnel socket, the l2tp
+      headers are removed as normal, and the session ID of the target
+      session associated with the skb using ip tunnel dst metadata.
+
+      The skb is then redirected to the tunnel virtual netdev: tc rules
+      can then be added to match traffic based on the session ID and
+      redirect it to the correct interface:
+
+            tc qdisc add dev l2tpt1 handle ffff: ingress
+            tc filter add dev l2tpt1 \
+                    parent ffff: \
+                    flower enc_key_id 1 \
+                    action mirred egress redirect dev eth0
+
+      In the case that no tc rule matches an incoming packet, the tunnel
+      virtual device implements an rx handler which swallows the packet
+      in order to prevent it continuing through the network stack.
+
+I welcome any comments on:
+
+    1. Whether this RFC represents a good approach for improving
+       the l2tp datapath?
+
+    2. Architectural/design feedback on this implementation.
+
+The code here isn't production-ready by any means, although any comments
+on bugs or other issues with the series as it stands are also welcome.
+
+Tom Parkin (3):
+  net/l2tp: add virtual tunnel device
+  net/l2tp: add flow-based session create API
+  net/l2tp: add netlink attribute to enable flow-based session creation
+
+ include/uapi/linux/l2tp.h |   1 +
+ net/l2tp/l2tp_core.c      | 208 ++++++++++++++++++++++++++++++++++++++
+ net/l2tp/l2tp_core.h      |   9 ++
+ net/l2tp/l2tp_netlink.c   |  36 ++++---
+ 4 files changed, 241 insertions(+), 13 deletions(-)
+
+-- 
+2.17.1
 
