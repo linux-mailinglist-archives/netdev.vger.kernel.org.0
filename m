@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B18DE41C913
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:59:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B1B641C90E
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:59:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345921AbhI2QBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 12:01:19 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:12988 "EHLO
+        id S1345889AbhI2QBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 12:01:08 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:12989 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345482AbhI2P7s (ORCPT
+        with ESMTP id S1345477AbhI2P7s (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:59:48 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HKLbJ4h5jzWY6M;
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HKLbJ5Z0ZzWYLq;
         Wed, 29 Sep 2021 23:56:44 +0800 (CST)
 Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
  dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
@@ -26,9 +26,9 @@ From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv2 net-next 055/167] net: l2tp: use netdev feature helpers
-Date:   Wed, 29 Sep 2021 23:51:42 +0800
-Message-ID: <20210929155334.12454-56-shenjian15@huawei.com>
+Subject: [RFCv2 net-next 056/167] net: ntb_netdev: use netdev feature helpers
+Date:   Wed, 29 Sep 2021 23:51:43 +0800
+Message-ID: <20210929155334.12454-57-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 References: <20210929155334.12454-1-shenjian15@huawei.com>
@@ -48,22 +48,28 @@ for netdev features.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- net/l2tp/l2tp_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ntb_netdev.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/l2tp/l2tp_eth.c b/net/l2tp/l2tp_eth.c
-index 6cd97c75445c..9fb916cec24e 100644
---- a/net/l2tp/l2tp_eth.c
-+++ b/net/l2tp/l2tp_eth.c
-@@ -117,7 +117,7 @@ static void l2tp_eth_dev_setup(struct net_device *dev)
- 	SET_NETDEV_DEVTYPE(dev, &l2tpeth_type);
- 	ether_setup(dev);
- 	dev->priv_flags		&= ~IFF_TX_SKB_SHARING;
--	dev->features		|= NETIF_F_LLTX;
-+	netdev_feature_set_bit(NETIF_F_LLTX_BIT, &dev->features);
- 	dev->netdev_ops		= &l2tp_eth_netdev_ops;
- 	dev->needs_free_netdev	= true;
- }
+diff --git a/drivers/net/ntb_netdev.c b/drivers/net/ntb_netdev.c
+index a5bab614ff84..aaaf118e778f 100644
+--- a/drivers/net/ntb_netdev.c
++++ b/drivers/net/ntb_netdev.c
+@@ -420,11 +420,12 @@ static int ntb_netdev_probe(struct device *client_dev)
+ 	dev = netdev_priv(ndev);
+ 	dev->ndev = ndev;
+ 	dev->pdev = pdev;
+-	ndev->features = NETIF_F_HIGHDMA;
++	netdev_feature_zero(&ndev->features);
++	netdev_feature_set_bit(NETIF_F_HIGHDMA_BIT, &ndev->features);
+ 
+ 	ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+ 
+-	ndev->hw_features = ndev->features;
++	netdev_feature_copy(&ndev->hw_features, ndev->features);
+ 	ndev->watchdog_timeo = msecs_to_jiffies(NTB_TX_TIMEOUT_MS);
+ 
+ 	eth_random_addr(ndev->perm_addr);
 -- 
 2.33.0
 
