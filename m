@@ -2,152 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A73EF41CB0B
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 19:26:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03D5F41CB18
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 19:32:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344547AbhI2R1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 13:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56694 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344622AbhI2R1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 13:27:01 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91FAC061764
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 10:25:20 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id x1-20020a056902102100b005b6233ad6b5so4418722ybt.6
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 10:25:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=CvGJ4Z6Bljun4/eGYY7fseGY0GSY3h9OiPiupWWA5tM=;
-        b=GmVWBnuZOe5ZD8VYrxEiLtAht1qo7Y2Bl7bNPQzenuVHdWV54pCQPSAKq7nzw5xYJo
-         L4OmmU4Ik5NsjNGO2gCeWsM/7J4yYIZC1oJ8zAiTXwckp0n8KM4CUwHVjmATzSQjMAsA
-         o8VU8geh9+p1mRuN6nfF1XomVTdMqC6jJP1Df1E51+81/OGWwPr88eS9m8KCcxJksv1a
-         OyU8X+1Vp8+jOUZOoCXJshEmfT5rJEPgdoxCliRSKt0wo5SrrlLkbNTC5vP97yVFiZRh
-         bXGXqC8GOqPDz3hHbWmqmp+uTrz/NPN4bei7JGfXjGVXsJdm+Ztb6uVL8MevYj95Oc0g
-         wiaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=CvGJ4Z6Bljun4/eGYY7fseGY0GSY3h9OiPiupWWA5tM=;
-        b=K/3bUF6txuDiwWgNHhmpS82JcoyP1CPq4SJ9rhv0BkB/Q7QDx0O1avbcl4WlJ0PTRx
-         Z0LyOIJ6tEMQ9gqdrgRLJjBZ9rro1HWNCaBoKBzGxqlEBBGOqCT6TfSCDpQ7XGkLXl5i
-         23weUL5lDz+VdV8tFOcm/BkBSrWi6yRnbYRS0Kk/c7ZAtQqBQPvwKVg3l4o94pS1DvzN
-         SL7ysRLvBoCandJcnS6WwaYpin0982kIGQ7+xUffg2rUhxpk+fTWy/b1JT5eL28f0vt9
-         cZ2UrvvPVtrMWRL3UTIKRJ9LXlfCV3MLiZmtmudi91gVvn4++7xo+54ts/JEwvdY3DFD
-         +YbA==
-X-Gm-Message-State: AOAM5319HANHPM8MXW54uO7OQIUnCKkUHKJU40aXP+rCzHagDJBQLhw1
-        8w/PCtVQ0bIVfMdsx9DebvPpNmNlOe4=
-X-Google-Smtp-Source: ABdhPJyirv41GoyDFtvThYOZQFwQH03dbIYyS2zrfDcFmCaW02hz7uwzGedyyfegq3IedWEltsm2ng9JT4s=
-X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:a9d9:bcda:fa5:99c6])
- (user=weiwan job=sendgmr) by 2002:a25:59d5:: with SMTP id n204mr1115249ybb.189.1632936320022;
- Wed, 29 Sep 2021 10:25:20 -0700 (PDT)
-Date:   Wed, 29 Sep 2021 10:25:13 -0700
-In-Reply-To: <20210929172513.3930074-1-weiwan@google.com>
-Message-Id: <20210929172513.3930074-4-weiwan@google.com>
-Mime-Version: 1.0
-References: <20210929172513.3930074-1-weiwan@google.com>
-X-Mailer: git-send-email 2.33.0.685.g46640cef36-goog
-Subject: [PATCH v3 net-next 3/3] tcp: adjust rcv_ssthresh according to sk_reserved_mem
-From:   Wei Wang <weiwan@google.com>
-To:     "'David S . Miller'" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Shakeel Butt <shakeelb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1344343AbhI2Rdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 13:33:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35554 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244721AbhI2Rdk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 13:33:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D609B60EE3;
+        Wed, 29 Sep 2021 17:31:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632936719;
+        bh=Q/fdWVX90LwZ97g+gyXrxHmMmJOch2UTWjX9oo13lUQ=;
+        h=In-Reply-To:References:From:Subject:To:Cc:Date:From;
+        b=YXWuyz7VLMUkzFxIWAQlnUrNNUQiGLWvvTAEZxa2m6Kczm8nS9G6xx/d8RCez3Muj
+         BoyOxodNEd6xBFpmDOU3aUHYkPKBkmJopoco772kZgiYwrQ1XLiviocOzwr8O0gxUv
+         xv260Q/7nMFswdAsWT95GpTxGQPVTTd0rLFbKJ0KGHZM9QMce1ooaK7dftheyW/4r3
+         CcKSGOlQl1mIuRIT+EQ9WA5Fny4tARGOsJ3PQY+I0OUn6Wm8KUfbf0vNqR8OUoCdEt
+         LCYD62Im125UGJBE5JzL01tOWEVX+yfzu9kUDFMKU2rf6GSRs8E0kg21kd8nnH3EMN
+         A9bH89DfjF5Yw==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210929063126.4a702dbd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210928125500.167943-1-atenart@kernel.org> <20210928125500.167943-9-atenart@kernel.org> <20210928170229.4c1431c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <163290399584.3047.8100336131824633098@kwain> <20210929063126.4a702dbd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Antoine Tenart <atenart@kernel.org>
+Subject: Re: [RFC PATCH net-next 8/9] net: delay device_del until run_todo
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, pabeni@redhat.com, gregkh@linuxfoundation.org,
+        ebiederm@xmission.com, stephen@networkplumber.org,
+        herbert@gondor.apana.org.au, juri.lelli@redhat.com,
+        netdev@vger.kernel.org
+Message-ID: <163293671647.3047.7240482794798716272@kwain>
+Date:   Wed, 29 Sep 2021 19:31:56 +0200
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When user sets SO_RESERVE_MEM socket option, in order to utilize the
-reserved memory when in memory pressure state, we adjust rcv_ssthresh
-according to the available reserved memory for the socket, instead of
-using 4 * advmss always.
+Quoting Jakub Kicinski (2021-09-29 15:31:26)
+> On Wed, 29 Sep 2021 10:26:35 +0200 Antoine Tenart wrote:
+> > Quoting Jakub Kicinski (2021-09-29 02:02:29)
+> > > On Tue, 28 Sep 2021 14:54:59 +0200 Antoine Tenart wrote: =20
+> > > > The sysfs removal is done in device_del, and moving it outside of t=
+he
+> > > > rtnl lock does fix the initial deadlock. With that the trylock/rest=
+art
+> > > > logic can be removed in a following-up patch. =20
+> > >  =20
+> > > > diff --git a/net/core/dev.c b/net/core/dev.c
+> > > > index a1eab120bb50..d774fbec5d63 100644
+> > > > --- a/net/core/dev.c
+> > > > +++ b/net/core/dev.c
+> > > > @@ -10593,6 +10593,8 @@ void netdev_run_todo(void)
+> > > >                       continue;
+> > > >               }
+> > > > =20
+> > > > +             device_del(&dev->dev);
+> > > > +
+> > > >               dev->reg_state =3D NETREG_UNREGISTERED;
+> > > > =20
+> > > >               netdev_wait_allrefs(dev);
+> > > > diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+> > > > index 21c3fdeccf20..e754f00c117b 100644
+> > > > --- a/net/core/net-sysfs.c
+> > > > +++ b/net/core/net-sysfs.c
+> > > > @@ -1955,8 +1955,6 @@ void netdev_unregister_kobject(struct net_dev=
+ice *ndev)
+> > > >       remove_queue_kobjects(ndev);
+> > > > =20
+> > > >       pm_runtime_set_memalloc_noio(dev, false);
+> > > > -
+> > > > -     device_del(dev);
+> > > >  }
+> > > > =20
+> > > >  /* Create sysfs entries for network device. */ =20
+> > >=20
+> > > Doesn't this mean there may be sysfs files which are accessible=20
+> > > for an unregistered netdevice? =20
+> >=20
+> > It would mean having accessible sysfs files for a device in the
+> > NETREG_UNREGISTERING state; NETREG_UNREGISTERED still comes after
+> > device_del. It's a small difference but still important, I think.
+> >=20
+> > You raise a good point. Yes, that would mean accessing attributes of net
+> > devices being unregistered, meaning accessing or modifying unused or
+> > obsolete parameters and data (it shouldn't be garbage data though).
+> > Unlisting those sysfs files without removing them would be better here,
+> > to not expose files when the device is being unregistered while still
+> > allowing pending operations to complete. I don't know if that is doable
+> > in sysfs.
+>=20
+> I wonder. Do we somehow remove the queue objects without waiting or are
+> those also waited on when we remove the device? 'Cause XPS is the part
+> that jumps out to me - we reset XPS after netdev_unregister_kobject().
+> Does it mean user can re-instate XPS settings after we thought we
+> already reset them?
 
-Signed-off-by: Wei Wang <weiwan@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com> 
----
- include/net/tcp.h     | 11 +++++++++++
- net/ipv4/tcp_input.c  | 12 ++++++++++--
- net/ipv4/tcp_output.c |  3 +--
- 3 files changed, 22 insertions(+), 4 deletions(-)
+This should be possible yes (and not really wanted).
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 32cf6c01f403..4c2898ac6569 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1421,6 +1421,17 @@ static inline int tcp_full_space(const struct sock *sk)
- 	return tcp_win_from_space(sk, READ_ONCE(sk->sk_rcvbuf));
- }
- 
-+static inline void tcp_adjust_rcv_ssthresh(struct sock *sk)
-+{
-+	int unused_mem = sk_unused_reserved_mem(sk);
-+	struct tcp_sock *tp = tcp_sk(sk);
-+
-+	tp->rcv_ssthresh = min(tp->rcv_ssthresh, 4U * tp->advmss);
-+	if (unused_mem)
-+		tp->rcv_ssthresh = max_t(u32, tp->rcv_ssthresh,
-+					 tcp_win_from_space(sk, unused_mem));
-+}
-+
- void tcp_cleanup_rbuf(struct sock *sk, int copied);
- 
- /* We provision sk_rcvbuf around 200% of sk_rcvlowat.
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 06020395cc8d..246ab7b5e857 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -500,8 +500,11 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb,
- 
- 	room = min_t(int, tp->window_clamp, tcp_space(sk)) - tp->rcv_ssthresh;
- 
-+	if (room <= 0)
-+		return;
-+
- 	/* Check #1 */
--	if (room > 0 && !tcp_under_memory_pressure(sk)) {
-+	if (!tcp_under_memory_pressure(sk)) {
- 		unsigned int truesize = truesize_adjust(adjust, skb);
- 		int incr;
- 
-@@ -518,6 +521,11 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb,
- 			tp->rcv_ssthresh += min(room, incr);
- 			inet_csk(sk)->icsk_ack.quick |= 1;
- 		}
-+	} else {
-+		/* Under pressure:
-+		 * Adjust rcv_ssthresh according to reserved mem
-+		 */
-+		tcp_adjust_rcv_ssthresh(sk);
- 	}
- }
- 
-@@ -5345,7 +5353,7 @@ static int tcp_prune_queue(struct sock *sk)
- 	if (atomic_read(&sk->sk_rmem_alloc) >= sk->sk_rcvbuf)
- 		tcp_clamp_window(sk);
- 	else if (tcp_under_memory_pressure(sk))
--		tp->rcv_ssthresh = min(tp->rcv_ssthresh, 4U * tp->advmss);
-+		tcp_adjust_rcv_ssthresh(sk);
- 
- 	if (atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf)
- 		return 0;
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index fdc39b4fbbfa..3a01e5593a17 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2967,8 +2967,7 @@ u32 __tcp_select_window(struct sock *sk)
- 		icsk->icsk_ack.quick = 0;
- 
- 		if (tcp_under_memory_pressure(sk))
--			tp->rcv_ssthresh = min(tp->rcv_ssthresh,
--					       4U * tp->advmss);
-+			tcp_adjust_rcv_ssthresh(sk);
- 
- 		/* free_space might become our new window, make sure we don't
- 		 * increase it due to wscale.
--- 
-2.33.0.685.g46640cef36-goog
+> Well, it's a little wobbly but I think the direction is sane.
+> It wouldn't feel super clean to add
+>=20
+>         if (dev->state !=3D NETREG_REGISTERED)
+>                 goto out;
+>=20
+> to the sysfs handlers but maybe it's better than leaving potential
+> traps for people who are not aware of the intricacies later? Not sure.
 
+Agreed, that doesn't feel super clean, but would be quite nice to have
+for users (and e.g. would also help in the XPS case). Having a wrapper
+should be possible, to minimize the impact and make it a bit better.
+
+> > (While I did ran stress tests reading/writing attributes while
+> > unregistering devices, I think I missed an issue with the
+> > netdev_queue_default attributes; which hopefully can be fixed =E2=80=94=
+ if the
+> > whole idea is deemed acceptable).
+
+I had a quick look about queue attributes, their removal should also be
+done in run_todo (that's easy). However the queues can be updated in
+flight (while holding the rtnl lock) and the error paths[1][2] do drain
+sysfs files (in kobject_put).
+
+We can't release the rtnl lock here. It should be possible to delay this
+outside the rtnl lock (in the global workqueue) but as the kobject are
+embedded in the queues, we might need to have them live outside to allow
+async releases while a net device (and ->_rx/->_tx) is being freed[3].
+That adds to the complexity...
+
+[1] https://elixir.bootlin.com/linux/latest/source/net/core/net-sysfs.c#L16=
+62
+[2] https://elixir.bootlin.com/linux/latest/source/net/core/net-sysfs.c#L10=
+67
+[3] Or having a dedicated workqueue and draining it.
+
+> > > Isn't the point of having device_del() under rtnl_lock() to make sure
+> > > we sysfs handlers can't run on dead devices? =20
+> >=20
+> > Hard to say what was the initial point, there is a lot of history here
+> > :) I'm not sure it was done because of a particular reason; IMHO it just
+> > made sense to make this simple without having a good reason not to do
+> > so. And it helped with the naming collision detection.
+>=20
+> FWIW the other two pieces of feedback I have is try to avoid the
+> synchronize_net() in patch 7
+
+I wasn't too happy in adding a call to this. However the node name list
+is rcu protected and to make sure all CPUs see the removal before
+freeing the node name a call to synchronize_net (synchronize_rcu) is
+needed. That being said I think we can just call kfree_rcu instead of
+netdev_name_node_free (kfree) here.
+
+> add a new helper for the name checking, which would return bool. The
+> callers don't have any business getting the struct.
+
+Good idea. Also I think the replacement of __dev_get_by_name by a new
+wrapper might be good even outside of this series (in case the series is
+delayed / reworked heavily / etc).
+
+Thanks!
+Antoine
