@@ -2,98 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24A5041BC98
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 04:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E69541BCA4
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 04:20:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243730AbhI2CJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 22:09:56 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:23184 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242761AbhI2CJw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 22:09:52 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HK09m2r80z1DHQb;
-        Wed, 29 Sep 2021 10:06:52 +0800 (CST)
-Received: from dggema721-chm.china.huawei.com (10.3.20.85) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2308.8; Wed, 29 Sep 2021 10:08:10 +0800
-Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
- dggema721-chm.china.huawei.com (10.3.20.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.8; Wed, 29 Sep 2021 10:08:10 +0800
-Received: from dggema772-chm.china.huawei.com ([10.9.128.138]) by
- dggema772-chm.china.huawei.com ([10.9.128.138]) with mapi id 15.01.2308.008;
- Wed, 29 Sep 2021 10:08:10 +0800
-From:   "liujian (CE)" <liujian56@huawei.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Subject: RE: [PATCH v3] skmsg: lose offset info in sk_psock_skb_ingress
-Thread-Topic: [PATCH v3] skmsg: lose offset info in sk_psock_skb_ingress
-Thread-Index: AQHXr5TEvqMbfOjFUkOFMdZlBki+lKu4dLMAgAHZdMA=
-Date:   Wed, 29 Sep 2021 02:08:10 +0000
-Message-ID: <329a2008cf5f47629451ad0699ef3305@huawei.com>
-References: <20210922093259.164013-1-liujian56@huawei.com>
- <CAM_iQpVDiA8-GHXYrNs8A4gBaDioWMPeQR=2u4OKn2ZCyzu8Lg@mail.gmail.com>
-In-Reply-To: <CAM_iQpVDiA8-GHXYrNs8A4gBaDioWMPeQR=2u4OKn2ZCyzu8Lg@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.176.93]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S243734AbhI2CVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 22:21:40 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:13384 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243048AbhI2CVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Sep 2021 22:21:39 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HK0MV4Mt4z900D;
+        Wed, 29 Sep 2021 10:15:18 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Wed, 29 Sep 2021 10:19:53 +0800
+Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
+ (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Wed, 29 Sep
+ 2021 10:19:51 +0800
+Subject: Re: [PATCH V2 net-next 1/6] ethtool: add support to set/get tx
+ copybreak buf size via ethtool
+To:     Michal Kubecek <mkubecek@suse.cz>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
+        <amitc@mellanox.com>, <idosch@idosch.org>, <danieller@nvidia.com>,
+        <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
+        <jdike@addtoit.com>, <richard@nod.at>,
+        <anton.ivanov@cambridgegreys.com>, <netanel@amazon.com>,
+        <akiyano@amazon.com>, <gtzalik@amazon.com>, <saeedb@amazon.com>,
+        <chris.snook@gmail.com>, <ulli.kroll@googlemail.com>,
+        <linus.walleij@linaro.org>, <jeroendb@google.com>,
+        <csully@google.com>, <awogbemila@google.com>, <jdmason@kudzu.us>,
+        <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
+        <kys@microsoft.com>, <haiyangz@microsoft.com>, <mst@redhat.com>,
+        <jasowang@redhat.com>, <doshir@vmware.com>,
+        <pv-drivers@vmware.com>, <jwi@linux.ibm.com>,
+        <kgraul@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
+        <johannes@sipsolutions.net>, <netdev@vger.kernel.org>,
+        <lipeng321@huawei.com>, <chenhao288@hisilicon.com>,
+        <linux-s390@vger.kernel.org>
+References: <20210924142959.7798-1-huangguangbin2@huawei.com>
+ <20210924142959.7798-2-huangguangbin2@huawei.com>
+ <20210924230537.cxiopoi3mwlpgx5c@lion.mk-sys.cz>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <7be0fd4c-e940-8f1b-9fa2-8b0aae9a900a@huawei.com>
+Date:   Wed, 29 Sep 2021 10:19:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
+In-Reply-To: <20210924230537.cxiopoi3mwlpgx5c@lion.mk-sys.cz>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQ29uZyBXYW5nIFttYWls
-dG86eGl5b3Uud2FuZ2NvbmdAZ21haWwuY29tXQ0KPiBTZW50OiBUdWVzZGF5LCBTZXB0ZW1iZXIg
-MjgsIDIwMjEgMTo1MiBQTQ0KPiBUbzogbGl1amlhbiAoQ0UpIDxsaXVqaWFuNTZAaHVhd2VpLmNv
-bT4NCj4gQ2M6IEpvaG4gRmFzdGFiZW5kIDxqb2huLmZhc3RhYmVuZEBnbWFpbC5jb20+OyBEYW5p
-ZWwgQm9ya21hbm4NCj4gPGRhbmllbEBpb2dlYXJib3gubmV0PjsgSmFrdWIgU2l0bmlja2kgPGph
-a3ViQGNsb3VkZmxhcmUuY29tPjsgTG9yZW56DQo+IEJhdWVyIDxsbWJAY2xvdWRmbGFyZS5jb20+
-OyBEYXZpZCBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyBKYWt1Yg0KPiBLaWNpbnNraSA8
-a3ViYUBrZXJuZWwub3JnPjsgQWxleGVpIFN0YXJvdm9pdG92IDxhc3RAa2VybmVsLm9yZz47IEFu
-ZHJpaQ0KPiBOYWtyeWlrbyA8YW5kcmlpQGtlcm5lbC5vcmc+OyBNYXJ0aW4gS2FGYWkgTGF1IDxr
-YWZhaUBmYi5jb20+OyBTb25nIExpdQ0KPiA8c29uZ2xpdWJyYXZpbmdAZmIuY29tPjsgWW9uZ2hv
-bmcgU29uZyA8eWhzQGZiLmNvbT47IEtQIFNpbmdoDQo+IDxrcHNpbmdoQGtlcm5lbC5vcmc+OyBM
-aW51eCBLZXJuZWwgTmV0d29yayBEZXZlbG9wZXJzDQo+IDxuZXRkZXZAdmdlci5rZXJuZWwub3Jn
-PjsgYnBmIDxicGZAdmdlci5rZXJuZWwub3JnPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHYzXSBz
-a21zZzogbG9zZSBvZmZzZXQgaW5mbyBpbiBza19wc29ja19za2JfaW5ncmVzcw0KPiANCj4gT24g
-V2VkLCBTZXAgMjIsIDIwMjEgYXQgMjozMiBBTSBMaXUgSmlhbiA8bGl1amlhbjU2QGh1YXdlaS5j
-b20+IHdyb3RlOg0KPiA+ICBzdGF0aWMgdm9pZCBza19wc29ja19za2Jfc3RhdGUoc3RydWN0IHNr
-X3Bzb2NrICpwc29jaywgQEAgLTYwNCw2DQo+ID4gKzYwOCw5IEBAIHN0YXRpYyB2b2lkIHNrX3Bz
-b2NrX2JhY2tsb2coc3RydWN0IHdvcmtfc3RydWN0ICp3b3JrKSAgew0KPiA+ICAgICAgICAgc3Ry
-dWN0IHNrX3Bzb2NrICpwc29jayA9IGNvbnRhaW5lcl9vZih3b3JrLCBzdHJ1Y3Qgc2tfcHNvY2ss
-IHdvcmspOw0KPiA+ICAgICAgICAgc3RydWN0IHNrX3Bzb2NrX3dvcmtfc3RhdGUgKnN0YXRlID0g
-JnBzb2NrLT53b3JrX3N0YXRlOw0KPiA+ICsjaWYgSVNfRU5BQkxFRChDT05GSUdfQlBGX1NUUkVB
-TV9QQVJTRVIpDQo+ID4gKyAgICAgICBzdHJ1Y3Qgc3RycF9tc2cgKnN0bSA9IE5VTEw7DQo+ID4g
-KyNlbmRpZg0KPiA+ICAgICAgICAgc3RydWN0IHNrX2J1ZmYgKnNrYiA9IE5VTEw7DQo+ID4gICAg
-ICAgICBib29sIGluZ3Jlc3M7DQo+ID4gICAgICAgICB1MzIgbGVuLCBvZmY7DQo+ID4gQEAgLTYy
-NCw2ICs2MzEsMTMgQEAgc3RhdGljIHZvaWQgc2tfcHNvY2tfYmFja2xvZyhzdHJ1Y3Qgd29ya19z
-dHJ1Y3QNCj4gKndvcmspDQo+ID4gICAgICAgICB3aGlsZSAoKHNrYiA9IHNrYl9kZXF1ZXVlKCZw
-c29jay0+aW5ncmVzc19za2IpKSkgew0KPiA+ICAgICAgICAgICAgICAgICBsZW4gPSBza2ItPmxl
-bjsNCj4gPiAgICAgICAgICAgICAgICAgb2ZmID0gMDsNCj4gPiArI2lmIElTX0VOQUJMRUQoQ09O
-RklHX0JQRl9TVFJFQU1fUEFSU0VSKQ0KPiA+ICsgICAgICAgICAgICAgICBpZiAoc2tiX2JwZl9z
-dHJwYXJzZXIoc2tiKSkgew0KPiANCj4gSWYgQ09ORklHX0JQRl9TVFJFQU1fUEFSU0VSIGlzIGRp
-c2FibGVkLCB0aGlzIHNob3VsZCBhbHdheXMgcmV0dXJuIGZhbHNlLA0KPiBoZW5jZSB5b3UgZG9u
-J3QgbmVlZCB0aGlzICNpZmRlZi4NCj4gT3IgYWx0ZXJuYXRpdmVseSwgeW91IGNhbiBhdCBsZWFz
-dCBkZWZpbmUgZm9yIG5vcCBmb3INCj4gc2tiX2JwZl9zdHJwYXJzZXIoKSBpZiAhQ09ORklHX0JQ
-Rl9TVFJFQU1fUEFSU0VSLg0KPiBBbmQgeW91IGNhbiBtb3ZlIHRoZSBhYm92ZSAic3RtIiBkb3du
-IGhlcmUgdG9vLg0KPiANClY0IGhhcyBiZWVuIHNlbnQsIHRoYW5rIHlvdX4NCg0KPiAoRGl0dG8g
-Zm9yIHRoZSBvdGhlciBwbGFjZSBiZWxvdy4pDQo+IA0KPiBUaGFua3MuDQo=
+
+
+On 2021/9/25 7:05, Michal Kubecek wrote:
+> On Fri, Sep 24, 2021 at 10:29:54PM +0800, Guangbin Huang wrote:
+>> From: Hao Chen <chenhao288@hisilicon.com>
+>>
+>> Add support for ethtool to set/get tx copybreak buf size.
+>>
+>> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+>> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+>> ---
+>>   Documentation/networking/ethtool-netlink.rst | 24 ++++++++++++++++++++
+>>   include/uapi/linux/ethtool.h                 |  1 +
+>>   net/ethtool/common.c                         |  1 +
+>>   net/ethtool/ioctl.c                          |  1 +
+>>   4 files changed, 27 insertions(+)
+>>
+>> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+>> index d9b55b7a1a4d..a47b0255aaf9 100644
+>> --- a/Documentation/networking/ethtool-netlink.rst
+>> +++ b/Documentation/networking/ethtool-netlink.rst
+>> @@ -1521,6 +1521,30 @@ Kernel response contents:
+>>     ``ETHTOOL_A_PHC_VCLOCKS_INDEX``       s32     PHC index array
+>>     ====================================  ======  ==========================
+>>   
+>> +TUNABLE_SET
+>> +===========
+>> +
+>> +Request contents:
+>> +
+>> +  =====================================  ======  ==========================
+>> +  ``ETHTOOL_TX_COPYBREAK_BUF_SIZE``      u32     buf size for tx copybreak
+>> +  =====================================  ======  ==========================
+>> +
+>> +Tx copybreak buf size is used for tx copybreak feature, the feature is used
+>> +for small size packet or frag. It adds a queue based tx shared bounce buffer
+>> +to memcpy the small packet when the len of xmitted skb is below tx_copybreak
+>> +(value to distinguish small size and normal size), and reduce the overhead
+>> +of dma map and unmap when IOMMU is on.
+>> +
+>> +TUNABLE_GET
+>> +===========
+>> +
+>> +Kernel response contents:
+>> +
+>> +  ====================================  ======  ==========================
+>> +  ``ETHTOOL_TX_COPYBREAK_BUF_SIZE``     u32     buf size for tx copybreak
+>> +  ====================================  ======  ==========================
+> 
+> I have to repeat my concerns expressed in
+> 
+>    https://lore.kernel.org/netdev/20210826072618.2lu6spapkzdcuhyv@lion.mk-sys.cz
+> 
+> and earlier in more details in
+> 
+>    https://lore.kernel.org/netdev/20200325164958.GZ31519@unicorn.suse.cz
+> 
+> That being said, I don't understand why this patch adds description of
+> two new message types to the documentation of ethtool netlink API but it
+> does not actually add them to the API. Instead, it adds the new tunable
+> to ioctl API.
+> 
+> Michal
+> 
+
+Hi Michal, thanks for your opinion.
+Is there any documentation for ioctl API? We didn't find it.
+Or we add a new documentation of ioctl API for the new tunable?
+
+Guangbin
