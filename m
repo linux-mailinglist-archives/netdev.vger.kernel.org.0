@@ -2,177 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B50D41CDC9
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 23:07:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B38B341CDD7
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 23:12:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346482AbhI2VIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 17:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50896 "EHLO
+        id S1346856AbhI2VOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 17:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345622AbhI2VIo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 17:08:44 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354EFC06161C
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 14:07:02 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id x27so16328799lfu.5
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 14:07:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3KZeQ1UL+Qr6VrGAkVMnUDxIrRV+iTWbafHkEPoCs9g=;
-        b=M58hkh9SpiSFF7g28cyy/3kzGz+I4WM2ImAvKHGPlvAQpoXgjzo5WLGWVFb2XS+DjO
-         aGc3YjZu4CVVsc+LGQFH5P3tMSUwNuYH5Gt2Y19W330VfK1P3wVoEiCeCqy1U4FGiksp
-         kZLs/GfxDAICvCJToEk9tOHXIlCwuhhqk8ypq/CnIuuYxCJEPSKV8BZutt4hop+Jylrc
-         MpjwotUmbKWHWGCRS5nNPCzcyCkL5GL6ZdQRzn4frd7le3ceCt0x1/f0djx/2nZ15JOY
-         jdKWAvJdW/yvUoZq7h8w1svZxIIA6KiLyB/MSPLYlasCwC8ztIL0eMPCqFykGw6rzp3M
-         8xVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3KZeQ1UL+Qr6VrGAkVMnUDxIrRV+iTWbafHkEPoCs9g=;
-        b=6j50UzYQHskyFTNJ8zSjfaKVXFX52bLfHrgC3NDHEslxRtM6bR16os3MzB/dPYMrwd
-         k0LhQrlAvo982zUDuMfcHLZbUl7gpvjRdWZSIggAJNsyS3xMTnpkAFooSLw3yhNTCWzl
-         zNcts6FuU0LhPqCXbbooAUb9sVD1Mm8JvfUKamtUuTadALDDBZjYQj1Zmlk83GxDOsQW
-         RYmUYIBejDASJkpaXtUTye7+6kXKQoo+Kpm6RPbvS+9VscM5RkGnric2nfVaytXoUZFL
-         cbSrqiqANOBM1HAaK3jWwL/fIUUCPJHP5dbn9xR6jAHPys5WLshgvOQTeHNRxHCewbkw
-         YJGw==
-X-Gm-Message-State: AOAM531vvBF4NpnVFu7ifgceTUCwMY49IjJ70GvupeB0yz32nLSNG27H
-        5wUQ1LcI6JrWqlAEN/43YT18Gw==
-X-Google-Smtp-Source: ABdhPJwvl5A/2dSRawajr/n/5JVATrjSjztaVBgZZW52qf0v90ip0K2/9Jpmls0s6yKraYlg4xw1gg==
-X-Received: by 2002:ac2:5e24:: with SMTP id o4mr1731035lfg.522.1632949620530;
-        Wed, 29 Sep 2021 14:07:00 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id s9sm112613lfp.291.2021.09.29.14.06.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Sep 2021 14:07:00 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Mauri Sandberg <sandberg@mailfence.com>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: [PATCH net-next 4/4 v4] net: dsa: rtl8366rb: Support setting STP state
-Date:   Wed, 29 Sep 2021 23:03:49 +0200
-Message-Id: <20210929210349.130099-5-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210929210349.130099-1-linus.walleij@linaro.org>
-References: <20210929210349.130099-1-linus.walleij@linaro.org>
+        with ESMTP id S1346685AbhI2VNz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 17:13:55 -0400
+Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799B8C06161C;
+        Wed, 29 Sep 2021 14:12:13 -0700 (PDT)
+Received: by fieldses.org (Postfix, from userid 2815)
+        id 7A2467046; Wed, 29 Sep 2021 17:12:11 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 7A2467046
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
+        s=default; t=1632949931;
+        bh=aNCVSUe1ezHP04FGaabkWlAzsR9PWbBgUjVbZnmPnEY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WrbW5KlXsi7AXwMiVw+KlMNteT7mz8SGIoElqbTcWay/Zqg8nMzswdS4PIHG5mVEG
+         f9zVpwVFZ4zbOnM+wFnZySrN4TwiF3hCDfera4Zlyyft79q61n3KjCBAfkKo7CP5mj
+         0wTiw8ZztvDwgvMymGZLkamKQ/2cLLE3MouXI044=
+Date:   Wed, 29 Sep 2021 17:12:11 -0400
+From:   "bfields@fieldses.org" <bfields@fieldses.org>
+To:     Trond Myklebust <trondmy@hammerspace.com>
+Cc:     "neilb@suse.com" <neilb@suse.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "willy@infradead.org" <willy@infradead.org>,
+        "tyhicks@canonical.com" <tyhicks@canonical.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "wanghai38@huawei.com" <wanghai38@huawei.com>,
+        "nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "jlayton@kernel.org" <jlayton@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "christian.brauner@ubuntu.com" <christian.brauner@ubuntu.com>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
+        "tom@talpey.com" <tom@talpey.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "cong.wang@bytedance.com" <cong.wang@bytedance.com>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "timo@rothenpieler.org" <timo@rothenpieler.org>,
+        "jiang.wang@bytedance.com" <jiang.wang@bytedance.com>,
+        "kuniyu@amazon.co.jp" <kuniyu@amazon.co.jp>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Rao.Shoaib@oracle.com" <Rao.Shoaib@oracle.com>,
+        "wenbin.zeng@gmail.com" <wenbin.zeng@gmail.com>,
+        "kolga@netapp.com" <kolga@netapp.com>
+Subject: Re: [PATCH net 2/2] auth_gss: Fix deadlock that blocks
+ rpcsec_gss_exit_net when use-gss-proxy==1
+Message-ID: <20210929211211.GC20707@fieldses.org>
+References: <20210928031440.2222303-1-wanghai38@huawei.com>
+ <20210928031440.2222303-3-wanghai38@huawei.com>
+ <a845b544c6592e58feeaff3be9271a717f53b383.camel@hammerspace.com>
+ <20210928134952.GA25415@fieldses.org>
+ <77051a059fa19a7ae2390fbda7f8ab6f09514dfc.camel@hammerspace.com>
+ <20210928141718.GC25415@fieldses.org>
+ <cc92411f242290b85aa232e7220027b875942f30.camel@hammerspace.com>
+ <20210928145747.GD25415@fieldses.org>
+ <8b0e774bdb534c69b0612103acbe61c628fde9b1.camel@hammerspace.com>
+ <20210928154300.GE25415@fieldses.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210928154300.GE25415@fieldses.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for setting the STP state to the RTL8366RB
-DSA switch. This rids the following message from the kernel on
-e.g. OpenWrt:
+On Tue, Sep 28, 2021 at 11:43:00AM -0400, bfields@fieldses.org wrote:
+> On Tue, Sep 28, 2021 at 03:36:58PM +0000, Trond Myklebust wrote:
+> > What is the use case here? Starting the gssd daemon or knfsd in
+> > separate chrooted environments? We already know that they have to be
+> > started in the same net namespace, which pretty much ensures it has to
+> > be the same container.
+> 
+> Somehow I forgot that knfsd startup is happening in some real process's
+> context too (not just a kthread).
+> 
+> OK, great, I agree, that sounds like it should work.
 
-DSA: failed to set STP state 3 (-95)
+Wang Hai, do you want to try that, or should I?
 
-Since the RTL8366RB has one STP state register per FID with
-two bit per port in each, we simply loop over all the FIDs
-and set the state on all of them.
-
-Cc: Vladimir Oltean <olteanv@gmail.com>
-Cc: Alvin Šipraga <alsi@bang-olufsen.dk>
-Cc: Mauri Sandberg <sandberg@mailfence.com>
-Cc: DENG Qingfang <dqfext@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v4:
-- New patch after discovering that we can do really nice
-  bridge offloading with these bits.
----
- drivers/net/dsa/rtl8366rb.c | 47 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
-
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index 748f22ab9130..c143fdab4802 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -110,6 +110,14 @@
- 
- #define RTL8366RB_POWER_SAVING_REG	0x0021
- 
-+/* Spanning tree status (STP) control, two bits per port per FID */
-+#define RTL8368S_SPT_STATE_BASE		0x0050 /* 0x0050..0x0057 */
-+#define RTL8368S_SPT_STATE_MSK		0x3
-+#define RTL8368S_SPT_STATE_DISABLED	0x0
-+#define RTL8368S_SPT_STATE_BLOCKING	0x1
-+#define RTL8368S_SPT_STATE_LEARNING	0x2
-+#define RTL8368S_SPT_STATE_FORWARDING	0x3
-+
- /* CPU port control reg */
- #define RTL8368RB_CPU_CTRL_REG		0x0061
- #define RTL8368RB_CPU_PORTS_MSK		0x00FF
-@@ -254,6 +262,7 @@
- #define RTL8366RB_NUM_LEDGROUPS		4
- #define RTL8366RB_NUM_VIDS		4096
- #define RTL8366RB_PRIORITYMAX		7
-+#define RTL8366RB_NUM_FIDS		8
- #define RTL8366RB_FIDMAX		7
- 
- #define RTL8366RB_PORT_1		BIT(0) /* In userspace port 0 */
-@@ -1359,6 +1368,43 @@ rtl8366rb_port_bridge_flags(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
-+static void
-+rtl8366rb_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
-+{
-+	struct realtek_smi *smi = ds->priv;
-+	u16 mask;
-+	u32 val;
-+	int i;
-+
-+	switch (state) {
-+	case BR_STATE_DISABLED:
-+		val = RTL8368S_SPT_STATE_DISABLED;
-+		break;
-+	case BR_STATE_BLOCKING:
-+	case BR_STATE_LISTENING:
-+		val = RTL8368S_SPT_STATE_BLOCKING;
-+		break;
-+	case BR_STATE_LEARNING:
-+		val = RTL8368S_SPT_STATE_LEARNING;
-+		break;
-+	case BR_STATE_FORWARDING:
-+		val = RTL8368S_SPT_STATE_FORWARDING;
-+		break;
-+	default:
-+		dev_err(smi->dev, "unknown bridge state requested\n");
-+		return;
-+	};
-+
-+	mask = (RTL8368S_SPT_STATE_MSK << (port * 2));
-+	val <<= (port * 2);
-+
-+	/* Set the same status for the port on all the FIDs */
-+	for (i = 0; i < RTL8366RB_NUM_FIDS; i++) {
-+		regmap_update_bits(smi->map, RTL8368S_SPT_STATE_BASE + i,
-+				   mask, val);
-+	}
-+}
-+
- static void
- rtl8366rb_port_fast_age(struct dsa_switch *ds, int port)
- {
-@@ -1784,6 +1830,7 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
- 	.port_disable = rtl8366rb_port_disable,
- 	.port_pre_bridge_flags = rtl8366rb_port_pre_bridge_flags,
- 	.port_bridge_flags = rtl8366rb_port_bridge_flags,
-+	.port_stp_state_set = rtl8366rb_port_stp_state_set,
- 	.port_fast_age = rtl8366rb_port_fast_age,
- 	.port_change_mtu = rtl8366rb_change_mtu,
- 	.port_max_mtu = rtl8366rb_max_mtu,
--- 
-2.31.1
-
+--b.
