@@ -2,249 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA92541CF91
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 00:58:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3996A41CFAC
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 01:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346851AbhI2W7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 18:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
+        id S1347378AbhI2XGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 19:06:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345988AbhI2W7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 18:59:39 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC964C06161C
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 15:57:57 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id a73so1327716pge.0
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 15:57:57 -0700 (PDT)
+        with ESMTP id S1346558AbhI2XGr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 19:06:47 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91493C06161C;
+        Wed, 29 Sep 2021 16:05:05 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id dj4so15038180edb.5;
+        Wed, 29 Sep 2021 16:05:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9E90c6YkLKHA18V49jTcSpNtA72RonacrjjL8A0pD5A=;
-        b=odqPw+zXGzz3GNHO1w7ZYKxx4vDSR9zIIArYWSZ8sSFo9+fQC7PuxdcD1tCzyzzXsC
-         GEY6S7CnNikeg84kNYPZrsPiPkxCStzaU9DaaUys9urnFFQjEfYBU80VYtEMaJdkFT/r
-         ynGLcUvtm96ADVp8YfCgGv8ECirDcBMJYepdYDnM1RPdEdrFNXIlNn6dGU5z43JODm/b
-         1JIVX3lerK3elvWmD1oMh2RdT12FXkz9CJOBKE5eq1U2Az6Br1wVN8Qm16pxTTUgjCmP
-         K/9FrpAp7MtO9LOrvZ/956hKqCtf3bFGcE2gmH1NnOj6sCwolrpX9taICd3iarDNr1g9
-         DBDQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=junDmjsGeeXH6AFTkfwWvE4eRp4hhF7+aaNBz6qBSf8=;
+        b=nh+yG0zcGzynV4sBXDmkkmzICeb9RD15jcVuXjresYcIPWYL58XSbBQJPKfFUhr8HZ
+         MK4Ib2UM8QwPkWwPxTMaRQEZ7gbfZVkjY7R55PfgC8cA3vxaGIuubZfMiyj9VlQerY0G
+         qzd51mNwVvGn5OlKaSz/Lja0vXV7+4AkM9gTHuvhGWaH7j6tX0+l7bCARq1tzxrntQrq
+         CvBE28bSBCl3RlT5j8Yqj/eKQpRAQ+yYCXcXk9WsLzhOo96mtf6lFIu/3zDEbovoQwEZ
+         tHt6Xf2OqFLnM2+N8UUPKz225lJqSVJC5Yg9eYivz/QUcj3aj93WFOKT1cDCHpAZRDjK
+         QYuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9E90c6YkLKHA18V49jTcSpNtA72RonacrjjL8A0pD5A=;
-        b=qpfuWH1hqbhbMF1AwLlfRxLf8F0Yj4HYKG5faoOnU2jZDwhuNHRumC5F3T11OjgetZ
-         2VlX0YTwwwP+Wmzlm0wCOwB5AqqURsX310pfxH30bGH5+wI2U+wlo9glOgRgIxZT9Cqp
-         +hibq3/Q/s+pka0v/3ewyyqZ6xxHHV5KyBJfNnvLaZpGGVkSbjZipPv9J+qM6ruZ3UsP
-         8CU6av4gQUlCFJcrl85X9e6sLY6cpiiFgWMTOqKumufUGVIeMME1Lm+8gwDEFCNyond4
-         HgRuOMrRcPcrAmutJUpY8MJiKyVPgSzW5xP/ZDBfkuJwy0nO+CSI6LL1UijCtz3GkNp6
-         UatA==
-X-Gm-Message-State: AOAM532zMwJL2KB5qrgdiXen8D2hBxKR2U+O+mfmy+z0HtXjTFhzI/dC
-        DeVVJJGs+/4LX9PUdwdtudQ=
-X-Google-Smtp-Source: ABdhPJxRyjsszn86TYDwnd4CbrkdA9i80X4EVInOcPEVKPP/GsIRQ4ESXcUjmPhY96y+Bwi22mc3SA==
-X-Received: by 2002:a05:6a00:1307:b0:43d:2b4:419a with SMTP id j7-20020a056a00130700b0043d02b4419amr975872pfu.62.1632956277375;
-        Wed, 29 Sep 2021 15:57:57 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:8858:a0b7:dcc9:9a3b])
-        by smtp.gmail.com with ESMTPSA id z11sm2955636pjn.12.2021.09.29.15.57.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Sep 2021 15:57:56 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jann Horn <jannh@google.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH net] af_unix: fix races in sk_peer_pid and sk_peer_cred accesses
-Date:   Wed, 29 Sep 2021 15:57:50 -0700
-Message-Id: <20210929225750.2548112-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.33.0.800.g4c38ced690-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=junDmjsGeeXH6AFTkfwWvE4eRp4hhF7+aaNBz6qBSf8=;
+        b=ZtSl/1Sm/JR0t5EAx9QBq+dByZq+MnrmyQjys82YA2zDCV0vt2ZpqHHeqsBl7Wq8L2
+         uaw7GF2xykuTiKrs7TUnprSH2up67FV+IUKoYIZ21XMFUN7O7Okltwljw9JgEYTjlNzj
+         kUSkqc24yzcJUYigxVtc9sXdbWDcnwYnjDqk6nDmRNG/8g4q8g4zIHjlnMQC1QBlPSjl
+         aUaDZPIgiFA5P8SOY543jXYP1sf+P2nOo7AQoP9Aoh8ohr7yeZqbZDCnKgtd3w7XCUOA
+         xSxFvnPkyoFAtjSiPZg6LMqg9epNITs5UJYQ9dMDbC8gnRr02Vlr6HI9caUH0y0F75Ng
+         n9Sw==
+X-Gm-Message-State: AOAM530Sunscs256hAStMS7pUgb+m5LoQ0lF7UFsWmUafG9g3oV9A7ZW
+        ZjR9wjlfeuPZdJCMoEJfLn7wT6s2MvyoYIBsnq4=
+X-Google-Smtp-Source: ABdhPJxNd8W4XXeXlRU3CKfDahGD6/F3XW55XhcqTgBtosY67UqcxtnkEDtJXvkNIg6AA+Ojjixpjh5S39+glLbrxjQ=
+X-Received: by 2002:a05:6402:513:: with SMTP id m19mr1037540edv.184.1632956703972;
+ Wed, 29 Sep 2021 16:05:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1632519891-26510-1-git-send-email-justinpopo6@gmail.com>
+ <1632519891-26510-4-git-send-email-justinpopo6@gmail.com> <YU9SHpn4ZJrjqNuF@lunn.ch>
+ <c66c8bd1-940a-bf9d-ce33-5a39635e9f5b@gmail.com> <YVB8ef3aMpJTEvgF@lunn.ch>
+In-Reply-To: <YVB8ef3aMpJTEvgF@lunn.ch>
+From:   Justin Chen <justinpopo6@gmail.com>
+Date:   Wed, 29 Sep 2021 16:04:53 -0700
+Message-ID: <CAJx26kVw8iJD_wJXypF4gjx697z_ErOdogWNNQffis19pt6y_w@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/5] net: bcmasp: Add support for ASP2.0 Ethernet controller
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Doug Berger <opendmb@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:DMA BUFFER SHARING FRAMEWORK" 
+        <linux-media@vger.kernel.org>,
+        "open list:DMA BUFFER SHARING FRAMEWORK" 
+        <dri-devel@lists.freedesktop.org>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Sun, Sep 26, 2021 at 6:58 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > > > +static int bcmasp_set_priv_flags(struct net_device *dev, u32 flags)
+> > > > +{
+> > > > + struct bcmasp_intf *intf = netdev_priv(dev);
+> > > > +
+> > > > + intf->wol_keep_rx_en = flags & BCMASP_WOL_KEEP_RX_EN ? 1 : 0;
+> > > > +
+> > > > + return 0;
+> > >
+> > > Please could you explain this some more. How can you disable RX and
+> > > still have WoL working?
+> >
+> > Wake-on-LAN using Magic Packets and network filters requires keeping the
+> > UniMAC's receiver turned on, and then the packets feed into the Magic Packet
+> > Detector (MPD) block or the network filter block. In that mode DRAM is in
+> > self refresh and there is local matching of frames into a tiny FIFO however
+> > in the case of magic packets the packets leading to a wake-up are dropped as
+> > there is nowhere to store them. In the case of a network filter match (e.g.:
+> > matching a multicast IP address plus protocol, plus source/destination
+> > ports) the packets are also discarded because the receive DMA was shut down.
+> >
+> > When the wol_keep_rx_en flag is set, the above happens but we also allow the
+> > packets that did match a network filter to reach the small FIFO (Justin
+> > would know how many entries are there) that is used to push the packets to
+> > DRAM. The packet contents are held in there until the system wakes up which
+> > is usually just a few hundreds of micro seconds after we received a packet
+> > that triggered a wake-up. Once we overflow the receive DMA FIFO capacity
+> > subsequent packets get dropped which is fine since we are usually talking
+> > about very low bit rates, and we only try to push to DRAM the packets of
+> > interest, that is those for which we have a network filter.
+> >
+> > This is convenient in scenarios where you want to wake-up from multicast DNS
+> > (e.g.: wake on Googlecast, Bonjour etc.) because then the packet that
+> > resulted in the system wake-up is not discarded but is then delivered to the
+> > network stack.
+>
+> Thanks for the explanation. It would be easier for the user if you
+> automate this. Enable is by default for WoL types which have user
+> content?
+>
+Yup that can work. We can enable it for WAKE_FILTER type wol and leave
+it disabled otherwise.
 
-Jann Horn reported that SO_PEERCRED and SO_PEERGROUPS implementations
-are racy, as af_unix can concurrently change sk_peer_pid and sk_peer_cred.
+> > > > + /* Per ch */
+> > > > + intf->tx_spb_dma = priv->base + TX_SPB_DMA_OFFSET(intf);
+> > > > + intf->res.tx_spb_ctrl = priv->base + TX_SPB_CTRL_OFFSET(intf);
+> > > > + /*
+> > > > +  * Stop gap solution. This should be removed when 72165a0 is
+> > > > +  * deprecated
+> > > > +  */
+> > >
+> > > Is that an internal commit?
+> >
+> > Yes this is a revision of the silicon that is not meant to see the light of
+> > day.
+>
+> So this can all be removed?
+>
+Yup. That can be removed
 
-In order to fix this issue, this patch adds a new spinlock that needs
-to be used whenever these fields are read or written.
+>    Andrew
 
-Jann also pointed out that l2cap_sock_get_peer_pid_cb() is currently
-reading sk->sk_peer_pid which makes no sense, as this field
-is only possibly set by AF_UNIX sockets.
-We will have to clean this in a separate patch.
-This could be done by reverting b48596d1dc25 "Bluetooth: L2CAP: Add get_peer_pid callback"
-or implementing what was truly expected.
+Thanks for the review.
 
-Fixes: 109f6e39fa07 ("af_unix: Allow SO_PEERCRED to work across namespaces.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Jann Horn <jannh@google.com>
-Cc: Eric W. Biederman <ebiederm@xmission.com>
-Cc: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>
----
- include/net/sock.h |  2 ++
- net/core/sock.c    | 32 ++++++++++++++++++++++++++------
- net/unix/af_unix.c | 34 ++++++++++++++++++++++++++++------
- 3 files changed, 56 insertions(+), 12 deletions(-)
-
-diff --git a/include/net/sock.h b/include/net/sock.h
-index c005c3c750e89b6d4d36d36ccfad392a7e733603..f471cd0a6f98cb5b2b961f01c2de62870d61521e 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -488,8 +488,10 @@ struct sock {
- 	u8			sk_prefer_busy_poll;
- 	u16			sk_busy_poll_budget;
- #endif
-+	spinlock_t		sk_peer_lock;
- 	struct pid		*sk_peer_pid;
- 	const struct cred	*sk_peer_cred;
-+
- 	long			sk_rcvtimeo;
- 	ktime_t			sk_stamp;
- #if BITS_PER_LONG==32
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 512e629f97803f3216db8f054e97fd1b7a6e6c63..c70cbce69a66181c3688862ea51aa781b3ce4f97 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1376,6 +1376,16 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- }
- EXPORT_SYMBOL(sock_setsockopt);
- 
-+static const struct cred *sk_get_peer_cred(struct sock *sk)
-+{
-+	const struct cred *cred;
-+
-+	spin_lock(&sk->sk_peer_lock);
-+	cred = get_cred(sk->sk_peer_cred);
-+	spin_unlock(&sk->sk_peer_lock);
-+
-+	return cred;
-+}
- 
- static void cred_to_ucred(struct pid *pid, const struct cred *cred,
- 			  struct ucred *ucred)
-@@ -1552,7 +1562,11 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
- 		struct ucred peercred;
- 		if (len > sizeof(peercred))
- 			len = sizeof(peercred);
-+
-+		spin_lock(&sk->sk_peer_lock);
- 		cred_to_ucred(sk->sk_peer_pid, sk->sk_peer_cred, &peercred);
-+		spin_unlock(&sk->sk_peer_lock);
-+
- 		if (copy_to_user(optval, &peercred, len))
- 			return -EFAULT;
- 		goto lenout;
-@@ -1560,20 +1574,23 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
- 
- 	case SO_PEERGROUPS:
- 	{
-+		const struct cred *cred;
- 		int ret, n;
- 
--		if (!sk->sk_peer_cred)
-+		cred = sk_get_peer_cred(sk);
-+		if (!cred)
- 			return -ENODATA;
- 
--		n = sk->sk_peer_cred->group_info->ngroups;
-+		n = cred->group_info->ngroups;
- 		if (len < n * sizeof(gid_t)) {
- 			len = n * sizeof(gid_t);
-+			put_cred(cred);
- 			return put_user(len, optlen) ? -EFAULT : -ERANGE;
- 		}
- 		len = n * sizeof(gid_t);
- 
--		ret = groups_to_user((gid_t __user *)optval,
--				     sk->sk_peer_cred->group_info);
-+		ret = groups_to_user((gid_t __user *)optval, cred->group_info);
-+		put_cred(cred);
- 		if (ret)
- 			return ret;
- 		goto lenout;
-@@ -1935,9 +1952,10 @@ static void __sk_destruct(struct rcu_head *head)
- 		sk->sk_frag.page = NULL;
- 	}
- 
--	if (sk->sk_peer_cred)
--		put_cred(sk->sk_peer_cred);
-+	/* We do not need to acquire sk->sk_peer_lock, we are the last user. */
-+	put_cred(sk->sk_peer_cred);
- 	put_pid(sk->sk_peer_pid);
-+
- 	if (likely(sk->sk_net_refcnt))
- 		put_net(sock_net(sk));
- 	sk_prot_free(sk->sk_prot_creator, sk);
-@@ -3145,6 +3163,8 @@ void sock_init_data(struct socket *sock, struct sock *sk)
- 
- 	sk->sk_peer_pid 	=	NULL;
- 	sk->sk_peer_cred	=	NULL;
-+	spin_lock_init(&sk->sk_peer_lock);
-+
- 	sk->sk_write_pending	=	0;
- 	sk->sk_rcvlowat		=	1;
- 	sk->sk_rcvtimeo		=	MAX_SCHEDULE_TIMEOUT;
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index f505b89bda6adefe973806f842001d428fc6c5ca..efac5989edb5d37881139bb1ad2fb9cf63bd7342 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -608,20 +608,42 @@ static void unix_release_sock(struct sock *sk, int embrion)
- 
- static void init_peercred(struct sock *sk)
- {
--	put_pid(sk->sk_peer_pid);
--	if (sk->sk_peer_cred)
--		put_cred(sk->sk_peer_cred);
-+	const struct cred *old_cred;
-+	struct pid *old_pid;
-+
-+	spin_lock(&sk->sk_peer_lock);
-+	old_pid = sk->sk_peer_pid;
-+	old_cred = sk->sk_peer_cred;
- 	sk->sk_peer_pid  = get_pid(task_tgid(current));
- 	sk->sk_peer_cred = get_current_cred();
-+	spin_unlock(&sk->sk_peer_lock);
-+
-+	put_pid(old_pid);
-+	put_cred(old_cred);
- }
- 
- static void copy_peercred(struct sock *sk, struct sock *peersk)
- {
--	put_pid(sk->sk_peer_pid);
--	if (sk->sk_peer_cred)
--		put_cred(sk->sk_peer_cred);
-+	const struct cred *old_cred;
-+	struct pid *old_pid;
-+
-+	if (sk < peersk) {
-+		spin_lock(&sk->sk_peer_lock);
-+		spin_lock_nested(&peersk->sk_peer_lock, SINGLE_DEPTH_NESTING);
-+	} else {
-+		spin_lock(&peersk->sk_peer_lock);
-+		spin_lock_nested(&sk->sk_peer_lock, SINGLE_DEPTH_NESTING);
-+	}
-+	old_pid = sk->sk_peer_pid;
-+	old_cred = sk->sk_peer_cred;
- 	sk->sk_peer_pid  = get_pid(peersk->sk_peer_pid);
- 	sk->sk_peer_cred = get_cred(peersk->sk_peer_cred);
-+
-+	spin_unlock(&sk->sk_peer_lock);
-+	spin_unlock(&peersk->sk_peer_lock);
-+
-+	put_pid(old_pid);
-+	put_cred(old_cred);
- }
- 
- static int unix_listen(struct socket *sock, int backlog)
--- 
-2.33.0.800.g4c38ced690-goog
-
+Justin
