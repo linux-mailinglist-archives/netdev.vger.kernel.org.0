@@ -2,191 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB15041C143
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 11:04:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55D5C41C154
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 11:09:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237806AbhI2JGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 05:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244898AbhI2JGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 05:06:20 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F01EC06161C
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 02:04:39 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mVVVX-0003JP-91; Wed, 29 Sep 2021 11:04:07 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mVVVS-0004kK-3w; Wed, 29 Sep 2021 11:04:02 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mVVVS-0000V5-1n; Wed, 29 Sep 2021 11:04:02 +0200
-Date:   Wed, 29 Sep 2021 11:04:01 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        oss-drivers@corigine.com, Paul Mackerras <paulus@samba.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Ido Schimmel <idosch@nvidia.com>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>,
-        Vadym Kochan <vkochan@marvell.com>, Michael Buesch <m@bues.ch>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        linux-crypto@vger.kernel.org, kernel@pengutronix.de,
-        Oliver O'Halloran <oohall@gmail.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v4 4/8] PCI: replace pci_dev::driver usage that gets the
- driver name
-Message-ID: <20210929090401.qvpjng3jne76o6kw@pengutronix.de>
-References: <20210927204326.612555-1-uwe@kleine-koenig.org>
- <20210927204326.612555-5-uwe@kleine-koenig.org>
- <20210928100127.GA16801@corigine.com>
- <20210928103129.c3gcbnfbarezr3mm@pengutronix.de>
- <20210929080541.GA13506@corigine.com>
+        id S244979AbhI2JLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 05:11:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50172 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239961AbhI2JLc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 05:11:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632906591;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=RcOVP83sWDrBqrCNf2sVDncAktEVO2ePzZXObxtehhI=;
+        b=dnyGG0+s7+X5hL26YyXKVDaC74Lh2WJSWAzd+qW7xF7jOIIs/ORhGpCsmfojBhAKWRfN20
+        oKHZc7pz1Eu6s4eqNUSZrB7lhJJ3P8MJ/2QDy7QVc4mBnFPT5TTWqFIXGAJmzb1ot4yrDq
+        rzwXQ5bJcTdfsCeFWJOsg/ITfWyh8YQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-543-0oOI8YVTOLiPmhnXhMqRlA-1; Wed, 29 Sep 2021 05:09:50 -0400
+X-MC-Unique: 0oOI8YVTOLiPmhnXhMqRlA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 01023802947;
+        Wed, 29 Sep 2021 09:09:49 +0000 (UTC)
+Received: from laptop.redhat.com (ovpn-13-131.pek2.redhat.com [10.72.13.131])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D41F960C9F;
+        Wed, 29 Sep 2021 09:09:36 +0000 (UTC)
+From:   Cindy Lu <lulu@redhat.com>
+To:     lulu@redhat.com, mst@redhat.com, jasowang@redhat.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] vhost-vdpa: Fix the wrong input in config_cb
+Date:   Wed, 29 Sep 2021 17:09:33 +0800
+Message-Id: <20210929090933.20465-1-lulu@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ey4ikhdxthigr5cx"
-Content-Disposition: inline
-In-Reply-To: <20210929080541.GA13506@corigine.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix the wrong input in for config_cb. In function vhost_vdpa_config_cb,
+the input cb.private was used as struct vhost_vdpa, so the input was
+wrong here, fix this issue
 
---ey4ikhdxthigr5cx
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fixes: 776f395004d8 ("vhost_vdpa: Support config interrupt in vdpa")
+Signed-off-by: Cindy Lu <lulu@redhat.com>
+---
+ drivers/vhost/vdpa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hello Simon,
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 942666425a45..e532cbe3d2f7 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -322,7 +322,7 @@ static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
+ 	struct eventfd_ctx *ctx;
+ 
+ 	cb.callback = vhost_vdpa_config_cb;
+-	cb.private = v->vdpa;
++	cb.private = v;
+ 	if (copy_from_user(&fd, argp, sizeof(fd)))
+ 		return  -EFAULT;
+ 
+-- 
+2.21.3
 
-On Wed, Sep 29, 2021 at 10:05:42AM +0200, Simon Horman wrote:
-> On Tue, Sep 28, 2021 at 12:31:29PM +0200, Uwe Kleine-K=F6nig wrote:
-> > On Tue, Sep 28, 2021 at 12:01:28PM +0200, Simon Horman wrote:
-> > > On Mon, Sep 27, 2021 at 10:43:22PM +0200, Uwe Kleine-K=F6nig wrote:
-> > > > From: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > > >=20
-> > > > struct pci_dev::driver holds (apart from a constant offset) the same
-> > > > data as struct pci_dev::dev->driver. With the goal to remove struct
-> > > > pci_dev::driver to get rid of data duplication replace getting the
-> > > > driver name by dev_driver_string() which implicitly makes use of st=
-ruct
-> > > > pci_dev::dev->driver.
-> > > >=20
-> > > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > >=20
-> > > ...
-> > >=20
-> > > > diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b=
-/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> > > > index 0685ece1f155..23dfb599c828 100644
-> > > > --- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> > > > +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> > > > @@ -202,7 +202,7 @@ nfp_get_drvinfo(struct nfp_app *app, struct pci=
-_dev *pdev,
-> > > >  {
-> > > >  	char nsp_version[ETHTOOL_FWVERS_LEN] =3D {};
-> > > > =20
-> > > > -	strlcpy(drvinfo->driver, pdev->driver->name, sizeof(drvinfo->driv=
-er));
-> > > > +	strlcpy(drvinfo->driver, dev_driver_string(&pdev->dev), sizeof(dr=
-vinfo->driver));
-> > >=20
-> > > I'd slightly prefer to maintain lines under 80 columns wide.
-> > > But not nearly strongly enough to engage in a long debate about it.
-> >=20
-> > :-)
-> >=20
-> > Looking at the output of
-> >=20
-> > 	git grep strlcpy.\*sizeof
-> >=20
-> > I wonder if it would be sensible to introduce something like
-> >=20
-> > 	#define strlcpy_array(arr, src) (strlcpy(arr, src, sizeof(arr)) + __mu=
-st_be_array(arr))
-> >=20
-> > but not sure this is possible without a long debate either (and this
-> > line is over 80 chars wide, too :-).
->=20
-> My main motivation for the 80 char limit in nfp_net_ethtool.c is
-> not that I think 80 char is universally a good limit (although that is tr=
-ue),
-> but rather that I expect that is the prevailing style in nfp_net_ethtool.=
-c.
-
-I sent out v5 with an additional line break now.
-=20
-> So a macro more than 80 car wide somewhere else is fine by me.
->=20
-> However, when running checkpatch --strict over the patch it told me:
->=20
->     WARNING: Prefer strscpy over strlcpy - see: https://lore.kernel.org/r=
-/CAHk-=3DwgfRnXz0W3D37d01q3JFkr_i_uTL=3DV6A6G1oUZcprmknw@mail.gmail.com/
->     #276: FILE: drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c:205:
->     +	strlcpy(drvinfo->driver, dev_driver_string(&pdev->dev), sizeof(drvi=
-nfo->driver));
->=20
->     total: 0 errors, 1 warnings, 0 checks, 80 lines checked
->=20
-> (Amusingly, more text wider than 80 column, perhaps suggesting the folly =
-of
->  my original comment, but lets move on from that.)
->=20
-> As your patch doesn't introduce the usage of strlcpy() I was considering a
-> follow-up patch to change it to strscpy(). And in general the email at the
-> link above suggests all usages of strlcpy() should do so. So perhaps
-> creating strscpy_array is a better idea?
-
-What I read about strscpy() is that conversions for the sake of the
-conversion are not welcome. When such a conversion comes from someone
-involved with the driver that is also tested this is probably fine.
-=20
-> I have not thought about this much, and probably this just leads us to a
-> deeper part of the rabbit hole.
-
-I assume so, too.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---ey4ikhdxthigr5cx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmFUK/8ACgkQwfwUeK3K
-7AlkTwf/dkfubvexEL8hKb2Rh3bCdHj1QQgkHxBsDLSNCo4lhj+H8iJlt8IyS3H8
-+XjgTjDp2XDrOSbFVQug/BYE5Wk94BoOdy/6cprREtPJZ4oI3QgdaaikCtG1CdwW
-KzFBUgIiRQlfUsxTM/xz9zGA40xpfydtliziKS7R4Kwn1dqfSB0Cl3hm97kC5DEA
-O42j5CvC58tvuAmEV02PSFRtt8xMb20mgqTN43Q9kzPHM2ziW4g0R9U999fyNqmT
-0vHgrGgXXdRc5+VU3Jd1ZCnrTVzWJMpaKoOCzGZVBO47gcB/7/mH6iFzMVACIYKV
-f5p890vGJmfiOE9WD2VDNGj7w2NU/A==
-=vlM1
------END PGP SIGNATURE-----
-
---ey4ikhdxthigr5cx--
