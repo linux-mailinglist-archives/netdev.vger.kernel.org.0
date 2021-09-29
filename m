@@ -2,211 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE9F041C861
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:29:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFD2341C86F
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:30:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345281AbhI2Pam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 11:30:42 -0400
-Received: from mail-bn1nam07on2080.outbound.protection.outlook.com ([40.107.212.80]:36485
-        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1345157AbhI2Paj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 11:30:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M7yE+3O25T4AcrkFRBqwxab+KX2nsT8LFo6lq8rkahtgHo/9+TZgF2ua1P0Gd+v60H2EPNdfKul2CFDR1YvVj1vvv9VrVmqBwYVtD3NEN9xuUCKqjWyeXO1h39t8EfPt4RsbTOLs/481f5i1eRhbvwOorS7+gHruyLkwveAlc0N6rHyWBvx6FIGIgWSfJCt8DwnnC60JetQvqyOLD8JHQe5WlKFni/nfM/1cGB27c45+Pd67BTM0HZq5N+YGBW0XEUXvohSbJT6x/YD7HiegeL0hWFuypjmF1IwjmKTj+PuJd7wsAAogG+o/tVHM2MK6kY0egB6crnO4+Jlp4/1WYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=9eel/MIbwZKsfy83C/KpYV1scUursh64yFpzJy4PeKQ=;
- b=lyv2ynuSv0lVmB3vXaECbIdTHDo+AFW/tBnMBlWooAhfIzVBj5fN3LZuVzurbI+pbXlDEgo3I9cld8QAXpM1KZysaG0e7UiAIqaeAfXx/rC2LiX2hHsOEec340pk8unjco1L4WEmeLKkLgjDo+w25WYPPg4wrzH+FX1Lnl23fdwXs1mBCJ7UaNZj/0Af0EZivC2kqqEznrV7f88mLm0A9uGmoGqTm6Sd+T0FwupkodtPVzXEsQab01mR3RTjOHx0eRbjkMcyH43d2O4NGvOCABI8fhbdZorFOthTPO2pRcyTIryBaFESISNEEEj5gS4ut05ECSTIk1JOpJ8L+fNdsg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9eel/MIbwZKsfy83C/KpYV1scUursh64yFpzJy4PeKQ=;
- b=kh+mws043f07pa63ABZmDmVH7BdpSuBmhXxzgkY+4x5EhmYIm54L14DintFozJ8ODV3MLWzvYM2kSMFAjzC1SMRWpSdIRSQEnd7F5aMKGhok0yY+jcB+Z7FnAgqnps4qP67pa8sqW/plRgDpwLkqLBwHcLVBlYvgIgx4Jc+on3rWChyIFG7jX5n7S05XHUhw2LouubuIJdJVhdvZgiKGHHbNVH+WpB+rAW559HH/jP9EF1Tl0n0hT7uSFVLaj76dPRmzqBEf0IGKQzsnHdURt3lbmHIu7+ccqPs0ss23V4ABpPj5HMUb2EVZC284CzwtpXQH55mDJMRgGP2g1hoAaQ==
-Received: from BN9PR03CA0366.namprd03.prod.outlook.com (2603:10b6:408:f7::11)
- by DM5PR12MB1162.namprd12.prod.outlook.com (2603:10b6:3:72::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14; Wed, 29 Sep
- 2021 15:28:56 +0000
-Received: from BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:f7:cafe::cc) by BN9PR03CA0366.outlook.office365.com
- (2603:10b6:408:f7::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.14 via Frontend
- Transport; Wed, 29 Sep 2021 15:28:56 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
- smtp.mailfrom=nvidia.com; redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- BN8NAM11FT060.mail.protection.outlook.com (10.13.177.211) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4566.14 via Frontend Transport; Wed, 29 Sep 2021 15:28:55 +0000
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 29 Sep
- 2021 15:28:51 +0000
-Received: from [172.27.14.186] (172.20.187.5) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 29 Sep
- 2021 15:28:47 +0000
-Subject: Re: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
- transition validity
-To:     Alex Williamson <alex.williamson@redhat.com>
-CC:     Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>,
-        "Doug Ledford" <dledford@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        "Bjorn Helgaas" <bhelgaas@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Kirti Wankhede <kwankhede@nvidia.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Cornelia Huck <cohuck@redhat.com>
-References: <cover.1632305919.git.leonro@nvidia.com>
- <c87f55d6fec77a22b110d3c9611744e6b28bba46.1632305919.git.leonro@nvidia.com>
- <20210927164648.1e2d49ac.alex.williamson@redhat.com>
- <20210927231239.GE3544071@ziepe.ca>
- <25c97be6-eb4a-fdc8-3ac1-5628073f0214@nvidia.com>
- <20210929063551.47590fbb.alex.williamson@redhat.com>
- <1eba059c-4743-4675-9f72-1a26b8f3c0f6@nvidia.com>
- <20210929075019.48d07deb.alex.williamson@redhat.com>
- <d2e94241-a146-c57d-cf81-8b7d8d00e62d@nvidia.com>
- <20210929091712.6390141c.alex.williamson@redhat.com>
-From:   Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <e1ba006f-f181-0b89-822d-890396e81c7b@nvidia.com>
+        id S1345355AbhI2Pbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 11:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345314AbhI2Pbm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:31:42 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA78FC06161C
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:30:00 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id r18so9980049edv.12
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:30:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=tgN79BvesPKY6SwuQbLpQKODnpT+35wR9t+40IBfPbY=;
+        b=iN3HoSZD1wmNYmGPPDoJNwNrLQ7tOUheDnwvqEmvykzs3zTnXikf0IlQlYI0N3gBj1
+         G2B8dSqlvoI+wSbpaL/IOrUTsvEmE4REOAjXp33Y40UQyQjt7PWTTk4ucQyLahA7VfLR
+         ot7Lu78Z4lNXfBZ8aiffQ81uA84ewLkBTsIbmoMSUAKH/xdEZpvrkhvHytctb6Omzf6i
+         xX6BYZbb3Sb8Ejv5Qg5ATPgD0jerYQzTf/S8Tk7MhaZBc6WqwrEAYIImaYOSdoqGz89B
+         q9Yi9Zu4JAVyoTZ72J0WhC/20Cx/Z42HQ1jaMwUQGZLUdSkFsm1UvU+dR99jlU2AMYKh
+         EsSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=tgN79BvesPKY6SwuQbLpQKODnpT+35wR9t+40IBfPbY=;
+        b=GqD2360uu8OO3hySc2QoYtM/v9+x/yxg9WTInCHorD/m6ils+zKXfEOUTIg5vnC6e8
+         PiV75oWhV4hVucbP+eB08VFpYBU+KgoHPUgDpMkI50wa7rOhKPH32ZKDSw9i+zmbEm1z
+         dK3EJSldH9ciqrbLkFeRsBrr4CWX43qri41dB+Mv8Oe4YC5P5dvX1VPq+gysPP87MVUb
+         CgY6m2TCvu2cGZV16cguVaINx/uPBA2J3EnLUusXcZeEdMpVSOeiz+lyyY6kRuAUX6aS
+         JWUPoU+8kiODqReqG3GPde48UpusQ7rn+GxFmJsW2HclKYJFTPTS4nskCo5IT5qMeBQM
+         ZdmQ==
+X-Gm-Message-State: AOAM531lP60XNM/49LsIs2gklLoHP9RTCv4BXQGgWQFkmy5GKkyxTopf
+        PMSa3dLHRzXOBs3SuNWW4JVPSgE9/Wugksdp
+X-Google-Smtp-Source: ABdhPJwl9CVd14MkBUo1H58daphPHlfNfU2jQCKud2GCJVPgZ+EDVDveDi8aZs6gU5Szb6x1jmbF+Q==
+X-Received: by 2002:a17:906:1299:: with SMTP id k25mr334079ejb.139.1632929340250;
+        Wed, 29 Sep 2021 08:29:00 -0700 (PDT)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id q12sm108434ejs.58.2021.09.29.08.28.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Sep 2021 08:28:59 -0700 (PDT)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, donaldsharp72@gmail.com, dsahern@gmail.com,
+        idosch@idosch.org, Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [RFC iproute2-next 07/11] ip: nexthop: add cache helpers
 Date:   Wed, 29 Sep 2021 18:28:44 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Message-Id: <20210929152848.1710552-8-razor@blackwall.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210929152848.1710552-1-razor@blackwall.org>
+References: <20210929152848.1710552-1-razor@blackwall.org>
 MIME-Version: 1.0
-In-Reply-To: <20210929091712.6390141c.alex.williamson@redhat.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- DRHQMAIL107.nvidia.com (10.27.9.16)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c087cda9-6f94-4634-659e-08d9835dd9f1
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1162:
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1162DA3E7D855678B0EEA62EDEA99@DM5PR12MB1162.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JSYVwHFEk0SSay0hP518DVStgWGhJi7O2UKbHYtMXGv53QxFAO+U1lLjjn47hrwXgsN9EPC1kmck09bAwM3lEsxiIpQLJc39syA7eRXE4pb62B/3o5KAx0w/xFgKUnz6g6Ybjq+T4j+UZ4XVOP9B/BvxoL8ZCVTVShuBc9qhAd8GRknt9anLLKp8RaSilt2MlRcJgumDKIa1rPYMkZ7DDPdPGB0euhe3pYyOW9ypF/8vq5uoT3L5fQQ/Fp+feh8sP0jJQQb7OwxAu/rHSd9E2uaInSAmLhMun7jVvTKL7frw1m3o02QsTA65R0qcs8G+fXHfG6X3o1zk3jS1llaE6yfYSxmgtEOzq29vZTakphf6oAWQrp5SgDM0OF/rsvpS0eNC+5+cjByH+rKe2Neh/+xCyYMvWQBTCPLumwWXAbswW5alKOmD9Hj3qno2tkNzWXnfnvTre7w0WuOcpPRUvRc5IAZFSWvo+Gay+3/0ISpSVLegHexloutc6WlM81MKtbL4uIo4mWgVLm7N7McrWP9gBCV+F62XI3JmturCChaZ3cuWAFcqEt8sYHHYermULMcqDuWMoFCv5mSZspDOLkv/M1t0EcFbysXCYXd8gPqXh3J/TSi3xn84ogzuvXFvkPk3KBefenuslwjoexYEh2SOo3D0aV4vhV+uwItmK77V4FTv7udTzXszgR+syoYGczYnUaHkRz8gXv4LsrcVDwEOqQDckAF2XCU7BSlk+k0=
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(6916009)(47076005)(508600001)(82310400003)(356005)(16526019)(7636003)(5660300002)(36756003)(6666004)(54906003)(336012)(426003)(36860700001)(83380400001)(31696002)(8676002)(186003)(86362001)(2906002)(70206006)(70586007)(53546011)(2616005)(8936002)(26005)(316002)(16576012)(31686004)(7416002)(4326008)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2021 15:28:55.9719
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c087cda9-6f94-4634-659e-08d9835dd9f1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1162
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-On 9/29/2021 6:17 PM, Alex Williamson wrote:
-> On Wed, 29 Sep 2021 17:36:59 +0300
-> Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
->
->> On 9/29/2021 4:50 PM, Alex Williamson wrote:
->>> On Wed, 29 Sep 2021 16:26:55 +0300
->>> Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
->>>   
->>>> On 9/29/2021 3:35 PM, Alex Williamson wrote:
->>>>> On Wed, 29 Sep 2021 13:44:10 +0300
->>>>> Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
->>>>>      
->>>>>> On 9/28/2021 2:12 AM, Jason Gunthorpe wrote:
->>>>>>> On Mon, Sep 27, 2021 at 04:46:48PM -0600, Alex Williamson wrote:
->>>>>>>>> +	enum { MAX_STATE = VFIO_DEVICE_STATE_RESUMING };
->>>>>>>>> +	static const u8 vfio_from_state_table[MAX_STATE + 1][MAX_STATE + 1] = {
->>>>>>>>> +		[VFIO_DEVICE_STATE_STOP] = {
->>>>>>>>> +			[VFIO_DEVICE_STATE_RUNNING] = 1,
->>>>>>>>> +			[VFIO_DEVICE_STATE_RESUMING] = 1,
->>>>>>>>> +		},
->>>>>>>> Our state transition diagram is pretty weak on reachable transitions
->>>>>>>> out of the _STOP state, why do we select only these two as valid?
->>>>>>> I have no particular opinion on specific states here, however adding
->>>>>>> more states means more stuff for drivers to implement and more risk
->>>>>>> driver writers will mess up this uAPI.
->>>>>> _STOP == 000b => Device Stopped, not saving or resuming (from UAPI).
->>>>>>
->>>>>> This is the default initial state and not RUNNING.
->>>>>>
->>>>>> The user application should move device from STOP => RUNNING or STOP =>
->>>>>> RESUMING.
->>>>>>
->>>>>> Maybe we need to extend the comment in the UAPI file.
->>>>> include/uapi/linux/vfio.h:
->>>>> ...
->>>>>     *  +------- _RESUMING
->>>>>     *  |+------ _SAVING
->>>>>     *  ||+----- _RUNNING
->>>>>     *  |||
->>>>>     *  000b => Device Stopped, not saving or resuming
->>>>>     *  001b => Device running, which is the default state
->>>>>                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
->>>>> ...
->>>>>     * State transitions:
->>>>>     *
->>>>>     *              _RESUMING  _RUNNING    Pre-copy    Stop-and-copy   _STOP
->>>>>     *                (100b)     (001b)     (011b)        (010b)       (000b)
->>>>>     * 0. Running or default state
->>>>>     *                             |
->>>>>                     ^^^^^^^^^^^^^
->>>>> ...
->>>>>     * 0. Default state of VFIO device is _RUNNING when the user application starts.
->>>>>          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->>>>>
->>>>> The uAPI is pretty clear here.  A default state of _STOP is not
->>>>> compatible with existing devices and userspace that does not support
->>>>> migration.  Thanks,
->>>> Why do you need this state machine for userspace that doesn't support
->>>> migration ?
->>> For userspace that doesn't support migration, there's one state,
->>> _RUNNING.  That's what we're trying to be compatible and consistent
->>> with.  Migration is an extension, not a base requirement.
->> Userspace without migration doesn't care about this state.
->>
->> We left with kernel now. vfio-pci today doesn't support migration, right
->> ? state is in theory is 0 (STOP).
->>
->> This state machine is controlled by the migration SW. The drivers don't
->> move state implicitly.
->>
->> mlx5-vfio-pci support migration and will work fine with non-migration SW
->> (it will stay with state = 0 unless someone will move it. but nobody
->> will) exactly like vfio-pci does today.
->>
->> So where is the problem ?
-> So you have a device that's actively modifying its internal state,
-> performing I/O, including DMA (thereby dirtying VM memory), all while
-> in the _STOP state?  And you don't see this as a problem?
+Add a static nexthop cache in a hash with 1024 buckets and helpers to
+manage it (link, unlink, find, add nexthop, del nexthop). Adding new
+nexthops is done by creating a new rtnl handle and using it to retrieve
+the nexthop so the helper is safe to use while already reading a
+response (i.e. using the global rth).
 
-I don't see how is it different from vfio-pci situation.
+Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+---
+ ip/ipnexthop.c | 112 +++++++++++++++++++++++++++++++++++++++++++++----
+ ip/nh_common.h |   6 +++
+ 2 files changed, 111 insertions(+), 7 deletions(-)
 
-And you said you're worried from compatibility. I can't see a 
-compatibility issue here.
+diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
+index 0a08230fc278..6e5ea47ac927 100644
+--- a/ip/ipnexthop.c
++++ b/ip/ipnexthop.c
+@@ -34,6 +34,8 @@ enum {
+ #define RTM_NHA(h)  ((struct rtattr *)(((char *)(h)) + \
+ 			NLMSG_ALIGN(sizeof(struct nhmsg))))
+ 
++static struct hlist_head nh_cache[NH_CACHE_SIZE];
++
+ static void usage(void) __attribute__((noreturn));
+ 
+ static void usage(void)
+@@ -347,6 +349,41 @@ static void ipnh_destroy_entry(struct nh_entry *nhe)
+ 		free(nhe->nh_groups);
+ }
+ 
++static struct hlist_head *ipnh_cache_head(__u32 nh_id)
++{
++	nh_id ^= nh_id >> 20;
++	nh_id ^= nh_id >> 10;
++
++	return &nh_cache[nh_id % NH_CACHE_SIZE];
++}
++
++static void ipnh_cache_link_entry(struct nh_entry *nhe)
++{
++	struct hlist_head *head = ipnh_cache_head(nhe->nh_id);
++
++	hlist_add_head(&nhe->nh_hash, head);
++}
++
++static void ipnh_cache_unlink_entry(struct nh_entry *nhe)
++{
++	hlist_del(&nhe->nh_hash);
++}
++
++static struct nh_entry *ipnh_cache_get(__u32 nh_id)
++{
++	struct hlist_head *head = ipnh_cache_head(nh_id);
++	struct nh_entry *nhe;
++	struct hlist_node *n;
++
++	hlist_for_each(n, head) {
++		nhe = container_of(n, struct nh_entry, nh_hash);
++		if (nhe->nh_id == nh_id)
++			return nhe;
++	}
++
++	return NULL;
++}
++
+ /* parse nhmsg into nexthop entry struct which must be destroyed by
+  * ipnh_destroy_enty when it's not needed anymore
+  */
+@@ -372,7 +409,7 @@ static int ipnh_parse_nhmsg(FILE *fp, const struct nhmsg *nhm, int len,
+ 		if (RTA_PAYLOAD(tb[NHA_GATEWAY]) > sizeof(nhe->nh_gateway)) {
+ 			fprintf(fp, "<nexthop id %u invalid gateway length %lu>\n",
+ 				nhe->nh_id, RTA_PAYLOAD(tb[NHA_GATEWAY]));
+-			err = EINVAL;
++			err = -EINVAL;
+ 			goto out_err;
+ 		}
+ 		nhe->nh_gateway_len = RTA_PAYLOAD(tb[NHA_GATEWAY]);
+@@ -383,7 +420,7 @@ static int ipnh_parse_nhmsg(FILE *fp, const struct nhmsg *nhm, int len,
+ 	if (tb[NHA_ENCAP]) {
+ 		nhe->nh_encap = malloc(RTA_LENGTH(RTA_PAYLOAD(tb[NHA_ENCAP])));
+ 		if (!nhe->nh_encap) {
+-			err = ENOMEM;
++			err = -ENOMEM;
+ 			goto out_err;
+ 		}
+ 		memcpy(nhe->nh_encap, tb[NHA_ENCAP],
+@@ -396,13 +433,13 @@ static int ipnh_parse_nhmsg(FILE *fp, const struct nhmsg *nhm, int len,
+ 		if (!__valid_nh_group_attr(tb[NHA_GROUP])) {
+ 			fprintf(fp, "<nexthop id %u invalid nexthop group>",
+ 				nhe->nh_id);
+-			err = EINVAL;
++			err = -EINVAL;
+ 			goto out_err;
+ 		}
+ 
+ 		nhe->nh_groups = malloc(RTA_PAYLOAD(tb[NHA_GROUP]));
+ 		if (!nhe->nh_groups) {
+-			err = ENOMEM;
++			err = -ENOMEM;
+ 			goto out_err;
+ 		}
+ 		nhe->nh_groups_cnt = RTA_PAYLOAD(tb[NHA_GROUP]) /
+@@ -450,6 +487,67 @@ static int  __ipnh_get_id(struct rtnl_handle *rthp, __u32 nh_id,
+ 	return rtnl_talk(rthp, &req.n, answer);
+ }
+ 
++static int __ipnh_cache_parse_nlmsg(const struct nlmsghdr *n,
++				    struct nh_entry *nhe)
++{
++	int err, len;
++
++	len = n->nlmsg_len - NLMSG_SPACE(sizeof(struct nhmsg));
++	if (len < 0) {
++		fprintf(stderr, "BUG: wrong nlmsg len %d\n", len);
++		return -EINVAL;
++	}
++
++	err = ipnh_parse_nhmsg(stderr, NLMSG_DATA(n), len, nhe);
++	if (err) {
++		fprintf(stderr, "Error parsing nexthop: %s\n", strerror(-err));
++		return err;
++	}
++
++	return 0;
++}
++
++static struct nh_entry *ipnh_cache_add(__u32 nh_id)
++{
++	struct rtnl_handle cache_rth = { .fd = -1 };
++	struct nlmsghdr *answer = NULL;
++	struct nh_entry *nhe = NULL;
++
++	if (rtnl_open(&cache_rth, 0) < 0)
++		goto out;
++
++	if (__ipnh_get_id(&cache_rth, nh_id, &answer) < 0)
++		goto out;
++
++	nhe = malloc(sizeof(*nhe));
++	if (!nhe)
++		goto out;
++
++	if (__ipnh_cache_parse_nlmsg(answer, nhe))
++		goto out_free_nhe;
++
++	ipnh_cache_link_entry(nhe);
++
++out:
++	if (answer)
++		free(answer);
++	rtnl_close(&cache_rth);
++
++	return nhe;
++
++out_free_nhe:
++	free(nhe);
++	nhe = NULL;
++	goto out;
++}
++
++static void ipnh_cache_del(struct nh_entry *nhe)
++{
++	ipnh_cache_unlink_entry(nhe);
++	ipnh_destroy_entry(nhe);
++	free(nhe);
++}
++
+ int print_nexthop(struct nlmsghdr *n, void *arg)
+ {
+ 	struct nhmsg *nhm = NLMSG_DATA(n);
+@@ -476,10 +574,10 @@ int print_nexthop(struct nlmsghdr *n, void *arg)
+ 	if (filter.proto && filter.proto != nhm->nh_protocol)
+ 		return 0;
+ 
+-	err = parse_nexthop_rta(fp, nhm, len, &nhe);
++	err = ipnh_parse_nhmsg(fp, nhm, len, &nhe);
+ 	if (err) {
+ 		close_json_object();
+-		fprintf(stderr, "Error parsing nexthop: %s\n", strerror(err));
++		fprintf(stderr, "Error parsing nexthop: %s\n", strerror(-err));
+ 		return -1;
+ 	}
+ 	open_json_object(NULL);
+@@ -530,7 +628,7 @@ int print_nexthop(struct nlmsghdr *n, void *arg)
+ 	print_string(PRINT_FP, NULL, "%s", "\n");
+ 	close_json_object();
+ 	fflush(fp);
+-	destroy_nexthop_entry(&nhe);
++	ipnh_destroy_entry(&nhe);
+ 
+ 	return 0;
+ }
+diff --git a/ip/nh_common.h b/ip/nh_common.h
+index 8c96f9993562..a34b0d20916e 100644
+--- a/ip/nh_common.h
++++ b/ip/nh_common.h
+@@ -2,6 +2,10 @@
+ #ifndef __NH_COMMON_H__
+ #define __NH_COMMON_H__ 1
+ 
++#include <list.h>
++
++#define NH_CACHE_SIZE		1024
++
+ struct nha_res_grp {
+ 	__u16			buckets;
+ 	__u32			idle_timer;
+@@ -10,6 +14,8 @@ struct nha_res_grp {
+ };
+ 
+ struct nh_entry {
++	struct hlist_node	nh_hash;
++
+ 	__u32			nh_id;
+ 	__u32			nh_oif;
+ 	__u32			nh_flags;
+-- 
+2.31.1
 
-Maybe we need to rename STOP state. We can call it READY or LIVE or 
-NON_MIGRATION_STATE.
-
->
-> There's a major inconsistency if the migration interface is telling us
-> something different than we can actually observe through the behavior of
-> the device.  Thanks,
->
-> Alex
->
