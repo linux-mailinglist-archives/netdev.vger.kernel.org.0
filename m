@@ -2,138 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D227441BECD
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 07:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0647241BEDF
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 07:53:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244295AbhI2FmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 01:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
+        id S244299AbhI2Fyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 01:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244263AbhI2FmB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 01:42:01 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919D8C06161C;
-        Tue, 28 Sep 2021 22:40:20 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id w19so2812948ybs.3;
-        Tue, 28 Sep 2021 22:40:20 -0700 (PDT)
+        with ESMTP id S243585AbhI2Fyu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 01:54:50 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3358C06161C;
+        Tue, 28 Sep 2021 22:53:09 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id 66so1168112pgc.9;
+        Tue, 28 Sep 2021 22:53:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=3wns5iqUmSbJ3GD+j4tRGlb5E0jFYqf2nMkL/XJB/GA=;
-        b=aMrbi5MvdvCDitx0MgGxfoRPUjjCYZc5vnh9Kym0z8T6XXJJP01Kbpst81ce1nQAWE
-         5dOAwR+8BRJ3e6nL0Eg2jlKa7KeWCPKa0MIVAE+tvCuIKsJc7Ol9x1DoCMXJOpeZN4p7
-         hpVraZpNR9CUl8qkTMHJhCnYn+vhLSYOzmJGrky6eSb8ewTFQHS8WSppAdEb/iEwzDYP
-         QRZLrmw0Megt5c1pf8LS9aOCXucxmaJGLq4JjxktKs/dichhtOO1mZ4FKtUy7AEA0BKE
-         z4FmHD3A7wj/kxxCcuc4MgV3BapKoTU7BzXoU1QN3w/lRendbcyxeeYS9GB+EgUJic25
-         9N+g==
+        bh=PfjTnWUcOgiAtumoZpdwinOUPN5UVGsh3TYhswHTtSk=;
+        b=pmuJwLZ5P54YR/f4I0ji7GnrYm1qiziZCmr6mmNLx7e339XVS0VXMcx9W2IEOVVY/J
+         XODE1jmE8D1nRwyfOX4jxAPX77b0ps8NDDh0s5tHrgk9rKVbjirgVDeXbrgW0Xogq9Fb
+         RRyH770GNwnEOfTSpSuJ0ziGyFJJ/jqn9pCy0HD15fMh8jiikvraH6R4QEb2jxnqzOQL
+         YGUWJGkXqU+W+r2jMQxdx9+CCvKhsqrqBjHWN4rPqeL9bZUi5xl6Z/F6c0pjOJ+1KJ2K
+         HIfdSTXeC8TkPbF/AcJtYmClEVhzMILFnLnshMSUFOdVkQ6vlfsEP3Reu/TXXoer1S94
+         7MTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=3wns5iqUmSbJ3GD+j4tRGlb5E0jFYqf2nMkL/XJB/GA=;
-        b=ebQ5DSwNlREivxYpmXq2W2IJKMnxy+uF+rqe7jjwTAiIpO8emsE3xSO0A005Fi18/U
-         i9LeFdqnfNp9S8VVzz+Gv+27bSVHNo8ZzmvpzRxnZy8NaXFtnA7ULTZUnmXy9hS68NeN
-         lysj+vo4vEc/zAFZfNpk8X1qW+KM3B7I3PBqKnukzQ7wK97MhXErW0d6WCvBF6fxbUNg
-         Q/UUnL204AU+ajHKyAtGv0N07K3eRWIvW0Y7Akwn3abOmOBwY0rvIYDG9WCMUrsBzIe6
-         D1+lyS+bmrzPv513l76uOfVkizk/GqUYV/eNJk9yjwBb8gKrKZE35akA3XFi/Lo70PSN
-         pWDQ==
-X-Gm-Message-State: AOAM5337Ir4WHqOAB+yOoIpNl7CuIJmMqZKPysf7XMV1en/gNNVZVN+d
-        7tyoIYNwikkRAE2cXxUSRO9IkAnYFUP97nbmzmQOw7p/
-X-Google-Smtp-Source: ABdhPJyhla2VXgZ9jEKO8rCEz8m0vtCbtZBTW0qwkQLuC+20HfcQEaB4ZLt1H9p+TBuM/lvHzC1ULqr6C0Hin7WODxA=
-X-Received: by 2002:a5b:507:: with SMTP id o7mr10428266ybp.491.1632894019880;
- Tue, 28 Sep 2021 22:40:19 -0700 (PDT)
+        bh=PfjTnWUcOgiAtumoZpdwinOUPN5UVGsh3TYhswHTtSk=;
+        b=LPTQD4CZrNdbMCkx0QaI+KaRn594PttWwPg3mUVVkDUgtBoLsLGqweFx+K1cBloSFX
+         D5PoaWAUenmVU5DCGt5Xz19HM1ByC7djQw0uhh4VeM/EINE+xsEpR1TRscHdVnZAd8FW
+         HN7KHVo0v/qNHWpX2gaeF1WRH98TNs1y8e06Y5Cq/dOP4VtjlfuNMFgfjk4TtYQzIV5d
+         hzbuVgGPNQNv18WQxoApJpaedFmUGaRnAuo+QJ2rm/bUmgzxDtuTmN6tFnhJW2CcdCWY
+         ST5jj061OCf3KNzjx7jXUxgDXRdY0UOHcbABHjFwFHnrLK7tBCcSKGSnTjA89QcS6oqU
+         KV9w==
+X-Gm-Message-State: AOAM531ZpMXLnL7lNgOWglCMv8yKZ/7dI5sHO3F/YqSJR4J6b1LxlIzR
+        v5wkFF44dvfsW7E93nvlbd15OoFm4nHH17I31jY=
+X-Google-Smtp-Source: ABdhPJw4pXVJN+Q3pNwE5TpcNyPHfgM9xrYH3AKu4MATrkHTwJD1dhSjIR2chL9FVutQXzR67KpZUaBzoGojLO/Z7q0=
+X-Received: by 2002:a05:6a00:708:b0:43b:80ba:99c8 with SMTP id
+ 8-20020a056a00070800b0043b80ba99c8mr9284101pfl.51.1632894789089; Tue, 28 Sep
+ 2021 22:53:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210913231108.19762-1-xiyou.wangcong@gmail.com>
- <CAADnVQJFbCmzoFM8GGHyLWULSmX75=67Tu0EnTOOoVfH4gE+HA@mail.gmail.com>
- <CAM_iQpX2prCpPDmO1U0A_wyJi_LS4wmd9MQiFKiqQT8NfGNNnw@mail.gmail.com>
- <CAADnVQJJHLuaymMEdDowharvyJr+6ta2Tg9XAR3aM+4=ysu+bg@mail.gmail.com>
- <CAM_iQpUCtXRWhMqSaoymZ6OqOywb-k4R1_mLYsLCTm7ABJ5k_A@mail.gmail.com> <CAADnVQJcUspoBzk9Tt3Rx_OH7-MB+m1xw+vq2k2SozYZMmpurg@mail.gmail.com>
-In-Reply-To: <CAADnVQJcUspoBzk9Tt3Rx_OH7-MB+m1xw+vq2k2SozYZMmpurg@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 28 Sep 2021 22:40:08 -0700
-Message-ID: <CAM_iQpVaVvaEn2ORfyZQ-FN56pCdE4YPa0r2E+VgyZzvEP31cQ@mail.gmail.com>
-Subject: Re: [RFC Patch net-next v2] net_sched: introduce eBPF based Qdisc
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
+References: <20210922075613.12186-1-magnus.karlsson@gmail.com>
+ <20210922075613.12186-7-magnus.karlsson@gmail.com> <YVOiCYXTL63R4Mu9@archlinux-ax161>
+In-Reply-To: <YVOiCYXTL63R4Mu9@archlinux-ax161>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 29 Sep 2021 07:52:58 +0200
+Message-ID: <CAJ8uoz0RioOT=-bvfcmGKTKvHnEfYg9v0o1cGLQdY7FX628o_Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 06/13] xsk: optimize for aligned case
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Ciara Loftus <ciara.loftus@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 22, 2021 at 6:49 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Wed, Sep 29, 2021 at 1:15 AM Nathan Chancellor <nathan@kernel.org> wrote:
 >
-> On Tue, Sep 21, 2021 at 9:13 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> On Wed, Sep 22, 2021 at 09:56:06AM +0200, Magnus Karlsson wrote:
+> > From: Magnus Karlsson <magnus.karlsson@intel.com>
 > >
-> > "This *incomplete* patch introduces a programmable Qdisc with
-> > eBPF.  The goal is to make this Qdisc as programmable as possible,
-> > that is, to replace as many existing Qdisc's as we can, no matter
-> > in tree or out of tree. And we want to make programmer's and researcher's
-> > life as easy as possible, so that they don't have to write a complete
-> > Qdisc kernel module just to experiment some queuing theory."
->
-> The inspiration was clear and obvious.
-> Folks in the thread had the same idea long before your patches came out.
-> But it doesn't matter who came up with an idea to implement qdisc in bpf first.
-> Everyone in the thread agreed that such a feature would be great to have.
-> The point people explicitly highlighted is that qdisc is not only about skbs.
-> The queuing concepts (fq, codel, etc) are useful in xdp and non networking
-> contexts too.
-> That's why approaching the goal with more generic ambitions was requested.
-
-This goal has nothing to do with my goal, I am pretty sure we have
-a lot of queues in networking, here I am only interested in Qdisc for
-sure. If you need queues in any other place, it is your job, not mine.
-
-More importantly, what's the conflict between these two goals here?
-I see none, from your response, it implies we could only have one.
-
->
-> > If you compare it with V1, V2 explains the use case in more details,
-> > which is to target Qdisc writers, not any other. Therefore, the argument
-> > of making it out of Qdisc is non-sense, anything outside of Qdisc is
-> > not even my target. Of course you can do anything in XDP, but it has
-> > absolutely nothing with my goal here: Qdisc.
->
-> Applying queuing discipline to non-skb context may be not your target
-> but it's a reasonable and practical request to have. The kernel is not
-
-Your request has nothing to do with TC or Qdisc, nor it has any
-conflict at all.
-
-> about solving one person's itch. The kernel has to be optimized for
-> all use cases.
-
-What are you talking about? Are you saying we can't add any new
-Qdisc simply because you want to a queue in XDP and it is more
-generic??
-
->
+> > Optimize for the aligned case by precomputing the parameter values of
+> > the xdp_buff_xsk and xdp_buff structures in the heads array. We can do
+> > this as the heads array size is equal to the number of chunks in the
+> > umem for the aligned case. Then every entry in this array will reflect
+> > a certain chunk/frame and can therefore be prepopulated with the
+> > correct values and we can drop the use of the free_heads stack. Note
+> > that it is not possible to allocate more buffers than what has been
+> > allocated in the aligned case since each chunk can only contain a
+> > single buffer.
 > >
-> > I also addressed the skb map concern:
+> > We can unfortunately not do this in the unaligned case as one chunk
+> > might contain multiple buffers. In this case, we keep the old scheme
+> > of populating a heads entry every time it is used and using
+> > the free_heads stack.
 > >
-> > " 2b) Kernel would lose the visibility of the "queues", as maps are only
-> >    shared between eBPF programs and user-space. These queues still have to
-> >    interact with the kernel, for example, kernel wants to reset all queues
-> >    when we reset the network interface, kernel wants to adjust number of
-> >    queues if they are mapped to hardware queues."
+> > Also move xp_release() and xp_get_handle() to xsk_buff_pool.h. They
+> > were for some reason in xsk.c even though they are buffer pool
+> > operations.
 > >
-> > More than writing, I even tried to write a skb map by myself,
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 >
-> Cool and it sounds that you've failed to do so?
+> My apologies if this has already been reported (I have not seen a report
+> on netdev nor a report from Intel around it) but this patch as
+> commit 94033cd8e73b ("xsk: Optimize for aligned case") in -next causes
+> the following build failure with clang + x86_64 allmodconfig:
+>
+> net/xdp/xsk_buff_pool.c:465:15: error: variable 'xskb' is uninitialized when used here [-Werror,-Wuninitialized]
+>                         xp_release(xskb);
+>                                    ^~~~
+> net/xdp/xsk_buff_pool.c:455:27: note: initialize the variable 'xskb' to silence this warning
+>         struct xdp_buff_xsk *xskb;
+>                                  ^
+>                                   = NULL
+> 1 error generated.
 
-Sure, the above precisely explains why it fails to fit in Qdisc context.
-Thanks for repeating it.
+Thanks for reporting this Nathan. Will fix right away.
 
-> At the same time Toke mentioned that he has a prototype of suck skb map.
-> What addition data can open your mind that skb/packet map is more
-> universal building block for queuing discipline in different layers?
+/Magnus
 
-You can add queue at any place you want, what's your problem of
-repeating it? What can open your mind to just look at Qdisc?
-
-Thanks
+> Cheers,
+> Nathan
