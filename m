@@ -2,109 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EACA741CD7C
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 22:39:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CA8241CD9D
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 22:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346771AbhI2Ukw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 16:40:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22857 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345611AbhI2Ukv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 16:40:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632947949;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1q2iWY5x6NtiyghS9gn8oPV2bKVir0LZN4nVYY52WSw=;
-        b=cTY2oDsj+KN+FtRpjmsokxrf/XUk2RMXXl801EK63FLSP9D4t4CScj5iqdlzVylL6aouJ9
-        H0CgwXBWkc0t2z03PTckfavj4xg/H01Qq5i6mton3iKxUCKcXZYUwDySI8lVMQLXmAzfCt
-        x1dNRs65h0UJY0dT7EtXlrsaQkHAVzc=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-83-ebCkog-zOs2VD6mDg6_BGA-1; Wed, 29 Sep 2021 16:39:08 -0400
-X-MC-Unique: ebCkog-zOs2VD6mDg6_BGA-1
-Received: by mail-ed1-f70.google.com with SMTP id c8-20020a50d648000000b003daa53c7518so3483845edj.21
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 13:39:07 -0700 (PDT)
+        id S1346810AbhI2Uwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 16:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346776AbhI2Uwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 16:52:47 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EFFC06161C;
+        Wed, 29 Sep 2021 13:51:05 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id x8so2387426plv.8;
+        Wed, 29 Sep 2021 13:51:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BoiIwPGlmB+GI+ljM6X3206faXHD3JRHXYQbXhb7vic=;
+        b=fj70wDysjSxfYIARyPtKORSQCRSxDiq50TIsPVrvAFtxBHB9OmQEZkipDYrkaGNhQF
+         mnLYvajf52becBYxnhU2yCaCTPCQCAkEmiGeovJMo/CFc0akSgncvOctbv+7msyhNong
+         E5DpCqX97Jq2MHrgCMbqu2bQ79WjCD6OcUaMzOZCX5A4Dhjv49SdIPEFp8TllTJt8Ti4
+         i63RboSoLseoX0rMIsqkhEjD81yAbEuhd0KF8kSaFXzi52OBTDJQu8xalKn9+rzwHR1b
+         CC2DxrSfaUSTi/zH5Lb3gbF4GApY3BPMTxXsfrDKA81l5XWZj/1xV2sGa8GgHg9uZgbv
+         quOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=1q2iWY5x6NtiyghS9gn8oPV2bKVir0LZN4nVYY52WSw=;
-        b=VEJQ5478nuh7RPTpOSjtIrAbuffaC0a1ZJL9MvwFdwgkDv+RjwRA9MP20YF0v6W+Sj
-         jB/ANIqrztmE4EE1ClqsczV8O7Wjc6GshlwDNghbxdJ2Qg4qqzsN3xVXkQ+tihGqjjk5
-         41Zd5+nOp47yH3+kXRbpuqeyY6sPL+MrmEEdiCT6PuUNb8xyP5EbGp9JDIYixd0dX+6Q
-         8Hj6CHTfNaNFAraex6YaSKataLVxiaCqatOr4zviw0QZyy374nKKnZsvuztMlCjToI07
-         5hM+VhX5HokX11H97ZToe+TcO92CtUbS+9ZM474MP/rWS1JIYFGYJ1M44GTkR36h77vW
-         IFZA==
-X-Gm-Message-State: AOAM532mmHnsn47nSZBN9O4VF8SpBQTAHSF02PL6jaQh9NP2ipjsCuRI
-        ZnO2tTaqztvc9bOBHSJLdi9DlGv1qIO2IkcGIVObTZ4BFHFpwCZrLnP4kDTNnKYmwzVfUhYSems
-        uIhwpceM5N8FMbXgs
-X-Received: by 2002:a05:6402:847:: with SMTP id b7mr2454877edz.242.1632947946873;
-        Wed, 29 Sep 2021 13:39:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwfFNcYoblnlae3U4yRwj0z0K5t3IzH+wSxByDMfEUiBPCc7QN8JJkD0RlKmLnCKsCQnU47yQ==
-X-Received: by 2002:a05:6402:847:: with SMTP id b7mr2454830edz.242.1632947946525;
-        Wed, 29 Sep 2021 13:39:06 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id v13sm504982edr.0.2021.09.29.13.39.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Sep 2021 13:39:05 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id E2F4718034F; Wed, 29 Sep 2021 22:39:03 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com
-Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer
- support
-In-Reply-To: <20210929122229.1d0c4960@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <cover.1631289870.git.lorenzo@kernel.org>
- <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACAyw9-8t8RpJgJUTd7u6bOLnJ1xQsgK7z37QrL9T1FUaJ7WNQ@mail.gmail.com>
- <87v92jinv7.fsf@toke.dk>
- <CACAyw99S9v658UyiKz3ad4kja7rDNfYv+9VOXZHCUOtam_C8Wg@mail.gmail.com>
- <CAADnVQ+XXGUxzqMdbPMYf+t_ViDkqvGDdogrmv-wH-dckzujLw@mail.gmail.com>
- <20210929122229.1d0c4960@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 29 Sep 2021 22:39:03 +0200
-Message-ID: <87mtnvi0bc.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BoiIwPGlmB+GI+ljM6X3206faXHD3JRHXYQbXhb7vic=;
+        b=T+2lIjfE4dPANHLWv5l+JjVY+5O7zDxqRtAjeE+n4TuEEDnTJV2x4hYYlDKm8q03BH
+         qk1zks36dqri5HB3g87OZScOxii6TcS45TxhAVg5SikzbIqO+Wv5QeDhORN8o+/aCPi3
+         68D1UBEzppcVvKiSZBjK2D3BoTIJ7tP/yDSuLkr7v9WhQ1712ltmnAmiQ9awGVv4ugOP
+         8GQCOrUB3oQ2qdZwsKFm/5ykyRYWcvISB63OXsRIa6twrNpdGnJa+VYmvFu5DDPAoxSh
+         HHKZAt185hzPkZqgvsnXZ0dziuyt3VjArB5UqoHwuDeW8aFo5m0y3m9M41KHJMTv+h0b
+         I1NQ==
+X-Gm-Message-State: AOAM530Hf0V6Ad6Rgwt8aossgdAGu09yWfbmY7oL6xmf4rAJa+5lACNL
+        8KQFDv6eUgw8J+jeNRUUPdwAdPYuI3DAIXtiCH0=
+X-Google-Smtp-Source: ABdhPJytBLgObAivspTM44bl5d0f1bbY/VEvRYdRda6R9n+4SonlspblOYW0zOcXYdzNzelzbopgpUnUE4Ha9zD1uJA=
+X-Received: by 2002:a17:90a:1944:: with SMTP id 4mr2095181pjh.62.1632948665222;
+ Wed, 29 Sep 2021 13:51:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20210927145941.1383001-1-memxor@gmail.com> <20210927145941.1383001-9-memxor@gmail.com>
+In-Reply-To: <20210927145941.1383001-9-memxor@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 29 Sep 2021 13:50:54 -0700
+Message-ID: <CAADnVQKnoFc=_jKNH=8-HWYuEw=FP941igh5Y1OgtQjdnoFLTw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 08/12] libbpf: Make gen_loader data aligned.
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
-
-> On Wed, 29 Sep 2021 11:54:46 -0700 Alexei Starovoitov wrote:
->> I'm missing something. Why do we need a separate flush() helper?
->> Can't we do:
->> char buf[64], *p;
->> p = xdp_mb_pointer(ctx, flags, off, len, buf);
->> read/write p[]
->> if (p == buf)
->>     xdp_store_bytes(ctx, off, buf, len, flags);
+On Mon, Sep 27, 2021 at 8:00 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
 >
-> Sure we can. That's what I meant by "leave the checking to the program".
-> It's bike shedding at this point.
+> From: Alexei Starovoitov <ast@kernel.org>
+>
+> Align gen_loader data to 8 byte boundary to make sure union bpf_attr,
+> bpf_insns and other structs are aligned.
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  tools/lib/bpf/gen_loader.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
+> index 8df718a6b142..80087b13877f 100644
+> --- a/tools/lib/bpf/gen_loader.c
+> +++ b/tools/lib/bpf/gen_loader.c
+> @@ -5,6 +5,7 @@
+>  #include <string.h>
+>  #include <errno.h>
+>  #include <linux/filter.h>
+> +#include <sys/param.h>
+>  #include "btf.h"
+>  #include "bpf.h"
+>  #include "libbpf.h"
+> @@ -135,13 +136,17 @@ void bpf_gen__init(struct bpf_gen *gen, int log_level)
+>
+>  static int add_data(struct bpf_gen *gen, const void *data, __u32 size)
+>  {
+> +       __u32 size8 = roundup(size, 8);
+> +       __u64 zero = 0;
+>         void *prev;
+>
+> -       if (realloc_data_buf(gen, size))
+> +       if (realloc_data_buf(gen, size8))
+>                 return 0;
+>         prev = gen->data_cur;
+>         memcpy(gen->data_cur, data, size);
+>         gen->data_cur += size;
+> +       memcpy(gen->data_cur, &zero, size8 - size);
+> +       gen->data_cur += size8 - size;
 
-Yeah, let's discuss the details once we have a patch :)
-
--Toke
-
+Since we both need this patch, I pushed it to bpf-next to
+simplify rebasing.
