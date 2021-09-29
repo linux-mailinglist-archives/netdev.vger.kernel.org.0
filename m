@@ -2,159 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7415541C654
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 16:08:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDE4841C65E
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 16:09:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245583AbhI2OJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 10:09:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38086 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229712AbhI2OJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 10:09:13 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B44C06161C;
-        Wed, 29 Sep 2021 07:07:31 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id x7so8977940edd.6;
-        Wed, 29 Sep 2021 07:07:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vFQqvNSnWmCJgPBVIv0fLxuJugZHZfFnjcNacnv+nUY=;
-        b=XjAouqqpvPC6C2koug9Hz7fDBc3/7YafLlgxX5duBljhVHkrMyYsC5WGctm83vhmBM
-         9yCwHvrKf5PD+IOlva1tkhIapVXoUrCNpHK+LIFKDHNLX58hyzi41g6Ot6sKDZlZDi7R
-         hb8teSMfTuBuYseQzarBIjDQRZZxlp7fk/ach8LLVOo6RJte4qcKOVXfDTz0qraB1hK8
-         X06zyBhpm+GBLfBwCkP8HBGNblVSKY6WiVaDI4RYXBnzCLrQ7uxBNCXX97JOBE34tgig
-         i3r0NdCg+0UtQcMlK1LDgz8cDZ9Zi9EJ69v+dPGEkVxqN4RnTRRjUlweUCBU9KWCm0ox
-         Z0rQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vFQqvNSnWmCJgPBVIv0fLxuJugZHZfFnjcNacnv+nUY=;
-        b=nADacH0tcO+KAdrw0StUXeGqh076uJCIcR3lTkM00d0YXFlYAwCk+x03qX54/QeBYm
-         aiug3y5eUKn1qc8DYiLtvfoM2pyU2F2k6Pzszn+Io3BTObD47+DGTaSI60icO/iWCCHw
-         yN2VsMN/baBzKzzlW6yx8DjBzZyqt4FMf8dTaczOOTFVFVlyX/3kmjI2grCXhnunQ8VP
-         YLBgd3/5jOjvZ9ed15AasyO4F3AIHTVwJfApIDrPBl/ETqWP45A043fDQ7+R/oG+QTPF
-         XY8cm5VRpjVHaLm4KQRzsGDYRfwVFCwMH6tpfx/fch7MQ3feJQHVaIc6NsXP0uEknDIi
-         d16A==
-X-Gm-Message-State: AOAM532VvO+lwFbFwpJNYHQNndPigruO8dnDcWC6570JIY4ToStmBWty
-        CAYZVFtoMU8Q2ZuAaHRBb5ng851CGwU=
-X-Google-Smtp-Source: ABdhPJwQabkM7boPK8gypnrl9CchOikh2/JF2KtFZzAunDM4dCwr3LDWRUpIvogoYCwQqih65l4kRQ==
-X-Received: by 2002:a17:906:12d4:: with SMTP id l20mr13506998ejb.43.1632924432746;
-        Wed, 29 Sep 2021 07:07:12 -0700 (PDT)
-Received: from skbuf ([188.26.53.217])
-        by smtp.gmail.com with ESMTPSA id n25sm1765315eda.95.2021.09.29.07.07.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Sep 2021 07:07:11 -0700 (PDT)
-Date:   Wed, 29 Sep 2021 17:07:10 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Circular dependency between DSA switch driver and tagging
- protocol driver
-Message-ID: <20210929140710.r6l7kg2njjpreaw4@skbuf>
-References: <20210908220834.d7gmtnwrorhharna@skbuf>
- <e0567cfe-d8b6-ed92-02c6-e45dd108d7d7@gmail.com>
- <20210908221958.cjwuag6oz2fmnd2n@skbuf>
- <0ce35724-336d-572e-4ba3-e5a014d035fc@gmail.com>
+        id S1344398AbhI2OK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 10:10:57 -0400
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:53827 "EHLO
+        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245433AbhI2OK4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 10:10:56 -0400
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20210929140913euoutp02989bfdabf9b029c93d174ad1ffd66625~pUDraUc7I3102631026euoutp02M
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 14:09:13 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20210929140913euoutp02989bfdabf9b029c93d174ad1ffd66625~pUDraUc7I3102631026euoutp02M
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1632924553;
+        bh=5iBilWNO3P+fklQ7Q2FmLDh2zdgIgVJM371EBVKWiBY=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=XYhGoYFCHZ8yxlRoE+3icMkncHVnxNUZYpZgrBNXf+WgqanUFhomxafaRbevZgUKV
+         EHGh7fVu+s4VfhLeSQ7kqIGNUuMTsFKdBQZlHAM+c0xAuqMM6y1gRP1WAG5zYPZ7Mb
+         t8W2Pgaxg8xnhj61ZCtd1dvaIBpoBtFupccG7tnw=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20210929140912eucas1p25541d8a11ec79661c76b50efd6c85141~pUDqxCOgm1351713517eucas1p2n;
+        Wed, 29 Sep 2021 14:09:12 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id C1.A8.56448.88374516; Wed, 29
+        Sep 2021 15:09:12 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20210929140912eucas1p2c3a4eac8b6fadd635aec3bbb44e8882e~pUDqTehIA1351613516eucas1p2w;
+        Wed, 29 Sep 2021 14:09:12 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20210929140912eusmtrp159129c9cc7f1dfa78b42d6905a22eaae~pUDqSR_nR3235032350eusmtrp1p;
+        Wed, 29 Sep 2021 14:09:12 +0000 (GMT)
+X-AuditID: cbfec7f5-2e23aa800002dc80-0c-61547388eae3
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 84.2D.31287.88374516; Wed, 29
+        Sep 2021 15:09:12 +0100 (BST)
+Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20210929140912eusmtip1f0092fea24473a5f7236a992c576bc91~pUDqC64Mc0338403384eusmtip1J;
+        Wed, 29 Sep 2021 14:09:12 +0000 (GMT)
+From:   =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        jim.cromie@gmail.com, Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Cc:     =?UTF-8?q?Bart=C5=82omiej=20=C5=BBolnierkiewicz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
+Subject: [PATCH net-next v16 0/3] AX88796C SPI Ethernet Adapter
+Date:   Wed, 29 Sep 2021 16:08:51 +0200
+Message-Id: <20210929140854.28535-1-l.stelmach@samsung.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0ce35724-336d-572e-4ba3-e5a014d035fc@gmail.com>
+Organization: Samsung R&D Institute Poland
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrEKsWRmVeSWpSXmKPExsWy7djPc7odxSGJBhP36lucv3uI2WLjjPWs
+        FnPOt7BYzD9yjtVi0fsZrBbX3t5hteh//JrZ4vz5DewWF7b1sVrcPLSC0WLT42usFpd3zWGz
+        mHF+H5PFoal7GS3WHrnLbnFsgZhF694j7A6CHpevXWT22LLyJpPHzll32T02repk89i8pN5j
+        547PTB59W1YxenzeJBfAEcVlk5Kak1mWWqRvl8CVsb6jga1gr0nF4iWPWRoY/2p0MXJySAiY
+        SLRemcbYxcjFISSwglHi+Y2pbBDOF0aJhRdfMkM4nxklTl6aywLT0tM4E6plOVDV8sWsEM5z
+        RonuvzeYQKrYBBwl+peeAEuICNxjlvh07DjYYGaBfYwSO+9NYQapEhawl5jwZA87iM0ioCpx
+        dM8WsB28AtYSt5ons0Psk5douz6dESIuKHFy5hOwGn4BLYk1TdfBbGagmuats8GOlRCYzynx
+        /EwXG0Szi8Sxu41QtrDEq+NboIbKSJye3APUzAFk10tMnmQG0dvDKLFtzg+oR60l7pz7xQZS
+        wyygKbF+lz5E2FFiwZvzjBCtfBI33gpCnMAnMWnbdGaIMK9ER5sQRLWKxLr+PVADpSR6X61g
+        hLA9JH5Ous0ygVFxFpLHZiF5ZhbC3gWMzKsYxVNLi3PTU4uN81LL9YoTc4tL89L1kvNzNzEC
+        k93pf8e/7mBc8eqj3iFGJg7GQ4wSHMxKIrw/xIMThXhTEiurUovy44tKc1KLDzFKc7AoifPu
+        2romXkggPbEkNTs1tSC1CCbLxMEp1cAUnODWIN2t97Fv1vRg28C1Ez5ZHzZNLPwwoX5P0H3N
+        uW7li09bWj6+vI/9TERB6eXcR1m/auckZM2Lml57fBPD85lX5y5JFDM8H8jSOddpUtLdpXOk
+        d/PLNUXKqVcmz5Dk1yy6MafhVsxsg5gPX++8zjsZcTY5oNg95LjwxH15YpsLY0TEOhSL86Of
+        Vthx25yVe3ZUYB8P65krk1wSdx75kcY5YUPSvIqzQoe+pK/okagKmm7idSD0pfG71lbPowlP
+        s1zWlrb2h9vsvfx9pRi74BMzh/jXMX2xYi/v5vQ/2L2Ej2marlWV4TnHFVnf3jwM7f4iX3Yi
+        9Ia+/Yank+re6t6bWc+hvurWpfRTe7cpsRRnJBpqMRcVJwIAPEF5HuUDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrJIsWRmVeSWpSXmKPExsVy+t/xu7odxSGJBpceC1mcv3uI2WLjjPWs
+        FnPOt7BYzD9yjtVi0fsZrBbX3t5hteh//JrZ4vz5DewWF7b1sVrcPLSC0WLT42usFpd3zWGz
+        mHF+H5PFoal7GS3WHrnLbnFsgZhF694j7A6CHpevXWT22LLyJpPHzll32T02repk89i8pN5j
+        547PTB59W1YxenzeJBfAEaVnU5RfWpKqkJFfXGKrFG1oYaRnaGmhZ2RiqWdobB5rZWSqpG9n
+        k5Kak1mWWqRvl6CXsb6jga1gr0nF4iWPWRoY/2p0MXJySAiYSPQ0zmTsYuTiEBJYyijxqPkU
+        SxcjB1BCSmLl3HSIGmGJP9e62CBqnjJKTO6ewAqSYBNwlOhfegLMFhF4wyzxs1cKpIhZYB+j
+        xP6ji9lBEsIC9hITnuwBs1kEVCWO7tnCAmLzClhL3GqezA6xQV6i7fp0Roi4oMTJmU/AjmAW
+        UJdYP08IJMwvoCWxpuk6WCszUHnz1tnMExgFZiHpmIXQMQtJ1QJG5lWMIqmlxbnpucWGesWJ
+        ucWleel6yfm5mxiBcbrt2M/NOxjnvfqod4iRiYPxEKMEB7OSCO8P8eBEId6UxMqq1KL8+KLS
+        nNTiQ4ymQB9MZJYSTc4HJoq8knhDMwNTQxMzSwNTSzNjJXHerXPXxAsJpCeWpGanphakFsH0
+        MXFwSjUwxZ6xfMEtG/hZIH75mbZPXgdnz2TlsfD/kPP2yfZJL9on7E838NGaKyTUGxG8gpOz
+        r19u49Wl67VWCuZ4cFvuCrJ+uSPs1qRZokKH/mc0njG3kltR6ryL8+D3LJGydYs6tvG+KDli
+        e0JuUpbThP8dXc/K95+J2cT3t22e0e+rjQuf75HWqJU+PlPt9mN+tf1xIbd3qe9x+XHnCbtw
+        ocSMQ65GB72XL2xK6mdb8FJ4Y/L9gH8mJ/9v4tGzfPpV30DLLyQubMqH3aKKjxNetj/RVb9c
+        0uTWtv0te45oXQhHp3zmij0HS8yOHygS1JI7cqcj5cuEdJFXFfo58Xu3rvYVnenXsLjqUNOZ
+        6mtNUUFCSizFGYmGWsxFxYkA7Pr42FwDAAA=
+X-CMS-MailID: 20210929140912eucas1p2c3a4eac8b6fadd635aec3bbb44e8882e
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20210929140912eucas1p2c3a4eac8b6fadd635aec3bbb44e8882e
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20210929140912eucas1p2c3a4eac8b6fadd635aec3bbb44e8882e
+References: <CGME20210929140912eucas1p2c3a4eac8b6fadd635aec3bbb44e8882e@eucas1p2.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 08, 2021 at 04:36:00PM -0700, Florian Fainelli wrote:
-> On 9/8/2021 3:19 PM, Vladimir Oltean wrote:
-> > On Wed, Sep 08, 2021 at 03:14:51PM -0700, Florian Fainelli wrote:
-> > > On 9/8/2021 3:08 PM, Vladimir Oltean wrote:
-> > > > Hi,
-> > > >
-> > > > Since commits 566b18c8b752 ("net: dsa: sja1105: implement TX
-> > > > timestamping for SJA1110") and 994d2cbb08ca ("net: dsa: tag_sja1105: be
-> > > > dsa_loop-safe"), net/dsa/tag_sja1105.ko has gained a build and insmod
-> > > > time dependency on drivers/net/dsa/sja1105.ko, due to several symbols
-> > > > exported by the latter and used by the former.
-> > > >
-> > > > So first one needs to insmod sja1105.ko, then insmod tag_sja1105.ko.
-> > > >
-> > > > But dsa_port_parse_cpu returns -EPROBE_DEFER when dsa_tag_protocol_get
-> > > > returns -ENOPROTOOPT. It means, there is no DSA_TAG_PROTO_SJA1105 in the
-> > > > list of tagging protocols known by DSA, try again later. There is a
-> > > > runtime dependency for DSA to have the tagging protocol loaded. Combined
-> > > > with the symbol dependency, this is a de facto circular dependency.
-> > > >
-> > > > So when we first insmod sja1105.ko, nothing happens, probing is deferred.
-> > > >
-> > > > Then when we insmod tag_sja1105.ko, we expect the DSA probing to kick
-> > > > off where it left from, and probe the switch too.
-> > > >
-> > > > However this does not happen because the deferred probing list in the
-> > > > device core is reconsidered for a new attempt only if a driver is bound
-> > > > to a new device. But DSA tagging protocols are drivers with no struct
-> > > > device.
-> > > >
-> > > > One can of course manually kick the driver after the two insmods:
-> > > >
-> > > > echo spi0.1 > /sys/bus/spi/drivers/sja1105/bind
-> > > >
-> > > > and this works, but automatic module loading based on modaliases will be
-> > > > broken if both tag_sja1105.ko and sja1105.ko are modules, and sja1105 is
-> > > > the last device to get a driver bound to it.
-> > > >
-> > > > Where is the problem?
-> > >
-> > > I'd say with 994d2cbb08ca, since the tagger now requires visibility into
-> > > sja1105_switch_ops which is not great, to say the least. You could solve
-> > > this by:
-> > >
-> > > - splitting up the sja1150 between a library that contains
-> > > sja1105_switch_ops and does not contain the driver registration code
-> > >
-> > > - finding a different way to do a dsa_switch_ops pointer comparison, by
-> > > e.g.: maintaining a boolean in dsa_port that tracks whether a particular
-> > > driver is backing that port
-> >
-> > What about 566b18c8b752 ("net: dsa: sja1105: implement TX timestamping for SJA1110")?
-> > It is essentially the same problem from a symbol usage perspective, plus
-> > the fact that an skb queue belonging to the driver is accessed.
->
-> I believe we will have to accept that another indirect function call must be
-> made in order to avoid creating a direct symbol dependency with
-> sja1110_rcv_meta() would that be acceptable performance wise?
-> --
-> Florian
+This is a driver for AX88796C Ethernet Adapter connected in SPI mode as
+found on ARTIK5 evaluation board. The driver has been ported from a
+v3.10.9 vendor kernel for ARTIK5 board.
 
-The same circular dependency problem exists between net/dsa/tag_ocelot_8021q.c
-and drivers/net/ethernet/mscc/ocelot.c, which exports ocelot_port_inject_frame
-and co. This one is fundamentally even worse, I could make all of the
-ocelot_port_inject_frame related functions static inline inside
-include/linux/dsa/ocelot.h, but for that to do anything, I'd also need
-to make the I/O functions themselves static inline, like __ocelot_write_ix
-which is called by ocelot_write_rix. That doesn't sound too fun, sooner
-or later I'm going to make the entire driver static inline :)
+Dear David and Jakub, since the driver, despite minor fixes, has
+been mostly stable for the past few versions, how do you see the
+chances of merging it?
 
-The alternative I see would be to just inject the PTP frames from a
-deferred worker, a la sja1105 with its magical SPI commands. A positive
-side effect of doing that would be that I can even try harder to inject
-them. Currently, because DSA uses NETIF_F_LLTX, it can't return
-NETDEV_TX_BUSY to ask the qdisc to requeue the packet, because the qdisc
-is, well, noqueue (we talked about this before). But "ocelot_can_inject"
-can return false, due to nasty stuff like egress congestion. The current
-behavior is to immediately drop the PTP frame, which leads to its own
-kind of nastiness - we have that skb enqueued in a list of frames
-awaiting TX timestamps, but the timestamp for it will never come because
-it's been silently dropped. Then we have a timestamp ID that rolls over
-after it counts to 4, and since we keep counting, future PTP timestamps
-might match on the skb that is still in the TX timestamping queue but
-stale. And nobody will match on the real skb. It goes downhill really
-fast and stinks.
+Changes in v16:
+  - rebased onto net-next 5.15-rc2 (7fec4d39198b)
 
-What do you think, should I go ahead and make a second user of deferred
-xmit (first and foremost to break the cyclic dependency between the
-tagger and the driver), and try harder to enqueue the PTP packets
-through register-based MMIO?
+Changes in v15:
+  - rebased onto net-next 5.14-rc2 (268ca4129d8d)
+  - added explicit cast of le16_to_cpus() argument to u16*
+    (reported by: kernel test robot <lkp@intel.com>)
+  - removed invalid and superfluous call to u64_stats_init()
+    (reported by: Jakub Kicinski <kuba@kernel.org>)
+  
+Changes in v14:
+  - rebased onto net-next 5.14-rc1 (0d6835ffe50c)
+
+Changes in v13:
+  - rebased onto net-next (ebbf5fcb94a7)
+  - minor fix: use u64_stats_update_{begin_irqsave,end_irqrestore}
+  - minor fix: initialize the syncp lock
+
+Changes in v12:
+  - rebased to net-next-5.13
+  - added missing spaces after commas
+  - corrected indentation
+
+Changes in v11:
+  - changed stat counters to 64-bit
+  - replaced WARN_ON(!mutex_is_locked()) with lockdep_assert_held()
+  - replaced ax88796c_free_skb_queue() with __skb_queue_purge()
+  - added cancel_work_sync() for ax_work
+  - removed unused fields of struct skb_data
+  - replaced MAX() with max() from minmax.h
+  - rebased to net-next (resend)
+
+Changes in v10:
+  - removed unused variable
+ 
+Changes in v9:
+  - used pskb_extend_head()
+  - used ethtool private flags instead of tunables to switch SPI
+    compression
+  - changed
+    - alloc_skb() to netdev_alloc(skb)
+    - __pskb_trim() to pskb_trim()
+  - removed:
+    - chages to skb->truesize
+    - unnecessary casting to short
+    - return f() in a void function
+    - IRQF_SHARED flags
+    - unnecessary memset(0) of kzalloc()ed buffer
+    - unused endiannes detection
+    - unnecessary __packed attribute for some structures
+  - added:
+    - temporary variable in AX_WRITE/READ sequences
+    - missin mutex_unlock() in error paths
+  - axspi_read_reg() returns a constant value in case of an error
+  
+Changes in v8:
+  - fixed the entry in MAINTAINERS
+  - removed unnecessary netif_err()
+  - changed netif_rx() to netif_rx_ni() for code running in a process
+    context
+  - added explicit type casting for ~BIT()
+
+Changes in v7:
+  - removed duplicate code
+  - moved a constant buffer definition away from a header file
+
+Changes in v6:
+  - fixed typos in Kconfig
+  - checked argument value in ax88796c_set_tunable
+  - updated tags in commit messages
+
+Changes in v5:
+  - coding style (local variable declarations)
+  - added spi0 node in the DT binding example and removed
+    interrupt-parent
+  - removed comp module parameter
+  - added CONFIG_SPI_AX88796C_COMPRESSION option to set the initial
+    state of SPI compression
+  - introduced new ethtool tunable "spi-compression" to controll SPI
+    transfer compression
+  - removed unused fields in struct ax88796c_device
+  - switched from using buffers allocated on stack for SPI transfers
+    to DMA safe ones embedded in struct ax_spi and allocated with
+    kmalloc()
+
+Changes in v4:
+  - fixed compilation problems in asix,ax88796c.yaml and in
+  ax88796c_main.c introduced in v3
+
+Changes in v3:
+  - modify vendor-prefixes.yaml in a separate patch
+  - fix several problems in the dt binding
+    - removed unnecessary descriptions and properties
+    - changed the order of entries
+    - fixed problems with missing defines in the example
+  - change (1 << N) to BIT(N), left a few (0 << N)
+  - replace ax88796c_get_link(), ax88796c_get_link_ksettings(),
+    ax88796c_set_link_ksettings(), ax88796c_nway_reset(),
+    ax88796c_set_mac_address() with appropriate kernel functions.
+  - disable PHY auto-polling in MAC and use PHYLIB to track the state
+    of PHY and configure MAC
+  - propagate return values instead of returning constants in several
+    places
+  - add WARN_ON() for unlocked mutex
+  - remove local work queue and use the system_wq
+  - replace phy_connect_direct() with phy_connect() and move
+    devm_register_netdev() to the end of ax88796c_probe()
+    (Unlike phy_connect_direct() phy_connect() does not crash if the
+    network device isn't registered yet.)
+  - remove error messages on ENOMEM
+  - move free_irq() to the end of ax88796c_close() to avoid race
+    condition
+  - implement flow-control
+
+Changes in v2:
+  - use phylib
+  - added DT bindings
+  - moved #includes to *.c files
+  - used mutex instead of a semaphore for locking
+  - renamed some constants
+  - added error propagation for several functions
+  - used ethtool for dumping registers
+  - added control over checksum offloading
+  - remove vendor specific PM
+  - removed macaddr module parameter and added support for reading a MAC
+    address from platform data (e.g. DT)
+  - removed dependency on SPI from NET_VENDOR_ASIX
+  - added an entry in the MAINTAINERS file
+  - simplified logging with appropriate netif_* and netdev_* helpers
+  - lots of style fixes
+
+Łukasz Stelmach (3):
+  dt-bindings: vendor-prefixes: Add asix prefix
+  dt-bindings: net: Add bindings for AX88796C SPI Ethernet Adapter
+  net: ax88796c: ASIX AX88796C SPI Ethernet Adapter Driver
+
+ .../bindings/net/asix,ax88796c.yaml           |   73 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ MAINTAINERS                                   |    6 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/asix/Kconfig             |   35 +
+ drivers/net/ethernet/asix/Makefile            |    6 +
+ drivers/net/ethernet/asix/ax88796c_ioctl.c    |  239 ++++
+ drivers/net/ethernet/asix/ax88796c_ioctl.h    |   26 +
+ drivers/net/ethernet/asix/ax88796c_main.c     | 1148 +++++++++++++++++
+ drivers/net/ethernet/asix/ax88796c_main.h     |  568 ++++++++
+ drivers/net/ethernet/asix/ax88796c_spi.c      |  115 ++
+ drivers/net/ethernet/asix/ax88796c_spi.h      |   69 +
+ 13 files changed, 2289 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/asix,ax88796c.yaml
+ create mode 100644 drivers/net/ethernet/asix/Kconfig
+ create mode 100644 drivers/net/ethernet/asix/Makefile
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_ioctl.c
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_ioctl.h
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_main.c
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_main.h
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_spi.c
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_spi.h
+
+-- 
+2.30.2
+
