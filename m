@@ -2,101 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01ECE41C2E2
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 12:42:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AD8B41C2E6
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 12:43:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244296AbhI2Knr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 06:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243396AbhI2Knq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 06:43:46 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E51C06161C
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 03:42:05 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id y26so8708162lfa.11
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 03:42:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l4erC+Dux4RZpiXMM/8/AcTUcBimHibMLQAzv6DQU+o=;
-        b=pWTyYkAmJjxtOkLL51V9mg/PqbDP0E4u7jg0yms1QQGQA1zh82E1sDNFiENspqFOQd
-         ZOviufEk1Eh17LabV0MlzjC5UT2eIfAMOnKJ5WIbjIQa0QUzvKYF+i8D3bsiryE0TS1j
-         gtILkjxA6L8rkFT0/QfyG2ddElo77KHom9BXE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l4erC+Dux4RZpiXMM/8/AcTUcBimHibMLQAzv6DQU+o=;
-        b=D96IbFTvsXthgN60btaiq16rZyvE8+53HhhVEvUyrgoQZYD7QZUTJo+NYtQgtMBxHM
-         lvPEsu8my7QENuECHMcZaBp9CIpo6RtGvkRsL8/cwa6+vF0pB4GndWxjFLDyOfe9CDLM
-         0GYJEiHSLHaULvPdD4Me9L6mHjZmH2UVQnDUCvrMENEfq+nInO4peHtFPA+oLaB6xuA7
-         ZtTAw+wRAYO9NgIgdQBCCKVuSLnb8vvkNQfQbrVZgWvD/Mzk6OYJqLbSTiiey9vi4fxm
-         3uwuxqI5Vw03bwGq2FbccDoSWu3Tpf2Hm+7UJo4qvOjS0Jt8GVsZ3fSEx/hnYqnyLaSG
-         409w==
-X-Gm-Message-State: AOAM531EViDeJYJ0rzcVexZr+pwcQ69zXTd/w70otiXqAkb8Gku0wn+B
-        9N9sgefIqDEpDC/CLxcyk0/F715KT0SEJbySu+Xrcg==
-X-Google-Smtp-Source: ABdhPJxNcgw9R6eeCfEocG9e8F8Aybsbx5fSHlscbgfa1bAlq6/YFqo30VRhN1YI39oEy1axhn5p0gr2v8Vo/6OzK4o=
-X-Received: by 2002:a2e:8852:: with SMTP id z18mr5401934ljj.412.1632912123996;
- Wed, 29 Sep 2021 03:42:03 -0700 (PDT)
+        id S244691AbhI2Kow (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 06:44:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57438 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243396AbhI2Kov (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 06:44:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A563161159;
+        Wed, 29 Sep 2021 10:43:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632912190;
+        bh=+dWbv6MK792jqAAiE3Iu+92XjoDmSSphFkEX4olyN/k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kkT0wJpXtOU1jKHLvTLEHDcFzyGsaTW2KbNFDDkSceiRF44orOxlmvEdUXPiAg1ne
+         T9iBP5MvAqpqlvvpT2eQB5LUHDWmHoBVhcaxAgfyBZK3m0dp5WUM2VzbZTPT1Q2vDn
+         TGpnO6rLO17kCzczJQTqNS6nN6cJkMUC9kAhjLV2CX+gL4IkIfAtJuTnHOB4GnObl5
+         f6AOUTYLHsTOjT+xKpBB8WraodAp0Rvr8Ol2OtCxF+vGeaZ48SswJ/7MMLvV00Wto8
+         70Uen1mLSDQS6ubpjqE94UZnhj+4JQMmVTwAgxMEhyVRUvZkuZ0qdZEMSs6jN352r7
+         LTzEfohSacJDQ==
+Date:   Wed, 29 Sep 2021 13:43:06 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        hariprasad <hkelam@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
+        Manish Chopra <manishc@marvell.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Moshe Shemesh <moshe@nvidia.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Shay Drory <shayd@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next 3/5] devlink: Allow set specific ops callbacks
+ dynamically
+Message-ID: <YVRDOijPHji2vg82@unreal>
+References: <cover.1632909221.git.leonro@nvidia.com>
+ <4e99e3996118ce0e2da5367b8fc2a427095dfffd.1632909221.git.leonro@nvidia.com>
+ <20210929103823.GK2048@kadam>
 MIME-Version: 1.0
-References: <cover.1631289870.git.lorenzo@kernel.org> <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Wed, 29 Sep 2021 11:41:53 +0100
-Message-ID: <CACAyw9-8t8RpJgJUTd7u6bOLnJ1xQsgK7z37QrL9T1FUaJ7WNQ@mail.gmail.com>
-Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer support
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210929103823.GK2048@kadam>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Sept 2021 at 18:47, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Won't applications end up building something like skb_header_pointer()
-> based on bpf_xdp_adjust_data(), anyway? In which case why don't we
-> provide them what they need?
->
-> say:
->
-> void *xdp_mb_pointer(struct xdp_buff *xdp_md, u32 flags,
->                      u32 offset, u32 len, void *stack_buf)
->
-> flags and offset can be squashed into one u64 as needed. Helper returns
-> pointer to packet data, either real one or stack_buf. Verifier has to
-> be taught that the return value is NULL or a pointer which is safe with
-> offsets up to @len.
->
-> If the reason for access is write we'd also need:
->
-> void *xdp_mb_pointer_flush(struct xdp_buff *xdp_md, u32 flags,
->                            u32 offset, u32 len, void *stack_buf)
+On Wed, Sep 29, 2021 at 01:38:23PM +0300, Dan Carpenter wrote:
+> On Wed, Sep 29, 2021 at 01:16:37PM +0300, Leon Romanovsky wrote:
+> > +void devlink_set_ops(struct devlink *devlink, struct devlink_ops *ops)
+> > +{
+> > +	struct devlink_ops *dev_ops = devlink->ops;
+> > +
+> > +	WARN_ON(!devlink_reload_actions_valid(ops));
+> > +
+> > +#define SET_DEVICE_OP(ptr, name)                                               \
+> > +	do {                                                                   \
+> > +		if (ops->name)                                                 \
+> 
+> Could you make "ops" a parameter of the macro instead of hard coding it?
 
-Yes! This would be so much better than bpf_skb_load/store_bytes(),
-especially if we can use it for both XDP and skb contexts as stated
-elsewhere in this thread.
+Sure
 
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
+> 
+> regards,
+> dan carpenter
+> 
+> > +			if (!((ptr)->name))				       \
+> > +				(ptr)->name = ops->name;                       \
+> > +	} while (0)
+> > +
+> > +	/* Keep sorted */
+> > +	SET_DEVICE_OP(dev_ops, reload_actions);
+> > +	SET_DEVICE_OP(dev_ops, reload_down);
+> > +	SET_DEVICE_OP(dev_ops, reload_limits);
+> > +	SET_DEVICE_OP(dev_ops, reload_up);
+> > +
+> > +#undef SET_DEVICE_OP
+> > +}
+> > +EXPORT_SYMBOL_GPL(devlink_set_ops);
+> 
