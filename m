@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CB4E41C80D
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 988F741C80A
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:11:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345080AbhI2PNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 11:13:06 -0400
-Received: from smtp1.axis.com ([195.60.68.17]:8923 "EHLO smtp1.axis.com"
+        id S1345125AbhI2PNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 11:13:18 -0400
+Received: from smtp2.axis.com ([195.60.68.18]:4228 "EHLO smtp2.axis.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344945AbhI2PNF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 11:13:05 -0400
+        id S1345095AbhI2PNH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 11:13:07 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1632928284;
-  x=1664464284;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1632928286;
+  x=1664464286;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=hMm60rb8viQQxGuL+SPlQBQ/aT6iemOCC/qktwqpcxU=;
-  b=Rdo0owCU2iDVyui+BJ3oEv7M2gbEooAQCGrhrXNzcY8uMPs1Tr2eeRAH
-   McEwbH5Fweye2v4jssLfci7GtBwfStxD3+NqA2B9nH4yYTErrKPLNusM7
-   7ElwviccH7KS/gFPNJLagRS9ReG3GZSNBQtBRBGOmi/OCcWcpCE8WEM0k
-   HsvSuq46lBrWAnX7MrWkBI+REPAoW8Gsi1kMqqz2Gr556bvDCSWGfTlpn
-   rZiw0AXo4hz3gwRfhLlFoe1Wm/GkflNv5rH1Mpw7aZxfmrRcaAlzzvV+e
-   TRQUwEww+lOOQtQtmxkkmgjQRn4IpQZaiQa5N9YILXomJS+tucsWnSSK9
-   w==;
+  bh=I+ZMDQoEY380qKi1YymoFVScbq3gPR3k5KyEBTna3rA=;
+  b=SvsodMRHir40Xgl/MQ3s7w1DA4A4z1b/Z9oTKRRznqKFDTMBaV9vq7Ms
+   Yz8Srhkj4wp1S7n0C0vErxL3jvXqBK7QKXIBVgxHo+FKu4R9IKtSpAlBz
+   A7pHt61daLBXCRA+j3kiVS6Tt7l5xXjXYQ4uYCrGEbb/M01ua4bWlXDnN
+   2BWUu8yZ+bzJ/O2PRhBOYK614s4jECqoGZV+7AAKKGU1/p2rjxuX6fKgY
+   Ci1IqUxt5i5g9quZ+ncp94be9qPOliiV/tU71mw5KCK51WpIYCncPTGHO
+   pvKUcLTsZz4lYhO3JtEebKKUIXjLjMzpNV67hGkrGbGu1QSWNI9OwqgUS
+   A==;
 From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
 To:     <mst@redhat.com>, <jasowang@redhat.com>
 CC:     <kernel@axis.com>, <kvm@vger.kernel.org>,
@@ -32,9 +32,9 @@ CC:     <kernel@axis.com>, <kvm@vger.kernel.org>,
         <pbonzini@redhat.com>, <stefanha@redhat.com>,
         <sgarzare@redhat.com>,
         Vincent Whitchurch <vincent.whitchurch@axis.com>
-Subject: [RFC PATCH 05/10] vhost: extract common code for file_operations handling
-Date:   Wed, 29 Sep 2021 17:11:14 +0200
-Message-ID: <20210929151119.14778-6-vincent.whitchurch@axis.com>
+Subject: [RFC PATCH 06/10] vhost: extract ioctl locking to common code
+Date:   Wed, 29 Sep 2021 17:11:15 +0200
+Message-ID: <20210929151119.14778-7-vincent.whitchurch@axis.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20210929151119.14778-1-vincent.whitchurch@axis.com>
 References: <20210929151119.14778-1-vincent.whitchurch@axis.com>
@@ -45,528 +45,263 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is some duplicated code for handling of file_operations among
-vhost drivers.  Move this to a common file.
-
-Having file_operations in a common place also makes adding functions for
-obaining a handle to a vhost device from a file descriptor simpler.
+Extract the mutex locking for the vhost ioctl into common code.  This
+will allow the common code to easily add some extra handling required
+for adding a kernel API to control vhost.
 
 Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 ---
- drivers/vhost/Makefile |   3 +
- drivers/vhost/common.c | 134 +++++++++++++++++++++++++++++++++++++++++
- drivers/vhost/net.c    |  79 +++++++-----------------
- drivers/vhost/vhost.h  |  15 +++++
- drivers/vhost/vsock.c  |  75 +++++++----------------
- 5 files changed, 197 insertions(+), 109 deletions(-)
- create mode 100644 drivers/vhost/common.c
+ drivers/vhost/common.c |  7 ++++++-
+ drivers/vhost/net.c    | 14 +-------------
+ drivers/vhost/vhost.c  | 10 ++++++++--
+ drivers/vhost/vhost.h  |  1 +
+ drivers/vhost/vsock.c  | 12 ------------
+ 5 files changed, 16 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/vhost/Makefile b/drivers/vhost/Makefile
-index f3e1897cce85..b1ddc976aede 100644
---- a/drivers/vhost/Makefile
-+++ b/drivers/vhost/Makefile
-@@ -15,5 +15,8 @@ vhost_vdpa-y := vdpa.o
- 
- obj-$(CONFIG_VHOST)	+= vhost.o
- 
-+obj-$(CONFIG_VHOST)	+= vhost_common.o
-+vhost_common-y := common.o
-+
- obj-$(CONFIG_VHOST_IOTLB) += vhost_iotlb.o
- vhost_iotlb-y := iotlb.o
 diff --git a/drivers/vhost/common.c b/drivers/vhost/common.c
-new file mode 100644
-index 000000000000..27d4672b15d3
---- /dev/null
+index 27d4672b15d3..a5722ad65e24 100644
+--- a/drivers/vhost/common.c
 +++ b/drivers/vhost/common.c
-@@ -0,0 +1,134 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/eventfd.h>
-+#include <linux/vhost.h>
-+#include <linux/uio.h>
-+#include <linux/mm.h>
-+#include <linux/miscdevice.h>
-+#include <linux/mutex.h>
-+#include <linux/poll.h>
-+#include <linux/file.h>
-+#include <linux/highmem.h>
-+#include <linux/slab.h>
-+#include <linux/vmalloc.h>
-+#include <linux/kthread.h>
-+#include <linux/cgroup.h>
-+#include <linux/module.h>
-+#include <linux/sort.h>
-+#include <linux/sched/mm.h>
-+#include <linux/sched/signal.h>
-+#include <linux/interval_tree_generic.h>
-+#include <linux/nospec.h>
-+#include <linux/kcov.h>
+@@ -60,8 +60,13 @@ static long vhost_ioctl(struct file *file, unsigned int ioctl, unsigned long arg
+ {
+ 	struct vhost_dev *dev = file->private_data;
+ 	struct vhost *vhost = dev->vhost;
++	long ret;
+ 
+-	return vhost->ops->ioctl(dev, ioctl, arg);
++	mutex_lock(&dev->mutex);
++	ret = vhost->ops->ioctl(dev, ioctl, arg);
++	mutex_unlock(&dev->mutex);
 +
-+#include "vhost.h"
-+
-+struct vhost_ops;
-+
-+struct vhost {
-+	struct miscdevice misc;
-+	const struct vhost_ops *ops;
-+};
-+
-+static int vhost_open(struct inode *inode, struct file *file)
-+{
-+	struct miscdevice *misc = file->private_data;
-+	struct vhost *vhost = container_of(misc, struct vhost, misc);
-+	struct vhost_dev *dev;
-+
-+	dev = vhost->ops->open(vhost);
-+	if (IS_ERR(dev))
-+		return PTR_ERR(dev);
-+
-+	dev->vhost = vhost;
-+	dev->file = file;
-+	file->private_data = dev;
-+
-+	return 0;
-+}
-+
-+static int vhost_release(struct inode *inode, struct file *file)
-+{
-+	struct vhost_dev *dev = file->private_data;
-+	struct vhost *vhost = dev->vhost;
-+
-+	vhost->ops->release(dev);
-+
-+	return 0;
-+}
-+
-+static long vhost_ioctl(struct file *file, unsigned int ioctl, unsigned long arg)
-+{
-+	struct vhost_dev *dev = file->private_data;
-+	struct vhost *vhost = dev->vhost;
-+
-+	return vhost->ops->ioctl(dev, ioctl, arg);
-+}
-+
-+static ssize_t vhost_read_iter(struct kiocb *iocb, struct iov_iter *to)
-+{
-+	struct file *file = iocb->ki_filp;
-+	struct vhost_dev *dev = file->private_data;
-+	int noblock = file->f_flags & O_NONBLOCK;
-+
-+	return vhost_chr_read_iter(dev, to, noblock);
-+}
-+
-+static ssize_t vhost_write_iter(struct kiocb *iocb, struct iov_iter *from)
-+{
-+	struct file *file = iocb->ki_filp;
-+	struct vhost_dev *dev = file->private_data;
-+
-+	return vhost_chr_write_iter(dev, from);
-+}
-+
-+static __poll_t vhost_poll(struct file *file, poll_table *wait)
-+{
-+	struct vhost_dev *dev = file->private_data;
-+
-+	return vhost_chr_poll(file, dev, wait);
-+}
-+
-+static const struct file_operations vhost_fops = {
-+	.owner          = THIS_MODULE,
-+	.open           = vhost_open,
-+	.release        = vhost_release,
-+	.llseek		= noop_llseek,
-+	.unlocked_ioctl = vhost_ioctl,
-+	.compat_ioctl   = compat_ptr_ioctl,
-+	.read_iter      = vhost_read_iter,
-+	.write_iter     = vhost_write_iter,
-+	.poll           = vhost_poll,
-+};
-+
-+struct vhost *vhost_register(const struct vhost_ops *ops)
-+{
-+	struct vhost *vhost;
-+	int ret;
-+
-+	vhost = kzalloc(sizeof(*vhost), GFP_KERNEL);
-+	if (!vhost)
-+		return ERR_PTR(-ENOMEM);
-+
-+	vhost->misc.minor = ops->minor;
-+	vhost->misc.name = ops->name;
-+	vhost->misc.fops = &vhost_fops;
-+	vhost->ops = ops;
-+
-+	ret = misc_register(&vhost->misc);
-+	if (ret) {
-+		kfree(vhost);
-+		return ERR_PTR(ret);
-+	}
-+
-+	return vhost;
-+}
-+EXPORT_SYMBOL_GPL(vhost_register);
-+
-+void vhost_unregister(struct vhost *vhost)
-+{
-+	misc_deregister(&vhost->misc);
-+	kfree(vhost);
-+}
-+EXPORT_SYMBOL_GPL(vhost_unregister);
-+
-+MODULE_LICENSE("GPL v2");
++	return ret;
+ }
+ 
+ static ssize_t vhost_read_iter(struct kiocb *iocb, struct iov_iter *to)
 diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index 8f82b646d4af..8910d9e2a74e 100644
+index 8910d9e2a74e..b5590b7862a9 100644
 --- a/drivers/vhost/net.c
 +++ b/drivers/vhost/net.c
-@@ -1281,7 +1281,7 @@ static void handle_rx_net(struct vhost_work *work)
- 	handle_rx(net);
- }
+@@ -1505,7 +1505,6 @@ static long vhost_net_set_backend(struct vhost_net *n, unsigned index, int fd)
+ 	struct vhost_net_ubuf_ref *ubufs, *oldubufs = NULL;
+ 	int r;
  
--static int vhost_net_open(struct inode *inode, struct file *f)
-+static struct vhost_dev *vhost_net_open(struct vhost *vhost)
- {
- 	struct vhost_net *n;
- 	struct vhost_dev *dev;
-@@ -1292,11 +1292,11 @@ static int vhost_net_open(struct inode *inode, struct file *f)
- 
- 	n = kvmalloc(sizeof *n, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
- 	if (!n)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 	vqs = kmalloc_array(VHOST_NET_VQ_MAX, sizeof(*vqs), GFP_KERNEL);
- 	if (!vqs) {
- 		kvfree(n);
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
+-	mutex_lock(&n->dev.mutex);
+ 	r = vhost_dev_check_owner(&n->dev);
+ 	if (r)
+ 		goto err;
+@@ -1573,7 +1572,6 @@ static long vhost_net_set_backend(struct vhost_net *n, unsigned index, int fd)
+ 		sockfd_put(oldsock);
  	}
  
- 	queue = kmalloc_array(VHOST_NET_BATCH, sizeof(void *),
-@@ -1304,7 +1304,7 @@ static int vhost_net_open(struct inode *inode, struct file *f)
- 	if (!queue) {
- 		kfree(vqs);
- 		kvfree(n);
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 	}
- 	n->vqs[VHOST_NET_VQ_RX].rxq.queue = queue;
+-	mutex_unlock(&n->dev.mutex);
+ 	return 0;
  
-@@ -1313,7 +1313,7 @@ static int vhost_net_open(struct inode *inode, struct file *f)
- 		kfree(vqs);
- 		kvfree(n);
- 		kfree(queue);
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 	}
- 	n->vqs[VHOST_NET_VQ_TX].xdp = xdp;
- 
-@@ -1341,11 +1341,10 @@ static int vhost_net_open(struct inode *inode, struct file *f)
- 	vhost_poll_init(n->poll + VHOST_NET_VQ_TX, handle_tx_net, EPOLLOUT, dev);
- 	vhost_poll_init(n->poll + VHOST_NET_VQ_RX, handle_rx_net, EPOLLIN, dev);
- 
--	f->private_data = n;
- 	n->page_frag.page = NULL;
- 	n->refcnt_bias = 0;
- 
--	return 0;
-+	return dev;
- }
- 
- static struct socket *vhost_net_stop_vq(struct vhost_net *n,
-@@ -1395,9 +1394,9 @@ static void vhost_net_flush(struct vhost_net *n)
- 	}
- }
- 
--static int vhost_net_release(struct inode *inode, struct file *f)
-+static void vhost_net_release(struct vhost_dev *dev)
- {
--	struct vhost_net *n = f->private_data;
-+	struct vhost_net *n = container_of(dev, struct vhost_net, dev);
- 	struct socket *tx_sock;
- 	struct socket *rx_sock;
- 
-@@ -1421,7 +1420,6 @@ static int vhost_net_release(struct inode *inode, struct file *f)
- 	if (n->page_frag.page)
- 		__page_frag_cache_drain(n->page_frag.page, n->refcnt_bias);
- 	kvfree(n);
--	return 0;
- }
- 
- static struct socket *get_raw_socket(int fd)
-@@ -1687,10 +1685,10 @@ static long vhost_net_set_owner(struct vhost_net *n)
+ err_used:
+@@ -1587,7 +1585,6 @@ static long vhost_net_set_backend(struct vhost_net *n, unsigned index, int fd)
+ err_vq:
+ 	mutex_unlock(&vq->mutex);
+ err:
+-	mutex_unlock(&n->dev.mutex);
  	return r;
  }
  
--static long vhost_net_ioctl(struct file *f, unsigned int ioctl,
-+static long vhost_net_ioctl(struct vhost_dev *dev, unsigned int ioctl,
- 			    unsigned long arg)
- {
--	struct vhost_net *n = f->private_data;
-+	struct vhost_net *n = container_of(dev, struct vhost_net, dev);
- 	void __user *argp = (void __user *)arg;
- 	u64 __user *featurep = argp;
- 	struct vhost_vring_file backend;
-@@ -1741,63 +1739,32 @@ static long vhost_net_ioctl(struct file *f, unsigned int ioctl,
+@@ -1598,7 +1595,6 @@ static long vhost_net_reset_owner(struct vhost_net *n)
+ 	long err;
+ 	struct vhost_iotlb *umem;
+ 
+-	mutex_lock(&n->dev.mutex);
+ 	err = vhost_dev_check_owner(&n->dev);
+ 	if (err)
+ 		goto done;
+@@ -1613,7 +1609,6 @@ static long vhost_net_reset_owner(struct vhost_net *n)
+ 	vhost_dev_reset_owner(&n->dev, umem);
+ 	vhost_net_vq_reset(n);
+ done:
+-	mutex_unlock(&n->dev.mutex);
+ 	if (tx_sock)
+ 		sockfd_put(tx_sock);
+ 	if (rx_sock)
+@@ -1639,7 +1634,6 @@ static int vhost_net_set_features(struct vhost_net *n, u64 features)
+ 		vhost_hlen = 0;
+ 		sock_hlen = hdr_len;
  	}
- }
+-	mutex_lock(&n->dev.mutex);
+ 	if ((features & (1 << VHOST_F_LOG_ALL)) &&
+ 	    !vhost_log_access_ok(&n->dev))
+ 		goto out_unlock;
+@@ -1656,11 +1650,9 @@ static int vhost_net_set_features(struct vhost_net *n, u64 features)
+ 		n->vqs[i].sock_hlen = sock_hlen;
+ 		mutex_unlock(&n->vqs[i].vq.mutex);
+ 	}
+-	mutex_unlock(&n->dev.mutex);
+ 	return 0;
  
--static ssize_t vhost_net_chr_read_iter(struct kiocb *iocb, struct iov_iter *to)
--{
--	struct file *file = iocb->ki_filp;
--	struct vhost_net *n = file->private_data;
--	struct vhost_dev *dev = &n->dev;
--	int noblock = file->f_flags & O_NONBLOCK;
--
--	return vhost_chr_read_iter(dev, to, noblock);
--}
--
--static ssize_t vhost_net_chr_write_iter(struct kiocb *iocb,
--					struct iov_iter *from)
--{
--	struct file *file = iocb->ki_filp;
--	struct vhost_net *n = file->private_data;
--	struct vhost_dev *dev = &n->dev;
--
--	return vhost_chr_write_iter(dev, from);
--}
--
--static __poll_t vhost_net_chr_poll(struct file *file, poll_table *wait)
--{
--	struct vhost_net *n = file->private_data;
--	struct vhost_dev *dev = &n->dev;
--
--	return vhost_chr_poll(file, dev, wait);
--}
--
--static const struct file_operations vhost_net_fops = {
--	.owner          = THIS_MODULE,
--	.release        = vhost_net_release,
--	.read_iter      = vhost_net_chr_read_iter,
--	.write_iter     = vhost_net_chr_write_iter,
--	.poll           = vhost_net_chr_poll,
--	.unlocked_ioctl = vhost_net_ioctl,
--	.compat_ioctl   = compat_ptr_ioctl,
-+static const struct vhost_ops vhost_net_ops = {
-+	.minor		= VHOST_NET_MINOR,
-+	.name		= "vhost-net",
- 	.open           = vhost_net_open,
--	.llseek		= noop_llseek,
-+	.release        = vhost_net_release,
-+	.ioctl		= vhost_net_ioctl,
- };
- 
--static struct miscdevice vhost_net_misc = {
--	.minor = VHOST_NET_MINOR,
--	.name = "vhost-net",
--	.fops = &vhost_net_fops,
--};
-+static struct vhost *vhost_net;
- 
- static int vhost_net_init(void)
- {
- 	if (experimental_zcopytx)
- 		vhost_net_enable_zcopy(VHOST_NET_VQ_TX);
--	return misc_register(&vhost_net_misc);
-+
-+	vhost_net = vhost_register(&vhost_net_ops);
-+	if (IS_ERR(vhost_net))
-+		return PTR_ERR(vhost_net);
-+
-+	return 0;
- }
- module_init(vhost_net_init);
- 
- static void vhost_net_exit(void)
- {
--	misc_deregister(&vhost_net_misc);
-+	vhost_unregister(vhost_net);
- }
- module_exit(vhost_net_exit);
- 
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index ded1b39d7852..562387b92730 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -15,6 +15,19 @@
- #include <linux/vhost_iotlb.h>
- #include <linux/irqbypass.h>
- 
-+struct vhost;
-+
-+struct vhost_ops {
-+	int minor;
-+	const char *name;
-+	struct vhost_dev * (*open)(struct vhost *vhost);
-+	long (*ioctl)(struct vhost_dev *dev, unsigned int ioctl, unsigned long arg);
-+	void (*release)(struct vhost_dev *dev);
-+};
-+
-+struct vhost *vhost_register(const struct vhost_ops *ops);
-+void vhost_unregister(struct vhost *vhost);
-+
- struct vhost_work;
- typedef void (*vhost_work_fn_t)(struct vhost_work *work);
- 
-@@ -160,6 +173,8 @@ struct vhost_dev {
- 	struct mm_struct *mm;
- 	struct mutex mutex;
- 	struct vhost_virtqueue **vqs;
-+	struct vhost *vhost;
-+	struct file *file;
- 	int nvqs;
- 	struct eventfd_ctx *log_ctx;
- 	struct llist_head work_list;
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 190e5a6ea045..93f74a0010d5 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -662,7 +662,7 @@ static void vhost_vsock_free(struct vhost_vsock *vsock)
- 	kvfree(vsock);
- }
- 
--static int vhost_vsock_dev_open(struct inode *inode, struct file *file)
-+static struct vhost_dev *vhost_vsock_dev_open(struct vhost *vhost)
- {
- 	struct vhost_virtqueue **vqs;
- 	struct vhost_vsock *vsock;
-@@ -673,7 +673,7 @@ static int vhost_vsock_dev_open(struct inode *inode, struct file *file)
- 	 */
- 	vsock = kvmalloc(sizeof(*vsock), GFP_KERNEL | __GFP_RETRY_MAYFAIL);
- 	if (!vsock)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	vqs = kmalloc_array(ARRAY_SIZE(vsock->vqs), sizeof(*vqs), GFP_KERNEL);
- 	if (!vqs) {
-@@ -694,15 +694,14 @@ static int vhost_vsock_dev_open(struct inode *inode, struct file *file)
- 		       UIO_MAXIOV, VHOST_VSOCK_PKT_WEIGHT,
- 		       VHOST_VSOCK_WEIGHT, true, NULL);
- 
--	file->private_data = vsock;
- 	spin_lock_init(&vsock->send_pkt_list_lock);
- 	INIT_LIST_HEAD(&vsock->send_pkt_list);
- 	vhost_work_init(&vsock->send_pkt_work, vhost_transport_send_pkt_work);
--	return 0;
-+	return &vsock->dev;
- 
- out:
- 	vhost_vsock_free(vsock);
--	return ret;
-+	return ERR_PTR(ret);
- }
- 
- static void vhost_vsock_flush(struct vhost_vsock *vsock)
-@@ -741,9 +740,9 @@ static void vhost_vsock_reset_orphans(struct sock *sk)
- 	sk_error_report(sk);
- }
- 
--static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
-+static void vhost_vsock_dev_release(struct vhost_dev *dev)
- {
--	struct vhost_vsock *vsock = file->private_data;
-+	struct vhost_vsock *vsock = container_of(dev, struct vhost_vsock, dev);
- 
- 	mutex_lock(&vhost_vsock_mutex);
- 	if (vsock->guest_cid)
-@@ -775,7 +774,6 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
- 	vhost_dev_cleanup(&vsock->dev);
- 	kfree(vsock->dev.vqs);
- 	vhost_vsock_free(vsock);
--	return 0;
- }
- 
- static int vhost_vsock_set_cid(struct vhost_vsock *vsock, u64 guest_cid)
-@@ -851,10 +849,10 @@ static int vhost_vsock_set_features(struct vhost_vsock *vsock, u64 features)
+ out_unlock:
+-	mutex_unlock(&n->dev.mutex);
  	return -EFAULT;
  }
  
--static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
-+static long vhost_vsock_dev_ioctl(struct vhost_dev *dev, unsigned int ioctl,
- 				  unsigned long arg)
+@@ -1668,7 +1660,6 @@ static long vhost_net_set_owner(struct vhost_net *n)
  {
--	struct vhost_vsock *vsock = f->private_data;
-+	struct vhost_vsock *vsock = container_of(dev, struct vhost_vsock, dev);
- 	void __user *argp = (void __user *)arg;
- 	u64 guest_cid;
- 	u64 features;
-@@ -906,51 +904,15 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
- 	}
+ 	int r;
+ 
+-	mutex_lock(&n->dev.mutex);
+ 	if (vhost_dev_has_owner(&n->dev)) {
+ 		r = -EBUSY;
+ 		goto out;
+@@ -1681,7 +1672,6 @@ static long vhost_net_set_owner(struct vhost_net *n)
+ 		vhost_net_clear_ubuf_info(n);
+ 	vhost_net_flush(n);
+ out:
+-	mutex_unlock(&n->dev.mutex);
+ 	return r;
  }
  
--static ssize_t vhost_vsock_chr_read_iter(struct kiocb *iocb, struct iov_iter *to)
--{
--	struct file *file = iocb->ki_filp;
--	struct vhost_vsock *vsock = file->private_data;
--	struct vhost_dev *dev = &vsock->dev;
--	int noblock = file->f_flags & O_NONBLOCK;
--
--	return vhost_chr_read_iter(dev, to, noblock);
--}
--
--static ssize_t vhost_vsock_chr_write_iter(struct kiocb *iocb,
--					struct iov_iter *from)
--{
--	struct file *file = iocb->ki_filp;
--	struct vhost_vsock *vsock = file->private_data;
--	struct vhost_dev *dev = &vsock->dev;
--
--	return vhost_chr_write_iter(dev, from);
--}
--
--static __poll_t vhost_vsock_chr_poll(struct file *file, poll_table *wait)
--{
--	struct vhost_vsock *vsock = file->private_data;
--	struct vhost_dev *dev = &vsock->dev;
--
--	return vhost_chr_poll(file, dev, wait);
--}
--
--static const struct file_operations vhost_vsock_fops = {
--	.owner          = THIS_MODULE,
-+static const struct vhost_ops vhost_vsock_ops = {
-+	.minor		= VHOST_VSOCK_MINOR,
-+	.name		= "vhost-vsock",
- 	.open           = vhost_vsock_dev_open,
- 	.release        = vhost_vsock_dev_release,
--	.llseek		= noop_llseek,
--	.unlocked_ioctl = vhost_vsock_dev_ioctl,
--	.compat_ioctl   = compat_ptr_ioctl,
--	.read_iter      = vhost_vsock_chr_read_iter,
--	.write_iter     = vhost_vsock_chr_write_iter,
--	.poll           = vhost_vsock_chr_poll,
-+	.ioctl		= vhost_vsock_dev_ioctl,
- };
+@@ -1721,20 +1711,18 @@ static long vhost_net_ioctl(struct vhost_dev *dev, unsigned int ioctl,
+ 			return -EFAULT;
+ 		if (features & ~VHOST_NET_BACKEND_FEATURES)
+ 			return -EOPNOTSUPP;
+-		vhost_set_backend_features(&n->dev, features);
++		__vhost_set_backend_features(&n->dev, features);
+ 		return 0;
+ 	case VHOST_RESET_OWNER:
+ 		return vhost_net_reset_owner(n);
+ 	case VHOST_SET_OWNER:
+ 		return vhost_net_set_owner(n);
+ 	default:
+-		mutex_lock(&n->dev.mutex);
+ 		r = vhost_dev_ioctl(&n->dev, ioctl, argp);
+ 		if (r == -ENOIOCTLCMD)
+ 			r = vhost_vring_ioctl(&n->dev, ioctl, argp);
+ 		else
+ 			vhost_net_flush(n);
+-		mutex_unlock(&n->dev.mutex);
+ 		return r;
+ 	}
+ }
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 9354061ce75e..9d6496b7ad85 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -2821,18 +2821,24 @@ struct vhost_msg_node *vhost_dequeue_msg(struct vhost_dev *dev,
+ }
+ EXPORT_SYMBOL_GPL(vhost_dequeue_msg);
  
--static struct miscdevice vhost_vsock_misc = {
--	.minor = VHOST_VSOCK_MINOR,
--	.name = "vhost-vsock",
--	.fops = &vhost_vsock_fops,
--};
-+static struct vhost *vhost_vsock;
- 
- static int __init vhost_vsock_init(void)
+-void vhost_set_backend_features(struct vhost_dev *dev, u64 features)
++void __vhost_set_backend_features(struct vhost_dev *dev, u64 features)
  {
-@@ -960,12 +922,19 @@ static int __init vhost_vsock_init(void)
- 				  VSOCK_TRANSPORT_F_H2G);
- 	if (ret < 0)
- 		return ret;
--	return misc_register(&vhost_vsock_misc);
-+
-+	vhost_vsock = vhost_register(&vhost_vsock_ops);
-+	if (IS_ERR(vhost_vsock)) {
-+		vsock_core_unregister(&vhost_transport.transport);
-+		return PTR_ERR(vhost_vsock);
-+	}
-+
-+	return 0;
- };
+ 	struct vhost_virtqueue *vq;
+ 	int i;
  
- static void __exit vhost_vsock_exit(void)
- {
--	misc_deregister(&vhost_vsock_misc);
-+	vhost_unregister(vhost_vsock);
- 	vsock_core_unregister(&vhost_transport.transport);
- };
+-	mutex_lock(&dev->mutex);
+ 	for (i = 0; i < dev->nvqs; ++i) {
+ 		vq = dev->vqs[i];
+ 		mutex_lock(&vq->mutex);
+ 		vq->acked_backend_features = features;
+ 		mutex_unlock(&vq->mutex);
+ 	}
++}
++EXPORT_SYMBOL_GPL(__vhost_set_backend_features);
++
++void vhost_set_backend_features(struct vhost_dev *dev, u64 features)
++{
++	mutex_lock(&dev->mutex);
++	__vhost_set_backend_features(dev, features);
+ 	mutex_unlock(&dev->mutex);
+ }
+ EXPORT_SYMBOL_GPL(vhost_set_backend_features);
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index 562387b92730..408ff243ed31 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -302,6 +302,7 @@ void vhost_enqueue_msg(struct vhost_dev *dev,
+ struct vhost_msg_node *vhost_dequeue_msg(struct vhost_dev *dev,
+ 					 struct list_head *head);
+ void vhost_set_backend_features(struct vhost_dev *dev, u64 features);
++void __vhost_set_backend_features(struct vhost_dev *dev, u64 features);
  
+ __poll_t vhost_chr_poll(struct file *file, struct vhost_dev *dev,
+ 			    poll_table *wait);
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 93f74a0010d5..062767636226 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -583,8 +583,6 @@ static int vhost_vsock_start(struct vhost_vsock *vsock)
+ 	size_t i;
+ 	int ret;
+ 
+-	mutex_lock(&vsock->dev.mutex);
+-
+ 	ret = vhost_dev_check_owner(&vsock->dev);
+ 	if (ret)
+ 		goto err;
+@@ -614,7 +612,6 @@ static int vhost_vsock_start(struct vhost_vsock *vsock)
+ 	 */
+ 	vhost_work_queue(&vsock->dev, &vsock->send_pkt_work);
+ 
+-	mutex_unlock(&vsock->dev.mutex);
+ 	return 0;
+ 
+ err_vq:
+@@ -629,7 +626,6 @@ static int vhost_vsock_start(struct vhost_vsock *vsock)
+ 		mutex_unlock(&vq->mutex);
+ 	}
+ err:
+-	mutex_unlock(&vsock->dev.mutex);
+ 	return ret;
+ }
+ 
+@@ -638,8 +634,6 @@ static int vhost_vsock_stop(struct vhost_vsock *vsock)
+ 	size_t i;
+ 	int ret;
+ 
+-	mutex_lock(&vsock->dev.mutex);
+-
+ 	ret = vhost_dev_check_owner(&vsock->dev);
+ 	if (ret)
+ 		goto err;
+@@ -653,7 +647,6 @@ static int vhost_vsock_stop(struct vhost_vsock *vsock)
+ 	}
+ 
+ err:
+-	mutex_unlock(&vsock->dev.mutex);
+ 	return ret;
+ }
+ 
+@@ -821,7 +814,6 @@ static int vhost_vsock_set_features(struct vhost_vsock *vsock, u64 features)
+ 	if (features & ~VHOST_VSOCK_FEATURES)
+ 		return -EOPNOTSUPP;
+ 
+-	mutex_lock(&vsock->dev.mutex);
+ 	if ((features & (1 << VHOST_F_LOG_ALL)) &&
+ 	    !vhost_log_access_ok(&vsock->dev)) {
+ 		goto err;
+@@ -841,11 +833,9 @@ static int vhost_vsock_set_features(struct vhost_vsock *vsock, u64 features)
+ 		vq->acked_features = features;
+ 		mutex_unlock(&vq->mutex);
+ 	}
+-	mutex_unlock(&vsock->dev.mutex);
+ 	return 0;
+ 
+ err:
+-	mutex_unlock(&vsock->dev.mutex);
+ 	return -EFAULT;
+ }
+ 
+@@ -893,13 +883,11 @@ static long vhost_vsock_dev_ioctl(struct vhost_dev *dev, unsigned int ioctl,
+ 		vhost_set_backend_features(&vsock->dev, features);
+ 		return 0;
+ 	default:
+-		mutex_lock(&vsock->dev.mutex);
+ 		r = vhost_dev_ioctl(&vsock->dev, ioctl, argp);
+ 		if (r == -ENOIOCTLCMD)
+ 			r = vhost_vring_ioctl(&vsock->dev, ioctl, argp);
+ 		else
+ 			vhost_vsock_flush(vsock);
+-		mutex_unlock(&vsock->dev.mutex);
+ 		return r;
+ 	}
+ }
 -- 
 2.28.0
 
