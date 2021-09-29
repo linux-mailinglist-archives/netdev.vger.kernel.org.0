@@ -2,354 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCA5C41C280
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 12:17:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E3CA41C290
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 12:18:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245506AbhI2KSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 06:18:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49544 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245462AbhI2KSi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 06:18:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2EB1661246;
-        Wed, 29 Sep 2021 10:16:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632910618;
-        bh=7rEFpyIGKlucXE4xEPtNn0Hz+pgVLOTNObgLDBYgrnA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ddtySAv2BqzvKP5K6lDHhoZkc2rrMrvP+v806YYvO72Lo67gfNbPP8TdPT3xS2JRy
-         Uuz54kYtXbVrNhcH0kByOTW0ZezWtqg+7dOyVAL8sxLI9PMjuJU5zxiA6mpJulNSaH
-         IiKyhBScGxdhiGYvaMBnitinlBNhiggVeUKChE4aJY0sDBM5ASN6E6dnmB5dOcaZRn
-         eWzrI7KVAeJ7dqwhFchmxN5shZBrj7F4k4mTdhW3HMaAnQ7ygoVRsa8JXq+1lm2lgI
-         Y1C5wtiuAq97Eu83coJy+oEIofJ6sqShQQ+Rq7WBskSpApNzPzfIQJzwo3klA3pn2P
-         KIcToTTJTWwVQ==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        hariprasad <hkelam@marvell.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
-        Manish Chopra <manishc@marvell.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Moshe Shemesh <moshe@nvidia.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        id S245553AbhI2KTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 06:19:19 -0400
+Received: from mail-mw2nam12on2102.outbound.protection.outlook.com ([40.107.244.102]:53985
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S245493AbhI2KS4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 06:18:56 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JHy/HzQLyC5taefBYnRzN5CDLHLEC4wub233PE0dS1csKDdTD4m2aL1yKAk3g0zuyMANYBlldPH62u8gtTUaYskZurrFwcaxXgSjX24iCgJA9/aS863o72TOaVZnoLx9qCKZbzfftBtKqKPv3daDituA18wSfV+hfRIGcjds5r+LzLt43MrI1Xo93gX1YnanWn0SA/MW/qdjm5HiLWdIBk9zvY5fmWFOSlQwisy7tDBawdVGiaY8mz47Us4q6x114ekWSzG9mMKt1usAhJi1n5uf/dKLYHTW7WDi9NSq0QWizeJsNfzEmcsWHs6o9rneV2E0NUI45TpMVgRtJIRw3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jyqPAoKXGoqzpWfcWDQA0QwX4xHbYvKVNyPoyY7h72Q=;
+ b=kWg++jg03mMjgRVM+vPlBgD4sjtUMfAwIUJq0JiHvTjQrZssLStA7SHHtCEnWcbyLhIv/6YTMK78xFHR2S/a+GccKEzislngQCzRPuH5AzfMUiB6YC9Aa4gx1ptEWymt18cHCpkapUGDQ0GfjE/RK97znUrmQm2JbPkjl3tNnrjL939lGiaN8efR5SxvEy3YQxzMditmCZGVYm3ROWiTtkPzamLWHGISGtSEG85etwxDAkD3MbhUzTMlNzVrs5/SLBdCZfoE6mpc3nf+n4A2Q2bUJAUd870q/33NKzocn0BVgVg1xpERqj1Ti/NnZNvMsbRnqezmmgr8jD0U5UGnGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jyqPAoKXGoqzpWfcWDQA0QwX4xHbYvKVNyPoyY7h72Q=;
+ b=AseZ8Y/f5Q3D2JFsjs3t/qCuRdo5v/ugyaDugSgCGc+6LamTeHB8Cn22eypA3E9Ofe+Pqyu3UNuavFNsLvCXDoA8QB7W98ExunO4ljSq40qYYkVJNgfREtVLQC0Rophu80VzjYLpUjinQQahAkGuDNdt7lg2CsfClvVbR3ivysU=
+Authentication-Results: pengutronix.de; dkim=none (message not signed)
+ header.d=none;pengutronix.de; dmarc=none action=none
+ header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB4794.namprd13.prod.outlook.com (2603:10b6:510:96::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.8; Wed, 29 Sep
+ 2021 10:17:13 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::e1d9:64d0:cb4f:3e90]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::e1d9:64d0:cb4f:3e90%9]) with mapi id 15.20.4566.014; Wed, 29 Sep 2021
+ 10:17:13 +0000
+Date:   Wed, 29 Sep 2021 12:17:03 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        linux-pci@vger.kernel.org, kernel@pengutronix.de,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Zhou Wang <wangzhou1@hisilicon.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
         Salil Mehta <salil.mehta@huawei.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Shay Drory <shayd@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vadym Kochan <vkochan@marvell.com>,
         Taras Chornyi <tchornyi@marvell.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: [PATCH net-next 5/5] devlink: Delete reload enable/disable interface
-Date:   Wed, 29 Sep 2021 13:16:39 +0300
-Message-Id: <2fb74547865c46c11194cf0d4e699f377719757c.1632909221.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1632909221.git.leonro@nvidia.com>
-References: <cover.1632909221.git.leonro@nvidia.com>
-MIME-Version: 1.0
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Michael Buesch <m@bues.ch>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@corigine.com
+Subject: Re: [PATCH v5 07/11] PCI: Replace pci_dev::driver usage that gets
+ the driver name
+Message-ID: <20210929101702.GD13506@corigine.com>
+References: <20210929085306.2203850-1-u.kleine-koenig@pengutronix.de>
+ <20210929085306.2203850-8-u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210929085306.2203850-8-u.kleine-koenig@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: AM0PR08CA0026.eurprd08.prod.outlook.com
+ (2603:10a6:208:d2::39) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+Received: from corigine.com (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM0PR08CA0026.eurprd08.prod.outlook.com (2603:10a6:208:d2::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend Transport; Wed, 29 Sep 2021 10:17:08 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ae53e499-2baf-4888-966a-08d983324dec
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4794:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <PH0PR13MB4794052F35552891F4D9EA28E8A99@PH0PR13MB4794.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:751;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2woKV4HKG64SPX5X09IWvfN9MJjcMKLiccyCSNNbpi5SXBR80DUgmbO3bcGUkNgQsWYyUK7aFq4caJKLKe+uohhUdK+4SsDPipTF1dG9UlV5xiqAHuC2s51WZiYCjvl053pSjl2OcoA66YdXS5gJStSr+TGo/unGtQJ5gOAWxp6PwBLd1IuLW12QwYEbzsUitqUYISrWOdhps+dqK5DqpiqJWQ8+VkRc9L+7p3TMJ2V6hB+tsVSo3zJrJ2/abO4nKuOHi1rX6c0yrn2u7vB+MwRFCWLnnkRR5Kde7tfGCWTdgYyKX+kDsHB3tSsRnFHzbGg7n6j50mDYK92eQsrXFASzJoD7L1QyLpRG/5kIBbqpnBTkOhPPrsBW3tReAgbWunAq8NqJzv8fSLFjjWA7jZr29qRGaI7anpj81ZDZmsiw4yuqJsAdbHdjxHCNh9NPV1wiedg2hmjtIY/D9oygroAgrH7a5ssAdlE5QVK4QBMc57NKKpzA066Hrl2zLbZkCUY86X8Vae7o4bU19hQ6TOWSdWwy1v7CIykDA4U5li8kbzNxKwb9FMgLv3CnyZXqGGoZmjwr41SMu+2YG11sC+dxQHoPjbHbIA4ZCyrMyv0R+DsYJcFsLn4N4c7AJs7Em1/mLdZZ0KAMVIa4PozoRg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(136003)(396003)(39830400003)(366004)(376002)(33656002)(186003)(36756003)(6916009)(44832011)(508600001)(86362001)(38100700002)(5660300002)(8886007)(55016002)(8936002)(52116002)(316002)(83380400001)(7696005)(54906003)(8676002)(2616005)(66556008)(4326008)(6666004)(66476007)(2906002)(66946007)(107886003)(4744005)(1076003)(7416002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Yi9ObWFiUzV6bDdYOFpDMEFXc3Bncm53U3F0M2JWYnNrQWFQZGpXWkhkbkxo?=
+ =?utf-8?B?Y3JsUUpDeGczcHQxMGFwSXloMUtOWGRMQzhUd1p2WTVqK1NucmVRblFvSGVx?=
+ =?utf-8?B?cmN2RnVJaGVqWjVFYmhnT1FROHUvcmg0OW5OZUFzZ1JRVjlvTGRkOTlCZzUw?=
+ =?utf-8?B?Y3VoMDJSQk1pSngwekQvYTE2TlJpclRwWXBoSmFqbXllRzNDS0xHK2VTMEhM?=
+ =?utf-8?B?QkZzMTQrV2tJQm1SWjBOc0FKYm5VTW15S1UwcVZyRTBrT0lzS3h0ejE0eDhY?=
+ =?utf-8?B?ZndSb3pEMndUL21NSEt4cmg5V1N4WlhzVHc0RlM0clNHRFBiam1GQTREZkRt?=
+ =?utf-8?B?R3NmVWtGaXgrTmZ3T2RLbGpobU9uVHhPT0ozY0xIR2VKN3NzWUpSbFJONjhK?=
+ =?utf-8?B?V0dIR21lWkZZemJ4RlE3OEY0NkJGbi94L1ZKdVZ2MUNxUm5vZGRZelVVMHdB?=
+ =?utf-8?B?RlNkeWZCVVNKMTZ2QTlYOTA5bE9zcVNYcmRIM3hkd00vTWRrWHZJc1QxMlRX?=
+ =?utf-8?B?YTVKMmtIUzBnTDl3NDVSVDdGNW15eWNENEVGMWlnNlU4cVd1aGtDT0lLK1l2?=
+ =?utf-8?B?ei9oRHkwWVFwYWYxbUZGN2VoZERDMk5zWTZsOXRSTUQrY1ZMeFRqamNWS2ZB?=
+ =?utf-8?B?c09nc2hnYjdSbWI5NUlVWUlJK2czd1BncjFibEliOVhuNXRWS3FzMURPaW5s?=
+ =?utf-8?B?eFgzZXdTdm9DMWc4T2phaHQyMVVVN3VHaFZVNjZHZ0p2bjhwakZSWHVNRkVP?=
+ =?utf-8?B?UlVHT29SZHNPa3hPVFQrRjZzVXY2RXhncE1LSXBqOE9xUWROZnRBQndjMWor?=
+ =?utf-8?B?MVB0UVZqN1BTZjZTVG1LYXVMVGRRc3QzVmdsQ1hFZFAwWjR0NFFMNGlBRWE4?=
+ =?utf-8?B?SXF1eVNCem91WGpKTExHSlQyREQzRnJjcmJaYnNoOVkrL2d2ZDVYdjJ6M25w?=
+ =?utf-8?B?ODBTbTNZZzRsbVZyTlY3NUl4dklHeGhMK1cwWURzQmMxbXprd29EaEx5TGRP?=
+ =?utf-8?B?TWlZM2F3NGd6L2ZHSUhkdFlwQktYVk1NeThRM2h2OVdKc3Z3SFlOQ0d2d1Fk?=
+ =?utf-8?B?TzBhaldlbVp6TlVSNzJwaDhZSjZXUXpPL2xneG1GcHczRXM4WXJZM08zZHBa?=
+ =?utf-8?B?NDdsb3B6ekxxc0ZTZ1ZpN21URk04NnpVTEpPVVBocmtQUzM2a1VHS3cwZURX?=
+ =?utf-8?B?MGVFdFg3M0JJR2prcFprMVVqUk1WQTE5OEYwTjdiZlNLZGZkaDQ5THdXMmc5?=
+ =?utf-8?B?TW5ZSXpOK2doV2xSZVkrS2c3bmdrSndUT09aMWpUYWErZno1S0w5RHZ2ZWNN?=
+ =?utf-8?B?NmQzbThxYXlKOE15aGt5b0pyVGExdEFpdU8vYy9oazBRTTZzdllTUUdsSDJu?=
+ =?utf-8?B?OVZBN0t2Mkg0eC9hd0hsdFA3cUdvSUxCVXVlWmx4ZDN6dkRtNWpET2ltaXJI?=
+ =?utf-8?B?bldpbVBFRC9kNmloOVlGVmMxQmF0MUFneFFzZXpZWXpzZndoNm0vZTRESkMx?=
+ =?utf-8?B?dUZlRzQxZjFFQm9Xcy8vQ3ZzZEFSQzJtNVY5MjF5WUhNOVRlR3MyMng4MHI5?=
+ =?utf-8?B?VUtRTFVpQUtHaUY5L2ZZMml5aFM4c292NjVsc2JsMitsZlk0bDZZejF4SDlU?=
+ =?utf-8?B?WFkySkJKUjJrbnpsR2RhdFgrM1JQOTR0aDBNT3VZbFkzY1hxT0dOVmh4QUpD?=
+ =?utf-8?B?Zy8yRkZLYjEvREJjS3dZWm54TDVmZktCR2ZkMWR6L1lWQk5LcUltdG5wT3g2?=
+ =?utf-8?B?UE9Bamhha1dUTFg5bDBGakVWbGI5T3A4M2lHMnYwLzNPM2pxOU9ZRVc5OFpN?=
+ =?utf-8?B?eVRRR2xMaHFtcXBLL0c3ZFgwaTJRb3RHTVNwc0o0d2h6RGtQdk5LK2FGbFYz?=
+ =?utf-8?Q?H62UPyy2H8Shc?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae53e499-2baf-4888-966a-08d983324dec
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2021 10:17:13.1546
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 83M4CGyBYqSrVCFUH5E4wuUsm79KJB3+U8Y+LE+7kTxGcmB6HjBddsjB4+LvLnNP36y2wZZYatZg89+LHLjQkk+cPcB2ykuOEbbZDTiAbHo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4794
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Wed, Sep 29, 2021 at 10:53:02AM +0200, Uwe Kleine-König wrote:
+> struct pci_dev::driver holds (apart from a constant offset) the same
+> data as struct pci_dev::dev->driver. With the goal to remove struct
+> pci_dev::driver to get rid of data duplication replace getting the
+> driver name by dev_driver_string() which implicitly makes use of struct
+> pci_dev::dev->driver.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/crypto/hisilicon/qm.c                        | 2 +-
+>  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c   | 2 +-
+>  drivers/net/ethernet/marvell/prestera/prestera_pci.c | 2 +-
+>  drivers/net/ethernet/mellanox/mlxsw/pci.c            | 2 +-
+>  drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 3 ++-
+>  5 files changed, 6 insertions(+), 5 deletions(-)
 
-After changes to allow dynamically set the reload_up/_down callbacks,
-we ensure that properly supported devlink ops are not accessible before
-devlink_register, which is last command in the initialization sequence.
+Thanks Uwe.
 
-It makes devlink_reload_enable/_disable not relevant anymore and can be
-safely deleted.
+For NFP:
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- .../hisilicon/hns3/hns3pf/hclge_devlink.c     |  3 --
- .../hisilicon/hns3/hns3vf/hclgevf_devlink.c   |  3 --
- drivers/net/ethernet/mellanox/mlx4/main.c     |  2 -
- .../net/ethernet/mellanox/mlx5/core/main.c    |  3 --
- .../mellanox/mlx5/core/sf/dev/driver.c        |  5 +--
- drivers/net/ethernet/mellanox/mlxsw/core.c    | 10 ++---
- drivers/net/netdevsim/dev.c                   |  3 --
- include/net/devlink.h                         |  5 +--
- net/core/devlink.c                            | 40 -------------------
- 9 files changed, 5 insertions(+), 69 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-index 329b020c688d..63fab1cd33d7 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-@@ -120,7 +120,6 @@ int hclge_devlink_init(struct hclge_dev *hdev)
- 	hdev->devlink = devlink;
- 
- 	devlink_register(devlink);
--	devlink_reload_enable(devlink);
- 	return 0;
- }
- 
-@@ -128,8 +127,6 @@ void hclge_devlink_uninit(struct hclge_dev *hdev)
- {
- 	struct devlink *devlink = hdev->devlink;
- 
--	devlink_reload_disable(devlink);
--
- 	devlink_unregister(devlink);
- 
- 	devlink_free(devlink);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-index 1d9eecc928a5..26f4d20de40d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-@@ -122,7 +122,6 @@ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
- 	hdev->devlink = devlink;
- 
- 	devlink_register(devlink);
--	devlink_reload_enable(devlink);
- 	return 0;
- }
- 
-@@ -130,8 +129,6 @@ void hclgevf_devlink_uninit(struct hclgevf_dev *hdev)
- {
- 	struct devlink *devlink = hdev->devlink;
- 
--	devlink_reload_disable(devlink);
--
- 	devlink_unregister(devlink);
- 
- 	devlink_free(devlink);
-diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-index ab805b6f23d4..8389845d5c9e 100644
---- a/drivers/net/ethernet/mellanox/mlx4/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-@@ -4026,7 +4026,6 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	pci_save_state(pdev);
- 	devlink_register(devlink);
--	devlink_reload_enable(devlink);
- 	return 0;
- 
- err_params_unregister:
-@@ -4135,7 +4134,6 @@ static void mlx4_remove_one(struct pci_dev *pdev)
- 	struct devlink *devlink = priv_to_devlink(priv);
- 	int active_vfs = 0;
- 
--	devlink_reload_disable(devlink);
- 	devlink_unregister(devlink);
- 
- 	if (mlx4_is_slave(dev))
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 92b08fa07efa..261f18d57916 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1538,8 +1538,6 @@ static int probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	pci_save_state(pdev);
- 	devlink_register(devlink);
--	if (!mlx5_core_is_mp_slave(dev))
--		devlink_reload_enable(devlink);
- 	return 0;
- 
- err_init_one:
-@@ -1559,7 +1557,6 @@ static void remove_one(struct pci_dev *pdev)
- 	struct mlx5_core_dev *dev  = pci_get_drvdata(pdev);
- 	struct devlink *devlink = priv_to_devlink(dev);
- 
--	devlink_reload_disable(devlink);
- 	devlink_unregister(devlink);
- 	mlx5_crdump_disable(dev);
- 	mlx5_drain_health_wq(dev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
-index 3cf272fa2164..7b4783ce213e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
-@@ -47,7 +47,6 @@ static int mlx5_sf_dev_probe(struct auxiliary_device *adev, const struct auxilia
- 		goto init_one_err;
- 	}
- 	devlink_register(devlink);
--	devlink_reload_enable(devlink);
- 	return 0;
- 
- init_one_err:
-@@ -62,10 +61,8 @@ static int mlx5_sf_dev_probe(struct auxiliary_device *adev, const struct auxilia
- static void mlx5_sf_dev_remove(struct auxiliary_device *adev)
- {
- 	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev, adev);
--	struct devlink *devlink;
-+	struct devlink *devlink = priv_to_devlink(sf_dev->mdev);
- 
--	devlink = priv_to_devlink(sf_dev->mdev);
--	devlink_reload_disable(devlink);
- 	devlink_unregister(devlink);
- 	mlx5_uninit_one(sf_dev->mdev);
- 	iounmap(sf_dev->mdev->iseg);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 1012279008f9..efbcee8d5ea9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -2007,11 +2007,8 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
- 			goto err_driver_init;
- 	}
- 
--	if (!reload) {
-+	if (!reload)
- 		devlink_register(devlink);
--		devlink_reload_enable(devlink);
--	}
--
- 	return 0;
- 
- err_driver_init:
-@@ -2075,10 +2072,9 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
- {
- 	struct devlink *devlink = priv_to_devlink(mlxsw_core);
- 
--	if (!reload) {
--		devlink_reload_disable(devlink);
-+	if (!reload)
- 		devlink_unregister(devlink);
--	}
-+
- 	if (devlink_is_reload_failed(devlink)) {
- 		if (!reload)
- 			/* Only the parts that were not de-initialized in the
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 466d2c27e868..c66c40afb19f 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -1512,7 +1512,6 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
- 
- 	nsim_dev->esw_mode = DEVLINK_ESWITCH_MODE_LEGACY;
- 	devlink_register(devlink);
--	devlink_reload_enable(devlink);
- 	return 0;
- 
- err_psample_exit:
-@@ -1566,9 +1565,7 @@ void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev)
- 	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
- 	struct devlink *devlink = priv_to_devlink(nsim_dev);
- 
--	devlink_reload_disable(devlink);
- 	devlink_unregister(devlink);
--
- 	nsim_dev_reload_destroy(nsim_dev);
- 
- 	nsim_bpf_dev_exit(nsim_dev);
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 305be548ac21..9403d13617af 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -54,8 +54,7 @@ struct devlink {
- 	struct mutex lock; /* Serializes access to devlink instance specific objects such as
- 			    * port, sb, dpipe, resource, params, region, traps and more.
- 			    */
--	u8 reload_failed:1,
--	   reload_enabled:1;
-+	u8 reload_failed:1;
- 	refcount_t refcount;
- 	struct completion comp;
- 	char priv[0] __aligned(NETDEV_ALIGN);
-@@ -1568,8 +1567,6 @@ static inline struct devlink *devlink_alloc(struct devlink_ops *ops,
- void devlink_set_ops(struct devlink *devlink, struct devlink_ops *ops);
- void devlink_register(struct devlink *devlink);
- void devlink_unregister(struct devlink *devlink);
--void devlink_reload_enable(struct devlink *devlink);
--void devlink_reload_disable(struct devlink *devlink);
- void devlink_free(struct devlink *devlink);
- int devlink_port_register(struct devlink *devlink,
- 			  struct devlink_port *devlink_port,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 71d0c5671f43..acf26c34ffa7 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -3959,9 +3959,6 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
- 	struct net *curr_net;
- 	int err;
- 
--	if (!devlink->reload_enabled)
--		return -EOPNOTSUPP;
--
- 	memcpy(remote_reload_stats, devlink->stats.remote_reload_stats,
- 	       sizeof(remote_reload_stats));
- 
-@@ -9105,49 +9102,12 @@ void devlink_unregister(struct devlink *devlink)
- 	wait_for_completion(&devlink->comp);
- 
- 	mutex_lock(&devlink_mutex);
--	WARN_ON(devlink_reload_supported(devlink->ops) &&
--		devlink->reload_enabled);
- 	devlink_notify_unregister(devlink);
- 	xa_clear_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
- 	mutex_unlock(&devlink_mutex);
- }
- EXPORT_SYMBOL_GPL(devlink_unregister);
- 
--/**
-- *	devlink_reload_enable - Enable reload of devlink instance
-- *
-- *	@devlink: devlink
-- *
-- *	Should be called at end of device initialization
-- *	process when reload operation is supported.
-- */
--void devlink_reload_enable(struct devlink *devlink)
--{
--	mutex_lock(&devlink_mutex);
--	devlink->reload_enabled = true;
--	mutex_unlock(&devlink_mutex);
--}
--EXPORT_SYMBOL_GPL(devlink_reload_enable);
--
--/**
-- *	devlink_reload_disable - Disable reload of devlink instance
-- *
-- *	@devlink: devlink
-- *
-- *	Should be called at the beginning of device cleanup
-- *	process when reload operation is supported.
-- */
--void devlink_reload_disable(struct devlink *devlink)
--{
--	mutex_lock(&devlink_mutex);
--	/* Mutex is taken which ensures that no reload operation is in
--	 * progress while setting up forbidded flag.
--	 */
--	devlink->reload_enabled = false;
--	mutex_unlock(&devlink_mutex);
--}
--EXPORT_SYMBOL_GPL(devlink_reload_disable);
--
- /**
-  *	devlink_free - Free devlink instance resources
-  *
--- 
-2.31.1
+Acked-by: Simon Horman <simon.horman@corigine.com>
 
