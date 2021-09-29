@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 137EA41C928
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6465141C919
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:59:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346022AbhI2QCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 12:02:01 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:24134 "EHLO
+        id S1345957AbhI2QBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 12:01:35 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:24135 "EHLO
         szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345428AbhI2P7r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:59:47 -0400
+        with ESMTP id S1345473AbhI2P7t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:59:49 -0400
 Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HKLbF4B1Rz1DHKM;
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HKLbF53r3z1DHKw;
         Wed, 29 Sep 2021 23:56:41 +0800 (CST)
 Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
@@ -26,9 +26,9 @@ From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv2 net-next 029/167] veth: use netdev feature helpers
-Date:   Wed, 29 Sep 2021 23:51:16 +0800
-Message-ID: <20210929155334.12454-30-shenjian15@huawei.com>
+Subject: [RFCv2 net-next 030/167] bonding: use netdev feature helpers
+Date:   Wed, 29 Sep 2021 23:51:17 +0800
+Message-ID: <20210929155334.12454-31-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 References: <20210929155334.12454-1-shenjian15@huawei.com>
@@ -48,154 +48,263 @@ for netdev features.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/net/veth.c | 61 ++++++++++++++++++++++++++++------------------
- 1 file changed, 37 insertions(+), 24 deletions(-)
+ drivers/net/bonding/bond_main.c    | 106 ++++++++++++++++++-----------
+ drivers/net/bonding/bond_options.c |  12 ++--
+ 2 files changed, 76 insertions(+), 42 deletions(-)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 82c900d7ba7b..39bfa024861c 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -310,9 +310,10 @@ static bool veth_skb_is_eligible_for_gro(const struct net_device *dev,
- 					 const struct net_device *rcv,
- 					 const struct sk_buff *skb)
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index b1c13fa3c677..9c6f37589733 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1371,15 +1371,15 @@ static void bond_fix_features(struct net_device *dev,
+ 
+ #if IS_ENABLED(CONFIG_TLS_DEVICE)
+ 	if (bond_sk_check(bond))
+-		*features |= BOND_TLS_FEATURES;
++		netdev_feature_set_bits(BOND_TLS_FEATURES, features);
+ 	else
+-		*features &= ~BOND_TLS_FEATURES;
++		netdev_feature_clear_bits(BOND_TLS_FEATURES, features);
+ #endif
+ 
+-	mask = *features;
++	netdev_feature_copy(&mask, *features);
+ 
+-	*features &= ~NETIF_F_ONE_FOR_ALL;
+-	*features |= NETIF_F_ALL_FOR_ALL;
++	netdev_feature_clear_bits(NETIF_F_ONE_FOR_ALL, features);
++	netdev_feature_set_bits(NETIF_F_ALL_FOR_ALL, features);
+ 
+ 	bond_for_each_slave(bond, slave, iter) {
+ 		netdev_increment_features(features, *features,
+@@ -1403,12 +1403,16 @@ static void bond_compute_features(struct bonding *bond)
  {
--	return !(dev->features & NETIF_F_ALL_TSO) ||
-+	return !netdev_feature_test_bits(NETIF_F_ALL_TSO, dev->features) ||
- 		(skb->destructor == sock_wfree &&
--		 rcv->features & (NETIF_F_GRO_FRAGLIST | NETIF_F_GRO_UDP_FWD));
-+		 netdev_feature_test_bits(NETIF_F_GRO_FRAGLIST |
-+					  NETIF_F_GRO_UDP_FWD, rcv->features));
- }
+ 	unsigned int dst_release_flag = IFF_XMIT_DST_RELEASE |
+ 					IFF_XMIT_DST_RELEASE_PERM;
+-	netdev_features_t vlan_features = BOND_VLAN_FEATURES;
+-	netdev_features_t enc_features  = BOND_ENC_FEATURES;
++	netdev_features_t vlan_features;
++	netdev_features_t enc_features;
++	netdev_features_t vlan_mask;
++	netdev_features_t enc_mask;
+ #ifdef CONFIG_XFRM_OFFLOAD
+-	netdev_features_t xfrm_features  = BOND_XFRM_FEATURES;
++	netdev_features_t xfrm_features;
++	netdev_features_t xfrm_mask;
+ #endif /* CONFIG_XFRM_OFFLOAD */
+-	netdev_features_t mpls_features  = BOND_MPLS_FEATURES;
++	netdev_features_t mpls_features;
++	netdev_features_t mpls_mask;
+ 	struct net_device *bond_dev = bond->dev;
+ 	struct list_head *iter;
+ 	struct slave *slave;
+@@ -1416,29 +1420,44 @@ static void bond_compute_features(struct bonding *bond)
+ 	unsigned int gso_max_size = GSO_MAX_SIZE;
+ 	u16 gso_max_segs = GSO_MAX_SEGS;
  
- static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
-@@ -993,7 +994,7 @@ static void veth_napi_del(struct net_device *dev)
- 
- static bool veth_gro_requested(const struct net_device *dev)
- {
--	return !!(dev->wanted_features & NETIF_F_GRO);
-+	return netdev_feature_test_bit(NETIF_F_GRO_BIT, dev->wanted_features);
- }
- 
- static int veth_enable_xdp_range(struct net_device *dev, int start, int end,
-@@ -1075,7 +1076,8 @@ static int veth_enable_xdp(struct net_device *dev)
- 				/* user-space did not require GRO, but adding XDP
- 				 * is supposed to get GRO working
- 				 */
--				dev->features |= NETIF_F_GRO;
-+				netdev_feature_set_bit(NETIF_F_GRO_BIT,
-+						       &dev->features);
- 				netdev_features_change(dev);
- 			}
- 		}
-@@ -1104,7 +1106,8 @@ static void veth_disable_xdp(struct net_device *dev)
- 		 * enabled it, clear it now
- 		 */
- 		if (!veth_gro_requested(dev) && netif_running(dev)) {
--			dev->features &= ~NETIF_F_GRO;
-+			netdev_feature_clear_bit(NETIF_F_GRO_BIT,
-+						 &dev->features);
- 			netdev_features_change(dev);
- 		}
- 	}
-@@ -1393,23 +1396,27 @@ static void veth_fix_features(struct net_device *dev,
- 		struct veth_priv *peer_priv = netdev_priv(peer);
- 
- 		if (peer_priv->_xdp_prog)
--			*features &= ~NETIF_F_GSO_SOFTWARE;
-+			netdev_feature_clear_bits(NETIF_F_GSO_SOFTWARE,
-+						  features);
- 	}
- 	if (priv->_xdp_prog)
--		*features |= NETIF_F_GRO;
-+		netdev_feature_set_bit(NETIF_F_GRO_BIT, features);
- }
- 
- static int veth_set_features(struct net_device *dev,
- 			     netdev_features_t features)
- {
--	netdev_features_t changed = features ^ dev->features;
- 	struct veth_priv *priv = netdev_priv(dev);
-+	netdev_features_t changed;
- 	int err;
- 
--	if (!(changed & NETIF_F_GRO) || !(dev->flags & IFF_UP) || priv->_xdp_prog)
-+	netdev_feature_xor(&changed, features, dev->features);
++	netdev_feature_zero(&vlan_features);
++	netdev_feature_set_bits(BOND_VLAN_FEATURES, &vlan_features);
++	netdev_feature_copy(&vlan_mask, vlan_features);
++	netdev_feature_zero(&enc_features);
++	netdev_feature_set_bits(BOND_ENC_FEATURES, &enc_features);
++	netdev_feature_copy(&enc_mask, enc_features);
++#ifdef CONFIG_XFRM_OFFLOAD
++	netdev_feature_zero(&xfrm_features);
++	netdev_feature_set_bits(BOND_XFRM_FEATURES, &xfrm_features);
++	netdev_feature_copy(&xfrm_mask, xfrm_features);
++#endif /* CONFIG_XFRM_OFFLOAD */
++	netdev_feature_zero(&mpls_features);
++	netdev_feature_set_bits(BOND_MPLS_FEATURES, &mpls_features);
++	netdev_feature_copy(&mpls_mask, mpls_features);
 +
-+	if (!netdev_feature_test_bit(NETIF_F_GRO_BIT, changed) ||
-+	    !(dev->flags & IFF_UP) || priv->_xdp_prog)
- 		return 0;
+ 	if (!bond_has_slaves(bond))
+ 		goto done;
+-	vlan_features &= NETIF_F_ALL_FOR_ALL;
+-	mpls_features &= NETIF_F_ALL_FOR_ALL;
++	netdev_feature_and_bits(NETIF_F_ALL_FOR_ALL, &vlan_features);
++	netdev_feature_and_bits(NETIF_F_ALL_FOR_ALL, &mpls_features);
  
--	if (features & NETIF_F_GRO) {
-+	if (netdev_feature_test_bit(NETIF_F_GRO_BIT, features)) {
- 		err = veth_napi_enable(dev);
- 		if (err)
- 			return err;
-@@ -1486,7 +1493,8 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 		}
+ 	bond_for_each_slave(bond, slave, iter) {
+ 		netdev_increment_features(&vlan_features, vlan_features,
+ 					  slave->dev->vlan_features,
+-					  BOND_VLAN_FEATURES);
++					  vlan_mask);
  
- 		if (!old_prog) {
--			peer->hw_features &= ~NETIF_F_GSO_SOFTWARE;
-+			netdev_feature_clear_bits(NETIF_F_GSO_SOFTWARE,
-+						  &peer->hw_features);
- 			peer->max_mtu = max_mtu;
- 		}
+ 		netdev_increment_features(&enc_features, enc_features,
+ 					  slave->dev->hw_enc_features,
+-					  BOND_ENC_FEATURES);
++					  enc_mask);
+ 
+ #ifdef CONFIG_XFRM_OFFLOAD
+ 		netdev_increment_features(&xfrm_features, xfrm_features,
+ 					  slave->dev->hw_enc_features,
+-					  BOND_XFRM_FEATURES);
++					  xfrm_mask);
+ #endif /* CONFIG_XFRM_OFFLOAD */
+ 
+ 		netdev_increment_features(&mpls_features, mpls_features,
+ 					  slave->dev->mpls_features,
+-					  BOND_MPLS_FEATURES);
++					  mpls_mask);
+ 
+ 		dst_release_flag &= slave->dev->priv_flags;
+ 		if (slave->dev->hard_header_len > max_hard_header_len)
+@@ -1450,14 +1469,16 @@ static void bond_compute_features(struct bonding *bond)
+ 	bond_dev->hard_header_len = max_hard_header_len;
+ 
+ done:
+-	bond_dev->vlan_features = vlan_features;
+-	bond_dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL |
+-				    NETIF_F_HW_VLAN_CTAG_TX |
+-				    NETIF_F_HW_VLAN_STAG_TX;
++	netdev_feature_copy(&bond_dev->vlan_features, vlan_features);
++	netdev_feature_copy(&bond_dev->hw_enc_features, enc_features);
++	netdev_feature_set_bits(NETIF_F_GSO_ENCAP_ALL |
++				NETIF_F_HW_VLAN_CTAG_TX |
++				NETIF_F_HW_VLAN_STAG_TX, &mpls_features);
+ #ifdef CONFIG_XFRM_OFFLOAD
+-	bond_dev->hw_enc_features |= xfrm_features;
++	netdev_feature_or(&bond_dev->hw_enc_features, bond_dev->hw_enc_features,
++			  xfrm_features);
+ #endif /* CONFIG_XFRM_OFFLOAD */
+-	bond_dev->mpls_features = mpls_features;
++	netdev_feature_copy(&bond_dev->mpls_features, mpls_features);
+ 	bond_dev->gso_max_segs = gso_max_segs;
+ 	netif_set_gso_max_size(bond_dev, gso_max_size);
+ 
+@@ -1781,7 +1802,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+ 
+ 	/* vlan challenged mutual exclusion */
+ 	/* no need to lock since we're protected by rtnl_lock */
+-	if (slave_dev->features & NETIF_F_VLAN_CHALLENGED) {
++	if (netdev_feature_test_bit(NETIF_F_VLAN_CHALLENGED_BIT,
++				    slave_dev->features)) {
+ 		slave_dbg(bond_dev, slave_dev, "is NETIF_F_VLAN_CHALLENGED\n");
+ 		if (vlan_uses_dev(bond_dev)) {
+ 			SLAVE_NL_ERR(bond_dev, slave_dev, extack,
+@@ -1794,7 +1816,7 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+ 		slave_dbg(bond_dev, slave_dev, "is !NETIF_F_VLAN_CHALLENGED\n");
  	}
-@@ -1497,7 +1505,8 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 				veth_disable_xdp(dev);
  
- 			if (peer) {
--				peer->hw_features |= NETIF_F_GSO_SOFTWARE;
-+				netdev_feature_set_bits(NETIF_F_GSO_SOFTWARE,
-+							&peer->hw_features);
- 				peer->max_mtu = ETH_MAX_MTU;
- 			}
- 		}
-@@ -1562,20 +1571,24 @@ static void veth_setup(struct net_device *dev)
+-	if (slave_dev->features & NETIF_F_HW_ESP)
++	if (netdev_feature_test_bit(NETIF_F_HW_ESP_BIT, slave_dev->features))
+ 		slave_dbg(bond_dev, slave_dev, "is esp-hw-offload capable\n");
  
- 	dev->netdev_ops = &veth_netdev_ops;
- 	dev->ethtool_ops = &veth_ethtool_ops;
--	dev->features |= NETIF_F_LLTX;
--	dev->features |= VETH_FEATURES;
--	dev->vlan_features = dev->features &
--			     ~(NETIF_F_HW_VLAN_CTAG_TX |
--			       NETIF_F_HW_VLAN_STAG_TX |
--			       NETIF_F_HW_VLAN_CTAG_RX |
--			       NETIF_F_HW_VLAN_STAG_RX);
-+	netdev_feature_set_bit(NETIF_F_LLTX_BIT, &dev->features);
-+	netdev_feature_set_bits(VETH_FEATURES, &dev->features);
-+	netdev_feature_copy(&dev->vlan_features, dev->features);
-+	netdev_feature_clear_bits(NETIF_F_HW_VLAN_CTAG_TX |
-+				  NETIF_F_HW_VLAN_STAG_TX |
-+				  NETIF_F_HW_VLAN_CTAG_RX |
-+				  NETIF_F_HW_VLAN_STAG_RX,
-+				  &dev->vlan_features);
- 	dev->needs_free_netdev = true;
- 	dev->priv_destructor = veth_dev_free;
- 	dev->max_mtu = ETH_MAX_MTU;
+ 	/* Old ifenslave binaries are no longer supported.  These can
+@@ -2087,7 +2109,7 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+ 	}
+ #endif
  
--	dev->hw_features = VETH_FEATURES;
--	dev->hw_enc_features = VETH_FEATURES;
--	dev->mpls_features = NETIF_F_HW_CSUM | NETIF_F_GSO_SOFTWARE;
-+	netdev_feature_zero(&dev->hw_features);
-+	netdev_feature_set_bits(VETH_FEATURES, &dev->hw_features);
-+	netdev_feature_copy(&dev->hw_enc_features, dev->hw_features);
-+	netdev_feature_zero(&dev->mpls_features);
-+	netdev_feature_set_bits(NETIF_F_HW_CSUM | NETIF_F_GSO_SOFTWARE,
-+				&dev->mpls_features);
+-	if (!(bond_dev->features & NETIF_F_LRO))
++	if (!netdev_feature_test_bit(NETIF_F_LRO_BIT, bond_dev->features))
+ 		dev_disable_lro(slave_dev);
+ 
+ 	res = netdev_rx_handler_register(slave_dev, bond_handle_frame,
+@@ -2285,8 +2307,9 @@ static int __bond_release_one(struct net_device *bond_dev,
+ 	struct slave *slave, *oldcurrent;
+ 	struct sockaddr_storage ss;
+ 	int old_flags = bond_dev->flags;
+-	netdev_features_t old_features = bond_dev->features;
++	netdev_features_t old_features;
+ 
++	netdev_feature_copy(&old_features, bond_dev->features);
+ 	/* slave is not a slave or master is not master of this slave */
+ 	if (!(slave_dev->flags & IFF_SLAVE) ||
+ 	    !netdev_has_upper_dev(slave_dev, bond_dev)) {
+@@ -2390,8 +2413,9 @@ static int __bond_release_one(struct net_device *bond_dev,
+ 	}
+ 
+ 	bond_compute_features(bond);
+-	if (!(bond_dev->features & NETIF_F_VLAN_CHALLENGED) &&
+-	    (old_features & NETIF_F_VLAN_CHALLENGED))
++	if (!netdev_feature_test_bit(NETIF_F_VLAN_CHALLENGED_BIT,
++				     bond_dev->features) &&
++	    netdev_feature_test_bit(NETIF_F_VLAN_CHALLENGED_BIT, old_features))
+ 		slave_info(bond_dev, slave_dev, "last VLAN challenged slave left bond - VLAN blocking is removed\n");
+ 
+ 	vlan_vids_del_by_dev(slave_dev, bond_dev);
+@@ -5406,7 +5430,7 @@ void bond_setup(struct net_device *bond_dev)
+ #endif /* CONFIG_XFRM_OFFLOAD */
+ 
+ 	/* don't acquire bond device's netif_tx_lock when transmitting */
+-	bond_dev->features |= NETIF_F_LLTX;
++	netdev_feature_set_bit(NETIF_F_LLTX_BIT, &bond_dev->features);
+ 
+ 	/* By default, we declare the bond to be fully
+ 	 * VLAN hardware accelerated capable. Special
+@@ -5416,24 +5440,30 @@ void bond_setup(struct net_device *bond_dev)
+ 	 */
+ 
+ 	/* Don't allow bond devices to change network namespaces. */
+-	bond_dev->features |= NETIF_F_NETNS_LOCAL;
++	netdev_feature_set_bit(NETIF_F_NETNS_LOCAL_BIT, &bond_dev->features);
+ 
+-	bond_dev->hw_features = BOND_VLAN_FEATURES |
++	netdev_feature_zero(&bond_dev->hw_features);
++	netdev_feature_set_bits(BOND_VLAN_FEATURES |
+ 				NETIF_F_HW_VLAN_CTAG_RX |
+-				NETIF_F_HW_VLAN_CTAG_FILTER;
+-
+-	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL;
+-	bond_dev->features |= bond_dev->hw_features;
+-	bond_dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
++				NETIF_F_HW_VLAN_CTAG_FILTER,
++				&bond_dev->hw_features);
++
++	netdev_feature_set_bits(NETIF_F_GSO_ENCAP_ALL, &bond_dev->hw_features);
++	netdev_feature_or(&bond_dev->features, bond_dev->features,
++			  bond_dev->hw_features);
++	netdev_feature_set_bits(NETIF_F_HW_VLAN_CTAG_TX |
++				NETIF_F_HW_VLAN_STAG_TX,
++				&bond_dev->features);
+ #ifdef CONFIG_XFRM_OFFLOAD
+-	bond_dev->hw_features |= BOND_XFRM_FEATURES;
++	netdev_feature_set_bits(BOND_XFRM_FEATURES, &bond_dev->hw_features);
+ 	/* Only enable XFRM features if this is an active-backup config */
+ 	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
+-		bond_dev->features |= BOND_XFRM_FEATURES;
++		netdev_feature_set_bits(BOND_XFRM_FEATURES,
++					&bond_dev->features);
+ #endif /* CONFIG_XFRM_OFFLOAD */
+ #if IS_ENABLED(CONFIG_TLS_DEVICE)
+ 	if (bond_sk_check(bond))
+-		bond_dev->features |= BOND_TLS_FEATURES;
++		netdev_feature_set_bits(BOND_TLS_FEATURES, &bond_dev->features);
+ #endif
  }
  
- /*
-@@ -1602,8 +1615,8 @@ static struct rtnl_link_ops veth_link_ops;
+diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+index a8fde3bc458f..b0c3a28c2448 100644
+--- a/drivers/net/bonding/bond_options.c
++++ b/drivers/net/bonding/bond_options.c
+@@ -778,9 +778,11 @@ static bool bond_set_xfrm_features(struct bonding *bond)
+ 		return false;
  
- static void veth_disable_gro(struct net_device *dev)
- {
--	dev->features &= ~NETIF_F_GRO;
--	dev->wanted_features &= ~NETIF_F_GRO;
-+	netdev_feature_clear_bit(NETIF_F_GRO_BIT, &dev->features);
-+	netdev_feature_clear_bit(NETIF_F_GRO_BIT, &dev->wanted_features);
- 	netdev_update_features(dev);
+ 	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
+-		bond->dev->wanted_features |= BOND_XFRM_FEATURES;
++		netdev_feature_set_bits(BOND_XFRM_FEATURES,
++					&bond->dev->wanted_features);
+ 	else
+-		bond->dev->wanted_features &= ~BOND_XFRM_FEATURES;
++		netdev_feature_clear_bits(BOND_XFRM_FEATURES,
++					  &bond->dev->wanted_features);
+ 
+ 	return true;
  }
+@@ -791,9 +793,11 @@ static bool bond_set_tls_features(struct bonding *bond)
+ 		return false;
  
+ 	if (bond_sk_check(bond))
+-		bond->dev->wanted_features |= BOND_TLS_FEATURES;
++		netdev_feature_set_bits(BOND_TLS_FEATURES,
++					&bond->dev->wanted_features);
+ 	else
+-		bond->dev->wanted_features &= ~BOND_TLS_FEATURES;
++		netdev_feature_clear_bits(BOND_TLS_FEATURES,
++					  &bond->dev->wanted_features);
+ 
+ 	return true;
+ }
 -- 
 2.33.0
 
