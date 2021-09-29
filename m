@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EB2D41C8F7
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF8C641C8F6
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:58:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345514AbhI2QA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 12:00:27 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:12981 "EHLO
+        id S1345727AbhI2QAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 12:00:25 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:12980 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344300AbhI2P7p (ORCPT
+        with ESMTP id S1344312AbhI2P7p (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:59:45 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HKLbD0sR6zWX6v;
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HKLbD1lXRzWX8X;
         Wed, 29 Sep 2021 23:56:40 +0800 (CST)
 Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
@@ -26,9 +26,9 @@ From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv2 net-next 019/167] net: sfc: convert the prototype of xxx_supported_features
-Date:   Wed, 29 Sep 2021 23:51:06 +0800
-Message-ID: <20210929155334.12454-20-shenjian15@huawei.com>
+Subject: [RFCv2 net-next 020/167] net: qlogic: convert the prototype of qlcnic_process_flags
+Date:   Wed, 29 Sep 2021 23:51:07 +0800
+Message-ID: <20210929155334.12454-21-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 References: <20210929155334.12454-1-shenjian15@huawei.com>
@@ -45,76 +45,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 For the origin type for netdev_features_t would be changed to
 be unsigned long * from u64, so changes the prototype of
-xxx_supported_features for adaption.
+qlcnic_process_flags for adaption.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/net/ethernet/sfc/falcon/net_driver.h | 5 +++--
- drivers/net/ethernet/sfc/mcdi_filters.c      | 5 ++++-
- drivers/net/ethernet/sfc/net_driver.h        | 5 +++--
- 3 files changed, 10 insertions(+), 5 deletions(-)
+ .../net/ethernet/qlogic/qlcnic/qlcnic_hw.c    | 24 +++++++++----------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/falcon/net_driver.h b/drivers/net/ethernet/sfc/falcon/net_driver.h
-index a381cf9ec4f3..6fabfe7f02f5 100644
---- a/drivers/net/ethernet/sfc/falcon/net_driver.h
-+++ b/drivers/net/ethernet/sfc/falcon/net_driver.h
-@@ -1298,11 +1298,12 @@ static inline struct ef4_rx_buffer *ef4_rx_buffer(struct ef4_rx_queue *rx_queue,
-  * If a feature is fixed, it does not present in hw_features, but
-  * always in features.
-  */
--static inline netdev_features_t ef4_supported_features(const struct ef4_nic *efx)
-+static inline void ef4_supported_features(const struct ef4_nic *efx,
-+					  netdev_features_t *supported)
- {
- 	const struct net_device *net_dev = efx->net_dev;
- 
--	return net_dev->features | net_dev->hw_features;
-+	*supported = net_dev->features | net_dev->hw_features;
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_hw.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_hw.c
+index e6ed7f8413b4..2367923e3e3f 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_hw.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_hw.c
+@@ -1020,37 +1020,35 @@ int qlcnic_change_mtu(struct net_device *netdev, int mtu)
+ 	return rc;
  }
  
- /* Get the current TX queue insert index. */
-diff --git a/drivers/net/ethernet/sfc/mcdi_filters.c b/drivers/net/ethernet/sfc/mcdi_filters.c
-index 1523be77b9db..8e788c3a6f2a 100644
---- a/drivers/net/ethernet/sfc/mcdi_filters.c
-+++ b/drivers/net/ethernet/sfc/mcdi_filters.c
-@@ -1298,6 +1298,7 @@ int efx_mcdi_filter_table_probe(struct efx_nic *efx, bool multicast_chaining)
+-static netdev_features_t qlcnic_process_flags(struct qlcnic_adapter *adapter,
+-					      netdev_features_t features)
++static void qlcnic_process_flags(struct qlcnic_adapter *adapter,
++				 netdev_features_t *features)
  {
- 	struct net_device *net_dev = efx->net_dev;
- 	struct efx_mcdi_filter_table *table;
-+	netdev_features_t supported;
- 	int rc;
+ 	u32 offload_flags = adapter->offload_flags;
  
- 	if (!efx_rwsem_assert_write_locked(&efx->filter_sem))
-@@ -1319,7 +1320,9 @@ int efx_mcdi_filter_table_probe(struct efx_nic *efx, bool multicast_chaining)
- 		rc = efx_mcdi_filter_table_probe_matches(efx, table, true);
- 	if (rc)
- 		goto fail;
--	if ((efx_supported_features(efx) & NETIF_F_HW_VLAN_CTAG_FILTER) &&
-+
-+	efx_supported_features(efx, &supported);
-+	if ((supported & NETIF_F_HW_VLAN_CTAG_FILTER) &&
- 	    !(efx_mcdi_filter_match_supported(table, false,
- 		(EFX_FILTER_MATCH_OUTER_VID | EFX_FILTER_MATCH_LOC_MAC)) &&
- 	      efx_mcdi_filter_match_supported(table, false,
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index f6981810039d..bf962ca160e7 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -1681,11 +1681,12 @@ efx_channel_tx_old_fill_level(struct efx_channel *channel)
-  * If a feature is fixed, it does not present in hw_features, but
-  * always in features.
-  */
--static inline netdev_features_t efx_supported_features(const struct efx_nic *efx)
-+static inline void efx_supported_features(const struct efx_nic *efx,
-+					  netdev_features_t *supported)
- {
- 	const struct net_device *net_dev = efx->net_dev;
+ 	if (offload_flags & BIT_0) {
+-		features |= NETIF_F_RXCSUM | NETIF_F_IP_CSUM |
+-			    NETIF_F_IPV6_CSUM;
++		*features |= NETIF_F_RXCSUM | NETIF_F_IP_CSUM |
++			     NETIF_F_IPV6_CSUM;
+ 		adapter->rx_csum = 1;
+ 		if (QLCNIC_IS_TSO_CAPABLE(adapter)) {
+ 			if (!(offload_flags & BIT_1))
+-				features &= ~NETIF_F_TSO;
++				*features &= ~NETIF_F_TSO;
+ 			else
+-				features |= NETIF_F_TSO;
++				*features |= NETIF_F_TSO;
  
--	return net_dev->features | net_dev->hw_features;
-+	*supported = net_dev->features | net_dev->hw_features;
+ 			if (!(offload_flags & BIT_2))
+-				features &= ~NETIF_F_TSO6;
++				*features &= ~NETIF_F_TSO6;
+ 			else
+-				features |= NETIF_F_TSO6;
++				*features |= NETIF_F_TSO6;
+ 		}
+ 	} else {
+-		features &= ~(NETIF_F_RXCSUM |
++		*features &= ~(NETIF_F_RXCSUM |
+ 			      NETIF_F_IP_CSUM |
+ 			      NETIF_F_IPV6_CSUM);
+ 
+ 		if (QLCNIC_IS_TSO_CAPABLE(adapter))
+-			features &= ~(NETIF_F_TSO | NETIF_F_TSO6);
++			*features &= ~(NETIF_F_TSO | NETIF_F_TSO6);
+ 		adapter->rx_csum = 0;
+ 	}
+-
+-	return features;
  }
  
- /* Get the current TX queue insert index. */
+ void qlcnic_fix_features(struct net_device *netdev, netdev_features_t *features)
+@@ -1061,7 +1059,7 @@ void qlcnic_fix_features(struct net_device *netdev, netdev_features_t *features)
+ 	if (qlcnic_82xx_check(adapter) &&
+ 	    (adapter->flags & QLCNIC_ESWITCH_ENABLED)) {
+ 		if (adapter->flags & QLCNIC_APP_CHANGED_FLAGS) {
+-			*features = qlcnic_process_flags(adapter, *features);
++			qlcnic_process_flags(adapter, features);
+ 		} else {
+ 			changed = *features ^ netdev->features;
+ 			*features ^= changed & (NETIF_F_RXCSUM |
 -- 
 2.33.0
 
