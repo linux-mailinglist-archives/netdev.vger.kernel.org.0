@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 692FE41C27C
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 12:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6FFC41C26D
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 12:16:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245479AbhI2KSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 06:18:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49430 "EHLO mail.kernel.org"
+        id S245383AbhI2KSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 06:18:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49162 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245419AbhI2KSf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 06:18:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C38AA613D3;
-        Wed, 29 Sep 2021 10:16:53 +0000 (UTC)
+        id S245094AbhI2KS2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 06:18:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EE0576135E;
+        Wed, 29 Sep 2021 10:16:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632910614;
-        bh=Y3WlE9/x8kkM4OdWBGlw4lrvVpqya0gDTOnqHUTWG08=;
+        s=k20201202; t=1632910607;
+        bh=mQ/v2Y98YV6XzE+86H8yYKlXm3WWV7jFnyEmqqOu/N8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V8VrcA5CUPkhOqftCql97IxkAsMr9Plp6k2Lm4+WSfiAG2t+R1+bMnZUBr9my09eK
-         uzItATWebU5qGqd91zwMLFjNnwiUTHhCsGE0AVGIct0+wao1FsyianKY4Oy19nXCbH
-         iAHyL1bQ2T44YOJjXHC95UsDyn1Ywca0eeUfhcWiTE7ME9UB+99nGjkn7KJNLpRH+a
-         XUQrGzOktX9W1t5i9Kh6XPc9HANXBc5vuvhggc+ep0bbP/UZxRDqiZ/LlQYNIZ3dUI
-         Lo2Zhpve5UxqFlVMDLg672QgvN181RmdgwwYjllA/kbQyt9cmqUEq4cZQXWpSVlm8c
-         aWNspAxNuVO5g==
+        b=rO9HtdRTP7wWcsc6ppy1mSX1I30rGf2ocJATSrAO6cTtJb+hEezTmn5kYVCa4WggJ
+         X7sEUqCXz00voTfckdkQrY54lNWZF2GGIFHcZbfR8GlPmBwUXcM9eQrwVN5/vlc0mq
+         884tBb0MZ7W14+Bj4w7O+Mt9KXc37+88rS/NYEJodG0MN76/itPK8p5W/7EmS9O0F/
+         LqJLi5UUxrPs+aCAOHRFhi32GGJ1XWj50QKzlJpXql0ILrK3eYrLsNporDCIAmmMeU
+         vEQJGj5zkTkmioy/JdInvWSfw/EIgBXLFWDO2oSGjml/pyuHtZjBDmlSCdHwC4x7JY
+         AzDwzFO15xAeg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -70,9 +70,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: [PATCH net-next 1/5] devlink: Add missed notifications iterators
-Date:   Wed, 29 Sep 2021 13:16:35 +0300
-Message-Id: <eb21672b950c4e58260ea95e5e3d10478c1755c6.1632909221.git.leonro@nvidia.com>
+Subject: [PATCH net-next 2/5] devlink: Allow modification of devlink ops
+Date:   Wed, 29 Sep 2021 13:16:36 +0300
+Message-Id: <0e07ad986db7d2f033a97e4c8253940676128237.1632909221.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1632909221.git.leonro@nvidia.com>
 References: <cover.1632909221.git.leonro@nvidia.com>
@@ -84,135 +84,624 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-The commit mentioned in Fixes line missed a couple of notifications that
-were registered before devlink_register() and should be delayed too.
+Drop const identifier from devlink_ops declaration to allow
+run-time modification of pre-declared ops.
 
-As such, the too early placed WARN_ON() check spotted it.
-
-WARNING: CPU: 1 PID: 6540 at net/core/devlink.c:5158 devlink_nl_region_notify+0x184/0x1e0 net/core/devlink.c:5158
-Modules linked in:
-CPU: 1 PID: 6540 Comm: syz-executor.0 Not tainted 5.15.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:devlink_nl_region_notify+0x184/0x1e0 net/core/devlink.c:5158
-Code: 38 41 b8 c0 0c 00 00 31 d2 48 89 ee 4c 89 e7 e8 72 1a 26 00 48 83 c4 08 5b 5d 41 5c 41 5d 41 5e e9 01 bd 41 fa
-e8 fc bc 41 fa <0f> 0b e9 f7 fe ff ff e8 f0 bc 41 fa 0f 0b eb da 4c 89 e7 e8 c4 18
-RSP: 0018:ffffc90002d6f658 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88801f08d580 RSI: ffffffff87344e94 RDI: 0000000000000003
-RBP: ffff88801ee42100 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff87344d8a R11: 0000000000000000 R12: ffff88801c1dc000
-R13: 0000000000000000 R14: 000000000000002c R15: ffff88801c1dc070
-FS:  0000555555e8e400(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055dd7c590310 CR3: 0000000069a09000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- devlink_region_create+0x39f/0x4c0 net/core/devlink.c:10327
- nsim_dev_dummy_region_init drivers/net/netdevsim/dev.c:481 [inline]
- nsim_dev_probe+0x5f6/0x1150 drivers/net/netdevsim/dev.c:1479
- call_driver_probe drivers/base/dd.c:517 [inline]
- really_probe+0x245/0xcc0 drivers/base/dd.c:596
- __driver_probe_device+0x338/0x4d0 drivers/base/dd.c:751
- driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:781
- __device_attach_driver+0x20b/0x2f0 drivers/base/dd.c:898
- bus_for_each_drv+0x15f/0x1e0 drivers/base/bus.c:427
- __device_attach+0x228/0x4a0 drivers/base/dd.c:969
- bus_probe_device+0x1e4/0x290 drivers/base/bus.c:487
- device_add+0xc35/0x21b0 drivers/base/core.c:3359
- nsim_bus_dev_new drivers/net/netdevsim/bus.c:435 [inline]
- new_device_store+0x48b/0x770 drivers/net/netdevsim/bus.c:302
- bus_attr_store+0x72/0xa0 drivers/base/bus.c:122
- sysfs_kf_write+0x110/0x160 fs/sysfs/file.c:139
- kernfs_fop_write_iter+0x342/0x500 fs/kernfs/file.c:296
- call_write_iter include/linux/fs.h:2163 [inline]
- new_sync_write+0x429/0x660 fs/read_write.c:507
- vfs_write+0x7cf/0xae0 fs/read_write.c:594
- ksys_write+0x12d/0x250 fs/read_write.c:647
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f328409d3ef
-Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 99 fd ff ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 01
-00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 31 44 89 c7 48 89 44 24 08 e8 cc fd ff ff 48
-RSP: 002b:00007ffdc6851140 EFLAGS: 00000293 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f328409d3ef
-RDX: 0000000000000003 RSI: 00007ffdc6851190 RDI: 0000000000000004
-RBP: 0000000000000004 R08: 0000000000000000 R09: 00007ffdc68510e0
-R10: 0000000000000000 R11: 0000000000000293 R12: 00007f3284144971
-R13: 00007ffdc6851190 R14: 0000000000000000 R15: 00007ffdc6851860
-
-Fixes: 474053c980a0 ("devlink: Notify users when objects are accessible")
-Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- net/core/devlink.c | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  6 +--
+ .../net/ethernet/cavium/liquidio/lio_main.c   |  2 +-
+ .../freescale/dpaa2/dpaa2-eth-devlink.c       |  2 +-
+ .../hisilicon/hns3/hns3pf/hclge_devlink.c     |  2 +-
+ .../hisilicon/hns3/hns3vf/hclgevf_devlink.c   |  2 +-
+ .../net/ethernet/huawei/hinic/hinic_devlink.c |  2 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |  2 +-
+ .../marvell/octeontx2/af/rvu_devlink.c        |  2 +-
+ .../marvell/prestera/prestera_devlink.c       |  2 +-
+ drivers/net/ethernet/mellanox/mlx4/main.c     |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  2 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  2 +-
+ drivers/net/ethernet/mscc/ocelot.h            |  2 +-
+ drivers/net/ethernet/mscc/ocelot_net.c        |  2 +-
+ .../net/ethernet/netronome/nfp/nfp_devlink.c  |  2 +-
+ drivers/net/ethernet/netronome/nfp/nfp_main.h |  2 +-
+ .../ethernet/pensando/ionic/ionic_devlink.c   |  2 +-
+ drivers/net/ethernet/qlogic/qed/qed_devlink.c |  2 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  2 +-
+ drivers/net/ethernet/ti/cpsw_new.c            |  2 +-
+ drivers/net/netdevsim/dev.c                   |  2 +-
+ drivers/ptp/ptp_ocp.c                         |  2 +-
+ drivers/staging/qlge/qlge_main.c              |  2 +-
+ include/net/devlink.h                         |  9 ++--
+ net/core/devlink.c                            | 52 +++++++++----------
+ net/dsa/dsa2.c                                |  2 +-
+ 26 files changed, 55 insertions(+), 58 deletions(-)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 06edb2f1d21e..35c74c8e5e2f 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -1074,6 +1074,9 @@ static void devlink_rate_notify(struct devlink_rate *devlink_rate,
- 	WARN_ON(cmd != DEVLINK_CMD_RATE_NEW && cmd != DEVLINK_CMD_RATE_DEL);
- 	WARN_ON(!xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED));
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 951c0c00cc95..0a1004d0be07 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -280,7 +280,7 @@ void bnxt_dl_health_recovery_done(struct bnxt *bp)
+ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+ 			    struct netlink_ext_ack *extack);
  
-+	if (!xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED))
-+		return;
-+
- 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
- 	if (!msg)
- 		return;
-@@ -5155,7 +5158,8 @@ static void devlink_nl_region_notify(struct devlink_region *region,
- 	struct sk_buff *msg;
+-static const struct devlink_ops bnxt_dl_ops = {
++static struct devlink_ops bnxt_dl_ops = {
+ #ifdef CONFIG_BNXT_SRIOV
+ 	.eswitch_mode_set = bnxt_dl_eswitch_mode_set,
+ 	.eswitch_mode_get = bnxt_dl_eswitch_mode_get,
+@@ -289,7 +289,7 @@ static const struct devlink_ops bnxt_dl_ops = {
+ 	.flash_update	  = bnxt_dl_flash_update,
+ };
  
- 	WARN_ON(cmd != DEVLINK_CMD_REGION_NEW && cmd != DEVLINK_CMD_REGION_DEL);
--	WARN_ON(!xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED));
-+	if (!xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED))
-+		return;
+-static const struct devlink_ops bnxt_vf_dl_ops;
++static struct devlink_ops bnxt_vf_dl_ops;
  
- 	msg = devlink_nl_region_notify_build(region, snapshot, cmd, 0, 0);
- 	if (IS_ERR(msg))
-@@ -8981,6 +8985,8 @@ static void devlink_notify_register(struct devlink *devlink)
- 	struct devlink_trap_group_item *group_item;
- 	struct devlink_trap_item *trap_item;
- 	struct devlink_port *devlink_port;
-+	struct devlink_rate *rate_node;
-+	struct devlink_region *region;
+ enum bnxt_dl_param_id {
+ 	BNXT_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
+@@ -762,8 +762,8 @@ static void bnxt_dl_params_unregister(struct bnxt *bp)
  
- 	devlink_notify(devlink, DEVLINK_CMD_NEW);
- 	list_for_each_entry(devlink_port, &devlink->port_list, list)
-@@ -8997,6 +9003,12 @@ static void devlink_notify_register(struct devlink *devlink)
- 	list_for_each_entry(trap_item, &devlink->trap_list, list)
- 		devlink_trap_notify(devlink, trap_item, DEVLINK_CMD_TRAP_NEW);
- 
-+	list_for_each_entry(rate_node, &devlink->rate_list, list)
-+		devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_NEW);
-+
-+	list_for_each_entry(region, &devlink->region_list, list)
-+		devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_NEW);
-+
- 	devlink_params_publish(devlink);
+ int bnxt_dl_register(struct bnxt *bp)
+ {
+-	const struct devlink_ops *devlink_ops;
+ 	struct devlink_port_attrs attrs = {};
++	struct devlink_ops *devlink_ops;
+ 	struct bnxt_dl *bp_dl;
+ 	struct devlink *dl;
+ 	int rc;
+diff --git a/drivers/net/ethernet/cavium/liquidio/lio_main.c b/drivers/net/ethernet/cavium/liquidio/lio_main.c
+index dafc79bd34f4..6684f4127ef2 100644
+--- a/drivers/net/ethernet/cavium/liquidio/lio_main.c
++++ b/drivers/net/ethernet/cavium/liquidio/lio_main.c
+@@ -3167,7 +3167,7 @@ liquidio_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 	return ret;
  }
  
-@@ -9006,9 +9018,17 @@ static void devlink_notify_unregister(struct devlink *devlink)
- 	struct devlink_trap_group_item *group_item;
- 	struct devlink_trap_item *trap_item;
- 	struct devlink_port *devlink_port;
-+	struct devlink_rate *rate_node;
-+	struct devlink_region *region;
+-static const struct devlink_ops liquidio_devlink_ops = {
++static struct devlink_ops liquidio_devlink_ops = {
+ 	.eswitch_mode_get = liquidio_eswitch_mode_get,
+ 	.eswitch_mode_set = liquidio_eswitch_mode_set,
+ };
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.c
+index 7fefe1574b6a..da6040fbb354 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.c
+@@ -182,7 +182,7 @@ static int dpaa2_eth_dl_trap_group_action_set(struct devlink *devlink,
+ 	return 0;
+ }
  
- 	devlink_params_unpublish(devlink);
+-static const struct devlink_ops dpaa2_eth_devlink_ops = {
++static struct devlink_ops dpaa2_eth_devlink_ops = {
+ 	.info_get = dpaa2_eth_dl_info_get,
+ 	.trap_init = dpaa2_eth_dl_trap_init,
+ 	.trap_action_set = dpaa2_eth_dl_trap_action_set,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
+index 59b0ae7d59e0..329b020c688d 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
+@@ -97,7 +97,7 @@ static int hclge_devlink_reload_up(struct devlink *devlink,
+ 	}
+ }
  
-+	list_for_each_entry_reverse(region, &devlink->region_list, list)
-+		devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_DEL);
-+
-+	list_for_each_entry_reverse(rate_node, &devlink->rate_list, list)
-+		devlink_rate_notify(rate_node, DEVLINK_CMD_RATE_DEL);
-+
- 	list_for_each_entry_reverse(trap_item, &devlink->trap_list, list)
- 		devlink_trap_notify(devlink, trap_item, DEVLINK_CMD_TRAP_DEL);
+-static const struct devlink_ops hclge_devlink_ops = {
++static struct devlink_ops hclge_devlink_ops = {
+ 	.info_get = hclge_devlink_info_get,
+ 	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
+ 	.reload_down = hclge_devlink_reload_down,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
+index d60cc9426f70..1d9eecc928a5 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
+@@ -98,7 +98,7 @@ static int hclgevf_devlink_reload_up(struct devlink *devlink,
+ 	}
+ }
  
+-static const struct devlink_ops hclgevf_devlink_ops = {
++static struct devlink_ops hclgevf_devlink_ops = {
+ 	.info_get = hclgevf_devlink_info_get,
+ 	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
+ 	.reload_down = hclgevf_devlink_reload_down,
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+index 60ae8bfc5f69..22365c85911f 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+@@ -289,7 +289,7 @@ static int hinic_devlink_flash_update(struct devlink *devlink,
+ 	return hinic_firmware_update(priv, params->fw, extack);
+ }
+ 
+-static const struct devlink_ops hinic_devlink_ops = {
++static struct devlink_ops hinic_devlink_ops = {
+ 	.flash_update = hinic_devlink_flash_update,
+ };
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index ab3d876fa624..ac3a66542a29 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -454,7 +454,7 @@ ice_devlink_flash_update(struct devlink *devlink,
+ 	return ice_flash_pldm_image(pf, params->fw, preservation, extack);
+ }
+ 
+-static const struct devlink_ops ice_devlink_ops = {
++static struct devlink_ops ice_devlink_ops = {
+ 	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
+ 	.info_get = ice_devlink_info_get,
+ 	.flash_update = ice_devlink_flash_update,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+index 70bacd38a6d9..e65ae07bd7b0 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+@@ -1491,7 +1491,7 @@ static int rvu_devlink_info_get(struct devlink *devlink, struct devlink_info_req
+ 	return devlink_info_driver_name_put(req, DRV_NAME);
+ }
+ 
+-static const struct devlink_ops rvu_devlink_ops = {
++static struct devlink_ops rvu_devlink_ops = {
+ 	.info_get = rvu_devlink_info_get,
+ 	.eswitch_mode_get = rvu_devlink_eswitch_mode_get,
+ 	.eswitch_mode_set = rvu_devlink_eswitch_mode_set,
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
+index 06279cd6da67..8110deba9331 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
+@@ -379,7 +379,7 @@ static int prestera_trap_action_set(struct devlink *devlink,
+ 				    enum devlink_trap_action action,
+ 				    struct netlink_ext_ack *extack);
+ 
+-static const struct devlink_ops prestera_dl_ops = {
++static struct devlink_ops prestera_dl_ops = {
+ 	.info_get = prestera_dl_info_get,
+ 	.trap_init = prestera_trap_init,
+ 	.trap_action_set = prestera_trap_action_set,
+diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
+index 9541f3a920c8..ab805b6f23d4 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/main.c
++++ b/drivers/net/ethernet/mellanox/mlx4/main.c
+@@ -3980,7 +3980,7 @@ static int mlx4_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
+ 	return err;
+ }
+ 
+-static const struct devlink_ops mlx4_devlink_ops = {
++static struct devlink_ops mlx4_devlink_ops = {
+ 	.port_type_set	= mlx4_devlink_port_type_set,
+ 	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
+ 	.reload_down	= mlx4_devlink_reload_down,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index d7576b6fa43b..47c9f7f5bb79 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -283,7 +283,7 @@ static int mlx5_devlink_trap_action_set(struct devlink *devlink,
+ 	return err;
+ }
+ 
+-static const struct devlink_ops mlx5_devlink_ops = {
++static struct devlink_ops mlx5_devlink_ops = {
+ #ifdef CONFIG_MLX5_ESWITCH
+ 	.eswitch_mode_set = mlx5_devlink_eswitch_mode_set,
+ 	.eswitch_mode_get = mlx5_devlink_eswitch_mode_get,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index 9e831e8b607a..1012279008f9 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -1614,7 +1614,7 @@ mlxsw_devlink_trap_policer_counter_get(struct devlink *devlink,
+ 						      p_drops);
+ }
+ 
+-static const struct devlink_ops mlxsw_devlink_ops = {
++static struct devlink_ops mlxsw_devlink_ops = {
+ 	.reload_actions		= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+ 				  BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
+ 	.reload_down		= mlxsw_devlink_core_bus_device_reload_down,
+diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
+index 1952d6a1b98a..b7e8c7caa437 100644
+--- a/drivers/net/ethernet/mscc/ocelot.h
++++ b/drivers/net/ethernet/mscc/ocelot.h
+@@ -115,6 +115,6 @@ void ocelot_port_devlink_teardown(struct ocelot *ocelot, int port);
+ extern struct notifier_block ocelot_netdevice_nb;
+ extern struct notifier_block ocelot_switchdev_nb;
+ extern struct notifier_block ocelot_switchdev_blocking_nb;
+-extern const struct devlink_ops ocelot_devlink_ops;
++extern struct devlink_ops ocelot_devlink_ops;
+ 
+ #endif
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index e54b9fb2a97a..8c08f63c4836 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -143,7 +143,7 @@ ocelot_devlink_sb_occ_tc_port_bind_get(struct devlink_port *dlp,
+ 					      p_cur, p_max);
+ }
+ 
+-const struct devlink_ops ocelot_devlink_ops = {
++struct devlink_ops ocelot_devlink_ops = {
+ 	.sb_pool_get			= ocelot_devlink_sb_pool_get,
+ 	.sb_pool_set			= ocelot_devlink_sb_pool_set,
+ 	.sb_port_pool_get		= ocelot_devlink_sb_port_pool_get,
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
+index bea978df7713..0db2ce522d5d 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
+@@ -336,7 +336,7 @@ nfp_devlink_flash_update(struct devlink *devlink,
+ 	return nfp_flash_update_common(devlink_priv(devlink), params->fw, extack);
+ }
+ 
+-const struct devlink_ops nfp_devlink_ops = {
++struct devlink_ops nfp_devlink_ops = {
+ 	.port_split		= nfp_devlink_port_split,
+ 	.port_unsplit		= nfp_devlink_port_unsplit,
+ 	.sb_pool_get		= nfp_devlink_sb_pool_get,
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_main.h b/drivers/net/ethernet/netronome/nfp/nfp_main.h
+index a7dede946a33..2273d0e76870 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_main.h
++++ b/drivers/net/ethernet/netronome/nfp/nfp_main.h
+@@ -145,7 +145,7 @@ struct nfp_pf {
+ 
+ extern struct pci_driver nfp_netvf_pci_driver;
+ 
+-extern const struct devlink_ops nfp_devlink_ops;
++extern struct devlink_ops nfp_devlink_ops;
+ 
+ int nfp_net_pci_probe(struct nfp_pf *pf);
+ void nfp_net_pci_remove(struct nfp_pf *pf);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+index 2267da95640b..3c26b0a1c8dc 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+@@ -55,7 +55,7 @@ static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+ 	return err;
+ }
+ 
+-static const struct devlink_ops ionic_dl_ops = {
++static struct devlink_ops ionic_dl_ops = {
+ 	.info_get	= ionic_dl_info_get,
+ 	.flash_update	= ionic_dl_flash_update,
+ };
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.c b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
+index 6bb4e165b592..fe1d21c36944 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_devlink.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
+@@ -196,7 +196,7 @@ static int qed_devlink_info_get(struct devlink *devlink,
+ 						DEVLINK_INFO_VERSION_GENERIC_FW_APP, buf);
+ }
+ 
+-static const struct devlink_ops qed_dl_ops = {
++static struct devlink_ops qed_dl_ops = {
+ 	.info_get = qed_devlink_info_get,
+ };
+ 
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 0de5f4a4fe08..9c686eaf798f 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -2200,7 +2200,7 @@ static void am65_cpsw_unregister_notifiers(struct am65_cpsw_common *cpsw)
+ 	unregister_netdevice_notifier(&cpsw->am65_cpsw_netdevice_nb);
+ }
+ 
+-static const struct devlink_ops am65_cpsw_devlink_ops = {};
++static struct devlink_ops am65_cpsw_devlink_ops = {};
+ 
+ static void am65_cpsw_init_stp_ale_entry(struct am65_cpsw_common *cpsw)
+ {
+diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
+index 1530532748a8..ca6f78527af1 100644
+--- a/drivers/net/ethernet/ti/cpsw_new.c
++++ b/drivers/net/ethernet/ti/cpsw_new.c
+@@ -1604,7 +1604,7 @@ static void cpsw_unregister_notifiers(struct cpsw_common *cpsw)
+ 	unregister_netdevice_notifier(&cpsw_netdevice_nb);
+ }
+ 
+-static const struct devlink_ops cpsw_devlink_ops = {
++static struct devlink_ops cpsw_devlink_ops = {
+ };
+ 
+ static int cpsw_dl_switch_mode_get(struct devlink *dl, u32 id,
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index cb6645012a30..466d2c27e868 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -1241,7 +1241,7 @@ nsim_dev_devlink_trap_drop_counter_get(struct devlink *devlink,
+ 	return 0;
+ }
+ 
+-static const struct devlink_ops nsim_dev_devlink_ops = {
++static struct devlink_ops nsim_dev_devlink_ops = {
+ 	.eswitch_mode_set = nsim_devlink_eswitch_mode_set,
+ 	.eswitch_mode_get = nsim_devlink_eswitch_mode_get,
+ 	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT |
+diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+index 34f943c8c9fd..c89be26ce4d2 100644
+--- a/drivers/ptp/ptp_ocp.c
++++ b/drivers/ptp/ptp_ocp.c
+@@ -1106,7 +1106,7 @@ ptp_ocp_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
+ 	return 0;
+ }
+ 
+-static const struct devlink_ops ptp_ocp_devlink_ops = {
++static struct devlink_ops ptp_ocp_devlink_ops = {
+ 	.flash_update = ptp_ocp_devlink_flash_update,
+ 	.info_get = ptp_ocp_devlink_info_get,
+ };
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 1dc849378a0f..55657c10b443 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -4535,7 +4535,7 @@ static void qlge_timer(struct timer_list *t)
+ 	mod_timer(&qdev->timer, jiffies + (5 * HZ));
+ }
+ 
+-static const struct devlink_ops qlge_devlink_ops;
++static struct devlink_ops qlge_devlink_ops;
+ 
+ static int qlge_probe(struct pci_dev *pdev,
+ 		      const struct pci_device_id *pci_entry)
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index a7852a257bf6..317b09917c41 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -46,7 +46,7 @@ struct devlink {
+ 	struct list_head trap_list;
+ 	struct list_head trap_group_list;
+ 	struct list_head trap_policer_list;
+-	const struct devlink_ops *ops;
++	struct devlink_ops *ops;
+ 	struct xarray snapshot_ids;
+ 	struct devlink_dev_stats stats;
+ 	struct device *dev;
+@@ -1557,10 +1557,9 @@ struct net *devlink_net(const struct devlink *devlink);
+  *
+  * Drivers that operate on real HW must use devlink_alloc() instead.
+  */
+-struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+-				 size_t priv_size, struct net *net,
+-				 struct device *dev);
+-static inline struct devlink *devlink_alloc(const struct devlink_ops *ops,
++struct devlink *devlink_alloc_ns(struct devlink_ops *ops, size_t priv_size,
++				 struct net *net, struct device *dev);
++static inline struct devlink *devlink_alloc(struct devlink_ops *ops,
+ 					    size_t priv_size,
+ 					    struct device *dev)
+ {
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 35c74c8e5e2f..cee2be47c40e 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -821,7 +821,7 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
+ 	return 0;
+ }
+ 
+-static int devlink_port_fn_hw_addr_fill(const struct devlink_ops *ops,
++static int devlink_port_fn_hw_addr_fill(struct devlink_ops *ops,
+ 					struct devlink_port *port,
+ 					struct sk_buff *msg,
+ 					struct netlink_ext_ack *extack,
+@@ -911,7 +911,7 @@ devlink_port_fn_opstate_valid(enum devlink_port_fn_opstate opstate)
+ 	       opstate == DEVLINK_PORT_FN_OPSTATE_ATTACHED;
+ }
+ 
+-static int devlink_port_fn_state_fill(const struct devlink_ops *ops,
++static int devlink_port_fn_state_fill(struct devlink_ops *ops,
+ 				      struct devlink_port *port,
+ 				      struct sk_buff *msg,
+ 				      struct netlink_ext_ack *extack,
+@@ -952,9 +952,9 @@ static int
+ devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *port,
+ 				   struct netlink_ext_ack *extack)
+ {
+-	const struct devlink_ops *ops;
+ 	struct nlattr *function_attr;
+ 	bool msg_updated = false;
++	struct devlink_ops *ops;
+ 	int err;
+ 
+ 	function_attr = nla_nest_start_noflag(msg, DEVLINK_ATTR_PORT_FUNCTION);
+@@ -1330,7 +1330,7 @@ static int devlink_port_function_hw_addr_set(struct devlink_port *port,
+ 					     const struct nlattr *attr,
+ 					     struct netlink_ext_ack *extack)
+ {
+-	const struct devlink_ops *ops = port->devlink->ops;
++	struct devlink_ops *ops = port->devlink->ops;
+ 	const u8 *hw_addr;
+ 	int hw_addr_len;
+ 
+@@ -1365,7 +1365,7 @@ static int devlink_port_fn_state_set(struct devlink_port *port,
+ 				     struct netlink_ext_ack *extack)
+ {
+ 	enum devlink_port_fn_state state;
+-	const struct devlink_ops *ops;
++	struct devlink_ops *ops;
+ 
+ 	state = nla_get_u8(attr);
+ 	ops = port->devlink->ops;
+@@ -1616,7 +1616,7 @@ devlink_nl_rate_parent_node_set(struct devlink_rate *devlink_rate,
+ {
+ 	struct devlink *devlink = devlink_rate->devlink;
+ 	const char *parent_name = nla_data(nla_parent);
+-	const struct devlink_ops *ops = devlink->ops;
++	struct devlink_ops *ops = devlink->ops;
+ 	size_t len = strlen(parent_name);
+ 	struct devlink_rate *parent;
+ 	int err = -EOPNOTSUPP;
+@@ -1674,8 +1674,7 @@ devlink_nl_rate_parent_node_set(struct devlink_rate *devlink_rate,
+ }
+ 
+ static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
+-			       const struct devlink_ops *ops,
+-			       struct genl_info *info)
++			       struct devlink_ops *ops, struct genl_info *info)
+ {
+ 	struct nlattr *nla_parent, **attrs = info->attrs;
+ 	int err = -EOPNOTSUPP;
+@@ -1718,7 +1717,7 @@ static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
+ 	return 0;
+ }
+ 
+-static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
++static bool devlink_rate_set_ops_supported(struct devlink_ops *ops,
+ 					   struct genl_info *info,
+ 					   enum devlink_rate_type type)
+ {
+@@ -1765,7 +1764,7 @@ static int devlink_nl_cmd_rate_set_doit(struct sk_buff *skb,
+ {
+ 	struct devlink_rate *devlink_rate = info->user_ptr[1];
+ 	struct devlink *devlink = devlink_rate->devlink;
+-	const struct devlink_ops *ops = devlink->ops;
++	struct devlink_ops *ops = devlink->ops;
+ 	int err;
+ 
+ 	if (!ops || !devlink_rate_set_ops_supported(ops, info, devlink_rate->type))
+@@ -1783,7 +1782,7 @@ static int devlink_nl_cmd_rate_new_doit(struct sk_buff *skb,
+ {
+ 	struct devlink *devlink = info->user_ptr[0];
+ 	struct devlink_rate *rate_node;
+-	const struct devlink_ops *ops;
++	struct devlink_ops *ops;
+ 	int err;
+ 
+ 	ops = devlink->ops;
+@@ -1840,7 +1839,7 @@ static int devlink_nl_cmd_rate_del_doit(struct sk_buff *skb,
+ {
+ 	struct devlink_rate *rate_node = info->user_ptr[1];
+ 	struct devlink *devlink = rate_node->devlink;
+-	const struct devlink_ops *ops = devlink->ops;
++	struct devlink_ops *ops = devlink->ops;
+ 	int err;
+ 
+ 	if (refcount_read(&rate_node->refcnt) > 1) {
+@@ -2128,7 +2127,7 @@ static int devlink_sb_pool_set(struct devlink *devlink, unsigned int sb_index,
+ 			       struct netlink_ext_ack *extack)
+ 
+ {
+-	const struct devlink_ops *ops = devlink->ops;
++	struct devlink_ops *ops = devlink->ops;
+ 
+ 	if (ops->sb_pool_set)
+ 		return ops->sb_pool_set(devlink, sb_index, pool_index,
+@@ -2176,7 +2175,7 @@ static int devlink_nl_sb_port_pool_fill(struct sk_buff *msg,
+ 					enum devlink_command cmd,
+ 					u32 portid, u32 seq, int flags)
+ {
+-	const struct devlink_ops *ops = devlink->ops;
++	struct devlink_ops *ops = devlink->ops;
+ 	u32 threshold;
+ 	void *hdr;
+ 	int err;
+@@ -2349,7 +2348,7 @@ static int devlink_sb_port_pool_set(struct devlink_port *devlink_port,
+ 				    struct netlink_ext_ack *extack)
+ 
+ {
+-	const struct devlink_ops *ops = devlink_port->devlink->ops;
++	struct devlink_ops *ops = devlink_port->devlink->ops;
+ 
+ 	if (ops->sb_port_pool_set)
+ 		return ops->sb_port_pool_set(devlink_port, sb_index,
+@@ -2392,7 +2391,7 @@ devlink_nl_sb_tc_pool_bind_fill(struct sk_buff *msg, struct devlink *devlink,
+ 				enum devlink_command cmd,
+ 				u32 portid, u32 seq, int flags)
+ {
+-	const struct devlink_ops *ops = devlink->ops;
++	struct devlink_ops *ops = devlink->ops;
+ 	u16 pool_index;
+ 	u32 threshold;
+ 	void *hdr;
+@@ -2600,7 +2599,7 @@ static int devlink_sb_tc_pool_bind_set(struct devlink_port *devlink_port,
+ 				       struct netlink_ext_ack *extack)
+ 
+ {
+-	const struct devlink_ops *ops = devlink_port->devlink->ops;
++	struct devlink_ops *ops = devlink_port->devlink->ops;
+ 
+ 	if (ops->sb_tc_pool_bind_set)
+ 		return ops->sb_tc_pool_bind_set(devlink_port, sb_index,
+@@ -2652,7 +2651,7 @@ static int devlink_nl_cmd_sb_occ_snapshot_doit(struct sk_buff *skb,
+ 					       struct genl_info *info)
+ {
+ 	struct devlink *devlink = info->user_ptr[0];
+-	const struct devlink_ops *ops = devlink->ops;
++	struct devlink_ops *ops = devlink->ops;
+ 	struct devlink_sb *devlink_sb;
+ 
+ 	devlink_sb = devlink_sb_get_from_info(devlink, info);
+@@ -2668,7 +2667,7 @@ static int devlink_nl_cmd_sb_occ_max_clear_doit(struct sk_buff *skb,
+ 						struct genl_info *info)
+ {
+ 	struct devlink *devlink = info->user_ptr[0];
+-	const struct devlink_ops *ops = devlink->ops;
++	struct devlink_ops *ops = devlink->ops;
+ 	struct devlink_sb *devlink_sb;
+ 
+ 	devlink_sb = devlink_sb_get_from_info(devlink, info);
+@@ -2684,8 +2683,8 @@ static int devlink_nl_eswitch_fill(struct sk_buff *msg, struct devlink *devlink,
+ 				   enum devlink_command cmd, u32 portid,
+ 				   u32 seq, int flags)
+ {
+-	const struct devlink_ops *ops = devlink->ops;
+ 	enum devlink_eswitch_encap_mode encap_mode;
++	struct devlink_ops *ops = devlink->ops;
+ 	u8 inline_mode;
+ 	void *hdr;
+ 	int err = 0;
+@@ -2778,8 +2777,8 @@ static int devlink_nl_cmd_eswitch_set_doit(struct sk_buff *skb,
+ 					   struct genl_info *info)
+ {
+ 	struct devlink *devlink = info->user_ptr[0];
+-	const struct devlink_ops *ops = devlink->ops;
+ 	enum devlink_eswitch_encap_mode encap_mode;
++	struct devlink_ops *ops = devlink->ops;
+ 	u8 inline_mode;
+ 	int err = 0;
+ 	u16 mode;
+@@ -3880,7 +3879,7 @@ static void devlink_ns_change_notify(struct devlink *devlink,
+ 		devlink_notify(devlink, DEVLINK_CMD_DEL);
+ }
+ 
+-static bool devlink_reload_supported(const struct devlink_ops *ops)
++static bool devlink_reload_supported(struct devlink_ops *ops)
+ {
+ 	return ops->reload_down && ops->reload_up;
+ }
+@@ -8879,7 +8878,7 @@ static struct genl_family devlink_nl_family __ro_after_init = {
+ 	.n_mcgrps	= ARRAY_SIZE(devlink_nl_mcgrps),
+ };
+ 
+-static bool devlink_reload_actions_valid(const struct devlink_ops *ops)
++static bool devlink_reload_actions_valid(struct devlink_ops *ops)
+ {
+ 	const struct devlink_reload_combination *comb;
+ 	int i;
+@@ -8920,9 +8919,8 @@ static bool devlink_reload_actions_valid(const struct devlink_ops *ops)
+  *	Allocate new devlink instance resources, including devlink index
+  *	and name.
+  */
+-struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+-				 size_t priv_size, struct net *net,
+-				 struct device *dev)
++struct devlink *devlink_alloc_ns(struct devlink_ops *ops, size_t priv_size,
++				 struct net *net, struct device *dev)
+ {
+ 	struct devlink *devlink;
+ 	static u32 last_id;
+@@ -9527,7 +9525,7 @@ EXPORT_SYMBOL_GPL(devlink_rate_leaf_destroy);
+ void devlink_rate_nodes_destroy(struct devlink *devlink)
+ {
+ 	static struct devlink_rate *devlink_rate, *tmp;
+-	const struct devlink_ops *ops = devlink->ops;
++	struct devlink_ops *ops = devlink->ops;
+ 
+ 	mutex_lock(&devlink->lock);
+ 	list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 8ca6a1170c9d..c07e4be3ed55 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -784,7 +784,7 @@ dsa_devlink_sb_occ_tc_port_bind_get(struct devlink_port *dlp,
+ 							p_max);
+ }
+ 
+-static const struct devlink_ops dsa_devlink_ops = {
++static struct devlink_ops dsa_devlink_ops = {
+ 	.info_get			= dsa_devlink_info_get,
+ 	.sb_pool_get			= dsa_devlink_sb_pool_get,
+ 	.sb_pool_set			= dsa_devlink_sb_pool_set,
 -- 
 2.31.1
 
