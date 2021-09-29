@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19FC541C94A
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:02:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46FA741C938
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346255AbhI2QDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 12:03:47 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:27921 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345586AbhI2QAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 12:00:02 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HKLX00Hwpzbmvh;
-        Wed, 29 Sep 2021 23:53:52 +0800 (CST)
+        id S1344606AbhI2QCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 12:02:43 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:13837 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345517AbhI2P7x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:59:53 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKLWb2x5Rz8ysn;
+        Wed, 29 Sep 2021 23:53:31 +0800 (CST)
 Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Wed, 29 Sep 2021 23:58:09 +0800
+ 15.1.2308.8; Wed, 29 Sep 2021 23:58:10 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -26,9 +26,9 @@ From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv2 net-next 090/167] net: chelsio: use netdev feature helpers
-Date:   Wed, 29 Sep 2021 23:52:17 +0800
-Message-ID: <20210929155334.12454-91-shenjian15@huawei.com>
+Subject: [RFCv2 net-next 094/167] net: sfc: use netdev feature helpers
+Date:   Wed, 29 Sep 2021 23:52:21 +0800
+Message-ID: <20210929155334.12454-95-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 References: <20210929155334.12454-1-shenjian15@huawei.com>
@@ -46,640 +46,758 @@ X-Mailing-List: netdev@vger.kernel.org
 Use netdev_feature_xxx helpers to replace the logical operation
 for netdev features.
 
+For the driver initializes the offloaded_features when define
+structure . So it's unable to change the prototype from u64 to
+bitmap. Define it as u64 array instead.
+
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/net/ethernet/chelsio/cxgb/cxgb2.c     | 45 +++++++-----
- drivers/net/ethernet/chelsio/cxgb/sge.c       | 12 +--
- .../net/ethernet/chelsio/cxgb3/cxgb3_main.c   | 54 +++++++++-----
- drivers/net/ethernet/chelsio/cxgb3/sge.c      | 10 ++-
- .../net/ethernet/chelsio/cxgb4/cxgb4_fcoe.c   | 16 ++--
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   | 73 ++++++++++++-------
- .../net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.h |  3 +-
- drivers/net/ethernet/chelsio/cxgb4/sge.c      | 14 ++--
- .../ethernet/chelsio/cxgb4vf/cxgb4vf_main.c   | 33 ++++++---
- drivers/net/ethernet/chelsio/cxgb4vf/sge.c    |  8 +-
- .../chelsio/inline_crypto/chtls/chtls_main.c  |  3 +-
- 11 files changed, 167 insertions(+), 104 deletions(-)
+ drivers/net/ethernet/sfc/ef10.c              | 37 +++++++++++-----
+ drivers/net/ethernet/sfc/ef100_nic.c         | 43 +++++++++++-------
+ drivers/net/ethernet/sfc/ef100_rx.c          |  6 ++-
+ drivers/net/ethernet/sfc/ef100_tx.c          | 11 +++--
+ drivers/net/ethernet/sfc/ef10_sriov.c        |  6 ++-
+ drivers/net/ethernet/sfc/efx.c               | 32 ++++++++------
+ drivers/net/ethernet/sfc/efx_common.c        | 36 +++++++++------
+ drivers/net/ethernet/sfc/falcon/efx.c        | 46 +++++++++++++-------
+ drivers/net/ethernet/sfc/falcon/falcon.c     |  4 +-
+ drivers/net/ethernet/sfc/falcon/net_driver.h |  4 +-
+ drivers/net/ethernet/sfc/falcon/rx.c         |  6 ++-
+ drivers/net/ethernet/sfc/farch.c             |  2 +-
+ drivers/net/ethernet/sfc/mcdi_filters.c      | 18 +++++---
+ drivers/net/ethernet/sfc/mcdi_port_common.c  |  3 +-
+ drivers/net/ethernet/sfc/net_driver.h        |  4 +-
+ drivers/net/ethernet/sfc/rx.c                |  3 +-
+ drivers/net/ethernet/sfc/rx_common.c         |  5 ++-
+ drivers/net/ethernet/sfc/siena.c             |  4 +-
+ 18 files changed, 172 insertions(+), 98 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb/cxgb2.c b/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-index 3fcd628fa449..193c75f5d682 100644
---- a/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-+++ b/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-@@ -186,7 +186,8 @@ static void link_start(struct port_info *p)
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index e7e2223aebbf..981c01acef51 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -627,7 +627,8 @@ static int efx_ef10_probe(struct efx_nic *efx)
  
- static void enable_hw_csum(struct adapter *adapter)
+ 	if (nic_data->datapath_caps &
+ 	    (1 << MC_CMD_GET_CAPABILITIES_OUT_RX_INCLUDE_FCS_LBN))
+-		efx->net_dev->hw_features |= NETIF_F_RXFCS;
++		netdev_feature_set_bit(NETIF_F_RXFCS_BIT,
++				       &efx->net_dev->hw_features);
+ 
+ 	rc = efx_mcdi_port_get_number(efx);
+ 	if (rc < 0)
+@@ -1304,9 +1305,11 @@ static void efx_ef10_fini_nic(struct efx_nic *efx)
+ static int efx_ef10_init_nic(struct efx_nic *efx)
  {
--	if (adapter->port[0].dev->hw_features & NETIF_F_TSO)
-+	if (netdev_feature_test_bit(NETIF_F_TSO_BIT,
-+				    adapter->port[0].dev->hw_features))
- 		t1_tp_set_ip_checksum_offload(adapter->tp, 1);	/* for TSO only */
- 	t1_tp_set_tcp_checksum_offload(adapter->tp, 1);
- }
-@@ -864,18 +865,20 @@ static void t1_fix_features(struct net_device *dev, netdev_features_t *features)
- 	 * Since there is no support for separate rx/tx vlan accel
- 	 * enable/disable make sure tx flag is always in same state as rx.
- 	 */
--	if (*features & NETIF_F_HW_VLAN_CTAG_RX)
--		*features |= NETIF_F_HW_VLAN_CTAG_TX;
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, *features))
-+		netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT, features);
- 	else
--		*features &= ~NETIF_F_HW_VLAN_CTAG_TX;
-+		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
-+					 features);
- }
+ 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+-	netdev_features_t hw_enc_features = 0;
++	netdev_features_t hw_enc_features;
+ 	int rc;
  
- static int t1_set_features(struct net_device *dev, netdev_features_t features)
- {
--	netdev_features_t changed = dev->features ^ features;
- 	struct adapter *adapter = dev->ml_priv;
-+	netdev_features_t changed;
- 
--	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
-+	netdev_feature_xor(&changed, dev->features, features);
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, changed))
- 		t1_vlan_mode(adapter, features);
- 
- 	return 0;
-@@ -1033,28 +1036,34 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		netdev->mem_start = mmio_start;
- 		netdev->mem_end = mmio_start + mmio_len - 1;
- 		netdev->ml_priv = adapter;
--		netdev->hw_features |= NETIF_F_SG | NETIF_F_IP_CSUM |
--			NETIF_F_RXCSUM;
--		netdev->features |= NETIF_F_SG | NETIF_F_IP_CSUM |
--			NETIF_F_RXCSUM | NETIF_F_LLTX;
-+		netdev_feature_set_bits(NETIF_F_SG | NETIF_F_IP_CSUM |
-+					NETIF_F_RXCSUM, &netdev->hw_features);
-+		netdev_feature_set_bits(NETIF_F_SG | NETIF_F_IP_CSUM |
-+					NETIF_F_RXCSUM | NETIF_F_LLTX,
-+					&netdev->features);
- 
- 		if (pci_using_dac)
--			netdev->features |= NETIF_F_HIGHDMA;
-+			netdev_feature_set_bit(NETIF_F_HIGHDMA_BIT,
-+					       &netdev->features);
- 		if (vlan_tso_capable(adapter)) {
--			netdev->features |=
--				NETIF_F_HW_VLAN_CTAG_TX |
--				NETIF_F_HW_VLAN_CTAG_RX;
--			netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX;
-+			netdev_feature_set_bits(NETIF_F_HW_VLAN_CTAG_TX |
-+						NETIF_F_HW_VLAN_CTAG_RX,
-+						&netdev->features);
-+			netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+					       &netdev->hw_features);
- 
- 			/* T204: disable TSO */
- 			if (!(is_T2(adapter)) || bi->port_number != 4) {
--				netdev->hw_features |= NETIF_F_TSO;
--				netdev->features |= NETIF_F_TSO;
-+				netdev_feature_set_bit(NETIF_F_TSO_BIT,
-+						       &netdev->hw_features);
-+				netdev_feature_set_bit(NETIF_F_TSO_BIT,
-+						       &netdev->features);
- 			}
- 		}
- 
- 		netdev->netdev_ops = &cxgb_netdev_ops;
--		netdev->hard_header_len += (netdev->hw_features & NETIF_F_TSO) ?
-+		netdev->hard_header_len +=
-+			netdev_feature_test_bit(NETIF_F_TSO_BIT, netdev->hw_features) ?
- 			sizeof(struct cpl_tx_pkt_lso) : sizeof(struct cpl_tx_pkt);
- 
- 		netif_napi_add(netdev, &adapter->napi, t1_poll, 64);
-diff --git a/drivers/net/ethernet/chelsio/cxgb/sge.c b/drivers/net/ethernet/chelsio/cxgb/sge.c
-index cda01f22c71c..62bb33202def 100644
---- a/drivers/net/ethernet/chelsio/cxgb/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb/sge.c
-@@ -737,7 +737,7 @@ void t1_vlan_mode(struct adapter *adapter, netdev_features_t features)
- {
- 	struct sge *sge = adapter->sge;
- 
--	if (features & NETIF_F_HW_VLAN_CTAG_RX)
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, features))
- 		sge->sge_control |= F_VLAN_XTRACT;
- 	else
- 		sge->sge_control &= ~F_VLAN_XTRACT;
-@@ -922,7 +922,8 @@ void t1_sge_intr_enable(struct sge *sge)
- 	u32 en = SGE_INT_ENABLE;
- 	u32 val = readl(sge->adapter->regs + A_PL_ENABLE);
- 
--	if (sge->adapter->port[0].dev->hw_features & NETIF_F_TSO)
-+	if (netdev_feature_test_bit(NETIF_F_TSO_BIT,
-+				    sge->adapter->port[0].dev->hw_features))
- 		en &= ~F_PACKET_TOO_BIG;
- 	writel(en, sge->adapter->regs + A_SG_INT_ENABLE);
- 	writel(val | SGE_PL_INTR_MASK, sge->adapter->regs + A_PL_ENABLE);
-@@ -946,7 +947,8 @@ bool t1_sge_intr_error_handler(struct sge *sge)
- 	u32 cause = readl(adapter->regs + A_SG_INT_CAUSE);
- 	bool wake = false;
- 
--	if (adapter->port[0].dev->hw_features & NETIF_F_TSO)
-+	if (netdev_feature_test_bit(NETIF_F_TSO_BIT,
-+				    adapter->port[0].dev->hw_features))
- 		cause &= ~F_PACKET_TOO_BIG;
- 	if (cause & F_RESPQ_EXHAUSTED)
- 		sge->stats.respQ_empty++;
-@@ -1386,8 +1388,8 @@ static void sge_rx(struct sge *sge, struct freelQ *fl, unsigned int len)
- 	dev = adapter->port[p->iff].dev;
- 
- 	skb->protocol = eth_type_trans(skb, dev);
--	if ((dev->features & NETIF_F_RXCSUM) && p->csum == 0xffff &&
--	    skb->protocol == htons(ETH_P_IP) &&
-+	if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, dev->features) &&
-+	    p->csum == 0xffff && skb->protocol == htons(ETH_P_IP) &&
- 	    (skb->data[9] == IPPROTO_TCP || skb->data[9] == IPPROTO_UDP)) {
- 		++st->rx_cso_good;
- 		skb->ip_summed = CHECKSUM_UNNECESSARY;
-diff --git a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-index 140b40e5c54c..acd2299c1657 100644
---- a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-@@ -1183,15 +1183,18 @@ static void cxgb_vlan_mode(struct net_device *dev, netdev_features_t features)
- 
- 	if (adapter->params.rev > 0) {
- 		t3_set_vlan_accel(adapter, 1 << pi->port_id,
--				  features & NETIF_F_HW_VLAN_CTAG_RX);
-+				  netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+							  features));
- 	} else {
- 		/* single control for all ports */
--		unsigned int i, have_vlans = features & NETIF_F_HW_VLAN_CTAG_RX;
-+		unsigned int i, have_vlans;
- 
-+		have_vlans = netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+						     features);
- 		for_each_port(adapter, i)
- 			have_vlans |=
--				adapter->port[i]->features &
--				NETIF_F_HW_VLAN_CTAG_RX;
-+				netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+							adapter->port[i]->features);
- 
- 		t3_set_vlan_accel(adapter, 1, have_vlans);
- 	}
-@@ -2249,9 +2252,11 @@ static int cxgb_siocdevprivate(struct net_device *dev,
- 
- 		if (t.lro >= 0) {
- 			if (t.lro)
--				dev->wanted_features |= NETIF_F_GRO;
-+				netdev_feature_set_bit(NETIF_F_GRO_BIT,
-+						       &dev->wanted_features);
- 			else
--				dev->wanted_features &= ~NETIF_F_GRO;
-+				netdev_feature_clear_bit(NETIF_F_GRO_BIT,
-+							 &dev->wanted_features);
- 			netdev_update_features(dev);
- 		}
- 
-@@ -2291,7 +2296,8 @@ static int cxgb_siocdevprivate(struct net_device *dev,
- 		t.fl_size[0] = q->fl_size;
- 		t.fl_size[1] = q->jumbo_size;
- 		t.polling = q->polling;
--		t.lro = !!(dev->features & NETIF_F_GRO);
-+		t.lro = netdev_feature_test_bit(NETIF_F_GRO_BIT,
-+						dev->features);
- 		t.intr_lat = q->coalesce_usecs;
- 		t.cong_thres = q->cong_thres;
- 		t.qnum = q1;
-@@ -2600,17 +2606,19 @@ static void cxgb_fix_features(struct net_device *dev,
- 	 * Since there is no support for separate rx/tx vlan accel
- 	 * enable/disable make sure tx flag is always in same state as rx.
- 	 */
--	if (*features & NETIF_F_HW_VLAN_CTAG_RX)
--		*features |= NETIF_F_HW_VLAN_CTAG_TX;
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, *features))
-+		netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT, features);
- 	else
--		*features &= ~NETIF_F_HW_VLAN_CTAG_TX;
-+		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
-+					 features);
- }
- 
- static int cxgb_set_features(struct net_device *dev, netdev_features_t features)
- {
--	netdev_features_t changed = dev->features ^ features;
-+	netdev_features_t changed;
- 
--	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
-+	netdev_feature_xor(&changed, dev->features, features);
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, changed))
- 		cxgb_vlan_mode(dev, features);
- 
- 	return 0;
-@@ -3214,6 +3222,7 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	resource_size_t mmio_start, mmio_len;
- 	const struct adapter_info *ai;
- 	struct adapter *adapter = NULL;
-+	netdev_features_t tmp;
- 	struct port_info *pi;
- 
- 	if (!cxgb3_wq) {
-@@ -3310,13 +3319,22 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		netdev->irq = pdev->irq;
- 		netdev->mem_start = mmio_start;
- 		netdev->mem_end = mmio_start + mmio_len - 1;
--		netdev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM |
--			NETIF_F_TSO | NETIF_F_RXCSUM | NETIF_F_HW_VLAN_CTAG_RX;
--		netdev->features |= netdev->hw_features |
--				    NETIF_F_HW_VLAN_CTAG_TX;
--		netdev->vlan_features |= netdev->features & VLAN_FEAT;
-+		netdev_feature_zero(&netdev->hw_features);
-+		netdev_feature_set_bits(NETIF_F_SG | NETIF_F_IP_CSUM |
-+					NETIF_F_TSO | NETIF_F_RXCSUM |
-+					NETIF_F_HW_VLAN_CTAG_RX,
-+					&netdev->hw_features);
-+		netdev_feature_or(&netdev->features, netdev->features,
-+				  netdev->hw_features);
-+		netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
-+				       &netdev->features);
-+		netdev_feature_copy(&tmp, netdev->features);
-+		netdev_feature_and_bits(VLAN_FEAT, &tmp);
-+		netdev_feature_or(&netdev->vlan_features,
-+				  netdev->vlan_features, tmp);
- 		if (pci_using_dac)
--			netdev->features |= NETIF_F_HIGHDMA;
-+			netdev_feature_set_bit(NETIF_F_HIGHDMA_BIT,
-+					       &netdev->features);
- 
- 		netdev->netdev_ops = &cxgb_netdev_ops;
- 		netdev->ethtool_ops = &cxgb_ethtool_ops;
-diff --git a/drivers/net/ethernet/chelsio/cxgb3/sge.c b/drivers/net/ethernet/chelsio/cxgb3/sge.c
-index c3afec1041f8..d22843ca6705 100644
---- a/drivers/net/ethernet/chelsio/cxgb3/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb3/sge.c
-@@ -2093,8 +2093,8 @@ static void rx_eth(struct adapter *adap, struct sge_rspq *rq,
- 	skb_pull(skb, sizeof(*p) + pad);
- 	skb->protocol = eth_type_trans(skb, adap->port[p->iff]);
- 	pi = netdev_priv(skb->dev);
--	if ((skb->dev->features & NETIF_F_RXCSUM) && p->csum_valid &&
--	    p->csum == htons(0xffff) && !p->fragment) {
-+	if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, skb->dev->features) &&
-+	    p->csum_valid && p->csum == htons(0xffff) && !p->fragment) {
- 		qs->port_stats[SGE_PSTAT_RX_CSUM_GOOD]++;
- 		skb->ip_summed = CHECKSUM_UNNECESSARY;
- 	} else
-@@ -2174,7 +2174,8 @@ static void lro_add_page(struct adapter *adap, struct sge_qset *qs,
- 		offset = 2 + sizeof(struct cpl_rx_pkt);
- 		cpl = qs->lro_va = sd->pg_chunk.va + 2;
- 
--		if ((qs->netdev->features & NETIF_F_RXCSUM) &&
-+		if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+					    qs->netdev->features) &&
- 		     cpl->csum_valid && cpl->csum == htons(0xffff)) {
- 			skb->ip_summed = CHECKSUM_UNNECESSARY;
- 			qs->port_stats[SGE_PSTAT_RX_CSUM_GOOD]++;
-@@ -2336,7 +2337,8 @@ static int process_responses(struct adapter *adap, struct sge_qset *qs,
- 
- 	while (likely(budget_left && is_new_response(r, q))) {
- 		int packet_complete, eth, ethpad = 2;
--		int lro = !!(qs->netdev->features & NETIF_F_GRO);
-+		int lro = netdev_feature_test_bit(NETIF_F_GRO_BIT,
-+						  qs->netdev->features);
- 		struct sk_buff *skb = NULL;
- 		u32 len, flags;
- 		__be32 rss_hi, rss_lo;
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_fcoe.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_fcoe.c
-index 33b2c0c45509..a10ee671514b 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_fcoe.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_fcoe.c
-@@ -79,10 +79,10 @@ int cxgb_fcoe_enable(struct net_device *netdev)
- 
- 	dev_info(adap->pdev_dev, "Enabling FCoE offload features\n");
- 
--	netdev->features |= NETIF_F_FCOE_CRC;
--	netdev->vlan_features |= NETIF_F_FCOE_CRC;
--	netdev->features |= NETIF_F_FCOE_MTU;
--	netdev->vlan_features |= NETIF_F_FCOE_MTU;
-+	netdev_feature_set_bit(NETIF_F_FCOE_CRC_BIT, &netdev->features);
-+	netdev_feature_set_bit(NETIF_F_FCOE_CRC_BIT, &netdev->vlan_features);
-+	netdev_feature_set_bit(NETIF_F_FCOE_MTU_BIT, &netdev->features);
-+	netdev_feature_set_bit(NETIF_F_FCOE_MTU_BIT, &netdev->vlan_features);
- 
- 	netdev_features_change(netdev);
- 
-@@ -110,10 +110,10 @@ int cxgb_fcoe_disable(struct net_device *netdev)
- 
- 	fcoe->flags &= ~CXGB_FCOE_ENABLED;
- 
--	netdev->features &= ~NETIF_F_FCOE_CRC;
--	netdev->vlan_features &= ~NETIF_F_FCOE_CRC;
--	netdev->features &= ~NETIF_F_FCOE_MTU;
--	netdev->vlan_features &= ~NETIF_F_FCOE_MTU;
-+	netdev_feature_clear_bit(NETIF_F_FCOE_CRC_BIT, &netdev->features);
-+	netdev_feature_clear_bit(NETIF_F_FCOE_CRC_BIT, &netdev->vlan_features);
-+	netdev_feature_clear_bit(NETIF_F_FCOE_MTU_BIT, &netdev->features);
-+	netdev_feature_clear_bit(NETIF_F_FCOE_MTU_BIT, &netdev->vlan_features);
- 
- 	netdev_features_change(netdev);
- 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 238416724a7c..26c550ae6dd0 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -513,7 +513,8 @@ static int link_start(struct net_device *dev)
- 	 */
- 	ret = t4_set_rxmode(pi->adapter, mb, pi->viid, pi->viid_mirror,
- 			    dev->mtu, -1, -1, -1,
--			    !!(dev->features & NETIF_F_HW_VLAN_CTAG_RX), true);
-+			    netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+						    dev->features), true);
- 	if (ret == 0)
- 		ret = cxgb4_update_mac_filt(pi, pi->viid, &pi->xact_addr_filt,
- 					    dev->dev_addr, true, &pi->smt_idx);
-@@ -1272,18 +1273,24 @@ int cxgb4_set_rspq_intr_params(struct sge_rspq *q,
- 
- static int cxgb_set_features(struct net_device *dev, netdev_features_t features)
- {
--	netdev_features_t changed = dev->features ^ features;
- 	const struct port_info *pi = netdev_priv(dev);
-+	netdev_features_t changed;
- 	int err;
- 
--	if (!(changed & NETIF_F_HW_VLAN_CTAG_RX))
-+	netdev_feature_xor(&changed, dev->features, features);
-+	if (!netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, changed))
- 		return 0;
- 
- 	err = t4_set_rxmode(pi->adapter, pi->adapter->mbox, pi->viid,
- 			    pi->viid_mirror, -1, -1, -1, -1,
--			    !!(features & NETIF_F_HW_VLAN_CTAG_RX), true);
--	if (unlikely(err))
--		dev->features = features ^ NETIF_F_HW_VLAN_CTAG_RX;
-+			    netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+						    features), true);
-+	if (unlikely(err)) {
-+		netdev_feature_copy(&dev->features, features);
-+		netdev_feature_change_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+					  &dev->features);
-+	}
++	netdev_feature_zero(&hw_enc_features);
 +
- 	return err;
- }
+ 	if (nic_data->must_check_datapath_caps) {
+ 		rc = efx_ef10_init_datapath_caps(efx);
+ 		if (rc)
+@@ -1351,18 +1354,27 @@ static int efx_ef10_init_nic(struct efx_nic *efx)
  
-@@ -1460,7 +1467,8 @@ static int cxgb4_port_mirror_start(struct net_device *dev)
- 	ret = t4_set_rxmode(adap, adap->mbox, pi->viid, pi->viid_mirror,
- 			    dev->mtu, (dev->flags & IFF_PROMISC) ? 1 : 0,
- 			    (dev->flags & IFF_ALLMULTI) ? 1 : 0, 1,
--			    !!(dev->features & NETIF_F_HW_VLAN_CTAG_RX), true);
-+			    netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+						    dev->features), true);
- 	if (ret) {
- 		dev_err(adap->pdev_dev,
- 			"Failed start up Rx mode for Mirror VI 0x%x, ret: %d\n",
-@@ -3848,15 +3856,16 @@ static void cxgb_features_check(struct sk_buff *skb, struct net_device *dev,
- 		return;
+ 	/* add encapsulated checksum offload features */
+ 	if (efx_has_cap(efx, VXLAN_NVGRE) && !efx_ef10_is_vf(efx))
+-		hw_enc_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
++		netdev_feature_set_bits(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM,
++					&hw_enc_features);
+ 	/* add encapsulated TSO features */
+ 	if (efx_has_cap(efx, TX_TSO_V2_ENCAP)) {
+ 		netdev_features_t encap_tso_features;
  
- 	/* Offload is not supported for this encapsulated packet */
--	*features &= ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
-+	netdev_feature_clear_bits(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK,
-+				  features);
- }
- 
- static void cxgb_fix_features(struct net_device *dev,
- 			      netdev_features_t *features)
- {
- 	/* Disable GRO, if RX_CSUM is disabled */
--	if (!(*features & NETIF_F_RXCSUM))
--		*features &= ~NETIF_F_GRO;
-+	if (!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, *features))
-+		netdev_feature_clear_bit(NETIF_F_GRO_BIT, features);
- }
- 
- static const struct net_device_ops cxgb4_netdev_ops = {
-@@ -6816,35 +6825,41 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		pi->port_id = i;
- 		netdev->irq = pdev->irq;
- 
--		netdev->hw_features = NETIF_F_SG | TSO_FLAGS |
-+		netdev_feature_zero(&netdev->hw_features);
-+		netdev_feature_set_bits(NETIF_F_SG | TSO_FLAGS |
- 			NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
- 			NETIF_F_RXCSUM | NETIF_F_RXHASH | NETIF_F_GRO |
- 			NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
--			NETIF_F_HW_TC | NETIF_F_NTUPLE;
-+			NETIF_F_HW_TC | NETIF_F_NTUPLE, &netdev->hw_features);
- 
- 		if (chip_ver > CHELSIO_T5) {
--			netdev->hw_enc_features |= NETIF_F_IP_CSUM |
--						   NETIF_F_IPV6_CSUM |
--						   NETIF_F_RXCSUM |
--						   NETIF_F_GSO_UDP_TUNNEL |
--						   NETIF_F_GSO_UDP_TUNNEL_CSUM |
--						   NETIF_F_TSO | NETIF_F_TSO6;
+-		encap_tso_features = NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_GRE |
+-			NETIF_F_GSO_UDP_TUNNEL_CSUM | NETIF_F_GSO_GRE_CSUM;
 -
--			netdev->hw_features |= NETIF_F_GSO_UDP_TUNNEL |
--					       NETIF_F_GSO_UDP_TUNNEL_CSUM |
--					       NETIF_F_HW_TLS_RECORD;
-+			netdev_feature_set_bits(NETIF_F_IP_CSUM |
-+						NETIF_F_IPV6_CSUM |
-+						NETIF_F_RXCSUM |
-+						NETIF_F_GSO_UDP_TUNNEL |
-+						NETIF_F_GSO_UDP_TUNNEL_CSUM |
-+						NETIF_F_TSO | NETIF_F_TSO6,
-+						&netdev->hw_enc_features);
-+			netdev_feature_set_bits(NETIF_F_GSO_UDP_TUNNEL |
-+						NETIF_F_GSO_UDP_TUNNEL_CSUM |
-+						NETIF_F_HW_TLS_RECORD,
-+						&netdev->hw_features);
+-		hw_enc_features |= encap_tso_features | NETIF_F_TSO;
+-		efx->net_dev->features |= encap_tso_features;
++		netdev_feature_zero(&encap_tso_features);
++		netdev_feature_set_bits(NETIF_F_GSO_UDP_TUNNEL |
++					NETIF_F_GSO_GRE |
++					NETIF_F_GSO_UDP_TUNNEL_CSUM |
++					NETIF_F_GSO_GRE_CSUM,
++					&encap_tso_features);
++
++		netdev_feature_or(&hw_enc_features, hw_enc_features,
++				  encap_tso_features);
++		netdev_feature_set_bit(NETIF_F_TSO_BIT, &hw_enc_features);
++		netdev_feature_or(&efx->net_dev->features,
++				  efx->net_dev->features,
++				  encap_tso_features);
+ 	}
+-	efx->net_dev->hw_enc_features = hw_enc_features;
++	netdev_feature_copy(&efx->net_dev->hw_enc_features, hw_enc_features);
  
- 			if (adapter->rawf_cnt)
- 				netdev->udp_tunnel_nic_info = &cxgb_udp_tunnels;
- 		}
+ 	/* don't fail init if RSS setup doesn't work */
+ 	rc = efx->type->rx_push_rss_config(efx, false,
+@@ -2694,7 +2706,8 @@ static u16 efx_ef10_handle_rx_event_errors(struct efx_channel *channel,
+ 	bool handled = false;
  
- 		if (highdma)
--			netdev->hw_features |= NETIF_F_HIGHDMA;
--		netdev->features |= netdev->hw_features;
--		netdev->vlan_features = netdev->features & VLAN_FEAT;
-+			netdev_feature_set_bit(NETIF_F_HIGHDMA_BIT,
-+					       &netdev->hw_features);
-+		netdev_feature_or(&netdev->features, netdev->features,
-+				  netdev->hw_features);
-+		netdev_feature_copy(&netdev->vlan_features, netdev->features);
-+		netdev_feature_and_bits(VLAN_FEAT, &netdev->vlan_features);
- #if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
- 		if (pi->adapter->params.crypto & FW_CAPS_CONFIG_TLS_HW) {
--			netdev->hw_features |= NETIF_F_HW_TLS_TX;
-+			netdev_feature_set_bit(NETIF_F_HW_TLS_TX_BIT,
-+					       &netdev->hw_features);
- 			netdev->tlsdev_ops = &cxgb4_ktls_ops;
- 			/* initialize the refcount */
- 			refcount_set(&pi->adapter->chcr_ktls.ktls_refcount, 0);
-@@ -6852,8 +6867,10 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- #endif /* CONFIG_CHELSIO_TLS_DEVICE */
- #if IS_ENABLED(CONFIG_CHELSIO_IPSEC_INLINE)
- 		if (pi->adapter->params.crypto & FW_CAPS_CONFIG_IPSEC_INLINE) {
--			netdev->hw_enc_features |= NETIF_F_HW_ESP;
--			netdev->features |= NETIF_F_HW_ESP;
-+			netdev_feature_set_bit(NETIF_F_HW_ESP_BIT,
-+					       &netdev->hw_enc_features);
-+			netdev_feature_set_bit(NETIF_F_HW_ESP_BIT,
-+					       &netdev->features);
- 			netdev->xfrmdev_ops = &cxgb4_xfrmdev_ops;
- 		}
- #endif /* CONFIG_CHELSIO_IPSEC_INLINE */
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.h
-index 70a07b7cca56..bcaa07591eab 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.h
-@@ -41,7 +41,8 @@ static inline bool can_tc_u32_offload(struct net_device *dev)
- {
- 	struct adapter *adap = netdev2adap(dev);
+ 	if (EFX_QWORD_FIELD(*event, ESF_DZ_RX_ECRC_ERR)) {
+-		if (!(efx->net_dev->features & NETIF_F_RXALL)) {
++		if (!netdev_feature_test_bit(NETIF_F_RXALL_BIT,
++					     efx->net_dev->features)) {
+ 			if (!efx->loopback_selftest)
+ 				channel->n_rx_eth_crc_err += n_packets;
+ 			return EFX_RX_PKT_DISCARD;
+@@ -4097,7 +4110,7 @@ const struct efx_nic_type efx_hunt_a0_vf_nic_type = {
+ 	.always_rx_scatter = true,
+ 	.min_interrupt_mode = EFX_INT_MODE_MSIX,
+ 	.timer_period_max = 1 << ERF_DD_EVQ_IND_TIMER_VAL_WIDTH,
+-	.offload_features = EF10_OFFLOAD_FEATURES,
++	.offload_features = { EF10_OFFLOAD_FEATURES },
+ 	.mcdi_max_ver = 2,
+ 	.max_rx_ip_filters = EFX_MCDI_FILTER_TBL_ROWS,
+ 	.hwtstamp_filters = 1 << HWTSTAMP_FILTER_NONE |
+@@ -4234,7 +4247,7 @@ const struct efx_nic_type efx_hunt_a0_nic_type = {
+ 	.option_descriptors = true,
+ 	.min_interrupt_mode = EFX_INT_MODE_LEGACY,
+ 	.timer_period_max = 1 << ERF_DD_EVQ_IND_TIMER_VAL_WIDTH,
+-	.offload_features = EF10_OFFLOAD_FEATURES,
++	.offload_features = { EF10_OFFLOAD_FEATURES },
+ 	.mcdi_max_ver = 2,
+ 	.max_rx_ip_filters = EFX_MCDI_FILTER_TBL_ROWS,
+ 	.hwtstamp_filters = 1 << HWTSTAMP_FILTER_NONE |
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+index 518268ce2064..5127e03050d1 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.c
++++ b/drivers/net/ethernet/sfc/ef100_nic.c
+@@ -184,17 +184,26 @@ static int efx_ef100_init_datapath_caps(struct efx_nic *efx)
  
--	return (dev->features & NETIF_F_HW_TC) && adap->tc_u32 ? true : false;
-+	return netdev_feature_test_bit(NETIF_F_HW_TC_BIT, dev->features) &&
-+		adap->tc_u32 ? true : false;
+ 	if (efx_ef100_has_cap(nic_data->datapath_caps2, TX_TSO_V3)) {
+ 		struct net_device *net_dev = efx->net_dev;
+-		netdev_features_t tso = NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_GSO_PARTIAL |
+-					NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_UDP_TUNNEL_CSUM |
+-					NETIF_F_GSO_GRE | NETIF_F_GSO_GRE_CSUM;
+-
+-		net_dev->features |= tso;
+-		net_dev->hw_features |= tso;
+-		net_dev->hw_enc_features |= tso;
++		netdev_features_t tso;
++
++		netdev_feature_zero(&tso);
++		netdev_feature_set_bits(NETIF_F_TSO | NETIF_F_TSO6 |
++					NETIF_F_GSO_PARTIAL |
++					NETIF_F_GSO_UDP_TUNNEL |
++					NETIF_F_GSO_UDP_TUNNEL_CSUM |
++					NETIF_F_GSO_GRE | NETIF_F_GSO_GRE_CSUM,
++					&tso);
++
++		netdev_feature_or(&net_dev->features, net_dev->features, tso);
++		netdev_feature_or(&net_dev->hw_features, net_dev->hw_features,
++				  tso);
++		netdev_feature_or(&net_dev->hw_enc_features,
++				  net_dev->hw_enc_features, tso);
+ 		/* EF100 HW can only offload outer checksums if they are UDP,
+ 		 * so for GRE_CSUM we have to use GSO_PARTIAL.
+ 		 */
+-		net_dev->gso_partial_features |= NETIF_F_GSO_GRE_CSUM;
++		netdev_feature_set_bit(NETIF_F_GSO_GRE_CSUM_BIT,
++				       &net_dev->gso_partial_features);
+ 	}
+ 	efx->num_mac_stats = MCDI_WORD(outbuf,
+ 				       GET_CAPABILITIES_V4_OUT_MAC_STATS_NUM_STATS);
+@@ -704,7 +713,7 @@ const struct efx_nic_type ef100_pf_nic_type = {
+ 	.revision = EFX_REV_EF100,
+ 	.is_vf = false,
+ 	.probe = ef100_probe_pf,
+-	.offload_features = EF100_OFFLOAD_FEATURES,
++	.offload_features = { EF100_OFFLOAD_FEATURES },
+ 	.mcdi_max_ver = 2,
+ 	.mcdi_request = ef100_mcdi_request,
+ 	.mcdi_poll_response = ef100_mcdi_poll_response,
+@@ -789,7 +798,7 @@ const struct efx_nic_type ef100_vf_nic_type = {
+ 	.revision = EFX_REV_EF100,
+ 	.is_vf = true,
+ 	.probe = ef100_probe_vf,
+-	.offload_features = EF100_OFFLOAD_FEATURES,
++	.offload_features = { EF100_OFFLOAD_FEATURES },
+ 	.mcdi_max_ver = 2,
+ 	.mcdi_request = ef100_mcdi_request,
+ 	.mcdi_poll_response = ef100_mcdi_poll_response,
+@@ -1111,11 +1120,15 @@ static int ef100_probe_main(struct efx_nic *efx)
+ 		return -ENOMEM;
+ 	efx->nic_data = nic_data;
+ 	nic_data->efx = efx;
+-	net_dev->features |= efx->type->offload_features;
+-	net_dev->hw_features |= efx->type->offload_features;
+-	net_dev->hw_enc_features |= efx->type->offload_features;
+-	net_dev->vlan_features |= NETIF_F_HW_CSUM | NETIF_F_SG |
+-				  NETIF_F_HIGHDMA | NETIF_F_ALL_TSO;
++	netdev_feature_set_bits(efx->type->offload_features[0],
++				&net_dev->features);
++	netdev_feature_set_bits(efx->type->offload_features[0],
++				&net_dev->hw_features);
++	netdev_feature_set_bits(efx->type->offload_features[0],
++				&net_dev->hw_enc_features);
++	netdev_feature_set_bits(NETIF_F_HW_CSUM | NETIF_F_SG |
++				NETIF_F_HIGHDMA | NETIF_F_ALL_TSO,
++				&net_dev->vlan_features);
+ 
+ 	/* Populate design-parameter defaults */
+ 	nic_data->tso_max_hdr_len = ESE_EF100_DP_GZ_TSO_MAX_HDR_LEN_DEFAULT;
+diff --git a/drivers/net/ethernet/sfc/ef100_rx.c b/drivers/net/ethernet/sfc/ef100_rx.c
+index 85207acf7dee..ffd7d7c34af2 100644
+--- a/drivers/net/ethernet/sfc/ef100_rx.c
++++ b/drivers/net/ethernet/sfc/ef100_rx.c
+@@ -64,7 +64,8 @@ void __ef100_rx_packet(struct efx_channel *channel)
+ 	prefix = (u32 *)(eh - ESE_GZ_RX_PKT_PREFIX_LEN);
+ 
+ 	if (ef100_has_fcs_error(channel, prefix) &&
+-	    unlikely(!(efx->net_dev->features & NETIF_F_RXALL)))
++	    unlikely(!netdev_feature_test_bit(NETIF_F_RXALL_BIT,
++					      efx->net_dev->features)))
+ 		goto out;
+ 
+ 	rx_buf->len = le16_to_cpu((__force __le16)PREFIX_FIELD(prefix, LENGTH));
+@@ -76,7 +77,8 @@ void __ef100_rx_packet(struct efx_channel *channel)
+ 		goto out;
+ 	}
+ 
+-	if (likely(efx->net_dev->features & NETIF_F_RXCSUM)) {
++	if (likely(netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
++					   efx->net_dev->features))) {
+ 		if (PREFIX_FIELD(prefix, NT_OR_INNER_L3_CLASS) == 1) {
+ 			++channel->n_rx_ip_hdr_chksum_err;
+ 		} else {
+diff --git a/drivers/net/ethernet/sfc/ef100_tx.c b/drivers/net/ethernet/sfc/ef100_tx.c
+index 26ef51d6b542..087c18e71f74 100644
+--- a/drivers/net/ethernet/sfc/ef100_tx.c
++++ b/drivers/net/ethernet/sfc/ef100_tx.c
+@@ -61,7 +61,7 @@ static bool ef100_tx_can_tso(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
+ 
+ 	if (!skb_is_gso_tcp(skb))
+ 		return false;
+-	if (!(efx->net_dev->features & NETIF_F_TSO))
++	if (!netdev_feature_test_bit(NETIF_F_TSO_BIT, efx->net_dev->features))
+ 		return false;
+ 
+ 	mss = skb_shinfo(skb)->gso_size;
+@@ -175,9 +175,11 @@ static void ef100_make_send_desc(struct efx_nic *efx,
+ 			     ESF_GZ_TX_SEND_LEN, buffer->len,
+ 			     ESF_GZ_TX_SEND_ADDR, buffer->dma_addr);
+ 
+-	if (likely(efx->net_dev->features & NETIF_F_HW_CSUM))
++	if (likely(netdev_feature_test_bit(NETIF_F_HW_CSUM_BIT,
++					   efx->net_dev->features)))
+ 		ef100_set_tx_csum_partial(skb, buffer, txd);
+-	if (efx->net_dev->features & NETIF_F_HW_VLAN_CTAG_TX &&
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
++				    efx->net_dev->features) &&
+ 	    skb && skb_vlan_tag_present(skb))
+ 		ef100_set_tx_hw_vlan(skb, txd);
  }
+@@ -202,7 +204,8 @@ static void ef100_make_tso_desc(struct efx_nic *efx,
  
- int cxgb4_config_knode(struct net_device *dev, struct tc_cls_u32_offload *cls);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index fa5b596ff23a..002d74d1ddc3 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -3466,7 +3466,8 @@ static void do_gro(struct sge_eth_rxq *rxq, const struct pkt_gl *gl,
- 	if (pi->rxtstamp)
- 		cxgb4_sgetim_to_hwtstamp(adapter, skb_hwtstamps(skb),
- 					 gl->sgetstamp);
--	if (rxq->rspq.netdev->features & NETIF_F_RXHASH)
-+	if (netdev_feature_test_bit(NETIF_F_RXHASH_BIT,
-+				    rxq->rspq.netdev->features))
- 		skb_set_hash(skb, (__force u32)pkt->rsshdr.hash_val,
- 			     PKT_HASH_TYPE_L3);
+ 	if (skb_shinfo(skb)->gso_type & SKB_GSO_TCP_FIXEDID)
+ 		mangleid = ESE_GZ_TX_DESC_IP4_ID_NO_OP;
+-	if (efx->net_dev->features & NETIF_F_HW_VLAN_CTAG_TX)
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
++				    efx->net_dev->features))
+ 		vlan_enable = skb_vlan_tag_present(skb);
  
-@@ -3708,7 +3709,8 @@ int t4_ethrx_handler(struct sge_rspq *q, const __be64 *rsp,
- 	}
+ 	len = skb->len - buffer->len;
+diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
+index 752d6406f07e..2e449b5b34e3 100644
+--- a/drivers/net/ethernet/sfc/ef10_sriov.c
++++ b/drivers/net/ethernet/sfc/ef10_sriov.c
+@@ -243,9 +243,11 @@ static int efx_ef10_vadaptor_alloc_set_features(struct efx_nic *efx)
  
- 	csum_ok = pkt->csum_calc && !err_vec &&
--		  (q->netdev->features & NETIF_F_RXCSUM);
-+		  netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+					  q->netdev->features);
- 
- 	if (err_vec)
- 		rxq->stats.bad_rx_pkts++;
-@@ -3719,9 +3721,9 @@ int t4_ethrx_handler(struct sge_rspq *q, const __be64 *rsp,
- 			return 0;
- 	}
- 
--	if (((pkt->l2info & htonl(RXF_TCP_F)) ||
--	     tnl_hdr_len) &&
--	    (q->netdev->features & NETIF_F_GRO) && csum_ok && !pkt->ip_frag) {
-+	if (((pkt->l2info & htonl(RXF_TCP_F)) || tnl_hdr_len) &&
-+	    netdev_feature_test_bit(NETIF_F_GRO_BIT, q->netdev->features) &&
-+	    csum_ok && !pkt->ip_frag) {
- 		do_gro(rxq, si, pkt, tnl_hdr_len);
- 		return 0;
- 	}
-@@ -3752,7 +3754,7 @@ int t4_ethrx_handler(struct sge_rspq *q, const __be64 *rsp,
- 
- 	skb->protocol = eth_type_trans(skb, q->netdev);
- 	skb_record_rx_queue(skb, q->idx);
--	if (skb->dev->features & NETIF_F_RXHASH)
-+	if (netdev_feature_test_bit(NETIF_F_RXHASH_BIT, skb->dev->features))
- 		skb_set_hash(skb, (__force u32)pkt->rsshdr.hash_val,
- 			     PKT_HASH_TYPE_L3);
- 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-index 6d46d460a0a1..772b513b6ba1 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-@@ -1180,21 +1180,24 @@ static void cxgb4vf_fix_features(struct net_device *dev,
- 	 * Since there is no support for separate rx/tx vlan accel
- 	 * enable/disable make sure tx flag is always in same state as rx.
- 	 */
--	if (*features & NETIF_F_HW_VLAN_CTAG_RX)
--		*features |= NETIF_F_HW_VLAN_CTAG_TX;
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, *features))
-+		netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT, features);
+ 	if (port_flags &
+ 	    (1 << MC_CMD_VPORT_ALLOC_IN_FLAG_VLAN_RESTRICT_LBN))
+-		efx->fixed_features |= NETIF_F_HW_VLAN_CTAG_FILTER;
++		netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++				       &efx->fixed_features);
  	else
--		*features &= ~NETIF_F_HW_VLAN_CTAG_TX;
-+		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
-+					 features);
- }
+-		efx->fixed_features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
++		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++					 &efx->fixed_features);
  
- static int cxgb4vf_set_features(struct net_device *dev,
- 	netdev_features_t features)
+ 	return 0;
+ 
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index 43ef4f529028..30cbfdbc100e 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -991,6 +991,7 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
  {
- 	struct port_info *pi = netdev_priv(dev);
--	netdev_features_t changed = dev->features ^ features;
-+	netdev_features_t changed;
+ 	struct net_device *net_dev = efx->net_dev;
+ 	int rc = efx_pci_probe_main(efx);
++	netdev_features_t tmp;
  
--	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
-+	netdev_feature_xor(&changed, dev->features, features);
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, changed))
- 		t4vf_set_rxmode(pi->adapter, pi->viid, -1, -1, -1, -1,
--				features & NETIF_F_HW_VLAN_CTAG_TX, 0);
-+				netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
-+							features), 0);
+ 	if (rc)
+ 		return rc;
+@@ -1003,29 +1004,34 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
+ 	}
  
- 	return 0;
- }
-@@ -3069,13 +3072,19 @@ static int cxgb4vf_pci_probe(struct pci_dev *pdev,
- 		pi->xact_addr_filt = -1;
- 		netdev->irq = pdev->irq;
+ 	/* Determine netdevice features */
+-	net_dev->features |= (efx->type->offload_features | NETIF_F_SG |
+-			      NETIF_F_TSO | NETIF_F_RXCSUM | NETIF_F_RXALL);
+-	if (efx->type->offload_features & (NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM))
+-		net_dev->features |= NETIF_F_TSO6;
++	netdev_feature_set_bits(efx->type->offload_features[0] | NETIF_F_SG |
++				NETIF_F_TSO | NETIF_F_RXCSUM | NETIF_F_RXALL,
++				&net_dev->features);
++
++	if (efx->type->offload_features[0] & (NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM))
++		netdev_feature_set_bit(NETIF_F_TSO6_BIT, &net_dev->features);
+ 	/* Check whether device supports TSO */
+ 	if (!efx->type->tso_versions || !efx->type->tso_versions(efx))
+-		net_dev->features &= ~NETIF_F_ALL_TSO;
++		netdev_feature_clear_bits(NETIF_F_ALL_TSO, &net_dev->features);
+ 	/* Mask for features that also apply to VLAN devices */
+-	net_dev->vlan_features |= (NETIF_F_HW_CSUM | NETIF_F_SG |
+-				   NETIF_F_HIGHDMA | NETIF_F_ALL_TSO |
+-				   NETIF_F_RXCSUM);
++	netdev_feature_set_bits(NETIF_F_HW_CSUM | NETIF_F_SG |
++				NETIF_F_HIGHDMA | NETIF_F_ALL_TSO |
++				NETIF_F_RXCSUM, &net_dev->vlan_features);
  
--		netdev->hw_features = NETIF_F_SG | TSO_FLAGS | NETIF_F_GRO |
--			NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM |
--			NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX;
--		netdev->features = netdev->hw_features;
-+		netdev_feature_zero(&netdev->hw_features);
-+		netdev_feature_set_bits(NETIF_F_SG | TSO_FLAGS | NETIF_F_GRO |
-+					NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
-+					NETIF_F_RXCSUM |
-+					NETIF_F_HW_VLAN_CTAG_TX |
-+					NETIF_F_HW_VLAN_CTAG_RX,
-+					&netdev->hw_features);
-+		netdev_feature_copy(&netdev->features, netdev->hw_features);
- 		if (pci_using_dac)
--			netdev->features |= NETIF_F_HIGHDMA;
--		netdev->vlan_features = netdev->features & VLAN_FEAT;
-+			netdev_feature_set_bit(NETIF_F_HIGHDMA_BIT,
-+					       &netdev->features);
-+		netdev_feature_copy(&netdev->vlan_features, netdev->features);
-+		netdev_feature_and_bits(VLAN_FEAT, &netdev->vlan_features);
+-	net_dev->hw_features |= net_dev->features & ~efx->fixed_features;
++	netdev_feature_andnot(&tmp, net_dev->features, efx->fixed_features);
++	netdev_feature_or(&net_dev->hw_features, net_dev->hw_features, tmp);
  
- 		netdev->priv_flags |= IFF_UNICAST_FLT;
- 		netdev->min_mtu = 81;
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/sge.c b/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
-index 0295b2406646..ffa3cd2ebef0 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
-@@ -1617,7 +1617,8 @@ int t4vf_ethrx_handler(struct sge_rspq *rspq, const __be64 *rsp,
- 	struct sk_buff *skb;
- 	const struct cpl_rx_pkt *pkt = (void *)rsp;
- 	bool csum_ok = pkt->csum_calc && !pkt->err_vec &&
--		       (rspq->netdev->features & NETIF_F_RXCSUM);
-+		       netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+					       rspq->netdev->features);
- 	struct sge_eth_rxq *rxq = container_of(rspq, struct sge_eth_rxq, rspq);
- 	struct adapter *adapter = rspq->adapter;
- 	struct sge *s = &adapter->sge;
-@@ -1628,8 +1629,9 @@ int t4vf_ethrx_handler(struct sge_rspq *rspq, const __be64 *rsp,
- 	 * enabled, handle the packet in the GRO path.
+ 	/* Disable receiving frames with bad FCS, by default. */
+-	net_dev->features &= ~NETIF_F_RXALL;
++	netdev_feature_clear_bit(NETIF_F_RXALL_BIT, &net_dev->features);
+ 
+ 	/* Disable VLAN filtering by default.  It may be enforced if
+ 	 * the feature is fixed (i.e. VLAN filters are required to
+ 	 * receive VLAN tagged packets due to vPort restrictions).
  	 */
- 	if ((pkt->l2info & cpu_to_be32(RXF_TCP_F)) &&
--	    (rspq->netdev->features & NETIF_F_GRO) && csum_ok &&
--	    !pkt->ip_frag) {
-+	    netdev_feature_test_bit(NETIF_F_GRO_BIT,
-+				    rspq->netdev->features) &&
-+	    csum_ok && !pkt->ip_frag) {
- 		do_gro(rxq, gl, pkt);
- 		return 0;
- 	}
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.c
-index 9098b3eed4da..d879cf91cf7b 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.c
-@@ -135,7 +135,8 @@ static int chtls_inline_feature(struct tls_toe_device *dev)
+-	net_dev->features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
+-	net_dev->features |= efx->fixed_features;
++	netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++				 &net_dev->features);
++	netdev_feature_or(&net_dev->features, net_dev->features,
++			  efx->fixed_features);
  
- 	for (i = 0; i < cdev->lldi->nports; i++) {
- 		netdev = cdev->ports[i];
--		if (netdev->features & NETIF_F_HW_TLS_RECORD)
-+		if (netdev_feature_test_bit(NETIF_F_HW_TLS_RECORD_BIT,
-+					    netdev->features))
- 			return 1;
+ 	rc = efx_register_netdev(efx);
+ 	if (!rc)
+@@ -1058,7 +1064,7 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
+ 		return -ENOMEM;
+ 	efx = netdev_priv(net_dev);
+ 	efx->type = (const struct efx_nic_type *) entry->driver_data;
+-	efx->fixed_features |= NETIF_F_HIGHDMA;
++	netdev_feature_set_bit(NETIF_F_HIGHDMA_BIT, &efx->fixed_features);
+ 
+ 	pci_set_drvdata(pci_dev, efx);
+ 	SET_NETDEV_DEV(net_dev, &pci_dev->dev);
+diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
+index a101fa50a5cc..01353739bae0 100644
+--- a/drivers/net/ethernet/sfc/efx_common.c
++++ b/drivers/net/ethernet/sfc/efx_common.c
+@@ -211,10 +211,12 @@ void efx_set_rx_mode(struct net_device *net_dev)
+ int efx_set_features(struct net_device *net_dev, netdev_features_t data)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
++	netdev_features_t changed;
+ 	int rc;
+ 
+ 	/* If disabling RX n-tuple filtering, clear existing filters */
+-	if (net_dev->features & ~data & NETIF_F_NTUPLE) {
++	if (netdev_feature_test_bit(NETIF_F_NTUPLE_BIT, net_dev->features) &&
++	    !netdev_feature_test_bit(NETIF_F_NTUPLE_BIT, data)) {
+ 		rc = efx->type->filter_clear_rx(efx, EFX_FILTER_PRI_MANUAL);
+ 		if (rc)
+ 			return rc;
+@@ -223,8 +225,9 @@ int efx_set_features(struct net_device *net_dev, netdev_features_t data)
+ 	/* If Rx VLAN filter is changed, update filters via mac_reconfigure.
+ 	 * If rx-fcs is changed, mac_reconfigure updates that too.
+ 	 */
+-	if ((net_dev->features ^ data) & (NETIF_F_HW_VLAN_CTAG_FILTER |
+-					  NETIF_F_RXFCS)) {
++	netdev_feature_xor(&changed, net_dev->features, data);
++	if (netdev_feature_test_bits(NETIF_F_HW_VLAN_CTAG_FILTER |
++				     NETIF_F_RXFCS, changed)) {
+ 		/* efx_set_rx_mode() will schedule MAC work to update filters
+ 		 * when a new features are finally set in net_dev.
+ 		 */
+@@ -363,8 +366,8 @@ void efx_start_monitor(struct efx_nic *efx)
+  */
+ static void efx_start_datapath(struct efx_nic *efx)
+ {
+-	netdev_features_t old_features = efx->net_dev->features;
+ 	bool old_rx_scatter = efx->rx_scatter;
++	netdev_features_t old_features;
+ 	size_t rx_buf_len;
+ 
+ 	/* Calculate the rx buffer allocation parameters required to
+@@ -409,10 +412,14 @@ static void efx_start_datapath(struct efx_nic *efx)
+ 	/* Restore previously fixed features in hw_features and remove
+ 	 * features which are fixed now
+ 	 */
+-	efx->net_dev->hw_features |= efx->net_dev->features;
+-	efx->net_dev->hw_features &= ~efx->fixed_features;
+-	efx->net_dev->features |= efx->fixed_features;
+-	if (efx->net_dev->features != old_features)
++	netdev_feature_copy(&old_features, efx->net_dev->features);
++	netdev_feature_or(&efx->net_dev->hw_features,
++			  efx->net_dev->hw_features, efx->net_dev->features);
++	netdev_feature_andnot(&efx->net_dev->hw_features,
++			      efx->net_dev->hw_features, efx->fixed_features);
++	netdev_feature_or(&efx->net_dev->features, efx->net_dev->features,
++			  efx->fixed_features);
++	if (!netdev_feature_equal(efx->net_dev->features, old_features))
+ 		netdev_features_change(efx->net_dev);
+ 
+ 	/* RX filters may also have scatter-enabled flags */
+@@ -1359,17 +1366,20 @@ void efx_features_check(struct sk_buff *skb, struct net_device *dev,
+ 	struct efx_nic *efx = netdev_priv(dev);
+ 
+ 	if (skb->encapsulation) {
+-		if (*features & NETIF_F_GSO_MASK)
++		if (netdev_feature_test_bits(NETIF_F_GSO_MASK, *features))
+ 			/* Hardware can only do TSO with at most 208 bytes
+ 			 * of headers.
+ 			 */
+ 			if (skb_inner_transport_offset(skb) >
+ 			    EFX_TSO2_MAX_HDRLEN)
+-				*features &= ~(NETIF_F_GSO_MASK);
+-		if (*features & (NETIF_F_GSO_MASK | NETIF_F_CSUM_MASK))
++				netdev_feature_clear_bits(NETIF_F_GSO_MASK,
++							  features);
++		if (netdev_feature_test_bits(NETIF_F_GSO_MASK |
++					     NETIF_F_CSUM_MASK, *features))
+ 			if (!efx_can_encap_offloads(efx, skb))
+-				*features &= ~(NETIF_F_GSO_MASK |
+-					      NETIF_F_CSUM_MASK);
++				netdev_feature_clear_bits(NETIF_F_GSO_MASK |
++							  NETIF_F_CSUM_MASK,
++							  features);
  	}
- 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/sfc/falcon/efx.c b/drivers/net/ethernet/sfc/falcon/efx.c
+index 423bdf81200f..a6301c8dd9cb 100644
+--- a/drivers/net/ethernet/sfc/falcon/efx.c
++++ b/drivers/net/ethernet/sfc/falcon/efx.c
+@@ -592,8 +592,8 @@ static int ef4_probe_channels(struct ef4_nic *efx)
+  */
+ static void ef4_start_datapath(struct ef4_nic *efx)
+ {
+-	netdev_features_t old_features = efx->net_dev->features;
+ 	bool old_rx_scatter = efx->rx_scatter;
++	netdev_features_t old_features;
+ 	struct ef4_tx_queue *tx_queue;
+ 	struct ef4_rx_queue *rx_queue;
+ 	struct ef4_channel *channel;
+@@ -640,10 +640,14 @@ static void ef4_start_datapath(struct ef4_nic *efx)
+ 	/* Restore previously fixed features in hw_features and remove
+ 	 * features which are fixed now
+ 	 */
+-	efx->net_dev->hw_features |= efx->net_dev->features;
+-	efx->net_dev->hw_features &= ~efx->fixed_features;
+-	efx->net_dev->features |= efx->fixed_features;
+-	if (efx->net_dev->features != old_features)
++	netdev_feature_copy(&old_features, efx->net_dev->features);
++	netdev_feature_or(&efx->net_dev->hw_features,
++			  efx->net_dev->hw_features, efx->net_dev->features);
++	netdev_feature_andnot(&efx->net_dev->hw_features,
++			      efx->net_dev->hw_features, efx->fixed_features);
++	netdev_feature_or(&efx->net_dev->features, efx->net_dev->features,
++			  efx->fixed_features);
++	if (!netdev_feature_equal(efx->net_dev->features, old_features))
+ 		netdev_features_change(efx->net_dev);
+ 
+ 	/* RX filters may also have scatter-enabled flags */
+@@ -1698,7 +1702,7 @@ static int ef4_probe_filters(struct ef4_nic *efx)
+ 		goto out_unlock;
+ 
+ #ifdef CONFIG_RFS_ACCEL
+-	if (efx->type->offload_features & NETIF_F_NTUPLE) {
++	if (efx->type->offload_features[0] & NETIF_F_NTUPLE) {
+ 		struct ef4_channel *channel;
+ 		int i, success = 1;
+ 
+@@ -2192,17 +2196,21 @@ static void ef4_set_rx_mode(struct net_device *net_dev)
+ static int ef4_set_features(struct net_device *net_dev, netdev_features_t data)
+ {
+ 	struct ef4_nic *efx = netdev_priv(net_dev);
++	netdev_features_t changed;
+ 	int rc;
+ 
+ 	/* If disabling RX n-tuple filtering, clear existing filters */
+-	if (net_dev->features & ~data & NETIF_F_NTUPLE) {
++	if (netdev_feature_test_bit(NETIF_F_NTUPLE_BIT, net_dev->features) &&
++	    !netdev_feature_test_bit(NETIF_F_NTUPLE_BIT, data)) {
+ 		rc = efx->type->filter_clear_rx(efx, EF4_FILTER_PRI_MANUAL);
+ 		if (rc)
+ 			return rc;
+ 	}
+ 
+ 	/* If Rx VLAN filter is changed, update filters via mac_reconfigure */
+-	if ((net_dev->features ^ data) & NETIF_F_HW_VLAN_CTAG_FILTER) {
++	netdev_feature_xor(&changed, net_dev->features, data);
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++				    changed)) {
+ 		/* ef4_set_rx_mode() will schedule MAC work to update filters
+ 		 * when a new features are finally set in net_dev.
+ 		 */
+@@ -2886,7 +2894,7 @@ static int ef4_pci_probe(struct pci_dev *pci_dev,
+ 		return -ENOMEM;
+ 	efx = netdev_priv(net_dev);
+ 	efx->type = (const struct ef4_nic_type *) entry->driver_data;
+-	efx->fixed_features |= NETIF_F_HIGHDMA;
++	netdev_feature_set_bit(NETIF_F_HIGHDMA_BIT, &efx->fixed_features);
+ 
+ 	pci_set_drvdata(pci_dev, efx);
+ 	SET_NETDEV_DEV(net_dev, &pci_dev->dev);
+@@ -2908,20 +2916,26 @@ static int ef4_pci_probe(struct pci_dev *pci_dev,
+ 	if (rc)
+ 		goto fail3;
+ 
+-	net_dev->features |= (efx->type->offload_features | NETIF_F_SG |
+-			      NETIF_F_RXCSUM);
++	netdev_feature_set_bits(efx->type->offload_features[0],
++				&net_dev->features);
++	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_RXCSUM,
++				&net_dev->features);
+ 	/* Mask for features that also apply to VLAN devices */
+-	net_dev->vlan_features |= (NETIF_F_HW_CSUM | NETIF_F_SG |
+-				   NETIF_F_HIGHDMA | NETIF_F_RXCSUM);
++	netdev_feature_set_bits(NETIF_F_HW_CSUM | NETIF_F_SG |
++				NETIF_F_HIGHDMA | NETIF_F_RXCSUM,
++				&net_dev->vlan_features);
+ 
+-	net_dev->hw_features = net_dev->features & ~efx->fixed_features;
++	netdev_feature_andnot(&net_dev->hw_features, net_dev->features,
++			      efx->fixed_features);
+ 
+ 	/* Disable VLAN filtering by default.  It may be enforced if
+ 	 * the feature is fixed (i.e. VLAN filters are required to
+ 	 * receive VLAN tagged packets due to vPort restrictions).
+ 	 */
+-	net_dev->features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
+-	net_dev->features |= efx->fixed_features;
++	netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++				 &net_dev->features);
++	netdev_feature_or(&net_dev->features, net_dev->features,
++			  efx->fixed_features);
+ 
+ 	rc = ef4_register_netdev(efx);
+ 	if (rc)
+diff --git a/drivers/net/ethernet/sfc/falcon/falcon.c b/drivers/net/ethernet/sfc/falcon/falcon.c
+index 3324a6219a09..cb8465b056ff 100644
+--- a/drivers/net/ethernet/sfc/falcon/falcon.c
++++ b/drivers/net/ethernet/sfc/falcon/falcon.c
+@@ -2799,7 +2799,7 @@ const struct ef4_nic_type falcon_a1_nic_type = {
+ 	.can_rx_scatter = false,
+ 	.max_interrupt_mode = EF4_INT_MODE_MSI,
+ 	.timer_period_max =  1 << FRF_AB_TC_TIMER_VAL_WIDTH,
+-	.offload_features = NETIF_F_IP_CSUM,
++	.offload_features = { NETIF_F_IP_CSUM },
+ };
+ 
+ const struct ef4_nic_type falcon_b0_nic_type = {
+@@ -2898,6 +2898,6 @@ const struct ef4_nic_type falcon_b0_nic_type = {
+ 	.can_rx_scatter = true,
+ 	.max_interrupt_mode = EF4_INT_MODE_MSIX,
+ 	.timer_period_max =  1 << FRF_AB_TC_TIMER_VAL_WIDTH,
+-	.offload_features = NETIF_F_IP_CSUM | NETIF_F_RXHASH | NETIF_F_NTUPLE,
++	.offload_features = { NETIF_F_IP_CSUM | NETIF_F_RXHASH | NETIF_F_NTUPLE },
+ 	.max_rx_ip_filters = FR_BZ_RX_FILTER_TBL0_ROWS,
+ };
+diff --git a/drivers/net/ethernet/sfc/falcon/net_driver.h b/drivers/net/ethernet/sfc/falcon/net_driver.h
+index 6fabfe7f02f5..942c539c76c2 100644
+--- a/drivers/net/ethernet/sfc/falcon/net_driver.h
++++ b/drivers/net/ethernet/sfc/falcon/net_driver.h
+@@ -1153,7 +1153,7 @@ struct ef4_nic_type {
+ 	bool always_rx_scatter;
+ 	unsigned int max_interrupt_mode;
+ 	unsigned int timer_period_max;
+-	netdev_features_t offload_features;
++	u64 offload_features[NETDEV_FEATURE_DWORDS];
+ 	unsigned int max_rx_ip_filters;
+ };
+ 
+@@ -1303,7 +1303,7 @@ static inline void ef4_supported_features(const struct ef4_nic *efx,
+ {
+ 	const struct net_device *net_dev = efx->net_dev;
+ 
+-	*supported = net_dev->features | net_dev->hw_features;
++	netdev_feature_or(supported, net_dev->features, net_dev->hw_features);
+ }
+ 
+ /* Get the current TX queue insert index. */
+diff --git a/drivers/net/ethernet/sfc/falcon/rx.c b/drivers/net/ethernet/sfc/falcon/rx.c
+index 966f13e7475d..0fc41f8f4c85 100644
+--- a/drivers/net/ethernet/sfc/falcon/rx.c
++++ b/drivers/net/ethernet/sfc/falcon/rx.c
+@@ -438,7 +438,8 @@ ef4_rx_packet_gro(struct ef4_channel *channel, struct ef4_rx_buffer *rx_buf,
+ 		return;
+ 	}
+ 
+-	if (efx->net_dev->features & NETIF_F_RXHASH)
++	if (netdev_feature_test_bit(NETIF_F_RXHASH_BIT,
++				    efx->net_dev->features))
+ 		skb_set_hash(skb, ef4_rx_buf_hash(efx, eh),
+ 			     PKT_HASH_TYPE_L3);
+ 	skb->ip_summed = ((rx_buf->flags & EF4_RX_PKT_CSUMMED) ?
+@@ -667,7 +668,8 @@ void __ef4_rx_packet(struct ef4_channel *channel)
+ 		goto out;
+ 	}
+ 
+-	if (unlikely(!(efx->net_dev->features & NETIF_F_RXCSUM)))
++	if (unlikely(!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
++					      efx->net_dev->features)))
+ 		rx_buf->flags &= ~EF4_RX_PKT_CSUMMED;
+ 
+ 	if ((rx_buf->flags & EF4_RX_PKT_TCP) && !channel->type->receive_skb)
+diff --git a/drivers/net/ethernet/sfc/farch.c b/drivers/net/ethernet/sfc/farch.c
+index 148dcd48b58d..8e9507524b46 100644
+--- a/drivers/net/ethernet/sfc/farch.c
++++ b/drivers/net/ethernet/sfc/farch.c
+@@ -921,7 +921,7 @@ static u16 efx_farch_handle_rx_not_ok(struct efx_rx_queue *rx_queue,
+ 	(void) rx_ev_other_err;
+ #endif
+ 
+-	if (efx->net_dev->features & NETIF_F_RXALL)
++	if (netdev_feature_test_bit(NETIF_F_RXALL_BIT, efx->net_dev->features))
+ 		/* don't discard frame for CRC error */
+ 		rx_ev_eth_crc_err = false;
+ 
+diff --git a/drivers/net/ethernet/sfc/mcdi_filters.c b/drivers/net/ethernet/sfc/mcdi_filters.c
+index 8e788c3a6f2a..2a9a692da100 100644
+--- a/drivers/net/ethernet/sfc/mcdi_filters.c
++++ b/drivers/net/ethernet/sfc/mcdi_filters.c
+@@ -1322,16 +1322,20 @@ int efx_mcdi_filter_table_probe(struct efx_nic *efx, bool multicast_chaining)
+ 		goto fail;
+ 
+ 	efx_supported_features(efx, &supported);
+-	if ((supported & NETIF_F_HW_VLAN_CTAG_FILTER) &&
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++				    supported) &&
+ 	    !(efx_mcdi_filter_match_supported(table, false,
+ 		(EFX_FILTER_MATCH_OUTER_VID | EFX_FILTER_MATCH_LOC_MAC)) &&
+ 	      efx_mcdi_filter_match_supported(table, false,
+ 		(EFX_FILTER_MATCH_OUTER_VID | EFX_FILTER_MATCH_LOC_MAC_IG)))) {
+ 		netif_info(efx, probe, net_dev,
+ 			   "VLAN filters are not supported in this firmware variant\n");
+-		net_dev->features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
+-		efx->fixed_features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
+-		net_dev->hw_features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
++		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++					 &net_dev->features);
++		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++					 &efx->fixed_features);
++		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++					 &net_dev->hw_features);
+ 	}
+ 
+ 	table->entry = vzalloc(array_size(EFX_MCDI_FILTER_TBL_ROWS,
+@@ -1343,7 +1347,8 @@ int efx_mcdi_filter_table_probe(struct efx_nic *efx, bool multicast_chaining)
+ 
+ 	table->mc_promisc_last = false;
+ 	table->vlan_filter =
+-		!!(efx->net_dev->features & NETIF_F_HW_VLAN_CTAG_FILTER);
++		netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++					efx->net_dev->features);
+ 	INIT_LIST_HEAD(&table->vlan_list);
+ 	init_rwsem(&table->lock);
+ 
+@@ -1760,7 +1765,8 @@ void efx_mcdi_filter_sync_rx_mode(struct efx_nic *efx)
+ 	 * Do it in advance to avoid conflicts for unicast untagged and
+ 	 * VLAN 0 tagged filters.
+ 	 */
+-	vlan_filter = !!(net_dev->features & NETIF_F_HW_VLAN_CTAG_FILTER);
++	vlan_filter = netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++					      net_dev->features);
+ 	if (table->vlan_filter != vlan_filter) {
+ 		table->vlan_filter = vlan_filter;
+ 		efx_mcdi_filter_remove_old(efx);
+diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.c b/drivers/net/ethernet/sfc/mcdi_port_common.c
+index 4bd3ef8f3384..81c4a8d79fba 100644
+--- a/drivers/net/ethernet/sfc/mcdi_port_common.c
++++ b/drivers/net/ethernet/sfc/mcdi_port_common.c
+@@ -1097,7 +1097,8 @@ int efx_mcdi_set_mac(struct efx_nic *efx)
+ 
+ 	MCDI_POPULATE_DWORD_1(cmdbytes, SET_MAC_IN_FLAGS,
+ 			      SET_MAC_IN_FLAG_INCLUDE_FCS,
+-			      !!(efx->net_dev->features & NETIF_F_RXFCS));
++			      netdev_feature_test_bit(NETIF_F_RXFCS_BIT,
++						      efx->net_dev->features));
+ 
+ 	switch (efx->wanted_fc) {
+ 	case EFX_FC_RX | EFX_FC_TX:
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index bf962ca160e7..0c47ba740445 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -1477,7 +1477,7 @@ struct efx_nic_type {
+ 	bool option_descriptors;
+ 	unsigned int min_interrupt_mode;
+ 	unsigned int timer_period_max;
+-	netdev_features_t offload_features;
++	u64 offload_features[NETDEV_FEATURE_DWORDS];
+ 	int mcdi_max_ver;
+ 	unsigned int max_rx_ip_filters;
+ 	u32 hwtstamp_filters;
+@@ -1686,7 +1686,7 @@ static inline void efx_supported_features(const struct efx_nic *efx,
+ {
+ 	const struct net_device *net_dev = efx->net_dev;
+ 
+-	*supported = net_dev->features | net_dev->hw_features;
++	netdev_feature_or(supported, net_dev->features, net_dev->hw_features);
+ }
+ 
+ /* Get the current TX queue insert index. */
+diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
+index 606750938b89..1a9cb9aa400c 100644
+--- a/drivers/net/ethernet/sfc/rx.c
++++ b/drivers/net/ethernet/sfc/rx.c
+@@ -387,7 +387,8 @@ void __efx_rx_packet(struct efx_channel *channel)
+ 	if (!efx_do_xdp(efx, channel, rx_buf, &eh))
+ 		goto out;
+ 
+-	if (unlikely(!(efx->net_dev->features & NETIF_F_RXCSUM)))
++	if (unlikely(!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
++					      efx->net_dev->features)))
+ 		rx_buf->flags &= ~EFX_RX_PKT_CSUMMED;
+ 
+ 	if ((rx_buf->flags & EFX_RX_PKT_TCP) && !channel->type->receive_skb)
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+index 68fc7d317693..dc01d246682b 100644
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -525,7 +525,8 @@ efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
+ 		return;
+ 	}
+ 
+-	if (efx->net_dev->features & NETIF_F_RXHASH &&
++	if (netdev_feature_test_bit(NETIF_F_RXHASH_BIT,
++				    efx->net_dev->features) &&
+ 	    efx_rx_buf_hash_valid(efx, eh))
+ 		skb_set_hash(skb, efx_rx_buf_hash(efx, eh),
+ 			     PKT_HASH_TYPE_L3);
+@@ -804,7 +805,7 @@ int efx_probe_filters(struct efx_nic *efx)
+ 		goto out_unlock;
+ 
+ #ifdef CONFIG_RFS_ACCEL
+-	if (efx->type->offload_features & NETIF_F_NTUPLE) {
++	if (efx->type->offload_features[0] & NETIF_F_NTUPLE) {
+ 		struct efx_channel *channel;
+ 		int i, success = 1;
+ 
+diff --git a/drivers/net/ethernet/sfc/siena.c b/drivers/net/ethernet/sfc/siena.c
+index 16347a6d0c47..d9578baad5a0 100644
+--- a/drivers/net/ethernet/sfc/siena.c
++++ b/drivers/net/ethernet/sfc/siena.c
+@@ -1088,8 +1088,8 @@ const struct efx_nic_type siena_a0_nic_type = {
+ 	.option_descriptors = false,
+ 	.min_interrupt_mode = EFX_INT_MODE_LEGACY,
+ 	.timer_period_max = 1 << FRF_CZ_TC_TIMER_VAL_WIDTH,
+-	.offload_features = (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+-			     NETIF_F_RXHASH | NETIF_F_NTUPLE),
++	.offload_features = { (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
++			       NETIF_F_RXHASH | NETIF_F_NTUPLE) },
+ 	.mcdi_max_ver = 1,
+ 	.max_rx_ip_filters = FR_BZ_RX_FILTER_TBL0_ROWS,
+ 	.hwtstamp_filters = (1 << HWTSTAMP_FILTER_NONE |
 -- 
 2.33.0
 
