@@ -2,107 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C68C41C0A5
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 10:26:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C764E41C0AD
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 10:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244607AbhI2I2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 04:28:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35592 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240284AbhI2I2T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 04:28:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 468D3613A5;
-        Wed, 29 Sep 2021 08:26:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632903998;
-        bh=zcwTKHO6w9fYFC5HwTtloM/uxPFwyGcKJAj7tHHknJA=;
-        h=In-Reply-To:References:From:Subject:To:Cc:Date:From;
-        b=XDwExBAH0SIGxJ39MoIwBtr9xHW9RfC2HW4/oqUcwGru5VDoWtTtKHFKxV21wdhEZ
-         eHPv8oG74TmG6hRGytAxYZRexjTjcvUqBwK3nc3cnndy8Bdbh51oCJHOLUGpO3irls
-         ek95H6V2U0nMFJasp/HjE9lyNF8ToqdO0b00iWLaZIanKgQOM0Jgql4buh5CMk0Oex
-         KBDDAJApMgUoIPnPiaK7eDQ43EYbMVPTez840AMytYU9jsWXKQvZ+aQC+HyCgXjJZL
-         qBD/e/bkOfiZSCPDRz94eWTrimeHIcrDXH2loQSdvNdMm9KZDd3ASgV2IODNmV1uRP
-         JkpzMBdNTy2CA==
-Content-Type: text/plain; charset="utf-8"
+        id S244733AbhI2IeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 04:34:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48530 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240284AbhI2IeH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 04:34:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632904342;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=33L2kvYESyBjFzI5T12hFb+rWTsyBJjmF6Rb3+aaSJw=;
+        b=DPhtQRATFXW5DUFG4STk4GLNZOfKTq2utGGfhyMf423oCtWqRNIPl0k9OwXB917mrfZEPg
+        tQVRbCitHUN0IGWUpfghaY0cePxKbE5b3l4TfLfnb4LBnVKJPXKNj6Z6vMF5+2gn1Y3J1T
+        kxSMUQ6vnDNnJ74psLR1lPqCkZIAoHg=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-247-mf82CESzNSG4Dgs6IYZ5ig-1; Wed, 29 Sep 2021 04:32:20 -0400
+X-MC-Unique: mf82CESzNSG4Dgs6IYZ5ig-1
+Received: by mail-wm1-f71.google.com with SMTP id v5-20020a1cac05000000b0030b85d2d479so858654wme.9
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 01:32:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=33L2kvYESyBjFzI5T12hFb+rWTsyBJjmF6Rb3+aaSJw=;
+        b=Uh23krLMq+GL2Qxq5/zXpWW8ulgQyf5AnK9rE/DVa742L6oA/IhrxFbmLgRYEk1Q/3
+         mJK7zeXGpR90xQQAxkR/CRaI4TASb/djuRciZdgrGG8m3CD7DGwdcVaYLak/pQizKdfQ
+         zwZVErNxCSVuHkIxiHzeiriWQISf64Rdg9waNGhg6T3d6Wepp8bY5SZMeFIL1nKy1PGg
+         fqg+os4ZQC0hyFoOnqKS2SVmDOv800SkIl2CtgTzxhUdcW3U7FRmfJJyxevAszCOklz/
+         mW2Dx3TTLAL8MQ2N5DtVaUqQirdI+lwxjd+uLoIdhCwMU/8Q+sJfnpB6AvKyMv/46hbH
+         PRTw==
+X-Gm-Message-State: AOAM532250t2dO03kz1gZ5g9g96U9zzZdbhBazRGHQS/fKg828/Tn6xf
+        M+f17dcb9Jq4o6FV587mNThSx2ndvUHo0EChX1y3OceszjlcEG7wC28bGgmZWN1f4wy5WmHzRyP
+        ONPn5neBXAN7FG62j
+X-Received: by 2002:a1c:4407:: with SMTP id r7mr9093109wma.69.1632904339601;
+        Wed, 29 Sep 2021 01:32:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxiFH8QvVbSSfltUTVNYrFe4cgpOa802Pjd2dc9VAv6jOjC98+5gHvsdXJBd6/yPoXBjvvJDg==
+X-Received: by 2002:a1c:4407:: with SMTP id r7mr9093089wma.69.1632904339405;
+        Wed, 29 Sep 2021 01:32:19 -0700 (PDT)
+Received: from redhat.com ([2.55.12.29])
+        by smtp.gmail.com with ESMTPSA id l21sm851391wme.39.2021.09.29.01.32.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Sep 2021 01:32:18 -0700 (PDT)
+Date:   Wed, 29 Sep 2021 04:32:15 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Cindy Lu <lulu@redhat.com>
+Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost-vdpa:fix the worng input in config_cb
+Message-ID: <20210929043142-mutt-send-email-mst@kernel.org>
+References: <20210929075437.12985-1-lulu@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20210928170229.4c1431c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210928125500.167943-1-atenart@kernel.org> <20210928125500.167943-9-atenart@kernel.org> <20210928170229.4c1431c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Antoine Tenart <atenart@kernel.org>
-Subject: Re: [RFC PATCH net-next 8/9] net: delay device_del until run_todo
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, pabeni@redhat.com, gregkh@linuxfoundation.org,
-        ebiederm@xmission.com, stephen@networkplumber.org,
-        herbert@gondor.apana.org.au, juri.lelli@redhat.com,
-        netdev@vger.kernel.org
-Message-ID: <163290399584.3047.8100336131824633098@kwain>
-Date:   Wed, 29 Sep 2021 10:26:35 +0200
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210929075437.12985-1-lulu@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Jakub Kicinski (2021-09-29 02:02:29)
-> On Tue, 28 Sep 2021 14:54:59 +0200 Antoine Tenart wrote:
-> > The sysfs removal is done in device_del, and moving it outside of the
-> > rtnl lock does fix the initial deadlock. With that the trylock/restart
-> > logic can be removed in a following-up patch.
->=20
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index a1eab120bb50..d774fbec5d63 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -10593,6 +10593,8 @@ void netdev_run_todo(void)
-> >                       continue;
-> >               }
-> > =20
-> > +             device_del(&dev->dev);
-> > +
-> >               dev->reg_state =3D NETREG_UNREGISTERED;
-> > =20
-> >               netdev_wait_allrefs(dev);
-> > diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> > index 21c3fdeccf20..e754f00c117b 100644
-> > --- a/net/core/net-sysfs.c
-> > +++ b/net/core/net-sysfs.c
-> > @@ -1955,8 +1955,6 @@ void netdev_unregister_kobject(struct net_device =
-*ndev)
-> >       remove_queue_kobjects(ndev);
-> > =20
-> >       pm_runtime_set_memalloc_noio(dev, false);
-> > -
-> > -     device_del(dev);
-> >  }
-> > =20
-> >  /* Create sysfs entries for network device. */
->=20
-> Doesn't this mean there may be sysfs files which are accessible=20
-> for an unregistered netdevice?
+On Wed, Sep 29, 2021 at 03:54:37PM +0800, Cindy Lu wrote:
+> Fix the worng input in for config_cb,
+> in function vhost_vdpa_config_cb, the input
+> cb.private was used as struct vhost_vdpa,
+> So the inuput was worng here, fix this issue
+> 
+> Signed-off-by: Cindy Lu <lulu@redhat.com>
 
-It would mean having accessible sysfs files for a device in the
-NETREG_UNREGISTERING state; NETREG_UNREGISTERED still comes after
-device_del. It's a small difference but still important, I think.
+Maybe add
 
-You raise a good point. Yes, that would mean accessing attributes of net
-devices being unregistered, meaning accessing or modifying unused or
-obsolete parameters and data (it shouldn't be garbage data though).
-Unlisting those sysfs files without removing them would be better here,
-to not expose files when the device is being unregistered while still
-allowing pending operations to complete. I don't know if that is doable
-in sysfs.
+Fixes: 776f395004d8 ("vhost_vdpa: Support config interrupt in vdpa")
 
-(While I did ran stress tests reading/writing attributes while
-unregistering devices, I think I missed an issue with the
-netdev_queue_default attributes; which hopefully can be fixed =E2=80=94 if =
-the
-whole idea is deemed acceptable).
+and fix typos in the commit log.
 
-> Isn't the point of having device_del() under rtnl_lock() to make sure
-> we sysfs handlers can't run on dead devices?
+> ---
+>  drivers/vhost/vdpa.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 942666425a45..e532cbe3d2f7 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -322,7 +322,7 @@ static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
+>  	struct eventfd_ctx *ctx;
+>  
+>  	cb.callback = vhost_vdpa_config_cb;
+> -	cb.private = v->vdpa;
+> +	cb.private = v;
+>  	if (copy_from_user(&fd, argp, sizeof(fd)))
+>  		return  -EFAULT;
+>  
+> -- 
+> 2.21.3
 
-Hard to say what was the initial point, there is a lot of history here
-:) I'm not sure it was done because of a particular reason; IMHO it just
-made sense to make this simple without having a good reason not to do
-so. And it helped with the naming collision detection.
-
-Thanks!
-Antoine
