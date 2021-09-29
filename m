@@ -2,163 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95EAD41C48A
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 14:16:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE4D341C466
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 14:15:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343769AbhI2MRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 08:17:22 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:16846 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343750AbhI2MQf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 08:16:35 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18T8e7NY008407;
-        Wed, 29 Sep 2021 05:13:20 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=AHOVgTFhb2oHZF48CQZTli68nfiMSiwbfcCqlx16MZY=;
- b=desJ9YiCQIiguv2uq03DIL0hVkwKnZK3Ve7nIfgZNREXgNWBPbjNPZ0XDAPdAVl5skEy
- dVsAJ4m7fzf+PbxEbiaybV+1xozJLsrkfrbDRTXHSVHLKXnszgTvLZILSVuox71wtRJV
- wljTkCUWYVuamOcxygi8mTEc2AtZhZz2JZuspZMt/4LfoiMARzck4ogefsXmbzssNDCv
- Pj6DUDCnhrfETpwPNDrSEa5YpDnZrtdCTCi4/G6PX+73r/t665qDxsoJW3+xIsrecXzY
- U/XUgKsVlea7ER/s9bS7WB8OWDqKU8I+idxWpJvz/fEwb11B9gcEcNdb+uYPv7Z24YwJ sw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3bcfd4a0by-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 29 Sep 2021 05:13:20 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 29 Sep
- 2021 05:13:18 -0700
-Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
- DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server id
- 15.0.1497.18 via Frontend Transport; Wed, 29 Sep 2021 05:13:15 -0700
-From:   Prabhakar Kushwaha <pkushwaha@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-rdma@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <martin.petersen@oracle.com>, <aelior@marvell.com>,
-        <smalin@marvell.com>, <jhasan@marvell.com>,
-        <mrangankar@marvell.com>, <pkushwaha@marvell.com>,
-        <prabhakar.pkin@gmail.com>, <malin1024@gmail.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Omkar Kulkarni <okulkarni@marvell.com>
-Subject: [PATCH 12/12] qed: fix ll2 establishment during load of RDMA driver
-Date:   Wed, 29 Sep 2021 15:12:15 +0300
-Message-ID: <20210929121215.17864-13-pkushwaha@marvell.com>
-X-Mailer: git-send-email 2.16.6
-In-Reply-To: <20210929121215.17864-1-pkushwaha@marvell.com>
-References: <20210929121215.17864-1-pkushwaha@marvell.com>
+        id S1343724AbhI2MQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 08:16:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58334 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S245720AbhI2MQV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 08:16:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8D363613D1;
+        Wed, 29 Sep 2021 12:14:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632917680;
+        bh=Gk5L1HO79jr/JO19wYKh1z/Tzn+nTQ0k9HT+5hhX858=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jG+uzh7KqpR3d2Dl/n6y4EInRtz0NPTN6gMkdo3y88cIBH1wGZk7xwLT5VTJ/HoeY
+         vH8r/dbGc3iZ43XmxOBCEhU1JlEOj+lQ/x9GozdXnY5ZV/9arRP7aVpG0EMC5oF66n
+         NZNcj/gY2f1gPnhOOJePuImq78ydHkhSgDR/KzN2HflgTncwOi+AyFwNKH8OOyAmSq
+         6l1ipIL5R+lg2pfxA0+Q+nIb7cbTeVDGvkFe0PcDxtSqyqK+0W7m5xKVw96FeZOLiz
+         bXFAWsapEUZOERtnSRUp18n1xhHZjGmwxW+nt/yZLAbIwPrGUM0K+agFomX6rK2TU7
+         FTw53oIpjSl5g==
+Date:   Wed, 29 Sep 2021 15:14:36 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Mark Zhang <markzhang@nvidia.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Aharon Landau <aharonl@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Gal Pressman <galpress@amazon.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Mustafa Ismail <mustafa.ismail@intel.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        Neta Ostrovsky <netao@nvidia.com>, netdev@vger.kernel.org,
+        Potnuri Bharat Teja <bharat@chelsio.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [PATCH rdma-next v1 05/11] RDMA/counter: Add optional counter
+ support
+Message-ID: <YVRYrNRkWokr3Xsc@unreal>
+References: <cover.1631660727.git.leonro@nvidia.com>
+ <04bd7354c6a375e684712d79915f7eb816efee92.1631660727.git.leonro@nvidia.com>
+ <20210927170318.GB1529966@nvidia.com>
+ <d9cd401a-b5fe-65ea-21c4-6d4c037fd641@nvidia.com>
+ <20210928115135.GG964074@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: jIwWeE_-sSEevTOdAl7QJRYjzsPLT5sS
-X-Proofpoint-ORIG-GUID: jIwWeE_-sSEevTOdAl7QJRYjzsPLT5sS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-29_05,2021-09-29_01,2020-04-07_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210928115135.GG964074@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+On Tue, Sep 28, 2021 at 08:51:35AM -0300, Jason Gunthorpe wrote:
+> On Tue, Sep 28, 2021 at 05:03:24PM +0800, Mark Zhang wrote:
+> > On 9/28/2021 1:03 AM, Jason Gunthorpe wrote:
+> > > On Wed, Sep 15, 2021 at 02:07:24AM +0300, Leon Romanovsky wrote:
+> > > > +int rdma_counter_modify(struct ib_device *dev, u32 port, int index, bool enable)
+> > > > +{
+> > > > +	struct rdma_hw_stats *stats;
+> > > > +	int ret;
+> > > > +
+> > > > +	if (!dev->ops.modify_hw_stat)
+> > > > +		return -EOPNOTSUPP;
+> > > > +
+> > > > +	stats = ib_get_hw_stats_port(dev, port);
+> > > > +	if (!stats)
+> > > > +		return -EINVAL;
+> > > > +
+> > > > +	mutex_lock(&stats->lock);
+> > > > +	ret = dev->ops.modify_hw_stat(dev, port, index, enable);
+> > > > +	if (!ret)
+> > > > +		enable ? clear_bit(index, stats->is_disabled) :
+> > > > +			set_bit(index, stats->is_disabled);
+> > > 
+> > > This is not a kernel coding style write out the if, use success
+> > > oriented flow
+> > > 
+> > > Also, shouldn't this logic protect the driver from being called on
+> > > non-optional counters?
+> > 
+> > We leave it to driver, driver would return failure if modify is not
+> > supported. Is it good?
+> 
+> I think the core code should do it
+> 
+> > > >   	for (i = 0; i < data->stats->num_counters; i++) {
+> > > > -		attr = &data->attrs[i];
+> > > > +		if (data->stats->descs[i].flags & IB_STAT_FLAG_OPTIONAL)
+> > > > +			continue;
+> > > > +		attr = &data->attrs[pos];
+> > > >   		sysfs_attr_init(&attr->attr.attr);
+> > > >   		attr->attr.attr.name = data->stats->descs[i].name;
+> > > >   		attr->attr.attr.mode = 0444;
+> > > >   		attr->attr.show = hw_stat_device_show;
+> > > >   		attr->show = show_hw_stats;
+> > > > -		data->group.attrs[i] = &attr->attr.attr;
+> > > > +		data->group.attrs[pos] = &attr->attr.attr;
+> > > > +		pos++;
+> > > >   	}
+> > > 
+> > > This isn't OK, the hw_stat_device_show() computes the stat index like
+> > > this:
+> > > 
+> > > 	return stat_attr->show(ibdev, ibdev->hw_stats_data->stats,
+> > > 			       stat_attr - ibdev->hw_stats_data->attrs, 0, buf);
+> > > 
+> > > Which assumes the stats are packed contiguously. This only works
+> > > because mlx5 is always putting the optional stats at the end.
+> > 
+> > Yes you are right, thanks. Maybe we can add an "index" field in struct
+> > hw_stats_device/port_attribute, then set it in setup and use it in show.
+> 
+> You could just add a WARN_ON check that optional stats are at the end
+> I suppose
 
-If stats ID of a LL2 (light l2) queue exceeds than the total amount
-of statistics counters, it may cause system crash upon enabling
-RDMA on all PFs.
+Everyone adds their counters to the end, last example is bnxt_re
+9a381f7e5aa2 ("RDMA/bnxt_re: Add extended statistics counters")
 
-This patch makes sure that the stats ID of the LL2 queue doesn't exceed
-the max allowed value.
+Thanks
 
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
-Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_ll2.c | 49 ++++++++++++++++++++---
- 1 file changed, 44 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.c b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-index 1a8c0df3d3dc..e199877a6526 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-@@ -44,6 +44,8 @@
- #define QED_LL2_TX_SIZE (256)
- #define QED_LL2_RX_SIZE (4096)
- 
-+#define QED_LL2_INVALID_STATS_ID        0xff
-+
- struct qed_cb_ll2_info {
- 	int rx_cnt;
- 	u32 rx_size;
-@@ -63,6 +65,29 @@ struct qed_ll2_buffer {
- 	dma_addr_t phys_addr;
- };
- 
-+static inline u8 qed_ll2_handle_to_stats_id(struct qed_hwfn *p_hwfn,
-+					    u8 ll2_queue_type, u8 qid)
-+{
-+	u8 stats_id;
-+
-+	/* For legacy (RAM based) queues, the stats_id will be set as the
-+	 * queue_id. Otherwise (context based queue), it will be set to
-+	 * the "abs_pf_id" offset from the end of the RAM based queue IDs.
-+	 * If the final value exceeds the total counters amount, return
-+	 * INVALID value to indicate that the stats for this connection should
-+	 * be disabled.
-+	 */
-+	if (ll2_queue_type == QED_LL2_RX_TYPE_LEGACY)
-+		stats_id = qid;
-+	else
-+		stats_id = MAX_NUM_LL2_RX_RAM_QUEUES + p_hwfn->abs_pf_id;
-+
-+	if (stats_id < MAX_NUM_LL2_TX_STATS_COUNTERS)
-+		return stats_id;
-+	else
-+		return QED_LL2_INVALID_STATS_ID;
-+}
-+
- static void qed_ll2b_complete_tx_packet(void *cxt,
- 					u8 connection_handle,
- 					void *cookie,
-@@ -1546,7 +1571,7 @@ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
- 	int rc = -EINVAL;
- 	u32 i, capacity;
- 	size_t desc_size;
--	u8 qid;
-+	u8 qid, stats_id;
- 
- 	p_ptt = qed_ptt_acquire(p_hwfn);
- 	if (!p_ptt)
-@@ -1612,12 +1637,26 @@ int qed_ll2_establish_connection(void *cxt, u8 connection_handle)
- 
- 	qid = qed_ll2_handle_to_queue_id(p_hwfn, connection_handle,
- 					 p_ll2_conn->input.rx_conn_type);
-+	stats_id = qed_ll2_handle_to_stats_id(p_hwfn,
-+					      p_ll2_conn->input.rx_conn_type,
-+					      qid);
- 	p_ll2_conn->queue_id = qid;
--	p_ll2_conn->tx_stats_id = qid;
-+	p_ll2_conn->tx_stats_id = stats_id;
- 
--	DP_VERBOSE(p_hwfn, QED_MSG_LL2,
--		   "Establishing ll2 queue. PF %d ctx_based=%d abs qid=%d\n",
--		   p_hwfn->rel_pf_id, p_ll2_conn->input.rx_conn_type, qid);
-+	/* If there is no valid stats id for this connection, disable stats */
-+	if (p_ll2_conn->tx_stats_id == QED_LL2_INVALID_STATS_ID) {
-+		p_ll2_conn->tx_stats_en = 0;
-+		DP_VERBOSE(p_hwfn,
-+			   QED_MSG_LL2,
-+			   "Disabling stats for queue %d - not enough counters\n",
-+			   qid);
-+	}
-+
-+	DP_VERBOSE(p_hwfn,
-+		   QED_MSG_LL2,
-+		   "Establishing ll2 queue. PF %d ctx_bsaed=%d abs qid=%d stats_id=%d\n",
-+		   p_hwfn->rel_pf_id,
-+		   p_ll2_conn->input.rx_conn_type, qid, stats_id);
- 
- 	if (p_ll2_conn->input.rx_conn_type == QED_LL2_RX_TYPE_LEGACY) {
- 		p_rx->set_prod_addr =
--- 
-2.24.1
-
+> 
+> Jason
