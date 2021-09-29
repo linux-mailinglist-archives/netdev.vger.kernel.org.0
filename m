@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2231B41C93D
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:01:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 114ED41C94F
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:02:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345284AbhI2QC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 12:02:56 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:12983 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345535AbhI2P74 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:59:56 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HKLbS0FGjzWNSn;
-        Wed, 29 Sep 2021 23:56:52 +0800 (CST)
+        id S1346408AbhI2QEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 12:04:06 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:23331 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344509AbhI2QAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 12:00:03 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKLX211b2zRd69;
+        Wed, 29 Sep 2021 23:53:54 +0800 (CST)
 Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -26,9 +26,9 @@ From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv2 net-next 104/167] net: cavium: use netdev feature helpers
-Date:   Wed, 29 Sep 2021 23:52:31 +0800
-Message-ID: <20210929155334.12454-105-shenjian15@huawei.com>
+Subject: [RFCv2 net-next 105/167] net: cadence: use netdev feature helpers
+Date:   Wed, 29 Sep 2021 23:52:32 +0800
+Message-ID: <20210929155334.12454-106-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 References: <20210929155334.12454-1-shenjian15@huawei.com>
@@ -48,453 +48,219 @@ for netdev features.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- .../net/ethernet/cavium/liquidio/lio_core.c   |  6 +-
- .../net/ethernet/cavium/liquidio/lio_main.c   | 89 ++++++++++++-------
- .../ethernet/cavium/liquidio/lio_vf_main.c    | 73 +++++++++------
- .../net/ethernet/cavium/thunder/nicvf_main.c  | 44 +++++----
- .../ethernet/cavium/thunder/nicvf_queues.c    |  2 +-
- 5 files changed, 133 insertions(+), 81 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 65 +++++++++++++++---------
+ 1 file changed, 40 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/cavium/liquidio/lio_core.c b/drivers/net/ethernet/cavium/liquidio/lio_core.c
-index 2a0d64e5797c..70e83610654b 100644
---- a/drivers/net/ethernet/cavium/liquidio/lio_core.c
-+++ b/drivers/net/ethernet/cavium/liquidio/lio_core.c
-@@ -660,7 +660,8 @@ liquidio_push_packet(u32 __maybe_unused octeon_id,
- 		skb_pull(skb, rh->r_dh.len * BYTES_PER_DHLEN_UNIT);
- 		skb->protocol = eth_type_trans(skb, skb->dev);
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index e30ee19d9ba2..53a44ba6444c 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1384,7 +1384,8 @@ static int gem_rx(struct macb_queue *queue, struct napi_struct *napi,
  
--		if ((netdev->features & NETIF_F_RXCSUM) &&
+ 		skb->protocol = eth_type_trans(skb, bp->dev);
+ 		skb_checksum_none_assert(skb);
+-		if (bp->dev->features & NETIF_F_RXCSUM &&
 +		if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+					    netdev->features) &&
- 		    (((rh->r_dh.encap_on) &&
- 		      (rh->r_dh.csum_verified & CNNIC_TUN_CSUM_VERIFIED)) ||
- 		     (!(rh->r_dh.encap_on) &&
-@@ -681,7 +682,8 @@ liquidio_push_packet(u32 __maybe_unused octeon_id,
- 		}
- 
- 		/* inbound VLAN tag */
--		if ((netdev->features & NETIF_F_HW_VLAN_CTAG_RX) &&
-+		if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+					    netdev->features) &&
- 		    rh->r_dh.vlan) {
- 			u16 priority = rh->r_dh.priority;
- 			u16 vid = rh->r_dh.vlan;
-diff --git a/drivers/net/ethernet/cavium/liquidio/lio_main.c b/drivers/net/ethernet/cavium/liquidio/lio_main.c
-index 43c256ad2790..b9f610c48ca2 100644
---- a/drivers/net/ethernet/cavium/liquidio/lio_main.c
-+++ b/drivers/net/ethernet/cavium/liquidio/lio_main.c
-@@ -2723,31 +2723,37 @@ static void liquidio_fix_features(struct net_device *netdev,
- {
- 	struct lio *lio = netdev_priv(netdev);
- 
--	if ((*request & NETIF_F_RXCSUM) &&
-+	if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, *request) &&
- 	    !(lio->dev_capability & NETIF_F_RXCSUM))
--		*request &= ~NETIF_F_RXCSUM;
-+		netdev_feature_clear_bit(NETIF_F_RXCSUM_BIT, request);
- 
--	if ((*request & NETIF_F_HW_CSUM) &&
-+	if (netdev_feature_test_bit(NETIF_F_HW_CSUM_BIT, *request) &&
- 	    !(lio->dev_capability & NETIF_F_HW_CSUM))
--		*request &= ~NETIF_F_HW_CSUM;
-+		netdev_feature_clear_bit(NETIF_F_HW_CSUM_BIT, request);
- 
--	if ((*request & NETIF_F_TSO) && !(lio->dev_capability & NETIF_F_TSO))
--		*request &= ~NETIF_F_TSO;
-+	if (netdev_feature_test_bit(NETIF_F_TSO_BIT, *request) &&
-+	    !(lio->dev_capability & NETIF_F_TSO))
-+		netdev_feature_clear_bit(NETIF_F_TSO_BIT, request);
- 
--	if ((*request & NETIF_F_TSO6) && !(lio->dev_capability & NETIF_F_TSO6))
--		*request &= ~NETIF_F_TSO6;
-+	if (netdev_feature_test_bit(NETIF_F_TSO6_BIT, *request) &&
-+	    !(lio->dev_capability & NETIF_F_TSO6))
-+		netdev_feature_clear_bit(NETIF_F_TSO6_BIT, request);
- 
--	if ((*request & NETIF_F_LRO) && !(lio->dev_capability & NETIF_F_LRO))
--		*request &= ~NETIF_F_LRO;
-+	if (netdev_feature_test_bit(NETIF_F_LRO_BIT, *request) &&
-+	    !(lio->dev_capability & NETIF_F_LRO))
-+		netdev_feature_clear_bit(NETIF_F_LRO_BIT, request);
- 
- 	/*Disable LRO if RXCSUM is off */
--	if (!(*request & NETIF_F_RXCSUM) && (netdev->features & NETIF_F_LRO) &&
-+	if (!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, *request) &&
-+	    netdev_feature_test_bit(NETIF_F_LRO_BIT, netdev->features) &&
- 	    (lio->dev_capability & NETIF_F_LRO))
--		*request &= ~NETIF_F_LRO;
-+		netdev_feature_clear_bit(NETIF_F_LRO_BIT, request);
- 
--	if ((*request & NETIF_F_HW_VLAN_CTAG_FILTER) &&
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+				    *request) &&
- 	    !(lio->dev_capability & NETIF_F_HW_VLAN_CTAG_FILTER))
--		*request &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
-+		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+					 request);
- }
- 
- /**
-@@ -2760,40 +2766,45 @@ static int liquidio_set_features(struct net_device *netdev,
- {
- 	struct lio *lio = netdev_priv(netdev);
- 
--	if ((features & NETIF_F_LRO) &&
-+	if (netdev_feature_test_bit(NETIF_F_LRO_BIT, features) &&
- 	    (lio->dev_capability & NETIF_F_LRO) &&
--	    !(netdev->features & NETIF_F_LRO))
-+	    !netdev_feature_test_bit(NETIF_F_LRO_BIT, netdev->features))
- 		liquidio_set_feature(netdev, OCTNET_CMD_LRO_ENABLE,
- 				     OCTNIC_LROIPV4 | OCTNIC_LROIPV6);
--	else if (!(features & NETIF_F_LRO) &&
-+	else if (!netdev_feature_test_bit(NETIF_F_LRO_BIT, features) &&
- 		 (lio->dev_capability & NETIF_F_LRO) &&
--		 (netdev->features & NETIF_F_LRO))
-+		 netdev_feature_test_bit(NETIF_F_LRO_BIT, netdev->features))
- 		liquidio_set_feature(netdev, OCTNET_CMD_LRO_DISABLE,
- 				     OCTNIC_LROIPV4 | OCTNIC_LROIPV6);
- 
- 	/* Sending command to firmware to enable/disable RX checksum
- 	 * offload settings using ethtool
++					    bp->dev->features) &&
+ 		    !(bp->dev->flags & IFF_PROMISC) &&
+ 		    GEM_BFEXT(RX_CSUM, ctrl) & GEM_RX_CSUM_CHECKED_MASK)
+ 			skb->ip_summed = CHECKSUM_UNNECESSARY;
+@@ -2001,7 +2002,8 @@ static unsigned int macb_tx_map(struct macb *bp,
+ 		if (i == queue->tx_head) {
+ 			ctrl |= MACB_BF(TX_LSO, lso_ctrl);
+ 			ctrl |= MACB_BF(TX_TCP_SEQ_SRC, seq_ctrl);
+-			if ((bp->dev->features & NETIF_F_HW_CSUM) &&
++			if (netdev_feature_test_bit(NETIF_F_HW_CSUM_BIT,
++						    bp->dev->features) &&
+ 			    skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl)
+ 				ctrl |= MACB_BIT(TX_NOCRC);
+ 		} else
+@@ -2055,7 +2057,7 @@ static void macb_features_check(struct sk_buff *skb, struct net_device *dev,
+ 	 * apart from the last must be a multiple of 8 bytes in size.
  	 */
--	if (!(netdev->features & NETIF_F_RXCSUM) &&
-+	if (!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, netdev->features) &&
- 	    (lio->enc_dev_capability & NETIF_F_RXCSUM) &&
--	    (features & NETIF_F_RXCSUM))
-+	    netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, features))
- 		liquidio_set_rxcsum_command(netdev,
- 					    OCTNET_CMD_TNL_RX_CSUM_CTL,
- 					    OCTNET_CMD_RXCSUM_ENABLE);
--	else if ((netdev->features & NETIF_F_RXCSUM) &&
-+	else if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+					 netdev->features) &&
- 		 (lio->enc_dev_capability & NETIF_F_RXCSUM) &&
--		 !(features & NETIF_F_RXCSUM))
-+		 !netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, features))
- 		liquidio_set_rxcsum_command(netdev, OCTNET_CMD_TNL_RX_CSUM_CTL,
- 					    OCTNET_CMD_RXCSUM_DISABLE);
+ 	if (!IS_ALIGNED(skb_headlen(skb) - hdrlen, MACB_TX_LEN_ALIGN)) {
+-		*features &= ~MACB_NETIF_LSO;
++		netdev_feature_clear_bits(MACB_NETIF_LSO, features);
+ 		return;
+ 	}
  
--	if ((features & NETIF_F_HW_VLAN_CTAG_FILTER) &&
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+				    features) &&
- 	    (lio->dev_capability & NETIF_F_HW_VLAN_CTAG_FILTER) &&
--	    !(netdev->features & NETIF_F_HW_VLAN_CTAG_FILTER))
-+	    !netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+				     netdev->features))
- 		liquidio_set_feature(netdev, OCTNET_CMD_VLAN_FILTER_CTL,
- 				     OCTNET_CMD_VLAN_FILTER_ENABLE);
--	else if (!(features & NETIF_F_HW_VLAN_CTAG_FILTER) &&
-+	else if (!netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+					  features) &&
- 		 (lio->dev_capability & NETIF_F_HW_VLAN_CTAG_FILTER) &&
--		 (netdev->features & NETIF_F_HW_VLAN_CTAG_FILTER))
-+		 netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+					 netdev->features))
- 		liquidio_set_feature(netdev, OCTNET_CMD_VLAN_FILTER_CTL,
- 				     OCTNET_CMD_VLAN_FILTER_DISABLE);
+@@ -2066,7 +2068,7 @@ static void macb_features_check(struct sk_buff *skb, struct net_device *dev,
+ 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[f];
  
-@@ -3578,25 +3589,35 @@ static int setup_nic_devices(struct octeon_device *octeon_dev)
- 					  | NETIF_F_TSO | NETIF_F_TSO6
- 					  | NETIF_F_LRO;
+ 		if (!IS_ALIGNED(skb_frag_size(frag), MACB_TX_LEN_ALIGN)) {
+-			*features &= ~MACB_NETIF_LSO;
++			netdev_feature_clear_bits(MACB_NETIF_LSO, features);
+ 			return;
+ 		}
+ 	}
+@@ -2100,7 +2102,7 @@ static int macb_pad_and_fcs(struct sk_buff **skb, struct net_device *ndev)
+ 	struct sk_buff *nskb;
+ 	u32 fcs;
  
--		netdev->hw_enc_features = (lio->enc_dev_capability &
--					   ~NETIF_F_LRO);
-+		netdev_feature_zero(&netdev->hw_enc_features);
-+		netdev_feature_set_bits(lio->enc_dev_capability,
-+					&netdev->hw_enc_features);
-+		netdev_feature_clear_bit(NETIF_F_LRO_BIT,
-+					 &netdev->hw_enc_features);
- 
- 		netdev->udp_tunnel_nic_info = &liquidio_udp_tunnels;
- 
- 		lio->dev_capability |= NETIF_F_GSO_UDP_TUNNEL;
- 
--		netdev->vlan_features = lio->dev_capability;
-+		netdev_feature_zero(&netdev->vlan_features);
-+		netdev_feature_set_bits(lio->dev_capability,
-+					&netdev->vlan_features);
- 		/* Add any unchangeable hw features */
- 		lio->dev_capability |=  NETIF_F_HW_VLAN_CTAG_FILTER |
- 					NETIF_F_HW_VLAN_CTAG_RX |
- 					NETIF_F_HW_VLAN_CTAG_TX;
- 
--		netdev->features = (lio->dev_capability & ~NETIF_F_LRO);
-+		netdev_feature_zero(&netdev->features);
-+		netdev_feature_set_bits(lio->dev_capability,
-+					&netdev->features);
-+		netdev_feature_clear_bit(NETIF_F_LRO_BIT, &netdev->features);
- 
--		netdev->hw_features = lio->dev_capability;
-+		netdev_feature_zero(&netdev->hw_features);
-+		netdev_feature_set_bits(lio->dev_capability,
-+					&netdev->hw_features);
- 		/*HW_VLAN_RX and HW_VLAN_FILTER is always on*/
--		netdev->hw_features = netdev->hw_features &
--			~NETIF_F_HW_VLAN_CTAG_RX;
-+		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+					 &netdev->hw_features);
- 
- 		/* MTU range: 68 - 16000 */
- 		netdev->min_mtu = LIO_MIN_MTU_SIZE;
-@@ -3664,7 +3685,7 @@ static int setup_nic_devices(struct octeon_device *octeon_dev)
- 		else
- 			octeon_dev->priv_flags = 0x0;
- 
--		if (netdev->features & NETIF_F_LRO)
-+		if (netdev_feature_test_bit(NETIF_F_LRO_BIT, netdev->features))
- 			liquidio_set_feature(netdev, OCTNET_CMD_LRO_ENABLE,
- 					     OCTNIC_LROIPV4 | OCTNIC_LROIPV6);
- 
-diff --git a/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c b/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c
-index 1c4c039dff9b..1653c058e4b9 100644
---- a/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c
-+++ b/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c
-@@ -1820,27 +1820,31 @@ static void liquidio_fix_features(struct net_device *netdev,
- {
- 	struct lio *lio = netdev_priv(netdev);
- 
--	if ((*request & NETIF_F_RXCSUM) &&
-+	if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, *request) &&
- 	    !(lio->dev_capability & NETIF_F_RXCSUM))
--		*request &= ~NETIF_F_RXCSUM;
-+		netdev_feature_clear_bit(NETIF_F_RXCSUM_BIT, request);
- 
--	if ((*request & NETIF_F_HW_CSUM) &&
-+	if (netdev_feature_test_bit(NETIF_F_HW_CSUM_BIT, *request) &&
- 	    !(lio->dev_capability & NETIF_F_HW_CSUM))
--		*request &= ~NETIF_F_HW_CSUM;
-+		netdev_feature_clear_bit(NETIF_F_HW_CSUM_BIT, request);
- 
--	if ((*request & NETIF_F_TSO) && !(lio->dev_capability & NETIF_F_TSO))
--		*request &= ~NETIF_F_TSO;
-+	if (netdev_feature_test_bit(NETIF_F_TSO_BIT, *request) &&
-+	    !(lio->dev_capability & NETIF_F_TSO))
-+		netdev_feature_clear_bit(NETIF_F_TSO_BIT, request);
- 
--	if ((*request & NETIF_F_TSO6) && !(lio->dev_capability & NETIF_F_TSO6))
--		*request &= ~NETIF_F_TSO6;
-+	if (netdev_feature_test_bit(NETIF_F_TSO6_BIT, *request) &&
-+	    !(lio->dev_capability & NETIF_F_TSO6))
-+		netdev_feature_clear_bit(NETIF_F_TSO6_BIT, request);
- 
--	if ((*request & NETIF_F_LRO) && !(lio->dev_capability & NETIF_F_LRO))
--		*request &= ~NETIF_F_LRO;
-+	if (netdev_feature_test_bit(NETIF_F_LRO_BIT, *request) &&
-+	    !(lio->dev_capability & NETIF_F_LRO))
-+		netdev_feature_clear_bit(NETIF_F_LRO_BIT, request);
- 
- 	/* Disable LRO if RXCSUM is off */
--	if (!(*request & NETIF_F_RXCSUM) && (netdev->features & NETIF_F_LRO) &&
-+	if (!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, *request) &&
-+	    netdev_feature_test_bit(NETIF_F_LRO_BIT, netdev->features) &&
- 	    (lio->dev_capability & NETIF_F_LRO))
--		*request &= ~NETIF_F_LRO;
-+		netdev_feature_clear_bit(NETIF_F_LRO_BIT, request);
- }
- 
- /** \brief Net device set features
-@@ -1851,25 +1855,29 @@ static int liquidio_set_features(struct net_device *netdev,
- 				 netdev_features_t features)
- {
- 	struct lio *lio = netdev_priv(netdev);
-+	netdev_features_t changed;
- 
--	if (!((netdev->features ^ features) & NETIF_F_LRO))
-+	netdev_feature_xor(&changed, netdev->features, features);
-+	if (!netdev_feature_test_bit(NETIF_F_LRO_BIT, changed))
+-	if (!(ndev->features & NETIF_F_HW_CSUM) ||
++	if (!netdev_feature_test_bit(NETIF_F_HW_CSUM_BIT, ndev->features) ||
+ 	    !((*skb)->ip_summed != CHECKSUM_PARTIAL) ||
+ 	    skb_shinfo(*skb)->gso_size)	/* Not available for GSO */
  		return 0;
- 
--	if ((features & NETIF_F_LRO) && (lio->dev_capability & NETIF_F_LRO))
-+	if (netdev_feature_test_bit(NETIF_F_LRO_BIT, features) &&
-+	    (lio->dev_capability & NETIF_F_LRO))
- 		liquidio_set_feature(netdev, OCTNET_CMD_LRO_ENABLE,
- 				     OCTNIC_LROIPV4 | OCTNIC_LROIPV6);
--	else if (!(features & NETIF_F_LRO) &&
-+	else if (!netdev_feature_test_bit(NETIF_F_LRO_BIT, features) &&
- 		 (lio->dev_capability & NETIF_F_LRO))
- 		liquidio_set_feature(netdev, OCTNET_CMD_LRO_DISABLE,
- 				     OCTNIC_LROIPV4 | OCTNIC_LROIPV6);
--	if (!(netdev->features & NETIF_F_RXCSUM) &&
-+	if (!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, netdev->features) &&
- 	    (lio->enc_dev_capability & NETIF_F_RXCSUM) &&
--	    (features & NETIF_F_RXCSUM))
-+	    netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, features))
- 		liquidio_set_rxcsum_command(netdev, OCTNET_CMD_TNL_RX_CSUM_CTL,
- 					    OCTNET_CMD_RXCSUM_ENABLE);
--	else if ((netdev->features & NETIF_F_RXCSUM) &&
-+	else if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+					 netdev->features) &&
- 		 (lio->enc_dev_capability & NETIF_F_RXCSUM) &&
--		 !(features & NETIF_F_RXCSUM))
-+		 !netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, features))
- 		liquidio_set_rxcsum_command(netdev, OCTNET_CMD_TNL_RX_CSUM_CTL,
- 					    OCTNET_CMD_RXCSUM_DISABLE);
- 
-@@ -2108,20 +2116,33 @@ static int setup_nic_devices(struct octeon_device *octeon_dev)
- 					  | NETIF_F_TSO | NETIF_F_TSO6
- 					  | NETIF_F_LRO;
- 
--		netdev->hw_enc_features =
--		    (lio->enc_dev_capability & ~NETIF_F_LRO);
-+		netdev_feature_zero(&netdev->hw_enc_features);
-+		netdev_feature_set_bits(lio->enc_dev_capability,
-+					&netdev->hw_enc_features);
-+		netdev_feature_clear_bit(NETIF_F_LRO_BIT,
-+					 &netdev->hw_enc_features);
-+
- 		netdev->udp_tunnel_nic_info = &liquidio_udp_tunnels;
- 
--		netdev->vlan_features = lio->dev_capability;
-+		netdev_feature_zero(&netdev->vlan_features);
-+		netdev_feature_set_bits(lio->enc_dev_capability,
-+					&netdev->vlan_features);
-+
- 		/* Add any unchangeable hw features */
- 		lio->dev_capability |= NETIF_F_HW_VLAN_CTAG_FILTER |
- 				       NETIF_F_HW_VLAN_CTAG_RX |
- 				       NETIF_F_HW_VLAN_CTAG_TX;
- 
--		netdev->features = (lio->dev_capability & ~NETIF_F_LRO);
-+		netdev_feature_zero(&netdev->features);
-+		netdev_feature_set_bits(lio->enc_dev_capability,
-+					&netdev->features);
-+		netdev_feature_clear_bit(NETIF_F_LRO_BIT, &netdev->features);
- 
--		netdev->hw_features = lio->dev_capability;
--		netdev->hw_features &= ~NETIF_F_HW_VLAN_CTAG_RX;
-+		netdev_feature_zero(&netdev->hw_features);
-+		netdev_feature_set_bits(lio->enc_dev_capability,
-+					&netdev->hw_features);
-+		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+					 &netdev->hw_features);
- 
- 		/* MTU range: 68 - 16000 */
- 		netdev->min_mtu = LIO_MIN_MTU_SIZE;
-@@ -2185,7 +2206,7 @@ static int setup_nic_devices(struct octeon_device *octeon_dev)
+@@ -2578,7 +2580,8 @@ static void macb_configure_dma(struct macb *bp)
  		else
- 			octeon_dev->priv_flags = 0x0;
+ 			dmacfg |= GEM_BIT(ENDIA_DESC); /* CPU in big endian */
  
--		if (netdev->features & NETIF_F_LRO)
-+		if (netdev_feature_test_bit(NETIF_F_LRO_BIT, netdev->features))
- 			liquidio_set_feature(netdev, OCTNET_CMD_LRO_ENABLE,
- 					     OCTNIC_LROIPV4 | OCTNIC_LROIPV6);
+-		if (bp->dev->features & NETIF_F_HW_CSUM)
++		if (netdev_feature_test_bit(NETIF_F_HW_CSUM_BIT,
++					    bp->dev->features))
+ 			dmacfg |= GEM_BIT(TXCOEN);
+ 		else
+ 			dmacfg &= ~GEM_BIT(TXCOEN);
+@@ -2614,7 +2617,9 @@ static void macb_init_hw(struct macb *bp)
+ 		config |= MACB_BIT(BIG);	/* Receive oversized frames */
+ 	if (bp->dev->flags & IFF_PROMISC)
+ 		config |= MACB_BIT(CAF);	/* Copy All Frames */
+-	else if (macb_is_gem(bp) && bp->dev->features & NETIF_F_RXCSUM)
++	else if (macb_is_gem(bp) &&
++		 netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
++					 bp->dev->features))
+ 		config |= GEM_BIT(RXCOEN);
+ 	if (!(bp->dev->flags & IFF_BROADCAST))
+ 		config |= MACB_BIT(NBC);	/* No BroadCast */
+@@ -2725,7 +2730,8 @@ static void macb_set_rx_mode(struct net_device *dev)
+ 		cfg &= ~MACB_BIT(CAF);
  
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-index 781138a71458..de451d94e1a7 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-@@ -732,7 +732,7 @@ static inline void nicvf_set_rxhash(struct net_device *netdev,
- 	u8 hash_type;
- 	u32 hash;
+ 		/* Enable RX checksum offload only if requested */
+-		if (macb_is_gem(bp) && dev->features & NETIF_F_RXCSUM)
++		if (macb_is_gem(bp) &&
++		    netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, dev->features))
+ 			cfg |= GEM_BIT(RXCOEN);
+ 	}
  
--	if (!(netdev->features & NETIF_F_RXHASH))
-+	if (!netdev_feature_test_bit(NETIF_F_RXHASH_BIT, netdev->features))
+@@ -3229,7 +3235,7 @@ static void gem_enable_flow_filters(struct macb *bp, bool enable)
+ 	u32 t2_scr;
+ 	int num_t2_scr;
+ 
+-	if (!(netdev->features & NETIF_F_NTUPLE))
++	if (!netdev_feature_test_bit(NETIF_F_NTUPLE_BIT, netdev->features))
  		return;
  
- 	switch (cqe_rx->rss_alg) {
-@@ -823,7 +823,7 @@ static void nicvf_rcv_pkt_handler(struct net_device *netdev,
- 	nicvf_set_rxhash(netdev, cqe_rx, skb);
+ 	num_t2_scr = GEM_BFEXT(T2SCR, gem_readl(bp, DCFG8));
+@@ -3588,7 +3594,7 @@ static inline void macb_set_txcsum_feature(struct macb *bp,
+ 		return;
  
- 	skb_record_rx_queue(skb, rq_idx);
--	if (netdev->hw_features & NETIF_F_RXCSUM) {
-+	if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, netdev->hw_features)) {
- 		/* HW by default verifies TCP/UDP/SCTP checksums */
- 		skb->ip_summed = CHECKSUM_UNNECESSARY;
- 	} else {
-@@ -837,7 +837,7 @@ static void nicvf_rcv_pkt_handler(struct net_device *netdev,
- 		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
- 				       ntohs((__force __be16)cqe_rx->vlan_tci));
- 
--	if (napi && (netdev->features & NETIF_F_GRO))
-+	if (napi && netdev_feature_test_bit(NETIF_F_GRO_BIT, netdev->features))
- 		napi_gro_receive(napi, skb);
+ 	val = gem_readl(bp, DMACFG);
+-	if (features & NETIF_F_HW_CSUM)
++	if (netdev_feature_test_bit(NETIF_F_HW_CSUM_BIT, features))
+ 		val |= GEM_BIT(TXCOEN);
  	else
- 		netif_receive_skb(skb);
-@@ -1768,7 +1768,8 @@ static int nicvf_config_loopback(struct nicvf *nic,
+ 		val &= ~GEM_BIT(TXCOEN);
+@@ -3606,7 +3612,8 @@ static inline void macb_set_rxcsum_feature(struct macb *bp,
+ 		return;
  
- 	mbx.lbk.msg = NIC_MBOX_MSG_LOOPBACK;
- 	mbx.lbk.vf_id = nic->vf_id;
--	mbx.lbk.enable = (features & NETIF_F_LOOPBACK) != 0;
-+	mbx.lbk.enable = netdev_feature_test_bit(NETIF_F_LOOPBACK_BIT,
-+						 features);
+ 	val = gem_readl(bp, NCFGR);
+-	if ((features & NETIF_F_RXCSUM) && !(netdev->flags & IFF_PROMISC))
++	if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, features) &&
++	    !(netdev->flags & IFF_PROMISC))
+ 		val |= GEM_BIT(RXCOEN);
+ 	else
+ 		val &= ~GEM_BIT(RXCOEN);
+@@ -3620,25 +3627,28 @@ static inline void macb_set_rxflow_feature(struct macb *bp,
+ 	if (!macb_is_gem(bp))
+ 		return;
  
- 	return nicvf_send_msg_to_pf(nic, &mbx);
- }
-@@ -1778,21 +1779,24 @@ static void nicvf_fix_features(struct net_device *netdev,
- {
- 	struct nicvf *nic = netdev_priv(netdev);
- 
--	if ((*features & NETIF_F_LOOPBACK) &&
-+	if (netdev_feature_test_bit(NETIF_F_LOOPBACK_BIT, *features) &&
- 	    netif_running(netdev) && !nic->loopback_supported)
--		*features &= ~NETIF_F_LOOPBACK;
-+		netdev_feature_clear_bit(NETIF_F_LOOPBACK_BIT, features);
+-	gem_enable_flow_filters(bp, !!(features & NETIF_F_NTUPLE));
++	gem_enable_flow_filters(bp, netdev_feature_test_bit(NETIF_F_NTUPLE_BIT,
++							    features));
  }
  
- static int nicvf_set_features(struct net_device *netdev,
- 			      netdev_features_t features)
+ static int macb_set_features(struct net_device *netdev,
+ 			     netdev_features_t features)
  {
- 	struct nicvf *nic = netdev_priv(netdev);
+ 	struct macb *bp = netdev_priv(netdev);
 -	netdev_features_t changed = features ^ netdev->features;
 +	netdev_features_t changed;
- 
--	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
-+	netdev_feature_xor(&changed, features, netdev->features);
 +
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, changed))
- 		nicvf_config_vlan_stripping(nic, features);
++	netdev_feature_xor(&changed, features, netdev->features);
  
--	if ((changed & NETIF_F_LOOPBACK) && netif_running(netdev))
-+	if (netdev_feature_test_bit(NETIF_F_LOOPBACK_BIT, changed) &&
-+	    netif_running(netdev))
- 		return nicvf_config_loopback(nic, features);
+ 	/* TX checksum offload */
+-	if (changed & NETIF_F_HW_CSUM)
++	if (netdev_feature_test_bit(NETIF_F_HW_CSUM_BIT, changed))
+ 		macb_set_txcsum_feature(bp, features);
+ 
+ 	/* RX checksum offload */
+-	if (changed & NETIF_F_RXCSUM)
++	if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, changed))
+ 		macb_set_rxcsum_feature(bp, features);
+ 
+ 	/* RX Flow Filters */
+-	if (changed & NETIF_F_NTUPLE)
++	if (netdev_feature_test_bit(NETIF_F_NTUPLE_BIT, changed))
+ 		macb_set_rxflow_feature(bp, features);
  
  	return 0;
-@@ -2209,18 +2213,22 @@ static int nicvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (err)
- 		goto err_unregister_interrupts;
+@@ -3647,8 +3657,10 @@ static int macb_set_features(struct net_device *netdev,
+ static void macb_restore_features(struct macb *bp)
+ {
+ 	struct net_device *netdev = bp->dev;
+-	netdev_features_t features = netdev->features;
+ 	struct ethtool_rx_fs_item *item;
++	netdev_features_t features;
++
++	netdev_feature_copy(&features, netdev->features);
  
--	netdev->hw_features = (NETIF_F_RXCSUM | NETIF_F_SG |
--			       NETIF_F_TSO | NETIF_F_GRO | NETIF_F_TSO6 |
--			       NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
--			       NETIF_F_HW_VLAN_CTAG_RX);
-+	netdev_feature_zero(&netdev->hw_features);
-+	netdev_feature_set_bits(NETIF_F_RXCSUM | NETIF_F_SG |
-+				NETIF_F_TSO | NETIF_F_GRO | NETIF_F_TSO6 |
-+				NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
-+				NETIF_F_HW_VLAN_CTAG_RX, &netdev->hw_features);
+ 	/* TX checksum offload */
+ 	macb_set_txcsum_feature(bp, features);
+@@ -3934,18 +3946,20 @@ static int macb_init(struct platform_device *pdev)
+ 	}
  
--	netdev->hw_features |= NETIF_F_RXHASH;
-+	netdev_feature_set_bit(NETIF_F_RXHASH_BIT, &netdev->hw_features);
+ 	/* Set features */
+-	dev->hw_features = NETIF_F_SG;
++	netdev_feature_zero(&dev->hw_features);
++	netdev_feature_set_bit(NETIF_F_SG_BIT, &dev->hw_features);
  
--	netdev->features |= netdev->hw_features;
--	netdev->hw_features |= NETIF_F_LOOPBACK;
-+	netdev_feature_or(&netdev->features, netdev->features,
-+			  netdev->hw_features);
-+	netdev_feature_set_bit(NETIF_F_LOOPBACK_BIT, &netdev->hw_features);
+ 	/* Check LSO capability */
+ 	if (GEM_BFEXT(PBUF_LSO, gem_readl(bp, DCFG6)))
+-		dev->hw_features |= MACB_NETIF_LSO;
++		netdev_feature_set_bits(MACB_NETIF_LSO, &dev->hw_features);
  
--	netdev->vlan_features = NETIF_F_SG | NETIF_F_IP_CSUM |
--				NETIF_F_IPV6_CSUM | NETIF_F_TSO | NETIF_F_TSO6;
-+	netdev_feature_zero(&netdev->vlan_features);
-+	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_IP_CSUM |
-+				NETIF_F_IPV6_CSUM | NETIF_F_TSO | NETIF_F_TSO6,
-+				&netdev->vlan_features);
+ 	/* Checksum offload is only available on gem with packet buffer */
+ 	if (macb_is_gem(bp) && !(bp->caps & MACB_CAPS_FIFO_MODE))
+-		dev->hw_features |= NETIF_F_HW_CSUM | NETIF_F_RXCSUM;
++		netdev_feature_set_bits(NETIF_F_HW_CSUM | NETIF_F_RXCSUM,
++					&dev->hw_features);
+ 	if (bp->caps & MACB_CAPS_SG_DISABLED)
+-		dev->hw_features &= ~NETIF_F_SG;
+-	dev->features = dev->hw_features;
++		netdev_feature_clear_bit(NETIF_F_SG_BIT, &dev->hw_features);
++	netdev_feature_copy(&dev->features, dev->hw_features);
  
- 	netdev->netdev_ops = &nicvf_netdev_ops;
- 	netdev->watchdog_timeo = NICVF_TX_TIMEOUT;
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
-index 50bbe79fb93d..5e95b42d7207 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
-@@ -714,7 +714,7 @@ void nicvf_config_vlan_stripping(struct nicvf *nic, netdev_features_t features)
- 	rq_cfg = nicvf_queue_reg_read(nic, NIC_QSET_RQ_GEN_CFG, 0);
+ 	/* Check RX Flow Filters support.
+ 	 * Max Rx flows set by availability of screeners & compare regs:
+@@ -3963,7 +3977,8 @@ static int macb_init(struct platform_device *pdev)
+ 			reg = GEM_BFINS(ETHTCMP, (uint16_t)ETH_P_IP, reg);
+ 			gem_writel_n(bp, ETHT, SCRT2_ETHT, reg);
+ 			/* Filtering is supported in hw but don't enable it in kernel now */
+-			dev->hw_features |= NETIF_F_NTUPLE;
++			netdev_feature_set_bit(NETIF_F_NTUPLE_BIT,
++					       &dev->hw_features);
+ 			/* init Rx flow definitions */
+ 			bp->rx_fs_list.count = 0;
+ 			spin_lock_init(&bp->rx_fs_lock);
+@@ -4942,7 +4957,7 @@ static int __maybe_unused macb_suspend(struct device *dev)
+ 	if (!(bp->caps & MACB_CAPS_USRIO_DISABLED))
+ 		bp->pm_data.usrio = macb_or_gem_readl(bp, USRIO);
  
- 	/* Enable first VLAN stripping */
--	if (features & NETIF_F_HW_VLAN_CTAG_RX)
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, features))
- 		rq_cfg |= (1ULL << 25);
- 	else
- 		rq_cfg &= ~(1ULL << 25);
+-	if (netdev->hw_features & NETIF_F_NTUPLE)
++	if (netdev_feature_test_bit(NETIF_F_NTUPLE_BIT, netdev->hw_features))
+ 		bp->pm_data.scrt2 = gem_readl_n(bp, ETHT, SCRT2_ETHT);
+ 
+ 	if (bp->ptp_info)
+@@ -5009,7 +5024,7 @@ static int __maybe_unused macb_resume(struct device *dev)
+ 	     ++q, ++queue)
+ 		napi_enable(&queue->napi);
+ 
+-	if (netdev->hw_features & NETIF_F_NTUPLE)
++	if (netdev_feature_test_bit(NETIF_F_NTUPLE_BIT, netdev->hw_features))
+ 		gem_writel_n(bp, ETHT, SCRT2_ETHT, bp->pm_data.scrt2);
+ 
+ 	if (!(bp->caps & MACB_CAPS_USRIO_DISABLED))
 -- 
 2.33.0
 
