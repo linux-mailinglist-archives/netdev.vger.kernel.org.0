@@ -2,51 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E206141C347
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 13:20:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B80141C358
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 13:21:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245576AbhI2LVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 07:21:24 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:46856 "EHLO
+        id S231310AbhI2LWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 07:22:18 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:33034 "EHLO
         mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231859AbhI2LVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 07:21:23 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18T9IOwq006524;
-        Wed, 29 Sep 2021 07:19:22 -0400
+        by vger.kernel.org with ESMTP id S229567AbhI2LWD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 07:22:03 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18TA4qC3030706;
+        Wed, 29 Sep 2021 07:19:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=ZoJdAtpCEWzoSowubQOrMKgOMVDWlKEkESqs4WoVx/E=;
- b=NTOHyBBEUCwAgOBEIXT5xpyCEaD65QJz90sv1/AbczCD4yF4JkRffiwHdFOvjMHQXUXg
- fDHboKujJY7v0WHYwp5FzN3Tz4MXTdLD29SaBfdbbLvbf4CuszRjd0J/Z9oOOzNUI10f
- UhlMCUVDEG3kS/E6cUGsqESnFI7/Pz0pCrBUFcOjRmSvk+jG4rePzbuakuY81enQq9Uk
- jD1PFdmX5+dQgMCDj29F39N2tGaUZdtGQEfhrA68SiVOMgPdLFEvvA0B81VGaDbqk7da
- h5eEbrdR3uAjPIxQpts07FMDkk7MppNfj/UGpW1APcPRVTniiLVeTgG61l3AwpuBA2uM 3g== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3bckhpd5mm-1
+ bh=w5BMI4jf7JbupfatK1eGMlJeM7pUt0KPcq2ugY/c8m8=;
+ b=GlelxGk+5M3bHHP9uUaHv10jXMpgt0GtBYs4TcuiPjk+U2PPk0ldm03dczJSnyR2G34L
+ ugPL/SqcVhGgA2pZxDg1wkw3S2vCD0NyfKojFHgDX1W/GjtLw3rRuE5E5KTSg3aeDhaR
+ SBnSIIfDZ9zX7srcO3jyLsFHzbM9Jhjhwfa8fYEuR0j3tcEN3VPI1lmNpMrI5GIklaIl
+ gAj/rBgXbLDKbXEbuM0T51d+66MZzKBsxF31IgKUMHidem7Cdhi9kANvqk2ZOoTUFW25
+ F+T+inZ+n+dPBdTaaRWbl02IdjaXyHBtvtPAEkUpqF1D03J9fwN1hie2Z7iw0ucbmBPD kw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3bcp2w1epd-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Sep 2021 07:19:22 -0400
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18TBDNmT021997;
-        Wed, 29 Sep 2021 11:19:19 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06fra.de.ibm.com with ESMTP id 3b9u1k58av-1
+        Wed, 29 Sep 2021 07:19:27 -0400
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 18TAhR28014252;
+        Wed, 29 Sep 2021 07:19:26 -0400
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3bcp2w1ep3-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Sep 2021 11:19:19 +0000
+        Wed, 29 Sep 2021 07:19:26 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18TBBRCu032680;
+        Wed, 29 Sep 2021 11:19:24 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04ams.nl.ibm.com with ESMTP id 3b9ud9y45j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 29 Sep 2021 11:19:24 +0000
 Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18TBJGPu44564852
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18TBEI5161473032
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Sep 2021 11:19:16 GMT
+        Wed, 29 Sep 2021 11:14:18 GMT
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E30D04206C;
-        Wed, 29 Sep 2021 11:19:15 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 0A23342072;
+        Wed, 29 Sep 2021 11:19:21 +0000 (GMT)
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 353E642070;
-        Wed, 29 Sep 2021 11:19:11 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 6F1154206E;
+        Wed, 29 Sep 2021 11:19:16 +0000 (GMT)
 Received: from hbathini-workstation.ibm.com.com (unknown [9.43.83.199])
         by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 29 Sep 2021 11:19:10 +0000 (GMT)
+        Wed, 29 Sep 2021 11:19:16 +0000 (GMT)
 From:   Hari Bathini <hbathini@linux.ibm.com>
 To:     naveen.n.rao@linux.ibm.com, christophe.leroy@csgroup.eu,
         mpe@ellerman.id.au, ast@kernel.org, daniel@iogearbox.net
@@ -54,136 +61,154 @@ Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
         songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
         kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org,
-        Ravi Bangoria <ravi.bangoria@linux.ibm.com>
-Subject: [PATCH v4 2/8] bpf powerpc: Remove extra_pass from bpf_jit_build_body()
-Date:   Wed, 29 Sep 2021 16:48:49 +0530
-Message-Id: <20210929111855.50254-3-hbathini@linux.ibm.com>
+        Hari Bathini <hbathini@linux.ibm.com>
+Subject: [PATCH v4 3/8] bpf powerpc: refactor JIT compiler code
+Date:   Wed, 29 Sep 2021 16:48:50 +0530
+Message-Id: <20210929111855.50254-4-hbathini@linux.ibm.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210929111855.50254-1-hbathini@linux.ibm.com>
 References: <20210929111855.50254-1-hbathini@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: wQBT_bCuPssj2pqOqV-Nm4pYeKqsLRwu
-X-Proofpoint-GUID: wQBT_bCuPssj2pqOqV-Nm4pYeKqsLRwu
+X-Proofpoint-GUID: GJOsgWFkvgnwZ4-kwtafmRnMvLSuxdR_
+X-Proofpoint-ORIG-GUID: 2KQV42-eDfQT7sUYN_YFNvf5LKvHtmLr
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
  definitions=2021-09-29_04,2021-09-29_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
- adultscore=0 clxscore=1015 priorityscore=1501 malwarescore=0
- impostorscore=0 mlxscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ phishscore=0 priorityscore=1501 adultscore=0 suspectscore=0 clxscore=1015
+ spamscore=0 lowpriorityscore=0 mlxlogscore=999 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2109230001 definitions=main-2109290068
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
+Refactor powerpc LDX JITing code to simplify adding BPF_PROBE_MEM
+support.
 
-In case of extra_pass, usual JIT passes are always skipped. So,
-extra_pass is always false while calling bpf_jit_build_body() and
-can be removed.
-
-Signed-off-by: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
+Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
 ---
 
-* No changes in v4.
+Changes in v4:
+* Dropped the default case in the switch statement for bpf size.
+* Dropped explicit fallthrough statement for empty switch cases.
 
 
- arch/powerpc/net/bpf_jit.h        | 2 +-
- arch/powerpc/net/bpf_jit_comp.c   | 6 +++---
- arch/powerpc/net/bpf_jit_comp32.c | 4 ++--
- arch/powerpc/net/bpf_jit_comp64.c | 4 ++--
- 4 files changed, 8 insertions(+), 8 deletions(-)
+ arch/powerpc/net/bpf_jit_comp32.c | 33 ++++++++++++++++++-------------
+ arch/powerpc/net/bpf_jit_comp64.c | 31 +++++++++++++++++------------
+ 2 files changed, 37 insertions(+), 27 deletions(-)
 
-diff --git a/arch/powerpc/net/bpf_jit.h b/arch/powerpc/net/bpf_jit.h
-index d6267e93027a..411c63d945c7 100644
---- a/arch/powerpc/net/bpf_jit.h
-+++ b/arch/powerpc/net/bpf_jit.h
-@@ -166,7 +166,7 @@ static inline void bpf_clear_seen_register(struct codegen_context *ctx, int i)
- 
- void bpf_jit_emit_func_call_rel(u32 *image, struct codegen_context *ctx, u64 func);
- int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *ctx,
--		       u32 *addrs, bool extra_pass);
-+		       u32 *addrs);
- void bpf_jit_build_prologue(u32 *image, struct codegen_context *ctx);
- void bpf_jit_build_epilogue(u32 *image, struct codegen_context *ctx);
- void bpf_jit_realloc_regs(struct codegen_context *ctx);
-diff --git a/arch/powerpc/net/bpf_jit_comp.c b/arch/powerpc/net/bpf_jit_comp.c
-index 53aefee3fe70..c5c9e8ad1de7 100644
---- a/arch/powerpc/net/bpf_jit_comp.c
-+++ b/arch/powerpc/net/bpf_jit_comp.c
-@@ -149,7 +149,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
- 	cgctx.stack_size = round_up(fp->aux->stack_depth, 16);
- 
- 	/* Scouting faux-generate pass 0 */
--	if (bpf_jit_build_body(fp, 0, &cgctx, addrs, false)) {
-+	if (bpf_jit_build_body(fp, 0, &cgctx, addrs)) {
- 		/* We hit something illegal or unsupported. */
- 		fp = org_fp;
- 		goto out_addrs;
-@@ -162,7 +162,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
- 	 */
- 	if (cgctx.seen & SEEN_TAILCALL) {
- 		cgctx.idx = 0;
--		if (bpf_jit_build_body(fp, 0, &cgctx, addrs, false)) {
-+		if (bpf_jit_build_body(fp, 0, &cgctx, addrs)) {
- 			fp = org_fp;
- 			goto out_addrs;
- 		}
-@@ -210,7 +210,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
- 		/* Now build the prologue, body code & epilogue for real. */
- 		cgctx.idx = 0;
- 		bpf_jit_build_prologue(code_base, &cgctx);
--		bpf_jit_build_body(fp, code_base, &cgctx, addrs, extra_pass);
-+		bpf_jit_build_body(fp, code_base, &cgctx, addrs);
- 		bpf_jit_build_epilogue(code_base, &cgctx);
- 
- 		if (bpf_jit_enable > 1)
 diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
-index beb12cbc8c29..b60b59426a24 100644
+index b60b59426a24..65a4d1ed97bf 100644
 --- a/arch/powerpc/net/bpf_jit_comp32.c
 +++ b/arch/powerpc/net/bpf_jit_comp32.c
-@@ -266,7 +266,7 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
+@@ -282,6 +282,7 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
+ 		u32 src_reg = bpf_to_ppc(ctx, insn[i].src_reg);
+ 		u32 src_reg_h = src_reg - 1;
+ 		u32 tmp_reg = bpf_to_ppc(ctx, TMP_REG);
++		u32 size = BPF_SIZE(code);
+ 		s16 off = insn[i].off;
+ 		s32 imm = insn[i].imm;
+ 		bool func_addr_fixed;
+@@ -810,23 +811,27 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
+ 		 * BPF_LDX
+ 		 */
+ 		case BPF_LDX | BPF_MEM | BPF_B: /* dst = *(u8 *)(ul) (src + off) */
+-			EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
+-			if (!fp->aux->verifier_zext)
+-				EMIT(PPC_RAW_LI(dst_reg_h, 0));
+-			break;
+ 		case BPF_LDX | BPF_MEM | BPF_H: /* dst = *(u16 *)(ul) (src + off) */
+-			EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
+-			if (!fp->aux->verifier_zext)
+-				EMIT(PPC_RAW_LI(dst_reg_h, 0));
+-			break;
+ 		case BPF_LDX | BPF_MEM | BPF_W: /* dst = *(u32 *)(ul) (src + off) */
+-			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
+-			if (!fp->aux->verifier_zext)
+-				EMIT(PPC_RAW_LI(dst_reg_h, 0));
+-			break;
+ 		case BPF_LDX | BPF_MEM | BPF_DW: /* dst = *(u64 *)(ul) (src + off) */
+-			EMIT(PPC_RAW_LWZ(dst_reg_h, src_reg, off));
+-			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off + 4));
++			switch (size) {
++			case BPF_B:
++				EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
++				break;
++			case BPF_H:
++				EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
++				break;
++			case BPF_W:
++				EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
++				break;
++			case BPF_DW:
++				EMIT(PPC_RAW_LWZ(dst_reg_h, src_reg, off));
++				EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off + 4));
++				break;
++			}
++
++			if (size != BPF_DW && !fp->aux->verifier_zext)
++				EMIT(PPC_RAW_LI(dst_reg_h, 0));
+ 			break;
  
- /* Assemble the body code between the prologue & epilogue */
- int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *ctx,
--		       u32 *addrs, bool extra_pass)
-+		       u32 *addrs)
- {
- 	const struct bpf_insn *insn = fp->insnsi;
- 	int flen = fp->len;
-@@ -860,7 +860,7 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
- 		case BPF_JMP | BPF_CALL:
- 			ctx->seen |= SEEN_FUNC;
- 
--			ret = bpf_jit_get_func_addr(fp, &insn[i], extra_pass,
-+			ret = bpf_jit_get_func_addr(fp, &insn[i], false,
- 						    &func_addr, &func_addr_fixed);
- 			if (ret < 0)
- 				return ret;
+ 		/*
 diff --git a/arch/powerpc/net/bpf_jit_comp64.c b/arch/powerpc/net/bpf_jit_comp64.c
-index b87a63dba9c8..2a87da50d9a4 100644
+index 2a87da50d9a4..49e6e0b6e4d2 100644
 --- a/arch/powerpc/net/bpf_jit_comp64.c
 +++ b/arch/powerpc/net/bpf_jit_comp64.c
-@@ -272,7 +272,7 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
+@@ -285,6 +285,7 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
+ 		u32 code = insn[i].code;
+ 		u32 dst_reg = b2p[insn[i].dst_reg];
+ 		u32 src_reg = b2p[insn[i].src_reg];
++		u32 size = BPF_SIZE(code);
+ 		s16 off = insn[i].off;
+ 		s32 imm = insn[i].imm;
+ 		bool func_addr_fixed;
+@@ -716,25 +717,29 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
+ 		 */
+ 		/* dst = *(u8 *)(ul) (src + off) */
+ 		case BPF_LDX | BPF_MEM | BPF_B:
+-			EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
+-			if (insn_is_zext(&insn[i + 1]))
+-				addrs[++i] = ctx->idx * 4;
+-			break;
+ 		/* dst = *(u16 *)(ul) (src + off) */
+ 		case BPF_LDX | BPF_MEM | BPF_H:
+-			EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
+-			if (insn_is_zext(&insn[i + 1]))
+-				addrs[++i] = ctx->idx * 4;
+-			break;
+ 		/* dst = *(u32 *)(ul) (src + off) */
+ 		case BPF_LDX | BPF_MEM | BPF_W:
+-			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
+-			if (insn_is_zext(&insn[i + 1]))
+-				addrs[++i] = ctx->idx * 4;
+-			break;
+ 		/* dst = *(u64 *)(ul) (src + off) */
+ 		case BPF_LDX | BPF_MEM | BPF_DW:
+-			PPC_BPF_LL(dst_reg, src_reg, off);
++			switch (size) {
++			case BPF_B:
++				EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
++				break;
++			case BPF_H:
++				EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
++				break;
++			case BPF_W:
++				EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
++				break;
++			case BPF_DW:
++				PPC_BPF_LL(dst_reg, src_reg, off);
++				break;
++			}
++
++			if (size != BPF_DW && insn_is_zext(&insn[i + 1]))
++				addrs[++i] = ctx->idx * 4;
+ 			break;
  
- /* Assemble the body code between the prologue & epilogue */
- int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *ctx,
--		       u32 *addrs, bool extra_pass)
-+		       u32 *addrs)
- {
- 	const struct bpf_insn *insn = fp->insnsi;
- 	int flen = fp->len;
-@@ -769,7 +769,7 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
- 		case BPF_JMP | BPF_CALL:
- 			ctx->seen |= SEEN_FUNC;
- 
--			ret = bpf_jit_get_func_addr(fp, &insn[i], extra_pass,
-+			ret = bpf_jit_get_func_addr(fp, &insn[i], false,
- 						    &func_addr, &func_addr_fixed);
- 			if (ret < 0)
- 				return ret;
+ 		/*
 -- 
 2.31.1
 
