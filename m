@@ -2,75 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB7BC41CC01
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 20:39:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2442441CC19
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 20:48:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346310AbhI2SkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 14:40:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34378 "EHLO mail.kernel.org"
+        id S1346321AbhI2Stc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 14:49:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38014 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346308AbhI2SkA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 14:40:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7E5D861216;
-        Wed, 29 Sep 2021 18:38:18 +0000 (UTC)
+        id S1346287AbhI2Stb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 14:49:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AA9F061504;
+        Wed, 29 Sep 2021 18:47:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632940699;
-        bh=D1OW1odBQV/5U8jRZ04+ORhf0sZ+4cKzL42iq1jdVe8=;
+        s=k20201202; t=1632941270;
+        bh=Kl5vETRwKZ9cABUEUhLbAd0/LQ63+r3ju9xKNwV63RA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rUVPB0YavgvNxSo4VHX6JeqndeB7O8eFEN8fEguCnEqY+Zbk7z0ekW+3VS0PrSVss
-         +1btiZtII4sWf3qTGqwLJUEEZrctsSUL+09b0ko94/3lWDMyGKPnjZuzt60TnKrznT
-         d4NJs8lV5vvSrNaYZszzvDhrwETdLcTXXFpL/31FIs5zWW3zkQKUXfSA0jKXqrNiJU
-         eGzloGW0iwnSmSxAnen08lVBJnxV9yTCyIHuoy6+VcfakPNmqf/nf0tERjh9ddcjHY
-         ZfW8iUOVbwlCTzVM3ZEg/pwdUPYdXn9tkm6ihCK/Wk+mb2k5/V1q6v4/GawsZJ4feA
-         s3cSYELdS662g==
-Date:   Wed, 29 Sep 2021 11:38:17 -0700
+        b=Q00tMlZk0b60MRf8WkqwNpGByhdalK00jSFzCWy1jYTP8pyyl7a9Zct8rmsLG49HW
+         vF39x+dH63l4vys9RMSKUQtxZdlq2vkcB4WNEwzw9Ne+CCCs/376Gk2V+jma3ahqhO
+         jIsN5zl0pxey3E4USiudFQTJtqAd6wDvJKZejrzYOxyCeNDBv53qgwYYRoESNK6pLj
+         OnOTf3siVAa02oWPBw6Ji7xp5HW/5lU58dqgC5Oxf45JAUQJNfnIDG/Fx03oz3BENP
+         ZabwoAvnKejJmI8hpE6HI1wZ+S0odYGkwPjmFU6Y+kFFHkfiAblwenpoMklXib50rw
+         MUQMn696G157g==
+Date:   Wed, 29 Sep 2021 11:47:48 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Prabhakar Kushwaha <pkushwaha@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <linux-rdma@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <martin.petersen@oracle.com>, <aelior@marvell.com>,
-        <smalin@marvell.com>, <jhasan@marvell.com>,
-        <mrangankar@marvell.com>, <prabhakar.pkin@gmail.com>,
-        <malin1024@gmail.com>, Omkar Kulkarni <okulkarni@marvell.com>
-Subject: Re: [PATCH 04/12] qed: Update qed_mfw_hsi.h for FW ver 8.59.1.0
-Message-ID: <20210929113817.06da736a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210929121215.17864-5-pkushwaha@marvell.com>
-References: <20210929121215.17864-1-pkushwaha@marvell.com>
-        <20210929121215.17864-5-pkushwaha@marvell.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Yu Xiao <yu.xiao@corigine.com>,
+        Yinjun Zhang <yinjun.zhang@corigine.com>,
+        Niklas =?UTF-8?B?U8O2ZGVybHVuZA==?= 
+        <niklas.soderlund@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>
+Subject: Re: [PATCH net] nfp: bpf: Add an MTU check before offloading BPF
+Message-ID: <20210929114748.545f7328@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210929152421.5232-1-simon.horman@corigine.com>
+References: <20210929152421.5232-1-simon.horman@corigine.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Sep 2021 15:12:07 +0300 Prabhakar Kushwaha wrote:
-> The qed_mfw_hsi.h contains HSI (Hardware Software Interface) changes
-> related to management firmware. It has been updated to support new FW
-> version 8.59.1.0 with below changes.
->  - New defines for VF bitmap.
->  - fec_mode and extended_speed defines updated in struct eth_phy_cfg.
->  - Updated structutres lldp_system_tlvs_buffer_s, public_global,
->    public_port, public_func, drv_union_data, public_drv_mb
->    with all dependent new structures.
->  - Updates in NVM related structures and defines.
->  - Msg defines are added in enum drv_msg_code and fw_msg_code.
->  - Updated/added new defines.
->=20
-> This patch also fixes the existing checkpatch warnings and few important
-> checks.
->=20
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
-> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+On Wed, 29 Sep 2021 17:24:21 +0200 Simon Horman wrote:
+> From: Yu Xiao <yu.xiao@corigine.com>
+> 
+> There is a bug during xdpoffloading. When MTU is bigger than the
+> max MTU of BFP (1888), it can still be added xdpoffloading.
+> 
+> Therefore, add an MTU check to ensure that xdpoffloading cannot be
+> loaded when MTU is larger than a max MTU of 1888.
 
-drivers/net/ethernet/qlogic/qed/qed_main.c:102:18: warning: =E2=80=98qed_mf=
-w_ext_20g=E2=80=99 defined but not used [-Wunused-const-variable=3D]
-  102 | static const u32 qed_mfw_ext_20g[] __initconst =3D {
-      |                  ^~~~~~~~~~~~~~~
-
-
-Plus you add a whole bunch on kdoc warnings with those patches.
-Please make sure no new kdoc warnings and no new compilation warnings
-(with C=3D1 W=3D1 flags!)
+There is a check in nfp_net_bpf_load(). TC or XDP, doesn't matter,
+we can't offload either with large MTU since the FW helper (used to be) 
+able to only access CTM. So the check is on the generic path, adding
+an XDP-specific check seems wrong.
