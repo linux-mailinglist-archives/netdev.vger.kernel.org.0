@@ -2,92 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B38B341CDD7
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 23:12:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28F4D41CDEC
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 23:17:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346856AbhI2VOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 17:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
+        id S1346889AbhI2VSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 17:18:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346685AbhI2VNz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 17:13:55 -0400
-Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799B8C06161C;
-        Wed, 29 Sep 2021 14:12:13 -0700 (PDT)
-Received: by fieldses.org (Postfix, from userid 2815)
-        id 7A2467046; Wed, 29 Sep 2021 17:12:11 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 7A2467046
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
-        s=default; t=1632949931;
-        bh=aNCVSUe1ezHP04FGaabkWlAzsR9PWbBgUjVbZnmPnEY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WrbW5KlXsi7AXwMiVw+KlMNteT7mz8SGIoElqbTcWay/Zqg8nMzswdS4PIHG5mVEG
-         f9zVpwVFZ4zbOnM+wFnZySrN4TwiF3hCDfera4Zlyyft79q61n3KjCBAfkKo7CP5mj
-         0wTiw8ZztvDwgvMymGZLkamKQ/2cLLE3MouXI044=
-Date:   Wed, 29 Sep 2021 17:12:11 -0400
-From:   "bfields@fieldses.org" <bfields@fieldses.org>
-To:     Trond Myklebust <trondmy@hammerspace.com>
-Cc:     "neilb@suse.com" <neilb@suse.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "tyhicks@canonical.com" <tyhicks@canonical.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "wanghai38@huawei.com" <wanghai38@huawei.com>,
-        "nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "jlayton@kernel.org" <jlayton@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "christian.brauner@ubuntu.com" <christian.brauner@ubuntu.com>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
-        "tom@talpey.com" <tom@talpey.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "cong.wang@bytedance.com" <cong.wang@bytedance.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "timo@rothenpieler.org" <timo@rothenpieler.org>,
-        "jiang.wang@bytedance.com" <jiang.wang@bytedance.com>,
-        "kuniyu@amazon.co.jp" <kuniyu@amazon.co.jp>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Rao.Shoaib@oracle.com" <Rao.Shoaib@oracle.com>,
-        "wenbin.zeng@gmail.com" <wenbin.zeng@gmail.com>,
-        "kolga@netapp.com" <kolga@netapp.com>
-Subject: Re: [PATCH net 2/2] auth_gss: Fix deadlock that blocks
- rpcsec_gss_exit_net when use-gss-proxy==1
-Message-ID: <20210929211211.GC20707@fieldses.org>
-References: <20210928031440.2222303-1-wanghai38@huawei.com>
- <20210928031440.2222303-3-wanghai38@huawei.com>
- <a845b544c6592e58feeaff3be9271a717f53b383.camel@hammerspace.com>
- <20210928134952.GA25415@fieldses.org>
- <77051a059fa19a7ae2390fbda7f8ab6f09514dfc.camel@hammerspace.com>
- <20210928141718.GC25415@fieldses.org>
- <cc92411f242290b85aa232e7220027b875942f30.camel@hammerspace.com>
- <20210928145747.GD25415@fieldses.org>
- <8b0e774bdb534c69b0612103acbe61c628fde9b1.camel@hammerspace.com>
- <20210928154300.GE25415@fieldses.org>
+        with ESMTP id S232258AbhI2VSy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 17:18:54 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD9DC06161C;
+        Wed, 29 Sep 2021 14:17:13 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id g2so3060201pfc.6;
+        Wed, 29 Sep 2021 14:17:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ULTC7uFCOb8co9nVQnkd69sN3DLPbqoM7kYoB4W6cDo=;
+        b=lm3kthFnazHXttVvxmdnJ2lpddbf2XDDyEtVHiu5kq5+E/TNrxO3zShoJxK27vGl5M
+         hLkZkRTMLcuesvn+vFn4Ge75LG4H7FLCIN7FbUOH8nZU+A/OTkRnJ0PI+ci6nlJLkbFe
+         1bBqwdJex2HHw3sywCY1BZuTJT+y6lXovyxKl9FywmFBwmQ25E/FgXRnZfHhc+Rw6yu4
+         xNJTkuF81lzc2+IdHEn+mmmAstIfe4vSEgy1YJcV8EakedVVyWgvQJVx2YThuDmFwz65
+         FPShZHE0KdPj/BpB4vvhSqMznDCAy+TqnEGtK3aS7y7GiqH875fT8GQhmGE0mo0/7flf
+         n5vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ULTC7uFCOb8co9nVQnkd69sN3DLPbqoM7kYoB4W6cDo=;
+        b=5jcfcSHpZQOdq2P4mWrs8SMfyix7IoLQ662uO2X50BkEZdUTShsH88iY9m4WrUJevP
+         Vox0JQib3+djz/eHlEVjA5AcZFB014Uah/2loZ2/EVSU7SlwLET/fgt4IOcEDHFdJ9b5
+         KHpgCBaKXMu2n3+dVii22er6snvrtipgo/tUbbYvnyz+Gh5aoYW9pJ4fYgQaRD8mwVXQ
+         mmgov9wBKoazoBfGy7hJsIukVYsLnuMi7Pyypuq69LEOM3Iwezqi2x65AzXb7/jGLMf5
+         4U/K0gB63/rO3MJ/NRJZ3zSIUt1UBCidbXxWIR7caf2E4P989IP937VPEsp6pAzyyEBn
+         I09Q==
+X-Gm-Message-State: AOAM533BG0fEkXm232iGFxeySgyZwgHaqoDLuO8TWlXki6TQ1oIo/zCs
+        JSnHJvl3Px5I6Y76twmO6v/fY+zOTsxsJKg1Jxc=
+X-Google-Smtp-Source: ABdhPJxK7Y+GYLhrsVzMbbLmfBk8/ATnKnMWoKns7LcaEVHzKqcybRRET83y8SkXgeSPrXDx6tUoyQPsY5quo84VXc4=
+X-Received: by 2002:a63:374c:: with SMTP id g12mr1778357pgn.35.1632950232758;
+ Wed, 29 Sep 2021 14:17:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210928154300.GE25415@fieldses.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+References: <20210928093100.27124-1-lmb@cloudflare.com>
+In-Reply-To: <20210928093100.27124-1-lmb@cloudflare.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 29 Sep 2021 14:17:01 -0700
+Message-ID: <CAADnVQ+UJ5bhRNdnHM62_XFzMp3q1-Njh80ZNvs=4=PH1jAmpw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: do not invoke the XDP dispatcher for
+ PROG_RUN with single repeat
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 11:43:00AM -0400, bfields@fieldses.org wrote:
-> On Tue, Sep 28, 2021 at 03:36:58PM +0000, Trond Myklebust wrote:
-> > What is the use case here? Starting the gssd daemon or knfsd in
-> > separate chrooted environments? We already know that they have to be
-> > started in the same net namespace, which pretty much ensures it has to
-> > be the same container.
-> 
-> Somehow I forgot that knfsd startup is happening in some real process's
-> context too (not just a kthread).
-> 
-> OK, great, I agree, that sounds like it should work.
+On Tue, Sep 28, 2021 at 2:31 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> We have a unit test that invokes an XDP program with 1m different
+> inputs, aka 1m BPF_PROG_RUN syscalls. We run this test concurrently
+> with slight variations in how we generated the input.
+>
+> Since commit f23c4b3924d2 ("bpf: Start using the BPF dispatcher in BPF_TEST_RUN")
+> the unit test has slowed down significantly. Digging deeper reveals that
+> the concurrent tests are serialised in the kernel on the XDP dispatcher.
+> This is a global resource that is protected by a mutex, on which we contend.
+>
+> Fix this by not calling into the XDP dispatcher if we only want to perform
+> a single run of the BPF program.
+>
+> See: https://lore.kernel.org/bpf/CACAyw9_y4QumOW35qpgTbLsJ532uGq-kVW-VESJzGyiZkypnvw@mail.gmail.com/
+>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 
-Wang Hai, do you want to try that, or should I?
-
---b.
+Applied. Thanks
