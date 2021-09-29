@@ -2,72 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69A2741CAF5
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 19:16:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE0ED41CAFC
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 19:21:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343839AbhI2RRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 13:17:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39336 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245166AbhI2RRs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 13:17:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=erakbhXi+Me/Hw6BfHO0fnn9A6VZYP8g4nNvk9wz1wk=; b=rET1WvGeyugFQQWf/LZPIylmrZ
-        MKL+mHILNJPR/yNtRW7ROeEP0f1w7YcUdqDbIbUhI87hC85ot6kqOIpHbynk9Iilf6xp8v7sG1x/x
-        o+PMwVNCAslqh5dEq+wBPWqelalVRBIRz7/+GMK3Co5su7XfNxzK4UbFZ3K/7ESot+Wo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mVdBQ-008p2N-VY; Wed, 29 Sep 2021 19:15:52 +0200
-Date:   Wed, 29 Sep 2021 19:15:52 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jian Shen <shenjian15@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, linuxarm@openeuler.org
-Subject: Re: [RFCv2 net-next 000/167] net: extend the netdev_features_t
-Message-ID: <YVSfSNyVeaIx6n8k@lunn.ch>
-References: <20210929155334.12454-1-shenjian15@huawei.com>
+        id S1346204AbhI2RXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 13:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343753AbhI2RXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 13:23:19 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9469C06161C;
+        Wed, 29 Sep 2021 10:21:30 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id w19so2516308pfn.12;
+        Wed, 29 Sep 2021 10:21:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LDYxmYqsjSSaY5qNEcKRB1CAbNpq6pKRJ2FH76OopzQ=;
+        b=SL08n0GYQgtLYfC8OeMRTPwz4kyFIBgH5vGSrXVasHm4qVTLleyDxys5Rs66XsHY4l
+         SHYNvDh9nPLfvQCq35o3c637USllorz1K/qgpzlwjz5CXtay3Ot2+hq0ww/+4D1uIGRX
+         Q/Ivgpr6NxxyOzouZ+NJi80Aw2qCYz1WsP6COSLgtPoAnb+Kn8n4q2GoWBcIykUXwybF
+         IDSSPQBOoRc8uMEQ3/ZVG3L6gHwWbzWPjtwLALdLcn5ZTABTMC7DTLhQUU1A1BLpXf6l
+         q0N94Rl4hLdZJ+gkRvhq+gjs8LNt0mWO21e1B5YtB9wjYxWPg9xfuybFUlASvK2DEIaw
+         pH6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LDYxmYqsjSSaY5qNEcKRB1CAbNpq6pKRJ2FH76OopzQ=;
+        b=fgTzSZJ5AX+mX3912gi5pV9qeZ/AJS9lV3YrGWXf9ncoX40kwEK9XzNaQFOerb+vc6
+         NdgBUY4zza7MHEw2fNOuAhyKKgFU2iQBUjfUlpMszaGKBk63niTMDb8ERhzrLK5TwJBZ
+         a7xiCjmR7LzhMTBwPY6HgObI7bLwWNELWihogdkRWRwPwNA3Hmub3WTMJZ8VY0hvypCS
+         0pSW/SqKbflTfrDrAYGPqGT7qOTy4SDzpBFuy21+ImbwQHGFsNmyGQdT7W2R0YBkTYR2
+         2d5jqzhl0UO7h5jmVU7z47GyNMS+mIzdkWruEXGQYe9Mb6k/QNqOD9ntL6kqmHS2IUuc
+         AKfg==
+X-Gm-Message-State: AOAM531aBS+/ukKBjfy/ms+zndpUNcKLkkSNfpMNdVfOsbuvQdW2/tWD
+        lHBU0DGERPPQGMwuFZ3QdmHgT4AwIa4=
+X-Google-Smtp-Source: ABdhPJzQ+G9aJM6HWNTbSxWaxo4SVk2CvZqbVEM2uqRjF5z+NdsvkVidWhSOGRVrANMeeNy0/PMuUA==
+X-Received: by 2002:a63:2b4b:: with SMTP id r72mr931484pgr.57.1632936090207;
+        Wed, 29 Sep 2021 10:21:30 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id b7sm386900pfb.20.2021.09.29.10.21.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Sep 2021 10:21:29 -0700 (PDT)
+Subject: Re: [PATCH][net-next] net/mlx4: Use array_size() helper in
+ copy_to_user()
+To:     Tariq Toukan <ttoukan.linux@gmail.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20210928201733.GA268467@embeddedor>
+ <283d239b-9af9-d3a3-72be-9138c032ef63@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <16ae2d2d-3aba-82b2-0bd8-90f7d0367a62@gmail.com>
+Date:   Wed, 29 Sep 2021 10:21:27 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
+In-Reply-To: <283d239b-9af9-d3a3-72be-9138c032ef63@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 11:50:47PM +0800, Jian Shen wrote:
-> For the prototype of netdev_features_t is u64, and the number
-> of netdevice feature bits is 64 now. So there is no space to
-> introduce new feature bit.
-> 
-> This patchset try to solve it by change the prototype of
-> netdev_features_t from u64 to bitmap. With this change,
-> it's necessary to introduce a set of bitmap operation helpers
-> for netdev features. Meanwhile, the functions which use
-> netdev_features_t as return value are also need to be changed,
-> return the result as an output parameter.
-> 
-> With above changes, it will affect hundreds of files, and all the
-> nic drivers. To make it easy to be reviewed, split the changes
-> to 167 patches to 5 parts.
-> 
-> patch 1~22: convert the prototype which use netdev_features_t
-> as return value
-> patch 24: introduce fake helpers for bitmap operation
-> patch 25~165: use netdev_feature_xxx helpers
-> patch 166: use macro __DECLARE_NETDEV_FEATURE_MASK to replace
-> netdev_feature_t declaration.
-> patch 167: change the type of netdev_features_t to bitmap,
-> and rewrite the bitmap helpers.
-> 
-> Sorry to send a so huge patchset, I wanna to get more suggestions
-> to finish this work, to make it much more reviewable and feasible.
 
-What you should of done is converted just one MAC driver. That gives
-us enough we can review the basic idea, etc, and not need to delete
-130 nearly identical patches.
 
-   Andrew
+On 9/29/21 3:24 AM, Tariq Toukan wrote:
+> 
+> 
+> On 9/28/2021 11:17 PM, Gustavo A. R. Silva wrote:
+>> Use array_size() helper instead of the open-coded version in
+>> copy_to_user(). These sorts of multiplication factors need
+>> to be wrapped in array_size().
+>>
+>> Link: https://github.com/KSPP/linux/issues/160
+>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+>> ---
+>>   drivers/net/ethernet/mellanox/mlx4/cq.c | 3 ++-
+>>   1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
+>> index f7053a74e6a8..4d4f9cf9facb 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx4/cq.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
+>> @@ -314,7 +314,8 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
+>>               buf += PAGE_SIZE;
+>>           }
+>>       } else {
+>> -        err = copy_to_user((void __user *)buf, init_ents, entries * cqe_size) ?
+>> +        err = copy_to_user((void __user *)buf, init_ents,
+>> +                   array_size(entries, cqe_size)) ?
+>>               -EFAULT : 0;
+>>       }
+>>  
+> 
+> Thanks for your patch.
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+
+Not sure why avoiding size_t overflows would make this code safer.
+init_ents contains PAGE_SIZE bytes...
+
+BTW
+
+Is @entries guaranteed to be a power of two ?
+
+This function seems to either copy one chunk ( <= PAGE_SIZE),
+or a number of full pages.
+
