@@ -2,268 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C46541C85E
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:29:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D761841C87C
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:32:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345240AbhI2Pai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 11:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345157AbhI2Pah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:30:37 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80571C06161C
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:28:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=EE0SZBTdfOx3aQZvqzWhLaHRmp63ZVqI/aHzXTZCU88=; b=rCLsw5YUYvLB7R5kIAR4DVhOsk
-        wu0ZcfpdsFyb0R6OezQri40s2NmhwI8/nMoqhWaZqLhIZz7HYFX++X/iEV27M9qerH7WBNHqRJ0NN
-        28DzgCznjI95IhoTcTtMjbijZse6+eNm/QsxUSnwjAMig8svOGvr3ZqaPT1NA1M17/e8wo12XueiY
-        6ebPtpXoHQDrZKw/eatlCt5Gk6jeQ5FYNKxZOCC18Y0wIMu/4NhN2POrJOQohB+veQHOLTZO7b8Jl
-        SasgCsjbIIN8ELgPMvdCwFIHn5M3vPne0myBpcxbak5vLkiBbPbcJq/Mto9fcAVlAUqMHpcdYcBJ1
-        jwLLn2Pw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:51450 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mVbVt-0002Oy-S2; Wed, 29 Sep 2021 16:28:53 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1mVbVt-0004Fh-Dv; Wed, 29 Sep 2021 16:28:53 +0100
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "Marek Beh__n" <kabel@kernel.org>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v2 net-next] net: phy: marvell10g: add downshift tunable
- support
+        id S1345326AbhI2Pdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 11:33:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40962 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345178AbhI2Pdg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 11:33:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 87BE661159;
+        Wed, 29 Sep 2021 15:31:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632929515;
+        bh=HXwoS1HjJA1S0yfWFpWczWoEmqeqJ8/hI4qGlsQfiLE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a8sMw03Rp6PGGokI/cGFo4lnq8A92MECDtnNRH0qAYiC9K1Vj5DaLvJfztY1rEwx2
+         J3FjihL9ii52e8Zfc1LoVAXfQPLIFtkcWyusSyw6hrLPxYhHTnB49JgfL17mN5pY50
+         8YPYUUzVPu6Gkd6TA90y1EU7fcrWlEMBwJGhL7hOX7n7IYjBvJbjvmnzc7myNa6TOJ
+         xOL0M+HYncEtqnaVZr7i4ot3tZbMpp7lbMxXHKZaRL6OYsWT1I2t1Q0jXuKcshj3+i
+         EhRojJsY7u7SHu6Llx2j3/ql9Ac0a4DTztxk62AfY9CPj7ePahwroyGlhgI7Xfabug
+         yDOSXw/s46Y1Q==
+Date:   Wed, 29 Sep 2021 18:31:51 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        hariprasad <hkelam@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
+        Manish Chopra <manishc@marvell.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Moshe Shemesh <moshe@nvidia.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Shay Drory <shayd@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next v1 0/5] Devlink reload and missed notifications
+ fix
+Message-ID: <YVSG55i75awUpAmn@unreal>
+References: <cover.1632916329.git.leonro@nvidia.com>
+ <20210929064004.3172946e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YVR0iKIRYDXQbD+o@unreal>
+ <20210929073940.5d7ed022@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1mVbVt-0004Fh-Dv@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 29 Sep 2021 16:28:53 +0100
+In-Reply-To: <20210929073940.5d7ed022@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the downshift tunable for the Marvell 88x3310 PHY.
-Downshift is only usable with firmware 0.3.5.0 and later.
+On Wed, Sep 29, 2021 at 07:39:40AM -0700, Jakub Kicinski wrote:
+> On Wed, 29 Sep 2021 17:13:28 +0300 Leon Romanovsky wrote:
+> > On Wed, Sep 29, 2021 at 06:40:04AM -0700, Jakub Kicinski wrote:
+> > > On Wed, 29 Sep 2021 15:00:41 +0300 Leon Romanovsky wrote:  
+> > > > This series starts from the fixing the bug introduced by implementing
+> > > > devlink delayed notifications logic, where I missed some of the
+> > > > notifications functions.
+> > > > 
+> > > > The rest series provides a way to dynamically set devlink ops that is
+> > > > needed for mlx5 multiport device and starts cleanup by removing
+> > > > not-needed logic.
+> > > > 
+> > > > In the next series, we will delete various publish API, drop general
+> > > > lock, annotate the code and rework logic around devlink->lock.
+> > > > 
+> > > > All this is possible because driver initialization is separated from the
+> > > > user input now.  
+> > > 
+> > > Swapping ops is a nasty hack in my book.
+> > > 
+> > > And all that to avoid having two op structures in one driver.
+> > > Or to avoid having counters which are always 0?  
+> > 
+> > We don't need to advertise counters for feature that is not supported.
+> > In multiport mlx5 devices, the reload functionality is not supported, so
+> > this change at least make that device to behave like all other netdev
+> > devices that don't support devlink reload.
+> > 
+> > The ops structure is set very early to make sure that internal devlink
+> > routines will be able access driver back during initialization (btw very
+> > questionable design choice)
+> 
+> Indeed, is this fixable? Or now that devlink_register() was moved to 
+> the end of probe netdev can call ops before instance is registered?
+> 
+> > and at that stage the driver doesn't know
+> > yet which device type it is going to drive.
+> > 
+> > So the answer is:
+> > 1. Can't have two structures.
+> 
+> I still don't understand why. To be clear - swapping full op structures
+> is probably acceptable if it's a pure upgrade (existing pointers match).
+> Poking new ops into a structure (in alphabetical order if I understand
+> your reply to Greg, not destructor-before-contructor) is what I deem
+> questionable.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
-v2: updated comment
+It is sorted simply for readability and not for any other technical
+reason.
 
- drivers/net/phy/marvell10g.c | 107 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 106 insertions(+), 1 deletion(-)
+Regarding new ops, this is how we are setting callbacks in RDMA based on
+actual device support. It works like a charm.
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index bd310e8d5e43..b6fea119fe13 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -22,6 +22,7 @@
-  * If both the fiber and copper ports are connected, the first to gain
-  * link takes priority and the other port is completely locked out.
-  */
-+#include <linux/bitfield.h>
- #include <linux/ctype.h>
- #include <linux/delay.h>
- #include <linux/hwmon.h>
-@@ -33,6 +34,8 @@
- #define MV_PHY_ALASKA_NBT_QUIRK_MASK	0xfffffffe
- #define MV_PHY_ALASKA_NBT_QUIRK_REV	(MARVELL_PHY_ID_88X3310 | 0xa)
- 
-+#define MV_VERSION(a,b,c,d) ((a) << 24 | (b) << 16 | (c) << 8 | (d))
-+
- enum {
- 	MV_PMA_FW_VER0		= 0xc011,
- 	MV_PMA_FW_VER1		= 0xc012,
-@@ -62,6 +65,15 @@ enum {
- 	MV_PCS_CSCR1_MDIX_MDIX	= 0x0020,
- 	MV_PCS_CSCR1_MDIX_AUTO	= 0x0060,
- 
-+	MV_PCS_DSC1		= 0x8003,
-+	MV_PCS_DSC1_ENABLE	= BIT(9),
-+	MV_PCS_DSC1_10GBT	= 0x01c0,
-+	MV_PCS_DSC1_1GBR	= 0x0038,
-+	MV_PCS_DSC1_100BTX	= 0x0007,
-+	MV_PCS_DSC2		= 0x8004,
-+	MV_PCS_DSC2_2P5G	= 0xf000,
-+	MV_PCS_DSC2_5G		= 0x0f00,
-+
- 	MV_PCS_CSSR1		= 0x8008,
- 	MV_PCS_CSSR1_SPD1_MASK	= 0xc000,
- 	MV_PCS_CSSR1_SPD1_SPD2	= 0xc000,
-@@ -125,6 +137,7 @@ enum {
- };
- 
- struct mv3310_chip {
-+	bool (*has_downshift)(struct phy_device *phydev);
- 	void (*init_supported_interfaces)(unsigned long *mask);
- 	int (*get_mactype)(struct phy_device *phydev);
- 	int (*init_interface)(struct phy_device *phydev, int mactype);
-@@ -138,6 +151,7 @@ struct mv3310_priv {
- 	DECLARE_BITMAP(supported_interfaces, PHY_INTERFACE_MODE_MAX);
- 
- 	u32 firmware_ver;
-+	bool has_downshift;
- 	bool rate_match;
- 	phy_interface_t const_interface;
- 
-@@ -330,6 +344,71 @@ static int mv3310_reset(struct phy_device *phydev, u32 unit)
- 					 5000, 100000, true);
- }
- 
-+static int mv3310_get_downshift(struct phy_device *phydev, u8 *ds)
-+{
-+	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-+	int val;
-+
-+	if (!priv->has_downshift)
-+		return -EOPNOTSUPP;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1);
-+	if (val < 0)
-+		return val;
-+
-+	if (val & MV_PCS_DSC1_ENABLE)
-+		/* assume that all fields are the same */
-+		*ds = 1 + FIELD_GET(MV_PCS_DSC1_10GBT, (u16)val);
-+	else
-+		*ds = DOWNSHIFT_DEV_DISABLE;
-+
-+	return 0;
-+}
-+
-+static int mv3310_set_downshift(struct phy_device *phydev, u8 ds)
-+{
-+	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-+	u16 val;
-+	int err;
-+
-+	if (!priv->has_downshift)
-+		return -EOPNOTSUPP;
-+
-+	if (ds == DOWNSHIFT_DEV_DISABLE)
-+		return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
-+					  MV_PCS_DSC1_ENABLE);
-+
-+	/* DOWNSHIFT_DEV_DEFAULT_COUNT is confusing. It looks like it should
-+	 * set the default settings for the PHY. However, it is used for
-+	 * "ethtool --set-phy-tunable ethN downshift on". The intention is
-+	 * to enable downshift at a default number of retries. The default
-+	 * settings for 88x3310 are for two retries with downshift disabled.
-+	 * So let's use two retries with downshift enabled.
-+	 */
-+	if (ds == DOWNSHIFT_DEV_DEFAULT_COUNT)
-+		ds = 2;
-+
-+	if (ds > 8)
-+		return -E2BIG;
-+
-+	ds -= 1;
-+	val = FIELD_PREP(MV_PCS_DSC2_2P5G, ds);
-+	val |= FIELD_PREP(MV_PCS_DSC2_5G, ds);
-+	err = phy_modify_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC2,
-+			     MV_PCS_DSC2_2P5G | MV_PCS_DSC2_5G, val);
-+	if (err < 0)
-+		return err;
-+
-+	val = MV_PCS_DSC1_ENABLE;
-+	val |= FIELD_PREP(MV_PCS_DSC1_10GBT, ds);
-+	val |= FIELD_PREP(MV_PCS_DSC1_1GBR, ds);
-+	val |= FIELD_PREP(MV_PCS_DSC1_100BTX, ds);
-+
-+	return phy_modify_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
-+			      MV_PCS_DSC1_ENABLE | MV_PCS_DSC1_10GBT |
-+			      MV_PCS_DSC1_1GBR | MV_PCS_DSC1_100BTX, val);
-+}
-+
- static int mv3310_get_edpd(struct phy_device *phydev, u16 *edpd)
- {
- 	int val;
-@@ -448,6 +527,9 @@ static int mv3310_probe(struct phy_device *phydev)
- 		    priv->firmware_ver >> 24, (priv->firmware_ver >> 16) & 255,
- 		    (priv->firmware_ver >> 8) & 255, priv->firmware_ver & 255);
- 
-+	if (chip->has_downshift)
-+		priv->has_downshift = chip->has_downshift(phydev);
-+
- 	/* Powering down the port when not in use saves about 600mW */
- 	ret = mv3310_power_down(phydev);
- 	if (ret)
-@@ -616,7 +698,16 @@ static int mv3310_config_init(struct phy_device *phydev)
- 	}
- 
- 	/* Enable EDPD mode - saving 600mW */
--	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
-+	err = mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
-+	if (err)
-+		return err;
-+
-+	/* Allow downshift */
-+	err = mv3310_set_downshift(phydev, DOWNSHIFT_DEV_DEFAULT_COUNT);
-+	if (err && err != -EOPNOTSUPP)
-+		return err;
-+
-+	return 0;
- }
- 
- static int mv3310_get_features(struct phy_device *phydev)
-@@ -886,6 +977,8 @@ static int mv3310_get_tunable(struct phy_device *phydev,
- 			      struct ethtool_tunable *tuna, void *data)
- {
- 	switch (tuna->id) {
-+	case ETHTOOL_PHY_DOWNSHIFT:
-+		return mv3310_get_downshift(phydev, data);
- 	case ETHTOOL_PHY_EDPD:
- 		return mv3310_get_edpd(phydev, data);
- 	default:
-@@ -897,6 +990,8 @@ static int mv3310_set_tunable(struct phy_device *phydev,
- 			      struct ethtool_tunable *tuna, const void *data)
- {
- 	switch (tuna->id) {
-+	case ETHTOOL_PHY_DOWNSHIFT:
-+		return mv3310_set_downshift(phydev, *(u8 *)data);
- 	case ETHTOOL_PHY_EDPD:
- 		return mv3310_set_edpd(phydev, *(u16 *)data);
- 	default:
-@@ -904,6 +999,14 @@ static int mv3310_set_tunable(struct phy_device *phydev,
- 	}
- }
- 
-+static bool mv3310_has_downshift(struct phy_device *phydev)
-+{
-+	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-+
-+	/* Fails to downshift with firmware older than v0.3.5.0 */
-+	return priv->firmware_ver >= MV_VERSION(0,3,5,0);
-+}
-+
- static void mv3310_init_supported_interfaces(unsigned long *mask)
- {
- 	__set_bit(PHY_INTERFACE_MODE_SGMII, mask);
-@@ -943,6 +1046,7 @@ static void mv2111_init_supported_interfaces(unsigned long *mask)
- }
- 
- static const struct mv3310_chip mv3310_type = {
-+	.has_downshift = mv3310_has_downshift,
- 	.init_supported_interfaces = mv3310_init_supported_interfaces,
- 	.get_mactype = mv3310_get_mactype,
- 	.init_interface = mv3310_init_interface,
-@@ -953,6 +1057,7 @@ static const struct mv3310_chip mv3310_type = {
- };
- 
- static const struct mv3310_chip mv3340_type = {
-+	.has_downshift = mv3310_has_downshift,
- 	.init_supported_interfaces = mv3340_init_supported_interfaces,
- 	.get_mactype = mv3310_get_mactype,
- 	.init_interface = mv3340_init_interface,
--- 
-2.30.2
+> 
+> > 2. Same behaviour across all netdev devices.
+> 
+> Unclear what this is referring to.
 
+If your device doesn't support devlink reload, it won't print any
+reload counters at all. It is not the case for the multiport mlx5
+device. It doesn't support, but still present these counters.
+
+Thanks
