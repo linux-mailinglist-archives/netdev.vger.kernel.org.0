@@ -2,128 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F054441CB2D
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 19:45:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CB1D41CB31
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 19:46:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345171AbhI2RrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 13:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344502AbhI2RrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 13:47:02 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AFCFC06161C;
-        Wed, 29 Sep 2021 10:45:21 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id v10so11844324edj.10;
-        Wed, 29 Sep 2021 10:45:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FIySyrXxkEKwm26jEVGIMsY7wJRMxgw98emBJrp8y6k=;
-        b=TPaJQTAmcDitxf8sdYRG0suoD9OHN+sqJSpRUZK8MeJi++z5D1ptjyVQYeiOQb0xRz
-         q/12yatXna9nstDHjtX91d0WHkcHgEAmqP9KMZqwMfGcdSq7xnaER0/LWjNOXtpP9FKn
-         F3+D2FaUshkIzokd6Ze1bOk/b9cs9UH1g7G0Ksb88yXanQlTAXv2ypXxRprYdArK4k0G
-         Xn+kJjK5+UFvUyGSF2oJM/6kx8z9D3NMPMQN/uBU+/8OO7orSgyv8a58AwQYVQpBjb3A
-         18cLyXbIvuY44Xrh/FnXl+PelNAiW3VaJSNiucUy2QkJmmJ3Hh60DV5sVavSCgo0lUb8
-         A+Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FIySyrXxkEKwm26jEVGIMsY7wJRMxgw98emBJrp8y6k=;
-        b=bwTpLIRvO8V7/spP36xvwJ4PbNUS7gG2Vsrf2zLJ4FLJpmD7AZGqmA8C/jyg09A2au
-         vXt4p8KAAX7K02XDtWsUqICafmz+KBJqK860EsJP7SqXnbeA01VPyZkKJn9G2gWOHo7d
-         nZEfhKxFfkBN27/FoJltM1wRqMgWtMPfRGDjp0Xp5udoimmKBnMZSWkF6VMANqoHJ+Re
-         r4PTWmZ63nBcgpECIENwKmhCkntap83iQ3xQ4lgCXqbnvmdIN+qnqKaaN4SWl3zlBO5L
-         3VkCdGHR+C1TPjJb7+WuFXjHanPEGjJ/6GIj/P4/mvILBlgrZF5Y11WY3ACdd+z38pR9
-         3NBw==
-X-Gm-Message-State: AOAM531MHijAAd/9isynwPi8J8V5whxOlJaWBTZDOA7yLwONWtl2vMPn
-        Jh+GZlt+Dpjt55r8luaHeFpMX4m6bZ0=
-X-Google-Smtp-Source: ABdhPJyv6MYqHGEXqX5DmaZbUP++IQh7gQRcGMZL91Fz4wXLE2Arze2Mh7vp5GGyw/Lnk8fL/qPVcw==
-X-Received: by 2002:a50:fa89:: with SMTP id w9mr1411930edr.113.1632937519918;
-        Wed, 29 Sep 2021 10:45:19 -0700 (PDT)
-Received: from [192.168.0.108] ([176.228.98.2])
-        by smtp.gmail.com with ESMTPSA id dt4sm350760ejb.27.2021.09.29.10.45.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Sep 2021 10:45:19 -0700 (PDT)
-Subject: Re: [PATCH][net-next] net/mlx4: Use array_size() helper in
- copy_to_user()
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
+        id S1344406AbhI2RsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 13:48:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43932 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244776AbhI2Rr6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 13:47:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3161361465;
+        Wed, 29 Sep 2021 17:46:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632937576;
+        bh=eTdjvQH/CdfOQ7X4ByS3Qx9OO5zspwx3avBYC1T9Gxs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aC61OETwUJOuqBc5LQRP+kC2sdJ+KJbEVU7spHjTMFUSTRwiSYbVi5Z1JkuaGY3vM
+         pLiisyxUZsCzutFzrtzkKCWI4IaaixWlV9VNXhIaDNFhR1oKMxT1nshoY8rLI7+jvn
+         pnLZ3g00AP4cYDTduxuzIGgCQY7WVyOaFQpIqC2lTXILwPdCDt2MlEK/s5SFUgf7wn
+         s2D55xrS8nf7N1n5abbqqlC21bs+EmWBesvxrxf9guwkRxXGBxoerSCcoaMaijUYS/
+         ITvQ55ZOqKqPiF5rW7ldDEl8bWoOMXk4UP5tEmKZFHnUUaEdXbScyY3v99NSVYAXmU
+         kDMdTTkPln5Iw==
+Date:   Wed, 29 Sep 2021 10:46:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20210928201733.GA268467@embeddedor>
- <283d239b-9af9-d3a3-72be-9138c032ef63@gmail.com>
- <16ae2d2d-3aba-82b2-0bd8-90f7d0367a62@gmail.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Message-ID: <e2f72429-91c5-7140-c13d-35d4623092de@gmail.com>
-Date:   Wed, 29 Sep 2021 20:45:17 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer
+ support
+Message-ID: <20210929104615.6179efee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CACAyw98tVmuRbMr5RpPY_0GmU_bQAH+d9=UoEx3u5g+nGSwfYQ@mail.gmail.com>
+References: <cover.1631289870.git.lorenzo@kernel.org>
+        <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YUSrWiWh57Ys7UdB@lore-desk>
+        <20210917113310.4be9b586@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAADnVQL15NAqbswXedF0r2om8SOiMQE80OSjbyCA56s-B4y8zA@mail.gmail.com>
+        <20210917120053.1ec617c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAADnVQKbrkOxfNoixUx-RLJEWULJLyhqjZ=M_X2cFG_APwNyCg@mail.gmail.com>
+        <614511bc3408b_8d5120862@john-XPS-13-9370.notmuch>
+        <8735q25ccg.fsf@toke.dk>
+        <20210920110216.4c54c9a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87lf3r3qrn.fsf@toke.dk>
+        <20210920142542.7b451b78@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87ilyu50kl.fsf@toke.dk>
+        <CACAyw98tVmuRbMr5RpPY_0GmU_bQAH+d9=UoEx3u5g+nGSwfYQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <16ae2d2d-3aba-82b2-0bd8-90f7d0367a62@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 29 Sep 2021 11:36:33 +0100 Lorenz Bauer wrote:
+> On Mon, 20 Sept 2021 at 23:46, Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+> > > The draft API was:
+> > >
+> > > void *xdp_mb_pointer_flush(struct xdp_buff *xdp_md, u32 flags,
+> > >                            u32 offset, u32 len, void *stack_buf)
+> > >
+> > > Which does not take the ptr returned by header_pointer(), but that's
+> > > easy to add (well, easy other than the fact it'd be the 6th arg). =20
+> >
+> > I guess we could play some trickery with stuffing offset/len/flags into
+> > one or two u64s to save an argument or two? =20
+>=20
+> Adding another pointer arg seems really hard to explain as an API.
+> What happens if I pass the "wrong" ptr? What happens if I pass NULL?
 
+Sure. We can leave the checking to the program then, but that ties
+our hands for the implementation changes later on.
 
-On 9/29/2021 8:21 PM, Eric Dumazet wrote:
-> 
-> 
-> On 9/29/21 3:24 AM, Tariq Toukan wrote:
->>
->>
->> On 9/28/2021 11:17 PM, Gustavo A. R. Silva wrote:
->>> Use array_size() helper instead of the open-coded version in
->>> copy_to_user(). These sorts of multiplication factors need
->>> to be wrapped in array_size().
->>>
->>> Link: https://github.com/KSPP/linux/issues/160
->>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
->>> ---
->>>    drivers/net/ethernet/mellanox/mlx4/cq.c | 3 ++-
->>>    1 file changed, 2 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
->>> index f7053a74e6a8..4d4f9cf9facb 100644
->>> --- a/drivers/net/ethernet/mellanox/mlx4/cq.c
->>> +++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
->>> @@ -314,7 +314,8 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
->>>                buf += PAGE_SIZE;
->>>            }
->>>        } else {
->>> -        err = copy_to_user((void __user *)buf, init_ents, entries * cqe_size) ?
->>> +        err = copy_to_user((void __user *)buf, init_ents,
->>> +                   array_size(entries, cqe_size)) ?
->>>                -EFAULT : 0;
->>>        }
->>>   
->>
->> Thanks for your patch.
->> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> 
-> Not sure why avoiding size_t overflows would make this code safer.
-> init_ents contains PAGE_SIZE bytes...
-> 
-> BTW
-> 
-> Is @entries guaranteed to be a power of two ?
+Not sure which pointer type will be chosen for the ret value but it=20
+may allow error checking at verification.
 
-Yes.
+> How about this: instead of taking stack_ptr, take the return value
+> from header_pointer as an argument. Then use the already existing
+> (right ;P) inlining to do the following:
+>=20
+>    if (md->ptr + args->off !=3D ret_ptr)
+>      __pointer_flush(...)
 
-> 
-> This function seems to either copy one chunk ( <= PAGE_SIZE),
-> or a number of full pages.
-> 
+That only checks for the case where pointer is in the "head" frag,
+and is not generally correct. You need to check the length of the=20
+first frag is smaller than off. Otherwise BPF stack may "happen"
+to follow the head page and math will work out.
 
-Exactly. No remainder handling is needed, for the reason you mentioned 
-above.
+It would also be slower than Lorenzo's current code, which allows
+access to tail pages without copying.
