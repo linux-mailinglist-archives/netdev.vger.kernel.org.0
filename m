@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2AB141C969
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:04:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9231641C953
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:03:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346338AbhI2QD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 12:03:56 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:13848 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345597AbhI2QAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 12:00:03 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKLWc15Zvz8yvp;
-        Wed, 29 Sep 2021 23:53:32 +0800 (CST)
+        id S1346467AbhI2QEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 12:04:25 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:24143 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345608AbhI2QAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 12:00:04 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HKLbR4hwKz1DHD0;
+        Wed, 29 Sep 2021 23:56:51 +0800 (CST)
 Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.8; Wed, 29 Sep 2021 23:58:10 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -26,9 +26,9 @@ From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv2 net-next 099/167] net: hinic: use netdev feature helpers
-Date:   Wed, 29 Sep 2021 23:52:26 +0800
-Message-ID: <20210929155334.12454-100-shenjian15@huawei.com>
+Subject: [RFCv2 net-next 100/167] net: ibm: use netdev feature helpers
+Date:   Wed, 29 Sep 2021 23:52:27 +0800
+Message-ID: <20210929155334.12454-101-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 References: <20210929155334.12454-1-shenjian15@huawei.com>
@@ -48,167 +48,317 @@ for netdev features.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- .../net/ethernet/huawei/hinic/hinic_main.c    | 74 ++++++++++++-------
- drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  5 +-
- 2 files changed, 50 insertions(+), 29 deletions(-)
+ drivers/net/ethernet/ibm/ehea/ehea_main.c | 22 ++++---
+ drivers/net/ethernet/ibm/emac/core.c      |  7 ++-
+ drivers/net/ethernet/ibm/ibmveth.c        | 70 ++++++++++++++---------
+ drivers/net/ethernet/ibm/ibmvnic.c        | 62 +++++++++++++-------
+ 4 files changed, 104 insertions(+), 57 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index cce66faa477c..c33bb3dd5614 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -894,9 +894,9 @@ static void hinic_fix_features(struct net_device *netdev,
- 	struct hinic_dev *nic_dev = netdev_priv(netdev);
+diff --git a/drivers/net/ethernet/ibm/ehea/ehea_main.c b/drivers/net/ethernet/ibm/ehea/ehea_main.c
+index d5df131b183c..dba57bb6684f 100644
+--- a/drivers/net/ethernet/ibm/ehea/ehea_main.c
++++ b/drivers/net/ethernet/ibm/ehea/ehea_main.c
+@@ -2991,14 +2991,20 @@ static struct ehea_port *ehea_setup_single_port(struct ehea_adapter *adapter,
+ 	dev->netdev_ops = &ehea_netdev_ops;
+ 	ehea_set_ethtool_ops(dev);
  
- 	/* If Rx checksum is disabled, then LRO should also be disabled */
--	if (!(*features & NETIF_F_RXCSUM)) {
-+	if (!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, *features)) {
- 		netif_info(nic_dev, drv, netdev, "disabling LRO as RXCSUM is off\n");
--		*features &= ~NETIF_F_LRO;
-+		netdev_feature_clear_bit(NETIF_F_LRO_BIT, features);
+-	dev->hw_features = NETIF_F_SG | NETIF_F_TSO |
+-		      NETIF_F_IP_CSUM | NETIF_F_HW_VLAN_CTAG_TX;
+-	dev->features = NETIF_F_SG | NETIF_F_TSO |
+-		      NETIF_F_HIGHDMA | NETIF_F_IP_CSUM |
+-		      NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
+-		      NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXCSUM;
+-	dev->vlan_features = NETIF_F_SG | NETIF_F_TSO | NETIF_F_HIGHDMA |
+-			NETIF_F_IP_CSUM;
++	netdev_feature_zero(&dev->hw_features);
++	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_TSO |
++				NETIF_F_IP_CSUM | NETIF_F_HW_VLAN_CTAG_TX,
++				&dev->hw_features);
++	netdev_feature_zero(&dev->features);
++	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_TSO |
++				NETIF_F_HIGHDMA | NETIF_F_IP_CSUM |
++				NETIF_F_HW_VLAN_CTAG_TX |
++				NETIF_F_HW_VLAN_CTAG_RX |
++				NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXCSUM,
++				&dev->features);
++	netdev_feature_zero(&dev->vlan_features);
++	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_TSO | NETIF_F_HIGHDMA |
++				NETIF_F_IP_CSUM, &dev->vlan_features);
+ 	dev->watchdog_timeo = EHEA_WATCH_DOG_TIMEOUT;
+ 
+ 	/* MTU range: 68 - 9022 */
+diff --git a/drivers/net/ethernet/ibm/emac/core.c b/drivers/net/ethernet/ibm/emac/core.c
+index 523c488c71f6..a2a45f39d363 100644
+--- a/drivers/net/ethernet/ibm/emac/core.c
++++ b/drivers/net/ethernet/ibm/emac/core.c
+@@ -3168,8 +3168,11 @@ static int emac_probe(struct platform_device *ofdev)
+ 		goto err_detach_tah;
+ 
+ 	if (dev->tah_dev) {
+-		ndev->hw_features = NETIF_F_IP_CSUM | NETIF_F_SG;
+-		ndev->features |= ndev->hw_features | NETIF_F_RXCSUM;
++		netdev_feature_zero(&ndev->hw_features);
++		netdev_feature_set_bits(NETIF_F_IP_CSUM | NETIF_F_SG,
++					&ndev->hw_features);
++		netdev_feature_copy(&ndev->features, ndev->hw_features);
++		netdev_feature_set_bit(NETIF_F_RXCSUM_BIT, &ndev->features);
  	}
+ 	ndev->watchdog_timeo = 5 * HZ;
+ 	if (emac_phy_supports_gige(dev->phy_mode)) {
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index 7884d17d666f..834a9036469a 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -754,8 +754,8 @@ static void ibmveth_fix_features(struct net_device *dev,
+ 	 * checksummed.
+ 	 */
+ 
+-	if (!(*features & NETIF_F_RXCSUM))
+-		*features &= ~NETIF_F_CSUM_MASK;
++	if (!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, *features))
++		netdev_feature_clear_bits(NETIF_F_CSUM_MASK, features);
  }
  
-@@ -941,19 +941,25 @@ static const struct net_device_ops hinicvf_netdev_ops = {
+ static int ibmveth_set_csum_offload(struct net_device *dev, u32 data)
+@@ -803,7 +803,8 @@ static int ibmveth_set_csum_offload(struct net_device *dev, u32 data)
+ 					   set_attr, clr_attr, &ret_attr);
  
- static void netdev_features_init(struct net_device *netdev)
+ 			if (data == 1)
+-				dev->features &= ~NETIF_F_IP_CSUM;
++				netdev_feature_clear_bit(NETIF_F_IP_CSUM_BIT,
++							 &dev->features);
+ 
+ 		} else {
+ 			adapter->fw_ipv4_csum_support = data;
+@@ -821,7 +822,8 @@ static int ibmveth_set_csum_offload(struct net_device *dev, u32 data)
+ 					   set_attr6, clr_attr6, &ret_attr);
+ 
+ 			if (data == 1)
+-				dev->features &= ~NETIF_F_IPV6_CSUM;
++				netdev_feature_clear_bit(NETIF_F_IPV6_CSUM_BIT,
++							 &dev->features);
+ 
+ 		} else
+ 			adapter->fw_ipv6_csum_support = data;
+@@ -881,7 +883,9 @@ static int ibmveth_set_tso(struct net_device *dev, u32 data)
+ 					   set_attr, clr_attr, &ret_attr);
+ 
+ 			if (data == 1)
+-				dev->features &= ~(NETIF_F_TSO | NETIF_F_TSO6);
++				netdev_feature_clear_bits(NETIF_F_TSO |
++							  NETIF_F_TSO6,
++							  &dev->features);
+ 			rc1 = -EIO;
+ 
+ 		} else {
+@@ -893,7 +897,8 @@ static int ibmveth_set_tso(struct net_device *dev, u32 data)
+ 		 * support tcp6/ipv6
+ 		 */
+ 		if (data == 1) {
+-			dev->features &= ~NETIF_F_TSO6;
++			netdev_feature_clear_bit(NETIF_F_TSO6_BIT,
++						 &dev->features);
+ 			netdev_info(dev, "TSO feature requires all partitions to have updated driver");
+ 		}
+ 		adapter->large_send = data;
+@@ -909,23 +914,32 @@ static int ibmveth_set_features(struct net_device *dev,
+ 	netdev_features_t features)
  {
--	netdev->hw_features = NETIF_F_SG | NETIF_F_HIGHDMA | NETIF_F_IP_CSUM |
--			      NETIF_F_IPV6_CSUM | NETIF_F_TSO | NETIF_F_TSO6 |
--			      NETIF_F_RXCSUM | NETIF_F_LRO |
--			      NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
--			      NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 	struct ibmveth_adapter *adapter = netdev_priv(dev);
+-	int rx_csum = !!(features & NETIF_F_RXCSUM);
+-	int large_send = !!(features & (NETIF_F_TSO | NETIF_F_TSO6));
+ 	int rc1 = 0, rc2 = 0;
++	int large_send;
++	int rx_csum;
++
++	rx_csum = netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, features);
++	large_send = netdev_feature_test_bits(NETIF_F_TSO | NETIF_F_TSO6,
++					      features);
  
--	netdev->vlan_features = netdev->hw_features;
+ 	if (rx_csum != adapter->rx_csum) {
+ 		rc1 = ibmveth_set_csum_offload(dev, rx_csum);
+-		if (rc1 && !adapter->rx_csum)
+-			dev->features =
+-				features & ~(NETIF_F_CSUM_MASK |
+-					     NETIF_F_RXCSUM);
++		if (rc1 && !adapter->rx_csum) {
++			netdev_feature_copy(&dev->features, features);
++			netdev_feature_clear_bits(NETIF_F_CSUM_MASK |
++						  NETIF_F_RXCSUM,
++						  &dev->features);
++		}
+ 	}
+ 
+ 	if (large_send != adapter->large_send) {
+ 		rc2 = ibmveth_set_tso(dev, large_send);
+-		if (rc2 && !adapter->large_send)
+-			dev->features =
+-				features & ~(NETIF_F_TSO | NETIF_F_TSO6);
++		if (rc2 && !adapter->large_send) {
++			netdev_feature_copy(&dev->features, features);
++			netdev_feature_clear_bits(NETIF_F_TSO |
++						  NETIF_F_TSO6,
++						  &dev->features);
++		}
+ 	}
+ 
+ 	return rc1 ? rc1 : rc2;
+@@ -1689,30 +1703,34 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	netdev->netdev_ops = &ibmveth_netdev_ops;
+ 	netdev->ethtool_ops = &netdev_ethtool_ops;
+ 	SET_NETDEV_DEV(netdev, &dev->dev);
+-	netdev->hw_features = NETIF_F_SG;
+-	if (vio_get_attribute(dev, "ibm,illan-options", NULL) != NULL) {
+-		netdev->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+-				       NETIF_F_RXCSUM;
+-	}
 +	netdev_feature_zero(&netdev->hw_features);
-+	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_HIGHDMA | NETIF_F_IP_CSUM |
-+				NETIF_F_IPV6_CSUM | NETIF_F_TSO | NETIF_F_TSO6 |
-+				NETIF_F_RXCSUM | NETIF_F_LRO |
-+				NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
-+				NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_UDP_TUNNEL_CSUM,
-+				&netdev->hw_features);
++	netdev_feature_set_bit(NETIF_F_SG_BIT, &netdev->hw_features);
++	if (vio_get_attribute(dev, "ibm,illan-options", NULL) != NULL)
++		netdev_feature_set_bits(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
++					NETIF_F_RXCSUM, &netdev->hw_features);
  
--	netdev->features = netdev->hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
-+	netdev_feature_copy(&netdev->vlan_features, netdev->hw_features);
+-	netdev->features |= netdev->hw_features;
++	netdev_feature_or(&netdev->features, netdev->features,
++			  netdev->hw_features);
  
--	netdev->hw_enc_features = NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | NETIF_F_SCTP_CRC |
--				  NETIF_F_SG | NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_TSO_ECN |
--				  NETIF_F_GSO_UDP_TUNNEL_CSUM | NETIF_F_GSO_UDP_TUNNEL;
-+	netdev_feature_copy(&netdev->features, netdev->hw_features);
-+	netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT, &netdev->features);
-+
-+	netdev_feature_zero(&netdev->hw_enc_features);
-+	netdev_feature_set_bits(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | NETIF_F_SCTP_CRC |
-+				NETIF_F_SG | NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_TSO_ECN |
-+				NETIF_F_GSO_UDP_TUNNEL_CSUM | NETIF_F_GSO_UDP_TUNNEL,
-+				&netdev->hw_enc_features);
+ 	ret = h_illan_attributes(adapter->vdev->unit_address, 0, 0, &ret_attr);
+ 
+ 	/* If running older firmware, TSO should not be enabled by default */
+ 	if (ret == H_SUCCESS && (ret_attr & IBMVETH_ILLAN_LRG_SND_SUPPORT) &&
+ 	    !old_large_send) {
+-		netdev->hw_features |= NETIF_F_TSO | NETIF_F_TSO6;
+-		netdev->features |= netdev->hw_features;
++		netdev_feature_set_bits(NETIF_F_TSO | NETIF_F_TSO6,
++					&netdev->hw_features);
++		netdev_feature_or(&netdev->features, netdev->features,
++				  netdev->hw_features);
+ 	} else {
+-		netdev->hw_features |= NETIF_F_TSO;
++		netdev_feature_set_bit(NETIF_F_TSO_BIT, &netdev->hw_features);
+ 	}
+ 
+ 	adapter->is_active_trunk = false;
+ 	if (ret == H_SUCCESS && (ret_attr & IBMVETH_ILLAN_ACTIVE_TRUNK)) {
+ 		adapter->is_active_trunk = true;
+-		netdev->hw_features |= NETIF_F_FRAGLIST;
+-		netdev->features |= NETIF_F_FRAGLIST;
++		netdev_feature_set_bit(NETIF_F_FRAGLIST_BIT,
++				       &netdev->hw_features);
++		netdev_feature_set_bit(NETIF_F_FRAGLIST_BIT, &netdev->features);
+ 	}
+ 
+ 	netdev->min_mtu = IBMVETH_MIN_MTU;
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index b8ee2e3977b5..4dfabea91db6 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -3013,7 +3013,7 @@ static void ibmvnic_features_check(struct sk_buff *skb, struct net_device *dev,
+ 	if (skb_is_gso(skb)) {
+ 		if (skb_shinfo(skb)->gso_size < 224 ||
+ 		    skb_shinfo(skb)->gso_segs == 1)
+-			*features &= ~NETIF_F_GSO_MASK;
++			netdev_feature_clear_bits(NETIF_F_GSO_MASK, features);
+ 	}
  }
  
- static void hinic_refresh_nic_cfg(struct hinic_dev *nic_dev)
-@@ -1073,52 +1079,66 @@ static int set_features(struct hinic_dev *nic_dev,
- 			netdev_features_t pre_features,
- 			netdev_features_t features, bool force_change)
- {
--	netdev_features_t changed = force_change ? ~0 : pre_features ^ features;
- 	u32 csum_en = HINIC_RX_CSUM_OFFLOAD_EN;
--	netdev_features_t failed_features = 0;
-+	netdev_features_t failed_features;
-+	netdev_features_t changed;
- 	int ret = 0;
- 	int err = 0;
+@@ -4511,7 +4511,7 @@ static void send_control_ip_offload(struct ibmvnic_adapter *adapter)
+ 	struct ibmvnic_control_ip_offload_buffer *ctrl_buf = &adapter->ip_offload_ctrl;
+ 	struct ibmvnic_query_ip_offload_buffer *buf = &adapter->ip_offload_buf;
+ 	struct device *dev = &adapter->vdev->dev;
+-	netdev_features_t old_hw_features = 0;
++	netdev_features_t old_hw_features;
+ 	union ibmvnic_crq crq;
  
--	if (changed & NETIF_F_TSO) {
--		ret = hinic_port_set_tso(nic_dev, (features & NETIF_F_TSO) ?
-+	if (force_change)
-+		netdev_feature_fill(&changed);
-+	else
-+		netdev_feature_xor(&changed, pre_features, features);
+ 	adapter->ip_offload_ctrl_tok =
+@@ -4540,40 +4540,59 @@ static void send_control_ip_offload(struct ibmvnic_adapter *adapter)
+ 	ctrl_buf->large_rx_ipv4 = 0;
+ 	ctrl_buf->large_rx_ipv6 = 0;
+ 
++	netdev_feature_zero(&old_hw_features);
 +
-+	netdev_feature_zero(&failed_features);
+ 	if (adapter->state != VNIC_PROBING) {
+-		old_hw_features = adapter->netdev->hw_features;
+-		adapter->netdev->hw_features = 0;
++		netdev_feature_copy(&old_hw_features,
++				    adapter->netdev->hw_features);
++		netdev_feature_zero(&adapter->netdev->hw_features);
+ 	}
+ 
+-	adapter->netdev->hw_features = NETIF_F_SG | NETIF_F_GSO | NETIF_F_GRO;
++	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_GSO | NETIF_F_GRO,
++				&adapter->netdev->hw_features);
+ 
+ 	if (buf->tcp_ipv4_chksum || buf->udp_ipv4_chksum)
+-		adapter->netdev->hw_features |= NETIF_F_IP_CSUM;
++		netdev_feature_set_bit(NETIF_F_IP_CSUM_BIT,
++				       &adapter->netdev->hw_features);
+ 
+ 	if (buf->tcp_ipv6_chksum || buf->udp_ipv6_chksum)
+-		adapter->netdev->hw_features |= NETIF_F_IPV6_CSUM;
++		netdev_feature_set_bit(NETIF_F_IPV6_CSUM_BIT,
++				       &adapter->netdev->hw_features);
+ 
+-	if ((adapter->netdev->features &
+-	    (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM)))
+-		adapter->netdev->hw_features |= NETIF_F_RXCSUM;
++	if (netdev_feature_test_bits(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM,
++				     adapter->netdev->features))
++		netdev_feature_set_bit(NETIF_F_RXCSUM_BIT,
++				       &adapter->netdev->hw_features);
+ 
+ 	if (buf->large_tx_ipv4)
+-		adapter->netdev->hw_features |= NETIF_F_TSO;
++		netdev_feature_set_bit(NETIF_F_TSO_BIT,
++				       &adapter->netdev->hw_features);
+ 	if (buf->large_tx_ipv6)
+-		adapter->netdev->hw_features |= NETIF_F_TSO6;
++		netdev_feature_set_bit(NETIF_F_TSO6_BIT,
++				       &adapter->netdev->hw_features);
+ 
+ 	if (adapter->state == VNIC_PROBING) {
+-		adapter->netdev->features |= adapter->netdev->hw_features;
+-	} else if (old_hw_features != adapter->netdev->hw_features) {
+-		netdev_features_t tmp = 0;
++		netdev_feature_or(&adapter->netdev->features,
++				  adapter->netdev->features,
++				  adapter->netdev->hw_features);
++	} else if (!netdev_feature_equal(old_hw_features,
++					 adapter->netdev->hw_features)) {
++		netdev_features_t tmp;
 +
-+	if (netdev_feature_test_bit(NETIF_F_TSO_BIT, changed)) {
-+		ret = hinic_port_set_tso(nic_dev,
-+					 netdev_feature_test_bit(NETIF_F_TSO_BIT,
-+								 features) ?
- 					 HINIC_TSO_ENABLE : HINIC_TSO_DISABLE);
- 		if (ret) {
- 			err = ret;
--			failed_features |= NETIF_F_TSO;
-+			netdev_feature_set_bit(NETIF_F_TSO_BIT,
-+					       &failed_features);
- 		}
++		netdev_feature_zero(&tmp);
+ 
+ 		/* disable features no longer supported */
+-		adapter->netdev->features &= adapter->netdev->hw_features;
++		netdev_feature_and(&adapter->netdev->features,
++				   adapter->netdev->features,
++				   adapter->netdev->hw_features);
+ 		/* turn on features now supported if previously enabled */
+-		tmp = (old_hw_features ^ adapter->netdev->hw_features) &
+-			adapter->netdev->hw_features;
+-		adapter->netdev->features |=
+-				tmp & adapter->netdev->wanted_features;
++		netdev_feature_xor(&tmp, old_hw_features,
++				   adapter->netdev->hw_features);
++		netdev_feature_and(&tmp, tmp, adapter->netdev->hw_features);
++		netdev_feature_and(&tmp, tmp,
++				   adapter->netdev->wanted_features);
++		netdev_feature_or(&adapter->netdev->features,
++				  adapter->netdev->features, tmp);
  	}
  
--	if (changed & NETIF_F_RXCSUM) {
-+	if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, changed)) {
- 		ret = hinic_set_rx_csum_offload(nic_dev, csum_en);
- 		if (ret) {
- 			err = ret;
--			failed_features |= NETIF_F_RXCSUM;
-+			netdev_feature_set_bit(NETIF_F_RXCSUM_BIT,
-+					       &failed_features);
- 		}
- 	}
- 
--	if (changed & NETIF_F_LRO) {
-+	if (netdev_feature_test_bit(NETIF_F_LRO_BIT, changed)) {
- 		ret = hinic_set_rx_lro_state(nic_dev,
--					     !!(features & NETIF_F_LRO),
-+					     netdev_feature_test_bit(NETIF_F_LRO_BIT,
-+								     features),
- 					     HINIC_LRO_RX_TIMER_DEFAULT,
- 					     HINIC_LRO_MAX_WQE_NUM_DEFAULT);
- 		if (ret) {
- 			err = ret;
--			failed_features |= NETIF_F_LRO;
-+			netdev_feature_set_bit(NETIF_F_LRO_BIT,
-+					       &failed_features);
- 		}
- 	}
- 
--	if (changed & NETIF_F_HW_VLAN_CTAG_RX) {
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, changed)) {
- 		ret = hinic_set_rx_vlan_offload(nic_dev,
--						!!(features &
--						   NETIF_F_HW_VLAN_CTAG_RX));
-+						netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+									features));
- 		if (ret) {
- 			err = ret;
--			failed_features |= NETIF_F_HW_VLAN_CTAG_RX;
-+			netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+					       &failed_features);
- 		}
- 	}
- 
- 	if (err) {
--		nic_dev->netdev->features = features ^ failed_features;
-+		netdev_feature_xor(&nic_dev->netdev->features, features, failed_features);
- 		return -EIO;
- 	}
- 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_rx.c b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-index fed3b6bc0d76..1e07978ec8a7 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-@@ -106,7 +106,7 @@ static void rx_csum(struct hinic_rxq *rxq, u32 status,
- 
- 	csum_err = HINIC_RQ_CQE_STATUS_GET(status, CSUM_ERR);
- 
--	if (!(netdev->features & NETIF_F_RXCSUM))
-+	if (!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, netdev->features))
- 		return;
- 
- 	if (!csum_err) {
-@@ -411,7 +411,8 @@ static int rxq_recv(struct hinic_rxq *rxq, int budget)
- 
- 		offload_type = be32_to_cpu(cqe->offload_type);
- 		vlan_len = be32_to_cpu(cqe->len);
--		if ((netdev->features & NETIF_F_HW_VLAN_CTAG_RX) &&
-+		if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+					    netdev->features) &&
- 		    HINIC_GET_RX_VLAN_OFFLOAD_EN(offload_type)) {
- 			vid = HINIC_GET_RX_VLAN_TAG(vlan_len);
- 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vid);
+ 	memset(&crq, 0, sizeof(crq));
+@@ -5088,7 +5107,8 @@ static void handle_query_cap_rsp(union ibmvnic_crq *crq,
+ 		adapter->vlan_header_insertion =
+ 		    be64_to_cpu(crq->query_capability.number);
+ 		if (adapter->vlan_header_insertion)
+-			netdev->features |= NETIF_F_HW_VLAN_STAG_TX;
++			netdev_feature_set_bit(NETIF_F_HW_VLAN_STAG_TX_BIT,
++					       &netdev->features);
+ 		netdev_dbg(netdev, "vlan_header_insertion = %lld\n",
+ 			   adapter->vlan_header_insertion);
+ 		break;
 -- 
 2.33.0
 
