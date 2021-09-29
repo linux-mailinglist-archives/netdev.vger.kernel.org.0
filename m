@@ -2,101 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E468F41BF08
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 08:14:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5064241BF0D
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 08:19:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244251AbhI2GQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 02:16:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42740 "EHLO
+        id S244302AbhI2GUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 02:20:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243585AbhI2GQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 02:16:12 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771C9C06161C;
-        Tue, 28 Sep 2021 23:14:31 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id o19so930786wms.1;
-        Tue, 28 Sep 2021 23:14:31 -0700 (PDT)
+        with ESMTP id S244225AbhI2GUt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 02:20:49 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75C8C061746
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 23:19:08 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id v17so2285559wrv.9
+        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 23:19:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=XjH00ULnPvaaEhtogRY+O9xuuituLohfTkt4dqW/uYQ=;
-        b=XDxLNC+/BkMU+ukXAxTVk/47iebnulw5jsQWZpmYspvXM3I4rGVEijaZH9wB5yOiwM
-         fmrl0R4DW+WxfpVAxASbyB+N6xH0d5bUBepGI8bHqC33ANTcYYH3hifRPzj0kUsVzUHp
-         k3usFHh7crvjmsEAq3fyh6B395su83YP/TXyu3/1Jj6FrC7lKH1l92DVNDMAJuXfAn2q
-         2xOqDQRWpWkKeMPuZUwyq0vKekzVi4M1ktzm7fQkDhbYvL8t3Wfv9fCj2DIQz48DApqT
-         qCY6j3pPS7fOkxsuBx2JzNON80Rnkq7qp//gQGs7WWwuK/zY17DkhqqC14FOL2/YeOBi
-         uALg==
+        bh=BA10AXdVIXU2So5ZYm/Sc6COKBVDhlynEdJznpSLYc0=;
+        b=P58jKiTC5DWofHUmyGJiE6z8KtcI/RYagaHB2u6ORXaXHYvRQAWtyRXK9xqzdMLJd2
+         GpmmXimZwC92p7FWPbAokJno3ohyES8lm5t5hLm3vHuCRUEH2HIgTVtBDREwfJkIoSqZ
+         uwZC6EaUyRvec7FGtdjJDzrZFAag+kGRQZMemPwinzIoM5PhvW0QZ6GBLye73bk7KJo7
+         Arq0oE9bgvkTtAAY0yBeQ4DH1Zy9sLJSG9HwEk1xvy8fbsoJeuxUAdCFeD7DtyybsvFO
+         JtX6VFVg1EV58r4mJj28x7SEDkB0gvL/vLAGxCRptMBcXgE4/la8anZ79tj99MnZb1qQ
+         1Ipg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XjH00ULnPvaaEhtogRY+O9xuuituLohfTkt4dqW/uYQ=;
-        b=U7/LKmklD66HDBVNWQfH+90be/B0roUP4+9l9Tq3YWAix884SyQPDuKyBjx5e7LLkv
-         Y1I4NMybt64tjmRukfVhGNxIpp9dolx0XUwtMPKKCUMcqlQMLGy2dATEFVwi2hMQ9+jA
-         eSdWgSHNX/Xj9Uka44SyPWD6pIPNTMRghewwWGUZyc/a+h+zRpaPzqbWyrcP9b8T8Xh3
-         2c/H7GY2zvorNtQHJD9CVgsG9KoTER9ovFhGC7e/BviDAQX8Jtr+k3teo4iVACKY1JZB
-         Tv0mFAf7g67upI6j3KjTUXUU6Nr/V5j9CSfEHphr9AP7pKsf+4CYqO8MjqksOqzwUCyU
-         3mVQ==
-X-Gm-Message-State: AOAM532Lvsh6BeVKAtyzaPZjUESCiC8euz43Q64kJNnSOWKGd/XbU0s2
-        Rnm3iSEUmvzcH8XUAsmZDD8=
-X-Google-Smtp-Source: ABdhPJxnj8DbJJubIprhjnvlUiut42WY88ZFI92TSPMHEutDxnp6Jp1/4yUJ7mAe4UU4QzadPdoYhQ==
-X-Received: by 2002:a1c:a757:: with SMTP id q84mr8550930wme.26.1632896070019;
-        Tue, 28 Sep 2021 23:14:30 -0700 (PDT)
-Received: from localhost.localdomain (213-66-48-107-no285.tbcn.telia.com. [213.66.48.107])
-        by smtp.gmail.com with ESMTPSA id c15sm908017wrs.19.2021.09.28.23.14.28
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 Sep 2021 23:14:29 -0700 (PDT)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
-        nathan@kernel.org
-Cc:     bpf@vger.kernel.org
-Subject: [PATCH bpf-next] xsk: fix clang build error in __xp_alloc
-Date:   Wed, 29 Sep 2021 08:14:03 +0200
-Message-Id: <20210929061403.8587-1-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.29.0
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=BA10AXdVIXU2So5ZYm/Sc6COKBVDhlynEdJznpSLYc0=;
+        b=MJ8Ddkhrpj0GMCyocxNcT527dHOGONuRexZjYOfRVtUc+BPVjFphavTLjz8y0fK/oT
+         OZm+E+hiQmhILpq+y+LXps6ecCTdccSuAtawnzUwWFnWiP8JBX8ynXz0YXBR7JdCf6/A
+         +acBJMFRF2pSpsvt64iqObQ67Tj8hbQdibL/cJhgMEUteGqpj6ccv7be82MzcbJcE7i1
+         lmgWV1uMm7kOZYI6lA0OX73THksXpfcxZsnBqZZ0yVQui7lyeXB0ENBtgmvnyBlJOtMT
+         YktVHOwfNDdHjfe5gVNBKWnsnPNc2GS1QcT44bNLDM20x2fyy5Pl7csEIRUYgRlx3q++
+         SbUQ==
+X-Gm-Message-State: AOAM533a/xSM9kic0ztJ54aX8OZ9qDPmj/OEVYbCy9hmEQwA+X585AJ4
+        HINGzMHPd7xI2SVvYSJ48moIzw==
+X-Google-Smtp-Source: ABdhPJxdQ8lTmod/ogUQz0HFrzrN4lIxzwK/Iej9UoxbHgUzLzsnYWdON7874dyHHoqLzgqJjgWnPw==
+X-Received: by 2002:adf:e603:: with SMTP id p3mr4562026wrm.357.1632896347151;
+        Tue, 28 Sep 2021 23:19:07 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:e0fd:c68f:ea32:2084? ([2a01:e0a:410:bb00:e0fd:c68f:ea32:2084])
+        by smtp.gmail.com with ESMTPSA id p3sm1152093wrn.47.2021.09.28.23.19.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Sep 2021 23:19:06 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next v6] net: openvswitch: IPv6: Add IPv6 extension
+ header support
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Toms Atteka <cpp.code.lv@gmail.com>
+Cc:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org
+References: <20210928194727.1635106-1-cpp.code.lv@gmail.com>
+ <20210928174853.06fe8e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <d1e5b178-47f5-9791-73e9-0c1f805b0fca@6wind.com>
+Date:   Wed, 29 Sep 2021 08:19:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
+In-Reply-To: <20210928174853.06fe8e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+Le 29/09/2021 à 02:48, Jakub Kicinski a écrit :
+> On Tue, 28 Sep 2021 12:47:27 -0700 Toms Atteka wrote:
+>> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+>> index a87b44cd5590..dc6eb5f6399f 100644
+>> --- a/include/uapi/linux/openvswitch.h
+>> +++ b/include/uapi/linux/openvswitch.h
+>> @@ -346,6 +346,13 @@ enum ovs_key_attr {
+>>  #ifdef __KERNEL__
+>>  	OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+>>  #endif
+>> +
+>> +#ifndef __KERNEL__
+> 
+> #else
+> 
+>> +	PADDING,  /* Padding so kernel and non kernel field count would match */
+> 
+> The name PADDING seems rather risky, collisions will be likely.
+> OVS_KEY_ATTR_PADDING maybe?
+> 
+> But maybe we don't need to define this special value and bake it into
+> the uAPI, why can't we add something like this to the kernel header
+> (i.e. include/linux/openvswitch.h):
+> 
+> /* Insert a kernel only KEY_ATTR */
+> #define OVS_KEY_ATTR_TUNNEL_INFO	__OVS_KEY_ATTR_MAX
+> #undef OVS_KEY_ATTR_MAX
+> #define OVS_KEY_ATTR_MAX		__OVS_KEY_ATTR_MAX
+Following the other thread [1], this will break if a new app runs over an old
+kernel.
+Why not simply expose this attribute to userspace and throw an error if a
+userspace app uses it?
 
-Fix a build error with clang in __xp_alloc().
+[1]
+https://lore.kernel.org/lkml/CAASuNyUWoZ1wToEUYbdehux=yVnWQ=suKDyRkQfRD-72DOLziw@mail.gmail.com/
 
-net/xdp/xsk_buff_pool.c:465:15: error: variable 'xskb' is uninitialized
-when used here [-Werror,-Wuninitialized]
-                        xp_release(xskb);
-                                   ^~~~
-
-This is correctly detected by clang, but not gcc. In fact, the
-xp_release() statement should not be there at all in the refactored
-code, so just remove it.
-
-Fixes: 94033cd8e73b ("xsk: Optimize for aligned case")
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- net/xdp/xsk_buff_pool.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-index 96b14e51ba7e..90c4e1e819d3 100644
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -462,7 +462,6 @@ static struct xdp_buff_xsk *__xp_alloc(struct xsk_buff_pool *pool)
- 	for (;;) {
- 		if (!xskq_cons_peek_addr_unchecked(pool->fq, &addr)) {
- 			pool->fq->queue_empty_descs++;
--			xp_release(xskb);
- 			return NULL;
- 		}
- 
-
-base-commit: 72e1781a5de9e3ee804e24f7ce9a7dd85596fc51
--- 
-2.29.0
-
+> 
+>> +#endif
