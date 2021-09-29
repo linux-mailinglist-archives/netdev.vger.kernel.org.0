@@ -2,101 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C764E41C0AD
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 10:32:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23AF341C0E7
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 10:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244733AbhI2IeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 04:34:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48530 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240284AbhI2IeH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 04:34:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1632904342;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=33L2kvYESyBjFzI5T12hFb+rWTsyBJjmF6Rb3+aaSJw=;
-        b=DPhtQRATFXW5DUFG4STk4GLNZOfKTq2utGGfhyMf423oCtWqRNIPl0k9OwXB917mrfZEPg
-        tQVRbCitHUN0IGWUpfghaY0cePxKbE5b3l4TfLfnb4LBnVKJPXKNj6Z6vMF5+2gn1Y3J1T
-        kxSMUQ6vnDNnJ74psLR1lPqCkZIAoHg=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-247-mf82CESzNSG4Dgs6IYZ5ig-1; Wed, 29 Sep 2021 04:32:20 -0400
-X-MC-Unique: mf82CESzNSG4Dgs6IYZ5ig-1
-Received: by mail-wm1-f71.google.com with SMTP id v5-20020a1cac05000000b0030b85d2d479so858654wme.9
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 01:32:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=33L2kvYESyBjFzI5T12hFb+rWTsyBJjmF6Rb3+aaSJw=;
-        b=Uh23krLMq+GL2Qxq5/zXpWW8ulgQyf5AnK9rE/DVa742L6oA/IhrxFbmLgRYEk1Q/3
-         mJK7zeXGpR90xQQAxkR/CRaI4TASb/djuRciZdgrGG8m3CD7DGwdcVaYLak/pQizKdfQ
-         zwZVErNxCSVuHkIxiHzeiriWQISf64Rdg9waNGhg6T3d6Wepp8bY5SZMeFIL1nKy1PGg
-         fqg+os4ZQC0hyFoOnqKS2SVmDOv800SkIl2CtgTzxhUdcW3U7FRmfJJyxevAszCOklz/
-         mW2Dx3TTLAL8MQ2N5DtVaUqQirdI+lwxjd+uLoIdhCwMU/8Q+sJfnpB6AvKyMv/46hbH
-         PRTw==
-X-Gm-Message-State: AOAM532250t2dO03kz1gZ5g9g96U9zzZdbhBazRGHQS/fKg828/Tn6xf
-        M+f17dcb9Jq4o6FV587mNThSx2ndvUHo0EChX1y3OceszjlcEG7wC28bGgmZWN1f4wy5WmHzRyP
-        ONPn5neBXAN7FG62j
-X-Received: by 2002:a1c:4407:: with SMTP id r7mr9093109wma.69.1632904339601;
-        Wed, 29 Sep 2021 01:32:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxiFH8QvVbSSfltUTVNYrFe4cgpOa802Pjd2dc9VAv6jOjC98+5gHvsdXJBd6/yPoXBjvvJDg==
-X-Received: by 2002:a1c:4407:: with SMTP id r7mr9093089wma.69.1632904339405;
-        Wed, 29 Sep 2021 01:32:19 -0700 (PDT)
-Received: from redhat.com ([2.55.12.29])
-        by smtp.gmail.com with ESMTPSA id l21sm851391wme.39.2021.09.29.01.32.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Sep 2021 01:32:18 -0700 (PDT)
-Date:   Wed, 29 Sep 2021 04:32:15 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Cindy Lu <lulu@redhat.com>
-Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vhost-vdpa:fix the worng input in config_cb
-Message-ID: <20210929043142-mutt-send-email-mst@kernel.org>
-References: <20210929075437.12985-1-lulu@redhat.com>
+        id S244815AbhI2IrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 04:47:05 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:26967 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244764AbhI2IrE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 04:47:04 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HK8wZ6RpNzbmrv;
+        Wed, 29 Sep 2021 16:41:02 +0800 (CST)
+Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2308.8; Wed, 29 Sep 2021 16:45:20 +0800
+Received: from huawei.com (10.175.101.6) by dggema772-chm.china.huawei.com
+ (10.1.198.214) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.8; Wed, 29
+ Sep 2021 16:45:17 +0800
+From:   Liu Jian <liujian56@huawei.com>
+To:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
+        <jakub@cloudflare.com>, <lmb@cloudflare.com>,
+        <edumazet@google.com>, <davem@davemloft.net>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
+        <ast@kernel.org>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <kpsingh@kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <liujian56@huawei.com>
+Subject: [PATCH] tcp_bpf: Fix one concurrency problem in the tcp_bpf_send_verdict function
+Date:   Wed, 29 Sep 2021 16:45:29 +0800
+Message-ID: <20210929084529.96583-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210929075437.12985-1-lulu@redhat.com>
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggema772-chm.china.huawei.com (10.1.198.214)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 03:54:37PM +0800, Cindy Lu wrote:
-> Fix the worng input in for config_cb,
-> in function vhost_vdpa_config_cb, the input
-> cb.private was used as struct vhost_vdpa,
-> So the inuput was worng here, fix this issue
-> 
-> Signed-off-by: Cindy Lu <lulu@redhat.com>
+In the following cases:
+We need to redirect the first msg to sock1 and the second msg to sock2.
+The sock lock needs to be released at __SK_REDIRECT and to get another
+sock lock, this will cause the probability that psock->eval is not set to
+__SK_NONE when the second msg comes.
 
-Maybe add
+If psock does not set apple bytes, fix this by do the cleanup before
+releasing the sock lock. And keep the original logic in other cases.
 
-Fixes: 776f395004d8 ("vhost_vdpa: Support config interrupt in vdpa")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+---
+ net/ipv4/tcp_bpf.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-and fix typos in the commit log.
-
-> ---
->  drivers/vhost/vdpa.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 942666425a45..e532cbe3d2f7 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -322,7 +322,7 @@ static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
->  	struct eventfd_ctx *ctx;
->  
->  	cb.callback = vhost_vdpa_config_cb;
-> -	cb.private = v->vdpa;
-> +	cb.private = v;
->  	if (copy_from_user(&fd, argp, sizeof(fd)))
->  		return  -EFAULT;
->  
-> -- 
-> 2.21.3
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index d3e9386b493e..02442e43ac4d 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -232,6 +232,7 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+ 	bool cork = false, enospc = sk_msg_full(msg);
+ 	struct sock *sk_redir;
+ 	u32 tosend, delta = 0;
++	u32 eval = __SK_NONE;
+ 	int ret;
+ 
+ more_data:
+@@ -274,6 +275,12 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+ 		break;
+ 	case __SK_REDIRECT:
+ 		sk_redir = psock->sk_redir;
++		if (!psock->apply_bytes) {
++			/* Clean up before releasing the sock lock. */
++			eval = psock->eval;
++			psock->eval = __SK_NONE;
++			psock->sk_redir = NULL;
++		}
+ 		sk_msg_apply_bytes(psock, tosend);
+ 		if (psock->cork) {
+ 			cork = true;
+@@ -281,7 +288,12 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+ 		}
+ 		sk_msg_return(sk, msg, tosend);
+ 		release_sock(sk);
++
+ 		ret = tcp_bpf_sendmsg_redir(sk_redir, msg, tosend, flags);
++
++		if (eval == __SK_REDIRECT)
++			sock_put(sk_redir);
++
+ 		lock_sock(sk);
+ 		if (unlikely(ret < 0)) {
+ 			int free = sk_msg_free_nocharge(sk, msg);
+-- 
+2.17.1
 
