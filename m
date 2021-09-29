@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CB1D41CB31
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 19:46:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0C1841CB42
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 19:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344406AbhI2RsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 13:48:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43932 "EHLO mail.kernel.org"
+        id S1345516AbhI2Rul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 13:50:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45642 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244776AbhI2Rr6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 13:47:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3161361465;
-        Wed, 29 Sep 2021 17:46:16 +0000 (UTC)
+        id S1345449AbhI2Ruj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 13:50:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AAD7061440;
+        Wed, 29 Sep 2021 17:48:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632937576;
-        bh=eTdjvQH/CdfOQ7X4ByS3Qx9OO5zspwx3avBYC1T9Gxs=;
+        s=k20201202; t=1632937738;
+        bh=QWgsOLwpXxz3fNUhaZNND/TYsYAt0u8ThxKlLeyN1v8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aC61OETwUJOuqBc5LQRP+kC2sdJ+KJbEVU7spHjTMFUSTRwiSYbVi5Z1JkuaGY3vM
-         pLiisyxUZsCzutFzrtzkKCWI4IaaixWlV9VNXhIaDNFhR1oKMxT1nshoY8rLI7+jvn
-         pnLZ3g00AP4cYDTduxuzIGgCQY7WVyOaFQpIqC2lTXILwPdCDt2MlEK/s5SFUgf7wn
-         s2D55xrS8nf7N1n5abbqqlC21bs+EmWBesvxrxf9guwkRxXGBxoerSCcoaMaijUYS/
-         ITvQ55ZOqKqPiF5rW7ldDEl8bWoOMXk4UP5tEmKZFHnUUaEdXbScyY3v99NSVYAXmU
-         kDMdTTkPln5Iw==
-Date:   Wed, 29 Sep 2021 10:46:15 -0700
+        b=OSCs05IzSK/ZklX6KN0g9t8jB3E/r9vNllbV3OUdOfySyfAHyOMZ1EOEGWqjbgyku
+         IpSDUb68j3mP6Qp/5TjBc0wx210HD+cGiZmVZmSSb4fnFWKEPo5M0PuxkYyHLgZ9X5
+         jJfIrP3jZ6qfT5TL6foJL3WfYo1THzBa5QA1askUaov4KWhj7Ji7dx+JlW4J3X2Sz2
+         DHzSPgYMg0CV9DWcv7FVHFas8NPIkBfrl3wa3fU/dtg7EXec0Uf5tILxD7dgTYns9n
+         IzUUOjo4ixDNBc79lEtglQO4s1AmeBchrls9Os8NRclVfN2wz2oM++fv3YFh8hoMSQ
+         SgimH4A3AkzbA==
+Date:   Wed, 29 Sep 2021 10:48:56 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
@@ -47,8 +47,8 @@ Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
         tirthendu.sarkar@intel.com
 Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer
  support
-Message-ID: <20210929104615.6179efee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CACAyw98tVmuRbMr5RpPY_0GmU_bQAH+d9=UoEx3u5g+nGSwfYQ@mail.gmail.com>
+Message-ID: <20210929104856.2d3f15e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87sfxnin6i.fsf@toke.dk>
 References: <cover.1631289870.git.lorenzo@kernel.org>
         <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
         <YUSrWiWh57Ys7UdB@lore-desk>
@@ -63,6 +63,7 @@ References: <cover.1631289870.git.lorenzo@kernel.org>
         <20210920142542.7b451b78@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
         <87ilyu50kl.fsf@toke.dk>
         <CACAyw98tVmuRbMr5RpPY_0GmU_bQAH+d9=UoEx3u5g+nGSwfYQ@mail.gmail.com>
+        <87sfxnin6i.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
@@ -70,40 +71,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Sep 2021 11:36:33 +0100 Lorenz Bauer wrote:
-> On Mon, 20 Sept 2021 at 23:46, Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
-hat.com> wrote:
-> > > The draft API was:
-> > >
-> > > void *xdp_mb_pointer_flush(struct xdp_buff *xdp_md, u32 flags,
-> > >                            u32 offset, u32 len, void *stack_buf)
-> > >
-> > > Which does not take the ptr returned by header_pointer(), but that's
-> > > easy to add (well, easy other than the fact it'd be the 6th arg). =20
+On Wed, 29 Sep 2021 14:25:09 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> >> I guess we could play some trickery with stuffing offset/len/flags into
+> >> one or two u64s to save an argument or two? =20
 > >
-> > I guess we could play some trickery with stuffing offset/len/flags into
-> > one or two u64s to save an argument or two? =20
+> > Adding another pointer arg seems really hard to explain as an API.
+> > What happens if I pass the "wrong" ptr? What happens if I pass NULL?
+> >
+> > How about this: instead of taking stack_ptr, take the return value
+> > from header_pointer as an argument. =20
 >=20
-> Adding another pointer arg seems really hard to explain as an API.
-> What happens if I pass the "wrong" ptr? What happens if I pass NULL?
+> Hmm, that's a good point; I do think that passing the return value from
+> header pointer is more natural as well (you're flushing pointer you just
+> wrote to, after all).
 
-Sure. We can leave the checking to the program then, but that ties
-our hands for the implementation changes later on.
-
-Not sure which pointer type will be chosen for the ret value but it=20
-may allow error checking at verification.
-
-> How about this: instead of taking stack_ptr, take the return value
-> from header_pointer as an argument. Then use the already existing
-> (right ;P) inlining to do the following:
->=20
->    if (md->ptr + args->off !=3D ret_ptr)
->      __pointer_flush(...)
-
-That only checks for the case where pointer is in the "head" frag,
-and is not generally correct. You need to check the length of the=20
-first frag is smaller than off. Otherwise BPF stack may "happen"
-to follow the head page and math will work out.
-
-It would also be slower than Lorenzo's current code, which allows
-access to tail pages without copying.
+It is more natural but doesn't allow for the same level of optimization.
+Wouldn't consistent naming obviate the semantics?
