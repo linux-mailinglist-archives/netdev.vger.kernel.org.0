@@ -2,502 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03CE141C807
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:11:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B26DB41C822
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345244AbhI2PNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 11:13:22 -0400
-Received: from smtp2.axis.com ([195.60.68.18]:4228 "EHLO smtp2.axis.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345112AbhI2PNJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 11:13:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1632928288;
-  x=1664464288;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CsaghLSaVLpU2MMwhss1abZWxi44kmc1aR1WxQPDiFY=;
-  b=DqdQESCDSxQjhcSUdAP6fuKNI8X/mgpogbZbqZgAw9Hk7rPd+Wpv2/iy
-   ylQpFjl+kh3yEu/Hm3KbH30XFfZgdrRmowkyxQhk03imi3HH3wdFAkuw2
-   DjLa/XnlvOqDVHF7BkadYcdKF193UKn67xd/B/L3thSg43MSVzwy5g09V
-   D7XZBEf8GMDJ+XTNJKCakSmEyvLhKgK7KGzp53JcrSXAyBwIawdARjTQZ
-   DOxUG/Cmls8YDctlr0mX1IdkxNEPbb4QTYAeYtN77Re2XqxTgudaXDUW/
-   viD0hBZTxbuYyFyHqYXh+eFZ17PKuq1JqA2XmKwvQsLNsouuQofOKE/yu
-   g==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>
-CC:     <kernel@axis.com>, <kvm@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <pbonzini@redhat.com>, <stefanha@redhat.com>,
-        <sgarzare@redhat.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>
-Subject: [RFC PATCH 10/10] selftests: add vhost_kernel tests
-Date:   Wed, 29 Sep 2021 17:11:19 +0200
-Message-ID: <20210929151119.14778-11-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20210929151119.14778-1-vincent.whitchurch@axis.com>
-References: <20210929151119.14778-1-vincent.whitchurch@axis.com>
+        id S1345117AbhI2PS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 11:18:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58559 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345089AbhI2PS5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:18:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1632928636;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KJdqVhfU2lEDy7K+qwgUFw8t05s+Wh549DqDME5rELw=;
+        b=KiQkdn6RyPKansGVpiC2GAlyOE/t1D1U5Y14OIbeNaC0EGUqe3vkmdGi+gNtKBm3hYucEF
+        GuxNlsGeBXNWxHHVcnXxQE5ub0YGJ4puptA9/Nh8JIN0yZ3DrYYDXsI8yuSBBYChKveT72
+        yeYqd1japg8lBxoR7OPP7ocqlsx6A2A=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-588-C66J71fYO7mUqwmSk9zP9w-1; Wed, 29 Sep 2021 11:17:14 -0400
+X-MC-Unique: C66J71fYO7mUqwmSk9zP9w-1
+Received: by mail-ot1-f69.google.com with SMTP id p7-20020a056830318700b0054749cce9bcso2103661ots.18
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:17:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=KJdqVhfU2lEDy7K+qwgUFw8t05s+Wh549DqDME5rELw=;
+        b=JrrMnupFDiMsmE3ry+mQtRjsWnvs/kYo3vfAgrVbmB0O/QgXxksWSCueP1JRkSV/xC
+         BDsVj2UQ8AGPs7mP6PTC10Ar2c/fT6ojAlki5vPP2bx2e4a8eQLF6cOX+pEYXcO9Rgf/
+         XBE4ocKx0fXzvtZXD5pCRfmmr1Gar2AvXeAM4SwJ187ILMQdkBp+c539WJ946Pp7XpqO
+         05PB2bjlmVTz1ztCcBORbG4H8b9nwqv1XS4obYWczY49hNn9Xkm306iantUJd+Qsypp9
+         UCTiAacysSDQjhZel4ZmjUkhmWT9PBXX654BV0ntcy9+Vbeo9AgANbCH7Xf7jptrZ301
+         5VRw==
+X-Gm-Message-State: AOAM531CiYX4wo30FvAD4JkrWp82fKUMZaEC99Xtf2VQiPgO/sZ3duXk
+        rAcKKPqr9pTKgr2F/D/7qRXTQ8gFQQFDOZ1SzwRZCDZKI3YPjpVcQzQ1msr6hIl9d77iKNesQRf
+        2fFnKmMHbIYaKtPIg
+X-Received: by 2002:a05:6808:2003:: with SMTP id q3mr358694oiw.173.1632928633976;
+        Wed, 29 Sep 2021 08:17:13 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwrWi5uNUHq2Qo0KN0Jf8EQ89vT/YbWyPvtA3dX8CT03MREY/+avCjKTfnNw+zB4bp4T5UiTQ==
+X-Received: by 2002:a05:6808:2003:: with SMTP id q3mr358670oiw.173.1632928633757;
+        Wed, 29 Sep 2021 08:17:13 -0700 (PDT)
+Received: from redhat.com ([198.99.80.109])
+        by smtp.gmail.com with ESMTPSA id j4sm2288oia.56.2021.09.29.08.17.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Sep 2021 08:17:13 -0700 (PDT)
+Date:   Wed, 29 Sep 2021 09:17:12 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Max Gurtovoy <mgurtovoy@nvidia.com>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>,
+        "Doug Ledford" <dledford@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        "Bjorn Helgaas" <bhelgaas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kirti Wankhede <kwankhede@nvidia.com>, <kvm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Cornelia Huck <cohuck@redhat.com>
+Subject: Re: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
+ transition validity
+Message-ID: <20210929091712.6390141c.alex.williamson@redhat.com>
+In-Reply-To: <d2e94241-a146-c57d-cf81-8b7d8d00e62d@nvidia.com>
+References: <cover.1632305919.git.leonro@nvidia.com>
+        <c87f55d6fec77a22b110d3c9611744e6b28bba46.1632305919.git.leonro@nvidia.com>
+        <20210927164648.1e2d49ac.alex.williamson@redhat.com>
+        <20210927231239.GE3544071@ziepe.ca>
+        <25c97be6-eb4a-fdc8-3ac1-5628073f0214@nvidia.com>
+        <20210929063551.47590fbb.alex.williamson@redhat.com>
+        <1eba059c-4743-4675-9f72-1a26b8f3c0f6@nvidia.com>
+        <20210929075019.48d07deb.alex.williamson@redhat.com>
+        <d2e94241-a146-c57d-cf81-8b7d8d00e62d@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a test which uses the vhost_kernel_test driver to test the vhost
-kernel buffers support.
+On Wed, 29 Sep 2021 17:36:59 +0300
+Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
 
-The test uses virtio-net and vhost-net and sets up a loopback network
-and then tests that ping works between the interface.  It also checks
-that unbinding/rebinding of devices and closing the involved file
-descriptors in different sequences during active use works correctly.
+> On 9/29/2021 4:50 PM, Alex Williamson wrote:
+> > On Wed, 29 Sep 2021 16:26:55 +0300
+> > Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
+> >  
+> >> On 9/29/2021 3:35 PM, Alex Williamson wrote:  
+> >>> On Wed, 29 Sep 2021 13:44:10 +0300
+> >>> Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
+> >>>     
+> >>>> On 9/28/2021 2:12 AM, Jason Gunthorpe wrote:  
+> >>>>> On Mon, Sep 27, 2021 at 04:46:48PM -0600, Alex Williamson wrote:  
+> >>>>>>> +	enum { MAX_STATE = VFIO_DEVICE_STATE_RESUMING };
+> >>>>>>> +	static const u8 vfio_from_state_table[MAX_STATE + 1][MAX_STATE + 1] = {
+> >>>>>>> +		[VFIO_DEVICE_STATE_STOP] = {
+> >>>>>>> +			[VFIO_DEVICE_STATE_RUNNING] = 1,
+> >>>>>>> +			[VFIO_DEVICE_STATE_RESUMING] = 1,
+> >>>>>>> +		},  
+> >>>>>> Our state transition diagram is pretty weak on reachable transitions
+> >>>>>> out of the _STOP state, why do we select only these two as valid?  
+> >>>>> I have no particular opinion on specific states here, however adding
+> >>>>> more states means more stuff for drivers to implement and more risk
+> >>>>> driver writers will mess up this uAPI.  
+> >>>> _STOP == 000b => Device Stopped, not saving or resuming (from UAPI).
+> >>>>
+> >>>> This is the default initial state and not RUNNING.
+> >>>>
+> >>>> The user application should move device from STOP => RUNNING or STOP =>
+> >>>> RESUMING.
+> >>>>
+> >>>> Maybe we need to extend the comment in the UAPI file.  
+> >>> include/uapi/linux/vfio.h:
+> >>> ...
+> >>>    *  +------- _RESUMING
+> >>>    *  |+------ _SAVING
+> >>>    *  ||+----- _RUNNING
+> >>>    *  |||
+> >>>    *  000b => Device Stopped, not saving or resuming
+> >>>    *  001b => Device running, which is the default state
+> >>>                               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> >>> ...
+> >>>    * State transitions:
+> >>>    *
+> >>>    *              _RESUMING  _RUNNING    Pre-copy    Stop-and-copy   _STOP
+> >>>    *                (100b)     (001b)     (011b)        (010b)       (000b)
+> >>>    * 0. Running or default state
+> >>>    *                             |
+> >>>                    ^^^^^^^^^^^^^
+> >>> ...
+> >>>    * 0. Default state of VFIO device is _RUNNING when the user application starts.
+> >>>         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> >>>
+> >>> The uAPI is pretty clear here.  A default state of _STOP is not
+> >>> compatible with existing devices and userspace that does not support
+> >>> migration.  Thanks,  
+> >> Why do you need this state machine for userspace that doesn't support
+> >> migration ?  
+> > For userspace that doesn't support migration, there's one state,
+> > _RUNNING.  That's what we're trying to be compatible and consistent
+> > with.  Migration is an extension, not a base requirement.  
+> 
+> Userspace without migration doesn't care about this state.
+> 
+> We left with kernel now. vfio-pci today doesn't support migration, right 
+> ? state is in theory is 0 (STOP).
+> 
+> This state machine is controlled by the migration SW. The drivers don't 
+> move state implicitly.
+> 
+> mlx5-vfio-pci support migration and will work fine with non-migration SW 
+> (it will stay with state = 0 unless someone will move it. but nobody 
+> will) exactly like vfio-pci does today.
+> 
+> So where is the problem ?
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
- tools/testing/selftests/Makefile              |   1 +
- .../vhost_kernel/vhost_kernel_test.c          | 287 ++++++++++++++++++
- .../vhost_kernel/vhost_kernel_test.sh         | 125 ++++++++
- 3 files changed, 413 insertions(+)
- create mode 100644 tools/testing/selftests/vhost_kernel/vhost_kernel_test.c
- create mode 100755 tools/testing/selftests/vhost_kernel/vhost_kernel_test.sh
+So you have a device that's actively modifying its internal state,
+performing I/O, including DMA (thereby dirtying VM memory), all while
+in the _STOP state?  And you don't see this as a problem?
 
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index c852eb40c4f7..14a8349e3dc1 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -73,6 +73,7 @@ TARGETS += tmpfs
- TARGETS += tpm2
- TARGETS += user
- TARGETS += vDSO
-+TARGETS += vhost_kernel
- TARGETS += vm
- TARGETS += x86
- TARGETS += zram
-diff --git a/tools/testing/selftests/vhost_kernel/vhost_kernel_test.c b/tools/testing/selftests/vhost_kernel/vhost_kernel_test.c
-new file mode 100644
-index 000000000000..b0f889bd2f72
---- /dev/null
-+++ b/tools/testing/selftests/vhost_kernel/vhost_kernel_test.c
-@@ -0,0 +1,287 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#define _GNU_SOURCE
-+#include <err.h>
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <getopt.h>
-+#include <linux/if_tun.h>
-+#include <linux/virtio_net.h>
-+#include <linux/vhost.h>
-+#include <net/if.h>
-+#include <netdb.h>
-+#include <netinet/in.h>
-+#include <stdio.h>
-+#include <string.h>
-+#include <signal.h>
-+#include <stdbool.h>
-+#include <stdlib.h>
-+#include <sys/eventfd.h>
-+#include <sys/ioctl.h>
-+#include <sys/stat.h>
-+#include <sys/types.h>
-+#include <unistd.h>
-+
-+#ifndef VIRTIO_F_ACCESS_PLATFORM
-+#define VIRTIO_F_ACCESS_PLATFORM 33
-+#endif
-+
-+#ifndef VKTEST_ATTACH_VHOST
-+#define VKTEST_ATTACH_VHOST _IOW(0xbf, 0x31, int)
-+#endif
-+
-+static int vktest;
-+static const int num_vqs = 2;
-+
-+static int tun_alloc(char *dev)
-+{
-+	int hdrsize = sizeof(struct virtio_net_hdr_mrg_rxbuf);
-+	struct ifreq ifr = {
-+		.ifr_flags = IFF_TAP | IFF_NO_PI | IFF_VNET_HDR,
-+	};
-+	int fd, ret;
-+
-+	fd = open("/dev/net/tun", O_RDWR);
-+	if (fd < 0)
-+		err(1, "open /dev/net/tun");
-+
-+	strncpy(ifr.ifr_name, dev, IFNAMSIZ);
-+
-+	ret = ioctl(fd, TUNSETIFF, &ifr);
-+	if (ret < 0)
-+		err(1, "TUNSETIFF");
-+
-+	ret = ioctl(fd, TUNSETOFFLOAD,
-+		    TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 | TUN_F_TSO_ECN);
-+	if (ret < 0)
-+		err(1, "TUNSETOFFLOAD");
-+
-+	ret = ioctl(fd, TUNSETVNETHDRSZ, &hdrsize);
-+	if (ret < 0)
-+		err(1, "TUNSETVNETHDRSZ");
-+
-+	strncpy(dev, ifr.ifr_name, IFNAMSIZ);
-+
-+	return fd;
-+}
-+
-+static void handle_signal(int signum)
-+{
-+	if (signum == SIGUSR1)
-+		close(vktest);
-+}
-+
-+static void vhost_net_set_backend(int vhost)
-+{
-+	char if_name[IFNAMSIZ];
-+	int tap_fd;
-+
-+	snprintf(if_name, IFNAMSIZ, "vhostkernel%d", 0);
-+
-+	tap_fd = tun_alloc(if_name);
-+
-+	for (int i = 0; i < num_vqs; i++) {
-+		struct vhost_vring_file txbackend = {
-+			.index = i,
-+			.fd = tap_fd,
-+		};
-+		int ret;
-+
-+		ret = ioctl(vhost, VHOST_NET_SET_BACKEND, &txbackend);
-+		if (ret < 0)
-+			err(1, "VHOST_NET_SET_BACKEND");
-+	}
-+}
-+
-+static void prepare_vhost_vktest(int vhost, int vktest)
-+{
-+	uint64_t features = 1llu << VIRTIO_F_ACCESS_PLATFORM | 1llu << VIRTIO_F_VERSION_1;
-+	int ret;
-+
-+	for (int i = 0; i < num_vqs; i++) {
-+		int kickfd = eventfd(0, EFD_CLOEXEC);
-+
-+		if (kickfd < 0)
-+			err(1, "eventfd");
-+
-+		struct vhost_vring_file kick = {
-+			.index = i,
-+			.fd = kickfd,
-+		};
-+
-+		ret = ioctl(vktest, VHOST_SET_VRING_KICK, &kick);
-+		if (ret < 0)
-+			err(1, "VHOST_SET_VRING_KICK");
-+
-+		ret = ioctl(vhost, VHOST_SET_VRING_KICK, &kick);
-+		if (ret < 0)
-+			err(1, "VHOST_SET_VRING_KICK");
-+	}
-+
-+	for (int i = 0; i < num_vqs; i++) {
-+		int callfd = eventfd(0, EFD_CLOEXEC);
-+
-+		if (callfd < 0)
-+			err(1, "eventfd");
-+
-+		struct vhost_vring_file call = {
-+			.index = i,
-+			.fd = callfd,
-+		};
-+
-+		ret = ioctl(vktest, VHOST_SET_VRING_CALL, &call);
-+		if (ret < 0)
-+			err(1, "VHOST_SET_VRING_CALL");
-+
-+		ret = ioctl(vhost, VHOST_SET_VRING_CALL, &call);
-+		if (ret < 0)
-+			err(1, "VHOST_SET_VRING_CALL");
-+	}
-+
-+	ret = ioctl(vhost, VHOST_SET_FEATURES, &features);
-+	if (ret < 0)
-+		err(1, "VHOST_SET_FEATURES");
-+}
-+
-+static void test_attach(void)
-+{
-+	int vktest, vktest2;
-+	int vhost;
-+	int ret;
-+
-+	vhost = open("/dev/vhost-net-kernel", O_RDONLY);
-+	if (vhost < 0)
-+		err(1, "vhost");
-+
-+	vktest = open("/dev/vktest", O_RDONLY);
-+	if (vktest < 0)
-+		err(1, "vhost");
-+
-+	ret = ioctl(vhost, VHOST_SET_OWNER);
-+	if (ret < 0)
-+		err(1, "VHOST_SET_OWNER");
-+
-+	prepare_vhost_vktest(vhost, vktest);
-+
-+	ret = ioctl(vktest, VKTEST_ATTACH_VHOST, vhost);
-+	if (ret < 0)
-+		err(1, "VKTEST_ATTACH_VHOST");
-+
-+	vktest2 = open("/dev/vktest", O_RDONLY);
-+	if (vktest2 < 0)
-+		err(1, "vktest");
-+
-+	ret = ioctl(vktest2, VKTEST_ATTACH_VHOST, vhost);
-+	if (ret == 0)
-+		errx(1, "Second attach did not fail");
-+
-+	close(vktest2);
-+	close(vktest);
-+	close(vhost);
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	bool serve = false;
-+	uint64_t features;
-+	int vhost;
-+	struct option options[] = {
-+		{ "serve", no_argument, NULL, 's' },
-+		{}
-+	};
-+
-+	while (1) {
-+		int c;
-+
-+		c = getopt_long_only(argc, argv, "", options, NULL);
-+		if (c == -1)
-+			break;
-+
-+		switch (c) {
-+		case 's':
-+			serve = true;
-+			break;
-+		case '?':
-+		default:
-+			errx(1, "usage %s [--serve]", argv[0]);
-+		}
-+	};
-+
-+	if (!serve) {
-+		test_attach();
-+		return 0;
-+	}
-+
-+	vhost = open("/dev/vhost-net-kernel", O_RDONLY);
-+	if (vhost < 0)
-+		err(1, "vhost");
-+
-+	int ret;
-+
-+	ret = ioctl(vhost, VHOST_SET_OWNER);
-+	if (ret < 0)
-+		err(1, "VHOST_SET_OWNER");
-+
-+	vktest = open("/dev/vktest", O_RDONLY);
-+	if (vktest < 0)
-+		err(1, "vktest");
-+
-+	for (int i = 0; i < num_vqs; i++) {
-+		int kickfd;
-+
-+		kickfd = eventfd(0, EFD_CLOEXEC);
-+		if (kickfd < 0)
-+			err(1, "eventfd");
-+
-+		struct vhost_vring_file kick = {
-+			.index = i,
-+			.fd = kickfd,
-+		};
-+
-+		ret = ioctl(vktest, VHOST_SET_VRING_KICK, &kick);
-+		if (ret < 0)
-+			err(1, "VHOST_SET_VRING_KICK");
-+
-+		ret = ioctl(vhost, VHOST_SET_VRING_KICK, &kick);
-+		if (ret < 0)
-+			err(1, "VHOST_SET_VRING_KICK");
-+	}
-+
-+	for (int i = 0; i < num_vqs; i++) {
-+		int callfd;
-+
-+		callfd = eventfd(0, EFD_CLOEXEC);
-+		if (callfd < 0)
-+			err(1, "eventfd");
-+
-+		struct vhost_vring_file call = {
-+			.index = i,
-+			.fd = callfd,
-+		};
-+
-+		ret = ioctl(vktest, VHOST_SET_VRING_CALL, &call);
-+		if (ret < 0)
-+			err(1, "VHOST_SET_VRING_CALL");
-+
-+		ret = ioctl(vhost, VHOST_SET_VRING_CALL, &call);
-+		if (ret < 0)
-+			err(1, "VHOST_SET_VRING_CALL");
-+	}
-+
-+	features = 1llu << VIRTIO_F_ACCESS_PLATFORM | 1llu << VIRTIO_F_VERSION_1;
-+	ret = ioctl(vhost, VHOST_SET_FEATURES, &features);
-+	if (ret < 0)
-+		err(1, "VHOST_SET_FEATURES");
-+
-+	vhost_net_set_backend(vhost);
-+
-+	ret = ioctl(vktest, VKTEST_ATTACH_VHOST, vhost);
-+	if (ret < 0)
-+		err(1, "VKTEST_ATTACH_VHOST");
-+
-+	signal(SIGUSR1, handle_signal);
-+
-+	while (1)
-+		pause();
-+
-+	return 0;
-+}
-diff --git a/tools/testing/selftests/vhost_kernel/vhost_kernel_test.sh b/tools/testing/selftests/vhost_kernel/vhost_kernel_test.sh
-new file mode 100755
-index 000000000000..82b7896cea68
---- /dev/null
-+++ b/tools/testing/selftests/vhost_kernel/vhost_kernel_test.sh
-@@ -0,0 +1,125 @@
-+#!/bin/sh -ex
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+cleanup() {
-+	[ -z "$PID" ] || kill $PID 2>/dev/null || :
-+	[ -z "$PINGPID0" ] || kill $PINGPID0 2>/dev/null || :
-+	[ -z "$PINGPID1" ] || kill $PINGPID1 2>/dev/null || :
-+	ip netns del g2h 2>/dev/null || :
-+	ip netns del h2g 2>/dev/null || :
-+}
-+
-+fail() {
-+	echo "FAIL: $*"
-+	exit 1
-+}
-+
-+./vhost_kernel_test || fail "Sanity test failed"
-+
-+cleanup
-+trap cleanup EXIT
-+
-+test_one() {
-+	ls /sys/class/net/ > before
-+	echo > new
-+
-+	./vhost_kernel_test --serve &
-+	PID=$!
-+
-+	echo 'Waiting for interfaces'
-+
-+	timeout=5
-+	while [ $timeout -gt 0 ]; do
-+		timeout=$(($timeout - 1))
-+		sleep 1
-+		ls /sys/class/net/ > after
-+		grep -F -x -v -f before after > new || continue
-+		[ $(wc -l < new) -eq 2 ] || continue
-+		break
-+	done
-+
-+	g2h=
-+	h2g=
-+
-+	while IFS= read -r iface; do
-+		case $iface in
-+			vhostkernel*)
-+				h2g=$iface
-+				;;
-+			*)
-+				# Assumed to be virtio-net
-+				g2h=$iface
-+				;;
-+		esac
-+
-+	done<new
-+
-+	[ "$g2h" ] || fail "Did not find guest-to-host interface"
-+	[ "$h2g" ] || fail "Did not find host-to-guest interface"
-+
-+	# IPv6 link-local addresses prevent short-circuit delivery.
-+	hostip=fe80::0
-+	guestip=fe80::1
-+
-+	# Move the interfaces out of the default namespaces to prevent network manager
-+	# daemons from messing with them.
-+	ip netns add g2h
-+	ip netns add h2g
-+
-+	ip link set dev $h2g netns h2g
-+	ip netns exec h2g ip addr add dev $h2g scope link $hostip
-+	ip netns exec h2g ip link set dev $h2g up
-+
-+	ip link set dev $g2h netns g2h
-+	ip netns exec g2h ip addr add dev $g2h scope link $guestip
-+	ip netns exec g2h ip link set dev $g2h up
-+
-+	# ip netns exec g2h tcpdump -i $g2h -w $g2h.pcap &
-+	# ip netns exec h2g tcpdump -i $h2g -w $h2g.pcap &
-+
-+	ip netns exec h2g ping6 -c10 -A -s 20000 $guestip%$h2g
-+	ip netns exec g2h ping6 -c10 -A -s 20000 $hostip%$g2h
-+}
-+
-+start_background_flood() {
-+	ip netns exec h2g ping6 -f $guestip%$h2g &
-+	PINGPID0=$!
-+	ip netns exec g2h ping6 -f $hostip%$g2h &
-+	PINGPID1=$!
-+	sleep 1
-+}
-+
-+echo TEST: Basic test
-+test_one
-+# Trigger cleanup races
-+start_background_flood
-+cleanup
-+
-+echo TEST: Close vhost_test fd before vhost
-+test_one
-+start_background_flood
-+kill -USR1 $PID
-+PID=
-+cleanup
-+
-+echo TEST: Unbind virtio_net and close
-+test_one
-+start_background_flood
-+echo virtio0 > /sys/bus/virtio/drivers/virtio_net/unbind
-+cleanup
-+
-+echo TEST: Unbind and rebind virtio_net
-+test_one
-+start_background_flood
-+echo virtio0 > /sys/bus/virtio/drivers/virtio_net/unbind
-+echo virtio0 > /sys/bus/virtio/drivers/virtio_net/bind
-+# We assume that $g2h is the same after the new probe
-+ip link set dev $g2h netns g2h
-+ip netns exec g2h ip addr add dev $g2h scope link $guestip
-+ip netns exec g2h ip link set dev $g2h up
-+ip netns exec g2h ping6 -c10 -A -s 20000 $hostip%$g2h
-+cleanup
-+
-+trap - EXIT
-+
-+echo OK
--- 
-2.28.0
+There's a major inconsistency if the migration interface is telling us
+something different than we can actually observe through the behavior of
+the device.  Thanks,
+
+Alex
 
