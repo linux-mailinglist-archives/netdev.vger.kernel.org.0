@@ -2,424 +2,675 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47B6141C8A0
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:44:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1E6B41C8E4
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345370AbhI2Ppm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 11:45:42 -0400
-Received: from sonic312-29.consmr.mail.ne1.yahoo.com ([66.163.191.210]:40101
-        "EHLO sonic312-29.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245376AbhI2Ppl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:45:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1632930239; bh=aNaWVvo+vg7wRJrLo1zPfzZuoGTFywQJBfEEypuuknA=; h=Subject:To:Cc:References:From:Date:In-Reply-To:From:Subject:Reply-To; b=sKS/PYv9/vjik6QxLuoSO5NgXjYXvzx6cCm9lVDxAj2gRTNwA7EpIfAa1GbiwYPm3JOpEDQaBOjwqkF2HY/RgMtYvhSmkFm52slmw76Ix/MJbOMYiVsF+d4JBu0fX57fQs6TE/OaUdM7LLC8sXZub9EisC2owfTyP1GcVyiSbOCwSSdowJS50m8KvUXskLOG0V7QlYeC2+gNbBXOkoF9RhMeXOspJtT9xUi53F7EAM0we5ziRkc8Y4Kv+WsS3QHoploC3wJkcC9WHfLxFQoAokO34nfF1kHPVeF0Jpun3nvHw7Ze68I+YH2iwkE49GnVX5w1atWAwT341xUsTukc0w==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1632930239; bh=VOw1L/AaTx9/MFuhf6X7w7OCnKH5k9Kfujqo18frgF1=; h=X-Sonic-MF:Subject:To:From:Date:From:Subject; b=m2NKcn65xg5+Et7m9tEOoscYnk86o1GmCHm163z439mJ/uSxi7QR3bEB+RzgU/Rhssb72HWLmewdIRtUKKvjuLsHm2Ti6u9HU/qd6opbTqG4DF6rIJD1Hv2dLzDkYeGgG/m4ClDPpwpNQ/VQR5fOq6JvMTdvvEkQ2HZntQJjTGAlN3oHCm9NBm0CIwuHNC1QTH15Bz+fYga4l8N9uf1pOlloZX3uFReRAvEJawFY3kOu9uqaRvTQyH9HYElaQdEDfxTmPzV1X3nHtO2hnAu1fI1ePtk2sxb7RdpjsaRsmf2qN+RXcTxI2PkOOnXLoxyYcP/DED6+jK5I3W7Hx1WehA==
-X-YMail-OSG: RsY2h_MVM1n5U0vIqYSZvRQUH74.UgsTF_45xh31LR05dx.riBJN2EEY20FF6i9
- Dzx_G6f.eEhSRj5AZglKg.Z1Sp3d5AgxwhmIoeSNKrA.Gwz.ZlBKrIkGLWQh0m.vmqP695PjwE_C
- TKE2Vp_MItlx96LY7n25sHU5.TxD_pN.WOd7zx1ZtgbH1cPT5k_klgnytZLLgajrKq67_iZ0ffVV
- 6MiRC7kGf7fXgArrth_fAwkFOwf_DGh9VMsQW3Xq_anmmKzmnpYM1OIPYqxcZCs32NRvpy7VMu6x
- E3beMDy9ZlCQFnel6zCp.x7vgtHERUqVu5C7zMqoqtv_etW7Ne5pnlo4T1pBCg4WQH.w_yo9vAi0
- Lpsf.wMtXXTfdUl0jTj.6SE2EcOdzw_Re54u7gkHOkNGhTxbxm_2RAxbqFcyi9ulqwejf9iHvVQU
- HFDNEbV7p6RLbJLpEK7ULJl1HkEpJBXsKo6ELGnCByg3jLz7_ORim2ATE.hoyYR4SNxuF85.q3bi
- gzaf6dR_HLKy969oWucEv3bKq_keuv_BjoeBCTAKEys_6CG2gXvwavLNEnP53bv_jTl4IP_rhuRa
- V2MD17gGkTcU0JdUvPmusbt.wy68gLgSyZncxS9hg3e3CmWdAIUsyoDq.zYLvBzJIm1V3NQYH4L.
- 6dBkrvF5wzrgPPpSTK9CxJ_ozCNMF44qL_H77Es4NKUA9oSBlViJ0eiM8N6HwlqEutXrT2ZC0tKC
- 9dPAe1534IbQzHU.P4aFdSTN22xMJFbl91vJaqxt4cjSdBxL3EHuVMlA2PZ0tnUaysk6MLSVxEL5
- HBlH6Ti.ezS66b.9itx4Z2rjwq5X.YxXL7kJtGIDwaFkj.ksKXSY1WK18ITffBrV2uRZB9HDxUO9
- f21C9PHmde5NtXbDD84fHc_42o9QLKHvBpaTwDk9jYUvESYgQVzngl3YakiAo1.ZFSr6JPV8GRQb
- vfPPEGfunQgZLqB059ESdQW6NkPUe7UMX0HIRHpkYKautMnkI9EoI8OvJtcDXoqS9.taPsEmpdn.
- ZNLiKMYRamlsDJ9nb7hglExz8j0aobaB88EtSwghWd0g3lpqne2F7voQuWqvUZIJY0Gz8RvJyl45
- 2DqXNtnyAthAWb4BFN3HYrODW8yTemLgd3tYxEy_AZFsPIrXY6hZ_rCOi3YkppK1YtyqQNNInyTt
- .hzVpGKoLlAIXFwCFAPssmLoWmw9e55U_9EgchLnKotUI.RltZrxUhPDkHWa0bFFaiNTRV3H.fxF
- y1VJu4K6K8.z.C3Dz_Uc8FNtKLlgcO4G_AzKNsUgeqEQsQlHDdpUzgZJRTY4eqenz.r3ts9hoK3i
- aUSQQhlo7qPN.HPCca9oTEqPlyQoU8bbpT21xKEjtNs9IXwIUJhRyDnZGTgcflTVzWdZA5sVPJIu
- u3U0wf1dIe0bgSbb7CZ8p9WMQEesDDIrX7yNF2srnng8Sxwd.5ZkzcHavXfGWPDGx848EpIsWcnW
- 7D4hArosEInPvGFnzLUVNKVDLx1le8D20hX8JI9WNP.nrgai5YvUH6iUpkL4XKlsHhTz2Gas1ov5
- 0QiIGJsY6nHjVwDShAIxvSu239k701YIVJU91h4GD5i89rqmlx08D10dWN7qC7OeRtI7WUMskWzV
- La_Pt3949kf5.zRFrqWwF.MJytWTtyCmM9NrqfKZGxw_4WDWPh51k8Fdx8uFetAuRaaJgD8rIcdw
- sGTExY3OfAUDhcuGFvsn2io6X6z5lVgdiApBbZgkQFQ1ZCHRGMa8Eu9PSh3lPWV654YSbNO51XJs
- Sx1Q2we928UYbwk1O9Cmu2lhgePG9pmNVN00LUbCSFBKcCLD4VGKFsyzB62WYZdhwPb9vppjn72Z
- B4h24EpwLJaUc.yEyDEiIP3HZJK_PtOLha_qaCbWtBoePDqXwcAxH.cBSf2NcWQBef9Kbtt7FgER
- CH43W3bZs5NRjr3jA30.ReFwwVvPIpZZg0inxC.2JFwarv8Pc6zwD1Z9jHAC56YZMooIXWndtF0O
- l33tc2PGr2rBo.1MB1p2Cl4qSJlcH7bfDsYj3RpG247ynW9P.VqgRyhCIfU7.4Zpvs7CP_XAvxjL
- X0RW3DTa7aqTvbVBPhkvhvc6VCVsqQUY7OC6r8pxWjsQQ9gGwlx379quNcLd_Kq.HTbwDdTtZj6Z
- LQjoSbJJOp7gwkZzzZMFjBi.nlFDSgEt2fNl3t4Fz8Jr._XBPVFSYVkeonWkfE0EJgA73g_FBiIm
- la21E0dcq_FjQZYVuyXwSkOErCll4DGzHlPpV0_atwFiNnYwaHkh5yUIGdIjIJnMikVYzGmszpHU
- O1RvzZGAZYoWUOAOgEM7j2_PREzA5YMlfLB3.oCP1JAo-
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic312.consmr.mail.ne1.yahoo.com with HTTP; Wed, 29 Sep 2021 15:43:59 +0000
-Received: by kubenode588.mail-prod1.omega.bf1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID d5d7dd6fd2fa6f2df65872353c2215c0;
-          Wed, 29 Sep 2021 15:43:57 +0000 (UTC)
-Subject: Re: Regression in unix stream sockets with the Smack LSM
-To:     "Jiang Wang ." <jiang.wang@bytedance.com>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>
-References: <a507efa7-066b-decf-8605-89cdb0ac1951.ref@schaufler-ca.com>
- <a507efa7-066b-decf-8605-89cdb0ac1951@schaufler-ca.com>
- <CAHC9VhR9SKX_-SAmtcCj+vuUvcdq-SWzKs86BKMjBcC8GhJ1gg@mail.gmail.com>
- <dd58bbf5-7983-ca26-c335-6bf8e492fcaa@schaufler-ca.com>
- <CAP_N_Z9iCP_xNNNSRVEzgGER7Zg+bb_nROzBUct=V6UyWn1P5A@mail.gmail.com>
- <2409eb92-aff5-7e1f-db9d-3c3ff3a12ad7@schaufler-ca.com>
-From:   Casey Schaufler <casey@schaufler-ca.com>
-Message-ID: <5fd9974b-531b-b7e9-81d3-ffefbad3ee96@schaufler-ca.com>
-Date:   Wed, 29 Sep 2021 08:43:55 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S1345493AbhI2P7s convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Sep 2021 11:59:48 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:13832 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229469AbhI2P7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:59:39 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKLWJ4lNNz8ymr;
+        Wed, 29 Sep 2021 23:53:16 +0800 (CST)
+Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Wed, 29 Sep 2021 23:57:55 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Wed, 29 Sep 2021 23:57:54 +0800
+From:   Jian Shen <shenjian15@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
+        <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
+Subject: [RFCv2 net-next 000/167] net: extend the netdev_features_t
+Date:   Wed, 29 Sep 2021 23:50:47 +0800
+Message-ID: <20210929155334.12454-1-shenjian15@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <2409eb92-aff5-7e1f-db9d-3c3ff3a12ad7@schaufler-ca.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Mailer: WebService/1.1.19076 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500022.china.huawei.com (7.185.36.66)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/20/2021 4:44 PM, Casey Schaufler wrote:
-> On 9/20/2021 3:35 PM, Jiang Wang . wrote:
->> On Wed, Sep 15, 2021 at 9:52 AM Casey Schaufler <casey@schaufler-ca.com> wrote:
->>> On 9/13/2021 4:47 PM, Paul Moore wrote:
->>>> On Mon, Sep 13, 2021 at 6:53 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
->>>>> Commit 77462de14a43f4d98dbd8de0f5743a4e02450b1d
->>>>>
->>>>>         af_unix: Add read_sock for stream socket types
->>>>>
->>>>> introduced a regression in UDS socket connections for the Smack LSM.
->>>>> I have not tracked done the details of why the change broke the code,
->>>>> but this is where bisecting the kernel indicates the problem lies, and
->>>>> I have verified that reverting this change repairs the problem.
->>>>>
->>>>> You can verify the problem with the Smack test suite:
->>>>>
->>>>>         https://github.com/smack-team/smack-testsuite.git
->>>>>
->>>>> The failing test is tests/uds-access.sh.
->>>>>
->> I tried to reproduce with tests/uds-access.sh, but the first two test
->> cases always failed.
+For the prototype of netdev_features_t is u64, and the number
+of netdevice feature bits is 64 now. So there is no space to
+introduce new feature bit.
 
-Just piping in that the behavior hasn't changed in 5.15-rc3.
-It still usually fails, with the occasional success. These
-tests used to succeed.
+This patchset try to solve it by change the prototype of
+netdev_features_t from u64 to bitmap. With this change,
+it's necessary to introduce a set of bitmap operation helpers
+for netdev features. Meanwhile, the functions which use
+netdev_features_t as return value are also need to be changed,
+return the result as an output parameter.
 
-> That was my initial impression as well. However, when I started
-> running the tests outside the routine "make test-results" I started
-> observing that they succeeded irregularly.
->
-> My biggest concern is that the test ever fails. The uds-access test
-> has not failed in several releases. The erratic behavior just adds
-> spice to the problem. 
->
->>  I tried different kernels with and without my
->> unix-stream sockmap patches. Also tried standard debian 4.19
->> kernel and they all have the same result.  What distro did you use? centos?
->> Fedora?
-> I have been testing on Fedora32 and Fedora34.
->
->>  Have you tested on debian based distros?
-> Ubuntu 20.04.3 with a 5.15-rc1 kernel is exhibiting the same
-> behavior. The Ubuntu system fails the test more regularly, but
-> does succeed on occasion.
->
->> failing log:
->> root@gitlab-runner-stretch:~/smack-testsuite# tests/uds-access.sh -v
-> # tools/clean-targets.sh
-> # tests/uds-access.sh -v
->
-> will remove the UDS filesystem entry before the test runs.
->  
->
->> mkdir: cannot create directory ‘./targets/uds-notroot’: File exists
->> tests/uds-access.sh:71 FAIL
->> tests/uds-access.sh:76 FAIL
->> tests/uds-access.sh:81 PASS
->> tests/uds-access.sh:86 PASS
->> tests/uds-access.sh:91 PASS
->> tests/uds-access.sh PASS=3 FAIL=2
->> root@gitlab-runner-stretch:~/smack-testsuite# uname -a
->> Linux gitlab-runner-stretch 5.14.0-rc5.bm.1-amd64+ #6 SMP Mon Sep 20
->> 22:01:10 UTC 2021 x86_64 GNU/Linux
->> root@gitlab-runner-stretch:~/smack-testsuite#
->>
->>>>> I have not looked to see if there's a similar problem with SELinux.
->>>>> There may be, but if there isn't it doesn't matter, there's still a
->>>>> bug.
->>>> FWIW, the selinux-testsuite tests ran clean today with v5.15-rc1 (it
->>>> looks like this code is only in v5.15) but as Casey said, a regression
->>>> is a regression.
->>>>
->>>> Casey, what actually fails on the Smack system with this commit?
->>> This problem occurs with security=none as well as with security=smack.
->>>
->>> There isn't a problem with connect, that always works correctly.
->>> The problem is an unexpected read() failure in the connecting process.
->>> This doesn't occur all the time, and sometimes happens in the first
->>> of my two tests, sometimes the second, sometimes neither and, you guessed
->>> it, sometimes both.
->>>
->>> Here's a sample socat log demonstrating the problem. The first run,
->>> ending at "uds-access RC=0" behaves as expected. The second, ending
->>> at "uds-access RC=1", demonstrates the read failure. This case was
->> I tried to compare logs between RC=0 and RC=1, but they look  to me
->> not apple to apple comparison? The read syscall have different parameters
->> and the syscall sequences are different. I am not sure which syscall
->> is the first failure.  See more comments below.
-> The data being feed to socat is the Smack label, so the data passed across
-> the socket will be of different length ("Pop" vs. "Snap") between the
-> two test cases, but that should be the only difference.
->
->
->>> run with Smack enabled, but I see the same problem with the same
->>> unpredictability on the same kernel with security=none.
->>>
->>> I've tried to convince myself that there's a flaw in the way I've
->>> set up the scripts. They've been pretty robust and I've never seen
->>> socat behaving erratically before. I've instrumented the kernel
->>> code and all the security checks are behaving as expected. Plus,
->>> as I mentioned above, the problem also occurs without an LSM.
->>>
->>> 2021/09/15 08:49:50 socat[2215] D getpid()
->>> 2021/09/15 08:49:50 socat[2215] D getpid() -> 2215
->>> 2021/09/15 08:49:50 socat[2215] D setenv("SOCAT_PID", "2215", 1)
->>> 2021/09/15 08:49:50 socat[2215] D setenv() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D setenv("SOCAT_PPID", "2215", 1)
->>> 2021/09/15 08:49:50 socat[2215] D setenv() -> 0
->>> 2021/09/15 08:49:50 socat[2215] I socat by Gerhard Rieger and contributors - see www.dest-unreach.org
->>> 2021/09/15 08:49:50 socat[2215] I This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit. (http://www.openssl.org/)
->>> 2021/09/15 08:49:50 socat[2215] I This product includes software written by Tim Hudson (tjh@cryptsoft.com)
->>> 2021/09/15 08:49:50 socat[2215] D socat version 1.7.4.1 on Jan 27 2021 00:00:00
->>> 2021/09/15 08:49:50 socat[2215] D setenv("SOCAT_VERSION", "1.7.4.1", 1)
->>> 2021/09/15 08:49:50 socat[2215] D setenv() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D running on Linux version #58 SMP Wed Sep 15 08:40:38 PDT 2021, release 5.15.0-rc1bisect, machine x86_64
->>>
->>> 2021/09/15 08:49:50 socat[2215] D argv[0]: "socat"
->>> 2021/09/15 08:49:50 socat[2215] D argv[1]: "-d"
->>> 2021/09/15 08:49:50 socat[2215] D argv[2]: "-d"
->>> 2021/09/15 08:49:50 socat[2215] D argv[3]: "-d"
->>> 2021/09/15 08:49:50 socat[2215] D argv[4]: "-d"
->>> 2021/09/15 08:49:50 socat[2215] D argv[5]: "-"
->>> 2021/09/15 08:49:50 socat[2215] D argv[6]: "UNIX-CONNECT:./targets/uds-notroot/uds-access-socket"
->>> 2021/09/15 08:49:50 socat[2215] D sigaction(1, 0x7fffaec50b50, 0x0)
->>> 2021/09/15 08:49:50 socat[2215] D sigaction() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D sigaction(2, 0x7fffaec50b50, 0x0)
->>> 2021/09/15 08:49:50 socat[2215] D sigaction() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D sigaction(3, 0x7fffaec50b50, 0x0)
->>> 2021/09/15 08:49:50 socat[2215] D sigaction() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D sigaction(4, 0x7fffaec50b50, 0x0)
->>> 2021/09/15 08:49:50 socat[2215] D sigaction() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D sigaction(6, 0x7fffaec50b50, 0x0)
->>> 2021/09/15 08:49:50 socat[2215] D sigaction() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D sigaction(7, 0x7fffaec50b50, 0x0)
->>> 2021/09/15 08:49:50 socat[2215] D sigaction() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D sigaction(8, 0x7fffaec50b50, 0x0)
->>> 2021/09/15 08:49:50 socat[2215] D sigaction() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D sigaction(11, 0x7fffaec50b50, 0x0)
->>> 2021/09/15 08:49:50 socat[2215] D sigaction() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D sigaction(15, 0x7fffaec50b50, 0x0)
->>> 2021/09/15 08:49:50 socat[2215] D sigaction() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D signal(13, 0x1)
->>> 2021/09/15 08:49:50 socat[2215] D signal() -> 0x0
->>> 2021/09/15 08:49:50 socat[2215] D atexit(0x55aa5d645110)
->>> 2021/09/15 08:49:50 socat[2215] D atexit() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D xioopen("-")
->>> 2021/09/15 08:49:50 socat[2215] D calloc(1, 824)
->>> 2021/09/15 08:49:50 socat[2215] D calloc() -> 0x55aa5f0139d0
->>> 2021/09/15 08:49:50 socat[2215] D malloc(1024)
->>> 2021/09/15 08:49:50 socat[2215] D malloc() -> 0x55aa5f013d30
->>> 2021/09/15 08:49:50 socat[2215] D calloc(1, 824)
->>> 2021/09/15 08:49:50 socat[2215] D calloc() -> 0x55aa5f014140
->>> 2021/09/15 08:49:50 socat[2215] D calloc(1, 824)
->>> 2021/09/15 08:49:50 socat[2215] D calloc() -> 0x55aa5f014bc0
->>> 2021/09/15 08:49:50 socat[2215] D isatty(0)
->>> 2021/09/15 08:49:50 socat[2215] D isatty() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D isatty(1)
->>> 2021/09/15 08:49:50 socat[2215] D isatty() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D malloc(128)
->>> 2021/09/15 08:49:50 socat[2215] D malloc() -> 0x55aa5f014f00
->>> 2021/09/15 08:49:50 socat[2215] D malloc(128)
->>> 2021/09/15 08:49:50 socat[2215] D malloc() -> 0x55aa5f014f90
->>> 2021/09/15 08:49:50 socat[2215] N reading from and writing to stdio
->>> 2021/09/15 08:49:50 socat[2215] D xioopen("UNIX-CONNECT:./targets/uds-notroot/uds-access-socket")
->>> 2021/09/15 08:49:50 socat[2215] D calloc(1, 824)
->>> 2021/09/15 08:49:50 socat[2215] D calloc() -> 0x55aa5f015020
->>> 2021/09/15 08:49:50 socat[2215] D malloc(1024)
->>> 2021/09/15 08:49:50 socat[2215] D malloc() -> 0x55aa5f015360
->>> 2021/09/15 08:49:50 socat[2215] D malloc(128)
->>> 2021/09/15 08:49:50 socat[2215] D malloc() -> 0x55aa5f015770
->>> 2021/09/15 08:49:50 socat[2215] N opening connection to AF=1 "./targets/uds-notroot/uds-access-socket"
->>> 2021/09/15 08:49:50 socat[2215] D socket(1, 1, 0)
->>> 2021/09/15 08:49:50 socat[2215] I socket(1, 1, 0) -> 5
->>> 2021/09/15 08:49:50 socat[2215] D fcntl(5, 2, 1)
->>> 2021/09/15 08:49:50 socat[2215] D fcntl() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D connect(5, {1,AF=1 "./targets/uds-notroot/uds-access-socket"}, 41)
->>> 2021/09/15 08:49:50 socat[2215] D connect() -> 0
->>> 2021/09/15 08:49:50 socat[2215] D getsockname(5, 0x7fffaec50580, 0x7fffaec50564{112})
->>> 2021/09/15 08:49:50 socat[2215] D getsockname(, {AF=1 "<anon>"}, {2}) -> 0
->>> 2021/09/15 08:49:50 socat[2215] N successfully connected from local address AF=1 "uds-notroot/ud\xEE\xEE\xEE\xEEcess-socket")\n"
->>> 2021/09/15 08:49:50 socat[2215] I resolved and opened all sock addresses
->>> 2021/09/15 08:49:50 socat[2215] D posix_memalign(0x7fffaec50b28, 4096, 16385)
->>> 2021/09/15 08:49:50 socat[2215] D posix_memalign(...) -> 0
->>> 2021/09/15 08:49:50 socat[2215] N starting data transfer loop with FDs [0,1] and [5,5]
->>> 2021/09/15 08:49:50 socat[2215] D data loop: sock1->eof=0, sock2->eof=0, closing=0, wasaction=1, total_to={0.000000}
->>> 2021/09/15 08:49:50 socat[2215] D select(6, &0x21, &0x22, &0x0, NULL/0.000000)
->>> 2021/09/15 08:49:50 socat[2215] D select -> (, 0x21, 0x22, 0x0, NULL/0.000000), 4
->>> 2021/09/15 08:49:50 socat[2215] D read(0, 0x55aa5f016000, 8192)
->>> 2021/09/15 08:49:50 socat[2215] D read -> 4
->>> 2021/09/15 08:49:50 socat[2215] D write(5, 0x55aa5f016000, 4)
->>> Pop
->>> 2021/09/15 08:49:50 socat[2215] D write -> 4
->>> 2021/09/15 08:49:50 socat[2215] I transferred 4 bytes from 0 to 5
->>> 2021/09/15 08:49:50 socat[2215] D read(5, 0x55aa5f016000, 8192)
->>> 2021/09/15 08:49:50 socat[2215] D read -> 4
->>> 2021/09/15 08:49:50 socat[2215] D write(1, 0x55aa5f016000, 4)
->>> Pop
->>> 2021/09/15 08:49:50 socat[2215] D write -> 4
->>> 2021/09/15 08:49:50 socat[2215] I transferred 4 bytes from 5 to 1
->>> 2021/09/15 08:49:50 socat[2215] D data loop: sock1->eof=0, sock2->eof=0, closing=0, wasaction=1, total_to={0.000000}
->>> 2021/09/15 08:49:50 socat[2215] D select(6, &0x21, &0x22, &0x0, NULL/0.000000)
->>> 2021/09/15 08:49:50 socat[2215] D select -> (, 0x21, 0x22, 0x0, NULL/0.000000), 4
->>> 2021/09/15 08:49:50 socat[2215] D read(0, 0x55aa5f016000, 8192)
->>> 2021/09/15 08:49:50 socat[2215] D read -> 0
->>> 2021/09/15 08:49:50 socat[2215] D read(5, 0x55aa5f016000, 8192)
->>> 2021/09/15 08:49:50 socat[2215] D read -> 0
->>> 2021/09/15 08:49:50 socat[2215] N socket 1 (fd 0) is at EOF
->>> 2021/09/15 08:49:50 socat[2215] I shutdown(5, 1)
->>> 2021/09/15 08:49:50 socat[2215] D shutdown()  -> 0
->>> 2021/09/15 08:49:50 socat[2215] N socket 2 (fd 5) is at EOF
->>> 2021/09/15 08:49:50 socat[2215] I shutdown(5, 2)
->>> 2021/09/15 08:49:50 socat[2215] D shutdown()  -> 0
->>> 2021/09/15 08:49:50 socat[2215] N exiting with status 0
->>> 2021/09/15 08:49:50 socat[2215] D exit(0)
->>> 2021/09/15 08:49:50 socat[2215] D starting xioexit()
->>> 2021/09/15 08:49:50 socat[2215] D finished xioexit()
->>> uds-access RC=0
->>> 2021/09/15 08:49:52 socat[2240] D getpid()
->>> 2021/09/15 08:49:52 socat[2240] D getpid() -> 2240
->>> 2021/09/15 08:49:52 socat[2240] D setenv("SOCAT_PID", "2240", 1)
->>> 2021/09/15 08:49:52 socat[2240] D setenv() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D setenv("SOCAT_PPID", "2240", 1)
->>> 2021/09/15 08:49:52 socat[2240] D setenv() -> 0
->>> 2021/09/15 08:49:52 socat[2240] I socat by Gerhard Rieger and contributors - see www.dest-unreach.org
->>> 2021/09/15 08:49:52 socat[2240] I This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit. (http://www.openssl.org/)
->>> 2021/09/15 08:49:52 socat[2240] I This product includes software written by Tim Hudson (tjh@cryptsoft.com)
->>> 2021/09/15 08:49:52 socat[2240] D socat version 1.7.4.1 on Jan 27 2021 00:00:00
->>> 2021/09/15 08:49:52 socat[2240] D setenv("SOCAT_VERSION", "1.7.4.1", 1)
->>> 2021/09/15 08:49:52 socat[2240] D setenv() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D running on Linux version #58 SMP Wed Sep 15 08:40:38 PDT 2021, release 5.15.0-rc1bisect, machine x86_64
->>>
->>> 2021/09/15 08:49:52 socat[2240] D argv[0]: "socat"
->>> 2021/09/15 08:49:52 socat[2240] D argv[1]: "-d"
->>> 2021/09/15 08:49:52 socat[2240] D argv[2]: "-d"
->>> 2021/09/15 08:49:52 socat[2240] D argv[3]: "-d"
->>> 2021/09/15 08:49:52 socat[2240] D argv[4]: "-d"
->>> 2021/09/15 08:49:52 socat[2240] D argv[5]: "-"
->>> 2021/09/15 08:49:52 socat[2240] D argv[6]: "UNIX-CONNECT:./targets/uds-notroot/uds-access-socket"
->>> 2021/09/15 08:49:52 socat[2240] D sigaction(1, 0x7ffcca7e26c0, 0x0)
->>> 2021/09/15 08:49:52 socat[2240] D sigaction() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D sigaction(2, 0x7ffcca7e26c0, 0x0)
->>> 2021/09/15 08:49:52 socat[2240] D sigaction() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D sigaction(3, 0x7ffcca7e26c0, 0x0)
->>> 2021/09/15 08:49:52 socat[2240] D sigaction() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D sigaction(4, 0x7ffcca7e26c0, 0x0)
->>> 2021/09/15 08:49:52 socat[2240] D sigaction() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D sigaction(6, 0x7ffcca7e26c0, 0x0)
->>> 2021/09/15 08:49:52 socat[2240] D sigaction() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D sigaction(7, 0x7ffcca7e26c0, 0x0)
->>> 2021/09/15 08:49:52 socat[2240] D sigaction() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D sigaction(8, 0x7ffcca7e26c0, 0x0)
->>> 2021/09/15 08:49:52 socat[2240] D sigaction() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D sigaction(11, 0x7ffcca7e26c0, 0x0)
->>> 2021/09/15 08:49:52 socat[2240] D sigaction() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D sigaction(15, 0x7ffcca7e26c0, 0x0)
->>> 2021/09/15 08:49:52 socat[2240] D sigaction() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D signal(13, 0x1)
->>> 2021/09/15 08:49:52 socat[2240] D signal() -> 0x0
->>> 2021/09/15 08:49:52 socat[2240] D atexit(0x560590a15110)
->>> 2021/09/15 08:49:52 socat[2240] D atexit() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D xioopen("-")
->>> 2021/09/15 08:49:52 socat[2240] D calloc(1, 824)
->>> 2021/09/15 08:49:52 socat[2240] D calloc() -> 0x560591e899d0
->>> 2021/09/15 08:49:52 socat[2240] D malloc(1024)
->>> 2021/09/15 08:49:52 socat[2240] D malloc() -> 0x560591e89d30
->>> 2021/09/15 08:49:52 socat[2240] D calloc(1, 824)
->>> 2021/09/15 08:49:52 socat[2240] D calloc() -> 0x560591e8a140
->>> 2021/09/15 08:49:52 socat[2240] D calloc(1, 824)
->>> 2021/09/15 08:49:52 socat[2240] D calloc() -> 0x560591e8abc0
->>> 2021/09/15 08:49:52 socat[2240] D isatty(0)
->>> 2021/09/15 08:49:52 socat[2240] D isatty() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D isatty(1)
->>> 2021/09/15 08:49:52 socat[2240] D isatty() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D malloc(128)
->>> 2021/09/15 08:49:52 socat[2240] D malloc() -> 0x560591e8af00
->>> 2021/09/15 08:49:52 socat[2240] D malloc(128)
->>> 2021/09/15 08:49:52 socat[2240] D malloc() -> 0x560591e8af90
->>> 2021/09/15 08:49:52 socat[2240] N reading from and writing to stdio
->>> 2021/09/15 08:49:52 socat[2240] D xioopen("UNIX-CONNECT:./targets/uds-notroot/uds-access-socket")
->>> 2021/09/15 08:49:52 socat[2240] D calloc(1, 824)
->>> 2021/09/15 08:49:52 socat[2240] D calloc() -> 0x560591e8b020
->>> 2021/09/15 08:49:52 socat[2240] D malloc(1024)
->>> 2021/09/15 08:49:52 socat[2240] D malloc() -> 0x560591e8b360
->>> 2021/09/15 08:49:52 socat[2240] D malloc(128)
->>> 2021/09/15 08:49:52 socat[2240] D malloc() -> 0x560591e8b770
->>> 2021/09/15 08:49:52 socat[2240] N opening connection to AF=1 "./targets/uds-notroot/uds-access-socket"
->>> 2021/09/15 08:49:52 socat[2240] D socket(1, 1, 0)
->>> 2021/09/15 08:49:52 socat[2240] I socket(1, 1, 0) -> 5
->>> 2021/09/15 08:49:52 socat[2240] D fcntl(5, 2, 1)
->>> 2021/09/15 08:49:52 socat[2240] D fcntl() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D connect(5, {1,AF=1 "./targets/uds-notroot/uds-access-socket"}, 41)
->>> 2021/09/15 08:49:52 socat[2240] D connect() -> 0
->>> 2021/09/15 08:49:52 socat[2240] D getsockname(5, 0x7ffcca7e20f0, 0x7ffcca7e20d4{112})
->>> 2021/09/15 08:49:52 socat[2240] D getsockname(, {AF=1 "<anon>"}, {2}) -> 0
->>> 2021/09/15 08:49:52 socat[2240] N successfully connected from local address AF=1 "uds-notroot/ud\xEE\xEE\xEE\xEEcess-socket")\n"
->>> 2021/09/15 08:49:52 socat[2240] I resolved and opened all sock addresses
->>> 2021/09/15 08:49:52 socat[2240] D posix_memalign(0x7ffcca7e2698, 4096, 16385)
->>> 2021/09/15 08:49:52 socat[2240] D posix_memalign(...) -> 0
->>> 2021/09/15 08:49:52 socat[2240] N starting data transfer loop with FDs [0,1] and [5,5]
->>> 2021/09/15 08:49:52 socat[2240] D data loop: sock1->eof=0, sock2->eof=0, closing=0, wasaction=1, total_to={0.000000}
->>> 2021/09/15 08:49:52 socat[2240] D select(6, &0x21, &0x22, &0x0, NULL/0.000000)
->>> 2021/09/15 08:49:52 socat[2240] D select -> (, 0x1, 0x22, 0x0, NULL/0.000000), 3
->>> 2021/09/15 08:49:52 socat[2240] D read(0, 0x560591e8c000, 8192)
->>> 2021/09/15 08:49:52 socat[2240] D read -> 5
->>> 2021/09/15 08:49:52 socat[2240] D write(5, 0x560591e8c000, 5)
->>> 2021/09/15 08:49:52 socat[2240] D write -> 5
->>> 2021/09/15 08:49:52 socat[2240] I transferred 5 bytes from 0 to 5
->>> 2021/09/15 08:49:52 socat[2240] D data loop: sock1->eof=0, sock2->eof=0, closing=0, wasaction=1, total_to={0.000000}
->>> 2021/09/15 08:49:52 socat[2240] D select(6, &0x21, &0x20, &0x0, NULL/0.000000)
->>> 2021/09/15 08:49:52 socat[2240] D select -> (, 0x1, 0x20, 0x0, NULL/0.000000), 2
->>> 2021/09/15 08:49:52 socat[2240] D read(0, 0x560591e8c000, 8192)
->>> 2021/09/15 08:49:52 socat[2240] D read -> 0
->>> 2021/09/15 08:49:52 socat[2240] N socket 1 (fd 0) is at EOF
->>> 2021/09/15 08:49:52 socat[2240] I shutdown(5, 1)
->>> 2021/09/15 08:49:52 socat[2240] D shutdown()  -> 0
->> Is this shutdown expected?
-> I'm not an expert on the internals of socat, but I don't think it
-> is expected.
->
->> 2021/09/15 08:49:52 socat[2240] D data loop: sock1->eof=3, sock2->eof=0, closing=1, wasaction=1, total_to={0.000000}
->> 2021/09/15 08:49:52 socat[2240] D select(6, &0x20, &0x0, &0x0, &0.500000)
->> Snap
->> 2021/09/15 08:49:52 socat[2240] D select -> (, 0x20, 0x0, 0x0, &0.500000), 1
->> 2021/09/15 08:49:52 socat[2240] D read(5, 0x560591e8c000, 8192)
->> 2021/09/15 08:49:52 socat[2240] D read -> -1
->> This read failure seems due to the previous shutdown, right?
-> Again, I'm not the socat expert, but that would seem reasonable
-> to me.
->
->
->>> 2021/09/15 08:49:52 socat[2240] E read(5, 0x560591e8c000, 8192): Invalid argument
->>> 2021/09/15 08:49:52 socat[2240] N exit(1)
->>> 2021/09/15 08:49:52 socat[2240] D starting xioexit()
->>> 2021/09/15 08:49:52 socat[2240] I shutdown(5, 2)
->>> 2021/09/15 08:49:52 socat[2240] D shutdown()  -> 0
->>> 2021/09/15 08:49:52 socat[2240] D finished xioexit()
->>> uds-access RC=1
->>>
->>>
->>>
->>>
+With above changes, it will affect hundreds of files, and all the
+nic drivers. To make it easy to be reviewed, split the changes
+to 167 patches to 5 parts.
+
+patch 1~22: convert the prototype which use netdev_features_t
+as return value
+patch 24: introduce fake helpers for bitmap operation
+patch 25~165: use netdev_feature_xxx helpers
+patch 166: use macro __DECLARE_NETDEV_FEATURE_MASK to replace
+netdev_feature_t declaration.
+patch 167: change the type of netdev_features_t to bitmap,
+and rewrite the bitmap helpers.
+
+Sorry to send a so huge patchset, I wanna to get more suggestions
+to finish this work, to make it much more reviewable and feasible.
+
+The former discussing for the changes, see [1]
+[1]. https://www.spinics.net/lists/netdev/msg753528.html
+
+ChangeLog:
+V1->V2:
+use bitmap by comment from Andrew Lunn
+
+Jian Shen (167):
+  net: convert the prototype of netdev_intersect_features
+  net: convert the prototype of netdev_get_wanted_features
+  net: convert the prototype of net_mpls_features
+  net: convert the prototype of harmonize_features
+  net: convert the prototype of gso_features_check
+  net: convert the prototype of vlan_features_check
+  net: convert the prototype of vxlan_features_check
+  net: convert the prototype of dflt_features_check
+  net: convert the prototype of ndo_features_check
+  net: convert the prototype of netif_skb_features
+  net: convert the prototype of ndo_fix_features
+  net: convert the prototype of netdev_fix_features
+  net: convert the prototype of netdev_sync_upper_features
+  net: convert the prototype of br_features_recompute
+  net: convert the prototype of netdev_add_tso_features
+  net: convert the prototype of netdev_increment_features
+  net: convert the prototype of hsr_features_recompute
+  net: mlx5: convert prototype of mlx5e_ipsec_feature_check,
+    mlx5e_tunnel_features_check and mlx5e_fix_uplink_rep_features
+  net: sfc: convert the prototype of xxx_supported_features
+  net: qlogic: convert the prototype of qlcnic_process_flags
+  net: realtek: convert the prototype of rtl8168evl_fix_tso
+  ethtool: convert the prototype of ethtool_get_feature_mask
+  net: add netdev feature helpers
+  net: core: use netdev feature helpers
+  skbuff: use netdev feature helpers
+  net: vlan: use netdev feature helpers
+  bridge: use netdev feature helpers
+  ipvlan: use netdev feature helpers
+  veth: use netdev feature helpers
+  bonding: use netdev feature helpers
+  net: tun: use netdev feature helpers
+  net: tap: use netdev feature helpers
+  net: geneve: use netdev feature helpers
+  hv_netvsc: use netdev feature helpers
+  macvlan: use netdev feature helpers
+  macsec: use netdev feature helpers
+  net: tls: use netdev feature helpers
+  s390: qeth: use netdev feature helpers
+  dsa: use netdev feature helpers
+  macvtap: use netdev feature helpers
+  team: use netdev feature helpers
+  vmxnet3: use netdev feature helpers
+  net_failover: use netdev feature helpers
+  pktgen: use netdev feature helpers
+  net: sched: use netdev feature helpers
+  netdevsim: use netdev feature helpers
+  virtio_net: use netdev feature helpers
+  net: ipv4: use netdev feature helpers
+  net: ipv6: use netdev feature helpers
+  net: hsr: use netdev feature helpers
+  net: mpls: use netdev feature helpers
+  net: nsh: use netdev feature helpers
+  net: decnet: use netdev feature helpers
+  net: dccp: use netdev feature helpers
+  net: l2tp: use netdev feature helpers
+  net: ntb_netdev: use netdev feature helpers
+  net: thunderbolt: use netdev feature helpers
+  net: phonet: use netdev feature helpers
+  net: vrf: use netdev feature helpers
+  net: sctp: use netdev feature helpers
+  vxlan: use netdev feature helpers
+  xen-netback: use netdev feature helpers
+  xen-netfront: use netdev feature helpers
+  sock: use netdev feature helpers
+  sunrpc: use netdev feature helpers
+  net: caif: use netdev feature helpers
+  net: loopback: use netdev feature helpers
+  net: dummy: use netdev_feature helpers
+  net: mac80211: use netdev feature helpers
+  net: ifb: use netdev feature helpers
+  net: bareudp: use netdev feature helpers
+  net: rionet: use netdev feature helpers
+  net: gtp: use netdev feature helpers
+  net: vsockmon: use netdev feature helpers
+  net: nlmon: use netdev feature helpers
+  net: wireguard: use netdev feature helpers
+  net: can: use netdev feature helpers
+  net: ppp: use netdev feature helpers
+  net: ipa: use netdev feature helpers
+  net: fjes: use netdev feature helpers
+  net: usb: use netdev feature helpers
+  net: wireless: use netdev feature helpers
+  net: realtek: use netdev feature helpers
+  net: broadcom: use netdev feature helpers
+  net: intel: use netdev feature helpers
+  net: hisilicon: use netdev feature helpers
+  net: mellanox: use netdev feature helpers
+  net: atlantic: use netdev feature helpers
+  net: atheros: use netdev feature helpers
+  net: chelsio: use netdev feature helpers
+  net: davicom: use netdev feature helpers
+  net: freescale: use netdev feature helpers
+  net: synopsys: use netdev feature helpers
+  net: sfc: use netdev feature helpers
+  net: qualcomm: use netdev feature helpers
+  net: nvidia: use netdev feature helpers
+  net: faraday: use netdev feature helpers
+  net: google: use netdev feature helpers
+  net: hinic: use netdev feature helpers
+  net: ibm: use netdev feature helpers
+  net: ionic: use netdev feature helpers
+  net: jme: use netdev feature helpers
+  net: micrel: use netdev feature helpers
+  net: cavium: use netdev feature helpers
+  net: cadence: use netdev feature helpers
+  net: mediatek: use netdev feature helpers
+  net: marvell: use netdev feature helpers
+  net: socionext: use netdev feature helpers
+  net: qlogic: use netdev feature helpers
+  net: nfp: use netdev feature helpers
+  net: mscc: use netdev feature helpers
+  net: oki-semi: use netdev feature helpers
+  net: renesas: use netdev feature helpers
+  net: neterion: use netdev feature helpers
+  net: cortina: use netdev feature helpers
+  net: stmmac: use netdev feature helpers
+  net: sxgbe: use netdev feature helpers
+  net: xgmac: use netdev feature helpers
+  net: altera: use netdev feature helpers
+  net: ti: use netdev feature helpers
+  net: benet: use netdev feature helpers
+  net: amd: use netdev feature helpers
+  net: bna: use netdev feature helpers
+  net: enic: use netdev feature helpers
+  net: 3com: use netdev feature helpers
+  net: aeroflex: use netdev feature helpers
+  net: sun: use netdev feature helpers
+  net: mana: use netdev feature helpers
+  net: myricom: use netdev feature helpers
+  net: alacritech: use netdev feature helpers
+  net: toshiba: use netdev feature helpers
+  net: tehuti: use netdev feature helpers
+  net: alteon: use netdev feature helpers
+  net: ena: use netdev feature helpers
+  net: sgi: use netdev feature helpers
+  net: microchip: use netdev feature helpers
+  net: ni: use netdev feature helpers
+  net: apm: use netdev feature helpers
+  net: natsemi: use netdev feature helpers
+  net: xilinx: use netdev feature helpers
+  net: pasemi: use netdev feature helpers
+  net: rocker: use netdev feature helpers
+  net: silan: use netdev feature helpers
+  net: adaptec: use netdev feature helpers
+  net: tundra: use netdev feature helpers
+  net: via: use netdev feature helpers
+  net: wiznet: use netdev feature helpers
+  net: dnet: use netdev feature helpers
+  net: ethoc: use netdev feature helpers
+  RDMA: ipoib: use netdev feature helpers
+  um: use netdev feature helpers
+  scsi: fcoe: use netdev feature helpers
+  net: ipvs: use netdev feature helpers
+  net: xfrm: use netdev feature helpers
+  net: cirrus: use netdev feature helpers
+  net: ec_bhf: use netdev feature helpers
+  net: hamradio: use netdev feature helpers
+  net: batman: use netdev feature helpers
+  net: ieee802154: use netdev feature helpers
+  test_bpf: change the prototype of features
+  net: openvswitch: use netdev feature helpers
+  firewire: use netdev feature helpers
+  staging: qlge: use netdev feature helpers
+  staging: octeon: use netdev feature helpers
+  net: sock: add helper sk_nocaps_add_gso()
+  treewide: introduce macro __DECLARE_NETDEV_FEATURE_MASK
+  net: extend the type of netdev_features_t to bitmap
+
+ arch/um/drivers/vector_kern.c                 |  15 +-
+ drivers/firewire/net.c                        |   3 +-
+ drivers/infiniband/hw/hfi1/vnic_main.c        |   7 +-
+ drivers/infiniband/ulp/ipoib/ipoib_cm.c       |   2 +-
+ drivers/infiniband/ulp/ipoib/ipoib_ib.c       |   2 +-
+ drivers/infiniband/ulp/ipoib/ipoib_main.c     |  21 +-
+ drivers/infiniband/ulp/ipoib/ipoib_verbs.c    |   2 +-
+ drivers/net/bareudp.c                         |  16 +-
+ drivers/net/bonding/bond_main.c               | 136 +++---
+ drivers/net/bonding/bond_options.c            |  12 +-
+ drivers/net/caif/caif_serial.c                |   2 +-
+ drivers/net/can/dev/dev.c                     |   3 +-
+ drivers/net/can/slcan.c                       |   3 +-
+ drivers/net/dsa/xrs700x/xrs700x.c             |   6 +-
+ drivers/net/dummy.c                           |  14 +-
+ drivers/net/ethernet/3com/3c59x.c             |   9 +-
+ drivers/net/ethernet/3com/typhoon.c           |  10 +-
+ drivers/net/ethernet/adaptec/starfire.c       |   9 +-
+ drivers/net/ethernet/aeroflex/greth.c         |  12 +-
+ drivers/net/ethernet/alacritech/slicoss.c     |   5 +-
+ drivers/net/ethernet/alteon/acenic.c          |   7 +-
+ drivers/net/ethernet/altera/altera_tse_main.c |  11 +-
+ .../net/ethernet/amazon/ena/ena_admin_defs.h  |   2 +-
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |  50 ++-
+ drivers/net/ethernet/amd/amd8111e.c           |   8 +-
+ drivers/net/ethernet/amd/xgbe/xgbe-dev.c      |  20 +-
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c      |  93 ++--
+ drivers/net/ethernet/amd/xgbe/xgbe-main.c     |  68 +--
+ drivers/net/ethernet/amd/xgbe/xgbe.h          |   2 +-
+ drivers/net/ethernet/apm/xgene-v2/main.c      |   5 +-
+ .../net/ethernet/apm/xgene/xgene_enet_main.c  |  21 +-
+ .../ethernet/aquantia/atlantic/aq_filters.c   |  12 +-
+ .../ethernet/aquantia/atlantic/aq_macsec.c    |   2 +-
+ .../net/ethernet/aquantia/atlantic/aq_main.c  |  27 +-
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |  28 +-
+ .../net/ethernet/aquantia/atlantic/aq_nic.h   |   2 +-
+ .../net/ethernet/aquantia/atlantic/aq_ring.c  |   3 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |   3 +-
+ drivers/net/ethernet/atheros/alx/main.c       |  23 +-
+ .../net/ethernet/atheros/atl1c/atl1c_main.c   |  33 +-
+ .../net/ethernet/atheros/atl1e/atl1e_main.c   |  44 +-
+ drivers/net/ethernet/atheros/atlx/atl1.c      |  15 +-
+ drivers/net/ethernet/atheros/atlx/atl2.c      |  27 +-
+ drivers/net/ethernet/atheros/atlx/atlx.c      |  20 +-
+ drivers/net/ethernet/broadcom/b44.c           |   2 +-
+ drivers/net/ethernet/broadcom/bcmsysport.c    |  24 +-
+ drivers/net/ethernet/broadcom/bgmac.c         |   8 +-
+ drivers/net/ethernet/broadcom/bnx2.c          |  48 +-
+ .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c   |  67 +--
+ .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.h   |   3 +-
+ .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  |  93 ++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 171 ++++---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  |   4 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c |  11 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |   3 +-
+ .../net/ethernet/broadcom/genet/bcmgenet.c    |  12 +-
+ drivers/net/ethernet/broadcom/tg3.c           |  62 +--
+ drivers/net/ethernet/brocade/bna/bnad.c       |  48 +-
+ drivers/net/ethernet/cadence/macb_main.c      |  81 ++--
+ drivers/net/ethernet/calxeda/xgmac.c          |  20 +-
+ .../net/ethernet/cavium/liquidio/lio_core.c   |   6 +-
+ .../net/ethernet/cavium/liquidio/lio_main.c   |  95 ++--
+ .../ethernet/cavium/liquidio/lio_vf_main.c    |  79 ++--
+ .../net/ethernet/cavium/thunder/nicvf_main.c  |  50 ++-
+ .../ethernet/cavium/thunder/nicvf_queues.c    |   2 +-
+ drivers/net/ethernet/chelsio/cxgb/cxgb2.c     |  50 ++-
+ drivers/net/ethernet/chelsio/cxgb/sge.c       |  12 +-
+ .../net/ethernet/chelsio/cxgb3/cxgb3_main.c   |  60 ++-
+ drivers/net/ethernet/chelsio/cxgb3/sge.c      |  10 +-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_fcoe.c   |  16 +-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  88 ++--
+ .../net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.h |   3 +-
+ drivers/net/ethernet/chelsio/cxgb4/sge.c      |  14 +-
+ .../ethernet/chelsio/cxgb4vf/cxgb4vf_main.c   |  39 +-
+ drivers/net/ethernet/chelsio/cxgb4vf/sge.c    |   8 +-
+ .../chelsio/inline_crypto/chtls/chtls_main.c  |   3 +-
+ drivers/net/ethernet/cirrus/ep93xx_eth.c      |   2 +-
+ drivers/net/ethernet/cisco/enic/enic_main.c   |  74 +--
+ drivers/net/ethernet/cortina/gemini.c         |  18 +-
+ drivers/net/ethernet/davicom/dm9000.c         |  24 +-
+ drivers/net/ethernet/dnet.c                   |   2 +-
+ drivers/net/ethernet/ec_bhf.c                 |   2 +-
+ drivers/net/ethernet/emulex/benet/be_main.c   |  68 +--
+ drivers/net/ethernet/ethoc.c                  |   2 +-
+ drivers/net/ethernet/faraday/ftgmac100.c      |  38 +-
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  23 +-
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  44 +-
+ .../ethernet/freescale/dpaa2/dpaa2-switch.c   |   5 +-
+ drivers/net/ethernet/freescale/enetc/enetc.c  |  34 +-
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |  38 +-
+ .../net/ethernet/freescale/enetc/enetc_qos.c  |   2 +-
+ .../net/ethernet/freescale/enetc/enetc_vf.c   |  16 +-
+ drivers/net/ethernet/freescale/fec_main.c     |  29 +-
+ .../ethernet/freescale/fs_enet/fs_enet-main.c |   2 +-
+ drivers/net/ethernet/freescale/gianfar.c      |  39 +-
+ .../net/ethernet/freescale/gianfar_ethtool.c  |  11 +-
+ drivers/net/ethernet/google/gve/gve_adminq.c  |   6 +-
+ drivers/net/ethernet/google/gve/gve_main.c    |  31 +-
+ drivers/net/ethernet/google/gve/gve_rx.c      |   8 +-
+ drivers/net/ethernet/google/gve/gve_rx_dqo.c  |   8 +-
+ drivers/net/ethernet/hisilicon/hix5hd2_gmac.c |   8 +-
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c |  52 ++-
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 109 +++--
+ .../net/ethernet/huawei/hinic/hinic_main.c    |  80 ++--
+ drivers/net/ethernet/huawei/hinic/hinic_rx.c  |   5 +-
+ drivers/net/ethernet/ibm/ehea/ehea_main.c     |  22 +-
+ drivers/net/ethernet/ibm/emac/core.c          |   7 +-
+ drivers/net/ethernet/ibm/ibmveth.c            |  76 ++--
+ drivers/net/ethernet/ibm/ibmvnic.c            |  69 +--
+ drivers/net/ethernet/intel/e100.c             |  26 +-
+ drivers/net/ethernet/intel/e1000/e1000_main.c |  82 ++--
+ drivers/net/ethernet/intel/e1000e/netdev.c    | 129 +++---
+ drivers/net/ethernet/intel/fm10k/fm10k_main.c |   9 +-
+ .../net/ethernet/intel/fm10k/fm10k_netdev.c   |  65 +--
+ drivers/net/ethernet/intel/fm10k/fm10k_pci.c  |  11 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 122 ++---
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   |   9 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c   | 153 ++++---
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c   |  12 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 177 +++++---
+ drivers/net/ethernet/intel/ice/ice_txrx_lib.c |   9 +-
+ drivers/net/ethernet/intel/igb/igb_ethtool.c  |   2 +-
+ drivers/net/ethernet/intel/igb/igb_main.c     | 150 ++++---
+ drivers/net/ethernet/intel/igbvf/netdev.c     |  86 ++--
+ drivers/net/ethernet/intel/igc/igc_ethtool.c  |   3 +-
+ drivers/net/ethernet/intel/igc/igc_main.c     | 130 +++---
+ drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  49 +-
+ .../net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c   |   3 +-
+ .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |   2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c |   7 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  |   3 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 215 +++++----
+ .../net/ethernet/intel/ixgbe/ixgbe_sriov.c    |   6 +-
+ drivers/net/ethernet/intel/ixgbevf/ipsec.c    |   9 +-
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c | 105 +++--
+ drivers/net/ethernet/jme.c                    |  49 +-
+ drivers/net/ethernet/marvell/mv643xx_eth.c    |  14 +-
+ drivers/net/ethernet/marvell/mvneta.c         |  22 +-
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  73 +--
+ .../marvell/octeontx2/nic/otx2_common.c       |   3 +-
+ .../marvell/octeontx2/nic/otx2_ethtool.c      |   4 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  85 ++--
+ .../marvell/octeontx2/nic/otx2_txrx.c         |   8 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |  35 +-
+ .../ethernet/marvell/prestera/prestera_main.c |   3 +-
+ drivers/net/ethernet/marvell/skge.c           |  11 +-
+ drivers/net/ethernet/marvell/sky2.c           |  75 ++--
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  68 +--
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   |   2 +-
+ .../net/ethernet/mellanox/mlx4/en_ethtool.c   |   4 +-
+ drivers/net/ethernet/mellanox/mlx4/en_main.c  |   8 +-
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    | 198 +++++----
+ .../net/ethernet/mellanox/mlx4/en_resources.c |   4 +-
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  19 +-
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |   5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |   5 +-
+ .../mellanox/mlx5/core/en_accel/ipsec.c       |  18 +-
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h  |  15 +-
+ .../mellanox/mlx5/core/en_accel/ktls.c        |  14 +-
+ .../mellanox/mlx5/core/en_accel/tls.c         |  16 +-
+ .../net/ethernet/mellanox/mlx5/core/en_arfs.c |   6 +-
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/en_fs.c   |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 250 ++++++-----
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  25 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   9 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   2 +-
+ .../ethernet/mellanox/mlx5/core/ipoib/ipoib.c |  19 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  36 +-
+ drivers/net/ethernet/micrel/ksz884x.c         |  10 +-
+ drivers/net/ethernet/microchip/lan743x_main.c |   7 +-
+ .../ethernet/microchip/sparx5/sparx5_fdma.c   |   2 +-
+ drivers/net/ethernet/microsoft/mana/mana_en.c |  20 +-
+ drivers/net/ethernet/mscc/ocelot.c            |   3 +-
+ drivers/net/ethernet/mscc/ocelot_net.c        |  18 +-
+ .../net/ethernet/myricom/myri10ge/myri10ge.c  |  31 +-
+ drivers/net/ethernet/natsemi/ns83820.c        |  13 +-
+ drivers/net/ethernet/neterion/s2io.c          |  32 +-
+ .../net/ethernet/neterion/vxge/vxge-main.c    |  49 +-
+ .../net/ethernet/netronome/nfp/crypto/tls.c   |  12 +-
+ .../ethernet/netronome/nfp/nfp_net_common.c   | 118 +++--
+ .../net/ethernet/netronome/nfp/nfp_net_repr.c |  76 ++--
+ drivers/net/ethernet/netronome/nfp/nfp_port.c |   3 +-
+ drivers/net/ethernet/ni/nixge.c               |   3 +-
+ drivers/net/ethernet/nvidia/forcedeth.c       |  66 +--
+ .../ethernet/oki-semi/pch_gbe/pch_gbe_main.c  |  13 +-
+ .../ethernet/oki-semi/pch_gbe/pch_gbe_param.c |   6 +-
+ drivers/net/ethernet/pasemi/pasemi_mac.c      |   6 +-
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 125 +++---
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |   9 +-
+ .../ethernet/qlogic/netxen/netxen_nic_init.c  |   3 +-
+ .../ethernet/qlogic/netxen/netxen_nic_main.c  |  50 ++-
+ drivers/net/ethernet/qlogic/qede/qede.h       |  10 +-
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   |   2 +-
+ .../net/ethernet/qlogic/qede/qede_filter.c    |  19 +-
+ drivers/net/ethernet/qlogic/qede/qede_fp.c    |  23 +-
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  67 +--
+ drivers/net/ethernet/qlogic/qla3xxx.c         |   5 +-
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic.h   |   3 +-
+ .../net/ethernet/qlogic/qlcnic/qlcnic_hw.c    |  72 +--
+ .../net/ethernet/qlogic/qlcnic/qlcnic_io.c    |   3 +-
+ .../net/ethernet/qlogic/qlcnic/qlcnic_main.c  |  57 +--
+ drivers/net/ethernet/qualcomm/emac/emac-mac.c |   6 +-
+ drivers/net/ethernet/qualcomm/emac/emac.c     |  25 +-
+ .../ethernet/qualcomm/rmnet/rmnet_map_data.c  |  11 +-
+ .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   |  10 +-
+ drivers/net/ethernet/realtek/8139cp.c         |  39 +-
+ drivers/net/ethernet/realtek/8139too.c        |  28 +-
+ drivers/net/ethernet/realtek/r8169_main.c     |  85 ++--
+ drivers/net/ethernet/renesas/ravb.h           |   4 +-
+ drivers/net/ethernet/renesas/ravb_main.c      |  24 +-
+ drivers/net/ethernet/renesas/sh_eth.c         |  28 +-
+ drivers/net/ethernet/rocker/rocker_main.c     |   3 +-
+ .../net/ethernet/samsung/sxgbe/sxgbe_main.c   |  19 +-
+ drivers/net/ethernet/sfc/ef10.c               |  41 +-
+ drivers/net/ethernet/sfc/ef100_nic.c          |  43 +-
+ drivers/net/ethernet/sfc/ef100_rx.c           |   6 +-
+ drivers/net/ethernet/sfc/ef100_tx.c           |  11 +-
+ drivers/net/ethernet/sfc/ef10_sriov.c         |   6 +-
+ drivers/net/ethernet/sfc/efx.c                |  32 +-
+ drivers/net/ethernet/sfc/efx_common.c         |  41 +-
+ drivers/net/ethernet/sfc/efx_common.h         |   4 +-
+ drivers/net/ethernet/sfc/falcon/efx.c         |  44 +-
+ drivers/net/ethernet/sfc/falcon/falcon.c      |   4 +-
+ drivers/net/ethernet/sfc/falcon/net_driver.h  |   9 +-
+ drivers/net/ethernet/sfc/falcon/rx.c          |   6 +-
+ drivers/net/ethernet/sfc/farch.c              |   2 +-
+ drivers/net/ethernet/sfc/mcdi_filters.c       |  21 +-
+ drivers/net/ethernet/sfc/mcdi_port_common.c   |   3 +-
+ drivers/net/ethernet/sfc/net_driver.h         |   9 +-
+ drivers/net/ethernet/sfc/rx.c                 |   3 +-
+ drivers/net/ethernet/sfc/rx_common.c          |   5 +-
+ drivers/net/ethernet/sfc/siena.c              |   4 +-
+ drivers/net/ethernet/sgi/ioc3-eth.c           |  11 +-
+ drivers/net/ethernet/silan/sc92031.c          |   6 +-
+ drivers/net/ethernet/socionext/netsec.c       |  10 +-
+ drivers/net/ethernet/socionext/sni_ave.c      |   6 +-
+ .../net/ethernet/stmicro/stmmac/dwmac4_core.c |   3 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  62 +--
+ .../stmicro/stmmac/stmmac_selftests.c         |   6 +-
+ drivers/net/ethernet/sun/cassini.c            |   5 +-
+ drivers/net/ethernet/sun/ldmvsw.c             |   5 +-
+ drivers/net/ethernet/sun/niu.c                |  11 +-
+ drivers/net/ethernet/sun/sungem.c             |  11 +-
+ drivers/net/ethernet/sun/sunhme.c             |  14 +-
+ drivers/net/ethernet/sun/sunvnet.c            |   8 +-
+ drivers/net/ethernet/sun/sunvnet_common.c     |   5 +-
+ .../net/ethernet/synopsys/dwc-xlgmac-common.c |  45 +-
+ drivers/net/ethernet/synopsys/dwc-xlgmac-hw.c |  20 +-
+ .../net/ethernet/synopsys/dwc-xlgmac-net.c    |  41 +-
+ drivers/net/ethernet/synopsys/dwc-xlgmac.h    |   2 +-
+ drivers/net/ethernet/tehuti/tehuti.c          |  22 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  23 +-
+ drivers/net/ethernet/ti/cpsw.c                |   6 +-
+ drivers/net/ethernet/ti/cpsw_new.c            |   7 +-
+ drivers/net/ethernet/ti/netcp_core.c          |   9 +-
+ drivers/net/ethernet/toshiba/ps3_gelic_net.c  |  14 +-
+ drivers/net/ethernet/toshiba/spider_net.c     |  12 +-
+ drivers/net/ethernet/tundra/tsi108_eth.c      |   3 +-
+ drivers/net/ethernet/via/via-rhine.c          |  10 +-
+ drivers/net/ethernet/via/via-velocity.c       |  14 +-
+ drivers/net/ethernet/wiznet/w5100.c           |   2 +-
+ drivers/net/ethernet/wiznet/w5300.c           |   2 +-
+ drivers/net/ethernet/xilinx/ll_temac_main.c   |   5 +-
+ .../net/ethernet/xilinx/xilinx_axienet_main.c |   9 +-
+ drivers/net/fjes/fjes_main.c                  |   3 +-
+ drivers/net/geneve.c                          |  18 +-
+ drivers/net/gtp.c                             |   2 +-
+ drivers/net/hamradio/bpqether.c               |   3 +-
+ drivers/net/hyperv/netvsc_bpf.c               |   2 +-
+ drivers/net/hyperv/netvsc_drv.c               |  46 +-
+ drivers/net/hyperv/rndis_filter.c             |  30 +-
+ drivers/net/ifb.c                             |  12 +-
+ drivers/net/ipa/ipa_modem.c                   |   3 +-
+ drivers/net/ipvlan/ipvlan.h                   |   2 +-
+ drivers/net/ipvlan/ipvlan_main.c              |  40 +-
+ drivers/net/ipvlan/ipvtap.c                   |   5 +-
+ drivers/net/loopback.c                        |  20 +-
+ drivers/net/macsec.c                          |  49 +-
+ drivers/net/macvlan.c                         |  58 ++-
+ drivers/net/macvtap.c                         |   5 +-
+ drivers/net/net_failover.c                    |  77 ++--
+ drivers/net/netdevsim/ipsec.c                 |   4 +-
+ drivers/net/netdevsim/netdev.c                |  15 +-
+ drivers/net/nlmon.c                           |   5 +-
+ drivers/net/ntb_netdev.c                      |   5 +-
+ drivers/net/ppp/ppp_generic.c                 |   2 +-
+ drivers/net/rionet.c                          |   3 +-
+ drivers/net/tap.c                             |  38 +-
+ drivers/net/team/team.c                       |  90 ++--
+ drivers/net/thunderbolt.c                     |  10 +-
+ drivers/net/tun.c                             |  53 ++-
+ drivers/net/usb/aqc111.c                      |  42 +-
+ drivers/net/usb/ax88179_178a.c                |  26 +-
+ drivers/net/usb/cdc-phonet.c                  |   2 +-
+ drivers/net/usb/cdc_mbim.c                    |   4 +-
+ drivers/net/usb/lan78xx.c                     |  46 +-
+ drivers/net/usb/r8152.c                       |  71 +--
+ drivers/net/usb/smsc75xx.c                    |  14 +-
+ drivers/net/usb/smsc95xx.c                    |  19 +-
+ drivers/net/veth.c                            |  67 +--
+ drivers/net/virtio_net.c                      |  50 ++-
+ drivers/net/vmxnet3/vmxnet3_drv.c             |  75 ++--
+ drivers/net/vmxnet3/vmxnet3_ethtool.c         |  88 ++--
+ drivers/net/vmxnet3/vmxnet3_int.h             |   4 +-
+ drivers/net/vrf.c                             |  20 +-
+ drivers/net/vsockmon.c                        |   6 +-
+ drivers/net/vxlan.c                           |  21 +-
+ drivers/net/wireguard/device.c                |   8 +-
+ drivers/net/wireless/ath/ath10k/mac.c         |   7 +-
+ drivers/net/wireless/ath/ath11k/mac.c         |   4 +-
+ drivers/net/wireless/ath/ath6kl/main.c        |  15 +-
+ drivers/net/wireless/ath/ath6kl/txrx.c        |   6 +-
+ drivers/net/wireless/ath/wil6210/netdev.c     |  11 +-
+ .../broadcom/brcm80211/brcmfmac/core.c        |   4 +-
+ .../net/wireless/intel/iwlwifi/cfg/22000.c    |   4 +-
+ drivers/net/wireless/intel/iwlwifi/cfg/8000.c |   2 +-
+ drivers/net/wireless/intel/iwlwifi/cfg/9000.c |   2 +-
+ .../net/wireless/intel/iwlwifi/dvm/mac80211.c |   7 +-
+ .../net/wireless/intel/iwlwifi/iwl-config.h   |   2 +-
+ .../net/wireless/intel/iwlwifi/mvm/mac80211.c |  17 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/rx.c   |   2 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c |   2 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/tx.c   |  10 +-
+ .../net/wireless/mediatek/mt76/mt7615/init.c  |   3 +-
+ .../net/wireless/mediatek/mt76/mt7915/init.c  |   3 +-
+ .../net/wireless/mediatek/mt76/mt7921/init.c  |   3 +-
+ drivers/net/xen-netback/interface.c           |  27 +-
+ drivers/net/xen-netfront.c                    |  53 ++-
+ drivers/s390/net/qeth_core.h                  |   7 +-
+ drivers/s390/net/qeth_core_main.c             | 139 +++---
+ drivers/s390/net/qeth_l2_main.c               |  44 +-
+ drivers/s390/net/qeth_l3_main.c               |  49 +-
+ drivers/scsi/fcoe/fcoe.c                      |  14 +-
+ drivers/staging/octeon/ethernet.c             |   5 +-
+ drivers/staging/qlge/qlge_main.c              |  59 +--
+ drivers/usb/gadget/function/f_phonet.c        |   2 +-
+ include/linux/if_macvlan.h                    |   2 +-
+ include/linux/if_tap.h                        |   2 +-
+ include/linux/if_vlan.h                       |  22 +-
+ include/linux/netdev_features.h               | 181 +++++++-
+ include/linux/netdevice.h                     | 122 ++---
+ include/linux/skbuff.h                        |   6 +-
+ include/net/mac80211.h                        |   2 +-
+ include/net/pkt_cls.h                         |   2 +-
+ include/net/sock.h                            |  22 +-
+ include/net/udp.h                             |   8 +-
+ include/net/udp_tunnel.h                      |  12 +-
+ include/net/vxlan.h                           |  13 +-
+ lib/test_bpf.c                                |  21 +-
+ lib/vsprintf.c                                |   4 +-
+ net/8021q/vlan.c                              |  11 +-
+ net/8021q/vlan.h                              |  24 +-
+ net/8021q/vlan_core.c                         |   6 +-
+ net/8021q/vlan_dev.c                          |  57 +--
+ net/batman-adv/soft-interface.c               |   5 +-
+ net/bridge/br_device.c                        |  21 +-
+ net/bridge/br_if.c                            |  19 +-
+ net/bridge/br_private.h                       |   3 +-
+ net/core/dev.c                                | 420 ++++++++++--------
+ net/core/netpoll.c                            |   4 +-
+ net/core/pktgen.c                             |   6 +-
+ net/core/skbuff.c                             |  10 +-
+ net/core/skmsg.c                              |   3 +-
+ net/core/sock.c                               |  17 +-
+ net/dccp/ipv4.c                               |   2 +-
+ net/dccp/ipv6.c                               |   7 +-
+ net/decnet/af_decnet.c                        |   2 +-
+ net/decnet/dn_nsp_out.c                       |   2 +-
+ net/dsa/slave.c                               |  24 +-
+ net/ethtool/features.c                        |  94 ++--
+ net/ethtool/ioctl.c                           | 158 ++++---
+ net/hsr/hsr_device.c                          |  40 +-
+ net/hsr/hsr_forward.c                         |  11 +-
+ net/hsr/hsr_framereg.c                        |   3 +-
+ net/hsr/hsr_slave.c                           |   3 +-
+ net/ieee802154/6lowpan/core.c                 |   2 +-
+ net/ieee802154/core.c                         |  14 +-
+ net/ipv4/af_inet.c                            |   5 +-
+ net/ipv4/esp4_offload.c                       |  28 +-
+ net/ipv4/gre_offload.c                        |   8 +-
+ net/ipv4/ip_gre.c                             |  36 +-
+ net/ipv4/ip_output.c                          |  27 +-
+ net/ipv4/ip_tunnel.c                          |   4 +-
+ net/ipv4/ip_vti.c                             |   2 +-
+ net/ipv4/ipip.c                               |   6 +-
+ net/ipv4/ipmr.c                               |   2 +-
+ net/ipv4/tcp.c                                |  10 +-
+ net/ipv4/tcp_ipv4.c                           |   6 +-
+ net/ipv4/tcp_offload.c                        |   5 +-
+ net/ipv4/tcp_output.c                         |   2 +-
+ net/ipv4/udp_offload.c                        |  28 +-
+ net/ipv6/af_inet6.c                           |   2 +-
+ net/ipv6/esp6_offload.c                       |  19 +-
+ net/ipv6/inet6_connection_sock.c              |   2 +-
+ net/ipv6/ip6_gre.c                            |  17 +-
+ net/ipv6/ip6_offload.c                        |   3 +-
+ net/ipv6/ip6_output.c                         |  24 +-
+ net/ipv6/ip6_tunnel.c                         |   9 +-
+ net/ipv6/ip6mr.c                              |   2 +-
+ net/ipv6/sit.c                                |   9 +-
+ net/ipv6/tcp_ipv6.c                           |   2 +-
+ net/ipv6/udp_offload.c                        |   2 +-
+ net/l2tp/l2tp_eth.c                           |   2 +-
+ net/mac80211/iface.c                          |  10 +-
+ net/mac80211/main.c                           |   5 +-
+ net/mpls/mpls_gso.c                           |   4 +-
+ net/netfilter/ipvs/ip_vs_proto_sctp.c         |   3 +-
+ net/nsh/nsh.c                                 |   2 +-
+ net/openvswitch/datapath.c                    |   5 +-
+ net/openvswitch/vport-internal_dev.c          |  24 +-
+ net/phonet/pep-gprs.c                         |   3 +-
+ net/sched/sch_cake.c                          |   6 +-
+ net/sched/sch_netem.c                         |   6 +-
+ net/sched/sch_taprio.c                        |   6 +-
+ net/sched/sch_tbf.c                           |   6 +-
+ net/sctp/offload.c                            |  12 +-
+ net/sctp/output.c                             |   2 +-
+ net/sunrpc/sunrpc.h                           |   2 +-
+ net/tls/tls_device.c                          |  10 +-
+ net/wireless/core.c                           |  14 +-
+ net/xfrm/xfrm_device.c                        |  31 +-
+ net/xfrm/xfrm_interface.c                     |   6 +-
+ net/xfrm/xfrm_output.c                        |   4 +-
+ 424 files changed, 6584 insertions(+), 4459 deletions(-)
+
+-- 
+2.33.0
+
