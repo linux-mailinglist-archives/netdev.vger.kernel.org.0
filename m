@@ -2,125 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BB0141C23F
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 12:05:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8241F41C251
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 12:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245287AbhI2KHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 06:07:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44624 "EHLO mail.kernel.org"
+        id S245341AbhI2KLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 06:11:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46528 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245248AbhI2KGz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 06:06:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3326B61439;
-        Wed, 29 Sep 2021 10:05:14 +0000 (UTC)
+        id S245330AbhI2KLs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 06:11:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 21F4D613DA;
+        Wed, 29 Sep 2021 10:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632909914;
-        bh=Xxn9/SD1dYhlDwttos3PuGBQ5U/2yCNeeOkyqW/lvMU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ORjEaY8oVoBe/kc1cZJj2pdtkHjlj8HbwEZxZTWQ2RJxE3GmpxNBmdNmOnphEgvSX
-         ZOxvvBYGhy3vPJuqA7LfPTEfGfZd04jb5pa8GODKkdyshK6wcZoWwPGMWC+MS9U+hB
-         xbVhK4m/Jq2Iwa6W/3givlEv93HsBHlrwK8xareW519JavUdMcvSDsFayE2ZD0oN8U
-         pIltEb8rvFoy0z9I8Y2vMLwBlDucBVUKGTbifrVUXnBcQOBZxHm/pShHiIlrwCdByI
-         22paW8ns7SMXCobLPJLkLp0xaLAaB7vuo8aCGQL+Oy4kg80h0CJMOIrD0tYnYvfS9M
-         gE71ALaohzM2g==
-Received: by mail-wm1-f54.google.com with SMTP id z184-20020a1c7ec1000000b003065f0bc631so4803714wmc.0;
-        Wed, 29 Sep 2021 03:05:14 -0700 (PDT)
-X-Gm-Message-State: AOAM532yZxt2Ugc20fx35XlU9lIw+2q6Dr19g/YRF6FloXm4Uy/5/Wnj
-        SBExSeBq1sMLRQCFM4vh42Bvw3zFo4f0jCdPZvo=
-X-Google-Smtp-Source: ABdhPJxj45zzIMnN/HHyq+6nU2KpFjlg3Tr2+Q2ZpxFzEZguNBmccSscTdNWt05AmI9I9AwUnU3a/laQUUwcLa8ETFA=
-X-Received: by 2002:a05:600c:896:: with SMTP id l22mr9378065wmp.173.1632909912585;
- Wed, 29 Sep 2021 03:05:12 -0700 (PDT)
+        s=k20201202; t=1632910208;
+        bh=QU88gdxAQKxhHUQXF5N7ud55cYRdrIC2ho+vk3rpsJk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DBNF8100Qc+lpmA0Jzxfg0ii47GdYcxkETVhmRFZ/aUTXZgHw6kfAtwozCBjBBszc
+         B1P+slHLbXO4XYz6smr6/dYazbdcTG2O+EuCHxSpgps9CuyppiZdJv8pactJOVzVZs
+         RP59WyJdWfGwNjxodYulr7SMDBDuMChTYOW3RUu7q3IemM3kG3UziXJ9F/eRFFJUgl
+         CVgXbgwixuci5MnBh0VYJFtoBY9H0k0oTPoE9mZB35+2o9hdl//x94O1VouumbnwYo
+         16+hXgqv6J3EyeRKn6Ly6xKjkN19oPuBClHQhyN0yWU2o3aTVagTfOOSLPU1z+vkrF
+         dzjhHCzBrK4FQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 110D3609D6;
+        Wed, 29 Sep 2021 10:10:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210927152412.2900928-1-arnd@kernel.org> <20210929095107.GA21057@willie-the-truck>
-In-Reply-To: <20210929095107.GA21057@willie-the-truck>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 29 Sep 2021 12:04:55 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2QnJkYCoEWhziYYXQusb-25_wUhA5ZTGtBsyfFx3NWzQ@mail.gmail.com>
-Message-ID: <CAK8P3a2QnJkYCoEWhziYYXQusb-25_wUhA5ZTGtBsyfFx3NWzQ@mail.gmail.com>
-Subject: Re: [PATCH] [RFC] qcom_scm: hide Kconfig symbol
-To:     Will Deacon <will@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Joerg Roedel <joro@8bytes.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Alex Elder <elder@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Andy Gross <agross@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/8] net: hns3: add some fixes for -net
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163291020806.13642.6595140708181277709.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Sep 2021 10:10:08 +0000
+References: <20210929093556.9146-1-huangguangbin2@huawei.com>
+In-Reply-To: <20210929093556.9146-1-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lipeng321@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 11:51 AM Will Deacon <will@kernel.org> wrote:
-> On Mon, Sep 27, 2021 at 05:22:13PM +0200, Arnd Bergmann wrote:
-> >
-> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> > index 124c41adeca1..989c83acbfee 100644
-> > --- a/drivers/iommu/Kconfig
-> > +++ b/drivers/iommu/Kconfig
-> > @@ -308,7 +308,7 @@ config APPLE_DART
-> >  config ARM_SMMU
-> >       tristate "ARM Ltd. System MMU (SMMU) Support"
-> >       depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
-> > -     depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
-> > +     select QCOM_SCM
-> >       select IOMMU_API
-> >       select IOMMU_IO_PGTABLE_LPAE
-> >       select ARM_DMA_USE_IOMMU if ARM
->
-> I don't want to get in the way of this patch because I'm also tired of the
-> randconfig failures caused by QCOM_SCM. However, ARM_SMMU is applicable to
-> a wide variety of (non-qcom) SoCs and so it seems a shame to require the
-> QCOM_SCM code to be included for all of those when it's not strictly needed
-> at all.
+Hello:
 
-Good point, I agree that needs to be fixed. I think this additional
-change should do the trick:
+This series was applied to netdev/net.git (refs/heads/master):
 
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -308,7 +308,6 @@ config APPLE_DART
- config ARM_SMMU
-        tristate "ARM Ltd. System MMU (SMMU) Support"
-        depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
--       select QCOM_SCM
-        select IOMMU_API
-        select IOMMU_IO_PGTABLE_LPAE
-        select ARM_DMA_USE_IOMMU if ARM
-@@ -438,7 +437,7 @@ config QCOM_IOMMU
-        # Note: iommu drivers cannot (yet?) be built as modules
-        bool "Qualcomm IOMMU Support"
-        depends on ARCH_QCOM || (COMPILE_TEST && !GENERIC_ATOMIC64)
--       depends on QCOM_SCM=y
-+       select QCOM_SCM
-        select IOMMU_API
-        select IOMMU_IO_PGTABLE_LPAE
-        select ARM_DMA_USE_IOMMU
+On Wed, 29 Sep 2021 17:35:48 +0800 you wrote:
+> This series adds some fixes for the HNS3 ethernet driver.
+> 
+> Guangbin Huang (3):
+>   net: hns3: PF enable promisc for VF when mac table is overflow
+>   net: hns3: fix always enable rx vlan filter problem after selftest
+>   net: hns3: disable firmware compatible features when uninstall PF
+> 
+> [...]
 
-I'll see if that causes any problems for the randconfig builds.
+Here is the summary with links:
+  - [net,1/8] net: hns3: do not allow call hns3_nic_net_open repeatedly
+    https://git.kernel.org/netdev/net/c/5b09e88e1bf7
+  - [net,2/8] net: hns3: remove tc enable checking
+    https://git.kernel.org/netdev/net/c/a8e76fefe3de
+  - [net,3/8] net: hns3: don't rollback when destroy mqprio fail
+    https://git.kernel.org/netdev/net/c/d82650be60ee
+  - [net,4/8] net: hns3: fix mixed flag HCLGE_FLAG_MQPRIO_ENABLE and HCLGE_FLAG_DCB_ENABLE
+    https://git.kernel.org/netdev/net/c/0472e95ffeac
+  - [net,5/8] net: hns3: fix show wrong state when add existing uc mac address
+    https://git.kernel.org/netdev/net/c/108b3c7810e1
+  - [net,6/8] net: hns3: PF enable promisc for VF when mac table is overflow
+    https://git.kernel.org/netdev/net/c/276e60421668
+  - [net,7/8] net: hns3: fix always enable rx vlan filter problem after selftest
+    https://git.kernel.org/netdev/net/c/27bf4af69fcb
+  - [net,8/8] net: hns3: disable firmware compatible features when uninstall PF
+    https://git.kernel.org/netdev/net/c/0178839ccca3
 
-       Arnd
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
