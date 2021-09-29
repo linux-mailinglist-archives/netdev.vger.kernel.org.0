@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E4C141C1BF
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 11:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA2C741C1C7
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 11:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245151AbhI2Jl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 05:41:57 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:13391 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245083AbhI2Jlv (ORCPT
+        id S245215AbhI2JmF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 05:42:05 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:26969 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245087AbhI2Jlv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 05:41:51 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKB7P3Zkyz901J;
-        Wed, 29 Sep 2021 17:35:29 +0800 (CST)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HKB7q0qLLzbmwH;
+        Wed, 29 Sep 2021 17:35:51 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Wed, 29 Sep 2021 17:40:07 +0800
+ 15.1.2308.8; Wed, 29 Sep 2021 17:40:08 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -26,9 +26,9 @@ From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net 1/8] net: hns3: do not allow call hns3_nic_net_open repeatedly
-Date:   Wed, 29 Sep 2021 17:35:49 +0800
-Message-ID: <20210929093556.9146-2-huangguangbin2@huawei.com>
+Subject: [PATCH net 2/8] net: hns3: remove tc enable checking
+Date:   Wed, 29 Sep 2021 17:35:50 +0800
+Message-ID: <20210929093556.9146-3-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929093556.9146-1-huangguangbin2@huawei.com>
 References: <20210929093556.9146-1-huangguangbin2@huawei.com>
@@ -45,76 +45,112 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jian Shen <shenjian15@huawei.com>
 
-hns3_nic_net_open() is not allowed to called repeatly, but there
-is no checking for this. When doing device reset and setup tc
-concurrently, there is a small oppotunity to call hns3_nic_net_open
-repeatedly, and cause kernel bug by calling napi_enable twice.
+Currently, in function hns3_nic_set_real_num_queue(), the
+driver doesn't report the queue count and offset for disabled
+tc. If user enables multiple TCs, but only maps user
+priorities to partial of them, it may cause the queue range
+of the unmapped TC being displayed abnormally.
 
-The calltrace information is like below:
-[ 3078.222780] ------------[ cut here ]------------
-[ 3078.230255] kernel BUG at net/core/dev.c:6991!
-[ 3078.236224] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-[ 3078.243431] Modules linked in: hns3 hclgevf hclge hnae3 vfio_iommu_type1 vfio_pci vfio_virqfd vfio pv680_mii(O)
-[ 3078.258880] CPU: 0 PID: 295 Comm: kworker/u8:5 Tainted: G           O      5.14.0-rc4+ #1
-[ 3078.269102] Hardware name:  , BIOS KpxxxFPGA 1P B600 V181 08/12/2021
-[ 3078.276801] Workqueue: hclge hclge_service_task [hclge]
-[ 3078.288774] pstate: 60400009 (nZCv daif +PAN -UAO -TCO BTYPE=--)
-[ 3078.296168] pc : napi_enable+0x80/0x84
-tc qdisc sho[w  3d0e7v8 .e3t0h218 79] lr : hns3_nic_net_open+0x138/0x510 [hns3]
+Fix it by removing the tc enable checking, ensure the queue
+count is not zero.
 
-[ 3078.314771] sp : ffff8000108abb20
-[ 3078.319099] x29: ffff8000108abb20 x28: 0000000000000000 x27: ffff0820a8490300
-[ 3078.329121] x26: 0000000000000001 x25: ffff08209cfc6200 x24: 0000000000000000
-[ 3078.339044] x23: ffff0820a8490300 x22: ffff08209cd76000 x21: ffff0820abfe3880
-[ 3078.349018] x20: 0000000000000000 x19: ffff08209cd76900 x18: 0000000000000000
-[ 3078.358620] x17: 0000000000000000 x16: ffffc816e1727a50 x15: 0000ffff8f4ff930
-[ 3078.368895] x14: 0000000000000000 x13: 0000000000000000 x12: 0000259e9dbeb6b4
-[ 3078.377987] x11: 0096a8f7e764eb40 x10: 634615ad28d3eab5 x9 : ffffc816ad8885b8
-[ 3078.387091] x8 : ffff08209cfc6fb8 x7 : ffff0820ac0da058 x6 : ffff0820a8490344
-[ 3078.396356] x5 : 0000000000000140 x4 : 0000000000000003 x3 : ffff08209cd76938
-[ 3078.405365] x2 : 0000000000000000 x1 : 0000000000000010 x0 : ffff0820abfe38a0
-[ 3078.414657] Call trace:
-[ 3078.418517]  napi_enable+0x80/0x84
-[ 3078.424626]  hns3_reset_notify_up_enet+0x78/0xd0 [hns3]
-[ 3078.433469]  hns3_reset_notify+0x64/0x80 [hns3]
-[ 3078.441430]  hclge_notify_client+0x68/0xb0 [hclge]
-[ 3078.450511]  hclge_reset_rebuild+0x524/0x884 [hclge]
-[ 3078.458879]  hclge_reset_service_task+0x3c4/0x680 [hclge]
-[ 3078.467470]  hclge_service_task+0xb0/0xb54 [hclge]
-[ 3078.475675]  process_one_work+0x1dc/0x48c
-[ 3078.481888]  worker_thread+0x15c/0x464
-[ 3078.487104]  kthread+0x160/0x170
-[ 3078.492479]  ret_from_fork+0x10/0x18
-[ 3078.498785] Code: c8027c81 35ffffa2 d50323bf d65f03c0 (d4210000)
-[ 3078.506889] ---[ end trace 8ebe0340a1b0fb44 ]---
+With this change, the tc_en is useless now, so remove it.
 
-Once hns3_nic_net_open() is excute success, the flag
-HNS3_NIC_STATE_DOWN will be cleared. So add checking for this
-flag, directly return when HNS3_NIC_STATE_DOWN is no set.
-
-Fixes: e888402789b9 ("net: hns3: call hns3_nic_net_open() while doing HNAE3_UP_CLIENT")
+Fixes: a75a8efa00c5 ("net: hns3: Fix tc setup when netdev is first up")
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h           |  1 -
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c       | 11 ++---------
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c    |  5 -----
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c |  2 --
+ 4 files changed, 2 insertions(+), 17 deletions(-)
 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 546a60530384..8ba21d6dc220 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -752,7 +752,6 @@ struct hnae3_tc_info {
+ 	u8 prio_tc[HNAE3_MAX_USER_PRIO]; /* TC indexed by prio */
+ 	u16 tqp_count[HNAE3_MAX_TC];
+ 	u16 tqp_offset[HNAE3_MAX_TC];
+-	unsigned long tc_en; /* bitmap of TC enabled */
+ 	u8 num_tc; /* Total number of enabled TCs */
+ 	bool mqprio_active;
+ };
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index adc54a726661..5637c075a894 100644
+index 5637c075a894..468b8f07bf47 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -779,6 +779,11 @@ static int hns3_nic_net_open(struct net_device *netdev)
- 	if (hns3_nic_resetting(netdev))
- 		return -EBUSY;
+@@ -623,13 +623,9 @@ static int hns3_nic_set_real_num_queue(struct net_device *netdev)
+ 			return ret;
+ 		}
  
-+	if (!test_bit(HNS3_NIC_STATE_DOWN, &priv->state)) {
-+		netdev_warn(netdev, "net open repeatedly!\n");
-+		return 0;
-+	}
-+
- 	netif_carrier_off(netdev);
+-		for (i = 0; i < HNAE3_MAX_TC; i++) {
+-			if (!test_bit(i, &tc_info->tc_en))
+-				continue;
+-
++		for (i = 0; i < tc_info->num_tc; i++)
+ 			netdev_set_tc_queue(netdev, i, tc_info->tqp_count[i],
+ 					    tc_info->tqp_offset[i]);
+-		}
+ 	}
  
- 	ret = hns3_nic_set_real_num_queue(netdev);
+ 	ret = netif_set_real_num_tx_queues(netdev, queue_size);
+@@ -4870,12 +4866,9 @@ static void hns3_init_tx_ring_tc(struct hns3_nic_priv *priv)
+ 	struct hnae3_tc_info *tc_info = &kinfo->tc_info;
+ 	int i;
+ 
+-	for (i = 0; i < HNAE3_MAX_TC; i++) {
++	for (i = 0; i < tc_info->num_tc; i++) {
+ 		int j;
+ 
+-		if (!test_bit(i, &tc_info->tc_en))
+-			continue;
+-
+ 		for (j = 0; j < tc_info->tqp_count[i]; j++) {
+ 			struct hnae3_queue *q;
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
+index 4a619e5d3f35..96f96644abab 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
+@@ -441,8 +441,6 @@ static int hclge_mqprio_qopt_check(struct hclge_dev *hdev,
+ static void hclge_sync_mqprio_qopt(struct hnae3_tc_info *tc_info,
+ 				   struct tc_mqprio_qopt_offload *mqprio_qopt)
+ {
+-	int i;
+-
+ 	memset(tc_info, 0, sizeof(*tc_info));
+ 	tc_info->num_tc = mqprio_qopt->qopt.num_tc;
+ 	memcpy(tc_info->prio_tc, mqprio_qopt->qopt.prio_tc_map,
+@@ -451,9 +449,6 @@ static void hclge_sync_mqprio_qopt(struct hnae3_tc_info *tc_info,
+ 	       sizeof_field(struct hnae3_tc_info, tqp_count));
+ 	memcpy(tc_info->tqp_offset, mqprio_qopt->qopt.offset,
+ 	       sizeof_field(struct hnae3_tc_info, tqp_offset));
+-
+-	for (i = 0; i < HNAE3_MAX_USER_PRIO; i++)
+-		set_bit(tc_info->prio_tc[i], &tc_info->tc_en);
+ }
+ 
+ static int hclge_config_tc(struct hclge_dev *hdev,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index 44618cc4cca1..6f5035a788c0 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -687,12 +687,10 @@ static void hclge_tm_vport_tc_info_update(struct hclge_vport *vport)
+ 
+ 	for (i = 0; i < HNAE3_MAX_TC; i++) {
+ 		if (hdev->hw_tc_map & BIT(i) && i < kinfo->tc_info.num_tc) {
+-			set_bit(i, &kinfo->tc_info.tc_en);
+ 			kinfo->tc_info.tqp_offset[i] = i * kinfo->rss_size;
+ 			kinfo->tc_info.tqp_count[i] = kinfo->rss_size;
+ 		} else {
+ 			/* Set to default queue if TC is disable */
+-			clear_bit(i, &kinfo->tc_info.tc_en);
+ 			kinfo->tc_info.tqp_offset[i] = 0;
+ 			kinfo->tc_info.tqp_count[i] = 1;
+ 		}
 -- 
 2.33.0
 
