@@ -2,109 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C543641C68D
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 16:20:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BDF441C695
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 16:25:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344014AbhI2OVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 10:21:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52674 "EHLO mail.kernel.org"
+        id S1344199AbhI2O1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 10:27:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38310 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244206AbhI2OVp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 10:21:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8794A613A7;
-        Wed, 29 Sep 2021 14:20:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632925204;
-        bh=/rFaJ/GWthiiFP4i+etBeG9LoeoqNtBGaxI8dkwdWLg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dLQUd2R30FU25Q/pjWqD86gU0LXsOCAmuWbfatlF3n9gTH/eVaBbejlM0Y/nVbnww
-         8jJK3Ke33wZm6ugH6Iwao5v/m8+mvqJq+4a7nfRpiRrv+xzQcP/yJ4PDuwunfqH/Ob
-         1RnQUotHpv3iGcDBBaH7bDCo9PvtoHSrHZnzp5nZlP4jWZNcBRh4TmjOW9XEgPOpSD
-         YP8Iq1E1hWL3yKuRMZoba9u7eh6W6tEUcP1pl6UEhCfZkZRWyOXComIOAdaKdiPagT
-         ST6EvIYLEbPG4Px00nnpK6oecE1OnqFOF1L4ql37gIAiW5GyKg9MULEYCT5Z8EGHa8
-         eLZbXug7Mf1tA==
-Date:   Wed, 29 Sep 2021 17:20:01 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        "drivers@pensando.io" <drivers@pensando.io>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
-        "GR-Linux-NIC-Dev@marvell.com" <GR-Linux-NIC-Dev@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
-        Manish Chopra <manishc@marvell.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "oss-drivers@corigine.com" <oss-drivers@corigine.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Shay Drory <shayd@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: Re: [PATCH net-next v1 0/5] Devlink reload and missed notifications
- fix
-Message-ID: <YVR2EYrklpj+CSfo@unreal>
-References: <cover.1632916329.git.leonro@nvidia.com>
- <20210929064004.3172946e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210929134637.4wlbd5ehbgc55cuo@skbuf>
- <20210929065621.20cb08ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1344142AbhI2O1B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 10:27:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=wWgC/vb5YXjwhIt78LP76qUd1D9uEqQMomeZ/ZahLfI=; b=z3
+        2N5e2h9d+oLtxvNTlpRGTUqVEVA3mvBQwslVgQBq224GDnhyuTVQLl0Atcl9TdwobqCefXFuTMFgS
+        zZv4dqGlFpXqjIuuio1X5jpchuB9nLn65HmL6xZw8/TMVuFz/vwSjLhpX96q92hRxJtRteSiTqM3f
+        XAacB/cW7Yp3tvM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mVaW5-008mdg-Lp; Wed, 29 Sep 2021 16:25:01 +0200
+Date:   Wed, 29 Sep 2021 16:25:01 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Scott Wood <oss@buserror.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] powerpc/fsl/dts: Fix phy-connection-type for fm1mac3
+Message-ID: <YVR3PVa9C6w5A1ce@lunn.ch>
+References: <20210604233455.fwcu2chlsed2gwmu@pali>
+ <20210704134325.24842-1-pali@kernel.org>
+ <63a72f648297e96c140a1412c20bd3796398a932.camel@buserror.net>
+ <20210827113836.hvqvaln65gexg5ps@pali>
+ <20210928213918.v4n3bzecbiltbktd@pali>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210929065621.20cb08ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210928213918.v4n3bzecbiltbktd@pali>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 06:56:21AM -0700, Jakub Kicinski wrote:
-> On Wed, 29 Sep 2021 13:46:38 +0000 Vladimir Oltean wrote:
-> > On Wed, Sep 29, 2021 at 06:40:04AM -0700, Jakub Kicinski wrote:
-> > > Swapping ops is a nasty hack in my book.
-> > >
-> > > And all that to avoid having two op structures in one driver.
-> > > Or to avoid having counters which are always 0?
-> > >
-> > > Sorry, at the very least you need better explanation for this.  
+On Tue, Sep 28, 2021 at 11:39:18PM +0200, Pali Rohár wrote:
+> On Friday 27 August 2021 13:38:36 Pali Rohár wrote:
+> > On Wednesday 14 July 2021 12:11:49 Scott Wood wrote:
+> > > On Sun, 2021-07-04 at 15:43 +0200, Pali Rohár wrote:
+> > > > Property phy-connection-type contains invalid value "sgmii-2500" per scheme
+> > > > defined in file ethernet-controller.yaml.
+> > > > 
+> > > > Correct phy-connection-type value should be "2500base-x".
+> > > > 
+> > > > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > > > Fixes: 84e0f1c13806 ("powerpc/mpc85xx: Add MDIO bus muxing support to the
+> > > > board device tree(s)")
+> > > > ---
+> > > >  arch/powerpc/boot/dts/fsl/t1023rdb.dts | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> > > > b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> > > > index 5ba6fbfca274..f82f85c65964 100644
+> > > > --- a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> > > > +++ b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> > > > @@ -154,7 +154,7 @@
+> > > >  
+> > > >                         fm1mac3: ethernet@e4000 {
+> > > >                                 phy-handle = <&sgmii_aqr_phy3>;
+> > > > -                               phy-connection-type = "sgmii-2500";
+> > > > +                               phy-connection-type = "2500base-x";
+> > > >                                 sleep = <&rcpm 0x20000000>;
+> > > >                         };
+> > > >  
+> > > 
+> > > Acked-by: Scott Wood <oss@buserror.net>
+> > > 
+> > > -Scott
 > > 
-> > Leon, while the discussion about this unfolds, can you please repost
-> > patch 1 separately? :)
+> > Hello! If there is not any objection, could you take this patch?
 > 
-> Yes, please and thanks! :)
+> Hello! I would like to remind this patch.
 
-Done, thanks
-https://lore.kernel.org/netdev/2ed1159291f2a589b013914f2b60d8172fc525c1.1632925030.git.leonro@nvidia.com/T/#u
+Hi Pali
+
+I suggest you resend, and with To: Michael Ellerman <mpe@ellerman.id.au>
+to make it clear who you expect to pick up the
+patch. Michael seems to do the Maintainer work in
+arch/powerpc/boot/dts/
+
+	Andrew
