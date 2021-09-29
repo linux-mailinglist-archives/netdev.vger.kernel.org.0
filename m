@@ -2,85 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D881D41BEA1
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 07:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44B6341BEA5
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 07:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244220AbhI2FUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 01:20:24 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:44792 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232553AbhI2FUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 01:20:21 -0400
-X-UUID: 70daad25348b408cb336491b518638f4-20210929
-X-UUID: 70daad25348b408cb336491b518638f4-20210929
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <jason-ch.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1840174725; Wed, 29 Sep 2021 13:18:36 +0800
-Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 29 Sep 2021 13:18:35 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas07.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 29 Sep 2021 13:18:35 +0800
-From:   Jason-ch Chen <jason-ch.chen@mediatek.com>
-To:     <matthias.bgg@gmail.com>, <hayeswang@realtek.com>
-CC:     <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <hsinyi@google.com>, Jason-ch Chen <jason-ch.chen@mediatek.com>
-Subject: [PATCH] r8152: stop submitting rx for -EPROTO
-Date:   Wed, 29 Sep 2021 13:18:12 +0800
-Message-ID: <20210929051812.3107-1-jason-ch.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        id S244229AbhI2FVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 01:21:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232553AbhI2FVI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 01:21:08 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C4AC06161C;
+        Tue, 28 Sep 2021 22:19:28 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id w19so2728348ybs.3;
+        Tue, 28 Sep 2021 22:19:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lgPcYkJU04EEpDlUPbryRL95NQ/b023yl3dG0wdTb9U=;
+        b=XYX/WxC97FCdYO9Z0vVYr0fxKM1o5Ns8apnLfDiKpNHSBGYz8BW7VcsEhRAUlAlGMn
+         ehoHEWl7+OkkRYgLU3yT8wuh3TR0SIjLf0WZ0jW0nUPWN/3AUtkO51vd7rd+xtAVqnpj
+         4TpIB7UBMAFm0JjWYeuYqSjbKqPFT/bltuadY8paEkm2f84bnEOnjcgHNRcclUkYKH8E
+         fCx5W8Ngf3p8XlTP5tcLAyIzyMpfBx0yoTAVe33N6N3y/qgw9T0Ii0vGCJL0MT8D3yI4
+         YJzqAbyvioiTEBxO+2LVkHZKYwqmrqzHE+Bpay9+32C9xfm9M7ZdVCJLWXnFsgGm8pQl
+         b4LA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lgPcYkJU04EEpDlUPbryRL95NQ/b023yl3dG0wdTb9U=;
+        b=YJPF7EAy5JHrNKgTKI3fmnG/XUwNB3Y38gnxAZi7Kj1pMd06c8+Qj3HCC44YH+igKx
+         Xngg+Sb6R4erBVCmABmeh1XLMNKZLPZaiVhgPc1HmbliJG3t7MJxxorLkmwn2zf/aM6B
+         JDuqqQLSxGHB9eTOG1P74KlGrBzfRQXD4CFThWMZU1vpMkaL3APF8/iMgAlR9P6oZoO/
+         CbN8vr3LNpAJAZlScek6A6ROdjTZKZH8tVJaxt3EOBgG4JAt9pDjj7MnzVN/dJkcQgq6
+         IxtZoUcxmyMXx6/rvDMkoOSfBFgNjfgcdVJzG4Lv0PeUFhkcU3IEAo20Yax17BG04ZDW
+         Nx5g==
+X-Gm-Message-State: AOAM531a2t/1A8skKamK+u4IZN8VNTaSmUCSQYkbo9DOyJhtwJuJwF6z
+        hptsYO9k6tn6eYlkHMqo7XdtPAUXA67k1UEAn2o=
+X-Google-Smtp-Source: ABdhPJyEa8hSnRrt5QytS0deYF5qTNw6fqoa4RniKdtM5kH/CXV2VpIr+UeOkK1Memxg+jYivYyt2CE2oAVM9Lg/3d0=
+X-Received: by 2002:a5b:507:: with SMTP id o7mr10361642ybp.491.1632892767289;
+ Tue, 28 Sep 2021 22:19:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20210929020642.206454-1-liujian56@huawei.com>
+In-Reply-To: <20210929020642.206454-1-liujian56@huawei.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 28 Sep 2021 22:19:16 -0700
+Message-ID: <CAM_iQpVCJYDCdh_ZUjMpc3QMU5861Yixs+P_YPs1gpdzE1c-5g@mail.gmail.com>
+Subject: Re: [PATCH v4] skmsg: lose offset info in sk_psock_skb_ingress
+To:     Liu Jian <liujian56@huawei.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When unplugging RTL8152 Fast Ethernet Adapter which is plugged
-into an USB HUB, the driver would get -EPROTO for bulk transfer.
-There is a high probability to get the soft/hard lockup
-information if the driver continues to submit Rx before the HUB
-completes the detection of all hub ports and issue the
-disconnect event.
+On Tue, Sep 28, 2021 at 7:06 PM Liu Jian <liujian56@huawei.com> wrote:
+>
+> If sockmap enable strparser, there are lose offset info in
+> sk_psock_skb_ingress. If the length determined by parse_msg function
+> is not skb->len, the skb will be converted to sk_msg multiple times,
+> and userspace app will get the data multiple times.
+>
+> Fix this by get the offset and length from strp_msg.
+> And as Cong suggestion, add one bit in skb->_sk_redir to distinguish
+> enable or disable strparser.
+>
+> Signed-off-by: Liu Jian <liujian56@huawei.com>
+> ---
+> v1->v2: fix build error when disable CONFIG_BPF_STREAM_PARSER
+> v2->v3: Add one bit in skb->_sk_redir to distinguish enable or disable strparser
+> v3->v4: Remove "#if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)" code;
+>         and let "stm" have a more precise scope.
 
-[  644.786219] net_ratelimit: 113887 callbacks suppressed
-[  644.786239] r8152 1-1.2.4:1.0 eth0: Rx status -71
-[  644.786335] r8152 1-1.2.4:1.0 eth0: Rx status -71
-[  644.786369] r8152 1-1.2.4:1.0 eth0: Rx status -71
-[  644.786431] r8152 1-1.2.4:1.0 eth0: Rx status -71
-[  644.786493] r8152 1-1.2.4:1.0 eth0: Rx status -71
-[  644.786555] r8152 1-1.2.4:1.0 eth0: Rx status -71
-[  644.786617] r8152 1-1.2.4:1.0 eth0: Rx status -71
-[  644.786678] r8152 1-1.2.4:1.0 eth0: Rx status -71
-[  644.786740] r8152 1-1.2.4:1.0 eth0: Rx status -71
-[  644.786802] r8152 1-1.2.4:1.0 eth0: Rx status -71
-[  645.041159] mtk-scp 10500000.scp: scp_ipi_send: IPI timeout!
-[  645.041211] cros-ec-rpmsg 10500000.scp.cros-ec-rpmsg.13.-1: rpmsg send failed
-[  649.183350] watchdog: BUG: soft lockup - CPU#0 stuck for 12s! [migration/0:14]
+Looks much cleaner now.
 
-Signed-off-by: Jason-ch Chen <jason-ch.chen@mediatek.com>
----
- drivers/net/usb/r8152.c | 1 +
- 1 file changed, 1 insertion(+)
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 60ba9b734055..250718f0dcb7 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -1771,6 +1771,7 @@ static void read_bulk_callback(struct urb *urb)
- 		netif_device_detach(tp->netdev);
- 		return;
- 	case -ENOENT:
-+	case -EPROTO:
- 		return;	/* the urb is in unlink state */
- 	case -ETIME:
- 		if (net_ratelimit())
--- 
-2.18.0
-
+Thanks.
