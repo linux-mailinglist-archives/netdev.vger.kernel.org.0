@@ -2,58 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2323841C34B
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 13:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E206141C347
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 13:20:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245689AbhI2LVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 07:21:31 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:38918 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245602AbhI2LV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 07:21:29 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18TAgCFK005094;
-        Wed, 29 Sep 2021 07:19:17 -0400
+        id S245576AbhI2LVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 07:21:24 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:46856 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231859AbhI2LVX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 07:21:23 -0400
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18T9IOwq006524;
+        Wed, 29 Sep 2021 07:19:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=WMuQ+O2IkNRcy7fcGeKUDwF2dbYrboDVkKgX2c1s/Mc=;
- b=DVN/apZ4a0kc/ob659i8eE65hrWaCaIQZAjtnMwmjcbWWb6gQLhW24oJe+45+HXu0Xm7
- M7pWDtQG/zgRwrpkG1JYib/hfnCifMdatv9dR95kU74GDzVMtZZxiRiNERhMNMIupfgJ
- /WPDRJEkrUxKZ/l+9eCVWTlFwDxiNu9x43dkz1csJPFbOoBl3xiLemF8CthOZWQ5JCfa
- WZ4VNg4gyXw5CIvNM7G++NAogTcN2ylLXY0ao27hjpZY2oDbpfwC3zeXf4i7A/lmWR0I
- ZlT+5BWFemPEuMdIVFeC3CveZiaWzF035slQL0Ti51px08bI6WUK9KQI0V2D/dimIf7C DA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bcpm9rrm1-1
+ bh=ZoJdAtpCEWzoSowubQOrMKgOMVDWlKEkESqs4WoVx/E=;
+ b=NTOHyBBEUCwAgOBEIXT5xpyCEaD65QJz90sv1/AbczCD4yF4JkRffiwHdFOvjMHQXUXg
+ fDHboKujJY7v0WHYwp5FzN3Tz4MXTdLD29SaBfdbbLvbf4CuszRjd0J/Z9oOOzNUI10f
+ UhlMCUVDEG3kS/E6cUGsqESnFI7/Pz0pCrBUFcOjRmSvk+jG4rePzbuakuY81enQq9Uk
+ jD1PFdmX5+dQgMCDj29F39N2tGaUZdtGQEfhrA68SiVOMgPdLFEvvA0B81VGaDbqk7da
+ h5eEbrdR3uAjPIxQpts07FMDkk7MppNfj/UGpW1APcPRVTniiLVeTgG61l3AwpuBA2uM 3g== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3bckhpd5mm-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Sep 2021 07:19:17 -0400
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 18TAsOUs015467;
-        Wed, 29 Sep 2021 07:19:16 -0400
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bcpm9rrkg-1
+        Wed, 29 Sep 2021 07:19:22 -0400
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18TBDNmT021997;
+        Wed, 29 Sep 2021 11:19:19 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06fra.de.ibm.com with ESMTP id 3b9u1k58av-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Sep 2021 07:19:16 -0400
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18TBC21N003932;
-        Wed, 29 Sep 2021 11:19:14 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma01fra.de.ibm.com with ESMTP id 3b9ud9w6a2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Sep 2021 11:19:14 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18TBJAOi30736824
+        Wed, 29 Sep 2021 11:19:19 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18TBJGPu44564852
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Sep 2021 11:19:10 GMT
+        Wed, 29 Sep 2021 11:19:16 GMT
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BDA9D42070;
-        Wed, 29 Sep 2021 11:19:10 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id E30D04206C;
+        Wed, 29 Sep 2021 11:19:15 +0000 (GMT)
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 145874207C;
-        Wed, 29 Sep 2021 11:19:06 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 353E642070;
+        Wed, 29 Sep 2021 11:19:11 +0000 (GMT)
 Received: from hbathini-workstation.ibm.com.com (unknown [9.43.83.199])
         by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 29 Sep 2021 11:19:05 +0000 (GMT)
+        Wed, 29 Sep 2021 11:19:10 +0000 (GMT)
 From:   Hari Bathini <hbathini@linux.ibm.com>
 To:     naveen.n.rao@linux.ibm.com, christophe.leroy@csgroup.eu,
         mpe@ellerman.id.au, ast@kernel.org, daniel@iogearbox.net
@@ -62,58 +55,135 @@ Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
         kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org,
         Ravi Bangoria <ravi.bangoria@linux.ibm.com>
-Subject: [PATCH v4 1/8] bpf powerpc: Remove unused SEEN_STACK
-Date:   Wed, 29 Sep 2021 16:48:48 +0530
-Message-Id: <20210929111855.50254-2-hbathini@linux.ibm.com>
+Subject: [PATCH v4 2/8] bpf powerpc: Remove extra_pass from bpf_jit_build_body()
+Date:   Wed, 29 Sep 2021 16:48:49 +0530
+Message-Id: <20210929111855.50254-3-hbathini@linux.ibm.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210929111855.50254-1-hbathini@linux.ibm.com>
 References: <20210929111855.50254-1-hbathini@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 1Xq6xviXLhXW7LAOn2mC1VVAbAG_CuQy
-X-Proofpoint-ORIG-GUID: TF5QaBHwuUKgmglbFbhrqv2sCr6uRynb
+X-Proofpoint-ORIG-GUID: wQBT_bCuPssj2pqOqV-Nm4pYeKqsLRwu
+X-Proofpoint-GUID: wQBT_bCuPssj2pqOqV-Nm4pYeKqsLRwu
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
  definitions=2021-09-29_04,2021-09-29_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- phishscore=0 lowpriorityscore=0 impostorscore=0 malwarescore=0 spamscore=0
- suspectscore=0 mlxlogscore=999 clxscore=1015 adultscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2109230001
- definitions=main-2109290068
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
+ adultscore=0 clxscore=1015 priorityscore=1501 malwarescore=0
+ impostorscore=0 mlxscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2109290068
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
 
-SEEN_STACK is unused on PowerPC. Remove it. Also, have
-SEEN_TAILCALL use 0x40000000.
+In case of extra_pass, usual JIT passes are always skipped. So,
+extra_pass is always false while calling bpf_jit_build_body() and
+can be removed.
 
 Signed-off-by: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
 
 * No changes in v4.
 
 
- arch/powerpc/net/bpf_jit.h | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/powerpc/net/bpf_jit.h        | 2 +-
+ arch/powerpc/net/bpf_jit_comp.c   | 6 +++---
+ arch/powerpc/net/bpf_jit_comp32.c | 4 ++--
+ arch/powerpc/net/bpf_jit_comp64.c | 4 ++--
+ 4 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/arch/powerpc/net/bpf_jit.h b/arch/powerpc/net/bpf_jit.h
-index 99fad093f43e..d6267e93027a 100644
+index d6267e93027a..411c63d945c7 100644
 --- a/arch/powerpc/net/bpf_jit.h
 +++ b/arch/powerpc/net/bpf_jit.h
-@@ -116,8 +116,7 @@ static inline bool is_nearbranch(int offset)
- #define COND_LE		(CR0_GT | COND_CMP_FALSE)
+@@ -166,7 +166,7 @@ static inline void bpf_clear_seen_register(struct codegen_context *ctx, int i)
  
- #define SEEN_FUNC	0x20000000 /* might call external helpers */
--#define SEEN_STACK	0x40000000 /* uses BPF stack */
--#define SEEN_TAILCALL	0x80000000 /* uses tail calls */
-+#define SEEN_TAILCALL	0x40000000 /* uses tail calls */
+ void bpf_jit_emit_func_call_rel(u32 *image, struct codegen_context *ctx, u64 func);
+ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *ctx,
+-		       u32 *addrs, bool extra_pass);
++		       u32 *addrs);
+ void bpf_jit_build_prologue(u32 *image, struct codegen_context *ctx);
+ void bpf_jit_build_epilogue(u32 *image, struct codegen_context *ctx);
+ void bpf_jit_realloc_regs(struct codegen_context *ctx);
+diff --git a/arch/powerpc/net/bpf_jit_comp.c b/arch/powerpc/net/bpf_jit_comp.c
+index 53aefee3fe70..c5c9e8ad1de7 100644
+--- a/arch/powerpc/net/bpf_jit_comp.c
++++ b/arch/powerpc/net/bpf_jit_comp.c
+@@ -149,7 +149,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
+ 	cgctx.stack_size = round_up(fp->aux->stack_depth, 16);
  
- #define SEEN_VREG_MASK	0x1ff80000 /* Volatile registers r3-r12 */
- #define SEEN_NVREG_MASK	0x0003ffff /* Non volatile registers r14-r31 */
+ 	/* Scouting faux-generate pass 0 */
+-	if (bpf_jit_build_body(fp, 0, &cgctx, addrs, false)) {
++	if (bpf_jit_build_body(fp, 0, &cgctx, addrs)) {
+ 		/* We hit something illegal or unsupported. */
+ 		fp = org_fp;
+ 		goto out_addrs;
+@@ -162,7 +162,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
+ 	 */
+ 	if (cgctx.seen & SEEN_TAILCALL) {
+ 		cgctx.idx = 0;
+-		if (bpf_jit_build_body(fp, 0, &cgctx, addrs, false)) {
++		if (bpf_jit_build_body(fp, 0, &cgctx, addrs)) {
+ 			fp = org_fp;
+ 			goto out_addrs;
+ 		}
+@@ -210,7 +210,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
+ 		/* Now build the prologue, body code & epilogue for real. */
+ 		cgctx.idx = 0;
+ 		bpf_jit_build_prologue(code_base, &cgctx);
+-		bpf_jit_build_body(fp, code_base, &cgctx, addrs, extra_pass);
++		bpf_jit_build_body(fp, code_base, &cgctx, addrs);
+ 		bpf_jit_build_epilogue(code_base, &cgctx);
+ 
+ 		if (bpf_jit_enable > 1)
+diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
+index beb12cbc8c29..b60b59426a24 100644
+--- a/arch/powerpc/net/bpf_jit_comp32.c
++++ b/arch/powerpc/net/bpf_jit_comp32.c
+@@ -266,7 +266,7 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
+ 
+ /* Assemble the body code between the prologue & epilogue */
+ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *ctx,
+-		       u32 *addrs, bool extra_pass)
++		       u32 *addrs)
+ {
+ 	const struct bpf_insn *insn = fp->insnsi;
+ 	int flen = fp->len;
+@@ -860,7 +860,7 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
+ 		case BPF_JMP | BPF_CALL:
+ 			ctx->seen |= SEEN_FUNC;
+ 
+-			ret = bpf_jit_get_func_addr(fp, &insn[i], extra_pass,
++			ret = bpf_jit_get_func_addr(fp, &insn[i], false,
+ 						    &func_addr, &func_addr_fixed);
+ 			if (ret < 0)
+ 				return ret;
+diff --git a/arch/powerpc/net/bpf_jit_comp64.c b/arch/powerpc/net/bpf_jit_comp64.c
+index b87a63dba9c8..2a87da50d9a4 100644
+--- a/arch/powerpc/net/bpf_jit_comp64.c
++++ b/arch/powerpc/net/bpf_jit_comp64.c
+@@ -272,7 +272,7 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
+ 
+ /* Assemble the body code between the prologue & epilogue */
+ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *ctx,
+-		       u32 *addrs, bool extra_pass)
++		       u32 *addrs)
+ {
+ 	const struct bpf_insn *insn = fp->insnsi;
+ 	int flen = fp->len;
+@@ -769,7 +769,7 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
+ 		case BPF_JMP | BPF_CALL:
+ 			ctx->seen |= SEEN_FUNC;
+ 
+-			ret = bpf_jit_get_func_addr(fp, &insn[i], extra_pass,
++			ret = bpf_jit_get_func_addr(fp, &insn[i], false,
+ 						    &func_addr, &func_addr_fixed);
+ 			if (ret < 0)
+ 				return ret;
 -- 
 2.31.1
 
