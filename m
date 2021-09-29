@@ -2,74 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CDD141BEB3
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 07:29:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 031A641BEBA
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 07:31:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244223AbhI2Fax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 01:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60954 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244096AbhI2Faw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 01:30:52 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B3CC06161C
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 22:29:12 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id v195so2285507ybb.0
-        for <netdev@vger.kernel.org>; Tue, 28 Sep 2021 22:29:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=G9y5qV66R7sMu6H/7MKQV3O4uRrhLLlnqDTpgcBBRiM=;
-        b=QlZnIQ/IIPp87BSEXusqzQIsAxLflQ8g6SAGTODod0Sf9hADmW1ymoZA3K+A9uP4XL
-         xR/L3peqESvN586wMRjTcKs0My1dnaoct5Lw1z1cwGfjlmRcoyHNjCnAqvpLfKDtU+y2
-         XlAJYU2FdoL897j+dIBaCuiyWRIHXFpjJh9iwtVs3OQHqDSJepGsIWpoXqns4q+FV+Yb
-         xE40iBFMCPt5kcRy+mjyPUI9neHsFluLuYNyUxAV6CEn1T3IWz5hAseIhIoYWIiewPjB
-         frlFS56+0A01dpLxn6PIKjus6YiQiNgzMfS+duNTbmuQ7bD0Nblw0A3UdVMENBGiDFYR
-         91bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=G9y5qV66R7sMu6H/7MKQV3O4uRrhLLlnqDTpgcBBRiM=;
-        b=pvpNV/JDseHhfMBHfgGSJ2JJeSe+8kT+6esEJH8wkHK7SveEBr1MHgC/ZLUZaS8IIm
-         d95b1tWGr+GKWlG94Yr2L7D6aNoKDs9Q867nuERq24bCMWBrZM8aiAo3x3KOloPTu5HO
-         DQKS1275r7KUB43X4zUfUoZmJ4IY3yM9Xv/aTMg3yM4joHc/eXj9qDeKpFjTyeB0VA5w
-         Yd5aiuu8tsZYWDKox/DmVyUALee/b7tJe2cqPUL36k/nFjMRyKBptfN4qR+3xsRFAhng
-         qqbIBvfTL0Jh/IhfBt5weAoCE0p6l9hf4ceMnX3knbiBEqxWM99evDqCZV+NBqTjVHC+
-         pm6Q==
-X-Gm-Message-State: AOAM533RXgDs7uo9B4zsCzFe0s6+pAH+or8dX4cm1KoRzVijpWBHMw8Q
-        1vDPyYlZTriRKEk54kU+hObMGQq1CC5wmTHF7ALs+bveN6w=
-X-Google-Smtp-Source: ABdhPJwkHJoHOEsK4vUcoXDhIB8KorIUHSyB8ovE69RWHRuiZBFlo6ewINhpF6PjwI6QBr1sUa4oMbpY7cqiXNcgLOw=
-X-Received: by 2002:a25:ccd1:: with SMTP id l200mr1524969ybf.140.1632893351382;
- Tue, 28 Sep 2021 22:29:11 -0700 (PDT)
+        id S244255AbhI2FdX convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Sep 2021 01:33:23 -0400
+Received: from mail1.shanghaitech.edu.cn ([119.78.254.90]:44251 "EHLO
+        mail.shanghaitech.edu.cn" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S243962AbhI2FdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 01:33:22 -0400
+Received: from [10.15.44.215] by mail.shanghaitech.edu.cn with MESSAGESEC ESMTP id 456895189764503;
+        Wed, 29 Sep 2021 13:31:32 +0800 (CST)
+Received: from DESKTOP-FOJ6ELG.localdomain (10.15.44.220) by
+ smtp.shanghaitech.edu.cn (10.15.44.215) with Microsoft SMTP Server (TLS) id
+ 14.3.399.0; Wed, 29 Sep 2021 13:31:32 +0800
+From:   Mianhan Liu <liumh1@shanghaitech.edu.cn>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Mianhan Liu <liumh1@shanghaitech.edu.cn>
+Subject: [PATCH -next -v2] net/ipv4/datagram.c: remove superfluous header files from datagram.c
+Date:   Wed, 29 Sep 2021 13:31:09 +0800
+Message-ID: <20210929053109.23979-1-liumh1@shanghaitech.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <fa97ab66e9154a28b796436f21990c31@boeing.com>
-In-Reply-To: <fa97ab66e9154a28b796436f21990c31@boeing.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 28 Sep 2021 22:29:00 -0700
-Message-ID: <CAM_iQpWw9OWnEHaorLri1C95W_LA56hsRmTqQyTyFwHVPA-DDQ@mail.gmail.com>
-Subject: Re: Turn on net_dbg_ratelimited() diagnostics in linux-5.10.67 ?
-To:     "Templin (US), Fred L" <Fred.L.Templin@boeing.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
+X-Originating-IP: [10.15.44.220]
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 3:07 PM Templin (US), Fred L
-<Fred.L.Templin@boeing.com> wrote:
->
-> Hi, it has been a while since I have delved into linux kernel networking internals,
-> and it appears that diagnostics-generation code has been significantly cleaned up
-> over the years since I last checked. I am working in linux-5.10.67, and I see that
-> network diagnostics are now generated by calls to "net_dbg_ratelimited()" but
-> that these seem to be disabled by default.
->
-> How can I turn on net_dbg_ratelimited() diagnostics, and once enabled where
-> do I go to see the diagnostics output?
+datagram.c hasn't use any macro or function declared in linux/ip.h.
+Thus, these files can be removed from datagram.c safely without
+affecting the compilation of the net/ipv4 module
 
-Please look at how to use dynamic debug:
-https://www.kernel.org/doc/html/v5.0/admin-guide/dynamic-debug-howto.html
+Signed-off-by: Mianhan Liu <liumh1@shanghaitech.edu.cn>
 
-Thanks.
+---
+ net/ipv4/datagram.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/net/ipv4/datagram.c b/net/ipv4/datagram.c
+index 4a8550c49..48f337ccf 100644
+--- a/net/ipv4/datagram.c
++++ b/net/ipv4/datagram.c
+@@ -9,7 +9,6 @@
+ 
+ #include <linux/types.h>
+ #include <linux/module.h>
+-#include <linux/ip.h>
+ #include <linux/in.h>
+ #include <net/ip.h>
+ #include <net/sock.h>
+-- 
+2.25.1
+
+
