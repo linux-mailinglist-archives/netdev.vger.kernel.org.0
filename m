@@ -2,77 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5465241CDA8
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 22:58:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0A1741CDC5
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 23:06:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346820AbhI2U7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 16:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48824 "EHLO
+        id S1345994AbhI2VHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 17:07:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346814AbhI2U7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 16:59:40 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61725C061766;
-        Wed, 29 Sep 2021 13:57:59 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id rm6-20020a17090b3ec600b0019ece2bdd20so3018617pjb.1;
-        Wed, 29 Sep 2021 13:57:59 -0700 (PDT)
+        with ESMTP id S1345930AbhI2VHi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 17:07:38 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3807C06161C
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 14:05:56 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id z24so16087978lfu.13
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 14:05:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uuv012X9QP66aLKBFKUSvigF4hVX/EMIbUUZ6Wm9ThE=;
-        b=QhNPLtw65YMvy2mrqajEF01CyVKSll0La0y0yQDDDnqHwhsNfGYUcA+x8oX2vXPnSZ
-         SY29t4c++w1HNYTq64PGotoK79TRWmOPbLYFZoLFV9oYvrcTKN7z5qLHre8pdCQ2oVJy
-         2wPk1nEICjPCALUfbC5MxtHD8E8cwTX0PYdub41h7Rxo/81ZmcrSHeNjN3S4ile4VgBg
-         bl1bIH0QqH/cAfXvBXP+iH3hJ+cP+Qf/uk6f0dlRU1V/GqawZtRm7lSoOcUX3aAspHyY
-         pVNojYrpwOsomWgltXLtf461gby8iRgIV4KTk5ALcALNDCssT8bHgYHTWv1ow4qRjM8O
-         AwDQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+6tJhw/rr29jqrzuGqPjz05j1cAdlxDIEkH2kVn9cEI=;
+        b=KhxDN53dKkeppF9epJ8K++q7mNPxv7Bz6E7YxyQW2DIxpIP++u2CNmMXEyTeoik9cc
+         G/PXq53SLBKDNFuZIdeYHOY7pILnPDbe5OAlaCsMShY1swesevUnP1+OlAmRI+L1K9bv
+         RZ7trC0luV5bFxnGC0t7nhQawy2vh+2RDVIDePGcfDL63y1S1TPdj7LtfuHwqc1eNS4Z
+         PAZTlJG2CE/39aP9+MQJAn0hpUfUYaaogjaevaVWPnt22xmRU3miG6F/3kCUOVee/0wR
+         7Y57RC3hxmu1jOknhIWOHsbDsC5NlhCGcwqNhZ/YZ089Y4/ymhuo2nlkNz1GnyYq5Gul
+         HkEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uuv012X9QP66aLKBFKUSvigF4hVX/EMIbUUZ6Wm9ThE=;
-        b=2i5zciVKQma1bdIppVhq4YTs1UrYz7VS7xKO+A/hcF1HPyHIqEZp6EDgiEzMSoV925
-         Cf/ETbL/wzI5IQY4XBBtRHNX/YQGbtPk+4aznIv7HC6Jp4fSkkCYjYmh9hb/eQNWEtJM
-         LPjyG8vvfpTCHQD10N+xhi1GpnErK6PpSQi+b8NuM4fMP3Kuq0Z73hDnFOtOHL7C8wE9
-         kkwVSO9Jxv661jT8E9XuqPhDRB3MVuOyRUTJW47MljB7G/xisBQi3WAra/Bd8HRi4mmC
-         ohxdphTHc0tV37948LUCuIkMihHbJE5WzvxZ2MBildccnsvCcmsCWFFWhmtycUfjtted
-         Rmog==
-X-Gm-Message-State: AOAM53357lTPd+nAiiJD8RW6OM8v700IQ7qH0CilpZ+7KVdi4XN3ajAU
-        VjlS41iK4kSfJOKHXBRv4Aze5xzJlP77KUPt2YE=
-X-Google-Smtp-Source: ABdhPJwocTgkBLViVZ3xqdqJqUZ6zVVqC7p+KlmZhWBO8LNx0BvRCzILFlTvm/1lknrQsvtn88oysXbNGZMLfFbNfo8=
-X-Received: by 2002:a17:902:bb95:b0:13e:6924:30e5 with SMTP id
- m21-20020a170902bb9500b0013e692430e5mr555019pls.20.1632949078934; Wed, 29 Sep
- 2021 13:57:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+6tJhw/rr29jqrzuGqPjz05j1cAdlxDIEkH2kVn9cEI=;
+        b=hAtLxnVo4nQLTnGtMB+7gmGq5kyHKGsZXz6xZsERu0hjUvrdbuaBfWS6jvr+ceKT2T
+         5JT0ZRP1P9oK12P0Y1nTp2mgKJjQfZpvLPbmc3PaSpeqH4vFCJ18qcHKll0XAe8O3xaW
+         VMt7vPAxZ4fgdGMV2OSlLlAWkJKr/TaCFSQDCzFhJW3kTZdcTHSsEChTEuLfy2ayTPqU
+         xcyi2wpqV7zW3elM8mJG3VYOMRjR0l4QxXiIEO2C3LvOS/zdEt/aU8bN2e7WpwhFm4wy
+         SwHGr9SoCkok9RFJ2wMCA+pGJd0KLOMpUdLoZG8kBQyHuoaID8ejobRHRUXHdP0173yY
+         1DQg==
+X-Gm-Message-State: AOAM532QHACdUr3T9YtJ+3Wgvh0ioIr9DSYPPLaEEytHCsLPBSpxSHNW
+        sdz4RNnpUqA7oVkB+fdNlSD62w==
+X-Google-Smtp-Source: ABdhPJxpbLMCW2/tEzGvKpcHzaFC7oyYeCmi5FU8Te8VpuzcMkY1qvMo5ljl7bkqQIEHmoRIvinxMg==
+X-Received: by 2002:ac2:5606:: with SMTP id v6mr1759823lfd.520.1632949555081;
+        Wed, 29 Sep 2021 14:05:55 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id s9sm112613lfp.291.2021.09.29.14.05.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Sep 2021 14:05:54 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH net-next 0/4 v4] RTL8366RB enhancements
+Date:   Wed, 29 Sep 2021 23:03:45 +0200
+Message-Id: <20210929210349.130099-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210913231108.19762-1-xiyou.wangcong@gmail.com>
- <CAADnVQJFbCmzoFM8GGHyLWULSmX75=67Tu0EnTOOoVfH4gE+HA@mail.gmail.com>
- <CAM_iQpX2prCpPDmO1U0A_wyJi_LS4wmd9MQiFKiqQT8NfGNNnw@mail.gmail.com>
- <CAADnVQJJHLuaymMEdDowharvyJr+6ta2Tg9XAR3aM+4=ysu+bg@mail.gmail.com>
- <CAM_iQpUCtXRWhMqSaoymZ6OqOywb-k4R1_mLYsLCTm7ABJ5k_A@mail.gmail.com>
- <CAADnVQJcUspoBzk9Tt3Rx_OH7-MB+m1xw+vq2k2SozYZMmpurg@mail.gmail.com> <CAM_iQpVaVvaEn2ORfyZQ-FN56pCdE4YPa0r2E+VgyZzvEP31cQ@mail.gmail.com>
-In-Reply-To: <CAM_iQpVaVvaEn2ORfyZQ-FN56pCdE4YPa0r2E+VgyZzvEP31cQ@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 29 Sep 2021 13:57:48 -0700
-Message-ID: <CAADnVQJX8OpXhQ66jVSN1ws8tav5R8yCERr6eaS9POA+QhRx-A@mail.gmail.com>
-Subject: Re: [RFC Patch net-next v2] net_sched: introduce eBPF based Qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 10:40 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > That's why approaching the goal with more generic ambitions was requested.
->
-> This goal has nothing to do with my goal, I am pretty sure we have
-> a lot of queues in networking, here I am only interested in Qdisc for
-> sure. If you need queues in any other place, it is your job, not mine.
+This patch set is a set of reasonably mature improvements
+for the RTL8366RB switch, implemented after Vladimir
+challenged me to dig deeper into the switch functions.
 
-Now it's yours.
-Applying queuing discipline to non-skb context may be not your target
-but it's a reasonable and practical request to have.
+ChangeLog -> v4:
+- Rebase earlier circulated patches on the now merged
+  VLAN set-up cleanups.
+
+Linus Walleij (4):
+  net: dsa: rtl8366rb: Support disabling learning
+  net: dsa: rtl8366rb: Support flood control
+  net: dsa: rtl8366rb: Support fast aging
+  net: dsa: rtl8366rb: Support setting STP state
+
+ drivers/net/dsa/rtl8366rb.c | 162 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 156 insertions(+), 6 deletions(-)
+
+-- 
+2.31.1
+
