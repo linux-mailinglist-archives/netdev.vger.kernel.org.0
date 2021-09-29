@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B99E41BFDE
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 09:27:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E242D41BFDF
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 09:27:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244684AbhI2H2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 03:28:41 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:33102 "EHLO
+        id S244690AbhI2H2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 03:28:42 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:33108 "EHLO
         codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244647AbhI2H23 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 03:28:29 -0400
+        with ESMTP id S244648AbhI2H2a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 03:28:30 -0400
 Received: by codeconstruct.com.au (Postfix, from userid 10001)
-        id 23F452148E; Wed, 29 Sep 2021 15:26:48 +0800 (AWST)
+        id 8D52C214E2; Wed, 29 Sep 2021 15:26:48 +0800 (AWST)
 From:   Matt Johnston <matt@codeconstruct.com.au>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     Jeremy Kerr <jk@codeconstruct.com.au>
-Subject: [PATCH net-next 05/10] mctp: Implement a timeout for tags
-Date:   Wed, 29 Sep 2021 15:26:09 +0800
-Message-Id: <20210929072614.854015-6-matt@codeconstruct.com.au>
+Subject: [PATCH net-next 06/10] mctp: Add tracepoints for tag/key handling
+Date:   Wed, 29 Sep 2021 15:26:10 +0800
+Message-Id: <20210929072614.854015-7-matt@codeconstruct.com.au>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210929072614.854015-1-matt@codeconstruct.com.au>
 References: <20210929072614.854015-1-matt@codeconstruct.com.au>
@@ -31,153 +31,190 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jeremy Kerr <jk@codeconstruct.com.au>
 
-Currently, a MCTP (local-eid,remote-eid,tag) tuple is allocated to a
-socket on send, and only expires when the socket is closed.
-
-This change introduces a tag timeout, freeing the tuple after a fixed
-expiry - currently six seconds. This is greater than (but close to) the
-max response timeout in upper-layer bindings.
+The tag allocation, release and bind events are somewhat opaque outside
+the kernel; this change adds a few tracepoints to assist in
+instrumentation and debugging.
 
 Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
 ---
- include/net/mctp.h | 10 ++++++++++
- net/mctp/af_mctp.c | 44 ++++++++++++++++++++++++++++++++++++++++++++
- net/mctp/route.c   |  8 ++++++++
- 3 files changed, 62 insertions(+)
+ include/trace/events/mctp.h | 75 +++++++++++++++++++++++++++++++++++++
+ net/mctp/af_mctp.c          |  6 +++
+ net/mctp/route.c            | 12 +++++-
+ 3 files changed, 92 insertions(+), 1 deletion(-)
+ create mode 100644 include/trace/events/mctp.h
 
-diff --git a/include/net/mctp.h b/include/net/mctp.h
-index bf783dc3ea45..b9ed62a63c24 100644
---- a/include/net/mctp.h
-+++ b/include/net/mctp.h
-@@ -62,6 +62,11 @@ struct mctp_sock {
- 	 * by sk->net->keys_lock
- 	 */
- 	struct hlist_head keys;
+diff --git a/include/trace/events/mctp.h b/include/trace/events/mctp.h
+new file mode 100644
+index 000000000000..175b057c507f
+--- /dev/null
++++ b/include/trace/events/mctp.h
+@@ -0,0 +1,75 @@
++/* SPDX-License-Identifier: GPL-2.0 */
 +
-+	/* mechanism for expiring allocated keys; will release an allocated
-+	 * tag, and any netdev state for a request/response pairing
-+	 */
-+	struct timer_list key_expiry;
- };
- 
- /* Key for matching incoming packets to sockets or reassembly contexts.
-@@ -107,6 +112,8 @@ struct mctp_sock {
-  *      the (complete) reply, or during reassembly errors. Here, we clean up
-  *      the reassembly context (marking reasm_dead, to prevent another from
-  *      starting), and remove the socket from the netns & socket lists.
-+ *
-+ *    - through an expiry timeout, on a per-socket timer
-  */
- struct mctp_sk_key {
- 	mctp_eid_t	peer_addr;
-@@ -138,6 +145,9 @@ struct mctp_sk_key {
- 
- 	/* key validity */
- 	bool		valid;
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM mctp
 +
-+	/* expiry timeout; valid (above) cleared on expiry */
-+	unsigned long	expiry;
- };
- 
- struct mctp_skb_cb {
++#if !defined(_TRACE_MCTP_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_MCTP_H
++
++#include <linux/tracepoint.h>
++
++#ifndef __TRACE_MCTP_ENUMS
++#define __TRACE_MCTP_ENUMS
++enum {
++	MCTP_TRACE_KEY_TIMEOUT,
++	MCTP_TRACE_KEY_REPLIED,
++	MCTP_TRACE_KEY_INVALIDATED,
++	MCTP_TRACE_KEY_CLOSED,
++};
++#endif /* __TRACE_MCTP_ENUMS */
++
++TRACE_DEFINE_ENUM(MCTP_TRACE_KEY_TIMEOUT);
++TRACE_DEFINE_ENUM(MCTP_TRACE_KEY_REPLIED);
++TRACE_DEFINE_ENUM(MCTP_TRACE_KEY_INVALIDATED);
++TRACE_DEFINE_ENUM(MCTP_TRACE_KEY_CLOSED);
++
++TRACE_EVENT(mctp_key_acquire,
++	TP_PROTO(const struct mctp_sk_key *key),
++	TP_ARGS(key),
++	TP_STRUCT__entry(
++		__field(__u8,	paddr)
++		__field(__u8,	laddr)
++		__field(__u8,	tag)
++	),
++	TP_fast_assign(
++		__entry->paddr = key->peer_addr;
++		__entry->laddr = key->local_addr;
++		__entry->tag = key->tag;
++	),
++	TP_printk("local %d, peer %d, tag %1x",
++		__entry->laddr,
++		__entry->paddr,
++		__entry->tag
++	)
++);
++
++TRACE_EVENT(mctp_key_release,
++	TP_PROTO(const struct mctp_sk_key *key, int reason),
++	TP_ARGS(key, reason),
++	TP_STRUCT__entry(
++		__field(__u8,	paddr)
++		__field(__u8,	laddr)
++		__field(__u8,	tag)
++		__field(int,	reason)
++	),
++	TP_fast_assign(
++		__entry->paddr = key->peer_addr;
++		__entry->laddr = key->local_addr;
++		__entry->tag = key->tag;
++		__entry->reason = reason;
++	),
++	TP_printk("local %d, peer %d, tag %1x %s",
++		__entry->laddr,
++		__entry->paddr,
++		__entry->tag,
++		__print_symbolic(__entry->reason,
++				 { MCTP_TRACE_KEY_TIMEOUT, "timeout" },
++				 { MCTP_TRACE_KEY_REPLIED, "replied" },
++				 { MCTP_TRACE_KEY_INVALIDATED, "invalidated" },
++				 { MCTP_TRACE_KEY_CLOSED, "closed" })
++	)
++);
++
++#endif
++
++#include <trace/define_trace.h>
 diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-index 2767d548736b..46e5ede385cb 100644
+index 46e5ede385cb..28cb1633bed6 100644
 --- a/net/mctp/af_mctp.c
 +++ b/net/mctp/af_mctp.c
-@@ -223,16 +223,60 @@ static const struct proto_ops mctp_dgram_ops = {
- 	.sendpage	= sock_no_sendpage,
- };
- 
-+static void mctp_sk_expire_keys(struct timer_list *timer)
-+{
-+	struct mctp_sock *msk = container_of(timer, struct mctp_sock,
-+					     key_expiry);
-+	struct net *net = sock_net(&msk->sk);
-+	unsigned long next_expiry, flags;
-+	struct mctp_sk_key *key;
-+	struct hlist_node *tmp;
-+	bool next_expiry_valid = false;
-+
-+	spin_lock_irqsave(&net->mctp.keys_lock, flags);
-+
-+	hlist_for_each_entry_safe(key, tmp, &msk->keys, sklist) {
-+		spin_lock(&key->lock);
-+
-+		if (!time_after_eq(key->expiry, jiffies)) {
-+			key->valid = false;
-+			hlist_del_rcu(&key->hlist);
-+			hlist_del_rcu(&key->sklist);
-+			spin_unlock(&key->lock);
-+			mctp_key_unref(key);
-+			continue;
-+		}
-+
-+		if (next_expiry_valid) {
-+			if (time_before(key->expiry, next_expiry))
-+				next_expiry = key->expiry;
-+		} else {
-+			next_expiry = key->expiry;
-+			next_expiry_valid = true;
-+		}
-+		spin_unlock(&key->lock);
-+	}
-+
-+	spin_unlock_irqrestore(&net->mctp.keys_lock, flags);
-+
-+	if (next_expiry_valid)
-+		mod_timer(timer, next_expiry);
-+}
-+
- static int mctp_sk_init(struct sock *sk)
- {
- 	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
- 
- 	INIT_HLIST_HEAD(&msk->keys);
-+	timer_setup(&msk->key_expiry, mctp_sk_expire_keys, 0);
- 	return 0;
- }
- 
- static void mctp_sk_close(struct sock *sk, long timeout)
- {
-+	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
-+
-+	del_timer_sync(&msk->key_expiry);
- 	sk_common_release(sk);
- }
- 
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 37aa67847a5a..c342adf4f97f 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -24,6 +24,8 @@
+@@ -16,6 +16,9 @@
+ #include <net/mctpdevice.h>
  #include <net/sock.h>
  
- static const unsigned int mctp_message_maxlen = 64 * 1024;
-+static const unsigned long mctp_key_lifetime = 6 * CONFIG_HZ;
++#define CREATE_TRACE_POINTS
++#include <trace/events/mctp.h>
 +
+ /* socket implementation */
  
+ static int mctp_release(struct socket *sock)
+@@ -239,6 +242,7 @@ static void mctp_sk_expire_keys(struct timer_list *timer)
+ 		spin_lock(&key->lock);
+ 
+ 		if (!time_after_eq(key->expiry, jiffies)) {
++			trace_mctp_key_release(key, MCTP_TRACE_KEY_TIMEOUT);
+ 			key->valid = false;
+ 			hlist_del_rcu(&key->hlist);
+ 			hlist_del_rcu(&key->sklist);
+@@ -310,6 +314,8 @@ static void mctp_sk_unhash(struct sock *sk)
+ 		hlist_del(&key->sklist);
+ 		hlist_del(&key->hlist);
+ 
++		trace_mctp_key_release(key, MCTP_TRACE_KEY_CLOSED);
++
+ 		spin_lock(&key->lock);
+ 		if (key->reasm_head)
+ 			kfree_skb(key->reasm_head);
+diff --git a/net/mctp/route.c b/net/mctp/route.c
+index c342adf4f97f..acc5bb39e16d 100644
+--- a/net/mctp/route.c
++++ b/net/mctp/route.c
+@@ -23,10 +23,11 @@
+ #include <net/netlink.h>
+ #include <net/sock.h>
+ 
++#include <trace/events/mctp.h>
++
+ static const unsigned int mctp_message_maxlen = 64 * 1024;
+ static const unsigned long mctp_key_lifetime = 6 * CONFIG_HZ;
+ 
+-
  /* route output callbacks */
  static int mctp_route_discard(struct mctp_route *route, struct sk_buff *skb)
-@@ -175,6 +177,9 @@ static int mctp_key_add(struct mctp_sk_key *key, struct mctp_sock *msk)
+ {
+@@ -332,6 +333,8 @@ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
+ 				/* we've hit a pending reassembly; not much we
+ 				 * can do but drop it
+ 				 */
++				trace_mctp_key_release(key,
++						       MCTP_TRACE_KEY_REPLIED);
+ 				__mctp_key_unlock_drop(key, net, f);
+ 				key = NULL;
+ 			}
+@@ -365,12 +368,16 @@ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
+ 			if (rc)
+ 				kfree(key);
  
- 	if (!rc) {
- 		refcount_inc(&key->refs);
-+		key->expiry = jiffies + mctp_key_lifetime;
-+		timer_reduce(&msk->key_expiry, key->expiry);
++			trace_mctp_key_acquire(key);
 +
- 		hlist_add_head(&key->hlist, &net->mctp.keys);
- 		hlist_add_head(&key->sklist, &msk->keys);
+ 			/* we don't need to release key->lock on exit */
+ 			key = NULL;
+ 
+ 		} else {
+ 			if (key->reasm_head || key->reasm_dead) {
+ 				/* duplicate start? drop everything */
++				trace_mctp_key_release(key,
++						       MCTP_TRACE_KEY_INVALIDATED);
+ 				__mctp_key_unlock_drop(key, net, f);
+ 				rc = -EEXIST;
+ 				key = NULL;
+@@ -396,6 +403,7 @@ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
+ 		if (!rc && flags & MCTP_HDR_FLAG_EOM) {
+ 			sock_queue_rcv_skb(key->sk, key->reasm_head);
+ 			key->reasm_head = NULL;
++			trace_mctp_key_release(key, MCTP_TRACE_KEY_REPLIED);
+ 			__mctp_key_unlock_drop(key, net, f);
+ 			key = NULL;
+ 		}
+@@ -572,6 +580,8 @@ static int mctp_alloc_local_tag(struct mctp_sock *msk,
+ 	if (tagbits) {
+ 		key->tag = __ffs(tagbits);
+ 		mctp_reserve_tag(net, key, msk);
++		trace_mctp_key_acquire(key);
++
+ 		*tagp = key->tag;
+ 		rc = 0;
  	}
-@@ -497,6 +502,9 @@ static void mctp_reserve_tag(struct net *net, struct mctp_sk_key *key,
- 
- 	lockdep_assert_held(&mns->keys_lock);
- 
-+	key->expiry = jiffies + mctp_key_lifetime;
-+	timer_reduce(&msk->key_expiry, key->expiry);
-+
- 	/* we hold the net->key_lock here, allowing updates to both
- 	 * then net and sk
- 	 */
 -- 
 2.30.2
 
