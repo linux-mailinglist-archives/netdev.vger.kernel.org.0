@@ -2,162 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8644441C83F
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:22:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B037541C84C
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:25:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345172AbhI2PXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 11:23:49 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:57911 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345161AbhI2PXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:23:47 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 908EA580BD1;
-        Wed, 29 Sep 2021 11:22:05 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 29 Sep 2021 11:22:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=D0IBY5Pj6/F0JNNHa8/d4D4dhFcHLMGCSTOY+LuBz
-        EA=; b=ZhuEp73RqBc+dT9dwPx5WFYuR7Gt0Z5v5JwZxAbdDiwVFqr1XKrU6RdqT
-        3rIoZ0CA9UXgji52+2PrjjTwfscTVJtNtaUNw4fuAiPKrcbpUMNPX+nbUdTlMNuo
-        UaNOlBBEIdPZdvCUm5E44mVcU0XNBF9ghUkUbjMwtk8eCdD0C5jk3+SwnJ6370BB
-        QgME+XdXif4rDMO/pgeg2l7pi1D3C/yDyz3uvu0xiYDNJw4CBYPifZEneb/EJw82
-        CIeEpqkNGZ0o97zwmk1ZQKBea3uhtd66i3eUUC6mqyYKw5ZNZrEiGUPGVcPsmtQJ
-        c5glFMBe4zEv4TdYBsw7o2ck4Y7Pw==
-X-ME-Sender: <xms:moRUYcIiQiek66OCH96DYUulnzjzdZQUThcHnOdDoDcRmeKGDlXjTg>
-    <xme:moRUYcI0MbGkED8qssdPRBiBWe_CrvaZAgkwunl6h6SPDjj1Nxxvi8lGvBHu2FgjH
-    55Xn4IWK7oq_YU>
-X-ME-Received: <xmr:moRUYcsakn1EZN6tshS1xq22hr0tGjDovRi3VpZjiEiXyTscCqvuL1Z2x-0vTKvY1JMClYZZLUhTFqgVM2ETrrkiuXTVYw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudekvddgkeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtudenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepvdffveekfeeiieeuieetudefkeevkeeuhfeuieduudetkeegleefvdegheej
-    hefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:moRUYZY2T71Ye70VK0ZXT9k0rMv0XvUrClrZ-XxbCRE7b_iEWDrspw>
-    <xmx:moRUYTbGUGgYGvqoe_LLC_BahVB-nT9wy_dlTmqtTbk_4_48J7znPQ>
-    <xmx:moRUYVCFJwt-bPeKh9TD9dC-MuOE8-gqr0XNjl2JX7tu6qUkLlwV3g>
-    <xmx:nYRUYRaaJhOxHhrGXNsvKxWu6G5VIgXneeVfia8eaWBmOXFI-btEUQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 29 Sep 2021 11:22:01 -0400 (EDT)
-Date:   Wed, 29 Sep 2021 18:21:57 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Ido Schimmel <idosch@nvidia.com>, u.kleine-koenig@pengutronix.de
-Cc:     Bjorn Helgaas <helgaas@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        linux-pci@vger.kernel.org, kernel@pengutronix.de,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Michael Buesch <m@bues.ch>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, oss-drivers@corigine.com
-Subject: Re: [PATCH v5 07/11] PCI: Replace pci_dev::driver usage that gets
- the driver name
-Message-ID: <YVSElahmw2AMwnNH@shredder>
-References: <20210929085306.2203850-1-u.kleine-koenig@pengutronix.de>
- <20210929085306.2203850-8-u.kleine-koenig@pengutronix.de>
- <YVR74+8Rw6XmTqDD@shredder>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+        id S1345210AbhI2P0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 11:26:36 -0400
+Received: from mail-mw2nam12on2135.outbound.protection.outlook.com ([40.107.244.135]:2634
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1345204AbhI2P0f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 11:26:35 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ki3O7q7UeZDluzmTmgooMDpDu8E5TmDupoKl3lz92WxBLIfJvdHEp3aWz+1sT7wZ9lSjUGcHO5Kgwsw4s0GP6+DwWoqskCtbXl/DyMHvbHA6Qwko0N68euFt2ceMBBGojBpI2FloYSCWdpZ/qKEnZgyI7PsmWxIz6Q2wm8k4iIcVpmCkPVDVsiVf4wL2NGZ3ADjR+jE5Y0thy9NLjyazukx8T0NIIxak2O8wKSnkO6od9RyjSoIOXwtnebZay+dZZ/yiTi1etytTyizbqovVXzwWcV9k6njAxzdVEly3IDh2E5Y97DHuJWfo8M/7YPwKT/v8wSuIervv0oa9Sx0mnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GkOVaddLKc1JDVyp6y50e4VLTDjUIBLuUbCrXBc9DYY=;
+ b=VRgmq4de+gYsGHK8WBPFAVX9dRX27+39ufyRjc45sPAQLIqqrCKlX+Gjn4UxfssTB8gpL6qV3t/HF+1bf0/PJ4O+2rycomRrhqERmm4H1zXSE/KkMprXz1Z+nSGMBl72VNYbuOnhhQbRtti9/WVkfw1Z2iiDatgTYqde8tZTJXwgpIwPY1KyP3AUu8qFPXU18cc9nWwVlM43vSafZ0SZkKHtKXpe2qW7uH/LF/oK0jGTP9pNly19M2Q5Suo3K3cwGtbLRss6Ksva1wn+JST3RMR6cF6tD+RYTkow45HWqd1qUrQbHmpJAPiKNBcFGxH9U5uIIchK5MfPEkYsIQfTDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GkOVaddLKc1JDVyp6y50e4VLTDjUIBLuUbCrXBc9DYY=;
+ b=sBmZUPFkgIfwC7yIPMu4dsCkU8gvSrqZUzv5jdDOR7JbiZ/RixxpPKQ9B30rbU9jKN7VaRTxaQG2K8v8eVAHYrCuC2Cp+0nZJBZLGfxBEWgM/WjerCCSIiAOmcREnLJ52MFCNc0a/QlyL4E8fBpaj53EsOobKoLVoN/4zzUzYXM=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH7PR13MB5456.namprd13.prod.outlook.com (2603:10b6:510:131::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.7; Wed, 29 Sep
+ 2021 15:24:52 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::e1d9:64d0:cb4f:3e90]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::e1d9:64d0:cb4f:3e90%9]) with mapi id 15.20.4566.014; Wed, 29 Sep 2021
+ 15:24:52 +0000
+From:   Simon Horman <simon.horman@corigine.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Yu Xiao <yu.xiao@corigine.com>,
+        Yinjun Zhang <yinjun.zhang@corigine.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH net] nfp: bpf: Add an MTU check before offloading BPF
+Date:   Wed, 29 Sep 2021 17:24:21 +0200
+Message-Id: <20210929152421.5232-1-simon.horman@corigine.com>
+X-Mailer: git-send-email 2.20.1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YVR74+8Rw6XmTqDD@shredder>
+X-ClientProxiedBy: AM0PR04CA0091.eurprd04.prod.outlook.com
+ (2603:10a6:208:be::32) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+Received: from madeliefje.horms.nl (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM0PR04CA0091.eurprd04.prod.outlook.com (2603:10a6:208:be::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend Transport; Wed, 29 Sep 2021 15:24:50 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3b462859-384c-4957-dbc4-08d9835d482c
+X-MS-TrafficTypeDiagnostic: PH7PR13MB5456:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <PH7PR13MB5456C7BEBDABCE45397E1DFAE8A99@PH7PR13MB5456.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 00WNt1w30mZFboBqQgOaBmC0WSRaYscj/3cWqCDZOFjEPRCVcLfHNgFukPjU71gAs/iHnXqgJa2Jqdfn+J9P0tT9569xyictwMoLbJUTWc9/sd7FHvhotmglVMivRPB029InEakFG9UEg0tvbtHpZ8Rom5d4477Bk/Cjc34nt+GFhE4RE/JykSszsqG4zaXe4jPJ0WDqxohMg2VXRymW/CMOAWmpvpVBgvE5C1E9kC5mboVWQh2SpZMjIixTavCqqBeThC00tNl6xwd1Wzg1CD2ExRObpbVWtveLGxH16D/4bc8Bq1EGANT+1/D58YZXI8JqP5iyQ34ow/1xQKchNLlQ9+uIQ5Hj7ajEOEFqYtMeg55nY4NwL8dMnrwhn/RixJten+bqLCTzYShIdai3keHPagDZ3JcnsT9DACb+zO/pyJjIriKw0he3Q6b6tnXvdQCMIB7EnVLMebP86XuLhi8QzNgThpS1To0XkmbCYWJlffwwvLUOjUsZYP+r4e7OQ5c41SbAMHmmSgcIFjNH3lJETnsKx1x8+5zd1JOJhtFHuf9ivMtUGPWoggWzn/VbDYt96TadgIu+xdjiMs6vx7vtDMUp3/dzm+2q3GRHoQU/BZ+a5tpBTyEGJmiAoJ1tay8wkPflFHirTA/c1CBmQA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(39840400004)(376002)(346002)(366004)(136003)(396003)(6486002)(1076003)(44832011)(86362001)(6666004)(186003)(508600001)(6512007)(38100700002)(5660300002)(66574015)(8676002)(2616005)(54906003)(36756003)(110136005)(2906002)(6506007)(66556008)(66476007)(52116002)(107886003)(66946007)(83380400001)(316002)(8936002)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V1l6blBMMGNoY1B6RFdFczNKb2I2ektYSGJacitFa0FTUENBalBNd3lBdURn?=
+ =?utf-8?B?M01BN0FPUHNkazUyb2NQYWc3aUdrbTJJOU42ZTcyN2U3Y1ZOMk9OcEpZamZC?=
+ =?utf-8?B?THZWOGRhRlhEWWNhMzZUTnRvUG9tT2lqUnFCUFQzeDBVeTVLVUhwc1NBdHZw?=
+ =?utf-8?B?UlZBcDJuV1Bna20zbjFrQ1RwQ000NXJ5MGtwZWJ6K0JiZ3hHUTdGM2ZhR1Y4?=
+ =?utf-8?B?T01LVnBiMU0rTFh0a1oraEtNamRTek40VWQxQUVOeWJnaVFlN09LT1dtVlRB?=
+ =?utf-8?B?OUpKekhtdjlBMHFkNHFub2NHVm04QTVGZ2gzV2RKQkh0TDNIbC9zZG1BWUtD?=
+ =?utf-8?B?bjYyakk0aUp5WkdBSW9pRVlGakxtNHJ0OFAyRmlrSUlweEFXakdwRHdqbEZB?=
+ =?utf-8?B?bzQ2bG5ZRGVHeHlqdG5rcnlrUE1WY0lGMlhKN0VNZndMTUVING1vZ25VS3V0?=
+ =?utf-8?B?dEs0QjdhNmhSaVMzRXlPL3pnckNidHEwbWpBMnpSZE5hRE85T3BNK1h4ZDNo?=
+ =?utf-8?B?eno4TDBmZVNaUms0LzFab2hXS0t2WU9QYmdvT08rZU9xdWt6RXUrOWVHb0l2?=
+ =?utf-8?B?S290ZFZYbEpaWU0rY1Y0dTNnSi9DemJlbXFZbnpTeUpGSUFZcjhyekJUNk9O?=
+ =?utf-8?B?LzZlYUdSSHZ0K21URjRCN3RGcE41SE4vU2YyU2FFTk1UM3lnWWM5VE5wVG9h?=
+ =?utf-8?B?TnhYUG14ZG1VczRWZVVXaXdPS1RheWowclVkdHg4TFlPajFCMVNrdVVIbUhv?=
+ =?utf-8?B?NjZ5eFhLeWY2NkZyMnQrZVVkcHhrZ28rUE9PbXg3eWhDUmpSVHh2ZEUyT1NF?=
+ =?utf-8?B?NzJxTGpkL2VicWFLZTdkbGdQL1N2MkNpZzBydVpEdHNwZC9QL2VZV2plelNj?=
+ =?utf-8?B?UzloaWhFQkExcGRycGxTTVNyQWhtZTI3U0xEVytMTUlISzVPWWRTZWpYTnBE?=
+ =?utf-8?B?TWlMMER6Ym1rVmo3anlSTitKb1crd0V2SkhscjlpbkhvSnRVTWxQR0wzV3Nl?=
+ =?utf-8?B?MHRESGExVklVMG9kdTMyODNDSXlMQlJGTjJTQUZZUUVjSzFMblprMnFmdk96?=
+ =?utf-8?B?WWlKQVZMcWQxeSszREtmaTNyRElrQ2ZkOUp2YXQrMzdQT2MrQTRSb1NIcGY4?=
+ =?utf-8?B?WC9LRnBkWUpvMWQyT0NkNDBST3BjTytKb09hY2V2UXZKd1JFdGNBNGZPTW44?=
+ =?utf-8?B?SHNFZzBrK3hvWVhOVDhoZmMwenYrMVA3WjJvR25lWTEyVzhYWjNIYnBCQmlO?=
+ =?utf-8?B?R2NIR0ZMZmt5bnQ3N2dKaGhnaHJGTXRHRlBPL2h5dk5XZ0V5cGNOclY5OUQ0?=
+ =?utf-8?B?Z3MxcENTTTFscXpMMzB6ZDNROEVPdlJhTVRvSm9hVW5CZVVXbVFGa1dnTElR?=
+ =?utf-8?B?ZFFybkxuUHBqeWdhckw3UGdnOEdXYVZlV1M0OFZzL0xvelkzU0tuMkFsUFV4?=
+ =?utf-8?B?Zi82ZmdOempySTNZQlhoMFBWYkU5WUNpY3JaQnppaGZnZzRESXoxUmp5b1M0?=
+ =?utf-8?B?cFltVlZZaWxxSk95bC9KaXR6OFN4eXgreW9NYVhIaFlQcTlnRjFRdWhZZkdF?=
+ =?utf-8?B?S1dQcmQ0QWVFTnl5YTBpanpzbkpnZE1BekE0ejl3SmRuN0RheXIrMzJwcTZy?=
+ =?utf-8?B?L3N2MCtWTkhIbnZhdCtwRWtlMFhFRm5WUUt5TjdDTGt5My9UeE04REZ4QTBs?=
+ =?utf-8?B?akRsdkdtL0kvKzdpNkRBVEkzNVdrb20rTi9Ucy9TSitMcUwrYWIxaVBCeXJk?=
+ =?utf-8?B?aXlBMmEzamduRmp2emVnTFovcmZYc3AvRytwM1JpM2c0QzE2WDJMSVdnbWxo?=
+ =?utf-8?B?cTIvSlpxTzc3TTg3WXgwa1VaQlp2V205M21pU2ZWbDVzOFd0emRNTmtKeWc5?=
+ =?utf-8?Q?OdBp+7wpO6sb0?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b462859-384c-4957-dbc4-08d9835d482c
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2021 15:24:51.6986
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: E/8YbvndomxN+lhqvXHwSFxQg/53U3PgLPoZltobd6iEKyWYBRjWQ3tSmzUxF+lwJ4d/Phe8b/d7y8NHySNmohEHataCzOflzhBfv3uTwbA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5456
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 05:44:51PM +0300, Ido Schimmel wrote:
-> On Wed, Sep 29, 2021 at 10:53:02AM +0200, Uwe Kleine-König wrote:
-> > struct pci_dev::driver holds (apart from a constant offset) the same
-> > data as struct pci_dev::dev->driver. With the goal to remove struct
-> > pci_dev::driver to get rid of data duplication replace getting the
-> > driver name by dev_driver_string() which implicitly makes use of struct
-> > pci_dev::dev->driver.
-> > 
-> > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> 
-> For mlxsw:
-> 
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-> Tested-by: Ido Schimmel <idosch@nvidia.com>
-> 
-> Thanks
+From: Yu Xiao <yu.xiao@corigine.com>
 
-Actually, I found out that after loading and executing another kernel
-(or the same one) via kexec I get this splat [1].
+There is a bug during xdpoffloading. When MTU is bigger than the
+max MTU of BFP (1888), it can still be added xdpoffloading.
 
-[1]
- BUG: unable to handle page fault for address: ffffffffffffffc8         
- #PF: supervisor read access in kernel mode                       
- #PF: error_code(0x0000) - not-present page
- PGD 6e40c067 P4D 6e40c067 PUD 6e40e067 PMD 0 
- Oops: 0000 [#1] SMP                                                    
- CPU: 0 PID: 786 Comm: kexec Not tainted 5.15.0-rc2-custom-45114-g6b0effa5a61f #112
- Hardware name: Mellanox Technologies Ltd. MSN3700/VMOD0005, BIOS 5.11 01/06/2019                                                                              
- RIP: 0010:pci_device_shutdown+0x16/0x40
- Code: 01 00 31 d2 4c 89 e7 89 c6 e8 36 ce 01 00 41 89 c5 eb bb 90 55 48 8d af 40 ff ff ff 53 48 8b 47 68 48 89 fb 48 83 f8 78 74 0e <48> 8b 40 c8 48 85 c0 74 
-05 48 89 ef ff d0 80 3d 35 81 b7 01 00 74                                             
- RSP: 0018:ffff95fec0d37db8 EFLAGS: 00010297                            
- RAX: 0000000000000000 RBX: ffff8d70c0f1f0c0 RCX: 0000000000000004
- RDX: ffff8d7115a03a00 RSI: 0000000000000206 RDI: ffff8d70c0f1f0c0      
- RBP: ffff8d70c0f1f000 R08: 0000000000000002 R09: 0000000000000502
- R10: 0000000000000000 R11: 0000000000000006 R12: ffff8d70c0f1f0c0                                                                                             
- R13: ffff8d70c0f1f140 R14: 00000000fee1dead R15: 0000000000000000                                                                                             
- FS:  00007fd3089e0b80(0000) GS:ffff8d7237c00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033                     
- CR2: ffffffffffffffc8 CR3: 0000000155abb001 CR4: 00000000003706f0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- Call Trace:
-  device_shutdown+0x12e/0x180 
-  kernel_kexec+0x52/0xb0
-  __do_sys_reboot+0x1c0/0x210 
-  do_syscall_64+0x35/0x80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7fd308afd557
- Code: 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 89 fa be 69 19 12 28 bf ad de e1 fe b8 a9 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 
-c3 48 8b 15 f1 a8 0c 00 f7 d8 64 89 02 b8
- RSP: 002b:00007fff7d01e0a8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a9
- RAX: ffffffffffffffda RBX: 00005606db11d380 RCX: 00007fd308afd557
- RDX: 0000000045584543 RSI: 0000000028121969 RDI: 00000000fee1dead
- RBP: 0000000000000000 R08: 0000000000000007 R09: 00007fd308bc8a60
- R10: 0000000000000021 R11: 0000000000000246 R12: 0000000000000003
- R13: 00007fff7d01e1f0 R14: 00005606db11d8c0 R15: 00000000ffffffff
- Modules linked in:
- CR2: ffffffffffffffc8
- ---[ end trace 0cb0bc633a6fde3e ]---
+Therefore, add an MTU check to ensure that xdpoffloading cannot be
+loaded when MTU is larger than a max MTU of 1888.
 
-Where:
+Fixes: 6d6770755f05 ("nfp: add support for offload of XDP programs")
+Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
+Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+Reviewed-by: Niklas SÃ¶derlund <niklas.soderlund@corigine.com>
+Reviewed-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+---
+ drivers/net/ethernet/netronome/nfp/bpf/main.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-(gdb) l *(pci_device_shutdown+0x16)
-0xffffffff8156abf6 is in pci_device_shutdown (drivers/pci/pci-driver.c:496).
-491             struct pci_dev *pci_dev = to_pci_dev(dev);
-492             struct pci_driver *drv = to_pci_driver(pci_dev->dev.driver);
-493
-494             pm_runtime_resume(dev);
-495
-496             if (drv && drv->shutdown)
-497                     drv->shutdown(pci_dev);
-498
-499             /*
-500              * If this is a kexec reboot, turn off Bus Master bit on the
+diff --git a/drivers/net/ethernet/netronome/nfp/bpf/main.c b/drivers/net/ethernet/netronome/nfp/bpf/main.c
+index 11c83a99b014..105142437fb4 100644
+--- a/drivers/net/ethernet/netronome/nfp/bpf/main.c
++++ b/drivers/net/ethernet/netronome/nfp/bpf/main.c
+@@ -34,11 +34,25 @@ static bool nfp_net_ebpf_capable(struct nfp_net *nn)
+ #endif
+ }
+ 
++static inline unsigned int
++nfp_bpf_get_bpf_max_mtu(struct nfp_net *nn)
++{
++	return nn_readb(nn, NFP_NET_CFG_BPF_INL_MTU) * 64 - 32;
++}
++
+ static int
+ nfp_bpf_xdp_offload(struct nfp_app *app, struct nfp_net *nn,
+ 		    struct bpf_prog *prog, struct netlink_ext_ack *extack)
+ {
+ 	bool running, xdp_running;
++	unsigned int max_mtu;
++
++	max_mtu = nfp_bpf_get_bpf_max_mtu(nn);
++	if (nn->dp.mtu > max_mtu) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "port MTU over max MTU of BPF offloading not supported");
++		return -EINVAL;
++	}
+ 
+ 	if (!nfp_net_ebpf_capable(nn))
+ 		return -EINVAL;
+@@ -187,7 +201,7 @@ nfp_bpf_check_mtu(struct nfp_app *app, struct net_device *netdev, int new_mtu)
+ 	if (~nn->dp.ctrl & NFP_NET_CFG_CTRL_BPF)
+ 		return 0;
+ 
+-	max_mtu = nn_readb(nn, NFP_NET_CFG_BPF_INL_MTU) * 64 - 32;
++	max_mtu = nfp_bpf_get_bpf_max_mtu(nn);
+ 	if (new_mtu > max_mtu) {
+ 		nn_info(nn, "BPF offload active, MTU over %u not supported\n",
+ 			max_mtu);
+-- 
+2.20.1
+
