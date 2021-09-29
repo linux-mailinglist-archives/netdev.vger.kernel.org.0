@@ -2,105 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 798F441C62B
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 15:56:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7415541C654
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 16:08:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344381AbhI2N6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 09:58:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40302 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244987AbhI2N6E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 09:58:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D2CB8613D1;
-        Wed, 29 Sep 2021 13:56:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632923783;
-        bh=idflF2E8/Ly1lOVFC+hy6dMOJPOrXijkr0KQryGJPgc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Fib9ZNHSBUhUAKcgkZuZOnEuDljdRL8P/uoCMGRKwG46UqHSo4HD5ngmYXsjAGs2r
-         bSm1F3ewUqSNpQu3GQgoOz7X9Yz7HqnI2qHtReyaLwqo1IGu2KL3q23PVgu8NYOcEV
-         Jv1Q4JJ3zP18LY4zSq/bYM1pWth/qPgyLLwFqqewCfbRtg20enKZPzcn5pE69aMjUT
-         EGxtNnS+u04nA8ovrmD+q4M4VvKpHefh0JUwR2ngjt1oTkbHiPxzR5rjQ+3+I6P/xI
-         xBx6iOtiTYStQUdyfGgY2Sep/suFOxURUeSRYpbnUQpSJ/BOVZ0JUFf2Zv46brq8d+
-         oR9yLP9KSppzg==
-Date:   Wed, 29 Sep 2021 06:56:21 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        "drivers@pensando.io" <drivers@pensando.io>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
-        "GR-Linux-NIC-Dev@marvell.com" <GR-Linux-NIC-Dev@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
-        Manish Chopra <manishc@marvell.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "oss-drivers@corigine.com" <oss-drivers@corigine.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Shay Drory <shayd@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Vadym Kochan <vkochan@marvell.com>,
+        id S245583AbhI2OJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 10:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229712AbhI2OJN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 10:09:13 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B44C06161C;
+        Wed, 29 Sep 2021 07:07:31 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id x7so8977940edd.6;
+        Wed, 29 Sep 2021 07:07:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vFQqvNSnWmCJgPBVIv0fLxuJugZHZfFnjcNacnv+nUY=;
+        b=XjAouqqpvPC6C2koug9Hz7fDBc3/7YafLlgxX5duBljhVHkrMyYsC5WGctm83vhmBM
+         9yCwHvrKf5PD+IOlva1tkhIapVXoUrCNpHK+LIFKDHNLX58hyzi41g6Ot6sKDZlZDi7R
+         hb8teSMfTuBuYseQzarBIjDQRZZxlp7fk/ach8LLVOo6RJte4qcKOVXfDTz0qraB1hK8
+         X06zyBhpm+GBLfBwCkP8HBGNblVSKY6WiVaDI4RYXBnzCLrQ7uxBNCXX97JOBE34tgig
+         i3r0NdCg+0UtQcMlK1LDgz8cDZ9Zi9EJ69v+dPGEkVxqN4RnTRRjUlweUCBU9KWCm0ox
+         Z0rQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vFQqvNSnWmCJgPBVIv0fLxuJugZHZfFnjcNacnv+nUY=;
+        b=nADacH0tcO+KAdrw0StUXeGqh076uJCIcR3lTkM00d0YXFlYAwCk+x03qX54/QeBYm
+         aiug3y5eUKn1qc8DYiLtvfoM2pyU2F2k6Pzszn+Io3BTObD47+DGTaSI60icO/iWCCHw
+         yN2VsMN/baBzKzzlW6yx8DjBzZyqt4FMf8dTaczOOTFVFVlyX/3kmjI2grCXhnunQ8VP
+         YLBgd3/5jOjvZ9ed15AasyO4F3AIHTVwJfApIDrPBl/ETqWP45A043fDQ7+R/oG+QTPF
+         XY8cm5VRpjVHaLm4KQRzsGDYRfwVFCwMH6tpfx/fch7MQ3feJQHVaIc6NsXP0uEknDIi
+         d16A==
+X-Gm-Message-State: AOAM532VvO+lwFbFwpJNYHQNndPigruO8dnDcWC6570JIY4ToStmBWty
+        CAYZVFtoMU8Q2ZuAaHRBb5ng851CGwU=
+X-Google-Smtp-Source: ABdhPJwQabkM7boPK8gypnrl9CchOikh2/JF2KtFZzAunDM4dCwr3LDWRUpIvogoYCwQqih65l4kRQ==
+X-Received: by 2002:a17:906:12d4:: with SMTP id l20mr13506998ejb.43.1632924432746;
+        Wed, 29 Sep 2021 07:07:12 -0700 (PDT)
+Received: from skbuf ([188.26.53.217])
+        by smtp.gmail.com with ESMTPSA id n25sm1765315eda.95.2021.09.29.07.07.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Sep 2021 07:07:11 -0700 (PDT)
+Date:   Wed, 29 Sep 2021 17:07:10 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: Re: [PATCH net-next v1 0/5] Devlink reload and missed notifications
- fix
-Message-ID: <20210929065621.20cb08ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210929134637.4wlbd5ehbgc55cuo@skbuf>
-References: <cover.1632916329.git.leonro@nvidia.com>
-        <20210929064004.3172946e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210929134637.4wlbd5ehbgc55cuo@skbuf>
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Circular dependency between DSA switch driver and tagging
+ protocol driver
+Message-ID: <20210929140710.r6l7kg2njjpreaw4@skbuf>
+References: <20210908220834.d7gmtnwrorhharna@skbuf>
+ <e0567cfe-d8b6-ed92-02c6-e45dd108d7d7@gmail.com>
+ <20210908221958.cjwuag6oz2fmnd2n@skbuf>
+ <0ce35724-336d-572e-4ba3-e5a014d035fc@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0ce35724-336d-572e-4ba3-e5a014d035fc@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Sep 2021 13:46:38 +0000 Vladimir Oltean wrote:
-> On Wed, Sep 29, 2021 at 06:40:04AM -0700, Jakub Kicinski wrote:
-> > Swapping ops is a nasty hack in my book.
+On Wed, Sep 08, 2021 at 04:36:00PM -0700, Florian Fainelli wrote:
+> On 9/8/2021 3:19 PM, Vladimir Oltean wrote:
+> > On Wed, Sep 08, 2021 at 03:14:51PM -0700, Florian Fainelli wrote:
+> > > On 9/8/2021 3:08 PM, Vladimir Oltean wrote:
+> > > > Hi,
+> > > >
+> > > > Since commits 566b18c8b752 ("net: dsa: sja1105: implement TX
+> > > > timestamping for SJA1110") and 994d2cbb08ca ("net: dsa: tag_sja1105: be
+> > > > dsa_loop-safe"), net/dsa/tag_sja1105.ko has gained a build and insmod
+> > > > time dependency on drivers/net/dsa/sja1105.ko, due to several symbols
+> > > > exported by the latter and used by the former.
+> > > >
+> > > > So first one needs to insmod sja1105.ko, then insmod tag_sja1105.ko.
+> > > >
+> > > > But dsa_port_parse_cpu returns -EPROBE_DEFER when dsa_tag_protocol_get
+> > > > returns -ENOPROTOOPT. It means, there is no DSA_TAG_PROTO_SJA1105 in the
+> > > > list of tagging protocols known by DSA, try again later. There is a
+> > > > runtime dependency for DSA to have the tagging protocol loaded. Combined
+> > > > with the symbol dependency, this is a de facto circular dependency.
+> > > >
+> > > > So when we first insmod sja1105.ko, nothing happens, probing is deferred.
+> > > >
+> > > > Then when we insmod tag_sja1105.ko, we expect the DSA probing to kick
+> > > > off where it left from, and probe the switch too.
+> > > >
+> > > > However this does not happen because the deferred probing list in the
+> > > > device core is reconsidered for a new attempt only if a driver is bound
+> > > > to a new device. But DSA tagging protocols are drivers with no struct
+> > > > device.
+> > > >
+> > > > One can of course manually kick the driver after the two insmods:
+> > > >
+> > > > echo spi0.1 > /sys/bus/spi/drivers/sja1105/bind
+> > > >
+> > > > and this works, but automatic module loading based on modaliases will be
+> > > > broken if both tag_sja1105.ko and sja1105.ko are modules, and sja1105 is
+> > > > the last device to get a driver bound to it.
+> > > >
+> > > > Where is the problem?
+> > >
+> > > I'd say with 994d2cbb08ca, since the tagger now requires visibility into
+> > > sja1105_switch_ops which is not great, to say the least. You could solve
+> > > this by:
+> > >
+> > > - splitting up the sja1150 between a library that contains
+> > > sja1105_switch_ops and does not contain the driver registration code
+> > >
+> > > - finding a different way to do a dsa_switch_ops pointer comparison, by
+> > > e.g.: maintaining a boolean in dsa_port that tracks whether a particular
+> > > driver is backing that port
 > >
-> > And all that to avoid having two op structures in one driver.
-> > Or to avoid having counters which are always 0?
-> >
-> > Sorry, at the very least you need better explanation for this.  
-> 
-> Leon, while the discussion about this unfolds, can you please repost
-> patch 1 separately? :)
+> > What about 566b18c8b752 ("net: dsa: sja1105: implement TX timestamping for SJA1110")?
+> > It is essentially the same problem from a symbol usage perspective, plus
+> > the fact that an skb queue belonging to the driver is accessed.
+>
+> I believe we will have to accept that another indirect function call must be
+> made in order to avoid creating a direct symbol dependency with
+> sja1110_rcv_meta() would that be acceptable performance wise?
+> --
+> Florian
 
-Yes, please and thanks! :)
+The same circular dependency problem exists between net/dsa/tag_ocelot_8021q.c
+and drivers/net/ethernet/mscc/ocelot.c, which exports ocelot_port_inject_frame
+and co. This one is fundamentally even worse, I could make all of the
+ocelot_port_inject_frame related functions static inline inside
+include/linux/dsa/ocelot.h, but for that to do anything, I'd also need
+to make the I/O functions themselves static inline, like __ocelot_write_ix
+which is called by ocelot_write_rix. That doesn't sound too fun, sooner
+or later I'm going to make the entire driver static inline :)
+
+The alternative I see would be to just inject the PTP frames from a
+deferred worker, a la sja1105 with its magical SPI commands. A positive
+side effect of doing that would be that I can even try harder to inject
+them. Currently, because DSA uses NETIF_F_LLTX, it can't return
+NETDEV_TX_BUSY to ask the qdisc to requeue the packet, because the qdisc
+is, well, noqueue (we talked about this before). But "ocelot_can_inject"
+can return false, due to nasty stuff like egress congestion. The current
+behavior is to immediately drop the PTP frame, which leads to its own
+kind of nastiness - we have that skb enqueued in a list of frames
+awaiting TX timestamps, but the timestamp for it will never come because
+it's been silently dropped. Then we have a timestamp ID that rolls over
+after it counts to 4, and since we keep counting, future PTP timestamps
+might match on the skb that is still in the TX timestamping queue but
+stale. And nobody will match on the real skb. It goes downhill really
+fast and stinks.
+
+What do you think, should I go ahead and make a second user of deferred
+xmit (first and foremost to break the cyclic dependency between the
+tagger and the driver), and try harder to enqueue the PTP packets
+through register-based MMIO?
