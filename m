@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 134CF41C97C
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:04:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEFB041C97B
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:04:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345700AbhI2QFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 12:05:52 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:27925 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345668AbhI2QAI (ORCPT
+        id S1345872AbhI2QFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 12:05:47 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:23335 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345669AbhI2QAI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 12:00:08 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HKLX62r5Yzbmw4;
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKLX62ckXzRd5n;
         Wed, 29 Sep 2021 23:53:58 +0800 (CST)
 Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
  dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
@@ -26,9 +26,9 @@ From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv2 net-next 132/167] net: tehuti: use netdev feature helpers
-Date:   Wed, 29 Sep 2021 23:52:59 +0800
-Message-ID: <20210929155334.12454-133-shenjian15@huawei.com>
+Subject: [RFCv2 net-next 133/167] net: alteon: use netdev feature helpers
+Date:   Wed, 29 Sep 2021 23:53:00 +0800
+Message-ID: <20210929155334.12454-134-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 References: <20210929155334.12454-1-shenjian15@huawei.com>
@@ -48,51 +48,34 @@ for netdev features.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/net/ethernet/tehuti/tehuti.c | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/alteon/acenic.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/tehuti/tehuti.c b/drivers/net/ethernet/tehuti/tehuti.c
-index 6b409f9c5863..b91cb899beaa 100644
---- a/drivers/net/ethernet/tehuti/tehuti.c
-+++ b/drivers/net/ethernet/tehuti/tehuti.c
-@@ -1980,15 +1980,21 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		/* these fields are used for info purposes only
- 		 * so we can have them same for all ports of the board */
- 		ndev->if_port = port;
--		ndev->features = NETIF_F_IP_CSUM | NETIF_F_SG | NETIF_F_TSO
--		    | NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
--		    NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXCSUM
--		    ;
--		ndev->hw_features = NETIF_F_IP_CSUM | NETIF_F_SG |
--			NETIF_F_TSO | NETIF_F_HW_VLAN_CTAG_TX;
-+		netdev_feature_zero(&ndev->features);
-+		netdev_feature_set_bits(NETIF_F_IP_CSUM | NETIF_F_SG |
-+					NETIF_F_TSO | NETIF_F_HW_VLAN_CTAG_TX |
-+					NETIF_F_HW_VLAN_CTAG_RX |
-+					NETIF_F_HW_VLAN_CTAG_FILTER |
-+					NETIF_F_RXCSUM,
-+					&ndev->features);
-+		netdev_feature_zero(&ndev->hw_features);
-+		netdev_feature_set_bits(NETIF_F_IP_CSUM | NETIF_F_SG |
-+					NETIF_F_TSO | NETIF_F_HW_VLAN_CTAG_TX,
-+					&ndev->hw_features);
+diff --git a/drivers/net/ethernet/alteon/acenic.c b/drivers/net/ethernet/alteon/acenic.c
+index 9dc12b13061f..1e8a69297fa0 100644
+--- a/drivers/net/ethernet/alteon/acenic.c
++++ b/drivers/net/ethernet/alteon/acenic.c
+@@ -469,8 +469,9 @@ static int acenic_probe_one(struct pci_dev *pdev,
+ 	ap->pdev = pdev;
+ 	ap->name = pci_name(pdev);
  
- 		if (pci_using_dac)
--			ndev->features |= NETIF_F_HIGHDMA;
-+			netdev_feature_set_bit(NETIF_F_HIGHDMA_BIT,
-+					       &ndev->features);
+-	dev->features |= NETIF_F_SG | NETIF_F_IP_CSUM;
+-	dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX;
++	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_IP_CSUM, &dev->features);
++	netdev_feature_set_bits(NETIF_F_HW_VLAN_CTAG_TX |
++				NETIF_F_HW_VLAN_CTAG_RX, &dev->features);
  
- 	/************** priv ****************/
- 		priv = nic->priv[port] = netdev_priv(ndev);
-@@ -2025,7 +2031,7 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		 * set multicast list callback has to use priv->tx_lock.
- 		 */
- #ifdef BDX_LLTX
--		ndev->features |= NETIF_F_LLTX;
-+		netdev_feature_set_bit(NETIF_F_LLTX_BIT, &ndev->features);
- #endif
- 		/* MTU range: 60 - 16384 */
- 		ndev->min_mtu = ETH_ZLEN;
+ 	dev->watchdog_timeo = 5*HZ;
+ 	dev->min_mtu = 0;
+@@ -590,7 +591,7 @@ static int acenic_probe_one(struct pci_dev *pdev,
+ 	ap->name = dev->name;
+ 
+ 	if (ap->pci_using_dac)
+-		dev->features |= NETIF_F_HIGHDMA;
++		netdev_feature_set_bit(NETIF_F_HIGHDMA_BIT, &dev->features);
+ 
+ 	pci_set_drvdata(pdev, dev);
+ 
 -- 
 2.33.0
 
