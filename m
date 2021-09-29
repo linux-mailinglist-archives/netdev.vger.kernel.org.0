@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0482241C868
+	by mail.lfdr.de (Postfix) with ESMTP id 4F26741C869
 	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:30:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345304AbhI2Pb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 11:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58074 "EHLO
+        id S1345308AbhI2Pbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 11:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345296AbhI2Pb0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:31:26 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB41BC06161C
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:29:44 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id l8so10469950edw.2
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:29:44 -0700 (PDT)
+        with ESMTP id S1345296AbhI2Pbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:31:32 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAAD5C06161C
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:29:51 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id y35so10243601ede.3
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:29:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EE38NogxNtaKTmKp2iIN72gRdSeWsh1uBV6CKHtm1Ls=;
-        b=gwJUxHjAuWh4c70ATN/KX1zxDDKu3o8Nn/0ZW084x1s6QYF3ym4gdzJoT0v+jB51hO
-         qRMrz73DORTn9mW677L/FWsvhElJ6riOE02/SUKvtgCty86OaIP5PICIc0LR18uXcJcF
-         o5BlmAVIkGA8y00iKfXPajVd5IveH2AuDhIg3O0ci8I4pXaTLeZ6bSfhRjpMeKn6vb61
-         KowilHhb5lMfPBWcSWrn10OSb5SBADuDgMPUCW1FkYhK6KitFMwdMFCyb45lKgGB+cEl
-         d1TySniPVnelUmDom7mArR2VTPcWNB6nujUIFSLm1cnaxdY6ncUi5I2Q55/U8zXryhSB
-         NagQ==
+        bh=2i/Mqwrz2agOlxgqYa9F+/vKQmuJbhOqcjJMyfrNYyo=;
+        b=C2IjEoffpGzSN986MX3VjrSwh4V5Sec4sf/GS1MI7lsHMdDQFYBqJUILzG3pbVrtnS
+         Nlb8Pbm+FyVaQ0GBoiFLLzjg9cTjL4oqvoMq4I5/AAhsD63uwl5BU/Brm0wUFNOFkCxM
+         8/Aimz1NsSaUYxOlS3MYlzdQLWmhv7QYRgImIBWZE57FUxxKzE5oId1kW7fIY4w6ZVH5
+         zrPYCHuWKTdyfQIQ9YuNxSzIEQ/R0CVn8bMAIQeHB+Ao++L/gVt9ELDlZ0/q4oL6IakO
+         vN79C9y6c9CBWvbC4+wQvmEszDwjnDjPxxnzPEFl1NKUHVjKODdWdzNVUUnEeuPxrjTm
+         YkHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=EE38NogxNtaKTmKp2iIN72gRdSeWsh1uBV6CKHtm1Ls=;
-        b=jf4VSIvfP3kWW+M/097PgmWArfW/Hh8uzkRB3KoETqCqPDQREVzOuFAFABR0usG8SM
-         DyaCeh+xSR6rnyJhaOh24BeXtPHUp/WBDfPjxD7Of9Y14TX1VwRk8fdIBn2uLFiPJFHn
-         XzulkZiS9XmAM65YxikVvkeKQ0OZEYJ3jrWG433o4n9SSlACgjyHiaoB01OLjxPlnZPX
-         izVMtaLLRe0/E7mTEzKF2YEnwhG3KE7C+R3MvV754S6/0jBaLCv0zSCeFM6J6PLtrS1d
-         StUQRgghiJZdIx7lEUs374HFe4fKwDT4yL5xruIxThpXtV/VAKOFMA8dC3zz119QSaCj
-         rSaw==
-X-Gm-Message-State: AOAM531tyXQToe/m2QQmwPeVXD/6Z4j4wkDGKp7wprNCQmUEp+HDPbKa
-        vTfkEtP6DjWwp5heeYjYRTJ4DERxSc56qmCG
-X-Google-Smtp-Source: ABdhPJyMeBvuACgzrwDBrqDCD4UeFEQKJ2EERxDLfvLmTl2J3Fa98iqqaahB16mGvneBhUIh+d2cQg==
-X-Received: by 2002:a17:906:6c83:: with SMTP id s3mr352314ejr.13.1632929333948;
-        Wed, 29 Sep 2021 08:28:53 -0700 (PDT)
+        bh=2i/Mqwrz2agOlxgqYa9F+/vKQmuJbhOqcjJMyfrNYyo=;
+        b=oPHYQa8JhyTs6TBLf/NF2FfoBVF6cE60hkCQy7ybwSNbkKVYNjFY7xmO1s8cy0BDrV
+         QwGskpdPapPSzn3c7PxgySZEqZdDIi3d6Qqk9TSrclhWUmwcnbXuYLSauYDbyF02x4uz
+         wLHyUCLWFJq6C8eY/af4bcWgeVpQ1yb12Hv4R1hlKuMGJx/1gDHppxIz0TPkJz1/nKW+
+         Qg1Dwbfzhx44QHHHg+9sx9J7Y/jupi5NJkeCmkYDMl/GiuLfEzJG6EiH/wmX/vnLDJP7
+         pTJT/hnM3BIAqDqImypZ2t/rsRt4EJhNWhaxHCFIfpxZcwjQO2VDbWh+yTu1rlWKRMVt
+         EE0A==
+X-Gm-Message-State: AOAM532+5x0qs0FFLdUBY/ugYIb9Pp0ExbHgrgWZ/DYt/yMkb1VgPtQB
+        jXqqOQYtRvO5DEnEpGUxzdxGZJam45I/TAf7
+X-Google-Smtp-Source: ABdhPJzdNekr0Zr/Ia4zabuqF/7qzdpcinQ481D36HK6nBIHxSFhbSBLy+lvZrrnEVE6Mc7K7C6vmw==
+X-Received: by 2002:a17:907:20c8:: with SMTP id qq8mr309526ejb.339.1632929334954;
+        Wed, 29 Sep 2021 08:28:54 -0700 (PDT)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id q12sm108434ejs.58.2021.09.29.08.28.53
+        by smtp.gmail.com with ESMTPSA id q12sm108434ejs.58.2021.09.29.08.28.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Sep 2021 08:28:53 -0700 (PDT)
+        Wed, 29 Sep 2021 08:28:54 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, donaldsharp72@gmail.com, dsahern@gmail.com,
         idosch@idosch.org, Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [RFC iproute2-next 01/11] ip: print_rta_if takes ifindex as device argument instead of attribute
-Date:   Wed, 29 Sep 2021 18:28:38 +0300
-Message-Id: <20210929152848.1710552-2-razor@blackwall.org>
+Subject: [RFC iproute2-next 02/11] ip: export print_rta_gateway version which outputs prepared gateway string
+Date:   Wed, 29 Sep 2021 18:28:39 +0300
+Message-Id: <20210929152848.1710552-3-razor@blackwall.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210929152848.1710552-1-razor@blackwall.org>
 References: <20210929152848.1710552-1-razor@blackwall.org>
@@ -65,82 +65,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-We need print_rta_if() to take ifindex directly so later we can use it
-with cached converted nexthop objects.
+Export a new __print_rta_gateway that takes a prepared gateway string to
+print which is also used by print_rta_gateway for consistent format.
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- ip/ip_common.h |  2 +-
- ip/ipnexthop.c |  2 +-
- ip/iproute.c   | 12 ++++++------
- 3 files changed, 8 insertions(+), 8 deletions(-)
+ ip/ip_common.h |  1 +
+ ip/iproute.c   | 15 ++++++++++-----
+ 2 files changed, 11 insertions(+), 5 deletions(-)
 
 diff --git a/ip/ip_common.h b/ip/ip_common.h
-index ad018183eac0..d3d50cbca74d 100644
+index d3d50cbca74d..a02a3b96f7fd 100644
 --- a/ip/ip_common.h
 +++ b/ip/ip_common.h
-@@ -168,7 +168,7 @@ int name_is_vrf(const char *name);
- 
+@@ -169,6 +169,7 @@ int name_is_vrf(const char *name);
  void print_num(FILE *fp, unsigned int width, uint64_t count);
  void print_rt_flags(FILE *fp, unsigned int flags);
--void print_rta_if(FILE *fp, const struct rtattr *rta, const char *prefix);
-+void print_rta_ifidx(FILE *fp, __u32 ifidx, const char *prefix);
+ void print_rta_ifidx(FILE *fp, __u32 ifidx, const char *prefix);
++void __print_rta_gateway(FILE *fp, unsigned char family, const char *gateway);
  void print_rta_gateway(FILE *fp, unsigned char family,
  		       const struct rtattr *rta);
  #endif /* _IP_COMMON_H_ */
-diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-index 9478aa5298eb..a4048d803325 100644
---- a/ip/ipnexthop.c
-+++ b/ip/ipnexthop.c
-@@ -381,7 +381,7 @@ int print_nexthop(struct nlmsghdr *n, void *arg)
- 		print_rta_gateway(fp, nhm->nh_family, tb[NHA_GATEWAY]);
- 
- 	if (tb[NHA_OIF])
--		print_rta_if(fp, tb[NHA_OIF], "dev");
-+		print_rta_ifidx(fp, rta_getattr_u32(tb[NHA_OIF]), "dev");
- 
- 	if (nhm->nh_scope != RT_SCOPE_UNIVERSE || show_details > 0) {
- 		print_string(PRINT_ANY, "scope", "scope %s ",
 diff --git a/ip/iproute.c b/ip/iproute.c
-index 1e5e2002d2ed..f2bf4737b958 100644
+index f2bf4737b958..3c933df4dd29 100644
 --- a/ip/iproute.c
 +++ b/ip/iproute.c
-@@ -410,13 +410,13 @@ static void print_rt_pref(FILE *fp, unsigned int pref)
+@@ -547,13 +547,11 @@ static void print_rta_newdst(FILE *fp, const struct rtmsg *r,
  	}
  }
  
--void print_rta_if(FILE *fp, const struct rtattr *rta, const char *prefix)
-+void print_rta_ifidx(FILE *fp, __u32 ifidx, const char *prefix)
+-void print_rta_gateway(FILE *fp, unsigned char family, const struct rtattr *rta)
++void __print_rta_gateway(FILE *fp, unsigned char family, const char *gateway)
  {
--	const char *ifname = ll_index_to_name(rta_getattr_u32(rta));
-+	const char *ifname = ll_index_to_name(ifidx);
- 
+-	const char *gateway = format_host_rta(family, rta);
+-
 -	if (is_json_context())
 +	if (is_json_context()) {
- 		print_string(PRINT_JSON, prefix, NULL, ifname);
+ 		print_string(PRINT_JSON, "gateway", NULL, gateway);
 -	else {
 +	} else {
- 		fprintf(fp, "%s ", prefix);
- 		color_fprintf(fp, COLOR_IFNAME, "%s ", ifname);
+ 		fprintf(fp, "via ");
+ 		print_color_string(PRINT_FP,
+ 				   ifa_family_color(family),
+@@ -561,6 +559,13 @@ void print_rta_gateway(FILE *fp, unsigned char family, const struct rtattr *rta)
  	}
-@@ -862,7 +862,7 @@ int print_route(struct nlmsghdr *n, void *arg)
- 		print_rta_via(fp, tb[RTA_VIA]);
+ }
  
- 	if (tb[RTA_OIF] && filter.oifmask != -1)
--		print_rta_if(fp, tb[RTA_OIF], "dev");
-+		print_rta_ifidx(fp, rta_getattr_u32(tb[RTA_OIF]), "dev");
- 
- 	if (table && (table != RT_TABLE_MAIN || show_details > 0) && !filter.tb)
- 		print_string(PRINT_ANY,
-@@ -946,7 +946,7 @@ int print_route(struct nlmsghdr *n, void *arg)
- 		print_rta_metrics(fp, tb[RTA_METRICS]);
- 
- 	if (tb[RTA_IIF] && filter.iifmask != -1)
--		print_rta_if(fp, tb[RTA_IIF], "iif");
-+		print_rta_ifidx(fp, rta_getattr_u32(tb[RTA_IIF]), "iif");
- 
- 	if (tb[RTA_PREF])
- 		print_rt_pref(fp, rta_getattr_u8(tb[RTA_PREF]));
++void print_rta_gateway(FILE *fp, unsigned char family, const struct rtattr *rta)
++{
++	const char *gateway = format_host_rta(family, rta);
++
++	__print_rta_gateway(fp, family, gateway);
++}
++
+ static void print_rta_via(FILE *fp, const struct rtattr *rta)
+ {
+ 	size_t len = RTA_PAYLOAD(rta) - 2;
 -- 
 2.31.1
 
