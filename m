@@ -2,109 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CA8241CD9D
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 22:51:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5465241CDA8
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 22:58:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346810AbhI2Uwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 16:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
+        id S1346820AbhI2U7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 16:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346776AbhI2Uwr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 16:52:47 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EFFC06161C;
-        Wed, 29 Sep 2021 13:51:05 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id x8so2387426plv.8;
-        Wed, 29 Sep 2021 13:51:05 -0700 (PDT)
+        with ESMTP id S1346814AbhI2U7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 16:59:40 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61725C061766;
+        Wed, 29 Sep 2021 13:57:59 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id rm6-20020a17090b3ec600b0019ece2bdd20so3018617pjb.1;
+        Wed, 29 Sep 2021 13:57:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BoiIwPGlmB+GI+ljM6X3206faXHD3JRHXYQbXhb7vic=;
-        b=fj70wDysjSxfYIARyPtKORSQCRSxDiq50TIsPVrvAFtxBHB9OmQEZkipDYrkaGNhQF
-         mnLYvajf52becBYxnhU2yCaCTPCQCAkEmiGeovJMo/CFc0akSgncvOctbv+7msyhNong
-         E5DpCqX97Jq2MHrgCMbqu2bQ79WjCD6OcUaMzOZCX5A4Dhjv49SdIPEFp8TllTJt8Ti4
-         i63RboSoLseoX0rMIsqkhEjD81yAbEuhd0KF8kSaFXzi52OBTDJQu8xalKn9+rzwHR1b
-         CC2DxrSfaUSTi/zH5Lb3gbF4GApY3BPMTxXsfrDKA81l5XWZj/1xV2sGa8GgHg9uZgbv
-         quOQ==
+        bh=uuv012X9QP66aLKBFKUSvigF4hVX/EMIbUUZ6Wm9ThE=;
+        b=QhNPLtw65YMvy2mrqajEF01CyVKSll0La0y0yQDDDnqHwhsNfGYUcA+x8oX2vXPnSZ
+         SY29t4c++w1HNYTq64PGotoK79TRWmOPbLYFZoLFV9oYvrcTKN7z5qLHre8pdCQ2oVJy
+         2wPk1nEICjPCALUfbC5MxtHD8E8cwTX0PYdub41h7Rxo/81ZmcrSHeNjN3S4ile4VgBg
+         bl1bIH0QqH/cAfXvBXP+iH3hJ+cP+Qf/uk6f0dlRU1V/GqawZtRm7lSoOcUX3aAspHyY
+         pVNojYrpwOsomWgltXLtf461gby8iRgIV4KTk5ALcALNDCssT8bHgYHTWv1ow4qRjM8O
+         AwDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BoiIwPGlmB+GI+ljM6X3206faXHD3JRHXYQbXhb7vic=;
-        b=T+2lIjfE4dPANHLWv5l+JjVY+5O7zDxqRtAjeE+n4TuEEDnTJV2x4hYYlDKm8q03BH
-         qk1zks36dqri5HB3g87OZScOxii6TcS45TxhAVg5SikzbIqO+Wv5QeDhORN8o+/aCPi3
-         68D1UBEzppcVvKiSZBjK2D3BoTIJ7tP/yDSuLkr7v9WhQ1712ltmnAmiQ9awGVv4ugOP
-         8GQCOrUB3oQ2qdZwsKFm/5ykyRYWcvISB63OXsRIa6twrNpdGnJa+VYmvFu5DDPAoxSh
-         HHKZAt185hzPkZqgvsnXZ0dziuyt3VjArB5UqoHwuDeW8aFo5m0y3m9M41KHJMTv+h0b
-         I1NQ==
-X-Gm-Message-State: AOAM530Hf0V6Ad6Rgwt8aossgdAGu09yWfbmY7oL6xmf4rAJa+5lACNL
-        8KQFDv6eUgw8J+jeNRUUPdwAdPYuI3DAIXtiCH0=
-X-Google-Smtp-Source: ABdhPJytBLgObAivspTM44bl5d0f1bbY/VEvRYdRda6R9n+4SonlspblOYW0zOcXYdzNzelzbopgpUnUE4Ha9zD1uJA=
-X-Received: by 2002:a17:90a:1944:: with SMTP id 4mr2095181pjh.62.1632948665222;
- Wed, 29 Sep 2021 13:51:05 -0700 (PDT)
+        bh=uuv012X9QP66aLKBFKUSvigF4hVX/EMIbUUZ6Wm9ThE=;
+        b=2i5zciVKQma1bdIppVhq4YTs1UrYz7VS7xKO+A/hcF1HPyHIqEZp6EDgiEzMSoV925
+         Cf/ETbL/wzI5IQY4XBBtRHNX/YQGbtPk+4aznIv7HC6Jp4fSkkCYjYmh9hb/eQNWEtJM
+         LPjyG8vvfpTCHQD10N+xhi1GpnErK6PpSQi+b8NuM4fMP3Kuq0Z73hDnFOtOHL7C8wE9
+         kkwVSO9Jxv661jT8E9XuqPhDRB3MVuOyRUTJW47MljB7G/xisBQi3WAra/Bd8HRi4mmC
+         ohxdphTHc0tV37948LUCuIkMihHbJE5WzvxZ2MBildccnsvCcmsCWFFWhmtycUfjtted
+         Rmog==
+X-Gm-Message-State: AOAM53357lTPd+nAiiJD8RW6OM8v700IQ7qH0CilpZ+7KVdi4XN3ajAU
+        VjlS41iK4kSfJOKHXBRv4Aze5xzJlP77KUPt2YE=
+X-Google-Smtp-Source: ABdhPJwocTgkBLViVZ3xqdqJqUZ6zVVqC7p+KlmZhWBO8LNx0BvRCzILFlTvm/1lknrQsvtn88oysXbNGZMLfFbNfo8=
+X-Received: by 2002:a17:902:bb95:b0:13e:6924:30e5 with SMTP id
+ m21-20020a170902bb9500b0013e692430e5mr555019pls.20.1632949078934; Wed, 29 Sep
+ 2021 13:57:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210927145941.1383001-1-memxor@gmail.com> <20210927145941.1383001-9-memxor@gmail.com>
-In-Reply-To: <20210927145941.1383001-9-memxor@gmail.com>
+References: <20210913231108.19762-1-xiyou.wangcong@gmail.com>
+ <CAADnVQJFbCmzoFM8GGHyLWULSmX75=67Tu0EnTOOoVfH4gE+HA@mail.gmail.com>
+ <CAM_iQpX2prCpPDmO1U0A_wyJi_LS4wmd9MQiFKiqQT8NfGNNnw@mail.gmail.com>
+ <CAADnVQJJHLuaymMEdDowharvyJr+6ta2Tg9XAR3aM+4=ysu+bg@mail.gmail.com>
+ <CAM_iQpUCtXRWhMqSaoymZ6OqOywb-k4R1_mLYsLCTm7ABJ5k_A@mail.gmail.com>
+ <CAADnVQJcUspoBzk9Tt3Rx_OH7-MB+m1xw+vq2k2SozYZMmpurg@mail.gmail.com> <CAM_iQpVaVvaEn2ORfyZQ-FN56pCdE4YPa0r2E+VgyZzvEP31cQ@mail.gmail.com>
+In-Reply-To: <CAM_iQpVaVvaEn2ORfyZQ-FN56pCdE4YPa0r2E+VgyZzvEP31cQ@mail.gmail.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 29 Sep 2021 13:50:54 -0700
-Message-ID: <CAADnVQKnoFc=_jKNH=8-HWYuEw=FP941igh5Y1OgtQjdnoFLTw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 08/12] libbpf: Make gen_loader data aligned.
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Network Development <netdev@vger.kernel.org>
+Date:   Wed, 29 Sep 2021 13:57:48 -0700
+Message-ID: <CAADnVQJX8OpXhQ66jVSN1ws8tav5R8yCERr6eaS9POA+QhRx-A@mail.gmail.com>
+Subject: Re: [RFC Patch net-next v2] net_sched: introduce eBPF based Qdisc
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 27, 2021 at 8:00 AM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
+On Tue, Sep 28, 2021 at 10:40 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > That's why approaching the goal with more generic ambitions was requested.
 >
-> From: Alexei Starovoitov <ast@kernel.org>
->
-> Align gen_loader data to 8 byte boundary to make sure union bpf_attr,
-> bpf_insns and other structs are aligned.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
->  tools/lib/bpf/gen_loader.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
-> index 8df718a6b142..80087b13877f 100644
-> --- a/tools/lib/bpf/gen_loader.c
-> +++ b/tools/lib/bpf/gen_loader.c
-> @@ -5,6 +5,7 @@
->  #include <string.h>
->  #include <errno.h>
->  #include <linux/filter.h>
-> +#include <sys/param.h>
->  #include "btf.h"
->  #include "bpf.h"
->  #include "libbpf.h"
-> @@ -135,13 +136,17 @@ void bpf_gen__init(struct bpf_gen *gen, int log_level)
->
->  static int add_data(struct bpf_gen *gen, const void *data, __u32 size)
->  {
-> +       __u32 size8 = roundup(size, 8);
-> +       __u64 zero = 0;
->         void *prev;
->
-> -       if (realloc_data_buf(gen, size))
-> +       if (realloc_data_buf(gen, size8))
->                 return 0;
->         prev = gen->data_cur;
->         memcpy(gen->data_cur, data, size);
->         gen->data_cur += size;
-> +       memcpy(gen->data_cur, &zero, size8 - size);
-> +       gen->data_cur += size8 - size;
+> This goal has nothing to do with my goal, I am pretty sure we have
+> a lot of queues in networking, here I am only interested in Qdisc for
+> sure. If you need queues in any other place, it is your job, not mine.
 
-Since we both need this patch, I pushed it to bpf-next to
-simplify rebasing.
+Now it's yours.
+Applying queuing discipline to non-skb context may be not your target
+but it's a reasonable and practical request to have.
