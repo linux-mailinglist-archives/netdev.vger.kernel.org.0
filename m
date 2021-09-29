@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22B3641C989
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:04:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A3EC41C97F
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:04:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345650AbhI2QGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 12:06:23 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:13851 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345696AbhI2QAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 12:00:20 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKLWm4Zr3z8ypK;
-        Wed, 29 Sep 2021 23:53:40 +0800 (CST)
+        id S1345601AbhI2QF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 12:05:56 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:24139 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345679AbhI2QAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 12:00:14 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HKLbc1ChJz1DHNs;
+        Wed, 29 Sep 2021 23:57:00 +0800 (CST)
 Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.8; Wed, 29 Sep 2021 23:58:19 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -26,9 +26,9 @@ From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv2 net-next 155/167] net: cirrus: use netdev feature helpers
-Date:   Wed, 29 Sep 2021 23:53:22 +0800
-Message-ID: <20210929155334.12454-156-shenjian15@huawei.com>
+Subject: [RFCv2 net-next 156/167] net: ec_bhf: use netdev feature helpers
+Date:   Wed, 29 Sep 2021 23:53:23 +0800
+Message-ID: <20210929155334.12454-157-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 References: <20210929155334.12454-1-shenjian15@huawei.com>
@@ -48,22 +48,22 @@ for netdev features.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/net/ethernet/cirrus/ep93xx_eth.c | 2 +-
+ drivers/net/ethernet/ec_bhf.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/cirrus/ep93xx_eth.c b/drivers/net/ethernet/cirrus/ep93xx_eth.c
-index 072fac5f5d24..d77266ef0035 100644
---- a/drivers/net/ethernet/cirrus/ep93xx_eth.c
-+++ b/drivers/net/ethernet/cirrus/ep93xx_eth.c
-@@ -751,7 +751,7 @@ static struct net_device *ep93xx_dev_alloc(struct ep93xx_eth_data *data)
- 	dev->ethtool_ops = &ep93xx_ethtool_ops;
- 	dev->netdev_ops = &ep93xx_netdev_ops;
+diff --git a/drivers/net/ethernet/ec_bhf.c b/drivers/net/ethernet/ec_bhf.c
+index b2d4fb3feb74..48d14efcab13 100644
+--- a/drivers/net/ethernet/ec_bhf.c
++++ b/drivers/net/ethernet/ec_bhf.c
+@@ -524,7 +524,7 @@ static int ec_bhf_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 	pci_set_drvdata(dev, net_dev);
+ 	SET_NETDEV_DEV(net_dev, &dev->dev);
  
--	dev->features |= NETIF_F_SG | NETIF_F_HW_CSUM;
-+	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_HW_CSUM, &dev->features);
+-	net_dev->features = 0;
++	netdev_feature_zero(&net_dev->features);
+ 	net_dev->flags |= IFF_NOARP;
  
- 	return dev;
- }
+ 	net_dev->netdev_ops = &ec_bhf_netdev_ops;
 -- 
 2.33.0
 
