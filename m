@@ -2,128 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BC9841C616
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 15:51:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45F1E41C623
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 15:55:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344367AbhI2Nwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 09:52:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344274AbhI2Nwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 09:52:42 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6664FC06161C
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 06:50:59 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id y186so2844857pgd.0
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 06:50:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zSV4Z8mFbXMexrERVcO1h1NELPo9dMflMbt5n8Sf4Hk=;
-        b=GezhHAWl6KBwmxXp8d37b+xMBu7zNaV/TIIRGw+bwSGRrZ0yFEW1EBxzxMW3nyG1/7
-         be5ISkux+HWW7aE1US/KtGHFa04Tj7C50QiZfVphVkGIf2ZChrMonXAj5ZQCRFowl16m
-         QG+y/Xdr61Zh47YsZHBqrPA+Y6iRkUam69Lkvkc0upjdrqyT6P7ku/i1fW4PSN74GtG1
-         wBrqLB/AYv5Vr05uI9J4UlxhHsnjV8321q8/ycCyPiKJ0hHXF29EjQs5+IVUAgPkySrQ
-         m7lO77C0f2MCEacicjcv0AoXqx/EsxR81S3U4xI2CtpaAt2kV38V6M5GcAaSSTGz4fcE
-         3Eiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zSV4Z8mFbXMexrERVcO1h1NELPo9dMflMbt5n8Sf4Hk=;
-        b=ALeGIjmOBHev+SOiyEI0oID2r1jeo8veGKUKXGdQUwrY72hDBYTxTx0a41u4unBLof
-         ObImmLbeomj4np9biqeoraho+I/gNyJrbhllWZCArUMgXRltp9h8LXp24ZpEjGxWy7fu
-         E4c17h8pC5QeYGzWpweyG65/3NuSRq2lX/7G12zp9IkgNGKnOBsHDk6HaVKFLShcCDAF
-         0GWDWwxSeYH+g1zrU8bkKw2gDyObPNL8odxkPGzm/2B8Xq3q8VwelzEBOSMMDTybYRt7
-         6cwwqEnOyPqBJCcUzNYhtFFSGSvebhM7pt6jB714rd8VchuxIsOOTn+n//mpSUyJUuHt
-         qOUQ==
-X-Gm-Message-State: AOAM532qiSmxh6RA6ISZuj/2tTA03vzRYfKrJ0ZTxqTchSF14l9HwN0N
-        YZarncd4SrruG94Az3WAHAVhRs4HNCuPZA==
-X-Google-Smtp-Source: ABdhPJwTtBcWbQKX/t61k/60uGU8jY/HnsHddE0T7ZQtDMgWl9mXtD2SzfRTWAYlTkhii00IZzvPKw==
-X-Received: by 2002:a63:2d02:: with SMTP id t2mr83323pgt.1.1632923458516;
-        Wed, 29 Sep 2021 06:50:58 -0700 (PDT)
-Received: from localhost (122x211x248x161.ap122.ftth.ucom.ne.jp. [122.211.248.161])
-        by smtp.gmail.com with ESMTPSA id f205sm2786218pfa.92.2021.09.29.06.50.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Sep 2021 06:50:57 -0700 (PDT)
-From:   Punit Agrawal <punitagrawal@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, davem@davemloft.net,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        kuba@kernel.org, Punit Agrawal <punitagrawal@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Michael Riesch <michael.riesch@wolfvision.net>
-Subject: [PATCH] net: stmmac: dwmac-rk: Fix ethernet on rk3399 based devices
-Date:   Wed, 29 Sep 2021 22:50:49 +0900
-Message-Id: <20210929135049.3426058-1-punitagrawal@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        id S1344352AbhI2N5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 09:57:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39814 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244987AbhI2N5d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 09:57:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 93920613D1;
+        Wed, 29 Sep 2021 13:55:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632923752;
+        bh=40noVjUADcTFuL18AWlGlA5AqcgIKtJPa+QjlNndmaA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TXfiJIOjDYkjlTD+FmCDLSeBSzFecqoscMatnM7hRJz6j32y6GJB5hP8vfTt6JtQw
+         gn9IlvE39J2vPbTRVUjz/jaT1L06lP4uP3LB0zCIkKE19K7ZX7zpsQT4XmXdM9B3iy
+         n2nfvYiL7HU7s8inrnWIlJkpF247sn7mwN75YafcAT+/81FgXfryg4c2QAJFCt3D9j
+         ZSL6MbbLr8QpNIW+tnfQcnHcw8vhN2rd8/kZZ/1VvZZr/OQDqKCuAkkyMyIRCyYbsS
+         0inDhEXaYXr29LaGJbQDn0nEnUJH5BtJeJ6S5lwBpW7pky/dWO5mnEJNlMzLVnU0ir
+         pugj5/zEYMKlg==
+Date:   Wed, 29 Sep 2021 06:55:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        hariprasad <hkelam@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
+        Manish Chopra <manishc@marvell.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Moshe Shemesh <moshe@nvidia.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Shay Drory <shayd@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next v1 4/5] net/mlx5: Register separate reload
+ devlink ops for multiport device
+Message-ID: <20210929065549.43b13203@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a8bf9a036fe0a590df830a77a31cc81c355f525d.1632916329.git.leonro@nvidia.com>
+References: <cover.1632916329.git.leonro@nvidia.com>
+        <a8bf9a036fe0a590df830a77a31cc81c355f525d.1632916329.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable warnings")
-while getting rid of a runtime PM warning ended up breaking ethernet
-on rk3399 based devices. By dropping an extra reference to the device,
-the commit ends up enabling suspend / resume of the ethernet device -
-which appears to be broken.
+On Wed, 29 Sep 2021 15:00:45 +0300 Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+>=20
+> Mulitport slave device doesn't support devlink reload, so instead of
+> complicating initialization flow with devlink_reload_enable() which
+> will be removed in next patch, set specialized devlink ops callbacks
+> for reload operations.
+>=20
+> This fixes an error when reload counters exposed (and equal zero) for
+> the mode that is not supported at all.
+>=20
+> Fixes: d89ddaae1766 ("net/mlx5: Disable devlink reload for multi port sla=
+ve device")
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/devlink.c | 13 ++++++++++---
+>  1 file changed, 10 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/=
+net/ethernet/mellanox/mlx5/core/devlink.c
+> index 47c9f7f5bb79..e85eca6976a9 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> @@ -309,14 +309,17 @@ static struct devlink_ops mlx5_devlink_ops =3D {
+>  #endif
+>  	.flash_update =3D mlx5_devlink_flash_update,
+>  	.info_get =3D mlx5_devlink_info_get,
+> +	.trap_init =3D mlx5_devlink_trap_init,
+> +	.trap_fini =3D mlx5_devlink_trap_fini,
+> +	.trap_action_set =3D mlx5_devlink_trap_action_set,
+> +};
+> +
+> +static struct devlink_ops mlx5_devlink_reload =3D {
+>  	.reload_actions =3D BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+>  			  BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
+>  	.reload_limits =3D BIT(DEVLINK_RELOAD_LIMIT_NO_RESET),
+>  	.reload_down =3D mlx5_devlink_reload_down,
+>  	.reload_up =3D mlx5_devlink_reload_up,
+> -	.trap_init =3D mlx5_devlink_trap_init,
+> -	.trap_fini =3D mlx5_devlink_trap_fini,
+> -	.trap_action_set =3D mlx5_devlink_trap_action_set,
+>  };
+> =20
+>  void mlx5_devlink_trap_report(struct mlx5_core_dev *dev, int trap_id, st=
+ruct sk_buff *skb,
+> @@ -791,6 +794,7 @@ static void mlx5_devlink_traps_unregister(struct devl=
+ink *devlink)
+> =20
+>  int mlx5_devlink_register(struct devlink *devlink)
+>  {
+> +	struct mlx5_core_dev *dev =3D devlink_priv(devlink);
+>  	int err;
+> =20
+>  	err =3D devlink_params_register(devlink, mlx5_devlink_params,
+> @@ -808,6 +812,9 @@ int mlx5_devlink_register(struct devlink *devlink)
+>  	if (err)
+>  		goto traps_reg_err;
+> =20
+> +	if (!mlx5_core_is_mp_slave(dev))
+> +		devlink_set_ops(devlink, &mlx5_devlink_reload);
 
-While the issue with runtime pm is being investigated, partially
-revert commit 2d26f6e39afb to restore the network on rk3399.
-
-Fixes: 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable warnings")
-Suggested-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Punit Agrawal <punitagrawal@gmail.com>
-Cc: Michael Riesch <michael.riesch@wolfvision.net>
----
-Hi,
-
-There's been a few reports of broken ethernet on rk3399 based
-boards. The issue got introduced due to a late commit in the 5.14
-cycle.
-
-It would be great if this commit can be taken as a fix for the next rc
-as well as applied to the 5.14 stable releases.
-
-Thanks,
-Punit
-
- drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-index ed817011a94a..6924a6aacbd5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-@@ -21,6 +21,7 @@
- #include <linux/delay.h>
- #include <linux/mfd/syscon.h>
- #include <linux/regmap.h>
-+#include <linux/pm_runtime.h>
- 
- #include "stmmac_platform.h"
- 
-@@ -1528,6 +1529,8 @@ static int rk_gmac_powerup(struct rk_priv_data *bsp_priv)
- 		return ret;
- 	}
- 
-+	pm_runtime_get_sync(dev);
-+
- 	if (bsp_priv->integrated_phy)
- 		rk_gmac_integrated_phy_powerup(bsp_priv);
- 
-@@ -1539,6 +1542,8 @@ static void rk_gmac_powerdown(struct rk_priv_data *gmac)
- 	if (gmac->integrated_phy)
- 		rk_gmac_integrated_phy_powerdown(gmac);
- 
-+	pm_runtime_put_sync(&gmac->pdev->dev);
-+
- 	phy_power_on(gmac, false);
- 	gmac_clk_enable(gmac, false);
- }
--- 
-2.32.0
-
+Does this work? Where do you make a copy of the ops? =F0=9F=A4=94 You can't=
+ modify
+the driver-global ops, to state the obvious.
