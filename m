@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 143D041D03F
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 01:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AD4641D043
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 01:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347437AbhI3ABQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 20:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
+        id S1347780AbhI3ABU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 20:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347392AbhI3ABP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 20:01:15 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F917C06161C;
+        with ESMTP id S1347414AbhI3ABQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 20:01:16 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CD0C06161C;
         Wed, 29 Sep 2021 16:59:34 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id me3-20020a17090b17c300b0019f44d2e401so1248136pjb.5;
+Received: by mail-pg1-x533.google.com with SMTP id k24so4395600pgh.8;
         Wed, 29 Sep 2021 16:59:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=avrktJRNNMnCM7OhV3vckQVnvHq2euVA9+QR/6aN7bU=;
-        b=TVQCfgV6sRaULvZgo7q0IYQgFt8Ula7I2zeAHfPZLq0LGetGRFdXUIE+Um+xzQlMzI
-         AxsUQEpK6PnDns/NvmSotnxFuh3xgfMFvWwS8ok3d1u+ye3qQ+50IAF70CNs3sbv6CLu
-         RV+OmDNn7Ksnf1H4GxFbQDFLKOF29p26aeRVTxEo1Ovx1D67SayJ1ln2R3khCjmWjhLJ
-         vQy7zJkyapeTyx+/rLTNO8u03psTD/HRS5SGfbXrYKqqW9O8oTpglUGtba+Ve1cSsbRn
-         OdAtXy7lJ7Crtnz8trkDFjQh7th3kgtBb0U6tNbJ87wBXQa0fNhSbWz/VBcK+l0Cyhet
-         89GA==
+        bh=9ZRKgDZ6XWRjC4EeejjjznOYs+6ni/tYALm2oo2Ed6I=;
+        b=BZYB9SQ8xm1V0xIGJCvYafNhZ/21gINYPjJ9EfdLnnkNroz6Eg32DAwtFGb+OnzhAd
+         aUY/2tgdL0r4pwCC8cNNOUdpimYn67f7azWOdbQdVRn2aQRqU6G46M2Yyk+KLAngxpyE
+         8EzFHQbbSKoCZJet/cs/TvvxwmEEpFN4TfTCmdIclGddtA3wFDrXU7smbr2D4PK9JYfw
+         IY7xGrq1BS/5il21dewqZAjFWXKvexngQ0kN4RZFsmmR/Olaj4RP8hEBSpQY7tCui/1d
+         npNDzjlyPO1EnLF1+rtX00hhn447d/b/1kCErSegb2us6f7qTvytfK5dxTkA0ePzYv0q
+         oXMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=avrktJRNNMnCM7OhV3vckQVnvHq2euVA9+QR/6aN7bU=;
-        b=aj3zRw3n1D8kjoYNqNTii5Hh064YQjCn21Uh/+OaYktUiIfivKucf7D7P2SwYTaKJR
-         en7+wvDvmiHnp9TFN2+5PO525rdrMwFhz+bQoIE9FQJScOQvawuh9vzTBJlJqSE3kLWA
-         MORkhAaKgM0pmOMiSBkFiQfZN4LY6pgDQKgQf8V8eXKpGievlMUTmPO2p+vSIAv5Odjq
-         z2jIO/CBWz4e8fO4CNTHcA/Pp1l0WbullwqofYtmJRsGt+GSSF2Lu0sW4lCWGggquCU4
-         8DB1vQMa1bzp8TnMceOwElzs7OwNqZtTurE3me3Iwhou3y6vDFxMEp1ahIAjQVGOgac0
-         79vQ==
-X-Gm-Message-State: AOAM533LRTzCXZM0R4CxztztD+xrYBAlAB9CcP8PUcEiUemjDAvZNyHX
-        SLQe1DcqtzQuovC5EmCRtA==
-X-Google-Smtp-Source: ABdhPJwVVO4gkRjVZzp/94Mguit4DSfK3tUtMTnFkIJA9/wt5JJBMsvXwiyzNMN//ZWroNTfhOZ1mg==
-X-Received: by 2002:a17:90b:1a90:: with SMTP id ng16mr9482351pjb.130.1632959973715;
-        Wed, 29 Sep 2021 16:59:33 -0700 (PDT)
+        bh=9ZRKgDZ6XWRjC4EeejjjznOYs+6ni/tYALm2oo2Ed6I=;
+        b=s+YYaGZgyAkyMHzaLwzfazZUnBzucHyKKiVqGi9wZJzS9C5h+ZgaYIdspfbBLCeoTG
+         fUhNnkTS4MGTtH7q3OsxeuvqjKxEqMnAFiAisejhQh+8uBSTIUsXEqNGeQgyelt/sY42
+         ZjZRtEIsOkXhr2V/Y5/fK+Axv1eADcasw3OYjuKhA+h3vT1gNxAjJhOvWWg5vRNwGNhf
+         B949Ow9DMliwIDPB8yGWYCsjr9A4ApxgHphT0XXhYp6YFjzpMAJRK/PBFpEQgIl/eH2V
+         +ZwY0WEx2qg/r2eK5DEFl/GRLLxrHqarkgflJ2a7HAtA/c1tP0GBDVfp7pNAYdVnG5fD
+         zgXw==
+X-Gm-Message-State: AOAM53028KgefawjDJgSR6kpp1TcpL98F0PdlCMqSciQMeRDycAodDmx
+        e+FRb+JpXuSEcGCtwr3mQumW7Kps/owj
+X-Google-Smtp-Source: ABdhPJxxZQ6VAkPC2tOllW5FrCrHYgMBgvsR+zWk5PTEgevqI/mjLOSK4rhKVanyLEHxzs167olWdQ==
+X-Received: by 2002:a63:4f:: with SMTP id 76mr2220691pga.457.1632959974264;
+        Wed, 29 Sep 2021 16:59:34 -0700 (PDT)
 Received: from jevburton2.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
         by smtp.gmail.com with ESMTPSA id mr18sm681907pjb.17.2021.09.29.16.59.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
@@ -59,9 +59,9 @@ Cc:     Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Stanislav Fomichev <sdf@google.com>,
         Hao Luo <haoluo@google.com>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, Joe Burton <jevburton@google.com>
-Subject: [RFC PATCH v2 02/13] bpf: Allow loading BPF_TRACE_MAP programs
-Date:   Wed, 29 Sep 2021 23:58:59 +0000
-Message-Id: <20210929235910.1765396-3-jevburton.kernel@gmail.com>
+Subject: [RFC PATCH v2 03/13] bpf: Add list of tracing programs to struct bpf_map
+Date:   Wed, 29 Sep 2021 23:59:00 +0000
+Message-Id: <20210929235910.1765396-4-jevburton.kernel@gmail.com>
 X-Mailer: git-send-email 2.33.0.685.g46640cef36-goog
 In-Reply-To: <20210929235910.1765396-1-jevburton.kernel@gmail.com>
 References: <20210929235910.1765396-1-jevburton.kernel@gmail.com>
@@ -73,106 +73,128 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Joe Burton <jevburton@google.com>
 
-Add new attach type, BPF_TRACE_MAP. Tracing programs may specify this
-type when loading. The verifier then checks that the traced function
-has been registered for map tracing.
+Add array of programs to struct bpf_map. To minimize cost, this array
+is allocated at the time that the first program is attached to a map.
+It is installed using a cmpxchg() to avoid adding another mutex inside
+bpf_map.
 
 Signed-off-by: Joe Burton <jevburton@google.com>
 ---
- include/linux/bpf.h      |  1 +
- include/uapi/linux/bpf.h |  1 +
- kernel/bpf/map_trace.c   | 25 +++++++++++++++++++++++++
- kernel/bpf/verifier.c    |  6 ++++++
- 4 files changed, 33 insertions(+)
+ include/linux/bpf.h    | 18 +++++++++++++++++-
+ kernel/bpf/map_trace.c | 21 +++++++++++++++++++++
+ kernel/bpf/syscall.c   |  4 ++++
+ 3 files changed, 42 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index dad62d5571c9..272f0ac49285 100644
+index 272f0ac49285..3ae12ab97720 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -1539,6 +1539,7 @@ void bpf_iter_unreg_target(const struct bpf_iter_reg *reg_info);
- bool bpf_iter_prog_supported(struct bpf_prog *prog);
- const struct bpf_func_proto *
- bpf_iter_get_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog);
-+bool bpf_map_trace_prog_supported(struct bpf_prog *prog);
- int bpf_map_trace_reg_target(const struct bpf_map_trace_reg *reg_info);
- int bpf_iter_link_attach(const union bpf_attr *attr, bpfptr_t uattr, struct bpf_prog *prog);
- int bpf_iter_new_fd(struct bpf_link *link);
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 17e8f4113369..0883c5dfb5d8 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1003,6 +1003,7 @@ enum bpf_attach_type {
- 	BPF_SK_REUSEPORT_SELECT,
- 	BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
- 	BPF_PERF_EVENT,
-+	BPF_TRACE_MAP,
- 	__MAX_BPF_ATTACH_TYPE
+@@ -43,6 +43,7 @@ struct kobject;
+ struct mem_cgroup;
+ struct module;
+ struct bpf_func_state;
++struct bpf_map_trace_progs;
+ 
+ extern struct idr btf_idr;
+ extern spinlock_t btf_idr_lock;
+@@ -180,10 +181,11 @@ struct bpf_map {
+ 	struct mem_cgroup *memcg;
+ #endif
+ 	char name[BPF_OBJ_NAME_LEN];
++	struct bpf_map_trace_progs *trace_progs;
+ 	u32 btf_vmlinux_value_type_id;
+ 	bool bypass_spec_v1;
+ 	bool frozen; /* write-once; write-protected by freeze_mutex */
+-	/* 22 bytes hole */
++	/* 14 bytes hole */
+ 
+ 	/* The 3rd and 4th cacheline with misc members to avoid false sharing
+ 	 * particularly with refcounting.
+@@ -1510,12 +1512,26 @@ struct bpf_iter_reg {
+ 	const struct bpf_iter_seq_info *seq_info;
  };
  
++/* Maximum number of tracing programs that may be attached to one map */
++#define BPF_MAP_TRACE_MAX_PROGS 16
+ #define BPF_MAP_TRACE_FUNC_SYM(trace_type) bpf_map_trace__ ## trace_type
+ #define DEFINE_BPF_MAP_TRACE_FUNC(trace_type, args...)	\
+ 	extern int BPF_MAP_TRACE_FUNC_SYM(trace_type)(args);	\
+ 	int __init BPF_MAP_TRACE_FUNC_SYM(trace_type)(args)	\
+ 	{ return 0; }
+ 
++struct bpf_map_trace_prog {
++	struct list_head list;
++	struct bpf_prog *prog;
++	struct rcu_head rcu;
++};
++
++struct bpf_map_trace_progs {
++	struct bpf_map_trace_prog __rcu progs[MAX_BPF_MAP_TRACE_TYPE];
++	u32 length[MAX_BPF_MAP_TRACE_TYPE];
++	struct mutex mutex; /* protects writes to progs, length */
++};
++
+ struct bpf_map_trace_reg {
+ 	const char *target;
+ 	enum bpf_map_trace_type trace_type;
 diff --git a/kernel/bpf/map_trace.c b/kernel/bpf/map_trace.c
-index d8f829535f7e..d2c6df20f55c 100644
+index d2c6df20f55c..7776b8ccfe88 100644
 --- a/kernel/bpf/map_trace.c
 +++ b/kernel/bpf/map_trace.c
-@@ -31,3 +31,28 @@ int bpf_map_trace_reg_target(const struct bpf_map_trace_reg *reg_info)
+@@ -3,6 +3,7 @@
  
- 	return 0;
+ #include <linux/filter.h>
+ #include <linux/bpf.h>
++#include <linux/rcupdate.h>
+ 
+ struct bpf_map_trace_target_info {
+ 	struct list_head list;
+@@ -56,3 +57,23 @@ bool bpf_map_trace_prog_supported(struct bpf_prog *prog)
+ 	return supported;
  }
-+
-+bool bpf_map_trace_prog_supported(struct bpf_prog *prog)
+ 
++int bpf_map_initialize_trace_progs(struct bpf_map *map)
 +{
-+	const char *attach_fname = prog->aux->attach_func_name;
-+	u32 prog_btf_id = prog->aux->attach_btf_id;
-+	struct bpf_map_trace_target_info *tinfo;
-+	bool supported = false;
++	struct bpf_map_trace_progs *new_trace_progs;
++	int i;
 +
-+	mutex_lock(&targets_mutex);
-+	list_for_each_entry(tinfo, &targets, list) {
-+		if (tinfo->btf_id && tinfo->btf_id == prog_btf_id) {
-+			supported = true;
-+			break;
-+		}
-+		if (!strcmp(attach_fname, tinfo->reg_info->target)) {
-+			tinfo->btf_id = prog->aux->attach_btf_id;
-+			supported = true;
-+			break;
-+		}
++	if (!READ_ONCE(map->trace_progs)) {
++		new_trace_progs = kzalloc(sizeof(struct bpf_map_trace_progs),
++					  GFP_KERNEL);
++		if (!new_trace_progs)
++			return -ENOMEM;
++		mutex_init(&new_trace_progs->mutex);
++		for (i = 0; i < MAX_BPF_MAP_TRACE_TYPE; i++)
++			INIT_LIST_HEAD(&new_trace_progs->progs[i].list);
++		if (cmpxchg(&map->trace_progs, NULL, new_trace_progs))
++			kfree(new_trace_progs);
 +	}
-+	mutex_unlock(&targets_mutex);
 +
-+	return supported;
++	return 0;
 +}
 +
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 1433752db740..babcb135dc0d 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -9464,6 +9464,7 @@ static int check_return_code(struct bpf_verifier_env *env)
- 			break;
- 		case BPF_TRACE_RAW_TP:
- 		case BPF_MODIFY_RETURN:
-+		case BPF_TRACE_MAP:
- 			return 0;
- 		case BPF_TRACE_ITER:
- 			break;
-@@ -13496,6 +13497,7 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 4e50c0bfdb7d..e6179755fd3b 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -460,6 +460,7 @@ static void bpf_map_free_deferred(struct work_struct *work)
  
- 		break;
- 	case BPF_TRACE_ITER:
-+	case BPF_TRACE_MAP:
- 		if (!btf_type_is_func(t)) {
- 			bpf_log(log, "attach_btf_id %u is not a function\n",
- 				btf_id);
-@@ -13672,6 +13674,10 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 		if (!bpf_iter_prog_supported(prog))
- 			return -EINVAL;
- 		return 0;
-+	} else if (prog->expected_attach_type == BPF_TRACE_MAP) {
-+		if (!bpf_map_trace_prog_supported(prog))
-+			return -EINVAL;
-+		return 0;
+ 	security_bpf_map_free(map);
+ 	bpf_map_release_memcg(map);
++	kfree(map->trace_progs);
+ 	/* implementation dependent freeing */
+ 	map->ops->map_free(map);
+ }
+@@ -913,6 +914,9 @@ static int map_create(union bpf_attr *attr)
+ 		return err;
  	}
  
- 	if (prog->type == BPF_PROG_TYPE_LSM) {
++	/* tracing programs lists are allocated when attached */
++	map->trace_progs = NULL;
++
+ 	return err;
+ 
+ free_map_sec:
 -- 
 2.33.0.685.g46640cef36-goog
 
