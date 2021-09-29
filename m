@@ -2,128 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8EAB41C5AE
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 15:31:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 511B441C5DA
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 15:40:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344211AbhI2NdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 09:33:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45114 "EHLO mail.kernel.org"
+        id S1344251AbhI2Nlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 09:41:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54822 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344140AbhI2NdI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 09:33:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F025361353;
-        Wed, 29 Sep 2021 13:31:26 +0000 (UTC)
+        id S1344186AbhI2Nls (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 09:41:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 632EC6137A;
+        Wed, 29 Sep 2021 13:40:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632922287;
-        bh=4kqcE1aNtIBzl/VT1ZDAblog8iS58Q0lddZNm7GgSCg=;
+        s=k20201202; t=1632922807;
+        bh=HRxvn3IUjfecEGEfskFUy3y0BDqwSgrQjWLQzEOJJgw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SZ8dB8LzwxAdqXC1m2OXAEMZzMhv3h5pCU9yzZGJSY03eiBtRFTdyQPv8zwBkQw7d
-         UQZ6imjJuGz/d0EuNtTGG18qvWsl5tes5WByD9Rgd+Oef4IUV1EXrf20/l41kfjhsC
-         aBcMvZOBUb5xWkBmsly4qtNoJDTfErITYYjFl4a6eJ6Cv4VQ9NGSVvnoK0PtnrGmkN
-         XXWqr/FoFjTtk7LAqC2LoziwRLp1Bev15ReOmR3ESoYGwwM3aSieTYBpg0e3Zav41j
-         MfyfiNDFS0Fry1r4jTI3RDvjc6PqFHvfpYcfINJstT1Gp/K6JTniJ6UyHuxBj7Z87y
-         XE05g6+3Qvv4w==
-Date:   Wed, 29 Sep 2021 06:31:26 -0700
+        b=RTPVEKKDWu8xLuOVgrWyDppGS6t0eE5njBJgD1i3idYi2+uHPuZa5cxEcjeFQ3cZe
+         6NABzyvWfwl476XJU0PdI98Izs20RoC9vvAoAveJEZuCn+cAfihiwiMabw0KRLU2e+
+         TjWVzaCDWGdqoHQJP8rzeE3N3fWPyiTmO527AagTY9mO2loOHnXdQV7WiMI4gLE6vU
+         ul6sdJZ8l6+2P15LTHORFb07eoWaQztgWFnh43dsVGZ4Hd/JzdNsuR4airw1rBFwB3
+         v8FM8IQp926Dnl24p7J95hZj1aT8hWczKBdj0YqITOJZkMf+W5a/5yeHOFVImIQmNU
+         0lw8wtPminwVw==
+Date:   Wed, 29 Sep 2021 06:40:04 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, pabeni@redhat.com, gregkh@linuxfoundation.org,
-        ebiederm@xmission.com, stephen@networkplumber.org,
-        herbert@gondor.apana.org.au, juri.lelli@redhat.com,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 8/9] net: delay device_del until run_todo
-Message-ID: <20210929063126.4a702dbd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <163290399584.3047.8100336131824633098@kwain>
-References: <20210928125500.167943-1-atenart@kernel.org>
-        <20210928125500.167943-9-atenart@kernel.org>
-        <20210928170229.4c1431c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <163290399584.3047.8100336131824633098@kwain>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        hariprasad <hkelam@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
+        Manish Chopra <manishc@marvell.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Moshe Shemesh <moshe@nvidia.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Shay Drory <shayd@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next v1 0/5] Devlink reload and missed notifications
+ fix
+Message-ID: <20210929064004.3172946e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <cover.1632916329.git.leonro@nvidia.com>
+References: <cover.1632916329.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Sep 2021 10:26:35 +0200 Antoine Tenart wrote:
-> Quoting Jakub Kicinski (2021-09-29 02:02:29)
-> > On Tue, 28 Sep 2021 14:54:59 +0200 Antoine Tenart wrote: =20
-> > > The sysfs removal is done in device_del, and moving it outside of the
-> > > rtnl lock does fix the initial deadlock. With that the trylock/restart
-> > > logic can be removed in a following-up patch. =20
-> >  =20
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index a1eab120bb50..d774fbec5d63 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -10593,6 +10593,8 @@ void netdev_run_todo(void)
-> > >                       continue;
-> > >               }
-> > > =20
-> > > +             device_del(&dev->dev);
-> > > +
-> > >               dev->reg_state =3D NETREG_UNREGISTERED;
-> > > =20
-> > >               netdev_wait_allrefs(dev);
-> > > diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> > > index 21c3fdeccf20..e754f00c117b 100644
-> > > --- a/net/core/net-sysfs.c
-> > > +++ b/net/core/net-sysfs.c
-> > > @@ -1955,8 +1955,6 @@ void netdev_unregister_kobject(struct net_devic=
-e *ndev)
-> > >       remove_queue_kobjects(ndev);
-> > > =20
-> > >       pm_runtime_set_memalloc_noio(dev, false);
-> > > -
-> > > -     device_del(dev);
-> > >  }
-> > > =20
-> > >  /* Create sysfs entries for network device. */ =20
-> >=20
-> > Doesn't this mean there may be sysfs files which are accessible=20
-> > for an unregistered netdevice? =20
->=20
-> It would mean having accessible sysfs files for a device in the
-> NETREG_UNREGISTERING state; NETREG_UNREGISTERED still comes after
-> device_del. It's a small difference but still important, I think.
->=20
-> You raise a good point. Yes, that would mean accessing attributes of net
-> devices being unregistered, meaning accessing or modifying unused or
-> obsolete parameters and data (it shouldn't be garbage data though).
-> Unlisting those sysfs files without removing them would be better here,
-> to not expose files when the device is being unregistered while still
-> allowing pending operations to complete. I don't know if that is doable
-> in sysfs.
+On Wed, 29 Sep 2021 15:00:41 +0300 Leon Romanovsky wrote:
+> This series starts from the fixing the bug introduced by implementing
+> devlink delayed notifications logic, where I missed some of the
+> notifications functions.
+> 
+> The rest series provides a way to dynamically set devlink ops that is
+> needed for mlx5 multiport device and starts cleanup by removing
+> not-needed logic.
+> 
+> In the next series, we will delete various publish API, drop general
+> lock, annotate the code and rework logic around devlink->lock.
+> 
+> All this is possible because driver initialization is separated from the
+> user input now.
 
-I wonder. Do we somehow remove the queue objects without waiting or are
-those also waited on when we remove the device? 'Cause XPS is the part
-that jumps out to me - we reset XPS after netdev_unregister_kobject().
-Does it mean user can re-instate XPS settings after we thought we
-already reset them?
+Swapping ops is a nasty hack in my book.
 
-> (While I did ran stress tests reading/writing attributes while
-> unregistering devices, I think I missed an issue with the
-> netdev_queue_default attributes; which hopefully can be fixed =E2=80=94 i=
-f the
-> whole idea is deemed acceptable).
+And all that to avoid having two op structures in one driver.
+Or to avoid having counters which are always 0?
 
-Well, it's a little wobbly but I think the direction is sane.
-It wouldn't feel super clean to add
-
-	if (dev->state !=3D NETREG_REGISTERED)
-		goto out;
-
-to the sysfs handlers but maybe it's better than leaving potential
-traps for people who are not aware of the intricacies later? Not sure.
-
-> > Isn't the point of having device_del() under rtnl_lock() to make sure
-> > we sysfs handlers can't run on dead devices? =20
->=20
-> Hard to say what was the initial point, there is a lot of history here
-> :) I'm not sure it was done because of a particular reason; IMHO it just
-> made sense to make this simple without having a good reason not to do
-> so. And it helped with the naming collision detection.
-
-FWIW the other two pieces of feedback I have is try to avoid the
-synchronize_net() in patch 7 and add a new helper for the name
-checking, which would return bool. The callers don't have any=20
-business getting the struct.
+Sorry, at the very least you need better explanation for this.
