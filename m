@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D169C41C7FB
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:11:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6849541C7F2
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345260AbhI2PNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 11:13:23 -0400
+        id S1345180AbhI2PNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 11:13:13 -0400
 Received: from smtp2.axis.com ([195.60.68.18]:4224 "EHLO smtp2.axis.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345109AbhI2PNI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 11:13:08 -0400
+        id S1345075AbhI2PNF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 11:13:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1632928288;
-  x=1664464288;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1632928284;
+  x=1664464284;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=OSpsqaSPCR0KkwR/V5TWdFbuLeIYeNSAyBlJF+6Nw08=;
-  b=OygCTZBOjqmbHXpn3auLcjyAdF5zaNNmCkIdNB2IUQINO57pJtxNrPSP
-   JDVnDwOYQsoRe3hblK9lOOSfMIEllyV+BxRjvvax7d9Y49PitY2ACrUJT
-   MsJ7UvxZ8q64OVQviKwSXHUGTnOdnHHEx3z5AFtFthgzC0k8FIM0fRXO+
-   tmohNN1LrFBhoymMcGJxuJaxhU3Zl4Ri4++70W6hLgrjScYLWL/zcZ9Q+
-   fzrfA3TWY+o3GJDxaRswn7Ap22DYwIPEGKZYtmyJ87ALxxAr6Y4pzgEm+
-   zBEYwePx4xEDasgifvVlyxaoY0WbRPncnD0jk5zMAabavaPYP89KVrnIv
-   Q==;
+  bh=rFsuG5yulChU1RiHnkTswRVXWfw8Xi3XkNlyr5Zr+o0=;
+  b=Sd8rxFQrnjJwSZE60Wd1AfRUEX3mF0XIdi4ONNwFGW2GNdgreiOj4ACL
+   5lGFBmuNOrJbyZrnU+ro2usXimiv+tcN+iMioIOiF3ERLuS3bvpEMFchI
+   w5UXzhAq5b/LqAAAnDmGwQULcLtNxwuGvZSi9cYTIAQf7kRXQ7uNHWSkF
+   a64+6L9ECKk1wtVBXEi8TZ9T+XO3ix5dNm8sTKJ1j2XvUNARcAcfzsN9Z
+   T+ygVmKcJIymM/i8qV4eaLl8ohMuyaJ1obt6YlROyc81NeGvgz+hzKUEM
+   ivTQAhhVgoqWMdxFFXhtqRz3biP8p8Y/LwD0ugYlAHlncxuGtjN62+p6g
+   g==;
 From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
 To:     <mst@redhat.com>, <jasowang@redhat.com>
 CC:     <kernel@axis.com>, <kvm@vger.kernel.org>,
@@ -32,9 +32,9 @@ CC:     <kernel@axis.com>, <kvm@vger.kernel.org>,
         <pbonzini@redhat.com>, <stefanha@redhat.com>,
         <sgarzare@redhat.com>,
         Vincent Whitchurch <vincent.whitchurch@axis.com>
-Subject: [RFC PATCH 02/10] vhost: push virtqueue area pointers into a user struct
-Date:   Wed, 29 Sep 2021 17:11:11 +0200
-Message-ID: <20210929151119.14778-3-vincent.whitchurch@axis.com>
+Subject: [RFC PATCH 03/10] vhost: add iov wrapper
+Date:   Wed, 29 Sep 2021 17:11:12 +0200
+Message-ID: <20210929151119.14778-4-vincent.whitchurch@axis.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20210929151119.14778-1-vincent.whitchurch@axis.com>
 References: <20210929151119.14778-1-vincent.whitchurch@axis.com>
@@ -45,368 +45,445 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to prepare for allowing vhost to operate on kernel buffers,
-push the virtqueue desc/avail/used area pointers down to a new "user"
-struct.
-
-No functional change intended.
+In order to prepare for supporting buffers in kernel space, add a
+vhost_iov struct to wrap the userspace iovec, add helper functions for
+accessing this struct, and use these helpers from all vhost drivers.
 
 Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 ---
- drivers/vhost/vdpa.c  |  6 +--
- drivers/vhost/vhost.c | 90 +++++++++++++++++++++----------------------
- drivers/vhost/vhost.h |  8 ++--
- 3 files changed, 53 insertions(+), 51 deletions(-)
+ drivers/vhost/net.c   | 13 ++++++------
+ drivers/vhost/scsi.c  | 30 +++++++++++++--------------
+ drivers/vhost/test.c  |  2 +-
+ drivers/vhost/vhost.c | 25 +++++++++++-----------
+ drivers/vhost/vhost.h | 48 +++++++++++++++++++++++++++++++++++++------
+ drivers/vhost/vsock.c |  8 ++++----
+ 6 files changed, 81 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index f41d081777f5..6f05388f5a21 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -400,9 +400,9 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
- 	switch (cmd) {
- 	case VHOST_SET_VRING_ADDR:
- 		if (ops->set_vq_address(vdpa, idx,
--					(u64)(uintptr_t)vq->desc,
--					(u64)(uintptr_t)vq->avail,
--					(u64)(uintptr_t)vq->used))
-+					(u64)(uintptr_t)vq->user.desc,
-+					(u64)(uintptr_t)vq->user.avail,
-+					(u64)(uintptr_t)vq->user.used))
- 			r = -EINVAL;
- 		break;
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index 28ef323882fb..8f82b646d4af 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -607,9 +607,9 @@ static size_t init_iov_iter(struct vhost_virtqueue *vq, struct iov_iter *iter,
+ 			    size_t hdr_size, int out)
+ {
+ 	/* Skip header. TODO: support TSO. */
+-	size_t len = iov_length(vq->iov, out);
++	size_t len = vhost_iov_length(vq, vq->iov, out);
  
+-	iov_iter_init(iter, WRITE, vq->iov, out, len);
++	vhost_iov_iter_init(vq, iter, WRITE, vq->iov, out, len);
+ 	iov_iter_advance(iter, hdr_size);
+ 
+ 	return iov_iter_count(iter);
+@@ -1080,7 +1080,7 @@ static int get_rx_bufs(struct vhost_virtqueue *vq,
+ 			log += *log_num;
+ 		}
+ 		heads[headcount].id = cpu_to_vhost32(vq, d);
+-		len = iov_length(vq->iov + seg, in);
++		len = vhost_iov_length(vq, vq->iov + seg, in);
+ 		heads[headcount].len = cpu_to_vhost32(vq, len);
+ 		datalen -= len;
+ 		++headcount;
+@@ -1182,14 +1182,14 @@ static void handle_rx(struct vhost_net *net)
+ 			msg.msg_control = vhost_net_buf_consume(&nvq->rxq);
+ 		/* On overrun, truncate and discard */
+ 		if (unlikely(headcount > UIO_MAXIOV)) {
+-			iov_iter_init(&msg.msg_iter, READ, vq->iov, 1, 1);
++			vhost_iov_iter_init(vq, &msg.msg_iter, READ, vq->iov, 1, 1);
+ 			err = sock->ops->recvmsg(sock, &msg,
+ 						 1, MSG_DONTWAIT | MSG_TRUNC);
+ 			pr_debug("Discarded rx packet: len %zd\n", sock_len);
+ 			continue;
+ 		}
+ 		/* We don't need to be notified again. */
+-		iov_iter_init(&msg.msg_iter, READ, vq->iov, in, vhost_len);
++		vhost_iov_iter_init(vq, &msg.msg_iter, READ, vq->iov, in, vhost_len);
+ 		fixup = msg.msg_iter;
+ 		if (unlikely((vhost_hlen))) {
+ 			/* We will supply the header ourselves
+@@ -1212,8 +1212,7 @@ static void handle_rx(struct vhost_net *net)
+ 		if (unlikely(vhost_hlen)) {
+ 			if (copy_to_iter(&hdr, sizeof(hdr),
+ 					 &fixup) != sizeof(hdr)) {
+-				vq_err(vq, "Unable to write vnet_hdr "
+-				       "at addr %p\n", vq->iov->iov_base);
++				vq_err(vq, "Unable to write vnet_hdr");
+ 				goto out;
+ 			}
+ 		} else {
+diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
+index bcf53685439d..22a372b52165 100644
+--- a/drivers/vhost/scsi.c
++++ b/drivers/vhost/scsi.c
+@@ -80,7 +80,7 @@ struct vhost_scsi_cmd {
+ 	struct scatterlist *tvc_prot_sgl;
+ 	struct page **tvc_upages;
+ 	/* Pointer to response header iovec */
+-	struct iovec tvc_resp_iov;
++	struct vhost_iov tvc_resp_iov;
+ 	/* Pointer to vhost_scsi for our device */
+ 	struct vhost_scsi *tvc_vhost;
+ 	/* Pointer to vhost_virtqueue for the cmd */
+@@ -208,7 +208,7 @@ struct vhost_scsi_tmf {
+ 	struct se_cmd se_cmd;
+ 	u8 scsi_resp;
+ 	struct vhost_scsi_inflight *inflight;
+-	struct iovec resp_iov;
++	struct vhost_iov resp_iov;
+ 	int in_iovs;
+ 	int vq_desc;
+ };
+@@ -487,9 +487,9 @@ vhost_scsi_do_evt_work(struct vhost_scsi *vs, struct vhost_scsi_evt *evt)
+ 		return;
+ 	}
+ 
+-	if ((vq->iov[out].iov_len != sizeof(struct virtio_scsi_event))) {
++	if (vhost_iov_len(vq, &vq->iov[out]) != sizeof(struct virtio_scsi_event)) {
+ 		vq_err(vq, "Expecting virtio_scsi_event, got %zu bytes\n",
+-				vq->iov[out].iov_len);
++				vhost_iov_len(vq, &vq->iov[out]));
+ 		vs->vs_events_missed = true;
+ 		return;
+ 	}
+@@ -499,7 +499,7 @@ vhost_scsi_do_evt_work(struct vhost_scsi *vs, struct vhost_scsi_evt *evt)
+ 		vs->vs_events_missed = false;
+ 	}
+ 
+-	iov_iter_init(&iov_iter, READ, &vq->iov[out], in, sizeof(*event));
++	vhost_iov_iter_init(vq, &iov_iter, READ, &vq->iov[out], in, sizeof(*event));
+ 
+ 	ret = copy_to_iter(event, sizeof(*event), &iov_iter);
+ 	if (ret == sizeof(*event))
+@@ -559,8 +559,8 @@ static void vhost_scsi_complete_cmd_work(struct vhost_work *work)
+ 		memcpy(v_rsp.sense, cmd->tvc_sense_buf,
+ 		       se_cmd->scsi_sense_length);
+ 
+-		iov_iter_init(&iov_iter, READ, &cmd->tvc_resp_iov,
+-			      cmd->tvc_in_iovs, sizeof(v_rsp));
++		vhost_iov_iter_init(&vs->vqs[0].vq, &iov_iter, READ, &cmd->tvc_resp_iov,
++				    cmd->tvc_in_iovs, sizeof(v_rsp));
+ 		ret = copy_to_iter(&v_rsp, sizeof(v_rsp), &iov_iter);
+ 		if (likely(ret == sizeof(v_rsp))) {
+ 			struct vhost_scsi_virtqueue *q;
+@@ -809,7 +809,7 @@ vhost_scsi_send_bad_target(struct vhost_scsi *vs,
+ 	struct iov_iter iov_iter;
+ 	int ret;
+ 
+-	iov_iter_init(&iov_iter, READ, &vq->iov[out], in, sizeof(rsp));
++	vhost_iov_iter_init(vq, &iov_iter, READ, &vq->iov[out], in, sizeof(rsp));
+ 
+ 	memset(&rsp, 0, sizeof(rsp));
+ 	rsp.response = VIRTIO_SCSI_S_BAD_TARGET;
+@@ -850,8 +850,8 @@ vhost_scsi_get_desc(struct vhost_scsi *vs, struct vhost_virtqueue *vq,
+ 	 * Get the size of request and response buffers.
+ 	 * FIXME: Not correct for BIDI operation
+ 	 */
+-	vc->out_size = iov_length(vq->iov, vc->out);
+-	vc->in_size = iov_length(&vq->iov[vc->out], vc->in);
++	vc->out_size = vhost_iov_length(vq, vq->iov, vc->out);
++	vc->in_size = vhost_iov_length(vq, &vq->iov[vc->out], vc->in);
+ 
+ 	/*
+ 	 * Copy over the virtio-scsi request header, which for a
+@@ -863,7 +863,7 @@ vhost_scsi_get_desc(struct vhost_scsi *vs, struct vhost_virtqueue *vq,
+ 	 * point at the start of the outgoing WRITE payload, if
+ 	 * DMA_TO_DEVICE is set.
+ 	 */
+-	iov_iter_init(&vc->out_iter, WRITE, vq->iov, vc->out, vc->out_size);
++	vhost_iov_iter_init(vq, &vc->out_iter, WRITE, vq->iov, vc->out, vc->out_size);
+ 	ret = 0;
+ 
+ done:
+@@ -1015,7 +1015,7 @@ vhost_scsi_handle_vq(struct vhost_scsi *vs, struct vhost_virtqueue *vq)
+ 			data_direction = DMA_FROM_DEVICE;
+ 			exp_data_len = vc.in_size - vc.rsp_size;
+ 
+-			iov_iter_init(&in_iter, READ, &vq->iov[vc.out], vc.in,
++			vhost_iov_iter_init(vq, &in_iter, READ, &vq->iov[vc.out], vc.in,
+ 				      vc.rsp_size + exp_data_len);
+ 			iov_iter_advance(&in_iter, vc.rsp_size);
+ 			data_iter = in_iter;
+@@ -1134,7 +1134,7 @@ vhost_scsi_handle_vq(struct vhost_scsi *vs, struct vhost_virtqueue *vq)
+ 
+ static void
+ vhost_scsi_send_tmf_resp(struct vhost_scsi *vs, struct vhost_virtqueue *vq,
+-			 int in_iovs, int vq_desc, struct iovec *resp_iov,
++			 int in_iovs, int vq_desc, struct vhost_iov *resp_iov,
+ 			 int tmf_resp_code)
+ {
+ 	struct virtio_scsi_ctrl_tmf_resp rsp;
+@@ -1145,7 +1145,7 @@ vhost_scsi_send_tmf_resp(struct vhost_scsi *vs, struct vhost_virtqueue *vq,
+ 	memset(&rsp, 0, sizeof(rsp));
+ 	rsp.response = tmf_resp_code;
+ 
+-	iov_iter_init(&iov_iter, READ, resp_iov, in_iovs, sizeof(rsp));
++	vhost_iov_iter_init(vq, &iov_iter, READ, resp_iov, in_iovs, sizeof(rsp));
+ 
+ 	ret = copy_to_iter(&rsp, sizeof(rsp), &iov_iter);
+ 	if (likely(ret == sizeof(rsp)))
+@@ -1237,7 +1237,7 @@ vhost_scsi_send_an_resp(struct vhost_scsi *vs,
+ 	memset(&rsp, 0, sizeof(rsp));	/* event_actual = 0 */
+ 	rsp.response = VIRTIO_SCSI_S_OK;
+ 
+-	iov_iter_init(&iov_iter, READ, &vq->iov[vc->out], vc->in, sizeof(rsp));
++	vhost_iov_iter_init(vq, &iov_iter, READ, &vq->iov[vc->out], vc->in, sizeof(rsp));
+ 
+ 	ret = copy_to_iter(&rsp, sizeof(rsp), &iov_iter);
+ 	if (likely(ret == sizeof(rsp)))
+diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+index a09dedc79f68..95794b0ea4ad 100644
+--- a/drivers/vhost/test.c
++++ b/drivers/vhost/test.c
+@@ -78,7 +78,7 @@ static void handle_vq(struct vhost_test *n)
+ 			       "out %d, int %d\n", out, in);
+ 			break;
+ 		}
+-		len = iov_length(vq->iov, out);
++		len = vhost_iov_length(vq, vq->iov, out);
+ 		/* Sanity check */
+ 		if (!len) {
+ 			vq_err(vq, "Unexpected 0 len for TX\n");
 diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 59edb5a1ffe2..108994f386f7 100644
+index 108994f386f7..ce81eee2a3fa 100644
 --- a/drivers/vhost/vhost.c
 +++ b/drivers/vhost/vhost.c
-@@ -46,8 +46,8 @@ enum {
- 	VHOST_MEMORY_F_LOG = 0x1,
- };
- 
--#define vhost_used_event(vq) ((__virtio16 __user *)&vq->avail->ring[vq->num])
--#define vhost_avail_event(vq) ((__virtio16 __user *)&vq->used->ring[vq->num])
-+#define vhost_used_event(vq) ((__virtio16 __user *)&vq->user.avail->ring[vq->num])
-+#define vhost_avail_event(vq) ((__virtio16 __user *)&vq->user.used->ring[vq->num])
- 
- #ifdef CONFIG_VHOST_CROSS_ENDIAN_LEGACY
- static void vhost_disable_cross_endian(struct vhost_virtqueue *vq)
-@@ -306,7 +306,7 @@ static void vhost_vring_call_reset(struct vhost_vring_call *call_ctx)
- 
- bool vhost_vq_is_setup(struct vhost_virtqueue *vq)
- {
--	return vq->avail && vq->desc && vq->used && vhost_vq_access_ok(vq);
-+	return vq->user.avail && vq->user.desc && vq->user.used && vhost_vq_access_ok(vq);
- }
- EXPORT_SYMBOL_GPL(vhost_vq_is_setup);
- 
-@@ -314,9 +314,9 @@ static void vhost_vq_reset(struct vhost_dev *dev,
- 			   struct vhost_virtqueue *vq)
- {
- 	vq->num = 1;
--	vq->desc = NULL;
--	vq->avail = NULL;
--	vq->used = NULL;
-+	vq->user.desc = NULL;
-+	vq->user.avail = NULL;
-+	vq->user.used = NULL;
- 	vq->last_avail_idx = 0;
- 	vq->avail_idx = 0;
- 	vq->last_used_idx = 0;
-@@ -444,8 +444,8 @@ static size_t vhost_get_avail_size(struct vhost_virtqueue *vq,
- 	size_t event __maybe_unused =
- 	       vhost_has_feature(vq, VIRTIO_RING_F_EVENT_IDX) ? 2 : 0;
- 
--	return sizeof(*vq->avail) +
--	       sizeof(*vq->avail->ring) * num + event;
-+	return sizeof(*vq->user.avail) +
-+	       sizeof(*vq->user.avail->ring) * num + event;
+@@ -812,7 +812,7 @@ static bool memory_access_ok(struct vhost_dev *d, struct vhost_iotlb *umem,
  }
  
- static size_t vhost_get_used_size(struct vhost_virtqueue *vq,
-@@ -454,14 +454,14 @@ static size_t vhost_get_used_size(struct vhost_virtqueue *vq,
- 	size_t event __maybe_unused =
- 	       vhost_has_feature(vq, VIRTIO_RING_F_EVENT_IDX) ? 2 : 0;
+ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
+-			  struct iovec iov[], int iov_size, int access);
++			  struct vhost_iov iov[], int iov_size, int access);
  
--	return sizeof(*vq->used) +
--	       sizeof(*vq->used->ring) * num + event;
-+	return sizeof(*vq->user.used) +
-+	       sizeof(*vq->user.used->ring) * num + event;
- }
- 
- static size_t vhost_get_desc_size(struct vhost_virtqueue *vq,
- 				  unsigned int num)
- {
--	return sizeof(*vq->desc) * num;
-+	return sizeof(*vq->user.desc) * num;
- }
- 
- void vhost_dev_init(struct vhost_dev *dev,
-@@ -959,7 +959,7 @@ static inline int vhost_put_used(struct vhost_virtqueue *vq,
- 				 struct vring_used_elem *head, int idx,
- 				 int count)
- {
--	return vhost_copy_to_user(vq, vq->used->ring + idx, head,
-+	return vhost_copy_to_user(vq, vq->user.used->ring + idx, head,
- 				  count * sizeof(*head));
- }
- 
-@@ -967,14 +967,14 @@ static inline int vhost_put_used_flags(struct vhost_virtqueue *vq)
- 
- {
- 	return vhost_put_user(vq, cpu_to_vhost16(vq, vq->used_flags),
--			      &vq->used->flags);
-+			      &vq->user.used->flags);
- }
- 
- static inline int vhost_put_used_idx(struct vhost_virtqueue *vq)
- 
- {
- 	return vhost_put_user(vq, cpu_to_vhost16(vq, vq->last_used_idx),
--			      &vq->used->idx);
-+			      &vq->user.used->idx);
- }
- 
- #define vhost_get_user(vq, x, ptr, type)		\
-@@ -1018,20 +1018,20 @@ static void vhost_dev_unlock_vqs(struct vhost_dev *d)
- static inline int vhost_get_avail_idx(struct vhost_virtqueue *vq,
- 				      __virtio16 *idx)
- {
--	return vhost_get_avail(vq, *idx, &vq->avail->idx);
-+	return vhost_get_avail(vq, *idx, &vq->user.avail->idx);
- }
- 
- static inline int vhost_get_avail_head(struct vhost_virtqueue *vq,
- 				       __virtio16 *head, int idx)
- {
- 	return vhost_get_avail(vq, *head,
--			       &vq->avail->ring[idx & (vq->num - 1)]);
-+			       &vq->user.avail->ring[idx & (vq->num - 1)]);
- }
- 
- static inline int vhost_get_avail_flags(struct vhost_virtqueue *vq,
- 					__virtio16 *flags)
- {
--	return vhost_get_avail(vq, *flags, &vq->avail->flags);
-+	return vhost_get_avail(vq, *flags, &vq->user.avail->flags);
- }
- 
- static inline int vhost_get_used_event(struct vhost_virtqueue *vq,
-@@ -1043,13 +1043,13 @@ static inline int vhost_get_used_event(struct vhost_virtqueue *vq,
- static inline int vhost_get_used_idx(struct vhost_virtqueue *vq,
- 				     __virtio16 *idx)
- {
--	return vhost_get_used(vq, *idx, &vq->used->idx);
-+	return vhost_get_used(vq, *idx, &vq->user.used->idx);
- }
- 
- static inline int vhost_get_desc(struct vhost_virtqueue *vq,
- 				 struct vring_desc *desc, int idx)
- {
--	return vhost_copy_from_user(vq, desc, vq->desc + idx, sizeof(*desc));
-+	return vhost_copy_from_user(vq, desc, vq->user.desc + idx, sizeof(*desc));
- }
- 
- static void vhost_iotlb_notify_vq(struct vhost_dev *d,
-@@ -1363,12 +1363,12 @@ int vq_meta_prefetch(struct vhost_virtqueue *vq)
- 	if (!vq->iotlb)
- 		return 1;
- 
--	return iotlb_access_ok(vq, VHOST_MAP_RO, (u64)(uintptr_t)vq->desc,
-+	return iotlb_access_ok(vq, VHOST_MAP_RO, (u64)(uintptr_t)vq->user.desc,
- 			       vhost_get_desc_size(vq, num), VHOST_ADDR_DESC) &&
--	       iotlb_access_ok(vq, VHOST_MAP_RO, (u64)(uintptr_t)vq->avail,
-+	       iotlb_access_ok(vq, VHOST_MAP_RO, (u64)(uintptr_t)vq->user.avail,
- 			       vhost_get_avail_size(vq, num),
- 			       VHOST_ADDR_AVAIL) &&
--	       iotlb_access_ok(vq, VHOST_MAP_WO, (u64)(uintptr_t)vq->used,
-+	       iotlb_access_ok(vq, VHOST_MAP_WO, (u64)(uintptr_t)vq->user.used,
- 			       vhost_get_used_size(vq, num), VHOST_ADDR_USED);
- }
- EXPORT_SYMBOL_GPL(vq_meta_prefetch);
-@@ -1412,7 +1412,7 @@ bool vhost_vq_access_ok(struct vhost_virtqueue *vq)
- 	if (!vq_log_access_ok(vq, vq->log_base))
- 		return false;
- 
--	return vq_access_ok(vq, vq->num, vq->desc, vq->avail, vq->used);
-+	return vq_access_ok(vq, vq->num, vq->user.desc, vq->user.avail, vq->user.used);
- }
- EXPORT_SYMBOL_GPL(vhost_vq_access_ok);
- 
-@@ -1523,8 +1523,8 @@ static long vhost_vring_set_addr(struct vhost_dev *d,
- 		return -EFAULT;
- 
- 	/* Make sure it's safe to cast pointers to vring types. */
--	BUILD_BUG_ON(__alignof__ *vq->avail > VRING_AVAIL_ALIGN_SIZE);
--	BUILD_BUG_ON(__alignof__ *vq->used > VRING_USED_ALIGN_SIZE);
-+	BUILD_BUG_ON(__alignof__ *vq->user.avail > VRING_AVAIL_ALIGN_SIZE);
-+	BUILD_BUG_ON(__alignof__ *vq->user.used > VRING_USED_ALIGN_SIZE);
- 	if ((a.avail_user_addr & (VRING_AVAIL_ALIGN_SIZE - 1)) ||
- 	    (a.used_user_addr & (VRING_USED_ALIGN_SIZE - 1)) ||
- 	    (a.log_guest_addr & (VRING_USED_ALIGN_SIZE - 1)))
-@@ -1548,10 +1548,10 @@ static long vhost_vring_set_addr(struct vhost_dev *d,
+ static int vhost_copy_to_user(struct vhost_virtqueue *vq, void __user *to,
+ 			      const void *from, unsigned size)
+@@ -840,7 +840,7 @@ static int vhost_copy_to_user(struct vhost_virtqueue *vq, void __user *to,
+ 				     VHOST_ACCESS_WO);
+ 		if (ret < 0)
+ 			goto out;
+-		iov_iter_init(&t, WRITE, vq->iotlb_iov, ret, size);
++		iov_iter_init(&t, WRITE, &vq->iotlb_iov->iovec, ret, size);
+ 		ret = copy_to_iter(from, size, &t);
+ 		if (ret == size)
+ 			ret = 0;
+@@ -879,7 +879,7 @@ static int vhost_copy_from_user(struct vhost_virtqueue *vq, void *to,
+ 			       (unsigned long long) size);
+ 			goto out;
+ 		}
+-		iov_iter_init(&f, READ, vq->iotlb_iov, ret, size);
++		iov_iter_init(&f, READ, &vq->iotlb_iov->iovec, ret, size);
+ 		ret = copy_from_iter(to, size, &f);
+ 		if (ret == size)
+ 			ret = 0;
+@@ -905,14 +905,14 @@ static void __user *__vhost_get_user_slow(struct vhost_virtqueue *vq,
+ 		return NULL;
  	}
  
- 	vq->log_used = !!(a.flags & (0x1 << VHOST_VRING_F_LOG));
--	vq->desc = (void __user *)(unsigned long)a.desc_user_addr;
--	vq->avail = (void __user *)(unsigned long)a.avail_user_addr;
-+	vq->user.desc = (void __user *)(unsigned long)a.desc_user_addr;
-+	vq->user.avail = (void __user *)(unsigned long)a.avail_user_addr;
- 	vq->log_addr = a.log_guest_addr;
--	vq->used = (void __user *)(unsigned long)a.used_user_addr;
-+	vq->user.used = (void __user *)(unsigned long)a.used_user_addr;
+-	if (ret != 1 || vq->iotlb_iov[0].iov_len != size) {
++	if (ret != 1 || vq->iotlb_iov->iovec.iov_len != size) {
+ 		vq_err(vq, "Non atomic userspace memory access: uaddr "
+ 			"%p size 0x%llx\n", addr,
+ 			(unsigned long long) size);
+ 		return NULL;
+ 	}
  
- 	return 0;
+-	return vq->iotlb_iov[0].iov_base;
++	return vq->iotlb_iov->iovec.iov_base;
  }
-@@ -1912,8 +1912,8 @@ static int log_used(struct vhost_virtqueue *vq, u64 used_offset, u64 len)
- 	if (!vq->iotlb)
- 		return log_write(vq->log_base, vq->log_addr + used_offset, len);
  
--	ret = translate_desc(vq, (uintptr_t)vq->used + used_offset,
--			     len, iov, 64, VHOST_ACCESS_WO);
-+	ret = translate_desc(vq, (uintptr_t)vq->user.used + used_offset,
-+			     len, vq->log_iov, 64, VHOST_ACCESS_WO);
- 	if (ret < 0)
+ /* This function should be called after iotlb
+@@ -1906,7 +1906,7 @@ static int log_write_hva(struct vhost_virtqueue *vq, u64 hva, u64 len)
+ 
+ static int log_used(struct vhost_virtqueue *vq, u64 used_offset, u64 len)
+ {
+-	struct iovec *iov = vq->log_iov;
++	struct iovec *iov = &vq->log_iov->iovec;
+ 	int i, ret;
+ 
+ 	if (!vq->iotlb)
+@@ -1928,8 +1928,9 @@ static int log_used(struct vhost_virtqueue *vq, u64 used_offset, u64 len)
+ }
+ 
+ int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
+-		    unsigned int log_num, u64 len, struct iovec *iov, int count)
++		    unsigned int log_num, u64 len, struct vhost_iov *viov, int count)
+ {
++	struct iovec *iov = &viov->iovec;
+ 	int i, r;
+ 
+ 	/* Make sure data written is seen before log. */
+@@ -2035,7 +2036,7 @@ int vhost_vq_init_access(struct vhost_virtqueue *vq)
+ EXPORT_SYMBOL_GPL(vhost_vq_init_access);
+ 
+ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
+-			  struct iovec iov[], int iov_size, int access)
++			  struct vhost_iov iov[], int iov_size, int access)
+ {
+ 	const struct vhost_iotlb_map *map;
+ 	struct vhost_dev *dev = vq->dev;
+@@ -2064,7 +2065,7 @@ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
+ 			break;
+ 		}
+ 
+-		_iov = iov + ret;
++		_iov = &iov->iovec + ret;
+ 		size = map->size - addr + map->start;
+ 		_iov->iov_len = min((u64)len - s, size);
+ 		_iov->iov_base = (void __user *)(unsigned long)
+@@ -2096,7 +2097,7 @@ static unsigned next_desc(struct vhost_virtqueue *vq, struct vring_desc *desc)
+ }
+ 
+ static int get_indirect(struct vhost_virtqueue *vq,
+-			struct iovec iov[], unsigned int iov_size,
++			struct vhost_iov iov[], unsigned int iov_size,
+ 			unsigned int *out_num, unsigned int *in_num,
+ 			struct vhost_log *log, unsigned int *log_num,
+ 			struct vring_desc *indirect)
+@@ -2123,7 +2124,7 @@ static int get_indirect(struct vhost_virtqueue *vq,
+ 			vq_err(vq, "Translation failure %d in indirect.\n", ret);
  		return ret;
- 
-@@ -1972,9 +1972,9 @@ static int vhost_update_used_flags(struct vhost_virtqueue *vq)
- 		/* Make sure the flag is seen before log. */
- 		smp_wmb();
- 		/* Log used flag write. */
--		used = &vq->used->flags;
--		log_used(vq, (used - (void __user *)vq->used),
--			 sizeof vq->used->flags);
-+		used = &vq->user.used->flags;
-+		log_used(vq, (used - (void __user *)vq->user.used),
-+			 sizeof vq->user.used->flags);
- 		if (vq->log_ctx)
- 			eventfd_signal(vq->log_ctx, 1);
  	}
-@@ -1991,7 +1991,7 @@ static int vhost_update_avail_event(struct vhost_virtqueue *vq, u16 avail_event)
- 		smp_wmb();
- 		/* Log avail event write */
- 		used = vhost_avail_event(vq);
--		log_used(vq, (used - (void __user *)vq->used),
-+		log_used(vq, (used - (void __user *)vq->user.used),
- 			 sizeof *vhost_avail_event(vq));
- 		if (vq->log_ctx)
- 			eventfd_signal(vq->log_ctx, 1);
-@@ -2015,14 +2015,14 @@ int vhost_vq_init_access(struct vhost_virtqueue *vq)
- 		goto err;
- 	vq->signalled_used_valid = false;
- 	if (!vq->iotlb &&
--	    !access_ok(&vq->used->idx, sizeof vq->used->idx)) {
-+	    !access_ok(&vq->user.used->idx, sizeof vq->user.used->idx)) {
- 		r = -EFAULT;
- 		goto err;
- 	}
- 	r = vhost_get_used_idx(vq, &last_used_idx);
- 	if (r) {
- 		vq_err(vq, "Can't access used idx at %p\n",
--		       &vq->used->idx);
-+		       &vq->user.used->idx);
- 		goto err;
- 	}
- 	vq->last_used_idx = vhost16_to_cpu(vq, last_used_idx);
-@@ -2214,7 +2214,7 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
- 	if (vq->avail_idx == vq->last_avail_idx) {
- 		if (unlikely(vhost_get_avail_idx(vq, &avail_idx))) {
- 			vq_err(vq, "Failed to access avail idx at %p\n",
--				&vq->avail->idx);
-+				&vq->user.avail->idx);
- 			return -EFAULT;
- 		}
- 		vq->avail_idx = vhost16_to_cpu(vq, avail_idx);
-@@ -2242,7 +2242,7 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
- 	if (unlikely(vhost_get_avail_head(vq, &ring_head, last_avail_idx))) {
- 		vq_err(vq, "Failed to read head: idx %d address %p\n",
- 		       last_avail_idx,
--		       &vq->avail->ring[last_avail_idx % vq->num]);
-+		       &vq->user.avail->ring[last_avail_idx % vq->num]);
- 		return -EFAULT;
- 	}
- 
-@@ -2277,7 +2277,7 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
- 		ret = vhost_get_desc(vq, &desc, i);
- 		if (unlikely(ret)) {
- 			vq_err(vq, "Failed to get descriptor: idx %d addr %p\n",
--			       i, vq->desc + i);
-+			       i, vq->user.desc + i);
- 			return -EFAULT;
- 		}
- 		if (desc.flags & cpu_to_vhost16(vq, VRING_DESC_F_INDIRECT)) {
-@@ -2366,7 +2366,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
- 	int start;
- 
- 	start = vq->last_used_idx & (vq->num - 1);
--	used = vq->used->ring + start;
-+	used = vq->user.used->ring + start;
- 	if (vhost_put_used(vq, heads, start, count)) {
- 		vq_err(vq, "Failed to write used");
- 		return -EFAULT;
-@@ -2375,7 +2375,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
- 		/* Make sure data is seen before log. */
- 		smp_wmb();
- 		/* Log used ring entry write. */
--		log_used(vq, ((void __user *)used - (void __user *)vq->used),
-+		log_used(vq, ((void __user *)used - (void __user *)vq->user.used),
- 			 count * sizeof *used);
- 	}
- 	old = vq->last_used_idx;
-@@ -2418,7 +2418,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
- 		smp_wmb();
- 		/* Log used index update. */
- 		log_used(vq, offsetof(struct vring_used, idx),
--			 sizeof vq->used->idx);
-+			 sizeof vq->user.used->idx);
- 		if (vq->log_ctx)
- 			eventfd_signal(vq->log_ctx, 1);
- 	}
-@@ -2523,7 +2523,7 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- 		r = vhost_update_used_flags(vq);
- 		if (r) {
- 			vq_err(vq, "Failed to enable notification at %p: %d\n",
--			       &vq->used->flags, r);
-+			       &vq->user.used->flags, r);
- 			return false;
- 		}
- 	} else {
-@@ -2540,7 +2540,7 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- 	r = vhost_get_avail_idx(vq, &avail_idx);
- 	if (r) {
- 		vq_err(vq, "Failed to check avail idx at %p: %d\n",
--		       &vq->avail->idx, r);
-+		       &vq->user.avail->idx, r);
- 		return false;
- 	}
- 
-@@ -2560,7 +2560,7 @@ void vhost_disable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- 		r = vhost_update_used_flags(vq);
- 		if (r)
- 			vq_err(vq, "Failed to disable notification at %p: %d\n",
--			       &vq->used->flags, r);
-+			       &vq->user.used->flags, r);
- 	}
- }
- EXPORT_SYMBOL_GPL(vhost_disable_notify);
+-	iov_iter_init(&from, READ, vq->indirect, ret, len);
++	vhost_iov_iter_init(vq, &from, READ, vq->indirect, ret, len);
+ 	count = len / sizeof desc;
+ 	/* Buffers are chained via a 16 bit next field, so
+ 	 * we can have at most 2^16 of these. */
+@@ -2197,7 +2198,7 @@ static int get_indirect(struct vhost_virtqueue *vq,
+  * never a valid descriptor number) if none was found.  A negative code is
+  * returned on error. */
+ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
+-		      struct iovec iov[], unsigned int iov_size,
++		      struct vhost_iov iov[], unsigned int iov_size,
+ 		      unsigned int *out_num, unsigned int *in_num,
+ 		      struct vhost_log *log, unsigned int *log_num)
+ {
 diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index 638bb640d6b4..b1db4ffe75f0 100644
+index b1db4ffe75f0..69aec724ef7f 100644
 --- a/drivers/vhost/vhost.h
 +++ b/drivers/vhost/vhost.h
-@@ -72,9 +72,11 @@ struct vhost_virtqueue {
- 	/* The actual ring of buffers. */
- 	struct mutex mutex;
- 	unsigned int num;
--	vring_desc_t __user *desc;
--	vring_avail_t __user *avail;
--	vring_used_t __user *used;
-+	struct {
-+		vring_desc_t __user *desc;
-+		vring_avail_t __user *avail;
-+		vring_used_t __user *used;
-+	} user;
- 	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
- 	struct file *kick;
- 	struct vhost_vring_call call_ctx;
+@@ -65,6 +65,12 @@ struct vhost_vring_call {
+ 	struct irq_bypass_producer producer;
+ };
+ 
++struct vhost_iov {
++	union {
++		struct iovec iovec;
++	};
++};
++
+ /* The virtqueue structure describes a queue attached to a device. */
+ struct vhost_virtqueue {
+ 	struct vhost_dev *dev;
+@@ -110,9 +116,9 @@ struct vhost_virtqueue {
+ 	bool log_used;
+ 	u64 log_addr;
+ 
+-	struct iovec iov[UIO_MAXIOV];
+-	struct iovec iotlb_iov[64];
+-	struct iovec *indirect;
++	struct vhost_iov iov[UIO_MAXIOV];
++	struct vhost_iov iotlb_iov[64];
++	struct vhost_iov *indirect;
+ 	struct vring_used_elem *heads;
+ 	/* Protected by virtqueue mutex. */
+ 	struct vhost_iotlb *umem;
+@@ -123,7 +129,7 @@ struct vhost_virtqueue {
+ 	/* Log write descriptors */
+ 	void __user *log_base;
+ 	struct vhost_log *log;
+-	struct iovec log_iov[64];
++	struct vhost_iov log_iov[64];
+ 
+ 	/* Ring endianness. Defaults to legacy native endianness.
+ 	 * Set to true when starting a modern virtio device. */
+@@ -167,6 +173,26 @@ struct vhost_dev {
+ 			   struct vhost_iotlb_msg *msg);
+ };
+ 
++static inline size_t vhost_iov_length(const struct vhost_virtqueue *vq, struct vhost_iov *iov,
++				      unsigned long nr_segs)
++{
++	return iov_length(&iov->iovec, nr_segs);
++}
++
++static inline size_t vhost_iov_len(const struct vhost_virtqueue *vq, struct vhost_iov *iov)
++{
++	return iov->iovec.iov_len;
++}
++
++static inline void vhost_iov_iter_init(const struct vhost_virtqueue *vq,
++				       struct iov_iter *i, unsigned int direction,
++				       struct vhost_iov *iov,
++				       unsigned long nr_segs,
++				       size_t count)
++{
++	iov_iter_init(i, direction, &iov->iovec, nr_segs, count);
++}
++
+ bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int total_len);
+ void vhost_dev_init(struct vhost_dev *, struct vhost_virtqueue **vqs,
+ 		    int nvqs, int iov_limit, int weight, int byte_weight,
+@@ -186,9 +212,19 @@ bool vhost_vq_access_ok(struct vhost_virtqueue *vq);
+ bool vhost_log_access_ok(struct vhost_dev *);
+ 
+ int vhost_get_vq_desc(struct vhost_virtqueue *,
+-		      struct iovec iov[], unsigned int iov_count,
++		      struct vhost_iov iov[], unsigned int iov_count,
+ 		      unsigned int *out_num, unsigned int *in_num,
+ 		      struct vhost_log *log, unsigned int *log_num);
++
++int vhost_get_vq_desc_viov(struct vhost_virtqueue *vq,
++			   struct vhost_iov *viov,
++			   unsigned int *out_num, unsigned int *in_num,
++			   struct vhost_log *log, unsigned int *log_num);
++int vhost_get_vq_desc_viov_offset(struct vhost_virtqueue *vq,
++			   struct vhost_iov *viov,
++			   int offset,
++			   unsigned int *out_num, unsigned int *in_num,
++			   struct vhost_log *log, unsigned int *log_num);
+ void vhost_discard_vq_desc(struct vhost_virtqueue *, int n);
+ 
+ bool vhost_vq_is_setup(struct vhost_virtqueue *vq);
+@@ -207,7 +243,7 @@ bool vhost_enable_notify(struct vhost_dev *, struct vhost_virtqueue *);
+ 
+ int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
+ 		    unsigned int log_num, u64 len,
+-		    struct iovec *iov, int count);
++		    struct vhost_iov *viov, int count);
+ int vq_meta_prefetch(struct vhost_virtqueue *vq);
+ 
+ struct vhost_msg_node *vhost_new_msg(struct vhost_virtqueue *vq, int type);
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 938aefbc75ec..190e5a6ea045 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -158,14 +158,14 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 			break;
+ 		}
+ 
+-		iov_len = iov_length(&vq->iov[out], in);
++		iov_len = vhost_iov_length(vq, &vq->iov[out], in);
+ 		if (iov_len < sizeof(pkt->hdr)) {
+ 			virtio_transport_free_pkt(pkt);
+ 			vq_err(vq, "Buffer len [%zu] too small\n", iov_len);
+ 			break;
+ 		}
+ 
+-		iov_iter_init(&iov_iter, READ, &vq->iov[out], in, iov_len);
++		vhost_iov_iter_init(vq, &iov_iter, READ, &vq->iov[out], in, iov_len);
+ 		payload_len = pkt->len - pkt->off;
+ 
+ 		/* If the packet is greater than the space available in the
+@@ -370,8 +370,8 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+ 	if (!pkt)
+ 		return NULL;
+ 
+-	len = iov_length(vq->iov, out);
+-	iov_iter_init(&iov_iter, WRITE, vq->iov, out, len);
++	len = vhost_iov_length(vq, vq->iov, out);
++	vhost_iov_iter_init(vq, &iov_iter, WRITE, vq->iov, out, len);
+ 
+ 	nbytes = copy_from_iter(&pkt->hdr, sizeof(pkt->hdr), &iov_iter);
+ 	if (nbytes != sizeof(pkt->hdr)) {
 -- 
 2.28.0
 
