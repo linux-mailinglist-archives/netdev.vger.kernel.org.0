@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BD4641BF62
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 08:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61B5C41BFD9
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 09:26:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244415AbhI2G6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 02:58:14 -0400
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:45050 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229536AbhI2G6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 02:58:12 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Uq.dnIy_1632898588;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0Uq.dnIy_1632898588)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 29 Sep 2021 14:56:29 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>
-Subject: [PATCH -next] intel: Simplify bool conversion
-Date:   Wed, 29 Sep 2021 14:56:26 +0800
-Message-Id: <1632898586-96655-1-git-send-email-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S244645AbhI2H22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 03:28:28 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:33056 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244600AbhI2H22 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 03:28:28 -0400
+Received: by codeconstruct.com.au (Postfix, from userid 10001)
+        id E289720166; Wed, 29 Sep 2021 15:26:45 +0800 (AWST)
+From:   Matt Johnston <matt@codeconstruct.com.au>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Jeremy Kerr <jk@codeconstruct.com.au>
+Subject: [PATCH net-next 00/10] Updates to MCTP core
+Date:   Wed, 29 Sep 2021 15:26:04 +0800
+Message-Id: <20210929072614.854015-1-matt@codeconstruct.com.au>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccicheck warning:
-./drivers/net/ethernet/intel/i40e/i40e_xsk.c:229:35-40: WARNING:
-conversion to bool not needed here
-./drivers/net/ethernet/intel/ice/ice_xsk.c:399:35-40: WARNING:
-conversion to bool not needed here
+Hi,
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 2 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c   | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+This series adds timeouts for MCTP tags (a limited resource), and a few
+other improvements to the MCTP core.
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 6f85879..ea06e95 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -226,7 +226,7 @@ bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 count)
- 	rx_desc->wb.qword1.status_error_len = 0;
- 	i40e_release_rx_desc(rx_ring, ntu);
- 
--	return count == nb_buffs ? true : false;
-+	return count == nb_buffs;
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 7682eaa..35b6e81 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -396,7 +396,7 @@ bool ice_alloc_rx_bufs_zc(struct ice_ring *rx_ring, u16 count)
- 	rx_desc->wb.status_error0 = 0;
- 	ice_release_rx_desc(rx_ring, ntu);
- 
--	return count == nb_buffs ? true : false;
-+	return count == nb_buffs;
- }
- 
- /**
+Cheers,
+Matt
+
+Jeremy Kerr (7):
+  mctp: Allow local delivery to the null EID
+  mctp: locking, lifetime and validity changes for sk_keys
+  mctp: Add refcounts to mctp_dev
+  mctp: Implement a timeout for tags
+  mctp: Add tracepoints for tag/key handling
+  mctp: Do inits as a subsys_initcall
+  doc/mctp: Add a little detail about kernel internals
+
+Matt Johnston (3):
+  mctp: Allow MCTP on tun devices
+  mctp: Set route MTU via netlink
+  mctp: Warn if pointer is set for a wrong dev type
+
+ Documentation/networking/mctp.rst |  59 ++++++++++
+ include/net/mctp.h                |  56 ++++++---
+ include/net/mctpdevice.h          |   5 +
+ include/trace/events/mctp.h       |  75 ++++++++++++
+ net/mctp/af_mctp.c                |  66 +++++++++--
+ net/mctp/device.c                 |  53 +++++++--
+ net/mctp/neigh.c                  |   4 +-
+ net/mctp/route.c                  | 190 ++++++++++++++++++++++++------
+ 8 files changed, 431 insertions(+), 77 deletions(-)
+ create mode 100644 include/trace/events/mctp.h
+
 -- 
-1.8.3.1
+2.30.2
 
