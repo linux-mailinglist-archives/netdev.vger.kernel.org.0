@@ -2,131 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE4D341C466
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 14:15:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C588A41C4AA
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 14:25:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343724AbhI2MQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 08:16:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58334 "EHLO mail.kernel.org"
+        id S1343763AbhI2M07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 08:26:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37494 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245720AbhI2MQV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Sep 2021 08:16:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8D363613D1;
-        Wed, 29 Sep 2021 12:14:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632917680;
-        bh=Gk5L1HO79jr/JO19wYKh1z/Tzn+nTQ0k9HT+5hhX858=;
+        id S1343657AbhI2M0p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Sep 2021 08:26:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F09DB6134F;
+        Wed, 29 Sep 2021 12:25:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1632918304;
+        bh=wWhYoJmf5o0goYtd67yiGvYSKB/JovKlR7TP3Zqi99g=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jG+uzh7KqpR3d2Dl/n6y4EInRtz0NPTN6gMkdo3y88cIBH1wGZk7xwLT5VTJ/HoeY
-         vH8r/dbGc3iZ43XmxOBCEhU1JlEOj+lQ/x9GozdXnY5ZV/9arRP7aVpG0EMC5oF66n
-         NZNcj/gY2f1gPnhOOJePuImq78ydHkhSgDR/KzN2HflgTncwOi+AyFwNKH8OOyAmSq
-         6l1ipIL5R+lg2pfxA0+Q+nIb7cbTeVDGvkFe0PcDxtSqyqK+0W7m5xKVw96FeZOLiz
-         bXFAWsapEUZOERtnSRUp18n1xhHZjGmwxW+nt/yZLAbIwPrGUM0K+agFomX6rK2TU7
-         FTw53oIpjSl5g==
-Date:   Wed, 29 Sep 2021 15:14:36 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Mark Zhang <markzhang@nvidia.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Aharon Landau <aharonl@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Gal Pressman <galpress@amazon.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        Neta Ostrovsky <netao@nvidia.com>, netdev@vger.kernel.org,
-        Potnuri Bharat Teja <bharat@chelsio.com>,
+        b=FOgYB8oD4xLYiT0MCbtWOdRGH09IaQNPSb9EOFkBWsnpoxLHGflJa7ENoq5BBegTA
+         /idNuAQ88djuyX6GEANEa3D9oBEdUuEjGy3rDzcd4GQcWFa+2U/Gw+KtNXffW4v0Ud
+         7oDuoKWmOB12QpwjmS0H8zNQahoQsoL0nRw6FaFU=
+Date:   Wed, 29 Sep 2021 14:25:00 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ariel Elior <aelior@marvell.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Derek Chickles <dchickles@marvell.com>, drivers@pensando.io,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        hariprasad <hkelam@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-staging@lists.linux.dev,
+        Manish Chopra <manishc@marvell.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Moshe Shemesh <moshe@nvidia.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com,
+        Richard Cochran <richardcochran@gmail.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH rdma-next v1 05/11] RDMA/counter: Add optional counter
- support
-Message-ID: <YVRYrNRkWokr3Xsc@unreal>
-References: <cover.1631660727.git.leonro@nvidia.com>
- <04bd7354c6a375e684712d79915f7eb816efee92.1631660727.git.leonro@nvidia.com>
- <20210927170318.GB1529966@nvidia.com>
- <d9cd401a-b5fe-65ea-21c4-6d4c037fd641@nvidia.com>
- <20210928115135.GG964074@nvidia.com>
+        Salil Mehta <salil.mehta@huawei.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Shay Drory <shayd@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next v1 3/5] devlink: Allow set specific ops
+ callbacks dynamically
+Message-ID: <YVRbHMODzcciHa2p@kroah.com>
+References: <cover.1632916329.git.leonro@nvidia.com>
+ <aac64d4861d6207a90a6d45245ee5ed59114659a.1632916329.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210928115135.GG964074@nvidia.com>
+In-Reply-To: <aac64d4861d6207a90a6d45245ee5ed59114659a.1632916329.git.leonro@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 08:51:35AM -0300, Jason Gunthorpe wrote:
-> On Tue, Sep 28, 2021 at 05:03:24PM +0800, Mark Zhang wrote:
-> > On 9/28/2021 1:03 AM, Jason Gunthorpe wrote:
-> > > On Wed, Sep 15, 2021 at 02:07:24AM +0300, Leon Romanovsky wrote:
-> > > > +int rdma_counter_modify(struct ib_device *dev, u32 port, int index, bool enable)
-> > > > +{
-> > > > +	struct rdma_hw_stats *stats;
-> > > > +	int ret;
-> > > > +
-> > > > +	if (!dev->ops.modify_hw_stat)
-> > > > +		return -EOPNOTSUPP;
-> > > > +
-> > > > +	stats = ib_get_hw_stats_port(dev, port);
-> > > > +	if (!stats)
-> > > > +		return -EINVAL;
-> > > > +
-> > > > +	mutex_lock(&stats->lock);
-> > > > +	ret = dev->ops.modify_hw_stat(dev, port, index, enable);
-> > > > +	if (!ret)
-> > > > +		enable ? clear_bit(index, stats->is_disabled) :
-> > > > +			set_bit(index, stats->is_disabled);
-> > > 
-> > > This is not a kernel coding style write out the if, use success
-> > > oriented flow
-> > > 
-> > > Also, shouldn't this logic protect the driver from being called on
-> > > non-optional counters?
-> > 
-> > We leave it to driver, driver would return failure if modify is not
-> > supported. Is it good?
-> 
-> I think the core code should do it
-> 
-> > > >   	for (i = 0; i < data->stats->num_counters; i++) {
-> > > > -		attr = &data->attrs[i];
-> > > > +		if (data->stats->descs[i].flags & IB_STAT_FLAG_OPTIONAL)
-> > > > +			continue;
-> > > > +		attr = &data->attrs[pos];
-> > > >   		sysfs_attr_init(&attr->attr.attr);
-> > > >   		attr->attr.attr.name = data->stats->descs[i].name;
-> > > >   		attr->attr.attr.mode = 0444;
-> > > >   		attr->attr.show = hw_stat_device_show;
-> > > >   		attr->show = show_hw_stats;
-> > > > -		data->group.attrs[i] = &attr->attr.attr;
-> > > > +		data->group.attrs[pos] = &attr->attr.attr;
-> > > > +		pos++;
-> > > >   	}
-> > > 
-> > > This isn't OK, the hw_stat_device_show() computes the stat index like
-> > > this:
-> > > 
-> > > 	return stat_attr->show(ibdev, ibdev->hw_stats_data->stats,
-> > > 			       stat_attr - ibdev->hw_stats_data->attrs, 0, buf);
-> > > 
-> > > Which assumes the stats are packed contiguously. This only works
-> > > because mlx5 is always putting the optional stats at the end.
-> > 
-> > Yes you are right, thanks. Maybe we can add an "index" field in struct
-> > hw_stats_device/port_attribute, then set it in setup and use it in show.
-> 
-> You could just add a WARN_ON check that optional stats are at the end
-> I suppose
+On Wed, Sep 29, 2021 at 03:00:44PM +0300, Leon Romanovsky wrote:
+> +void devlink_set_ops(struct devlink *devlink, struct devlink_ops *ops)
+> +{
+> +	struct devlink_ops *dev_ops = devlink->ops;
+> +
+> +	WARN_ON(!devlink_reload_actions_valid(ops));
+> +
+> +#define SET_DEVICE_OP(ptr, op, name)                                           \
+> +	do {                                                                   \
+> +		if ((op)->name)                                                \
+> +			if (!((ptr)->name))                                    \
+> +				(ptr)->name = (op)->name;                      \
+> +	} while (0)
+> +
+> +	/* Keep sorted */
+> +	SET_DEVICE_OP(dev_ops, ops, reload_actions);
+> +	SET_DEVICE_OP(dev_ops, ops, reload_down);
+> +	SET_DEVICE_OP(dev_ops, ops, reload_limits);
+> +	SET_DEVICE_OP(dev_ops, ops, reload_up);
 
-Everyone adds their counters to the end, last example is bnxt_re
-9a381f7e5aa2 ("RDMA/bnxt_re: Add extended statistics counters")
+Keep sorted in what order?  And why?
 
-Thanks
+thanks,
 
-> 
-> Jason
+greg k-h
