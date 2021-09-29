@@ -2,158 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDE7241C35A
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 13:21:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93EDC41C367
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 13:25:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245711AbhI2LWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 07:22:20 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:17600 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231261AbhI2LWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 07:22:05 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18T9BfTU004513;
-        Wed, 29 Sep 2021 07:19:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=+g8wp0I/DHpzgUrFDoHUxVuRI/eutiJXiCB45G6x38I=;
- b=r1aB7vwOZYybRexjIDEUwEv/8TAYbYNwtIxrKA8b3JpEX8Not6xFrdCvgGk6ewXL1SxD
- 6Nn3m5OLSYRFJUQ8vES3reoNrC90jYbsb0hFvMdiITZOk9oYt4JKO0lINN6SydnJ/Yp1
- S1JudFd+CaNLTe0UCY16eRHVztnBSUIvfkbtZTtj9fAjb/IaCCe6t5sfiKp0r1IYZN8Z
- fpY47Ja0Sjm+UNdolUC4r2264kbTVefmNq3EPy10tsWF1ooCbSrbMTsONMAlkm3VcJWA
- 66bO8Y9WpfAOyJy7Wt+44Jy1HVZ3GXne/KoAkZAWb2uWDjz6nSLUmzzSZQzyb57Rw4DH lQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bcn9y2n6x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Sep 2021 07:19:54 -0400
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 18TAR9Bc018533;
-        Wed, 29 Sep 2021 07:19:54 -0400
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bcn9y2n69-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Sep 2021 07:19:54 -0400
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18TBDLcu021974;
-        Wed, 29 Sep 2021 11:19:51 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06fra.de.ibm.com with ESMTP id 3b9u1k58e7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Sep 2021 11:19:51 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 18TBJlrH46006534
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Sep 2021 11:19:47 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6617842059;
-        Wed, 29 Sep 2021 11:19:47 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BAD8242074;
-        Wed, 29 Sep 2021 11:19:42 +0000 (GMT)
-Received: from hbathini-workstation.ibm.com.com (unknown [9.43.83.199])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 29 Sep 2021 11:19:42 +0000 (GMT)
-From:   Hari Bathini <hbathini@linux.ibm.com>
-To:     naveen.n.rao@linux.ibm.com, christophe.leroy@csgroup.eu,
-        mpe@ellerman.id.au, ast@kernel.org, daniel@iogearbox.net
-Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org,
-        Hari Bathini <hbathini@linux.ibm.com>
-Subject: [PATCH v4 8/8] bpf ppc32: Access only if addr is kernel address
-Date:   Wed, 29 Sep 2021 16:48:55 +0530
-Message-Id: <20210929111855.50254-9-hbathini@linux.ibm.com>
+        id S244807AbhI2L1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 07:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56922 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244528AbhI2L1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 07:27:08 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEF4C06161C
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 04:25:26 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id g41so9382752lfv.1
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 04:25:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=18QIUUZxp5qOvCoDwCvZFa4Ni+X1+Oj0cdvtjpdBJiM=;
+        b=ZePE9kwX229auryBnfZKhnes7mFNagvIlxTm15GUEKJbrAKIIOiuGu0cQqGuLW/2XQ
+         HqvvtDctccWZZl9cWyyhzXkqiszlSxfTdBNunqOFODcMKABf+ng116fY3HLrQz2PdSD4
+         PczMZ3bcHCcr0O5v+6tyfQm1UUIYwyWq5NAg2vRHwn3QFNg1YJCvFvmx2eaVlOEf+Y7L
+         zElWMM2hLIJlNqNXGCJD+9n6l4XaKxEr8L+qjdaT85mE20wuzbVeri/UwTZifVg0VXJt
+         gBFO0/iHz9EPVTgbwEZYZHd0sfhbL38yhIjFsPgk+UrDqf7SBrTEG+W0xR26HDyunJcL
+         tgpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=18QIUUZxp5qOvCoDwCvZFa4Ni+X1+Oj0cdvtjpdBJiM=;
+        b=LHawerZ0lQd3r2lC0w8Zlt0bTv8EOxDWgz1yTtcE0HVY7pKAeqlx9jHVfZagIcr0rg
+         H1llNRCzfscs2j35nFiBq8nhqZWdZznkczLO92+j8R67aLqABscpqNjb9ERX1JBOEj4t
+         G7pVAaBJ3DRHL6lhGigJE9wQs3KECSFELtNeIPlppbeUh4dGdRv5q3X/4VIxIpoBJehx
+         Q/7PGRAKn0QMyaIw8piBJEgJb8LmuGsYtAdEE+I5KWbUABvbkuHjIqz+BZBO5MSCa3DD
+         DCaMagsCjP2zG0FTz5t0EMjA+U/85I51PNbWnZrTczirgWyuVSHEYbYfn79JULXyLIEP
+         u7cA==
+X-Gm-Message-State: AOAM531iimnLjYIjoRHOJjJUYkcnd15hwhEQEmxqSBvy8YaYaxd4aRpT
+        f6r0ViTyITJG0yfJzLoemQtrrg==
+X-Google-Smtp-Source: ABdhPJyeGveaPV5e5qX7NRUBE7tRuRUucI/ggniaYJo+mM81+O4XcbFhkTn5TLr0oCuqro7FlwGVHg==
+X-Received: by 2002:a2e:bf18:: with SMTP id c24mr5622371ljr.408.1632914724678;
+        Wed, 29 Sep 2021 04:25:24 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id br40sm213293lfb.64.2021.09.29.04.25.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Sep 2021 04:25:24 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Mauri Sandberg <sandberg@mailfence.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
+Subject: [PATCH] net: dsa: rtl8366rb: Use core filtering tracking
+Date:   Wed, 29 Sep 2021 13:23:22 +0200
+Message-Id: <20210929112322.122140-1-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210929111855.50254-1-hbathini@linux.ibm.com>
-References: <20210929111855.50254-1-hbathini@linux.ibm.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 0r5rBPmu5aLXQxKkUK8bV1NpmjCe6INr
-X-Proofpoint-ORIG-GUID: pGdPj2uMhdqx_HZhWITf2bGg7EIsb0PY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-29_04,2021-09-29_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 mlxscore=0 malwarescore=0 mlxlogscore=999
- lowpriorityscore=0 spamscore=0 adultscore=0 bulkscore=0 clxscore=1015
- impostorscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2109230001 definitions=main-2109290068
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With KUAP enabled, any kernel code which wants to access userspace
-needs to be surrounded by disable-enable KUAP. But that is not
-happening for BPF_PROBE_MEM load instruction. Though PPC32 does not
-support read protection, considering the fact that PTR_TO_BTF_ID
-(which uses BPF_PROBE_MEM mode) could either be a valid kernel pointer
-or NULL but should never be a pointer to userspace address, execute
-BPF_PROBE_MEM load only if addr is kernel address, otherwise set
-dst_reg=0 and move on.
+We added a state variable to track whether a certain port
+was VLAN filtering or not, but we can just inquire the DSA
+core about this.
 
-This will catch NULL, valid or invalid userspace pointers. Only bad
-kernel pointer will be handled by BPF exception table.
-
-[Alexei suggested for x86]
-Suggested-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+Cc: Vladimir Oltean <olteanv@gmail.com>
+Cc: Mauri Sandberg <sandberg@mailfence.com>
+Cc: DENG Qingfang <dqfext@gmail.com>
+Cc: Alvin Šipraga <alsi@bang-olufsen.dk>
+Cc: Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
+This fixes the diff between patch sets v7 and v8.
+---
+ drivers/net/dsa/rtl8366rb.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Changes in v4:
-* Adjusted the emit code to avoid using temporary reg.
-
-
- arch/powerpc/net/bpf_jit_comp32.c | 34 +++++++++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
-
-diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
-index 6ee13a09c70d..2ac81563c78d 100644
---- a/arch/powerpc/net/bpf_jit_comp32.c
-+++ b/arch/powerpc/net/bpf_jit_comp32.c
-@@ -818,6 +818,40 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
- 		case BPF_LDX | BPF_PROBE_MEM | BPF_W:
- 		case BPF_LDX | BPF_MEM | BPF_DW: /* dst = *(u64 *)(ul) (src + off) */
- 		case BPF_LDX | BPF_PROBE_MEM | BPF_DW:
-+			/*
-+			 * As PTR_TO_BTF_ID that uses BPF_PROBE_MEM mode could either be a valid
-+			 * kernel pointer or NULL but not a userspace address, execute BPF_PROBE_MEM
-+			 * load only if addr is kernel address (see is_kernel_addr()), otherwise
-+			 * set dst_reg=0 and move on.
-+			 */
-+			if (BPF_MODE(code) == BPF_PROBE_MEM) {
-+				PPC_LI32(_R0, TASK_SIZE - off);
-+				EMIT(PPC_RAW_CMPLW(src_reg, _R0));
-+				PPC_BCC(COND_GT, (ctx->idx + 5) * 4);
-+				EMIT(PPC_RAW_LI(dst_reg, 0));
-+				/*
-+				 * For BPF_DW case, "li reg_h,0" would be needed when
-+				 * !fp->aux->verifier_zext. Emit NOP otherwise.
-+				 *
-+				 * Note that "li reg_h,0" is emitted for BPF_B/H/W case,
-+				 * if necessary. So, jump there insted of emitting an
-+				 * additional "li reg_h,0" instruction.
-+				 */
-+				if (size == BPF_DW && !fp->aux->verifier_zext)
-+					EMIT(PPC_RAW_LI(dst_reg_h, 0));
-+				else
-+					EMIT(PPC_RAW_NOP());
-+				/*
-+				 * Need to jump two instructions instead of one for BPF_DW case
-+				 * as there are two load instructions for dst_reg_h & dst_reg
-+				 * respectively.
-+				 */
-+				if (size == BPF_DW)
-+					PPC_JMP((ctx->idx + 3) * 4);
-+				else
-+					PPC_JMP((ctx->idx + 2) * 4);
-+			}
-+
- 			switch (size) {
- 			case BPF_B:
- 				EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index 6382404814c3..bb9d017c2f9f 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -337,12 +337,10 @@
+  * struct rtl8366rb - RTL8366RB-specific data
+  * @max_mtu: per-port max MTU setting
+  * @pvid_enabled: if PVID is set for respective port
+- * @vlan_filtering: if VLAN filtering is enabled for respective port
+  */
+ struct rtl8366rb {
+ 	unsigned int max_mtu[RTL8366RB_NUM_PORTS];
+ 	bool pvid_enabled[RTL8366RB_NUM_PORTS];
+-	bool vlan_filtering[RTL8366RB_NUM_PORTS];
+ };
+ 
+ static struct rtl8366_mib_counter rtl8366rb_mib_counters[] = {
+@@ -1262,12 +1260,9 @@ static int rtl8366rb_vlan_filtering(struct dsa_switch *ds, int port,
+ 	if (ret)
+ 		return ret;
+ 
+-	/* Keep track if filtering is enabled on each port */
+-	rb->vlan_filtering[port] = vlan_filtering;
+-
+ 	/* If VLAN filtering is enabled and PVID is also enabled, we must
+ 	 * not drop any untagged or C-tagged frames. If we turn off VLAN
+-	 * filtering on a port, we need ti accept any frames.
++	 * filtering on a port, we need to accept any frames.
+ 	 */
+ 	if (vlan_filtering)
+ 		ret = rtl8366rb_drop_untagged(smi, port, !rb->pvid_enabled[port]);
+@@ -1512,7 +1507,7 @@ static int rtl8366rb_set_mc_index(struct realtek_smi *smi, int port, int index)
+ 	 * not drop any untagged or C-tagged frames. Make sure to update the
+ 	 * filtering setting.
+ 	 */
+-	if (rb->vlan_filtering[port])
++	if (dsa_port_is_vlan_filtering(dsa_to_port(smi->ds, port)))
+ 		ret = rtl8366rb_drop_untagged(smi, port, !pvid_enabled);
+ 
+ 	return ret;
 -- 
 2.31.1
 
