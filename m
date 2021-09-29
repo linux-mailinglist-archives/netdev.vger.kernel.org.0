@@ -2,217 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E89A041C86A
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:30:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C46541C85E
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 17:29:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345320AbhI2Pbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 11:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
+        id S1345240AbhI2Pai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 11:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345310AbhI2Pbf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:31:35 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A6FC06161C
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:29:53 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id dj4so10525855edb.5
-        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:29:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=t8pP26/7fb5Wq+dpeoArozy4Jca0fDg3x4MgpY2CvXY=;
-        b=w1dP7KQsV+0AZQp0DZAVlJ0jJ5clsLTFD5g2mjiy3f7J3suDb+Th1UOCHOb9KbIAZS
-         g1ves4JPO74hBF8f9jfq3EiTDj12S+GE2PpKnWe6M+pUrqL8wjJbj/arAY80Qi1XPY7U
-         nNNSZtq2uUeYZ5HbSziH3bRFxviLNEcXTMD3zD50tZT++jxxf5csd60fJedy2Qi9zl34
-         L/jaC6jRGTjhyUJZcokGvFExWBY1o8MCXQhOn7prNoA29ry12lu9PfuJasN+GU+JWwqs
-         PFSGY31URbA/PHiAu2MqtF1Tf7u91PzzIGRTz2jLLXv3oPkrY0hAkwBVQdTFtJukN7c+
-         +sXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=t8pP26/7fb5Wq+dpeoArozy4Jca0fDg3x4MgpY2CvXY=;
-        b=4vj0XLbg3X0C6FHS42Dl2wmGMKkcpyGVcAVj0KQmduN8KucINjVmvEE05oADp5OHSO
-         kL3g3WKG3D6+gs/FriyAN1BfP9OK0oJd9hXUos68m3JaIeWe8o1BhA3EotXTnjLVX5zT
-         omXGXmpVrjy704FRrKu6qkZMnQ7RabLpzUsaUvtPCOTuw4tZ49ova0imL8k5dkGDcfFE
-         9Bsf+f7zBdshwGFYP1Y0niD5Px464Ntk27+YEDBkimsGG7dA64KExh/gFRuXZ+V+lI4j
-         fWnAlRxAqHRyqlmBR8R4guoGldH3Qer6mTgoc4nAtGNu+8DBIXRnlTY0ns/aiTtrVBPN
-         YC8g==
-X-Gm-Message-State: AOAM533ozANULmtOcnEx0kmUhe03mvd5z0Iik0FLqV+QXcQ/91OXKUI0
-        U7eJi+uctjSwZz0DzBuwUXtMJxMStNSO/+ys
-X-Google-Smtp-Source: ABdhPJw8s24H0nJhtp72jqVkDQvgwQu2EK6pZgTHTDX53e+EeYpyM6EiQ+eu6NEL2OIrMOpDOR5AEg==
-X-Received: by 2002:a05:6402:16d8:: with SMTP id r24mr562317edx.47.1632929345861;
-        Wed, 29 Sep 2021 08:29:05 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id q12sm108434ejs.58.2021.09.29.08.29.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Sep 2021 08:29:05 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, donaldsharp72@gmail.com, dsahern@gmail.com,
-        idosch@idosch.org, Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [RFC iproute2-next 11/11] ip: nexthop: add print_cache_nexthop which prints and manages the nh cache
-Date:   Wed, 29 Sep 2021 18:28:48 +0300
-Message-Id: <20210929152848.1710552-12-razor@blackwall.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210929152848.1710552-1-razor@blackwall.org>
-References: <20210929152848.1710552-1-razor@blackwall.org>
+        with ESMTP id S1345157AbhI2Pah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 11:30:37 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80571C06161C
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 08:28:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=EE0SZBTdfOx3aQZvqzWhLaHRmp63ZVqI/aHzXTZCU88=; b=rCLsw5YUYvLB7R5kIAR4DVhOsk
+        wu0ZcfpdsFyb0R6OezQri40s2NmhwI8/nMoqhWaZqLhIZz7HYFX++X/iEV27M9qerH7WBNHqRJ0NN
+        28DzgCznjI95IhoTcTtMjbijZse6+eNm/QsxUSnwjAMig8svOGvr3ZqaPT1NA1M17/e8wo12XueiY
+        6ebPtpXoHQDrZKw/eatlCt5Gk6jeQ5FYNKxZOCC18Y0wIMu/4NhN2POrJOQohB+veQHOLTZO7b8Jl
+        SasgCsjbIIN8ELgPMvdCwFIHn5M3vPne0myBpcxbak5vLkiBbPbcJq/Mto9fcAVlAUqMHpcdYcBJ1
+        jwLLn2Pw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:51450 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mVbVt-0002Oy-S2; Wed, 29 Sep 2021 16:28:53 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mVbVt-0004Fh-Dv; Wed, 29 Sep 2021 16:28:53 +0100
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "Marek Beh__n" <kabel@kernel.org>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v2 net-next] net: phy: marvell10g: add downshift tunable
+ support
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1mVbVt-0004Fh-Dv@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Wed, 29 Sep 2021 16:28:53 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+Add support for the downshift tunable for the Marvell 88x3310 PHY.
+Downshift is only usable with firmware 0.3.5.0 and later.
 
-Add a new helper print_cache_nexthop replacing print_nexthop which can
-update the nexthop cache if the process_cache argument is true. It is
-used when monitoring netlink messages to keep the nexthop cache up to
-date with nexthop changes happening. For the old callers and anyone
-who's just dumping nexthops its _nocache version is used which is a
-wrapper for print_cache_nexthop.
-
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- ip/ip_common.h |  1 -
- ip/ipmonitor.c |  3 ++-
- ip/ipnexthop.c | 53 ++++++++++++++++++++++++++++++++++++++++++++++----
- ip/nh_common.h |  1 +
- 4 files changed, 52 insertions(+), 6 deletions(-)
+v2: updated comment
 
-diff --git a/ip/ip_common.h b/ip/ip_common.h
-index a02a3b96f7fd..ea04c8ff3dea 100644
---- a/ip/ip_common.h
-+++ b/ip/ip_common.h
-@@ -53,7 +53,6 @@ int print_prefix(struct nlmsghdr *n, void *arg);
- int print_rule(struct nlmsghdr *n, void *arg);
- int print_netconf(struct rtnl_ctrl_data *ctrl,
- 		  struct nlmsghdr *n, void *arg);
--int print_nexthop(struct nlmsghdr *n, void *arg);
- int print_nexthop_bucket(struct nlmsghdr *n, void *arg);
- void netns_map_init(void);
- void netns_nsid_socket_init(void);
-diff --git a/ip/ipmonitor.c b/ip/ipmonitor.c
-index ab1af2ebd6df..0badda4e7812 100644
---- a/ip/ipmonitor.c
-+++ b/ip/ipmonitor.c
+ drivers/net/phy/marvell10g.c | 107 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 106 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index bd310e8d5e43..b6fea119fe13 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
 @@ -22,6 +22,7 @@
+  * If both the fiber and copper ports are connected, the first to gain
+  * link takes priority and the other port is completely locked out.
+  */
++#include <linux/bitfield.h>
+ #include <linux/ctype.h>
+ #include <linux/delay.h>
+ #include <linux/hwmon.h>
+@@ -33,6 +34,8 @@
+ #define MV_PHY_ALASKA_NBT_QUIRK_MASK	0xfffffffe
+ #define MV_PHY_ALASKA_NBT_QUIRK_REV	(MARVELL_PHY_ID_88X3310 | 0xa)
  
- #include "utils.h"
- #include "ip_common.h"
-+#include "nh_common.h"
++#define MV_VERSION(a,b,c,d) ((a) << 24 | (b) << 16 | (c) << 8 | (d))
++
+ enum {
+ 	MV_PMA_FW_VER0		= 0xc011,
+ 	MV_PMA_FW_VER1		= 0xc012,
+@@ -62,6 +65,15 @@ enum {
+ 	MV_PCS_CSCR1_MDIX_MDIX	= 0x0020,
+ 	MV_PCS_CSCR1_MDIX_AUTO	= 0x0060,
  
- static void usage(void) __attribute__((noreturn));
- static int prefix_banner;
-@@ -88,7 +89,7 @@ static int accept_msg(struct rtnl_ctrl_data *ctrl,
- 	case RTM_NEWNEXTHOP:
- 	case RTM_DELNEXTHOP:
- 		print_headers(fp, "[NEXTHOP]", ctrl);
--		print_nexthop(n, arg);
-+		print_cache_nexthop(n, arg, true);
- 		return 0;
++	MV_PCS_DSC1		= 0x8003,
++	MV_PCS_DSC1_ENABLE	= BIT(9),
++	MV_PCS_DSC1_10GBT	= 0x01c0,
++	MV_PCS_DSC1_1GBR	= 0x0038,
++	MV_PCS_DSC1_100BTX	= 0x0007,
++	MV_PCS_DSC2		= 0x8004,
++	MV_PCS_DSC2_2P5G	= 0xf000,
++	MV_PCS_DSC2_5G		= 0x0f00,
++
+ 	MV_PCS_CSSR1		= 0x8008,
+ 	MV_PCS_CSSR1_SPD1_MASK	= 0xc000,
+ 	MV_PCS_CSSR1_SPD1_SPD2	= 0xc000,
+@@ -125,6 +137,7 @@ enum {
+ };
  
- 	case RTM_NEWNEXTHOPBUCKET:
-diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-index fdd0d0926630..43dc238c7725 100644
---- a/ip/ipnexthop.c
-+++ b/ip/ipnexthop.c
-@@ -602,7 +602,43 @@ static void __print_nexthop_entry(FILE *fp, const char *jsobj,
- 	close_json_object();
+ struct mv3310_chip {
++	bool (*has_downshift)(struct phy_device *phydev);
+ 	void (*init_supported_interfaces)(unsigned long *mask);
+ 	int (*get_mactype)(struct phy_device *phydev);
+ 	int (*init_interface)(struct phy_device *phydev, int mactype);
+@@ -138,6 +151,7 @@ struct mv3310_priv {
+ 	DECLARE_BITMAP(supported_interfaces, PHY_INTERFACE_MODE_MAX);
+ 
+ 	u32 firmware_ver;
++	bool has_downshift;
+ 	bool rate_match;
+ 	phy_interface_t const_interface;
+ 
+@@ -330,6 +344,71 @@ static int mv3310_reset(struct phy_device *phydev, u32 unit)
+ 					 5000, 100000, true);
  }
  
--int print_nexthop(struct nlmsghdr *n, void *arg)
-+/* update, add or delete a nexthop entry based on nlmsghdr */
-+static int ipnh_cache_process_nlmsg(const struct nlmsghdr *n,
-+				    struct nh_entry *new_nhe)
++static int mv3310_get_downshift(struct phy_device *phydev, u8 *ds)
 +{
-+	struct nh_entry *nhe;
++	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
++	int val;
 +
-+	nhe = ipnh_cache_get(new_nhe->nh_id);
-+	switch (n->nlmsg_type) {
-+	case RTM_DELNEXTHOP:
-+		if (nhe)
-+			ipnh_cache_del(nhe);
-+		ipnh_destroy_entry(new_nhe);
-+		break;
-+	case RTM_NEWNEXTHOP:
-+		if (!nhe) {
-+			nhe = malloc(sizeof(*nhe));
-+			if (!nhe) {
-+				ipnh_destroy_entry(new_nhe);
-+				return -1;
-+			}
-+		} else {
-+			/* this allows us to save 1 allocation on updates by
-+			 * reusing the old nh entry, but we need to cleanup its
-+			 * internal storage
-+			 */
-+			ipnh_cache_unlink_entry(nhe);
-+			ipnh_destroy_entry(nhe);
-+		}
-+		memcpy(nhe, new_nhe, sizeof(*nhe));
-+		ipnh_cache_link_entry(nhe);
-+		break;
-+	}
++	if (!priv->has_downshift)
++		return -EOPNOTSUPP;
++
++	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1);
++	if (val < 0)
++		return val;
++
++	if (val & MV_PCS_DSC1_ENABLE)
++		/* assume that all fields are the same */
++		*ds = 1 + FIELD_GET(MV_PCS_DSC1_10GBT, (u16)val);
++	else
++		*ds = DOWNSHIFT_DEV_DISABLE;
 +
 +	return 0;
 +}
 +
-+int print_cache_nexthop(struct nlmsghdr *n, void *arg, bool process_cache)
- {
- 	struct nhmsg *nhm = NLMSG_DATA(n);
- 	FILE *fp = (FILE *)arg;
-@@ -635,11 +671,20 @@ int print_nexthop(struct nlmsghdr *n, void *arg)
- 	__print_nexthop_entry(fp, NULL, &nhe, n->nlmsg_type == RTM_DELNEXTHOP);
- 	print_string(PRINT_FP, NULL, "%s", "\n");
- 	fflush(fp);
--	ipnh_destroy_entry(&nhe);
-+
-+	if (process_cache)
-+		ipnh_cache_process_nlmsg(n, &nhe);
-+	else
-+		ipnh_destroy_entry(&nhe);
- 
- 	return 0;
- }
- 
-+static int print_nexthop_nocache(struct nlmsghdr *n, void *arg)
++static int mv3310_set_downshift(struct phy_device *phydev, u8 ds)
 +{
-+	return print_cache_nexthop(n, arg, false);
++	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
++	u16 val;
++	int err;
++
++	if (!priv->has_downshift)
++		return -EOPNOTSUPP;
++
++	if (ds == DOWNSHIFT_DEV_DISABLE)
++		return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
++					  MV_PCS_DSC1_ENABLE);
++
++	/* DOWNSHIFT_DEV_DEFAULT_COUNT is confusing. It looks like it should
++	 * set the default settings for the PHY. However, it is used for
++	 * "ethtool --set-phy-tunable ethN downshift on". The intention is
++	 * to enable downshift at a default number of retries. The default
++	 * settings for 88x3310 are for two retries with downshift disabled.
++	 * So let's use two retries with downshift enabled.
++	 */
++	if (ds == DOWNSHIFT_DEV_DEFAULT_COUNT)
++		ds = 2;
++
++	if (ds > 8)
++		return -E2BIG;
++
++	ds -= 1;
++	val = FIELD_PREP(MV_PCS_DSC2_2P5G, ds);
++	val |= FIELD_PREP(MV_PCS_DSC2_5G, ds);
++	err = phy_modify_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC2,
++			     MV_PCS_DSC2_2P5G | MV_PCS_DSC2_5G, val);
++	if (err < 0)
++		return err;
++
++	val = MV_PCS_DSC1_ENABLE;
++	val |= FIELD_PREP(MV_PCS_DSC1_10GBT, ds);
++	val |= FIELD_PREP(MV_PCS_DSC1_1GBR, ds);
++	val |= FIELD_PREP(MV_PCS_DSC1_100BTX, ds);
++
++	return phy_modify_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
++			      MV_PCS_DSC1_ENABLE | MV_PCS_DSC1_10GBT |
++			      MV_PCS_DSC1_1GBR | MV_PCS_DSC1_100BTX, val);
 +}
 +
- void print_cache_nexthop_id(FILE *fp, const char *fp_prefix, const char *jsobj,
- 			    __u32 nh_id)
+ static int mv3310_get_edpd(struct phy_device *phydev, u16 *edpd)
  {
-@@ -967,7 +1012,7 @@ static int ipnh_get_id(__u32 id)
+ 	int val;
+@@ -448,6 +527,9 @@ static int mv3310_probe(struct phy_device *phydev)
+ 		    priv->firmware_ver >> 24, (priv->firmware_ver >> 16) & 255,
+ 		    (priv->firmware_ver >> 8) & 255, priv->firmware_ver & 255);
  
- 	new_json_obj(json);
- 
--	if (print_nexthop(answer, (void *)stdout) < 0) {
-+	if (print_nexthop_nocache(answer, (void *)stdout) < 0) {
- 		free(answer);
- 		return -1;
++	if (chip->has_downshift)
++		priv->has_downshift = chip->has_downshift(phydev);
++
+ 	/* Powering down the port when not in use saves about 600mW */
+ 	ret = mv3310_power_down(phydev);
+ 	if (ret)
+@@ -616,7 +698,16 @@ static int mv3310_config_init(struct phy_device *phydev)
  	}
-@@ -1052,7 +1097,7 @@ static int ipnh_list_flush(int argc, char **argv, int action)
  
- 	new_json_obj(json);
+ 	/* Enable EDPD mode - saving 600mW */
+-	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
++	err = mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
++	if (err)
++		return err;
++
++	/* Allow downshift */
++	err = mv3310_set_downshift(phydev, DOWNSHIFT_DEV_DEFAULT_COUNT);
++	if (err && err != -EOPNOTSUPP)
++		return err;
++
++	return 0;
+ }
  
--	if (rtnl_dump_filter(&rth, print_nexthop, stdout) < 0) {
-+	if (rtnl_dump_filter(&rth, print_nexthop_nocache, stdout) < 0) {
- 		fprintf(stderr, "Dump terminated\n");
- 		return -2;
+ static int mv3310_get_features(struct phy_device *phydev)
+@@ -886,6 +977,8 @@ static int mv3310_get_tunable(struct phy_device *phydev,
+ 			      struct ethtool_tunable *tuna, void *data)
+ {
+ 	switch (tuna->id) {
++	case ETHTOOL_PHY_DOWNSHIFT:
++		return mv3310_get_downshift(phydev, data);
+ 	case ETHTOOL_PHY_EDPD:
+ 		return mv3310_get_edpd(phydev, data);
+ 	default:
+@@ -897,6 +990,8 @@ static int mv3310_set_tunable(struct phy_device *phydev,
+ 			      struct ethtool_tunable *tuna, const void *data)
+ {
+ 	switch (tuna->id) {
++	case ETHTOOL_PHY_DOWNSHIFT:
++		return mv3310_set_downshift(phydev, *(u8 *)data);
+ 	case ETHTOOL_PHY_EDPD:
+ 		return mv3310_set_edpd(phydev, *(u16 *)data);
+ 	default:
+@@ -904,6 +999,14 @@ static int mv3310_set_tunable(struct phy_device *phydev,
  	}
-diff --git a/ip/nh_common.h b/ip/nh_common.h
-index a672d658a9ea..2ad8b134f891 100644
---- a/ip/nh_common.h
-+++ b/ip/nh_common.h
-@@ -48,5 +48,6 @@ struct nh_entry {
+ }
  
- void print_cache_nexthop_id(FILE *fp, const char *fp_prefix, const char *jsobj,
- 			    __u32 nh_id);
-+int print_cache_nexthop(struct nlmsghdr *n, void *arg, bool process_cache);
++static bool mv3310_has_downshift(struct phy_device *phydev)
++{
++	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
++
++	/* Fails to downshift with firmware older than v0.3.5.0 */
++	return priv->firmware_ver >= MV_VERSION(0,3,5,0);
++}
++
+ static void mv3310_init_supported_interfaces(unsigned long *mask)
+ {
+ 	__set_bit(PHY_INTERFACE_MODE_SGMII, mask);
+@@ -943,6 +1046,7 @@ static void mv2111_init_supported_interfaces(unsigned long *mask)
+ }
  
- #endif /* __NH_COMMON_H__ */
+ static const struct mv3310_chip mv3310_type = {
++	.has_downshift = mv3310_has_downshift,
+ 	.init_supported_interfaces = mv3310_init_supported_interfaces,
+ 	.get_mactype = mv3310_get_mactype,
+ 	.init_interface = mv3310_init_interface,
+@@ -953,6 +1057,7 @@ static const struct mv3310_chip mv3310_type = {
+ };
+ 
+ static const struct mv3310_chip mv3340_type = {
++	.has_downshift = mv3310_has_downshift,
+ 	.init_supported_interfaces = mv3340_init_supported_interfaces,
+ 	.get_mactype = mv3310_get_mactype,
+ 	.init_interface = mv3340_init_interface,
 -- 
-2.31.1
+2.30.2
 
