@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DDE941C96A
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:04:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A8B841C955
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 18:03:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346394AbhI2QEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 12:04:04 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:23246 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345610AbhI2QAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 12:00:03 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HKLbw5kZkz8tVq;
-        Wed, 29 Sep 2021 23:57:16 +0800 (CST)
+        id S1346544AbhI2QEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 12:04:30 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:23327 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345592AbhI2QAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 12:00:04 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKLWz5dRvzRQKp;
+        Wed, 29 Sep 2021 23:53:51 +0800 (CST)
 Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -26,9 +26,9 @@ From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv2 net-next 088/167] net: atlantic: use netdev feature helpers
-Date:   Wed, 29 Sep 2021 23:52:15 +0800
-Message-ID: <20210929155334.12454-89-shenjian15@huawei.com>
+Subject: [RFCv2 net-next 089/167] net: atheros: use netdev feature helpers
+Date:   Wed, 29 Sep 2021 23:52:16 +0800
+Message-ID: <20210929155334.12454-90-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210929155334.12454-1-shenjian15@huawei.com>
 References: <20210929155334.12454-1-shenjian15@huawei.com>
@@ -48,225 +48,346 @@ for netdev features.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- .../ethernet/aquantia/atlantic/aq_filters.c   | 12 +++++---
- .../ethernet/aquantia/atlantic/aq_macsec.c    |  2 +-
- .../net/ethernet/aquantia/atlantic/aq_main.c  | 27 ++++++++++++------
- .../net/ethernet/aquantia/atlantic/aq_nic.c   | 28 +++++++++++++------
- .../net/ethernet/aquantia/atlantic/aq_nic.h   |  2 +-
- .../net/ethernet/aquantia/atlantic/aq_ring.c  |  3 +-
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |  3 +-
- 7 files changed, 51 insertions(+), 26 deletions(-)
+ drivers/net/ethernet/atheros/alx/main.c       | 17 +++++----
+ .../net/ethernet/atheros/atl1c/atl1c_main.c   | 27 +++++++------
+ .../net/ethernet/atheros/atl1e/atl1e_main.c   | 38 +++++++++++--------
+ drivers/net/ethernet/atheros/atlx/atl1.c      | 15 +++++---
+ drivers/net/ethernet/atheros/atlx/atl2.c      | 21 ++++++----
+ drivers/net/ethernet/atheros/atlx/atlx.c      | 14 ++++---
+ 6 files changed, 78 insertions(+), 54 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_filters.c b/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-index 1bc4d33a0ce5..8d0c174be6b2 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-@@ -164,7 +164,8 @@ aq_check_approve_fvlan(struct aq_nic_s *aq_nic,
- 		return -EINVAL;
+diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
+index 922c600fd292..2f79aa6f41a4 100644
+--- a/drivers/net/ethernet/atheros/alx/main.c
++++ b/drivers/net/ethernet/atheros/alx/main.c
+@@ -261,7 +261,8 @@ static int alx_clean_rx_irq(struct alx_rx_queue *rxq, int budget)
+ 		skb->protocol = eth_type_trans(skb, rxq->netdev);
+ 
+ 		skb_checksum_none_assert(skb);
+-		if (alx->dev->features & NETIF_F_RXCSUM &&
++		if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
++					    alx->dev->features) &&
+ 		    !(rrd->word3 & (cpu_to_le32(1 << RRD_ERR_L4_SHIFT) |
+ 				    cpu_to_le32(1 << RRD_ERR_IPV4_SHIFT)))) {
+ 			switch (ALX_GET_FIELD(le32_to_cpu(rrd->word2),
+@@ -1101,7 +1102,8 @@ static void alx_fix_features(struct net_device *netdev,
+ 			     netdev_features_t *features)
+ {
+ 	if (netdev->mtu > ALX_MAX_TSO_PKT_SIZE)
+-		*features &= ~(NETIF_F_TSO | NETIF_F_TSO6);
++		netdev_feature_clear_bits(NETIF_F_TSO | NETIF_F_TSO6,
++					  features);
+ }
+ 
+ static void alx_netif_stop(struct alx_priv *alx)
+@@ -1816,11 +1818,12 @@ static int alx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		}
  	}
  
--	if ((aq_nic->ndev->features & NETIF_F_HW_VLAN_CTAG_FILTER) &&
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+				    aq_nic->ndev->features) &&
- 	    (!test_bit(be16_to_cpu(fsp->h_ext.vlan_tci) & VLAN_VID_MASK,
- 		       aq_nic->active_vlans))) {
- 		netdev_err(aq_nic->ndev,
-@@ -236,7 +237,8 @@ aq_rule_is_not_support(struct aq_nic_s *aq_nic,
+-	netdev->hw_features = NETIF_F_SG |
+-			      NETIF_F_HW_CSUM |
+-			      NETIF_F_RXCSUM |
+-			      NETIF_F_TSO |
+-			      NETIF_F_TSO6;
++	netdev_feature_zero(&netdev->hw_features);
++	netdev_feature_set_bits(NETIF_F_SG |
++				NETIF_F_HW_CSUM |
++				NETIF_F_RXCSUM |
++				NETIF_F_TSO |
++				NETIF_F_TSO6, &netdev->hw_features);
+ 
+ 	if (alx_get_perm_macaddr(hw, hw->perm_addr)) {
+ 		dev_warn(&pdev->dev,
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+index 66c0985adb43..eea741e971ae 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+@@ -429,7 +429,7 @@ static void atl1c_set_multi(struct net_device *netdev)
+ 
+ static void __atl1c_vlan_mode(netdev_features_t features, u32 *mac_ctrl_data)
  {
- 	bool rule_is_not_support = false;
+-	if (features & NETIF_F_HW_VLAN_CTAG_RX) {
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, features)) {
+ 		/* enable VLAN tag insert/strip */
+ 		*mac_ctrl_data |= MAC_CTRL_RMV_VLAN;
+ 	} else {
+@@ -514,23 +514,27 @@ static void atl1c_fix_features(struct net_device *netdev,
+ 	 * Since there is no support for separate rx/tx vlan accel
+ 	 * enable/disable make sure tx flag is always in same state as rx.
+ 	 */
+-	if (*features & NETIF_F_HW_VLAN_CTAG_RX)
+-		*features |= NETIF_F_HW_VLAN_CTAG_TX;
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, *features))
++		netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT, features);
+ 	else
+-		*features &= ~NETIF_F_HW_VLAN_CTAG_TX;
++		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
++					 features);
  
--	if (!(aq_nic->ndev->features & NETIF_F_NTUPLE)) {
-+	if (!netdev_feature_test_bit(NETIF_F_NTUPLE_BIT,
-+				     aq_nic->ndev->features)) {
- 		netdev_err(aq_nic->ndev,
- 			   "ethtool: Please, to enable the RX flow control:\n"
- 			   "ethtool -K %s ntuple on\n", aq_nic->ndev->name);
-@@ -836,7 +838,8 @@ int aq_filters_vlans_update(struct aq_nic_s *aq_nic)
- 	aq_fvlan_rebuild(aq_nic, aq_nic->active_vlans,
- 			 aq_nic->aq_hw_rx_fltrs.fl2.aq_vlans);
+ 	if (hw->nic_type != athr_mt) {
+ 		if (netdev->mtu > MAX_TSO_FRAME_SIZE)
+-			*features &= ~(NETIF_F_TSO | NETIF_F_TSO6);
++			netdev_feature_clear_bits(NETIF_F_TSO | NETIF_F_TSO6,
++						  features);
+ 	}
+ }
  
--	if (aq_nic->ndev->features & NETIF_F_HW_VLAN_CTAG_FILTER) {
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+				    aq_nic->ndev->features)) {
- 		for (i = 0; i < BITS_TO_LONGS(VLAN_N_VID); i++)
- 			hweight += hweight_long(aq_nic->active_vlans[i]);
+ static int atl1c_set_features(struct net_device *netdev,
+ 	netdev_features_t features)
+ {
+-	netdev_features_t changed = netdev->features ^ features;
++	netdev_features_t changed;
  
-@@ -851,7 +854,8 @@ int aq_filters_vlans_update(struct aq_nic_s *aq_nic)
- 	if (err)
- 		return err;
- 
--	if (aq_nic->ndev->features & NETIF_F_HW_VLAN_CTAG_FILTER) {
-+	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+				    aq_nic->ndev->features)) {
- 		if (hweight <= AQ_VLAN_MAX_FILTERS && hweight > 0) {
- 			err = aq_hw_ops->hw_filter_vlan_ctrl(aq_hw,
- 				!(aq_nic->packet_filter & IFF_PROMISC));
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
-index 4a6dfac857ca..0c10d8ba11c2 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
-@@ -1490,7 +1490,7 @@ int aq_macsec_init(struct aq_nic_s *nic)
- 	if (!nic->macsec_cfg)
- 		return -ENOMEM;
- 
--	nic->ndev->features |= NETIF_F_HW_MACSEC;
-+	netdev_feature_set_bit(NETIF_F_HW_MACSEC_BIT, &nic->ndev->features);
- 	nic->ndev->macsec_ops = &aq_macsec_ops;
+-	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
++	netdev_feature_xor(&changed, netdev->features, features);
++
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, changed))
+ 		atl1c_vlan_mode(netdev, features);
  
  	return 0;
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_main.c b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-index e22935ce9573..a153b99f2166 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-@@ -142,35 +142,42 @@ static int aq_ndev_change_mtu(struct net_device *ndev, int new_mtu)
- static int aq_ndev_set_features(struct net_device *ndev,
- 				netdev_features_t features)
+@@ -2626,13 +2630,14 @@ static int atl1c_init_netdev(struct net_device *netdev, struct pci_dev *pdev)
+ 	atl1c_set_ethtool_ops(netdev);
+ 
+ 	/* TODO: add when ready */
+-	netdev->hw_features =	NETIF_F_SG		|
++	netdev_feature_zero(&netdev->hw_features);
++	netdev_feature_set_bits(NETIF_F_SG		|
+ 				NETIF_F_HW_CSUM		|
+ 				NETIF_F_HW_VLAN_CTAG_RX	|
+ 				NETIF_F_TSO		|
+-				NETIF_F_TSO6;
+-	netdev->features =	netdev->hw_features	|
+-				NETIF_F_HW_VLAN_CTAG_TX;
++				NETIF_F_TSO6, &netdev->hw_features);
++	netdev_feature_copy(&netdev->features, netdev->hw_features);
++	netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT, &netdev->features);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/atheros/atl1e/atl1e_main.c b/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
+index ea99949c91eb..fe5339b0ca7f 100644
+--- a/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
++++ b/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
+@@ -299,7 +299,7 @@ static void atl1e_set_multi(struct net_device *netdev)
+ static void __atl1e_rx_mode(netdev_features_t features, u32 *mac_ctrl_data)
  {
--	bool is_vlan_tx_insert = !!(features & NETIF_F_HW_VLAN_CTAG_TX);
--	bool is_vlan_rx_strip = !!(features & NETIF_F_HW_VLAN_CTAG_RX);
- 	struct aq_nic_s *aq_nic = netdev_priv(ndev);
- 	bool need_ndev_restart = false;
- 	struct aq_nic_cfg_s *aq_cfg;
-+	bool is_vlan_tx_insert;
-+	bool is_vlan_rx_strip;
- 	bool is_lro = false;
- 	int err = 0;
  
-+	is_vlan_tx_insert = netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
-+						    features);
-+	is_vlan_rx_strip = netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+						   features);
- 	aq_cfg = aq_nic_get_cfg(aq_nic);
+-	if (features & NETIF_F_RXALL) {
++	if (netdev_feature_test_bit(NETIF_F_RXALL_BIT, features)) {
+ 		/* enable RX of ALL frames */
+ 		*mac_ctrl_data |= MAC_CTRL_DBG;
+ 	} else {
+@@ -326,7 +326,7 @@ static void atl1e_rx_mode(struct net_device *netdev,
  
--	if (!(features & NETIF_F_NTUPLE)) {
--		if (aq_nic->ndev->features & NETIF_F_NTUPLE) {
-+	if (!netdev_feature_test_bit(NETIF_F_NTUPLE_BIT, features)) {
-+		if (netdev_feature_test_bit(NETIF_F_NTUPLE_BIT,
-+					    aq_nic->ndev->features)) {
- 			err = aq_clear_rxnfc_all_rules(aq_nic);
- 			if (unlikely(err))
- 				goto err_exit;
- 		}
- 	}
--	if (!(features & NETIF_F_HW_VLAN_CTAG_FILTER)) {
--		if (aq_nic->ndev->features & NETIF_F_HW_VLAN_CTAG_FILTER) {
-+	if (!netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+				     features)) {
-+		if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+					    aq_nic->ndev->features)) {
- 			err = aq_filters_vlan_offload_off(aq_nic);
- 			if (unlikely(err))
- 				goto err_exit;
- 		}
- 	}
- 
--	aq_cfg->features = features;
-+	netdev_feature_copy(&aq_cfg->features, features);
- 
- 	if (aq_cfg->aq_hw_caps->hw_features & NETIF_F_LRO) {
--		is_lro = features & NETIF_F_LRO;
-+		is_lro = netdev_feature_test_bit(NETIF_F_LRO_BIT, features);
- 
- 		if (aq_cfg->is_lro != is_lro) {
- 			aq_cfg->is_lro = is_lro;
-@@ -178,7 +185,9 @@ static int aq_ndev_set_features(struct net_device *ndev,
- 		}
- 	}
- 
--	if ((aq_nic->ndev->features ^ features) & NETIF_F_RXCSUM) {
-+	if (netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+				    aq_nic->ndev->features) !=
-+	    netdev_feature_test_bit(NETIF_F_RXCSUM_BIT, features)) {
- 		err = aq_nic->aq_hw_ops->hw_set_offload(aq_nic->aq_hw,
- 							aq_cfg);
- 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 6c049864dac0..5e73a469861d 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -144,9 +144,14 @@ void aq_nic_cfg_start(struct aq_nic_s *self)
- 		cfg->link_irq_vec = 0;
- 
- 	cfg->link_speed_msk &= cfg->aq_hw_caps->link_speed_msk;
--	cfg->features = cfg->aq_hw_caps->hw_features;
--	cfg->is_vlan_rx_strip = !!(cfg->features & NETIF_F_HW_VLAN_CTAG_RX);
--	cfg->is_vlan_tx_insert = !!(cfg->features & NETIF_F_HW_VLAN_CTAG_TX);
-+	netdev_feature_zero(&cfg->features);
-+	netdev_feature_set_bits(cfg->aq_hw_caps->hw_features, &cfg->features);
-+	cfg->is_vlan_rx_strip =
-+		netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+					cfg->features);
-+	cfg->is_vlan_tx_insert =
-+		netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
-+					cfg->features);
- 	cfg->is_vlan_force_promisc = true;
- 
- 	for (i = 0; i < sizeof(cfg->prio_tc_map); i++)
-@@ -367,12 +372,17 @@ void aq_nic_ndev_init(struct aq_nic_s *self)
- 	const struct aq_hw_caps_s *aq_hw_caps = self->aq_nic_cfg.aq_hw_caps;
- 	struct aq_nic_cfg_s *aq_nic_cfg = &self->aq_nic_cfg;
- 
--	self->ndev->hw_features |= aq_hw_caps->hw_features;
--	self->ndev->features = aq_hw_caps->hw_features;
--	self->ndev->vlan_features |= NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
--				     NETIF_F_RXHASH | NETIF_F_SG |
--				     NETIF_F_LRO | NETIF_F_TSO | NETIF_F_TSO6;
--	self->ndev->gso_partial_features = NETIF_F_GSO_UDP_L4;
-+	netdev_feature_set_bits(aq_hw_caps->hw_features,
-+				&self->ndev->hw_features);
-+	netdev_feature_zero(&self->ndev->features);
-+	netdev_feature_set_bits(aq_hw_caps->hw_features, &self->ndev->features);
-+	netdev_feature_set_bits(NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
-+				NETIF_F_RXHASH | NETIF_F_SG |
-+				NETIF_F_LRO | NETIF_F_TSO | NETIF_F_TSO6,
-+				&self->ndev->vlan_features);
-+	netdev_feature_zero(&self->ndev->gso_partial_features);
-+	netdev_feature_set_bit(NETIF_F_GSO_UDP_L4_BIT,
-+			       &self->ndev->gso_partial_features);
- 	self->ndev->priv_flags = aq_hw_caps->hw_priv_flags;
- 	self->ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
- 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-index 1a7148041e3d..685adb52d44a 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-@@ -38,7 +38,7 @@ struct aq_fc_info {
- 
- struct aq_nic_cfg_s {
- 	const struct aq_hw_caps_s *aq_hw_caps;
--	u64 features;
-+	netdev_features_t features;
- 	u32 rxds;		/* rx ring size, descriptors # */
- 	u32 txds;		/* tx ring size, descriptors # */
- 	u32 vecs;		/* allocated rx/tx vectors */
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index 24122ccda614..63f3cef1c9fc 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -318,7 +318,8 @@ static void aq_rx_checksum(struct aq_ring_s *self,
- 			   struct aq_ring_buff_s *buff,
- 			   struct sk_buff *skb)
+ static void __atl1e_vlan_mode(netdev_features_t features, u32 *mac_ctrl_data)
  {
--	if (!(self->aq_nic->ndev->features & NETIF_F_RXCSUM))
-+	if (!netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+				     self->aq_nic->ndev->features))
- 		return;
+-	if (features & NETIF_F_HW_VLAN_CTAG_RX) {
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, features)) {
+ 		/* enable VLAN tag insert/strip */
+ 		*mac_ctrl_data |= MAC_CTRL_RMV_VLAN;
+ 	} else {
+@@ -389,24 +389,25 @@ static void atl1e_fix_features(struct net_device *netdev,
+ 	 * Since there is no support for separate rx/tx vlan accel
+ 	 * enable/disable make sure tx flag is always in same state as rx.
+ 	 */
+-	if (*features & NETIF_F_HW_VLAN_CTAG_RX)
+-		*features |= NETIF_F_HW_VLAN_CTAG_TX;
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, *features))
++		netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT, features);
+ 	else
+-		*features &= ~NETIF_F_HW_VLAN_CTAG_TX;
++		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
++					 features);
+ }
  
- 	if (unlikely(buff->is_cso_err)) {
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 9f1b15077e7d..778c78bcd992 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -273,7 +273,8 @@ static int hw_atl_b0_hw_rss_set(struct aq_hw_s *self,
- int hw_atl_b0_hw_offload_set(struct aq_hw_s *self,
- 			     struct aq_nic_cfg_s *aq_nic_cfg)
+ static int atl1e_set_features(struct net_device *netdev,
+ 	netdev_features_t features)
  {
--	u64 rxcsum = !!(aq_nic_cfg->features & NETIF_F_RXCSUM);
-+	u64 rxcsum = netdev_feature_test_bit(NETIF_F_RXCSUM_BIT,
-+					     aq_nic_cfg->features);
- 	unsigned int i;
+-	netdev_features_t changed = netdev->features ^ features;
++	netdev_features_t changed;
  
- 	/* TX checksums offloads*/
+-	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
++	netdev_feature_xor(&changed, netdev->features, features);
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, changed))
+ 		atl1e_vlan_mode(netdev, features);
+ 
+-	if (changed & NETIF_F_RXALL)
++	if (netdev_feature_test_bit(NETIF_F_RXALL_BIT, changed))
+ 		atl1e_rx_mode(netdev, features);
+ 
+-
+ 	return 0;
+ }
+ 
+@@ -1065,7 +1066,7 @@ static void atl1e_setup_mac_ctrl(struct atl1e_adapter *adapter)
+ 		value |= MAC_CTRL_PROMIS_EN;
+ 	if (netdev->flags & IFF_ALLMULTI)
+ 		value |= MAC_CTRL_MC_ALL_EN;
+-	if (netdev->features & NETIF_F_RXALL)
++	if (netdev_feature_test_bit(NETIF_F_RXALL_BIT, netdev->features))
+ 		value |= MAC_CTRL_DBG;
+ 	AT_WRITE_REG(hw, REG_MAC_CTRL, value);
+ }
+@@ -1427,7 +1428,8 @@ static void atl1e_clean_rx_irq(struct atl1e_adapter *adapter, u8 que,
+ 
+ 			/* error packet */
+ 			if ((prrs->pkt_flag & RRS_IS_ERR_FRAME) &&
+-			    !(netdev->features & NETIF_F_RXALL)) {
++			    !netdev_feature_test_bit(NETIF_F_RXALL_BIT,
++						     netdev->features)) {
+ 				if (prrs->err_flag & (RRS_ERR_BAD_CRC |
+ 					RRS_ERR_DRIBBLE | RRS_ERR_CODE |
+ 					RRS_ERR_TRUNC)) {
+@@ -1441,7 +1443,8 @@ static void atl1e_clean_rx_irq(struct atl1e_adapter *adapter, u8 que,
+ 
+ 			packet_size = ((prrs->word1 >> RRS_PKT_SIZE_SHIFT) &
+ 					RRS_PKT_SIZE_MASK);
+-			if (likely(!(netdev->features & NETIF_F_RXFCS)))
++			if (likely(!netdev_feature_test_bit(NETIF_F_RXFCS_BIT,
++							    netdev->features)))
+ 				packet_size -= 4; /* CRC */
+ 
+ 			skb = netdev_alloc_skb_ip_align(netdev, packet_size);
+@@ -2267,11 +2270,14 @@ static int atl1e_init_netdev(struct net_device *netdev, struct pci_dev *pdev)
+ 			  (ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN);
+ 	atl1e_set_ethtool_ops(netdev);
+ 
+-	netdev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_TSO |
+-			      NETIF_F_HW_VLAN_CTAG_RX;
+-	netdev->features = netdev->hw_features | NETIF_F_HW_VLAN_CTAG_TX;
++	netdev_feature_zero(&netdev->hw_features);
++	netdev_feature_set_bits(NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_TSO |
++				NETIF_F_HW_VLAN_CTAG_RX, &netdev->hw_features);
++	netdev_feature_copy(&netdev->features, netdev->hw_features);
++	netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT, &netdev->features);
+ 	/* not enabled by default */
+-	netdev->hw_features |= NETIF_F_RXALL | NETIF_F_RXFCS;
++	netdev_feature_set_bits(NETIF_F_RXALL | NETIF_F_RXFCS,
++				&netdev->hw_features);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/atheros/atlx/atl1.c b/drivers/net/ethernet/atheros/atlx/atl1.c
+index 68f6c0bbd945..a717cd030c69 100644
+--- a/drivers/net/ethernet/atheros/atlx/atl1.c
++++ b/drivers/net/ethernet/atheros/atlx/atl1.c
+@@ -2988,15 +2988,18 @@ static int atl1_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (err)
+ 		goto err_common;
+ 
+-	netdev->features = NETIF_F_HW_CSUM;
+-	netdev->features |= NETIF_F_SG;
+-	netdev->features |= (NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX);
++	netdev_feature_zero(&netdev->features);
++	netdev_feature_set_bit(NETIF_F_HW_CSUM_BIT, &netdev->features);
++	netdev_feature_set_bit(NETIF_F_SG_BIT, &netdev->features);
++	netdev_feature_set_bits(NETIF_F_HW_VLAN_CTAG_TX |
++				NETIF_F_HW_VLAN_CTAG_RX, &netdev->features);
+ 
+-	netdev->hw_features = NETIF_F_HW_CSUM | NETIF_F_SG | NETIF_F_TSO |
+-			      NETIF_F_HW_VLAN_CTAG_RX;
++	netdev_feature_zero(&netdev->hw_features);
++	netdev_feature_set_bits(NETIF_F_HW_CSUM | NETIF_F_SG | NETIF_F_TSO |
++				NETIF_F_HW_VLAN_CTAG_RX, &netdev->hw_features);
+ 
+ 	/* is this valid? see atl1_setup_mac_ctrl() */
+-	netdev->features |= NETIF_F_RXCSUM;
++	netdev_feature_set_bit(NETIF_F_RXCSUM_BIT, &netdev->features);
+ 
+ 	/* MTU range: 42 - 10218 */
+ 	netdev->min_mtu = ETH_ZLEN - (ETH_HLEN + VLAN_HLEN);
+diff --git a/drivers/net/ethernet/atheros/atlx/atl2.c b/drivers/net/ethernet/atheros/atlx/atl2.c
+index c4d303ce284c..2db693636588 100644
+--- a/drivers/net/ethernet/atheros/atlx/atl2.c
++++ b/drivers/net/ethernet/atheros/atlx/atl2.c
+@@ -342,7 +342,7 @@ static inline void atl2_irq_disable(struct atl2_adapter *adapter)
+ 
+ static void __atl2_vlan_mode(netdev_features_t features, u32 *ctrl)
+ {
+-	if (features & NETIF_F_HW_VLAN_CTAG_RX) {
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, features)) {
+ 		/* enable VLAN tag insert/strip */
+ 		*ctrl |= MAC_CTRL_RMV_VLAN;
+ 	} else {
+@@ -378,18 +378,20 @@ static void atl2_fix_features(struct net_device *netdev,
+ 	 * Since there is no support for separate rx/tx vlan accel
+ 	 * enable/disable make sure tx flag is always in same state as rx.
+ 	 */
+-	if (*features & NETIF_F_HW_VLAN_CTAG_RX)
+-		*features |= NETIF_F_HW_VLAN_CTAG_TX;
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, *features))
++		netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT, features);
+ 	else
+-		*features &= ~NETIF_F_HW_VLAN_CTAG_TX;
++		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
++					 features);
+ }
+ 
+ static int atl2_set_features(struct net_device *netdev,
+ 	netdev_features_t features)
+ {
+-	netdev_features_t changed = netdev->features ^ features;
++	netdev_features_t changed;
+ 
+-	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
++	netdev_feature_xor(&changed, netdev->features, features);
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, changed))
+ 		atl2_vlan_mode(netdev, features);
+ 
+ 	return 0;
+@@ -1387,8 +1389,11 @@ static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (err)
+ 		goto err_sw_init;
+ 
+-	netdev->hw_features = NETIF_F_HW_VLAN_CTAG_RX;
+-	netdev->features |= (NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX);
++	netdev_feature_zero(&netdev->hw_features);
++	netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT,
++			       &netdev->hw_features);
++	netdev_feature_set_bits(NETIF_F_HW_VLAN_CTAG_TX |
++				NETIF_F_HW_VLAN_CTAG_RX, &netdev->features);
+ 
+ 	/* Init PHY as early as possible due to power saving issue  */
+ 	atl2_phy_init(&adapter->hw);
+diff --git a/drivers/net/ethernet/atheros/atlx/atlx.c b/drivers/net/ethernet/atheros/atlx/atlx.c
+index 3b0dbc3a5896..6e91bf6f54d0 100644
+--- a/drivers/net/ethernet/atheros/atlx/atlx.c
++++ b/drivers/net/ethernet/atheros/atlx/atlx.c
+@@ -207,7 +207,7 @@ static void atlx_link_chg_task(struct work_struct *work)
+ 
+ static void __atlx_vlan_mode(netdev_features_t features, u32 *ctrl)
+ {
+-	if (features & NETIF_F_HW_VLAN_CTAG_RX) {
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, features)) {
+ 		/* enable VLAN tag insert/strip */
+ 		*ctrl |= MAC_CTRL_RMV_VLAN;
+ 	} else {
+@@ -244,18 +244,20 @@ static void atlx_fix_features(struct net_device *netdev,
+ 	 * Since there is no support for separate rx/tx vlan accel
+ 	 * enable/disable make sure tx flag is always in same state as rx.
+ 	 */
+-	if (*features & NETIF_F_HW_VLAN_CTAG_RX)
+-		*features |= NETIF_F_HW_VLAN_CTAG_TX;
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, *features))
++		netdev_feature_set_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT, features);
+ 	else
+-		*features &= ~NETIF_F_HW_VLAN_CTAG_TX;
++		netdev_feature_clear_bit(NETIF_F_HW_VLAN_CTAG_TX_BIT,
++					 features);
+ }
+ 
+ static int atlx_set_features(struct net_device *netdev,
+ 	netdev_features_t features)
+ {
+-	netdev_features_t changed = netdev->features ^ features;
++	netdev_features_t changed;
+ 
+-	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
++	netdev_feature_xor(&changed, netdev->features, features);
++	if (netdev_feature_test_bit(NETIF_F_HW_VLAN_CTAG_RX_BIT, changed))
+ 		atlx_vlan_mode(netdev, features);
+ 
+ 	return 0;
 -- 
 2.33.0
 
