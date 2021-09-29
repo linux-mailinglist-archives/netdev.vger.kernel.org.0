@@ -2,60 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C60C941BBB0
-	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 02:25:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70D4141BBB8
+	for <lists+netdev@lfdr.de>; Wed, 29 Sep 2021 02:31:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243398AbhI2A1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Sep 2021 20:27:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37856 "EHLO mail.kernel.org"
+        id S243417AbhI2AdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Sep 2021 20:33:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42044 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240715AbhI2A1A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Sep 2021 20:27:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 244F9613BD;
-        Wed, 29 Sep 2021 00:25:20 +0000 (UTC)
+        id S240715AbhI2AdI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Sep 2021 20:33:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 27AAA613BD;
+        Wed, 29 Sep 2021 00:31:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632875120;
-        bh=9xO1Lgz8aGSr/dLS5UkdR6O5RIo51DBSNABm9wa8Crc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Fl0m/53FqPv/ncD/MWllwlr2GKa67geouY5B05rE8gSptBroQ1o3UoLBl9kKScdZH
-         AmDZAiNN5+g91POnsVD9F1EZp2AMQxrMcr8sFCqe133BKbN8EwblZtyEwKzMUh5i3t
-         2+hcGBcKvkSxPR81S+bRmwG9Ui2xhacolipx2HziV94g26uMz7/j7KrfBZ3/tKyBZ2
-         XrLxTQQ2mz6h3hUvv0lpIiW7yZT9UvwDdaLsnWQp5VzmtBP6oWQ0s6GObwLjBoo7Kv
-         8UjGFWy+vE9aKYRCTmHL5pVRj7uI/fQrDKKYgjLe8kp2hkvUnEMm/AAt8zF1BGT93f
-         etowKjob5VYOg==
-Date:   Tue, 28 Sep 2021 17:25:19 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/6 v8] RTL8366(RB) cleanups part 1
-Message-ID: <20210928172519.4655ec60@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210928144149.84612-1-linus.walleij@linaro.org>
-References: <20210928144149.84612-1-linus.walleij@linaro.org>
+        s=k20201202; t=1632875488;
+        bh=HjdVWJnKMwXF65cLTCeXMKC9SY3TjN/w3RiwrlWgIGQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gm5cDH4m2v6piR46mLc/JSBVCPI+BfX7C0Jl7Q9/ebduscr7kYKOyDJkRRCW97nyn
+         OTatGXAIaYy1C1n0aWd1IAjKuOvRWb2mnvy9J8yYdLcaUe4FNNmyDRHCy0lW4hmgLr
+         UVhvsec9oDp8bC3APGn9osA0ZA2pTfi2elVoASuoeo8ItgTHPmH0nfi0XQWufrVgg/
+         S1TUt3arPeuIoYfFmD/XGk2UG4IIQnjyy4UCFhlFKR/dIAEWnnoMKqItFfEsiyBlrZ
+         KcLb3haPCx5SKIcykWluOcG5RPc72bVPhpgFYbPljMjvXkHtdcJcOaHnKgdjXnVBov
+         mHe++aRPFe4wg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Siewior <bigeasy@linutronix.de>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.14] net: core: Correct the sock::sk_lock.owned lockdep annotations
+Date:   Tue, 28 Sep 2021 20:31:27 -0400
+Message-Id: <20210929003127.208073-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Sep 2021 16:41:43 +0200 Linus Walleij wrote:
-> This is a first set of patches making the RTL8366RB work out of
-> the box with a default OpenWrt userspace.
-> 
-> We achieve bridge port isolation with the first patch, and the
-> next 5 patches removes the very weird VLAN set-up with one
-> VLAN with PVID per port that has been in this driver in all
-> vendor trees and in OpenWrt for years.
-> 
-> The switch is now managed the way a modern bridge/DSA switch
-> shall be managed.
-> 
-> After these patches are merged, I will send the next set which
-> adds new features, some which have circulated before.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Looks like v7 got silently applied. Would you mind converting 
-to incremental fixups?
+[ Upstream commit 2dcb96bacce36021c2f3eaae0cef607b5bb71ede ]
+
+lock_sock_fast() and lock_sock_nested() contain lockdep annotations for the
+sock::sk_lock.owned 'mutex'. sock::sk_lock.owned is not a regular mutex. It
+is just lockdep wise equivalent. In fact it's an open coded trivial mutex
+implementation with some interesting features.
+
+sock::sk_lock.slock is a regular spinlock protecting the 'mutex'
+representation sock::sk_lock.owned which is a plain boolean. If 'owned' is
+true, then some other task holds the 'mutex', otherwise it is uncontended.
+As this locking construct is obviously endangered by lock ordering issues as
+any other locking primitive it got lockdep annotated via a dedicated
+dependency map sock::sk_lock.dep_map which has to be updated at the lock
+and unlock sites.
+
+lock_sock_nested() is a straight forward 'mutex' lock operation:
+
+  might_sleep();
+  spin_lock_bh(sock::sk_lock.slock)
+  while (!try_lock(sock::sk_lock.owned)) {
+      spin_unlock_bh(sock::sk_lock.slock);
+      wait_for_release();
+      spin_lock_bh(sock::sk_lock.slock);
+  }
+
+The lockdep annotation for sock::sk_lock.owned is for unknown reasons
+_after_ the lock has been acquired, i.e. after the code block above and
+after releasing sock::sk_lock.slock, but inside the bottom halves disabled
+region:
+
+  spin_unlock(sock::sk_lock.slock);
+  mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
+  local_bh_enable();
+
+The placement after the unlock is obvious because otherwise the
+mutex_acquire() would nest into the spin lock held region.
+
+But that's from the lockdep perspective still the wrong place:
+
+ 1) The mutex_acquire() is issued _after_ the successful acquisition which
+    is pointless because in a dead lock scenario this point is never
+    reached which means that if the deadlock is the first instance of
+    exposing the wrong lock order lockdep does not have a chance to detect
+    it.
+
+ 2) It only works because lockdep is rather lax on the context from which
+    the mutex_acquire() is issued. Acquiring a mutex inside a bottom halves
+    and therefore non-preemptible region is obviously invalid, except for a
+    trylock which is clearly not the case here.
+
+    This 'works' stops working on RT enabled kernels where the bottom halves
+    serialization is done via a local lock, which exposes this misplacement
+    because the 'mutex' and the local lock nest the wrong way around and
+    lockdep complains rightfully about a lock inversion.
+
+The placement is wrong since the initial commit a5b5bb9a053a ("[PATCH]
+lockdep: annotate sk_locks") which introduced this.
+
+Fix it by moving the mutex_acquire() in front of the actual lock
+acquisition, which is what the regular mutex_lock() operation does as well.
+
+lock_sock_fast() is not that straight forward. It looks at the first glance
+like a convoluted trylock operation:
+
+  spin_lock_bh(sock::sk_lock.slock)
+  if (!sock::sk_lock.owned)
+      return false;
+  while (!try_lock(sock::sk_lock.owned)) {
+      spin_unlock_bh(sock::sk_lock.slock);
+      wait_for_release();
+      spin_lock_bh(sock::sk_lock.slock);
+  }
+  spin_unlock(sock::sk_lock.slock);
+  mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
+  local_bh_enable();
+  return true;
+
+But that's not the case: lock_sock_fast() is an interesting optimization
+for short critical sections which can run with bottom halves disabled and
+sock::sk_lock.slock held. This allows to shortcut the 'mutex' operation in
+the non contended case by preventing other lockers to acquire
+sock::sk_lock.owned because they are blocked on sock::sk_lock.slock, which
+in turn avoids the overhead of doing the heavy processing in release_sock()
+including waking up wait queue waiters.
+
+In the contended case, i.e. when sock::sk_lock.owned == true the behavior
+is the same as lock_sock_nested().
+
+Semantically this shortcut means, that the task acquired the 'mutex' even
+if it does not touch the sock::sk_lock.owned field in the non-contended
+case. Not telling lockdep about this shortcut acquisition is hiding
+potential lock ordering violations in the fast path.
+
+As a consequence the same reasoning as for the above lock_sock_nested()
+case vs. the placement of the lockdep annotation applies.
+
+The current placement of the lockdep annotation was just copied from
+the original lock_sock(), now renamed to lock_sock_nested(),
+implementation.
+
+Fix this by moving the mutex_acquire() in front of the actual lock
+acquisition and adding the corresponding mutex_release() into
+unlock_sock_fast(). Also document the fast path return case with a comment.
+
+Reported-by: Sebastian Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: netdev@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/net/sock.h |  1 +
+ net/core/sock.c    | 37 +++++++++++++++++++++++--------------
+ 2 files changed, 24 insertions(+), 14 deletions(-)
+
+diff --git a/include/net/sock.h b/include/net/sock.h
+index f23cb259b0e2..e9ef47c0cfce 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1641,6 +1641,7 @@ static inline void unlock_sock_fast(struct sock *sk, bool slow)
+ 		release_sock(sk);
+ 		__release(&sk->sk_lock.slock);
+ 	} else {
++		mutex_release(&sk->sk_lock.dep_map, _RET_IP_);
+ 		spin_unlock_bh(&sk->sk_lock.slock);
+ 	}
+ }
+diff --git a/net/core/sock.c b/net/core/sock.c
+index a3eea6e0b30a..54b8eeccbdf4 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3158,17 +3158,15 @@ EXPORT_SYMBOL(sock_init_data);
+ 
+ void lock_sock_nested(struct sock *sk, int subclass)
+ {
++	/* The sk_lock has mutex_lock() semantics here. */
++	mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
++
+ 	might_sleep();
+ 	spin_lock_bh(&sk->sk_lock.slock);
+ 	if (sk->sk_lock.owned)
+ 		__lock_sock(sk);
+ 	sk->sk_lock.owned = 1;
+-	spin_unlock(&sk->sk_lock.slock);
+-	/*
+-	 * The sk_lock has mutex_lock() semantics here:
+-	 */
+-	mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
+-	local_bh_enable();
++	spin_unlock_bh(&sk->sk_lock.slock);
+ }
+ EXPORT_SYMBOL(lock_sock_nested);
+ 
+@@ -3206,24 +3204,35 @@ EXPORT_SYMBOL(release_sock);
+  */
+ bool lock_sock_fast(struct sock *sk) __acquires(&sk->sk_lock.slock)
+ {
++	/* The sk_lock has mutex_lock() semantics here. */
++	mutex_acquire(&sk->sk_lock.dep_map, 0, 0, _RET_IP_);
++
+ 	might_sleep();
+ 	spin_lock_bh(&sk->sk_lock.slock);
+ 
+-	if (!sk->sk_lock.owned)
++	if (!sk->sk_lock.owned) {
+ 		/*
+-		 * Note : We must disable BH
++		 * Fast path return with bottom halves disabled and
++		 * sock::sk_lock.slock held.
++		 *
++		 * The 'mutex' is not contended and holding
++		 * sock::sk_lock.slock prevents all other lockers to
++		 * proceed so the corresponding unlock_sock_fast() can
++		 * avoid the slow path of release_sock() completely and
++		 * just release slock.
++		 *
++		 * From a semantical POV this is equivalent to 'acquiring'
++		 * the 'mutex', hence the corresponding lockdep
++		 * mutex_release() has to happen in the fast path of
++		 * unlock_sock_fast().
+ 		 */
+ 		return false;
++	}
+ 
+ 	__lock_sock(sk);
+ 	sk->sk_lock.owned = 1;
+-	spin_unlock(&sk->sk_lock.slock);
+-	/*
+-	 * The sk_lock has mutex_lock() semantics here:
+-	 */
+-	mutex_acquire(&sk->sk_lock.dep_map, 0, 0, _RET_IP_);
+ 	__acquire(&sk->sk_lock.slock);
+-	local_bh_enable();
++	spin_unlock_bh(&sk->sk_lock.slock);
+ 	return true;
+ }
+ EXPORT_SYMBOL(lock_sock_fast);
+-- 
+2.33.0
+
