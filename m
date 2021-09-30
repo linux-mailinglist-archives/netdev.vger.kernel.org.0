@@ -2,93 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 028C041D30F
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 08:09:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 420CB41D328
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 08:19:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348229AbhI3GKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 02:10:40 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39430 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348185AbhI3GKj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 02:10:39 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mVpFW-000Ca3-Nk; Thu, 30 Sep 2021 08:08:54 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mVpFW-000TrI-EH; Thu, 30 Sep 2021 08:08:54 +0200
-Subject: Re: [PATCH nf-next v5 0/6] Netfilter egress hook
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        lukas@wunner.de, kadlec@netfilter.org, fw@strlen.de,
-        ast@kernel.org, edumazet@google.com, tgraf@suug.ch,
-        nevola@gmail.com, john.fastabend@gmail.com, willemb@google.com
-References: <20210928095538.114207-1-pablo@netfilter.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e4f1700c-c299-7091-1c23-60ec329a5b8d@iogearbox.net>
-Date:   Thu, 30 Sep 2021 08:08:53 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1348253AbhI3GV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 02:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348217AbhI3GV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 02:21:28 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA8EC06161C;
+        Wed, 29 Sep 2021 23:19:45 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id i25so20707127lfg.6;
+        Wed, 29 Sep 2021 23:19:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GZKBNq+YiujxNh+mvumqFbgFxvNpazQ5GJiioQevf1c=;
+        b=XMSSrTWV0pDM+6jI4IkgDWJ3m2Ljzu3CWjbOMnS1RxiWODZ8ARZT1AySuqXW5IpNMI
+         tpr0yLiREwXe1/3ohr0uNSQefqx8Qvoc9eY9r+K3RDiH1nNrgd/0/OoE7tVnszj/YfVM
+         UuGoMoeYwrz03SCkzyxToSmI3PsfReiBvGv/T8QBbBEYzKlq2VDOYEQKABgXKlWAkx1b
+         O59gaQxKDJnXLjClIJxpEzR3OvDqnQfS5xK0cxNf8uinME2bxO6fCDUrCLaNk0NQ9y1k
+         1bD5/xM3nvhFQ1s2Gr+bsWzcyNfKxahuLYuj3dgG0f+gJ6e2o69+0K5X/e3IxIdGWALK
+         7vhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GZKBNq+YiujxNh+mvumqFbgFxvNpazQ5GJiioQevf1c=;
+        b=2LS043rdjE0wfL8st47Q84395s6fRIqqE2EBreoPJ2JUTw7LsN2OK0i/cYAEL2EIe+
+         tYhdoZrg8Ws7GyRYiqnDbkJUhLhbPjXZZGXj4F81V1LAPpu79gyQ5QwnXtJBLONcsQlg
+         SXOfhATgZPm/r+jKN5fjZz9BDikjvDsM1hg0dc+2JHtCx2r+l2yMtjshiYvEyszp8/eH
+         8TtRHYLUdvKN6gd2087Kog+wIxtAPwp4S0Bdk6OEvgdeEbuwvQrbdruwz5NtMmO4k3uz
+         0k3bdFJVZGrDggPF409ojapqEuSXi5sUJn2qgmBesVHyhB1hAPBGRDJMJnkyR7HihS9w
+         hOxQ==
+X-Gm-Message-State: AOAM531p0XgHWBN+DeN7uMaBfaTRSudt//DFc1aiLBwriXZirpMpCpuP
+        wpJV1r5OebgJCkIqGAX7mVw=
+X-Google-Smtp-Source: ABdhPJx+pMbO0IPsn2Hm96Ds7c9laZsWkG7Y4dRIm47JtUK1n8MLKGEL4CmhONsgT2xWpQ8nloJ3CQ==
+X-Received: by 2002:ac2:4c50:: with SMTP id o16mr65331lfk.286.1632982784082;
+        Wed, 29 Sep 2021 23:19:44 -0700 (PDT)
+Received: from localhost.localdomain ([217.117.245.149])
+        by smtp.gmail.com with ESMTPSA id a21sm252222lfb.226.2021.09.29.23.19.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Sep 2021 23:19:43 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, buytenh@marvell.com,
+        afleming@freescale.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Yanfei Xu <yanfei.xu@windriver.com>
+Subject: [PATCH v3 1/2] Revert "net: mdiobus: Fix memory leak in __mdiobus_register"
+Date:   Thu, 30 Sep 2021 09:19:41 +0300
+Message-Id: <f12fb1faa4eccf0f355788225335eb4309ff2599.1632982651.git.paskripkin@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <20210928095538.114207-1-pablo@netfilter.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26307/Wed Sep 29 11:09:54 2021)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/28/21 11:55 AM, Pablo Neira Ayuso wrote:
-> Hi,
-> 
-> This patchset v5 that re-adds the Netfilter egress:
-> 
-> 1) Rename linux/netfilter_ingress.h to linux/netfilter_netdev.h
->     from Lukas Wunner.
-> 
-> 2) Generalize ingress hook file to accomodate egress support,
->     from Lukas Wunner.
-> 
-> 3) Modularize Netfilter ingress hook into nf_tables_netdev: Daniel
->     Borkmann is requesting for a mechanism to allow to blacklist
->     Netfilter, this allows users to blacklist this new module that
->     includes ingress chain and the new egress chain for the netdev
->     family. There is no other in-tree user of the ingress and egress
->     hooks than this which might interfer with his matter.
-> 
-> 4) Place the egress hook again before the tc egress hook as requested
->     by Daniel Borkmann. Patch to add egress hook from Lukas Wunner.
->     The Netfilter egress hook remains behind the static key, if unused
->     performance degradation is negligible.
-> 
-> 5) Add netfilter egress handling to af_packet.
-> 
-> Arguably, distributors might decide to compile nf_tables_netdev
-> built-in. Traditionally, distributors have compiled their kernels using
-> the default configuration that Netfilter Kconfig provides (ie. use
-> modules whenever possible). In any case, I consider that distributor
-> policy is out of scope in this discussion, providing a mechanism to
-> allow Daniel to prevent Netfilter ingress and egress chains to be loaded
-> should be sufficient IMHO.
+This reverts commit ab609f25d19858513919369ff3d9a63c02cd9e2e.
 
-Hm, so in the case of SRv6 users were running into a similar issue and commit
-7a3f5b0de364 ("netfilter: add netfilter hooks to SRv6 data plane") [0] added
-a new hook along with a sysctl which defaults the new hook to off.
+This patch is correct in the sense that we _should_ call device_put() in
+case of device_register() failure, but the problem in this code is more
+vast.
 
-The rationale for it was given as "the hooks are enabled via nf_hooks_lwtunnel
-sysctl to make sure existing netfilter rulesets do not break." [0,1]
+We need to set bus->state to UNMDIOBUS_REGISTERED before calling
+device_register() to correctly release the device in mdiobus_free().
+This patch prevents us from doing it, since in case of device_register()
+failure put_device() will be called 2 times and it will cause UAF or
+something else.
 
-If the suggestion to flag the skb [2] one way or another from the tc forwarding
-path (e.g. skb bit or per-cpu marker) is not technically feasible, then why not
-do a sysctl toggle like in the SRv6 case?
+Also, Reported-by: tag in revered commit was wrong, since syzbot
+reported different leak in same function.
 
-   [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7a3f5b0de3647c854e34269c3332d7a1e902901a
-   [1] https://lore.kernel.org/netdev/20210830093852.21654-1-pablo@netfilter.org/
-   [2] https://lore.kernel.org/netdev/11584665-e3b5-3afe-d72c-ef92ad0b9313@iogearbox.net/
+Link: https://lore.kernel.org/netdev/20210928092657.GI2048@kadam/
+Acked-by: Yanfei Xu <yanfei.xu@windriver.com>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+
+Changes in v3:
+	CC Yanfei -> Acked-by Yanfei
+
+Changes in v2:
+	Added this revert
+
+---
+ drivers/net/phy/mdio_bus.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 6f4b4e5df639..53f034fc2ef7 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -537,7 +537,6 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	err = device_register(&bus->dev);
+ 	if (err) {
+ 		pr_err("mii_bus %s failed to register\n", bus->id);
+-		put_device(&bus->dev);
+ 		return -EINVAL;
+ 	}
+ 
+-- 
+2.33.0
+
