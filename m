@@ -2,116 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6CC941E091
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 20:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A56441E0B2
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 20:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353034AbhI3SF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 14:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58622 "EHLO
+        id S1353169AbhI3SMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 14:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353029AbhI3SFz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 14:05:55 -0400
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9206BC06176C;
-        Thu, 30 Sep 2021 11:04:12 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4HL1Mq0ttGzQkBY;
-        Thu, 30 Sep 2021 20:04:07 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Subject: Re: [PATCH v2 2/2] mwifiex: Try waking the firmware until we get an
- interrupt
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Brian Norris <briannorris@chromium.org>, stable@vger.kernel.org
-References: <20210914114813.15404-1-verdre@v0yd.nl>
- <20210914114813.15404-3-verdre@v0yd.nl> <YUsRT1rmtITJiJRh@smile.fi.intel.com>
-From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
-Message-ID: <d9b1c8ea-99e2-7c3e-ec8e-61362e8ccfa7@v0yd.nl>
-Date:   Thu, 30 Sep 2021 20:04:00 +0200
+        with ESMTP id S1353130AbhI3SM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 14:12:29 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EAFC06176A
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 11:10:46 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id a11so7848728ilk.9
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 11:10:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kvNALztHaapZiHyr87gDoU7KzQF7xStUg5vzkvd2Bc8=;
+        b=YPp1rXQuSi4jyBMmY0w7DuJpuja9lWOD35RrEBGc1D0TlkkwIz8Y8UeH1LavqHrubb
+         HY43HxIstWNHHzc94og8Y4eLZibwKqEsVAgOn8EjK7lUnEkYmumizH2jquc6ex9mHtCn
+         hbW2zbpcE6rVE11E/L837TPRsHMDwh5yQbzktKXCV+qZphEX3JdyyKedfhknyu4HiVpm
+         gNmwuoBeC5Q3ILACvUMBn72NzLlZcQcq1qTx1DktbsmzIR+NQRidOcztSwED33xUcW8O
+         Ob32ed2WELWiic4TGKaqNCHlrQmqhu6oc7bh31FZIIbxqp+A/VR3IE8wtFPmiXDL+RWg
+         sq9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kvNALztHaapZiHyr87gDoU7KzQF7xStUg5vzkvd2Bc8=;
+        b=usNDW1cvm/m2SVvbbC93N+mALqO02vbAaoYD6XH8CgfKXBslixtWFBctacaN0+j5LS
+         Xc3L/tMPdiVvkoGRlncFblJUmxMkU++eFOPBEzjGnj0tt5EY271YhB65P7kCu4tCaEdv
+         w/lQEFHTYUAWU7ZW5/wUc8XOfeCpyTvqbCZncSw+/a9oE6eG2ksZxV6dbIBk6CeRdIRi
+         YjDPjOtXll0D3HKEWDvzqvQDd+93/u4gA/GQXOYmV4SMpiXFGR05tqYlqpSlCrQzWy77
+         A9rVDGwm7bapVIBTrSuHGUqVBgSGDGuNKesF/Ub2DjlICtiVgOEm6cFx++ZkxAmWb+6e
+         NOgg==
+X-Gm-Message-State: AOAM5327v7KwTw8jMsIRwo0SAWm9Xqvb6MbE0Ct0qfij9rEAKTaDUBJY
+        y1N6y2UC1l4hxGVtepUl+0/WrgOOlTmQTcjHX6k=
+X-Google-Smtp-Source: ABdhPJzw5hSRqXssACw+noLrlWe9kJAWI5mqYxCgcS2Puq7LfvR6cbka26nVazOqDYm2zZy9wdLBBLH6NEKUBHZE4RA=
+X-Received: by 2002:a05:6e02:8a3:: with SMTP id a3mr5193812ilt.88.1633025446115;
+ Thu, 30 Sep 2021 11:10:46 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <YUsRT1rmtITJiJRh@smile.fi.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 839D1188F
+References: <CA+FuTSe-6MSpB4hwwvwPgDqHkxYJoxMZMDbOusNqiq0Gwa1eiQ@mail.gmail.com>
+ <CA+FuTSdkJcj_ikNnJmGadBZ1fa7q26MZ1g3ERf8Ax+YbXvgcng@mail.gmail.com>
+ <20210203052924-mutt-send-email-mst@kernel.org> <CAF=yD-J8rsr9JWdMGBSc-muFGMG2=YCWYwWOiQBQZuryioBUoA@mail.gmail.com>
+ <20210203175837-mutt-send-email-mst@kernel.org> <CAEA6p_BqKECAU=C55TpJedG9gkZDakiiN27dcWOTJYH0YOFA_w@mail.gmail.com>
+ <CA+FuTSf-uWyK6Jz=G67p+ep693oTczF55EUzrH9fXzBqTnoMQA@mail.gmail.com>
+ <CAEA6p_DGgErG6oa1T9zJr+K6CosxoMb-TA=f2kQ_1bFdeMWAcg@mail.gmail.com>
+ <20210413011508-mutt-send-email-mst@kernel.org> <CAEA6p_CCsfOrJO8CUcvmt0hg2bDE36UjJqeqKPOEBx0+ieJ2uA@mail.gmail.com>
+ <20210929175118-mutt-send-email-mst@kernel.org> <CAEA6p_CQwn1BrU=t3yAmmKUgn9vWfkao_2c-FrqBk0qK0r7shQ@mail.gmail.com>
+In-Reply-To: <CAEA6p_CQwn1BrU=t3yAmmKUgn9vWfkao_2c-FrqBk0qK0r7shQ@mail.gmail.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Thu, 30 Sep 2021 11:10:33 -0700
+Message-ID: <CAA93jw4z7W6uUYKn5SdZ+Ci1tr1NrtCbhkkmua5xwfGA=V-8pQ@mail.gmail.com>
+Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
+To:     Wei Wang <weiwan@google.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/22/21 1:19 PM, Andy Shevchenko wrote:
-> On Tue, Sep 14, 2021 at 01:48:13PM +0200, Jonas Dreßler wrote:
->> It seems that the firmware of the 88W8897 card sometimes ignores or
->> misses when we try to wake it up by writing to the firmware status
->> register. This leads to the firmware wakeup timeout expiring and the
->> driver resetting the card because we assume the firmware has hung up or
->> crashed (unfortunately that's not unlikely with this card).
->>
->> Turns out that most of the time the firmware actually didn't hang up,
->> but simply "missed" our wakeup request and didn't send us an AWAKE
->> event.
->>
->> Trying again to read the firmware status register after a short timeout
->> usually makes the firmware wake up as expected, so add a small retry
->> loop to mwifiex_pm_wakeup_card() that looks at the interrupt status to
->> check whether the card woke up.
->>
->> The number of tries and timeout lengths for this were determined
->> experimentally: The firmware usually takes about 500 us to wake up
->> after we attempt to read the status register. In some cases where the
->> firmware is very busy (for example while doing a bluetooth scan) it
->> might even miss our requests for multiple milliseconds, which is why
->> after 15 tries the waiting time gets increased to 10 ms. The maximum
->> number of tries it took to wake the firmware when testing this was
->> around 20, so a maximum number of 50 tries should give us plenty of
->> safety margin.
->>
->> A good reproducer for this issue is letting the firmware sleep and wake
->> up in very short intervals, for example by pinging a device on the
->> network every 0.1 seconds.
-> 
-> ...
-> 
->> +	do {
->> +		if (mwifiex_write_reg(adapter, reg->fw_status, FIRMWARE_READY_PCIE)) {
->> +			mwifiex_dbg(adapter, ERROR,
->> +				    "Writing fw_status register failed\n");
->> +			return -EIO;
->> +		}
->> +
->> +		n_tries++;
->> +
->> +		if (n_tries <= N_WAKEUP_TRIES_SHORT_INTERVAL)
->> +			usleep_range(400, 700);
->> +		else
->> +			msleep(10);
->> +	} while (n_tries <= N_WAKEUP_TRIES_SHORT_INTERVAL + N_WAKEUP_TRIES_LONG_INTERVAL &&
->> +		 READ_ONCE(adapter->int_status) == 0);
-> 
-> Can't you use read_poll_timeout() twice instead of this custom approach?
-> 
+To me, the symptoms of this problem (a packet storm) smelt like the
+lack of bql leading to very bursty tcp behavior
+and enormous tcp RTT inflation in this driver which I observed 6+ months back.
 
-I've tried this now, but read_poll_timeout() is not ideal for our 
-use-case. What we'd need would be read->sleep->poll->repeat instead of 
-read->poll->sleep->repeat. With read_poll_timeout() we always end up 
-doing one more (unnecessary) write.
+now that it seems to be fixed (?), could you re-run the netperf 128
+stream test and share a packet capture? (try with pfifo_fast or
+fq_codel
+at the qdisc), and sch_fq as a control (which was working correctly).
 
->> +	mwifiex_dbg(adapter, EVENT,
->> +		    "event: Tried %d times until firmware woke up\n", n_tries);
-> 
-
+thx.
