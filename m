@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B5D541E4A2
+	by mail.lfdr.de (Postfix) with ESMTP id 6574941E4A3
 	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:15:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350219AbhI3XQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 19:16:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53186 "EHLO mail.kernel.org"
+        id S1350189AbhI3XQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 19:16:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53202 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346146AbhI3XQs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 19:16:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 48DF861A7F;
+        id S1350091AbhI3XQt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 19:16:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C748B61A6E;
         Thu, 30 Sep 2021 23:15:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633043705;
-        bh=In24AEgCVGvKAdv8L2bW96QtQXb3PIaN+oO0piXgDAk=;
+        s=k20201202; t=1633043706;
+        bh=TgOg0rnlrtsNdQK9n1/2cLGQH0f4sB2HILwNRzHvG7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NGfDZobP6t+6M5tl+bkgVeS4OZAA+eo2BaxMB0zJS2YpYItxryAOufortcJwr92zG
-         5XUt1WIHT2Px7R6wnUfwVukbUJHiJSkNb91jsXxzn1NZkv0GtnZdfSUst8sUdMn3Xv
-         j+zx/CcG0wDy6bINN89zRjA6/ppTO8sqk/bO/wqOllkstApc+04+UmwEAUHYF57Ry0
-         AR0FjXYh7/lklpnRBqga5hWSU4+3njihTjOr4tjgUSG5PRxNfGk94VCkWQusmLnpPb
-         5oKR5dyEFsPTfATVL+zSxsQvJ59+7Tr6NDnUDEECUViXQeZhAk1Vz4qiZW1DVnPJOr
-         Cnko/57MURgxQ==
+        b=khhkeISs6wLo2PYmA2ZbV+6tcD2nDr+wWdA8v6oGDK9b0QLRDV9oM3lFQJNoctgrj
+         eXdO39eEcnEOnRzZ1cXkEPwwfqfHyuGu7chivUXZvIkRqOWO1jraWZ+NuaqSYxQEiW
+         iy2JjG4Rs7O0pwhn+v97j3u2nFZg4QNli91Y7VK1HH+BlbB3IgvTb6HnUYklSsdBjl
+         c4C0tYd2mHBL7jnp2anf3KHpSFYHF+F98gN52DcaPxIp3mY0d8qUXWdjC+1gwhrIaD
+         TrP+p5ZuUcfMWbky9uXUqFH4vDSeF1egZYV8Ab+sBohD8dZKne0vLdIFHWGPYuQEix
+         V420xOwOjHVcg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 04/10] net/mlx5: E-Switch, Fix double allocation of acl flow counter
-Date:   Thu, 30 Sep 2021 16:14:55 -0700
-Message-Id: <20210930231501.39062-5-saeed@kernel.org>
+Subject: [net 05/10] net/mlx5: Force round second at 1PPS out start time
+Date:   Thu, 30 Sep 2021 16:14:56 -0700
+Message-Id: <20210930231501.39062-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210930231501.39062-1-saeed@kernel.org>
 References: <20210930231501.39062-1-saeed@kernel.org>
@@ -41,78 +41,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Aya Levin <ayal@nvidia.com>
 
-Flow counter is allocated in eswitch legacy acl setting functions
-without checking if already allocated by previous setting. Add a check
-to avoid such double allocation.
+Allow configuration of 1PPS start time only with time-stamp representing
+a round second. Prior to this patch driver allowed setting of a
+non-round-second which is not supported by the device. Avoid unexpected
+behavior by restricting start-time configuration to a round-second.
 
-Fixes: 07bab9502641 ("net/mlx5: E-Switch, Refactor eswitch ingress acl codes")
-Fixes: ea651a86d468 ("net/mlx5: E-Switch, Refactor eswitch egress acl codes")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Fixes: 4272f9b88db9 ("net/mlx5e: Change 1PPS out scheme")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/esw/acl/egress_lgcy.c         | 12 ++++++++----
- .../mellanox/mlx5/core/esw/acl/ingress_lgcy.c        |  4 +++-
- 2 files changed, 11 insertions(+), 5 deletions(-)
+ .../ethernet/mellanox/mlx5/core/lib/clock.c   | 25 ++++++++-----------
+ 1 file changed, 11 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c
-index 0399a396d166..60a73990017c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c
-@@ -79,12 +79,16 @@ int esw_acl_egress_lgcy_setup(struct mlx5_eswitch *esw,
- 	int dest_num = 0;
- 	int err = 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+index ffac8a0e7a23..d2ed7b0a18ea 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+@@ -448,22 +448,20 @@ static u64 find_target_cycles(struct mlx5_core_dev *mdev, s64 target_ns)
+ 	return cycles_now + cycles_delta;
+ }
  
--	if (MLX5_CAP_ESW_EGRESS_ACL(esw->dev, flow_counter)) {
-+	if (vport->egress.legacy.drop_counter) {
-+		drop_counter = vport->egress.legacy.drop_counter;
-+	} else if (MLX5_CAP_ESW_EGRESS_ACL(esw->dev, flow_counter)) {
- 		drop_counter = mlx5_fc_create(esw->dev, false);
--		if (IS_ERR(drop_counter))
-+		if (IS_ERR(drop_counter)) {
- 			esw_warn(esw->dev,
- 				 "vport[%d] configure egress drop rule counter err(%ld)\n",
- 				 vport->vport, PTR_ERR(drop_counter));
-+			drop_counter = NULL;
-+		}
- 		vport->egress.legacy.drop_counter = drop_counter;
- 	}
+-static u64 perout_conf_internal_timer(struct mlx5_core_dev *mdev,
+-				      s64 sec, u32 nsec)
++static u64 perout_conf_internal_timer(struct mlx5_core_dev *mdev, s64 sec)
+ {
+-	struct timespec64 ts;
++	struct timespec64 ts = {};
+ 	s64 target_ns;
  
-@@ -123,7 +127,7 @@ int esw_acl_egress_lgcy_setup(struct mlx5_eswitch *esw,
- 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_DROP;
+ 	ts.tv_sec = sec;
+-	ts.tv_nsec = nsec;
+ 	target_ns = timespec64_to_ns(&ts);
  
- 	/* Attach egress drop flow counter */
--	if (!IS_ERR_OR_NULL(drop_counter)) {
-+	if (drop_counter) {
- 		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_COUNT;
- 		drop_ctr_dst.type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
- 		drop_ctr_dst.counter_id = mlx5_fc_id(drop_counter);
-@@ -162,7 +166,7 @@ void esw_acl_egress_lgcy_cleanup(struct mlx5_eswitch *esw,
- 	esw_acl_egress_table_destroy(vport);
+ 	return find_target_cycles(mdev, target_ns);
+ }
  
- clean_drop_counter:
--	if (!IS_ERR_OR_NULL(vport->egress.legacy.drop_counter)) {
-+	if (vport->egress.legacy.drop_counter) {
- 		mlx5_fc_destroy(esw->dev, vport->egress.legacy.drop_counter);
- 		vport->egress.legacy.drop_counter = NULL;
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c
-index f75b86abaf1c..b1a5199260f6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c
-@@ -160,7 +160,9 @@ int esw_acl_ingress_lgcy_setup(struct mlx5_eswitch *esw,
+-static u64 perout_conf_real_time(s64 sec, u32 nsec)
++static u64 perout_conf_real_time(s64 sec)
+ {
+-	return (u64)nsec | (u64)sec << 32;
++	return (u64)sec << 32;
+ }
  
- 	esw_acl_ingress_lgcy_rules_destroy(vport);
+ static int mlx5_perout_configure(struct ptp_clock_info *ptp,
+@@ -501,8 +499,10 @@ static int mlx5_perout_configure(struct ptp_clock_info *ptp,
  
--	if (MLX5_CAP_ESW_INGRESS_ACL(esw->dev, flow_counter)) {
-+	if (vport->ingress.legacy.drop_counter) {
-+		counter = vport->ingress.legacy.drop_counter;
-+	} else if (MLX5_CAP_ESW_INGRESS_ACL(esw->dev, flow_counter)) {
- 		counter = mlx5_fc_create(esw->dev, false);
- 		if (IS_ERR(counter)) {
- 			esw_warn(esw->dev,
+ 	if (on) {
+ 		bool rt_mode = mlx5_real_time_mode(mdev);
+-		u32 nsec;
+-		s64 sec;
++		s64 sec = rq->perout.start.sec;
++
++		if (rq->perout.start.nsec)
++			return -EINVAL;
+ 
+ 		pin_mode = MLX5_PIN_MODE_OUT;
+ 		pattern = MLX5_OUT_PATTERN_PERIODIC;
+@@ -513,14 +513,11 @@ static int mlx5_perout_configure(struct ptp_clock_info *ptp,
+ 		if ((ns >> 1) != 500000000LL)
+ 			return -EINVAL;
+ 
+-		nsec = rq->perout.start.nsec;
+-		sec = rq->perout.start.sec;
+-
+ 		if (rt_mode && sec > U32_MAX)
+ 			return -EINVAL;
+ 
+-		time_stamp = rt_mode ? perout_conf_real_time(sec, nsec) :
+-				       perout_conf_internal_timer(mdev, sec, nsec);
++		time_stamp = rt_mode ? perout_conf_real_time(sec) :
++				       perout_conf_internal_timer(mdev, sec);
+ 
+ 		field_select |= MLX5_MTPPS_FS_PIN_MODE |
+ 				MLX5_MTPPS_FS_PATTERN |
+@@ -717,7 +714,7 @@ static u64 perout_conf_next_event_timer(struct mlx5_core_dev *mdev,
+ 	ts_next_sec(&ts);
+ 	target_ns = timespec64_to_ns(&ts);
+ 
+-	return rt_mode ? perout_conf_real_time(ts.tv_sec, ts.tv_nsec) :
++	return rt_mode ? perout_conf_real_time(ts.tv_sec) :
+ 			 find_target_cycles(mdev, target_ns);
+ }
+ 
 -- 
 2.31.1
 
