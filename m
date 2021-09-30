@@ -2,86 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8184841E4BD
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:21:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A28F41E504
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:32:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350550AbhI3XXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 19:23:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55870 "EHLO mail.kernel.org"
+        id S1349561AbhI3Xdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 19:33:40 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42092 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350162AbhI3XWo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 19:22:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 46686619E7;
-        Thu, 30 Sep 2021 23:21:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633044061;
-        bh=l5/N+lqRCSsmY95mBZtUZFDZ0e5/N7Ulq5D8PrDgF/k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fm22nkWnRmQuDU7trzs9LwiGDdtqECH/4XrLU6tQiQaVVPZ/yJj7YEFg8QK6OALh8
-         mZ8AGcRievBbZ04i66JHTXmPonOMRuj5KeL1qvkbEyIwU0Of2dGcxMopZeOhsh3LO7
-         +UJbwn+TJzg0O8uH0A5BTKNfkTvflT7i9RjsW9drSLy2C0zyJbJN3cfe1W+OMpZwi8
-         bar9tG/ARs5+HqvPsJE3+mY4fHidBt4FLzGHfOGKZCiiWqFfXmqhfHcgIoG37Jd94x
-         Te8E8Q7HFYUS4mXabv+kcq1wn3TjlLzl7qRzO65hE4BA44RV6d1sXdwFwB+BTrFiwD
-         mwGKOjJX4SbvA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 15/15] net/mlx5e: Use array_size() helper
-Date:   Thu, 30 Sep 2021 16:20:50 -0700
-Message-Id: <20210930232050.41779-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210930232050.41779-1-saeed@kernel.org>
-References: <20210930232050.41779-1-saeed@kernel.org>
+        id S1347868AbhI3Xdj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 19:33:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=9gmdjG51P4sUtdlckZMNf2bN5+zN0n8cVhZkk4LzqwE=; b=pC5GRS0XWArGvEi55mbqERtVOh
+        N39cL3bi9yU69ML2hwVJ6lOe3tLcxU7O827WLtiuL720YgiSe9kDsdVok9lzuD2BvtKu/R58bCI/Q
+        MYdjTqAQIQ2WB73gZnYaDK+3pG5Qm/xwNDy25zsvvgUUv3CtLNCW0CYzJDdNpoYvb3HU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mW5Wa-0091JE-Nn; Fri, 01 Oct 2021 01:31:36 +0200
+Date:   Fri, 1 Oct 2021 01:31:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Wong Vee Khee <veekhee@gmail.com>
+Subject: Re: [PATCH net v1 1/1] net: stmmac: fix EEE init issue when paired
+ with EEE capable PHYs
+Message-ID: <YVZI2GWxUNZdL2SX@lunn.ch>
+References: <20210930064436.1502516-1-vee.khee.wong@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210930064436.1502516-1-vee.khee.wong@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+On Thu, Sep 30, 2021 at 02:44:36PM +0800, Wong Vee Khee wrote:
+> When STMMAC is paired with Energy-Efficient Ethernet(EEE) capable PHY,
+> and the PHY is advertising EEE by default, we need to enable EEE on the
+> xPCS side too, instead of having user to manually trigger the enabling
+> config via ethtool.
+> 
+> Fixed this by adding xpcs_config_eee() call in stmmac_eee_init().
+> 
+> Fixes: 7617af3d1a5e ("net: pcs: Introducing support for DWC xpcs Energy Efficient Ethernet")
+> Cc: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+> Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 553c4403258a..981ccf47dcea 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -486,6 +486,10 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
+>  		timer_setup(&priv->eee_ctrl_timer, stmmac_eee_ctrl_timer, 0);
+>  		stmmac_set_eee_timer(priv, priv->hw, STMMAC_DEFAULT_LIT_LS,
+>  				     eee_tw_timer);
+> +		if (priv->hw->xpcs)
+> +			xpcs_config_eee(priv->hw->xpcs,
+> +					priv->plat->mult_fact_100ns,
+> +					true);
+>  	}
 
-Use array_size() helper to aid in 2-factor allocation instances.
 
-Link: https://github.com/KSPP/linux/issues/160
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+       /* Check if it needs to be deactivated */
+        if (!priv->eee_active) {
+                if (priv->eee_enabled) {
+                        netdev_dbg(priv->dev, "disable EEE\n");
+                        stmmac_lpi_entry_timer_config(priv, 0);
+                        del_timer_sync(&priv->eee_ctrl_timer);
+                        stmmac_set_eee_timer(priv, priv->hw, 0, eee_tw_timer);
+                }
+                mutex_unlock(&priv->lock);
+                return false;
+        }
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 3fd515e7bf30..3ab5929ff131 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -930,9 +930,10 @@ static int mlx5e_alloc_xdpsq_fifo(struct mlx5e_xdpsq *sq, int numa)
- 	struct mlx5e_xdp_info_fifo *xdpi_fifo = &sq->db.xdpi_fifo;
- 	int wq_sz        = mlx5_wq_cyc_get_size(&sq->wq);
- 	int dsegs_per_wq = wq_sz * MLX5_SEND_WQEBB_NUM_DS;
-+	size_t size;
- 
--	xdpi_fifo->xi = kvzalloc_node(sizeof(*xdpi_fifo->xi) * dsegs_per_wq,
--				      GFP_KERNEL, numa);
-+	size = array_size(sizeof(*xdpi_fifo->xi), dsegs_per_wq);
-+	xdpi_fifo->xi = kvzalloc_node(size, GFP_KERNEL, numa);
- 	if (!xdpi_fifo->xi)
- 		return -ENOMEM;
- 
-@@ -946,10 +947,11 @@ static int mlx5e_alloc_xdpsq_fifo(struct mlx5e_xdpsq *sq, int numa)
- static int mlx5e_alloc_xdpsq_db(struct mlx5e_xdpsq *sq, int numa)
- {
- 	int wq_sz = mlx5_wq_cyc_get_size(&sq->wq);
-+	size_t size;
- 	int err;
- 
--	sq->db.wqe_info = kvzalloc_node(sizeof(*sq->db.wqe_info) * wq_sz,
--					GFP_KERNEL, numa);
-+	size = array_size(sizeof(*sq->db.wqe_info), wq_sz);
-+	sq->db.wqe_info = kvzalloc_node(size, GFP_KERNEL, numa);
- 	if (!sq->db.wqe_info)
- 		return -ENOMEM;
- 
--- 
-2.31.1
+Don't you want to turn it of in here?
 
+      Andrew
