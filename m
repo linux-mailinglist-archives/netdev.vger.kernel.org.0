@@ -2,197 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9990941DB60
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:44:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A533141DB6B
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:47:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351713AbhI3Npx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 09:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53502 "EHLO
+        id S1348765AbhI3NtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 09:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351414AbhI3Npw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 09:45:52 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29C7C06176A;
-        Thu, 30 Sep 2021 06:44:09 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id s17so22051451edd.8;
-        Thu, 30 Sep 2021 06:44:09 -0700 (PDT)
+        with ESMTP id S234439AbhI3NtL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 09:49:11 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A01C06176A
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 06:47:28 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id b15so25434234lfe.7
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 06:47:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UjF2DK0XHqbPC53s90LqLkLXntykYrLbNoJlQA0A+CI=;
-        b=MAitvzNmtLvoEHW8BbdfWwBvyQF7njfyns6d6aH6pXb65iRk+pAX8kjM/xbksSkgT3
-         goGXrRPOTyGSWOtdzqi7yu8oDvIZahB4tvdGIPb7VZKSSFWtW7RsxearcgMHpzlATBtU
-         TcIoh0Kb8sp1d/4ZaypFBO/jY/oR6RzIv9+e/Cxzn+iv11g4f5ju5ZfreqzNpi6USKXq
-         p3pxmYTqf8A6OpUjRf4O8nYptpGIkuucVJvVb7LHI3D+nD3cIz5dbYFNsl9sC0EfLAmX
-         jceDLcc2mgSGidv55WqbWx2zuI1PLLrB/cDdFDizPLtoV4IsUT3nB/DMoYbTtdylFTMs
-         J9DQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SuBK9MUTG4Xpa0dK+QeeyPt2uzx3nmKZP0e8zjqmNrE=;
+        b=AJL+fQPyKJ67K7JUkrV9mxUPJ3cfjiYzMByMQijf4eRAQF4acHIwwVm4SKxOPGCYRG
+         +DMjbRv8Z1wbGIORffYJQunTqrpvsGu5BxF2H8419GRZ7q71hp1/HihemWZPa9Mwi93A
+         XJHkQ2Mab5gbob08pXcmx2H7No/EECq1yEm2nhsmOS/vomdyiMhY8dkEEokVBxwWm/Ew
+         Kx/VRhjHR+KMd/6TgkWq4PoUmRQwhc9VknibjRJCam34wnSNpAcoyM1F8wRyzJaFBEjp
+         JOoU3db/uk2xKn1zvNskaze6p3EOwDRL16yUJvDNwlzcBg3BGkl8nmw8mmd1Fp7Xbk74
+         vXIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UjF2DK0XHqbPC53s90LqLkLXntykYrLbNoJlQA0A+CI=;
-        b=CfXCJ1fff40t88tb482NLR2b975NRSFzKxLZQ1sxheU1XjIDEOj7p4dtBjPDgp+SU2
-         XSB1wt0TOJPaEOsD1SSLeRrRuAWd7CG6b8nXIETqyLCE72Exelsb/ZfxFOaNRjS8XYJX
-         U5gScnGkaHGwMnUeDI5pZIvFP+dcKJGrCGIm47PKHtH3tRpxKIur/ZRG9e4hHnzvT9sk
-         Q9LkgHRyUHPjc2E2JVH8c2yOLFR0IfBNqvGyxF8jEs2Bdeqf0C/yclLXgQp2ZsvnMq1k
-         pr+mx9jlkT89JFQqmjJ2Fi0Flewkbu3wypBwg/3VTUHh4z7meAPkTR1nTPPLAagDo2Cd
-         st+g==
-X-Gm-Message-State: AOAM531iqUPrjQwX8R6G1xsb/KUCH6Sznqm+e8TLCsk0qFR/CzJgaptq
-        DZiwFcLMGFSVbSQ87WwSobg=
-X-Google-Smtp-Source: ABdhPJx0eviuC9N/tm8dMClBGyquoSCJX4K4rzXd53RFBmp7YruazDT6tfydDczTncEX3qHZLJF9ag==
-X-Received: by 2002:a17:906:c249:: with SMTP id bl9mr6780265ejb.225.1633009426246;
-        Thu, 30 Sep 2021 06:43:46 -0700 (PDT)
-Received: from skbuf ([188.26.53.217])
-        by smtp.gmail.com with ESMTPSA id pg17sm339319ejb.56.2021.09.30.06.43.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Sep 2021 06:43:45 -0700 (PDT)
-Date:   Thu, 30 Sep 2021 16:43:43 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SuBK9MUTG4Xpa0dK+QeeyPt2uzx3nmKZP0e8zjqmNrE=;
+        b=4huG/zckw0UK23JbyHev7eXjpVNurVmUSGp0uIiyIWZXDPUjoEJG78oA7Oob46uwqY
+         3ElweN+XEbQsOxMA0bt8pK9814apalhIqLjcebfhTUEyVuaYlCI7lQMfi1Jy5if/jqWL
+         NA/yWFajZwovs+8UDJ4FFpFH1OZ+Bn8uDA2hLHP3/DetjMs9C8sBmgaDZKUIXJsQfYu+
+         q7KeNTktaSQsEQ8A5HfuWrwr2LBdyjf6g51viNL+7XoEDBvRlrjowtCYEBRerJSS3aS6
+         5UvnjgHUmzA5aaLqIZEF8GBTe1NBJ4p0v4i2eEzhczRC9w74KbKGWiDGLyS+nRkHrI5s
+         agNQ==
+X-Gm-Message-State: AOAM532Buwhmu09Dza+QX3bupeutuYNv+cQodC3/LhZ1UFCS6BGyvf1j
+        4bggP9Sz55EAMD7TP4Cdu7Y=
+X-Google-Smtp-Source: ABdhPJxe/0uRhEexqCkl72g73QrgRrAbk2V42zOuZaHv/fgTkapcAzLHno5R/GBy21tlNPZfhW1Lqw==
+X-Received: by 2002:a05:651c:b28:: with SMTP id b40mr6229706ljr.334.1633009646604;
+        Thu, 30 Sep 2021 06:47:26 -0700 (PDT)
+Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id h4sm378739lft.184.2021.09.30.06.47.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Sep 2021 06:47:26 -0700 (PDT)
+Subject: Re: Lockup in phy_probe() for MDIO device (Broadcom's switch)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
- FWNODE_FLAG_BROKEN_PARENT
-Message-ID: <20210930134343.ztq3hgianm34dvqb@skbuf>
-References: <CAGETcx-ZvENq8tFZ9wb_BCPZabpZcqPrguY5rsg4fSNdOAB+Kw@mail.gmail.com>
- <YSpr/BOZj2PKoC8B@lunn.ch>
- <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
- <YS4rw7NQcpRmkO/K@lunn.ch>
- <CAGETcx_QPh=ppHzBdM2_TYZz3o+O7Ab9-JSY52Yz1--iLnykxA@mail.gmail.com>
- <YS6nxLp5TYCK+mJP@lunn.ch>
- <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
- <YS608fdIhH4+qJsn@lunn.ch>
- <20210831231804.zozyenear45ljemd@skbuf>
- <CAGETcx8MXzFhhxom3u2MXw8XA-uUtm9XGEbYNobfr+Ptq5+fVQ@mail.gmail.com>
+        BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
+        Vivek Unune <npcomplete13@gmail.com>
+References: <YVWOp/2Nj/E1dpe3@shell.armlinux.org.uk>
+ <5715f818-a279-d514-dcac-73a94c1d30ef@gmail.com>
+ <YVWUKwEXrd39t8iw@shell.armlinux.org.uk>
+ <1e4e40ba-23b8-65b4-0b53-1c8393d9a834@gmail.com>
+ <YVWjEQzJisT0HgHB@shell.armlinux.org.uk>
+ <f51658fb-0844-93fc-46d0-6b3a7ef36123@gmail.com>
+ <YVWt2B7c9YKLlmgT@shell.armlinux.org.uk>
+ <955416fe-4da4-b1ec-aadb-9b816f02d7f2@gmail.com>
+ <YVW2oN3vBoP3tNNn@shell.armlinux.org.uk>
+ <YVW59e2iItl5S4Qh@shell.armlinux.org.uk> <YVW8WM5yxP7sW7Ph@lunn.ch>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Message-ID: <7f328778-fab7-79de-6adf-57d650bc3e2f@gmail.com>
+Date:   Thu, 30 Sep 2021 15:47:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGETcx8MXzFhhxom3u2MXw8XA-uUtm9XGEbYNobfr+Ptq5+fVQ@mail.gmail.com>
+In-Reply-To: <YVW8WM5yxP7sW7Ph@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saravana,
-
-On Wed, Sep 29, 2021 at 10:33:16PM -0700, Saravana Kannan wrote:
-> On Tue, Aug 31, 2021 at 4:18 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> >
-> > On Wed, Sep 01, 2021 at 01:02:09AM +0200, Andrew Lunn wrote:
-> > > Rev B is interesting because switch0 and switch1 got genphy, while
-> > > switch2 got the correct Marvell PHY driver. switch2 PHYs don't have
-> > > interrupt properties, so don't loop back to their parent device.
-> >
-> > This is interesting and not what I really expected to happen. It goes to
-> > show that we really need more time to understand all the subtleties of
-> > device dependencies before jumping on patching stuff.
-> >
-> > In case the DSA tree contains more than one switch, different things
-> > will happen in dsa_register_switch().
-> > The tree itself is only initialized when the last switch calls
-> > dsa_register_switch(). All the other switches just mark themselves as
-> > present and exit probing early. See this piece of code in dsa_tree_setup:
-> >
-> >         complete = dsa_tree_setup_routing_table(dst);
-> >         if (!complete)
-> >                 return 0;
+On 30.09.2021 15:32, Andrew Lunn wrote:
+>> I should also point out that as this b53 driver that is causing the
+>> problem only exists in OpenWRT, this is really a matter for OpenWRT
+>> developers rather than mainline which does not suffer this problem.
+>> I suspect that OpenWRT developers will not be happy with either of
+>> the two patches I've posted above - I suspect they are trying to
+>> support both DSA and swconfig approaches with a single DT. That can
+>> be made to work, but not with a PHYLIB driver being a wrapper around
+>> the swconfig stuff (precisely because there's no phy_device in this
+>> scenario.)
+>>
+>> The only reason to patch mainline kernels would be to make them more
+>> robust, and maybe to also make an explicit statement about what isn't
+>> supported (having a phy_driver with its of_match_table member set.)
 > 
-> Hi Vladimir,
-> 
-> Can you point me to an example dts file that has a DSA tree with more
-> than one switch and also point me to the switches that form the tree?
-> 
-> I'm working on a RFC series that tries to improve some stuff and
-> having an example DTS to look at would help.
-> 
-> Thanks,
-> Saravana
+> I agree with you here. This is an OpenWRT problem. We would hopefully
+> catch such a driver at review time and reject it. We could make it
+> more robust in mainline, but as you said, OpenWRT developers might not
+> actually like it more robust.
+I was thinking about patching mdio_bus_match() / phy_driver_register()
+to prevent other developers from doing the same mistake as OpenWrt &
+b53. Also saving your time from reports similar to mine.
 
-Andrew is testing with arch/arm/boot/dts/vf610-zii-dev-rev-b.dts.
+I understand it's an issue that OpenWrt has to handle downstream.
 
-Graphically it looks like this:
-
- +-----------------------------+
- |          VF610 SoC          |
- |          +--------+         |
- |          |  fec1  |         |
- +----------+--------+---------+
-                | DSA master
-                |
-                | ethernet = <&fec1>;
- +--------+----------+---------------------------+
- |        |  port@6  |                           |
- |        +----------+                           |
- |        | CPU port |     dsa,member = <0 0>;   |
- |        +----------+      -> tree 0, switch 0  |
- |        |   cpu    |                           |
- |        +----------+                           |
- |                                               |
- |            switch0                            |
- |                                               |
- +-----------+-----------+-----------+-----------+
- |   port@0  |   port@1  |   port@2  |   port@5  |
- +-----------+-----------+-----------+-----------+
- |switch0phy0|switch0phy1|switch0phy2|   no PHY  |
- +-----------+-----------+-----------+-----------+
- | user port | user port | user port | DSA port  |
- +-----------+-----------+-----------+-----------+
- |    lan0   |    lan1   |    lan2   |    dsa    |
- +-----------+-----------+-----------+-----------+
-                                           | link = <&switch1port6 &switch2port9>;
-                                           |
-                                           |
-                                           |
-                                           | link = <&switch0port5>;
-                           +----------+----------+-------------------------+
-                           |          |  port@6  |                         |
-                           |          +----------+                         |
-                           |          | DSA port |    dsa,member = <0 1>;  |
-                           |          +----------+     -> tree 0, switch 1 |
-                           |          |   dsa    |                         |
-                           |          +----------+                         |
-                           |                                               |
-                           |            switch1                            |
-                           |                                               |
-                           +-----------+-----------+-----------+-----------+
-                           |   port@0  |   port@1  |   port@2  |   port@5  |
-                           +-----------+-----------+-----------+-----------+
-                           |switch1phy0|switch1phy1|switch2phy2|   no PHY  |
-                           +-----------+-----------+-----------+-----------+
-                           | user port | user port | user port | DSA port  |
-                           +-----------+-----------+-----------+-----------+
-                           |    lan3   |    lan4   |    lan5   |   dsa     |
-                           +-----------+-----------+-----------+-----------+
-                                                                    | link = <&switch2port9>;
-                                                                    |
-                                                                    |
-                                                                    |
-                                                                    | link = <&switch1port5 &switch0port5>;
-                                                    +----------+----------+-------------------------------------+
-                                                    |          |  port@9  |                                     |
-                                                    |          +----------+                                     |
-                                                    |          | DSA port |      dsa,member = <0 2>;            |
-                                                    |          +----------+       -> tree 0, switch 2           |
-                                                    |          |   dsa    |                                     |
-                                                    |          +----------+                                     |
-                                                    |                                                           |
-                                                    |            switch2                                        |
-                                                    |                                                           |
-                                                    +-----------+-----------+-----------+-----------+-----------+
-                                                    |   port@0  |   port@1  |   port@2  |   port@3  |   port@4  |
-                                                    +-----------+-----------+-----------+-----------+-----------+
-                                                    |switch2phy0|switch2phy1|switch2phy2|   no PHY  |   no PHY  |
-                                                    +-----------+-----------+-----------+-----------+-----------+
-                                                    | user port | user port | user port | user port | user port |
-                                                    +-----------+-----------+-----------+-----------+-----------+
-                                                    |    lan6   |    lan7   |   lan8    |  optical3 |  optical4 |
-                                                    +-----------+-----------+-----------+-----------+-----------+
+Thank you a lot for helping me investigate this problem.
