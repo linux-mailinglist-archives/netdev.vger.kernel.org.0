@@ -2,161 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEB8C41DF82
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 18:44:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1C4A41DF92
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 18:51:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352285AbhI3Qq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 12:46:29 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.184]:42904 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1350980AbhI3Qq3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 12:46:29 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.178])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 033412006A;
-        Thu, 30 Sep 2021 16:44:45 +0000 (UTC)
-Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A8954B00087;
-        Thu, 30 Sep 2021 16:44:44 +0000 (UTC)
-Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 986BB13C2B0;
-        Thu, 30 Sep 2021 09:44:34 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 986BB13C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1633020274;
-        bh=R5g12WamHPZKaK9uCKhV94Fis2b2mGqXe726112+89o=;
-        h=Subject:From:To:References:Date:In-Reply-To:From;
-        b=Qic9/7t520GDtpN/DPObazliGoE18X80oJ4sUx7b6XKgPdPxnO+/0SWAkDX3g69LC
-         0IoKhnhHlbCKkWBkDoW6QPsL5AxCIzr6fdRKfdDWiGpNhVptzWHKwD3jTuskmomO29
-         lyuPK5AqplhuXdN3NLSoOaHuo9uf92eGWUqTjvC0=
-Subject: Re: 5.15-rc3+ crash in fq-codel?
-From:   Ben Greear <greearb@candelatech.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-References: <dfa032f3-18f2-22a3-80bf-f0f570892478@candelatech.com>
- <b6e8155e-7fae-16b0-59f0-2a2e6f5142de@gmail.com>
- <00e495ba-391e-6ad8-94a2-930fbc826a37@candelatech.com>
- <296232ac-e7ed-6e3c-36b9-ed430a21f632@candelatech.com>
- <7e87883e-42f5-2341-ab67-9f1614fb8b86@candelatech.com>
- <7f1d67f1-3a2c-2e74-bb86-c02a56370526@gmail.com>
- <88bc8a03-da44-fc15-f032-fe5cb592958b@candelatech.com>
- <b537053d-498d-928b-8ca0-e9daf5909128@gmail.com>
- <f3f1378d-6839-cd23-9e2c-4668947c2345@gmail.com>
- <41b4221b-be68-da96-8cbf-4297bb7ba821@gmail.com>
- <8768df9e-f1f6-db25-15d8-cabed2346f32@candelatech.com>
- <b7df0abb-8bdd-6348-a60a-75a66d6a9d91@candelatech.com>
- <c4000c2a-8894-c3f5-9497-82bce4615be1@gmail.com>
- <aa633585-0f0d-edf2-5659-72a49c1061c6@gmail.com>
- <7a896ce5-ff52-0c44-752c-f6d238d6d8d9@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <1d5fc498-c783-4857-b8e5-851e00561898@candelatech.com>
-Date:   Thu, 30 Sep 2021 09:44:34 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1352374AbhI3QxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 12:53:01 -0400
+Received: from mail-co1nam11on2075.outbound.protection.outlook.com ([40.107.220.75]:16835
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1348841AbhI3QxA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 12:53:00 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MXz92w6UhK6Ux1zyGm84HC3mdO9VYjs98B20v1TyR2zxUFCFAaDB0B2Hup+1SF6OOLuLiGNILwb0PP7qv9qGRJ/eP/cVVlEixEmWrPCIu2M4hwF1TT2/9Dmu2PR85d1fhk5/DE0mQa2oYUa0ytnHeU79qGuc3u0j4Q4nO2V38juUXWYaFEzuLSzknQqrFOAXBWDeYyMMDvWQ8pOUyVKu34gZ81gdMZ3zs940kg2srWBF8eVKzZqcicWte5ATzmK0p2tIXFE2cm0VqX7w4+67B2chN7oToMy/6AYU+DQCz2AEx1fHMBbTFgMi62bxHTHybDN0lX7jx2kLeXDIDDKGDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=1Brt1fDPPt4N5kVu9ctsplROTbl64V512WvAliRfKaQ=;
+ b=RDTyXvpmxT3iSyxt+G+DSVfGPnZENx7QyvJGmvKkkO+UbtmD71APNbqMmWD5zPHt0AwtiMuL76n6NTp+/GlmVQwMFQp+o7hx3CXg/JXgNkWmJ4MsbHiCL4TGW/NqbXKh8hwYsVJOqeW/OI3Al4lMJf6qFJSmDlRdacqnz+FAFLQU+qcpUxzKjUDZk6oJGBgU5VK6q6o7vXnvEW1/Oc9WQ97Ny3k/m6KYvSf2sKuA41gaVOzrfHP5zDPflVEHC/5ku5Hw0XdPgWsvDNVuG1P9rr/q4uGWvWLL7jJwGf0ClLh7qT07UcJSpHnhF0/oB5+TP1Ai88fjcHxZ9cYhpysEkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1Brt1fDPPt4N5kVu9ctsplROTbl64V512WvAliRfKaQ=;
+ b=KPfjET3UyGrnhSV54aGZeNLFeCWqm/39IcAfHP8kElyNypYWQd68mbcGQK8NPohXj2iSniTlDMEtEbF3abi0+U6naN0IbRDhGWQRwlSY1JI4QL0K54MFpy42uxMsfzMCpOLWYYuLpDmy7WygrrMX5WqFW833rtHpSgGz5arMzgI=
+Authentication-Results: linaro.org; dkim=none (message not signed)
+ header.d=none;linaro.org; dmarc=none action=none header.from=silabs.com;
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
+ by PH0PR11MB5644.namprd11.prod.outlook.com (2603:10b6:510:ef::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14; Thu, 30 Sep
+ 2021 16:51:15 +0000
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::31cb:3b13:b0e8:d8f4]) by PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::31cb:3b13:b0e8:d8f4%9]) with mapi id 15.20.4544.021; Thu, 30 Sep 2021
+ 16:51:15 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Subject: Re: [PATCH v7 08/24] wfx: add bus_sdio.c
+Date:   Thu, 30 Sep 2021 18:51:09 +0200
+Message-ID: <19731906.ZuIkq4dnIL@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <CAPDyKFp2_41mScO=-Ev+kvYD5xjShQdLugU_2FTTmvzgCxmEWA@mail.gmail.com>
+References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com> <20210920161136.2398632-9-Jerome.Pouiller@silabs.com> <CAPDyKFp2_41mScO=-Ev+kvYD5xjShQdLugU_2FTTmvzgCxmEWA@mail.gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-ClientProxiedBy: SA9P221CA0010.NAMP221.PROD.OUTLOOK.COM
+ (2603:10b6:806:25::15) To PH0PR11MB5657.namprd11.prod.outlook.com
+ (2603:10b6:510:ee::19)
 MIME-Version: 1.0
-In-Reply-To: <7a896ce5-ff52-0c44-752c-f6d238d6d8d9@candelatech.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-MDID: 1633020285-WS3dG5AADqnM
+Received: from pc-42.localnet (2a01:e34:ecb5:66a0:9876:e1d7:65be:d294) by SA9P221CA0010.NAMP221.PROD.OUTLOOK.COM (2603:10b6:806:25::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.17 via Frontend Transport; Thu, 30 Sep 2021 16:51:12 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5049ece1-9f55-44cf-5c67-08d9843283e1
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5644:
+X-Microsoft-Antispam-PRVS: <PH0PR11MB5644589A68C4F30F318CFF9393AA9@PH0PR11MB5644.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EKb5yy/7IZibqKPno8ZshaLkDTQF/vZFQ4ZMC0N5ZaiD6+LH+UD8WEuW99x5CYyndhWTYU3MHD6w7aUTBhNH+svHQjmY5kLf7VOlVr9y+Onklma088prO85Wpf2tX+WqiRy4OJGCoSlRkb2epRTrU5I8+VJ7hsJsQWlEBYA/ZUrPmP99tYMx36FFLIjbi9J8MB5sFZVUvghM4CWpQiUrf1p2eWZ5mzRFysln/cYO/byO7F22kGb2XGc7NStg4WIwcaLSxrJInPIirOslp4hLUaEQ2cN9VzeQqFivHPP/d71DX2+IBNzK9L/KTOcQzB8YZ1NROeL0bGfrHe+9yuL4JZo/8XYeth7e5nL9vMxQMJjaF5rjMnrjdadDAwUpc8yKpg2/ZgeOxUzFjrt4iKCFwGbXxrMVt5ty5sQmSgf4Nwjp5196HUOAraK40KoXooLVJY0SmDm8IBOC3aV75jTccVTE+yWOSzBmYRIzesguFxz4lX53RU3V2kxJfsZarRUeWrzjFtZjJgK6KNX/hxPfIQPkySzM/yOpw4HgefgzqTdYZcgx8DBlZG7ikpM/CeqamGf1dA+v+9p7uUjoWxhBTxBTnQBaKCe4QNSt2NjUZXDbuQAwEXrwRAzkieBP1VXV3+tkD1XAChG/o+KIM6+9HzqmjkFO07MVvpUFCLQ6c3LZBjcHwBnBQRnRD1aDp3s9NPaTw7b2E3I3VwlO6b7/W801Giu5L+ejW8sy3mzhabDJKtThn2XyfXwkqurFzSWoRoGTJL/0LhiQT7ectpwHgw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(36916002)(52116002)(6486002)(6512007)(54906003)(6506007)(5660300002)(508600001)(316002)(66574015)(9686003)(6666004)(33716001)(966005)(2906002)(66556008)(186003)(86362001)(38100700002)(4326008)(8936002)(66946007)(8676002)(66476007)(83380400001)(6916009)(7416002)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?YyP6Sz9l84Oa32OmYnsqa0W3jNawHWlroCcNKBmvQ6lkRQWo7qOko0f4Jy?=
+ =?iso-8859-1?Q?+BCTvg+V81vFIQk8LgEVys7J5MGp3GuqGMUvGV7iOdvs6q7OdGHCDLnZ/W?=
+ =?iso-8859-1?Q?NHbjJiPy98XA2LKHwzpZ0hh1hh+ZZpNZR7AQUY+9wjVGaCPJ5WZRH9s4Hb?=
+ =?iso-8859-1?Q?+986lXLNBjcqP08VIsjH94RMiQxXfk21es+SqCp7W2xOlLfcQuslJ2gw7k?=
+ =?iso-8859-1?Q?fkpb8AqdHYiJqHNvSFj+7jlEny0FGHxSzvxvXUK632ZZ1ofSx5ud6eFNbN?=
+ =?iso-8859-1?Q?/1iDliW9qQyfNsu/YfQGNdJfa70pqyNt5gGpsjLeQAwu1SktBHtoVnQA0V?=
+ =?iso-8859-1?Q?aau8kr4O4An8u1pITUy8ZFpP0JHyHFu+EhWQ6cX3PXMQvIGXVcHel4ha/I?=
+ =?iso-8859-1?Q?ZsuxXx/g6D/b3R12TiLH3TkC4wKN6THSve4fOieHO+BFac4M4Q8b8E7fqH?=
+ =?iso-8859-1?Q?ThP+80jByFzscBrzIJJdiN9B6Mr6SOBP+I4XxSAlC01Htns4jaZJtizKsG?=
+ =?iso-8859-1?Q?OPS0bUotZEKBbH836CcNs849qcZnWKDjfr6P1TmPaUuj8yjkXkGDdYMA2G?=
+ =?iso-8859-1?Q?yJ0pfvWwGf30aQJqrnuUyI8Zw9qPbZG0pnq7OI+qnPMrm2INZc4IxoTolD?=
+ =?iso-8859-1?Q?BLBKz+VNYP6CoMYlmaWHCeITunc7DqbVntR1dXtOM7nAnsTRuAsYhqMDvo?=
+ =?iso-8859-1?Q?JEESUPNEJpudCR2PmhYlGNQsJGD9v2yZ+AkiNmWIBDg+5eZ8339eeWl+30?=
+ =?iso-8859-1?Q?Fplpys5d8u40gTHzapl1GJdaj30qSA/wqcJbYYTbv13q7+7etJMvT+h7no?=
+ =?iso-8859-1?Q?JGGGFS371zXcgAP7uxkcXQ0w/3t53aRz//xNh4vrExbRcf360LPJhXKUl+?=
+ =?iso-8859-1?Q?UgKlssyrv2IEHPSSfHWRGUw5lo3CVUw24p34UWaARduvOoxXNY6TsfidlD?=
+ =?iso-8859-1?Q?OS1alsSbymnfV9Verc/7HKwvuwaIkKnpWx121fDzzrS2aZCIaZoy38at7z?=
+ =?iso-8859-1?Q?9GhY92lm1f1Pcj377H6DvzKDGhkgXpnofc2O8xHvi7pwlCEBKffVsjrAhQ?=
+ =?iso-8859-1?Q?dkNlZfX+elCxDxAGGfue0zMemXDXIubeODXmg5RF3xsoRPXbGyh1PpF8Oc?=
+ =?iso-8859-1?Q?jlwkcl7sRoNmoYjNeH5BjWPOyQLe9Ik1YyQ7Ngqs/cGrB4k51cztLq38Bv?=
+ =?iso-8859-1?Q?TZV9Hd2iHbr5uebh5o8uyBajwHXjyQI03sgHE1uYhFMUXu6UQ0EjddqC9u?=
+ =?iso-8859-1?Q?M8G3E1gb3gNS6yqucf8UM62D119EfnIxIa7eiTbVzbSuPzhyCZ+rjeNfSG?=
+ =?iso-8859-1?Q?9+4TVDZ6V+lm5YJKZ3zDYg/1ZZ4yjjVy/MKBuhBs5CXt5fJ10D9zSPx8dv?=
+ =?iso-8859-1?Q?33Av1EF5rTW6NBoNN161U390s18AqosU5spOSJHmwjV4qzuE6UlfzCu3QL?=
+ =?iso-8859-1?Q?ztTHBAYmB/C4P1qO?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5049ece1-9f55-44cf-5c67-08d9843283e1
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2021 16:51:15.0285
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pzoP39Ei89GQb2qx93Y2ZzIatZ2aJMgtSF6Dx/shDjdkzaCtwy5RvRziT708ocDieyVs9iwAY3Ad+psoHSYcJA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5644
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/29/21 6:36 PM, Ben Greear wrote:
-> On 9/29/21 5:40 PM, Eric Dumazet wrote:
->>
->>
->> On 9/29/21 5:29 PM, Eric Dumazet wrote:
->>>
->>>
->>> On 9/29/21 5:04 PM, Ben Greear wrote:
->>>> On 9/29/21 4:48 PM, Ben Greear wrote:
->>>>> On 9/29/21 4:42 PM, Eric Dumazet wrote:
->>>>>>
->>>>>>
->>>>>> On 9/29/21 4:28 PM, Eric Dumazet wrote:
->>>>>>>
->>>>>>
->>>>>>>
->>>>>>> Actually the bug seems to be in pktgen, vs NET_XMIT_CN
->>>>>>>
->>>>>>> You probably would hit the same issues with other qdisc also using NET_XMIT_CN
->>>>>>>
->>>>>>
->>>>>> I would try the following patch :
->>>>>>
->>>>>> diff --git a/net/core/pktgen.c b/net/core/pktgen.c
->>>>>> index a3d74e2704c42e3bec1aa502b911c1b952a56cf1..0a2d9534f8d08d1da5dfc68c631f3a07f95c6f77 100644
->>>>>> --- a/net/core/pktgen.c
->>>>>> +++ b/net/core/pktgen.c
->>>>>> @@ -3567,6 +3567,7 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
->>>>>>           case NET_XMIT_DROP:
->>>>>>           case NET_XMIT_CN:
->>>>>>                   /* skb has been consumed */
->>>>>> +               pkt_dev->last_ok = 1;
->>>>>>                   pkt_dev->errors++;
->>>>>>                   break;
->>>>>>           default: /* Drivers are not supposed to return other values! */
->>>>
->>>> While patching my variant of pktgen, I took a look at the 'default' case.  I think
->>>> it should probably go above NET_XMIT_DROP and fallthrough into the consumed pkt path?
->>>>
->>>> Although, probably not a big deal since only bugs elsewhere would hit that path, and
->>>> we don't really know if skb would be consumed in that case or not.
->>>>
->>>
->>> This is probably dead code after commit
->>>
->>> commit f466dba1832f05006cf6caa9be41fb98d11cb848    pktgen: ndo_start_xmit can return NET_XMIT_xxx values
->>>
->>> So this does not really matter anymore.
->>>
->>>
->>
->> Alternative would be the following patch.
->> NET_XMIT_CN means the packet has been queued for transmit,
->> but that we might have dropped prior packets.
->>
->> Probably not a big deal to make the difference in pktgen.
->>
->> diff --git a/net/core/pktgen.c b/net/core/pktgen.c
->> index a3d74e2704c42e3bec1aa502b911c1b952a56cf1..5c612cbc74c790f64aff5ce602843378284c7119 100644
->> --- a/net/core/pktgen.c
->> +++ b/net/core/pktgen.c
->> @@ -3557,6 +3557,7 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
->>          switch (ret) {
->>          case NETDEV_TX_OK:
->> +       case NET_XMIT_CN:
->>                  pkt_dev->last_ok = 1;
->>                  pkt_dev->sofar++;
->>                  pkt_dev->seq_num++;
->> @@ -3565,8 +3566,8 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
->>                          goto xmit_more;
->>                  break;
->>          case NET_XMIT_DROP:
->> -       case NET_XMIT_CN:
->>                  /* skb has been consumed */
->> +               pkt_dev->last_ok = 1;
->>                  pkt_dev->errors++;
->>                  break;
->>          default: /* Drivers are not supposed to return other values! */
->>
-> 
-> Yes, I like that the XMIT_CN then means to increment the seq_num, though for my own purposes,
-> I wouldn't want to increment the sofar++ in that case (and maybe not do other logic in that case),
-> since we know at least something dropped.
-> 
-> For fq-codel, seems that XMIT_CN could mean that the attempted packet actually was queued
-> for xmit, but at least some other packets were purged.
-> 
-> Thanks,
-> Ben
-> 
+Hello Ulf,
 
-This does fix the crash for me (my patch in my tree is slightly different, but same idea).
+On Thursday 30 September 2021 12:07:55 CEST Ulf Hansson wrote:
+> On Mon, 20 Sept 2021 at 18:12, Jerome Pouiller
+> <Jerome.Pouiller@silabs.com> wrote:
+> >
+> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> >
+> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> > ---
+> >  drivers/net/wireless/silabs/wfx/bus_sdio.c | 261 +++++++++++++++++++++
+> >  1 file changed, 261 insertions(+)
+> >  create mode 100644 drivers/net/wireless/silabs/wfx/bus_sdio.c
+> >
+> > diff --git a/drivers/net/wireless/silabs/wfx/bus_sdio.c b/drivers/net/w=
+ireless/silabs/wfx/bus_sdio.c
+>=20
+> [...]
+>=20
+> > +
+> > +static int wfx_sdio_probe(struct sdio_func *func,
+> > +                         const struct sdio_device_id *id)
+> > +{
+> > +       struct device_node *np =3D func->dev.of_node;
+> > +       struct wfx_sdio_priv *bus;
+> > +       int ret;
+> > +
+> > +       if (func->num !=3D 1) {
+> > +               dev_err(&func->dev, "SDIO function number is %d while i=
+t should always be 1 (unsupported chip?)\n",
+> > +                       func->num);
+> > +               return -ENODEV;
+> > +       }
+> > +
+> > +       bus =3D devm_kzalloc(&func->dev, sizeof(*bus), GFP_KERNEL);
+> > +       if (!bus)
+> > +               return -ENOMEM;
+> > +
+> > +       if (!np || !of_match_node(wfx_sdio_of_match, np)) {
+> > +               dev_warn(&func->dev, "no compatible device found in DT\=
+n");
+> > +               return -ENODEV;
+> > +       }
+> > +
+> > +       bus->func =3D func;
+> > +       bus->of_irq =3D irq_of_parse_and_map(np, 0);
+> > +       sdio_set_drvdata(func, bus);
+> > +       func->card->quirks |=3D MMC_QUIRK_LENIENT_FN0 |
+> > +                             MMC_QUIRK_BLKSZ_FOR_BYTE_MODE |
+> > +                             MMC_QUIRK_BROKEN_BYTE_MODE_512;
+>=20
+> I would rather see that you add an SDIO_FIXUP for the SDIO card, to
+> the sdio_fixup_methods[], in drivers/mmc/core/quirks.h, instead of
+> this.
 
-Thanks,
-Ben
+In the current patch, these quirks are applied only if the device appears
+in the device tree (see the condition above). If I implement them in
+drivers/mmc/core/quirks.h they will be applied as soon as the device is
+detected. Is it what we want?
+
+Note: we already have had a discussion about the strange VID/PID declared
+by this device:
+  https://www.spinics.net/lists/netdev/msg692577.html
+
+
+[...]
+> > +
+> > +static const struct sdio_device_id wfx_sdio_ids[] =3D {
+> > +       { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF20=
+0) },
+> > +       { },
+> > +};
+> > +MODULE_DEVICE_TABLE(sdio, wfx_sdio_ids);
+> > +
+> > +struct sdio_driver wfx_sdio_driver =3D {
+> > +       .name =3D "wfx-sdio",
+> > +       .id_table =3D wfx_sdio_ids,
+> > +       .probe =3D wfx_sdio_probe,
+> > +       .remove =3D wfx_sdio_remove,
+> > +       .drv =3D {
+> > +               .owner =3D THIS_MODULE,
+> > +               .of_match_table =3D wfx_sdio_of_match,
+>=20
+> Is there no power management? Or do you intend to add that on top?
+
+It seems we already have had this discussion:
+
+  https://lore.kernel.org/netdev/CAPDyKFqJf=3DvUqpQg3suDCadKrFTkQWFTY_qp=3D=
++yDK=3D_Lu9gJGg@mail.gmail.com/#r
+
+In this thread, Kalle said:
+> Many mac80211 drivers do so that the device is powered off during
+> interface down (ifconfig wlan0 down), and as mac80211 does interface
+> down automatically during suspend, suspend then works without extra
+> handlers.
+
+
+--=20
+J=E9r=F4me Pouiller
+
+
