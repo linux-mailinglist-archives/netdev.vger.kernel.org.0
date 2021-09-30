@@ -2,105 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E10641E4A7
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:15:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22DE841E4AC
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:20:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350417AbhI3XRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 19:17:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53280 "EHLO mail.kernel.org"
+        id S1345182AbhI3XWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 19:22:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55606 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350002AbhI3XQv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 19:16:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 44B1B61A78;
-        Thu, 30 Sep 2021 23:15:08 +0000 (UTC)
+        id S229992AbhI3XWh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 19:22:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 873F2619E7;
+        Thu, 30 Sep 2021 23:20:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633043708;
-        bh=yrWSIGoSSF2+PeYQ2L6bxSi2DMnVo1+1BwsYV14hZhQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GKqgVIFo0+b40ZWvCfzB9Iz5vcxNdPDoSqWpZN3JBFF5AywZpWtNMdQJr532JTBlS
-         vY0/1WZJM/wiYfbM7U40s7Fn47/gUvL0Zj9NTh9YNpxrn+o+rDFlQ9p1huSAGyaKtK
-         50fjLtIkR8Jrj7fbAXlRQbK8nGpxR2pzSe1IXS7AKKN3/52ry0aC6vp8ZrmAEwpTX/
-         mV/mVd9Il1ZiLDTjtXouV8cNXpdYjcMMzEqFroSfgrP555oAnqaTvz+gKffXhXcwC8
-         xSEdAhcHf+DB4NaHda3xEkx8aUYu7k9PaSRYetvY0Gkjy2HtF/LSOSrni4FD9O+nys
-         Gm7Up+FTEzfAw==
+        s=k20201202; t=1633044053;
+        bh=oD1ZvNDz/D9J/jdSztTuoSvXSpqy09g/lD0JnXkNtlQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=O1RE9nqLZjbu4nHK446wA1N6P90H0K/hKq85bSaGyh1UWkAwBdjFIJ6tg3x1rZBoT
+         MsDtFduvZwkuK8vmaaAS/GZMhWHecIiJfyCH19vYTWhZt5wEZ3OeR2FBPssC1OeGZS
+         S2BdrMwVRbs7ku0KOQjmkGnxSqV8Hv/zJ3ISya8eUQSjzmyYBf1paNavHCcKmImLrf
+         LKRRKODrg+PXsJ0HHlAVUhXn1wRxx5Sjs7tBPJEcB2BmqiYThIpPNxklvGZIjhB9yk
+         UNSYjuQLs80xQ/du0l9uzwE4C9ee7xNfyX4IEGmjAS7ivXhRFmW6mWdvDXAiyrFAp0
+         QfID4BDHZyj1Q==
 From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 10/10] net/mlx5e: Mutually exclude setting of TX-port-TS and MQPRIO in channel mode
-Date:   Thu, 30 Sep 2021 16:15:01 -0700
-Message-Id: <20210930231501.39062-11-saeed@kernel.org>
+Subject: [pull request][net-next 00/15] mlx5 updates 2021-09-30
+Date:   Thu, 30 Sep 2021 16:20:35 -0700
+Message-Id: <20210930232050.41779-1-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210930231501.39062-1-saeed@kernel.org>
-References: <20210930231501.39062-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-TX-port-TS hijacks the PTP traffic to a specific HW TX-queue. This
-conflicts with MQPRIO in channel mode, which specifies explicitly which
-TC accepts the packet. This patch mutually excludes the above
-configuration.
+Hi Dave, Jakub,
 
-Fixes: ec60c4581bd9 ("net/mlx5e: Support MQPRIO channel mode")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+This series provides misc mlx5 updates.
+For more information please see tag log below.
+
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c | 11 +++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c    |  8 ++++++++
- 2 files changed, 19 insertions(+)
+The following changes since commit dd9a887b35b01d7027f974f5e7936f1410ab51ca:
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index 306fb5d6a36d..9d451b8ee467 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -2036,6 +2036,17 @@ static int set_pflag_tx_port_ts(struct net_device *netdev, bool enable)
- 	}
- 
- 	new_params = priv->channels.params;
-+	/* Don't allow enabling TX-port-TS if MQPRIO mode channel  offload is
-+	 * active, since it defines explicitly which TC accepts the packet.
-+	 * This conflicts with TX-port-TS hijacking the PTP traffic to a specific
-+	 * HW TX-queue.
-+	 */
-+	if (enable && new_params.mqprio.mode == TC_MQPRIO_MODE_CHANNEL) {
-+		netdev_err(priv->netdev,
-+			   "%s: MQPRIO mode channel offload is active, cannot set the TX-port-TS\n",
-+			   __func__);
-+		return -EINVAL;
-+	}
- 	MLX5E_SET_PFLAG(&new_params, MLX5E_PFLAG_TX_PORT_TS, enable);
- 	/* No need to verify SQ stop room as
- 	 * ptpsq.txqsq.stop_room <= generic_sq->stop_room, and both
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 0390395f421f..0c5197f9cea3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -2945,9 +2945,17 @@ static int mlx5e_mqprio_channel_validate(struct mlx5e_priv *priv,
- 					 struct tc_mqprio_qopt_offload *mqprio)
- {
- 	struct net_device *netdev = priv->netdev;
-+	struct mlx5e_ptp *ptp_channel;
- 	int agg_count = 0;
- 	int i;
- 
-+	ptp_channel = priv->channels.ptp;
-+	if (ptp_channel && test_bit(MLX5E_PTP_STATE_TX, ptp_channel->state)) {
-+		netdev_err(netdev,
-+			   "Cannot activate MQPRIO mode channel since it conflicts with TX port TS\n");
-+		return -EINVAL;
-+	}
-+
- 	if (mqprio->qopt.offset[0] != 0 || mqprio->qopt.num_tc < 1 ||
- 	    mqprio->qopt.num_tc > MLX5E_MAX_NUM_MQPRIO_CH_TC)
- 		return -EINVAL;
--- 
-2.31.1
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-09-30 14:49:21 -0700)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-09-30
+
+for you to fetch changes up to 51984c9ee01e784ff578e583678958709b18f7b7:
+
+  net/mlx5e: Use array_size() helper (2021-09-30 16:19:02 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2021-09-30
+
+Misc mlx5 updates:
+
+1) SW steering, Vports handling and SFs support
+
+From Yevgeny Kliteynik
+======================
+This patch series deals with vport handling in SW steering.
+
+For every vport, SW steering queries FW for this vport's properties,
+such as RX/TX ICM addresses to be able to add this vport as dest action.
+The following patches rework vport capabilities managements and add support
+for Scalable Functions (SFs).
+
+ - Patch 1 fixes the vport number data type all over the DR code to 16 bits
+   in accordance with HW spec.
+ - Patch 2 replaces local SW steering WIRE_PORT macro with the existing
+   mlx5 define.
+ - Patch 3 adds missing query for vport 0 and and handles eswitch manager
+   capabilities for ECPF (BlueField in embedded CPU mode).
+ - Patch 4 fixes error messages for failure to obtain vport caps from
+   different locations in the code to have the same verbosity level and
+   similar wording.
+ - Patch 5 adds support for csum recalculation flow tables on SFs: it
+   implements these FTs management in XArray instead of the fixed size array,
+   thus adding support for csum recalculation table for any valid vport.
+ - Patch 6 is the main patch of this whole series: it refactors vports
+   capabilities handling and adds SFs support.
+
+======================
+
+2) Minor and trivial updates and cleanups
+
+----------------------------------------------------------------
+Aya Levin (1):
+      net/mlx5: Tolerate failures in debug features while driver load
+
+Gustavo A. R. Silva (3):
+      net/mlx5: Use kvcalloc() instead of kvzalloc()
+      net/mlx5: Use struct_size() helper in kvzalloc()
+      net/mlx5e: Use array_size() helper
+
+Lama Kayal (1):
+      net/mlx5: Warn for devlink reload when there are VFs alive
+
+Yevgeny Kliteynik (10):
+      net/mlx5: DR, Fix vport number data type to u16
+      net/mlx5: DR, Replace local WIRE_PORT macro with the existing MLX5_VPORT_UPLINK
+      net/mlx5: DR, Add missing query for vport 0
+      net/mlx5: DR, Align error messages for failure to obtain vport caps
+      net/mlx5: DR, Support csum recalculation flow table on SFs
+      net/mlx5: DR, Add support for SF vports
+      net/mlx5: DR, Increase supported num of actions to 32
+      net/mlx5: DR, Fix typo 'offeset' to 'offset'
+      net/mlx5: DR, init_next_match only if needed
+      net/mlx5: DR, Add missing string for action type SAMPLER
+
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |   5 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  10 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/fs_counters.c  |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  12 +-
+ .../mellanox/mlx5/core/steering/dr_action.c        |  19 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |   6 +-
+ .../mellanox/mlx5/core/steering/dr_domain.c        | 212 ++++++++++++++-------
+ .../ethernet/mellanox/mlx5/core/steering/dr_fw.c   |   2 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |   4 +-
+ .../mellanox/mlx5/core/steering/dr_ste_v0.c        |  13 +-
+ .../mellanox/mlx5/core/steering/dr_ste_v1.c        |  18 +-
+ .../mellanox/mlx5/core/steering/dr_types.h         |  47 ++---
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |   2 +-
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |   2 +-
+ 16 files changed, 215 insertions(+), 146 deletions(-)
