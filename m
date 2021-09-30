@@ -2,154 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79ED641E2A4
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 22:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C8DD41E2A7
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 22:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347862AbhI3UXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 16:23:21 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:48556 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347353AbhI3UXU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 16:23:20 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 72B1122402;
-        Thu, 30 Sep 2021 20:21:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1633033296; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9g75lAyLFkTda2g/McMXgcaclXSCYLuRfhdLWCumKkY=;
-        b=HM+Nwl06H49OgFnqiCTo5iCOqxkA4mAvz2ISiH6/rhSrPSPOy5zmf6HA20TBUY62PgWC2Y
-        hdx16umL/14tIco1SSHD7lOTX2t0FBQ/krAlhIX7rEgy1mlFnhj35cffsJz567wtT+x3un
-        RwaWhx7PeuvaBLOBG3oaClo4XOfo4Fs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1633033296;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9g75lAyLFkTda2g/McMXgcaclXSCYLuRfhdLWCumKkY=;
-        b=v+tSPTAOfpLU5b2RrylfG1dCVV6kVZmEziDBWFVNeK5bq+redCtw3ZBNKJk8BfPTip57o4
-        RRwiZQ1UalFxIvCA==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 64FCAA3B81;
-        Thu, 30 Sep 2021 20:21:36 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 4A50E603E0; Thu, 30 Sep 2021 22:21:33 +0200 (CEST)
-Date:   Thu, 30 Sep 2021 22:21:33 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, vadimp@nvidia.com, moshe@nvidia.com,
-        popadrian1996@gmail.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH ethtool-next 1/7] cmis: Fix CLEI code parsing
-Message-ID: <20210930202133.rspuswnnbnnhlgeb@lion.mk-sys.cz>
-References: <20210917144043.566049-1-idosch@idosch.org>
- <20210917144043.566049-2-idosch@idosch.org>
+        id S1347867AbhI3UYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 16:24:32 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41864 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229941AbhI3UYc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 16:24:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YmcyVghdJHtC/wool3HxKieEO9gZnFRYp8XV9FD2I/E=; b=tGTRsTo7JNRXFpm9YWcxcsHrlb
+        lZKYTQ0oH4zwS8eWytNikCNTFeIZyAdDOz8jIUuvpoBhUuJ+nbuNEwzvU/CcOEVO1j9Ampqc1HxX7
+        C882PphgctxEbcrOVeMm8l8lkeC0IhhfidAHDXIiv82eCxzfUW9pKsxK9RFRQPTF0L2I=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mW2Zk-0090EA-Vi; Thu, 30 Sep 2021 22:22:40 +0200
+Date:   Thu, 30 Sep 2021 22:22:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Saravana Kannan <saravanak@google.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_BROKEN_PARENT
+Message-ID: <YVYckPBihi1ukwvE@lunn.ch>
+References: <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
+ <YS608fdIhH4+qJsn@lunn.ch>
+ <20210831231804.zozyenear45ljemd@skbuf>
+ <CAGETcx8MXzFhhxom3u2MXw8XA-uUtm9XGEbYNobfr+Ptq5+fVQ@mail.gmail.com>
+ <20210930134343.ztq3hgianm34dvqb@skbuf>
+ <YVXDAQc6RMvDjjFu@lunn.ch>
+ <CAGETcx8emDg1rojU=_rrQJ3ezpx=wTukFdbBV-uXiu1EQ87=wQ@mail.gmail.com>
+ <YVYSMMMkmHQn6n2+@lunn.ch>
+ <CAGETcx-L7zhfd72+aRmapb=nAbbFGR5NX0aFK-V9K1WT4ubohA@mail.gmail.com>
+ <cb193c3d-e75d-3b1e-f3f4-0dcd1e982407@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="3ybpthoeyshqsjg3"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210917144043.566049-2-idosch@idosch.org>
+In-Reply-To: <cb193c3d-e75d-3b1e-f3f4-0dcd1e982407@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> I don't think this is going to scale, we have dozens and dozens of
+> drivers that connect to the PHY during ndo_open(). It is not realistic
+> to audit them all, just like the opposite case where the drivers do
+> probe MDIO/PHY during their .probe() call is not realistic either.
 
---3ybpthoeyshqsjg3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I was wondering if Coccinelle could help use here. But a quick scan of
+the documents don't suggest it can follow call stacks. Ideally we
+would what something to goes and finds the struct net_device_ops, and
+gets the function used for .ndo_open. Then look into that function,
+and all functions it calls within the driver, and see if any of them
+connect the PHY to the MAC. We could then add an additional parameter
+to indicate we are in ndo_open context.
 
-On Fri, Sep 17, 2021 at 05:40:37PM +0300, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
->=20
-> In CMIS, unlike SFF-8636, there is no presence indication for the CLEI
-> code (Common Language Equipment Identification) field. The field is
-> always present, but might not be supported. In which case, "a value of
-> all ASCII 20h (spaces) shall be entered".
->=20
-> Therefore, remove the erroneous check which seems to be influenced from
-> SFF-8636 and only print the string if it is supported and has a non-zero
-> length.
->=20
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  cmis.c | 8 +++++---
->  cmis.h | 3 +--
->  2 files changed, 6 insertions(+), 5 deletions(-)
->=20
-> diff --git a/cmis.c b/cmis.c
-> index 1a91e798e4b8..2a48c1a1d56a 100644
-> --- a/cmis.c
-> +++ b/cmis.c
-> @@ -307,6 +307,8 @@ static void cmis_show_link_len(const __u8 *id)
->   */
->  static void cmis_show_vendor_info(const __u8 *id)
->  {
-> +	const char *clei =3D (const char *)(id + CMIS_CLEI_START_OFFSET);
-> +
->  	sff_show_ascii(id, CMIS_VENDOR_NAME_START_OFFSET,
->  		       CMIS_VENDOR_NAME_END_OFFSET, "Vendor name");
->  	cmis_show_oui(id);
-> @@ -319,9 +321,9 @@ static void cmis_show_vendor_info(const __u8 *id)
->  	sff_show_ascii(id, CMIS_DATE_YEAR_OFFSET,
->  		       CMIS_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
-> =20
-> -	if (id[CMIS_CLEI_PRESENT_BYTE] & CMIS_CLEI_PRESENT_MASK)
-> -		sff_show_ascii(id, CMIS_CLEI_START_OFFSET,
-> -			       CMIS_CLEI_END_OFFSET, "CLEI code");
-> +	if (strlen(clei) && strcmp(clei, CMIS_CLEI_BLANK))
-> +		sff_show_ascii(id, CMIS_CLEI_START_OFFSET, CMIS_CLEI_END_OFFSET,
-> +			       "CLEI code");
->  }
-> =20
->  void qsfp_dd_show_all(const __u8 *id)
+But it looks like that is wishful thinking.
 
-Is it safe to assume that the string will be always null terminated?
-Looking at the code below, CMIS_CLEI_BLANK consists of 10 spaces which
-would fill the whole block at offsets 0xBE through 0xC7 with spaces and
-offset 0xC8 is used as CMIS_PWR_CLASS_OFFSET. Also, sff_show_ascii()
-doesn't seem to expect a null terminated string, rather a space padded
-one.
-
-Michal
-
-
-> diff --git a/cmis.h b/cmis.h
-> index 78ee1495bc33..d365252baa48 100644
-> --- a/cmis.h
-> +++ b/cmis.h
-> @@ -34,10 +34,9 @@
->  #define CMIS_DATE_VENDOR_LOT_OFFSET		0xBC
-> =20
->  /* CLEI Code (Page 0) */
-> -#define CMIS_CLEI_PRESENT_BYTE			0x02
-> -#define CMIS_CLEI_PRESENT_MASK			0x20
->  #define CMIS_CLEI_START_OFFSET			0xBE
->  #define CMIS_CLEI_END_OFFSET			0xC7
-> +#define CMIS_CLEI_BLANK				"          "
-> =20
->  /* Cable assembly length */
->  #define CMIS_CBL_ASM_LEN_OFFSET			0xCA
-> --=20
-> 2.31.1
->=20
-
---3ybpthoeyshqsjg3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmFWHEcACgkQ538sG/LR
-dpUdJwgAuPphJeVjEXRM1tfCvISWSoYyDvgR54ZsuGIlLMtq1RPPf5ZUigAG/AeV
-ZbJmFSJ2mVF1dmMmlImpKyFM9wh/nDSaj1qZ5Ss5NG+1AIhgtAmabkV/ZzgJUJas
-XAlSPE8cm0F9403005D4h7ph195jQTWyJ3R0XAjkIH/5Y6At6OqmYnzDbeEte90E
-FxCE8aQEi8xFt6vRSKnawuQMMUxsFV5kZvp/2f+Yoz7k2vaVVcvMiQV6yxlSDMha
-Ipt3DITi7ompOlxUBgPbi67EVfZYGACWg2YIgk1Tyi21QcQ+JGvLkW1Z8aA/sGP7
-Tn5MprgphdQt4976v20hmRgE85ypqg==
-=kUtx
------END PGP SIGNATURE-----
-
---3ybpthoeyshqsjg3--
+    Andrew
