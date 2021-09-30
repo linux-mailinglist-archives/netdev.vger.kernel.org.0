@@ -2,105 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C445D41DC47
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 16:29:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B27941DC65
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 16:35:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349746AbhI3ObS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 10:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35936 "EHLO
+        id S1350339AbhI3OhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 10:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348126AbhI3ObQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 10:31:16 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C11C06176A;
-        Thu, 30 Sep 2021 07:29:33 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id u18so26243464lfd.12;
-        Thu, 30 Sep 2021 07:29:33 -0700 (PDT)
+        with ESMTP id S1348440AbhI3OhN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 10:37:13 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1A4C06176A;
+        Thu, 30 Sep 2021 07:35:31 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id t11so4144429plq.11;
+        Thu, 30 Sep 2021 07:35:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7zNReFsiR9GlBgh8OErMyFvjMC9S/ZuWsLI5xMLDm3g=;
-        b=Ojt/7NUyCNR6hCeEnHzXa/311xlbRLS1wsz6K/2egRaJTaA/tefSdMEWJZgM6UHnRZ
-         TwgX4sga/4VmfUL+dpz7G2pKAuwG5IynkudrRrpAhLG4gO1s+YnhumOr+VgaQvqDruVh
-         yrqKoDD6yilLh+IvGpsZzP29Yh5bm4YDY/X7LvCtm0CCOXBHb8hpChqKLyJ66538f9la
-         FROpP7npOMpQcmMFkcSCl+ozspYF++0c9G05G1UUsMslIXJ59Cjq9kXf+LIrHCBAtCiK
-         TyqqE1YxmxqJwarabLwdmjZLO+JjIf9RQIxpXwWSEOBqnIA+m5Ho6MvgoJuso7/s0K59
-         mopQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lYJPRniTRBZbff9MFqNleWr6TXhR2CJIGNuRoQ2wgy8=;
+        b=XQEYgilh70OAlHfZfNiT4UE+CVMlUBQBBEfmJuQpsArcbqLTUq2qLCSTq3g+lPTSuA
+         dsil27f5oQCy6Hg5aa+KT279e0Zeli5QMjLxeCUfpExxRMcIttaoa/SArfrgd0L7QeDt
+         mfDKQesUR1GNj5IQhtH5ailEAiefK2xyc2iA9qr7bKOlbC+AIpNDBmGB+OJMJ654bdBs
+         oRxExW0W3xlZF8SvT/AW6pnx7pdQ3jTfnxDto7MwUygnBoLsE4wygMbnmM0r20jPLdZC
+         rUn4GC2A9kzWvE1vXEif7hDxMrSX1heB5xMZEBfAR+h3FgM91M3BYcqQ5PcRaT25ebk0
+         QR3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7zNReFsiR9GlBgh8OErMyFvjMC9S/ZuWsLI5xMLDm3g=;
-        b=kJF4LaqBfVPCwwWatkUI0PFLxfWkA714Tj9AyCm6Fs/3PKd2w32gv5hBuzZJKF5UEw
-         KL2+RbW7mJbMy9bwGlHcs3TLF4R9SZ92fz/D2VCX6ePjzBM7dyjUfgkBIYr7kYl2MWmS
-         6gt6lfaJO+aNXOhLk54q5dXcAmxlV/q2fWcnjdPYzkvpok8v7DW1jUBnDHAZfWUa5UfQ
-         voLAxwWb5xlbUJQpk6gJ6zFIR5Gm2w/OYIVPXkM1qBC6GC8i2q06Dil+C3ujR8j49P8n
-         lzGAqGCmaaH1sVesPCReUJiQbDDv5nFrMWdE7OAtm8vC61AKWApmM4qswWlGMwMINGs8
-         gUtA==
-X-Gm-Message-State: AOAM531HCCd+hQLSZpf4DHtbK1HBUNzNJGdFf7GA6jdt27QXusPJEZW8
-        H5n4/bBhzjyR/z5tJBGgwJY=
-X-Google-Smtp-Source: ABdhPJxOQmm8wk1i7Zs7d0uMFPmNY/Lj1ybxC07H58iZoDKaVyFbXrbTTXKpFCUAJZyq6BLv1PNyuw==
-X-Received: by 2002:a05:6512:10ca:: with SMTP id k10mr6102844lfg.315.1633012167031;
-        Thu, 30 Sep 2021 07:29:27 -0700 (PDT)
-Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id d26sm397469ljj.45.2021.09.30.07.29.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Sep 2021 07:29:26 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: bgmac: support MDIO described in DT
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20210920123441.9088-1-zajec5@gmail.com>
- <168e00d3-f335-4e62-341f-224e79a08558@gmail.com>
- <79c91b0e-7f6a-ef40-9ab2-ee8212bf5791@gmail.com>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Message-ID: <780a6e7f-655a-6d79-d086-2eefd7e9ccb6@gmail.com>
-Date:   Thu, 30 Sep 2021 16:29:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lYJPRniTRBZbff9MFqNleWr6TXhR2CJIGNuRoQ2wgy8=;
+        b=pvp4M+chC2WEYc16DCsE75K69ornul7PrT1So9WgRJK7hkC24N5AjYroYGKeJkN+P5
+         D7qdyiExao5Srlr5Wd/UnV+atGq7hCPy5ddN82HMZMH3Ztng6XgirkoG8rqbhKgDIw+E
+         NfUSdaeY4kD4TWYgvQ5frmRYcaJg36gD+v6hWboWpd9lYzjfuikbBcJ5Z0rjWJNQ47UQ
+         srS4Cer5Pwd87o2Oo/ZlXGlste4X09AhA0GFK5eRdnglMLFQ7576t16XpCpoqhKvWsKk
+         AG0+RUrF5AOqEjh8aBGQM1jD9S+qHJvU6amGV7Fp0dsnHSND4KtlNXE/Xr86osvHvctR
+         779Q==
+X-Gm-Message-State: AOAM533oN/ULwVoSSB1bzHir4XNbwU2Sb6JgDiWs8zmGgTCkCoOhSSnJ
+        hoO+xCqvAOLqby16LEI/abs=
+X-Google-Smtp-Source: ABdhPJzOYNarPIvIznW68ec40qAzjkKpHUN+ruoL95o7U+ATJK1Bqw1yOg5bN+fboQvyHOo6Hz2vlg==
+X-Received: by 2002:a17:90a:db95:: with SMTP id h21mr13615635pjv.102.1633012530501;
+        Thu, 30 Sep 2021 07:35:30 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id d5sm2966317pjs.53.2021.09.30.07.35.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Sep 2021 07:35:29 -0700 (PDT)
+Date:   Thu, 30 Sep 2021 07:35:27 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Sebastien Laveze <sebastien.laveze@oss.nxp.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yangbo.lu@nxp.com, yannick.vignon@oss.nxp.com,
+        rui.sousa@oss.nxp.com
+Subject: Re: [PATCH net-next] ptp: add vclock timestamp conversion IOCTL
+Message-ID: <20210930143527.GA14158@hoboy.vegasvil.org>
+References: <20210927093250.202131-1-sebastien.laveze@oss.nxp.com>
+ <20210927145916.GA9549@hoboy.vegasvil.org>
+ <b9397ec109ca1055af74bd8f20be8f64a7a1c961.camel@oss.nxp.com>
+ <20210927202304.GC11172@hoboy.vegasvil.org>
+ <98a91f5889b346f7a3b347bebb9aab56bddfd6dc.camel@oss.nxp.com>
+ <20210928133100.GB28632@hoboy.vegasvil.org>
+ <0941a4ea73c496ab68b24df929dcdef07637c2cd.camel@oss.nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <79c91b0e-7f6a-ef40-9ab2-ee8212bf5791@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0941a4ea73c496ab68b24df929dcdef07637c2cd.camel@oss.nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.09.2021 19:57, Rafał Miłecki wrote:
-> On 20.09.2021 18:11, Florian Fainelli wrote:
->> I believe this leaks np and the use case is not exactly clear to me
->> here. AFAICT the Northstar SoCs have two MDIO controllers: one for
->> internal PHYs and one for external PHYs which how you would attach a
->> switch to the chip (in chipcommonA). Is 53573 somewhat different here?
->> What is the MDIO bus driver that is being used?
+On Wed, Sep 29, 2021 at 05:00:56PM +0200, Sebastien Laveze wrote:
+> On Tue, 2021-09-28 at 06:31 -0700, Richard Cochran wrote:
+> > On Tue, Sep 28, 2021 at 01:50:23PM +0200, Sebastien Laveze wrote:
+> > > Yes that would do it. Only drawback is that ALL rx and tx timestamps
+> > > are converted to the N domains instead of a few as needed.
+> > 
+> > No, the kernel would provide only those that are selected by the
+> > program via the socket option API.
 > 
-> of_get_child_by_name() doesn't seem to increase refcount or anything and
-> I think it's how most drivers handle it. I don't think it should leak.
-> 
-> BCM53573 is a built with some older blocks. Please check:
-> 
-> 4ebd50472899 ("ARM: BCM53573: Initial support for Broadcom BCM53573 SoCs")
->      BCM53573 series is a new family with embedded wireless. By marketing
->      people it's sometimes called Northstar but it uses different CPU and has
->      different architecture so we need a new symbol for it.
->      Fortunately it shares some peripherals with other iProc based SoCs so we
->      will be able to reuse some drivers/bindings.
-> 
-> e90d2d51c412 ("ARM: BCM5301X: Add basic dts for BCM53573 based Tenda AC9")
->      BCM53573 seems to be low priced alternative for Northstar chipsts. It
->      uses single core Cortex-A7 and doesn't have SDU or local (TWD) timer. It
->      was also stripped out of independent SPI controller and 2 GMACs.
-> 
-> Northstar uses SRAB which is some memory based (0x18007000) access to
-> switch register space.
-> BCM53573 uses different blocks & mappings and it doesn't include SRAB at
-> 0x18007000. Accessing switch registers is handled over MDIO.
+> But _all_ timestamps (rx and tx) are converted when a domain is
+> selected.
 
-Florian: did my explanations help reviewing this patch? Would you ack it
-now?
+So what?  It is only a mult/shift.  Cheaper than syscall by far.
+
+> If we consider gPTP,
+> -using the ioctl, you only need to convert the sync receive timestamps.
+> PDelay (rx, tx, fup), sync (tx and fup) and signalling don't need to be
+> converted. So that's for a default sync period of 125 ms, 8 ioctl /
+> second / domain.
+
+Well, today that is true, for your very specific use case.  But we
+don't invent kernel interfaces for one-off projects.
+
+> -doing the conversion in the kernel will necessarly be done for every
+> timestamp handled by the socket. In addition, the vclock device lookup
+> is not free as well and done for _each_ conversion.
+
+Sounds like something that can be optimized in the kernel implementation.
+
+> From a high-level view, I understand that you would have N
+> instance/process of linuxptp to support N domains ?
+
+Yes.
+
+> CMLDS performed by
+> one of them and then some signalling to the other instances ?
+
+Yes, something like that.  One process measures peer delay, and the
+others read the result via management messages (could also be pushed
+via ptp4l's management notification method).
+ 
+> What we miss currently in the kernel for a better multi-domain usage
+> and would like to find a solution:
+> -allow PHC adjustment with virtual clocks. Otherwise scheduled traffic
+> cannot be used... (I've read your comments on this topic, we are
+> experimenting things on MCUs and we need to assess on measurements)
+
+Yeah, so you cannot have it both ways, I'm afraid.  Either you adjust
+the HW clock or not.  If you don't, it becomes impractical to program
+the event registers for output signals.  (Time stamps on input signals
+are not an issue, though)
+
+> -timer support for virtual clocks (nanosleep likely, as yous suggested
+> IIRC).
+
+Right, and this is (probably) difficult to sell on lkml.  Look at the
+hrtimer implementation to see what I mean.
+
+I could imagine adding one additional hrtimer base under user space
+control that isn't clock_monotonic or _realtime or _tai, but not N new
+bases.
+
+I think the best option for user space wanting timers in multiple
+domains is to periodically do 
+
+   gettime(monotonic); gettime(vclock); gettime(monotonic);
+
+figure the conversion, and schedule using clock_monotonic.
+
+
+HTH,
+Richard
+
