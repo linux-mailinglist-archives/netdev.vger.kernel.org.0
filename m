@@ -2,64 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC7A41D9D1
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 14:30:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25DB941D9D4
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 14:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350872AbhI3Mbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 08:31:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36194 "EHLO mail.kernel.org"
+        id S1350873AbhI3McB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 08:32:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244692AbhI3Mbt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 08:31:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 55DE66137A;
-        Thu, 30 Sep 2021 12:30:07 +0000 (UTC)
+        id S1350837AbhI3Mbu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 08:31:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 48557619E9;
+        Thu, 30 Sep 2021 12:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633005007;
-        bh=3SV7CMgKoNYDF0EvsEmKmRphzDtH67oMAwQOqzdI+j0=;
+        s=k20201202; t=1633005008;
+        bh=CcTc775U0Nnl+OC4Icy8y2oARW0X9UK7n7gImHsHo7Q=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MQ8s4Yw4qHN+vEXVUR92pPl+xO6jL1PAd9XLPobLJpCEE9oEjBNVWpDSKAbzWsKT4
-         W3waQeF0r19khF0EF7RXq3a4lER9V1lfRecgqD9nfLEv85J16WxiAER+lkbQzNeQrO
-         CyeLBmFj7brMBXBHbuVQ6+v/RTcZVMKpXqCil3sUWFMuw6GiI+lfAilpRqFdwZFsCU
-         nr4BuflCDGheWNivSzJhhldxYd3VC52xyW3BVnNYemJVwTfxsgcAmkdcWcholg8mp/
-         GxC/qYqMSNgnvpmj7nvJE+yO4Cnl93LvYqqnneok8QhauQJ+lM20fNNSkDUXErGGuf
-         76MnArMC3WrbA==
+        b=t2MXS/32kQUQa7M4cL/OtdYJd9vUUjpagPsgpASJdpvXcfUPWB5rAFHeFsAAnFrqX
+         AxybwM8MxoN8XUFnTb1YFpv5Ro5drRl+374GyT/Uop7Ge62GW13gC3knxB9YlvEEZp
+         nEuJNlVoBj784FM5SKSwZHBcGdQEkxxgguT4Bl9ywbttP3XSV8bmP1ljX5tyF68RJi
+         KJ1GVMAQAO/7in158TH9lec7YsYL5ni7tQ04CiuRrNtaJ8pSP1yt67c0Q19vYtpVsm
+         3P+w1UaeZclUC05jXfH6rLX30kCJDjU+aMTIue+zu7IBsNXpJzBHDolQiR/N75uoTg
+         UI0u0n8jZJYlQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4A11A60A9F;
-        Thu, 30 Sep 2021 12:30:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3F43D60AA5;
+        Thu, 30 Sep 2021 12:30:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: introduce and use lock_sock_fast_nested()
+Subject: Re: [PATCH][next] octeontx2-af: Remove redundant initialization of
+ variable pin
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163300500729.24074.16162617259711797260.git-patchwork-notify@kernel.org>
-Date:   Thu, 30 Sep 2021 12:30:07 +0000
-References: <59164fda628b5169d2dac9ecf7e85d3d6f9690f5.1632909427.git.pabeni@redhat.com>
-In-Reply-To: <59164fda628b5169d2dac9ecf7e85d3d6f9690f5.1632909427.git.pabeni@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        mptcp@lists.linux.dev, tglx@linutronix.de, edumazet@google.com
+Message-Id: <163300500825.24074.17246457961363839532.git-patchwork-notify@kernel.org>
+Date:   Thu, 30 Sep 2021 12:30:08 +0000
+References: <20210929132753.216068-1-colin.king@canonical.com>
+In-Reply-To: <20210929132753.216068-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
+        hkelam@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 29 Sep 2021 11:59:17 +0200 you wrote:
-> Syzkaller reported a false positive deadlock involving
-> the nl socket lock and the subflow socket lock:
+On Wed, 29 Sep 2021 14:27:53 +0100 you wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> MPTCP: kernel_bind error, err=-98
-> ============================================
-> WARNING: possible recursive locking detected
-> 5.15.0-rc1-syzkaller #0 Not tainted
+> The variable pin is being initialized with a value that is never
+> read, it is being updated later on in only one case of a switch
+> statement.  The assignment is redundant and can be removed.
+> 
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: introduce and use lock_sock_fast_nested()
-    https://git.kernel.org/netdev/net/c/49054556289e
+  - [next] octeontx2-af: Remove redundant initialization of variable pin
+    https://git.kernel.org/netdev/net-next/c/75f81afb27c3
 
 You are awesome, thank you!
 --
