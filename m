@@ -2,153 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46FB241E0FB
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 20:20:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C89D941E106
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 20:20:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350775AbhI3SWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 14:22:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350744AbhI3SWI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 14:22:08 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97B1C06176A
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 11:20:23 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id n64so8453209oih.2
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 11:20:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lf+VoCriw5DB0o5daX4RDUCtEQx84DR82AMmLvovZHk=;
-        b=JeC5VwI4nIwH8N2C5nRWUHWrhp99hVM9xRWgIq7K/JNA/mO5tn+09jvUfXwITKoN6b
-         shqzmGNlrDMnsDJYN4N1+Ogv6MSIcw5EExbLvav3IIAzVSF6oQewr0+lxjerhVvlkUuS
-         NLa2LLUkIrOern+Xm+U3JWg4NyDLgPmQ618/nbBJhpGc3nXA5aMUHmTV4aqaJeto9tbJ
-         8eLDMUTNPJIgm4bblxp9nfgkzZOk2NHKb0N0unDn5f82Y6Kf5sGqU5gDh8b/uyp6t6NT
-         +RD3jTcGtVdmQyFu5dbTiFPXJHwok4t/wqyceXpdceN5QnyFgm0/dxfpfInOQK9MLDip
-         +rBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lf+VoCriw5DB0o5daX4RDUCtEQx84DR82AMmLvovZHk=;
-        b=B7VCPdY+OzSzmQGkeOzedgUGKfX6Ha+t5JCJ7gdEpYS5xNa/QF5KMNYM4QWF17zYyx
-         bnrVUazj+wnbJznCnO9pU8EsU5yBlFmY0PS2Fmk13Jpi/Ari1CyO9wEnX8/ZROl/N67N
-         BH663IJkA87o6YQ9T0PRG1J+XmLlwFml/W7Db2owDch4nRZiIVrWNg3R5YMKd4hY39WK
-         mS2L2mlJvqr90O8xUUUv/+btnUGK6VlhSi0NXFilMIhSWahrc/aUtE9ugazU+U0qLUbC
-         SAd00OTeHeXPxa5V7Sj/gK6jCGTep/pIEZXioqaqTpq0snZhnFC1ypaGSGkiqi2+zbD6
-         tahg==
-X-Gm-Message-State: AOAM5322VlFgkwGBBM0y4a5iLBkpyybHFrgYbkUHfNYvK/gcSHh/K3ip
-        ibTXW9u3s2xkHkmRZsI/EqDLXRCLm9tgAA==
-X-Google-Smtp-Source: ABdhPJxOM/MGScfNs2uJ7AMJzAmO6T4F88bPrIqdarq6v1cW47r7CR+j195BeKDWE8lsTYQp8XUjaw==
-X-Received: by 2002:a05:6808:30d:: with SMTP id i13mr588852oie.0.1633026023115;
-        Thu, 30 Sep 2021 11:20:23 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id a9sm698244otk.3.2021.09.30.11.20.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Sep 2021 11:20:22 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/2] ipv6: ioam: Add support for the ip6ip6
- encapsulation
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org
-References: <20210928190328.24097-1-justin.iurman@uliege.be>
- <20210928190328.24097-2-justin.iurman@uliege.be>
- <16630ce5-4c61-a16b-8125-8ec697d6c33e@gmail.com>
- <2092322692.108322349.1633015157710.JavaMail.zimbra@uliege.be>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0ce98a52-e9fe-9b5c-68ca-f81c88e021ab@gmail.com>
-Date:   Thu, 30 Sep 2021 12:20:21 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S1351279AbhI3SWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 14:22:35 -0400
+Received: from mail.skyhub.de ([5.9.137.197]:43480 "EHLO mail.skyhub.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351282AbhI3SW0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 14:22:26 -0400
+Received: from zn.tnic (p200300ec2f0e160042ff9e72dd33ffc9.dip0.t-ipconnect.de [IPv6:2003:ec:2f0e:1600:42ff:9e72:dd33:ffc9])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BDC561EC052C;
+        Thu, 30 Sep 2021 20:20:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1633026040;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=FXyOq/QMBX4m5TO7R9gCBXGs2SQRIs7nKHlxFhhRzA8=;
+        b=eT+8YEfPrmSWLKeBe4sPaMbSsDltmaGjWcspmyrqCwnOuzTm4K1dChyrOJCGMyrAYnVUfh
+        r6u0gvWL7KLGCNsLaxM78DtrUnzdqnkLk+spjkiE7y2TQKD5JVcs/lmlsUbl7vAWpMXOUa
+        YtkoYm471zCc5pj5k+hmgCwx0wd5OYs=
+Date:   Thu, 30 Sep 2021 20:20:37 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        arnd@arndb.de, brijesh.singh@amd.com, jroedel@suse.de,
+        Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
+        pgonda@google.com, akpm@linux-foundation.org, rppt@kernel.org,
+        kirill.shutemov@linux.intel.com, saravanand@fb.com,
+        aneesh.kumar@linux.ibm.com, rientjes@google.com, tj@kernel.org,
+        michael.h.kelley@microsoft.com, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com,
+        konrad.wilk@oracle.com, hch@lst.de, robin.murphy@arm.com,
+        joro@8bytes.org, parri.andrea@gmail.com, dave.hansen@intel.com
+Subject: Re: [PATCH V6 5/8] x86/hyperv: Add Write/Read MSR registers via ghcb
+ page
+Message-ID: <YVX/9Xxxgy5D/Cvo@zn.tnic>
+References: <20210930130545.1210298-1-ltykernel@gmail.com>
+ <20210930130545.1210298-6-ltykernel@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <2092322692.108322349.1633015157710.JavaMail.zimbra@uliege.be>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20210930130545.1210298-6-ltykernel@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/30/21 9:19 AM, Justin Iurman wrote:
->>>  static const struct nla_policy ioam6_iptunnel_policy[IOAM6_IPTUNNEL_MAX + 1] = {
->>> -	[IOAM6_IPTUNNEL_TRACE]	= NLA_POLICY_EXACT_LEN(sizeof(struct ioam6_trace_hdr)),
->>> +	[IOAM6_IPTUNNEL_TRACE]	= NLA_POLICY_EXACT_LEN(sizeof(struct
->>> ioam6_iptunnel_trace)),
->>
->> you can't do that. Once a kernel is released with a given UAPI, it can
->> not be changed. You could go the other way and handle
->>
->> struct ioam6_iptunnel_trace {
->> +	struct ioam6_trace_hdr trace;
->> +	__u8 mode;
->> +	struct in6_addr tundst;	/* unused for inline mode */
->> +};
-> 
-> Makes sense. But I'm not sure what you mean by "go the other way". Should I handle ioam6_iptunnel_trace as well, in addition to ioam6_trace_hdr, so that the uapi is backward compatible?
+On Thu, Sep 30, 2021 at 09:05:41AM -0400, Tianyu Lan wrote:
+> diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
+> index 9f90f460a28c..dd7f37de640b 100644
+> --- a/arch/x86/kernel/sev-shared.c
+> +++ b/arch/x86/kernel/sev-shared.c
+> @@ -94,10 +94,9 @@ static void vc_finish_insn(struct es_em_ctxt *ctxt)
+>  	ctxt->regs->ip += ctxt->insn.length;
+>  }
+>  
+> -static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+> -					  struct es_em_ctxt *ctxt,
+> -					  u64 exit_code, u64 exit_info_1,
+> -					  u64 exit_info_2)
+> +enum es_result sev_es_ghcb_hv_call_simple(struct ghcb *ghcb,
+> +				   u64 exit_code, u64 exit_info_1,
+> +				   u64 exit_info_2)
 
-by "the other way" I meant let ioam6_trace_hdr be the top element in the
-new ioam6_iptunnel_trace struct. If the IOAM6_IPTUNNEL_TRACE size ==
-ioam6_trace_hdr then you know it is the legacy argument vs sizeof
-ioam6_iptunnel_trace which is the new.
+Align arguments on the opening brace.
 
-> 
->> Also, no gaps in uapi. Make sure all holes are stated; an anonymous
->> entry is best.
-> 
-> Would something like this do the trick?
-> 
-> struct ioam6_iptunnel_trace {
-> 	struct ioam6_trace_hdr trace;
-> 	__u8 mode;
-> 	union { /* anonymous field only used by both the encap and auto modes */
-> 		struct in6_addr tundst;
-> 	};
-> };
+Also, there's nothing "simple" about it - what you've carved out does
+the actual HV call and the trailing part is verifying the HV info. So
+that function should be called
 
-By anonymous filling of the holes I meant something like:
+__sev_es_ghcb_hv_call()
 
-struct ioam6_iptunnel_trace {
-	struct ioam6_trace_hdr trace;
-	__u8 mode;
-	__u8 :8;
-	__u16 :16;
+and the outer one without the "__".
 
-	struct in6_addr tundst;
-};
+>  {
+>  	enum es_result ret;
+>  
+> @@ -109,29 +108,45 @@ static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+>  	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
+>  	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
+>  
+> -	sev_es_wr_ghcb_msr(__pa(ghcb));
+>  	VMGEXIT();
+>  
+> -	if ((ghcb->save.sw_exit_info_1 & 0xffffffff) == 1) {
+> -		u64 info = ghcb->save.sw_exit_info_2;
+> -		unsigned long v;
+> -
+> -		info = ghcb->save.sw_exit_info_2;
+> -		v = info & SVM_EVTINJ_VEC_MASK;
+> -
+> -		/* Check if exception information from hypervisor is sane. */
+> -		if ((info & SVM_EVTINJ_VALID) &&
+> -		    ((v == X86_TRAP_GP) || (v == X86_TRAP_UD)) &&
+> -		    ((info & SVM_EVTINJ_TYPE_MASK) == SVM_EVTINJ_TYPE_EXEPT)) {
+> -			ctxt->fi.vector = v;
+> -			if (info & SVM_EVTINJ_VALID_ERR)
+> -				ctxt->fi.error_code = info >> 32;
+> -			ret = ES_EXCEPTION;
+> -		} else {
+> -			ret = ES_VMM_ERROR;
+> -		}
+> -	} else {
+> +	if ((ghcb->save.sw_exit_info_1 & 0xffffffff) == 1)
+> +		ret = ES_VMM_ERROR;
+> +	else
+>  		ret = ES_OK;
+> +
+> +	return ret;
+> +}
+> +
+> +static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+> +				   struct es_em_ctxt *ctxt,
+> +				   u64 exit_code, u64 exit_info_1,
+> +				   u64 exit_info_2)
 
-Use pahole to check that struct for proper alignment of the entries as
-desired (4-byte or 8-byte aligned).
 
-> 
->>>  };
->>>  
->>> -static int nla_put_ioam6_trace(struct sk_buff *skb, int attrtype,
->>> -			       struct ioam6_trace_hdr *trace)
->>> -{
->>> -	struct ioam6_trace_hdr *data;
->>> -	struct nlattr *nla;
->>> -	int len;
->>> -
->>> -	len = sizeof(*trace);
->>> -
->>> -	nla = nla_reserve(skb, attrtype, len);
->>> -	if (!nla)
->>> -		return -EMSGSIZE;
->>> -
->>> -	data = nla_data(nla);
->>> -	memcpy(data, trace, len);
->>> -
->>> -	return 0;
->>> -}
->>> -
->>
->> quite a bit of the change seems like refactoring from existing feature
->> to allow the new ones. Please submit refactoring changes as a
->> prerequisite patch. The patch that introduces your new feature should be
->> focused solely on what is needed to implement that feature.
-> 
-> +1, will do.
-> 
+Align arguments on the opening brace.
 
+> +{
+> +	unsigned long v;
+> +	enum es_result ret;
+> +	u64 info;
+> +
+> +	sev_es_wr_ghcb_msr(__pa(ghcb));
+> +
+> +	ret = sev_es_ghcb_hv_call_simple(ghcb, exit_code, exit_info_1,
+> +					 exit_info_2);
+> +	if (ret == ES_OK)
+> +		return ret;
+> +
+> +	info = ghcb->save.sw_exit_info_2;
+> +	v = info & SVM_EVTINJ_VEC_MASK;
+> +
+> +	/* Check if exception information from hypervisor is sane. */
+> +	if ((info & SVM_EVTINJ_VALID) &&
+> +	    ((v == X86_TRAP_GP) || (v == X86_TRAP_UD)) &&
+> +	    ((info & SVM_EVTINJ_TYPE_MASK) == SVM_EVTINJ_TYPE_EXEPT)) {
+> +		ctxt->fi.vector = v;
+> +		if (info & SVM_EVTINJ_VALID_ERR)
+> +			ctxt->fi.error_code = info >> 32;
+> +		ret = ES_EXCEPTION;
+> +	} else {
+> +		ret = ES_VMM_ERROR;
+
+Why do you need to assign ES_VMM_ERROR here again when you return it
+above?
+
+IOW, that else branch is not really needed.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
