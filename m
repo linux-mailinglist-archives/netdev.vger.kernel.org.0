@@ -2,152 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C2E241DA6D
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:00:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB9CA41DA80
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:07:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349299AbhI3NC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 09:02:27 -0400
-Received: from mail-eopbgr150138.outbound.protection.outlook.com ([40.107.15.138]:17892
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1349165AbhI3NC0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 09:02:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UERV1IYcMsk6hksNmJ/aux+07YdC7Wo+ygQXkjHPN3ENmUUrqoFtp8Uc/OMdWpJ7LAn7D7VKyLMz2udWTwU30QVGwVLLdYVQbhUPLSKXGZ7IpOVU/WsfoC0GojcYup+DqF+YmykU0ewYtg8cN34GS2kgOedRhnu3JostWrImvFUP+Qy0LohZ/GMQxb6rQKyuEc4BdedqqppTRllsyHJe/oGXwyGtBnMYOtvk5ZeqvZ/EZY7AWmySoY7h/fnfVY2SOaTTr0ne9y3yyAF4kLNZYmpcTVI413gZVZKW5AoFovlo1ybSK5kTuuhLXnikYBy4F/zNOO+SQEyO1ZHqScAWTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=5J/Gg1ndtz4sSl7YerPtNW1//TP/7Rv96hnlor/vTRI=;
- b=Bvpe5QWKu1/v7itLY4Rhy2+f8ZT7gXPec9tcT4TFzHTbNjwQRewN5zbpV34hJOcBa9V7/pacswHlGEQ3M3hEIjgbQHWO8pxtGupNLbGaNFYicDGiMj+wgN/7QyNcyaAOaqK7ETPAVqmOQbebMTJMnMdZnVtIACW/Z2otZEXC9FmN37MQOG6zKYF/NiE8WXZDjcbPhfmPx7cpVHSLPHPSDmvpdCV5WJCc9FNbaS+VGPZrZCOCgJwzsXGW+aOgXAl23eb/wDTB6xrYPhfDK3ERwaDVBpSbLoUe5mQYPKWsyD70sTxDU2GRiHU6iPfzl7NSaBj/tnnsNhQeM+fWQ5mwTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kontron.de; dmarc=pass action=none header.from=kontron.de;
- dkim=pass header.d=kontron.de; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mysnt.onmicrosoft.com;
- s=selector2-mysnt-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5J/Gg1ndtz4sSl7YerPtNW1//TP/7Rv96hnlor/vTRI=;
- b=BYIS/iqAnCVOYsi6rEE6TQx8/B5O2taL+d+aCKz/2nmyDeiGGMo6NJF2ib9FGuW1fJnod6Lizylz5gRJawO8dtIGgJQxRrzssRiJpr6oWpCKj9HGjWp/bli7RnWuDixKKcjYmEz0zjxN1HxTcWzxEA9ea8JnQ501YbZlQ3uKz5I=
-Authentication-Results: fris.de; dkim=none (message not signed)
- header.d=none;fris.de; dmarc=none action=none header.from=kontron.de;
-Received: from AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:157::14)
- by AM9PR10MB4436.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:271::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.15; Thu, 30 Sep
- 2021 13:00:40 +0000
-Received: from AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::216b:62be:3272:2560]) by AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::216b:62be:3272:2560%6]) with mapi id 15.20.4566.015; Thu, 30 Sep 2021
- 13:00:40 +0000
-Message-ID: <c52ca248-f555-e5a7-4fb8-f6efdc06e6c6@kontron.de>
-Date:   Thu, 30 Sep 2021 15:00:38 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.1
-Subject: Re: [PATCH 2/3] dt-bindings: net: phy: mscc: vsc8531: Add LED mode
- combine disable property
-Content-Language: en-US
-To:     Frieder Schrempf <frieder@fris.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        id S1349559AbhI3NHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 09:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349422AbhI3NHb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 09:07:31 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC994C06176A;
+        Thu, 30 Sep 2021 06:05:48 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id r2so6126184pgl.10;
+        Thu, 30 Sep 2021 06:05:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oj0TByVQOdhVxnTIGPAfhUDdmcc6lgt8LdPMueUIGf4=;
+        b=Fl6rX98BQScLSWVyP+EPV4/iRT+SGhMVqSDRiFZA4zbWAaGB2I5VA4J2EHbAVTPxTt
+         /jlnpRrfGTPOsag2I5HjzoBye6N/S1ThtgeNKfKgteYt2N2iJIdqMmL9YrTh2nm3VQvZ
+         u8hrtZ4mWwTqmyPkpkH58IfQNn/Bk97KAWRDSK4jM0MOxdq/ZogCS0CDRwmofCxZ5px7
+         sxfBXYyjBD+6w0vEO2GOKWDG1HsWJmFkdSusb7lFXzsrWRzpPVGwXLSilwXAmoLhigVd
+         1GfK1vw2T4L1ue2saqYDdUV5lK4sYkh5ESBQGdQoRTwNlEPflqfuPpW0Yo+hbdktnXio
+         7D2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oj0TByVQOdhVxnTIGPAfhUDdmcc6lgt8LdPMueUIGf4=;
+        b=ueXQ75IMa2WWptOz+Faw+1YQ4RdRI+58jacEOHtEmX0QjV0By8EKbEnTnF8/gZ4WHB
+         lGz63fIkvbdKsmdoaDnsGjSYIbPIYFaL6fJHeHWOlIcXXXL2iP5ImaNIlVIJPCB2XtGo
+         mcxH9W3BxdBMjpxAziWFUhBqbDlsHvJDY/RsuNJ+OKnKt/pSZKT3+H31fAN8ZS8TBsgt
+         IbQ22AidpzaxE442mxfFF/U9TkdeTRlizfL+kqdNwuL4RLTSqqEDO8tMqGz5CxDjYSBk
+         m069ZwRGRE+grRUQVCGrGl70Lj+U4PIob3KmnKMw5PfEGRw9oRzFYkBkBW6TfMxg9z6l
+         OG/g==
+X-Gm-Message-State: AOAM530VJHcc060svZjfWIv1zxeYn8PIcUyLbfHjU90CA39LC/rZU5j6
+        MI9wz8YpzoYLv/smt6SLLGI=
+X-Google-Smtp-Source: ABdhPJx7hblaS+W1P4WILqv44xjkJFYJOzFiL6QYIz3HKQ4/6WS8OtSYOr6T6mXn8k+GBrz1Pph2lA==
+X-Received: by 2002:a63:3d0f:: with SMTP id k15mr4765753pga.269.1633007148235;
+        Thu, 30 Sep 2021 06:05:48 -0700 (PDT)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:35:a72f:86cf:2cc5:8116])
+        by smtp.gmail.com with ESMTPSA id v7sm3072134pff.195.2021.09.30.06.05.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Sep 2021 06:05:47 -0700 (PDT)
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        arnd@arndb.de, brijesh.singh@amd.com, jroedel@suse.de,
+        Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
+        pgonda@google.com, akpm@linux-foundation.org, rppt@kernel.org,
+        kirill.shutemov@linux.intel.com, saravanand@fb.com,
+        aneesh.kumar@linux.ibm.com, rientjes@google.com, tj@kernel.org,
+        michael.h.kelley@microsoft.com
+Cc:     linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Baisheng Gao <gaobaisheng@bonc.com.cn>,
-        Rob Herring <robh@kernel.org>
-References: <20210930125747.2511954-1-frieder@fris.de>
- <20210930125747.2511954-2-frieder@fris.de>
-From:   Frieder Schrempf <frieder.schrempf@kontron.de>
-In-Reply-To: <20210930125747.2511954-2-frieder@fris.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR02CA0111.eurprd02.prod.outlook.com
- (2603:10a6:20b:28c::8) To AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:157::14)
+        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
+        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
+        dave.hansen@intel.com
+Subject: [PATCH V6 0/8] x86/Hyper-V: Add Hyper-V Isolation VM support(First part)
+Date:   Thu, 30 Sep 2021 09:05:36 -0400
+Message-Id: <20210930130545.1210298-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: from [192.168.10.40] (89.247.44.207) by AM0PR02CA0111.eurprd02.prod.outlook.com (2603:10a6:20b:28c::8) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.16 via Frontend Transport; Thu, 30 Sep 2021 13:00:39 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a2247940-95f3-48c6-f76f-08d984124dee
-X-MS-TrafficTypeDiagnostic: AM9PR10MB4436:
-X-Microsoft-Antispam-PRVS: <AM9PR10MB4436E8F402791E5F288E9EFDE9AA9@AM9PR10MB4436.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: z+F1FUtZLdvfhGJF7c/BmL3I38NykGEVD9pbWEMmmkiX67yA13Qb9JNlCXsGQaoW2ildZo6sGweyTA+yyObPRvgD4IMvRgMiWSfYuedFUu1JtoxlnR7eCmXjkflnOCiNb/sMCcaapSYk085VyPDEpVyunh1vLP36e0NvePdufRqSzVhTIMpVdinQ6oxOQXIfokgbzSEmBScJMeiF3JVyzBO/0VHmkAE9YOS9MixXZDwQ4HFJWqr08h/tbZQnHB/5SuUJgn/rVi/nWEfM7pfopM28U1oYk9nZo9igdZ18DyO06TO3CPtfsOKpTQZ/oQr4swOfxu3RdYfkgJTdogZWZ/vmVRbhqtR9yioqbIj3FGv9+X7ICQ2wSj3DEWaa646QTwbxO867pkuaHXM4zoXdrz7Ed+Ffnw51s5UKyjLabWSVgp+NswCCjNyTvoQqRYxB4tHFkJcvQhpuRznRGdVHOUkeBFXJplbsYMnjQHrQumlZw8wmSMYHbONYs5phlUGplg77siTZpYxJCCt2n1zYna274XuK6+Tuo0CXLEoWTYEeJmZT3u70NxDIiDkuzzqmIjiMXjED0fCKwlM/uHqHZoBbbnWLd6mDhlBhXsGU2Ly5/XDYsEHxheQFS/mR91q2GnlsWKDUy1FJLKPau/CliUU3uah89cV9Hn6NLbsb1WVzg62ZJcPHEY2rMyzRW2sfGG6M2gvuKzAtvzx+sGxJNhcO1soILMbfUuTENuW+zzU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(66946007)(8936002)(66476007)(53546011)(66556008)(83380400001)(186003)(2616005)(956004)(26005)(4326008)(8676002)(5660300002)(38100700002)(44832011)(36756003)(2906002)(508600001)(110136005)(54906003)(316002)(31686004)(6486002)(16576012)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MTAyVXJkWkxReitGOGMwN043ZEs1UlgxZFgxME9iaEJNWVkwWVVhQ29JUnpI?=
- =?utf-8?B?dFYvM1hGV2JoM0lDbmRlblg0NUp3cmREM1BBdFdteTJCMUxkNVVxY1dmVlFX?=
- =?utf-8?B?Z1NGMmpQL3Rhd1lyYkJtbW5uUlB4QkR3SUlyZGtoZTJzWTJHSERqbDFFMW02?=
- =?utf-8?B?S3EraTdvOGQ4b3NvcW9WMTBWTjI1bGI2ZUhSOURMQ2svcHUwOXVEcFZoMWl6?=
- =?utf-8?B?dkxYT3dJNVplUC9Gck1OeU5JVTRIL2JpZDNMQm9TU3BKVFNjNEtvb09TTzRm?=
- =?utf-8?B?dWc1K2syOEtTaklYdUw1ekxNcUJYU1owekxZdUZJSzRxUmJ0dUNrS0xBL1FR?=
- =?utf-8?B?akJpeUxLTDc4M2ZpaHpIODR4Wm9BOVZwYlYwRzdiZGIwRHNoN1RVVnp3cUlQ?=
- =?utf-8?B?TTMwR1NGd3hPbTlSOWE4dHlhaVpLTTJJYkhPcmVjSE82Um5VQTZXNldQa1JG?=
- =?utf-8?B?TXlxZkZRcFpPMFhuSmI3Z2c4Rm5VdEd6K003RFFFQTBpK0duNVZMWjkyTTdt?=
- =?utf-8?B?SEx6dGlTeStNLzQ5bGFKQUR6enhpV1BUTVBtSmo5RTBSemdtOW8xTVhuT3VR?=
- =?utf-8?B?SnVMUk5GZWR2eWxxWWc4cm95VnlQSmY2M0t0a3dQYlA3RjIycHIrQTAwandw?=
- =?utf-8?B?K3NsbWlicnpXRDEvdVRxbGh3cUhCVmVaREFxdEo0Y0t4QVc1aEFvbHNsQzZB?=
- =?utf-8?B?VE5rYlkwZXJNZktpZkpCd0pRZXB3amtZcm5KYXBWWm9GMHJoSCtFU1lUbzNj?=
- =?utf-8?B?blAvT1M2MVRJVmhxUi95S0JXTUFZNG5MUlhENGJ0UGtmcjF3NFFDKzIzZVBh?=
- =?utf-8?B?YUhWb3RiK3l5K1ZlNlN2a25mK2tYNVF5MW5UZjg1bklEUGdzT0hmZlBVSXBO?=
- =?utf-8?B?L1JzZzRqRkFIVXl0QjJ2anE1cDEwUm9oTi9MQklWSEZjUllVdktzL0N5YnJl?=
- =?utf-8?B?bFg0WEFDell2a29mTHRaYnI4WUdCbk5ab3VubnhpOVZkSzVqckU0eEM1amZN?=
- =?utf-8?B?ZWZxOHk2VjU5ZEk1U3N5elNGT2hjS1NjUmlneFVrQzBsRTllNTUyNWhnY0Vh?=
- =?utf-8?B?VGM4bzdldEVYTW5iSTJvLzh2dHpFemtablVIdXFNU2pXRWpiZTh4UTc0L0xT?=
- =?utf-8?B?dUlPZmw4ZiszVVlNcUpqUElqMzBCS1ZPenJuSWxjY2liQnYzTnRyU0NCMlFq?=
- =?utf-8?B?cWp1S3QvZTNCNG1Qak5qSGFDcklhampuQzZKZnNPVU91cWxyM2YyTHVRNmdX?=
- =?utf-8?B?OUZoK3FuSEZ6cW0rYXM4Q2Jxb0hyOUtUdU03czQ2RVRYM21JdGNpUWZEM0ZE?=
- =?utf-8?B?ZVZHbFByWE5xSVduSkNHN1VtNlhtV1pmNW4zbm9TUnNVOEVEVVgzWFdmdjlo?=
- =?utf-8?B?YnJmQnVrVHdobWI3Mlh3NEwvaEplV2FITkFXU3JoSUJYK0l5Ui9ZeHg0OU5m?=
- =?utf-8?B?cGZHeGF3OGxOS1ZMajVaSkdjMkZNdjRSNk1seHpvdWE4ejNZcFdneXFpd01Y?=
- =?utf-8?B?amw3azJ2WXFkT05zZE9IVkJMcVhiYTlaK2tWTHBOa0ErMG5zQnM2NlExOWxO?=
- =?utf-8?B?c0VVb2tjT2ltNnptWUYzdU0wQXNpR2U0cVB2Z2M3UGdxY2xlN2ZuNTNWM3dM?=
- =?utf-8?B?SWQ2UG1vZFY0TGpyY0NWWnUyckNTclZIaFhmT2pCR3BqRHdjSFcrMjZnbHlG?=
- =?utf-8?B?MkVFM2VnaW81NE1pcTAzTFVNRzhmcnQyZVpaZ29PRWFCd1FKNTk0NUEyOXRL?=
- =?utf-8?Q?AuAbVKw2gWA6Wv18eo507PsZu5XHufvfQm+skJr?=
-X-OriginatorOrg: kontron.de
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2247940-95f3-48c6-f76f-08d984124dee
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2021 13:00:40.3229
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8c9d3c97-3fd9-41c8-a2b1-646f3942daf1
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mYL5wjhzzVxzsCuMg4WcMyf7zpC5ZHYP/zDitTstwEAHzOwYKKoBdfaioEuB3FSOW6jk1Ov/6Tn+CWCOqvPbEuBXvNF3Q2CTlKxQWbQWiIM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR10MB4436
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.09.21 14:57, Frieder Schrempf wrote:
-> From: Frieder Schrempf <frieder.schrempf@kontron.de>
-> 
-> Add the new property to disable the combined LED modes to the bindings
-> documentation.
-> 
-> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-> ---
->  Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt b/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-> index 0a3647fe331b..1ca11ab4011b 100644
-> --- a/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-> +++ b/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-> @@ -31,10 +31,13 @@ Optional properties:
->  			  VSC8531_LINK_100_ACTIVITY (2),
->  			  VSC8531_LINK_ACTIVITY (0) and
->  			  VSC8531_DUPLEX_COLLISION (8).
-> +- vsc8531,led-[N]-combine-disable	: Disable the combined mode for LED[N].
-> +			  This disables the second mode if a combined mode is selected.
->  - load-save-gpios	: GPIO used for the load/save operation of the PTP
->  			  hardware clock (PHC).
->  
->  
-> +
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Sorry, this extra newline shouldn't be here of course.
 
->  Table: 1 - Edge rate change
->  ----------------------------------------------------------------|
->  | 		Edge Rate Change (VDDMAC)			|
-> 
+Hyper-V provides two kinds of Isolation VMs. VBS(Virtualization-based
+security) and AMD SEV-SNP unenlightened Isolation VMs. This patchset
+is to add support for these Isolation VM support in Linux.
+
+The memory of these vms are encrypted and host can't access guest
+memory directly. Hyper-V provides new host visibility hvcall and
+the guest needs to call new hvcall to mark memory visible to host
+before sharing memory with host. For security, all network/storage
+stack memory should not be shared with host and so there is bounce
+buffer requests.
+
+Vmbus channel ring buffer already plays bounce buffer role because
+all data from/to host needs to copy from/to between the ring buffer
+and IO stack memory. So mark vmbus channel ring buffer visible.
+
+For SNP isolation VM, guest needs to access the shared memory via
+extra address space which is specified by Hyper-V CPUID HYPERV_CPUID_
+ISOLATION_CONFIG. The access physical address of the shared memory
+should be bounce buffer memory GPA plus with shared_gpa_boundary
+reported by CPUID.
+
+This patchset is rebased on the commit 02d5e016 of Linux mainline tree.
+
+Change since v5
+	- Replace HVPFN_UP() with PFN_UP() in the __vmbus_establish_gpadl()
+	- Remove unused variable gpadl in the __vmbus_open() and vmbus_close_
+	  internal()
+	- Clean gpadl_handle in the vmbus_teardown_gpadl().
+	- Adjust change layout in the asm/mshyperv.h to make
+	  hv_is_synic_reg(), hv_get_register() and hv_set_register()
+	  ahead of the #include of asm-generic/mshyperv.h
+	- Change vmbus_connection.monitor_pages_pa type from unsigned
+	  long to phys_addr_t
+
+Change since v4:
+	- Hide hv_mark_gpa_visibility() and set memory visibility via
+	  set_memory_encrypted/decrypted() 
+	- Change gpadl handle in netvsc and uio driver from u32 to
+	  struct vmbus_gpadl.
+	- Change vmbus_establish_gpadl()'s gpadl_handle parameter
+	  to vmbus_gpadl data structure.
+	- Remove hv_get_simp(), hv_get_siefp()  hv_get_synint_*()
+	  helper function. Move the logic into hv_get/set_register().
+	- Use scsi_dma_map/unmap() instead of dma_map/unmap_sg() in storvsc driver.
+	- Allocate rx/tx ring buffer via alloc_pages() in Isolation VM  
+
+Change since V3:
+	- Initalize GHCB page in the cpu init callbac.
+	- Change vmbus_teardown_gpadl() parameter in order to
+	  mask the memory back to non-visible to host.
+	- Merge hv_ringbuffer_post_init() into hv_ringbuffer_init().
+	- Keep Hyper-V bounce buffer size as same as AMD SEV VM
+	- Use dma_map_sg() instead of dm_map_page() in the storvsc driver.
+
+Change since V2:
+       - Drop x86_set_memory_enc static call and use platform check
+         in the __set_memory_enc_dec() to run platform callback of
+	 set memory encrypted or decrypted.
+
+Change since V1:
+       - Introduce x86_set_memory_enc static call and so platforms can
+         override __set_memory_enc_dec() with their implementation
+       - Introduce sev_es_ghcb_hv_call_simple() and share code
+         between SEV and Hyper-V code.
+       - Not remap monitor pages in the non-SNP isolation VM
+       - Make swiotlb_init_io_tlb_mem() return error code and return
+         error when dma_map_decrypted() fails.
+
+Change since RFC V4:
+       - Introduce dma map decrypted function to remap bounce buffer
+          and provide dma map decrypted ops for platform to hook callback.        
+       - Split swiotlb and dma map decrypted change into two patches
+       - Replace vstart with vaddr in swiotlb changes.
+
+Change since RFC v3:
+       - Add interface set_memory_decrypted_map() to decrypt memory and
+         map bounce buffer in extra address space
+       - Remove swiotlb remap function and store the remap address
+         returned by set_memory_decrypted_map() in swiotlb mem data structure.
+       - Introduce hv_set_mem_enc() to make code more readable in the __set_memory_enc_dec().
+
+Change since RFC v2:
+       - Remove not UIO driver in Isolation VM patch
+       - Use vmap_pfn() to replace ioremap_page_range function in
+       order to avoid exposing symbol ioremap_page_range() and
+       ioremap_page_range()
+       - Call hv set mem host visibility hvcall in set_memory_encrypted/decrypted()
+       - Enable swiotlb force mode instead of adding Hyper-V dma map/unmap hook
+       - Fix code style
+
+
+Tianyu Lan (8):
+  x86/hyperv: Initialize GHCB page in Isolation VM
+  x86/hyperv: Initialize shared memory boundary in the Isolation VM.
+  x86/hyperv: Add new hvcall guest address host visibility  support
+  Drivers: hv: vmbus: Mark vmbus ring buffer visible to host in
+    Isolation VM
+  x86/hyperv: Add Write/Read MSR registers via ghcb page
+  x86/hyperv: Add ghcb hvcall support for SNP VM
+  Drivers: hv: vmbus: Add SNP support for VMbus channel initiate 
+    message
+  Drivers: hv : vmbus: Initialize VMbus ring buffer for Isolation VM
+
+ arch/x86/hyperv/Makefile           |   2 +-
+ arch/x86/hyperv/hv_init.c          |  78 ++++++--
+ arch/x86/hyperv/ivm.c              | 282 +++++++++++++++++++++++++++++
+ arch/x86/include/asm/hyperv-tlfs.h |  17 ++
+ arch/x86/include/asm/mshyperv.h    |  59 ++++--
+ arch/x86/include/asm/sev.h         |   6 +
+ arch/x86/kernel/cpu/mshyperv.c     |   5 +
+ arch/x86/kernel/sev-shared.c       |  63 ++++---
+ arch/x86/mm/pat/set_memory.c       |  19 +-
+ drivers/hv/Kconfig                 |   1 +
+ drivers/hv/channel.c               |  72 +++++---
+ drivers/hv/connection.c            |  96 +++++++++-
+ drivers/hv/hv.c                    |  82 +++++++--
+ drivers/hv/hv_common.c             |  12 ++
+ drivers/hv/hyperv_vmbus.h          |   2 +
+ drivers/hv/ring_buffer.c           |  55 ++++--
+ drivers/net/hyperv/hyperv_net.h    |   5 +-
+ drivers/net/hyperv/netvsc.c        |  15 +-
+ drivers/uio/uio_hv_generic.c       |  18 +-
+ include/asm-generic/hyperv-tlfs.h  |   1 +
+ include/asm-generic/mshyperv.h     |  17 +-
+ include/linux/hyperv.h             |  12 +-
+ 22 files changed, 769 insertions(+), 150 deletions(-)
+ create mode 100644 arch/x86/hyperv/ivm.c
+
+-- 
+2.25.1
+
