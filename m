@@ -2,78 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 617F341DC41
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 16:28:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C445D41DC47
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 16:29:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349600AbhI3OaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 10:30:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36410 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348126AbhI3OaT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 10:30:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BCF7C61A07;
-        Thu, 30 Sep 2021 14:28:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633012117;
-        bh=umB/IVXAMP4SWIOcWbkXsDo21chQw2rLTLyMHL+/xcA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nfSGJEaqNLA3Cf2lbmeDqnt1BqDLRYXC6b28ySFJ+2uJOHRRU7O4dm9tLcsiG9wRi
-         F0Z1BpFCk1+Yw5ct/ImfDW+Xw8YFzU85vrBbLIe7nkMqDNlGnlH1owMFIzgqStpEIF
-         N+Yq1wKo/AtsXONVtFYsfLWpKd2YWuXQRFNt4WW2lsgIuxWeJwcHfaERalmLmofSpa
-         vNs2uNqPoP2VK5jSk1qwn78HZO8Z+ufk8TshHrPWkWWxFI05Do1KiRwxNw4bWozAsm
-         vaYxcfxPXD9zI7+hHB1K2/yCRnOaMKX0K6flrdiliX6HhoE01dLh2fEyzXAlRvZA4s
-         W7R9YWhtLyfSA==
-Date:   Thu, 30 Sep 2021 07:28:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, lukas@wunner.de, kadlec@netfilter.org,
-        fw@strlen.de, ast@kernel.org, edumazet@google.com, tgraf@suug.ch,
-        nevola@gmail.com, john.fastabend@gmail.com, willemb@google.com
-Subject: Re: [PATCH nf-next v5 0/6] Netfilter egress hook
-Message-ID: <20210930072835.791085f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YVWBpsC4kvMuMQsc@salvia>
-References: <20210928095538.114207-1-pablo@netfilter.org>
-        <e4f1700c-c299-7091-1c23-60ec329a5b8d@iogearbox.net>
-        <YVVk/C6mb8O3QMPJ@salvia>
-        <3973254b-9afb-72d5-7bf1-59edfcf39a58@iogearbox.net>
-        <YVWBpsC4kvMuMQsc@salvia>
+        id S1349746AbhI3ObS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 10:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35936 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348126AbhI3ObQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 10:31:16 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C11C06176A;
+        Thu, 30 Sep 2021 07:29:33 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id u18so26243464lfd.12;
+        Thu, 30 Sep 2021 07:29:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=7zNReFsiR9GlBgh8OErMyFvjMC9S/ZuWsLI5xMLDm3g=;
+        b=Ojt/7NUyCNR6hCeEnHzXa/311xlbRLS1wsz6K/2egRaJTaA/tefSdMEWJZgM6UHnRZ
+         TwgX4sga/4VmfUL+dpz7G2pKAuwG5IynkudrRrpAhLG4gO1s+YnhumOr+VgaQvqDruVh
+         yrqKoDD6yilLh+IvGpsZzP29Yh5bm4YDY/X7LvCtm0CCOXBHb8hpChqKLyJ66538f9la
+         FROpP7npOMpQcmMFkcSCl+ozspYF++0c9G05G1UUsMslIXJ59Cjq9kXf+LIrHCBAtCiK
+         TyqqE1YxmxqJwarabLwdmjZLO+JjIf9RQIxpXwWSEOBqnIA+m5Ho6MvgoJuso7/s0K59
+         mopQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7zNReFsiR9GlBgh8OErMyFvjMC9S/ZuWsLI5xMLDm3g=;
+        b=kJF4LaqBfVPCwwWatkUI0PFLxfWkA714Tj9AyCm6Fs/3PKd2w32gv5hBuzZJKF5UEw
+         KL2+RbW7mJbMy9bwGlHcs3TLF4R9SZ92fz/D2VCX6ePjzBM7dyjUfgkBIYr7kYl2MWmS
+         6gt6lfaJO+aNXOhLk54q5dXcAmxlV/q2fWcnjdPYzkvpok8v7DW1jUBnDHAZfWUa5UfQ
+         voLAxwWb5xlbUJQpk6gJ6zFIR5Gm2w/OYIVPXkM1qBC6GC8i2q06Dil+C3ujR8j49P8n
+         lzGAqGCmaaH1sVesPCReUJiQbDDv5nFrMWdE7OAtm8vC61AKWApmM4qswWlGMwMINGs8
+         gUtA==
+X-Gm-Message-State: AOAM531HCCd+hQLSZpf4DHtbK1HBUNzNJGdFf7GA6jdt27QXusPJEZW8
+        H5n4/bBhzjyR/z5tJBGgwJY=
+X-Google-Smtp-Source: ABdhPJxOQmm8wk1i7Zs7d0uMFPmNY/Lj1ybxC07H58iZoDKaVyFbXrbTTXKpFCUAJZyq6BLv1PNyuw==
+X-Received: by 2002:a05:6512:10ca:: with SMTP id k10mr6102844lfg.315.1633012167031;
+        Thu, 30 Sep 2021 07:29:27 -0700 (PDT)
+Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id d26sm397469ljj.45.2021.09.30.07.29.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Sep 2021 07:29:26 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: bgmac: support MDIO described in DT
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20210920123441.9088-1-zajec5@gmail.com>
+ <168e00d3-f335-4e62-341f-224e79a08558@gmail.com>
+ <79c91b0e-7f6a-ef40-9ab2-ee8212bf5791@gmail.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Message-ID: <780a6e7f-655a-6d79-d086-2eefd7e9ccb6@gmail.com>
+Date:   Thu, 30 Sep 2021 16:29:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <79c91b0e-7f6a-ef40-9ab2-ee8212bf5791@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Sep 2021 11:21:42 +0200 Pablo Neira Ayuso wrote:
-> On Thu, Sep 30, 2021 at 09:33:23AM +0200, Daniel Borkmann wrote:
-> > On 9/30/21 9:19 AM, Pablo Neira Ayuso wrote:  
-> > > Why do you need you need a sysctl knob when my proposal is already
-> > > addressing your needs?  
-> > 
-> > Well, it's not addressing anything ... you even mention it yourself "arguably,
-> > distributors might decide to compile nf_tables_netdev built-in".  
+On 20.09.2021 19:57, Rafał Miłecki wrote:
+> On 20.09.2021 18:11, Florian Fainelli wrote:
+>> I believe this leaks np and the use case is not exactly clear to me
+>> here. AFAICT the Northstar SoCs have two MDIO controllers: one for
+>> internal PHYs and one for external PHYs which how you would attach a
+>> switch to the chip (in chipcommonA). Is 53573 somewhat different here?
+>> What is the MDIO bus driver that is being used?
 > 
-> I said distributors traditionally select the option that we signal to
-> them, which is to enable this as module. We can document this in
-> Kconfig. I think distributors should select whatever is better for
-> their needs.
+> of_get_child_by_name() doesn't seem to increase refcount or anything and
+> I think it's how most drivers handle it. I don't think it should leak.
 > 
-> Anyway, I'll tell you why module blacklisting is bad: It is a hammer,
-> it is a band aid to a problem. Blacklisting is just making things
-> worst because it makes some people believe that something is
-> unfixable. Yes, it took me a while to figure out.
+> BCM53573 is a built with some older blocks. Please check:
 > 
-> We already entered the let's bloat the skbuff for many years already,
-> this is stuffing one more bit into the skbuff just because maybe users
-> might break an existing setup when they load new rules to the new
-> netfilter egress hook.
+> 4ebd50472899 ("ARM: BCM53573: Initial support for Broadcom BCM53573 SoCs")
+>      BCM53573 series is a new family with embedded wireless. By marketing
+>      people it's sometimes called Northstar but it uses different CPU and has
+>      different architecture so we need a new symbol for it.
+>      Fortunately it shares some peripherals with other iProc based SoCs so we
+>      will be able to reuse some drivers/bindings.
+> 
+> e90d2d51c412 ("ARM: BCM5301X: Add basic dts for BCM53573 based Tenda AC9")
+>      BCM53573 seems to be low priced alternative for Northstar chipsts. It
+>      uses single core Cortex-A7 and doesn't have SDU or local (TWD) timer. It
+>      was also stripped out of independent SPI controller and 2 GMACs.
+> 
+> Northstar uses SRAB which is some memory based (0x18007000) access to
+> switch register space.
+> BCM53573 uses different blocks & mappings and it doesn't include SRAB at
+> 0x18007000. Accessing switch registers is handled over MDIO.
 
-The lifetime of this information is constrained, can't it be a percpu
-flag, like xmit_more?
-
-> Probably the sysctl for this new egress hook is the way to go as you
-> suggest.
-
-Knobs is making users pay, let's do our best to avoid that.
+Florian: did my explanations help reviewing this patch? Would you ack it
+now?
