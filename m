@@ -2,73 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADB8941E24B
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 21:38:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFCA541E253
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 21:40:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344566AbhI3TkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 15:40:22 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41798 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229600AbhI3TkV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 15:40:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=w6t0kKZoMiYbydZxW60i6D+JDdmXM6i9cbCc5bRw9+A=; b=hFq5itmWQqlwT+7Y9DIGp1R+pc
-        9ATbmdlcdK4QCzOdhrKvuFSiXMmpZtxHtAaCwhC//v4GxJkgCiJ2cQD8wYqI50oMQdyrRA1EuI2Bp
-        +z8/ubzqIHj1PwafUZqWOMrmP6BZxA1ejh8EVfhJg5yofN5TZlwYaofO2lVkQGLiQPIk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mW1su-008zyB-2t; Thu, 30 Sep 2021 21:38:24 +0200
-Date:   Thu, 30 Sep 2021 21:38:24 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
- FWNODE_FLAG_BROKEN_PARENT
-Message-ID: <YVYSMMMkmHQn6n2+@lunn.ch>
-References: <YS4rw7NQcpRmkO/K@lunn.ch>
- <CAGETcx_QPh=ppHzBdM2_TYZz3o+O7Ab9-JSY52Yz1--iLnykxA@mail.gmail.com>
- <YS6nxLp5TYCK+mJP@lunn.ch>
- <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
- <YS608fdIhH4+qJsn@lunn.ch>
- <20210831231804.zozyenear45ljemd@skbuf>
- <CAGETcx8MXzFhhxom3u2MXw8XA-uUtm9XGEbYNobfr+Ptq5+fVQ@mail.gmail.com>
- <20210930134343.ztq3hgianm34dvqb@skbuf>
- <YVXDAQc6RMvDjjFu@lunn.ch>
- <CAGETcx8emDg1rojU=_rrQJ3ezpx=wTukFdbBV-uXiu1EQ87=wQ@mail.gmail.com>
+        id S1344843AbhI3TmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 15:42:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345286AbhI3TmT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 15:42:19 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4760AC06176C
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 12:40:36 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id y5so4791375pll.3
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 12:40:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DUmy3ftvpt4slivmFdWM/t7fJc6HK6FWGLReMOuefTo=;
+        b=I0jl6uUDdjMoor60bTkBVaBdlaOpj5C3cP2XLkWT3uXcH0eMndU9HngqZe96fgKm9O
+         I39DezWd0N7rW4KDTu/gcWQPJ/2MswSDaB0sqr0+9r2zTKZsas4TV0L2RNF2Lp4XvIPI
+         qSAZvtCWlV4+bnq1BSJdV3Rsia3ih6C1eocEmzatvu4pjgDKw6IFXLztaVcqCGQXoe9v
+         OL4x/1ZsS1Ahk2TVx6X087+U35A79xTbiq6M/XyQtVhJNHd5ZXHyFNcDFKgh9O5T5nus
+         UjQWcBvLO1hW38ANIqoXm2/S36mN0TmDGqnTqeWjm3Hr2dvEmfBqwK7UGpJ6Zridhdhg
+         Dpcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DUmy3ftvpt4slivmFdWM/t7fJc6HK6FWGLReMOuefTo=;
+        b=HATNHMcTbV1umE89tTckzt5pLxqOVkk5zkmtG9lJBK6SAdatxYHhlE6ONyJrtKxh/S
+         OwjFQ6ovI21SrQGAkCLDmJAykPPoYj+nbgNQwjDg51GAs5Z+3ALKTikH/9Fc8kDfIgGm
+         YJ49ANNzzqT2Ie3Lt3VdEzINZM3U7mSgu4OZ/R27Y8hLpCZ4Hh9aqntYfLldRpWjvNc5
+         TSzArsgsyb6C6VXQbt2Z/Tdp+0bee4EIjWoVTuIaMA4JBj6J8i4p7HB3qza+B332shD8
+         2dzPne3IN4QsbzYyuKi7okVe0nSjRu9gt9my4uCNJKVrFZea/EPIodrybBb471TDLI30
+         8QBw==
+X-Gm-Message-State: AOAM5307sfzVNd1xP8l9nv+NldFdQl0WfVqJ5EurOnfYL5mvhFuhWFI3
+        uf5kCCpQD1Hfm8DsisvhJqA=
+X-Google-Smtp-Source: ABdhPJzuoKWLyfchm72lEUQtNdj/1BqAjdR+xLLaiapLRFEJkrDemgeir2+3dKZha0O2WhvOCEqzkQ==
+X-Received: by 2002:a17:90a:f409:: with SMTP id ch9mr7665716pjb.50.1633030835803;
+        Thu, 30 Sep 2021 12:40:35 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:b59b:abc0:171:fe0e])
+        by smtp.gmail.com with ESMTPSA id b8sm3800781pfi.103.2021.09.30.12.40.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Sep 2021 12:40:35 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH net-next] net/mlx4_en: avoid one cache line miss to ring doorbell
+Date:   Thu, 30 Sep 2021 12:40:31 -0700
+Message-Id: <20210930194031.3181989-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.33.0.800.g4c38ced690-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGETcx8emDg1rojU=_rrQJ3ezpx=wTukFdbBV-uXiu1EQ87=wQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Btw, do we have non-DSA networking devices where fw_devlink=on
-> delaying PHY probes is causing an issue?
+From: Eric Dumazet <edumazet@google.com>
 
-I don't know if issues have been reported, but the realtek driver has
-had problems in the past when the generic driver is used. Take a look
-at r8169_mdio_register(), it does something similar to DSA.
+This patch caches doorbell address directly in struct mlx4_en_tx_ring.
 
-What is going to make things interesting is that phy_attach_direct()
-is called in two different contexts. During the MAC drivers probe, it
-is O.K. to return EPROBE_DEFER, and let the MAC driver try again
-later, if we know there is a specific PHY driver for it. But when
-called during the MAC drivers open() op, -EPROBE_DEFER is not
-allowed. What to do then is an interesting question.
+This removes the need to bring in cpu caches whole struct mlx4_uar
+in fast path.
 
-     Andrew
+Note that mlx4_uar is not guaranteed to be on a local node,
+because mlx4_bf_alloc() uses a single free list (priv->bf_list)
+regardless of its node parameter.
+
+This kind of change does matter in presence of light/moderate traffic.
+In high stress, this read-only line would be kept hot in caches.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Tariq Toukan <tariqt@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx4/en_tx.c   | 4 ++--
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
+index c56b9dba4c71898b61e87fd32e5fa523c313e445..817f4154b86d599cd593876ec83529051d95fe2f 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
+@@ -130,6 +130,7 @@ int mlx4_en_create_tx_ring(struct mlx4_en_priv *priv,
+ 		ring->bf_enabled = !!(priv->pflags &
+ 				      MLX4_EN_PRIV_FLAGS_BLUEFLAME);
+ 	}
++	ring->doorbell_address = ring->bf.uar->map + MLX4_SEND_DOORBELL;
+ 
+ 	ring->hwtstamp_tx_type = priv->hwtstamp_config.tx_type;
+ 	ring->queue_index = queue_index;
+@@ -753,8 +754,7 @@ void mlx4_en_xmit_doorbell(struct mlx4_en_tx_ring *ring)
+ #else
+ 	iowrite32be(
+ #endif
+-		  (__force u32)ring->doorbell_qpn,
+-		  ring->bf.uar->map + MLX4_SEND_DOORBELL);
++		  (__force u32)ring->doorbell_qpn, ring->doorbell_address);
+ }
+ 
+ static void mlx4_en_tx_write_desc(struct mlx4_en_tx_ring *ring,
+diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+index ad0a8b488832c8cdca2790e47fc778fe15686f7f..e1ad64cc0c8784352d18ae89df6d05bd9709e8a0 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
++++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+@@ -283,6 +283,7 @@ struct mlx4_en_tx_ring {
+ 	struct mlx4_bf		bf;
+ 
+ 	/* Following part should be mostly read */
++	void			*doorbell_address;
+ 	__be32			doorbell_qpn;
+ 	__be32			mr_key;
+ 	u32			size; /* number of TXBBs */
+-- 
+2.33.0.800.g4c38ced690-goog
+
