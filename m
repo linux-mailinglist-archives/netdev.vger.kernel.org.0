@@ -2,87 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D50B41DB7B
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:50:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6119641DB8E
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351479AbhI3Nvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 09:51:36 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:37102 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235171AbhI3Nvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 09:51:35 -0400
-Received: from netfilter.org (unknown [37.29.219.236])
-        by mail.netfilter.org (Postfix) with ESMTPSA id B68E463EB3;
-        Thu, 30 Sep 2021 15:48:24 +0200 (CEST)
-Date:   Thu, 30 Sep 2021 15:49:46 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     kuba@kernel.org, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net 2/5] netfilter: nf_tables: add position handle in
- event notification
-Message-ID: <YVXAeheN9xpOWXWU@salvia>
-References: <20210929230500.811946-1-pablo@netfilter.org>
- <20210929230500.811946-3-pablo@netfilter.org>
- <20210929191953.00378ec4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210930.133522.917842602540469933.davem@davemloft.net>
+        id S1351529AbhI3N4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 09:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351468AbhI3N4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 09:56:00 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD01C06176A
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 06:54:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=qDLAtsiT33ruB17Tbww9QwVKnCmJB/88Z6LJsxX0VDY=; b=nJ5OztL8Wwm26pKkWZ0EY8i9X6
+        aXB5Py39fMBWyoutWjE306bIU1viCB+WRdDinc4iOlDplxd48prG3roGumbfh2yeg4Tkcizd9lJiA
+        +ejHonZgkT7CyQ6wT0jU/jIXN8gJwQPitDBq4t7YNB2DYZehj6xOCt+WOZ083ZYDuD0c3CYL2R3I1
+        6MTfkRsUCqNgY+IfbVBmf8fDm+wojIhqZhv/EBU4j92MSIwWKJPlK3lflxL/ISc00ER9NDpWfvCB9
+        yG/WKna0rq7bmTDpKnIduIcsr7b23oNIQoMffosFBl/NySB0ObM49xtqWyIO8L6nk8u8FzfLC19an
+        AWC1nNgg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54874)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mVwVs-0003Z1-B7; Thu, 30 Sep 2021 14:54:16 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mVwVr-0003hr-QJ; Thu, 30 Sep 2021 14:54:15 +0100
+Date:   Thu, 30 Sep 2021 14:54:15 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
+        Vivek Unune <npcomplete13@gmail.com>
+Subject: Re: Lockup in phy_probe() for MDIO device (Broadcom's switch)
+Message-ID: <YVXBhzr1+ZuYlhJT@shell.armlinux.org.uk>
+References: <YVWOp/2Nj/E1dpe3@shell.armlinux.org.uk>
+ <5715f818-a279-d514-dcac-73a94c1d30ef@gmail.com>
+ <YVWUKwEXrd39t8iw@shell.armlinux.org.uk>
+ <1e4e40ba-23b8-65b4-0b53-1c8393d9a834@gmail.com>
+ <YVWjEQzJisT0HgHB@shell.armlinux.org.uk>
+ <f51658fb-0844-93fc-46d0-6b3a7ef36123@gmail.com>
+ <YVWt2B7c9YKLlmgT@shell.armlinux.org.uk>
+ <955416fe-4da4-b1ec-aadb-9b816f02d7f2@gmail.com>
+ <YVW2oN3vBoP3tNNn@shell.armlinux.org.uk>
+ <dcfb52cb-2d28-a3a9-8a79-7a522e05ce92@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210930.133522.917842602540469933.davem@davemloft.net>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <dcfb52cb-2d28-a3a9-8a79-7a522e05ce92@gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 01:35:22PM +0100, David Miller wrote:
-> From: Jakub Kicinski <kuba@kernel.org>
-> Date: Wed, 29 Sep 2021 19:19:53 -0700
+On Thu, Sep 30, 2021 at 03:42:38PM +0200, Rafał Miłecki wrote:
+> On 30.09.2021 15:07, Russell King (Oracle) wrote:
+> > On Thu, Sep 30, 2021 at 02:51:40PM +0200, Rafał Miłecki wrote:
+> > > On 30.09.2021 14:30, Russell King (Oracle) wrote:
+> > > > > It's actually OpenWrt's downstream swconfig-based b53 driver that
+> > > > > matches this device.
+> > > > > 
+> > > > > I'm confused as downstream b53_mdio.c calls phy_driver_register(). Why
+> > > > > does it match MDIO device then? I thought MDIO devices should be
+> > > > > matches only with drivers using mdio_driver_register().
+> > > > 
+> > > > Note that I've no idea what he swconfig-based b53 driver looks like,
+> > > > I don't have the source for that to hand.
+> > > > 
+> > > > If it calls phy_driver_register(), then it is registering a driver for
+> > > > a MDIO device wrapped in a struct phy_device. If this driver has a
+> > > > .of_match_table member set, then this is wrong - the basic rule is
+> > > > 
+> > > > 	PHY drivers must never match using DT compatibles.
+> > > > 
+> > > > because this is exactly what will occur - it bypasses the check that
+> > > > the mdio_device being matched is in fact wrapped by a struct phy_device,
+> > > > and we will access members of the non-existent phy_device, including
+> > > > the "uninitialised" mutex.
+> > > > 
+> > > > If the swconfig-based b53 driver does want to bind to a phy_device based
+> > > > DT node, then it needs to match using either a custom .match_phy_device
+> > > > method in the PHY driver, or it needs to match using the PHY IDs.
+> > > 
+> > > Sorry, I should have linked downstream b53_mdio.c . It's:
+> > > https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=target/linux/generic/files/drivers/net/phy/b53/b53_mdio.c;h=98cdbffe73c7354f4401389dfcc96014bff62588;hb=HEAD
+> > 
+> > Yes, I just found a version of the driver
+> > 
+> > > You can see that is *uses* of_match_table.
+> > > 
+> > > What about refusing bugged drivers like above b53 with something like:
+> > 
+> > That will break all the MDIO based DSA and other non-PHY drivers,
+> > sorry.
+> > 
+> > I suppose we could detect if the driver has the MDIO_DEVICE_IS_PHY flag
+> > set, and reject any device that does not have MDIO_DEVICE_IS_PHY set:
+> > 
+> > diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> > index 53f034fc2ef7..7bc06126ce10 100644
+> > --- a/drivers/net/phy/mdio_bus.c
+> > +++ b/drivers/net/phy/mdio_bus.c
+> > @@ -939,6 +939,12 @@ EXPORT_SYMBOL_GPL(mdiobus_modify);
+> >   static int mdio_bus_match(struct device *dev, struct device_driver *drv)
+> >   {
+> >   	struct mdio_device *mdio = to_mdio_device(dev);
+> > +	struct mdio_driver *mdiodrv = to_mdio_driver(drv);
+> > +
+> > +	/* Both the driver and device must type-match */
+> > +	if (!(mdiodrv->mdiodrv.flags & MDIO_DEVICE_IS_PHY) ==
+> > +	    !(mdio->flags & MDIO_DEVICE_FLAG_PHY))
+> > +		return 0;
+> >   	if (of_driver_match_device(dev, drv))
+> >   		return 1;
+> > 
 > 
-> > On Thu, 30 Sep 2021 01:04:57 +0200 Pablo Neira Ayuso wrote:
-> >> Add position handle to allow to identify the rule location from netlink
-> >> events. Otherwise, userspace cannot incrementally update a userspace
-> >> cache through monitoring events.
-> >> 
-> >> Skip handle dump if the rule has been either inserted (at the beginning
-> >> of the ruleset) or appended (at the end of the ruleset), the
-> >> NLM_F_APPEND netlink flag is sufficient in these two cases.
-> >> 
-> >> Handle NLM_F_REPLACE as NLM_F_APPEND since the rule replacement
-> >> expansion appends it after the specified rule handle.
-> >> 
-> >> Fixes: 96518518cc41 ("netfilter: add nftables")
-> >> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> > 
-> > Let me defer to Dave on this one. Krzysztof K recently provided us with
-> > this quote:
-> > 
-> > "One thing that does bother [Linus] is developers who send him fixes in the
-> > -rc2 or -rc3 time frame for things that never worked in the first place.
-> > If something never worked, then the fact that it doesn't work now is not
-> > a regression, so the fixes should just wait for the next merge window.
-> > Those fixes are, after all, essentially development work."
-> > 
-> > 	https://lwn.net/Articles/705245/
-> > 
-> > Maybe the thinking has evolved since, but this patch strikes me as odd.
-> > We forgot to put an attribute in netlink 8 years ago, and suddenly it's
-> > urgent to fill it in?  Something does not connect for me, certainly the
-> > commit message should have explained things better...
+> In OpenWrt & bugged b53 case we have:
+> 1. Device without MDIO_DEVICE_FLAG_PHY
+> 2. Driver with MDIO_DEVICE_IS_PHY
 > 
-> Agreed.
+> I think the logic should be to return 0 on mismatch (reverted).
 
-The aforementioned article says:
+I assume you mean the test should've been != not == - then yes, you
+are absolutely correct. Sorry, I'm still not over a cold.
 
-"In general, he said, if a fix applies to a feature that is not
-currently being used, it should wait for the next development cycle"
-
-This feature is being used by 'nft monitor', which is not
-representing:
-
-- insert rule
-- add/insert rule with position handle
-- create table/chain/set/map
-
-commands in the correct way via netlink notifications.
-
-I can rework the commit message to clarify this and resubmit.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
