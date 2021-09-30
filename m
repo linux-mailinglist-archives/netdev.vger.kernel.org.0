@@ -2,204 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E92AE41D0E6
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 03:09:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56D4341D100
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 03:37:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346064AbhI3BLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 21:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233113AbhI3BLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 21:11:17 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC8EC06161C;
-        Wed, 29 Sep 2021 18:09:35 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id z5so9518443ybj.2;
-        Wed, 29 Sep 2021 18:09:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rgiH3IvJ0OAlzs0PgaVGNLl0L1GHKN5qFR99u9Ydudw=;
-        b=bs/Qb5uB4Mqyl5axF8F6TDCBLMnyTolsL+pvK1pljdfm48KUf5TV6tmqacSd5kORc6
-         73eYJ7damYlJ6XCjOYgIW0dF24keAiVGTBkaeW4zBRmM2vxxltLoJYWbH2gV8Skld8FR
-         O65Th1OxH5iU1smRv7IgOmjgm87SnOOoip2KtT8LCYZJNpRjzcX59dGT8wv1mx1Nfgwl
-         3aKWQeBHGVXM5GokfAG1LD4RUPEg2IDXW8Qy9CCdF6u/7+8M1C/6ReCmP89NeG1oq+Os
-         lu5suyiRA8nnAP4+4cHMwefDjJ1sp7FnJgT0Vk7FiL4sCYeYpWwPbpvJ7Jeoi4cZUGt8
-         1wzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rgiH3IvJ0OAlzs0PgaVGNLl0L1GHKN5qFR99u9Ydudw=;
-        b=ZDC/NjMCaVbJPr/r3jjJJ6PxKyyHLOfu7UnkW1Bo1Mpo71kbjjDJogZ0Zb+VMmu8Mr
-         nBFLg6vmoNBobduwO5kLHGo6b2MvuHHYKRjMpkJDITbGlGY/vu6WvXT4dm7g6DN++r5y
-         BAH1bU7GYr7/3VLj7jfhRv3y9wY/mI4if5JyvGeih725B6Ru4+CU7/5A/gPtqNXczDld
-         fJUpbOuyQwlgEhLKgoFUGq2Rlso+cPNb8CXZu/fl47p5jPyM/jDNxbBUJZav4EnAs+S7
-         ZYGGhYh2DZ46Hb6o2s7df24qeq8BM2TEgp3pVjI5tJvd9OdhsMo/7IkYg7Chv8CRq8uy
-         wvuA==
-X-Gm-Message-State: AOAM532UxJX1h6YRXn1sqwapX1vUc7xrvPBP9KyXuu5gr3/PdeqL/nyH
-        B1adSHQkmE21k0apLEoHrGTpBD21ytjs69SXT0IolXy0Zw==
-X-Google-Smtp-Source: ABdhPJw8uATfqAs57aGBG1bzmfaJR9fhg2uvx7XqJbJm3uD8vqs/AVfeqLIcwONnmiPuEO8i0C5xy+zTkejoC4tH8C0=
-X-Received: by 2002:a5b:88a:: with SMTP id e10mr3512204ybq.467.1632964174622;
- Wed, 29 Sep 2021 18:09:34 -0700 (PDT)
+        id S1347642AbhI3Bif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 21:38:35 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.183]:40692 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1347601AbhI3Bie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 21:38:34 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.27])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 1AF5A2A0064;
+        Thu, 30 Sep 2021 01:36:52 +0000 (UTC)
+Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id C3432600070;
+        Thu, 30 Sep 2021 01:36:51 +0000 (UTC)
+Received: from [192.168.1.115] (unknown [206.214.234.211])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 176CE13C2B0;
+        Wed, 29 Sep 2021 18:36:51 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 176CE13C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1632965811;
+        bh=Y86CkdyUSWUyevWPqAQxLIVrkoMjCBCmweBRs/WBn54=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=ZnUKgNYx/sCadQSIra73FzhNu/ra2pa3q7B2vEo89RVksEirsHL914XT86BFN9N4M
+         /ZoQQRgowTT2xrvjnpTMLWHPuNZrtNu/Pex95+xuADCwSmUEQYxeU6LGNr8PnVYgpD
+         47vCQcztxBD3ctQuNakU4ciXiX0CaNFVyjCGRfVY=
+Subject: Re: 5.15-rc3+ crash in fq-codel?
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+References: <dfa032f3-18f2-22a3-80bf-f0f570892478@candelatech.com>
+ <b6e8155e-7fae-16b0-59f0-2a2e6f5142de@gmail.com>
+ <00e495ba-391e-6ad8-94a2-930fbc826a37@candelatech.com>
+ <296232ac-e7ed-6e3c-36b9-ed430a21f632@candelatech.com>
+ <7e87883e-42f5-2341-ab67-9f1614fb8b86@candelatech.com>
+ <7f1d67f1-3a2c-2e74-bb86-c02a56370526@gmail.com>
+ <88bc8a03-da44-fc15-f032-fe5cb592958b@candelatech.com>
+ <b537053d-498d-928b-8ca0-e9daf5909128@gmail.com>
+ <f3f1378d-6839-cd23-9e2c-4668947c2345@gmail.com>
+ <41b4221b-be68-da96-8cbf-4297bb7ba821@gmail.com>
+ <8768df9e-f1f6-db25-15d8-cabed2346f32@candelatech.com>
+ <b7df0abb-8bdd-6348-a60a-75a66d6a9d91@candelatech.com>
+ <c4000c2a-8894-c3f5-9497-82bce4615be1@gmail.com>
+ <aa633585-0f0d-edf2-5659-72a49c1061c6@gmail.com>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <7a896ce5-ff52-0c44-752c-f6d238d6d8d9@candelatech.com>
+Date:   Wed, 29 Sep 2021 18:36:50 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20210929235910.1765396-1-jevburton.kernel@gmail.com>
- <20210929235910.1765396-5-jevburton.kernel@gmail.com> <1c148ba0-0b74-2d48-c94b-3e7ea42e8238@gmail.com>
-In-Reply-To: <1c148ba0-0b74-2d48-c94b-3e7ea42e8238@gmail.com>
-From:   Joe Burton <jevburton.kernel@gmail.com>
-Date:   Wed, 29 Sep 2021 18:09:23 -0700
-Message-ID: <CAN22Dihw1r9WP5JcecyE-3Y==ghVJT5ivRFGTR2bsboxLD2JEw@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 04/13] bpf: Define a few bpf_link_ops for BPF_TRACE_MAP
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Petar Penkov <ppenkov@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Joe Burton <jevburton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <aa633585-0f0d-edf2-5659-72a49c1061c6@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-MW
+Content-Transfer-Encoding: 8bit
+X-MDID: 1632965812-uz3SdBa0JIRO
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good catch, applied both changes. The expectation is to remove only
-one
- program. Theoretically an app could link the same program to the same
-map
-twice, twice, in which case close()ing one link should not detach both
-programs.
+On 9/29/21 5:40 PM, Eric Dumazet wrote:
+> 
+> 
+> On 9/29/21 5:29 PM, Eric Dumazet wrote:
+>>
+>>
+>> On 9/29/21 5:04 PM, Ben Greear wrote:
+>>> On 9/29/21 4:48 PM, Ben Greear wrote:
+>>>> On 9/29/21 4:42 PM, Eric Dumazet wrote:
+>>>>>
+>>>>>
+>>>>> On 9/29/21 4:28 PM, Eric Dumazet wrote:
+>>>>>>
+>>>>>
+>>>>>>
+>>>>>> Actually the bug seems to be in pktgen, vs NET_XMIT_CN
+>>>>>>
+>>>>>> You probably would hit the same issues with other qdisc also using NET_XMIT_CN
+>>>>>>
+>>>>>
+>>>>> I would try the following patch :
+>>>>>
+>>>>> diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+>>>>> index a3d74e2704c42e3bec1aa502b911c1b952a56cf1..0a2d9534f8d08d1da5dfc68c631f3a07f95c6f77 100644
+>>>>> --- a/net/core/pktgen.c
+>>>>> +++ b/net/core/pktgen.c
+>>>>> @@ -3567,6 +3567,7 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
+>>>>>           case NET_XMIT_DROP:
+>>>>>           case NET_XMIT_CN:
+>>>>>                   /* skb has been consumed */
+>>>>> +               pkt_dev->last_ok = 1;
+>>>>>                   pkt_dev->errors++;
+>>>>>                   break;
+>>>>>           default: /* Drivers are not supposed to return other values! */
+>>>
+>>> While patching my variant of pktgen, I took a look at the 'default' case.  I think
+>>> it should probably go above NET_XMIT_DROP and fallthrough into the consumed pkt path?
+>>>
+>>> Although, probably not a big deal since only bugs elsewhere would hit that path, and
+>>> we don't really know if skb would be consumed in that case or not.
+>>>
+>>
+>> This is probably dead code after commit
+>>
+>> commit f466dba1832f05006cf6caa9be41fb98d11cb848    pktgen: ndo_start_xmit can return NET_XMIT_xxx values
+>>
+>> So this does not really matter anymore.
+>>
+>>
+> 
+> Alternative would be the following patch.
+> NET_XMIT_CN means the packet has been queued for transmit,
+> but that we might have dropped prior packets.
+> 
+> Probably not a big deal to make the difference in pktgen.
+> 
+> diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+> index a3d74e2704c42e3bec1aa502b911c1b952a56cf1..5c612cbc74c790f64aff5ce602843378284c7119 100644
+> --- a/net/core/pktgen.c
+> +++ b/net/core/pktgen.c
+> @@ -3557,6 +3557,7 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
+>   
+>          switch (ret) {
+>          case NETDEV_TX_OK:
+> +       case NET_XMIT_CN:
+>                  pkt_dev->last_ok = 1;
+>                  pkt_dev->sofar++;
+>                  pkt_dev->seq_num++;
+> @@ -3565,8 +3566,8 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
+>                          goto xmit_more;
+>                  break;
+>          case NET_XMIT_DROP:
+> -       case NET_XMIT_CN:
+>                  /* skb has been consumed */
+> +               pkt_dev->last_ok = 1;
+>                  pkt_dev->errors++;
+>                  break;
+>          default: /* Drivers are not supposed to return other values! */
+> 
 
-I opted to also apply the _safe() suffix mostly as a matter of convention.
+Yes, I like that the XMIT_CN then means to increment the seq_num, though for my own purposes,
+I wouldn't want to increment the sofar++ in that case (and maybe not do other logic in that case),
+since we know at least something dropped.
 
--       struct bpf_map_trace_prog *cur_prog;
-+       struct bpf_map_trace_prog *cur_prog, *tmp;
-        struct bpf_map_trace_progs *progs;
+For fq-codel, seems that XMIT_CN could mean that the attempted packet actually was queued
+for xmit, but at least some other packets were purged.
 
-        progs = map_trace_link->map->trace_progs;
-        mutex_lock(&progs->mutex);
--       list_for_each_entry(cur_prog, &progs->progs[trace_type].list, list) {
-+       list_for_each_entry_safe(cur_prog, tmp, &progs->progs[trace_type].list,
-+                                list) {
-                if (cur_prog->prog == link->prog) {
-                        progs->length[trace_type] -= 1;
-                        list_del_rcu(&cur_prog->list);
-                        kfree_rcu(cur_prog, rcu);
-+                       break;
-                }
-        }
+Thanks,
+Ben
 
-
-On Wed, Sep 29, 2021 at 5:26 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 9/29/21 4:59 PM, Joe Burton wrote:
-> > From: Joe Burton <jevburton@google.com>
-> >
-> > Define release, dealloc, and update_prog for the new tracing programs.
-> > Updates are protected by a single global mutex.
-> >
-> > Signed-off-by: Joe Burton <jevburton@google.com>
-> > ---
-> >  kernel/bpf/map_trace.c | 71 ++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 71 insertions(+)
-> >
-> > diff --git a/kernel/bpf/map_trace.c b/kernel/bpf/map_trace.c
-> > index 7776b8ccfe88..35906d59ba3c 100644
-> > --- a/kernel/bpf/map_trace.c
-> > +++ b/kernel/bpf/map_trace.c
-> > @@ -14,6 +14,14 @@ struct bpf_map_trace_target_info {
-> >  static struct list_head targets = LIST_HEAD_INIT(targets);
-> >  static DEFINE_MUTEX(targets_mutex);
-> >
-> > +struct bpf_map_trace_link {
-> > +     struct bpf_link link;
-> > +     struct bpf_map *map;
-> > +     struct bpf_map_trace_target_info *tinfo;
-> > +};
-> > +
-> > +static DEFINE_MUTEX(link_mutex);
-> > +
-> >  int bpf_map_trace_reg_target(const struct bpf_map_trace_reg *reg_info)
-> >  {
-> >       struct bpf_map_trace_target_info *tinfo;
-> > @@ -77,3 +85,66 @@ int bpf_map_initialize_trace_progs(struct bpf_map *map)
-> >       return 0;
-> >  }
-> >
-> > +static void bpf_map_trace_link_release(struct bpf_link *link)
-> > +{
-> > +     struct bpf_map_trace_link *map_trace_link =
-> > +                     container_of(link, struct bpf_map_trace_link, link);
-> > +     enum bpf_map_trace_type trace_type =
-> > +                     map_trace_link->tinfo->reg_info->trace_type;
-> > +     struct bpf_map_trace_prog *cur_prog;
-> > +     struct bpf_map_trace_progs *progs;
-> > +
-> > +     progs = map_trace_link->map->trace_progs;
-> > +     mutex_lock(&progs->mutex);
-> > +     list_for_each_entry(cur_prog, &progs->progs[trace_type].list, list) {
->
-> You might consider using list_for_each_entry_safe(), or ...
->
-> > +             if (cur_prog->prog == link->prog) {
-> > +                     progs->length[trace_type] -= 1;
-> > +                     list_del_rcu(&cur_prog->list);
-> > +                     kfree_rcu(cur_prog, rcu);
->
-> or add a break; if you do not expect to find multiple entries.
->
-> > +             }
-> > +     }
-> > +     mutex_unlock(&progs->mutex);
-> > +     bpf_map_put_with_uref(map_trace_link->map);
-> > +}
-> > +
-> > +static void bpf_map_trace_link_dealloc(struct bpf_link *link)
-> > +{
-> > +     struct bpf_map_trace_link *map_trace_link =
-> > +                     container_of(link, struct bpf_map_trace_link, link);
-> > +
-> > +     kfree(map_trace_link);
-> > +}
-> > +
-> > +static int bpf_map_trace_link_replace(struct bpf_link *link,
-> > +                                   struct bpf_prog *new_prog,
-> > +                                   struct bpf_prog *old_prog)
-> > +{
-> > +     int ret = 0;
-> > +
-> > +     mutex_lock(&link_mutex);
-> > +     if (old_prog && link->prog != old_prog) {
-> > +             ret = -EPERM;
-> > +             goto out_unlock;
-> > +     }
-> > +
-> > +     if (link->prog->type != new_prog->type ||
-> > +         link->prog->expected_attach_type != new_prog->expected_attach_type ||
-> > +         link->prog->aux->attach_btf_id != new_prog->aux->attach_btf_id) {
-> > +             ret = -EINVAL;
-> > +             goto out_unlock;
-> > +     }
-> > +
-> > +     old_prog = xchg(&link->prog, new_prog);
-> > +     bpf_prog_put(old_prog);
-> > +
-> > +out_unlock:
-> > +     mutex_unlock(&link_mutex);
-> > +     return ret;
-> > +}
-> > +
-> > +static const struct bpf_link_ops bpf_map_trace_link_ops = {
-> > +     .release = bpf_map_trace_link_release,
-> > +     .dealloc = bpf_map_trace_link_dealloc,
-> > +     .update_prog = bpf_map_trace_link_replace,
-> > +};
-> > +
-> >
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
