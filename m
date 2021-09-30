@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B89141E4B7
+	by mail.lfdr.de (Postfix) with ESMTP id 22CB141E4B6
 	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:21:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350378AbhI3XWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 19:22:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55734 "EHLO mail.kernel.org"
+        id S1350331AbhI3XWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 19:22:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55746 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348976AbhI3XWl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1349127AbhI3XWl (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 30 Sep 2021 19:22:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 808E561A3D;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0695D61A3F;
         Thu, 30 Sep 2021 23:20:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633044057;
-        bh=SPNtdrYxmAyTFEjPqKpP0PTZthMZMaWxlxULeKwkeaY=;
+        s=k20201202; t=1633044058;
+        bh=505aAtPc7hivMXNvbWLirdpFo8YJfhl87epT8pYJEm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D5GYV9kSjYh5hidvzFakgCsJjXG2cLbRA2n3i/i3JpOrk+hdcP3jJYV4YqKMLgWn7
-         BDiOPt8ubdowYm6pHlSiQhC+v1rXp6YIz2M48CyGP+6rI7lhEXK9u9tzYV65ONNH4s
-         4zMu5lrzns+KDqFHrlJ1eeBwUgptOkkOs/sZ9QkBWIul75bO4Bd4flx54PLvVS+WY3
-         sgpw6o71rmzonl7PwDenVwZSNngFKBmaUATNuD9rZuD3hoJmK2vjMxXae7+U6rR4Tg
-         R3bW0TUSGjFuSoVqxc+xnbigyTADOyp4CiU6fBYhETx5gOMEsdg5ydHfVo6c7MIcD6
-         n1of1Ak4cvDqg==
+        b=rJvTUBzbKNCFfEr2qtJlhu8zhHYxXv4lpTr48owBRfoeud7mk3Iis5FQt2kiqcMog
+         ZDR9ATB5OBNDWxVBRyTq47qR7ipjIkMLmIsdNjbS8LNdtoQyVmork8wIhLEm6Pinkv
+         HRy9kxtb5ioCJ5CH5KA+SxYtWHOHYYgNbI2ttHa8DjEyLExsT5eVM2S8VdNWzx+64L
+         t5W2606z5Vmu+tsKrzFrGzpXydIDoyuVWECJmMVYnQAbuR5H4nm0rVnTcXcd/gqD8r
+         /ktesXm8601jfWDCEoBGVvSFeoi8sxykrbauUk61aQgEPdAlkJGXpiI0YrRLTjCL03
+         fW/NeOSohblRA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 08/15] net/mlx5: DR, Fix typo 'offeset' to 'offset'
-Date:   Thu, 30 Sep 2021 16:20:43 -0700
-Message-Id: <20210930232050.41779-9-saeed@kernel.org>
+Subject: [net-next 09/15] net/mlx5: DR, init_next_match only if needed
+Date:   Thu, 30 Sep 2021 16:20:44 -0700
+Message-Id: <20210930232050.41779-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210930232050.41779-1-saeed@kernel.org>
 References: <20210930232050.41779-1-saeed@kernel.org>
@@ -42,39 +42,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
+Allocate next steering table entry only if the remaining space requires to.
+
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c  | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-index 0179d386ee48..00199b3eae6a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-@@ -632,7 +632,7 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
- 			return -EOPNOTSUPP;
- 		case DR_ACTION_TYP_CTR:
- 			attr.ctr_id = action->ctr->ctr_id +
--				action->ctr->offeset;
-+				action->ctr->offset;
- 			break;
- 		case DR_ACTION_TYP_TAG:
- 			attr.flow_tag = action->flow_tag->flow_tag;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 01787b9d5a57..73fed94af09a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -941,7 +941,7 @@ struct mlx5dr_action_dest_tbl {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
+index 3497c2cf3118..cb9cf67b0a02 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
+@@ -586,9 +586,11 @@ static void dr_ste_v1_set_actions_tx(struct mlx5dr_domain *dmn,
+ 	} else if (action_type_set[DR_ACTION_TYP_L2_TO_TNL_L3]) {
+ 		u8 *d_action;
  
- struct mlx5dr_action_ctr {
- 	u32 ctr_id;
--	u32 offeset;
-+	u32 offset;
- };
+-		dr_ste_v1_arr_init_next_match(&last_ste, added_stes, attr->gvmi);
+-		action = MLX5_ADDR_OF(ste_mask_and_match_v1, last_ste, action);
+-		action_sz = DR_STE_ACTION_TRIPLE_SZ;
++		if (action_sz < DR_STE_ACTION_TRIPLE_SZ) {
++			dr_ste_v1_arr_init_next_match(&last_ste, added_stes, attr->gvmi);
++			action = MLX5_ADDR_OF(ste_mask_and_match_v1, last_ste, action);
++			action_sz = DR_STE_ACTION_TRIPLE_SZ;
++		}
+ 		d_action = action + DR_STE_ACTION_SINGLE_SZ;
  
- struct mlx5dr_action_vport {
+ 		dr_ste_v1_set_encap_l3(last_ste,
 -- 
 2.31.1
 
