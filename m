@@ -2,131 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5869E41D4DB
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 09:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 408F041D4B7
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 09:50:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348876AbhI3H5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 03:57:51 -0400
-Received: from relay-b01.edpnet.be ([212.71.1.221]:36608 "EHLO
-        relay-b01.edpnet.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348701AbhI3H5u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 03:57:50 -0400
-X-ASG-Debug-ID: 1632987728-15c4341a85b81220001-BZBGGp
-Received: from zotac.vandijck-laurijssen.be (94.105.120.149.dyn.edpnet.net [94.105.120.149]) by relay-b01.edpnet.be with ESMTP id gocwNBg9nSrzGfSh; Thu, 30 Sep 2021 09:42:08 +0200 (CEST)
-X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
-X-Barracuda-Effective-Source-IP: 94.105.120.149.dyn.edpnet.net[94.105.120.149]
-X-Barracuda-Apparent-Source-IP: 94.105.120.149
-Received: from x1.vandijck-laurijssen.be (x1.vandijck-laurijssen.be [IPv6:fd01::1a1d:eaff:fe02:d339])
-        by zotac.vandijck-laurijssen.be (Postfix) with ESMTPSA id D797D168301A;
-        Thu, 30 Sep 2021 09:42:07 +0200 (CEST)
-Date:   Thu, 30 Sep 2021 09:42:06 +0200
-From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session
- if receive TP.DT with error length
-Message-ID: <20210930074206.GB7502@x1.vandijck-laurijssen.be>
-X-ASG-Orig-Subj: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session
- if receive TP.DT with error length
-Mail-Followup-To: Zhang Changzhong <zhangchangzhong@huawei.com>,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1632972800-45091-1-git-send-email-zhangchangzhong@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1632972800-45091-1-git-send-email-zhangchangzhong@huawei.com>
-User-Agent: Mutt/1.5.22 (2013-10-16)
-X-Barracuda-Connect: 94.105.120.149.dyn.edpnet.net[94.105.120.149]
-X-Barracuda-Start-Time: 1632987728
-X-Barracuda-URL: https://212.71.1.221:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at edpnet.be
-X-Barracuda-Scan-Msg-Size: 2144
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Spam-Score: 0.50
-X-Barracuda-Spam-Status: No, SCORE=0.50 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=BSF_RULE7568M
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.92948
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------------------------
-        0.50 BSF_RULE7568M          Custom Rule 7568M
+        id S1348821AbhI3Hvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 03:51:55 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:43414 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1348701AbhI3Hvy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 03:51:54 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 325D91A17CC;
+        Thu, 30 Sep 2021 09:50:11 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id ED8301A17CA;
+        Thu, 30 Sep 2021 09:50:10 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 3E922183AC94;
+        Thu, 30 Sep 2021 15:50:08 +0800 (+08)
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
+        UNGLinuxDriver@microchip.com, vinicius.gomes@intel.com,
+        michael.chan@broadcom.com, vishal@chelsio.com, saeedm@mellanox.com,
+        jiri@mellanox.com, idosch@mellanox.com,
+        alexandre.belloni@bootlin.com, kuba@kernel.org,
+        xiaoliang.yang_1@nxp.com, po.liu@nxp.com, vladimir.oltean@nxp.com,
+        leoyang.li@nxp.com, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, claudiu.manoil@nxp.com,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, matthias.bgg@gmail.com,
+        horatiu.vultur@microchip.com
+Subject: [PATCH v6 net-next 0/8] net: dsa: felix: psfp support on vsc9959
+Date:   Thu, 30 Sep 2021 15:59:40 +0800
+Message-Id: <20210930075948.36981-1-xiaoliang.yang_1@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Sep 2021 11:33:20 +0800, Zhang Changzhong wrote:
-> According to SAE-J1939-21, the data length of TP.DT must be 8 bytes, so
-> cancel session when receive unexpected TP.DT message.
+VSC9959 hardware supports Per-Stream Filtering and Policing(PSFP).
+This patch series add PSFP support on tc flower offload of ocelot
+driver. Use chain 30000 to distinguish PSFP from VCAP blocks. Add gate
+and police set to support PSFP in VSC9959 driver.
 
-SAE-j1939-21 indeed says that all TP.DT must be 8 bytes.
-However, the last TP.DT may contain up to 6 stuff bytes, which have no meaning.
-If I remember well, they are even not 'reserved'.
+v5->v6 changes:
+ - Modify ocelot_mact_lookup() parameters.
+ - Use parameters ssid and sfid instead of streamdata in
+   ocelot_mact_learn_streamdata() function.
+ - Serialize STREAMDATA and MAC table write.
 
-> 
-> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> ---
->  net/can/j1939/transport.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-> index bb5c4b8..eedaeaf 100644
-> --- a/net/can/j1939/transport.c
-> +++ b/net/can/j1939/transport.c
-> @@ -1789,6 +1789,7 @@ static void j1939_xtp_rx_dpo(struct j1939_priv *priv, struct sk_buff *skb,
->  static void j1939_xtp_rx_dat_one(struct j1939_session *session,
->  				 struct sk_buff *skb)
->  {
-> +	enum j1939_xtp_abort abort = J1939_XTP_ABORT_FAULT;
->  	struct j1939_priv *priv = session->priv;
->  	struct j1939_sk_buff_cb *skcb, *se_skcb;
->  	struct sk_buff *se_skb = NULL;
-> @@ -1803,9 +1804,11 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
->  
->  	skcb = j1939_skb_to_cb(skb);
->  	dat = skb->data;
-> -	if (skb->len <= 1)
-> +	if (skb->len != 8) {
->  		/* makes no sense */
-> +		abort = J1939_XTP_ABORT_UNEXPECTED_DATA;
->  		goto out_session_cancel;
+v4->v5 changes:
+ - Add MAC table lock patch, and move stream data write in
+   ocelot_mact_learn_streamdata().
+ - Add two sections of VCAP policers to Seville platform.
 
-I think this is a situation of
-"be strict on what you send, be tolerant on what you receive".
+v3->v4 changes:
+ - Introduce vsc9959_psfp_sfi_table_get() function in patch where it is
+   used to fix compile warning.
+ - Store MAC entry type before FRER set, and recover it after FRER
+   disabled.
 
-Did you find a technical reason to abort a session because the last frame didn't
-bring overhead that you don't use?
+v2->v3 changes:
+ - Reorder first two patches. Export struct ocelot_mact_entry, then add
+   ocelot_mact_lookup() and ocelot_mact_write() functions.
+ - Add PSFP list to struct ocelot, and init it by using
+   ocelot->ops->psfp_init().
 
-Kind regards,
-Kurt
-> +	}
->  
->  	switch (session->last_cmd) {
->  	case 0xff:
-> @@ -1904,7 +1907,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
->   out_session_cancel:
->  	kfree_skb(se_skb);
->  	j1939_session_timers_cancel(session);
-> -	j1939_session_cancel(session, J1939_XTP_ABORT_FAULT);
-> +	j1939_session_cancel(session, abort);
->  	j1939_session_put(session);
->  }
->  
-> -- 
-> 2.9.5
-> 
+v1->v2 changes:
+ - Use tc flower offload of ocelot driver to support PSFP add and delete.
+ - Add PSFP tables add/del functions in felix_vsc9959.c.
+
+Vladimir Oltean (1):
+  net: mscc: ocelot: serialize access to the MAC table
+
+Xiaoliang Yang (7):
+  net: mscc: ocelot: add MAC table stream learn and lookup operations
+  net: mscc: ocelot: set vcap IS2 chain to goto PSFP chain
+  net: mscc: ocelot: add gate and police action offload to PSFP
+  net: dsa: felix: support psfp filter on vsc9959
+  net: dsa: felix: add stream gate settings for psfp
+  net: mscc: ocelot: use index to set vcap policer
+  net: dsa: felix: use vcap policer to set flow meter for psfp
+
+ drivers/net/dsa/ocelot/felix.c             |   4 +
+ drivers/net/dsa/ocelot/felix.h             |   4 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c     | 694 ++++++++++++++++++++-
+ drivers/net/dsa/ocelot/seville_vsc9953.c   |   8 +
+ drivers/net/ethernet/mscc/ocelot.c         | 135 +++-
+ drivers/net/ethernet/mscc/ocelot.h         |  13 -
+ drivers/net/ethernet/mscc/ocelot_flower.c  |  84 ++-
+ drivers/net/ethernet/mscc/ocelot_vcap.c    | 103 +--
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c |   7 +
+ include/soc/mscc/ocelot.h                  |  52 +-
+ include/soc/mscc/ocelot_ana.h              |  10 +
+ include/soc/mscc/ocelot_vcap.h             |   1 +
+ 12 files changed, 1034 insertions(+), 81 deletions(-)
+
+-- 
+2.17.1
+
