@@ -2,139 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22DE841E4AC
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9CA741E4AD
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:21:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345182AbhI3XWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 19:22:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55606 "EHLO mail.kernel.org"
+        id S1347316AbhI3XWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 19:22:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55618 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229992AbhI3XWh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230172AbhI3XWh (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 30 Sep 2021 19:22:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 873F2619E7;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F403A619F5;
         Thu, 30 Sep 2021 23:20:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633044053;
-        bh=oD1ZvNDz/D9J/jdSztTuoSvXSpqy09g/lD0JnXkNtlQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=O1RE9nqLZjbu4nHK446wA1N6P90H0K/hKq85bSaGyh1UWkAwBdjFIJ6tg3x1rZBoT
-         MsDtFduvZwkuK8vmaaAS/GZMhWHecIiJfyCH19vYTWhZt5wEZ3OeR2FBPssC1OeGZS
-         S2BdrMwVRbs7ku0KOQjmkGnxSqV8Hv/zJ3ISya8eUQSjzmyYBf1paNavHCcKmImLrf
-         LKRRKODrg+PXsJ0HHlAVUhXn1wRxx5Sjs7tBPJEcB2BmqiYThIpPNxklvGZIjhB9yk
-         UNSYjuQLs80xQ/du0l9uzwE4C9ee7xNfyX4IEGmjAS7ivXhRFmW6mWdvDXAiyrFAp0
-         QfID4BDHZyj1Q==
+        s=k20201202; t=1633044054;
+        bh=sZUYErglcZjK1ElRGf+JVTwOb/oSMUkxC3r8vXzuj8I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=a3AnlMYFpcWwjaRVjElvARaGKm9BVnbxdwkylAwWCWMDMbDO45S55nfwv41JIDOql
+         bnVVeJjyMqLHw/jYPl8T4YRkP2Dq2xXcqh/uXIjSDHt3nhTQEejns8rQsc1gbFcriz
+         9RnU6Km6xSNPKe+aJy/xR7KHmrns8V/O9goDk4BvsdAA30ffPGNKp9sYkyQhO8Vg2o
+         LtHaTAYDdwgzaUtscAjXfMF9wKWsKmRUdwOD3zYP3L3+GqjQhRd4O7aW483o6B3rgZ
+         sA0LvEcCDsj8HPrC+kBo6nFRpVjLbqYFgxTv0x/VA6KLmDCvKKlgITsSsWhEl1QtB4
+         qSgIubECH4NVA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Muhammad Sammar <muhammads@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 00/15] mlx5 updates 2021-09-30
-Date:   Thu, 30 Sep 2021 16:20:35 -0700
-Message-Id: <20210930232050.41779-1-saeed@kernel.org>
+Subject: [net-next 01/15] net/mlx5: DR, Fix vport number data type to u16
+Date:   Thu, 30 Sep 2021 16:20:36 -0700
+Message-Id: <20210930232050.41779-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210930232050.41779-1-saeed@kernel.org>
+References: <20210930232050.41779-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Hi Dave, Jakub,
+According to the HW spec, vport number is a 16-bit value.
+Fix vport usage all over the code to u16 data type.
 
-This series provides misc mlx5 updates.
-For more information please see tag log below.
-
-Please pull and let me know if there is any problem.
-
-Thanks,
-Saeed.
-
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Reviewed-by: Muhammad Sammar <muhammads@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit dd9a887b35b01d7027f974f5e7936f1410ab51ca:
+ .../ethernet/mellanox/mlx5/core/steering/dr_action.c   |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |  4 ++--
+ .../ethernet/mellanox/mlx5/core/steering/dr_domain.c   |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_fw.c   |  2 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_types.h    | 10 +++++-----
+ .../net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |  2 +-
+ 6 files changed, 11 insertions(+), 11 deletions(-)
 
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-09-30 14:49:21 -0700)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+index a5b9f65db23c..032b4a2546d3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+@@ -1747,7 +1747,7 @@ mlx5dr_action_create_modify_header(struct mlx5dr_domain *dmn,
+ 
+ struct mlx5dr_action *
+ mlx5dr_action_create_dest_vport(struct mlx5dr_domain *dmn,
+-				u32 vport, u8 vhca_id_valid,
++				u16 vport, u8 vhca_id_valid,
+ 				u16 vhca_id)
+ {
+ 	struct mlx5dr_cmd_vport_cap *vport_cap;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+index 56307283bf9b..0f69321b3269 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+@@ -272,7 +272,7 @@ int mlx5dr_cmd_set_fte_modify_and_vport(struct mlx5_core_dev *mdev,
+ 					u32 table_id,
+ 					u32 group_id,
+ 					u32 modify_header_id,
+-					u32 vport_id)
++					u16 vport)
+ {
+ 	u32 out[MLX5_ST_SZ_DW(set_fte_out)] = {};
+ 	void *in_flow_context;
+@@ -303,7 +303,7 @@ int mlx5dr_cmd_set_fte_modify_and_vport(struct mlx5_core_dev *mdev,
+ 	in_dests = MLX5_ADDR_OF(flow_context, in_flow_context, destination);
+ 	MLX5_SET(dest_format_struct, in_dests, destination_type,
+ 		 MLX5_FLOW_DESTINATION_TYPE_VPORT);
+-	MLX5_SET(dest_format_struct, in_dests, destination_id, vport_id);
++	MLX5_SET(dest_format_struct, in_dests, destination_id, vport);
+ 
+ 	err = mlx5_cmd_exec(mdev, in, inlen, out, sizeof(out));
+ 	kvfree(in);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+index 0fe159809ba1..ca299d480579 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+@@ -38,7 +38,7 @@ static void dr_domain_uninit_cache(struct mlx5dr_domain *dmn)
+ }
+ 
+ int mlx5dr_domain_cache_get_recalc_cs_ft_addr(struct mlx5dr_domain *dmn,
+-					      u32 vport_num,
++					      u16 vport_num,
+ 					      u64 *rx_icm_addr)
+ {
+ 	struct mlx5dr_fw_recalc_cs_ft *recalc_cs_ft;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
+index 0d6f86eb248b..68a4c32d5f34 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
+@@ -5,7 +5,7 @@
+ #include "dr_types.h"
+ 
+ struct mlx5dr_fw_recalc_cs_ft *
+-mlx5dr_fw_create_recalc_cs_ft(struct mlx5dr_domain *dmn, u32 vport_num)
++mlx5dr_fw_create_recalc_cs_ft(struct mlx5dr_domain *dmn, u16 vport_num)
+ {
+ 	struct mlx5dr_cmd_create_flow_table_attr ft_attr = {};
+ 	struct mlx5dr_fw_recalc_cs_ft *recalc_cs_ft;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+index b20e8aabb861..441c03e645db 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+@@ -752,9 +752,9 @@ struct mlx5dr_esw_caps {
+ struct mlx5dr_cmd_vport_cap {
+ 	u16 vport_gvmi;
+ 	u16 vhca_gvmi;
++	u16 num;
+ 	u64 icm_address_rx;
+ 	u64 icm_address_tx;
+-	u32 num;
+ };
+ 
+ struct mlx5dr_roce_cap {
+@@ -1103,7 +1103,7 @@ mlx5dr_ste_htbl_may_grow(struct mlx5dr_ste_htbl *htbl)
+ }
+ 
+ static inline struct mlx5dr_cmd_vport_cap *
+-mlx5dr_get_vport_cap(struct mlx5dr_cmd_caps *caps, u32 vport)
++mlx5dr_get_vport_cap(struct mlx5dr_cmd_caps *caps, u16 vport)
+ {
+ 	if (!caps->vports_caps ||
+ 	    (vport >= caps->num_vports && vport != WIRE_PORT))
+@@ -1154,7 +1154,7 @@ int mlx5dr_cmd_set_fte_modify_and_vport(struct mlx5_core_dev *mdev,
+ 					u32 table_id,
+ 					u32 group_id,
+ 					u32 modify_header_id,
+-					u32 vport_id);
++					u16 vport_id);
+ int mlx5dr_cmd_del_flow_table_entry(struct mlx5_core_dev *mdev,
+ 				    u32 table_type,
+ 				    u32 table_id);
+@@ -1372,11 +1372,11 @@ struct mlx5dr_fw_recalc_cs_ft {
+ };
+ 
+ struct mlx5dr_fw_recalc_cs_ft *
+-mlx5dr_fw_create_recalc_cs_ft(struct mlx5dr_domain *dmn, u32 vport_num);
++mlx5dr_fw_create_recalc_cs_ft(struct mlx5dr_domain *dmn, u16 vport_num);
+ void mlx5dr_fw_destroy_recalc_cs_ft(struct mlx5dr_domain *dmn,
+ 				    struct mlx5dr_fw_recalc_cs_ft *recalc_cs_ft);
+ int mlx5dr_domain_cache_get_recalc_cs_ft_addr(struct mlx5dr_domain *dmn,
+-					      u32 vport_num,
++					      u16 vport_num,
+ 					      u64 *rx_icm_addr);
+ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
+ 			    struct mlx5dr_cmd_flow_destination_hw_info *dest,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+index c5a8b1601999..c7c93131b762 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+@@ -89,7 +89,7 @@ mlx5dr_action_create_dest_flow_fw_table(struct mlx5dr_domain *domain,
+ 
+ struct mlx5dr_action *
+ mlx5dr_action_create_dest_vport(struct mlx5dr_domain *domain,
+-				u32 vport, u8 vhca_id_valid,
++				u16 vport, u8 vhca_id_valid,
+ 				u16 vhca_id);
+ 
+ struct mlx5dr_action *
+-- 
+2.31.1
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-09-30
-
-for you to fetch changes up to 51984c9ee01e784ff578e583678958709b18f7b7:
-
-  net/mlx5e: Use array_size() helper (2021-09-30 16:19:02 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2021-09-30
-
-Misc mlx5 updates:
-
-1) SW steering, Vports handling and SFs support
-
-From Yevgeny Kliteynik
-======================
-This patch series deals with vport handling in SW steering.
-
-For every vport, SW steering queries FW for this vport's properties,
-such as RX/TX ICM addresses to be able to add this vport as dest action.
-The following patches rework vport capabilities managements and add support
-for Scalable Functions (SFs).
-
- - Patch 1 fixes the vport number data type all over the DR code to 16 bits
-   in accordance with HW spec.
- - Patch 2 replaces local SW steering WIRE_PORT macro with the existing
-   mlx5 define.
- - Patch 3 adds missing query for vport 0 and and handles eswitch manager
-   capabilities for ECPF (BlueField in embedded CPU mode).
- - Patch 4 fixes error messages for failure to obtain vport caps from
-   different locations in the code to have the same verbosity level and
-   similar wording.
- - Patch 5 adds support for csum recalculation flow tables on SFs: it
-   implements these FTs management in XArray instead of the fixed size array,
-   thus adding support for csum recalculation table for any valid vport.
- - Patch 6 is the main patch of this whole series: it refactors vports
-   capabilities handling and adds SFs support.
-
-======================
-
-2) Minor and trivial updates and cleanups
-
-----------------------------------------------------------------
-Aya Levin (1):
-      net/mlx5: Tolerate failures in debug features while driver load
-
-Gustavo A. R. Silva (3):
-      net/mlx5: Use kvcalloc() instead of kvzalloc()
-      net/mlx5: Use struct_size() helper in kvzalloc()
-      net/mlx5e: Use array_size() helper
-
-Lama Kayal (1):
-      net/mlx5: Warn for devlink reload when there are VFs alive
-
-Yevgeny Kliteynik (10):
-      net/mlx5: DR, Fix vport number data type to u16
-      net/mlx5: DR, Replace local WIRE_PORT macro with the existing MLX5_VPORT_UPLINK
-      net/mlx5: DR, Add missing query for vport 0
-      net/mlx5: DR, Align error messages for failure to obtain vport caps
-      net/mlx5: DR, Support csum recalculation flow table on SFs
-      net/mlx5: DR, Add support for SF vports
-      net/mlx5: DR, Increase supported num of actions to 32
-      net/mlx5: DR, Fix typo 'offeset' to 'offset'
-      net/mlx5: DR, init_next_match only if needed
-      net/mlx5: DR, Add missing string for action type SAMPLER
-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |   5 +
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  10 +-
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   4 +-
- .../net/ethernet/mellanox/mlx5/core/fs_counters.c  |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  12 +-
- .../mellanox/mlx5/core/steering/dr_action.c        |  19 +-
- .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |   6 +-
- .../mellanox/mlx5/core/steering/dr_domain.c        | 212 ++++++++++++++-------
- .../ethernet/mellanox/mlx5/core/steering/dr_fw.c   |   2 +-
- .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |   4 +-
- .../mellanox/mlx5/core/steering/dr_ste_v0.c        |  13 +-
- .../mellanox/mlx5/core/steering/dr_ste_v1.c        |  18 +-
- .../mellanox/mlx5/core/steering/dr_types.h         |  47 ++---
- .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |   2 +-
- .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |   2 +-
- 16 files changed, 215 insertions(+), 146 deletions(-)
