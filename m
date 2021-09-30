@@ -2,164 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4336941DF30
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 18:39:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEB8C41DF82
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 18:44:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352174AbhI3Qku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 12:40:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52276 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352163AbhI3Qkt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 12:40:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 843FB615E0;
-        Thu, 30 Sep 2021 16:39:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633019946;
-        bh=l4psnDS2L4mNszZp3eSV39BLlsLnxaYRmZiaPEPx/DM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EDo+iZBLh61LjGBdXtXCGg7fsozqORH2v8dvTewaNZuP59U/Tsyw6NNHDzlLGYhBo
-         CF9isbBPlTNlRlq7dCzjxMalsuQvDx6tXPcmP6f16p2QZb2SabvCEmSBo06LdJWhTN
-         OojibY9LjoCfTYpycpQmrt4vdbw0OHqS0Wmn40pBQU6CLxnexuJf5LJKksESIdZAvF
-         XcddVlKSFw1KCtom961I8wGjttZ5Rpktiy3T4+cjjm9U0BIGTCy5WD2EPRNBEWtLNm
-         WJA8/cUlExi3NbnzJbwTjSmds5GYJzQKYu6z/Bskr/1+lWC+034E8CZXffMcc6Q/Bk
-         tBO+WvnLLZC+w==
-Received: by pali.im (Postfix)
-        id 466D7E79; Thu, 30 Sep 2021 18:39:04 +0200 (CEST)
-Date:   Thu, 30 Sep 2021 18:39:04 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Jonas =?utf-8?Q?Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH 1/2] mwifiex: Use non-posted PCI register writes
-Message-ID: <20210930163904.asr3ugj7oj7l2arx@pali>
-References: <CA+ASDXNMhrxX-nFrr6kBo0a0c-25+Ge2gBP2uTjE8UWJMeQO2A@mail.gmail.com>
- <bd64c142-93d0-c348-834c-34ed80c460f9@v0yd.nl>
- <e4cbf804-c374-79a3-53ac-8a0fbd8f75b8@v0yd.nl>
- <CAHp75Vd5iCLELx8s+Zvcj8ufd2bN6CK26soDMkZyC1CwMO2Qeg@mail.gmail.com>
- <20210923202231.t2zjoejpxrbbe5hc@pali>
- <db583b3c-6bfc-d765-a588-eb47c76cea31@v0yd.nl>
- <20210930154202.cvw3it3edv7pmqtb@pali>
- <6ba104fa-a659-c192-4dc0-291ca3413f99@v0yd.nl>
- <20210930161905.5a552go73c2o4e7l@pali>
- <4e4f3b6a-25c6-289f-2de0-660aeee2b695@v0yd.nl>
+        id S1352285AbhI3Qq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 12:46:29 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.184]:42904 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1350980AbhI3Qq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 12:46:29 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.178])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 033412006A;
+        Thu, 30 Sep 2021 16:44:45 +0000 (UTC)
+Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A8954B00087;
+        Thu, 30 Sep 2021 16:44:44 +0000 (UTC)
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 986BB13C2B0;
+        Thu, 30 Sep 2021 09:44:34 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 986BB13C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1633020274;
+        bh=R5g12WamHPZKaK9uCKhV94Fis2b2mGqXe726112+89o=;
+        h=Subject:From:To:References:Date:In-Reply-To:From;
+        b=Qic9/7t520GDtpN/DPObazliGoE18X80oJ4sUx7b6XKgPdPxnO+/0SWAkDX3g69LC
+         0IoKhnhHlbCKkWBkDoW6QPsL5AxCIzr6fdRKfdDWiGpNhVptzWHKwD3jTuskmomO29
+         lyuPK5AqplhuXdN3NLSoOaHuo9uf92eGWUqTjvC0=
+Subject: Re: 5.15-rc3+ crash in fq-codel?
+From:   Ben Greear <greearb@candelatech.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+References: <dfa032f3-18f2-22a3-80bf-f0f570892478@candelatech.com>
+ <b6e8155e-7fae-16b0-59f0-2a2e6f5142de@gmail.com>
+ <00e495ba-391e-6ad8-94a2-930fbc826a37@candelatech.com>
+ <296232ac-e7ed-6e3c-36b9-ed430a21f632@candelatech.com>
+ <7e87883e-42f5-2341-ab67-9f1614fb8b86@candelatech.com>
+ <7f1d67f1-3a2c-2e74-bb86-c02a56370526@gmail.com>
+ <88bc8a03-da44-fc15-f032-fe5cb592958b@candelatech.com>
+ <b537053d-498d-928b-8ca0-e9daf5909128@gmail.com>
+ <f3f1378d-6839-cd23-9e2c-4668947c2345@gmail.com>
+ <41b4221b-be68-da96-8cbf-4297bb7ba821@gmail.com>
+ <8768df9e-f1f6-db25-15d8-cabed2346f32@candelatech.com>
+ <b7df0abb-8bdd-6348-a60a-75a66d6a9d91@candelatech.com>
+ <c4000c2a-8894-c3f5-9497-82bce4615be1@gmail.com>
+ <aa633585-0f0d-edf2-5659-72a49c1061c6@gmail.com>
+ <7a896ce5-ff52-0c44-752c-f6d238d6d8d9@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <1d5fc498-c783-4857-b8e5-851e00561898@candelatech.com>
+Date:   Thu, 30 Sep 2021 09:44:34 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <7a896ce5-ff52-0c44-752c-f6d238d6d8d9@candelatech.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4e4f3b6a-25c6-289f-2de0-660aeee2b695@v0yd.nl>
-User-Agent: NeoMutt/20180716
+X-MDID: 1633020285-WS3dG5AADqnM
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday 30 September 2021 18:22:42 Jonas Dreßler wrote:
-> On 9/30/21 6:19 PM, Pali Rohár wrote:
-> > On Thursday 30 September 2021 18:14:04 Jonas Dreßler wrote:
-> > > On 9/30/21 5:42 PM, Pali Rohár wrote:
-> > > > On Thursday 30 September 2021 17:38:43 Jonas Dreßler wrote:
-> > > > > On 9/23/21 10:22 PM, Pali Rohár wrote:
-> > > > > > On Thursday 23 September 2021 22:41:30 Andy Shevchenko wrote:
-> > > > > > > On Thu, Sep 23, 2021 at 6:28 PM Jonas Dreßler <verdre@v0yd.nl> wrote:
-> > > > > > > > On 9/22/21 2:50 PM, Jonas Dreßler wrote:
-> > > > > > > 
-> > > > > > > ...
-> > > > > > > 
-> > > > > > > > - Just calling mwifiex_write_reg() once and then blocking until the card
-> > > > > > > > wakes up using my delay-loop doesn't fix the issue, it's actually
-> > > > > > > > writing multiple times that fixes the issue
-> > > > > > > > 
-> > > > > > > > These observations sound a lot like writes (and even reads) are actually
-> > > > > > > > being dropped, don't they?
-> > > > > > > 
-> > > > > > > It sounds like you're writing into a not ready (fully powered on) device.
-> > > > > > 
-> > > > > > This reminds me a discussion with Bjorn about CRS response returned
-> > > > > > after firmware crash / reset when device is not ready yet:
-> > > > > > https://lore.kernel.org/linux-pci/20210922164803.GA203171@bhelgaas/
-> > > > > > 
-> > > > > > Could not be this similar issue? You could check it via reading
-> > > > > > PCI_VENDOR_ID register from config space. And if it is not valid value
-> > > > > > then card is not really ready yet.
-> > > > > > 
-> > > > > > > To check this, try to put a busy loop for reading and check the value
-> > > > > > > till it gets 0.
-> > > > > > > 
-> > > > > > > Something like
-> > > > > > > 
-> > > > > > >      unsigned int count = 1000;
-> > > > > > > 
-> > > > > > >      do {
-> > > > > > >        if (mwifiex_read_reg(...) == 0)
-> > > > > > >          break;
-> > > > > > >      } while (--count);
-> > > > > > > 
-> > > > > > > 
-> > > > > > > -- 
-> > > > > > > With Best Regards,
-> > > > > > > Andy Shevchenko
-> > > > > 
-> > > > > I've tried both reading PCI_VENDOR_ID and the firmware status using a busy
-> > > > > loop now, but sadly none of them worked. It looks like the card always
-> > > > > replies with the correct values even though it sometimes won't wake up after
-> > > > > that.
-> > > > > 
-> > > > > I do have one new observation though, although I've no clue what could be
-> > > > > happening here: When reading PCI_VENDOR_ID 1000 times to wakeup we can
-> > > > > "predict" the wakeup failure because exactly one (usually around the 20th)
-> > > > > of those 1000 reads will fail.
-> > > > 
-> > > > What does "fail" means here?
-> > > 
-> > > ioread32() returns all ones, that's interpreted as failure by
-> > > mwifiex_read_reg().
-> > 
-> > Ok. And can you check if PCI Bridge above this card has enabled CRSSVE
-> > bit (CRSVisible in RootCtl+RootCap in lspci output)? To determinate if
-> > Bridge could convert CRS response to all-ones as failed transaction.
-> > 
+On 9/29/21 6:36 PM, Ben Greear wrote:
+> On 9/29/21 5:40 PM, Eric Dumazet wrote:
+>>
+>>
+>> On 9/29/21 5:29 PM, Eric Dumazet wrote:
+>>>
+>>>
+>>> On 9/29/21 5:04 PM, Ben Greear wrote:
+>>>> On 9/29/21 4:48 PM, Ben Greear wrote:
+>>>>> On 9/29/21 4:42 PM, Eric Dumazet wrote:
+>>>>>>
+>>>>>>
+>>>>>> On 9/29/21 4:28 PM, Eric Dumazet wrote:
+>>>>>>>
+>>>>>>
+>>>>>>>
+>>>>>>> Actually the bug seems to be in pktgen, vs NET_XMIT_CN
+>>>>>>>
+>>>>>>> You probably would hit the same issues with other qdisc also using NET_XMIT_CN
+>>>>>>>
+>>>>>>
+>>>>>> I would try the following patch :
+>>>>>>
+>>>>>> diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+>>>>>> index a3d74e2704c42e3bec1aa502b911c1b952a56cf1..0a2d9534f8d08d1da5dfc68c631f3a07f95c6f77 100644
+>>>>>> --- a/net/core/pktgen.c
+>>>>>> +++ b/net/core/pktgen.c
+>>>>>> @@ -3567,6 +3567,7 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
+>>>>>>           case NET_XMIT_DROP:
+>>>>>>           case NET_XMIT_CN:
+>>>>>>                   /* skb has been consumed */
+>>>>>> +               pkt_dev->last_ok = 1;
+>>>>>>                   pkt_dev->errors++;
+>>>>>>                   break;
+>>>>>>           default: /* Drivers are not supposed to return other values! */
+>>>>
+>>>> While patching my variant of pktgen, I took a look at the 'default' case.  I think
+>>>> it should probably go above NET_XMIT_DROP and fallthrough into the consumed pkt path?
+>>>>
+>>>> Although, probably not a big deal since only bugs elsewhere would hit that path, and
+>>>> we don't really know if skb would be consumed in that case or not.
+>>>>
+>>>
+>>> This is probably dead code after commit
+>>>
+>>> commit f466dba1832f05006cf6caa9be41fb98d11cb848    pktgen: ndo_start_xmit can return NET_XMIT_xxx values
+>>>
+>>> So this does not really matter anymore.
+>>>
+>>>
+>>
+>> Alternative would be the following patch.
+>> NET_XMIT_CN means the packet has been queued for transmit,
+>> but that we might have dropped prior packets.
+>>
+>> Probably not a big deal to make the difference in pktgen.
+>>
+>> diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+>> index a3d74e2704c42e3bec1aa502b911c1b952a56cf1..5c612cbc74c790f64aff5ce602843378284c7119 100644
+>> --- a/net/core/pktgen.c
+>> +++ b/net/core/pktgen.c
+>> @@ -3557,6 +3557,7 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
+>>          switch (ret) {
+>>          case NETDEV_TX_OK:
+>> +       case NET_XMIT_CN:
+>>                  pkt_dev->last_ok = 1;
+>>                  pkt_dev->sofar++;
+>>                  pkt_dev->seq_num++;
+>> @@ -3565,8 +3566,8 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
+>>                          goto xmit_more;
+>>                  break;
+>>          case NET_XMIT_DROP:
+>> -       case NET_XMIT_CN:
+>>                  /* skb has been consumed */
+>> +               pkt_dev->last_ok = 1;
+>>                  pkt_dev->errors++;
+>>                  break;
+>>          default: /* Drivers are not supposed to return other values! */
+>>
 > 
-> Seems like that bit is disabled:
-> > RootCap: CRSVisible-
-> > RootCtl: ErrCorrectable- ErrNon-Fatal- ErrFatal- PMEIntEna+ CRSVisible-
+> Yes, I like that the XMIT_CN then means to increment the seq_num, though for my own purposes,
+> I wouldn't want to increment the sofar++ in that case (and maybe not do other logic in that case),
+> since we know at least something dropped.
+> 
+> For fq-codel, seems that XMIT_CN could mean that the attempted packet actually was queued
+> for xmit, but at least some other packets were purged.
+> 
+> Thanks,
+> Ben
+> 
 
-So it means that CRSSVE is unsupported by upper bridge. In case card
-returns CRS response to system (via bridge) that is not ready yet,
-bridge re-issue read request, and after some failures it returns to
-system all-ones to indicate failed transaction. But all-ones can be
-returned also by bridge when card does not send any response.
+This does fix the crash for me (my patch in my tree is slightly different, but same idea).
 
-So from this test we do not know what happened. It would be nice to know
-it, but such test requires to connect this card into system which
-supports CRSSVE, in which case CRS response it passed directly to OS as
-value 0xffff0001. Look at the link above where I discussed with Bjorn
-about buggy wifi cards which resets internally, for more details.
-
-But in this setup when CRSSVE is not supported, I think there is no
-other option than just adding sleep prior accessing card...
-
-For debugging such issues I got the only advice to use PCIe analyzer and
-look at what is really happening on the bus. But required equipment for
-this debugging is not cheap...
-
-> > > > 
-> > > > > Maybe the firmware actually tries to wake up,
-> > > > > encounters an error somewhere in its wakeup routines and then goes down a
-> > > > > special failure code path. That code path keeps the cards CPU so busy that
-> > > > > at some point a PCI_VENDOR_ID request times out?
-> > > > > 
-> > > > > Or well, maybe the card actually wakes up fine, but we don't receive the
-> > > > > interrupt on our end, so many possibilities...
+Thanks,
+Ben
