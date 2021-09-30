@@ -2,218 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D498841D86D
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 13:08:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 892ED41D891
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 13:22:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350325AbhI3LKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 07:10:31 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:24208 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350266AbhI3LKb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 07:10:31 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HKr7Y6Gtpz8tVp;
-        Thu, 30 Sep 2021 19:07:53 +0800 (CST)
-Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Thu, 30 Sep 2021 19:08:47 +0800
-Received: from [10.174.176.117] (10.174.176.117) by
- dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Thu, 30 Sep 2021 19:08:46 +0800
-Subject: Re: [PATCH bpf-next 5/5] selftests/bpf: test return value handling
- for struct_ops prog
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <20210928025228.88673-1-houtao1@huawei.com>
- <20210928025228.88673-6-houtao1@huawei.com>
- <CAEf4BzaE4_c7fcMCfFe7nukivVrFgpPZcbr5z-FfSa=erNKiTw@mail.gmail.com>
-From:   Hou Tao <houtao1@huawei.com>
-Message-ID: <765d949b-f19d-bac6-ca60-75237ff1989e@huawei.com>
-Date:   Thu, 30 Sep 2021 19:08:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S1350374AbhI3LYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 07:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350303AbhI3LYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 07:24:37 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00B6C06176A
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 04:22:54 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id u18so23804925lfd.12
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 04:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=M8LRQsZ0EshnHPz8PyHyiiiSfpREFwqLez3eu+ixTOk=;
+        b=CVvqm0dJKa77A8ePWIYiJOJVk/YmGjDcjiELu+DvOMSU55F4hKdMt3GY0dPDgBomUa
+         oDH/gnF9SK/nuWqDpa6rrp1uNXRdhB+j7JRRo82Vul92iN/NDfNy1rcKnHYQxz8+lwRW
+         308Ms886vDLSmHmTS8UYDAckOvFRyzRkjo8epKkK21upW8ucedqVxgehqpiz0gKxeFn7
+         THlrpPsSdOSgjR7H5YAQ8sJTouB+0ehWGUTWkZkCeSX56BtsxzteMeneGwZLqLHCQ5RW
+         jT6R2ArQizShcv5Dv0Py72hCvHlNOq1OwpXJQazh6CXDbi1ExSa+Lu+aZN/bsgnxAyYv
+         YPYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=M8LRQsZ0EshnHPz8PyHyiiiSfpREFwqLez3eu+ixTOk=;
+        b=L/JHTzYpVFfISorVXpZG1HIi/Ncr6adfQVkaCqyLi2d0kulOe3hn0ws+cQyVA7izHw
+         eEpbLrbDmvxEUMyZNj/CJN4+Cj7No11NH1f98cw6CF4LPeaydaNEViGTpHTNfg3C509i
+         ehQ66bXiqpuVrZEaQMb+dfmbdRV2qIdu5A7dgAFVyMitqUuUMprpPPCOHwuh0HdjN1O1
+         skmD/8CHT0Ju6/T9jz7qQIb5+0vk2vx8n7GlO6dagPFxrDvMFVvsjF4h2DQWQNUnKIjv
+         pVJUiGwqvflSUTLtxBYS4RF3SvZ7umwJWP1+K691GBZnnTN9Drz5gTYHPE9EIgfU6gtB
+         OBOg==
+X-Gm-Message-State: AOAM532gNmhHwHIxxLEGsxnMUcN4K5WcPqbTKRhBFHY92uZDxd3cdhd8
+        uFbV3TG78gdPFiFlaPIszRU=
+X-Google-Smtp-Source: ABdhPJxa/7oKxrCxSlC4K0i+9rgoFTFAdUszMFD5pJKTuq/Asc1EHelqQUgekovjbAaoZZrplIK2Zw==
+X-Received: by 2002:a05:651c:178e:: with SMTP id bn14mr5655164ljb.521.1633000973003;
+        Thu, 30 Sep 2021 04:22:53 -0700 (PDT)
+Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id 8sm306929ljf.39.2021.09.30.04.22.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Sep 2021 04:22:52 -0700 (PDT)
+Subject: Re: Lockup in phy_probe() for MDIO device (Broadcom's switch)
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
+        Vivek Unune <npcomplete13@gmail.com>
+References: <2b1dc053-8c9a-e3e4-b450-eecdfca3fe16@gmail.com>
+ <YVWOp/2Nj/E1dpe3@shell.armlinux.org.uk>
+ <5715f818-a279-d514-dcac-73a94c1d30ef@gmail.com>
+Message-ID: <118886b0-43c3-5211-1474-97adf006c1a3@gmail.com>
+Date:   Thu, 30 Sep 2021 13:22:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzaE4_c7fcMCfFe7nukivVrFgpPZcbr5z-FfSa=erNKiTw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <5715f818-a279-d514-dcac-73a94c1d30ef@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-Originating-IP: [10.174.176.117]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500025.china.huawei.com (7.185.36.35)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 30.09.2021 12:30, Rafał Miłecki wrote:
+> On 30.09.2021 12:17, Russell King (Oracle) wrote:
+>> On Thu, Sep 30, 2021 at 11:58:21AM +0200, Rafał Miłecki wrote:
+>>> This isn't necessarily a PHY / MDIO regression. It could be some core
+>>> change that exposed a PHY / MDIO bug.
+>>
+>> I think what's going on is that the switch device is somehow being
+>> probed by phylib. It looks to me like we don't check that the mdio
+>> device being matched in phy_bus_match() is actually a PHY (by
+>> checking whether mdiodev->flags & MDIO_DEVICE_FLAG_PHY is true
+>> before proceeding with any matching.)
+>>
+>> We do, however, check the driver side. This looks to me like a problem
+>> especially when the mdio bus can contain a mixture of PHY devices and
+>> non-PHY devices. However, I would expect this to also be blowing up in
+>> the mainline kernel as well - but it doesn't seem to.
+>>
+>> Maybe Andrew can provide a reason why this doesn't happen - maybe we've
+>> just been lucky with out-of-bounds read accesses (to the non-existent
+>> phy_device wrapped around the mdio_device?)
+> 
+> I'll see if I can use buildroot to test unmodified kernel.
 
-On 9/29/2021 7:19 AM, Andrii Nakryiko wrote:
-> On Mon, Sep 27, 2021 at 7:38 PM Hou Tao <houtao1@huawei.com> wrote:
->> Running a BPF_PROG_TYPE_STRUCT_OPS prog for dummy_st_ops::init()
->> through bpf_prog_test_run(). Three test cases are added:
->> (1) attach dummy_st_ops should fail
->> (2) function return value of bpf_dummy_ops::init() is expected
->> (3) pointer argument of bpf_dummy_ops::init() works as expected
->>
->> Signed-off-by: Hou Tao <houtao1@huawei.com>
->> ---
->>  .../selftests/bpf/prog_tests/dummy_st_ops.c   | 81 +++++++++++++++++++
->>  .../selftests/bpf/progs/dummy_st_ops.c        | 33 ++++++++
->>  2 files changed, 114 insertions(+)
->>  create mode 100644 tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
->>  create mode 100644 tools/testing/selftests/bpf/progs/dummy_st_ops.c
->>
->> diff --git a/tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c b/tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
->> new file mode 100644
->> index 000000000000..4b1b52b847e6
->> --- /dev/null
->> +++ b/tools/testing/selftests/bpf/prog_tests/dummy_st_ops.c
->> @@ -0,0 +1,81 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
->> +#include <test_progs.h>
->> +#include "dummy_st_ops.skel.h"
->> +
->> +/* Need to keep consistent with definitions in include/linux/bpf_dummy_ops.h */
->> +struct bpf_dummy_ops_state {
->> +       int val;
->> +};
->> +
->> +static void test_dummy_st_ops_attach(void)
->> +{
->> +       struct dummy_st_ops *skel;
->> +       struct bpf_link *link;
->> +
->> +       skel = dummy_st_ops__open_and_load();
->> +       if (!ASSERT_OK_PTR(skel, "dummy_st_ops_load"))
->> +               goto out;
-> no need for __destroy() as we haven't created skeleton, so this could
-> be just a return
-Will do.
->> +
->> +       link = bpf_map__attach_struct_ops(skel->maps.dummy_1);
->> +       if (!ASSERT_EQ(libbpf_get_error(link), -EOPNOTSUPP,
->> +                      "dummy_st_ops_attach"))
->> +               goto out;
-> nit: unless you expect to add something here soon, probably doing
-> ASSERT_EQ() and let it fall through to out: and destroy would be a bit
-> more readable
-Make sense. Will do.
->
->> +out:
->> +       dummy_st_ops__destroy(skel);
->> +}
->> +
->> +static void test_dummy_init_ret_value(void)
->> +{
->> +       struct dummy_st_ops *skel;
->> +       int err, fd;
->> +       __u32 duration = 0, retval = 0;
->> +
->> +       skel = dummy_st_ops__open_and_load();
->> +       if (!ASSERT_OK_PTR(skel, "dummy_st_ops_load"))
->> +               goto out;
-> same, just return is fine and no need for out: label
-OK. Will do in v2.
->> +
->> +       fd = bpf_program__fd(skel->progs.init_1);
->> +       err = bpf_prog_test_run(fd, 1, NULL, 0,
->> +                               NULL, NULL, &retval, &duration);
->> +       ASSERT_OK(err, "test_run");
->> +       ASSERT_EQ(retval, 0xf2f3f4f5, "test_ret");
->> +out:
->> +       dummy_st_ops__destroy(skel);
->> +}
->> +
->> +static void test_dummy_init_ptr_arg(void)
->> +{
->> +       struct dummy_st_ops *skel;
->> +       int err, fd;
->> +       __u32 duration = 0, retval = 0;
->> +       struct bpf_dummy_ops_state in_state, out_state;
->> +       __u32 state_size;
->> +
->> +       skel = dummy_st_ops__open_and_load();
->> +       if (!ASSERT_OK_PTR(skel, "dummy_st_ops_load"))
->> +               goto out;
-> here as well
-OK. Will do.
->
->> +
->> +       fd = bpf_program__fd(skel->progs.init_1);
->> +       memset(&in_state, 0, sizeof(in_state));
->> +       in_state.val = 0xbeef;
->> +       memset(&out_state, 0, sizeof(out_state));
->> +       err = bpf_prog_test_run(fd, 1, &in_state, sizeof(in_state),
->> +                               &out_state, &state_size, &retval, &duration);
->> +       ASSERT_OK(err, "test_run");
->> +       ASSERT_EQ(state_size, sizeof(out_state), "test_data_out");
->> +       ASSERT_EQ(out_state.val, 0x5a, "test_ptr_ret");
->> +       ASSERT_EQ(retval, in_state.val, "test_ret");
->> +out:
->> +       dummy_st_ops__destroy(skel);
->> +}
->> +
->> +void test_dummy_st_ops(void)
->> +{
->> +       if (test__start_subtest("dummy_st_ops_attach"))
->> +               test_dummy_st_ops_attach();
->> +       if (test__start_subtest("dummy_init_ret_value"))
->> +               test_dummy_init_ret_value();
->> +       if (test__start_subtest("dummy_init_ptr_arg"))
->> +               test_dummy_init_ptr_arg();
->> +}
->> diff --git a/tools/testing/selftests/bpf/progs/dummy_st_ops.c b/tools/testing/selftests/bpf/progs/dummy_st_ops.c
->> new file mode 100644
->> index 000000000000..133c328f082a
->> --- /dev/null
->> +++ b/tools/testing/selftests/bpf/progs/dummy_st_ops.c
->> @@ -0,0 +1,33 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
->> +#include <linux/bpf.h>
->> +#include <bpf/bpf_helpers.h>
->> +#include <bpf/bpf_tracing.h>
->> +
->> +struct bpf_dummy_ops_state {
->> +       int val;
->> +} __attribute__((preserve_access_index));
->> +
->> +struct bpf_dummy_ops {
->> +       int (*init)(struct bpf_dummy_ops_state *state);
->> +};
->> +
->> +char _liencse[] SEC("license") = "GPL";
-> typo: _license (but it doesn't matter to libbpf, it looks at the
-> section name only
-Will fix.
->
->> +
->> +SEC("struct_ops/init_1")
->> +int BPF_PROG(init_1, struct bpf_dummy_ops_state *state)
->> +{
->> +       int ret;
->> +
->> +       if (!state)
->> +               return 0xf2f3f4f5;
->> +
->> +       ret = state->val;
->> +       state->val = 0x5a;
->> +       return ret;
->> +}
->> +
->> +SEC(".struct_ops")
->> +struct bpf_dummy_ops dummy_1 = {
->> +       .init = (void *)init_1,
->> +};
->> --
->> 2.29.2
->>
-> .
+I've used buildroot to use unmodified 5.10.57 kernel.
 
+
+Let me start with explaining that there are 2 b53 drivers.
+
+1. OpenWrt downstream swconfig-based b53 driver
+Its b53_mdio.c registers as PHY driver by calling phy_driver_register()
+
+2. Upstream DSA-based b53 driver
+Its b53_mdio.c registers as MDIO driver by using mdio_module_driver()
+
+
+With buildroot + kernel 5.10.57 + upstream DSA-based b53 driver I can't
+see phy_probe() called for the /mdio-mux@18003000/mdio@200/switch@0 .
+I'm not sure why as I have CONFIG_B53_MDIO_DRIVER=y . Maybe it's some
+PHY device vs. MDIO device thing?
+
+I'll proceed with Russell's request for checking MDIO_DEVICE_FLAG_PHY
+now.
