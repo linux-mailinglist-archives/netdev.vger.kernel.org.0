@@ -2,141 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E3C941D26D
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 06:38:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55F5E41D29D
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 07:12:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347348AbhI3EkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 00:40:22 -0400
-Received: from mga01.intel.com ([192.55.52.88]:53099 "EHLO mga01.intel.com"
+        id S1348040AbhI3FOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 01:14:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55070 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229783AbhI3EkV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 00:40:21 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10122"; a="247634428"
-X-IronPort-AV: E=Sophos;i="5.85,335,1624345200"; 
-   d="scan'208";a="247634428"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2021 21:38:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,335,1624345200"; 
-   d="scan'208";a="479667061"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga007.fm.intel.com with ESMTP; 29 Sep 2021 21:38:16 -0700
-Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
-        by linux.intel.com (Postfix) with ESMTP id 923475807C8;
-        Wed, 29 Sep 2021 21:38:13 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+        id S236162AbhI3FOb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 01:14:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9309D6142A;
+        Thu, 30 Sep 2021 05:12:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1632978769;
+        bh=4QH/619IxiuIEopsC3sn97j1l53+ZQHiNJ5wMPJ/Qh8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=t4f5+IOoNuPKrETE3mgjPdJlnlgf4s8MGtVu4ewbBLvwS18Ny9A5rq4buMZ9VF6ZH
+         +MuYGdVUhM4YfoVYmvn/5K41HG4mMtAdJ+hR2c8CI1MRRlLyA/Yx6dyjPVGOT+qGY+
+         fZZaRCHjlIXaMwIvuG1mGEtNHpyyP5x+2dxbX899ALEaTznwN8QojvHSsx3HFk6Y17
+         6U7B3OQ4+wC02rZRxKIDdI8cXwlom6w8imd2l1sfmYcGuqIiT6ujzk7hxPKoWZgtgf
+         W5P9pSgZVoOKXNR72kFbCOkvXdcdhmsQnraKOCJnyWpGhjRewP9enDo3mSJr0Sucmp
+         5I6gSw2+FqKAg==
+From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Wong Vee Khee <veekhee@gmail.com>
-Subject: [PATCH net v3 1/1] net: pcs: xpcs: fix incorrect CL37 AN sequence
-Date:   Thu, 30 Sep 2021 12:44:21 +0800
-Message-Id: <20210930044421.1309538-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: [PATCH net] MAINTAINERS: Remove Bin Luo as his email bounces
+Date:   Thu, 30 Sep 2021 08:12:43 +0300
+Message-Id: <045a32ccf394de66b7899c8b732f44dc5f4a1154.1632978665.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to Synopsys DesignWare Cores Ethernet PCS databook, it is
-required to disable Clause 37 auto-negotiation by programming bit-12
-(AN_ENABLE) to 0 if it is already enabled, before programming various
-fields of VR_MII_AN_CTRL registers.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-After all these programming are done, it is then required to enable
-Clause 37 auto-negotiation by programming bit-12 (AN_ENABLE) to 1.
+The emails sent to luobin9@huawei.com bounce with error:
+ "Recipient address rejected: Failed recipient validation check."
 
-Fixes: b97b5331b8ab ("net: pcs: add C37 SGMII AN support for intel mGbE controller")
-Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+So let's remove his entry and change the status of hinic driver till
+someone in Huawei will step-in to maintain it again.
+
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
-v2 -> v3:
- - Added error handling after xpcs_write().
- - Added 'changed' flag.
- - Added fixes tag.
-v1 -> v2:
- - Removed use of xpcs_modify() helper function.
- - Add conditional check on inband auto-negotiation.
----
- drivers/net/pcs/pcs-xpcs.c | 41 +++++++++++++++++++++++++++++++++-----
- 1 file changed, 36 insertions(+), 5 deletions(-)
+ MAINTAINERS | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index fb0a83dc09ac..d2126f5d5016 100644
---- a/drivers/net/pcs/pcs-xpcs.c
-+++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -697,14 +697,18 @@ EXPORT_SYMBOL_GPL(xpcs_config_eee);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b585e6092a74..1e39189b4004 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8609,9 +8609,8 @@ F:	Documentation/devicetree/bindings/iio/humidity/st,hts221.yaml
+ F:	drivers/iio/humidity/hts221*
  
- static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
- {
--	int ret;
-+	int ret, reg_val;
-+	int changed = 0;
+ HUAWEI ETHERNET DRIVER
+-M:	Bin Luo <luobin9@huawei.com>
+ L:	netdev@vger.kernel.org
+-S:	Supported
++S:	Orphan
+ F:	Documentation/networking/device_drivers/ethernet/huawei/hinic.rst
+ F:	drivers/net/ethernet/huawei/hinic/
  
- 	/* For AN for C37 SGMII mode, the settings are :-
--	 * 1) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 10b (SGMII AN)
--	 * 2) VR_MII_AN_CTRL Bit(3) [TX_CONFIG] = 0b (MAC side SGMII)
-+	 * 1) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 0b (Disable SGMII AN in case
-+	      it is already enabled)
-+	 * 2) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 10b (SGMII AN)
-+	 * 3) VR_MII_AN_CTRL Bit(3) [TX_CONFIG] = 0b (MAC side SGMII)
- 	 *    DW xPCS used with DW EQoS MAC is always MAC side SGMII.
--	 * 3) VR_MII_DIG_CTRL1 Bit(9) [MAC_AUTO_SW] = 1b (Automatic
-+	 * 4) VR_MII_DIG_CTRL1 Bit(9) [MAC_AUTO_SW] = 1b (Automatic
- 	 *    speed/duplex mode change by HW after SGMII AN complete)
-+	 * 5) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 1b (Enable SGMII AN)
- 	 *
- 	 * Note: Since it is MAC side SGMII, there is no need to set
- 	 *	 SR_MII_AN_ADV. MAC side SGMII receives AN Tx Config from
-@@ -712,6 +716,19 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
- 	 *	 between PHY and Link Partner. There is also no need to
- 	 *	 trigger AN restart for MAC-side SGMII.
- 	 */
-+	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret & AN_CL37_EN) {
-+		changed = 1;
-+		reg_val = ret & ~AN_CL37_EN;
-+		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
-+				 reg_val);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_CTRL);
- 	if (ret < 0)
- 		return ret;
-@@ -736,7 +753,21 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
- 	else
- 		ret &= ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
- 
--	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
-+	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (changed) {
-+		if (phylink_autoneg_inband(mode))
-+			reg_val |= AN_CL37_EN;
-+		else
-+			reg_val &= ~AN_CL37_EN;
-+
-+		return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
-+				  reg_val);
-+	}
-+
-+	return ret;
- }
- 
- static int xpcs_config_2500basex(struct dw_xpcs *xpcs)
 -- 
-2.25.1
+2.31.1
 
