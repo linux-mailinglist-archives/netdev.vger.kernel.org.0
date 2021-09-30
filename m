@@ -2,156 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D41B41E2C0
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 22:39:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC8D941E2C2
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 22:41:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348264AbhI3UlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 16:41:14 -0400
-Received: from mxout04.lancloud.ru ([45.84.86.114]:37806 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229958AbhI3UlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 16:41:13 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 22BE920A5C5E
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC/PATCH 18/18] ravb: Add set_feature support for RZ/G2L
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "Geert Uytterhoeven" <geert+renesas@glider.be>,
-        Adam Ford <aford173@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
- <20210923140813.13541-19-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <b19b7b83-7b0b-2c48-afc2-6fbf36a5ad98@omp.ru>
-Date:   Thu, 30 Sep 2021 23:39:26 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S1348271AbhI3Umu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 16:42:50 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:36619 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229958AbhI3Umu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 16:42:50 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id BA47C5C00D8;
+        Thu, 30 Sep 2021 16:41:06 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 30 Sep 2021 16:41:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=tlu5ke
+        c8+bKTenuSnheTpyPIbGOnRIEDtzI21qiNR+Q=; b=qnMp+4e314BrW58ZdvH+Mc
+        RPOflam2LWaJS7uOhL+VYg4xY9Fo4Z8uW6qQ8EAuTSIGuyd/fz5zM8rLq/cDKASE
+        2jPh3oWZOSTUPYH5YpsyOUG1Jm2yM618aRx84FTFjeUabrp/uy/vcZE5xxwOF/G9
+        nkfdxlfpCkX8TmrYiwkDMyAgFLG2ogQsc3Oxd0wc6cvO6iY4Zc7SwE/8xBm2TDvO
+        Exbe69WRkXNJjE8Y9ZOLPGslChEgm/j1OAJf92BEu8LdXaUr6VfH3sC75zpe9y2w
+        LMfaSH59z9VKQ2Zps/d0Zs66nETLz7nOd/YPVnP0Y9UV1+8AsbypbdYeXSKlQshQ
+        ==
+X-ME-Sender: <xms:4iBWYRBeJNKGpmzVFbX8zRZXlQwUIWbeVgLsRNI0ugW2hIe7lxtZSw>
+    <xme:4iBWYfiItAS_3PEQVfnryL-dymIRLDYnjZepMw-CrPkd1ulmOVgkjBHklXMczoz50
+    2RsB4JVc0mHmFo>
+X-ME-Received: <xmr:4iBWYcl57X_G70qoBKuc951tJwFt5i6nsA5vdWRTU2ABj5MXwYo9JbrF3G9r4oEGUaBEW1k7XdC-nHjBnDRcbEUms6TWlQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudekgedgudehtdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:4iBWYbzctqvH2bQCf1XnFyNXHhbIsl5fxqZPBEzweli8ujCm500jVg>
+    <xmx:4iBWYWSowChFmZTS_sa04sJvr1HNV3px_AAVWG31UsH_SUS67Bf-Og>
+    <xmx:4iBWYeYmaOaQaC5KB12kq_K3KTc9SejFmjOP8kasp-Eq9G2gFzdI9w>
+    <xmx:4iBWYcMOYuMLo1til95ivrsCSB_9rY0kc01dUUJH2eZjodL5E8yq_Q>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 30 Sep 2021 16:41:05 -0400 (EDT)
+Date:   Thu, 30 Sep 2021 23:41:02 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, vadimp@nvidia.com, moshe@nvidia.com,
+        popadrian1996@gmail.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH ethtool-next 1/7] cmis: Fix CLEI code parsing
+Message-ID: <YVYg3rBB1/a2dlxw@shredder>
+References: <20210917144043.566049-1-idosch@idosch.org>
+ <20210917144043.566049-2-idosch@idosch.org>
+ <20210930202133.rspuswnnbnnhlgeb@lion.mk-sys.cz>
 MIME-Version: 1.0
-In-Reply-To: <20210923140813.13541-19-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210930202133.rspuswnnbnnhlgeb@lion.mk-sys.cz>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/23/21 5:08 PM, Biju Das wrote:
-
-> This patch adds set_feature support for RZ/G2L.
+On Thu, Sep 30, 2021 at 10:21:33PM +0200, Michal Kubecek wrote:
+> On Fri, Sep 17, 2021 at 05:40:37PM +0300, Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@nvidia.com>
+> > 
+> > In CMIS, unlike SFF-8636, there is no presence indication for the CLEI
+> > code (Common Language Equipment Identification) field. The field is
+> > always present, but might not be supported. In which case, "a value of
+> > all ASCII 20h (spaces) shall be entered".
+> > 
+> > Therefore, remove the erroneous check which seems to be influenced from
+> > SFF-8636 and only print the string if it is supported and has a non-zero
+> > length.
+> > 
+> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> > ---
+> >  cmis.c | 8 +++++---
+> >  cmis.h | 3 +--
+> >  2 files changed, 6 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/cmis.c b/cmis.c
+> > index 1a91e798e4b8..2a48c1a1d56a 100644
+> > --- a/cmis.c
+> > +++ b/cmis.c
+> > @@ -307,6 +307,8 @@ static void cmis_show_link_len(const __u8 *id)
+> >   */
+> >  static void cmis_show_vendor_info(const __u8 *id)
+> >  {
+> > +	const char *clei = (const char *)(id + CMIS_CLEI_START_OFFSET);
+> > +
+> >  	sff_show_ascii(id, CMIS_VENDOR_NAME_START_OFFSET,
+> >  		       CMIS_VENDOR_NAME_END_OFFSET, "Vendor name");
+> >  	cmis_show_oui(id);
+> > @@ -319,9 +321,9 @@ static void cmis_show_vendor_info(const __u8 *id)
+> >  	sff_show_ascii(id, CMIS_DATE_YEAR_OFFSET,
+> >  		       CMIS_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
+> >  
+> > -	if (id[CMIS_CLEI_PRESENT_BYTE] & CMIS_CLEI_PRESENT_MASK)
+> > -		sff_show_ascii(id, CMIS_CLEI_START_OFFSET,
+> > -			       CMIS_CLEI_END_OFFSET, "CLEI code");
+> > +	if (strlen(clei) && strcmp(clei, CMIS_CLEI_BLANK))
+> > +		sff_show_ascii(id, CMIS_CLEI_START_OFFSET, CMIS_CLEI_END_OFFSET,
+> > +			       "CLEI code");
+> >  }
+> >  
+> >  void qsfp_dd_show_all(const __u8 *id)
 > 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
->  drivers/net/ethernet/renesas/ravb.h      | 32 ++++++++++++++
->  drivers/net/ethernet/renesas/ravb_main.c | 56 +++++++++++++++++++++++-
->  2 files changed, 87 insertions(+), 1 deletion(-)
+> Is it safe to assume that the string will be always null terminated?
+
+No. You want to see strnlen() and strncmp() instead?
+
+> Looking at the code below, CMIS_CLEI_BLANK consists of 10 spaces which
+> would fill the whole block at offsets 0xBE through 0xC7 with spaces and
+> offset 0xC8 is used as CMIS_PWR_CLASS_OFFSET. Also, sff_show_ascii()
+> doesn't seem to expect a null terminated string, rather a space padded
+> one.
 > 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index d42e8ea981df..2275f27c0672 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -209,6 +209,8 @@ enum ravb_reg {
->  	CXR56	= 0x0770,	/* Documented for RZ/G2L only */
->  	MAFCR	= 0x0778,
->  	CSR0     = 0x0800,	/* Documented for RZ/G2L only */
-> +	CSR1     = 0x0804,	/* Documented for RZ/G2L only */
-> +	CSR2     = 0x0808,	/* Documented for RZ/G2L only */
+> Michal
+> 
+> 
+> > diff --git a/cmis.h b/cmis.h
+> > index 78ee1495bc33..d365252baa48 100644
+> > --- a/cmis.h
+> > +++ b/cmis.h
+> > @@ -34,10 +34,9 @@
+> >  #define CMIS_DATE_VENDOR_LOT_OFFSET		0xBC
+> >  
+> >  /* CLEI Code (Page 0) */
+> > -#define CMIS_CLEI_PRESENT_BYTE			0x02
+> > -#define CMIS_CLEI_PRESENT_MASK			0x20
+> >  #define CMIS_CLEI_START_OFFSET			0xBE
+> >  #define CMIS_CLEI_END_OFFSET			0xC7
+> > +#define CMIS_CLEI_BLANK				"          "
+> >  
+> >  /* Cable assembly length */
+> >  #define CMIS_CBL_ASM_LEN_OFFSET			0xCA
+> > -- 
+> > 2.31.1
+> > 
 
-   These are the TOE regs (CSR0 included), they only exist on RZ/G2L, no?
 
-[...]
-> @@ -978,6 +980,36 @@ enum CSR0_BIT {
->  	CSR0_RPE	= 0x00000020,
->  };
->  
-
-   *enum* CSR0_BIT should be here (as we concluded).
-
-> +enum CSR1_BIT {
-[...]
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index 72aea5875bc5..641ae5553b64 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-[...]
-> @@ -2290,7 +2308,38 @@ static void ravb_set_rx_csum(struct net_device *ndev, bool enable)
->  static int ravb_set_features_rgeth(struct net_device *ndev,
->  				   netdev_features_t features)
->  {
-> -	/* Place holder */
-> +	netdev_features_t changed = features ^ ndev->features;
-> +	unsigned int reg;
-
-   u32 reg;
-
-> +	int error;
-> +
-> +	reg = ravb_read(ndev, CSR0);
-
-   ... as this function returns u32.
-
-> +
-> +	ravb_write(ndev, reg & ~(CSR0_RPE | CSR0_TPE), CSR0);
-> +	error = ravb_wait(ndev, CSR0, CSR0_RPE | CSR0_TPE, 0);
-> +	if (error) {
-> +		ravb_write(ndev, reg, CSR0);
-> +		return error;
-> +	}
-> +
-> +	if (changed & NETIF_F_RXCSUM) {
-> +		if (features & NETIF_F_RXCSUM)
-> +			ravb_write(ndev, CSR2_ALL, CSR2);
-> +		else
-> +			ravb_write(ndev, 0, CSR2);
-> +	}
-> +
-> +	if (changed & NETIF_F_HW_CSUM) {
-> +		if (features & NETIF_F_HW_CSUM) {
-> +			ravb_write(ndev, CSR1_ALL, CSR1);
-> +			ndev->features |= NETIF_F_CSUM_MASK;
-
-   Hm, I don't understand this... it would be nice if someone knowledgeable about the offloads
-would look at this... Although, without the register documentation it's possibly vain...
-
-> +		} else {
-> +			ravb_write(ndev, 0, CSR1);
-> +		}
-> +	}
-> +	ravb_write(ndev, reg, CSR0);
-> +
-> +	ndev->features = features;
-> +
->  	return 0;
->  }
->  
-> @@ -2432,6 +2481,11 @@ static const struct ravb_hw_info rgeth_hw_info = {
->  	.set_feature = ravb_set_features_rgeth,
->  	.dmac_init = ravb_dmac_init_rgeth,
->  	.emac_init = ravb_emac_init_rgeth,
-> +	.net_hw_features = (NETIF_F_HW_CSUM | NETIF_F_RXCSUM),
-> +	.gstrings_stats = ravb_gstrings_stats_rgeth,
-> +	.gstrings_size = sizeof(ravb_gstrings_stats_rgeth),
-> +	.stats_len = ARRAY_SIZE(ravb_gstrings_stats_rgeth),
-
-    These seem unrelated, couldn't it be moved to a spearate patch?
-
-> +	.max_rx_len = RGETH_RX_BUFF_MAX + RAVB_ALIGN - 1,
-
-   This seems unrelsated and misplaced too.
-
-[...]
-
-MBR, Sergey
