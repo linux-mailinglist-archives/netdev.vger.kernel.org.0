@@ -2,82 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A56441E0B2
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 20:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91A3641E0FA
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 20:20:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353169AbhI3SMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 14:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60256 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353130AbhI3SM3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 14:12:29 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EAFC06176A
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 11:10:46 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id a11so7848728ilk.9
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 11:10:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kvNALztHaapZiHyr87gDoU7KzQF7xStUg5vzkvd2Bc8=;
-        b=YPp1rXQuSi4jyBMmY0w7DuJpuja9lWOD35RrEBGc1D0TlkkwIz8Y8UeH1LavqHrubb
-         HY43HxIstWNHHzc94og8Y4eLZibwKqEsVAgOn8EjK7lUnEkYmumizH2jquc6ex9mHtCn
-         hbW2zbpcE6rVE11E/L837TPRsHMDwh5yQbzktKXCV+qZphEX3JdyyKedfhknyu4HiVpm
-         gNmwuoBeC5Q3ILACvUMBn72NzLlZcQcq1qTx1DktbsmzIR+NQRidOcztSwED33xUcW8O
-         Ob32ed2WELWiic4TGKaqNCHlrQmqhu6oc7bh31FZIIbxqp+A/VR3IE8wtFPmiXDL+RWg
-         sq9A==
+        id S1350715AbhI3SWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 14:22:03 -0400
+Received: from mail-oi1-f176.google.com ([209.85.167.176]:42635 "EHLO
+        mail-oi1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348239AbhI3SWC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 14:22:02 -0400
+Received: by mail-oi1-f176.google.com with SMTP id x124so8407172oix.9;
+        Thu, 30 Sep 2021 11:20:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kvNALztHaapZiHyr87gDoU7KzQF7xStUg5vzkvd2Bc8=;
-        b=usNDW1cvm/m2SVvbbC93N+mALqO02vbAaoYD6XH8CgfKXBslixtWFBctacaN0+j5LS
-         Xc3L/tMPdiVvkoGRlncFblJUmxMkU++eFOPBEzjGnj0tt5EY271YhB65P7kCu4tCaEdv
-         w/lQEFHTYUAWU7ZW5/wUc8XOfeCpyTvqbCZncSw+/a9oE6eG2ksZxV6dbIBk6CeRdIRi
-         YjDPjOtXll0D3HKEWDvzqvQDd+93/u4gA/GQXOYmV4SMpiXFGR05tqYlqpSlCrQzWy77
-         A9rVDGwm7bapVIBTrSuHGUqVBgSGDGuNKesF/Ub2DjlICtiVgOEm6cFx++ZkxAmWb+6e
-         NOgg==
-X-Gm-Message-State: AOAM5327v7KwTw8jMsIRwo0SAWm9Xqvb6MbE0Ct0qfij9rEAKTaDUBJY
-        y1N6y2UC1l4hxGVtepUl+0/WrgOOlTmQTcjHX6k=
-X-Google-Smtp-Source: ABdhPJzw5hSRqXssACw+noLrlWe9kJAWI5mqYxCgcS2Puq7LfvR6cbka26nVazOqDYm2zZy9wdLBBLH6NEKUBHZE4RA=
-X-Received: by 2002:a05:6e02:8a3:: with SMTP id a3mr5193812ilt.88.1633025446115;
- Thu, 30 Sep 2021 11:10:46 -0700 (PDT)
+        bh=ef7KENLW1l1PGesfqJMrkuTOmq0xzY2aXbR1ZPKfeKo=;
+        b=xSGMF7xAyaMcnlihuCFjEglZ1OAaAs+43FO8RnEa+FXTIcFXT45nQNN1cdWlnI0GWd
+         eKrQE2Fwrnl20UsFLJGyOBJBIhcwfmETUDYqhVx+Fh03T0M/1jRpvJAbjN5ku9yTI5AF
+         lyv335JsWGjM48sKZJrUVEflwLJ5xobKZ2lIuFteifqEqpRzqgIjAkM6SvO7u26ty4YC
+         ZM0pXt7IgPfeRePrPxfCOrahV8u8w0a+R3FPK/u+17z/gLLrzgQFfbLljq6TN1gA58mU
+         gZ8AoZWpXEbEOV9T0ZSsClIfvoWi+u5CwW5Yrsk9YSQ4owCdNi4QeM3K40QAZtrlkzQN
+         RLKg==
+X-Gm-Message-State: AOAM533nDSwEYxwxMbNYz/hW1z16aF0kh1APP9h2r0O6wzBetB9e2KVr
+        6g61ekFs2DdbUDYv74BnOux3u3j5HOuEkbquzC1FZuWvOqw=
+X-Google-Smtp-Source: ABdhPJyVi3QhT6Mkd8Puepw6tOTOAjfQnSqEQnm9+cc/GmJMrXSfrSb1F04tCCjt8i30lNWilUXd9wAmy8RPIkpHreA=
+X-Received: by 2002:a05:6808:178c:: with SMTP id bg12mr537861oib.157.1633026019701;
+ Thu, 30 Sep 2021 11:20:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <CA+FuTSe-6MSpB4hwwvwPgDqHkxYJoxMZMDbOusNqiq0Gwa1eiQ@mail.gmail.com>
- <CA+FuTSdkJcj_ikNnJmGadBZ1fa7q26MZ1g3ERf8Ax+YbXvgcng@mail.gmail.com>
- <20210203052924-mutt-send-email-mst@kernel.org> <CAF=yD-J8rsr9JWdMGBSc-muFGMG2=YCWYwWOiQBQZuryioBUoA@mail.gmail.com>
- <20210203175837-mutt-send-email-mst@kernel.org> <CAEA6p_BqKECAU=C55TpJedG9gkZDakiiN27dcWOTJYH0YOFA_w@mail.gmail.com>
- <CA+FuTSf-uWyK6Jz=G67p+ep693oTczF55EUzrH9fXzBqTnoMQA@mail.gmail.com>
- <CAEA6p_DGgErG6oa1T9zJr+K6CosxoMb-TA=f2kQ_1bFdeMWAcg@mail.gmail.com>
- <20210413011508-mutt-send-email-mst@kernel.org> <CAEA6p_CCsfOrJO8CUcvmt0hg2bDE36UjJqeqKPOEBx0+ieJ2uA@mail.gmail.com>
- <20210929175118-mutt-send-email-mst@kernel.org> <CAEA6p_CQwn1BrU=t3yAmmKUgn9vWfkao_2c-FrqBk0qK0r7shQ@mail.gmail.com>
-In-Reply-To: <CAEA6p_CQwn1BrU=t3yAmmKUgn9vWfkao_2c-FrqBk0qK0r7shQ@mail.gmail.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Thu, 30 Sep 2021 11:10:33 -0700
-Message-ID: <CAA93jw4z7W6uUYKn5SdZ+Ci1tr1NrtCbhkkmua5xwfGA=V-8pQ@mail.gmail.com>
-Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
-To:     Wei Wang <weiwan@google.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Willem de Bruijn <willemb@google.com>
+References: <8e4bbd5c59de31db71f718556654c0aa077df03d.camel@linux.ibm.com>
+ <5ea40608-388e-1137-9b86-85aad1cad6f6@intel.com> <b9e461a5-75de-6f45-1709-d9573492f7ac@intel.com>
+In-Reply-To: <b9e461a5-75de-6f45-1709-d9573492f7ac@intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 30 Sep 2021 20:20:08 +0200
+Message-ID: <CAJZ5v0gpxRDt0V3Eh1_edZAudxyL3-ik4MhT7TzijTYeOd=_Vg@mail.gmail.com>
+Subject: Re: Oops in during sriov_enable with ixgbe driver
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To me, the symptoms of this problem (a packet storm) smelt like the
-lack of bql leading to very bursty tcp behavior
-and enormous tcp RTT inflation in this driver which I observed 6+ months back.
+On Thu, Sep 30, 2021 at 7:38 PM Rafael J. Wysocki
+<rafael.j.wysocki@intel.com> wrote:
+>
+> On 9/30/2021 7:31 PM, Jesse Brandeburg wrote:
+> > On 9/28/2021 4:56 AM, Niklas Schnelle wrote:
+> >> Hi Jesse, Hi Tony,
+> >>
+> >> Since v5.15-rc1 I've been having problems with enabling SR-IOV VFs on
+> >> my private workstation with an Intel 82599 NIC with the ixgbe driver. I
+> >> haven't had time to bisect or look closer but since it still happens on
+> >> v5.15-rc3 I wanted to at least check if you're aware of the problem as
+> >> I couldn't find anything on the web.
+> > We haven't heard anything of this problem.
+> >
+> >
+> >> I get below Oops when trying "echo 2 > /sys/bus/pci/.../sriov_numvfs"
+> >> and suspect that the earlier ACPI messages could have something to do
+> >> with that, absolutely not an ACPI expert though. If there is a need I
+> >> could do a bisect.
+> > Hi Niklas, thanks for the report, I added the Intel Driver's list for
+> > more exposure.
+> >
+> > I asked the developers working on that driver to take a look and they
+> > tried to reproduce, and were unable to do so. This might be related to
+> > your platform, which strongly suggests that the ACPI stuff may be related.
+> >
+> > We have tried to reproduce but everything works fine no call trace in
+> > scenario with creating VF.
+> >
+> > This is good in that it doesn't seem to be a general failure, you may
+> > want to file a kernel bugzilla (bugzilla.kernel.org) to track the issue,
+> > and I hope that @Rafael might have some insight.
+> >
+> > This issue may be related to changes in acpi_pci_find_companion,
+> > but as I say, we are not able to reproduce this.
+> >
+> > commit 59dc33252ee777e02332774fbdf3381b1d5d5f5d
+> > Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > Date:   Tue Aug 24 16:43:55 2021 +0200
+> >      PCI: VMD: ACPI: Make ACPI companion lookup work for VMD bus
+>
+> This change doesn't affect any devices beyond the ones on the VMD bus.
 
-now that it seems to be fixed (?), could you re-run the netperf 128
-stream test and share a packet capture? (try with pfifo_fast or
-fq_codel
-at the qdisc), and sch_fq as a control (which was working correctly).
+The only failing case I can see is when the device is on the VMD bus
+and its bus pointer is NULL, so the dereference in
+vmd_acpi_find_companion() crashes.
 
-thx.
+Can anything like that happen?
+
+> > At this point maybe a bisect would be helpful, since this seems to be a
+> > corner case that we used to handle but no longer do.
