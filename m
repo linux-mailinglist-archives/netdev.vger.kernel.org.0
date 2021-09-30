@@ -2,96 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12C4741D779
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 12:17:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E4FA41D782
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 12:17:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349831AbhI3KTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 06:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349640AbhI3KS5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 06:18:57 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4E1C06176A
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 03:17:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=KrqG4JFO9eCNyiMhpwZoFMVUHibPz9o1W2N9hB+Ei20=; b=qT2632OWcJhH8kWO6q7myarqw0
-        zpsjEi6QrWdNH/G7NIgqFDq+chC2m7FoAFv6IjhoN7R2h3+M/Xi2XA9GebzgEg5TAifyuDwzdgY20
-        Z+dRQWwKjz44oF39Hk0yyZ3N2XdOV2sr9vXTGSZXIiZbWe2LhQ13f6Ny5Oq4e9k62ceHIuHT+s22J
-        1OksPtXMxx2ryP5IahB7Tz+duLO72CVA2HN8/Pix7odmpt9pU1mb/L6KMMu7TO4YSY4qn+Snv7GXM
-        27TYnQFwMfNImf4xJ+zVHFrmK7w0HSHePWyh9UiBTs8gjL9Rs7ct6Oyr5/jtVUMvG+BRK+SoBVHWA
-        skf7rRhg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54854)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mVt7o-0003Cq-AU; Thu, 30 Sep 2021 11:17:12 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mVt7n-0003YS-Fg; Thu, 30 Sep 2021 11:17:11 +0100
-Date:   Thu, 30 Sep 2021 11:17:11 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
-        Vivek Unune <npcomplete13@gmail.com>
-Subject: Re: Lockup in phy_probe() for MDIO device (Broadcom's switch)
-Message-ID: <YVWOp/2Nj/E1dpe3@shell.armlinux.org.uk>
-References: <2b1dc053-8c9a-e3e4-b450-eecdfca3fe16@gmail.com>
+        id S1349874AbhI3KTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 06:19:24 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:24206 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349867AbhI3KTS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 06:19:18 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4HKq0T2YPVz8tWh;
+        Thu, 30 Sep 2021 18:16:41 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (7.185.36.35) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Thu, 30 Sep 2021 18:17:34 +0800
+Received: from [10.174.176.117] (10.174.176.117) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Thu, 30 Sep 2021 18:17:34 +0800
+Subject: Re: [PATCH bpf-next 2/5] bpf: factor out a helper to prepare
+ trampoline for struct_ops prog
+To:     Martin KaFai Lau <kafai@fb.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <20210928025228.88673-1-houtao1@huawei.com>
+ <20210928025228.88673-3-houtao1@huawei.com>
+ <20210929175620.yi4jfpllhugys6eo@kafai-mbp.dhcp.thefacebook.com>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <74247c43-39df-6872-4de6-8f4136ac37cd@huawei.com>
+Date:   Thu, 30 Sep 2021 18:17:33 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2b1dc053-8c9a-e3e4-b450-eecdfca3fe16@gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20210929175620.yi4jfpllhugys6eo@kafai-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.176.117]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 11:58:21AM +0200, Rafał Miłecki wrote:
-> This isn't necessarily a PHY / MDIO regression. It could be some core
-> change that exposed a PHY / MDIO bug.
+Hi
 
-I think what's going on is that the switch device is somehow being
-probed by phylib. It looks to me like we don't check that the mdio
-device being matched in phy_bus_match() is actually a PHY (by
-checking whether mdiodev->flags & MDIO_DEVICE_FLAG_PHY is true
-before proceeding with any matching.)
+On 9/30/2021 1:56 AM, Martin KaFai Lau wrote:
+> On Tue, Sep 28, 2021 at 10:52:25AM +0800, Hou Tao wrote:
+>> Factor out a helper bpf_prepare_st_ops_prog() to prepare trampoline
+>> for BPF_PROG_TYPE_STRUCT_OPS prog. It will be used by .test_run
+>> callback in following patch.
+> Thanks for the patches.
+Thanks for you review.
+>
+> This preparation change should be the first patch instead.
+Will do.
+>
+>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+>> index 155dfcfb8923..002bbb2c8bc7 100644
+>> --- a/include/linux/bpf.h
+>> +++ b/include/linux/bpf.h
+>> @@ -2224,4 +2224,9 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
+>>  			u32 **bin_buf, u32 num_args);
+>>  void bpf_bprintf_cleanup(void);
+>>  
+>> +int bpf_prepare_st_ops_prog(struct bpf_tramp_progs *tprogs,
+>> +			    struct bpf_prog *prog,
+>> +			    const struct btf_func_model *model,
+>> +			    void *image, void *image_end);
+> Move it under where other bpf_struct_ops_.*() resides in bpf.h.
+>
+>> +
+>>  #endif /* _LINUX_BPF_H */
+>> diff --git a/kernel/bpf/bpf_struct_ops.c b/kernel/bpf/bpf_struct_ops.c
+>> index 9abcc33f02cf..ec3c25174923 100644
+>> --- a/kernel/bpf/bpf_struct_ops.c
+>> +++ b/kernel/bpf/bpf_struct_ops.c
+>> @@ -312,6 +312,20 @@ static int check_zero_holes(const struct btf_type *t, void *data)
+>>  	return 0;
+>>  }
+>>  
+>> +int bpf_prepare_st_ops_prog(struct bpf_tramp_progs *tprogs,
+>> +			    struct bpf_prog *prog,
+>> +			    const struct btf_func_model *model,
+>> +			    void *image, void *image_end)
+> The existing struct_ops functions in the kernel now have naming like
+> bpf_struct_ops_.*().  How about renaming it to
+> bpf_struct_ops_prepare_trampoline()?
+bpf_struct_ops_prepare_trampoline() may be a little long, and it will make
+the indentations of its parameters look ugly, so how about
+bpf_struct_ops_prep_prog() ?
+>
+>> +{
+>> +	u32 flags;
+>> +
+>> +	tprogs[BPF_TRAMP_FENTRY].progs[0] = prog;
+>> +	tprogs[BPF_TRAMP_FENTRY].nr_progs = 1;
+>> +	flags = model->ret_size > 0 ? BPF_TRAMP_F_RET_FENTRY_RET : 0;
+>> +	return arch_prepare_bpf_trampoline(NULL, image, image_end,
+>> +					   model, flags, tprogs, NULL);
+>> +}
+>> +
+>>  static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
+>>  					  void *value, u64 flags)
+>>  {
+>> @@ -368,7 +382,6 @@ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
+>>  		const struct btf_type *mtype, *ptype;
+>>  		struct bpf_prog *prog;
+>>  		u32 moff;
+>> -		u32 flags;
+>>  
+>>  		moff = btf_member_bit_offset(t, member) / 8;
+>>  		ptype = btf_type_resolve_ptr(btf_vmlinux, member->type, NULL);
+>> @@ -430,14 +443,9 @@ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
+>>  			goto reset_unlock;
+>>  		}
+>>  
+>> -		tprogs[BPF_TRAMP_FENTRY].progs[0] = prog;
+>> -		tprogs[BPF_TRAMP_FENTRY].nr_progs = 1;
+>> -		flags = st_ops->func_models[i].ret_size > 0 ?
+>> -			BPF_TRAMP_F_RET_FENTRY_RET : 0;
+> This change can't apply to bpf-next now because
+> commit 356ed64991c6 ("bpf: Handle return value of BPF_PROG_TYPE_STRUCT_OPS prog")
+> is not pulled into bpf-next yet.  Please mention the dependency
+> in the cover letter if it is still the case in v2.
+Thanks for the reminder. Will do.
+>
+>> -		err = arch_prepare_bpf_trampoline(NULL, image,
+>> -						  st_map->image + PAGE_SIZE,
+>> -						  &st_ops->func_models[i],
+>> -						  flags, tprogs, NULL);
+>> +		err = bpf_prepare_st_ops_prog(tprogs, prog,
+>> +					      &st_ops->func_models[i],
+>> +					      image, st_map->image + PAGE_SIZE);
+>>  		if (err < 0)
+>>  			goto reset_unlock;
+>>  
+>> -- 
+>> 2.29.2
+>>
+> .
 
-We do, however, check the driver side. This looks to me like a problem
-especially when the mdio bus can contain a mixture of PHY devices and
-non-PHY devices. However, I would expect this to also be blowing up in
-the mainline kernel as well - but it doesn't seem to.
-
-Maybe Andrew can provide a reason why this doesn't happen - maybe we've
-just been lucky with out-of-bounds read accesses (to the non-existent
-phy_device wrapped around the mdio_device?)
-
-If my theory is correct, this patch should solve your issue:
-
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index ba5ad86ec826..dac017174ab1 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -462,7 +462,8 @@ static int phy_bus_match(struct device *dev, struct device_driver *drv)
- 	const int num_ids = ARRAY_SIZE(phydev->c45_ids.device_ids);
- 	int i;
- 
--	if (!(phydrv->mdiodrv.flags & MDIO_DEVICE_IS_PHY))
-+	if (!(phydrv->mdiodrv.flags & MDIO_DEVICE_IS_PHY) ||
-+	    !(phydev->mdio.flags & MDIO_DEVICE_FLAG_PHY))
- 		return 0;
- 
- 	if (phydrv->match_phy_device)
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
