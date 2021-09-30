@@ -2,107 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 697F941D38F
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 08:45:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D448E41D3CC
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 09:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348332AbhI3Gqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 02:46:53 -0400
-Received: from mga05.intel.com ([192.55.52.43]:15339 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236162AbhI3Gqw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 02:46:52 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10122"; a="310661916"
-X-IronPort-AV: E=Sophos;i="5.85,335,1624345200"; 
-   d="scan'208";a="310661916"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2021 23:45:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,335,1624345200"; 
-   d="scan'208";a="438747782"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga003.jf.intel.com with ESMTP; 29 Sep 2021 23:45:09 -0700
-Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
+        id S233784AbhI3HC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 03:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233661AbhI3HC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 03:02:26 -0400
+X-Greylist: delayed 482 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Sep 2021 00:00:44 PDT
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443C8C06161C;
+        Thu, 30 Sep 2021 00:00:44 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id CC44E58097E;
-        Wed, 29 Sep 2021 23:45:06 -0700 (PDT)
-Date:   Thu, 30 Sep 2021 14:45:03 +0800
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, buytenh@marvell.com,
-        afleming@freescale.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH v3 2/2] phy: mdio: fix memory leak
-Message-ID: <20210930064503.GA7992@linux.intel.com>
-References: <f12fb1faa4eccf0f355788225335eb4309ff2599.1632982651.git.paskripkin@gmail.com>
- <5745dea4e12268a3f6b0772317f1cf0f49dab958.1632982651.git.paskripkin@gmail.com>
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 86993101EA412;
+        Thu, 30 Sep 2021 08:52:38 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 5B5731FD87; Thu, 30 Sep 2021 08:52:38 +0200 (CEST)
+Date:   Thu, 30 Sep 2021 08:52:38 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org, kadlec@netfilter.org,
+        fw@strlen.de, ast@kernel.org, edumazet@google.com, tgraf@suug.ch,
+        nevola@gmail.com, john.fastabend@gmail.com, willemb@google.com
+Subject: Re: [PATCH nf-next v5 0/6] Netfilter egress hook
+Message-ID: <20210930065238.GA28709@wunner.de>
+References: <20210928095538.114207-1-pablo@netfilter.org>
+ <e4f1700c-c299-7091-1c23-60ec329a5b8d@iogearbox.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5745dea4e12268a3f6b0772317f1cf0f49dab958.1632982651.git.paskripkin@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <e4f1700c-c299-7091-1c23-60ec329a5b8d@iogearbox.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 09:19:54AM +0300, Pavel Skripkin wrote:
-> Syzbot reported memory leak in MDIO bus interface, the problem was in
-> wrong state logic.
+On Thu, Sep 30, 2021 at 08:08:53AM +0200, Daniel Borkmann wrote:
+> Hm, so in the case of SRv6 users were running into a similar issue
+> and commit 7a3f5b0de364 ("netfilter: add netfilter hooks to SRv6
+> data plane") [0] added a new hook along with a sysctl which defaults
+> the new hook to off.
 > 
-> MDIOBUS_ALLOCATED indicates 2 states:
-> 	1. Bus is only allocated
-> 	2. Bus allocated and __mdiobus_register() fails, but
-> 	   device_register() was called
+> The rationale for it was given as "the hooks are enabled via
+> nf_hooks_lwtunnel sysctl to make sure existing netfilter rulesets
+>  do not break." [0,1]
 > 
-> In case of device_register() has been called we should call put_device()
-> to correctly free the memory allocated for this device, but mdiobus_free()
-> calls just kfree(dev) in case of MDIOBUS_ALLOCATED state
-> 
-> To avoid this behaviour we need to set bus->state to MDIOBUS_UNREGISTERED
-> _before_ calling device_register(), because put_device() should be
-> called even in case of device_register() failure.
-> 
-> Link: https://lore.kernel.org/netdev/YVMRWNDZDUOvQjHL@shell.armlinux.org.uk/
-> Fixes: 46abc02175b3 ("phylib: give mdio buses a device tree presence")
-> Reported-and-tested-by: syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com
-> Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
-> 
-> Changes in v3:
-> 	s/==/=/
-> 	Added Dan's Reviewed-by tag
-> 
-> Changes in v2:
-> 	Removed new state, since MDIOBUS_UNREGISTERED can be used. Also, moved
-> 	bus->state initialization _before_ device_register() call, because
-> 	Yanfei's patch is reverted in [v2 1/2]
-> 
-> ---
->  drivers/net/phy/mdio_bus.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> index 53f034fc2ef7..a5f910d4a7be 100644
-> --- a/drivers/net/phy/mdio_bus.c
-> +++ b/drivers/net/phy/mdio_bus.c
-> @@ -534,6 +534,13 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
->  	bus->dev.groups = NULL;
->  	dev_set_name(&bus->dev, "%s", bus->id);
->  
-> +	/* We need to set state to MDIOBUS_UNREGISTERED to correctly realese
+> If the suggestion to flag the skb [2] one way or another from the
+> tc forwarding path (e.g. skb bit or per-cpu marker) is not
+> technically feasible, then why not do a sysctl toggle like in the
+> SRv6 case?
 
-Typo here. s/realese/release/
+The skb flag *is* technically feasible.  I amended the patches with
+the flag and was going to post them this week, but Pablo beat me to
+the punch and posted his alternative version, which lacks the flag
+but modularizes netfilter ingress/egress processing instead.
 
-> +	 * the device in mdiobus_free()
-> +	 *
-> +	 * State will be updated later in this function in case of success
-> +	 */
-> +	bus->state = MDIOBUS_UNREGISTERED;
-> +
->  	err = device_register(&bus->dev);
->  	if (err) {
->  		pr_err("mii_bus %s failed to register\n", bus->id);
+Honestly I think a hodge-podge of config options and sysctl toggles
+is awful and I would prefer the skb flag you suggested.  I kind of
+like your idea of considering tc and netfilter as layers.
+
+FWIW the finished patches *with* the flag are on this branch:
+https://github.com/l1k/linux/commits/nft_egress_v5
+
+Below is the "git range-diff" between Pablo's patches and mine
+(just the hunks which pertain to the skb flag, plus excerpts
+from the commit message).
+
+Would you find the patch set acceptable with this skb flag?
+
+-- >8 --
+
+    +    Alternatively or in addition to netfilter, packets can be classified
+    +    with traffic control (tc).  On ingress, packets are classified first by
+    +    tc, then by netfilter.  On egress, the order is reversed for symmetry.
+    +    Conceptually, tc and netfilter can be thought of as layers, with
+    +    netfilter layered above tc.
+     
+    +    Traffic control is capable of redirecting packets to another interface
+    +    (man 8 tc-mirred).  E.g., an ingress packet may be redirected from the
+    +    host namespace to a container via a veth connection:
+    +    tc ingress (host) -> tc egress (veth host) -> tc ingress (veth container)
+     
+    +    In this case, netfilter egress classifying is not performed when leaving
+    +    the host namespace!  That's because the packet is still on the tc layer.
+    +    If tc redirects the packet to a physical interface in the host namespace
+    +    such that it leaves the system, the packet is never subjected to
+    +    netfilter egress classifying.  That is only logical since it hasn't
+    +    passed through netfilter ingress classifying either.
+     
+    +    Packets can alternatively be redirected at the netfilter layer using
+    +    nft fwd.  Such a packet *is* subjected to netfilter egress classifying.
+    +    Internally, the skb->nf_skip_egress flag controls whether netfilter is
+    +    invoked on egress by __dev_queue_xmit().
+    +
+    +    Interaction between tc and netfilter is possible by setting and querying
+    +    skb->mark.
+     
+    @@ include/linux/netfilter_netdev.h: static inline int nf_hook_ingress(struct sk_bu
+     +static inline struct sk_buff *nf_hook_egress(struct sk_buff *skb, int *rc,
+     +					     struct net_device *dev)
+     +{
+    -+	struct nf_hook_entries *e = rcu_dereference(dev->nf_hooks_egress);
+    ++	struct nf_hook_entries *e;
+     +	struct nf_hook_state state;
+     +	int ret;
+     +
+    ++	if (skb->nf_skip_egress)
+    ++		return skb;
+    ++
+    ++	e = rcu_dereference(dev->nf_hooks_egress);
+     +	if (!e)
+     +		return skb;
+     +
+    @@ include/linux/netfilter_netdev.h: static inline int nf_hook_ingress(struct sk_bu
+     +		return NULL;
+     +	}
+     +}
+    ++
+    ++static inline void nf_skip_egress(struct sk_buff *skb, bool skip)
+    ++{
+    ++	skb->nf_skip_egress = skip;
+    ++}
+     +#else /* CONFIG_NETFILTER_EGRESS */
+     +static inline bool nf_hook_egress_active(void)
+     +{
+    @@ include/linux/netfilter_netdev.h: static inline int nf_hook_ingress(struct sk_bu
+     +{
+     +	return skb;
+     +}
+    ++
+    ++static inline void nf_skip_egress(struct sk_buff *skb, bool skip)
+    ++{
+    ++}
+     +#endif /* CONFIG_NETFILTER_EGRESS */
+     +
+      static inline void nf_hook_netdev_init(struct net_device *dev)
+    @@ include/linux/netfilter_netdev.h: static inline int nf_hook_ingress(struct sk_bu
+      
+      #endif /* _NETFILTER_NETDEV_H_ */
+     
+    + ## include/linux/skbuff.h ##
+    +@@ include/linux/skbuff.h: typedef unsigned char *sk_buff_data_t;
+    +  *	@tc_at_ingress: used within tc_classify to distinguish in/egress
+    +  *	@redirected: packet was redirected by packet classifier
+    +  *	@from_ingress: packet was redirected from the ingress path
+    ++ *	@nf_skip_egress: packet shall skip netfilter egress processing
+    +  *	@peeked: this packet has been seen already, so stats have been
+    +  *		done for it, don't do them again
+    +  *	@nf_trace: netfilter packet trace flag
+    +@@ include/linux/skbuff.h: struct sk_buff {
+    + #ifdef CONFIG_NET_REDIRECT
+    + 	__u8			from_ingress:1;
+    + #endif
+    ++#ifdef CONFIG_NETFILTER_EGRESS
+    ++	__u8			nf_skip_egress:1;
+    ++#endif
+    + #ifdef CONFIG_TLS_DEVICE
+    + 	__u8			decrypted:1;
+    + #endif
+    +
+      ## include/uapi/linux/netfilter.h ##
+     @@ include/uapi/linux/netfilter.h: enum nf_inet_hooks {
+      
+    @@ net/core/dev.c: static int __dev_queue_xmit(struct sk_buff *skb, struct net_devi
+     +			if (!skb)
+     +				goto out;
+     +		}
+    ++		nf_skip_egress(skb, true);
+      		skb = sch_handle_egress(skb, &rc, dev);
+      		if (!skb)
+      			goto out;
+    @@ net/core/dev.c: static int __dev_queue_xmit(struct sk_buff *skb, struct net_devi
+      #endif
+      	/* If device/qdisc don't need skb->dst, release it right now while
+      	 * its hot in this cpu cache.
+    +@@ net/core/dev.c: static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
+    + 	if (static_branch_unlikely(&ingress_needed_key)) {
+    + 		bool another = false;
+    + 
+    ++		nf_skip_egress(skb, true);
+    + 		skb = sch_handle_ingress(skb, &pt_prev, &ret, orig_dev,
+    + 					 &another);
+    + 		if (another)
+    +@@ net/core/dev.c: static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
+    + 		if (!skb)
+    + 			goto out;
+    + 
+    ++		nf_skip_egress(skb, false);
+    + 		if (nf_ingress(skb, &pt_prev, &ret, orig_dev) < 0)
+    + 			goto out;
+    + 	}
+
