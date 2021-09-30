@@ -2,92 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F35A41D2E0
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 07:48:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7E2A41D2EB
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 07:56:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348145AbhI3FuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 01:50:10 -0400
-Received: from verein.lst.de ([213.95.11.211]:58257 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348054AbhI3FuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 01:50:09 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 272C868AFE; Thu, 30 Sep 2021 07:48:22 +0200 (CEST)
-Date:   Thu, 30 Sep 2021 07:48:21 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        vkuznets <vkuznets@redhat.com>,
-        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "will@kernel.org" <will@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
-        "saravanand@fb.com" <saravanand@fb.com>,
-        "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "tj@kernel.org" <tj@kernel.org>,
-        "rientjes@google.com" <rientjes@google.com>
-Subject: Re: [PATCH V5 12/12] net: netvsc: Add Isolation VM support for
- netvsc driver
-Message-ID: <20210930054821.GA22332@lst.de>
-References: <20210914133916.1440931-1-ltykernel@gmail.com> <20210914133916.1440931-13-ltykernel@gmail.com> <MWHPR21MB15939A5D74CA1DF25EE816ADD7DB9@MWHPR21MB1593.namprd21.prod.outlook.com> <43e22b84-7273-4099-42ea-54b06f398650@gmail.com> <e379a60b-4d74-9167-983f-f70c96bb279e@gmail.com> <20210928053911.GA29208@lst.de> <de18b708-7252-642b-c60f-59e12ac27421@gmail.com>
+        id S1348170AbhI3F5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 01:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348054AbhI3F5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 01:57:41 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9261C06161C;
+        Wed, 29 Sep 2021 22:55:58 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id g41so20484241lfv.1;
+        Wed, 29 Sep 2021 22:55:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2qGpbnt6Ea9Mn6yWgyyxhjvadWbpeqRJ4xkhEjZ9SsE=;
+        b=YY8UpddAA8/LckCgQq+XM4SWrWfV0p/x8ju7e7m1AbQUnsMIT4b4d1xtaNskFasAVp
+         bnhuy3o53ab2V35seCuM+AdSDngA4//ULKuf7yOanPf4sgYgs+lsmbrf7OgFusBg7xqv
+         uFviLHXHlQ2rxnt5oTl8fD1HQpm+6ZbOAxnD7ru8a9FIB6VdtB50H8XTnF08dZuXSXEv
+         +GRP3Epkk45e9Mr+r81uZxv7nv3zVGLBjTRFZJ8On0Lv6B31lWQP67M6Hf2IE1Nv9cDI
+         kEupKbrYVDko9JDMN9TnVxDabeErG6bWxREfczrHgH26rTx3Sgkhpm/QECV5AOS/1fr0
+         dsGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2qGpbnt6Ea9Mn6yWgyyxhjvadWbpeqRJ4xkhEjZ9SsE=;
+        b=4VGQwv2VU4LPOpSaCyYnWAACRDGpsoMyh3nSsx3mzHtZwugE8iS+Ddk3RQRqYQ4qGu
+         +Y4eg+GQ2yb7I6aqZX1YT4CUZ5LZOjPQ4wSupYS0R8Vg1lOVwe7YOTvmrhVTLPEfF9j2
+         6LJ4BwzqO8C+XPWAYvFA/8yAweXQ3mj/nWdM//RbShG1hb2DfJQdB3KuJpwRbOI9g2VO
+         spviggpEzIWqpaWlj9+rBow6QC5bkmj40Sja6/5LmT7tnZ0htXVWBL4uxneM2DbAk1w+
+         +6buD2dJu+Hwn6JBBIt6WIWrsOql4esXUU40YGcTGmrPjL9qC3QSUDxnDHcvkiPVgjmB
+         1H1w==
+X-Gm-Message-State: AOAM530EjMAkPWWbhoucJoIsYxmLrIZETy96F5+XQv5s8yBHTTFeAz5D
+        4vR6/t27kLad/BOWayEMXj0=
+X-Google-Smtp-Source: ABdhPJzDryf+Tr4zoSfjX/tu6EcZklDOfBSc7qqJQ+JooouBdRyXaqCE+m08QTK8cqJ+mu4MRP1GWA==
+X-Received: by 2002:a05:6512:ac2:: with SMTP id n2mr4335806lfu.625.1632981357138;
+        Wed, 29 Sep 2021 22:55:57 -0700 (PDT)
+Received: from [192.168.1.11] ([217.117.245.149])
+        by smtp.gmail.com with ESMTPSA id c14sm52519lfc.49.2021.09.29.22.55.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Sep 2021 22:55:56 -0700 (PDT)
+Message-ID: <84cf4561-506b-511c-04b7-f12e411506a6@gmail.com>
+Date:   Thu, 30 Sep 2021 08:55:53 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <de18b708-7252-642b-c60f-59e12ac27421@gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH v2 2/2] phy: mdio: fix memory leak
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, buytenh@marvell.com, afleming@freescale.com,
+        dan.carpenter@oracle.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com
+References: <2324212c8d0a713eba0aae3c25635b3ca5c5243f.1632861239.git.paskripkin@gmail.com>
+ <55e9785e2ae2eae03c4af850a07e3297c5a0b784.1632861239.git.paskripkin@gmail.com>
+ <20210929164840.76afdec8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20210929164840.76afdec8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 05:23:31PM +0800, Tianyu Lan wrote:
->>
->>   - the bare memremap usage in swiotlb looks strange and I'd
->>     definitively expect a well documented wrapper.
->
-> OK. Should the wrapper in the DMA code? How about dma_map_decrypted() 
-> introduced in the V4?
+On 9/30/21 02:48, Jakub Kicinski wrote:
+> On Tue, 28 Sep 2021 23:40:15 +0300 Pavel Skripkin wrote:
+>> +	/* We need to set state to MDIOBUS_UNREGISTERED to correctly realese
+>> +	 * the device in mdiobus_free()
+>> +	 *
+>> +	 * State will be updated later in this function in case of success
+>> +	 */
+>> +	bus->state == MDIOBUS_UNREGISTERED;
+> 
+> IDK how syzbot has tested it but clearly we should blindly
+> depend on that.
+> 
+> s/==/=/
+> 
+> Compiler would have told you this.
+> 
+whooops... sorry about that. syzbot has tested v1. v2 is same, but 
+without new state (so, the logic in v1 and v2 is the same).
 
-A mentioned then the name is a pretty bad choice as it touches the dma_map*
-namespace that it is not related to.  I suspect just a little helper
-in the swiotlb code that explains how it is used might be enogh for now.
+I guess, it's copy-paste error on my side :). Will send v3 this evening
+
+
+
+With regards,
+Pavel Skripkin
