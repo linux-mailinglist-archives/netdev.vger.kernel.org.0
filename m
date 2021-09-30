@@ -2,129 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CA9D41E291
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 22:15:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79ED641E2A4
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 22:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347647AbhI3UQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 16:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346172AbhI3UQ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 16:16:57 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DDFC06176C
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 13:15:14 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id m132so15908359ybf.8
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 13:15:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Me7vW3q+q6rLanOt9S2VuLazMhOi6957p7rnr+uLOIk=;
-        b=R2FWQW45NNofSeNJjPfUjNyFFGod2AQS1fmBgJZAaTIHwyU6++wv5vI9m/2JPTk8rX
-         WugZ1flWTFEs6XzqN2uc0P9GJhlwnkMJi7s1WBXdivpSy2fMM/O+5pPhuHqBVXAPJYFl
-         loP65unlQa3cHJwxa30sHAZSocSa7V3A2W1azPmBVwsIyYnFpWOoKZ5yPA5lvIAY7F4D
-         zCfHC1tvrXhOYtLb8oeHcNk0yi5McHmEsrfMmA/omIIeXH3BjGTZpsNhuIBWsS+o383z
-         gRayEQmmxLWZktUXQsvBfi4jicmQIVD8Nwjrx3KQHpZfz9ItFqgTCFCXT53dhpq8j1dW
-         oCzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Me7vW3q+q6rLanOt9S2VuLazMhOi6957p7rnr+uLOIk=;
-        b=vMzyOXEUvuXyJ95yhe741MZ/xe5Xx8RE8CtLj9nC0TfYhef0JFqUpitk1cSxcpsvKZ
-         7NHLRXP9s4857IMRvatc7rWLj4qTxokPVkrC0tUK16cch/koOdHGC5cUlH1NgNFbu55Y
-         hVsJJW6/zd0i3ua/QrTcG6q8Y/S4j2dN3ql7nt2Q5EKirQpU+CqiNPiCCz+RMWmqYrMY
-         Cm9JJXhQxFC9szZJenJ2Eu2yRCzVrzhGUVXA7eM7/sCwl5lXwV44IV/FLGB0XDJJGtUC
-         2GChmfrOrv9u93KSV2R5BZWV8VLBBlllfxKVC00yVMqj1E+vm4pjXJEipGKgwPEK7iCF
-         bceQ==
-X-Gm-Message-State: AOAM531WKeKLYD7fOCWLsIIhNHjr4O4rL+7dPOxWmKPlHjxVPG+PuxpZ
-        NZPySZwNAjKoKwfgsgB3Tjxexo0yt5uXVMJLcBua2Q==
-X-Google-Smtp-Source: ABdhPJyz2NYXeBQwRc9kkgNI9ar1T2WvDJpjlb3i7GnpyBRAvqGnbL4ZtbOFN5XbF1suUYAXztX67XYEMBOQNXZt/yU=
-X-Received: by 2002:a25:db91:: with SMTP id g139mr1313912ybf.391.1633032913793;
- Thu, 30 Sep 2021 13:15:13 -0700 (PDT)
+        id S1347862AbhI3UXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 16:23:21 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:48556 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347353AbhI3UXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 16:23:20 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 72B1122402;
+        Thu, 30 Sep 2021 20:21:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1633033296; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9g75lAyLFkTda2g/McMXgcaclXSCYLuRfhdLWCumKkY=;
+        b=HM+Nwl06H49OgFnqiCTo5iCOqxkA4mAvz2ISiH6/rhSrPSPOy5zmf6HA20TBUY62PgWC2Y
+        hdx16umL/14tIco1SSHD7lOTX2t0FBQ/krAlhIX7rEgy1mlFnhj35cffsJz567wtT+x3un
+        RwaWhx7PeuvaBLOBG3oaClo4XOfo4Fs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1633033296;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9g75lAyLFkTda2g/McMXgcaclXSCYLuRfhdLWCumKkY=;
+        b=v+tSPTAOfpLU5b2RrylfG1dCVV6kVZmEziDBWFVNeK5bq+redCtw3ZBNKJk8BfPTip57o4
+        RRwiZQ1UalFxIvCA==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 64FCAA3B81;
+        Thu, 30 Sep 2021 20:21:36 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 4A50E603E0; Thu, 30 Sep 2021 22:21:33 +0200 (CEST)
+Date:   Thu, 30 Sep 2021 22:21:33 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, vadimp@nvidia.com, moshe@nvidia.com,
+        popadrian1996@gmail.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH ethtool-next 1/7] cmis: Fix CLEI code parsing
+Message-ID: <20210930202133.rspuswnnbnnhlgeb@lion.mk-sys.cz>
+References: <20210917144043.566049-1-idosch@idosch.org>
+ <20210917144043.566049-2-idosch@idosch.org>
 MIME-Version: 1.0
-References: <YS4rw7NQcpRmkO/K@lunn.ch> <CAGETcx_QPh=ppHzBdM2_TYZz3o+O7Ab9-JSY52Yz1--iLnykxA@mail.gmail.com>
- <YS6nxLp5TYCK+mJP@lunn.ch> <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
- <YS608fdIhH4+qJsn@lunn.ch> <20210831231804.zozyenear45ljemd@skbuf>
- <CAGETcx8MXzFhhxom3u2MXw8XA-uUtm9XGEbYNobfr+Ptq5+fVQ@mail.gmail.com>
- <20210930134343.ztq3hgianm34dvqb@skbuf> <YVXDAQc6RMvDjjFu@lunn.ch>
- <CAGETcx8emDg1rojU=_rrQJ3ezpx=wTukFdbBV-uXiu1EQ87=wQ@mail.gmail.com>
- <YVYSMMMkmHQn6n2+@lunn.ch> <CAGETcx-L7zhfd72+aRmapb=nAbbFGR5NX0aFK-V9K1WT4ubohA@mail.gmail.com>
- <cb193c3d-e75d-3b1e-f3f4-0dcd1e982407@gmail.com>
-In-Reply-To: <cb193c3d-e75d-3b1e-f3f4-0dcd1e982407@gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 30 Sep 2021 13:14:37 -0700
-Message-ID: <CAGETcx_G3haECnv-FS4L16PCmpfbCB3hhqHssT2E8d1fw5D3zw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for FWNODE_FLAG_BROKEN_PARENT
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="3ybpthoeyshqsjg3"
+Content-Disposition: inline
+In-Reply-To: <20210917144043.566049-2-idosch@idosch.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 1:06 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> On 9/30/21 12:48 PM, Saravana Kannan wrote:
-> > On Thu, Sep 30, 2021 at 12:38 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >>
-> >>> Btw, do we have non-DSA networking devices where fw_devlink=on
-> >>> delaying PHY probes is causing an issue?
-> >>
-> >> I don't know if issues have been reported, but the realtek driver has
-> >> had problems in the past when the generic driver is used. Take a look
-> >> at r8169_mdio_register(), it does something similar to DSA.
-> >
-> > Does it have the issue of having the PHY as its child too and then
-> > depending on it to bind to a driver? I can't tell because I didn't
-> > know how to find that info for a PCI device.
->
-> Yes, r8169 includes a MDIO bus controller, and the PHY is internal to
-> the Ethernet MAC. These are AFAIR the relevant changes to this discussion:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=16983507742cbcaa5592af530872a82e82fb9c51
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=11287b693d03830010356339e4ceddf47dee34fa
->
->
-> >
-> >>
-> >> What is going to make things interesting is that phy_attach_direct()
-> >> is called in two different contexts. During the MAC drivers probe, it
-> >> is O.K. to return EPROBE_DEFER, and let the MAC driver try again
-> >> later, if we know there is a specific PHY driver for it. But when
-> >> called during the MAC drivers open() op, -EPROBE_DEFER is not
-> >> allowed. What to do then is an interesting question.
-> >
-> > Yeah, basically before doing an open() it'll have to call an API to
-> > say "just bind with whatever you got". Or something along those lines.
-> > I already know how to get that to work. I'll send some RFC soonish (I
-> > hope).
->
-> I don't think this is going to scale, we have dozens and dozens of
-> drivers that connect to the PHY during ndo_open().
 
-Whichever code calls ->ndo_open() can't that mark all the PHYs that'll
-be used as "needs to be ready now"? In any case, if we can have an API
-that allows a less greedy Generic PHY binding, we could slowly
-transition drivers over or at least move them over as they hit issues
-with Gen PHY. Anyway, I'll think discussing it over code would be
-easier. I'll also have more context as I try to make changes. So,
-let's continue this on my future RFC.
+--3ybpthoeyshqsjg3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--Saravana
+On Fri, Sep 17, 2021 at 05:40:37PM +0300, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+>=20
+> In CMIS, unlike SFF-8636, there is no presence indication for the CLEI
+> code (Common Language Equipment Identification) field. The field is
+> always present, but might not be supported. In which case, "a value of
+> all ASCII 20h (spaces) shall be entered".
+>=20
+> Therefore, remove the erroneous check which seems to be influenced from
+> SFF-8636 and only print the string if it is supported and has a non-zero
+> length.
+>=20
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  cmis.c | 8 +++++---
+>  cmis.h | 3 +--
+>  2 files changed, 6 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/cmis.c b/cmis.c
+> index 1a91e798e4b8..2a48c1a1d56a 100644
+> --- a/cmis.c
+> +++ b/cmis.c
+> @@ -307,6 +307,8 @@ static void cmis_show_link_len(const __u8 *id)
+>   */
+>  static void cmis_show_vendor_info(const __u8 *id)
+>  {
+> +	const char *clei =3D (const char *)(id + CMIS_CLEI_START_OFFSET);
+> +
+>  	sff_show_ascii(id, CMIS_VENDOR_NAME_START_OFFSET,
+>  		       CMIS_VENDOR_NAME_END_OFFSET, "Vendor name");
+>  	cmis_show_oui(id);
+> @@ -319,9 +321,9 @@ static void cmis_show_vendor_info(const __u8 *id)
+>  	sff_show_ascii(id, CMIS_DATE_YEAR_OFFSET,
+>  		       CMIS_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
+> =20
+> -	if (id[CMIS_CLEI_PRESENT_BYTE] & CMIS_CLEI_PRESENT_MASK)
+> -		sff_show_ascii(id, CMIS_CLEI_START_OFFSET,
+> -			       CMIS_CLEI_END_OFFSET, "CLEI code");
+> +	if (strlen(clei) && strcmp(clei, CMIS_CLEI_BLANK))
+> +		sff_show_ascii(id, CMIS_CLEI_START_OFFSET, CMIS_CLEI_END_OFFSET,
+> +			       "CLEI code");
+>  }
+> =20
+>  void qsfp_dd_show_all(const __u8 *id)
 
-> It is not realistic
-> to audit them all, just like the opposite case where the drivers do
-> probe MDIO/PHY during their .probe() call is not realistic either.
-> --
-> Florian
+Is it safe to assume that the string will be always null terminated?
+Looking at the code below, CMIS_CLEI_BLANK consists of 10 spaces which
+would fill the whole block at offsets 0xBE through 0xC7 with spaces and
+offset 0xC8 is used as CMIS_PWR_CLASS_OFFSET. Also, sff_show_ascii()
+doesn't seem to expect a null terminated string, rather a space padded
+one.
+
+Michal
+
+
+> diff --git a/cmis.h b/cmis.h
+> index 78ee1495bc33..d365252baa48 100644
+> --- a/cmis.h
+> +++ b/cmis.h
+> @@ -34,10 +34,9 @@
+>  #define CMIS_DATE_VENDOR_LOT_OFFSET		0xBC
+> =20
+>  /* CLEI Code (Page 0) */
+> -#define CMIS_CLEI_PRESENT_BYTE			0x02
+> -#define CMIS_CLEI_PRESENT_MASK			0x20
+>  #define CMIS_CLEI_START_OFFSET			0xBE
+>  #define CMIS_CLEI_END_OFFSET			0xC7
+> +#define CMIS_CLEI_BLANK				"          "
+> =20
+>  /* Cable assembly length */
+>  #define CMIS_CBL_ASM_LEN_OFFSET			0xCA
+> --=20
+> 2.31.1
+>=20
+
+--3ybpthoeyshqsjg3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmFWHEcACgkQ538sG/LR
+dpUdJwgAuPphJeVjEXRM1tfCvISWSoYyDvgR54ZsuGIlLMtq1RPPf5ZUigAG/AeV
+ZbJmFSJ2mVF1dmMmlImpKyFM9wh/nDSaj1qZ5Ss5NG+1AIhgtAmabkV/ZzgJUJas
+XAlSPE8cm0F9403005D4h7ph195jQTWyJ3R0XAjkIH/5Y6At6OqmYnzDbeEte90E
+FxCE8aQEi8xFt6vRSKnawuQMMUxsFV5kZvp/2f+Yoz7k2vaVVcvMiQV6yxlSDMha
+Ipt3DITi7ompOlxUBgPbi67EVfZYGACWg2YIgk1Tyi21QcQ+JGvLkW1Z8aA/sGP7
+Tn5MprgphdQt4976v20hmRgE85ypqg==
+=kUtx
+-----END PGP SIGNATURE-----
+
+--3ybpthoeyshqsjg3--
