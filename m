@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9A641DA99
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:07:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 619C641DA9D
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:07:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350254AbhI3NIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 09:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44094 "EHLO
+        id S1350027AbhI3NIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 09:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351282AbhI3NHo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 09:07:44 -0400
+        with ESMTP id S1349956AbhI3NHp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 09:07:45 -0400
 Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E68C061773;
-        Thu, 30 Sep 2021 06:06:01 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id a73so3208192pge.0;
-        Thu, 30 Sep 2021 06:06:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D34AC06176A;
+        Thu, 30 Sep 2021 06:06:03 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id g184so6149033pgc.6;
+        Thu, 30 Sep 2021 06:06:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cm4jgELk6Xp/hX/9BaiZTFfLPzmGCIgbhZco7tEeQqs=;
-        b=MH6mI48j2sG8+TBin/n9o5VFA2a7oaoljutktiMjigjG6rh2zBV4QBgY1gDbnd+FUd
-         0lWVKp+vLdeit+vM1JTBfLzrp3EwV/i0gkL/v9r0GmUH0DxMk629Ph/SKNwP6BKEN9Z2
-         mvXrUaYWdcBa6V5GGMXBwac/cv12reKQWKDwvGSO2HqrVKGa3R34CHn+eG56blhE76uM
-         NilT5dXAZ4tN/5rNRSMylJ3eA2hvo63wzJCw53bRYFvc6aM5dRnV6Q/O168uDlagLSot
-         5gWKb5jLD+j19h1anNimVOd73MLB6hqwvA+5wIevrqdYPI8TBWNZQUSc7AXFD4mv5tHU
-         j2sw==
+        bh=cUs+nJBemKyqHW1/+tBNnIBzfXId6r+3EciJyXUHzJs=;
+        b=RZFctd5dW0a89iRZZHRCFcKcJLA39/1742Yt377tcbISa2AmPIQs/DjEDMQtgx9oPz
+         6su24OUlHIBQgZmzUKUjnzaA9sS0rLvEI9bcDuNnrG1wLxTmk2EcqlLQYP6kLHdqBE0g
+         YLrO1nP5qpZXh3D4HXnEW6LnXFKY0igXNlQ+gFPCEJpQkJM8U5lNfLO1Bay8BxIo1/lB
+         uTTrj54p6kP4agB/klOYj939bScMyZrJYbKKVyMteybe9G4GTPDJ/iE0fMumPjSncwXy
+         uIrQfXdd41HCzXKW7lBzdvkZoyb4tYVqL8hUeM9mZ9IYWPjM5xY0siFjoJdBI5BPkXka
+         b4eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cm4jgELk6Xp/hX/9BaiZTFfLPzmGCIgbhZco7tEeQqs=;
-        b=vS7NUPVM3AacfZWkQCj5D4cwWShb/uAY0r50TOys1l9ZJSbM+ux3X0OWk478O/fPoI
-         datu3Pgz6mDnkGV48Ckpt+NOn6CzhqhrAQSTfVj5vD0MHUVj8SfINjQz8/LtX8/Z9ivn
-         pANl13DZMTj6tpy1SxWy7aUbekb33OMDESAhtYbFqRaGWLroptYAbML3lBGK3q97YyB9
-         wPqStdTGVTzTo/9/lAjwvFziqElOig8Sb3WP1iYzFscWMpOaRCSS7qqtglrsHNHUTNqJ
-         1UrlmF9ZPSeFomyEiCoWK6pudkjimS3xXxssnkEX3bJXvm17OYGok9o5z4Rfnccb0kq8
-         CoAA==
-X-Gm-Message-State: AOAM532tSAmYEO7NnmxJ41ZKO9WeMNE0mVY1GFp2xPpf5JGeuKtjxxSJ
-        bixlV/kmG4fRO6qWHr1oql0=
-X-Google-Smtp-Source: ABdhPJwNukM0TqHOon4Icu8RwDqyCno+LHPa5gi5+tU8gD6a/aQQpItB0dTaD9KbHpa881M1EWOGIA==
-X-Received: by 2002:a62:8141:0:b0:447:96be:ac2 with SMTP id t62-20020a628141000000b0044796be0ac2mr5398039pfd.61.1633007161074;
-        Thu, 30 Sep 2021 06:06:01 -0700 (PDT)
+        bh=cUs+nJBemKyqHW1/+tBNnIBzfXId6r+3EciJyXUHzJs=;
+        b=D/cqqm7Fs71Z50WcskG/myBSriWCZbJ1jExfgD+E1g7fIlmc4faccvx6BBuwQWDwuc
+         qs1AVqNtqDXujQc+V5ptCIty2z7TNeU1HshDO1t5YI5MNJuOnY+vuuA9ZydvGeEmD8hd
+         5CaF+GQvDgZP1VKGGuhTymD79RduWAUpnQT3+elUVxUvqUZT/9AmI4ytdiCz2E30evPa
+         ejiz3WMYkPUC7va8BDRqurGnGv014qqqzFUDtnCxjMjeg6q7eVrsuYubPp44GjUZakQ4
+         FmYYF9CYYC4BZSuAjId+e80yRNGAnOtgsUZQM5U1eFJhjQyZcbRr0Ozvd7lOhREpqJU8
+         K48A==
+X-Gm-Message-State: AOAM531elyuNZHf5QV7eG9aYtSMkZlmq3uBNMBWaLjSvsgZtDT4YPRcH
+        kph9UbF83re3iRalMp0uDqc=
+X-Google-Smtp-Source: ABdhPJwywRGGJxi2nc9fSfsDiR0aFN3t3Vo1LUIV4bB1PcT2E2cayprbxTpBi9lfROrxbbqnOvUGcA==
+X-Received: by 2002:a63:4457:: with SMTP id t23mr4858978pgk.354.1633007162966;
+        Thu, 30 Sep 2021 06:06:02 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:35:a72f:86cf:2cc5:8116])
-        by smtp.gmail.com with ESMTPSA id v7sm3072134pff.195.2021.09.30.06.06.00
+        by smtp.gmail.com with ESMTPSA id v7sm3072134pff.195.2021.09.30.06.06.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Sep 2021 06:06:00 -0700 (PDT)
+        Thu, 30 Sep 2021 06:06:02 -0700 (PDT)
 From:   Tianyu Lan <ltykernel@gmail.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -64,9 +64,9 @@ Cc:     linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
         vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
         robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
         dave.hansen@intel.com
-Subject: [PATCH V6 7/8] Drivers: hv: vmbus: Add SNP support for VMbus channel initiate  message
-Date:   Thu, 30 Sep 2021 09:05:43 -0400
-Message-Id: <20210930130545.1210298-8-ltykernel@gmail.com>
+Subject: [PATCH V6 8/8] Drivers: hv : vmbus: Initialize VMbus ring buffer for Isolation VM
+Date:   Thu, 30 Sep 2021 09:05:44 -0400
+Message-Id: <20210930130545.1210298-9-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210930130545.1210298-1-ltykernel@gmail.com>
 References: <20210930130545.1210298-1-ltykernel@gmail.com>
@@ -78,184 +78,163 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-The monitor pages in the CHANNELMSG_INITIATE_CONTACT msg are shared
-with host in Isolation VM and so it's necessary to use hvcall to set
-them visible to host. In Isolation VM with AMD SEV SNP, the access
-address should be in the extra space which is above shared gpa
-boundary. So remap these pages into the extra address(pa +
-shared_gpa_boundary).
-
-Introduce monitor_pages_original[] in the struct vmbus_connection
-to store monitor page virtual address returned by hv_alloc_hyperv_
-zeroed_page() and free monitor page via monitor_pages_original in
-the vmbus_disconnect(). The monitor_pages[] is to used to access
-monitor page and it is initialized to be equal with monitor_pages_
-original. The monitor_pages[] will be overridden in the isolation VM
-with va of extra address. Introduce monitor_pages_pa[] to store
-monitor pages' physical address and use it to populate pa in the
-initiate msg.
+VMbus ring buffer are shared with host and it's need to
+be accessed via extra address space of Isolation VM with
+AMD SNP support. This patch is to map the ring buffer
+address in extra address space via vmap_pfn(). Hyperv set
+memory host visibility hvcall smears data in the ring buffer
+and so reset the ring buffer memory to zero after mapping.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
-Change since v5:
-	*  change vmbus_connection.monitor_pages_pa type from
-	   unsigned long to phys_addr_t
-	*  Plus vmbus_connection.monitor_pages_pa with ms_hyperv.
-	   shared_gpa_boundary only in the IVM with AMD SEV.
-
 Change since v4:
-	* Introduce monitor_pages_pa[] to store monitor pages' physical
-	  address and use it to populate pa in the initiate msg.
-	* Move code of mapping moniter pages in extra address into
-	  vmbus_connect().
+	* Use PFN_DOWN instead of HVPFN_DOWN in the hv_ringbuffer_init()
 
 Change since v3:
-	* Rename monitor_pages_va with monitor_pages_original
-	* free monitor page via monitor_pages_original and
-	  monitor_pages is used to access monitor page.
-
-Change since v1:
-        * Not remap monitor pages in the non-SNP isolation VM.
+	* Remove hv_ringbuffer_post_init(), merge map
+	operation for Isolation VM into hv_ringbuffer_init()
+	* Call hv_ringbuffer_init() after __vmbus_establish_gpadl().
 ---
- drivers/hv/connection.c   | 90 ++++++++++++++++++++++++++++++++++++---
- drivers/hv/hyperv_vmbus.h |  2 +
- 2 files changed, 86 insertions(+), 6 deletions(-)
+ drivers/hv/Kconfig       |  1 +
+ drivers/hv/channel.c     | 19 +++++++-------
+ drivers/hv/ring_buffer.c | 55 ++++++++++++++++++++++++++++++----------
+ 3 files changed, 53 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
-index 8820ae68f20f..7fac8d99541c 100644
---- a/drivers/hv/connection.c
-+++ b/drivers/hv/connection.c
-@@ -19,6 +19,8 @@
+diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
+index d1123ceb38f3..dd12af20e467 100644
+--- a/drivers/hv/Kconfig
++++ b/drivers/hv/Kconfig
+@@ -8,6 +8,7 @@ config HYPERV
+ 		|| (ARM64 && !CPU_BIG_ENDIAN))
+ 	select PARAVIRT
+ 	select X86_HV_CALLBACK_VECTOR if X86
++	select VMAP_PFN
+ 	help
+ 	  Select this option to run Linux as a Hyper-V client operating
+ 	  system.
+diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
+index b37ff4a39224..dc5c35210c16 100644
+--- a/drivers/hv/channel.c
++++ b/drivers/hv/channel.c
+@@ -683,15 +683,6 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
+ 	if (!newchannel->max_pkt_size)
+ 		newchannel->max_pkt_size = VMBUS_DEFAULT_MAX_PKT_SIZE;
+ 
+-	err = hv_ringbuffer_init(&newchannel->outbound, page, send_pages, 0);
+-	if (err)
+-		goto error_clean_ring;
+-
+-	err = hv_ringbuffer_init(&newchannel->inbound, &page[send_pages],
+-				 recv_pages, newchannel->max_pkt_size);
+-	if (err)
+-		goto error_clean_ring;
+-
+ 	/* Establish the gpadl for the ring buffer */
+ 	newchannel->ringbuffer_gpadlhandle.gpadl_handle = 0;
+ 
+@@ -703,6 +694,16 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
+ 	if (err)
+ 		goto error_clean_ring;
+ 
++	err = hv_ringbuffer_init(&newchannel->outbound,
++				 page, send_pages, 0);
++	if (err)
++		goto error_free_gpadl;
++
++	err = hv_ringbuffer_init(&newchannel->inbound, &page[send_pages],
++				 recv_pages, newchannel->max_pkt_size);
++	if (err)
++		goto error_free_gpadl;
++
+ 	/* Create and init the channel open message */
+ 	open_info = kzalloc(sizeof(*open_info) +
+ 			   sizeof(struct vmbus_channel_open_channel),
+diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
+index 314015d9e912..931802ae985c 100644
+--- a/drivers/hv/ring_buffer.c
++++ b/drivers/hv/ring_buffer.c
+@@ -17,6 +17,8 @@
  #include <linux/vmalloc.h>
- #include <linux/hyperv.h>
- #include <linux/export.h>
+ #include <linux/slab.h>
+ #include <linux/prefetch.h>
 +#include <linux/io.h>
-+#include <linux/set_memory.h>
- #include <asm/mshyperv.h>
++#include <asm/mshyperv.h>
  
  #include "hyperv_vmbus.h"
-@@ -102,8 +104,9 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
- 		vmbus_connection.msg_conn_id = VMBUS_MESSAGE_CONNECTION_ID;
- 	}
  
--	msg->monitor_page1 = virt_to_phys(vmbus_connection.monitor_pages[0]);
--	msg->monitor_page2 = virt_to_phys(vmbus_connection.monitor_pages[1]);
-+	msg->monitor_page1 = vmbus_connection.monitor_pages_pa[0];
-+	msg->monitor_page2 = vmbus_connection.monitor_pages_pa[1];
-+
- 	msg->target_vcpu = hv_cpu_number_to_vp_number(VMBUS_CONNECT_CPU);
+@@ -183,8 +185,10 @@ void hv_ringbuffer_pre_init(struct vmbus_channel *channel)
+ int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
+ 		       struct page *pages, u32 page_cnt, u32 max_pkt_size)
+ {
+-	int i;
+ 	struct page **pages_wraparound;
++	unsigned long *pfns_wraparound;
++	u64 pfn;
++	int i;
  
- 	/*
-@@ -216,6 +219,65 @@ int vmbus_connect(void)
- 		goto cleanup;
- 	}
+ 	BUILD_BUG_ON((sizeof(struct hv_ring_buffer) != PAGE_SIZE));
  
-+	vmbus_connection.monitor_pages_original[0]
-+		= vmbus_connection.monitor_pages[0];
-+	vmbus_connection.monitor_pages_original[1]
-+		= vmbus_connection.monitor_pages[1];
-+	vmbus_connection.monitor_pages_pa[0]
-+		= virt_to_phys(vmbus_connection.monitor_pages[0]);
-+	vmbus_connection.monitor_pages_pa[1]
-+		= virt_to_phys(vmbus_connection.monitor_pages[1]);
-+
-+	if (hv_is_isolation_supported()) {
-+		ret = set_memory_decrypted((unsigned long)
-+					   vmbus_connection.monitor_pages[0],
-+					   1);
-+		ret |= set_memory_decrypted((unsigned long)
-+					    vmbus_connection.monitor_pages[1],
-+					    1);
-+		if (ret)
-+			goto cleanup;
-+
-+		/*
-+		 * Isolation VM with AMD SNP needs to access monitor page via
-+		 * address space above shared gpa boundary.
-+		 */
-+		if (hv_isolation_type_snp()) {
-+			vmbus_connection.monitor_pages_pa[0] +=
-+				ms_hyperv.shared_gpa_boundary;
-+			vmbus_connection.monitor_pages_pa[1] +=
-+				ms_hyperv.shared_gpa_boundary;
-+
-+			vmbus_connection.monitor_pages[0]
-+				= memremap(vmbus_connection.monitor_pages_pa[0],
-+					   HV_HYP_PAGE_SIZE,
-+					   MEMREMAP_WB);
-+			if (!vmbus_connection.monitor_pages[0]) {
-+				ret = -ENOMEM;
-+				goto cleanup;
-+			}
-+
-+			vmbus_connection.monitor_pages[1]
-+				= memremap(vmbus_connection.monitor_pages_pa[1],
-+					   HV_HYP_PAGE_SIZE,
-+					   MEMREMAP_WB);
-+			if (!vmbus_connection.monitor_pages[1]) {
-+				ret = -ENOMEM;
-+				goto cleanup;
-+			}
-+		}
-+
-+		/*
-+		 * Set memory host visibility hvcall smears memory
-+		 * and so zero monitor pages here.
-+		 */
-+		memset(vmbus_connection.monitor_pages[0], 0x00,
-+		       HV_HYP_PAGE_SIZE);
-+		memset(vmbus_connection.monitor_pages[1], 0x00,
-+		       HV_HYP_PAGE_SIZE);
-+
-+	}
-+
- 	msginfo = kzalloc(sizeof(*msginfo) +
- 			  sizeof(struct vmbus_channel_initiate_contact),
- 			  GFP_KERNEL);
-@@ -303,10 +365,26 @@ void vmbus_disconnect(void)
- 		vmbus_connection.int_page = NULL;
- 	}
- 
--	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[0]);
--	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[1]);
--	vmbus_connection.monitor_pages[0] = NULL;
--	vmbus_connection.monitor_pages[1] = NULL;
-+	if (hv_is_isolation_supported()) {
-+		memunmap(vmbus_connection.monitor_pages[0]);
-+		memunmap(vmbus_connection.monitor_pages[1]);
-+
-+		set_memory_encrypted((unsigned long)
-+			vmbus_connection.monitor_pages_original[0],
-+			1);
-+		set_memory_encrypted((unsigned long)
-+			vmbus_connection.monitor_pages_original[1],
-+			1);
-+	}
-+
-+	hv_free_hyperv_page((unsigned long)
-+		vmbus_connection.monitor_pages_original[0]);
-+	hv_free_hyperv_page((unsigned long)
-+		vmbus_connection.monitor_pages_original[1]);
-+	vmbus_connection.monitor_pages_original[0] =
-+		vmbus_connection.monitor_pages[0] = NULL;
-+	vmbus_connection.monitor_pages_original[1] =
-+		vmbus_connection.monitor_pages[1] = NULL;
- }
- 
- /*
-diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
-index 42f3d9d123a1..d0a5232a1c3e 100644
---- a/drivers/hv/hyperv_vmbus.h
-+++ b/drivers/hv/hyperv_vmbus.h
-@@ -240,6 +240,8 @@ struct vmbus_connection {
- 	 * is child->parent notification
+@@ -192,23 +196,48 @@ int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
+ 	 * First page holds struct hv_ring_buffer, do wraparound mapping for
+ 	 * the rest.
  	 */
- 	struct hv_monitor_page *monitor_pages[2];
-+	void *monitor_pages_original[2];
-+	phys_addr_t monitor_pages_pa[2];
- 	struct list_head chn_msg_list;
- 	spinlock_t channelmsg_lock;
+-	pages_wraparound = kcalloc(page_cnt * 2 - 1, sizeof(struct page *),
+-				   GFP_KERNEL);
+-	if (!pages_wraparound)
+-		return -ENOMEM;
++	if (hv_isolation_type_snp()) {
++		pfn = page_to_pfn(pages) +
++			PFN_DOWN(ms_hyperv.shared_gpa_boundary);
++
++		pfns_wraparound = kcalloc(page_cnt * 2 - 1,
++			sizeof(unsigned long), GFP_KERNEL);
++		if (!pfns_wraparound)
++			return -ENOMEM;
++
++		pfns_wraparound[0] = pfn;
++		for (i = 0; i < 2 * (page_cnt - 1); i++)
++			pfns_wraparound[i + 1] = pfn + i % (page_cnt - 1) + 1;
  
+-	pages_wraparound[0] = pages;
+-	for (i = 0; i < 2 * (page_cnt - 1); i++)
+-		pages_wraparound[i + 1] = &pages[i % (page_cnt - 1) + 1];
++		ring_info->ring_buffer = (struct hv_ring_buffer *)
++			vmap_pfn(pfns_wraparound, page_cnt * 2 - 1,
++				 PAGE_KERNEL);
++		kfree(pfns_wraparound);
+ 
+-	ring_info->ring_buffer = (struct hv_ring_buffer *)
+-		vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP, PAGE_KERNEL);
++		if (!ring_info->ring_buffer)
++			return -ENOMEM;
++
++		/* Zero ring buffer after setting memory host visibility. */
++		memset(ring_info->ring_buffer, 0x00, PAGE_SIZE * page_cnt);
++	} else {
++		pages_wraparound = kcalloc(page_cnt * 2 - 1,
++					   sizeof(struct page *),
++					   GFP_KERNEL);
++
++		pages_wraparound[0] = pages;
++		for (i = 0; i < 2 * (page_cnt - 1); i++)
++			pages_wraparound[i + 1] =
++				&pages[i % (page_cnt - 1) + 1];
+ 
+-	kfree(pages_wraparound);
++		ring_info->ring_buffer = (struct hv_ring_buffer *)
++			vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP,
++				PAGE_KERNEL);
+ 
++		kfree(pages_wraparound);
++		if (!ring_info->ring_buffer)
++			return -ENOMEM;
++	}
+ 
+-	if (!ring_info->ring_buffer)
+-		return -ENOMEM;
+ 
+ 	ring_info->ring_buffer->read_index =
+ 		ring_info->ring_buffer->write_index = 0;
 -- 
 2.25.1
 
