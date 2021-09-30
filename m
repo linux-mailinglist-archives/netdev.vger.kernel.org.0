@@ -2,115 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE67F41DBCB
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 16:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B24E41DC00
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 16:07:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351642AbhI3OC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 10:02:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41130 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351630AbhI3OCZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 10:02:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GqfIQMoOfvYuD6pFZH47BEA82MZMbwCc2wxffNr631k=; b=DqG3RCLA4PmCZb8wRSE56KUqb5
-        GpG5tzQjKiJKwKG+NmKP0uD/PpN3TIHtYdxXZy7TSoK0GfZotKPiPWXGj6AVRty+1jgm1fb0/GHXL
-        YETdopjEfvdjghnxucTDs9RdBHikKwa4aBrdX7HGl7EZZBAGybSD0k2sC2+1NdvAu7WQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mVwbx-008xOn-DF; Thu, 30 Sep 2021 16:00:33 +0200
-Date:   Thu, 30 Sep 2021 16:00:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Saravana Kannan <saravanak@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
-        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
- FWNODE_FLAG_BROKEN_PARENT
-Message-ID: <YVXDAQc6RMvDjjFu@lunn.ch>
-References: <YSpr/BOZj2PKoC8B@lunn.ch>
- <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
- <YS4rw7NQcpRmkO/K@lunn.ch>
- <CAGETcx_QPh=ppHzBdM2_TYZz3o+O7Ab9-JSY52Yz1--iLnykxA@mail.gmail.com>
- <YS6nxLp5TYCK+mJP@lunn.ch>
- <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
- <YS608fdIhH4+qJsn@lunn.ch>
- <20210831231804.zozyenear45ljemd@skbuf>
- <CAGETcx8MXzFhhxom3u2MXw8XA-uUtm9XGEbYNobfr+Ptq5+fVQ@mail.gmail.com>
- <20210930134343.ztq3hgianm34dvqb@skbuf>
+        id S1351777AbhI3OJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 10:09:06 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:50390 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351669AbhI3OJF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 10:09:05 -0400
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1633010842;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=IyrJmCu4eyZQOsViNW5NAFasbLvR7GyoPKIT5sQFDmc=;
+        b=G4iMSzg1dC4/NYjfjfq6v9nSYh3KMTMxB1ItgZAGBVk7bVCx2nHxNdlBDa7gSL+VUc9FHY
+        x177GYvSXVLXjoa4RZ3LYblskOqhaiMzBLoHfNqzjJ5ove0n0bbRYX9XefNWO5YbYU61tW
+        yOxvQD873WOO67GKOeYrRJ1z86qFWuRNl/hE+ro7poo6+w/K2aWdbrNHoIE3Cxcurk4U3x
+        ioxeswCvxmcFQC9aP10bjEL2LNSB8/5U4pWy99+qNAr065qNBg3943I+5OkjjuPPHU9CVb
+        /IqSSaARF3sAXJdRjSEObelX0tDHPwXUXk+I5C1voHeWjr8r3apUodFXS/gVXA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1633010842;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=IyrJmCu4eyZQOsViNW5NAFasbLvR7GyoPKIT5sQFDmc=;
+        b=UYqWDFCFbK5h07G8dyDHF4UJEMOC531yauPYAliwBIDZa0GOrD279WBo0Vucg1mguFQAbK
+        V8jz11H9kuZHpeBg==
+To:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH net-next v2] ixgbe: Consider xsk pool's frame size for MTU size
+Date:   Thu, 30 Sep 2021 16:06:51 +0200
+Message-Id: <20210930140651.2249972-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210930134343.ztq3hgianm34dvqb@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Andrew is testing with arch/arm/boot/dts/vf610-zii-dev-rev-b.dts.
-> 
-> Graphically it looks like this:
+The driver has to a ensure that a network packet is not using more than
+one page for its data if a XDP program is used.
+This results in an upper limit of 1500 bytes. This can be increased a
+little if the MTU was programmed to 1514..3072 bytes before loading the
+XDP program. By setting this increased MTU size the driver will set the
+__IXGBE_RX_3K_BUFFER flag which in turn will allow to use 3KiB as the
+upper limit.
+This looks like a hack and the upper limit is could increased further.
+If the user configured a memory pool then PAGE_SIZE is used as BSIZEPKT
+and RLPML is set to pool's memory size as is the card's maximum frame
+size.
+The result is that a MTU of 3520 bytes can be programmed and every
+packet is stored a single page.
 
-Nice ASCII art :-)
+If a RX ring has a pool assigned use its size while comparing for the
+maximal MTU size.
 
-This shows the flow of Ethernet frames thought the switch
-cluster. What is missing, and causing fw_devlink problems is the MDIO
-bus master for the PHYs, and the interrupt control where PHY
-interrupts are stored, and the linking from the PHY to the interrupt
-controller. Physically all these parts are inside the Ethernet switch
-package. But Linux models them as separate blocks. This is because in
-the general case, they are all discrete blocks. You have a MAC chip,
-and a PHY chip, and the PHY interrupt output it connected to a SoC
-GPIO.
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+v1=E2=80=A6v2: Remove RFC. Repost of
+	https://lore.kernel.org/r/20210622162616.eadk2u5hmf4ru5jd@linutronix.de
 
-> 
->  +-----------------------------+
->  |          VF610 SoC          |
->  |          +--------+         |
->  |          |  fec1  |         |
->  +----------+--------+---------+
->                 | DSA master
->                 |
->                 | ethernet = <&fec1>;
->  +--------+----------+---------------------------+
->  |        |  port@6  |                           |
->  |        +----------+                           |
->  |        | CPU port |     dsa,member = <0 0>;   |
->  |        +----------+      -> tree 0, switch 0  |
->  |        |   cpu    |                           |
->  |        +----------+                           |
->  |                                               |
->  |            switch0                            |
->  |                                               |
->  +-----------+-----------+-----------+-----------+
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 21 +++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-Inside the block above, is the interrupt controller and the MDIO bus
-master.
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/et=
+hernet/intel/ixgbe/ixgbe_main.c
+index 24e06ba6f5e93..ed451f32e1980 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -6722,6 +6722,23 @@ static void ixgbe_free_all_rx_resources(struct ixgbe=
+_adapter *adapter)
+ 			ixgbe_free_rx_resources(adapter->rx_ring[i]);
+ }
+=20
++static int ixgbe_validate_frame_size(unsigned int frame_size,
++				     struct ixgbe_ring *ring)
++{
++	struct xsk_buff_pool *xsk_pool;
++	unsigned int buf_len;
++
++	xsk_pool =3D ring->xsk_pool;
++	if (xsk_pool)
++		buf_len =3D xsk_pool_get_rx_frame_size(xsk_pool);
++	else
++		buf_len =3D ixgbe_rx_bufsz(ring);
++
++	if (frame_size > buf_len)
++		return -EINVAL;
++	return 0;
++}
++
+ /**
+  * ixgbe_change_mtu - Change the Maximum Transfer Unit
+  * @netdev: network interface device structure
+@@ -6741,7 +6758,7 @@ static int ixgbe_change_mtu(struct net_device *netdev=
+, int new_mtu)
+ 		for (i =3D 0; i < adapter->num_rx_queues; i++) {
+ 			struct ixgbe_ring *ring =3D adapter->rx_ring[i];
+=20
+-			if (new_frame_size > ixgbe_rx_bufsz(ring)) {
++			if (ixgbe_validate_frame_size(new_frame_size, ring)) {
+ 				e_warn(probe, "Requested MTU size is not supported with XDP\n");
+ 				return -EINVAL;
+ 			}
+@@ -10126,7 +10143,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, =
+struct bpf_prog *prog)
+ 		if (ring_is_rsc_enabled(ring))
+ 			return -EINVAL;
+=20
+-		if (frame_size > ixgbe_rx_bufsz(ring))
++		if (ixgbe_validate_frame_size(frame_size, ring))
+ 			return -EINVAL;
+ 	}
+=20
+--=20
+2.33.0
 
-
->  |   port@0  |   port@1  |   port@2  |   port@5  |
->  +-----------+-----------+-----------+-----------+
->  |switch0phy0|switch0phy1|switch0phy2|   no PHY  |
->  +-----------+-----------+-----------+-----------+
-
-The control path for these PHYs is over the MDIO bus. They are probed
-via the control path bus. These PHYs also have an interrupt output,
-which is wired to the interrupt controller above.
-
-
->  | user port | user port | user port | DSA port  |
->  +-----------+-----------+-----------+-----------+
->  |    lan0   |    lan1   |    lan2   |    dsa    |
->  +-----------+-----------+-----------+-----------+
-
-   Andrew
