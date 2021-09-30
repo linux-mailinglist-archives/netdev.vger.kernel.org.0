@@ -2,122 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88EA841D8E5
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 13:34:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B59841D8F0
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 13:39:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350574AbhI3LgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 07:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
+        id S1350525AbhI3LlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 07:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350541AbhI3Lfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 07:35:52 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685ACC06176C
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 04:34:10 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id d26so9496291wrb.6
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 04:34:10 -0700 (PDT)
+        with ESMTP id S1350447AbhI3LlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 07:41:07 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60890C06176A
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 04:39:25 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id b26so21118420edt.0
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 04:39:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6qPlM6MAUchBkbCWCD/H91DQxecPf+FzubhRu6ucuSs=;
-        b=ngoQMemrzIewdd3+IzesJcp06Wm6Qo2mJJj4JtXI83Ie4+j3CnMKPemhFtRk370aYB
-         At51Lvv1n7GMQVGDu8x4ocfwd+TfhooeLe7QrX1VUp5eM4Fzx+FkhpWdRY4ExI/WG8tw
-         3hiVBKB/xefgKpOMhL3Gp6C5Y3nkmm0sjKa5FSChj/n3dHZzddS/xRepLtRVPY6vfwOr
-         3f1p5WcFy/qrHKBumoB/AOJ9QSaq0BUPqlau6XaA4odR9Hy6knvewR4kvf2HJdDC0AwE
-         5SJZP4CZdhAvKwAdIE4ONcbfE7U87ejPTr30jDBL69v1VROCmNX+/eFitdRfepsF5x3C
-         DmEQ==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KIveXak6Vojd3sokG7dlyIU3QoU8hE8FWBUOhGDGfeI=;
+        b=6758ujj/xkUJlRKM/gv5jB4WFM24hg6EH55anzQh22hmdx+lue08kzniTNCCUr8xp7
+         bQwU8vryKqX5/UZuO5/7z37M+5ExXFWQrh8ILEyQ3cYZfXn6Ui68bAwkDv4utS29AOz5
+         cp66TosLvxcfwQ2NH+Ij4dHjV1FK0umXii0jWw9Gs5CqFJ7P22N+afnrpza+5JzNpOAL
+         ledDS7pQHtSgZyu9NdHGo/8rKrKbnLzjSzXY+X4id7jJ3Or06rYWxP0FOhW4jhCvmmLD
+         PZLNpxVLUaaHtqzkbrZQWg5HBqJ/UHdTGBlo0JnsxTMwAyErlZ6vNsr2pjdm4d62lLvo
+         F7Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6qPlM6MAUchBkbCWCD/H91DQxecPf+FzubhRu6ucuSs=;
-        b=FkeEoKreW1QbhqylvnZ2WbWd6mlZnSKofFBP4XEYAGi7xzQcjMGWkTUU3iJFCqtyQi
-         6DOZ3MxalV3ITS9i0AjYe1fYR8F44s2Ez5VWHz1HprjQc/F6kdR3Yb5ARMgFpAtNyYs/
-         xkL1GaCRSXSP1WIwRvb26qA2nnTYwmrtj+AYP0Uzzt1LaQPM0dh+bCfCCgtPG5tWdzZ3
-         02S1wfcl8w//Xr+soq6NhoV8BdlK8pG1P9VHL4uL1eJ8aHbl2jHEkyZ6JrEAA9bt0m5c
-         0XoSlYij67LCPNjCLZmPRGrVPz3q5s1oS7hbJerOy1hBNsk4xXpzekQikzyNJam3z2IS
-         jUJg==
-X-Gm-Message-State: AOAM5305cJbVVUevTRvudAuetjkX246vJ/oI12llDmHYDqvL+50mERTe
-        jopMlHk0t3/hLanwiMHPt0nsOw==
-X-Google-Smtp-Source: ABdhPJz9dIovrgp2dDGP6xv6Y83kaTlcPNC+pb+jjtkJNXRphLp/ODWzSocZaAvxA9DAFqQlXgEDww==
-X-Received: by 2002:a5d:4a46:: with SMTP id v6mr5553856wrs.262.1633001649001;
-        Thu, 30 Sep 2021 04:34:09 -0700 (PDT)
-Received: from localhost.localdomain ([149.86.91.95])
-        by smtp.gmail.com with ESMTPSA id v10sm2904660wrm.71.2021.09.30.04.34.08
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KIveXak6Vojd3sokG7dlyIU3QoU8hE8FWBUOhGDGfeI=;
+        b=vOm92Uk8RmHE3w+EbNjg3VOxxYNiAndQog76PED31T/yezVycMMpQEgB+0ZDzNMHRC
+         sEL8/CYUSPsfCuDVigVlXGUePED5qu3ubtJkgIrkl9MkUxvSOJUjQeBBQp4TBbvx1VlA
+         quHW0qzOIHy3GKpmraalqosiEHXHuJDPNkA2QksQuQeWMwbaGu/uqESkn8cs6aVjTTf2
+         zr/NJzyfC9EiSs+PCWR33HIJ4dEoZOYkVkHtt5Lzl/iFqHEE1IiBIklXSUaZdrDtGoY1
+         jzB0sjp2IG7/5AEyYh1w4yftoQNRSfKJQx7BibrojSpiL+pmHbz6ggzgIRDA7upoy5RH
+         AVZw==
+X-Gm-Message-State: AOAM532bnf0kloUj/rMNsMORxH98Ymz6WV40VFHWIltock4KamXLQRBb
+        lvutEPA60YML+PmLmMChIxZEm/wUiO8/PF/k
+X-Google-Smtp-Source: ABdhPJwwBHmYlwjqg8bVLV0h6zpNhXnAx47Z8yaUCvi5UcJZCrETgRI8J1TqBlLpErcDs1LDOw8Kig==
+X-Received: by 2002:aa7:c2c7:: with SMTP id m7mr1260759edp.339.1633001963692;
+        Thu, 30 Sep 2021 04:39:23 -0700 (PDT)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id b27sm1277704ejq.34.2021.09.30.04.39.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Sep 2021 04:34:08 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next 9/9] selftests/bpf: better clean up for runqslower in test_bpftool_build.sh
-Date:   Thu, 30 Sep 2021 12:33:06 +0100
-Message-Id: <20210930113306.14950-10-quentin@isovalent.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210930113306.14950-1-quentin@isovalent.com>
-References: <20210930113306.14950-1-quentin@isovalent.com>
+        Thu, 30 Sep 2021 04:39:23 -0700 (PDT)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, donaldsharp72@gmail.com, dsahern@gmail.com,
+        idosch@idosch.org, Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH iproute2-next 00/12] ip: nexthop: cache nexthops and print routes' nh info
+Date:   Thu, 30 Sep 2021 14:38:32 +0300
+Message-Id: <20210930113844.1829373-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The script test_bpftool_build.sh attempts to build bpftool in the
-various supported ways, to make sure nothing breaks.
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-One of those ways is to run "make tools/bpf" from the root of the kernel
-repository. This command builds bpftool, along with the other tools
-under tools/bpf, and runqslower in particular. After running the
-command and upon a successful bpftool build, the script attempts to
-cleanup the generated objects. However, after building with this target
-and in the case of runqslower, the files are not cleaned up as expected.
+Hi,
+This set tries to help with an old ask that we've had for some time
+which is to print nexthop information while monitoring or dumping routes.
+The core problem is that people cannot follow nexthop changes while
+monitoring route changes, by the time they check the nexthop it could be
+deleted or updated to something else. In order to help them out I've
+added a nexthop cache which is populated (only used if -d / show_details
+is specified) while decoding routes and kept up to date while monitoring.
+The nexthop information is printed on its own line starting with the
+"nh_info" attribute and its embedded inside it if printing JSON. To
+cache the nexthop entries I parse them into structures, in order to
+reuse most of the code the print helpers have been altered so they rely
+on prepared structures. Nexthops are now always parsed into a structure,
+even if they won't be cached, that structure is later used to print the
+nexthop and destroyed if not going to be cached. New nexthops (not found
+in the cache) are retrieved from the kernel using a private netlink
+socket so they don't disrupt an ongoing dump, similar to how interfaces
+are retrieved and cached.
 
-This is because the "tools/bpf" target sets $(OUTPUT) to
-.../tools/bpf/runqslower/ when building the tool, causing the object
-files to be placed directly under the runqslower directory. But when
-running "cd tools/bpf; make clean", the value for $(OUTPUT) is set to
-".output" (relative to the runqslower directory) by runqslower's
-Makefile, and this is where the Makefile looks for files to clean up.
+I have tested the set with the kernel forwarding selftests and also by
+stressing it with nexthop create/update/delete in loops while monitoring.
 
-We cannot easily fix in the root Makefile (where "tools/bpf" is defined)
-or in tools/scripts/Makefile.include (setting $(OUTPUT)), where changing
-the way the output variables are passed would likely have consequences
-elsewhere. We could change runqslower's Makefile to build in the
-repository instead of in a dedicated ".output/", but doing so just to
-accommodate a test script doesn't sound great. Instead, let's just make
-sure that we clean up runqslower properly by adding the correct command
-to the script.
+Comments are very welcome as usual. :)
 
-This will attempt to clean runqslower twice: the first try with command
-"cd tools/bpf; make clean" will search for tools/bpf/runqslower/.output
-and fail to clean it (but will still clean the other tools, in
-particular bpftool), the second one (added in this commit) sets the
-$(OUTPUT) variable like for building with the "tool/bpf" target and
-should succeed.
+Changes since RFC:
+ - reordered parse/print splits, in order to do that I have to parse
+   resilient groups first, then add nh entry parsing so code has been
+   reordered as well and patch order has changed, but there have been
+   no functional changes (as before refactoring of old code is done in
+   the first 8 patches and then patches 9-12 add the new cache and use it)
+ - re-run all tests above
 
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- tools/testing/selftests/bpf/test_bpftool_build.sh | 4 ++++
- 1 file changed, 4 insertions(+)
+Patch breakdown:
+Patches 1-2: update current route helpers to take parsed arguments so we
+             can directly pass them from the nh_entry structure later
+Patch     3: adds new nha_res_grp structure which describes a resilient
+             nexhtop group
+Patch     4: splits print_nh_res_group into a parse and print parts
+             which use the new nha_res_grp structure
+Patch     5: adds new nh_entry structure which describes a nexthop
+Patch     6: factors out print_nexthop's attribute parsing into nh_entry
+             structure used before printing
+Patch     7: factors out print_nexthop's nh_entry structure printing
+Patch     8: factors out ipnh_get's rtnl talk part and allows to use a
+             different rt handle for the communication
+Patch     9: adds nexthop cache and helpers to manage it, it uses the
+             new __ipnh_get to retrieve nexthops
+Patch    10: adds a new helper print_cache_nexthop_id that prints nexthop
+             information from its id, if the nexthop is not found in the
+             cache it fetches it
+Patch    11: the new print_cache_nexthop_id helper is used when printing
+             routes with show_details (-d) to output detailed nexthop
+             information, the format after nh_info is the same as
+             ip nexthop show
+Patch    12: changes print_nexthop into print_cache_nexthop which always
+             outputs the nexthop information and can also update the cache
+             (based on process_cache argument), it's used to keep the
+             cache up to date while monitoring
 
-diff --git a/tools/testing/selftests/bpf/test_bpftool_build.sh b/tools/testing/selftests/bpf/test_bpftool_build.sh
-index b03a87571592..1453a53ed547 100755
---- a/tools/testing/selftests/bpf/test_bpftool_build.sh
-+++ b/tools/testing/selftests/bpf/test_bpftool_build.sh
-@@ -90,6 +90,10 @@ echo -e "... through kbuild\n"
- 
- if [ -f ".config" ] ; then
- 	make_and_clean tools/bpf
-+	## "make tools/bpf" sets $(OUTPUT) to ...tools/bpf/runqslower for
-+	## runqslower, but the default (used for the "clean" target) is .output.
-+	## Let's make sure we clean runqslower's directory properly.
-+	make -C tools/bpf/runqslower OUTPUT=${KDIR_ROOT_DIR}/tools/bpf/runqslower/ clean
- 
- 	## $OUTPUT is overwritten in kbuild Makefile, and thus cannot be passed
- 	## down from toplevel Makefile to bpftool's Makefile.
+Example outputs (monitor):
+[NEXTHOP]id 101 via 169.254.2.22 dev veth2 scope link proto unspec 
+[NEXTHOP]id 102 via 169.254.3.23 dev veth4 scope link proto unspec 
+[NEXTHOP]id 103 group 101/102 type resilient buckets 512 idle_timer 0 unbalanced_timer 0 unbalanced_time 0 scope global proto unspec 
+[ROUTE]unicast 192.0.2.0/24 nhid 203 table 4 proto boot scope global 
+	nh_info id 203 group 201/202 type resilient buckets 512 idle_timer 0 unbalanced_timer 0 unbalanced_time 0 scope global proto unspec 
+	nexthop via 169.254.2.12 dev veth3 weight 1 
+	nexthop via 169.254.3.13 dev veth5 weight 1 
+
+[NEXTHOP]id 204 via fe80:2::12 dev veth3 scope link proto unspec 
+[NEXTHOP]id 205 via fe80:3::13 dev veth5 scope link proto unspec 
+[NEXTHOP]id 206 group 204/205 type resilient buckets 512 idle_timer 0 unbalanced_timer 0 unbalanced_time 0 scope global proto unspec 
+[ROUTE]unicast 2001:db8:1::/64 nhid 206 table 4 proto boot scope global metric 1024 pref medium
+	nh_info id 206 group 204/205 type resilient buckets 512 idle_timer 0 unbalanced_timer 0 unbalanced_time 0 scope global proto unspec 
+	nexthop via fe80:2::12 dev veth3 weight 1 
+	nexthop via fe80:3::13 dev veth5 weight 1 
+
+[NEXTHOP]id 2  encap mpls  200/300 via 10.1.1.1 dev ens20 scope link proto unspec onlink 
+[ROUTE]unicast 2.3.4.10 nhid 2 table main proto boot scope global 
+	nh_info id 2  encap mpls  200/300 via 10.1.1.1 dev ens20 scope link proto unspec onlink 
+
+JSON:
+ {
+        "type": "unicast",
+        "dst": "198.51.100.0/24",
+        "nhid": 103,
+        "table": "3",
+        "protocol": "boot",
+        "scope": "global",
+        "flags": [ ],
+        "nh_info": {
+            "id": 103,
+            "group": [ {
+                    "id": 101,
+                    "weight": 11
+                },{
+                    "id": 102,
+                    "weight": 45
+                } ],
+            "type": "resilient",
+            "resilient_args": {
+                "buckets": 512,
+                "idle_timer": 0,
+                "unbalanced_timer": 0,
+                "unbalanced_time": 0
+            },
+            "scope": "global",
+            "protocol": "unspec",
+            "flags": [ ]
+        },
+        "nexthops": [ {
+                "gateway": "169.254.2.22",
+                "dev": "veth2",
+                "weight": 11,
+                "flags": [ ]
+            },{
+                "gateway": "169.254.3.23",
+                "dev": "veth4",
+                "weight": 45,
+                "flags": [ ]
+            } ]
+  }
+
+Thank you,
+ Nik
+
+
+Nikolay Aleksandrov (12):
+  ip: print_rta_if takes ifindex as device argument instead of attribute
+  ip: export print_rta_gateway version which outputs prepared gateway
+    string
+  ip: nexthop: add resilient group structure
+  ip: nexthop: split print_nh_res_group into parse and print parts
+  ip: nexthop: add nh entry structure
+  ip: nexthop: parse attributes into nh entry structure before printing
+  ip: nexthop: factor out print_nexthop's nh entry printing
+  ip: nexthop: factor out ipnh_get_id rtnl talk into a helper
+  ip: nexthop: add cache helpers
+  ip: nexthop: add a helper which retrieves and prints cached nh entry
+  ip: route: print and cache detailed nexthop information when requested
+  ip: nexthop: add print_cache_nexthop which prints and manages the nh
+    cache
+
+ ip/ip_common.h |   4 +-
+ ip/ipmonitor.c |   3 +-
+ ip/ipnexthop.c | 459 +++++++++++++++++++++++++++++++++++++++----------
+ ip/iproute.c   |  32 ++--
+ ip/nh_common.h |  53 ++++++
+ 5 files changed, 448 insertions(+), 103 deletions(-)
+ create mode 100644 ip/nh_common.h
+
 -- 
-2.30.2
+2.31.1
 
