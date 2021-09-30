@@ -2,239 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 619C641DA9D
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:07:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED0EE41DAB1
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:08:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350027AbhI3NIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 09:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
+        id S1350257AbhI3NKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 09:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349956AbhI3NHp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 09:07:45 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D34AC06176A;
-        Thu, 30 Sep 2021 06:06:03 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id g184so6149033pgc.6;
-        Thu, 30 Sep 2021 06:06:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cUs+nJBemKyqHW1/+tBNnIBzfXId6r+3EciJyXUHzJs=;
-        b=RZFctd5dW0a89iRZZHRCFcKcJLA39/1742Yt377tcbISa2AmPIQs/DjEDMQtgx9oPz
-         6su24OUlHIBQgZmzUKUjnzaA9sS0rLvEI9bcDuNnrG1wLxTmk2EcqlLQYP6kLHdqBE0g
-         YLrO1nP5qpZXh3D4HXnEW6LnXFKY0igXNlQ+gFPCEJpQkJM8U5lNfLO1Bay8BxIo1/lB
-         uTTrj54p6kP4agB/klOYj939bScMyZrJYbKKVyMteybe9G4GTPDJ/iE0fMumPjSncwXy
-         uIrQfXdd41HCzXKW7lBzdvkZoyb4tYVqL8hUeM9mZ9IYWPjM5xY0siFjoJdBI5BPkXka
-         b4eQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cUs+nJBemKyqHW1/+tBNnIBzfXId6r+3EciJyXUHzJs=;
-        b=D/cqqm7Fs71Z50WcskG/myBSriWCZbJ1jExfgD+E1g7fIlmc4faccvx6BBuwQWDwuc
-         qs1AVqNtqDXujQc+V5ptCIty2z7TNeU1HshDO1t5YI5MNJuOnY+vuuA9ZydvGeEmD8hd
-         5CaF+GQvDgZP1VKGGuhTymD79RduWAUpnQT3+elUVxUvqUZT/9AmI4ytdiCz2E30evPa
-         ejiz3WMYkPUC7va8BDRqurGnGv014qqqzFUDtnCxjMjeg6q7eVrsuYubPp44GjUZakQ4
-         FmYYF9CYYC4BZSuAjId+e80yRNGAnOtgsUZQM5U1eFJhjQyZcbRr0Ozvd7lOhREpqJU8
-         K48A==
-X-Gm-Message-State: AOAM531elyuNZHf5QV7eG9aYtSMkZlmq3uBNMBWaLjSvsgZtDT4YPRcH
-        kph9UbF83re3iRalMp0uDqc=
-X-Google-Smtp-Source: ABdhPJwywRGGJxi2nc9fSfsDiR0aFN3t3Vo1LUIV4bB1PcT2E2cayprbxTpBi9lfROrxbbqnOvUGcA==
-X-Received: by 2002:a63:4457:: with SMTP id t23mr4858978pgk.354.1633007162966;
-        Thu, 30 Sep 2021 06:06:02 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:35:a72f:86cf:2cc5:8116])
-        by smtp.gmail.com with ESMTPSA id v7sm3072134pff.195.2021.09.30.06.06.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Sep 2021 06:06:02 -0700 (PDT)
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
-        arnd@arndb.de, brijesh.singh@amd.com, jroedel@suse.de,
-        Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
-        pgonda@google.com, akpm@linux-foundation.org, rppt@kernel.org,
-        kirill.shutemov@linux.intel.com, saravanand@fb.com,
-        aneesh.kumar@linux.ibm.com, rientjes@google.com, tj@kernel.org,
-        michael.h.kelley@microsoft.com
-Cc:     linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
-        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
-        dave.hansen@intel.com
-Subject: [PATCH V6 8/8] Drivers: hv : vmbus: Initialize VMbus ring buffer for Isolation VM
-Date:   Thu, 30 Sep 2021 09:05:44 -0400
-Message-Id: <20210930130545.1210298-9-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210930130545.1210298-1-ltykernel@gmail.com>
-References: <20210930130545.1210298-1-ltykernel@gmail.com>
+        with ESMTP id S1351306AbhI3NJv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 09:09:51 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F24C0613EC
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 06:07:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=pmbeNY56E8IZrBs0XLLySX4KozQORiVLtIWngPFjeuU=; b=PzZ8fZr9c5U/g3NOhJjnb/VvV8
+        dvWpAWhiMy+6vEWBdEgbKPKCWphzWUrYJPm5n/syCD0aCC7vIXAYGrHJCWpu8h509vTJi4ibB3Qkq
+        GxdectatpkaCYe9B/1sKbIIpf6OWmJjwPAR3NV2xUKx7n01EZrpTAf5i/kM0XsiKXZVzadHd58zEb
+        r0PUphIffXD17y+FLl3qAo89LzFCi9PsIfDinBTWzsOPjuNFKJRyoqrwoznioBRgtIh7jMndBhZ2n
+        sdb6d+Zf9iM2SyxGoemPF6OTLJ9k21vA3fClE0PDT8LnZlW3kczz0eoJUeJoMQdSobaHfutFukdDN
+        5EAiwOJA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54870)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mVvmr-0003UC-Ff; Thu, 30 Sep 2021 14:07:45 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mVvmq-0003fW-As; Thu, 30 Sep 2021 14:07:44 +0100
+Date:   Thu, 30 Sep 2021 14:07:44 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
+        Vivek Unune <npcomplete13@gmail.com>
+Subject: Re: Lockup in phy_probe() for MDIO device (Broadcom's switch)
+Message-ID: <YVW2oN3vBoP3tNNn@shell.armlinux.org.uk>
+References: <2b1dc053-8c9a-e3e4-b450-eecdfca3fe16@gmail.com>
+ <YVWOp/2Nj/E1dpe3@shell.armlinux.org.uk>
+ <5715f818-a279-d514-dcac-73a94c1d30ef@gmail.com>
+ <YVWUKwEXrd39t8iw@shell.armlinux.org.uk>
+ <1e4e40ba-23b8-65b4-0b53-1c8393d9a834@gmail.com>
+ <YVWjEQzJisT0HgHB@shell.armlinux.org.uk>
+ <f51658fb-0844-93fc-46d0-6b3a7ef36123@gmail.com>
+ <YVWt2B7c9YKLlmgT@shell.armlinux.org.uk>
+ <955416fe-4da4-b1ec-aadb-9b816f02d7f2@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <955416fe-4da4-b1ec-aadb-9b816f02d7f2@gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+On Thu, Sep 30, 2021 at 02:51:40PM +0200, Rafał Miłecki wrote:
+> On 30.09.2021 14:30, Russell King (Oracle) wrote:
+> > > It's actually OpenWrt's downstream swconfig-based b53 driver that
+> > > matches this device.
+> > > 
+> > > I'm confused as downstream b53_mdio.c calls phy_driver_register(). Why
+> > > does it match MDIO device then? I thought MDIO devices should be
+> > > matches only with drivers using mdio_driver_register().
+> > 
+> > Note that I've no idea what he swconfig-based b53 driver looks like,
+> > I don't have the source for that to hand.
+> > 
+> > If it calls phy_driver_register(), then it is registering a driver for
+> > a MDIO device wrapped in a struct phy_device. If this driver has a
+> > .of_match_table member set, then this is wrong - the basic rule is
+> > 
+> > 	PHY drivers must never match using DT compatibles.
+> > 
+> > because this is exactly what will occur - it bypasses the check that
+> > the mdio_device being matched is in fact wrapped by a struct phy_device,
+> > and we will access members of the non-existent phy_device, including
+> > the "uninitialised" mutex.
+> > 
+> > If the swconfig-based b53 driver does want to bind to a phy_device based
+> > DT node, then it needs to match using either a custom .match_phy_device
+> > method in the PHY driver, or it needs to match using the PHY IDs.
+> 
+> Sorry, I should have linked downstream b53_mdio.c . It's:
+> https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=target/linux/generic/files/drivers/net/phy/b53/b53_mdio.c;h=98cdbffe73c7354f4401389dfcc96014bff62588;hb=HEAD
 
-VMbus ring buffer are shared with host and it's need to
-be accessed via extra address space of Isolation VM with
-AMD SNP support. This patch is to map the ring buffer
-address in extra address space via vmap_pfn(). Hyperv set
-memory host visibility hvcall smears data in the ring buffer
-and so reset the ring buffer memory to zero after mapping.
+Yes, I just found a version of the driver
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
-Change since v4:
-	* Use PFN_DOWN instead of HVPFN_DOWN in the hv_ringbuffer_init()
+> You can see that is *uses* of_match_table.
+> 
+> What about refusing bugged drivers like above b53 with something like:
 
-Change since v3:
-	* Remove hv_ringbuffer_post_init(), merge map
-	operation for Isolation VM into hv_ringbuffer_init()
-	* Call hv_ringbuffer_init() after __vmbus_establish_gpadl().
----
- drivers/hv/Kconfig       |  1 +
- drivers/hv/channel.c     | 19 +++++++-------
- drivers/hv/ring_buffer.c | 55 ++++++++++++++++++++++++++++++----------
- 3 files changed, 53 insertions(+), 22 deletions(-)
+That will break all the MDIO based DSA and other non-PHY drivers,
+sorry.
 
-diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
-index d1123ceb38f3..dd12af20e467 100644
---- a/drivers/hv/Kconfig
-+++ b/drivers/hv/Kconfig
-@@ -8,6 +8,7 @@ config HYPERV
- 		|| (ARM64 && !CPU_BIG_ENDIAN))
- 	select PARAVIRT
- 	select X86_HV_CALLBACK_VECTOR if X86
-+	select VMAP_PFN
- 	help
- 	  Select this option to run Linux as a Hyper-V client operating
- 	  system.
-diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
-index b37ff4a39224..dc5c35210c16 100644
---- a/drivers/hv/channel.c
-+++ b/drivers/hv/channel.c
-@@ -683,15 +683,6 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
- 	if (!newchannel->max_pkt_size)
- 		newchannel->max_pkt_size = VMBUS_DEFAULT_MAX_PKT_SIZE;
- 
--	err = hv_ringbuffer_init(&newchannel->outbound, page, send_pages, 0);
--	if (err)
--		goto error_clean_ring;
--
--	err = hv_ringbuffer_init(&newchannel->inbound, &page[send_pages],
--				 recv_pages, newchannel->max_pkt_size);
--	if (err)
--		goto error_clean_ring;
--
- 	/* Establish the gpadl for the ring buffer */
- 	newchannel->ringbuffer_gpadlhandle.gpadl_handle = 0;
- 
-@@ -703,6 +694,16 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
- 	if (err)
- 		goto error_clean_ring;
- 
-+	err = hv_ringbuffer_init(&newchannel->outbound,
-+				 page, send_pages, 0);
-+	if (err)
-+		goto error_free_gpadl;
-+
-+	err = hv_ringbuffer_init(&newchannel->inbound, &page[send_pages],
-+				 recv_pages, newchannel->max_pkt_size);
-+	if (err)
-+		goto error_free_gpadl;
-+
- 	/* Create and init the channel open message */
- 	open_info = kzalloc(sizeof(*open_info) +
- 			   sizeof(struct vmbus_channel_open_channel),
-diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
-index 314015d9e912..931802ae985c 100644
---- a/drivers/hv/ring_buffer.c
-+++ b/drivers/hv/ring_buffer.c
-@@ -17,6 +17,8 @@
- #include <linux/vmalloc.h>
- #include <linux/slab.h>
- #include <linux/prefetch.h>
-+#include <linux/io.h>
-+#include <asm/mshyperv.h>
- 
- #include "hyperv_vmbus.h"
- 
-@@ -183,8 +185,10 @@ void hv_ringbuffer_pre_init(struct vmbus_channel *channel)
- int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
- 		       struct page *pages, u32 page_cnt, u32 max_pkt_size)
+I suppose we could detect if the driver has the MDIO_DEVICE_IS_PHY flag
+set, and reject any device that does not have MDIO_DEVICE_IS_PHY set:
+
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 53f034fc2ef7..7bc06126ce10 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -939,6 +939,12 @@ EXPORT_SYMBOL_GPL(mdiobus_modify);
+ static int mdio_bus_match(struct device *dev, struct device_driver *drv)
  {
--	int i;
- 	struct page **pages_wraparound;
-+	unsigned long *pfns_wraparound;
-+	u64 pfn;
-+	int i;
- 
- 	BUILD_BUG_ON((sizeof(struct hv_ring_buffer) != PAGE_SIZE));
- 
-@@ -192,23 +196,48 @@ int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
- 	 * First page holds struct hv_ring_buffer, do wraparound mapping for
- 	 * the rest.
- 	 */
--	pages_wraparound = kcalloc(page_cnt * 2 - 1, sizeof(struct page *),
--				   GFP_KERNEL);
--	if (!pages_wraparound)
--		return -ENOMEM;
-+	if (hv_isolation_type_snp()) {
-+		pfn = page_to_pfn(pages) +
-+			PFN_DOWN(ms_hyperv.shared_gpa_boundary);
+ 	struct mdio_device *mdio = to_mdio_device(dev);
++	struct mdio_driver *mdiodrv = to_mdio_driver(drv);
 +
-+		pfns_wraparound = kcalloc(page_cnt * 2 - 1,
-+			sizeof(unsigned long), GFP_KERNEL);
-+		if (!pfns_wraparound)
-+			return -ENOMEM;
-+
-+		pfns_wraparound[0] = pfn;
-+		for (i = 0; i < 2 * (page_cnt - 1); i++)
-+			pfns_wraparound[i + 1] = pfn + i % (page_cnt - 1) + 1;
++	/* Both the driver and device must type-match */
++	if (!(mdiodrv->mdiodrv.flags & MDIO_DEVICE_IS_PHY) ==
++	    !(mdio->flags & MDIO_DEVICE_FLAG_PHY))
++		return 0;
  
--	pages_wraparound[0] = pages;
--	for (i = 0; i < 2 * (page_cnt - 1); i++)
--		pages_wraparound[i + 1] = &pages[i % (page_cnt - 1) + 1];
-+		ring_info->ring_buffer = (struct hv_ring_buffer *)
-+			vmap_pfn(pfns_wraparound, page_cnt * 2 - 1,
-+				 PAGE_KERNEL);
-+		kfree(pfns_wraparound);
- 
--	ring_info->ring_buffer = (struct hv_ring_buffer *)
--		vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP, PAGE_KERNEL);
-+		if (!ring_info->ring_buffer)
-+			return -ENOMEM;
-+
-+		/* Zero ring buffer after setting memory host visibility. */
-+		memset(ring_info->ring_buffer, 0x00, PAGE_SIZE * page_cnt);
-+	} else {
-+		pages_wraparound = kcalloc(page_cnt * 2 - 1,
-+					   sizeof(struct page *),
-+					   GFP_KERNEL);
-+
-+		pages_wraparound[0] = pages;
-+		for (i = 0; i < 2 * (page_cnt - 1); i++)
-+			pages_wraparound[i + 1] =
-+				&pages[i % (page_cnt - 1) + 1];
- 
--	kfree(pages_wraparound);
-+		ring_info->ring_buffer = (struct hv_ring_buffer *)
-+			vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP,
-+				PAGE_KERNEL);
- 
-+		kfree(pages_wraparound);
-+		if (!ring_info->ring_buffer)
-+			return -ENOMEM;
-+	}
- 
--	if (!ring_info->ring_buffer)
--		return -ENOMEM;
- 
- 	ring_info->ring_buffer->read_index =
- 		ring_info->ring_buffer->write_index = 0;
--- 
-2.25.1
+ 	if (of_driver_match_device(dev, drv))
+ 		return 1;
 
+In other words, the driver's state of the MDIO_DEVICE_IS_PHY flag
+must match the device's MDIO_DEVICE_FLAG_PHY flag before we attempt
+any matches.
+
+If that's not possible, then we need to prevent phylib drivers from
+using .of_match_table:
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index e62f7a232307..dacf0b31b167 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2501,6 +2501,16 @@ int phy_driver_register(struct phy_driver *new_driver, struct module *owner)
+ 		return -EINVAL;
+ 	}
+ 
++	/* PHYLIB device drivers must not match using a DT compatible table
++	 * as this bypasses our checks that the mdiodev that is being matched
++	 * is backed by a struct phy_device. If such a case happens, we will
++	 * make out-of-bounds accesses and lockup in phydev->lock.
++	 */
++	if (WARN(new_driver->mdiodrv.driver.of_match_table,
++		 "%s: driver must not provide a DT match table\n",
++		 new_driver->name))
++		return -EINVAL;
++
+ 	new_driver->mdiodrv.flags |= MDIO_DEVICE_IS_PHY;
+ 	new_driver->mdiodrv.driver.name = new_driver->name;
+ 	new_driver->mdiodrv.driver.bus = &mdio_bus_type;
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
