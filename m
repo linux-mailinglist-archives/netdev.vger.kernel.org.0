@@ -2,92 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBCDA41DD33
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 17:18:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E68F41DD3E
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 17:19:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245484AbhI3PUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 11:20:05 -0400
-Received: from netrider.rowland.org ([192.131.102.5]:41995 "HELO
-        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with SMTP id S245377AbhI3PUD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 11:20:03 -0400
-Received: (qmail 472189 invoked by uid 1000); 30 Sep 2021 11:18:19 -0400
-Date:   Thu, 30 Sep 2021 11:18:19 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     Jason-ch Chen <jason-ch.chen@mediatek.com>,
-        Hayes Wang <hayeswang@realtek.com>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "Project_Global_Chrome_Upstream_Group@mediatek.com" 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        "hsinyi@google.com" <hsinyi@google.com>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: Re: [PATCH] r8152: stop submitting rx for -EPROTO
-Message-ID: <20210930151819.GC464826@rowland.harvard.edu>
-References: <20210929051812.3107-1-jason-ch.chen@mediatek.com>
- <cbd1591fc03f480c9f08cc55585e2e35@realtek.com>
- <4c2ad5e4a9747c59a55d92a8fa0c95df5821188f.camel@mediatek.com>
- <274ec862-86cf-9d83-7ea7-5786e30ca4a7@suse.com>
+        id S245587AbhI3PVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 11:21:06 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:36754 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245581AbhI3PVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 11:21:05 -0400
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id DD1AF200E7B6;
+        Thu, 30 Sep 2021 17:19:17 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be DD1AF200E7B6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1633015157;
+        bh=sLB3OuxTE1vjPG0J/tNwW101xLMRODQKzAlDS8+xqmo=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=YpQrJmR1hKeum+B6NgVQBft+xcDpylY8tSjnNxPOrdXOmJzzifzs9qJShZ3SGC12W
+         4uxg5gazT9Uuv89K9N2ul7+0W9jYs/8v7Yjllc0LQVmxILzwCvQzFaQm4ycJieG7+f
+         tzzjSks9wTsI7hUmUCxenlY7Q5zEawzVMUBAC8736GOb6NKOm9f42jLN7z09wVDEtv
+         U+3AIQawpWc24eGBRy80acPjQNm50WbfE2129GWsFPXBq9cYOH2pqDJH2+KPuCkqVt
+         EeTmDO4/aP2rhO9j6x9axDcG3za2pT8LXuSnFv+IsRh88OOxosWGU11MYh9JNaXDNK
+         W4dNiHuAPzrTw==
+Received: from localhost (localhost [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id D4FB660225447;
+        Thu, 30 Sep 2021 17:19:17 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id fFeu0ygeG1aM; Thu, 30 Sep 2021 17:19:17 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id BA85060225265;
+        Thu, 30 Sep 2021 17:19:17 +0200 (CEST)
+Date:   Thu, 30 Sep 2021 17:19:17 +0200 (CEST)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org
+Message-ID: <2092322692.108322349.1633015157710.JavaMail.zimbra@uliege.be>
+In-Reply-To: <16630ce5-4c61-a16b-8125-8ec697d6c33e@gmail.com>
+References: <20210928190328.24097-1-justin.iurman@uliege.be> <20210928190328.24097-2-justin.iurman@uliege.be> <16630ce5-4c61-a16b-8125-8ec697d6c33e@gmail.com>
+Subject: Re: [PATCH net-next 1/2] ipv6: ioam: Add support for the ip6ip6
+ encapsulation
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <274ec862-86cf-9d83-7ea7-5786e30ca4a7@suse.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [81.240.24.148]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF92 (Linux)/8.8.15_GA_4026)
+Thread-Topic: ipv6: ioam: Add support for the ip6ip6 encapsulation
+Thread-Index: a4QBJ2gFy4PkbP1P6YVvbTkTRprqDQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 11:30:17AM +0200, Oliver Neukum wrote:
+>>  static const struct nla_policy ioam6_iptunnel_policy[IOAM6_IPTUNNEL_MAX + 1] = {
+>> -	[IOAM6_IPTUNNEL_TRACE]	= NLA_POLICY_EXACT_LEN(sizeof(struct ioam6_trace_hdr)),
+>> +	[IOAM6_IPTUNNEL_TRACE]	= NLA_POLICY_EXACT_LEN(sizeof(struct
+>> ioam6_iptunnel_trace)),
 > 
-> On 29.09.21 11:52, Jason-ch Chen wrote:
-> > On Wed, 2021-09-29 at 08:14 +0000, Hayes Wang wrote:
-> >>
-> > Hi Hayes,
-> >
-> > Sometimes Rx submits rapidly and the USB kernel driver of opensource
-> > cannot receive any disconnect event due to CPU heavy loading, which
-> > finally causes a system crash.
-> > Do you have any suggestions to modify the r8152 driver to prevent this
-> > situation happened?
-> >
-> > Regards,
-> > Jason
-> >
-> Hi,
+> you can't do that. Once a kernel is released with a given UAPI, it can
+> not be changed. You could go the other way and handle
 > 
-> Hayes proposed a solution. Basically you solve this the way HID or WDM do it
-> delaying resubmission. This makes me wonder whether this problem is specific
-> to any driver. If it is not, as I would argue, do we have a deficiency
-> in our API?
+> struct ioam6_iptunnel_trace {
+> +	struct ioam6_trace_hdr trace;
+> +	__u8 mode;
+> +	struct in6_addr tundst;	/* unused for inline mode */
+> +};
+
+Makes sense. But I'm not sure what you mean by "go the other way". Should I handle ioam6_iptunnel_trace as well, in addition to ioam6_trace_hdr, so that the uapi is backward compatible?
+
+> Also, no gaps in uapi. Make sure all holes are stated; an anonymous
+> entry is best.
+
+Would something like this do the trick?
+
+struct ioam6_iptunnel_trace {
+	struct ioam6_trace_hdr trace;
+	__u8 mode;
+	union { /* anonymous field only used by both the encap and auto modes */
+		struct in6_addr tundst;
+	};
+};
+
+>>  };
+>>  
+>> -static int nla_put_ioam6_trace(struct sk_buff *skb, int attrtype,
+>> -			       struct ioam6_trace_hdr *trace)
+>> -{
+>> -	struct ioam6_trace_hdr *data;
+>> -	struct nlattr *nla;
+>> -	int len;
+>> -
+>> -	len = sizeof(*trace);
+>> -
+>> -	nla = nla_reserve(skb, attrtype, len);
+>> -	if (!nla)
+>> -		return -EMSGSIZE;
+>> -
+>> -	data = nla_data(nla);
+>> -	memcpy(data, trace, len);
+>> -
+>> -	return 0;
+>> -}
+>> -
 > 
-> Should we have something like: usb_submit_delayed_urb() ?
+> quite a bit of the change seems like refactoring from existing feature
+> to allow the new ones. Please submit refactoring changes as a
+> prerequisite patch. The patch that introduces your new feature should be
+> focused solely on what is needed to implement that feature.
 
-There has been some discussion about this in the past.
-
-In general, -EPROTO is almost always a non-recoverable error.  In 
-usually occurs when a USB cable has been unplugged, before the 
-upstream hub has notified the kernel about the unplug event.  It also 
-can occur when the device's firmware has crashed.
-
-I do tend to think there is a deficiency in our API, and that it 
-should be fixed by making the core logically disable an endpoint 
-(clear the ep->enabled flag) whenever an URB for that endpoint 
-completes with -EPROTO, -EILSEQ, or -ETIME status.  (In retrospect, 
-using three distinct status codes for these errors was a mistake.)  
-Then we wouldn't have to go through this piecemeal approach, 
-modifying individual drivers to make them give up whenever they get 
-one of these errors.
-
-But then we'd have also have to make sure drivers have a way to 
-logically re-enable endpoints, for the unlikely case that the error 
-can be recovered from.  Certainly set-config, set-interface, and 
-clear-halt should do this.  Anything else?
-
-Alan Stern
++1, will do.
