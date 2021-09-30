@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04DC41D8F8
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 13:39:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 452AB41D8F9
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 13:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350578AbhI3Ll1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 07:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
+        id S1350597AbhI3Ll3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 07:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350546AbhI3LlT (ORCPT
+        with ESMTP id S1350581AbhI3LlT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 07:41:19 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73F3C061770
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 04:39:32 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id s17so20661361edd.8
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 04:39:32 -0700 (PDT)
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1037C061775
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 04:39:33 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id g7so20815984edv.1
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 04:39:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9GUl3vBWCG+v9Gc/Z+HIfOOWjGV7nOvafJfxxKjlTWA=;
-        b=Gfkz6ee/6XkEgg2ig3bdsAWBeNcIjUwwTOI8iP7l8x1c4AhsKycwbBNmGtFf7TamJO
-         vApvCJQf9j154A5llvraU948tZhu26miQBvidMv9jMaVCcQQiB1CU/l8z9EnZI0WdStO
-         L1P7XrMdXWvl65a3UCfcNEsff2g5wkK8r8eIVV7lbR/ywbcnZ1TjjK34yXQJ9cFM8FYs
-         KQVxwzZN6VtytA4CZYVY34OIjpCW9MGQ335Qn1fuKvu7Bm6T3JMDOUmbX+UziA4PFBA/
-         Gu1R4fOghdJyqVJGqHuNGnsFNpnlfCV9euted1//0gCPV+Bup4uDDU2iFd2JvCojog+4
-         LDHA==
+        bh=k1RmNcVoX+kLSBgaMA/S8z2XYkL/ljTubxIHEdK9yg0=;
+        b=1xU8VUvg2r28WWiPPxFf46ucRcsPrLHxwQ34kr+zOmaFJb3BYAycqzsZN34jJaq1g2
+         7GRVg6eoR7CO2E77NtQbOO6xB4hLGD6is1NGi9lZ/6OPdLEaRG3/2Y3cndgjkDKgVHfs
+         N8axEuoanQvknxI9mye4Lr5qk+//9wbazd9xnEr+wywxtvo98SaNeGWO8/8EvMlG8cH3
+         U9JzV2414LrMQ0EfzB/vD+IsWtrgQm1lZYq+58e6qukYsvDEqrtebnsiJ5mubhkJcdQe
+         6cQB9yT8QqJxIHey4e09jbi5eHggaQpQieJRgpnHMiAHNtCP+TFuOkp698KI1LeouHlc
+         8Evw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9GUl3vBWCG+v9Gc/Z+HIfOOWjGV7nOvafJfxxKjlTWA=;
-        b=kN3nMPKLbLQJTlU5gYL/GtKbA3C7A/eRzwIdVjNvFEbR/V8zu5SmeEUq+75rlPEfvf
-         Ne0v5wRRRoGvFhfUIEfG5TDGnWGR1WY6Fin56iOdNSI1zPjjGzgcMztVMku3C7SvF5XF
-         2cDlOpTvCvJjMdgj/7aZoNKhp4fTik8kAm/4wgmx5eX9S40fcFquAveqXE0+rz03GgVs
-         cPDH8qS9NFxwdt2R738SYVStVrpIj1bw6xNorehSRwkmP+E8nHlDLcsUctd5LIWxKk76
-         kSoWq4ve6xD4sjW3qDZINPQohOyrnKLKmGaRPpKR5xV6EdVdOwa/mBVUE+GagZJUzE/4
-         6tNw==
-X-Gm-Message-State: AOAM531CITBuDfAOb7XzAqAaOfY2hNDJcket+AS92h9VfOJrqYADxBYw
-        w/BbK0T8zAvw2lWBL/G/KOHzmdZQHbJy8hsH
-X-Google-Smtp-Source: ABdhPJxq7Dn/gzmOk0GjmzxanVdl58zr9WLDyfFDWjNuthXhV9zgEYkF2w1zX+vIfp4GZZH0MYqACw==
-X-Received: by 2002:a17:906:7811:: with SMTP id u17mr6034720ejm.562.1633001971183;
-        Thu, 30 Sep 2021 04:39:31 -0700 (PDT)
+        bh=k1RmNcVoX+kLSBgaMA/S8z2XYkL/ljTubxIHEdK9yg0=;
+        b=qRGyvJvDS7CUVARfk2hOjXvw0em7NBaoRC/9A3HDgGrxWrnCgrqPDbZZarQ8vZWyGc
+         nKQlaOwbSL2gZkQPV/74+cdPutYTw7wyY2QU8xqCnAYKO5g18vuqj33VUjsfqaRA4V53
+         CfO9S8sFuiNTpIlwydYaSJYKayQJFCbqDldJ91HpT5bre5m2XQ1PJftC9oHSP2Wsrtec
+         a5DEwuUQTX/T6Pq6AhAQVJA6rKB4VpPITcITPSqZFgi7OYHvr6e1cK07ltY2XPwiMiSP
+         5Kg34lGqwuY3kT8CoGxMYvsqCp9/D7vQwUtjZAfkIQdfF6otJZJgDT0QHJzXYwGj+UYg
+         58og==
+X-Gm-Message-State: AOAM531xiIprjQw25QQCvQwhtB5ZU5I1kC0YJ0s2oSlvXh/2fgXYNAJY
+        0msvbgvm46/wC1fr7nyEILWgIAz5QKnsGHjb
+X-Google-Smtp-Source: ABdhPJw3MQ3g4brwksZDNiBu7UJsb6K3jtcdRzg//+oh/RCWL5xSn7IS22+/QwS1f3r5n3uoxHq1yg==
+X-Received: by 2002:a17:907:d23:: with SMTP id gn35mr6338919ejc.556.1633001972020;
+        Thu, 30 Sep 2021 04:39:32 -0700 (PDT)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id b27sm1277704ejq.34.2021.09.30.04.39.30
+        by smtp.gmail.com with ESMTPSA id b27sm1277704ejq.34.2021.09.30.04.39.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Sep 2021 04:39:30 -0700 (PDT)
+        Thu, 30 Sep 2021 04:39:31 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, donaldsharp72@gmail.com, dsahern@gmail.com,
         idosch@idosch.org, Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH iproute2-next 08/12] ip: nexthop: factor out ipnh_get_id rtnl talk into a helper
-Date:   Thu, 30 Sep 2021 14:38:40 +0300
-Message-Id: <20210930113844.1829373-9-razor@blackwall.org>
+Subject: [PATCH iproute2-next 09/12] ip: nexthop: add cache helpers
+Date:   Thu, 30 Sep 2021 14:38:41 +0300
+Message-Id: <20210930113844.1829373-10-razor@blackwall.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210930113844.1829373-1-razor@blackwall.org>
 References: <20210930113844.1829373-1-razor@blackwall.org>
@@ -65,67 +65,158 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Factor out ipnh_get_id's rtnl talk portion into a separate helper which
-will be reused later to retrieve nexthops for caching.
+Add a static nexthop cache in a hash with 1024 buckets and helpers to
+manage it (link, unlink, find, add nexthop, del nexthop). Adding new
+nexthops is done by creating a new rtnl handle and using it to retrieve
+the nexthop so the helper is safe to use while already reading a
+response (i.e. using the global rth).
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- ip/ipnexthop.c | 33 ++++++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 13 deletions(-)
+ ip/ipnexthop.c | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ ip/nh_common.h |  6 ++++
+ 2 files changed, 104 insertions(+)
 
 diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-index a589febca605..454c7416e30f 100644
+index 454c7416e30f..e0f0f78460c9 100644
 --- a/ip/ipnexthop.c
 +++ b/ip/ipnexthop.c
-@@ -485,6 +485,25 @@ static void __print_nexthop_entry(FILE *fp, const char *jsobj,
- 	close_json_object();
+@@ -34,6 +34,8 @@ enum {
+ #define RTM_NHA(h)  ((struct rtattr *)(((char *)(h)) + \
+ 			NLMSG_ALIGN(sizeof(struct nhmsg))))
+ 
++static struct hlist_head nh_cache[NH_CACHE_SIZE];
++
+ static void usage(void) __attribute__((noreturn));
+ 
+ static void usage(void)
+@@ -504,6 +506,102 @@ static int  __ipnh_get_id(struct rtnl_handle *rthp, __u32 nh_id,
+ 	return rtnl_talk(rthp, &req.n, answer);
  }
  
-+static int  __ipnh_get_id(struct rtnl_handle *rthp, __u32 nh_id,
-+			  struct nlmsghdr **answer)
++static struct hlist_head *ipnh_cache_head(__u32 nh_id)
 +{
-+	struct {
-+		struct nlmsghdr n;
-+		struct nhmsg	nhm;
-+		char		buf[1024];
-+	} req = {
-+		.n.nlmsg_len	= NLMSG_LENGTH(sizeof(struct nhmsg)),
-+		.n.nlmsg_flags	= NLM_F_REQUEST,
-+		.n.nlmsg_type	= RTM_GETNEXTHOP,
-+		.nhm.nh_family	= preferred_family,
-+	};
++	nh_id ^= nh_id >> 20;
++	nh_id ^= nh_id >> 10;
 +
-+	addattr32(&req.n, sizeof(req), NHA_ID, nh_id);
++	return &nh_cache[nh_id % NH_CACHE_SIZE];
++}
 +
-+	return rtnl_talk(rthp, &req.n, answer);
++static void ipnh_cache_link_entry(struct nh_entry *nhe)
++{
++	struct hlist_head *head = ipnh_cache_head(nhe->nh_id);
++
++	hlist_add_head(&nhe->nh_hash, head);
++}
++
++static void ipnh_cache_unlink_entry(struct nh_entry *nhe)
++{
++	hlist_del(&nhe->nh_hash);
++}
++
++static struct nh_entry *ipnh_cache_get(__u32 nh_id)
++{
++	struct hlist_head *head = ipnh_cache_head(nh_id);
++	struct nh_entry *nhe;
++	struct hlist_node *n;
++
++	hlist_for_each(n, head) {
++		nhe = container_of(n, struct nh_entry, nh_hash);
++		if (nhe->nh_id == nh_id)
++			return nhe;
++	}
++
++	return NULL;
++}
++
++static int __ipnh_cache_parse_nlmsg(const struct nlmsghdr *n,
++				    struct nh_entry *nhe)
++{
++	int err, len;
++
++	len = n->nlmsg_len - NLMSG_SPACE(sizeof(struct nhmsg));
++	if (len < 0) {
++		fprintf(stderr, "BUG: wrong nlmsg len %d\n", len);
++		return -EINVAL;
++	}
++
++	err = ipnh_parse_nhmsg(stderr, NLMSG_DATA(n), len, nhe);
++	if (err) {
++		fprintf(stderr, "Error parsing nexthop: %s\n", strerror(-err));
++		return err;
++	}
++
++	return 0;
++}
++
++static struct nh_entry *ipnh_cache_add(__u32 nh_id)
++{
++	struct rtnl_handle cache_rth = { .fd = -1 };
++	struct nlmsghdr *answer = NULL;
++	struct nh_entry *nhe = NULL;
++
++	if (rtnl_open(&cache_rth, 0) < 0)
++		goto out;
++
++	if (__ipnh_get_id(&cache_rth, nh_id, &answer) < 0)
++		goto out;
++
++	nhe = malloc(sizeof(*nhe));
++	if (!nhe)
++		goto out;
++
++	if (__ipnh_cache_parse_nlmsg(answer, nhe))
++		goto out_free_nhe;
++
++	ipnh_cache_link_entry(nhe);
++
++out:
++	if (answer)
++		free(answer);
++	rtnl_close(&cache_rth);
++
++	return nhe;
++
++out_free_nhe:
++	free(nhe);
++	nhe = NULL;
++	goto out;
++}
++
++static void ipnh_cache_del(struct nh_entry *nhe)
++{
++	ipnh_cache_unlink_entry(nhe);
++	ipnh_destroy_entry(nhe);
++	free(nhe);
 +}
 +
  int print_nexthop(struct nlmsghdr *n, void *arg)
  {
  	struct nhmsg *nhm = NLMSG_DATA(n);
-@@ -827,21 +846,9 @@ static int ipnh_modify(int cmd, unsigned int flags, int argc, char **argv)
+diff --git a/ip/nh_common.h b/ip/nh_common.h
+index d9730f45c6fb..ee84d968d8dd 100644
+--- a/ip/nh_common.h
++++ b/ip/nh_common.h
+@@ -2,6 +2,10 @@
+ #ifndef __NH_COMMON_H__
+ #define __NH_COMMON_H__ 1
  
- static int ipnh_get_id(__u32 id)
- {
--	struct {
--		struct nlmsghdr	n;
--		struct nhmsg	nhm;
--		char		buf[1024];
--	} req = {
--		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct nhmsg)),
--		.n.nlmsg_flags = NLM_F_REQUEST,
--		.n.nlmsg_type  = RTM_GETNEXTHOP,
--		.nhm.nh_family = preferred_family,
--	};
- 	struct nlmsghdr *answer;
++#include <list.h>
++
++#define NH_CACHE_SIZE		1024
++
+ struct nha_res_grp {
+ 	__u16			buckets;
+ 	__u32			idle_timer;
+@@ -10,6 +14,8 @@ struct nha_res_grp {
+ };
  
--	addattr32(&req.n, sizeof(req), NHA_ID, id);
--
--	if (rtnl_talk(&rth, &req.n, &answer) < 0)
-+	if (__ipnh_get_id(&rth, id, &answer) < 0)
- 		return -2;
- 
- 	new_json_obj(json);
+ struct nh_entry {
++	struct hlist_node	nh_hash;
++
+ 	__u32			nh_id;
+ 	__u32			nh_oif;
+ 	__u32			nh_flags;
 -- 
 2.31.1
 
