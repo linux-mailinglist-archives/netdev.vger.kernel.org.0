@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C395941E4A1
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:15:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B5D541E4A2
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:15:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350163AbhI3XQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 19:16:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53168 "EHLO mail.kernel.org"
+        id S1350219AbhI3XQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 19:16:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53186 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350002AbhI3XQs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1346146AbhI3XQs (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 30 Sep 2021 19:16:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BFC1A61A7A;
-        Thu, 30 Sep 2021 23:15:04 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 48DF861A7F;
+        Thu, 30 Sep 2021 23:15:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1633043705;
-        bh=PuzE515VkzrlX0aa3d3bnw+XljQY1LWDPkksC63wNDU=;
+        bh=In24AEgCVGvKAdv8L2bW96QtQXb3PIaN+oO0piXgDAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LnTxMzxM2TQ7w4sDslqhKy/A4gYVz/CyfPLaSLfQNXXMpbt9oIEZ7E5oEFIWV5rBp
-         J4PTHKgFtLkpWztb94aoYyhGDRh+h4rDoZA0kSqldozzdUbrGK1G8SiX/kTGL/fJ/1
-         LjI/i7aFetOV/M5Vip8P+d9aQSTQmk0MxGiOSqJoWlG3QyyMGoDfLUvx0+hv3D8UBK
-         VonMxSGL7hJptzpnzq+1+ou7LlKRWwlRac75XAzss4BwMS28Laj2G9yYaGNPAjJNTp
-         ea8zn7KN3v6tvDec1KvSX09sUOFD+3R53dPjSHNPdrRqCtpfdD2XOCLHs8lyb+v8QN
-         jmUikaVf/22jA==
+        b=NGfDZobP6t+6M5tl+bkgVeS4OZAA+eo2BaxMB0zJS2YpYItxryAOufortcJwr92zG
+         5XUt1WIHT2Px7R6wnUfwVukbUJHiJSkNb91jsXxzn1NZkv0GtnZdfSUst8sUdMn3Xv
+         j+zx/CcG0wDy6bINN89zRjA6/ppTO8sqk/bO/wqOllkstApc+04+UmwEAUHYF57Ry0
+         AR0FjXYh7/lklpnRBqga5hWSU4+3njihTjOr4tjgUSG5PRxNfGk94VCkWQusmLnpPb
+         5oKR5dyEFsPTfATVL+zSxsQvJ59+7Tr6NDnUDEECUViXQeZhAk1Vz4qiZW1DVnPJOr
+         Cnko/57MURgxQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 03/10] net/mlx5e: Improve MQPRIO resiliency
-Date:   Thu, 30 Sep 2021 16:14:54 -0700
-Message-Id: <20210930231501.39062-4-saeed@kernel.org>
+Subject: [net 04/10] net/mlx5: E-Switch, Fix double allocation of acl flow counter
+Date:   Thu, 30 Sep 2021 16:14:55 -0700
+Message-Id: <20210930231501.39062-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210930231501.39062-1-saeed@kernel.org>
 References: <20210930231501.39062-1-saeed@kernel.org>
@@ -41,242 +41,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-* Add netdev->tc_to_txq rollback in case of failure in
-  mlx5e_update_netdev_queues().
-* Fix broken transition between the two modes:
-  MQPRIO DCB mode with tc==8, and MQPRIO channel mode.
-* Disable MQPRIO channel mode if re-attaching with a different number
-  of channels.
-* Improve code sharing.
+Flow counter is allocated in eswitch legacy acl setting functions
+without checking if already allocated by previous setting. Add a check
+to avoid such double allocation.
 
-Fixes: ec60c4581bd9 ("net/mlx5e: Support MQPRIO channel mode")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Fixes: 07bab9502641 ("net/mlx5: E-Switch, Refactor eswitch ingress acl codes")
+Fixes: ea651a86d468 ("net/mlx5: E-Switch, Refactor eswitch egress acl codes")
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |   1 +
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 111 +++++++++++++-----
- 2 files changed, 80 insertions(+), 32 deletions(-)
+ .../mellanox/mlx5/core/esw/acl/egress_lgcy.c         | 12 ++++++++----
+ .../mellanox/mlx5/core/esw/acl/ingress_lgcy.c        |  4 +++-
+ 2 files changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 2dca9219ca71..03a7a4ce5cd5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -252,6 +252,7 @@ struct mlx5e_params {
- 	struct {
- 		u16 mode;
- 		u8 num_tc;
-+		struct netdev_tc_txq tc_to_txq[TC_MAX_QUEUE];
- 	} mqprio;
- 	bool rx_cqe_compress_def;
- 	bool tunneled_offload_en;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 774ce88d80cd..0390395f421f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -2264,7 +2264,7 @@ void mlx5e_set_netdev_mtu_boundaries(struct mlx5e_priv *priv)
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c
+index 0399a396d166..60a73990017c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c
+@@ -79,12 +79,16 @@ int esw_acl_egress_lgcy_setup(struct mlx5_eswitch *esw,
+ 	int dest_num = 0;
+ 	int err = 0;
  
- static int mlx5e_netdev_set_tcs(struct net_device *netdev, u16 nch, u8 ntc,
--				struct tc_mqprio_qopt_offload *mqprio)
-+				struct netdev_tc_txq *tc_to_txq)
- {
- 	int tc, err;
- 
-@@ -2282,11 +2282,8 @@ static int mlx5e_netdev_set_tcs(struct net_device *netdev, u16 nch, u8 ntc,
- 	for (tc = 0; tc < ntc; tc++) {
- 		u16 count, offset;
- 
--		/* For DCB mode, map netdev TCs to offset 0
--		 * We have our own UP to TXQ mapping for QoS
--		 */
--		count = mqprio ? mqprio->qopt.count[tc] : nch;
--		offset = mqprio ? mqprio->qopt.offset[tc] : 0;
-+		count = tc_to_txq[tc].count;
-+		offset = tc_to_txq[tc].offset;
- 		netdev_set_tc_queue(netdev, tc, count, offset);
- 	}
- 
-@@ -2315,19 +2312,24 @@ int mlx5e_update_tx_netdev_queues(struct mlx5e_priv *priv)
- 
- static int mlx5e_update_netdev_queues(struct mlx5e_priv *priv)
- {
-+	struct netdev_tc_txq old_tc_to_txq[TC_MAX_QUEUE], *tc_to_txq;
- 	struct net_device *netdev = priv->netdev;
- 	int old_num_txqs, old_ntc;
- 	int num_rxqs, nch, ntc;
- 	int err;
-+	int i;
- 
- 	old_num_txqs = netdev->real_num_tx_queues;
- 	old_ntc = netdev->num_tc ? : 1;
-+	for (i = 0; i < ARRAY_SIZE(old_tc_to_txq); i++)
-+		old_tc_to_txq[i] = netdev->tc_to_txq[i];
- 
- 	nch = priv->channels.params.num_channels;
--	ntc = mlx5e_get_dcb_num_tc(&priv->channels.params);
-+	ntc = priv->channels.params.mqprio.num_tc;
- 	num_rxqs = nch * priv->profile->rq_groups;
-+	tc_to_txq = priv->channels.params.mqprio.tc_to_txq;
- 
--	err = mlx5e_netdev_set_tcs(netdev, nch, ntc, NULL);
-+	err = mlx5e_netdev_set_tcs(netdev, nch, ntc, tc_to_txq);
- 	if (err)
- 		goto err_out;
- 	err = mlx5e_update_tx_netdev_queues(priv);
-@@ -2350,11 +2352,14 @@ static int mlx5e_update_netdev_queues(struct mlx5e_priv *priv)
- 	WARN_ON_ONCE(netif_set_real_num_tx_queues(netdev, old_num_txqs));
- 
- err_tcs:
--	mlx5e_netdev_set_tcs(netdev, old_num_txqs / old_ntc, old_ntc, NULL);
-+	WARN_ON_ONCE(mlx5e_netdev_set_tcs(netdev, old_num_txqs / old_ntc, old_ntc,
-+					  old_tc_to_txq));
- err_out:
- 	return err;
- }
- 
-+static MLX5E_DEFINE_PREACTIVATE_WRAPPER_CTX(mlx5e_update_netdev_queues);
-+
- static void mlx5e_set_default_xps_cpumasks(struct mlx5e_priv *priv,
- 					   struct mlx5e_params *params)
- {
-@@ -2861,6 +2866,58 @@ static int mlx5e_modify_channels_vsd(struct mlx5e_channels *chs, bool vsd)
- 	return 0;
- }
- 
-+static void mlx5e_mqprio_build_default_tc_to_txq(struct netdev_tc_txq *tc_to_txq,
-+						 int ntc, int nch)
-+{
-+	int tc;
-+
-+	memset(tc_to_txq, 0, sizeof(*tc_to_txq) * TC_MAX_QUEUE);
-+
-+	/* Map netdev TCs to offset 0.
-+	 * We have our own UP to TXQ mapping for DCB mode of QoS
-+	 */
-+	for (tc = 0; tc < ntc; tc++) {
-+		tc_to_txq[tc] = (struct netdev_tc_txq) {
-+			.count = nch,
-+			.offset = 0,
-+		};
-+	}
-+}
-+
-+static void mlx5e_mqprio_build_tc_to_txq(struct netdev_tc_txq *tc_to_txq,
-+					 struct tc_mqprio_qopt *qopt)
-+{
-+	int tc;
-+
-+	for (tc = 0; tc < TC_MAX_QUEUE; tc++) {
-+		tc_to_txq[tc] = (struct netdev_tc_txq) {
-+			.count = qopt->count[tc],
-+			.offset = qopt->offset[tc],
-+		};
-+	}
-+}
-+
-+static void mlx5e_params_mqprio_dcb_set(struct mlx5e_params *params, u8 num_tc)
-+{
-+	params->mqprio.mode = TC_MQPRIO_MODE_DCB;
-+	params->mqprio.num_tc = num_tc;
-+	mlx5e_mqprio_build_default_tc_to_txq(params->mqprio.tc_to_txq, num_tc,
-+					     params->num_channels);
-+}
-+
-+static void mlx5e_params_mqprio_channel_set(struct mlx5e_params *params,
-+					    struct tc_mqprio_qopt *qopt)
-+{
-+	params->mqprio.mode = TC_MQPRIO_MODE_CHANNEL;
-+	params->mqprio.num_tc = qopt->num_tc;
-+	mlx5e_mqprio_build_tc_to_txq(params->mqprio.tc_to_txq, qopt);
-+}
-+
-+static void mlx5e_params_mqprio_reset(struct mlx5e_params *params)
-+{
-+	mlx5e_params_mqprio_dcb_set(params, 1);
-+}
-+
- static int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
- 				     struct tc_mqprio_qopt *mqprio)
- {
-@@ -2874,8 +2931,7 @@ static int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
- 		return -EINVAL;
- 
- 	new_params = priv->channels.params;
--	new_params.mqprio.mode = TC_MQPRIO_MODE_DCB;
--	new_params.mqprio.num_tc = tc ? tc : 1;
-+	mlx5e_params_mqprio_dcb_set(&new_params, tc ? tc : 1);
- 
- 	err = mlx5e_safe_switch_params(priv, &new_params,
- 				       mlx5e_num_channels_changed_ctx, NULL, true);
-@@ -2926,25 +2982,12 @@ static int mlx5e_mqprio_channel_validate(struct mlx5e_priv *priv,
- 	return 0;
- }
- 
--static int mlx5e_mqprio_channel_set_tcs_ctx(struct mlx5e_priv *priv, void *ctx)
--{
--	struct tc_mqprio_qopt_offload *mqprio = (struct tc_mqprio_qopt_offload *)ctx;
--	struct net_device *netdev = priv->netdev;
--	u8 num_tc;
--
--	if (priv->channels.params.mqprio.mode != TC_MQPRIO_MODE_CHANNEL)
--		return -EINVAL;
--
--	num_tc = priv->channels.params.mqprio.num_tc;
--	mlx5e_netdev_set_tcs(netdev, 0, num_tc, mqprio);
--
--	return 0;
--}
--
- static int mlx5e_setup_tc_mqprio_channel(struct mlx5e_priv *priv,
- 					 struct tc_mqprio_qopt_offload *mqprio)
- {
-+	mlx5e_fp_preactivate preactivate;
- 	struct mlx5e_params new_params;
-+	bool nch_changed;
- 	int err;
- 
- 	err = mlx5e_mqprio_channel_validate(priv, mqprio);
-@@ -2952,12 +2995,12 @@ static int mlx5e_setup_tc_mqprio_channel(struct mlx5e_priv *priv,
- 		return err;
- 
- 	new_params = priv->channels.params;
--	new_params.mqprio.mode = TC_MQPRIO_MODE_CHANNEL;
--	new_params.mqprio.num_tc = mqprio->qopt.num_tc;
--	err = mlx5e_safe_switch_params(priv, &new_params,
--				       mlx5e_mqprio_channel_set_tcs_ctx, mqprio, true);
-+	mlx5e_params_mqprio_channel_set(&new_params, &mqprio->qopt);
- 
--	return err;
-+	nch_changed = mlx5e_get_dcb_num_tc(&priv->channels.params) > 1;
-+	preactivate = nch_changed ? mlx5e_num_channels_changed_ctx :
-+		mlx5e_update_netdev_queues_ctx;
-+	return mlx5e_safe_switch_params(priv, &new_params, preactivate, NULL, true);
- }
- 
- static int mlx5e_setup_tc_mqprio(struct mlx5e_priv *priv,
-@@ -4190,7 +4233,7 @@ void mlx5e_build_nic_params(struct mlx5e_priv *priv, struct mlx5e_xsk *xsk, u16
- 	params->hard_mtu = MLX5E_ETH_HARD_MTU;
- 	params->num_channels = min_t(unsigned int, MLX5E_MAX_NUM_CHANNELS / 2,
- 				     priv->max_nch);
--	params->mqprio.num_tc = 1;
-+	mlx5e_params_mqprio_reset(params);
- 
- 	/* Set an initial non-zero value, so that mlx5e_select_queue won't
- 	 * divide by zero if called before first activating channels.
-@@ -4823,6 +4866,10 @@ int mlx5e_attach_netdev(struct mlx5e_priv *priv)
- 		 */
- 		priv->netdev->priv_flags &= ~IFF_RXFH_CONFIGURED;
- 		priv->channels.params.num_channels = max_nch;
-+		if (priv->channels.params.mqprio.mode == TC_MQPRIO_MODE_CHANNEL) {
-+			mlx5_core_warn(priv->mdev, "MLX5E: Disabling MQPRIO channel mode\n");
-+			mlx5e_params_mqprio_reset(&priv->channels.params);
+-	if (MLX5_CAP_ESW_EGRESS_ACL(esw->dev, flow_counter)) {
++	if (vport->egress.legacy.drop_counter) {
++		drop_counter = vport->egress.legacy.drop_counter;
++	} else if (MLX5_CAP_ESW_EGRESS_ACL(esw->dev, flow_counter)) {
+ 		drop_counter = mlx5_fc_create(esw->dev, false);
+-		if (IS_ERR(drop_counter))
++		if (IS_ERR(drop_counter)) {
+ 			esw_warn(esw->dev,
+ 				 "vport[%d] configure egress drop rule counter err(%ld)\n",
+ 				 vport->vport, PTR_ERR(drop_counter));
++			drop_counter = NULL;
 +		}
+ 		vport->egress.legacy.drop_counter = drop_counter;
  	}
- 	if (max_nch != priv->max_nch) {
- 		mlx5_core_warn(priv->mdev,
+ 
+@@ -123,7 +127,7 @@ int esw_acl_egress_lgcy_setup(struct mlx5_eswitch *esw,
+ 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_DROP;
+ 
+ 	/* Attach egress drop flow counter */
+-	if (!IS_ERR_OR_NULL(drop_counter)) {
++	if (drop_counter) {
+ 		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_COUNT;
+ 		drop_ctr_dst.type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
+ 		drop_ctr_dst.counter_id = mlx5_fc_id(drop_counter);
+@@ -162,7 +166,7 @@ void esw_acl_egress_lgcy_cleanup(struct mlx5_eswitch *esw,
+ 	esw_acl_egress_table_destroy(vport);
+ 
+ clean_drop_counter:
+-	if (!IS_ERR_OR_NULL(vport->egress.legacy.drop_counter)) {
++	if (vport->egress.legacy.drop_counter) {
+ 		mlx5_fc_destroy(esw->dev, vport->egress.legacy.drop_counter);
+ 		vport->egress.legacy.drop_counter = NULL;
+ 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c
+index f75b86abaf1c..b1a5199260f6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c
+@@ -160,7 +160,9 @@ int esw_acl_ingress_lgcy_setup(struct mlx5_eswitch *esw,
+ 
+ 	esw_acl_ingress_lgcy_rules_destroy(vport);
+ 
+-	if (MLX5_CAP_ESW_INGRESS_ACL(esw->dev, flow_counter)) {
++	if (vport->ingress.legacy.drop_counter) {
++		counter = vport->ingress.legacy.drop_counter;
++	} else if (MLX5_CAP_ESW_INGRESS_ACL(esw->dev, flow_counter)) {
+ 		counter = mlx5_fc_create(esw->dev, false);
+ 		if (IS_ERR(counter)) {
+ 			esw_warn(esw->dev,
 -- 
 2.31.1
 
