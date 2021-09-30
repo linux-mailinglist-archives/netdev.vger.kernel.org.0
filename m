@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2599D41D362
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 08:31:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3384E41D365
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 08:31:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348368AbhI3Gbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 02:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
+        id S1348058AbhI3Gb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 02:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348363AbhI3Gbl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 02:31:41 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6C1C06176D;
-        Wed, 29 Sep 2021 23:29:59 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id l6so3262928plh.9;
-        Wed, 29 Sep 2021 23:29:59 -0700 (PDT)
+        with ESMTP id S1348358AbhI3Gbq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 02:31:46 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD035C061771;
+        Wed, 29 Sep 2021 23:30:02 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id r2so5181327pgl.10;
+        Wed, 29 Sep 2021 23:30:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=SmxgKFkRGgoEqMaY9cRCsw185bTTD612fO7JwVu7FH4=;
-        b=mJvxVvapfsM5/TAyGI93gO+un+1vYLwzvBXd9xJgV495VSgvX7Y7rcFP8M5gcQ7xP1
-         ikTuX9CeyJgor5vtxEYaVv/9UFD9rv1SEKk3bAUtoOoK7BPBLBxRoDOSIBisG54UOAMq
-         DtIH5TpZJ4EId7IzcRGYVPsXbK8+HT7LPxjWtwDY0w/t8N2mTt4BIW9yHj2O+x5vf0cg
-         E3s8TjYDoPwTM4+CLevjOWXYau6V8tMW0s6oOtWAh18dqi1K13lx3/Q7YPwmwwBgAfvM
-         PT557FFwb/0QdUzNBaYgaRQV72qQHihW/otmJp6XA++WUwFpdZMokynjQmDho9hRwqUU
-         swCg==
+        bh=J0qwPwLHdv9Ry0hnhF4U+31mLrql64Mi3Dl7eMKHw3Q=;
+        b=OaLzCUg7sR0pMW0AkwuxhG8gUCWYemwG+D676ExawgKDKBpbCN1NeHZ4thy7cNUxJH
+         QttfzrHWALG1Zjs6svQkBjVdsOrLYa29nruPsxXl96zm/GklLbthetA2IbrLOtpNFqZ3
+         2vDWl1TexCtDgWWQDPEZxTKyvnCSinB1fyls9GrCFlhfExXAc/7BW7CU8RSigUx7NcWs
+         sN91MPcZ2toJfCXwmQYxeET6SOeXkx/csVNOUxeScfSaEAgmGtdjxdXmlhXZkJdd8aQ+
+         0K+5bi8AwCR8kA9hJkxixtQIpBhr27mBKvHUnp44hfO6ewckRar9vzSxWbybysYAa7hO
+         RMJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=SmxgKFkRGgoEqMaY9cRCsw185bTTD612fO7JwVu7FH4=;
-        b=Eo1OgB18NPi3WO4paw2Mmktk94GrAyd52ixXeV6J4OLSkdaiYsahH/LfPVJqky3iID
-         NpArCWg3n1SVj4grFaE6G7icEenUcT+uBaGErnkEBygUy+O20DPPASbVzwnlAAV7izin
-         RYGyHHqeyOBhMfPb55ABMw3V3nz59Lpts5wmMTEKhYqUqqCB/YFnwJltXagIeFS1A4LA
-         dcL6Shiv1EUAHWpEk0zjoh0es8MbaxDNn5lLi9XfMp04qRY97PzCIqQklJf7alsBh9RX
-         0w1e9M/aLhKAkpmS81Jg232yWZVKdT5gQe0Q3Qzotw9x7XjGrTDDMry+XPX3IojiW4di
-         WJRQ==
-X-Gm-Message-State: AOAM532N6IAVay+KaTk/Nc3E/GVIRIBEy2wagssMQ9eZMP9Mxl4r8E/8
-        vfivSj+vNJzPY34oOYDQrSyhBW4EgRo=
-X-Google-Smtp-Source: ABdhPJz7ih3w/IqZxUtxlFeJuXj8D53Eb5s/OK75YEML/JeYpOzOK+R+AqxTZjkblmLzzSUPQ3JUPQ==
-X-Received: by 2002:a17:90a:1944:: with SMTP id 4mr10923078pjh.221.1632983399214;
-        Wed, 29 Sep 2021 23:29:59 -0700 (PDT)
+        bh=J0qwPwLHdv9Ry0hnhF4U+31mLrql64Mi3Dl7eMKHw3Q=;
+        b=v+/uP6ZFxr3WJhIt8gw2ru3TYBp9EoGIYsr5Ygsge9dph2I051e+gd0eE8miD9Rgp5
+         yJgC0lvFcVGcwrYQ51vSgVHFFhdT5PfWyoXAoS48uDPMNd75/CFsTTcQsoFZZ5NgHohJ
+         lTIhWtvo4slvyEeyAVQZqtmn/sipIAfCRwPfdxrJhImf0kLKywpomG+lwabE9baEfuUZ
+         j6J7thpNinR8liYGH6IGUMIw9Sdmdv/+92NWarm+5MM0cgdYYbvOpYDtsnCvF4v0cA/Q
+         bQCFsMWHucoz5GGt06FK/OdOo5inWrmDIeQj0cKq/NbD9DKuPv7sQAiR1JaysawnUUi9
+         hYyA==
+X-Gm-Message-State: AOAM533g2FEXYUvVZ00C2wLtf8tIsXOZBmQcDu326rMmQCVju6Sci+wu
+        kR/BBM5oArgR+fButYRs2nHGL9hDRBs=
+X-Google-Smtp-Source: ABdhPJxkftWHLxsuDd8493jnDVyJN7VQCjG4JbnnujjFHpcOGgBduKwJiykWEYMZAb9+2cnzO9xl0w==
+X-Received: by 2002:a63:5f0d:: with SMTP id t13mr3543425pgb.22.1632983402055;
+        Wed, 29 Sep 2021 23:30:02 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id z9sm1445160pji.42.2021.09.29.23.29.58
+        by smtp.gmail.com with ESMTPSA id mr18sm1482217pjb.17.2021.09.29.23.30.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Sep 2021 23:29:58 -0700 (PDT)
+        Wed, 29 Sep 2021 23:30:01 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -57,157 +57,130 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v6 3/9] bpf: btf: Introduce helpers for dynamic BTF set registration
-Date:   Thu, 30 Sep 2021 11:59:42 +0530
-Message-Id: <20210930062948.1843919-4-memxor@gmail.com>
+Subject: [PATCH bpf-next v6 4/9] tools: Allow specifying base BTF file in resolve_btfids
+Date:   Thu, 30 Sep 2021 11:59:43 +0530
+Message-Id: <20210930062948.1843919-5-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210930062948.1843919-1-memxor@gmail.com>
 References: <20210930062948.1843919-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4928; h=from:subject; bh=Z49+ZfOJfNIcBx7xGCBn4+PTlYIzy90X8Bk3C1i1vSo=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhVVlBfrZyWFi8bHU8zOBS4ia5K3qEpJqBiICjwsXY NqOXh4SJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYVVZQQAKCRBM4MiGSL8RyiZOD/ 9q8VTFuTU9N0Pc80vMA1xpvif4bwk+yWi+BAm3gc0r+QVqjCa/9X5L22SM6SkqWFfh6E3sYuRFtAqE gvDDw/PCJqmYAGy9BwEQVblGbtMFyKwAllE3l07UEbuTPb6c+cFYwBNK1gnmGIpALiMr0e01TosXov dmw15gGKzPAikpjeEifakrqwMRw0YNi6/Z4dszSJxzdVc9qx62PS4a4yEwZSP0p0kXAB8I+cff8c/C 1fQvv9z4SxgOqCNsAvyIRF/YOfy+bmjPrNFOSOFas3cMqODTvHBNFcDzbvuY8f8Ksp8DzNh38nLJrF PRwuAOMMnQ8JFwKMDs9wTt4YWE/3ktD+SOMfktJrll4IQD1ZRN1Js2T0kRR/M3Zw/zrgLY9zgizdsv 1bQnvD1ZIXxtD/UcKcqy2ZtdtMz0wciRyW5lamMcfly+s3CW4xjluqNFDR0d1D9d51YQI7HtWfomrL 5o49YkNHlI8vJaCeHIqoBld7bt+XwQL0aHk29ZdnvV3oRxwrmgfAVMKrl492FpBwQtIJQHyM05m438 gnMxMNk49dgrp4CW2Yr8/gUU4fw5hTSgUgy2EZimJJD8rgTE3s5beKPVrcVHTtHSL3jvtjoGqsMbmq TfndmTXh8lsH2vKzmtDDrnzkFpjv9DTtF1V/jMcD+vtJw7PtzTJOGxxU75vQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3590; h=from:subject; bh=JQF5FTCXoiG0ws4sHCqjBu7XKk8EtlYkG/YdFjxrcpU=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhVVlBWhWKmXQXqjEOOQQo0Qvqm2W8oSyAf2VVF5+s gNtOhXOJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYVVZQQAKCRBM4MiGSL8Ryoh0D/ 90FhUevnwvYsVWY0w0VIj/PilH3T3blsAcCrXujGLQpWBGeLFzKFR2Y4vuhH13AJeKP80G9jRmIIEu N07BtdJXh83+DeyL5cG4gLu9uoRfEitvdUxGfaR1ofRwQSfCKH9ndRl5BBVNPKGZCPhsLt/v5oEnJK ru7Ndz+O8d8h5raZtePwGJZx+FeaXMJSYrx6N6mKceAt002c5kuLBZIr4fcUpsKGfcznIfaX3Ovdmr JY4JvAO9xqiBwSq1P2MHxLYyyMQpHrmn5iM8F/iFCe7/U44d8fBweFV0BDb/H2o5qt2piwRJ8HuV5u SACwyK2UxAnWal4tVvkMt0gZ6L7DHooPmJVEFV/ZZT5xOAbd4EhooECL90/ALNPNhL2yCIcmntTWzn 8qQF6kGsD+p7NkdgW7Zoo/OdnS6tq+HU3IRzrH5MsGknepZc15FafLXsmqei9sYZs1z6zaHzIBfe6U bvgocBp5hqrbeETTuZT6jsNw5tmorYGALuLU4Mbv0NILZa/UiaVog0EGwxDbsXNqxLkOH4rcNQ9l8N vb39FEOZRcLTwa6wu/rO2cQDP3r79Cn9lRLhbVjqjT4DQiP9/7t1MfYM0/N5YDuQihyTZR6MmxJGQW pNsp8DXD2EU4nKWZqP3DTe+hMuxiaXAsxhv78UaoM7rGNyskygxj3S7aV8Lg==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds helpers for registering btf_id_set from modules and the
-check_kfunc_call callback that can be used to look them up.
+This commits allows specifying the base BTF for resolving btf id
+lists/sets during link time in the resolve_btfids tool. The base BTF is
+set to NULL if no path is passed. This allows resolving BTF ids for
+module kernel objects.
 
-With in kernel sets, the way this is supposed to work is, in kernel
-callback looks up within the in-kernel kfunc whitelist, and then defers
-to the dynamic BTF set lookup if it doesn't find the BTF id. If there is
-no in-kernel BTF id set, this callback can be used directly.
-
-Also fix includes for btf.h and bpfptr.h so that they can included in
-isolation. This is in preparation for their usage in tcp_bbr, tcp_cubic
-and tcp_dctcp modules in the next patch.
+Also, drop the --no-fail option, as it is only used in case .BTF_ids
+section is not present, instead make no-fail the default mode. The long
+option name is same as that of pahole.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/bpfptr.h |  1 +
- include/linux/btf.h    | 31 +++++++++++++++++++++++++
- kernel/bpf/btf.c       | 51 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 83 insertions(+)
+ tools/bpf/resolve_btfids/main.c      | 28 +++++++++++++++++++---------
+ tools/testing/selftests/bpf/Makefile |  2 +-
+ 2 files changed, 20 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/bpfptr.h b/include/linux/bpfptr.h
-index 546e27fc6d46..46e1757d06a3 100644
---- a/include/linux/bpfptr.h
-+++ b/include/linux/bpfptr.h
-@@ -3,6 +3,7 @@
- #ifndef _LINUX_BPFPTR_H
- #define _LINUX_BPFPTR_H
+diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
+index de6365b53c9c..c6c3e613858a 100644
+--- a/tools/bpf/resolve_btfids/main.c
++++ b/tools/bpf/resolve_btfids/main.c
+@@ -89,6 +89,7 @@ struct btf_id {
+ struct object {
+ 	const char *path;
+ 	const char *btf;
++	const char *base_btf_path;
  
-+#include <linux/mm.h>
- #include <linux/sockptr.h>
+ 	struct {
+ 		int		 fd;
+@@ -477,16 +478,27 @@ static int symbols_resolve(struct object *obj)
+ 	int nr_structs  = obj->nr_structs;
+ 	int nr_unions   = obj->nr_unions;
+ 	int nr_funcs    = obj->nr_funcs;
++	struct btf *base_btf = NULL;
+ 	int err, type_id;
+ 	struct btf *btf;
+ 	__u32 nr_types;
  
- typedef sockptr_t bpfptr_t;
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 214fde93214b..382c00d5cede 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -5,6 +5,7 @@
- #define _LINUX_BTF_H 1
- 
- #include <linux/types.h>
-+#include <linux/bpfptr.h>
- #include <uapi/linux/btf.h>
- #include <uapi/linux/bpf.h>
- 
-@@ -238,4 +239,34 @@ static inline const char *btf_name_by_offset(const struct btf *btf,
- }
- #endif
- 
-+struct kfunc_btf_id_set {
-+	struct list_head list;
-+	struct btf_id_set *set;
-+	struct module *owner;
-+};
-+
-+struct kfunc_btf_id_list;
-+
-+#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
-+void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
-+			       struct kfunc_btf_id_set *s);
-+void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
-+				 struct kfunc_btf_id_set *s);
-+#else
-+static inline void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
-+					     struct kfunc_btf_id_set *s)
-+{
-+}
-+static inline void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
-+					       struct kfunc_btf_id_set *s)
-+{
-+}
-+#endif
-+
-+#define DECLARE_CHECK_KFUNC_CALLBACK(type)                                     \
-+	bool __bpf_##type##_check_kfunc_call(u32 kfunc_id, struct module *owner)
-+#define DEFINE_KFUNC_BTF_ID_SET(set, name)                                     \
-+	struct kfunc_btf_id_set name = { LIST_HEAD_INIT(name.list), (set),     \
-+					 THIS_MODULE }
-+
- #endif
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index c3d605b22473..5a8806cfecd0 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6343,3 +6343,54 @@ const struct bpf_func_proto bpf_btf_find_by_name_kind_proto = {
- };
- 
- BTF_ID_LIST_GLOBAL_SINGLE(btf_task_struct_ids, struct, task_struct)
-+
-+struct kfunc_btf_id_list {
-+	struct list_head list;
-+	struct mutex mutex;
-+};
-+
-+#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
-+
-+void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
-+			       struct kfunc_btf_id_set *s)
-+{
-+	mutex_lock(&l->mutex);
-+	list_add(&s->list, &l->list);
-+	mutex_unlock(&l->mutex);
-+}
-+EXPORT_SYMBOL_GPL(register_kfunc_btf_id_set);
-+
-+void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
-+				 struct kfunc_btf_id_set *s)
-+{
-+	mutex_lock(&l->mutex);
-+	list_del_init(&s->list);
-+	mutex_unlock(&l->mutex);
-+}
-+EXPORT_SYMBOL_GPL(unregister_kfunc_btf_id_set);
-+
-+#endif
-+
-+#define DEFINE_KFUNC_BTF_ID_LIST(name)                                         \
-+	struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
-+					  __MUTEX_INITIALIZER(name.mutex) }; \
-+	EXPORT_SYMBOL_GPL(name)
-+
-+#define DEFINE_CHECK_KFUNC_CALLBACK(type, list_name)                           \
-+	bool __bpf_##type##_check_kfunc_call(u32 kfunc_id,                     \
-+					     struct module *owner)             \
-+	{                                                                      \
-+		struct kfunc_btf_id_set *s;                                    \
-+		if (!owner || !IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))      \
-+			return false;                                          \
-+		mutex_lock(&list_name.mutex);                                  \
-+		list_for_each_entry(s, &list_name.list, list) {                \
-+			if (s->owner == owner &&                               \
-+			    btf_id_set_contains(s->set, kfunc_id)) {           \
-+				mutex_unlock(&list_name.mutex);                \
-+				return true;                                   \
-+			}                                                      \
-+		}                                                              \
-+		mutex_unlock(&list_name.mutex);                                \
-+		return false;                                                  \
+-	btf = btf__parse(obj->btf ?: obj->path, NULL);
++	if (obj->base_btf_path) {
++		base_btf = btf__parse(obj->base_btf_path, NULL);
++		err = libbpf_get_error(base_btf);
++		if (err) {
++			pr_err("FAILED: load base BTF from %s: %s\n",
++			       obj->base_btf_path, strerror(-err));
++			return -1;
++		}
 +	}
++
++	btf = btf__parse_split(obj->btf ?: obj->path, base_btf);
+ 	err = libbpf_get_error(btf);
+ 	if (err) {
+ 		pr_err("FAILED: load BTF from %s: %s\n",
+ 			obj->btf ?: obj->path, strerror(-err));
+-		return -1;
++		goto out;
+ 	}
+ 
+ 	err = -1;
+@@ -545,6 +557,7 @@ static int symbols_resolve(struct object *obj)
+ 
+ 	err = 0;
+ out:
++	btf__free(base_btf);
+ 	btf__free(btf);
+ 	return err;
+ }
+@@ -678,7 +691,6 @@ static const char * const resolve_btfids_usage[] = {
+ 
+ int main(int argc, const char **argv)
+ {
+-	bool no_fail = false;
+ 	struct object obj = {
+ 		.efile = {
+ 			.idlist_shndx  = -1,
+@@ -695,8 +707,8 @@ int main(int argc, const char **argv)
+ 			 "be more verbose (show errors, etc)"),
+ 		OPT_STRING(0, "btf", &obj.btf, "BTF data",
+ 			   "BTF data"),
+-		OPT_BOOLEAN(0, "no-fail", &no_fail,
+-			   "do not fail if " BTF_IDS_SECTION " section is not found"),
++		OPT_STRING('b', "btf_base", &obj.base_btf_path, "file",
++			   "path of file providing base BTF"),
+ 		OPT_END()
+ 	};
+ 	int err = -1;
+@@ -717,10 +729,8 @@ int main(int argc, const char **argv)
+ 	 */
+ 	if (obj.efile.idlist_shndx == -1 ||
+ 	    obj.efile.symbols_shndx == -1) {
+-		if (no_fail)
+-			return 0;
+-		pr_err("FAILED to find needed sections\n");
+-		return -1;
++		pr_debug("Cannot find .BTF_ids or symbols sections, nothing to do\n");
++		return 0;
+ 	}
+ 
+ 	if (symbols_collect(&obj))
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 326ea75ce99e..e1ce73be7a5b 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -453,7 +453,7 @@ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
+ 			     | $(TRUNNER_BINARY)-extras
+ 	$$(call msg,BINARY,,$$@)
+ 	$(Q)$$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
+-	$(Q)$(RESOLVE_BTFIDS) --no-fail --btf $(TRUNNER_OUTPUT)/btf_data.o $$@
++	$(Q)$(RESOLVE_BTFIDS) --btf $(TRUNNER_OUTPUT)/btf_data.o $$@
+ 
+ endef
+ 
 -- 
 2.33.0
 
