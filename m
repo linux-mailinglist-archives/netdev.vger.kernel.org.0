@@ -2,145 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC8D941E2C2
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 22:41:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59F0B41E2E8
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 22:58:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348271AbhI3Umu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 16:42:50 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:36619 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229958AbhI3Umu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 16:42:50 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id BA47C5C00D8;
-        Thu, 30 Sep 2021 16:41:06 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Thu, 30 Sep 2021 16:41:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=tlu5ke
-        c8+bKTenuSnheTpyPIbGOnRIEDtzI21qiNR+Q=; b=qnMp+4e314BrW58ZdvH+Mc
-        RPOflam2LWaJS7uOhL+VYg4xY9Fo4Z8uW6qQ8EAuTSIGuyd/fz5zM8rLq/cDKASE
-        2jPh3oWZOSTUPYH5YpsyOUG1Jm2yM618aRx84FTFjeUabrp/uy/vcZE5xxwOF/G9
-        nkfdxlfpCkX8TmrYiwkDMyAgFLG2ogQsc3Oxd0wc6cvO6iY4Zc7SwE/8xBm2TDvO
-        Exbe69WRkXNJjE8Y9ZOLPGslChEgm/j1OAJf92BEu8LdXaUr6VfH3sC75zpe9y2w
-        LMfaSH59z9VKQ2Zps/d0Zs66nETLz7nOd/YPVnP0Y9UV1+8AsbypbdYeXSKlQshQ
-        ==
-X-ME-Sender: <xms:4iBWYRBeJNKGpmzVFbX8zRZXlQwUIWbeVgLsRNI0ugW2hIe7lxtZSw>
-    <xme:4iBWYfiItAS_3PEQVfnryL-dymIRLDYnjZepMw-CrPkd1ulmOVgkjBHklXMczoz50
-    2RsB4JVc0mHmFo>
-X-ME-Received: <xmr:4iBWYcl57X_G70qoBKuc951tJwFt5i6nsA5vdWRTU2ABj5MXwYo9JbrF3G9r4oEGUaBEW1k7XdC-nHjBnDRcbEUms6TWlQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudekgedgudehtdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:4iBWYbzctqvH2bQCf1XnFyNXHhbIsl5fxqZPBEzweli8ujCm500jVg>
-    <xmx:4iBWYWSowChFmZTS_sa04sJvr1HNV3px_AAVWG31UsH_SUS67Bf-Og>
-    <xmx:4iBWYeYmaOaQaC5KB12kq_K3KTc9SejFmjOP8kasp-Eq9G2gFzdI9w>
-    <xmx:4iBWYcMOYuMLo1til95ivrsCSB_9rY0kc01dUUJH2eZjodL5E8yq_Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 30 Sep 2021 16:41:05 -0400 (EDT)
-Date:   Thu, 30 Sep 2021 23:41:02 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, vadimp@nvidia.com, moshe@nvidia.com,
-        popadrian1996@gmail.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH ethtool-next 1/7] cmis: Fix CLEI code parsing
-Message-ID: <YVYg3rBB1/a2dlxw@shredder>
-References: <20210917144043.566049-1-idosch@idosch.org>
- <20210917144043.566049-2-idosch@idosch.org>
- <20210930202133.rspuswnnbnnhlgeb@lion.mk-sys.cz>
+        id S1348441AbhI3U7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 16:59:45 -0400
+Received: from www62.your-server.de ([213.133.104.62]:57628 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229957AbhI3U7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 16:59:45 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mW37V-000DIq-1m; Thu, 30 Sep 2021 22:57:33 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mW37U-000FDj-Lu; Thu, 30 Sep 2021 22:57:32 +0200
+Subject: Re: [PATCH v4 0/8] bpf powerpc: Add BPF_PROBE_MEM support in powerpc
+ JIT compiler
+To:     Hari Bathini <hbathini@linux.ibm.com>, naveen.n.rao@linux.ibm.com,
+        christophe.leroy@csgroup.eu, mpe@ellerman.id.au, ast@kernel.org
+Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+References: <20210929111855.50254-1-hbathini@linux.ibm.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <88b59272-e3f7-30ba-dda0-c4a6b42c0029@iogearbox.net>
+Date:   Thu, 30 Sep 2021 22:57:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210930202133.rspuswnnbnnhlgeb@lion.mk-sys.cz>
+In-Reply-To: <20210929111855.50254-1-hbathini@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26308/Thu Sep 30 11:04:45 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 10:21:33PM +0200, Michal Kubecek wrote:
-> On Fri, Sep 17, 2021 at 05:40:37PM +0300, Ido Schimmel wrote:
-> > From: Ido Schimmel <idosch@nvidia.com>
-> > 
-> > In CMIS, unlike SFF-8636, there is no presence indication for the CLEI
-> > code (Common Language Equipment Identification) field. The field is
-> > always present, but might not be supported. In which case, "a value of
-> > all ASCII 20h (spaces) shall be entered".
-> > 
-> > Therefore, remove the erroneous check which seems to be influenced from
-> > SFF-8636 and only print the string if it is supported and has a non-zero
-> > length.
-> > 
-> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> > ---
-> >  cmis.c | 8 +++++---
-> >  cmis.h | 3 +--
-> >  2 files changed, 6 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/cmis.c b/cmis.c
-> > index 1a91e798e4b8..2a48c1a1d56a 100644
-> > --- a/cmis.c
-> > +++ b/cmis.c
-> > @@ -307,6 +307,8 @@ static void cmis_show_link_len(const __u8 *id)
-> >   */
-> >  static void cmis_show_vendor_info(const __u8 *id)
-> >  {
-> > +	const char *clei = (const char *)(id + CMIS_CLEI_START_OFFSET);
-> > +
-> >  	sff_show_ascii(id, CMIS_VENDOR_NAME_START_OFFSET,
-> >  		       CMIS_VENDOR_NAME_END_OFFSET, "Vendor name");
-> >  	cmis_show_oui(id);
-> > @@ -319,9 +321,9 @@ static void cmis_show_vendor_info(const __u8 *id)
-> >  	sff_show_ascii(id, CMIS_DATE_YEAR_OFFSET,
-> >  		       CMIS_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
-> >  
-> > -	if (id[CMIS_CLEI_PRESENT_BYTE] & CMIS_CLEI_PRESENT_MASK)
-> > -		sff_show_ascii(id, CMIS_CLEI_START_OFFSET,
-> > -			       CMIS_CLEI_END_OFFSET, "CLEI code");
-> > +	if (strlen(clei) && strcmp(clei, CMIS_CLEI_BLANK))
-> > +		sff_show_ascii(id, CMIS_CLEI_START_OFFSET, CMIS_CLEI_END_OFFSET,
-> > +			       "CLEI code");
-> >  }
-> >  
-> >  void qsfp_dd_show_all(const __u8 *id)
-> 
-> Is it safe to assume that the string will be always null terminated?
+On 9/29/21 1:18 PM, Hari Bathini wrote:
+> Patch #1 & #2 are simple cleanup patches. Patch #3 refactors JIT
+> compiler code with the aim to simplify adding BPF_PROBE_MEM support.
+> Patch #4 introduces PPC_RAW_BRANCH() macro instead of open coding
+> branch instruction. Patch #5 & #7 add BPF_PROBE_MEM support for PPC64
+> & PPC32 JIT compilers respectively. Patch #6 & #8 handle bad userspace
+> pointers for PPC64 & PPC32 cases respectively.
 
-No. You want to see strnlen() and strncmp() instead?
+Michael, are you planning to pick up the series or shall we route via bpf-next?
 
-> Looking at the code below, CMIS_CLEI_BLANK consists of 10 spaces which
-> would fill the whole block at offsets 0xBE through 0xC7 with spaces and
-> offset 0xC8 is used as CMIS_PWR_CLASS_OFFSET. Also, sff_show_ascii()
-> doesn't seem to expect a null terminated string, rather a space padded
-> one.
-> 
-> Michal
-> 
-> 
-> > diff --git a/cmis.h b/cmis.h
-> > index 78ee1495bc33..d365252baa48 100644
-> > --- a/cmis.h
-> > +++ b/cmis.h
-> > @@ -34,10 +34,9 @@
-> >  #define CMIS_DATE_VENDOR_LOT_OFFSET		0xBC
-> >  
-> >  /* CLEI Code (Page 0) */
-> > -#define CMIS_CLEI_PRESENT_BYTE			0x02
-> > -#define CMIS_CLEI_PRESENT_MASK			0x20
-> >  #define CMIS_CLEI_START_OFFSET			0xBE
-> >  #define CMIS_CLEI_END_OFFSET			0xC7
-> > +#define CMIS_CLEI_BLANK				"          "
-> >  
-> >  /* Cable assembly length */
-> >  #define CMIS_CBL_ASM_LEN_OFFSET			0xCA
-> > -- 
-> > 2.31.1
-> > 
+Thanks,
+Daniel
 
+> Changes in v4:
+> * Addressed all the review comments from Christophe.
+> 
+> 
+> Hari Bathini (4):
+>    bpf powerpc: refactor JIT compiler code
+>    powerpc/ppc-opcode: introduce PPC_RAW_BRANCH() macro
+>    bpf ppc32: Add BPF_PROBE_MEM support for JIT
+>    bpf ppc32: Access only if addr is kernel address
+> 
+> Ravi Bangoria (4):
+>    bpf powerpc: Remove unused SEEN_STACK
+>    bpf powerpc: Remove extra_pass from bpf_jit_build_body()
+>    bpf ppc64: Add BPF_PROBE_MEM support for JIT
+>    bpf ppc64: Access only if addr is kernel address
+> 
+>   arch/powerpc/include/asm/ppc-opcode.h |   2 +
+>   arch/powerpc/net/bpf_jit.h            |  19 +++--
+>   arch/powerpc/net/bpf_jit_comp.c       |  72 ++++++++++++++++--
+>   arch/powerpc/net/bpf_jit_comp32.c     | 101 ++++++++++++++++++++++----
+>   arch/powerpc/net/bpf_jit_comp64.c     |  72 ++++++++++++++----
+>   5 files changed, 224 insertions(+), 42 deletions(-)
+> 
 
