@@ -2,186 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B34C41D647
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 11:25:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 473D741D65C
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 11:30:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349384AbhI3J1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 05:27:16 -0400
-Received: from mail-dm6nam10on2045.outbound.protection.outlook.com ([40.107.93.45]:36082
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1349293AbhI3J1P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 05:27:15 -0400
+        id S1349417AbhI3JcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 05:32:07 -0400
+Received: from de-smtp-delivery-102.mimecast.com ([194.104.111.102]:38269 "EHLO
+        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1349322AbhI3JcF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 05:32:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1632994222;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MgMqLc/2CAxXSpqukooo7cR1tG734vgtpKuS+VBBb0A=;
+        b=hHn32U3YEVj8Y4fpCzcrhB7W0nSVn/BlUXhxOnOclPBRX5eiFfTVApWhw1jg8bh6u4ezt4
+        xBHmWpcTPXSe9Pfh62COX0rr7m55N19Hgcwed1ZMpLhlbF6PUfqjqvsE6sgH5XeOd7Sj06
+        6zpjGRImKcuX6UiSKRUgxnqS6pcmVEI=
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com
+ (mail-vi1eur04lp2052.outbound.protection.outlook.com [104.47.14.52]) (Using
+ TLS) by relay.mimecast.com with ESMTP id de-mta-2-zdXEjLdRPCO6ue2D0zizsw-1;
+ Thu, 30 Sep 2021 11:30:21 +0200
+X-MC-Unique: zdXEjLdRPCO6ue2D0zizsw-1
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZmQFC0IP5q0M14gkGFEIS7CuPwMP/q4XWySC2jM968rfAx9uTBtBv6LcY1gJPopJZQKRkrrKzt7Mi8UWTLWNcMebGGBJcwM7lmt6AfTwWtAhRUYZcxwPJEJg+4w/6BAkyqe4KYSvVfNqzDVl8KuvXHXfPsfrLr9vH1cpgdFka8KGm15Ao9NYEfcPcxGRv/BeVAqwaGsF0IX4utYrpkmccqbnU7AzVf1w7tspJCHhp6z8uEVS5pKbCeODZwweyNYU5d48Ze+aOFs7GwLbc1bPgkL2EuzilusajWAhF/3JPTHKFPBqF1ne7jNQMi/yKOu3y6IXutNJyrAjwI+nvVPZpQ==
+ b=GDxhHuVyHrpYNB6UQ4ozYVi1EZ37XQ5BHgRxGmjikBvERohn47ETferLAmx+QkQRsnFif+lT/bhvBkW+e1PE+XugmQ3Fl0zyuodfFDkKrGazqvJny2dXwTsfVSjvk23HuGiE1bTb86eQneOWg1/HV12s3GSsP4QTLEQUo5L+vAyYMTl3DOrOpos5ykta57UNyU99xpDJ6fhMizQBZ01sQpR6B7NorU5sCm4WiZys+1ADNZSn2PIwvlzxS658dmdHTJrhYD416Jk3GPCE8AXRVUYc6JI2i8RUV7gED1XpaQ/XfVt3i9GQ6YFH2pNBqUCRli/uFGsdMXZsUbp8cpRMAQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=9S3wZBv0tNdr+hHbKqEsV2JMFySlS+AJHHTdkyTfl1E=;
- b=FVZp5/22n+Vp3UZun2YGuwM/VT/BG4WDNsHw7UkpVMQGAgVH+MoHtWtAv4vZHnPhmwopmTNchYVG41zLpEFIkXpZs1CinorbMJTKtJangJypaAslZJsQ0H9PQoWQVKcuIgXBzjNV9TzYqohHdHbhRaZlNnJqNmKYFIFECPxLTuh3PgWVuiNlgSX9aNir+FLln1UFGGV07wUiQhP6MKEK/lcuPFLA+JHpKrUu34uQ8C2BBCupHO8xebNJogsYCTPaNldSslsVGf/lcQX52un1di8LQ31CT+iSw5R/57ZH7lqDc1m0mqEqVuYfUCc7pHmEvM9NPHq6mvyYueqlb5gYiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9S3wZBv0tNdr+hHbKqEsV2JMFySlS+AJHHTdkyTfl1E=;
- b=PWTreCsQTZVfqS6lxuHZNu4ph+z2pH5rla7fvA/pBZRNCYR3Qh54bD7EWMsLFTp5oLZMSQE1S/wQXgrWxRgc8VOyX66YMrkb3WwzblUZf7d0o94mS8F+RLStZ/vEweWYF/dC1YGlEwstaanZWPUBQptKvwpiZPJujvq8CDl7jKkhHyms0fxYuaSN3rUaeKixURKGNrDSo8ZFWgESlnzMIKVXtY1g9qL3XvHiwBgxgt9u5HZcvivg7Nuy2kwFFbVR3SkPPPz0dmg5lc0Mi5nyFcjpiRNNb9UkvlWgFDAYwwSSTWGOgJ/ykVkJAQWvYNLN1GWWgdbBjZT53KWgVkvP3w==
-Received: from MW2PR2101CA0027.namprd21.prod.outlook.com (2603:10b6:302:1::40)
- by DM5PR12MB1706.namprd12.prod.outlook.com (2603:10b6:3:10f::7) with
+ bh=WA+Wngh51cwpRDWQTKMkMW2yPn621UUyhNrRINcV4GE=;
+ b=N+g8BubkCXRefdAq8lXeqOqQWo28zBWaXQ4Mw8SBY5aA5J3apzJTd92Bu3uxyZ1bojHCNVl8TiRR3TrcKefi584QKLhMy6a443/uXfHJ2Xu+6D9N7wXO3E+6IKXY9cEIXtdEzcI2A6k/RraY3eWPPqgDSoJ1RwZUaZq4xRViSLn9ZLBNzEp4iENSKxCpa0SMP71oBSiZAP1IDML1dh8g9lSvUujL8+HNYw1VgvxjxNVAqNs1UnOboH+DkSjVQI9lN9lIS01BGcCowcBqR4PzovC78TmkmN/MonFj8sNkfOL6WyFAKI37iJXI/yfD95wltMuUtV9Xpyz5NWd0xfnRJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+Authentication-Results: realtek.com; dkim=none (message not signed)
+ header.d=none;realtek.com; dmarc=none action=none header.from=suse.com;
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com (2603:10a6:10:22::23)
+ by DB7PR04MB4137.eurprd04.prod.outlook.com (2603:10a6:5:22::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.15; Thu, 30 Sep
- 2021 09:25:30 +0000
-Received: from CO1NAM11FT055.eop-nam11.prod.protection.outlook.com
- (2603:10b6:302:1:cafe::5) by MW2PR2101CA0027.outlook.office365.com
- (2603:10b6:302:1::40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.1 via Frontend
- Transport; Thu, 30 Sep 2021 09:25:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT055.mail.protection.outlook.com (10.13.175.129) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4566.14 via Frontend Transport; Thu, 30 Sep 2021 09:25:29 +0000
-Received: from [172.27.13.136] (172.20.187.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 30 Sep
- 2021 09:25:25 +0000
-Subject: Re: [PATCH mlx5-next 2/7] vfio: Add an API to check migration state
- transition validity
-To:     Alex Williamson <alex.williamson@redhat.com>
-CC:     Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>,
-        "Doug Ledford" <dledford@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        "Bjorn Helgaas" <bhelgaas@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Kirti Wankhede <kwankhede@nvidia.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Cornelia Huck <cohuck@redhat.com>
-References: <c87f55d6fec77a22b110d3c9611744e6b28bba46.1632305919.git.leonro@nvidia.com>
- <20210927164648.1e2d49ac.alex.williamson@redhat.com>
- <20210927231239.GE3544071@ziepe.ca>
- <25c97be6-eb4a-fdc8-3ac1-5628073f0214@nvidia.com>
- <20210929063551.47590fbb.alex.williamson@redhat.com>
- <1eba059c-4743-4675-9f72-1a26b8f3c0f6@nvidia.com>
- <20210929075019.48d07deb.alex.williamson@redhat.com>
- <d2e94241-a146-c57d-cf81-8b7d8d00e62d@nvidia.com>
- <20210929091712.6390141c.alex.williamson@redhat.com>
- <e1ba006f-f181-0b89-822d-890396e81c7b@nvidia.com>
- <20210929161433.GA1808627@ziepe.ca>
- <29835bf4-d094-ae6d-1a32-08e65847b52c@nvidia.com>
- <20210929164409.3c33e311.alex.williamson@redhat.com>
-From:   Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <bad28179-cbca-9337-8e6b-d730f06c6c58@nvidia.com>
-Date:   Thu, 30 Sep 2021 12:25:23 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <20210929164409.3c33e311.alex.williamson@redhat.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.17; Thu, 30 Sep
+ 2021 09:30:20 +0000
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::61c5:2592:9e7f:a390]) by DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::61c5:2592:9e7f:a390%5]) with mapi id 15.20.4566.014; Thu, 30 Sep 2021
+ 09:30:19 +0000
+Subject: Re: [PATCH] r8152: stop submitting rx for -EPROTO
+To:     Jason-ch Chen <jason-ch.chen@mediatek.com>,
+        Hayes Wang <hayeswang@realtek.com>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>
+CC:     "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "Project_Global_Chrome_Upstream_Group@mediatek.com" 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        "hsinyi@google.com" <hsinyi@google.com>,
+        nic_swsd <nic_swsd@realtek.com>
+References: <20210929051812.3107-1-jason-ch.chen@mediatek.com>
+ <cbd1591fc03f480c9f08cc55585e2e35@realtek.com>
+ <4c2ad5e4a9747c59a55d92a8fa0c95df5821188f.camel@mediatek.com>
+From:   Oliver Neukum <oneukum@suse.com>
+Message-ID: <274ec862-86cf-9d83-7ea7-5786e30ca4a7@suse.com>
+Date:   Thu, 30 Sep 2021 11:30:17 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+In-Reply-To: <4c2ad5e4a9747c59a55d92a8fa0c95df5821188f.camel@mediatek.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
+X-ClientProxiedBy: AM6P191CA0050.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:209:7f::27) To DB7PR04MB5050.eurprd04.prod.outlook.com
+ (2603:10a6:10:22::23)
+MIME-Version: 1.0
+Received: from linux.fritz.box (2001:a61:3b0d:4601:21ab:d1da:15e9:ca07) by AM6P191CA0050.EURP191.PROD.OUTLOOK.COM (2603:10a6:209:7f::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.13 via Frontend Transport; Thu, 30 Sep 2021 09:30:18 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ea141835-a751-4bf4-ab95-08d983f43eee
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1706:
-X-Microsoft-Antispam-PRVS: <DM5PR12MB17068E15FE4977A7BF6B4FAFDEAA9@DM5PR12MB1706.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Office365-Filtering-Correlation-Id: c382a353-cc03-4863-4f7e-08d983f4eb88
+X-MS-TrafficTypeDiagnostic: DB7PR04MB4137:
+X-Microsoft-Antispam-PRVS: <DB7PR04MB41377695F563D92FB4478FD1C7AA9@DB7PR04MB4137.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ijkGxaWglL0cE+tNSWAcCH/WG2LDI2PRjeRGYaeY0G48ux2xh6RyD9Jbb7Tsev1SoZXD9UWXrczUsNA6DEZvV3WmiZ7DNR/eRxm0B2JP9Xkg3dRrEHXztDgRchfmrKqZmjFf3ELMf3smjXwX7v75DFTkaO4E9YwVhqec5XwyKoVHyx1bMQMz0VqzevpHAz7qyPJUQXjoOQt9oUiO9cduD8VSuMJdORaZcZDZAeMC05M1aMRN4BQ1+O1dd+goMsiZOpPvpbsvNvCsKJn9pMGX2nko/1mM0Yt6qNgauf6hWa9KHPJ3VMkulkF6YGxbzMKKKKAAoc9RH13BWsWV/9R8TWtGbz5L0Rb9+9D7taBqa7PfCFWDMuaoPb+YeQ6JEjvyEfQMvXu3bWeB+8TfEMt0+qQmxP1DrkfvwgpxhH1cGZGuq1qprTvOeFVtiJECLmeg3xWonuQ0d+XKNgfMDtFlJopLNpiyMmedQmH45dYIW4/JrcJ5lzeBvw2vafDFBy2CJachRsGFZgTGMp7X2RFD9ekQeikdsV3wnzcsA/cKDnZ6weXIim4L3K+4rtOlBOela7Fh6xPBJqhkjoK8xhAul5X6N2jBo/DNX17Jv34HMnqLMDinp8krK1Qq1r6yZav16ZNtkMReIfCWw8HbvSLvbvZTXbikUWfY6T8fyUVrfkSBKOs7XtWIXtZ60Q6/WVvF+Efre0/t51cuDIvVo6MrEqutg/1o4JEXHPdhj2n3Q8U=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(16526019)(8936002)(508600001)(186003)(36860700001)(316002)(26005)(7416002)(16576012)(5660300002)(54906003)(31696002)(426003)(336012)(2906002)(82310400003)(4326008)(2616005)(36756003)(53546011)(86362001)(8676002)(7636003)(31686004)(47076005)(356005)(70586007)(70206006)(83380400001)(6916009)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2021 09:25:29.9594
+X-Microsoft-Antispam-Message-Info: H/tLsyWIZCaJTdsYYVXd0gwa85IgqNimJs6DsnpvBj04/jT5ARgNzVXiUmowDBujgdMFSk1QcTiUP4n6vOmZxhPm5FbVPL9/yPPFRYxOzkZwywz6SWt/ikm7s8y1OFo40Y+gZQ379ubUnlPBLpazFn94IESXI7vDYn1QoXmgagdFTwsOv9zzMWQ3/jWweroXBGpEoANyOFY0nEyPpmBsgT8Mffvd2uYvoms9o/IhdBl29HvXFjpiRjitPXLbAwaisBPflY8TKJIkbyPP/eRwhv+VGZLJNFAE6KWjJRorkDdEIDsGKl+lo8X6+CAnNEpKv3ICaTZQTCfmmWdlp+Txp7yox8P3C0hhxssp1kC66vxNelRXwdaLbdltD5O1TNAH1BZy0b5FDKE0j84S10O9E6iI55xhXbtRqDQFhO12hfAjLtycCjyFlsqs37eIk+RFiwU+kMUqtl0f81EQ5WqVTAk4j0mn+KSdKnAEPn+u4uGj9Ep1Hv9h0w+Df6BqnNNGmDbFnpE8y/gSgOwLpoJv2Fd9bJj1nBeOWrrwc8Y7xVKhYW/WMYnVzTSU15yWbUpAV3CvzlRNOrPKPexiY19z2oYUPxWTRT0/Xh06JlySlyWQz2DqK20YEi3euBNTjd0E631UAaWSZ12K2gd2JSe2EILZpLSICKaALtP2ZXHJKAjutpEyaOJOQsh/a4lkPkkf7zLVIXK1wlSPk9yk+sChDbro2G7JK5TKL5jDp6zMF58=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5050.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(36756003)(83380400001)(66476007)(66556008)(4744005)(8936002)(66946007)(186003)(2616005)(86362001)(6486002)(508600001)(110136005)(4326008)(7416002)(53546011)(31696002)(8676002)(6512007)(2906002)(6506007)(31686004)(316002)(38100700002)(54906003)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rhRK09H2EKEGyIUT8VhgEz2Vv1IYMSeBEVoZbYubnKMGv6eIDVIURGo1Zin2?=
+ =?us-ascii?Q?xxGSbO/MR2+N/PDPi/TUzE4fkV3nyfsttcG66mkAIRBzgaHo6HFoAnm1xQ6l?=
+ =?us-ascii?Q?s7g6RTfXoE2OFI+N+i7J9/g6G95Xsoqutnf3tHOmwNTMku/ekOPRBdts+Pte?=
+ =?us-ascii?Q?RDbMQ+47lKlzeypiQWYoJDpaCf5sszN4D4SoZ2mhVi5rEJ0YqqFc9tBwboA9?=
+ =?us-ascii?Q?0uqf2udfJSW3r1qUqYF4Y+zi+yrXZZPr2D3xAQ1+k93BzortBxlF4bekUIHL?=
+ =?us-ascii?Q?c+8zJDXT1+gDOL9ACvtkpPafMt2KPPq+qyLxhGVtJAQOKrh1fzAEQzN3qnmS?=
+ =?us-ascii?Q?40+ulOVRPznxQAt7nJX+AXkiwrwx/ZBeYXnPviAYGfKqVywK2ejdJlvXswAH?=
+ =?us-ascii?Q?sAZgP+m2fA/6Y+oK/22U2qrHLeeIZYkYjnY5OpooGZncQ1QipKlu01iuLN5y?=
+ =?us-ascii?Q?5w6tIEgaPY5xXm0uEJSJHBgRb74SZWQ+zqKFYAhNIxxfL6GUKKfFdDXXpAh0?=
+ =?us-ascii?Q?1bE9sVywspEweIJLvGgKlazpTS97ZO0HgLDs9LY0xiZcA56gbtU5cGamKbxH?=
+ =?us-ascii?Q?snyJaHqx70HSNKld527bm4uA5yLCrvzrrgLO57GJ46dTxZxCgShwz9QqB089?=
+ =?us-ascii?Q?n6fMBSEu7cpFIABowE8gdQRxLW3Ubad2R/iI5ea2Nue42Ps6Pv8XmbFmB3D6?=
+ =?us-ascii?Q?Zf8CB9U53ooxFi7D/H9WGchxPO9AcaRbrPCdm/kk6Hz8lAleHlcV6YFHOueT?=
+ =?us-ascii?Q?xS9diz0TtrRGIJ0Gwvv0DEz2PXgM8MfhAP3nROJM42rrY9v1ao3q5+uN/x2T?=
+ =?us-ascii?Q?fGShyfMcIB399l3mI4FJu8s40gt2J32otHZt/bSEu40TiM/tF/N87/5cWz10?=
+ =?us-ascii?Q?bqONN/5lfdpmee6llS5uBXJk52HYKPo8x5jbqAqdsUzwdsuFXXuQ5JbHInBx?=
+ =?us-ascii?Q?Xg0zuILr4JVAykR1+Iw2XxqsxI+8oiOobBnkBqcTce+viWyaIvDojsOfrUqC?=
+ =?us-ascii?Q?tabvvXpuZbWvkN7DpgLTtFTBEUOspP1HMac/E34mnWVt/yvy+czs2dSQgVNJ?=
+ =?us-ascii?Q?jy4hDMMfQggqZVJt0y+7rlgWnD2KvkHUD8osR0q6mRjbGcmEeL4Qk5aSrwHr?=
+ =?us-ascii?Q?RnwQ8ZiEwh8MX7gvOVncJ0YgVEb3TSpsTH2k+aLH0WoZT5/cqEqWcNbA9CUg?=
+ =?us-ascii?Q?6Yo8wAYtozzTSKGiGqOOks8Z4KP47NUi4zAewO2Xm9k8Tjdr9KTv62rh3Dcz?=
+ =?us-ascii?Q?DtIKzQEj4Vm9xYC5uqOuay64etyKypfA5RGRoWZggDLo01hH9gvhVgyKrWKy?=
+ =?us-ascii?Q?DfBuSP4xifmUw7/x0chkJjTSRo6wVat1Z94Yat0WALzrTVQZfnqmmL9Qt0P9?=
+ =?us-ascii?Q?cBdQ8nz11LpAbzA52Habu1gfDyUT?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c382a353-cc03-4863-4f7e-08d983f4eb88
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5050.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2021 09:30:19.8312
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea141835-a751-4bf4-ab95-08d983f43eee
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT055.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1706
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4oowC6GyiL0nfFj2LEToTxKqklRfTHDMR2Gon4r/D6i/pd5tUz4nV4Kn1ggU4AL/i/TrSUKe6r9LfGMue62U7g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4137
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 9/30/2021 1:44 AM, Alex Williamson wrote:
-> On Thu, 30 Sep 2021 00:48:55 +0300
-> Max Gurtovoy <mgurtovoy@nvidia.com> wrote:
->
->> On 9/29/2021 7:14 PM, Jason Gunthorpe wrote:
->>> On Wed, Sep 29, 2021 at 06:28:44PM +0300, Max Gurtovoy wrote:
->>>   
->>>>> So you have a device that's actively modifying its internal state,
->>>>> performing I/O, including DMA (thereby dirtying VM memory), all while
->>>>> in the _STOP state?  And you don't see this as a problem?
->>>> I don't see how is it different from vfio-pci situation.
->>> vfio-pci provides no way to observe the migration state. It isn't
->>> "000b"
->> Alex said that there is a problem of compatibility.
+On 29.09.21 11:52, Jason-ch Chen wrote:
+> On Wed, 2021-09-29 at 08:14 +0000, Hayes Wang wrote:
 >>
->> I migration SW is not involved, nobody will read this migration state.
-> The _STOP state has a specific meaning regardless of whether userspace
-> reads the device state value.  I think what you're suggesting is that
-> the device reports itself as _STOP'd but it's actually _RUNNING.  Is
-> that the compatibility workaround, create a self inconsistency?
-
- From migration point of view the device is stopped.
-
+> Hi Hayes,
 >
-> We cannot impose on userspace to move a device from _STOP to _RUNNING
-> simply because the device supports the migration region, nor should we
-> report a device state that is inconsistent with the actual device state.
-
-In this case we can think maybe moving to running during enabling the 
-bus master..
-
-
+> Sometimes Rx submits rapidly and the USB kernel driver of opensource
+> cannot receive any disconnect event due to CPU heavy loading, which
+> finally causes a system crash.
+> Do you have any suggestions to modify the r8152 driver to prevent this
+> situation happened?
 >
->>>> Maybe we need to rename STOP state. We can call it READY or LIVE or
->>>> NON_MIGRATION_STATE.
->>> It was a poor choice to use 000b as stop, but it doesn't really
->>> matter. The mlx5 driver should just pre-init this readable to running.
->> I guess we can do it for this reason. There is no functional problem nor
->> compatibility issue here as was mentioned.
->>
->> But still we need the kernel to track transitions. We don't want to
->> allow moving from RESUMING to SAVING state for example. How this
->> transition can be allowed ?
->>
->> In this case we need to fail the request from the migration SW...
-> _RESUMING to _SAVING seems like a good way to test round trip migration
-> without running the device to modify the state.  Potentially it's a
-> means to update a saved device migration data stream to a newer format
-> using an intermediate driver version.
+> Regards,
+> Jason
+>
+Hi,
 
-what do you mean by "without running the device to modify the state." ?
+Hayes proposed a solution. Basically you solve this the way HID or WDM do i=
+t
+delaying resubmission. This makes me wonder whether this problem is specifi=
+c
+to any driver. If it is not, as I would argue, do we have a deficiency
+in our API?
 
-did you describe a case where you migrate from source to dst and then 
-back to source with a new migration data format ?
+Should we have something like: usb_submit_delayed_urb() ?
 
->
-> If a driver is written such that it simply sees clearing the _RESUME
-> bit as an indicator to de-serialize the data stream to the device, and
-> setting the _SAVING flag as an indicator to re-serialize that data
-> stream from the device, then this is just a means to make use of
-> existing data paths.
->
-> The uAPI specifies a means for drivers to reject a state change, but
-> that risks failing to support a transition which might find mainstream
-> use cases.  I don't think common code should be responsible for
-> filtering out viable transitions.  Thanks,
->
-> Alex
->
+=C2=A0=C2=A0=C2=A0 Regards
+=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 Oliver
+
+
