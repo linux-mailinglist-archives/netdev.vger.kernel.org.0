@@ -2,71 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F4341E225
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 21:18:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB8941E24B
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 21:38:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345906AbhI3TTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 15:19:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50088 "EHLO mail.kernel.org"
+        id S1344566AbhI3TkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 15:40:22 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41798 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345434AbhI3TTm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 15:19:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6FF6C619F8;
-        Thu, 30 Sep 2021 19:17:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633029479;
-        bh=XtIJvXsruNGVf58rTbKNKsu6/VR3FXPQSA4IE3yR++M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=c4jwZSNKhXJBgiK2kwsxuQN2574x0xOlUJm0tzSXmCW2CKdjaOO3x9ikJEUsBOQjV
-         K6N5M7MJDx4PJrgZgQ1fsxHdGFhlyrt7WuahHqAJDDcZgbBeoJScwIQZbLN+PIs3GD
-         cbzvAsfvv3FQGKeFvfdxcTSLewAxVkWKBoeDfyUYU5GZbM11MlvCmfVY2A57n3WJ9z
-         D2iSUTU/cawuozZ9EvJOp0i8hff+QcA1Bov1RwxX52evQ5gcoT5VV4W+9t+r24oC/g
-         I4rjC6nb2yXBGSLyw8OEy6OYqe5W2AjIyBY57lq4VPiE+ySnqhZvhoptIypFnCKmGA
-         EcYt1JqCp/xpQ==
-Date:   Thu, 30 Sep 2021 12:17:58 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, lukas@wunner.de, kadlec@netfilter.org,
-        fw@strlen.de, ast@kernel.org, edumazet@google.com, tgraf@suug.ch,
-        nevola@gmail.com, john.fastabend@gmail.com, willemb@google.com
-Subject: Re: [PATCH nf-next v5 0/6] Netfilter egress hook
-Message-ID: <20210930121758.43e1893d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YVX7WATmhsJUATSB@salvia>
-References: <20210928095538.114207-1-pablo@netfilter.org>
-        <e4f1700c-c299-7091-1c23-60ec329a5b8d@iogearbox.net>
-        <YVVk/C6mb8O3QMPJ@salvia>
-        <3973254b-9afb-72d5-7bf1-59edfcf39a58@iogearbox.net>
-        <YVWBpsC4kvMuMQsc@salvia>
-        <20210930072835.791085f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YVXUIUMk0m3L+My+@salvia>
-        <20210930090652.4f91be57@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YVX7WATmhsJUATSB@salvia>
+        id S229600AbhI3TkV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 15:40:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=w6t0kKZoMiYbydZxW60i6D+JDdmXM6i9cbCc5bRw9+A=; b=hFq5itmWQqlwT+7Y9DIGp1R+pc
+        9ATbmdlcdK4QCzOdhrKvuFSiXMmpZtxHtAaCwhC//v4GxJkgCiJ2cQD8wYqI50oMQdyrRA1EuI2Bp
+        +z8/ubzqIHj1PwafUZqWOMrmP6BZxA1ejh8EVfhJg5yofN5TZlwYaofO2lVkQGLiQPIk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mW1su-008zyB-2t; Thu, 30 Sep 2021 21:38:24 +0200
+Date:   Thu, 30 Sep 2021 21:38:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_BROKEN_PARENT
+Message-ID: <YVYSMMMkmHQn6n2+@lunn.ch>
+References: <YS4rw7NQcpRmkO/K@lunn.ch>
+ <CAGETcx_QPh=ppHzBdM2_TYZz3o+O7Ab9-JSY52Yz1--iLnykxA@mail.gmail.com>
+ <YS6nxLp5TYCK+mJP@lunn.ch>
+ <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
+ <YS608fdIhH4+qJsn@lunn.ch>
+ <20210831231804.zozyenear45ljemd@skbuf>
+ <CAGETcx8MXzFhhxom3u2MXw8XA-uUtm9XGEbYNobfr+Ptq5+fVQ@mail.gmail.com>
+ <20210930134343.ztq3hgianm34dvqb@skbuf>
+ <YVXDAQc6RMvDjjFu@lunn.ch>
+ <CAGETcx8emDg1rojU=_rrQJ3ezpx=wTukFdbBV-uXiu1EQ87=wQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx8emDg1rojU=_rrQJ3ezpx=wTukFdbBV-uXiu1EQ87=wQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Sep 2021 20:00:56 +0200 Pablo Neira Ayuso wrote:
-> On Thu, Sep 30, 2021 at 09:06:52AM -0700, Jakub Kicinski wrote:
-> > On Thu, 30 Sep 2021 17:13:37 +0200 Pablo Neira Ayuso wrote:  
-> > > It's just one single bit in this case after all.  
-> > 
-> > ??  
-> 
-> There are "escape" points such ifb from ingress, where the packets gets
-> enqueued and then percpu might not help, it might be fragile to use
-> percpu in this case.
+> Btw, do we have non-DSA networking devices where fw_devlink=on
+> delaying PHY probes is causing an issue?
 
-You still have to scrub the skb mark at the correct points, otherwise
-the ignoring egress may propagate beyond the "paired hook". I don't see
-much difference in fragility TBH.
+I don't know if issues have been reported, but the realtek driver has
+had problems in the past when the generic driver is used. Take a look
+at r8169_mdio_register(), it does something similar to DSA.
 
-Speaking of ifb, doesn't it have an egress hook? And ingress on the way
-out? IMHO the "ignore egress" mark should not survive going thru ifb.
+What is going to make things interesting is that phy_attach_direct()
+is called in two different contexts. During the MAC drivers probe, it
+is O.K. to return EPROBE_DEFER, and let the MAC driver try again
+later, if we know there is a specific PHY driver for it. But when
+called during the MAC drivers open() op, -EPROBE_DEFER is not
+allowed. What to do then is an interesting question.
 
-Anyway, that's just my preference. Whatever you, Daniel and Lukas
-decide together in the end is fine by me.
+     Andrew
