@@ -2,60 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EA2741DE79
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 18:12:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5E8441DE81
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 18:13:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348901AbhI3QNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 12:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
+        id S1349033AbhI3QOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 12:14:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348582AbhI3QNn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 12:13:43 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5429C06176A;
-        Thu, 30 Sep 2021 09:12:00 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id b15so27347352lfe.7;
-        Thu, 30 Sep 2021 09:12:00 -0700 (PDT)
+        with ESMTP id S1348685AbhI3QOr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 12:14:47 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A31DC061771;
+        Thu, 30 Sep 2021 09:13:03 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id j5so22681305lfg.8;
+        Thu, 30 Sep 2021 09:13:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=a3vOhd3AxRBGGkQ1Ffsi6fx5ALF3ffB714UeOL8XqBU=;
-        b=nEkTOTrBqW70y++KGcwtoP3dePkqsP3/baqjSZkpHheBCDHsP1siCD8Y1BFBU9jQyO
-         8UDGfHNDWqE+AGmDygUGzFuWfe4t78xEAEml5WGju36hpmeaoWb3OUJnAF/XcATG/6dC
-         7Iik7Qw1LiXXqOPtoFDBmwRjC/kzsqcgv8KC5vD5L3PRO5s42MvzcApCwwp5ybfaO16I
-         J/z3t5w8djS3xthCuwDBzJkWmpueYK0RnE8w0RQLcCEXHtBKAUHzKZM493bI/v4xYLtX
-         Ly/+1pxqoa4gUtm9ct106ZFK84CNFVN7k1jEnyb6fStPe9WD89oLs+QnP8b40on/yeO4
-         JOkA==
+        bh=PSTyYsEnPx2Zz8WOySJeA/TTfgz1xi0DMJG8hnz15H8=;
+        b=eHblUON+RQew3T5hKr9l8zNpzreOx5+1eTTqANwye7HIuVSyN9zcg/kLorxjbLKmfF
+         7JCc5cJ4i5AIiVYoosGJfWxb4zaVpCx4ggTNn18XcFPKEZhj3Z4iLIpm6DPdCJVF+bYS
+         EuySdve1mavEROFhsIQJnCJmRYCmy8Z/9eywYDTsVNuGaHZT16cw5dy9LR8gPYq0sm1+
+         DB1SwiDzNoCAszX7L8H1TbZoHYC/AxTyuHdRYQUOqpfPR9ogtax3UGJzYWPQAdxBvMd6
+         kESgZGr8bAx0EiAd65SRqbWntIylJCc0/RP2GPQpH4O3PRy0bWBSf+4/HiMZj5Om2qGg
+         Rfkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=a3vOhd3AxRBGGkQ1Ffsi6fx5ALF3ffB714UeOL8XqBU=;
-        b=nelmMyeJSE+WjV0LozY0NDJHsS68KZWwLzoY9P4a0uuV5ATmai/5G4r39m57c8xsZJ
-         5VDdiUYqLnZBYA0Qy6LK3tvnMkjAv7LlSc4YJb5l2gJ3g2FW14DMS7th2x0x1d5gqVKV
-         7EAuOwMzXu27J8SmNqPkE29IIbRpctgIKmCIJv86Qp5a+b2wM6efuiN7fP8tEB6afBl1
-         /X12O/jNYKLw+wY2u1kPeuPtctHFqZ4ZXryx5yx4zcD0fM5x8zonHf23FK6/AgKE8ZJv
-         Zk3nRA/65T8TeSDdU7IbuGwN2Qr2cJvaeFsFVQ+VyWTY15tOMomJkhEJ2ocFaVg28eVW
-         O86Q==
-X-Gm-Message-State: AOAM530IkTMe+ceMvVY8ebatr2ACn3+kE0nDgbiwSXTeE3Mon5/6EZhG
-        GxBfkh/s6Qb1fCQ1byKa7TEq7fgv2DNpOu5xeSY=
-X-Google-Smtp-Source: ABdhPJybsD1xRfNr9pXfjZhq2UbsQcKOSv4i+MJkaa5zkp7oWk8aHl9JVTIliUgrIfDbXq0SkjetAGoAwSkKXZTPFHE=
-X-Received: by 2002:a05:6512:1052:: with SMTP id c18mr51516lfb.161.1633018319217;
- Thu, 30 Sep 2021 09:11:59 -0700 (PDT)
+        bh=PSTyYsEnPx2Zz8WOySJeA/TTfgz1xi0DMJG8hnz15H8=;
+        b=mhWjJWouVtHBnPY/Re6Gcv/UDWBs1o3N2rpM3V3br/w6MqlbFioWNdbP0+WLYvfivg
+         X9XH2Z3nnq0SBW3hQcLD/sKyjxKMP4fIs1nk6S+d5bJjCgPdZDVerJvoHyr6RIivEzuM
+         nZLLxOkcznEyH1jPCkq8yCYMsKST6LRSi6fMUbkB8wrNVMh6vG6WXNVZKKGxmxXOnlzo
+         UkZo239jGPYdEes9GfjVgzQwo3RNh7NrJyUyXyYbgHHIHkB5Nojd+1M46LbBL8TfP2rO
+         Gthg0za8akH4uT1gc+woAhC3EgNfBUVl6D4JxS2FgnzaKXGzrl5JocyC28kkJopE6MjZ
+         1Jgg==
+X-Gm-Message-State: AOAM532WZkb2SmFrsDH0NPh1LeD/Ny5A9ahqMK6QpI88fBApNzQVIOdK
+        Z80oodC3go0h2IRAILqFrWg0NRJ2R6JpAvbkDYndWXIFmzY=
+X-Google-Smtp-Source: ABdhPJweNHytmxWHYiqmadp7UNqbhgXMgSWVNSNBcc87lAY3taBiRUnPiicvXlIBDMJzy4RdKme6Zsf/z/9K1DEL61k=
+X-Received: by 2002:a2e:300c:: with SMTP id w12mr6787647ljw.302.1633018381576;
+ Thu, 30 Sep 2021 09:13:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210928194727.1635106-1-cpp.code.lv@gmail.com>
- <20210928174853.06fe8e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <d1e5b178-47f5-9791-73e9-0c1f805b0fca@6wind.com> <20210929061909.59c94eff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210929061909.59c94eff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210928194727.1635106-1-cpp.code.lv@gmail.com> <20210928174853.06fe8e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210928174853.06fe8e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   Cpp Code <cpp.code.lv@gmail.com>
-Date:   Thu, 30 Sep 2021 09:11:48 -0700
-Message-ID: <CAASuNyVe8z1R6xyCfSAxZbcrL3dej1n8TXXkqS-e8QvA6eWd+w@mail.gmail.com>
+Date:   Thu, 30 Sep 2021 09:12:50 -0700
+Message-ID: <CAASuNyXcjwju6wzOeV6Ggu=DrNTrtqWv8T68TcwmwX8kUCZufw@mail.gmail.com>
 Subject: Re: [PATCH net-next v6] net: openvswitch: IPv6: Add IPv6 extension
  header support
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        netdev@vger.kernel.org, pshelar@ovn.org,
+Cc:     netdev@vger.kernel.org, pshelar@ovn.org,
         "David S. Miller" <davem@davemloft.net>,
         ovs dev <dev@openvswitch.org>, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
@@ -63,35 +60,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 6:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Tue, Sep 28, 2021 at 5:48 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Wed, 29 Sep 2021 08:19:05 +0200 Nicolas Dichtel wrote:
-> > > /* Insert a kernel only KEY_ATTR */
-> > > #define OVS_KEY_ATTR_TUNNEL_INFO    __OVS_KEY_ATTR_MAX
-> > > #undef OVS_KEY_ATTR_MAX
-> > > #define OVS_KEY_ATTR_MAX            __OVS_KEY_ATTR_MAX
-> > Following the other thread [1], this will break if a new app runs over an old
-> > kernel.
+> On Tue, 28 Sep 2021 12:47:27 -0700 Toms Atteka wrote:
+> > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+> > index a87b44cd5590..dc6eb5f6399f 100644
+> > --- a/include/uapi/linux/openvswitch.h
+> > +++ b/include/uapi/linux/openvswitch.h
+> > @@ -346,6 +346,13 @@ enum ovs_key_attr {
+> >  #ifdef __KERNEL__
+> >       OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+> >  #endif
+> > +
+> > +#ifndef __KERNEL__
 >
-> Good point.
+> #else
 >
-> > Why not simply expose this attribute to userspace and throw an error if a
-> > userspace app uses it?
+> > +     PADDING,  /* Padding so kernel and non kernel field count would match */
 >
-> Does it matter if it's exposed or not? Either way the parsing policy
-> for attrs coming from user space should have a reject for the value.
-> (I say that not having looked at the code, so maybe I shouldn't...)
+> The name PADDING seems rather risky, collisions will be likely.
+> OVS_KEY_ATTR_PADDING maybe?
+>
+> But maybe we don't need to define this special value and bake it into
+> the uAPI, why can't we add something like this to the kernel header
+> (i.e. include/linux/openvswitch.h):
+>
+> /* Insert a kernel only KEY_ATTR */
+> #define OVS_KEY_ATTR_TUNNEL_INFO        __OVS_KEY_ATTR_MAX
+> #undef OVS_KEY_ATTR_MAX
+> #define OVS_KEY_ATTR_MAX                __OVS_KEY_ATTR_MAX
+>
+> > +#endif
 
-To remove some confusion, there are some architectural nuances if we
-want to extend code without large refactor.
-The ovs_key_attr is defined only in kernel side. Userspace side is
-generated from this file. As well the code can be built without kernel
-modules.
-The code inside OVS repository and net-next is not identical, but I
-try to keep some consistency.
-
-JFYI This is the file responsible for generating userspace part:
-https://github.com/openvswitch/ovs/blob/master/build-aux/extract-odp-netlink-h
-This is the how corresponding file for ovs_key_attr looks inside OVS:
-https://github.com/openvswitch/ovs/blob/master/datapath/linux/compat/include/linux/openvswitch.h
-one can see there are more values than in net-next version.
+Agree, name should be changed, I think I will go with __OVS_KEY_ATTR_PADDING
