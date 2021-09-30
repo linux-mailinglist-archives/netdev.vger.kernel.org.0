@@ -2,157 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8451A41E145
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 20:34:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F00941E151
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 20:38:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343982AbhI3Sg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 14:36:28 -0400
-Received: from mail-dm6nam12on2048.outbound.protection.outlook.com ([40.107.243.48]:65312
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S245683AbhI3SgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 14:36:25 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Nq4I0L8VXIfNZB3fEBuY5rMEyDuYk1HXY9zbQcICh9KCocKpvyT5fF1KQOGYo9ah9hgHGXJSoeoqe8wGqOaprs3rpy9BUZtRq/wA9VbcPsOfXlCnZ6B4MzakevfirZPGe1CQlFTzzskVgXzdLo9cmUSl98StRPgfKDjL8Oss5gW+BUuzvP7XabfMFEiAg8YvOnfk6jlFmTMrXiGkkXbBb3NB1DUHG1FLu/m5xpnShG7WTDnnQ1Fj2h/m8Fj9c0wNU3uN0nyIlhyVF8PQG47Fk+FsJz33O+Ti4rQcBfj5opJb/gJGRoW7nFy9Q+N+g74RwRjt9QyzR62HlkN7M1d/Rg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=y7EOAKWOsmn3v/ffm2kAGObAa3aRdxAM0hHtpX8OpRQ=;
- b=A8/fUdCsVQAWb+8CM5aELCtT1YOsDIbFqbH8LJ+faG2i46uPS6zqn2OEUTlJFu7V4Gapyb/u0bgKguYZkTe9TlxxjFaTSx919rhkPNortGYBLz/PDELMSoY5pVKG92aRuQLdaJLUb515WpjnHEHf+pKpvDLLBk2TQAg4gkbvXpuCx9bxvy178R22vi+EertSmbKh3SvSYbEW6dHSb9rYYaJZp8WBN3tjAazLphaGFE7Azw/mfL6kFUErYfg187Dl2/8WCsGrlymMwEIdUtR64nIlXzGeZcYjklpV8/dy8KeIU+2qZ/cl4qMhNmfXZvj2vBzfr2xTl/MjN5WTELm5Iw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y7EOAKWOsmn3v/ffm2kAGObAa3aRdxAM0hHtpX8OpRQ=;
- b=DV5JL/bLvskyuRmjh/Tf/z4XnvnnSIxT6hHpf6WgKIiILDe1U43WlrdhxK6aHNvvkP7aoALw2n3Nyv95DEHiy+6W2X7o5iXg/eaRpY0CsH4bsHGBDLYNJp5mT0W2bpyBADnLVm8GmgmRo4PYJR8vdcMR3TWtmZoIyG4YtXqsY6E=
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by DM8PR12MB5493.namprd12.prod.outlook.com (2603:10b6:8:3d::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.16; Thu, 30 Sep
- 2021 18:34:39 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d560:d21:cd59:9418]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d560:d21:cd59:9418%7]) with mapi id 15.20.4544.022; Thu, 30 Sep 2021
- 18:34:39 +0000
-Subject: Re: [PATCH V6 5/8] x86/hyperv: Add Write/Read MSR registers via ghcb
- page
-To:     Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
-        arnd@arndb.de, brijesh.singh@amd.com, jroedel@suse.de,
-        Tianyu.Lan@microsoft.com, pgonda@google.com,
-        akpm@linux-foundation.org, rppt@kernel.org,
-        kirill.shutemov@linux.intel.com, saravanand@fb.com,
-        aneesh.kumar@linux.ibm.com, rientjes@google.com, tj@kernel.org,
-        michael.h.kelley@microsoft.com
-Cc:     linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
-        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
-        dave.hansen@intel.com
-References: <20210930130545.1210298-1-ltykernel@gmail.com>
- <20210930130545.1210298-6-ltykernel@gmail.com>
-From:   Tom Lendacky <thomas.lendacky@amd.com>
-Message-ID: <a10b24fa-98dd-ae57-ca63-2789a06abe7a@amd.com>
-Date:   Thu, 30 Sep 2021 13:34:34 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-In-Reply-To: <20210930130545.1210298-6-ltykernel@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SN7PR04CA0234.namprd04.prod.outlook.com
- (2603:10b6:806:127::29) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+        id S229684AbhI3Sjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 14:39:41 -0400
+Received: from mail-ot1-f42.google.com ([209.85.210.42]:44670 "EHLO
+        mail-ot1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229587AbhI3Sjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 14:39:40 -0400
+Received: by mail-ot1-f42.google.com with SMTP id h9-20020a9d2f09000000b005453f95356cso8490427otb.11;
+        Thu, 30 Sep 2021 11:37:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lUkADYfUz5un8GeU7MGDH79pA82yqB0rhOdsDK8eU6A=;
+        b=u0s0nDA+OMPfuAp4lAsYh1ZxN61uhu0FRDlVTL9ukW5nnMVD+XITgN6Ebzqp2crNU3
+         SN5RFRfOQDv+FPTtd+zQwwrBmyLMMbVxWgXbO+cauZkyY0EAipg8MSVHrckUd5m6WUOg
+         FQTZ9cR1VNViNiUZuPxDxviQvfHF/Mo6Pe6mZuO/K+BzN/n0S+TxqDO0F9hISlzlZtA+
+         KrAmR7SPpFaOb4tyPWU557EQF994n3rMxNZ0aKYXERYT5m0+tM0jbFJAblx2higZmYHy
+         lN0Ui1wdMjsHZQPZJJci4p3kuUk2eazli6UVBNIxTfYiROiNpoaw+YWhuMOS9X6nRlT8
+         QIBw==
+X-Gm-Message-State: AOAM532jREbViNULhqWYcHkN+ZDBJq9ejgYR9qrQ97n5mUEA4DUM7HT5
+        uj/nVkUW0ONDBwhMCT4Xe9Rn4dzXCJSCvh6fH1ZCMu6v69g=
+X-Google-Smtp-Source: ABdhPJxIUnhHcEe7tzABklGIDEk7KBcPhVF+HiFLTsPIM+LNOIuhSRT/2BAbMOSwjMmdBscnqUc9bevf8EFVlXM2zTo=
+X-Received: by 2002:a05:6830:165a:: with SMTP id h26mr6707745otr.301.1633027076597;
+ Thu, 30 Sep 2021 11:37:56 -0700 (PDT)
 MIME-Version: 1.0
-Received: from [10.236.30.241] (165.204.77.1) by SN7PR04CA0234.namprd04.prod.outlook.com (2603:10b6:806:127::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.15 via Frontend Transport; Thu, 30 Sep 2021 18:34:36 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2c77fda6-5deb-48b3-bc13-08d98440f5f3
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5493:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM8PR12MB549351F74ED6507AAAA420FCECAA9@DM8PR12MB5493.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oNM9mNQun7pMDbf7U8NX8SHEdFkBKGAIJbiD1gz0hHBgyAuSutFUIB0jdE+3CzAVFuCoeDxDizmr5g5lGI5oZXA1Wk8mjewy0J7VP5GJFFH0Ip6qk3Kd/l+/I4lZPW8kLYO3732frh6fCrxY+PrNti2fIaIrbnlMhdHQ3nfBhlmdT5pZ/Qr60Afg8+TnHv1vlsMi3Sic9fljYvYMvFIUDh4QrCASKz+fsz+hjFX7CjkWz2uu5XYuF7EIhmVky6TTQYBtjDCjtHysqi0x/0gB5WlcXpbFMgSkeEYP7EUYD1hOMItU/Agh5PAgThQGEhsn+9s2ezQBmWSRQE5bxyI5nsY//APk1Cn/IvWrJcY6G7fs18+xBcq3I2xKyK4VN+Nw9Z4YYVs2In+a04EjfrKJt9YbIBulEvrq/xssdighEXtC+BffhaMySwSDlK9hEL+lr1A0fMXy51KItHBGQQ/PyWyzmKyszqxN2yaAXsEEltKhAIATSsQI6fQe+Wszj0WI+ojQmAyn+Gzg84xyqA9cOJlfSEQzLcmcxkeI2XTz1Q6lKYxoAhmT41L+IfbDNVYyrgRZZGQgUa14w/P8wqXadxLerpSHjyiNDvlhwGhVl+KuhmsXdbWEZz/B+zaafWLeIZFy0mOYtccS+J+6JNFjvfWnDznGqNrjJbjwMgd717Mx6O8UWr+sDqBZ6N/o+zzEebXWYosjca1SkYfuuLMWX9U8PZGzvobGD3F62JBcXZBif/ExEjW7f5TGjihot8gN
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(53546011)(4326008)(31696002)(45080400002)(921005)(16576012)(36756003)(2906002)(186003)(6486002)(508600001)(26005)(956004)(2616005)(66556008)(4744005)(31686004)(8936002)(7416002)(7406005)(8676002)(86362001)(5660300002)(66476007)(316002)(38100700002)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?c0k3c0tPdEt0dXNGMW4xYXZmZEVGYkFJSGZneDI0NWl2ZXVvR092Sm9neC9V?=
- =?utf-8?B?LzV5TFJ5eXZzbTlLZ3JNWS9PR1kxc3kvOVRUZ1gxSVltSDRYMUdlb2w0SnZX?=
- =?utf-8?B?K3JpSlZ1eG82dlZ4NVJUVnMrSThySENBNVFIZ2hOdlFPc25lU3B0WVpBamY5?=
- =?utf-8?B?M1NoeDV1eHZhSTB2WFRJMk13S2tPNVpIUGRFSTdVTXR6TlRnUEczMGVaUTRi?=
- =?utf-8?B?VUJ4ZVJ3V29uUXF4cFVGR2ZLTmEzYk1zOHY4NkRCUjFmTkNLN3A2V3dzUlg4?=
- =?utf-8?B?dWJneWo5RldjQm5tYXdMakZ1c3prSG9iMkRiZyt5c3pkdGxic0xVT0QxeTAv?=
- =?utf-8?B?aWVLM3BBVWE5OWd5RzBFU2FqM25ZM1MyK1cwL3k0NFpKYzdKZmRvN2R4amxm?=
- =?utf-8?B?RUNnSkxiYnhBQXRQRFowcUNQV2tQSEJyd0JJY2gwejZwc0UzQStTbzBnYjZO?=
- =?utf-8?B?eUVwUWU4c09jeDJ5NHpLdU9ReGhlaHJycnJ6YzY2VE0wbHUzYjA1VmRrdTJY?=
- =?utf-8?B?UWIzZnF0d3Z6d0hIN1dsWk1vb1VNb3l5UENLZXRpUjNGbldFUGw5K2tZU1dE?=
- =?utf-8?B?aitMOEcvSXcxN2pDM01hQlRDZThxeEh2R2l4VkExQVB3dlBnMDZSSzJPS0pn?=
- =?utf-8?B?eEt3bExrQ3BWeSs0Nkd0V0V4L3pxMGp5MmtsRFlId213S0d0dDJkRmM3WUZz?=
- =?utf-8?B?TW5DbmpvU0V6a3BVUUFzeHVTWWdqbGozMTNWWGZUemU5RXp4N3RxeWFZd1Fx?=
- =?utf-8?B?YVdjcWMwWXNwOEh6TFJVRExlblBxT0tLclRmTzExQ1FMMThVZWJHbGw3RjVm?=
- =?utf-8?B?bVFDZlFtcURJMVZmZjFFb1VpOSsranNpaklncTZSOWcyM2VMUWJqbUxMcE4r?=
- =?utf-8?B?SkFmamZnQmNwU2xCRjdaWENMSnQzbUduck1KQ0EvTUtyQ0xzYXQ2eGpEd2hr?=
- =?utf-8?B?RElwRU1xSlhJQi85MVBDelAyNW51THRHZGF6dy9EY0pURElyTzlJcVJQTW82?=
- =?utf-8?B?MjB5WHBGWjhQV1pESXZYZExSczJ6RXd6cHhCcnJDR0VkWXA1a0p0eXJ5RWNh?=
- =?utf-8?B?Y3V4ZFBzZlRvMmN2Q1RaQzBvY0dHcmozWCt5SWRTNFNleU1LVlBaZTdmUU9z?=
- =?utf-8?B?d3lzTS92aDJhWHVWZWp4YW1mWTN3a25iYWtKcVNGdXgwT09jVVJuVGV2NTRO?=
- =?utf-8?B?UjhNR081aTVpREFPMmU5Uk5aUm1kbEl4bk4zVVBNN2NvVEsrajJNaVhGSkNh?=
- =?utf-8?B?SjFrSlhYdTVCclB3a2xkV29oMHJScTFQcDNBNjZmUTRwb29BNzU4TTJHNzVi?=
- =?utf-8?B?bWNZVjdXb29UMUtxZ2pOWjBiR1c4YnV4RDJjTktTaVRXY0dEUjNXcm9Nd1J5?=
- =?utf-8?B?NmVwd2YzWU1mRGxOSjVzVkRPVnpVUkh2NHlmbVFiQURIRXYxT3lPaDJweWtU?=
- =?utf-8?B?cGU5OUJjRXBNUkxjTFlzelAzMUJSNUx3eVZjWVQ3YjRvUUt0aklzcTNTb2h4?=
- =?utf-8?B?S1U4d0Y2cFh4SHkzN3cxcGN6cW5yWm5VZ2pvT3lQZ0FnTVZrMGpoaEV6THpT?=
- =?utf-8?B?c0lwaGNTRzM3NDJEVGhGRXZST2srYno2NjdvVHFGQ081R1Nsa0Z5TkM1eUhr?=
- =?utf-8?B?bTNWb3B5c3h6eGNjdThjUmJqWVdsT2FCeDl4bVVSZklUU0dyc2FrQ1l0VkNo?=
- =?utf-8?B?TmpaYnBWYXJ5K2NaZmptZlZrZzlMUmtCMDl2aDBJaTN5Ym5DR1ZiYXNIYXVr?=
- =?utf-8?Q?ZKionn6azNBHtsBYzBfqfkR/vAH6nZ1arYxVe4x?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c77fda6-5deb-48b3-bc13-08d98440f5f3
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2021 18:34:39.5311
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Bh5rKL4Ar9OwCE2Ws+MvsM8V39LAcLDAQgHEWQaicxfi0PUJ4P42w3xeIHEPM70AFpTQ7C/S4WFzSq1kfjm8pA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5493
+References: <8e4bbd5c59de31db71f718556654c0aa077df03d.camel@linux.ibm.com>
+ <5ea40608-388e-1137-9b86-85aad1cad6f6@intel.com> <b9e461a5-75de-6f45-1709-d9573492f7ac@intel.com>
+ <CAJZ5v0gpxRDt0V3Eh1_edZAudxyL3-ik4MhT7TzijTYeOd=_Vg@mail.gmail.com>
+In-Reply-To: <CAJZ5v0gpxRDt0V3Eh1_edZAudxyL3-ik4MhT7TzijTYeOd=_Vg@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 30 Sep 2021 20:37:45 +0200
+Message-ID: <CAJZ5v0hsQvHp2PqFjxvyx4tPCnNC7BCWyfPj-eADFa1w68BCMQ@mail.gmail.com>
+Subject: Re: Oops in during sriov_enable with ixgbe driver
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/30/21 8:05 AM, Tianyu Lan wrote:
-> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+On Thu, Sep 30, 2021 at 8:20 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+>
+> On Thu, Sep 30, 2021 at 7:38 PM Rafael J. Wysocki
+> <rafael.j.wysocki@intel.com> wrote:
+> >
+> > On 9/30/2021 7:31 PM, Jesse Brandeburg wrote:
+> > > On 9/28/2021 4:56 AM, Niklas Schnelle wrote:
+> > >> Hi Jesse, Hi Tony,
+> > >>
+> > >> Since v5.15-rc1 I've been having problems with enabling SR-IOV VFs on
+> > >> my private workstation with an Intel 82599 NIC with the ixgbe driver. I
+> > >> haven't had time to bisect or look closer but since it still happens on
+> > >> v5.15-rc3 I wanted to at least check if you're aware of the problem as
+> > >> I couldn't find anything on the web.
+> > > We haven't heard anything of this problem.
+> > >
+> > >
+> > >> I get below Oops when trying "echo 2 > /sys/bus/pci/.../sriov_numvfs"
+> > >> and suspect that the earlier ACPI messages could have something to do
+> > >> with that, absolutely not an ACPI expert though. If there is a need I
+> > >> could do a bisect.
+> > > Hi Niklas, thanks for the report, I added the Intel Driver's list for
+> > > more exposure.
+> > >
+> > > I asked the developers working on that driver to take a look and they
+> > > tried to reproduce, and were unable to do so. This might be related to
+> > > your platform, which strongly suggests that the ACPI stuff may be related.
+> > >
+> > > We have tried to reproduce but everything works fine no call trace in
+> > > scenario with creating VF.
+> > >
+> > > This is good in that it doesn't seem to be a general failure, you may
+> > > want to file a kernel bugzilla (bugzilla.kernel.org) to track the issue,
+> > > and I hope that @Rafael might have some insight.
+> > >
+> > > This issue may be related to changes in acpi_pci_find_companion,
+> > > but as I say, we are not able to reproduce this.
+> > >
+> > > commit 59dc33252ee777e02332774fbdf3381b1d5d5f5d
+> > > Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > Date:   Tue Aug 24 16:43:55 2021 +0200
+> > >      PCI: VMD: ACPI: Make ACPI companion lookup work for VMD bus
+> >
+> > This change doesn't affect any devices beyond the ones on the VMD bus.
+>
+> The only failing case I can see is when the device is on the VMD bus
+> and its bus pointer is NULL, so the dereference in
+> vmd_acpi_find_companion() crashes.
+>
+> Can anything like that happen?
 
-...
+Not really, because pci_iov_add_virtfn() sets virtfn->bus.
 
-> diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
-> index 9f90f460a28c..dd7f37de640b 100644
-> --- a/arch/x86/kernel/sev-shared.c
-> +++ b/arch/x86/kernel/sev-shared.c
-> @@ -94,10 +94,9 @@ static void vc_finish_insn(struct es_em_ctxt *ctxt)
->   	ctxt->regs->ip += ctxt->insn.length;
->   }
->   
-> -static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
-> -					  struct es_em_ctxt *ctxt,
-> -					  u64 exit_code, u64 exit_info_1,
-> -					  u64 exit_info_2)
-> +enum es_result sev_es_ghcb_hv_call_simple(struct ghcb *ghcb,
-> +				   u64 exit_code, u64 exit_info_1,
-> +				   u64 exit_info_2)
+However, it doesn\t set virtfn->dev.parent AFAICS, so when that gets
+dereferenced by ACPI_COMPANIO(dev->parent) in
+acpi_pci_find_companion(), the crash occurs.
 
-Oh, and a nice comment about when to use this function directly vs. the 
-non-simple one would be nice to have (basically use this one only for the 
-Hyper-V Isolation VM support).
+We need a !dev->parent check in acpi_pci_find_companion() I suppose:
 
-Thanks,
-Tom
+Does the following change help?
 
+Index: linux-pm/drivers/pci/pci-acpi.c
+===================================================================
+--- linux-pm.orig/drivers/pci/pci-acpi.c
++++ linux-pm/drivers/pci/pci-acpi.c
+@@ -1243,6 +1243,9 @@ static struct acpi_device *acpi_pci_find
+     bool check_children;
+     u64 addr;
+
++    if (!dev->parent)
++        return NULL;
++
+     down_read(&pci_acpi_companion_lookup_sem);
+
+     adev = pci_acpi_find_companion_hook ?
