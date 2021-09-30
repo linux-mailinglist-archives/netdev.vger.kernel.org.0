@@ -2,86 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A2C41D1CC
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 05:15:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D31341D1D1
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 05:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347871AbhI3DQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Sep 2021 23:16:55 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:13857 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346735AbhI3DQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 23:16:54 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HKdXm3qnSz8yxN;
-        Thu, 30 Sep 2021 11:10:32 +0800 (CST)
-Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Thu, 30 Sep 2021 11:15:06 +0800
-Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
- (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Thu, 30 Sep
- 2021 11:15:06 +0800
-Subject: Re: [RFCv2 net-next 000/167] net: extend the netdev_features_t
-To:     Edward Cree <ecree.xilinx@gmail.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <andrew@lunn.ch>, <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-References: <20210929155334.12454-1-shenjian15@huawei.com>
- <ca0ffcae-a82b-f81f-7702-410650e4677c@gmail.com>
-From:   "shenjian (K)" <shenjian15@huawei.com>
-Message-ID: <24f4fcfa-6c62-7784-0b25-aa60044c9f4d@huawei.com>
-Date:   Thu, 30 Sep 2021 11:15:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S1347779AbhI3DVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Sep 2021 23:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346735AbhI3DVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Sep 2021 23:21:50 -0400
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB56AC06161C
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 20:20:08 -0700 (PDT)
+Received: by mail-oo1-xc30.google.com with SMTP id e16-20020a4ad250000000b002b5e1f1bc78so1413994oos.11
+        for <netdev@vger.kernel.org>; Wed, 29 Sep 2021 20:20:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0qXzTeIto2hKgC9SebnuW0T4TvmpMxfgKJLCEzxCAM0=;
+        b=bEEHmrEbyiILzdPRqFmuzdG1/8/mDlFNulGnNxIz3HdYh9eVz7Nmy5ESRZFe4Jl/eM
+         +KrxjDnZNfPyxYSYTDApq0MSHrL2Gl053Z1dvohEFn5STImlN5A79PUDSGTAbn/HUURM
+         0wqR1COXbNhiKAOALBg5fq92Uxj3EuJ1JOfbvApCOjsE/CNB6USlzZs4QqwVLf9Lq93a
+         pmng4H7uFyqF9ECgnewecHf8xuR6xroiRHkFBPdgKPKILA1AOPXeAk93GQ3DWJqFcU54
+         7BgOkqNGL+ZSnOJ4SZ+65ad8opXpMZL8xTM9arclvJvmAt7qBoHbB/vXhpc/9Uz2B3yv
+         touQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0qXzTeIto2hKgC9SebnuW0T4TvmpMxfgKJLCEzxCAM0=;
+        b=TZ3k1RNMF/D6cN+f9ynKInkLOIA5cytW0a9iVTf6M0OwXCBu61fD7D6gby71fgkYe4
+         i9APvBdZNe8UNB20fxk4LrttEX4yyHughcN5lxz7zZKQ+SvvqODpw4+P8UPqPn5jVwzU
+         m6XwJRHEctGQcDuPGnoa7mLd8tmyP6us8K6TIDAxIynpseDccZEgpy+MZ9cHJitYfYc8
+         7cAzQdDP3t9bTDNPqongzjEl4r60rcqqIh2V+gPKjGaJeIK9HEYB8xBC2Wov+BHYxxQc
+         9muNoo4CcSMXXt0Ed7A5lx8MGr+Ktt73kBnrtXiGlL8ieNCg9Jfj0s2Mcd3kXA4KMvpy
+         O0LA==
+X-Gm-Message-State: AOAM531vg545wT8olpWu5EMo6w1yXLMjZsPuJrNw9eA0NoB44oQQvu5G
+        U+/XVi8udwYHA4Ee9cmfbAc=
+X-Google-Smtp-Source: ABdhPJzRRbhdfeJknQM6JPDaboY+lczGzPMY5ELp9eRjqFulXM2S1TDRWe7QhYWN72HsRavlMjQD6w==
+X-Received: by 2002:a4a:7b4b:: with SMTP id l72mr2803316ooc.21.1632972008163;
+        Wed, 29 Sep 2021 20:20:08 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id u6sm377834ooh.15.2021.09.29.20.20.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Sep 2021 20:20:07 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/2] Support for the ip6ip6 encapsulation of IOAM
+To:     Justin Iurman <justin.iurman@uliege.be>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org
+References: <20210928190328.24097-1-justin.iurman@uliege.be>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <590592ba-0e79-b649-e03b-6b735a575fc3@gmail.com>
+Date:   Wed, 29 Sep 2021 21:20:04 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <ca0ffcae-a82b-f81f-7702-410650e4677c@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.103.87]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20210928190328.24097-1-justin.iurman@uliege.be>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, edward
+On 9/28/21 1:03 PM, Justin Iurman wrote:
+> In the current implementation, IOAM can only be inserted directly (i.e., only
+> inside packets generated locally) by default, to be compliant with RFC8200.
+> 
+> This patch adds support for in-transit packets and provides the ip6ip6
+> encapsulation of IOAM. Therefore, three explicit encap modes are defined:
+> 
+>  - inline: directly inserts IOAM inside packets.
+> 
+>  - encap:  ip6ip6 encapsulation of IOAM inside packets.
+> 
+>  - auto:   either inline mode for packets generated locally or encap mode for
+>            in-transit packets.
+> 
+> With current iproute2 implementation, it is configured this way:
+> 
+> $ ip -6 r [...] encap ioam6 trace prealloc type 0x800000 ns 1 size 12 [...]
+> 
+> Now, an encap mode must be specified:
+> 
+> (inline mode)
+> $ [...] encap ioam6 mode inline trace prealloc [...]
 
+I take this to mean you want to change the CLI for ioam6? If so, that
+does not happen once an iproute2 version has shipped with some previous
+command line; it needs to be backwards compatible.
 
-在 2021/9/30 8:55, Edward Cree 写道:
-> On 29/09/2021 16:50, Jian Shen wrote:
->> This patchset try to solve it by change the prototype of
->> netdev_features_t from u64 to bitmap. With this change,
->> it's necessary to introduce a set of bitmap operation helpers
->> for netdev features. Meanwhile, the functions which use
->> netdev_features_t as return value are also need to be changed,
->> return the result as an output parameter.
-> This might be a terrible idea, but could you not do something like
->      typedef struct {
->          DECLARE_BITMAP(bits, NETDEV_FEATURE_COUNT);
->      } netdev_features_t;
->   thereby allowing functions to carry on returning it directly?
-> The compiler would still likely turn it into an output parameter
->   at an ABI level (at least once NETDEV_FEATURE_COUNT goes above
->   64), but the amount of code churn might be significantly reduced.
-> Another advantage is that, whereas bitwise ops (&, |, ^) on a
->   pointer (such as unsigned long *) are legal (meaning something
->   like "if (features & NETIF_F_GSO_MASK)" may still compile, at
->   best with a warning, despite having nonsensical semantics), they
->   aren't possible on a struct; so there's less risk of unpatched
->   code (perhaps merged in from another subsystem, or in out-of-tree
->   modules) silently breaking — instead, any mix of new and old code
->   will be caught at build time.
->
-> WDYT?
-> -ed
-> .
-Thanks for your advice.  It looks good to me.
-
-The risk of misusing bitwise ops, and not be reported by  compiler is 
-truely
-exist in my patchset.  I will consider the way of using structure.
-
-shenjian
-
-
+> 
+> (encap mode)
+> $ [...] encap ioam6 mode encap tundst fc00::2 trace prealloc [...]
+> 
+> (auto mode)
+> $ [...] encap ioam6 mode auto tundst fc00::2 trace prealloc [...]
+> 
+> A tunnel destination address must be configured when using the encap mode or the
+> auto mode.
+> 
