@@ -2,113 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D00B641DB9E
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 15:58:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE67F41DBCB
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 16:01:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351584AbhI3N7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 09:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351513AbhI3N7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 09:59:44 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B18EC06176A;
-        Thu, 30 Sep 2021 06:58:01 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id t8so10286273wri.1;
-        Thu, 30 Sep 2021 06:58:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=18QivVRaNgZyCxRZL4f3lI3BO5DrU07SsqJpq8mUAt8=;
-        b=Px/631X1/iZuL3xLrC8H9nv1yXeXvbua7ytfVGkKwqw13CurMrMGHzMyasI+B/Qoi4
-         u0hkEHrytDwgNZOUcIwhVdf78eM44TXYCs6CNyuItsE7D9urcakxYjJa8TiL8d9mWlO1
-         boCP7ITbPHB+aS09zVEdPnqTO+c8xjc4xkuT/PTIlkPzz8uv9npVUXX8scnGozGfl+AP
-         UPzpY3cjX68ABgHGm75mnNnR6Tpqyqybe766OFYg6wZVNd6RYIVAnttYHGoW/qzO/K5m
-         YdIbT8ii4JrV5nCVqOI0lVkBmmvU9g6I4PVzrCjCz+uC0KuG/1L+es1yjq0quSarjZ0a
-         7m2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=18QivVRaNgZyCxRZL4f3lI3BO5DrU07SsqJpq8mUAt8=;
-        b=wXvxN4euhftBKh41rSytBWbK/30kmQgYVc4accEU8V7fYJ+97sSPFpVDgbLE9K0EQ1
-         7ymfxhPsyciEuEZdqWeFlRFyIbVSXT2dF7VHkyK7Z27QUaQjzfHiF4pU23Mg+IBpTE5l
-         +SUGNBkjgsWB8+ycc2B/wg5yTL6E3YAhuGVr0wejnAhlHD4ATY+NiZERQ3djMNSa9MEq
-         C55S2EMcG9Mt0gmAhkRlxU6WHkiA+QP3BRpE+zPhAX8mRKmjReylOG/AZRpHod306m4S
-         8xU1Wm7+qAPj8wajKDJ8Zh69LqmttPidto9tQDTo3u1yJkI7mf5ZNI6OEh3w/lKXVkp8
-         By7A==
-X-Gm-Message-State: AOAM532id/8Yooaqdq1Z00sbWqKWZRfchJrlBvfQGkqIftWNNxoi7YUk
-        IPt0lutrCzYIexesfUSKAab2BVzpL0zY7g==
-X-Google-Smtp-Source: ABdhPJxZwvJANa71PdqyRVSgpsorKHNBGSQGpDopGIsMga27ZLJ8v7cAvdbRQXtDQ6tvee0YKuTtyQ==
-X-Received: by 2002:a5d:4e4e:: with SMTP id r14mr6499055wrt.147.1633010279635;
-        Thu, 30 Sep 2021 06:57:59 -0700 (PDT)
-Received: from [192.168.4.32] ([85.184.170.180])
-        by smtp.gmail.com with ESMTPSA id f63sm4437779wma.24.2021.09.30.06.57.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Sep 2021 06:57:59 -0700 (PDT)
-From:   Jes Sorensen <jes.sorensen@gmail.com>
-X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
-Subject: Re: [PATCH] rtl8xxxu: Use lower tx rates for the ack packet
-To:     Chris Chiu <chris.chiu@canonical.com>, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210930104422.968365-1-chris.chiu@canonical.com>
-Message-ID: <76bcc40e-f302-196f-5d83-df2aa0d9d963@gmail.com>
-Date:   Thu, 30 Sep 2021 09:57:58 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S1351642AbhI3OC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 10:02:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41130 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351630AbhI3OCZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 10:02:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=GqfIQMoOfvYuD6pFZH47BEA82MZMbwCc2wxffNr631k=; b=DqG3RCLA4PmCZb8wRSE56KUqb5
+        GpG5tzQjKiJKwKG+NmKP0uD/PpN3TIHtYdxXZy7TSoK0GfZotKPiPWXGj6AVRty+1jgm1fb0/GHXL
+        YETdopjEfvdjghnxucTDs9RdBHikKwa4aBrdX7HGl7EZZBAGybSD0k2sC2+1NdvAu7WQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mVwbx-008xOn-DF; Thu, 30 Sep 2021 16:00:33 +0200
+Date:   Thu, 30 Sep 2021 16:00:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Saravana Kannan <saravanak@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Alvin Sipraga <ALSI@bang-olufsen.dk>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] driver core: fw_devlink: Add support for
+ FWNODE_FLAG_BROKEN_PARENT
+Message-ID: <YVXDAQc6RMvDjjFu@lunn.ch>
+References: <YSpr/BOZj2PKoC8B@lunn.ch>
+ <CAGETcx_mjY10WzaOvb=vuojbodK7pvY1srvKmimu4h6xWkeQuQ@mail.gmail.com>
+ <YS4rw7NQcpRmkO/K@lunn.ch>
+ <CAGETcx_QPh=ppHzBdM2_TYZz3o+O7Ab9-JSY52Yz1--iLnykxA@mail.gmail.com>
+ <YS6nxLp5TYCK+mJP@lunn.ch>
+ <CAGETcx90dOkw+Yp5ZRNqQq2Ny_ToOKvGJNpvyRohaRQi=SQxhw@mail.gmail.com>
+ <YS608fdIhH4+qJsn@lunn.ch>
+ <20210831231804.zozyenear45ljemd@skbuf>
+ <CAGETcx8MXzFhhxom3u2MXw8XA-uUtm9XGEbYNobfr+Ptq5+fVQ@mail.gmail.com>
+ <20210930134343.ztq3hgianm34dvqb@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20210930104422.968365-1-chris.chiu@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210930134343.ztq3hgianm34dvqb@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/30/21 6:44 AM, Chris Chiu wrote:
-> According to the Realtek propritary driver and the rtw88 driver, the
-> tx rates of the ack (includes block ack) are initialized with lower
-> tx rates (no HT rates) which is set by the RRSR register value. In
-> real cases, ack rate higher than current tx rate could lead to
-> difficulty for the receiving end to receive management/control frames.
-> The retransmission rate would be higher then expected when the driver
-> is acting as receiver and the RSSI is not good.
+> Andrew is testing with arch/arm/boot/dts/vf610-zii-dev-rev-b.dts.
 > 
-> Cross out higer rates for ack packet before implementing dynamic rrsr
-> configuration
+> Graphically it looks like this:
 
-Theory of this looks sound to me, but there's an implementation detail,
-see below.
+Nice ASCII art :-)
 
-> Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
-> ---
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 7 ++++++-
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h | 2 ++
->  2 files changed, 8 insertions(+), 1 deletion(-)
+This shows the flow of Ethernet frames thought the switch
+cluster. What is missing, and causing fw_devlink problems is the MDIO
+bus master for the PHYs, and the interrupt control where PHY
+interrupts are stored, and the linking from the PHY to the interrupt
+controller. Physically all these parts are inside the Ethernet switch
+package. But Linux models them as separate blocks. This is because in
+the general case, they are all discrete blocks. You have a MAC chip,
+and a PHY chip, and the PHY interrupt output it connected to a SoC
+GPIO.
+
 > 
-> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> index 774341b0005a..413cccd88f5c 100644
-> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> @@ -4460,13 +4460,18 @@ void rtl8xxxu_gen1_init_aggregation(struct rtl8xxxu_priv *priv)
->  
->  static void rtl8xxxu_set_basic_rates(struct rtl8xxxu_priv *priv, u32 rate_cfg)
->  {
-> +	struct ieee80211_hw *hw = priv->hw;
->  	u32 val32;
->  	u8 rate_idx = 0;
->  
->  	rate_cfg &= RESPONSE_RATE_BITMAP_ALL;
->  
->  	val32 = rtl8xxxu_read32(priv, REG_RESPONSE_RATE_SET);
-> -	val32 &= ~RESPONSE_RATE_BITMAP_ALL;
-> +	       val32 = rtl8xxxu_read32(priv, REG_RESPONSE_RATE_SET);
+>  +-----------------------------+
+>  |          VF610 SoC          |
+>  |          +--------+         |
+>  |          |  fec1  |         |
+>  +----------+--------+---------+
+>                 | DSA master
+>                 |
+>                 | ethernet = <&fec1>;
+>  +--------+----------+---------------------------+
+>  |        |  port@6  |                           |
+>  |        +----------+                           |
+>  |        | CPU port |     dsa,member = <0 0>;   |
+>  |        +----------+      -> tree 0, switch 0  |
+>  |        |   cpu    |                           |
+>  |        +----------+                           |
+>  |                                               |
+>  |            switch0                            |
+>  |                                               |
+>  +-----------+-----------+-----------+-----------+
 
-You're reading REG_RESPONSE_RATE_SET twice.
+Inside the block above, is the interrupt controller and the MDIO bus
+master.
 
-Cheers,
-Jes
+
+>  |   port@0  |   port@1  |   port@2  |   port@5  |
+>  +-----------+-----------+-----------+-----------+
+>  |switch0phy0|switch0phy1|switch0phy2|   no PHY  |
+>  +-----------+-----------+-----------+-----------+
+
+The control path for these PHYs is over the MDIO bus. They are probed
+via the control path bus. These PHYs also have an interrupt output,
+which is wired to the interrupt controller above.
+
+
+>  | user port | user port | user port | DSA port  |
+>  +-----------+-----------+-----------+-----------+
+>  |    lan0   |    lan1   |    lan2   |    dsa    |
+>  +-----------+-----------+-----------+-----------+
+
+   Andrew
