@@ -2,142 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B824641D9D6
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 14:30:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FDAB41D9DD
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 14:33:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350842AbhI3McF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 08:32:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350899AbhI3McB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 08:32:01 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375A3C06176C
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 05:30:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jA7PKu74lC1fDKZcFizdDucOGMVgjnpmp3Y6CVJGHWU=; b=qwc5wk60W/Np/8peGuiK8+kZh3
-        Dnd7cZmXPOzjvSGcMape+rw8HkYLmWuhn2D3AB2Coh7+F+16+3t3rcd+KaV2VLPYaziDpnPSVqjVG
-        fAatGmV0DZwvKGN7AYCTd2Xr7c14dXgdkxslQQ+/jASl6wpD5O+hUCtOmrQEq8sa1Vh9C04EMByhg
-        2xEBX/mGBErfwQ1SblixerAJBRgSkRqf/vlSovtRU/EIrmL4zyykkUGT/dIM9ennHxgs4Gdhirkry
-        +k7di7sOEYoCqlz9G9soQJ4fLZYvaJmxY/EOjZIPUy5Tri8xnpdp1SRmQ98JTcgJdM04omXupdxlO
-        VPMAvs+Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54866)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mVvCb-0003QG-DJ; Thu, 30 Sep 2021 13:30:17 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mVvCa-0003dm-Gt; Thu, 30 Sep 2021 13:30:16 +0100
-Date:   Thu, 30 Sep 2021 13:30:16 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
-        Vivek Unune <npcomplete13@gmail.com>
-Subject: Re: Lockup in phy_probe() for MDIO device (Broadcom's switch)
-Message-ID: <YVWt2B7c9YKLlmgT@shell.armlinux.org.uk>
-References: <2b1dc053-8c9a-e3e4-b450-eecdfca3fe16@gmail.com>
- <YVWOp/2Nj/E1dpe3@shell.armlinux.org.uk>
- <5715f818-a279-d514-dcac-73a94c1d30ef@gmail.com>
- <YVWUKwEXrd39t8iw@shell.armlinux.org.uk>
- <1e4e40ba-23b8-65b4-0b53-1c8393d9a834@gmail.com>
- <YVWjEQzJisT0HgHB@shell.armlinux.org.uk>
- <f51658fb-0844-93fc-46d0-6b3a7ef36123@gmail.com>
+        id S1350884AbhI3Mei (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 08:34:38 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:35446 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350339AbhI3Meh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 08:34:37 -0400
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id 501A3200F835;
+        Thu, 30 Sep 2021 14:32:53 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 501A3200F835
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1633005173;
+        bh=wNc6MhCgQT6+EqY92JYgvfGgPHgidwJi32cnGqcd9HI=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=N3vrexeNY264EgqbY8KMwsblKRt71kMV+eLAUjrRftCycJ984o+orj6AorvCLePaO
+         5+Ek9X4bWnmGzKtn6mif0T60NaDiO30OZir1f4/1NSgpIlVrJ2X9SdKWjuB8iRpzmw
+         qj/MGYylP2qQQE+QR+iOGUtARC0deIsoy6XUH8GAVKtPU5AD2FPxnGN82g+dwffaK0
+         sT4OdyQWwcECO4yCxE+ZU8QVsAGEfMsVd3C/0a+uf9QpQPhwRT2/CiBtTgHcrf9O//
+         fPyu08MWT/s+85TJmu/bbwiB85S1pmPiYWRRybbV6R7H6jCRpBbgUZ8Qqjm00EpI/H
+         m8vz5fC2YciIA==
+Received: from localhost (localhost [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 3727160125E23;
+        Thu, 30 Sep 2021 14:32:53 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id QTvtN9ep6FvO; Thu, 30 Sep 2021 14:32:53 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 15B4760225413;
+        Thu, 30 Sep 2021 14:32:53 +0200 (CEST)
+Date:   Thu, 30 Sep 2021 14:32:53 +0200 (CEST)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org
+Message-ID: <495911022.108075672.1633005173034.JavaMail.zimbra@uliege.be>
+In-Reply-To: <590592ba-0e79-b649-e03b-6b735a575fc3@gmail.com>
+References: <20210928190328.24097-1-justin.iurman@uliege.be> <590592ba-0e79-b649-e03b-6b735a575fc3@gmail.com>
+Subject: Re: [PATCH net-next 0/2] Support for the ip6ip6 encapsulation of
+ IOAM
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f51658fb-0844-93fc-46d0-6b3a7ef36123@gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [81.240.24.148]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF92 (Linux)/8.8.15_GA_4026)
+Thread-Topic: Support for the ip6ip6 encapsulation of IOAM
+Thread-Index: eBCPx8cYyrfejaRL3yoLEIyHbhLOgA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 02:14:54PM +0200, Rafał Miłecki wrote:
-> On 30.09.2021 13:44, Russell King (Oracle) wrote:
-> > On Thu, Sep 30, 2021 at 01:29:33PM +0200, Rafał Miłecki wrote:
-> > > On 30.09.2021 12:40, Russell King (Oracle) wrote:
-> > > > In phy_probe, can you add:
-> > > > 
-> > > > 	WARN_ON(!(phydev->mdio.flags & MDIO_DEVICE_FLAG_PHY));
-> > > > 
-> > > > just to make sure we have a real PHY device there please? Maybe also
-> > > > print the value of the flags argument.
-> > > > 
-> > > > MDIO_DEVICE_FLAG_PHY is set by phy_create_device() before the mutex is
-> > > > initialised, so if it is set, the lock should be initialised.
-> > > > 
-> > > > Maybe also print mdiodev->flags in mdio_device_register() as well, so
-> > > > we can see what is being registered and the flags being used for that
-> > > > device.
-> > > > 
-> > > > Could it be that openwrt is carrying a patch that is causing this
-> > > > issue?
-> > > 
-> > > I don't think there is any OpenWrt patch affecting that.
-> > > 
-> > > MDIO_DEVICE_FLAG_PHY seems to be missing.
-> > 
-> > Right, so the mdio device being registered is a non-PHY MDIO device.
-> > It doesn't have a struct phy_device around it - and so any access
-> > outside of the mdio_device is an out-of-bounds access.
+>> With current iproute2 implementation, it is configured this way:
+>> 
+>> $ ip -6 r [...] encap ioam6 trace prealloc type 0x800000 ns 1 size 12 [...]
+>> 
+>> Now, an encap mode must be specified:
+>> 
+>> (inline mode)
+>> $ [...] encap ioam6 mode inline trace prealloc [...]
 > 
-> I can confirm that.
-> 
-> of_mdiobus_register() iterates over node children. It calls
-> of_mdiobus_child_is_phy() for the /mdio-mux@18003000/mdio@200/switch@0
-> and that returns 0. It results in calling of_mdiobus_register_device().
-> 
-> So we have MDIO device as expected. It's not a PHY device.
+> I take this to mean you want to change the CLI for ioam6? If so, that
+> does not happen once an iproute2 version has shipped with some previous
+> command line; it needs to be backwards compatible.
 
-Right - because it's a switch device - identified as having a
-compatible but without having a PHY-like compatible.
-
-	compatible = "brcm,bcm53125";
-
-This will be created by mdio_device_create(), which will not have
-its bus_match method populated. So the only way a driver registered
-on the MDIO bus_type can match is via the DT-based matching I've
-previously mentioned.
-
-> > Consequently, phylib should not be matching this device. The only
-> > remaining way I can see that this could happen is if a PHY driver has
-> > an OF compatible, which phylib drivers should never have.
-> 
-> It's actually OpenWrt's downstream swconfig-based b53 driver that
-> matches this device.
-> 
-> I'm confused as downstream b53_mdio.c calls phy_driver_register(). Why
-> does it match MDIO device then? I thought MDIO devices should be
-> matches only with drivers using mdio_driver_register().
-
-Note that I've no idea what he swconfig-based b53 driver looks like,
-I don't have the source for that to hand.
-
-If it calls phy_driver_register(), then it is registering a driver for
-a MDIO device wrapped in a struct phy_device. If this driver has a
-.of_match_table member set, then this is wrong - the basic rule is
-
-	PHY drivers must never match using DT compatibles.
-
-because this is exactly what will occur - it bypasses the check that
-the mdio_device being matched is in fact wrapped by a struct phy_device,
-and we will access members of the non-existent phy_device, including
-the "uninitialised" mutex.
-
-If the swconfig-based b53 driver does want to bind to a phy_device based
-DT node, then it needs to match using either a custom .match_phy_device
-method in the PHY driver, or it needs to match using the PHY IDs.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Sure. The inline mode would be the default one when using the old syntax (i.e., without specifying a mode).
