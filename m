@@ -2,132 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4153A41D22C
-	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 06:20:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E3C941D26D
+	for <lists+netdev@lfdr.de>; Thu, 30 Sep 2021 06:38:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346396AbhI3EUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 00:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbhI3EUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 00:20:33 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F00C06161C;
-        Wed, 29 Sep 2021 21:18:51 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id r4so10237169ybp.4;
-        Wed, 29 Sep 2021 21:18:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=BM3+YuEPCCFf8tnVNn41FpirshNfW0x9wEl2P7HQvXo=;
-        b=BYDEpv9+qB5pI+2ZbITPdpCaidM0xuiXrlS/vk8ZE+e9VsLS6ubwW0ac2bu48KuvP0
-         cUKCPv5ncs5Iw/f9M4IRMQPuQRMkX0+elSxZMPWM15rwRBwn9V8zjuIzI8YWuaD0PKBM
-         dWTjGkLLds3Vh+xf5N/mxUctiZxAxEqBCuqriiWdmF4yU1/kvTR3y0LWBEAk65ZSAWIO
-         Hs9quGpVfZ3YOhy+9fnOse40ScFdFRmMMBaiQwkISuxjvNhSWSLD/Z6/0kZwoJ/Wa6G6
-         SVvRodICbq8NWb4/SRBs3wUhAv7JG5A7Z4yFq/7sRY90QdkRC+bTtqQz5qv0yR6m1HBM
-         oZeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=BM3+YuEPCCFf8tnVNn41FpirshNfW0x9wEl2P7HQvXo=;
-        b=W0CFOCgNUixKgVNahH8WNGD5jPip6y+TOAc7XMf2koSPt2QvHSlKC7hT4vxWWfr5tk
-         mZgwKvGweS4b1BS/Ht/DRyo5GlJEUaU5Q9eW3dnTh7dQL3cpDfTkhZ38leVGh289xEH7
-         TKVPk/524mtTC0ZtihSTUS1NpgVXMeHNbo5NjZHODeccwEAZrtnJnDC+EEBP/6PtCYP/
-         Ij+rrg48OtiD/e+qg99/bLAQPsfnVgdWFtvH12sxeTDQJBg6yBruEpVuphW1278bAC6m
-         vqCinpfLr6pdxJ2qObQa/iNdoqVAWqmqDOiBnP9U3he5vHR1MRr+9Mh+2TrXdqNLzeJz
-         JxyQ==
-X-Gm-Message-State: AOAM530eU6cP+ECCpiQorqmvKB0kM3E10EDjvZlD8kRNediN36CudTQH
-        tp47B64OoYu+BhSGVY/Q1qcVGvgefutfPYu4Yis=
-X-Google-Smtp-Source: ABdhPJxG9/V7h+JBx/vEOn0pfzD+Ov8bHsUw3MTd1M/mwB81H3w/MY0nqdiSQwYQshUykI5r2CPfec288HVjabf6hHM=
-X-Received: by 2002:a25:5402:: with SMTP id i2mr4240704ybb.312.1632975530282;
- Wed, 29 Sep 2021 21:18:50 -0700 (PDT)
+        id S1347348AbhI3EkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 00:40:22 -0400
+Received: from mga01.intel.com ([192.55.52.88]:53099 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229783AbhI3EkV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 00:40:21 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10122"; a="247634428"
+X-IronPort-AV: E=Sophos;i="5.85,335,1624345200"; 
+   d="scan'208";a="247634428"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2021 21:38:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,335,1624345200"; 
+   d="scan'208";a="479667061"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga007.fm.intel.com with ESMTP; 29 Sep 2021 21:38:16 -0700
+Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
+        by linux.intel.com (Postfix) with ESMTP id 923475807C8;
+        Wed, 29 Sep 2021 21:38:13 -0700 (PDT)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Wong Vee Khee <veekhee@gmail.com>
+Subject: [PATCH net v3 1/1] net: pcs: xpcs: fix incorrect CL37 AN sequence
+Date:   Thu, 30 Sep 2021 12:44:21 +0800
+Message-Id: <20210930044421.1309538-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210929111855.50254-1-hbathini@linux.ibm.com>
- <20210929111855.50254-6-hbathini@linux.ibm.com> <9628c18d-001e-9777-e800-486a83844ac1@csgroup.eu>
-In-Reply-To: <9628c18d-001e-9777-e800-486a83844ac1@csgroup.eu>
-From:   Jordan Niethe <jniethe5@gmail.com>
-Date:   Thu, 30 Sep 2021 14:18:38 +1000
-Message-ID: <CACzsE9oNCaXoizCt-KzKS48A1L7v4_em-nLVfVLeeuWky1mrTA@mail.gmail.com>
-Subject: Re: [PATCH v4 5/8] bpf ppc64: Add BPF_PROBE_MEM support for JIT
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Hari Bathini <hbathini@linux.ibm.com>, naveen.n.rao@linux.ibm.com,
-        Michael Ellerman <mpe@ellerman.id.au>, ast@kernel.org,
-        daniel@iogearbox.net, Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
-        songliubraving@fb.com, netdev@vger.kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kpsingh@kernel.org,
-        Paul Mackerras <paulus@samba.org>, yhs@fb.com,
-        bpf@vger.kernel.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        kafai@fb.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 9:50 PM Christophe Leroy
-<christophe.leroy@csgroup.eu> wrote:
->
->
->
-> Le 29/09/2021 =C3=A0 13:18, Hari Bathini a =C3=A9crit :
-> > From: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
-> >
-> > BPF load instruction with BPF_PROBE_MEM mode can cause a fault
-> > inside kernel. Append exception table for such instructions
-> > within BPF program.
-> >
-> > Unlike other archs which uses extable 'fixup' field to pass dest_reg
-> > and nip, BPF exception table on PowerPC follows the generic PowerPC
->
->
-> For my curiosity, can you explain why we don't want and can't do the
-> same on powerpc as on other archs ?
+According to Synopsys DesignWare Cores Ethernet PCS databook, it is
+required to disable Clause 37 auto-negotiation by programming bit-12
+(AN_ENABLE) to 0 if it is already enabled, before programming various
+fields of VR_MII_AN_CTRL registers.
 
-The main thing is on x86, the extable has another field , handler:
-struct exception_table_entry { int insn, fixup, handler; };
-handler can be used to perform other things before continuing on to fixup.
-So for bpf the handler is used to clear the dest register (which is
-encoded in the low byte of fixup).
-More detail in 3dec541b2e63 ("bpf: Add support for BTF pointers to x86 JIT"=
-).
+After all these programming are done, it is then required to enable
+Clause 37 auto-negotiation by programming bit-12 (AN_ENABLE) to 1.
 
-arm64 is an example of an arch that doesn't have a handler field in the ext=
-able.
-They did something along the lines of this rather than adding a
-handler field to the extable.
-See 800834285361 ("bpf, arm64: Add BPF exception tables")
+Fixes: b97b5331b8ab ("net: pcs: add C37 SGMII AN support for intel mGbE controller")
+Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+---
+v2 -> v3:
+ - Added error handling after xpcs_write().
+ - Added 'changed' flag.
+ - Added fixes tag.
+v1 -> v2:
+ - Removed use of xpcs_modify() helper function.
+ - Add conditional check on inband auto-negotiation.
+---
+ drivers/net/pcs/pcs-xpcs.c | 41 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 36 insertions(+), 5 deletions(-)
 
->
->
-> > exception table design, where it populates both fixup and extable
-> > sections within BPF program. fixup section contains two instructions,
-> > first instruction clears dest_reg and 2nd jumps to next instruction
-> > in the BPF code. extable 'insn' field contains relative offset of
-> > the instruction and 'fixup' field contains relative offset of the
-> > fixup entry. Example layout of BPF program with extable present:
-> >
-> >               +------------------+
-> >               |                  |
-> >               |                  |
-> >     0x4020 -->| ld   r27,4(r3)   |
-> >               |                  |
-> >               |                  |
-> >     0x40ac -->| lwz  r3,0(r4)    |
-> >               |                  |
-> >               |                  |
-> >               |------------------|
-> >     0x4280 -->| li  r27,0        |  \ fixup entry
-> >               | b   0x4024       |  /
-> >     0x4288 -->| li  r3,0         |
-> >               | b   0x40b0       |
-> >               |------------------|
-> >     0x4290 -->| insn=3D0xfffffd90  |  \ extable entry
-> >               | fixup=3D0xffffffec |  /
-> >     0x4298 -->| insn=3D0xfffffe14  |
-> >               | fixup=3D0xffffffec |
-> >               +------------------+
-> >
-> >     (Addresses shown here are chosen random, not real)
-> >
+diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+index fb0a83dc09ac..d2126f5d5016 100644
+--- a/drivers/net/pcs/pcs-xpcs.c
++++ b/drivers/net/pcs/pcs-xpcs.c
+@@ -697,14 +697,18 @@ EXPORT_SYMBOL_GPL(xpcs_config_eee);
+ 
+ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
+ {
+-	int ret;
++	int ret, reg_val;
++	int changed = 0;
+ 
+ 	/* For AN for C37 SGMII mode, the settings are :-
+-	 * 1) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 10b (SGMII AN)
+-	 * 2) VR_MII_AN_CTRL Bit(3) [TX_CONFIG] = 0b (MAC side SGMII)
++	 * 1) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 0b (Disable SGMII AN in case
++	      it is already enabled)
++	 * 2) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 10b (SGMII AN)
++	 * 3) VR_MII_AN_CTRL Bit(3) [TX_CONFIG] = 0b (MAC side SGMII)
+ 	 *    DW xPCS used with DW EQoS MAC is always MAC side SGMII.
+-	 * 3) VR_MII_DIG_CTRL1 Bit(9) [MAC_AUTO_SW] = 1b (Automatic
++	 * 4) VR_MII_DIG_CTRL1 Bit(9) [MAC_AUTO_SW] = 1b (Automatic
+ 	 *    speed/duplex mode change by HW after SGMII AN complete)
++	 * 5) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 1b (Enable SGMII AN)
+ 	 *
+ 	 * Note: Since it is MAC side SGMII, there is no need to set
+ 	 *	 SR_MII_AN_ADV. MAC side SGMII receives AN Tx Config from
+@@ -712,6 +716,19 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
+ 	 *	 between PHY and Link Partner. There is also no need to
+ 	 *	 trigger AN restart for MAC-side SGMII.
+ 	 */
++	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
++	if (ret < 0)
++		return ret;
++
++	if (ret & AN_CL37_EN) {
++		changed = 1;
++		reg_val = ret & ~AN_CL37_EN;
++		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
++				 reg_val);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_CTRL);
+ 	if (ret < 0)
+ 		return ret;
+@@ -736,7 +753,21 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
+ 	else
+ 		ret &= ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
+ 
+-	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
++	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
++	if (ret < 0)
++		return ret;
++
++	if (changed) {
++		if (phylink_autoneg_inband(mode))
++			reg_val |= AN_CL37_EN;
++		else
++			reg_val &= ~AN_CL37_EN;
++
++		return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
++				  reg_val);
++	}
++
++	return ret;
+ }
+ 
+ static int xpcs_config_2500basex(struct dw_xpcs *xpcs)
+-- 
+2.25.1
+
