@@ -2,154 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E97B41EDE1
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 14:53:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EC8C41EE09
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 15:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231473AbhJAMzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 08:55:11 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:25250 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231437AbhJAMzI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 08:55:08 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 191BfekC013864;
-        Fri, 1 Oct 2021 08:53:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=9afJ2qjLSKuBEwPIpFU1S7G+NnaAmmNbXe5Ffp/3qDs=;
- b=BIdyLzU8+DR4xEHOZMM3pkRvuryxZNpz3CHw984QmRmBX6OkBaBQc1ScWYU5rkPyP+1L
- heu1TEUtLHYh/cnmeC2Hn290SBLHD/MGO3e0h+xw6pk3pMrCW9kjG3UJNxjN7are4S7i
- kY/+W1ZaoKJVC+dpuBJTZ1zIdPU3kPpoCFIkBmunQwZmsOkCFD3pMeSeb0C+LDSLtTcc
- Bd231YXS9zAM7tPx4rm46PZQjxAgJFqHU+/OB/jZqKzZHPzPt2+lxEGgjlW+1lm+tLdx
- RLaPdrV/84CUAZQT1OOMqagJGF3wdAh6HGRTg9hs1iG8jeYJu5Sh1NSdGKH3fI9wn+Ag tg== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3be1p7snef-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Oct 2021 08:53:04 -0400
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 191CmIrO007842;
-        Fri, 1 Oct 2021 12:53:02 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06fra.de.ibm.com with ESMTP id 3b9u1ku464-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Oct 2021 12:53:02 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 191ClmNf49676696
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 1 Oct 2021 12:47:48 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A282D5205F;
-        Fri,  1 Oct 2021 12:52:58 +0000 (GMT)
-Received: from thinkpad (unknown [9.171.7.108])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with SMTP id EFA3E52051;
-        Fri,  1 Oct 2021 12:52:57 +0000 (GMT)
-Date:   Fri, 1 Oct 2021 14:52:56 +0200
-From:   Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Hamza Mahfooz <someguy@effective-light.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Subject: Re: DPAA2 triggers, [PATCH] dma debug: report -EEXIST errors in
- add_dma_entry
-Message-ID: <20211001145256.0323957a@thinkpad>
-In-Reply-To: <185e7ee4-3749-4ccb-6d2e-da6bc8f30c04@linux.ibm.com>
-References: <20210518125443.34148-1-someguy@effective-light.com>
-        <fd67fbac-64bf-f0ea-01e1-5938ccfab9d0@arm.com>
-        <20210914154504.z6vqxuh3byqwgfzx@skbuf>
-        <185e7ee4-3749-4ccb-6d2e-da6bc8f30c04@linux.ibm.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S1353714AbhJANCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 09:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353502AbhJANCb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 09:02:31 -0400
+Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15D3C061775
+        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 06:00:47 -0700 (PDT)
+Received: by mail-vk1-xa30.google.com with SMTP id f73so4365081vkf.6
+        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 06:00:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=GBxtMLR6alkmVxwlJaKCf5/g7Of55gJyQ8PKha6gRkg=;
+        b=qC1PfvJM/fEvMSbTKmkzxJYZSo/sftu6eZ77hQaXHF1fut8I0VnUvTsNVKKSww0bNW
+         njNTWJ5doUigLaeEjAyN70YP2/5uNkcig6hbwI6ZkknbxhQnDUcXWzx89o71i0MgVtLu
+         bTKWXudLatT6thPT6K1Ut05546YD4yr1kfymO042pLpADLdKMLECqusgkV6gLe5gJ/KZ
+         0XNZoHdBO3pwqkJSckd4EUCKk9fznF7bQEiW/4Q/wlgXXK/NiK+Oecswo0ws2FQb4l7E
+         cwZQY7qKCQZqW46EgdmNpNxmrwDECDdDbwxMhxuNVqF/LR2FoHzovAwML2U488tHjzQ2
+         7yiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=GBxtMLR6alkmVxwlJaKCf5/g7Of55gJyQ8PKha6gRkg=;
+        b=d1t6jzCnEcDDffp9zDz2jPeiQuGAdTcUwrw79DDTdor6XXD1kH4Hb7gSXHK8GzYyZo
+         ezkWKVo85fDB6wZmlzuTyv+LboLUzOwsJYvyrv5G9dGdmQy7DiKuk6S2x48gqieqfuOG
+         1wNSpl7U3avIz6kLh9/B0+/jJar+ocJJ82LvRXNccmqCJoRKU02DJgbLsgqZDTXjttDp
+         V3/SRy4vHk22IXiBK6B8zIkM5h4lsT3sGj23GmkWl8fuXxXXX/61KzNA3ImJUyA5d8p2
+         T4A+nIMubDjEU/J13+XxTk+TfbyskJMYZRrYuBaugr02O0TU1S/xvZ4u9TaYsTpXTtlL
+         eppg==
+X-Gm-Message-State: AOAM530IJ2gAzsPQ15UnU1XXgCDlYdRh/2uIlbbHvKnTxWdfbNHO8L1W
+        /hT8rCQT69mj6QnWSWqQClSy5mOa06pwBVYyqAo=
+X-Google-Smtp-Source: ABdhPJx675PAhhwj9mLPYbHYZ0UUD3A1PyeTIIfpKL3Ar6sbm+XOyJKHc5Ps6iP2e6BbL95oyBlHvc/od6cmHD5LPEI=
+X-Received: by 2002:a05:6122:307:: with SMTP id c7mr1017837vko.18.1633093246663;
+ Fri, 01 Oct 2021 06:00:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: F9ueB-YXoaqxOVwjoXdiCvjjdDtsFi5z
-X-Proofpoint-GUID: F9ueB-YXoaqxOVwjoXdiCvjjdDtsFi5z
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-10-01_02,2021-10-01_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
- priorityscore=1501 malwarescore=0 bulkscore=0 mlxscore=0
- lowpriorityscore=0 spamscore=0 impostorscore=0 phishscore=0 clxscore=1011
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110010079
+Received: by 2002:a59:1d45:0:b0:232:2c6d:30f7 with HTTP; Fri, 1 Oct 2021
+ 06:00:46 -0700 (PDT)
+Reply-To: mariamorwa100@gmail.com
+From:   MRS MARIAM ORWA <mariamorwa06@gmail.com>
+Date:   Fri, 1 Oct 2021 06:00:46 -0700
+Message-ID: <CAHRnEsrCAoFitwipvVEFtB3dq13+oXaSJJtUQQS3kb4gzzLKHg@mail.gmail.com>
+Subject: VERY IMPORTANT /TREAT AND REPLY URGENT
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Sep 2021 15:37:33 +0200
-Karsten Graul <kgraul@linux.ibm.com> wrote:
+Hello My Dear Friend,
 
-> On 14/09/2021 17:45, Ioana Ciornei wrote:
-> > On Wed, Sep 08, 2021 at 10:33:26PM -0500, Jeremy Linton wrote:
-> >> +DPAA2, netdev maintainers
-> >> Hi,
-> >>
-> >> On 5/18/21 7:54 AM, Hamza Mahfooz wrote:
-> >>> Since, overlapping mappings are not supported by the DMA API we should
-> >>> report an error if active_cacheline_insert returns -EEXIST.
-> >>
-> >> It seems this patch found a victim. I was trying to run iperf3 on a
-> >> honeycomb (5.14.0, fedora 35) and the console is blasting this error message
-> >> at 100% cpu. So, I changed it to a WARN_ONCE() to get the call trace, which
-> >> is attached below.
-> >>
-> > 
-> > These frags are allocated by the stack, transformed into a scatterlist
-> > by skb_to_sgvec and then DMA mapped with dma_map_sg. It was not the
-> > dpaa2-eth's decision to use two fragments from the same page (that will
-> > also end un in the same cacheline) in two different in-flight skbs.
-> > 
-> > Is this behavior normal?
-> > 
-> 
-> We see the same problem here and it started with 5.15-rc2 in our nightly CI runs.
-> The CI has panic_on_warn enabled so we see the panic every day now.
+With due respect to your person and much sincerity of purpose, It=E2=80=99s=
+ my
+pleasure to write you today, I am Mrs  Mariam Orwa, I work in a bank.
+and I get your contact from internet search I hope that you will not
+expose or betray this trust and confident that am about to repose in
+you for the benefit of our both families.
 
-Adding a WARN for a case that be detected false-positive seems not
-acceptable, exactly for this reason (kernel panic on unaffected
-systems).
+Am in need of your help as a foreigner to transfer fourteen Million Usd
+($14000000.00, Million U.S.dollar) into your bank account,The fund is for
+late Sir Ratnavale Victor,dual citizen of Switzerland and Britain whom
+died in a Plane crash many years back living nobody as the next of kin
+to the fund. Risk is completely 100% free for this transaction.
 
-So I guess it boils down to the question if the behavior that Ioana
-described is legit behavior, on a system that is dma coherent. We
-are apparently hitting the same scenario, although it could not yet be
-reproduced with debug printks for some reason.
+Please I will like you to keep this proposal as a top secret or delete
+it from your mail box, if you are not interested. Also note that you
+will have 40% of the above mentioned sum, if you agree to transact
+this business with me.
 
-If the answer is yes, than please remove at lease the WARN, so that
-it will not make systems crash that behave valid, and have
-panic_on_warn set. Even a normal printk feels wrong to me in that
-case, it really sounds rather like you want to fix / better refine
-the overlap check, if you want to report anything here.
+while 60% will be for me. I will give you full details of this transaction
+immediately you notify me your interest by sending your data information to
+me.Also know that immediately this fund is transferred to your account,
+I will resign from my work and come over to your country  for the sharing
+of the money and for you to help me and direct me on what is profitable tha=
+t
+i can invest my own share of the money on it in your country.
 
-BTW, there is already a WARN in the add_dma_entry() path, related
-to cachlline overlap and -EEXIST:
+Your Full Name,........
 
-add_dma_entry() -> active_cacheline_insert() -> -EEXIST ->
-active_cacheline_inc_overlap()
+Your Country.............
 
-That will only trigger when "overlap > ACTIVE_CACHELINE_MAX_OVERLAP".
-Not familiar with that code, but it seems that there are now two
-warnings for more or less the same, and the new warning is much more
-prone to false-positives.
+Your Age.................
 
-How do these 2 warnings relate, are they both really necessary?
-I think the new warning was only introduced because of some old
-TODO comment in add_dma_entry(), see commit 2b4bbc6231d78
-("dma-debug: report -EEXIST errors in add_dma_entry").
+Phone Number............
 
-That comment was initially added by Dan long time ago, and he
-added several fix-ups for overlap detection after that, including
-the "overlap > ACTIVE_CACHELINE_MAX_OVERLAP" stuff in
-active_cacheline_inc_overlap(). So could it be that the TODO
-comment was simply not valid any more, and better be removed
-instead of adding new / double warnings, that also generate
-false-positives and kernel crashes?
+Waiting for your urgent reply
+Yours Mariam Orwa
