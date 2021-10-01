@@ -2,159 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F95B41E984
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 11:20:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C5BC41E988
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 11:21:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352939AbhJAJWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 05:22:33 -0400
-Received: from mail-eopbgr60124.outbound.protection.outlook.com ([40.107.6.124]:39125
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        id S1352994AbhJAJXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 05:23:02 -0400
+Received: from mail-vi1eur05on2065.outbound.protection.outlook.com ([40.107.21.65]:49952
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229681AbhJAJWb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 05:22:31 -0400
+        id S229681AbhJAJW7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Oct 2021 05:22:59 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GjPPisaK7Ns83UdP1RCzplgVRSZmxtxM7h4yOo6N64v7PWgl/sgWn0Vatf53iV3AQMo95RzOwOVyRQLcO33h8TlapvJ4guzuMJnuChaQde4KYVIZSVWxnCpZcG47cH84WERQT5yJmDExldfh/KxzlMA06yLZpGKRkcPJtp2E4Kczt5ub5lHYAG4DDaXwGSAEwNJjLoiytZmCt7jFUdYehNRP/i6E7mQVA5ktVJwNqC8DGacXvU7pQ+S1USwr5AWURvLC4j6BvCMDoTY5FoK1oozEAiO+YRikrnvgXMuVWFDzXAARmy5SYaCUwYB7g4Axd7e5Xw8L1Jq32FUf/Is5zg==
+ b=CVGe8iDl0xOCGC1yQvUc/ge23VBhrulKLifDGgV+UVWsisSMls6CinhnROS5kA+aPaWxSw7mc7PEkJOCQqi+qcKtDC4JOqteYQnyN/e996VSHPf51NaR7SjOBQzUR8lW7QCewJMsc79FB7gWhpT7/dfSrIjpiLF+p15YM+9IFPqWR6pEQH3I0zMaMU5WZweInVg1l6pwIiPV+4f8BgaHITjhbw1bY8108VAacrcU3GZTicJp7tMkMNPvBn0dsOKTlQNO8IhG0dL9f/S/MBfbQMR5a8pRiQ+D7K9tA7Un+5AjbNo1qN5R3dI8jQN/HwCWmeQt+KRirEvp7SrHUm6pww==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8RZhaAD38iXNiylQ0T7FkJ7PgQuKAq92nkknJ+ALJ2M=;
- b=etiorjODzGDkQq2cN2hY+xyNBdP954PdIxIceEPkLqJuRlsZIRgqILT/k5WzduchbJYF3fdP1fz22tHzRF7wmv9ZSqSykOAYD8UQsANWvjXgo59v06eUl30iDVlza3btcyG40zyWxqgGh0Ix5hMg5Wnj593xWeGkKYPC1srjZ487U43aWnILtz1moof6YIRryL8deyVH/j+M1aha1EmQFmacfjfgFwOOeRzSh3RLMZ4k8cUxkeGEgh4QrD1TfSXyDHP5BmOkKHJgXeIcTnIIOXvpehsialqQgPHsftj3kNIvzMiLsSF9/0JpO2K9Jp/cUP/4HKkpGJC6SAYUYuN4Hg==
+ bh=2vROfgZYve/eN+WJQnBMRjUY8aJLMOdFcI8Ir5wL/9o=;
+ b=LiVRUFs3cDVz6bgAPs1OpNL32ywX0xM/ll1b3oCL2kJnmwbRbGGbwcDXzsgJpVGWC+KJXya81jCNYeVCvqlmXiutAqDJHBcHSUZUq9S0osSVdFh0Dhk3+jEPQ0IDB967tSTaGbP5Y8oIC4ci5wtxtTuqspXM0CAzBfFDrDCLHIZKOh9IKQhCLN1THD8i2jPiOJyptFQw1QspMxA+1M+3Bf+/kzMerC8nxJtJYIm9eJFrb+4HDpaYqIdKRG8/IpRgi7MwyixERz/kjuSlUW4PfwiZyK13PouDxhA2VI3YNQn4FgGHvs2iAYLz0H+K8oRVevHuyJulfjH+CwSlTwb3Vg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kontron.de; dmarc=pass action=none header.from=kontron.de;
- dkim=pass header.d=kontron.de; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mysnt.onmicrosoft.com;
- s=selector2-mysnt-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8RZhaAD38iXNiylQ0T7FkJ7PgQuKAq92nkknJ+ALJ2M=;
- b=gPdGltB9Kllysl23KFmD2RxtcuPTl8tGpwC06IzEIenTUQ8vLrLGSxYrY01RnwpHUuIqo+IfGsT15E/E+ikcqJfFfwhmO3Rd6GKYP6ZZwVaFrMCDqR86ukaGYoX9R9yjsjCYuXAK7iMpv7MOTKM5tusZnQnU9B4bkZSyp63fhoM=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=kontron.de;
-Received: from AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:157::14)
- by AM0PR10MB2865.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:165::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.19; Fri, 1 Oct
- 2021 09:20:44 +0000
-Received: from AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::216b:62be:3272:2560]) by AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::216b:62be:3272:2560%6]) with mapi id 15.20.4566.015; Fri, 1 Oct 2021
- 09:20:43 +0000
-Message-ID: <18de5e10-f41f-0790-89c8-3a70d48539be@kontron.de>
-Date:   Fri, 1 Oct 2021 11:20:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.1
-Subject: Re: [PATCH 1/3] net: phy: mscc: Add possibilty to disable combined
- LED mode
+ bh=2vROfgZYve/eN+WJQnBMRjUY8aJLMOdFcI8Ir5wL/9o=;
+ b=lGFfl2PCTD9HXgk8K7OO/p6AeFBq+yHByFY9e+P6FWENulXPmtY5BPO5mHv7QOeXhLi9+ta6WccuVbKZ4manCIZHaMGaeNlTRMAEId3hYRXDgUAD2dsKpdFGWcy0AQDJUX3qaZHLWfFw3LvB3kUtkCc2M80aqn16qeFnFjwdH1Y=
+Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
+ (2603:10a6:200:4f::13) by AM8PR04MB7956.eurprd04.prod.outlook.com
+ (2603:10a6:20b:241::5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.15; Fri, 1 Oct
+ 2021 09:21:13 +0000
+Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
+ ([fe80::6476:5ddb:7bf2:e726]) by AM4PR0401MB2308.eurprd04.prod.outlook.com
+ ([fe80::6476:5ddb:7bf2:e726%8]) with mapi id 15.20.4544.025; Fri, 1 Oct 2021
+ 09:21:13 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Christoph Hellwig <hch@lst.de>
+CC:     Jeremy Linton <jeremy.linton@arm.com>,
+        Hamza Mahfooz <someguy@effective-light.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: DPAA2 triggers, [PATCH] dma debug: report -EEXIST errors in
+ add_dma_entry
+Thread-Topic: DPAA2 triggers, [PATCH] dma debug: report -EEXIST errors in
+ add_dma_entry
+Thread-Index: AQHXpSuO4AOhY9kToEi8I4sPqFaslaujtKEAgBn4OYCAAFQpAA==
+Date:   Fri, 1 Oct 2021 09:21:13 +0000
+Message-ID: <20211001092112.ndi43juysd2vg6zm@skbuf>
+References: <20210518125443.34148-1-someguy@effective-light.com>
+ <fd67fbac-64bf-f0ea-01e1-5938ccfab9d0@arm.com>
+ <20210914154504.z6vqxuh3byqwgfzx@skbuf> <20211001041959.GA17448@lst.de>
+In-Reply-To: <20211001041959.GA17448@lst.de>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>, Frieder Schrempf <frieder@fris.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>
-References: <20210930125747.2511954-1-frieder@fris.de>
- <YVZQuIr2poOfWvcO@lunn.ch>
-From:   Frieder Schrempf <frieder.schrempf@kontron.de>
-In-Reply-To: <YVZQuIr2poOfWvcO@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM5PR0502CA0007.eurprd05.prod.outlook.com
- (2603:10a6:203:91::17) To AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:157::14)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lst.de; dkim=none (message not signed)
+ header.d=none;lst.de; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bae6da4f-4a09-4a37-a92a-08d984bcd076
+x-ms-traffictypediagnostic: AM8PR04MB7956:
+x-microsoft-antispam-prvs: <AM8PR04MB79565CF74E36CA71F82ECED1E0AB9@AM8PR04MB7956.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3173;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +GD3ZubnkNwHKkoJwtAmpRW3WvAYBlULKWGD5dUUHzjpb84HR8GKEtB+/95Fpe6rL8jnQ8W6g4iC/EECYQMsSUoO2d4AXP8ko7RW41gmaYvZDQAk1cwn9aynDZwzNUY0bpTaxuS4c0nYvwJGa/qX74Svajg1+0ZsQ/KEkwkv5tcQGUBPcyvTVrLIkqW4I9BKCD+HGHphml+6XjOW1eYxE5h3TWNJ6jrabRQa4j0P8xW+WlZ3PbZ4h1fdiCgEc9QTfUwvM2/ALJ+iuEorpr65llgDdT52QJ+KMCJRVSWMHvv0QVv0XD/wx44Bp6pEbl0pAfHGRA7zdXJ98o5uOO8h2LQYN4Qds0IcYkymIJycUE9wsQJePX16hBRpXyawCk1E/i5mlmu4thAg6zmGSFRzK/jBoWWq1Xy0aQ0NscMF+V4Z673cdlK3R47VVpwvde/3iDVAsDHY+FZtJZWRKPGck48eJk6Gj/y9zv0fduQ7JNi4o+OyopSYNHUGB+0oJFEP/eKAsrn5OGHiW6Q/zuvFLcPeq7K+7mluwWbr1RWh641yqXkjAy6/0GVQv7L2RuZTEwIuHaRnoKAp13VZ3jAvpnL+8ZOxqwuYG5cxBCBsygwCNYgLwd+m3JaH3U4n5TwQixykVEksysipAWl9rHuAU27KEF7DkUxR6PfPPOX81rQpOnyZ10QbrZbcBJCQozkg1RsbASBxnfTyKxIRaVr2cQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR0401MB2308.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(44832011)(66946007)(6916009)(2906002)(76116006)(91956017)(38100700002)(83380400001)(5660300002)(6486002)(122000001)(316002)(9686003)(66446008)(6512007)(33716001)(54906003)(66476007)(86362001)(64756008)(66556008)(4326008)(1076003)(38070700005)(26005)(8936002)(186003)(6506007)(71200400001)(45080400002)(8676002)(508600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?ajtcWiutTWak/KUAXK0/MlwtRKJdRumfocK869j2wEJFYcMneFt1iRC+v0?=
+ =?iso-8859-1?Q?9n1LMny7Nqi8QwGWb7B2o8zbhR+m2FYs14kmeoeMmDVMNA+aXRV/Ov4/k6?=
+ =?iso-8859-1?Q?9R8UAI6e/0Q/hUzN6ap11HraX/xK3CmBv/1WwaOU0fnJEQf+G+kp/pTqpS?=
+ =?iso-8859-1?Q?WmsFyu1wdv3LdIeLG1JefmlyPynjYO6NYpygsAnmbYsMmhgB/w+4Djm2ZW?=
+ =?iso-8859-1?Q?R6YpxJZgn7E68n5ijQflhZCAIVLVoGTWX/8NjomJapKTIPVC/3DCr9DmgH?=
+ =?iso-8859-1?Q?ilG5R3XatiKF/k61ix+YuJWlQKwEmSSliKLd/GVOR+h3AbIJMkbsWs403I?=
+ =?iso-8859-1?Q?31XqXVRP/TWl0s8lZX8w1f1qM2eC6znBckUuu41KDm7HqczBO24EZvWrzp?=
+ =?iso-8859-1?Q?N0OZzOuuZvqHiO47/X+bj9HRtTSLETw0/UpiqDNW0L4egbn6x48/kioNjx?=
+ =?iso-8859-1?Q?+eWDHx+XREF/gdgZULWekC5ULbz73D30GkEYVTlvViJ3S3cuAPr45JaBoW?=
+ =?iso-8859-1?Q?eLaRnBj6k353mSPYnkqd+yNIEGUk93d6r7oPSXROr6qOsvdS/qFZXWuJo3?=
+ =?iso-8859-1?Q?TpkVTTVQs4uGlwxDQIDOzpCJl6vi7NoNXdnCvjXG8QltddAFACaU/IZ0eE?=
+ =?iso-8859-1?Q?mEg5QXbLUn/s7pGxLDNaGmr80QPRqyE8jhcQORbXopw3pOyIqGGbrOVyOT?=
+ =?iso-8859-1?Q?F2rmZpuoxGgbAw/RpRFI+uOhxCHULqq8reLa7mZnInltFO39+UR2EsJ7so?=
+ =?iso-8859-1?Q?7lqmm7TUvxZUqwsB03VO0ETI6QSTyMg35cfV5ITAon3Vr+CWwfSR8KLz2X?=
+ =?iso-8859-1?Q?AA9KcTSZimyctVcv8SCEwhSdyys1Lb1qEC5hVZrEU6iMj12MIXC5KchMM6?=
+ =?iso-8859-1?Q?25JtXgISV63K8GxHSz3f5lzDrsOkuW8Z6NLbV01TynktvgslgPzHFBfUpe?=
+ =?iso-8859-1?Q?ZelAFAvTDXKJCzQeqxjxmVmBz6lR+ne9DDF6klL/oj5GSsIAoj1ajhgyxS?=
+ =?iso-8859-1?Q?i6AtkuZjLuxsRl0teZYslPQ5ZEyt3qZGh2BVhheEM1Q64y5FodtyHLTi7G?=
+ =?iso-8859-1?Q?R3JOQ49sjryt9axhZQ4tLXSxhcyN6xs8bT58YW1gYvGm+xPxylyQ2ldNJ0?=
+ =?iso-8859-1?Q?mcqC7nPM3ILRRXBvL89BGp6Gib6zFsTthMmpzZdUwdXaFBe2ZBy4n7YCG+?=
+ =?iso-8859-1?Q?wdWHZvGEwQ0qnxvIBd5oH0/zasoq1BGNrgciYq6qXTGlGd2NLngfUY24Pj?=
+ =?iso-8859-1?Q?10W4c3ccXHrvibYHNko9gN5N1PzOmaedzayqNjf3IGHBVDDvnHUo1tbrNL?=
+ =?iso-8859-1?Q?/cDpC1HDu/j3TqWsC74GNYjNvW25NRadys3hFKSvIMixw9g2IaZUNIRsCb?=
+ =?iso-8859-1?Q?Tdb4c+s3AN?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <8EB46456DFEC83449F1712382451EE3F@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Received: from [192.168.10.35] (89.244.186.11) by AM5PR0502CA0007.eurprd05.prod.outlook.com (2603:10a6:203:91::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend Transport; Fri, 1 Oct 2021 09:20:42 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 96aa0ff7-b5cd-4fb1-bdb5-08d984bcbe66
-X-MS-TrafficTypeDiagnostic: AM0PR10MB2865:
-X-Microsoft-Antispam-PRVS: <AM0PR10MB28652B05625B3431453E39B4E9AB9@AM0PR10MB2865.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ER1AAQUE+jXOqNJfw5StrhKtLpB6UXdK4lGtEPxm7hAUN3xi43X43DvrQxse8dmIp7I91K0Jgf2TNa29pejpZz1v1vyCdRzqGJmOjk0D4xSZg+qR1l7+VuYJOBC27lpJYfAH7pMg1Pm1hCpzRmxJF2Fj2zeKhKApsvdsz76hQvD7ivFB65vUaWwx1SCWCVcy+FK6s3KX0+CJ2E88n+etWzmbMGXLH5E3lLRIxjLKxQPqgNgEW+TRgBHxOQ+uL5IgpZ3m0+YnvjSAF8s/GRnksLm5QbBigXJtBbZ7ZJoMfFOiiPaVJMwY8W7qq68ThGwWwGP8sZr/r8AZzGyaSaQn3EKGqOCQq2vALdRmyA/UdWUV3fi8Y2is4qqcnJ3uAJSF1NAnI5EsTQmi7tSPvaWajFYyHg5m2pYWtCFrdTWLKc8ffwXBKr0C0NmwCE18PCZ0mNldSe9IrTEfGWLkgx471J/j/UC1eRt11Vnhw/bFzVzn4/js8Ytc3I6z0iRvW6/WkrK7Ht4TLV3Jgk8Me7lnjHDpPnq77Jo+lX51Py+yw/c44m333aDkUYBd8Qri81Sw61B+njvV/w/V70/t1z/d4oWifOaUEOoMiECEL7EZIdSnVbRRf/A4fv1PaPKJfwdcJz1ALD0yJATBR/gDpVTJbKL5U9TsHC7xp7HS2aez4ENnUVhdyxkWNBleu/7087tpiwSQCWugnoKBfADWbdbasdBSkv8Ohspjqx4zP0zES2G6z4WV1RDDvjIWFnFpezWdLkxYn6nUM6GU2/E05vDNwTW3Sz1z16eyMjhS2VL96OSZt05kYZn6UOLTw0x0CWK9
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(6666004)(31696002)(83380400001)(966005)(36756003)(956004)(66946007)(8936002)(66476007)(86362001)(2616005)(66556008)(508600001)(6486002)(8676002)(186003)(26005)(16576012)(110136005)(7416002)(53546011)(54906003)(5660300002)(316002)(2906002)(38100700002)(31686004)(4326008)(44832011)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NldnWnJCcmFCSW8yWHBPalQwWUFoblZlMFBKM29vR0w1VVMweStNTlFWYVpM?=
- =?utf-8?B?Z05YYUVpYUlLdFlYZ1lzY2dMcW40UlM4ZUQ2SEFtcXR6WFFpay93NXd4MG5Q?=
- =?utf-8?B?b2pPWWVuQXBET0lvSitTYTNMK3pIck5SM3BuU3kvV0tTL2oyRFVrT3gvWGVJ?=
- =?utf-8?B?OWxPNjhDeERyV0wrcmRtZUM5UkFUVDgxdXFzU3Jwa0NjV3ZkdWUyWjZNWVNP?=
- =?utf-8?B?akRCTkg2bTRPV2FRUVp1NUlGRXpwbCtMcWtaT3BSOFdWOVgvNXhvMDFKelFs?=
- =?utf-8?B?MldCWnAxYlVSMlV3RnVlNEF2LzBRbmVWdVpTU09sMGxiQVpRVjlFSkx1VnYz?=
- =?utf-8?B?RnRtWWJjdjlQNG9VeUFHNHNUZWRYenZ4ZXZ5MmMvZEh5cjU5dEZ2ZUVUVDZt?=
- =?utf-8?B?ZzhKN0tlb2lTdmdHNEpDUVQ3cHF2VmhLcU0vbzBDTGVlYTlSOXJVdm5FWHA3?=
- =?utf-8?B?SlREQm1JVExvRjFGWW5vTzJvb1lVQ2FlNmJIdUk0T2tiSURIRFptRDlwQlRE?=
- =?utf-8?B?anJ1TzFmMWxZZDZwcDl4cjlEdXFZb0dGdDV6T1JJdXVqY0djU1AraWtEamJq?=
- =?utf-8?B?WWZEN2V2ZEUzQXBHeFI1cWM2L1hBUlFPK3pnY3hjUWVvOEp2KzZ4SmpZWWE1?=
- =?utf-8?B?R2VkZFBTbHpDTEZCSWNtUlFmZXRmK2VaODBwKzdMWW1GTm9nV1VVeWdMUXU5?=
- =?utf-8?B?SUJ5OVpuZmIrVW1YR3drQmgvMGIvUitIdXd5aWM4T1M4WjRvR1g1bjhhbXN6?=
- =?utf-8?B?U0hZYzd6d0hiN3RzK3hvZVFWMlllemtiS1k3Q3RDbHpOZC9WUEhPQ2JwKzZN?=
- =?utf-8?B?cjdaVFRtcVJTcVpBSjRJWmJPYW4vNTdFMFRBNVczb1hqSmJMUDRnajhRRU5h?=
- =?utf-8?B?UnFIdU9HYjYrcmJzNjcrckdUWFZKY2x4VW1oQVo2RWptMm5sYThqVGlpSmdK?=
- =?utf-8?B?ZzBxakdqYzNNQ2xZNnV1ZXFOeElFeUJhVHkwbzQ0VFVka2NyZ2ZGM1V0MEkv?=
- =?utf-8?B?bHNlTm5GSnF5eWlhS3krTVR0bEZwVmhFeXh2RXRBa1J4SFM5VkFiMGR1OXZR?=
- =?utf-8?B?Q21lUTZZVGJkRi8zU1U1R3hiM29vekxVaHQ3RTFNbm5qS2dmUjNkYnNQYkJB?=
- =?utf-8?B?SHFDVk5mcWdJV0dDUTUxUkxnWjdBUVR6WlhHRSs3VW42M29OUkZNWGlnWmVy?=
- =?utf-8?B?bXkvRmdjZnZMUG9JL1RRVHNGWFBwb2I4U2lJa1lHemdYcG9ua0FZK2pHV2ZJ?=
- =?utf-8?B?UUNjSlhCWGYrb3ZZbmZFSCs4QTUwc2tkdnAxdFR3clA4M1d5bjZud2REVU9P?=
- =?utf-8?B?K1E4eWRLcUJTQlF6ZVJXdFBrSURVQ21wTVJKeUxpNkFyaGtReC9SRmFxNjBq?=
- =?utf-8?B?SXJlUHR1TVJFdmJQODRVUzhsRDlhcmVDVXhNTUdsZ3VhU1FncHpPV2JhTEo0?=
- =?utf-8?B?TVNwNzg1QjlZanJ1Ung3ZEhWblZ1MTNnTXVvNmtLc2txaktCY2JtRFJWZGJi?=
- =?utf-8?B?aHFaWjIyVjBHRituVitTdDM2d3BxVS9CUG9YQ2M3TC8vOTMzeGk4ZDVhYzJH?=
- =?utf-8?B?YUx1aGlBWVMvaCtxUk5TOEU4S0RwbjYyN1pJdFgwbllEVDA4MHp1RnEzNFpT?=
- =?utf-8?B?eEV5RS8xc05pWUNSNCt0NG05UlUwYitxcGZvaXJuNmFweUZDazI4ajBxVXpX?=
- =?utf-8?B?aDdPKzQvZXoyNDRCNlFZSWhnY2tFalkrNjRwUk1LRTlibFcyVkdNRDc5VEtX?=
- =?utf-8?Q?kMT0ZT9zPva5F6yMTSA/5iWJCZhvVkVU14wZoT3?=
-X-OriginatorOrg: kontron.de
-X-MS-Exchange-CrossTenant-Network-Message-Id: 96aa0ff7-b5cd-4fb1-bdb5-08d984bcbe66
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2021 09:20:43.4097
+X-MS-Exchange-CrossTenant-AuthSource: AM4PR0401MB2308.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bae6da4f-4a09-4a37-a92a-08d984bcd076
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Oct 2021 09:21:13.5201
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8c9d3c97-3fd9-41c8-a2b1-646f3942daf1
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Q2YTdeuE2Pa4Mm6L1ONeWBXNjRKuLB/iG8rwyY8dQfn/TWmptMIB+NuCWr6u4r0QOt/Zq088YLoRUkt2ZDZe8XXQkiZVOmoZ2ChTywjkV6Y=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB2865
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +aqPwjlCDwV/Z3vipSFBf2SImQtf9u+e9EN5T17xteEaNooZTCGlvXJa/tQjnbguO5G/Y0ANXr9ETbNjQRhklQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7956
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01.10.21 02:05, Andrew Lunn wrote:
-> On Thu, Sep 30, 2021 at 02:57:43PM +0200, Frieder Schrempf wrote:
->> From: Frieder Schrempf <frieder.schrempf@kontron.de>
->>
->> By default the LED modes offer to combine two indicators like speed/link
->> and activity in one LED. In order to use a LED only for the first of the
->> two modes, the combined feature needs to be disabled.
->>
->> In order to do this we introduce a boolean devicetree property
->> 'vsc8531,led-[N]-combine-disable' and wire it up to the matching
->> bits in the LED behavior register.
-> 
-> Sorry, but no DT property. Each PHY has its own magic combination of
-> DT properties, nothing shared, nothing common. This does not scale.
-> 
-> Please look at the work being done to control PHY LEDs using the Linux
-> LED infrastructure. That should give us one uniform interface for all
-> PHY LEDs.
+On Fri, Oct 01, 2021 at 06:19:59AM +0200, Christoph Hellwig wrote:
+> On Tue, Sep 14, 2021 at 03:45:06PM +0000, Ioana Ciornei wrote:
+> > [  245.927020] fsl_dpaa2_eth dpni.3: scather-gather idx 0 P=3D20a732000=
+0 N=3D20a7320 D=3D20a7320000 L=3D30 DMA_BIDIRECTIONAL dma map error check n=
+ot applicable=B7
+> > [  245.927048] fsl_dpaa2_eth dpni.3: scather-gather idx 1 P=3D20a732003=
+0 N=3D20a7320 D=3D20a7320030 L=3D5a8 DMA_BIDIRECTIONAL dma map error check =
+not applicable
+> > [  245.927062] DMA-API: cacheline tracking EEXIST, overlapping mappings=
+ aren't supported
+> >=20
+> > The first line is the dump of the dma_debug_entry which is already pres=
+ent
+> > in the radix tree and the second one is the entry which just triggered
+> > the EEXIST.
+> >=20
+> > As we can see, they are not actually overlapping, at least from my
+> > understanding. The first one starts at 0x20a7320000 with a size 0x30
+> > and the second one at 0x20a7320030.
+>=20
+> They overlap the cache lines.  Which means if you use this driver
+> on a system that is not dma coherent you will corrupt data.
 
-+Cc: Marek
+This is a driver of an integrated ethernet controller which is DMA
+coherent.
 
-I guess you are referring to this: [1]?
+I added a print just to make sure of this:
 
-If so, the last version I could find is a year old now. Is anyone still
-working on this?
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -567,6 +567,7 @@ static void add_dma_entry(struct dma_debug_entry *entry=
+)
+                pr_err("cacheline tracking ENOMEM, dma-debug disabled\n");
+                global_disable =3D true;
+        } else if (rc =3D=3D -EEXIST) {
++               pr_err("dev_is_dma_coherent(%s) =3D %d\n", dev_name(entry->=
+dev), dev_is_dma_coherent(entry->dev));
+                err_printk(entry->dev, entry,
+                        "cacheline tracking EEXIST, overlapping mappings ar=
+en't supported\n");
+        }
 
-I understand, that the generic approach is the one we want to have, but
-does this really mean adding PHY led configuration via DT to existing
-drivers (that already use DT properties for LED modes) is not accepted
-anymore, even if the new API is not yet in place?
 
-If anyone (Marek?) would be willing to revive this series, I could maybe
-try to find some spare time to rework the mscc PHY LED configuration on
-top of this and do some tests.
+[   85.852218] DMA-API: dev_is_dma_coherent(dpni.3) =3D 1
+[   85.858891] ------------[ cut here ]------------
+[   85.858893] DMA-API: fsl_dpaa2_eth dpni.3: cacheline tracking EEXIST, ov=
+erlapping mappings aren't supported
+[   85.858901] WARNING: CPU: 13 PID: 1046 at kernel/dma/debug.c:571 add_dma=
+_entry+0x330/0x390
+[   85.858911] Modules linked in:
+[   85.858915] CPU: 13 PID: 1046 Comm: iperf3 Not tainted 5.15.0-rc2-00478-=
+g34286ba6a164-dirty #1275
+[   85.858919] Hardware name: NXP Layerscape LX2160ARDB (DT)
 
-[1] https://patches.linaro.org/patch/255422/
+
+Shouldn't this case not generate this kind of warning?
+
+Ioana=
