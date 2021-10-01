@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE71A41EE25
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 15:05:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26CA541EE32
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 15:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354226AbhJANGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 09:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
+        id S1354500AbhJANG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 09:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354167AbhJANGD (ORCPT
+        with ESMTP id S1354213AbhJANGD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 09:06:03 -0400
 Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B88C0613E6
-        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 06:03:59 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id p13so6294978edw.0
-        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 06:03:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D84C0613EB
+        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 06:04:04 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id g7so33802625edv.1
+        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 06:04:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=anyfinetworks-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Jw9IUMaLywJloQik8I5Go3bAQFQF2YDMapxftvHW9ss=;
-        b=kL2uqYRQ2DVtojeTq45f2PBUCs/JXBOYH0ZwK8Hfc2IXN7XA4Hqq5tcw+M/hSqfiXN
-         Y3/VRbCBvw+Pjo+kfDnIKtI3KmDbh+ucB5dej+lwpi97aoX8mvdHKvoQgbisctbT5CEt
-         BVmfsMrbV55wU0vIvK3l1yt4YhuVzXjk6uIPOqvroOzAibAIsUYHNQy9cBn7wSVwPg7f
-         gFzFhwTQfz+rJHM0ikSrFhloNT333EeEWi284vZfKSGIQK1EVAoacjypl9YPwpbw4Mi8
-         9ZFnos4j8jcKN5c3nQZDZA42diEPI0bQN+inwWP+tpNI4Xlnt/PRPLUuIpS3KxqjM/sY
-         7tWw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3jpHHECyJBSuDzV8sQEpnKqzKuSA0gHWMInU+P2sJMM=;
+        b=L5/YvycX993FGYGpJAohPhtyp1IoH+ZofMEQx+8C7sgxQSekL4wFyP31hjA2QBgWfv
+         EV+gdzbHEx73OO3Ld4PwEm+10WM2GhGTnQKUtneQqbpGZuz67uZ4NpC5qnT/bigGoOFO
+         fFySZP8o7fA/N4bQGX08jVTDbxVJCFHM69U/o0OwW48cAmoubPMReXFi2Y5pOW/FLap7
+         P0ci01MagBRYw/+99RvDAEjK7vG44nj2EhVVpY5XwGZADmM9euYk+ya4iE6xmIypgHY6
+         IFKtyek8lsU2M3IUleLIjGtgUEGkxA37HBTU22GMQza9h8Lr0rUoy+Es8ICOg+lAvaRc
+         iBUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Jw9IUMaLywJloQik8I5Go3bAQFQF2YDMapxftvHW9ss=;
-        b=EFlEQbSQMX4s8zCGiZ0Rc0fX8Fp0zc9yoVVk0CvHPY6j4MR7JllJzIWnoD6nBSFFr5
-         dnQbaZw4ioeZgD2zvYjeZK/XWYBwrW11S8l5+fpMi0LnI8aX0njV3HVC48eMW1/TDmBZ
-         hPJii+9+59U7UdJQf2gnjzq6L3enNb3BQCRh9ClVZ6v/qIKt9qs2kyqKkiyiBVyXVN9h
-         djXYNZ9S75ym+phxgL+EVqd2Gr/XwdSQ9lsLVPqc4SI8oLZkHUd0GLJi80G2qUqM1jst
-         CnHI4Q0PXWYXcR2IuhjoC/zemSqg7oW3ZH4RDF3IdcU5DzQcXBcIYvuyHr1h9KN1e+9M
-         RIcw==
-X-Gm-Message-State: AOAM531Io7+VCTmVg2xohMrOYzUt9NUar9M2gVVxAYriXJUQejR9+KB8
-        Mn1YrqFFnczwhZXvMXrxNSQsfA==
-X-Google-Smtp-Source: ABdhPJwuOTrl9CV5KOgJa7gOtxUuQMDtwaAPUEqH9sxYW38UFTjXcrHMs0X9p1BIGX0ZvtcWv66ZGA==
-X-Received: by 2002:a17:906:8aa7:: with SMTP id mu39mr6081129ejc.298.1633093437608;
-        Fri, 01 Oct 2021 06:03:57 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3jpHHECyJBSuDzV8sQEpnKqzKuSA0gHWMInU+P2sJMM=;
+        b=c1gWWtr3wJDpXcxYBuHhir2dpcOD/IejhMpPh4LmNSuZaovZY88yQlhuCsSHWNhfbq
+         xZlqPl88/9TDW7ZEydip5zHKj8XvlSPBi7HMocAttBO0kuotH4t11r3sX0I+njFgNDvi
+         3y2aq/4ianVur5QeHUje6j9ZmYFT0rZOlFMstX06cvotUSLhE1MvWIOFxMUrRojwo91D
+         yp8E6Y7pzMoUKJikTwueM7TUE1DqaoXMlkblhYE6nI6saQMb+0ramOZxy5nIQDXYtO/I
+         8YNDq8ySY2STDAgsHhMFKkyahvHqVgILuYZNpcOSeb+lXVPXRZSS3Vzh1VlRGUHAvbmy
+         Yd7A==
+X-Gm-Message-State: AOAM531HbRZh9OkywjQyFK5TYZfxwPV1bI89dAjhf6rBhDFDibj8zM+w
+        jLYLcdfyMFGwaXGtaBSBs4oOqA==
+X-Google-Smtp-Source: ABdhPJxP1recQuvCaOvbZrc5X2GV9hImHVScvrvBzFLUbGU3S9GFk9xHcoujT8qJsDVi7wLsmygxhw==
+X-Received: by 2002:a50:e1cf:: with SMTP id m15mr13988643edl.181.1633093438864;
+        Fri, 01 Oct 2021 06:03:58 -0700 (PDT)
 Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id p22sm2920279ejl.90.2021.10.01.06.03.56
+        by smtp.gmail.com with ESMTPSA id p22sm2920279ejl.90.2021.10.01.06.03.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Oct 2021 06:03:57 -0700 (PDT)
+        Fri, 01 Oct 2021 06:03:58 -0700 (PDT)
 From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
 Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -54,39 +54,296 @@ Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         paul@cilium.io, yangtiezhu@loongson.cn, netdev@vger.kernel.org,
         bpf@vger.kernel.org,
         Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH bpf-next 00/10] bpf/tests: Extend eBPF JIT test suite
-Date:   Fri,  1 Oct 2021 15:03:38 +0200
-Message-Id: <20211001130348.3670534-1-johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf-next 01/10] bpf/tests: Add tests of BPF_LDX and BPF_STX with small sizes
+Date:   Fri,  1 Oct 2021 15:03:39 +0200
+Message-Id: <20211001130348.3670534-2-johan.almbladh@anyfinetworks.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211001130348.3670534-1-johan.almbladh@anyfinetworks.com>
+References: <20211001130348.3670534-1-johan.almbladh@anyfinetworks.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set adds a number of new tests to the test_bpf.ko test suite.
-The new tests focus on the behaviour of operations with different
-combinations of register operands, and in particular, when two or more
-register operands are in fact the same register. It also verifies things
-like a src register not being zero-extended in-place in ALU32 operations,
-and that operations implemented with function calls do not clobber any
-other eBPF registers.
+This patch adds a series of tests to verify the behavior of BPF_LDX and
+BPF_STX with BPF_B//W sizes in isolation. In particular, it checks that
+BPF_LDX zero-extendeds the result, and that BPF_STX does not overwrite
+adjacent bytes in memory.
 
-Johan Almbladh (10):
-  bpf/tests: Add tests of BPF_LDX and BPF_STX with small sizes
-  bpf/tests: Add zero-extension checks in BPF_ATOMIC tests
-  bpf/tests: Add exhaustive tests of BPF_ATOMIC magnitudes
-  bpf/tests: Add tests to check source register zero-extension
-  bpf/tests: Add more tests for ALU and ATOMIC register clobbering
-  bpf/tests: Minor restructuring of ALU tests
-  bpf/tests: Add exhaustive tests of ALU register combinations
-  bpf/tests: Add exhaustive tests of BPF_ATOMIC register combinations
-  bpf/tests: Add test of ALU shifts with operand register aliasing
-  bpf/tests: Add test of LDX_MEM with operand aliasing
+BPF_ST and operations on BPF_DW size are deemed to be sufficiently
+tested by existing tests.
 
- lib/test_bpf.c | 2803 ++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 2571 insertions(+), 232 deletions(-)
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+---
+ lib/test_bpf.c | 254 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 254 insertions(+)
 
+diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+index 21ea1ab253a1..a838a6179ca4 100644
+--- a/lib/test_bpf.c
++++ b/lib/test_bpf.c
+@@ -6907,6 +6907,260 @@ static struct bpf_test tests[] = {
+ 		{ },
+ 		{ { 0, (u32) (cpu_to_le64(0xfedcba9876543210ULL) >> 32) } },
+ 	},
++	/* BPF_LDX_MEM B/H/W/DW */
++	{
++		"BPF_LDX_MEM | BPF_B",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x0102030405060708ULL),
++			BPF_LD_IMM64(R2, 0x0000000000000008ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_LDX_MEM(BPF_B, R0, R10, -1),
++#else
++			BPF_LDX_MEM(BPF_B, R0, R10, -8),
++#endif
++			BPF_JMP_REG(BPF_JNE, R0, R2, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	{
++		"BPF_LDX_MEM | BPF_B, MSB set",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x8182838485868788ULL),
++			BPF_LD_IMM64(R2, 0x0000000000000088ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_LDX_MEM(BPF_B, R0, R10, -1),
++#else
++			BPF_LDX_MEM(BPF_B, R0, R10, -8),
++#endif
++			BPF_JMP_REG(BPF_JNE, R0, R2, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	{
++		"BPF_LDX_MEM | BPF_H",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x0102030405060708ULL),
++			BPF_LD_IMM64(R2, 0x0000000000000708ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_LDX_MEM(BPF_H, R0, R10, -2),
++#else
++			BPF_LDX_MEM(BPF_H, R0, R10, -8),
++#endif
++			BPF_JMP_REG(BPF_JNE, R0, R2, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	{
++		"BPF_LDX_MEM | BPF_H, MSB set",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x8182838485868788ULL),
++			BPF_LD_IMM64(R2, 0x0000000000008788ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_LDX_MEM(BPF_H, R0, R10, -2),
++#else
++			BPF_LDX_MEM(BPF_H, R0, R10, -8),
++#endif
++			BPF_JMP_REG(BPF_JNE, R0, R2, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	{
++		"BPF_LDX_MEM | BPF_W",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x0102030405060708ULL),
++			BPF_LD_IMM64(R2, 0x0000000005060708ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_LDX_MEM(BPF_W, R0, R10, -4),
++#else
++			BPF_LDX_MEM(BPF_W, R0, R10, -8),
++#endif
++			BPF_JMP_REG(BPF_JNE, R0, R2, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	{
++		"BPF_LDX_MEM | BPF_W, MSB set",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x8182838485868788ULL),
++			BPF_LD_IMM64(R2, 0x0000000085868788ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_LDX_MEM(BPF_W, R0, R10, -4),
++#else
++			BPF_LDX_MEM(BPF_W, R0, R10, -8),
++#endif
++			BPF_JMP_REG(BPF_JNE, R0, R2, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	/* BPF_STX_MEM B/H/W/DW */
++	{
++		"BPF_STX_MEM | BPF_B",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x8090a0b0c0d0e0f0ULL),
++			BPF_LD_IMM64(R2, 0x0102030405060708ULL),
++			BPF_LD_IMM64(R3, 0x8090a0b0c0d0e008ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_STX_MEM(BPF_B, R10, R2, -1),
++#else
++			BPF_STX_MEM(BPF_B, R10, R2, -8),
++#endif
++			BPF_LDX_MEM(BPF_DW, R0, R10, -8),
++			BPF_JMP_REG(BPF_JNE, R0, R3, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	{
++		"BPF_STX_MEM | BPF_B, MSB set",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x8090a0b0c0d0e0f0ULL),
++			BPF_LD_IMM64(R2, 0x8182838485868788ULL),
++			BPF_LD_IMM64(R3, 0x8090a0b0c0d0e088ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_STX_MEM(BPF_B, R10, R2, -1),
++#else
++			BPF_STX_MEM(BPF_B, R10, R2, -8),
++#endif
++			BPF_LDX_MEM(BPF_DW, R0, R10, -8),
++			BPF_JMP_REG(BPF_JNE, R0, R3, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	{
++		"BPF_STX_MEM | BPF_H",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x8090a0b0c0d0e0f0ULL),
++			BPF_LD_IMM64(R2, 0x0102030405060708ULL),
++			BPF_LD_IMM64(R3, 0x8090a0b0c0d00708ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_STX_MEM(BPF_H, R10, R2, -2),
++#else
++			BPF_STX_MEM(BPF_H, R10, R2, -8),
++#endif
++			BPF_LDX_MEM(BPF_DW, R0, R10, -8),
++			BPF_JMP_REG(BPF_JNE, R0, R3, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	{
++		"BPF_STX_MEM | BPF_H, MSB set",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x8090a0b0c0d0e0f0ULL),
++			BPF_LD_IMM64(R2, 0x8182838485868788ULL),
++			BPF_LD_IMM64(R3, 0x8090a0b0c0d08788ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_STX_MEM(BPF_H, R10, R2, -2),
++#else
++			BPF_STX_MEM(BPF_H, R10, R2, -8),
++#endif
++			BPF_LDX_MEM(BPF_DW, R0, R10, -8),
++			BPF_JMP_REG(BPF_JNE, R0, R3, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	{
++		"BPF_STX_MEM | BPF_W",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x8090a0b0c0d0e0f0ULL),
++			BPF_LD_IMM64(R2, 0x0102030405060708ULL),
++			BPF_LD_IMM64(R3, 0x8090a0b005060708ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_STX_MEM(BPF_W, R10, R2, -4),
++#else
++			BPF_STX_MEM(BPF_W, R10, R2, -8),
++#endif
++			BPF_LDX_MEM(BPF_DW, R0, R10, -8),
++			BPF_JMP_REG(BPF_JNE, R0, R3, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
++	{
++		"BPF_STX_MEM | BPF_W, MSB set",
++		.u.insns_int = {
++			BPF_LD_IMM64(R1, 0x8090a0b0c0d0e0f0ULL),
++			BPF_LD_IMM64(R2, 0x8182838485868788ULL),
++			BPF_LD_IMM64(R3, 0x8090a0b085868788ULL),
++			BPF_STX_MEM(BPF_DW, R10, R1, -8),
++#ifdef __BIG_ENDIAN
++			BPF_STX_MEM(BPF_W, R10, R2, -4),
++#else
++			BPF_STX_MEM(BPF_W, R10, R2, -8),
++#endif
++			BPF_LDX_MEM(BPF_DW, R0, R10, -8),
++			BPF_JMP_REG(BPF_JNE, R0, R3, 1),
++			BPF_ALU64_IMM(BPF_MOV, R0, 0),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
++		{ },
++		{ { 0, 0 } },
++		.stack_depth = 8,
++	},
+ 	/* BPF_ST(X) | BPF_MEM | BPF_B/H/W/DW */
+ 	{
+ 		"ST_MEM_B: Store/Load byte: max negative",
 -- 
 2.30.2
 
