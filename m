@@ -2,126 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D64D41F311
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 19:27:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AC2F41F316
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 19:28:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355341AbhJAR27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 13:28:59 -0400
-Received: from mga05.intel.com ([192.55.52.43]:50616 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355262AbhJAR26 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 13:28:58 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10124"; a="311051743"
-X-IronPort-AV: E=Sophos;i="5.85,339,1624345200"; 
-   d="scan'208";a="311051743"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2021 10:27:14 -0700
-X-IronPort-AV: E=Sophos;i="5.85,339,1624345200"; 
-   d="scan'208";a="521239016"
-Received: from unknown (HELO vcostago-mobl3) ([10.134.46.83])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2021 10:27:12 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     "Arvid.Brodin@xdin.com" <Arvid.Brodin@xdin.com>,
-        "m-karicheri2@ti.com" <m-karicheri2@ti.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        "vishal@chelsio.com" <vishal@chelsio.com>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        "jiri@mellanox.com" <jiri@mellanox.com>,
-        "idosch@mellanox.com" <idosch@mellanox.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "ivan.khoronzhuk@linaro.org" <ivan.khoronzhuk@linaro.org>,
-        "andre.guedes@linux.intel.com" <andre.guedes@linux.intel.com>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
-        "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>
-Subject: RE: [EXT] Re: [RFC, net-next] net: qos: introduce a frer action to
- implement 802.1CB
-In-Reply-To: <DB8PR04MB5785F3128FEB1FB1B2F9AC0DF0A99@DB8PR04MB5785.eurprd04.prod.outlook.com>
-References: <20210928114451.24956-1-xiaoliang.yang_1@nxp.com>
- <87czos9vnj.fsf@linux.intel.com>
- <DB8PR04MB5785F3128FEB1FB1B2F9AC0DF0A99@DB8PR04MB5785.eurprd04.prod.outlook.com>
-Date:   Fri, 01 Oct 2021 10:27:12 -0700
-Message-ID: <87lf3cfyfj.fsf@intel.com>
+        id S1355394AbhJAR3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 13:29:46 -0400
+Received: from mxout03.lancloud.ru ([45.84.86.113]:36176 "EHLO
+        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355340AbhJAR3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 13:29:45 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru BAC552033887
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: Re: [RFC/PATCH 16/18] ravb: Add Packet receive function for Gigabit
+ Ethernet
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+References: <20210923140813.13541-1-biju.das.jz@bp.renesas.com>
+ <20210923140813.13541-17-biju.das.jz@bp.renesas.com>
+Organization: Open Mobile Platform
+Message-ID: <82f58946-b88b-8990-8788-a58f8d1468c2@omp.ru>
+Date:   Fri, 1 Oct 2021 20:27:56 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20210923140813.13541-17-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xiaoliang Yang <xiaoliang.yang_1@nxp.com> writes:
+On 9/23/21 5:08 PM, Biju Das wrote:
 
-> Hi Vinicius,
->
-> On Sep 29, 2021 at 6:35:59 +0000, Vinicius Costa Gomes wrote:
->> > This patch introduce a frer action to implement frame replication and
->> > elimination for reliability, which is defined in IEEE P802.1CB.
->> >
->> 
->> An action seems, to me, a bit too limiting/fine grained for a frame replication
->> and elimination feature.
->> 
->> At least I want to hear the reasons that the current hsr/prp support cannot be
->> extended to support one more tag format/protocol.
->> 
->> And the current name for the spec is IEEE 802.1CB-2017.
->> 
-> 802.1CB can be set on bridge ports, and need to use bridge forward
-> Function as a relay system. It only works on identified streams,
-> unrecognized flows still need to pass through the bridged network
-> normally.
+> This patch series adds RX(packet receive) function for
+> Gigabit Ethernet found on RZ/G2L SoC.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+>  drivers/net/ethernet/renesas/ravb.h      |   1 +
+>  drivers/net/ethernet/renesas/ravb_main.c | 157 ++++++++++++++++++++++-
+>  2 files changed, 156 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+> index b0e067a6a8ee..85260f89e1cd 100644
+> --- a/drivers/net/ethernet/renesas/ravb.h
+> +++ b/drivers/net/ethernet/renesas/ravb.h
+> @@ -1092,6 +1092,7 @@ struct ravb_private {
+>  
+>  	int duplex;
+>  	struct ravb_rx_desc *rgeth_rx_ring[NUM_RX_QUEUE];
+> +	struct sk_buff *rxtop_skb;
 
-This ("only on identified streams") is the strongest argument so far to
-have FRER also as an action, in adition to the current hsr netdevice
-approach.
+   I'd prefer for this one declared earler in the *struct*, as well. And why not e.g 'rx_1st_skb'?
 
->
-> But current hsr/prp seems only support two ports, and cannot use the
-> ports in bridge. It's hard to implement FRER functions on current HSR
-> driver.
+>  
+>  	const struct ravb_hw_info *info;
+>  	struct reset_control *rstc;
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index a08da7a37b92..867e180e6655 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -705,6 +705,23 @@ static void ravb_get_tx_tstamp(struct net_device *ndev)
+>  	}
+>  }
+>  
+> +static void ravb_rx_csum_rgeth(struct sk_buff *skb)
+> +{
+> +	u8 *hw_csum;
+> +
+> +	/* The hardware checksum is contained in sizeof(__sum16) (2) bytes
+> +	 * appended to packet data
+> +	 */
+> +	if (unlikely(skb->len < sizeof(__sum16)))
+> +		return;
+> +	hw_csum = skb_tail_pointer(skb) - sizeof(__sum16);
+> +
+> +	if (*hw_csum == 0)
+> +		skb->ip_summed = CHECKSUM_UNNECESSARY;
+> +	else
+> +		skb->ip_summed = CHECKSUM_NONE;
 
-That the hsr netdevice only support two ports, I think is more a bug
-than a design issue. Which will need to get fixed at some point. 
+   Mhm, what's the point of this whole function then? Why it can't be a copy of the R-Car analog?
 
-Speaking of functions, one thing that might be interesting is trying to
-see if it makes sense to make part of the current hsr functionality a
-"library" so it can be used by tc-frer as well. (less duplication of
-bugs).
+[...]
+> @@ -720,11 +737,147 @@ static void ravb_rx_csum(struct sk_buff *skb)
+[...]
+>  /* Packet receive function for Gigabit Ethernet */
+>  static bool ravb_rgeth_rx(struct net_device *ndev, int *quota, int q)
+>  {
+> -	/* Place holder */
+> -	return true;
+> +	struct ravb_private *priv = netdev_priv(ndev);
+> +	int entry = priv->cur_rx[q] % priv->num_rx_ring[q];
+> +	int boguscnt = priv->dirty_rx[q] + priv->num_rx_ring[q] - priv->cur_rx[q];
+> +	struct net_device_stats *stats = &priv->stats[q];
 
->
-> You can see chapter "D.2 Example 2: Various stack positions" in IEEE 802.1CB-2017,
-> Protocol stack for relay system is like follows:
->
->              Stream Transfer Function
->                 |             |
->   				|    	Sequence generation
->                 |       	Sequence encode/decode
->   Stream identification		Active Stream identification
-> 				|			  |
->   			    |		Internal LAN---- Relay system forwarding
-> 				|						|		|
-> 				MAC						MAC		MAC
->
-> Use port actions to easily implement FRER tag add/delete, split, and
-> recover functions.
->
-> Current HSR/PRP driver can be used for port HSR/PRP set, and tc-frer
-> Action to be used for stream RTAG/HSR/PRP set and recover.
+   [q] should be dropped, as we've agreed...
 
-I am still reading the spec and trying to imagine how things would fit
-together:
-  - for which use cases tc-frer would be useful;
-  - for which use cases the hsr netdevice would be useful;
-  - would it make sense to have them in the same system?
-  
->
-> Thanks,
-> Xiaoliang
+> +	struct ravb_rx_desc *desc;
+> +	struct sk_buff *skb;
+> +	dma_addr_t dma_addr;
+> +	u8  desc_status;
+> +	u8  die_dt;
+> +	u16 pkt_len;
+> +	int limit;
+> +
+> +	boguscnt = min(boguscnt, *quota);
+> +	limit = boguscnt;
+> +	desc = &priv->rgeth_rx_ring[q][entry];
+> +	while (desc->die_dt != DT_FEMPTY) {
+> +		/* Descriptor type must be checked before all other reads */
+> +		dma_rmb();
+> +		desc_status = desc->msc;
+> +		pkt_len = le16_to_cpu(desc->ds_cc) & RX_DS;
+> +
+> +		if (--boguscnt < 0)
+> +			break;
+> +
+> +		/* We use 0-byte descriptors to mark the DMA mapping errors */
+> +		if (!pkt_len)
+> +			continue;
+> +
+> +		if (desc_status & MSC_MC)
+> +			stats->multicast++;
+> +
+> +		if (desc_status & (MSC_CRC | MSC_RFE | MSC_RTSF | MSC_RTLF | MSC_CEEF)) {
+> +			stats->rx_errors++;
+> +			if (desc_status & MSC_CRC)
+> +				stats->rx_crc_errors++;
+> +			if (desc_status & MSC_RFE)
+> +				stats->rx_frame_errors++;
+> +			if (desc_status & (MSC_RTLF | MSC_RTSF))
+> +				stats->rx_length_errors++;
+> +			if (desc_status & MSC_CEEF)
+> +				stats->rx_missed_errors++;
+> +		} else {
+> +			die_dt = desc->die_dt & 0xF0;
+> +			switch (die_dt) {
+> +			case DT_FSINGLE:
+> +				skb = ravb_get_skb_rgeth(ndev, q, entry, desc);
+> +				skb_put(skb, pkt_len);
+> +				skb->protocol = eth_type_trans(skb, ndev);
+> +				if (ndev->features & NETIF_F_RXCSUM)
+> +					ravb_rx_csum_rgeth(skb);
+> +				napi_gro_receive(&priv->napi[q], skb);
+> +				stats->rx_packets++;
+> +				stats->rx_bytes += pkt_len;
+> +				break;
+> +			case DT_FSTART:
+> +				priv->rxtop_skb = ravb_get_skb_rgeth(ndev, q, entry, desc);
 
-Cheers,
--- 
-Vinicius
+   But don't you need to  copy the data in this case?
+
+> +				skb_put(priv->rxtop_skb, pkt_len);
+> +				break;
+> +			case DT_FMID:
+> +				skb = ravb_get_skb_rgeth(ndev, q, entry, desc);
+> +				skb_copy_to_linear_data_offset(priv->rxtop_skb,
+> +							       priv->rxtop_skb->len,
+> +							       skb->data,
+> +							       pkt_len);
+> +				skb_put(priv->rxtop_skb, pkt_len);
+> +				dev_kfree_skb(skb);
+> +				break;
+> +			case DT_FEND:
+> +				skb = ravb_get_skb_rgeth(ndev, q, entry, desc);
+> +				skb_copy_to_linear_data_offset(priv->rxtop_skb,
+> +							       priv->rxtop_skb->len,
+> +							       skb->data,
+> +							       pkt_len);
+> +				skb_put(priv->rxtop_skb, pkt_len);
+> +				dev_kfree_skb(skb);
+> +				priv->rxtop_skb->protocol =
+> +					eth_type_trans(priv->rxtop_skb, ndev);
+> +				if (ndev->features & NETIF_F_RXCSUM)
+> +					ravb_rx_csum_rgeth(skb);
+> +				napi_gro_receive(&priv->napi[q],
+> +						 priv->rxtop_skb);
+> +				stats->rx_packets++;
+> +				stats->rx_bytes += priv->rxtop_skb->len;
+> +				break;
+> +			}
+> +		}
+> +
+> +		entry = (++priv->cur_rx[q]) % priv->num_rx_ring[q];
+> +		desc = &priv->rgeth_rx_ring[q][entry];
+> +	}
+> +
+> +	/* Refill the RX ring buffers. */
+> +	for (; priv->cur_rx[q] - priv->dirty_rx[q] > 0; priv->dirty_rx[q]++) {
+> +		entry = priv->dirty_rx[q] % priv->num_rx_ring[q];
+> +		desc = &priv->rgeth_rx_ring[q][entry];
+> +		desc->ds_cc = cpu_to_le16(RGETH_RX_DESC_DATA_SIZE);
+> +
+> +		if (!priv->rx_skb[q][entry]) {
+> +			skb = netdev_alloc_skb(ndev,
+> +					       RGETH_RX_BUFF_MAX + RAVB_ALIGN - 1);
+
+   ALIGN(RGETH_RX_BUFF_MAX, RAVB_ALIGN)?
+
+[...]
+
+MBR, Sergey
