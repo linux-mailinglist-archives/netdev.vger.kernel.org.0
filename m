@@ -2,100 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 110FB41EED2
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 15:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E300941EED6
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 15:45:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354103AbhJANpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 09:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
+        id S231600AbhJANqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 09:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354147AbhJANpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 09:45:00 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0C9C061775
-        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 06:43:16 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id e16so8952802qts.4
-        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 06:43:16 -0700 (PDT)
+        with ESMTP id S230250AbhJANqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 09:46:46 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71853C061775;
+        Fri,  1 Oct 2021 06:45:02 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id h3so9456941pgb.7;
+        Fri, 01 Oct 2021 06:45:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cf4KervmgbYPewbFXW0H0LrSdYd5Nbh/NaFrqSsod4Y=;
-        b=3Hqx4iJoDMd/CbstYyPKbtUv5iaeGCpZ57vqdgLGDE88xLSq+bB1vN3HhmM3qunXk2
-         RGfhlmLBWn9fHHH3XFZjMn1aCK4rlwgZzbT0oLEZ48DD4uiiiNaAoxzc84NCFIg5t4Mh
-         tbmqATbs2+LHirwbBoQk6zzDCohSeWTej6haXlZe9q/fOv6doKfcW25U1pnsmaNdpKsp
-         meHp6BVNTZCxqy8lH6QDsNpHBzvvs+3SsopkLPfDPQLxrQRKVxggWWpI+sHeUc8tb+Yz
-         DiFA0U9dq8Nrlj8I83sGM7JxArPjsmkS9TCL4RLHoCcu0Ub2L8ZnR5grPW+2Q2KmCiQ/
-         5xCg==
+        bh=+W0613/U97/IRk/cKafjuDgCo1b1iuYjGfZXYXnQ6Ks=;
+        b=fI+a+LG8ArsPWPNVrcDlN1Y+DGYbEAMiOyVtFcrgIanlWJoHfu3nErCi7z9B7TRc0s
+         XwkLDSu1HSUCVcuUGAf2UAfkIZbdq0kYiq1hwcM4Chs9DtwIyx5IcQcjIfHB/Pf2yXEo
+         H7qFms2XI1NTfN593xVR9xVLDqYLgx0y3Nnz8+9Bq6V7W7c3d+wtp69kwgzNG+8b8JdR
+         Y4gZtH/zc4nw9Vv9uUKElYpBKRywUCzcJ5JZ8FBtYTOLAbe6Ey+vzJmV1uMjblwCdps+
+         8o6+40wggv41yfCOBYJzPR9nB5IkaksFvEMkrAHI/sEx/M2LIzl4SavufDg1IOWqSdK8
+         IFTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=cf4KervmgbYPewbFXW0H0LrSdYd5Nbh/NaFrqSsod4Y=;
-        b=jQ5FuOOGL2wxj6edmIfNTR3wV3tWkByVghx4OIdLd1yWoPWz/6iU+XqW11M9VEN66U
-         JGRjdtkFG3d+KrnocIqkXd7zpSfSPw3zH7PQUZW9EomoK2aZXlt1O2QHx6mxAmcVXutN
-         aN4nzuI0orSOwWz7zilYuJu3rhRXT/uise1ha5vILQ43OdDd8oWmQfFFuYHP2Kb5W6F9
-         3D8fZ/ExAs7l7sWqXNr+h8beccz8crC2N9ES+H2hlxF4RwILMnGTEGRwyO5IQM8OOI93
-         /sEGukQZbGBMqBGqYMk5lYFDCbUW3heJh/SnYw75io24tzxUyLeu49D8u9rsIpW5XuhO
-         ud3w==
-X-Gm-Message-State: AOAM530F2YfKvj5eWhrPwCsOgo13aOs93BJ6F+ftSzgRCY4JeIF/MpBm
-        j7ggLOM/Mn5P7Erk0ZQO72g2lw==
-X-Google-Smtp-Source: ABdhPJxtCkBgpFlKSAej/LLmct64vIxRBmKGIpMEhIWICJ6X3uIis+5Y29rgb65pLMVd0YPuDNViIA==
-X-Received: by 2002:a05:622a:181:: with SMTP id s1mr13423984qtw.47.1633095795595;
-        Fri, 01 Oct 2021 06:43:15 -0700 (PDT)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
-        by smtp.googlemail.com with ESMTPSA id y22sm3453660qkp.9.2021.10.01.06.43.14
+        bh=+W0613/U97/IRk/cKafjuDgCo1b1iuYjGfZXYXnQ6Ks=;
+        b=2P8gyvR5aTMwtqGFCEU0p9GeLXeG/0WlyjEYxQtHBkLSzcLZP/HwZeSzKzWeNoMh4i
+         4mddxL9ue+35/udtmJDURr6VS99UVPBxi7ija1KrQvGrh2fxyX9ahzfiuV22M/sZuTa8
+         mhtbVJSs8QFMGOtdP4Ec4IQ6OVRd9Wlp4GS77VBQJs1dDD50bGjvWZQfVfWzM+UZlq30
+         pOLuSRGPd/b37SqysX/9Dfu6fzLfiTTq27HgT36WddgvdaX6d6hcCZ02lFxDuG4hMgFy
+         dWoPY7hw2+YWzBoxA8TZOWGW++euD9kdVbbKeUW4NqHyLzvRyMqG6y57HYVU0fQ8btqR
+         iQHA==
+X-Gm-Message-State: AOAM532zhdETqLxy0xm3RsFG72qpt4qOGOdutUcaMYJW4A/fy9H+Jtme
+        i3d0j9llvtIqDKY26Wg6uU4=
+X-Google-Smtp-Source: ABdhPJxUpFMG0u9Y0nQi7Ij3rISBGTDlzrBFeaSwsW5M8Ta7kbtdYw1JRUOoqo+ermBwMkbpwM/6YQ==
+X-Received: by 2002:a63:f050:: with SMTP id s16mr9765518pgj.258.1633095901913;
+        Fri, 01 Oct 2021 06:45:01 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
+        by smtp.gmail.com with ESMTPSA id p27sm6480554pfq.164.2021.10.01.06.44.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Oct 2021 06:43:14 -0700 (PDT)
-Subject: Re: [RFC Patch net-next v2] net_sched: introduce eBPF based Qdisc
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Jiri Pirko <jiri@resnulli.us>
-References: <20210913231108.19762-1-xiyou.wangcong@gmail.com>
- <CAADnVQJFbCmzoFM8GGHyLWULSmX75=67Tu0EnTOOoVfH4gE+HA@mail.gmail.com>
- <CAM_iQpX2prCpPDmO1U0A_wyJi_LS4wmd9MQiFKiqQT8NfGNNnw@mail.gmail.com>
- <CAADnVQJJHLuaymMEdDowharvyJr+6ta2Tg9XAR3aM+4=ysu+bg@mail.gmail.com>
- <CAM_iQpUCtXRWhMqSaoymZ6OqOywb-k4R1_mLYsLCTm7ABJ5k_A@mail.gmail.com>
- <CAADnVQJcUspoBzk9Tt3Rx_OH7-MB+m1xw+vq2k2SozYZMmpurg@mail.gmail.com>
- <CAM_iQpVaVvaEn2ORfyZQ-FN56pCdE4YPa0r2E+VgyZzvEP31cQ@mail.gmail.com>
- <CAADnVQJX8OpXhQ66jVSN1ws8tav5R8yCERr6eaS9POA+QhRx-A@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <6d648f13-756f-0e3e-b617-5f9244d733b7@mojatatu.com>
-Date:   Fri, 1 Oct 2021 09:43:13 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+        Fri, 01 Oct 2021 06:45:01 -0700 (PDT)
+Subject: Re: [PATCH V6 5/8] x86/hyperv: Add Write/Read MSR registers via ghcb
+ page
+To:     Tom Lendacky <thomas.lendacky@amd.com>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        arnd@arndb.de, brijesh.singh@amd.com, jroedel@suse.de,
+        Tianyu.Lan@microsoft.com, pgonda@google.com,
+        akpm@linux-foundation.org, rppt@kernel.org,
+        kirill.shutemov@linux.intel.com, saravanand@fb.com,
+        aneesh.kumar@linux.ibm.com, rientjes@google.com, tj@kernel.org,
+        michael.h.kelley@microsoft.com
+Cc:     linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
+        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
+        dave.hansen@intel.com
+References: <20210930130545.1210298-1-ltykernel@gmail.com>
+ <20210930130545.1210298-6-ltykernel@gmail.com>
+ <0f33ca85-f1c6-bab3-5bdb-233c09f86621@amd.com>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <5d13faf8-0733-10cc-6e2e-c43b400f7d69@gmail.com>
+Date:   Fri, 1 Oct 2021 21:44:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQJX8OpXhQ66jVSN1ws8tav5R8yCERr6eaS9POA+QhRx-A@mail.gmail.com>
+In-Reply-To: <0f33ca85-f1c6-bab3-5bdb-233c09f86621@amd.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-09-29 4:57 p.m., Alexei Starovoitov wrote:
+Hi Tom:
+      Thanks for your review.
 
-> Applying queuing discipline to non-skb context may be not your target
-> but it's a reasonable and practical request to have.
+On 10/1/2021 2:27 AM, Tom Lendacky wrote:
+> On 9/30/21 8:05 AM, Tianyu Lan wrote:
+>> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+>>
+> 
+> ...
+> 
+>> diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
+>> index 9f90f460a28c..dd7f37de640b 100644
+>> --- a/arch/x86/kernel/sev-shared.c
+>> +++ b/arch/x86/kernel/sev-shared.c
+>> @@ -94,10 +94,9 @@ static void vc_finish_insn(struct es_em_ctxt *ctxt)
+>>       ctxt->regs->ip += ctxt->insn.length;
+>>   }
+>> -static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+>> -                      struct es_em_ctxt *ctxt,
+>> -                      u64 exit_code, u64 exit_info_1,
+>> -                      u64 exit_info_2)
+>> +enum es_result sev_es_ghcb_hv_call_simple(struct ghcb *ghcb,
+>> +                   u64 exit_code, u64 exit_info_1,
+>> +                   u64 exit_info_2)
+>>   {
+>>       enum es_result ret;
+>> @@ -109,29 +108,45 @@ static enum es_result sev_es_ghcb_hv_call(struct 
+>> ghcb *ghcb,
+>>       ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
+>>       ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
+>> -    sev_es_wr_ghcb_msr(__pa(ghcb));
+>>       VMGEXIT();
+>> -    if ((ghcb->save.sw_exit_info_1 & 0xffffffff) == 1) {
+>> -        u64 info = ghcb->save.sw_exit_info_2;
+>> -        unsigned long v;
+>> -
+>> -        info = ghcb->save.sw_exit_info_2;
+>> -        v = info & SVM_EVTINJ_VEC_MASK;
+>> -
+>> -        /* Check if exception information from hypervisor is sane. */
+>> -        if ((info & SVM_EVTINJ_VALID) &&
+>> -            ((v == X86_TRAP_GP) || (v == X86_TRAP_UD)) &&
+>> -            ((info & SVM_EVTINJ_TYPE_MASK) == SVM_EVTINJ_TYPE_EXEPT)) {
+>> -            ctxt->fi.vector = v;
+>> -            if (info & SVM_EVTINJ_VALID_ERR)
+>> -                ctxt->fi.error_code = info >> 32;
+>> -            ret = ES_EXCEPTION;
+>> -        } else {
+>> -            ret = ES_VMM_ERROR;
+>> -        }
+>> -    } else {
+>> +    if ((ghcb->save.sw_exit_info_1 & 0xffffffff) == 1)
+> 
+> Really, any non-zero value indicates an error, so this should be:
+> 
+>      if (ghcb->save.sw_exit_info_1 & 0xffffffff) >
+>> +        ret = ES_VMM_ERROR;
+>> +    else
+>>           ret = ES_OK;
+>> +
+>> +    return ret;
+>> +}
+>> +
+>> +static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
+>> +                   struct es_em_ctxt *ctxt,
+>> +                   u64 exit_code, u64 exit_info_1,
+>> +                   u64 exit_info_2)
+>> +{
+>> +    unsigned long v;
+>> +    enum es_result ret;
+>> +    u64 info;
+>> +
+>> +    sev_es_wr_ghcb_msr(__pa(ghcb));
+>> +
+>> +    ret = sev_es_ghcb_hv_call_simple(ghcb, exit_code, exit_info_1,
+>> +                     exit_info_2);
+>> +    if (ret == ES_OK)
+>> +        return ret;
+>> +
+> 
+> And then here, the explicit check for 1 should be performed and if not 
+> 1, then return ES_VMM_ERROR. If it is 1, then check the event injection 
+> values. >
+> Thanks,
+> Tom
 
+Good suggestion. Will update.
 
-While i agree that it is useful to deal with queues and scheduling
-for other buffer contexts, it certainly not the same infrastructure
-wise to deal with sending a context to user space vs dealing with
-the qdisc environment. There are a lot of corner cases of dealing with
-the mix of hard and softirqs, non-work conserving modes, multiflow
-funneling and locking etc that have been refined over the years that
-are incorporated into the tc + netdev infra.
-The approach that Cong took of just reusing that infra will take
-advantage of those learnings. The only thing that is variable between
-the different qdiscs is the enqueue/dequeue algos (which is where
-Cong is sticking the ebpf hooks). To me that looks like a very
-good starting point as i dont believe you can come up with one size
-fits all without excessive over-engineering (which seems to defeat
-the purpose of ebpf).
-
-cheers,
-jamal
+> 
+>> +    info = ghcb->save.sw_exit_info_2;
+>> +    v = info & SVM_EVTINJ_VEC_MASK;
+>> +
+>> +    /* Check if exception information from hypervisor is sane. */
+>> +    if ((info & SVM_EVTINJ_VALID) &&
+>> +        ((v == X86_TRAP_GP) || (v == X86_TRAP_UD)) &&
+>> +        ((info & SVM_EVTINJ_TYPE_MASK) == SVM_EVTINJ_TYPE_EXEPT)) {
+>> +        ctxt->fi.vector = v;
+>> +        if (info & SVM_EVTINJ_VALID_ERR)
+>> +            ctxt->fi.error_code = info >> 32;
+>> +        ret = ES_EXCEPTION;
+>> +    } else {
+>> +        ret = ES_VMM_ERROR;
+>>       }
+>>       return ret;
