@@ -2,170 +2,313 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C40C341E90F
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 10:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8399241E91E
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 10:36:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352710AbhJAIZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 04:25:28 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:54288 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352645AbhJAIZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 04:25:27 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1918C2PX001177;
-        Fri, 1 Oct 2021 04:23:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=G6K+sVMkbV9kGDxT1j5qPRAw9MwY5YvJSeK69w1o8mE=;
- b=GWGytIFg+r0GWNcfDTaPJxZeGudeWy/fRZDp/+picKBzPRfP8eOMTDsAQL7gwkRo3uo2
- YRTA1cW/vJJquRTHqHs7jH2KJnmKUeG42btRUg6Xj9ngFFlDN4JHLHt9q6iRyp04IiJz
- aikPnyxRmUvQVl5nM9Hc5XN3zXUqDp4EfbeVsYOyzDIxgenO31ZaiTnFV2m7mpSRhei1
- qC12nZJyGp5Bh6mBghpKuGmtjq1YprFWtLY8YV7AUopdQ7LhvRHoFRTojufUKUe3arXi
- P2ZNd2Bl5kDKGuDqjfIkM8rjL1/I53VzI0vuLIOz8cgGF5Fup+XxW6Z0sSzVsHJ6m5DN 6Q== 
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bdxku07ak-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Oct 2021 04:23:41 -0400
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1918CQeq022296;
-        Fri, 1 Oct 2021 08:23:38 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma02fra.de.ibm.com with ESMTP id 3b9uda8kkt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Oct 2021 08:23:38 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1918NaBE53412280
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 1 Oct 2021 08:23:36 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0FDFF11C064;
-        Fri,  1 Oct 2021 08:23:36 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9BFE811C04A;
-        Fri,  1 Oct 2021 08:23:35 +0000 (GMT)
-Received: from sig-9-145-167-144.de.ibm.com (unknown [9.145.167.144])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  1 Oct 2021 08:23:35 +0000 (GMT)
-Message-ID: <924c2d6ef51a83cce5c9bcf4004bbf1506c5a768.camel@linux.ibm.com>
-Subject: Re: Oops in during sriov_enable with ixgbe driver
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Date:   Fri, 01 Oct 2021 10:23:35 +0200
-In-Reply-To: <CAJZ5v0hsQvHp2PqFjxvyx4tPCnNC7BCWyfPj-eADFa1w68BCMQ@mail.gmail.com>
-References: <8e4bbd5c59de31db71f718556654c0aa077df03d.camel@linux.ibm.com>
-         <5ea40608-388e-1137-9b86-85aad1cad6f6@intel.com>
-         <b9e461a5-75de-6f45-1709-d9573492f7ac@intel.com>
-         <CAJZ5v0gpxRDt0V3Eh1_edZAudxyL3-ik4MhT7TzijTYeOd=_Vg@mail.gmail.com>
-         <CAJZ5v0hsQvHp2PqFjxvyx4tPCnNC7BCWyfPj-eADFa1w68BCMQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-16.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: -x7WUWAeS2lx3fdAEJUTltwZzXq29tRr
-X-Proofpoint-GUID: -x7WUWAeS2lx3fdAEJUTltwZzXq29tRr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-30_07,2021-09-30_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- mlxscore=0 adultscore=0 clxscore=1011 suspectscore=0 priorityscore=1501
- malwarescore=0 phishscore=0 lowpriorityscore=0 spamscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2109230001
- definitions=main-2110010055
+        id S1352757AbhJAIhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 04:37:37 -0400
+Received: from mga03.intel.com ([134.134.136.65]:37732 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1352324AbhJAIhg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Oct 2021 04:37:36 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10123"; a="225453721"
+X-IronPort-AV: E=Sophos;i="5.85,337,1624345200"; 
+   d="scan'208";a="225453721"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2021 01:35:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,337,1624345200"; 
+   d="scan'208";a="708436315"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga006.fm.intel.com with ESMTP; 01 Oct 2021 01:35:49 -0700
+Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 0724B580970;
+        Fri,  1 Oct 2021 01:35:44 -0700 (PDT)
+Date:   Fri, 1 Oct 2021 16:35:42 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Wong Vee Khee <veekhee@gmail.com>
+Subject: Re: [PATCH net v3 1/1] net: pcs: xpcs: fix incorrect CL37 AN sequence
+Message-ID: <20211001083542.GA22563@linux.intel.com>
+References: <20210930044421.1309538-1-vee.khee.wong@linux.intel.com>
+ <YVWCV1Vaq5SAJflX@shell.armlinux.org.uk>
+ <20211001001951.erebmghjsewuk3lh@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211001001951.erebmghjsewuk3lh@skbuf>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-09-30 at 20:37 +0200, Rafael J. Wysocki wrote:
-> On Thu, Sep 30, 2021 at 8:20 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> > On Thu, Sep 30, 2021 at 7:38 PM Rafael J. Wysocki
-> > <rafael.j.wysocki@intel.com> wrote:
-> > > On 9/30/2021 7:31 PM, Jesse Brandeburg wrote:
-> > > > On 9/28/2021 4:56 AM, Niklas Schnelle wrote:
-> > > > > Hi Jesse, Hi Tony,
-> > > > > 
-> > > > > Since v5.15-rc1 I've been having problems with enabling SR-IOV VFs on
-> > > > > my private workstation with an Intel 82599 NIC with the ixgbe driver. I
-> > > > > haven't had time to bisect or look closer but since it still happens on
-> > > > > v5.15-rc3 I wanted to at least check if you're aware of the problem as
-> > > > > I couldn't find anything on the web.
-> > > > We haven't heard anything of this problem.
-> > > > 
-> > > > 
-> > > > > I get below Oops when trying "echo 2 > /sys/bus/pci/.../sriov_numvfs"
-> > > > > and suspect that the earlier ACPI messages could have something to do
-> > > > > with that, absolutely not an ACPI expert though. If there is a need I
-> > > > > could do a bisect.
-> > > > Hi Niklas, thanks for the report, I added the Intel Driver's list for
-> > > > more exposure.
-> > > > 
-> > > > I asked the developers working on that driver to take a look and they
-> > > > tried to reproduce, and were unable to do so. This might be related to
-> > > > your platform, which strongly suggests that the ACPI stuff may be related.
-> > > > 
-> > > > We have tried to reproduce but everything works fine no call trace in
-> > > > scenario with creating VF.
-> > > > 
-> > > > This is good in that it doesn't seem to be a general failure, you may
-> > > > want to file a kernel bugzilla (bugzilla.kernel.org) to track the issue,
-> > > > and I hope that @Rafael might have some insight.
-> > > > 
-> > > > This issue may be related to changes in acpi_pci_find_companion,
-> > > > but as I say, we are not able to reproduce this.
-> > > > 
-> > > > commit 59dc33252ee777e02332774fbdf3381b1d5d5f5d
-> > > > Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > > > Date:   Tue Aug 24 16:43:55 2021 +0200
-> > > >      PCI: VMD: ACPI: Make ACPI companion lookup work for VMD bus
+On Fri, Oct 01, 2021 at 12:19:52AM +0000, Vladimir Oltean wrote:
+> On Thu, Sep 30, 2021 at 10:24:39AM +0100, Russell King (Oracle) wrote:
+> > On Thu, Sep 30, 2021 at 12:44:21PM +0800, Wong Vee Khee wrote:
+> > > According to Synopsys DesignWare Cores Ethernet PCS databook, it is
+> > > required to disable Clause 37 auto-negotiation by programming bit-12
+> > > (AN_ENABLE) to 0 if it is already enabled, before programming various
+> > > fields of VR_MII_AN_CTRL registers.
 > > > 
-> > > This change doesn't affect any devices beyond the ones on the VMD bus.
+> > > After all these programming are done, it is then required to enable
+> > > Clause 37 auto-negotiation by programming bit-12 (AN_ENABLE) to 1.
+> > > 
+> > > Fixes: b97b5331b8ab ("net: pcs: add C37 SGMII AN support for intel mGbE controller")
+> > > Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+> > > ---
+> > > v2 -> v3:
+> > >  - Added error handling after xpcs_write().
+> > >  - Added 'changed' flag.
+> > >  - Added fixes tag.
+> > > v1 -> v2:
+> > >  - Removed use of xpcs_modify() helper function.
+> > >  - Add conditional check on inband auto-negotiation.
+> > > ---
+> > >  drivers/net/pcs/pcs-xpcs.c | 41 +++++++++++++++++++++++++++++++++-----
+> > >  1 file changed, 36 insertions(+), 5 deletions(-)
+> > > 
+> > > diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+> > > index fb0a83dc09ac..d2126f5d5016 100644
+> > > --- a/drivers/net/pcs/pcs-xpcs.c
+> > > +++ b/drivers/net/pcs/pcs-xpcs.c
+> > > @@ -697,14 +697,18 @@ EXPORT_SYMBOL_GPL(xpcs_config_eee);
+> > >  
+> > >  static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
+> > >  {
+> > > -	int ret;
+> > > +	int ret, reg_val;
+> > > +	int changed = 0;
+> > >  
+> > >  	/* For AN for C37 SGMII mode, the settings are :-
+> > > -	 * 1) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 10b (SGMII AN)
+> > > -	 * 2) VR_MII_AN_CTRL Bit(3) [TX_CONFIG] = 0b (MAC side SGMII)
+> > > +	 * 1) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 0b (Disable SGMII AN in case
+> > > +	      it is already enabled)
+> > > +	 * 2) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 10b (SGMII AN)
+> > > +	 * 3) VR_MII_AN_CTRL Bit(3) [TX_CONFIG] = 0b (MAC side SGMII)
+> > >  	 *    DW xPCS used with DW EQoS MAC is always MAC side SGMII.
+> > > -	 * 3) VR_MII_DIG_CTRL1 Bit(9) [MAC_AUTO_SW] = 1b (Automatic
+> > > +	 * 4) VR_MII_DIG_CTRL1 Bit(9) [MAC_AUTO_SW] = 1b (Automatic
+> > >  	 *    speed/duplex mode change by HW after SGMII AN complete)
+> > > +	 * 5) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 1b (Enable SGMII AN)
+> > >  	 *
+> > >  	 * Note: Since it is MAC side SGMII, there is no need to set
+> > >  	 *	 SR_MII_AN_ADV. MAC side SGMII receives AN Tx Config from
+> > > @@ -712,6 +716,19 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
+> > >  	 *	 between PHY and Link Partner. There is also no need to
+> > >  	 *	 trigger AN restart for MAC-side SGMII.
+> > >  	 */
+> > > +	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
+> > > +	if (ret < 0)
+> > > +		return ret;
+> > > +
+> > > +	if (ret & AN_CL37_EN) {
+> > > +		changed = 1;
+> > > +		reg_val = ret & ~AN_CL37_EN;
+> > > +		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
+> > > +				 reg_val);
+> > > +		if (ret < 0)
+> > > +			return ret;
+> > > +	}
 > > 
-> > The only failing case I can see is when the device is on the VMD bus
-> > and its bus pointer is NULL, so the dereference in
-> > vmd_acpi_find_companion() crashes.
+> > I don't think you need to record "changed" here - just maintain a
+> > local copy of the current state of the register, e.g:
 > > 
-> > Can anything like that happen?
+> > +	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	reg_val = ret;
+> > +	if (reg_val & AN_CL37_EN) {
+> > +		reg_val &= ~AN_CL37_EN;
+> > ...
+> > 
+> > What you're wanting to do is ensure this bit is clear before you do the
+> > register changes, and once complete, set the bit back to one. If the bit
+> > was previously clear, you can omit this write, otherwise the write was
+> > needed - as you have the code. However, the point is that once you're
+> > past this code, the state of the register in the device will have the
+> > AN_CL37_EN clear. See below for the rest of my comments on this...
 > 
-> Not really, because pci_iov_add_virtfn() sets virtfn->bus.
-> 
-> However, it doesn\t set virtfn->dev.parent AFAICS, so when that gets
-> dereferenced by ACPI_COMPANIO(dev->parent) in
-> acpi_pci_find_companion(), the crash occurs.
-> 
-> We need a !dev->parent check in acpi_pci_find_companion() I suppose:
-> 
-> Does the following change help?
-> 
-> Index: linux-pm/drivers/pci/pci-acpi.c
-> ===================================================================
-> --- linux-pm.orig/drivers/pci/pci-acpi.c
-> +++ linux-pm/drivers/pci/pci-acpi.c
-> @@ -1243,6 +1243,9 @@ static struct acpi_device *acpi_pci_find
->      bool check_children;
->      u64 addr;
-> 
-> +    if (!dev->parent)
-> +        return NULL;
-> +
->      down_read(&pci_acpi_companion_lookup_sem);
-> 
->      adev = pci_acpi_find_companion_hook ?
+> VK, I don't want to force you towards a certain implementation, but I
+> just want to throw this out there, this works for me, and doesn't do
+> more reads or writes than strictly necessary, and it also breaks up the
+> wall-of-text comment into more digestible pieces:
 
+I agree on breaking up the comments, which make it more readable.
+Also do not perform unnecessary writes.
 
-Yes the above change fixes the problem for me. SR-IOV enables
-successfully and the VFs are fully usable. Thanks!
+What about doing this once the fix is merged into net-next?
 
-Just out of curiosity and because I use this system to test common code
-PCI changed. Do you have an idea what makes my system special here? 
+It seems there are a lot of clean-ups need to be introduced, which is
+more reasonable to be in net-next.
 
-The call to pci_set_acpi_fwnode() in pci_setup_device() is
-unconditional and should do the same on any ACPI enabled system.
-Also nothing in your explanation sounds specific to my system.
-
+> 
+> static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
+> {
+> 	int ret, mdio_ctrl1, old_an_ctrl, an_ctrl, old_dig_ctrl1, dig_ctrl1;
+> 
+> 	/* Disable SGMII AN in case it is already enabled */
+> 	mdio_ctrl1 = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
+> 	if (mdio_ctrl1 < 0)
+> 		return mdio_ctrl1;
+> 
+> 	if (mdio_ctrl1 & AN_CL37_EN) {
+> 		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
+> 				 mdio_ctrl1 & ~AN_CL37_EN);
+> 		if (ret < 0)
+> 			return ret;
+> 	}
+> 
+> 	/* Set VR_MII_AN_CTRL[PCS_MODE] to SGMII AN, and
+> 	 * VR_MII_AN_CTRL[TX_CONFIG] to MAC side SGMII.
+> 	 */
+> 	old_an_ctrl = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_CTRL);
+> 	if (old_an_ctrl < 0)
+> 		return old_an_ctrl;
+> 
+> 	an_ctrl = old_an_ctrl & ~(DW_VR_MII_PCS_MODE_MASK | DW_VR_MII_TX_CONFIG_MASK);
+> 	an_ctrl |= (DW_VR_MII_PCS_MODE_C37_SGMII << DW_VR_MII_AN_CTRL_PCS_MODE_SHIFT) &
+> 		   DW_VR_MII_PCS_MODE_MASK;
+> 	an_ctrl |= (DW_VR_MII_TX_CONFIG_MAC_SIDE_SGMII << DW_VR_MII_AN_CTRL_TX_CONFIG_SHIFT) &
+> 		   DW_VR_MII_TX_CONFIG_MASK;
+> 
+> 	if (an_ctrl != old_an_ctrl) {
+> 		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_CTRL, an_ctrl);
+> 		if (ret < 0)
+> 			return ret;
+> 	}
+> 
+> 	/* If using in-band autoneg, enable automatic speed/duplex mode change
+> 	 * by HW after SGMII AN complete.
+> 	 * 5) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 1b (Enable SGMII AN)
+> 	 */
+> 	old_dig_ctrl1 = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1);
+> 	if (old_dig_ctrl1 < 0)
+> 		return old_dig_ctrl1;
+> 
+> 	if (phylink_autoneg_inband(mode))
+> 		dig_ctrl1 = old_dig_ctrl1 | DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
+> 	else
+> 		dig_ctrl1 = old_dig_ctrl1 & ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
+> 
+> 	if (dig_ctrl1 != old_dig_ctrl1) {
+> 		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, dig_ctrl1);
+> 		if (ret < 0)
+> 			return ret;
+> 	}
+> 
+> 	if (!(mdio_ctrl1 & AN_CL37_EN) && phylink_autoneg_inband(mode)) {
+> 		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
+> 				 mdio_ctrl1 | AN_CL37_EN);
+> 		if (ret)
+> 			return ret;
+> 	}
+> 
+> 	/* Note: Since it is MAC side SGMII, there is no need to set
+> 	 * SR_MII_AN_ADV. MAC side SGMII receives AN Tx Config from PHY about
+> 	 * the link state change after C28 AN is completed between PHY and Link
+> 	 * Partner. There is also no need to trigger AN restart for MAC-side
+> 	 * SGMII.
+> 	 */
+> 
+> 	return 0;
+> }
+> 
+> > 
+> > > @@ -736,7 +753,21 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
+> > >  	else
+> > >  		ret &= ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
+> > >  
+> > > -	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
+> > > +	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
+> > > +	if (ret < 0)
+> > > +		return ret;
+> > > +
+> > > +	if (changed) {
+> > > +		if (phylink_autoneg_inband(mode))
+> > > +			reg_val |= AN_CL37_EN;
+> > > +		else
+> > > +			reg_val &= ~AN_CL37_EN;
+> > > +
+> > > +		return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
+> > > +				  reg_val);
+> > > +	}
+> > 
+> > As I say above, here, you are _guaranteed_ that the AN_CL27_EN bit is
+> > clear in the register due to the effects of your change above. You say
+> > in the commit text:
+> > 
+> >   After all these programming are done, it is then required to enable
+> >   Clause 37 auto-negotiation by programming bit-12 (AN_ENABLE) to 1.
+> > 
+> > So that makes me think that you _always_ need to write back a value
+> > with AN_CL27_EN set. So:
+> > 
+> > 	reg_val |= AN_CL37_EN;
+> > 	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL, reg_val);
+> 
+> I will only say this: modifying the last part of the function I posted
+> above like this:
+> 
+> //	if (!(mdio_ctrl1 & AN_CL37_EN) && phylink_autoneg_inband(mode)) {
+> 		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
+> 				 mdio_ctrl1 | AN_CL37_EN);
+> 		if (ret)
+> 			return ret;
+> //	}
+> 
+> aka unconditionally writing an mdio_ctrl1 value with the AN_CL37_EN bit set,
+> will still end up with a functional link. But the only reason for that
+> is this:
+> 
+> static void xpcs_link_up_sgmii(struct dw_xpcs *xpcs, unsigned int mode,
+> 			       int speed, int duplex)
+> {
+> 	int val, ret;
+> 
+> 	if (phylink_autoneg_inband(mode))
+> 		return;
+> 
+> 	switch (speed) {
+> 	case SPEED_1000:
+> 		val = BMCR_SPEED1000;
+> 		break;
+> 	case SPEED_100:
+> 		val = BMCR_SPEED100;
+> 		break;
+> 	case SPEED_10:
+> 		val = BMCR_SPEED10;
+> 		break;
+> 	default:
+> 		return;
+> 	}
+> 
+> 	if (duplex == DUPLEX_FULL)
+> 		val |= BMCR_FULLDPLX;
+> 
+> 	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, MDIO_CTRL1, val);   <- this clears the AN_CL37_EN bit again
+> 	if (ret)
+> 		pr_err("%s: xpcs_write returned %pe\n", __func__, ERR_PTR(ret));
+> }
+> 
+> If I add "val |= AN_CL37_EN;" before the xpcs_write in xpcs_link_up_sgmii(),
+> my SGMII link with in-band autoneg turned off breaks.
+> 
+> > If that is not correct, the commit message is misleading and needs
+> > fixing.
+> > 
+> > Lastly, I would recommend a much better name for this variable rather
+> > than the bland "reg_val" since you're needing the value preserved over
+> > a chunk of code. "ctrl" maybe?
