@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C362B41F457
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 20:06:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21EE141F458
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 20:06:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355710AbhJASIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 14:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
+        id S1355694AbhJASIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 14:08:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355689AbhJASI1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 14:08:27 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE7EC06177D
-        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 11:06:43 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id e7so10170250pgk.2
-        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 11:06:43 -0700 (PDT)
+        with ESMTP id S1355697AbhJASI3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 14:08:29 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8A4C0613E5
+        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 11:06:44 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id g2so8638396pfc.6
+        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 11:06:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=a56tnI90wkoptumCKz8cROuiPJZwxaVfKx9BzSDrql8=;
-        b=13R7a1BAsTgFExL1et9S2v4JEXPauB0mTZLvJI5g88cnkPa7FQDRZhw5m4hm/33Wr6
-         ezu+AFgpvWITDhUoO9A0g3/iKpB0oDOCQ6nL15rQKW5dueOs7qVgdR7IIaZwf1e7F+P3
-         14/oYYJ4s2e9w+AvBieCE++R/FY90eASe4mDLuLL2OOA85kC9JOGeFF43M6G9WUw5HkS
-         3NNmcnr9KRx0UbQMYKHPE/+rV/N8owxWgC2balbWmd4mqTzzxu64BRWbJH2tj7xVFM0R
-         pGVB3pH4iH9qU+D5WRObEME6DhLFMMXnW5ZCdvC+EOPL19SYus7QZR6UaGElrYkhgN2M
-         3SRg==
+        bh=pYdwC3tyFN62O+NwJAqe54Jxsi4jVAh2HmKgrbPXqsg=;
+        b=KuIzUyRoi4QfIIf/RTYgsL/7gyjQ5YzeaNUWzUQjvptMhGiAVgNgwK3DTUr2cpdMNt
+         CtlgOACf93amL4/ec/C5wicPU5pjRsAKFIYC6LmbiI9fy9HZ01fYgeTU5lvvuXW8hJXw
+         NxUldWOQTGV1ZtJ2kkw/9l6KzbCfTiPGXA6NXSGVr6ppqFLs6B5VJC/MsZ1T3dBIhyYT
+         TCzi7ksRm7cooepgGYNk7KTvHteuVIIVp2IYCnQPtb2wg2yUfhwNtohAa/IS9ixhJ3uD
+         oFuoaiUXlJ9yaYkUDdkNN9EtZ24tEGHA9nwIyiyVnt7R1HLBQBrhEDN181N06wUR2mj1
+         4ipg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=a56tnI90wkoptumCKz8cROuiPJZwxaVfKx9BzSDrql8=;
-        b=ZgP+KpEkD1uBIs7wBNUexLN/fOYwVU41p+L6BCdOzAwo9/3iSpkNVLXasx1SrGl3L9
-         ih1gT75iCAY/hCsdGC+QKWdPCh733qPAKpNDfcRunRgOJO+upUjVlxJPu9b72D/9L/H4
-         LrMPy2Ka9ShTfC4ZLhOLTLMoSxHGWD+lDvVcY4WSmm5P32IbqdZInmmvY6Echc7AwAxt
-         Syv2HthLO4nf22eKoB7BjODs3L6PSvNHfiCPr1YV4UsXr1lH+OQqq5E85OjvS0RdNqJV
-         8QYg1MHaKXMkgeTaxVnPGGvmumly9C1vYoo8rTg4LfNcF9PfP/jEjIlIu8L3scS3TyTY
-         pxVA==
-X-Gm-Message-State: AOAM532U51JZTfYsFeZz3/WYF7Eg7mZk9XZQlfkT0SI05EL0UEwvXofc
-        ZS0IP5yhGybCMnCMHrY/Rngnzw==
-X-Google-Smtp-Source: ABdhPJxVksy9mfWwMcr+lvQMeSuypKsSAVxtmDlM+hkhIYvRtPf3SUIoQvAqUOyiS+SaDIcz+7dWGA==
-X-Received: by 2002:aa7:82ce:0:b0:44b:436b:b171 with SMTP id f14-20020aa782ce000000b0044b436bb171mr12753851pfn.21.1633111602989;
-        Fri, 01 Oct 2021 11:06:42 -0700 (PDT)
+        bh=pYdwC3tyFN62O+NwJAqe54Jxsi4jVAh2HmKgrbPXqsg=;
+        b=aTz33HTLx06N0KFArJwcqFA+2Grm2lRA805zFFBMTCxsLcJ3HrUiSkAcQsJWlG6r8y
+         6eqnrq4WQf9ML9dFhFnx8+haNLc4k77LDSWTRTLm2GQv1NoK2Q2Ku6BBlM0XZqQirykJ
+         EL+YTDkzD9UFT+vDVJ51qvEfHY22koqDJGqTtjDPUvX3Q2cZNpPsEiJn7RFbiN20Fwde
+         Fx/smUlHsDB/NmhOkCIzYTUUkcGsvpmxYLH+i1HFhx6tJ5tHjasHbuXM8ywEcz2O7mtt
+         eXHXyczxAw7icPRhM1LqOR5vEXgOHgcJFc/U94zewaCZmt48/Em9rpXyCmff8Y1R+Mhn
+         B08g==
+X-Gm-Message-State: AOAM532WoYUdsqQdxIq49gSCll313WaSRxJZV5o3DVJSwBrCJAxZqeWR
+        vQyv6JEDCGVpEfoRsmlD1F5bxg==
+X-Google-Smtp-Source: ABdhPJyU0vBb0IONtOtVx2TAq8ag/ckQoon+M3gD4xa1e+Fatr8RkT/AX678OUc+LXmHbpmojah8NA==
+X-Received: by 2002:a62:7592:0:b0:44c:153d:9114 with SMTP id q140-20020a627592000000b0044c153d9114mr5629504pfc.19.1633111603965;
+        Fri, 01 Oct 2021 11:06:43 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id a2sm6409384pjd.33.2021.10.01.11.06.41
+        by smtp.gmail.com with ESMTPSA id a2sm6409384pjd.33.2021.10.01.11.06.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Oct 2021 11:06:42 -0700 (PDT)
+        Fri, 01 Oct 2021 11:06:43 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
 Cc:     drivers@pensando.io, jtoppins@redhat.com,
         Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 4/7] ionic: widen queue_lock use around lif init and deinit
-Date:   Fri,  1 Oct 2021 11:05:54 -0700
-Message-Id: <20211001180557.23464-5-snelson@pensando.io>
+Subject: [PATCH v2 net-next 5/7] ionic: add polling to adminq wait
+Date:   Fri,  1 Oct 2021 11:05:55 -0700
+Message-Id: <20211001180557.23464-6-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211001180557.23464-1-snelson@pensando.io>
 References: <20211001180557.23464-1-snelson@pensando.io>
@@ -60,74 +60,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Widen the coverage of the queue_lock to be sure the lif init
-and lif deinit actions are protected.  This addresses a hang
-seen when a Tx Timeout action was attempted at the same time
-as a FW Reset was started.
+Split the adminq wait into smaller polling periods in order
+to watch for broken firmware and not have to wait for the full
+adminq devcmd_timeout.
+
+Generally, adminq commands take fewer than 2 msecs.  If the
+FW is busy they can take longer, but usually still under 100
+msecs.  We set the polling period to 100 msecs in order to
+start snooping on FW status when a command is taking longer
+than usual.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic.h   |  1 +
+ .../net/ethernet/pensando/ionic/ionic_main.c  | 36 +++++++++++++++----
+ 2 files changed, 31 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 4f28cd3ea454..5efa9f168830 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2974,11 +2974,10 @@ static void ionic_lif_handle_fw_down(struct ionic_lif *lif)
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
+index 66204106f83e..d570d03b23f6 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic.h
+@@ -19,6 +19,7 @@ struct ionic_lif;
+ #define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF	0x1003
  
- 	netif_device_detach(lif->netdev);
+ #define DEVCMD_TIMEOUT  10
++#define IONIC_ADMINQ_TIME_SLICE		msecs_to_jiffies(100)
  
-+	mutex_lock(&lif->queue_lock);
- 	if (test_bit(IONIC_LIF_F_UP, lif->state)) {
- 		dev_info(ionic->dev, "Surprise FW stop, stopping queues\n");
--		mutex_lock(&lif->queue_lock);
- 		ionic_stop_queues(lif);
--		mutex_unlock(&lif->queue_lock);
+ #define IONIC_PHC_UPDATE_NS	10000000000	    /* 10s in nanoseconds */
+ #define NORMAL_PPB		1000000000	    /* one billion parts per billion */
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index b6473c02c041..bb49f1b8ef67 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -301,21 +301,45 @@ int ionic_adminq_post(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
+ int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx, int err)
+ {
+ 	struct net_device *netdev = lif->netdev;
++	unsigned long time_limit;
++	unsigned long time_start;
++	unsigned long time_done;
+ 	unsigned long remaining;
+ 	const char *name;
+ 
++	name = ionic_opcode_to_str(ctx->cmd.cmd.opcode);
++
+ 	if (err) {
+-		if (!test_bit(IONIC_LIF_F_FW_RESET, lif->state)) {
+-			name = ionic_opcode_to_str(ctx->cmd.cmd.opcode);
++		if (!test_bit(IONIC_LIF_F_FW_RESET, lif->state))
+ 			netdev_err(netdev, "Posting of %s (%d) failed: %d\n",
+ 				   name, ctx->cmd.cmd.opcode, err);
+-		}
+ 		return err;
  	}
  
- 	if (netif_running(lif->netdev)) {
-@@ -2989,6 +2988,8 @@ static void ionic_lif_handle_fw_down(struct ionic_lif *lif)
- 	ionic_reset(ionic);
- 	ionic_qcqs_free(lif);
- 
-+	mutex_unlock(&lif->queue_lock);
+-	remaining = wait_for_completion_timeout(&ctx->work,
+-						HZ * (ulong)DEVCMD_TIMEOUT);
+-	return ionic_adminq_check_err(lif, ctx, (remaining == 0));
++	time_start = jiffies;
++	time_limit = time_start + HZ * (ulong)DEVCMD_TIMEOUT;
++	do {
++		remaining = wait_for_completion_timeout(&ctx->work,
++							IONIC_ADMINQ_TIME_SLICE);
 +
- 	dev_info(ionic->dev, "FW Down: LIFs stopped\n");
++		/* check for done */
++		if (remaining)
++			break;
++
++		/* interrupt the wait if FW stopped */
++		if (test_bit(IONIC_LIF_F_FW_RESET, lif->state)) {
++			netdev_err(netdev, "%s (%d) interrupted, FW in reset\n",
++				   name, ctx->cmd.cmd.opcode);
++			return -ENXIO;
++		}
++
++	} while (time_before(jiffies, time_limit));
++	time_done = jiffies;
++
++	dev_dbg(lif->ionic->dev, "%s: elapsed %d msecs\n",
++		__func__, jiffies_to_msecs(time_done - time_start));
++
++	return ionic_adminq_check_err(lif, ctx, time_after_eq(time_done, time_limit));
  }
  
-@@ -3012,9 +3013,12 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
- 	err = ionic_port_init(ionic);
- 	if (err)
- 		goto err_out;
-+
-+	mutex_lock(&lif->queue_lock);
-+
- 	err = ionic_qcqs_alloc(lif);
- 	if (err)
--		goto err_out;
-+		goto err_unlock;
- 
- 	err = ionic_lif_init(lif);
- 	if (err)
-@@ -3035,6 +3039,8 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
- 			goto err_txrx_free;
- 	}
- 
-+	mutex_unlock(&lif->queue_lock);
-+
- 	clear_bit(IONIC_LIF_F_FW_RESET, lif->state);
- 	ionic_link_status_check_request(lif, CAN_SLEEP);
- 	netif_device_attach(lif->netdev);
-@@ -3051,6 +3057,8 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
- 	ionic_lif_deinit(lif);
- err_qcqs_free:
- 	ionic_qcqs_free(lif);
-+err_unlock:
-+	mutex_unlock(&lif->queue_lock);
- err_out:
- 	dev_err(ionic->dev, "FW Up: LIFs restart failed - err %d\n", err);
- }
+ int ionic_adminq_post_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
 -- 
 2.17.1
 
