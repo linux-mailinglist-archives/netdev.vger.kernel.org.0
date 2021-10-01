@@ -2,162 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 940DA41EBFE
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 13:33:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C87D041EC06
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 13:34:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353944AbhJALex (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 07:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
+        id S1353963AbhJALfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 07:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353928AbhJALev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 07:34:51 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703FDC061775;
-        Fri,  1 Oct 2021 04:33:07 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id bd28so33518314edb.9;
-        Fri, 01 Oct 2021 04:33:07 -0700 (PDT)
+        with ESMTP id S1353882AbhJALfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 07:35:46 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1EAC061775
+        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 04:34:02 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id bd28so33526375edb.9
+        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 04:34:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uG+FsR2ZVaMG3D4Jjpme5SqiABkN8ahayf8+njWuNAo=;
-        b=DIroYdYJEOYNDXDEnLbwozDObDvQNaLsQyIpMmEZn8wJG/7pyhfssFPZIdk8dBhJLw
-         L83TPGomwElibS8tLrN+rBWmbT/7pbhWiHsO8NFxHJoVKq0V1MF0Xa8lcCUCzn7nVdvS
-         LpQJFEXXTIGjQv1WyRKY066uWfS82J86ZKQ9DYWa7ctxdh0WbOlh0IwQz+BQE7h36+/A
-         2AvCdBjmzGNR1gR8XQkqEmtiogEM7BExNfYIKnTnDwItHws2p2/WIw/XvDHRIMXSDF/f
-         tU3/DBG6QsKv2fawYPWrCXTNqxLpiOeoazRZf/HUDLIv0Q797c7ahPVSXOInZzcw9GAy
-         9GbQ==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=5L/E4eErsLvrvRSyjenHMn1XgR3BfAibYkaUBTxnmho=;
+        b=Vo6dNMJacivclpX39NYuQxPyy7jixXWHxjo6FX6+jazisF6E5oLyroTLwfuTOuvV/B
+         urVBUrn9YTNATwKg50uaLt3PouPpKgWBZ0VVBKC11kXhCRZHNZkSeTJHOyVbHP6SFCPT
+         xcXCP8rbdNWL6KSbJ1YDkvgs6qdcLsNRlHj6GPWXguLU6JGTQ9eR6jw+kK5sdbjfr9hD
+         9UQH3ouRb0GQvmw6nN6tgsdX05fQGSwy/4CC/GypndAOAN9/CM94GA2/h9Ot2aI5x9Hl
+         JPZ2xujGWBe2QPoocZ99OvSjpiuY9zG/LV9wu9DNWb5OeIlj7BQn7Hx5ZUnYwkVv31HV
+         apEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uG+FsR2ZVaMG3D4Jjpme5SqiABkN8ahayf8+njWuNAo=;
-        b=JAY0VXcBd0JSlwNWjwmbHmmOQ/n20xtUA22SfLzL28qADALbTbkVZJrVAKNFmuncom
-         dvCk5kW8zPJtH/KbSxZ7fBJTyx8Fiwb29kxCMv0wTJxkWyMNbLhCWfYqOKd02duyz6BI
-         EdY6+TNyyMn0JOnFYXaUuNJb57yxsRtgT0MeliGtFb3+Ugz+Phtsv/KE7vN2FA1GBmDB
-         8K3LKLpzjW/6TInwJw1KaL/wbKAQCLRVlJfBA3qBKCBpLE5Lj0Wn+6a0M63ZXZr6f0DF
-         ZLq62GslmBPNv19xYaHExRSzwJOnisf9SnYJuDjGKRQVOJkEjzGjUfs0093MN6GAlzsR
-         mx5w==
-X-Gm-Message-State: AOAM530cnak2mEGB+6MHOlG2BlD1ltm1inWgutOlGQuI2Sop+vCEWEMX
-        ZLO8+8cmtN1ODFp4CDpyfoM=
-X-Google-Smtp-Source: ABdhPJxxp9CKTeo2biWhd1LMMk5iS/VKrfUd78iBEIrt2EuMenBZS3wHX175OW4dPepbZbHl0FXMiQ==
-X-Received: by 2002:a17:906:60c3:: with SMTP id f3mr5419778ejk.561.1633087985724;
-        Fri, 01 Oct 2021 04:33:05 -0700 (PDT)
-Received: from skbuf ([188.26.53.217])
-        by smtp.gmail.com with ESMTPSA id n23sm3087091edw.75.2021.10.01.04.33.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Oct 2021 04:33:05 -0700 (PDT)
-Date:   Fri, 1 Oct 2021 14:33:04 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next] drivers: net: dsa: qca8k: convert to
- GENMASK/FIELD_PREP/FIELD_GET
-Message-ID: <20211001113304.bxuhsavgvl5xny2m@skbuf>
-References: <20211001013729.21849-1-ansuelsmth@gmail.com>
- <91eb5d7e-b62c-45e6-16a3-1d9c1c780c7b@gmail.com>
- <YVbqbq180jgrhiIe@Ansuel-xps.localdomain>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=5L/E4eErsLvrvRSyjenHMn1XgR3BfAibYkaUBTxnmho=;
+        b=5AxuqvDzooywfvWZTsAhUA4h9X43sv+dTQITLI0wPNuY3eeDbP4xaMLTxUww7giW44
+         /Jq6ei0cAnPmRIyLPUnKB4j35fbwbzxHvq+mlWrUoYTz84hWnzM4C9oFigFZ5lm7MQhp
+         ownP7i1sfZIPr4z6ySMI4v6ZwFbsADjzKwLIEde4IQmWJ0gOv/NqR13tYZM0c74mF//Z
+         vXlDS6fS8bynkkDc2po4H3uXWY2s6HvKld8uOJnIGu4GX+lhUihv7kHILvQHK7cXZGFb
+         BEkOoqdUZ1193Z2mVHbL0bq29oJH0/lUmgeapVlfpkLGgDXCQ+E4tAQ11TAZbbLDqMdL
+         UnSQ==
+X-Gm-Message-State: AOAM532cd55NqNR4TcN2kyDfy3Q5f7OCmVsvhHaej1KJm8BaRp9VXN8j
+        YnGEDlPbb2TzweP7cGry1+ehgTNidhLXzfANC5c=
+X-Google-Smtp-Source: ABdhPJyXSXFIv5azNJzKhpwu/AyaI33GMWyzY9nViqOH7AsmrGewq95hTE7cEhwTxvfZs+al//Pqh1mw1IEgOHiTwcQ=
+X-Received: by 2002:a17:906:32c9:: with SMTP id k9mr5855872ejk.218.1633088040668;
+ Fri, 01 Oct 2021 04:34:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YVbqbq180jgrhiIe@Ansuel-xps.localdomain>
+Received: by 2002:a17:906:724a:0:0:0:0 with HTTP; Fri, 1 Oct 2021 04:33:59
+ -0700 (PDT)
+Reply-To: joymat52@gmail.com
+From:   Joyce Thomas <tjoyc1234@gmail.com>
+Date:   Fri, 1 Oct 2021 04:33:59 -0700
+Message-ID: <CAF-RpUgU3h-mSWg8iUNqxiuH5urH4qFN_Zpt7uaJvXx6GNUy2Q@mail.gmail.com>
+Subject: ATTN:
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 01, 2021 at 01:01:02PM +0200, Ansuel Smith wrote:
-> On Thu, Sep 30, 2021 at 07:14:13PM -0700, Florian Fainelli wrote:
-> > 
-> > 
-> > On 9/30/2021 6:37 PM, Ansuel Smith wrote:
-> > > Convert and try to standardize bit fields using
-> > > GENMASK/FIELD_PREP/FIELD_GET macros. Rework some logic to support the
-> > > standard macro and tidy things up. No functional change intended.
-> > > 
-> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > > ---
-> > > 
-> > > I still need to test this in every part but I would like to have some
-> > > approval about this kind of change. Also there are tons of warning by
-> > > checkpatch about too long line... Are they accepted for headers? I can't
-> > > really find another way to workaround the problem as reducing the define
-> > > name would make them less descriptive.
-> > > Aside from that I did the conversion as carefully as possible so in
-> > > theory nothing should be broken and the conversion should be all
-> > > correct. Some real improvement by using filed macro are in the
-> > > fdb_read/fdb_write that now are much more readable.
-> > 
-> > My main concern is that it is going to be a tad harder to back port fixes
-> > made to this driver with such changes in place, so unfortunately it is
-> > usually a matter of either the initial version of the driver use BIT(),
-> > FIELD_{PREP,GET} and GENMASK, or the very few commits following the initial
-> > commit take care of that, and then it is all rosy for everyone, or else it
-> > may be complicated.
-> > 
-> > You are one of the active contributors to this driver, so ultimately you
-> > should decide.
-> > -- 
-> > Florian
-> 
-> Problem I'm trying to solve here is that I notice various name scheme
-> used and not an unique one... (many _S and _M mixed with MASK and SHIFT)
-> Various shift and strange bits handling. I think this is needed to
-> improve the code in all the next release.
-> About backports you mean for older kernel (bugfixes)
-
-this
-
-> or for external project (backports for openwrt, for example?) Anyway
-> in the main code (the one in theory that should receive backports) I
-> just reworked the ACL code that should be stable and the switch ID
-> handling (I don't think there is anything to fix there).
-
-Famous last words :)
-
-> Aside from that and some improvement to VLAN, I tried to implement
-> FIELD_PREP only in the define without touching qca8k code. 
-> I honestly don't know if this would cause that much of a problem with
-> backports (assuming they only touch qca8k code and not header).
-> Would love to receive some feedback if I'm wrong about my idea.
-> Any feedback about the warning for long names in the define? Are they
-> accepted? I can't find anywhere how we should handle them.
-
-While it does look pretty ugly, and you could perhaps split them like
-this:
-
-#define QCA8K_VTU_FUNC0_EG_MODE_PORT_MASK(_i) \
-	(GENMASK(1, 0) << QCA8K_VTU_FUNC0_EG_MODE_PORT_SHIFT(_i))
-
-it's more or less a judgement call, I've seen worse in a header file,
-and exceeding a certain line length is certainly not among the worst of
-sins - putting complex control flow logic inside the C preprocessor
-would take that place, I think.
-
-Anyway, Florian's point is that you're touching up the following
-functions:
-
-qca8k_port_vlan_filtering
-qca8k_port_vlan_add
-qca8k_read_switch_id
-qca8k_setup
-qca8k_vlan_del
-qca8k_vlan_add
-qca8k_vlan_access
-qca8k_fdb_access
-qca8k_fdb_write
-qca8k_fdb_read
-
-quite gratuitously, but this is another judgement call for you to make.
-The only thing you should consider is that future you might hate you for
-giving him extra work when a new bug in those functions is discovered.
-You'll have to prepare a fix patch that applies on the refactored code,
-to submit to the "net" tree, and and a fix patch that applies to the
-pre-refactoring code, to submit to the "stable" tree directly.
-
-As a proponent of code cleanups myself, I would still choose to do the
-refactoring, but just be aware that it doesn't come for free.
+Hello Dear
+My Name is Mr. Joyce Thomas. Contact me for more information on the
+transfer of ($7.9 million dollars) left by my late client from your
+Country. I want to present you as a business partner and next of kin
+of the fund. I will give you the details of this transaction, as soon
+as I hear from you. I need the information below:
+Full Name:
+Address:
+Occupation:
+Age:
+Personal Email:
+Personal Telephone:
+Best Regards,
+Mr.Joyce  Thomas
