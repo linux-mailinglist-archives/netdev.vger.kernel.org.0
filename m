@@ -2,101 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FB8141EA39
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 11:57:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B65B841EA4A
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 12:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353227AbhJAJ73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 05:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46476 "EHLO
+        id S1353296AbhJAKC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 06:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238512AbhJAJ72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 05:59:28 -0400
+        with ESMTP id S1353184AbhJAKC1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 06:02:27 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B09BC061775;
-        Fri,  1 Oct 2021 02:57:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B21C061775
+        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 03:00:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=fCuzHP94LEPxfLS5wTP0qiT8yU1ftlKvpdAto7R4Duw=; b=o5QyA1crVbp2CPTOXV8y3tZ9Od
-        TjwK5XnMIwLRLtEMnW+03SCIqDJONijBn9X3ZbDSzd6N9uJI00XYxEtGY3xZcRL/1p9IpMyhghYQc
-        ZBH+kO9P0Kap5WzoMeVm71/w6mOjmbJDf1UJ0/vZVz+uW9kuI0dYSOS0y3J+Nqlp5GNWyTNifXbhX
-        5g7QN1q7DwF8qESFwgrqSbxJzyU+2IlzVzZQZuNold75/tRVzxWXTTZBCtXOgA7ueMrU6FJYDX8xV
-        O+JyzYgZXscrIpTSwx4BJOPWH6sO0aoPvuLQBH0gh1YApX0uvdJApSFZWVXOZun0lR8s52MVQhdOo
-        DfAwjsLQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54886)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=HEs1+f8S6t6jETPnUudA3SHYrAvuGDxp+PjLV1/0EZo=; b=GyT9Navy01CPzNKg/97TPLS7lG
+        vRQnyWhJ//nvXqSs7fSVx0sTKA3odY9OwsduJgujRfbCj6kk2D3M/xHaDMUW7DIvjdL6we0LVyNwL
+        obFydS5mfx3FzHyIirwEJBVE2dIH3ls3mARuXpW8O4D7PwfypqCouVMksDtRl9qwWBbB+ULEHT25N
+        NC4tSZAetGElkUTwRuchL2pUe6kckl5PaZHCIq14YT24DVFPnriJkZntZ4A+GpwI3sRO5ddbhiwIL
+        b94l0LclXzwUXUuIDshCUjNieGy3tXC9flngrm8mqvDvUITd+la3wGgrEjcvjdFwKqx4eCjWKb/rV
+        KzbkkxaA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:57874 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mWFIL-0004V2-CU; Fri, 01 Oct 2021 10:57:33 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mWFII-0004Vn-CH; Fri, 01 Oct 2021 10:57:30 +0100
-Date:   Fri, 1 Oct 2021 10:57:30 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Wong Vee Khee <veekhee@gmail.com>
-Subject: Re: [PATCH net v3 1/1] net: pcs: xpcs: fix incorrect CL37 AN sequence
-Message-ID: <YVbbitGJDZhd6eW/@shell.armlinux.org.uk>
-References: <20210930044421.1309538-1-vee.khee.wong@linux.intel.com>
- <YVWCV1Vaq5SAJflX@shell.armlinux.org.uk>
- <20211001001951.erebmghjsewuk3lh@skbuf>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mWFLN-0004VH-T7; Fri, 01 Oct 2021 11:00:41 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mWFLN-000fYQ-Cl; Fri, 01 Oct 2021 11:00:41 +0100
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH RFT v2 net-next] net: mdio: ensure the type of mdio devices match
+ mdio drivers
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211001001951.erebmghjsewuk3lh@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1mWFLN-000fYQ-Cl@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Fri, 01 Oct 2021 11:00:41 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 01, 2021 at 12:19:52AM +0000, Vladimir Oltean wrote:
-> static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
-> {
-> 	int ret, mdio_ctrl1, old_an_ctrl, an_ctrl, old_dig_ctrl1, dig_ctrl1;
-> 
-> 	/* Disable SGMII AN in case it is already enabled */
-> 	mdio_ctrl1 = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
-> 	if (mdio_ctrl1 < 0)
-> 		return mdio_ctrl1;
-> 
-> 	if (mdio_ctrl1 & AN_CL37_EN) {
-> 		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
-> 				 mdio_ctrl1 & ~AN_CL37_EN);
-> 		if (ret < 0)
-> 			return ret;
-> 	}
+On the MDIO bus, we have PHYLIB devices and drivers, and we have non-
+PHYLIB devices and drivers. PHYLIB devices are MDIO devices that are
+wrapped with a struct phy_device.
 
-This is fine...
+Trying to bind a MDIO device with a PHYLIB driver results in out-of-
+bounds accesses as we attempt to access struct phy_device members. So,
+let's prevent this by ensuring that the type of the MDIO device
+(indicated by the MDIO_DEVICE_FLAG_PHY flag) matches the type of the
+MDIO driver (indicated by the MDIO_DEVICE_IS_PHY flag.)
 
-> 	if (!(mdio_ctrl1 & AN_CL37_EN) && phylink_autoneg_inband(mode)) {
-> 		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
-> 				 mdio_ctrl1 | AN_CL37_EN);
-> 		if (ret)
-> 			return ret;
-> 	}
+Link: https://lore.kernel.org/r/2b1dc053-8c9a-e3e4-b450-eecdfca3fe16@gmail.com
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+Tested locally in SolidRun Clearfog, DSA switch and PHY get probed
+correctly. Further testing welcomed.
 
-This is not. If the control register had AN_CL37_EN set initially, then
-in the first test above, we clear the bit. However, mdio_ctrl1 will
-still contain the bit set. When we get here, we will skip setting the
-register bit back to one even if in-band mode was requested.
+v2: dead christmas tree ordering.
 
-As I said in a previous email, at this point there is no reason to check
-the previous state, because if it was set on entry, we will have cleared
-it, so the register state at this point has the bit clear no matter
-what. If we need to set it, then we /always/ need to write it here - it
-doesn't matter what the initial state was.
+ drivers/net/phy/mdio_bus.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 53f034fc2ef7..3a36b463c22a 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -938,8 +938,14 @@ EXPORT_SYMBOL_GPL(mdiobus_modify);
+  */
+ static int mdio_bus_match(struct device *dev, struct device_driver *drv)
+ {
++	struct mdio_driver *mdiodrv = to_mdio_driver(drv);
+ 	struct mdio_device *mdio = to_mdio_device(dev);
+ 
++	/* Both the driver and device must type-match */
++	if (!(mdiodrv->mdiodrv.flags & MDIO_DEVICE_IS_PHY) !=
++	    !(mdio->flags & MDIO_DEVICE_FLAG_PHY))
++		return 0;
++
+ 	if (of_driver_match_device(dev, drv))
+ 		return 1;
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
