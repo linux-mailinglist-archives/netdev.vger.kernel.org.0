@@ -2,96 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FB9D41E743
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 07:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EDDD41E76F
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 08:18:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352049AbhJAFjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 01:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
+        id S1352109AbhJAGUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 02:20:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbhJAFjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 01:39:19 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28746C06176A;
-        Thu, 30 Sep 2021 22:37:36 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id d21so13516942wra.12;
-        Thu, 30 Sep 2021 22:37:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ICvakysTnIcMlsFl1CajmrW7XSMIhF0mtzyN0yeCPvo=;
-        b=NJpPde/VyrekEvNAM8op1urjweEjPHrjH5CR8QfKDwsFev6sl7t5yes/7W24Wu2Tld
-         WLXmR7mGy9t9xTPN43xpuBLuREVQErKyRBCin6ylKAbap30p/zzIEBry2sG+Fyo40ajE
-         GzVcW6A+G2N08JCjxP3ufzcarD41Ta1g2BB42mD3QjjJ1zAoTFgQUmLJdkv2KZ5a/VuG
-         Ynns4JDo1XtypTX4jAHqLAMI+BZ6FLTD6GZLk8gSzOEa71+5hdOtxhqPgtHSbam7mSeT
-         G0S10heB4TA2TwpC6Jh5pIo7s8679uersk289IeiPW8YSFTityTKUt+ZkKbKhx00tsy0
-         qedw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ICvakysTnIcMlsFl1CajmrW7XSMIhF0mtzyN0yeCPvo=;
-        b=VhcbkxlxmkJOnOhaZk72X7OgJeSVqnJwL7jd1V0hDQwjGu8y6Xl5JxDBWPRbhng1th
-         57paU2tCMPaUpyKxShtwne/ejaL8/3Lahv0HZ9GTqq1jzmRdZ7QtCrpea8fVwHLRAyTw
-         nKbt0bdaXxkWp43aHTqjKW9tadT/GOj9QRXV5Ub3VUprhcKO+X+uF6UhBM0cYWgsvbHS
-         EbQ492MDeLAiiFwclOdF1d266o0Jx0p8XyW2pNL5P+37b5l067JbrB4kDoMrOpk7fVP3
-         K474r6BLmvDD37ueGNRLaSFTcqenWSxlQumDF/XkpzkPcaNT+AMN4h3Q3DfDyYuPmggz
-         pygA==
-X-Gm-Message-State: AOAM530wULnHYZa3qEXY2d/3yxdCYsHa8vuzSzY6HJzvqoMeRe6m557H
-        7ty1yipy50Jh/uHTeihoa6QobSY9V2nZ0Q==
-X-Google-Smtp-Source: ABdhPJzCSpC43uIo4eNv23X7URdylmJhUbPDB+mdxVs4my1Bk1BoKfSEXlgv6lVwF5SrvvtVmiRcvA==
-X-Received: by 2002:a5d:6d8e:: with SMTP id l14mr9988365wrs.270.1633066654667;
-        Thu, 30 Sep 2021 22:37:34 -0700 (PDT)
-Received: from [192.168.4.32] ([85.184.170.180])
-        by smtp.gmail.com with ESMTPSA id g13sm4587316wmh.20.2021.09.30.22.37.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Sep 2021 22:37:34 -0700 (PDT)
-From:   Jes Sorensen <jes.sorensen@gmail.com>
-X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
-Subject: Re: [PATCH v2] rtl8xxxu: Use lower tx rates for the ack packet
-To:     Chris Chiu <chris.chiu@canonical.com>, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     code@reto-schneider.ch, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211001040044.1028708-1-chris.chiu@canonical.com>
-Message-ID: <e64de376-f765-fc55-0e82-84e269c4dc43@gmail.com>
-Date:   Fri, 1 Oct 2021 01:37:33 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        with ESMTP id S229749AbhJAGUj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 02:20:39 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22C5C06176A;
+        Thu, 30 Sep 2021 23:18:54 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HLKgc3M82z4xbQ;
+        Fri,  1 Oct 2021 16:18:51 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1633069132;
+        bh=FtDEQ6sQa+w0QICsIw2I0WfJjMFi2rKpIwYM1kIV+tc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=lu1TqovdXmI40DJ1rcszuHV6A4xC363T/u3mY0cq1cF9oMz16yXfwHXrzc3nVM6fK
+         dJhw0WSnhGc88Tcatl7//OV4y4eKB6TexvG4tU+lde3QN5RJRCx7zfFeSh0r5ljTaG
+         9Bt5FAGShyu7fKs+ket8ruk9UpaslMZs6c3IbfNQzMn4TLoPUpzq+F/uuDczdL4RMH
+         S++y4wXfBrcHLqxADyGMGblh5y2iNM4E5qt01eX6y7NRQofp2/fPYoslWYuyLjSaGN
+         eLcslxRKfoXBuWa0XB+XheL4QDogw+LvjszeJRdtHqLeSn5MUNkTd1DS3q9ykJkvL6
+         Y8NCY4sBBf5xQ==
+Date:   Fri, 1 Oct 2021 16:18:49 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>, Wei Wang <weiwan@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20211001161849.51b6deca@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20211001040044.1028708-1-chris.chiu@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/juQm59FPtUBQKGnQG5fzsSB";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/1/21 12:00 AM, Chris Chiu wrote:
-> According to the Realtek propritary driver and the rtw88 driver, the
-> tx rates of the ack (includes block ack) are initialized with lower
-> tx rates (no HT rates) which is set by the RRSR register value. In
-> real cases, ack rate higher than current tx rate could lead to
-> difficulty for the receiving end to receive management/control frames.
-> The retransmission rate would be higher then expected when the driver
-> is acting as receiver and the RSSI is not good.
-> 
-> Cross out higer rates for ack packet before implementing dynamic rrsr
-> configuration like the commit 4830872685f8 ("rtw88: add dynamic rrsr
-> configuration").
-> 
-> Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
-> ---
-> 
-> Changelog:
->   v2:
->    - Specify the dynamic rrsr commit for reference
->    - Remove the unintentional twice reading of REG_RESPONSE_RATE_SET
-> 
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 6 +++++-
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h | 2 ++
->  2 files changed, 7 insertions(+), 1 deletion(-)
+--Sig_/juQm59FPtUBQKGnQG5fzsSB
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Jes Sorensen <Jes.Sorensen@gmail.com>
+Hi all,
+
+After merging the net-next tree, today's linux-next build (sparc64
+defconfig) failed like this:
+
+net/core/sock.c: In function 'sock_setsockopt':
+net/core/sock.c:1417:7: error: 'SO_RESERVE_MEM' undeclared (first use in th=
+is function); did you mean 'IORESOURCE_MEM'?
+  case SO_RESERVE_MEM:
+       ^~~~~~~~~~~~~~
+       IORESOURCE_MEM
+net/core/sock.c:1417:7: note: each undeclared identifier is reported only o=
+nce for each function it appears in
+net/core/sock.c: In function 'sock_getsockopt':
+net/core/sock.c:1817:7: error: 'SO_RESERVE_MEM' undeclared (first use in th=
+is function); did you mean 'IORESOURCE_MEM'?
+  case SO_RESERVE_MEM:
+       ^~~~~~~~~~~~~~
+       IORESOURCE_MEM
+
+Caused by commit
+
+  2bb2f5fb21b0 ("net: add new socket option SO_RESERVE_MEM")
+
+arch/sparc/include/uapi/socket.h does not include uapi/asm/socket.h and
+some other architectures do not as well.
+
+I have added the following patch for today (I searched for SO_BUF_LOCK
+and, of these architectures, I have only compile tested sparc64 and
+sparc):
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Fri, 1 Oct 2021 15:51:50 +1000
+Subject: [PATCH] fix up for "net: add new socket option SO_RESERVE_MEM"
+
+Some architectures do not include uapi/asm/socket.h
+
+Fixes: 2bb2f5fb21b0 ("net: add new socket option SO_RESERVE_MEM")
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ arch/alpha/include/uapi/asm/socket.h  | 2 ++
+ arch/mips/include/uapi/asm/socket.h   | 2 ++
+ arch/parisc/include/uapi/asm/socket.h | 2 ++
+ arch/sparc/include/uapi/asm/socket.h  | 2 ++
+ 4 files changed, 8 insertions(+)
+
+diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi=
+/asm/socket.h
+index 1dd9baf4a6c2..284d28755b8d 100644
+--- a/arch/alpha/include/uapi/asm/socket.h
++++ b/arch/alpha/include/uapi/asm/socket.h
+@@ -131,6 +131,8 @@
+=20
+ #define SO_BUF_LOCK		72
+=20
++#define SO_RESERVE_MEM		73
++
+ #if !defined(__KERNEL__)
+=20
+ #if __BITS_PER_LONG =3D=3D 64
+diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/a=
+sm/socket.h
+index 1eaf6a1ca561..24e0efb360f6 100644
+--- a/arch/mips/include/uapi/asm/socket.h
++++ b/arch/mips/include/uapi/asm/socket.h
+@@ -142,6 +142,8 @@
+=20
+ #define SO_BUF_LOCK		72
+=20
++#define SO_RESERVE_MEM		73
++
+ #if !defined(__KERNEL__)
+=20
+ #if __BITS_PER_LONG =3D=3D 64
+diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/ua=
+pi/asm/socket.h
+index 8baaad52d799..845ddc63c882 100644
+--- a/arch/parisc/include/uapi/asm/socket.h
++++ b/arch/parisc/include/uapi/asm/socket.h
+@@ -123,6 +123,8 @@
+=20
+ #define SO_BUF_LOCK		0x4046
+=20
++#define SO_RESERVE_MEM		0x4047
++
+ #if !defined(__KERNEL__)
+=20
+ #if __BITS_PER_LONG =3D=3D 64
+diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi=
+/asm/socket.h
+index e80ee8641ac3..9e9ceee6358f 100644
+--- a/arch/sparc/include/uapi/asm/socket.h
++++ b/arch/sparc/include/uapi/asm/socket.h
+@@ -124,6 +124,8 @@
+=20
+ #define SO_BUF_LOCK              0x0051
+=20
++#define SO_RESERVE_MEM           0x0052
++
+ #if !defined(__KERNEL__)
+=20
+=20
+--=20
+2.33.0
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/juQm59FPtUBQKGnQG5fzsSB
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmFWqEkACgkQAVBC80lX
+0GzURQf/Qb2+M65Vu7CVhw7LM8TnQWDV54GslYN4/danqEwXCP0w1siZZ8biRuZr
+BlCxM/7L+9d5bg+vkHUiLgqLUVCAP8t1kIPs+Oa1hnZpxM4JW7Ui8xuF3nHL3apR
+dnwDfWsK2C+wCpQz3XGwxRba5mMs2rh7bQG66VvRHqS3RiFVXJOq1xJgyOlqPdoK
+sxdq0HGVKljoM4CC9oeakhMv797yaduPvwE7ub4VjATRi/BdxfZecGqRE2pe1rdy
+SFmQHq52W9NMO0x4OTOkvbNunkpd0dQGdSNmeg/rmnKK4m9Eod3Arod79RkTaA4u
+IOL2RLYK8CIq1Hl2ME3CnBCTomxvHw==
+=c79C
+-----END PGP SIGNATURE-----
+
+--Sig_/juQm59FPtUBQKGnQG5fzsSB--
