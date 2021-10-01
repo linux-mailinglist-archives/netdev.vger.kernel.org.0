@@ -2,121 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 217AA41EB4C
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 13:01:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8552241EB64
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 13:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353717AbhJALDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 07:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33000 "EHLO
+        id S1353730AbhJALIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 07:08:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353710AbhJALCt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 07:02:49 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B196DC061775;
-        Fri,  1 Oct 2021 04:01:04 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id q17-20020a7bce91000000b0030d4e298215so894111wmj.0;
-        Fri, 01 Oct 2021 04:01:04 -0700 (PDT)
+        with ESMTP id S1353454AbhJALIa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 07:08:30 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A29DC061775
+        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 04:06:46 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id g19-20020a1c9d13000000b003075062d4daso6498211wme.0
+        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 04:06:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AlljMHBis/HGJBiP3p84b0NWwK4Vv/mNrhgfG66xRN0=;
-        b=kL8k3KExxNPjOhmf5Yc13M8iZH785dkPpqzkefCPkoYoobgeIRoIHDV8wgOno4cJnI
-         QBGI7Ak9zU7bgiDFYIMUJ7i6bSpO/5cGqY6Od1wDemxYR6iCuh4UEMviiE4BK3Z45RqJ
-         1LrZ85eo6KjDTmJvv1H3XMLHoh0Vz7Jdw5GuBHZUxXDF6kQwd2SrlfkdUdzxHvEQiP2q
-         uhkHMHTfJF2yV/HucKogY5JzXGXRfcAq60mT8AUjImo451ZxpQYjK373T2zdPg1AUX6N
-         AYB8xSYi/WM5rW4AyPhDw0gqEWyVfmh8HDPGmBPRL8iy+ypNZU1hzys3VllwC1P/TrKg
-         ut4w==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=Ic8xXiFIaM5JGwOBFHZCQicrwrYtjcMu6SEU2TZ/HzU=;
+        b=xveUO6JABTX6wVw2mDKiysxksM8SH6FnuIPhIoGVMSaHIn6H0VD9NKBKFi+sOge3lN
+         J+k3GBgST1yZyd2ZsjRmG1Yzo17/kj6ISXX1WoMhqpVXcYkxo/6T6CM9JhcHjyd7qUOl
+         MhO4lqeNb3C+6WtpbOwfhT3UqYukYb+VXdrlPmchA8pr/eWa9DuPP7LCFTLiGlwEklXp
+         Gt2p+vk42HNGfSSqk4R8/gxL+fCDqE+gCjRiGvfndDdOjf/G7UfRziAm3yyPlGkV/g0A
+         N3c6l5+FfalAY3woJmPZj3CcHbUhz+WUevTW3lKIw+2uJOa2jBJxID/XRTyEzJdwRSY1
+         7oBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AlljMHBis/HGJBiP3p84b0NWwK4Vv/mNrhgfG66xRN0=;
-        b=5obvZzoNw99d6fy9vdldFGxvaffoXcnPkGU/1zMV8l5ahbhvYdHtmnZChcOIwueztY
-         /zs5e7Wpy0MmtLIEA4cnwatQ3NsqVVJRJWIgmgbnXpTn5xw0NQw67ZciqqBmiV1pr0Pa
-         PLiKSeRNXyP4xwWnn/rZ+4AwmBI8VZh9rGFfxfk5XUA1+QUr/MyvEnPYcJeJ7hhu693M
-         XGIqxJWm/e8Xz+9wHO46ynoIvIH6PmmEsTkqZjDUa1YEwxeaz2RPlBu9+G5MHhL9UYNe
-         cTE9lvjLtQik7OWdwTjexfrzZNOi6jkX3Lp972RA5EPutF3eGdW/etf5gd4X8HApwGvp
-         O6uQ==
-X-Gm-Message-State: AOAM531NbfYlpEGEAlLWllZ+M5ycrD84XAdzBvlWUsZNXaTj65bgtIES
-        sJiAfM9EOGG/n2/yGIo0iOYTQGXuGWI=
-X-Google-Smtp-Source: ABdhPJzLsgwBDTgq0mPqkClwiGnbU8lLscbd3XxcsEkz1bR8+RG3h7laXw0AK7hf+stOwcAdlLKVHQ==
-X-Received: by 2002:a7b:cb4b:: with SMTP id v11mr3803605wmj.155.1633086063029;
-        Fri, 01 Oct 2021 04:01:03 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-67-254.ip85.fastwebnet.it. [93.42.67.254])
-        by smtp.gmail.com with ESMTPSA id q18sm7337204wmc.7.2021.10.01.04.01.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Oct 2021 04:01:02 -0700 (PDT)
-Date:   Fri, 1 Oct 2021 13:01:02 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next] drivers: net: dsa: qca8k: convert to
- GENMASK/FIELD_PREP/FIELD_GET
-Message-ID: <YVbqbq180jgrhiIe@Ansuel-xps.localdomain>
-References: <20211001013729.21849-1-ansuelsmth@gmail.com>
- <91eb5d7e-b62c-45e6-16a3-1d9c1c780c7b@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=Ic8xXiFIaM5JGwOBFHZCQicrwrYtjcMu6SEU2TZ/HzU=;
+        b=NkYwLt7lgp5nbU7IMf2QrWg7tcjod5ITBnYy7bGQk4KI23zCGaGn0MYeY0yzVIxp2K
+         v+QTEDOlKYvH2sg/DEv5wz+RRL0XpGRV4cqq1zqkkaWe24CdWqbhbv8nM33gHT8ZqY5m
+         mCV0TFHLP+inQMGaFTRVAB6DVsSCPd0peVEKNqx7psTrYY+lVBpY4quB3en9Ke9RNwRg
+         eN22aS2JnNuu3/0VR92AEohDo5TrLFY5wXC1gU4FuUnkwfTRF4Lf68+dzCfGBZwmBl9P
+         aHUijE9nqYIIh8Fe5FVCG5wUuT9aYUw+NmWYcAOGuyInUnxvc/pKSwosVwDzPE5RhAG+
+         Iqqw==
+X-Gm-Message-State: AOAM5325EcIQF3oyLNj3R9C0OSUrQnZ8YbjdG+QH1MhPX9Sb6JWmWupg
+        ey6LiGsQM7/VMlFudDRjti+9Pg==
+X-Google-Smtp-Source: ABdhPJxbDoDy2kazexW//RNpVrkMlwjdEz2/ZLPKYlKUl3giJE+FrAoXmwQECe+3ot8yERe4gzizgA==
+X-Received: by 2002:a1c:7d44:: with SMTP id y65mr3728469wmc.181.1633086405139;
+        Fri, 01 Oct 2021 04:06:45 -0700 (PDT)
+Received: from [192.168.1.8] ([149.86.91.69])
+        by smtp.gmail.com with ESMTPSA id f15sm5221859wrd.44.2021.10.01.04.06.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Oct 2021 04:06:44 -0700 (PDT)
+Message-ID: <37d25d01-c6ad-4ff9-46e2-236c60369171@isovalent.com>
+Date:   Fri, 1 Oct 2021 12:06:43 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <91eb5d7e-b62c-45e6-16a3-1d9c1c780c7b@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.2
+Subject: Re: [PATCH bpf-next 6/9] bpf: iterators: install libbpf headers when
+ building
+Content-Language: en-US
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20210930113306.14950-1-quentin@isovalent.com>
+ <20210930113306.14950-7-quentin@isovalent.com>
+ <354d2a7b-3dfc-f1b2-e695-1b77d013c621@isovalent.com>
+In-Reply-To: <354d2a7b-3dfc-f1b2-e695-1b77d013c621@isovalent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 07:14:13PM -0700, Florian Fainelli wrote:
+2021-09-30 13:17 UTC+0100 ~ Quentin Monnet <quentin@isovalent.com>
+> 2021-09-30 12:33 UTC+0100 ~ Quentin Monnet <quentin@isovalent.com>
+>> API headers from libbpf should not be accessed directly from the
+>> library's source directory. Instead, they should be exported with "make
+>> install_headers". Let's make sure that bpf/preload/iterators/Makefile
+>> installs the headers properly when building.
 > 
-> 
-> On 9/30/2021 6:37 PM, Ansuel Smith wrote:
-> > Convert and try to standardize bit fields using
-> > GENMASK/FIELD_PREP/FIELD_GET macros. Rework some logic to support the
-> > standard macro and tidy things up. No functional change intended.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> > 
-> > I still need to test this in every part but I would like to have some
-> > approval about this kind of change. Also there are tons of warning by
-> > checkpatch about too long line... Are they accepted for headers? I can't
-> > really find another way to workaround the problem as reducing the define
-> > name would make them less descriptive.
-> > Aside from that I did the conversion as carefully as possible so in
-> > theory nothing should be broken and the conversion should be all
-> > correct. Some real improvement by using filed macro are in the
-> > fdb_read/fdb_write that now are much more readable.
-> 
-> My main concern is that it is going to be a tad harder to back port fixes
-> made to this driver with such changes in place, so unfortunately it is
-> usually a matter of either the initial version of the driver use BIT(),
-> FIELD_{PREP,GET} and GENMASK, or the very few commits following the initial
-> commit take care of that, and then it is all rosy for everyone, or else it
-> may be complicated.
-> 
-> You are one of the active contributors to this driver, so ultimately you
-> should decide.
-> -- 
-> Florian
+> CI complains when trying to build
+> kernel/bpf/preload/iterators/iterators.o. I'll look more into this.
 
-Problem I'm trying to solve here is that I notice various name scheme
-used and not an unique one... (many _S and _M mixed with MASK and SHIFT)
-Various shift and strange bits handling. I think this is needed to
-improve the code in all the next release.
-About backports you mean for older kernel (bugfixes) or for external
-project (backports for openwrt, for example?) Anyway in the main code
-(the one in theory that should receive backports) I just reworked the ACL
-code that should be stable and the switch ID handling (I don't think
-there is anything to fix there). Aside from that and some improvement to
-VLAN, I tried to implement FIELD_PREP only in the define without
-touching qca8k code. 
-I honestly don't know if this would cause that much of a problem with
-backports (assuming they only touch qca8k code and not header).
-Would love to receive some feedback if I'm wrong about my idea.
-Any feedback about the warning for long names in the define? Are they
-accepted? I can't find anywhere how we should handle them.
--- 
-Ansuel
+My error was in fact on the previous patch for kernel/preload/Makefile,
+where iterators.o is handled. The resulting Makefile in my v1 contained:
+
+	bpf_preload_umd-objs := iterators/iterators.o
+	bpf_preload_umd-userldlibs := $(LIBBPF_A) -lelf -lz
+
+	$(obj)/bpf_preload_umd: $(LIBBPF_A)
+
+This declares a dependency on $(LIBBPF_A) for building the final
+bpf_preload_umd target, when iterators/iterators.o is linked against the
+libraries. It does not declare the dependency for iterators/iterators.o
+itself. So when we attempt to build the object file, libbpf has not been
+compiled yet (not an issue per se), and the API headers from libbpf have
+not been installed and made available to iterators.o, causing the build
+to fail.
+
+Before this patch, there was no issue because the headers would be
+included directly from tools/lib/bpf, so they would always be present.
+I'll fix this by adding the relevant dependency, and send a v2.
+
+As a side note, I couldn't reproduce the issue locally or in the VM for
+the selftests, I'm not sure why. I struggled to get helpful logs from
+the kernel CI (kernel build in non-verbose mode), so I ended up copying
+the CI infra (running on kernel-patches/bpf on GitHub) to my own GitHub
+repository to add debug info and do other runs without re-posting every
+time to the mailing list. In case anyone else is interested, I figured I
+might share the steps:
+
+- Clone the linux repo on GitHub, push the bpf-next branch
+- Copy all files and directories from the kernel-patches/vmtest GitHub
+repo (including the .github directory) to the root of my linux repo, on
+my development branch.
+- Update the checks on "kernel-patches/bpf" repository name in
+.github/workflows/test.yaml, to avoid pulling new Linux sources and
+overwriting the files on my branch.
+- (Add as much build debug info as necessary.)
+- Push the branch to GitHub and open a PR against my own bpf-next
+branch. This should trigger the Action.
+
+Or was there a simpler way to test my set on the CI, that I ignore?
+
+Quentin
