@@ -2,135 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20F5F41F669
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 22:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F270A41F66F
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 22:43:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355457AbhJAUoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 16:44:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355332AbhJAUo3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 16:44:29 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2636BC061775;
-        Fri,  1 Oct 2021 13:42:45 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id j5so38471985lfg.8;
-        Fri, 01 Oct 2021 13:42:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=VaEB82g66moSG49ibSQm4DaIHpTLHO/JhyYD6WTE38E=;
-        b=WT8tOvXoMB55QTeKzRCKfDDees9R7IsFTEjbNDM7JRfSa7C0vAXxtXKNYIj+zr9Zu+
-         KUa8MjXjG1pNe0dOCW/yqpVM8T7WmqHk7tBHtTcxB4p7Z3aBkNvmSYeb5PlnJg6Tl82Q
-         5HGo4ZIl9irAmOCGJJYfUyh4WJJP99Qgj0lMPZXyYpphgBFE19VF/8yd9+Ivc6V7UZcj
-         wNhA1wq8YKBLUtNe+pAbripBAKtsgYZD2QwdVzj0ETmpl1+4ECOLtGIavmMflJ5420ZU
-         a9HpFVggIV528qqWJ5nZWuozx/zlxo7WcIerGvq7Bp+4SPpGd4/Rhom9F9bB0sf9Nw0j
-         SLjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VaEB82g66moSG49ibSQm4DaIHpTLHO/JhyYD6WTE38E=;
-        b=pD0hliMBzWeeQm/WoJnGyzPvBvhElvOxYeTH6cLaCU6g+4kCbn2GYz8mGrFQ4g/aSu
-         s2GwIDJxjfDenK9WorwKvfqK7uBlFfATLb24KfeLhj26tLonE0Uy4FJBDUmwZ9O4cm2+
-         5c1SXbWhFssvfT0p/JiQCpBS8owOf+aCWyLMB7mZ+tgvLAZWQSribeOXKXnNlJ+wZ79r
-         5zqfoUudHfaQHTsb4/woDxCiCylJeOHvXek9ueMnvE+wXbJz7Qb6IjP7rX4ds04BGnl/
-         xPO/BUdnx508kFwzLjXNEqy975L3IdE9rVMlm5ULbVI3UOWY3yTk3nG1GZpIo/3KiumY
-         9Y/A==
-X-Gm-Message-State: AOAM530+YVjSgRzLDBXOlZQ7Q6Rl/p5bLSFX0yrQ06o/2tw2vWpNiTHF
-        wfiXOeaQSi2FpRfJ5Kf/EHxiKcYbB1oPIkwwWNo=
-X-Google-Smtp-Source: ABdhPJy9TwRcdV4sMm8TgMLXEZJfac+zanXG7g7DsutApUoAt1WpMctRE7+tJWPf4akrToetBj1AgpRLy0chKORI6OE=
-X-Received: by 2002:a05:6512:1052:: with SMTP id c18mr92771lfb.161.1633120963250;
- Fri, 01 Oct 2021 13:42:43 -0700 (PDT)
+        id S1355514AbhJAUpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 16:45:16 -0400
+Received: from mxout04.lancloud.ru ([45.84.86.114]:59030 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355465AbhJAUpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 16:45:10 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru AD2F120A504D
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH 02/10] ravb: Rename "no_ptp_cfg_active" and
+ "ptp_cfg_active" variables
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
+ <20211001150636.7500-3-biju.das.jz@bp.renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <232c6ad6-c35b-76c0-2800-e05ca2631048@omp.ru>
+Date:   Fri, 1 Oct 2021 23:43:23 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20210928194727.1635106-1-cpp.code.lv@gmail.com>
- <20210928174853.06fe8e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <d1e5b178-47f5-9791-73e9-0c1f805b0fca@6wind.com> <20210929061909.59c94eff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAASuNyVe8z1R6xyCfSAxZbcrL3dej1n8TXXkqS-e8QvA6eWd+w@mail.gmail.com> <b091ef39-dc29-8362-4d31-0a9cc498e8ea@6wind.com>
-In-Reply-To: <b091ef39-dc29-8362-4d31-0a9cc498e8ea@6wind.com>
-From:   Cpp Code <cpp.code.lv@gmail.com>
-Date:   Fri, 1 Oct 2021 13:42:32 -0700
-Message-ID: <CAASuNyW81zpSu+FGSDuUrOsyqJj7SokZtvX081BbeXi0ARBaYg@mail.gmail.com>
-Subject: Re: [PATCH net-next v6] net: openvswitch: IPv6: Add IPv6 extension
- header support
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        pshelar@ovn.org, "David S. Miller" <davem@davemloft.net>,
-        ovs dev <dev@openvswitch.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211001150636.7500-3-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 1, 2021 at 12:21 AM Nicolas Dichtel
-<nicolas.dichtel@6wind.com> wrote:
->
-> Le 30/09/2021 =C3=A0 18:11, Cpp Code a =C3=A9crit :
-> > On Wed, Sep 29, 2021 at 6:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >>
-> >> On Wed, 29 Sep 2021 08:19:05 +0200 Nicolas Dichtel wrote:
-> >>>> /* Insert a kernel only KEY_ATTR */
-> >>>> #define OVS_KEY_ATTR_TUNNEL_INFO    __OVS_KEY_ATTR_MAX
-> >>>> #undef OVS_KEY_ATTR_MAX
-> >>>> #define OVS_KEY_ATTR_MAX            __OVS_KEY_ATTR_MAX
-> >>> Following the other thread [1], this will break if a new app runs ove=
-r an old
-> >>> kernel.
-> >>
-> >> Good point.
-> >>
-> >>> Why not simply expose this attribute to userspace and throw an error =
-if a
-> >>> userspace app uses it?
-> >>
-> >> Does it matter if it's exposed or not? Either way the parsing policy
-> >> for attrs coming from user space should have a reject for the value.
-> >> (I say that not having looked at the code, so maybe I shouldn't...)
-> >
-> > To remove some confusion, there are some architectural nuances if we
-> > want to extend code without large refactor.
-> > The ovs_key_attr is defined only in kernel side. Userspace side is
-> > generated from this file. As well the code can be built without kernel
-> > modules.
-> > The code inside OVS repository and net-next is not identical, but I
-> > try to keep some consistency.
-> I didn't get why OVS_KEY_ATTR_TUNNEL_INFO cannot be exposed to userspace.
+On 10/1/21 6:06 PM, Biju Das wrote:
 
-OVS_KEY_ATTR_TUNNEL_INFO is compressed version of OVS_KEY_ATTR_TUNNEL
-and for clarity purposes its not exposed to userspace as it will never
-use it.
-I would say it's a coding style as it would not brake anything if exposed.
+> Rename the variable "no_ptp_cfg_active" with "gptp" and
 
->
-> >
-> > JFYI This is the file responsible for generating userspace part:
-> > https://github.com/openvswitch/ovs/blob/master/build-aux/extract-odp-ne=
-tlink-h
-> > This is the how corresponding file for ovs_key_attr looks inside OVS:
-> > https://github.com/openvswitch/ovs/blob/master/datapath/linux/compat/in=
-clude/linux/openvswitch.h
-> > one can see there are more values than in net-next version.
-> There are still some '#ifdef __KERNEL__'. The standard 'make headers_inst=
-all'
-> filters them. Why not using this standard mechanism?
+   This shouldn't be a rename but the extension of the meaning instead...
 
-Could you elaborate on this, I don't quite understand the idea!? Which
-ifdef you are referring, the one along OVS_KEY_ATTR_TUNNEL_INFO or
-some other?
+> "ptp_cfg_active" with "ccc_gac" to match the HW features.
+> 
+> There is no functional change.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Suggested-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+> RFc->v1:
+>  * Renamed the variable "no_ptp_cfg_active" with "gptp" and
+>    "ptp_cfg_active" with "ccc_gac
+> ---
+>  drivers/net/ethernet/renesas/ravb.h      |  4 ++--
+>  drivers/net/ethernet/renesas/ravb_main.c | 26 ++++++++++++------------
+>  2 files changed, 15 insertions(+), 15 deletions(-)
 
->
-> In this file, there are two attributes (OVS_KEY_ATTR_PACKET_TYPE and
-> OVS_KEY_ATTR_ND_EXTENSIONS) that doesn't exist in the kernel.
-> This will also breaks if an old app runs over a new kernel. I don't see h=
-ow it
-> is possible to keep the compat between {old|new} {kernel|app}.
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index 8f2358caef34..dc7654abfe55 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -1274,7 +1274,7 @@ static int ravb_set_ringparam(struct net_device *ndev,
+>  	if (netif_running(ndev)) {
+>  		netif_device_detach(ndev);
+>  		/* Stop PTP Clock driver */
+> -		if (info->no_ptp_cfg_active)
+> +		if (info->gptp)
 
-Looks like this most likely is a bug while working on multiple
-versions of code.  Need to do add more padding.
+   Where have you lost !info->ccc_gac?
 
->
->
-> Regards,
-> Nicolas
+>  			ravb_ptp_stop(ndev);
+>  		/* Wait for DMA stopping */
+>  		error = ravb_stop_dma(ndev);
+> @@ -1306,7 +1306,7 @@ static int ravb_set_ringparam(struct net_device *ndev,
+>  		ravb_emac_init(ndev);
+>  
+>  		/* Initialise PTP Clock driver */
+> -		if (info->no_ptp_cfg_active)
+> +		if (info->gptp)
+>  			ravb_ptp_init(ndev, priv->pdev);
+
+    The same question here...
+
+>  		netif_device_attach(ndev);
+> @@ -1446,7 +1446,7 @@ static int ravb_open(struct net_device *ndev)
+>  	ravb_emac_init(ndev);
+>  
+>  	/* Initialise PTP Clock driver */
+> -	if (info->no_ptp_cfg_active)
+> +	if (info->gptp)
+
+   ... and here.
+
+>  		ravb_ptp_init(ndev, priv->pdev);
+>  
+>  	netif_tx_start_all_queues(ndev);
+> @@ -1460,7 +1460,7 @@ static int ravb_open(struct net_device *ndev)
+>  
+>  out_ptp_stop:
+>  	/* Stop PTP Clock driver */
+> -	if (info->no_ptp_cfg_active)
+> +	if (info->gptp)
+>  		ravb_ptp_stop(ndev);
+
+    ... and here.
+
+>  out_free_irq_nc_tx:
+>  	if (!info->multi_irqs)
+> @@ -1508,7 +1508,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+>  	netif_tx_stop_all_queues(ndev);
+>  
+>  	/* Stop PTP Clock driver */
+> -	if (info->no_ptp_cfg_active)
+> +	if (info->gptp)
+
+    ... and here.
+
+>  		ravb_ptp_stop(ndev);
+>  
+>  	/* Wait for DMA stopping */
+> @@ -1543,7 +1543,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+>  
+>  out:
+>  	/* Initialise PTP Clock driver */
+> -	if (info->no_ptp_cfg_active)
+> +	if (info->gptp)
+>  		ravb_ptp_init(ndev, priv->pdev);
+
+    ... and here.
+ 
+>  	netif_tx_start_all_queues(ndev);
+> @@ -1752,7 +1752,7 @@ static int ravb_close(struct net_device *ndev)
+>  	ravb_write(ndev, 0, TIC);
+>  
+>  	/* Stop PTP Clock driver */
+> -	if (info->no_ptp_cfg_active)
+> +	if (info->gptp)
+
+    ... and here.
+
+>  		ravb_ptp_stop(ndev);
+>  
+>  	/* Set the config mode to stop the AVB-DMAC's processes */
+> @@ -2018,7 +2018,7 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
+>  	.internal_delay = 1,
+>  	.tx_counters = 1,
+>  	.multi_irqs = 1,
+> -	.ptp_cfg_active = 1,
+
+   Where is 'gptp'?
+
+> +	.ccc_gac = 1,
+>  };
+>  
+>  static const struct ravb_hw_info ravb_gen2_hw_info = {
+[...]
+> @@ -2080,7 +2080,7 @@ static void ravb_set_config_mode(struct net_device *ndev)
+>  	struct ravb_private *priv = netdev_priv(ndev);
+>  	const struct ravb_hw_info *info = priv->info;
+>  
+> -	if (info->no_ptp_cfg_active) {
+> +	if (info->gptp) {
+
+   Where have you lost !info->ccc_gac?
+
+>  		ravb_modify(ndev, CCC, CCC_OPC, CCC_OPC_CONFIG);
+>  		/* Set CSEL value */
+>  		ravb_modify(ndev, CCC, CCC_CSEL, CCC_CSEL_HPB);
+[...]
+
+MBR, Sergey
