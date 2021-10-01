@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27BA841F086
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 17:07:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53CAD41F08A
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 17:07:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354984AbhJAPIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 11:08:46 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:2731 "EHLO
+        id S1354986AbhJAPIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 11:08:51 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:23063 "EHLO
         relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1354913AbhJAPIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 11:08:38 -0400
+        by vger.kernel.org with ESMTP id S1354957AbhJAPIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 11:08:42 -0400
 X-IronPort-AV: E=Sophos;i="5.85,339,1624287600"; 
-   d="scan'208";a="95671596"
+   d="scan'208";a="95671599"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 02 Oct 2021 00:06:53 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 02 Oct 2021 00:06:57 +0900
 Received: from localhost.localdomain (unknown [10.226.92.36])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 440CE4351834;
-        Sat,  2 Oct 2021 00:06:50 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 693BA444D9BF;
+        Sat,  2 Oct 2021 00:06:54 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -32,9 +32,9 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 03/10] ravb: Add nc_queue to struct ravb_hw_info
-Date:   Fri,  1 Oct 2021 16:06:29 +0100
-Message-Id: <20211001150636.7500-4-biju.das.jz@bp.renesas.com>
+Subject: [PATCH 04/10] ravb: Add support for RZ/G2L SoC
+Date:   Fri,  1 Oct 2021 16:06:30 +0100
+Message-Id: <20211001150636.7500-5-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
 References: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
@@ -42,377 +42,173 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-R-Car supports network control queue whereas RZ/G2L does not support
-it. Add nc_queue to struct ravb_hw_info, so that NC queue is handled
-only by R-Car.
+RZ/G2L SoC has Gigabit Ethernet IP consisting of Ethernet controller
+(E-MAC), Internal TCP/IP Offload Engine (TOE) and Dedicated Direct
+memory access controller (DMAC).
 
-This patch also renames ravb_rcar_dmac_init to ravb_dmac_init_rcar
-to be consistent with the naming convention used in sh_eth driver.
+This patch adds compatible string for RZ/G2L and fills up the
+ravb_hw_info struct. Function stubs are added which will be used by
+gbeth_hw_info and will be filled incrementally.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
 RFC->v1:
- * Handled NC queue only for R-Car.
+ * Added compatible string for RZ/G2L.
+ * Added feature bits max_rx_len, aligned_tx and tx_counters for RZ/G2L.
 ---
- drivers/net/ethernet/renesas/ravb.h      |   3 +-
- drivers/net/ethernet/renesas/ravb_main.c | 140 +++++++++++++++--------
- 2 files changed, 94 insertions(+), 49 deletions(-)
+ drivers/net/ethernet/renesas/ravb.h      |  2 +
+ drivers/net/ethernet/renesas/ravb_main.c | 62 ++++++++++++++++++++++++
+ 2 files changed, 64 insertions(+)
 
 diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-index a33fbcb4aac3..c91e93e5590f 100644
+index c91e93e5590f..f6398fdcead2 100644
 --- a/drivers/net/ethernet/renesas/ravb.h
 +++ b/drivers/net/ethernet/renesas/ravb.h
-@@ -986,7 +986,7 @@ struct ravb_hw_info {
- 	bool (*receive)(struct net_device *ndev, int *quota, int q);
- 	void (*set_rate)(struct net_device *ndev);
- 	int (*set_feature)(struct net_device *ndev, netdev_features_t features);
--	void (*dmac_init)(struct net_device *ndev);
-+	int (*dmac_init)(struct net_device *ndev);
- 	void (*emac_init)(struct net_device *ndev);
- 	const char (*gstrings_stats)[ETH_GSTRING_LEN];
- 	size_t gstrings_size;
-@@ -1002,6 +1002,7 @@ struct ravb_hw_info {
- 	unsigned multi_irqs:1;		/* AVB-DMAC and E-MAC has multiple irqs */
- 	unsigned gptp:1;		/* AVB-DMAC has gPTP support */
- 	unsigned ccc_gac:1;		/* AVB-DMAC has gPTP support active in config mode */
-+	unsigned nc_queue:1;		/* AVB-DMAC has NC queue */
- };
+@@ -956,6 +956,8 @@ enum RAVB_QUEUE {
  
- struct ravb_private {
+ #define RX_BUF_SZ	(2048 - ETH_FCS_LEN + sizeof(__sum16))
+ 
++#define GBETH_RX_BUFF_MAX 8192
++
+ struct ravb_tstamp_skb {
+ 	struct list_head list;
+ 	struct sk_buff *skb;
 diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index dc7654abfe55..8bf13586e90a 100644
+index 8bf13586e90a..dc817b4d95a1 100644
 --- a/drivers/net/ethernet/renesas/ravb_main.c
 +++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -461,10 +461,24 @@ static void ravb_emac_init(struct net_device *ndev)
+@@ -83,6 +83,11 @@ static int ravb_config(struct net_device *ndev)
+ 	return error;
+ }
+ 
++static void ravb_set_rate_gbeth(struct net_device *ndev)
++{
++	/* Place holder */
++}
++
+ static void ravb_set_rate(struct net_device *ndev)
+ {
+ 	struct ravb_private *priv = netdev_priv(ndev);
+@@ -217,6 +222,11 @@ static int ravb_tx_free(struct net_device *ndev, int q, bool free_txed_only)
+ 	return free_num;
+ }
+ 
++static void ravb_rx_ring_free_gbeth(struct net_device *ndev, int q)
++{
++	/* Place holder */
++}
++
+ static void ravb_rx_ring_free(struct net_device *ndev, int q)
+ {
+ 	struct ravb_private *priv = netdev_priv(ndev);
+@@ -283,6 +293,11 @@ static void ravb_ring_free(struct net_device *ndev, int q)
+ 	priv->tx_skb[q] = NULL;
+ }
+ 
++static void ravb_rx_ring_format_gbeth(struct net_device *ndev, int q)
++{
++	/* Place holder */
++}
++
+ static void ravb_rx_ring_format(struct net_device *ndev, int q)
+ {
+ 	struct ravb_private *priv = netdev_priv(ndev);
+@@ -356,6 +371,12 @@ static void ravb_ring_format(struct net_device *ndev, int q)
+ 	desc->dptr = cpu_to_le32((u32)priv->tx_desc_dma[q]);
+ }
+ 
++static void *ravb_alloc_rx_desc_gbeth(struct net_device *ndev, int q)
++{
++	/* Place holder */
++	return NULL;
++}
++
+ static void *ravb_alloc_rx_desc(struct net_device *ndev, int q)
+ {
+ 	struct ravb_private *priv = netdev_priv(ndev);
+@@ -426,6 +447,11 @@ static int ravb_ring_init(struct net_device *ndev, int q)
+ 	return -ENOMEM;
+ }
+ 
++static void ravb_emac_init_gbeth(struct net_device *ndev)
++{
++	/* Place holder */
++}
++
+ static void ravb_rcar_emac_init(struct net_device *ndev)
+ {
+ 	/* Receive frame limit set register */
+@@ -461,6 +487,12 @@ static void ravb_emac_init(struct net_device *ndev)
  	info->emac_init(ndev);
  }
  
--static void ravb_rcar_dmac_init(struct net_device *ndev)
-+static int ravb_dmac_init_rcar(struct net_device *ndev)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
- 	const struct ravb_hw_info *info = priv->info;
-+	int error;
-+
-+	error = ravb_ring_init(ndev, RAVB_BE);
-+	if (error)
-+		return error;
-+	error = ravb_ring_init(ndev, RAVB_NC);
-+	if (error) {
-+		ravb_ring_free(ndev, RAVB_BE);
-+		return error;
-+	}
-+
-+	/* Descriptor format */
-+	ravb_ring_format(ndev, RAVB_BE);
-+	ravb_ring_format(ndev, RAVB_NC);
- 
- 	/* Set AVB RX */
- 	ravb_write(ndev,
-@@ -491,6 +505,8 @@ static void ravb_rcar_dmac_init(struct net_device *ndev)
- 	ravb_write(ndev, RIC2_QFE0 | RIC2_QFE1 | RIC2_RFFE, RIC2);
- 	/* Frame transmitted, timestamp FIFO updated */
- 	ravb_write(ndev, TIC_FTE0 | TIC_FTE1 | TIC_TFUE, TIC);
-+
++static int ravb_dmac_init_gbeth(struct net_device *ndev)
++{
++	/* Place holder */
 +	return 0;
- }
- 
- /* Device init function for Ethernet AVB */
-@@ -505,20 +521,9 @@ static int ravb_dmac_init(struct net_device *ndev)
- 	if (error)
- 		return error;
- 
--	error = ravb_ring_init(ndev, RAVB_BE);
-+	error = info->dmac_init(ndev);
- 	if (error)
- 		return error;
--	error = ravb_ring_init(ndev, RAVB_NC);
--	if (error) {
--		ravb_ring_free(ndev, RAVB_BE);
--		return error;
--	}
--
--	/* Descriptor format */
--	ravb_ring_format(ndev, RAVB_BE);
--	ravb_ring_format(ndev, RAVB_NC);
--
--	info->dmac_init(ndev);
- 
- 	/* Setting the control will start the AVB-DMAC process. */
- 	ravb_modify(ndev, CCC, CCC_OPC, CCC_OPC_OPERATION);
-@@ -859,6 +864,7 @@ static irqreturn_t ravb_interrupt(int irq, void *dev_id)
- {
- 	struct net_device *ndev = dev_id;
- 	struct ravb_private *priv = netdev_priv(ndev);
-+	const struct ravb_hw_info *info = priv->info;
- 	irqreturn_t result = IRQ_NONE;
- 	u32 iss;
- 
-@@ -875,8 +881,13 @@ static irqreturn_t ravb_interrupt(int irq, void *dev_id)
- 			result = IRQ_HANDLED;
- 
- 		/* Network control and best effort queue RX/TX */
--		for (q = RAVB_NC; q >= RAVB_BE; q--) {
--			if (ravb_queue_interrupt(ndev, q))
-+		if (info->nc_queue) {
-+			for (q = RAVB_NC; q >= RAVB_BE; q--) {
-+				if (ravb_queue_interrupt(ndev, q))
-+					result = IRQ_HANDLED;
-+			}
-+		} else {
-+			if (ravb_queue_interrupt(ndev, RAVB_BE))
- 				result = IRQ_HANDLED;
- 		}
- 	}
-@@ -1000,7 +1011,8 @@ static int ravb_poll(struct napi_struct *napi, int budget)
- 
- 	/* Receive error message handling */
- 	priv->rx_over_errors =  priv->stats[RAVB_BE].rx_over_errors;
--	priv->rx_over_errors += priv->stats[RAVB_NC].rx_over_errors;
-+	if (info->nc_queue)
-+		priv->rx_over_errors += priv->stats[RAVB_NC].rx_over_errors;
- 	if (priv->rx_over_errors != ndev->stats.rx_over_errors)
- 		ndev->stats.rx_over_errors = priv->rx_over_errors;
- 	if (priv->rx_fifo_errors != ndev->stats.rx_fifo_errors)
-@@ -1208,11 +1220,14 @@ static void ravb_get_ethtool_stats(struct net_device *ndev,
- 				   struct ethtool_stats *estats, u64 *data)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
-+	const struct ravb_hw_info *info = priv->info;
-+	int num_rx_q;
- 	int i = 0;
- 	int q;
- 
-+	num_rx_q = info->nc_queue ? NUM_RX_QUEUE : 1;
- 	/* Device-specific stats */
--	for (q = RAVB_BE; q < NUM_RX_QUEUE; q++) {
-+	for (q = RAVB_BE; q < num_rx_q; q++) {
- 		struct net_device_stats *stats = &priv->stats[q];
- 
- 		data[i++] = priv->cur_rx[q];
-@@ -1287,7 +1302,8 @@ static int ravb_set_ringparam(struct net_device *ndev,
- 
- 		/* Free all the skb's in the RX queue and the DMA buffers. */
- 		ravb_ring_free(ndev, RAVB_BE);
--		ravb_ring_free(ndev, RAVB_NC);
-+		if (info->nc_queue)
-+			ravb_ring_free(ndev, RAVB_NC);
- 	}
- 
- 	/* Set new parameters */
-@@ -1403,7 +1419,8 @@ static int ravb_open(struct net_device *ndev)
- 	int error;
- 
- 	napi_enable(&priv->napi[RAVB_BE]);
--	napi_enable(&priv->napi[RAVB_NC]);
-+	if (info->nc_queue)
-+		napi_enable(&priv->napi[RAVB_NC]);
- 
- 	if (!info->multi_irqs) {
- 		error = request_irq(ndev->irq, ravb_interrupt, IRQF_SHARED,
-@@ -1477,7 +1494,8 @@ static int ravb_open(struct net_device *ndev)
- out_free_irq:
- 	free_irq(ndev->irq, ndev);
- out_napi_off:
--	napi_disable(&priv->napi[RAVB_NC]);
-+	if (info->nc_queue)
-+		napi_disable(&priv->napi[RAVB_NC]);
- 	napi_disable(&priv->napi[RAVB_BE]);
- 	return error;
- }
-@@ -1526,7 +1544,8 @@ static void ravb_tx_timeout_work(struct work_struct *work)
- 	}
- 
- 	ravb_ring_free(ndev, RAVB_BE);
--	ravb_ring_free(ndev, RAVB_NC);
-+	if (info->nc_queue)
-+		ravb_ring_free(ndev, RAVB_NC);
- 
- 	/* Device init */
- 	error = ravb_dmac_init(ndev);
-@@ -1698,28 +1717,38 @@ static struct net_device_stats *ravb_get_stats(struct net_device *ndev)
- 
- 	nstats = &ndev->stats;
- 	stats0 = &priv->stats[RAVB_BE];
--	stats1 = &priv->stats[RAVB_NC];
- 
- 	if (info->tx_counters) {
- 		nstats->tx_dropped += ravb_read(ndev, TROCR);
- 		ravb_write(ndev, 0, TROCR);	/* (write clear) */
- 	}
- 
--	nstats->rx_packets = stats0->rx_packets + stats1->rx_packets;
--	nstats->tx_packets = stats0->tx_packets + stats1->tx_packets;
--	nstats->rx_bytes = stats0->rx_bytes + stats1->rx_bytes;
--	nstats->tx_bytes = stats0->tx_bytes + stats1->tx_bytes;
--	nstats->multicast = stats0->multicast + stats1->multicast;
--	nstats->rx_errors = stats0->rx_errors + stats1->rx_errors;
--	nstats->rx_crc_errors = stats0->rx_crc_errors + stats1->rx_crc_errors;
--	nstats->rx_frame_errors =
--		stats0->rx_frame_errors + stats1->rx_frame_errors;
--	nstats->rx_length_errors =
--		stats0->rx_length_errors + stats1->rx_length_errors;
--	nstats->rx_missed_errors =
--		stats0->rx_missed_errors + stats1->rx_missed_errors;
--	nstats->rx_over_errors =
--		stats0->rx_over_errors + stats1->rx_over_errors;
-+	nstats->rx_packets = stats0->rx_packets;
-+	nstats->tx_packets = stats0->tx_packets;
-+	nstats->rx_bytes = stats0->rx_bytes;
-+	nstats->tx_bytes = stats0->tx_bytes;
-+	nstats->multicast = stats0->multicast;
-+	nstats->rx_errors = stats0->rx_errors;
-+	nstats->rx_crc_errors = stats0->rx_crc_errors;
-+	nstats->rx_frame_errors = stats0->rx_frame_errors;
-+	nstats->rx_length_errors = stats0->rx_length_errors;
-+	nstats->rx_missed_errors = stats0->rx_missed_errors;
-+	nstats->rx_over_errors = stats0->rx_over_errors;
-+	if (info->nc_queue) {
-+		stats1 = &priv->stats[RAVB_NC];
++}
 +
-+		nstats->rx_packets += stats1->rx_packets;
-+		nstats->tx_packets += stats1->tx_packets;
-+		nstats->rx_bytes += stats1->rx_bytes;
-+		nstats->tx_bytes += stats1->tx_bytes;
-+		nstats->multicast += stats1->multicast;
-+		nstats->rx_errors += stats1->rx_errors;
-+		nstats->rx_crc_errors += stats1->rx_crc_errors;
-+		nstats->rx_frame_errors += stats1->rx_frame_errors;
-+		nstats->rx_length_errors += stats1->rx_length_errors;
-+		nstats->rx_missed_errors += stats1->rx_missed_errors;
-+		nstats->rx_over_errors += stats1->rx_over_errors;
-+	}
- 
- 	return nstats;
+ static int ravb_dmac_init_rcar(struct net_device *ndev)
+ {
+ 	struct ravb_private *priv = netdev_priv(ndev);
+@@ -584,6 +616,14 @@ static void ravb_rx_csum(struct sk_buff *skb)
+ 	skb_trim(skb, skb->len - sizeof(__sum16));
  }
-@@ -1784,12 +1813,14 @@ static int ravb_close(struct net_device *ndev)
- 	}
- 	free_irq(ndev->irq, ndev);
  
--	napi_disable(&priv->napi[RAVB_NC]);
-+	if (info->nc_queue)
-+		napi_disable(&priv->napi[RAVB_NC]);
- 	napi_disable(&priv->napi[RAVB_BE]);
- 
- 	/* Free all the skb's in the RX queue and the DMA buffers. */
- 	ravb_ring_free(ndev, RAVB_BE);
--	ravb_ring_free(ndev, RAVB_NC);
-+	if (info->nc_queue)
-+		ravb_ring_free(ndev, RAVB_NC);
- 
- 	return 0;
++/* Packet receive function for Gigabit Ethernet */
++static bool ravb_rx_gbeth(struct net_device *ndev, int *quota, int q)
++{
++	/* Place holder */
++	return true;
++}
++
++/* Packet receive function for Ethernet AVB */
+ static bool ravb_rcar_rx(struct net_device *ndev, int *quota, int q)
+ {
+ 	struct ravb_private *priv = netdev_priv(ndev);
+@@ -1949,6 +1989,13 @@ static void ravb_set_rx_csum(struct net_device *ndev, bool enable)
+ 	spin_unlock_irqrestore(&priv->lock, flags);
  }
-@@ -2007,7 +2038,7 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
- 	.receive = ravb_rcar_rx,
- 	.set_rate = ravb_set_rate,
- 	.set_feature = ravb_set_features_rcar,
--	.dmac_init = ravb_rcar_dmac_init,
-+	.dmac_init = ravb_dmac_init_rcar,
- 	.emac_init = ravb_rcar_emac_init,
- 	.gstrings_stats = ravb_gstrings_stats,
- 	.gstrings_size = sizeof(ravb_gstrings_stats),
-@@ -2019,6 +2050,7 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
- 	.tx_counters = 1,
- 	.multi_irqs = 1,
- 	.ccc_gac = 1,
-+	.nc_queue = 1,
+ 
++static int ravb_set_features_gbeth(struct net_device *ndev,
++				   netdev_features_t features)
++{
++	/* Place holder */
++	return 0;
++}
++
+ static int ravb_set_features_rcar(struct net_device *ndev,
+ 				  netdev_features_t features)
+ {
+@@ -2073,12 +2120,27 @@ static const struct ravb_hw_info ravb_gen2_hw_info = {
+ 	.nc_queue = 1,
  };
  
- static const struct ravb_hw_info ravb_gen2_hw_info = {
-@@ -2028,7 +2060,7 @@ static const struct ravb_hw_info ravb_gen2_hw_info = {
- 	.receive = ravb_rcar_rx,
- 	.set_rate = ravb_set_rate,
- 	.set_feature = ravb_set_features_rcar,
--	.dmac_init = ravb_rcar_dmac_init,
-+	.dmac_init = ravb_dmac_init_rcar,
- 	.emac_init = ravb_rcar_emac_init,
- 	.gstrings_stats = ravb_gstrings_stats,
- 	.gstrings_size = sizeof(ravb_gstrings_stats),
-@@ -2038,6 +2070,7 @@ static const struct ravb_hw_info ravb_gen2_hw_info = {
- 	.max_rx_len = RX_BUF_SZ + RAVB_ALIGN - 1,
- 	.aligned_tx = 1,
- 	.gptp = 1,
-+	.nc_queue = 1,
- };
- 
++static const struct ravb_hw_info gbeth_hw_info = {
++	.rx_ring_free = ravb_rx_ring_free_gbeth,
++	.rx_ring_format = ravb_rx_ring_format_gbeth,
++	.alloc_rx_desc = ravb_alloc_rx_desc_gbeth,
++	.receive = ravb_rx_gbeth,
++	.set_rate = ravb_set_rate_gbeth,
++	.set_feature = ravb_set_features_gbeth,
++	.dmac_init = ravb_dmac_init_gbeth,
++	.emac_init = ravb_emac_init_gbeth,
++	.max_rx_len = GBETH_RX_BUFF_MAX + RAVB_ALIGN - 1,
++	.aligned_tx = 1,
++	.tx_counters = 1,
++};
++
  static const struct of_device_id ravb_match_table[] = {
-@@ -2192,8 +2225,11 @@ static int ravb_probe(struct platform_device *pdev)
- 	priv->pdev = pdev;
- 	priv->num_tx_ring[RAVB_BE] = BE_TX_RING_SIZE;
- 	priv->num_rx_ring[RAVB_BE] = BE_RX_RING_SIZE;
--	priv->num_tx_ring[RAVB_NC] = NC_TX_RING_SIZE;
--	priv->num_rx_ring[RAVB_NC] = NC_RX_RING_SIZE;
-+	if (info->nc_queue) {
-+		priv->num_tx_ring[RAVB_NC] = NC_TX_RING_SIZE;
-+		priv->num_rx_ring[RAVB_NC] = NC_RX_RING_SIZE;
-+	}
-+
- 	priv->addr = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(priv->addr)) {
- 		error = PTR_ERR(priv->addr);
-@@ -2323,7 +2359,8 @@ static int ravb_probe(struct platform_device *pdev)
- 	}
- 
- 	netif_napi_add(ndev, &priv->napi[RAVB_BE], ravb_poll, 64);
--	netif_napi_add(ndev, &priv->napi[RAVB_NC], ravb_poll, 64);
-+	if (info->nc_queue)
-+		netif_napi_add(ndev, &priv->napi[RAVB_NC], ravb_poll, 64);
- 
- 	/* Network device register */
- 	error = register_netdev(ndev);
-@@ -2341,7 +2378,9 @@ static int ravb_probe(struct platform_device *pdev)
- 	return 0;
- 
- out_napi_del:
--	netif_napi_del(&priv->napi[RAVB_NC]);
-+	if (info->nc_queue)
-+		netif_napi_del(&priv->napi[RAVB_NC]);
-+
- 	netif_napi_del(&priv->napi[RAVB_BE]);
- 	ravb_mdio_release(priv);
- out_dma_free:
-@@ -2380,7 +2419,8 @@ static int ravb_remove(struct platform_device *pdev)
- 	ravb_write(ndev, CCC_OPC_RESET, CCC);
- 	pm_runtime_put_sync(&pdev->dev);
- 	unregister_netdev(ndev);
--	netif_napi_del(&priv->napi[RAVB_NC]);
-+	if (info->nc_queue)
-+		netif_napi_del(&priv->napi[RAVB_NC]);
- 	netif_napi_del(&priv->napi[RAVB_BE]);
- 	ravb_mdio_release(priv);
- 	pm_runtime_disable(&pdev->dev);
-@@ -2394,6 +2434,7 @@ static int ravb_remove(struct platform_device *pdev)
- static int ravb_wol_setup(struct net_device *ndev)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
-+	const struct ravb_hw_info *info = priv->info;
- 
- 	/* Disable interrupts by clearing the interrupt masks. */
- 	ravb_write(ndev, 0, RIC0);
-@@ -2402,7 +2443,8 @@ static int ravb_wol_setup(struct net_device *ndev)
- 
- 	/* Only allow ECI interrupts */
- 	synchronize_irq(priv->emac_irq);
--	napi_disable(&priv->napi[RAVB_NC]);
-+	if (info->nc_queue)
-+		napi_disable(&priv->napi[RAVB_NC]);
- 	napi_disable(&priv->napi[RAVB_BE]);
- 	ravb_write(ndev, ECSIPR_MPDIP, ECSIPR);
- 
-@@ -2415,9 +2457,11 @@ static int ravb_wol_setup(struct net_device *ndev)
- static int ravb_wol_restore(struct net_device *ndev)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
-+	const struct ravb_hw_info *info = priv->info;
- 	int ret;
- 
--	napi_enable(&priv->napi[RAVB_NC]);
-+	if (info->nc_queue)
-+		napi_enable(&priv->napi[RAVB_NC]);
- 	napi_enable(&priv->napi[RAVB_BE]);
- 
- 	/* Disable MagicPacket */
+ 	{ .compatible = "renesas,etheravb-r8a7790", .data = &ravb_gen2_hw_info },
+ 	{ .compatible = "renesas,etheravb-r8a7794", .data = &ravb_gen2_hw_info },
+ 	{ .compatible = "renesas,etheravb-rcar-gen2", .data = &ravb_gen2_hw_info },
+ 	{ .compatible = "renesas,etheravb-r8a7795", .data = &ravb_gen3_hw_info },
+ 	{ .compatible = "renesas,etheravb-rcar-gen3", .data = &ravb_gen3_hw_info },
++	{ .compatible = "renesas,rzg2l-gbeth", .data = &gbeth_hw_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, ravb_match_table);
 -- 
 2.17.1
 
