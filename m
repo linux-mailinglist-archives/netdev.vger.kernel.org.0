@@ -2,61 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03F6041F508
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 20:35:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7042941F527
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 20:46:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355846AbhJAShW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 14:37:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42894 "EHLO mail.kernel.org"
+        id S1354603AbhJASrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 14:47:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48410 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355797AbhJAShO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 14:37:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AE89A61A7D;
-        Fri,  1 Oct 2021 18:35:29 +0000 (UTC)
+        id S1354510AbhJASrp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Oct 2021 14:47:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 97CB56124F;
+        Fri,  1 Oct 2021 18:46:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633113330;
-        bh=CFY8rWfSbLSFLzHuVSiOyly9QkUwNhS5Ga01Vncxabc=;
+        s=k20201202; t=1633113961;
+        bh=CKAAC2OXyGm5bmCnnHP4/xfqQwfeho4xebAjwhPsDzE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NrPeTy36ORB8Dhe80oz1WIvELeyb8061TCPN9NAN+hsfz6ZRoFl8I7hO5IcU/511w
-         SZuXuN+seRirF2ebw1b+7COzAlsyXaeWfV1dsqtNyJ9Lz1VdAYw96ATUqYuusNNKnu
-         wAGs6pTZRjKqShV0nJTvdFhHowrysv6dqLWXgBI+xEYluNCVmRpnziNWlHghh49/C+
-         euCoNifLNev0O7ri2rgun/LOIwqorrk9x+JeBoP4UOOBgt6pZrkys2BYqqSUCHZ6xP
-         9LZwCnkbA0WJCZARriOUu6R+4QrS70+ZtNaxi94KKXyidQeU1RosJ4H9vzbvr/QSCD
-         tIw/saul02CGg==
-Date:   Fri, 1 Oct 2021 11:35:28 -0700
+        b=MfACnr/D4a4+7bPwhwdA9Akn59IP9UonN6n8hHQkJEzr6bhswSDRfEdOQkv33HBAr
+         BJzNPohqG0TSWkyLh8K/h1bVCgFvaRBcEttsFDUPfljzPmUNcV0Qw0PKs+Nk3ly806
+         9gWPol3V+rLpTGBCeV7IrA2x4G8eSpMGlgVLOnhqDDOoVieiOun7Kd/dIZ5YBH0qDq
+         xoN5/bUsAsNefelGSelzUluZymsuXXlfT7YWcyTeaemCaHibuY/Tx5GX9TwSCK9v0p
+         H5bWUzg8nnsYKkC/cJZF+VwVELYrOzMoa4uRxKs/qzJRx2ehVy3jgfVVMIMNCvk3rM
+         hA5uCoudmVxFA==
+Date:   Fri, 1 Oct 2021 11:45:59 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com
-Subject: Re: [PATCH v14 bpf-next 00/18] mvneta: introduce XDP multi-buffer
- support
-Message-ID: <20211001113528.79f35460@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YVbO/kit/mjWTrv6@lore-desk>
-References: <cover.1631289870.git.lorenzo@kernel.org>
-        <20210916095539.4696ae27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CACAyw9-8t8RpJgJUTd7u6bOLnJ1xQsgK7z37QrL9T1FUaJ7WNQ@mail.gmail.com>
-        <87v92jinv7.fsf@toke.dk>
-        <CACAyw99S9v658UyiKz3ad4kja7rDNfYv+9VOXZHCUOtam_C8Wg@mail.gmail.com>
-        <CAADnVQ+XXGUxzqMdbPMYf+t_ViDkqvGDdogrmv-wH-dckzujLw@mail.gmail.com>
-        <20210929122229.1d0c4960@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87mtnvi0bc.fsf@toke.dk>
-        <YVbO/kit/mjWTrv6@lore-desk>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+Subject: Re: [PATCH 0/8] Fillup stubs for Gigabit Ethernet driver support
+Message-ID: <20211001114559.376cbf19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211001164305.8999-1-biju.das.jz@bp.renesas.com>
+References: <20211001164305.8999-1-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,15 +48,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 1 Oct 2021 11:03:58 +0200 Lorenzo Bianconi wrote:
-> Can you please check if the code above is aligned to current requirements or if
-> it is missing something?
-> If this code it is fine, I guess we have two option here:
-> - integrate the commits above in xdp multi-buff series (posting v15) and work on
->   the verfier code in parallel (if xdp_mb_pointer helper is not required from day0)
-> - integrate verfier changes in xdp multi-buff series, drop bpf_xdp_load_bytes
->   helper (probably we will still need bpf_xdp_store_bytes) and introduce
->   bpf_xdp_pointer as new ebpf helper.
+On Fri,  1 Oct 2021 17:42:57 +0100 Biju Das wrote:
+> This patch series depend upon [1]
+> [1] https://lore.kernel.org/linux-renesas-soc/20211001150636.7500-1-biju.das.jz@bp.renesas.com/T/#t
 
-It wasn't clear to me that we wanted bpf_xdp_load_bytes() to exist.
-But FWIW no preference here.
+Post it as an RFC, then, please.
