@@ -2,97 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC8C41EE09
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 15:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE71A41EE25
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 15:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353714AbhJANCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 09:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33254 "EHLO
+        id S1354226AbhJANGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 09:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353502AbhJANCb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 09:02:31 -0400
-Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15D3C061775
-        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 06:00:47 -0700 (PDT)
-Received: by mail-vk1-xa30.google.com with SMTP id f73so4365081vkf.6
-        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 06:00:47 -0700 (PDT)
+        with ESMTP id S1354167AbhJANGD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 09:06:03 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B88C0613E6
+        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 06:03:59 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id p13so6294978edw.0
+        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 06:03:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
+        d=anyfinetworks-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=GBxtMLR6alkmVxwlJaKCf5/g7Of55gJyQ8PKha6gRkg=;
-        b=qC1PfvJM/fEvMSbTKmkzxJYZSo/sftu6eZ77hQaXHF1fut8I0VnUvTsNVKKSww0bNW
-         njNTWJ5doUigLaeEjAyN70YP2/5uNkcig6hbwI6ZkknbxhQnDUcXWzx89o71i0MgVtLu
-         bTKWXudLatT6thPT6K1Ut05546YD4yr1kfymO042pLpADLdKMLECqusgkV6gLe5gJ/KZ
-         0XNZoHdBO3pwqkJSckd4EUCKk9fznF7bQEiW/4Q/wlgXXK/NiK+Oecswo0ws2FQb4l7E
-         cwZQY7qKCQZqW46EgdmNpNxmrwDECDdDbwxMhxuNVqF/LR2FoHzovAwML2U488tHjzQ2
-         7yiw==
+        bh=Jw9IUMaLywJloQik8I5Go3bAQFQF2YDMapxftvHW9ss=;
+        b=kL2uqYRQ2DVtojeTq45f2PBUCs/JXBOYH0ZwK8Hfc2IXN7XA4Hqq5tcw+M/hSqfiXN
+         Y3/VRbCBvw+Pjo+kfDnIKtI3KmDbh+ucB5dej+lwpi97aoX8mvdHKvoQgbisctbT5CEt
+         BVmfsMrbV55wU0vIvK3l1yt4YhuVzXjk6uIPOqvroOzAibAIsUYHNQy9cBn7wSVwPg7f
+         gFzFhwTQfz+rJHM0ikSrFhloNT333EeEWi284vZfKSGIQK1EVAoacjypl9YPwpbw4Mi8
+         9ZFnos4j8jcKN5c3nQZDZA42diEPI0bQN+inwWP+tpNI4Xlnt/PRPLUuIpS3KxqjM/sY
+         7tWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=GBxtMLR6alkmVxwlJaKCf5/g7Of55gJyQ8PKha6gRkg=;
-        b=d1t6jzCnEcDDffp9zDz2jPeiQuGAdTcUwrw79DDTdor6XXD1kH4Hb7gSXHK8GzYyZo
-         ezkWKVo85fDB6wZmlzuTyv+LboLUzOwsJYvyrv5G9dGdmQy7DiKuk6S2x48gqieqfuOG
-         1wNSpl7U3avIz6kLh9/B0+/jJar+ocJJ82LvRXNccmqCJoRKU02DJgbLsgqZDTXjttDp
-         V3/SRy4vHk22IXiBK6B8zIkM5h4lsT3sGj23GmkWl8fuXxXXX/61KzNA3ImJUyA5d8p2
-         T4A+nIMubDjEU/J13+XxTk+TfbyskJMYZRrYuBaugr02O0TU1S/xvZ4u9TaYsTpXTtlL
-         eppg==
-X-Gm-Message-State: AOAM530IJ2gAzsPQ15UnU1XXgCDlYdRh/2uIlbbHvKnTxWdfbNHO8L1W
-        /hT8rCQT69mj6QnWSWqQClSy5mOa06pwBVYyqAo=
-X-Google-Smtp-Source: ABdhPJx675PAhhwj9mLPYbHYZ0UUD3A1PyeTIIfpKL3Ar6sbm+XOyJKHc5Ps6iP2e6BbL95oyBlHvc/od6cmHD5LPEI=
-X-Received: by 2002:a05:6122:307:: with SMTP id c7mr1017837vko.18.1633093246663;
- Fri, 01 Oct 2021 06:00:46 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Jw9IUMaLywJloQik8I5Go3bAQFQF2YDMapxftvHW9ss=;
+        b=EFlEQbSQMX4s8zCGiZ0Rc0fX8Fp0zc9yoVVk0CvHPY6j4MR7JllJzIWnoD6nBSFFr5
+         dnQbaZw4ioeZgD2zvYjeZK/XWYBwrW11S8l5+fpMi0LnI8aX0njV3HVC48eMW1/TDmBZ
+         hPJii+9+59U7UdJQf2gnjzq6L3enNb3BQCRh9ClVZ6v/qIKt9qs2kyqKkiyiBVyXVN9h
+         djXYNZ9S75ym+phxgL+EVqd2Gr/XwdSQ9lsLVPqc4SI8oLZkHUd0GLJi80G2qUqM1jst
+         CnHI4Q0PXWYXcR2IuhjoC/zemSqg7oW3ZH4RDF3IdcU5DzQcXBcIYvuyHr1h9KN1e+9M
+         RIcw==
+X-Gm-Message-State: AOAM531Io7+VCTmVg2xohMrOYzUt9NUar9M2gVVxAYriXJUQejR9+KB8
+        Mn1YrqFFnczwhZXvMXrxNSQsfA==
+X-Google-Smtp-Source: ABdhPJwuOTrl9CV5KOgJa7gOtxUuQMDtwaAPUEqH9sxYW38UFTjXcrHMs0X9p1BIGX0ZvtcWv66ZGA==
+X-Received: by 2002:a17:906:8aa7:: with SMTP id mu39mr6081129ejc.298.1633093437608;
+        Fri, 01 Oct 2021 06:03:57 -0700 (PDT)
+Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
+        by smtp.gmail.com with ESMTPSA id p22sm2920279ejl.90.2021.10.01.06.03.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Oct 2021 06:03:57 -0700 (PDT)
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, iii@linux.ibm.com,
+        paul@cilium.io, yangtiezhu@loongson.cn, netdev@vger.kernel.org,
+        bpf@vger.kernel.org,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf-next 00/10] bpf/tests: Extend eBPF JIT test suite
+Date:   Fri,  1 Oct 2021 15:03:38 +0200
+Message-Id: <20211001130348.3670534-1-johan.almbladh@anyfinetworks.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Received: by 2002:a59:1d45:0:b0:232:2c6d:30f7 with HTTP; Fri, 1 Oct 2021
- 06:00:46 -0700 (PDT)
-Reply-To: mariamorwa100@gmail.com
-From:   MRS MARIAM ORWA <mariamorwa06@gmail.com>
-Date:   Fri, 1 Oct 2021 06:00:46 -0700
-Message-ID: <CAHRnEsrCAoFitwipvVEFtB3dq13+oXaSJJtUQQS3kb4gzzLKHg@mail.gmail.com>
-Subject: VERY IMPORTANT /TREAT AND REPLY URGENT
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello My Dear Friend,
+This patch set adds a number of new tests to the test_bpf.ko test suite.
+The new tests focus on the behaviour of operations with different
+combinations of register operands, and in particular, when two or more
+register operands are in fact the same register. It also verifies things
+like a src register not being zero-extended in-place in ALU32 operations,
+and that operations implemented with function calls do not clobber any
+other eBPF registers.
 
-With due respect to your person and much sincerity of purpose, It=E2=80=99s=
- my
-pleasure to write you today, I am Mrs  Mariam Orwa, I work in a bank.
-and I get your contact from internet search I hope that you will not
-expose or betray this trust and confident that am about to repose in
-you for the benefit of our both families.
+Johan Almbladh (10):
+  bpf/tests: Add tests of BPF_LDX and BPF_STX with small sizes
+  bpf/tests: Add zero-extension checks in BPF_ATOMIC tests
+  bpf/tests: Add exhaustive tests of BPF_ATOMIC magnitudes
+  bpf/tests: Add tests to check source register zero-extension
+  bpf/tests: Add more tests for ALU and ATOMIC register clobbering
+  bpf/tests: Minor restructuring of ALU tests
+  bpf/tests: Add exhaustive tests of ALU register combinations
+  bpf/tests: Add exhaustive tests of BPF_ATOMIC register combinations
+  bpf/tests: Add test of ALU shifts with operand register aliasing
+  bpf/tests: Add test of LDX_MEM with operand aliasing
 
-Am in need of your help as a foreigner to transfer fourteen Million Usd
-($14000000.00, Million U.S.dollar) into your bank account,The fund is for
-late Sir Ratnavale Victor,dual citizen of Switzerland and Britain whom
-died in a Plane crash many years back living nobody as the next of kin
-to the fund. Risk is completely 100% free for this transaction.
+ lib/test_bpf.c | 2803 ++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 2571 insertions(+), 232 deletions(-)
 
-Please I will like you to keep this proposal as a top secret or delete
-it from your mail box, if you are not interested. Also note that you
-will have 40% of the above mentioned sum, if you agree to transact
-this business with me.
+-- 
+2.30.2
 
-while 60% will be for me. I will give you full details of this transaction
-immediately you notify me your interest by sending your data information to
-me.Also know that immediately this fund is transferred to your account,
-I will resign from my work and come over to your country  for the sharing
-of the money and for you to help me and direct me on what is profitable tha=
-t
-i can invest my own share of the money on it in your country.
-
-Your Full Name,........
-
-Your Country.............
-
-Your Age.................
-
-Phone Number............
-
-Waiting for your urgent reply
-Yours Mariam Orwa
