@@ -2,66 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF5741E55C
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 02:05:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22CAA41E56A
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 02:10:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350409AbhJAAHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 20:07:19 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42126 "EHLO vps0.lunn.ch"
+        id S1350135AbhJAAMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 20:12:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59190 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351319AbhJAAHG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 20:07:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=AYZ78MbKE7o+ckLapKuGnIkQLgJnUysGF/DpNN6Cl/M=; b=wCgNyofgxHVLiJOIpzWGKYIK4V
-        x3vc55G92ccdld/b1h1gR+bQ6E6SOYp5wql/RqmMMxmj2tbTnAie2vRFPxtvqmg1aQZ3Y0SKo856d
-        v3kefxLxBtw25YrQn9+Tv0TRPfBYqFiCx8ZLpq6SkpYMz84gsPq8h/TSTNul+XnRzJOw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mW636-0091Sh-7f; Fri, 01 Oct 2021 02:05:12 +0200
-Date:   Fri, 1 Oct 2021 02:05:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Frieder Schrempf <frieder@fris.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Steen Hegelund <steen.hegelund@microchip.com>
-Subject: Re: [PATCH 1/3] net: phy: mscc: Add possibilty to disable combined
- LED mode
-Message-ID: <YVZQuIr2poOfWvcO@lunn.ch>
-References: <20210930125747.2511954-1-frieder@fris.de>
+        id S1347868AbhJAAMg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 20:12:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 87EE9615A4;
+        Fri,  1 Oct 2021 00:10:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633047053;
+        bh=vtOoBhIbAnRqc6pw1GncBQvvEU05vrvvAM/j4K7pALg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kGQCKMHuzZv6ex5zKxnT29z6AHEvJHTMDLmysUW7Vxkg/rn4Rswr4RbMN5DG/Ac1G
+         SwyI595hauQ2aZ3peg6SUcyw9HA9Ca9Lin66SeSC1kBDUjNzEAgd0Y5jl3NxZFNlbz
+         yTOPbYRydmiC//nLqOIzf0SsCmYvfiiOPraNOgkNV2UtBM0lbyUe7DqRvyQfE9pgKs
+         DG8Dt5Iuh/pOF6Blr84buYABTmClF2BGqItk/gmgQfpaLa+ME1R9ch2V4ezbmkjH6e
+         bRfj0YqQi9roMv0DQDTEUc/gao++CeJK11VxMaV2EyQu8SOs+jyJJxgl2ZnKP21G2x
+         5LCFN+1tq0fJQ==
+Date:   Thu, 30 Sep 2021 17:10:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH net-next] net/mlx4_en: avoid one cache line miss to ring
+ doorbell
+Message-ID: <20210930171052.30660edb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210930194031.3181989-1-eric.dumazet@gmail.com>
+References: <20210930194031.3181989-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210930125747.2511954-1-frieder@fris.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 02:57:43PM +0200, Frieder Schrempf wrote:
-> From: Frieder Schrempf <frieder.schrempf@kontron.de>
+On Thu, 30 Sep 2021 12:40:31 -0700 Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> By default the LED modes offer to combine two indicators like speed/link
-> and activity in one LED. In order to use a LED only for the first of the
-> two modes, the combined feature needs to be disabled.
+> This patch caches doorbell address directly in struct mlx4_en_tx_ring.
 > 
-> In order to do this we introduce a boolean devicetree property
-> 'vsc8531,led-[N]-combine-disable' and wire it up to the matching
-> bits in the LED behavior register.
+> This removes the need to bring in cpu caches whole struct mlx4_uar
+> in fast path.
+> 
+> Note that mlx4_uar is not guaranteed to be on a local node,
+> because mlx4_bf_alloc() uses a single free list (priv->bf_list)
+> regardless of its node parameter.
+> 
+> This kind of change does matter in presence of light/moderate traffic.
+> In high stress, this read-only line would be kept hot in caches.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Tariq Toukan <tariqt@nvidia.com>
 
-Sorry, but no DT property. Each PHY has its own magic combination of
-DT properties, nothing shared, nothing common. This does not scale.
+>  	/* Following part should be mostly read */
+> +	void			*doorbell_address;
 
-Please look at the work being done to control PHY LEDs using the Linux
-LED infrastructure. That should give us one uniform interface for all
-PHY LEDs.
+We'll need to make sparse happy before applying:
 
-    Andrew
+drivers/net/ethernet/mellanox/mlx4/en_tx.c:133:32: warning: incorrect type in assignment (different address spaces)
+drivers/net/ethernet/mellanox/mlx4/en_tx.c:133:32:    expected void *doorbell_address
+drivers/net/ethernet/mellanox/mlx4/en_tx.c:133:32:    got void [noderef] __iomem *
+drivers/net/ethernet/mellanox/mlx4/en_tx.c:757:56: warning: incorrect type in argument 2 (different address spaces)
+drivers/net/ethernet/mellanox/mlx4/en_tx.c:757:56:    expected void [noderef] __iomem *
+drivers/net/ethernet/mellanox/mlx4/en_tx.c:757:56:    got void *doorbell_address
