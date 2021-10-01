@@ -2,93 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC6241E59E
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 02:50:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5544241E59F
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 02:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351017AbhJAAw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 20:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37624 "EHLO
+        id S1351093AbhJAAyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 20:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349760AbhJAAwZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 20:52:25 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A81C06176A
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 17:50:42 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id b82so17063425ybg.1
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 17:50:42 -0700 (PDT)
+        with ESMTP id S1349760AbhJAAyh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 20:54:37 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CBFC06176A
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 17:52:54 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id me3-20020a17090b17c300b0019f44d2e401so3971444pjb.5
+        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 17:52:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sSIYRPAj7smXy74/Y3XxYl8pLf22IW2BYxYMs+e3VNw=;
-        b=kBJg8M+npzMu6yiOqcpjIcYP+6PrUKMtS3EdalgEuWITg1tpAnYVBHuM7reqxnU9kp
-         OO0Pg/A/c/H9JEpI9wu3HYB4koKwMoeJkt2P7TYXunBbt2N4dc05hueh4y1THuZsMdIe
-         02VUC9BN2ik6UX6u805O9oS4ZtfpJOpDTyDtJPM5exl7bxXjejpndVDY1CwOMBojYXao
-         qMYaS5yvl4tAv7nXHBjvjdahQNWAlmku8v17eANzCDIEp36FMtpQui29NljYg7CpIBsb
-         CTm/q0HNkBdepgxVOGePxon/Kwz9r4lgEfPFdDq6NBpKBe3KwEyX/819/po1wIo8SqtJ
-         bPvg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CXjBna4HYl4iHw62ZyeTaK7T4OPPc9zVEwlUvVwTzN8=;
+        b=JpdkIOLNQxCMLgSt8tjmrDbvWvWAgV8QHlmK5j0BACWuUl3J923Dpt8VC4x2n0nf4N
+         zjDVDymAr+kSA9joyv/ZopjNUVFZ6wjk2XPbfk2E2VETWyqDiWulmAVljTFBoGXW1Hb4
+         Zn/VCdVObug/DkzkkQde3sdxBdNWDF/lC/ipKUKzE0G+R3CWEw66yHVkCB7/rb1q1ra6
+         GOxJCW43zr6S/TFbimbFLPaGn7C7jSFlh7hC21SZp8Ul/0G+0o6YfLJwz15cfLrS16WZ
+         +LHJ6kHqXye4+ULUTc9I0vvkfntoF5/XSuiIIAqntCJx91HuSvdmqrqEYhzwaa/xaJhR
+         X20w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sSIYRPAj7smXy74/Y3XxYl8pLf22IW2BYxYMs+e3VNw=;
-        b=P0KxY1DD/DbiT/CNddSwdnVfDFdykYYtmZFKOTfeA2h6foypISRJM8ZMcHDJ++nxup
-         EdXO+ZgvybAzmhU0cbrxtwbTqDOV21USybKEUyu0OOGXkSeA51ppjbNCwWtPtkIsTXhP
-         XhhV4bAidPKZzgKZO/u/hPbat6rH7RTwXbNNKTeAT9rcOh5KF/FY7epqmEP55ZX5DTIx
-         hP/GbWIeIAvHwwYE7xeP8W6vbAgTlpwiYUOU3Eu86PZaT2F87tdF6VSm0t73UGQtLQ2u
-         KKYRnRvmgXuK1c0MWESqFDZz7JgrZgVqJAmHvHpaTmzXiRleFhTT6WgRb50GkadfEp4o
-         LC9Q==
-X-Gm-Message-State: AOAM531QMR4cQBpYsx39J/nVLrEiu9h/P6Kf4XrMm2Ke5t3vzAgxl0OD
-        eIc0evW/23Ieh920s4aY37FASZWPJfsecfJm+SGIuQ==
-X-Google-Smtp-Source: ABdhPJzrpPqcLZPjHFPe3uUGRRpTAWix+QMRG4qKGieAzwb+PtPr3AJWdtegHCsFQrZKzjk+QaHbtbVrzoWcqAVUCA8=
-X-Received: by 2002:a25:d258:: with SMTP id j85mr2893616ybg.398.1633049440986;
- Thu, 30 Sep 2021 17:50:40 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CXjBna4HYl4iHw62ZyeTaK7T4OPPc9zVEwlUvVwTzN8=;
+        b=Spj+isSRy0POaOrjgG6Zq/vAH9FMvIe2H7bfzg1sA9g3CgWcyEQXHxcIKemAQaQIRs
+         7isF9Xpivu1sBH8n/uLut4BFG/2MB6SPjgxqKrB4dDPugCzt3+aWq2e3tF5byN72nYHg
+         mnffBkC14cdrnBO66t2JZCtCy9naykY3LIjmfX9OC0xhqVoZDNq/5WMRHQTiBVLgZvuo
+         JyZBjGrZ7q6/5UCCfhDWwWkXcLGXhtw3p6UFOCTtAkdTibLWXZriuAGgIsfm919ROvYj
+         4CrCBT9o6dMcMlk1lB1/wxT+TdQ+GhZsMbOIiAUngIG55NZERVgO7EsIP1s0W3/dY/QH
+         kJ5Q==
+X-Gm-Message-State: AOAM533ZF1pd8TrFUt3j9ugWojhIGyfA9YsW7GhIGhjdXmUZXzPDOy6a
+        1r8zBnYaIXkmGBlx/9uaUqI=
+X-Google-Smtp-Source: ABdhPJxasZFak1nYcypIdGoqAtoF0zi9RkKZ5kYf5KxMEQ0qhcfQYq1ugAUm/C7Eo48skbeIMGx4oQ==
+X-Received: by 2002:a17:90b:3b8b:: with SMTP id pc11mr9912682pjb.180.1633049573504;
+        Thu, 30 Sep 2021 17:52:53 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:b59b:abc0:171:fe0e])
+        by smtp.gmail.com with ESMTPSA id m1sm4397425pfc.183.2021.09.30.17.52.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Sep 2021 17:52:53 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH V2 net-next] net/mlx4_en: avoid one cache line miss to ring doorbell
+Date:   Thu, 30 Sep 2021 17:52:49 -0700
+Message-Id: <20211001005249.3945672-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.33.0.800.g4c38ced690-goog
 MIME-Version: 1.0
-References: <20210930194031.3181989-1-eric.dumazet@gmail.com> <20210930171052.30660edb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210930171052.30660edb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 30 Sep 2021 17:50:29 -0700
-Message-ID: <CANn89iL32eW5fR+eTpz5iybFubZDAbxZrZLK635U7070fxHDyA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/mlx4_en: avoid one cache line miss to ring doorbell
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Tariq Toukan <tariqt@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 5:10 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 30 Sep 2021 12:40:31 -0700 Eric Dumazet wrote:
-> > From: Eric Dumazet <edumazet@google.com>
-> >
-> > This patch caches doorbell address directly in struct mlx4_en_tx_ring.
-> >
-> > This removes the need to bring in cpu caches whole struct mlx4_uar
-> > in fast path.
-> >
-> > Note that mlx4_uar is not guaranteed to be on a local node,
-> > because mlx4_bf_alloc() uses a single free list (priv->bf_list)
-> > regardless of its node parameter.
-> >
-> > This kind of change does matter in presence of light/moderate traffic.
-> > In high stress, this read-only line would be kept hot in caches.
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > Cc: Tariq Toukan <tariqt@nvidia.com>
->
-> >       /* Following part should be mostly read */
-> > +     void                    *doorbell_address;
->
-> We'll need to make sparse happy before applying:
->
-> drivers/net/ethernet/mellanox/mlx4/en_tx.c:133:32: warning: incorrect type in assignment (different address spaces)
-> drivers/net/ethernet/mellanox/mlx4/en_tx.c:133:32:    expected void *doorbell_address
-> drivers/net/ethernet/mellanox/mlx4/en_tx.c:133:32:    got void [noderef] __iomem *
-> drivers/net/ethernet/mellanox/mlx4/en_tx.c:757:56: warning: incorrect type in argument 2 (different address spaces)
-> drivers/net/ethernet/mellanox/mlx4/en_tx.c:757:56:    expected void [noderef] __iomem *
-> drivers/net/ethernet/mellanox/mlx4/en_tx.c:757:56:    got void *doorbell_address
+From: Eric Dumazet <edumazet@google.com>
 
-Yes indeed, I'll send a V2 right away, thanks !
+This patch caches doorbell address directly in struct mlx4_en_tx_ring.
+
+This removes the need to bring in cpu caches whole struct mlx4_uar
+in fast path.
+
+Note that mlx4_uar is not guaranteed to be on a local node,
+because mlx4_bf_alloc() uses a single free list (priv->bf_list)
+regardless of its node parameter.
+
+This kind of change does matter in presence of light/moderate traffic.
+In high stress, this read-only line would be kept hot in caches.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Tariq Toukan <tariqt@nvidia.com>
+---
+V2: added __iomem attribute to remove sparse errors (Jakub)
+
+ drivers/net/ethernet/mellanox/mlx4/en_tx.c   | 4 ++--
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
+index c56b9dba4c71898b61e87fd32e5fa523c313e445..817f4154b86d599cd593876ec83529051d95fe2f 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
+@@ -130,6 +130,7 @@ int mlx4_en_create_tx_ring(struct mlx4_en_priv *priv,
+ 		ring->bf_enabled = !!(priv->pflags &
+ 				      MLX4_EN_PRIV_FLAGS_BLUEFLAME);
+ 	}
++	ring->doorbell_address = ring->bf.uar->map + MLX4_SEND_DOORBELL;
+ 
+ 	ring->hwtstamp_tx_type = priv->hwtstamp_config.tx_type;
+ 	ring->queue_index = queue_index;
+@@ -753,8 +754,7 @@ void mlx4_en_xmit_doorbell(struct mlx4_en_tx_ring *ring)
+ #else
+ 	iowrite32be(
+ #endif
+-		  (__force u32)ring->doorbell_qpn,
+-		  ring->bf.uar->map + MLX4_SEND_DOORBELL);
++		  (__force u32)ring->doorbell_qpn, ring->doorbell_address);
+ }
+ 
+ static void mlx4_en_tx_write_desc(struct mlx4_en_tx_ring *ring,
+diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+index ad0a8b488832c8cdca2790e47fc778fe15686f7f..e132ff4c82f2d33045f6c9aeecaaa409a41e0b0d 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
++++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
+@@ -283,6 +283,7 @@ struct mlx4_en_tx_ring {
+ 	struct mlx4_bf		bf;
+ 
+ 	/* Following part should be mostly read */
++	void __iomem		*doorbell_address;
+ 	__be32			doorbell_qpn;
+ 	__be32			mr_key;
+ 	u32			size; /* number of TXBBs */
+-- 
+2.33.0.800.g4c38ced690-goog
+
