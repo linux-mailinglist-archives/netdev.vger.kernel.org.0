@@ -2,88 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C22A341F250
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 18:43:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E01F641F252
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 18:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355096AbhJAQo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 12:44:57 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:34837 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232094AbhJAQo4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 12:44:56 -0400
+        id S1355136AbhJAQpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 12:45:01 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:53132 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232094AbhJAQo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 12:44:59 -0400
 X-IronPort-AV: E=Sophos;i="5.85,339,1624287600"; 
-   d="scan'208";a="95676880"
+   d="scan'208";a="95827525"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 02 Oct 2021 01:43:10 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 02 Oct 2021 01:43:14 +0900
 Received: from localhost.localdomain (unknown [10.226.92.36])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id CA1A54001DD6;
-        Sat,  2 Oct 2021 01:43:07 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 447EE4001DD6;
+        Sat,  2 Oct 2021 01:43:11 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
         Sergei Shtylyov <sergei.shtylyov@gmail.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
-        Adam Ford <aford173@gmail.com>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
         Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
         netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-Subject: [PATCH 0/8] Fillup stubs for Gigabit Ethernet driver support
-Date:   Fri,  1 Oct 2021 17:42:57 +0100
-Message-Id: <20211001164305.8999-1-biju.das.jz@bp.renesas.com>
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 1/8] ravb: Add rx_max_buf_size to struct ravb_hw_info
+Date:   Fri,  1 Oct 2021 17:42:58 +0100
+Message-Id: <20211001164305.8999-2-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211001164305.8999-1-biju.das.jz@bp.renesas.com>
+References: <20211001164305.8999-1-biju.das.jz@bp.renesas.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC are
-similar to the R-Car Ethernet AVB IP.
+R-Car AVB-DMAC has maximum 2K size on RX buffer, whereas on RZ/G2L
+it is 8K. We need to allow for changing the MTU within the limit
+of the maximum size of a descriptor.
 
-The Gigabit Ethernet IP consists of Ethernet controller (E-MAC), Internal
-TCP/IP Offload Engine (TOE)  and Dedicated Direct memory access controller
-(DMAC).
+Add a rx_max_buf_size variable to struct ravb_hw_info to handle
+this difference.
 
-With a few changes in the driver we can support both IPs.
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+RFC->v1:
+ * used buffer_size instead of feature bit.
+---
+ drivers/net/ethernet/renesas/ravb.h      | 1 +
+ drivers/net/ethernet/renesas/ravb_main.c | 5 ++++-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-This patch series is for adding Gigabit ethernet driver support to RZ/G2L SoC.
-
-The number of patches after incorporatng RFC review comments is 18.
-So split the patches into 2 patchsets (10 + 8).
-
-This series is the second patchset, aims to fillup all the stubs for the
-Gigabit Ethernet driver.
-
-This patch series depend upon [1]
-[1] https://lore.kernel.org/linux-renesas-soc/20211001150636.7500-1-biju.das.jz@bp.renesas.com/T/#t
-
-RFC->V1:
- * used rx_max_buf_size instead of rx_2k_buffers feature bit.
- * renamed "rgeth" to "gbeth".
- * renamed ravb_rx_ring_free to ravb_rx_ring_free_rcar
- * renamed ravb_rx_ring_format to ravb_rx_ring_format_rcar
- * renamed ravb_alloc_rx_desc to ravb_alloc_rx_desc_rcar
- * renamed ravb_rcar_rx to ravb_rx_rcar
- * Added Sergey's Rb tag for patch #6.
- * Moved CSR0 initialization to patch #8.
-
-Biju Das (8):
-  ravb: Add rx_max_buf_size to struct ravb_hw_info
-  ravb: Fillup ravb_rx_ring_free_gbeth() stub
-  ravb: Fillup ravb_rx_ring_format_gbeth() stub
-  ravb: Fillup ravb_alloc_rx_desc_gbeth() stub
-  ravb: Fillup ravb_rx_gbeth() stub
-  ravb: Add carrier_counters to struct ravb_hw_info
-  ravb: Add support to retrieve stats for GbEthernet
-  ravb: Fillup ravb_set_features_gbeth() stub
-
- drivers/net/ethernet/renesas/ravb.h      |  47 ++++
- drivers/net/ethernet/renesas/ravb_main.c | 327 +++++++++++++++++++++--
- 2 files changed, 352 insertions(+), 22 deletions(-)
-
+diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+index 5dc1324786e0..b147c4a0dc0b 100644
+--- a/drivers/net/ethernet/renesas/ravb.h
++++ b/drivers/net/ethernet/renesas/ravb.h
+@@ -1010,6 +1010,7 @@ struct ravb_hw_info {
+ 	int stats_len;
+ 	size_t max_rx_len;
+ 	u32 tsrq;
++	u32 rx_max_buf_size;
+ 	unsigned aligned_tx: 1;
+ 
+ 	/* hardware features */
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index 9a4888543384..0d1e3f7d8c33 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -2188,6 +2188,7 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
+ 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
+ 	.max_rx_len = RX_BUF_SZ + RAVB_ALIGN - 1,
+ 	.tsrq = TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3,
++	.rx_max_buf_size = SZ_2K,
+ 	.internal_delay = 1,
+ 	.tx_counters = 1,
+ 	.multi_irqs = 1,
+@@ -2212,6 +2213,7 @@ static const struct ravb_hw_info ravb_gen2_hw_info = {
+ 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
+ 	.max_rx_len = RX_BUF_SZ + RAVB_ALIGN - 1,
+ 	.tsrq = TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3,
++	.rx_max_buf_size = SZ_2K,
+ 	.aligned_tx = 1,
+ 	.gptp = 1,
+ 	.nc_queue = 1,
+@@ -2229,6 +2231,7 @@ static const struct ravb_hw_info gbeth_hw_info = {
+ 	.emac_init = ravb_emac_init_gbeth,
+ 	.max_rx_len = GBETH_RX_BUFF_MAX + RAVB_ALIGN - 1,
+ 	.tsrq = TCCR_TSRQ0,
++	.rx_max_buf_size = SZ_8K,
+ 	.aligned_tx = 1,
+ 	.tx_counters = 1,
+ 	.half_duplex = 1,
+@@ -2452,7 +2455,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 	}
+ 	clk_prepare_enable(priv->refclk);
+ 
+-	ndev->max_mtu = 2048 - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
++	ndev->max_mtu = info->rx_max_buf_size - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
+ 	ndev->min_mtu = ETH_MIN_MTU;
+ 
+ 	/* FIXME: R-Car Gen2 has 4byte alignment restriction for tx buffer
 -- 
 2.17.1
 
