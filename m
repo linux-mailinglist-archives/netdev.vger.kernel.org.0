@@ -2,129 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA5D741F84A
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 01:40:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C8A641F864
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 01:53:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231969AbhJAXmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 19:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
+        id S232204AbhJAXzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 19:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230368AbhJAXmf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 19:42:35 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209A9C061775;
-        Fri,  1 Oct 2021 16:40:51 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id s4so7393196ybs.8;
-        Fri, 01 Oct 2021 16:40:51 -0700 (PDT)
+        with ESMTP id S232182AbhJAXzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 19:55:24 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70FF1C0613E8
+        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 16:53:38 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id j198so331872pfd.2
+        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 16:53:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O1D8oZVXToA4pvTbmtzcpTG4TdrFZTbxyfGVdrjw1NU=;
-        b=XbW9uSztHiQUZlFNG10H++5sMOElFvBpHj7ChPBOCf+ZOT9CCIn+ZgwzePuCd+et+q
-         MG8AVqCbkVK4fjW+CPBMlfuAUAWbKp+f5OmETssk6G2Tf9VZ1oQMfqwCh9iuiErx2oHm
-         NernIqFSDVgpJlw1BYQZ0K+DVX2BP1aNNiZHVzB0C/Wa73XxzP1AE2nHwl0TizUcDqjK
-         fJlQ4bBCzRyFdstVOtF367Xsi0VoposIifzRFKLIDptn5/gHWytuk2ULA3Imt2Z1Asd+
-         5IWUjv1N6Hyk8BgczoG/lUmRbaqylrQTS70lWAuwQgbgjpUpL15BeArFbN5lfgAHRw/u
-         Targ==
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=nEaMZYfBbUMahEQ9pNEj5u/WB16Qt6Df/NmIiMEdqOA=;
+        b=cvL7GLezvnmoKopRyj7ZPggZw2gaZu2ZwHeGC3ABC4XeLwX0gUO5Ba66Jrsj5sxYJl
+         iKSbvmaPnZ3nF+zx8sSUHDE7au6pnB3WCJi0Ahgi0TwmTU5E2R19DYRWU5sefASgKAv3
+         zYD8jZL4g9y+sDgA+ynYUpgalwJo3czyGSShAgonZMlSCEOsk5BPrBFIC5QkyoAeebIX
+         Q1BK0ENf0Los/gFuy3ouCot7zz5oW6p/8vp9rQz1YAU4Zl69d2JDUewCBUdKWvtoIXJ8
+         nOp+7rIYofS7CuzsojqmxvWGUM1mbFNTopT5M7WIfN2VaWRq6qPqDHT+RLwuICeK5Tsz
+         NP3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O1D8oZVXToA4pvTbmtzcpTG4TdrFZTbxyfGVdrjw1NU=;
-        b=EKclcFJV6+kTgplWJIBMXQsuDw3Sv3UEteCChwCw0eWswCxl86RIeOoDJzMU+tePJg
-         6LQNqTwhe/71FW9cFp4vRFq8XrsppOYcTt8mEocOY+uLcW67AfcnkPE0U0IEpcN4Y5Uo
-         Hq59WvKcq0VmpCWy981r6FHrXvxdTTfjBJNXwK1NaQrw0zRM1LibUEZanX9+rGoqQW7A
-         bsfR8TQEtFAPxEdBAqAiSIyGzB6c2IeHJbJTVkxqgHMzhQPXboj93xhdQ4FZayHL8Xr6
-         vKD1C/No0b5fOKwbJdb5cithfM5jBYFrwRgifHhM+uXmX5Pe0LNqR5Q3jT80DpLEDWap
-         lKiw==
-X-Gm-Message-State: AOAM53353YIItTLpmZpZowFyu8VtDq4gg/eVe3m3dPdN80vrn4OkUbM6
-        kxiLQVQB47z/pBKiZO7PqphbPaV5kCoc0KSswxU=
-X-Google-Smtp-Source: ABdhPJzhyy/8maGjG3cBwiJhYueopV9Mytg/faKKrQpaPt3z/oeoK/2u0e30WMaVn15mDHYUnnHLH89U8Kj1NhyzUL4=
-X-Received: by 2002:a25:afcd:: with SMTP id d13mr692987ybj.504.1633131650405;
- Fri, 01 Oct 2021 16:40:50 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=nEaMZYfBbUMahEQ9pNEj5u/WB16Qt6Df/NmIiMEdqOA=;
+        b=Z/K1fajLx+nLuRYSI7i5Kabf9K61R3zRQubQQgD1ok8pfByJJqFWAcSOrpb2MQOiVJ
+         iKgkpMEhDp/BHPNYXfAURO79rPvzZY8BroHEbFMA6+DQfnjOFHVz+jUD7+NUlxrU2eXw
+         TiLgCUej8g4b5aSRWnlzGnQlCPHCAfjLNr9mKV1mMU12yoeIOqJ0ihTyV6CpDrgVRuUX
+         E+XsinDUiL7c0h7wBpk2/TLsJZsTE5bnDb6JPY3paINjIdvctk2JXRWNt5fkQKkoZBsg
+         C6uGARbv5/dBhcilwzH3XyjpKo+yJ60Wua1cU5i18KOvTaM9acBqKaHyKh2by8tT4haw
+         lfSg==
+X-Gm-Message-State: AOAM531vmgHtXFZ6T+QCBcX+41+72XOjRjr/Bn3oVahLVxFTUzXMmI0H
+        b958E8vLq/BLboa1P3Qydya1Yy5Gf1ED7lVq8t4=
+X-Google-Smtp-Source: ABdhPJwp9DuWjylTxI9B9yA/7sYW3M3lr26uR7KWexlOPkHfoeQtpcQU2KbqMiiYtSxKYMt09YCwlMWaUThqi/At66I=
+X-Received: by 2002:a65:6aa8:: with SMTP id x8mr674038pgu.136.1633132417956;
+ Fri, 01 Oct 2021 16:53:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211001215858.1132715-1-joannekoong@fb.com> <20211001215858.1132715-4-joannekoong@fb.com>
-In-Reply-To: <20211001215858.1132715-4-joannekoong@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 1 Oct 2021 16:40:39 -0700
-Message-ID: <CAEf4BzYdx9heDyPcXqVR4yhgoWj+Qg-v62UgLFY6WVd0qChH=g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 3/3] bpf/selftests: Add xdp
- bpf_load_tcp_hdr_options tests
-To:     Joanne Koong <joannekoong@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Martin Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
+Reply-To: alahmedhassan5602@gmail.com
+Sender: ubagroupbbfa@gmail.com
+Received: by 2002:a17:90a:1f4b:0:0:0:0 with HTTP; Fri, 1 Oct 2021 16:53:37
+ -0700 (PDT)
+From:   Ahmed Hassan <alahmedhassann6@gmail.com>
+Date:   Sat, 2 Oct 2021 00:53:37 +0100
+X-Google-Sender-Auth: OyLBbNU_6XrLu-m8MQul1QYICYI
+Message-ID: <CAFGQBKMUGtvtMaLymFx3AffS1yLwkxVruG89--Da+JjpwSrMRA@mail.gmail.com>
+Subject: Please respond urgently
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 1, 2021 at 3:04 PM Joanne Koong <joannekoong@fb.com> wrote:
->
-> This patch adds tests for bpf_load_tcp_hdr_options used by xdp
-> programs.
->
-> test_xdp_tcp_hdr_options.c:
-> - Tests ipv4 and ipv6 packets with TCPOPT_EXP and non-TCPOPT_EXP
-> tcp options set. Verify that options can be parsed and loaded
-> successfully.
-> - Tests error paths: TCPOPT_EXP with invalid magic, option with
-> invalid kind_len, non-existent option, invalid flags, option size
-> smaller than kind_len, invalid packet
->
-> Signed-off-by: Joanne Koong <joannekoong@fb.com>
-> ---
->  .../bpf/prog_tests/xdp_tcp_hdr_options.c      | 158 ++++++++++++++
->  .../bpf/progs/test_xdp_tcp_hdr_options.c      | 198 ++++++++++++++++++
->  2 files changed, 356 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_tcp_hdr_options.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_tcp_hdr_options.c
->
+I know that this mail will come to you as a surprise as we have never
+met before, but need not to worry as I am contacting you independently
+of my investigation and no one is informed of this communication. I
+need your urgent assistance in transferring the sum of $11.3million
+immediately to your private account.The money has been here in our
+Bank lying dormant for years now without anybody coming for the claim
+of it.
 
-[...]
+I want to release the money to you as the relative to our deceased
+customer (the account owner) who died a long with his supposed NEXT OF
+KIN since 16th October 2005. The Banking laws here does not allow such
+money to stay more than 16 years, because the money will be recalled
+to the Bank treasury account as unclaimed fund.
 
-> +static void check_opt_out(struct test_xdp_tcp_hdr_options *skel)
-> +{
-> +       struct bpf_test_option *opt_out;
-> +       __u32 duration = 0;
-> +
-> +       opt_out = &skel->bss->exprm_opt_out;
-> +       CHECK(opt_out->flags != opt_flags, "exprm flags",
-> +             "flags = 0x%x", opt_out->flags);
-> +       CHECK(opt_out->max_delack_ms != exprm_max_delack_ms, "exprm max_delack_ms",
-> +             "max_delack_ms = 0x%x", opt_out->max_delack_ms);
-> +       CHECK(opt_out->rand != exprm_rand, "exprm rand",
-> +             "rand = 0x%x", opt_out->rand);
-> +
-> +       opt_out = &skel->bss->regular_opt_out;
-> +       CHECK(opt_out->flags != opt_flags, "regular flags",
-> +             "flags = 0x%x", opt_out->flags);
-> +       CHECK(opt_out->max_delack_ms != regular_max_delack_ms, "regular max_delack_ms",
-> +             "max_delack_ms = 0x%x", opt_out->max_delack_ms);
-> +       CHECK(opt_out->rand != regular_rand, "regular rand",
-> +             "rand = 0x%x", opt_out->rand);
+By indicating your interest I will send you the full details on how
+the business will be executed.
 
-Please use ASSERT_xxx() macros for new tests. CHECK()s are confusing
-and actually require more typing and work to output actual arguments
-that failed. In this case, you'd just write
+Please respond urgently and delete if you are not interested.
 
-ASSERT_EQ(opt_out->rand, regular_rand, "regular_rand");
-
-And if they are not equal, ASSERT_EQ() will print actual values of
-both opt_out->rand and regular_rand.
-
-> +}
-> +
-> +void test_xdp_tcp_hdr_options(void)
-> +{
-> +       int err, prog_fd, prog_err_path_fd, prog_invalid_pkt_fd;
-> +       struct xdp_ipv6_packet ipv6_pkt, invalid_pkt;
-> +       struct test_xdp_tcp_hdr_options *skel;
-> +       struct xdp_ipv4_packet ipv4_pkt;
-> +       struct xdp_test_opt test_opt;
-> +       __u32 duration, retval, size;
-> +       char buf[128];
-> +
-
-[...]
+Best Regards,
+Mr. Ahmed Hassan
