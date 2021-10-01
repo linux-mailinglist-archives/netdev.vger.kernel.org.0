@@ -2,93 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD20E41F08E
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 17:07:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A261941F083
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 17:07:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355078AbhJAPI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 11:08:58 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:44647 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1354938AbhJAPIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 11:08:45 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id AAC3B5C0117;
-        Fri,  1 Oct 2021 11:07:00 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Fri, 01 Oct 2021 11:07:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=wMgHWGEFDtQMgyF9iJhX0MHEQhexcToVkFgOADVIAoA=; b=iUndApsK
-        23XBJ7WC3MmY5VG7VEnGyrinjmb2n4bxQv/3WiJVFmnVPD35l80QIg4g/Y2h13Yc
-        1ppJbFy544Om/rdqcewFZmBnxrI6lpb9bd6Tviy85UEnLlLs9ft7nwiv43EKF7DJ
-        oc0Skpt3ix2CXcCQeeJQbnxT18M0THZfCOjHF0TmgSqwvLMEDXgC5H4kJVTC+4ya
-        bdQO0uakkro3FVy/z7Deld4TCUHu+RzZ1LJGRjaoVektwJRCFZpUF8YMrVQumDab
-        QZg31Et3Nx4opjZ8PyrYVSokp8evf3mud+lFSbulqEaOGRMMbJfCJFSFxqpY/eYu
-        nFIf70e2oVqFJg==
-X-ME-Sender: <xms:FCRXYU9Q53Q8t2w6bUtVXQi2tQlDfxWBf0WYyvDttcTBiDPJjQs2rQ>
-    <xme:FCRXYctHbmsN3Be2i1LXEB-v2uVKXyK73wCeM2cvZnaRdnWeaYWcS0gQyO8K_QETF
-    96z-Q2yfR_54Mk>
-X-ME-Received: <xmr:FCRXYaBL-QKiy6abHRYzt-FP-3eZjImjtq1MNryj46ls4rPNUJUKLyOV2Qw8Ts0o68_UJGOz_oVkbCXEUC37mtjOT_o4cUCqQQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudekiedgkedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepvdenucfr
-    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:FCRXYUdfevrAPicZY4H6_ci7en7san3voQIcoE8jzhnkas4VzUxZgA>
-    <xmx:FCRXYZMfbDuvauxYB3leVuhKBBnSho6KaUE1CqFTsUz4ye9zeXuRIg>
-    <xmx:FCRXYekf0oc-X-zCRVVb1ZSqdqMqs6_ZFv3O6SohsA2UZ6ivxEFkHg>
-    <xmx:FCRXYSZslmpgIjIpIWh25miihDL07Go05N0sTC7UC4aceVGAaozGVw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 1 Oct 2021 11:06:59 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     mkubecek@suse.cz, popadrian1996@gmail.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool-next v2 7/7] sff-8636: Remove extra blank lines
-Date:   Fri,  1 Oct 2021 18:06:27 +0300
-Message-Id: <20211001150627.1353209-8-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211001150627.1353209-1-idosch@idosch.org>
-References: <20211001150627.1353209-1-idosch@idosch.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1354926AbhJAPIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 11:08:43 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:23063 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1354626AbhJAPIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 11:08:36 -0400
+X-IronPort-AV: E=Sophos;i="5.85,339,1624287600"; 
+   d="scan'208";a="95671590"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 02 Oct 2021 00:06:49 +0900
+Received: from localhost.localdomain (unknown [10.226.92.36])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 966DC4351834;
+        Sat,  2 Oct 2021 00:06:46 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 02/10] ravb: Rename "no_ptp_cfg_active" and "ptp_cfg_active" variables
+Date:   Fri,  1 Oct 2021 16:06:28 +0100
+Message-Id: <20211001150636.7500-3-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
+References: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+Rename the variable "no_ptp_cfg_active" with "gptp" and
+"ptp_cfg_active" with "ccc_gac" to match the HW features.
 
-Not needed, so remove them.
+There is no functional change.
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Suggested-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- qsfp.c | 2 --
- 1 file changed, 2 deletions(-)
+RFc->v1:
+ * Renamed the variable "no_ptp_cfg_active" with "gptp" and
+   "ptp_cfg_active" with "ccc_gac
+---
+ drivers/net/ethernet/renesas/ravb.h      |  4 ++--
+ drivers/net/ethernet/renesas/ravb_main.c | 26 ++++++++++++------------
+ 2 files changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/qsfp.c b/qsfp.c
-index d1464cb50fdc..3f37f1036e96 100644
---- a/qsfp.c
-+++ b/qsfp.c
-@@ -738,7 +738,6 @@ static void sff8636_dom_parse(const __u8 *id, const __u8 *page_three, struct sff
- 		sd->scd[i].rx_power = OFFSET_TO_U16(rx_power_offset);
- 		sd->scd[i].tx_power = OFFSET_TO_U16(tx_power_offset);
- 	}
--
- }
+diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+index 7363abae6e59..a33fbcb4aac3 100644
+--- a/drivers/net/ethernet/renesas/ravb.h
++++ b/drivers/net/ethernet/renesas/ravb.h
+@@ -1000,8 +1000,8 @@ struct ravb_hw_info {
+ 	unsigned internal_delay:1;	/* AVB-DMAC has internal delays */
+ 	unsigned tx_counters:1;		/* E-MAC has TX counters */
+ 	unsigned multi_irqs:1;		/* AVB-DMAC and E-MAC has multiple irqs */
+-	unsigned no_ptp_cfg_active:1;	/* AVB-DMAC does not support gPTP active in config mode */
+-	unsigned ptp_cfg_active:1;	/* AVB-DMAC has gPTP support active in config mode */
++	unsigned gptp:1;		/* AVB-DMAC has gPTP support */
++	unsigned ccc_gac:1;		/* AVB-DMAC has gPTP support active in config mode */
+ };
  
- static void sff8636_show_dom(const __u8 *id, const __u8 *page_three, __u32 eeprom_len)
-@@ -819,7 +818,6 @@ static void sff8636_show_dom(const __u8 *id, const __u8 *page_three, __u32 eepro
- 	}
- }
+ struct ravb_private {
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index 8f2358caef34..dc7654abfe55 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1274,7 +1274,7 @@ static int ravb_set_ringparam(struct net_device *ndev,
+ 	if (netif_running(ndev)) {
+ 		netif_device_detach(ndev);
+ 		/* Stop PTP Clock driver */
+-		if (info->no_ptp_cfg_active)
++		if (info->gptp)
+ 			ravb_ptp_stop(ndev);
+ 		/* Wait for DMA stopping */
+ 		error = ravb_stop_dma(ndev);
+@@ -1306,7 +1306,7 @@ static int ravb_set_ringparam(struct net_device *ndev,
+ 		ravb_emac_init(ndev);
  
--
- static void sff8636_show_page_zero(const __u8 *id)
- {
- 	sff8636_show_ext_identifier(id);
+ 		/* Initialise PTP Clock driver */
+-		if (info->no_ptp_cfg_active)
++		if (info->gptp)
+ 			ravb_ptp_init(ndev, priv->pdev);
+ 
+ 		netif_device_attach(ndev);
+@@ -1446,7 +1446,7 @@ static int ravb_open(struct net_device *ndev)
+ 	ravb_emac_init(ndev);
+ 
+ 	/* Initialise PTP Clock driver */
+-	if (info->no_ptp_cfg_active)
++	if (info->gptp)
+ 		ravb_ptp_init(ndev, priv->pdev);
+ 
+ 	netif_tx_start_all_queues(ndev);
+@@ -1460,7 +1460,7 @@ static int ravb_open(struct net_device *ndev)
+ 
+ out_ptp_stop:
+ 	/* Stop PTP Clock driver */
+-	if (info->no_ptp_cfg_active)
++	if (info->gptp)
+ 		ravb_ptp_stop(ndev);
+ out_free_irq_nc_tx:
+ 	if (!info->multi_irqs)
+@@ -1508,7 +1508,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+ 	netif_tx_stop_all_queues(ndev);
+ 
+ 	/* Stop PTP Clock driver */
+-	if (info->no_ptp_cfg_active)
++	if (info->gptp)
+ 		ravb_ptp_stop(ndev);
+ 
+ 	/* Wait for DMA stopping */
+@@ -1543,7 +1543,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+ 
+ out:
+ 	/* Initialise PTP Clock driver */
+-	if (info->no_ptp_cfg_active)
++	if (info->gptp)
+ 		ravb_ptp_init(ndev, priv->pdev);
+ 
+ 	netif_tx_start_all_queues(ndev);
+@@ -1752,7 +1752,7 @@ static int ravb_close(struct net_device *ndev)
+ 	ravb_write(ndev, 0, TIC);
+ 
+ 	/* Stop PTP Clock driver */
+-	if (info->no_ptp_cfg_active)
++	if (info->gptp)
+ 		ravb_ptp_stop(ndev);
+ 
+ 	/* Set the config mode to stop the AVB-DMAC's processes */
+@@ -2018,7 +2018,7 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
+ 	.internal_delay = 1,
+ 	.tx_counters = 1,
+ 	.multi_irqs = 1,
+-	.ptp_cfg_active = 1,
++	.ccc_gac = 1,
+ };
+ 
+ static const struct ravb_hw_info ravb_gen2_hw_info = {
+@@ -2037,7 +2037,7 @@ static const struct ravb_hw_info ravb_gen2_hw_info = {
+ 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
+ 	.max_rx_len = RX_BUF_SZ + RAVB_ALIGN - 1,
+ 	.aligned_tx = 1,
+-	.no_ptp_cfg_active = 1,
++	.gptp = 1,
+ };
+ 
+ static const struct of_device_id ravb_match_table[] = {
+@@ -2080,7 +2080,7 @@ static void ravb_set_config_mode(struct net_device *ndev)
+ 	struct ravb_private *priv = netdev_priv(ndev);
+ 	const struct ravb_hw_info *info = priv->info;
+ 
+-	if (info->no_ptp_cfg_active) {
++	if (info->gptp) {
+ 		ravb_modify(ndev, CCC, CCC_OPC, CCC_OPC_CONFIG);
+ 		/* Set CSEL value */
+ 		ravb_modify(ndev, CCC, CCC_CSEL, CCC_CSEL_HPB);
+@@ -2301,7 +2301,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 	INIT_LIST_HEAD(&priv->ts_skb_list);
+ 
+ 	/* Initialise PTP Clock driver */
+-	if (info->ptp_cfg_active)
++	if (info->ccc_gac)
+ 		ravb_ptp_init(ndev, pdev);
+ 
+ 	/* Debug message level */
+@@ -2349,7 +2349,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 			  priv->desc_bat_dma);
+ 
+ 	/* Stop PTP Clock driver */
+-	if (info->ptp_cfg_active)
++	if (info->ccc_gac)
+ 		ravb_ptp_stop(ndev);
+ out_disable_refclk:
+ 	clk_disable_unprepare(priv->refclk);
+@@ -2369,7 +2369,7 @@ static int ravb_remove(struct platform_device *pdev)
+ 	const struct ravb_hw_info *info = priv->info;
+ 
+ 	/* Stop PTP Clock driver */
+-	if (info->ptp_cfg_active)
++	if (info->ccc_gac)
+ 		ravb_ptp_stop(ndev);
+ 
+ 	clk_disable_unprepare(priv->refclk);
 -- 
-2.31.1
+2.17.1
 
