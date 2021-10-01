@@ -2,115 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14F5041EDA5
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 14:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6DD241EDAE
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 14:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354416AbhJAMlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 08:41:07 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:32990 "EHLO m43-7.mailgun.net"
+        id S1354403AbhJAMmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 08:42:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57358 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354403AbhJAMlG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 08:41:06 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1633091962; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=+LA/iPiXIb7Rh6nwCE/NZX+iTrBRh1ILVRGZiiUV9tQ=; b=k9UpxGEBMqXsGLqrempmL3NsRfHAVMYr6oqL0c37fCCJkld9T+4I8/p/Xjl5mvhJegQlE+di
- O/v5dKtxLdykLNcjlY17tN8JwTNYx5H81XRiVWZbrvHRXrlzHyRjBdhY6OCIiK93AsUnZ9db
- Nv0jMSLAZHgkKj6fc9JkjHH5Gdw=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 61570171a3e8d3c64013b6a4 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 01 Oct 2021 12:39:13
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id CB7C4C43616; Fri,  1 Oct 2021 12:39:12 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B2F4FC4338F;
-        Fri,  1 Oct 2021 12:39:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org B2F4FC4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org,
-        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v7 09/24] wfx: add hwio.c/hwio.h
-References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com>
-        <20210920161136.2398632-10-Jerome.Pouiller@silabs.com>
-        <87k0ixkr6z.fsf@codeaurora.org>
-Date:   Fri, 01 Oct 2021 15:39:03 +0300
-In-Reply-To: <87k0ixkr6z.fsf@codeaurora.org> (Kalle Valo's message of "Fri, 01
-        Oct 2021 12:52:20 +0300")
-Message-ID: <875yug6hso.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S231352AbhJAMml (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Oct 2021 08:42:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 535F3619EC;
+        Fri,  1 Oct 2021 12:40:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633092057;
+        bh=6uhWW7FTN4K3UNWUrnTlssSq9i2l2Xj7wJq28RUxb9c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=b3+cfY6IK7cpTu1vlVcS5a286fKvSXOusXvVIPafZW3mxo+PSm51wHRgmKYiR4K+H
+         ni5V0MnolPy5ncOYkWL7ie7zgg4IXzb47dhrXFpFmEz6fHF5D+jDEwCt7Gox0LYZgd
+         eAr8kCxAspLH69xiKhHf6ar9oT5WYj1pCW76+PbhrvZUU3n2qocpeQ9czYutnfWA30
+         ZpMDxgbN1jTQmtj4g5LH4ryCxt7NTJtHKeRwjXvYvNntEfl8pXUXyGsAyFmA46ZbA1
+         DtoPD0zMIrowJfdSuMX8aIZlI5M9HIj3vBiSxrm8XDzoHMoI5Ks7vIQ5lzao78rIfb
+         TLMK9VV1FaGVQ==
+Date:   Fri, 1 Oct 2021 14:40:53 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Pavel Machek <pavel@ucw.cz>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
+        netdev@vger.kernel.org,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>
+Subject: Re: devicename part of LEDs under ethernet MAC / PHY
+Message-ID: <20211001144053.3952474a@thinkpad>
+In-Reply-To: <YVb/HSLqcOM6drr1@lunn.ch>
+References: <20211001133057.5287f150@thinkpad>
+        <YVb/HSLqcOM6drr1@lunn.ch>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo <kvalo@codeaurora.org> writes:
+On Fri, 1 Oct 2021 14:29:17 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
->> --- /dev/null
->> +++ b/drivers/net/wireless/silabs/wfx/hwio.h
->> @@ -0,0 +1,79 @@
->> +/* SPDX-License-Identifier: GPL-2.0-only */
->> +/*
->> + * Low-level I/O functions.
->> + *
->> + * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
->> + * Copyright (c) 2010, ST-Ericsson
->> + */
->> +#ifndef WFX_HWIO_H
->> +#define WFX_HWIO_H
->> +
->> +#include <linux/types.h>
->> +
->> +struct wfx_dev;
->> +
->> +/* Caution: in the functions below, 'buf' will used with a DMA. So, it must be
->> + * kmalloc'd (do not use stack allocated buffers). In doubt, enable
->> + * CONFIG_DEBUG_SG to detect badly located buffer.
->> + */
->> +int wfx_data_read(struct wfx_dev *wdev, void *buf, size_t buf_len);
->> +int wfx_data_write(struct wfx_dev *wdev, const void *buf, size_t buf_len);
->> +
->> +int sram_buf_read(struct wfx_dev *wdev, u32 addr, void *buf, size_t len);
->> +int sram_buf_write(struct wfx_dev *wdev, u32 addr, const void *buf, size_t len);
->> +
->> +int ahb_buf_read(struct wfx_dev *wdev, u32 addr, void *buf, size_t len);
->> +int ahb_buf_write(struct wfx_dev *wdev, u32 addr, const void *buf, size_t len);
->> +
->> +int sram_reg_read(struct wfx_dev *wdev, u32 addr, u32 *val);
->> +int sram_reg_write(struct wfx_dev *wdev, u32 addr, u32 val);
->> +
->> +int ahb_reg_read(struct wfx_dev *wdev, u32 addr, u32 *val);
->> +int ahb_reg_write(struct wfx_dev *wdev, u32 addr, u32 val);
->
-> "wfx_" prefix missing from these functions.
+> > - Andrew proposed that the numbering should start at non-zero number,
+> >   for example at 42, to prevent people from thinking that the numbers
+> >   are related to numbers in network interface names (ethN).
+> >   A system with interfaces
+> >     eth0
+> >     eth1
+> >   and LEDs
+> >     ethphy0:green:link
+> >     ethphy1:green:link
+> >   may make user think that the ethphy0 LED does correspond to eth0
+> >   interface, which is not necessarily true.
+> >   Instead if LEDs are
+> >     ethphy42:green:link
+> >     ethphy43:green:link 
+> >   the probability of confusing the user into relating them to network
+> >   interfaces by these numbers is lower.
+> > 
+> > Anyway, the issue with these naming is that it is not stable. Upgrading
+> > the kernel, enabling drivers and so on can change these names between
+> > reboots.  
+> 
+> Sure, eth0 can become eth1, eth1 can become eth0. That is why we have
+> udev rules, systemd interface names etc. Interface names have never
+> been guaranteed to be stable. Also, you can have multiple interfaces
+> named eth0, so long as they are in different network name spaces.
+> 
+> > Also for LEDs on USB ethernet adapters, removing the USB and
+> > plugging it again would change the name, although the device path does
+> > not change if the adapter is re-plugged into the same port.
+> > 
+> > To finally settle this then, I would like to ask your opinion on
+> > whether this naming of LEDs should be stable.  
+> 
+> No. They should be unstable like everything else.
 
-I actually saw quite a few functions without wfx_ prefix. My preference
-is that all function names would have that prefix.
+LED classdev names are something different.
+For etherent interfaces, the interface name is different from name of
+the underlying struct device. But LED classdev names are also
+corresponding struct device names, and thus part of sysfs ABI, which,
+as far as I understand, should be stable.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+> > Note that this names are visible to userspace as symlinks
+> > /sys/class/leds directory. If they are unstable, it is not that big an
+> > issue, because mostly these LEDs should be accessed via
+> > /sys/class/net/<interface>/device/leds for eth MAC LEDs and via
+> > /sys/class/net/<interface>/phydev/leds for eth PHY LEDs.  
+> 
+> Yes, this also handles network name space nicely.
+> 
+> > If we wanted to make these names stable, we would need to do something
+> > like
+> >   ethphy-BUS-ID
+> > for example
+> >   ethphy-usb3,2
+> >   ethmac-pci0,19,0
+> >   ethphy-mdio0,1
+> > or
+> >   ethmac-DEVICE_PATH (with '/'s and ':'s replaced with ',' or something)
+> > for example
+> >   ethphy-platform,soc,soc,internal-regs,f10f0000.usb3,usb3,3-0,1:0  
+> 
+> I guess Systemd can be extended to do this, maybe, rename the LEDs
+> when it renames the interface? This is not really a kernel problem.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Pavel is against LED classdev renaming.
+
+Marek
