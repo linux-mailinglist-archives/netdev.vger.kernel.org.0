@@ -2,125 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D105341F7E3
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 00:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AFAA41F7E4
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 00:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230443AbhJAW6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 18:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58318 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356171AbhJAW5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 18:57:37 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1775C061775;
-        Fri,  1 Oct 2021 15:55:52 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id v10so23632796ybq.7;
-        Fri, 01 Oct 2021 15:55:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BbdfudAXrW8/mnrrb7EAmGS3rUW5NiGxX746IanDHeE=;
-        b=gzf4VmGukAxfE7acbAVoCuS0I1htg0zZHxY6lEgWN/FYd7RR88uL8DvG/3cZmmiifU
-         7oB+JpGyRFIgGm2Ac9gwsOKVYo8QtXB8IZYlA/QLgbZqOy8ikizsFqaJlztS+u4QHg0w
-         Oi1Bz/y9twttBr+72uFDrg0Qze7yFpvBme1eVPj9P21FS8dQLiynrgbTMqVsNJxisYdz
-         RNQtNW1o2ht3agTJ+21ORj4+RV0R7QQ55ksQGjqzDF4OTa76IYrbacWRGFWbpJQsPm2Q
-         0hAKdCndWXacbWU2S4x58k0CaWIkK9+xuGQK37r9e8GTN+htGPwGd4IgoiAGkGY/slAk
-         m8dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BbdfudAXrW8/mnrrb7EAmGS3rUW5NiGxX746IanDHeE=;
-        b=ljEat5Zm3+HUjiTOBsHAh4+Tm/NIzRojCN92Jj+X0DhipF6MaCN6H1+RtpyRvUz1cs
-         ZlzsaIIzg1KWUyNZKsTwbY3w8oPTtnmBDmdS1ojdiXDYyuRs4mIUrlQRYOt07iQddZb3
-         6RQNGwf1RXMreqmHCrAxD18mLZzkiyvX4uBdDNSspt/FHseGfjO4AVEOrZ5FCfqLjJ02
-         r5Ye4B8jH3EbuqAvPa65UXCrxz9i5ElmIVYIU7891DjuHVBA4yXpRsHpzFSGNkxCuydW
-         tBhSn76otQZVPl5LI5JTivAJgJ2h1EbP1k2mLcaMowWjI8H2KNQ8q4yNaYsfMY3RCtXA
-         mREA==
-X-Gm-Message-State: AOAM531YaURZDEW9lvj4D3jBVSRl/V/lfO/UM6O66H90QxIR5utXu5sS
-        zGDMpjRQM3Yu1/tV2yuhG6215HeVBzOAJSw/5Tg=
-X-Google-Smtp-Source: ABdhPJxqaMCbudAmQr0mxFv/MOTSblrUKEPDDP5egxpcRGns/hNd7co555uuzVSTyIASZbHE+7Q8KjWLwoDnXh04Rxs=
-X-Received: by 2002:a25:e7d7:: with SMTP id e206mr464966ybh.267.1633128951924;
- Fri, 01 Oct 2021 15:55:51 -0700 (PDT)
+        id S232634AbhJAW6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 18:58:22 -0400
+Received: from mga11.intel.com ([192.55.52.93]:61509 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1356172AbhJAW57 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Oct 2021 18:57:59 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10124"; a="222401574"
+X-IronPort-AV: E=Sophos;i="5.85,340,1624345200"; 
+   d="scan'208";a="222401574"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2021 15:56:14 -0700
+X-IronPort-AV: E=Sophos;i="5.85,340,1624345200"; 
+   d="scan'208";a="480775114"
+Received: from unknown (HELO vcostago-mobl3) ([10.134.46.83])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2021 15:56:12 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Arvid.Brodin@xdin.com" <Arvid.Brodin@xdin.com>,
+        "m-karicheri2@ti.com" <m-karicheri2@ti.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "ivan.khoronzhuk@linaro.org" <ivan.khoronzhuk@linaro.org>,
+        "andre.guedes@linux.intel.com" <andre.guedes@linux.intel.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>
+Subject: Re: [EXT] Re: [RFC, net-next] net: qos: introduce a frer action to
+ implement 802.1CB
+In-Reply-To: <20211001175524.3sa2m3occzham5og@skbuf>
+References: <20210928114451.24956-1-xiaoliang.yang_1@nxp.com>
+ <87czos9vnj.fsf@linux.intel.com>
+ <DB8PR04MB5785F3128FEB1FB1B2F9AC0DF0A99@DB8PR04MB5785.eurprd04.prod.outlook.com>
+ <87lf3cfyfj.fsf@intel.com> <20211001175524.3sa2m3occzham5og@skbuf>
+Date:   Fri, 01 Oct 2021 15:56:12 -0700
+Message-ID: <87fstkfj77.fsf@intel.com>
 MIME-Version: 1.0
-References: <20211001110856.14730-1-quentin@isovalent.com> <20211001110856.14730-3-quentin@isovalent.com>
-In-Reply-To: <20211001110856.14730-3-quentin@isovalent.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 1 Oct 2021 15:55:41 -0700
-Message-ID: <CAEf4BzaEN91ju5E6YUdpT07noMafMfge+8Owvq8UPvBBQxJxJg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/9] tools: bpftool: install libbpf headers
- instead of including the dir
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 1, 2021 at 4:09 AM Quentin Monnet <quentin@isovalent.com> wrote:
+Hi,
+
+Vladimir Oltean <vladimir.oltean@nxp.com> writes:
+
+> On Fri, Oct 01, 2021 at 10:27:12AM -0700, Vinicius Costa Gomes wrote:
+>> Xiaoliang Yang <xiaoliang.yang_1@nxp.com> writes:
+>> 
+>> > Hi Vinicius,
+>> >
+>> > On Sep 29, 2021 at 6:35:59 +0000, Vinicius Costa Gomes wrote:
+>> >> > This patch introduce a frer action to implement frame replication and
+>> >> > elimination for reliability, which is defined in IEEE P802.1CB.
+>> >> >
+>> >> 
+>> >> An action seems, to me, a bit too limiting/fine grained for a frame replication
+>> >> and elimination feature.
+>> >> 
+>> >> At least I want to hear the reasons that the current hsr/prp support cannot be
+>> >> extended to support one more tag format/protocol.
+>> >> 
+>> >> And the current name for the spec is IEEE 802.1CB-2017.
+>> >> 
+>> > 802.1CB can be set on bridge ports, and need to use bridge forward
+>> > Function as a relay system. It only works on identified streams,
+>> > unrecognized flows still need to pass through the bridged network
+>> > normally.
+>> 
+>> This ("only on identified streams") is the strongest argument so far to
+>> have FRER also as an action, in adition to the current hsr netdevice
+>> approach.
+>> 
+>> >
+>> > But current hsr/prp seems only support two ports, and cannot use the
+>> > ports in bridge. It's hard to implement FRER functions on current HSR
+>> > driver.
+>> 
+>> That the hsr netdevice only support two ports, I think is more a bug
+>> than a design issue. Which will need to get fixed at some point. 
 >
-> Bpftool relies on libbpf, therefore it relies on a number of headers
-> from the library and must be linked against the library. The Makefile
-> for bpftool exposes these objects by adding tools/lib as an include
-> directory ("-I$(srctree)/tools/lib"). This is a working solution, but
-> this is not the cleanest one. The risk is to involuntarily include
-> objects that are not intended to be exposed by the libbpf.
+> What do you mean 'a bug'? HSR and PRP, as protocols, use _two_ ports,
+> see IEC 62439-3, that's where the "D" (doubly attached node) in DANH and
+> DANP comes from. There's no TANH/TANH for "triply attached node".
+> It doesn't scale.
+
+First of all, thank you for taking the time to write such detailed
+answer, really helpful.
+
+Another spec that I should take some time and read if I want to keep
+commenting on this stuff.
+
 >
-> The headers needed to compile bpftool should in fact be "installed" from
-> libbpf, with its "install_headers" Makefile target. In addition, there
-> is one header which is internal to the library and not supposed to be
-> used by external applications, but that bpftool uses anyway.
+>> Speaking of functions, one thing that might be interesting is trying to
+>> see if it makes sense to make part of the current hsr functionality a
+>> "library" so it can be used by tc-frer as well. (less duplication of
+>> bugs).
 >
-> Adjust the Makefile in order to install the header files properly before
-> compiling bpftool. Also copy the additional internal header file
-> (nlattr.h), but call it out explicitly. Build (and install headers) in a
-> subdirectory under bpftool/ instead of tools/lib/bpf/. When descending
-> from a parent Makefile, this is configurable by setting the OUTPUT,
-> LIBBPF_OUTPUT and LIBBPF_DESTDIR variables.
+> You mean tc-frer should inherit from the get-go the plethora of bugs
+> from the unmaintained hsr driver? :)
 >
-> Also adjust the Makefile for BPF selftests, so as to reuse the (host)
-> libbpf compiled earlier and to avoid compiling a separate version of the
-> library just for bpftool.
->
-> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> ---
->  tools/bpf/bpftool/Makefile           | 27 ++++++++++++++++-----------
->  tools/testing/selftests/bpf/Makefile |  2 ++
->  2 files changed, 18 insertions(+), 11 deletions(-)
+> That would be good for hsr, which is in a pretty poor state, but the
+> design of the 802.1CB spec isn't really in its favor sadly.
 >
 
-Looks good, but with Makefile no one can ever be sure :) Let's see how
-this works in practice...
+Fair enough.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+So what I am going to suggest is for you folks to write in the RFC how
+to use tc-frer (the "toolbox" idea) in "IEC 62439-9 mode", not necessary
+to implement it, just to write it down. The idea is that we have a path
+forward to better maintained alternatives, as you said, if we stop
+recommending people to use/experiment with net/hsr.
 
-> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-> index 1fcf5b01a193..78e42963535a 100644
-> --- a/tools/bpf/bpftool/Makefile
-> +++ b/tools/bpf/bpftool/Makefile
-> @@ -17,16 +17,16 @@ endif
->  BPF_DIR = $(srctree)/tools/lib/bpf/
-
-[...]
-
-> +# We need to copy nlattr.h which is not otherwise exported by libbpf, but still
-> +# required by bpftool.
->  $(LIBBPF): FORCE | $(LIBBPF_OUTPUT)
-> -       $(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_OUTPUT) $(LIBBPF_OUTPUT)libbpf.a
-> +       $(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_OUTPUT) \
-> +               DESTDIR=$(LIBBPF_DESTDIR) prefix= \
-> +               $(LIBBPF_OUTPUT)libbpf.a install_headers
-
-s/$(LIBBPF_OUTPUT)libbpf.a/$(LIBBPF)/ ?
-
-> +       $(call QUIET_INSTALL, bpf/nlattr.h)
-> +       $(Q)install -m 644 -t $(LIBBPF_INCLUDE)/bpf/ $(BPF_DIR)nlattr.h
+>> >
+>> > You can see chapter "D.2 Example 2: Various stack positions" in IEEE 802.1CB-2017,
+>> > Protocol stack for relay system is like follows:
+>> >
+>> >              Stream Transfer Function
+>> >                 |             |
+>> >   				|    	Sequence generation
+>> >                 |       	Sequence encode/decode
+>> >   Stream identification		Active Stream identification
+>> > 				|			  |
+>> >   			    |		Internal LAN---- Relay system forwarding
+>> > 				|						|		|
+>> > 				MAC						MAC		MAC
+>> >
+>> > Use port actions to easily implement FRER tag add/delete, split, and
+>> > recover functions.
+>> >
+>> > Current HSR/PRP driver can be used for port HSR/PRP set, and tc-frer
+>> > Action to be used for stream RTAG/HSR/PRP set and recover.
+>> 
+>> I am still reading the spec and trying to imagine how things would fit
+>> together:
+>>   - for which use cases tc-frer would be useful;
+>>   - for which use cases the hsr netdevice would be useful;
+>>   - would it make sense to have them in the same system?
 >
->  $(LIBBPF_BOOTSTRAP): FORCE | $(LIBBPF_BOOTSTRAP_OUTPUT)
->         $(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_BOOTSTRAP_OUTPUT) \
+> You could use FRER in networks where normally you'd use HSR (aka rings).
+> In fact the 802.1CB demonstration I have, which uses the NXP tsntool
+> program with the downstream genetlink tsn interface, does exactly that:
+> https://github.com/vladimiroltean/tsn-scripts
+>
 
-[...]
+After a very quick look, interesting stuff here. Will take a better
+look. (even more reading for the weekend)
+
+> Basically FRER is IEEE's take on redundancy protocols and more like a
+> generalization of HSR/PRP, the big changes are:
+> - not limited to two (or any number of) ports
+> - more than one type of stream/flow identification function: can look at
+>   source/destination MAC, source/destination IP, VLAN, and most
+>   importantly, there can be passive stream identification functions (don't
+>   modify the packet) and active stream identification functions (do
+>   modify the packet).
+>
+> Please note that we've already started modeling IEEE 802.1CB stream
+> identification functions as tc flower filters, since those map nicely on top.
+> We use these for PSFP (former 802.1Qci) tc-police and tc-gate actions
+> (yes, tc-police is single-bucket and color-unaware, that needs to be improved).
+>
+> Basically IEEE 802.1CB is a huge toolbox, the spec gives you the tools
+> but it doesn't tell you how to use them, that's why the stream
+> identification functions are so generic and decoupled from the
+> redundancy protocol itself.
+>
+> In both HSR and PRP, sequence numbers are kept per source MAC address,
+> that is absolutely baken into the standard.
+>
+> But think about this. When the sequence number is kept per source
+> station, frames sent from node A to multiple destinations (nodes B and C)
+> will be part of the same stream. So nodes B and C will see
+> discontinuities in the sequence numbers when node A talks to them.
+>
+> The opposite is true as well. When sequence numbers are kept per
+> destination MAC address, then frames sent from multiple talkers (nodes A
+> and B) to the same destination (node C) will be interpreted as part of
+> the same stream by the listener. So there will be jumps in sequence
+> numbers seen by C when A and B are simultaneously transmitting to it.
+>
+> Which type of stream identification you need depends on the traffic you
+> need to support, and the topology.
+
+Good insight here. Even if I can imagine those simple stream identification
+functions working on simple topologies, I totally get you point. 
+
+>
+> So again, IEEE 802.1CB doesn't tell you what to do, but it gives you the
+> tools. You can do source MAC based stream identification, and you can
+> emulate HSR, or you can do something that encompasses both source node
+> information as well as destination node information.
+>
+> It's one whole degree of freedom more flexible, plain and simple.
+> And the topologies are not limited to:
+> - the rings that HSR supports
+> - the disjoint IP networks that PRP supports
+> but are rather generic graphs.
+>
+> I fully expect there to be hardware out there already that can convert
+> between the HSR/PRP frame format on one set of ports to 802.1CB frame
+> format on another set of ports. Maybe that's something that some thought
+> needs to be put into.
+
+In short, I am reasonably satisfied with the proposal that tc-frer
+offers a superset of net/hsr can do.
+
+Suggestions for the cover letter:
+ - Expand a bit on the whole superset/toolbox idea;
+ - Document how to use the toolbox to emulate HSR/PRP;
+
+
+Cheers,
+-- 
+Vinicius
