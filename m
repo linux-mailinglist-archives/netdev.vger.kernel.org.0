@@ -2,77 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D64441EE6A
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 15:20:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E39D41EE6F
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 15:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231596AbhJANVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 09:21:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38454 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231500AbhJANVx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 09:21:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 872E661A51;
-        Fri,  1 Oct 2021 13:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633094409;
-        bh=BYN0nl+7sTQlhrv6Fh7jj7uMe2+EM4Q+yeOOj+4ObXo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pC3mqmJz1VWxV7Yq2F8Nyf019izRWC08UWLeb9twWn4W4fk5iPbfBsR89tt3EbM6I
-         8BlnoClj62xAPbCh18RTh+bFr1OLjYLIa/I/pxyUkElaxkBSq7LTZI2oxcoqKwCMvk
-         siswEqR7vCFOaNbwtvHez5KS77rZNv+e9emSaCUwep+sZq2JorJdRnDmzjK9koP42p
-         gtt+zdrFybc2cmwHohj+eJ/PvSSbS9wHtmK2bL46ut/5ANci5D5ooC104HOHezEdI9
-         S2GQtU2IcyOzSjuBrHUuNL1yowZjfPBf15V31XpHq0WKr4Rp8c1nQ6YL7ByTfajuT4
-         D6Q6sWSi+X/xw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7ABE960A4E;
-        Fri,  1 Oct 2021 13:20:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231630AbhJANW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 09:22:57 -0400
+Received: from mail-ot1-f47.google.com ([209.85.210.47]:46030 "EHLO
+        mail-ot1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231629AbhJANW4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 09:22:56 -0400
+Received: by mail-ot1-f47.google.com with SMTP id e66-20020a9d2ac8000000b0054da8bdf2aeso9220526otb.12;
+        Fri, 01 Oct 2021 06:21:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ccQjIYZZTjb3miwbaozC6bIs/tTh0jmSzaX5X7213ro=;
+        b=qekQdMh8DTHoovrcuAD/tHiCte90YVLYbcxfNO1tHnzm1LUE/xmzZ7iM0Lni9sxq8L
+         rjOSCR7uPsLATeOWCsPO4GuTi+aUuulpc7eQ23+ccqUCjOz24TZt3Q3JuJ8hawp8q/H+
+         omZv4bXTO6VhEkhNrM9dSpP+UHI0QzPFcJ+Sw4KRvbSESfvLH6ZJvt6RKFrjKlWrVJMh
+         ekpn//Dha2qep/fzj02fArjSB2BnA0IbjRqBUW03rlNDRhFQTh64up+MDNS3W2kKbG9T
+         XRNnzNkdKb7CiiT0WGYvmedxA4cm2zBo5WR+bvUNPQNUxEaHy1tWKMgOnIvZK17IQADk
+         yzig==
+X-Gm-Message-State: AOAM533u73BTCZwu3kSwH/H+S1q+lU/toeb5EZHzQgJeUzVk5epQWg3l
+        WspoiqFnN2TIrHRxS7/cQiFgtHqtgoggkR8PlaU=
+X-Google-Smtp-Source: ABdhPJwCR2Wo/1OGr5zYsrtobZFZbORlSmd2mGjDR3WPp/zNEIwNKDJ5dHmcYFsgX+IzZPHVm/q359uINdGv0p+dKT4=
+X-Received: by 2002:a05:6830:82b:: with SMTP id t11mr10127019ots.319.1633094471783;
+ Fri, 01 Oct 2021 06:21:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] MCTP kunit tests
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163309440949.24017.15314464452259318665.git-patchwork-notify@kernel.org>
-Date:   Fri, 01 Oct 2021 13:20:09 +0000
-References: <20211001081844.3408786-1-jk@codeconstruct.com.au>
-In-Reply-To: <20211001081844.3408786-1-jk@codeconstruct.com.au>
-To:     Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     netdev@vger.kernel.org, matt@codeconstruct.com.au,
-        davem@davemloft.net, kuba@kernel.org, brendanhiggins@google.com,
-        linux-kselftest@vger.kernel.org
+References: <8e4bbd5c59de31db71f718556654c0aa077df03d.camel@linux.ibm.com>
+ <5ea40608-388e-1137-9b86-85aad1cad6f6@intel.com> <b9e461a5-75de-6f45-1709-d9573492f7ac@intel.com>
+ <CAJZ5v0gpxRDt0V3Eh1_edZAudxyL3-ik4MhT7TzijTYeOd=_Vg@mail.gmail.com>
+ <CAJZ5v0hsQvHp2PqFjxvyx4tPCnNC7BCWyfPj-eADFa1w68BCMQ@mail.gmail.com> <924c2d6ef51a83cce5c9bcf4004bbf1506c5a768.camel@linux.ibm.com>
+In-Reply-To: <924c2d6ef51a83cce5c9bcf4004bbf1506c5a768.camel@linux.ibm.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 1 Oct 2021 15:21:00 +0200
+Message-ID: <CAJZ5v0hoYfSE3MCuFeHYjuD5trznCJWDthWwUFp9M52m3FK-zg@mail.gmail.com>
+Subject: Re: Oops in during sriov_enable with ixgbe driver
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Oct 1, 2021 at 10:23 AM Niklas Schnelle <schnelle@linux.ibm.com> wrote:
+>
+> On Thu, 2021-09-30 at 20:37 +0200, Rafael J. Wysocki wrote:
+> > On Thu, Sep 30, 2021 at 8:20 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+> > > On Thu, Sep 30, 2021 at 7:38 PM Rafael J. Wysocki
+> > > <rafael.j.wysocki@intel.com> wrote:
+> > > > On 9/30/2021 7:31 PM, Jesse Brandeburg wrote:
+> > > > > On 9/28/2021 4:56 AM, Niklas Schnelle wrote:
+> > > > > > Hi Jesse, Hi Tony,
+> > > > > >
+> > > > > > Since v5.15-rc1 I've been having problems with enabling SR-IOV VFs on
+> > > > > > my private workstation with an Intel 82599 NIC with the ixgbe driver. I
+> > > > > > haven't had time to bisect or look closer but since it still happens on
+> > > > > > v5.15-rc3 I wanted to at least check if you're aware of the problem as
+> > > > > > I couldn't find anything on the web.
+> > > > > We haven't heard anything of this problem.
+> > > > >
+> > > > >
+> > > > > > I get below Oops when trying "echo 2 > /sys/bus/pci/.../sriov_numvfs"
+> > > > > > and suspect that the earlier ACPI messages could have something to do
+> > > > > > with that, absolutely not an ACPI expert though. If there is a need I
+> > > > > > could do a bisect.
+> > > > > Hi Niklas, thanks for the report, I added the Intel Driver's list for
+> > > > > more exposure.
+> > > > >
+> > > > > I asked the developers working on that driver to take a look and they
+> > > > > tried to reproduce, and were unable to do so. This might be related to
+> > > > > your platform, which strongly suggests that the ACPI stuff may be related.
+> > > > >
+> > > > > We have tried to reproduce but everything works fine no call trace in
+> > > > > scenario with creating VF.
+> > > > >
+> > > > > This is good in that it doesn't seem to be a general failure, you may
+> > > > > want to file a kernel bugzilla (bugzilla.kernel.org) to track the issue,
+> > > > > and I hope that @Rafael might have some insight.
+> > > > >
+> > > > > This issue may be related to changes in acpi_pci_find_companion,
+> > > > > but as I say, we are not able to reproduce this.
+> > > > >
+> > > > > commit 59dc33252ee777e02332774fbdf3381b1d5d5f5d
+> > > > > Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > > > Date:   Tue Aug 24 16:43:55 2021 +0200
+> > > > >      PCI: VMD: ACPI: Make ACPI companion lookup work for VMD bus
+> > > >
+> > > > This change doesn't affect any devices beyond the ones on the VMD bus.
+> > >
+> > > The only failing case I can see is when the device is on the VMD bus
+> > > and its bus pointer is NULL, so the dereference in
+> > > vmd_acpi_find_companion() crashes.
+> > >
+> > > Can anything like that happen?
+> >
+> > Not really, because pci_iov_add_virtfn() sets virtfn->bus.
+> >
+> > However, it doesn\t set virtfn->dev.parent AFAICS, so when that gets
+> > dereferenced by ACPI_COMPANIO(dev->parent) in
+> > acpi_pci_find_companion(), the crash occurs.
+> >
+> > We need a !dev->parent check in acpi_pci_find_companion() I suppose:
+> >
+> > Does the following change help?
+> >
+> > Index: linux-pm/drivers/pci/pci-acpi.c
+> > ===================================================================
+> > --- linux-pm.orig/drivers/pci/pci-acpi.c
+> > +++ linux-pm/drivers/pci/pci-acpi.c
+> > @@ -1243,6 +1243,9 @@ static struct acpi_device *acpi_pci_find
+> >      bool check_children;
+> >      u64 addr;
+> >
+> > +    if (!dev->parent)
+> > +        return NULL;
+> > +
+> >      down_read(&pci_acpi_companion_lookup_sem);
+> >
+> >      adev = pci_acpi_find_companion_hook ?
+>
+>
+> Yes the above change fixes the problem for me. SR-IOV enables
+> successfully and the VFs are fully usable. Thanks!
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Thanks for the confirmation!
 
-On Fri,  1 Oct 2021 16:18:39 +0800 you wrote:
-> This change adds some initial kunit tests for the MCTP core. We'll
-> expand the coverage in a future series, and augment with a few
-> selftests, but this establishes a baseline set of tests for now.
-> 
-> Thanks to the kunit folks for the framework!
-> 
-> Cheers,
-> 
-> [...]
+> Just out of curiosity and because I use this system to test common code
+> PCI changed. Do you have an idea what makes my system special here?
+>
+> The call to pci_set_acpi_fwnode() in pci_setup_device() is
+> unconditional and should do the same on any ACPI enabled system.
+> Also nothing in your explanation sounds specific to my system.
 
-Here is the summary with links:
-  - [net-next,1/5] mctp: Add initial test structure and fragmentation test
-    https://git.kernel.org/netdev/net-next/c/8c02066b053d
-  - [net-next,2/5] mctp: Add test utils
-    https://git.kernel.org/netdev/net-next/c/077b6d52df6d
-  - [net-next,3/5] mctp: Add packet rx tests
-    https://git.kernel.org/netdev/net-next/c/925c01afb06a
-  - [net-next,4/5] mctp: Add route input to socket tests
-    https://git.kernel.org/netdev/net-next/c/d04dcc2d67ef
-  - [net-next,5/5] mctp: Add input reassembly tests
-    https://git.kernel.org/netdev/net-next/c/bbde430319ee
+Right, it is not special and I'm not really sure why others don't see
+this breakage.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+That's one of the reasons why it is key to report problems early: this
+may help to protect others from being hit by those problems.
 
-
+Let me post an "official" patch for this.
