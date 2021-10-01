@@ -2,125 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5544241E59F
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 02:53:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E1E241E5D7
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 03:37:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351093AbhJAAyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 20:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349760AbhJAAyh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 20:54:37 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CBFC06176A
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 17:52:54 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id me3-20020a17090b17c300b0019f44d2e401so3971444pjb.5
-        for <netdev@vger.kernel.org>; Thu, 30 Sep 2021 17:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CXjBna4HYl4iHw62ZyeTaK7T4OPPc9zVEwlUvVwTzN8=;
-        b=JpdkIOLNQxCMLgSt8tjmrDbvWvWAgV8QHlmK5j0BACWuUl3J923Dpt8VC4x2n0nf4N
-         zjDVDymAr+kSA9joyv/ZopjNUVFZ6wjk2XPbfk2E2VETWyqDiWulmAVljTFBoGXW1Hb4
-         Zn/VCdVObug/DkzkkQde3sdxBdNWDF/lC/ipKUKzE0G+R3CWEw66yHVkCB7/rb1q1ra6
-         GOxJCW43zr6S/TFbimbFLPaGn7C7jSFlh7hC21SZp8Ul/0G+0o6YfLJwz15cfLrS16WZ
-         +LHJ6kHqXye4+ULUTc9I0vvkfntoF5/XSuiIIAqntCJx91HuSvdmqrqEYhzwaa/xaJhR
-         X20w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CXjBna4HYl4iHw62ZyeTaK7T4OPPc9zVEwlUvVwTzN8=;
-        b=Spj+isSRy0POaOrjgG6Zq/vAH9FMvIe2H7bfzg1sA9g3CgWcyEQXHxcIKemAQaQIRs
-         7isF9Xpivu1sBH8n/uLut4BFG/2MB6SPjgxqKrB4dDPugCzt3+aWq2e3tF5byN72nYHg
-         mnffBkC14cdrnBO66t2JZCtCy9naykY3LIjmfX9OC0xhqVoZDNq/5WMRHQTiBVLgZvuo
-         JyZBjGrZ7q6/5UCCfhDWwWkXcLGXhtw3p6UFOCTtAkdTibLWXZriuAGgIsfm919ROvYj
-         4CrCBT9o6dMcMlk1lB1/wxT+TdQ+GhZsMbOIiAUngIG55NZERVgO7EsIP1s0W3/dY/QH
-         kJ5Q==
-X-Gm-Message-State: AOAM533ZF1pd8TrFUt3j9ugWojhIGyfA9YsW7GhIGhjdXmUZXzPDOy6a
-        1r8zBnYaIXkmGBlx/9uaUqI=
-X-Google-Smtp-Source: ABdhPJxasZFak1nYcypIdGoqAtoF0zi9RkKZ5kYf5KxMEQ0qhcfQYq1ugAUm/C7Eo48skbeIMGx4oQ==
-X-Received: by 2002:a17:90b:3b8b:: with SMTP id pc11mr9912682pjb.180.1633049573504;
-        Thu, 30 Sep 2021 17:52:53 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:b59b:abc0:171:fe0e])
-        by smtp.gmail.com with ESMTPSA id m1sm4397425pfc.183.2021.09.30.17.52.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Sep 2021 17:52:53 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH V2 net-next] net/mlx4_en: avoid one cache line miss to ring doorbell
-Date:   Thu, 30 Sep 2021 17:52:49 -0700
-Message-Id: <20211001005249.3945672-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.33.0.800.g4c38ced690-goog
+        id S1351424AbhJABip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 21:38:45 -0400
+Received: from mailgw01.mediatek.com ([60.244.123.138]:58990 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230256AbhJABin (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Sep 2021 21:38:43 -0400
+X-UUID: 3bcfb2b1a06848beb28bad7608c253d6-20211001
+X-UUID: 3bcfb2b1a06848beb28bad7608c253d6-20211001
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <jason-ch.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2072459898; Fri, 01 Oct 2021 09:36:56 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 1 Oct 2021 09:36:55 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 1 Oct
+ 2021 09:36:55 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 1 Oct 2021 09:36:54 +0800
+Message-ID: <a891e733157ca7e631ca120ebae15557a6f05738.camel@mediatek.com>
+Subject: Re: [PATCH] r8152: stop submitting rx for -EPROTO
+From:   Jason-ch Chen <jason-ch.chen@mediatek.com>
+To:     Hayes Wang <hayeswang@realtek.com>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>
+CC:     "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "Project_Global_Chrome_Upstream_Group@mediatek.com" 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        "hsinyi@google.com" <hsinyi@google.com>,
+        nic_swsd <nic_swsd@realtek.com>
+Date:   Fri, 1 Oct 2021 09:36:54 +0800
+In-Reply-To: <7dc4198f05784b6686973500150faca7@realtek.com>
+References: <20210929051812.3107-1-jason-ch.chen@mediatek.com>
+         <cbd1591fc03f480c9f08cc55585e2e35@realtek.com>
+         <4c2ad5e4a9747c59a55d92a8fa0c95df5821188f.camel@mediatek.com>
+         <7dc4198f05784b6686973500150faca7@realtek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Thu, 2021-09-30 at 02:41 +0000, Hayes Wang wrote:
+> Jason-ch Chen <jason-ch.chen@mediatek.com>
+> > Sent: Wednesday, September 29, 2021 5:53 PM
+> 
+> [...]
+> > Hi Hayes,
+> > 
+> > Sometimes Rx submits rapidly and the USB kernel driver of
+> > opensource
+> > cannot receive any disconnect event due to CPU heavy loading, which
+> > finally causes a system crash.
+> > Do you have any suggestions to modify the r8152 driver to prevent
+> > this
+> > situation happened?
+> 
+> Do you mind to try the following patch?
+> It avoids to re-submit RX immediately.
+> 
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index 60ba9b734055..bfe00af8283f 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -767,6 +767,7 @@ enum rtl8152_flags {
+>  	PHY_RESET,
+>  	SCHEDULE_TASKLET,
+>  	GREEN_ETHERNET,
+> +	SCHEDULE_NAPI,
+>  };
+>  
+>  #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
+> @@ -1770,6 +1771,14 @@ static void read_bulk_callback(struct urb
+> *urb)
+>  		rtl_set_unplug(tp);
+>  		netif_device_detach(tp->netdev);
+>  		return;
+> +	case -EPROTO:
+> +		urb->actual_length = 0;
+> +		spin_lock_irqsave(&tp->rx_lock, flags);
+> +		list_add_tail(&agg->list, &tp->rx_done);
+> +		spin_unlock_irqrestore(&tp->rx_lock, flags);
+> +		set_bit(SCHEDULE_NAPI, &tp->flags);
+> +		schedule_delayed_work(&tp->schedule, 1);
+> +		return;
+>  	case -ENOENT:
+>  		return;	/* the urb is in unlink state */
+>  	case -ETIME:
+> @@ -2425,6 +2434,7 @@ static int rx_bottom(struct r8152 *tp, int
+> budget)
+>  	if (list_empty(&tp->rx_done))
+>  		goto out1;
+>  
+> +	clear_bit(SCHEDULE_NAPI, &tp->flags);
+>  	INIT_LIST_HEAD(&rx_queue);
+>  	spin_lock_irqsave(&tp->rx_lock, flags);
+>  	list_splice_init(&tp->rx_done, &rx_queue);
+> @@ -2441,7 +2451,7 @@ static int rx_bottom(struct r8152 *tp, int
+> budget)
+>  
+>  		agg = list_entry(cursor, struct rx_agg, list);
+>  		urb = agg->urb;
+> -		if (urb->actual_length < ETH_ZLEN)
+> +		if (urb->status != 0 || urb->actual_length < ETH_ZLEN)
+>  			goto submit;
+>  
+>  		agg_free = rtl_get_free_rx(tp, GFP_ATOMIC);
+> @@ -6643,6 +6653,10 @@ static void rtl_work_func_t(struct work_struct
+> *work)
+>  	    netif_carrier_ok(tp->netdev))
+>  		tasklet_schedule(&tp->tx_tl);
+>  
+> +	if (test_and_clear_bit(SCHEDULE_NAPI, &tp->flags) &&
+> +	    !list_empty(&tp->rx_done))
+> +		napi_schedule(&tp->napi);
+> +
+>  	mutex_unlock(&tp->control);
+>  
+>  out1:
+> 
+> 
+> Best Regards,
+> Hayes
 
-This patch caches doorbell address directly in struct mlx4_en_tx_ring.
+Hi,
 
-This removes the need to bring in cpu caches whole struct mlx4_uar
-in fast path.
+This patch has been verified.
+It did avoid Rx re-submit immediately.
 
-Note that mlx4_uar is not guaranteed to be on a local node,
-because mlx4_bf_alloc() uses a single free list (priv->bf_list)
-regardless of its node parameter.
-
-This kind of change does matter in presence of light/moderate traffic.
-In high stress, this read-only line would be kept hot in caches.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Tariq Toukan <tariqt@nvidia.com>
----
-V2: added __iomem attribute to remove sparse errors (Jakub)
-
- drivers/net/ethernet/mellanox/mlx4/en_tx.c   | 4 ++--
- drivers/net/ethernet/mellanox/mlx4/mlx4_en.h | 1 +
- 2 files changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-index c56b9dba4c71898b61e87fd32e5fa523c313e445..817f4154b86d599cd593876ec83529051d95fe2f 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-@@ -130,6 +130,7 @@ int mlx4_en_create_tx_ring(struct mlx4_en_priv *priv,
- 		ring->bf_enabled = !!(priv->pflags &
- 				      MLX4_EN_PRIV_FLAGS_BLUEFLAME);
- 	}
-+	ring->doorbell_address = ring->bf.uar->map + MLX4_SEND_DOORBELL;
- 
- 	ring->hwtstamp_tx_type = priv->hwtstamp_config.tx_type;
- 	ring->queue_index = queue_index;
-@@ -753,8 +754,7 @@ void mlx4_en_xmit_doorbell(struct mlx4_en_tx_ring *ring)
- #else
- 	iowrite32be(
- #endif
--		  (__force u32)ring->doorbell_qpn,
--		  ring->bf.uar->map + MLX4_SEND_DOORBELL);
-+		  (__force u32)ring->doorbell_qpn, ring->doorbell_address);
- }
- 
- static void mlx4_en_tx_write_desc(struct mlx4_en_tx_ring *ring,
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-index ad0a8b488832c8cdca2790e47fc778fe15686f7f..e132ff4c82f2d33045f6c9aeecaaa409a41e0b0d 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-@@ -283,6 +283,7 @@ struct mlx4_en_tx_ring {
- 	struct mlx4_bf		bf;
- 
- 	/* Following part should be mostly read */
-+	void __iomem		*doorbell_address;
- 	__be32			doorbell_qpn;
- 	__be32			mr_key;
- 	u32			size; /* number of TXBBs */
--- 
-2.33.0.800.g4c38ced690-goog
+Thanks,
+Jason
 
