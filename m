@@ -2,122 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2EC541EB8C
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 13:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE1C241EBF3
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 13:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353794AbhJALP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 07:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353779AbhJALLS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 07:11:18 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A42FC0613E5
-        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 04:09:31 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id j27so6965304wms.0
-        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 04:09:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6qPlM6MAUchBkbCWCD/H91DQxecPf+FzubhRu6ucuSs=;
-        b=rLhqDBYADo0gATH024esrjLIO6v4kz2Njm1FM5OFb6ic311kGVTISD76FxNOfhlH5U
-         4N0Dh9lBc3wbNCSCi01Gf39Y6j+xsAEqya/Uiz+fWCN+p9p41YVKOZk2mu0y9Q8UIQGj
-         7ku2+EDb0RZhnYZtSg6ep9SNLpFRTYfcBjrWCM6DzqL2jNIyfEAws9KRh7ADVevEC7wA
-         Zf3CDBlSVAX8S60Lbute8Q5LMYoS05ieZMPE8uNNHmbp7GXR+oDwD0l/s3AB+iZqlBPY
-         LbzXOu6rG4Ze67aH/dr0duSumV34/5gJO3GbOeP8OgJ6coJfkzgNrlZIDaPW557X5xG0
-         Pqag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6qPlM6MAUchBkbCWCD/H91DQxecPf+FzubhRu6ucuSs=;
-        b=SficAok0hW42YMokbGzPsnz70iGHUWAPfbOTVE8DzIlvbm0iT0gf0qcCAMjuLutjp4
-         2aFHLbYcPDRwW6U67qizIl76OibWJvhqrKgbXIBYQYpc+gK1Pb5nM+dgmC6V7WIikHYO
-         uLo/2os6FPVUa9o0bKKvLQfRvtlMp822T7zZNM54T4bR1HwUmE87d0OCSLpuYhZn/Ojk
-         YIGSDAKAIYeBVf1WwacKDRU7auVJQgey+kYOFHFkj6iS151DcOrSwVYQPUl0MoZjojDO
-         fJX5ggy7Kr4spdu/wS9N3kR9UBR2REfn/0/JM9jMmedsttFPoZ5ONNGL9eV7HcTMRSCY
-         P3eA==
-X-Gm-Message-State: AOAM532LwFsTfI6cn1o9/RgUR6ft/MkENDOOCrtgQ8UNT40dDH6qiiut
-        cxQgiv/l+1bm9BfpqZugLu50CYytpwdaKzqY
-X-Google-Smtp-Source: ABdhPJwy+/LZz9UiprvlfvSX72rL4WmZrFEfo85Hi/fvLGC14Sb7muPYWu7R2pd34j/dCs6+v4rB2w==
-X-Received: by 2002:a05:600c:510a:: with SMTP id o10mr3737710wms.81.1633086569927;
-        Fri, 01 Oct 2021 04:09:29 -0700 (PDT)
-Received: from localhost.localdomain ([149.86.91.69])
-        by smtp.gmail.com with ESMTPSA id v17sm5903271wro.34.2021.10.01.04.09.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Oct 2021 04:09:29 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next v2 9/9] selftests/bpf: better clean up for runqslower in test_bpftool_build.sh
-Date:   Fri,  1 Oct 2021 12:08:56 +0100
-Message-Id: <20211001110856.14730-10-quentin@isovalent.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211001110856.14730-1-quentin@isovalent.com>
-References: <20211001110856.14730-1-quentin@isovalent.com>
+        id S1353652AbhJALcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 07:32:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34550 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230345AbhJALco (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Oct 2021 07:32:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D430361A8B;
+        Fri,  1 Oct 2021 11:30:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633087860;
+        bh=UUfgjmNnIaOorGRnXAAQNArA0PVP/iZMbNdl/f8qZ1U=;
+        h=Date:From:To:Cc:Subject:From;
+        b=j0ixoeRiZyjLgnDCCU4qEp5S1hRrE5KipwyTE9UaOedn6JNzooA4SZ84I0Iy04WRd
+         8wpCW8vnIuodqxbpjlvnjMLT6DxTc3gpMy7YlyfIpaRkGbkKqiuMoaG0S9WWE0ypm6
+         Sj5nh4wupTP/kZrTzeen1dCznz0rJg5TuZUoplabaByqVeJBnMMQhpJ+do0VkMvmOJ
+         TRS2y57WaHpqa3rMRDuvV/CL5w+hhPlA3kxkdWS3batrWm0878Q2MvxQR+2C8JVmHC
+         zPAF8Lh6jvyXJMbmKXV91+T2+RMLiaE2JMNoHjyFsU9lcDvftub7s8gRUWqMnODn0e
+         EyydpvoFEwGQQ==
+Date:   Fri, 1 Oct 2021 13:30:57 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Pavel Machek <pavel@ucw.cz>, Andrew Lunn <andrew@lunn.ch>
+Cc:     "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
+        netdev@vger.kernel.org,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>
+Subject: devicename part of LEDs under ethernet MAC / PHY
+Message-ID: <20211001133057.5287f150@thinkpad>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The script test_bpftool_build.sh attempts to build bpftool in the
-various supported ways, to make sure nothing breaks.
+Hello Pavel, Andrew,
 
-One of those ways is to run "make tools/bpf" from the root of the kernel
-repository. This command builds bpftool, along with the other tools
-under tools/bpf, and runqslower in particular. After running the
-command and upon a successful bpftool build, the script attempts to
-cleanup the generated objects. However, after building with this target
-and in the case of runqslower, the files are not cleaned up as expected.
+previously we discussed devicename part of LEDs connected under
+ethernet MACs and/or ethrenet PHYs.
 
-This is because the "tools/bpf" target sets $(OUTPUT) to
-.../tools/bpf/runqslower/ when building the tool, causing the object
-files to be placed directly under the runqslower directory. But when
-running "cd tools/bpf; make clean", the value for $(OUTPUT) is set to
-".output" (relative to the runqslower directory) by runqslower's
-Makefile, and this is where the Makefile looks for files to clean up.
+I would like to finally settle this, but there is one more thing that
+may be problematic.
 
-We cannot easily fix in the root Makefile (where "tools/bpf" is defined)
-or in tools/scripts/Makefile.include (setting $(OUTPUT)), where changing
-the way the output variables are passed would likely have consequences
-elsewhere. We could change runqslower's Makefile to build in the
-repository instead of in a dedicated ".output/", but doing so just to
-accommodate a test script doesn't sound great. Instead, let's just make
-sure that we clean up runqslower properly by adding the correct command
-to the script.
+To remind the current proposal, discussed in previous e-mails:
 
-This will attempt to clean runqslower twice: the first try with command
-"cd tools/bpf; make clean" will search for tools/bpf/runqslower/.output
-and fail to clean it (but will still clean the other tools, in
-particular bpftool), the second one (added in this commit) sets the
-$(OUTPUT) variable like for building with the "tool/bpf" target and
-should succeed.
+- for LEDs under an ethernet PHY, the devicename part of the LED should
+  be "ethphyN", with N an auto-incrementing number for each struct
+  phy_device
+- for LEDs under an ethernet MAC, it should be similar: "ethmacN"
 
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- tools/testing/selftests/bpf/test_bpftool_build.sh | 4 ++++
- 1 file changed, 4 insertions(+)
+- the numbers in ethmac and ethphy are unrelated and cannot be related
 
-diff --git a/tools/testing/selftests/bpf/test_bpftool_build.sh b/tools/testing/selftests/bpf/test_bpftool_build.sh
-index b03a87571592..1453a53ed547 100755
---- a/tools/testing/selftests/bpf/test_bpftool_build.sh
-+++ b/tools/testing/selftests/bpf/test_bpftool_build.sh
-@@ -90,6 +90,10 @@ echo -e "... through kbuild\n"
- 
- if [ -f ".config" ] ; then
- 	make_and_clean tools/bpf
-+	## "make tools/bpf" sets $(OUTPUT) to ...tools/bpf/runqslower for
-+	## runqslower, but the default (used for the "clean" target) is .output.
-+	## Let's make sure we clean runqslower's directory properly.
-+	make -C tools/bpf/runqslower OUTPUT=${KDIR_ROOT_DIR}/tools/bpf/runqslower/ clean
- 
- 	## $OUTPUT is overwritten in kbuild Makefile, and thus cannot be passed
- 	## down from toplevel Makefile to bpftool's Makefile.
--- 
-2.30.2
+- Andrew proposed that the numbering should start at non-zero number,
+  for example at 42, to prevent people from thinking that the numbers
+  are related to numbers in network interface names (ethN).
+  A system with interfaces
+    eth0
+    eth1
+  and LEDs
+    ethphy0:green:link
+    ethphy1:green:link
+  may make user think that the ethphy0 LED does correspond to eth0
+  interface, which is not necessarily true.
+  Instead if LEDs are
+    ethphy42:green:link
+    ethphy43:green:link 
+  the probability of confusing the user into relating them to network
+  interfaces by these numbers is lower.
 
+Anyway, the issue with these naming is that it is not stable. Upgrading
+the kernel, enabling drivers and so on can change these names between
+reboots. Also for LEDs on USB ethernet adapters, removing the USB and
+plugging it again would change the name, although the device path does
+not change if the adapter is re-plugged into the same port.
+
+To finally settle this then, I would like to ask your opinion on
+whether this naming of LEDs should be stable.
+
+Note that this names are visible to userspace as symlinks
+/sys/class/leds directory. If they are unstable, it is not that big an
+issue, because mostly these LEDs should be accessed via
+/sys/class/net/<interface>/device/leds for eth MAC LEDs and via
+/sys/class/net/<interface>/phydev/leds for eth PHY LEDs.
+
+If we wanted to make these names stable, we would need to do something
+like
+  ethphy-BUS-ID
+for example
+  ethphy-usb3,2
+  ethmac-pci0,19,0
+  ethphy-mdio0,1
+or
+  ethmac-DEVICE_PATH (with '/'s and ':'s replaced with ',' or something)
+for example
+  ethphy-platform,soc,soc,internal-regs,f10f0000.usb3,usb3,3-0,1:0
+
+The first scheme is nicer but would need some additional code for each
+bus.
+The second scheme is simpler to implement, but the naming is hideous -
+the whole point of devicename part of LEDs was (in my understanding) to
+be a nice name, like "mmc0".
+
+Marek
