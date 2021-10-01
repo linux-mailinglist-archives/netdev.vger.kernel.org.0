@@ -2,93 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A28F41E504
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 01:32:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C3FF41E55B
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 02:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349561AbhI3Xdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Sep 2021 19:33:40 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42092 "EHLO vps0.lunn.ch"
+        id S1351401AbhJAAHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Sep 2021 20:07:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55156 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347868AbhI3Xdj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Sep 2021 19:33:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=9gmdjG51P4sUtdlckZMNf2bN5+zN0n8cVhZkk4LzqwE=; b=pC5GRS0XWArGvEi55mbqERtVOh
-        N39cL3bi9yU69ML2hwVJ6lOe3tLcxU7O827WLtiuL720YgiSe9kDsdVok9lzuD2BvtKu/R58bCI/Q
-        MYdjTqAQIQ2WB73gZnYaDK+3pG5Qm/xwNDy25zsvvgUUv3CtLNCW0CYzJDdNpoYvb3HU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mW5Wa-0091JE-Nn; Fri, 01 Oct 2021 01:31:36 +0200
-Date:   Fri, 1 Oct 2021 01:31:36 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Wong Vee Khee <veekhee@gmail.com>
-Subject: Re: [PATCH net v1 1/1] net: stmmac: fix EEE init issue when paired
- with EEE capable PHYs
-Message-ID: <YVZI2GWxUNZdL2SX@lunn.ch>
-References: <20210930064436.1502516-1-vee.khee.wong@linux.intel.com>
+        id S1350508AbhJAAGv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Sep 2021 20:06:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 05C5461283;
+        Fri,  1 Oct 2021 00:05:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633046708;
+        bh=9Z0KbGZH64ADfJBv1OyGLnqkyE5ODF5dNMWDqrzOOpI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iKKOZOPUO8zPMUx7gusGdSVSM0VdaA22zSNqGB9oui5XnQ5uX+tQdwyEMsujTneHd
+         1zMN6Prmd/NQ87bKzTajxvXLH0Rkh1zxXXZTEUoA7jCtLfAfxWf1DEutkn4P5kSR17
+         P+W3+jMSu6nSAaxkM42liXy8TOizWrbWOMTJPhdChMhuJkJ+j6K5xyko/eDo2GfKAb
+         1CzYh4IwNCjM2K0azZokqSIgAN7jLROtQpMtWAqkNwFsDXdCvyH+zfh7NVRHKVLRVF
+         /Oum7cIEWxPgQsxWVsNtcQnR0ontViGuHbJk6OK4wM7k6vj7iZWHFT4D54MUqb3/Iq
+         d0o7PW2sUvcoA==
+Date:   Thu, 30 Sep 2021 17:05:06 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: Re: [net-next] devlink: report maximum number of snapshots with
+ regions
+Message-ID: <20210930170506.24d74fb5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210930212104.1674017-1-jacob.e.keller@intel.com>
+References: <20210930212104.1674017-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210930064436.1502516-1-vee.khee.wong@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 02:44:36PM +0800, Wong Vee Khee wrote:
-> When STMMAC is paired with Energy-Efficient Ethernet(EEE) capable PHY,
-> and the PHY is advertising EEE by default, we need to enable EEE on the
-> xPCS side too, instead of having user to manually trigger the enabling
-> config via ethtool.
+On Thu, 30 Sep 2021 14:21:04 -0700 Jacob Keller wrote:
+> Each region has an independently configurable number of maximum
+> snapshots. This information is not reported to userspace, making it not
+> very discoverable. Fix this by adding a new
+> DEVLINK_ATTR_REGION_MAX_SNAPSHOST attribute which is used to report this
+> maximum.
 > 
-> Fixed this by adding xpcs_config_eee() call in stmmac_eee_init().
+> Ex:
 > 
-> Fixes: 7617af3d1a5e ("net: pcs: Introducing support for DWC xpcs Energy Efficient Ethernet")
-> Cc: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-> Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>   $devlink region
+>   pci/0000:af:00.0/nvm-flash: size 10485760 snapshot [] max 1
+>   pci/0000:af:00.0/device-caps: size 4096 snapshot [] max 10
+>   pci/0000:af:00.1/nvm-flash: size 10485760 snapshot [] max 1
+>   pci/0000:af:00.1/device-caps: size 4096 snapshot [] max 10
 > 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 553c4403258a..981ccf47dcea 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -486,6 +486,10 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
->  		timer_setup(&priv->eee_ctrl_timer, stmmac_eee_ctrl_timer, 0);
->  		stmmac_set_eee_timer(priv, priv->hw, STMMAC_DEFAULT_LIT_LS,
->  				     eee_tw_timer);
-> +		if (priv->hw->xpcs)
-> +			xpcs_config_eee(priv->hw->xpcs,
-> +					priv->plat->mult_fact_100ns,
-> +					true);
->  	}
+> This information enables users to understand why a new region command
+> may fail due to having too many existing snapshots.
+> 
+> Reported-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-
-       /* Check if it needs to be deactivated */
-        if (!priv->eee_active) {
-                if (priv->eee_enabled) {
-                        netdev_dbg(priv->dev, "disable EEE\n");
-                        stmmac_lpi_entry_timer_config(priv, 0);
-                        del_timer_sync(&priv->eee_ctrl_timer);
-                        stmmac_set_eee_timer(priv, priv->hw, 0, eee_tw_timer);
-                }
-                mutex_unlock(&priv->lock);
-                return false;
-        }
-
-Don't you want to turn it of in here?
-
-      Andrew
+Acked-by: Jakub Kicinski <kuba@kernel.org>
