@@ -2,95 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECD8641F08C
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 17:07:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF12341F07B
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 17:06:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355053AbhJAPIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 11:08:54 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:39597 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1354973AbhJAPIn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 11:08:43 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 50D2A5C00FF;
-        Fri,  1 Oct 2021 11:06:59 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Fri, 01 Oct 2021 11:06:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=x4J8reGaSF8uDtTVxmggr85GwMO34kOnvq4DCaJfDv0=; b=BM7hBnQU
-        1bkWOV+nELVOtugqbOJ7LFathOcS4GN2YdEW0eGTAWSP3d51a451MWhnPH24hy0X
-        CIIIKfLZAzO2kWBFapf2/lUdzdx2U2wPlIaVzDT5u3wqq+RD719S460n9bhCSdhq
-        uwu2IqD/yhRFnaYSnc1VJcMDHFdk4IhusQXE9wPLi13TFlxBOzUreicxxumzNjs9
-        33xvzBiWoj7IFi2cft1A55C4RpgXof0Mgr/dtaAN5cs/qQTaxWTQtEYrIGevyFzS
-        GCgVlO0mpjiNaMhxnfNKIC5EiJUscLzO4kR1NrJ6N1tzkJxLzfqZzoPr6oqMdTqF
-        x6dQ0ZKnzPbnHA==
-X-ME-Sender: <xms:EyRXYcvMdjuqgZRu5T1wfA8LTxtaoWPYQ5KyCktSp1-enKKTXBH4MQ>
-    <xme:EyRXYZewrSpb0uZkOnUgTNRVdgM_XYXH1IalEF1W7PDDqRp3ogPNlLFmY-zEt55ZU
-    Mk7RL94toSa0QQ>
-X-ME-Received: <xmr:EyRXYXwyMO1gwtRvKfuS3o6jMkLM6uT720GmfEQ70iyhGxGdC7GoxhA5OpOSzaea1_8q_HAwEbrObsQ1BJ4nG4lA48M7Mx63fg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudekiedgkeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepudenucfr
-    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:EyRXYfNSFKLlwrQzPGetOd1NsirHmwARln35CzCY8ZOBh-gO5AhHOQ>
-    <xmx:EyRXYc9ndbOnNDSLU_mEXNlVfv4ayP2XQu_xzy1cWpcWCqDMjNdhyQ>
-    <xmx:EyRXYXXJ-5mYOYClLtztN6ZR41LABig7k8wc4wRQUo6ygtp46aeGdw>
-    <xmx:EyRXYeL_UVx5aSpU82Hv9_jxPwCntBWwaYnft31XYhcGEyBbeJeAwA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 1 Oct 2021 11:06:58 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     mkubecek@suse.cz, popadrian1996@gmail.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool-next v2 6/7] sff-8636: Convert if statement to switch-case
-Date:   Fri,  1 Oct 2021 18:06:26 +0300
-Message-Id: <20211001150627.1353209-7-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211001150627.1353209-1-idosch@idosch.org>
-References: <20211001150627.1353209-1-idosch@idosch.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1354919AbhJAPIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 11:08:30 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:6324 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1354827AbhJAPI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 11:08:28 -0400
+X-IronPort-AV: E=Sophos;i="5.85,339,1624287600"; 
+   d="scan'208";a="95822181"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 02 Oct 2021 00:06:42 +0900
+Received: from localhost.localdomain (unknown [10.226.92.36])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 986254405283;
+        Sat,  2 Oct 2021 00:06:39 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+Subject: [PATCH 00/10] Add Gigabit Ethernet driver support
+Date:   Fri,  1 Oct 2021 16:06:26 +0100
+Message-Id: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC are
+similar to the R-Car Ethernet AVB IP.
 
-The indentation is wrong and the statement can be more clearly
-represented using a switch-case statement. Convert it.
+The Gigabit Ethernet IP consists of Ethernet controller (E-MAC), Internal
+TCP/IP Offload Engine (TOE)  and Dedicated Direct memory access controller
+(DMAC).
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- qsfp.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+With a few changes in the driver we can support both IPs.
 
-diff --git a/qsfp.c b/qsfp.c
-index 3401db84352d..d1464cb50fdc 100644
---- a/qsfp.c
-+++ b/qsfp.c
-@@ -863,11 +863,13 @@ void sff8636_show_all(const __u8 *id, __u32 eeprom_len)
- 	}
- 
- 	sff8636_show_identifier(id);
--	if ((id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP) ||
--		(id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP_PLUS) ||
--		(id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP28)) {
-+	switch (id[SFF8636_ID_OFFSET]) {
-+	case SFF8024_ID_QSFP:
-+	case SFF8024_ID_QSFP_PLUS:
-+	case SFF8024_ID_QSFP28:
- 		sff8636_show_page_zero(id);
- 		sff8636_show_dom(id, id + 3 * 0x80, eeprom_len);
-+		break;
- 	}
- }
- 
+This patch series is in preparation for adding Gigabit ethernet driver support to RZ/G2L SoC.
+
+The number of patches after incorporatng RFC review comments is 19.
+So splitting the patches into 2 patchsets (10 + 9).
+
+The series is the first patchset which aims to add RZ/G2L SoC with
+compatible strings, E-MAC and D-MAC initialization.
+
+Second patchset basically fillup all the stubs for the full Gigabit
+Ethernet functionality.
+
+RFC->V1:
+ * Added Rb tags of patch#1 and patch #9
+ * Renamed "rgeth" to gbeth
+ * Renamed the variable "no_ptp_cfg_active" with "gptp" and
+   "ptp_cfg_active" with "ccc_gac
+ * Handled NC queue only for R-Car.
+ * Removed RIC3 initialization from DMAC init, as it is 
+   same as reset value.
+ * moved stubs function to patch#4.
+ * Added tsrq variable instead of multi_tsrq feature bit.
+ * moved CSR0 initialization from E-MAC init to later patch.
+ * started using ravb_modify for initializing link registers.
+
+Ref:-
+https://lore.kernel.org/linux-renesas-soc/20210923140813.13541-1-biju.das.jz@bp.renesas.com/T/#m5c007b42d6c334de7b2224f2b219f52efc712fe9
+
+
+Biju Das (10):
+  ravb: Rename "ravb_set_features_rx_csum" function to
+    "ravb_set_features_rcar"
+  ravb: Rename "no_ptp_cfg_active" and "ptp_cfg_active" variables
+  ravb: Add nc_queue to struct ravb_hw_info
+  ravb: Add support for RZ/G2L SoC
+  ravb: Initialize GbEthernet DMAC
+  ravb: Exclude gPTP feature support for RZ/G2L
+  ravb: Add tsrq to struct ravb_hw_info
+  ravb: Add magic_pkt to struct ravb_hw_info
+  ravb: Add half_duplex to struct ravb_hw_info
+  ravb: Initialize GbEthernet E-MAC
+
+ drivers/net/ethernet/renesas/ravb.h      |  39 +-
+ drivers/net/ethernet/renesas/ravb_main.c | 452 +++++++++++++++++------
+ 2 files changed, 362 insertions(+), 129 deletions(-)
+
 -- 
-2.31.1
+2.17.1
 
