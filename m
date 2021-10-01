@@ -2,81 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F46041F629
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 22:10:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62A8D41F637
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 22:17:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231550AbhJAUME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 16:12:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:23437 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229531AbhJAUMD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 16:12:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1633119018;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XiGtJZlVMPsm2Li879wR6Wr450jla08RUNWR3dUvcq8=;
-        b=NH8L6gZQhuOhfwWzDmr18pPneVHXpkkv6CRBfMKbMch1+COubCEG9Dm2go8qY00DQ5KB1q
-        8F9mQW9UuJDMLz1yqqf4O05zowG1TK/upel0OOskwbuvN+LETw+wQXUY/TFQOJcO4N9obn
-        NS1LMUjsc/FarPKVtW4UKVXh+8d97lQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-27-IQnDggNHOVaQ_pu9syFdpw-1; Fri, 01 Oct 2021 16:10:15 -0400
-X-MC-Unique: IQnDggNHOVaQ_pu9syFdpw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9919B8015C7;
-        Fri,  1 Oct 2021 20:10:13 +0000 (UTC)
-Received: from oldenburg.str.redhat.com (unknown [10.39.192.176])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 824A65F4E1;
-        Fri,  1 Oct 2021 20:10:10 +0000 (UTC)
-From:   Florian Weimer <fweimer@redhat.com>
-To:     "Cufi, Carles" <Carles.Cufi@nordicsemi.no>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jukka.rissanen@linux.intel.com" <jukka.rissanen@linux.intel.com>,
-        "johan.hedberg@intel.com" <johan.hedberg@intel.com>,
-        "Lubos, Robert" <Robert.Lubos@nordicsemi.no>,
-        "Bursztyka, Tomasz" <tomasz.bursztyka@intel.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: Non-packed structures in IP headers
-References: <AS8PR05MB78952FE7E8D82245D309DEBCE7AA9@AS8PR05MB7895.eurprd05.prod.outlook.com>
-Date:   Fri, 01 Oct 2021 22:10:08 +0200
-In-Reply-To: <AS8PR05MB78952FE7E8D82245D309DEBCE7AA9@AS8PR05MB7895.eurprd05.prod.outlook.com>
-        (Carles Cufi's message of "Thu, 30 Sep 2021 12:30:05 +0000")
-Message-ID: <87bl48v74v.fsf@oldenburg.str.redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        id S229959AbhJAUT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 16:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229531AbhJAUT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 16:19:28 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD899C061775
+        for <netdev@vger.kernel.org>; Fri,  1 Oct 2021 13:17:43 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id e144so13042092iof.3
+        for <netdev@vger.kernel.org>; Fri, 01 Oct 2021 13:17:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=lTurnxEhVRIQFU1t9vD5WNd44iPXJTxRZ8CdCO7OTBc=;
+        b=frMrOEOPbTbWCq2lUVH/F58DknI5ZMKwGexxO9ZexzJL9Z3IUrXNca9eQjlTR56ZEt
+         YA64aVlMlhWegzkc+ZVZ9dEIB+/s7V206b5eQ1yTPAq306rikzsSmrhX0AcFh6pq2TJe
+         iRIs+Egy892fJLM45qwRdegbs+cSXL8Ih6ZRDbovBEVeZqvGosfwlLzCY1OH47Dh9bSw
+         LG/+4loCl7R+oOTSzMUGnh3tiG5x2d7sxg+UOuupOXHNvZjR6nlF7GWe0pc7uGaTBwLB
+         GhFGMzkzPdUIFlt+CjybleRDtI1rKdW0bd0UmgLnx9WqUF+oJdqOrEmfnxy5Q+YWxQR7
+         iusw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=lTurnxEhVRIQFU1t9vD5WNd44iPXJTxRZ8CdCO7OTBc=;
+        b=zkkSNqPJaQ6M4KbfULx6XeDkmubx1OWWbHBPIrS04HlhpiR9wvzISjQTYMbqKhGK1c
+         B0ru6uUgRgXqRNsdkE6wVVuQh+2TipSAeNwe1OCoVpL/2eU0sBUE69wb3uKqaBvb4p14
+         7vfsS+aUZGTHBLL0S6hW6BTgJ9yZM4sTw1YJgmGgiquO1+9VwBOO7Ybjn0vDXUqHUz7q
+         DsRxCvC/FE9zB08A28ng7WBi45LiDOzgLUCiLlUu27Nb8v1J/badeMsIrPGoT0lu4Cd9
+         giVnB7O9ZxkpiMJtKU8dJEeqiaO9WfiBufITbp2VnrNNlKp3IPs63l7jIqVDS00zfRdF
+         uchQ==
+X-Gm-Message-State: AOAM530GxhCbIcRx2nCIAibyO92EbAKgTxIWlAgeSFjj+40PZSkrYeDt
+        30AhJRYNsIkkGN89gLhEdBUbkWTv62+y9305TV4=
+X-Google-Smtp-Source: ABdhPJwfh7YZxFW+HMo6qd1HdjIqFxbGIGqm3OHo8vLC7+gdBeMppP3vcc4wWjCogG8lzBoPzklOSg5XCtM2ofO5/hM=
+X-Received: by 2002:a02:a38f:: with SMTP id y15mr11437374jak.26.1633119463302;
+ Fri, 01 Oct 2021 13:17:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Received: by 2002:a6b:1547:0:0:0:0:0 with HTTP; Fri, 1 Oct 2021 13:17:43 -0700 (PDT)
+Reply-To: aalihelp5@gmail.com
+From:   "Mr. Hui Ka Yan" <verma76666@gmail.com>
+Date:   Fri, 1 Oct 2021 13:17:43 -0700
+Message-ID: <CAFmNovhAyhX=a0Pz-JGdMaP2QxA1m-AphhzS2hp3B9Ckt6V_6g@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* Carles Cufi:
-
-> I was looking through the structures for IPv{4,6} packet headers and
-> noticed that several of those that seem to be used to parse a packet
-> directly from the wire are not declared as packed. This surprised me
-> because, although I did find that provisions are made so that the
-> alignment of the structure, it is still technically possible for the
-> compiler to inject padding bytes inside those structures, since AFAIK
-> the C standard makes no guarantees about padding unless it's
-> instructed to pack the structure.
-
-The C standards do not make such guarantees, but the platform ABI
-standards describe struct layout and ensure that there is no padding.
-Linux relies on that not just for networking, but also for the userspace
-ABI, support for separately compiled kernel modules, and in other
-places.
-
-Sometimes there are alignment concerns in the way these structs are
-used, but I believe the kernel generally controls placement of the data
-that is being worked on, so that does not matter, either.
-
-Therefore, I do not believe this is an actual problem.
-
-Thanks,
-Florian
-
+-- 
+Am Mr. Hui Ka Yan. I am donating a grant of $10,500,000 USD to you.
+Contact Me ( aalihelp5@gmail.com ) for further details. Thanks and God
+bless.
