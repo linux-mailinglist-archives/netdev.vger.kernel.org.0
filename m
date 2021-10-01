@@ -2,242 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CACF41F819
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 01:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF61141F81E
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 01:17:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231127AbhJAXP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 19:15:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39986 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230009AbhJAXP2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 19:15:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7A19161A3A;
-        Fri,  1 Oct 2021 23:13:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633130023;
-        bh=us9r4OlZBEJcDwfaANwYYNPzbpNqIU8fPZetJ2SbwPo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=kYctJxWrK1yIZOy8v6fWE/apKZ8jDAO+5g7ImYppbJCBLWHP+XZN1A9rrqqCKfZzA
-         9+B79Uedm9cs02IgF8l7bNCPRuYstGMJ0zcVPj3NLIPTgX0zSOeAZa7Ir2z/UFJjvU
-         zu3kmaqc7KdpwX7dtGp2PRS8sBIxtkVaRFll8czX+PFZjOgBjzHJMfHbjvj9C48ciG
-         ah9r/XaYpLtZJa2bHPCngo3Cdt29WlcAtcfSJL+zlvTDG80Es3unONMe96H5+pd6vx
-         DrI9BWg23wulYdATaN31YfEYHcxMKZRrDRJQ9CDD7nni4AtZP6tg1KLfIvzgWIaHQY
-         7bYxzZ9XkeGHQ==
-Received: by mail-lf1-f50.google.com with SMTP id m3so43906718lfu.2;
-        Fri, 01 Oct 2021 16:13:43 -0700 (PDT)
-X-Gm-Message-State: AOAM533wAWf1UMLQceQxRx4XvyrsFbCn/xyTt3KzwPMnAFIoG6bfBsV9
-        Bl3kYWZVkJcKSSP7xmYT4yFdXaB40dYSkv7r/fI=
-X-Google-Smtp-Source: ABdhPJxrvh8lT1hZBYaSDwk3Fs4OiYqTlXecGnWlRBnC/M+EKv+4c5a44c+eHQwZPwjbcdwAIpv7UbYQt08wnZSjLv4=
-X-Received: by 2002:ac2:5617:: with SMTP id v23mr768187lfd.114.1633130021799;
- Fri, 01 Oct 2021 16:13:41 -0700 (PDT)
+        id S231230AbhJAXS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 19:18:59 -0400
+Received: from mail-eopbgr140050.outbound.protection.outlook.com ([40.107.14.50]:63224
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230009AbhJAXSz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Oct 2021 19:18:55 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GeiHH55wtq51tDRXqTtzQHHq4nLrXv/SHXrJ2YKSKzQazDAtL6wZsB/1pJnjxUAyH3lkqghrWBvCGhifytWPDLacrTSpBN6WR2pOyDG+wKA/B9sHytwxrxdgTDd/8M+WSlgFw6EnRzzn52PC5n23q17J6n0QCMScI9zcVDKcNQo2CY9p9N2tMObAi7MRr/BIp+s+K74PFa5eaXQ1OohhnKp8NmzlFqqkbIWHpON6/wWe/TdChUSBasvgw5v49hnMlt1FH60Pre0Rn1HBpKvV0Rh5Dd4+E/xdSQHdbAKKsG3yVX4mM+3gSyXxjo7PgxcdbbXWaER3Z46zwxSo2ZjalA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HRrE2gftkxDZkUBNWDMuuDeA8BQ+ZLrST2dhthHpaNU=;
+ b=jp3X2VoXuZ9k5CGh66zusF9BgJLGTwFXjVs6pVMq3EE4o87rSSJB4b4epg/C69rR9Et/zCtvpcVEEcFlAnVZdB4MgVgAbEygCnmCIqYMcPFSURImCEkQryQmRJ6U0Crmlh9sg8jDNyX6b8TRNxrn4eeB4u7fCWZIut84JC5cBjl3ClCxGkRZi4jIzXbqSiMtQR5ec4v5MF2PyGKWdh/uLQOhN9nW+xuxjzRbyp3CyZB3wYUtrIhXmVdwJubPnyq4Wqt2GGvSaHpZdJWa7cJco2U0IeyHvFGULiHF8DqwpJpgDh4PGHR8Tx2M24YTbVz/uXiulKnc08vkNmiSnjH5bQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HRrE2gftkxDZkUBNWDMuuDeA8BQ+ZLrST2dhthHpaNU=;
+ b=CCB+UZNPABrZOuVePqchP5cKJEh9ynrdhRT+FVlo/ASbF6e0T421HL2cHGt7KV3zzT8zCESqIhtA/hHPKTtVnSr78mCKSscblDYKVEN8WWf1odfTPjRwjbwxJG8qwoBkSRl/KOZFo/4kHuxyBMSZNf0iQ7l/dl+dGraPAVUqg5w=
+Received: from AM6PR04MB5128.eurprd04.prod.outlook.com (2603:10a6:20b:5::16)
+ by AM6PR04MB6343.eurprd04.prod.outlook.com (2603:10a6:20b:fd::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.15; Fri, 1 Oct
+ 2021 23:17:08 +0000
+Received: from AM6PR04MB5128.eurprd04.prod.outlook.com
+ ([fe80::d826:aa72:3d7b:6e11]) by AM6PR04MB5128.eurprd04.prod.outlook.com
+ ([fe80::d826:aa72:3d7b:6e11%5]) with mapi id 15.20.4544.025; Fri, 1 Oct 2021
+ 23:17:08 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        Po Liu <po.liu@nxp.com>, Leo Li <leoyang.li@nxp.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>
+Subject: Re: [PATCH v6 net-next 0/8] net: dsa: felix: psfp support on vsc9959
+Thread-Topic: [PATCH v6 net-next 0/8] net: dsa: felix: psfp support on vsc9959
+Thread-Index: AQHXtc/NwIV3BgN/R0a4xHtuLk/jJqu+tuCAgAAJ3YCAAAOmAIAABOMA
+Date:   Fri, 1 Oct 2021 23:17:07 +0000
+Message-ID: <20211001231706.szeo66plekzwszci@skbuf>
+References: <20210930075948.36981-1-xiaoliang.yang_1@nxp.com>
+ <20211001151115.5f583f4a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211001224633.u7ylsyy4mpl5kmmo@skbuf>
+ <20211001155936.48eec95d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211001155936.48eec95d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ebc01d51-ccc2-41c2-2904-08d9853196e4
+x-ms-traffictypediagnostic: AM6PR04MB6343:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR04MB634385F6491C1AB49DE84A62E0AB9@AM6PR04MB6343.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4303;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2qVqD0u34xWoRyVffO4yJTUPN6CuXKkGd41P43C9vow+jLapWN3yS6r6387UHrXsedn6xyxTT4iCL39fAT+Qloh/FFDAvzg9/V+d6A5PmEz3lEiu03frz7db4OYxvmakXcttWQdSediDhJV1EakeFNsEPq7RX7hHCVtIa8NHSkhyHneRWjtma8Ixg9skBHrux7gscdaJeo22W9gXzNesRhZFwUT0/39Xyx0rKCXpXjXUvgRtk3K9mbzJEawJbsPOwwHsf42iR2Ez90fBuvFzHXVcsVTKP7oSfpQlfJtJnyovEB5+/eo8vDHrV8Jecs/yMyufhNHZtdg82V/y5URIRY06Rrs77noiICIZXnbL7wmKeymiEaN4XfOSD/Hig8SPboku0BkU8x2rUp3o5Uldm5nMtBy33hGoZ0RcyYv+kFUCgMuwsKwbUt1XFPf70etthtv0zwx1mhZO5XbIcdnFYKqRHOCsZG2+VnAvc3R9SBdVQ5e7JXf/j9/1Ya/5LAfAmHZdjVpYicCFvbFDjSQFM25e5CDCc3kKvarkaecp1gFLZhiZyDHFCgeg5XgAL9SGCRhjgbEK/LqJxb4pusSTJZDRNi9dWVBFqRevaZwmQIr5le7eVTSOdI5/Nj0t6PTXSzHZ33+CrNlM1WN3FlUyILHb5l2q4b2LvPNs6KHsDTVrE/A28GYO69VnFS55E5Yn+QMpCAO5jiblclb7RHNyag==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB5128.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(186003)(8676002)(71200400001)(5660300002)(508600001)(1076003)(9686003)(6512007)(83380400001)(44832011)(316002)(38070700005)(7416002)(6486002)(6916009)(86362001)(8936002)(66446008)(66556008)(66476007)(2906002)(33716001)(122000001)(38100700002)(76116006)(54906003)(91956017)(26005)(4326008)(66946007)(6506007)(64756008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ctaj30RceCZfGQM4wGNPh2t8mDgX3KEGF3D8gqm1TVaHq962u0XaGo9J8iWX?=
+ =?us-ascii?Q?i0BMffVxStVu9XdeQZcnz/mUL2zy4N+lryjHnlGT40CWT7HXvb5AVyPUCWzW?=
+ =?us-ascii?Q?L4lIPjN96GM/nU2s+DQBYheijob/RrJ6dWcXhjmEYD1jE6Liy4viN+DUZDPp?=
+ =?us-ascii?Q?2w0qOTBAaKz31nXXhVi5FnUodbPZn8f4sHLTS3wgoP+x451/0milVlSnsOoR?=
+ =?us-ascii?Q?sgWdKIQ9O3qY/YBrhB++eOs4f+uQTzMN5WZrg697WTu6hBh6uXd9QjiqGwxX?=
+ =?us-ascii?Q?v84SBU/q4RWxJSv9bCPntL4fkgnULlQg0RT2KpIMXxbnKloEK1UXUztbcPnV?=
+ =?us-ascii?Q?KApjYPpHwVGOBzLbZ4cXtApliFN4BScyjQyZeGevjJ4rWitzPjs04LhEsyhf?=
+ =?us-ascii?Q?YwXo50DMvEpBng8gSA/UBOyZ/5pZMORVAil5VTgSbULdHNDsc119DzeeC6Fc?=
+ =?us-ascii?Q?yxJEtusOlxJ8NNKB5Ec/gOVxy0PNdiRqiAC7XkicPHomysy57/OY3bg0MHlK?=
+ =?us-ascii?Q?IETEcnUSFOakbuqpSwdVkki2CbZ9mWgilHrLEMZgGCqeo8Y04gs28iIG9Glc?=
+ =?us-ascii?Q?Wtzm06JHYKb1sOwdXXI1BUTYXVdiCDAmVhfgFzLmzCsvO7jnYVyn6Z+Md4hH?=
+ =?us-ascii?Q?xARJ3no6E22wzpnr3+UYy0NJuSUiSPixBx9Z0/MLDJd94ko2Mt6w4Sh7Z35p?=
+ =?us-ascii?Q?iCCuyQ8RNwGu13gVBkj6DAu1Pfi910BzMSaOcnCvA/QnAQWA2RJpupBkFqDq?=
+ =?us-ascii?Q?lwZ++12hlmVFYcjbrjeTFKgf2IxWBMSqTfOkIHu6b4+nFKP9C/4Ox4QUpprk?=
+ =?us-ascii?Q?Al+J5THoLtGZjWp837UuRq2W93WFEZdoWkryU++dvrOVEONoCvX0m+OFfDfU?=
+ =?us-ascii?Q?spPHwWkLrJzbIz05W4e/1tBMW1OPO6CHVBkSSTYT2EGPy4MS5sx0ez1jk2N6?=
+ =?us-ascii?Q?tsmz3ZwnhKZ2TGfwcnn4Ft5H0ixrxD0lX8cNWB0d55170fR2gtcKP2rHeD6p?=
+ =?us-ascii?Q?N42Hwa3y+L+Yh3VGmU6h0wSos4Ez7GwuxJud4NKgr4CbvvjlH4vobI+gpFWN?=
+ =?us-ascii?Q?IdFBBVL9R7MpmHZjwKM4Krli8hwAYnkvQO5Tl66+B3Gk6l9eiK4BgkgtEsGV?=
+ =?us-ascii?Q?TtPplztFiSTBmPdkHr+2RmVcQVVr9zdZmEXDSae+6pOl/wooeNq5hJvE4cgh?=
+ =?us-ascii?Q?UilPTzq5+D75BhbLHVLSYMTJ3fECD34+iygCyp8SEkoYH4UaGoLcEE1fgpW1?=
+ =?us-ascii?Q?ipjvBuppv9oP1isV9IzYYQhePOKEpj9wr7k7JRykcAZ6wePEQG28Psx+aHs2?=
+ =?us-ascii?Q?2l35XpKLfHwCItiKnlFoZaHx41pqy+/WH7nYor9f7Uo6Iw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <AB617D2C15B4734284690203916F115E@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20211001215858.1132715-1-joannekoong@fb.com> <20211001215858.1132715-4-joannekoong@fb.com>
-In-Reply-To: <20211001215858.1132715-4-joannekoong@fb.com>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 1 Oct 2021 16:13:30 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6CU+1qbt+dvT2m_Ys+3517e0DQ1wWCcJfgAWf6oRzGxA@mail.gmail.com>
-Message-ID: <CAPhsuW6CU+1qbt+dvT2m_Ys+3517e0DQ1wWCcJfgAWf6oRzGxA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 3/3] bpf/selftests: Add xdp
- bpf_load_tcp_hdr_options tests
-To:     Joanne Koong <joannekoong@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB5128.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ebc01d51-ccc2-41c2-2904-08d9853196e4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Oct 2021 23:17:07.9323
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JtyvIK53z+yGzVhvJa5HJQqjLNenC7JhhmpHf7bq8GzmD3ZllC4nRibIToxcUJe6ADQZlXRGtlkz9intmK+fkA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6343
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 1, 2021 at 3:04 PM Joanne Koong <joannekoong@fb.com> wrote:
->
-> This patch adds tests for bpf_load_tcp_hdr_options used by xdp
-> programs.
->
-> test_xdp_tcp_hdr_options.c:
-> - Tests ipv4 and ipv6 packets with TCPOPT_EXP and non-TCPOPT_EXP
-> tcp options set. Verify that options can be parsed and loaded
-> successfully.
-> - Tests error paths: TCPOPT_EXP with invalid magic, option with
-> invalid kind_len, non-existent option, invalid flags, option size
-> smaller than kind_len, invalid packet
->
-> Signed-off-by: Joanne Koong <joannekoong@fb.com>
-> ---
->  .../bpf/prog_tests/xdp_tcp_hdr_options.c      | 158 ++++++++++++++
->  .../bpf/progs/test_xdp_tcp_hdr_options.c      | 198 ++++++++++++++++++
->  2 files changed, 356 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_tcp_hdr_options.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_tcp_hdr_options.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_tcp_hdr_options.c b/tools/testing/selftests/bpf/prog_tests/xdp_tcp_hdr_options.c
-> new file mode 100644
-> index 000000000000..bd77593fb2dd
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_tcp_hdr_options.c
-> @@ -0,0 +1,158 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2021 Facebook */
-> +
-> +#include "test_progs.h"
-> +#include "network_helpers.h"
-> +#include "test_tcp_hdr_options.h"
-> +#include "test_xdp_tcp_hdr_options.skel.h"
-> +
-> +struct xdp_exprm_opt {
-> +       __u8 kind;
-> +       __u8 len;
-> +       __u16 magic;
-> +       struct bpf_test_option data;
-> +} __packed;
-> +
-> +struct xdp_regular_opt {
-> +       __u8 kind;
-> +       __u8 len;
-> +       struct bpf_test_option data;
-> +} __packed;
-> +
-> +struct xdp_test_opt {
-> +       struct xdp_exprm_opt exprm_opt;
-> +       struct xdp_regular_opt regular_opt;
-> +} __packed;
-> +
-> +struct xdp_ipv4_packet {
-> +       struct ipv4_packet pkt_v4;
-> +       struct xdp_test_opt test_opt;
-> +} __packed;
-> +
-> +struct xdp_ipv6_packet {
-> +       struct ipv6_packet pkt_v6;
-> +       struct xdp_test_opt test_opt;
-> +} __packed;
-> +
-> +static __u8 opt_flags = OPTION_MAX_DELACK_MS | OPTION_RAND;
-> +static __u8 exprm_max_delack_ms = 12;
-> +static __u8 regular_max_delack_ms = 21;
-> +static __u8 exprm_rand = 0xfa;
-> +static __u8 regular_rand = 0xce;
-> +
-> +static void init_test_opt(struct xdp_test_opt *test_opt,
-> +                         struct test_xdp_tcp_hdr_options *skel)
-> +{
-> +       test_opt->exprm_opt.kind = TCPOPT_EXP;
-> +       /* +1 for kind, +1 for kind-len, +2 for magic, +1 for flags, +1 for
-> +        * OPTION_MAX_DELACK_MAX, +1 FOR OPTION_RAND
-> +        */
-> +       test_opt->exprm_opt.len = 3 + TCP_BPF_EXPOPT_BASE_LEN;
-> +       test_opt->exprm_opt.magic = __bpf_htons(skel->rodata->test_magic);
-> +       test_opt->exprm_opt.data.flags = opt_flags;
-> +       test_opt->exprm_opt.data.max_delack_ms = exprm_max_delack_ms;
-> +       test_opt->exprm_opt.data.rand = exprm_rand;
-> +
-> +       test_opt->regular_opt.kind = skel->rodata->test_kind;
-> +       /* +1 for kind, +1 for kind-len, +1 for flags, +1 FOR
-> +        * OPTION_MAX_DELACK_MS, +1 FOR OPTION_RAND
-> +        */
-> +       test_opt->regular_opt.len = 5;
-> +       test_opt->regular_opt.data.flags = opt_flags;
-> +       test_opt->regular_opt.data.max_delack_ms = regular_max_delack_ms;
-> +       test_opt->regular_opt.data.rand = regular_rand;
-> +}
-> +
-> +static void check_opt_out(struct test_xdp_tcp_hdr_options *skel)
-> +{
-> +       struct bpf_test_option *opt_out;
-> +       __u32 duration = 0;
-> +
-> +       opt_out = &skel->bss->exprm_opt_out;
-> +       CHECK(opt_out->flags != opt_flags, "exprm flags",
-> +             "flags = 0x%x", opt_out->flags);
-> +       CHECK(opt_out->max_delack_ms != exprm_max_delack_ms, "exprm max_delack_ms",
-> +             "max_delack_ms = 0x%x", opt_out->max_delack_ms);
-> +       CHECK(opt_out->rand != exprm_rand, "exprm rand",
-> +             "rand = 0x%x", opt_out->rand);
-> +
-> +       opt_out = &skel->bss->regular_opt_out;
-> +       CHECK(opt_out->flags != opt_flags, "regular flags",
-> +             "flags = 0x%x", opt_out->flags);
-> +       CHECK(opt_out->max_delack_ms != regular_max_delack_ms, "regular max_delack_ms",
-> +             "max_delack_ms = 0x%x", opt_out->max_delack_ms);
-> +       CHECK(opt_out->rand != regular_rand, "regular rand",
-> +             "rand = 0x%x", opt_out->rand);
-> +}
-> +
-> +void test_xdp_tcp_hdr_options(void)
-> +{
-> +       int err, prog_fd, prog_err_path_fd, prog_invalid_pkt_fd;
-> +       struct xdp_ipv6_packet ipv6_pkt, invalid_pkt;
-> +       struct test_xdp_tcp_hdr_options *skel;
-> +       struct xdp_ipv4_packet ipv4_pkt;
-> +       struct xdp_test_opt test_opt;
-> +       __u32 duration, retval, size;
-> +       char buf[128];
-> +
-> +       /* Load XDP program to introspect */
-> +       skel = test_xdp_tcp_hdr_options__open_and_load();
-> +       if (CHECK(!skel, "skel open and load",
-> +                 "%s skeleton failed\n", __func__))
-> +               return;
-> +
-> +       prog_fd = bpf_program__fd(skel->progs._xdp_load_hdr_opt);
-> +
-> +       init_test_opt(&test_opt, skel);
-> +
-> +       /* Init the packets */
-> +       ipv4_pkt.pkt_v4 = pkt_v4;
-> +       ipv4_pkt.pkt_v4.tcp.doff += 3;
-> +       ipv4_pkt.test_opt = test_opt;
-> +
-> +       ipv6_pkt.pkt_v6 = pkt_v6;
-> +       ipv6_pkt.pkt_v6.tcp.doff += 3;
-> +       ipv6_pkt.test_opt = test_opt;
-> +
-> +       invalid_pkt.pkt_v6 = pkt_v6;
-> +       /* Set to an offset that will exceed the xdp data_end */
-> +       invalid_pkt.pkt_v6.tcp.doff += 4;
-> +       invalid_pkt.test_opt = test_opt;
-> +
-> +       /* Test on ipv4 packet */
-> +       err = bpf_prog_test_run(prog_fd, 1, &ipv4_pkt, sizeof(ipv4_pkt),
-> +                               buf, &size, &retval, &duration);
-> +       CHECK(err || retval != XDP_PASS,
-> +             "xdp_tcp_hdr_options ipv4", "err val %d, retval %d\n",
-> +             skel->bss->err_val, retval);
+On Fri, Oct 01, 2021 at 03:59:36PM -0700, Jakub Kicinski wrote:
+> On Fri, 1 Oct 2021 22:46:34 +0000 Vladimir Oltean wrote:
+> > On Fri, Oct 01, 2021 at 03:11:15PM -0700, Jakub Kicinski wrote:
+> > > On Thu, 30 Sep 2021 15:59:40 +0800 Xiaoliang Yang wrote: =20
+> > > > VSC9959 hardware supports Per-Stream Filtering and Policing(PSFP).
+> > > > This patch series add PSFP support on tc flower offload of ocelot
+> > > > driver. Use chain 30000 to distinguish PSFP from VCAP blocks. Add g=
+ate
+> > > > and police set to support PSFP in VSC9959 driver. =20
+> > >
+> > > Vladimir, any comments? =20
+> >=20
+> > Sorry, I was intending to try out the patches and get an overall feel
+> > from there, but I had an incredibly busy week and simply didn't have ti=
+me.
+> > If it's okay to wait a bit more I will do that tomorrow.
+>=20
+> Take your time, I'll mark it as Deferred for now.
 
-Shall we skip the following checks if the test_run fails?
+Thank you.
 
-> +       check_opt_out(skel);
-> +
-> +       /* Test on ipv6 packet */
-> +       err = bpf_prog_test_run(prog_fd, 1, &ipv6_pkt, sizeof(ipv6_pkt),
-> +                               buf, &size, &retval, &duration);
-> +       CHECK(err || retval != XDP_PASS,
-> +             "xdp_tcp_hdr_options ipv6", "err val %d, retval %d\n",
-> +             skel->bss->err_val, retval);
-> +       check_opt_out(skel);
-> +
-> +       /* Test error paths */
-> +       prog_err_path_fd =
-> +               bpf_program__fd(skel->progs._xdp_load_hdr_opt_err_paths);
-> +       err = bpf_prog_test_run(prog_err_path_fd, 1, &ipv6_pkt, sizeof(ipv6_pkt),
-> +                               buf, &size, &retval, &duration);
-> +       CHECK(err || retval != XDP_PASS,
-> +             "xdp_tcp_hdr_options err_path", "err val %d, retval %d\n",
-> +             skel->bss->err_val, retval);
+> Maybe I shouldn't comment based on the snippets of understanding but
+> "steal some FDB entries" would be my first reaction.
 
-Ditto.
+No, it's absolutely reasonable. I feel like it's also going to be your
+second reaction, and third, and...
 
-> +
-> +       /* Test invalid packet */
-> +       prog_invalid_pkt_fd =
-> +               bpf_program__fd(skel->progs._xdp_load_hdr_opt_invalid_pkt);
-> +       err = bpf_prog_test_run(prog_invalid_pkt_fd, 1, &invalid_pkt,
-> +                               sizeof(invalid_pkt), buf, &size, &retval,
-> +                               &duration);
-> +       CHECK(err || retval != XDP_PASS,
-> +             "xdp_tcp_hdr_options invalid_pkt", "err val %d, retval %d\n",
-> +             skel->bss->err_val, retval);
-> +
-> +       test_xdp_tcp_hdr_options__destroy(skel);
-> +}
+The thing is, if we depend on the bridge driver's state only for this
+snowflake piece of hardware, user experience is going to absolutely suck.
+Having a selftest inside the kernel would be the litmus test we need for
+deciding whether the way we expose the feature is sane or not.
+The kernel should abstract the hardware and its quirks and provide a
+standardized and abstract interface, that's literally its job. If you
+tell me your hardware needs special massaging in this or that way, I'm
+better off just using a random SDK.
 
-[...]
+> Xiaoliang said:
+>=20
+> 	The PSFP gate and police action are set on ingress port, and
+> 	"tc-filter" has no parameter to set the forward port for the
+> 	filtered stream.
+>=20
+> which seems to undersell TC.
+
+I know, right? That's the loop we can't get out of, TSN is still pretty
+much in its infancy, and with pre-standard hardware it's really difficult
+to create software models that stand the test of time.
+I've seen other hardware implementations for PSFP and they do use TCAM
+and are strictly decoupled from the bridging service. Microchip say that
+their newer hardware generations are also thought out this way. So while
+yes, Ocelot is driving me crazy for special-casing the NULL stream
+identification function and implementing it using bridge FDB entries
+(because those types of flows only match on MAC DA and VLAN ID, somebody
+thought "oh, I know something that can already do that!"). That is
+definitely not what TSN streams in the general sense are about, and I do
+feel that classifier-action pairs in TC are really the right software
+model overall, from an application/user point of view.=
