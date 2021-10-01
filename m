@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71A3141EDB4
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 14:42:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EC7341EDC1
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 14:45:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354426AbhJAMoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 08:44:11 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:40446 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353853AbhJAMoL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 08:44:11 -0400
+        id S1354472AbhJAMrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 08:47:11 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:14938 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354417AbhJAMrJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 08:47:09 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1633092147; h=Content-Transfer-Encoding: Content-Type:
+ s=smtp; t=1633092325; h=Content-Transfer-Encoding: Content-Type:
  MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=oebx3fcM3g966gWCz22lzF59IX1zMeaSKJn177/dREs=; b=HhJAyS9S2zcg0YIBeYaxA2HepJR501SF+ol1Q0FOiGX0WVIZN/Oy3BfYISDQtRosXk6lScZA
- yPFDMwqjYMzR0ldHzPREFQuKPx+7y6pyptMWGQ7vqkicsHtcvloMEUPC1BIEOgJap7DIM6Pj
- oTZ7PC3F9EA5T03iZxWBh5JRYTQ=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ To: From: Sender; bh=DxUzotX+Y7gO/nEKkP180xLqp5Xbdp3BDVDGIp9TVHI=; b=AP08yk6XSzc/ZrFpN+kUqCZrpWY4Gv+47bE64L6xSAqkAdCjYqtuwMMSu9WIP+Kmblvfsqlp
+ 6YhOV8qxDZH4/yRb61ZrFuVF/kgpjPPCeBHB35dhPmcGzrzWwdC0GaYxWjJkFr+FlMXNDFj/
+ XBdUQKuAtCI9u9sRPrqN27/qM2k=
+X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 6157022b8578ef11ed835006 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 01 Oct 2021 12:42:19
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 615702db605ecf100bfaac94 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 01 Oct 2021 12:45:15
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id F029DC4360C; Fri,  1 Oct 2021 12:42:18 +0000 (UTC)
+        id 23036C43618; Fri,  1 Oct 2021 12:45:15 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,13 +37,13 @@ Received: from tykki (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 782CDC43460;
-        Fri,  1 Oct 2021 12:42:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 782CDC43460
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A3539C4338F;
+        Fri,  1 Oct 2021 12:45:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org A3539C4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -52,12 +52,15 @@ Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-mmc@vger.kernel.org,
         Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
         Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v7 00/24] wfx: get out from the staging area
+Subject: Re: [PATCH v7 12/24] wfx: add hif_api_*.h
 References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com>
-Date:   Fri, 01 Oct 2021 15:42:13 +0300
-In-Reply-To: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com> (Jerome
-        Pouiller's message of "Mon, 20 Sep 2021 18:11:12 +0200")
-Message-ID: <87bl48kjbu.fsf@codeaurora.org>
+        <20210920161136.2398632-13-Jerome.Pouiller@silabs.com>
+        <875yuhkm4c.fsf@codeaurora.org> <2600267.GQK6fj20dd@pc-42>
+Date:   Fri, 01 Oct 2021 15:45:05 +0300
+In-Reply-To: <2600267.GQK6fj20dd@pc-42> (=?utf-8?B?IkrDqXLDtG1l?=
+ Pouiller"'s message of "Fri,
+        01 Oct 2021 13:52:52 +0200")
+Message-ID: <877dewkj72.fsf@codeaurora.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -66,43 +69,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com> writes:
 
-> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+> On Friday 1 October 2021 13:41:55 CEST Kalle Valo wrote:
+>> Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+>>=20
+>> > From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>> >
+>> > Signed-off-by: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>>=20
+>> [...]
+>>=20
+>> > --- /dev/null
+>> > +++ b/drivers/net/wireless/silabs/wfx/hif_api_cmd.h
+>> > @@ -0,0 +1,555 @@
+>> > +/* SPDX-License-Identifier: Apache-2.0 */
+>>=20
+>> I don't how I missed this earlier:
+>>=20
+>> hif_api_cmd.h:/* SPDX-License-Identifier: Apache-2.0 */
+>> hif_api_general.h:/* SPDX-License-Identifier: Apache-2.0 */
+>> hif_api_mib.h:/* SPDX-License-Identifier: Apache-2.0 */
+>>=20
+>> Apache-2.0 license is a blocker for me, see LICENSES/dual/Apache-2.0.
 >
-> Hello,
->
-> I think the wfx driver is now mature enough to be accepted in the
-> drivers/net/wireless directory.
->
-> The firmware is now a part of the linux-firmware repository since relase
-> 20210315[1]. It had taken a bit of time because I have worked with the le=
-gal
-> department to simplify the redistribution terms of the firmware.
->
-> [1]: https://lore.kernel.org/linux-firmware/2833354.gXvVfaC4I7@pc-42/
->
->
-> As requested by Kalle[2], I send one file per patch. At the end, all the
-> patches (or at least the patches 3 to 24) will be squashed (therefore, I
-> didn't bother to write real commit messages).
+> Ok. It is not a problem here. I have the authorisation to change it in
+> GPLv2-only.
 
-I did another review of the driver and in general it looks pretty good.
-The use of Apache license, PDS file format and the missing firmware
-directory are the biggest issues I saw.
-
-> v7:
->   - Update location of mmc-pwrseq-simple.txt (Rob)
->
-> v6:
->   - Rebase on last staging-next (roughtly somewhere after the 5.15
->     merge window). So, this series include the patches from:
->       https://lore.kernel.org/netdev/20210913130203.1903622-1-Jerome.Poui=
-ller@silabs.com/
-
-BTW, it would be nice to know what commit id are you using from
-staging-next, I prefer to also look at the full tree while I'm reviewing
-the patches.
+Great, thanks!
 
 --=20
 https://patchwork.kernel.org/project/linux-wireless/list/
