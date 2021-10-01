@@ -2,87 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7622541F7FC
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 01:02:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFAE941F7FD
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 01:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231341AbhJAXDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 19:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59824 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230337AbhJAXDt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 19:03:49 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5CFC061775;
-        Fri,  1 Oct 2021 16:02:04 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id h2so23584957ybi.13;
-        Fri, 01 Oct 2021 16:02:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RlfblMKoDsp+/IB/1ts+074qWeC+fOJ9hDq+pm5YCqI=;
-        b=nN6y5g5GPQGKJcaPcMGFCBnD5a86JxH4WYT/yL73WER2e1G+cYmu7mG9l0uROTvQeJ
-         2JemHRjQJQiS4ycgfpDI/2hR8O5jq7iDAcsksTf8AuGYo7INdYA3QE6gui1wOuziV8A8
-         jJtkXY3o24rI9Bx96DHlOixKiBW2LlKVZ9cipplKReynNQjYo7++K0Lhq6w9NVqoovIJ
-         syHbCF+XUC+loMAQXYE2wtRRqQcfDkKKzZxb1YVj5AcaZUTkXiJcx0cbYDy38BB4/ms0
-         U4D2/dDBpy7wsLEUFLacIPAD5XfGVyJUTK8YryxSgISnI/kr5prtmqkxcqfR/DjyO3KU
-         hVnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RlfblMKoDsp+/IB/1ts+074qWeC+fOJ9hDq+pm5YCqI=;
-        b=6LRKdTkfDpoxlv9SxAxfMyptDgUg8F6uh6dSPvowxvfiKW8ePefPRaPedXCXa1uPXC
-         6XELgBatRJlVN3sfl21EehuGhjrsdy70nYzG9TTFZg56unyO5gnlWPAaViVJvl6Hb6lB
-         lK8kB0fN8OM/W55eVuH5JnNtSae7ILZp9/5p6D3CkEcMfvoLLaFUzWx3oyvOfH10Sesy
-         IEZccxBTr3eR5U/iiIflTEq7qtwIa5U4ABaxEx56FJIvj/sv03EkNrbl//VnyuVp1eyy
-         e/RMsCr1Ss9kwDKkreuOZIRhZrIzu54bD2Hl4v9qsrfuvl1MVNi9nu1jS1eoWay5vZO7
-         1Ozg==
-X-Gm-Message-State: AOAM530IXsFh7yFbtdJzEv3Dvv2bxK2I9JA6lLdwCan5Br2mT7xWrPf6
-        X6Rek3qHSLpOWjF0rCMgcbB3i3ZhtPFFwGtzTNE=
-X-Google-Smtp-Source: ABdhPJzHWkM+MhXslYEaYqIM3ECnz9HEYkv7YepMqvBFqpiY1RYalLzLNczY20aXHEjPd+XdLvW9bX28l7zklTdJT2A=
-X-Received: by 2002:a25:e7d7:: with SMTP id e206mr492597ybh.267.1633129324175;
- Fri, 01 Oct 2021 16:02:04 -0700 (PDT)
+        id S231374AbhJAXEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 19:04:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37952 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231347AbhJAXEX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Oct 2021 19:04:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DD37661AAB;
+        Fri,  1 Oct 2021 23:02:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633129359;
+        bh=Et1vBAzzXp38/cf+29ag0WERSDPG0JukGE/4eE9eArw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sup5I6n2GufZT9C0pd+8i1mSTb1yX8W7QsogbRBHs01r0s0b1OnqXbVnjyvTGS2IF
+         Cmg8+tZYI/7GS0weqKJYeuLjPvNA2ho0UKt6ueGQaXqN41N56RdfwUQXwcJbg8mz3c
+         XTiUCodhw54UEl+AoYwHILR/f4H7EPbH/0tk5Dvd7QUktfCHZJUrqHH7xRp73/RgZ0
+         uzFZuA/uzdPRk+Y0ROC2xykjaaMNJsPbUUaU/lZM1vZBfh7JL/PBIGHNnF+JcaZQyZ
+         CO0cMXfdfWmQbQJx6jtK90Ag4V5MKcZlHt5F+elmDjOp0FhsDnyNYM+SHBCXuPJxKw
+         yzMi22MTjinEQ==
+Date:   Fri, 1 Oct 2021 16:02:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
+Cc:     netdev@vger.kernel.org, Punit Agrawal <punitagrawal@gmail.com>,
+        linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, davem@davemloft.net,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        Michael Riesch <michael.riesch@wolfvision.net>
+Subject: Re: [PATCH] net: stmmac: dwmac-rk: Fix ethernet on rk3399 based
+ devices
+Message-ID: <20211001160238.4335a83d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <12744188.XEzkDOsqEc@diego>
+References: <20210929135049.3426058-1-punitagrawal@gmail.com>
+        <12744188.XEzkDOsqEc@diego>
 MIME-Version: 1.0
-References: <20211001110856.14730-1-quentin@isovalent.com> <20211001110856.14730-4-quentin@isovalent.com>
-In-Reply-To: <20211001110856.14730-4-quentin@isovalent.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 1 Oct 2021 16:01:53 -0700
-Message-ID: <CAEf4BzZ4gH2WtN2zsMe1b+jC1us14hSqoUSNCQerLqaFH5PLGw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 3/9] tools: resolve_btfids: install libbpf
- headers when building
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 1, 2021 at 4:09 AM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> API headers from libbpf should not be accessed directly from the
-> library's source directory. Instead, they should be exported with "make
-> install_headers". Let's make sure that resolve_btfids installs the
-> headers properly when building.
->
-> When descending from a parent Makefile, the specific output directories
-> for building the library and exporting the headers are configurable with
-> LIBBPF_OUT and LIBBPF_DESTDIR, respectively. This is in addition to
-> OUTPUT, on top of which those variables are constructed by default.
->
-> Also adjust the Makefile for the BPF selftests in order to point to the
-> (target) libbpf shared with other tools, instead of building a version
-> specific to resolve_btfids.
->
-> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> ---
->  tools/bpf/resolve_btfids/Makefile    | 17 ++++++++++++-----
->  tools/bpf/resolve_btfids/main.c      |  4 ++--
->  tools/testing/selftests/bpf/Makefile |  7 +++++--
->  3 files changed, 19 insertions(+), 9 deletions(-)
->
+On Wed, 29 Sep 2021 23:02:35 +0200 Heiko St=C3=BCbner wrote:
+> Am Mittwoch, 29. September 2021, 15:50:49 CEST schrieb Punit Agrawal:
+> > Commit 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced pm_runtime_=
+enable warnings")
+> > while getting rid of a runtime PM warning ended up breaking ethernet
+> > on rk3399 based devices. By dropping an extra reference to the device,
+> > the commit ends up enabling suspend / resume of the ethernet device -
+> > which appears to be broken.
+> >=20
+> > While the issue with runtime pm is being investigated, partially
+> > revert commit 2d26f6e39afb to restore the network on rk3399.
+> >=20
+> > Fixes: 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced pm_runtime_=
+enable warnings")
+> > Suggested-by: Heiko Stuebner <heiko@sntech.de>
+> > Signed-off-by: Punit Agrawal <punitagrawal@gmail.com>
+> > Cc: Michael Riesch <michael.riesch@wolfvision.net> =20
+>=20
+> On a rk3399-puma which has the described issue,
+> Tested-by: Heiko Stuebner <heiko@sntech.de>
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Applied, thanks!
