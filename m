@@ -2,149 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB98641EB37
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 12:53:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 217AA41EB4C
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 13:01:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353519AbhJAKyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 06:54:53 -0400
-Received: from mail.fris.de ([116.203.77.234]:43232 "EHLO mail.fris.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352922AbhJAKye (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 06:54:34 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 363A0BFC32;
-        Fri,  1 Oct 2021 12:52:46 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1633085567; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-         content-transfer-encoding:in-reply-to:references;
-        bh=6pYBgI+8NKm6cyLCUDJZUxM0MC4KtCLVKARxH3IY6YI=;
-        b=M34EetMd2A5fYceHKi9nBMFj8eGcgra/MGvCQfMERj4Z5QnBX0dWDT389Qm7xjJ+Vmp9tM
-        znCbQlnNxfBuGI0x1pQlGe/3fhFEIOx9XuiOAwkepLrrQG6Sg/iaLfi8AFLExiFqiNJzwM
-        9Q7DoZcGcKo8cd2vjAsSlvdPcUO6EJz3KlxeenB7DBeSFdJz+0qDCyH/vY9UU/+x77Rvni
-        zgCNzrFe2zYnGB7PEysknu/M7lmdCJIx6lk63DgSwiq/P2NX2IpC+0Vms9DAMHKdz85j00
-        FA35Gdq532c7H4X7nJTjoyElqcSbDYNTHjqvO0Y+XIB5p4POk+dY/5VmVWabhQ==
-Message-ID: <25f24602-e3b4-197f-338b-167b67308f2c@fris.de>
-Date:   Fri, 1 Oct 2021 12:52:45 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.1
-Subject: Re: [PATCH 1/3] net: phy: mscc: Add possibilty to disable combined
- LED mode
-Content-Language: en-GB
-To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        linux-leds@vger.kernel.org
+        id S1353717AbhJALDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 07:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33000 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353710AbhJALCt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 07:02:49 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B196DC061775;
+        Fri,  1 Oct 2021 04:01:04 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id q17-20020a7bce91000000b0030d4e298215so894111wmj.0;
+        Fri, 01 Oct 2021 04:01:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AlljMHBis/HGJBiP3p84b0NWwK4Vv/mNrhgfG66xRN0=;
+        b=kL8k3KExxNPjOhmf5Yc13M8iZH785dkPpqzkefCPkoYoobgeIRoIHDV8wgOno4cJnI
+         QBGI7Ak9zU7bgiDFYIMUJ7i6bSpO/5cGqY6Od1wDemxYR6iCuh4UEMviiE4BK3Z45RqJ
+         1LrZ85eo6KjDTmJvv1H3XMLHoh0Vz7Jdw5GuBHZUxXDF6kQwd2SrlfkdUdzxHvEQiP2q
+         uhkHMHTfJF2yV/HucKogY5JzXGXRfcAq60mT8AUjImo451ZxpQYjK373T2zdPg1AUX6N
+         AYB8xSYi/WM5rW4AyPhDw0gqEWyVfmh8HDPGmBPRL8iy+ypNZU1hzys3VllwC1P/TrKg
+         ut4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AlljMHBis/HGJBiP3p84b0NWwK4Vv/mNrhgfG66xRN0=;
+        b=5obvZzoNw99d6fy9vdldFGxvaffoXcnPkGU/1zMV8l5ahbhvYdHtmnZChcOIwueztY
+         /zs5e7Wpy0MmtLIEA4cnwatQ3NsqVVJRJWIgmgbnXpTn5xw0NQw67ZciqqBmiV1pr0Pa
+         PLiKSeRNXyP4xwWnn/rZ+4AwmBI8VZh9rGFfxfk5XUA1+QUr/MyvEnPYcJeJ7hhu693M
+         XGIqxJWm/e8Xz+9wHO46ynoIvIH6PmmEsTkqZjDUa1YEwxeaz2RPlBu9+G5MHhL9UYNe
+         cTE9lvjLtQik7OWdwTjexfrzZNOi6jkX3Lp972RA5EPutF3eGdW/etf5gd4X8HApwGvp
+         O6uQ==
+X-Gm-Message-State: AOAM531NbfYlpEGEAlLWllZ+M5ycrD84XAdzBvlWUsZNXaTj65bgtIES
+        sJiAfM9EOGG/n2/yGIo0iOYTQGXuGWI=
+X-Google-Smtp-Source: ABdhPJzLsgwBDTgq0mPqkClwiGnbU8lLscbd3XxcsEkz1bR8+RG3h7laXw0AK7hf+stOwcAdlLKVHQ==
+X-Received: by 2002:a7b:cb4b:: with SMTP id v11mr3803605wmj.155.1633086063029;
+        Fri, 01 Oct 2021 04:01:03 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-67-254.ip85.fastwebnet.it. [93.42.67.254])
+        by smtp.gmail.com with ESMTPSA id q18sm7337204wmc.7.2021.10.01.04.01.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Oct 2021 04:01:02 -0700 (PDT)
+Date:   Fri, 1 Oct 2021 13:01:02 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Steen Hegelund <steen.hegelund@microchip.com>
-References: <20210930125747.2511954-1-frieder@fris.de>
- <YVZQuIr2poOfWvcO@lunn.ch> <18de5e10-f41f-0790-89c8-3a70d48539be@kontron.de>
- <20211001120952.6be6bb36@thinkpad>
-From:   Frieder Schrempf <frieder@fris.de>
-In-Reply-To: <20211001120952.6be6bb36@thinkpad>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next] drivers: net: dsa: qca8k: convert to
+ GENMASK/FIELD_PREP/FIELD_GET
+Message-ID: <YVbqbq180jgrhiIe@Ansuel-xps.localdomain>
+References: <20211001013729.21849-1-ansuelsmth@gmail.com>
+ <91eb5d7e-b62c-45e6-16a3-1d9c1c780c7b@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <91eb5d7e-b62c-45e6-16a3-1d9c1c780c7b@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marek,
+On Thu, Sep 30, 2021 at 07:14:13PM -0700, Florian Fainelli wrote:
+> 
+> 
+> On 9/30/2021 6:37 PM, Ansuel Smith wrote:
+> > Convert and try to standardize bit fields using
+> > GENMASK/FIELD_PREP/FIELD_GET macros. Rework some logic to support the
+> > standard macro and tidy things up. No functional change intended.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> > 
+> > I still need to test this in every part but I would like to have some
+> > approval about this kind of change. Also there are tons of warning by
+> > checkpatch about too long line... Are they accepted for headers? I can't
+> > really find another way to workaround the problem as reducing the define
+> > name would make them less descriptive.
+> > Aside from that I did the conversion as carefully as possible so in
+> > theory nothing should be broken and the conversion should be all
+> > correct. Some real improvement by using filed macro are in the
+> > fdb_read/fdb_write that now are much more readable.
+> 
+> My main concern is that it is going to be a tad harder to back port fixes
+> made to this driver with such changes in place, so unfortunately it is
+> usually a matter of either the initial version of the driver use BIT(),
+> FIELD_{PREP,GET} and GENMASK, or the very few commits following the initial
+> commit take care of that, and then it is all rosy for everyone, or else it
+> may be complicated.
+> 
+> You are one of the active contributors to this driver, so ultimately you
+> should decide.
+> -- 
+> Florian
 
-On 01.10.21 12:09, Marek Behún wrote:
-> On Fri, 1 Oct 2021 11:20:36 +0200
-> Frieder Schrempf <frieder.schrempf@kontron.de> wrote:
-> 
->> On 01.10.21 02:05, Andrew Lunn wrote:
->>> On Thu, Sep 30, 2021 at 02:57:43PM +0200, Frieder Schrempf wrote:
->>>> From: Frieder Schrempf <frieder.schrempf@kontron.de>
->>>>
->>>> By default the LED modes offer to combine two indicators like speed/link
->>>> and activity in one LED. In order to use a LED only for the first of the
->>>> two modes, the combined feature needs to be disabled.
->>>>
->>>> In order to do this we introduce a boolean devicetree property
->>>> 'vsc8531,led-[N]-combine-disable' and wire it up to the matching
->>>> bits in the LED behavior register.
->>>
->>> Sorry, but no DT property. Each PHY has its own magic combination of
->>> DT properties, nothing shared, nothing common. This does not scale.
->>>
->>> Please look at the work being done to control PHY LEDs using the Linux
->>> LED infrastructure. That should give us one uniform interface for all
->>> PHY LEDs.
->>
->> +Cc: Marek
->>
->> I guess you are referring to this: [1]?
->>
->> If so, the last version I could find is a year old now. Is anyone still
->> working on this?
-> 
-> Yes, I am still working on this.
-> 
-> Anyway the last version is not one year old, the last version to add
-> this support is 4 months old:
-> https://lore.kernel.org/netdev/20210602144439.4d20b295@dellmb/T/
-
-Thanks for pointing out the latest patches. Good to know that you are 
-still working on this.
-
-> 
-> This version does not add the code for ethernet PHYs, instead it just
-> tries to touch only the LED subsystem by adding the API for offloading
-> LED triggers and an example implementation for Turris Omnia LED
-> controller.
-> 
-> I will probably send another version this weekend. Sorry this takes
-> this long.
-
-No worries, and thanks for the work!
-
-> 
-> 
->> I understand, that the generic approach is the one we want to have, but
->> does this really mean adding PHY led configuration via DT to existing
->> drivers (that already use DT properties for LED modes) is not accepted
->> anymore, even if the new API is not yet in place?
-> 
-> I don't know about Rob, but I would be against it.
-> 
-> But if you need to have your PHY LED configured with via devicetree
-> ASAP, instead of proposing the vendor specific property, you can
-> propose LED subnodes and properties that will be generic and compatible
-> with the LED subsystem API, i.e. something like:
-> 
->    ethernet-phy@1 {
->      .... eth phy properties;
-> 
->      leds {
->        led@0 {
->          reg = <0>;
->          color = <LED_COLOR_ID_GREEN>;
->          /* this LED should indicate link/speed */
->          function = LED_FUNCTION_LINK;
->        };
->      };
->    }
-> 
-> Then make your PHY driver parse this, and make it so that if
-> function is LED_FUNCTION_LINK or LED_FUNCTION_ACTIVITY, the driver will
-> disable combined mode.
-> 
-> Afterwards, when LED subsystem has support for trigger offloading, you
-> can update mscc driver so that instead of just disabling combined mode,
-> it will register the LEDs via LED subsystem...
-
-Good idea, but I'm not really in a hurry. Now knowing that work on the 
-trigger offloading is still active, I guess I will just wait a bit until 
-the dust has settled and maybe the bindings have been defined. Then I 
-can try to implement this in the PHY driver.
-
-Thanks
-Frieder
+Problem I'm trying to solve here is that I notice various name scheme
+used and not an unique one... (many _S and _M mixed with MASK and SHIFT)
+Various shift and strange bits handling. I think this is needed to
+improve the code in all the next release.
+About backports you mean for older kernel (bugfixes) or for external
+project (backports for openwrt, for example?) Anyway in the main code
+(the one in theory that should receive backports) I just reworked the ACL
+code that should be stable and the switch ID handling (I don't think
+there is anything to fix there). Aside from that and some improvement to
+VLAN, I tried to implement FIELD_PREP only in the define without
+touching qca8k code. 
+I honestly don't know if this would cause that much of a problem with
+backports (assuming they only touch qca8k code and not header).
+Would love to receive some feedback if I'm wrong about my idea.
+Any feedback about the warning for long names in the define? Are they
+accepted? I can't find anywhere how we should handle them.
+-- 
+Ansuel
