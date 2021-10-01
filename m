@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BD7D41EA1C
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 11:52:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F35341EA31
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 11:55:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353204AbhJAJyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 05:54:17 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:15216 "EHLO m43-7.mailgun.net"
+        id S1353257AbhJAJ5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 05:57:38 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:22568 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353121AbhJAJyQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 05:54:16 -0400
+        id S1353183AbhJAJ5g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Oct 2021 05:57:36 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1633081951; h=Content-Transfer-Encoding: Content-Type:
+ s=smtp; t=1633082153; h=Content-Transfer-Encoding: Content-Type:
  MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=2bttLv42HrO8OSNS4BdRIDDtX+8/+9g8pCv8FTqYHyI=; b=Qr2zPMnIy3bNVfalULgSjcVeWGuGZgXvH/cOk18lfDPZDDvl6BwmpEzI5ZVyv2JTQY1Xhhba
- 8Kc9XkbmlIGGPPCmojBizlvXZ79PxU3MDWp4MKCyVWfV4ETiRgYUegSGBes7VzM6vW1tgE23
- InbxdT/chHVPtLGY5F8rhzd72yU=
+ To: From: Sender; bh=tMw5Hzb3ztdNEHxY4bAev68n6seU8HT3Mf7aFuIt4P8=; b=rdHIMJnrygDT4HQsdbk1vGLisqmAwBPTqYwmEkK/eo4DZs24rq3Y7FLPZ4rVfV4FcM+8uPFT
+ wxL8Jvi1IA/EC0OHna65u/Q0ZQuYHJq1X1mJJgKM7U/2La590uUKIEo6PYrnORyxYgqUiF6j
+ 2nbo57CndejHwtvijRNT+UUOWQQ=
 X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
  smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 6156da5e605ecf100b477d37 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 01 Oct 2021 09:52:30
+ 6156db1c605ecf100b49b611 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 01 Oct 2021 09:55:40
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E3BECC4361A; Fri,  1 Oct 2021 09:52:29 +0000 (UTC)
+        id 910CFC43618; Fri,  1 Oct 2021 09:55:40 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,9 +37,9 @@ Received: from tykki (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id CDC00C4338F;
-        Fri,  1 Oct 2021 09:52:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org CDC00C4338F
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E8C99C4338F;
+        Fri,  1 Oct 2021 09:55:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org E8C99C4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 From:   Kalle Valo <kvalo@codeaurora.org>
@@ -52,13 +52,13 @@ Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-mmc@vger.kernel.org,
         Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
         Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v7 09/24] wfx: add hwio.c/hwio.h
+Subject: Re: [PATCH v7 13/24] wfx: add hif_tx*.c/hif_tx*.h
 References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com>
-        <20210920161136.2398632-10-Jerome.Pouiller@silabs.com>
-Date:   Fri, 01 Oct 2021 12:52:20 +0300
-In-Reply-To: <20210920161136.2398632-10-Jerome.Pouiller@silabs.com> (Jerome
-        Pouiller's message of "Mon, 20 Sep 2021 18:11:21 +0200")
-Message-ID: <87k0ixkr6z.fsf@codeaurora.org>
+        <20210920161136.2398632-14-Jerome.Pouiller@silabs.com>
+Date:   Fri, 01 Oct 2021 12:55:33 +0300
+In-Reply-To: <20210920161136.2398632-14-Jerome.Pouiller@silabs.com> (Jerome
+        Pouiller's message of "Mon, 20 Sep 2021 18:11:25 +0200")
+Message-ID: <87fstlkr1m.fsf@codeaurora.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -72,122 +72,62 @@ Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
 > From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
 >
 > Signed-off-by: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
-> ---
->  drivers/net/wireless/silabs/wfx/hwio.c | 340 +++++++++++++++++++++++++
->  drivers/net/wireless/silabs/wfx/hwio.h |  79 ++++++
 
 [...]
 
-> +static int indirect_read(struct wfx_dev *wdev, int reg, u32 addr,
-> +			 void *buf, size_t len)
-> +{
-> +	int ret;
-> +	int i;
-> +	u32 cfg;
-> +	u32 prefetch;
-> +
-> +	WARN_ON(len >=3D 0x2000);
-
-A define for the magic value, please. I see this 0x2000 limit multiple
-times.
-
-> +	WARN_ON(reg !=3D WFX_REG_AHB_DPORT && reg !=3D WFX_REG_SRAM_DPORT);
-
-I see quite a lot of WARN() and WARN_ON() in the driver. Do note that
-WARN() and WARN_ON() are a bit dangerous to use in the data path as an
-attacker, or even just a bug, might easily spam the kernel log which
-might result to host reboots due to watchdog triggering or other
-resource starvation. I recommend using some ratelimited versions of
-printk() macros, for example dev_*() if they have ratelimits. Not a
-blocker, but wanted to point out anyway.
-
-> +int wfx_data_read(struct wfx_dev *wdev, void *buf, size_t len)
-> +{
-> +	int ret;
-> +
-> +	WARN((long)buf & 3, "%s: unaligned buffer", __func__);
-
-IS_ALIGNED()?
-
-> +	wdev->hwbus_ops->lock(wdev->hwbus_priv);
-> +	ret =3D wdev->hwbus_ops->copy_from_io(wdev->hwbus_priv,
-> +					    WFX_REG_IN_OUT_QUEUE, buf, len);
-> +	_trace_io_read(WFX_REG_IN_OUT_QUEUE, buf, len);
-> +	wdev->hwbus_ops->unlock(wdev->hwbus_priv);
-> +	if (ret)
-> +		dev_err(wdev->dev, "%s: bus communication error: %d\n",
-> +			__func__, ret);
-> +	return ret;
-> +}
-> +
-> +int wfx_data_write(struct wfx_dev *wdev, const void *buf, size_t len)
-> +{
-> +	int ret;
-> +
-> +	WARN((long)buf & 3, "%s: unaligned buffer", __func__);
-
-IS_ALIGNED()?
-
 > --- /dev/null
-> +++ b/drivers/net/wireless/silabs/wfx/hwio.h
-> @@ -0,0 +1,79 @@
+> +++ b/drivers/net/wireless/silabs/wfx/hif_tx_mib.h
+> @@ -0,0 +1,49 @@
 > +/* SPDX-License-Identifier: GPL-2.0-only */
 > +/*
-> + * Low-level I/O functions.
+> + * Implementation of the host-to-chip MIBs of the hardware API.
 > + *
 > + * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
 > + * Copyright (c) 2010, ST-Ericsson
+> + * Copyright (C) 2010, ST-Ericsson SA
 > + */
-> +#ifndef WFX_HWIO_H
-> +#define WFX_HWIO_H
+> +#ifndef WFX_HIF_TX_MIB_H
+> +#define WFX_HIF_TX_MIB_H
 > +
-> +#include <linux/types.h>
+> +struct wfx_vif;
+> +struct sk_buff;
 > +
-> +struct wfx_dev;
-> +
-> +/* Caution: in the functions below, 'buf' will used with a DMA. So, it m=
-ust be
-> + * kmalloc'd (do not use stack allocated buffers). In doubt, enable
-> + * CONFIG_DEBUG_SG to detect badly located buffer.
-> + */
-> +int wfx_data_read(struct wfx_dev *wdev, void *buf, size_t buf_len);
-> +int wfx_data_write(struct wfx_dev *wdev, const void *buf, size_t buf_len=
-);
-> +
-> +int sram_buf_read(struct wfx_dev *wdev, u32 addr, void *buf, size_t len);
-> +int sram_buf_write(struct wfx_dev *wdev, u32 addr, const void *buf, size=
-_t len);
-> +
-> +int ahb_buf_read(struct wfx_dev *wdev, u32 addr, void *buf, size_t len);
-> +int ahb_buf_write(struct wfx_dev *wdev, u32 addr, const void *buf, size_=
-t len);
-> +
-> +int sram_reg_read(struct wfx_dev *wdev, u32 addr, u32 *val);
-> +int sram_reg_write(struct wfx_dev *wdev, u32 addr, u32 val);
-> +
-> +int ahb_reg_read(struct wfx_dev *wdev, u32 addr, u32 *val);
-> +int ahb_reg_write(struct wfx_dev *wdev, u32 addr, u32 val);
+> +int hif_set_output_power(struct wfx_vif *wvif, int val);
+> +int hif_set_beacon_wakeup_period(struct wfx_vif *wvif,
+> +				 unsigned int dtim_interval,
+> +				 unsigned int listen_interval);
+> +int hif_set_rcpi_rssi_threshold(struct wfx_vif *wvif,
+> +				int rssi_thold, int rssi_hyst);
+> +int hif_get_counters_table(struct wfx_dev *wdev, int vif_id,
+> +			   struct hif_mib_extended_count_table *arg);
+> +int hif_set_macaddr(struct wfx_vif *wvif, u8 *mac);
+> +int hif_set_rx_filter(struct wfx_vif *wvif,
+> +		      bool filter_bssid, bool fwd_probe_req);
+> +int hif_set_beacon_filter_table(struct wfx_vif *wvif, int tbl_len,
+> +				const struct hif_ie_table_entry *tbl);
+> +int hif_beacon_filter_control(struct wfx_vif *wvif,
+> +			      int enable, int beacon_count);
+> +int hif_set_operational_mode(struct wfx_dev *wdev, enum hif_op_power_mod=
+e mode);
+> +int hif_set_template_frame(struct wfx_vif *wvif, struct sk_buff *skb,
+> +			   u8 frame_type, int init_rate);
+> +int hif_set_mfp(struct wfx_vif *wvif, bool capable, bool required);
+> +int hif_set_block_ack_policy(struct wfx_vif *wvif,
+> +			     u8 tx_tid_policy, u8 rx_tid_policy);
+> +int hif_set_association_mode(struct wfx_vif *wvif, int ampdu_density,
+> +			     bool greenfield, bool short_preamble);
+> +int hif_set_tx_rate_retry_policy(struct wfx_vif *wvif,
+> +				 int policy_index, u8 *rates);
+> +int hif_keep_alive_period(struct wfx_vif *wvif, int period);
+> +int hif_set_arp_ipv4_filter(struct wfx_vif *wvif, int idx, __be32 *addr);
+> +int hif_use_multi_tx_conf(struct wfx_dev *wdev, bool enable);
+> +int hif_set_uapsd_info(struct wfx_vif *wvif, unsigned long val);
+> +int hif_erp_use_protection(struct wfx_vif *wvif, bool enable);
+> +int hif_slot_time(struct wfx_vif *wvif, int val);
+> +int hif_wep_default_key_id(struct wfx_vif *wvif, int val);
+> +int hif_rts_threshold(struct wfx_vif *wvif, int val);
 
-"wfx_" prefix missing from these functions.
-
-> +int config_reg_read(struct wfx_dev *wdev, u32 *val);
-> +int config_reg_write(struct wfx_dev *wdev, u32 val);
-> +int config_reg_write_bits(struct wfx_dev *wdev, u32 mask, u32 val);
-> +
-> +#define CTRL_NEXT_LEN_MASK   0x00000FFF
-> +#define CTRL_WLAN_WAKEUP     0x00001000
-> +#define CTRL_WLAN_READY      0x00002000
-> +int control_reg_read(struct wfx_dev *wdev, u32 *val);
-> +int control_reg_write(struct wfx_dev *wdev, u32 val);
-> +int control_reg_write_bits(struct wfx_dev *wdev, u32 mask, u32 val);
-> +
-> +#define IGPR_RW          0x80000000
-> +#define IGPR_INDEX       0x7F000000
-> +#define IGPR_VALUE       0x00FFFFFF
-> +int igpr_reg_read(struct wfx_dev *wdev, int index, u32 *val);
-> +int igpr_reg_write(struct wfx_dev *wdev, int index, u32 val);
-
-And these too.
+"wfx_" prefix missing from quite a few functions.
 
 --=20
 https://patchwork.kernel.org/project/linux-wireless/list/
