@@ -2,142 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52DF641F7CB
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 00:54:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D105341F7E3
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 00:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356070AbhJAW4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 18:56:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36236 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356044AbhJAW4C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 18:56:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B21361AAB;
-        Fri,  1 Oct 2021 22:54:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633128857;
-        bh=zPKOut12759YrChMuTsMoqBL59Wp8+ZSlMnE3nY7Hxw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=VT3UcaoD0bONpz3zAVK8zSuDtpknlVnI5yYKDwVx7/cUcUSzyhmKj2vYqWciZMzfF
-         Vep+sTEsGejsrNs2ZL3oGrV+6vHVJ7vgZhDFV6Et67KY5vbJkWFlic813njFqu7hlK
-         DC4tRYUxMrV8C7BxpMQsp4HhQ/uCpxrxplrDKR0STPuV+kshBTx/WrdojZiOqh8olI
-         /1IsagfWsqLniUT+OSyQGMqImpo4CSfkHpZgo23E+/tY3XShDEx4yjCnhN6TWDxa34
-         jjjBv/LFKnByWUVbHDPzqLufvx9fkk7f6vQdThgHVpOb2TzHwDwKOEDIba2zWXcKrB
-         cXU4LNAxCIuPQ==
-Received: by mail-lf1-f49.google.com with SMTP id m3so43776621lfu.2;
-        Fri, 01 Oct 2021 15:54:17 -0700 (PDT)
-X-Gm-Message-State: AOAM533auYCfv6NE/GJC5fZN4gPrTMMUYXX1hhiyRUBMKsti1LQloYNY
-        jnK2D5l229Z67wu3+wxc/u/H1WfGzenYK7SMxro=
-X-Google-Smtp-Source: ABdhPJz4ppbI+kmM0q97fUCL90jYIsKhzNAxoWSGqixPtk52OrSSKcXX3dWQlNFUNfbwvN9eO9jExFI/tYp4ZVaUgqs=
-X-Received: by 2002:ac2:5182:: with SMTP id u2mr615797lfi.676.1633128855585;
- Fri, 01 Oct 2021 15:54:15 -0700 (PDT)
+        id S230443AbhJAW6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 18:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356171AbhJAW5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 18:57:37 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1775C061775;
+        Fri,  1 Oct 2021 15:55:52 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id v10so23632796ybq.7;
+        Fri, 01 Oct 2021 15:55:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BbdfudAXrW8/mnrrb7EAmGS3rUW5NiGxX746IanDHeE=;
+        b=gzf4VmGukAxfE7acbAVoCuS0I1htg0zZHxY6lEgWN/FYd7RR88uL8DvG/3cZmmiifU
+         7oB+JpGyRFIgGm2Ac9gwsOKVYo8QtXB8IZYlA/QLgbZqOy8ikizsFqaJlztS+u4QHg0w
+         Oi1Bz/y9twttBr+72uFDrg0Qze7yFpvBme1eVPj9P21FS8dQLiynrgbTMqVsNJxisYdz
+         RNQtNW1o2ht3agTJ+21ORj4+RV0R7QQ55ksQGjqzDF4OTa76IYrbacWRGFWbpJQsPm2Q
+         0hAKdCndWXacbWU2S4x58k0CaWIkK9+xuGQK37r9e8GTN+htGPwGd4IgoiAGkGY/slAk
+         m8dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BbdfudAXrW8/mnrrb7EAmGS3rUW5NiGxX746IanDHeE=;
+        b=ljEat5Zm3+HUjiTOBsHAh4+Tm/NIzRojCN92Jj+X0DhipF6MaCN6H1+RtpyRvUz1cs
+         ZlzsaIIzg1KWUyNZKsTwbY3w8oPTtnmBDmdS1ojdiXDYyuRs4mIUrlQRYOt07iQddZb3
+         6RQNGwf1RXMreqmHCrAxD18mLZzkiyvX4uBdDNSspt/FHseGfjO4AVEOrZ5FCfqLjJ02
+         r5Ye4B8jH3EbuqAvPa65UXCrxz9i5ElmIVYIU7891DjuHVBA4yXpRsHpzFSGNkxCuydW
+         tBhSn76otQZVPl5LI5JTivAJgJ2h1EbP1k2mLcaMowWjI8H2KNQ8q4yNaYsfMY3RCtXA
+         mREA==
+X-Gm-Message-State: AOAM531YaURZDEW9lvj4D3jBVSRl/V/lfO/UM6O66H90QxIR5utXu5sS
+        zGDMpjRQM3Yu1/tV2yuhG6215HeVBzOAJSw/5Tg=
+X-Google-Smtp-Source: ABdhPJxqaMCbudAmQr0mxFv/MOTSblrUKEPDDP5egxpcRGns/hNd7co555uuzVSTyIASZbHE+7Q8KjWLwoDnXh04Rxs=
+X-Received: by 2002:a25:e7d7:: with SMTP id e206mr464966ybh.267.1633128951924;
+ Fri, 01 Oct 2021 15:55:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211001215858.1132715-1-joannekoong@fb.com> <20211001215858.1132715-3-joannekoong@fb.com>
-In-Reply-To: <20211001215858.1132715-3-joannekoong@fb.com>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 1 Oct 2021 15:54:04 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5fUA84rZgVMuFgsqDDDtJkMgH3E49RShnfa3-rVKTvaA@mail.gmail.com>
-Message-ID: <CAPhsuW5fUA84rZgVMuFgsqDDDtJkMgH3E49RShnfa3-rVKTvaA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 2/3] bpf/selftests: Rename test_tcp_hdr_options
- to test_sockops_tcp_hdr_options
-To:     Joanne Koong <joannekoong@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
+References: <20211001110856.14730-1-quentin@isovalent.com> <20211001110856.14730-3-quentin@isovalent.com>
+In-Reply-To: <20211001110856.14730-3-quentin@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 1 Oct 2021 15:55:41 -0700
+Message-ID: <CAEf4BzaEN91ju5E6YUdpT07noMafMfge+8Owvq8UPvBBQxJxJg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/9] tools: bpftool: install libbpf headers
+ instead of including the dir
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 1, 2021 at 3:03 PM Joanne Koong <joannekoong@fb.com> wrote:
+On Fri, Oct 1, 2021 at 4:09 AM Quentin Monnet <quentin@isovalent.com> wrote:
 >
-> Currently, tcp_hdr_options is only supported for sockops type programs.
-> This patchset adds xdp tcp_hdr_options support. To more easily
-> differentiate between these two tests, this patch does the following
-> renames (with  no functional changes):
+> Bpftool relies on libbpf, therefore it relies on a number of headers
+> from the library and must be linked against the library. The Makefile
+> for bpftool exposes these objects by adding tools/lib as an include
+> directory ("-I$(srctree)/tools/lib"). This is a working solution, but
+> this is not the cleanest one. The risk is to involuntarily include
+> objects that are not intended to be exposed by the libbpf.
 >
-> test_tcp_hdr_options -> test_sockops_tcp_hdr_options
-> test_misc_tcp_hdr_options -> test_sockops_misc_tcp_hdr_options
+> The headers needed to compile bpftool should in fact be "installed" from
+> libbpf, with its "install_headers" Makefile target. In addition, there
+> is one header which is internal to the library and not supposed to be
+> used by external applications, but that bpftool uses anyway.
 >
-> The next patch will add xdp_test_tcp_hdr_options.
+> Adjust the Makefile in order to install the header files properly before
+> compiling bpftool. Also copy the additional internal header file
+> (nlattr.h), but call it out explicitly. Build (and install headers) in a
+> subdirectory under bpftool/ instead of tools/lib/bpf/. When descending
+> from a parent Makefile, this is configurable by setting the OUTPUT,
+> LIBBPF_OUTPUT and LIBBPF_DESTDIR variables.
 >
-> Signed-off-by: Joanne Koong <joannekoong@fb.com>
-
-Acked-by: Song Liu <songliubraving@fb.com>
-
+> Also adjust the Makefile for BPF selftests, so as to reuse the (host)
+> libbpf compiled earlier and to avoid compiling a separate version of the
+> library just for bpftool.
+>
+> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 > ---
->  ...hdr_options.c => sockops_tcp_hdr_options.c} | 18 +++++++++---------
->  ...s.c => test_sockops_misc_tcp_hdr_options.c} |  0
->  ...ptions.c => test_sockops_tcp_hdr_options.c} |  0
->  3 files changed, 9 insertions(+), 9 deletions(-)
->  rename tools/testing/selftests/bpf/prog_tests/{tcp_hdr_options.c => sockops_tcp_hdr_options.c} (96%)
->  rename tools/testing/selftests/bpf/progs/{test_misc_tcp_hdr_options.c => test_sockops_misc_tcp_hdr_options.c} (100%)
->  rename tools/testing/selftests/bpf/progs/{test_tcp_hdr_options.c => test_sockops_tcp_hdr_options.c} (100%)
+>  tools/bpf/bpftool/Makefile           | 27 ++++++++++++++++-----------
+>  tools/testing/selftests/bpf/Makefile |  2 ++
+>  2 files changed, 18 insertions(+), 11 deletions(-)
 >
-> diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c b/tools/testing/selftests/bpf/prog_tests/sockops_tcp_hdr_options.c
-> similarity index 96%
-> rename from tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
-> rename to tools/testing/selftests/bpf/prog_tests/sockops_tcp_hdr_options.c
-> index 1fa772079967..f8fb12f4c1ed 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/sockops_tcp_hdr_options.c
-> @@ -12,8 +12,8 @@
->  #include "cgroup_helpers.h"
->  #include "network_helpers.h"
->  #include "test_tcp_hdr_options.h"
-> -#include "test_tcp_hdr_options.skel.h"
-> -#include "test_misc_tcp_hdr_options.skel.h"
-> +#include "test_sockops_tcp_hdr_options.skel.h"
-> +#include "test_sockops_misc_tcp_hdr_options.skel.h"
+
+Looks good, but with Makefile no one can ever be sure :) Let's see how
+this works in practice...
+
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+
+> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> index 1fcf5b01a193..78e42963535a 100644
+> --- a/tools/bpf/bpftool/Makefile
+> +++ b/tools/bpf/bpftool/Makefile
+> @@ -17,16 +17,16 @@ endif
+>  BPF_DIR = $(srctree)/tools/lib/bpf/
+
+[...]
+
+> +# We need to copy nlattr.h which is not otherwise exported by libbpf, but still
+> +# required by bpftool.
+>  $(LIBBPF): FORCE | $(LIBBPF_OUTPUT)
+> -       $(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_OUTPUT) $(LIBBPF_OUTPUT)libbpf.a
+> +       $(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_OUTPUT) \
+> +               DESTDIR=$(LIBBPF_DESTDIR) prefix= \
+> +               $(LIBBPF_OUTPUT)libbpf.a install_headers
+
+s/$(LIBBPF_OUTPUT)libbpf.a/$(LIBBPF)/ ?
+
+> +       $(call QUIET_INSTALL, bpf/nlattr.h)
+> +       $(Q)install -m 644 -t $(LIBBPF_INCLUDE)/bpf/ $(BPF_DIR)nlattr.h
 >
->  #define LO_ADDR6 "::1"
->  #define CG_NAME "/tcpbpf-hdr-opt-test"
-> @@ -25,8 +25,8 @@ static struct bpf_test_option exp_active_fin_in;
->  static struct hdr_stg exp_passive_hdr_stg;
->  static struct hdr_stg exp_active_hdr_stg = { .active = true, };
->
-> -static struct test_misc_tcp_hdr_options *misc_skel;
-> -static struct test_tcp_hdr_options *skel;
-> +static struct test_sockops_misc_tcp_hdr_options *misc_skel;
-> +static struct test_sockops_tcp_hdr_options *skel;
->  static int lport_linum_map_fd;
->  static int hdr_stg_map_fd;
->  static __u32 duration;
-> @@ -570,15 +570,15 @@ static struct test tests[] = {
->         DEF_TEST(misc),
->  };
->
-> -void test_tcp_hdr_options(void)
-> +void test_sockops_tcp_hdr_options(void)
->  {
->         int i;
->
-> -       skel = test_tcp_hdr_options__open_and_load();
-> +       skel = test_sockops_tcp_hdr_options__open_and_load();
->         if (CHECK(!skel, "open and load skel", "failed"))
->                 return;
->
-> -       misc_skel = test_misc_tcp_hdr_options__open_and_load();
-> +       misc_skel = test_sockops_misc_tcp_hdr_options__open_and_load();
->         if (CHECK(!misc_skel, "open and load misc test skel", "failed"))
->                 goto skel_destroy;
->
-> @@ -600,6 +600,6 @@ void test_tcp_hdr_options(void)
->
->         close(cg_fd);
->  skel_destroy:
-> -       test_misc_tcp_hdr_options__destroy(misc_skel);
-> -       test_tcp_hdr_options__destroy(skel);
-> +       test_sockops_misc_tcp_hdr_options__destroy(misc_skel);
-> +       test_sockops_tcp_hdr_options__destroy(skel);
->  }
-> diff --git a/tools/testing/selftests/bpf/progs/test_misc_tcp_hdr_options.c b/tools/testing/selftests/bpf/progs/test_sockops_misc_tcp_hdr_options.c
-> similarity index 100%
-> rename from tools/testing/selftests/bpf/progs/test_misc_tcp_hdr_options.c
-> rename to tools/testing/selftests/bpf/progs/test_sockops_misc_tcp_hdr_options.c
-> diff --git a/tools/testing/selftests/bpf/progs/test_tcp_hdr_options.c b/tools/testing/selftests/bpf/progs/test_sockops_tcp_hdr_options.c
-> similarity index 100%
-> rename from tools/testing/selftests/bpf/progs/test_tcp_hdr_options.c
-> rename to tools/testing/selftests/bpf/progs/test_sockops_tcp_hdr_options.c
-> --
-> 2.30.2
->
+>  $(LIBBPF_BOOTSTRAP): FORCE | $(LIBBPF_BOOTSTRAP_OUTPUT)
+>         $(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_BOOTSTRAP_OUTPUT) \
+
+[...]
