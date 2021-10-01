@@ -2,114 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6DD241EDAE
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 14:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71A3141EDB4
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 14:42:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354403AbhJAMmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 08:42:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57358 "EHLO mail.kernel.org"
+        id S1354426AbhJAMoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 08:44:11 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:40446 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231352AbhJAMml (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Oct 2021 08:42:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 535F3619EC;
-        Fri,  1 Oct 2021 12:40:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633092057;
-        bh=6uhWW7FTN4K3UNWUrnTlssSq9i2l2Xj7wJq28RUxb9c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b3+cfY6IK7cpTu1vlVcS5a286fKvSXOusXvVIPafZW3mxo+PSm51wHRgmKYiR4K+H
-         ni5V0MnolPy5ncOYkWL7ie7zgg4IXzb47dhrXFpFmEz6fHF5D+jDEwCt7Gox0LYZgd
-         eAr8kCxAspLH69xiKhHf6ar9oT5WYj1pCW76+PbhrvZUU3n2qocpeQ9czYutnfWA30
-         ZpMDxgbN1jTQmtj4g5LH4ryCxt7NTJtHKeRwjXvYvNntEfl8pXUXyGsAyFmA46ZbA1
-         DtoPD0zMIrowJfdSuMX8aIZlI5M9HIj3vBiSxrm8XDzoHMoI5Ks7vIQ5lzao78rIfb
-         TLMK9VV1FaGVQ==
-Date:   Fri, 1 Oct 2021 14:40:53 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>
-Subject: Re: devicename part of LEDs under ethernet MAC / PHY
-Message-ID: <20211001144053.3952474a@thinkpad>
-In-Reply-To: <YVb/HSLqcOM6drr1@lunn.ch>
-References: <20211001133057.5287f150@thinkpad>
-        <YVb/HSLqcOM6drr1@lunn.ch>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S1353853AbhJAMoL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Oct 2021 08:44:11 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1633092147; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
+ To: From: Sender; bh=oebx3fcM3g966gWCz22lzF59IX1zMeaSKJn177/dREs=; b=HhJAyS9S2zcg0YIBeYaxA2HepJR501SF+ol1Q0FOiGX0WVIZN/Oy3BfYISDQtRosXk6lScZA
+ yPFDMwqjYMzR0ldHzPREFQuKPx+7y6pyptMWGQ7vqkicsHtcvloMEUPC1BIEOgJap7DIM6Pj
+ oTZ7PC3F9EA5T03iZxWBh5JRYTQ=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 6157022b8578ef11ed835006 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 01 Oct 2021 12:42:19
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id F029DC4360C; Fri,  1 Oct 2021 12:42:18 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 782CDC43460;
+        Fri,  1 Oct 2021 12:42:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 782CDC43460
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org,
+        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v7 00/24] wfx: get out from the staging area
+References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com>
+Date:   Fri, 01 Oct 2021 15:42:13 +0300
+In-Reply-To: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com> (Jerome
+        Pouiller's message of "Mon, 20 Sep 2021 18:11:12 +0200")
+Message-ID: <87bl48kjbu.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 1 Oct 2021 14:29:17 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
 
-> > - Andrew proposed that the numbering should start at non-zero number,
-> >   for example at 42, to prevent people from thinking that the numbers
-> >   are related to numbers in network interface names (ethN).
-> >   A system with interfaces
-> >     eth0
-> >     eth1
-> >   and LEDs
-> >     ethphy0:green:link
-> >     ethphy1:green:link
-> >   may make user think that the ethphy0 LED does correspond to eth0
-> >   interface, which is not necessarily true.
-> >   Instead if LEDs are
-> >     ethphy42:green:link
-> >     ethphy43:green:link 
-> >   the probability of confusing the user into relating them to network
-> >   interfaces by these numbers is lower.
-> > 
-> > Anyway, the issue with these naming is that it is not stable. Upgrading
-> > the kernel, enabling drivers and so on can change these names between
-> > reboots.  
-> 
-> Sure, eth0 can become eth1, eth1 can become eth0. That is why we have
-> udev rules, systemd interface names etc. Interface names have never
-> been guaranteed to be stable. Also, you can have multiple interfaces
-> named eth0, so long as they are in different network name spaces.
-> 
-> > Also for LEDs on USB ethernet adapters, removing the USB and
-> > plugging it again would change the name, although the device path does
-> > not change if the adapter is re-plugged into the same port.
-> > 
-> > To finally settle this then, I would like to ask your opinion on
-> > whether this naming of LEDs should be stable.  
-> 
-> No. They should be unstable like everything else.
+> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>
+> Hello,
+>
+> I think the wfx driver is now mature enough to be accepted in the
+> drivers/net/wireless directory.
+>
+> The firmware is now a part of the linux-firmware repository since relase
+> 20210315[1]. It had taken a bit of time because I have worked with the le=
+gal
+> department to simplify the redistribution terms of the firmware.
+>
+> [1]: https://lore.kernel.org/linux-firmware/2833354.gXvVfaC4I7@pc-42/
+>
+>
+> As requested by Kalle[2], I send one file per patch. At the end, all the
+> patches (or at least the patches 3 to 24) will be squashed (therefore, I
+> didn't bother to write real commit messages).
 
-LED classdev names are something different.
-For etherent interfaces, the interface name is different from name of
-the underlying struct device. But LED classdev names are also
-corresponding struct device names, and thus part of sysfs ABI, which,
-as far as I understand, should be stable.
+I did another review of the driver and in general it looks pretty good.
+The use of Apache license, PDS file format and the missing firmware
+directory are the biggest issues I saw.
 
-> > Note that this names are visible to userspace as symlinks
-> > /sys/class/leds directory. If they are unstable, it is not that big an
-> > issue, because mostly these LEDs should be accessed via
-> > /sys/class/net/<interface>/device/leds for eth MAC LEDs and via
-> > /sys/class/net/<interface>/phydev/leds for eth PHY LEDs.  
-> 
-> Yes, this also handles network name space nicely.
-> 
-> > If we wanted to make these names stable, we would need to do something
-> > like
-> >   ethphy-BUS-ID
-> > for example
-> >   ethphy-usb3,2
-> >   ethmac-pci0,19,0
-> >   ethphy-mdio0,1
-> > or
-> >   ethmac-DEVICE_PATH (with '/'s and ':'s replaced with ',' or something)
-> > for example
-> >   ethphy-platform,soc,soc,internal-regs,f10f0000.usb3,usb3,3-0,1:0  
-> 
-> I guess Systemd can be extended to do this, maybe, rename the LEDs
-> when it renames the interface? This is not really a kernel problem.
+> v7:
+>   - Update location of mmc-pwrseq-simple.txt (Rob)
+>
+> v6:
+>   - Rebase on last staging-next (roughtly somewhere after the 5.15
+>     merge window). So, this series include the patches from:
+>       https://lore.kernel.org/netdev/20210913130203.1903622-1-Jerome.Poui=
+ller@silabs.com/
 
-Pavel is against LED classdev renaming.
+BTW, it would be nice to know what commit id are you using from
+staging-next, I prefer to also look at the full tree while I'm reviewing
+the patches.
 
-Marek
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
