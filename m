@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5C941E8F6
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 10:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DA0441E8F4
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 10:19:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352553AbhJAIVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 04:21:09 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:33718 "EHLO
+        id S1352462AbhJAIVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 04:21:07 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:33730 "EHLO
         codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352290AbhJAIVF (ORCPT
+        with ESMTP id S231222AbhJAIVF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 04:21:05 -0400
 Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 27DDD20274; Fri,  1 Oct 2021 16:19:15 +0800 (AWST)
+        id 76F4721465; Fri,  1 Oct 2021 16:19:15 +0800 (AWST)
 From:   Jeremy Kerr <jk@codeconstruct.com.au>
 To:     netdev@vger.kernel.org
 Cc:     Matt Johnston <matt@codeconstruct.com.au>,
@@ -20,9 +20,9 @@ Cc:     Matt Johnston <matt@codeconstruct.com.au>,
         Jakub Kicinski <kuba@kernel.org>,
         Brendan Higgins <brendanhiggins@google.com>,
         linux-kselftest@vger.kernel.org
-Subject: [PATCH net-next 2/5] mctp: Add test utils
-Date:   Fri,  1 Oct 2021 16:18:41 +0800
-Message-Id: <20211001081844.3408786-3-jk@codeconstruct.com.au>
+Subject: [PATCH net-next 3/5] mctp: Add packet rx tests
+Date:   Fri,  1 Oct 2021 16:18:42 +0800
+Message-Id: <20211001081844.3408786-4-jk@codeconstruct.com.au>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211001081844.3408786-1-jk@codeconstruct.com.au>
 References: <20211001081844.3408786-1-jk@codeconstruct.com.au>
@@ -32,127 +32,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new object for shared test utilities
+Add a few tests for the initial packet ingress through
+mctp_pkttype_receive function; mainly packet header sanity checks. Full
+input routing checks will be added as a separate change.
 
 Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
 ---
- net/mctp/Makefile     |  3 ++
- net/mctp/test/utils.c | 67 +++++++++++++++++++++++++++++++++++++++++++
- net/mctp/test/utils.h | 20 +++++++++++++
- 3 files changed, 90 insertions(+)
- create mode 100644 net/mctp/test/utils.c
- create mode 100644 net/mctp/test/utils.h
+ net/mctp/test/route-test.c | 67 ++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 64 insertions(+), 3 deletions(-)
 
-diff --git a/net/mctp/Makefile b/net/mctp/Makefile
-index 0171333384d7..6cd55233e685 100644
---- a/net/mctp/Makefile
-+++ b/net/mctp/Makefile
-@@ -1,3 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_MCTP) += mctp.o
- mctp-objs := af_mctp.o device.o route.o neigh.o
-+
-+# tests
-+obj-$(CONFIG_MCTP_TEST) += test/utils.o
-diff --git a/net/mctp/test/utils.c b/net/mctp/test/utils.c
-new file mode 100644
-index 000000000000..e2ab1f3da357
---- /dev/null
-+++ b/net/mctp/test/utils.c
-@@ -0,0 +1,67 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/netdevice.h>
-+#include <linux/mctp.h>
-+#include <linux/if_arp.h>
-+
-+#include <net/mctpdevice.h>
-+#include <net/pkt_sched.h>
-+
+diff --git a/net/mctp/test/route-test.c b/net/mctp/test/route-test.c
+index cf3b51183613..ee0422bf24ce 100644
+--- a/net/mctp/test/route-test.c
++++ b/net/mctp/test/route-test.c
+@@ -2,6 +2,8 @@
+ 
+ #include <kunit/test.h>
+ 
 +#include "utils.h"
 +
-+static netdev_tx_t mctp_test_dev_tx(struct sk_buff *skb,
-+				    struct net_device *ndev)
-+{
-+	kfree(skb);
-+	return NETDEV_TX_OK;
-+}
-+
-+static const struct net_device_ops mctp_test_netdev_ops = {
-+	.ndo_start_xmit = mctp_test_dev_tx,
+ struct mctp_test_route {
+ 	struct mctp_route	rt;
+ 	struct sk_buff_head	pkts;
+@@ -35,6 +37,7 @@ static struct mctp_test_route *mctp_route_test_alloc(void)
+ }
+ 
+ static struct mctp_test_route *mctp_test_create_route(struct net *net,
++						      struct mctp_dev *dev,
+ 						      mctp_eid_t eid,
+ 						      unsigned int mtu)
+ {
+@@ -48,7 +51,9 @@ static struct mctp_test_route *mctp_test_create_route(struct net *net,
+ 	rt->rt.max = eid;
+ 	rt->rt.mtu = mtu;
+ 	rt->rt.type = RTN_UNSPEC;
+-	rt->rt.dev = NULL; /* somewhat illegal, but fine for current tests */
++	if (dev)
++		mctp_dev_hold(dev);
++	rt->rt.dev = dev;
+ 
+ 	list_add_rcu(&rt->rt.list, &net->mctp.routes);
+ 
+@@ -62,11 +67,13 @@ static void mctp_test_route_destroy(struct mctp_test_route *rt)
+ 	rtnl_unlock();
+ 
+ 	skb_queue_purge(&rt->pkts);
++	if (rt->rt.dev)
++		mctp_dev_put(rt->rt.dev);
+ 
+ 	kfree_rcu(&rt->rt, rcu);
+ }
+ 
+-static struct sk_buff *mctp_test_create_skb(struct mctp_hdr *hdr,
++static struct sk_buff *mctp_test_create_skb(const struct mctp_hdr *hdr,
+ 					    unsigned int data_len)
+ {
+ 	size_t hdr_len = sizeof(*hdr);
+@@ -114,7 +121,7 @@ static void mctp_test_fragment(struct kunit *test)
+ 	skb = mctp_test_create_skb(&hdr, msgsize);
+ 	KUNIT_ASSERT_TRUE(test, skb);
+ 
+-	rt = mctp_test_create_route(&init_net, 10, mtu);
++	rt = mctp_test_create_route(&init_net, NULL, 10, mtu);
+ 	KUNIT_ASSERT_TRUE(test, rt);
+ 
+ 	rc = mctp_do_fragment_route(&rt->rt, skb, mtu, MCTP_TAG_OWNER);
+@@ -193,8 +200,62 @@ static void mctp_frag_test_to_desc(const struct mctp_frag_test *t, char *desc)
+ 
+ KUNIT_ARRAY_PARAM(mctp_frag, mctp_frag_tests, mctp_frag_test_to_desc);
+ 
++struct mctp_rx_input_test {
++	struct mctp_hdr hdr;
++	bool input;
 +};
 +
-+static void mctp_test_dev_setup(struct net_device *ndev)
++static void mctp_test_rx_input(struct kunit *test)
 +{
-+	ndev->type = ARPHRD_MCTP;
-+	ndev->mtu = MCTP_DEV_TEST_MTU;
-+	ndev->hard_header_len = 0;
-+	ndev->addr_len = 0;
-+	ndev->tx_queue_len = DEFAULT_TX_QUEUE_LEN;
-+	ndev->flags = IFF_NOARP;
-+	ndev->netdev_ops = &mctp_test_netdev_ops;
-+	ndev->needs_free_netdev = true;
-+}
-+
-+struct mctp_test_dev *mctp_test_create_dev(void)
-+{
++	const struct mctp_rx_input_test *params;
++	struct mctp_test_route *rt;
 +	struct mctp_test_dev *dev;
-+	struct net_device *ndev;
-+	int rc;
++	struct sk_buff *skb;
 +
-+	ndev = alloc_netdev(sizeof(*dev), "mctptest%d", NET_NAME_ENUM,
-+			    mctp_test_dev_setup);
-+	if (!ndev)
-+		return NULL;
++	params = test->param_value;
 +
-+	dev = netdev_priv(ndev);
-+	dev->ndev = ndev;
++	dev = mctp_test_create_dev();
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dev);
 +
-+	rcu_read_lock();
-+	dev->mdev = __mctp_dev_get(ndev);
-+	mctp_dev_hold(dev->mdev);
-+	rcu_read_unlock();
++	rt = mctp_test_create_route(&init_net, dev->mdev, 8, 68);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, rt);
 +
-+	rc = register_netdev(ndev);
-+	if (rc) {
-+		free_netdev(ndev);
-+		return NULL;
-+	}
++	skb = mctp_test_create_skb(&params->hdr, 1);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, skb);
 +
-+	return dev;
++	__mctp_cb(skb);
++
++	mctp_pkttype_receive(skb, dev->ndev, &mctp_packet_type, NULL);
++
++	KUNIT_EXPECT_EQ(test, !!rt->pkts.qlen, params->input);
++
++	mctp_test_route_destroy(rt);
++	mctp_test_destroy_dev(dev);
 +}
 +
-+void mctp_test_destroy_dev(struct mctp_test_dev *dev)
-+{
-+	mctp_dev_put(dev->mdev);
-+	unregister_netdev(dev->ndev);
-+}
-diff --git a/net/mctp/test/utils.h b/net/mctp/test/utils.h
-new file mode 100644
-index 000000000000..df6aa1c03440
---- /dev/null
-+++ b/net/mctp/test/utils.h
-@@ -0,0 +1,20 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
++#define RX_HDR(_ver, _src, _dest, _fst) \
++	{ .ver = _ver, .src = _src, .dest = _dest, .flags_seq_tag = _fst }
 +
-+#ifndef __NET_MCTP_TEST_UTILS_H
-+#define __NET_MCTP_TEST_UTILS_H
-+
-+#include <kunit/test.h>
-+
-+#define MCTP_DEV_TEST_MTU	68
-+
-+struct mctp_test_dev {
-+	struct net_device *ndev;
-+	struct mctp_dev *mdev;
++/* we have a route for EID 8 only */
++static const struct mctp_rx_input_test mctp_rx_input_tests[] = {
++	{ .hdr = RX_HDR(1, 10, 8, 0), .input = true },
++	{ .hdr = RX_HDR(1, 10, 9, 0), .input = false }, /* no input route */
++	{ .hdr = RX_HDR(2, 10, 8, 0), .input = false }, /* invalid version */
 +};
 +
-+struct mctp_test_dev;
++static void mctp_rx_input_test_to_desc(const struct mctp_rx_input_test *t,
++				       char *desc)
++{
++	sprintf(desc, "{%x,%x,%x,%x}", t->hdr.ver, t->hdr.src, t->hdr.dest,
++		t->hdr.flags_seq_tag);
++}
 +
-+struct mctp_test_dev *mctp_test_create_dev(void);
-+void mctp_test_destroy_dev(struct mctp_test_dev *dev);
++KUNIT_ARRAY_PARAM(mctp_rx_input, mctp_rx_input_tests,
++		  mctp_rx_input_test_to_desc);
 +
-+#endif /* __NET_MCTP_TEST_UTILS_H */
+ static struct kunit_case mctp_test_cases[] = {
+ 	KUNIT_CASE_PARAM(mctp_test_fragment, mctp_frag_gen_params),
++	KUNIT_CASE_PARAM(mctp_test_rx_input, mctp_rx_input_gen_params),
+ 	{}
+ };
+ 
 -- 
 2.33.0
 
