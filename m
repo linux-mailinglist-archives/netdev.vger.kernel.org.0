@@ -2,188 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F270A41F66F
-	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 22:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA2DB41F6B0
+	for <lists+netdev@lfdr.de>; Fri,  1 Oct 2021 23:09:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355514AbhJAUpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 16:45:16 -0400
-Received: from mxout04.lancloud.ru ([45.84.86.114]:59030 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355465AbhJAUpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 16:45:10 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru AD2F120A504D
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH 02/10] ravb: Rename "no_ptp_cfg_active" and
- "ptp_cfg_active" variables
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
- <20211001150636.7500-3-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <232c6ad6-c35b-76c0-2800-e05ca2631048@omp.ru>
-Date:   Fri, 1 Oct 2021 23:43:23 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S1355080AbhJAVLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 17:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34374 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355640AbhJAVLN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 17:11:13 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A05EBC0613E6;
+        Fri,  1 Oct 2021 14:09:26 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id z5so23301041ybj.2;
+        Fri, 01 Oct 2021 14:09:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RNz2xN/mK/HSLvlX8J0MiZKBTon0nEQ4e8Ht/DeCmI8=;
+        b=a8rMmxwZ6tdoyVru2Mz3yspmGwE6Hl9LrYRR1WkH0JxDC45E8OmPmyg7hCAQrVFXT+
+         l6WxnDq4YRPCverno0H0WIubOP16ER2AZPOx5Fn72JH3EVOBJwJH7pl5gMjC9Mav+e64
+         9TLjDWCXZJzXx/mss85qdTHgqPsH5fFQU55yI3vVBNAbR6zMQ4GSOImsjOOKEx5i33CK
+         KF9GarbzfBb+I4Xw6rv2TMnu0TCyOcIxNGVMqJrlrHEKUJW+63dDQiQV9/yccpoQwie8
+         0WT+jFCh7bDJetZEA4w+tIYH9tj3wZmE4oxFSbAGWaYRKze7l05XRNtbusIC11IIK4Rc
+         enEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RNz2xN/mK/HSLvlX8J0MiZKBTon0nEQ4e8Ht/DeCmI8=;
+        b=qe/3QOed1Ue/JSSdpX0dUSdZlb7CwQhZd1lQ79bKx476noU67p/A46dLglYeahF8+b
+         sMD9CA+108WqMHFaEimq3QogPK0eMA0wrpEtYpicZwC8E7H6+hjE/yVdtedzxAjfli+e
+         UUwFGj3fq906VgQXRpbweecQxKuXwV+m5g78jpsIFPX6K/EmWZmwzmfjulPdPUB8b9ma
+         dW3UduUWHEzcG5nuWCMmR8Rhxr+X6wepahJsCDl2/hXce/032eHY+kwDLy+km41tKLTP
+         gyAK4+Z51ju+BloZ/hhANWNU6uutWD74hhLy9ZZd5rUVh6/G+lull4xQnVYFMwGpjBlB
+         hJwA==
+X-Gm-Message-State: AOAM530eiSEFxNGBLr4UWda3sH/qkJIkjE+sFEPoxA5LpoKTlK+6aegG
+        eRbO29f8gvpyxWGAESAeQEcELzHHHrFj++t+syE=
+X-Google-Smtp-Source: ABdhPJyBzUtFp5FJQtqpZCS2SZcLLnkhtLq8wVu5kyvlcsgg8N2jPxuA6gomCYoZrQ9/J47LdYoLE0sFLpYo/hoPO+U=
+X-Received: by 2002:a25:e7d7:: with SMTP id e206mr3087ybh.267.1633122565824;
+ Fri, 01 Oct 2021 14:09:25 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211001150636.7500-3-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+References: <20210930062948.1843919-1-memxor@gmail.com> <20210930062948.1843919-4-memxor@gmail.com>
+In-Reply-To: <20210930062948.1843919-4-memxor@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 1 Oct 2021 14:09:14 -0700
+Message-ID: <CAEf4BzahEZPvAuXfNAd3weqwRKewuHoFX4VZ4YpQqP0BLCiQQQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 3/9] bpf: btf: Introduce helpers for dynamic
+ BTF set registration
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/1/21 6:06 PM, Biju Das wrote:
-
-> Rename the variable "no_ptp_cfg_active" with "gptp" and
-
-   This shouldn't be a rename but the extension of the meaning instead...
-
-> "ptp_cfg_active" with "ccc_gac" to match the HW features.
-> 
-> There is no functional change.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Suggested-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Wed, Sep 29, 2021 at 11:30 PM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> This adds helpers for registering btf_id_set from modules and the
+> check_kfunc_call callback that can be used to look them up.
+>
+> With in kernel sets, the way this is supposed to work is, in kernel
+> callback looks up within the in-kernel kfunc whitelist, and then defers
+> to the dynamic BTF set lookup if it doesn't find the BTF id. If there is
+> no in-kernel BTF id set, this callback can be used directly.
+>
+> Also fix includes for btf.h and bpfptr.h so that they can included in
+> isolation. This is in preparation for their usage in tcp_bbr, tcp_cubic
+> and tcp_dctcp modules in the next patch.
+>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 > ---
-> RFc->v1:
->  * Renamed the variable "no_ptp_cfg_active" with "gptp" and
->    "ptp_cfg_active" with "ccc_gac
-> ---
->  drivers/net/ethernet/renesas/ravb.h      |  4 ++--
->  drivers/net/ethernet/renesas/ravb_main.c | 26 ++++++++++++------------
->  2 files changed, 15 insertions(+), 15 deletions(-)
-
-[...]
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index 8f2358caef34..dc7654abfe55 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -1274,7 +1274,7 @@ static int ravb_set_ringparam(struct net_device *ndev,
->  	if (netif_running(ndev)) {
->  		netif_device_detach(ndev);
->  		/* Stop PTP Clock driver */
-> -		if (info->no_ptp_cfg_active)
-> +		if (info->gptp)
-
-   Where have you lost !info->ccc_gac?
-
->  			ravb_ptp_stop(ndev);
->  		/* Wait for DMA stopping */
->  		error = ravb_stop_dma(ndev);
-> @@ -1306,7 +1306,7 @@ static int ravb_set_ringparam(struct net_device *ndev,
->  		ravb_emac_init(ndev);
->  
->  		/* Initialise PTP Clock driver */
-> -		if (info->no_ptp_cfg_active)
-> +		if (info->gptp)
->  			ravb_ptp_init(ndev, priv->pdev);
-
-    The same question here...
-
->  		netif_device_attach(ndev);
-> @@ -1446,7 +1446,7 @@ static int ravb_open(struct net_device *ndev)
->  	ravb_emac_init(ndev);
->  
->  	/* Initialise PTP Clock driver */
-> -	if (info->no_ptp_cfg_active)
-> +	if (info->gptp)
-
-   ... and here.
-
->  		ravb_ptp_init(ndev, priv->pdev);
->  
->  	netif_tx_start_all_queues(ndev);
-> @@ -1460,7 +1460,7 @@ static int ravb_open(struct net_device *ndev)
->  
->  out_ptp_stop:
->  	/* Stop PTP Clock driver */
-> -	if (info->no_ptp_cfg_active)
-> +	if (info->gptp)
->  		ravb_ptp_stop(ndev);
-
-    ... and here.
-
->  out_free_irq_nc_tx:
->  	if (!info->multi_irqs)
-> @@ -1508,7 +1508,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
->  	netif_tx_stop_all_queues(ndev);
->  
->  	/* Stop PTP Clock driver */
-> -	if (info->no_ptp_cfg_active)
-> +	if (info->gptp)
-
-    ... and here.
-
->  		ravb_ptp_stop(ndev);
->  
->  	/* Wait for DMA stopping */
-> @@ -1543,7 +1543,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
->  
->  out:
->  	/* Initialise PTP Clock driver */
-> -	if (info->no_ptp_cfg_active)
-> +	if (info->gptp)
->  		ravb_ptp_init(ndev, priv->pdev);
-
-    ... and here.
- 
->  	netif_tx_start_all_queues(ndev);
-> @@ -1752,7 +1752,7 @@ static int ravb_close(struct net_device *ndev)
->  	ravb_write(ndev, 0, TIC);
->  
->  	/* Stop PTP Clock driver */
-> -	if (info->no_ptp_cfg_active)
-> +	if (info->gptp)
-
-    ... and here.
-
->  		ravb_ptp_stop(ndev);
->  
->  	/* Set the config mode to stop the AVB-DMAC's processes */
-> @@ -2018,7 +2018,7 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
->  	.internal_delay = 1,
->  	.tx_counters = 1,
->  	.multi_irqs = 1,
-> -	.ptp_cfg_active = 1,
-
-   Where is 'gptp'?
-
-> +	.ccc_gac = 1,
+>  include/linux/bpfptr.h |  1 +
+>  include/linux/btf.h    | 31 +++++++++++++++++++++++++
+>  kernel/bpf/btf.c       | 51 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 83 insertions(+)
+>
+> diff --git a/include/linux/bpfptr.h b/include/linux/bpfptr.h
+> index 546e27fc6d46..46e1757d06a3 100644
+> --- a/include/linux/bpfptr.h
+> +++ b/include/linux/bpfptr.h
+> @@ -3,6 +3,7 @@
+>  #ifndef _LINUX_BPFPTR_H
+>  #define _LINUX_BPFPTR_H
+>
+> +#include <linux/mm.h>
+>  #include <linux/sockptr.h>
+>
+>  typedef sockptr_t bpfptr_t;
+> diff --git a/include/linux/btf.h b/include/linux/btf.h
+> index 214fde93214b..382c00d5cede 100644
+> --- a/include/linux/btf.h
+> +++ b/include/linux/btf.h
+> @@ -5,6 +5,7 @@
+>  #define _LINUX_BTF_H 1
+>
+>  #include <linux/types.h>
+> +#include <linux/bpfptr.h>
+>  #include <uapi/linux/btf.h>
+>  #include <uapi/linux/bpf.h>
+>
+> @@ -238,4 +239,34 @@ static inline const char *btf_name_by_offset(const struct btf *btf,
+>  }
+>  #endif
+>
+> +struct kfunc_btf_id_set {
+> +       struct list_head list;
+> +       struct btf_id_set *set;
+> +       struct module *owner;
+> +};
+> +
+> +struct kfunc_btf_id_list;
+> +
+> +#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+> +void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+> +                              struct kfunc_btf_id_set *s);
+> +void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+> +                                struct kfunc_btf_id_set *s);
+> +#else
+> +static inline void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+> +                                            struct kfunc_btf_id_set *s)
+> +{
+> +}
+> +static inline void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+> +                                              struct kfunc_btf_id_set *s)
+> +{
+> +}
+> +#endif
+> +
+> +#define DECLARE_CHECK_KFUNC_CALLBACK(type)                                     \
+> +       bool __bpf_##type##_check_kfunc_call(u32 kfunc_id, struct module *owner)
+> +#define DEFINE_KFUNC_BTF_ID_SET(set, name)                                     \
+> +       struct kfunc_btf_id_set name = { LIST_HEAD_INIT(name.list), (set),     \
+> +                                        THIS_MODULE }
+> +
+>  #endif
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index c3d605b22473..5a8806cfecd0 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -6343,3 +6343,54 @@ const struct bpf_func_proto bpf_btf_find_by_name_kind_proto = {
 >  };
->  
->  static const struct ravb_hw_info ravb_gen2_hw_info = {
-[...]
-> @@ -2080,7 +2080,7 @@ static void ravb_set_config_mode(struct net_device *ndev)
->  	struct ravb_private *priv = netdev_priv(ndev);
->  	const struct ravb_hw_info *info = priv->info;
->  
-> -	if (info->no_ptp_cfg_active) {
-> +	if (info->gptp) {
+>
+>  BTF_ID_LIST_GLOBAL_SINGLE(btf_task_struct_ids, struct, task_struct)
+> +
+> +struct kfunc_btf_id_list {
+> +       struct list_head list;
+> +       struct mutex mutex;
+> +};
+> +
+> +#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+> +
+> +void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+> +                              struct kfunc_btf_id_set *s)
+> +{
+> +       mutex_lock(&l->mutex);
+> +       list_add(&s->list, &l->list);
+> +       mutex_unlock(&l->mutex);
+> +}
+> +EXPORT_SYMBOL_GPL(register_kfunc_btf_id_set);
+> +
+> +void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+> +                                struct kfunc_btf_id_set *s)
+> +{
+> +       mutex_lock(&l->mutex);
+> +       list_del_init(&s->list);
+> +       mutex_unlock(&l->mutex);
+> +}
+> +EXPORT_SYMBOL_GPL(unregister_kfunc_btf_id_set);
+> +
+> +#endif
+> +
+> +#define DEFINE_KFUNC_BTF_ID_LIST(name)                                         \
+> +       struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
+> +                                         __MUTEX_INITIALIZER(name.mutex) }; \
+> +       EXPORT_SYMBOL_GPL(name)
+> +
 
-   Where have you lost !info->ccc_gac?
+nit: \ alignment seems off
 
->  		ravb_modify(ndev, CCC, CCC_OPC, CCC_OPC_CONFIG);
->  		/* Set CSEL value */
->  		ravb_modify(ndev, CCC, CCC_CSEL, CCC_CSEL_HPB);
-[...]
+> +#define DEFINE_CHECK_KFUNC_CALLBACK(type, list_name)                           \
+> +       bool __bpf_##type##_check_kfunc_call(u32 kfunc_id,                     \
+> +                                            struct module *owner)             \
 
-MBR, Sergey
+does this have to be a type-specific macro-defined function? It seems
+like type is used only for creating a dedicated function with type
+embedded in it, but otherwise this helper only needs mutex and the
+list, why not code it as a generic function and pass mutex and list
+explicitly (or if it is always struct struct kfunc_btf_id_list then
+just declare it so)? I think that will be easier to follow.
+
+
+> +       {                                                                      \
+> +               struct kfunc_btf_id_set *s;                                    \
+> +               if (!owner || !IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))      \
+> +                       return false;                                          \
+> +               mutex_lock(&list_name.mutex);                                  \
+> +               list_for_each_entry(s, &list_name.list, list) {                \
+> +                       if (s->owner == owner &&                               \
+> +                           btf_id_set_contains(s->set, kfunc_id)) {           \
+> +                               mutex_unlock(&list_name.mutex);                \
+> +                               return true;                                   \
+> +                       }                                                      \
+> +               }                                                              \
+> +               mutex_unlock(&list_name.mutex);                                \
+> +               return false;                                                  \
+> +       }
+> --
+> 2.33.0
+>
