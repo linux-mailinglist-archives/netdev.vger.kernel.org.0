@@ -2,81 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5D0141FDB1
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 20:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3014541FDBE
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 20:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233846AbhJBS0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 14:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233776AbhJBS0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 14:26:02 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D303C0613EC
-        for <netdev@vger.kernel.org>; Sat,  2 Oct 2021 11:24:16 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id b6so14088996ilv.0
-        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 11:24:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=tx9VJOQ15K+5VAyyFrnNX4VI/btPSNvTBb8zZbIQLuM=;
-        b=jd23SHUI7962OCl5dbka9MqHQSU/W/fxeVJVr0JsXrSdy9qkhXhvz13p38MHJ9ljoZ
-         g5Rum2g2jjqTvLMEw9QbP3rgFAa0C5KivYprAmh2vgGjBgmYtde0OscWs0hJEyTaWQT7
-         /IRqqO2a7ahR+2GpzB8TW2LpOT4FR/gx27uLW7FwUipOE7dPn0hs4Q6345Okt8+Hx6JG
-         CMtrMlqHQG7OWLEPJ2O6NwYeAqq8wT6XmxpmL8ag+HTOuAv6FLFoBj+I1UzBBhucnb9+
-         4RDALzc0x0iDoGGR8Vy/5f2Gor9ZKQUks6X+3b+2Kqw29A3xvOfSvQmDgtrpg+0bPxGy
-         hcFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=tx9VJOQ15K+5VAyyFrnNX4VI/btPSNvTBb8zZbIQLuM=;
-        b=zvFS6YlfZjZBpI6JzMlqjq9yW9msN3/YjiDt84eipqLNhihnISee3S/VdwT0prPTyW
-         4oEwAVYP8vASxHKv/3obVS8NgmsKAEqesMNzbJfY2noyiFKk8P9siiIinVYUNfeASESo
-         /ltnR3m2g2NHIEYFB0+nBenFZdHphT4gajIXpM7I8S558TLGq/fOfm9Pqq4Jp1E9blkc
-         5eLoiCWEYeLTyvQ5CBHOsX6QgamlS1V+KPruppAPa0CsvheGKdr7/fa/Jtl23AJCOMue
-         xcH96WXrAukZ1goaXoqX0HLN7a7eYJltH6wrqLKl8iJooqVWcwWrbtYmmjbsZ3pa2rdM
-         KuEg==
-X-Gm-Message-State: AOAM532wZrRsNIid9g03aJyeNlGEFPlKK7m7o+osLGYcJi2sChNaAcpg
-        GIp04X1hxEJFRsfgtViA8EYojOjBBzlHotkSQuk=
-X-Google-Smtp-Source: ABdhPJySnDsFY2t0aI/12iMfPcnaMiBQ7pmLE7yv3aXOxbFim71MlqU71KEYMI75DpJF3ag9nzZXZkarslvU+l3vNHY=
-X-Received: by 2002:a92:cd89:: with SMTP id r9mr3547981ilb.226.1633199056028;
- Sat, 02 Oct 2021 11:24:16 -0700 (PDT)
+        id S233854AbhJBShq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 14:37:46 -0400
+Received: from mxout01.lancloud.ru ([45.84.86.81]:47532 "EHLO
+        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233872AbhJBShm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 14:37:42 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 578722091F09
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH 03/10] ravb: Add nc_queue to struct ravb_hw_info
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
+ <20211001150636.7500-4-biju.das.jz@bp.renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <334a8156-0645-b29c-137b-1e76d524efb9@omp.ru>
+Date:   Sat, 2 Oct 2021 21:35:52 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Received: by 2002:a05:6602:1681:0:0:0:0 with HTTP; Sat, 2 Oct 2021 11:24:15
- -0700 (PDT)
-Reply-To: bazaatg@gmail.com
-From:   Tchao Ago Bazaa <renechristoph10@gmail.com>
-Date:   Sat, 2 Oct 2021 11:24:15 -0700
-Message-ID: <CA+=X2ESuqvnHkgrBF-XmonMt2EH-+JLzGsgTFQe3tcbKWEos6g@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20211001150636.7500-4-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+On 10/1/21 6:06 PM, Biju Das wrote:
 
-I apologize for using this medium to contact you. My name is Tchao Ago
-Bazaa and I am a lawyer by profession. I am contacting you in respect
-of my late client who bears the same surname as you and a citizen of
-your country, My late client died in a car accident along with his
-family some years back, leaving no next of kin. My late client  was a
-businessman who was into the oil and gold business here in my country.
+> R-Car supports network control queue whereas RZ/G2L does not support
+> it. Add nc_queue to struct ravb_hw_info, so that NC queue is handled
+> only by R-Car.
+> 
+> This patch also renames ravb_rcar_dmac_init to ravb_dmac_init_rcar
+> to be consistent with the naming convention used in sh_eth driver.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-He left behind a deposit value of  ( Five Million Nine Hundred
-Thousand United States Dollars only ) the bank where this money was
-deposited is trying to confiscate it, since i cannot locate any member
-of the family a long time after his demise, I therefore seek your
-since partnership since you share the same family names with my late
-client and probably from the same country, Do not hesitate to send me
-the following information below for easy communication and endeavor to
-reply through my private email address for more details:
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-Your full names
-Your private Telephone Number
+   One little nit below:
 
-Thanks
+> ---
+> RFC->v1:
+>  * Handled NC queue only for R-Car.
+> ---
+>  drivers/net/ethernet/renesas/ravb.h      |   3 +-
+>  drivers/net/ethernet/renesas/ravb_main.c | 140 +++++++++++++++--------
+>  2 files changed, 94 insertions(+), 49 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+> index a33fbcb4aac3..c91e93e5590f 100644
+> --- a/drivers/net/ethernet/renesas/ravb.h
+> +++ b/drivers/net/ethernet/renesas/ravb.h
+> @@ -986,7 +986,7 @@ struct ravb_hw_info {
+>  	bool (*receive)(struct net_device *ndev, int *quota, int q);
+>  	void (*set_rate)(struct net_device *ndev);
+>  	int (*set_feature)(struct net_device *ndev, netdev_features_t features);
+> -	void (*dmac_init)(struct net_device *ndev);
+> +	int (*dmac_init)(struct net_device *ndev);
+>  	void (*emac_init)(struct net_device *ndev);
+>  	const char (*gstrings_stats)[ETH_GSTRING_LEN];
+>  	size_t gstrings_size;
+> @@ -1002,6 +1002,7 @@ struct ravb_hw_info {
+>  	unsigned multi_irqs:1;		/* AVB-DMAC and E-MAC has multiple irqs */
+>  	unsigned gptp:1;		/* AVB-DMAC has gPTP support */
+>  	unsigned ccc_gac:1;		/* AVB-DMAC has gPTP support active in config mode */
+> +	unsigned nc_queue:1;		/* AVB-DMAC has NC queue */
 
-Barrister Tchao Ago Bazaa
+   Rather "queues" as there are RX and TX NC queues, no?
+
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index dc7654abfe55..8bf13586e90a 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+[...]
+> @@ -1698,28 +1717,38 @@ static struct net_device_stats *ravb_get_stats(struct net_device *ndev)
+>  
+>  	nstats = &ndev->stats;
+>  	stats0 = &priv->stats[RAVB_BE];
+> -	stats1 = &priv->stats[RAVB_NC];
+>  
+>  	if (info->tx_counters) {
+>  		nstats->tx_dropped += ravb_read(ndev, TROCR);
+>  		ravb_write(ndev, 0, TROCR);	/* (write clear) */
+>  	}
+>  
+> -	nstats->rx_packets = stats0->rx_packets + stats1->rx_packets;
+> -	nstats->tx_packets = stats0->tx_packets + stats1->tx_packets;
+> -	nstats->rx_bytes = stats0->rx_bytes + stats1->rx_bytes;
+> -	nstats->tx_bytes = stats0->tx_bytes + stats1->tx_bytes;
+> -	nstats->multicast = stats0->multicast + stats1->multicast;
+> -	nstats->rx_errors = stats0->rx_errors + stats1->rx_errors;
+> -	nstats->rx_crc_errors = stats0->rx_crc_errors + stats1->rx_crc_errors;
+> -	nstats->rx_frame_errors =
+> -		stats0->rx_frame_errors + stats1->rx_frame_errors;
+> -	nstats->rx_length_errors =
+> -		stats0->rx_length_errors + stats1->rx_length_errors;
+> -	nstats->rx_missed_errors =
+> -		stats0->rx_missed_errors + stats1->rx_missed_errors;
+> -	nstats->rx_over_errors =
+> -		stats0->rx_over_errors + stats1->rx_over_errors;
+> +	nstats->rx_packets = stats0->rx_packets;
+> +	nstats->tx_packets = stats0->tx_packets;
+> +	nstats->rx_bytes = stats0->rx_bytes;
+> +	nstats->tx_bytes = stats0->tx_bytes;
+> +	nstats->multicast = stats0->multicast;
+> +	nstats->rx_errors = stats0->rx_errors;
+> +	nstats->rx_crc_errors = stats0->rx_crc_errors;
+> +	nstats->rx_frame_errors = stats0->rx_frame_errors;
+> +	nstats->rx_length_errors = stats0->rx_length_errors;
+> +	nstats->rx_missed_errors = stats0->rx_missed_errors;
+> +	nstats->rx_over_errors = stats0->rx_over_errors;
+> +	if (info->nc_queue) {
+> +		stats1 = &priv->stats[RAVB_NC];
+> +
+> +		nstats->rx_packets += stats1->rx_packets;
+> +		nstats->tx_packets += stats1->tx_packets;
+> +		nstats->rx_bytes += stats1->rx_bytes;
+> +		nstats->tx_bytes += stats1->tx_bytes;
+> +		nstats->multicast += stats1->multicast;
+> +		nstats->rx_errors += stats1->rx_errors;
+> +		nstats->rx_crc_errors += stats1->rx_crc_errors;
+> +		nstats->rx_frame_errors += stats1->rx_frame_errors;
+> +		nstats->rx_length_errors += stats1->rx_length_errors;
+> +		nstats->rx_missed_errors += stats1->rx_missed_errors;
+> +		nstats->rx_over_errors += stats1->rx_over_errors;
+> +	}
+
+   Good! :-)
+
+[...]
+
+MBR, Sergey
