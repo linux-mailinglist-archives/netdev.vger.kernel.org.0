@@ -2,65 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EED6F41FC18
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 15:10:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 024D441FC17
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 15:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233224AbhJBNL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 09:11:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56602 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233210AbhJBNLz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233221AbhJBNLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 2 Oct 2021 09:11:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 24CD261B1E;
+Received: from mail.kernel.org ([198.145.29.99]:56590 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233200AbhJBNLy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 Oct 2021 09:11:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1594A61B08;
         Sat,  2 Oct 2021 13:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1633180209;
-        bh=TD4rT1zAFJICaKJFdMN/fLj1PYhqGiZOb7Q0Wc1VC0A=;
+        bh=pxEdquuJtMBE/8AUwa7ZWnRSQPpuxTDUGkFKv/jhNTg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qhvY8Peh2Kh6RLzmNRi4PhFeeVojRkMGkExcJ/J1iQHxcZsffRvl3O/85Zf5pDDQj
-         i+sxwvYqUAM+8j/6nuFXH48deQ+mFJvO5rN7LwdbEWopNT6SRCZRR6+uVtQGJRXCXC
-         sfbX4ZMx9V2p/xfUjQU2VCsxfvhHe7YPxCom0VZSZdXITMhbAKk1to9bU5VkZsqFER
-         ljaHK5CTUXr6+cxcMGlYg2n/FZ0/70CU+xgFYjbsVbful/xONeUkTS3J8tlbdT0j50
-         +T0ckWCR1eEHCsTw4eXysF39OkDSWp+Akr1itcnvpRLyum+rzGB5eWWlqRXsrRHpm8
-         xusYuNeMG7BnQ==
+        b=s5Lup3Nlo5EO2uYZA8/FPPexQwDALINHQ2ZwSli+DgRtYioCmwATBxyIO83gSZPOP
+         FBR08txYvHh84w9YEiRhdNkvoStdbMv2PAUj/Wd72sZk5Pp0APj0v+o91fcpqA/Ppg
+         mZ490G/tpl5QLwmV/F3u2Arqd7qaAYRtDH/g6XKleeg2NzdPzU/3dAEJcr5lcRfH9k
+         uO5E4n5NaUo7Aj8Ho4UVWRqAulcX8fO9/2m9du8GE70wGsPlrLwob/eYP2g8HL2ZGL
+         RiprWdU6MEnJ1CI6lS66L3aAAnN0Y0PwgbgcvsMLfMb8HmZYzWoSEC0E1qiOssdl7l
+         BoD39uNYLJx/g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 185CC609D6;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0F1E660BE1;
         Sat,  2 Oct 2021 13:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net:dev: Change napi_gro_complete return type to void
+Subject: Re: [PATCH v2 net-next 0/7] ionic: housekeeping updates
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163318020909.24030.3514310334456101990.git-patchwork-notify@kernel.org>
+Message-Id: <163318020905.24030.3787281867816723192.git-patchwork-notify@kernel.org>
 Date:   Sat, 02 Oct 2021 13:10:09 +0000
-References: <20211002081136.3754-1-hkm73560@gmail.com>
-In-Reply-To: <20211002081136.3754-1-hkm73560@gmail.com>
-To:     Gyumin Hwang <hkm73560@gmail.com>
-Cc:     joe@perches.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, herbert@gondor.apana.org.au, daniel@iogearbox.net,
-        atenart@kernel.org, netdev@vger.kernel.org
+References: <20211001180557.23464-1-snelson@pensando.io>
+In-Reply-To: <20211001180557.23464-1-snelson@pensando.io>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        drivers@pensando.io, jtoppins@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Sat,  2 Oct 2021 08:11:36 +0000 you wrote:
-> napi_gro_complete always returned the same value, NET_RX_SUCCESS
-> And the value was not used anywhere
+On Fri,  1 Oct 2021 11:05:50 -0700 you wrote:
+> These are a few changes for code clean up and a couple
+> more lock management tweaks.
 > 
-> Signed-off-by: Gyumin Hwang <hkm73560@gmail.com>
-> ---
-> Changes in v2:
->   - Remove unnecessary return at function end
+> v2: rebased
+> 
+> Shannon Nelson (7):
+>   ionic: remove debug stats
+>   ionic: check for binary values in FW ver string
+>   ionic: move lif mutex setup and delete
+>   ionic: widen queue_lock use around lif init and deinit
+>   ionic: add polling to adminq wait
+>   ionic: have ionic_qcq_disable decide on sending to hardware
+>   ionic: add lif param to ionic_qcq_disable
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2] net:dev: Change napi_gro_complete return type to void
-    https://git.kernel.org/netdev/net-next/c/1643771eeb2d
+  - [v2,net-next,1/7] ionic: remove debug stats
+    https://git.kernel.org/netdev/net-next/c/ebc792e26cb0
+  - [v2,net-next,2/7] ionic: check for binary values in FW ver string
+    https://git.kernel.org/netdev/net-next/c/36b20b7fb1c3
+  - [v2,net-next,3/7] ionic: move lif mutex setup and delete
+    https://git.kernel.org/netdev/net-next/c/26671ff92c63
+  - [v2,net-next,4/7] ionic: widen queue_lock use around lif init and deinit
+    https://git.kernel.org/netdev/net-next/c/2624d95972db
+  - [v2,net-next,5/7] ionic: add polling to adminq wait
+    https://git.kernel.org/netdev/net-next/c/a095e4775b7c
+  - [v2,net-next,6/7] ionic: have ionic_qcq_disable decide on sending to hardware
+    https://git.kernel.org/netdev/net-next/c/3a5e0fafefe0
+  - [v2,net-next,7/7] ionic: add lif param to ionic_qcq_disable
+    https://git.kernel.org/netdev/net-next/c/7dd22a864e0c
 
 You are awesome, thank you!
 --
