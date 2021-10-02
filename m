@@ -2,118 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C3C41FD86
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 19:57:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B216741FD89
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 19:58:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233709AbhJBR6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 13:58:54 -0400
-Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:14691 "EHLO
-        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232043AbhJBR6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 13:58:53 -0400
+        id S233744AbhJBSAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 14:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232043AbhJBSAH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 14:00:07 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F55C0613EC;
+        Sat,  2 Oct 2021 10:58:21 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id y23so12994454lfb.0;
+        Sat, 02 Oct 2021 10:58:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1633197428; x=1664733428;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qYC8+r3qWGM8s+Oe5mJfYpPsI3uuOhdL16fRYsSmiiw=;
-  b=f1Rmx/8UXLxGoC8Y7J75N+AOt3HkukAahUFBt9JHn23nctYT9Sh/hHwj
-   KFLmkh/zWow4oy75hktBDS7hWO7W3EnvLQx9bDqulNv3bH8vNdawjKjU0
-   d6kd6kju4WjuXCpDuDKIOMkDfgKhTZR4m1Xy4tTP23bykJKtNCEAVun//
-   U=;
-X-IronPort-AV: E=Sophos;i="5.85,342,1624320000"; 
-   d="scan'208";a="31378107"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-90419278.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 02 Oct 2021 17:57:08 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2c-90419278.us-west-2.amazon.com (Postfix) with ESMTPS id 43D4241FD0;
-        Sat,  2 Oct 2021 17:57:07 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.23; Sat, 2 Oct 2021 17:57:06 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.89) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.23; Sat, 2 Oct 2021 17:56:57 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <alx.manpages@gmail.com>
-CC:     <benh@amazon.com>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <linux-man@vger.kernel.org>, <mtk.manpages@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH] unix.7: Add a description for ENFILE.
-Date:   Sun, 3 Oct 2021 02:56:53 +0900
-Message-ID: <20211002175653.58027-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <206a26e5-0515-44b9-39cb-bc46013bfc6c@gmail.com>
-References: <206a26e5-0515-44b9-39cb-bc46013bfc6c@gmail.com>
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JkjhFap2SaKbCVGK3B2tWxosThf62VIvzJlE9sE85OE=;
+        b=oAVdA7Dmue10p33t50tGLK7NmxX7LZX/SLJlP2VjHiADCEAPRP1lUNWcgM+ZyeT2II
+         UmY80EkAMBC0KGIt7OygVtjGOqcUYNM8riQeNjD7d5Q1Vte1iXH+u5kJDVMDVW7dt7Qb
+         doINhDYzoHR/5HlRZdA8R3vL9aGQ3H4NloJqWgW2mFtA//F811UWGfloJ7ZEXks+DTQI
+         5m4Lt370Uqnbip+8+2PN7ZiVktJWGA8mxDL5SfUWMfFTUg83y9GNQAuzfCWvgS2vDUil
+         sOFaYvy2NqpTgp7XhuorabRdExsXAXkNPGNNLG6mUaaX+8ytTfYc1CcJYgE7bmxe5WHN
+         DGaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JkjhFap2SaKbCVGK3B2tWxosThf62VIvzJlE9sE85OE=;
+        b=rFCbVvh9O/1EKgspTVvMpGQgkv7ka15yHT3PLgzN9Gywa8e7KlPOhQf5fAbnBuMqyV
+         sxlulXkZCiXfe21c7z84xfgm579I1SA7FI7W6wAtGWTRgNO77mzaJLPxYqJ4Kp9SntLT
+         HDDNgf9XX0A79iQFpmtkijfYIpkxKzaS5BWC7O/gusvJ3jAqXqrniKylsDNVHz5+IMG6
+         wVHW7AKoiTsBYJaLmlsh3XxjmhBLDEc1N/PhhH+0O9Tf0m4IikASgMFcwLQwr7izuR6/
+         kLP6kBnFAF/9sMZvybHCln0KyKICzVTYXVZ6t2Gnx8aE2MeedrnG6jDGhrDCYmZGuEYG
+         2RNw==
+X-Gm-Message-State: AOAM533oAWdj1X81SqMejzYWRdtqCL0HzrYuwP3b1U1vrfNdm9DfYzSb
+        CFLnv4cL10G/fqH5Vpg51RA=
+X-Google-Smtp-Source: ABdhPJx7j+bqqISG+zpYLqXO7exxTaMKYbSOJYhakMULTdwY1OZKxxSInen9GngredVEd7cyHpcIPA==
+X-Received: by 2002:a2e:d19:: with SMTP id 25mr4825511ljn.167.1633197499509;
+        Sat, 02 Oct 2021 10:58:19 -0700 (PDT)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id t26sm1100043lfl.141.2021.10.02.10.58.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Oct 2021 10:58:18 -0700 (PDT)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH V2 net-next 1/2] net: bgmac: improve handling PHY
+Date:   Sat,  2 Oct 2021 19:58:11 +0200
+Message-Id: <20211002175812.14384-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.89]
-X-ClientProxiedBy: EX13D27UWB003.ant.amazon.com (10.43.161.195) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Date:   Sat, 2 Oct 2021 19:44:52 +0200
-> Hello Kuniyuki,
-> 
-> On 9/29/21 3:38 AM, Kuniyuki Iwashima wrote:
-> > When creating UNIX domain sockets, the kernel used to return -ENOMEM on
-> > error where it should return -ENFILE.  The behaviour has been wrong since
-> > 2.2.4 and fixed in the recent commit f4bd73b5a950 ("af_unix: Return errno
-> > instead of NULL in unix_create1().").
-> > 
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> > ---
-> > Note to maintainers of man-pages, the commit is merged in the net tree [0]
-> > but not in the Linus' tree yet.
-> > 
-> > [0]: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=f4bd73b5a950
-> 
-> Thanks!
-> 
-> The patch looks good to me, so could you ping back when this is merged 
-> in Linus's tree?
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Thanks, sure!
-Is that -stable?
-The pull-request from net-next hit the Linus' 5.14-rc4 tree few days ago.
-https://lore.kernel.org/linux-kernel/20210930163002.4159171-1-kuba@kernel.org/
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4de593fb965fc2bd11a0b767e0c65ff43540a6e4
+1. Use info from DT if available
 
-Best regards,
-Kuniyuki
+It allows describing for example a fixed link. It's more accurate than
+just guessing there may be one (depending on a chipset).
 
+2. Verify PHY ID before trying to connect PHY
 
-> 
-> Cheers,
-> 
-> Alex
-> 
-> > ---
-> >   man7/unix.7 | 3 +++
-> >   1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/man7/unix.7 b/man7/unix.7
-> > index 6d30b25cd..2dc96fea1 100644
-> > --- a/man7/unix.7
-> > +++ b/man7/unix.7
-> > @@ -721,6 +721,9 @@ invalid state for the applied operation.
-> >   called on an already connected socket or a target address was
-> >   specified on a connected socket.
-> >   .TP
-> > +.B ENFILE
-> > +The system-wide limit on the total number of open files has been reached.
-> > +.TP
-> >   .B ENOENT
-> >   The pathname in the remote address specified to
-> >   .BR connect (2)
-> > 
-> 
-> 
-> -- 
-> Alejandro Colomar
-> Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
-> http://www.alejandro-colomar.es/
+PHY addr 0x1e (30) is special in Broadcom routers and means a switch
+connected as MDIO devices instead of a real PHY. Don't try connecting to
+it.
+
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+V2: Promote it out of RFC and send together with MDIO patch per
+    Florian's request.
+---
+ drivers/net/ethernet/broadcom/bgmac-bcma.c | 33 ++++++++++++++--------
+ 1 file changed, 21 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+index 28759062d68d..7190e3f0da91 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
++++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+@@ -11,6 +11,7 @@
+ #include <linux/bcma/bcma.h>
+ #include <linux/brcmphy.h>
+ #include <linux/etherdevice.h>
++#include <linux/of_mdio.h>
+ #include <linux/of_net.h>
+ #include "bgmac.h"
+ 
+@@ -86,17 +87,28 @@ static int bcma_phy_connect(struct bgmac *bgmac)
+ 	struct phy_device *phy_dev;
+ 	char bus_id[MII_BUS_ID_SIZE + 3];
+ 
++	/* DT info should be the most accurate */
++	phy_dev = of_phy_get_and_connect(bgmac->net_dev, bgmac->dev->of_node,
++					 bgmac_adjust_link);
++	if (phy_dev)
++		return 0;
++
+ 	/* Connect to the PHY */
+-	snprintf(bus_id, sizeof(bus_id), PHY_ID_FMT, bgmac->mii_bus->id,
+-		 bgmac->phyaddr);
+-	phy_dev = phy_connect(bgmac->net_dev, bus_id, bgmac_adjust_link,
+-			      PHY_INTERFACE_MODE_MII);
+-	if (IS_ERR(phy_dev)) {
+-		dev_err(bgmac->dev, "PHY connection failed\n");
+-		return PTR_ERR(phy_dev);
++	if (bgmac->mii_bus && bgmac->phyaddr != BGMAC_PHY_NOREGS) {
++		snprintf(bus_id, sizeof(bus_id), PHY_ID_FMT, bgmac->mii_bus->id,
++			 bgmac->phyaddr);
++		phy_dev = phy_connect(bgmac->net_dev, bus_id, bgmac_adjust_link,
++				      PHY_INTERFACE_MODE_MII);
++		if (IS_ERR(phy_dev)) {
++			dev_err(bgmac->dev, "PHY connection failed\n");
++			return PTR_ERR(phy_dev);
++		}
++
++		return 0;
+ 	}
+ 
+-	return 0;
++	/* Assume a fixed link to the switch port */
++	return bgmac_phy_connect_direct(bgmac);
+ }
+ 
+ static const struct bcma_device_id bgmac_bcma_tbl[] = {
+@@ -297,10 +309,7 @@ static int bgmac_probe(struct bcma_device *core)
+ 	bgmac->cco_ctl_maskset = bcma_bgmac_cco_ctl_maskset;
+ 	bgmac->get_bus_clock = bcma_bgmac_get_bus_clock;
+ 	bgmac->cmn_maskset32 = bcma_bgmac_cmn_maskset32;
+-	if (bgmac->mii_bus)
+-		bgmac->phy_connect = bcma_phy_connect;
+-	else
+-		bgmac->phy_connect = bgmac_phy_connect_direct;
++	bgmac->phy_connect = bcma_phy_connect;
+ 
+ 	err = bgmac_enet_probe(bgmac);
+ 	if (err)
+-- 
+2.26.2
+
