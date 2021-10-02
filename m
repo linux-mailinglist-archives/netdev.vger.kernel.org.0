@@ -2,98 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AFCF41FACD
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 12:08:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B6A841FAD0
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 12:08:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232771AbhJBKKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 06:10:24 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:45068 "EHLO
+        id S232784AbhJBKK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 06:10:27 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:45078 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232691AbhJBKKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 06:10:24 -0400
+        with ESMTP id S232772AbhJBKKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 06:10:25 -0400
 Received: from localhost.localdomain (unknown [78.30.35.141])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 6915F63EDC;
-        Sat,  2 Oct 2021 12:07:09 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 32FC763EE3;
+        Sat,  2 Oct 2021 12:07:11 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 0/4] Netfilter fixes for net (v2)
-Date:   Sat,  2 Oct 2021 12:08:29 +0200
-Message-Id: <20211002100833.21411-1-pablo@netfilter.org>
+Subject: [PATCH net 1/4] netfilter: conntrack: fix boot failure with nf_conntrack.enable_hooks=1
+Date:   Sat,  2 Oct 2021 12:08:30 +0200
+Message-Id: <20211002100833.21411-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211002100833.21411-1-pablo@netfilter.org>
+References: <20211002100833.21411-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Florian Westphal <fw@strlen.de>
 
-The following patchset contains Netfilter fixes for net:
+This is a revert of
+7b1957b049 ("netfilter: nf_defrag_ipv4: use net_generic infra")
+and a partial revert of
+8b0adbe3e3 ("netfilter: nf_defrag_ipv6: use net_generic infra").
 
-1) Move back the defrag users fields to the global netns_nf area.
-   Kernel fails to boot if conntrack is builtin and kernel is booted
-   with: nf_conntrack.enable_hooks=1. From Florian Westphal.
+If conntrack is builtin and kernel is booted with:
+nf_conntrack.enable_hooks=1
 
-2) Rule event notification is missing relevant context such as
-   the position handle and the NLM_F_APPEND flag.
+.... kernel will fail to boot due to a NULL deref in
+nf_defrag_ipv4_enable(): Its called before the ipv4 defrag initcall is
+made, so net_generic() returns NULL.
 
-3) Rule replacement is expanded to add + delete using the existing
-   rule handle, reverse order of this operation so it makes sense
-   from rule notification standpoint.
+To resolve this, move the user refcount back to struct net so calls
+to those functions are possible even before their initcalls have run.
 
-4) Propagate to userspace the NLM_F_CREATE and NLM_F_EXCL flags
-   from the rule notification path.
-
-Patches #2, #3 and #4 are used by 'nft monitor' and 'iptables-monitor'
-userspace utilities which are not correctly representing the following
-operations through netlink notifications:
-
-- rule insertions
-- rule addition/insertion from position handle
-- create table/chain/set/map/flowtable/...
-
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
-
-In this round, I have keep back the patch 4/5 ("netfilter: nft_dynset:
-relax superfluous check on set updates") coming in the previous series,
-which is relaxing a bogus check in the dynset extension for the timeout
-flag. Such patch has no existing users in the strict sense and it is
-possible to route it through net-next.
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit 3b1b6e82fb5e08e2cb355d7b2ee8644ec289de66:
-
-  net: phy: enhance GPY115 loopback disable function (2021-09-27 13:49:38 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
-
-for you to fetch changes up to 6fb721cf781808ee2ca5e737fb0592cc68de3381:
-
-  netfilter: nf_tables: honor NLM_F_CREATE and NLM_F_EXCL in event notification (2021-10-02 12:00:17 +0200)
-
-----------------------------------------------------------------
-Florian Westphal (1):
-      netfilter: conntrack: fix boot failure with nf_conntrack.enable_hooks=1
-
-Pablo Neira Ayuso (3):
-      netfilter: nf_tables: add position handle in event notification
-      netfilter: nf_tables: reverse order in rule replacement expansion
-      netfilter: nf_tables: honor NLM_F_CREATE and NLM_F_EXCL in event notification
-
+Fixes: 7b1957b04956 ("netfilter: nf_defrag_ipv4: use net_generic infra")
+Fixes: 8b0adbe3e38d ("netfilter: nf_defrag_ipv6: use net_generic infra").
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
  include/net/netfilter/ipv6/nf_defrag_ipv6.h |  1 -
- include/net/netfilter/nf_tables.h           |  2 +-
- include/net/netns/netfilter.h               |  6 ++
- net/ipv4/netfilter/nf_defrag_ipv4.c         | 30 +++-------
+ include/net/netns/netfilter.h               |  6 +++++
+ net/ipv4/netfilter/nf_defrag_ipv4.c         | 30 +++++++--------------
  net/ipv6/netfilter/nf_conntrack_reasm.c     |  2 +-
- net/ipv6/netfilter/nf_defrag_ipv6_hooks.c   | 25 +++-----
- net/netfilter/nf_tables_api.c               | 91 ++++++++++++++++++++---------
- net/netfilter/nft_quota.c                   |  2 +-
- 8 files changed, 91 insertions(+), 68 deletions(-)
+ net/ipv6/netfilter/nf_defrag_ipv6_hooks.c   | 25 +++++++----------
+ 5 files changed, 25 insertions(+), 39 deletions(-)
+
+diff --git a/include/net/netfilter/ipv6/nf_defrag_ipv6.h b/include/net/netfilter/ipv6/nf_defrag_ipv6.h
+index 0fd8a4159662..ceadf8ba25a4 100644
+--- a/include/net/netfilter/ipv6/nf_defrag_ipv6.h
++++ b/include/net/netfilter/ipv6/nf_defrag_ipv6.h
+@@ -17,7 +17,6 @@ struct inet_frags_ctl;
+ struct nft_ct_frag6_pernet {
+ 	struct ctl_table_header *nf_frag_frags_hdr;
+ 	struct fqdir	*fqdir;
+-	unsigned int users;
+ };
+ 
+ #endif /* _NF_DEFRAG_IPV6_H */
+diff --git a/include/net/netns/netfilter.h b/include/net/netns/netfilter.h
+index 986a2a9cfdfa..b593f95e9991 100644
+--- a/include/net/netns/netfilter.h
++++ b/include/net/netns/netfilter.h
+@@ -27,5 +27,11 @@ struct netns_nf {
+ #if IS_ENABLED(CONFIG_DECNET)
+ 	struct nf_hook_entries __rcu *hooks_decnet[NF_DN_NUMHOOKS];
+ #endif
++#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV4)
++	unsigned int defrag_ipv4_users;
++#endif
++#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
++	unsigned int defrag_ipv6_users;
++#endif
+ };
+ #endif
+diff --git a/net/ipv4/netfilter/nf_defrag_ipv4.c b/net/ipv4/netfilter/nf_defrag_ipv4.c
+index 613432a36f0a..e61ea428ea18 100644
+--- a/net/ipv4/netfilter/nf_defrag_ipv4.c
++++ b/net/ipv4/netfilter/nf_defrag_ipv4.c
+@@ -20,13 +20,8 @@
+ #endif
+ #include <net/netfilter/nf_conntrack_zones.h>
+ 
+-static unsigned int defrag4_pernet_id __read_mostly;
+ static DEFINE_MUTEX(defrag4_mutex);
+ 
+-struct defrag4_pernet {
+-	unsigned int users;
+-};
+-
+ static int nf_ct_ipv4_gather_frags(struct net *net, struct sk_buff *skb,
+ 				   u_int32_t user)
+ {
+@@ -111,19 +106,15 @@ static const struct nf_hook_ops ipv4_defrag_ops[] = {
+ 
+ static void __net_exit defrag4_net_exit(struct net *net)
+ {
+-	struct defrag4_pernet *nf_defrag = net_generic(net, defrag4_pernet_id);
+-
+-	if (nf_defrag->users) {
++	if (net->nf.defrag_ipv4_users) {
+ 		nf_unregister_net_hooks(net, ipv4_defrag_ops,
+ 					ARRAY_SIZE(ipv4_defrag_ops));
+-		nf_defrag->users = 0;
++		net->nf.defrag_ipv4_users = 0;
+ 	}
+ }
+ 
+ static struct pernet_operations defrag4_net_ops = {
+ 	.exit = defrag4_net_exit,
+-	.id   = &defrag4_pernet_id,
+-	.size = sizeof(struct defrag4_pernet),
+ };
+ 
+ static int __init nf_defrag_init(void)
+@@ -138,24 +129,23 @@ static void __exit nf_defrag_fini(void)
+ 
+ int nf_defrag_ipv4_enable(struct net *net)
+ {
+-	struct defrag4_pernet *nf_defrag = net_generic(net, defrag4_pernet_id);
+ 	int err = 0;
+ 
+ 	mutex_lock(&defrag4_mutex);
+-	if (nf_defrag->users == UINT_MAX) {
++	if (net->nf.defrag_ipv4_users == UINT_MAX) {
+ 		err = -EOVERFLOW;
+ 		goto out_unlock;
+ 	}
+ 
+-	if (nf_defrag->users) {
+-		nf_defrag->users++;
++	if (net->nf.defrag_ipv4_users) {
++		net->nf.defrag_ipv4_users++;
+ 		goto out_unlock;
+ 	}
+ 
+ 	err = nf_register_net_hooks(net, ipv4_defrag_ops,
+ 				    ARRAY_SIZE(ipv4_defrag_ops));
+ 	if (err == 0)
+-		nf_defrag->users = 1;
++		net->nf.defrag_ipv4_users = 1;
+ 
+  out_unlock:
+ 	mutex_unlock(&defrag4_mutex);
+@@ -165,12 +155,10 @@ EXPORT_SYMBOL_GPL(nf_defrag_ipv4_enable);
+ 
+ void nf_defrag_ipv4_disable(struct net *net)
+ {
+-	struct defrag4_pernet *nf_defrag = net_generic(net, defrag4_pernet_id);
+-
+ 	mutex_lock(&defrag4_mutex);
+-	if (nf_defrag->users) {
+-		nf_defrag->users--;
+-		if (nf_defrag->users == 0)
++	if (net->nf.defrag_ipv4_users) {
++		net->nf.defrag_ipv4_users--;
++		if (net->nf.defrag_ipv4_users == 0)
+ 			nf_unregister_net_hooks(net, ipv4_defrag_ops,
+ 						ARRAY_SIZE(ipv4_defrag_ops));
+ 	}
+diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
+index a0108415275f..5c47be29b9ee 100644
+--- a/net/ipv6/netfilter/nf_conntrack_reasm.c
++++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
+@@ -33,7 +33,7 @@
+ 
+ static const char nf_frags_cache_name[] = "nf-frags";
+ 
+-unsigned int nf_frag_pernet_id __read_mostly;
++static unsigned int nf_frag_pernet_id __read_mostly;
+ static struct inet_frags nf_frags;
+ 
+ static struct nft_ct_frag6_pernet *nf_frag_pernet(struct net *net)
+diff --git a/net/ipv6/netfilter/nf_defrag_ipv6_hooks.c b/net/ipv6/netfilter/nf_defrag_ipv6_hooks.c
+index e8a59d8bf2ad..cb4eb1d2c620 100644
+--- a/net/ipv6/netfilter/nf_defrag_ipv6_hooks.c
++++ b/net/ipv6/netfilter/nf_defrag_ipv6_hooks.c
+@@ -25,8 +25,6 @@
+ #include <net/netfilter/nf_conntrack_zones.h>
+ #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
+ 
+-extern unsigned int nf_frag_pernet_id;
+-
+ static DEFINE_MUTEX(defrag6_mutex);
+ 
+ static enum ip6_defrag_users nf_ct6_defrag_user(unsigned int hooknum,
+@@ -91,12 +89,10 @@ static const struct nf_hook_ops ipv6_defrag_ops[] = {
+ 
+ static void __net_exit defrag6_net_exit(struct net *net)
+ {
+-	struct nft_ct_frag6_pernet *nf_frag = net_generic(net, nf_frag_pernet_id);
+-
+-	if (nf_frag->users) {
++	if (net->nf.defrag_ipv6_users) {
+ 		nf_unregister_net_hooks(net, ipv6_defrag_ops,
+ 					ARRAY_SIZE(ipv6_defrag_ops));
+-		nf_frag->users = 0;
++		net->nf.defrag_ipv6_users = 0;
+ 	}
+ }
+ 
+@@ -134,24 +130,23 @@ static void __exit nf_defrag_fini(void)
+ 
+ int nf_defrag_ipv6_enable(struct net *net)
+ {
+-	struct nft_ct_frag6_pernet *nf_frag = net_generic(net, nf_frag_pernet_id);
+ 	int err = 0;
+ 
+ 	mutex_lock(&defrag6_mutex);
+-	if (nf_frag->users == UINT_MAX) {
++	if (net->nf.defrag_ipv6_users == UINT_MAX) {
+ 		err = -EOVERFLOW;
+ 		goto out_unlock;
+ 	}
+ 
+-	if (nf_frag->users) {
+-		nf_frag->users++;
++	if (net->nf.defrag_ipv6_users) {
++		net->nf.defrag_ipv6_users++;
+ 		goto out_unlock;
+ 	}
+ 
+ 	err = nf_register_net_hooks(net, ipv6_defrag_ops,
+ 				    ARRAY_SIZE(ipv6_defrag_ops));
+ 	if (err == 0)
+-		nf_frag->users = 1;
++		net->nf.defrag_ipv6_users = 1;
+ 
+  out_unlock:
+ 	mutex_unlock(&defrag6_mutex);
+@@ -161,12 +156,10 @@ EXPORT_SYMBOL_GPL(nf_defrag_ipv6_enable);
+ 
+ void nf_defrag_ipv6_disable(struct net *net)
+ {
+-	struct nft_ct_frag6_pernet *nf_frag = net_generic(net, nf_frag_pernet_id);
+-
+ 	mutex_lock(&defrag6_mutex);
+-	if (nf_frag->users) {
+-		nf_frag->users--;
+-		if (nf_frag->users == 0)
++	if (net->nf.defrag_ipv6_users) {
++		net->nf.defrag_ipv6_users--;
++		if (net->nf.defrag_ipv6_users == 0)
+ 			nf_unregister_net_hooks(net, ipv6_defrag_ops,
+ 						ARRAY_SIZE(ipv6_defrag_ops));
+ 	}
+-- 
+2.30.2
+
