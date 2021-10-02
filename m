@@ -2,160 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3014541FDBE
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 20:36:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E58041FDC5
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 20:47:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233854AbhJBShq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 14:37:46 -0400
-Received: from mxout01.lancloud.ru ([45.84.86.81]:47532 "EHLO
-        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233872AbhJBShm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 14:37:42 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 578722091F09
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH 03/10] ravb: Add nc_queue to struct ravb_hw_info
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
- <20211001150636.7500-4-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <334a8156-0645-b29c-137b-1e76d524efb9@omp.ru>
-Date:   Sat, 2 Oct 2021 21:35:52 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S233860AbhJBSt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 14:49:29 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:11584 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233776AbhJBSt2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 14:49:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1633200463; x=1664736463;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=1yufmRtHN7r9R8GWOTbEyide2oF85zYuwpBmwCHWCSw=;
+  b=t0EH4gUrDPrwvGML3yhZ++RK3qkY2Zs65oK8m5SVNDsz4DpDPP9UDmog
+   NV2Htz0I7o6HpaTCTdvPRTpyBaX5StkWkB61ESMEnR91gGRP/8uxJvONO
+   MMo6Fa22WZniDb/A38zlcgh1QwM4ObKtOrKjC7+wM3ZRBLTFmeqLVsWgY
+   o=;
+X-IronPort-AV: E=Sophos;i="5.85,342,1624320000"; 
+   d="scan'208";a="144931730"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-72dc3927.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 02 Oct 2021 18:47:42 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-72dc3927.us-west-2.amazon.com (Postfix) with ESMTPS id EDCB2418D7;
+        Sat,  2 Oct 2021 18:47:40 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Sat, 2 Oct 2021 18:47:39 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.146) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23; Sat, 2 Oct 2021 18:47:36 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <alx.manpages@gmail.com>
+CC:     <benh@amazon.com>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <linux-man@vger.kernel.org>, <mtk.manpages@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH] unix.7: Add a description for ENFILE.
+Date:   Sun, 3 Oct 2021 03:47:33 +0900
+Message-ID: <20211002184733.62758-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <84a95c03-43e6-36b8-fdd3-fbb3d74dcd0e@gmail.com>
+References: <84a95c03-43e6-36b8-fdd3-fbb3d74dcd0e@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20211001150636.7500-4-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.146]
+X-ClientProxiedBy: EX13D27UWB001.ant.amazon.com (10.43.161.169) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/1/21 6:06 PM, Biju Das wrote:
-
-> R-Car supports network control queue whereas RZ/G2L does not support
-> it. Add nc_queue to struct ravb_hw_info, so that NC queue is handled
-> only by R-Car.
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Date:   Sat, 2 Oct 2021 20:12:48 +0200
+> On 9/29/21 3:38 AM, Kuniyuki Iwashima wrote:
+> > When creating UNIX domain sockets, the kernel used to return -ENOMEM on
+> > error where it should return -ENFILE.  The behaviour has been wrong since
+> > 2.2.4 and fixed in the recent commit f4bd73b5a950 ("af_unix: Return errno
+> > instead of NULL in unix_create1().").
+> > 
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > ---
+> > Note to maintainers of man-pages, the commit is merged in the net tree [0]
+> > but not in the Linus' tree yet.
+> > 
+> > [0]: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=f4bd73b5a950
 > 
-> This patch also renames ravb_rcar_dmac_init to ravb_dmac_init_rcar
-> to be consistent with the naming convention used in sh_eth driver.
+> Patch applied!
+
+Thank you!
+
+Best regards,
+Kuniyuki
+
+
 > 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-
-   One little nit below:
-
-> ---
-> RFC->v1:
->  * Handled NC queue only for R-Car.
-> ---
->  drivers/net/ethernet/renesas/ravb.h      |   3 +-
->  drivers/net/ethernet/renesas/ravb_main.c | 140 +++++++++++++++--------
->  2 files changed, 94 insertions(+), 49 deletions(-)
+> Thanks,
 > 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index a33fbcb4aac3..c91e93e5590f 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -986,7 +986,7 @@ struct ravb_hw_info {
->  	bool (*receive)(struct net_device *ndev, int *quota, int q);
->  	void (*set_rate)(struct net_device *ndev);
->  	int (*set_feature)(struct net_device *ndev, netdev_features_t features);
-> -	void (*dmac_init)(struct net_device *ndev);
-> +	int (*dmac_init)(struct net_device *ndev);
->  	void (*emac_init)(struct net_device *ndev);
->  	const char (*gstrings_stats)[ETH_GSTRING_LEN];
->  	size_t gstrings_size;
-> @@ -1002,6 +1002,7 @@ struct ravb_hw_info {
->  	unsigned multi_irqs:1;		/* AVB-DMAC and E-MAC has multiple irqs */
->  	unsigned gptp:1;		/* AVB-DMAC has gPTP support */
->  	unsigned ccc_gac:1;		/* AVB-DMAC has gPTP support active in config mode */
-> +	unsigned nc_queue:1;		/* AVB-DMAC has NC queue */
-
-   Rather "queues" as there are RX and TX NC queues, no?
-
-[...]
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index dc7654abfe55..8bf13586e90a 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-[...]
-> @@ -1698,28 +1717,38 @@ static struct net_device_stats *ravb_get_stats(struct net_device *ndev)
->  
->  	nstats = &ndev->stats;
->  	stats0 = &priv->stats[RAVB_BE];
-> -	stats1 = &priv->stats[RAVB_NC];
->  
->  	if (info->tx_counters) {
->  		nstats->tx_dropped += ravb_read(ndev, TROCR);
->  		ravb_write(ndev, 0, TROCR);	/* (write clear) */
->  	}
->  
-> -	nstats->rx_packets = stats0->rx_packets + stats1->rx_packets;
-> -	nstats->tx_packets = stats0->tx_packets + stats1->tx_packets;
-> -	nstats->rx_bytes = stats0->rx_bytes + stats1->rx_bytes;
-> -	nstats->tx_bytes = stats0->tx_bytes + stats1->tx_bytes;
-> -	nstats->multicast = stats0->multicast + stats1->multicast;
-> -	nstats->rx_errors = stats0->rx_errors + stats1->rx_errors;
-> -	nstats->rx_crc_errors = stats0->rx_crc_errors + stats1->rx_crc_errors;
-> -	nstats->rx_frame_errors =
-> -		stats0->rx_frame_errors + stats1->rx_frame_errors;
-> -	nstats->rx_length_errors =
-> -		stats0->rx_length_errors + stats1->rx_length_errors;
-> -	nstats->rx_missed_errors =
-> -		stats0->rx_missed_errors + stats1->rx_missed_errors;
-> -	nstats->rx_over_errors =
-> -		stats0->rx_over_errors + stats1->rx_over_errors;
-> +	nstats->rx_packets = stats0->rx_packets;
-> +	nstats->tx_packets = stats0->tx_packets;
-> +	nstats->rx_bytes = stats0->rx_bytes;
-> +	nstats->tx_bytes = stats0->tx_bytes;
-> +	nstats->multicast = stats0->multicast;
-> +	nstats->rx_errors = stats0->rx_errors;
-> +	nstats->rx_crc_errors = stats0->rx_crc_errors;
-> +	nstats->rx_frame_errors = stats0->rx_frame_errors;
-> +	nstats->rx_length_errors = stats0->rx_length_errors;
-> +	nstats->rx_missed_errors = stats0->rx_missed_errors;
-> +	nstats->rx_over_errors = stats0->rx_over_errors;
-> +	if (info->nc_queue) {
-> +		stats1 = &priv->stats[RAVB_NC];
-> +
-> +		nstats->rx_packets += stats1->rx_packets;
-> +		nstats->tx_packets += stats1->tx_packets;
-> +		nstats->rx_bytes += stats1->rx_bytes;
-> +		nstats->tx_bytes += stats1->tx_bytes;
-> +		nstats->multicast += stats1->multicast;
-> +		nstats->rx_errors += stats1->rx_errors;
-> +		nstats->rx_crc_errors += stats1->rx_crc_errors;
-> +		nstats->rx_frame_errors += stats1->rx_frame_errors;
-> +		nstats->rx_length_errors += stats1->rx_length_errors;
-> +		nstats->rx_missed_errors += stats1->rx_missed_errors;
-> +		nstats->rx_over_errors += stats1->rx_over_errors;
-> +	}
-
-   Good! :-)
-
-[...]
-
-MBR, Sergey
+> Alex
+> 
+> > ---
+> >   man7/unix.7 | 3 +++
+> >   1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/man7/unix.7 b/man7/unix.7
+> > index 6d30b25cd..2dc96fea1 100644
+> > --- a/man7/unix.7
+> > +++ b/man7/unix.7
+> > @@ -721,6 +721,9 @@ invalid state for the applied operation.
+> >   called on an already connected socket or a target address was
+> >   specified on a connected socket.
+> >   .TP
+> > +.B ENFILE
+> > +The system-wide limit on the total number of open files has been reached.
+> > +.TP
+> >   .B ENOENT
+> >   The pathname in the remote address specified to
+> >   .BR connect (2)
+> > 
+> 
+> 
+> -- 
+> Alejandro Colomar
+> Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+> http://www.alejandro-colomar.es/
