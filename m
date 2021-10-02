@@ -2,83 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75B1A41FCA5
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 17:12:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9685A41FCB2
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 17:20:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233385AbhJBPLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 11:11:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38282 "EHLO mail.kernel.org"
+        id S233468AbhJBPVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 11:21:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57042 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233274AbhJBPLy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 2 Oct 2021 11:11:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 96B0861AFB;
-        Sat,  2 Oct 2021 15:10:08 +0000 (UTC)
+        id S232575AbhJBPVx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 Oct 2021 11:21:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7917161B21;
+        Sat,  2 Oct 2021 15:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633187408;
-        bh=01AM/1cxuQUpeTxdSe8uKOE0YCvWnCrgZjn5APJs0Jg=;
+        s=k20201202; t=1633188007;
+        bh=YJYyP9axb7xwZ0VEBvGaxpql7EFNPlKqIZDSS/WIN44=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sh9rL5iMUaavgPemZIcN8eTyLlOYjgLw9zQeYJpwBIs1/l9s6D0DHQgSCP4mbj84C
-         uaEwOGIuzzYMoYyAe04UPfcGp+oLQ/zwQ6IWQ7rgQBiLhzbKrfIs0Dc8ud9u4XskRZ
-         q42nJrEAg9BNLqXOW9JLW7JPBB1CxiH7Sgx6ENXoZhwmOjjVqBchj0kyYHXpIB1Jma
-         xVscOna86qfRF5YzJZyk8OQVFpjACyPqFsclQ9QNKVhAoKAstbOFP5t9KZ3sgexNgS
-         K+Bx95GS1Iqi9uAsyd7tYNgPXpEwMYmtIaZMJ1ydiIq7KU80Q352ajKTLHxJTkOQ20
-         7uP8lLKjMF1pQ==
+        b=BTjgLcfJ3zBn15QJKH1j3rRJMHRWTkjXDgUs5mTw5DFF9qcRQbsMwDrFIdLOWEkzS
+         VW/a+0G66WkLYjibbGhepp2OmZBt3OWjJdkkp9bBqpxVhku3Hofs/NPzf7d2xwqdKZ
+         bRBFXX9Dlcl0Bp5Yx6n8PJqX0ykMBgvt1HwXakCRJw6zXU+yFGoMwsdl4suiC/hw2E
+         msmCQGthmO41QTJ9g9C47eJMHi831DFMTwojIHQDw0B0vBW9xBHi7AGrjEhAYuyAbq
+         7bN8E239yoehMVOi6PRH18INQqMKw16kwGy+DGHaX9hD2uAH1WKwRDRQef0yBXMNB5
+         t4j7jofWtl8Cw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 87A3360BCB;
-        Sat,  2 Oct 2021 15:10:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7231D600AB;
+        Sat,  2 Oct 2021 15:20:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/11] Use netdev->dev_addr write helpers (part 1)
+Subject: Re: [PATCH net-next] net: wwan: iosm: correct devlink extra params
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163318740855.10513.12274093387926375607.git-patchwork-notify@kernel.org>
-Date:   Sat, 02 Oct 2021 15:10:08 +0000
-References: <20211001213228.1735079-1-kuba@kernel.org>
-In-Reply-To: <20211001213228.1735079-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Message-Id: <163318800746.15445.8256454747829483471.git-patchwork-notify@kernel.org>
+Date:   Sat, 02 Oct 2021 15:20:07 +0000
+References: <20211002143212.282851-1-m.chetan.kumar@linux.intel.com>
+In-Reply-To: <20211002143212.282851-1-m.chetan.kumar@linux.intel.com>
+To:     M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, krishna.c.sudi@intel.com,
+        m.chetan.kumar@intel.com, linuxwwan@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri,  1 Oct 2021 14:32:17 -0700 you wrote:
-> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-> of VLANs...") introduced a rbtree for faster Ethernet address look
-> up. To maintain netdev->dev_addr in this tree we need to make all
-> the writes to it got through appropriate helpers.
+On Sat,  2 Oct 2021 20:02:12 +0530 you wrote:
+> 1. Removed driver specific extra params like download_region,
+>    address & region_count. The required information is passed
+>    as part of flash API.
+> 2. IOSM Devlink documentation updated to reflect the same.
 > 
-> This is the first installment of predictably tedious conversion.
-> It tackles:
+> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/11] arch: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/4e9b9de65cdd
-  - [net-next,02/11] net: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/2f23e5cef314
-  - [net-next,03/11] ethernet: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/a96d317fb1a3
-  - [net-next,04/11] net: usb: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/168137176233
-  - [net-next,05/11] net: use eth_hw_addr_set() instead of ether_addr_copy()
-    https://git.kernel.org/netdev/net-next/c/e35b8d7dbb09
-  - [net-next,06/11] ethernet: use eth_hw_addr_set() instead of ether_addr_copy()
-    https://git.kernel.org/netdev/net-next/c/f3956ebb3bf0
-  - [net-next,07/11] net: usb: use eth_hw_addr_set() instead of ether_addr_copy()
-    https://git.kernel.org/netdev/net-next/c/af804e6db9f6
-  - [net-next,08/11] ethernet: chelsio: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/47d71f45902e
-  - [net-next,09/11] ethernet: s2io: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/1235568b6d2e
-  - [net-next,10/11] fddi: use eth_hw_addr_set()
-    https://git.kernel.org/netdev/net-next/c/4d3d2c8dba36
-  - [net-next,11/11] ethernet: use eth_hw_addr_set() - casts
-    https://git.kernel.org/netdev/net-next/c/16be9a16340b
+  - [net-next] net: wwan: iosm: correct devlink extra params
+    https://git.kernel.org/netdev/net-next/c/b8aa16541d73
 
 You are awesome, thank you!
 --
