@@ -2,243 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F18741FAD5
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 12:08:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5938141FB17
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 13:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232815AbhJBKKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 06:10:35 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:45080 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232778AbhJBKK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 06:10:27 -0400
-Received: from localhost.localdomain (unknown [78.30.35.141])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 1238163EE8;
-        Sat,  2 Oct 2021 12:07:13 +0200 (CEST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 4/4] netfilter: nf_tables: honor NLM_F_CREATE and NLM_F_EXCL in event notification
-Date:   Sat,  2 Oct 2021 12:08:33 +0200
-Message-Id: <20211002100833.21411-5-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211002100833.21411-1-pablo@netfilter.org>
-References: <20211002100833.21411-1-pablo@netfilter.org>
+        id S232842AbhJBLUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 07:20:33 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:33251 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232621AbhJBLUc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 07:20:32 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1633173526; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=XbOlq0yV9tI+HC++0Jz6+JIOkLBrknbCOV4MG10Kd6w=; b=dEOgSqHGhqTE9DvVARiJYVPo8pdsmuXRgNGEvFgaaLRZyRW58bgXv7nDh1UNwZkkIm8urmh+
+ Hun+2CeITy2mZPQWordX/JiNY2Po82VvK7l3GlpVVr4B/QqE7SpiKKxc7UxthpZnScjki09H
+ Ajar4pRYtKj6OeAgE1EJjvUEujQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 61584015a5a9bab6e8a6be61 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 02 Oct 2021 11:18:45
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 1258DC43616; Sat,  2 Oct 2021 11:18:45 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id CDD89C4338F;
+        Sat,  2 Oct 2021 11:18:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org CDD89C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        ath9k-devel@qca.qualcomm.com,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: Two ath9k_htc fixes
+References: <77b76ac8-2bee-6444-d26c-8c30858b8daa@i-love.sakura.ne.jp>
+        <dfe7d982-2f6a-325a-c257-6d039033a2ed@i-love.sakura.ne.jp>
+Date:   Sat, 02 Oct 2021 14:18:37 +0300
+In-Reply-To: <dfe7d982-2f6a-325a-c257-6d039033a2ed@i-love.sakura.ne.jp>
+        (Tetsuo Handa's message of "Sat, 2 Oct 2021 18:29:51 +0900")
+Message-ID: <87tuhzhdyq.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Include the NLM_F_CREATE and NLM_F_EXCL flags in netlink event
-notifications, otherwise userspace cannot distiguish between create and
-add commands.
+Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp> writes:
 
-Fixes: 96518518cc41 ("netfilter: add nftables")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/net/netfilter/nf_tables.h |  2 +-
- net/netfilter/nf_tables_api.c     | 47 +++++++++++++++++++++++--------
- net/netfilter/nft_quota.c         |  2 +-
- 3 files changed, 37 insertions(+), 14 deletions(-)
+> I don't know whether these patches can fix all races.
+> But since no response from ath9k maintainers/developers,
+> can you directly pick up these patches via your tree?
 
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index 148f5d8ee5ab..a16171c5fd9e 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -1202,7 +1202,7 @@ struct nft_object *nft_obj_lookup(const struct net *net,
- 
- void nft_obj_notify(struct net *net, const struct nft_table *table,
- 		    struct nft_object *obj, u32 portid, u32 seq,
--		    int event, int family, int report, gfp_t gfp);
-+		    int event, u16 flags, int family, int report, gfp_t gfp);
- 
- /**
-  *	struct nft_object_type - stateful object type
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index c8acd26c7201..c0851fec11d4 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -780,6 +780,7 @@ static void nf_tables_table_notify(const struct nft_ctx *ctx, int event)
- {
- 	struct nftables_pernet *nft_net;
- 	struct sk_buff *skb;
-+	u16 flags = 0;
- 	int err;
- 
- 	if (!ctx->report &&
-@@ -790,8 +791,11 @@ static void nf_tables_table_notify(const struct nft_ctx *ctx, int event)
- 	if (skb == NULL)
- 		goto err;
- 
-+	if (ctx->flags & (NLM_F_CREATE | NLM_F_EXCL))
-+		flags |= ctx->flags & (NLM_F_CREATE | NLM_F_EXCL);
-+
- 	err = nf_tables_fill_table_info(skb, ctx->net, ctx->portid, ctx->seq,
--					event, 0, ctx->family, ctx->table);
-+					event, flags, ctx->family, ctx->table);
- 	if (err < 0) {
- 		kfree_skb(skb);
- 		goto err;
-@@ -1563,6 +1567,7 @@ static void nf_tables_chain_notify(const struct nft_ctx *ctx, int event)
- {
- 	struct nftables_pernet *nft_net;
- 	struct sk_buff *skb;
-+	u16 flags = 0;
- 	int err;
- 
- 	if (!ctx->report &&
-@@ -1573,8 +1578,11 @@ static void nf_tables_chain_notify(const struct nft_ctx *ctx, int event)
- 	if (skb == NULL)
- 		goto err;
- 
-+	if (ctx->flags & (NLM_F_CREATE | NLM_F_EXCL))
-+		flags |= ctx->flags & (NLM_F_CREATE | NLM_F_EXCL);
-+
- 	err = nf_tables_fill_chain_info(skb, ctx->net, ctx->portid, ctx->seq,
--					event, 0, ctx->family, ctx->table,
-+					event, flags, ctx->family, ctx->table,
- 					ctx->chain);
- 	if (err < 0) {
- 		kfree_skb(skb);
-@@ -2945,6 +2953,8 @@ static void nf_tables_rule_notify(const struct nft_ctx *ctx,
- 	}
- 	if (ctx->flags & (NLM_F_APPEND | NLM_F_REPLACE))
- 		flags |= NLM_F_APPEND;
-+	if (ctx->flags & (NLM_F_CREATE | NLM_F_EXCL))
-+		flags |= ctx->flags & (NLM_F_CREATE | NLM_F_EXCL);
- 
- 	err = nf_tables_fill_rule_info(skb, ctx->net, ctx->portid, ctx->seq,
- 				       event, flags, ctx->family, ctx->table,
-@@ -3957,8 +3967,9 @@ static void nf_tables_set_notify(const struct nft_ctx *ctx,
- 			         gfp_t gfp_flags)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(ctx->net);
--	struct sk_buff *skb;
- 	u32 portid = ctx->portid;
-+	struct sk_buff *skb;
-+	u16 flags = 0;
- 	int err;
- 
- 	if (!ctx->report &&
-@@ -3969,7 +3980,10 @@ static void nf_tables_set_notify(const struct nft_ctx *ctx,
- 	if (skb == NULL)
- 		goto err;
- 
--	err = nf_tables_fill_set(skb, ctx, set, event, 0);
-+	if (ctx->flags & (NLM_F_CREATE | NLM_F_EXCL))
-+		flags |= ctx->flags & (NLM_F_CREATE | NLM_F_EXCL);
-+
-+	err = nf_tables_fill_set(skb, ctx, set, event, flags);
- 	if (err < 0) {
- 		kfree_skb(skb);
- 		goto err;
-@@ -5245,12 +5259,13 @@ static int nf_tables_getsetelem(struct sk_buff *skb,
- static void nf_tables_setelem_notify(const struct nft_ctx *ctx,
- 				     const struct nft_set *set,
- 				     const struct nft_set_elem *elem,
--				     int event, u16 flags)
-+				     int event)
- {
- 	struct nftables_pernet *nft_net;
- 	struct net *net = ctx->net;
- 	u32 portid = ctx->portid;
- 	struct sk_buff *skb;
-+	u16 flags = 0;
- 	int err;
- 
- 	if (!ctx->report && !nfnetlink_has_listeners(net, NFNLGRP_NFTABLES))
-@@ -5260,6 +5275,9 @@ static void nf_tables_setelem_notify(const struct nft_ctx *ctx,
- 	if (skb == NULL)
- 		goto err;
- 
-+	if (ctx->flags & (NLM_F_CREATE | NLM_F_EXCL))
-+		flags |= ctx->flags & (NLM_F_CREATE | NLM_F_EXCL);
-+
- 	err = nf_tables_fill_setelem_info(skb, ctx, 0, portid, event, flags,
- 					  set, elem);
- 	if (err < 0) {
-@@ -6935,7 +6953,7 @@ static int nf_tables_delobj(struct sk_buff *skb, const struct nfnl_info *info,
- 
- void nft_obj_notify(struct net *net, const struct nft_table *table,
- 		    struct nft_object *obj, u32 portid, u32 seq, int event,
--		    int family, int report, gfp_t gfp)
-+		    u16 flags, int family, int report, gfp_t gfp)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(net);
- 	struct sk_buff *skb;
-@@ -6960,8 +6978,9 @@ void nft_obj_notify(struct net *net, const struct nft_table *table,
- 	if (skb == NULL)
- 		goto err;
- 
--	err = nf_tables_fill_obj_info(skb, net, portid, seq, event, 0, family,
--				      table, obj, false);
-+	err = nf_tables_fill_obj_info(skb, net, portid, seq, event,
-+				      flags & (NLM_F_CREATE | NLM_F_EXCL),
-+				      family, table, obj, false);
- 	if (err < 0) {
- 		kfree_skb(skb);
- 		goto err;
-@@ -6978,7 +6997,7 @@ static void nf_tables_obj_notify(const struct nft_ctx *ctx,
- 				 struct nft_object *obj, int event)
- {
- 	nft_obj_notify(ctx->net, ctx->table, obj, ctx->portid, ctx->seq, event,
--		       ctx->family, ctx->report, GFP_KERNEL);
-+		       ctx->flags, ctx->family, ctx->report, GFP_KERNEL);
- }
- 
- /*
-@@ -7759,6 +7778,7 @@ static void nf_tables_flowtable_notify(struct nft_ctx *ctx,
- {
- 	struct nftables_pernet *nft_net = nft_pernet(ctx->net);
- 	struct sk_buff *skb;
-+	u16 flags = 0;
- 	int err;
- 
- 	if (!ctx->report &&
-@@ -7769,8 +7789,11 @@ static void nf_tables_flowtable_notify(struct nft_ctx *ctx,
- 	if (skb == NULL)
- 		goto err;
- 
-+	if (ctx->flags & (NLM_F_CREATE | NLM_F_EXCL))
-+		flags |= ctx->flags & (NLM_F_CREATE | NLM_F_EXCL);
-+
- 	err = nf_tables_fill_flowtable_info(skb, ctx->net, ctx->portid,
--					    ctx->seq, event, 0,
-+					    ctx->seq, event, flags,
- 					    ctx->family, flowtable, hook_list);
- 	if (err < 0) {
- 		kfree_skb(skb);
-@@ -8648,7 +8671,7 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 			nft_setelem_activate(net, te->set, &te->elem);
- 			nf_tables_setelem_notify(&trans->ctx, te->set,
- 						 &te->elem,
--						 NFT_MSG_NEWSETELEM, 0);
-+						 NFT_MSG_NEWSETELEM);
- 			nft_trans_destroy(trans);
- 			break;
- 		case NFT_MSG_DELSETELEM:
-@@ -8656,7 +8679,7 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 
- 			nf_tables_setelem_notify(&trans->ctx, te->set,
- 						 &te->elem,
--						 NFT_MSG_DELSETELEM, 0);
-+						 NFT_MSG_DELSETELEM);
- 			nft_setelem_remove(net, te->set, &te->elem);
- 			if (!nft_setelem_is_catchall(te->set, &te->elem)) {
- 				atomic_dec(&te->set->nelems);
-diff --git a/net/netfilter/nft_quota.c b/net/netfilter/nft_quota.c
-index 0363f533a42b..c4d1389f7185 100644
---- a/net/netfilter/nft_quota.c
-+++ b/net/netfilter/nft_quota.c
-@@ -60,7 +60,7 @@ static void nft_quota_obj_eval(struct nft_object *obj,
- 	if (overquota &&
- 	    !test_and_set_bit(NFT_QUOTA_DEPLETED_BIT, &priv->flags))
- 		nft_obj_notify(nft_net(pkt), obj->key.table, obj, 0, 0,
--			       NFT_MSG_NEWOBJ, nft_pf(pkt), 0, GFP_ATOMIC);
-+			       NFT_MSG_NEWOBJ, 0, nft_pf(pkt), 0, GFP_ATOMIC);
- }
- 
- static int nft_quota_do_init(const struct nlattr * const tb[],
+Dave, please do not take ath9k patches. It seems that all ath9k syzbot
+fixes are of questionable quality, and at least some of them have
+created regressions, so they need to be tested on a real device before I
+apply them. I asked for help but nobody cared, so I now need to create
+an ath9k_htc test setup myself and that will take a while.
+
+Tetsuo, the patches are on my deferred queue and you can follow the
+status via patchwork:
+
+https://patchwork.kernel.org/project/linux-wireless/list/?series=550357&state=*
+
 -- 
-2.30.2
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
