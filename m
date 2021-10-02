@@ -2,106 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 841C841FA8A
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 11:06:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9C641FA92
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 11:19:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232625AbhJBJIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 05:08:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55940 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232631AbhJBJIS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 2 Oct 2021 05:08:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AF39261B06;
-        Sat,  2 Oct 2021 09:06:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633165592;
-        bh=T8waKCrPkYnEX9h6g7UvY1gmwClk6YShtPvOohfqWi8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JKM19fsyS85GrbKCYw1lQg6XE0tO+ljh6K8MfcxxtCqtRPnm4hgtT5Pf4V9c3MM6u
-         vOypUn0o5KdCerjdLJOxPNmWXTtb/jzZ0AP9OHSQy0Jo7Ph7sGs4RayOMD5PXHrEv3
-         TxKbNu3IAZ+X0KqullA25VVnt0VJSosB6A5rJNAcPIqewAA4NgALxh9TbklIu0+AAS
-         u/IkeE7JW8EmIKMYLey0oWMulE3jVCMzK/bWB0Kp+7GQggboJNBsblaC/CJ593vDNb
-         kOYFVbOaZv7UFd+Yt4LQ8RlMj9ZvNRm9clL0tPwAqPjmkCYAs5KiBnOgr6VWiEsCFK
-         Q9vt74njWwzVw==
-Received: by pali.im (Postfix)
-        id 86EEE1087; Sat,  2 Oct 2021 11:06:30 +0200 (CEST)
-Date:   Sat, 2 Oct 2021 11:06:30 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Scott Wood <oss@buserror.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] powerpc/fsl/dts: Fix phy-connection-type for fm1mac3
-Message-ID: <20211002090630.h6er5vhln5psw3yd@pali>
-References: <20210604233455.fwcu2chlsed2gwmu@pali>
- <20210704134325.24842-1-pali@kernel.org>
- <63a72f648297e96c140a1412c20bd3796398a932.camel@buserror.net>
- <20210827113836.hvqvaln65gexg5ps@pali>
- <20210928213918.v4n3bzecbiltbktd@pali>
- <YVR3PVa9C6w5A1ce@lunn.ch>
+        id S232662AbhJBJVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 05:21:02 -0400
+Received: from mail-vk1-f171.google.com ([209.85.221.171]:38775 "EHLO
+        mail-vk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232611AbhJBJU6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 05:20:58 -0400
+Received: by mail-vk1-f171.google.com with SMTP id g15so5469598vke.5
+        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 02:19:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x+xYE8hczlO6GFnDveXBiRxByg4CFjvmx5N3gLcK3ic=;
+        b=QCpgd7w3tPrk7jddbl1i79U8g4iLXaKokO22yUgWln7TcisddFKKRUfebkqu33iGZ8
+         nJUVxDzGg8a0/gztMvJ4TdnTXQNtHXOCagJxDHYE0Ur2jva1SFEtmB/7Q2PXc3Osi29b
+         QrS78ARgAwFRw3ugoJWNALrZ4VIHcRBPqeA23nD9sIxkYaPBG49w44hniKZtpu2ZLgQF
+         pA1ntQ/WgoEItXzf5cV/J/kim/zu0KjrPvLrypcXI3BVol4ZXXRPBpx9VW0n7EVIjUtU
+         iSwO7H0U2WhWamBwTM60R1P8Tr1sGJeXWq8x5mWMXVTu8kTcJKg07bWpgE6N2MFnRhRG
+         r+Zg==
+X-Gm-Message-State: AOAM530ObPdlymDDlxcEvmUeVVVUszm6wT8Af5Dbu2RGWQaA9xe0NbdA
+        eS7dUPPgPSMn/dPfcmANNf+4Uqu1ci8riTRshHI=
+X-Google-Smtp-Source: ABdhPJwcOdFmtRf0gkHzfZgpjXe/xFEruOKZ49Kymm8VmXyF5sO6oaNWBSQVsNwTDMHXSX07vsIGfcSGECzgtDSlD8w=
+X-Received: by 2002:a1f:1841:: with SMTP id 62mr10464590vky.26.1633166352464;
+ Sat, 02 Oct 2021 02:19:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YVR3PVa9C6w5A1ce@lunn.ch>
-User-Agent: NeoMutt/20180716
+References: <20211001213228.1735079-1-kuba@kernel.org> <20211001213228.1735079-2-kuba@kernel.org>
+In-Reply-To: <20211001213228.1735079-2-kuba@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Sat, 2 Oct 2021 11:19:01 +0200
+Message-ID: <CAMuHMdXaq=7bkL6Vx5CHve2mLTifa48y3-4KO2tdjAp3fQ-9Nw@mail.gmail.com>
+Subject: Re: [PATCH net-next 01/11] arch: use eth_hw_addr_set()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday 29 September 2021 16:25:01 Andrew Lunn wrote:
-> On Tue, Sep 28, 2021 at 11:39:18PM +0200, Pali Rohár wrote:
-> > On Friday 27 August 2021 13:38:36 Pali Rohár wrote:
-> > > On Wednesday 14 July 2021 12:11:49 Scott Wood wrote:
-> > > > On Sun, 2021-07-04 at 15:43 +0200, Pali Rohár wrote:
-> > > > > Property phy-connection-type contains invalid value "sgmii-2500" per scheme
-> > > > > defined in file ethernet-controller.yaml.
-> > > > > 
-> > > > > Correct phy-connection-type value should be "2500base-x".
-> > > > > 
-> > > > > Signed-off-by: Pali Rohár <pali@kernel.org>
-> > > > > Fixes: 84e0f1c13806 ("powerpc/mpc85xx: Add MDIO bus muxing support to the
-> > > > > board device tree(s)")
-> > > > > ---
-> > > > >  arch/powerpc/boot/dts/fsl/t1023rdb.dts | 2 +-
-> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
-> > > > > b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
-> > > > > index 5ba6fbfca274..f82f85c65964 100644
-> > > > > --- a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
-> > > > > +++ b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
-> > > > > @@ -154,7 +154,7 @@
-> > > > >  
-> > > > >                         fm1mac3: ethernet@e4000 {
-> > > > >                                 phy-handle = <&sgmii_aqr_phy3>;
-> > > > > -                               phy-connection-type = "sgmii-2500";
-> > > > > +                               phy-connection-type = "2500base-x";
-> > > > >                                 sleep = <&rcpm 0x20000000>;
-> > > > >                         };
-> > > > >  
-> > > > 
-> > > > Acked-by: Scott Wood <oss@buserror.net>
-> > > > 
-> > > > -Scott
-> > > 
-> > > Hello! If there is not any objection, could you take this patch?
-> > 
-> > Hello! I would like to remind this patch.
-> 
-> Hi Pali
-> 
-> I suggest you resend, and with To: Michael Ellerman <mpe@ellerman.id.au>
-> to make it clear who you expect to pick up the
-> patch. Michael seems to do the Maintainer work in
-> arch/powerpc/boot/dts/
-> 
-> 	Andrew
+On Fri, Oct 1, 2021 at 11:32 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+> of VLANs...") introduced a rbtree for faster Ethernet address look
+> up. To maintain netdev->dev_addr in this tree we need to make all
+> the writes to it got through appropriate helpers.
+>
+> Convert misc arch drivers from memcpy(... ETH_ADDR) to eth_hw_addr_set():
+>
+>   @@
+>   expression dev, np;
+>   @@
+>   - memcpy(dev->dev_addr, np, ETH_ALEN)
+>   + eth_hw_addr_set(dev, np)
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Done: https://lore.kernel.org/lkml/20211002090409.3833-1-pali@kernel.org/T/#u
+>  arch/m68k/emu/nfeth.c               | 2 +-
+
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
