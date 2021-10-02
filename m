@@ -2,345 +2,473 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 954FA41FC4C
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 15:26:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94DCE41FC81
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 16:25:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233316AbhJBN2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 09:28:19 -0400
-Received: from mail-oln040093003014.outbound.protection.outlook.com ([40.93.3.14]:32320
-        "EHLO na01-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230089AbhJBN2R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 2 Oct 2021 09:28:17 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U6xoQAQfvZma7qKWhId98USvBogAytL6flv/vzdSseiLsrLAPODZbL77yP0b2lh+sqpaNmyuwCUxNjopMw8hbKZP122URBY6e3fR5Xt0Ch3so8m16v0xVTt/uCO3P6oA2BUzc87FLEvN+N4eQV9nyxNft70jYQIiWnwsGOKTkU1kZXLwpd3k8DNoiyB0d5R3o1whoDVQSGq95hTVGd5J5eRP1IknxJZ+IjlpD3CcwGTOf9zp50iBDKvNLERSKERkn4yAuNFd6xnmI6C8yagNev/jLBD85z5SjVRWWsF9hTCNjwcH09/ocEcZ8x0X4esI129wfbkYMV+dhVtBeO9rmA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ccapwOvJcvZZbX9Dpho2siajlm0alArAyVUpX0nxPMA=;
- b=kwcWPRD0KyYNbYejFHfFI4a7Onaz9/lWkkRC47SJ6bEsr7lK4+663pk3gAj1gGHQ+dSrCpcUyGuYu4wg9X85JLEi/tpOzquKxQvHxw0QKWKJh/6+fNS8MJHAbOOUYks8X26yFrqH7Fewmd4Wca9W64pBZsQsUe4CAv11I1kVyJ2JBDB7nl5ks9RO7wD8BhxbrpNcxUFdSXadyStYle3f0TkF6zGsYGXYxRqNfnxvLTKXcHNK0q0tgNge9jtrYXt7YS0+rODoSDNeRNwNubFwKti1O6aoOvOKK7X0EGx7e+pDonNpZVhULQU8ZhsEZwIspDpNTcTh3msLsSLLzg+2Rg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ccapwOvJcvZZbX9Dpho2siajlm0alArAyVUpX0nxPMA=;
- b=SPyp8B416AJCMwFBBjpHeb/cxSWRQBOEC9xvVf2utEHVPKvmdH3CWCd09qkl9IedVT2bOUBAx/Sv1fI5iCu298kAAkuredc4X4S/3tI6GR0ZpPhT3XCS9B6owtYrK4gLl9cmarhO2GP21pFgicoABLoDpRkx+xfdYg5NPZx+zT0=
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
- by CO1PR21MB1281.namprd21.prod.outlook.com (2603:10b6:303:160::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.2; Sat, 2 Oct
- 2021 13:26:26 +0000
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::6129:c6f7:3f56:c899]) by MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::6129:c6f7:3f56:c899%4]) with mapi id 15.20.4587.013; Sat, 2 Oct 2021
- 13:26:26 +0000
-From:   Michael Kelley <mikelley@microsoft.com>
-To:     Tianyu Lan <ltykernel@gmail.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "jroedel@suse.de" <jroedel@suse.de>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "saravanand@fb.com" <saravanand@fb.com>,
-        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "tj@kernel.org" <tj@kernel.org>
-CC:     "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        vkuznets <vkuznets@redhat.com>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "hch@lst.de" <hch@lst.de>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>
-Subject: RE: [PATCH V6 7/8] Drivers: hv: vmbus: Add SNP support for VMbus
- channel initiate  message
-Thread-Topic: [PATCH V6 7/8] Drivers: hv: vmbus: Add SNP support for VMbus
- channel initiate  message
-Thread-Index: AQHXtfvyIQOjP+tUd0awi444HXmTFqu/ss0Q
-Date:   Sat, 2 Oct 2021 13:26:26 +0000
-Message-ID: <MWHPR21MB15933BC87034940AB7170552D7AC9@MWHPR21MB1593.namprd21.prod.outlook.com>
-References: <20210930130545.1210298-1-ltykernel@gmail.com>
- <20210930130545.1210298-8-ltykernel@gmail.com>
-In-Reply-To: <20210930130545.1210298-8-ltykernel@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=e5d00b32-ac26-4827-8703-4e604eb1f01c;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-10-02T13:14:09Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1c3533ea-5dd3-4e4b-ce86-08d985a83c68
-x-ms-traffictypediagnostic: CO1PR21MB1281:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <CO1PR21MB12812AA9542EDFBCC5C08977D7AC9@CO1PR21MB1281.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UOgvP6Vo5M32XgD6v+Mj8xWzwFW61iQb7eE+1gHfVvFZgguOYnoUVPsLZtBTgVIwC7MjHJD6ewTB9Jwa38bVlQw96vJuP6b1BVjE0kzEAOlOOdJoZiEktpLC6Nt/GFVGjLECyGKfDeOtbJ0e5R4I0K67mFFGZoTDyNX79b+4QQB3lpkX7dcOc4rac3vEoOYv2eUtWIsMYv+t2PMnLYTLXQoenFo2wuGZ3MkV819DrvPMbtKImlnpv1m5aTyrixZM2NnIa8agZj1YE+UG6ziduVH8QCjXitYqMHT5lTO4vWFlzoqtVOf+R7mLPkTOnvzXhIpfplx8/bBe8JbOmGFfG25tAEw310nwTqQ0HICYyRZtWYu0wCwmKvK3GtBu6AX3TvSvvDk1uzk95dysX0anFPZmAv3eWvomf8zqBHHHR4LUWkJ0WRfYuBubrklSXXukrYCRyVzCk7UDbt77yVQOhQqN/xm5lEet8vQseS6xOKeSdqeaBo86jud+VEU+QZt/tghDRz+G5RNpVjgwHHWe7YQ7aHzoZFz0Nyh7KyDBFQQ1PK4VJRXviLC2kZH4OHsT6IjkdpLZvC54FgCD9QQku1P1OLDiUZ8gR+LulYHvOR+L0MvvNhwArFDas5ocmVrHptydMGG+Izi8tSST92ul0tILjkB/0z4fLkSHpe3OnMmlu+JuH62yW/jrL4pUlQjR2EOwtCect64obK2E5IrZs4GkUDGJrSjFceFqRTkaMxc=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR21MB1593.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38070700005)(9686003)(7406005)(7416002)(921005)(76116006)(66476007)(2906002)(82950400001)(82960400001)(110136005)(7696005)(15650500001)(54906003)(316002)(83380400001)(66556008)(8936002)(64756008)(66446008)(6506007)(66946007)(5660300002)(86362001)(122000001)(4326008)(38100700002)(71200400001)(33656002)(10290500003)(55016002)(8676002)(186003)(8990500004)(52536014)(26005)(508600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Iw4rB2+U/8uMNineIP0ruu1Nl0YWFhuTtOPICPaFNeKigQC8E2/lrdEmNo3q?=
- =?us-ascii?Q?3EDzLrnaVE8MW8MUg+HYcV49VazHI9tWZuu3Q95O/cXzu/TosWW87k6ZNUPw?=
- =?us-ascii?Q?gj+QryrR+OXbnL2KmITz3Ys9bGVP50RUdGvUTjoqDc+ThSJvqXW+QRYG4+p6?=
- =?us-ascii?Q?ve2lVn8UXN6NPpPmHEV7GNQwMLi+NLsbjbtt7hjpCRPS03s5FTKV+lJSfQQH?=
- =?us-ascii?Q?GQCftX4tA6fYULOTHi1k3zPja/E2ypXrWLbXYRKo6R1MhReEifUp6qVb0nDH?=
- =?us-ascii?Q?6eHrlQKRuiL6mY3hCOcO5gSj+Yh81+kp6+1416GNZjO/e/jNWKWTdB445F3c?=
- =?us-ascii?Q?kDVpPBA7qA2IHdmqkkhO6v6ASCxpy001nngJ38t+UC58QNnk5I4i3nE0Ei7a?=
- =?us-ascii?Q?jXv5cNZL8j4/sxHu8NR9d2zdogLmuLG8e/3WAZo2cu6y5jHdj/1WP64lwNVm?=
- =?us-ascii?Q?Z33zadEWDWT0JuQ9ppo3mSoT7JxW7tNWW6GhKAA5v759xDgbl0ETKO4soO8/?=
- =?us-ascii?Q?oaXpjpk3+Zf5VteOs8ctvxR11FZHaQ1sNA8BOwY3hzMrMUlTX2wVKzjbrMKz?=
- =?us-ascii?Q?JN5ZrAPsWZ4p3Di2RIl04cB/F4MBckQso1BWlmdjtJY41lx4gT12MEjltPao?=
- =?us-ascii?Q?9E4wKIK59QzRjvx0x55S/f/a3ggXcw+u6PN8XDwRMAKj9JLhZcmoCnpDwYvy?=
- =?us-ascii?Q?wLzZKaQ/auKgQdA1SggGEPp9kIzkPWpRNSASNAXOJvplWqpBqcldLLe1aK8t?=
- =?us-ascii?Q?7WUQ4cGwSWXU4QdKLVWkhnStJ/9P+iuYIFxcGs9VZvrmGZcsqFjeefq921iw?=
- =?us-ascii?Q?dbfP4VvfHiw+XjXqhK77jPvS6D2p6f2HPBcEXX5fmDFnNffKsyDTWNJ1Oowd?=
- =?us-ascii?Q?0vzUpKPUwwHfgnbex7PsjxHKHjInbZwz4s37Sex2f9SWwmnkIz5OJU25y0g2?=
- =?us-ascii?Q?iN6KzyYz6A31O465WVK0Uxvb5KrpsGkz3WvP9Qknarq5WwXRHsl2T+LMOE05?=
- =?us-ascii?Q?40q/iGHPkcCABbo8Se2ifo9CZL3NnwWq+Y8OaubWqqJO5W5Ofdmm87K1MCeB?=
- =?us-ascii?Q?GZp+X0fGh7UW9/6P04eUJ/1uwuX7TGQWW5EqRHRXM+dEWkUX95om4J9X0gcv?=
- =?us-ascii?Q?FHdLbXSZ/y0PZhQE4VlrNvX8nrG0rgPGUvDPlmK63oH5HSK2j4o4/+wtyin7?=
- =?us-ascii?Q?x65UJeIcmf26ZEJVvHYNxxILIjpoW6JplhMS0bMe/4lCbDPj8vYlkL1Ix549?=
- =?us-ascii?Q?4WxXk2J5KvFML1+IOrKTtl+maQgNlcIGPV80ETxF4Zan6afbRnIZnIJRkFE+?=
- =?us-ascii?Q?Vb7YjaTMA+NbMTDNLnPV5Eg5?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S233381AbhJBO1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 10:27:05 -0400
+Received: from mga12.intel.com ([192.55.52.136]:6439 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233349AbhJBO1E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 Oct 2021 10:27:04 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10125"; a="205177842"
+X-IronPort-AV: E=Sophos;i="5.85,341,1624345200"; 
+   d="scan'208";a="205177842"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Oct 2021 07:25:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,341,1624345200"; 
+   d="scan'208";a="620007681"
+Received: from ccgwwan-desktop15.iind.intel.com ([10.224.174.19])
+  by fmsmga001.fm.intel.com with ESMTP; 02 Oct 2021 07:25:13 -0700
+From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
+        linuxwwan@intel.com
+Subject: [PATCH net-next] net: wwan: iosm: correct devlink extra params
+Date:   Sat,  2 Oct 2021 20:02:12 +0530
+Message-Id: <20211002143212.282851-1-m.chetan.kumar@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c3533ea-5dd3-4e4b-ce86-08d985a83c68
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Oct 2021 13:26:26.3167
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nxfq8qbtj52UDNJqXOuGqzqoKZ+5Bbv4F57P390V2fyu5gAxUVSWNveG8bpMXuF2d40N7P9NG893S5IFZFeJ+VRoTaqMSGl5aqfyGC5eApU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR21MB1281
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tianyu Lan <ltykernel@gmail.com> Sent: Thursday, September 30, 2021 6=
-:06 AM
->=20
-> The monitor pages in the CHANNELMSG_INITIATE_CONTACT msg are shared
-> with host in Isolation VM and so it's necessary to use hvcall to set
-> them visible to host. In Isolation VM with AMD SEV SNP, the access
-> address should be in the extra space which is above shared gpa
-> boundary. So remap these pages into the extra address(pa +
-> shared_gpa_boundary).
->=20
-> Introduce monitor_pages_original[] in the struct vmbus_connection
-> to store monitor page virtual address returned by hv_alloc_hyperv_
-> zeroed_page() and free monitor page via monitor_pages_original in
-> the vmbus_disconnect(). The monitor_pages[] is to used to access
-> monitor page and it is initialized to be equal with monitor_pages_
-> original. The monitor_pages[] will be overridden in the isolation VM
-> with va of extra address. Introduce monitor_pages_pa[] to store
-> monitor pages' physical address and use it to populate pa in the
-> initiate msg.
->=20
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
-> Change since v5:
-> 	*  change vmbus_connection.monitor_pages_pa type from
-> 	   unsigned long to phys_addr_t
-> 	*  Plus vmbus_connection.monitor_pages_pa with ms_hyperv.
-> 	   shared_gpa_boundary only in the IVM with AMD SEV.
->=20
-> Change since v4:
-> 	* Introduce monitor_pages_pa[] to store monitor pages' physical
-> 	  address and use it to populate pa in the initiate msg.
-> 	* Move code of mapping moniter pages in extra address into
-> 	  vmbus_connect().
->=20
-> Change since v3:
-> 	* Rename monitor_pages_va with monitor_pages_original
-> 	* free monitor page via monitor_pages_original and
-> 	  monitor_pages is used to access monitor page.
->=20
-> Change since v1:
->         * Not remap monitor pages in the non-SNP isolation VM.
-> ---
->  drivers/hv/connection.c   | 90 ++++++++++++++++++++++++++++++++++++---
->  drivers/hv/hyperv_vmbus.h |  2 +
->  2 files changed, 86 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
-> index 8820ae68f20f..7fac8d99541c 100644
-> --- a/drivers/hv/connection.c
-> +++ b/drivers/hv/connection.c
-> @@ -19,6 +19,8 @@
->  #include <linux/vmalloc.h>
->  #include <linux/hyperv.h>
->  #include <linux/export.h>
-> +#include <linux/io.h>
-> +#include <linux/set_memory.h>
->  #include <asm/mshyperv.h>
->=20
->  #include "hyperv_vmbus.h"
-> @@ -102,8 +104,9 @@ int vmbus_negotiate_version(struct vmbus_channel_msgi=
-nfo *msginfo, u32 version)
->  		vmbus_connection.msg_conn_id =3D VMBUS_MESSAGE_CONNECTION_ID;
->  	}
->=20
-> -	msg->monitor_page1 =3D virt_to_phys(vmbus_connection.monitor_pages[0]);
-> -	msg->monitor_page2 =3D virt_to_phys(vmbus_connection.monitor_pages[1]);
-> +	msg->monitor_page1 =3D vmbus_connection.monitor_pages_pa[0];
-> +	msg->monitor_page2 =3D vmbus_connection.monitor_pages_pa[1];
-> +
->  	msg->target_vcpu =3D hv_cpu_number_to_vp_number(VMBUS_CONNECT_CPU);
->=20
->  	/*
-> @@ -216,6 +219,65 @@ int vmbus_connect(void)
->  		goto cleanup;
->  	}
->=20
-> +	vmbus_connection.monitor_pages_original[0]
-> +		=3D vmbus_connection.monitor_pages[0];
-> +	vmbus_connection.monitor_pages_original[1]
-> +		=3D vmbus_connection.monitor_pages[1];
-> +	vmbus_connection.monitor_pages_pa[0]
-> +		=3D virt_to_phys(vmbus_connection.monitor_pages[0]);
-> +	vmbus_connection.monitor_pages_pa[1]
-> +		=3D virt_to_phys(vmbus_connection.monitor_pages[1]);
-> +
-> +	if (hv_is_isolation_supported()) {
-> +		ret =3D set_memory_decrypted((unsigned long)
-> +					   vmbus_connection.monitor_pages[0],
-> +					   1);
-> +		ret |=3D set_memory_decrypted((unsigned long)
-> +					    vmbus_connection.monitor_pages[1],
-> +					    1);
-> +		if (ret)
-> +			goto cleanup;
-> +
-> +		/*
-> +		 * Isolation VM with AMD SNP needs to access monitor page via
-> +		 * address space above shared gpa boundary.
-> +		 */
-> +		if (hv_isolation_type_snp()) {
-> +			vmbus_connection.monitor_pages_pa[0] +=3D
-> +				ms_hyperv.shared_gpa_boundary;
-> +			vmbus_connection.monitor_pages_pa[1] +=3D
-> +				ms_hyperv.shared_gpa_boundary;
-> +
-> +			vmbus_connection.monitor_pages[0]
-> +				=3D memremap(vmbus_connection.monitor_pages_pa[0],
-> +					   HV_HYP_PAGE_SIZE,
-> +					   MEMREMAP_WB);
-> +			if (!vmbus_connection.monitor_pages[0]) {
-> +				ret =3D -ENOMEM;
-> +				goto cleanup;
-> +			}
-> +
-> +			vmbus_connection.monitor_pages[1]
-> +				=3D memremap(vmbus_connection.monitor_pages_pa[1],
-> +					   HV_HYP_PAGE_SIZE,
-> +					   MEMREMAP_WB);
-> +			if (!vmbus_connection.monitor_pages[1]) {
-> +				ret =3D -ENOMEM;
-> +				goto cleanup;
-> +			}
-> +		}
-> +
-> +		/*
-> +		 * Set memory host visibility hvcall smears memory
-> +		 * and so zero monitor pages here.
-> +		 */
-> +		memset(vmbus_connection.monitor_pages[0], 0x00,
-> +		       HV_HYP_PAGE_SIZE);
-> +		memset(vmbus_connection.monitor_pages[1], 0x00,
-> +		       HV_HYP_PAGE_SIZE);
-> +
-> +	}
-> +
->  	msginfo =3D kzalloc(sizeof(*msginfo) +
->  			  sizeof(struct vmbus_channel_initiate_contact),
->  			  GFP_KERNEL);
-> @@ -303,10 +365,26 @@ void vmbus_disconnect(void)
->  		vmbus_connection.int_page =3D NULL;
->  	}
->=20
-> -	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[0]);
-> -	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[1]);
-> -	vmbus_connection.monitor_pages[0] =3D NULL;
-> -	vmbus_connection.monitor_pages[1] =3D NULL;
-> +	if (hv_is_isolation_supported()) {
-> +		memunmap(vmbus_connection.monitor_pages[0]);
-> +		memunmap(vmbus_connection.monitor_pages[1]);
+1. Removed driver specific extra params like download_region,
+   address & region_count. The required information is passed
+   as part of flash API.
+2. IOSM Devlink documentation updated to reflect the same.
 
-The matching memremap() calls are made in vmbus_connect() only in the
-SNP case.  In the non-SNP case, monitor_pages and monitor_pages_original
-are the same, so you would be doing an unmap, and then doing the
-set_memory_encrypted() and hv_free_hyperv_page() using an address
-that is no longer mapped, which seems wrong.   Looking at memunmap(),
-it might be a no-op in this case, but even if it is, making them conditiona=
-l
-on the SNP case might be a safer thing to do, and it would make the code
-more symmetrical.
+Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+---
+ Documentation/networking/devlink/iosm.rst | 32 ++-------
+ drivers/net/wwan/iosm/iosm_ipc_devlink.c  | 81 +++++------------------
+ drivers/net/wwan/iosm/iosm_ipc_devlink.h  | 44 ++++++++----
+ drivers/net/wwan/iosm/iosm_ipc_flash.c    | 42 +++++++-----
+ 4 files changed, 75 insertions(+), 124 deletions(-)
 
-> +
-> +		set_memory_encrypted((unsigned long)
-> +			vmbus_connection.monitor_pages_original[0],
-> +			1);
-> +		set_memory_encrypted((unsigned long)
-> +			vmbus_connection.monitor_pages_original[1],
-> +			1);
-> +	}
-> +
-> +	hv_free_hyperv_page((unsigned long)
-> +		vmbus_connection.monitor_pages_original[0]);
-> +	hv_free_hyperv_page((unsigned long)
-> +		vmbus_connection.monitor_pages_original[1]);
-> +	vmbus_connection.monitor_pages_original[0] =3D
-> +		vmbus_connection.monitor_pages[0] =3D NULL;
-> +	vmbus_connection.monitor_pages_original[1] =3D
-> +		vmbus_connection.monitor_pages[1] =3D NULL;
->  }
->=20
->  /*
-> diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
-> index 42f3d9d123a1..d0a5232a1c3e 100644
-> --- a/drivers/hv/hyperv_vmbus.h
-> +++ b/drivers/hv/hyperv_vmbus.h
-> @@ -240,6 +240,8 @@ struct vmbus_connection {
->  	 * is child->parent notification
->  	 */
->  	struct hv_monitor_page *monitor_pages[2];
-> +	void *monitor_pages_original[2];
-> +	phys_addr_t monitor_pages_pa[2];
->  	struct list_head chn_msg_list;
->  	spinlock_t channelmsg_lock;
->=20
-> --
-> 2.25.1
+diff --git a/Documentation/networking/devlink/iosm.rst b/Documentation/networking/devlink/iosm.rst
+index dd460c1c15cd..6136181339aa 100644
+--- a/Documentation/networking/devlink/iosm.rst
++++ b/Documentation/networking/devlink/iosm.rst
+@@ -26,23 +26,6 @@ The ``iosm`` driver implements the following driver-specific parameters.
+        the device during firmware flashing.
+        If set, Full nand erase command will be sent to the device. By default,
+        only conditional erase support is enabled.
+-   * - ``download_region``
+-     - u8
+-     - runtime
+-     - download_region parameter is used to identify if we are flashing the
+-       loadmap/region file during the firmware flashing.
+-   * - ``address``
+-     - u32
+-     - runtime
+-     - address parameter is used to send the address information of the
+-       loadmap/region file which is required during the firmware flashing
+-       process. Each region file has be flashed to its respective flash address.
+-   * - ``region_count``
+-     - u8
+-     - runtime
+-     - region_count parameter is used to inform the driver on how many total
+-       loadmap/region files are present in modem firmware image that has to be
+-       flashed.
+ 
+ 
+ Flash Update
+@@ -87,7 +70,7 @@ Flash Commands:
+ 1) When modem is in Boot ROM stage, user can use below command to inject PSI RAM
+ image using devlink flash command.
+ 
+-$ devlink dev flash pci/0000:02:00.0 file <PSI_RAM_File_name> component PSI
++$ devlink dev flash pci/0000:02:00.0 file <PSI_RAM_File_name>
+ 
+ 2) If user want to do a full erase, below command need to be issued to set the
+ erase full flash param (To be set only if full erase required).
+@@ -95,22 +78,19 @@ erase full flash param (To be set only if full erase required).
+ $ devlink dev param set pci/0000:02:00.0 name erase_full_flash value true cmode runtime
+ 
+ 3) Inject EBL after the modem is in PSI stage.
+-$ devlink dev flash pci/0000:02:00.0 file <EBL_File_name> component EBL
++
++$ devlink dev flash pci/0000:02:00.0 file <EBL_File_name>
+ 
+ 4) Once EBL is injected successfully, then the actual firmware flashing takes
+ place. Below is the sequence of commands used for each of the firmware images.
+ 
+ a) Flash secure bin file.
+-$ devlink dev flash pci/0000:02:00.0 file <Secure_bin_file_name> component FLS
+-
+-b) Flashing the Loadmap/Region file
+-$ devlink dev param set pci/0000:02:00.0 name region_count value 1 cmode runtime
+ 
+-$ devlink dev param set pci/0000:02:00.0 name download_region value true cmode runtime
++$ devlink dev flash pci/0000:02:00.0 file <Secure_bin_file_name>
+ 
+-$ devlink dev param set pci/0000:02:00.0 name address value <Nand_address> cmode runtime
++b) Flashing the Loadmap/Region file
+ 
+-$ devlink dev flash pci/0000:02:00.0 file <Load_map_file_name> component FLS
++$ devlink dev flash pci/0000:02:00.0 file <Load_map_file_name>
+ 
+ Regions
+ =======
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_devlink.c b/drivers/net/wwan/iosm/iosm_ipc_devlink.c
+index 6fe56f73011b..17da85a8f337 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_devlink.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_devlink.c
+@@ -23,31 +23,11 @@ static int ipc_devlink_get_param(struct devlink *dl, u32 id,
+ 				 struct devlink_param_gset_ctx *ctx)
+ {
+ 	struct iosm_devlink *ipc_devlink = devlink_priv(dl);
+-	int rc = 0;
+ 
+-	switch (id) {
+-	case IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH:
++	if (id == IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH)
+ 		ctx->val.vu8 = ipc_devlink->param.erase_full_flash;
+-		break;
+-
+-	case IOSM_DEVLINK_PARAM_ID_DOWNLOAD_REGION:
+-		ctx->val.vu8 = ipc_devlink->param.download_region;
+-		break;
+-
+-	case IOSM_DEVLINK_PARAM_ID_ADDRESS:
+-		ctx->val.vu32 = ipc_devlink->param.address;
+-		break;
+-
+-	case IOSM_DEVLINK_PARAM_ID_REGION_COUNT:
+-		ctx->val.vu8 = ipc_devlink->param.region_count;
+-		break;
+ 
+-	default:
+-		rc = -EOPNOTSUPP;
+-		break;
+-	}
+-
+-	return rc;
++	return 0;
+ }
+ 
+ /* Set the param values for the specific param ID's */
+@@ -55,31 +35,11 @@ static int ipc_devlink_set_param(struct devlink *dl, u32 id,
+ 				 struct devlink_param_gset_ctx *ctx)
+ {
+ 	struct iosm_devlink *ipc_devlink = devlink_priv(dl);
+-	int rc = 0;
+ 
+-	switch (id) {
+-	case IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH:
++	if (id == IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH)
+ 		ipc_devlink->param.erase_full_flash = ctx->val.vu8;
+-		break;
+-
+-	case IOSM_DEVLINK_PARAM_ID_DOWNLOAD_REGION:
+-		ipc_devlink->param.download_region = ctx->val.vu8;
+-		break;
+-
+-	case IOSM_DEVLINK_PARAM_ID_ADDRESS:
+-		ipc_devlink->param.address = ctx->val.vu32;
+-		break;
+-
+-	case IOSM_DEVLINK_PARAM_ID_REGION_COUNT:
+-		ipc_devlink->param.region_count = ctx->val.vu8;
+-		break;
+-
+-	default:
+-		rc = -EOPNOTSUPP;
+-		break;
+-	}
+ 
+-	return rc;
++	return 0;
+ }
+ 
+ /* Devlink param structure array */
+@@ -89,21 +49,6 @@ static const struct devlink_param iosm_devlink_params[] = {
+ 			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
+ 			     ipc_devlink_get_param, ipc_devlink_set_param,
+ 			     NULL),
+-	DEVLINK_PARAM_DRIVER(IOSM_DEVLINK_PARAM_ID_DOWNLOAD_REGION,
+-			     "download_region", DEVLINK_PARAM_TYPE_BOOL,
+-			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
+-			     ipc_devlink_get_param, ipc_devlink_set_param,
+-			     NULL),
+-	DEVLINK_PARAM_DRIVER(IOSM_DEVLINK_PARAM_ID_ADDRESS,
+-			     "address", DEVLINK_PARAM_TYPE_U32,
+-			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
+-			     ipc_devlink_get_param, ipc_devlink_set_param,
+-			     NULL),
+-	DEVLINK_PARAM_DRIVER(IOSM_DEVLINK_PARAM_ID_REGION_COUNT,
+-			     "region_count", DEVLINK_PARAM_TYPE_U8,
+-			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
+-			     ipc_devlink_get_param, ipc_devlink_set_param,
+-			     NULL),
+ };
+ 
+ /* Get devlink flash component type */
+@@ -134,18 +79,23 @@ static int ipc_devlink_flash_update(struct devlink *devlink,
+ {
+ 	struct iosm_devlink *ipc_devlink = devlink_priv(devlink);
+ 	enum iosm_flash_comp_type fls_type;
++	struct iosm_devlink_image *header;
+ 	int rc = -EINVAL;
+ 	u8 *mdm_rsp;
+ 
+-	if (!params->component)
++	header = (struct iosm_devlink_image *)params->fw->data;
++
++	if (!header || params->fw->size <= IOSM_DEVLINK_HDR_SIZE ||
++	    (memcmp(header->magic_header, IOSM_DEVLINK_MAGIC_HEADER,
++	     IOSM_DEVLINK_MAGIC_HEADER_LEN) != 0))
+ 		return -EINVAL;
+ 
+ 	mdm_rsp = kzalloc(IOSM_EBL_DW_PACK_SIZE, GFP_KERNEL);
+ 	if (!mdm_rsp)
+ 		return -ENOMEM;
+ 
+-	fls_type = ipc_devlink_get_flash_comp_type(params->component,
+-						   strlen(params->component));
++	fls_type = ipc_devlink_get_flash_comp_type(header->image_type,
++						   IOSM_DEVLINK_MAX_IMG_LEN);
+ 
+ 	switch (fls_type) {
+ 	case FLASH_COMP_TYPE_PSI:
+@@ -165,16 +115,16 @@ static int ipc_devlink_flash_update(struct devlink *devlink,
+ 		break;
+ 	default:
+ 		devlink_flash_update_status_notify(devlink, "Invalid component",
+-						   params->component, 0, 0);
++						   NULL, 0, 0);
+ 		break;
+ 	}
+ 
+ 	if (!rc)
+ 		devlink_flash_update_status_notify(devlink, "Flashing success",
+-						   params->component, 0, 0);
++						   header->image_type, 0, 0);
+ 	else
+ 		devlink_flash_update_status_notify(devlink, "Flashing failed",
+-						   params->component, 0, 0);
++						   header->image_type, 0, 0);
+ 
+ 	kfree(mdm_rsp);
+ 	return rc;
+@@ -182,7 +132,6 @@ static int ipc_devlink_flash_update(struct devlink *devlink,
+ 
+ /* Call back function for devlink ops */
+ static const struct devlink_ops devlink_flash_ops = {
+-	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT,
+ 	.flash_update = ipc_devlink_flash_update,
+ };
+ 
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_devlink.h b/drivers/net/wwan/iosm/iosm_ipc_devlink.h
+index fa2b388a2f8a..35c2d013b9cc 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_devlink.h
++++ b/drivers/net/wwan/iosm/iosm_ipc_devlink.h
+@@ -12,6 +12,18 @@
+ #include "iosm_ipc_imem_ops.h"
+ #include "iosm_ipc_pcie.h"
+ 
++/* Image ext max len */
++#define IOSM_DEVLINK_MAX_IMG_LEN 3
++/* Magic Header */
++#define IOSM_DEVLINK_MAGIC_HEADER "IOSM_DEVLINK_HEADER"
++/* Magic Header len */
++#define IOSM_DEVLINK_MAGIC_HEADER_LEN 20
++/* Devlink image type */
++#define IOSM_DEVLINK_IMG_TYPE 4
++/* Reserve header size */
++#define IOSM_DEVLINK_RESERVED 34
++/* Devlink Image Header size */
++#define IOSM_DEVLINK_HDR_SIZE sizeof(struct iosm_devlink_image)
+ /* MAX file name length */
+ #define IOSM_MAX_FILENAME_LEN 32
+ /* EBL response size */
+@@ -32,19 +44,11 @@
+  * enum iosm_devlink_param_id - Enum type to different devlink params
+  * @IOSM_DEVLINK_PARAM_ID_BASE:			Devlink param base ID
+  * @IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH:     Set if full erase required
+- * @IOSM_DEVLINK_PARAM_ID_DOWNLOAD_REGION:	Set if fls file to be
+- *						flashed is Loadmap/region file
+- * @IOSM_DEVLINK_PARAM_ID_ADDRESS:		Address of the region to be
+- *						flashed
+- * @IOSM_DEVLINK_PARAM_ID_REGION_COUNT:		Max region count
+  */
+ 
+ enum iosm_devlink_param_id {
+ 	IOSM_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
+ 	IOSM_DEVLINK_PARAM_ID_ERASE_FULL_FLASH,
+-	IOSM_DEVLINK_PARAM_ID_DOWNLOAD_REGION,
+-	IOSM_DEVLINK_PARAM_ID_ADDRESS,
+-	IOSM_DEVLINK_PARAM_ID_REGION_COUNT,
+ };
+ 
+ /**
+@@ -94,22 +98,34 @@ struct iosm_devlink_sio {
+ 
+ /**
+  * struct iosm_flash_params - List of flash params required for flashing
+- * @address:		Address of the region file to be flashed
+- * @region_count:	Maximum no of regions for each fls file
+- * @download_region:	To be set if region is being flashed
+  * @erase_full_flash:   To set the flashing mode
+  *                      erase_full_flash = 1; full erase
+  *                      erase_full_flash = 0; no erase
+  * @erase_full_flash_done: Flag to check if it is a full erase
+  */
+ struct iosm_flash_params {
+-	u32 address;
+-	u8 region_count;
+-	u8 download_region;
+ 	u8 erase_full_flash;
+ 	u8 erase_full_flash_done;
+ };
+ 
++/**
++ * struct iosm_devlink_image - Structure with Fls file header info
++ * @magic_header:	Header of the firmware image
++ * @image_type:		Firmware image type
++ * @region_address:	Address of the region to be flashed
++ * @download_region:	Field to identify if it is a region
++ * @last_region:	Field to identify if it is last region
++ * @reserved:		Reserved field
++ */
++struct iosm_devlink_image {
++	char magic_header[IOSM_DEVLINK_MAGIC_HEADER_LEN];
++	char image_type[IOSM_DEVLINK_IMG_TYPE];
++	__le32 region_address;
++	u8 download_region;
++	u8 last_region;
++	u8 reserved[IOSM_DEVLINK_RESERVED];
++} __packed;
++
+ /**
+  * struct iosm_ebl_ctx_data -  EBL ctx data used during flashing
+  * @ebl_sw_info_version: SWID version info obtained from EBL
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_flash.c b/drivers/net/wwan/iosm/iosm_ipc_flash.c
+index ebceedf7c9f5..d890914aa349 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_flash.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_flash.c
+@@ -330,18 +330,20 @@ static int ipc_flash_full_erase(struct iosm_devlink *ipc_devlink, u8 *mdm_rsp)
+ static int ipc_flash_download_region(struct iosm_devlink *ipc_devlink,
+ 				     const struct firmware *fw, u8 *mdm_rsp)
+ {
++	u32 raw_len, rest_len = fw->size - IOSM_DEVLINK_HDR_SIZE;
++	struct iosm_devlink_image *fls_data;
+ 	__le32 reg_info[2]; /* 0th position region address, 1st position size */
++	u32 nand_address;
+ 	char *file_ptr;
+-	u32 rest_len;
+-	u32 raw_len;
+ 	int ret;
+ 
+-	file_ptr = (char *)fw->data;
+-	reg_info[0] = cpu_to_le32(ipc_devlink->param.address);
++	fls_data = (struct iosm_devlink_image *)fw->data;
++	file_ptr = (void *)(fls_data + 1);
++	nand_address = le32_to_cpu(fls_data->region_address);
++	reg_info[0] = cpu_to_le32(nand_address);
+ 
+ 	if (!ipc_devlink->param.erase_full_flash_done) {
+-		reg_info[1] = cpu_to_le32(ipc_devlink->param.address +
+-					  fw->size - 2);
++		reg_info[1] = cpu_to_le32(nand_address + rest_len - 2);
+ 		ret = ipc_flash_send_receive(ipc_devlink, FLASH_ERASE_START,
+ 					     (u8 *)reg_info, IOSM_MDM_SEND_8,
+ 					     mdm_rsp);
+@@ -359,8 +361,6 @@ static int ipc_flash_download_region(struct iosm_devlink *ipc_devlink,
+ 	if (ret)
+ 		goto dl_region_fail;
+ 
+-	rest_len = fw->size;
+-
+ 	/* Request Flash Write Raw Image */
+ 	ret = ipc_flash_send_data(ipc_devlink, IOSM_EBL_DW_PACK_SIZE,
+ 				  FLASH_WRITE_IMAGE_RAW, (u8 *)&rest_len,
+@@ -399,9 +399,12 @@ static int ipc_flash_download_region(struct iosm_devlink *ipc_devlink,
+ int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
+ 		       const struct firmware *fw, u8 *mdm_rsp)
+ {
++	u32 fw_size = fw->size - IOSM_DEVLINK_HDR_SIZE;
++	struct iosm_devlink_image *fls_data;
+ 	u16 flash_cmd;
+ 	int ret;
+ 
++	fls_data = (struct iosm_devlink_image *)fw->data;
+ 	if (ipc_devlink->param.erase_full_flash) {
+ 		ipc_devlink->param.erase_full_flash = false;
+ 		ret = ipc_flash_full_erase(ipc_devlink, mdm_rsp);
+@@ -410,19 +413,20 @@ int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
+ 	}
+ 
+ 	/* Request Sec Start */
+-	if (!ipc_devlink->param.download_region) {
++	if (!fls_data->download_region) {
+ 		ret = ipc_flash_send_receive(ipc_devlink, FLASH_SEC_START,
+-					     (u8 *)fw->data, fw->size, mdm_rsp);
++					     (u8 *)fw->data +
++					     IOSM_DEVLINK_HDR_SIZE, fw_size,
++					     mdm_rsp);
+ 		if (ret)
+ 			goto ipc_flash_err;
+ 	} else {
+ 		/* Download regions */
+-		ipc_devlink->param.region_count -= IOSM_SET_FLAG;
+ 		ret = ipc_flash_download_region(ipc_devlink, fw, mdm_rsp);
+ 		if (ret)
+ 			goto ipc_flash_err;
+ 
+-		if (!ipc_devlink->param.region_count) {
++		if (fls_data->last_region) {
+ 			/* Request Sec End */
+ 			flash_cmd = IOSM_MDM_SEND_DATA;
+ 			ret = ipc_flash_send_receive(ipc_devlink, FLASH_SEC_END,
+@@ -445,17 +449,18 @@ int ipc_flash_send_fls(struct iosm_devlink *ipc_devlink,
+ int ipc_flash_boot_psi(struct iosm_devlink *ipc_devlink,
+ 		       const struct firmware *fw)
+ {
++	u32 bytes_read, psi_size = fw->size - IOSM_DEVLINK_HDR_SIZE;
+ 	u8 psi_ack_byte[IOSM_PSI_ACK], read_data[2];
+-	u32 bytes_read;
+ 	u8 *psi_code;
+ 	int ret;
+ 
+ 	dev_dbg(ipc_devlink->dev, "Boot transfer PSI");
+-	psi_code = kmemdup(fw->data, fw->size, GFP_KERNEL);
++	psi_code = kmemdup(fw->data + IOSM_DEVLINK_HDR_SIZE, psi_size,
++			   GFP_KERNEL);
+ 	if (!psi_code)
+ 		return -ENOMEM;
+ 
+-	ret = ipc_imem_sys_devlink_write(ipc_devlink, psi_code, fw->size);
++	ret = ipc_imem_sys_devlink_write(ipc_devlink, psi_code, psi_size);
+ 	if (ret) {
+ 		dev_err(ipc_devlink->dev, "RPSI Image write failed");
+ 		goto ipc_flash_psi_free;
+@@ -501,7 +506,7 @@ int ipc_flash_boot_psi(struct iosm_devlink *ipc_devlink,
+ int ipc_flash_boot_ebl(struct iosm_devlink *ipc_devlink,
+ 		       const struct firmware *fw)
+ {
+-	u32 ebl_size = fw->size;
++	u32 ebl_size = fw->size - IOSM_DEVLINK_HDR_SIZE;
+ 	u8 read_data[2];
+ 	u32 bytes_read;
+ 	int ret;
+@@ -553,8 +558,9 @@ int ipc_flash_boot_ebl(struct iosm_devlink *ipc_devlink,
+ 		goto ipc_flash_ebl_err;
+ 	}
+ 
+-	ret = ipc_imem_sys_devlink_write(ipc_devlink, (unsigned char *)fw->data,
+-					 fw->size);
++	ret = ipc_imem_sys_devlink_write(ipc_devlink,
++					 (u8 *)fw->data + IOSM_DEVLINK_HDR_SIZE,
++					 ebl_size);
+ 	if (ret) {
+ 		dev_err(ipc_devlink->dev, "EBL data transfer failed");
+ 		goto ipc_flash_ebl_err;
+-- 
+2.25.1
 
