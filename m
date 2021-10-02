@@ -2,152 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B86A641FB32
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 13:46:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B8E341FB38
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 13:49:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232881AbhJBLsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 07:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232868AbhJBLsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 07:48:04 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2739EC061570;
-        Sat,  2 Oct 2021 04:46:18 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id g41so49106149lfv.1;
-        Sat, 02 Oct 2021 04:46:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4DJIItM2FWrgGH0UiE2IkSW9OJMaI+AG2VdPxfUUR5I=;
-        b=IIPTgavOUo90wwODdx+/CN9IrSwM+20hM8eZbuyl23QKA6e5pPbL/+e8iy+q1KL2p6
-         DbGol0FzQQ9ZSaptH/3qC/sdiP0mKUQg08t56zJJY73YluPwyfJEkMcv1u96QWm65QCG
-         8HSKn+qDZ72qPg9wLb3kD6pcrrpaFcYai13tLJe65YLcpsXAHKfMvmmH24/1aFZAIMp3
-         si8bipmfGphoADxgO0Rs3/bXvZYr2xAmTJT6kWvJZAvjjSAnZKciVBtXNekdQZb/21fa
-         ml7cClnSrKGt9MZTSMyjjNWNziRU/uEA9xIYzl47iudzz0RrW3nj7iI1r32R43dQpJ9v
-         hw5w==
+        id S232915AbhJBLvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 07:51:17 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:37389 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232875AbhJBLvO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 07:51:14 -0400
+Received: by mail-io1-f72.google.com with SMTP id e68-20020a6bb547000000b005d06de54ab7so11298714iof.4
+        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 04:49:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4DJIItM2FWrgGH0UiE2IkSW9OJMaI+AG2VdPxfUUR5I=;
-        b=vubiVDLdHw1CuL/udJwdj7sVoNCFQSdNoezBBIbqFehYNnG6gqgr085eQsJcbGOGLv
-         YVPeyLyTyWHU42xrPnvXR913ihLeKzZ3k0GAeifCf8xxe1+NFioZsvpr6VMzdpDbaDff
-         ZkrNxQc3ltTnSpYaTZrnPjw32rVKtJEeW4R1UOGGOUahnO5AlVF6Guk9AmCDYba//8vL
-         1JP+nsGy/QPiLfaBRiONBYDjiOXfVeeNRwZdZ49M9u6uq/EcKkQMDMGuI0DnDi9LPS/c
-         wURtduhqPRPX/JCXT0I0tDL8TcdRxBELbYH/PCz1iBlwU9wwi2vsaJLf5qMk99Z6UxL0
-         W0Ng==
-X-Gm-Message-State: AOAM531c0J1P7fRN10wG73uHeZ/3NE9Q1BBTR8NSsbsxTjAwJfGEoNNs
-        baIebigEHcv00UtNlm3k0hk=
-X-Google-Smtp-Source: ABdhPJxgufrLx9SHL6JLhQoZbIE498UDDZer3ETrvG+uXjCBFO2/jb+pRWiBPwe91n8WxE1I2j8xUw==
-X-Received: by 2002:a2e:a367:: with SMTP id i7mr3466046ljn.435.1633175176498;
-        Sat, 02 Oct 2021 04:46:16 -0700 (PDT)
-Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id j23sm43970lfm.139.2021.10.02.04.46.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 Oct 2021 04:46:15 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: bgmac: support MDIO described in DT
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20210920123441.9088-1-zajec5@gmail.com>
- <168e00d3-f335-4e62-341f-224e79a08558@gmail.com>
- <79c91b0e-7f6a-ef40-9ab2-ee8212bf5791@gmail.com>
- <780a6e7f-655a-6d79-d086-2eefd7e9ccb6@gmail.com>
- <c687a7b4-24eb-f088-d6d0-f167a8f9da1f@gmail.com>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Message-ID: <3b468d96-8c36-ec04-8993-97f1de12c34f@gmail.com>
-Date:   Sat, 2 Oct 2021 13:46:08 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=TxM9Xomw4NkWnOXL5CXFszT+5JBuU4qqbJet8FXAYV4=;
+        b=Pz/1q6EwgTx4TaFhtUv0bfelgH36FYSNQ5wajNLBR/cSUi9adIzEgkElbN6zO0kNdd
+         +pWraaiP3ywjjT/KQFF4XQ3zzGvHiKhHkF1wMCT9yNVGUfj8Vb+FEpQ43DfCo4EpdFS1
+         wu+83tEVgTImJ/ozz4GZy5BlG/YpYS529JfITO/ZSZmbm3M0jA9/19SNXObpNeYq4D6N
+         1CRffcsXpiXTDoeFRV8za+x1199cqIXKrXJRmx3clXsbzIgoKk2VVGHJTIkMB+TBga17
+         uEXD/wv2xHZW+hIrAaz+sqwR3uFnvnIRghS5cb/7aEgZzVDWxzazZkreNYXxO549oxfv
+         yB5A==
+X-Gm-Message-State: AOAM532x9yElGszOjdR7Mwo7foEGWHpXUY7zZKj7QglyG3qZO5vO0HKz
+        0rPJrCwQUyyU+8SwXmvkJxuWLekdxUwxmxXLa99L1fFufQkh
+X-Google-Smtp-Source: ABdhPJy0S+EUv86uoLU/w13YtrgANg3dRZq3JvPij7rcYlEaZzkLZJv9MpqQx+BneOmfW51Cu8E4aExj/kOt4a04N6xdJGH9R6Te
 MIME-Version: 1.0
-In-Reply-To: <c687a7b4-24eb-f088-d6d0-f167a8f9da1f@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:d89:: with SMTP id l9mr2580890jaj.46.1633175368985;
+ Sat, 02 Oct 2021 04:49:28 -0700 (PDT)
+Date:   Sat, 02 Oct 2021 04:49:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b96daa05cd5d4538@google.com>
+Subject: [syzbot] linux-next test error: WARNING in devlink_nl_region_notify
+From:   syzbot <syzbot+e7ae6f62421c72822b9d@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jiri@nvidia.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        netdev@vger.kernel.org, sfr@canb.auug.org.au,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01.10.2021 01:04, Florian Fainelli wrote:
-> On 9/30/21 7:29 AM, Rafał Miłecki wrote:
->> On 20.09.2021 19:57, Rafał Miłecki wrote:
->>> On 20.09.2021 18:11, Florian Fainelli wrote:
->>>> I believe this leaks np and the use case is not exactly clear to me
->>>> here. AFAICT the Northstar SoCs have two MDIO controllers: one for
->>>> internal PHYs and one for external PHYs which how you would attach a
->>>> switch to the chip (in chipcommonA). Is 53573 somewhat different here?
->>>> What is the MDIO bus driver that is being used?
->>>
->>> of_get_child_by_name() doesn't seem to increase refcount or anything and
->>> I think it's how most drivers handle it. I don't think it should leak.
->>>
->>> BCM53573 is a built with some older blocks. Please check:
->>>
->>> 4ebd50472899 ("ARM: BCM53573: Initial support for Broadcom BCM53573
->>> SoCs")
->>>       BCM53573 series is a new family with embedded wireless. By marketing
->>>       people it's sometimes called Northstar but it uses different CPU
->>> and has
->>>       different architecture so we need a new symbol for it.
->>>       Fortunately it shares some peripherals with other iProc based
->>> SoCs so we
->>>       will be able to reuse some drivers/bindings.
->>>
->>> e90d2d51c412 ("ARM: BCM5301X: Add basic dts for BCM53573 based Tenda
->>> AC9")
->>>       BCM53573 seems to be low priced alternative for Northstar
->>> chipsts. It
->>>       uses single core Cortex-A7 and doesn't have SDU or local (TWD)
->>> timer. It
->>>       was also stripped out of independent SPI controller and 2 GMACs.
->>>
->>> Northstar uses SRAB which is some memory based (0x18007000) access to
->>> switch register space.
->>> BCM53573 uses different blocks & mappings and it doesn't include SRAB at
->>> 0x18007000. Accessing switch registers is handled over MDIO.
->>
->> Florian: did my explanations help reviewing this patch? Would you ack it
->> now?
-> 
-> Thanks for providing the background.
-> 
-> You still appear to be needing an of_node_put() after
-> of_mdiobus_register() because that function does increase the reference
-> count.
+Hello,
 
-I really can't find code increasing refcount.
+syzbot found the following issue on:
 
-I even attempted to runtime test it and I still can't see a leaking ref. See:
+HEAD commit:    2d02a18f75fc Add linux-next specific files for 20210929
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1166777f300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4b58fe22c337ee4a
+dashboard link: https://syzkaller.appspot.com/bug?extid=e7ae6f62421c72822b9d
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-[    1.168863] bgmac_bcma bcma0:5: [bcma_mdio_mii_register] BEFORE count:2
-[    1.176235] libphy: bcma_mdio mii bus: probed
-[    1.181513] bcm53xx bcma_mdio-0-0:1e: found switch: BCM53125, rev 4
-[    1.187936] bcm53xx bcma_mdio-0-0:1e: failed to register switch: -517
-[    1.194610] bgmac_bcma bcma0:5: [bcma_mdio_mii_register]  AFTER count:2
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e7ae6f62421c72822b9d@syzkaller.appspotmail.com
+
+batman_adv: batadv0: Not using interface batadv_slave_1 (retrying later): interface not active
+device hsr_slave_0 entered promiscuous mode
+device hsr_slave_1 entered promiscuous mode
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 6562 at net/core/devlink.c:5158 devlink_nl_region_notify+0x184/0x1e0 net/core/devlink.c:5158
+Modules linked in:
+CPU: 1 PID: 6562 Comm: syz-executor.0 Not tainted 5.15.0-rc3-next-20210929-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:devlink_nl_region_notify+0x184/0x1e0 net/core/devlink.c:5158
+Code: 38 41 b8 c0 0c 00 00 31 d2 48 89 ee 4c 89 e7 e8 62 0b 26 00 48 83 c4 08 5b 5d 41 5c 41 5d 41 5e e9 e1 03 45 fa e8 dc 03 45 fa <0f> 0b e9 f7 fe ff ff e8 d0 03 45 fa 0f 0b eb da 4c 89 e7 e8 b4 62
+RSP: 0018:ffffc90002c3f660 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88801d199d00 RSI: ffffffff87313be4 RDI: 0000000000000003
+RBP: ffff88801d320b00 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff87313ada R11: 0000000000000000 R12: ffff888019ed5000
+R13: 0000000000000000 R14: 000000000000002c R15: ffff888019ed5070
+FS:  00005555560ce400(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f6594537000 CR3: 00000000684dd000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ devlink_region_create+0x39f/0x4c0 net/core/devlink.c:10327
+ nsim_dev_dummy_region_init drivers/net/netdevsim/dev.c:481 [inline]
+ nsim_dev_probe+0x5f6/0x1150 drivers/net/netdevsim/dev.c:1479
+ call_driver_probe drivers/base/dd.c:517 [inline]
+ really_probe+0x245/0xcc0 drivers/base/dd.c:596
+ __driver_probe_device+0x338/0x4d0 drivers/base/dd.c:751
+ driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:781
+ __device_attach_driver+0x20b/0x2f0 drivers/base/dd.c:898
+ bus_for_each_drv+0x15f/0x1e0 drivers/base/bus.c:427
+ __device_attach+0x228/0x4a0 drivers/base/dd.c:969
+ bus_probe_device+0x1e4/0x290 drivers/base/bus.c:487
+ device_add+0xc17/0x1ee0 drivers/base/core.c:3395
+ nsim_bus_dev_new drivers/net/netdevsim/bus.c:435 [inline]
+ new_device_store+0x48b/0x770 drivers/net/netdevsim/bus.c:302
+ bus_attr_store+0x72/0xa0 drivers/base/bus.c:122
+ sysfs_kf_write+0x110/0x160 fs/sysfs/file.c:136
+ kernfs_fop_write_iter+0x342/0x500 fs/kernfs/file.c:296
+ call_write_iter include/linux/fs.h:2163 [inline]
+ new_sync_write+0x429/0x660 fs/read_write.c:507
+ vfs_write+0x7cf/0xae0 fs/read_write.c:594
+ ksys_write+0x12d/0x250 fs/read_write.c:647
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f3dbe12f3ef
+Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 99 fd ff ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 31 44 89 c7 48 89 44 24 08 e8 cc fd ff ff 48
+RSP: 002b:00007ffcb02d3780 EFLAGS: 00000293 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f3dbe12f3ef
+RDX: 0000000000000003 RSI: 00007ffcb02d37d0 RDI: 0000000000000004
+RBP: 0000000000000004 R08: 0000000000000000 R09: 00007ffcb02d3720
+R10: 0000000000000000 R11: 0000000000000293 R12: 00007f3dbe1d6971
+R13: 00007ffcb02d37d0 R14: 0000000000000000 R15: 00007ffcb02d3ea0
+ </TASK>
 
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-index 086739e4f..e52a3d8b7 100644
---- a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-+++ b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-@@ -233,11 +233,14 @@ struct mii_bus *bcma_mdio_mii_register(struct bgmac *bgmac)
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-         np = of_get_child_by_name(core->dev.of_node, "mdio");
-
-+
-+       dev_info(&core->dev, "[%s] BEFORE count:%d\n", __func__, refcount_read(&np->kobj.kref.refcount));
-         err = of_mdiobus_register(mii_bus, np);
-         if (err) {
-                 dev_err(&core->dev, "Registration of mii bus failed\n");
-                 goto err_free_bus;
-         }
-+       dev_info(&core->dev, "[%s]  AFTER count:%d\n", __func__, refcount_read(&np->kobj.kref.refcount));
-
-         return mii_bus;
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
