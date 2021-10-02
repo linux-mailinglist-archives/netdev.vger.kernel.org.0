@@ -2,124 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B8E341FB38
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 13:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05DCD41FB76
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 14:03:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232915AbhJBLvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 07:51:17 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:37389 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbhJBLvO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 07:51:14 -0400
-Received: by mail-io1-f72.google.com with SMTP id e68-20020a6bb547000000b005d06de54ab7so11298714iof.4
-        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 04:49:29 -0700 (PDT)
+        id S232986AbhJBMFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 08:05:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60886 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232935AbhJBMF1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 08:05:27 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41C3C061570;
+        Sat,  2 Oct 2021 05:03:41 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id z184so1532206iof.5;
+        Sat, 02 Oct 2021 05:03:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=nsZbpm1YBoHMpWTnzHLuE/zYZ0yg4jBiKD5Q7oCTPBE=;
+        b=YxWIlaBSYFvjD6wxI3Im7HD0DUa8SKawF0d7t45AEzKjL6m83eOsT6rgZdQRGCng74
+         6RLcJMZhzHbNym1o2udNgSV2epSTH0qAv/gDWDsxACfpBL7vOUGDwWmGmUaO2SE5P8uY
+         T63X4axLx9vlrJbw970R//6K5CXkIsOYNNanoWJo6B81ZE00DEyRoVjZrAUA3RQ+9ju3
+         SZYoVWN+Ed+cukZyyntSGlKOmbEpXAJVn5nVjU9PttbC0fy1k1kkmOWz1VvVx3VvX7FT
+         7VoKZi/ug9VIcJXMy54+WPXzQ6H5V7BFKbJ6aHn+8SZElmbcl8wcN4j53q3jHLdvow5u
+         jyoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=TxM9Xomw4NkWnOXL5CXFszT+5JBuU4qqbJet8FXAYV4=;
-        b=Pz/1q6EwgTx4TaFhtUv0bfelgH36FYSNQ5wajNLBR/cSUi9adIzEgkElbN6zO0kNdd
-         +pWraaiP3ywjjT/KQFF4XQ3zzGvHiKhHkF1wMCT9yNVGUfj8Vb+FEpQ43DfCo4EpdFS1
-         wu+83tEVgTImJ/ozz4GZy5BlG/YpYS529JfITO/ZSZmbm3M0jA9/19SNXObpNeYq4D6N
-         1CRffcsXpiXTDoeFRV8za+x1199cqIXKrXJRmx3clXsbzIgoKk2VVGHJTIkMB+TBga17
-         uEXD/wv2xHZW+hIrAaz+sqwR3uFnvnIRghS5cb/7aEgZzVDWxzazZkreNYXxO549oxfv
-         yB5A==
-X-Gm-Message-State: AOAM532x9yElGszOjdR7Mwo7foEGWHpXUY7zZKj7QglyG3qZO5vO0HKz
-        0rPJrCwQUyyU+8SwXmvkJxuWLekdxUwxmxXLa99L1fFufQkh
-X-Google-Smtp-Source: ABdhPJy0S+EUv86uoLU/w13YtrgANg3dRZq3JvPij7rcYlEaZzkLZJv9MpqQx+BneOmfW51Cu8E4aExj/kOt4a04N6xdJGH9R6Te
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:cc:content-transfer-encoding;
+        bh=nsZbpm1YBoHMpWTnzHLuE/zYZ0yg4jBiKD5Q7oCTPBE=;
+        b=LmOqDwxqDDyQv8S5r8mgiOrkAdVuYjTHRPeL3SEcVCmf7iltEE+9E/WZ/p4a/Rn6OK
+         r3NIfiwPWf7KMH2N8E7aj9oaEc65LBtP0zvNSXYapgvfoiGp/gn4pQr6YnnJ321thhXg
+         UPVYssUs2StzWAD4Fo7masaaFkiOnbLL5nVv/dCZJIbtpy0aOis4w8Sq2+zDrQJpYgJ2
+         BgAockzdWQXrw276F+kR1NCbmuusK8c+G5aTErF1zxB/C4qJBdeiCmLoNqfxrhcADHs1
+         C+A9TlKq/pvb05UIgyvRzQeVCHUz2Vc2jXMdDry12eLQagUSqyM6oyQG9mzJutcKherx
+         5Ckw==
+X-Gm-Message-State: AOAM531n/GcSWL+Qoyf2OX/kqSmiAkrV6zyLjg67Vu5E6w2n/478Pi66
+        /U4B72F0Qpia4whCxpJUMQqm5jkVFMT4Yf+6K6E=
+X-Google-Smtp-Source: ABdhPJz2q09A+517W2EVe9dbDivdnk3AEH6BZaUlyYLwJiT4IN/1ySl0KWhD1PmrDJ75/9gz6SNXe4y+mLeDTP26TSo=
+X-Received: by 2002:a05:6638:104:: with SMTP id x4mr2547380jao.145.1633176221400;
+ Sat, 02 Oct 2021 05:03:41 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:d89:: with SMTP id l9mr2580890jaj.46.1633175368985;
- Sat, 02 Oct 2021 04:49:28 -0700 (PDT)
-Date:   Sat, 02 Oct 2021 04:49:28 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b96daa05cd5d4538@google.com>
-Subject: [syzbot] linux-next test error: WARNING in devlink_nl_region_notify
-From:   syzbot <syzbot+e7ae6f62421c72822b9d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jiri@nvidia.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        netdev@vger.kernel.org, sfr@canb.auug.org.au,
-        syzkaller-bugs@googlegroups.com
+Received: by 2002:a4f:f90d:0:0:0:0:0 with HTTP; Sat, 2 Oct 2021 05:03:41 -0700 (PDT)
+Reply-To: unitednnation0@gmail.com
+From:   "U.n" <wadebaye33@gmail.com>
+Date:   Sat, 2 Oct 2021 00:03:41 -1200
+Message-ID: <CACE0T5XLJ2ZM5W28B0Dyv4Rc8vqA8pN78J4Aso6XvTW_kxoNmQ@mail.gmail.com>
+Subject: Attention
+To:     unitednnation0@gmail.com
+Cc:     pberger@brimson.com, alborchers@steinerpoint.com,
+        xavyer@ix.netcom.com, support@connecttech.com,
+        steve.glendinning@shawell.net, luca.risolia@studio.unibo.it,
+        stern@rowland.harvard.edu, oneukum@suse.de,
+        linux-uvc-devel@lists.sourceforge.net,
+        laurent.pinchart@ideasonboard.com, jussi.kivilinna@mbnet.fi,
+        sarah.a.sharp@linux.intel.com, royale@zerezo.com,
+        jdike@addtoit.com, richard@nod.at,
+        user-mode-linux-devel@lists.sourceforge.net,
+        user-mode-linux-user@lists.sourceforge.net, hjk@hansjkoch.de,
+        kzak@redhat.com, util-linux@vger.kernel.org, spock@gentoo.org,
+        hirofumi@mail.parknet.co.jp, alex.williamson@redhat.com,
+        pawel@osciak.com, m.szyprowski@samsung.com,
+        kyungmin.park@samsung.com, amit.shah@redhat.com,
+        rusty@rustcorp.com.au, mst@redhat.com, kvm@vger.kernel.org,
+        rl@hellgate.ch, brucechang@via.com.tw, HaraldWelte@viatech.com,
+        FlorianSchandinat@gmx.de, linux-fbdev@vger.kernel.org,
+        romieu@fr.zoreil.com, kaber@trash.net, florian@openwrt.org,
+        openwrt-devel@lists.openwrt.org, martyn.welch@ge.com,
+        manohar.vanga@gmail.com, gregkh@linuxfoundation.org,
+        devel@driverdev.osuosl.org, sbhatewara@vmware.com,
+        arvindkumar@vmware.com, pv-drivers@vmware.com, lrg@ti.com,
+        juergh@gmail.com, vt8231@hiddenengine.co.uk,
+        tony.olech@elandigitalsystems.com, linux-mmc@vger.kernel.org,
+        linux-usb@vger.kernel.org, zbr@ioremap.net, m.hulsman@tudelft.nl,
+        r.marek@assembler.cz, khali@linux-fr.org,
+        lm-sensors@lm-sensors.org, pierre@ossman.eu, wim@iguana.be,
+        linux-watchdog@vger.kernel.org, zaga@fly.cc.fer.hr,
+        linux-scsi@vger.kernel.org, dh.herrmann@googlemail.com,
+        david@hardeman.nu, inaky.perez-gonzalez@intel.com,
+        linux-wimax@intel.com, wimax@linuxwimax.org, mitr@volny.cz,
+        acme@ghostprotocols.net, lrg@slimlogic.co.uk,
+        linux-input@vger.kernel.org, broonie@opensource.wolfsonmicro.com,
+        patches@opensource.wolfsonmicro.com, tj@kernel.org,
+        andrew.hendry@gmail.com, linux-x25@vger.kernel.org,
+        tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com,
+        x86@kernel.org, mjg@redhat.com,
+        platform-driver-x86@vger.kernel.org, tony.luck@intel.com,
+        bp@alien8.de, linux-edac@vger.kernel.org, mchehab@redhat.com,
+        jeremy@goop.org, virtualization@lists.linux-foundation.org,
+        stefano.stabellini@eu.citrix.com, ian.campbell@citrix.com,
+        netdev@vger.kernel.org, konrad.wilk@oracle.com,
+        xen-devel@lists.xensource.com, bpm@sgi.com, elder@kernel.org,
+        xfs@oss.sgi.com, anirudh@xilinx.com, John.Linn@xilinx.com,
+        grant.likely@secretlab.ca, jacmet@sunsite.dk
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    2d02a18f75fc Add linux-next specific files for 20210929
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1166777f300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4b58fe22c337ee4a
-dashboard link: https://syzkaller.appspot.com/bug?extid=e7ae6f62421c72822b9d
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e7ae6f62421c72822b9d@syzkaller.appspotmail.com
-
-batman_adv: batadv0: Not using interface batadv_slave_1 (retrying later): interface not active
-device hsr_slave_0 entered promiscuous mode
-device hsr_slave_1 entered promiscuous mode
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 6562 at net/core/devlink.c:5158 devlink_nl_region_notify+0x184/0x1e0 net/core/devlink.c:5158
-Modules linked in:
-CPU: 1 PID: 6562 Comm: syz-executor.0 Not tainted 5.15.0-rc3-next-20210929-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:devlink_nl_region_notify+0x184/0x1e0 net/core/devlink.c:5158
-Code: 38 41 b8 c0 0c 00 00 31 d2 48 89 ee 4c 89 e7 e8 62 0b 26 00 48 83 c4 08 5b 5d 41 5c 41 5d 41 5e e9 e1 03 45 fa e8 dc 03 45 fa <0f> 0b e9 f7 fe ff ff e8 d0 03 45 fa 0f 0b eb da 4c 89 e7 e8 b4 62
-RSP: 0018:ffffc90002c3f660 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88801d199d00 RSI: ffffffff87313be4 RDI: 0000000000000003
-RBP: ffff88801d320b00 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff87313ada R11: 0000000000000000 R12: ffff888019ed5000
-R13: 0000000000000000 R14: 000000000000002c R15: ffff888019ed5070
-FS:  00005555560ce400(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f6594537000 CR3: 00000000684dd000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- devlink_region_create+0x39f/0x4c0 net/core/devlink.c:10327
- nsim_dev_dummy_region_init drivers/net/netdevsim/dev.c:481 [inline]
- nsim_dev_probe+0x5f6/0x1150 drivers/net/netdevsim/dev.c:1479
- call_driver_probe drivers/base/dd.c:517 [inline]
- really_probe+0x245/0xcc0 drivers/base/dd.c:596
- __driver_probe_device+0x338/0x4d0 drivers/base/dd.c:751
- driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:781
- __device_attach_driver+0x20b/0x2f0 drivers/base/dd.c:898
- bus_for_each_drv+0x15f/0x1e0 drivers/base/bus.c:427
- __device_attach+0x228/0x4a0 drivers/base/dd.c:969
- bus_probe_device+0x1e4/0x290 drivers/base/bus.c:487
- device_add+0xc17/0x1ee0 drivers/base/core.c:3395
- nsim_bus_dev_new drivers/net/netdevsim/bus.c:435 [inline]
- new_device_store+0x48b/0x770 drivers/net/netdevsim/bus.c:302
- bus_attr_store+0x72/0xa0 drivers/base/bus.c:122
- sysfs_kf_write+0x110/0x160 fs/sysfs/file.c:136
- kernfs_fop_write_iter+0x342/0x500 fs/kernfs/file.c:296
- call_write_iter include/linux/fs.h:2163 [inline]
- new_sync_write+0x429/0x660 fs/read_write.c:507
- vfs_write+0x7cf/0xae0 fs/read_write.c:594
- ksys_write+0x12d/0x250 fs/read_write.c:647
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f3dbe12f3ef
-Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 99 fd ff ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 31 44 89 c7 48 89 44 24 08 e8 cc fd ff ff 48
-RSP: 002b:00007ffcb02d3780 EFLAGS: 00000293 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f3dbe12f3ef
-RDX: 0000000000000003 RSI: 00007ffcb02d37d0 RDI: 0000000000000004
-RBP: 0000000000000004 R08: 0000000000000000 R09: 00007ffcb02d3720
-R10: 0000000000000000 R11: 0000000000000293 R12: 00007f3dbe1d6971
-R13: 00007ffcb02d37d0 R14: 0000000000000000 R15: 00007ffcb02d3ea0
- </TASK>
+--=20
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Attention Sir/Madam
+This is the United Nation (UN). We the United Nations (UN) Globally
+has approved (US$2.500,000)( two Million Five hundred thousand
+dollars) compensation as part of our responsibilities for humanitarian
+Aid for fighting against CoronaVirus and you are among the lucky ones.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+This compensation is for the most affected countries, communities and
+families across the global. Your funds were deposited with Bank in USA
+to transfer your funds to you via Internet Banking. You have to send
+your full details as state below:with this email Address
+  ( unitednnation0@gmail.com )
+Your full names:
+Address:
+Telephone:
+Occupation:
+
+
+
+Yours Sincerely
+Mr. Ant=C3=B3nio Guterres
+United Nations (UN).
