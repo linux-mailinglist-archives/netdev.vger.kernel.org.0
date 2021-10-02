@@ -2,132 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9694941FE12
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 22:40:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1361941FE44
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 23:33:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233993AbhJBUmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 16:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33130 "EHLO
+        id S234096AbhJBVe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 17:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233975AbhJBUmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 16:42:11 -0400
-Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434C6C0613EC
-        for <netdev@vger.kernel.org>; Sat,  2 Oct 2021 13:40:25 -0700 (PDT)
-Received: by mail-vk1-xa29.google.com with SMTP id g15so5941295vke.5
-        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 13:40:25 -0700 (PDT)
+        with ESMTP id S229503AbhJBVez (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 17:34:55 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF254C061714
+        for <netdev@vger.kernel.org>; Sat,  2 Oct 2021 14:33:08 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id m14-20020a05600c3b0e00b0030d4dffd04fso4073935wms.3
+        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 14:33:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LNIVK0kO4OyLgbBlEEKag1wUjDkN0DCQynWh6c8ag18=;
-        b=A1H3NecD+cHXG6G5gXmA+fxHVmmvx5TKaiI04gPvAbZvfC7HyeSnYzl6xADuqhHIeC
-         XAuZKbBYqFMpbukQMPtggToY+uLmrPujXELFglVjFNuJLUzH3Gn/WZMAY2cF/epQWsYt
-         m5k3nVCb5f04t8HtUyUBo7zPw4MpIgJ7pWgkAsoFTJ0VvjEgIpKLdNi5Wneouf3YHEBe
-         QhPOIx7AJaJtWbrTCeCqhPOVY5XXF3bgBDYeRqvNBjAvN7RJqhrUOSOGG2ifE2zrd2gl
-         zev+LDAYc+oO45zrcrsX7RfQI0nd4I9tlsbn5fEflJSF1tFZMZoUjkhz30tLud6azDg7
-         GeFQ==
+        d=rammhold-de.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=F8UDpjnQBldDuJU6rmGvahmZPDxt2kePCnSKQd7HXG4=;
+        b=mO6R2I6M03AiFu8in1neOBOyhQC4wruqS8jIb65NFHgVyDhLfLEGsWSRSEMdg8Lxf+
+         w1HsRqLxbRFSVT+NDYnQ9Xz4WYTD+ZhVraUIRhb1CdMc55vaUK/zyYHEis2XBY/DB7e0
+         DHYprqwdAXeL6K/qKRDC/a9t/reNtRCUCxe8EiofTTJ53GVCRio+sH4/E5FlumZrM2v+
+         HP3DNTEZSfIzNWZ9Yq/nbKq8xGm3tWhbhHQIxXvkYVJ+/DXoowuhHDxWLHfduLdfapMx
+         5/EURzEBLVRUlsAv8629USZEncKnVb0VBcfrZh/tXqb+x/UCSVgX+XW100m2F6gOzfU4
+         gwlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LNIVK0kO4OyLgbBlEEKag1wUjDkN0DCQynWh6c8ag18=;
-        b=5OnECSVriCRGfeWzDFC5tFU27W0YaMr213+hhi1B0I+3sxxjUOKUoX/GR9dK13Gds4
-         LR3BVm/K7bJhPiJhW9o0rXAe+tMnSSgVaHa5nZ+Jxt9LJ+P+cNmpmx9n9F0xoSwQAmKu
-         ltqvJfV+Jby1pWTITnmVV+5yzo/AfEyCsS5l67jUePColaVCKW5Wzepi5lc29FsIbC3k
-         aaiwkQwtvDxPLIsnS/nIuD1Buw2sDjPqOVkJ8koP9PLe7tTQ1O/Mv7k81T2epVwsmrml
-         P9RHIRzCjBcs6I+JRNTjunVlMGdvr1tt5O1VrDlDTm5D/h/bGkKVUyR0BcRVlsG9m5PP
-         RsRw==
-X-Gm-Message-State: AOAM532k4n1cpDtr2K+1HdX456R5TzJ1Nzo4sH/VVvLGmGbcM9e7P6FE
-        U8jSnWKHRFbR/74RiPFS0QJyJMiizVBi1+bJmxlM8Q==
-X-Google-Smtp-Source: ABdhPJzsEm7guaAFJZfKI6JguP01/GHgS5JO3A/evzbqNymBFJ96bMKuppzMcQHHKqZkFoGUH6x93zvuV+dE2/9RkDk=
-X-Received: by 2002:a1f:cdc7:: with SMTP id d190mr5318066vkg.1.1633207224300;
- Sat, 02 Oct 2021 13:40:24 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=F8UDpjnQBldDuJU6rmGvahmZPDxt2kePCnSKQd7HXG4=;
+        b=h8WI3ZwLDaPCfeTIfVCE71VdNBv1xPAasOsJABy0g4sKUDgWNyCapGvrY+ut/RZI38
+         Lv88enjoK/nH3f6bi7WJiGdKDJdMqA6Gt0llavkRso46QKsiFXV+PMTn6QoNF6OGzkx/
+         2N99XQpemxcGZOKBSEcSUBM2IPRuIMKIK1DNEIHcuRue3tY5bED5lvbZSLC2y5VPEl4C
+         wXiHQepFX2l7PkQHrab+dHKWF0mdFCN0nU19/CMfRqqIc0Xu8ittXAN2/voVVKT/i+jD
+         lDrwp6SFbKBW4/mtgk0rkU10lZucWi2fynt+z0gfTfthUakNk2znDwTqoVCg+ODMvFhL
+         Tijg==
+X-Gm-Message-State: AOAM533+NqCmqsHgBk/AwG281IkppxR8o4iGR2LiuTJZm9OhcPG4sovO
+        RGVdMyrEnWpm5EJ+dSCteivDW0hFzQ0stg==
+X-Google-Smtp-Source: ABdhPJzJ8VTihT1Ur7aTqVIXTAXPkfuDMOgeW55F8CPfPRDayvZ86vq/Z0sKuqHwd3ApU5byeI4PDg==
+X-Received: by 2002:a05:600c:358d:: with SMTP id p13mr10979016wmq.71.1633210387458;
+        Sat, 02 Oct 2021 14:33:07 -0700 (PDT)
+Received: from localhost ([2a00:e67:5c9:a:5621:d377:9a16:5c6c])
+        by smtp.gmail.com with ESMTPSA id d8sm2449356wrz.84.2021.10.02.14.33.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Oct 2021 14:33:06 -0700 (PDT)
+Date:   Sat, 2 Oct 2021 23:33:03 +0200
+From:   Andreas Rammhold <andreas@rammhold.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Heiko =?utf-8?Q?St=C3=BCbner?= <heiko@sntech.de>,
+        netdev@vger.kernel.org, Punit Agrawal <punitagrawal@gmail.com>,
+        linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, davem@davemloft.net,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        Michael Riesch <michael.riesch@wolfvision.net>
+Subject: Re: [PATCH] net: stmmac: dwmac-rk: Fix ethernet on rk3399 based
+ devices
+Message-ID: <20211002213303.bofdao6ar7wvodka@wrt>
+References: <20210929135049.3426058-1-punitagrawal@gmail.com>
+ <12744188.XEzkDOsqEc@diego>
+ <20211001160238.4335a83d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20211001110856.14730-1-quentin@isovalent.com> <CAEf4Bza+C5cNJbvw_n_pR_mVL0rPH2VkZd-AJMx78Fp_m+CpRQ@mail.gmail.com>
-In-Reply-To: <CAEf4Bza+C5cNJbvw_n_pR_mVL0rPH2VkZd-AJMx78Fp_m+CpRQ@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Date:   Sat, 2 Oct 2021 21:40:13 +0100
-Message-ID: <CACdoK4LU-uigbtQw63Yacd_AOzv+_fWuhL-ur20GyqFbE4doqw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/9] install libbpf headers when using the library
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211001160238.4335a83d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2 Oct 2021 at 00:05, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
->
-> On Fri, Oct 1, 2021 at 4:09 AM Quentin Monnet <quentin@isovalent.com> wrote:
-> >
-> > Libbpf is used at several locations in the repository. Most of the time,
-> > the tools relying on it build the library in its own directory, and include
-> > the headers from there. This works, but this is not the cleanest approach.
-> > It generates objects outside of the directory of the tool which is being
-> > built, and it also increases the risk that developers include a header file
-> > internal to libbpf, which is not supposed to be exposed to user
-> > applications.
-> >
-> > This set adjusts all involved Makefiles to make sure that libbpf is built
-> > locally (with respect to the tool's directory or provided build directory),
-> > and by ensuring that "make install_headers" is run from libbpf's Makefile
-> > to export user headers properly.
-> >
-> > This comes at a cost: given that the libbpf was so far mostly compiled in
-> > its own directory by the different components using it, compiling it once
-> > would be enough for all those components. With the new approach, each
-> > component compiles its own version. To mitigate this cost, efforts were
-> > made to reuse the compiled library when possible:
-> >
-> > - Make the bpftool version in samples/bpf reuse the library previously
-> >   compiled for the selftests.
-> > - Make the bpftool version in BPF selftests reuse the library previously
-> >   compiled for the selftests.
-> > - Similarly, make resolve_btfids in BPF selftests reuse the same compiled
-> >   library.
-> > - Similarly, make runqslower in BPF selftests reuse the same compiled
-> >   library; and make it rely on the bpftool version also compiled from the
-> >   selftests (instead of compiling its own version).
-> > - runqslower, when compiled independently, needs its own version of
-> >   bpftool: make them share the same compiled libbpf.
-> >
-> > As a result:
-> >
-> > - Compiling the samples/bpf should compile libbpf just once.
-> > - Compiling the BPF selftests should compile libbpf just once.
-> > - Compiling the kernel (with BTF support) should now lead to compiling
-> >   libbpf twice: one for resolve_btfids, one for kernel/bpf/preload.
-> > - Compiling runqslower individually should compile libbpf just once. Same
-> >   thing for bpftool, resolve_btfids, and kernel/bpf/preload/iterators.
->
-> The whole sharing of libbpf build artifacts is great, I just want to
-> point out that it's also dangerous if those multiple Makefiles aren't
-> ordered properly. E.g., if you build runqslower and the rest of
-> selftests in parallel without making sure that libbpf already
-> completed its build, you might end up building libbpf in parallel in
-> two independent make instances and subsequently corrupting generated
-> object files. I haven't looked through all the changes (and I'll
-> confess that it's super hard to reason about dependencies and ordering
-> in Makefile) and I'll keep this in mind, but wanted to bring this up.
+On 16:02 01.10.21, Jakub Kicinski wrote:
+> On Wed, 29 Sep 2021 23:02:35 +0200 Heiko Stübner wrote:
+> > Am Mittwoch, 29. September 2021, 15:50:49 CEST schrieb Punit Agrawal:
+> > > Commit 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable warnings")
+> > > while getting rid of a runtime PM warning ended up breaking ethernet
+> > > on rk3399 based devices. By dropping an extra reference to the device,
+> > > the commit ends up enabling suspend / resume of the ethernet device -
+> > > which appears to be broken.
+> > > 
+> > > While the issue with runtime pm is being investigated, partially
+> > > revert commit 2d26f6e39afb to restore the network on rk3399.
+> > > 
+> > > Fixes: 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable warnings")
+> > > Suggested-by: Heiko Stuebner <heiko@sntech.de>
+> > > Signed-off-by: Punit Agrawal <punitagrawal@gmail.com>
+> > > Cc: Michael Riesch <michael.riesch@wolfvision.net>  
+> > 
+> > On a rk3399-puma which has the described issue,
+> > Tested-by: Heiko Stuebner <heiko@sntech.de>
+> 
+> Applied, thanks!
 
-I'm not sure how Makefile handles this exactly, I don't know if it can
-possibly build the two in parallel or if it's smart enough to realise
-that the libbpf.a is the same object in both cases and should be built
-only once. Same as you, I didn't hit any issue of this kind when
-testing the patches.
+This also fixed the issue on a RockPi4.
 
-> I suspect you already thought about that, but would be worth to call
-> out this explicitly.
-
-Ok, how would you like me to mention it? Comments in the Makefiles for
-runqslower, the samples, and the selftests?
-
-I'll post a new version addressing this, your other comments, and an
-issue I found for the samples/bpf/ while doing more tests.
-
-Thanks for the review and testing!
-Quentin
+Will any of you submit this to the stable kernels (as this broke within
+3.13 for me) or shall I do that?
