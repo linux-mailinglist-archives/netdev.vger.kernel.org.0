@@ -2,110 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE9C441FA65
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 10:12:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 055B641FA7D
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 10:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232589AbhJBINg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 04:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232505AbhJBINf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 04:13:35 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18FCDC061775
-        for <netdev@vger.kernel.org>; Sat,  2 Oct 2021 01:11:49 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id h3so978685pgb.7
-        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 01:11:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=L/Y0dK/DJsa4dDzC0rhCrQWvZh9+m0W4XlUzZ39cLjs=;
-        b=c4GTfoJxh8NvQLImFpnlyxUlxV87NTfzA65mV+72dCRe9RR0sk03Jl17Gaj5/BxRNn
-         HHjBTqgAgn/uaiEGSojIBkvar/072qGnceYkd8geq9PQOyqc4xBfUmCaXjhMY4bZQzeh
-         La2MmLMeea+AeGusVzX4THzWff0qky0s/u2/t+yMDAoEEm0912gOLlaCI3j/Xf2Uwome
-         JoTOESBRCjLub3uDum8mQvZbn4vHN66XB+U6+4g3vzYEmYbU/Nf2WlwoN1A+LOvDTv9J
-         UALREmO9Z9N9HL9PNWUU3DbKq8e2POEW4sRKJqkvCLT6orBAchSwsmzUxQAVS0DmFZXp
-         6DrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=L/Y0dK/DJsa4dDzC0rhCrQWvZh9+m0W4XlUzZ39cLjs=;
-        b=6dIsmpqtp1/0zHedWZ2LI/VBZTKKF420OE4WMnaa4G8RmWci1v8qN6u6yRS5RaGQvg
-         nrLMpnvC8RX/i23k0DN4xUrEvqi1VyRHZzPreb7BFSNc1bCZJsWR6ZU3ZsmqQhEttMHq
-         9Hl47DR7oj0iUtLuWx6clyr3i/sWvKKmLuJ40La61d4DrI30bEV+i8/fSBwWkKieEzuG
-         k9wonmyKhyEk/Epql1j0N34d8RflXV8O9BzgobNvFl65AsuErPJOfCX1K7MEcgyH5sj/
-         mNFXHsyvjN3t3BIPCjArINmqP+UqqGGFMgyQ0iMubIfGDl9mAf/fZlG9jBoeRXqL/BF/
-         sFpA==
-X-Gm-Message-State: AOAM532nUc0pd5a/tZJlKit6WBj6GK8/vlXXoKBQsoaahRASWgBh97R6
-        uK1DlyQzbUZJ7hKjB9FSM9I=
-X-Google-Smtp-Source: ABdhPJxwzvzTEZGshkQ36LxWo47LDH2eTDt6BY12um5dSmPYTqP47lKO8bujnlAZy+LjLz3d2c9PKA==
-X-Received: by 2002:a63:3d4c:: with SMTP id k73mr2027365pga.44.1633162307964;
-        Sat, 02 Oct 2021 01:11:47 -0700 (PDT)
-Received: from tommy.ericsson.se ([124.52.133.176])
-        by smtp.gmail.com with ESMTPSA id n19sm7857318pff.37.2021.10.02.01.11.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Oct 2021 01:11:47 -0700 (PDT)
-From:   Gyumin Hwang <hkm73560@gmail.com>
-To:     Joe Perches <joe@perches.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
-        Gyumin Hwang <hkm73560@gmail.com>
-Subject: [PATCH v2] net:dev: Change napi_gro_complete return type to void
-Date:   Sat,  2 Oct 2021 08:11:36 +0000
-Message-Id: <20211002081136.3754-1-hkm73560@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <8d21e758966ca5581edd4babe0773a28e9938a78.camel@perches.com>
-References: <8d21e758966ca5581edd4babe0773a28e9938a78.camel@perches.com>
+        id S232646AbhJBJBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 05:01:21 -0400
+Received: from kirsty.vergenet.net ([202.4.237.240]:42790 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232630AbhJBJBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 05:01:20 -0400
+Received: from madeliefje.horms.nl (tulip.horms.nl [83.161.246.101])
+        by kirsty.vergenet.net (Postfix) with ESMTPA id 8548425B79F;
+        Sat,  2 Oct 2021 18:59:31 +1000 (AEST)
+Received: by madeliefje.horms.nl (Postfix, from userid 7100)
+        id 7D0ED42E0; Sat,  2 Oct 2021 10:59:29 +0200 (CEST)
+Date:   Sat, 2 Oct 2021 10:59:29 +0200
+From:   Simon Horman <horms@verge.net.au>
+To:     Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Dust Li <dust.li@linux.alibaba.com>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, yunhong-cgl jiang <xintian1976@gmail.com>
+Subject: Re: [PATCH net-next v4] net: ipvs: add sysctl_run_estimation to
+ support disable estimation
+Message-ID: <20211002085929.GA27500@vergenet.net>
+References: <20210820053752.11508-1-dust.li@linux.alibaba.com>
+ <5f590b6-4668-19fe-b768-15125f48df1e@ssi.bg>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5f590b6-4668-19fe-b768-15125f48df1e@ssi.bg>
+Organisation: Horms Solutions BV
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-napi_gro_complete always returned the same value, NET_RX_SUCCESS
-And the value was not used anywhere
+On Sat, Aug 21, 2021 at 11:41:50AM +0300, Julian Anastasov wrote:
+> 
+> 	Hello,
+> 
+> On Fri, 20 Aug 2021, Dust Li wrote:
+> 
+> > estimation_timer will iterate the est_list to do estimation
+> > for each ipvs stats. When there are lots of services, the
+> > list can be very large.
+> > We found that estimation_timer() run for more then 200ms on a
+> > machine with 104 CPU and 50K services.
+> > 
+> > yunhong-cgl jiang report the same phenomenon before:
+> > https://www.spinics.net/lists/lvs-devel/msg05426.html
+> > 
+> > In some cases(for example a large K8S cluster with many ipvs services),
+> > ipvs estimation may not be needed. So adding a sysctl blob to allow
+> > users to disable this completely.
+> > 
+> > Default is: 1 (enable)
+> > 
+> > Cc: yunhong-cgl jiang <xintian1976@gmail.com>
+> > Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+> 
+> 	Looks good to me, thanks!
+> 
+> Acked-by: Julian Anastasov <ja@ssi.bg>
 
-Signed-off-by: Gyumin Hwang <hkm73560@gmail.com>
----
-Changes in v2:
-  - Remove unnecessary return at function end
+Likwewise, thanks. And sorry for the delay.
 
- net/core/dev.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Acked-by: Simon Horman <horms@verge.net.au>
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index f930329f0dc2..96fd8f77ab6a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5839,7 +5839,7 @@ static void gro_normal_one(struct napi_struct *napi, struct sk_buff *skb, int se
- 		gro_normal_list(napi);
- }
- 
--static int napi_gro_complete(struct napi_struct *napi, struct sk_buff *skb)
-+static void napi_gro_complete(struct napi_struct *napi, struct sk_buff *skb)
- {
- 	struct packet_offload *ptype;
- 	__be16 type = skb->protocol;
-@@ -5868,12 +5868,11 @@ static int napi_gro_complete(struct napi_struct *napi, struct sk_buff *skb)
- 	if (err) {
- 		WARN_ON(&ptype->list == head);
- 		kfree_skb(skb);
--		return NET_RX_SUCCESS;
-+		return;
- 	}
- 
- out:
- 	gro_normal_one(napi, skb, NAPI_GRO_CB(skb)->count);
--	return NET_RX_SUCCESS;
- }
- 
- static void __napi_gro_flush_chain(struct napi_struct *napi, u32 index,
--- 
-2.25.1
+Pablo, could you consider picking this up?
 
+> > ---
+> > v2: Use common sysctl facilities
+> > v3: Fix sysctl_run_estimation() redefine when CONFIG_SYSCTL not enabled
+> > v4: Some typo and minor fixes
+> > 
+> >  Documentation/networking/ipvs-sysctl.rst | 11 +++++++++++
+> >  include/net/ip_vs.h                      | 11 +++++++++++
+> >  net/netfilter/ipvs/ip_vs_ctl.c           |  8 ++++++++
+> >  net/netfilter/ipvs/ip_vs_est.c           |  5 +++++
+> >  4 files changed, 35 insertions(+)
+> > 
+> > diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+> > index 2afccc63856e..95ef56d62077 100644
+> > --- a/Documentation/networking/ipvs-sysctl.rst
+> > +++ b/Documentation/networking/ipvs-sysctl.rst
+> > @@ -300,3 +300,14 @@ sync_version - INTEGER
+> >  
+> >  	Kernels with this sync_version entry are able to receive messages
+> >  	of both version 1 and version 2 of the synchronisation protocol.
+> > +
+> > +run_estimation - BOOLEAN
+> > +	0 - disabled
+> > +	not 0 - enabled (default)
+> > +
+> > +	If disabled, the estimation will be stop, and you can't see
+> > +	any update on speed estimation data.
+> > +
+> > +	You can always re-enable estimation by setting this value to 1.
+> > +	But be careful, the first estimation after re-enable is not
+> > +	accurate.
+> > diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+> > index 7cb5a1aace40..ff1804a0c469 100644
+> > --- a/include/net/ip_vs.h
+> > +++ b/include/net/ip_vs.h
+> > @@ -931,6 +931,7 @@ struct netns_ipvs {
+> >  	int			sysctl_conn_reuse_mode;
+> >  	int			sysctl_schedule_icmp;
+> >  	int			sysctl_ignore_tunneled;
+> > +	int			sysctl_run_estimation;
+> >  
+> >  	/* ip_vs_lblc */
+> >  	int			sysctl_lblc_expiration;
+> > @@ -1071,6 +1072,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+> >  	return ipvs->sysctl_cache_bypass;
+> >  }
+> >  
+> > +static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
+> > +{
+> > +	return ipvs->sysctl_run_estimation;
+> > +}
+> > +
+> >  #else
+> >  
+> >  static inline int sysctl_sync_threshold(struct netns_ipvs *ipvs)
+> > @@ -1163,6 +1169,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
+> >  	return 0;
+> >  }
+> >  
+> > +static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
+> > +{
+> > +	return 1;
+> > +}
+> > +
+> >  #endif
+> >  
+> >  /* IPVS core functions
+> > diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+> > index c25097092a06..cbea5a68afb5 100644
+> > --- a/net/netfilter/ipvs/ip_vs_ctl.c
+> > +++ b/net/netfilter/ipvs/ip_vs_ctl.c
+> > @@ -2017,6 +2017,12 @@ static struct ctl_table vs_vars[] = {
+> >  		.mode		= 0644,
+> >  		.proc_handler	= proc_dointvec,
+> >  	},
+> > +	{
+> > +		.procname	= "run_estimation",
+> > +		.maxlen		= sizeof(int),
+> > +		.mode		= 0644,
+> > +		.proc_handler	= proc_dointvec,
+> > +	},
+> >  #ifdef CONFIG_IP_VS_DEBUG
+> >  	{
+> >  		.procname	= "debug_level",
+> > @@ -4090,6 +4096,8 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
+> >  	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
+> >  	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
+> >  	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
+> > +	ipvs->sysctl_run_estimation = 1;
+> > +	tbl[idx++].data = &ipvs->sysctl_run_estimation;
+> >  
+> >  	ipvs->sysctl_hdr = register_net_sysctl(net, "net/ipv4/vs", tbl);
+> >  	if (ipvs->sysctl_hdr == NULL) {
+> > diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
+> > index 05b8112ffb37..9a1a7af6a186 100644
+> > --- a/net/netfilter/ipvs/ip_vs_est.c
+> > +++ b/net/netfilter/ipvs/ip_vs_est.c
+> > @@ -100,6 +100,9 @@ static void estimation_timer(struct timer_list *t)
+> >  	u64 rate;
+> >  	struct netns_ipvs *ipvs = from_timer(ipvs, t, est_timer);
+> >  
+> > +	if (!sysctl_run_estimation(ipvs))
+> > +		goto skip;
+> > +
+> >  	spin_lock(&ipvs->est_lock);
+> >  	list_for_each_entry(e, &ipvs->est_list, list) {
+> >  		s = container_of(e, struct ip_vs_stats, est);
+> > @@ -131,6 +134,8 @@ static void estimation_timer(struct timer_list *t)
+> >  		spin_unlock(&s->lock);
+> >  	}
+> >  	spin_unlock(&ipvs->est_lock);
+> > +
+> > +skip:
+> >  	mod_timer(&ipvs->est_timer, jiffies + 2*HZ);
+> >  }
+> >  
+> > -- 
+> > 2.19.1.3.ge56e4f7
+> > 
+> > 
+> > 
+> 
+> Regards
+> 
+> --
+> Julian Anastasov <ja@ssi.bg>
+> 
