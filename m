@@ -2,200 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 055B641FA7D
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 10:59:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EDA541FA83
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 11:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232646AbhJBJBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 05:01:21 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:42790 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232630AbhJBJBU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 05:01:20 -0400
-Received: from madeliefje.horms.nl (tulip.horms.nl [83.161.246.101])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id 8548425B79F;
-        Sat,  2 Oct 2021 18:59:31 +1000 (AEST)
-Received: by madeliefje.horms.nl (Postfix, from userid 7100)
-        id 7D0ED42E0; Sat,  2 Oct 2021 10:59:29 +0200 (CEST)
-Date:   Sat, 2 Oct 2021 10:59:29 +0200
-From:   Simon Horman <horms@verge.net.au>
-To:     Julian Anastasov <ja@ssi.bg>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Dust Li <dust.li@linux.alibaba.com>,
-        Wensong Zhang <wensong@linux-vs.org>,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, yunhong-cgl jiang <xintian1976@gmail.com>
-Subject: Re: [PATCH net-next v4] net: ipvs: add sysctl_run_estimation to
- support disable estimation
-Message-ID: <20211002085929.GA27500@vergenet.net>
-References: <20210820053752.11508-1-dust.li@linux.alibaba.com>
- <5f590b6-4668-19fe-b768-15125f48df1e@ssi.bg>
+        id S232645AbhJBJGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 05:06:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55664 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232611AbhJBJGT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 Oct 2021 05:06:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D55CE61AA9;
+        Sat,  2 Oct 2021 09:04:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633165473;
+        bh=m1O8K7AIaIxHDsI0pUGbMNZV2m4sU+hqM4GI4F3pMkc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sTdxKn8qyKWpiRchR6DAnM055Iw2NWr0zra85aX++Y+szXBuCE8d4tDtjcQcsmNKm
+         yu1ly+zjpXtROj1NcDH+HLRSTY2uJSJVM5LOAY2eZT/Hc/Yw9EzaLIAtacAuOA4vsy
+         ex3HL9UDu41G+6BmByAKwbuANMWWFSQt1dCA97ghiXOQd3DMdRhLJBfCzXy1GT2gas
+         +OrApDhDcV3kuR8FN3gQ8XSENL+q/ZcpJfiF3Kl3paa8uwB/uWrzfJGx5pGI8iXmFW
+         KwBoempfJjqIyaQz/eiBVDo5+5OerYY1TIZ9sw2sRDtlc82Gdwa1sL+/I3Taj06sJa
+         vw6CgL0eHpdCA==
+Received: by pali.im (Postfix)
+        id 4EF0F1087; Sat,  2 Oct 2021 11:04:30 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH] powerpc/fsl/dts: Fix phy-connection-type for fm1mac3
+Date:   Sat,  2 Oct 2021 11:04:09 +0200
+Message-Id: <20211002090409.3833-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5f590b6-4668-19fe-b768-15125f48df1e@ssi.bg>
-Organisation: Horms Solutions BV
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 21, 2021 at 11:41:50AM +0300, Julian Anastasov wrote:
-> 
-> 	Hello,
-> 
-> On Fri, 20 Aug 2021, Dust Li wrote:
-> 
-> > estimation_timer will iterate the est_list to do estimation
-> > for each ipvs stats. When there are lots of services, the
-> > list can be very large.
-> > We found that estimation_timer() run for more then 200ms on a
-> > machine with 104 CPU and 50K services.
-> > 
-> > yunhong-cgl jiang report the same phenomenon before:
-> > https://www.spinics.net/lists/lvs-devel/msg05426.html
-> > 
-> > In some cases(for example a large K8S cluster with many ipvs services),
-> > ipvs estimation may not be needed. So adding a sysctl blob to allow
-> > users to disable this completely.
-> > 
-> > Default is: 1 (enable)
-> > 
-> > Cc: yunhong-cgl jiang <xintian1976@gmail.com>
-> > Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-> 
-> 	Looks good to me, thanks!
-> 
-> Acked-by: Julian Anastasov <ja@ssi.bg>
+Property phy-connection-type contains invalid value "sgmii-2500" per scheme
+defined in file ethernet-controller.yaml.
 
-Likwewise, thanks. And sorry for the delay.
+Correct phy-connection-type value should be "2500base-x".
 
-Acked-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Fixes: 84e0f1c13806 ("powerpc/mpc85xx: Add MDIO bus muxing support to the board device tree(s)")
+Acked-by: Scott Wood <oss@buserror.net>
+---
+Per Andrew's request I'm resending this patch again:
+https://patchwork.kernel.org/project/netdevbpf/patch/20210704134325.24842-1-pali@kernel.org/
+---
+ arch/powerpc/boot/dts/fsl/t1023rdb.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Pablo, could you consider picking this up?
+diff --git a/arch/powerpc/boot/dts/fsl/t1023rdb.dts b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+index 5ba6fbfca274..f82f85c65964 100644
+--- a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
++++ b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+@@ -154,7 +154,7 @@
+ 
+ 			fm1mac3: ethernet@e4000 {
+ 				phy-handle = <&sgmii_aqr_phy3>;
+-				phy-connection-type = "sgmii-2500";
++				phy-connection-type = "2500base-x";
+ 				sleep = <&rcpm 0x20000000>;
+ 			};
+ 
+-- 
+2.20.1
 
-> > ---
-> > v2: Use common sysctl facilities
-> > v3: Fix sysctl_run_estimation() redefine when CONFIG_SYSCTL not enabled
-> > v4: Some typo and minor fixes
-> > 
-> >  Documentation/networking/ipvs-sysctl.rst | 11 +++++++++++
-> >  include/net/ip_vs.h                      | 11 +++++++++++
-> >  net/netfilter/ipvs/ip_vs_ctl.c           |  8 ++++++++
-> >  net/netfilter/ipvs/ip_vs_est.c           |  5 +++++
-> >  4 files changed, 35 insertions(+)
-> > 
-> > diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
-> > index 2afccc63856e..95ef56d62077 100644
-> > --- a/Documentation/networking/ipvs-sysctl.rst
-> > +++ b/Documentation/networking/ipvs-sysctl.rst
-> > @@ -300,3 +300,14 @@ sync_version - INTEGER
-> >  
-> >  	Kernels with this sync_version entry are able to receive messages
-> >  	of both version 1 and version 2 of the synchronisation protocol.
-> > +
-> > +run_estimation - BOOLEAN
-> > +	0 - disabled
-> > +	not 0 - enabled (default)
-> > +
-> > +	If disabled, the estimation will be stop, and you can't see
-> > +	any update on speed estimation data.
-> > +
-> > +	You can always re-enable estimation by setting this value to 1.
-> > +	But be careful, the first estimation after re-enable is not
-> > +	accurate.
-> > diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
-> > index 7cb5a1aace40..ff1804a0c469 100644
-> > --- a/include/net/ip_vs.h
-> > +++ b/include/net/ip_vs.h
-> > @@ -931,6 +931,7 @@ struct netns_ipvs {
-> >  	int			sysctl_conn_reuse_mode;
-> >  	int			sysctl_schedule_icmp;
-> >  	int			sysctl_ignore_tunneled;
-> > +	int			sysctl_run_estimation;
-> >  
-> >  	/* ip_vs_lblc */
-> >  	int			sysctl_lblc_expiration;
-> > @@ -1071,6 +1072,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
-> >  	return ipvs->sysctl_cache_bypass;
-> >  }
-> >  
-> > +static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
-> > +{
-> > +	return ipvs->sysctl_run_estimation;
-> > +}
-> > +
-> >  #else
-> >  
-> >  static inline int sysctl_sync_threshold(struct netns_ipvs *ipvs)
-> > @@ -1163,6 +1169,11 @@ static inline int sysctl_cache_bypass(struct netns_ipvs *ipvs)
-> >  	return 0;
-> >  }
-> >  
-> > +static inline int sysctl_run_estimation(struct netns_ipvs *ipvs)
-> > +{
-> > +	return 1;
-> > +}
-> > +
-> >  #endif
-> >  
-> >  /* IPVS core functions
-> > diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-> > index c25097092a06..cbea5a68afb5 100644
-> > --- a/net/netfilter/ipvs/ip_vs_ctl.c
-> > +++ b/net/netfilter/ipvs/ip_vs_ctl.c
-> > @@ -2017,6 +2017,12 @@ static struct ctl_table vs_vars[] = {
-> >  		.mode		= 0644,
-> >  		.proc_handler	= proc_dointvec,
-> >  	},
-> > +	{
-> > +		.procname	= "run_estimation",
-> > +		.maxlen		= sizeof(int),
-> > +		.mode		= 0644,
-> > +		.proc_handler	= proc_dointvec,
-> > +	},
-> >  #ifdef CONFIG_IP_VS_DEBUG
-> >  	{
-> >  		.procname	= "debug_level",
-> > @@ -4090,6 +4096,8 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
-> >  	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
-> >  	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
-> >  	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
-> > +	ipvs->sysctl_run_estimation = 1;
-> > +	tbl[idx++].data = &ipvs->sysctl_run_estimation;
-> >  
-> >  	ipvs->sysctl_hdr = register_net_sysctl(net, "net/ipv4/vs", tbl);
-> >  	if (ipvs->sysctl_hdr == NULL) {
-> > diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
-> > index 05b8112ffb37..9a1a7af6a186 100644
-> > --- a/net/netfilter/ipvs/ip_vs_est.c
-> > +++ b/net/netfilter/ipvs/ip_vs_est.c
-> > @@ -100,6 +100,9 @@ static void estimation_timer(struct timer_list *t)
-> >  	u64 rate;
-> >  	struct netns_ipvs *ipvs = from_timer(ipvs, t, est_timer);
-> >  
-> > +	if (!sysctl_run_estimation(ipvs))
-> > +		goto skip;
-> > +
-> >  	spin_lock(&ipvs->est_lock);
-> >  	list_for_each_entry(e, &ipvs->est_list, list) {
-> >  		s = container_of(e, struct ip_vs_stats, est);
-> > @@ -131,6 +134,8 @@ static void estimation_timer(struct timer_list *t)
-> >  		spin_unlock(&s->lock);
-> >  	}
-> >  	spin_unlock(&ipvs->est_lock);
-> > +
-> > +skip:
-> >  	mod_timer(&ipvs->est_timer, jiffies + 2*HZ);
-> >  }
-> >  
-> > -- 
-> > 2.19.1.3.ge56e4f7
-> > 
-> > 
-> > 
-> 
-> Regards
-> 
-> --
-> Julian Anastasov <ja@ssi.bg>
-> 
