@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD01641F8C2
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 02:37:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CE5841F8C4
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 02:37:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232182AbhJBAjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 20:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53036 "EHLO
+        id S232218AbhJBAjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 20:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232039AbhJBAjA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 20:39:00 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B607C061775;
-        Fri,  1 Oct 2021 17:37:15 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id l16-20020a9d6a90000000b0053b71f7dc83so13555464otq.7;
-        Fri, 01 Oct 2021 17:37:15 -0700 (PDT)
+        with ESMTP id S232105AbhJBAjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 20:39:01 -0400
+Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803BEC061775;
+        Fri,  1 Oct 2021 17:37:16 -0700 (PDT)
+Received: by mail-oo1-xc31.google.com with SMTP id a17-20020a4a6851000000b002b59bfbf669so3373264oof.9;
+        Fri, 01 Oct 2021 17:37:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HzPJUTvz/bSzmVaZOvd5k1WvBZ2gneG2hoQ0KV2QWMM=;
-        b=l0Aq0T1Q52ty5Z/mS/FAQTvcAt9RIuLW3HPGRRxjv1iSxhur045hmVafhKFE3ADvPR
-         bq8ZNQufBblKQ+lnCi9sJeWK4UOwUyOuMYoIM53ji42uBM70uqYNO+D/anVAmPMCYM2+
-         Sj9Kz12I9ndfyTq2d/VNh4xIvlBZG+Z8afvhBEcYgBQmHuCucWw65GhQQLMf/v/6hwDy
-         TPbd7Q/1q/heCSE3Z2BPMdvLtck/MJwsBImisKI2na2ONJ04fn9F7AyYtCas+KWW1MNy
-         r26cqaVaU/TBmDrT90sDzKvmgMClEhDSLwJ+ttnrWB0vno+URdOagq602OQg1/UNo5mU
-         DBcQ==
+        bh=ysNfuXl1HWktNtOSEF03F01sMlIv53eUMXjaR2LS9EI=;
+        b=DLUXIVZoHqRRmgx/OCyrIhFldIBJDu3r0bEi1mzXJgs7nySRlUodI0cUe+56xnLmpk
+         65WfAqecfWonvMWf5Xa4yyz73VCOGJHeFPw3PPNq5YBhK1DgNPrTJMbGHnuuDaHDLj9p
+         ZLxGB0KRoEJaEhCPjADL+FokaArkuLqlKBRZ4qT1vI/krjZ5oyR8Yrj91zbGEV0C8Lbg
+         Ryk2ElROgranMBBYZDMB+xe0mTtzxFhSVbBukMBbZkGR76/6KSfXiwMJzdvmq4p5yJLg
+         7ek+b5mReVHdsp5oByPIWYUAxq3wOyqqRA6i8Sk1ch/rUHupQFuLzb3jmBWnLjYefKl4
+         h9aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HzPJUTvz/bSzmVaZOvd5k1WvBZ2gneG2hoQ0KV2QWMM=;
-        b=rxrypXEGGgGbDMpMMWTKvhqrCnc/bDp5yXDYarBVp5iKbBpli4XS4W1U9TiB9dPYtS
-         i2Bx9sGmBlTlRq3jmoeDTkhUB3CWs66AWoR3Or2271+thq9klzL3v8MqnYMboTVG2MBe
-         2dsT7Bx2IKbUqCasCRCXxGAnp5qAbZpCWSisPLy5xGemj7/0W19Hj1bzPd19tMUyFGeB
-         tD0AZhj9z1MO6Q9IkiGqutmoa2tiMbVjaQR9Md0kgljUkQmWpkteSUbMOZx7IHrusL75
-         n+L0G8FzIIeMog7AYTBEOnci2xEwDYZVAyyKa+FwTlYC1HSXVUeBE1mjOSHiNA/vjvDu
-         kcew==
-X-Gm-Message-State: AOAM530uR9BPPN5yVHpdh/xTU28PrSMf6uZ0k6GgSjlSWHm2z3r9Ojto
-        We/dQlQI+RohuQibw43jdZz9HcWBZIk=
-X-Google-Smtp-Source: ABdhPJzBLnByCd79P4V7owzJmvo5J8jPbGVS5mA0paG1CUk1YcxYCunNl4cEuAlJKOvTlpYekZfEgA==
-X-Received: by 2002:a9d:7751:: with SMTP id t17mr657360otl.276.1633135034728;
-        Fri, 01 Oct 2021 17:37:14 -0700 (PDT)
+        bh=ysNfuXl1HWktNtOSEF03F01sMlIv53eUMXjaR2LS9EI=;
+        b=NVr1tP/B6/qvTEDI1E6zmFhs+EKQ3P1LyOxHjnd3sNb9e7SrnZmfj5wKScbkkOP8YS
+         MspP4LiRB/vpgFRL7hmd6hn0ELd+B7ecHXvFzisFcRadN1a2Mew6s5o4gS76EhtuMbkK
+         ex/5e0FLv46Bw9xeJPnJ6MVCkANqko+XXKEHpQJ94sRnwRRzIB168tL98uQQqPvSSfYv
+         Tox/KfVuAlWWNqSFHep9F2DDcGpQsOCR5sEfgRein4meh9W0SxWU+tuKr/BQs8qQqjL/
+         hgFmoUAQdaw/qOV8GHTizNeq2XRboxNzCxYfDrbjLrME+6tIGg7v16LHd/eXavwfkD0h
+         f5JQ==
+X-Gm-Message-State: AOAM531F5ANvjGP4/sppYhxhcREmRzY79EAzf+j6nEkR4SP+HsBJ5wrX
+        v5yKsLUpmlBli7vfPDxcWHDhlbsGJ3o=
+X-Google-Smtp-Source: ABdhPJwjDVbqVGIP3qCag+f+jSB+XZ0l+4KUTeYWR+lknVLquafXL88SDbccLalpY4nCg8Q//959eg==
+X-Received: by 2002:a05:6820:28f:: with SMTP id q15mr797773ood.78.1633135035727;
+        Fri, 01 Oct 2021 17:37:15 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:a62e:a53d:c4bc:b137])
-        by smtp.gmail.com with ESMTPSA id p18sm1545017otk.7.2021.10.01.17.37.13
+        by smtp.gmail.com with ESMTPSA id p18sm1545017otk.7.2021.10.01.17.37.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Oct 2021 17:37:14 -0700 (PDT)
+        Fri, 01 Oct 2021 17:37:15 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Yucong Sun <sunyucong@gmail.com>,
+Cc:     bpf@vger.kernel.org, Yucong Sun <sunyucong@gmail.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf v3 3/4] net: implement ->sock_is_readable() for UDP and AF_UNIX
-Date:   Fri,  1 Oct 2021 17:37:05 -0700
-Message-Id: <20211002003706.11237-4-xiyou.wangcong@gmail.com>
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch bpf v3 4/4] selftests/bpf: use recv_timeout() instead of retries
+Date:   Fri,  1 Oct 2021 17:37:06 -0700
+Message-Id: <20211002003706.11237-5-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211002003706.11237-1-xiyou.wangcong@gmail.com>
 References: <20211002003706.11237-1-xiyou.wangcong@gmail.com>
@@ -67,95 +67,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+From: Yucong Sun <sunyucong@gmail.com>
 
-Yucong noticed we can't poll() sockets in sockmap even
-when they are the destination sockets of redirections.
-This is because we never poll any psock queues in ->poll(),
-except for TCP. With ->sock_is_readable() now we can
-overwrite >sock_is_readable(), invoke and implement it for
-both UDP and AF_UNIX sockets.
+We use non-blocking sockets in those tests, retrying for
+EAGAIN is ugly because there is no upper bound for the packet
+arrival time, at least in theory. After we fix poll() on
+sockmap sockets, now we can switch to select()+recv().
 
-Reported-by: Yucong Sun <sunyucong@gmail.com>
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
 Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Yucong Sun <sunyucong@gmail.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- net/ipv4/udp.c      | 2 ++
- net/ipv4/udp_bpf.c  | 1 +
- net/unix/af_unix.c  | 4 ++++
- net/unix/unix_bpf.c | 2 ++
- 4 files changed, 9 insertions(+)
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 75 +++++--------------
+ 1 file changed, 20 insertions(+), 55 deletions(-)
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 2a7825a5b842..4a7e15a43a68 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2866,6 +2866,8 @@ __poll_t udp_poll(struct file *file, struct socket *sock, poll_table *wait)
- 	    !(sk->sk_shutdown & RCV_SHUTDOWN) && first_packet_length(sk) == -1)
- 		mask &= ~(EPOLLIN | EPOLLRDNORM);
+diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+index 5c5979046523..d88bb65b74cc 100644
+--- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
++++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+@@ -949,7 +949,6 @@ static void redir_to_connected(int family, int sotype, int sock_mapfd,
+ 	int err, n;
+ 	u32 key;
+ 	char b;
+-	int retries = 100;
  
-+	if (sk_is_readable(sk))
-+		mask |= EPOLLIN | EPOLLRDNORM;
- 	return mask;
+ 	zero_verdict_count(verd_mapfd);
  
- }
-diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
-index 7a1d5f473878..bbe6569c9ad3 100644
---- a/net/ipv4/udp_bpf.c
-+++ b/net/ipv4/udp_bpf.c
-@@ -114,6 +114,7 @@ static void udp_bpf_rebuild_protos(struct proto *prot, const struct proto *base)
- 	*prot        = *base;
- 	prot->close  = sock_map_close;
- 	prot->recvmsg = udp_bpf_recvmsg;
-+	prot->sock_is_readable = sk_msg_is_readable;
- }
+@@ -1002,17 +1001,11 @@ static void redir_to_connected(int family, int sotype, int sock_mapfd,
+ 		goto close_peer1;
+ 	if (pass != 1)
+ 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
+-again:
+-	n = read(c0, &b, 1);
+-	if (n < 0) {
+-		if (errno == EAGAIN && retries--) {
+-			usleep(1000);
+-			goto again;
+-		}
+-		FAIL_ERRNO("%s: read", log_prefix);
+-	}
++	n = recv_timeout(c0, &b, 1, 0, IO_TIMEOUT_SEC);
++	if (n < 0)
++		FAIL_ERRNO("%s: recv_timeout", log_prefix);
+ 	if (n == 0)
+-		FAIL("%s: incomplete read", log_prefix);
++		FAIL("%s: incomplete recv", log_prefix);
  
- static void udp_bpf_check_v6_needs_rebuild(struct proto *ops)
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index f505b89bda6a..3e65d9f5531d 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -3029,6 +3029,8 @@ static __poll_t unix_poll(struct file *file, struct socket *sock, poll_table *wa
- 	/* readable? */
- 	if (!skb_queue_empty_lockless(&sk->sk_receive_queue))
- 		mask |= EPOLLIN | EPOLLRDNORM;
-+	if (sk_is_readable(sk))
-+		mask |= EPOLLIN | EPOLLRDNORM;
+ close_peer1:
+ 	xclose(p1);
+@@ -1571,7 +1564,6 @@ static void unix_redir_to_connected(int sotype, int sock_mapfd,
+ 	const char *log_prefix = redir_mode_str(mode);
+ 	int c0, c1, p0, p1;
+ 	unsigned int pass;
+-	int retries = 100;
+ 	int err, n;
+ 	int sfd[2];
+ 	u32 key;
+@@ -1606,17 +1598,11 @@ static void unix_redir_to_connected(int sotype, int sock_mapfd,
+ 	if (pass != 1)
+ 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
  
- 	/* Connection-based need to check for termination and startup */
- 	if ((sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET) &&
-@@ -3068,6 +3070,8 @@ static __poll_t unix_dgram_poll(struct file *file, struct socket *sock,
- 	/* readable? */
- 	if (!skb_queue_empty_lockless(&sk->sk_receive_queue))
- 		mask |= EPOLLIN | EPOLLRDNORM;
-+	if (sk_is_readable(sk))
-+		mask |= EPOLLIN | EPOLLRDNORM;
+-again:
+-	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
+-	if (n < 0) {
+-		if (errno == EAGAIN && retries--) {
+-			usleep(1000);
+-			goto again;
+-		}
+-		FAIL_ERRNO("%s: read", log_prefix);
+-	}
++	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
++	if (n < 0)
++		FAIL_ERRNO("%s: recv_timeout", log_prefix);
+ 	if (n == 0)
+-		FAIL("%s: incomplete read", log_prefix);
++		FAIL("%s: incomplete recv", log_prefix);
  
- 	/* Connection-based need to check for termination and startup */
- 	if (sk->sk_type == SOCK_SEQPACKET) {
-diff --git a/net/unix/unix_bpf.c b/net/unix/unix_bpf.c
-index b927e2baae50..452376c6f419 100644
---- a/net/unix/unix_bpf.c
-+++ b/net/unix/unix_bpf.c
-@@ -102,6 +102,7 @@ static void unix_dgram_bpf_rebuild_protos(struct proto *prot, const struct proto
- 	*prot        = *base;
- 	prot->close  = sock_map_close;
- 	prot->recvmsg = unix_bpf_recvmsg;
-+	prot->sock_is_readable = sk_msg_is_readable;
- }
+ close:
+ 	xclose(c1);
+@@ -1748,7 +1734,6 @@ static void udp_redir_to_connected(int family, int sock_mapfd, int verd_mapfd,
+ 	const char *log_prefix = redir_mode_str(mode);
+ 	int c0, c1, p0, p1;
+ 	unsigned int pass;
+-	int retries = 100;
+ 	int err, n;
+ 	u32 key;
+ 	char b;
+@@ -1781,17 +1766,11 @@ static void udp_redir_to_connected(int family, int sock_mapfd, int verd_mapfd,
+ 	if (pass != 1)
+ 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
  
- static void unix_stream_bpf_rebuild_protos(struct proto *prot,
-@@ -110,6 +111,7 @@ static void unix_stream_bpf_rebuild_protos(struct proto *prot,
- 	*prot        = *base;
- 	prot->close  = sock_map_close;
- 	prot->recvmsg = unix_bpf_recvmsg;
-+	prot->sock_is_readable = sk_msg_is_readable;
- 	prot->unhash  = sock_map_unhash;
- }
+-again:
+-	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
+-	if (n < 0) {
+-		if (errno == EAGAIN && retries--) {
+-			usleep(1000);
+-			goto again;
+-		}
+-		FAIL_ERRNO("%s: read", log_prefix);
+-	}
++	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
++	if (n < 0)
++		FAIL_ERRNO("%s: recv_timeout", log_prefix);
+ 	if (n == 0)
+-		FAIL("%s: incomplete read", log_prefix);
++		FAIL("%s: incomplete recv", log_prefix);
  
+ close_cli1:
+ 	xclose(c1);
+@@ -1841,7 +1820,6 @@ static void inet_unix_redir_to_connected(int family, int type, int sock_mapfd,
+ 	const char *log_prefix = redir_mode_str(mode);
+ 	int c0, c1, p0, p1;
+ 	unsigned int pass;
+-	int retries = 100;
+ 	int err, n;
+ 	int sfd[2];
+ 	u32 key;
+@@ -1876,17 +1854,11 @@ static void inet_unix_redir_to_connected(int family, int type, int sock_mapfd,
+ 	if (pass != 1)
+ 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
+ 
+-again:
+-	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
+-	if (n < 0) {
+-		if (errno == EAGAIN && retries--) {
+-			usleep(1000);
+-			goto again;
+-		}
+-		FAIL_ERRNO("%s: read", log_prefix);
+-	}
++	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
++	if (n < 0)
++		FAIL_ERRNO("%s: recv_timeout", log_prefix);
+ 	if (n == 0)
+-		FAIL("%s: incomplete read", log_prefix);
++		FAIL("%s: incomplete recv", log_prefix);
+ 
+ close_cli1:
+ 	xclose(c1);
+@@ -1932,7 +1904,6 @@ static void unix_inet_redir_to_connected(int family, int type, int sock_mapfd,
+ 	int sfd[2];
+ 	u32 key;
+ 	char b;
+-	int retries = 100;
+ 
+ 	zero_verdict_count(verd_mapfd);
+ 
+@@ -1963,17 +1934,11 @@ static void unix_inet_redir_to_connected(int family, int type, int sock_mapfd,
+ 	if (pass != 1)
+ 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
+ 
+-again:
+-	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
+-	if (n < 0) {
+-		if (errno == EAGAIN && retries--) {
+-			usleep(1000);
+-			goto again;
+-		}
+-		FAIL_ERRNO("%s: read", log_prefix);
+-	}
++	n = recv_timeout(mode == REDIR_INGRESS ? p0 : c0, &b, 1, 0, IO_TIMEOUT_SEC);
++	if (n < 0)
++		FAIL_ERRNO("%s: recv_timeout", log_prefix);
+ 	if (n == 0)
+-		FAIL("%s: incomplete read", log_prefix);
++		FAIL("%s: incomplete recv", log_prefix);
+ 
+ close:
+ 	xclose(c1);
 -- 
 2.30.2
 
