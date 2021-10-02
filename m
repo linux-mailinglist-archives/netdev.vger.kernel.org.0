@@ -2,111 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5858141FDE5
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 21:43:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 739CF41FE04
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 22:27:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233923AbhJBTow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 15:44:52 -0400
-Received: from mxout02.lancloud.ru ([45.84.86.82]:36080 "EHLO
-        mxout02.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbhJBTov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 15:44:51 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru E3B6C20C0450
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH 04/10] ravb: Add support for RZ/G2L SoC
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
- <20211001150636.7500-5-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <b4c87a6d-014f-0170-feb5-20079c7d5761@omp.ru>
-Date:   Sat, 2 Oct 2021 22:43:01 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S233984AbhJBU3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 16:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58484 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229503AbhJBU3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 16:29:09 -0400
+Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB6EC061714
+        for <netdev@vger.kernel.org>; Sat,  2 Oct 2021 13:27:23 -0700 (PDT)
+Received: by mail-ua1-x935.google.com with SMTP id y3so3905354uar.5
+        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 13:27:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yBEvAC7tytvPNoNntMpfQQJzo7nKUOYCQrVYj2r104U=;
+        b=o9eUq9nuapn89HcZb81sAOQsrhggxsUh3cy6Qnwn86QpjH6U5W31FkeB7KXzzTv332
+         fcCXaVelp2BChJQKEQK9M7mS9zM/KWq+LiepW3HoLmxvCLQiUrVf169f1idq5rMWjjxI
+         0TdBitShr/NufyNVwnce6KU9x8T8rQ4nHIbxUiR9qFq720MgXUti+7lfYTQa0wBoKDSY
+         TdF/hmuEeb51lVjnfVOsq4yn3F0dAnXIVlTvJWpcJBcXYk6YpgSoJP4bVfrXFjMFAZZp
+         wL4q+OOfYMLjgHY+KjLZOxfALegLJXV4zFHd6Nfuygv99dWeqIgi7iPZZbUe8cJRKvcx
+         0gFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yBEvAC7tytvPNoNntMpfQQJzo7nKUOYCQrVYj2r104U=;
+        b=QU5FvXi+PDNw2RwVOElxn72jDxkrY/Pldj1WkZEEI4AuT6tXf3dibAjqdEBQLMJyRX
+         /29d+zQ0Oo+RlFzuyUadWHoX2i/jVc7ELWBT36ciw/VUoOxQcOl+bBqG2NYJdFhLLyAn
+         WIIWLBsdwxLkZyXy7DHiDKLkcF0MSKm7lIxExgt2K0Fxfk1fs/iZ/jvxXLQ08TK8hdx3
+         0mgpoMilqhYPrZiJOsfsgHLMqPGUx5kSCbAbprCah8mYwcCS/us1PjHheqlOEUEnLrfN
+         RjbQl+Ekocwz0I3MmKORfHPbN/PepW4vE1vqCsO0UgBzTePVUideQVjdx8L9J9eL/Yg+
+         MAJA==
+X-Gm-Message-State: AOAM532YWeMMlfIEvPIc3Lw8IXON3RBT+Ju3tZbRHZXBHEJDs2PHx2az
+        MVMZyISfcvTNmNymIp1ML+cHcn+jFtx93bW4rQb7Ng==
+X-Google-Smtp-Source: ABdhPJzgelWYeQD2lUxqsGxAlCUh1fxLZCc4twOwsrJgQW41zotY5EJqnhtnVCdwjcrWawrJV1D390YSM1ufCIiGKEg=
+X-Received: by 2002:ab0:31d6:: with SMTP id e22mr2503667uan.99.1633206442853;
+ Sat, 02 Oct 2021 13:27:22 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20211001150636.7500-5-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+References: <20211001110856.14730-1-quentin@isovalent.com> <20211001110856.14730-7-quentin@isovalent.com>
+ <CAEf4BzYm_QTq+u5tUp71+wY+JAaiUApv35tSqFUEyc81yOeUzw@mail.gmail.com>
+In-Reply-To: <CAEf4BzYm_QTq+u5tUp71+wY+JAaiUApv35tSqFUEyc81yOeUzw@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Date:   Sat, 2 Oct 2021 21:27:11 +0100
+Message-ID: <CACdoK4LL91u-JK1fZ3XvkrTXsKBVsN-y1Js4QSPkWyS51KPB8Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 6/9] bpf: iterators: install libbpf headers
+ when building
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/1/21 6:06 PM, Biju Das wrote:
+On Sat, 2 Oct 2021 at 00:20, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+>
+> On Fri, Oct 1, 2021 at 4:09 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >
+> > API headers from libbpf should not be accessed directly from the
+> > library's source directory. Instead, they should be exported with "make
+> > install_headers". Let's make sure that bpf/preload/iterators/Makefile
+> > installs the headers properly when building.
 
-> RZ/G2L SoC has Gigabit Ethernet IP consisting of Ethernet controller
-> (E-MAC), Internal TCP/IP Offload Engine (TOE) and Dedicated Direct
-> memory access controller (DMAC).
-> 
-> This patch adds compatible string for RZ/G2L and fills up the
-> ravb_hw_info struct. Function stubs are added which will be used by
-> gbeth_hw_info and will be filled incrementally.
+> >
+> > -$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)
+> > +$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile)            \
+> > +          | $(LIBBPF_OUTPUT) $(LIBBPF_INCLUDE)
+>
+> Would it make sense for libbpf's Makefile to create include and output
+> directories on its own? We wouldn't need to have these order-only
+> dependencies everywhere, right?
 
-   I've always been against this patch -- we get a support for the GbEther whihc doesn't work
-after this patch. I believe we should have the GbEther support in the last patch. of the overall
-series.
-
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
-> RFC->v1:
->  * Added compatible string for RZ/G2L.
->  * Added feature bits max_rx_len, aligned_tx and tx_counters for RZ/G2L.
-> ---
->  drivers/net/ethernet/renesas/ravb.h      |  2 +
->  drivers/net/ethernet/renesas/ravb_main.c | 62 ++++++++++++++++++++++++
->  2 files changed, 64 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index c91e93e5590f..f6398fdcead2 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-[...]
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index 8bf13586e90a..dc817b4d95a1 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-[...]
-> @@ -2073,12 +2120,27 @@ static const struct ravb_hw_info ravb_gen2_hw_info = {
->  	.nc_queue = 1,
->  };
->  
-> +static const struct ravb_hw_info gbeth_hw_info = {
-> +	.rx_ring_free = ravb_rx_ring_free_gbeth,
-> +	.rx_ring_format = ravb_rx_ring_format_gbeth,
-> +	.alloc_rx_desc = ravb_alloc_rx_desc_gbeth,
-> +	.receive = ravb_rx_gbeth,
-> +	.set_rate = ravb_set_rate_gbeth,
-> +	.set_feature = ravb_set_features_gbeth,
-> +	.dmac_init = ravb_dmac_init_gbeth,
-> +	.emac_init = ravb_emac_init_gbeth,
-> +	.max_rx_len = GBETH_RX_BUFF_MAX + RAVB_ALIGN - 1,
-
-   ALIGN(GBETH_RX_BUFF_MAX, RAVB_ALIGN)?
-
-> +	.aligned_tx = 1,
-> +	.tx_counters = 1,
-> +};
-> +
-
-[...]
-
-MBR. Sergey
+Good point, I'll have a look at it.
+Quentin
