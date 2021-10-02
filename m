@@ -2,124 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28C7241FD8B
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 19:58:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CAAB41FD96
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 20:10:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233750AbhJBSAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 14:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54160 "EHLO
+        id S233780AbhJBSMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 14:12:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233755AbhJBSAK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 14:00:10 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786FAC0613F0;
-        Sat,  2 Oct 2021 10:58:24 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id y23so17318909lfj.7;
-        Sat, 02 Oct 2021 10:58:24 -0700 (PDT)
+        with ESMTP id S233721AbhJBSMV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 14:12:21 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F91C0613EC;
+        Sat,  2 Oct 2021 11:10:35 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id s24so9652182wmh.4;
+        Sat, 02 Oct 2021 11:10:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gaRaKrEwRGzaX6BOqH5N99x59hBWZ2AV0k4uy5LgEBg=;
-        b=XVjEd3id04JNAEcFq6xWLwCLJBBs9dz7ZxBHHe8ZFV+3zq3Ixc57dzgJVicmiD1gyg
-         Rp3Hf6nEGujKg4eAc3kB0FC7qi/DBsVqS2G1KP2HjsisdEDV4n1oVI6Q3GD3TcwEdWCn
-         Vso0mHgDlWgjIaZknrRGgqx9HmpQGjGv//IzhFlP/5PxUKjfoEQI4bg9bGr9HHYKmgRy
-         uw+JX/TU7/p1EyuxogZ6pgVSCiXmZoBQA3ZUlucrU59e82Irv2+MD78YlPw8gtf/EdUL
-         Pi+/Tkcq/8AXpixKc3sv3lbbVxq+0WDUl0xdg4DuN09Ra0AfBdmxB+WyEZaF10K9LHpf
-         cjJA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=clkeClsT6IZFwtmF+F+5IU24AjU7rv5LP/5BbBwXOts=;
+        b=MXLKaW9livxn7JRmENcmaCVpLpEDRKCYDtpXjx7Hha0KLDZ6+8nMw/SV2LWc1CecrN
+         U7/MM0xmgYFubW6U9wKbeIoaV5DaU/wB8R5KwraHdaWRyP1qqPODdFncCt6Z73Shnv10
+         2Fnjlxyw6YgvtGe4YdX8VjgYG9nGi7DKx4N/KnAMeRRCE7cSapuVerIlhjeOFBOaquqA
+         FM7Faqnhv+xtwbvXlns5TYGRxCQN8VM71huQ2iy5DeRcBrCp+0xries89ZbxM8xGBcac
+         c2v1I3V3kv9VQGdXdxbAOVlFA9MPYei3+8k+Fdu+gujJvme9YzQzZ9sJnkaCffc5tkLC
+         2ETQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gaRaKrEwRGzaX6BOqH5N99x59hBWZ2AV0k4uy5LgEBg=;
-        b=2YHvJA2rupJbXN2ydTd4d6pENJ6HfwifED54hnALhrNnCilV6IvKGh+ANNNT8SrA4I
-         GsyUkLOWKqKQto6tSUcYAuMddGjQevqP5UAcCrpRmH7V3ZyKSi4FBjGAFmWLZv8SeokD
-         RMurqnU754Jz1IW38Wz2t81QP9CYeJSCCIssCx4fgm36Pws8id0o5Z7gN1S8/4dvbtEI
-         ii/GyIlGa7ojgJ+gBIkuUEGVZFutXxC5y/vgTHr3YBUPeXUnMhcbetCtluqq2ddG0IAt
-         IoDZcTfblHpcGcMsQ8waBrDHsdgrC5gGuCGCS1xw8Wq/BK4vGPiiavHmSgrzRCNPDyNO
-         H9Lw==
-X-Gm-Message-State: AOAM5337kIvqtpbpxgOi93BaeLpe89YO27gq4IMv90yaE88BMgEtgdWU
-        V8RcQnp3Y4ITCCCykg807G8=
-X-Google-Smtp-Source: ABdhPJzbVgX6dyWALx2lhYNHzDYPScIyQ0eE4VJQDfdE2jmqtdnaSN17ldCOJ0mJGQ3eP9CjNlyqUA==
-X-Received: by 2002:a05:651c:1110:: with SMTP id d16mr4768779ljo.326.1633197502886;
-        Sat, 02 Oct 2021 10:58:22 -0700 (PDT)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id t26sm1100043lfl.141.2021.10.02.10.58.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Oct 2021 10:58:22 -0700 (PDT)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH V2 net-next 2/2] net: bgmac: support MDIO described in DT
-Date:   Sat,  2 Oct 2021 19:58:12 +0200
-Message-Id: <20211002175812.14384-2-zajec5@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20211002175812.14384-1-zajec5@gmail.com>
-References: <20211002175812.14384-1-zajec5@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=clkeClsT6IZFwtmF+F+5IU24AjU7rv5LP/5BbBwXOts=;
+        b=TV2/kFeBKt0WDtkpf/XHGtIDjBFLjdh6wDEp8QWdWpa3uBlDzzdJIgh+7d4NtVh948
+         vZoeemKMB6Kkz2P67DBBsT6sRDBPBVEoOm5q0tPIo0rhetvU+96MHBD4a6rNQNehZavc
+         Ys3RuOrPrwZTCSsv/2FOmlbxZKvdl0LINe+ALOVRWcnM3s20hc6j2Cgt1B8J/wLhSTms
+         qi94BWvYYlm7JcLD8K+9LBsOc03avjTc67Fad6HjgTWFyP8cgBRBuKIEGY0vCROyzjXw
+         0b3oY7kRWtC0V/SS8BU2mqY9iu0tEpKOSKWr0j4yqVUqbwus7BWbRC7u0WLRBwgcVpQA
+         5dEQ==
+X-Gm-Message-State: AOAM530QWgeGTH09ZZGEa8jW3yxAQTR+Om/4fJ2qtdmuybRfQLGf5Pn9
+        eElemLOnhFtbQcuzLo46hI9nYkTjT3I=
+X-Google-Smtp-Source: ABdhPJwC0EzyR8BCPHEkqExvF/JR3f4XLJyhmG4e0fOArHlLDj3BaFfbJQN7Hrsh9nPpLJdtbCxG3Q==
+X-Received: by 2002:a05:600c:354a:: with SMTP id i10mr10152827wmq.77.1633198233769;
+        Sat, 02 Oct 2021 11:10:33 -0700 (PDT)
+Received: from [10.8.0.30] ([195.53.121.100])
+        by smtp.gmail.com with ESMTPSA id z6sm13209596wmp.1.2021.10.02.11.10.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Oct 2021 11:10:33 -0700 (PDT)
+Subject: Re: [PATCH] unix.7: Add a description for ENFILE.
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     benh@amazon.com, kuni1840@gmail.com, linux-man@vger.kernel.org,
+        mtk.manpages@gmail.com, netdev@vger.kernel.org
+References: <206a26e5-0515-44b9-39cb-bc46013bfc6c@gmail.com>
+ <20211002175653.58027-1-kuniyu@amazon.co.jp>
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Message-ID: <e0074952-cf64-9cc5-0d0b-c31124b44166@gmail.com>
+Date:   Sat, 2 Oct 2021 20:10:32 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211002175653.58027-1-kuniyu@amazon.co.jp>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+Hi, Kuniyuki!
 
-Check ethernet controller DT node for "mdio" subnode and use it with
-of_mdiobus_register() when present. That allows specifying MDIO and its
-PHY devices in a standard DT based way.
+On 10/2/21 7:56 PM, Kuniyuki Iwashima wrote:
+> From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+> Date:   Sat, 2 Oct 2021 19:44:52 +0200
+>> Hello Kuniyuki,
+>>
+>> On 9/29/21 3:38 AM, Kuniyuki Iwashima wrote:
+>>> When creating UNIX domain sockets, the kernel used to return -ENOMEM on
+>>> error where it should return -ENFILE.  The behaviour has been wrong since
+>>> 2.2.4 and fixed in the recent commit f4bd73b5a950 ("af_unix: Return errno
+>>> instead of NULL in unix_create1().").
+>>>
+>>> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+>>> ---
+>>> Note to maintainers of man-pages, the commit is merged in the net tree [0]
+>>> but not in the Linus' tree yet.
+>>>
+>>> [0]: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=f4bd73b5a950
+>>
+>> Thanks!
+>>
+>> The patch looks good to me, so could you ping back when this is merged
+>> in Linus's tree?
+> 
+> Thanks, sure!
+> Is that -stable?
+> The pull-request from net-next hit the Linus' 5.14-rc4 tree few days ago.
+> https://lore.kernel.org/linux-kernel/20210930163002.4159171-1-kuba@kernel.org/
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4de593fb965fc2bd11a0b767e0c65ff43540a6e4
 
-This is required for BCM53573 SoC support. That family is sometimes
-called Northstar (by marketing?) but is quite different from it. It uses
-different CPU(s) and many different hw blocks.
+Ahh, if it already is in Linus's tree, I'll merge your patch.
 
-One of shared blocks in BCM53573 is Ethernet controller. Switch however
-is not SRAB accessible (as it Northstar) but is MDIO attached.
+Thanks,
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
-V2: Update commit message to reference BCM53573. I thought it's worth it
-    after Florian's question.
-    Florian suggested I may need of_node_put() but it doesn't seem that
-    of_get_child_by_name() or of_mdiobus_register() inc. any refcount.
----
- drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Alex
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-index 6ce80cbcb48e..086739e4f40a 100644
---- a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-+++ b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-@@ -10,6 +10,7 @@
- 
- #include <linux/bcma/bcma.h>
- #include <linux/brcmphy.h>
-+#include <linux/of_mdio.h>
- #include "bgmac.h"
- 
- static bool bcma_mdio_wait_value(struct bcma_device *core, u16 reg, u32 mask,
-@@ -211,6 +212,7 @@ struct mii_bus *bcma_mdio_mii_register(struct bgmac *bgmac)
- {
- 	struct bcma_device *core = bgmac->bcma.core;
- 	struct mii_bus *mii_bus;
-+	struct device_node *np;
- 	int err;
- 
- 	mii_bus = mdiobus_alloc();
-@@ -229,7 +231,9 @@ struct mii_bus *bcma_mdio_mii_register(struct bgmac *bgmac)
- 	mii_bus->parent = &core->dev;
- 	mii_bus->phy_mask = ~(1 << bgmac->phyaddr);
- 
--	err = mdiobus_register(mii_bus);
-+	np = of_get_child_by_name(core->dev.of_node, "mdio");
-+
-+	err = of_mdiobus_register(mii_bus, np);
- 	if (err) {
- 		dev_err(&core->dev, "Registration of mii bus failed\n");
- 		goto err_free_bus;
+> 
+> Best regards,
+> Kuniyuki
+> 
+> 
+>>
+>> Cheers,
+>>
+>> Alex
+>>
+>>> ---
+>>>    man7/unix.7 | 3 +++
+>>>    1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/man7/unix.7 b/man7/unix.7
+>>> index 6d30b25cd..2dc96fea1 100644
+>>> --- a/man7/unix.7
+>>> +++ b/man7/unix.7
+>>> @@ -721,6 +721,9 @@ invalid state for the applied operation.
+>>>    called on an already connected socket or a target address was
+>>>    specified on a connected socket.
+>>>    .TP
+>>> +.B ENFILE
+>>> +The system-wide limit on the total number of open files has been reached.
+>>> +.TP
+>>>    .B ENOENT
+>>>    The pathname in the remote address specified to
+>>>    .BR connect (2)
+>>>
+>>
+>>
+>> -- 
+>> Alejandro Colomar
+>> Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+>> http://www.alejandro-colomar.es/
+
+
 -- 
-2.26.2
-
+Alejandro Colomar
+Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+http://www.alejandro-colomar.es/
