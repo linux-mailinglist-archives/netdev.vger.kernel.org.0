@@ -2,143 +2,595 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B3BA41F917
+	by mail.lfdr.de (Postfix) with ESMTP id 9F68F41F919
 	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 03:18:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232348AbhJBBUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Oct 2021 21:20:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33954 "EHLO
+        id S232384AbhJBBUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Oct 2021 21:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232304AbhJBBUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 21:20:07 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 847F3C0613E4;
-        Fri,  1 Oct 2021 18:18:22 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id y1so7347128plk.10;
-        Fri, 01 Oct 2021 18:18:22 -0700 (PDT)
+        with ESMTP id S232355AbhJBBUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Oct 2021 21:20:10 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F58C0613F0;
+        Fri,  1 Oct 2021 18:18:25 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id 187so4976342pfc.10;
+        Fri, 01 Oct 2021 18:18:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wewkhhwNYcJ+qazuMZ8MfxHrMXyhhOXfh1BDJibl6zU=;
-        b=h9pATacWZMN3oFswcHjvK/gvNgBovRzkeSLSaV86eU0sdTZBS3LRA627/hEVNsFrCc
-         e8Nf1r8W2Qy7oVqPgUvszTWHruhRL46U6XZKF0vF+j6NvgZmqPCImKmt/x8oBNa7Pmg4
-         qoYMS/eycInL0VFc8S+dRjfVN8JQOGsk6yfLSCaUIBcEExoDlTSxC1l9+c01qXfN5uJC
-         xxlVQ6c2G0EUVFHmE3MS1FqCGYtLEy5ZX4qumQA+bsTypXGWHXiuLJzd5lbD5EWxIdtr
-         dz1aQ3b1tOt6rJl2zGpayIUKxlT79Vd6n6iQrjxUNPmVtTqQvkr8CjcPKkBui2UVPL52
-         kG5w==
+        bh=I/W7jgFqUyiNHqzGYT8yqgVbkhArPk7YhPdpyLXV/1E=;
+        b=ENtJM3cM0FwLyEBkYl7QAE7pZ/4TnwK4xADtSloEGK7VyTmenhJGW5m3d3c5R7wiG4
+         cRxO5vIjJUEnBIdh1TNHSnyTmbIhJH0lkyFQcRaVqnIg4/2GVC5Y/byG9C4s2EeaMvf0
+         WsqKzqponxMrPO3Pfw8I8VQbXpcYn7fkIAQOxVzNavmEmI2kV5zGARYIcDy79dZlhe1T
+         etkKK190CDkxjZJAJuPUE5Y+9ZBh8eoL/z+co5yp/nEhellzwEcTivmGh4xPkyto2rnz
+         rOKriZjm0iyOENs/KpicUB2TaxBsArPMkWEyogOgbvwAmDQNL2yIU20u7jriaNELzLM+
+         bfFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wewkhhwNYcJ+qazuMZ8MfxHrMXyhhOXfh1BDJibl6zU=;
-        b=DWasIV5GYeVCgARRSNeWt9wgtJvcXpEAvwoaCqtgsr2jPKEEUuyztjkuGCPWAMOqUe
-         xT4Q03QBKKr3MAKKPhKYw3Mp3IVn+NHDBe0j0NFqgMzXXNUccHq2s9D8s0Wm46M/p6OS
-         67TZ9nFCfABI4PXkZMmjrlRraMjzIA+L/uVu+Po8ajGLq3KV5UIvlmUOa3mYsuCPzWyt
-         9Ie9ZOizFHOv+KnjSbr76SqBYSdvzBJVNvDBE/XxA6b4L6Hha4JeXCEWrFuUfnLef+qQ
-         vDMhaMRJVmdJ+zrEEqpAUESxIHSe4sRmgvJSc7/0TC54GMlx7ImovFW+q+fRWk86Gj6k
-         Z6sA==
-X-Gm-Message-State: AOAM530Tnh/gDHzRJO6U5mOxFXbs1SMnwz8UIdl+CKXE4p6oz6iLA6Xp
-        X2ei4UGfqSBLEGO81YFZGsRyV5XPE38=
-X-Google-Smtp-Source: ABdhPJwjzqcfrhf8Z6xFfQ9nrPaMi6f+d583rBwichqVgOzUPc6N2WpbfWEpKJKFtbiaPCzu1ajDlA==
-X-Received: by 2002:a17:90a:6c97:: with SMTP id y23mr16734818pjj.117.1633137501929;
-        Fri, 01 Oct 2021 18:18:21 -0700 (PDT)
+        bh=I/W7jgFqUyiNHqzGYT8yqgVbkhArPk7YhPdpyLXV/1E=;
+        b=f7VeEtDzxbKNtgGxZiMzh3O+Y1JwDLTlgkp+UNKBihfY68tEw0i0sF/PWwKETHt1Hm
+         8giBwlczQgfF8j+nxtD8O6KN6jJ5DIQliCGOKdugI8iE7zjyUxsodFZrFnpwCgrbyWJU
+         MVf5BHrWhvIJLPsECxCKi+kYLHBoxZeHFDdLKrOlPuvbiejcbv1VyPMmcbQvBw1UZ4A0
+         vtsIoZmTQvcAkvffI29GaLuONflG7qFmCHOjx87/xnOEbepx0mGlWre0xASiFJTNyY0J
+         KURSxzFUuMoNxaKuABFuhoIECZFP8RGnb5KZteJVTN+jmtwl5v8+BGWwwO/tN456HTIt
+         2iAw==
+X-Gm-Message-State: AOAM5326njaUM+F33p0vHpd3RavFrqUE3WlhIGNYUQQFzC0mH/XPqS2+
+        0X5SkonMVQd9zFb55MjvtRVe0rWHYgc=
+X-Google-Smtp-Source: ABdhPJzCHhrg1jYKEUqxP9NWCpDPvPDSlbSMTOyoybaB2RE8K/c2uQQR+TGRaR4CImSkPcxWOipVvg==
+X-Received: by 2002:a63:f817:: with SMTP id n23mr903522pgh.250.1633137504914;
+        Fri, 01 Oct 2021 18:18:24 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id e8sm6931825pfn.45.2021.10.01.18.18.21
+        by smtp.gmail.com with ESMTPSA id s2sm9361484pjs.56.2021.10.01.18.18.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Oct 2021 18:18:21 -0700 (PDT)
+        Fri, 01 Oct 2021 18:18:24 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v7 7/9] libbpf: Resolve invalid weak kfunc calls with imm = 0, off = 0
-Date:   Sat,  2 Oct 2021 06:47:55 +0530
-Message-Id: <20211002011757.311265-8-memxor@gmail.com>
+Subject: [PATCH bpf-next v7 8/9] libbpf: Update gen_loader to emit BTF_KIND_FUNC relocations
+Date:   Sat,  2 Oct 2021 06:47:56 +0530
+Message-Id: <20211002011757.311265-9-memxor@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211002011757.311265-1-memxor@gmail.com>
 References: <20211002011757.311265-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2575; h=from:subject; bh=38TYx4WvwVhwS/xCGMtko+uMr4vgLxfodQ07csI7Woo=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhV7MRq0APtx+ptnUKQ6aPO6mdVkLn+FSMYPA7jQw+ hM82jJOJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYVezEQAKCRBM4MiGSL8RyofJEA Crp30LsRan41PMgYImiTHAUBzaHKnTgdsamwYozktUDVdGd12pqST+hmSrMDWWpo+a0uHshLw0ynKX P3yvF+js7iWRVKWvwr7AMvWJsoWHjQ43HljhYJxCdxDZPbj4XC1P340F4LK7/FJ/RwMfCYuq0F9yZp lgvVGLSiFKOuDroJhaYsRMiiRSUtxplAcNPAJalN65IDSTVYeQsF+dU9vqY1Molq82vbJmZ3Lo5T90 uMpPiYpyr8IjkM1EQfmRLfEGi01cf5ETW28pco9uVv3HjTlNIWsqRbQszOl0ONd/Eob2ylY6xRHsoi i8mnHHprb5ku3eIoHy4uZCvRi8NCailxGaBAIaYQKFB3VxccI5OwHNfEyeMMbkPV+SKjKV8SAfWe4m v6lyGofoCyNEtfK2/+yzCnXA1l/MlvD0RmMeQm4j3cLU9km9HF7i+MqcvXySlx5tnviNVRyps7aGJJ Ra4MDPMOCjKj8m4IE+ImPV2yZPgB1qQ/nG6OzWjgOfxja4QMja1Vsmpk44xS/hdmhE37VZcPlTvXk7 1RAHT248/v7Gl1KMltvfcMVtMPSBMc5MqYc7By5Eif60JdDI6WgP0j95CeRfomrCSBiQ5MgkCgAdfs 7vfUV834w4UFvDm4oMUcOXXq0/WRkerZ+zizB9Mtk1hOF2pi/sWj+CyTexTg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=19935; h=from:subject; bh=gdO552QiQ/wY2CQ3sB+KS8G/cijveUrOVaqhbGyBeW4=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhV7MR8IikApREN+sWi48/Y93uWs0yq4lQEzyIsgW1 BUlIpGWJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYVezEQAKCRBM4MiGSL8RyvOFEA CnMQNHeswvZqZk2XZfTGnjP1fH7K90VG2BrLVmxvKard7V9ur1E5khW8o4BqRkBLJIB1ns2uz6SGKp gN3gyEF2lZur+6tWVPQmpl99qLdo3daF1b8jvULp3eqGkqQ36ARPPwpVHHVLx/BOISYRl7JIGkt3L9 tnDvuAbwVfeq1r2EdcjEGAqISWhzfCYGUTzH27CH87FX/xBVGFbvbv+prpDWNj4BqAzNj+zkBYYe09 sRiOGDFsExjyYqkLZWY+0RzfaMhHowJK9V4R725RwThDtLaUTdFFwCOvVUYrY2eIg03ZND/5+hrdFX 67isJ9ae51NDGuc/XCf6Vb4PdV2jmZ3R+mlIgXQw+EHSmzQET+kcj3sASBBzXSFyB2dN26eT/sUdA2 f1MS/zVYl9S8PgrCkffoNddnTWofIJiPvL/sYpBlMTcYb01vEJ5Wh/kx7W9fGKvxQ/pThwjC/o4W5J ppNM3E5PsOTEVNftsWYbm+2N0Msw8mnEi3wzc5y2WSfjPi3jhl0AE/yMAXWiktM+BHqen0iAA8SXOy GwEaSjoqHCgHnDqc34c07ulQkf918L8Gh8rJf/sIssBYIW4RwHG+IoVmgXyVuHP9G2KzvATm3SkoHw YK1aVG8Xv6bulXYLz87nlqK8PneHRRF9vf94/aVcqnz8brBaIS3E5UEPy9Hw==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Preserve these calls as it allows verifier to succeed in loading the
-program if they are determined to be unreachable after dead code
-elimination during program load. If not, the verifier will fail at
-runtime. This is done for ext->is_weak symbols similar to the case for
-variable ksyms.
+This change updates the BPF syscall loader to relocate BTF_KIND_FUNC
+relocations, with support for weak kfunc relocations. The general idea
+is to move map_fds to loader map, and also use the data for storing
+kfunc BTF fds. Since both reuse the fd_array parameter, they need to be
+kept together.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+For map_fds, we reserve MAX_USED_MAPS slots in a region, and for kfunc,
+we reserve MAX_KFUNC_DESCS. This is done so that insn->off has more
+chances of being <= INT16_MAX than treating data map as a sparse array
+and adding fd as needed.
+
+When the MAX_KFUNC_DESCS limit is reached, we fall back to the sparse
+array model, so that as long as it does remain <= INT16_MAX, we pass an
+index relative to the start of fd_array.
+
+We store all ksyms in an array where we try to avoid calling the
+bpf_btf_find_by_name_kind helper, and also reuse the BTF fd that was
+already stored. This also speeds up the loading process compared to
+emitting calls in all cases, in later tests.
+
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- tools/lib/bpf/libbpf.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+ tools/lib/bpf/bpf_gen_internal.h |  16 +-
+ tools/lib/bpf/gen_loader.c       | 314 +++++++++++++++++++++++++------
+ tools/lib/bpf/libbpf.c           |   8 +-
+ 3 files changed, 280 insertions(+), 58 deletions(-)
 
+diff --git a/tools/lib/bpf/bpf_gen_internal.h b/tools/lib/bpf/bpf_gen_internal.h
+index 615400391e57..70eccbffefb1 100644
+--- a/tools/lib/bpf/bpf_gen_internal.h
++++ b/tools/lib/bpf/bpf_gen_internal.h
+@@ -7,6 +7,15 @@ struct ksym_relo_desc {
+ 	const char *name;
+ 	int kind;
+ 	int insn_idx;
++	bool is_weak;
++};
++
++struct ksym_desc {
++	const char *name;
++	int ref;
++	int kind;
++	int off;
++	int insn;
+ };
+ 
+ struct bpf_gen {
+@@ -24,6 +33,10 @@ struct bpf_gen {
+ 	int relo_cnt;
+ 	char attach_target[128];
+ 	int attach_kind;
++	struct ksym_desc *ksyms;
++	__u32 nr_ksyms;
++	int fd_array;
++	int nr_fd_array;
+ };
+ 
+ void bpf_gen__init(struct bpf_gen *gen, int log_level);
+@@ -36,6 +49,7 @@ void bpf_gen__prog_load(struct bpf_gen *gen, struct bpf_prog_load_params *load_a
+ void bpf_gen__map_update_elem(struct bpf_gen *gen, int map_idx, void *value, __u32 value_size);
+ void bpf_gen__map_freeze(struct bpf_gen *gen, int map_idx);
+ void bpf_gen__record_attach_target(struct bpf_gen *gen, const char *name, enum bpf_attach_type type);
+-void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, int kind, int insn_idx);
++void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, bool is_weak, int kind,
++			    int insn_idx);
+ 
+ #endif
+diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
+index 80087b13877f..937bfc7db41e 100644
+--- a/tools/lib/bpf/gen_loader.c
++++ b/tools/lib/bpf/gen_loader.c
+@@ -14,8 +14,10 @@
+ #include "bpf_gen_internal.h"
+ #include "skel_internal.h"
+ 
+-#define MAX_USED_MAPS 64
+-#define MAX_USED_PROGS 32
++#define MAX_USED_MAPS	64
++#define MAX_USED_PROGS	32
++#define MAX_KFUNC_DESCS 256
++#define MAX_FD_ARRAY_SZ (MAX_USED_PROGS + MAX_KFUNC_DESCS)
+ 
+ /* The following structure describes the stack layout of the loader program.
+  * In addition R6 contains the pointer to context.
+@@ -30,7 +32,6 @@
+  */
+ struct loader_stack {
+ 	__u32 btf_fd;
+-	__u32 map_fd[MAX_USED_MAPS];
+ 	__u32 prog_fd[MAX_USED_PROGS];
+ 	__u32 inner_map_fd;
+ };
+@@ -143,13 +144,49 @@ static int add_data(struct bpf_gen *gen, const void *data, __u32 size)
+ 	if (realloc_data_buf(gen, size8))
+ 		return 0;
+ 	prev = gen->data_cur;
+-	memcpy(gen->data_cur, data, size);
+-	gen->data_cur += size;
+-	memcpy(gen->data_cur, &zero, size8 - size);
+-	gen->data_cur += size8 - size;
++	if (data) {
++		memcpy(gen->data_cur, data, size);
++		memcpy(gen->data_cur + size, &zero, size8 - size);
++	} else {
++		memset(gen->data_cur, 0, size8);
++	}
++	gen->data_cur += size8;
+ 	return prev - gen->data_start;
+ }
+ 
++/* Get index for map_fd/btf_fd slot in reserved fd_array, or in data relative
++ * to start of fd_array. Caller can decide if it is usable or not.
++ */
++static int add_map_fd(struct bpf_gen *gen)
++{
++	if (!gen->fd_array)
++		gen->fd_array = add_data(gen, NULL, MAX_FD_ARRAY_SZ * sizeof(int));
++	if (gen->nr_maps == MAX_USED_MAPS) {
++		pr_warn("Total maps exceeds %d\n", MAX_USED_MAPS);
++		gen->error = -E2BIG;
++		return 0;
++	}
++	return gen->nr_maps++;
++}
++
++static int add_kfunc_btf_fd(struct bpf_gen *gen)
++{
++	int cur;
++
++	if (!gen->fd_array)
++		gen->fd_array = add_data(gen, NULL, MAX_FD_ARRAY_SZ * sizeof(int));
++	if (gen->nr_fd_array == MAX_KFUNC_DESCS) {
++		cur = add_data(gen, NULL, sizeof(int));
++		return (cur - gen->fd_array) / sizeof(int);
++	}
++	return MAX_USED_MAPS + gen->nr_fd_array++;
++}
++
++static int blob_fd_array_off(struct bpf_gen *gen, int index)
++{
++	return gen->fd_array + index * sizeof(int);
++}
++
+ static int insn_bytes_to_bpf_size(__u32 sz)
+ {
+ 	switch (sz) {
+@@ -171,14 +208,22 @@ static void emit_rel_store(struct bpf_gen *gen, int off, int data)
+ 	emit(gen, BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0, 0));
+ }
+ 
+-/* *(u64 *)(blob + off) = (u64)(void *)(%sp + stack_off) */
+-static void emit_rel_store_sp(struct bpf_gen *gen, int off, int stack_off)
++static void move_blob2blob(struct bpf_gen *gen, int off, int size, int blob_off)
+ {
+-	emit(gen, BPF_MOV64_REG(BPF_REG_0, BPF_REG_10));
+-	emit(gen, BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, stack_off));
++	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_2, BPF_PSEUDO_MAP_IDX_VALUE,
++					 0, 0, 0, blob_off));
++	emit(gen, BPF_LDX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_0, BPF_REG_2, 0));
+ 	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
+ 					 0, 0, 0, off));
+-	emit(gen, BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0, 0));
++	emit(gen, BPF_STX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_1, BPF_REG_0, 0));
++}
++
++static void move_blob2ctx(struct bpf_gen *gen, int ctx_off, int size, int blob_off)
++{
++	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
++					 0, 0, 0, blob_off));
++	emit(gen, BPF_LDX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_0, BPF_REG_1, 0));
++	emit(gen, BPF_STX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_6, BPF_REG_0, ctx_off));
+ }
+ 
+ static void move_ctx2blob(struct bpf_gen *gen, int off, int size, int ctx_off,
+@@ -326,11 +371,11 @@ int bpf_gen__finish(struct bpf_gen *gen)
+ 			       offsetof(struct bpf_prog_desc, prog_fd), 4,
+ 			       stack_off(prog_fd[i]));
+ 	for (i = 0; i < gen->nr_maps; i++)
+-		move_stack2ctx(gen,
+-			       sizeof(struct bpf_loader_ctx) +
+-			       sizeof(struct bpf_map_desc) * i +
+-			       offsetof(struct bpf_map_desc, map_fd), 4,
+-			       stack_off(map_fd[i]));
++		move_blob2ctx(gen,
++			      sizeof(struct bpf_loader_ctx) +
++			      sizeof(struct bpf_map_desc) * i +
++			      offsetof(struct bpf_map_desc, map_fd), 4,
++			      blob_fd_array_off(gen, i));
+ 	emit(gen, BPF_MOV64_IMM(BPF_REG_0, 0));
+ 	emit(gen, BPF_EXIT_INSN());
+ 	pr_debug("gen: finish %d\n", gen->error);
+@@ -390,7 +435,7 @@ void bpf_gen__map_create(struct bpf_gen *gen,
+ {
+ 	int attr_size = offsetofend(union bpf_attr, btf_vmlinux_value_type_id);
+ 	bool close_inner_map_fd = false;
+-	int map_create_attr;
++	int map_create_attr, idx;
+ 	union bpf_attr attr;
+ 
+ 	memset(&attr, 0, attr_size);
+@@ -467,9 +512,11 @@ void bpf_gen__map_create(struct bpf_gen *gen,
+ 		gen->error = -EDOM; /* internal bug */
+ 		return;
+ 	} else {
+-		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_7,
+-				      stack_off(map_fd[map_idx])));
+-		gen->nr_maps++;
++		/* add_map_fd does gen->nr_maps++ */
++		idx = add_map_fd(gen);
++		emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
++						 0, 0, 0, blob_fd_array_off(gen, idx)));
++		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_7, 0));
+ 	}
+ 	if (close_inner_map_fd)
+ 		emit_sys_close_stack(gen, stack_off(inner_map_fd));
+@@ -511,8 +558,8 @@ static void emit_find_attach_target(struct bpf_gen *gen)
+ 	 */
+ }
+ 
+-void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, int kind,
+-			    int insn_idx)
++void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, bool is_weak,
++			    int kind, int insn_idx)
+ {
+ 	struct ksym_relo_desc *relo;
+ 
+@@ -524,38 +571,192 @@ void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, int kind,
+ 	gen->relos = relo;
+ 	relo += gen->relo_cnt;
+ 	relo->name = name;
++	relo->is_weak = is_weak;
+ 	relo->kind = kind;
+ 	relo->insn_idx = insn_idx;
+ 	gen->relo_cnt++;
+ }
+ 
+-static void emit_relo(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insns)
++/* returns existing ksym_desc with ref incremented, or inserts a new one */
++static struct ksym_desc *get_ksym_desc(struct bpf_gen *gen, struct ksym_relo_desc *relo)
+ {
+-	int name, insn, len = strlen(relo->name) + 1;
++	struct ksym_desc *kdesc;
+ 
+-	pr_debug("gen: emit_relo: %s at %d\n", relo->name, relo->insn_idx);
+-	name = add_data(gen, relo->name, len);
++	for (int i = 0; i < gen->nr_ksyms; i++) {
++		if (!strcmp(gen->ksyms[i].name, relo->name)) {
++			gen->ksyms[i].ref++;
++			return &gen->ksyms[i];
++		}
++	}
++	kdesc = libbpf_reallocarray(gen->ksyms, gen->nr_ksyms + 1, sizeof(*kdesc));
++	if (!kdesc) {
++		gen->error = -ENOMEM;
++		return NULL;
++	}
++	gen->ksyms = kdesc;
++	kdesc = &gen->ksyms[gen->nr_ksyms++];
++	kdesc->name = relo->name;
++	kdesc->kind = relo->kind;
++	kdesc->ref = 1;
++	kdesc->off = 0;
++	kdesc->insn = 0;
++	return kdesc;
++}
++
++/* Overwrites BPF_REG_{0, 1, 2, 3, 4, 7}
++ * Returns result in BPF_REG_7
++ */
++static void emit_bpf_find_by_name_kind(struct bpf_gen *gen, struct ksym_relo_desc *relo)
++{
++	int name_off, len = strlen(relo->name) + 1;
+ 
++	name_off = add_data(gen, relo->name, len);
+ 	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, name));
++					 0, 0, 0, name_off));
+ 	emit(gen, BPF_MOV64_IMM(BPF_REG_2, len));
+ 	emit(gen, BPF_MOV64_IMM(BPF_REG_3, relo->kind));
+ 	emit(gen, BPF_MOV64_IMM(BPF_REG_4, 0));
+ 	emit(gen, BPF_EMIT_CALL(BPF_FUNC_btf_find_by_name_kind));
+ 	emit(gen, BPF_MOV64_REG(BPF_REG_7, BPF_REG_0));
+ 	debug_ret(gen, "find_by_name_kind(%s,%d)", relo->name, relo->kind);
+-	emit_check_err(gen);
++}
++
++/* Expects:
++ * BPF_REG_8 - pointer to instruction
++ *
++ * We need to reuse BTF fd for same symbol otherwise each relocation takes a new
++ * index, while kernel limits total kfunc BTFs to 256. For duplicate symbols,
++ * this would mean a new BTF fd index for each entry. By pairing symbol name
++ * with index, we get the insn->imm, insn->off pairing that kernel uses for
++ * kfunc_tab, which becomes the effective limit even though all of them may
++ * share same index in fd_array (such that kfunc_btf_tab has 1 element).
++ */
++static void emit_relo_kfunc_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insn)
++{
++	struct ksym_desc *kdesc;
++	int btf_fd_idx;
++
++	kdesc = get_ksym_desc(gen, relo);
++	if (!kdesc)
++		return;
++	/* try to copy from existing bpf_insn */
++	if (kdesc->ref > 1) {
++		move_blob2blob(gen, insn + offsetof(struct bpf_insn, imm), 4,
++			       kdesc->insn + offsetof(struct bpf_insn, imm));
++		move_blob2blob(gen, insn + offsetof(struct bpf_insn, off), 2,
++			       kdesc->insn + offsetof(struct bpf_insn, off));
++		goto log;
++	}
++	/* remember insn offset, so we can copy BTF ID and FD later */
++	kdesc->insn = insn;
++	emit_bpf_find_by_name_kind(gen, relo);
++	if (!relo->is_weak)
++		emit_check_err(gen);
++	/* get index in fd_array to store BTF FD at */
++	btf_fd_idx = add_kfunc_btf_fd(gen);
++	if (btf_fd_idx > INT16_MAX) {
++		pr_warn("BTF fd off %d for kfunc %s exceeds INT16_MAX, cannot process relocation\n",
++			btf_fd_idx, relo->name);
++		gen->error = -E2BIG;
++		return;
++	}
++	kdesc->off = btf_fd_idx;
++	/* set a default value for imm */
++	emit(gen, BPF_ST_MEM(BPF_W, BPF_REG_8, offsetof(struct bpf_insn, imm), 0));
++	/* skip success case store if ret < 0 */
++	emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, 1));
+ 	/* store btf_id into insn[insn_idx].imm */
+-	insn = insns + sizeof(struct bpf_insn) * relo->insn_idx +
+-		offsetof(struct bpf_insn, imm);
++	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7, offsetof(struct bpf_insn, imm)));
++	/* load fd_array slot pointer */
+ 	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, insn));
+-	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_7, 0));
+-	if (relo->kind == BTF_KIND_VAR) {
+-		/* store btf_obj_fd into insn[insn_idx + 1].imm */
+-		emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_7, 32));
+-		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_7,
+-				      sizeof(struct bpf_insn)));
++					 0, 0, 0, blob_fd_array_off(gen, btf_fd_idx)));
++	/* skip store of BTF fd if ret < 0 */
++	emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, 3));
++	/* store BTF fd in slot */
++	emit(gen, BPF_MOV64_REG(BPF_REG_9, BPF_REG_7));
++	emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_9, 32));
++	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_9, 0));
++	/* set a default value for off */
++	emit(gen, BPF_ST_MEM(BPF_H, BPF_REG_8, offsetof(struct bpf_insn, off), 0));
++	/* skip insn->off store if ret < 0 */
++	emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, 2));
++	/* skip if vmlinux BTF */
++	emit(gen, BPF_JMP_IMM(BPF_JEQ, BPF_REG_9, 0, 1));
++	/* store index into insn[insn_idx].off */
++	emit(gen, BPF_ST_MEM(BPF_H, BPF_REG_8, offsetof(struct bpf_insn, off), btf_fd_idx));
++log:
++	if (!gen->log_level)
++		return;
++	emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_8,
++			      offsetof(struct bpf_insn, imm)));
++	emit(gen, BPF_LDX_MEM(BPF_H, BPF_REG_9, BPF_REG_8,
++			      offsetof(struct bpf_insn, off)));
++	debug_regs(gen, BPF_REG_7, BPF_REG_9, " func (%s:count=%d): imm: %%d, off: %%d",
++		   relo->name, kdesc->ref);
++	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE,
++					 0, 0, 0, blob_fd_array_off(gen, kdesc->off)));
++	emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_9, BPF_REG_0, 0));
++	debug_regs(gen, BPF_REG_9, -1, " func (%s:count=%d): btf_fd",
++		   relo->name, kdesc->ref);
++}
++
++/* Expects:
++ * BPF_REG_8 - pointer to instruction
++ */
++static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insn)
++{
++	struct ksym_desc *kdesc;
++
++	kdesc = get_ksym_desc(gen, relo);
++	if (!kdesc)
++		return;
++	/* try to copy from existing ldimm64 insn */
++	if (kdesc->ref > 1) {
++		move_blob2blob(gen, insn + offsetof(struct bpf_insn, imm), 4,
++			       kdesc->insn + offsetof(struct bpf_insn, imm));
++		move_blob2blob(gen, insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm), 4,
++			       kdesc->insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm));
++		goto log;
++	}
++	/* remember insn offset, so we can copy BTF ID and FD later */
++	kdesc->insn = insn;
++	emit_bpf_find_by_name_kind(gen, relo);
++	emit_check_err(gen);
++	/* store btf_id into insn[insn_idx].imm */
++	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7, offsetof(struct bpf_insn, imm)));
++	/* store btf_obj_fd into insn[insn_idx + 1].imm */
++	emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_7, 32));
++	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7,
++			      sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm)));
++log:
++	if (!gen->log_level)
++		return;
++	emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_8,
++			      offsetof(struct bpf_insn, imm)));
++	emit(gen, BPF_LDX_MEM(BPF_H, BPF_REG_9, BPF_REG_8, sizeof(struct bpf_insn) +
++			      offsetof(struct bpf_insn, imm)));
++	debug_regs(gen, BPF_REG_7, BPF_REG_9, " var (%s:count=%d): imm: %%d, fd: %%d",
++		   relo->name, kdesc->ref);
++}
++
++static void emit_relo(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insns)
++{
++	int insn;
++
++	pr_debug("gen: emit_relo (%d): %s at %d\n", relo->kind, relo->name, relo->insn_idx);
++	insn = insns + sizeof(struct bpf_insn) * relo->insn_idx;
++	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_8, BPF_PSEUDO_MAP_IDX_VALUE, 0, 0, 0, insn));
++	switch (relo->kind) {
++	case BTF_KIND_VAR:
++		emit_relo_ksym_btf(gen, relo, insn);
++		break;
++	case BTF_KIND_FUNC:
++		emit_relo_kfunc_btf(gen, relo, insn);
++		break;
++	default:
++		pr_warn("Unknown relocation kind '%d'\n", relo->kind);
++		gen->error = -EDOM;
++		return;
+ 	}
+ }
+ 
+@@ -571,14 +772,22 @@ static void cleanup_relos(struct bpf_gen *gen, int insns)
+ {
+ 	int i, insn;
+ 
+-	for (i = 0; i < gen->relo_cnt; i++) {
+-		if (gen->relos[i].kind != BTF_KIND_VAR)
+-			continue;
+-		/* close fd recorded in insn[insn_idx + 1].imm */
+-		insn = insns +
+-			sizeof(struct bpf_insn) * (gen->relos[i].insn_idx + 1) +
+-			offsetof(struct bpf_insn, imm);
+-		emit_sys_close_blob(gen, insn);
++	for (i = 0; i < gen->nr_ksyms; i++) {
++		if (gen->ksyms[i].kind == BTF_KIND_VAR) {
++			/* close fd recorded in insn[insn_idx + 1].imm */
++			insn = gen->ksyms[i].insn;
++			insn += sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm);
++			emit_sys_close_blob(gen, insn);
++		} else { /* BTF_KIND_FUNC */
++			emit_sys_close_blob(gen, blob_fd_array_off(gen, gen->ksyms[i].off));
++			if (gen->ksyms[i].off < MAX_FD_ARRAY_SZ)
++				gen->nr_fd_array--;
++		}
++	}
++	if (gen->nr_ksyms) {
++		free(gen->ksyms);
++		gen->nr_ksyms = 0;
++		gen->ksyms = NULL;
+ 	}
+ 	if (gen->relo_cnt) {
+ 		free(gen->relos);
+@@ -637,9 +846,8 @@ void bpf_gen__prog_load(struct bpf_gen *gen,
+ 	/* populate union bpf_attr with a pointer to line_info */
+ 	emit_rel_store(gen, attr_field(prog_load_attr, line_info), line_info);
+ 
+-	/* populate union bpf_attr fd_array with a pointer to stack where map_fds are saved */
+-	emit_rel_store_sp(gen, attr_field(prog_load_attr, fd_array),
+-			  stack_off(map_fd[0]));
++	/* populate union bpf_attr fd_array with a pointer to data where map_fds are saved */
++	emit_rel_store(gen, attr_field(prog_load_attr, fd_array), gen->fd_array);
+ 
+ 	/* populate union bpf_attr with user provided log details */
+ 	move_ctx2blob(gen, attr_field(prog_load_attr, log_level), 4,
+@@ -706,8 +914,8 @@ void bpf_gen__map_update_elem(struct bpf_gen *gen, int map_idx, void *pvalue,
+ 	emit(gen, BPF_EMIT_CALL(BPF_FUNC_copy_from_user));
+ 
+ 	map_update_attr = add_data(gen, &attr, attr_size);
+-	move_stack2blob(gen, attr_field(map_update_attr, map_fd), 4,
+-			stack_off(map_fd[map_idx]));
++	move_blob2blob(gen, attr_field(map_update_attr, map_fd), 4,
++		       blob_fd_array_off(gen, map_idx));
+ 	emit_rel_store(gen, attr_field(map_update_attr, key), key);
+ 	emit_rel_store(gen, attr_field(map_update_attr, value), value);
+ 	/* emit MAP_UPDATE_ELEM command */
+@@ -725,8 +933,8 @@ void bpf_gen__map_freeze(struct bpf_gen *gen, int map_idx)
+ 	memset(&attr, 0, attr_size);
+ 	pr_debug("gen: map_freeze: idx %d\n", map_idx);
+ 	map_freeze_attr = add_data(gen, &attr, attr_size);
+-	move_stack2blob(gen, attr_field(map_freeze_attr, map_fd), 4,
+-			stack_off(map_fd[map_idx]));
++	move_blob2blob(gen, attr_field(map_freeze_attr, map_fd), 4,
++		       blob_fd_array_off(gen, map_idx));
+ 	/* emit MAP_FREEZE command */
+ 	emit_sys_bpf(gen, BPF_MAP_FREEZE, map_freeze_attr, attr_size);
+ 	debug_ret(gen, "map_freeze");
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index ea1c51dbc0f3..092cf4bd1879 100644
+index 092cf4bd1879..f32fa51b1e63 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -3439,11 +3439,6 @@ static int bpf_object__collect_externs(struct bpf_object *obj)
+@@ -6360,12 +6360,12 @@ static int bpf_program__record_externs(struct bpf_program *prog)
+ 					ext->name);
  				return -ENOTSUP;
  			}
- 		} else if (strcmp(sec_name, KSYMS_SEC) == 0) {
--			if (btf_is_func(t) && ext->is_weak) {
--				pr_warn("extern weak function %s is unsupported\n",
--					ext->name);
--				return -ENOTSUP;
--			}
- 			ksym_sec = sec;
- 			ext->type = EXT_KSYM;
- 			skip_mods_and_typedefs(obj->btf, t->type,
-@@ -5416,8 +5411,13 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
- 		case RELO_EXTERN_FUNC:
- 			ext = &obj->externs[relo->sym_off];
- 			insn[0].src_reg = BPF_PSEUDO_KFUNC_CALL;
--			insn[0].imm = ext->ksym.kernel_btf_id;
--			insn[0].off = ext->ksym.btf_fd_idx;
-+			if (ext->is_set) {
-+				insn[0].imm = ext->ksym.kernel_btf_id;
-+				insn[0].off = ext->ksym.btf_fd_idx;
-+			} else { /* unresolved weak kfunc */
-+				insn[0].imm = 0;
-+				insn[0].off = 0;
-+			}
+-			bpf_gen__record_extern(obj->gen_loader, ext->name, BTF_KIND_VAR,
+-					       relo->insn_idx);
++			bpf_gen__record_extern(obj->gen_loader, ext->name, ext->is_weak,
++					       BTF_KIND_VAR, relo->insn_idx);
  			break;
- 		case RELO_SUBPROG_ADDR:
- 			if (insn[0].src_reg != BPF_PSEUDO_FUNC) {
-@@ -6807,9 +6807,9 @@ static int bpf_object__resolve_ksym_var_btf_id(struct bpf_object *obj,
- 	int id, err;
- 
- 	id = find_ksym_btf_id(obj, ext->name, BTF_KIND_VAR, &btf, &mod_btf);
--	if (id == -ESRCH && ext->is_weak) {
--		return 0;
--	} else if (id < 0) {
-+	if (id < 0) {
-+		if (id == -ESRCH && ext->is_weak)
-+			return 0;
- 		pr_warn("extern (var ksym) '%s': not found in kernel BTF\n",
- 			ext->name);
- 		return id;
-@@ -6862,7 +6862,9 @@ static int bpf_object__resolve_ksym_func_btf_id(struct bpf_object *obj,
- 
- 	kfunc_id = find_ksym_btf_id(obj, ext->name, BTF_KIND_FUNC, &kern_btf, &mod_btf);
- 	if (kfunc_id < 0) {
--		pr_warn("extern (func ksym) '%s': not found in kernel BTF\n",
-+		if (kfunc_id == -ESRCH && ext->is_weak)
-+			return 0;
-+		pr_warn("extern (func ksym) '%s': not found in kernel or module BTFs\n",
- 			ext->name);
- 		return kfunc_id;
- 	}
+ 		case RELO_EXTERN_FUNC:
+-			bpf_gen__record_extern(obj->gen_loader, ext->name, BTF_KIND_FUNC,
+-					       relo->insn_idx);
++			bpf_gen__record_extern(obj->gen_loader, ext->name, ext->is_weak,
++					       BTF_KIND_FUNC, relo->insn_idx);
+ 			break;
+ 		default:
+ 			continue;
 -- 
 2.33.0
 
