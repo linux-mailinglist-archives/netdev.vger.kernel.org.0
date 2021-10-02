@@ -2,85 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5938141FB17
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 13:18:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E8641FB1B
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 13:21:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232842AbhJBLUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 07:20:33 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:33251 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232621AbhJBLUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 07:20:32 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1633173526; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=XbOlq0yV9tI+HC++0Jz6+JIOkLBrknbCOV4MG10Kd6w=; b=dEOgSqHGhqTE9DvVARiJYVPo8pdsmuXRgNGEvFgaaLRZyRW58bgXv7nDh1UNwZkkIm8urmh+
- Hun+2CeITy2mZPQWordX/JiNY2Po82VvK7l3GlpVVr4B/QqE7SpiKKxc7UxthpZnScjki09H
- Ajar4pRYtKj6OeAgE1EJjvUEujQ=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 61584015a5a9bab6e8a6be61 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 02 Oct 2021 11:18:45
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 1258DC43616; Sat,  2 Oct 2021 11:18:45 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id CDD89C4338F;
-        Sat,  2 Oct 2021 11:18:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org CDD89C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        ath9k-devel@qca.qualcomm.com,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: Two ath9k_htc fixes
-References: <77b76ac8-2bee-6444-d26c-8c30858b8daa@i-love.sakura.ne.jp>
-        <dfe7d982-2f6a-325a-c257-6d039033a2ed@i-love.sakura.ne.jp>
-Date:   Sat, 02 Oct 2021 14:18:37 +0300
-In-Reply-To: <dfe7d982-2f6a-325a-c257-6d039033a2ed@i-love.sakura.ne.jp>
-        (Tetsuo Handa's message of "Sat, 2 Oct 2021 18:29:51 +0900")
-Message-ID: <87tuhzhdyq.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S232851AbhJBLXM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 2 Oct 2021 07:23:12 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52284 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232801AbhJBLXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 07:23:11 -0400
+Received: from localhost (cpc147930-brnt3-2-0-cust60.4-2.cable.virginm.net [86.15.196.61])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 8B1194F7C7764;
+        Sat,  2 Oct 2021 04:21:24 -0700 (PDT)
+Date:   Sat, 02 Oct 2021 12:21:18 +0100 (BST)
+Message-Id: <20211002.122118.350530875086041712.davem@davemloft.net>
+To:     saeedm@nvidia.com
+Cc:     patchwork-bot+netdevbpf@kernel.org, kuba@kernel.org,
+        raeds@nvidia.com, netdev@vger.kernel.org
+Subject: Re: [net 01/10] net/mlx5e: IPSEC RX, enable checksum complete
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <b8be86319c06c5de4770a9f84b3e7a6847ff217f.camel@nvidia.com>
+References: <20210930231501.39062-2-saeed@kernel.org>
+        <163309380890.18892.12905958838273991886.git-patchwork-notify@kernel.org>
+        <b8be86319c06c5de4770a9f84b3e7a6847ff217f.camel@nvidia.com>
+X-Mailer: Mew version 6.8 on Emacs 27.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Sat, 02 Oct 2021 04:21:25 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp> writes:
+From: Saeed Mahameed <saeedm@nvidia.com>
+Date: Fri, 1 Oct 2021 18:27:34 +0000
 
-> I don't know whether these patches can fix all races.
-> But since no response from ath9k maintainers/developers,
-> can you directly pick up these patches via your tree?
+> On Fri, 2021-10-01 at 13:10 +0000, patchwork-bot+netdevbpf@kernel.org
+> wrote:
+>> Hello:
+>> 
+>> This series was applied to netdev/net-next.git (refs/heads/master):
+> 
+> this was for -net.
+> I see it applied to both net and net-next, why the bot says it was
+> net-next ?
+> 
+> Any mistakes on my end ?
 
-Dave, please do not take ath9k patches. It seems that all ath9k syzbot
-fixes are of questionable quality, and at least some of them have
-created regressions, so they need to be tested on a real device before I
-apply them. I asked for help but nobody cared, so I now need to create
-an ath9k_htc test setup myself and that will take a while.
+I accidently pulled it initially into net-next and puished back out before I could undo that.
 
-Tetsuo, the patches are on my deferred queue and you can follow the
-status via patchwork:
+So I just pushed it to both trees in the end, not your fault.
 
-https://patchwork.kernel.org/project/linux-wireless/list/?series=550357&state=*
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Thanks!
