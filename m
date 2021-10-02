@@ -2,67 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2946E41FCB1
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 17:20:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 489FA41FCE5
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 17:55:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233476AbhJBPVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 11:21:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56992 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233468AbhJBPVx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 2 Oct 2021 11:21:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2BCFF61B06;
-        Sat,  2 Oct 2021 15:20:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633188007;
-        bh=0NdqX5AXnj3U6jq+wBvSsBPAt9a24+NFzsCdzpr1XUQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tm59uVkdj2M6MeEd5tfPYNAmIYm0ek6vLlNE298muwdsdesn4wJu7rm+Pj0yG9uC6
-         P51WOO6EIjS3tAz6hl2NKna5LWt6PCY6AbRu3YlPKamg3R0z33AElpE8kQRtkZxJb/
-         OUGG6zVUEwlAhd6FlDaEs/IW1Fy6WWYzKZpu4gLzIzUrvziXFihsPB2foPzLOdtfrS
-         OdVkXBCMWTe877FoKIplon9qCxg/djcgYy3FoImKUbpfbolhiOf2niwBnTjHHOrP5G
-         EImrOlKTGYBuafEjetNGK9TXIZHE/UJGBm5IkeiuQrKXeuc7pH/YZOGt0ApNzZ5ioQ
-         62LVt5HlS3y3w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1D3A1600AB;
-        Sat,  2 Oct 2021 15:20:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233552AbhJBP4r convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 2 Oct 2021 11:56:47 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:29389 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233545AbhJBP4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 11:56:46 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-236-JWS7r0F4PKqKFlaZpOK-Xw-1; Sat, 02 Oct 2021 16:54:56 +0100
+X-MC-Unique: JWS7r0F4PKqKFlaZpOK-Xw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.23; Sat, 2 Oct 2021 16:54:54 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.023; Sat, 2 Oct 2021 16:54:54 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Florian Weimer' <fweimer@redhat.com>,
+        "Cufi, Carles" <Carles.Cufi@nordicsemi.no>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jukka.rissanen@linux.intel.com" <jukka.rissanen@linux.intel.com>,
+        "johan.hedberg@intel.com" <johan.hedberg@intel.com>,
+        "Lubos, Robert" <Robert.Lubos@nordicsemi.no>,
+        "Bursztyka, Tomasz" <tomasz.bursztyka@intel.com>,
+        "linux-toolchains@vger.kernel.org" <linux-toolchains@vger.kernel.org>
+Subject: RE: Non-packed structures in IP headers
+Thread-Topic: Non-packed structures in IP headers
+Thread-Index: AQHXtwBfS5Uh4qQ3iEK5aIu8W7utVau/29dA
+Date:   Sat, 2 Oct 2021 15:54:54 +0000
+Message-ID: <a8082bcaeb534ee5b24ea6dae4428547@AcuMS.aculab.com>
+References: <AS8PR05MB78952FE7E8D82245D309DEBCE7AA9@AS8PR05MB7895.eurprd05.prod.outlook.com>
+ <87bl48v74v.fsf@oldenburg.str.redhat.com>
+In-Reply-To: <87bl48v74v.fsf@oldenburg.str.redhat.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v1 net 1/1] ptp_pch: Load module automatically if ID matches
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163318800711.15445.7631528846521046417.git-patchwork-notify@kernel.org>
-Date:   Sat, 02 Oct 2021 15:20:07 +0000
-References: <20211001162033.13578-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20211001162033.13578-1-andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     davem@davemloft.net, lee.jones@linaro.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, richardcochran@gmail.com
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Fri,  1 Oct 2021 19:20:33 +0300 you wrote:
-> The driver can't be loaded automatically because it misses
-> module alias to be provided. Add corresponding MODULE_DEVICE_TABLE()
-> call to the driver.
+From: Florian Weimer
+> Sent: 01 October 2021 21:10
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/ptp/ptp_pch.c | 1 +
->  1 file changed, 1 insertion(+)
+> * Carles Cufi:
+> 
+> > I was looking through the structures for IPv{4,6} packet headers and
+> > noticed that several of those that seem to be used to parse a packet
+> > directly from the wire are not declared as packed. This surprised me
+> > because, although I did find that provisions are made so that the
+> > alignment of the structure, it is still technically possible for the
+> > compiler to inject padding bytes inside those structures, since AFAIK
+> > the C standard makes no guarantees about padding unless it's
+> > instructed to pack the structure.
+> 
+> The C standards do not make such guarantees, but the platform ABI
+> standards describe struct layout and ensure that there is no padding.
+> Linux relies on that not just for networking, but also for the userspace
+> ABI, support for separately compiled kernel modules, and in other
+> places.
 
-Here is the summary with links:
-  - [v1,net,1/1] ptp_pch: Load module automatically if ID matches
-    https://git.kernel.org/netdev/net/c/7cd8b1542a7b
+In particular structures are used to map hardware register blocks.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Sometimes there are alignment concerns in the way these structs are
+> used, but I believe the kernel generally controls placement of the data
+> that is being worked on, so that does not matter, either.
+> 
+> Therefore, I do not believe this is an actual problem.
 
+And adding __packed forces the compiler to do byte accesses
+(with shifts) on cpu that don't support misaligned memory accesses.
+
+So it really is wrong to specify __packed unless the structure
+can be unaligned in memory, or has a 'broken' definition
+that has fields that aren't 'naturally aligned'.
+In the latter case it is enough to mark the field that requires
+the padding before it removed as (IIRC) __aligned(1).
+The compiler will then remove the padding but still assume the
+field is partially aligned - so my do two 32bit access instead
+of 8 8bit ones).
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
