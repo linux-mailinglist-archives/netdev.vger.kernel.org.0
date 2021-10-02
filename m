@@ -2,126 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2B6F41FBDF
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 14:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE8D841FBFE
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 15:00:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233197AbhJBMyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 08:54:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232823AbhJBMym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 08:54:42 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844F5C0613EC;
-        Sat,  2 Oct 2021 05:52:56 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id b20so50188167lfv.3;
-        Sat, 02 Oct 2021 05:52:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:cc:from:in-reply-to:content-transfer-encoding;
-        bh=73l45VrsSMydq7i5W9f5vyJ/5wGhCAznnH6g8ZTpcK8=;
-        b=axca/9yT9QokobdzZGXyB3WifC708N5PFiq+4VXM/HAVzZdhrjfS/laZpgecjU/HLR
-         2mhUZh0rBJPd6RdrZvhXwV9AO5xEI6+RtSFM8msyGw+L7Rpu0VREeiwIkPUzxQjt7fAP
-         NKqXPJoeWBmyyUkmZSnegH3Pimf2hUnx/3CULNwMEw20Asz+sf3TRxn9dDckKGlOMkrN
-         l48gLJUtrrMzX2HtPCNXUJVUdqDT5OPdyPdBQS5mc2Cp5mm46jxBtuTWTTclycOGSoo5
-         mAu55SJ81zXninBFziWtnWE4026DEd29OAeWkOgLP3P1R3hsGNSB+Aoiiv/SvqEKVfXf
-         y9Fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:cc:from:in-reply-to
-         :content-transfer-encoding;
-        bh=73l45VrsSMydq7i5W9f5vyJ/5wGhCAznnH6g8ZTpcK8=;
-        b=umd72jkGHfxXtyRTF+S920vzUG4jlIfBuSxENAmoioheuTCOiWFsqb1XSf2XcW5NNb
-         PoS9S8Ta6cq1ZlYIx+AbTPy1V4fILsa+AO1c6fCKCPdavoDlzKtpj1s/Ak3yysJ1UzG9
-         QMGfHkVYxu2mKBehzTW4O96JnUhgyhmdL5Z4+DdjWln44sVPzeKRUkhPEXYiPIzbSoib
-         uCuM/VAAwqknVmSAaqtYV6zRFXvRBtqGN/oZFaos8lr+ei0OsDkVYE8svX82nCxCJPI7
-         kU25rsYuL+7Rcc3mjsyfeJ5XL8b4p6X33Zh9vIe9tGA7SJZUTTSma2wt4ujnnj0Bp81C
-         5Zyw==
-X-Gm-Message-State: AOAM532Zy6FU0ZsBBiZcg/+BcfC0/cJI8EvkHrkcVMjH5MJTjvNud5hr
-        tijVJf3WiK6ZwF6wb3LGu8s=
-X-Google-Smtp-Source: ABdhPJz8J+cj/0eMvqhbDlSeH/YQGoRx8gu4jxv4uMCSa5e/vmwSfl5+hoQkEMwvffe/Gnvxk0NAXA==
-X-Received: by 2002:ac2:514e:: with SMTP id q14mr3801162lfd.154.1633179174773;
-        Sat, 02 Oct 2021 05:52:54 -0700 (PDT)
-Received: from [192.168.1.11] ([217.117.245.149])
-        by smtp.gmail.com with ESMTPSA id x24sm1015279lji.0.2021.10.02.05.52.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 Oct 2021 05:52:54 -0700 (PDT)
-Message-ID: <cc51edb5-92f2-bf33-f101-2a5c9f75ca58@gmail.com>
-Date:   Sat, 2 Oct 2021 15:52:52 +0300
+        id S233206AbhJBNBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 09:01:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53898 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233093AbhJBNBx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 Oct 2021 09:01:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id E838B61B08;
+        Sat,  2 Oct 2021 13:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633179608;
+        bh=wmjfw/tNBJqZDKcvzEcUF8UGlmBxeS3fGwMOtzmwuSQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DS3XYRjarfi48FnGz52xjE05Z9vgXLMIqT5xwUd9j0AqTMsUMk37psPiPO5nZVWYA
+         5bDzIZMfe82wN3NwCLwQjPCYLYxjpODOflP7JzHuVapVWQBNC4V308L/PBPr5jCi7k
+         gS5V6ZTK2MHo9XJTLRgSXRpy/y7HE3awNNmswMhEpz+xp0Wtixn0RnkEDet8JD/hkS
+         9iccqYXPjThkdhLavzwQpUe52dqLjtv9Rq9atyUgKrPRvQ8io9tQH/ZkfHLDm7I73i
+         kR3jjwndPQik2SE7pejz0LBI8F9Fkan4GWsUeSxv5EqGUmaG4dLzY2Zhlo33NstfHD
+         ZImxdbZ9sxpIQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DB2CD609D6;
+        Sat,  2 Oct 2021 13:00:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.1
-Subject: Re: Any idea to fix the recursive call in tls_setsockopt?
-Content-Language: en-US
-To:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <CAD-N9QW=ex-+gkwnJNw0eQjFCPcQ-awN_NH5OERjQfo-FC=z4A@mail.gmail.com>
-Cc:     netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <CAD-N9QW=ex-+gkwnJNw0eQjFCPcQ-awN_NH5OERjQfo-FC=z4A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 00/10] Add Gigabit Ethernet driver support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163317960789.20123.6630687472734688411.git-patchwork-notify@kernel.org>
+Date:   Sat, 02 Oct 2021 13:00:07 +0000
+References: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, s.shtylyov@omp.ru,
+        prabhakar.mahadev-lad.rj@bp.renesas.com, andrew@lunn.ch,
+        sergei.shtylyov@gmail.com, geert+renesas@glider.be,
+        aford173@gmail.com, yoshihiro.shimoda.uh@renesas.com,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris.Paterson2@renesas.com, biju.das@bp.renesas.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/2/21 11:38, Dongliang Mu wrote:
+Hello:
 
-[ +CC netdev, LKML ]
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-> BUG: stack guard page was hit at ffffc90000b87ff8 (stack is
-> ffffc90000b88000..ffffc90000b8bfff)
-> kernel stack overflow (double-fault): 0000 [#1] PREEMPT SMP
-> RIP: 0010:tls_setsockopt+0xe/0x650 net/tls/tls_main.c:617
-> Call Trace:
->   tls_setsockopt+0x6a/0x650 net/tls/tls_main.c:621
-> ......
->   tls_setsockopt+0x6a/0x650 net/tls/tls_main.c:621
->   tls_setsockopt+0x6a/0x650 net/tls/tls_main.c:621
->   __sys_setsockopt+0x1b0/0x360 net/socket.c:2176
->   __do_sys_setsockopt net/socket.c:2187 [inline]
->   __se_sys_setsockopt net/socket.c:2184 [inline]
->   __x64_sys_setsockopt+0x22/0x30 net/socket.c:2184
->   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->   entry_SYSCALL_64_after_hwframe+0x44/0xae
+On Fri,  1 Oct 2021 16:06:26 +0100 you wrote:
+> The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC are
+> similar to the R-Car Ethernet AVB IP.
 > 
-> My local syzkaller instance finds this bug, however, I am not sure how
-> to fix it. So I post the bug report here to seek help. The
-> implementation of tls_setsockopt is as follows:
+> The Gigabit Ethernet IP consists of Ethernet controller (E-MAC), Internal
+> TCP/IP Offload Engine (TOE)  and Dedicated Direct memory access controller
+> (DMAC).
 > 
-> static int tls_setsockopt(struct sock *sk, int level, int optname,
->                            sockptr_t optval, unsigned int optlen)
-> {
->          struct tls_context *ctx = tls_get_ctx(sk);
-> 
->          if (level != SOL_TLS)
->                  return ctx->sk_proto->setsockopt(sk, level, optname, optval,
->                                                   optlen);
-> 
->          return do_tls_setsockopt(sk, optname, optval, optlen);
-> }
-> 
-> Since I am not familiar with this part code, the fix in my mind is to
-> do a sanity check on "ctx->sk_proto->setsockopt" and make sure it is
-> not tls_setsockopt.
-> 
-> Any comment here?
-> 
-> --
-> My best regards to you.
-> 
->       No System Is Safe!
->       Dongliang Mu
-> 
+> [...]
+
+Here is the summary with links:
+  - [01/10] ravb: Rename "ravb_set_features_rx_csum" function to "ravb_set_features_rcar"
+    https://git.kernel.org/netdev/net-next/c/d9bc9ec45e01
+  - [02/10] ravb: Rename "no_ptp_cfg_active" and "ptp_cfg_active" variables
+    https://git.kernel.org/netdev/net-next/c/2b061b545cd0
+  - [03/10] ravb: Add nc_queue to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/a92f4f0662bf
+  - [04/10] ravb: Add support for RZ/G2L SoC
+    https://git.kernel.org/netdev/net-next/c/feab85c7ccea
+  - [05/10] ravb: Initialize GbEthernet DMAC
+    https://git.kernel.org/netdev/net-next/c/660e3d95e21a
+  - [06/10] ravb: Exclude gPTP feature support for RZ/G2L
+    https://git.kernel.org/netdev/net-next/c/7e09a052dc4e
+  - [07/10] ravb: Add tsrq to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/0b395f289451
+  - [08/10] ravb: Add magic_pkt to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/ebd5df063ce4
+  - [09/10] ravb: Add half_duplex to struct ravb_hw_info
+    https://git.kernel.org/netdev/net-next/c/68aa0763c045
+  - [10/10] ravb: Initialize GbEthernet E-MAC
+    https://git.kernel.org/netdev/net-next/c/16a235199235
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-With regards,
-Pavel Skripkin
