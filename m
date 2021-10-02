@@ -2,42 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 489FA41FCE5
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 17:55:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C541341FCFB
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 18:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233552AbhJBP4r convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 2 Oct 2021 11:56:47 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:29389 "EHLO
+        id S233585AbhJBQLI convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 2 Oct 2021 12:11:08 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:44527 "EHLO
         eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233545AbhJBP4q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 11:56:46 -0400
+        by vger.kernel.org with ESMTP id S233451AbhJBQLH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 12:11:07 -0400
 Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
  TLS) by relay.mimecast.com with ESMTP id
- uk-mta-236-JWS7r0F4PKqKFlaZpOK-Xw-1; Sat, 02 Oct 2021 16:54:56 +0100
-X-MC-Unique: JWS7r0F4PKqKFlaZpOK-Xw-1
+ uk-mta-185-X3JNG97FPwich-hLz-WT8w-1; Sat, 02 Oct 2021 17:09:19 +0100
+X-MC-Unique: X3JNG97FPwich-hLz-WT8w-1
 Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
  AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Sat, 2 Oct 2021 16:54:54 +0100
+ Server (TLS) id 15.0.1497.23; Sat, 2 Oct 2021 17:09:17 +0100
 Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
  AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Sat, 2 Oct 2021 16:54:54 +0100
+ 15.00.1497.023; Sat, 2 Oct 2021 17:09:17 +0100
 From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Florian Weimer' <fweimer@redhat.com>,
-        "Cufi, Carles" <Carles.Cufi@nordicsemi.no>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jukka.rissanen@linux.intel.com" <jukka.rissanen@linux.intel.com>,
-        "johan.hedberg@intel.com" <johan.hedberg@intel.com>,
-        "Lubos, Robert" <Robert.Lubos@nordicsemi.no>,
-        "Bursztyka, Tomasz" <tomasz.bursztyka@intel.com>,
-        "linux-toolchains@vger.kernel.org" <linux-toolchains@vger.kernel.org>
-Subject: RE: Non-packed structures in IP headers
-Thread-Topic: Non-packed structures in IP headers
-Thread-Index: AQHXtwBfS5Uh4qQ3iEK5aIu8W7utVau/29dA
-Date:   Sat, 2 Oct 2021 15:54:54 +0000
-Message-ID: <a8082bcaeb534ee5b24ea6dae4428547@AcuMS.aculab.com>
-References: <AS8PR05MB78952FE7E8D82245D309DEBCE7AA9@AS8PR05MB7895.eurprd05.prod.outlook.com>
- <87bl48v74v.fsf@oldenburg.str.redhat.com>
-In-Reply-To: <87bl48v74v.fsf@oldenburg.str.redhat.com>
+To:     'Kees Cook' <keescook@chromium.org>,
+        Alexei Starovoitov <ast@kernel.org>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
+Subject: RE: [PATCH bpf-next v2 2/2] bpf: Replace callers of BPF_CAST_CALL
+ with proper function typedef
+Thread-Topic: [PATCH bpf-next v2 2/2] bpf: Replace callers of BPF_CAST_CALL
+ with proper function typedef
+Thread-Index: AQHXtL3/8BB2BiidZEGFv/aSkiFUcau/5NIA
+Date:   Sat, 2 Oct 2021 16:09:17 +0000
+Message-ID: <29ca9f764f07426093b570515dc8e025@AcuMS.aculab.com>
+References: <20210928230946.4062144-1-keescook@chromium.org>
+ <20210928230946.4062144-3-keescook@chromium.org>
+In-Reply-To: <20210928230946.4062144-3-keescook@chromium.org>
 Accept-Language: en-GB, en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
@@ -55,45 +62,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Weimer
-> Sent: 01 October 2021 21:10
-> 
-> * Carles Cufi:
-> 
-> > I was looking through the structures for IPv{4,6} packet headers and
-> > noticed that several of those that seem to be used to parse a packet
-> > directly from the wire are not declared as packed. This surprised me
-> > because, although I did find that provisions are made so that the
-> > alignment of the structure, it is still technically possible for the
-> > compiler to inject padding bytes inside those structures, since AFAIK
-> > the C standard makes no guarantees about padding unless it's
-> > instructed to pack the structure.
-> 
-> The C standards do not make such guarantees, but the platform ABI
-> standards describe struct layout and ensure that there is no padding.
-> Linux relies on that not just for networking, but also for the userspace
-> ABI, support for separately compiled kernel modules, and in other
-> places.
+From: Kees Cook
+> Sent: 29 September 2021 00:10
+...
+> In order to keep ahead of cases in the kernel where Control Flow
+> Integrity (CFI) may trip over function call casts, enabling
+> -Wcast-function-type is helpful. To that end, BPF_CAST_CALL causes
+> various warnings and is one of the last places in the kernel
+> triggering this warning.
+...
+> -static int bpf_for_each_array_elem(struct bpf_map *map, void *callback_fn,
+> +static int bpf_for_each_array_elem(struct bpf_map *map, bpf_callback_t callback_fn,
+>  				   void *callback_ctx, u64 flags)
+>  {
+>  	u32 i, key, num_elems = 0;
+> @@ -668,9 +668,8 @@ static int bpf_for_each_array_elem(struct bpf_map *map, void *callback_fn,
+>  			val = array->value + array->elem_size * i;
+>  		num_elems++;
+>  		key = i;
+> -		ret = BPF_CAST_CALL(callback_fn)((u64)(long)map,
+> -					(u64)(long)&key, (u64)(long)val,
+> -					(u64)(long)callback_ctx, 0);
+> +		ret = callback_fn((u64)(long)map, (u64)(long)&key,
+> +				  (u64)(long)val, (u64)(long)callback_ctx, 0);
+>  		/* return value: 0 - continue, 1 - stop and return */
+>  		if (ret)
+>  			break;
 
-In particular structures are used to map hardware register blocks.
-
-> Sometimes there are alignment concerns in the way these structs are
-> used, but I believe the kernel generally controls placement of the data
-> that is being worked on, so that does not matter, either.
-> 
-> Therefore, I do not believe this is an actual problem.
-
-And adding __packed forces the compiler to do byte accesses
-(with shifts) on cpu that don't support misaligned memory accesses.
-
-So it really is wrong to specify __packed unless the structure
-can be unaligned in memory, or has a 'broken' definition
-that has fields that aren't 'naturally aligned'.
-In the latter case it is enough to mark the field that requires
-the padding before it removed as (IIRC) __aligned(1).
-The compiler will then remove the padding but still assume the
-field is partially aligned - so my do two 32bit access instead
-of 8 8bit ones).
+This is still entirely horrid and potentially error prone.
+While a callback function seems a nice idea the code is
+almost always better and much easier to read if some
+kind of iterator function is used so that the calling
+code is just a simple loop.
+This is true even if you need a #define for the loop end.
 
 	David
 
