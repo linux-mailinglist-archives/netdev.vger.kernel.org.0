@@ -2,98 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29C3A41FE60
-	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 00:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3275141FE7E
+	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 00:33:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234141AbhJBWNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 18:13:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
+        id S234163AbhJBWfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 18:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234136AbhJBWNq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 18:13:46 -0400
-Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59260C061714
-        for <netdev@vger.kernel.org>; Sat,  2 Oct 2021 15:12:00 -0700 (PDT)
-Received: by mail-vs1-xe31.google.com with SMTP id l19so15382138vst.7
-        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 15:12:00 -0700 (PDT)
+        with ESMTP id S234111AbhJBWf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 18:35:29 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C04C061714
+        for <netdev@vger.kernel.org>; Sat,  2 Oct 2021 15:33:43 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id oj15-20020a17090b4d8f00b0019f8860d6e2so2618757pjb.5
+        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 15:33:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SsvscJ402dii9bAJeiyjIQz+HyfgmN4Yk1LeCVUSwDM=;
-        b=Tei7YHAW2GP4SiEaqa1QWrHo1rwW2wXUVlg2yAJ55ELT7palkeOzTXhIrPVT6MCPgO
-         bIktr+nDhCnMFWV9xeOA6exWHD/lYtYqxCnLlRR0kBvvQEylyhxirqk8TH/AQanPTj3c
-         p0wHNEpVkPi7HhFIPxofKB1vm0382zxBLfmCb9P+BP56wMRAtyAPYry/0IQqdTMQ1F/t
-         MdTd0hpxrenW5RzRJ0jelSjgo2UxolQiKCQvTK5+OPX/i+3zcYdJU0S05peljgSdy+K8
-         82Kw0lbTt+l4XunmQKNWfXAMcwROg8iIs9IhlnrDxe/nt5dqXLOoNJlfjrAUMgo27DID
-         jZ9Q==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PzVNB2R4Ft9UsCNEZCdYlsZL6jzNshtK4wQXaAVFDAE=;
+        b=QkQU+WtLqsKziAzBoya6hKIokIM2Y9xO3gC9rkOrIbFAyYw3A/YqcvxTq1yeojCZGf
+         ApDI8Ot6y3/JE+GDdvFpvg4G8IcHlo+wGagRZnfe/FB/I/3yeWTKYCWle2kfbU4QDnRI
+         UqJwVjkO9+a1sBKNfnCJ7yrn6WaWtpU+5oHZ6ijNXwsGrX6EgwrEVcXkUQBTfSRm0hgu
+         RaRpmeQzLlRZEZvizmxG/JOdpQAIs7xBuu+CcopC7HgGstBc8FTQRodblgf/iTOBXIXu
+         HluNcx2ZP1iYXupZBtP8fkJCRU1mZVcIcMHnKj31zUcKvaQNkTpNWNxjc1nWmJp2prwU
+         jYmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SsvscJ402dii9bAJeiyjIQz+HyfgmN4Yk1LeCVUSwDM=;
-        b=dnP4oYBajWOWRX02EyLoQikovOwmyZS5FtFm065D03xYgOJFYJbhYFzJel60eDiXgI
-         K9A+FMxJwML9d9WPth1khLXy6QRVBI9RxDkkPOdb/yleGV+HnHgmd34PbWT2Ny4gBzJ/
-         DmCCTuHHURb87x76zwNSbd+YbFjLMN9VCtFXI0M6j4SQV68zsMdL7QLW6wxgF9hq4AD/
-         InpGlqTy7txWhxGvc+wWI5FMACGoZ20v0qO8T9V/J0YfBcYpxidiPwoz7DpFQMZCO2eU
-         ociinxnAoSvZEoc97NkL4Yb+hS8ByhFn9m1PYgsCCMeJmd+5aqfhV+4AME/FIAylpBLh
-         uj2w==
-X-Gm-Message-State: AOAM532g/2DaYWyOvsDDbW+vIxiWbdJFx40qJoGrZruLapI3v39NFfVZ
-        0TwkExwL1bwmq7GT3Py5C64Gv3FULtduA0MqsCmtXg==
-X-Google-Smtp-Source: ABdhPJxSiewjc5fxuicPfqjS/DGDqEJyacHtrPcYgxr6POZ3CGJWUri2UCSIznykYgJnFj7AT1mMjmkiGyW1qZoDkKU=
-X-Received: by 2002:a05:6102:192:: with SMTP id r18mr9243859vsq.0.1633212719460;
- Sat, 02 Oct 2021 15:11:59 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PzVNB2R4Ft9UsCNEZCdYlsZL6jzNshtK4wQXaAVFDAE=;
+        b=tY2YRFb8AGL4SKlxvNakomChz5sVD4J/psqElmsI5uz+Gz4PEK8+ub29+YM+uMqDUq
+         whJAQBla9CKvn8XTZjVivXbN4RI9kEt75MfEWxhiqWlp6cJCAXw8yWZ7hs9Oz8YIGzlj
+         h1b0UYfCjV7pLnhmqf5i4Scog8GJ0QmwL/3A/Q/UX/TxcpLhfjB/2GmFHkmSzW/2qbvF
+         QNhz9UN9lpr0TDbZ6c6QjlWHo5899/PNisnis5FuXEhFvVhiWhS69HErBG3EzgHT2bhB
+         +zWAqgxehlw6tkdO8FGTae8WK3So1iBx9CoZ08itrxB7dwOHAYuLSOYAAhdMwO2FsfZy
+         ieMA==
+X-Gm-Message-State: AOAM5326mfwrboWwQ2Yu+DDZ9R0XmPKGGKmaQbvMEZPR9/owa/lgtTU2
+        i3/85uzlEEqSzSqPUYLaqPy0CbMa3x8=
+X-Google-Smtp-Source: ABdhPJzAPtYjMJrN6YrWfvhZ8s5llqhk/kHESKe7cMU6eCtBg/dV4ML2IlJijtMu5kvgMOziygaJqQ==
+X-Received: by 2002:a17:902:c193:b0:13e:8e77:6c82 with SMTP id d19-20020a170902c19300b0013e8e776c82mr7783083pld.29.1633214022196;
+        Sat, 02 Oct 2021 15:33:42 -0700 (PDT)
+Received: from jsh.42seoul.kr ([121.135.181.61])
+        by smtp.googlemail.com with ESMTPSA id z12sm9939431pge.16.2021.10.02.15.33.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Oct 2021 15:33:41 -0700 (PDT)
+From:   MichelleJin <shjy180909@gmail.com>
+To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next] net: ipv6: fix use after free of struct seg6_pernet_data
+Date:   Sat,  2 Oct 2021 22:33:32 +0000
+Message-Id: <20211002223332.548350-1-shjy180909@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211001110856.14730-1-quentin@isovalent.com> <20211001110856.14730-7-quentin@isovalent.com>
- <CAEf4BzYm_QTq+u5tUp71+wY+JAaiUApv35tSqFUEyc81yOeUzw@mail.gmail.com> <CACdoK4LL91u-JK1fZ3XvkrTXsKBVsN-y1Js4QSPkWyS51KPB8Q@mail.gmail.com>
-In-Reply-To: <CACdoK4LL91u-JK1fZ3XvkrTXsKBVsN-y1Js4QSPkWyS51KPB8Q@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Date:   Sat, 2 Oct 2021 23:11:48 +0100
-Message-ID: <CACdoK4K4-x4+ZWXyB697Kn8RK5AyoCST+V7Lhtk_Kaqm5uQ6wg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 6/9] bpf: iterators: install libbpf headers
- when building
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2 Oct 2021 at 21:27, Quentin Monnet <quentin@isovalent.com> wrote:
->
-> On Sat, 2 Oct 2021 at 00:20, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Fri, Oct 1, 2021 at 4:09 AM Quentin Monnet <quentin@isovalent.com> wrote:
-> > >
-> > > API headers from libbpf should not be accessed directly from the
-> > > library's source directory. Instead, they should be exported with "make
-> > > install_headers". Let's make sure that bpf/preload/iterators/Makefile
-> > > installs the headers properly when building.
->
-> > >
-> > > -$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)
-> > > +$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile)            \
-> > > +          | $(LIBBPF_OUTPUT) $(LIBBPF_INCLUDE)
-> >
-> > Would it make sense for libbpf's Makefile to create include and output
-> > directories on its own? We wouldn't need to have these order-only
-> > dependencies everywhere, right?
->
-> Good point, I'll have a look at it.
-> Quentin
+sdata->tun_src should be freed before sdata is freed
+because sdata->tun_src is allocated after sdata allocation.
+So, kfree(sdata) and kfree(rcu_dereference_raw(sdata->tun_src)) are
+changed code order.
 
-So libbpf already creates the include (and parent $(DESTDIR))
-directory, so I can get rid of the related dependencies. But I don't
-see an easy solution for the output directory for the object files.
-The issue is that libbpf's Makefile includes
-tools/scripts/Makefile.include, which checks $(OUTPUT) and errors out
-if the directory does not exist. This prevents us from creating the
-directory as part of the regular targets. We could create it
-unconditionally before running any target, but it's ugly; and I don't
-see any simple workaround.
+Fixes: f04ed7d277e8 ("net: ipv6: check return value of rhashtable_init")
 
-So I'll remove the deps on $(LIBBPF_INCLUDE) and keep the ones on
-$(LIBBPF_OUTPUT).
+Signed-off-by: MichelleJin <shjy180909@gmail.com>
+---
+
+ commit f04ed7d277e8
+ ("net: ipv6: check return value of rhashtable_init")
+ is not yet merged into net branch,
+ so this patch is committed to net-next.
+
+ net/ipv6/seg6.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv6/seg6.c b/net/ipv6/seg6.c
+index 65744f2d38da..5daa1c3ed83b 100644
+--- a/net/ipv6/seg6.c
++++ b/net/ipv6/seg6.c
+@@ -375,8 +375,8 @@ static int __net_init seg6_net_init(struct net *net)
+ 
+ #ifdef CONFIG_IPV6_SEG6_HMAC
+ 	if (seg6_hmac_net_init(net)) {
+-		kfree(sdata);
+ 		kfree(rcu_dereference_raw(sdata->tun_src));
++		kfree(sdata);
+ 		return -ENOMEM;
+ 	};
+ #endif
+-- 
+2.25.1
+
