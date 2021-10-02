@@ -2,166 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ABB841FD41
-	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 18:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F33C841FD82
+	for <lists+netdev@lfdr.de>; Sat,  2 Oct 2021 19:44:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233673AbhJBQp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 12:45:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47106 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233659AbhJBQp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 12:45:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1633193020;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mPVKKmzJ904TlkYHJ+uR1Am9wdvn/NnuT6zIrlFo9Rk=;
-        b=CXtYYNSaF3m9C1dULAJk771BeDkXqSZWVhE6HQzI8YDh6i/6UMjC80IJB4PcBVo3YOZKYK
-        lnj8ceT8LdEe0XZq1yTlAQaVOWkUE0gqXXMbVMkYVa+M5egdvrWclLiLsAeUQFrUKpVDvM
-        Z6696Ywa3HxkzwuiB6+bSkVGCT+0GQk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-428-KBwS3PngOMiW53nqPj6udA-1; Sat, 02 Oct 2021 12:43:39 -0400
-X-MC-Unique: KBwS3PngOMiW53nqPj6udA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 11D2C1808308;
-        Sat,  2 Oct 2021 16:43:38 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (unknown [10.39.192.43])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C04A35D740;
-        Sat,  2 Oct 2021 16:43:36 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org
-Subject: [PATCH 2/2 iproute2] configure: add the --libdir param
-Date:   Sat,  2 Oct 2021 18:41:21 +0200
-Message-Id: <1047327c1350db0fe3df84d7eb96bf45955fa795.1633191885.git.aclaudi@redhat.com>
-In-Reply-To: <cover.1633191885.git.aclaudi@redhat.com>
-References: <cover.1633191885.git.aclaudi@redhat.com>
+        id S233770AbhJBRqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 13:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232043AbhJBRql (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 13:46:41 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB05C0613EC;
+        Sat,  2 Oct 2021 10:44:55 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id j10-20020a1c230a000000b0030d523b6693so3515629wmj.2;
+        Sat, 02 Oct 2021 10:44:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TDptnlX5D3kk5KeBvQAiSIEzvz/mdqtpEDNI3MannFA=;
+        b=VDeyZH077ujEG5sD746uF68NcPvUo3IEzFO/BaQy6cARXZfZ+6lJcKZ0srd3VLI4K+
+         GUC5ZJVYIvAdKNIcPr9cRkCj5l6+6lYS7nQ0KfOljdguNymAEV2FAHYcm/5Kht4BaTVK
+         AB/qxs1cjIV4I5ylfpQgImgXbrVELD7Qj2AsdfH/2n1x2X0TJmrwvUprEdpBy8HyTxOx
+         I3H/3rCxnJjhH4osAcQ2H2G+Csm5A+YwcBGOAKcoxhXFdQsPWHdmQvUPiDgUvIsKNHT0
+         vSP4GZSTtCb9ylqoBA/EWXiamzXVaFAgo0edC9RAAekT379uc2H5oGvufld33FlqQg5f
+         L4DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TDptnlX5D3kk5KeBvQAiSIEzvz/mdqtpEDNI3MannFA=;
+        b=65p9NqvWoOCh5I11aouHnTLYCO/8F4GszhY0bzpWxDluC3b5mE/ZnCSDtn8yVJUTix
+         PUYeiQ//HU7wvRgp97EWIXj/6gmyHdCt5syyWNFvapya3atlqGsNHFegG0jDPgwj39KC
+         j4B5E3j+lnNGbOFX4CrgfeGvRk3L2IhtcaiR7FaSNZet4QjH92IrNxXZAtj9dMh8p0sd
+         5MfqW1GImyQ/YhgLm6UyluRECI460KG9gBsYEhA0FLBHsG+IpJYx6WnOvpaGJXfiw+vR
+         A/Kax+Eo4sl+yZ7H1ndoyzdgH+0bZmjoVN1ZMiiiC0443RnyaDO4T200P/kJ1Hik8RZt
+         i/IA==
+X-Gm-Message-State: AOAM531U79Ns9WTj8ngy4b91dKPKQcO4JAe8M5mDqjqMxV4agR15nP1Y
+        M1phvHV03Q1vwpqIhotmjd8=
+X-Google-Smtp-Source: ABdhPJwFBJNH+oKm6V02Fm9cyONB3sj9FfLlyZHD2MQVeVjjZ2I19mMWb7jYXJQbqyYlfKmxPZtZqQ==
+X-Received: by 2002:a7b:ce83:: with SMTP id q3mr10399372wmj.103.1633196693823;
+        Sat, 02 Oct 2021 10:44:53 -0700 (PDT)
+Received: from [10.8.0.30] ([195.53.121.100])
+        by smtp.gmail.com with ESMTPSA id d24sm9094826wmb.35.2021.10.02.10.44.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Oct 2021 10:44:53 -0700 (PDT)
+Subject: Re: [PATCH] unix.7: Add a description for ENFILE.
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     Benjamin Herrenschmidt <benh@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        linux-man@vger.kernel.org, netdev@vger.kernel.org,
+        Michael Kerrisk <mtk.manpages@gmail.com>
+References: <20210929013841.1694-1-kuniyu@amazon.co.jp>
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Message-ID: <206a26e5-0515-44b9-39cb-bc46013bfc6c@gmail.com>
+Date:   Sat, 2 Oct 2021 19:44:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <20210929013841.1694-1-kuniyu@amazon.co.jp>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit allows users/packagers to choose a lib directory to store
-iproute2 lib files.
+Hello Kuniyuki,
 
-At the moment iproute2 ship lib files in /usr/lib and offers no way to
-modify this setting. However, according to the FHS, distros may choose
-"one or more variants of the /lib directory on systems which support
-more than one binary format" (e.g. /usr/lib64 on Fedora).
+On 9/29/21 3:38 AM, Kuniyuki Iwashima wrote:
+> When creating UNIX domain sockets, the kernel used to return -ENOMEM on
+> error where it should return -ENFILE.  The behaviour has been wrong since
+> 2.2.4 and fixed in the recent commit f4bd73b5a950 ("af_unix: Return errno
+> instead of NULL in unix_create1().").
+> 
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> ---
+> Note to maintainers of man-pages, the commit is merged in the net tree [0]
+> but not in the Linus' tree yet.
+> 
+> [0]: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=f4bd73b5a950
 
-As Luca states in commit a3272b93725a ("configure: restore backward
-compatibility"), packaging systems may assume that 'configure' is from
-autotools, and try to pass it some parameters.
+Thanks!
 
-Allowing the '--libdir=/path/to/libdir' syntax, we can use this to our
-advantage, and let the lib directory to be chosen by the distro
-packaging system.
+The patch looks good to me, so could you ping back when this is merged 
+in Linus's tree?
 
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- Makefile  |  7 ++++---
- configure | 21 +++++++++++++++++++++
- 2 files changed, 25 insertions(+), 3 deletions(-)
+Cheers,
 
-diff --git a/Makefile b/Makefile
-index 5bc11477..45655ca4 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1,6 +1,8 @@
- # SPDX-License-Identifier: GPL-2.0
- # Top level Makefile for iproute2
- 
-+-include config.mk
-+
- ifeq ("$(origin V)", "command line")
- VERBOSE = $(V)
- endif
-@@ -13,7 +15,6 @@ MAKEFLAGS += --no-print-directory
- endif
- 
- PREFIX?=/usr
--LIBDIR?=$(PREFIX)/lib
- SBINDIR?=/sbin
- CONFDIR?=/etc/iproute2
- NETNS_RUN_DIR?=/var/run/netns
-@@ -60,7 +61,7 @@ SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma dcb man vdpa
- LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
- LDLIBS += $(LIBNETLINK)
- 
--all: config
-+all: config.mk
- 	@set -e; \
- 	for i in $(SUBDIRS); \
- 	do echo; echo $$i; $(MAKE) -C $$i; done
-@@ -80,7 +81,7 @@ help:
- 	@echo "Make Arguments:"
- 	@echo " V=[0|1]             - set build verbosity level"
- 
--config:
-+config.mk:
- 	@if [ ! -f config.mk -o configure -nt config.mk ]; then \
- 		sh configure $(KERNEL_INCLUDE); \
- 	fi
-diff --git a/configure b/configure
-index f0c81ee1..a1b0261a 100755
---- a/configure
-+++ b/configure
-@@ -148,6 +148,19 @@ EOF
- 	rm -f $TMPDIR/ipttest.c $TMPDIR/ipttest
- }
- 
-+check_lib_dir()
-+{
-+	echo -n "lib directory: "
-+	if [ -n "$LIB_DIR" ]; then
-+		echo "$LIB_DIR"
-+		echo "LIBDIR:=$LIB_DIR" >> $CONFIG
-+		return
-+	fi
-+
-+	echo "/usr/lib"
-+	echo "LIBDIR:=/usr/lib" >> $CONFIG
-+}
-+
- check_ipt()
- {
- 	if ! grep TC_CONFIG_XT $CONFIG > /dev/null; then
-@@ -486,6 +499,7 @@ usage()
- 	cat <<EOF
- Usage: $0 [OPTIONS]
- 	--include_dir		Path to iproute2 include dir
-+	--libdir		Path to iproute2 lib dir
- 	--libbpf_dir		Path to libbpf DESTDIR
- 	--libbpf_force		Enable/disable libbpf by force. Available options:
- 				  on: require link against libbpf, quit config if no libbpf support
-@@ -507,6 +521,12 @@ else
- 			--include_dir=*)
- 				INCLUDE="${1#*=}"
- 				shift ;;
-+			--libdir)
-+				LIB_DIR="$2"
-+				shift 2 ;;
-+			--libdir=*)
-+				LIB_DIR="${1#*=}"
-+				shift ;;
- 			--libbpf_dir)
- 				LIBBPF_DIR="$2"
- 				shift 2 ;;
-@@ -559,6 +579,7 @@ if ! grep -q TC_CONFIG_NO_XT $CONFIG; then
- fi
- 
- echo
-+check_lib_dir
- if ! grep -q TC_CONFIG_NO_XT $CONFIG; then
- 	echo -n "iptables modules directory: "
- 	check_ipt_lib_dir
+Alex
+
+> ---
+>   man7/unix.7 | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/man7/unix.7 b/man7/unix.7
+> index 6d30b25cd..2dc96fea1 100644
+> --- a/man7/unix.7
+> +++ b/man7/unix.7
+> @@ -721,6 +721,9 @@ invalid state for the applied operation.
+>   called on an already connected socket or a target address was
+>   specified on a connected socket.
+>   .TP
+> +.B ENFILE
+> +The system-wide limit on the total number of open files has been reached.
+> +.TP
+>   .B ENOENT
+>   The pathname in the remote address specified to
+>   .BR connect (2)
+> 
+
+
 -- 
-2.31.1
-
+Alejandro Colomar
+Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+http://www.alejandro-colomar.es/
