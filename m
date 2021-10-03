@@ -2,458 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC7A420377
-	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 20:46:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B82C1420382
+	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 20:56:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231372AbhJCSrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Oct 2021 14:47:47 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:39524 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231239AbhJCSro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 14:47:44 -0400
-Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 205AE200BFE0;
-        Sun,  3 Oct 2021 20:45:55 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 205AE200BFE0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1633286755;
-        bh=Krpr7byl6leSzPJLOrH/DuqcJXTEaip3zqqL7jCjabI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L6zJqI6N/SrfQCVB9bo+ZPSxIH/HKAcB7sma4IfqAg0/pLmF+/WVGFnvExRdmDixn
-         3Grbu0JZm7Ou8dIz5VZlI3QiThQu65u4gbZg+BClHKJm/glGxpSNvwrPtFGSnwyrCs
-         KKNXWBbao1lRc1ihxYYRXQQ1YfMVKf9nq4ucEiYVIwIqJw7VTrjLEBSFzzXsQL3zx+
-         PxD+uS6t6Ftt5JYJwQAyOTq7PmLMD07PQmOu3EQrPOOpeQoS8FHClfBA2RcIP7s4kj
-         muz5POzbU4n9aV134I5S7mDQsZRI4fK+gIkAl4MmdilqkZ7J7w7FH74/8FuupmhGmz
-         /Ix1QqY/PBCqg==
-From:   Justin Iurman <justin.iurman@uliege.be>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, justin.iurman@uliege.be
-Subject: [PATCH net-next v2 4/4] selftests: net: Test for the IOAM encapsulation with IPv6
-Date:   Sun,  3 Oct 2021 20:45:39 +0200
-Message-Id: <20211003184539.23629-5-justin.iurman@uliege.be>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211003184539.23629-1-justin.iurman@uliege.be>
-References: <20211003184539.23629-1-justin.iurman@uliege.be>
+        id S231407AbhJCS6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Oct 2021 14:58:18 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46368 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231239AbhJCS6R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 3 Oct 2021 14:58:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=nWD2iY3wGzp1ITvaMwjDQ1EeA8ClBEIaE0kzTWhx2To=; b=qf
+        YO//2rH86hkBwOO73judt2e77GFbNoS0oAeC6pFHjAGVQhLq1TszTSl2gFjR1in7A8Njhh8kQOZQg
+        1xbMSZR99gOaTZ3xUWPRfJLAXeEAzJ2NIRlhrSMOLQ2V3sKJ3SM+sMvQgYbcnn0Uu+tVr6kPzhlJP
+        dz/HOtlN3pG/Buc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mX6et-009Q7z-9C; Sun, 03 Oct 2021 20:56:23 +0200
+Date:   Sun, 3 Oct 2021 20:56:23 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Pavel Machek <pavel@ucw.cz>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: lets settle the LED `function` property regarding the netdev
+ trigger
+Message-ID: <YVn815h7JBtVSfwZ@lunn.ch>
+References: <20211001143601.5f57eb1a@thinkpad>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211001143601.5f57eb1a@thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for testing the encap (ip6ip6) mode of IOAM.
+On Fri, Oct 01, 2021 at 02:36:01PM +0200, Marek Behún wrote:
+> Hello Pavel, Jacek, Rob and others,
+> 
+> I'd like to settle DT binding for the LED function property regarding
+> the netdev LED trigger.
+> 
+> Currently we have, in include/dt-bindings/leds/common.h, the following
+> functions defined that could be interpreted as request to enable netdev
+> trigger on given LEDs:
+>   activity
+>   lan
+>   rx tx
+>   wan
+>   wlan
+> 
+> The "activity" function was originally meant to imply the CPU
+> activity trigger, while "rx" and "tx" are AFAIK meant as UART indicators
+> (tty LED trigger), see
+> https://lore.kernel.org/linux-leds/20190609190803.14815-27-jacek.anaszewski@gmail.com/
+> 
+> The netdev trigger supports different settings:
+> - indicate link
+> - blink on rx, blink on tx, blink on both
+> 
+> The current scheme does not allow for implying these.
+> 
+> I therefore propose that when a LED has a network device handle in the
+> trigger-sources property, the "rx", "tx" and "activity" functions
+> should also imply netdev trigger (with the corresponding setting).
+> A "link" function should be added, also implying netdev trigger.
+> 
+> What about if a LED is meant by the device vendor to indicate both link
+> (on) and activity (blink)?
+> The function property is currently a string. This could be changed to
+> array of strings, and then we can have
+>   function = "link", "activity";
+> Since the function property is also used for composing LED classdev
+> names, I think only the first member should be used for that.
+> 
+> This would allow for ethernet LEDs with names
+>   ethphy-0:green:link
+>   ethphy-0:yellow:activity
+> to be controlled by netdev trigger in a specific setting without the
+> need to set the trigger in /sys/class/leds.
 
-Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
----
- tools/testing/selftests/net/ioam6.sh | 209 ++++++++++++++++++++-------
- 1 file changed, 159 insertions(+), 50 deletions(-)
+Hi Marek
 
-diff --git a/tools/testing/selftests/net/ioam6.sh b/tools/testing/selftests/net/ioam6.sh
-index 3caf72bb9c6a..90700303d8a9 100755
---- a/tools/testing/selftests/net/ioam6.sh
-+++ b/tools/testing/selftests/net/ioam6.sh
-@@ -6,7 +6,7 @@
- # This script evaluates the IOAM insertion for IPv6 by checking the IOAM data
- # consistency directly inside packets on the receiver side. Tests are divided
- # into three categories: OUTPUT (evaluates the IOAM processing by the sender),
--# INPUT (evaluates the IOAM processing by the receiver) and GLOBAL (evaluates
-+# INPUT (evaluates the IOAM processing by a receiver) and GLOBAL (evaluates
- # wider use cases that do not fall into the other two categories). Both OUTPUT
- # and INPUT tests only use a two-node topology (alpha and beta), while GLOBAL
- # tests use the entire three-node topology (alpha, beta, gamma). Each test is
-@@ -200,7 +200,7 @@ check_kernel_compatibility()
-   ip -netns ioam-tmp-node link set veth0 up
-   ip -netns ioam-tmp-node link set veth1 up
- 
--  ip -netns ioam-tmp-node ioam namespace add 0 &>/dev/null
-+  ip -netns ioam-tmp-node ioam namespace add 0
-   ns_ad=$?
- 
-   ip -netns ioam-tmp-node ioam namespace show | grep -q "namespace 0"
-@@ -214,11 +214,11 @@ check_kernel_compatibility()
-     exit 1
-   fi
- 
--  ip -netns ioam-tmp-node route add db02::/64 encap ioam6 trace prealloc \
--         type 0x800000 ns 0 size 4 dev veth0 &>/dev/null
-+  ip -netns ioam-tmp-node route add db02::/64 encap ioam6 mode inline \
-+         trace prealloc type 0x800000 ns 0 size 4 dev veth0
-   tr_ad=$?
- 
--  ip -netns ioam-tmp-node -6 route | grep -q "encap ioam6 trace"
-+  ip -netns ioam-tmp-node -6 route | grep -q "encap ioam6"
-   tr_sh=$?
- 
-   if [[ $tr_ad != 0 || $tr_sh != 0 ]]
-@@ -232,6 +232,30 @@ check_kernel_compatibility()
- 
-   ip link del veth0 2>/dev/null || true
-   ip netns del ioam-tmp-node || true
-+
-+  lsmod | grep -q "ip6_tunnel"
-+  ip6tnl_loaded=$?
-+
-+  if [ $ip6tnl_loaded = 0 ]
-+  then
-+    encap_tests=0
-+  else
-+    modprobe ip6_tunnel &>/dev/null
-+    lsmod | grep -q "ip6_tunnel"
-+    encap_tests=$?
-+
-+    if [ $encap_tests != 0 ]
-+    then
-+      ip a | grep -q "ip6tnl0"
-+      encap_tests=$?
-+
-+      if [ $encap_tests != 0 ]
-+      then
-+        echo "Note: ip6_tunnel not found neither as a module nor inside the" \
-+             "kernel, tests that require it (encap mode) will be omitted"
-+      fi
-+    fi
-+  fi
- }
- 
- cleanup()
-@@ -242,6 +266,11 @@ cleanup()
-   ip netns del ioam-node-alpha || true
-   ip netns del ioam-node-beta || true
-   ip netns del ioam-node-gamma || true
-+
-+  if [ $ip6tnl_loaded != 0 ]
-+  then
-+    modprobe -r ip6_tunnel 2>/dev/null || true
-+  fi
- }
- 
- setup()
-@@ -329,6 +358,12 @@ log_test_failed()
-   printf "TEST: %-60s  [FAIL]\n" "${desc}"
- }
- 
-+log_results()
-+{
-+  echo "- Tests passed: ${npassed}"
-+  echo "- Tests failed: ${nfailed}"
-+}
-+
- run_test()
- {
-   local name=$1
-@@ -349,16 +384,26 @@ run_test()
-   ip netns exec $node_src ping6 -t 64 -c 1 -W 1 $ip6_dst &>/dev/null
-   if [ $? != 0 ]
-   then
-+    nfailed=$((nfailed+1))
-     log_test_failed "${desc}"
-     kill -2 $spid &>/dev/null
-   else
-     wait $spid
--    [ $? = 0 ] && log_test_passed "${desc}" || log_test_failed "${desc}"
-+    if [ $? = 0 ]
-+    then
-+      npassed=$((npassed+1))
-+      log_test_passed "${desc}"
-+    else
-+      nfailed=$((nfailed+1))
-+      log_test_failed "${desc}"
-+    fi
-   fi
- }
- 
- run()
- {
-+  echo
-+  printf "%0.s-" {1..74}
-   echo
-   echo "OUTPUT tests"
-   printf "%0.s-" {1..74}
-@@ -369,7 +414,8 @@ run()
- 
-   for t in $TESTS_OUTPUT
-   do
--    $t
-+    $t "inline"
-+    [ $encap_tests = 0 ] && $t "encap"
-   done
- 
-   # clean OUTPUT settings
-@@ -377,6 +423,8 @@ run()
-   ip -netns ioam-node-alpha route change db01::/64 dev veth0
- 
- 
-+  echo
-+  printf "%0.s-" {1..74}
-   echo
-   echo "INPUT tests"
-   printf "%0.s-" {1..74}
-@@ -387,7 +435,8 @@ run()
- 
-   for t in $TESTS_INPUT
-   do
--    $t
-+    $t "inline"
-+    [ $encap_tests = 0 ] && $t "encap"
-   done
- 
-   # clean INPUT settings
-@@ -396,7 +445,8 @@ run()
-   ip -netns ioam-node-alpha ioam namespace set 123 schema ${ALPHA[8]}
-   ip -netns ioam-node-alpha route change db01::/64 dev veth0
- 
--
-+  echo
-+  printf "%0.s-" {1..74}
-   echo
-   echo "GLOBAL tests"
-   printf "%0.s-" {1..74}
-@@ -404,8 +454,12 @@ run()
- 
-   for t in $TESTS_GLOBAL
-   do
--    $t
-+    $t "inline"
-+    [ $encap_tests = 0 ] && $t "encap"
-   done
-+
-+  echo
-+  log_results
- }
- 
- bit2type=(
-@@ -431,11 +485,16 @@ out_undef_ns()
-   ##############################################################################
-   local desc="Unknown IOAM namespace"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0x800000 ns 0 size 4 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0x800000 ns 0 size 4 dev veth0
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0x800000 0
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0x800000 0
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- out_no_room()
-@@ -446,11 +505,16 @@ out_no_room()
-   ##############################################################################
-   local desc="Missing trace room"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0xc00000 ns 123 size 4 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xc00000 ns 123 size 4 dev veth0
-+
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0xc00000 123
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0xc00000 123
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- out_bits()
-@@ -465,15 +529,21 @@ out_bits()
-   local tmp=${bit2size[22]}
-   bit2size[22]=$(( $tmp + ${#ALPHA[9]} + ((4 - (${#ALPHA[9]} % 4)) % 4) ))
- 
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-   for i in {0..22}
-   do
--    ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace \
--           prealloc type ${bit2type[$i]} ns 123 size ${bit2size[$i]} dev veth0
-+    ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+           trace prealloc type ${bit2type[$i]} ns 123 size ${bit2size[$i]} \
-+           dev veth0
- 
--    run_test "out_bit$i" "${desc/<n>/$i}" ioam-node-alpha ioam-node-beta \
--           db01::2 db01::1 veth0 ${bit2type[$i]} 123
-+    run_test "out_bit$i" "${desc/<n>/$i} ($1 mode)" ioam-node-alpha \
-+           ioam-node-beta db01::2 db01::1 veth0 ${bit2type[$i]} 123
-   done
- 
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
-+
-   bit2size[22]=$tmp
- }
- 
-@@ -485,11 +555,16 @@ out_full_supp_trace()
-   ##############################################################################
-   local desc="Full supported trace"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0xfff002 ns 123 size 100 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0xfff002 123
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xfff002 ns 123 size 100 dev veth0
-+
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0xfff002 123
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- 
-@@ -510,11 +585,16 @@ in_undef_ns()
-   ##############################################################################
-   local desc="Unknown IOAM namespace"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0x800000 ns 0 size 4 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0x800000 ns 0 size 4 dev veth0
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0x800000 0
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0x800000 0
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- in_no_room()
-@@ -525,11 +605,16 @@ in_no_room()
-   ##############################################################################
-   local desc="Missing trace room"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0xc00000 ns 123 size 4 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xc00000 ns 123 size 4 dev veth0
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0xc00000 123
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0xc00000 123
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- in_bits()
-@@ -544,15 +629,21 @@ in_bits()
-   local tmp=${bit2size[22]}
-   bit2size[22]=$(( $tmp + ${#BETA[9]} + ((4 - (${#BETA[9]} % 4)) % 4) ))
- 
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-   for i in {0..22}
-   do
--    ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace \
--           prealloc type ${bit2type[$i]} ns 123 size ${bit2size[$i]} dev veth0
-+    ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+           trace prealloc type ${bit2type[$i]} ns 123 size ${bit2size[$i]} \
-+           dev veth0
- 
--    run_test "in_bit$i" "${desc/<n>/$i}" ioam-node-alpha ioam-node-beta \
--           db01::2 db01::1 veth0 ${bit2type[$i]} 123
-+    run_test "in_bit$i" "${desc/<n>/$i} ($1 mode)" ioam-node-alpha \
-+           ioam-node-beta db01::2 db01::1 veth0 ${bit2type[$i]} 123
-   done
- 
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
-+
-   bit2size[22]=$tmp
- }
- 
-@@ -569,11 +660,16 @@ in_oflag()
-   #   back the IOAM namespace that was previously configured on the sender.
-   ip -netns ioam-node-alpha ioam namespace add 123
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0xc00000 ns 123 size 4 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xc00000 ns 123 size 4 dev veth0
-+
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0xc00000 123
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0xc00000 123
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- 
-   # And we clean the exception for this test to get things back to normal for
-   # other INPUT tests
-@@ -588,11 +684,16 @@ in_full_supp_trace()
-   ##############################################################################
-   local desc="Full supported trace"
- 
--  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 trace prealloc \
--         type 0xfff002 ns 123 size 80 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db01::1" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 up
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-beta db01::2 \
--         db01::1 veth0 0xfff002 123
-+  ip -netns ioam-node-alpha route change db01::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xfff002 ns 123 size 80 dev veth0
-+
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-beta \
-+         db01::2 db01::1 veth0 0xfff002 123
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-beta link set ip6tnl0 down
- }
- 
- 
-@@ -611,11 +712,16 @@ fwd_full_supp_trace()
-   ##############################################################################
-   local desc="Forward - Full supported trace"
- 
--  ip -netns ioam-node-alpha route change db02::/64 encap ioam6 trace prealloc \
--         type 0xfff002 ns 123 size 244 via db01::1 dev veth0
-+  [ "$1" = "encap" ] && mode="$1 tundst db02::2" || mode="$1"
-+  [ "$1" = "encap" ] && ip -netns ioam-node-gamma link set ip6tnl0 up
-+
-+  ip -netns ioam-node-alpha route change db02::/64 encap ioam6 mode $mode \
-+         trace prealloc type 0xfff002 ns 123 size 244 via db01::1 dev veth0
- 
--  run_test ${FUNCNAME[0]} "${desc}" ioam-node-alpha ioam-node-gamma db01::2 \
--         db02::2 veth0 0xfff002 123
-+  run_test ${FUNCNAME[0]} "${desc} ($1 mode)" ioam-node-alpha ioam-node-gamma \
-+         db01::2 db02::2 veth0 0xfff002 123
-+
-+  [ "$1" = "encap" ] && ip -netns ioam-node-gamma link set ip6tnl0 down
- }
- 
- 
-@@ -625,6 +731,9 @@ fwd_full_supp_trace()
- #                                                                              #
- ################################################################################
- 
-+npassed=0
-+nfailed=0
-+
- if [ "$(id -u)" -ne 0 ]
- then
-   echo "SKIP: Need root privileges"
--- 
-2.25.1
+There is no real standardization here. Which means PHYs differ a lot
+in what they can do. We need to strike a balance between over
+simplifying and only supporting a very small set of PHY LED features,
+and allowing great flexibility and having each PHY implement its own
+specific features and having little in common.
 
+I think your current proposal is currently on the too simple side.
+
+One common feature is that there are multiple modes for indicating
+link, which take into account the link speed. Look at for example
+include/dt-bindings/net/microchip-lan78xx.h
+
+#define LAN78XX_LINK_ACTIVITY           0
+#define LAN78XX_LINK_1000_ACTIVITY      1
+#define LAN78XX_LINK_100_ACTIVITY       2
+#define LAN78XX_LINK_10_ACTIVITY        3
+#define LAN78XX_LINK_100_1000_ACTIVITY  4
+#define LAN78XX_LINK_10_1000_ACTIVITY   5
+#define LAN78XX_LINK_10_100_ACTIVITY    6
+
+And:
+
+intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10	0x0010
+intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK100	0x0020
+intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10X	0x0030
+intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK1000	0x0040
+intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10_0	0x0050
+intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK100X	0x0060
+intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10XX	0x0070
+
+Marvell PHYs have similar LINK modes which can either be one specific
+speed, or a combination of speeds.
+
+This is a common enough feature, and a frequently used feature, we
+need to support it. We also need to forward looking. We should not
+limit ourselves to 10/100/1G. We have 3 PHY drivers which support
+2.5G, 5G and 10G. 25G and 40G are standardized so are likely to come
+along at some point.
+
+One way we could support this is:
+
+function = "link100", "link1G", "activity";
+
+for LAN78XX_LINK_100_1000_ACTIVITY, etc.
+
+    Andrew
