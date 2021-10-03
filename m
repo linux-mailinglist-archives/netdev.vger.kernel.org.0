@@ -2,134 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF6434203AD
-	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 21:22:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A84D4203BD
+	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 21:27:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231639AbhJCTYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Oct 2021 15:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231642AbhJCTYV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 15:24:21 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4047C0617A4
-        for <netdev@vger.kernel.org>; Sun,  3 Oct 2021 12:22:29 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id m22so20937765wrb.0
-        for <netdev@vger.kernel.org>; Sun, 03 Oct 2021 12:22:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BDlgUQirZcOt1FAHvZmZNmvLlnlW8XrgUiUQXaZEUJM=;
-        b=HPYUUXZZm3+OB8e2U+Z2KPrnDJKdj/A0fXhGS8POpGD8+7WDr8LtyrMuS6RzCHevkI
-         ri92xvsl6tiEmbhQN0dgEuY16lMcI0WarLqxg2ox8SMyDGshIB7rg3+7Bf1puF5/zh6z
-         Cf1oRmb5h9qVTm7BD02J1y2coIogbvhbj/5l7kO2JDeiZLh6VKq6Et6j0lHeqIWiNTOU
-         p7rUmuY1APtvgYLRKM8V0lY99uog9E416RMaOyPRWVEMRGCMBsr//S9k4mk35PKXvGuh
-         lqE9Td9LNZ6CHnl9y73BnJjG/PogKL6qc1xcOcIqdbFsFl+KWzoe1NDoY+gfYj0peFt5
-         /Smg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BDlgUQirZcOt1FAHvZmZNmvLlnlW8XrgUiUQXaZEUJM=;
-        b=mnTE89GEqx4W+PzKoL7B3sf3LA37vST4b1b4Htz4DphHb5c1BSCOpdOopa8ThZalCC
-         ESfWn6xKd6yzVDjQUbHFi3a495T/ZdO7KahHSVDA24KaZeWTMqHuFzNJ9ciH5qNzyljZ
-         9dq48HTYsnkyDwpoji/fBnN0beRJ2wG7DvL9P0qjwxYbYC8OTdtXrDp13Mij1mMtrPte
-         OnVZrCTBfqA26w56A3omkDCAe0DvquYHlFvoli4nFbcddcjnXnnrxdwZmFrIv61bXuu4
-         JhYRTN6w4KygKLfJDuDDCHyhM/bfEknHtGv6DOxB2fog6ugzjGYHIeTy04bJ/WnuhjMB
-         EVYw==
-X-Gm-Message-State: AOAM532i1tSBgcMAOrLAe4JSIN/JkDCGXC5ps/DqVE6qaF1jTzJjpxpW
-        w1LnKSzXvZVlhU7EspT3Md3AsUWkyugm3jzX
-X-Google-Smtp-Source: ABdhPJzb/u4TIo3KgzbBwfzILlctGJx1H2U1FHbUrzIhlv1OBw3jUKwvwzKt2EAwW6e0QOEXLjZfAg==
-X-Received: by 2002:a5d:4911:: with SMTP id x17mr6955157wrq.173.1633288948218;
-        Sun, 03 Oct 2021 12:22:28 -0700 (PDT)
-Received: from localhost.localdomain ([149.86.88.77])
-        by smtp.gmail.com with ESMTPSA id d3sm14124642wrb.36.2021.10.03.12.22.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Oct 2021 12:22:27 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next v3 10/10] tools: bpftool: add install-bin target to install binary only
-Date:   Sun,  3 Oct 2021 20:22:08 +0100
-Message-Id: <20211003192208.6297-11-quentin@isovalent.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211003192208.6297-1-quentin@isovalent.com>
-References: <20211003192208.6297-1-quentin@isovalent.com>
+        id S231420AbhJCT2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Oct 2021 15:28:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39578 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231280AbhJCT2q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 3 Oct 2021 15:28:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 779A26113E;
+        Sun,  3 Oct 2021 19:26:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633289219;
+        bh=xT1kBNgVseYDpuIPi5OSd2BvxN7N+C4ybBmVSDmqbkw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZFKPpkB9z5vxwWZwjePFLih316yP1HgZIuOANjShMByhj5Z1HbWQr7PMFHpgihbY7
+         BwQjqopfa1f3UEH0y2An/6BwWaJR2RCIFTEkS0GJpfNKBfZ7vu1Y37hxAa8/cAn0MR
+         FVsSQmGGvdeb0BXIzOqKtlSJUYTcV8Bl8D09e3bx50qzye/T8bHYSf2aazg9TP2LfD
+         0TPKslFYPAsZTdRLHKN5AGVbrxKSoWAqJtZ3TIyRXaZXw08xeELDAxlWV4We37lkiQ
+         n+Seiekuu51pgRpZH+tNjshcx8r/oRPo3+km73qvzXjVVMZZc/Uqh6BvRGoCiggth/
+         1aXl4I2xeXJog==
+Date:   Sun, 3 Oct 2021 21:26:54 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>, Rob Herring <robh+dt@kernel.org>
+Cc:     Pavel Machek <pavel@ucw.cz>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: lets settle the LED `function` property regarding the netdev
+ trigger
+Message-ID: <20211003212654.30fa43f5@thinkpad>
+In-Reply-To: <YVn815h7JBtVSfwZ@lunn.ch>
+References: <20211001143601.5f57eb1a@thinkpad>
+        <YVn815h7JBtVSfwZ@lunn.ch>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With "make install", bpftool installs its binary and its bash completion
-file. Usually, this is what we want. But a few components in the kernel
-repository (namely, BPF iterators and selftests) also install bpftool
-locally before using it. In such a case, bash completion is not
-necessary and is just a useless build artifact.
+On Sun, 3 Oct 2021 20:56:23 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-Let's add an "install-bin" target to bpftool, to offer a way to install
-the binary only.
+> On Fri, Oct 01, 2021 at 02:36:01PM +0200, Marek Beh=C3=BAn wrote:
+> > Hello Pavel, Jacek, Rob and others,
+> >=20
+> > I'd like to settle DT binding for the LED function property regarding
+> > the netdev LED trigger.
+> >=20
+> > Currently we have, in include/dt-bindings/leds/common.h, the following
+> > functions defined that could be interpreted as request to enable netdev
+> > trigger on given LEDs:
+> >   activity
+> >   lan
+> >   rx tx
+> >   wan
+> >   wlan
+> >=20
+> > The "activity" function was originally meant to imply the CPU
+> > activity trigger, while "rx" and "tx" are AFAIK meant as UART indicators
+> > (tty LED trigger), see
+> > https://lore.kernel.org/linux-leds/20190609190803.14815-27-jacek.anasze=
+wski@gmail.com/
+> >=20
+> > The netdev trigger supports different settings:
+> > - indicate link
+> > - blink on rx, blink on tx, blink on both
+> >=20
+> > The current scheme does not allow for implying these.
+> >=20
+> > I therefore propose that when a LED has a network device handle in the
+> > trigger-sources property, the "rx", "tx" and "activity" functions
+> > should also imply netdev trigger (with the corresponding setting).
+> > A "link" function should be added, also implying netdev trigger.
+> >=20
+> > What about if a LED is meant by the device vendor to indicate both link
+> > (on) and activity (blink)?
+> > The function property is currently a string. This could be changed to
+> > array of strings, and then we can have
+> >   function =3D "link", "activity";
+> > Since the function property is also used for composing LED classdev
+> > names, I think only the first member should be used for that.
+> >=20
+> > This would allow for ethernet LEDs with names
+> >   ethphy-0:green:link
+> >   ethphy-0:yellow:activity
+> > to be controlled by netdev trigger in a specific setting without the
+> > need to set the trigger in /sys/class/leds. =20
+>=20
+> Hi Marek
+>=20
+> There is no real standardization here. Which means PHYs differ a lot
+> in what they can do. We need to strike a balance between over
+> simplifying and only supporting a very small set of PHY LED features,
+> and allowing great flexibility and having each PHY implement its own
+> specific features and having little in common.
+>=20
+> I think your current proposal is currently on the too simple side.
+>=20
+> One common feature is that there are multiple modes for indicating
+> link, which take into account the link speed. Look at for example
+> include/dt-bindings/net/microchip-lan78xx.h
+>=20
+> #define LAN78XX_LINK_ACTIVITY           0
+> #define LAN78XX_LINK_1000_ACTIVITY      1
+> #define LAN78XX_LINK_100_ACTIVITY       2
+> #define LAN78XX_LINK_10_ACTIVITY        3
+> #define LAN78XX_LINK_100_1000_ACTIVITY  4
+> #define LAN78XX_LINK_10_1000_ACTIVITY   5
+> #define LAN78XX_LINK_10_100_ACTIVITY    6
+>=20
+> And:
+>=20
+> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10	0x0010
+> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK100	0x0020
+> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10X	0x0030
+> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK1000	0x0040
+> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10_0	0x0050
+> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK100X	0x0060
+> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10XX	0x0070
+>=20
+> Marvell PHYs have similar LINK modes which can either be one specific
+> speed, or a combination of speeds.
+>=20
+> This is a common enough feature, and a frequently used feature, we
+> need to support it. We also need to forward looking. We should not
+> limit ourselves to 10/100/1G. We have 3 PHY drivers which support
+> 2.5G, 5G and 10G. 25G and 40G are standardized so are likely to come
+> along at some point.
+>=20
+> One way we could support this is:
+>=20
+> function =3D "link100", "link1G", "activity";
+>=20
+> for LAN78XX_LINK_100_1000_ACTIVITY, etc.
+>=20
+>     Andrew
 
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- kernel/bpf/preload/iterators/Makefile | 2 +-
- tools/bpf/bpftool/Makefile            | 6 ++++--
- tools/testing/selftests/bpf/Makefile  | 2 +-
- 3 files changed, 6 insertions(+), 4 deletions(-)
+Hello Andrew,
 
-diff --git a/kernel/bpf/preload/iterators/Makefile b/kernel/bpf/preload/iterators/Makefile
-index ec39ccc71b8e..616a7ec0232c 100644
---- a/kernel/bpf/preload/iterators/Makefile
-+++ b/kernel/bpf/preload/iterators/Makefile
-@@ -67,4 +67,4 @@ $(DEFAULT_BPFTOOL): $(BPFOBJ) | $(BPFTOOL_OUTPUT)
- 		    OUTPUT=$(BPFTOOL_OUTPUT)/				       \
- 		    LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/			       \
- 		    LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/			       \
--		    prefix= DESTDIR=$(abs_out)/ install
-+		    prefix= DESTDIR=$(abs_out)/ install-bin
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index ef5219e0e233..eaa38d27194d 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -221,10 +221,12 @@ clean: $(LIBBPF)-clean $(LIBBPF_BOOTSTRAP)-clean feature-detect-clean
- 	$(Q)$(RM) -- $(OUTPUT)FEATURE-DUMP.bpftool
- 	$(Q)$(RM) -r -- $(OUTPUT)feature/
- 
--install: $(OUTPUT)bpftool
-+install-bin: $(OUTPUT)bpftool
- 	$(call QUIET_INSTALL, bpftool)
- 	$(Q)$(INSTALL) -m 0755 -d $(DESTDIR)$(prefix)/sbin
- 	$(Q)$(INSTALL) $(OUTPUT)bpftool $(DESTDIR)$(prefix)/sbin/bpftool
-+
-+install: install-bin
- 	$(Q)$(INSTALL) -m 0755 -d $(DESTDIR)$(bash_compdir)
- 	$(Q)$(INSTALL) -m 0644 bash-completion/bpftool $(DESTDIR)$(bash_compdir)
- 
-@@ -251,6 +253,6 @@ zdep:
- 	@if [ "$(feature-zlib)" != "1" ]; then echo "No zlib found"; exit 1 ; fi
- 
- .SECONDARY:
--.PHONY: all FORCE clean install uninstall zdep
-+.PHONY: all FORCE clean install-bin install uninstall zdep
- .PHONY: doc doc-clean doc-install doc-uninstall
- .DEFAULT_GOAL := all
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index ffe48b40d8fa..f1cb55c0c37e 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -216,7 +216,7 @@ $(DEFAULT_BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile)    \
- 		    OUTPUT=$(HOST_BUILD_DIR)/bpftool/			       \
- 		    LIBBPF_OUTPUT=$(HOST_BUILD_DIR)/libbpf/		       \
- 		    LIBBPF_DESTDIR=$(HOST_SCRATCH_DIR)/			       \
--		    prefix= DESTDIR=$(HOST_SCRATCH_DIR)/ install
-+		    prefix= DESTDIR=$(HOST_SCRATCH_DIR)/ install-bin
- 
- all: docs
- 
--- 
-2.30.2
+I am aware of this, and in fact am working on a proposal for an
+extension of netdev LED extension, to support the different link
+modes. (And also to support for multi-color LEDs.)
 
+But I am not entirely sure whether these different link modes should be
+also definable via device-tree. Are there devices with ethernet LEDs
+dedicated for a specific speed? (i.e. the manufacturer says in the
+documentation of the device, or perhaps on the device's case, that this
+LED shows 100M/1000M link, and that other LED is shows 10M link?)
+If so, that this should be specified in the devicetree, IMO. But are
+such devices common?
+
+And what about multi-color LEDs? There are ethernet ports where one LED
+is red-green, and so can generate red, green, and yellow color. Should
+device tree also define which color indicates which mode?
+
+Marek
