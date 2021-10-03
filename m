@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ECC742044B
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 00:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DFC342044C
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 00:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231852AbhJCWZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Oct 2021 18:25:26 -0400
+        id S231863AbhJCWZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Oct 2021 18:25:28 -0400
 Received: from mail-am6eur05on2062.outbound.protection.outlook.com ([40.107.22.62]:35009
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231799AbhJCWZY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 3 Oct 2021 18:25:24 -0400
+        id S231835AbhJCWZZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 3 Oct 2021 18:25:25 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kvV0seZvyA/aHqlvvJSh0XfwMCicG3sXm3KeVmxucqBV0DqWJ+1yYZ8/n+jVBw8h9z112Deg98aIugGJHfhK4ATk4zXoeWlhsq2nYsSUiD2Romehs/T0zVyfU1ovxBdrpCzRCdQ09PPg+l3h7EzIX797F64jVa7EuweBF81I8DgshWjwEWOaONngunkBPytfjxHLKL7N2uFwiqhQjSP0lJm8DXGv037qhTFgSOc6uUdQhjZqJ6TYlkJ56uUV27QrtkTxPTxvO+Ivj+l2IUYs5UMcE+E+YF23XtoZITwpLvgqOKemWAK6VqAHrJcSK+06EB9JXS0m9ZSUqfAUc3G3Og==
+ b=ir8QfTrXOFQR5NKwvJF5IkaEh6mDYHuyDTNMVIEGq6lnUnHVmBoGpInlU2ukZ2/tHFM8K+KD6s3h4h5k4Fw0ln0vBZwxAYUF8S405SfDoqDambMDNOoaAyIiQJcO4iSonsp80Pb9E/fEgRb5Q4jAA2ilwhd4kpu+j89WsgkcyKytYLym9lmQKQ0YfRWtcffUiRLLVqRZehvJrnyEdGCsm0pAMDhDgW2b0ll8J1pyCSeSxqrKVMBy6qdjU0Je2zdkMRMn3vuQa2aNvnZu3bg6O5m4ynIH0OQhTFN3GSGOK3siSuy0mdxEDiY6kK07fdhBGeL7PpBbm8MDv80taeHW6A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JHgUuch1y82MAqGQx2mMphOZBfpBFdWzwFZ//B+BjIU=;
- b=f+GVVCL9v98sqJByt+CgiHXqY06tSAXLcnSipXP2l6nPMdoaCjhkiMexogHxmd5VZMHi1CET5OpvfuUus5GQIjExJb+18HoNtQhtcbJH32n5b5DXfPJivp9CtQQCqkH/A1lCA4E3aD8HbOakkD2k1B07rkMA47Cg/erZsa5pKmy5TRBNN/nqhY/UkEQxK8644+jQmaEZ/FxYBwBDl5GsHholRj8RctGhc0LbiqoEiA86OmJjdM1K/dkhZuAS7FKwGiQbpLXSy1LIbOhqJa2jOO7tXWCkzfa/mVX+1SHYfjRZvM0E0KxSmyqvMIjaLPbsUaObOmKZTP4mtDJCeTyYOQ==
+ bh=8+KKGaH0HwqP+qqDoHYDjjmLRXsEtBGe6LDFqnifKv4=;
+ b=dEBQJ3LwVxr+VIUu48Ud0KDS9uJ2Ep9R9sGGUJYX6fmKDcZCRnc8kVagpSplC+KWCclJ6Dr6+rFsCNb73oqxOwgACLRg1jzo8Gm6AUsVvgDT2z1kNAQd02WDOLTxAw4Kay+BRRCrYL/NXq/Wx6mJTV22Qh/6ehIlOFQvsTE6zv6fQgAZQR0z8WFJnYIPDX0CcI0Xp6E3KWstkC9wMHPQ1FMKF/t+deNWNpt3h6mULlL3Qqp0vu2cl7qLxeVLpZnTRiuzrErELaL7JqYTyg+YZXCb1yyhmUrjRtIwFk+8zmvAM2r1kVh2gEbo7C1aR52iAj9gNa0YJ1gUaUIzn66ndg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JHgUuch1y82MAqGQx2mMphOZBfpBFdWzwFZ//B+BjIU=;
- b=FNx6fscu30epyjrVay6s0WZpMul8vx+YaVrpyc2GYa4lICtMo0pJNQppZMoW8Sfn3gsjIvuf3I0cUPH0xW24EFUbzyAI6MOouze8TJjFCBSYbWEz8YrSV2ExQaHEZYjEn1kQSK6ZKva1iVqrvpuessD0FBE/P3NIEdvZZOlWkoA=
+ bh=8+KKGaH0HwqP+qqDoHYDjjmLRXsEtBGe6LDFqnifKv4=;
+ b=MQMSKmMv/2AosKTy4LC7rqrxe6qQpeGUDJE0cxbXbVl4YV8J1t1tNVfbJ+148GAs2ibXwIXk4EvM2n8NcNZrRHVxlUtJCEHT/HnrI1grXClEdAlqqeXP193TzBL41QHEgX0aoAleD8Lt9F5ByuE2w++WBV3YKSZSamPOvPcpsbU=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB4814.eurprd04.prod.outlook.com (2603:10a6:803:53::31) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.19; Sun, 3 Oct
- 2021 22:23:33 +0000
+ 2021 22:23:34 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4566.022; Sun, 3 Oct 2021
- 22:23:33 +0000
+ 22:23:34 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -44,9 +44,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Tobias Waldekranz <tobias@waldekranz.com>
-Subject: [PATCH net 1/2] net: dsa: tag_dsa: send packets with TX fwd offload from VLAN-unaware bridges using VID 0
-Date:   Mon,  4 Oct 2021 01:23:11 +0300
-Message-Id: <20211003222312.284175-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net 2/2] net: dsa: fix bridge_num not getting cleared after ports leaving the bridge
+Date:   Mon,  4 Oct 2021 01:23:12 +0300
+Message-Id: <20211003222312.284175-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211003222312.284175-1-vladimir.oltean@nxp.com>
 References: <20211003222312.284175-1-vladimir.oltean@nxp.com>
@@ -56,154 +56,101 @@ X-ClientProxiedBy: AM6PR0502CA0068.eurprd05.prod.outlook.com
  (2603:10a6:20b:56::45) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.26.53.217) by AM6PR0502CA0068.eurprd05.prod.outlook.com (2603:10a6:20b:56::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend Transport; Sun, 3 Oct 2021 22:23:32 +0000
+Received: from localhost.localdomain (188.26.53.217) by AM6PR0502CA0068.eurprd05.prod.outlook.com (2603:10a6:20b:56::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend Transport; Sun, 3 Oct 2021 22:23:33 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c5e2f62c-97e2-4186-5d22-08d986bc6f94
+X-MS-Office365-Filtering-Correlation-Id: c27bae2c-cdc4-4ecb-8fc5-08d986bc7023
 X-MS-TrafficTypeDiagnostic: VI1PR04MB4814:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB481473BD775245608B77FECDE0AD9@VI1PR04MB4814.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB4814D9668CD13333CF40BAA3E0AD9@VI1PR04MB4814.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ePKOf+qsLL9og+oy62clGGdtjwi5T1qAzX/AyvMCIzhXa5JMhWoBPzXRb/OIhVmlvnpnpZ2Za5oNzCkofaOTzyEZNPrNuhPOBL2jvNkGmF6WTKals6ZxmyCD1Rg4WSdtqk2gAmXepGpLJO2EwaTXa9lEx86OB3ZpA0AGG2jbf5lgzSUxES5W+2Prm3cthxUg9tTECyqg4dZp8xMi975JUMvRFJSsdoqhkcp4VIoSZkd7bIuqYYll/AbaH7HRgoWO0sCUNN56K2wMHgOk2XPxcAVurUDFBmoIXfy/McsIREXqrpXO9xydqc2HTYE5YjmbdoN9bxHc0u6BFI+0UWqe9auN1ob5jmyjc/wdKzA5wsQOXT8Ze1VkWC4M3W2L04Cg/I+uon/Ja1Jwv9PMDutumSR1HmiBUzvIlGl9dKKTHXsQW9KIUZFtGHA7HDtBjum7CaTP88cVWuPjdEtsEaiGvpiIuO4HdlAemvo+wKakgAGGb4thXhy6YWZaraDPOdU1uBW0Vdn6CRAowst79xdJ4tsll3YMGDhZyu6bSc2AhOvBjAb0TbmH6nV0G1bkpZ1pmm7x14L/zF2gf4fF2yF2WSheDs/lYPBnJXZUG19405yXK3LVimYlQNaOL7DuaqrMOgf8xqbkhHVsBFQSvnk2+rXhVdltS00Z0yaS75EN/AK/nplgIbYteVTqtSVqHllJVm/cif690C9bI/ciDbPM9c6/a2txf+Ft+/V43OMalpJee2GQd69k2GYY9d+RSFMHC2Gm1k7W4HqQ2f3VWOvxMe7JxkEXsia8D6j0iG+AmP3AqQ9zvSPRcs34iREhD4VzKh8I7Q0EdvTiRfwPC2O+NA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66946007)(5660300002)(38350700002)(1076003)(8676002)(966005)(38100700002)(44832011)(54906003)(316002)(508600001)(6666004)(8936002)(36756003)(66476007)(66556008)(186003)(6506007)(956004)(83380400001)(4326008)(2906002)(26005)(6486002)(110136005)(86362001)(2616005)(52116002)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 0jxvcN84wgKj907jW+eFqAOQ0J1tWnH5VDLhYp4CLOv9Uca0Xij3TnwSA/naqF4YGkILS/X5+m62uIgvNE2v+5rF83utzNhw7FF27hiep0jvNlg+49q4MqrXmC5ZKJyIUwbRqrJtWTkN5TPQwWJHG79t39qUHLRzCQTc5bjHTop9jxft378C1sC85l8s7Z6SmvDr/nWahCBwAMtbs4zvtweYmyXHHok9scNyOYzUSwwcEldtDTF/W6r5PFc9tL1ZpnO2K73ORfbNKynPnNlq41ndq9jpE9WvOr1ioQqCnOSGiqRyCA/kihu+4330oZo0ck7r1DNubioawxbDe01W2J8FQPXtyPyiJ9mltj1VbQ+Z9/+MZ2P4Eh9QUlEJVYWI5oMdTXUotkJ9LZMXqwaULgVCQs/6RN+ihQEI8atTlz7FBLyAchnR+QRCxP2+ODKFGmEU5ukhDmk6DEl79ZwRXeovG/KdKy0HArFJSycc/VrRprGl9iXNrD2XmgNFJd50IUsCg1ZZr9YS8xF5XY74AXkRbLAGW2HIlgKyRhkqYuOt/Hq16gwtliLwYkFFHw0+5L1RN/l108uS2akTRTINHqrVH64he/yC4wRh2E5nU2K9p5ByRaiJqMKa1ARlWvMJfRn+tEZ39+JPpDgtMxOsNAYhLMW+NEaeRgx+MwtuxZ7Rg20OoFXxLShB/Ow3+obF4Gi/BJoS/YCWQKEjZDVvzg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66946007)(5660300002)(38350700002)(1076003)(8676002)(38100700002)(44832011)(54906003)(316002)(508600001)(6666004)(8936002)(36756003)(66476007)(66556008)(186003)(6506007)(956004)(83380400001)(4326008)(2906002)(26005)(6486002)(110136005)(86362001)(2616005)(52116002)(6512007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RR/HtBWarN4ZBUbbEqFCtWaPkxtyPAwsiazrKbkzD8V3VyTrgCtf/lVbbc4h?=
- =?us-ascii?Q?x7AXfE75Xbwp8GEvIbgpd/dVMyMT4kVBIsDv6cR9ZB6J2DCxRCtxwuPH4rH1?=
- =?us-ascii?Q?EOv6WJS0g/hl1c6FJvJ1bS9Nx8tRVl3mq0daSPbGGIihfT8VMzc8CmF41L5G?=
- =?us-ascii?Q?QrJBmH/5Kqsdi9hnks4MPoFZ5Pa7SlDSyV6o7rJ3lpoWmlwsvY9rsO/onrjA?=
- =?us-ascii?Q?ZdvljrtFT6etY6hfTpDkg72vl1j6cHfYJdjoCpO3XfFAGFfUCi8CjC+fIVMK?=
- =?us-ascii?Q?67V4L2By3vOY3UHUb/9JXy6apCuk7ntmK/emX7bhAYxe7EOrrWX4xHDIJ61R?=
- =?us-ascii?Q?3yKH0mauH8ydmgzq19UcUGsCxylxrDHJmuuDJnX0IuP9SY8uPkc/SivX/Jlh?=
- =?us-ascii?Q?Df0ElCOrm7ILYB8R+qrAw/PsEME18UYgUfEwbDKGL2CilImplQBBVtm/5gp1?=
- =?us-ascii?Q?lnQ1b4B/lEoiyu84h34jXmkwej33NftBs7j6iPag7RqFqcJyWAEycUq9v6J+?=
- =?us-ascii?Q?hQbfmz9590Tk5/ZRh5XrSNk9pKfAck8c1UJRt2HWTXCgEDpD+AA63JiOiL6N?=
- =?us-ascii?Q?KdQSznrehWxkls9JC9YMSynvh0GgH2rUJIDCqbSHc4vSCLAhZuUMt/50YDED?=
- =?us-ascii?Q?5Hdd44wDGurAsYxjyi1hndgqph6oRvkW6jC/GBygRKnt3CwKmRkwL9xxhfTp?=
- =?us-ascii?Q?fdMQIAOCnchbuZlhGx8FE29A6hwAFmrV+OrxLsnIKOJO2hf7mbZn1DLV4DKl?=
- =?us-ascii?Q?o/ujObLruYJTc/zqbmxapIDTVu/ASXsNxhcCExo23ee7lJLfK63hPiW5FdpS?=
- =?us-ascii?Q?o8R4E4SD4YdWspL1PFVy1RjeCTTUJNJMbc3ZziUy3K/25Ou+3UjmkaT9uHxK?=
- =?us-ascii?Q?xZuhk0jq/y/VZNTvg/MFT+3AtF3N25iwyNxtnOnkmm/mBHeBxvuFgstRcRgf?=
- =?us-ascii?Q?N/f7sGo8p/gKaoeai1IbBg46ciU/ep3zMdnggOquaqjNwEqJtA9Bi6lTgcns?=
- =?us-ascii?Q?hn03s/94UiAHRqGUvWrTpq+lSufJy2JXzEJtlwBy6JC5eVwx6bjbTVQZMRKH?=
- =?us-ascii?Q?vi+K3OC7kcAAxoxNo+L3JfPB/2uSpSPewswJC3LH15Nec8K//XMfdBfhrcv0?=
- =?us-ascii?Q?Na9NVwGcuqjLSPW9k3y7dCNRhh71knxDDLuJz8vIWKahtJUvV7AnTWK9vTg1?=
- =?us-ascii?Q?pMVZ9ELAW4YzR9Aq2mcWB1C6gba5a7EXyZaKhtZI1cIaqseOUZp+DNwFzSe0?=
- =?us-ascii?Q?bh364Ktrbvzkd2El4b1zn6cx0cXYByhs/2wbikiyCDgB+DqMfMw6Rcd+w8JM?=
- =?us-ascii?Q?/uIPNKsHa62DwRJkkBiCceEY?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yKezDXDHxAeUHjKqRNr7eLYPtDLSqorEtdlhM7wEAwKpTmrri8YB8hrCRNLj?=
+ =?us-ascii?Q?W9Pr4eFapd0M1jtzA23wljX59qa6iDE1lW96xloQxzSrKfrv/APhSB3wl2GT?=
+ =?us-ascii?Q?2XQ3MAvK0WeGXXpQM5bV0T9buJV9LSsaal1xwmr3C0cDj04jbEFaqNgwbgab?=
+ =?us-ascii?Q?fmn8+1VUbHMXfI5vVDb8qcZiSZdFp/bnOpkN7BQslEgs7nBQYSCEbaOfdAUQ?=
+ =?us-ascii?Q?LTNhtvwO+7hO87mHHQ7OObJ0/xHw8/WqSaW4ut6v6+mXNFWeTnzJBoLUIJs1?=
+ =?us-ascii?Q?0q2T70NPNRPGEeqM9gwPGKeeNqFEO7QRsstt34RzevF2WqmUaMCPJ8hFLJ75?=
+ =?us-ascii?Q?aH9RrWq9UX5P0M/m+DbnDbVdmPm5SkpS3IHGstMuRx69Mae2BaVXz5ZJLr5K?=
+ =?us-ascii?Q?KKCERPN050QuAdqc3L2O7TJPMRZ8nHAO2epttjymqjXwaPpx51aeOAk3bedH?=
+ =?us-ascii?Q?nC6v8tvd/HtkvoA759iNRWlVCzHVOkxGKO74Le22LZCgQloGZx3/xaFjWAmm?=
+ =?us-ascii?Q?cGuiz9DLO4QjyehidS7uwGNPakPVBYXLb6GpD4pBdvcLqNgeWWHs5jsQ3MlY?=
+ =?us-ascii?Q?T4BeUxkUuMdB8Gj9OMi3Kx6vncSsK7uYCOj7htsITep/e+l3wQsClhAOfNiH?=
+ =?us-ascii?Q?jkC5zyxTiF9x8TiqiNZUdaKW4zj9wc+qi0j6xWeHuWTmysuuDPyH33SLhzWf?=
+ =?us-ascii?Q?h0uIxsXgLiGsB2B/AwE8n7LSzNPJFlJlDQaCanV8/dKGp0nu+In+lHchd89H?=
+ =?us-ascii?Q?k/J46N5WiZI9siNULImvbq+l+gdmah4291BvZSDHMXDRjOu82xE+u/A9h6GN?=
+ =?us-ascii?Q?ywISBJwTBmgdz1YP7hsoJ6/rZfOSqVdqm1xiGQvLTbCbXSHEpkd28aWo4Hjl?=
+ =?us-ascii?Q?NFOjaCNVVzaVNHepN2PUEkZH0c4j/BgIfjXw+XqSo4+arg0p570BGV/48CIN?=
+ =?us-ascii?Q?j5cor1PBVs23BlHTA1n0+weBnX2wQr+akf59wQxOOC6e/KfNqT+LO+h3Xirf?=
+ =?us-ascii?Q?0zjnpEwfG0wx78I1Dck1xk9M2F/lWW/vvZmaC3jPKEM2nE/c6RLNyuSZ7B8n?=
+ =?us-ascii?Q?/LOXUcCcD5VrqgwVwOL6HKLU3ONSQL8aA5m9kQZcFbZtIrCgMuE11GC73Sk7?=
+ =?us-ascii?Q?GifT+iwrMxqH+iFqu1qLlQi0YRK8PLtwuAr8mwf4lGHev66moXR6hlFdvyek?=
+ =?us-ascii?Q?OObPv9PjPOuStvC8BMGm6I4Kql/KZDmHhYjGPkmTIrS2vaaWDUyubhjfIq+y?=
+ =?us-ascii?Q?gNnVbmqGw5k11WddvZ0e5vZOWRjHPWmPg0joIhDGIzTrvfQP4+fU4rO46aqv?=
+ =?us-ascii?Q?B9fkh0dN4ZEunUe3Gu2XQj15?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5e2f62c-97e2-4186-5d22-08d986bc6f94
+X-MS-Exchange-CrossTenant-Network-Message-Id: c27bae2c-cdc4-4ecb-8fc5-08d986bc7023
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2021 22:23:33.5422
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2021 22:23:34.4887
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6CdnU17FK8ohjaf03gt1bWU2a0WlRp9knJcPbclLXiJaTeILo0OkBDAGGJ627yOR7dGoD6ytBelRF4/I7Njo0A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: oMEkENz0A45WvRxBC9LtK9gzg7N14O7NvcWENKrjW3RNUmI5gbNLIKTtsDG0onxmDjHSCmii9llFrCrh42CSMA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4814
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The present code is structured this way due to an incomplete thought
-process. In Documentation/networking/switchdev.rst we document that if a
-bridge is VLAN-unaware, then the presence or lack of a pvid on a bridge
-port (or on the bridge itself, for that matter) should not affect the
-ability to receive and transmit tagged or untagged packets.
+The dp->bridge_num is zero-based, with -1 being the encoding for an
+invalid value. But dsa_bridge_num_put used to check for an invalid value
+by comparing bridge_num with 0, which is of course incorrect.
 
-If the bridge on behalf of which we are sending this packet is
-VLAN-aware, then the TX forwarding offload API ensures that the skb will
-be VLAN-tagged (if the packet was sent by user space as untagged, it
-will get transmitted town to the driver as tagged with the bridge
-device's pvid). But if the bridge is VLAN-unaware, it may or may not be
-VLAN-tagged. In fact the logic to insert the bridge's PVID came from the
-idea that we should emulate what is being done in the VLAN-aware case.
-But we shouldn't.
+The result is that the bridge_num will never get cleared by
+dsa_bridge_num_put, and further port joins to other bridges will get a
+bridge_num larger than the previous one, and once all the available
+bridges with TX forwarding offload supported by the hardware get
+exhausted, the TX forwarding offload feature is simply disabled.
 
-It appears that injecting packets using a VLAN ID of 0 serves the
-purpose of forwarding the packets to the egress port with no VLAN tag
-added or stripped by the hardware, and no filtering being performed.
-So we can simply remove the superfluous logic.
+In the case of sja1105, 7 iterations of the loop below are enough to
+exhaust the TX forwarding offload bits, and further bridge joins operate
+without that feature.
 
-There are in fact two independent reasons why having this logic is broken:
+ip link add br0 type bridge vlan_filtering 1
 
-(1) When CONFIG_BRIDGE_VLAN_FILTERING=n, we call br_vlan_get_pvid_rcu()
-    but that returns an error and we do error out, dropping all packets
-    on xmit. Not really smart. This is also an issue when the user
-    deletes the bridge pvid:
+while :; do
+        ip link set sw0p2 master br0 && sleep 1
+        ip link set sw0p2 nomaster && sleep 1
+done
 
-    $ bridge vlan del dev br0 vid 1 self
+This issue is enough of an indication that having the dp->bridge_num
+invalid encoding be a negative number is prone to bugs, so this will be
+changed to a one-based value, with the dp->bridge_num of zero being the
+indication of no bridge. However, that is material for net-next.
 
-    As mentioned, in both cases, packets should still flow freely, and
-    they do just that on any net device where the bridge is not offloaded,
-    but on mv88e6xxx they don't.
-
-(2) that code actually triggers a lockdep warning due to the fact that
-    it dereferences bridge private data that assumes rcu_preempt protection
-    (rcu_read_lock), but rcu_read_lock is not actually held during
-    .ndo_start_xmit, but rather rcu_read_lock_bh (rcu_bh), which has its
-    own lockdep keys.
-
-The solution to both problems is the same: delete the broken code.
-
-Fixes: d82f8ab0d874 ("net: dsa: tag_dsa: offload the bridge forwarding process")
-Reported-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://patchwork.kernel.org/project/netdevbpf/patch/20211003155141.2241314-1-andrew@lunn.ch/
-Link: https://patchwork.kernel.org/project/netdevbpf/patch/20210928233708.1246774-1-vladimir.oltean@nxp.com/
+Fixes: f5e165e72b29 ("net: dsa: track unique bridge numbers across all DSA switch trees")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/tag_dsa.c | 20 ++------------------
- 1 file changed, 2 insertions(+), 18 deletions(-)
+ net/dsa/dsa2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index 77d0ce89ab77..7e35bcda91c9 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -129,12 +129,9 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 	u8 tag_dev, tag_port;
- 	enum dsa_cmd cmd;
- 	u8 *dsa_header;
--	u16 pvid = 0;
--	int err;
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index b29262eee00b..6d5cc0217133 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -170,7 +170,7 @@ void dsa_bridge_num_put(const struct net_device *bridge_dev, int bridge_num)
+ 	/* Check if the bridge is still in use, otherwise it is time
+ 	 * to clean it up so we can reuse this bridge_num later.
+ 	 */
+-	if (!dsa_bridge_num_find(bridge_dev))
++	if (dsa_bridge_num_find(bridge_dev) < 0)
+ 		clear_bit(bridge_num, &dsa_fwd_offloading_bridges);
+ }
  
- 	if (skb->offload_fwd_mark) {
- 		struct dsa_switch_tree *dst = dp->ds->dst;
--		struct net_device *br = dp->bridge_dev;
- 
- 		cmd = DSA_CMD_FORWARD;
- 
-@@ -144,19 +141,6 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 		 */
- 		tag_dev = dst->last_switch + 1 + dp->bridge_num;
- 		tag_port = 0;
--
--		/* If we are offloading forwarding for a VLAN-unaware bridge,
--		 * inject packets to hardware using the bridge's pvid, since
--		 * that's where the packets ingressed from.
--		 */
--		if (!br_vlan_enabled(br)) {
--			/* Safe because __dev_queue_xmit() runs under
--			 * rcu_read_lock_bh()
--			 */
--			err = br_vlan_get_pvid_rcu(br, &pvid);
--			if (err)
--				return NULL;
--		}
- 	} else {
- 		cmd = DSA_CMD_FROM_CPU;
- 		tag_dev = dp->ds->index;
-@@ -188,8 +172,8 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 
- 		dsa_header[0] = (cmd << 6) | tag_dev;
- 		dsa_header[1] = tag_port << 3;
--		dsa_header[2] = pvid >> 8;
--		dsa_header[3] = pvid & 0xff;
-+		dsa_header[2] = 0;
-+		dsa_header[3] = 0;
- 	}
- 
- 	return skb;
 -- 
 2.25.1
 
