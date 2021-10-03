@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 200A442007C
+	by mail.lfdr.de (Postfix) with ESMTP id 2726242007E
 	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 09:34:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbhJCHgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Oct 2021 03:36:02 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:41911 "EHLO
+        id S229949AbhJCHgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Oct 2021 03:36:04 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:37911 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229914AbhJCHft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 03:35:49 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 94E99580E3F;
-        Sun,  3 Oct 2021 03:34:02 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S229924AbhJCHfy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 03:35:54 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id AF1CB580E43;
+        Sun,  3 Oct 2021 03:34:05 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 03 Oct 2021 03:34:02 -0400
+  by compute4.internal (MEProxy); Sun, 03 Oct 2021 03:34:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=ThklMO8SG7PEU6n5YuJBmvEtglgUEieU7AhvsApRfeE=; b=SkoQvBKB
-        BIKmHnD7AQCZlG7sJb3LgT2BAAzh8Xi2+qa6WZEuDHYaAE9ctPRT3JVlpNBOkAZl
-        hKbJSgA/i0bQX1xwX894vRDoDuZBdzEpUXd8SGTHWt13YhgwRT75/qJjWHyziTdK
-        rRToiZlH9ILeerC8DmAl9JlxwgHg+LU8ncR6biP5d6Tmz9GL3H84cH9/OEl2rSzZ
-        TnZwrfunL6zOzQcSjwLfQ/6q8WmM6epYdD2/07kmloIIb/r12qTve4MklNDJHs1w
-        H1/7mdTIiHoSz7tiAAgGN/oBs5sViMnyQw9mxY61WrdYUkhBX9IxqNkzKhH5n3mV
-        Oun0jKfmoEphVQ==
-X-ME-Sender: <xms:6lxZYe58s60wSG_vm7WIGgUNN5eq7IBW6i5u32lGZDVc4wr5utQ5Jg>
-    <xme:6lxZYX4hCA__SeRjjy391ZFb2DmE0ykzsy1cVHVyX24JNsIqjTNWQZgnX1pWpkVnN
-    H0nQorcAb4mC0M>
-X-ME-Received: <xmr:6lxZYdfOFdBUArz421eHp4xYyPxTgmjQQgdvjvPYbYm1VB3kYmALsKF5sHkF73OQzpQpAtSiuBTKB0gd8YIeMNOkeafqCFROSp99fKE_5vqQbA>
+        fm1; bh=QjTQVmByqXnVfU8ZezBKdv2IP0+p2sB/WLXa94HjQXE=; b=Z+Swm6RQ
+        xdP8izaWEtvkKnNHhanlNrk7ef6HbwhpWnf6h3G8eQWwN2pw6JA6jkvwdz0aVjBn
+        5jgom4PWdlYEim3KrTidotKOoIYSrKFNa/thbfkPs5txB2ryRwuxr96APkzENFgV
+        JXsXQA9tmt8Ft3YYXJN7/zwDir8Tn5j53eDPQKfpjH9fWEKuy09lwo+qItwdqF5s
+        HBuX1pcfronFwDShTQEa85UAclQpNYDP/DdAmoBIjM4g63JgDjFSIusjNeASt4wf
+        dJjLmvKF/m1pk2480elAHoeRUJZwrNgYvHxtaDJqJkP88bG7/GpjE1HQQfyPw6js
+        nuMjQbRYNG38TA==
+X-ME-Sender: <xms:7VxZYXAj5mIwIvJoRgPGztEUf6gPbozCzgEhEaHtQaAArCBhX7fbfQ>
+    <xme:7VxZYdjSCfPr2JZMLd1r0IyFK7i-WUe-DaP6rGRXK_P7v2H2dSu_Pz1YGal0n3VUB
+    x7398V7M_v5sIs>
+X-ME-Received: <xmr:7VxZYSkuHfVkqF-jYe0ZezF3-UiGYXdTz7GjKcqQS6htA6rLlS2hiAf7beO1Ha_gu3OZ-vpXKw6iUGDO-tromOLJZAT0In7N6rI3lRpRPPb_-A>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudekledguddulecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
     ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
     ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
-    ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedunecu
+    ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedvnecu
     rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:6lxZYbKnNZZR1KrUOA3ToRUtjxqiGZiNnEMJSudDOfy26gTu7wF0YQ>
-    <xmx:6lxZYSIX3llCnK5gM5izD1jBW7foQwKaF49IDgc0KLqe1i_v8C4h3w>
-    <xmx:6lxZYcwBlxwlZekhUobnrXdOVJRr_k98cYD-LAGLgXGlEUPijgSHSQ>
-    <xmx:6lxZYR8bQpLEpM7Hlju15fq3EGjaboaPlcDY1mo4V5bJD3DhgVMuTA>
+X-ME-Proxy: <xmx:7VxZYZzplPXGr_gnRmiwRYtttHehUlaC-OYbGKaZPVhmMCf7_yDfcA>
+    <xmx:7VxZYcRjXTrU4_4wk69EZ_QYh7b7rRsjgjqBjUXdmFYfY_aNZ9-Y4w>
+    <xmx:7VxZYcYu_DIiipfuyi-7gKX5QbH5Y6Q5antBrhb1eDv2hybBEDV83A>
+    <xmx:7VxZYfHyB_l0CVV5zHR8jEqs2hN3_muGtQ3sO_5Bdx6m6w6bRmvkNA>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 3 Oct 2021 03:33:59 -0400 (EDT)
+ 3 Oct 2021 03:34:02 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
         jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 5/6] ethtool: Add transceiver module extended state
-Date:   Sun,  3 Oct 2021 10:32:18 +0300
-Message-Id: <20211003073219.1631064-6-idosch@idosch.org>
+Subject: [PATCH net-next 6/6] mlxsw: Add support for transceiver module extended state
+Date:   Sun,  3 Oct 2021 10:32:19 +0300
+Message-Id: <20211003073219.1631064-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211003073219.1631064-1-idosch@idosch.org>
 References: <20211003073219.1631064-1-idosch@idosch.org>
@@ -64,87 +64,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Add an extended state and sub-state to describe link issues related to
-transceiver modules.
-
-The 'ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY' extended sub-state
-tells user space that port is unable to gain a carrier because the CMIS
-Module State Machine did not reach the ModuleReady (Fully Operational)
-state. For example, if the module is stuck at ModuleLowPwr or
-ModuleFault state. In case of the latter, user space can read the fault
-reason from the module's EEPROM and potentially reset it.
+Add support for the transceiver module extended state and sub-state
+added in previous patch. The extended state is meant to describe link
+issues related to transceiver modules.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- Documentation/networking/ethtool-netlink.rst | 10 ++++++++++
- include/linux/ethtool.h                      |  1 +
- include/uapi/linux/ethtool.h                 |  6 ++++++
- 3 files changed, 17 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index d6fd4b2e243c..7b598c7e3912 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -528,6 +528,8 @@ Link extended states:
-                                                         power required from cable or module
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
+index 7329bc84a8ee..84d4460f3dcd 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
+@@ -96,6 +96,9 @@ mlxsw_sp_link_ext_state_opcode_map[] = {
+ 	{1032, ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED, 0},
  
-   ``ETHTOOL_LINK_EXT_STATE_OVERHEAT``                   The module is overheated
+ 	{1030, ETHTOOL_LINK_EXT_STATE_OVERHEAT, 0},
 +
-+  ``ETHTOOL_LINK_EXT_STATE_MODULE``                     Transceiver module issue
-   ================================================      ============================================
- 
- Link extended substates:
-@@ -621,6 +623,14 @@ Link extended substates:
-   ``ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE``   Cable test failure
-   ===================================================   ============================================
- 
-+  Transceiver module issue substates:
-+
-+  ===================================================   ============================================
-+  ``ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY``   The CMIS Module State Machine did not reach
-+                                                        the ModuleReady state. For example, if the
-+                                                        module is stuck at ModuleFault state
-+  ===================================================   ============================================
-+
- DEBUG_GET
- =========
- 
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 9adf8d2c3144..845a0ffc16ee 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -94,6 +94,7 @@ struct ethtool_link_ext_state_info {
- 		enum ethtool_link_ext_substate_link_logical_mismatch link_logical_mismatch;
- 		enum ethtool_link_ext_substate_bad_signal_integrity bad_signal_integrity;
- 		enum ethtool_link_ext_substate_cable_issue cable_issue;
-+		enum ethtool_link_ext_substate_module module;
- 		u8 __link_ext_substate;
- 	};
- };
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index a3e763ad1666..1b126e8b5269 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -603,6 +603,7 @@ enum ethtool_link_ext_state {
- 	ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE,
- 	ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED,
- 	ETHTOOL_LINK_EXT_STATE_OVERHEAT,
-+	ETHTOOL_LINK_EXT_STATE_MODULE,
++	{1042, ETHTOOL_LINK_EXT_STATE_MODULE,
++	 ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY},
  };
  
- /* More information in addition to ETHTOOL_LINK_EXT_STATE_AUTONEG. */
-@@ -649,6 +650,11 @@ enum ethtool_link_ext_substate_cable_issue {
- 	ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE,
- };
- 
-+/* More information in addition to ETHTOOL_LINK_EXT_STATE_MODULE. */
-+enum ethtool_link_ext_substate_module {
-+	ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY = 1,
-+};
-+
- #define ETH_GSTRING_LEN		32
- 
- /**
+ static void
+@@ -124,6 +127,10 @@ mlxsw_sp_port_set_link_ext_state(struct mlxsw_sp_ethtool_link_ext_state_opcode_m
+ 		link_ext_state_info->cable_issue =
+ 			link_ext_state_mapping.link_ext_substate;
+ 		break;
++	case ETHTOOL_LINK_EXT_STATE_MODULE:
++		link_ext_state_info->module =
++			link_ext_state_mapping.link_ext_substate;
++		break;
+ 	default:
+ 		break;
+ 	}
 -- 
 2.31.1
 
