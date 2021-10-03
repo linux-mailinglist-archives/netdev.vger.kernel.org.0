@@ -2,65 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A3D241FF75
-	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 05:24:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E315941FFD0
+	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 06:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229607AbhJCD0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 23:26:20 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:34396 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbhJCD0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 23:26:19 -0400
-Received: from pecola.lan (unknown [159.196.93.152])
-        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id F202D20274;
-        Sun,  3 Oct 2021 11:24:30 +0800 (AWST)
-Message-ID: <d5ada7b46f4abc2c5a7ecf0af0e50e356685a25b.camel@codeconstruct.com.au>
-Subject: Re: [PATCH net-next 2/2] mctp: test: defer mdev setup until we've
- registered
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     David Gow <davidgow@google.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Date:   Sun, 03 Oct 2021 11:24:30 +0800
-In-Reply-To: <CABVgOSkuN7XPPvnBQFm_h80eFpx_fT0veDPxMefVbiNa_ZQG8g@mail.gmail.com>
-References: <20211002022656.1681956-1-jk@codeconstruct.com.au>
-         <20211002022656.1681956-2-jk@codeconstruct.com.au>
-         <CABVgOSkuN7XPPvnBQFm_h80eFpx_fT0veDPxMefVbiNa_ZQG8g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        id S229681AbhJCEm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Oct 2021 00:42:57 -0400
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:63837 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229645AbhJCEmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 00:42:55 -0400
+Received: from tomoyo.flets-east.jp ([114.149.34.46])
+        by smtp.orange.fr with ESMTPA
+        id WtJ1mh6etsoWhWtJAm9O0T; Sun, 03 Oct 2021 06:41:06 +0200
+X-ME-Helo: tomoyo.flets-east.jp
+X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
+X-ME-Date: Sun, 03 Oct 2021 06:41:06 +0200
+X-ME-IP: 114.149.34.46
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v1] can: netlink: report the CAN controller mode supported flags
+Date:   Sun,  3 Oct 2021 13:40:49 +0900
+Message-Id: <20211003044049.568441-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+This patch introduces a method for the user to check both the
+supported and the static capabilities.
 
-> Haha -- you sent this just as I'd come up with the same patch here.
-> :-)
-> 
-> With these changes, alongside the rt->dev == NULL in
-> mctp_route_release() crash fix mentioned in [1], the tests all pass
-> on
-> my system. (They also pass under KASAN, which bodes well.)
+Currently, the CAN netlink interface provides no easy ways to check
+the capabilities of a given controller. The only method from the
+command line is to try each CAN_CTRLMODE_ individually to check
+whether the netlink interface returns an -EOPNOTSUPP error or not
+(alternatively, one may find it easier to directly check the source
+code of the driver instead...)
 
-Awesome, thanks for checking these out. I've since sent a v2 with the
-fixes integrated, in order to not break davem's build.
+It appears that, currently, the struct can_ctrlmode::mask field is
+only used in one direction: from the userland to the kernel. So we can
+just reuse this field in the other direction (from the kernel to
+userland). But, because the semantic is different, we use a union to
+give this field a proper name: supported.
 
-I've refined the rt->dev == NULL case a little; rather than allowing
-->dev == NULL in the core code (which should never happen), I've
-modified the test's route refcounting so that the route destroy path
-should only ever hit the test's own destructor instead (which allows
-!rt->dev cases). This means we can keep the ->dev != NULL assumption in
-the core, and still handle tests where our fake route->dev is unset.
+Below table explains how the two fields can_ctrlmode::supported and
+can_ctrlmode::flags, when masked with any of the CAN_CTRLMODE_* bit
+flags, allow us to identify both the supported and the static
+capabilities:
 
-Cheers,
+ supported &	flags &		Controller capabilities
+ CAN_CTRLMODE_*	CAN_CTRLMODE_*
+ ------------------------------------------------------------------------
+ false		false		Feature not supported (always disabled)
+ false		true		Static feature (always enabled)
+ true		false		Feature supported but disabled
+ true		true		Feature supported and enabled
 
+N.B.: This patch relies on the fact that a given CAN_CTRLMODE_*
+feature can not be set for both can_priv::ctrlmode_supported and
+can_priv::ctrlmode_static at the same time. c.f. comments in struct
+can_priv [1]. Else, there would be no way to distinguish which
+features were statically enabled.
 
-Jeremy
+[1] https://elixir.bootlin.com/linux/v5.14/source/include/linux/can/dev.h#61
+
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+I will send a iproute2-next patch right after to illustrate the idea.
+---
+ drivers/net/can/dev/netlink.c    | 5 ++++-
+ include/uapi/linux/can/netlink.h | 5 ++++-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
+index 80425636049d..480818edccc1 100644
+--- a/drivers/net/can/dev/netlink.c
++++ b/drivers/net/can/dev/netlink.c
+@@ -264,7 +264,10 @@ static size_t can_get_size(const struct net_device *dev)
+ static int can_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ {
+ 	struct can_priv *priv = netdev_priv(dev);
+-	struct can_ctrlmode cm = {.flags = priv->ctrlmode};
++	struct can_ctrlmode cm = {
++		.supported = priv->ctrlmode_supported,
++		.flags = priv->ctrlmode
++	};
+ 	struct can_berr_counter bec = { };
+ 	enum can_state state = priv->state;
+ 
+diff --git a/include/uapi/linux/can/netlink.h b/include/uapi/linux/can/netlink.h
+index f730d443b918..2847ed0dcac3 100644
+--- a/include/uapi/linux/can/netlink.h
++++ b/include/uapi/linux/can/netlink.h
+@@ -88,7 +88,10 @@ struct can_berr_counter {
+  * CAN controller mode
+  */
+ struct can_ctrlmode {
+-	__u32 mask;
++	union {
++		__u32 mask;		/* Userland to kernel */
++		__u32 supported;	/* Kernel to userland */
++	};
+ 	__u32 flags;
+ };
+ 
+-- 
+2.32.0
 
