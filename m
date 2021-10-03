@@ -2,163 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A84D4203BD
-	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 21:27:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C500E4203D0
+	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 21:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231420AbhJCT2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Oct 2021 15:28:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39578 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231280AbhJCT2q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 3 Oct 2021 15:28:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 779A26113E;
-        Sun,  3 Oct 2021 19:26:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633289219;
-        bh=xT1kBNgVseYDpuIPi5OSd2BvxN7N+C4ybBmVSDmqbkw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZFKPpkB9z5vxwWZwjePFLih316yP1HgZIuOANjShMByhj5Z1HbWQr7PMFHpgihbY7
-         BwQjqopfa1f3UEH0y2An/6BwWaJR2RCIFTEkS0GJpfNKBfZ7vu1Y37hxAa8/cAn0MR
-         FVsSQmGGvdeb0BXIzOqKtlSJUYTcV8Bl8D09e3bx50qzye/T8bHYSf2aazg9TP2LfD
-         0TPKslFYPAsZTdRLHKN5AGVbrxKSoWAqJtZ3TIyRXaZXw08xeELDAxlWV4We37lkiQ
-         n+Seiekuu51pgRpZH+tNjshcx8r/oRPo3+km73qvzXjVVMZZc/Uqh6BvRGoCiggth/
-         1aXl4I2xeXJog==
-Date:   Sun, 3 Oct 2021 21:26:54 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>, Rob Herring <robh+dt@kernel.org>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: lets settle the LED `function` property regarding the netdev
- trigger
-Message-ID: <20211003212654.30fa43f5@thinkpad>
-In-Reply-To: <YVn815h7JBtVSfwZ@lunn.ch>
-References: <20211001143601.5f57eb1a@thinkpad>
-        <YVn815h7JBtVSfwZ@lunn.ch>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S231589AbhJCT6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Oct 2021 15:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230303AbhJCT6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 15:58:20 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309B0C0613EC
+        for <netdev@vger.kernel.org>; Sun,  3 Oct 2021 12:56:32 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id z184-20020a1c7ec1000000b003065f0bc631so17313959wmc.0
+        for <netdev@vger.kernel.org>; Sun, 03 Oct 2021 12:56:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=pRp4uGUNTnL3zIP7ZkjQGVHzB+m4RFp5zwN3JbYDBEY=;
+        b=hhVfUW5kcnoaeJybfNVMEY+rLXBW0ypBKVlW2s7T8alZbfqkCTVTDrLACbbvWAof0F
+         987esJbX4rE4IHgJvq/GND7dllh7HMoS98Bu8YelFMA2fYkvhwSqn2SracxtErEBSEEc
+         Qz0MLYHkDxuAOPpdU5NC2DD6MFM3dUQJYpJB/PYfvtPgVLDIIwF3RmmlXxVUAnSmB6Wv
+         JaeO53djZc28Q5rnRWHPD5MQj46NNc37WB0z5vNquM1vbSKgAyZBnRFDOAXcYtfq7je+
+         z4/vzfjPXzcDuEcf91aL3znLrhXBVi7+2dq2S4OBXVYqI5L3AIBVbXcQB7d5jet7u3Zq
+         TvxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=pRp4uGUNTnL3zIP7ZkjQGVHzB+m4RFp5zwN3JbYDBEY=;
+        b=UjNurJ58VSrvCcfUVqMSi+O/pzQNkHxMqwG7MWU38amM4BrneB/nXb+RgcaNodJ4J4
+         yd76Yprz9cHik7dmeWx5Rf11hv1ndC7xBbgBVfO3jVXja8IEtPhvdm30nvamc89Q+x6n
+         VIDRI0UpuueUCGz9koMXCs/smjj9D2YBL7JF2bzkCXzZEqXGV1Be7DE2dGX5abL60O4r
+         8DC5/igYPuOz6hchbEtfBDvJ0NDQYMbK4Yrb4zYFUkq9EX/rhrrSAJBErnYLLdVZ9ku5
+         BUHGRKvDZsa3/H7Sd1F1x3aK/xIyvRIdP3cFi33oZ4x2NgtuG1OIVi7h48yA+6Mw78TS
+         xGJg==
+X-Gm-Message-State: AOAM532o0s5cIm5hEds5eqeCqJZBiofTsUkl1arpXPHIqAOGVDzZ/3uP
+        gyf6tzj9LuRljlD3a0014mJO/bcBvDyNDpTbDU4=
+X-Google-Smtp-Source: ABdhPJzBYolx6iX894eO3WQYHwNTieNr+4PyPuEgZcnyRvYZepP+fdU++TAkh+4jDT2aZbeJoeQnLqLCZdKixt9JuB0=
+X-Received: by 2002:a05:600c:4148:: with SMTP id h8mr15198069wmm.2.1633290990700;
+ Sun, 03 Oct 2021 12:56:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Sender: lchi75698@gmail.com
+Received: by 2002:adf:eb8b:0:0:0:0:0 with HTTP; Sun, 3 Oct 2021 12:56:30 -0700 (PDT)
+From:   Evelyn Philips <evelynphilips517@gmail.com>
+Date:   Sun, 3 Oct 2021 12:56:30 -0700
+X-Google-Sender-Auth: wRuj5jd9ybO0VZWLFGC2uXAHcHw
+Message-ID: <CAHW3fY7hh95ckcXjRBZ-EPZAjhPc0__eKDXNzY1MWti1Uf2LPQ@mail.gmail.com>
+Subject: Hello dear frined
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 3 Oct 2021 20:56:23 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+Hello My Dear,
 
-> On Fri, Oct 01, 2021 at 02:36:01PM +0200, Marek Beh=C3=BAn wrote:
-> > Hello Pavel, Jacek, Rob and others,
-> >=20
-> > I'd like to settle DT binding for the LED function property regarding
-> > the netdev LED trigger.
-> >=20
-> > Currently we have, in include/dt-bindings/leds/common.h, the following
-> > functions defined that could be interpreted as request to enable netdev
-> > trigger on given LEDs:
-> >   activity
-> >   lan
-> >   rx tx
-> >   wan
-> >   wlan
-> >=20
-> > The "activity" function was originally meant to imply the CPU
-> > activity trigger, while "rx" and "tx" are AFAIK meant as UART indicators
-> > (tty LED trigger), see
-> > https://lore.kernel.org/linux-leds/20190609190803.14815-27-jacek.anasze=
-wski@gmail.com/
-> >=20
-> > The netdev trigger supports different settings:
-> > - indicate link
-> > - blink on rx, blink on tx, blink on both
-> >=20
-> > The current scheme does not allow for implying these.
-> >=20
-> > I therefore propose that when a LED has a network device handle in the
-> > trigger-sources property, the "rx", "tx" and "activity" functions
-> > should also imply netdev trigger (with the corresponding setting).
-> > A "link" function should be added, also implying netdev trigger.
-> >=20
-> > What about if a LED is meant by the device vendor to indicate both link
-> > (on) and activity (blink)?
-> > The function property is currently a string. This could be changed to
-> > array of strings, and then we can have
-> >   function =3D "link", "activity";
-> > Since the function property is also used for composing LED classdev
-> > names, I think only the first member should be used for that.
-> >=20
-> > This would allow for ethernet LEDs with names
-> >   ethphy-0:green:link
-> >   ethphy-0:yellow:activity
-> > to be controlled by netdev trigger in a specific setting without the
-> > need to set the trigger in /sys/class/leds. =20
->=20
-> Hi Marek
->=20
-> There is no real standardization here. Which means PHYs differ a lot
-> in what they can do. We need to strike a balance between over
-> simplifying and only supporting a very small set of PHY LED features,
-> and allowing great flexibility and having each PHY implement its own
-> specific features and having little in common.
->=20
-> I think your current proposal is currently on the too simple side.
->=20
-> One common feature is that there are multiple modes for indicating
-> link, which take into account the link speed. Look at for example
-> include/dt-bindings/net/microchip-lan78xx.h
->=20
-> #define LAN78XX_LINK_ACTIVITY           0
-> #define LAN78XX_LINK_1000_ACTIVITY      1
-> #define LAN78XX_LINK_100_ACTIVITY       2
-> #define LAN78XX_LINK_10_ACTIVITY        3
-> #define LAN78XX_LINK_100_1000_ACTIVITY  4
-> #define LAN78XX_LINK_10_1000_ACTIVITY   5
-> #define LAN78XX_LINK_10_100_ACTIVITY    6
->=20
-> And:
->=20
-> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10	0x0010
-> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK100	0x0020
-> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10X	0x0030
-> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK1000	0x0040
-> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10_0	0x0050
-> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK100X	0x0060
-> intel-xway.c:#define  XWAY_MMD_LEDxL_BLINKS_LINK10XX	0x0070
->=20
-> Marvell PHYs have similar LINK modes which can either be one specific
-> speed, or a combination of speeds.
->=20
-> This is a common enough feature, and a frequently used feature, we
-> need to support it. We also need to forward looking. We should not
-> limit ourselves to 10/100/1G. We have 3 PHY drivers which support
-> 2.5G, 5G and 10G. 25G and 40G are standardized so are likely to come
-> along at some point.
->=20
-> One way we could support this is:
->=20
-> function =3D "link100", "link1G", "activity";
->=20
-> for LAN78XX_LINK_100_1000_ACTIVITY, etc.
->=20
->     Andrew
-
-Hello Andrew,
-
-I am aware of this, and in fact am working on a proposal for an
-extension of netdev LED extension, to support the different link
-modes. (And also to support for multi-color LEDs.)
-
-But I am not entirely sure whether these different link modes should be
-also definable via device-tree. Are there devices with ethernet LEDs
-dedicated for a specific speed? (i.e. the manufacturer says in the
-documentation of the device, or perhaps on the device's case, that this
-LED shows 100M/1000M link, and that other LED is shows 10M link?)
-If so, that this should be specified in the devicetree, IMO. But are
-such devices common?
-
-And what about multi-color LEDs? There are ethernet ports where one LED
-is red-green, and so can generate red, green, and yellow color. Should
-device tree also define which color indicates which mode?
-
-Marek
+ I am sending the same message to you. My names are Mrs. Evelyn
+Philips. a widow diagnosed with brain tumor disease which has gotten
+to a very bad stage, Please I want you to understand the most
+important reason why I am contacting you through this medium is
+because I need your sincerity and ability to carry out this
+transaction and fulfill my final wish in implementing the charitable
+investment project in your country as it requires absolute trust and
+devotion without any failure, which i believe that you will not expose
+this to anyone or betray this trust and confident that I am about to
+entrust on you for the mutual benefit of the orphans and the less
+privilege. I have some funds I inherited from my late husband, the sum
+of ($ 9,500,000.00 Nine point five million dollars.) deposited with
+the Bank. Having known my present health condition, I decided to
+entrust this fund to you believing that you will utilize it the way i
+am going to instruct herein.
+It will be my pleasure to compensate you as my Investment
+Manager/Partner with 35% percent of the total money for your effort in
+handling the transaction, 5% percent for any expenses or processing
+charges fee that will involve during this process while 60% of the
+fund will be Invested into the charity project there in your country.
+Therefore I am waiting for your prompt respond, if only you are
+interested in this humanitarian project for further details of the
+transaction and execution of this charitable project for the glory and
+honor of God the merciful compassionate. Your urgent reply will be
+appreciated.
+God bless you.
+Sincerely Sister in Christ Mrs. Evelyn Philips.
