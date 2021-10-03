@@ -2,96 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3275141FE7E
-	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 00:33:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12A1241FEDF
+	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 02:13:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234163AbhJBWfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 18:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234111AbhJBWf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 18:35:29 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C04C061714
-        for <netdev@vger.kernel.org>; Sat,  2 Oct 2021 15:33:43 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id oj15-20020a17090b4d8f00b0019f8860d6e2so2618757pjb.5
-        for <netdev@vger.kernel.org>; Sat, 02 Oct 2021 15:33:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PzVNB2R4Ft9UsCNEZCdYlsZL6jzNshtK4wQXaAVFDAE=;
-        b=QkQU+WtLqsKziAzBoya6hKIokIM2Y9xO3gC9rkOrIbFAyYw3A/YqcvxTq1yeojCZGf
-         ApDI8Ot6y3/JE+GDdvFpvg4G8IcHlo+wGagRZnfe/FB/I/3yeWTKYCWle2kfbU4QDnRI
-         UqJwVjkO9+a1sBKNfnCJ7yrn6WaWtpU+5oHZ6ijNXwsGrX6EgwrEVcXkUQBTfSRm0hgu
-         RaRpmeQzLlRZEZvizmxG/JOdpQAIs7xBuu+CcopC7HgGstBc8FTQRodblgf/iTOBXIXu
-         HluNcx2ZP1iYXupZBtP8fkJCRU1mZVcIcMHnKj31zUcKvaQNkTpNWNxjc1nWmJp2prwU
-         jYmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PzVNB2R4Ft9UsCNEZCdYlsZL6jzNshtK4wQXaAVFDAE=;
-        b=tY2YRFb8AGL4SKlxvNakomChz5sVD4J/psqElmsI5uz+Gz4PEK8+ub29+YM+uMqDUq
-         whJAQBla9CKvn8XTZjVivXbN4RI9kEt75MfEWxhiqWlp6cJCAXw8yWZ7hs9Oz8YIGzlj
-         h1b0UYfCjV7pLnhmqf5i4Scog8GJ0QmwL/3A/Q/UX/TxcpLhfjB/2GmFHkmSzW/2qbvF
-         QNhz9UN9lpr0TDbZ6c6QjlWHo5899/PNisnis5FuXEhFvVhiWhS69HErBG3EzgHT2bhB
-         +zWAqgxehlw6tkdO8FGTae8WK3So1iBx9CoZ08itrxB7dwOHAYuLSOYAAhdMwO2FsfZy
-         ieMA==
-X-Gm-Message-State: AOAM5326mfwrboWwQ2Yu+DDZ9R0XmPKGGKmaQbvMEZPR9/owa/lgtTU2
-        i3/85uzlEEqSzSqPUYLaqPy0CbMa3x8=
-X-Google-Smtp-Source: ABdhPJzAPtYjMJrN6YrWfvhZ8s5llqhk/kHESKe7cMU6eCtBg/dV4ML2IlJijtMu5kvgMOziygaJqQ==
-X-Received: by 2002:a17:902:c193:b0:13e:8e77:6c82 with SMTP id d19-20020a170902c19300b0013e8e776c82mr7783083pld.29.1633214022196;
-        Sat, 02 Oct 2021 15:33:42 -0700 (PDT)
-Received: from jsh.42seoul.kr ([121.135.181.61])
-        by smtp.googlemail.com with ESMTPSA id z12sm9939431pge.16.2021.10.02.15.33.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Oct 2021 15:33:41 -0700 (PDT)
-From:   MichelleJin <shjy180909@gmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next] net: ipv6: fix use after free of struct seg6_pernet_data
-Date:   Sat,  2 Oct 2021 22:33:32 +0000
-Message-Id: <20211002223332.548350-1-shjy180909@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S234265AbhJCAOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 20:14:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55634 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233697AbhJCAOm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 Oct 2021 20:14:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7375F611EE;
+        Sun,  3 Oct 2021 00:12:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633219976;
+        bh=44/4UXSTX7aMakCoo7kCOg/4EAa0B7TFu4vaKWWN1N8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mUcjekr7MFRa8B1hb7yyiu6ZCtmMqk2Cz5RJYLpLb+NWceikIT8Nok5vO0plZF/rE
+         K50t5dnUbn3NAshBfLOYktwflEYFA15OMm6ZAyDoHBIhkbP45jbsaE9fQOHTbYQaJV
+         KTIcEydZYP1u7Oaxn3zmB5eV/IqIldt/2xS2UH8NmlOOHE0GPZG7T0fpP5keOZbtF6
+         YjDW6pFtSVpS79SblR39aveCzJOhzbg82GchlcWSAZeMID1l9AwxttgAJm0FttVHfu
+         meIqXjkrhKR1uAPMNER7oycyOAUvNb5UsqdvAYEGmuTspi2RfAn80AjVBc25ljPF6B
+         cSJFSalet1r9A==
+Date:   Sat, 2 Oct 2021 17:12:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 03/11] ethernet: use eth_hw_addr_set()
+Message-ID: <20211002171255.336bbbe8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YViJtfwpSqR9wIOU@shredder>
+References: <20211001213228.1735079-1-kuba@kernel.org>
+        <20211001213228.1735079-4-kuba@kernel.org>
+        <YViJtfwpSqR9wIOU@shredder>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sdata->tun_src should be freed before sdata is freed
-because sdata->tun_src is allocated after sdata allocation.
-So, kfree(sdata) and kfree(rcu_dereference_raw(sdata->tun_src)) are
-changed code order.
+On Sat, 2 Oct 2021 19:32:53 +0300 Ido Schimmel wrote:
+> On Fri, Oct 01, 2021 at 02:32:20PM -0700, Jakub Kicinski wrote:
+> > Convert all Ethernet drivers from memcpy(... ETH_ADDR)
+> > to eth_hw_addr_set():
+> > 
+> >   @@
+> >   expression dev, np;
+> >   @@
+> >   - memcpy(dev->dev_addr, np, ETH_ALEN)
+> >   + eth_hw_addr_set(dev, np)  
+> 
+> Some use:
+> 
+> memcpy(dev->dev_addr, np, dev->addr_len)
+> 
+> Not sure if you missed it or if it's going to be in part 2. I assume the
+> latter, but thought I would ask.
 
-Fixes: f04ed7d277e8 ("net: ipv6: check return value of rhashtable_init")
+Yup, still
 
-Signed-off-by: MichelleJin <shjy180909@gmail.com>
----
+ 417 files changed, 1239 insertions(+), 960 deletions(-)
 
- commit f04ed7d277e8
- ("net: ipv6: check return value of rhashtable_init")
- is not yet merged into net branch,
- so this patch is committed to net-next.
+to go. I thought I'd start upstreaming from the most obvious /
+mechanical changes.
 
- net/ipv6/seg6.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+For the memcpy(..., dev->addr_len) I'm thinking of using
+eth_hw_addr_set() in appropriate sections of the tree (drivers/ethernet,
+driver/wireless) and convert the rest to this helper:
 
-diff --git a/net/ipv6/seg6.c b/net/ipv6/seg6.c
-index 65744f2d38da..5daa1c3ed83b 100644
---- a/net/ipv6/seg6.c
-+++ b/net/ipv6/seg6.c
-@@ -375,8 +375,8 @@ static int __net_init seg6_net_init(struct net *net)
- 
- #ifdef CONFIG_IPV6_SEG6_HMAC
- 	if (seg6_hmac_net_init(net)) {
--		kfree(sdata);
- 		kfree(rcu_dereference_raw(sdata->tun_src));
-+		kfree(sdata);
- 		return -ENOMEM;
- 	};
- #endif
--- 
-2.25.1
+static inline void dev_addr_set(struct net_device *dev, const u8 *addr)
+{
+	memcpy(dev->dev_addr, addr, dev->addr_len);
+}
 
+dev_addr_set() everywhere would be more obviously correct, but using
+eth_hw_addr_set() seems cleaner for Ethernet drivers. Second opinion
+on this would be good if you have a preference.
