@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26914420077
+	by mail.lfdr.de (Postfix) with ESMTP id 930AA420078
 	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 09:34:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229882AbhJCHfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Oct 2021 03:35:40 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:57837 "EHLO
+        id S229888AbhJCHfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Oct 2021 03:35:44 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:56325 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229567AbhJCHfh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 03:35:37 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 18EF6580E3F;
-        Sun,  3 Oct 2021 03:33:50 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S229877AbhJCHfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 03:35:40 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 10E69580E43;
+        Sun,  3 Oct 2021 03:33:53 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sun, 03 Oct 2021 03:33:50 -0400
+  by compute3.internal (MEProxy); Sun, 03 Oct 2021 03:33:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=UCtjs6LaLl34qo6PKQ4pkMVpAHEUcl4tTRUMpTgSabI=; b=MJORZxV6
-        3+W7U7ZJ/lyIxk11PK5wZScmGDOoa7ikJ6UzL65dyXvgeFhKPTIUwonNba+QwRFL
-        Z8RSMOx19ORvxgl4t4ZgQNn221mHqsEQvgXy1TXH/l6dAc8/V98haXDjHvf0CDtR
-        vK6OyrtQ4NwTSLwFbCeUQe+AQxVnmSY4ABxi8WzL1CURMa+GlE9XlTShUqY9O+6V
-        rjmOrMKQy0VPUP/n9nP7sAnYcG0U2bviI6SCgHUcSJazd2ozj8JEcVQ8dce3MwQG
-        ob6V8+VTzU5///es6VM3/FRg5Ss//v34njVKWev96ELwMViZbyRYQGgZeyMt0wWT
-        pDSAI5QRVHDcmg==
-X-ME-Sender: <xms:3VxZYWjqa8VlUHPU4wJmA7aTsoPYN1kxjENuApvppNEkEPh80FSZKQ>
-    <xme:3VxZYXBaYpPo98jAdyXVqttqJfCSHAAkCeZNWYcgCSWdw7urdjtHqxDCQv7dXjvGz
-    Vl56r0E5b-zPc8>
-X-ME-Received: <xmr:3VxZYeF5wZT0ltfnCC9vFUTugeSJjTa-M9e2S0RaYo2Q_0tXwFQ8JzLp6kn5vEYQGSz1BiNiLBAC_o4VLblfsSD5KcpV2ehYyZ_0RTV-Aw-eEQ>
+        fm1; bh=nImdF6j1LgCiDiPmAZ0/Yn9vHkDCY52jGC75qP6Y4XM=; b=Ibt2AKGt
+        lk4O9C71RewicoLClxO13ejAYEhTk7XgSQgl5sM+AAzlAr24nAxdbPpQSzD6EQBs
+        smcZ1NVoN0yTJHvWwmYxxAQN5c0MJbm/6okcBp/JpvM+MGHL/JthxDn7vtjV1LbA
+        SqSxzVcMIQHzFiylok474u2yslb2WhCGsjDocjo0YKbpyvpx/h42+XDuI+42edsB
+        qYZTXmU/ce52eInXu/ykM6vH3jfUwcwJoLCv3WWtvFH61Cru0z9qEsdbvrCvdr3o
+        YbLohFVf8PxazZzDYr5UhCvXLaZwQcgexfS01Odq1uaRHfdNAUkazirE3PyYt3jn
+        +S6jJl+OHxE3Sg==
+X-ME-Sender: <xms:4FxZYXrgDudg45jvUZjTE6jMZXe0mCNVDw35eHe6byOou4r9vGnBrw>
+    <xme:4FxZYRpMccOz9Isq_SwmLQ3jjDruBUnB08s-_7dKciqvcrtFzvuS8y4niBdhiEjfS
+    IrOcOsXF4ozB18>
+X-ME-Received: <xmr:4FxZYUMb9axGFKZzcIq0u1l-g--3KJawODgFCJtq71wVgfvca-w_sqExADmwwnag_4rInTxvW8w9qxehiaIkg5Isx4zXQm-DLUTJoPt71lNt9g>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudekledguddulecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
@@ -38,21 +38,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudekledguddulecutefuodetgg
     ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
     ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedtnecu
     rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:3VxZYfR2MOirlBeDymsRoP9ZtKs0G2k4AdvVOV8_aObUONgv0Gi_2A>
-    <xmx:3VxZYTyiteTbiT-Uh6U7A4ufUCyJzT8uSkkHgc3upPFiLaKs7zkstA>
-    <xmx:3VxZYd6XTqlUEzcoU3lkHFgPUSjpWNzf9I8lQrifWGWtAO1Tn4rjqw>
-    <xmx:3lxZYamcthlk-zSC_oz2Pb-fAo18-sauZrzcFEVOAkXiZGAtil14rg>
+X-ME-Proxy: <xmx:4FxZYa45gluZLhd79cutDp11DeB109dp0x50aM_Y3dFOj0bEdbEPqw>
+    <xmx:4FxZYW6n8ELaKgSh08qiZjzZmw5j1tCyDVTEwQEqa8ukuUnXUC2pRQ>
+    <xmx:4FxZYSi6MvWHu5JAD6lXc6fbHJQNAoxeW1bStQ4lxqZs8aFj26gOQQ>
+    <xmx:4VxZYYtafYYyJKcddCpcMkyihvp5inzFWp0DkAadNeNlMsiQvx_-FQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 3 Oct 2021 03:33:47 -0400 (EDT)
+ 3 Oct 2021 03:33:50 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
         jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 1/6] ethtool: Add ability to control transceiver modules' power mode
-Date:   Sun,  3 Oct 2021 10:32:14 +0300
-Message-Id: <20211003073219.1631064-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/6] mlxsw: reg: Add Port Module Memory Map Properties register
+Date:   Sun,  3 Oct 2021 10:32:15 +0300
+Message-Id: <20211003073219.1631064-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211003073219.1631064-1-idosch@idosch.org>
 References: <20211003073219.1631064-1-idosch@idosch.org>
@@ -64,784 +64,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Add a pair of new ethtool messages, 'ETHTOOL_MSG_MODULE_SET' and
-'ETHTOOL_MSG_MODULE_GET', that can be used to control transceiver
-modules parameters and retrieve their status.
-
-The first parameter to control is the power mode of the module. It is
-only relevant for paged memory modules, as flat memory modules always
-operate in low power mode.
-
-When a paged memory module is in low power mode, its power consumption
-is reduced to the minimum, the management interface towards the host is
-available and the data path is deactivated.
-
-User space can choose to put modules that are not currently in use in
-low power mode and transition them to high power mode before putting the
-associated ports administratively up. This is useful for user space that
-favors reduced power consumption and lower temperatures over reduced
-link up times. In QSFP-DD modules the transition from low power mode to
-high power mode can take a few seconds and this transition is only
-expected to get longer with future / more complex modules.
-
-User space can control the power mode of the module via the power mode
-policy attribute ('ETHTOOL_A_MODULE_POWER_MODE_POLICY'). Possible
-values:
-
-* high: Module is always in high power mode.
-
-* auto: Module is transitioned by the host to high power mode when the
-  first port using it is put administratively up and to low power mode
-  when the last port using it is put administratively down.
-
-The operational power mode of the module is available to user space via
-the 'ETHTOOL_A_MODULE_POWER_MODE' attribute. The attribute is not
-reported to user space when a module is not plugged-in.
-
-The user API is designed to be generic enough so that it could be used
-for modules with different memory maps (e.g., SFF-8636, CMIS).
-
-The only implementation of the device driver API in this series is for a
-MAC driver (mlxsw) where the module is controlled by the device's
-firmware, but it is designed to be generic enough so that it could also
-be used by implementations where the module is controlled by the CPU.
-
-CMIS testing
-
-============
-
- # ethtool -m swp11
- Identifier                                : 0x18 (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))
- ...
- Module State                              : 0x03 (ModuleReady)
- LowPwrAllowRequestHW                      : Off
- LowPwrRequestSW                           : Off
-
-The module is not in low power mode, as it is not forced by hardware
-(LowPwrAllowRequestHW is off) or by software (LowPwrRequestSW is off).
-
-The power mode can be queried from the kernel. In case
-LowPwrAllowRequestHW was on, the kernel would need to take into account
-the state of the LowPwrRequestHW signal, which is not visible to user
-space.
-
- $ ethtool --show-module swp11
- Module parameters for swp11:
- power-mode-policy high
- power-mode high
-
-Change the power mode policy to 'auto':
-
- # ethtool --set-module swp11 power-mode-policy auto
-
-Query the power mode again:
-
- $ ethtool --show-module swp11
- Module parameters for swp11:
- power-mode-policy auto
- power-mode low
-
-Verify with the data read from the EEPROM:
-
- # ethtool -m swp11
- Identifier                                : 0x18 (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))
- ...
- Module State                              : 0x01 (ModuleLowPwr)
- LowPwrAllowRequestHW                      : Off
- LowPwrRequestSW                           : On
-
-Put the associated port administratively up which will instruct the host
-to transition the module to high power mode:
-
- # ip link set dev swp11 up
-
-Query the power mode again:
-
- $ ethtool --show-module swp11
- Module parameters for swp11:
- power-mode-policy auto
- power-mode high
-
-Verify with the data read from the EEPROM:
-
- # ethtool -m swp11
- Identifier                                : 0x18 (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))
- ...
- Module State                              : 0x03 (ModuleReady)
- LowPwrAllowRequestHW                      : Off
- LowPwrRequestSW                           : Off
-
-Put the associated port administratively down which will instruct the
-host to transition the module to low power mode:
-
- # ip link set dev swp11 down
-
-Query the power mode again:
-
- $ ethtool --show-module swp11
- Module parameters for swp11:
- power-mode-policy auto
- power-mode low
-
-Verify with the data read from the EEPROM:
-
- # ethtool -m swp11
- Identifier                                : 0x18 (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))
- ...
- Module State                              : 0x01 (ModuleLowPwr)
- LowPwrAllowRequestHW                      : Off
- LowPwrRequestSW                           : On
-
-SFF-8636 testing
-================
-
- # ethtool -m swp13
- Identifier                                : 0x11 (QSFP28)
- ...
- Extended identifier description           : 5.0W max. Power consumption,  High Power Class (> 3.5 W) enabled
- Power set                                 : Off
- Power override                            : On
- ...
- Transmit avg optical power (Channel 1)    : 0.7733 mW / -1.12 dBm
- Transmit avg optical power (Channel 2)    : 0.7649 mW / -1.16 dBm
- Transmit avg optical power (Channel 3)    : 0.7790 mW / -1.08 dBm
- Transmit avg optical power (Channel 4)    : 0.7837 mW / -1.06 dBm
- Rcvr signal avg optical power(Channel 1)  : 0.9302 mW / -0.31 dBm
- Rcvr signal avg optical power(Channel 2)  : 0.9079 mW / -0.42 dBm
- Rcvr signal avg optical power(Channel 3)  : 0.8993 mW / -0.46 dBm
- Rcvr signal avg optical power(Channel 4)  : 0.8778 mW / -0.57 dBm
-
-The module is not in low power mode, as it is not forced by hardware
-(Power override is on) or by software (Power set is off).
-
-The power mode can be queried from the kernel. In case Power override
-was off, the kernel would need to take into account the state of the
-LPMode signal, which is not visible to user space.
-
- $ ethtool --show-module swp13
- Module parameters for swp13:
- power-mode-policy high
- power-mode high
-
-Change the power mode policy to 'auto':
-
- # ethtool --set-module swp13 power-mode-policy auto
-
-Query the power mode again:
-
- $ ethtool --show-module swp13
- Module parameters for swp13:
- power-mode-policy auto
- power-mode low
-
-Verify with the data read from the EEPROM:
-
- # ethtool -m swp13
- Identifier                                : 0x11 (QSFP28)
- Extended identifier description           : 5.0W max. Power consumption,  High Power Class (> 3.5 W) not enabled
- Power set                                 : On
- Power override                            : On
- ...
- Transmit avg optical power (Channel 1)    : 0.0000 mW / -inf dBm
- Transmit avg optical power (Channel 2)    : 0.0000 mW / -inf dBm
- Transmit avg optical power (Channel 3)    : 0.0000 mW / -inf dBm
- Transmit avg optical power (Channel 4)    : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 1)  : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 2)  : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 3)  : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 4)  : 0.0000 mW / -inf dBm
-
-Put the associated port administratively up which will instruct the host
-to transition the module to high power mode:
-
- # ip link set dev swp13 up
-
-Query the power mode again:
-
- $ ethtool --show-module swp13
- Module parameters for swp13:
- power-mode-policy auto
- power-mode high
-
-Verify with the data read from the EEPROM:
-
- # ethtool -m swp13
- Identifier                                : 0x11 (QSFP28)
- ...
- Extended identifier description           : 5.0W max. Power consumption,  High Power Class (> 3.5 W) enabled
- Power set                                 : Off
- Power override                            : On
- ...
- Transmit avg optical power (Channel 1)    : 0.7934 mW / -1.01 dBm
- Transmit avg optical power (Channel 2)    : 0.7859 mW / -1.05 dBm
- Transmit avg optical power (Channel 3)    : 0.7885 mW / -1.03 dBm
- Transmit avg optical power (Channel 4)    : 0.7985 mW / -0.98 dBm
- Rcvr signal avg optical power(Channel 1)  : 0.9325 mW / -0.30 dBm
- Rcvr signal avg optical power(Channel 2)  : 0.9034 mW / -0.44 dBm
- Rcvr signal avg optical power(Channel 3)  : 0.9086 mW / -0.42 dBm
- Rcvr signal avg optical power(Channel 4)  : 0.8885 mW / -0.51 dBm
-
-Put the associated port administratively down which will instruct the
-host to transition the module to low power mode:
-
- # ip link set dev swp13 down
-
-Query the power mode again:
-
- $ ethtool --show-module swp13
- Module parameters for swp13:
- power-mode-policy auto
- power-mode low
-
-Verify with the data read from the EEPROM:
-
- # ethtool -m swp13
- Identifier                                : 0x11 (QSFP28)
- ...
- Extended identifier description           : 5.0W max. Power consumption,  High Power Class (> 3.5 W) not enabled
- Power set                                 : On
- Power override                            : On
- ...
- Transmit avg optical power (Channel 1)    : 0.0000 mW / -inf dBm
- Transmit avg optical power (Channel 2)    : 0.0000 mW / -inf dBm
- Transmit avg optical power (Channel 3)    : 0.0000 mW / -inf dBm
- Transmit avg optical power (Channel 4)    : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 1)  : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 2)  : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 3)  : 0.0000 mW / -inf dBm
- Rcvr signal avg optical power(Channel 4)  : 0.0000 mW / -inf dBm
+Add the Port Module Memory Map Properties register. It will be used to
+set the power mode of a module in subsequent patches.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- Documentation/networking/ethtool-netlink.rst |  71 ++++++-
- include/linux/ethtool.h                      |  22 +++
- include/uapi/linux/ethtool.h                 |  23 +++
- include/uapi/linux/ethtool_netlink.h         |  17 ++
- net/ethtool/Makefile                         |   2 +-
- net/ethtool/module.c                         | 184 +++++++++++++++++++
- net/ethtool/netlink.c                        |  19 ++
- net/ethtool/netlink.h                        |   4 +
- 8 files changed, 339 insertions(+), 3 deletions(-)
- create mode 100644 net/ethtool/module.c
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 50 +++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index d9b55b7a1a4d..d6fd4b2e243c 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -41,6 +41,11 @@ In the message structure descriptions below, if an attribute name is suffixed
- with "+", parent nest can contain multiple attributes of the same type. This
- implements an array of entries.
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index c5fad3c94fac..bff05a0a2f7a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -5946,6 +5946,55 @@ static inline void mlxsw_reg_pddr_pack(char *payload, u8 local_port,
+ 	mlxsw_reg_pddr_page_select_set(payload, page_select);
+ }
  
-+Attributes that need to be filled-in by device drivers and that are dumped to
-+user space based on whether they are valid or not should not use zero as a
-+valid value. This avoids the need to explicitly signal the validity of the
-+attribute in the device driver API.
-+
- 
- Request header
- ==============
-@@ -179,7 +184,7 @@ according to message purpose:
- 
- Userspace to kernel:
- 
--  ===================================== ================================
-+  ===================================== =================================
-   ``ETHTOOL_MSG_STRSET_GET``            get string set
-   ``ETHTOOL_MSG_LINKINFO_GET``          get link settings
-   ``ETHTOOL_MSG_LINKINFO_SET``          set link settings
-@@ -213,7 +218,9 @@ Userspace to kernel:
-   ``ETHTOOL_MSG_MODULE_EEPROM_GET``     read SFP module EEPROM
-   ``ETHTOOL_MSG_STATS_GET``             get standard statistics
-   ``ETHTOOL_MSG_PHC_VCLOCKS_GET``       get PHC virtual clocks info
--  ===================================== ================================
-+  ``ETHTOOL_MSG_MODULE_SET``            set transceiver module parameters
-+  ``ETHTOOL_MSG_MODULE_GET``            get transceiver module parameters
-+  ===================================== =================================
- 
- Kernel to userspace:
- 
-@@ -252,6 +259,7 @@ Kernel to userspace:
-   ``ETHTOOL_MSG_MODULE_EEPROM_GET_REPLY``  read SFP module EEPROM
-   ``ETHTOOL_MSG_STATS_GET_REPLY``          standard statistics
-   ``ETHTOOL_MSG_PHC_VCLOCKS_GET_REPLY``    PHC virtual clocks info
-+  ``ETHTOOL_MSG_MODULE_GET_REPLY``         transceiver module parameters
-   ======================================== =================================
- 
- ``GET`` requests are sent by userspace applications to retrieve device
-@@ -1521,6 +1529,63 @@ Kernel response contents:
-   ``ETHTOOL_A_PHC_VCLOCKS_INDEX``       s32     PHC index array
-   ====================================  ======  ==========================
- 
-+MODULE_GET
-+==========
-+
-+Gets transceiver module parameters.
-+
-+Request contents:
-+
-+  =====================================  ======  ==========================
-+  ``ETHTOOL_A_MODULE_HEADER``            nested  request header
-+  =====================================  ======  ==========================
-+
-+Kernel response contents:
-+
-+  ======================================  ======  ==========================
-+  ``ETHTOOL_A_MODULE_HEADER``             nested  reply header
-+  ``ETHTOOL_A_MODULE_POWER_MODE_POLICY``  u8      power mode policy
-+  ``ETHTOOL_A_MODULE_POWER_MODE``         u8      operational power mode
-+  ======================================  ======  ==========================
-+
-+The optional ``ETHTOOL_A_MODULE_POWER_MODE_POLICY`` attribute encodes the
-+transceiver module power mode policy enforced by the host. The default policy
-+is driver-dependent, but "auto" is the recommended default and it should be
-+implemented by new drivers and drivers where conformance to a legacy behavior
-+is not critical.
-+
-+The optional ``ETHTHOOL_A_MODULE_POWER_MODE`` attribute encodes the operational
-+power mode policy of the transceiver module. It is only reported when a module
-+is plugged-in. Possible values are:
-+
-+.. kernel-doc:: include/uapi/linux/ethtool.h
-+    :identifiers: ethtool_module_power_mode
-+
-+MODULE_SET
-+==========
-+
-+Sets transceiver module parameters.
-+
-+Request contents:
-+
-+  ======================================  ======  ==========================
-+  ``ETHTOOL_A_MODULE_HEADER``             nested  request header
-+  ``ETHTOOL_A_MODULE_POWER_MODE_POLICY``  u8      power mode policy
-+  ======================================  ======  ==========================
-+
-+When set, the optional ``ETHTOOL_A_MODULE_POWER_MODE_POLICY`` attribute is used
-+to set the transceiver module power policy enforced by the host. Possible
-+values are:
-+
-+.. kernel-doc:: include/uapi/linux/ethtool.h
-+    :identifiers: ethtool_module_power_mode_policy
-+
-+For SFF-8636 modules, low power mode is forced by the host according to table
-+6-10 in revision 2.10a of the specification.
-+
-+For CMIS modules, low power mode is forced by the host according to table 6-12
-+in revision 5.0 of the specification.
-+
- Request translation
- ===================
- 
-@@ -1620,4 +1685,6 @@ are netlink only.
-   n/a                                 ``ETHTOOL_MSG_CABLE_TEST_TDR_ACT``
-   n/a                                 ``ETHTOOL_MSG_TUNNEL_INFO_GET``
-   n/a                                 ``ETHTOOL_MSG_PHC_VCLOCKS_GET``
-+  n/a                                 ``ETHTOOL_MSG_MODULE_GET``
-+  n/a                                 ``ETHTOOL_MSG_MODULE_SET``
-   =================================== =====================================
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 849524b55d89..9adf8d2c3144 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -415,6 +415,17 @@ struct ethtool_module_eeprom {
- 	u8	*data;
- };
- 
-+/**
-+ * struct ethtool_module_power_mode_params - module power mode parameters
-+ * @policy: The power mode policy enforced by the host for the plug-in module.
-+ * @mode: The operational power mode of the plug-in module. Should be filled by
-+ *	device drivers on get operations.
++/* PMMP - Port Module Memory Map Properties Register
++ * -------------------------------------------------
++ * The PMMP register allows to override the module memory map advertisement.
++ * The register can only be set when the module is disabled by PMAOS register.
 + */
-+struct ethtool_module_power_mode_params {
-+	enum ethtool_module_power_mode_policy policy;
-+	enum ethtool_module_power_mode mode;
-+};
++#define MLXSW_REG_PMMP_ID 0x5044
++#define MLXSW_REG_PMMP_LEN 0x2C
 +
- /**
-  * struct ethtool_ops - optional netdev operations
-  * @cap_link_lanes_supported: indicates if the driver supports lanes
-@@ -580,6 +591,11 @@ struct ethtool_module_eeprom {
-  * @get_eth_ctrl_stats: Query some of the IEEE 802.3 MAC Ctrl statistics.
-  * @get_rmon_stats: Query some of the RMON (RFC 2819) statistics.
-  *	Set %ranges to a pointer to zero-terminated array of byte ranges.
-+ * @get_module_power_mode: Get the power mode policy for the plug-in module
-+ *	used by the network device and its operational power mode, if
-+ *	plugged-in.
-+ * @set_module_power_mode: Set the power mode policy for the plug-in module
-+ *	used by the network device.
-  *
-  * All operations are optional (i.e. the function pointer may be set
-  * to %NULL) and callers must take this into account.  Callers must
-@@ -705,6 +721,12 @@ struct ethtool_ops {
- 	void	(*get_rmon_stats)(struct net_device *dev,
- 				  struct ethtool_rmon_stats *rmon_stats,
- 				  const struct ethtool_rmon_hist_range **ranges);
-+	int	(*get_module_power_mode)(struct net_device *dev,
-+					 struct ethtool_module_power_mode_params *params,
-+					 struct netlink_ext_ack *extack);
-+	int	(*set_module_power_mode)(struct net_device *dev,
-+					 const struct ethtool_module_power_mode_params *params,
-+					 struct netlink_ext_ack *extack);
- };
- 
- int ethtool_check_ops(const struct ethtool_ops *ops);
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index b6db6590baf0..a3e763ad1666 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -706,6 +706,29 @@ enum ethtool_stringset {
- 	ETH_SS_COUNT
- };
- 
-+/**
-+ * enum ethtool_module_power_mode_policy - plug-in module power mode policy
-+ * @ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH: Module is always in high power mode.
-+ * @ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO: Module is transitioned by the host
-+ *	to high power mode when the first port using it is put administratively
-+ *	up and to low power mode when the last port using it is put
-+ *	administratively down.
++MLXSW_REG_DEFINE(pmmp, MLXSW_REG_PMMP_ID, MLXSW_REG_PMMP_LEN);
++
++/* reg_pmmp_module
++ * Module number.
++ * Access: Index
 + */
-+enum ethtool_module_power_mode_policy {
-+	ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH,
-+	ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO,
-+};
++MLXSW_ITEM32(reg, pmmp, module, 0x00, 16, 8);
 +
-+/**
-+ * enum ethtool_module_power_mode - plug-in module power mode
-+ * @ETHTOOL_MODULE_POWER_MODE_LOW: Module is in low power mode.
-+ * @ETHTOOL_MODULE_POWER_MODE_HIGH: Module is in high power mode.
++/* reg_pmmp_sticky
++ * When set, will keep eeprom_override values after plug-out event.
++ * Access: OP
 + */
-+enum ethtool_module_power_mode {
-+	ETHTOOL_MODULE_POWER_MODE_LOW = 1,
-+	ETHTOOL_MODULE_POWER_MODE_HIGH,
-+};
++MLXSW_ITEM32(reg, pmmp, sticky, 0x00, 0, 1);
 +
- /**
-  * struct ethtool_gstrings - string set for data tagging
-  * @cmd: Command number = %ETHTOOL_GSTRINGS
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index 5545f1ca9237..ca5fbb59fa42 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -47,6 +47,8 @@ enum {
- 	ETHTOOL_MSG_MODULE_EEPROM_GET,
- 	ETHTOOL_MSG_STATS_GET,
- 	ETHTOOL_MSG_PHC_VCLOCKS_GET,
-+	ETHTOOL_MSG_MODULE_GET,
-+	ETHTOOL_MSG_MODULE_SET,
- 
- 	/* add new constants above here */
- 	__ETHTOOL_MSG_USER_CNT,
-@@ -90,6 +92,8 @@ enum {
- 	ETHTOOL_MSG_MODULE_EEPROM_GET_REPLY,
- 	ETHTOOL_MSG_STATS_GET_REPLY,
- 	ETHTOOL_MSG_PHC_VCLOCKS_GET_REPLY,
-+	ETHTOOL_MSG_MODULE_GET_REPLY,
-+	ETHTOOL_MSG_MODULE_NTF,
- 
- 	/* add new constants above here */
- 	__ETHTOOL_MSG_KERNEL_CNT,
-@@ -833,6 +837,19 @@ enum {
- 	ETHTOOL_A_STATS_RMON_MAX = (__ETHTOOL_A_STATS_RMON_CNT - 1)
- };
- 
-+/* MODULE */
++/* reg_pmmp_eeprom_override_mask
++ * Write mask bit (negative polarity).
++ * 0 - Allow write
++ * 1 - Ignore write
++ * On write, indicates which of the bits from eeprom_override field are
++ * updated.
++ * Access: WO
++ */
++MLXSW_ITEM32(reg, pmmp, eeprom_override_mask, 0x04, 16, 16);
 +
 +enum {
-+	ETHTOOL_A_MODULE_UNSPEC,
-+	ETHTOOL_A_MODULE_HEADER,		/* nest - _A_HEADER_* */
-+	ETHTOOL_A_MODULE_POWER_MODE_POLICY,	/* u8 */
-+	ETHTOOL_A_MODULE_POWER_MODE,		/* u8 */
-+
-+	/* add new constants above here */
-+	__ETHTOOL_A_MODULE_CNT,
-+	ETHTOOL_A_MODULE_MAX = (__ETHTOOL_A_MODULE_CNT - 1)
++	/* Set module to low power mode */
++	MLXSW_REG_PMMP_EEPROM_OVERRIDE_LOW_POWER_MASK = BIT(8),
 +};
 +
- /* generic netlink info */
- #define ETHTOOL_GENL_NAME "ethtool"
- #define ETHTOOL_GENL_VERSION 1
-diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
-index 0a19470efbfb..b76432e70e6b 100644
---- a/net/ethtool/Makefile
-+++ b/net/ethtool/Makefile
-@@ -7,4 +7,4 @@ obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
- ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
- 		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
- 		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
--		   tunnels.o fec.o eeprom.o stats.o phc_vclocks.o
-+		   tunnels.o fec.o eeprom.o stats.o phc_vclocks.o module.o
-diff --git a/net/ethtool/module.c b/net/ethtool/module.c
-new file mode 100644
-index 000000000000..254ac84f9728
---- /dev/null
-+++ b/net/ethtool/module.c
-@@ -0,0 +1,184 @@
-+// SPDX-License-Identifier: GPL-2.0-only
++/* reg_pmmp_eeprom_override
++ * Override / ignore EEPROM advertisement properties bitmask
++ * Access: RW
++ */
++MLXSW_ITEM32(reg, pmmp, eeprom_override, 0x04, 0, 16);
 +
-+#include <linux/ethtool.h>
-+
-+#include "netlink.h"
-+#include "common.h"
-+#include "bitset.h"
-+
-+struct module_req_info {
-+	struct ethnl_req_info base;
-+};
-+
-+struct module_reply_data {
-+	struct ethnl_reply_data	base;
-+	struct ethtool_module_power_mode_params power;
-+	u8 power_valid:1;
-+};
-+
-+#define MODULE_REPDATA(__reply_base) \
-+	container_of(__reply_base, struct module_reply_data, base)
-+
-+/* MODULE_GET */
-+
-+const struct nla_policy ethnl_module_get_policy[ETHTOOL_A_MODULE_HEADER + 1] = {
-+	[ETHTOOL_A_MODULE_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
-+};
-+
-+static int module_get_power_mode(struct net_device *dev,
-+				 struct module_reply_data *data,
-+				 struct netlink_ext_ack *extack)
++static inline void mlxsw_reg_pmmp_pack(char *payload, u8 module)
 +{
-+	const struct ethtool_ops *ops = dev->ethtool_ops;
-+	int ret;
-+
-+	if (!ops->get_module_power_mode)
-+		return 0;
-+
-+	ret = ops->get_module_power_mode(dev, &data->power, extack);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->power_valid = true;
-+
-+	return 0;
++	MLXSW_REG_ZERO(pmmp, payload);
++	mlxsw_reg_pmmp_module_set(payload, module);
 +}
 +
-+static int module_prepare_data(const struct ethnl_req_info *req_base,
-+			       struct ethnl_reply_data *reply_base,
-+			       struct genl_info *info)
-+{
-+	struct module_reply_data *data = MODULE_REPDATA(reply_base);
-+	struct netlink_ext_ack *extack = info ? info->extack : NULL;
-+	struct net_device *dev = reply_base->dev;
-+	int ret;
-+
-+	ret = ethnl_ops_begin(dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = module_get_power_mode(dev, data, extack);
-+	if (ret < 0)
-+		goto out_complete;
-+
-+out_complete:
-+	ethnl_ops_complete(dev);
-+	return ret;
-+}
-+
-+static int module_reply_size(const struct ethnl_req_info *req_base,
-+			     const struct ethnl_reply_data *reply_base)
-+{
-+	struct module_reply_data *data = MODULE_REPDATA(reply_base);
-+	int len = 0;
-+
-+	if (data->power_valid)
-+		len += nla_total_size(sizeof(u8));	/* _MODULE_POWER_MODE_POLICY */
-+
-+	if (data->power_valid && data->power.mode)
-+		len += nla_total_size(sizeof(u8));	/* _MODULE_POWER_MODE */
-+
-+	return len;
-+}
-+
-+static int module_fill_reply(struct sk_buff *skb,
-+			     const struct ethnl_req_info *req_base,
-+			     const struct ethnl_reply_data *reply_base)
-+{
-+	const struct module_reply_data *data = MODULE_REPDATA(reply_base);
-+
-+	if (data->power_valid &&
-+	    nla_put_u8(skb, ETHTOOL_A_MODULE_POWER_MODE_POLICY,
-+		       data->power.policy))
-+		return -EMSGSIZE;
-+
-+	if (data->power_valid && data->power.mode &&
-+	    nla_put_u8(skb, ETHTOOL_A_MODULE_POWER_MODE, data->power.mode))
-+		return -EMSGSIZE;
-+
-+	return 0;
-+}
-+
-+const struct ethnl_request_ops ethnl_module_request_ops = {
-+	.request_cmd		= ETHTOOL_MSG_MODULE_GET,
-+	.reply_cmd		= ETHTOOL_MSG_MODULE_GET_REPLY,
-+	.hdr_attr		= ETHTOOL_A_MODULE_HEADER,
-+	.req_info_size		= sizeof(struct module_req_info),
-+	.reply_data_size	= sizeof(struct module_reply_data),
-+
-+	.prepare_data		= module_prepare_data,
-+	.reply_size		= module_reply_size,
-+	.fill_reply		= module_fill_reply,
-+};
-+
-+/* MODULE_SET */
-+
-+const struct nla_policy ethnl_module_set_policy[ETHTOOL_A_MODULE_POWER_MODE_POLICY + 1] = {
-+	[ETHTOOL_A_MODULE_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
-+	[ETHTOOL_A_MODULE_POWER_MODE_POLICY] =
-+		NLA_POLICY_MAX(NLA_U8, ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO),
-+};
-+
-+static int module_set_power_mode(struct net_device *dev, struct nlattr **tb,
-+				 bool *p_mod, struct netlink_ext_ack *extack)
-+{
-+	struct ethtool_module_power_mode_params power = {};
-+	struct ethtool_module_power_mode_params power_new;
-+	const struct ethtool_ops *ops = dev->ethtool_ops;
-+	int ret;
-+
-+	if (!tb[ETHTOOL_A_MODULE_POWER_MODE_POLICY])
-+		return 0;
-+
-+	if (!ops->get_module_power_mode || !ops->set_module_power_mode) {
-+		NL_SET_ERR_MSG_ATTR(extack,
-+				    tb[ETHTOOL_A_MODULE_POWER_MODE_POLICY],
-+				    "Setting power mode policy is not supported by this device");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	power_new.policy = nla_get_u8(tb[ETHTOOL_A_MODULE_POWER_MODE_POLICY]);
-+	ret = ops->get_module_power_mode(dev, &power, extack);
-+	if (ret < 0)
-+		return ret;
-+	*p_mod = power_new.policy != power.policy;
-+
-+	return ops->set_module_power_mode(dev, &power_new, extack);
-+}
-+
-+int ethnl_set_module(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct ethnl_req_info req_info = {};
-+	struct nlattr **tb = info->attrs;
-+	struct net_device *dev;
-+	bool mod = false;
-+	int ret;
-+
-+	ret = ethnl_parse_header_dev_get(&req_info, tb[ETHTOOL_A_MODULE_HEADER],
-+					 genl_info_net(info), info->extack,
-+					 true);
-+	if (ret < 0)
-+		return ret;
-+	dev = req_info.dev;
-+
-+	rtnl_lock();
-+	ret = ethnl_ops_begin(dev);
-+	if (ret < 0)
-+		goto out_rtnl;
-+
-+	ret = module_set_power_mode(dev, tb, &mod, info->extack);
-+	if (ret < 0)
-+		goto out_ops;
-+
-+	if (!mod)
-+		goto out_ops;
-+
-+	ethtool_notify(dev, ETHTOOL_MSG_MODULE_NTF, NULL);
-+
-+out_ops:
-+	ethnl_ops_complete(dev);
-+out_rtnl:
-+	rtnl_unlock();
-+	dev_put(dev);
-+	return ret;
-+}
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index 1797a0a90019..38b44c0291b1 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -282,6 +282,7 @@ ethnl_default_requests[__ETHTOOL_MSG_USER_CNT] = {
- 	[ETHTOOL_MSG_MODULE_EEPROM_GET]	= &ethnl_module_eeprom_request_ops,
- 	[ETHTOOL_MSG_STATS_GET]		= &ethnl_stats_request_ops,
- 	[ETHTOOL_MSG_PHC_VCLOCKS_GET]	= &ethnl_phc_vclocks_request_ops,
-+	[ETHTOOL_MSG_MODULE_GET]	= &ethnl_module_request_ops,
- };
- 
- static struct ethnl_dump_ctx *ethnl_dump_context(struct netlink_callback *cb)
-@@ -593,6 +594,7 @@ ethnl_default_notify_ops[ETHTOOL_MSG_KERNEL_MAX + 1] = {
- 	[ETHTOOL_MSG_PAUSE_NTF]		= &ethnl_pause_request_ops,
- 	[ETHTOOL_MSG_EEE_NTF]		= &ethnl_eee_request_ops,
- 	[ETHTOOL_MSG_FEC_NTF]		= &ethnl_fec_request_ops,
-+	[ETHTOOL_MSG_MODULE_NTF]	= &ethnl_module_request_ops,
- };
- 
- /* default notification handler */
-@@ -686,6 +688,7 @@ static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
- 	[ETHTOOL_MSG_PAUSE_NTF]		= ethnl_default_notify,
- 	[ETHTOOL_MSG_EEE_NTF]		= ethnl_default_notify,
- 	[ETHTOOL_MSG_FEC_NTF]		= ethnl_default_notify,
-+	[ETHTOOL_MSG_MODULE_NTF]	= ethnl_default_notify,
- };
- 
- void ethtool_notify(struct net_device *dev, unsigned int cmd, const void *data)
-@@ -999,6 +1002,22 @@ static const struct genl_ops ethtool_genl_ops[] = {
- 		.policy = ethnl_phc_vclocks_get_policy,
- 		.maxattr = ARRAY_SIZE(ethnl_phc_vclocks_get_policy) - 1,
- 	},
-+	{
-+		.cmd	= ETHTOOL_MSG_MODULE_GET,
-+		.doit	= ethnl_default_doit,
-+		.start	= ethnl_default_start,
-+		.dumpit	= ethnl_default_dumpit,
-+		.done	= ethnl_default_done,
-+		.policy = ethnl_module_get_policy,
-+		.maxattr = ARRAY_SIZE(ethnl_module_get_policy) - 1,
-+	},
-+	{
-+		.cmd	= ETHTOOL_MSG_MODULE_SET,
-+		.flags	= GENL_UNS_ADMIN_PERM,
-+		.doit	= ethnl_set_module,
-+		.policy = ethnl_module_set_policy,
-+		.maxattr = ARRAY_SIZE(ethnl_module_set_policy) - 1,
-+	},
- };
- 
- static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index e8987e28036f..836ee7157848 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -337,6 +337,7 @@ extern const struct ethnl_request_ops ethnl_fec_request_ops;
- extern const struct ethnl_request_ops ethnl_module_eeprom_request_ops;
- extern const struct ethnl_request_ops ethnl_stats_request_ops;
- extern const struct ethnl_request_ops ethnl_phc_vclocks_request_ops;
-+extern const struct ethnl_request_ops ethnl_module_request_ops;
- 
- extern const struct nla_policy ethnl_header_policy[ETHTOOL_A_HEADER_FLAGS + 1];
- extern const struct nla_policy ethnl_header_policy_stats[ETHTOOL_A_HEADER_FLAGS + 1];
-@@ -373,6 +374,8 @@ extern const struct nla_policy ethnl_fec_set_policy[ETHTOOL_A_FEC_AUTO + 1];
- extern const struct nla_policy ethnl_module_eeprom_get_policy[ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS + 1];
- extern const struct nla_policy ethnl_stats_get_policy[ETHTOOL_A_STATS_GROUPS + 1];
- extern const struct nla_policy ethnl_phc_vclocks_get_policy[ETHTOOL_A_PHC_VCLOCKS_HEADER + 1];
-+extern const struct nla_policy ethnl_module_get_policy[ETHTOOL_A_MODULE_HEADER + 1];
-+extern const struct nla_policy ethnl_module_set_policy[ETHTOOL_A_MODULE_POWER_MODE_POLICY + 1];
- 
- int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info);
-@@ -391,6 +394,7 @@ int ethnl_tunnel_info_doit(struct sk_buff *skb, struct genl_info *info);
- int ethnl_tunnel_info_start(struct netlink_callback *cb);
- int ethnl_tunnel_info_dumpit(struct sk_buff *skb, struct netlink_callback *cb);
- int ethnl_set_fec(struct sk_buff *skb, struct genl_info *info);
-+int ethnl_set_module(struct sk_buff *skb, struct genl_info *info);
- 
- extern const char stats_std_names[__ETHTOOL_STATS_CNT][ETH_GSTRING_LEN];
- extern const char stats_eth_phy_names[__ETHTOOL_A_STATS_ETH_PHY_CNT][ETH_GSTRING_LEN];
+ /* PLLP - Port Local port to Label Port mapping Register
+  * -----------------------------------------------------
+  * The PLLP register returns the mapping from Local Port into Label Port.
+@@ -12348,6 +12397,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
+ 	MLXSW_REG(pmtdb),
+ 	MLXSW_REG(pmpe),
+ 	MLXSW_REG(pddr),
++	MLXSW_REG(pmmp),
+ 	MLXSW_REG(pllp),
+ 	MLXSW_REG(htgt),
+ 	MLXSW_REG(hpkt),
 -- 
 2.31.1
 
