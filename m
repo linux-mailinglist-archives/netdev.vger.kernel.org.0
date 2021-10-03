@@ -2,197 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCCDB41FF71
-	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 05:17:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A3D241FF75
+	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 05:24:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229714AbhJCDTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Oct 2021 23:19:17 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:34378 "EHLO
+        id S229607AbhJCD0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Oct 2021 23:26:20 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:34396 "EHLO
         codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbhJCDTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 23:19:08 -0400
-Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id EB253214E5; Sun,  3 Oct 2021 11:17:19 +0800 (AWST)
+        with ESMTP id S229534AbhJCD0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Oct 2021 23:26:19 -0400
+Received: from pecola.lan (unknown [159.196.93.152])
+        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id F202D20274;
+        Sun,  3 Oct 2021 11:24:30 +0800 (AWST)
+Message-ID: <d5ada7b46f4abc2c5a7ecf0af0e50e356685a25b.camel@codeconstruct.com.au>
+Subject: Re: [PATCH net-next 2/2] mctp: test: defer mdev setup until we've
+ registered
 From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     netdev@vger.kernel.org
-Cc:     Matt Johnston <matt@codeconstruct.com.au>,
+To:     David Gow <davidgow@google.com>
+Cc:     Networking <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Matt Johnston <matt@codeconstruct.com.au>,
         Brendan Higgins <brendanhiggins@google.com>,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH net-next v2 5/5] mctp: Add input reassembly tests
-Date:   Sun,  3 Oct 2021 11:17:08 +0800
-Message-Id: <20211003031708.132096-6-jk@codeconstruct.com.au>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211003031708.132096-1-jk@codeconstruct.com.au>
-References: <20211003031708.132096-1-jk@codeconstruct.com.au>
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Date:   Sun, 03 Oct 2021 11:24:30 +0800
+In-Reply-To: <CABVgOSkuN7XPPvnBQFm_h80eFpx_fT0veDPxMefVbiNa_ZQG8g@mail.gmail.com>
+References: <20211002022656.1681956-1-jk@codeconstruct.com.au>
+         <20211002022656.1681956-2-jk@codeconstruct.com.au>
+         <CABVgOSkuN7XPPvnBQFm_h80eFpx_fT0veDPxMefVbiNa_ZQG8g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add multi-packet route input tests, for message reassembly. These will
-feed packets to be received by a bound socket, or dropped.
+Hi David,
 
-Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+> Haha -- you sent this just as I'd come up with the same patch here.
+> :-)
+> 
+> With these changes, alongside the rt->dev == NULL in
+> mctp_route_release() crash fix mentioned in [1], the tests all pass
+> on
+> my system. (They also pass under KASAN, which bodes well.)
 
----
-v2:
- - strict route ref checking
----
- net/mctp/test/route-test.c | 134 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 134 insertions(+)
+Awesome, thanks for checking these out. I've since sent a v2 with the
+fixes integrated, in order to not break davem's build.
 
-diff --git a/net/mctp/test/route-test.c b/net/mctp/test/route-test.c
-index a8254daeeb96..36fac3daf86a 100644
---- a/net/mctp/test/route-test.c
-+++ b/net/mctp/test/route-test.c
-@@ -395,10 +395,144 @@ static void mctp_route_input_sk_to_desc(const struct mctp_route_input_sk_test *t
- KUNIT_ARRAY_PARAM(mctp_route_input_sk, mctp_route_input_sk_tests,
- 		  mctp_route_input_sk_to_desc);
- 
-+struct mctp_route_input_sk_reasm_test {
-+	const char *name;
-+	struct mctp_hdr hdrs[4];
-+	int n_hdrs;
-+	int rx_len;
-+};
-+
-+static void mctp_test_route_input_sk_reasm(struct kunit *test)
-+{
-+	const struct mctp_route_input_sk_reasm_test *params;
-+	struct sk_buff *skb, *skb2;
-+	struct mctp_test_route *rt;
-+	struct mctp_test_dev *dev;
-+	struct socket *sock;
-+	int i, rc;
-+	u8 c;
-+
-+	params = test->param_value;
-+
-+	__mctp_route_test_init(test, &dev, &rt, &sock);
-+
-+	for (i = 0; i < params->n_hdrs; i++) {
-+		c = i;
-+		skb = mctp_test_create_skb_data(&params->hdrs[i], &c);
-+		KUNIT_ASSERT_NOT_ERR_OR_NULL(test, skb);
-+
-+		skb->dev = dev->ndev;
-+		__mctp_cb(skb);
-+
-+		rc = mctp_route_input(&rt->rt, skb);
-+	}
-+
-+	skb2 = skb_recv_datagram(sock->sk, 0, 1, &rc);
-+
-+	if (params->rx_len) {
-+		KUNIT_EXPECT_NOT_ERR_OR_NULL(test, skb2);
-+		KUNIT_EXPECT_EQ(test, skb2->len, params->rx_len);
-+		skb_free_datagram(sock->sk, skb2);
-+
-+	} else {
-+		KUNIT_EXPECT_PTR_EQ(test, skb2, NULL);
-+	}
-+
-+	__mctp_route_test_fini(test, dev, rt, sock);
-+}
-+
-+#define RX_FRAG(f, s) RX_HDR(1, 10, 8, FL_T | (f) | ((s) << MCTP_HDR_SEQ_SHIFT))
-+
-+static const struct mctp_route_input_sk_reasm_test mctp_route_input_sk_reasm_tests[] = {
-+	{
-+		.name = "single packet",
-+		.hdrs = {
-+			RX_FRAG(FL_S | FL_E, 0),
-+		},
-+		.n_hdrs = 1,
-+		.rx_len = 1,
-+	},
-+	{
-+		.name = "single packet, offset seq",
-+		.hdrs = {
-+			RX_FRAG(FL_S | FL_E, 1),
-+		},
-+		.n_hdrs = 1,
-+		.rx_len = 1,
-+	},
-+	{
-+		.name = "start & end packets",
-+		.hdrs = {
-+			RX_FRAG(FL_S, 0),
-+			RX_FRAG(FL_E, 1),
-+		},
-+		.n_hdrs = 2,
-+		.rx_len = 2,
-+	},
-+	{
-+		.name = "start & end packets, offset seq",
-+		.hdrs = {
-+			RX_FRAG(FL_S, 1),
-+			RX_FRAG(FL_E, 2),
-+		},
-+		.n_hdrs = 2,
-+		.rx_len = 2,
-+	},
-+	{
-+		.name = "start & end packets, out of order",
-+		.hdrs = {
-+			RX_FRAG(FL_E, 1),
-+			RX_FRAG(FL_S, 0),
-+		},
-+		.n_hdrs = 2,
-+		.rx_len = 0,
-+	},
-+	{
-+		.name = "start, middle & end packets",
-+		.hdrs = {
-+			RX_FRAG(FL_S, 0),
-+			RX_FRAG(0,    1),
-+			RX_FRAG(FL_E, 2),
-+		},
-+		.n_hdrs = 3,
-+		.rx_len = 3,
-+	},
-+	{
-+		.name = "missing seq",
-+		.hdrs = {
-+			RX_FRAG(FL_S, 0),
-+			RX_FRAG(FL_E, 2),
-+		},
-+		.n_hdrs = 2,
-+		.rx_len = 0,
-+	},
-+	{
-+		.name = "seq wrap",
-+		.hdrs = {
-+			RX_FRAG(FL_S, 3),
-+			RX_FRAG(FL_E, 0),
-+		},
-+		.n_hdrs = 2,
-+		.rx_len = 2,
-+	},
-+};
-+
-+static void mctp_route_input_sk_reasm_to_desc(
-+				const struct mctp_route_input_sk_reasm_test *t,
-+				char *desc)
-+{
-+	sprintf(desc, "%s", t->name);
-+}
-+
-+KUNIT_ARRAY_PARAM(mctp_route_input_sk_reasm, mctp_route_input_sk_reasm_tests,
-+		  mctp_route_input_sk_reasm_to_desc);
-+
- static struct kunit_case mctp_test_cases[] = {
- 	KUNIT_CASE_PARAM(mctp_test_fragment, mctp_frag_gen_params),
- 	KUNIT_CASE_PARAM(mctp_test_rx_input, mctp_rx_input_gen_params),
- 	KUNIT_CASE_PARAM(mctp_test_route_input_sk, mctp_route_input_sk_gen_params),
-+	KUNIT_CASE_PARAM(mctp_test_route_input_sk_reasm,
-+			 mctp_route_input_sk_reasm_gen_params),
- 	{}
- };
- 
--- 
-2.33.0
+I've refined the rt->dev == NULL case a little; rather than allowing
+->dev == NULL in the core code (which should never happen), I've
+modified the test's route refcounting so that the route destroy path
+should only ever hit the test's own destructor instead (which allows
+!rt->dev cases). This means we can keep the ->dev != NULL assumption in
+the core, and still handle tests where our fake route->dev is unset.
+
+Cheers,
+
+
+Jeremy
 
