@@ -2,170 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27F7B42010C
-	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 11:18:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F36CB42011C
+	for <lists+netdev@lfdr.de>; Sun,  3 Oct 2021 11:44:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbhJCJUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Oct 2021 05:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56510 "EHLO
+        id S229958AbhJCJpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Oct 2021 05:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbhJCJUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 05:20:15 -0400
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595BFC0613EC;
-        Sun,  3 Oct 2021 02:18:28 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4HMdYs6NzvzQk90;
-        Sun,  3 Oct 2021 11:18:25 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Message-ID: <5f0b52be-8b9c-b015-6c5a-f2f470e37058@v0yd.nl>
-Date:   Sun, 3 Oct 2021 11:18:15 +0200
+        with ESMTP id S229914AbhJCJpf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 05:45:35 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D1BC0613EC;
+        Sun,  3 Oct 2021 02:43:47 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id o4-20020a05600c510400b0030d55d6449fso3705338wms.5;
+        Sun, 03 Oct 2021 02:43:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y8s5Okeo6WxBJf1cFUUcrgLlXmGQNS6CIp0UlprQc2Q=;
+        b=VVhvuakDJIz4tYWHBo4D8Hw7Wudh8jvcQJ6UkWt/xvd/xIWFgPKgBS5btNZjadLkJN
+         /TG6GeCDAeZZBmrNlYSyYAq0Dno4QLvTHkRI7BgKZf7QdvWY5+1FWM0RYIGDewaJzxds
+         6fKIoEh1RDpqJ9OVVNPLB1udWaqpj4Z8zOnj8D+fX1s1ICwbDHPsxukjy03JjA5pNjwa
+         RXuEQ6nQMHlJbDWyFahLfhPMzSQR6N8sVJ/bmJMUvGhEW2c8xilMKXfqoGw2x9oExzkW
+         EczR4cr5H4lF+S/i1tWCNKBSsTJBMSqKPsdzQKmGWr4tDlGPbHrrHIkSwcHIL/t1Z1+o
+         BjGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y8s5Okeo6WxBJf1cFUUcrgLlXmGQNS6CIp0UlprQc2Q=;
+        b=RS+1cBzxC2sAek/1+VsmXiLd8VtUvv3CTsYidoxaAEOwafTLT/dvJUfwAQHeThP3/w
+         EsUsI+XdtYj0wyPSFADAR3mq1myyXhDpYlVy4F5LHYDiOQNK6MPj0WJ+CPxWczre2Gvd
+         ju1MjqT1qap+0/VY2Xq4InF7fohRy7lKjA+OJr1Ti0wRgqgYrLoFvNb4JaE/4vMZ43ar
+         7+QmS32O+cvk6yzEe9aNg0s8FFm2j8wmNw/4+LFBNGQtIXsEnwtyluhwNHTWJ2TYSaeo
+         EImgWbDXxUpQv8yh5U874whurl20Vg+uJe3+DSFZVG8j5N4OMNrttun4gmZC1crkrlN5
+         dKhw==
+X-Gm-Message-State: AOAM5333MUd5XaPkgRzwWTJv+JEkjqPbtisZExWJF2jDOZw++CXuOL6q
+        eZl0MHmI4QyQMoaLQdHte1LIRVAd1NwVgUMfMdY=
+X-Google-Smtp-Source: ABdhPJyXF6565LiYj4CaeT54IjmpdEE3utOV93ftCvEPtDqBKu7zVjJKr2sicKViEj7sXZJdQJ1wFTeE2chr7lUia7o=
+X-Received: by 2002:a05:600c:247:: with SMTP id 7mr13144159wmj.4.1633254225493;
+ Sun, 03 Oct 2021 02:43:45 -0700 (PDT)
 MIME-Version: 1.0
-From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
-Subject: Re: [PATCH v2 2/2] mwifiex: Try waking the firmware until we get an
- interrupt
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Tsuchiya Yuto <kitakar@gmail.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Brian Norris <briannorris@chromium.org>, stable@vger.kernel.org
-References: <20210914114813.15404-1-verdre@v0yd.nl>
- <20210914114813.15404-3-verdre@v0yd.nl>
-Content-Language: en-US
-In-Reply-To: <20210914114813.15404-3-verdre@v0yd.nl>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 3CFE718B4
+References: <0000000000009a53cd05cc788a95@google.com> <CADvbK_c-V6orWGm2ae1pxoUU-5J-1J-a057hYemA6oTESGhFMg@mail.gmail.com>
+ <20210923093442.GC2048@kadam> <20210924171412.GF2083@kadam>
+In-Reply-To: <20210924171412.GF2083@kadam>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Sun, 3 Oct 2021 17:43:34 +0800
+Message-ID: <CADvbK_fso7ZLnOwcZbvoSORErT4BG0JwGGxdKg237e_wvv7Usw@mail.gmail.com>
+Subject: Re: [syzbot] general protection fault in sctp_rcv
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     syzbot <syzbot+581aff2ae6b860625116@syzkaller.appspotmail.com>,
+        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Vlad Yasevich <vyasevich@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/14/21 13:48, Jonas Dreßler wrote:
-> It seems that the firmware of the 88W8897 card sometimes ignores or
-> misses when we try to wake it up by writing to the firmware status
-> register. This leads to the firmware wakeup timeout expiring and the
-> driver resetting the card because we assume the firmware has hung up or
-> crashed (unfortunately that's not unlikely with this card).
-> 
-> Turns out that most of the time the firmware actually didn't hang up,
-> but simply "missed" our wakeup request and didn't send us an AWAKE
-> event.
-> 
-> Trying again to read the firmware status register after a short timeout
-> usually makes the firmware wake up as expected, so add a small retry
-> loop to mwifiex_pm_wakeup_card() that looks at the interrupt status to
-> check whether the card woke up.
-> 
-> The number of tries and timeout lengths for this were determined
-> experimentally: The firmware usually takes about 500 us to wake up
-> after we attempt to read the status register. In some cases where the
-> firmware is very busy (for example while doing a bluetooth scan) it
-> might even miss our requests for multiple milliseconds, which is why
-> after 15 tries the waiting time gets increased to 10 ms. The maximum
-> number of tries it took to wake the firmware when testing this was
-> around 20, so a maximum number of 50 tries should give us plenty of
-> safety margin.
-> 
-> A good reproducer for this issue is letting the firmware sleep and wake
-> up in very short intervals, for example by pinging a device on the
-> network every 0.1 seconds.
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
-> ---
->   drivers/net/wireless/marvell/mwifiex/pcie.c | 33 +++++++++++++++++----
->   1 file changed, 27 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
-> index 0eff717ac5fa..7fea319e013c 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/pcie.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
-> @@ -661,11 +661,15 @@ static void mwifiex_delay_for_sleep_cookie(struct mwifiex_adapter *adapter,
->   			    "max count reached while accessing sleep cookie\n");
->   }
->   
-> +#define N_WAKEUP_TRIES_SHORT_INTERVAL 15
-> +#define N_WAKEUP_TRIES_LONG_INTERVAL 35
-> +
->   /* This function wakes up the card by reading fw_status register. */
->   static int mwifiex_pm_wakeup_card(struct mwifiex_adapter *adapter)
->   {
->   	struct pcie_service_card *card = adapter->card;
->   	const struct mwifiex_pcie_card_reg *reg = card->pcie.reg;
-> +	int n_tries = 0;
->   
->   	mwifiex_dbg(adapter, EVENT,
->   		    "event: Wakeup device...\n");
-> @@ -673,12 +677,29 @@ static int mwifiex_pm_wakeup_card(struct mwifiex_adapter *adapter)
->   	if (reg->sleep_cookie)
->   		mwifiex_pcie_dev_wakeup_delay(adapter);
->   
-> -	/* Accessing fw_status register will wakeup device */
-> -	if (mwifiex_write_reg(adapter, reg->fw_status, FIRMWARE_READY_PCIE)) {
-> -		mwifiex_dbg(adapter, ERROR,
-> -			    "Writing fw_status register failed\n");
-> -		return -1;
-> -	}
-> +	/* Access the fw_status register to wake up the device.
-> +	 * Since the 88W8897 firmware sometimes appears to ignore or miss
-> +	 * that wakeup request, we continue trying until we receive an
-> +	 * interrupt from the card.
-> +	 */
-> +	do {
-> +		if (mwifiex_write_reg(adapter, reg->fw_status, FIRMWARE_READY_PCIE)) {
-> +			mwifiex_dbg(adapter, ERROR,
-> +				    "Writing fw_status register failed\n");
-> +			return -EIO;
-> +		}
-> +
-> +		n_tries++;
-> +
-> +		if (n_tries <= N_WAKEUP_TRIES_SHORT_INTERVAL)
-> +			usleep_range(400, 700);
-> +		else
-> +			msleep(10);
-> +	} while (n_tries <= N_WAKEUP_TRIES_SHORT_INTERVAL + N_WAKEUP_TRIES_LONG_INTERVAL &&
-> +		 READ_ONCE(adapter->int_status) == 0);
-> +
-> +	mwifiex_dbg(adapter, EVENT,
-> +		    "event: Tried %d times until firmware woke up\n", n_tries);
->   
->   	if (reg->sleep_cookie) {
->   		mwifiex_pcie_dev_wakeup_delay(adapter);
-> 
+On Sat, Sep 25, 2021 at 1:14 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> On Thu, Sep 23, 2021 at 12:34:42PM +0300, Dan Carpenter wrote:
+> > On Wed, Sep 22, 2021 at 05:18:29PM +0800, Xin Long wrote:
+> > > On Tue, Sep 21, 2021 at 12:09 PM syzbot
+> > > <syzbot+581aff2ae6b860625116@syzkaller.appspotmail.com> wrote:
+> > > >
+> > > > Hello,
+> > > >
+> > > > syzbot found the following issue on:
+> > > >
+> > > > HEAD commit:    98dc68f8b0c2 selftests: nci: replace unsigned int with int
+> > > > git tree:       net
+> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=11fd443d300000
+> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=c31c0936547df9ea
+> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=581aff2ae6b860625116
+> > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > >
+> > > > Unfortunately, I don't have any reproducer for this issue yet.
+> > > >
+> > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > > Reported-by: syzbot+581aff2ae6b860625116@syzkaller.appspotmail.com
+> > > >
+> > > > general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+> > > > KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+> > > > CPU: 0 PID: 11205 Comm: kworker/0:12 Not tainted 5.14.0-syzkaller #0
+> > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > > Workqueue: ipv6_addrconf addrconf_dad_work
+> > > > RIP: 0010:sctp_rcv_ootb net/sctp/input.c:705 [inline]
+> > > by anyway, checking if skb_header_pointer() return NULL is always needed:
+> > > @@ -702,7 +702,7 @@ static int sctp_rcv_ootb(struct sk_buff *skb)
+> > >                 ch = skb_header_pointer(skb, offset, sizeof(*ch), &_ch);
+> > >
+> > >                 /* Break out if chunk length is less then minimal. */
+> > > -               if (ntohs(ch->length) < sizeof(_ch))
+> > > +               if (!ch || ntohs(ch->length) < sizeof(_ch))
+> > >                         break;
+> > >
+> >
+> > The skb_header_pointer() function is annotated as __must_check but that
+> > only means you have to use the return value.  These things would be
+> > better as a Coccinelle or Smatch check.
+> >
+> > I will create a Smatch warning for this.
+>
+> These are the Smatch warnings for this:
+>
+> net/sctp/input.c:705 sctp_rcv_ootb() error: skb_header_pointer() returns NULL
+> net/ipv6/netfilter/ip6t_rt.c:111 rt_mt6() error: skb_header_pointer() returns NULL
+> net/ipv4/icmp.c:1076 icmp_build_probe() error: skb_header_pointer() returns NULL
+> net/ipv4/icmp.c:1089 icmp_build_probe() error: skb_header_pointer() returns NULL
+Will post follow-ups for rt_mt6() and icmp_build_probe() too.
 
-So I think I have another solution that might be a lot more elegant, how
-about this:
-
-try_again:
-	n_tries++;
-
-	mwifiex_write_reg(adapter, reg->fw_status, FIRMWARE_READY_PCIE);
-
-	if (wait_event_interruptible_timeout(adapter->card_wakeup_wait_q,
-					     READ_ONCE(adapter->int_status) != 0,
-					     WAKEUP_TRY_AGAIN_TIMEOUT) == 0 &&
-	    n_tries < MAX_N_WAKEUP_TRIES) {
-		goto try_again;
-	}
-
-
-and then call wake_up_interruptible() in the mwifiex_interrupt_status()
-interrupt handler.
-
-This solution should make sure we always keep wakeup latency to a minimum
-and can still retry the register write if things didn't work.
+Thanks!
+>
+> regards,
+> dan carpenter
+>
