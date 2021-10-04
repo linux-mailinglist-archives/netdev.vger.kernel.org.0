@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6046B4208B3
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 11:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E2A94208B4
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 11:49:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232490AbhJDJu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 05:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
+        id S232495AbhJDJvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 05:51:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232519AbhJDJux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 05:50:53 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0304AC061745;
-        Mon,  4 Oct 2021 02:49:05 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id q201so3343875pgq.12;
-        Mon, 04 Oct 2021 02:49:04 -0700 (PDT)
+        with ESMTP id S232527AbhJDJu6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 05:50:58 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78875C061745;
+        Mon,  4 Oct 2021 02:49:09 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id 187so9592558pfc.10;
+        Mon, 04 Oct 2021 02:49:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lGemrg4Muom6Cfwgs/hNeDxOfo3YFnX0lyDjrzWFdew=;
-        b=B6Yd5CW5y64BXu3J4iKJ7Y5Y4qZHeUYSCYqxXpr3cYEZY/bxZXCIGilyVmgmpU6TBn
-         waaE0cTRTWsOL7VJqVFEubGhHnacDxFh3xY2b0VlVaCjFUcvdHdY4/mbX7rdZRZPB2/B
-         iA/gSRBl5M8hCDl2hTvCX7g5kvqJPCJfNp88/SLVhJHHOZKsoBc3EVbV9H88Veaz19/v
-         C9i+6RtOBpjv29UU0ydIFuGFx/skbkGAZYSD3AqxWVZAsfzSsgP770luZxZafSrPIour
-         fGQSk44YkdpF6bNe9rMA9i2J6SbXTfpn8tSOU8a0s8QB5WbbqWSaY4OAHhjL/5NXjurj
-         k9lQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=E8J25Gq6xzCDmlDqYl4jc967Wi537iG16/emcYGXLlM=;
+        b=fzxOW1f/y0CMTAl0VcNoUKwW4usxc3D2fA/o9/TPoAIA0GiTvUIXJBY/fgLFISROyL
+         ddoeLQmXu8Xwbhg1xpZ37ajlGufogr7Ud2JRxdqj7uO+4CXxMIYvdv+SzgbomJSbnj4m
+         EqiMPUse7h46+hI/j7jVNlFC6adhyqWK1/DZ+hLCFp39DLthg8pw3yG1Y72Cx+IwryJF
+         w7SIUQLHXBhi8o0MGdPkjkq2aDSvrOMjXh+FYnVK8Kt+wGwdJ+yIV6B7OQKNlqmkgmdA
+         dIEgZWDuxuxFoejaNKmQauaXxTjaZh+OykOzzc57JQcsyL38aVIZ1BXf+SKuhppj+kGs
+         y53Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lGemrg4Muom6Cfwgs/hNeDxOfo3YFnX0lyDjrzWFdew=;
-        b=dxvWnda4gOuOHW7BoOrLoCssjhhcp6c3FB5B4A3F2lv2AFmCFXB0ChCXTD0HERfv8n
-         /j46D6l2wKwWTd66rAvKmh373absck7sV2yZQGLgMbLWS9Q3EDhnqYmf8oBvS+JrLWyW
-         nqs64gOieJY+YiEJJExze1pI3SgSZuav6V87rQr9dpnzIVZ0OlhQtAbEzG3WXdhBtuUY
-         BK5NH6ij0ZP8MJ0nA2cr/21cA05Hm+cXXzCi0vC+aVdyU37HUfQjv81JDquVR7bu91SB
-         8MNaHyIyaFHY9tEyoiMGvk1tQwHTmHjYIAprRqZ2oevOm36HPxgh5EKBUMtWOfj5WIHb
-         s87w==
-X-Gm-Message-State: AOAM530TOl88MsKtUWecQqwM8fl5710Rv8+QOBr0S4GNmgRSVgLu5kzE
-        ZlaSIYcYCTXV0ni729aemu4=
-X-Google-Smtp-Source: ABdhPJwTXRNKqy3DHTvRLD3ayH1kyzlN+ZUiRpH355pRFZkFMR2LLGFkg0UzdNidkPTqLchKa+vNJA==
-X-Received: by 2002:a63:bf4a:: with SMTP id i10mr10039386pgo.196.1633340944609;
-        Mon, 04 Oct 2021 02:49:04 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=E8J25Gq6xzCDmlDqYl4jc967Wi537iG16/emcYGXLlM=;
+        b=N6YSTHi0gw5RG6pbs1CrkbmT0w05p4usmMklP4Yl8RALh5jV4t5tIiYSDI2QhvZ+wW
+         DsyIrESAaPlb922D1lgUItAGCatxAmnClJRu7LyByQ8J0j3ormZBp8M9KDJGv2cTJryK
+         CO9kfO96HR4Sd6dJi1QwRaD2S0qaex+BHT3dfSMSgVhFUufE1gfGn8lX3TsYy9EkUPYi
+         cMOZJNI1uYmvesjrvwJuKGACdsXY/svSDhycsSH6A1wWNxvaKlkAhMX5wtJgrEOQQEEE
+         3HsdXIZTDZF8tqQgtBSbx9HdWOSjQkVkPOvHXDDHSI7Jr1FuM4OqRic02ZxzcZ/d/UeV
+         ivGw==
+X-Gm-Message-State: AOAM530PYel1SJ+L75A9OlXkrv0c5ta7xP/waZVdZvKX+KCtq+WNGkpF
+        w12FA+U8fVngU0OWh3tq9og=
+X-Google-Smtp-Source: ABdhPJx1dgxbjxTuUugAErAQ5vD1veWy18SQTVcqXO+gegOfWAjhc9HyL+jUYnmrQorsrQDuvSHGNg==
+X-Received: by 2002:a63:e64a:: with SMTP id p10mr10170214pgj.263.1633340949116;
+        Mon, 04 Oct 2021 02:49:09 -0700 (PDT)
 Received: from localhost ([27.102.113.79])
-        by smtp.gmail.com with ESMTPSA id t9sm14715062pjq.20.2021.10.04.02.49.03
+        by smtp.gmail.com with ESMTPSA id g10sm7659107pfv.109.2021.10.04.02.49.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Oct 2021 02:49:04 -0700 (PDT)
+        Mon, 04 Oct 2021 02:49:08 -0700 (PDT)
 From:   Hou Tao <hotforest@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>
@@ -55,10 +55,12 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
         Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, houtao1@huawei.com
-Subject: [PATCH bpf-next v5 0/3] add support for writable bare tracepoint
-Date:   Mon,  4 Oct 2021 17:48:54 +0800
-Message-Id: <20211004094857.30868-1-hotforest@gmail.com>
+Subject: [PATCH bpf-next v5 1/3] bpf: support writable context for bare tracepoint
+Date:   Mon,  4 Oct 2021 17:48:55 +0800
+Message-Id: <20211004094857.30868-2-hotforest@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20211004094857.30868-1-hotforest@gmail.com>
+References: <20211004094857.30868-1-hotforest@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -67,65 +69,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hou Tao <houtao1@huawei.com>
 
-Hi,
+Commit 9df1c28bb752 ("bpf: add writable context for raw tracepoints")
+supports writable context for tracepoint, but it misses the support
+for bare tracepoint which has no associated trace event.
 
-The patchset series supports writable context for bare tracepoint.
+Bare tracepoint is defined by DECLARE_TRACE(), so adding a corresponding
+DECLARE_TRACE_WRITABLE() macro to generate a definition in __bpf_raw_tp_map
+section for bare tracepoint in a similar way to DEFINE_TRACE_WRITABLE().
 
-The main idea comes from patchset "writable contexts for bpf raw
-tracepoints" [1], but it only supports normal tracepoint with
-associated trace event under tracefs. Now we have one use case
-in which we add bare tracepoint in VFS layer, and update
-file::f_mode for specific files. The reason using bare tracepoint
-is that it doesn't form a ABI and we can change it freely. So
-add support for it in BPF.
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ include/trace/bpf_probe.h | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-Comments are always welcome.
-
-[1]: https://lore.kernel.org/lkml/20190426184951.21812-1-mmullins@fb.com
-
-Change log:
-v5:
- * rebased on bpf-next
- * patch 1: add Acked-by tag
- * patch 2: handle invalid section name, make prefixes array being const
-
-v4: https://www.spinics.net/lists/bpf/msg47021.html
- * rebased on bpf-next
- * update patch 2 to add support for writable raw tracepoint attachment
-   in attach_raw_tp().
- * update patch 3 to add Acked-by tag
-
-v3: https://www.spinics.net/lists/bpf/msg46824.html
-  * use raw_tp.w instead of raw_tp_writable as section
-    name of writable tp
-  * use ASSERT_XXX() instead of CHECK()
-  * define a common macro for "/sys/kernel/bpf_testmod"
-
-v2: https://www.spinics.net/lists/bpf/msg46356.html 
-  * rebase on bpf-next tree
-  * address comments from Yonghong Song
-  * rename bpf_testmode_test_writable_ctx::ret as early_ret to reflect
-    its purpose better.
-
-v1: https://www.spinics.net/lists/bpf/msg46221.html
-
-
-Hou Tao (3):
-  bpf: support writable context for bare tracepoint
-  libbpf: support detecting and attaching of writable tracepoint program
-  bpf/selftests: add test for writable bare tracepoint
-
- include/trace/bpf_probe.h                     | 19 +++++++---
- tools/lib/bpf/libbpf.c                        | 26 +++++++++++---
- .../bpf/bpf_testmod/bpf_testmod-events.h      | 15 ++++++++
- .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 10 ++++++
- .../selftests/bpf/bpf_testmod/bpf_testmod.h   |  5 +++
- .../selftests/bpf/prog_tests/module_attach.c  | 35 +++++++++++++++++++
- .../selftests/bpf/progs/test_module_attach.c  | 14 ++++++++
- tools/testing/selftests/bpf/test_progs.c      |  4 +--
- tools/testing/selftests/bpf/test_progs.h      |  2 ++
- 9 files changed, 119 insertions(+), 11 deletions(-)
-
+diff --git a/include/trace/bpf_probe.h b/include/trace/bpf_probe.h
+index a23be89119aa..a8e97f84b652 100644
+--- a/include/trace/bpf_probe.h
++++ b/include/trace/bpf_probe.h
+@@ -93,8 +93,7 @@ __section("__bpf_raw_tp_map") = {					\
+ 
+ #define FIRST(x, ...) x
+ 
+-#undef DEFINE_EVENT_WRITABLE
+-#define DEFINE_EVENT_WRITABLE(template, call, proto, args, size)	\
++#define __CHECK_WRITABLE_BUF_SIZE(call, proto, args, size)		\
+ static inline void bpf_test_buffer_##call(void)				\
+ {									\
+ 	/* BUILD_BUG_ON() is ignored if the code is completely eliminated, but \
+@@ -103,8 +102,12 @@ static inline void bpf_test_buffer_##call(void)				\
+ 	 */								\
+ 	FIRST(proto);							\
+ 	(void)BUILD_BUG_ON_ZERO(size != sizeof(*FIRST(args)));		\
+-}									\
+-__DEFINE_EVENT(template, call, PARAMS(proto), PARAMS(args), size)
++}
++
++#undef DEFINE_EVENT_WRITABLE
++#define DEFINE_EVENT_WRITABLE(template, call, proto, args, size) \
++	__CHECK_WRITABLE_BUF_SIZE(call, PARAMS(proto), PARAMS(args), size) \
++	__DEFINE_EVENT(template, call, PARAMS(proto), PARAMS(args), size)
+ 
+ #undef DEFINE_EVENT
+ #define DEFINE_EVENT(template, call, proto, args)			\
+@@ -119,9 +122,17 @@ __DEFINE_EVENT(template, call, PARAMS(proto), PARAMS(args), size)
+ 	__BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args))		\
+ 	__DEFINE_EVENT(call, call, PARAMS(proto), PARAMS(args), 0)
+ 
++#undef DECLARE_TRACE_WRITABLE
++#define DECLARE_TRACE_WRITABLE(call, proto, args, size) \
++	__CHECK_WRITABLE_BUF_SIZE(call, PARAMS(proto), PARAMS(args), size) \
++	__BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args)) \
++	__DEFINE_EVENT(call, call, PARAMS(proto), PARAMS(args), size)
++
+ #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
+ 
++#undef DECLARE_TRACE_WRITABLE
+ #undef DEFINE_EVENT_WRITABLE
++#undef __CHECK_WRITABLE_BUF_SIZE
+ #undef __DEFINE_EVENT
+ #undef FIRST
+ 
 -- 
 2.20.1
 
