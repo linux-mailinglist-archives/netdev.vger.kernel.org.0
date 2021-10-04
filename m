@@ -2,81 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D7AC42048C
+	by mail.lfdr.de (Postfix) with ESMTP id E6A0F42048D
 	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 02:46:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231809AbhJDAfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Oct 2021 20:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230508AbhJDAfi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Oct 2021 20:35:38 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36210C0613EC
-        for <netdev@vger.kernel.org>; Sun,  3 Oct 2021 17:33:50 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id l20so4195197ilk.2
-        for <netdev@vger.kernel.org>; Sun, 03 Oct 2021 17:33:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qhmVOSJJhXUxmby2LZ1rQNOJIc5RXdNWyU23DEK7n9w=;
-        b=iQ8RoHDKOjyS7XITWYh8JWE+d0m9R0opftmV45rBkBA6cLVBXiYBsXZM9lgOBZ4t8J
-         XjUv5pJIac67t6RE+THlBPOrDUbQHQwRCqoDk9eKZOwd0EYEacoqNcp1XHJzN1qSIXmI
-         7rLTgwzuQ4jjDZ+okZCNjzD0Jb9HmslR1aOkDINn6wzYhXiiE9Xmn4IxqoVuyGz6yFYb
-         NO6JByUxk8Ukw7LGNvnIZ/mJnPAYSfrrWLM8EktSKV7Fhlk+iXf6ml7qE1WRQtMbw/9z
-         e5xBPMQaq9Z4eOd8NaI+O4E3cUXi0KRZe+oCRsL36Xp3Vo9rgz4QloidUzdboCWbPwtG
-         4ONA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qhmVOSJJhXUxmby2LZ1rQNOJIc5RXdNWyU23DEK7n9w=;
-        b=GJxBpFxZaOAC8A3486TK6NLGgG6eQagn7KRtA9Xj21UzDuAQNltd6Yi4XnpYHDZNkC
-         +OjVqI2yCcV9Q8FbZmCID24b54Rl76PZC6/ngjFX5x+oXZJVWnJ+XXSezsFaiV/+sGgp
-         I0q3N8AT4pKkpWXvFFVf6+s9kADMcrZWKL33MlxTsbnJ2FtJquaOARF7Cr6bGRiRqzXf
-         vpKb1t1intIH9oVaQn9XtbFs104zwGvzeOSA1inLwU92pb1dB1z9NmfUec8wNigimECd
-         i83Y2JqQlpEY9N0bIqkFcd1F1zTbPQptMoj9iJ80s1gtPgPJdEuGyqaNYwd0e36PSCtC
-         W7pA==
-X-Gm-Message-State: AOAM533mmuOnS3NxNAjOH4GuDc25krgt1FWcRkJAD/AwU/nuNF/KEVTM
-        AaRpg57li3wYvN0qu4h/XDKJSic6n6myKQ==
-X-Google-Smtp-Source: ABdhPJwuaGy+C+I0qGCVJsuYwfNKSJ6frkMi2OKoC6+hmikDuYl98/BkMIuQ1I1CavrJki0xwPQaXA==
-X-Received: by 2002:a05:6e02:1a6d:: with SMTP id w13mr7487830ilv.304.1633307629320;
-        Sun, 03 Oct 2021 17:33:49 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id f21sm8086839iox.38.2021.10.03.17.33.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 Oct 2021 17:33:48 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 09/12] ip: nexthop: add cache helpers
-To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, donaldsharp72@gmail.com, idosch@idosch.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-References: <20210930113844.1829373-1-razor@blackwall.org>
- <20210930113844.1829373-10-razor@blackwall.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <c036dc79-0d78-df8b-343b-fa9a913bd5cf@gmail.com>
-Date:   Sun, 3 Oct 2021 18:33:47 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S231956AbhJDAl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Oct 2021 20:41:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59438 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230508AbhJDAl5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 3 Oct 2021 20:41:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id D90E861362;
+        Mon,  4 Oct 2021 00:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633308008;
+        bh=BIv1Whxq637eji3IDuAQdKo8gjBB0EqktsdVANA93co=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=oFGXf9eAd4OVohoEYiYyTRal727uToEnCCqA7OUUwukwFLCHv5Uu9ddy8B850P0X7
+         uRQNKndnbWRzx4X7FFvh2+xBtpm9h/64AZapIksgKDQptptZvJVvQg2K853caDx2ap
+         iYBaScse8VbEtYG+wuqZfZZ6Udt5jNFbonQCHzSxrE95qML1CgCzluBLPy2nj6d1jx
+         sWPBzN8DfW/GOLvjTjeVpM0xuY+XuxfdAR6Zz+ejxqPYbUknlzSk6epkqYr4QPKDQ6
+         A+wDzFP+yiwaWfu4wAZi6UTcWNzVDmcjyMFjjJUBm7Zy6IB2PwKEdYRkG/o5mydj6W
+         jGcMzsSmZNHDQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C8E6260971;
+        Mon,  4 Oct 2021 00:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210930113844.1829373-10-razor@blackwall.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2-next 00/12] ip: nexthop: cache nexthops and print
+ routes' nh info
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163330800881.10241.15878981717990557235.git-patchwork-notify@kernel.org>
+Date:   Mon, 04 Oct 2021 00:40:08 +0000
+References: <20210930113844.1829373-1-razor@blackwall.org>
+In-Reply-To: <20210930113844.1829373-1-razor@blackwall.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com, donaldsharp72@gmail.com,
+        dsahern@gmail.com, idosch@idosch.org, nikolay@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/30/21 5:38 AM, Nikolay Aleksandrov wrote:
-> +static struct nh_entry *ipnh_cache_add(__u32 nh_id)
-> +{
-> +	struct rtnl_handle cache_rth = { .fd = -1 };
-> +	struct nlmsghdr *answer = NULL;
-> +	struct nh_entry *nhe = NULL;
-> +
-> +	if (rtnl_open(&cache_rth, 0) < 0)
+Hello:
 
-Set applied to iproute-next; wondering if this can be cached - avoid the
-open on every nexthop.
+This series was applied to iproute2/iproute2-next.git (refs/heads/main):
+
+On Thu, 30 Sep 2021 14:38:32 +0300 you wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+> 
+> Hi,
+> This set tries to help with an old ask that we've had for some time
+> which is to print nexthop information while monitoring or dumping routes.
+> The core problem is that people cannot follow nexthop changes while
+> monitoring route changes, by the time they check the nexthop it could be
+> deleted or updated to something else. In order to help them out I've
+> added a nexthop cache which is populated (only used if -d / show_details
+> is specified) while decoding routes and kept up to date while monitoring.
+> The nexthop information is printed on its own line starting with the
+> "nh_info" attribute and its embedded inside it if printing JSON. To
+> cache the nexthop entries I parse them into structures, in order to
+> reuse most of the code the print helpers have been altered so they rely
+> on prepared structures. Nexthops are now always parsed into a structure,
+> even if they won't be cached, that structure is later used to print the
+> nexthop and destroyed if not going to be cached. New nexthops (not found
+> in the cache) are retrieved from the kernel using a private netlink
+> socket so they don't disrupt an ongoing dump, similar to how interfaces
+> are retrieved and cached.
+> 
+> [...]
+
+Here is the summary with links:
+  - [iproute2-next,01/12] ip: print_rta_if takes ifindex as device argument instead of attribute
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=f72789965eff
+  - [iproute2-next,02/12] ip: export print_rta_gateway version which outputs prepared gateway string
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=371e889da771
+  - [iproute2-next,03/12] ip: nexthop: add resilient group structure
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=cfb0a8729ea4
+  - [iproute2-next,04/12] ip: nexthop: split print_nh_res_group into parse and print parts
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=60a7515b89ff
+  - [iproute2-next,05/12] ip: nexthop: add nh entry structure
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=7ec1cee630e3
+  - [iproute2-next,06/12] ip: nexthop: parse attributes into nh entry structure before printing
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=945c26db686b
+  - [iproute2-next,07/12] ip: nexthop: factor out print_nexthop's nh entry printing
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=a2ca43121501
+  - [iproute2-next,08/12] ip: nexthop: factor out ipnh_get_id rtnl talk into a helper
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=53d7c43bd385
+  - [iproute2-next,09/12] ip: nexthop: add cache helpers
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=60a970303288
+  - [iproute2-next,10/12] ip: nexthop: add a helper which retrieves and prints cached nh entry
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=cb3d18c29e20
+  - [iproute2-next,11/12] ip: route: print and cache detailed nexthop information when requested
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=5d5dc549ce7d
+  - [iproute2-next,12/12] ip: nexthop: add print_cache_nexthop which prints and manages the nh cache
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=7ca868a7aa26
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
