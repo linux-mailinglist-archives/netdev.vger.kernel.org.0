@@ -2,133 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 677F742113E
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 16:19:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFA11421175
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 16:33:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233665AbhJDOVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 10:21:36 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:47801 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233384AbhJDOVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 10:21:34 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 72665580A5E;
-        Mon,  4 Oct 2021 10:19:45 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Mon, 04 Oct 2021 10:19:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=SP8p7v
-        RHek0+NLeWR4b0M3SRX5R2PEfbEShLyKtrWB8=; b=RVl7cYWwf8stiNnf5eE5ed
-        fepYlcBTDeYASgwVEEKIiJh7BXL15InnRRbSvsYZT3UQrJ8BcMkLXP+R6KDYjLFc
-        dal+UHDiIpncurYHzZXeb75pZhypmv7ZKmXRZnkrXDkC+HHXwEDkOjbrG+K7MfXy
-        IJ9MNn6PSMwVqi5TqyIUgzH76QxFKfYbIKJCjzBnNogKtI9qK9ArDGvUHGJvhUB+
-        F/rwNlOhZgvZTAlVIbL//7rSQB2B5pSLt9uRxDSIwuCfB6U84QoSZ0iN53prkrMB
-        Njx5j+HDc8yenfOHnK8SATJjTkQdIuRdfDfz5HZCAuy7zi6o7ADsw/r3lQ5MlBCQ
-        ==
-X-ME-Sender: <xms:gA1bYW4oNPc2_Jynme6eWHXba34pvsSkvtyeDNt87grt-sS7fJjcfA>
-    <xme:gA1bYf4m5g52wfUqT2EcMJvPQh7MkkXYrRGUgYsT3m6p6MMx8SZ9mw7oCZv18Qkl0
-    sC_oGhiVUSG8Xc>
-X-ME-Received: <xmr:gA1bYVcmj0xrb1FvTteH5Zx8sKtGprOTNQhJ2TtBcCL4EHQ8TAt5hxnBIOf7gPHz6u7I_fCWMGfXnsu5iPzsVZH73qXokw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudelvddgjeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:gA1bYTLpfERgcKxtdbUE-LpPg5PMTdE9FX5flR4g-K_UXwPBCt1Gbg>
-    <xmx:gA1bYaL6DfWlLR-_erVe_FdtWwHdoCrUhihq7k4rAZk5G_STnAlaUQ>
-    <xmx:gA1bYUzfX_AyJqIJDzxFhbjGL3_qP-rE5FwfA3DU8jaHxbNxgDnzqQ>
-    <xmx:gQ1bYf6VdGPgTJjnhNngfm6877Q2lRENVOnsCNMDDuobCYjPRLDmfA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 4 Oct 2021 10:19:44 -0400 (EDT)
-Date:   Mon, 4 Oct 2021 17:19:40 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        mlxsw@nvidia.com, Moshe Shemesh <moshe@nvidia.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: Re: [PATCH net-next v2 5/5] devlink: Delete reload enable/disable
- interface
-Message-ID: <YVsNfLzhGULiifw2@shredder>
-References: <cover.1633284302.git.leonro@nvidia.com>
- <06ebba9e115d421118b16ac4efda61c2e08f4d50.1633284302.git.leonro@nvidia.com>
+        id S234472AbhJDOe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 10:34:56 -0400
+Received: from netrider.rowland.org ([192.131.102.5]:41623 "HELO
+        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S234384AbhJDOez (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 10:34:55 -0400
+Received: (qmail 584706 invoked by uid 1000); 4 Oct 2021 10:33:05 -0400
+Date:   Mon, 4 Oct 2021 10:33:05 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     Hayes Wang <hayeswang@realtek.com>,
+        Jason-ch Chen <jason-ch.chen@mediatek.com>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "Project_Global_Chrome_Upstream_Group@mediatek.com" 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        "hsinyi@google.com" <hsinyi@google.com>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: Re: [PATCH] r8152: stop submitting rx for -EPROTO
+Message-ID: <20211004143305.GA583555@rowland.harvard.edu>
+References: <20210929051812.3107-1-jason-ch.chen@mediatek.com>
+ <cbd1591fc03f480c9f08cc55585e2e35@realtek.com>
+ <4c2ad5e4a9747c59a55d92a8fa0c95df5821188f.camel@mediatek.com>
+ <274ec862-86cf-9d83-7ea7-5786e30ca4a7@suse.com>
+ <20210930151819.GC464826@rowland.harvard.edu>
+ <3694347f29ed431e9f8f2c065b8df0a7@realtek.com>
+ <5f56b21575dd4f64a3b46aac21151667@realtek.com>
+ <20211001152226.GA505557@rowland.harvard.edu>
+ <72573b91-11d7-55a0-0cd8-5afbc289b38c@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <06ebba9e115d421118b16ac4efda61c2e08f4d50.1633284302.git.leonro@nvidia.com>
+In-Reply-To: <72573b91-11d7-55a0-0cd8-5afbc289b38c@suse.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 03, 2021 at 09:12:06PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Mon, Oct 04, 2021 at 01:44:54PM +0200, Oliver Neukum wrote:
 > 
-> After changes to allow dynamically set the reload_up/_down callbacks,
-> we ensure that properly supported devlink ops are not accessible before
-> devlink_register, which is last command in the initialization sequence.
+> On 01.10.21 17:22, Alan Stern wrote:
+> > On Fri, Oct 01, 2021 at 03:26:48AM +0000, Hayes Wang wrote:
+> >>> Alan Stern <stern@rowland.harvard.edu>
+> >>> [...]
+> >>>> There has been some discussion about this in the past.
+> >>>>
+> >>>> In general, -EPROTO is almost always a non-recoverable error.
+> >>> Excuse me. I am confused about the above description.
+> >>> I got -EPROTO before, when I debugged another issue.
+> >>> However, the bulk transfer still worked after I resubmitted
+> >>> the transfer. I didn't do anything to recover it. That is why
+> >>> I do resubmission for -EPROTO.
+> >> I check the Linux driver and the xHCI spec.
+> >> The driver gets -EPROTO for bulk transfer, when the host
+> >> returns COMP_USB_TRANSACTION_ERROR.
+> >> According to the spec of xHCI, USB TRANSACTION ERROR
+> >> means the host did not receive a valid response from the
+> >> device (Timeout, CRC, Bad PID, unexpected NYET, etc.).
+> > That's right.  If the device and cable are working properly, this 
+> > should never happen.  Or only extremely rarely (for example, caused 
+> > by external electromagnetic interference).
+> And the device. I am afraid the condition in your conditional statement
+> is not as likely to be true as would be desirable for quite a lot setups.
+
+But if the device isn't working, a simple retry is most unlikely to fix 
+the problem.  Some form of active error recovery, such as a bus reset, 
+will be necessary.  For a non-working cable, even a reset won't help -- 
+the user would have to physically adjust or replace the cable.
+
+> >> It seems to be reasonable why resubmission sometimes works.
+> > Did you ever track down the reason why you got the -EPROTO error 
+> > while debugging that other issue?  Can you reproduce it?
 > 
-> It makes devlink_reload_enable/_disable not relevant anymore and can be
-> safely deleted.
+> Is that really the issue though? We are seeing this issue with EPROTO.
+> But wouldn't we see it with any recoverable error?
+
+If you mean an error that can be fixed but only by doing something more 
+than a simple retry, then yes.  However, the vast majority of USB 
+drivers do not attempt anything more than a simple retry.  Relatively 
+few of them (including usbhid and mass-storage) are more sophisticated 
+in their error handling.
+
+> AFAICT we are running into a situation without progress because drivers
+> retry
 > 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> * forever
+> * immediately
+> 
+> If we broke any of these conditions the system would proceed and the
+> hotplug event be eventually be processed. We may ask whether drivers should
+> retry forever, but I don't see that you can blame it on error codes.
 
-[...]
+It's important to distinguish between:
 
-> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-> index cb6645012a30..09e48fb232a9 100644
-> --- a/drivers/net/netdevsim/dev.c
-> +++ b/drivers/net/netdevsim/dev.c
-> @@ -1512,7 +1512,6 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
->  
->  	nsim_dev->esw_mode = DEVLINK_ESWITCH_MODE_LEGACY;
->  	devlink_register(devlink);
-> -	devlink_reload_enable(devlink);
->  	return 0;
->  
->  err_psample_exit:
-> @@ -1566,9 +1565,7 @@ void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev)
->  	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
->  	struct devlink *devlink = priv_to_devlink(nsim_dev);
->  
-> -	devlink_reload_disable(devlink);
->  	devlink_unregister(devlink);
-> -
->  	nsim_dev_reload_destroy(nsim_dev);
->  
->  	nsim_bpf_dev_exit(nsim_dev);
+    1.	errors that are transient and will disappear very quickly,
+	meaning that a retry has a good chance of working, and
 
-I didn't remember why devlink_reload_{enable,disable}() were added in
-the first place so it was not clear to me from the commit message why
-they can be removed. It is described in commit a0c76345e3d3 ("devlink:
-disallow reload operation during device cleanup") with a reproducer.
+    2.	errors that are effectively permanent (or at least, long-lived)
+	and therefore are highly unlikely to be fixed by retrying.
 
-Tried the reproducer with this series and I cannot reproduce the issue.
-Wasn't quite sure why, but it does not seem to be related to "changes to
-allow dynamically set the reload_up/_down callbacks", as this seems to
-be specific to mlx5.
+My point is that there is no reason to retry in case 2, and -EPROTO 
+falls into this case (as do -EILSEQ and -ETIME).
 
-IIUC, the reason that the race described in above mentioned commit can
-no longer happen is related to the fact that devlink_unregister() is
-called first in the device dismantle path, after your previous patches.
-Since both the reload operation and devlink_unregister() hold
-'devlink_mutex', it is not possible for the reload operation to race
-with device dismantle.
+Converting drivers to keep track of their retries, to avoid retrying 
+forever, would be a fairly large change.  Even implementing delayed 
+retries requires some significant work (as you can see in Hayes's recent 
+patch -- and that was an easy case because the NAPI infrastructure was 
+already present).  It's much simpler to avoid retrying entirely in 
+situations where retries won't help.
 
-Agree? If so, I think it would be good to explain this in the commit
-message unless it's clear to everyone else.
+And it's even simpler if the USB core would automatically prevent 
+retries (by failing URB submissions after low-level protocol errors) in 
+these situations.
 
-Thanks
+Alan Stern
