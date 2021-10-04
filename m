@@ -2,134 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE224421625
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 20:12:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB1F84216A2
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 20:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237847AbhJDSN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 14:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
+        id S238323AbhJDSjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 14:39:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236050AbhJDSN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 14:13:58 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC85C061745;
-        Mon,  4 Oct 2021 11:12:09 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id 73so17380663qki.4;
-        Mon, 04 Oct 2021 11:12:09 -0700 (PDT)
+        with ESMTP id S229907AbhJDSi5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 14:38:57 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CFBC061745;
+        Mon,  4 Oct 2021 11:37:08 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id x27so75649658lfu.5;
+        Mon, 04 Oct 2021 11:37:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+fT+aA8O5oRqS8Fx8O+K4w9xvhEfwcMTbFUqJDULxaY=;
-        b=cB8begJI5ATh6WUeF3PsZL0eN0zkI5dsdFYEZsxDXbahwFjHCE1LT8VFlsj9Lzs7/j
-         Jmu/pnTyPj5S+Fm/F9qYXTzyt8PT95g2kYwLN9j+Tyu+yiMElJlKLkLaso0lI5fd8zOQ
-         8aikJdx6bbwK0b4VlPhSQGhg3iUjzqBBi0LBltW4vu8eeDkG4nF6JyhWEyPQbE4QM4x6
-         e5iIa+gy3aim9dxo2/Lhxkkdm/9LBYhyL/YErgBSFkwgRcBPqEnGsPjCkdX4bTXXD6Am
-         uXRC8r/AvgiBFtEY8N7CPtTQmEtAR6muZNgeF1XFRg1hGD1UHOSUVA5Wk6j3ANGQ+glD
-         RaIQ==
+        bh=xem27AtWW1FQA6QFUscNmpNu/Mi0AlB3uxJE9Zg7LWU=;
+        b=VvlK17bgfWju26sVx30X0JjTItRn2NqFbmnHvE2isMMlopyEpyhXM0Rj2E4M62D6Il
+         mTRup9WRJoLo6k5LORBQarOAcJa4XMLNjfXqvEABYiG4zjR6yNuJgUDgNTZIPyh2Ke1Y
+         9NhX46dJrB0Owho9XbLusMcZ4Od/DsIVa72+Gxas+FJoQg98YXn3bNb6UXzpmwtgkQDD
+         bowtIgQ7TXO7XcLVGzkL9wWyKCMBc49lGkB1FjmTmKoRY4Fm1o4Ek41/0OMycbY3jNrf
+         hoEwSuuwje+C1Dgd2fdtnIwWYBkWgZy5DcPgdDJ14Y4COisSaFLc8+1x/pe6Ia5Sqo35
+         C7tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=+fT+aA8O5oRqS8Fx8O+K4w9xvhEfwcMTbFUqJDULxaY=;
-        b=5fLsraFjhG1lwxIgZiT6OMdPZuSsZFMG6V9Fpvss3WHUzx1MkW0IAIV1njH8q5w+wW
-         h7kA1gtKm8nKS3R3Oxrluqpeg+2ixEc/mf1HDRirpf2DPHo6o/NPczJmkWhxn5OOAA0o
-         LgntKCnhtLyVX/fswc229A6aC3NvMSWJjmb0pxS2hl5c8O5IsH15dzkVOdZKewEj46WM
-         BfjDrZ2i3Y0gRl7xee7QYEY/zGDlBNtsCyPNX8wsFxA7sqqYuQMAPK9W/M3KgAv9+GXR
-         Ef2yNm8FuBtYAp3i05joTY+4+ROBjMxf4xuN64uTlw9Bi3wsmuzF9VrVsF4m8x3Yecpc
-         ho6g==
-X-Gm-Message-State: AOAM531teUz6KYVY3PT45BW5edOr1hXdfpFAD1Oh6VTFfBcs61eeiVaj
-        o0VQlTkC/+ulBB52nc2WIb4dRIbxPB/HwM2GLSo=
-X-Google-Smtp-Source: ABdhPJw+p5LDAu4EWLtXrEVmBgi6I2O8BSJ/cp3rVmaxsAJHduNSbNYqlpna5byopgrCWGY7tfR9Bg==
-X-Received: by 2002:a37:e14:: with SMTP id 20mr11478184qko.250.1633371128922;
-        Mon, 04 Oct 2021 11:12:08 -0700 (PDT)
-Received: from [192.168.4.191] (pool-72-82-21-11.prvdri.fios.verizon.net. [72.82.21.11])
-        by smtp.gmail.com with ESMTPSA id g12sm9179316qtm.59.2021.10.04.11.12.08
+        bh=xem27AtWW1FQA6QFUscNmpNu/Mi0AlB3uxJE9Zg7LWU=;
+        b=H+anMHbHrvM5PlquRcHpiAnSi5ckGn/NrkzNRCwSRhd5gDKQZFf3RNjQNM6k3LXe1m
+         UiWw5ksNfJcuepAsS3I1GrVMUqYfoo8MLzuvN9ywfztY+c4jrNoraRQ0shltrIoEJt8P
+         MQodXiY8UHVLIMOndRfsRvJnL1V2Or6Y7/+wYvjdL7xrQRZUNQUmEoHcoHI09xwsKSN8
+         nwXnFXjSwgnlhGFvMVp9G9T1yxSXMHv2Q0WSaLzv2epkZXsumAzoTcqMc6iJ3mf5MDLg
+         RLIrI3zroktVfJVgYaPYic5ja03rALENdvbXi1N7WfZ9o/NHB6AHtTkdnVj8frFdTm7h
+         7tkw==
+X-Gm-Message-State: AOAM532h8JGmtjlWA4GPnLeOuWftKAZelC5oHAOgyjzbMZSOq5nB11Pp
+        LipSUh/9XtNveNRZ4j/22ZM=
+X-Google-Smtp-Source: ABdhPJxh4rDbJVCVy7zoAFnE3MkIxBFqljK7Opdyx3aKJumHOnHj5ZBOKogs7h85DCNjYopavjgDbA==
+X-Received: by 2002:a2e:a277:: with SMTP id k23mr14153835ljm.53.1633372626602;
+        Mon, 04 Oct 2021 11:37:06 -0700 (PDT)
+Received: from [192.168.1.103] ([178.176.79.223])
+        by smtp.gmail.com with ESMTPSA id w26sm1695440ljo.33.2021.10.04.11.37.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Oct 2021 11:12:08 -0700 (PDT)
-Subject: Re: [PATCH 1/2] Bluetooth: call sock_hold earlier in sco_conn_del
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Mon, 04 Oct 2021 11:37:06 -0700 (PDT)
+Subject: Re: [PATCH 07/10] ravb: Add tsrq to struct ravb_hw_info
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        eric.dumazet@gmail.com
-References: <20210903031306.78292-1-desmondcheongzx@gmail.com>
- <20210903031306.78292-2-desmondcheongzx@gmail.com>
- <7AEB2618-111A-45F4-8C00-CF40FCBE92EC@holtmann.org>
-From:   Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-Message-ID: <1203215b-13bf-ce0c-ef23-5664544607a1@gmail.com>
-Date:   Mon, 4 Oct 2021 14:12:07 -0400
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
+ <20211001150636.7500-8-biju.das.jz@bp.renesas.com>
+ <5193e153-2765-943b-4cf8-413d5957ec01@omp.ru>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <e83b3688-4cfe-8706-bd42-ab1ad8644239@gmail.com>
+Date:   Mon, 4 Oct 2021 21:37:04 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <7AEB2618-111A-45F4-8C00-CF40FCBE92EC@holtmann.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <5193e153-2765-943b-4cf8-413d5957ec01@omp.ru>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
+On 10/4/21 9:00 PM, Sergey Shtylyov wrote:
 
-On 10/9/21 3:36 am, Marcel Holtmann wrote:
-> Hi Desmond,
+[...]
+>    The TCCR bits are called transmit start request (queue 0/1), not transmit start request queue 0/1.
+> I think you've read too much value into them for what is just TX queue 0/1.
 > 
->> In sco_conn_del, conn->sk is read while holding on to the
->> sco_conn.lock to avoid races with a socket that could be released
->> concurrently.
+>> Add a tsrq variable to struct ravb_hw_info to handle this
+>> difference.
 >>
->> However, in between unlocking sco_conn.lock and calling sock_hold,
->> it's possible for the socket to be freed, which would cause a
->> use-after-free write when sock_hold is finally called.
->>
->> To fix this, the reference count of the socket should be increased
->> while the sco_conn.lock is still held.
->>
->> Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+>> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 >> ---
->> net/bluetooth/sco.c | 3 ++-
->> 1 file changed, 2 insertions(+), 1 deletion(-)
+>> RFC->v1:
+>>  * Added tsrq variable instead of multi_tsrq feature bit.
+>> ---
+>>  drivers/net/ethernet/renesas/ravb.h      | 1 +
+>>  drivers/net/ethernet/renesas/ravb_main.c | 9 +++++++--
+>>  2 files changed, 8 insertions(+), 2 deletions(-)
 >>
->> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
->> index b62c91c627e2..4a057f99b60a 100644
->> --- a/net/bluetooth/sco.c
->> +++ b/net/bluetooth/sco.c
->> @@ -187,10 +187,11 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
->> 	/* Kill socket */
->> 	sco_conn_lock(conn);
->> 	sk = conn->sk;
+>> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+>> index 9cd3a15743b4..c586070193ef 100644
+>> --- a/drivers/net/ethernet/renesas/ravb.h
+>> +++ b/drivers/net/ethernet/renesas/ravb.h
+>> @@ -997,6 +997,7 @@ struct ravb_hw_info {
+>>  	netdev_features_t net_features;
+>>  	int stats_len;
+>>  	size_t max_rx_len;
+>> +	u32 tsrq;
 > 
-> please add a comment here on why we are doing it.
-> 
+>    I'd call it 'tccr_value' instead.
 
-So sorry for the very delayed response. I was looking through old email 
-threads to check if my recently resent patch was still necessary, and 
-just realized I missed this email.
+    Or even better, 'tccr_mask'...
 
-This patch was merged into the bluetooth-next tree before your feedback 
-came in. Would you still like me to write a separate patch to add the 
-requested comment?
+[...]
 
-Best wishes,
-Desmond
-
->> +	if (sk)
->> +		sock_hold(sk);
->> 	sco_conn_unlock(conn);
->>
->> 	if (sk) {
->> -		sock_hold(sk);
->> 		lock_sock(sk);
->> 		sco_sock_clear_timer(sk);
->> 		sco_chan_del(sk, err);
-> 
-> Regards
-> 
-> Marcel
-> 
+MBR, Sergey
