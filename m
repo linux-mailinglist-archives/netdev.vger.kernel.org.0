@@ -2,157 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD582420ABC
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 14:19:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB053420ABE
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 14:19:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233190AbhJDMU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 08:20:58 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:60149 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233207AbhJDMU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 08:20:57 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-49-sV7CZNCCMQCvWxLrGAb6og-1; Mon, 04 Oct 2021 13:19:02 +0100
-X-MC-Unique: sV7CZNCCMQCvWxLrGAb6og-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Mon, 4 Oct 2021 13:18:59 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Mon, 4 Oct 2021 13:18:59 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Cufi, Carles'" <Carles.Cufi@nordicsemi.no>,
-        'Florian Weimer' <fweimer@redhat.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jukka.rissanen@linux.intel.com" <jukka.rissanen@linux.intel.com>,
-        "johan.hedberg@intel.com" <johan.hedberg@intel.com>,
-        "Lubos, Robert" <Robert.Lubos@nordicsemi.no>,
-        "Bursztyka, Tomasz" <tomasz.bursztyka@intel.com>,
-        "linux-toolchains@vger.kernel.org" <linux-toolchains@vger.kernel.org>
-Subject: RE: Non-packed structures in IP headers
-Thread-Topic: Non-packed structures in IP headers
-Thread-Index: AQHXtwBfS5Uh4qQ3iEK5aIu8W7utVau/29dAgAK+NgCAACY+YA==
-Date:   Mon, 4 Oct 2021 12:18:59 +0000
-Message-ID: <bb7bb41a724c42d9adb6357306428a5b@AcuMS.aculab.com>
-References: <AS8PR05MB78952FE7E8D82245D309DEBCE7AA9@AS8PR05MB7895.eurprd05.prod.outlook.com>
- <87bl48v74v.fsf@oldenburg.str.redhat.com>
- <a8082bcaeb534ee5b24ea6dae4428547@AcuMS.aculab.com>
- <DB9PR05MB789852210DBB2F6264536A8EE7AE9@DB9PR05MB7898.eurprd05.prod.outlook.com>
-In-Reply-To: <DB9PR05MB789852210DBB2F6264536A8EE7AE9@DB9PR05MB7898.eurprd05.prod.outlook.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S233222AbhJDMVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 08:21:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49202 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233203AbhJDMVA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 08:21:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E5040613AC;
+        Mon,  4 Oct 2021 12:19:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1633349951;
+        bh=uVtc/23Io3B6xyyTilD7o7cTM7pfM+IBE9IJZCjrpMc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QLtAQFq+e7d1jjMZPtkQAGzUa+syyD3Ty/yCR8skjLWBbMCH6yj7wGpUZmy5jtiuU
+         8d2H9XFlDEkykH3+ZP7suucs3HKSLDkj6drW4Sl3evZz2iKwPih+nUvV2z3C23let2
+         xxluKb+QNTrdzSkJYY4BojjTn7LnLeX5Oc11Dm40=
+Date:   Mon, 4 Oct 2021 14:19:09 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        netdev@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] drivers: net: mhi: fix error path in mhi_net_newlink
+Message-ID: <YVrxPd81zvk1C4xk@kroah.com>
+References: <20211004114601.13870-1-dnlplm@gmail.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211004114601.13870-1-dnlplm@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQ3VmaSwgQ2FybGVzDQo+IFNlbnQ6IDA0IE9jdG9iZXIgMjAyMSAxMTo0Mg0KPiANCj4g
-PiBGcm9tOiBEYXZpZCBMYWlnaHQgPERhdmlkLkxhaWdodEBBQ1VMQUIuQ09NPg0KPiA+IFNlbnQ6
-IDAyIE9jdG9iZXIgMjAyMSAxNzo1NQ0KPiA+IEZyb206IEZsb3JpYW4gV2VpbWVyDQo+ID4gPiBT
-ZW50OiAwMSBPY3RvYmVyIDIwMjEgMjE6MTANCj4gPiA+DQo+ID4gPiAqIENhcmxlcyBDdWZpOg0K
-PiA+ID4NCj4gPiA+ID4gSSB3YXMgbG9va2luZyB0aHJvdWdoIHRoZSBzdHJ1Y3R1cmVzIGZvciBJ
-UHZ7NCw2fSBwYWNrZXQgaGVhZGVycyBhbmQNCj4gPiA+ID4gbm90aWNlZCB0aGF0IHNldmVyYWwg
-b2YgdGhvc2UgdGhhdCBzZWVtIHRvIGJlIHVzZWQgdG8gcGFyc2UgYSBwYWNrZXQNCj4gPiA+ID4g
-ZGlyZWN0bHkgZnJvbSB0aGUgd2lyZSBhcmUgbm90IGRlY2xhcmVkIGFzIHBhY2tlZC4gVGhpcyBz
-dXJwcmlzZWQgbWUNCj4gPiA+ID4gYmVjYXVzZSwgYWx0aG91Z2ggSSBkaWQgZmluZCB0aGF0IHBy
-b3Zpc2lvbnMgYXJlIG1hZGUgc28gdGhhdCB0aGUNCj4gPiA+ID4gYWxpZ25tZW50IG9mIHRoZSBz
-dHJ1Y3R1cmUsIGl0IGlzIHN0aWxsIHRlY2huaWNhbGx5IHBvc3NpYmxlIGZvciB0aGUNCj4gPiA+
-ID4gY29tcGlsZXIgdG8gaW5qZWN0IHBhZGRpbmcgYnl0ZXMgaW5zaWRlIHRob3NlIHN0cnVjdHVy
-ZXMsIHNpbmNlDQo+ID4gPiA+IEFGQUlLIHRoZSBDIHN0YW5kYXJkIG1ha2VzIG5vIGd1YXJhbnRl
-ZXMgYWJvdXQgcGFkZGluZyB1bmxlc3MgaXQncw0KPiA+ID4gPiBpbnN0cnVjdGVkIHRvIHBhY2sg
-dGhlIHN0cnVjdHVyZS4NCj4gPiA+DQo+ID4gPiBUaGUgQyBzdGFuZGFyZHMgZG8gbm90IG1ha2Ug
-c3VjaCBndWFyYW50ZWVzLCBidXQgdGhlIHBsYXRmb3JtIEFCSQ0KPiA+ID4gc3RhbmRhcmRzIGRl
-c2NyaWJlIHN0cnVjdCBsYXlvdXQgYW5kIGVuc3VyZSB0aGF0IHRoZXJlIGlzIG5vIHBhZGRpbmcu
-DQo+ID4gPiBMaW51eCByZWxpZXMgb24gdGhhdCBub3QganVzdCBmb3IgbmV0d29ya2luZywgYnV0
-IGFsc28gZm9yIHRoZQ0KPiA+ID4gdXNlcnNwYWNlIEFCSSwgc3VwcG9ydCBmb3Igc2VwYXJhdGVs
-eSBjb21waWxlZCBrZXJuZWwgbW9kdWxlcywgYW5kIGluDQo+ID4gPiBvdGhlciBwbGFjZXMuDQo+
-ID4NCj4gPiBJbiBwYXJ0aWN1bGFyIHN0cnVjdHVyZXMgYXJlIHVzZWQgdG8gbWFwIGhhcmR3YXJl
-IHJlZ2lzdGVyIGJsb2Nrcy4NCj4gDQo+IE5vbi1wYWRkZWQgb25lcz8gQmVjYXVzZSB0aGlzIGFn
-YWluIG1pZ2h0IGJlIGFuIGlzc3VlIGRlcGVuZGluZyBvbiB0aGUgY29tcGlsZXIvQUJJIGFzIHBl
-ciBteQ0KPiB1bmRlcnN0YW5kaW5nLg0KDQpUaGUgQUJJIGFyZSB1c3VhbGx5ICdzYW5lJyAtIGF0
-IHRoZSB0aW1lIG9mIHdyaXRpbmcuDQpTbyB5b3UgY2FuIGFzc3VtZSB0aGF0IHRoZSBjb21waWxl
-ciB3aWxsIG9ubHkgYWRkIHBhZGRpbmcgaWYgaXQgaXMNCm5lY2Vzc2FyeSB0byBnZXQgYSBmaWVs
-ZCBvbiBpdHMgY29ycmVjdCBhbGlnbm1lbnQuDQpUaGUgbW9zdCBjb21tb24gaXNzdWUgaXMgd2hl
-dGhlciB0aGUgQUJJIHNwZWNpZmllcyAzMmJpdCBvciA2NGJpdA0KYWxpZ25tZW50IGZvciA2NGJp
-dCBpdGVtcy4NCg0KTW9zdCBoYXJkd2FyZSByZWdpc3RlciBsYXlvdXRzIGFyZSBhbGwgb2YgJ3dv
-cmRzJyAodXN1YWxseSAzMmJpdCkuDQpTbyB0aGVyZSBpcyB1bmxpa2VseSB0byBiZSBhbnkgYWxp
-Z25tZW50IHBhZGRpbmcuDQooQnV0IHRoZXJlIG1heSBiZSB1bnVzZWQvdW5kb2N1bWVudGVkIHJl
-Z2lzdGVycy4pDQpUaGUgYWR2YW50YWdlIG9mIHVzaW5nIGEgQyBzdHJ1Y3R1cmUgKHJhdGhlciB0
-aGFuIGNvbnN0YW50cykgdG8NCmRlZmluZSBhIGhhcmR3YXJlIHJlZ2lzdGVyIGxheW91dCBpcyB0
-aGF0IGlzIG11Y2ggaGFyZGVyIHRvIGVuZA0KdXAgdXNpbmcgb2Zmc2V0cyBmb3IgdGhlIHdyb25n
-IHJlZ2lzdGVyIGJsb2NrLg0KDQo+ID4gPiBTb21ldGltZXMgdGhlcmUgYXJlIGFsaWdubWVudCBj
-b25jZXJucyBpbiB0aGUgd2F5IHRoZXNlIHN0cnVjdHMgYXJlDQo+ID4gPiB1c2VkLCBidXQgSSBi
-ZWxpZXZlIHRoZSBrZXJuZWwgZ2VuZXJhbGx5IGNvbnRyb2xzIHBsYWNlbWVudCBvZiB0aGUNCj4g
-PiA+IGRhdGEgdGhhdCBpcyBiZWluZyB3b3JrZWQgb24sIHNvIHRoYXQgZG9lcyBub3QgbWF0dGVy
-LCBlaXRoZXIuDQo+ID4gPg0KPiA+ID4gVGhlcmVmb3JlLCBJIGRvIG5vdCBiZWxpZXZlIHRoaXMg
-aXMgYW4gYWN0dWFsIHByb2JsZW0uDQo+ID4NCj4gPiBBbmQgYWRkaW5nIF9fcGFja2VkIGZvcmNl
-cyB0aGUgY29tcGlsZXIgdG8gZG8gYnl0ZSBhY2Nlc3NlcyAod2l0aCBzaGlmdHMpDQo+ID4gb24g
-Y3B1IHRoYXQgZG9uJ3Qgc3VwcG9ydCBtaXNhbGlnbmVkIG1lbW9yeSBhY2Nlc3Nlcy4NCj4gDQo+
-IFJpZ2h0LCBJIHVuZGVyc3RhbmQgdGhhdCB1c2luZyBfX3BhY2tlZCBpbnZvbHZlcyBhIHJ1bnRp
-bWUgcGVuYWx0eSBoaXQgb24gbWVtb3J5IGFjY2Vzc2VzLCBidXQgSQ0KPiB3YXNuJ3QgcHJvcG9z
-aW5nIHRvIHBhY2sgdGhvc2Ugc3RydWN0cywganVzdCB0byBjaGVjayB0aGVpciBzaXplIGZvciBw
-YWRkaW5nIGF0IGNvbXBpbGUtdGltZS4NCg0KVGhhdCBpcyBzZW5zaWJsZSwgYnV0IG5vdCByZWFs
-bHkgbmVlZGVkIGlmIHRoZSBzdHJ1Y3R1cmUgaXMgc2hvcnQNCmFuZCBldmVyeXRoaW5nIGlzICdu
-YXR1cmFsbHkgYWxpZ25lZCcuDQoNCj4gPiBTbyBpdCByZWFsbHkgaXMgd3JvbmcgdG8gc3BlY2lm
-eSBfX3BhY2tlZCB1bmxlc3MgdGhlIHN0cnVjdHVyZSBjYW4gYmUNCj4gPiB1bmFsaWduZWQgaW4g
-bWVtb3J5LCBvciBoYXMgYSAnYnJva2VuJyBkZWZpbml0aW9uIHRoYXQgaGFzIGZpZWxkcyB0aGF0
-DQo+ID4gYXJlbid0ICduYXR1cmFsbHkgYWxpZ25lZCcuDQo+IA0KPiBCdXQgd2hvIGRlZmluZXMg
-d2hhdCAiYnJva2VuIiBvciAibmF0dXJhbCBhbGlnbm1lbnQiIGlzIGZvciBlYWNoIGFyY2hpdGVj
-dHVyZT8gRnVydGhlcm1vcmUsIHRoZSBDDQo+IHN0YW5kYXJkIGRvZXNuJ3QgcmVhbGx5IG1lbnRp
-b24gYW55IG9mIHRoZXNlIHRlcm1zIGFzIGZhciBhcyBJIGtub3csIGl0IGp1c3QgbGVhdmVzIGNv
-bXBsZXRlIGZyZWVkb20NCj4gdG8gdGhlIGNvbXBpbGVyIHRvIGFkZCB0aGUgcGFkZGluZyBpdCBt
-aWdodCBjb25zaWRlciBhcHByb3ByaWF0ZS4NCg0KJ25hdHVyYWwgYWxpZ25tZW50JyBtZWFucyB0
-aGF0IGEgMioqbiBieXRlIGl0ZW0gaXMgYWx3YXlzIGENCm11bHRpcGxlIG9mIDIqKm4gbXl0ZXMg
-ZnJvbSB0aGUgZnJvbnQuDQoNCj4gPiBJbiB0aGUgbGF0dGVyIGNhc2UgaXQgaXMgZW5vdWdoIHRv
-IG1hcmsgdGhlIGZpZWxkIHRoYXQgcmVxdWlyZXMgdGhlDQo+ID4gcGFkZGluZyBiZWZvcmUgaXQg
-cmVtb3ZlZCBhcyAoSUlSQykgX19hbGlnbmVkKDEpLg0KPiA+IFRoZSBjb21waWxlciB3aWxsIHRo
-ZW4gcmVtb3ZlIHRoZSBwYWRkaW5nIGJ1dCBzdGlsbCBhc3N1bWUgdGhlIGZpZWxkIGlzDQo+ID4g
-cGFydGlhbGx5IGFsaWduZWQgLSBzbyBteSBkbyB0d28gMzJiaXQgYWNjZXNzIGluc3RlYWQgb2Yg
-OCA4Yml0IG9uZXMpLg0KPiANCj4gSW50ZXJlc3RpbmcsIEkgaGF2ZSBuZXZlciBzZWVuIHRoaXMg
-dXNlZCBiZWZvcmUsIGJ1dCB0aGVuIGFnYWluIEkgY29tZSBmcm9tIGFuIChkZWVwbHkpIGVtYmVk
-ZGVkDQo+IGJhY2tncm91bmQgdGhhdCB0ZW5kcyB0byBwYWNrIGFsbCBvZiBpdHMgc3RydWN0cyB0
-aGF0IHJlcHJlc2VudCBieXRlcyB0aGF0IGdvIG92ZXIgdGhlIHdpcmUgKG9yDQo+IGhhcmR3YXJl
-IHJlZ2lzdGVycyBmb3IgdGhhdCBtYXR0ZXIpLg0KDQpIbW1tLCBJIGdldCB5b3UgYXJlIHVzaW5n
-IGNvbnN0YW50IG9mZnNldHMgbm90IEMgc3RydXRzIGZvciByZWdpc3RlciBsYXlvdXRzLg0KRWl0
-aGVyIHRoYXQgb3IgeW91J3ZlIG5vdCBhY3R1YWxseSBsb29rZWQgYXQgdGhlIG9iamVjdCBjb2Rl
-Lg0KDQo+IFdoYXQgaXMgYWxzbyBpbnRlcmVzdGluZyBpbiB0aGlzIGNhc2UsIGlzIHdoeSB0aGUg
-ZXRoZXJuZXQgaGVhZGVyIGlzIHBhY2tlZCBpbiBMaW51eFsyXS4gVGhlcmUgZG9uJ3QNCj4gc2Vl
-bSB0byBiZSBhbnkgc3BlY2lhbCBhbGlnbm1lbnQgb3Igc2l6ZSBjb25zdHJhaW50cyB3aGVuIGNv
-bXBhcmVkIHRvIHRoZSBJUCBoZWFkZXJzLCBzaW5jZSB0aGUgc2luZ2xlDQo+IDE2LWJpdCBpbnRl
-Z2VyIGlzIHBsYWNlZCAxMiBieXRlcyBhZnRlciB0aGUgYmVnaW5uaW5nIG9mIHRoZSBzdHJ1Y3Qu
-IEkgYXNzdW1lIHRoZSByZWFzb24gZm9yIHBhY2tpbmcNCj4gdGhpcyBoZWFkZXIgaXMgaW5kZWVk
-IGFsaWdubWVudCwgYW5kIG5vdCBwYWRkaW5nLiBVbmxpa2UgdGhlIElQIGhlYWRlcnMsIHRoZSBr
-ZXJuZWwgcHJvYmFibHkgZG9lc24ndA0KPiBlbnN1cmUgdGhhdCBhbiBldGhlcm5ldCBoZWFkZXIg
-YmVnaW5zIGF0IGFuIGFkZHJlc3MgY29tcGF0aWJsZSB3aXRoIHRoZSBhbGlnbm1lbnQgcmVxdWly
-ZW1lbnRzIG9mIHRoYXQNCj4gMTYtYml0IGludGVnZXIsIHNvIHRoZSBoZWFkZXIgbmVlZHMgcGFj
-a2luZyBub3QgYmVjYXVzZSB0aGVyZSdzIGEgcmlzayBvZiBwYWRkaW5nIGJlaW5nIGludHJvZHVj
-ZWQgYnkNCj4gdGhlIGNvbXBpbGVyLCBidXQgYmVjYXVzZSB0aGUgaGVhZGVyIG1pZ2h0IHN0YXJ0
-IGF0IGFuIG9kZCBtZW1vcnkgYWRkcmVzcz8NCg0KQWxtb3N0IGNlcnRhaW5seSBiZWNhdXNlIHRo
-ZSBiYXNlIGFkZHJlc3MgbWlnaHQgYmUgb2RkLg0KKEFsdGhvdWdoIG9kZCBpcyBhY3R1YWxseSB1
-bmxpa2VseS4pDQoNCkV0aGVybmV0IGZyYW1lcyBhcmUgYW5ub3lpbmcuDQpUaGV5IHdlcmUgJ2Rl
-c2lnbmVkJyBiZWZvcmUgYW55b25lIHRob3VnaHQgYWJvdXQgMzJiaXQgY3B1cy4NClNvIHRoZXkg
-aGF2ZSB0d28gNi1ieXRlIGFkZHJlc3NlcyBmb2xsb3dlZCBieSBhIDItYnl0ZSAnZXRoZXJ0eXBl
-Jw0KKG9yIGEgMiBieXRlIGxlbmd0aCBmb3IgSVNPIGZyYW1lcykuDQpUaGlzIGlzIHRoZW4gZm9s
-bG93ZWQgYnkgdGhlIElQIGhlYWRlciAtIHdoaWNoIGlzIGFsbCAzMmJpdCBmaWVsZHMuDQpTbyBp
-ZiB5b3Ugd2FudCB0aGUgSVAgaGVhZGVyIGFsaWduZWQgKHdoaWNoIGlzIGJldHRlciAtIGV2ZW4g
-b24geDg2KQ0KeW91IG5lZWQgdG8gcmVhbiB0aGUgZXRoZXJuZXQgZnJhbWUgdG8gYSA0bisyIGJ5
-dGUgYm91bmRhcnkuDQoNCkl0IGlzIHN1cnByaXNpbmcgaG93IG1hbnkgc3lzdGVtcyB0aGF0IGhh
-dmUgY3B1IHRoYXQgcmVxdWlyZSAzMmJpdA0KaXRlbXMgYmUgb24gMzJiaXQgYm91bmRhcmllcyAo
-Y3Jvc3NpbmcgcGFnZSBib3VuZGFyaWVzIGlzIGEgUElUQSkNCmhhdmUgZXRoZXJuZXQgY29udHJv
-bGxlcnMgdGhhdCByZXF1aXJlIHJlY2VpdmUgYnVmZmVycyBiZSAzMmJpdA0KYWxpZ25lZC4NCkV2
-ZW4gd3JpdGluZyB0d28gYnl0ZXMgb24ganVuayB3b3VsZCBoZWxwLg0KDQoJRGF2aWQNCg0KLQ0K
-UmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1p
-bHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVz
-KQ0K
+On Mon, Oct 04, 2021 at 01:46:01PM +0200, Daniele Palmas wrote:
+> Fix double free_netdev when mhi_prepare_for_transfer fails.
+> 
+> This is a back-port of upstream:
+> commit 4526fe74c3c509 ("drivers: net: mhi: fix error path in mhi_net_newlink")
+> 
+> Fixes: 13adac032982 ("net: mhi_net: Register wwan_ops for link creation")
+> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+> ---
+> Hello Greg,
+> 
+> if maintainers ack, this should go just to 5.14 branch.
 
+Looks good to me, thanks!
+
+greg k-h
