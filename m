@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB64942173B
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 21:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BEFD421730
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 21:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238984AbhJDTSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 15:18:46 -0400
-Received: from mail-eopbgr50077.outbound.protection.outlook.com ([40.107.5.77]:3542
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        id S238991AbhJDTSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 15:18:22 -0400
+Received: from mail-am6eur05on2057.outbound.protection.outlook.com ([40.107.22.57]:12353
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238700AbhJDTSc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 15:18:32 -0400
+        id S238862AbhJDTR6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 15:17:58 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GWYBkXJzrHatYr0+owH6DWs99SAmZkjrzzhPSfNewwy8NmoSd7vQgxn1w+UAnS7v0MEQzxd/LPB7ceX/xux+UDU6uT2MvxdBSXj+thT0aS6C2Q4cwIRjk0Ek96qdUL1Y0/kJEWrrtMeUtW8UHTMTIRTMZIvstf8IfNg77z3sXVnsZ1XK2PdpnIyFZq6VcteW6rQ/lNLZ7GZsf/WbGgP0rDEoBlwZz9Gu7pZLPIo5hPvQNphtGNCvQChOxprX2IK0Is/p5I16YNCDG+f0x4pHK/22aEVaPNaI1NqbDCAIRJMuURqOk3LVlgaH0UQ5fSaSU8XoLBmjJLrj37AOG0jYng==
+ b=lGn0iWBZhw6fF8OYbOwweXPLJZo9BMehNgqmVKA429nzicrtrMt8xzmuiTLh0LoMVYjDkM48TvqRV79Dxi/uQMWh0ORIFmDXlywbYYCynnOGtDUtm4sADCnD5KsvNzFY53h8JnQWcYm72cDJEVyYoYFl6irv3qLFtMc900f/txTNa0ve0eQ9ladr6Kd66kmsfvIuU1gMskiHoyzs2W4BxM/znL3pc4KXK2sa37mKv2KOZoBd+/64kMSZ7QwzgEYDJEiTnqOD+CnOfFC2F2jj2jcAhw0NTHCjQtlRPo+/ECTqgisgkcuZvub5dzYLxJllDAalJEdYeyrGYhHJlgytPQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MwqogHcbsow8dBZ9T8Dw1UllQRhGDdyQ20Ce5cmhTTc=;
- b=b1WCVfV/uRfPYweCTQmdwfmf3h3/ZfScQ3+xPdY8n6eEITpbIo1FoBbZcoXI68XV/Vf0cTWTUSAs0e4sxVqmMWOdrtHJm112XGjagr/JWZTQAKpmk7aJYDPFaa4srA2DQDnITUGjfEqrVvKe106RWFkaaG/USx/z69Z/1y1TdS1hWpND8O0T/bOzixYMeUrFuh8uUk5sdXF6GxmsNaihUaOBs/fOYgz9GWPnugoSpJAX+k+MIvVX+oGcOhT76s4BtjqNrhHKw8W9Cpvi6acyIEFqeS4GGCeCgNbcwMwQMYhHb+Nh1SZj4u4B8ZgowX6IQxbk5fh6cBFlhgrqoAARAQ==
+ bh=0dhPr8MGXC9UUahNrbi/O4wBvyRmOPYg1jFblu+Lxzg=;
+ b=AuSNOGpZ4rrydxSFGX8CKxOyvA6xDsjNvIGGjFkFwTKpkyIWUGU3J5NuvSM0Hahp/vyu1rcjyh8x8A97sdP9wky2EFO7PxGZXDppX609Fe+OD0DmA+1htXniZDPPKm6fOlVBvGZhDLcdF8zNMp8mDVW1F4bytREnFhjiInD/3OlrSM+q9+J0IAbpNIdBb4JDY056YzxQaLqshf+nJkQaAnw5kEIJthjhGsIMUunCDXXS3P0nzHWVz6h5bJqvckM56soHgCTlnbFLnBwnj0rK0Aas5XEJaT2//7YxzsGAoXP5IIFJYXhOY+NBwm3LeU1MyuABK6g00rIPAL35Id0FMQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MwqogHcbsow8dBZ9T8Dw1UllQRhGDdyQ20Ce5cmhTTc=;
- b=R+zZqDN00zLvWpXWW73cwOPfTdKp/T12N9jdyfNLeGOhEczs9MscO1Ja5YJe4L22UYzj18WIP9vrIByKz6+sKiSyA/qrIMHsnVoLye4v8JAwjU4mZD0Vt5pSyIEmCFBgVnnKVuceOZeVWrUPPH3nKOLgpR62yjEij5o0Epz5cb8=
+ bh=0dhPr8MGXC9UUahNrbi/O4wBvyRmOPYg1jFblu+Lxzg=;
+ b=EcaqNHoKtu+YAIWNO4UdVybwELBzHgwGNFICQLcfdEm9jfBv0wYaIqdVNLo4KksnNsVNxhe6PbOq1nBJQQsMw3MAAxI8UDB/OBpsiyh7dtKnFBo+Y69N/rBk/l0UVT0d9aJyLrtnBQljbC6wBc3QznOcf+xztPWIe0QH986eTUk=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
- by DB9PR03MB7434.eurprd03.prod.outlook.com (2603:10a6:10:22c::8) with
+ by DB6PR0301MB2183.eurprd03.prod.outlook.com (2603:10a6:4:47::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.19; Mon, 4 Oct
- 2021 19:16:05 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.22; Mon, 4 Oct
+ 2021 19:16:06 +0000
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::a9aa:f363:66e:fadf]) by DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::a9aa:f363:66e:fadf%6]) with mapi id 15.20.4566.022; Mon, 4 Oct 2021
- 19:16:05 +0000
+ 19:16:06 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
@@ -47,9 +47,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Sean Anderson <sean.anderson@seco.com>,
         Claudiu Beznea <claudiu.beznea@microchip.com>,
         Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [RFC net-next PATCH 11/16] net: macb: Support restarting PCS autonegotiation
-Date:   Mon,  4 Oct 2021 15:15:22 -0400
-Message-Id: <20211004191527.1610759-12-sean.anderson@seco.com>
+Subject: [RFC net-next PATCH 12/16] net: macb: Support external PCSs
+Date:   Mon,  4 Oct 2021 15:15:23 -0400
+Message-Id: <20211004191527.1610759-13-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211004191527.1610759-1-sean.anderson@seco.com>
 References: <20211004191527.1610759-1-sean.anderson@seco.com>
@@ -59,99 +59,93 @@ X-ClientProxiedBy: MN2PR08CA0023.namprd08.prod.outlook.com
  (2603:10b6:208:239::28) To DB7PR03MB4523.eurprd03.prod.outlook.com
  (2603:10a6:10:19::27)
 MIME-Version: 1.0
-Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR08CA0023.namprd08.prod.outlook.com (2603:10b6:208:239::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.17 via Frontend Transport; Mon, 4 Oct 2021 19:16:03 +0000
+Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR08CA0023.namprd08.prod.outlook.com (2603:10b6:208:239::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.17 via Frontend Transport; Mon, 4 Oct 2021 19:16:05 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fe3b666a-cb2a-4349-49c1-08d9876b6954
-X-MS-TrafficTypeDiagnostic: DB9PR03MB7434:
+X-MS-Office365-Filtering-Correlation-Id: cca3a8c1-2275-452b-1e86-08d9876b6a68
+X-MS-TrafficTypeDiagnostic: DB6PR0301MB2183:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB9PR03MB743471C53B7A33C4C1E7AD1296AE9@DB9PR03MB7434.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
+X-Microsoft-Antispam-PRVS: <DB6PR0301MB2183DAA06EB19C843AEAC9DB96AE9@DB6PR0301MB2183.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZUp5O0RQ5hEgKdtCT2jHOWxSE55vV0wDRNdVNPds1KdI9HdQV3sWOWEhCQDbZThv+xWd9kRBTOdhAkdnLZhXCsdwMAKehexj1fSpKdcHlraPoymVDW8T29+pslODSTT0nkx7id+c7IvpZxZhcLhuRi1u6fGj8ScplXwOagaQcYhfpkKASY7YPk5hFo2H+3WyAjhmNkeexEQ2QX6ZW8pkf+hqVbHNlbynZCxVGzv3cioMptlL6K6tN14xP0VoR4eL+Pj1nGSjzfnaLJwf2L8eriUrBbRKljqcQOqalbr3ihdQaP3fa77cdy+4buqRxzeq+LFg4QHRHmYlYzIMGTNJ5YmzWssTpHbmmT7+FQy06Bl9o0fPPDzEhd0LiKmPiryrJ0BjY1bEvgaupRHs7TE9TdDHwtp8QaCcTe2Lw/7+YVW2Q7bwXiY/TBQElsQoZ3nazbTzrY83BuDfHFeneZ4pFOcD1s11ByHU+1IytyvQvansIcpxkmDMefcxtmFtl3+3ec6mbypRuWxkqm7mJFvAG+uPDF0UIIiwJPOBRXFZOkYiNnpppb1A9qN60VuPjPM3MSq5cMrnmrvNZtmq+nWcgarXfanmsrxm3dEJRFeajgoquA/UmYJoX3pY+U3hrBnxFlD1pum1EVfM/3mDN0BYh6EGZjk4DIbsfMFPPoxJb0uIT8VT6mQJfQUcGFyzoY50abJkYmhIzZcS0MaEPizL8g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(1076003)(86362001)(4326008)(44832011)(6486002)(5660300002)(66946007)(508600001)(38350700002)(83380400001)(52116002)(956004)(66556008)(66476007)(38100700002)(110136005)(6506007)(2906002)(186003)(8936002)(316002)(8676002)(2616005)(54906003)(26005)(6666004)(36756003)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: L2vLfpQuMTgU2H530aB9qwRAhyiIO5908VqZ5eD92Bde2rvdzsliB3jTjDXa4c5vPY9xFTLYUjnKCdhZlhnRRceci15+Mfuut3bGuyt4MxQSqgdhfWvPjljq/r6m9IX0O1NZ6QqjGcpQHWGYAUdoehgi4CJwobRjZqjo7VkKsfZdKOe5J6F9xbV7qvuXkjxF5J2vbgvW/oX40STTJOGdIUg4t9GvQPF2VXNCzSetgm1kkteyvZPa/Nqz60VOr0Q18P9CA/ZMkPf+sy3nQ1X8/WQDuh0Rt/ZdfPE6vflOjwC15mm+VLra6OaOlM2QPVMq9X8RnAd7cVqRf3PP8EK7qXtotgbZGr0vq1O+2xZ5xCv2U+KFLwbsqoonDYmDjyCVcdeJuujA94lFfTAagZyvpCOE05qOQxY5EaqIQlvP1MuYNBhQQKuLbAd+J2IFQvyM3GooOB3FXIRVP9lTJtbEVE+TWRCNeo+ptnCtqcc3rZrpF3AQTnNPIaccy+Jel3O2g6tdm/0grQtlVeTmMIvlzuAVaG3Iu0SjxBZ4aX1navRdCAq1eY2zlZaTerb224xLWhfo6wWwkqqDGyZo3bjpWT7xDvvjrn3YMgVLlbC3NZDwLCEqMvhjnwwauY6cnDYDDRakMdHOo+nEHID1XFWYB0cyt0GXtJooWExpUiNH/6n7s54OIgZlzYHWsZ7I+BJ3n0aGlupNEQ6MdJwQ+X75Vw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(508600001)(186003)(83380400001)(2906002)(54906003)(5660300002)(1076003)(52116002)(26005)(66946007)(66476007)(66556008)(44832011)(8936002)(110136005)(6506007)(2616005)(316002)(6486002)(6666004)(36756003)(8676002)(4326008)(956004)(38350700002)(6512007)(38100700002)(86362001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?otb40rf4lZwuXT61DX6N7+Joe8U9M4BE3qR72vVyLugsXQ5Lyp9JC04eTNEe?=
- =?us-ascii?Q?g1R4npzp2FeiX1Yhpdj5x4jpQtF+eP797SzOujT2zjbs7iG29zoQa3MkFJmf?=
- =?us-ascii?Q?Y0mCleHH5iyZbNouCnhFdsFXIrPIYhdo2TvUULonaPmbrexXRds1QOYTTWar?=
- =?us-ascii?Q?cy4DwxpOMq1fe80M8e4+7lKS6UqD90hkEwnRiyy7+b5lsnbiCTlNtZ4CnEer?=
- =?us-ascii?Q?vuTYcUXEeV1Oy0Js6Kia47+QEv09qVK7ejWLuBEClKjdmSNmFUaSY4aXdj6B?=
- =?us-ascii?Q?ZT6AH5zNlg7ZWvks6FIUbN4K9EJkasWHzsBR6sETYCrTCkfJbyqnXlExL4t+?=
- =?us-ascii?Q?wEOR2B7aCSvcKV2YY1zXekKvf8Px/MU1LfbFxAoYjfV3VHqHdJOJNV5DQwo4?=
- =?us-ascii?Q?tLASI+2z43VA98ExST5O06mGwe67JPsTPt4YXQas4lz52IjKlIwwJr6whreW?=
- =?us-ascii?Q?BUfknETW5I7QLBpVUEl74zc79SQ3SVQ1oviBNlJWk2YnECM6mbxAB513hwp6?=
- =?us-ascii?Q?Kyu6IyoZzgfQNA/gOLaE5aBV7LhdNsBH0mNG/uJRm9TrWFUEDfxngT03Kbe2?=
- =?us-ascii?Q?ayQhzGSXU+X4a5Mt+F0wNiedJKxtIn4VDaTf9g66EFhLZIXqCQEGFWU/FhBZ?=
- =?us-ascii?Q?BGdN2TozxlVoMvsbqJ816OPXkuuiJ47fMoFFKeecAElx7dnIdjcf3Fd98sUI?=
- =?us-ascii?Q?RatFVP+5aHl6sBRCnNl+bMg2pSzgQlmAJ3Mzx8n1behfIghL22drVjSw90Sc?=
- =?us-ascii?Q?zd5O9vWNVHlSMRhktcSPVrjbGCeKjS7U3aUvRPo6/JsSjmpjoC6W8uiE6gNs?=
- =?us-ascii?Q?UA9Cnie599J7/t7rXOKrqCXphc5wUA37emES15qbLYBt2zgK2dnuP4yi6x8L?=
- =?us-ascii?Q?RX0i9PL67I+/ann+bslIp12XRQOTYUH1AB3Gu5yyPJwT/TMP84jlVi0oyLSX?=
- =?us-ascii?Q?dnjgHgo6XXAt2JJWstKAVLJKu4QyTTcLshgxhE/fJwq75RPTdmb36//rKWIf?=
- =?us-ascii?Q?MITKr9wMJ/tborjirQ5jHgdlOudYcje49Gb6OY+p3RjOyIJRvRrHMFIBdnMA?=
- =?us-ascii?Q?pzbcantlbPEKVWSoGdWjQuZnFKLEDsDakSDMu3uFHg9hPuJhZkzTB+7FMVI9?=
- =?us-ascii?Q?/PDdtGMX6IVabs9Mi2JdC6iOuh1VtBvcHlAqqI+fsyQ2Qsc+NVVhNuL2vkM4?=
- =?us-ascii?Q?MLaSMhc/JiYgPRPc0ts83FWXoyqS0ijEJbspLXcw+SYZLk8ysS/2fpSEnb28?=
- =?us-ascii?Q?jDxeQO47awPVRXPRM31+RHzuMNbWOgfpAm/Cm1MFTlPjlSmq09mYZNtBT8JZ?=
- =?us-ascii?Q?9ssfmLaUcFeF545ZetmXcXyD?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?58dAl8FwAeXlhOR7WJtawK00yzUELmrtUWng6Mu1XokQ+BX7DbGWcQ654Okr?=
+ =?us-ascii?Q?hrCOaxGHC05FMQQo/STd6bPPtL5eyxQHLJSAfvocRBh+7Bdloc73YGwOLe76?=
+ =?us-ascii?Q?zq4hjMW/F8HNd/MMu33fSGsO1qvhwzjPjAFqyXgAuv8sN6Y7Xa8AqjApXuzo?=
+ =?us-ascii?Q?hzKxq8pLVHMw/wmd1qlbbXG8/ClGzmHwoyDppQKIRAZGYn4dTRbGUQXS2dDQ?=
+ =?us-ascii?Q?6dRopqs0XluZrLFhVfYqMH7hCuA2D9XtxvE48+ETx2rOFSLtdSDJeR6j73jH?=
+ =?us-ascii?Q?1vDif7l95sDVwspt2qHYk6i5aGMPG6bezPK0jodyawo2QttP72eTNxj8f/ig?=
+ =?us-ascii?Q?yvfwFgadPDDUR9Uy3QJtElI1Nnx0T0NFgghMpnvl93q+jP8X24sijdJ22SRW?=
+ =?us-ascii?Q?5CfpZ1SjlJHQvlcbPiZpG8hoYhmqt1BGDyzA4LWikhY26XhFBaQSLz61RMhY?=
+ =?us-ascii?Q?3m5YWIyIPuv+JLuc3mGZYpGWqdk3UDcrJHCPi/o3ousJU+F9Iv981L+adZhi?=
+ =?us-ascii?Q?ZEczktOsQzU09sC2vfvaJ22MLijSQCD+W+qop8wItIjEDCk8eBfkd4T+UOmx?=
+ =?us-ascii?Q?nTk6XralO4d3JOalAWuLLHEZ6NJoJNvcMGGpoprQlcvx1fEUvGHeqQIDSA8A?=
+ =?us-ascii?Q?H9nue3A3QkKjxXT4DFbIsHB9k81+k3ncBt3vdAnl/jviwEUCCBFNVNB2sjS3?=
+ =?us-ascii?Q?3gW2QrtVLn2L8ZvVlhuKUTNFBdrsZ8PfYzXhAznHb/O/xZeWN1xAvbxwCKpI?=
+ =?us-ascii?Q?wUwz5BYU7lElx2TuvWEmYRJkd6AkPSMIll3DV9xnbAe1cbF/EK02vEnsM9Yy?=
+ =?us-ascii?Q?rCjPu+iwlx+v1u0mk90Umq8GxopMCc0/lj8wHYhyIFqpD7epjHM2TXPTXY3Q?=
+ =?us-ascii?Q?0r7c9kQdhxQH+0NKE5ZL3pyBkURYi67q2FZs9dKGjuW3MQQR7H5NU2Ka19+t?=
+ =?us-ascii?Q?S0iXzG4e/e1hV7Wm8AOnQOHnUX4kbcg9DeHtp94DmK2cI/2oI3yLgl77LxFU?=
+ =?us-ascii?Q?WfcMpfSYpZIp/TPkRGZk0PhPFv2H1SUUAixUnqZzIcfJ3b28GLq/ix9wOTci?=
+ =?us-ascii?Q?+66bba164Wo0mtnLRg9PTdnlNFUl4z56ySQbbOqMYoIlHrbau5aolJkedOT/?=
+ =?us-ascii?Q?IPdUnxAnGKuPGnTQB/9/0mKL3Pjr+qD1gWdr1PlcfT24+TESXNOsebQyuuVQ?=
+ =?us-ascii?Q?4HcmsK3Ziu0lhuyyVopDPf1vHBk7kcdpC1gmoqAzOVor1diJxUbjyVLNDzTS?=
+ =?us-ascii?Q?omAniahfXJhxBJCeMS4Ipmi6acZ43SSYcFRzhpbVm2C+R3fmcoHidIXKrpGQ?=
+ =?us-ascii?Q?FowMzJXnbI8Kg1kh6lvmwSSG?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe3b666a-cb2a-4349-49c1-08d9876b6954
+X-MS-Exchange-CrossTenant-Network-Message-Id: cca3a8c1-2275-452b-1e86-08d9876b6a68
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2021 19:16:05.0328
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2021 19:16:06.7881
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yLKgB4Fuq7lhYCCOqvVZTYUoa2A9dB/bej2maRf88IJeQ5FKHeg/nnIzv4gSGCmN36cvlwDrR7s8zB/rZaTEHg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR03MB7434
+X-MS-Exchange-CrossTenant-UserPrincipalName: VXb8ABwaRf+GNNg27Nyxh9eloqlueDDDzOH3ooEysl0JIIKNuBl/0NVLAbic4c+o+FZRySAqJ0bprm/+3Y03ZQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0301MB2183
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for restarting autonegotiation using the internal PCS.
+This adds support for using an external PCS. If someone else has set the
+PCS beforehand, then we will use it instead of the internal PCS.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
- drivers/net/ethernet/cadence/macb_main.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/net/ethernet/cadence/macb_main.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 08dcccd94f87..b938cdf4bb59 100644
+index b938cdf4bb59..7e9fd12c09c8 100644
 --- a/drivers/net/ethernet/cadence/macb_main.c
 +++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -662,6 +662,21 @@ static int macb_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 	return changed;
- }
+@@ -862,7 +862,7 @@ static int macb_mac_prepare(struct phylink_config *config, unsigned int mode,
+ 	}
  
-+static void macb_pcs_an_restart(struct phylink_pcs *pcs)
-+{
-+	struct macb *bp = pcs_to_macb(pcs);
-+	u32 bmcr;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&bp->lock, flags);
-+
-+	bmcr = gem_readl(bp, PCSCNTRL);
-+	bmcr |= BMCR_ANENABLE;
-+	gem_writel(bp, PCSCNTRL, bmcr);
-+
-+	spin_lock_irqsave(&bp->lock, flags);
-+}
-+
- static void macb_usx_pcs_get_state(struct phylink_pcs *pcs,
- 				   struct phylink_link_state *state)
- {
-@@ -733,6 +748,7 @@ static const struct phylink_pcs_ops macb_phylink_usx_pcs_ops = {
- static const struct phylink_pcs_ops macb_phylink_pcs_ops = {
- 	.pcs_get_state = macb_pcs_get_state,
- 	.pcs_config = macb_pcs_config,
-+	.pcs_an_restart = macb_pcs_an_restart,
- };
+ 	if (set_pcs)
+-		phylink_set_pcs(bp->phylink, &bp->phylink_pcs);
++		set_pcs = phylink_set_pcs_weak(bp->phylink, &bp->phylink_pcs);
  
- static void macb_mac_config(struct phylink_config *config, unsigned int mode,
+ 	spin_lock_irqsave(&bp->lock, flags);
+ 
+@@ -877,8 +877,11 @@ static int macb_mac_prepare(struct phylink_config *config, unsigned int mode,
+ 		ncr |= MACB_BIT(MIIONRGMII);
+ 	}
+ 
+-	if (macb_is_gem(bp) && set_pcs)
+-		ctrl |= GEM_BIT(PCSSEL);
++	if (macb_is_gem(bp)) {
++		ctrl &= ~GEM_BIT(PCSSEL);
++		if (set_pcs)
++			ctrl |= GEM_BIT(PCSSEL);
++	}
+ 
+ 	/* Apply the new configuration, if any */
+ 	if (old_ctrl ^ ctrl)
 -- 
 2.25.1
 
