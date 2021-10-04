@@ -2,119 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F1B2420D8F
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 15:14:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34E46420CFA
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 15:09:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236215AbhJDNQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 09:16:21 -0400
-Received: from mx4.uni-regensburg.de ([194.94.157.149]:49464 "EHLO
-        mx4.uni-regensburg.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235157AbhJDNOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 09:14:21 -0400
-X-Greylist: delayed 357 seconds by postgrey-1.27 at vger.kernel.org; Mon, 04 Oct 2021 09:14:20 EDT
-Received: from mx4.uni-regensburg.de (localhost [127.0.0.1])
-        by localhost (Postfix) with SMTP id 571F26000056
-        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 15:06:33 +0200 (CEST)
-Received: from smtp1.uni-regensburg.de (smtp1.uni-regensburg.de [194.94.157.129])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "smtp.uni-regensburg.de", Issuer "DFN-Verein Global Issuing CA" (not verified))
-        by mx4.uni-regensburg.de (Postfix) with ESMTPS id 383CC600004E
-        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 15:06:33 +0200 (CEST)
-From:   "Andreas K. Huettel" <andreas.huettel@ur.de>
+        id S235486AbhJDNKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 09:10:49 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:45343 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234881AbhJDNJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 09:09:06 -0400
+Received: from ubuntu.home (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 1AA23200E2A5;
+        Mon,  4 Oct 2021 15:07:15 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 1AA23200E2A5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1633352835;
+        bh=HifNznjauFK0fX6GIX8XbylBiof8SR/BfGojRjxpX0U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=GW0UX4sFJSnE3AMLGkAs8B/+lRPo5ZFevgneMPLP3V3L5NFBF7z1n+ynhjkHXkoME
+         ZWR2HzpYB9/zFDBFp90iVIpebznV9vn83pQvhr1V+i+IJ/4DOtEDMb6s14CKPBUTgo
+         kGH40ton+d8O/vk+IhohlN+oUGU73+nKn1dl8DHssee0qtG7kTaN6JeM4fobRZoovs
+         il+V610pxaek/Wgyq6/GzU/ggUtKx9mN7if8Q7gvWeCZEolq5Z4Hk20j94yv3BAldX
+         hGK1Qf2IvhgI/7LHd+wUGvlX+FVCDyjI3bSYxRIOkb04mPS7l9BycZClwqcNvIk2z/
+         YXtaU4oORIshg==
+From:   Justin Iurman <justin.iurman@uliege.be>
 To:     netdev@vger.kernel.org
-Subject: Intel I350 regression 5.10 -> 5.14 ("The NVM Checksum Is Not Valid")  [8086:1521]
-Date:   Mon, 04 Oct 2021 15:06:31 +0200
-Message-ID: <1823864.tdWV9SEqCh@kailua>
-Organization: Universitaet Regensburg
+Cc:     davem@davemloft.net, dsahern@kernel.org,
+        stephen@networkplumber.org, justin.iurman@uliege.be
+Subject: [PATCH iproute2-next 0/2] Support for IOAM encap modes
+Date:   Mon,  4 Oct 2021 15:06:49 +0200
+Message-Id: <20211004130651.13571-1-justin.iurman@uliege.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart2106358.irdbgypaU6"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart2106358.irdbgypaU6
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: "Andreas K. Huettel" <andreas.huettel@ur.de>
-To: netdev@vger.kernel.org
-Subject: Intel I350 regression 5.10 -> 5.14 ("The NVM Checksum Is Not Valid")  [8086:1521]
-Date: Mon, 04 Oct 2021 15:06:31 +0200
-Message-ID: <1823864.tdWV9SEqCh@kailua>
-Organization: Universitaet Regensburg
+Following the series applied to net-next (see [1]), here are the corresponding
+changes to iproute2.
 
-Dear all, 
+In the current implementation, IOAM can only be inserted directly (i.e., only
+inside packets generated locally) by default, to be compliant with RFC8200.
 
-I hope this is the right place to ask, if not please advise me where to go.
+This patch adds support for in-transit packets and provides the ip6ip6
+encapsulation of IOAM (RFC8200 compliant). Therefore, three ioam6 encap modes
+are defined:
 
-I have a new Dell machine with both an Intel on-board ethernet controller 
-([8086:15f9]) and an additional 2-port extension card ([8086:1521]). 
+ - inline: directly inserts IOAM inside packets (by default).
 
-The second adaptor, a "DeLock PCIe 2xGBit", worked fine as far as I could 
-see with Linux 5.10.59, but fails to initialize with Linux 5.14.9.
+ - encap:  ip6ip6 encapsulation of IOAM inside packets.
 
-dilfridge ~ # lspci -nn
-[...]
-01:00.0 Ethernet controller [0200]: Intel Corporation I350 Gigabit Network Connection [8086:1521] (rev ff)
-01:00.1 Ethernet controller [0200]: Intel Corporation I350 Gigabit Network Connection [8086:1521] (rev ff)
-[...]
+ - auto:   either inline mode for packets generated locally or encap mode for
+           in-transit packets.
 
-dilfridge ~ # dmesg|grep igb
-[    2.069286] igb: Intel(R) Gigabit Ethernet Network Driver
-[    2.069288] igb: Copyright (c) 2007-2014 Intel Corporation.
-[    2.069305] igb 0000:01:00.0: can't change power state from D3cold to D0 (config space inaccessible)
-[    2.069624] igb 0000:01:00.0 0000:01:00.0 (uninitialized): PCIe link lost
-[    2.386659] igb 0000:01:00.0: PHY reset is blocked due to SOL/IDER session.
-[    4.115500] igb 0000:01:00.0: The NVM Checksum Is Not Valid
-[    4.133807] igb: probe of 0000:01:00.0 failed with error -5
-[    4.133820] igb 0000:01:00.1: can't change power state from D3cold to D0 (config space inaccessible)
-[    4.134072] igb 0000:01:00.1 0000:01:00.1 (uninitialized): PCIe link lost
-[    4.451602] igb 0000:01:00.1: PHY reset is blocked due to SOL/IDER session.
-[    6.180123] igb 0000:01:00.1: The NVM Checksum Is Not Valid
-[    6.188631] igb: probe of 0000:01:00.1 failed with error -5
+With current iproute2 implementation, it is configured this way:
 
-Any advice on how to proceed? Willing to test patches and provide additional debug info.
+$ ip -6 r [...] encap ioam6 trace prealloc [...]
 
-Thanks,
-Andreas
+The old syntax does not change (for backwards compatibility) and implicitly uses
+the inline mode. With the new syntax, an encap mode can be specified:
+
+(inline mode)
+$ ip -6 r [...] encap ioam6 mode inline trace prealloc [...]
+
+(encap mode)
+$ ip -6 r [...] encap ioam6 mode encap tundst fc00::2 trace prealloc [...]
+
+(auto mode)
+$ ip -6 r [...] encap ioam6 mode auto tundst fc00::2 trace prealloc [...]
+
+A tunnel destination address must be configured when using the encap mode or the
+auto mode.
+
+  [1] https://lore.kernel.org/netdev/163335001045.30570.12527451523558030753.git-patchwork-notify@kernel.org/T/#m3b428d4142ee3a414ec803466c211dfdec6e0c09
+
+Justin Iurman (2):
+  Add support for IOAM encap modes
+  Update documentation
+
+ include/uapi/linux/ioam6_iptunnel.h |  29 ++++++
+ ip/iproute_lwtunnel.c               | 142 ++++++++++++++++++++--------
+ man/man8/ip-route.8.in              |  39 ++++++--
+ 3 files changed, 161 insertions(+), 49 deletions(-)
 
 -- 
-PD Dr. Andreas K. Huettel
-Institute for Experimental and Applied Physics
-University of Regensburg
-93040 Regensburg
-Germany
-
-tel. +49 151 241 67748 (mobile)
-tel. +49 941 943 1618 (office)
-e-mail andreas.huettel@ur.de
-http://www.akhuettel.de/
-http://www.physik.uni-r.de/forschung/huettel/
---nextPart2106358.irdbgypaU6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQKTBAABCgB9FiEE6W4INB9YeKX6Qpi1TEn3nlTQogYFAmFa/FdfFIAAAAAALgAo
-aXNzdWVyLWZwckBub3RhdGlvbnMub3BlbnBncC5maWZ0aGhvcnNlbWFuLm5ldEU5
-NkUwODM0MUY1ODc4QTVGQTQyOThCNTRDNDlGNzlFNTREMEEyMDYACgkQTEn3nlTQ
-ogaCRhAAt5c37Fz+F5EMCfZPmWvKHLHyd2MuS8YmsMnnY+HOH5Vq4VArhJckDAOX
-s+Z5PjcWl+PjDw+UlbOtKZJ58hangOV/rXg1ungicFl1e3Epg+uKqw2WYLwf3L3g
-5Dyac9Mwy6rkrtpj0a0zxqRVhQBjmaaXWJGNJzLwGmn6piclgtt7m5llm1buunU2
-cszkRNmTFemi3c5guVl7jqYjsXR5R7X93i0uHKqH36n0HovEZMaudnbW9O/Dh7Kz
-SDpnfwBsi8x1rsuibJ1ejszkx09qmfRHPhs7OfF+a039RJH77nr/OFAuF9/et1Hh
-V8jg2TgYL3zLiTcuj8/Sb7Lm2n+OMZBEIQCDl/WTpPRzQuRQWE97oUtFEtxtzW61
-BDMMNNuhhfvZPgsJmHLmEcu6O91ncrDOxFJAkSlDh7o5ANGF99X2nsv1peZS98Da
-VkiKJGJ/HX2zWLBr5TyrnpQ1jdj5Yeq25dVzoNIUSUjwntALtglg9Vb+OxeBDFFz
-4xSS/VjfNwkRCSohnj5Wb7viZfAqxASWtkywrQ08Jsxz6G4Io4Xufik4iHzgWtqM
-FD3lE+Khc3xc/NEtei6+yvUVjm9WcUSML/YfbPULzXYmFzLQPRNo4IQScBR4dVfE
-Ac2Je+DLQCGCcNzhdAh8oFz/zwGQrIwRbwW9+ypYxs7VfcGyayM=
-=5402
------END PGP SIGNATURE-----
-
---nextPart2106358.irdbgypaU6--
-
-
+2.25.1
 
