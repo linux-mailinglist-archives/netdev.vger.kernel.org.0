@@ -2,126 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CCBD4217E9
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 21:49:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 677884217EF
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 21:51:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234411AbhJDTvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 15:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234380AbhJDTvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 15:51:36 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D44C061753
-        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 12:49:47 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id y201so23123103oie.3
-        for <netdev@vger.kernel.org>; Mon, 04 Oct 2021 12:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0xg0klEEXfQWyRwdVFTk0XM1yzW4hChkS4NjvWNx8aU=;
-        b=CDtCkikeyO++8Dw6DTVaX/AIePG7DTSGjbDcCsuSjPJluh4XvMAw/uY3Gh6CQoNJ0d
-         J2AInkZI4kOnjTBw6lZwwnvLTFcgp7+wj51CxMTZEatOUOwvheo3uMup5Pdfh6snsBkl
-         H09KTg2kwKdyEUYMgyDcsOoBVrmED+gyJUrt8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0xg0klEEXfQWyRwdVFTk0XM1yzW4hChkS4NjvWNx8aU=;
-        b=quKoXfLZdRvpxghaSfDVD6v+s1x9bmDipZRvmwGs7W/SHEgjNuJhn9FctWoR1OL4xB
-         Ga7zkF8R4Na3SPpEIbhdx1mdD0FAPbAxTIZSxo1EC3cJIivzODnQN/DKnnBXtUrFjkf2
-         lz+9lXXenGx5/BvvbWTlSeJmDbQ2REAGEz8dndX6dFvR3SlWP2Z+JYE+fMT2e1LIMWHz
-         8Alkiv0I9KjBKCPs1Q1LV8yqURVmoDNWHeLp+LE/PmMpTPUf1rYH+KUfKKW8X2jeFKOQ
-         gIpC17JpRIwQMaXmif5hdKVeA7RXRMJiiV/60z+GN/TL40ZOkEzrbl59r0cInr1yp0eN
-         wY7Q==
-X-Gm-Message-State: AOAM531PGo9cx8OP1XiQoDb37Q79PMz9xkx2sF/l3643TwxcoC29C5X9
-        bRNjYYnT+gQGQ4Ku9yHh3REvdw==
-X-Google-Smtp-Source: ABdhPJzsnMH+2UsoMkwY1hiP5DrE0TfnSByx0Y6C/tVxAI6vzAv0kmaVE4C2B8tHNk/IbWCLjH+j1g==
-X-Received: by 2002:a05:6808:1910:: with SMTP id bf16mr15014619oib.43.1633376986355;
-        Mon, 04 Oct 2021 12:49:46 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id s66sm2808181oie.32.2021.10.04.12.49.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Oct 2021 12:49:45 -0700 (PDT)
-Subject: Re: [PATCH 4.19 00/95] 4.19.209-rc1 review
-To:     Eric Dumazet <edumazet@google.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Jon Hunter <jonathanh@nvidia.com>,
-        linux-stable <stable@vger.kernel.org>,
-        Pavel Machek <pavel@denx.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Netdev <netdev@vger.kernel.org>, Jann Horn <jannh@google.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20211004125033.572932188@linuxfoundation.org>
- <CA+G9fYtyzfpSnapCFEVgeWGD8ZwS2_Lv5KPwjX4hUwDAv52kFg@mail.gmail.com>
- <CANn89iKPvyS1FB2z9XFr4Y1i8XXc34CTdbSAakjMC=NVYvwzXw@mail.gmail.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <576d46b9-644f-ece0-2cf0-8abbe8b85f4a@linuxfoundation.org>
-Date:   Mon, 4 Oct 2021 13:49:44 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S234473AbhJDTw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 15:52:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39941 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232319AbhJDTw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 15:52:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1633377067;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=b9sGuR8jJFA2PalGViNI3vvdNrylXqQRpUzKJ5zMhfQ=;
+        b=BPbaZei5w0jiv+aHwgl4XAhZ8Xgk96SvMKIOu6SK3SxenkOjRsM7N7uVrr0lMoeCwrpLNr
+        aopCkZXIUvlCv0l/WbtaGTuUbyIObRC2+g583A/jroyDFVe3FS1QgF6EZ5EYioEurQW4Zj
+        8iD6hTaQltMSPTzOUZGSAD+kzgFMdxU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-395-yFCoa1_6NtWpoEI5FHLpFA-1; Mon, 04 Oct 2021 15:51:06 -0400
+X-MC-Unique: yFCoa1_6NtWpoEI5FHLpFA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0876A8015C7;
+        Mon,  4 Oct 2021 19:51:05 +0000 (UTC)
+Received: from renaissance-vector.redhat.com (unknown [10.39.195.138])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E3B905D9F4;
+        Mon,  4 Oct 2021 19:51:02 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org
+Subject: [PATCH iproute2 v2 0/3] configure: add support for libdir and
+Date:   Mon,  4 Oct 2021 21:50:29 +0200
+Message-Id: <cover.1633369677.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CANn89iKPvyS1FB2z9XFr4Y1i8XXc34CTdbSAakjMC=NVYvwzXw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/4/21 11:44 AM, Eric Dumazet wrote:
-> On Mon, Oct 4, 2021 at 10:40 AM Naresh Kamboju
-> <naresh.kamboju@linaro.org> wrote:
->>
->> On Mon, 4 Oct 2021 at 18:32, Greg Kroah-Hartman
->> <gregkh@linuxfoundation.org> wrote:
->>>
->>> This is the start of the stable review cycle for the 4.19.209 release.
->>> There are 95 patches in this series, all will be posted as a response
->>> to this one.  If anyone has any issues with these being applied, please
->>> let me know.
->>>
->>> Responses should be made by Wed, 06 Oct 2021 12:50:17 +0000.
->>> Anything received after that time might be too late.
->>>
->>> The whole patch series can be found in one patch at:
->>>          https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.209-rc1.gz
->>> or in the git tree and branch at:
->>>          git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
->>> and the diffstat can be found below.
->>>
->>> thanks,
->>>
->>> greg k-h
->>
->> Regression found on arm, arm64, i386 and x86.
->> following kernel crash reported on stable-rc linux-4.19.y.
->>
-> 
-> Stable teams should backport cred: allow get_cred() and put_cred() to
-> be given NULL.
-> 
-> f06bc03339ad4c1baa964a5f0606247ac1c3c50b
-> 
-> Or they should have tweaked my patch before backporting it.
-> 
-Seeing the same problem on my test system as well.
+This series add support for the libdir parameter in iproute2 configure
+system. The idea is to make use of the fact that packaging systems may
+assume that 'configure' comes from autotools allowing a syntax similar
+to the autotools one, and using it to tell iproute2 where the distro
+expects to find its lib files.
 
-Patch applied with fuzz. Didn't need any tweaks. Compiling now.
-Will let you know soon.
+Patch 1 introduces support for the --param=value style on current
+params, for uniformity.
 
-thanks,
--- Shuah
+Patch 2 add the --prefix option, that may be used by some packaging
+systems when calling the configure script.
+
+Patch 3 add the --libdir option to the configure script, and also drops
+the static LIBDIR var from the Makefile.
+
+Changelog:
+----------
+v1 -> v2
+  - consolidate '--param value' and '--param=value' use cases, as
+    suggested by David Ahern.
+  - Added patch 2 to manage the --prefix option, used by the Debian
+    packaging system, as reported by Luca Boccassi, and use it when
+    setting lib directory.
+
+Andrea Claudi (3):
+  configure: support --param=value style
+  configure: add the --prefix option
+  configure: add the --libdir option
+
+ Makefile  |  7 +++---
+ configure | 72 +++++++++++++++++++++++++++++++++++++++++++++++--------
+ 2 files changed, 66 insertions(+), 13 deletions(-)
+
+-- 
+2.31.1
 
