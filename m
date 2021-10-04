@@ -2,241 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5CB94209CF
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 13:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DD94420A4F
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 13:45:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232519AbhJDLSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 07:18:14 -0400
-Received: from mail-db8eur05on2073.outbound.protection.outlook.com ([40.107.20.73]:58561
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232891AbhJDLSN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 07:18:13 -0400
+        id S232995AbhJDLqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 07:46:51 -0400
+Received: from de-smtp-delivery-102.mimecast.com ([194.104.109.102]:57066 "EHLO
+        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232978AbhJDLqu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 07:46:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1633347900;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6HJhGDSq7Qq3ZxqHEhSaEcPK3AccoB8ZDZ90soSKsV8=;
+        b=M5nmCD5/TomJ+YPH2fNwjgKeiLJzVvHMdqOG9mgF1ogT4r6Yy57XHmenHeRYffbmBFq1JM
+        156CMw4HX9Z4OlKfDzSqdZ0kEdwic+nn9nm2+OpQBED3/J4Sa7RA0Hk2fdYYe1rOtQzSZx
+        2Qd2pRsl6NJhL/FbEfSxnxYZwCbviIU=
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com
+ (mail-he1eur02lp2051.outbound.protection.outlook.com [104.47.5.51]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ de-mta-11-DfE0Ghs0NJueObAAdyYh5Q-2; Mon, 04 Oct 2021 13:44:59 +0200
+X-MC-Unique: DfE0Ghs0NJueObAAdyYh5Q-2
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ChvgXif5ztmp+8bXnVTVi97QtvJ3zwahukNC7psRQlKD1BHTUPhVZyiyhE0JabSg4fJVAbJu4YTQbWfO3ylT5GguM3X0eLkgCepbLYQGiAierfB0Xz7DkgnmZ+p61ibzgq6nL9J22g6xZhrWdBPBWsx9U5Re9iNJYEwZq0XtwziR3FwayIssWz4bm5v//5yMYhy5+hT1whpb4k0Ocbgo7Um4KgyYbawv36LAlaX0nEwHa9tuz08potmivHSanCNFy0IWhg6SCqJikG5YKWhSRui2zSYFrwpB8tklGJNmITN6yqIodC45pycC80VSDd/nWGHejF7d/pV/G/Tnp8VIcQ==
+ b=EwvqVFxfyvUzvQc5We9xY1eYLkOVYetZJxLtE6hDkQp8EXzPBFli4/+h8YdC07wU4RLYHMCgxJMF/clFUs5RNGxClbtEOe3U9Kz+FSktQbgtBU3nmHBxwix2lRFCJOh88qZXQYHaij3tVinKSWwhpCyY9j8xHLUPSnhtmXcuF2bPYNR4pntKQnzLHcrJfCXssHh2T68uF627rDaykJsOZo8oKf0VG2lt4BU1iKHzbJShQe7LArcF2u/SNu+7Exf8dQxq4kOLYpMg3508L9WpZX/orG1biUM9izf1Fk58OoBxFIcg1MBnKntD1ohwkUqKcrEc/16AK78LjGzDhxcFOA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AOBAcc0e3TmuNaV4XmfI5M7K5O+7GkKngeBZuNL5JYc=;
- b=AQysRnooKI5SP02HFG+AhwtP4TN1r4RYax+99BCPlTz1NJjn+m5zJrCZpHo0xFxmSHValuhvd98oJCbrxBiJ6yoLoOz6PeSNg41pan3GoSvPjhfODGVZK4I2RA3PMnyhO3S6dekk4XmFHtWRkJPovzk+x1OKDcvflel80+VoBMIl+a7tOvbhhkfI8I3eBwyl7wJ2AivDcOtt1L2E8b8b4snj8D59VgnpBSnGJBxvgDPDk13u+Pr784hsYRk4yo6gzOjxXnci/gXkDbfwFO4stFmkKyo2DvJn4DFKc0vzc3TPY+UZTF14BrUGjubh5/tyN/rNyDfpfivGTbK3nBtuMw==
+ bh=P5yWjQdy0GDPdICeCJdHGvyoKANhQNDpuJwXdpryihs=;
+ b=ngPwPJcH1NoUKq2E/CtUB+LBeBc6AI8W3dJI5xdr/5nRx8SW9s/oZ67/Jr0ea7RQmftxd53Kr6Kq1AQGFkXIb49VAqFUqeW6XXEIdVMsSATl59voxtUUv7eqYHq6qppS50DG6lIcGGgi/DX6lI6GjKoBQ6CjKsBdXVV63VhOVSiKbwPSZ9IpF7C4xUj6mGbPwNa4vZiha7EANLn4Ls3PeYylD/ZX+FgtcjYoNIBm4PcqycYJlSjDmhbOQpFU5l2On0PUIFcMgVMcD79zpQLab4FhQrvITJTPTOBY/JgHkPIyLEGGGro8ZH3nhAtwmVFtQjrP04GH2YdQGto9zvNgVw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AOBAcc0e3TmuNaV4XmfI5M7K5O+7GkKngeBZuNL5JYc=;
- b=kXUEatsVFhkctbnPX/ryiQYV0lktLN414giaKRouDLsoABnCCrIesBCN0KfVza/qu5gXpXojm0SfXKSX2xVhmADOLMBkr8dnpMN6NXTbND+k0vQyJd1ZbN5/BRNkd17QH7N4IiogbaYjjz5EpBm0NlKbROZ+v5M5XHR7YVY188U=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5855.eurprd04.prod.outlook.com (2603:10a6:803:de::15) with
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+Authentication-Results: realtek.com; dkim=none (message not signed)
+ header.d=none;realtek.com; dmarc=none action=none header.from=suse.com;
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com (2603:10a6:10:22::23)
+ by DB7PR04MB4537.eurprd04.prod.outlook.com (2603:10a6:5:35::27) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.19; Mon, 4 Oct
- 2021 11:16:22 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4566.022; Mon, 4 Oct 2021
- 11:16:22 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net 1/2] net: dsa: tag_dsa: send packets with TX fwd
- offload from VLAN-unaware bridges using VID 0
-Thread-Topic: [PATCH net 1/2] net: dsa: tag_dsa: send packets with TX fwd
- offload from VLAN-unaware bridges using VID 0
-Thread-Index: AQHXuKVN0g8c7qiGRUOKHtWHUYnlh6vCq2OAgAAF2AA=
-Date:   Mon, 4 Oct 2021 11:16:22 +0000
-Message-ID: <20211004111622.wgn3tssr2impfoys@skbuf>
-References: <20211003222312.284175-1-vladimir.oltean@nxp.com>
- <20211003222312.284175-2-vladimir.oltean@nxp.com>
- <871r51m540.fsf@waldekranz.com>
-In-Reply-To: <871r51m540.fsf@waldekranz.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: waldekranz.com; dkim=none (message not signed)
- header.d=none;waldekranz.com; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 12800de5-f067-4fe2-5efc-08d9872865e8
-x-ms-traffictypediagnostic: VI1PR04MB5855:
-x-microsoft-antispam-prvs: <VI1PR04MB5855CE999EC43EC815688BD4E0AE9@VI1PR04MB5855.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0fCIvSWZK5RNMH0fftKVNbCBN+HawrPzkEfzc7ls2CMI5fV/G0KhkoXBTMvYJgtbZCni/NPlYRRPqqm09z00sdoAZa5Npk7WhV4s9jMnheWe84uch6AMP8HvswbiX0ZkDw7UiRz2xgQnQJJsamDfm+c1iUSqZc5BkOZD31W8YeYqBF6yL261NqIDUw8JKO6StS2WnCVFebivYZ+i5fgZ4gJQlV8fnE0EUYRcOZEWIeEZ4Z/SvoZI7Y24R49KS4paVPYtZ3u8PT5c0agqmbgXS+abqCTmTyzMWnynF5/1Qpbz5JIOFt1B27KIzG7o5lXe5RTKQgE0DLCb+PO7di1tb/hiZRIgdu11/OdW3XftP9op8qX+BrHpAHpH2uE9AG3ncF2Q7kslcrprd5/gnQqol9HTnY3NNPEChNz5ufmeuoh9qgGCYuRB9vsJNIkr1Ag8fZGnHtPOpjuEmdYU5UrHxTCV0t4EyMbVq4J5QLP0JBOvOwDgJOksFR7Q9aKJUTA44OQRnymL5ZvR7qQOlNy55u9A66dFpSOMwXQgS2HKCM0gfD/pVTEQPmdVi+HwDfomXVnjp8HSSlqz+Ml3LD9NuUa1oWnI1wAUHl84SjaMVdIE7MWkH6dflOIcyQs1ZtrePP8QpXo/pJzrKUdT91WxybwoxgyRTmrDV+wsLncPkc+/mFSyMyoXCwwBsBIleNAHcnzaEjdkUgoanrgVlJOjVH/zp9qBoz36BTvZtRZ6STf71GoyKopcjztapm+09JG/uzhZ7O1P5x3m2nl4fVvA+otW+4liigpV6pFENfrkvnU=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(86362001)(5660300002)(508600001)(83380400001)(122000001)(9686003)(6512007)(966005)(54906003)(316002)(71200400001)(33716001)(64756008)(66446008)(8936002)(186003)(38070700005)(66556008)(66476007)(2906002)(66946007)(76116006)(38100700002)(6506007)(44832011)(91956017)(8676002)(4326008)(26005)(6916009)(1076003)(6486002)(53546011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?UKqphudJSh2a6YS5nAw0JQ5g2kvLK+4jA74OqbCMil6cS0+3Jnsc+BvXad1H?=
- =?us-ascii?Q?FRdualObZSLU6KbkFq3V5l0iGYPUSl9XMHCE8uMczwQ586Unp9BwHz7hPJjh?=
- =?us-ascii?Q?ZCf2wtr+N1mczpUpmEz7lgtF7FWMctycAUQiRsMTkJO4ssNOOGDbPQTrHkg8?=
- =?us-ascii?Q?V69fRrW7N/ELYaTRBWxuZOf9P//4MheR8TfnQB5eKDCegn1Lsfk2ZD4Lrj8J?=
- =?us-ascii?Q?Xtv9EyeV4K71PXxFU8hsE2dXNSHUHz8kCjqH7nCKBotIJkNt7fdkaR1V6qEC?=
- =?us-ascii?Q?XHufvzmOvPb7pMhZwJP+6QNVlhufWm+VpSU+56LxHXyuJ5DLZN77KK4WevEI?=
- =?us-ascii?Q?gD1dXxFBU9IxY8BcC8lGb9YXRmxXDpytC8X5cdIdzUvqS2aEkJ1wyaT/Mwqq?=
- =?us-ascii?Q?GLsdrCEyi2PnxP3brB3GLZjS0ip4s7sevd9OPp/jaLwRQ6lXXDYKjUpKs92i?=
- =?us-ascii?Q?TndYq7W+t3ev6bJSsbzdc/ZWhCxa85/G5V1AVjYN3zzAu/QrXSDzMuvZCt5f?=
- =?us-ascii?Q?U5XKfbR2/oAu89S8r6ubVR6QMAERCcfPEhUry3dkyo2qFR9tYctcgDYpXbDQ?=
- =?us-ascii?Q?cyRkdtwo/sJojQVyEqf8HOM/4CUOMEdBPbi9H9V6fhObWyrQiX+yvzGolQRo?=
- =?us-ascii?Q?ycgYqnr2dE1bc7cJwomsT1jfsQGyihcvFcmiS7ri308/9bn1PrFNBicA6qQs?=
- =?us-ascii?Q?dyyt+liuRWRPSIfu3Y66bl46w6xPW7SM3kGXH25Azo5uMiABxwnh+KVgyx3N?=
- =?us-ascii?Q?G3yxPGK2Xw6wuOMgSD+NvF2UtuFjuTMvFja00bRw/5KQkPHpWbFqGcU58M4u?=
- =?us-ascii?Q?hiZ2BOWFWKDiEMLEIcVHOiyvQ9AZMQQT9fZWKDwsepeew71So/Inz9UzybSR?=
- =?us-ascii?Q?awkIHZGsaZv86v8o6OrSSSLkcYc6wLYX5SCD46ytbkkeTBF6atvgcToTpemM?=
- =?us-ascii?Q?bvS4oq/YCuPEJV3r8IydhwBEQpbfHGNtC8am31d7HQm1Ic6W+X9oBh2tXzw7?=
- =?us-ascii?Q?XrbvE39tcH+UkoLEdgBOiQ0omlyNC5NPqTREKUaKf0OgxZhRi3Y+tNcfYt0N?=
- =?us-ascii?Q?ESMTB0BiVZMvUSwCn6toSyjm/4d82ZRaGio2tsivPgQY4W4fB3bkxvc5IHlI?=
- =?us-ascii?Q?PCUXshbGnidbYJY1RWqfb71U1xYhCREGX+lpfwcUS7RbbHD7Qlf7oJC7bMpx?=
- =?us-ascii?Q?44N7e3316yipJ0jutwIgXVpz3Ns7eWboye2e8nUHUpofPF3y19Hn52oFFJvf?=
- =?us-ascii?Q?1hBRjDsZ1vSVBvXTdqimSXhx+towz5+vkjt/V8601edaYGlGXZ0Myd9xv0/O?=
- =?us-ascii?Q?ELVIrs2nCJmH96poDGVsZl2a?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <6705EF79BC731F41B20700CF58068BA9@eurprd04.prod.outlook.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.15; Mon, 4 Oct
+ 2021 11:44:56 +0000
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::61c5:2592:9e7f:a390]) by DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::61c5:2592:9e7f:a390%5]) with mapi id 15.20.4566.022; Mon, 4 Oct 2021
+ 11:44:56 +0000
+Subject: Re: [PATCH] r8152: stop submitting rx for -EPROTO
+To:     Alan Stern <stern@rowland.harvard.edu>,
+        Hayes Wang <hayeswang@realtek.com>
+CC:     Oliver Neukum <oneukum@suse.com>,
+        Jason-ch Chen <jason-ch.chen@mediatek.com>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "Project_Global_Chrome_Upstream_Group@mediatek.com" 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        "hsinyi@google.com" <hsinyi@google.com>,
+        nic_swsd <nic_swsd@realtek.com>
+References: <20210929051812.3107-1-jason-ch.chen@mediatek.com>
+ <cbd1591fc03f480c9f08cc55585e2e35@realtek.com>
+ <4c2ad5e4a9747c59a55d92a8fa0c95df5821188f.camel@mediatek.com>
+ <274ec862-86cf-9d83-7ea7-5786e30ca4a7@suse.com>
+ <20210930151819.GC464826@rowland.harvard.edu>
+ <3694347f29ed431e9f8f2c065b8df0a7@realtek.com>
+ <5f56b21575dd4f64a3b46aac21151667@realtek.com>
+ <20211001152226.GA505557@rowland.harvard.edu>
+From:   Oliver Neukum <oneukum@suse.com>
+Message-ID: <72573b91-11d7-55a0-0cd8-5afbc289b38c@suse.com>
+Date:   Mon, 4 Oct 2021 13:44:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+In-Reply-To: <20211001152226.GA505557@rowland.harvard.edu>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+X-ClientProxiedBy: AM6PR01CA0064.eurprd01.prod.exchangelabs.com
+ (2603:10a6:20b:e0::41) To DB7PR04MB5050.eurprd04.prod.outlook.com
+ (2603:10a6:10:22::23)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+Received: from localhost.localdomain (2001:a61:3b0d:4601:21ab:d1da:15e9:ca07) by AM6PR01CA0064.eurprd01.prod.exchangelabs.com (2603:10a6:20b:e0::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend Transport; Mon, 4 Oct 2021 11:44:55 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 03850ac4-310b-413d-2cdb-08d9872c6351
+X-MS-TrafficTypeDiagnostic: DB7PR04MB4537:
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB7PR04MB4537543E6789CE0D57790F3DC7AE9@DB7PR04MB4537.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SeYP5kUtIEwfTbgaf5+MheY8ud7LZaw01r79BTIj9jjK4hrsnA+R/A+xlPP0n6hFEGj0QfNp/9IPgDNpU9w0jGxUOqaO10FHJ5BIvMGct9f5oSfPSeYmVge/8ASjeKbYhfpGZu8+tOHlCFfeOPbUcPr0Y8G1hPB4vQN40RW2BnE/aft+VNeuWLrmOtwQkb+rymJ73ZqzKr+YkIH32DSSO0QRCAyzZS5mFQI/Db/9JC4C3YtjLt6t8w5h0+HLvz9xQWq1ycHc/KMjW/qj5nqLH/QaPbO1GUA3CsWoWjwv+7qeBwfPKqbu12Cox+wKnE6t84kmcQNum3L6vkPIqSUgOnBsptT1K2gw7mp1c4q2Qo+a5pqFTnj8qDnz16amL9e79Y4I1EzLHnGgrdiYKiqjpj5k0DWYbBwgBas0QC60fjewGZsHLK17N5ZKo0SN669xkftAirg/uAhYaG/68ZImKo/r1bV1dBxUG4LDqRrzMJNu2HmSst1YXFu0qufbxwGY0cEYttOLXkT66cRTOliUsT9zAofo6YboNfrnqXphnpQZSfozCUP71ZlvwOYf7n+DG1fsp/WX8UUCMW5F0ZdZG5RJJ3h6ljz7Dn97Qq9woEGk0GDEhglfFCxi/OiKdQSRuon4OtpGfNNz4S6irYWOnojxOKX2PdLcT+zvyG3RJVyZtCOtcxDHvD83Ww5QpfUqJcmisCSxzQRTMtIJ6peE8Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5050.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(53546011)(6512007)(2906002)(316002)(110136005)(54906003)(6506007)(38100700002)(31686004)(36756003)(186003)(8676002)(83380400001)(6486002)(508600001)(66476007)(31696002)(66556008)(2616005)(7416002)(8936002)(86362001)(4326008)(66946007)(5660300002)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uKPzfWzrP0Vnduti6RA2fdraCTibW4wCH9MnwaoZTGuyksHIZ/lIRrEcEfhq?=
+ =?us-ascii?Q?WxLHmAhY7thAlI1qHfLFD764CkdTS2swJHBbOBnXjCpHMm3uKBXwu2cCpNgI?=
+ =?us-ascii?Q?kgdYmBotWghCmxvMUfFjSjOu1+F80k4q+qDx3IPDsMAWMwN3UEH+BZVq/R8s?=
+ =?us-ascii?Q?XXrHWw9zsAkKDJFp4uJJS2SqkFKWOXVan9Zr0GmvM1+UpSLW1NSXrJe3sFEj?=
+ =?us-ascii?Q?s7I5+kVJoDfsEIX7UBbF98EQfh3K05eaJ5LeSMKkA+zsIC9IFIFCayEqQMqQ?=
+ =?us-ascii?Q?dTOhM65D+YRsKi7WQKnBKxAjLFPII6AB7tq/Egv0bUPfvYpDi+Rdbh+1PZ1R?=
+ =?us-ascii?Q?dGLGIPl29aX+mJ9WY9fodlxhnJcmvmRue71PDDzVMVbAXh8L7QqS3PotQC1L?=
+ =?us-ascii?Q?gVt+Ahl/bWLm6NVr4H4NlGQbr9IDhbZw82dwdKzw1XVQPIIPh4v5QsB9OjTt?=
+ =?us-ascii?Q?CorkvM01LlVuZCKM9Z9ytjTeIU22iojBzhX3Cvt6M8b1a/e6DCWXKq42q2qS?=
+ =?us-ascii?Q?+sURLxXSByi0EUhjspiSvo1LXMp2dyEgaMUJTFaUxaMajsWn57KvNUNggJNf?=
+ =?us-ascii?Q?66bKPA6DInDZpq9ZqXGLiaY/zzQOSYWJi+K9F+fH6AsAdAYAI1dblW+AK3Xz?=
+ =?us-ascii?Q?rXfYqRboQURdByj75vSesytGS78glVm/f+Vbvrm+dlPN9iyD7nVDuDzNFY5C?=
+ =?us-ascii?Q?roVYwS39A4kB2K0q8R28f/fW8hvGE6DnkOKvIY1S8dqpY/jKAfxJkAEpQg0U?=
+ =?us-ascii?Q?kSIE0ZHCiTqsSqWvY6Q6opUCkZItps3LnRvZVvUrLXof0tXVotrR0NpeAxMF?=
+ =?us-ascii?Q?+52HZGg9V6vY4/U+PD5D0NyznKsgbJpulO4wYrAVGP6WV6QxcUZo0TRVXkQq?=
+ =?us-ascii?Q?lR4t8L5ANTAqXtHxrI45ntL0a7VVy7Hhk+11VUufTGWHAbs5wPp8fJ92svxQ?=
+ =?us-ascii?Q?1xVl9An0RypUzehunBuTflAhY/rKn/wuKD1IJbiB2Mw7gD+9tVRsyNLXbsH2?=
+ =?us-ascii?Q?TM01ivee4axvy/2TirdyJXMHd1+IRhjyhMiogT7nl3ild4Y5fvx9B/Rm7kjr?=
+ =?us-ascii?Q?L7+RdhCe5AyWGagPGoVNIPTGO2P3t+YQDhXqhIwIHFqlU8iGkqf7ZyS9PVsP?=
+ =?us-ascii?Q?c09rxxN6BMywt1an/GzTX1trZZB2CtbFhV8Myg5vDbh6eZU7y3Q//b12JARW?=
+ =?us-ascii?Q?WaeO3XMeIjZ4b1hmJwXNh2G5fFNwXimj8BU/jRUjB/qwdm6ulhFGdoF6QF70?=
+ =?us-ascii?Q?0kho9fI5mXEujTTGPF3F17MYfMUUSQB2QVyllUtmr6dAGFHJJSyGyq/fO6Fe?=
+ =?us-ascii?Q?EPR6QeyD4DkDk3LLLkHgl5Fyt3Avu6j1xynvMRvFKGOy68FehCGog6RgMs35?=
+ =?us-ascii?Q?Rw4CZCnnWh9d2ufdMyHqdmrDg4WD?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 03850ac4-310b-413d-2cdb-08d9872c6351
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5050.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 12800de5-f067-4fe2-5efc-08d9872865e8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Oct 2021 11:16:22.7375
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2021 11:44:56.5919
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: f3N4o8nDD+3N8tO+Xk4h3R4TVng9do3JzrzSSl8Hn/vA5DymeZj3Rh3IE1tVbs9K/ipbEUHT4N9a9K/6E+kWtg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5855
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ogf5DAn4WV6+hRBj3A0WBBPCdi7PAtNaFAO9bDltvYnhpVfop20cyHroNluiwqNpLtCq/UpCjMYNM3VEby5Q9g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4537
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 04, 2021 at 12:55:27PM +0200, Tobias Waldekranz wrote:
-> On Mon, Oct 04, 2021 at 01:23, Vladimir Oltean <vladimir.oltean@nxp.com> =
-wrote:
-> > The present code is structured this way due to an incomplete thought
-> > process. In Documentation/networking/switchdev.rst we document that if =
-a
-> > bridge is VLAN-unaware, then the presence or lack of a pvid on a bridge
-> > port (or on the bridge itself, for that matter) should not affect the
-> > ability to receive and transmit tagged or untagged packets.
-> >
-> > If the bridge on behalf of which we are sending this packet is
-> > VLAN-aware, then the TX forwarding offload API ensures that the skb wil=
-l
-> > be VLAN-tagged (if the packet was sent by user space as untagged, it
-> > will get transmitted town to the driver as tagged with the bridge
-> > device's pvid). But if the bridge is VLAN-unaware, it may or may not be
-> > VLAN-tagged. In fact the logic to insert the bridge's PVID came from th=
-e
-> > idea that we should emulate what is being done in the VLAN-aware case.
-> > But we shouldn't.
->=20
-> IMO, the problem here stems from a discrepancy between LinkStreet
-> devices and the bridge, in how PVID is interpreted. For the bridge, when
-> VLAN filtering is disabled, ingressing traffic will be assigned to VID
-> 0. This is true even if the port's PVID is set. A mv88e6xxx port who's
-> QMode bits are set to 00 (802.1Q disabled) OTOH, will assign ingressing
-> traffic to its PVID.
->=20
-> So, in order to match the bridge's behavior, I think we need to rethink
-> how mv88e6xxx deals with non-filtering bridges. At first, one might be
-> tempted to simply leave the hardware PVID at 0. The PVT can then be used
-> to create isolation barriers between different bridges. ATU isolation is
-> really what kills this approach. Since there is no VLAN information in
-> the tag, there is no way to separate flows from different bridges into
-> different FIDs. This is the issue I discovered with the forward
-> offloading series.
->=20
-> > It appears that injecting packets using a VLAN ID of 0 serves the
-> > purpose of forwarding the packets to the egress port with no VLAN tag
-> > added or stripped by the hardware, and no filtering being performed.
-> > So we can simply remove the superfluous logic.
->=20
-> The problem with this patch is that return traffic from the CPU is sent
-> asymmetrically over a different VLAN, which in turn means that it will
-> perform the DA lookup in a different FID (0). The result is that traffic
-> does flow, but for the wrong reason. CPU -> port traffic is now flooded
-> as unknown unicast. An example:
->=20
-> (:aa / 10.1)
->     br0
->    /   \
-> sw0p1 sw0p2
-> \         /
->  \       /
->   \     /
->     CPU
->      |
->   .--0--.
->   | sw0 |
->   '-1-2-'
->     | '-- sniffer
->     '---- host (:bb / 10.2)
->=20
-> br0 is created using the default settings. sw0 will have (among others)
-> static entries for the CPU:
->=20
->     fid:0 addr:aa type:static port:0
->     fid:1 addr:aa type:static port:0
->=20
-> 1. host sends an ARP for 10.1.
->=20
-> 2. sw0 will add this entry (since vlan_default_pvid is 1):
->=20
->     fid:1 addr:bb type:age-7 port:1
 
-Well, that's precisely mv88e6xxx's problem, it should not make its
-ports' pvid inherit that of the bridge if the bridge is not VLAN aware.
-Other drivers inherit the bridge pvid only when VLAN filtering is turned
-on. See sja1105, ocelot, mt7530 at the very least. So the entry should
-have been learned in FID 0 here.
+On 01.10.21 17:22, Alan Stern wrote:
+> On Fri, Oct 01, 2021 at 03:26:48AM +0000, Hayes Wang wrote:
+>>> Alan Stern <stern@rowland.harvard.edu>
+>>> [...]
+>>>> There has been some discussion about this in the past.
+>>>>
+>>>> In general, -EPROTO is almost always a non-recoverable error.
+>>> Excuse me. I am confused about the above description.
+>>> I got -EPROTO before, when I debugged another issue.
+>>> However, the bulk transfer still worked after I resubmitted
+>>> the transfer. I didn't do anything to recover it. That is why
+>>> I do resubmission for -EPROTO.
+>> I check the Linux driver and the xHCI spec.
+>> The driver gets -EPROTO for bulk transfer, when the host
+>> returns COMP_USB_TRANSACTION_ERROR.
+>> According to the spec of xHCI, USB TRANSACTION ERROR
+>> means the host did not receive a valid response from the
+>> device (Timeout, CRC, Bad PID, unexpected NYET, etc.).
+> That's right.  If the device and cable are working properly, this=20
+> should never happen.  Or only extremely rarely (for example, caused=20
+> by external electromagnetic interference).
+And the device. I am afraid the condition in your conditional statement
+is not as likely to be true as would be desirable for quite a lot setups.
+>
+>> It seems to be reasonable why resubmission sometimes works.
+> Did you ever track down the reason why you got the -EPROTO error=20
+> while debugging that other issue?  Can you reproduce it?
 
-> 3. CPU replies with a FORWARD (VID 0).
->=20
-> 4. sw0 will perform a DA lookup in FID 0, missing the entry learned in
->    step 2.
->=20
-> 5. sw0 floods the frame as unknown unicast to both host and sniffer.
->=20
-> Conversely, if flooding of unknown unicast is disabled on sw0p1:
->=20
->     $ bridge link set dev sw0p1 flood off
->=20
-> host can no longer communicate with the CPU.
->=20
-> As I alluded to in the forward offloading thread, I think we need to
-> move a scheme where:
->=20
-> 1. mv88e6xxx clears ds->configure_vlan_while_not_filtering.
+Is that really the issue though? We are seeing this issue with EPROTO.
+But wouldn't we see it with any recoverable error?
 
-No, that's the wrong answer, nobody should clear ds->configure_vlan_while_n=
-ot_filtering.
-mv88e6xxx should leave the pvid at zero* when joining a bridge that is
-not VLAN-aware. It should inherit the bridge pvid when that bridge
-becomes VLAN-aware, and it should reset the pvid to zero* when that
-bridge becomes VLAN-unaware.
+AFAICT we are running into a situation without progress because drivers
+retry
 
-> 2. Assigns a free VID (and by extension a FID) in the VTU to each
->    non-filtering bridge.
+* forever
+* immediately
 
-*with the mention that the pvid of zero will only solve the first half
-of the problem, the discrepancy between the VLAN classified on xmit and
-the VLAN classified on rcv.
+If we broke any of these conditions the system would proceed and the
+hotplug event be eventually be processed. We may ask whether drivers should
+retry forever, but I don't see that you can blame it on error codes.
 
-It will not solve the ATU (FDB) isolation problem. But to solve the FDB
-isolation problem you need this:
-https://patchwork.kernel.org/project/netdevbpf/cover/20210818120150.892647-=
-1-vladimir.oltean@nxp.com/
+=C2=A0=C2=A0=C2=A0 Regards
+=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 Oliver
 
-> With this in place, the tagger could use the VID associated with the
-> egressing port's bridge in the tag.
-
-So the patch is not incorrect, it is incomplete. And there's nothing
-further I can add to the tagger logic to make it more complete, at least
-not now.
-
-That's one of the reasons why this is merely a "part 1".=
