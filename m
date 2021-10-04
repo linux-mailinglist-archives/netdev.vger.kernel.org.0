@@ -2,116 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB1F84216A2
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 20:37:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0241B421698
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 20:35:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238323AbhJDSjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 14:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229907AbhJDSi5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 14:38:57 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CFBC061745;
-        Mon,  4 Oct 2021 11:37:08 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id x27so75649658lfu.5;
-        Mon, 04 Oct 2021 11:37:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xem27AtWW1FQA6QFUscNmpNu/Mi0AlB3uxJE9Zg7LWU=;
-        b=VvlK17bgfWju26sVx30X0JjTItRn2NqFbmnHvE2isMMlopyEpyhXM0Rj2E4M62D6Il
-         mTRup9WRJoLo6k5LORBQarOAcJa4XMLNjfXqvEABYiG4zjR6yNuJgUDgNTZIPyh2Ke1Y
-         9NhX46dJrB0Owho9XbLusMcZ4Od/DsIVa72+Gxas+FJoQg98YXn3bNb6UXzpmwtgkQDD
-         bowtIgQ7TXO7XcLVGzkL9wWyKCMBc49lGkB1FjmTmKoRY4Fm1o4Ek41/0OMycbY3jNrf
-         hoEwSuuwje+C1Dgd2fdtnIwWYBkWgZy5DcPgdDJ14Y4COisSaFLc8+1x/pe6Ia5Sqo35
-         C7tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xem27AtWW1FQA6QFUscNmpNu/Mi0AlB3uxJE9Zg7LWU=;
-        b=H+anMHbHrvM5PlquRcHpiAnSi5ckGn/NrkzNRCwSRhd5gDKQZFf3RNjQNM6k3LXe1m
-         UiWw5ksNfJcuepAsS3I1GrVMUqYfoo8MLzuvN9ywfztY+c4jrNoraRQ0shltrIoEJt8P
-         MQodXiY8UHVLIMOndRfsRvJnL1V2Or6Y7/+wYvjdL7xrQRZUNQUmEoHcoHI09xwsKSN8
-         nwXnFXjSwgnlhGFvMVp9G9T1yxSXMHv2Q0WSaLzv2epkZXsumAzoTcqMc6iJ3mf5MDLg
-         RLIrI3zroktVfJVgYaPYic5ja03rALENdvbXi1N7WfZ9o/NHB6AHtTkdnVj8frFdTm7h
-         7tkw==
-X-Gm-Message-State: AOAM532h8JGmtjlWA4GPnLeOuWftKAZelC5oHAOgyjzbMZSOq5nB11Pp
-        LipSUh/9XtNveNRZ4j/22ZM=
-X-Google-Smtp-Source: ABdhPJxh4rDbJVCVy7zoAFnE3MkIxBFqljK7Opdyx3aKJumHOnHj5ZBOKogs7h85DCNjYopavjgDbA==
-X-Received: by 2002:a2e:a277:: with SMTP id k23mr14153835ljm.53.1633372626602;
-        Mon, 04 Oct 2021 11:37:06 -0700 (PDT)
-Received: from [192.168.1.103] ([178.176.79.223])
-        by smtp.gmail.com with ESMTPSA id w26sm1695440ljo.33.2021.10.04.11.37.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Oct 2021 11:37:06 -0700 (PDT)
-Subject: Re: [PATCH 07/10] ravb: Add tsrq to struct ravb_hw_info
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211001150636.7500-1-biju.das.jz@bp.renesas.com>
- <20211001150636.7500-8-biju.das.jz@bp.renesas.com>
- <5193e153-2765-943b-4cf8-413d5957ec01@omp.ru>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <e83b3688-4cfe-8706-bd42-ab1ad8644239@gmail.com>
-Date:   Mon, 4 Oct 2021 21:37:04 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S238599AbhJDShX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 14:37:23 -0400
+Received: from mga01.intel.com ([192.55.52.88]:29471 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229487AbhJDShS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 14:37:18 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10127"; a="248796750"
+X-IronPort-AV: E=Sophos;i="5.85,346,1624345200"; 
+   d="scan'208";a="248796750"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2021 09:40:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,346,1624345200"; 
+   d="scan'208";a="713503076"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by fmsmga005.fm.intel.com with ESMTP; 04 Oct 2021 09:40:06 -0700
+Date:   Mon, 4 Oct 2021 20:40:53 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH net-next v2] ixgbe: Consider xsk pool's frame size for
+ MTU size
+Message-ID: <YVtKtYoyZtez1DsD@boxer>
+References: <20210930140651.2249972-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <5193e153-2765-943b-4cf8-413d5957ec01@omp.ru>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210930140651.2249972-1-bigeasy@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/4/21 9:00 PM, Sergey Shtylyov wrote:
+On Thu, Sep 30, 2021 at 04:06:51PM +0200, Sebastian Andrzej Siewior wrote:
+> The driver has to a ensure that a network packet is not using more than
+> one page for its data if a XDP program is used.
+> This results in an upper limit of 1500 bytes. This can be increased a
+> little if the MTU was programmed to 1514..3072 bytes before loading the
+> XDP program. By setting this increased MTU size the driver will set the
+> __IXGBE_RX_3K_BUFFER flag which in turn will allow to use 3KiB as the
+> upper limit.
+> This looks like a hack and the upper limit is could increased further.
+> If the user configured a memory pool then PAGE_SIZE is used as BSIZEPKT
+> and RLPML is set to pool's memory size as is the card's maximum frame
+> size.
 
-[...]
->    The TCCR bits are called transmit start request (queue 0/1), not transmit start request queue 0/1.
-> I think you've read too much value into them for what is just TX queue 0/1.
+From what I can tell this is only true for hw->mac.type != ixgbe_mac_82599EB.
+
+> The result is that a MTU of 3520 bytes can be programmed and every
+> packet is stored a single page.
+
+How did you come up with 3520 bytes? Is this what
+xsk_pool_get_rx_frame_size returns on your system?
+
+Or is it:
+4k - XDP_HEADROOM (256) - sizeof skb_shared_info (320) = 3520?
+
+I think I also need a bit more of a context in here what you are solving
+here. Bare in mind that xsk_pool being present on Rx ring implies a
+different memory model than the standard one where __IXGBE_RX_3K_BUFFER is
+not valid.
+
+It seems to me that you were using the copy mode for xsk socket, or is my
+assumption wrong? If yes, then how did you end up with xsk_pool being
+present on a ring?
+
+>
+> If a RX ring has a pool assigned use its size while comparing for the
+> maximal MTU size.
+
+Were you trying to change the MTU with xsk socket loaded on a queue?
+
 > 
->> Add a tsrq variable to struct ravb_hw_info to handle this
->> difference.
->>
->> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
->> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->> ---
->> RFC->v1:
->>  * Added tsrq variable instead of multi_tsrq feature bit.
->> ---
->>  drivers/net/ethernet/renesas/ravb.h      | 1 +
->>  drivers/net/ethernet/renesas/ravb_main.c | 9 +++++++--
->>  2 files changed, 8 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
->> index 9cd3a15743b4..c586070193ef 100644
->> --- a/drivers/net/ethernet/renesas/ravb.h
->> +++ b/drivers/net/ethernet/renesas/ravb.h
->> @@ -997,6 +997,7 @@ struct ravb_hw_info {
->>  	netdev_features_t net_features;
->>  	int stats_len;
->>  	size_t max_rx_len;
->> +	u32 tsrq;
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+> v1…v2: Remove RFC. Repost of
+> 	https://lore.kernel.org/r/20210622162616.eadk2u5hmf4ru5jd@linutronix.de
 > 
->    I'd call it 'tccr_value' instead.
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 21 +++++++++++++++++--
+>  1 file changed, 19 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> index 24e06ba6f5e93..ed451f32e1980 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> @@ -6722,6 +6722,23 @@ static void ixgbe_free_all_rx_resources(struct ixgbe_adapter *adapter)
+>  			ixgbe_free_rx_resources(adapter->rx_ring[i]);
+>  }
+>  
+> +static int ixgbe_validate_frame_size(unsigned int frame_size,
+> +				     struct ixgbe_ring *ring)
+> +{
+> +	struct xsk_buff_pool *xsk_pool;
+> +	unsigned int buf_len;
+> +
+> +	xsk_pool = ring->xsk_pool;
+> +	if (xsk_pool)
+> +		buf_len = xsk_pool_get_rx_frame_size(xsk_pool);
 
-    Or even better, 'tccr_mask'...
+I still don't get what is being solved in here, but shouldn't we repeat
+the logic from ixgbe_configure_srrctl in here?
 
-[...]
+	if (xsk_pool) {
+		if (hw->mac.type != ixgbe_mac_82599EB)
+			buf_len = PAGE_SIZE;
+		else
+			buf_len = xsk_pool_get_rx_frame_size(xsk_pool);
+	} else {
+		buf_len = ixgbe_rx_bufsz(ring);
+	}
 
-MBR, Sergey
+> +	else
+> +		buf_len = ixgbe_rx_bufsz(ring);
+> +
+> +	if (frame_size > buf_len)
+> +		return -EINVAL;
+> +	return 0;
+> +}
+> +
+>  /**
+>   * ixgbe_change_mtu - Change the Maximum Transfer Unit
+>   * @netdev: network interface device structure
+> @@ -6741,7 +6758,7 @@ static int ixgbe_change_mtu(struct net_device *netdev, int new_mtu)
+>  		for (i = 0; i < adapter->num_rx_queues; i++) {
+>  			struct ixgbe_ring *ring = adapter->rx_ring[i];
+>  
+> -			if (new_frame_size > ixgbe_rx_bufsz(ring)) {
+> +			if (ixgbe_validate_frame_size(new_frame_size, ring)) {
+>  				e_warn(probe, "Requested MTU size is not supported with XDP\n");
+>  				return -EINVAL;
+>  			}
+> @@ -10126,7 +10143,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+>  		if (ring_is_rsc_enabled(ring))
+>  			return -EINVAL;
+>  
+> -		if (frame_size > ixgbe_rx_bufsz(ring))
+> +		if (ixgbe_validate_frame_size(frame_size, ring))
+>  			return -EINVAL;
+>  	}
+>  
+> -- 
+> 2.33.0
+> 
