@@ -2,107 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45AE3421A0E
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 00:30:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE8F421A37
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 00:41:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235726AbhJDWcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 18:32:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57478 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235700AbhJDWcM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 18:32:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E41C161058;
-        Mon,  4 Oct 2021 22:30:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633386622;
-        bh=GnU+ACh3ikWReIYS292sllZht7HNrIJBFVq0DlI76i8=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=ceFHS0ufrxP6kmB3Q74ahWQgaxqoocRjgkRNpfygBq643i8CuZk/OrOi8YPBSsxkH
-         93R7dm8zvPNHlpQNPRLEv4dZyrb7XqJ3ClqAZG6caSwEAtB+Go1t9+9vn/slDmBowq
-         Hjx+IBqvISfJkPQ63IF+y6OSqCg8y0uGQA+aPOFIv6Zp/XSgEqjjRVWgY73s3mfC2Z
-         +uWiogaiNS2/DhrZa6zkh78gxBJj7CbtLxD0lWzIt8bMsNYNl3YcDRbBKoO6SHyZY4
-         cA7dTGZy3U4xThX0BnnWpDfPSHoAVIeoYovfNUQ8KpmbYZTJ50UxwjhL+iGFD3Dnf7
-         s8JVrANYxS0iA==
-Message-ID: <b335852ecaba3c86d1745b5021bb500798fc843b.camel@kernel.org>
-Subject: Re: [RFCv2 net-next 000/167] net: extend the netdev_features_t
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Jian Shen <shenjian15@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linuxarm@openeuler.org
-Date:   Mon, 04 Oct 2021 15:30:21 -0700
-In-Reply-To: <YVsWyO3Fa5RC0hRh@lunn.ch>
-References: <20210929155334.12454-1-shenjian15@huawei.com>
-         <20211001151710.20451-1-alexandr.lobakin@intel.com>
-         <YVsWyO3Fa5RC0hRh@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        id S236573AbhJDWnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 18:43:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52694 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236524AbhJDWne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 18:43:34 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFA0C061749
+        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 15:41:44 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id e15so78053958lfr.10
+        for <netdev@vger.kernel.org>; Mon, 04 Oct 2021 15:41:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BVplZDWCP2Cmo9kXIU0kj43Mzd2m24zYah/Ddctflio=;
+        b=WDXi2C1MpnHW3vX/GR9Y79OxWmL+mY9wvILiWsCHXnbiorLx6ESoAUAVV0vxfWXfbI
+         n5n0cO1D+LPUOQJbJ1br9JR4ntXhpLrnjL2K4VNjPJgi/d4KzLKswa/fJ5UU/QHMnuby
+         m6Pl88ZFeMXkD4PLNFHiPv+t4TovDbNQHh+yEhnYdnG5C5YDiCjnRNnjtm6Cbl7gXozi
+         SJsKwTemSuegj850YmM1D50fKaY/5kQF/VF/HtQUL0NI4H5KsIheHDdPf07DbegK6vzj
+         EJHS5UHuukol/e8+d4Yr9xnnVXiK+5orkRQe4ODPIOy/wJoHYtgvZemkv3tRWrRgHfrw
+         L2Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BVplZDWCP2Cmo9kXIU0kj43Mzd2m24zYah/Ddctflio=;
+        b=zFJEpIpph8nfRWyM8YCTpj8R8/PnEpvwqnNd24iOkjZWJ/YSmJvDxUv/kwwqSiLhLc
+         QB71fCRdoplu913mSyer257XPgV4GpYlqCqf/qteXhWyuGzaxBh2xU7N1sVV7k7es4vE
+         sNpaoH54kiOhfJoJJxeM76PvkUqZ1JEZItaJxZ9P22fI/hsNCftd22slpSmBTdNTV1VS
+         hjLNADApMF55Msj/tpOLLwfhh4LrI1oh/82hOaOtgF/C6UT79wJxbW1OWjXPPznN+2wR
+         2PdG1qrAR/0dz33PJPc8D3wCC+VpuYhvSLcDD9rxsrCc0qXxUcPDHFZsxo1MMbrZkLEU
+         aVsw==
+X-Gm-Message-State: AOAM531OJORHXuZiWdh9VfzF0HGGMDGsk23LY42HfkaoxQkYGMJQI1bw
+        U73CGjIChQ1M9mwau1PEhyNonHIvTDCbx/ovzfBC7B+J0uM=
+X-Google-Smtp-Source: ABdhPJzE7X5+IaKlaGj/GKQrEgjvbMmUMzm4cxK+2cy9JiQZIQqaG7XZ1JqaD5NJBSmatyG2adSM/e7c0JhnazvoYI0=
+X-Received: by 2002:a19:c10d:: with SMTP id r13mr17057213lff.339.1633387303289;
+ Mon, 04 Oct 2021 15:41:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210929210349.130099-1-linus.walleij@linaro.org>
+ <20210929210349.130099-4-linus.walleij@linaro.org> <20210929214504.gvrcx7lpl5apouwc@skbuf>
+In-Reply-To: <20210929214504.gvrcx7lpl5apouwc@skbuf>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 5 Oct 2021 00:41:32 +0200
+Message-ID: <CACRpkdaZ7tUwv8OjBaHJ-Da9mBrBy5AuK+p3m4J=hZyyKHTx4w@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/4 v4] net: dsa: rtl8366rb: Support fast aging
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Mauri Sandberg <sandberg@mailfence.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-10-04 at 16:59 +0200, Andrew Lunn wrote:
-> On Fri, Oct 01, 2021 at 05:17:10PM +0200, Alexander Lobakin wrote:
-> > From: Jian Shen <shenjian15@huawei.com>
-> > Date: Wed, 29 Sep 2021 23:50:47 +0800
-> > 
-> > Hi,
-> > 
-> > > For the prototype of netdev_features_t is u64, and the number
-> > > of netdevice feature bits is 64 now. So there is no space to
-> > > introduce new feature bit.
-> > > 
-> > > This patchset try to solve it by change the prototype of
-> > > netdev_features_t from u64 to bitmap. With this change,
-> > > it's necessary to introduce a set of bitmap operation helpers
-> > > for netdev features. Meanwhile, the functions which use
-> > > netdev_features_t as return value are also need to be changed,
-> > > return the result as an output parameter.
-> > > 
-> > > With above changes, it will affect hundreds of files, and all the
-> > > nic drivers. To make it easy to be reviewed, split the changes
-> > > to 167 patches to 5 parts.
-> > 
-> > If you leave the current feature field set (features, hw_features
-> > etc.) as is and just add new ones as bitmaps -- I mean, to place
-> > only newly added features there -- you won't have to change this in
-> > hundreds of drivers.
-> 
-> That makes things messy for the future. Two different ways to express
-> the same thing. And it is a trap waiting for developers to fall
-> into. Is this a new feature or an old feature bit? Should i add it to
-> the old or new bitmap? Will the compiler error out if i get it wrong,
-> or silently accept it?
-> 
-> > Another option is to introduce new fields as bitmaps and mirror all
-> > features there, but also keep the current ones. This implies some
-> > code duplication -- to keep both sets in sync -- but it will also
-> > allow to avoid such diffstats. Developers could switch their
-> > drivers
-> > one-by-one then, and once they finish converting,
-> 
-> Which will never happen. Most developers will say, why bother, it
-> works as it is, i'm too lazy. And many drivers don't have an active
-> developer, and so won't get converted.
-> 
-> Yes it is a big patchset, but at the end, we get a uniform API which
-> is future proof, and no traps waiting for developers to fall into.
-> 
+On Wed, Sep 29, 2021 at 11:45 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Wed, Sep 29, 2021 at 11:03:48PM +0200, Linus Walleij wrote:
 
-I agree, i had to visit this topic a year ago or so, and the only
-conclusion was is to solve this the hard way, introduce a totally new
-mechanism, the safest way is to remove old netdev_features_t fields
-from netdev and add new ones (both names and types), so compiler will
-catch you if you missed to convert a place.
+> > +     /* This will age out any learned L2 entries */
+> > +     regmap_update_bits(smi->map, RTL8366RB_SECURITY_CTRL,
+> > +                        BIT(port), BIT(port));
+>
+> Is there any delay that needs to be added between these two operations?
+>
+> > +     /* Restore the normal state of things */
+> > +     regmap_update_bits(smi->map, RTL8366RB_SECURITY_CTRL,
+> > +                        BIT(port), 0);
 
-maybe hide the implementation details and abstract it away from drivers
-using getters and manipulation APIs, it is not that bad since drivers
-are already not supposed to modify netdev_features directly.
+Absolutely no idea. The API from the vendor essentially just set/clear
+this bit with no comments on use.
 
-
->    Andrew
-
-
+Yours,
+Linus Walleij
