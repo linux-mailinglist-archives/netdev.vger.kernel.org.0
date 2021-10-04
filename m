@@ -2,112 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AB5F421592
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 19:52:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08D77421597
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 19:52:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235317AbhJDRyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 13:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234678AbhJDRyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 13:54:13 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6D4C061746
-        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 10:52:24 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id b8so33475012edk.2
-        for <netdev@vger.kernel.org>; Mon, 04 Oct 2021 10:52:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=SVy+42avAMDVs9YXx1N0MW72e1XqpRIo0we4Jey6TgQ=;
-        b=USZyRilZz6erOG49DFYjzZ7yWgjOF6KTPmH52T4Gemm+QUM3Fsk9hCPuO1ae+CsKMy
-         5cxbMWN0+QWJ7TNvMS+xMUWtoLMWb5t6Z7EiTWRxNQI0EeXpbmWGUY7HPhtaBMFPRnN1
-         tyqo3akeIm/LNXB/Hnk8xMZ2sGRkMTJTjJrVs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SVy+42avAMDVs9YXx1N0MW72e1XqpRIo0we4Jey6TgQ=;
-        b=XE3N0kx1wGUO4b0IfFgciTpCosEx9CxwKfVDQyjDnai3SHi3Y+LqA/vLlpy1d259FS
-         Q7Pftlm2xZS8uLt6TDUFy/o1TN4apDmGwbKiTGYEgIKuUeoQ8HBR0eo0+YDO4pxnXvkd
-         bUxlE5wnTWEidNgimzraH6Df25B12EhUWqnIrN/xbcjMxnubWrX4wdUsnVNNSynN+RvI
-         XAFF4QkDQD60vVPIkO+CXpVMUZBS7W7+lwjukjVQyrUhyeXe73YTLTknTRAlzzZX1ZAP
-         wC04VAhEhsX1pUXsLd/Udkm+A2rx6QHS734+gqAk1dfOkHDDcaTauZD98F7uDvxYGYhp
-         uA9g==
-X-Gm-Message-State: AOAM532t0R7wsEC7yMJopgMlgsJjZhIAo/TkN0CIsCeIjFD2ZDws/6Sc
-        vaSbbdKeQt7mQeBY94zSrNxqT09vKJhQt3jXxTLw4g==
-X-Google-Smtp-Source: ABdhPJw473yRin1rcK/LShFHmhtAKymPp2Nzjft1z63Ov1VE3CPb6pN7T9mMOt0Y7yINQAzbdd9Z9LQmL/AJ4fFVqJE=
-X-Received: by 2002:a17:906:60c7:: with SMTP id f7mr18468620ejk.57.1633369942391;
- Mon, 04 Oct 2021 10:52:22 -0700 (PDT)
+        id S235383AbhJDRyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 13:54:35 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:44208 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234063AbhJDRyf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 13:54:35 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 7F83D1C0B76; Mon,  4 Oct 2021 19:52:44 +0200 (CEST)
+Date:   Mon, 4 Oct 2021 19:52:44 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Jon Hunter <jonathanh@nvidia.com>,
+        linux-stable <stable@vger.kernel.org>,
+        Pavel Machek <pavel@denx.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jann Horn <jannh@google.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 4.19 00/95] 4.19.209-rc1 review
+Message-ID: <20211004175244.GA14089@duo.ucw.cz>
+References: <20211004125033.572932188@linuxfoundation.org>
+ <CA+G9fYtyzfpSnapCFEVgeWGD8ZwS2_Lv5KPwjX4hUwDAv52kFg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210914114813.15404-1-verdre@v0yd.nl> <20210914114813.15404-3-verdre@v0yd.nl>
- <5f0b52be-8b9c-b015-6c5a-f2f470e37058@v0yd.nl>
-In-Reply-To: <5f0b52be-8b9c-b015-6c5a-f2f470e37058@v0yd.nl>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Mon, 4 Oct 2021 10:52:11 -0700
-Message-ID: <CAOFLbXbK5LmZbLcEs5e-0twoSkxkyKy8S6ZJVsz9Ap_a_iGZPA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] mwifiex: Try waking the firmware until we get an interrupt
-To:     =?UTF-8?Q?Jonas_Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        Linux Wireless <linux-wireless@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "# 9798ac6d32c1 mfd : cros_ec : Add cros_ec_cmd_xfer_status helper" 
-        <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYtyzfpSnapCFEVgeWGD8ZwS2_Lv5KPwjX4hUwDAv52kFg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-On Sun, Oct 3, 2021 at 2:18 AM Jonas Dre=C3=9Fler <verdre@v0yd.nl> wrote:
-> So I think I have another solution that might be a lot more elegant, how
-> about this:
->
-> try_again:
->         n_tries++;
->
->         mwifiex_write_reg(adapter, reg->fw_status, FIRMWARE_READY_PCIE);
->
->         if (wait_event_interruptible_timeout(adapter->card_wakeup_wait_q,
->                                              READ_ONCE(adapter->int_statu=
-s) !=3D 0,
->                                              WAKEUP_TRY_AGAIN_TIMEOUT) =
-=3D=3D 0 &&
->             n_tries < MAX_N_WAKEUP_TRIES) {
->                 goto try_again;
->         }
+--Q68bSM7Ycu6FN28Q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Isn't wait_event_interruptible_timeout()'s timeout in jiffies, which
-is not necessarily that predictable, and also a lot more
-coarse-grained than we want? (As in, if HZ=3D100, we're looking at
-precision on the order of 10ms, whereas the expected wakeup latency is
-~6ms.) That would be OK for well-behaved PCI cases, where we never
-miss a write, but it could ~double your latency for your bad systems
-that will need more than one run of the loop.
+Hi!
 
-Also, feels like a do/while could be cleaner, but that's a lesser detail.
+> > This is the start of the stable review cycle for the 4.19.209 release.
+> > There are 95 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> >
+> > Responses should be made by Wed, 06 Oct 2021 12:50:17 +0000.
+> > Anything received after that time might be too late.
+> >
+> > The whole patch series can be found in one patch at:
+> >         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patc=
+h-4.19.209-rc1.gz
+> > or in the git tree and branch at:
+> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stab=
+le-rc.git linux-4.19.y
+> > and the diffstat can be found below.
+> >
+> > thanks,
+> >
+> > greg k-h
+>=20
+> Regression found on arm, arm64, i386 and x86.
+> following kernel crash reported on stable-rc linux-4.19.y.
+>=20
+> metadata:
+>   git branch: linux-4.19.y
+>   git repo: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+>   git commit: ee3e528d83e91547f386a30677ccb96c28e78218
+>   git describe: v4.19.208-96-gee3e528d83e9
+>   make_kernelversion: 4.19.209-rc1
+>   kernel-config: https://builds.tuxbuild.com/1z2izwX1xMgF2OSYM5EN6ELHEij/=
+config
+>=20
+>=20
+> Kernel crash:
+> --------------
+> [   14.900875] BUG: unable to handle kernel NULL pointer dereference
+> at 0000000000000000
+> [   14.908699] PGD 0 P4D 0
+> [   14.911230] Oops: 0002 [#1] SMP PTI
+> [   14.914714] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.19.209-rc1 #1
+> [   14.921147] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
+> 2.2 05/23/2018
+> [   14.928531] RIP: 0010:__sk_destruct+0xb9/0x190
+> [   14.932965] Code: 48 8b 47 08 48 8d 50 ff a8 01 48 0f 45 fa f0 ff
+> 4f 34 0f 84 d9 00 00 00 48 c7 83 00 ff ff ff 00 00 00 00 48 8b bb 78
+> ff ff ff <f0> ff 0f 0f 84 a0 00 00 00 48 8b bb 70 ff ff ff e8 32 41 6d
+> ff f6
 
-> and then call wake_up_interruptible() in the mwifiex_interrupt_status()
-> interrupt handler.
->
-> This solution should make sure we always keep wakeup latency to a minimum
-> and can still retry the register write if things didn't work.
+I believe we see the same failure in testing:
 
-Brian
+https://lava.ciplatform.org/scheduler/job/455022
+
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 4.19.209-rc1-gee3e528d83e9-dirty (root@runner-=
+ryfx8chz-project-14394223-concurrent-0xchkx) () #1 SMP Mon Oct 4 17:14:39 U=
+TC 2021
+[    0.000000] CPU: ARMv7 Processor [413fc0f2] revision 2 (ARMv7), cr=3D10c=
+5387d
+[    0.000000] CPU: div instructions available: patching division code
+=2E..
+[    7.215118]      nameserver0=3D192.168.1.1
+[    7.228063] Unable to handle kernel NULL pointer dereference at virtual =
+address 00000000
+[    7.236165] pgd =3D (ptrval)
+[    7.238867] [00000000] *pgd=3D00000000
+[    7.242442] Internal error: Oops: 5 [#1] SMP ARM
+[    7.247055] Modules linked in:
+[    7.250110] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.19.209-rc1-gee3e=
+528d83e9-dirty #1
+[    7.258286] Hardware name: Generic RZ/G1 (Flattened Device Tree)
+[    7.264318] PC is at __sk_destruct+0xa8/0x11c
+[    7.268690] LR is at __sk_destruct+0x4c/0x11c
+[    7.273058] pc : [<c0ce244c>]    lr : [<c0ce23f0>]    psr: 60000113
+
+
+Best regards,
+								Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--Q68bSM7Ycu6FN28Q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYVs/bAAKCRAw5/Bqldv6
+8o8oAKCif9tj6XAsxnQxqZl9z/OcfazZagCglQ9kz+NpHVNUxfCFRNRArbTPNwc=
+=809t
+-----END PGP SIGNATURE-----
+
+--Q68bSM7Ycu6FN28Q--
