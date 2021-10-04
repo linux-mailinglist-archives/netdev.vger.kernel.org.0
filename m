@@ -2,71 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E39C420700
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 10:06:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18E54420759
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 10:30:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbhJDIIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 04:08:06 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39104 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230408AbhJDIIB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 04:08:01 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mXIz0-000CRs-N6; Mon, 04 Oct 2021 10:05:58 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mXIz0-000BaL-Cv; Mon, 04 Oct 2021 10:05:58 +0200
-Subject: Re: [PATCH v4 0/8] bpf powerpc: Add BPF_PROBE_MEM support in powerpc
- JIT compiler
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        naveen.n.rao@linux.ibm.com, christophe.leroy@csgroup.eu,
-        ast@kernel.org
-Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-References: <20210929111855.50254-1-hbathini@linux.ibm.com>
- <88b59272-e3f7-30ba-dda0-c4a6b42c0029@iogearbox.net>
- <87o885raev.fsf@mpe.ellerman.id.au>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <768469ec-a596-9e0c-541c-aca5693d69e7@iogearbox.net>
-Date:   Mon, 4 Oct 2021 10:05:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S231458AbhJDIcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 04:32:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42406 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230469AbhJDIcS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 04:32:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 639EC6124D;
+        Mon,  4 Oct 2021 08:30:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1633336228;
+        bh=AGIgwoQNBBt0ACT2Oa703+VXilss9u/HArqWzTXe+jM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Xu8068laLv4h09QdbkgWqg1+Hsrt2pB2Y69WPnlP903fWNJN40bLPIgUB8fTcTLUC
+         x4BGct5hBdnnFcBypf8x7utNBSs6iaKRodKX5yHA39OhoKUatmYRx9HNOrxSXBJi2M
+         GnVRK9NTnZXWHkEyIDE4zSMdlENcN2Uc92Wr0amA=
+Date:   Mon, 4 Oct 2021 10:30:25 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
+        netdev@vger.kernel.org,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: are device names part of sysfs ABI? (was Re: devicename part of
+ LEDs under ethernet MAC / PHY)
+Message-ID: <YVq7oTTv5URYKVJb@kroah.com>
+References: <20211001133057.5287f150@thinkpad>
+ <YVb/HSLqcOM6drr1@lunn.ch>
+ <20211001144053.3952474a@thinkpad>
+ <20211003225338.76092ec3@thinkpad>
+ <YVqhMeuDI0IZL/zY@kroah.com>
+ <20211004090438.588a8a89@thinkpad>
+ <YVqo64vS4ox9P9hk@kroah.com>
+ <20211004073841.GA20163@amd>
 MIME-Version: 1.0
-In-Reply-To: <87o885raev.fsf@mpe.ellerman.id.au>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26311/Sun Oct  3 11:08:49 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211004073841.GA20163@amd>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/4/21 12:49 AM, Michael Ellerman wrote:
-> Daniel Borkmann <daniel@iogearbox.net> writes:
->> On 9/29/21 1:18 PM, Hari Bathini wrote:
->>> Patch #1 & #2 are simple cleanup patches. Patch #3 refactors JIT
->>> compiler code with the aim to simplify adding BPF_PROBE_MEM support.
->>> Patch #4 introduces PPC_RAW_BRANCH() macro instead of open coding
->>> branch instruction. Patch #5 & #7 add BPF_PROBE_MEM support for PPC64
->>> & PPC32 JIT compilers respectively. Patch #6 & #8 handle bad userspace
->>> pointers for PPC64 & PPC32 cases respectively.
->>
->> Michael, are you planning to pick up the series or shall we route via bpf-next?
+On Mon, Oct 04, 2021 at 09:38:41AM +0200, Pavel Machek wrote:
+> Hi!
 > 
-> Yeah I'll plan to take it, unless you think there is a strong reason it
-> needs to go via the bpf tree (doesn't look like it from the diffstat).
+> > > > > Are device names (as returned by dev_name() function) also part of
+> > > > > sysfs ABI? Should these names be stable across reboots / kernel
+> > > > > upgrades?  
+> > > > 
+> > > > Stable in what exact way?
+> > > 
+> > > Example:
+> > > - Board has an ethernet PHYs that is described in DT, and therefore
+> > >   has stable sysfs path (derived from DT path), something like
+> > >     /sys/devices/.../mdio_bus/f1072004.mdio-mii/f1072004.mdio-mii:01
+> > 
+> > None of the numbers there are "stable", right?
+> 
+> At least f1072004 part is stable (and probably whole path). DT has
+> advantages here, and we should provide stable paths when we can.
 
-Sounds good to me, in that case, please also route the recent JIT fixes from
-Naveen through your tree.
-
-Thanks,
-Daniel
+The kernel should enumerate the devices as best that it can, but it
+never has the requirement of always enumerating them in the same way
+each time as many busses are not deterministic.
