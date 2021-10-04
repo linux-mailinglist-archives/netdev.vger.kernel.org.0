@@ -2,67 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 923A5421A5F
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 00:56:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91447421A68
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 01:01:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237040AbhJDW6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 18:58:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47940 "EHLO mail.kernel.org"
+        id S233613AbhJDXDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 19:03:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236984AbhJDW6d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 18:58:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A1222613AC;
-        Mon,  4 Oct 2021 22:56:43 +0000 (UTC)
+        id S231575AbhJDXDd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 19:03:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 195C46126A;
+        Mon,  4 Oct 2021 23:01:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633388203;
-        bh=i6ulNormSIWlQQqKHj+2j7C0TrI/jvl82mpagj6SXos=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ACj6heyZ40ajjsBptLaqZ0jcXu/Ph+Mis5f5615mHIhmvKbICRsYSr+i7b8Snl2iv
-         iI7T9PSniMejgLSeNgTgIuDFdGuJtV3PmEYd+LQ25UW5gZsL3ibUYxZj8d+BD1xQqh
-         3ZiyjDjdIrApCJvO/1IUCX4kzQ8Levovfsxpd45LZQfqu6lQXO7o3Cj0i4Kd5cvRqM
-         xuvDCZIOi2pyMNZMxrW6gflED2GuEYPKrrSxWrEDAWXqsZ9Eo7ioxecX9ZRo4A+1SU
-         i6UGOnntEWSQnQdcbViBpwG+cHBWYKM6ax6FGu1u84wlyuJK71118zTfcwd/YwrfsM
-         2+4i/tDs7YKdw==
-Date:   Mon, 4 Oct 2021 15:56:42 -0700
+        s=k20201202; t=1633388504;
+        bh=Bm/jQXiJU5yBX5ctMTB7mwj4NyuRX9y3Mrw2XSx7AAQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cwRL5vvHY6Y9sOlTVU1pyPb/3IijBN1JyY5cO1joTpaJJMJaEBAUQT5OBA9v4OqGD
+         vbXYLo0lyOk7UJCvya8ILCWXTJDuRcBu3CTtdL6BBtffiVKXK8Wq9d2JIWUa9ki4UF
+         TRVxOIJ8W5WnHYhTZGIK9/jwtX8mVfHaOXkoLivMWPLk9lzHfEf4MLQfghlnRMPwLs
+         sX7Ic29wB8DuB+tuq99ykcGogQlLPe4Nhvx3F2D6lZBpP6L1uxen9FA9ZS4f6W9gZB
+         HbgTRPf/Ni3kQHFjDH89//ahTNre6yD7ZwYuCFEPee2AmioYBd0NXj6xEKKqPtPqjZ
+         NSEQ/mioGBVSA==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] ethernet: use eth_hw_addr_set() for
- dev->addr_len cases
-Message-ID: <20211004155642.369db0ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YVt9xbVVoNb3p9ro@lunn.ch>
-References: <20211004160522.1974052-1-kuba@kernel.org>
-        <YVt9xbVVoNb3p9ro@lunn.ch>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] etherdevice: use __dev_addr_set()
+Date:   Mon,  4 Oct 2021 16:01:40 -0700
+Message-Id: <20211004230140.2547271-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Oct 2021 00:18:45 +0200 Andrew Lunn wrote:
-> On Mon, Oct 04, 2021 at 09:05:21AM -0700, Jakub Kicinski wrote:
-> > Convert all Ethernet drivers from memcpy(... dev->addr_len)
-> > to eth_hw_addr_set():
-> > 
-> >   @@
-> >   expression dev, np;
-> >   @@
-> >   - memcpy(dev->dev_addr, np, dev->addr_len)
-> >   + eth_hw_addr_set(dev, np)  
-> 
-> eth_hw_addr_set() uses ether_addr_copy(), which says:
-> 
-> Please note: dst & src must both be aligned to u16.
-> 
-> memcpy() does not have this restriction. If the source is something
-> funky, like an EEPROM, it could be oddly aligned.
-> 
-> If you are going to do this, i think the assumption needs removing, a
-> test added for unaligned addresses and fall back to memcpy().
+Andrew points out that eth_hw_addr_set() replaces memcpy()
+calls so we can't use ether_addr_copy() which assumes
+both arguments are 2-bytes aligned.
 
-Thanks for pointing that out, I'll queue up a fix.
+Reported-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ include/linux/etherdevice.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-At the end of the conversion eth_hw_addr_set() calls dev_addr_set()
-which is a memcpy() but I created the former first hence the wrong
-ordering.
+diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
+index e7b2e5fd8d24..c8442d954d19 100644
+--- a/include/linux/etherdevice.h
++++ b/include/linux/etherdevice.h
+@@ -308,7 +308,7 @@ static inline void ether_addr_copy(u8 *dst, const u8 *src)
+  */
+ static inline void eth_hw_addr_set(struct net_device *dev, const u8 *addr)
+ {
+-	ether_addr_copy(dev->dev_addr, addr);
++	__dev_addr_set(dev, addr, ETH_ALEN);
+ }
+ 
+ /**
+-- 
+2.31.1
+
