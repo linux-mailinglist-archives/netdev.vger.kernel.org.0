@@ -2,125 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A48E421AA1
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 01:26:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E08A2421AC5
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 01:38:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235276AbhJDX1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 19:27:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbhJDX1q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 19:27:46 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5518DC061745
-        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 16:25:56 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id g184so18064098pgc.6
-        for <netdev@vger.kernel.org>; Mon, 04 Oct 2021 16:25:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LVhO5Cff8ywinpP+5fBDLr67Q38pdXZFNpJlJzlXkJE=;
-        b=GXTR3mgVoyk+LINwkQwxywsnzIcITh6CzQUvyA1sOKgsBLTkEOFhViJacv9lFs+uMD
-         h+ZwlEZLKD7yS4/UfvZfC1VmewlF55C63tHv9ayQXwJO8EInNqUGkRHf93sqUG3FROdS
-         LwTDkbOI71SA48KkDKTZrW27UzM/WjyMzPca2SwbB6ZjIukUxccHLdpKP4JyN7q9Ltme
-         T5ZI5V+FgP4xKO0h7UgfBE4O5LJ7+oB/I7e10Enp87pG1IWrQvYc0+7HVn/cbutq+BNm
-         u6XDKyaInGD5M6+xg1pBHjF/GzB46rnEGQ0QCtS01R3yIVR3OPLMASsSyvKfsKsSJ33p
-         ewKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LVhO5Cff8ywinpP+5fBDLr67Q38pdXZFNpJlJzlXkJE=;
-        b=1/KEHk2mfH5/lOkkDjeBdrZRnkZ0ARPVHlkFkIGFwaDPYWOet69dL6XyDXhW0AEgo5
-         KMdEVxQ5E5gYvQV4dafuQEwvslwnv34/ktHeBOk3ndiLrX/8CXgXeRlr9sogHG0VSwSx
-         eEQBSxY04H6nlJB5fnckyhf2LUb2ur3X7v4h/RokZ5csoRcSQ0L84Mj84N55BrUqJswm
-         Mfd3dBlcBRLo54SciYxLKA9pLGGcauegjLNiE3Rt/3UrWD6yIok5CXzq66yKHARikHZl
-         EjkduOEoASbK8vCFOXqJguMjrBon94vBPg6gO7cY+yvjwInXyEXI64ASpgNn7SKZWoMN
-         ay4Q==
-X-Gm-Message-State: AOAM532tw+2YUIHViG64E+BNSHDlVSGiTcqKBkDMAgZR0Tczoyng5nrk
-        n1rXWCzXd2Cq6+xQsTqSXpVSSA==
-X-Google-Smtp-Source: ABdhPJwJGPAc7usCDf8FZyr5sAz4GPe1/1fOJFubRDrEMSwdtmFeNvwS0U2MWm33Tus//mbeEHs+PA==
-X-Received: by 2002:aa7:88d6:0:b0:44c:5c0b:c8a8 with SMTP id k22-20020aa788d6000000b0044c5c0bc8a8mr8955357pff.76.1633389955702;
-        Mon, 04 Oct 2021 16:25:55 -0700 (PDT)
-Received: from ip-10-124-121-13.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
-        by smtp.gmail.com with ESMTPSA id s68sm14096927pfb.192.2021.10.04.16.25.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Oct 2021 16:25:55 -0700 (PDT)
-From:   Jiang Wang <jiang.wang@bytedance.com>
-To:     bpf@vger.kernel.org
-Cc:     cong.wang@bytedance.com, Casey Schaufler <casey@schaufler-ca.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Rao Shoaib <Rao.Shoaib@oracle.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf v1] unix: fix an issue in unix_shutdown causing the other end read/write failures
-Date:   Mon,  4 Oct 2021 23:25:28 +0000
-Message-Id: <20211004232530.2377085-1-jiang.wang@bytedance.com>
-X-Mailer: git-send-email 2.20.1
+        id S233537AbhJDXkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 19:40:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51488 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234995AbhJDXj7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 19:39:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4BBA161131;
+        Mon,  4 Oct 2021 23:38:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633390689;
+        bh=7FQS12BJyVfLKwhmHhNpViQ6vnbzhOByhHXQRuhEDAw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=czVI7h9CjVBBLcioO417aQterEvQMv2y8n4apS/L+6qdf8SIZ6u4Nz/6uHWRBsif9
+         mYXIuuNprKHnMY7WfFqhRGbzQhUOG8w63Ao88tw449K8hQkJ7eF7JEsssh4xX4jvtY
+         NO78FsgvvBDfIoQgm5JAEnTy1BtrgRHKuc+gyoEBKD32aOQpFsiMuxFXwksDvmkYf7
+         yxqaDDhDR7r1QUftffK/a+UhWHD3XUoZV7l+b4hbI5g4wk+riiZaGuK870TGKuWp2f
+         i/lkH7Qr4CYdFeBuXJNAbfAHVUmgB2opyha4vLjDvFKe+1qq7uqeL4Li8L++U1XAi6
+         Q+7YfGr84SZCg==
+Date:   Mon, 4 Oct 2021 16:38:08 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        mlxsw@nvidia.com, Moshe Shemesh <moshe@nvidia.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Shay Drory <shayd@nvidia.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next v2 1/5] devlink: Reduce struct devlink exposure
+Message-ID: <20211004163808.437ea8f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <d21ebe6fde8139d5630ef4ebc9c5eb6ed18b0e3b.1633284302.git.leonro@nvidia.com>
+References: <cover.1633284302.git.leonro@nvidia.com>
+        <d21ebe6fde8139d5630ef4ebc9c5eb6ed18b0e3b.1633284302.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 94531cfcbe79 ("af_unix: Add unix_stream_proto for sockmap")
-sets unix domain socket peer state to TCP_CLOSE
-in unix_shutdown. This could happen when the local end is shutdown
-but the other end is not. Then the other end will get read or write
-failures which is not expected.
+On Sun,  3 Oct 2021 21:12:02 +0300 Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> The declaration of struct devlink in general header provokes the
+> situation where internal fields can be accidentally used by the driver
+> authors. In order to reduce such possible situations, let's reduce the
+> namespace exposure of struct devlink.
+> 
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-Fix the issue by setting the local state to shutdown.
-
-Fixes: 94531cfcbe79 (af_unix: Add unix_stream_proto for sockmap)
-Suggested-by: Cong Wang <cong.wang@bytedance.com>
-Reported-by: Casey Schaufler <casey@schaufler-ca.com>
-Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
----
- net/unix/af_unix.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index efac5989edb5..0878ab86597b 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -2882,6 +2882,9 @@ static int unix_shutdown(struct socket *sock, int mode)
- 
- 	unix_state_lock(sk);
- 	sk->sk_shutdown |= mode;
-+	if ((sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET) &&
-+	    mode == SHUTDOWN_MASK)
-+		sk->sk_state = TCP_CLOSE;
- 	other = unix_peer(sk);
- 	if (other)
- 		sock_hold(other);
-@@ -2904,12 +2907,10 @@ static int unix_shutdown(struct socket *sock, int mode)
- 		other->sk_shutdown |= peer_mode;
- 		unix_state_unlock(other);
- 		other->sk_state_change(other);
--		if (peer_mode == SHUTDOWN_MASK) {
-+		if (peer_mode == SHUTDOWN_MASK)
- 			sk_wake_async(other, SOCK_WAKE_WAITD, POLL_HUP);
--			other->sk_state = TCP_CLOSE;
--		} else if (peer_mode & RCV_SHUTDOWN) {
-+		else if (peer_mode & RCV_SHUTDOWN)
- 			sk_wake_async(other, SOCK_WAKE_WAITD, POLL_IN);
--		}
- 	}
- 	if (other)
- 		sock_put(other);
--- 
-2.20.1
-
+100% subjective but every time I decided to hide a structure definition
+like this I came to regret it later. The fact there is only one minor
+infraction in drivers poking at members seems to prove this is not in
+fact needed.
