@@ -2,180 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0C8420C32
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 15:02:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F1B2420D8F
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 15:14:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234347AbhJDNDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 09:03:49 -0400
-Received: from relay.sw.ru ([185.231.240.75]:60072 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234010AbhJDNCA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 09:02:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=NXXBfgE0TSkMoIe3yY7lZ8NYjYOprC0AaP84Hxvq3jU=; b=EAY640bekynyJmgRFI0
-        d5Sooeh+TadYX1ZAHSM1FrY4cvgzntLy32GyQLcORbCZmC7yrj47kMydYacoXN3ada4PRlgFP4zPL
-        We4DgN8sI807hnGlhQSw1dWelFajgl7HwiVPL608vA/t1bKXyfk8wlHPfQGLYFSXnwJT4ZZ6byk=;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1mXNZe-004uHs-Me; Mon, 04 Oct 2021 16:00:06 +0300
-From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH net v9] skb_expand_head() adjust skb->truesize incorrectly
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Christoph Paasch <christoph.paasch@gmail.com>,
-        linux-kernel@vger.kernel.org, kernel@openvz.org
-References: <45b3cb13-8c6e-25a3-f568-921ab6f1ca8f@virtuozzo.com>
-Message-ID: <2bd9c638-3038-5aba-1dae-ad939e13c0c4@virtuozzo.com>
-Date:   Mon, 4 Oct 2021 16:00:06 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S236215AbhJDNQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 09:16:21 -0400
+Received: from mx4.uni-regensburg.de ([194.94.157.149]:49464 "EHLO
+        mx4.uni-regensburg.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235157AbhJDNOV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 09:14:21 -0400
+X-Greylist: delayed 357 seconds by postgrey-1.27 at vger.kernel.org; Mon, 04 Oct 2021 09:14:20 EDT
+Received: from mx4.uni-regensburg.de (localhost [127.0.0.1])
+        by localhost (Postfix) with SMTP id 571F26000056
+        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 15:06:33 +0200 (CEST)
+Received: from smtp1.uni-regensburg.de (smtp1.uni-regensburg.de [194.94.157.129])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "smtp.uni-regensburg.de", Issuer "DFN-Verein Global Issuing CA" (not verified))
+        by mx4.uni-regensburg.de (Postfix) with ESMTPS id 383CC600004E
+        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 15:06:33 +0200 (CEST)
+From:   "Andreas K. Huettel" <andreas.huettel@ur.de>
+To:     netdev@vger.kernel.org
+Subject: Intel I350 regression 5.10 -> 5.14 ("The NVM Checksum Is Not Valid")  [8086:1521]
+Date:   Mon, 04 Oct 2021 15:06:31 +0200
+Message-ID: <1823864.tdWV9SEqCh@kailua>
+Organization: Universitaet Regensburg
 MIME-Version: 1.0
-In-Reply-To: <45b3cb13-8c6e-25a3-f568-921ab6f1ca8f@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="nextPart2106358.irdbgypaU6"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christoph Paasch reports [1] about incorrect skb->truesize
-after skb_expand_head() call in ip6_xmit.
-This may happen because of two reasons:
-- skb_set_owner_w() for newly cloned skb is called too early,
-before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
-- pskb_expand_head() does not adjust truesize in (skb->sk) case.
-In this case sk->sk_wmem_alloc should be adjusted too.
+--nextPart2106358.irdbgypaU6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: "Andreas K. Huettel" <andreas.huettel@ur.de>
+To: netdev@vger.kernel.org
+Subject: Intel I350 regression 5.10 -> 5.14 ("The NVM Checksum Is Not Valid")  [8086:1521]
+Date: Mon, 04 Oct 2021 15:06:31 +0200
+Message-ID: <1823864.tdWV9SEqCh@kailua>
+Organization: Universitaet Regensburg
 
-[1] https://lkml.org/lkml/2021/8/20/1082
+Dear all, 
 
-Fixes: f1260ff15a71 ("skbuff: introduce skb_expand_head()")
-Fixes: 2d85a1b31dde ("ipv6: ip6_finish_output2: set sk into newly allocated nskb")
-Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
----
-v9: restored sock_edemux check
-v8: clone non-wmem skb
-v7 (from kuba@):
-    shift more magic into helpers,
-    follow Eric's advice and don't inherit non-wmem skbs for now
-v6: fixed delta,
-    improved comments
-v5: fixed else condition, thanks to Eric
-    reworked update of expanded skb,
-    added corresponding comments
-v4: decided to use is_skb_wmem() after pskb_expand_head() call
-    fixed 'return (EXPRESSION);' in os_skb_wmem according to Eric Dumazet
-v3: removed __pskb_expand_head(),
-    added is_skb_wmem() helper for skb with wmem-compatible destructors
-    there are 2 ways to use it:
-     - before pskb_expand_head(), to create skb clones
-     - after successfull pskb_expand_head() to change owner on extended
-       skb.
-v2: based on patch version from Eric Dumazet,
-    added __pskb_expand_head() function, which can be forced
-    to adjust skb->truesize and sk->sk_wmem_alloc.
----
- include/net/sock.h |  1 +
- net/core/skbuff.c  | 35 ++++++++++++++++++++++-------------
- net/core/sock.c    |  8 ++++++++
- 3 files changed, 31 insertions(+), 13 deletions(-)
+I hope this is the right place to ask, if not please advise me where to go.
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 66a9a90f9558..a547651d46a7 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1695,6 +1695,7 @@ struct sk_buff *sock_wmalloc(struct sock *sk, unsigned long size, int force,
- 			     gfp_t priority);
- void __sock_wfree(struct sk_buff *skb);
- void sock_wfree(struct sk_buff *skb);
-+bool is_skb_wmem(const struct sk_buff *skb);
- struct sk_buff *sock_omalloc(struct sock *sk, unsigned long size,
- 			     gfp_t priority);
- void skb_orphan_partial(struct sk_buff *skb);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 2170bea2c7de..8cb6d360cda5 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1804,30 +1804,39 @@ EXPORT_SYMBOL(skb_realloc_headroom);
- struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
- {
- 	int delta = headroom - skb_headroom(skb);
-+	int osize = skb_end_offset(skb);
-+	struct sock *sk = skb->sk;
- 
- 	if (WARN_ONCE(delta <= 0,
- 		      "%s is expecting an increase in the headroom", __func__))
- 		return skb;
- 
--	/* pskb_expand_head() might crash, if skb is shared */
--	if (skb_shared(skb)) {
-+	delta = SKB_DATA_ALIGN(delta);
-+	/* pskb_expand_head() might crash, if skb is shared. */
-+	if (skb_shared(skb) || !is_skb_wmem(skb)) {
- 		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
- 
--		if (likely(nskb)) {
--			if (skb->sk)
--				skb_set_owner_w(nskb, skb->sk);
--			consume_skb(skb);
--		} else {
--			kfree_skb(skb);
--		}
-+		if (unlikely(!nskb))
-+			goto fail;
-+
-+		if (sk)
-+			skb_set_owner_w(nskb, sk);
-+		consume_skb(skb);
- 		skb = nskb;
- 	}
--	if (skb &&
--	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
--		kfree_skb(skb);
--		skb = NULL;
-+	if (pskb_expand_head(skb, delta, 0, GFP_ATOMIC))
-+		goto fail;
-+
-+	if (sk && skb->destructor != sock_edemux) {
-+		delta = skb_end_offset(skb) - osize;
-+		refcount_add(delta, &sk->sk_wmem_alloc);
-+		skb->truesize += delta;
- 	}
- 	return skb;
-+
-+fail:
-+	kfree_skb(skb);
-+	return NULL;
- }
- EXPORT_SYMBOL(skb_expand_head);
- 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 62627e868e03..1932755ae9ba 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2227,6 +2227,14 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
- }
- EXPORT_SYMBOL(skb_set_owner_w);
- 
-+bool is_skb_wmem(const struct sk_buff *skb)
-+{
-+	return skb->destructor == sock_wfree ||
-+	       skb->destructor == __sock_wfree ||
-+	       (IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree);
-+}
-+EXPORT_SYMBOL(is_skb_wmem);
-+
- static bool can_skb_orphan_partial(const struct sk_buff *skb)
- {
- #ifdef CONFIG_TLS_DEVICE
+I have a new Dell machine with both an Intel on-board ethernet controller 
+([8086:15f9]) and an additional 2-port extension card ([8086:1521]). 
+
+The second adaptor, a "DeLock PCIe 2xGBit", worked fine as far as I could 
+see with Linux 5.10.59, but fails to initialize with Linux 5.14.9.
+
+dilfridge ~ # lspci -nn
+[...]
+01:00.0 Ethernet controller [0200]: Intel Corporation I350 Gigabit Network Connection [8086:1521] (rev ff)
+01:00.1 Ethernet controller [0200]: Intel Corporation I350 Gigabit Network Connection [8086:1521] (rev ff)
+[...]
+
+dilfridge ~ # dmesg|grep igb
+[    2.069286] igb: Intel(R) Gigabit Ethernet Network Driver
+[    2.069288] igb: Copyright (c) 2007-2014 Intel Corporation.
+[    2.069305] igb 0000:01:00.0: can't change power state from D3cold to D0 (config space inaccessible)
+[    2.069624] igb 0000:01:00.0 0000:01:00.0 (uninitialized): PCIe link lost
+[    2.386659] igb 0000:01:00.0: PHY reset is blocked due to SOL/IDER session.
+[    4.115500] igb 0000:01:00.0: The NVM Checksum Is Not Valid
+[    4.133807] igb: probe of 0000:01:00.0 failed with error -5
+[    4.133820] igb 0000:01:00.1: can't change power state from D3cold to D0 (config space inaccessible)
+[    4.134072] igb 0000:01:00.1 0000:01:00.1 (uninitialized): PCIe link lost
+[    4.451602] igb 0000:01:00.1: PHY reset is blocked due to SOL/IDER session.
+[    6.180123] igb 0000:01:00.1: The NVM Checksum Is Not Valid
+[    6.188631] igb: probe of 0000:01:00.1 failed with error -5
+
+Any advice on how to proceed? Willing to test patches and provide additional debug info.
+
+Thanks,
+Andreas
+
 -- 
-2.31.1
+PD Dr. Andreas K. Huettel
+Institute for Experimental and Applied Physics
+University of Regensburg
+93040 Regensburg
+Germany
+
+tel. +49 151 241 67748 (mobile)
+tel. +49 941 943 1618 (office)
+e-mail andreas.huettel@ur.de
+http://www.akhuettel.de/
+http://www.physik.uni-r.de/forschung/huettel/
+--nextPart2106358.irdbgypaU6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQKTBAABCgB9FiEE6W4INB9YeKX6Qpi1TEn3nlTQogYFAmFa/FdfFIAAAAAALgAo
+aXNzdWVyLWZwckBub3RhdGlvbnMub3BlbnBncC5maWZ0aGhvcnNlbWFuLm5ldEU5
+NkUwODM0MUY1ODc4QTVGQTQyOThCNTRDNDlGNzlFNTREMEEyMDYACgkQTEn3nlTQ
+ogaCRhAAt5c37Fz+F5EMCfZPmWvKHLHyd2MuS8YmsMnnY+HOH5Vq4VArhJckDAOX
+s+Z5PjcWl+PjDw+UlbOtKZJ58hangOV/rXg1ungicFl1e3Epg+uKqw2WYLwf3L3g
+5Dyac9Mwy6rkrtpj0a0zxqRVhQBjmaaXWJGNJzLwGmn6piclgtt7m5llm1buunU2
+cszkRNmTFemi3c5guVl7jqYjsXR5R7X93i0uHKqH36n0HovEZMaudnbW9O/Dh7Kz
+SDpnfwBsi8x1rsuibJ1ejszkx09qmfRHPhs7OfF+a039RJH77nr/OFAuF9/et1Hh
+V8jg2TgYL3zLiTcuj8/Sb7Lm2n+OMZBEIQCDl/WTpPRzQuRQWE97oUtFEtxtzW61
+BDMMNNuhhfvZPgsJmHLmEcu6O91ncrDOxFJAkSlDh7o5ANGF99X2nsv1peZS98Da
+VkiKJGJ/HX2zWLBr5TyrnpQ1jdj5Yeq25dVzoNIUSUjwntALtglg9Vb+OxeBDFFz
+4xSS/VjfNwkRCSohnj5Wb7viZfAqxASWtkywrQ08Jsxz6G4Io4Xufik4iHzgWtqM
+FD3lE+Khc3xc/NEtei6+yvUVjm9WcUSML/YfbPULzXYmFzLQPRNo4IQScBR4dVfE
+Ac2Je+DLQCGCcNzhdAh8oFz/zwGQrIwRbwW9+ypYxs7VfcGyayM=
+=5402
+-----END PGP SIGNATURE-----
+
+--nextPart2106358.irdbgypaU6--
+
+
 
