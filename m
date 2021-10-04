@@ -2,156 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8217421035
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 15:40:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB0C8420C32
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 15:02:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237918AbhJDNlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 09:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35872 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238232AbhJDNkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 09:40:09 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD4EC02980D
-        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 06:00:30 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mXNZO-0005B6-5Z; Mon, 04 Oct 2021 14:59:50 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mXNZJ-0000Lr-Cz; Mon, 04 Oct 2021 14:59:45 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1mXNZG-0000cu-9R; Mon, 04 Oct 2021 14:59:42 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     linux-pci@vger.kernel.org, kernel@pengutronix.de,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        id S234347AbhJDNDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 09:03:49 -0400
+Received: from relay.sw.ru ([185.231.240.75]:60072 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234010AbhJDNCA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 09:02:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
+        :From; bh=NXXBfgE0TSkMoIe3yY7lZ8NYjYOprC0AaP84Hxvq3jU=; b=EAY640bekynyJmgRFI0
+        d5Sooeh+TadYX1ZAHSM1FrY4cvgzntLy32GyQLcORbCZmC7yrj47kMydYacoXN3ada4PRlgFP4zPL
+        We4DgN8sI807hnGlhQSw1dWelFajgl7HwiVPL608vA/t1bKXyfk8wlHPfQGLYFSXnwJT4ZZ6byk=;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1mXNZe-004uHs-Me; Mon, 04 Oct 2021 16:00:06 +0300
+From:   Vasily Averin <vvs@virtuozzo.com>
+Subject: [PATCH net v9] skb_expand_head() adjust skb->truesize incorrectly
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Michael Buesch <m@bues.ch>,
-        "Oliver O'Halloran" <oohall@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, oss-drivers@corigine.com
-Subject: [PATCH v6 07/11] PCI: Replace pci_dev::driver usage that gets the driver name
-Date:   Mon,  4 Oct 2021 14:59:31 +0200
-Message-Id: <20211004125935.2300113-8-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211004125935.2300113-1-u.kleine-koenig@pengutronix.de>
-References: <20211004125935.2300113-1-u.kleine-koenig@pengutronix.de>
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Christoph Paasch <christoph.paasch@gmail.com>,
+        linux-kernel@vger.kernel.org, kernel@openvz.org
+References: <45b3cb13-8c6e-25a3-f568-921ab6f1ca8f@virtuozzo.com>
+Message-ID: <2bd9c638-3038-5aba-1dae-ad939e13c0c4@virtuozzo.com>
+Date:   Mon, 4 Oct 2021 16:00:06 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=x5Y9j5QPtBpKPfcAJK/OT7BRgKvI7pSChd5/rmmq6Xw=; m=nEqg0QrmbDfsrPkKSQiKF1eTL+0Rkaib5pkx/JtL0jE=; p=P030KPvGBgn0wACiWmlhwa6Q6u7mafsHSYpCChEQFbg=; g=d855fa8a2569029e17368da8c0bf9fc2e6496586
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmFa+p8ACgkQwfwUeK3K7Akgawf/Xx3 8d1n/PRIuyXwavQQ5ZVCnDnLvAZf8+W7tgrZMDmQqmxTiRWDEtMW9LEabr1RZmRaiCb+iYFFZVNEL jDL5v6WZi1ZzNdk66VUUJjjCglQ8U9tTPobkm/evwZTZCDkfhr7UoYSUZqL8LIbHsvtW5onQJdi+y d7dmNzs7w6Zc9mvpoxyA76r98YmB/hgU413bLQ5g9Jhw2orQ8bQkguQZNIEhu9xR8q+Yco7Q8f0IG QRXdirMMHXks9FkjFqHywZfNwjh72LrULqxY9Difn0Wsbov5UijaUM1BzClFn9RQMu+d7iWK6T4E9 796RuLTiXS0J78uftSGRmBl7z6UHyQg==
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <45b3cb13-8c6e-25a3-f568-921ab6f1ca8f@virtuozzo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct pci_dev::driver holds (apart from a constant offset) the same
-data as struct pci_dev::dev->driver. With the goal to remove struct
-pci_dev::driver to get rid of data duplication replace getting the
-driver name by dev_driver_string() which implicitly makes use of struct
-pci_dev::dev->driver.
+Christoph Paasch reports [1] about incorrect skb->truesize
+after skb_expand_head() call in ip6_xmit.
+This may happen because of two reasons:
+- skb_set_owner_w() for newly cloned skb is called too early,
+before pskb_expand_head() where truesize is adjusted for (!skb-sk) case.
+- pskb_expand_head() does not adjust truesize in (skb->sk) case.
+In this case sk->sk_wmem_alloc should be adjusted too.
 
-Acked-by: Simon Horman <simon.horman@corigine.com> (for NFP)
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+[1] https://lkml.org/lkml/2021/8/20/1082
+
+Fixes: f1260ff15a71 ("skbuff: introduce skb_expand_head()")
+Fixes: 2d85a1b31dde ("ipv6: ip6_finish_output2: set sk into newly allocated nskb")
+Reported-by: Christoph Paasch <christoph.paasch@gmail.com>
+Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
 ---
- drivers/crypto/hisilicon/qm.c                        | 2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c   | 2 +-
- drivers/net/ethernet/marvell/prestera/prestera_pci.c | 2 +-
- drivers/net/ethernet/mellanox/mlxsw/pci.c            | 2 +-
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 3 ++-
- 5 files changed, 6 insertions(+), 5 deletions(-)
+v9: restored sock_edemux check
+v8: clone non-wmem skb
+v7 (from kuba@):
+    shift more magic into helpers,
+    follow Eric's advice and don't inherit non-wmem skbs for now
+v6: fixed delta,
+    improved comments
+v5: fixed else condition, thanks to Eric
+    reworked update of expanded skb,
+    added corresponding comments
+v4: decided to use is_skb_wmem() after pskb_expand_head() call
+    fixed 'return (EXPRESSION);' in os_skb_wmem according to Eric Dumazet
+v3: removed __pskb_expand_head(),
+    added is_skb_wmem() helper for skb with wmem-compatible destructors
+    there are 2 ways to use it:
+     - before pskb_expand_head(), to create skb clones
+     - after successfull pskb_expand_head() to change owner on extended
+       skb.
+v2: based on patch version from Eric Dumazet,
+    added __pskb_expand_head() function, which can be forced
+    to adjust skb->truesize and sk->sk_wmem_alloc.
+---
+ include/net/sock.h |  1 +
+ net/core/skbuff.c  | 35 ++++++++++++++++++++++-------------
+ net/core/sock.c    |  8 ++++++++
+ 3 files changed, 31 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index 369562d34d66..8f361e54e524 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -3085,7 +3085,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 	};
- 	int ret;
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 66a9a90f9558..a547651d46a7 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1695,6 +1695,7 @@ struct sk_buff *sock_wmalloc(struct sock *sk, unsigned long size, int force,
+ 			     gfp_t priority);
+ void __sock_wfree(struct sk_buff *skb);
+ void sock_wfree(struct sk_buff *skb);
++bool is_skb_wmem(const struct sk_buff *skb);
+ struct sk_buff *sock_omalloc(struct sock *sk, unsigned long size,
+ 			     gfp_t priority);
+ void skb_orphan_partial(struct sk_buff *skb);
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 2170bea2c7de..8cb6d360cda5 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1804,30 +1804,39 @@ EXPORT_SYMBOL(skb_realloc_headroom);
+ struct sk_buff *skb_expand_head(struct sk_buff *skb, unsigned int headroom)
+ {
+ 	int delta = headroom - skb_headroom(skb);
++	int osize = skb_end_offset(skb);
++	struct sock *sk = skb->sk;
  
--	ret = strscpy(interface.name, pdev->driver->name,
-+	ret = strscpy(interface.name, dev_driver_string(&pdev->dev),
- 		      sizeof(interface.name));
- 	if (ret < 0)
- 		return -ENAMETOOLONG;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 7ea511d59e91..f279edfce3f1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -606,7 +606,7 @@ static void hns3_get_drvinfo(struct net_device *netdev,
- 		return;
+ 	if (WARN_ONCE(delta <= 0,
+ 		      "%s is expecting an increase in the headroom", __func__))
+ 		return skb;
+ 
+-	/* pskb_expand_head() might crash, if skb is shared */
+-	if (skb_shared(skb)) {
++	delta = SKB_DATA_ALIGN(delta);
++	/* pskb_expand_head() might crash, if skb is shared. */
++	if (skb_shared(skb) || !is_skb_wmem(skb)) {
+ 		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
+ 
+-		if (likely(nskb)) {
+-			if (skb->sk)
+-				skb_set_owner_w(nskb, skb->sk);
+-			consume_skb(skb);
+-		} else {
+-			kfree_skb(skb);
+-		}
++		if (unlikely(!nskb))
++			goto fail;
++
++		if (sk)
++			skb_set_owner_w(nskb, sk);
++		consume_skb(skb);
+ 		skb = nskb;
  	}
+-	if (skb &&
+-	    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
+-		kfree_skb(skb);
+-		skb = NULL;
++	if (pskb_expand_head(skb, delta, 0, GFP_ATOMIC))
++		goto fail;
++
++	if (sk && skb->destructor != sock_edemux) {
++		delta = skb_end_offset(skb) - osize;
++		refcount_add(delta, &sk->sk_wmem_alloc);
++		skb->truesize += delta;
+ 	}
+ 	return skb;
++
++fail:
++	kfree_skb(skb);
++	return NULL;
+ }
+ EXPORT_SYMBOL(skb_expand_head);
  
--	strncpy(drvinfo->driver, h->pdev->driver->name,
-+	strncpy(drvinfo->driver, dev_driver_string(&h->pdev->dev),
- 		sizeof(drvinfo->driver));
- 	drvinfo->driver[sizeof(drvinfo->driver) - 1] = '\0';
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 62627e868e03..1932755ae9ba 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2227,6 +2227,14 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
+ }
+ EXPORT_SYMBOL(skb_set_owner_w);
  
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_pci.c b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-index a250d394da38..a8f007f6dad2 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-@@ -720,7 +720,7 @@ static int prestera_fw_load(struct prestera_fw *fw)
- static int prestera_pci_probe(struct pci_dev *pdev,
- 			      const struct pci_device_id *id)
++bool is_skb_wmem(const struct sk_buff *skb)
++{
++	return skb->destructor == sock_wfree ||
++	       skb->destructor == __sock_wfree ||
++	       (IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree);
++}
++EXPORT_SYMBOL(is_skb_wmem);
++
+ static bool can_skb_orphan_partial(const struct sk_buff *skb)
  {
--	const char *driver_name = pdev->driver->name;
-+	const char *driver_name = dev_driver_string(&pdev->dev);
- 	struct prestera_fw *fw;
- 	int err;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index 13b0259f7ea6..8f306364f7bf 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -1876,7 +1876,7 @@ static void mlxsw_pci_cmd_fini(struct mlxsw_pci *mlxsw_pci)
- 
- static int mlxsw_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- {
--	const char *driver_name = pdev->driver->name;
-+	const char *driver_name = dev_driver_string(&pdev->dev);
- 	struct mlxsw_pci *mlxsw_pci;
- 	int err;
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index 0685ece1f155..1de076f55740 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -202,7 +202,8 @@ nfp_get_drvinfo(struct nfp_app *app, struct pci_dev *pdev,
- {
- 	char nsp_version[ETHTOOL_FWVERS_LEN] = {};
- 
--	strlcpy(drvinfo->driver, pdev->driver->name, sizeof(drvinfo->driver));
-+	strlcpy(drvinfo->driver, dev_driver_string(&pdev->dev),
-+		sizeof(drvinfo->driver));
- 	nfp_net_get_nspinfo(app, nsp_version);
- 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
- 		 "%s %s %s %s", vnic_version, nsp_version,
+ #ifdef CONFIG_TLS_DEVICE
 -- 
-2.30.2
+2.31.1
 
