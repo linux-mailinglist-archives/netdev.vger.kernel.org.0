@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D79E6421720
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 21:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01732421722
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 21:16:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238688AbhJDTRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 15:17:44 -0400
+        id S238696AbhJDTRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 15:17:47 -0400
 Received: from mail-eopbgr60088.outbound.protection.outlook.com ([40.107.6.88]:55525
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236024AbhJDTRj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 15:17:39 -0400
+        id S238501AbhJDTRk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 15:17:40 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EQNUBS3akYODomCiN3x1ac/YYBd99+Px7xupYHvHCY1zyo+vtY8YMWxNspHp66hxfg96cZucw4G0XPBWcx5uqkzm9M86RjBVEe03ETiOnQ06PBsd7WwM7Y4jTegLyk1QRsaeTcbS2kMvyHDcjGp5pKKG3bJcSyeUKVOtu7n3zdrZcK87vlcx9k2QstDF4df3FdZfUIug99v/ek9pmEXupPF87wcCWFUZRJDr5zT5NvtpUCASFPwxEI4lbg6J3xNCvAKyyW5LHiFJSYziCIQGKylwhdQ69nFcU3bgZDAcCCecHl6TSQhaYpF4414eqj7qIIcO3RcBYjk1fpCTfWNiEA==
+ b=cGC8264jgEkkgBtrFWqKryk9wttea7ANKl4pxOg+UxpxYoDXmugIXThaJpxyp+EPKXxsucMy71Dw3OIsjCusAyL7d1CLvB2Ujgsd1gNoWDl6pmyVShJDNq4j9BDWG6LKXAgyvaR4gO2ws9XRGGdPdM2KPhAk3vbWNnUslqsL+RF7PjnbYWl3uYbHCOLuG1BzVNvXZLoF+452zPUSZLu1KxhjzUnjKySPnBEwuRKXEn24/o79WsQRw26jvUKpqgRXMcWEgxy7Dy+pBkR0xHIer51n4xb/sMd2u12kYVnoX2meqOR3B7lLNYlgqLi6t0855f1fOh1I7aMLEAGJYfITRQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PUISQ9T9H/VOPco1fyucgWrbR4Z0SCRT5jht9oSvTOM=;
- b=k1bBmSkYTEj+vcejWca7SXI1Mrf8LwEMXtuyqrtsYa5dwHwWdcdNmiWq1L/L+qraIGjoGw6ZiNlUl0LDyeTUjOPdlkazn59wfQ97GRM9qW6stx5u/obwS39ay7WceC/aGC17diLiswrABzZgyngLFieZL9mmvH2Sp63Fgbrl+wY4LDvPEgh5fLhrL/KImJSHiFfV4A/rpWuwx7uluSjZNBSNB7k068ZqHl6nrTW9pGWrX0eHfhbh9hiiuRhNiN7brtL+/vqqT3p5nGEJLGMRZgwrphMbf1/jcazr3ndBr2S3W4VPT7APdC5ECiGiwIAQrRIInkM43xN5HxG2kyMN2w==
+ bh=p9UlkUu6sxJFXBIxo3jZuwWY1oxP/LYIeHhe83CUWic=;
+ b=P8NteS0acuSPhwwEjlJSRBJVI/0DQorrtqw4lWGXrgoVVwg5a8x7SXjbOqynVil177KRnSEILCMbNPdPXM1AZL4zdaAQX+pbASxOzN63WKitz3d9gUge3AQ5hejCE8PbkFFmYKBTLlz+qRLiOVS1CLuYm9nWLoqhIQP5jWCMXux+YybEwQs/XY3+PobYllqKgI4iqs3PqppKyN8FDCjc+SQ3hZ+656siNus6KO+37HXvO3MgQyn9skGScF/MAEoVFe86lQJ8oiGtwsq7nL+THS9w2RuKtcF1NfmWf2EcJYJb1Lqmf63DfeqJVjKSE0iKh6cl/P3YXiH6PSEJaNtYRw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PUISQ9T9H/VOPco1fyucgWrbR4Z0SCRT5jht9oSvTOM=;
- b=vexHImE1A2+TBYWlZhXVHSnaOjPge8dooKy+lFOIkvzFoNgQqwFd9Di5H1kll+MnffarQ5MW71wYsNvrmZVKisE2Zn0UIXtGGuz+nZ2cHW7T+tYfYS0VWYNx001lf9SOqbEa5bMStTtcRms+r4dxAxMyIt4zwzOBC59oNYMbhIY=
+ bh=p9UlkUu6sxJFXBIxo3jZuwWY1oxP/LYIeHhe83CUWic=;
+ b=sgnWL/R/1K5hblIIQFI746lHLNESk9aAAn4IrHVk4kJ1XGqmNnCaYdK42vXfcXXTAvXv6bqg5Hidjp6liId12bKsKxLzZYLvQTDk7bffiEL8n25oDeJ5vaWsKpFAtRGFgde/PJf7l2PzhRQImG1OLK2t9pJgZvPCGLIQ74BHwcc=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
  by DB9PR03MB7434.eurprd03.prod.outlook.com (2603:10a6:10:22c::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.19; Mon, 4 Oct
- 2021 19:15:48 +0000
+ 2021 19:15:50 +0000
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::a9aa:f363:66e:fadf]) by DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::a9aa:f363:66e:fadf%6]) with mapi id 15.20.4566.022; Mon, 4 Oct 2021
- 19:15:48 +0000
+ 19:15:50 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
@@ -45,10 +45,11 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         Sean Anderson <sean.anderson@seco.com>,
+        Michal Simek <michal.simek@xilinx.com>,
         Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-Subject: [RFC net-next PATCH 01/16] dt-bindings: net: Add pcs property
-Date:   Mon,  4 Oct 2021 15:15:12 -0400
-Message-Id: <20211004191527.1610759-2-sean.anderson@seco.com>
+Subject: [RFC net-next PATCH 02/16] dt-bindings: net: Add binding for Xilinx PCS
+Date:   Mon,  4 Oct 2021 15:15:13 -0400
+Message-Id: <20211004191527.1610759-3-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211004191527.1610759-1-sean.anderson@seco.com>
 References: <20211004191527.1610759-1-sean.anderson@seco.com>
@@ -58,83 +59,164 @@ X-ClientProxiedBy: MN2PR08CA0023.namprd08.prod.outlook.com
  (2603:10b6:208:239::28) To DB7PR03MB4523.eurprd03.prod.outlook.com
  (2603:10a6:10:19::27)
 MIME-Version: 1.0
-Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR08CA0023.namprd08.prod.outlook.com (2603:10b6:208:239::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.17 via Frontend Transport; Mon, 4 Oct 2021 19:15:46 +0000
+Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR08CA0023.namprd08.prod.outlook.com (2603:10b6:208:239::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.17 via Frontend Transport; Mon, 4 Oct 2021 19:15:48 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 84aa43d4-f72d-49bc-8864-08d9876b5f4a
+X-MS-Office365-Filtering-Correlation-Id: a5778b41-6ec6-4122-5118-08d9876b6072
 X-MS-TrafficTypeDiagnostic: DB9PR03MB7434:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB9PR03MB74342653C969DDCFB92E823C96AE9@DB9PR03MB7434.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
+X-Microsoft-Antispam-PRVS: <DB9PR03MB743461D8355B9544BE8EDFC596AE9@DB9PR03MB7434.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ihs9FU0ikdDxcNX2txzrar0bXj3mMTCN+L9QwOLt47NNa4Ndx46qQWjJzYSrvysYiLY0Oi0vRLFSICQn01cPJe7Hp0bkMhS4y961yntjyRLi7YZSNr3V7jctLECdX8PGWhC9TpdAybdNLyUWPl1U7EVbCQzCGFAhI0axC7e+rlOUK10X+huAXPAbYTlI49AhtOQrV2xTRgLTOROoWUeKdpQOkLymyN9oYs0JNFwhmXKRUNYzAxEmIAR+V8jpVroqsjNmElXknWA4bNjlu6ujFsjIspzyvGWJ2Eeh4Gz5HNyVjFmDDfuCwZru4yc3g6GaEqXJrsjijdHabeVfc8Jl2jpW3a8tqavoI8Ny6VKYUaxa2qQwx3fmCP4G7enpe1xThG2tE0AwezIUGKOa/NIxxi9w1ayAAQpraCJfPZPP02g9+wyQ3ndOXkFGfZa0a6SFKvKDb1bE277KCv1d6mHjhVmJ5Am7+VDQX9t+ZnkN1STj2YzRvc8BTZP/HFsblf+OuZFsUwn0Z742lW5lFv+/rU/GHHMYk42QPINx+H5iUaiYTx2uXFZvQArP3mXavWj0WskZHb8MCD/v1kMJHyE7h4wnFAe73kp/VWOW68DyF6jxjIAyriSitD/PGNrIHFW97js2+Wgx0CA30iIFvGwb/7bSajDDK4dq0xRaNzJSo82odm8n4OYQwI1IalDUEhFZuW2vxi/78egrsaT0iGMe4w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(1076003)(86362001)(4326008)(44832011)(6486002)(5660300002)(66946007)(508600001)(38350700002)(52116002)(956004)(66556008)(66476007)(38100700002)(110136005)(6506007)(2906002)(186003)(8936002)(316002)(8676002)(4744005)(2616005)(54906003)(26005)(6666004)(36756003)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 3KaFzLR6x5stWllMcAygW4xopQ4LhduUiXQUJqBcdAs09PSECv2LXVQEtttw3bh/iw1wf7HZbzRJFjNsIqQsus7sWnqAnm1wf9bQb3lwV6MDVc0raeKDnBXilkA1RUP3y9VaDsB0Yl3XOFv4G0R7kuqXaXcPjKqtkSxIdMaAI78loIbqP/39WEF22cM3aqrXl96hnJ0U+sJ+FoCi73hHn9/RID+ooaWqkdfawuac9o5+ZRNyuG8X6WMooZdqlo1VbdCFyY/5qYGS9Qa92RogBnhtlaqTr8hjt0BWo3TEn0EhkR26/YomqbBY/QMCBVxktOABjA6n9U8CgFoAhJ8GApmQTgSU3UhSQw+9rN3hL80u6/XyFUZv4QeUyy+7UUTNcZxXf6GXztK/gMwYx5dnykLC7k+NVuqOQ3r9M9FeWbFca+S/nvB5nvgjCUwx/j6lTVhbUI0Z0Pmkk88pFIiX2w3ampgvFuza5baftbW4IebfoYS49d/xaj23kv53KvZPB1LdHRk6i1D6QRIQ2hvqzVzreGONJwP9yPylvcjdJlMFvK4MYuSLIWt+vquFL2RAQ44+iLk7mOMgL1FwFwSXH0qxan/IM56r7dOg8y/s8fXBv+h5dW6jzLlhVBAUcaynBP0kAMTdNgVchcBqyJOmmqPTgwPBYsBx2+o4Gu1uEe3bX4SmZNC5WYx/B8STzlt0ciifPDJ/aWK+y+4/xgs17i9yehtvVLZZuUQh7W2xMNh2uz73rskr4xvSU0TJxR0Ejh5+5nydDIPuRiVch4nc6o4gZfAcX0Yv95YFke9KN2A=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(1076003)(86362001)(4326008)(44832011)(6486002)(5660300002)(66946007)(508600001)(38350700002)(83380400001)(52116002)(956004)(66556008)(966005)(66476007)(38100700002)(110136005)(6506007)(2906002)(186003)(8936002)(316002)(8676002)(2616005)(7416002)(54906003)(26005)(6666004)(36756003)(6512007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UqWHr7xH6EFELpxIRTYb+RqrakRl5thObZfKHXrt/NqssCqiFSU99ZVyFi5f?=
- =?us-ascii?Q?7wKZA0ZAQQFaSukefA94zYAgdPYcz/YOI7wr3ZMwBmqtZG60uPQeFpfnXnMa?=
- =?us-ascii?Q?lYECsjczOfFOIrLminDGs/dyajPQ8xkeZgA/q0M5dYz0lMfWUEJUq8ZuPkpN?=
- =?us-ascii?Q?P9zAYcT49ic0TNb5F5m7+QZZmCXMTq1Lh31hrXNx+f10iwqc1EJKW9Z+d6hS?=
- =?us-ascii?Q?mUvFbsXm97nJJf5gi87Sz/sKHXEhPh1mBE6uHWhpOHMlQ2ixqbql/aBvbTo9?=
- =?us-ascii?Q?f8vu6Z6Qy0HPyiPU0r4s5RQEWjfsXA1zHyLs4MNOHuj/XuQtOkiKux6qbD0j?=
- =?us-ascii?Q?z7Etgwdn6DLEHHWL8ZrI3NsBgFh0GQsGVifl3H4dPG4ZYlF9mitPzx/swetr?=
- =?us-ascii?Q?T5DwTOjTNgHkZuzY4rAmWm/uTOcOEwrXqbGePhg4SwWTpu8F8jj2RGlF7+y9?=
- =?us-ascii?Q?6X543GJjZ0+MciXiXLbDhr+XhjpiyX1ikkoBRUfOtkUpc0n+lRH0OI5uVsC5?=
- =?us-ascii?Q?1s5YS8SOWSCI9ArODJ8slZWcndicj9H45K3+7wBzm43ABn9c93sF27myTVYU?=
- =?us-ascii?Q?yQCWjetIde2j7vzteU07MV/Hd21dXb5SQTTgn0SiA3e9XI3oQdJQfGpufBJa?=
- =?us-ascii?Q?YjweHIS94+HHzyiFp7PhuZu0s4+CAvNrkVfok3xmRSGuIJX7geoFECHsJ/2g?=
- =?us-ascii?Q?dtzSe+ys83BtDfRdsYMqut1Tnws/Q/cveiFA9Y/zh6mB7kLhzMpiEsq+XfJB?=
- =?us-ascii?Q?2C/ctiU5qdq3UweQX8PjAu+w34zW7SAL5VvBhsp/q4i5viubwTJrf8A4c942?=
- =?us-ascii?Q?Va2CHZ7rusIrfFyP68V9KExWYZZlX/MjuUsQZY4P/ChNqbYCte2bkOgWxvNQ?=
- =?us-ascii?Q?CeWWag0KA/OAfvr0+ZXsO8c+64FMyIpVtBMqFBdX99KwxRwzr0cM1naFJ8vE?=
- =?us-ascii?Q?R9yInIsSH8IWYimii9/ZoYyz3Tc/eAys6118ceiETsiAAFL2Xclxu8qB45gm?=
- =?us-ascii?Q?JWs02mVeUOZhtUJEm2+BmFR6AN5sE7p1Xn+MEmmV1y47PtvCqnCd/jipgEtU?=
- =?us-ascii?Q?Wb4kVgWOUzjFfdSEluxivV8z6tQDRxyMJFUG7S0QaOj5b3yHn5gZAZO5oYXN?=
- =?us-ascii?Q?GkQJPIlOkgYG/W5So8JLcFN4lCkTUPZwQIreruBx+f3qX1HiZFVRUowAVy63?=
- =?us-ascii?Q?oZto3m+ptL6j5Ww0FXt8cKPAQTshYlfcOxx6GHSEwjidXSABOYIsQdNZlRdF?=
- =?us-ascii?Q?S7D1aBOdpHWWeyE7b7r6ddxwg6nLGiLK/NUg3tjtoHCBXTkadni4hMJwubZd?=
- =?us-ascii?Q?D+TFwi8I3l6S1wxbqNXpl4ff?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/rapiSpOwr3F8Y/BspyboF+V+nl9G4QVH+kNj+LFdptPOllesv62JK7EGXxq?=
+ =?us-ascii?Q?2XmxBg1gC6zzzkBDdNuvbEDLMzayszg1GsRI83z9PlxIygXckL3PmqQinB+3?=
+ =?us-ascii?Q?Rpl3bE1M4ACquVIDBxGOcv0SU7l0N2mKTzIFnqu949sLqGComhL4kttsQZMj?=
+ =?us-ascii?Q?URLgts0uI/JP1NnSFmrOi2LMq3SWBiQBZRE+kn3qjb6tRoE30rI0dRbabsmk?=
+ =?us-ascii?Q?I5GvKfMByaK2yYM0UmYdMb7vmtyC5q8vZ0bpIj45cYaNr+F9QgRVsYh+qkT8?=
+ =?us-ascii?Q?5bJhTDLec55DsMlPQmUKTulFQbgM1It4YXHlFe/emmorIK4H8cjDmKKdquUH?=
+ =?us-ascii?Q?GyFjI7MEh+hIlvyv7McHIUdGc5NlNe42mHU2Xx/oaCQZAHnHfwrTq/TD3joQ?=
+ =?us-ascii?Q?Ue8HNNzCC3YF7diuii8HGci61DVFmDJP+Pkt3ObP9O/pbzkLQYBLbn9SpIDr?=
+ =?us-ascii?Q?gM/JT8eG9ZT0XzijdA/LPdjTx79MBOeLvnPJ8VBrbfgtpXeBFWmoYhEAzc2N?=
+ =?us-ascii?Q?EvY0kvGw23JClq0ajLUKrqEWsRBh/gWUm0dMFTAQzjkGQ6Pf7Z8ds+fKRgZT?=
+ =?us-ascii?Q?Y40O/b+fNGP/kPevQaeGSR+SzMcineVRPH8OI4LJD6hHTnEC1ophHrcp2Cew?=
+ =?us-ascii?Q?OuodCyF95FAfG0rWgHrMdIoKl6MOV5Irkg8OBoQ4fKazdluvH9uGTeWB+gu0?=
+ =?us-ascii?Q?2IzuONkV8xAgDg54BuxWePJG2HokW8KC/EtqcObqW3WsxAGDd9BaEkiOHxzc?=
+ =?us-ascii?Q?OX+RKFaNb2ebByVhb7uYiRlsGtapHHBPUSsxB4axxTkVv9FFBuf5Pyj8qLnv?=
+ =?us-ascii?Q?9g/KewKTtxpWdnNyqZvfxn4zq/D2uosAVuw0GjqewX/nttfScqUkOs/IOJUc?=
+ =?us-ascii?Q?fxyvYxJrs8/zrRdSi/hj5+PT8RMTjFatoDwOHOlhapR7Qv1VPbg1fYXKOOaX?=
+ =?us-ascii?Q?XW9JXZuhlSQ/LgC9mrwdnj00OO0XwPLncNk7EoP+Zcl/U49+i1KeyXcxfOCT?=
+ =?us-ascii?Q?6i0DZuDPcoqYUP7VvZe6EM4+73FgmbUr0B5stYnOFDcHH+k6rNRhXVDuYjrj?=
+ =?us-ascii?Q?Kg2KveHWZ2c4yr+V4zxUtsbAnawGd0XstA5S09F+nZsqhQkzhx3JJPhIzdrn?=
+ =?us-ascii?Q?/xtZ9plyMcfcKCMG3VitxvaaKcnE3Fywox3rFuJfF6VkZ6STYFTstKPT8OPA?=
+ =?us-ascii?Q?KaoVRt8MmfF6dqcE/iRhd8BJ38AK6BY0U94fv64TKEg+3OgDmXO5MJHatr0k?=
+ =?us-ascii?Q?fFQ7uJUwvdKAT075Te7P9MPOqZLvnc3ViwnKSiov20/epaPKem2NfL54xFxf?=
+ =?us-ascii?Q?IuNS6NRkm4XY02a9x2Q1LZMu?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 84aa43d4-f72d-49bc-8864-08d9876b5f4a
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5778b41-6ec6-4122-5118-08d9876b6072
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2021 19:15:48.2481
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2021 19:15:50.1606
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4MFKdNqQCzO/CMmw2S5kbLzpdJwsFKcTPvwAvQn8G4A16Z4VISkuQOigCVCJLlnOyuJQgCLVbxj0TwDxdrCPDw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3MQpZJf4zouuU9jbiSIXKBsImwZOZbFfg0QS8PbtfeOC2pwHSmV98P3ZJm0TCJfCkZegrxdAhxMugww9q2DNzw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR03MB7434
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a property for associating PCS devices with ethernet controllers.
-Because PCS has no generic analogue like PHY, I have left off the
--handle suffix.
+This adds a binding for the Xilinx 1G/2.5G Ethernet PCS/PMA or SGMII
+LogiCORE IP. This device is a soft device typically used to adapt between
+GMII and SGMII or 1000BASE-X (in combination with a suitable SERDES). The
+standard property is roughly analogous to the interface property of
+ethernet controllers, except that it has an additional value used to
+indicate that dynamic switching is supported. Note that switching is
+supported only between SGMII and 1000BASE-X, and only if the appropriate
+parameter is set when the device is synthesized. The property name was
+chosen to align with the terminology in the datasheet. I also considered
+"mdi", but that is a bit of a misnomer in the case of SGMII.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
- .../devicetree/bindings/net/ethernet-controller.yaml         | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../devicetree/bindings/net/xilinx,pcs.yaml   | 83 +++++++++++++++++++
+ 1 file changed, 83 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/xilinx,pcs.yaml
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-index b0933a8c295a..def95fa6a315 100644
---- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-@@ -116,6 +116,11 @@ properties:
-     $ref: "#/properties/phy-handle"
-     deprecated: true
- 
-+  pcs:
-+    $ref: /schemas/types.yaml#definitions/phandle
-+    description:
-+      Specifies a reference to a node representing a PCS device.
+diff --git a/Documentation/devicetree/bindings/net/xilinx,pcs.yaml b/Documentation/devicetree/bindings/net/xilinx,pcs.yaml
+new file mode 100644
+index 000000000000..43750dcb4b11
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/xilinx,pcs.yaml
+@@ -0,0 +1,83 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/xilinx,pcs.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-   rx-fifo-depth:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     description:
++title: Xilinx 1G/2.5G Ethernet PCS/PMA or SGMII LogiCORE IP
++
++maintainers:
++  - Sean Anderson <sean.anderson@seco.com>
++
++description:
++  This is a soft device which converts between GMII and SGMII, 2.5G SGMII,
++  1000BASE-X, or 2500BASE-X. It may have an attached SERDES, or may talk
++  directly to LVDS.
++
++allOf:
++  - $ref: "ethernet-controller.yaml#"
++
++properties:
++  compatible:
++    contains:
++      const:
++        - xilinx,pcs-16.2
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++    items:
++      - description: The reference clock for the PMD, which is typically a
++                     SERDES but may be a direct interface to LVDS I/Os.
++                     Depending on your setup, this may be the gtrefclk, refclk,
++                     or clk125m signal.
++
++  clock-names:
++    const: refclk
++
++  resets:
++    maxItems: 1
++
++  reset-names:
++    const: pcs
++
++  standard:
++    description:
++      The interface standard that the PCS supports. The sgmii/1000base-x
++      setting indicates that the PCS supports dynamically switching between
++      SGMII and 1000BASE-X.
++    enum:
++      - sgmii
++      - 1000base-x
++      - sgmii/1000base-x
++      - 2500base-x
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - resets
++  - reset-names
++  - standard
++
++additionalProperties: false
++
++examples:
++  - |
++    mdio {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pcs0: ethernet-pcs@0 {
++            compatible = "xlnx,pcs-16.2";
++            reg = <0>;
++            clocks = <&si570>;
++            clock-names = "refclk";
++            resets = <&pcs_reset 1>;
++            reset-names = "pcs";
++            standard = "sgmii/1000base-x";
++        };
++    };
 -- 
 2.25.1
 
