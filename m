@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43A74421729
+	by mail.lfdr.de (Postfix) with ESMTP id DA67042172B
 	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 21:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238939AbhJDTSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 15:18:08 -0400
+        id S238879AbhJDTSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 15:18:18 -0400
 Received: from mail-eopbgr50077.outbound.protection.outlook.com ([40.107.5.77]:3542
         "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238821AbhJDTRv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 15:17:51 -0400
+        id S238892AbhJDTRx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 15:17:53 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lo/AYTi4MfeO0lwKNzh2/jppUhxMK2PibWQpYXcMZetB0IvsRvywpiaAkiXRGUbJvaKK2Kc6AL3hnw672Jw2NhwwO0CbYEdyUa0fAFw6ML+WYMsCJNJiEUDjxe+ALanrXOOENYs/6hoqVepqS4VDnwQuoqrXolUdOWCW+e0XW/CZb0LayfghOHg+7acC7V3cZJq0afCrET4iq4SsuFwQWd0yIzeUCSqaW0EECWvnmVglijFfwZWgXmuD5wG8obretafm3sD8q8am9o/DrDT5cLTPs5TIklDZK+rXXYXbwh299A0EmGAUdEbrc6/tpjTf7v2VIXZUQE9yZju4/LStuA==
+ b=X05O5LrFPJP6ul+v3NJvdkPae1YaVnbpMbyHCgNworyabA45wtt5vn1/9sf8Jc5Yi6GotqPL152vrBAnGJFsJeIfgoGqLF/Kq079ga0mTpNPZGXMB3Kff3uJYGxKRs+z6hEvwUW7r9Y2axJkx2X0DqkUhVRoBv/4UDSZ1iLyZO1i0vBHic+qzeKgMGKMimdbAyLt3KMSNyI0bK8nSdnvcYRkgi4BU6tvyF64SCRDQgfxFd+hzn2Rl5bBwcVB/TkmaRU/GwjGjgqTSBDocJmRxomRE1HP/eH/QhQ4R+WuDV32R6b3+0GQl/Xpx9xYYF1THidM2pciTRncjhDxiKic/Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PzFxzqMFq+sNXDIXeWvtYTkChDz6300NfcmKe2BB//4=;
- b=ifygFTCY52Rv82PZnr+m5C74AeHWKGBV/wt2hr38wQ3DTKPdzvp5HlkztAVyat+cCYL6KI7do55vRBpqJAfXVV4eCmWnjOL1TlJCCh96uOcnuyGYmL1Iqt5yZ86H1sfqd8Yt7Bsa9Mlc29Vw9zQB79L1jbvGdIowsjSlei007LFyUpp0N8b/AUvYeWzTaBb/Mix5AIbvN+vJDOFR6t6bHjsCOwhrAnySHv6NV5P2G6q9KR/Onz7abmI00TexcZY5tvO+Z1mWIiBdQ4hfN6/hcTn5998Kf3PgsMy7gMxjaCZacyAdhzWNIhvUlXiotIFaN7b2XO7EDgXcwd0m1ju/3Q==
+ bh=dbm4/gf8fjTyn1w5yeJgzTRX9XqtUglzxN5ttU8NXAE=;
+ b=K4ZREWkCKh1p6CzmLp2JNIb3DzEnY9qmZtrB5VU2l0KIh4aXCgQrHqUJt4uo7TgS+pwH64dg6tz8II1ruynPEylOiHEzpctOqFFiYo/sy8aShlGDHDT3e0Uz+k43E98oX25LyIcXV2WZyp0Q1BaZrMre3pJ3h8HdNJ1fTW0Z9QjmBfgjvgBbxoIakpGJyVdClF7AwJhIFFPuMJGICgPsTM6pzvnvBytWUFrf2iyUxPJne8zSEUspNcZuztud0ofHvdr1JhEbejVgv/pbG0wEwO/DirKKMnYjNFJtMHnljG7F9ngtxaiKjxMwOWZ70xLBF3UlVwCSxWZ2i836c20Cfw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PzFxzqMFq+sNXDIXeWvtYTkChDz6300NfcmKe2BB//4=;
- b=AnKkcZLHbjbSnMJFa1dmVdFTP9J+dhxBARSGRJmd36y4MCWKxPg35brWtszZwHGjm44+DZ7PAhbn7pXsg32btvxgF0OvgfXA71xOGoWSDhicPwkWqPbK7CSvgjL4MJ6/75G/5u0TrqNGrI//wgSBNZn7qLhLacfqvEN3ltt4+0k=
+ bh=dbm4/gf8fjTyn1w5yeJgzTRX9XqtUglzxN5ttU8NXAE=;
+ b=CUWewRaQiXMUeXJgJ7aeNYfUKcT6Sc2iBy+8WRkxDqN8jdlMd74A0xME7Oz+tXRxi1yXyEmMUCKAcMnxq0PlDGCoxHkEKXkLM6MtiVYG4AfCvSq+AHQoex7G2IUUHjSyy9UJ4YEk3uuPAVs8MSwhYaCi06ygidtkCD/OvSvWWGU=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
  by DB9PR03MB7434.eurprd03.prod.outlook.com (2603:10a6:10:22c::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.19; Mon, 4 Oct
- 2021 19:15:57 +0000
+ 2021 19:15:59 +0000
 Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::a9aa:f363:66e:fadf]) by DB7PR03MB4523.eurprd03.prod.outlook.com
  ([fe80::a9aa:f363:66e:fadf%6]) with mapi id 15.20.4566.022; Mon, 4 Oct 2021
- 19:15:57 +0000
+ 19:15:59 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: [RFC net-next PATCH 07/16] net: phylink: Add helpers for c22 registers without MDIO
-Date:   Mon,  4 Oct 2021 15:15:18 -0400
-Message-Id: <20211004191527.1610759-8-sean.anderson@seco.com>
+        Sean Anderson <sean.anderson@seco.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: [RFC net-next PATCH 08/16] net: macb: Clean up macb_validate
+Date:   Mon,  4 Oct 2021 15:15:19 -0400
+Message-Id: <20211004191527.1610759-9-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211004191527.1610759-1-sean.anderson@seco.com>
 References: <20211004191527.1610759-1-sean.anderson@seco.com>
@@ -57,273 +59,195 @@ X-ClientProxiedBy: MN2PR08CA0023.namprd08.prod.outlook.com
  (2603:10b6:208:239::28) To DB7PR03MB4523.eurprd03.prod.outlook.com
  (2603:10a6:10:19::27)
 MIME-Version: 1.0
-Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR08CA0023.namprd08.prod.outlook.com (2603:10b6:208:239::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.17 via Frontend Transport; Mon, 4 Oct 2021 19:15:56 +0000
+Received: from plantagenet.inhand.com (50.195.82.171) by MN2PR08CA0023.namprd08.prod.outlook.com (2603:10b6:208:239::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.17 via Frontend Transport; Mon, 4 Oct 2021 19:15:58 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 85f90e25-7fd0-4c45-7b7d-08d9876b650e
+X-MS-Office365-Filtering-Correlation-Id: e02bd6a3-185a-4542-9656-08d9876b65ff
 X-MS-TrafficTypeDiagnostic: DB9PR03MB7434:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB9PR03MB7434919C303641254F44A8FD96AE9@DB9PR03MB7434.eurprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <DB9PR03MB743431A1D2B3359EDCDC164A96AE9@DB9PR03MB7434.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6AEhaTzGJCJxM2YYSErNUTL3B764XrVGgkT0Km2Vynq6kBElp4v9ztqNCPr/GYB2c4Bw7cza49aIQhUOEp5fcICojiJWXgwSPDLBJdamD2F/dv/Y71waMwoXbfjYXpgOHdBSUynIj/V6JwczdGpWmcIlnScqMBIA97TQaxcYrVi5r09V0NsW8dUePy/biVVHX9w3boIm0v9MoS9Ha/B5On3xzqVvgeSEjzjISn0k8d4vcobeQJxPOy6MCTU9sVJ0F+y0+TVmBETlOKWwaM2hNI62fk7SBVW/5rZ+KC5rwK5j0r8hITWN3/baGC88FW5erhhFnPFGmCa3vyTQGYBN4OAGsPTmumieG2lr3PeW9c1CN5xkBlwLs1Uc/tcOZv4R7M+OUdzp13SL7DqFrP7eI+PhfpU5lmhClWg4mv2wo8/S+xNXJgsrImTCOHEL1vlnb4UqQZuGoIDxeeEzg7ZAGPh8UwFd81VHWCnJJbV6YLquoGOwGZXge7aXr//xqaKBO82A1OYnZCPVQSwpLGJTnufFEdl7K5gNFSLrfIwhR15CE4DmsOjnMVxS5UsnieK+M8ta3QhPU5PVCJt7zxQt//t+/q4jADYKzRWncmecu8KZNQn18CbucSR+AV0AsGzj8PUVt6lDXe8D9yGzxZpBUqdxBeFOgQjJRl0WiKIoAF9QQoDl+cSDtFGuFjRm2EVH29tXZN1VFq+OuSoYQOijBg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(1076003)(86362001)(4326008)(44832011)(6486002)(5660300002)(66946007)(508600001)(38350700002)(83380400001)(52116002)(956004)(66556008)(66476007)(38100700002)(110136005)(6506007)(2906002)(186003)(8936002)(316002)(8676002)(2616005)(54906003)(26005)(6666004)(107886003)(36756003)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: qP8ANFVVpw+6V7Omo11hiEQHZjn20pRStG/JSZ/qCv1TCa/PkuVh1BzSusrUtizCvJfRAZE4nr4a1zDAg48MMKdpgKyPDJRpuOZHJHaOlCLuQK5BkZUebz2UL7AulHJTT23ulvSJpbjuEu5cIPJtROTfiCIe6ziKuvCCA0u2lB/ZuSnzaNvA5vJgsGvVrPTLHD6QzWNNUXCGla0TEgweDObJQpSf7nPiZd59TqLdgfdsxsq6ToAGl9c5Ll2BSwb+HlZhUdAGdq7+JntfNvB1drg9o+KirpMLBKyfP9fIS5pYYXrgerNCEYu6UDnB+dozf3cL8iEBixk/zUFXFiVnqIKhdK0S/C2yeCqRIH+17mdLVtvKjgqvUHPH0o2ALZABzvhNFKLogETcu6+mfR0qzbYHpecDjNLYk0HFLTGKN9E/x9PbyvYbg+kOrxoy+IJeE+JA2/PZ+2Busz/4liJXQnMYHtxLpF6yYbLdFIL3DI0x67LC2OoQMiqXeLetoYhsFmeB/zFpvSwIPB08Nm1ub+ztjQbjd8vuyTkxR3J7THHoPNnjrp0VPefIjYOWjru0BG0Rstve8B5JVIjn2FBucJm9awzpkprJwjkDMti/K5U1ar5XKF06y4b4Cy97HunLo7QmAFcYmHfN5Yt/bnEUdTZP3tLm5+no7M3HW7t2pmS9M6MvIWIlblTVdyaJJPhbdhz8Rvx7mysXNkt+3d5EqQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(1076003)(86362001)(4326008)(44832011)(6486002)(5660300002)(66946007)(508600001)(38350700002)(83380400001)(52116002)(956004)(66556008)(66476007)(38100700002)(110136005)(6506007)(2906002)(186003)(8936002)(316002)(8676002)(2616005)(54906003)(26005)(6666004)(36756003)(6512007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cyT1jPdFgze51qsZG/bnWJwFT3fWxEf9zz+CdtQ6J35xAW/XHTr6cuevLJj1?=
- =?us-ascii?Q?qVATxSKtyvCqazDnrpNtk3xB0J+i/eHn77BGrasSgwiqbAN7IHz4yHGf0RAF?=
- =?us-ascii?Q?3whC/cD+zsWXut0dlpVfaBSpVwAAb25qXLUUXquw0Xq4pTx3vGOCyRpsHkkj?=
- =?us-ascii?Q?K/R2d25cqbwHzNOO2iV82MQMaIkhpnEnkgeAOp16lIzD0e/1046PC5rH4O7b?=
- =?us-ascii?Q?m1x665IvH0LJgG51lNIVjpy17aLAN6aff8n9c+gbt3DbXHCZ8LHO/D1l5lqx?=
- =?us-ascii?Q?OEBPUweClRl23wbqap2qK+eBNSl6APlKqeddTtyG0KvX9hpk3MLxJfq8CsNA?=
- =?us-ascii?Q?IUUv1q7QjLI6vHt5xvL6sb/yIDfkJ1pbbbRuZaa29uxKHqhZqwMJMS7PBAx1?=
- =?us-ascii?Q?Lgsa1kxYnOrDlTbv/OLiCwT2xW8Xn/jHxVWG+8aem9nsrbFhMCP6ddURrUx9?=
- =?us-ascii?Q?zQQmOX2fAh24LdBv9bQKunN+nSqJMcq/fSLME6NuMnuq3lmgD0TmTJUGlQTz?=
- =?us-ascii?Q?sSYf+x43WXJK1hwqggeTV9cy8l3ik4OZmO7VHdt5a+9XbC+BVD5EK9qFqp+V?=
- =?us-ascii?Q?G+nZSDP+Rr1j2czUWIfqVLs/qovvHftEc8MMklTdGvRagzhIsdA5ricWy6en?=
- =?us-ascii?Q?fGBVLgacfHqv3r9J3MHuvhOMbVQGqo9pAjEHtlb4kafwxc4m/8ZcdBtHkN5n?=
- =?us-ascii?Q?sz7sjfSYzzVK97pblUwpeYL2/7XLxPftpW+SAbQMX6oMD2H9IQeiig2W2RG0?=
- =?us-ascii?Q?xKqI69AKfNDuskUeZhMsRShQgLd0QdpN1fozj1cLbagvS0naWyt1Plyz8A7w?=
- =?us-ascii?Q?OCMpAFk2ovZSwKIOA57k0RNLti7hEeKHhAZV52Ybr817n8OwmuzMd8x3dWLM?=
- =?us-ascii?Q?l/MpHZCDq6OGP8oVWCGh/TrY07YlNMl9aiYopE93bSmU+NXwnpJks8GjLXUa?=
- =?us-ascii?Q?XwVESZSLlUawhwVgUFdmkGDI8Wz7QwnCK6AulA3GFLv1RpEFmTjRSa60vh8J?=
- =?us-ascii?Q?MSrMWC9CPG/qw56I4poAZGZYTJd+iCb/ds+4tqiLEHYXXB6Y273rT6UIiu9x?=
- =?us-ascii?Q?P3GWz5I317I1MlES6CLtnjp+nKcVjbB0imCaBNjD0lbcwX0r7cJz/wBBJoS0?=
- =?us-ascii?Q?eD9VJ3wMYFCH+bRDnNjNCMqZwCd+LcMamK9qs4C+TCF0tBh4nuGxUEqRdKqn?=
- =?us-ascii?Q?kQTeWLRfS6hOgCfE46zml0MP4YoP5AmSdXLfvKy8F8qRaqECqB4oQGiNir3p?=
- =?us-ascii?Q?4mxuovWfix9wPUW11HESuPdfCcBevqwpnflZAEe6V5Cky267OK31YkJjLHQS?=
- =?us-ascii?Q?1CQubtF6eNxGmhqUnAZ64SFC?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ebg7k1uEQi/JojvSj7NfJf7YXJfEld9A1zaZiBQ9cwTL3HyejQwfOAnV29Bv?=
+ =?us-ascii?Q?qWLs80ADiAnpeEa04bV6Q4GlTe2N8uJV2/0S/Blbd0kGt+alDycLkiP8aH0V?=
+ =?us-ascii?Q?qkAyu3yfu1op3ziS6PC9ApVmfmP5/6aJ+vMS6wT9rAVpMfyWUTZFBqub+Ad7?=
+ =?us-ascii?Q?DPEwUx3Itmh+wG6CSAnA6MT/XdUKpsJyv/QHRKGWtoe2ksOSWc9MsSefVJu3?=
+ =?us-ascii?Q?aHfC5282vQzznbnx47kHRul6vtfJzz4iHYBqEdfTFqdCCRHJsnxY2y9qwlX0?=
+ =?us-ascii?Q?zA0qxqbdV76DUrI5HlRUcdY3OqvN0hqRtXbJjEgDmjA0xQ85Gwh+UmnD2aAD?=
+ =?us-ascii?Q?DnyG89vQ8XIPeK4YlvaB73aG+xTiZquDBd2zy999LHoTWCe/h9fsyh3M8Tr8?=
+ =?us-ascii?Q?oPPRJg9db54vmtqkAPD4+L3fXm2dkU34JatgjFereVA2N0fNsMW78C3LtbjY?=
+ =?us-ascii?Q?gyovHcxOF0/tIaVYL/Fv6H16qkcywdWuHArM68Qniye6vbftAmCyjWCspSQs?=
+ =?us-ascii?Q?ZfC2QHc5vN0F7LU8WMSSkB94IUJkLMtaHrmmi+JhRJzY8g+NHqAtEyomCWo6?=
+ =?us-ascii?Q?mgjddZE379soi+3yKnvDcDe0ithoxgP5l0WdjYzJoAh19IVikYjETAvstXzT?=
+ =?us-ascii?Q?jMtK79Gbg4N7cc4zEXIOBlA45ojQ7CJRaIx+CPC0hzCCjb7LnrSApBF49PAT?=
+ =?us-ascii?Q?gWrE9ff0hir2so71AMXF/O2wipgfX435cHlvy18iOGeBVL0cAThTqxFbF0zP?=
+ =?us-ascii?Q?LGdNiWr5xJ31Fwajb6IbbfEfQ4EWUc/tZ0Qaa2zYlOUrEl7PEp9/Cjn/Zj6/?=
+ =?us-ascii?Q?jySJ0tA5Cu/SmTkdaa3A2f96ef7cG3Kh4DGvqyklUHf/1vfJtV7Vw3PenxBf?=
+ =?us-ascii?Q?hO8fvg8+iQvUIsftEGF3Qq/HtxaxO8AGl+UzQX2oVrYI1TN0Qsn9AKfKGqZa?=
+ =?us-ascii?Q?eCrqeyYDRqr9ECo22ZKQrjhY4Fpe6UbFkKHFd/fn2F0/rMdSGdmNKVBEA34j?=
+ =?us-ascii?Q?Cc+jATth9am4nVkoNRhnu4o4hLGM7SP08fFIdMBvQvJTtwummssy3EO0/caF?=
+ =?us-ascii?Q?CdRkqY6dBbcngOYrYsAFl/T5sxxu+LSkLOyk+JXk5tvkpimHUPCTxPQRaMkU?=
+ =?us-ascii?Q?t/RTNhmbwpm/yh7DYL0wVFBUEF74a5/JAmaX6qVloOc1oWtNL8q4GAuXRo8Z?=
+ =?us-ascii?Q?dcio9oaBFyaPsHRlpcE7rsPISHthVOFX0aavvfg+qglzKL3jk1YBex7OXmn/?=
+ =?us-ascii?Q?/hGA3+jrD084rqAiNo61u2eSldqB8y77dpUOX+UHvyzC7DHy3XEojRt+hhGg?=
+ =?us-ascii?Q?1z32mr+nRvPYh87pJ2s2qu/l?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 85f90e25-7fd0-4c45-7b7d-08d9876b650e
+X-MS-Exchange-CrossTenant-Network-Message-Id: e02bd6a3-185a-4542-9656-08d9876b65ff
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2021 19:15:57.7227
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2021 19:15:59.3168
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NqhXiyEnI9oGMzIa07nStLIAWykVbOjTL2MbgqbEMTMMJkZM0T/vrjLSuPy7SwMHXe1p2XodbZ9paTrna4nvOg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: EJO9pfe0W0l+OFOxXDeHwU9dRkQKCCKx3ABvgttz1pgRCk3j9TwyLg3udIMX8hCOT0zR+/P4wK6x6lESbKmqmw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR03MB7434
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some devices expose memory-mapped c22-compliant PHYs. Because these
-devices do not have an MDIO bus, we cannot use the existing helpers.
-Refactor the existing helpers to allow supplying the values for c22
-registers directly, instead of using MDIO to access them. Only get_state
-and set_adversisement are converted, since they contain the most complex
-logic.
+As the number of interfaces grows, the number of if statements grows
+ever more unweildy. Clean everything up a bit by using a switch
+statement. No functional change intended.
+
+While we're on the subject, could someone clarify the relationship
+between the various speed capabilities? What's the difference between
+MACB_CAPS_GIGABIT_MODE_AVAILABLE, MACB_CAPS_HIGH_SPEED, MACB_CAPS_PCS,
+and macb_is_gem()? Would there ever be a GEM without GIGABIT_MODE?
+HIGH_SPEED without PCS? Why doesn't SGMII care if we're a gem (I think
+this one is a bug, because it cares later on)?
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
- drivers/net/phy/phylink.c | 154 ++++++++++++++++++++++----------------
- include/linux/phylink.h   |   5 ++
- 2 files changed, 96 insertions(+), 63 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 99 +++++++++++-------------
+ 1 file changed, 45 insertions(+), 54 deletions(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index f82dc0f87f40..1b6077557e31 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -2639,6 +2639,49 @@ void phylink_decode_usxgmii_word(struct phylink_link_state *state,
- }
- EXPORT_SYMBOL_GPL(phylink_decode_usxgmii_word);
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index e2730b3e1a57..18afa544b623 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -510,32 +510,55 @@ static void macb_validate(struct phylink_config *config,
+ 			  unsigned long *supported,
+ 			  struct phylink_link_state *state)
+ {
++	bool one = state->interface == PHY_INTERFACE_MODE_NA;
+ 	struct net_device *ndev = to_net_dev(config->dev);
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+ 	struct macb *bp = netdev_priv(ndev);
  
-+/**
-+ * phylink_mii_c22_pcs_decode_state() - Decode MAC PCS state from MII registers
-+ * @state: a pointer to a &struct phylink_link_state.
-+ * @bmsr: The value of the %MII_BMSR register
-+ * @lpa: The value of the %MII_LPA register
-+ *
-+ * Helper for MAC PCS supporting the 802.3 clause 22 register set for
-+ * clause 37 negotiation and/or SGMII control.
-+ *
-+ * Parse the Clause 37 or Cisco SGMII link partner negotiation word into
-+ * the phylink @state structure. This is suitable to be used for implementing
-+ * the mac_pcs_get_state() member of the struct phylink_mac_ops structure if
-+ * accessing @bmsr and @lpa cannot be done with MDIO directly.
-+ */
-+void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
-+				      u16 bmsr, u16 lpa)
-+{
-+	state->link = !!(bmsr & BMSR_LSTATUS);
-+	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
-+	if (!state->link)
-+		return;
-+
+-	/* We only support MII, RMII, GMII, RGMII & SGMII. */
+-	if (state->interface != PHY_INTERFACE_MODE_NA &&
+-	    state->interface != PHY_INTERFACE_MODE_MII &&
+-	    state->interface != PHY_INTERFACE_MODE_RMII &&
+-	    state->interface != PHY_INTERFACE_MODE_GMII &&
+-	    state->interface != PHY_INTERFACE_MODE_SGMII &&
+-	    state->interface != PHY_INTERFACE_MODE_10GBASER &&
+-	    !phy_interface_mode_is_rgmii(state->interface)) {
+-		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+-		return;
+-	}
+-
+-	if (!macb_is_gem(bp) &&
+-	    (state->interface == PHY_INTERFACE_MODE_GMII ||
+-	     phy_interface_mode_is_rgmii(state->interface))) {
+-		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+-		return;
+-	}
+-
+-	if (state->interface == PHY_INTERFACE_MODE_10GBASER &&
+-	    !(bp->caps & MACB_CAPS_HIGH_SPEED &&
+-	      bp->caps & MACB_CAPS_PCS)) {
 +	switch (state->interface) {
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+		phylink_decode_c37_word(state, lpa, SPEED_1000);
-+		break;
-+
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		phylink_decode_c37_word(state, lpa, SPEED_2500);
-+		break;
-+
++	case PHY_INTERFACE_MODE_NA:
++	case PHY_INTERFACE_MODE_10GBASER:
++		if (bp->caps & MACB_CAPS_HIGH_SPEED &&
++		    bp->caps & MACB_CAPS_PCS &&
++		    bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE) {
++			phylink_set(mask, 10000baseCR_Full);
++			phylink_set(mask, 10000baseER_Full);
++			phylink_set(mask, 10000baseKR_Full);
++			phylink_set(mask, 10000baseLR_Full);
++			phylink_set(mask, 10000baseLRM_Full);
++			phylink_set(mask, 10000baseSR_Full);
++			phylink_set(mask, 10000baseT_Full);
++		} else if (one) {
++			goto none;
++		}
++		if (one)
++			break;
++		fallthrough;
++	case PHY_INTERFACE_MODE_GMII:
++	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++		if (!macb_is_gem(bp) && one)
++			goto none;
++		fallthrough;
 +	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+		phylink_decode_sgmii_word(state, lpa);
++		if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE) {
++			phylink_set(mask, 1000baseT_Full);
++			phylink_set(mask, 1000baseX_Full);
++			if (!(bp->caps & MACB_CAPS_NO_GIGABIT_HALF))
++				phylink_set(mask, 1000baseT_Half);
++		}
++		fallthrough;
++	case PHY_INTERFACE_MODE_MII:
++	case PHY_INTERFACE_MODE_RMII:
++		phylink_set(mask, 10baseT_Half);
++		phylink_set(mask, 10baseT_Full);
++		phylink_set(mask, 100baseT_Half);
++		phylink_set(mask, 100baseT_Full);
 +		break;
-+
++	none:
 +	default:
-+		state->link = false;
-+		break;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_decode_state);
-+
- /**
-  * phylink_mii_c22_pcs_get_state() - read the MAC PCS state
-  * @pcs: a pointer to a &struct mdio_device.
-@@ -2667,32 +2710,48 @@ void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
+ 		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
  		return;
  	}
- 
--	state->link = !!(bmsr & BMSR_LSTATUS);
--	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
--	if (!state->link)
--		return;
+@@ -543,38 +566,6 @@ static void macb_validate(struct phylink_config *config,
+ 	phylink_set_port_modes(mask);
+ 	phylink_set(mask, Autoneg);
+ 	phylink_set(mask, Asym_Pause);
 -
--	switch (state->interface) {
--	case PHY_INTERFACE_MODE_1000BASEX:
--		phylink_decode_c37_word(state, lpa, SPEED_1000);
--		break;
--
--	case PHY_INTERFACE_MODE_2500BASEX:
--		phylink_decode_c37_word(state, lpa, SPEED_2500);
--		break;
--
--	case PHY_INTERFACE_MODE_SGMII:
--	case PHY_INTERFACE_MODE_QSGMII:
--		phylink_decode_sgmii_word(state, lpa);
--		break;
--
--	default:
--		state->link = false;
--		break;
+-	if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE &&
+-	    (state->interface == PHY_INTERFACE_MODE_NA ||
+-	     state->interface == PHY_INTERFACE_MODE_10GBASER)) {
+-		phylink_set(mask, 10000baseCR_Full);
+-		phylink_set(mask, 10000baseER_Full);
+-		phylink_set(mask, 10000baseKR_Full);
+-		phylink_set(mask, 10000baseLR_Full);
+-		phylink_set(mask, 10000baseLRM_Full);
+-		phylink_set(mask, 10000baseSR_Full);
+-		phylink_set(mask, 10000baseT_Full);
+-		if (state->interface != PHY_INTERFACE_MODE_NA)
+-			goto out;
 -	}
-+	phylink_mii_c22_pcs_decode_state(state, bmsr, lpa);
- }
- EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_get_state);
- 
-+/**
-+ * phylink_mii_c22_pcs_encode_advertisement() - configure the clause 37 PCS
-+ *	advertisement
-+ * @interface: the PHY interface mode being configured
-+ * @advertising: the ethtool advertisement mask
-+ * @adv: the value of the %MII_ADVERTISE register
-+ *
-+ * Helper for MAC PCS supporting the 802.3 clause 22 register set for
-+ * clause 37 negotiation and/or SGMII control.
-+ *
-+ * Encode the clause 37 PCS advertisement as specified by @interface and
-+ * @advertising. Callers should write @adv if it has been modified.
-+ *
-+ * Return: The new value for @adv.
-+ */
-+u16 phylink_mii_c22_pcs_encode_advertisement(phy_interface_t interface,
-+					     const unsigned long *advertising,
-+					     u16 adv)
-+{
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		adv = ADVERTISE_1000XFULL;
-+		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-+				      advertising))
-+			adv |= ADVERTISE_1000XPAUSE;
-+		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-+				      advertising))
-+			adv |= ADVERTISE_1000XPSE_ASYM;
-+		return adv;
-+	case PHY_INTERFACE_MODE_SGMII:
-+		return 0x0001;
-+	default:
-+		/* Nothing to do for other modes */
-+		return adv;
-+	}
-+}
-+
- /**
-  * phylink_mii_c22_pcs_set_advertisement() - configure the clause 37 PCS
-  *	advertisement
-@@ -2719,48 +2778,17 @@ int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
- 	int val, ret;
- 	u16 adv;
- 
--	switch (interface) {
--	case PHY_INTERFACE_MODE_1000BASEX:
--	case PHY_INTERFACE_MODE_2500BASEX:
--		adv = ADVERTISE_1000XFULL;
--		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
--				      advertising))
--			adv |= ADVERTISE_1000XPAUSE;
--		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
--				      advertising))
--			adv |= ADVERTISE_1000XPSE_ASYM;
-+	val = mdiobus_read(bus, addr, MII_ADVERTISE);
-+	if (val < 0)
-+		return val;
- 
--		val = mdiobus_read(bus, addr, MII_ADVERTISE);
--		if (val < 0)
--			return val;
 -
--		if (val == adv)
--			return 0;
+-	phylink_set(mask, 10baseT_Half);
+-	phylink_set(mask, 10baseT_Full);
+-	phylink_set(mask, 100baseT_Half);
+-	phylink_set(mask, 100baseT_Full);
 -
--		ret = mdiobus_write(bus, addr, MII_ADVERTISE, adv);
--		if (ret < 0)
--			return ret;
+-	if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE &&
+-	    (state->interface == PHY_INTERFACE_MODE_NA ||
+-	     state->interface == PHY_INTERFACE_MODE_GMII ||
+-	     state->interface == PHY_INTERFACE_MODE_SGMII ||
+-	     phy_interface_mode_is_rgmii(state->interface))) {
+-		phylink_set(mask, 1000baseT_Full);
+-		phylink_set(mask, 1000baseX_Full);
 -
--		return 1;
--
--	case PHY_INTERFACE_MODE_SGMII:
--		val = mdiobus_read(bus, addr, MII_ADVERTISE);
--		if (val < 0)
--			return val;
--
--		if (val == 0x0001)
--			return 0;
--
--		ret = mdiobus_write(bus, addr, MII_ADVERTISE, 0x0001);
--		if (ret < 0)
--			return ret;
--
--		return 1;
--
--	default:
--		/* Nothing to do for other modes */
-+	adv = phylink_mii_c22_pcs_encode_advertisement(interface, advertising,
-+						       adv);
-+	if (adv == val)
- 		return 0;
+-		if (!(bp->caps & MACB_CAPS_NO_GIGABIT_HALF))
+-			phylink_set(mask, 1000baseT_Half);
 -	}
-+
-+	ret = mdiobus_write(bus, addr, MII_ADVERTISE, adv);
-+	return ret < 0 ? ret : 1;
- }
- EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_set_advertisement);
- 
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index bd0ce707d098..b28ed8b569ee 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -496,8 +496,13 @@ int phylink_speed_up(struct phylink *pl);
- void phylink_set_port_modes(unsigned long *bits);
- void phylink_helper_basex_speed(struct phylink_link_state *state);
- 
-+void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
-+				      u16 bmsr, u16 lpa);
- void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
- 				   struct phylink_link_state *state);
-+u16 phylink_mii_c22_pcs_encode_advertisement(phy_interface_t interface,
-+					     const unsigned long *advertising,
-+					     u16 adv);
- int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
- 					  phy_interface_t interface,
- 					  const unsigned long *advertising);
+-out:
+ 	bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
+ 	bitmap_and(state->advertising, state->advertising, mask,
+ 		   __ETHTOOL_LINK_MODE_MASK_NBITS);
 -- 
 2.25.1
 
