@@ -2,298 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E097B42059C
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 07:52:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 238BE4205DF
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 08:31:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232557AbhJDFw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 01:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232495AbhJDFw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 01:52:26 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A952C0613EC
-        for <netdev@vger.kernel.org>; Sun,  3 Oct 2021 22:50:37 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id k21-20020a05600c0b5500b0030d6ac87a80so1253993wmr.0
-        for <netdev@vger.kernel.org>; Sun, 03 Oct 2021 22:50:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EpVI6CkfPsA7We1+C10fWDLHsxafmk126aaDImN3124=;
-        b=xyEN8pYuMZiiG/gPy7lL1c3OMFE7WV1qHhsCgiJzzCg9swOwApkv16OJpIqYNs/dCf
-         cjIL0B5FM8bBc4cNh7S4tD8LU3uYyfXIZDWJIlaeyN2fLrUe0dQWWIYgMSkjm/zX8apo
-         vZqluyUOwlnxUaZIyPtxxBNmCD+bX3GR3DUuLDctMAfZiQsu9KhqFgNs5HMQZdXww0WZ
-         B0bU5BTcw0hEdpAf2vfHxSIcp7YLsvm/e0QHgYAQRrt5g5AqR8JLb5ERMBMC1xVBN0PQ
-         xk+BCExtUuf36jCDbsQUSgfA64zfbxmRPiJr7QJ7WzTru+xetMt/9LfSCpxNdF00AOUR
-         uANg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EpVI6CkfPsA7We1+C10fWDLHsxafmk126aaDImN3124=;
-        b=deEgRrfOOyKxD8FSOx9R+gSVFQGSSUQKhD4opdtnz+9ntC8EKUbs6nYXKMmAgxD1D0
-         fuVloFEnEgclSYEyKEeYT5y9+k4/btHLdOrQDPVEBMHteboWTrlrEz2yMHMupF0NkFSO
-         uJJTAqKHPO/bHVqk+BDQeWMtk1apzLkXV3mBTAN49j9r6buN8ufuex0CAG0ERI8psFat
-         FM15bfooIwqeU21cNBHEuAtfxmw5C6D61m1XBp249U27EhgV99UpNFHidjUIreP9AEPz
-         06LispIhdx1l5Cbbxb71+1UEzVUTPTXnsiz891+Gp6h8DzHJfDQJ124KPg9IOFuW9pBR
-         jW3g==
-X-Gm-Message-State: AOAM532+zZQAjAOlj3osF3OQh+KPzbmKb2lbe0LfkfUDCK896quDJkpA
-        qdwgrVRMnonN1rzD1KpOxpp6QA==
-X-Google-Smtp-Source: ABdhPJxtUjucosVjtjX6uc4/ZjY6wqAo/OVc4PfZ+S/3NpNdxZMwi6n2ZEc75ZzbpS/bCNDsG2jC7A==
-X-Received: by 2002:a1c:2d6:: with SMTP id 205mr16327691wmc.48.1633326636198;
-        Sun, 03 Oct 2021 22:50:36 -0700 (PDT)
-Received: from enceladus (ppp-94-66-220-209.home.otenet.gr. [94.66.220.209])
-        by smtp.gmail.com with ESMTPSA id d2sm7468649wrs.73.2021.10.03.22.50.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Oct 2021 22:50:35 -0700 (PDT)
-Date:   Mon, 4 Oct 2021 08:50:32 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        hawk@kernel.org, jonathan.lemon@gmail.com, alobakin@pm.me,
-        willemb@google.com, cong.wang@bytedance.com, pabeni@redhat.com,
-        haokexin@gmail.com, nogikh@google.com, elver@google.com,
-        memxor@gmail.com, edumazet@google.com, alexander.duyck@gmail.com,
-        dsahern@gmail.com
-Subject: Re: [PATCH net-next v4 3/3] skbuff: keep track of pp page when
- pp_frag_count is used
-Message-ID: <YVqWKM89b2TH3Kic@enceladus>
-References: <20210930080747.28297-1-linyunsheng@huawei.com>
- <20210930080747.28297-4-linyunsheng@huawei.com>
+        id S232719AbhJDGcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 02:32:46 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:43209 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232131AbhJDGcp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 02:32:45 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1946Uj0J2014914, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36503.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1946Uj0J2014914
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 4 Oct 2021 14:30:45 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36503.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Mon, 4 Oct 2021 14:30:45 +0800
+Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Mon, 4 Oct 2021
+ 14:30:44 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <jason-ch.chen@mediatek.com>, <kuba@kernel.org>,
+        <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net] r8152: avoid to resubmit rx immediately
+Date:   Mon, 4 Oct 2021 14:28:58 +0800
+Message-ID: <20211004062858.1679-381-nic_swsd@realtek.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210929051812.3107-1-jason-ch.chen@mediatek.com>
+References: <20210929051812.3107-1-jason-ch.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210930080747.28297-4-linyunsheng@huawei.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.102]
+X-ClientProxiedBy: RTEXH36503.realtek.com.tw (172.21.6.25) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 10/04/2021 06:21:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzEwLzQgpFekyCAwNDo1MTowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36503.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 10/04/2021 06:17:40
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 166474 [Oct 04 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 463 463 5854868460de3f0d8e8c0a4df98aeb05fb764a09
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 10/04/2021 06:21:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 04:07:47PM +0800, Yunsheng Lin wrote:
-> As the skb->pp_recycle and page->pp_magic may not be enough
-> to track if a frag page is from page pool after the calling
-> of __skb_frag_ref(), mostly because of a data race, see:
-> commit 2cc3aeb5eccc ("skbuff: Fix a potential race while
-> recycling page_pool packets").
-> 
-> There may be clone and expand head case that might lose the
-> track if a frag page is from page pool or not.
-> 
-> And not being able to keep track of pp page may cause problem
-> for the skb_split() case in tso_fragment() too:
-> Supposing a skb has 3 frag pages, all coming from a page pool,
-> and is split to skb1 and skb2:
-> skb1: first frag page + first half of second frag page
-> skb2: second half of second frag page + third frag page
-> 
-> How do we set the skb->pp_recycle of skb1 and skb2?
-> 1. If we set both of them to 1, then we may have a similar
->    race as the above commit for second frag page.
-> 2. If we set only one of them to 1, then we may have resource
->    leaking problem as both first frag page and third frag page
->    are indeed from page pool.
-> 
-> Increment the pp_frag_count of pp page frag in __skb_frag_ref(),
-> and only use page->pp_magic to indicate a pp page frag in
-> __skb_frag_unref() to keep track of pp page frag.
-> 
-> Similar handling is done for the head page of a skb too.
-> 
-> As we need the head page of a compound page to decide if it is
-> from page pool at first, so __page_frag_cache_drain() and
-> page_ref_inc() is used to avoid unnecessary compound_head()
-> calling.
-> 
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> ---
->  include/linux/skbuff.h  | 30 ++++++++++++++++++++----------
->  include/net/page_pool.h | 24 +++++++++++++++++++++++-
->  net/core/page_pool.c    | 17 ++---------------
->  net/core/skbuff.c       | 10 ++++++++--
->  4 files changed, 53 insertions(+), 28 deletions(-)
-> 
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 841e2f0f5240..aeee150d4a04 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -3073,7 +3073,19 @@ static inline struct page *skb_frag_page(const skb_frag_t *frag)
->   */
->  static inline void __skb_frag_ref(skb_frag_t *frag)
->  {
-> -	get_page(skb_frag_page(frag));
-> +	struct page *page = skb_frag_page(frag);
-> +
-> +	page = compound_head(page);
-> +
-> +#ifdef CONFIG_PAGE_POOL
-> +	if (page_pool_is_pp_page(page) &&
-> +	    page_pool_is_pp_page_frag(page)) {
-> +		page_pool_atomic_inc_frag_count(page);
-> +		return;
-> +	}
-> +#endif
-> +
-> +	page_ref_inc(page);
+For the situation that the disconnect event comes very late when the
+device is unplugged, the driver would resubmit the RX bulk transfer
+after getting the callback with -EPROTO immediately and continually.
+Finally, soft lockup occurs.
 
-There's a BUG_ON we are now ignoring on get_page. 
+This patch avoids to resubmit RX immediately. It uses a workqueue to
+schedule the RX NAPI. And the NAPI would resubmit the RX. It let the
+disconnect event have opportunity to stop the submission before soft
+lockup.
 
->  }
->  
->  /**
-> @@ -3100,11 +3112,16 @@ static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
->  {
->  	struct page *page = skb_frag_page(frag);
->  
-> +	page = compound_head(page);
-> +
->  #ifdef CONFIG_PAGE_POOL
-> -	if (recycle && page_pool_return_skb_page(page))
-> +	if (page_pool_is_pp_page(page) &&
-> +	    (recycle || page_pool_is_pp_page_frag(page))) {
-> +		page_pool_return_skb_page(page);
->  		return;
-> +	}
->  #endif
-> -	put_page(page);
-> +	__page_frag_cache_drain(page, 1);
+Reported-by: Jason-ch Chen <jason-ch.chen@mediatek.com>
+Tested-by: Jason-ch Chen <jason-ch.chen@mediatek.com>
+Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+---
+ drivers/net/usb/r8152.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-Same here,  freeing the page is not the only thing put_page does. 
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 60ba9b734055..f329e39100a7 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -767,6 +767,7 @@ enum rtl8152_flags {
+ 	PHY_RESET,
+ 	SCHEDULE_TASKLET,
+ 	GREEN_ETHERNET,
++	RX_EPROTO,
+ };
+ 
+ #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
+@@ -1770,6 +1771,14 @@ static void read_bulk_callback(struct urb *urb)
+ 		rtl_set_unplug(tp);
+ 		netif_device_detach(tp->netdev);
+ 		return;
++	case -EPROTO:
++		urb->actual_length = 0;
++		spin_lock_irqsave(&tp->rx_lock, flags);
++		list_add_tail(&agg->list, &tp->rx_done);
++		spin_unlock_irqrestore(&tp->rx_lock, flags);
++		set_bit(RX_EPROTO, &tp->flags);
++		schedule_delayed_work(&tp->schedule, 1);
++		return;
+ 	case -ENOENT:
+ 		return;	/* the urb is in unlink state */
+ 	case -ETIME:
+@@ -2425,6 +2434,7 @@ static int rx_bottom(struct r8152 *tp, int budget)
+ 	if (list_empty(&tp->rx_done))
+ 		goto out1;
+ 
++	clear_bit(RX_EPROTO, &tp->flags);
+ 	INIT_LIST_HEAD(&rx_queue);
+ 	spin_lock_irqsave(&tp->rx_lock, flags);
+ 	list_splice_init(&tp->rx_done, &rx_queue);
+@@ -2441,7 +2451,7 @@ static int rx_bottom(struct r8152 *tp, int budget)
+ 
+ 		agg = list_entry(cursor, struct rx_agg, list);
+ 		urb = agg->urb;
+-		if (urb->actual_length < ETH_ZLEN)
++		if (urb->status != 0 || urb->actual_length < ETH_ZLEN)
+ 			goto submit;
+ 
+ 		agg_free = rtl_get_free_rx(tp, GFP_ATOMIC);
+@@ -6643,6 +6653,10 @@ static void rtl_work_func_t(struct work_struct *work)
+ 	    netif_carrier_ok(tp->netdev))
+ 		tasklet_schedule(&tp->tx_tl);
+ 
++	if (test_and_clear_bit(RX_EPROTO, &tp->flags) &&
++	    !list_empty(&tp->rx_done))
++		napi_schedule(&tp->napi);
++
+ 	mutex_unlock(&tp->control);
+ 
+ out1:
+-- 
+2.31.1
 
->  }
->  
->  /**
-> @@ -4718,12 +4735,5 @@ static inline void skb_mark_for_recycle(struct sk_buff *skb)
->  }
->  #endif
->  
-> -static inline bool skb_pp_recycle(struct sk_buff *skb, void *data)
-> -{
-> -	if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
-> -		return false;
-> -	return page_pool_return_skb_page(virt_to_page(data));
-> -}
-> -
->  #endif	/* __KERNEL__ */
->  #endif	/* _LINUX_SKBUFF_H */
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index 3855f069627f..740a8ca7f4a6 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -164,7 +164,7 @@ inline enum dma_data_direction page_pool_get_dma_dir(struct page_pool *pool)
->  	return pool->p.dma_dir;
->  }
->  
-> -bool page_pool_return_skb_page(struct page *page);
-> +void page_pool_return_skb_page(struct page *page);
->  
->  struct page_pool *page_pool_create(const struct page_pool_params *params);
->  
-> @@ -231,6 +231,28 @@ static inline void page_pool_set_frag_count(struct page *page, long nr)
->  	atomic_long_set(&page->pp_frag_count, nr);
->  }
->  
-> +static inline void page_pool_atomic_inc_frag_count(struct page *page)
-> +{
-> +	atomic_long_inc(&page->pp_frag_count);
-> +}
-> +
-> +static inline bool page_pool_is_pp_page(struct page *page)
-> +{
-> +	/* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
-> +	 * in order to preserve any existing bits, such as bit 0 for the
-> +	 * head page of compound page and bit 1 for pfmemalloc page, so
-> +	 * mask those bits for freeing side when doing below checking,
-> +	 * and page_is_pfmemalloc() is checked in __page_pool_put_page()
-> +	 * to avoid recycling the pfmemalloc page.
-> +	 */
-> +	return (page->pp_magic & ~0x3UL) == PP_SIGNATURE;
-> +}
-> +
-> +static inline bool page_pool_is_pp_page_frag(struct page *page)
-> +{
-> +	return !!atomic_long_read(&page->pp_frag_count);
-> +}
-> +
->  static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
->  							  long nr)
->  {
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 2c643b72ce16..d141e00459c9 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -219,6 +219,7 @@ static void page_pool_set_pp_info(struct page_pool *pool,
->  {
->  	page->pp = pool;
->  	page->pp_magic |= PP_SIGNATURE;
-> +	page_pool_set_frag_count(page, 0);
->  }
->  
->  static void page_pool_clear_pp_info(struct page *page)
-> @@ -736,22 +737,10 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
->  }
->  EXPORT_SYMBOL(page_pool_update_nid);
->  
-> -bool page_pool_return_skb_page(struct page *page)
-> +void page_pool_return_skb_page(struct page *page)
->  {
->  	struct page_pool *pp;
->  
-> -	page = compound_head(page);
-> -
-> -	/* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
-> -	 * in order to preserve any existing bits, such as bit 0 for the
-> -	 * head page of compound page and bit 1 for pfmemalloc page, so
-> -	 * mask those bits for freeing side when doing below checking,
-> -	 * and page_is_pfmemalloc() is checked in __page_pool_put_page()
-> -	 * to avoid recycling the pfmemalloc page.
-> -	 */
-> -	if (unlikely((page->pp_magic & ~0x3UL) != PP_SIGNATURE))
-> -		return false;
-> -
->  	pp = page->pp;
->  
->  	/* Driver set this to memory recycling info. Reset it on recycle.
-> @@ -760,7 +749,5 @@ bool page_pool_return_skb_page(struct page *page)
->  	 * 'flipped' fragment being in use or not.
->  	 */
->  	page_pool_put_full_page(pp, page, false);
-> -
-> -	return true;
->  }
->  EXPORT_SYMBOL(page_pool_return_skb_page);
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 74601bbc56ac..e3691b025d30 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -646,9 +646,15 @@ static void skb_free_head(struct sk_buff *skb)
->  	unsigned char *head = skb->head;
->  
->  	if (skb->head_frag) {
-> -		if (skb_pp_recycle(skb, head))
-> +		struct page *page = virt_to_head_page(head);
-> +
-> +		if (page_pool_is_pp_page(page) &&
-> +		    (skb->pp_recycle || page_pool_is_pp_page_frag(page))) {
-> +			page_pool_return_skb_page(page);
->  			return;
-> -		skb_free_frag(head);
-> +		}
-> +
-> +		__page_frag_cache_drain(page, 1);
->  	} else {
->  		kfree(head);
->  	}
-> -- 
-> 2.33.0
-> 
-
-Regardless of the comments above,  providing some numbers on how the
-patches affect performance (at least on hns3), would be good to have.
-
-I'll try giving this another look.  I still think having three indicators
-to look at before recycling the page is not ideal.
-
-
-Regards
-/Ilias
