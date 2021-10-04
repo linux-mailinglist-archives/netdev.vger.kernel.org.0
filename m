@@ -2,98 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90B45420AC8
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 14:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7861A420AE0
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 14:26:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233252AbhJDMWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 08:22:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49524 "EHLO mail.kernel.org"
+        id S232426AbhJDM2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 08:28:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50676 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233134AbhJDMV7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 08:21:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 854D3613A2;
-        Mon,  4 Oct 2021 12:20:10 +0000 (UTC)
+        id S230238AbhJDM2I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 08:28:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6E5556124C;
+        Mon,  4 Oct 2021 12:26:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633350010;
-        bh=DMFxEWTqfbnq1ZABZ316JYtNGzInIZEnFJF/Sr6NcIo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=neOu2rpEKv/cI+7zfUa47vyjK7828WWiIo2X0+YsB0ZF2KMzjnD+0VzZCruLGDe6s
-         +EFZEW733ELPWz7mG5RbWQiAqcyGrOQaCqGw92e7QeZXKNBa9DBmlsYcXO9TLnui+H
-         drNjwtQTQ/tOXOnZFOHFo3zL5wkGfHZPSY++GQZ+iN3eax7SBi8GCkjvQIvExEOAyD
-         QYb73eMKrUcVKvRdzBDBQertzbV4F25P4/z9+sAf8Ho/jcLlDkbXXfkPK5pG+xT+Vt
-         4hKJ6vxxvn/RKzutwllTRRbc9cKZybqY56xGymy5C56dAaHE+NTIfwNStu01YKaihF
-         rkMOJfbkLn12Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7979F608AF;
-        Mon,  4 Oct 2021 12:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1633350379;
+        bh=S/xozdTW2Vv6URwHQvbZxlXTqDmdRuwhaA8ampD9IDk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bZGVgamiO/dFIWw3pDm1bomZoXCkpinHgJAGBDonfwuNM3EMLqsZ/3Bjyt0XAVdtp
+         qy5/FZRReOqAJ6tKbDcHsJpuPLkzMUIR63f7OsHCQgkMu3ZPRcMkwDtET1a8pKeg1p
+         fe1CxyOspkKIfY7f2SSsTO14ozX6Th3guTvqGY/fUf6XY1la33ArT8/0+RNKGZtSkZ
+         CsuRIFChyO3O/eOp4QOCrIisp//taINqBjWCcBNgO2RXAm0D7mbntHVbBVxTLb1N+W
+         4AsmRABAEbsJCKqwxYohNhjSreHgAEw224l9fwwrGmT+2F79otuAmluKIkoSr+ULbK
+         vpOjbBT2PVEKA==
+Date:   Mon, 4 Oct 2021 17:56:12 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] drivers: net: mhi: fix error path in mhi_net_newlink
+Message-ID: <20211004122612.GF16442@workstation>
+References: <20211004114601.13870-1-dnlplm@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 00/13] qed: new firmware version 8.59.1.0 support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163335001049.30570.14249227941766939428.git-patchwork-notify@kernel.org>
-Date:   Mon, 04 Oct 2021 12:20:10 +0000
-References: <20211004065851.1903-1-pkushwaha@marvell.com>
-In-Reply-To: <20211004065851.1903-1-pkushwaha@marvell.com>
-To:     Prabhakar Kushwaha <pkushwaha@marvell.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
-        martin.petersen@oracle.com, aelior@marvell.com, smalin@marvell.com,
-        jhasan@marvell.com, mrangankar@marvell.com,
-        prabhakar.pkin@gmail.com, malin1024@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211004114601.13870-1-dnlplm@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Mon, 4 Oct 2021 09:58:38 +0300 you wrote:
-> This series integrate new firmware version 8.59.1.0, along with updated
-> HSI (hardware software interface) to use the FW, into the family of
-> qed drivers (fastlinq devices). This FW does not reside in the NVRAM.
-> It needs to be programmed to device during driver load as the part of
-> initialization sequence.
+On Mon, Oct 04, 2021 at 01:46:01PM +0200, Daniele Palmas wrote:
+> Fix double free_netdev when mhi_prepare_for_transfer fails.
 > 
-> Similar to previous FW support series, this FW is tightly linked to
-> software and pf function driver. This means FW release is not backward
-> compatible, and driver should always run with the FW it was designed
-> against.
+> This is a back-port of upstream:
+> commit 4526fe74c3c509 ("drivers: net: mhi: fix error path in mhi_net_newlink")
 > 
-> [...]
+> Fixes: 13adac032982 ("net: mhi_net: Register wwan_ops for link creation")
+> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
 
-Here is the summary with links:
-  - [v2,01/13] qed: Fix kernel-doc warnings
-    https://git.kernel.org/netdev/net-next/c/19198e4ec97d
-  - [v2,02/13] qed: Remove e4_ and _e4 from FW HSI
-    https://git.kernel.org/netdev/net-next/c/fb09a1ed5c6e
-  - [v2,03/13] qed: Split huge qed_hsi.h header file
-    https://git.kernel.org/netdev/net-next/c/ee824f4bcc10
-  - [v2,04/13] qed: Update common_hsi for FW ver 8.59.1.0
-    https://git.kernel.org/netdev/net-next/c/484563e230a8
-  - [v2,05/13] qed: Update qed_mfw_hsi.h for FW ver 8.59.1.0
-    https://git.kernel.org/netdev/net-next/c/f2a74107f1e1
-  - [v2,06/13] qed: Update qed_hsi.h for fw 8.59.1.0
-    https://git.kernel.org/netdev/net-next/c/fe40a830dcde
-  - [v2,07/13] qed: Use enum as per FW 8.59.1.0 in qed_iro_hsi.h
-    https://git.kernel.org/netdev/net-next/c/3091be065f11
-  - [v2,08/13] qed: Update FW init functions to support FW 8.59.1.0
-    https://git.kernel.org/netdev/net-next/c/b90cb5385af7
-  - [v2,09/13] qed: Add '_GTT' suffix to the IRO RAM macros
-    https://git.kernel.org/netdev/net-next/c/e2dbc2237692
-  - [v2,10/13] qed: Update debug related changes
-    https://git.kernel.org/netdev/net-next/c/6c95dd8f0aa1
-  - [v2,11/13] qed: Update TCP silly-window-syndrome timeout for iwarp, scsi
-    https://git.kernel.org/netdev/net-next/c/3a6f5d0cbda3
-  - [v2,12/13] qed: Update the TCP active termination 2 MSL timer ("TIME_WAIT")
-    https://git.kernel.org/netdev/net-next/c/a64aa0a8b991
-  - [v2,13/13] qed: fix ll2 establishment during load of RDMA driver
-    https://git.kernel.org/netdev/net-next/c/17696cada74f
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks,
+Mani
 
-
+> ---
+> Hello Greg,
+> 
+> if maintainers ack, this should go just to 5.14 branch.
+> 
+> Thanks,
+> Daniele
+> ---
+>  drivers/net/mhi/net.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
+> index e60e38c1f09d..5e49f7a919b6 100644
+> --- a/drivers/net/mhi/net.c
+> +++ b/drivers/net/mhi/net.c
+> @@ -337,7 +337,7 @@ static int mhi_net_newlink(void *ctxt, struct net_device *ndev, u32 if_id,
+>  	/* Start MHI channels */
+>  	err = mhi_prepare_for_transfer(mhi_dev);
+>  	if (err)
+> -		goto out_err;
+> +		return err;
+>  
+>  	/* Number of transfer descriptors determines size of the queue */
+>  	mhi_netdev->rx_queue_sz = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
+> @@ -347,7 +347,7 @@ static int mhi_net_newlink(void *ctxt, struct net_device *ndev, u32 if_id,
+>  	else
+>  		err = register_netdev(ndev);
+>  	if (err)
+> -		goto out_err;
+> +		return err;
+>  
+>  	if (mhi_netdev->proto) {
+>  		err = mhi_netdev->proto->init(mhi_netdev);
+> @@ -359,8 +359,6 @@ static int mhi_net_newlink(void *ctxt, struct net_device *ndev, u32 if_id,
+>  
+>  out_err_proto:
+>  	unregister_netdevice(ndev);
+> -out_err:
+> -	free_netdev(ndev);
+>  	return err;
+>  }
+>  
+> -- 
+> 2.30.2
+> 
