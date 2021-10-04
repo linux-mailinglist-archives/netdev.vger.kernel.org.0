@@ -2,78 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0D6A4205E9
-	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 08:37:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 626114205EA
+	for <lists+netdev@lfdr.de>; Mon,  4 Oct 2021 08:38:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232767AbhJDGja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 02:39:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59132 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232536AbhJDGja (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 02:39:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E126B6120F;
-        Mon,  4 Oct 2021 06:37:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1633329461;
-        bh=nUn5+lxliX8C9iNQcew76Wqvp8zRRWbU1gAS2vMx6Tw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RY8bUxVwd24wkuMiaf5/1WwFCQALhuUE8dk7ypc+K2sBhVV7IdS1YCq+drJTSSbDY
-         HRj1RzMqaXdRQcbqv0PhJI5L67gtuzDjpx9NyDv0bBjeaSZGBXODwE4bsUftvAV4pl
-         qvl3vWo4ZOYQ+LEs3CEzf8PQDiHYBV3uJKb38kio=
-Date:   Mon, 4 Oct 2021 08:37:37 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Pavel Machek <pavel@ucw.cz>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: are device names part of sysfs ABI? (was Re: devicename part of
- LEDs under ethernet MAC / PHY)
-Message-ID: <YVqhMeuDI0IZL/zY@kroah.com>
-References: <20211001133057.5287f150@thinkpad>
- <YVb/HSLqcOM6drr1@lunn.ch>
- <20211001144053.3952474a@thinkpad>
- <20211003225338.76092ec3@thinkpad>
+        id S232770AbhJDGkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 02:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53322 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232536AbhJDGkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 02:40:36 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2FD7C061745
+        for <netdev@vger.kernel.org>; Sun,  3 Oct 2021 23:38:47 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id n8so11763741lfk.6
+        for <netdev@vger.kernel.org>; Sun, 03 Oct 2021 23:38:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=aYN7JB0UiIqnEd1up6VCc7D3bCgke8HG87B0yLPIHbQ=;
+        b=3KZQJV5EcuDqFD+7ZT8pn9MvgEofIlfPhNr26kcfDN+qnwuwlD6z5NYBRdZafUfMR1
+         L0c4hxxO3U6nD4F3jiLEPQqRyrfDIoxId5e2isueeuYjjkOyh8ORdURHD9UBhOEqiNve
+         dO4/8gDAQJ9XxYEZ0xTO9ZYiqypv1QEf5koc6/e9U3MGZazPu6AwVob6l4JyMp2Eu9Vc
+         hmzVShBvx1kEiuvi+1Omy/xZqoKjtkcT024vnK+DK1O6HXvBzRDxKoICHE8cbvG1SshZ
+         EDtRziodmzge4XZr1cPphSdOjESJ6lddDk7sPQ+dzdqfjGsQ72ekFmmJ9cFnDyfY634w
+         720Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=aYN7JB0UiIqnEd1up6VCc7D3bCgke8HG87B0yLPIHbQ=;
+        b=HRSKbWGcs/3TuqPqQRbp/u+T0uezcMaGtwuhmljMkrYvWaSa+rwPHewtAcNC2Oyh7E
+         ywZll0BWyrgUl4vgd3YHn81tNgb4C2iSBNhCJqISo0QuNbKMPWN3MmOAsEPrzlWulYAX
+         79fzpqnXQkN9M/vE+oDyqCYQIEkwISiGNB/ojuFDAVbMevbQDbyu36htLYPl4Vv4BVbA
+         8SprZ1sTu8IXUWshbcgdF3m9qKiZo2grO7G2jcpeETSZg2nXveJszyIbAN/ED2Y31W4i
+         lL8sb3G12ZBXdPu75Vmcqh8FfTU4si9m75x80gCenFljq/AcjJe4BXoGZ/AdQcpRuiTF
+         DhZA==
+X-Gm-Message-State: AOAM531KW6Hef8Gb4f7xDcLhuo/l1iJMJr5q3zdXbOlmAyGCxXCJiMvr
+        dQ6w1Kr6MsxAN59TekGFk0eYtQ==
+X-Google-Smtp-Source: ABdhPJxIafv9ONcjynwTZsDwanGVlOQpzaWn86HpS/46s38RZxy/el0NudM8vbls0F545a/wfkvSow==
+X-Received: by 2002:a2e:711d:: with SMTP id m29mr13870217ljc.299.1633329525955;
+        Sun, 03 Oct 2021 23:38:45 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id br38sm1512717lfb.305.2021.10.03.23.38.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Oct 2021 23:38:45 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH net 0/2] DSA bridge TX forwarding offload fixes - part 1
+In-Reply-To: <20211003222312.284175-1-vladimir.oltean@nxp.com>
+References: <20211003222312.284175-1-vladimir.oltean@nxp.com>
+Date:   Mon, 04 Oct 2021 08:38:44 +0200
+Message-ID: <874k9xmgzv.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211003225338.76092ec3@thinkpad>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 03, 2021 at 10:53:38PM +0200, Marek Behún wrote:
-> Hello Greg,
-> 
-> could you give your opinion on this discussion?
+On Mon, Oct 04, 2021 at 01:23, Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> This is part 1 of a series of fixes to the bridge TX forwarding offload
+> feature introduced for v5.15. Sadly, the other fixes are so intrusive
+> that they cannot be reasonably be sent to the "net" tree, as they also
+> include API changes. So they are left as part 2 for net-next.
 
-What discussion?  Top posting ruins that :(
+Please give me some time to test this before merging. My spider sense is
+tingling.
 
-> Are device names (as returned by dev_name() function) also part of
-> sysfs ABI? Should these names be stable across reboots / kernel
-> upgrades?
+Have you tried this (1) on a multi-chip system and (2) in a multi-bridge
+setup?
 
-Stable in what exact way?
-
-Numbering of devices (where a dynamic value is part of a name, like the
-"42" in "usb42"), is never guaranteed to be stable, but the non-number
-part of the name (like "usb" is in "usb42") is stable, as that is what
-you have properly documented in the Documentation/ABI/ files defining
-the bus and class devices, right?
-
-The very reason we export all of this information to userspace is so
-that userspace can figure it all out in ways it wants to, if it wants
-to, and no naming scheme that has to be static and deterministic is
-forced into the kernel, where it does NOT belong.
-
-That is 1/2 of the reason why we created the whole "unified
-device/driver model" in the kernel in the first place all those years
-ago.
-
-Does that help?  I can't figure out what the "problem" is here...
-
-thanks,
-
-greg k-h
+--
+Tobias
