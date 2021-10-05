@@ -2,57 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ECC6421BE5
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:31:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16F17421C21
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229549AbhJEBdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 21:33:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38760 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231162AbhJEBdY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 21:33:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E31B1610C8;
-        Tue,  5 Oct 2021 01:31:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633397495;
-        bh=TRSCAQ1Si+uY18vh7kgvvlybyOXrKC6bnN84suQm93g=;
+        id S232259AbhJEBi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 21:38:29 -0400
+Received: from gandalf.ozlabs.org ([150.107.74.76]:42083 "EHLO
+        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231467AbhJEBhf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 21:37:35 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HNgC25zFKz4xbq;
+        Tue,  5 Oct 2021 12:35:42 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1633397743;
+        bh=47QfV4nu+DZPLTppE4pwknz4UZg87R1qgXfAER5Zwlo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ItyMQmXdVLRgSojfrutm7r/UfDuFYNs4psIhsstmHwDU/Rw2uvKI1gKDFGAAPDovt
-         8ViQQCOqqUbdvnp5n7xZeP47g5jULsZfjqDbQx29yS+buAK4wS07ECsPb3BKdDn/4U
-         PEd81QohTMdljdLv5w/sGxOuqd249lchvQ8c3WHaRrTpJ4v8S5lc6vWsOkYsEnD0jB
-         EZIFuxSPHwBR7W49h+IdMwW9er8G10jnthd14sH/GB/kjr77N2JjJG/NWLXV2lfhkf
-         R2/1KWFAf+Mj5eAsKi3OqLR+nrp8qQuq/YL5X/fS6TxfbCl4C8U+QCVEiAn4foANJg
-         49HcoqvZYp0GA==
-Date:   Mon, 4 Oct 2021 18:31:34 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Bauer <mail@david-bauer.net>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: phy: at803x: add QCA9561 support
-Message-ID: <20211004183134.03739959@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211004193633.730203-1-mail@david-bauer.net>
-References: <20211004193633.730203-1-mail@david-bauer.net>
+        b=rfcbA3K9rUkTT1Wj1TUz/MYtCudZq8ibqQTMyZ1L+JD9GMYcYnj2cUwC8OdRFG77m
+         qXPgblcPgYDViwhTmmxEp4oJGxQf0/9lFIXJQrWCMJKZAt1ancpOSltBxXesdsyrny
+         6Df6o+oreetpZIKJH1rztRmSilLnV5/Wtd8Vx+PEtKXdmEoqEcC4YtJVA2Fbi3j59g
+         2FTsC0eQUaFX6woF8/C9pUIxhjaGCL8vMdEepjRKiMVFHyjnl+k4EXTteeOFJZ4cVK
+         zfpMgOZnaSGyh2MYLKEFjcI7XneOC+rnTDHxwfCqgWhwKl+OYDBkwxzzPcuk0DB9uS
+         6wHde2TGm+iIg==
+Date:   Tue, 5 Oct 2021 12:35:41 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Message-ID: <20211005123541.5614abd8@canb.auug.org.au>
+In-Reply-To: <20211005122407.25274909@canb.auug.org.au>
+References: <20211005115637.3eacc45f@canb.auug.org.au>
+        <20211005122407.25274909@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/cbcd=_7knEFw__qlU1jv_N1";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  4 Oct 2021 21:36:33 +0200 David Bauer wrote:
-> Add support for the embedded fast-ethernet PHY found on the QCA9561
-> WiSoC platform. It supports the usual Atheros PHY featureset including
-> the cable tester.
-> 
-> Tested on a Xiaomi MiRouter 4Q (QCA9561)
-> 
-> Signed-off-by: David Bauer <mail@david-bauer.net>
+--Sig_/cbcd=_7knEFw__qlU1jv_N1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Please keep Andrew's tag, rebase this patch on net-next:
+Hi all,
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
+On Tue, 5 Oct 2021 12:24:07 +1100 Stephen Rothwell <sfr@canb.auug.org.au> w=
+rote:
+>
+> Hi all,
+>=20
+> On Tue, 5 Oct 2021 11:56:37 +1100 Stephen Rothwell <sfr@canb.auug.org.au>=
+ wrote:
+> >
+> > After merging the net-next tree, today's linux-next build (powerpc
+> > ppc64_defconfig) failed like this:
+> >=20
+> > drivers/net/ethernet/ibm/ehea/ehea_main.c: In function 'ehea_setup_sing=
+le_port':
+> > drivers/net/ethernet/ibm/ehea/ehea_main.c:2989:23: error: passing argum=
+ent 2 of 'eth_hw_addr_set' from incompatible pointer type [-Werror=3Dincomp=
+atible-pointer-types]
+> >  2989 |  eth_hw_addr_set(dev, &port->mac_addr);
+> >       |                       ^~~~~~~~~~~~~~~
+> >       |                       |
+> >       |                       u64 * {aka long long unsigned int *}
+> > In file included from include/linux/if_vlan.h:11,
+> >                  from include/linux/filter.h:19,
+> >                  from include/net/sock.h:59,
+> >                  from include/linux/tcp.h:19,
+> >                  from drivers/net/ethernet/ibm/ehea/ehea_main.c:20:
+> > include/linux/etherdevice.h:309:70: note: expected 'const u8 *' {aka 'c=
+onst unsigned char *'} but argument is of type 'u64 *' {aka 'long long unsi=
+gned int *'}
+> >   309 | static inline void eth_hw_addr_set(struct net_device *dev, cons=
+t u8 *addr)
+> >       |                                                            ~~~~=
+~~~~~~^~~~
+> > cc1: some warnings being treated as errors
+> >=20
+> > Caused by commit
+> >=20
+> >   a96d317fb1a3 ("ethernet: use eth_hw_addr_set()")
+> >=20
+> > I have used the net-next tree from next-20211001 for today. =20
+>=20
+> I also had to use the next-20211001 version if the bpf-next tree (since
+> it had been reset past the broken commit in the net-next tree).
 
-and resend with [PATCH net-next] as the subject prefix.
+And the bluetooth tree similarly.
 
-We have a number of additions to at803x already queued for the next
-release and otherwise this patch conflicts with them.
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/cbcd=_7knEFw__qlU1jv_N1
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmFbq+0ACgkQAVBC80lX
+0GwGwQf/QT+ZmXAZnb8cEKZiojFmKsUEzw0NBaiZbWErMEHQj6q+yJ858HnUOnjD
+EiTIZ/61DAe26JxA1uUW5eEAIPvDpuntyj5VngROppYI+EJ03vvMeYYV6qBCkUqE
+WG302g3VT48L/wrzpHsIVWhIzttuIHe0LrL65hKm3NroQoJ2v4ytqT0gbRaCyM2L
+nCGsl1GKdWbB4sVvAWcNg+LTzRQrUPmvYC3DMtDQZTohWYBJthJe29XH8g16TAvv
+V85PIvsQDgbcCn5UhOR/hN+q7B52IxOrJOWGL9u5UPXnOqgKT6AqkzTB0ImCnMDA
+0F3GtKuHFswZ/c3og5eb0FILp9BDrg==
+=e8Tn
+-----END PGP SIGNATURE-----
+
+--Sig_/cbcd=_7knEFw__qlU1jv_N1--
