@@ -2,148 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFDA042341A
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 01:06:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7ADE42342F
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 01:11:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236979AbhJEXIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 19:08:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49308 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236898AbhJEXIC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 19:08:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 72965611C3;
-        Tue,  5 Oct 2021 23:06:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633475171;
-        bh=pImpjV3oik1V6m7jNP8D4xHxOdiqpF8Fz8EVHZ83rjM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OBit6HWictHggCKxYMEgvW8AB6ltmiU6y09bgCzPzu/e9leUnlJ3Qjahs4rPWiNKW
-         gwNC1m9UOvXpXnuKgVhA9lIyDqBLTYT9zxtDmJu61whI9e6uAmzGeou2CpbF0C3Ow4
-         fPnFM9Z9PcJCDUys6+V4vr61HYpL5F2sX7bpgTNsIwEqdT9rSzAVIn8b6TE53XPznE
-         V1xGyF//jXrcOJT7PQoey7zcMjfT8aKaFCKsBWmCx1sRFqmwgBHAlFW8RdlceWooEl
-         Q+oAEHzOjDTYld9duW9sfjr856rKVtQRPd0j3qofYLg7a2rt567FZkcqMUJ8ZFwGFZ
-         zjtIie5kdPbfw==
-Date:   Wed, 6 Oct 2021 01:06:06 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: lets settle the LED `function` property regarding the netdev
- trigger
-Message-ID: <20211006010606.15d7370b@thinkpad>
-In-Reply-To: <YVzMghbt1+ZSILpQ@lunn.ch>
-References: <20211001143601.5f57eb1a@thinkpad>
-        <YVn815h7JBtVSfwZ@lunn.ch>
-        <20211003212654.30fa43f5@thinkpad>
-        <YVsUodiPoiIESrEE@lunn.ch>
-        <20211004170847.3f92ef48@thinkpad>
-        <0b1bc2d7-6e62-5adb-5aed-48b99770d80d@gmail.com>
-        <20211005222657.7d1b2a19@thinkpad>
-        <YVy9Ho47XeVON+lB@lunn.ch>
-        <20211005234342.7334061b@thinkpad>
-        <YVzMghbt1+ZSILpQ@lunn.ch>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S236976AbhJEXNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 19:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236700AbhJEXNE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 19:13:04 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282D7C061749
+        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 16:11:13 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id a73so817296pge.0
+        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 16:11:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=bt3xIfE4BZHPPo38q5CPuaaMeeXh4XDQ8Z9nvqb7yO4=;
+        b=Q+grvMMbdIU6ZGkKf8ssZ/D1VECPybABFxf/ISjBpk09y931PbPI/ZXT0/JbFaNPuU
+         IZfZd4yglO0bWzmx+P7ATbnSULEs4BDUVdMCr/+IyvqYbK2TzoiO9bo149e/WDh3r32i
+         2emkqtblDuSDQIW/3EDin8ItaT+DyQ5qBASN6lt+3mpq5otzSoN7/46Kr/ZZmoJ6puwK
+         fVY/EbQ9OBjvhhgWM6nH6PmGyjCt3F+640CIGhiMUMTOpdDtU+58zn92dl/TSCOdZg/8
+         51+4dPmWVrtkAb8E/Qzc7c0l/6XSZsAAPh7ppC04j6dmvztreLq7Rsy6QVuqj59huggL
+         behA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bt3xIfE4BZHPPo38q5CPuaaMeeXh4XDQ8Z9nvqb7yO4=;
+        b=aK/cuuEqI6BQ0k5/SIzw2VDkc50AtOZD1jnA5GGlYPZbKikKDrmncjzqWtWBtUqWWl
+         q38A2jSWeG1t+Ph4XiGgstCWGxbGEi9tE/DxmqKTRYBACBKWyoNfIQbpDEmqvR56lBKL
+         FZLn7+JzHmWvpLDmY+rSHaGWmZfnXrKPWY8lEXkx5WpWMt9C/9KEmecoPlP0vOWuBeNI
+         hmaLQSzTY6pfw0/0pzOhijiZR3I2tUMOZrtFdOlexM8x+GuCaKIDCcxqYTX7FuvdndnH
+         7o6oW29HlCcEPfXFEAaZWvHfv9n29YKNkHkhPpQcLgj7nMcUEyqsvsK/gXZgDB6Jwpgs
+         PENw==
+X-Gm-Message-State: AOAM533v8qopRuDZgcKVtJNgpn6p31i5yF/V8AxCvaORSkavlKt5ivqJ
+        uCpo2ZyLnKH/HK8KRUcrnSrggA==
+X-Google-Smtp-Source: ABdhPJxO1aqSEZiZTMp6HxZgkTerz8eXFKwhhFzmM1zFUVhSJbbnn/7vy3lu3sK9+s8kbZeNq8m3yA==
+X-Received: by 2002:a63:5947:: with SMTP id j7mr17937582pgm.193.1633475472713;
+        Tue, 05 Oct 2021 16:11:12 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id t13sm3040974pjg.25.2021.10.05.16.11.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Oct 2021 16:11:12 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Cc:     drivers@pensando.io, jtoppins@redhat.com,
+        Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net] ionic: move filter sync_needed bit set
+Date:   Tue,  5 Oct 2021 16:11:05 -0700
+Message-Id: <20211005231105.29660-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 Oct 2021 00:06:58 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+Move the setting of the filter-sync-needed bit to the error
+case in the filter add routine to be sure we're checking the
+live filter status rather than a copy of the pre-sync status.
 
-> > > I suggest we start with simple independent LEDs. That gives enough to
-> > > support the majority of use cases people actually need. And is enough
-> > > to unblock people who i keep NACKing patches and tell them to wait for
-> > > this work to get merged.  
-> > 
-> > Of course, and I plan to do so. Those netdev trigger extensions and
-> > multi-color function definitions are for later :)  
-> 
-> Great.
->  
-> > We got side tracked in this discussion, sorry about that.
-> > 
-> > In this thread I just wanted to settle the LED function property for
-> > LEDs indicating network ports.
-> > 
-> > So would you, Andrew, agree with:
-> > - extending function property to be array of strings instead of only
-> >   one string, so that we can do
-> >     function = "link", "activity";  
-> 
-> I agree with having a list, and we use the combination. If the
-> combination is not possible by the hardware, then -EINVAL, or
-> -EOPNOTSUPP.
-> 
-> > - having separate functions for different link modes
-> >     function = "link1000", "link100";  
-> 
-> I would suggest this, so you can use 
-> 
-> function = "link1000", "link100", "activity"
+Fixes: 969f84394604 ("ionic: sync the filters in the work task")
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+---
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c       | 4 +++-
+ drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c | 3 ---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-The problem here is that LED core uses function to compose LED name:
-  devicename:color:function
-Should we use the first function? Then this LED will be named:
-  ethphy42:green:link1000
-but it also indicates link100...
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 381966e8f557..ccf3ffcd3939 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -1292,8 +1292,10 @@ int ionic_lif_addr_add(struct ionic_lif *lif, const u8 *addr)
+ 	if (err && err != -EEXIST) {
+ 		/* set the state back to NEW so we can try again later */
+ 		f = ionic_rx_filter_by_addr(lif, addr);
+-		if (f && f->state == IONIC_FILTER_STATE_SYNCED)
++		if (f && f->state == IONIC_FILTER_STATE_SYNCED) {
+ 			f->state = IONIC_FILTER_STATE_NEW;
++			set_bit(IONIC_LIF_F_FILTER_SYNC_NEEDED, lif->state);
++		}
+ 
+ 		spin_unlock_bh(&lif->rx_filters.lock);
+ 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
+index 25ecfcfa1281..69728f9013cb 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
+@@ -349,9 +349,6 @@ void ionic_rx_filter_sync(struct ionic_lif *lif)
+ 	list_for_each_entry_safe(sync_item, spos, &sync_add_list, list) {
+ 		(void)ionic_lif_addr_add(lif, sync_item->f.cmd.mac.addr);
+ 
+-		if (sync_item->f.state != IONIC_FILTER_STATE_SYNCED)
+-			set_bit(IONIC_LIF_F_FILTER_SYNC_NEEDED, lif->state);
+-
+ 		list_del(&sync_item->list);
+ 		devm_kfree(dev, sync_item);
+ 	}
+-- 
+2.17.1
 
-> What could be interesting is how you do this in sysfs?  How do you
-> enumerate what the hardware can do? How do you select what you want?
-
-This is again sidetrack from the original discussion, which was only
-meant to discuss DT, but okay :)
-
-> Do you need to do
-> 
-> echo "link1000 link100 activity" > /sys/class/net/eth0/phy/led/function
-> 
-> And we can have something like
-> 
-> cat /sys/class/net/eth0/phy/led/function
-> activity
-> link10 activity
-> link100 activity
-> link1000 activity
-> [link100 link1000 activity]
-> link10
-> link100
-> link1000
-
-No, my current ideas about the netdev trigger extension are as follows
-(not yet complete):
-
-$ cd /sys/.../<LED>
-$ echo netdev >trigger	# To enable netdev trigger
-$ echo eth0 >device_name
-$ echo 1 >ext		# To enable extended netdev trigger.
-			# This will create directory modes if there is
-			# a PHY attached to the interface  
-$ ls modes/		
-1000baseT_Full 100BaseT_Full 100BaseT_Half 10BaseT_Full 10BaseT_Half
-
-$ cd modes/1000baseT_Full
-$ ls
-brightness link rx tx interval
-
-So basically if you enable the extended netdev trigger, you will get
-all the standard netdev settings for each PHY mode. (With a little
-change to support blinking on link.)
-
-With this you can set the LED:
-  ON when linked and speed=1000m or 100m, blink on activity
-or
-  blink with 50ms interval when speed=1000m
-  blink with 100ms interval when speed=100m
-  blink with 200ms interval when speed=10m
-
-(Note that these don't need to be supported by PHY. We are talking
- about SW control. If the PHY supports some of these in HW, then the
- trigger can be offloaded.)
-
-Marek
