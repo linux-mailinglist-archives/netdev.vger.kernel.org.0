@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E323421B9B
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:15:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A968C421B9C
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:15:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231160AbhJEBQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 21:16:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55400 "EHLO mail.kernel.org"
+        id S231545AbhJEBRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 21:17:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55410 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231185AbhJEBQi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231166AbhJEBQi (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 4 Oct 2021 21:16:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4FE75613AC;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EAC88615A3;
         Tue,  5 Oct 2021 01:14:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633396488;
-        bh=7WxCVfrlfePgRSv+/N0cO5NXF0/ZphXwK1B79Ov+pmM=;
+        s=k20201202; t=1633396489;
+        bh=r3P8d6axw7ec4FSLieYQn0HYdWAzgfWlYU65/kglq7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z1lv61H7cpnJdKTkyszkW2n+d/rtdQ/r/A4Lm1+/9maVByanudathElZ+uMN25EUX
-         x/Ni6/tT5lWPm41Pa+snp5Hk0O6p/TZcbGvHe9OHREbZTlN4UPOScn5c4kaEiS1ekQ
-         qvfOFvY+o5W1SHoNK80TUuawNKqa7eJ0KTruNAfGmQDaS27TlY0tvITl2sPR8gDXsQ
-         WoPu/rKRiFPu9MXHYF1Zc8QSKYBRyYv7kF8u5rht5Og/mulYRL3eMb4pHLIxPHTF6E
-         jxNOlfSIDbVP1BxmQtOT1TqgkkaUFQKzuCP5L6P4FPGLZ4TQ85Ywes0KlbTxBO+tvJ
-         TQn9udZD0hy5w==
+        b=SvV/nTTR1U39VYIT2tFVEyFiJyBPShsTrQzXWbs9YT+b+zELoU0kjK5xh3ZqJs5hd
+         MEI8x+uGbGPiuMFqjDFtkvLy0hj7BHxDxtmCck97jVpzxFC8fXf3ARlacBqKm8j+NV
+         cO7eld/7zMhVi17n13cTCuDrHjjE2vv1prbJu4yA2OzHzNbi8uXWlM10LA3oQB/yq3
+         SRMeSn/qqSm/cBX8h5JIcfyIvDM/ctJTcJ3DZv2GxcVl4NmaxpD8PCCm++JbRLohJX
+         dRlN4e6pvl5qJYw1xnJgmExWroHxmCGMWFk74sXNEdSmMf5rAdOHr9YLaXm5N0d0XE
+         qZ2bCLZnaFnVQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Vlad Buslov <vladbu@nvidia.com>,
         Paul Blakey <paulb@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 12/15] net/mlx5: Bridge, mark reg_c1 when pushing VLAN
-Date:   Mon,  4 Oct 2021 18:12:59 -0700
-Message-Id: <20211005011302.41793-13-saeed@kernel.org>
+Subject: [net-next 13/15] net/mlx5: Bridge, pop VLAN on egress table miss
+Date:   Mon,  4 Oct 2021 18:13:00 -0700
+Message-Id: <20211005011302.41793-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211005011302.41793-1-saeed@kernel.org>
 References: <20211005011302.41793-1-saeed@kernel.org>
@@ -44,139 +44,207 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vlad Buslov <vladbu@nvidia.com>
 
-On ingress VLAN push also assign value 0x7FE to reg_c1 tunnel id+opts
-bits (tunnel id 0, which is not a valid tunnel id, and option 0x7FE which
-was reserved by one of previous patches in the series). In following patch
-the reg value is matched on egress miss to restore the packet to its
-original state by removing the VLAN before passing it to the software data
-path.
+Create lowest priority flow group in egress table with single rule that
+matches on special reg_c1 value that is set on ingress VLAN push with
+single action that pops VLAN. The flow destination is skip table that is
+used to skip any further processing of packet in FDB bridge priority.
 
 Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 Reviewed-by: Paul Blakey <paulb@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/esw/bridge.c  | 40 ++++++++++++++++++-
- .../mellanox/mlx5/core/esw/bridge_priv.h      |  1 +
- include/linux/mlx5/eswitch.h                  |  9 +++++
- 3 files changed, 49 insertions(+), 1 deletion(-)
+ .../ethernet/mellanox/mlx5/core/esw/bridge.c  | 128 +++++++++++++++++-
+ 1 file changed, 126 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-index 8361dfc0bf1a..439b67b4380f 100644
+index 439b67b4380f..ed72246d1d83 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-@@ -465,8 +465,10 @@ mlx5_esw_bridge_ingress_flow_with_esw_create(u16 vport_num, const unsigned char
- 		 mlx5_eswitch_get_vport_metadata_for_match(esw, vport_num));
+@@ -28,7 +28,10 @@
+ #define MLX5_ESW_BRIDGE_EGRESS_TABLE_VLAN_GRP_IDX_TO (MLX5_ESW_BRIDGE_EGRESS_TABLE_SIZE / 2 - 1)
+ #define MLX5_ESW_BRIDGE_EGRESS_TABLE_MAC_GRP_IDX_FROM \
+ 	(MLX5_ESW_BRIDGE_EGRESS_TABLE_VLAN_GRP_IDX_TO + 1)
+-#define MLX5_ESW_BRIDGE_EGRESS_TABLE_MAC_GRP_IDX_TO (MLX5_ESW_BRIDGE_EGRESS_TABLE_SIZE - 1)
++#define MLX5_ESW_BRIDGE_EGRESS_TABLE_MAC_GRP_IDX_TO (MLX5_ESW_BRIDGE_EGRESS_TABLE_SIZE - 2)
++#define MLX5_ESW_BRIDGE_EGRESS_TABLE_MISS_GRP_IDX_FROM \
++	(MLX5_ESW_BRIDGE_EGRESS_TABLE_MAC_GRP_IDX_TO + 1)
++#define MLX5_ESW_BRIDGE_EGRESS_TABLE_MISS_GRP_IDX_TO (MLX5_ESW_BRIDGE_EGRESS_TABLE_SIZE - 1)
  
- 	if (vlan && vlan->pkt_reformat_push) {
--		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
-+		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT |
-+			MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
- 		flow_act.pkt_reformat = vlan->pkt_reformat_push;
-+		flow_act.modify_hdr = vlan->pkt_mod_hdr_push_mark;
- 	} else if (vlan) {
- 		MLX5_SET_TO_ONES(fte_match_param, rule_spec->match_criteria,
- 				 outer_headers.cvlan_tag);
-@@ -845,6 +847,33 @@ mlx5_esw_bridge_vlan_pop_cleanup(struct mlx5_esw_bridge_vlan *vlan, struct mlx5_
- 	vlan->pkt_reformat_pop = NULL;
- }
+ #define MLX5_ESW_BRIDGE_SKIP_TABLE_SIZE 0
  
-+static int
-+mlx5_esw_bridge_vlan_push_mark_create(struct mlx5_esw_bridge_vlan *vlan, struct mlx5_eswitch *esw)
-+{
-+	u8 action[MLX5_UN_SZ_BYTES(set_add_copy_action_in_auto)] = {};
-+	struct mlx5_modify_hdr *pkt_mod_hdr;
-+
-+	MLX5_SET(set_action_in, action, action_type, MLX5_ACTION_TYPE_SET);
-+	MLX5_SET(set_action_in, action, field, MLX5_ACTION_IN_FIELD_METADATA_REG_C_1);
-+	MLX5_SET(set_action_in, action, offset, 8);
-+	MLX5_SET(set_action_in, action, length, ESW_TUN_OPTS_BITS + ESW_TUN_ID_BITS);
-+	MLX5_SET(set_action_in, action, data, ESW_TUN_BRIDGE_INGRESS_PUSH_VLAN);
-+
-+	pkt_mod_hdr = mlx5_modify_header_alloc(esw->dev, MLX5_FLOW_NAMESPACE_FDB, 1, action);
-+	if (IS_ERR(pkt_mod_hdr))
-+		return PTR_ERR(pkt_mod_hdr);
-+
-+	vlan->pkt_mod_hdr_push_mark = pkt_mod_hdr;
-+	return 0;
-+}
-+
-+static void
-+mlx5_esw_bridge_vlan_push_mark_cleanup(struct mlx5_esw_bridge_vlan *vlan, struct mlx5_eswitch *esw)
-+{
-+	mlx5_modify_header_dealloc(esw->dev, vlan->pkt_mod_hdr_push_mark);
-+	vlan->pkt_mod_hdr_push_mark = NULL;
-+}
-+
- static struct mlx5_esw_bridge_vlan *
- mlx5_esw_bridge_vlan_create(u16 vid, u16 flags, struct mlx5_esw_bridge_port *port,
- 			    struct mlx5_eswitch *esw)
-@@ -864,6 +893,10 @@ mlx5_esw_bridge_vlan_create(u16 vid, u16 flags, struct mlx5_esw_bridge_port *por
- 		err = mlx5_esw_bridge_vlan_push_create(vlan, esw);
- 		if (err)
- 			goto err_vlan_push;
-+
-+		err = mlx5_esw_bridge_vlan_push_mark_create(vlan, esw);
-+		if (err)
-+			goto err_vlan_push_mark;
- 	}
- 	if (flags & BRIDGE_VLAN_INFO_UNTAGGED) {
- 		err = mlx5_esw_bridge_vlan_pop_create(vlan, esw);
-@@ -882,6 +915,9 @@ mlx5_esw_bridge_vlan_create(u16 vid, u16 flags, struct mlx5_esw_bridge_port *por
- 	if (vlan->pkt_reformat_pop)
- 		mlx5_esw_bridge_vlan_pop_cleanup(vlan, esw);
- err_vlan_pop:
-+	if (vlan->pkt_mod_hdr_push_mark)
-+		mlx5_esw_bridge_vlan_push_mark_cleanup(vlan, esw);
-+err_vlan_push_mark:
- 	if (vlan->pkt_reformat_push)
- 		mlx5_esw_bridge_vlan_push_cleanup(vlan, esw);
- err_vlan_push:
-@@ -908,6 +944,8 @@ static void mlx5_esw_bridge_vlan_flush(struct mlx5_esw_bridge_vlan *vlan,
- 
- 	if (vlan->pkt_reformat_pop)
- 		mlx5_esw_bridge_vlan_pop_cleanup(vlan, esw);
-+	if (vlan->pkt_mod_hdr_push_mark)
-+		mlx5_esw_bridge_vlan_push_mark_cleanup(vlan, esw);
- 	if (vlan->pkt_reformat_push)
- 		mlx5_esw_bridge_vlan_push_cleanup(vlan, esw);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h
-index 52964a82d6a6..878311fe950a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h
-@@ -49,6 +49,7 @@ struct mlx5_esw_bridge_vlan {
- 	struct list_head fdb_list;
- 	struct mlx5_pkt_reformat *pkt_reformat_push;
- 	struct mlx5_pkt_reformat *pkt_reformat_pop;
-+	struct mlx5_modify_hdr *pkt_mod_hdr_push_mark;
+@@ -61,6 +64,9 @@ struct mlx5_esw_bridge {
+ 	struct mlx5_flow_table *egress_ft;
+ 	struct mlx5_flow_group *egress_vlan_fg;
+ 	struct mlx5_flow_group *egress_mac_fg;
++	struct mlx5_flow_group *egress_miss_fg;
++	struct mlx5_pkt_reformat *egress_miss_pkt_reformat;
++	struct mlx5_flow_handle *egress_miss_handle;
+ 	unsigned long ageing_time;
+ 	u32 flags;
  };
+@@ -307,6 +313,36 @@ mlx5_esw_bridge_egress_mac_fg_create(struct mlx5_eswitch *esw, struct mlx5_flow_
+ 	return fg;
+ }
  
- struct mlx5_esw_bridge_port {
-diff --git a/include/linux/mlx5/eswitch.h b/include/linux/mlx5/eswitch.h
-index 4ab5c1fc1270..97afcea39a7b 100644
---- a/include/linux/mlx5/eswitch.h
-+++ b/include/linux/mlx5/eswitch.h
-@@ -130,11 +130,20 @@ u32 mlx5_eswitch_get_vport_metadata_for_set(struct mlx5_eswitch *esw,
- #define ESW_TUN_OPTS_MASK GENMASK(31 - ESW_TUN_ID_BITS - ESW_RESERVED_BITS, ESW_TUN_OPTS_OFFSET)
- #define ESW_TUN_MASK GENMASK(31 - ESW_RESERVED_BITS, ESW_TUN_OFFSET)
- #define ESW_TUN_ID_SLOW_TABLE_GOTO_VPORT 0 /* 0 is not a valid tunnel id */
-+#define ESW_TUN_ID_BRIDGE_INGRESS_PUSH_VLAN ESW_TUN_ID_SLOW_TABLE_GOTO_VPORT
- /* 0x7FF is a reserved mapping */
- #define ESW_TUN_OPTS_SLOW_TABLE_GOTO_VPORT GENMASK(ESW_TUN_OPTS_BITS - 1, 0)
- #define ESW_TUN_SLOW_TABLE_GOTO_VPORT ((ESW_TUN_ID_SLOW_TABLE_GOTO_VPORT << ESW_TUN_OPTS_BITS) | \
- 				       ESW_TUN_OPTS_SLOW_TABLE_GOTO_VPORT)
- #define ESW_TUN_SLOW_TABLE_GOTO_VPORT_MARK ESW_TUN_OPTS_MASK
-+/* 0x7FE is a reserved mapping for bridge ingress push vlan mark */
-+#define ESW_TUN_OPTS_BRIDGE_INGRESS_PUSH_VLAN (ESW_TUN_OPTS_SLOW_TABLE_GOTO_VPORT - 1)
-+#define ESW_TUN_BRIDGE_INGRESS_PUSH_VLAN ((ESW_TUN_ID_BRIDGE_INGRESS_PUSH_VLAN << \
-+					   ESW_TUN_OPTS_BITS) | \
-+					  ESW_TUN_OPTS_BRIDGE_INGRESS_PUSH_VLAN)
-+#define ESW_TUN_BRIDGE_INGRESS_PUSH_VLAN_MARK \
-+	GENMASK(31 - ESW_TUN_ID_BITS - ESW_RESERVED_BITS, \
-+		ESW_TUN_OPTS_OFFSET + 1)
++static struct mlx5_flow_group *
++mlx5_esw_bridge_egress_miss_fg_create(struct mlx5_eswitch *esw, struct mlx5_flow_table *egress_ft)
++{
++	int inlen = MLX5_ST_SZ_BYTES(create_flow_group_in);
++	struct mlx5_flow_group *fg;
++	u32 *in, *match;
++
++	in = kvzalloc(inlen, GFP_KERNEL);
++	if (!in)
++		return ERR_PTR(-ENOMEM);
++
++	MLX5_SET(create_flow_group_in, in, match_criteria_enable, MLX5_MATCH_MISC_PARAMETERS_2);
++	match = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
++
++	MLX5_SET(fte_match_param, match, misc_parameters_2.metadata_reg_c_1, ESW_TUN_MASK);
++
++	MLX5_SET(create_flow_group_in, in, start_flow_index,
++		 MLX5_ESW_BRIDGE_EGRESS_TABLE_MISS_GRP_IDX_FROM);
++	MLX5_SET(create_flow_group_in, in, end_flow_index,
++		 MLX5_ESW_BRIDGE_EGRESS_TABLE_MISS_GRP_IDX_TO);
++
++	fg = mlx5_create_flow_group(egress_ft, in);
++	if (IS_ERR(fg))
++		esw_warn(esw->dev,
++			 "Failed to create bridge egress table miss flow group (err=%ld)\n",
++			 PTR_ERR(fg));
++	kvfree(in);
++	return fg;
++}
++
+ static int
+ mlx5_esw_bridge_ingress_table_init(struct mlx5_esw_bridge_offloads *br_offloads)
+ {
+@@ -383,12 +419,19 @@ mlx5_esw_bridge_ingress_table_cleanup(struct mlx5_esw_bridge_offloads *br_offloa
+ 	br_offloads->ingress_ft = NULL;
+ }
  
- u8 mlx5_eswitch_mode(struct mlx5_core_dev *dev);
- u16 mlx5_eswitch_get_total_vports(const struct mlx5_core_dev *dev);
++static struct mlx5_flow_handle *
++mlx5_esw_bridge_egress_miss_flow_create(struct mlx5_flow_table *egress_ft,
++					struct mlx5_flow_table *skip_ft,
++					struct mlx5_pkt_reformat *pkt_reformat);
++
+ static int
+ mlx5_esw_bridge_egress_table_init(struct mlx5_esw_bridge_offloads *br_offloads,
+ 				  struct mlx5_esw_bridge *bridge)
+ {
++	struct mlx5_flow_group *miss_fg = NULL, *mac_fg, *vlan_fg;
++	struct mlx5_pkt_reformat *miss_pkt_reformat = NULL;
++	struct mlx5_flow_handle *miss_handle = NULL;
+ 	struct mlx5_eswitch *esw = br_offloads->esw;
+-	struct mlx5_flow_group *mac_fg, *vlan_fg;
+ 	struct mlx5_flow_table *egress_ft;
+ 	int err;
+ 
+@@ -410,9 +453,48 @@ mlx5_esw_bridge_egress_table_init(struct mlx5_esw_bridge_offloads *br_offloads,
+ 		goto err_mac_fg;
+ 	}
+ 
++	if (mlx5_esw_bridge_pkt_reformat_vlan_pop_supported(esw)) {
++		miss_fg = mlx5_esw_bridge_egress_miss_fg_create(esw, egress_ft);
++		if (IS_ERR(miss_fg)) {
++			esw_warn(esw->dev, "Failed to create miss flow group (err=%ld)\n",
++				 PTR_ERR(miss_fg));
++			miss_fg = NULL;
++			goto skip_miss_flow;
++		}
++
++		miss_pkt_reformat = mlx5_esw_bridge_pkt_reformat_vlan_pop_create(esw);
++		if (IS_ERR(miss_pkt_reformat)) {
++			esw_warn(esw->dev,
++				 "Failed to alloc packet reformat REMOVE_HEADER (err=%ld)\n",
++				 PTR_ERR(miss_pkt_reformat));
++			miss_pkt_reformat = NULL;
++			mlx5_destroy_flow_group(miss_fg);
++			miss_fg = NULL;
++			goto skip_miss_flow;
++		}
++
++		miss_handle = mlx5_esw_bridge_egress_miss_flow_create(egress_ft,
++								      br_offloads->skip_ft,
++								      miss_pkt_reformat);
++		if (IS_ERR(miss_handle)) {
++			esw_warn(esw->dev, "Failed to create miss flow (err=%ld)\n",
++				 PTR_ERR(miss_handle));
++			miss_handle = NULL;
++			mlx5_packet_reformat_dealloc(esw->dev, miss_pkt_reformat);
++			miss_pkt_reformat = NULL;
++			mlx5_destroy_flow_group(miss_fg);
++			miss_fg = NULL;
++			goto skip_miss_flow;
++		}
++	}
++skip_miss_flow:
++
+ 	bridge->egress_ft = egress_ft;
+ 	bridge->egress_vlan_fg = vlan_fg;
+ 	bridge->egress_mac_fg = mac_fg;
++	bridge->egress_miss_fg = miss_fg;
++	bridge->egress_miss_pkt_reformat = miss_pkt_reformat;
++	bridge->egress_miss_handle = miss_handle;
+ 	return 0;
+ 
+ err_mac_fg:
+@@ -425,6 +507,13 @@ mlx5_esw_bridge_egress_table_init(struct mlx5_esw_bridge_offloads *br_offloads,
+ static void
+ mlx5_esw_bridge_egress_table_cleanup(struct mlx5_esw_bridge *bridge)
+ {
++	if (bridge->egress_miss_handle)
++		mlx5_del_flow_rules(bridge->egress_miss_handle);
++	if (bridge->egress_miss_pkt_reformat)
++		mlx5_packet_reformat_dealloc(bridge->br_offloads->esw->dev,
++					     bridge->egress_miss_pkt_reformat);
++	if (bridge->egress_miss_fg)
++		mlx5_destroy_flow_group(bridge->egress_miss_fg);
+ 	mlx5_destroy_flow_group(bridge->egress_mac_fg);
+ 	mlx5_destroy_flow_group(bridge->egress_vlan_fg);
+ 	mlx5_destroy_flow_table(bridge->egress_ft);
+@@ -623,6 +712,41 @@ mlx5_esw_bridge_egress_flow_create(u16 vport_num, u16 esw_owner_vhca_id, const u
+ 	return handle;
+ }
+ 
++static struct mlx5_flow_handle *
++mlx5_esw_bridge_egress_miss_flow_create(struct mlx5_flow_table *egress_ft,
++					struct mlx5_flow_table *skip_ft,
++					struct mlx5_pkt_reformat *pkt_reformat)
++{
++	struct mlx5_flow_destination dest = {
++		.type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE,
++		.ft = skip_ft,
++	};
++	struct mlx5_flow_act flow_act = {
++		.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
++		MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT,
++		.flags = FLOW_ACT_NO_APPEND,
++		.pkt_reformat = pkt_reformat,
++	};
++	struct mlx5_flow_spec *rule_spec;
++	struct mlx5_flow_handle *handle;
++
++	rule_spec = kvzalloc(sizeof(*rule_spec), GFP_KERNEL);
++	if (!rule_spec)
++		return ERR_PTR(-ENOMEM);
++
++	rule_spec->match_criteria_enable = MLX5_MATCH_MISC_PARAMETERS_2;
++
++	MLX5_SET(fte_match_param, rule_spec->match_criteria,
++		 misc_parameters_2.metadata_reg_c_1, ESW_TUN_MASK);
++	MLX5_SET(fte_match_param, rule_spec->match_value, misc_parameters_2.metadata_reg_c_1,
++		 ESW_TUN_BRIDGE_INGRESS_PUSH_VLAN_MARK);
++
++	handle = mlx5_add_flow_rules(egress_ft, rule_spec, &flow_act, &dest, 1);
++
++	kvfree(rule_spec);
++	return handle;
++}
++
+ static struct mlx5_esw_bridge *mlx5_esw_bridge_create(int ifindex,
+ 						      struct mlx5_esw_bridge_offloads *br_offloads)
+ {
 -- 
 2.31.1
 
