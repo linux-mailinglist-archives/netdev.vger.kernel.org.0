@@ -2,65 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E264422BBF
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 17:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B79AF422BF1
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 17:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231968AbhJEPE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 11:04:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230141AbhJEPE5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 11:04:57 -0400
-Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ADBC061749
-        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 08:03:07 -0700 (PDT)
-Received: by mail-vs1-xe32.google.com with SMTP id p2so1596409vst.10
-        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 08:03:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=kHkROjDqImNrCORBYAHwY53VEsgwyF5aAqEMBu+eK6E=;
-        b=Ld/jGmlM7L7cvmpZs7O16aFGH2MhSAvs4Vg9XepU9E0Fa3G6BqKbUz9RXNmqst1Odo
-         p8xP+SwrSaNCxONhKG/pugYde6lKuarl874Wn2sBPkuY+u8LIcSuHVtLOJC7sEy8l7ak
-         ekz7AbxYeMbdVBYz4GAodVqQaiG61uQjw6qiqKHNZbbh5gh20QUeePXI2r0N1p3EW8U0
-         MPWC5YV4LSbxBTUfvEtWM/k9wnrBI0Nmho8zZEhNZ2wgpJsLCVfS6VWc/OtXWCkhz5m0
-         7GWs7eLSKPDGn8FE1OEymXNtCuXE6Rr4xq1UMz0LwD6AvtLZcyNSu2CqgvUlVxsxBu7R
-         a9sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=kHkROjDqImNrCORBYAHwY53VEsgwyF5aAqEMBu+eK6E=;
-        b=wjUQDOmINxzE9sWFhaYgPHNFJ66Bxs697zd/RGvnJolAcHDBomCo7VLkLGkWx1VFAX
-         5gr/VBNoI9c9C/0197Z7a9bEWKnpF3CjFb4790Kdu19lvdxfhLXhiQUKn138scDRHx3z
-         d1sAksZfLda7TaoIlRhTP5ZhZ3rDrTgIVGvp8qVR2FLT5WpxdHzs1b2n6cAOL5LxTqNB
-         0Jyht2xlL0iZbe7M7YSZGli+vxRZCPnJv3gJhubqKuG+tnMxV/dppDZLhe4kYdoK8C7/
-         CeizpUjqhxLt04rNAwpBHu+p7zAgm67h2vjP/fcWS8H+viwZz5pDlK7ZUMdMk8bNvB0j
-         6X5g==
-X-Gm-Message-State: AOAM532RxJsR6bQQ6cbAOMp2UuWRCbYscDmHk1rFRFNQAjJdoPHm3Dm7
-        ytueUUHrJuKpABNRmT/e0DAakC5ft8foG0eePHE=
-X-Google-Smtp-Source: ABdhPJyKzegwSGuZT/Yg1u4eNZ0fVVpWq7kUUqCYZdV6SkrojGHJFjjjNdBba2GQlWxuyOtaokJfprgqH2gckxOo8jY=
-X-Received: by 2002:a67:d88c:: with SMTP id f12mr2616076vsj.33.1633446186474;
- Tue, 05 Oct 2021 08:03:06 -0700 (PDT)
+        id S231663AbhJEPMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 11:12:40 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:51141 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235075AbhJEPMf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 11:12:35 -0400
+Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id DA5DB200F498;
+        Tue,  5 Oct 2021 17:10:43 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be DA5DB200F498
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1633446644;
+        bh=hY865fCCIDdqf0VnY3r1KEDzT40QXuEZRetzxZyb23Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=pI1jNGzKG610R7OoUtUKXWB1UHnSfgR07WQAWIOmZyzr5Vtg+Z8Irsn7EHlV1Y2Yp
+         Xn1dajMTyk1Cl6GRGBhczgqmso987Bm2aUd6/I9nEXGyXJpVcfHP7fZnLYuO/UCV84
+         X3UUhnik1yCQwbqBd7wF7RArCxgK6QR68nbbH7yL8bvPpbgGwC1yHy/ew4Q94Lc9UR
+         fOIp1CkWRVcE6YWZfYPB2s7VFQGnMmn5DKAy/AMH7jIoEd4DKy+/U9kqxoz0FlB8L2
+         bzVPEUWuvWWXTzVL9LQlq0Qe+9ucQBNSwPB1PdJKY5lytptx5aenNb/hMFsaMhMSyR
+         fsgIZrbFa1jAw==
+From:   Justin Iurman <justin.iurman@uliege.be>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, dsahern@kernel.org,
+        stephen@networkplumber.org, justin.iurman@uliege.be
+Subject: [PATCH iproute2-next v2 0/2] Support for IOAM encap modes
+Date:   Tue,  5 Oct 2021 17:10:18 +0200
+Message-Id: <20211005151020.32533-1-justin.iurman@uliege.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: by 2002:a59:5d10:0:b0:235:cc09:d8f with HTTP; Tue, 5 Oct 2021
- 08:03:06 -0700 (PDT)
-Reply-To: Salemchantal2@mail.com
-From:   MRS Salem Chantal Lawrence <patrickmurphy791@gmail.com>
-Date:   Tue, 5 Oct 2021 08:03:06 -0700
-Message-ID: <CAEsU2=gF0EZdry_d1GDz3M52tCtd9BGiEj=X5U_i5m36PFrQCw@mail.gmail.com>
-Subject: Attention
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention
+v2:
+ - Fix the size of ioam6_mode_types (thanks David Ahern)
+ - Remove uapi diff from patch #1 (already merged inside iproute2-next)
 
-You have been compensated with the sum of 4.6 million dollars in this
-United Nation the payment will be issue into Atm Visa Card and send to you
-from the Bank we need your Address Passport and your whatsapp number.
+Following the series applied to net-next (see [1]), here are the corresponding
+changes to iproute2.
 
-THANKS
-MRS Salem Chantal Lawrence
+In the current implementation, IOAM can only be inserted directly (i.e., only
+inside packets generated locally) by default, to be compliant with RFC8200.
+
+This patch adds support for in-transit packets and provides the ip6ip6
+encapsulation of IOAM (RFC8200 compliant). Therefore, three ioam6 encap modes
+are defined:
+
+ - inline: directly inserts IOAM inside packets (by default).
+
+ - encap:  ip6ip6 encapsulation of IOAM inside packets.
+
+ - auto:   either inline mode for packets generated locally or encap mode for
+           in-transit packets.
+
+With current iproute2 implementation, it is configured this way:
+
+$ ip -6 r [...] encap ioam6 trace prealloc [...]
+
+The old syntax does not change (for backwards compatibility) and implicitly uses
+the inline mode. With the new syntax, an encap mode can be specified:
+
+(inline mode)
+$ ip -6 r [...] encap ioam6 mode inline trace prealloc [...]
+
+(encap mode)
+$ ip -6 r [...] encap ioam6 mode encap tundst fc00::2 trace prealloc [...]
+
+(auto mode)
+$ ip -6 r [...] encap ioam6 mode auto tundst fc00::2 trace prealloc [...]
+
+A tunnel destination address must be configured when using the encap mode or the
+auto mode.
+
+  [1] https://lore.kernel.org/netdev/163335001045.30570.12527451523558030753.git-patchwork-notify@kernel.org/T/#m3b428d4142ee3a414ec803466c211dfdec6e0c09
+
+Justin Iurman (2):
+  Add support for IOAM encap modes
+  Update documentation
+
+ ip/iproute_lwtunnel.c  | 142 +++++++++++++++++++++++++++++------------
+ man/man8/ip-route.8.in |  39 +++++++++--
+ 2 files changed, 132 insertions(+), 49 deletions(-)
+
+-- 
+2.25.1
+
