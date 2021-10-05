@@ -2,101 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5C86422F8B
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 20:00:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1CC8422F90
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 20:02:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234724AbhJESCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 14:02:18 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:41807 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232869AbhJESCR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 14:02:17 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A3B1358104F;
-        Tue,  5 Oct 2021 14:00:26 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Tue, 05 Oct 2021 14:00:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        message-id:date:mime-version:subject:to:cc:references:from
-        :in-reply-to:content-type:content-transfer-encoding; s=fm3; bh=W
-        wKIRauzG1K4f0r8zZg//BwjfXC6szb332atZehFcLQ=; b=e6VyM8dEA0Erxneif
-        N5qK5rrQX2KKZVfeTVq9oUiaAi6Vq54vS3s/1DRr6x+2bTMzl+hl/c7saD+A0jTb
-        FRdw0zk+DqoqihB31dgqIAuvGLcBkScbpW9UfvwvjztfsuLiKK2I5OtBXXkhUs0Z
-        kljGJt6UggnnkqNJ4qeoGy3vGwRkdJ22RZ8NjlsZ6KfDL0Sjn9IqpbE024NqH2Y0
-        2MsD7XkjZZjyiyF83LkUW0+eBbLhmukQuOszNlkLGA6DOVabgj/CzvAw96NB7HlV
-        CYHh8WNw9CYSDegKM5IaSTGqOmtn0IDwLt7mHpmsTLtcdgsJL2QbSAm/LlV4NEN2
-        kTTVg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=WwKIRauzG1K4f0r8zZg//BwjfXC6szb332atZehFc
-        LQ=; b=INLddzxTszqRjVJl3vlqiQAtAw7J6f1lPj/WMlaWB7X9f7rfALNQcGIRL
-        VzQSoXQ+GUGvUsDB77olL85yG6xILuFz7poZIj4DVz3HGw5ZzdYB1OCAnlR28UHl
-        YXbtSvM+Luo7gHXln8Ut5UFf50fwe5NPzIb+LaK93iKd+Mjzxi3EB9CsfWGofu5Z
-        77WHGPYj5/xOp1pgjcLp8ppXvo99ZeGzdLh+2ccFw+xeRKHiV/frNkoh+s1gBkgv
-        OOW3BMdU3ZZdGPjRtVwym52DMvbtBw1NuZloFBU7aTP9HXK/13LNOUhFSiDgOoHG
-        lCgwygcjgRLuyR2rTGhMILxjmf8pQ==
-X-ME-Sender: <xms:upJcYdS5XXFAuAEuIv0l4DxX-gzqLjSnosZy8UJcpO9y1JSSwsFAvQ>
-    <xme:upJcYWyzQukYzShHGDf1hm-xH0lLCByMWmm-HKxamgSbxZxwSkUjwy5I1ObsKDSp2
-    mBJLHM-US-Xvq29gzI>
-X-ME-Received: <xmr:upJcYS3FiUXt_c_UJkEbivMSdNucDy23kSBdWqv92dEer2jZt3Pguq69FIH0Beo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudelgedguddvtdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefkffggfgfuvfhfhfgjtgfgsehtkeertddtfeejnecuhfhrohhmpeflihgr
-    gihunhcujggrnhhguceojhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomheqne
-    cuggftrfgrthhtvghrnhepheeiuddvvefhkeejfedttdekieethfdukedvieeuueelgfel
-    ieejgeehvdekudelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
-    hfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomh
-X-ME-Proxy: <xmx:upJcYVDOLnPJYH2BYn_ZJchzJOR94JXiMHuX4HPAAnz_6KOW7qkJXA>
-    <xmx:upJcYWh8TebLJ9BDcpVMtZJNAeaXi2z0TfDiXVtTXxkOQvtRmGGGLA>
-    <xmx:upJcYZoEig34LFdh0WUKRd2NE1nDFY9gekBwtr4-rilZB2Id0e-dZA>
-    <xmx:upJcYaxpTMPv2ePBP4GKVEIt4WrFlLJwZWqkqBy9glCUHHsudhbrVg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 5 Oct 2021 14:00:24 -0400 (EDT)
-Message-ID: <e9e1c9e4-abc1-5fd9-637a-8a7205bbf4c6@flygoat.com>
-Date:   Tue, 5 Oct 2021 19:00:14 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.2
-Subject: Re: [PATCH 5/7] mips: bpf: Add JIT workarounds for CPU errata
-To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, paulburton@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        tsbogend@alpha.franken.de, chenhuacai@kernel.org,
-        yangtiezhu@loongson.cn, tony.ambardar@gmail.com,
-        bpf@vger.kernel.org, linux-mips@vger.kernel.org,
+        id S234590AbhJESD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 14:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232861AbhJESDz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 14:03:55 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748DDC061755
+        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 11:02:04 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id f9so2042295edx.4
+        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 11:02:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8soODRKahVCrtRlGdz3itpTz6efHriNTM+iAlgAUdyU=;
+        b=bYv7DnuO0RwkyA+l2MKeegZst/fh5ECeydJbnQ9QG8NQQ8b2dDTFDpxbhrFgAtrWcO
+         PNfl0qr8UxOX9DiiorStolrwbPL57AOAtego0kcSajMSiwv3CSlTuVg3egOK6yxfa4Sw
+         MEz6Stdn1nAyy5hLsBb1h69M0tzHD+xBqEThU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8soODRKahVCrtRlGdz3itpTz6efHriNTM+iAlgAUdyU=;
+        b=XazuRNKolhtZ0aNyFcfh8AJ1dSA27MRmEsr56ahY6gjRx17oijIbqe1YxS3KN+aQ9V
+         dPASgMsypzlbhD5oR35leBGO0XsCEkDdxPY4utX+QsMKwI7p0rZY5DXx994FxW9H6ibi
+         y3yf2ay4lLFxHMhtTM9/S1DBsreDgZwUaZL2RxoQL3SRnM56aIsg2OotIAvqJvvmbvpk
+         pWeQ3fi1/4xK847NkO/VrNshZQf/F6kOiVcMSmZbN1lMcRwmuPGDVxg4rddiXM4B/jZv
+         zB6npyIXoFxKnsAP/FIibEe5Wr3VKxiyp9VhjrVXwGxn1AcAZhym2ckJOfJV9C/QSBi+
+         C5CQ==
+X-Gm-Message-State: AOAM531Hj7QIcvU4ATxalqb2KBTN6lgipbsr303V3LrqPSrksUZhOCqo
+        V/FsjG3XkY3AmkJUloTW9LRbWufIFrPE0JKa
+X-Google-Smtp-Source: ABdhPJztLA+4bqrgciuGWV2Utz46byIwXyxUhs5Eyhx9lSWiXnu0KLr/rnzC3xlvcwqMkfGmPec67Q==
+X-Received: by 2002:a17:906:c317:: with SMTP id s23mr23300124ejz.127.1633456922542;
+        Tue, 05 Oct 2021 11:02:02 -0700 (PDT)
+Received: from [192.168.1.149] ([80.208.69.72])
+        by smtp.gmail.com with ESMTPSA id e7sm9799784edk.3.2021.10.05.11.02.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Oct 2021 11:02:02 -0700 (PDT)
+Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, rcu@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-References: <20211005165408.2305108-1-johan.almbladh@anyfinetworks.com>
- <20211005165408.2305108-6-johan.almbladh@anyfinetworks.com>
-From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
-In-Reply-To: <20211005165408.2305108-6-johan.almbladh@anyfinetworks.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20211005094728.203ecef2@gandalf.local.home>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Message-ID: <ef5b1654-1f75-da82-cab8-248319efbe3f@rasmusvillemoes.dk>
+Date:   Tue, 5 Oct 2021 20:01:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+MIME-Version: 1.0
+In-Reply-To: <20211005094728.203ecef2@gandalf.local.home>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 05/10/2021 15.47, Steven Rostedt wrote:
 
+> That is, instead of declaring: typeof(*p) *_p; just do:
+>  typeof(p) _p;
+> 
+> Also had to update a lot of the function pointer initialization in the
+> networking code, as a function address must be passed as an argument in
+> RCU_INIT_POINTER() 
 
-在 2021/10/5 17:54, Johan Almbladh 写道:
-> This patch adds workarounds for the following CPU errata to the MIPS
-> eBPF JIT, if enabled in the kernel configuration.
->
->    - R10000 ll/sc weak ordering
->    - Loongson-3 ll/sc weak ordering
->    - Loongson-2F jump hang
->
-> The Loongson-2F nop errata is implemented in uasm, which the JIT uses,
-> so no additional mitigations are needed for that.
->
-> Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+I would think that one could avoid that churn by saying
 
-Thanks!
+  typeof((p) + 0)
 
-- Jiaxun
-> ---
->   
+instead of just "typeof(p)", to force the decay to a pointer.
+
+Rasmus
