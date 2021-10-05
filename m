@@ -2,73 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D2D94225AF
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 13:50:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED8F042258D
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 13:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234408AbhJELv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 07:51:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59992 "EHLO mail.kernel.org"
+        id S234545AbhJELrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 07:47:05 -0400
+Received: from mga11.intel.com ([192.55.52.93]:61521 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232658AbhJELv7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 07:51:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C42AF61409;
-        Tue,  5 Oct 2021 11:50:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633434608;
-        bh=jaTojMCxRuXFcXME9PeSVJhLH5i9NJZpTsCDdGmD9MI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Y2HHg1dMEigr6ZMdTi98Ga1CCJSjpW92aeywl0xBZrkPjCEO+TMkenl1A93G3cQGy
-         BNli/CyU4ncJGKOIImYEuNDgSCyPrtN0tVgUbtI6iFJjmhfjlciqhhGlPMQrQqQmK/
-         w7BCHIm856PM/p5dn+Z88nVvGAjbUjTT2NEcYIFCV7eFh6wzhOfaobDnOv2kB11PhJ
-         Sgk8P/a93kEBCvtrMCvEPOUyMYMY82Iq+l1DmeTc3s76HCU5VD9LAgcfrIrPDFPEBA
-         Dx3Fnbrq4ZdIORjiUUU3FoT/7sSfzOzFRK55V71o4xjVwdHX7yTxia0f5bEzgeBLC0
-         6jKeoIlHZCgXw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BAECF60A1B;
-        Tue,  5 Oct 2021 11:50:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233672AbhJELrD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 07:47:03 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10127"; a="223132354"
+X-IronPort-AV: E=Sophos;i="5.85,348,1624345200"; 
+   d="scan'208";a="223132354"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2021 04:45:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,348,1624345200"; 
+   d="scan'208";a="477646370"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga007.jf.intel.com with ESMTP; 05 Oct 2021 04:44:52 -0700
+Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
+        by linux.intel.com (Postfix) with ESMTP id D46EE5805EE;
+        Tue,  5 Oct 2021 04:44:48 -0700 (PDT)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Wong Vee Khee <veekhee@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH net 0/2] net: stmmac: Turn off EEE on MAC link down
+Date:   Tue,  5 Oct 2021 19:50:58 +0800
+Message-Id: <20211005115100.1648170-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/sched: sch_taprio: properly cancel timer from
- taprio_destroy()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163343460876.12488.4550894028979621156.git-patchwork-notify@kernel.org>
-Date:   Tue, 05 Oct 2021 11:50:08 +0000
-References: <20211004195522.2041705-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211004195522.2041705-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, dcaratti@redhat.com,
-        syzkaller@googlegroups.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This patch series ensure PCS EEE is turned off on the event of MAC
+link down.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Tested on Intel AlderLake-S (STMMAC + MaxLinear GPY211 PHY).
 
-On Mon,  4 Oct 2021 12:55:22 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> There is a comment in qdisc_create() about us not calling ops->reset()
-> in some cases.
-> 
-> err_out4:
-> 	/*
-> 	 * Any broken qdiscs that would require a ops->reset() here?
-> 	 * The qdisc was never in action so it shouldn't be necessary.
-> 	 */
-> 
-> [...]
+Wong Vee Khee (2):
+  net: pcs: xpcs: fix incorrect steps on disable EEE
+  net: stmmac: trigger PCS EEE to turn off on link down
 
-Here is the summary with links:
-  - [net] net/sched: sch_taprio: properly cancel timer from taprio_destroy()
-    https://git.kernel.org/netdev/net/c/a56d447f196f
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  6 +++++-
+ drivers/net/pcs/pcs-xpcs.c                        | 13 +++++++++----
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+-- 
+2.25.1
 
