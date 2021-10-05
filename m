@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B404228A1
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 15:51:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8DFE422898
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 15:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235768AbhJENxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 09:53:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60572 "EHLO mail.kernel.org"
+        id S235770AbhJENxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 09:53:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60600 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235524AbhJENwt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 09:52:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3834761526;
-        Tue,  5 Oct 2021 13:50:58 +0000 (UTC)
+        id S235413AbhJENwv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 09:52:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B6CC2615A6;
+        Tue,  5 Oct 2021 13:50:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633441859;
-        bh=jrcEUgW68Qkqt5B8DOxIH62D8gSCwxGLreQ0NMB8Lc4=;
+        s=k20201202; t=1633441860;
+        bh=D+8LE65aJeazr7MPs5PYlzMbV8Jvff7TNv/Kb2Y+raE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qa8gCMtlXzr3YQgjGkUu3r6y/F86WrUi+8RY6x+uMAsQtmGrEhVt3A0K/y1OGb7SI
-         jT7Kt7A9Wg24FVRaV4+EgEGxY/hnWoBqw6/HO+oeDeBInZYMow24FGwGTvwxf2xPa7
-         VUoBowqfVkKcYPcrZSPFLp9MBu4xYuuMgmZXeUDNyFYtIy6nGCFQLB2qnhUbtcinF6
-         FhNYM59r7iZ0zfziDMxQcQcuhNig3W5xbN+UkxKGQeOf2L2/GjhY6Gedf8z2lAGYC8
-         JUHuxgNiUGkOrxA8AMcsH4k3uWISqRR/tCQ2izygmtIp6YHQM2C27yerKkjKXs04ot
-         s1LtsGxMrg58g==
+        b=MbLnrR+u8Jy8bOZ4kWX7v6S46RJIxZrkdtHaQBfMcJLt7cVLuR7QKGeMKm6TDhZwc
+         nsf4cS1KOWwurEQP97v1YThe28pnXIA6ju+1mtP4Jv1pCbFTsqZSu4t4HBMaO0Z55c
+         qe6WoOD0/1hnh+xXm33HxAIRwf7debwS+ak54MXtTH+v8w7LO8Mbm5yGF1b9JFI89V
+         r8lcaeOGMGeRde4x5vy9hIQwQAOaLiMP0IXD7NBWL+Ba98QlO1T/BRRJNJ/h0BAIid
+         pO0rveTUyAidRraQ2Ts0hiDjaShomYnsaFF3hvUdUSru8qGsRm2aiQ4UAW6HQDE+T6
+         6uby/p1h0H8FQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Florian Westphal <fw@strlen.de>,
+        Martin Zaharinov <micron10@gmail.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
         davem@davemloft.net, kuba@kernel.org,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 18/40] netfilter: nf_nat_masquerade: make async masq_inet6_event handling generic
-Date:   Tue,  5 Oct 2021 09:49:57 -0400
-Message-Id: <20211005135020.214291-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.14 19/40] netfilter: nf_nat_masquerade: defer conntrack walk to work queue
+Date:   Tue,  5 Oct 2021 09:49:58 -0400
+Message-Id: <20211005135020.214291-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211005135020.214291-1-sashal@kernel.org>
 References: <20211005135020.214291-1-sashal@kernel.org>
@@ -47,205 +48,137 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 30db406923b9285a9bac06a6af5e74bd6d0f1d06 ]
+[ Upstream commit 7970a19b71044bf4dc2c1becc200275bdf1884d4 ]
 
-masq_inet6_event is called asynchronously from system work queue,
-because the inet6 notifier is atomic and nf_iterate_cleanup can sleep.
+The ipv4 and device notifiers are called with RTNL mutex held.
+The table walk can take some time, better not block other RTNL users.
 
-The ipv4 and device notifiers call nf_iterate_cleanup directly.
+'ip a' has been reported to block for up to 20 seconds when conntrack table
+has many entries and device down events are frequent (e.g., PPP).
 
-This is legal, but these notifiers are called with RTNL mutex held.
-A large conntrack table with many devices coming and going will have severe
-impact on the system usability, with 'ip a' blocking for several seconds.
-
-This change places the defer code into a helper and makes it more
-generic so ipv4 and ifdown notifiers can be converted to defer the
-cleanup walk as well in a follow patch.
-
+Reported-and-tested-by: Martin Zaharinov <micron10@gmail.com>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_nat_masquerade.c | 122 ++++++++++++++++++------------
- 1 file changed, 75 insertions(+), 47 deletions(-)
+ net/netfilter/nf_nat_masquerade.c | 50 +++++++++++++++----------------
+ 1 file changed, 24 insertions(+), 26 deletions(-)
 
 diff --git a/net/netfilter/nf_nat_masquerade.c b/net/netfilter/nf_nat_masquerade.c
-index 8e8a65d46345..415919a6ac1a 100644
+index 415919a6ac1a..acd73f717a08 100644
 --- a/net/netfilter/nf_nat_masquerade.c
 +++ b/net/netfilter/nf_nat_masquerade.c
-@@ -9,8 +9,19 @@
- 
- #include <net/netfilter/nf_nat_masquerade.h>
- 
-+struct masq_dev_work {
-+	struct work_struct work;
-+	struct net *net;
-+	union nf_inet_addr addr;
-+	int ifindex;
-+	int (*iter)(struct nf_conn *i, void *data);
-+};
-+
-+#define MAX_MASQ_WORKER_COUNT	16
-+
- static DEFINE_MUTEX(masq_mutex);
- static unsigned int masq_refcnt __read_mostly;
-+static atomic_t masq_worker_count __read_mostly;
- 
- unsigned int
- nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
-@@ -63,6 +74,63 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
+@@ -131,13 +131,14 @@ static void nf_nat_masq_schedule(struct net *net, union nf_inet_addr *addr,
+ 	put_net(net);
  }
- EXPORT_SYMBOL_GPL(nf_nat_masquerade_ipv4);
  
-+static void iterate_cleanup_work(struct work_struct *work)
-+{
-+	struct masq_dev_work *w;
-+
-+	w = container_of(work, struct masq_dev_work, work);
-+
-+	nf_ct_iterate_cleanup_net(w->net, w->iter, (void *)w, 0, 0);
-+
-+	put_net(w->net);
-+	kfree(w);
-+	atomic_dec(&masq_worker_count);
-+	module_put(THIS_MODULE);
-+}
-+
-+/* Iterate conntrack table in the background and remove conntrack entries
-+ * that use the device/address being removed.
-+ *
-+ * In case too many work items have been queued already or memory allocation
-+ * fails iteration is skipped, conntrack entries will time out eventually.
-+ */
-+static void nf_nat_masq_schedule(struct net *net, union nf_inet_addr *addr,
-+				 int ifindex,
-+				 int (*iter)(struct nf_conn *i, void *data),
-+				 gfp_t gfp_flags)
-+{
-+	struct masq_dev_work *w;
-+
-+	if (atomic_read(&masq_worker_count) > MAX_MASQ_WORKER_COUNT)
-+		return;
-+
-+	net = maybe_get_net(net);
-+	if (!net)
-+		return;
-+
-+	if (!try_module_get(THIS_MODULE))
-+		goto err_module;
-+
-+	w = kzalloc(sizeof(*w), gfp_flags);
-+	if (w) {
-+		/* We can overshoot MAX_MASQ_WORKER_COUNT, no big deal */
-+		atomic_inc(&masq_worker_count);
-+
-+		INIT_WORK(&w->work, iterate_cleanup_work);
-+		w->ifindex = ifindex;
-+		w->net = net;
-+		w->iter = iter;
-+		if (addr)
-+			w->addr = *addr;
-+		schedule_work(&w->work);
-+		return;
-+	}
-+
-+	module_put(THIS_MODULE);
-+ err_module:
-+	put_net(net);
-+}
-+
- static int device_cmp(struct nf_conn *i, void *ifindex)
+-static int device_cmp(struct nf_conn *i, void *ifindex)
++static int device_cmp(struct nf_conn *i, void *arg)
  {
  	const struct nf_conn_nat *nat = nfct_nat(i);
-@@ -136,8 +204,6 @@ static struct notifier_block masq_inet_notifier = {
- };
++	const struct masq_dev_work *w = arg;
  
- #if IS_ENABLED(CONFIG_IPV6)
--static atomic_t v6_worker_count __read_mostly;
--
- static int
- nat_ipv6_dev_get_saddr(struct net *net, const struct net_device *dev,
- 		       const struct in6_addr *daddr, unsigned int srcprefs,
-@@ -187,13 +253,6 @@ nf_nat_masquerade_ipv6(struct sk_buff *skb, const struct nf_nat_range2 *range,
+ 	if (!nat)
+ 		return 0;
+-	return nat->masq_index == (int)(long)ifindex;
++	return nat->masq_index == w->ifindex;
  }
- EXPORT_SYMBOL_GPL(nf_nat_masquerade_ipv6);
  
--struct masq_dev_work {
--	struct work_struct work;
--	struct net *net;
--	struct in6_addr addr;
--	int ifindex;
--};
--
- static int inet6_cmp(struct nf_conn *ct, void *work)
+ static int masq_device_event(struct notifier_block *this,
+@@ -153,8 +154,8 @@ static int masq_device_event(struct notifier_block *this,
+ 		 * and forget them.
+ 		 */
+ 
+-		nf_ct_iterate_cleanup_net(net, device_cmp,
+-					  (void *)(long)dev->ifindex, 0, 0);
++		nf_nat_masq_schedule(net, NULL, dev->ifindex,
++				     device_cmp, GFP_KERNEL);
+ 	}
+ 
+ 	return NOTIFY_DONE;
+@@ -162,35 +163,45 @@ static int masq_device_event(struct notifier_block *this,
+ 
+ static int inet_cmp(struct nf_conn *ct, void *ptr)
  {
- 	struct masq_dev_work *w = (struct masq_dev_work *)work;
-@@ -204,21 +263,7 @@ static int inet6_cmp(struct nf_conn *ct, void *work)
+-	struct in_ifaddr *ifa = (struct in_ifaddr *)ptr;
+-	struct net_device *dev = ifa->ifa_dev->dev;
+ 	struct nf_conntrack_tuple *tuple;
++	struct masq_dev_work *w = ptr;
+ 
+-	if (!device_cmp(ct, (void *)(long)dev->ifindex))
++	if (!device_cmp(ct, ptr))
+ 		return 0;
  
  	tuple = &ct->tuplehash[IP_CT_DIR_REPLY].tuple;
  
--	return ipv6_addr_equal(&w->addr, &tuple->dst.u3.in6);
--}
--
--static void iterate_cleanup_work(struct work_struct *work)
--{
--	struct masq_dev_work *w;
--
--	w = container_of(work, struct masq_dev_work, work);
--
--	nf_ct_iterate_cleanup_net(w->net, inet6_cmp, (void *)w, 0, 0);
--
--	put_net(w->net);
--	kfree(w);
--	atomic_dec(&v6_worker_count);
--	module_put(THIS_MODULE);
+-	return ifa->ifa_address == tuple->dst.u3.ip;
 +	return nf_inet_addr_cmp(&w->addr, &tuple->dst.u3);
  }
  
- /* atomic notifier; can't call nf_ct_iterate_cleanup_net (it can sleep).
-@@ -233,36 +278,19 @@ static int masq_inet6_event(struct notifier_block *this,
+ static int masq_inet_event(struct notifier_block *this,
+ 			   unsigned long event,
+ 			   void *ptr)
  {
- 	struct inet6_ifaddr *ifa = ptr;
- 	const struct net_device *dev;
--	struct masq_dev_work *w;
--	struct net *net;
+-	struct in_device *idev = ((struct in_ifaddr *)ptr)->ifa_dev;
+-	struct net *net = dev_net(idev->dev);
++	const struct in_ifaddr *ifa = ptr;
++	const struct in_device *idev;
++	const struct net_device *dev;
 +	union nf_inet_addr addr;
- 
--	if (event != NETDEV_DOWN || atomic_read(&v6_worker_count) >= 16)
++
 +	if (event != NETDEV_DOWN)
++		return NOTIFY_DONE;
+ 
+ 	/* The masq_dev_notifier will catch the case of the device going
+ 	 * down.  So if the inetdev is dead and being destroyed we have
+ 	 * no work to do.  Otherwise this is an individual address removal
+ 	 * and we have to perform the flush.
+ 	 */
++	idev = ifa->ifa_dev;
+ 	if (idev->dead)
  		return NOTIFY_DONE;
  
- 	dev = ifa->idev->dev;
--	net = maybe_get_net(dev_net(dev));
--	if (!net)
--		return NOTIFY_DONE;
- 
--	if (!try_module_get(THIS_MODULE))
--		goto err_module;
+-	if (event == NETDEV_DOWN)
+-		nf_ct_iterate_cleanup_net(net, inet_cmp, ptr, 0, 0);
 +	memset(&addr, 0, sizeof(addr));
++
++	addr.ip = ifa->ifa_address;
++
++	dev = idev->dev;
++	nf_nat_masq_schedule(dev_net(idev->dev), &addr, dev->ifindex,
++			     inet_cmp, GFP_KERNEL);
  
--	w = kmalloc(sizeof(*w), GFP_ATOMIC);
--	if (w) {
--		atomic_inc(&v6_worker_count);
-+	addr.in6 = ifa->addr;
- 
--		INIT_WORK(&w->work, iterate_cleanup_work);
--		w->ifindex = dev->ifindex;
--		w->net = net;
--		w->addr = ifa->addr;
--		schedule_work(&w->work);
--
--		return NOTIFY_DONE;
--	}
--
--	module_put(THIS_MODULE);
-- err_module:
--	put_net(net);
-+	nf_nat_masq_schedule(dev_net(dev), &addr, dev->ifindex, inet6_cmp,
-+			     GFP_ATOMIC);
  	return NOTIFY_DONE;
  }
+@@ -253,19 +264,6 @@ nf_nat_masquerade_ipv6(struct sk_buff *skb, const struct nf_nat_range2 *range,
+ }
+ EXPORT_SYMBOL_GPL(nf_nat_masquerade_ipv6);
  
+-static int inet6_cmp(struct nf_conn *ct, void *work)
+-{
+-	struct masq_dev_work *w = (struct masq_dev_work *)work;
+-	struct nf_conntrack_tuple *tuple;
+-
+-	if (!device_cmp(ct, (void *)(long)w->ifindex))
+-		return 0;
+-
+-	tuple = &ct->tuplehash[IP_CT_DIR_REPLY].tuple;
+-
+-	return nf_inet_addr_cmp(&w->addr, &tuple->dst.u3);
+-}
+-
+ /* atomic notifier; can't call nf_ct_iterate_cleanup_net (it can sleep).
+  *
+  * Defer it to the system workqueue.
+@@ -289,7 +287,7 @@ static int masq_inet6_event(struct notifier_block *this,
+ 
+ 	addr.in6 = ifa->addr;
+ 
+-	nf_nat_masq_schedule(dev_net(dev), &addr, dev->ifindex, inet6_cmp,
++	nf_nat_masq_schedule(dev_net(dev), &addr, dev->ifindex, inet_cmp,
+ 			     GFP_ATOMIC);
+ 	return NOTIFY_DONE;
+ }
 -- 
 2.33.0
 
