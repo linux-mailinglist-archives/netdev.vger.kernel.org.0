@@ -2,107 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89CAC423144
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 22:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6665742315D
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 22:12:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235224AbhJEUIv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 5 Oct 2021 16:08:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46506 "EHLO mail.kernel.org"
+        id S235894AbhJEUOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 16:14:00 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50718 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231159AbhJEUIu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 16:08:50 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 30FDB610CE;
-        Tue,  5 Oct 2021 20:06:58 +0000 (UTC)
-Date:   Tue, 5 Oct 2021 16:06:56 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     Jan Engelhardt <jengelh@inai.de>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Paul <paulmck@linux.vnet.ibm.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Joel Fernandes, Google" <joel@joelfernandes.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        coreteam <coreteam@netfilter.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
-Message-ID: <20211005160656.29e8bf38@gandalf.local.home>
-In-Reply-To: <1403497170.3059.1633463398562.JavaMail.zimbra@efficios.com>
-References: <20211005094728.203ecef2@gandalf.local.home>
-        <ef5b1654-1f75-da82-cab8-248319efbe3f@rasmusvillemoes.dk>
-        <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
-        <826o327o-3r46-3oop-r430-8qr0ssp537o3@vanv.qr>
-        <20211005144002.34008ea0@gandalf.local.home>
-        <srqsppq-p657-43qq-np31-pq5pp03271r6@vanv.qr>
-        <20211005154029.46f9c596@gandalf.local.home>
-        <1403497170.3059.1633463398562.JavaMail.zimbra@efficios.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S235581AbhJEUN7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 16:13:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Wq7nrL82/L3EOLhn+avQUN00z2EQ2FcNnYuF4o5Vwxc=; b=AV/VFhOx8CPCsEz+WuHkHFZ7pH
+        3D7Sa/E0gSDzXv38L0ZyfveGdnlyDeZQSSSifGFbhZFlgWu2U2XrcYpVjGXqHAwOtKKebb5b73rKd
+        gf1YjkWeejx3bP7apHZ7GC7Ta8vB/+amiGOkfjGzjD1jLXCUGy/I+1DkXUJtIDUAWtG8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mXqnE-009k7C-1I; Tue, 05 Oct 2021 22:12:04 +0200
+Date:   Tue, 5 Oct 2021 22:12:04 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: lets settle the LED `function` property regarding the netdev
+ trigger
+Message-ID: <YVyxlEVQ7TvMs5DH@lunn.ch>
+References: <20211001143601.5f57eb1a@thinkpad>
+ <YVn815h7JBtVSfwZ@lunn.ch>
+ <20211003212654.30fa43f5@thinkpad>
+ <YVsUodiPoiIESrEE@lunn.ch>
+ <20211004170847.3f92ef48@thinkpad>
+ <0b1bc2d7-6e62-5adb-5aed-48b99770d80d@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0b1bc2d7-6e62-5adb-5aed-48b99770d80d@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Oct 2021 15:49:58 -0400 (EDT)
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
-
-> ----- On Oct 5, 2021, at 3:40 PM, rostedt rostedt@goodmis.org wrote:
-> 
-> > On Tue, 5 Oct 2021 21:06:36 +0200 (CEST)
-> > Jan Engelhardt <jengelh@inai.de> wrote:
-> >   
-> >> On Tuesday 2021-10-05 20:40, Steven Rostedt wrote:  
-> >> >>     
-> >> >> >>>> typeof(*p) *________p1 = (typeof(*p) *__force)READ_ONCE(p);  
-> >> >> 
-> >> >> #define static_cast(type, expr) ((struct { type x; }){(expr)}.x)
-> >> >> typeof(p) p1 = (typeof(p) __force)static_cast(void *, READ_ONCE(p));
-> >> >> 
-> >> >> Let the name not fool you; it's absolutely _not_ the same as C++'s
-> >> >> static_cast, but still: it does emit a warning when you do pass an
-> >> >> integer, which is better than no warning at all in that case.
-> >> >> 
-> >> >>  *flies away*  
-> >> >
-> >> >Are you suggesting I should continue this exercise ;-)  
-> >> 
-> >> “After all, why not?”
-> >> 
-> >> typeof(p) p1 = (typeof(p) __force)READ_ONCE(p) +
-> >>                BUILD_BUG_ON_EXPR(__builtin_classify_type(p) != 5);  
+> > > There are two different ways this can be implemented. There can be two
+> > > independent LEDs within the same package. So you can generate three
+> > > colours. Or there can be two cross connected LEDs within the
+> > > package. Apply +ve you get one colour, apply -ve you get a different
+> > > colour. Since you cannot apply both -ve and +ve at the same time, you
+> > > cannot get both colours at once.
+> > > 
+> > > If you have two independent LEDs, I would define two LEDs in DT.
 > > 
-> > I may try it, because exposing the structure I want to hide, is pulling out
-> > a lot of other crap with it :-p  
-> 
-> I like the static_cast() approach above. It is neat way to validate that the
-> argument is a pointer without need to dereference the pointer.
-> 
-> I would also be open to consider this trick for liburcu's userspace API.
-> 
-> About the other proposed solution based on __builtin_classify_type, I am
-> reluctant to use something designed specifically for varargs in a context
-> where they are not used.
-> 
+> > No, we have multicolor LED API which is meant for exactly this
+> > situation: a multicolor LED.
 
-Unfortunately, it doesn't solve the Debian gcc 10 compiler failing when
-passing the function name instead of a pointer to the function in
-RCU_INIT_POINTER()  That alone makes me feel like I shouldn't touch that
-macro :-(
+> What do you mean by dependency here?
 
-And who knows what other version of gcc will fail on passing the address :-p
+https://www.youtube.com/watch?v=5M9p25OfKdg
 
--- Steve
+There are two different ways you can two LEDs in one package.
 
+Some Ethernet PHY RJ45 connector housings have bi-colour LEDs. Some
+have tri-colour LEDs, and some have mono-colour LEDs.
+
+      Andrew
