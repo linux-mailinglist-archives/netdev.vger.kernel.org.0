@@ -2,153 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B96421EF0
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 08:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BFB6421EFA
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 08:44:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232349AbhJEGnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 02:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231751AbhJEGm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 02:42:58 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302E7C061749
-        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 23:41:06 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id z2so15456389wmc.3
-        for <netdev@vger.kernel.org>; Mon, 04 Oct 2021 23:41:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RQd1eb7LuGWMGXLW0Toj0Xy2/OgdsTmnaijiP9bfs9U=;
-        b=RPHqYA3e3EwHYTUB3ZxwTfsF8lSLbP97gBZAXp/Qh0rKVVJRSUJxMFhjfA6T1BeCBm
-         LW4SosYc0ZipAwZLYXCfNfqjzrgBqNBY8TwUpUlEVb3Mu6jb4bCgYL4traaopI3szxsR
-         LlKpRmFJN8ZXa9cfVqclrLQuDxA7t9EGWF7TohOFrkvIZl0f4w/8hqhL212bHnMSxhW8
-         6kOgzrvrz4U696/iQD37Lb/vogdOVzXvt65pwGrc5P0FWoyjlWhPyBh5iIZ/+HkSIGWk
-         2B0FxFD9vacmkuPphLWv8iH1echfyjf7R/KF73PVEIgcEqRf5fbocGsugZ8ay3bgjHv5
-         Zc1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=RQd1eb7LuGWMGXLW0Toj0Xy2/OgdsTmnaijiP9bfs9U=;
-        b=LlRtilap7uwctxjaqDiB/qTC6cDc7JXN8y/r+nzwWSJ11kv/y/wVE5Qp+58UCW4fEq
-         bDjmY84efw/0uC4lhvO3KU8L2Vp+4PKsBwjOGDKnDIt1rNABKRqe8jk7CnlS6/XmhrRV
-         HtPCtbbDAbbiAes6Z2JCwhXGSLenzb5Zjd6pJB9n/DPNEyiybDnYxIJQtoiuG4e4/xdi
-         Qv2FwA8TymRphINr2a7IoKsYL+67WpixOqtQ9pWb/kQJwBb7e1+thWqmISFwtoABN50q
-         r1PatlHYcD6LQfECs92gD8o1QrOzwppDsr1NaguIhwgliUNFBXhdSqJ7rPTILZAk/oMR
-         aT/g==
-X-Gm-Message-State: AOAM531hbaENxriXIOzHDkEN6iWojSZXG6CebU6lmQs/Ny6+mK3zLOKa
-        0v48IMgMPqWhZfiIwsriLQewiDg2cFImPQ==
-X-Google-Smtp-Source: ABdhPJwHYdrAmn7HqGpTOF+tOwfSklRJAwMdUfFhaC6YHYzyjRrTA6T939GnW35iI62OmGc1AXFUzA==
-X-Received: by 2002:a7b:c5d8:: with SMTP id n24mr1573727wmk.51.1633416064597;
-        Mon, 04 Oct 2021 23:41:04 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:573:1b46:b04d:a14c? ([2a01:e0a:410:bb00:573:1b46:b04d:a14c])
-        by smtp.gmail.com with ESMTPSA id c17sm772160wmr.15.2021.10.04.23.41.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Oct 2021 23:41:04 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next v6] net: openvswitch: IPv6: Add IPv6 extension
- header support
-To:     Cpp Code <cpp.code.lv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        pshelar@ovn.org, "David S. Miller" <davem@davemloft.net>,
-        ovs dev <dev@openvswitch.org>, linux-kernel@vger.kernel.org
-References: <20210928194727.1635106-1-cpp.code.lv@gmail.com>
- <20210928174853.06fe8e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <d1e5b178-47f5-9791-73e9-0c1f805b0fca@6wind.com>
- <20210929061909.59c94eff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAASuNyVe8z1R6xyCfSAxZbcrL3dej1n8TXXkqS-e8QvA6eWd+w@mail.gmail.com>
- <b091ef39-dc29-8362-4d31-0a9cc498e8ea@6wind.com>
- <CAASuNyW81zpSu+FGSDuUrOsyqJj7SokZtvX081BbeXi0ARBaYg@mail.gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <a4894aef-b82a-8224-611d-07be229f5ebe@6wind.com>
-Date:   Tue, 5 Oct 2021 08:41:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S232297AbhJEGqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 02:46:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34584 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231816AbhJEGqM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 02:46:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 75CA261165;
+        Tue,  5 Oct 2021 06:44:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1633416261;
+        bh=cXUDZv200Bhhq7gsR76VWgnrwqp0ABdauVK7hmqot5w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZV5n+9UvZODI6hqY+hb84xZZ1gka6VxdbbUQjl/0NAUqSzWU7FrBtKsWVpAkb0irz
+         V8vqf+Kaa2+NvGcLcV5IQbzHRf1XRZ0WnY97LaQ7AwSDXBd/kpmrzPVe4o70wgrxNY
+         1JOlhmTWHZ964BV2Q0fLJw6wiy7KiwOZnkTdV6+c=
+Date:   Tue, 5 Oct 2021 08:44:19 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        devel@driverdev.osuosl.org, devicetree@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, linux-mmc@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v7 13/24] wfx: add hif_tx*.c/hif_tx*.h
+Message-ID: <YVv0Q4ARfh/ebof5@kroah.com>
+References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com>
+ <20210920161136.2398632-14-Jerome.Pouiller@silabs.com>
+ <87fstlkr1m.fsf@codeaurora.org>
+ <2873071.CAOYYqaKbK@pc-42>
+ <20211001161316.w3cwsigacznjbowl@pali>
+ <87tuhwf19w.fsf@codeaurora.org>
 MIME-Version: 1.0
-In-Reply-To: <CAASuNyW81zpSu+FGSDuUrOsyqJj7SokZtvX081BbeXi0ARBaYg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <87tuhwf19w.fsf@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 01/10/2021 Ã  22:42, Cpp Code a Ã©critÂ :
-> On Fri, Oct 1, 2021 at 12:21 AM Nicolas Dichtel
-> <nicolas.dichtel@6wind.com> wrote:
->>
->> Le 30/09/2021 Ã  18:11, Cpp Code a Ã©crit :
->>> On Wed, Sep 29, 2021 at 6:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
->>>>
->>>> On Wed, 29 Sep 2021 08:19:05 +0200 Nicolas Dichtel wrote:
->>>>>> /* Insert a kernel only KEY_ATTR */
->>>>>> #define OVS_KEY_ATTR_TUNNEL_INFO    __OVS_KEY_ATTR_MAX
->>>>>> #undef OVS_KEY_ATTR_MAX
->>>>>> #define OVS_KEY_ATTR_MAX            __OVS_KEY_ATTR_MAX
->>>>> Following the other thread [1], this will break if a new app runs over an old
->>>>> kernel.
->>>>
->>>> Good point.
->>>>
->>>>> Why not simply expose this attribute to userspace and throw an error if a
->>>>> userspace app uses it?
->>>>
->>>> Does it matter if it's exposed or not? Either way the parsing policy
->>>> for attrs coming from user space should have a reject for the value.
->>>> (I say that not having looked at the code, so maybe I shouldn't...)
->>>
->>> To remove some confusion, there are some architectural nuances if we
->>> want to extend code without large refactor.
->>> The ovs_key_attr is defined only in kernel side. Userspace side is
->>> generated from this file. As well the code can be built without kernel
->>> modules.
->>> The code inside OVS repository and net-next is not identical, but I
->>> try to keep some consistency.
->> I didn't get why OVS_KEY_ATTR_TUNNEL_INFO cannot be exposed to userspace.
+On Tue, Oct 05, 2021 at 09:12:27AM +0300, Kalle Valo wrote:
+> Pali Rohár <pali@kernel.org> writes:
 > 
-> OVS_KEY_ATTR_TUNNEL_INFO is compressed version of OVS_KEY_ATTR_TUNNEL
-> and for clarity purposes its not exposed to userspace as it will never
-> use it.
-> I would say it's a coding style as it would not brake anything if exposed.
-In fact, it's the best way to keep the compatibility in the long term.
-You can define it like this:
-OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info, reserved for kernel use */
+> > On Friday 01 October 2021 17:17:52 Jérôme Pouiller wrote:
+> >> On Friday 1 October 2021 11:55:33 CEST Kalle Valo wrote:
+> >> > CAUTION: This email originated from outside of the organization.
+> >> > Do not click links or open attachments unless you recognize the
+> >> > sender and know the content is safe.
+> >> > 
+> >> > 
+> >> > Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+> >> > 
+> >> > > From: Jérôme Pouiller <jerome.pouiller@silabs.com>
+> >> > >
+> >> > > Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
+> >> > 
+> >> > [...]
+> >> > 
+> >> > > --- /dev/null
+> >> > > +++ b/drivers/net/wireless/silabs/wfx/hif_tx_mib.h
+> >> > > @@ -0,0 +1,49 @@
+> >> > > +/* SPDX-License-Identifier: GPL-2.0-only */
+> >> > > +/*
+> >> > > + * Implementation of the host-to-chip MIBs of the hardware API.
+> >> > > + *
+> >> > > + * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
+> >> > > + * Copyright (c) 2010, ST-Ericsson
+> >> > > + * Copyright (C) 2010, ST-Ericsson SA
+> >> > > + */
+> >> > > +#ifndef WFX_HIF_TX_MIB_H
+> >> > > +#define WFX_HIF_TX_MIB_H
+> >> > > +
+> >> > > +struct wfx_vif;
+> >> > > +struct sk_buff;
+> >> > > +
+> >> > > +int hif_set_output_power(struct wfx_vif *wvif, int val);
+> >> > > +int hif_set_beacon_wakeup_period(struct wfx_vif *wvif,
+> >> > > +                              unsigned int dtim_interval,
+> >> > > +                              unsigned int listen_interval);
+> >> > > +int hif_set_rcpi_rssi_threshold(struct wfx_vif *wvif,
+> >> > > +                             int rssi_thold, int rssi_hyst);
+> >> > > +int hif_get_counters_table(struct wfx_dev *wdev, int vif_id,
+> >> > > +                        struct hif_mib_extended_count_table *arg);
+> >> > > +int hif_set_macaddr(struct wfx_vif *wvif, u8 *mac);
+> >> > > +int hif_set_rx_filter(struct wfx_vif *wvif,
+> >> > > +                   bool filter_bssid, bool fwd_probe_req);
+> >> > > +int hif_set_beacon_filter_table(struct wfx_vif *wvif, int tbl_len,
+> >> > > +                             const struct hif_ie_table_entry *tbl);
+> >> > > +int hif_beacon_filter_control(struct wfx_vif *wvif,
+> >> > > +                           int enable, int beacon_count);
+> >> > > +int hif_set_operational_mode(struct wfx_dev *wdev, enum
+> >> > > hif_op_power_mode mode);
+> >> > > +int hif_set_template_frame(struct wfx_vif *wvif, struct sk_buff *skb,
+> >> > > +                        u8 frame_type, int init_rate);
+> >> > > +int hif_set_mfp(struct wfx_vif *wvif, bool capable, bool required);
+> >> > > +int hif_set_block_ack_policy(struct wfx_vif *wvif,
+> >> > > +                          u8 tx_tid_policy, u8 rx_tid_policy);
+> >> > > +int hif_set_association_mode(struct wfx_vif *wvif, int ampdu_density,
+> >> > > +                          bool greenfield, bool short_preamble);
+> >> > > +int hif_set_tx_rate_retry_policy(struct wfx_vif *wvif,
+> >> > > +                              int policy_index, u8 *rates);
+> >> > > +int hif_keep_alive_period(struct wfx_vif *wvif, int period);
+> >> > > +int hif_set_arp_ipv4_filter(struct wfx_vif *wvif, int idx, __be32 *addr);
+> >> > > +int hif_use_multi_tx_conf(struct wfx_dev *wdev, bool enable);
+> >> > > +int hif_set_uapsd_info(struct wfx_vif *wvif, unsigned long val);
+> >> > > +int hif_erp_use_protection(struct wfx_vif *wvif, bool enable);
+> >> > > +int hif_slot_time(struct wfx_vif *wvif, int val);
+> >> > > +int hif_wep_default_key_id(struct wfx_vif *wvif, int val);
+> >> > > +int hif_rts_threshold(struct wfx_vif *wvif, int val);
+> >> > 
+> >> > "wfx_" prefix missing from quite a few functions.
+> >> 
+> >> I didn't know it was mandatory to prefix all the functions with the
+> >> same prefix.
+> 
+> I don't know either if this is mandatory or not, for example I do not
+> have any recollection what Linus and other maintainers think of this. I
+> just personally think it's good practise to use driver prefix ("wfx_")
+> in all non-static functions.
+> 
+> Any opinions from others? Greg?
 
-> 
->>
->>>
->>> JFYI This is the file responsible for generating userspace part:
->>> https://github.com/openvswitch/ovs/blob/master/build-aux/extract-odp-netlink-h
->>> This is the how corresponding file for ovs_key_attr looks inside OVS:
->>> https://github.com/openvswitch/ovs/blob/master/datapath/linux/compat/include/linux/openvswitch.h
->>> one can see there are more values than in net-next version.
->> There are still some '#ifdef __KERNEL__'. The standard 'make headers_install'
->> filters them. Why not using this standard mechanism?
-> 
-> Could you elaborate on this, I don't quite understand the idea!? Which
-> ifdef you are referring, the one along OVS_KEY_ATTR_TUNNEL_INFO or
-> some other?
-My understanding is that this file is used for the userland third party, thus,
-theoretically, there should be no '#ifdef __KERNEL__'. uapi headers generated
-with 'make headers_install' are filtered to remove them.
+For static functions, pick what you want.
 
-> 
->>
->> In this file, there are two attributes (OVS_KEY_ATTR_PACKET_TYPE and
->> OVS_KEY_ATTR_ND_EXTENSIONS) that doesn't exist in the kernel.
->> This will also breaks if an old app runs over a new kernel. I don't see how it
->> is possible to keep the compat between {old|new} {kernel|app}.
-> 
-> Looks like this most likely is a bug while working on multiple
-> versions of code.  Need to do add more padding.
-As said above, just define the same uapi for everybody and the problem is gone
-forever.
+For global functions, like this, use a common prefix that indicates the
+driver as you are now playing in the global namespace of a 30 million
+line project.
 
+> >> With the rule of 80-columns, I think I will have to change a bunch of
+> >> code :( .
+> >
+> > I think that new drivers can use 100 characters per line.
+> 
+> That's my understanding as well.
 
-Regards,
-Nicolas
+Yes, that's fine.
+
+thanks,
+
+greg k-h
