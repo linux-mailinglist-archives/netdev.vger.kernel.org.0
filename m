@@ -2,124 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C48D3422B7A
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:49:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 859B7422B81
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:51:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235166AbhJEOvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 10:51:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234084AbhJEOvL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 10:51:11 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64156C061749
-        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 07:49:21 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id v10so2336806oic.12
-        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 07:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=m4AcBIZFF8jLrkAWke5xLiuOfsbZRGFbl/bgJhpq7h4=;
-        b=BgrgOh4pnQcrx1H7zfH0rkJDRB1N2o2NKpM8x0Cwk/jQtVsjVy+5C1NiJIF5Yxd06H
-         f1NZ8//b5AaNCSa+RDrx2o+fPp4J+6GPYn+zWcha7C7+dXOUCIBOwn8zLgX5Ctq2T2gw
-         sEFF91N4gRsC9Cfh6Lyki7YjlDaVS5bUVTESEaRtya2aIfSTcHfcFdI+hp2nb7xIE8wH
-         R55STnu33sJE/UGiOSz35xHQIfGo4huYCN5bWng8E26JgOZcU9KZjdsVI+9/iUWm/qsB
-         NnvzWpZJatE61YTOE0gEfVXUL2VEL4Ke9ywRbE3kpdyZaLM6CqqrXHQRSk63qS9gWRPT
-         usxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=m4AcBIZFF8jLrkAWke5xLiuOfsbZRGFbl/bgJhpq7h4=;
-        b=zdfU24SfSe38004t1sVezX7UY3LjyQCOFHXvV7aUniAhJCqhsLSTZdqvl5Cli6LYrs
-         Y0xrqwi6XejBhXIEYe2dWsum/avR0ERO+2ypNIk/SY0CqE3fVxC7BaYiG5nwHbTGhmWD
-         5jqtSthUbWjZWAStgTW6ps49yg3qf94htGBxCACDA26ggvlQltAN4pkhAMX52ZHuVliV
-         vMQ4E4xavgV7gyc4WWXW5vSx7Y//5tlLGhdSh894rcA/c5o29osWLE5XmDDtt2e2wma2
-         8lzCdSsKEHlNxXNSdglM/Ce/N6VHK+ogvRbX6Uv/h5Bdx2vgSfOkXiSYMDavnFB560k8
-         DgYA==
-X-Gm-Message-State: AOAM533wzFSLDcuN5y6ym1uqf22+JSKqYyG3/1wTHGFTVNYAjJU68/w9
-        0RKswQbLuzQdxomahRW+S2I=
-X-Google-Smtp-Source: ABdhPJziJyzobQhoM1H7V090D4TKZs5erQwmOlrn3TUiPgeoGSsWSl8XcpBjb07a2IlV0PRL7g0nsg==
-X-Received: by 2002:aca:f283:: with SMTP id q125mr2785123oih.172.1633445360575;
-        Tue, 05 Oct 2021 07:49:20 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id n73sm3362901oig.20.2021.10.05.07.49.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Oct 2021 07:49:19 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 1/2] Add support for IOAM encap modes
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
-        stephen@networkplumber.org
-References: <20211004130651.13571-1-justin.iurman@uliege.be>
- <20211004130651.13571-2-justin.iurman@uliege.be>
- <a80c8fba-bf66-93ef-c54e-6648b3522e28@gmail.com>
- <181201748.114494759.1633445114212.JavaMail.zimbra@uliege.be>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <86e6a547-0d9d-9720-15bc-81fb40e6cd84@gmail.com>
-Date:   Tue, 5 Oct 2021 08:49:18 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S235569AbhJEOxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 10:53:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58562 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235090AbhJEOxY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 10:53:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E497961216;
+        Tue,  5 Oct 2021 14:51:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633445494;
+        bh=H4au8cRKsKlT2WzVzVUciC3U/eOkaJQmybq+e0GbWOk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SnE2WI3jxMf2cz6uVcQbgGBPvXjU9qHKP+8K8GW5RPHi2epco2Ye2/6d3CLfCUkZN
+         cAaHPnBU5yEkfCF1xOVevl0+MutHaG7tOIMvxzxDiwQCWHHDEqPa8r5nmBKlB7Oe/i
+         P5GoMkXSagskClxL7bUlIRTugUuNlrWByg92P5O1v7twzlFFD1CA7Vx5sfd0v2x84q
+         eFYbHfcRRF/2a1mlVfg8z4TDra3zYn/7o8wSNPaaqocDWu8xzubBklQw5sNZFnVv0P
+         nAUrC+M4z1Z0yS8XcHdMFP+0kbVcrAXb7eAzhAJK3+lBJEQIvwP/CQzlosVKdc0Mg9
+         lVdwI8p+pnBYg==
+Date:   Tue, 5 Oct 2021 07:51:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Subject: Re: pull request: bluetooth 2021-10-04
+Message-ID: <20211005075133.38a31995@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CABBYNZKJaD01+o8Tuh7AX7=3Hct_6YqzQcWWzDvOcRpRdPOizQ@mail.gmail.com>
+References: <20211004222146.251892-1-luiz.dentz@gmail.com>
+        <20211004182158.10df611b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CABBYNZKJaD01+o8Tuh7AX7=3Hct_6YqzQcWWzDvOcRpRdPOizQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <181201748.114494759.1633445114212.JavaMail.zimbra@uliege.be>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/5/21 8:45 AM, Justin Iurman wrote:
->>> +static const char *ioam6_mode_types[] = {
->>
->> I think you want to declare this of size IOAM6_IPTUNNEL_MODE_MAX + 1
+On Mon, 4 Oct 2021 20:47:35 -0700 Luiz Augusto von Dentz wrote:
+> On Mon, Oct 4, 2021 at 6:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Mon,  4 Oct 2021 15:21:46 -0700 Luiz Augusto von Dentz wrote:  
+> > > bluetooth-next pull request for net-next:
+> > >
+> > >  - Add support for MediaTek MT7922 and MT7921
+> > >  - Add support for TP-Link UB500
+> > >  - Enable support for AOSP extention in Qualcomm WCN399x and Realtek
+> > >    8822C/8852A.
+> > >  - Add initial support for link quality and audio/codec offload.
+> > >  - Rework of sockets sendmsg to avoid locking issues.
+> > >  - Add vhci suspend/resume emulation.  
+> >
+> > Now it's flipped, it's complaining about Luiz being the committer
+> > but there's only a sign off from Marcel :(  
 > 
-> This is automatically the case, see below explanation.
-> 
->>> +	[IOAM6_IPTUNNEL_MODE_INLINE]	= "inline",
->>> +	[IOAM6_IPTUNNEL_MODE_ENCAP]	= "encap",
->>> +	[IOAM6_IPTUNNEL_MODE_AUTO]	= "auto",
->>> +};
->>> +
->>> +static const char *format_ioam6mode_type(int mode)
->>> +{
->>> +	if (mode < IOAM6_IPTUNNEL_MODE_MIN ||
->>> +	    mode > IOAM6_IPTUNNEL_MODE_MAX ||
->>> +	    !ioam6_mode_types[mode])
->>
->> otherwise this check is not sufficient.
-> 
-> Are you sure? I mean, both IOAM6_IPTUNNEL_MODE_MIN and IOAM6_IPTUNNEL_MODE_MAX respectively point to IOAM6_IPTUNNEL_MODE_INLINE and IOAM6_IPTUNNEL_MODE_AUTO. So, either the input mode is out of bound, or not defined in the array above (this one is not mandatory, but it ensures that the above array is updated accordingly with the uapi). So, what we have right now is:
-> 
-> __IOAM6_IPTUNNEL_MODE_MIN = 0
-> IOAM6_IPTUNNEL_MODE_INLINE = 1
-> IOAM6_IPTUNNEL_MODE_ENCAP = 2
-> IOAM6_IPTUNNEL_MODE_AUTO = 3
-> __IOAM6_IPTUNNEL_MODE_MAX = 4
-> 
-> IOAM6_IPTUNNEL_MODE_MIN = 1
-> IOAM6_IPTUNNEL_MODE_MAX = 3
-> 
-> ioam6_mode_types = {
->   [0] (null)
->   [1] "inline"
->   [2] "encap"
->   [3] "auto"
-> }
-> 
-> where its size is automatically/implicitly 4 (IOAM6_IPTUNNEL_MODE_MAX + 1).
-> 
+> I did have both sign-off, or are you saying Ive now become the
+> committer of other patches as well? Which means whoever rebases the
+> tree has to sign-off the entire set as well, I guess other trees does
+> better with this because they don't have multiple committer but once
+> you have that it is kind hard to maintain this rule of committer must
+> sign-off, shouldn't we actually just check if there is one sign-off by
+> one of the maintainers that shall be considered acceptable?
 
-today yes, but tomorrow no. ie,. a new feature is added to the header
-file. Header file is updated in iproute2 as part of a header file sync
-but the ioam6 code is not updated to expand ioam6_mode_types. Command is
-then run on a system with the new feature so
+I think most trees don't do rebases. The issue does indeed seem to be
+that whoever does a rebase becomes the committer, so you need to make
+sure that whenever you rebase you add your sign-off to the commits
+initially done by other maintainers (in the range of commits that are
+being modified).
 
-    mode > IOAM6_IPTUNNEL_MODE_MAX
+> Or perhaps there is some documentation on the matter?
 
-will pass but then
+I don't think there's any docs.
 
-     !ioam6_mode_types[mode])
 
-accesses an entry beyond the size of ioam6_mode_types.
+Since this looks very painful to fix at this point I'll pull as is
+from the initial PR from Oct 1st (since it had fewer warnings).
+
+About the content of the PR there is a whole bunch of things here
+(fixes, simple device ID additions) which really look like they should
+have been targeting net, not net-next.
+
+Okay, enough complaining ;)  
+
+Pulled v1, thanks!
