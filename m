@@ -2,107 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A30AE422444
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 13:00:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E95042248E
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 13:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234574AbhJELC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 07:02:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42920 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234376AbhJELCA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 07:02:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B933861139;
-        Tue,  5 Oct 2021 11:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633431609;
-        bh=v5FbJo5qrVUlbMZ3ddNVAYvu1mAUooqD0BmTMDlbz5k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Xqck704VhP00sB3C9xaIHqb0opFwk5rr4RrKGlmHwh0EWL6l8+WCC8JySWIaECkaK
-         rrH/af/kA/hxkUStFGDoonuPFVPhGxcqDdIckeuUqoGLj1SxV3fWaUqh9X+Ol9N1XV
-         XlcgxMLyorZsPoqNQCFsEXvrsqkuqaEWK/GOsQg1ISFdEHJm41gEQrFHLdalOtmYcy
-         btM7o8bjeJBQShzOXbKOQ9CjDt26gDSenSgKqkmjR9FlMLAB4brYy5sKD1dqTSdFUp
-         cbc7Dm9AtOmLHl37TiL/Nrrf3B57aCprbV/nEtPBd/3MZrvPWM0sVNrWA8jrxTFEea
-         1F90rekWBDfJg==
-Date:   Tue, 5 Oct 2021 14:00:05 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Aharon Landau <aharonl@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Gal Pressman <galpress@amazon.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
-        Mark Zhang <markzhang@nvidia.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        Neta Ostrovsky <netao@nvidia.com>, netdev@vger.kernel.org,
-        Potnuri Bharat Teja <bharat@chelsio.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH rdma-next v2 13/13] RDMA/nldev: Add support to get status
- of all counters
-Message-ID: <YVwwNTiBBOl591nZ@unreal>
-References: <cover.1632988543.git.leonro@nvidia.com>
- <e4f07e8ff4c79eabc12fd8cd859deb7b3c6391f0.1632988543.git.leonro@nvidia.com>
- <20211004180714.GE2515663@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211004180714.GE2515663@nvidia.com>
+        id S234278AbhJELIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 07:08:40 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:29930 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S233449AbhJELIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 07:08:39 -0400
+X-IronPort-AV: E=Sophos;i="5.85,348,1624287600"; 
+   d="scan'208";a="96017410"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 05 Oct 2021 20:06:47 +0900
+Received: from localhost.localdomain (unknown [10.226.93.104])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 1BAE040078B9;
+        Tue,  5 Oct 2021 20:06:44 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+Subject: [RFC 00/12] Add functional support for Gigabit Ethernet driver
+Date:   Tue,  5 Oct 2021 12:06:30 +0100
+Message-Id: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 04, 2021 at 03:07:14PM -0300, Jason Gunthorpe wrote:
-> On Thu, Sep 30, 2021 at 11:02:29AM +0300, Leon Romanovsky wrote:
-> > +static int stat_get_doit_default_counter(struct sk_buff *skb,
-> > +					 struct nlmsghdr *nlh,
-> > +					 struct netlink_ext_ack *extack,
-> > +					 struct nlattr *tb[])
-> > +{
-> > +	struct rdma_hw_stats *stats;
-> > +	struct ib_device *device;
-> > +	u32 index, port;
-> > +	int ret;
-> > +
-> > +	if (!tb[RDMA_NLDEV_ATTR_DEV_INDEX] || !tb[RDMA_NLDEV_ATTR_PORT_INDEX])
-> > +		return -EINVAL;
-> > +
-> > +	index = nla_get_u32(tb[RDMA_NLDEV_ATTR_DEV_INDEX]);
-> > +	device = ib_device_get_by_index(sock_net(skb->sk), index);
-> > +	if (!device)
-> > +		return -EINVAL;
-> > +
-> > +	port = nla_get_u32(tb[RDMA_NLDEV_ATTR_PORT_INDEX]);
-> > +	if (!rdma_is_port_valid(device, port)) {
-> > +		ret = -EINVAL;
-> > +		goto end;
-> > +	}
-> > +
-> > +	stats = ib_get_hw_stats_port(device, port);
-> > +	if (!stats) {
-> > +		ret = -EINVAL;
-> > +		goto end;
-> > +	}
-> > +
-> > +	if (tb[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_DYNAMIC])
-> > +		ret = stat_get_doit_stats_list(skb, nlh, extack, tb,
-> > +					       device, port, stats);
-> > +	else
-> > +		ret = stat_get_doit_stats_values(skb, nlh, extack, tb, device,
-> > +						 port, stats);
-> 
-> And this is still here - 'gets' do not act differently depending on
-> inputs..
+The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC are
+similar to the R-Car Ethernet AVB IP.
 
-This patch shouldn't be sent at all. Sorry for the noise.
+The Gigabit Ethernet IP consists of Ethernet controller (E-MAC), Internal
+TCP/IP Offload Engine (TOE)  and Dedicated Direct memory access controller
+(DMAC).
 
-Thanks
+With a few changes in the driver we can support both IPs.
 
-> 
-> Jason
+This patch series is aims to add functional support for Gigabit Ethernet driver
+by filling all the stubs.
+
+Ref:-
+https://lore.kernel.org/linux-renesas-soc/OS0PR01MB5922240F88E5E0FD989ECDF386AC9@OS0PR01MB5922.jpnprd01.prod.outlook.com/T/#m8dee0a1b14d505d4611cad8c10e4017a30db55d6
+
+RFC changes:
+ * used ALIGN macro for calculating the value for max_rx_len.
+ * used rx_max_buf_size instead of rx_2k_buffers feature bit.
+ * moved struct ravb_rx_desc *gbeth_rx_ring near to ravb_private::rx_ring
+   and allocating it for 1 RX queue.
+ * Started using gbeth_rx_ring instead of gbeth_rx_ring[q].
+ * renamed ravb_alloc_rx_desc to ravb_alloc_rx_desc_rcar
+ * renamed ravb_rx_ring_free to ravb_rx_ring_free_rcar
+ * renamed ravb_rx_ring_format to ravb_rx_ring_format_rcar
+ * renamed ravb_rcar_rx to ravb_rx_rcar
+ * renamed "tsrq" variable
+ * Updated the comments
+
+Biju Das (12):
+  ravb: Use ALIGN macro for max_rx_len
+  ravb: Add rx_max_buf_size to struct ravb_hw_info
+  ravb: Fillup ravb_set_features_gbeth() stub
+  ravb: Fillup ravb_alloc_rx_desc_gbeth() stub
+  ravb: Fillup ravb_rx_ring_free_gbeth() stub
+  ravb: Fillup ravb_rx_ring_format_gbeth() stub
+  ravb: Fillup ravb_rx_gbeth() stub
+  ravb: Add carrier_counters to struct ravb_hw_info
+  ravb: Add support to retrieve stats for GbEthernet
+  ravb: Rename "tsrq" variable
+  ravb: Optimize ravb_emac_init_gbeth function
+  ravb: Update/Add comments
+
+ drivers/net/ethernet/renesas/ravb.h      |  51 +++-
+ drivers/net/ethernet/renesas/ravb_main.c | 349 +++++++++++++++++++++--
+ 2 files changed, 367 insertions(+), 33 deletions(-)
+
+-- 
+2.17.1
+
