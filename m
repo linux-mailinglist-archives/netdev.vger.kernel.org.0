@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F10904220B5
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 10:30:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A0124220B8
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 10:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233153AbhJEIbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 04:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44324 "EHLO
+        id S233262AbhJEIcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 04:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230286AbhJEIbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 04:31:52 -0400
+        with ESMTP id S232761AbhJEIcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 04:32:04 -0400
 Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A59C061745;
-        Tue,  5 Oct 2021 01:30:02 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id b22so1827034pls.1;
-        Tue, 05 Oct 2021 01:30:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D7EC061745;
+        Tue,  5 Oct 2021 01:30:14 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id b22so1827385pls.1;
+        Tue, 05 Oct 2021 01:30:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=l/X3D8axCR8R6Iv8FHRMGZCljg4SY7rI3XtaUgh1lNc=;
-        b=Nsn0Y4fntJPCapUQIivLcByF5/yz08ne98pBVKNURr5S119buvbXXVg9Cg+PfiAVCY
-         vW+yUX0rm/dZGQakisBI9WGHB+vNJrGwMzAviJhZLWr9+HK1ZGssZnld/VH1jle8/xRB
-         mhe2b1ahLM0qCBkU00C0RUjQksK4eH1aD/kLSWqCLIKHugqKeNB6Ad8xXG0s+JZJG1RL
-         X11K+FvTfr35PJT6RTlhU9BZRSx5zkD0Ip8R7sehA5HkeXbjnmQvBKCqA4jbc7vagCQu
-         aQjc6+sUDnRcjkLrd/rvZOF6H9WJZXXkaXyREkU44S7Bgvik3YRF2arPWG8Y7lutlZxX
-         uojg==
+        bh=zzGe5Wy3mDkKEKYCT9h+VBJHOg/ijD2uRySpX5DGZX4=;
+        b=LDJs7JXie2s8SUMGrGQq0hEMaanjTjMnRkTtWaBRu1FZSWgF9Dx1nnAMLm2+QYU8dq
+         jNVwoVPuuv6zHydYnMfH5iGuI8LE6O/5s8t1mJ7+/ZXRxbKTLinSoniLfOVqUBPlqI9z
+         zAWmwvkWgmeRJtYILVfZOzEnrWyVYgyh5uXIZ++WKMZUzDw4QHPYHjkGc4gROCpry342
+         qXn17Ropc0dmtt3OybtFms7D8pinUvVKIfVwPN305DpR8M6HSZIGky5BNl8kcDh8eq8W
+         WQ5mUv5YrXmXGWT9lmqURmoWrIAUM+7JAgiaO0KyOdGiFPiregxVSmnCIUl8ibLhDXqG
+         AOoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=l/X3D8axCR8R6Iv8FHRMGZCljg4SY7rI3XtaUgh1lNc=;
-        b=wm8006xIDXIudvGYhM1S2MZnliuPGSJx00RsJjTp4/5KvGAEGy5XVGS7VOU/Uku9s/
-         ycZmF2zVG72A4Bx/yxj3L1Dzck3yKxzbZOnU6OYxGIka+LlOnQfsknknkdgqYCYCMNJb
-         3tagraf+BJq+YZBDV4VWBhTZUMojNt+pZdkYnF2wNczQr4k58/MT1VdXfEx2sbwc9Vfu
-         p9VpJQ1JO/MTOLRv90PyOhnnryI8fQgS5y3sTzB4YP8ak3eesMkV+LKmVZ/lv24LdPzT
-         MaYI2pbinqOY2mJ3EZMh0RqtQ3ZlJVv0dYIg3yBu+QDv1BoKHXd7jq7a9QuY/H/LyjNF
-         hhHQ==
-X-Gm-Message-State: AOAM530eMXHqbUmR0erg0q10RllW/NUNHouhhu1tnPBuQlvJtPLXb48/
-        J9PAZpJk0ZX4q4+hyUJWYQk=
-X-Google-Smtp-Source: ABdhPJxo2Q4SBzL3ZP1UWnJkgImTo3uNqIpC7e6zID71Bvd0KWgJm6FHNjNaqLW/NTgEhxBVDUvr6g==
-X-Received: by 2002:a17:902:8a83:b0:13d:9572:86c2 with SMTP id p3-20020a1709028a8300b0013d957286c2mr4173829plo.48.1633422602452;
-        Tue, 05 Oct 2021 01:30:02 -0700 (PDT)
+        bh=zzGe5Wy3mDkKEKYCT9h+VBJHOg/ijD2uRySpX5DGZX4=;
+        b=xkeYGI3hySRqzfmUFb8aa7t/Tx8TH9RliTANda5TgJb1ntGWByZ91wJCwLualxvTFG
+         l/b+860o0uHI2LqH7aDjDTB3EIUeCgis3vm1vkNiaNrpjf0YXu5zLe5OhCfskZbM6wN6
+         c9za1BDZZHLJIm8uQZWFn81yiLPPw3/6ubS1ORXvBA89QTse2J91s39Ez3a40lEVmso8
+         iKlg/UjL5WO8TikrZ7ty5eyOHskzXr4HaeVjMh2mLMiP/vKcrwBf05na3o3Yh7+7BMWV
+         37oDNs0z8D8krkv/RcWJ1s1yLqZMWcuELLF4ewynHbHyKVUxdaXv0QlZCbDNPfdlY+Q8
+         //JA==
+X-Gm-Message-State: AOAM5310+LlP4yQa25E75ORmwMPS67GGlSMmCidWbhDzV2DO25Fz3cRV
+        wYBLUe5Qia8DMxmGrZQzI/M=
+X-Google-Smtp-Source: ABdhPJzrq+Z2N/ppb2aKdvI31i8JGUgD1xJW9WP49KjOZpIHNwyQa9rjT21w/d2v6Qkd02EQPI/uEg==
+X-Received: by 2002:a17:90a:9f91:: with SMTP id o17mr2263689pjp.225.1633422614497;
+        Tue, 05 Oct 2021 01:30:14 -0700 (PDT)
 Received: from localhost.localdomain ([2001:470:e92d:10:78ba:4bcc:a59a:2284])
-        by smtp.gmail.com with ESMTPSA id a15sm4941257pfg.53.2021.10.05.01.30.00
+        by smtp.gmail.com with ESMTPSA id a15sm4941257pfg.53.2021.10.05.01.30.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Oct 2021 01:30:02 -0700 (PDT)
+        Tue, 05 Oct 2021 01:30:14 -0700 (PDT)
 From:   Tony Ambardar <tony.ambardar@gmail.com>
 X-Google-Original-From: Tony Ambardar <Tony.Ambardar@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -66,9 +66,9 @@ Cc:     Tony Ambardar <Tony.Ambardar@gmail.com>, netdev@vger.kernel.org,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>
-Subject: [RFC PATCH bpf-next v2 01/16] MIPS: eBPF: support BPF_TAIL_CALL in JIT static analysis
-Date:   Tue,  5 Oct 2021 01:26:45 -0700
-Message-Id: <05a0d17bef1394521e0aec4b33d2ea3c29c715e5.1633392335.git.Tony.Ambardar@gmail.com>
+Subject: [RFC PATCH bpf-next v2 02/16] MIPS: eBPF: mask 32-bit index for tail calls
+Date:   Tue,  5 Oct 2021 01:26:46 -0700
+Message-Id: <15d2aab0133231aea254bd7422528d4a765d5f0f.1633392335.git.Tony.Ambardar@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1633392335.git.Tony.Ambardar@gmail.com>
 References: <cover.1625970383.git.Tony.Ambardar@gmail.com> <cover.1633392335.git.Tony.Ambardar@gmail.com>
@@ -78,30 +78,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support in reg_val_propagate_range() for BPF_TAIL_CALL, fixing many
-kernel log WARNINGs ("Unhandled BPF_JMP case") seen during JIT testing.
-Treat BPF_TAIL_CALL like a NOP, falling through as if the tail call failed.
+The program array index for tail-calls should be 32-bit, so zero-extend to
+sanitize the value. This fixes failures seen for test_verifier test:
+
+  852/p runtime/jit: pass > 32bit index to tail_call FAIL retval 2 != 42
 
 Fixes: b6bd53f9c4e8 ("MIPS: Add missing file for eBPF JIT.")
 Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
 ---
- arch/mips/net/ebpf_jit.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/mips/net/ebpf_jit.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/arch/mips/net/ebpf_jit.c b/arch/mips/net/ebpf_jit.c
-index 3a73e9375712..0e99cb790564 100644
+index 0e99cb790564..82ea20399b70 100644
 --- a/arch/mips/net/ebpf_jit.c
 +++ b/arch/mips/net/ebpf_jit.c
-@@ -1717,6 +1717,9 @@ static int reg_val_propagate_range(struct jit_ctx *ctx, u64 initial_rvt,
- 				for (reg = BPF_REG_0; reg <= BPF_REG_5; reg++)
- 					set_reg_val_type(&exit_rvt, reg, REG_64BIT);
- 
-+				rvt[idx] |= RVT_DONE;
-+				break;
-+			case BPF_TAIL_CALL:
- 				rvt[idx] |= RVT_DONE;
- 				break;
- 			default:
+@@ -611,6 +611,8 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx, int this_idx)
+ 	 * if (index >= array->map.max_entries)
+ 	 *     goto out;
+ 	 */
++	/* Mask index as 32-bit */
++	emit_instr(ctx, dinsu, MIPS_R_A2, MIPS_R_ZERO, 32, 32);
+ 	off = offsetof(struct bpf_array, map.max_entries);
+ 	emit_instr(ctx, lwu, MIPS_R_T5, off, MIPS_R_A1);
+ 	emit_instr(ctx, sltu, MIPS_R_AT, MIPS_R_T5, MIPS_R_A2);
 -- 
 2.25.1
 
