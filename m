@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 653C94220F9
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 10:39:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EEC64220DD
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 10:32:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233382AbhJEIlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 04:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46634 "EHLO
+        id S233301AbhJEIeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 04:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233002AbhJEIlJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 04:41:09 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9462C061745;
-        Tue,  5 Oct 2021 01:39:18 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id d18so23363401iof.13;
-        Tue, 05 Oct 2021 01:39:18 -0700 (PDT)
+        with ESMTP id S232108AbhJEIe3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 04:34:29 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A1FC061745;
+        Tue,  5 Oct 2021 01:32:39 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id g14so16824395pfm.1;
+        Tue, 05 Oct 2021 01:32:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vRAxmubyADiVGnedQuvE2MHzC9GyBk/oPvl54a5kj8k=;
-        b=H3/bD4ruK7c89f4rRt0oMJD3H5C6OYZpYeTFmO74MrOWGrYEDs9gx5A0eZKOLHeFfP
-         VhXme9AvQalS9rekOpaUf3xVVIe/N774f6tonzu3R/6ZVvUuJ4nnozm4cUId59fA+2cD
-         IyuweqfHJmCTL3JpjhiV8E5oG/AEDPTtIi/Yp1pJhNL9RIIHP3/6flaBGurRCOgJdRqr
-         UbHz/QLLP0mM3S4CVlN2WxJcNEylO6QorqPLkZrqUABWY6mDLSoclkPFasW+GWOkzpB2
-         NPe57of2oibWf1IuaWJSC29MQngnFs5wtSBoJ42F6y28P8qk1KbLsRGQlSCL63D+esSl
-         h34Q==
+        bh=oB80oYMulhrt43Nc7h4b8WTmJ925bEkBYiIlwoCVavE=;
+        b=LgU8mqTxrXP9w5FDf88vbtQB9pIkvHyP7Snhffc78rg77kw1jneS0Sy7xl5qFPvSpD
+         IEXqLMHsQvmL8Xh0eh5EbfhUgR06klJAs6a4bBHMTpfqktP7HfLTny/NBLAqMwXBGmC5
+         t+ROAI14vIpQpsHOH4QDgAz1e3pNCqdtzLM98HdCyrLSlfGmvk5QrmNtH8mccgCzO13I
+         Om5erayhNB9sS/ul8EcqUCkw1NwmE6crq4qIWNSIxMWF3ae7w/oFgYfGKwQCkW9oVSsW
+         HuMqyE14TgXm7+b9PMCG8kbC7flvvRWJlkYvHBpynpl+IzvK38i6WZLAGq+Rce5vKYuB
+         EWug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vRAxmubyADiVGnedQuvE2MHzC9GyBk/oPvl54a5kj8k=;
-        b=B60fhZe0Lbi55nvWkoxYQDcdGynAsUIAFv4Y14WEEdaLQYAIsJ1lYCdErhTHQ5S9Sv
-         KoH+IO8upyY9oOLjIe2XCv8cC6zTNjDyNrZu5yQp7oxmi7jMVNLcX1zeM7AtdwmogU0h
-         aoGTAH9Ge945bNHNKtpKXCZpC8R4zLzIxs/F1SnqJH8ecPqFnhEK1ZqIdEFJweyeuINE
-         wDmFz8BxbIbkMNsM9mNoXeYCpRE+JUEF9ZZp5xPeJE8FzkdVPm2DQSF/Duloqb0p2OZf
-         9jstF320mzFMFwuVlluHKz/J0ghPd64MgXP+3Z8I2yb6jareUWkDCzzD4mZfjP9Qvzsm
-         AUgQ==
-X-Gm-Message-State: AOAM5316H/9wSFSPm7c8HWDfUd8EwgMr+MYqNBPavyAJo460G8qMcHI/
-        YqpQTD0kO5Vc2YCBYeD6gxFiJKsAA3T2Vw==
-X-Google-Smtp-Source: ABdhPJyAn4+mgqMuaK99WTG4Qb3Q4N8lzJX6ftX6PCSdMN8k4MrclknyAt1h2SD/t/JgJ3sDw9zZxg==
-X-Received: by 2002:a63:b34a:: with SMTP id x10mr14611613pgt.473.1633422728971;
-        Tue, 05 Oct 2021 01:32:08 -0700 (PDT)
+        bh=oB80oYMulhrt43Nc7h4b8WTmJ925bEkBYiIlwoCVavE=;
+        b=CIkjmJVk65mWiFnxsfskbvwRAhg1ehLxExzr3xDOy4R/NH9/ZPw/N9uVQs6l7+3tru
+         dY9ljidW05fcWvCpvSsN98R2H2mAYrCbNG0x/67emL9EdEz9rOM3phBk2w6zmAomKOvT
+         0JcyJ6tNk/BVpxsu2e/QuJl12Tq2162cXT6ubNowkH/rr2oQapUhV39FAq7NC6EkGpVJ
+         5k9Pyaj1GV1OxbC86utjfqVaDaFa5Y57IJ0fbyphvtvriTAmqTdfZf13lzsHGjjUyES/
+         GOD6dpXJ5AVTne6f82lphhKjWo2N3cMPPyzyazQ5XljwbCvEWzKcaj+vJ50nQAwXLwq7
+         nOrg==
+X-Gm-Message-State: AOAM5337DhUSYMp+9pH8lHfI9Wn9AVx4HS3yiHpZoRZK5V6f8CqwnH9m
+        gtW+ERX8jj2oeH1T/P3lnaE=
+X-Google-Smtp-Source: ABdhPJwadmGEPkjSjq1bvQexkQA0RWI7UEAOIDW4pkpcLRXMENbOdsYnuFGNaqU/vrA8TFzFq61suA==
+X-Received: by 2002:a05:6a00:98b:b0:44b:df34:c17b with SMTP id u11-20020a056a00098b00b0044bdf34c17bmr29657149pfg.34.1633422758941;
+        Tue, 05 Oct 2021 01:32:38 -0700 (PDT)
 Received: from localhost.localdomain ([2001:470:e92d:10:78ba:4bcc:a59a:2284])
-        by smtp.gmail.com with ESMTPSA id a15sm4941257pfg.53.2021.10.05.01.32.07
+        by smtp.gmail.com with ESMTPSA id a15sm4941257pfg.53.2021.10.05.01.32.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Oct 2021 01:32:08 -0700 (PDT)
+        Tue, 05 Oct 2021 01:32:38 -0700 (PDT)
 From:   Tony Ambardar <tony.ambardar@gmail.com>
 X-Google-Original-From: Tony Ambardar <Tony.Ambardar@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -66,9 +66,9 @@ Cc:     Tony Ambardar <Tony.Ambardar@gmail.com>, netdev@vger.kernel.org,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>
-Subject: [RFC PATCH bpf-next v2 14/16] MIPS: eBPF64: implement all BPF_ATOMIC ops
-Date:   Tue,  5 Oct 2021 01:26:58 -0700
-Message-Id: <3499e013eb8994077c8f642fb1907a49d6a0afd7.1633392335.git.Tony.Ambardar@gmail.com>
+Subject: [RFC PATCH bpf-next v2 15/16] MIPS: uasm: Enable muhu opcode for MIPS R6
+Date:   Tue,  5 Oct 2021 01:26:59 -0700
+Message-Id: <a5746ac3dc8d972d8aa3e8be7142f9449014772b.1633392335.git.Tony.Ambardar@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1633392335.git.Tony.Ambardar@gmail.com>
 References: <cover.1625970383.git.Tony.Ambardar@gmail.com> <cover.1633392335.git.Tony.Ambardar@gmail.com>
@@ -78,224 +78,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reorganize code for BPF_ATOMIC and BPF_MEM, and add the atomic ops AND,
-OR, XOR, XCHG and CMPXCHG, with support for BPF_FETCH.
+Enable the 'muhu' instruction, complementing the existing 'mulu', needed
+to implement a MIPS32 BPF JIT.
+
+Also fix a typo in the existing definition of 'dmulu'.
 
 Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
 ---
- arch/mips/net/ebpf_jit_comp64.c | 181 +++++++++++++++++++++-----------
- 1 file changed, 119 insertions(+), 62 deletions(-)
+ arch/mips/include/asm/uasm.h | 1 +
+ arch/mips/mm/uasm-mips.c     | 4 +++-
+ arch/mips/mm/uasm.c          | 3 ++-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/net/ebpf_jit_comp64.c b/arch/mips/net/ebpf_jit_comp64.c
-index 842e516ce749..35c8c8307b64 100644
---- a/arch/mips/net/ebpf_jit_comp64.c
-+++ b/arch/mips/net/ebpf_jit_comp64.c
-@@ -167,7 +167,15 @@ static int gen_imm_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
- int build_one_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
- 		   int this_idx, int exit_idx)
- {
-+	/*
-+	 * Since CMPXCHG uses R0 implicitly, outside of a passed
-+	 * bpf_insn, we fake a lookup to get the MIPS base reg.
-+	 */
-+	const struct bpf_insn r0_insn = {.src_reg = BPF_REG_0};
-+	const int r0 = ebpf_to_mips_reg(ctx, &r0_insn,
-+					REG_SRC_NO_FP);
- 	const int bpf_class = BPF_CLASS(insn->code);
-+	const int bpf_size = BPF_SIZE(insn->code);
- 	const int bpf_op = BPF_OP(insn->code);
- 	bool need_swap, did_move, cmp_eq;
- 	unsigned int target = 0;
-@@ -944,6 +952,32 @@ int build_one_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
- 	case BPF_STX | BPF_H | BPF_MEM:
- 	case BPF_STX | BPF_W | BPF_MEM:
- 	case BPF_STX | BPF_DW | BPF_MEM:
-+		dst = ebpf_to_mips_reg(ctx, insn, REG_DST_FP_OK);
-+		src = ebpf_to_mips_reg(ctx, insn, REG_SRC_FP_OK);
-+		if (src < 0 || dst < 0)
-+			return -EINVAL;
-+		mem_off = insn->off;
-+		switch (BPF_SIZE(insn->code)) {
-+		case BPF_B:
-+			emit_instr(ctx, sb, src, mem_off, dst);
-+			break;
-+		case BPF_H:
-+			emit_instr(ctx, sh, src, mem_off, dst);
-+			break;
-+		case BPF_W:
-+			emit_instr(ctx, sw, src, mem_off, dst);
-+			break;
-+		case BPF_DW:
-+			if (get_reg_val_type(ctx, this_idx, insn->src_reg) == REG_32BIT) {
-+				emit_instr(ctx, daddu, MIPS_R_AT, src, MIPS_R_ZERO);
-+				emit_instr(ctx, dinsu, MIPS_R_AT, MIPS_R_ZERO, 32, 32);
-+				src = MIPS_R_AT;
-+			}
-+			emit_instr(ctx, sd, src, mem_off, dst);
-+			break;
-+		}
-+		break;
-+
- 	case BPF_STX | BPF_W | BPF_ATOMIC:
- 	case BPF_STX | BPF_DW | BPF_ATOMIC:
- 		dst = ebpf_to_mips_reg(ctx, insn, REG_DST_FP_OK);
-@@ -951,71 +985,94 @@ int build_one_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
- 		if (src < 0 || dst < 0)
- 			return -EINVAL;
- 		mem_off = insn->off;
--		if (BPF_MODE(insn->code) == BPF_ATOMIC) {
--			if (insn->imm != BPF_ADD) {
--				pr_err("ATOMIC OP %02x NOT HANDLED\n", insn->imm);
--				return -EINVAL;
-+		/*
-+		 * If mem_off does not fit within the 9 bit ll/sc
-+		 * instruction immediate field, use a temp reg.
-+		 */
-+		if (MIPS_ISA_REV >= 6 &&
-+		    (mem_off >= BIT(8) || mem_off < -BIT(8))) {
-+			emit_instr(ctx, daddiu, MIPS_R_T6, dst, mem_off);
-+			mem_off = 0;
-+			dst = MIPS_R_T6;
-+		}
-+		/* Copy or adjust 32-bit src regs based on BPF op size. */
-+		ts = get_reg_val_type(ctx, this_idx, insn->src_reg);
-+		if (bpf_size == BPF_W) {
-+			if (ts == REG_32BIT) {
-+				emit_instr(ctx, sll, MIPS_R_T9, src, 0);
-+				src = MIPS_R_T9;
- 			}
-+			/* Ensure proper old == new comparison .*/
-+			if (insn->imm == BPF_CMPXCHG)
-+				emit_instr(ctx, sll, r0, r0, 0);
-+		}
-+		if (bpf_size == BPF_DW && ts == REG_32BIT) {
-+			emit_instr(ctx, move, MIPS_R_T9, src);
-+			emit_instr(ctx, dinsu, MIPS_R_T9, MIPS_R_ZERO, 32, 32);
-+			src = MIPS_R_T9;
-+		}
-+
-+/* Helper to simplify using BPF_DW/BPF_W atomic opcodes. */
-+#define emit_instr_size(ctx, func64, func32, ...)                              \
-+do {                                                                           \
-+	if (bpf_size == BPF_DW)                                                \
-+		emit_instr(ctx, func64, ##__VA_ARGS__);                        \
-+	else                                                                   \
-+		emit_instr(ctx, func32, ##__VA_ARGS__);                        \
-+} while (0)
-+
-+		/* Track variable branch offset due to CMPXCHG. */
-+		b_off = ctx->idx;
-+		emit_instr_size(ctx, lld, ll, MIPS_R_AT, mem_off, dst);
-+		switch (insn->imm) {
-+		case BPF_AND | BPF_FETCH:
-+		case BPF_AND:
-+			emit_instr(ctx, and, MIPS_R_T8, MIPS_R_AT, src);
-+			break;
-+		case BPF_OR | BPF_FETCH:
-+		case BPF_OR:
-+			emit_instr(ctx, or, MIPS_R_T8, MIPS_R_AT, src);
-+			break;
-+		case BPF_XOR | BPF_FETCH:
-+		case BPF_XOR:
-+			emit_instr(ctx, xor, MIPS_R_T8, MIPS_R_AT, src);
-+			break;
-+		case BPF_ADD | BPF_FETCH:
-+		case BPF_ADD:
-+			emit_instr_size(ctx, daddu, addu, MIPS_R_T8, MIPS_R_AT, src);
-+			break;
-+		case BPF_XCHG:
-+			emit_instr_size(ctx, daddu, addu, MIPS_R_T8, MIPS_R_ZERO, src);
-+			break;
-+		case BPF_CMPXCHG:
- 			/*
--			 * If mem_off does not fit within the 9 bit ll/sc
--			 * instruction immediate field, use a temp reg.
-+			 * If R0 != old_val then break out of LL/SC loop
- 			 */
--			if (MIPS_ISA_REV >= 6 &&
--			    (mem_off >= BIT(8) || mem_off < -BIT(8))) {
--				emit_instr(ctx, daddiu, MIPS_R_T6,
--						dst, mem_off);
--				mem_off = 0;
--				dst = MIPS_R_T6;
--			}
--			switch (BPF_SIZE(insn->code)) {
--			case BPF_W:
--				if (get_reg_val_type(ctx, this_idx, insn->src_reg) == REG_32BIT) {
--					emit_instr(ctx, sll, MIPS_R_AT, src, 0);
--					src = MIPS_R_AT;
--				}
--				emit_instr(ctx, ll, MIPS_R_T8, mem_off, dst);
--				emit_instr(ctx, addu, MIPS_R_T8, MIPS_R_T8, src);
--				emit_instr(ctx, sc, MIPS_R_T8, mem_off, dst);
--				/*
--				 * On failure back up to LL (-4
--				 * instructions of 4 bytes each
--				 */
--				emit_instr(ctx, beq, MIPS_R_T8, MIPS_R_ZERO, -4 * 4);
--				emit_instr(ctx, nop);
--				break;
--			case BPF_DW:
--				if (get_reg_val_type(ctx, this_idx, insn->src_reg) == REG_32BIT) {
--					emit_instr(ctx, daddu, MIPS_R_AT, src, MIPS_R_ZERO);
--					emit_instr(ctx, dinsu, MIPS_R_AT, MIPS_R_ZERO, 32, 32);
--					src = MIPS_R_AT;
--				}
--				emit_instr(ctx, lld, MIPS_R_T8, mem_off, dst);
--				emit_instr(ctx, daddu, MIPS_R_T8, MIPS_R_T8, src);
--				emit_instr(ctx, scd, MIPS_R_T8, mem_off, dst);
--				emit_instr(ctx, beq, MIPS_R_T8, MIPS_R_ZERO, -4 * 4);
--				emit_instr(ctx, nop);
--				break;
--			}
--		} else { /* BPF_MEM */
--			switch (BPF_SIZE(insn->code)) {
--			case BPF_B:
--				emit_instr(ctx, sb, src, mem_off, dst);
--				break;
--			case BPF_H:
--				emit_instr(ctx, sh, src, mem_off, dst);
--				break;
--			case BPF_W:
--				emit_instr(ctx, sw, src, mem_off, dst);
--				break;
--			case BPF_DW:
--				if (get_reg_val_type(ctx, this_idx, insn->src_reg) == REG_32BIT) {
--					emit_instr(ctx, daddu, MIPS_R_AT, src, MIPS_R_ZERO);
--					emit_instr(ctx, dinsu, MIPS_R_AT, MIPS_R_ZERO, 32, 32);
--					src = MIPS_R_AT;
--				}
--				emit_instr(ctx, sd, src, mem_off, dst);
--				break;
--			}
-+			emit_instr(ctx, bne, r0, MIPS_R_AT, 4 * 4);
-+			/* Delay slot */
-+			emit_instr_size(ctx, daddu, addu, MIPS_R_T8, MIPS_R_ZERO, src);
-+			/* Return old_val in R0 */
-+			src = r0;
-+			break;
-+		default:
-+			pr_err("ATOMIC OP %02x NOT HANDLED\n", insn->imm);
-+			return -EINVAL;
-+		}
-+		emit_instr_size(ctx, scd, sc, MIPS_R_T8, mem_off, dst);
-+#undef emit_instr_size
-+		/*
-+		 * On failure back up to LL (calculate # insns)
-+		 */
-+		b_off = (b_off - ctx->idx - 1) * 4;
-+		emit_instr(ctx, beqz, MIPS_R_T8, b_off);
-+		emit_instr(ctx, nop);
-+		/*
-+		 * Using fetch returns old value in src or R0
-+		 */
-+		if (insn->imm & BPF_FETCH) {
-+			if (bpf_size == BPF_W)
-+				emit_instr(ctx, dinsu, MIPS_R_AT, MIPS_R_ZERO, 32, 32);
-+			emit_instr(ctx, move, src, MIPS_R_AT);
- 		}
- 		break;
- 
+diff --git a/arch/mips/include/asm/uasm.h b/arch/mips/include/asm/uasm.h
+index f7effca791a5..5efa4e2dc9ab 100644
+--- a/arch/mips/include/asm/uasm.h
++++ b/arch/mips/include/asm/uasm.h
+@@ -145,6 +145,7 @@ Ip_u1(_mtlo);
+ Ip_u3u1u2(_mul);
+ Ip_u1u2(_multu);
+ Ip_u3u1u2(_mulu);
++Ip_u3u1u2(_muhu);
+ Ip_u3u1u2(_nor);
+ Ip_u3u1u2(_or);
+ Ip_u2u1u3(_ori);
+diff --git a/arch/mips/mm/uasm-mips.c b/arch/mips/mm/uasm-mips.c
+index 7154a1d99aad..e15c6700cd08 100644
+--- a/arch/mips/mm/uasm-mips.c
++++ b/arch/mips/mm/uasm-mips.c
+@@ -90,7 +90,7 @@ static const struct insn insn_table[insn_invalid] = {
+ 				RS | RT | RD},
+ 	[insn_dmtc0]	= {M(cop0_op, dmtc_op, 0, 0, 0, 0), RT | RD | SET},
+ 	[insn_dmultu]	= {M(spec_op, 0, 0, 0, 0, dmultu_op), RS | RT},
+-	[insn_dmulu]	= {M(spec_op, 0, 0, 0, dmult_dmul_op, dmultu_op),
++	[insn_dmulu]	= {M(spec_op, 0, 0, 0, dmultu_dmulu_op, dmultu_op),
+ 				RS | RT | RD},
+ 	[insn_drotr]	= {M(spec_op, 1, 0, 0, 0, dsrl_op), RT | RD | RE},
+ 	[insn_drotr32]	= {M(spec_op, 1, 0, 0, 0, dsrl32_op), RT | RD | RE},
+@@ -150,6 +150,8 @@ static const struct insn insn_table[insn_invalid] = {
+ 	[insn_mtlo]	= {M(spec_op, 0, 0, 0, 0, mtlo_op), RS},
+ 	[insn_mulu]	= {M(spec_op, 0, 0, 0, multu_mulu_op, multu_op),
+ 				RS | RT | RD},
++	[insn_muhu]	= {M(spec_op, 0, 0, 0, multu_muhu_op, multu_op),
++				RS | RT | RD},
+ #ifndef CONFIG_CPU_MIPSR6
+ 	[insn_mul]	= {M(spec2_op, 0, 0, 0, 0, mul_op), RS | RT | RD},
+ #else
+diff --git a/arch/mips/mm/uasm.c b/arch/mips/mm/uasm.c
+index 81dd226d6b6b..125140979d62 100644
+--- a/arch/mips/mm/uasm.c
++++ b/arch/mips/mm/uasm.c
+@@ -59,7 +59,7 @@ enum opcode {
+ 	insn_lddir, insn_ldpte, insn_ldx, insn_lh, insn_lhu, insn_ll, insn_lld,
+ 	insn_lui, insn_lw, insn_lwu, insn_lwx, insn_mfc0, insn_mfhc0, insn_mfhi,
+ 	insn_mflo, insn_modu, insn_movn, insn_movz, insn_mtc0, insn_mthc0,
+-	insn_mthi, insn_mtlo, insn_mul, insn_multu, insn_mulu, insn_nor,
++	insn_mthi, insn_mtlo, insn_mul, insn_multu, insn_mulu, insn_muhu, insn_nor,
+ 	insn_or, insn_ori, insn_pref, insn_rfe, insn_rotr, insn_sb, insn_sc,
+ 	insn_scd, insn_seleqz, insn_selnez, insn_sd, insn_sh, insn_sll,
+ 	insn_sllv, insn_slt, insn_slti, insn_sltiu, insn_sltu, insn_sra,
+@@ -344,6 +344,7 @@ I_u1(_mtlo)
+ I_u3u1u2(_mul)
+ I_u1u2(_multu)
+ I_u3u1u2(_mulu)
++I_u3u1u2(_muhu)
+ I_u3u1u2(_nor)
+ I_u3u1u2(_or)
+ I_u2u1u3(_ori)
 -- 
 2.25.1
 
