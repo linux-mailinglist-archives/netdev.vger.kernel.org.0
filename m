@@ -2,70 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6665742315D
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 22:12:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 648974231DA
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 22:26:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235894AbhJEUOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 16:14:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50718 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235581AbhJEUN7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 16:13:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Wq7nrL82/L3EOLhn+avQUN00z2EQ2FcNnYuF4o5Vwxc=; b=AV/VFhOx8CPCsEz+WuHkHFZ7pH
-        3D7Sa/E0gSDzXv38L0ZyfveGdnlyDeZQSSSifGFbhZFlgWu2U2XrcYpVjGXqHAwOtKKebb5b73rKd
-        gf1YjkWeejx3bP7apHZ7GC7Ta8vB/+amiGOkfjGzjD1jLXCUGy/I+1DkXUJtIDUAWtG8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mXqnE-009k7C-1I; Tue, 05 Oct 2021 22:12:04 +0200
-Date:   Tue, 5 Oct 2021 22:12:04 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: lets settle the LED `function` property regarding the netdev
- trigger
-Message-ID: <YVyxlEVQ7TvMs5DH@lunn.ch>
-References: <20211001143601.5f57eb1a@thinkpad>
- <YVn815h7JBtVSfwZ@lunn.ch>
- <20211003212654.30fa43f5@thinkpad>
- <YVsUodiPoiIESrEE@lunn.ch>
- <20211004170847.3f92ef48@thinkpad>
- <0b1bc2d7-6e62-5adb-5aed-48b99770d80d@gmail.com>
+        id S236082AbhJEU1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 16:27:48 -0400
+Received: from mail.w1.fi ([212.71.239.96]:45786 "EHLO
+        li674-96.members.linode.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230019AbhJEU1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 16:27:48 -0400
+X-Greylist: delayed 306 seconds by postgrey-1.27 at vger.kernel.org; Tue, 05 Oct 2021 16:27:47 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by li674-96.members.linode.com (Postfix) with ESMTP id 6DC7A110DE;
+        Tue,  5 Oct 2021 20:20:49 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at w1.fi
+Received: from li674-96.members.linode.com ([127.0.0.1])
+        by localhost (mail.w1.fi [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id W-kqsIKIJhpv; Tue,  5 Oct 2021 20:20:47 +0000 (UTC)
+Received: by jm (sSMTP sendmail emulation); Tue, 05 Oct 2021 23:20:45 +0300
+Date:   Tue, 5 Oct 2021 23:20:45 +0300
+From:   Jouni Malinen <j@w1.fi>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Youghandhar Chintala <youghand@codeaurora.org>,
+        Abhishek Kumar <kuabhs@chromium.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Rakesh Pillai <pillair@codeaurora.org>,
+        Manikanta Pubbisetty <mpubbise@codeaurora.org>
+Subject: Re: [PATCH 2/3] mac80211: Add support to trigger sta disconnect on
+ hardware restart
+Message-ID: <20211005202045.GA18000@w1.fi>
+References: <20201215172352.5311-1-youghand@codeaurora.org>
+ <f2089f3c-db96-87bc-d678-199b440c05be@nbd.name>
+ <ba0e6a3b783722c22715ae21953b1036@codeaurora.org>
+ <CACTWRwt0F24rkueS9Ydq6gY3M-oouKGpaL3rhWngQ7cTP0xHMA@mail.gmail.com>
+ <d5cfad1543f31b3e0d8e7a911d3741f3d5446c57.camel@sipsolutions.net>
+ <66ba0f836dba111b8c7692f78da3f079@codeaurora.org>
+ <5826123db4731bde01594212101ed5dbbea4d54f.camel@sipsolutions.net>
+ <30fa98673ad816ec849f34853c9e1257@codeaurora.org>
+ <90d3c3c8cedcf5f8baa77b3b6e94b18656fcd0be.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <0b1bc2d7-6e62-5adb-5aed-48b99770d80d@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <90d3c3c8cedcf5f8baa77b3b6e94b18656fcd0be.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > There are two different ways this can be implemented. There can be two
-> > > independent LEDs within the same package. So you can generate three
-> > > colours. Or there can be two cross connected LEDs within the
-> > > package. Apply +ve you get one colour, apply -ve you get a different
-> > > colour. Since you cannot apply both -ve and +ve at the same time, you
-> > > cannot get both colours at once.
-> > > 
-> > > If you have two independent LEDs, I would define two LEDs in DT.
-> > 
-> > No, we have multicolor LED API which is meant for exactly this
-> > situation: a multicolor LED.
+On Fri, Sep 24, 2021 at 11:20:50AM +0200, Johannes Berg wrote:
+> > We thought sending the delba would solve the problem as earlier thought 
+> > but the actual problem is with TX PN in a secure mode.
+> > It is not because of delba that the Seq number and TX PN are reset to 
+> > zero.
+> > It’s because of the HW restart, these parameters are reset to zero.
+> > Since FW/HW is the one which decides the TX PN, when it goes through 
+> > SSR, all these parameters are reset.
+> 
+> Right, we solved this problem too - in a sense the driver reads the
+> database (not just TX PN btw, also RX replay counters) when the firmware
+> crashes, and sending it back after the restart. mac80211 has some hooks
+> for that.
 
-> What do you mean by dependency here?
+This might be doable for some cases where the firmware is the component
+assigning the PN values on TX and the firmware still being in a state
+where the counter used for this could be fetched after a crash or
+detected misbehavior. However, this does not sound like a very reliable
+mechanism for cases where the firmware state for this cannot be trusted
+or for the cases where the TX PN is actually assigned by the hardware
+(which would get cleared on that restart and the value might be
+unreadable before that restart). Trying to pull for this information
+periodically before the issue is detected does not sound like a very
+robust design either, since that would both waste resources and have a
+race condition with the lower layers having transmitted additional
+frames.
 
-https://www.youtube.com/watch?v=5M9p25OfKdg
+Obviously it would be nice to be able to restore this type of state in
+all cases accurately, but that may not really be a viable approach for
+all designs and it would seem to make sense to provide an alternative
+approach to minimize the user visible impact from the rare cases of
+having to restart some low level components during an association.
 
-There are two different ways you can two LEDs in one package.
-
-Some Ethernet PHY RJ45 connector housings have bi-colour LEDs. Some
-have tri-colour LEDs, and some have mono-colour LEDs.
-
-      Andrew
+-- 
+Jouni Malinen                                            PGP id EFC895FA
