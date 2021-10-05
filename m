@@ -2,76 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 849DF423007
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 20:29:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1175942301E
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 20:38:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232831AbhJESat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 14:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbhJESas (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 14:30:48 -0400
-Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66465C061749;
-        Tue,  5 Oct 2021 11:28:57 -0700 (PDT)
-Received: by a3.inai.de (Postfix, from userid 25121)
-        id 9FB465877C256; Tue,  5 Oct 2021 20:28:54 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by a3.inai.de (Postfix) with ESMTP id 9C8A260C1CB34;
-        Tue,  5 Oct 2021 20:28:54 +0200 (CEST)
-Date:   Tue, 5 Oct 2021 20:28:54 +0200 (CEST)
-From:   Jan Engelhardt <jengelh@inai.de>
-To:     rostedt <rostedt@goodmis.org>
-cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        rostedt <rostedt@goodmis.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Paul <paulmck@linux.vnet.ibm.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Joel Fernandes, Google" <joel@joelfernandes.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
+        id S234894AbhJESjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 14:39:49 -0400
+Received: from ch3vs03.rockwellcollins.com ([205.175.226.47]:37686 "EHLO
+        ch3vs03.rockwellcollins.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229577AbhJESjs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 14:39:48 -0400
+X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Tue, 05 Oct 2021 14:39:48 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=rockwellcollins.com; s=hrcrc2020;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KnwWS8FxXuoDgDDRlM7P5scofOq7+jfHg9Cs3y6jq5E=;
+  b=rBTp802gP1HQZIHecSVzcp8H0WNOmElvKX9j5ygPUJL82c6wRNk4Udh1
+   givVUvZjay8v4+WwSuhXG1efnjcUcnmKoO+K8DscjHZFN5cR39VNj4bEy
+   eP7SqS1xwYsscWd8wQ9bOQsBIW/YRNPCCK30EiqpVamgqz3RRe3PDyOSA
+   dacsOYKjQDsAmZ5yI6czaSTyu8gM+XrIbUgQ6NAVquPeYjOpvustvdnIa
+   qUaoE4LwdOeD9UCxETh9msEkjn6KLxB6KJyMJYzaREHycYxwmSIC4rBpO
+   7wOHAsNmAmMlHnuoFsuOr+/O8mBf8sOEftj0Riuc4PBOo1UclUCc1Terg
+   w==;
+IronPort-SDR: rkO7ETqPYBTFbL3KKFATaFVfS96dZm5FYwzuP2qG5qayGYRh/rCwTExBt5v7lcwAGZ4fEacaEs
+ 6pfzbCZ9bMBk4DuAXlk6C+kgAMx/rFIwwOcPI6U0ZK00ZEjrvhN8MeNRMBWvCoDkFX1lKQ49Ro
+ pNROYUmlIF53zNy3yjz450idAgvvN+ld/rYYYDCYaPAjyUYAYZ4AW0Hlg+un7eORHf/aGOoISG
+ VnnTpqYCMjcFd4IYpR2WKyrjf8SuLtGxj2nEJb3gYVFBBpIY0f+3IX7PCGu8fNUmzrSSVH1mza
+ N6Y=
+Received: from ofwch3n02.rockwellcollins.com (HELO crulimr01.rockwellcollins.com) ([205.175.226.14])
+  by ch3vs03.rockwellcollins.com with ESMTP; 05 Oct 2021 13:30:49 -0500
+X-Received: from righttwix.rockwellcollins.com (righttwix.rockwellcollins.com [192.168.141.218])
+        by crulimr01.rockwellcollins.com (Postfix) with ESMTP id 5ED8B6038E;
+        Tue,  5 Oct 2021 13:30:48 -0500 (CDT)
+From:   Brandon Maier <brandon.maier@rockwellcollins.com>
+Cc:     Brandon Maier <brandon.maier@rockwellcollins.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        coreteam <coreteam@netfilter.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
-In-Reply-To: <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
-Message-ID: <826o327o-3r46-3oop-r430-8qr0ssp537o3@vanv.qr>
-References: <20211005094728.203ecef2@gandalf.local.home> <ef5b1654-1f75-da82-cab8-248319efbe3f@rasmusvillemoes.dk> <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
-User-Agent: Alpine 2.25 (LSU 592 2021-09-18)
+        Jakub Kicinski <kuba@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        linux-can@vger.kernel.org (open list:CAN NETWORK DRIVERS),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Microchip
+        (AT91) SoC support), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] can: at91_can: fix passive-state AERR flooding
+Date:   Tue,  5 Oct 2021 13:30:23 -0500
+Message-Id: <20211005183023.109328-1-brandon.maier@rockwellcollins.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When the at91_can is a single node on the bus and a user attempts to
+transmit, the can state machine will report ack errors and increment the
+transmit error count until it reaches the passive-state. Per the
+specification, it will then transmit with a passive error, but will stop
+incrementing the transmit error count. This results in the host machine
+being flooded with the AERR interrupt forever, or until another node
+rejoins the bus.
 
-On Tuesday 2021-10-05 20:06, Mathieu Desnoyers wrote:
->> instead of just "typeof(p)", to force the decay to a pointer.
->
->If the type of @p is an integer, (p) + 0 is still valid, so it will not
->prevent users from passing an integer type as argument, which is what
->the current implementation prevents.
->
->Also, AFAIU, the compiler wants to know the sizeof(p) in order to evaluate
->(p + 0). Steven's goal is to hide the structure declaration, so that would
->not work either.
+To prevent the AERR flooding, disable the AERR interrupt when we are in
+passive mode.
 
->>>> typeof(*p) *________p1 = (typeof(*p) *__force)READ_ONCE(p);
+Signed-off-by: Brandon Maier <brandon.maier@rockwellcollins.com>
+---
+ drivers/net/can/at91_can.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/can/at91_can.c b/drivers/net/can/at91_can.c
+index b06af90a9964..2a8831127bd0 100644
+--- a/drivers/net/can/at91_can.c
++++ b/drivers/net/can/at91_can.c
+@@ -804,8 +804,13 @@ static int at91_poll(struct napi_struct *napi, int quota)
+ 		work_done += at91_poll_err(dev, quota - work_done, reg_sr);
+ 
+ 	if (work_done < quota) {
+-		/* enable IRQs for frame errors and all mailboxes >= rx_next */
++		/* enable IRQs for frame errors and all mailboxes >= rx_next,
++		 * disable the ack error in passive mode to avoid flooding
++		 * ourselves with interrupts
++		 */
+ 		u32 reg_ier = AT91_IRQ_ERR_FRAME;
++		if (priv->can.state == CAN_STATE_ERROR_PASSIVE)
++			reg_ier &= ~AT91_IRQ_AERR;
+ 
+ 		reg_ier |= get_irq_mb_rx(priv) & ~AT91_MB_MASK(priv->rx_next);
+ 
+-- 
+2.30.2
 
-#define static_cast(type, expr) ((struct { type x; }){(expr)}.x)
-typeof(p) p1 = (typeof(p) __force)static_cast(void *, READ_ONCE(p));
-
-Let the name not fool you; it's absolutely _not_ the same as C++'s 
-static_cast, but still: it does emit a warning when you do pass an 
-integer, which is better than no warning at all in that case.
-
- *flies away*
