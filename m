@@ -2,84 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E0E3422B40
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:39:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7AF2422B68
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:45:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235140AbhJEOky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 10:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234757AbhJEOkx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 10:40:53 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446C7C06174E
-        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 07:39:03 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id n63so1188837oif.7
-        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 07:39:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lXEZl61p3YP6BUzkTvBp3K8ieedWxYJW4wQES1XWMKU=;
-        b=FJdhyek91PEjWvO7Hj8fb+6AqXPXHJNs3xlFZFqt0KP7xJTSpBhooD+5Zc21nZ+lo7
-         BD3T0HYSUkADZueQTtDLjNwtSQIM0pDWdSSIaFLwYWeB7TwCFngtgge0B+JdONBJz2Yl
-         CwuADTp8JC2lklwO1FoOEUraFY4Q6YF3RSMfo6Yjrs8q3zJTvzuQAZSX8Rlrml19k+qD
-         zVMOOqYqFBRwY11feuSzpeHyiy3pDwEEpNhBxlTf+BnO7yfeSx4ijed2BI6Zc3IfbaYs
-         MwAHZxfUBxhv/+wyEUlf3ZKWozZPCgxyyXf3sMPlGH0rAwdlcRiygJdHPF3lxBE+Mmkk
-         uVhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lXEZl61p3YP6BUzkTvBp3K8ieedWxYJW4wQES1XWMKU=;
-        b=Pmze35HfdtL22P0ChgRzhaR4zWL7hJXPYmTIsFykV7VMlQeOcsr4Lyq+Dht6iLLqtH
-         vbqs688DsCFnKTEiOp1ir1IirIdoXKSawrzGPRckVgJBRl04SzijEbu5E6QbtYfS8F+y
-         hM3tQj8lRz3s+53Px8kUZaf9pqZg8tMi1EAKlAD2OwQ7hrwm9V1N7p/DQ1NPYrrCdbTP
-         PRdPGiSVaRY/6oMjxVLl63+ZkPLrNySdbd8nMnW5yJQzpfOU2qZgM4SNVNOjMsH9TfKv
-         GMpqwTi1E+AKuYIQsnrsssQ78FugVVRPwNZsf+OZZJQbCdKNVf/5YcLA3Yp/b9Fh8lLw
-         Fr0A==
-X-Gm-Message-State: AOAM532scxRDfQJ82w9uflbudC3GB2z2g1D2c+PsNCyJFFgpqvjFgf+7
-        lzGzY9Zs7DJsBOk/134KkaxTtMWx7f53ZA==
-X-Google-Smtp-Source: ABdhPJz+GrNSbZkcfzPEhPNduZRiiJMEeDp2/5IkNi9/vrEWHi1nvOlneiaygnqbMhbQagKGsCyoqA==
-X-Received: by 2002:a05:6808:1823:: with SMTP id bh35mr2932937oib.53.1633444742714;
-        Tue, 05 Oct 2021 07:39:02 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id l25sm3509118ooh.22.2021.10.05.07.39.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Oct 2021 07:39:02 -0700 (PDT)
-Subject: Re: [iproute2-next] devlink: print maximum number of snapshots if
- available
-To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kubakici@wp.pl>, Jiri Pirko <jiri@resnulli.us>
-References: <20210930212050.1673896-1-jacob.e.keller@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <fc0d89a5-7ffe-e8a4-e7c0-7694eece400d@gmail.com>
-Date:   Tue, 5 Oct 2021 08:39:01 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S235511AbhJEOrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 10:47:07 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:47700 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235134AbhJEOrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 10:47:06 -0400
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id 62E98200F48B;
+        Tue,  5 Oct 2021 16:45:14 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 62E98200F48B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1633445114;
+        bh=D5CLXSpjv2zQmPTWaTxvZZom7i+QAm9xoMnWPURrcXI=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=WQHiPdK+u3Tmri7YzUJuc928V0IkfnVCSBJ+XzyvKoQjByV3WkqnsTTfsYWGp9Fwx
+         IeL1DTvVB5+O51jnkAH5taH0YROPFvKhsPJUbT7CtO6/MComCxPk2b4Zs8VomhYAwN
+         Rdae2XcBrwrJGC3S8DEhpTlU2xTRJBKM4RwJwNcI8lNEd1OdSG0yLp/yYddaX9RJBS
+         QRYFqZmtRR8vFGj5RcpMbSSC2KODmh8e0e0k0WqpHee2cfAMPjXEpT+0YH0DHQ5nBq
+         Ctu+sONUzEXviTgJawWzvFhLzvkN3kyYWB3qLWqvqT6gpNjnCAPkTFD+O+ooUbbXC5
+         D2KFVEF2DC19g==
+Received: from localhost (localhost [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 5ADC4602245CD;
+        Tue,  5 Oct 2021 16:45:14 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 6rHTmE37pE0z; Tue,  5 Oct 2021 16:45:14 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 453C56010ECC0;
+        Tue,  5 Oct 2021 16:45:14 +0200 (CEST)
+Date:   Tue, 5 Oct 2021 16:45:14 +0200 (CEST)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
+        stephen@networkplumber.org
+Message-ID: <181201748.114494759.1633445114212.JavaMail.zimbra@uliege.be>
+In-Reply-To: <a80c8fba-bf66-93ef-c54e-6648b3522e28@gmail.com>
+References: <20211004130651.13571-1-justin.iurman@uliege.be> <20211004130651.13571-2-justin.iurman@uliege.be> <a80c8fba-bf66-93ef-c54e-6648b3522e28@gmail.com>
+Subject: Re: [PATCH iproute2-next 1/2] Add support for IOAM encap modes
 MIME-Version: 1.0
-In-Reply-To: <20210930212050.1673896-1-jacob.e.keller@intel.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [81.240.24.148]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF92 (Linux)/8.8.15_GA_4026)
+Thread-Topic: Add support for IOAM encap modes
+Thread-Index: qck4K0XlCrUmVufBS9kmuWVQ/Z38Fg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/30/21 3:20 PM, Jacob Keller wrote:
-> Recently the kernel gained ability to report the maximum number of
-> snapshots a region can have. Print this value out if it was reported.
+>> +static const char *ioam6_mode_types[] = {
 > 
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> ---
-> 
-> This requires updating the UAPI headers to the commit which includes the
-> DEVLINK_ATTR_REGION_MAX_SNAPSHOTS attribute.
-> 
->  devlink/devlink.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
+> I think you want to declare this of size IOAM6_IPTUNNEL_MODE_MAX + 1
 
-applied to iproute2-next
+This is automatically the case, see below explanation.
 
+>> +	[IOAM6_IPTUNNEL_MODE_INLINE]	= "inline",
+>> +	[IOAM6_IPTUNNEL_MODE_ENCAP]	= "encap",
+>> +	[IOAM6_IPTUNNEL_MODE_AUTO]	= "auto",
+>> +};
+>> +
+>> +static const char *format_ioam6mode_type(int mode)
+>> +{
+>> +	if (mode < IOAM6_IPTUNNEL_MODE_MIN ||
+>> +	    mode > IOAM6_IPTUNNEL_MODE_MAX ||
+>> +	    !ioam6_mode_types[mode])
+> 
+> otherwise this check is not sufficient.
+
+Are you sure? I mean, both IOAM6_IPTUNNEL_MODE_MIN and IOAM6_IPTUNNEL_MODE_MAX respectively point to IOAM6_IPTUNNEL_MODE_INLINE and IOAM6_IPTUNNEL_MODE_AUTO. So, either the input mode is out of bound, or not defined in the array above (this one is not mandatory, but it ensures that the above array is updated accordingly with the uapi). So, what we have right now is:
+
+__IOAM6_IPTUNNEL_MODE_MIN = 0
+IOAM6_IPTUNNEL_MODE_INLINE = 1
+IOAM6_IPTUNNEL_MODE_ENCAP = 2
+IOAM6_IPTUNNEL_MODE_AUTO = 3
+__IOAM6_IPTUNNEL_MODE_MAX = 4
+
+IOAM6_IPTUNNEL_MODE_MIN = 1
+IOAM6_IPTUNNEL_MODE_MAX = 3
+
+ioam6_mode_types = {
+  [0] (null)
+  [1] "inline"
+  [2] "encap"
+  [3] "auto"
+}
+
+where its size is automatically/implicitly 4 (IOAM6_IPTUNNEL_MODE_MAX + 1).
