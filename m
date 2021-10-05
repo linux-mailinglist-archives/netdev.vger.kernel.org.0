@@ -2,60 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93BD24229F5
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 402834229F2
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:02:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236431AbhJEOEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 10:04:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50016 "EHLO vps0.lunn.ch"
+        id S236134AbhJEOEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 10:04:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42194 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235946AbhJEOEb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 10:04:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=lk6JWB2KOp3ewiwXACvmReryVSjhtXfoVoFaRHFT30w=; b=1I4waaUYVzC6dE9DSzMJMIjfwX
-        uknVZVZeHPWi4TCzm5Wv1IS30qID6nFWTox0MJfhEEWQBdsI1VT9tlMhg+Cms5O7WTZIwhTGdwE7p
-        RuYj0EazVFHe9mYzGVfZUUVLlHCOt8FPA0RsPf8/340HweKC0nqSsJQTfeKflB/NtwJw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mXl1U-009hb1-0Z; Tue, 05 Oct 2021 16:02:24 +0200
-Date:   Tue, 5 Oct 2021 16:02:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Yanfei Xu <yanfei.xu@windriver.com>,
-        syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com,
-        "David S . Miller" <davem@davemloft.net>, hkallweit1@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.14 28/40] net: mdiobus: Fix memory leak in
- __mdiobus_register
-Message-ID: <YVxa7w8JWOMPOQsp@lunn.ch>
-References: <20211005135020.214291-1-sashal@kernel.org>
- <20211005135020.214291-28-sashal@kernel.org>
+        id S236439AbhJEOER (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 10:04:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2008761165;
+        Tue,  5 Oct 2021 14:02:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633442546;
+        bh=nZSWn8xN++BfadytUcz08RDgfDMR1W47HBlabr9TEfQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hNQgiK4FGZhI10JNZYVYWjO+QRPLaEFGDmRwvJ9o3x1J8FZmi8fNmssq6/Y3dNvRB
+         RqFV7AtmmbybHUDhi9tVU2C2D4lWscyC1lD8pP82dIUcaeCHpylIEgZjiYjhouauqb
+         S5eXt8g+jV01OKZpF/PHUy4wP+xd/Nte615PrFsixhpzZ72yfFX/ca/UvftpyK75pF
+         8BvMrkfJMNkMcbMMHwihr1jeVTj4Qsx1vA8lgMJ52ej2upTSL8YrksbYKiYPK1tuuX
+         TAm4CRYcdPCnRUJrfe3d+juVa/Np+Bu07fmAKOsXzrh78OZQQcYH+k05G3pHdaLKbX
+         jyrdGviqSBFiw==
+Date:   Tue, 5 Oct 2021 07:02:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        =?UTF-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v7 13/24] wfx: add hif_tx*.c/hif_tx*.h
+Message-ID: <20211005070225.4d5f038a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87tuhwf19w.fsf@codeaurora.org>
+References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com>
+        <20210920161136.2398632-14-Jerome.Pouiller@silabs.com>
+        <87fstlkr1m.fsf@codeaurora.org>
+        <2873071.CAOYYqaKbK@pc-42>
+        <20211001161316.w3cwsigacznjbowl@pali>
+        <87tuhwf19w.fsf@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211005135020.214291-28-sashal@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 05, 2021 at 09:50:07AM -0400, Sasha Levin wrote:
-> From: Yanfei Xu <yanfei.xu@windriver.com>
+On Tue, 05 Oct 2021 09:12:27 +0300 Kalle Valo wrote:
+> >> I didn't know it was mandatory to prefix all the functions with the
+> >> same prefix.  
 > 
-> [ Upstream commit ab609f25d19858513919369ff3d9a63c02cd9e2e ]
-> 
-> Once device_register() failed, we should call put_device() to
-> decrement reference count for cleanup. Or it will cause memory
-> leak.
+> I don't know either if this is mandatory or not, for example I do not
+> have any recollection what Linus and other maintainers think of this. I
+> just personally think it's good practise to use driver prefix ("wfx_")
+> in all non-static functions.
 
-Hi Sasha
-
-https://lkml.org/lkml/2021/10/4/1427
-
-Please don't backport for any stable kernel.
-
-	Andrew
+I'd even say all functions. The prefixes are usually 3 chars, it's no
+hassle to add and makes reading the code and looking at stack traces
+much more intuitive for people who are not intimately familiar with 
+the code.
