@@ -2,101 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 324BD423059
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 20:48:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EDD842306C
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 20:53:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234814AbhJESul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 14:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
+        id S235099AbhJESzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 14:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233671AbhJESuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 14:50:37 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523D0C061755
-        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 11:48:46 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id z1so367028edb.8
-        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 11:48:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=A2NgxD1/eVKF5aA/6vOIKBsVzYpDnTEprcND7FDOo0M=;
-        b=fFls5kf51lCIVFfkvGfs/xBe5XimbcYmLquWrEgTuzI0E86OeuXyL7p0wYGBeMKXp6
-         n2zUmaPptcJGf4ySWE3LboQxkcw2GdxkxT8U487eGeQ/OELckpICsePkKJ7Jb5gQzOMp
-         DHouSPks6GOygmlOmWexqYsjUFUsR5vaYJxuA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=A2NgxD1/eVKF5aA/6vOIKBsVzYpDnTEprcND7FDOo0M=;
-        b=yYabGqzML0Cd8vLuMyuIOv/gsKTvhjOShSSn6X4h0yWgPlTQS4VmirS6ox44JNcaIW
-         LCs1T3OGJwSRJiEFC2bMDUEBbdl7XMREd5vht67hCLzlrySqzwRb5oTxYQqi6e52jf9H
-         nJCLQKfs3I+IyRcISZydWgQXCNnFkCuyOz0neRjmSC5mFRwH3BJw3Mdh2MCCzIyFMunm
-         /2CHJ555nRsgufIB0ErbBmhSJYt7HfaiVvZXM5kka9VsT9GdCpXLtT2rDH+5lRKhoPR1
-         6H4VTYuAO/mkEe8sdL1SLDPieILp3SeFWF4kV52eU8C7Okxo9Bfh7RaSPcq6MhQ8c9Ic
-         BkVQ==
-X-Gm-Message-State: AOAM532dP+5732oS8hMn6ezTlQlT3LTyrtXWm0PuueU7nj8Up7nkI+l9
-        cLKvxai8GIKOp62qtHgv0YsF8raX6vJJ7GTC
-X-Google-Smtp-Source: ABdhPJz9jeqHDl8O0imLWpCr8HeJ8hr/QY2yL6Y9H94zZ/C0athk4E1x91ecMziaL8KCw9LmdzYAMQ==
-X-Received: by 2002:a17:906:cec6:: with SMTP id si6mr2070177ejb.270.1633459724617;
-        Tue, 05 Oct 2021 11:48:44 -0700 (PDT)
-Received: from [192.168.1.149] ([80.208.69.72])
-        by smtp.gmail.com with ESMTPSA id lb20sm8091267ejc.40.2021.10.05.11.48.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Oct 2021 11:48:44 -0700 (PDT)
-Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     rostedt <rostedt@goodmis.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Paul <paulmck@linux.vnet.ibm.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Joel Fernandes, Google" <joel@joelfernandes.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        coreteam <coreteam@netfilter.org>,
-        netdev <netdev@vger.kernel.org>
-References: <20211005094728.203ecef2@gandalf.local.home>
- <ef5b1654-1f75-da82-cab8-248319efbe3f@rasmusvillemoes.dk>
- <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Message-ID: <ed3b6265-b073-bab2-4a05-d7a8acf7763d@rasmusvillemoes.dk>
-Date:   Tue, 5 Oct 2021 20:48:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        with ESMTP id S229684AbhJESzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 14:55:00 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6502C061749;
+        Tue,  5 Oct 2021 11:53:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=qjr76vSgztkgEfig8jYzCaTebFv24jfWo3PlnZ+dHr4=; b=eWtqvcIhO5Vo588yDa9141/8Ku
+        mbeJ/XvB8y/8U3rR+1lN0/ry3+YEpFASbvneEgRMMem6fSlrsdTtzf96aD8xqS1eR1KEsViPw7Ny2
+        S+XAGgj92edGRNx4xTWhCSOo+N/xEvLwhr2/zkxFbrs7WqWY/wZA+4ccHjB6zBepbhaFESgpYOs6D
+        Fa8DmYq6EsN1shs74Em7ev5SLBTsUClkYWbbbF/Do7DtmciaKDNL+oGL4U6lWE/Cocv65dCkDN94W
+        xu46KrfbP1v3bP61IpxGcgdIxxLH170VQu3TzNVY5D5D33ccVd2RIT/5LtGK+TBT77vp2q5rdqnRy
+        d/CdwtRw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54962)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mXpYo-0000ey-Co; Tue, 05 Oct 2021 19:53:06 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mXpYm-0000EW-3k; Tue, 05 Oct 2021 19:53:04 +0100
+Date:   Tue, 5 Oct 2021 19:53:04 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: Re: [RFC net-next PATCH 10/16] net: macb: Move PCS settings to PCS
+ callbacks
+Message-ID: <YVyfEOu+emsX/ERr@shell.armlinux.org.uk>
+References: <20211004191527.1610759-1-sean.anderson@seco.com>
+ <20211004191527.1610759-11-sean.anderson@seco.com>
+ <YVwjjghGcXaEYgY+@shell.armlinux.org.uk>
+ <7c92218c-baec-a991-9d6b-af42dfabbad3@seco.com>
 MIME-Version: 1.0
-In-Reply-To: <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7c92218c-baec-a991-9d6b-af42dfabbad3@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/10/2021 20.06, Mathieu Desnoyers wrote:
-> ----- On Oct 5, 2021, at 2:01 PM, Rasmus Villemoes linux@rasmusvillemoes.dk wrote:
+On Tue, Oct 05, 2021 at 12:03:50PM -0400, Sean Anderson wrote:
+> Hi Russell,
 > 
->> I would think that one could avoid that churn by saying
->>
->>  typeof((p) + 0)
->>
->> instead of just "typeof(p)", to force the decay to a pointer.
+> On 10/5/21 6:06 AM, Russell King (Oracle) wrote:
+> > On Mon, Oct 04, 2021 at 03:15:21PM -0400, Sean Anderson wrote:
+> > > +static void macb_pcs_get_state(struct phylink_pcs *pcs,
+> > > +			       struct phylink_link_state *state)
+> > > +{
+> > > +	struct macb *bp = pcs_to_macb(pcs);
+> > > +
+> > > +	if (gem_readl(bp, NCFGR) & GEM_BIT(SGMIIEN))
+> > > +		state->interface = PHY_INTERFACE_MODE_SGMII;
+> > > +	else
+> > > +		state->interface = PHY_INTERFACE_MODE_1000BASEX;
+> > 
+> > There is no requirement to set state->interface here. Phylink doesn't
+> > cater for interface changes when reading the state. As documented,
+> > phylink will set state->interface already before calling this function
+> > to indicate what interface mode it is currently expecting from the
+> > hardware.
 > 
-> Also, AFAIU, the compiler wants to know the sizeof(p) in order to evaluate
-> (p + 0). Steven's goal is to hide the structure declaration, so that would
-> not work either.
+> Ok, so instead I should be doing something like
+> 
+> if (gem_readl(bp, NCFGR) & GEM_BIT(SGMIIEN))
+> 	interface = PHY_INTERFACE_MODE_SGMII;
+> else
+> 	interface = PHY_INTERFACE_MODE_1000BASEX;
+> 
+> if (interface != state->interface) {
+> 	state->link = 0;
+> 	return;
+> }
 
-Gah, you're right. I was hoping the frontend would see that +0 could be
-optimized away and only affect the type of the expression, but it does
-give 'error: invalid use of undefined type ‘struct abc’'. Sorry for the
-noise.
+Why would it be different? If we've called the pcs_config method to
+set the interface to one mode, why would it change?
 
-Rasmus
+> > There has been the suggestion that we should allow in-band AN to be
+> > disabled in 1000base-X if we're in in-band mode according to the
+> > ethtool state.
+> 
+> This logic is taken from phylink_mii_c22_pcs_config. Maybe I should add
+> another _encode variant? I hadn't done this here because the logic was
+> only one if statement.
+> 
+> > I have a patch that adds that.
+> 
+> Have you posted it?
+
+I haven't - it is a patch from Robert Hancock, "net: phylink: Support
+disabling autonegotiation for PCS". I've had it in my tree for a while,
+but I do want to make some changes to it before re-posting.
+
+> > You can't actually abort at this point - phylink will print the error
+> > and carry on regardless. The checking is all done via the validate()
+> > callback and if that indicates the interface mode is acceptable, then
+> > it should be accepted.
+> 
+> Ok, so where can the PCS NAK an interface? This is the only callback
+> which has a return code, so I assumed this was the correct place to say
+> "no, we don't support this." This is what lynx_pcs_config does as well.
+
+At the moment, the PCS doesn't get to NAK an inappropriate interface.
+That's currently the job of the MAC's validate callback with the
+assumtion that the MAC knows what interfaces are supportable.
+
+Trying to do it later, once the configuration has been worked out can
+_only_ lead to a failure of some kind - in many paths, there is no way
+to report the problem except by printing a message into the kernel log.
+
+For example, by the time we reach pcs_config(), we've already prepared
+the MAC for a change to the interface, we've told the MAC to configure
+for that interface. Now the PCS rejects it - we have no record of the
+old configuration to restore. Even if we had a way to restore it, then
+we could return an error to the user - but the user doesn't get to
+control the interface themselves. If it was the result of a PHY changing
+its interface, then what - we can only log an error to the kernel log.
+If it's the result of a SFP being plugged in, we have no way to
+renegotiate.
+
+pcs_config() is too late to be making decisions about whether the
+requested configuration is acceptable or not. It needs to be done as
+part of the validation step.
+
+However, the validation step is not purely just validation, but it's
+negotiation too for SFPs to be able to work out what interface mode
+they should use in combination with the support that the MAC/PCS
+offers.
+
+I do feel that the implementation around the validation/selection of
+interface for SFP etc is starting to creak, and I've some patches that
+introduce a bitmap of interface types that are supported by the various
+components. I haven't had the motivation to finish that off as my last
+attempt at making a phylink API change was not pleasant in terms of
+either help updating network drivers or getting patches tested. So I
+now try to avoid phylink API changes at all cost.
+
+People have whinged that phylink's API changes too quickly... I'm
+guessing we're now going to get other people arguing that it needs
+change to fix issues like this...
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
