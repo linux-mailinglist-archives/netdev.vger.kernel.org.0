@@ -2,84 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA389423294
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 23:01:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BF8B42329F
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 23:04:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236136AbhJEVDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 17:03:13 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50800 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231387AbhJEVDM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 17:03:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=xoD6/I7Cc8crpzzqPjHiA+h57zOy6+xgtG83jf7v3i8=; b=NYWTqPejfFry0n/LrjSsAY4phD
-        Qv1Tdgk05aJiDeQWZbS1BqXiFN/DcEdqUax8IasE+VPxks+3NE3UEyp2JQfM8YXCOsAG4Oogb1FPj
-        SFZsudwdTTCj2sSoyY+bdNG+q9Bbt+LK+gMQf5D8vdH6eIZDVq+QPOqlesfuADycj2UQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mXrYs-009kQB-57; Tue, 05 Oct 2021 23:01:18 +0200
-Date:   Tue, 5 Oct 2021 23:01:18 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: lets settle the LED `function` property regarding the netdev
- trigger
-Message-ID: <YVy9Ho47XeVON+lB@lunn.ch>
-References: <20211001143601.5f57eb1a@thinkpad>
- <YVn815h7JBtVSfwZ@lunn.ch>
- <20211003212654.30fa43f5@thinkpad>
- <YVsUodiPoiIESrEE@lunn.ch>
- <20211004170847.3f92ef48@thinkpad>
- <0b1bc2d7-6e62-5adb-5aed-48b99770d80d@gmail.com>
- <20211005222657.7d1b2a19@thinkpad>
+        id S231159AbhJEVGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 17:06:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236395AbhJEVGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 17:06:12 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23320C061749
+        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 14:04:22 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id d13-20020a17090ad3cd00b0019e746f7bd4so2980088pjw.0
+        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 14:04:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F9pNhpViyWyRyJMOPeFgEcLGjmDG7MgoLRw9zus3txg=;
+        b=fr45+6WZEZvuavdFcsy4kpT1Mh86pAhaJgdNtf2D2pS/aO9i/02Rcr5WjGMLYmfvw2
+         RrXJwXm5b0Dz0rnEdgB5/+xsgMVH1GVVcVMJt30Y78st91pltKiwDuUmWYdlE2I/yofe
+         SJcqK8GxCtSpS4oGrv4FwdF7SpXMu9OBxtJGloEgKFwui/ZQd9E1dkMRXIJOZOofBjhQ
+         OSN1e1LthuzfSV2E+gt6VGFn1WLHRcWRVtA2HbAzZfCnJIJyDZSh6DJMtNCM594of5Ut
+         Ouc7YkLnJI1+iMq2N523D2vX0yJD1897NVlwSFkeY+16UKPFA4iiMhi3qFwK2dmSR4Wi
+         0W2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F9pNhpViyWyRyJMOPeFgEcLGjmDG7MgoLRw9zus3txg=;
+        b=EUg4B0AsoT3Hgzaox885w7Gg9OZ6EZyYU1aoAgpC3B03b71Sqxywbh29s2NSdF5OD1
+         4h8JpePVhZtYA+g3RSmVMV5Qg5KUSn3GbpaQDdNYr70s03nr9XcVa2nW/17Xf3Hl06e7
+         XbfLlAAWVbH3IfHAbw2CvEs5L9M94NE9Le/zb2x2mzv4HBk6YqjfDScI9UrponVb2LOi
+         XBVXEsTh3c3+Lbg5QAcB2AnEKTbweTQE0Fc+/VR6zXtgY+12cjXQEsmb1eMRnmVvwjX3
+         OSFXVtLqsogZByvlhIjWVk3orlUTBXP+MFgdR1zxm9xIkP5BVNMO3FUKm2D+xNFu2hlB
+         7scQ==
+X-Gm-Message-State: AOAM530QTsSmEwPtDuRi5NFdAEtVU6SXAtIF+DhZKjdXWmbO0Cjl3AdR
+        /jFOepigO84STZQ+6c+O+1KzDRm5OVU=
+X-Google-Smtp-Source: ABdhPJycZnqLU63xi+MjY3yqj0LXCBb2Wf5wyIQQGCyJ0JoAHnxnRgO+81P5MbpfGvKHuQ1pvcsmDg==
+X-Received: by 2002:a17:902:9b88:b0:13e:55b1:2939 with SMTP id y8-20020a1709029b8800b0013e55b12939mr7173095plp.80.1633467861727;
+        Tue, 05 Oct 2021 14:04:21 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4c77:3139:c57:fc29])
+        by smtp.gmail.com with ESMTPSA id mv9sm2917348pjb.10.2021.10.05.14.04.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Oct 2021 14:04:21 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>
+Subject: [PATCH net] rtnetlink: fix if_nlmsg_stats_size() under estimation
+Date:   Tue,  5 Oct 2021 14:04:17 -0700
+Message-Id: <20211005210417.2624297-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.33.0.800.g4c38ced690-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211005222657.7d1b2a19@thinkpad>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> In the discussed case (ethernet PHY LEDs) - it is sometimes possible to
-> have multiple brightness levels per color channel. For example some
-> Marvell PHYs allow to set 8 levels of brightness for Dual Mode LEDs.
-> Dual Mode is what Marvell calls when the PHY allows to pair two
-> LED pins to control one dual-color LED (green-red, for example) into
-> one.
-> 
-> Moreover for this Dual Mode case they also allow for HW control of
-> this dual LED, which, when enabled, does something like this, in HW:
->   1g link	green
->   100m link	yellow
->   10m link	red
->   no link	off
-> 
-> Note that actual colors depend on the LEDs themselves. The PHY
-> documentation does not talk about the color, only about which pin is
-> on/off. The thing is that if we want to somehow set this mode for the
-> LED, it should be represented as one LED class device.
-> 
-> I want to extend the netdev trigger to support such configuration,
-> so that when you have multicolor LED, you will be able to say which
-> color should be set for which link mode.
+From: Eric Dumazet <edumazet@google.com>
 
-This is getting into the exotic level i don't think we need to
-support. How many PHYs have you seen that support something like this?
+rtnl_fill_statsinfo() is filling skb with one mandatory if_stats_msg structure.
 
-I suggest we start with simple independent LEDs. That gives enough to
-support the majority of use cases people actually need. And is enough
-to unblock people who i keep NACKing patches and tell them to wait for
-this work to get merged.
+nlmsg_put(skb, pid, seq, type, sizeof(struct if_stats_msg), flags);
 
-     Andrew
+But if_nlmsg_stats_size() never considered the needed storage.
 
+This bug did not show up because alloc_skb(X) allocates skb with
+extra tailroom, because of added alignments. This could very well
+be changed in the future to have deterministic behavior.
 
+Fixes: 10c9ead9f3c6 ("rtnetlink: add new RTM_GETSTATS message to dump link stats")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+---
+ net/core/rtnetlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 972c8cb303a514758278307cd9fcb974e37f2b96..8ccce85562a1da2a5285aebd19a6a4cb7d6a163e 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -5262,7 +5262,7 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
+ static size_t if_nlmsg_stats_size(const struct net_device *dev,
+ 				  u32 filter_mask)
+ {
+-	size_t size = 0;
++	size_t size = NLMSG_ALIGN(sizeof(struct if_stats_msg));
+ 
+ 	if (stats_attr_valid(filter_mask, IFLA_STATS_LINK_64, 0))
+ 		size += nla_total_size_64bit(sizeof(struct rtnl_link_stats64));
+-- 
+2.33.0.800.g4c38ced690-goog
 
