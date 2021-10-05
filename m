@@ -2,25 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83CF6423025
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 20:40:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 324BD423059
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 20:48:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234805AbhJESl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 14:41:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47730 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229662AbhJESl4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 14:41:56 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CB861613D3;
-        Tue,  5 Oct 2021 18:40:03 +0000 (UTC)
-Date:   Tue, 5 Oct 2021 14:40:02 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jan Engelhardt <jengelh@inai.de>
-Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        id S234814AbhJESul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 14:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233671AbhJESuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 14:50:37 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523D0C061755
+        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 11:48:46 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id z1so367028edb.8
+        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 11:48:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=A2NgxD1/eVKF5aA/6vOIKBsVzYpDnTEprcND7FDOo0M=;
+        b=fFls5kf51lCIVFfkvGfs/xBe5XimbcYmLquWrEgTuzI0E86OeuXyL7p0wYGBeMKXp6
+         n2zUmaPptcJGf4ySWE3LboQxkcw2GdxkxT8U487eGeQ/OELckpICsePkKJ7Jb5gQzOMp
+         DHouSPks6GOygmlOmWexqYsjUFUsR5vaYJxuA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=A2NgxD1/eVKF5aA/6vOIKBsVzYpDnTEprcND7FDOo0M=;
+        b=yYabGqzML0Cd8vLuMyuIOv/gsKTvhjOShSSn6X4h0yWgPlTQS4VmirS6ox44JNcaIW
+         LCs1T3OGJwSRJiEFC2bMDUEBbdl7XMREd5vht67hCLzlrySqzwRb5oTxYQqi6e52jf9H
+         nJCLQKfs3I+IyRcISZydWgQXCNnFkCuyOz0neRjmSC5mFRwH3BJw3Mdh2MCCzIyFMunm
+         /2CHJ555nRsgufIB0ErbBmhSJYt7HfaiVvZXM5kka9VsT9GdCpXLtT2rDH+5lRKhoPR1
+         6H4VTYuAO/mkEe8sdL1SLDPieILp3SeFWF4kV52eU8C7Okxo9Bfh7RaSPcq6MhQ8c9Ic
+         BkVQ==
+X-Gm-Message-State: AOAM532dP+5732oS8hMn6ezTlQlT3LTyrtXWm0PuueU7nj8Up7nkI+l9
+        cLKvxai8GIKOp62qtHgv0YsF8raX6vJJ7GTC
+X-Google-Smtp-Source: ABdhPJz9jeqHDl8O0imLWpCr8HeJ8hr/QY2yL6Y9H94zZ/C0athk4E1x91ecMziaL8KCw9LmdzYAMQ==
+X-Received: by 2002:a17:906:cec6:: with SMTP id si6mr2070177ejb.270.1633459724617;
+        Tue, 05 Oct 2021 11:48:44 -0700 (PDT)
+Received: from [192.168.1.149] ([80.208.69.72])
+        by smtp.gmail.com with ESMTPSA id lb20sm8091267ejc.40.2021.10.05.11.48.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Oct 2021 11:48:44 -0700 (PDT)
+Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     rostedt <rostedt@goodmis.org>,
         linux-kernel <linux-kernel@vger.kernel.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Paul <paulmck@linux.vnet.ibm.com>,
@@ -37,47 +64,39 @@ Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         netfilter-devel <netfilter-devel@vger.kernel.org>,
         coreteam <coreteam@netfilter.org>,
         netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
-Message-ID: <20211005144002.34008ea0@gandalf.local.home>
-In-Reply-To: <826o327o-3r46-3oop-r430-8qr0ssp537o3@vanv.qr>
 References: <20211005094728.203ecef2@gandalf.local.home>
-        <ef5b1654-1f75-da82-cab8-248319efbe3f@rasmusvillemoes.dk>
-        <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
-        <826o327o-3r46-3oop-r430-8qr0ssp537o3@vanv.qr>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <ef5b1654-1f75-da82-cab8-248319efbe3f@rasmusvillemoes.dk>
+ <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Message-ID: <ed3b6265-b073-bab2-4a05-d7a8acf7763d@rasmusvillemoes.dk>
+Date:   Tue, 5 Oct 2021 20:48:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Oct 2021 20:28:54 +0200 (CEST)
-Jan Engelhardt <jengelh@inai.de> wrote:
+On 05/10/2021 20.06, Mathieu Desnoyers wrote:
+> ----- On Oct 5, 2021, at 2:01 PM, Rasmus Villemoes linux@rasmusvillemoes.dk wrote:
+> 
+>> I would think that one could avoid that churn by saying
+>>
+>>  typeof((p) + 0)
+>>
+>> instead of just "typeof(p)", to force the decay to a pointer.
+> 
+> Also, AFAIU, the compiler wants to know the sizeof(p) in order to evaluate
+> (p + 0). Steven's goal is to hide the structure declaration, so that would
+> not work either.
 
-> On Tuesday 2021-10-05 20:06, Mathieu Desnoyers wrote:
-> >> instead of just "typeof(p)", to force the decay to a pointer.  
-> >
-> >If the type of @p is an integer, (p) + 0 is still valid, so it will not
-> >prevent users from passing an integer type as argument, which is what
-> >the current implementation prevents.
-> >
-> >Also, AFAIU, the compiler wants to know the sizeof(p) in order to evaluate
-> >(p + 0). Steven's goal is to hide the structure declaration, so that would
-> >not work either.  
-> 
-> >>>> typeof(*p) *________p1 = (typeof(*p) *__force)READ_ONCE(p);  
-> 
-> 
-> #define static_cast(type, expr) ((struct { type x; }){(expr)}.x)
-> typeof(p) p1 = (typeof(p) __force)static_cast(void *, READ_ONCE(p));
-> 
-> Let the name not fool you; it's absolutely _not_ the same as C++'s 
-> static_cast, but still: it does emit a warning when you do pass an 
-> integer, which is better than no warning at all in that case.
-> 
->  *flies away*
+Gah, you're right. I was hoping the frontend would see that +0 could be
+optimized away and only affect the type of the expression, but it does
+give 'error: invalid use of undefined type ‘struct abc’'. Sorry for the
+noise.
 
-Are you suggesting I should continue this exercise ;-)
-
--- Steve
+Rasmus
