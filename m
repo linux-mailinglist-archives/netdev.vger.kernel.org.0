@@ -2,116 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 374434233CB
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 00:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4767E4233E6
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 00:54:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236945AbhJEWsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 18:48:02 -0400
-Received: from mail-oi1-f171.google.com ([209.85.167.171]:42821 "EHLO
-        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236820AbhJEWr7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 18:47:59 -0400
-Received: by mail-oi1-f171.google.com with SMTP id x124so1358397oix.9;
-        Tue, 05 Oct 2021 15:46:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=idk/OPLqOoxicS++8eNcVOO+4pet2v6UE8sH+4Sn+Fs=;
-        b=WyTt2CQ9yJFlHGsC8zVMPHHvq5DXj31iv+UOO1BmXHi63+boxFKUna0r6qh0YTQY1/
-         M6TlUdbENjmP7LKGWBkuEjexUxmMNRskHJcy8eU4pYWnCYPzV/Fs/ilhnlQbyID86q5a
-         hvadqI9on0eHQYE6O2A0GT2ydrplUF0O10uZd25G56AjOs/rAZ7lU/mqGC3Io6kjssSg
-         sekxx0qnJLKGOTterNuzRs8zgl217lLuLxLGt14WiOShWd8U8Fn7urS4M+9uiUvILwQA
-         B8TU7Fnns99SfJyDaEBZfWzSpF9TDVV0hlB1T1uOtZX/EitPCyLKOSA+/GFJnXrALjir
-         Xzog==
-X-Gm-Message-State: AOAM533xb7Cko15KkCkvj0LbQF//I+SDLs5IsG8PlTuU/rz11d6CEkgn
-        aOTdNXsO68c5Zfxs7/t/HQ==
-X-Google-Smtp-Source: ABdhPJzuCyAG5KCu9OI9pzfAoSNtgTk0/nwWINbsvAaJKNhig4buPmUm2PEwS2D8Cwi0GfG/C6nvPw==
-X-Received: by 2002:aca:2415:: with SMTP id n21mr4542248oic.27.1633473967660;
-        Tue, 05 Oct 2021 15:46:07 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id a9sm3775851otk.3.2021.10.05.15.46.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Oct 2021 15:46:06 -0700 (PDT)
-Received: (nullmailer pid 106780 invoked by uid 1000);
-        Tue, 05 Oct 2021 22:45:59 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     devicetree@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?utf-8?b?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
-        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devel@driverdev.osuosl.org,
-        =?utf-8?q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-kernel@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, linux-mmc@vger.kernel.org
-In-Reply-To: <20211005135400.788058-3-Jerome.Pouiller@silabs.com>
-References: <20211005135400.788058-1-Jerome.Pouiller@silabs.com> <20211005135400.788058-3-Jerome.Pouiller@silabs.com>
-Subject: Re: [PATCH v8 02/24] dt-bindings: introduce silabs,wfx.yaml
-Date:   Tue, 05 Oct 2021 17:45:59 -0500
-Message-Id: <1633473959.392405.106778.nullmailer@robh.at.kernel.org>
+        id S236818AbhJEW4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 18:56:05 -0400
+Received: from perseus.uberspace.de ([95.143.172.134]:47460 "EHLO
+        perseus.uberspace.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230113AbhJEW4E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 18:56:04 -0400
+Received: (qmail 32076 invoked from network); 5 Oct 2021 22:54:11 -0000
+Received: from localhost (HELO localhost) (127.0.0.1)
+  by perseus.uberspace.de with SMTP; 5 Oct 2021 22:54:11 -0000
+From:   David Bauer <mail@david-bauer.net>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v2] net: phy: at803x: add QCA9561 support
+Date:   Wed,  6 Oct 2021 00:54:01 +0200
+Message-Id: <20211005225401.10653-1-mail@david-bauer.net>
+X-Mailer: git-send-email 2.33.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 05 Oct 2021 15:53:38 +0200, Jerome Pouiller wrote:
-> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> 
-> Prepare the inclusion of the wfx driver in the kernel.
-> 
-> Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> ---
->  .../bindings/net/wireless/silabs,wfx.yaml     | 137 ++++++++++++++++++
->  1 file changed, 137 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-> 
+Add support for the embedded fast-ethernet PHY found on the QCA9561
+WiSoC platform. It supports the usual Atheros PHY featureset including
+the cable tester.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Tested on a Xiaomi MiRouter 4Q (QCA9561)
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml:39:31: [error] syntax error: mapping values are not allowed here (syntax)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David Bauer <mail@david-bauer.net>
+---
+ drivers/net/phy/at803x.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-dtschema/dtc warnings/errors:
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/net/wireless/silabs,wfx.example.dts'
-Traceback (most recent call last):
-  File "/usr/local/bin/dt-extract-example", line 45, in <module>
-    binding = yaml.load(open(args.yamlfile, encoding='utf-8').read())
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/main.py", line 434, in load
-    return constructor.get_single_data()
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 120, in get_single_data
-    node = self.composer.get_single_node()
-  File "_ruamel_yaml.pyx", line 706, in _ruamel_yaml.CParser.get_single_node
-  File "_ruamel_yaml.pyx", line 724, in _ruamel_yaml.CParser._compose_document
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 891, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 904, in _ruamel_yaml.CParser._parse_next_event
-ruamel.yaml.scanner.ScannerError: mapping values are not allowed in this context
-  in "<unicode string>", line 39, column 31
-make[1]: *** [Documentation/devicetree/bindings/Makefile:20: Documentation/devicetree/bindings/net/wireless/silabs,wfx.example.dts] Error 1
-make[1]: *** Waiting for unfinished jobs....
-./Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml:  mapping values are not allowed in this context
-  in "<unicode string>", line 39, column 31
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml: ignoring, error parsing file
-warning: no schema found in file: ./Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-make: *** [Makefile:1441: dt_binding_check] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1536655
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 3feee4d59030..ae7e1f1c59f0 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -153,6 +153,7 @@
+ #define QCA8327_A_PHY_ID			0x004dd033
+ #define QCA8327_B_PHY_ID			0x004dd034
+ #define QCA8337_PHY_ID				0x004dd036
++#define QCA9561_PHY_ID				0x004dd042
+ #define QCA8K_PHY_ID_MASK			0xffffffff
+ 
+ #define QCA8K_DEVFLAGS_REVISION_MASK		GENMASK(2, 0)
+@@ -1237,7 +1238,8 @@ static int at803x_cable_test_get_status(struct phy_device *phydev,
+ 	int pair, ret;
+ 
+ 	if (phydev->phy_id == ATH9331_PHY_ID ||
+-	    phydev->phy_id == ATH8032_PHY_ID)
++	    phydev->phy_id == ATH8032_PHY_ID ||
++	    phydev->phy_id == QCA9561_PHY_ID)
+ 		pair_mask = 0x3;
+ 	else
+ 		pair_mask = 0xf;
+@@ -1277,7 +1279,8 @@ static int at803x_cable_test_start(struct phy_device *phydev)
+ 	phy_write(phydev, MII_BMCR, BMCR_ANENABLE);
+ 	phy_write(phydev, MII_ADVERTISE, ADVERTISE_CSMA);
+ 	if (phydev->phy_id != ATH9331_PHY_ID &&
+-	    phydev->phy_id != ATH8032_PHY_ID)
++	    phydev->phy_id != ATH8032_PHY_ID &&
++	    phydev->phy_id != QCA9561_PHY_ID)
+ 		phy_write(phydev, MII_CTRL1000, 0);
+ 
+ 	/* we do all the (time consuming) work later */
+@@ -1408,6 +1411,21 @@ static struct phy_driver at803x_driver[] = {
+ 	.read_status		= at803x_read_status,
+ 	.soft_reset		= genphy_soft_reset,
+ 	.config_aneg		= at803x_config_aneg,
++}, {
++	/* Qualcomm Atheros QCA9561 */
++	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
++	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
++	.suspend		= at803x_suspend,
++	.resume			= at803x_resume,
++	.flags			= PHY_POLL_CABLE_TEST,
++	/* PHY_BASIC_FEATURES */
++	.config_intr		= &at803x_config_intr,
++	.handle_interrupt	= at803x_handle_interrupt,
++	.cable_test_start	= at803x_cable_test_start,
++	.cable_test_get_status	= at803x_cable_test_get_status,
++	.read_status		= at803x_read_status,
++	.soft_reset		= genphy_soft_reset,
++	.config_aneg		= at803x_config_aneg,
+ }, {
+ 	/* QCA8337 */
+ 	.phy_id			= QCA8337_PHY_ID,
+@@ -1466,6 +1484,7 @@ static struct mdio_device_id __maybe_unused atheros_tbl[] = {
+ 	{ PHY_ID_MATCH_EXACT(QCA8337_PHY_ID) },
+ 	{ PHY_ID_MATCH_EXACT(QCA8327_A_PHY_ID) },
+ 	{ PHY_ID_MATCH_EXACT(QCA8327_B_PHY_ID) },
++	{ PHY_ID_MATCH_EXACT(QCA9561_PHY_ID) },
+ 	{ }
+ };
+ 
+-- 
+2.33.0
 
