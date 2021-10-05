@@ -2,178 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A75454232E4
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 23:34:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 821334232FB
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 23:43:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236701AbhJEVgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 17:36:18 -0400
-Received: from mga18.intel.com ([134.134.136.126]:25070 "EHLO mga18.intel.com"
+        id S236719AbhJEVpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 17:45:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55970 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235679AbhJEVgR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 17:36:17 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10128"; a="212795849"
-X-IronPort-AV: E=Sophos;i="5.85,349,1624345200"; 
-   d="scan'208";a="212795849"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2021 14:34:25 -0700
-X-IronPort-AV: E=Sophos;i="5.85,349,1624345200"; 
-   d="scan'208";a="477855541"
-Received: from pwali-mobl1.amr.corp.intel.com (HELO ldmartin-desk2) ([10.213.170.68])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2021 14:34:24 -0700
-Date:   Tue, 5 Oct 2021 14:34:23 -0700
-From:   Lucas De Marchi <lucas.demarchi@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Eryk Brol <eryk.brol@amd.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        netdev@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v1 1/3] string: Consolidate yesno() helpers under
- string.h hood
-Message-ID: <20211005213423.dklsii4jx37pjvb4@ldmartin-desk2>
-References: <20210215142137.64476-1-andriy.shevchenko@linux.intel.com>
+        id S231167AbhJEVph (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 17:45:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CA53B6115B;
+        Tue,  5 Oct 2021 21:43:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633470226;
+        bh=WSHqCxwflqcKiT4irCE8NVjFBqw/353tC8L3Y9Ud/TI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ScmUt3fswhW0wl194TQi6oZyg8Vnh1ZvtfHQ9IWUNX/pReP6oohtj8AgjDUSbtZEz
+         zVL/iYigoegiTcipiIhaJICnIckaUQZGL8vie8YySTZe+r+texQfzMQU5Hp+8xUH9I
+         Uu5t/397vlJONtqayAAqVrNpkes3cGbJuBTYiG8lTh5n0vuSFqVJdRvgxRVx+8JvVl
+         36Q1zw+SmY5BjYBQJOU2nOMzjOY/gpQ7T0Bo/vU3h2cWPv+D2I/BZHh9n2QGHEVEEz
+         LSYUCFNH3+oIg5AvyTFfaGZKb7Vnp9fg/YJh8Io6+P3W4hbaP2cq4rINjyxNijkKOi
+         yYcOO1wb3E9Tw==
+Date:   Tue, 5 Oct 2021 23:43:42 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: lets settle the LED `function` property regarding the netdev
+ trigger
+Message-ID: <20211005234342.7334061b@thinkpad>
+In-Reply-To: <YVy9Ho47XeVON+lB@lunn.ch>
+References: <20211001143601.5f57eb1a@thinkpad>
+        <YVn815h7JBtVSfwZ@lunn.ch>
+        <20211003212654.30fa43f5@thinkpad>
+        <YVsUodiPoiIESrEE@lunn.ch>
+        <20211004170847.3f92ef48@thinkpad>
+        <0b1bc2d7-6e62-5adb-5aed-48b99770d80d@gmail.com>
+        <20211005222657.7d1b2a19@thinkpad>
+        <YVy9Ho47XeVON+lB@lunn.ch>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210215142137.64476-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 04:21:35PM +0200, Andy Shevchenko wrote:
->We have already few similar implementation and a lot of code that can benefit
->of the yesno() helper.  Consolidate yesno() helpers under string.h hood.
+On Tue, 5 Oct 2021 23:01:18 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-I was taking a look on i915_utils.h to reduce it and move some of it
-elsewhere to be shared with others.  I was starting with these helpers
-and had [1] done, then Jani pointed me to this thread and also his
-previous tentative. I thought the natural place for this would be
-include/linux/string_helpers.h, but I will leave it up to you.
+> > In the discussed case (ethernet PHY LEDs) - it is sometimes possible to
+> > have multiple brightness levels per color channel. For example some
+> > Marvell PHYs allow to set 8 levels of brightness for Dual Mode LEDs.
+> > Dual Mode is what Marvell calls when the PHY allows to pair two
+> > LED pins to control one dual-color LED (green-red, for example) into
+> > one.
+> > 
+> > Moreover for this Dual Mode case they also allow for HW control of
+> > this dual LED, which, when enabled, does something like this, in HW:
+> >   1g link	green
+> >   100m link	yellow
+> >   10m link	red
+> >   no link	off
+> > 
+> > Note that actual colors depend on the LEDs themselves. The PHY
+> > documentation does not talk about the color, only about which pin is
+> > on/off. The thing is that if we want to somehow set this mode for the
+> > LED, it should be represented as one LED class device.
+> > 
+> > I want to extend the netdev trigger to support such configuration,
+> > so that when you have multicolor LED, you will be able to say which
+> > color should be set for which link mode.  
+> 
+> This is getting into the exotic level i don't think we need to
+> support. How many PHYs have you seen that support something like this?
 
-After reading the threads, I don't see real opposition to it.
-Is there a tree you plan to take this through?
+This isn't about whether there are PHYs which support this in HW.
+The extension to netdev trigger will be able to do this in SW.
 
-thanks
-Lucas De Marchi
+For example the Turris Omnia has 12 RGB LEDs on the front panel, of
+which 6 are dedicated to ethernet ports (and there are no LEDs on
+ethernet ports themselves). It would make sense to be able to have
+netdev trigger (or it's extension) show link mode by color (for example
+green on 1g, yellow on 100g, orange on 10g).
 
-[1] https://lore.kernel.org/lkml/20211005212634.3223113-1-lucas.demarchi@intel.com/T/#u
+Anyway when you have a green-yellow LED on an ethernet port wired in
+such a way than it can only be off, green or yellow, but not both green
+and yellow, I don't think we should register these as 2 LED class
+devices.
 
->
->Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->---
-> .../drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c    |  6 +-----
-> drivers/gpu/drm/i915/i915_utils.h                    |  6 +-----
-> drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c   | 12 +-----------
-> include/linux/string.h                               |  5 +++++
-> 4 files changed, 8 insertions(+), 21 deletions(-)
->
->diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
->index 360952129b6d..7fde4f90e513 100644
->--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
->+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
->@@ -23,6 +23,7 @@
->  *
->  */
->
->+#include <linux/string.h>
-> #include <linux/uaccess.h>
->
-> #include <drm/drm_debugfs.h>
->@@ -49,11 +50,6 @@ struct dmub_debugfs_trace_entry {
-> 	uint32_t param1;
-> };
->
->-static inline const char *yesno(bool v)
->-{
->-	return v ? "yes" : "no";
->-}
->-
-> /* parse_write_buffer_into_params - Helper function to parse debugfs write buffer into an array
->  *
->  * Function takes in attributes passed to debugfs write entry
->diff --git a/drivers/gpu/drm/i915/i915_utils.h b/drivers/gpu/drm/i915/i915_utils.h
->index abd4dcd9f79c..e6da5a951132 100644
->--- a/drivers/gpu/drm/i915/i915_utils.h
->+++ b/drivers/gpu/drm/i915/i915_utils.h
->@@ -27,6 +27,7 @@
->
-> #include <linux/list.h>
-> #include <linux/overflow.h>
->+#include <linux/string.h>
-> #include <linux/sched.h>
-> #include <linux/types.h>
-> #include <linux/workqueue.h>
->@@ -408,11 +409,6 @@ wait_remaining_ms_from_jiffies(unsigned long timestamp_jiffies, int to_wait_ms)
-> #define MBps(x) KBps(1000 * (x))
-> #define GBps(x) ((u64)1000 * MBps((x)))
->
->-static inline const char *yesno(bool v)
->-{
->-	return v ? "yes" : "no";
->-}
->-
-> static inline const char *onoff(bool v)
-> {
-> 	return v ? "on" : "off";
->diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
->index 7d49fd4edc9e..c857d73abbd7 100644
->--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
->+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
->@@ -34,6 +34,7 @@
->
-> #include <linux/seq_file.h>
-> #include <linux/debugfs.h>
->+#include <linux/string.h>
-> #include <linux/string_helpers.h>
-> #include <linux/sort.h>
-> #include <linux/ctype.h>
->@@ -2015,17 +2016,6 @@ static const struct file_operations rss_debugfs_fops = {
-> /* RSS Configuration.
->  */
->
->-/* Small utility function to return the strings "yes" or "no" if the supplied
->- * argument is non-zero.
->- */
->-static const char *yesno(int x)
->-{
->-	static const char *yes = "yes";
->-	static const char *no = "no";
->-
->-	return x ? yes : no;
->-}
->-
-> static int rss_config_show(struct seq_file *seq, void *v)
-> {
-> 	struct adapter *adapter = seq->private;
->diff --git a/include/linux/string.h b/include/linux/string.h
->index 9521d8cab18e..fd946a5e18c8 100644
->--- a/include/linux/string.h
->+++ b/include/linux/string.h
->@@ -308,4 +308,9 @@ static __always_inline size_t str_has_prefix(const char *str, const char *prefix
-> 	return strncmp(str, prefix, len) == 0 ? len : 0;
-> }
->
->+static inline const char *yesno(bool yes)
->+{
->+	return yes ? "yes" : "no";
->+}
->+
-> #endif /* _LINUX_STRING_H_ */
->-- 
->2.30.0
->
->
+> I suggest we start with simple independent LEDs. That gives enough to
+> support the majority of use cases people actually need. And is enough
+> to unblock people who i keep NACKing patches and tell them to wait for
+> this work to get merged.
+
+Of course, and I plan to do so. Those netdev trigger extensions and
+multi-color function definitions are for later :)
+
+We got side tracked in this discussion, sorry about that.
+
+In this thread I just wanted to settle the LED function property for
+LEDs indicating network ports.
+
+So would you, Andrew, agree with:
+- extending function property to be array of strings instead of only
+  one string, so that we can do
+    function = "link", "activity";
+- having separate functions for different link modes
+    function = "link1000", "link100";
+  or should this insted be in another property
+    function = "link";
+    link-modes = <1000 100>;
+  ?
+
+Marek
