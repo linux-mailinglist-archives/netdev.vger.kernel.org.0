@@ -2,118 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 888C642324B
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 22:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA389423294
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 23:01:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235673AbhJEUsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 16:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbhJEUsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 16:48:04 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2802AC061749
-        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 13:46:13 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id m3so1264577lfu.2
-        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 13:46:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WSPoOTkRr5tV7uZ2oQ4/a2w9VK4Qjz1YAPZdC+7bcrw=;
-        b=atKPmliQ9LuYJrilGpsViHfk6LQV6BmknanYEfaKC5+DRlC/Sf/bbZjgm5eOG2gsrs
-         fmv7trPUK3bUcYnjK+F3dvGkJznH7EtdSCCwNZlfE6Q1ZLEG8bowAjHuLUwTsaJgDL3U
-         E3zlV7ocEBIN+OWdpawxUEevr7fS0Jaaj9cW0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WSPoOTkRr5tV7uZ2oQ4/a2w9VK4Qjz1YAPZdC+7bcrw=;
-        b=gjFqVh6Z5Zmm3lWYwuuE6GRavu9KrPxA7YiGQw28+Om9fwe++Z5zPzCa7oGxiLXk9j
-         Dfn5LjTdCRgNCsY2TerDHHbkrLnvahI4ubabK/5H2+uLyaS2TMcIdt52Y21RzavAkp9k
-         yZjW0AKSrG7rF2Yy3mRLKazvGQ2bJrixYjEEk+WELMUlT75qk6+X0wnPEauaV3nY8XEJ
-         kIZCJP4r3Vd8qw7WsGbePCTE1y21xaAwADwAFqX3b51y1uc/cqLPsj7kLlgSkk8ZKre7
-         79Tt8zxrr0PNw5knoE6Iy0I9s8tDVvr2K40q6lagx+hyZafaN05u6maU8J+vpLTw9Itv
-         xARA==
-X-Gm-Message-State: AOAM531Q5plkWz79biaHZlkr6QkG6Ad+JnT0DSJ4mYViHP8i+BeFueoU
-        vtmR09A9mZE+nJxG75cowOCWcQtcdvnzZxwe9Ik=
-X-Google-Smtp-Source: ABdhPJz7Wb1g0X4FLdYah8jQ7O6TGu4oOOlR9tNl1p5COhM81Ylply31UDXmcY3ej/byWKz9jmdzcg==
-X-Received: by 2002:a2e:9a09:: with SMTP id o9mr25104602lji.218.1633466770582;
-        Tue, 05 Oct 2021 13:46:10 -0700 (PDT)
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
-        by smtp.gmail.com with ESMTPSA id i10sm2068228ljn.36.2021.10.05.13.46.09
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Oct 2021 13:46:09 -0700 (PDT)
-Received: by mail-lf1-f54.google.com with SMTP id x27so1123485lfa.9
-        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 13:46:09 -0700 (PDT)
-X-Received: by 2002:a05:651c:a09:: with SMTP id k9mr25182695ljq.191.1633466769318;
- Tue, 05 Oct 2021 13:46:09 -0700 (PDT)
+        id S236136AbhJEVDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 17:03:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50800 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231387AbhJEVDM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 17:03:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xoD6/I7Cc8crpzzqPjHiA+h57zOy6+xgtG83jf7v3i8=; b=NYWTqPejfFry0n/LrjSsAY4phD
+        Qv1Tdgk05aJiDeQWZbS1BqXiFN/DcEdqUax8IasE+VPxks+3NE3UEyp2JQfM8YXCOsAG4Oogb1FPj
+        SFZsudwdTTCj2sSoyY+bdNG+q9Bbt+LK+gMQf5D8vdH6eIZDVq+QPOqlesfuADycj2UQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mXrYs-009kQB-57; Tue, 05 Oct 2021 23:01:18 +0200
+Date:   Tue, 5 Oct 2021 23:01:18 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: lets settle the LED `function` property regarding the netdev
+ trigger
+Message-ID: <YVy9Ho47XeVON+lB@lunn.ch>
+References: <20211001143601.5f57eb1a@thinkpad>
+ <YVn815h7JBtVSfwZ@lunn.ch>
+ <20211003212654.30fa43f5@thinkpad>
+ <YVsUodiPoiIESrEE@lunn.ch>
+ <20211004170847.3f92ef48@thinkpad>
+ <0b1bc2d7-6e62-5adb-5aed-48b99770d80d@gmail.com>
+ <20211005222657.7d1b2a19@thinkpad>
 MIME-Version: 1.0
-References: <20211005094728.203ecef2@gandalf.local.home> <ef5b1654-1f75-da82-cab8-248319efbe3f@rasmusvillemoes.dk>
- <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
- <826o327o-3r46-3oop-r430-8qr0ssp537o3@vanv.qr> <20211005144002.34008ea0@gandalf.local.home>
- <srqsppq-p657-43qq-np31-pq5pp03271r6@vanv.qr> <20211005154029.46f9c596@gandalf.local.home>
- <20211005163754.66552fb3@gandalf.local.home>
-In-Reply-To: <20211005163754.66552fb3@gandalf.local.home>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 5 Oct 2021 13:45:52 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj+P=YeuY=tpY72nDMQgxGTzEMqjfq5P536G=qYEkQr1w@mail.gmail.com>
-Message-ID: <CAHk-=wj+P=YeuY=tpY72nDMQgxGTzEMqjfq5P536G=qYEkQr1w@mail.gmail.com>
-Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Jan Engelhardt <jengelh@inai.de>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Paul <paulmck@linux.vnet.ibm.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Joel Fernandes, Google" <joel@joelfernandes.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        coreteam <coreteam@netfilter.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211005222657.7d1b2a19@thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 5, 2021 at 1:38 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> Really, thinking about abstraction, I don't believe there's anything wrong
-> with returning a pointer of one type, and then typecasting it to a pointer
-> of another type. Is there? As long as whoever uses the returned type does
-> nothing with it.
+> In the discussed case (ethernet PHY LEDs) - it is sometimes possible to
+> have multiple brightness levels per color channel. For example some
+> Marvell PHYs allow to set 8 levels of brightness for Dual Mode LEDs.
+> Dual Mode is what Marvell calls when the PHY allows to pair two
+> LED pins to control one dual-color LED (green-red, for example) into
+> one.
+> 
+> Moreover for this Dual Mode case they also allow for HW control of
+> this dual LED, which, when enabled, does something like this, in HW:
+>   1g link	green
+>   100m link	yellow
+>   10m link	red
+>   no link	off
+> 
+> Note that actual colors depend on the LEDs themselves. The PHY
+> documentation does not talk about the color, only about which pin is
+> on/off. The thing is that if we want to somehow set this mode for the
+> LED, it should be represented as one LED class device.
+> 
+> I want to extend the netdev trigger to support such configuration,
+> so that when you have multicolor LED, you will be able to say which
+> color should be set for which link mode.
 
-Just stop doing this.,
+This is getting into the exotic level i don't think we need to
+support. How many PHYs have you seen that support something like this?
 
-Dammit, just include the header file that defines the type in the
-places that you use the thing.
+I suggest we start with simple independent LEDs. That gives enough to
+support the majority of use cases people actually need. And is enough
+to unblock people who i keep NACKing patches and tell them to wait for
+this work to get merged.
 
-Because, yes, there is a LOT wrong with just randomly casting pointers
-that you think have the "wrong type". You're basically taking it on
-yourself to lie to the compiler, and intentionally breaking the type
-system, because you have some completely bogus reason to hide a type.
+     Andrew
 
-We don't hide types in the kernel for no good reason.
 
-You are literally talking about making things worse, for a reason that
-hasn't even been explained, and isn't valid in the first place.
-Nothing else in the kernel has had a problem just declaring the damn
-type,.
 
-If there was some clean and simple solution to the compiler warning
-problem, that would be one thing. But when you think you need to
-change core RCU macros, or lie to the compiler about the type system,
-at that point it's not some clean and simple fix any more. At that
-point you're literally making things worse than just exposing the
-type.
-
-           Linus
