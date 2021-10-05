@@ -2,100 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13D2D422A97
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:14:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77AC6422AA7
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:15:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235601AbhJEOPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 10:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236530AbhJEOPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 10:15:09 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D48C0617BD
-        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 07:12:30 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id n63so1067030oif.7
-        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 07:12:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aBBN7qqUrcyjGDZpTsmnzdTjBRLP6HzQ12u2GYdg6iM=;
-        b=Q31ck09gUx3R3m0pjgUPrVFt6mg1sZyx3vt+FHeJ3zw1EtymO/8ao7UlLVr0FSfram
-         d8o8BEmpfxqMosANHpMKwAkFrDc2v8rI3HPsfaLIxAtw63o+JLZFMZvEPWgPDJiGbi/E
-         tcmye/ZIetv6Zp5QnEsrc3Wka+R2cyLfm7XoDSq0Rausrkzpp1VOuSuEfXVvlgMEiF28
-         312iXdiyUKjjMhQjAKs41OTuy1o2m3TZ42cbIfIPaZvIjiWmw66encYs4J41EBwk8XkS
-         6VyYe+2kQ3bm6wstNrpYrVjZuQGdJnjbbVga7FkBhnFQr/rL5ItfdmYZAU7G8cDVou5G
-         T0ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aBBN7qqUrcyjGDZpTsmnzdTjBRLP6HzQ12u2GYdg6iM=;
-        b=Byrwb1BBC2b2xAMMuXkog973OgdVHBMYQg0HsuDW0tzzYxDcHxmyDYxIKvykG6zews
-         0ltEUnyFkibp+/l9ZtqkV0GHCuEhBLQPtxvXgGP3gSslcGQ1Oxh30EYy4AfT33h4hsGQ
-         gCx2lNnDneSgZXsrVHnUIC5VD6boKA+70XxUtDBI4W5yIPfkioFghCH0ne70SaU23I6b
-         mPgsWNjvtpHl4mkANjaexmsDA7Pgk9qhxDDmQu2b0JY71dw71kps48z6yhMoKTwgZv8N
-         rEbRE2kSc+YH0504GQTYDQFJmc+2BahJZdbOzAjKRKefAMVHja/k5sQ6N22lNabkrcEw
-         MhbQ==
-X-Gm-Message-State: AOAM531evbUK2+SZaWJ0kb8GbQCMEY5gkDGyNSkflh3yKGESHFwIGZHc
-        d+ICc3odt4r4ANGuT6A6W5FZrMTrzKp/dQ==
-X-Google-Smtp-Source: ABdhPJxKfqJCGkanFrw5BSasj9y6xQSsfSA+tQ0ukMXLEGoUffhtxHzVpoIcC4UVGzCK7wRV43wIZA==
-X-Received: by 2002:aca:bec2:: with SMTP id o185mr2725094oif.30.1633443148680;
-        Tue, 05 Oct 2021 07:12:28 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id i25sm3586327oto.26.2021.10.05.07.12.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Oct 2021 07:12:28 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 1/2] Add support for IOAM encap modes
-To:     Justin Iurman <justin.iurman@uliege.be>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, dsahern@kernel.org, stephen@networkplumber.org
-References: <20211004130651.13571-1-justin.iurman@uliege.be>
- <20211004130651.13571-2-justin.iurman@uliege.be>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a80c8fba-bf66-93ef-c54e-6648b3522e28@gmail.com>
-Date:   Tue, 5 Oct 2021 08:12:27 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S236214AbhJEORC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 10:17:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48814 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235781AbhJEOQ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 10:16:56 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4D1AF6115B;
+        Tue,  5 Oct 2021 14:15:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633443305;
+        bh=I7XCFGAmyXivWz7d1EBNyLvBe+/ID7If4dnsGSTv3fU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CTXz7yEhcw5L8afieI4Lprps7Hj/MyvDyxzeE/k48YLH3jmq4j44t4icOlHt5zYyR
+         ccOW3CzF4bKSDVWl5ovic4FZCkK5cC9TuGBClAKCXS1QSMKBaP2Mg40oT386unWOpS
+         GGRbs0TaOPRhXCXLWqJcYgAUqi1Bb6AMOwt2kCuDHPCwc06hm/z3A67rs3YDG27qGR
+         mvLOnWyvawrs252WNrM72wihsC+2o5Cf2YljKEbIIDnOaziCR+uPGBKuqXM+SHwvPj
+         ec8ArAGbkvZalmO/i3JRlbKt7mLBKjH+cNmEC8F9ENafZDppDl7Dm31SjJyNmFKFD0
+         +H1XQ49SxmB6w==
+Date:   Tue, 5 Oct 2021 07:15:04 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
+        jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 1/6] ethtool: Add ability to control
+ transceiver modules' power mode
+Message-ID: <20211005071504.43e08feb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YVv3UARMHU8HZTfz@shredder>
+References: <20211003073219.1631064-1-idosch@idosch.org>
+        <20211003073219.1631064-2-idosch@idosch.org>
+        <20211004180135.55759be4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YVv3UARMHU8HZTfz@shredder>
 MIME-Version: 1.0
-In-Reply-To: <20211004130651.13571-2-justin.iurman@uliege.be>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/4/21 7:06 AM, Justin Iurman wrote:
-> diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
-> index 218d5086..3641f9ef 100644
-> --- a/ip/iproute_lwtunnel.c
-> +++ b/ip/iproute_lwtunnel.c
-> @@ -210,16 +210,54 @@ static void print_encap_rpl(FILE *fp, struct rtattr *encap)
->  	print_rpl_srh(fp, srh);
+On Tue, 5 Oct 2021 09:57:20 +0300 Ido Schimmel wrote:
+> > > +static int module_set_power_mode(struct net_device *dev, struct nlat=
+tr **tb,
+> > > +				 bool *p_mod, struct netlink_ext_ack *extack)
+> > > +{
+> > > +	struct ethtool_module_power_mode_params power =3D {};
+> > > +	struct ethtool_module_power_mode_params power_new;
+> > > +	const struct ethtool_ops *ops =3D dev->ethtool_ops;
+> > > +	int ret;
+> > > +
+> > > +	if (!tb[ETHTOOL_A_MODULE_POWER_MODE_POLICY])
+> > > +		return 0; =20
+> >=20
+> > Feels a little old school to allow set with no attrs, now that we=20
+> > do strict validation on attrs across netlink.  What's the reason? =20
+>=20
+> The power mode policy is the first parameter that can be set via
+> MODULE_SET, but in the future there can be more and it is valid for user
+> space to only want to change a subset. In which case, we will skip over
+> attributes that were not specified.
+
+Ack, I guess catching the "no parameter specified" case may be more
+effort than it's worth. Nothing is going to break if we don't do it.
+
+> > > +	if (!ops->get_module_power_mode || !ops->set_module_power_mode) {
+> > > +		NL_SET_ERR_MSG_ATTR(extack,
+> > > +				    tb[ETHTOOL_A_MODULE_POWER_MODE_POLICY],
+> > > +				    "Setting power mode policy is not supported by this device");
+> > > +		return -EOPNOTSUPP;
+> > > +	}
+> > > +
+> > > +	power_new.policy =3D nla_get_u8(tb[ETHTOOL_A_MODULE_POWER_MODE_POLI=
+CY]);
+> > > +	ret =3D ops->get_module_power_mode(dev, &power, extack);
+> > > +	if (ret < 0)
+> > > +		return ret;
+> > > +	*p_mod =3D power_new.policy !=3D power.policy;
+> > > +
+> > > +	return ops->set_module_power_mode(dev, &power_new, extack); =20
+> >=20
+> > Why still call set if *p_mod =3D=3D false? =20
+>=20
+> Good question...
+>=20
+> Thinking about this again, this seems better:
+>=20
+> diff --git a/net/ethtool/module.c b/net/ethtool/module.c
+> index 254ac84f9728..a6eefae906eb 100644
+> --- a/net/ethtool/module.c
+> +++ b/net/ethtool/module.c
+> @@ -141,7 +141,10 @@ static int module_set_power_mode(struct net_device *=
+dev, struct nlattr **tb,
+>         ret =3D ops->get_module_power_mode(dev, &power, extack);
+>         if (ret < 0)
+>                 return ret;
+> -       *p_mod =3D power_new.policy !=3D power.policy;
+> +
+> +       if (power_new.policy =3D=3D power.policy)
+> +               return 0;
+> +       *p_mod =3D true;
+> =20
+>         return ops->set_module_power_mode(dev, &power_new, extack);
 >  }
->  
-> +static const char *ioam6_mode_types[] = {
+>=20
+> That way we avoid setting 'mod' to 'false' if it was already 'true'
+> because of other parameters that were changed in ethnl_set_module(). We
+> don't have any other parameters right now, but this can change.
+>=20
+> Thanks for looking into this
 
-I think you want to declare this of size IOAM6_IPTUNNEL_MODE_MAX + 1
-
-> +	[IOAM6_IPTUNNEL_MODE_INLINE]	= "inline",
-> +	[IOAM6_IPTUNNEL_MODE_ENCAP]	= "encap",
-> +	[IOAM6_IPTUNNEL_MODE_AUTO]	= "auto",
-> +};
-> +
-> +static const char *format_ioam6mode_type(int mode)
-> +{
-> +	if (mode < IOAM6_IPTUNNEL_MODE_MIN ||
-> +	    mode > IOAM6_IPTUNNEL_MODE_MAX ||
-> +	    !ioam6_mode_types[mode])
-
-otherwise this check is not sufficient.
-
-> +		return "<unknown>";
-> +
-> +	return ioam6_mode_types[mode];
-> +}
-> +
-
+=F0=9F=91=8D
