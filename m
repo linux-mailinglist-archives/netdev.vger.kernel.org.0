@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76A324228F0
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 15:53:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BC1442289A
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 15:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236354AbhJENzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 09:55:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60662 "EHLO mail.kernel.org"
+        id S235447AbhJENxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 09:53:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235551AbhJENwx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 09:52:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 62CDF615E3;
-        Tue,  5 Oct 2021 13:51:01 +0000 (UTC)
+        id S235563AbhJENwy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 09:52:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0FBDF61980;
+        Tue,  5 Oct 2021 13:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633441862;
-        bh=U2uqL6w8bT5xKU7qMShB7MtSMtcH07sXJcK0MA4O1gk=;
+        s=k20201202; t=1633441864;
+        bh=l2PBwFcwTGHSNqGFtASWv7fKzwQj4tZRL3SFrv8yhiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dJ/H4JLMAYUy+AeaolgAsel/RewvigH4WrEqA3wicUipPHSUYPAubJDydoidOl2BM
-         A/Cr6bz7Pd7gaB8IKyCztnYL4IFfQIuFLD4ltSfdx3yyu/3WqVvxnuzXMXYMpl4d/4
-         GxSnfOk3st3RUlTRN0Vtc7qN3MYlkDvQ06ZTMBmQVWCKgN9M1U5bzrDQrBYdGag+jj
-         w1PG1o14hBtzUR/I0d4cPwC7VUaFwrTx4e4er7eHtYG1SUA54x/JsO55zN1duj0N5V
-         Twi6qh4HRT8mWSz90jRGXeH8ZU2BlFAUWckn1xat8cGgPWrpnnATObIRedf9zuYdWo
-         e1A63cz+d7AdQ==
+        b=ikU/RhZKu0VeYmfKXrQONH/ZU5U84LXgsH0TU1juvuGfbBUx4zvAm05Mk2C0U/ADs
+         kAkOjUHr5gmuBaajaIDrg6Ccq2CGzz28MyD4wqJ0u7Vi1ITGYR7SZsdfcosULeAjhb
+         JaEmKYd8tT0NO4fq3G2VlznSXGQxGrB/hqMwWVMCBD+M7Zt5iglpS8iK9p8eeLlDFn
+         TF5Qy5Y50087Qg97kQZEV/yaW8HPGJsTe/PCmAH+d38fInIeNtKwT1bHNMvkgTMTiB
+         nHVzNXhV4w4t8ghgZxaRkgdRkKWdHFKb6Bh2xtTr62LKSZnwAFd7hOJQ6BGtZCnFF1
+         kr7RKEA0LDokg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
-        fw@strlen.de, davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.14 20/40] netfilter: conntrack: serialize hash resizes and cleanups
-Date:   Tue,  5 Oct 2021 09:49:59 -0400
-Message-Id: <20211005135020.214291-20-sashal@kernel.org>
+Cc:     YueHaibing <yuehaibing@huawei.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.14 21/40] mac80211: Drop frames from invalid MAC address in ad-hoc mode
+Date:   Tue,  5 Oct 2021 09:50:00 -0400
+Message-Id: <20211005135020.214291-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211005135020.214291-1-sashal@kernel.org>
 References: <20211005135020.214291-1-sashal@kernel.org>
@@ -46,212 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit e9edc188fc76499b0b9bd60364084037f6d03773 ]
+[ Upstream commit a6555f844549cd190eb060daef595f94d3de1582 ]
 
-Syzbot was able to trigger the following warning [1]
-
-No repro found by syzbot yet but I was able to trigger similar issue
-by having 2 scripts running in parallel, changing conntrack hash sizes,
-and:
-
-for j in `seq 1 1000` ; do unshare -n /bin/true >/dev/null ; done
-
-It would take more than 5 minutes for net_namespace structures
-to be cleaned up.
-
-This is because nf_ct_iterate_cleanup() has to restart everytime
-a resize happened.
-
-By adding a mutex, we can serialize hash resizes and cleanups
-and also make get_next_corpse() faster by skipping over empty
-buckets.
-
-Even without resizes in the picture, this patch considerably
-speeds up network namespace dismantles.
-
-[1]
-INFO: task syz-executor.0:8312 can't die for more than 144 seconds.
-task:syz-executor.0  state:R  running task     stack:25672 pid: 8312 ppid:  6573 flags:0x00004006
+WARNING: CPU: 1 PID: 9 at net/mac80211/sta_info.c:554
+sta_info_insert_rcu+0x121/0x12a0
+Modules linked in:
+CPU: 1 PID: 9 Comm: kworker/u8:1 Not tainted 5.14.0-rc7+ #253
+Workqueue: phy3 ieee80211_iface_work
+RIP: 0010:sta_info_insert_rcu+0x121/0x12a0
+...
 Call Trace:
- context_switch kernel/sched/core.c:4955 [inline]
- __schedule+0x940/0x26f0 kernel/sched/core.c:6236
- preempt_schedule_common+0x45/0xc0 kernel/sched/core.c:6408
- preempt_schedule_thunk+0x16/0x18 arch/x86/entry/thunk_64.S:35
- __local_bh_enable_ip+0x109/0x120 kernel/softirq.c:390
- local_bh_enable include/linux/bottom_half.h:32 [inline]
- get_next_corpse net/netfilter/nf_conntrack_core.c:2252 [inline]
- nf_ct_iterate_cleanup+0x15a/0x450 net/netfilter/nf_conntrack_core.c:2275
- nf_conntrack_cleanup_net_list+0x14c/0x4f0 net/netfilter/nf_conntrack_core.c:2469
- ops_exit_list+0x10d/0x160 net/core/net_namespace.c:171
- setup_net+0x639/0xa30 net/core/net_namespace.c:349
- copy_net_ns+0x319/0x760 net/core/net_namespace.c:470
- create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
- unshare_nsproxy_namespaces+0xc1/0x1f0 kernel/nsproxy.c:226
- ksys_unshare+0x445/0x920 kernel/fork.c:3128
- __do_sys_unshare kernel/fork.c:3202 [inline]
- __se_sys_unshare kernel/fork.c:3200 [inline]
- __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3200
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f63da68e739
-RSP: 002b:00007f63d7c05188 EFLAGS: 00000246 ORIG_RAX: 0000000000000110
-RAX: ffffffffffffffda RBX: 00007f63da792f80 RCX: 00007f63da68e739
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000040000000
-RBP: 00007f63da6e8cc4 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f63da792f80
-R13: 00007fff50b75d3f R14: 00007f63d7c05300 R15: 0000000000022000
+ ieee80211_ibss_finish_sta+0xbc/0x170
+ ieee80211_ibss_work+0x13f/0x7d0
+ ieee80211_iface_work+0x37a/0x500
+ process_one_work+0x357/0x850
+ worker_thread+0x41/0x4d0
 
-Showing all locks held in the system:
-1 lock held by khungtaskd/27:
- #0: ffffffff8b980020 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6446
-2 locks held by kworker/u4:2/153:
- #0: ffff888010c69138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888010c69138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888010c69138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff888010c69138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:634 [inline]
- #0: ffff888010c69138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:661 [inline]
- #0: ffff888010c69138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2268
- #1: ffffc9000140fdb0 ((kfence_timer).work){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2272
-1 lock held by systemd-udevd/2970:
-1 lock held by in:imklog/6258:
- #0: ffff88807f970ff0 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:990
-3 locks held by kworker/1:6/8158:
-1 lock held by syz-executor.0/8312:
-2 locks held by kworker/u4:13/9320:
-1 lock held by syz-executor.5/10178:
-1 lock held by syz-executor.4/10217:
+If an Ad-Hoc node receives packets with invalid source MAC address,
+it hits a WARN_ON in sta_info_insert_check(), this can spam the log.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Link: https://lore.kernel.org/r/20210827144230.39944-1-yuehaibing@huawei.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_core.c | 70 ++++++++++++++++---------------
- 1 file changed, 37 insertions(+), 33 deletions(-)
+ net/mac80211/rx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index d31dbccbe7bd..4f074d7653b8 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -75,6 +75,9 @@ static __read_mostly struct kmem_cache *nf_conntrack_cachep;
- static DEFINE_SPINLOCK(nf_conntrack_locks_all_lock);
- static __read_mostly bool nf_conntrack_locks_all;
- 
-+/* serialize hash resizes and nf_ct_iterate_cleanup */
-+static DEFINE_MUTEX(nf_conntrack_mutex);
-+
- #define GC_SCAN_INTERVAL	(120u * HZ)
- #define GC_SCAN_MAX_DURATION	msecs_to_jiffies(10)
- 
-@@ -2192,28 +2195,31 @@ get_next_corpse(int (*iter)(struct nf_conn *i, void *data),
- 	spinlock_t *lockp;
- 
- 	for (; *bucket < nf_conntrack_htable_size; (*bucket)++) {
-+		struct hlist_nulls_head *hslot = &nf_conntrack_hash[*bucket];
-+
-+		if (hlist_nulls_empty(hslot))
-+			continue;
-+
- 		lockp = &nf_conntrack_locks[*bucket % CONNTRACK_LOCKS];
- 		local_bh_disable();
- 		nf_conntrack_lock(lockp);
--		if (*bucket < nf_conntrack_htable_size) {
--			hlist_nulls_for_each_entry(h, n, &nf_conntrack_hash[*bucket], hnnode) {
--				if (NF_CT_DIRECTION(h) != IP_CT_DIR_REPLY)
--					continue;
--				/* All nf_conn objects are added to hash table twice, one
--				 * for original direction tuple, once for the reply tuple.
--				 *
--				 * Exception: In the IPS_NAT_CLASH case, only the reply
--				 * tuple is added (the original tuple already existed for
--				 * a different object).
--				 *
--				 * We only need to call the iterator once for each
--				 * conntrack, so we just use the 'reply' direction
--				 * tuple while iterating.
--				 */
--				ct = nf_ct_tuplehash_to_ctrack(h);
--				if (iter(ct, data))
--					goto found;
--			}
-+		hlist_nulls_for_each_entry(h, n, hslot, hnnode) {
-+			if (NF_CT_DIRECTION(h) != IP_CT_DIR_REPLY)
-+				continue;
-+			/* All nf_conn objects are added to hash table twice, one
-+			 * for original direction tuple, once for the reply tuple.
-+			 *
-+			 * Exception: In the IPS_NAT_CLASH case, only the reply
-+			 * tuple is added (the original tuple already existed for
-+			 * a different object).
-+			 *
-+			 * We only need to call the iterator once for each
-+			 * conntrack, so we just use the 'reply' direction
-+			 * tuple while iterating.
-+			 */
-+			ct = nf_ct_tuplehash_to_ctrack(h);
-+			if (iter(ct, data))
-+				goto found;
- 		}
- 		spin_unlock(lockp);
- 		local_bh_enable();
-@@ -2231,26 +2237,20 @@ get_next_corpse(int (*iter)(struct nf_conn *i, void *data),
- static void nf_ct_iterate_cleanup(int (*iter)(struct nf_conn *i, void *data),
- 				  void *data, u32 portid, int report)
- {
--	unsigned int bucket = 0, sequence;
-+	unsigned int bucket = 0;
- 	struct nf_conn *ct;
- 
- 	might_sleep();
- 
--	for (;;) {
--		sequence = read_seqcount_begin(&nf_conntrack_generation);
--
--		while ((ct = get_next_corpse(iter, data, &bucket)) != NULL) {
--			/* Time to push up daises... */
-+	mutex_lock(&nf_conntrack_mutex);
-+	while ((ct = get_next_corpse(iter, data, &bucket)) != NULL) {
-+		/* Time to push up daises... */
- 
--			nf_ct_delete(ct, portid, report);
--			nf_ct_put(ct);
--			cond_resched();
--		}
--
--		if (!read_seqcount_retry(&nf_conntrack_generation, sequence))
--			break;
--		bucket = 0;
-+		nf_ct_delete(ct, portid, report);
-+		nf_ct_put(ct);
-+		cond_resched();
- 	}
-+	mutex_unlock(&nf_conntrack_mutex);
- }
- 
- struct iter_data {
-@@ -2486,8 +2486,10 @@ int nf_conntrack_hash_resize(unsigned int hashsize)
- 	if (!hash)
- 		return -ENOMEM;
- 
-+	mutex_lock(&nf_conntrack_mutex);
- 	old_size = nf_conntrack_htable_size;
- 	if (old_size == hashsize) {
-+		mutex_unlock(&nf_conntrack_mutex);
- 		kvfree(hash);
- 		return 0;
- 	}
-@@ -2523,6 +2525,8 @@ int nf_conntrack_hash_resize(unsigned int hashsize)
- 	nf_conntrack_all_unlock();
- 	local_bh_enable();
- 
-+	mutex_unlock(&nf_conntrack_mutex);
-+
- 	synchronize_net();
- 	kvfree(old_hash);
- 	return 0;
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 2563473b5cf1..e023e307c0c3 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -4053,7 +4053,8 @@ static bool ieee80211_accept_frame(struct ieee80211_rx_data *rx)
+ 		if (!bssid)
+ 			return false;
+ 		if (ether_addr_equal(sdata->vif.addr, hdr->addr2) ||
+-		    ether_addr_equal(sdata->u.ibss.bssid, hdr->addr2))
++		    ether_addr_equal(sdata->u.ibss.bssid, hdr->addr2) ||
++		    !is_valid_ether_addr(hdr->addr2))
+ 			return false;
+ 		if (ieee80211_is_beacon(hdr->frame_control))
+ 			return true;
 -- 
 2.33.0
 
