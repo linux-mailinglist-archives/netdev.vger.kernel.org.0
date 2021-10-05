@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A9FD422EDE
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 19:15:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BE2D422EDF
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 19:15:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236605AbhJERRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 13:17:36 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:49550 "EHLO
+        id S236668AbhJERRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 13:17:39 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:9830 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234459AbhJERRg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 13:17:36 -0400
+        by vger.kernel.org with ESMTP id S234459AbhJERRi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 13:17:38 -0400
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 195FuNX5026580;
-        Tue, 5 Oct 2021 10:15:44 -0700
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 195FuOGD026606;
+        Tue, 5 Oct 2021 10:15:47 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=ODzWgPgY/UOcdL/xxI5MZHqqI5o/7wF30J7IX2H0DNQ=;
- b=bL5RpLBOHSDcmUsbrDDFA/xxPMkpINID94pw6HSAG+b8GZdk0rOgeGsFf6YIvtVQsTuN
- FNynxaALohIZHDS+33aHjkgS177ae23+d9T2K1+92mrsvJ+jzuPXTsZwvOTfwkdBJ/07
- fuCCRFhDZAP8miLgW9xtCvuL4JwP5QeNmUnrpun9aLGqoHyvEGg+YanvJmdQK1c2qMFe
- yhnI9dDkNwiTuwyqA7QL+oB9RnjXixxbNIoVyIUNs9Tu3XOOu1HnOZ7S5Ra1TZR6Z7t1
- Rb7Q/9ucZFZli3kSK4eXZnEHg35IeCs25PKq3sTMZZ3vA6pobspAocYA8bCe5oHQ2hDE Tw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3bgmv5t48n-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=ddFJlLlBQrf2ipQ2AhaSMEDFBbYbxXQoMcZ6boNIc5c=;
+ b=Y+UHaPH/3/LDLhrc/pLyU2v2GR+ONS5jMxfemGs/ZMrbBSvQXBWPpS1pTV2SsEIGum98
+ yA0L0nw/jKhoUVAoIObc0gihYu8WD0ZUG1M3vy7YgCuI7AUe0Nuy9bBpaccK/bTx08tU
+ 4YUYddpUZs/CE08GJNcCfnLR027OfAYiPbHZD1iXjmtTS9iep9DHIdr2XUSiRZBi+tcR
+ SkbZNF4bCb5G0uN5mvaLLo0pIZb3kLzv60yzB6s+9LTxdl2ZU6gv+1kI6YopsqxrVTcq
+ D429P1039VOhjIyEK7s8/P8q2i8x9/MTFeU1zsp1ai92yHJuzpY9Slt1+LlAY05K+BNI 1g== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3bgmv5t48r-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 05 Oct 2021 10:15:44 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 5 Oct
- 2021 10:15:42 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 5 Oct 2021 10:15:42 -0700
+        Tue, 05 Oct 2021 10:15:46 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 5 Oct
+ 2021 10:15:45 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 5 Oct 2021 10:15:45 -0700
 Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-        by maili.marvell.com (Postfix) with ESMTP id 6AC373F707C;
-        Tue,  5 Oct 2021 10:15:40 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 19D9E3F7081;
+        Tue,  5 Oct 2021 10:15:42 -0700 (PDT)
 From:   Subbaraya Sundeep <sbhatta@marvell.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
 CC:     <sgoutham@marvell.com>, <hkelam@marvell.com>, <gakula@marvell.com>,
         Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net-next PATCH 0/3] Add devlink params to vary cqe and rbuf
-Date:   Tue, 5 Oct 2021 22:45:33 +0530
-Message-ID: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
+Subject: [net-next PATCH 1/3] octeontx2-pf: Simplify the receive buffer size calculation
+Date:   Tue, 5 Oct 2021 22:45:34 +0530
+Message-ID: <1633454136-14679-2-git-send-email-sbhatta@marvell.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
+References: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-GUID: lUw1QPkgpgSwqCRiFTPBWyLnycn5-upv
-X-Proofpoint-ORIG-GUID: lUw1QPkgpgSwqCRiFTPBWyLnycn5-upv
+X-Proofpoint-GUID: ZT8Xsb-mSBpUg-kxUGL2mMPT6HGdanku
+X-Proofpoint-ORIG-GUID: ZT8Xsb-mSBpUg-kxUGL2mMPT6HGdanku
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
  definitions=2021-10-05_03,2021-10-04_01,2020-04-07_01
@@ -54,48 +56,198 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Octeontx2 hardware writes a Completion Queue Entry(CQE) in the
-memory provided by software when a packet is received or
-transmitted. CQE has the buffer pointers (IOVAs) where the
-packet data fragments are written by hardware. One 128 byte
-CQE can hold 6 buffer pointers and a 512 byte CQE can hold
-42 buffer pointers. Hence large packets can be received either
-by using 512 byte CQEs or by increasing size of receive buffers.
-Current driver only supports 128 byte CQEs.
-This patchset adds devlink params to change CQE and receive
-buffer sizes which inturn helps to tune whether many small size
-buffers or less big size buffers are needed to receive larger
-packets. Below is the patches description:
+This patch separates the logic of configuring hardware
+maximum transmit frame size and receive frame size.
+This simplifies the logic to calculate receive buffer
+size and using cqe descriptor of different size.
+Also additional size of skb_shared_info structure is
+allocated for each receive buffer pointer given to
+hardware which is not necessary. Hence change the
+size calculation to remove the size of
+skb_shared_info. Add a check for array out of
+bounds while adding fragments to the network stack.
 
-Patch 1 - This prepares for 512 byte CQE operation by
-seperating out transmit side and receive side config.
-Also simplifies existing rbuf size calculation.
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 10 +++-----
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  2 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 15 +++++------
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 30 +++++++++++++++-------
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |  4 +--
+ 5 files changed, 34 insertions(+), 27 deletions(-)
 
-Patch 2 - Adds devlink param to change cqe. Basically
-sets new config and toggles interface to cleanup and init properly.
-
-Patch 3 - Similar to patch 2 and adds devlink param to
-change receive buffer size
-
-
-Thanks,
-Sundeep
-
-
-Subbaraya Sundeep (3):
-  octeontx2-pf: Simplify the receive buffer size calculation
-  octeontx2-pf: Add devlink param to vary cqe size
-  octeontx2-pf: Add devlink param to vary rbuf size
-
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  20 ++--
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   4 +-
- .../ethernet/marvell/octeontx2/nic/otx2_devlink.c  | 116 +++++++++++++++++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  24 +++--
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  30 ++++--
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   4 +-
- .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |   7 ++
- 7 files changed, 176 insertions(+), 29 deletions(-)
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index 0c89eb8..66da31f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -231,7 +231,7 @@ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
+ 		return -ENOMEM;
+ 	}
+ 
+-	req->maxlen = pfvf->max_frs;
++	req->maxlen = pfvf->netdev->mtu + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
+ 
+ 	err = otx2_sync_mbox_msg(&pfvf->mbox);
+ 	mutex_unlock(&pfvf->mbox.lock);
+@@ -590,7 +590,7 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 	u64 schq, parent;
+ 	u64 dwrr_val;
+ 
+-	dwrr_val = mtu_to_dwrr_weight(pfvf, pfvf->max_frs);
++	dwrr_val = mtu_to_dwrr_weight(pfvf, pfvf->tx_max_pktlen);
+ 
+ 	req = otx2_mbox_alloc_msg_nix_txschq_cfg(&pfvf->mbox);
+ 	if (!req)
+@@ -603,9 +603,7 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 	/* Set topology e.t.c configuration */
+ 	if (lvl == NIX_TXSCH_LVL_SMQ) {
+ 		req->reg[0] = NIX_AF_SMQX_CFG(schq);
+-		req->regval[0] = ((pfvf->netdev->max_mtu + OTX2_ETH_HLEN) << 8)
+-				  | OTX2_MIN_MTU;
+-
++		req->regval[0] = ((u64)pfvf->tx_max_pktlen << 8) | OTX2_MIN_MTU;
+ 		req->regval[0] |= (0x20ULL << 51) | (0x80ULL << 39) |
+ 				  (0x2ULL << 36);
+ 		req->num_regs++;
+@@ -800,7 +798,7 @@ int otx2_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
+ 	aq->sq.ena = 1;
+ 	/* Only one SMQ is allocated, map all SQ's to that SMQ  */
+ 	aq->sq.smq = pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
+-	aq->sq.smq_rr_quantum = mtu_to_dwrr_weight(pfvf, pfvf->max_frs);
++	aq->sq.smq_rr_quantum = mtu_to_dwrr_weight(pfvf, pfvf->tx_max_pktlen);
+ 	aq->sq.default_chan = pfvf->hw.tx_chan_base;
+ 	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
+ 	aq->sq.sqb_aura = sqb_aura;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index a05f6bd..61e5281 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -326,7 +326,7 @@ struct otx2_nic {
+ 	struct net_device	*netdev;
+ 	struct dev_hw_ops	*hw_ops;
+ 	void			*iommu_domain;
+-	u16			max_frs;
++	u16			tx_max_pktlen;
+ 	u16			rbsize; /* Receive buffer size */
+ 
+ #define OTX2_FLAG_RX_TSTAMP_ENABLED		BIT_ULL(0)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index f24e920..1e0d0c9c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1312,16 +1312,14 @@ static int otx2_get_rbuf_size(struct otx2_nic *pf, int mtu)
+ 	 * NIX transfers entire data using 6 segments/buffers and writes
+ 	 * a CQE_RX descriptor with those segment addresses. First segment
+ 	 * has additional data prepended to packet. Also software omits a
+-	 * headroom of 128 bytes and sizeof(struct skb_shared_info) in
+-	 * each segment. Hence the total size of memory needed
+-	 * to receive a packet with 'mtu' is:
++	 * headroom of 128 bytes in each segment. Hence the total size of
++	 * memory needed to receive a packet with 'mtu' is:
+ 	 * frame size =  mtu + additional data;
+-	 * memory = frame_size + (headroom + struct skb_shared_info size) * 6;
++	 * memory = frame_size + headroom * 6;
+ 	 * each receive buffer size = memory / 6;
+ 	 */
+ 	frame_size = mtu + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
+-	total_size = frame_size + (OTX2_HEAD_ROOM +
+-		     OTX2_DATA_ALIGN(sizeof(struct skb_shared_info))) * 6;
++	total_size = frame_size + OTX2_HEAD_ROOM * 6;
+ 	rbuf_size = total_size / 6;
+ 
+ 	return ALIGN(rbuf_size, 2048);
+@@ -1343,7 +1341,8 @@ static int otx2_init_hw_resources(struct otx2_nic *pf)
+ 	hw->sqpool_cnt = hw->tot_tx_queues;
+ 	hw->pool_cnt = hw->rqpool_cnt + hw->sqpool_cnt;
+ 
+-	pf->max_frs = pf->netdev->mtu + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
++	/* Maximum hardware supported transmit length */
++	pf->tx_max_pktlen = pf->netdev->max_mtu + OTX2_ETH_HLEN;
+ 
+ 	pf->rbsize = otx2_get_rbuf_size(pf, pf->netdev->mtu);
+ 
+@@ -1807,7 +1806,7 @@ static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 
+ 	/* Check for minimum and maximum packet length */
+ 	if (skb->len <= ETH_HLEN ||
+-	    (!skb_shinfo(skb)->gso_size && skb->len > pf->max_frs)) {
++	    (!skb_shinfo(skb)->gso_size && skb->len > pf->tx_max_pktlen)) {
+ 		dev_kfree_skb(skb);
+ 		return NETDEV_TX_OK;
+ 	}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index 2d2b673..0cc6353 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -181,8 +181,9 @@ static void otx2_set_rxtstamp(struct otx2_nic *pfvf,
+ 	skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(tsns);
+ }
+ 
+-static void otx2_skb_add_frag(struct otx2_nic *pfvf, struct sk_buff *skb,
+-			      u64 iova, int len, struct nix_rx_parse_s *parse)
++static bool otx2_skb_add_frag(struct otx2_nic *pfvf, struct sk_buff *skb,
++			      u64 iova, int len, struct nix_rx_parse_s *parse,
++			      int qidx)
+ {
+ 	struct page *page;
+ 	int off = 0;
+@@ -203,11 +204,22 @@ static void otx2_skb_add_frag(struct otx2_nic *pfvf, struct sk_buff *skb,
+ 	}
+ 
+ 	page = virt_to_page(va);
+-	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
+-			va - page_address(page) + off, len - off, pfvf->rbsize);
++	if (likely(skb_shinfo(skb)->nr_frags < MAX_SKB_FRAGS)) {
++		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
++				va - page_address(page) + off,
++				len - off, pfvf->rbsize);
++
++		otx2_dma_unmap_page(pfvf, iova - OTX2_HEAD_ROOM,
++				    pfvf->rbsize, DMA_FROM_DEVICE);
++		return true;
++	}
+ 
+-	otx2_dma_unmap_page(pfvf, iova - OTX2_HEAD_ROOM,
+-			    pfvf->rbsize, DMA_FROM_DEVICE);
++	/* If more than MAX_SKB_FRAGS fragments are received then
++	 * give back those buffer pointers to hardware for reuse.
++	 */
++	pfvf->hw_ops->aura_freeptr(pfvf, qidx, iova & ~0x07ULL);
++
++	return false;
+ }
+ 
+ static void otx2_set_rxhash(struct otx2_nic *pfvf,
+@@ -349,9 +361,9 @@ static void otx2_rcv_pkt_handler(struct otx2_nic *pfvf,
+ 		seg_addr = &sg->seg_addr;
+ 		seg_size = (void *)sg;
+ 		for (seg = 0; seg < sg->segs; seg++, seg_addr++) {
+-			otx2_skb_add_frag(pfvf, skb, *seg_addr, seg_size[seg],
+-					  parse);
+-			cq->pool_ptrs++;
++			if (otx2_skb_add_frag(pfvf, skb, *seg_addr,
++					      seg_size[seg], parse, cq->cq_idx))
++				cq->pool_ptrs++;
+ 		}
+ 		start += sizeof(*sg);
+ 	}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+index 5c05774..f1a04cf 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+@@ -39,9 +39,7 @@
+ #define RCV_FRAG_LEN(x)	\
+ 		((RCV_FRAG_LEN1(x) < 2048) ? 2048 : RCV_FRAG_LEN1(x))
+ 
+-#define DMA_BUFFER_LEN(x)		\
+-		((x) - OTX2_HEAD_ROOM - \
+-		OTX2_DATA_ALIGN(sizeof(struct skb_shared_info)))
++#define DMA_BUFFER_LEN(x)	((x) - OTX2_HEAD_ROOM)
+ 
+ /* IRQ triggered when NIX_LF_CINTX_CNT[ECOUNT]
+  * is equal to this value.
 -- 
 2.7.4
 
