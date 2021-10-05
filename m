@@ -2,134 +2,341 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77F66421D04
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 05:39:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9770A421D0A
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 05:48:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbhJEDlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 23:41:04 -0400
-Received: from mga14.intel.com ([192.55.52.115]:55059 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229659AbhJEDlC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 23:41:02 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10127"; a="225957957"
-X-IronPort-AV: E=Sophos;i="5.85,347,1624345200"; 
-   d="scan'208";a="225957957"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2021 20:39:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,347,1624345200"; 
-   d="scan'208";a="544610054"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga004.fm.intel.com with ESMTP; 04 Oct 2021 20:39:12 -0700
-Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
-        by linux.intel.com (Postfix) with ESMTP id ABF72580A6C;
-        Mon,  4 Oct 2021 20:39:09 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Wong Vee Khee <veekhee@gmail.com>
-Subject: [PATCH net v4 1/1] net: pcs: xpcs: fix incorrect CL37 AN sequence
-Date:   Tue,  5 Oct 2021 11:45:21 +0800
-Message-Id: <20211005034521.534125-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S231482AbhJEDt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 23:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36962 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230495AbhJEDtz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 23:49:55 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D96C061745;
+        Mon,  4 Oct 2021 20:48:05 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id qe4-20020a17090b4f8400b0019f663cfcd1so936325pjb.1;
+        Mon, 04 Oct 2021 20:48:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/jRoIvx4ENdh4pGhogdDVwoFP1/nkhTlh4K8JiaSyDk=;
+        b=oZgjLdJNdAeefLB76oWiTLO0BQpiQx/gRy+a/sUpduWJD3Rkgl4D5H78tg7MazIA1t
+         +8sEEqwTla8jGxyL4aP0E0xP2HByAXZBMC4GYRq7OfLw5yBWIS14ovAT09QLZblnhV36
+         ofXkdlzXBSqa8QD8XJwFikfBzJBk9F+BzfqfOCKN1XFWHK8PWApQQFSC7jN2pSVYC8Ji
+         I/JcDLZLW8kEd+7TIwPoT9J+VL92gTSsaByIbvfFDdM4fDKSputvdFHA+p729SMXkS1b
+         nTkhS0Imrn5aqUnWgyAHMm7a3QGoXRRdDqZRSjI5GCnKtospgdMkQMScj1ngYvHCgsyv
+         pPTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=/jRoIvx4ENdh4pGhogdDVwoFP1/nkhTlh4K8JiaSyDk=;
+        b=oEq5c9AK4gSvRTwVXwFzaD3cyFFimq4t3/9VOEwNMdmAWxP81yff7tXg3IHHlEumwp
+         EWCBqVfWHc2f1tEXYjubL9F/7xR+UKs+wTJbm8yeiuDE+wGo7AIPDL4jItDsxmp6+al9
+         zeLSUAuwU4hf4mKL+lLpGsLlYBYh+eF+eKjOWdrXgYOI7k0uJdZY8OIE3a5cqEImk9k4
+         o5h61IwHe9l21GSSGJ4Kxd8cMZ0tlOhphcShdXSxTFC7/ygQQhrOmISpc3RnPWeB/M9r
+         DVC6HbRD91pW3NnY1RIwKnl/alJ426rahCVmUnNwD6X8lA/iUfQakQzhEy6TXRvsL5GL
+         Jhcw==
+X-Gm-Message-State: AOAM532dnxuY/QLawXMK7avBrL9Ia33kSVkIBJWgwKcZG7fma0OCBNgQ
+        WmVSo8gWIhYxMq+rQUofO/177LrcT3s=
+X-Google-Smtp-Source: ABdhPJydTmkq8pXgaF3jsPamZp9/NGxvl9n/Ixb8EfSXw4bKpV89rFz0mrvPb3+CIkxurgTiFPrKWg==
+X-Received: by 2002:a17:90a:9403:: with SMTP id r3mr1029531pjo.220.1633405685375;
+        Mon, 04 Oct 2021 20:48:05 -0700 (PDT)
+Received: from [192.168.1.16] ([120.229.69.27])
+        by smtp.gmail.com with ESMTPSA id v7sm15385261pff.195.2021.10.04.20.48.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Oct 2021 20:48:04 -0700 (PDT)
+Subject: Re: [PATCH net-next v4 3/3] skbuff: keep track of pp page when
+ pp_frag_count is used
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        hawk@kernel.org, jonathan.lemon@gmail.com, alobakin@pm.me,
+        willemb@google.com, cong.wang@bytedance.com, pabeni@redhat.com,
+        haokexin@gmail.com, nogikh@google.com, elver@google.com,
+        memxor@gmail.com, edumazet@google.com, alexander.duyck@gmail.com,
+        dsahern@gmail.com
+References: <20210930080747.28297-1-linyunsheng@huawei.com>
+ <20210930080747.28297-4-linyunsheng@huawei.com> <YVqWKM89b2TH3Kic@enceladus>
+From:   Yunsheng Lin <yunshenglin0825@gmail.com>
+Message-ID: <8cacdb44-bb19-1dbf-714a-a96b348c7fb0@gmail.com>
+Date:   Tue, 5 Oct 2021 11:47:34 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YVqWKM89b2TH3Kic@enceladus>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to Synopsys DesignWare Cores Ethernet PCS databook, it is
-required to disable Clause 37 auto-negotiation by programming bit-12
-(AN_ENABLE) to 0 if it is already enabled, before programming various
-fields of VR_MII_AN_CTRL registers.
+On 2021/10/4 13:50, Ilias Apalodimas wrote:
+> On Thu, Sep 30, 2021 at 04:07:47PM +0800, Yunsheng Lin wrote:
+>> As the skb->pp_recycle and page->pp_magic may not be enough
+>> to track if a frag page is from page pool after the calling
+>> of __skb_frag_ref(), mostly because of a data race, see:
+>> commit 2cc3aeb5eccc ("skbuff: Fix a potential race while
+>> recycling page_pool packets").
+>>
+>> There may be clone and expand head case that might lose the
+>> track if a frag page is from page pool or not.
+>>
+>> And not being able to keep track of pp page may cause problem
+>> for the skb_split() case in tso_fragment() too:
+>> Supposing a skb has 3 frag pages, all coming from a page pool,
+>> and is split to skb1 and skb2:
+>> skb1: first frag page + first half of second frag page
+>> skb2: second half of second frag page + third frag page
+>>
+>> How do we set the skb->pp_recycle of skb1 and skb2?
+>> 1. If we set both of them to 1, then we may have a similar
+>>    race as the above commit for second frag page.
+>> 2. If we set only one of them to 1, then we may have resource
+>>    leaking problem as both first frag page and third frag page
+>>    are indeed from page pool.
+>>
+>> Increment the pp_frag_count of pp page frag in __skb_frag_ref(),
+>> and only use page->pp_magic to indicate a pp page frag in
+>> __skb_frag_unref() to keep track of pp page frag.
+>>
+>> Similar handling is done for the head page of a skb too.
+>>
+>> As we need the head page of a compound page to decide if it is
+>> from page pool at first, so __page_frag_cache_drain() and
+>> page_ref_inc() is used to avoid unnecessary compound_head()
+>> calling.
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>>  include/linux/skbuff.h  | 30 ++++++++++++++++++++----------
+>>  include/net/page_pool.h | 24 +++++++++++++++++++++++-
+>>  net/core/page_pool.c    | 17 ++---------------
+>>  net/core/skbuff.c       | 10 ++++++++--
+>>  4 files changed, 53 insertions(+), 28 deletions(-)
+>>
+>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+>> index 841e2f0f5240..aeee150d4a04 100644
+>> --- a/include/linux/skbuff.h
+>> +++ b/include/linux/skbuff.h
+>> @@ -3073,7 +3073,19 @@ static inline struct page *skb_frag_page(const skb_frag_t *frag)
+>>   */
+>>  static inline void __skb_frag_ref(skb_frag_t *frag)
+>>  {
+>> -	get_page(skb_frag_page(frag));
+>> +	struct page *page = skb_frag_page(frag);
+>> +
+>> +	page = compound_head(page);
+>> +
+>> +#ifdef CONFIG_PAGE_POOL
+>> +	if (page_pool_is_pp_page(page) &&
+>> +	    page_pool_is_pp_page_frag(page)) {
+>> +		page_pool_atomic_inc_frag_count(page);
+>> +		return;
+>> +	}
+>> +#endif
+>> +
+>> +	page_ref_inc(page);
+> 
+> There's a BUG_ON we are now ignoring on get_page. 
 
-After all these programming are done, it is then required to enable
-Clause 37 auto-negotiation by programming bit-12 (AN_ENABLE) to 1.
+Actually it is a VM_BUG_ON_PAGE(), and it is only turned into a
+BUG() while CONFIG_DEBUG_VM is defined.
 
-Fixes: b97b5331b8ab ("net: pcs: add C37 SGMII AN support for intel mGbE controller")
-Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
----
-v3 -> v4:
- - Removed redunctant 'changed' variable.
-v2 -> v3:
- - Added error handling after xpcs_write().
- - Added 'changed' flag.
- - Added fixes tag.
-v1 -> v2:
- - Removed use of xpcs_modify() helper function.
- - Add conditional check on inband auto-negotiation.
----
- drivers/net/pcs/pcs-xpcs.c | 32 +++++++++++++++++++++++++++-----
- 1 file changed, 27 insertions(+), 5 deletions(-)
+As there is already tracepoint in page_ref_inc(), I am not sure
+VM_BUG_ON_PAGE() is really needed anymore, as there are a few other
+place calling page_ref_inc() directly without the VM_BUG_ON_PAGE().
 
-diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index fb0a83dc09ac..a3e806cfa684 100644
---- a/drivers/net/pcs/pcs-xpcs.c
-+++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -697,14 +697,17 @@ EXPORT_SYMBOL_GPL(xpcs_config_eee);
- 
- static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
- {
--	int ret;
-+	int ret, mdio_ctrl;
- 
- 	/* For AN for C37 SGMII mode, the settings are :-
--	 * 1) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 10b (SGMII AN)
--	 * 2) VR_MII_AN_CTRL Bit(3) [TX_CONFIG] = 0b (MAC side SGMII)
-+	 * 1) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 0b (Disable SGMII AN in case
-+	      it is already enabled)
-+	 * 2) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 10b (SGMII AN)
-+	 * 3) VR_MII_AN_CTRL Bit(3) [TX_CONFIG] = 0b (MAC side SGMII)
- 	 *    DW xPCS used with DW EQoS MAC is always MAC side SGMII.
--	 * 3) VR_MII_DIG_CTRL1 Bit(9) [MAC_AUTO_SW] = 1b (Automatic
-+	 * 4) VR_MII_DIG_CTRL1 Bit(9) [MAC_AUTO_SW] = 1b (Automatic
- 	 *    speed/duplex mode change by HW after SGMII AN complete)
-+	 * 5) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 1b (Enable SGMII AN)
- 	 *
- 	 * Note: Since it is MAC side SGMII, there is no need to set
- 	 *	 SR_MII_AN_ADV. MAC side SGMII receives AN Tx Config from
-@@ -712,6 +715,17 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
- 	 *	 between PHY and Link Partner. There is also no need to
- 	 *	 trigger AN restart for MAC-side SGMII.
- 	 */
-+	mdio_ctrl = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
-+	if (mdio_ctrl < 0)
-+		return mdio_ctrl;
-+
-+	if (mdio_ctrl & AN_CL37_EN) {
-+		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
-+				 mdio_ctrl & ~AN_CL37_EN);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_CTRL);
- 	if (ret < 0)
- 		return ret;
-@@ -736,7 +750,15 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
- 	else
- 		ret &= ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
- 
--	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
-+	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (phylink_autoneg_inband(mode))
-+		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL,
-+				 mdio_ctrl | AN_CL37_EN);
-+
-+	return ret;
- }
- 
- static int xpcs_config_2500basex(struct dw_xpcs *xpcs)
--- 
-2.25.1
+https://elixir.bootlin.com/linux/v5.15-rc4/source/include/linux/page_ref.h#L117
 
+> 
+>>  }
+>>  
+>>  /**
+>> @@ -3100,11 +3112,16 @@ static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
+>>  {
+>>  	struct page *page = skb_frag_page(frag);
+>>  
+>> +	page = compound_head(page);
+>> +
+>>  #ifdef CONFIG_PAGE_POOL
+>> -	if (recycle && page_pool_return_skb_page(page))
+>> +	if (page_pool_is_pp_page(page) &&
+>> +	    (recycle || page_pool_is_pp_page_frag(page))) {
+>> +		page_pool_return_skb_page(page);
+>>  		return;
+>> +	}
+>>  #endif
+>> -	put_page(page);
+>> +	__page_frag_cache_drain(page, 1);
+> 
+> Same here,  freeing the page is not the only thing put_page does. 
+
+I think the __page_frag_cache_drain() has the VM_BUG_ON_PAGE() as
+put_page() does.
+
+The one thing I am not sure about it is the devmap managed pages,
+which is handled in put_page(), but is not handle in
+__page_frag_cache_drain(). Is it possible that devmap managed pages
+could be used in the network stack?
+
+> 
+>>  }
+>>  
+>>  /**
+>> @@ -4718,12 +4735,5 @@ static inline void skb_mark_for_recycle(struct sk_buff *skb)
+>>  }
+>>  #endif
+>>  
+>> -static inline bool skb_pp_recycle(struct sk_buff *skb, void *data)
+>> -{
+>> -	if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
+>> -		return false;
+>> -	return page_pool_return_skb_page(virt_to_page(data));
+>> -}
+>> -
+>>  #endif	/* __KERNEL__ */
+>>  #endif	/* _LINUX_SKBUFF_H */
+>> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+>> index 3855f069627f..740a8ca7f4a6 100644
+>> --- a/include/net/page_pool.h
+>> +++ b/include/net/page_pool.h
+>> @@ -164,7 +164,7 @@ inline enum dma_data_direction page_pool_get_dma_dir(struct page_pool *pool)
+>>  	return pool->p.dma_dir;
+>>  }
+>>  
+>> -bool page_pool_return_skb_page(struct page *page);
+>> +void page_pool_return_skb_page(struct page *page);
+>>  
+>>  struct page_pool *page_pool_create(const struct page_pool_params *params);
+>>  
+>> @@ -231,6 +231,28 @@ static inline void page_pool_set_frag_count(struct page *page, long nr)
+>>  	atomic_long_set(&page->pp_frag_count, nr);
+>>  }
+>>  
+>> +static inline void page_pool_atomic_inc_frag_count(struct page *page)
+>> +{
+>> +	atomic_long_inc(&page->pp_frag_count);
+>> +}
+>> +
+>> +static inline bool page_pool_is_pp_page(struct page *page)
+>> +{
+>> +	/* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
+>> +	 * in order to preserve any existing bits, such as bit 0 for the
+>> +	 * head page of compound page and bit 1 for pfmemalloc page, so
+>> +	 * mask those bits for freeing side when doing below checking,
+>> +	 * and page_is_pfmemalloc() is checked in __page_pool_put_page()
+>> +	 * to avoid recycling the pfmemalloc page.
+>> +	 */
+>> +	return (page->pp_magic & ~0x3UL) == PP_SIGNATURE;
+>> +}
+>> +
+>> +static inline bool page_pool_is_pp_page_frag(struct page *page)
+>> +{
+>> +	return !!atomic_long_read(&page->pp_frag_count);
+>> +}
+>> +
+>>  static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
+>>  							  long nr)
+>>  {
+>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+>> index 2c643b72ce16..d141e00459c9 100644
+>> --- a/net/core/page_pool.c
+>> +++ b/net/core/page_pool.c
+>> @@ -219,6 +219,7 @@ static void page_pool_set_pp_info(struct page_pool *pool,
+>>  {
+>>  	page->pp = pool;
+>>  	page->pp_magic |= PP_SIGNATURE;
+>> +	page_pool_set_frag_count(page, 0);
+>>  }
+>>  
+>>  static void page_pool_clear_pp_info(struct page *page)
+>> @@ -736,22 +737,10 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
+>>  }
+>>  EXPORT_SYMBOL(page_pool_update_nid);
+>>  
+>> -bool page_pool_return_skb_page(struct page *page)
+>> +void page_pool_return_skb_page(struct page *page)
+>>  {
+>>  	struct page_pool *pp;
+>>  
+>> -	page = compound_head(page);
+>> -
+>> -	/* page->pp_magic is OR'ed with PP_SIGNATURE after the allocation
+>> -	 * in order to preserve any existing bits, such as bit 0 for the
+>> -	 * head page of compound page and bit 1 for pfmemalloc page, so
+>> -	 * mask those bits for freeing side when doing below checking,
+>> -	 * and page_is_pfmemalloc() is checked in __page_pool_put_page()
+>> -	 * to avoid recycling the pfmemalloc page.
+>> -	 */
+>> -	if (unlikely((page->pp_magic & ~0x3UL) != PP_SIGNATURE))
+>> -		return false;
+>> -
+>>  	pp = page->pp;
+>>  
+>>  	/* Driver set this to memory recycling info. Reset it on recycle.
+>> @@ -760,7 +749,5 @@ bool page_pool_return_skb_page(struct page *page)
+>>  	 * 'flipped' fragment being in use or not.
+>>  	 */
+>>  	page_pool_put_full_page(pp, page, false);
+>> -
+>> -	return true;
+>>  }
+>>  EXPORT_SYMBOL(page_pool_return_skb_page);
+>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+>> index 74601bbc56ac..e3691b025d30 100644
+>> --- a/net/core/skbuff.c
+>> +++ b/net/core/skbuff.c
+>> @@ -646,9 +646,15 @@ static void skb_free_head(struct sk_buff *skb)
+>>  	unsigned char *head = skb->head;
+>>  
+>>  	if (skb->head_frag) {
+>> -		if (skb_pp_recycle(skb, head))
+>> +		struct page *page = virt_to_head_page(head);
+>> +
+>> +		if (page_pool_is_pp_page(page) &&
+>> +		    (skb->pp_recycle || page_pool_is_pp_page_frag(page))) {
+>> +			page_pool_return_skb_page(page);
+>>  			return;
+>> -		skb_free_frag(head);
+>> +		}
+>> +
+>> +		__page_frag_cache_drain(page, 1);
+>>  	} else {
+>>  		kfree(head);
+>>  	}
+>> -- 
+>> 2.33.0
+>>
+> 
+> Regardless of the comments above,  providing some numbers on how the
+> patches affect performance (at least on hns3), would be good to have.
+
+As mentioned in the cover letter:
+"The small packet drop test show no notiable performance degradation
+when page pool is disabled."
+
+And no notiable performance degradation for the page pool enabled case
+with hns3 too.
+
+> 
+> I'll try giving this another look.  I still think having three indicators
+> to look at before recycling the page is not ideal.
+
+All three indicators only need to be done when a page has PP_SIGNATURE set,
+but do not want to be considered to be a pp page, which seems to be a rare
+case?
+
+If the mlx5 driver can change the way of using the page pool as it is now,
+we can remove the addtional checking in the future, and just use the pp_magic
+to indicate a pp page.
+
+> 
+> 
+> Regards
+> /Ilias
+> 
