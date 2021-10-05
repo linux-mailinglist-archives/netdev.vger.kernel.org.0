@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59ABF422EE3
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 19:16:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB351422EE2
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 19:15:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236730AbhJERRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 13:17:47 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:21896 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236700AbhJERRo (ORCPT
+        id S236728AbhJERRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 13:17:45 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:10942 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S236711AbhJERRo (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 13:17:44 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 195FuFe4028844;
-        Tue, 5 Oct 2021 10:15:51 -0700
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 195Fub5D026710;
+        Tue, 5 Oct 2021 10:15:53 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=lsTPQJbq1BoWC63f6Z/OJhplQKO6S+lgfgJHE06Md1E=;
- b=QOcCWlVO+ZgljbcPyajv0cSD+K9TJ8m0Lo73e0aEc6EcCmpMSLMMQ78FlpNfuksrNbXr
- E/Tmy0Ik6kfmmHfgK4EMbXZJb7xX6Fm7Qu0qFm50uemRuIwhrzb9RakwaZ5rV2yfKh38
- dITp515Spy3+0k9ir5uwJDIAPLpcya7/MULauyarOjHSlo1v+8rFq5Ku+EtClxg/zuNS
- pyNWhOZ6FiFfCzlaPcc1R7VqoQkJyTa5Pmwr2orqR9cFKdsvGHnCbTfshey1CyR6rUBI
- Hq6ACAdxSxxME23kx3o3/rgFeVrp1FVYMwsnYyrY2hj+C6ITPPdpxF6/Q8ZjQcyir8+c JQ== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3bgr1qgu05-1
+ content-type; s=pfpt0220; bh=Um9s9/TLHNrNMcB2c9SFF6AaxMvdu82WG4m2JK9f+8k=;
+ b=OQp4WDQxAoFHeA/ybo1cMav78PdqH/mjDzJYr44wXKckjqXA+2jcPXPRVgtMEBcNof//
+ Pmw5y0f9eK+rUuppmeiANDDEFpkwsaSIujStsny591pqaa92ODWV6OvD+r/pjSWvuTUV
+ V6x4ls0H0Zvyua+OuYRGOSwlFpnWUYcKyqxonPGITU7WEpxkcoO9Ut4fgUEhFCVtGAFF
+ av9l11TbaIa9Q5dgm3G7UMe49wMr1AxcLS4L/BlswgSdq2VbwDsmSf0zYNj6fghqUYxp
+ FAWS8DGSqfwyBteFPQps4kEWRB9j6LrZ/3IykIjAB1RGNFNcDRYWxIT6jY5S0HvNme1C wQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3bgmv5t497-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 05 Oct 2021 10:15:50 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 5 Oct
- 2021 10:15:48 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 5 Oct 2021 10:15:48 -0700
+        Tue, 05 Oct 2021 10:15:52 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 5 Oct
+ 2021 10:15:51 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 5 Oct 2021 10:15:51 -0700
 Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-        by maili.marvell.com (Postfix) with ESMTP id C3A263F7080;
-        Tue,  5 Oct 2021 10:15:45 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 2D13D3F707C;
+        Tue,  5 Oct 2021 10:15:48 -0700 (PDT)
 From:   Subbaraya Sundeep <sbhatta@marvell.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
 CC:     <sgoutham@marvell.com>, <hkelam@marvell.com>, <gakula@marvell.com>,
         Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net-next PATCH 2/3] octeontx2-pf: Add devlink param to vary cqe size
-Date:   Tue, 5 Oct 2021 22:45:35 +0530
-Message-ID: <1633454136-14679-3-git-send-email-sbhatta@marvell.com>
+Subject: [net-next PATCH 3/3] octeontx2-pf: Add devlink param to vary rbuf size
+Date:   Tue, 5 Oct 2021 22:45:36 +0530
+Message-ID: <1633454136-14679-4-git-send-email-sbhatta@marvell.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
 References: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: WuvCG2Tgvh8E8s9LuwV40OymMwBTwJf8
-X-Proofpoint-GUID: WuvCG2Tgvh8E8s9LuwV40OymMwBTwJf8
+X-Proofpoint-GUID: vwQlzVhR040hVQKN4MCDYFcHbshzwvpI
+X-Proofpoint-ORIG-GUID: vwQlzVhR040hVQKN4MCDYFcHbshzwvpI
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
  definitions=2021-10-05_03,2021-10-04_01,2020-04-07_01
@@ -56,103 +56,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Completion Queue Entry(CQE) is a descriptor written
-by hardware to notify software about the send and
-receive completion status. The CQE can be of size
-128 or 512 bytes. A 512 bytes CQE can hold more receive
-fragments pointers compared to 128 bytes CQE. This
-patch adds devlink param to change CQE descriptor
-size.
+The size of receive buffers for receiving packets
+is calculated based on the mtu of interface. This
+patch adds devlink parameter to utilize user given
+size for receive buffers instead. By changing CQE
+descriptor size and receive buffer sizes the number
+of buffer pointers used by hardware for a large packet
+can be configured.
 
 Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 10 +++-
  .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  1 +
- .../ethernet/marvell/octeontx2/nic/otx2_devlink.c  | 56 ++++++++++++++++++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  2 +
- .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  2 +
- 5 files changed, 69 insertions(+), 2 deletions(-)
+ .../ethernet/marvell/octeontx2/nic/otx2_devlink.c  | 60 ++++++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  7 +++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  5 ++
+ 4 files changed, 73 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 66da31f..3777f41 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -222,8 +222,11 @@ EXPORT_SYMBOL(otx2_set_mac_address);
- int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
- {
- 	struct nix_frs_cfg *req;
-+	u16 maxlen;
- 	int err;
- 
-+	maxlen = otx2_get_max_mtu(pfvf) + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
-+
- 	mutex_lock(&pfvf->mbox.lock);
- 	req = otx2_mbox_alloc_msg_nix_set_hw_frs(&pfvf->mbox);
- 	if (!req) {
-@@ -233,6 +236,9 @@ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
- 
- 	req->maxlen = pfvf->netdev->mtu + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
- 
-+	if (is_otx2_lbkvf(pfvf->pdev))
-+		req->maxlen = maxlen;
-+
- 	err = otx2_sync_mbox_msg(&pfvf->mbox);
- 	mutex_unlock(&pfvf->mbox.lock);
- 	return err;
-@@ -1036,7 +1042,7 @@ int otx2_config_nix(struct otx2_nic *pfvf)
- 	struct nix_lf_alloc_rsp *rsp;
- 	int err;
- 
--	pfvf->qset.xqe_size = NIX_XQESZ_W16 ? 128 : 512;
-+	pfvf->qset.xqe_size = pfvf->hw.xqe_size;
- 
- 	/* Get memory to put this msg */
- 	nixlf = otx2_mbox_alloc_msg_nix_lf_alloc(&pfvf->mbox);
-@@ -1049,7 +1055,7 @@ int otx2_config_nix(struct otx2_nic *pfvf)
- 	nixlf->cq_cnt = pfvf->qset.cq_cnt;
- 	nixlf->rss_sz = MAX_RSS_INDIR_TBL_SIZE;
- 	nixlf->rss_grps = MAX_RSS_GROUPS;
--	nixlf->xqe_sz = NIX_XQESZ_W16;
-+	nixlf->xqe_sz = pfvf->hw.xqe_size == 128 ? NIX_XQESZ_W16 : NIX_XQESZ_W64;
- 	/* We don't know absolute NPA LF idx attached.
- 	 * AF will replace 'RVU_DEFAULT_PF_FUNC' with
- 	 * NPA LF attached to this RVU PF/VF.
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 61e5281..6e0d1ac 100644
+index 6e0d1ac..f885abe 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -177,6 +177,7 @@ struct otx2_hw {
- 	u16			pool_cnt;
+@@ -178,6 +178,7 @@ struct otx2_hw {
  	u16			rqpool_cnt;
  	u16			sqpool_cnt;
-+	u16			xqe_size;
+ 	u16			xqe_size;
++	u16			rbuf_fixed_size;
  
  	/* NPA */
  	u32			stack_pg_ptrs;  /* No of ptrs per stack page */
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-index 777a270..98450e1 100644
+index 98450e1..0fc7e32 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-@@ -64,9 +64,60 @@ static int otx2_dl_mcam_count_get(struct devlink *devlink, u32 id,
+@@ -64,6 +64,60 @@ static int otx2_dl_mcam_count_get(struct devlink *devlink, u32 id,
  	return 0;
  }
  
-+static int otx2_dl_cqe_size_validate(struct devlink *devlink, u32 id,
-+				     union devlink_param_value val,
-+				     struct netlink_ext_ack *extack)
++static int otx2_dl_rbuf_size_validate(struct devlink *devlink, u32 id,
++				      union devlink_param_value val,
++				      struct netlink_ext_ack *extack)
 +{
-+	if (val.vu16 != 128 && val.vu16 != 512) {
++	/* Hardware supports max size of 32k for a receive buffer
++	 * and 1536 is typical ethernet frame size.
++	 */
++	if (val.vu16 < 1536 || val.vu16 > 32768) {
 +		NL_SET_ERR_MSG_MOD(extack,
-+				   "Only 128 or 512 byte descriptor allowed");
++				   "Receive buffer range is 1536 - 32768");
 +		return -EINVAL;
 +	}
 +
 +	return 0;
 +}
 +
-+static int otx2_dl_cqe_size_set(struct devlink *devlink, u32 id,
-+				struct devlink_param_gset_ctx *ctx)
++static int otx2_dl_rbuf_size_set(struct devlink *devlink, u32 id,
++				 struct devlink_param_gset_ctx *ctx)
 +{
 +	struct otx2_devlink *otx2_dl = devlink_priv(devlink);
 +	struct otx2_nic *pfvf = otx2_dl->pfvf;
@@ -167,7 +125,8 @@ index 777a270..98450e1 100644
 +	if (if_up)
 +		netdev->netdev_ops->ndo_stop(netdev);
 +
-+	pfvf->hw.xqe_size = ctx->val.vu16;
++	pfvf->hw.rbuf_fixed_size = ALIGN(ctx->val.vu16, OTX2_ALIGN) +
++				   OTX2_HEAD_ROOM;
 +
 +	if (if_up)
 +		err = netdev->netdev_ops->ndo_open(netdev);
@@ -177,62 +136,88 @@ index 777a270..98450e1 100644
 +	return err;
 +}
 +
-+static int otx2_dl_cqe_size_get(struct devlink *devlink, u32 id,
-+				struct devlink_param_gset_ctx *ctx)
++static int otx2_dl_rbuf_size_get(struct devlink *devlink, u32 id,
++				 struct devlink_param_gset_ctx *ctx)
 +{
 +	struct otx2_devlink *otx2_dl = devlink_priv(devlink);
 +	struct otx2_nic *pfvf = otx2_dl->pfvf;
 +
-+	ctx->val.vu16 = pfvf->hw.xqe_size;
++	ctx->val.vu16 = pfvf->hw.rbuf_fixed_size;
 +
 +	return 0;
 +}
 +
- enum otx2_dl_param_id {
+ static int otx2_dl_cqe_size_validate(struct devlink *devlink, u32 id,
+ 				     union devlink_param_value val,
+ 				     struct netlink_ext_ack *extack)
+@@ -118,6 +172,7 @@ enum otx2_dl_param_id {
  	OTX2_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
  	OTX2_DEVLINK_PARAM_ID_MCAM_COUNT,
-+	OTX2_DEVLINK_PARAM_ID_CQE_SIZE,
+ 	OTX2_DEVLINK_PARAM_ID_CQE_SIZE,
++	OTX2_DEVLINK_PARAM_ID_RBUF_SIZE,
  };
  
  static const struct devlink_param otx2_dl_params[] = {
-@@ -75,6 +126,11 @@ static const struct devlink_param otx2_dl_params[] = {
+@@ -131,6 +186,11 @@ static const struct devlink_param otx2_dl_params[] = {
  			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
- 			     otx2_dl_mcam_count_get, otx2_dl_mcam_count_set,
- 			     otx2_dl_mcam_count_validate),
-+	DEVLINK_PARAM_DRIVER(OTX2_DEVLINK_PARAM_ID_CQE_SIZE,
-+			     "completion_descriptor_size", DEVLINK_PARAM_TYPE_U16,
+ 			     otx2_dl_cqe_size_get, otx2_dl_cqe_size_set,
+ 			     otx2_dl_cqe_size_validate),
++	DEVLINK_PARAM_DRIVER(OTX2_DEVLINK_PARAM_ID_RBUF_SIZE,
++			     "receive_buffer_size", DEVLINK_PARAM_TYPE_U16,
 +			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     otx2_dl_cqe_size_get, otx2_dl_cqe_size_set,
-+			     otx2_dl_cqe_size_validate),
++			     otx2_dl_rbuf_size_get, otx2_dl_rbuf_size_set,
++			     otx2_dl_rbuf_size_validate),
  };
  
  /* Devlink OPs */
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 1e0d0c9c..8618cf7 100644
+index 8618cf7..1be524d3 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -2624,6 +2624,8 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	hw->tx_queues = qcount;
- 	hw->tot_tx_queues = qcount;
- 	hw->max_queues = qcount;
-+	/* Use CQE of 128 byte descriptor size by default */
-+	hw->xqe_size = 128;
+@@ -65,6 +65,10 @@ static int otx2_change_mtu(struct net_device *netdev, int new_mtu)
+ 	netdev_info(netdev, "Changing MTU from %d to %d\n",
+ 		    netdev->mtu, new_mtu);
+ 	netdev->mtu = new_mtu;
++	/* Modify receive buffer size based on MTU and do not
++	 * use the fixed size set.
++	 */
++	pf->hw.rbuf_fixed_size = 0;
  
- 	num_vec = pci_msix_vec_count(pdev);
- 	hw->irq_name = devm_kmalloc_array(&hw->pdev->dev, num_vec, NAME_SIZE,
+ 	if (if_up)
+ 		err = otx2_open(netdev);
+@@ -1306,6 +1310,9 @@ static int otx2_get_rbuf_size(struct otx2_nic *pf, int mtu)
+ 	int total_size;
+ 	int rbuf_size;
+ 
++	if (pf->hw.rbuf_fixed_size)
++		return pf->hw.rbuf_fixed_size;
++
+ 	/* The data transferred by NIX to memory consists of actual packet
+ 	 * plus additional data which has timestamp and/or EDSA/HIGIG2
+ 	 * headers if interface is configured in corresponding modes.
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index 980219a..672be05 100644
+index 672be05..229d051 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -587,6 +587,8 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	hw->tx_queues = qcount;
- 	hw->max_queues = qcount;
- 	hw->tot_tx_queues = qcount;
-+	/* Use CQE of 128 byte descriptor size by default */
-+	hw->xqe_size = 128;
+@@ -439,6 +439,7 @@ static void otx2vf_do_set_rx_mode(struct work_struct *work)
  
- 	hw->irq_name = devm_kmalloc_array(&hw->pdev->dev, num_vec, NAME_SIZE,
- 					  GFP_KERNEL);
+ static int otx2vf_change_mtu(struct net_device *netdev, int new_mtu)
+ {
++	struct otx2_nic *vf = netdev_priv(netdev);
+ 	bool if_up = netif_running(netdev);
+ 	int err = 0;
+ 
+@@ -448,6 +449,10 @@ static int otx2vf_change_mtu(struct net_device *netdev, int new_mtu)
+ 	netdev_info(netdev, "Changing MTU from %d to %d\n",
+ 		    netdev->mtu, new_mtu);
+ 	netdev->mtu = new_mtu;
++	/* Modify receive buffer size based on MTU and do not
++	 * use the fixed size set.
++	 */
++	vf->hw.rbuf_fixed_size = 0;
+ 
+ 	if (if_up)
+ 		err = otx2vf_open(netdev);
 -- 
 2.7.4
 
