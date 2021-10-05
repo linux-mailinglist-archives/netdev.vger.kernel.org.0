@@ -2,88 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6284422266
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 11:34:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DF25422281
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 11:39:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233701AbhJEJgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 05:36:16 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:34627 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233638AbhJEJgO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 05:36:14 -0400
-Received: from [192.168.0.2] (ip5f5ae91d.dynamic.kabel-deutschland.de [95.90.233.29])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id C4DE161E64846;
-        Tue,  5 Oct 2021 11:34:23 +0200 (CEST)
-Subject: Re: [Intel-wired-lan] Intel I350 regression 5.10 -> 5.14 ("The NVM
- Checksum Is Not Valid") [8086:1521]
-To:     "Andreas K. Huettel" <andreas.huettel@ur.de>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        Jakub Kicinski <kubakici@wp.pl>
-References: <1823864.tdWV9SEqCh@kailua>
- <20211004074814.5900791a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <35dfc9e8-431c-362d-450e-4c6ac1e55434@molgen.mpg.de>
-Date:   Tue, 5 Oct 2021 11:34:21 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S233632AbhJEJld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 05:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233077AbhJEJlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 05:41:32 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2E7C061745;
+        Tue,  5 Oct 2021 02:39:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=mP8SE6PYbA6eukRG5PcP85FllcxoPD5k3unsb67nCcQ=; b=dep6hnBXc/2z4bKbJKxlnT2dmi
+        lRDGPHZoHYEiXUzkY6zRwlksYbM9/sVYUoltpKhS9AgjOZ1GByGTv8Eknt9wBdI0NTbciP3jn0gG0
+        BojX//rXH1mGt51PPAb4U1pBafNj1qOB9J2+a5Z6+GNTyR8sOwVUSXhtKGTrueqUAENOYlcRsLkx8
+        pwSXq3k4COgz8QUaaAyIDBA/HuNu3obOcpt6u1z6kJ6AC7pmEshAqndY2f1ILqfXNpnrmsi+ej+XE
+        Vr/t5HjbzFbl+Jkl1IF+jNvHaz4aEgHqTDsVZb2IEnp/0JXTJUhHYB+hAi9b80l1+tY+LKKJNNDS7
+        Bu8EF6mw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54942)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mXgvC-00005N-Qh; Tue, 05 Oct 2021 10:39:38 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mXgvA-0008Mf-Rx; Tue, 05 Oct 2021 10:39:36 +0100
+Date:   Tue, 5 Oct 2021 10:39:36 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [RFC net-next PATCH 01/16] dt-bindings: net: Add pcs property
+Message-ID: <YVwdWIJiV1nkJ4A3@shell.armlinux.org.uk>
+References: <20211004191527.1610759-1-sean.anderson@seco.com>
+ <20211004191527.1610759-2-sean.anderson@seco.com>
 MIME-Version: 1.0
-In-Reply-To: <20211004074814.5900791a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211004191527.1610759-2-sean.anderson@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Andreas,
+On Mon, Oct 04, 2021 at 03:15:12PM -0400, Sean Anderson wrote:
+> Add a property for associating PCS devices with ethernet controllers.
+> Because PCS has no generic analogue like PHY, I have left off the
+> -handle suffix.
 
+For PHYs, we used to have phy and phy-device as property names, but the
+modern name is "phy-handle". I think we should do the same here, so I
+would suggest using "pcs-handle".
 
-Am 04.10.21 um 16:48 schrieb Jakub Kicinski:
-> On Mon, 04 Oct 2021 15:06:31 +0200 Andreas K. Huettel wrote:
+We actually already have LX2160A platforms using "pcs-handle", (see
+Documentation/devicetree/bindings/net/fsl,qoriq-mc-dpmac.yaml) so we're
+in danger of ending up with multiple property names describing the same
+thing.
 
->> I hope this is the right place to ask, if not please advise me where to go.
-> 
-> Adding intel-wired-lan@lists.osuosl.org and Sasha as well.
-> 
->> I have a new Dell machine with both an Intel on-board ethernet controller
->> ([8086:15f9]) and an additional 2-port extension card ([8086:1521]).
->>
->> The second adaptor, a "DeLock PCIe 2xGBit", worked fine as far as I could
->> see with Linux 5.10.59, but fails to initialize with Linux 5.14.9.
->>
->> dilfridge ~ # lspci -nn
->> [...]
->> 01:00.0 Ethernet controller [0200]: Intel Corporation I350 Gigabit Network Connection [8086:1521] (rev ff)
->> 01:00.1 Ethernet controller [0200]: Intel Corporation I350 Gigabit Network Connection [8086:1521] (rev ff)
->> [...]
->>
->> dilfridge ~ # dmesg|grep igb
->> [    2.069286] igb: Intel(R) Gigabit Ethernet Network Driver
->> [    2.069288] igb: Copyright (c) 2007-2014 Intel Corporation.
->> [    2.069305] igb 0000:01:00.0: can't change power state from D3cold to D0 (config space inaccessible)
->> [    2.069624] igb 0000:01:00.0 0000:01:00.0 (uninitialized): PCIe link lost
->> [    2.386659] igb 0000:01:00.0: PHY reset is blocked due to SOL/IDER session.
->> [    4.115500] igb 0000:01:00.0: The NVM Checksum Is Not Valid
->> [    4.133807] igb: probe of 0000:01:00.0 failed with error -5
->> [    4.133820] igb 0000:01:00.1: can't change power state from D3cold to D0 (config space inaccessible)
->> [    4.134072] igb 0000:01:00.1 0000:01:00.1 (uninitialized): PCIe link lost
->> [    4.451602] igb 0000:01:00.1: PHY reset is blocked due to SOL/IDER session.
->> [    6.180123] igb 0000:01:00.1: The NVM Checksum Is Not Valid
->> [    6.188631] igb: probe of 0000:01:00.1 failed with error -5
-
-What messages are new compared to the working Linux 5.10.59?
-
->> Any advice on how to proceed? Willing to test patches and provide additional debug info.
-
-Without any ideas about the issue, please bisect the issue to find the 
-commit introducing the regression, so it can be reverted/fixed to not 
-violate Linux’ no-regression policy.
-
-
-Kind regards,
-
-Paul
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
