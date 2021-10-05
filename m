@@ -2,109 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC1D1423336
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 00:07:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DC52423341
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 00:09:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236834AbhJEWIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 18:08:54 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50894 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236816AbhJEWIx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 18:08:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Lluhp1JzYl1MdgCun+Ng6rRe2JKMoYgDlOFY52JZHkI=; b=A9JRMZYv+g00Zd38Un+SBqSPMW
-        WRoUi7KZcYTflWhKIy9rp3/T+85FFyO2Q8hmcAU6pe8YXa7hP3Ot3lM4+Zcy515RTSJQZ2yaoY7Y8
-        tY2k/5Owv1IJbAtwbmdZzCV29K0VRoM6elseDsj54xkO1rRNJPiKHhw4Hvx0G6rAM8Z8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mXsaQ-009kjn-UP; Wed, 06 Oct 2021 00:06:58 +0200
-Date:   Wed, 6 Oct 2021 00:06:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: lets settle the LED `function` property regarding the netdev
- trigger
-Message-ID: <YVzMghbt1+ZSILpQ@lunn.ch>
-References: <20211001143601.5f57eb1a@thinkpad>
- <YVn815h7JBtVSfwZ@lunn.ch>
- <20211003212654.30fa43f5@thinkpad>
- <YVsUodiPoiIESrEE@lunn.ch>
- <20211004170847.3f92ef48@thinkpad>
- <0b1bc2d7-6e62-5adb-5aed-48b99770d80d@gmail.com>
- <20211005222657.7d1b2a19@thinkpad>
- <YVy9Ho47XeVON+lB@lunn.ch>
- <20211005234342.7334061b@thinkpad>
+        id S236831AbhJEWLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 18:11:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39047 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230477AbhJEWLn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 18:11:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1633471792;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=aWzcY9DwIFxWa3x0DXqWxyU6JgtlmSe1ew1aqJhLJ2o=;
+        b=Gml/3y9fC2CLNbhDui1wX7cDLYcHmKitZB2dYJ1orT2loZ7a3Kj1pgHn4+Ig+NSQLM4FhZ
+        0zQ5SYZXQt1+mL6AZiQ5iLLYg4Lt5RsogwiG0ZwtMUoDWrpMqQQ/0BT6jC2pGejWVMln1u
+        0+an90YZK1H8ot1DTFbFkpUqUIch0PU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-553-BGjU8PC0PbGAPBCWuZnJCg-1; Tue, 05 Oct 2021 18:09:51 -0400
+X-MC-Unique: BGjU8PC0PbGAPBCWuZnJCg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C975C88C915;
+        Tue,  5 Oct 2021 22:09:41 +0000 (UTC)
+Received: from renaissance-vector.redhat.com (unknown [10.39.192.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 86FCD60BD8;
+        Tue,  5 Oct 2021 22:09:39 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org
+Subject: [PATCH iproute2 v3 0/3] configure: add support for libdir and prefix option
+Date:   Wed,  6 Oct 2021 00:08:03 +0200
+Message-Id: <cover.1633455436.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211005234342.7334061b@thinkpad>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I suggest we start with simple independent LEDs. That gives enough to
-> > support the majority of use cases people actually need. And is enough
-> > to unblock people who i keep NACKing patches and tell them to wait for
-> > this work to get merged.
-> 
-> Of course, and I plan to do so. Those netdev trigger extensions and
-> multi-color function definitions are for later :)
+This series add support for the libdir parameter in iproute2 configure
+system. The idea is to make use of the fact that packaging systems may
+assume that 'configure' comes from autotools allowing a syntax similar
+to the autotools one, and using it to tell iproute2 where the distro
+expects to find its lib files.
 
-Great.
- 
-> We got side tracked in this discussion, sorry about that.
-> 
-> In this thread I just wanted to settle the LED function property for
-> LEDs indicating network ports.
-> 
-> So would you, Andrew, agree with:
-> - extending function property to be array of strings instead of only
->   one string, so that we can do
->     function = "link", "activity";
+Patch 1 introduces support for the --param=value style on current
+params, for uniformity.
 
-I agree with having a list, and we use the combination. If the
-combination is not possible by the hardware, then -EINVAL, or
--EOPNOTSUPP.
+Patch 2 add the --prefix option, that may be used by some packaging
+systems when calling the configure script.
 
-> - having separate functions for different link modes
->     function = "link1000", "link100";
+Patch 3 add the --libdir option to the configure script, and also drops
+the static LIBDIR var from the Makefile.
 
-I would suggest this, so you can use 
+Changelog:
+----------
+v2 -> v3
+  - Fix parsing error on prefix and libdir options.
 
-function = "link1000", "link100", "activity"
+v1 -> v2
+  - consolidate '--param value' and '--param=value' use cases, as
+    suggested by David Ahern.
+  - Added patch 2 to manage the --prefix option, used by the Debian
+    packaging system, as reported by Luca Boccassi, and use it when
+    setting lib directory.
 
-What could be interesting is how you do this in sysfs?  How do you
-enumerate what the hardware can do? How do you select what you want?
+Andrea Claudi (3):
+  configure: support --param=value style
+  configure: add the --prefix option
+  configure: add the --libdir option
 
-Do you need to do
+ Makefile  |  7 +++---
+ configure | 72 +++++++++++++++++++++++++++++++++++++++++++++++--------
+ 2 files changed, 66 insertions(+), 13 deletions(-)
 
-echo "link1000 link100 activity" > /sys/class/net/eth0/phy/led/function
-
-And we can have something like
-
-cat /sys/class/net/eth0/phy/led/function
-activity
-link10 activity
-link100 activity
-link1000 activity
-[link100 link1000 activity]
-link10
-link100
-link1000
-
-each line being a combination the hardware supports, and the line in
-[] is the currently select function.
-
-   Andrew
-
-
-
+-- 
+2.31.1
 
