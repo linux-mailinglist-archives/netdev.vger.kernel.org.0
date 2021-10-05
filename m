@@ -2,66 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0C0442321D
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 22:34:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2FA542322B
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 22:38:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235995AbhJEUgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 16:36:42 -0400
-Received: from mxout04.lancloud.ru ([45.84.86.114]:52352 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbhJEUgl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 16:36:41 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru C69EC20A88C6
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC 06/12] ravb: Fillup ravb_rx_ring_format_gbeth() stub
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        id S236553AbhJEUju (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 16:39:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54998 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230098AbhJEUjt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 16:39:49 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5065C613D5;
+        Tue,  5 Oct 2021 20:37:57 +0000 (UTC)
+Date:   Tue, 5 Oct 2021 16:37:54 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Jan Engelhardt <jengelh@inai.de>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Paul <paulmck@linux.vnet.ibm.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        "Joel Fernandes, Google" <joel@joelfernandes.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
- <20211005110642.3744-7-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <37180ab7-6187-5d39-2d9c-7a7cc30c10b5@omp.ru>
-Date:   Tue, 5 Oct 2021 23:34:46 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        coreteam <coreteam@netfilter.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
+Message-ID: <20211005163754.66552fb3@gandalf.local.home>
+In-Reply-To: <20211005154029.46f9c596@gandalf.local.home>
+References: <20211005094728.203ecef2@gandalf.local.home>
+        <ef5b1654-1f75-da82-cab8-248319efbe3f@rasmusvillemoes.dk>
+        <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
+        <826o327o-3r46-3oop-r430-8qr0ssp537o3@vanv.qr>
+        <20211005144002.34008ea0@gandalf.local.home>
+        <srqsppq-p657-43qq-np31-pq5pp03271r6@vanv.qr>
+        <20211005154029.46f9c596@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20211005110642.3744-7-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/5/21 2:06 PM, Biju Das wrote:
+On Tue, 5 Oct 2021 15:40:29 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-> Fillup ravb_rx_ring_format_gbeth() function to support RZ/G2L.
+> struct trace_pid_list {
+> 	unsigned long		ignore;
+> };
 > 
-> This patch also renames ravb_rx_ring_format to ravb_rx_ring_format_rcar
-> to be consistent with the naming convention used in sh_eth driver.
+> Rename the above struct trace_pid_list to struct trace_pid_internal.
 > 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> And internally have:
+> 
+> union trace_pid_data {
+> 	struct trace_pid_list		external;
+> 	struct trace_pid_internal	internal;
+> };
+> 
+> Then use the internal version within the C file that modifies it, and just
+> return a pointer to the external part.
 
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+So this has proved to be a PITA.
 
-[...]
+> 
+> That should follow the "C standard".
 
-MBR, Sergey
+Really, thinking about abstraction, I don't believe there's anything wrong
+with returning a pointer of one type, and then typecasting it to a pointer
+of another type. Is there? As long as whoever uses the returned type does
+nothing with it.
+
+That is, if I simply do:
+
+In the header file:
+
+struct trace_pid_list {
+	void *ignore;
+};
+
+struct trace_pid_list *trace_pid_list_alloc(void);
+void trace_pid_list_free(struct trace_pid_list *pid_list);
+
+
+And then in the C file:
+
+struct pid_list {
+	[...]
+};
+
+struct trace_pid_list *trace_pid_list_alloc(void)
+{
+	struct pid_list *pid_list;
+
+	pid_list = kmalloc(sizeof(*pid_list), GFP_KERNEL);
+	[..]
+
+	return (struct trace_pid_list *)pid_list;
+}
+
+void trace_pid_list_free(struct trace_pid_list *list)
+{
+	struct pid_list *pid_list = (struct pid_list *)list;
+
+	[..]
+	kfree(pid_list);
+}
+
+That should be perfectly fine for standard C. Right?
+
+-- Steve
+
