@@ -2,97 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 887934230BD
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 21:26:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 080034230D8
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 21:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231858AbhJET2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 15:28:17 -0400
-Received: from mxout02.lancloud.ru ([45.84.86.82]:49120 "EHLO
-        mxout02.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbhJET2Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 15:28:16 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru DE5662084023
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC 12/12] ravb: Update/Add comments
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        id S235361AbhJETmY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 5 Oct 2021 15:42:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41750 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231343AbhJETmX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 15:42:23 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9FA61611C5;
+        Tue,  5 Oct 2021 19:40:30 +0000 (UTC)
+Date:   Tue, 5 Oct 2021 15:40:29 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Jan Engelhardt <jengelh@inai.de>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Paul <paulmck@linux.vnet.ibm.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        "Joel Fernandes, Google" <joel@joelfernandes.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
- <20211005110642.3744-13-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <983e7d02-ae9e-0c30-a7b8-f94855e7927b@omp.ru>
-Date:   Tue, 5 Oct 2021 22:26:22 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        coreteam <coreteam@netfilter.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
+Message-ID: <20211005154029.46f9c596@gandalf.local.home>
+In-Reply-To: <srqsppq-p657-43qq-np31-pq5pp03271r6@vanv.qr>
+References: <20211005094728.203ecef2@gandalf.local.home>
+        <ef5b1654-1f75-da82-cab8-248319efbe3f@rasmusvillemoes.dk>
+        <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>
+        <826o327o-3r46-3oop-r430-8qr0ssp537o3@vanv.qr>
+        <20211005144002.34008ea0@gandalf.local.home>
+        <srqsppq-p657-43qq-np31-pq5pp03271r6@vanv.qr>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20211005110642.3744-13-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/5/21 2:06 PM, Biju Das wrote:
+On Tue, 5 Oct 2021 21:06:36 +0200 (CEST)
+Jan Engelhardt <jengelh@inai.de> wrote:
 
-> This patch update/add the following comments
+> On Tuesday 2021-10-05 20:40, Steven Rostedt wrote:
+> >>   
+> >> >>>> typeof(*p) *________p1 = (typeof(*p) *__force)READ_ONCE(p);    
+> >> 
+> >> #define static_cast(type, expr) ((struct { type x; }){(expr)}.x)
+> >> typeof(p) p1 = (typeof(p) __force)static_cast(void *, READ_ONCE(p));
+> >> 
+> >> Let the name not fool you; it's absolutely _not_ the same as C++'s 
+> >> static_cast, but still: it does emit a warning when you do pass an 
+> >> integer, which is better than no warning at all in that case.
+> >> 
+> >>  *flies away*  
+> >
+> >Are you suggesting I should continue this exercise ;-)  
 > 
-> 1) Fix the typo AVB->DMAC in comment, as the code following the comment
->    is for GbEthernet DMAC in ravb_dmac_init_gbeth()
-
-   ; not needed at the end of the comment. :-)
-
+> “After all, why not?”
 > 
-> 2) Update the comment "PAUSE prohibition"-> "EMAC Mode: PAUSE
->    prohibition; Duplex; TX; RX;" in ravb_emac_init_gbeth()
-> 
-> 3) Document PFRI register bit, as it is only supported for
->    R-Car Gen3 and RZ/G2L.
+> typeof(p) p1 = (typeof(p) __force)READ_ONCE(p) +
+>                BUILD_BUG_ON_EXPR(__builtin_classify_type(p) != 5);
 
-   Not a good idea to do 3 different things in 1 patch... I know I said that (2) isn't worth
-a separate patch but I meant that it shouldbe done as a part of a lrger ravb_emac_init_gbeth()
-change. Sorry for not being clear enough...
+I may try it, because exposing the structure I want to hide, is pulling out
+a lot of other crap with it :-p
 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> RFC changes:
->  * New patch.
-> ---
->  drivers/net/ethernet/renesas/ravb.h      | 2 +-
->  drivers/net/ethernet/renesas/ravb_main.c | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
+struct trace_pid_list {
+	raw_spinlock_t			lock;
+	struct irq_work			refill_irqwork;
+	union upper_chunk		*upper[UPPER1_SIZE]; // 1 or 2K in size
+	union upper_chunk		*upper_list;
+	union lower_chunk		*lower_list;
+	int				free_upper_chunks;
+	int				free_lower_chunks;
+};
 
-[...]
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index dfbbda3681f8..4a057005a470 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -519,7 +519,7 @@ static void ravb_emac_init_gbeth(struct net_device *ndev)
->  	/* Receive frame limit set register */
->  	ravb_write(ndev, GBETH_RX_BUFF_MAX + ETH_FCS_LEN, RFLR);
->  
-> -	/* PAUSE prohibition */
-> +	/* EMAC Mode: PAUSE prohibition; Duplex; TX; RX; */
+I can still abstract out the unions, but this means I need to also pull out
+the define of "UPPER1_SIZE". Not to mention, I need to make sure irq_work
+and spin locks are defined.
 
-   No need for ; after RX.
+Another approach is to have it return:
 
-[...]
+struct trace_pid_list {
+	unsigned long		ignore;
+};
 
-MBR, Sergey
+Rename the above struct trace_pid_list to struct trace_pid_internal.
+
+And internally have:
+
+union trace_pid_data {
+	struct trace_pid_list		external;
+	struct trace_pid_internal	internal;
+};
+
+Then use the internal version within the C file that modifies it, and just
+return a pointer to the external part.
+
+That should follow the "C standard".
+
+-- Steve
