@@ -2,130 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4DE0422BF2
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 17:10:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F9A8422C24
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 17:15:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235734AbhJEPMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 11:12:41 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:51151 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235090AbhJEPMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 11:12:36 -0400
-Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 377B5200F49A;
-        Tue,  5 Oct 2021 17:10:44 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 377B5200F49A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1633446644;
-        bh=I0nEP8vfKGW6TukYOp64csYtSH20p6E70bEMluuQCHc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jQDFk5iQXIpXpBhBapqVThyTc64ZYtyKvyjdQVqry5j7rygctXVFnI0vSotblh65Q
-         Vbqlj5P/VnqGtCI0cXsedhw9ltXJG2pIlcidaDlbkYefCN8oVcbYc784X8bilvHfqD
-         EOdTOhHLUhp+bhgl5Fv6NUP+o445csMnBrysmSW+vA9kH4u1T23HLMghsd1sjV2URW
-         LRrL0dF+lu5cugJVnwC4BD5bENRpeyUwUf1zd7SkjyzmtokG7pOgrfbTtE63eDmRFm
-         GwFhTyA+eiyS12uQhC4tvtjHbAQ5zEGh+wsONKnnVa/FYISnqG2J1SyKPwsAV+uFSY
-         ZhyUM6wciS/QQ==
-From:   Justin Iurman <justin.iurman@uliege.be>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, dsahern@kernel.org,
-        stephen@networkplumber.org, justin.iurman@uliege.be
-Subject: [PATCH iproute2-next v2 2/2] Update documentation
-Date:   Tue,  5 Oct 2021 17:10:20 +0200
-Message-Id: <20211005151020.32533-3-justin.iurman@uliege.be>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211005151020.32533-1-justin.iurman@uliege.be>
-References: <20211005151020.32533-1-justin.iurman@uliege.be>
+        id S235852AbhJEPRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 11:17:05 -0400
+Received: from mail.efficios.com ([167.114.26.124]:55550 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231513AbhJEPRE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 11:17:04 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id EE21B38D87B;
+        Tue,  5 Oct 2021 11:15:12 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id kZ6Ruhz5_vwz; Tue,  5 Oct 2021 11:15:12 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 771A738DEA5;
+        Tue,  5 Oct 2021 11:15:12 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 771A738DEA5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1633446912;
+        bh=F2x+Hi5WGEvzSTS/iYSt+2Kq3IbtXMx7Ua5K43Tf+8Q=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=fWZyv80Hc57O72INVh6dzebvppxNTTpSCWD6RX6UcVz0TCIG7KNJFBruatsJlbExw
+         a8m1LH2syppBinNohKsGX7Let/OXR1df6ma27SCVmH/cJOlyEpjOnjXwgezNfnyBtT
+         Ysfzbmm+lo0m6osH+K1EFWYLctbOmd5Blockkwo7Y10QWtKV+RwuP+99Djm81eXW80
+         KKtj5gqs35x3yuV0hBt3DwAHpdU+xi2TuYGECth+9gfop5OvVk2mBE8x9LiSpqNf43
+         YxLhniS72qCXG3Dxuv3pvMVdS43CxGasiiw7HWsLrHsg5K6ejL9ZnYlk9EpHxqrs7h
+         h/K7AP6Vrbjjg==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id tJJJRKMZDi4F; Tue,  5 Oct 2021 11:15:12 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 5A3A838DE3F;
+        Tue,  5 Oct 2021 11:15:12 -0400 (EDT)
+Date:   Tue, 5 Oct 2021 11:15:12 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     rostedt <rostedt@goodmis.org>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Paul <paulmck@linux.vnet.ibm.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        "Joel Fernandes, Google" <joel@joelfernandes.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        coreteam@netfilter.org, netdev <netdev@vger.kernel.org>
+Message-ID: <505004021.2637.1633446912223.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20211005094728.203ecef2@gandalf.local.home>
+References: <20211005094728.203ecef2@gandalf.local.home>
+Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4156 (ZimbraWebClient - FF92 (Linux)/8.8.15_GA_4156)
+Thread-Topic: Use typeof(p) instead of typeof(*p) *
+Thread-Index: 7dSlbpn4ImaK0wI9+IMWa3C1UuJxjA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch updates the IOAM documentation (ip-route man page) to reflect the
-three encap modes that were introduced.
+----- On Oct 5, 2021, at 9:47 AM, rostedt rostedt@goodmis.org wrote:
+[...]
+> #define rcu_dereference_raw(p) \
+> ({ \
+> 	/* Dependency order vs. p above. */ \
+> 	typeof(p) ________p1 = READ_ONCE(p); \
+> -	((typeof(*p) __force __kernel *)(________p1)); \
+> +	((typeof(p) __force __kernel)(________p1)); \
+> })
 
-Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
----
- man/man8/ip-route.8.in | 39 ++++++++++++++++++++++++++++++++-------
- 1 file changed, 32 insertions(+), 7 deletions(-)
+AFAIU doing so removes validation that @p is indeed a pointer, so a user might mistakenly
+try to use rcu_dereference() on an integer, and get away with it. I'm not sure we want to
+loosen this check. I wonder if there might be another way to achieve the same check without
+requiring the structure to be declared, e.g. with __builtin_types_compatible_p ?
 
-diff --git a/man/man8/ip-route.8.in b/man/man8/ip-route.8.in
-index c9a9cbf1..ed628455 100644
---- a/man/man8/ip-route.8.in
-+++ b/man/man8/ip-route.8.in
-@@ -246,13 +246,17 @@ throw " | " unreachable " | " prohibit " | " blackhole " | " nat " ]"
- .ti -8
- .IR ENCAP_IOAM6 " := "
- .B ioam6
--.BR trace
--.BR prealloc
--.BR type
-+.BR mode " [ "
-+.BR inline " | " encap " | " auto " ] ["
-+.B tundst
-+.IR ADDRESS " ] "
-+.B trace
-+.B prealloc
-+.B type
- .IR IOAM6_TRACE_TYPE
--.BR ns
-+.B ns
- .IR IOAM6_NAMESPACE
--.BR size
-+.B size
- .IR IOAM6_TRACE_SIZE
- 
- .ti -8
-@@ -915,14 +919,35 @@ address is set as described in \fBip-sr\fR(8).
- 
- .B ioam6
- .in +2
-+.B mode inline
-+- Directly insert IOAM after IPv6 header (default mode).
-+.sp
-+
-+.B mode encap
-+- Encapsulate packet in an outer IPv6 header with IOAM.
-+.sp
-+
-+.B mode auto
-+- Automatically use inline mode for local packets and encap mode for in-transit
-+packets.
-+.sp
-+
-+.B tundst
-+.I ADDRESS
-+- IPv6 address of the tunnel destination (outer header), not used with inline
-+mode.
-+
-+.B type
- .I IOAM6_TRACE_TYPE
- - List of IOAM data required in the trace, represented by a bitfield (24 bits).
- .sp
- 
-+.B ns
- .I IOAM6_NAMESPACE
- - Numerical value to represent an IOAM namespace. See \fBip-ioam\fR(8).
- .sp
- 
-+.B size
- .I IOAM6_TRACE_SIZE
- - Size, in octets, of the pre-allocated trace data block.
- .in -4
-@@ -1249,9 +1274,9 @@ ip -6 route add 2001:db8:1::/64 encap seg6local action End.DT46 vrftable 100 dev
- Adds an IPv6 route with SRv6 decapsulation and forward with lookup in VRF table.
- .RE
- .PP
--ip -6 route add 2001:db8:1::/64 encap ioam6 trace prealloc type 0x800000 ns 1 size 12 dev eth0
-+ip -6 route add 2001:db8:1::/64 encap ioam6 mode encap tundst 2001:db8:42::1 trace prealloc type 0x800000 ns 1 size 12 dev eth0
- .RS 4
--Adds an IPv6 route with an IOAM Pre-allocated Trace encapsulation that only includes the hop limit and the node id, configured for the IOAM namespace 1 and a pre-allocated data block of 12 octets.
-+Adds an IPv6 route with an IOAM Pre-allocated Trace encapsulation (ip6ip6) that only includes the hop limit and the node id, configured for the IOAM namespace 1 and a pre-allocated data block of 12 octets.
- .RE
- .PP
- ip route add 10.1.1.0/30 nhid 10
+Thanks,
+
+Mathieu
+
 -- 
-2.25.1
-
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
