@@ -2,87 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 062824222F8
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 12:00:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1B2E42230F
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 12:06:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233782AbhJEKBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 06:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
+        id S233904AbhJEKIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 06:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233289AbhJEKBu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 06:01:50 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B033DC06161C;
-        Tue,  5 Oct 2021 02:59:59 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id z20so24823151edc.13;
-        Tue, 05 Oct 2021 02:59:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8Q2qP0gzBKg31ibi+4OJDDQ+9ysa+79XE1gm8GYKlvs=;
-        b=gAoZ7mA7pfJjCKGPFHf5qr8gaemT91vhSRvOnV9IxZlj5r0ZQoGCJYVE1chCYyWWi3
-         tl9sWHOWitYa21kOPfs/CcrF2/9bFFhRU4KSBgVy5LXKREoisblr89q4KQH8MtEBhMqa
-         fXezmSEk3aacvnam7dCXcNnvdvqBnPljvJmh4ou/G5fKbd9V6EugS2LByIiso+XNw8uX
-         t208+yOzwTyyQqTW7rWcB6SeGuTL9HwRLNwjxEMDOCSNX6T31qy8PHFfAi94tcZEqmU5
-         iBwONQeDaUkWIJt5PkrFacCxUr+Lw2sf2lE+GQORB8t6QMTAp5tmDUsjLnJvTDvsqgRp
-         FJnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8Q2qP0gzBKg31ibi+4OJDDQ+9ysa+79XE1gm8GYKlvs=;
-        b=6s3jbTmxRCBLMNvA70FnZeeR8Ys5seq/5YHmGvZhbO0g5/s1zCD7NF7wcrkwN8JMpA
-         0m4Ch3SNlFNfp/irkCA6neAS+1EIbHJiQofrs+VKZdB8Fp3VKOVzkr2lJ2S9w+1ZMdEA
-         3wG4N0tg7yXfxJRQ5bCLsTOgbmlTQMGWJ0z+3pEv0f8r+dgkXtbs+pCDXg4TmGicEHNP
-         6uC3k2zXXNuBGWaqisvqyu9XM6Y15mhi89imp6uxBR2+i9w72pKfEvdZUliHR6QaqeEp
-         AtiYJlPZb5gdf1Mic3D8EKwe3AUcYxc/ueZ9V/PvjxNz2J/oi1j3NXTtndW5TheGvxjJ
-         iNEg==
-X-Gm-Message-State: AOAM530ZkNnVtjdoeRUDMRLPggYkjclcYJLKpgliVFWJcv72EbB6TFbB
-        kFGXHieH5Tf5P4wopHkCX55zlU6bc4k=
-X-Google-Smtp-Source: ABdhPJygwlimuv2iotPwCebh/g+Ywp0VWJmwIMEWYH/by9cphPLfHhZpJQTL1KD01gMDUi9u7ORhZQ==
-X-Received: by 2002:a50:cd02:: with SMTP id z2mr6915715edi.241.1633427998050;
-        Tue, 05 Oct 2021 02:59:58 -0700 (PDT)
-Received: from [192.168.0.108] ([176.228.98.2])
-        by smtp.gmail.com with ESMTPSA id j14sm8561322edl.21.2021.10.05.02.59.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Oct 2021 02:59:57 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/4] mlx4: replace mlx4_u64_to_mac() with
- u64_to_ether_addr()
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, tariqt@nvidia.com, yishaih@nvidia.com,
-        linux-rdma@vger.kernel.org
-References: <20211004191446.2127522-1-kuba@kernel.org>
- <20211004191446.2127522-3-kuba@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Message-ID: <7b1b45b5-546c-2ce3-a5d9-e8463ba588b3@gmail.com>
-Date:   Tue, 5 Oct 2021 12:59:55 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S233784AbhJEKIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 06:08:01 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1F0C06161C;
+        Tue,  5 Oct 2021 03:06:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=x5LyrEZtyTYgVW8P7eEdPEoGjAnPMtn7SJqGAKJ+WAM=; b=xcPaIYgXlOo2smSUYYX6a3wMi+
+        Z3QY34kICgFD+S/huIFroTkxJUAiwbL4z7zZsBhbqviiC8lZ2Ace5P+fx6FwMoo660DfRJvR/GOIl
+        gzTVGFdQdsMxQ6ZafP+x/0tbhoXYFUbFZObP1qt3ViPNghfb2pxRc/PPB0A39wSVA8MiythyYW9A2
+        hayH3VYhxeNhbVK7rQK+M4xQBceIdjhAibAegPmZI1igzduL8UVst9H1LlSFWaP+QKfGCPtEfQ9xV
+        pIW8y+QfBl3Tn9IKlGIXU5WTSBm9tRa6WGizDDaIevuItbW+3GDkO0lBM3dBa/uIu+iVkVMCvkwkv
+        Sp07Fyig==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54950)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mXhKq-00007Y-KF; Tue, 05 Oct 2021 11:06:08 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mXhKo-0008NG-Dp; Tue, 05 Oct 2021 11:06:06 +0100
+Date:   Tue, 5 Oct 2021 11:06:06 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: Re: [RFC net-next PATCH 10/16] net: macb: Move PCS settings to PCS
+ callbacks
+Message-ID: <YVwjjghGcXaEYgY+@shell.armlinux.org.uk>
+References: <20211004191527.1610759-1-sean.anderson@seco.com>
+ <20211004191527.1610759-11-sean.anderson@seco.com>
 MIME-Version: 1.0
-In-Reply-To: <20211004191446.2127522-3-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211004191527.1610759-11-sean.anderson@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 04, 2021 at 03:15:21PM -0400, Sean Anderson wrote:
+> +static void macb_pcs_get_state(struct phylink_pcs *pcs,
+> +			       struct phylink_link_state *state)
+> +{
+> +	struct macb *bp = pcs_to_macb(pcs);
+> +
+> +	if (gem_readl(bp, NCFGR) & GEM_BIT(SGMIIEN))
+> +		state->interface = PHY_INTERFACE_MODE_SGMII;
+> +	else
+> +		state->interface = PHY_INTERFACE_MODE_1000BASEX;
 
+There is no requirement to set state->interface here. Phylink doesn't
+cater for interface changes when reading the state. As documented,
+phylink will set state->interface already before calling this function
+to indicate what interface mode it is currently expecting from the
+hardware.
 
-On 10/4/2021 10:14 PM, Jakub Kicinski wrote:
-> mlx4_u64_to_mac() predates the common helper but doesn't
-> make the argument constant.
-> 
+> +static int macb_pcs_config_an(struct macb *bp, unsigned int mode,
+> +			      phy_interface_t interface,
+> +			      const unsigned long *advertising)
+> +{
+> +	bool changed = false;
+> +	u16 old, new;
+> +
+> +	old = gem_readl(bp, PCSANADV);
+> +	new = phylink_mii_c22_pcs_encode_advertisement(interface, advertising,
+> +						       old);
+> +	if (old != new) {
+> +		changed = true;
+> +		gem_writel(bp, PCSANADV, new);
+> +	}
+> +
+> +	old = new = gem_readl(bp, PCSCNTRL);
+> +	if (mode == MLO_AN_INBAND)
 
-Neither does the argument constant.
+Please use phylink_autoneg_inband(mode) here.
 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->   drivers/net/ethernet/mellanox/mlx4/cmd.c |  2 +-
->   include/linux/mlx4/driver.h              | 10 ----------
->   2 files changed, 1 insertion(+), 11 deletions(-)
-> 
+> +		new |= BMCR_ANENABLE;
+> +	else
+> +		new &= ~BMCR_ANENABLE;
+> +	if (old != new) {
+> +		changed = true;
+> +		gem_writel(bp, PCSCNTRL, new);
+> +	}
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+There has been the suggestion that we should allow in-band AN to be
+disabled in 1000base-X if we're in in-band mode according to the
+ethtool state. I have a patch that adds that.
+
+> +	return changed;
+> +}
+> +
+> +static int macb_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+> +			   phy_interface_t interface,
+> +			   const unsigned long *advertising,
+> +			   bool permit_pause_to_mac)
+> +{
+> +	bool changed = false;
+> +	struct macb *bp = pcs_to_macb(pcs);
+> +	u16 old, new;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&bp->lock, flags);
+> +	old = new = gem_readl(bp, NCFGR);
+> +	if (interface == PHY_INTERFACE_MODE_SGMII) {
+> +		new |= GEM_BIT(SGMIIEN);
+> +	} else if (interface == PHY_INTERFACE_MODE_1000BASEX) {
+> +		new &= ~GEM_BIT(SGMIIEN);
+> +	} else {
+> +		spin_lock_irqsave(&bp->lock, flags);
+> +		return -EOPNOTSUPP;
+
+You can't actually abort at this point - phylink will print the error
+and carry on regardless. The checking is all done via the validate()
+callback and if that indicates the interface mode is acceptable, then
+it should be accepted.
+
+>  static const struct phylink_pcs_ops macb_phylink_usx_pcs_ops = {
+>  	.pcs_get_state = macb_usx_pcs_get_state,
+>  	.pcs_config = macb_usx_pcs_config,
+> -	.pcs_link_up = macb_usx_pcs_link_up,
+>  };
+>  
+>  static const struct phylink_pcs_ops macb_phylink_pcs_ops = {
+>  	.pcs_get_state = macb_pcs_get_state,
+> -	.pcs_an_restart = macb_pcs_an_restart,
+
+You don't want to remove this. When operating in 1000BASE-X mode, it
+will be called if a restart is required (e.g. macb_pcs_config()
+returning positive, or an ethtool request.) You need to keep the empty
+function. That may also help the diff algorithm to produce a cleaner
+patch too.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
