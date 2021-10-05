@@ -2,67 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82B92422E73
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 18:54:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A9FD422EDE
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 19:15:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236465AbhJEQ4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 12:56:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49258 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235238AbhJEQz7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 12:55:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A3A40611C5;
-        Tue,  5 Oct 2021 16:54:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633452848;
-        bh=EU4i46Iv81JxEqXo49bpEWSTRMwOPurDSU/8ru7L3aM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ax4wzZ+4oeyeFvXuGkok1j702SR7Zd2HW/DOcZgiuRQJ+ASjPpG3dkaBzeC1LAl6O
-         c2Dc+p0oFrLhdGyzaJyoY5OFALaIQ8f44kQjs+lW4SBvVK7MSOew2lJWFg0CSQRox4
-         nEa0J+LZjqrq4GDHmHVMpER0c17OCXUeLbtH1uGoF9o/yG9SusLol6Bw/LOS+r67Zm
-         gq4PqPbxXPQK/gJndh8Rb9ZjRDGA/+m8QSks4BnInIdmC4USqSt315gWOWd2+clK3g
-         VApdE+uEjwpExHAdOr59yIrNuuch0K4r9D4j9hfZXJ3LRxjQNYIiQWRuxtweD2+i5N
-         sLwoOOo+W7yuQ==
-Date:   Tue, 5 Oct 2021 09:54:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 1/4] of: net: add a helper for loading
- netdev->dev_addr
-Message-ID: <20211005095408.2adcb2e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAL_JsqLGtfQgpVqSGN-HsTmeRQnbZ0vrOv2y6PprPx373-tVfg@mail.gmail.com>
-References: <20211005155321.2966828-1-kuba@kernel.org>
-        <20211005155321.2966828-2-kuba@kernel.org>
-        <CAL_Jsq+HsW-dpUxC2Sz-FhgHgRonhanX2LgUVHiNZYfZS81iBQ@mail.gmail.com>
-        <20211005092956.44eb4d3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAL_JsqLGtfQgpVqSGN-HsTmeRQnbZ0vrOv2y6PprPx373-tVfg@mail.gmail.com>
+        id S236605AbhJERRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 13:17:36 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:49550 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S234459AbhJERRg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 13:17:36 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 195FuNX5026580;
+        Tue, 5 Oct 2021 10:15:44 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=ODzWgPgY/UOcdL/xxI5MZHqqI5o/7wF30J7IX2H0DNQ=;
+ b=bL5RpLBOHSDcmUsbrDDFA/xxPMkpINID94pw6HSAG+b8GZdk0rOgeGsFf6YIvtVQsTuN
+ FNynxaALohIZHDS+33aHjkgS177ae23+d9T2K1+92mrsvJ+jzuPXTsZwvOTfwkdBJ/07
+ fuCCRFhDZAP8miLgW9xtCvuL4JwP5QeNmUnrpun9aLGqoHyvEGg+YanvJmdQK1c2qMFe
+ yhnI9dDkNwiTuwyqA7QL+oB9RnjXixxbNIoVyIUNs9Tu3XOOu1HnOZ7S5Ra1TZR6Z7t1
+ Rb7Q/9ucZFZli3kSK4eXZnEHg35IeCs25PKq3sTMZZ3vA6pobspAocYA8bCe5oHQ2hDE Tw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3bgmv5t48n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 05 Oct 2021 10:15:44 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 5 Oct
+ 2021 10:15:42 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 5 Oct 2021 10:15:42 -0700
+Received: from hyd1358.marvell.com (unknown [10.29.37.11])
+        by maili.marvell.com (Postfix) with ESMTP id 6AC373F707C;
+        Tue,  5 Oct 2021 10:15:40 -0700 (PDT)
+From:   Subbaraya Sundeep <sbhatta@marvell.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <hkelam@marvell.com>, <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [net-next PATCH 0/3] Add devlink params to vary cqe and rbuf
+Date:   Tue, 5 Oct 2021 22:45:33 +0530
+Message-ID: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-GUID: lUw1QPkgpgSwqCRiFTPBWyLnycn5-upv
+X-Proofpoint-ORIG-GUID: lUw1QPkgpgSwqCRiFTPBWyLnycn5-upv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-10-05_03,2021-10-04_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Oct 2021 11:39:39 -0500 Rob Herring wrote:
-> On Tue, Oct 5, 2021 at 11:29 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Tue, 5 Oct 2021 11:15:48 -0500 Rob Herring wrote:  
-> > > Can we move this file to drivers/net/ given it's always merged via the
-> > > net tree? It's also the only thing left not part of the driver
-> > > subsystems.  
-> >
-> > Hm, our driver core historically lives under net/core, not drivers/net,
-> > how about drivers/of/of_net.c -> net/core/of_net.c ?  
-> 
-> Sure.
+Octeontx2 hardware writes a Completion Queue Entry(CQE) in the
+memory provided by software when a packet is received or
+transmitted. CQE has the buffer pointers (IOVAs) where the
+packet data fragments are written by hardware. One 128 byte
+CQE can hold 6 buffer pointers and a 512 byte CQE can hold
+42 buffer pointers. Hence large packets can be received either
+by using 512 byte CQEs or by increasing size of receive buffers.
+Current driver only supports 128 byte CQEs.
+This patchset adds devlink params to change CQE and receive
+buffer sizes which inturn helps to tune whether many small size
+buffers or less big size buffers are needed to receive larger
+packets. Below is the patches description:
 
-I'll send out the rename as soon as this gets merged. If anyone has 
-a different idea on where to move this code please chime in.
+Patch 1 - This prepares for 512 byte CQE operation by
+seperating out transmit side and receive side config.
+Also simplifies existing rbuf size calculation.
+
+Patch 2 - Adds devlink param to change cqe. Basically
+sets new config and toggles interface to cleanup and init properly.
+
+Patch 3 - Similar to patch 2 and adds devlink param to
+change receive buffer size
+
+
+Thanks,
+Sundeep
+
+
+Subbaraya Sundeep (3):
+  octeontx2-pf: Simplify the receive buffer size calculation
+  octeontx2-pf: Add devlink param to vary cqe size
+  octeontx2-pf: Add devlink param to vary rbuf size
+
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  20 ++--
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   4 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_devlink.c  | 116 +++++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  24 +++--
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  30 ++++--
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   4 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |   7 ++
+ 7 files changed, 176 insertions(+), 29 deletions(-)
+
+-- 
+2.7.4
+
