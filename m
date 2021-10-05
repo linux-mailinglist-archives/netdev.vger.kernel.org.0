@@ -2,184 +2,336 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6EA2422827
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 15:43:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CBA342283E
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 15:47:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235087AbhJENpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 09:45:13 -0400
-Received: from mx2.uni-regensburg.de ([194.94.157.147]:36876 "EHLO
-        mx2.uni-regensburg.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233942AbhJENpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 09:45:10 -0400
-Received: from mx2.uni-regensburg.de (localhost [127.0.0.1])
-        by localhost (Postfix) with SMTP id 57734600004A;
-        Tue,  5 Oct 2021 15:43:17 +0200 (CEST)
-Received: from smtp1.uni-regensburg.de (smtp1.uni-regensburg.de [194.94.157.129])
+        id S235089AbhJENtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 09:49:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57176 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233077AbhJENtV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 09:49:21 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "smtp.uni-regensburg.de", Issuer "DFN-Verein Global Issuing CA" (not verified))
-        by mx2.uni-regensburg.de (Postfix) with ESMTPS id 15076600004E;
-        Tue,  5 Oct 2021 15:43:13 +0200 (CEST)
-From:   "Andreas K. Huettel" <andreas.huettel@ur.de>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        Jakub Kicinski <kubakici@wp.pl>
-Subject: Re: [EXT] Re: [Intel-wired-lan] Intel I350 regression 5.10 -> 5.14 ("The NVM Checksum Is Not Valid") [8086:1521]
-Date:   Tue, 05 Oct 2021 15:43:08 +0200
-Message-ID: <2944777.ktpJ11cQ8Q@pinacolada>
-Organization: Universitaet Regensburg
-In-Reply-To: <35dfc9e8-431c-362d-450e-4c6ac1e55434@molgen.mpg.de>
-References: <1823864.tdWV9SEqCh@kailua> <20211004074814.5900791a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <35dfc9e8-431c-362d-450e-4c6ac1e55434@molgen.mpg.de>
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D191961244;
+        Tue,  5 Oct 2021 13:47:29 +0000 (UTC)
+Date:   Tue, 5 Oct 2021 09:47:28 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, rcu@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
+Message-ID: <20211005094728.203ecef2@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart2159422.HovnAMPojK"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart2159422.HovnAMPojK
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"; protected-headers="v1"
-From: "Andreas K. Huettel" <andreas.huettel@ur.de>
-To: Paul Menzel <pmenzel@molgen.mpg.de>
-Cc: netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kubakici@wp.pl>
-Subject: Re: [EXT] Re: [Intel-wired-lan] Intel I350 regression 5.10 -> 5.14 ("The NVM Checksum Is Not Valid") [8086:1521]
-Date: Tue, 05 Oct 2021 15:43:08 +0200
-Message-ID: <2944777.ktpJ11cQ8Q@pinacolada>
-Organization: Universitaet Regensburg
-In-Reply-To: <35dfc9e8-431c-362d-450e-4c6ac1e55434@molgen.mpg.de>
-References: <1823864.tdWV9SEqCh@kailua> <20211004074814.5900791a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <35dfc9e8-431c-362d-450e-4c6ac1e55434@molgen.mpg.de>
+From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
 
->=20
-> What messages are new compared to the working Linux 5.10.59?
->=20
+After moving a structure into a local file and only declaring it for users
+of that structure to have just a pointer to it, some compilers gave this error:
 
-I've uploaded the full boot logs to https://dev.gentoo.org/~dilfridge/igb/
-(both in a version with and without timestamps, for easy diff).
+kernel/trace/ftrace.c: In function 'ftrace_filter_pid_sched_switch_probe':
+include/linux/rcupdate.h:389:9: error: dereferencing pointer to incomplete type 'struct trace_pid_list'
+  typeof(*p) *________p1 = (typeof(*p) *__force)READ_ONCE(p); \
+         ^
+include/linux/rcupdate.h:558:2: note: in expansion of macro '__rcu_dereference_check'
+  __rcu_dereference_check((p), (c) || rcu_read_lock_sched_held(), \
+  ^~~~~~~~~~~~~~~~~~~~~~~
+include/linux/rcupdate.h:612:34: note: in expansion of macro 'rcu_dereference_sched_check'
+ #define rcu_dereference_sched(p) rcu_dereference_sched_check(p, 0)
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+kernel/trace/ftrace.c:7101:13: note: in expansion of macro 'rcu_dereference_sched'
+  pid_list = rcu_dereference_sched(tr->function_pids);
+             ^~~~~~~~~~~~~~~~~~~~~
 
-* I can't see anything that immediately points to the igb device (like a PC=
-I id etc.) before the module is loaded.=20
-* The main difference between the logs is many unrelated (?) i915 warnings =
-in 5.10.59 because of the nonfunctional graphics.
+The reason is that rcu_dereference_sched() has a check that uses
+typeof(*p) of the pointer passed to it. But here, the pointer is of type
+"struct trace_pid_list *" which is abstracted out, and nothing outside of
+pid_list.c should care what the content of it is. But the check uses
+typeof(*p) and on some (not all) compilers, it errors with the
+dereferencing pointer to incomplete type, which is totally bogus here.
 
-The messages easily identifiable are:
+Since the logic creates a pointer of each of these instances of
+typeof(*p), just use typeof(p).
 
-huettel@pinacolada ~/tmp $ cat kernel-messages-5.10.59.txt |grep igb
-Oct  5 15:11:18 dilfridge kernel: [    2.090675] igb: Intel(R) Gigabit Ethe=
-rnet Network Driver
-Oct  5 15:11:18 dilfridge kernel: [    2.090676] igb: Copyright (c) 2007-20=
-14 Intel Corporation.
-Oct  5 15:11:18 dilfridge kernel: [    2.090728] igb 0000:01:00.0: enabling=
- device (0000 -> 0002)
-Oct  5 15:11:18 dilfridge kernel: [    2.094438] Modules linked in: igb(+) =
-i915(+) iosf_mbi acpi_pad efivarfs
-Oct  5 15:11:18 dilfridge kernel: [    2.097287] Modules linked in: igb(+) =
-i915(+) iosf_mbi acpi_pad efivarfs
-Oct  5 15:11:18 dilfridge kernel: [    2.098492] Modules linked in: igb(+) =
-i915(+) iosf_mbi acpi_pad efivarfs
-Oct  5 15:11:18 dilfridge kernel: [    2.098787] Modules linked in: igb(+) =
-i915(+) iosf_mbi acpi_pad efivarfs
-Oct  5 15:11:18 dilfridge kernel: [    2.173386] igb 0000:01:00.0: added PH=
-C on eth0
-Oct  5 15:11:18 dilfridge kernel: [    2.173391] igb 0000:01:00.0: Intel(R)=
- Gigabit Ethernet Network Connection
-Oct  5 15:11:18 dilfridge kernel: [    2.173395] igb 0000:01:00.0: eth0: (P=
-CIe:5.0Gb/s:Width x4) 6c:b3:11:23:d4:4c
-Oct  5 15:11:18 dilfridge kernel: [    2.173991] igb 0000:01:00.0: eth0: PB=
-A No: H47819-001
-Oct  5 15:11:18 dilfridge kernel: [    2.173994] igb 0000:01:00.0: Using MS=
-I-X interrupts. 8 rx queue(s), 8 tx queue(s)
-Oct  5 15:11:18 dilfridge kernel: [    2.174199] igb 0000:01:00.1: enabling=
- device (0000 -> 0002)
-Oct  5 15:11:18 dilfridge kernel: [    2.261029] igb 0000:01:00.1: added PH=
-C on eth1
-Oct  5 15:11:18 dilfridge kernel: [    2.261034] igb 0000:01:00.1: Intel(R)=
- Gigabit Ethernet Network Connection
-Oct  5 15:11:18 dilfridge kernel: [    2.261038] igb 0000:01:00.1: eth1: (P=
-CIe:5.0Gb/s:Width x4) 6c:b3:11:23:d4:4d
-Oct  5 15:11:18 dilfridge kernel: [    2.261772] igb 0000:01:00.1: eth1: PB=
-A No: H47819-001
-Oct  5 15:11:18 dilfridge kernel: [    2.261776] igb 0000:01:00.1: Using MS=
-I-X interrupts. 8 rx queue(s), 8 tx queue(s)
-Oct  5 15:11:18 dilfridge kernel: [    2.265376] igb 0000:01:00.1 enp1s0f1:=
- renamed from eth1
-Oct  5 15:11:18 dilfridge kernel: [    2.282514] igb 0000:01:00.0 enp1s0f0:=
- renamed from eth0
-Oct  5 15:11:31 dilfridge kernel: [   17.585202] igb 0000:01:00.0 enp1s0f0:=
- igb: enp1s0f0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+That is, instead of declaring: typeof(*p) *_p; just do:
+ typeof(p) _p;
 
-huettel@pinacolada ~/tmp $ cat kernel-messages-5.14.9.txt |grep igb
-Oct  5 02:38:31 dilfridge kernel: [    2.108606] igb: Intel(R) Gigabit Ethe=
-rnet Network Driver
-Oct  5 02:38:31 dilfridge kernel: [    2.108608] igb: Copyright (c) 2007-20=
-14 Intel Corporation.
-Oct  5 02:38:31 dilfridge kernel: [    2.108622] igb 0000:01:00.0: can't ch=
-ange power state from D3cold to D0 (config space inaccessible)
-Oct  5 02:38:31 dilfridge kernel: [    2.108918] igb 0000:01:00.0 0000:01:0=
-0.0 (uninitialized): PCIe link lost
-Oct  5 02:38:31 dilfridge kernel: [    2.418724] igb 0000:01:00.0: PHY rese=
-t is blocked due to SOL/IDER session.
-Oct  5 02:38:31 dilfridge kernel: [    4.148163] igb 0000:01:00.0: The NVM =
-Checksum Is Not Valid
-Oct  5 02:38:31 dilfridge kernel: [    4.154891] igb: probe of 0000:01:00.0=
- failed with error -5
-Oct  5 02:38:31 dilfridge kernel: [    4.154904] igb 0000:01:00.1: can't ch=
-ange power state from D3cold to D0 (config space inaccessible)
-Oct  5 02:38:31 dilfridge kernel: [    4.155146] igb 0000:01:00.1 0000:01:0=
-0.1 (uninitialized): PCIe link lost
-Oct  5 02:38:31 dilfridge kernel: [    4.466904] igb 0000:01:00.1: PHY rese=
-t is blocked due to SOL/IDER session.
-Oct  5 02:38:31 dilfridge kernel: [    6.195528] igb 0000:01:00.1: The NVM =
-Checksum Is Not Valid
-Oct  5 02:38:31 dilfridge kernel: [    6.200863] igb: probe of 0000:01:00.1=
- failed with error -5
+Also had to update a lot of the function pointer initialization in the
+networking code, as a function address must be passed as an argument in
+RCU_INIT_POINTER() and not just the function name, otherwise the following
+error occurs:
 
+In file included from ./arch/x86/include/generated/asm/rwonce.h:1,
+                 from ./include/linux/compiler.h:266,
+                 from ./include/linux/init.h:5,
+                 from ./include/linux/netfilter.h:5,
+                 from ./net/netfilter/nf_conntrack_core.c:15:
+./net/netfilter/nf_conntrack_core.c: In function 'nf_conntrack_init_end':
+./include/linux/rcupdate.h:411:28: error: cast specifies function type
+ #define RCU_INITIALIZER(v) (typeof((v)) __force __rcu)(v)
+                            ^
+./include/asm-generic/rwonce.h:55:33: note: in definition of macro '__WRITE_ONCE'
+  *(volatile typeof(x) *)&(x) = (val);    \
+                                 ^~~
+./include/linux/rcupdate.h:853:3: note: in expansion of macro 'WRITE_ONCE'
+   WRITE_ONCE(p, RCU_INITIALIZER(v)); \
+   ^~~~~~~~~~
+./include/linux/rcupdate.h:853:17: note: in expansion of macro 'RCU_INITIALIZER'
+   WRITE_ONCE(p, RCU_INITIALIZER(v)); \
+                 ^~~~~~~~~~~~~~~
+./net/netfilter/nf_conntrack_core.c:2736:2: note: in expansion of macro 'RCU_INIT_POINTER'
+  RCU_INIT_POINTER(ip_ct_attach, nf_conntrack_attach);
+  ^~~~~~~~~~~~~~~~
 
-> >> Any advice on how to proceed? Willing to test patches and provide addi=
-tional debug info.
->=20
-> Without any ideas about the issue, please bisect the issue to find the=20
-> commit introducing the regression, so it can be reverted/fixed to not=20
-> violate Linux=E2=80=99 no-regression policy.
+Link: https://lore.kernel.org/all/20211002195718.0b5d9b67@oasis.local.home/
 
-I'll start going through kernel versions (and later revisions) end of the w=
-eek.
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ include/linux/rcupdate.h                    | 20 ++++++++++----------
+ net/ipv4/netfilter/nf_nat_h323.c            | 18 +++++++++---------
+ net/ipv4/netfilter/nf_nat_pptp.c            |  8 ++++----
+ net/ipv4/netfilter/nf_nat_snmp_basic_main.c |  2 +-
+ net/netfilter/nf_conntrack_core.c           |  2 +-
+ net/netfilter/nf_nat_amanda.c               |  2 +-
+ net/netfilter/nf_nat_ftp.c                  |  2 +-
+ net/netfilter/nf_nat_irc.c                  |  2 +-
+ net/netfilter/nf_nat_tftp.c                 |  2 +-
+ net/netfilter/nfnetlink_cttimeout.c         |  4 ++--
+ 10 files changed, 31 insertions(+), 31 deletions(-)
 
-Thanks a lot,
-Andreas
-
-
-=2D-=20
-PD Dr. Andreas K. Huettel
-Institute for Experimental and Applied Physics
-University of Regensburg
-93040 Regensburg
-Germany
-
---nextPart2159422.HovnAMPojK
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQKTBAABCgB9FiEE6W4INB9YeKX6Qpi1TEn3nlTQogYFAmFcVmxfFIAAAAAALgAo
-aXNzdWVyLWZwckBub3RhdGlvbnMub3BlbnBncC5maWZ0aGhvcnNlbWFuLm5ldEU5
-NkUwODM0MUY1ODc4QTVGQTQyOThCNTRDNDlGNzlFNTREMEEyMDYACgkQTEn3nlTQ
-ogZcGQ//f8ADOoIyR+L7jh8IOJTOp1WgNbRzwws+OFwC5bzVSV5EDIo6epbNpobs
-+pDuiypqp4XjSbpR9QHULKEDxmRSMClF5FmtXtnV8iR+fRoQJYzYN7SxDD4aTE/D
-QtsZZlEH2JyqvpZR+Zg+EeGFW8RzuOd6f9LRg7zM2d5mYn+qu2F5y8FemZm8maaV
-ZHzMgtFMsCLsr8Yb1J0eNkvPBA6TpR7ehcf9LkZxnNV/OPt1F2VjKzjZqyjHZYC+
-Z2sBOkV6GbGciLwcFPrF/eEcQfhcAiXn+b+sKmSZws/YdALdat5gYB5ingJpl00U
-fHCD70+v/jPyZb5thDFRDcMJFUxhycGiWrP53gsVpRKaU6KF2mREU8Q8LGabMcUu
-uifrDmdXc/Daply5YNr1TTJ1HwU3L8n8A6WMlICEStXu4OH/Y6Q9fkcHBi8xEdNI
-gS2/b3RLF8MFj/oqi5hMdDyIRTmixzBKiJMdqWPtvwmm6L74RLkXeSjHP0svVQTL
-oACTlBJwMpmfj9mUAlDo0oV8yy+9+MjdzKiMuDdsyFQXkwPXzLK5zPNF063HLdrd
-KrdmHEkCsUuni5lKEpJ4P0MLAASLsl7mOUsaBPipzXcoQxQA9mjU1sG16htWw/Wg
-4L49s5gPBRoDOGwV83PifUClyRb5eiljm2898dFPXaFNaN66o+c=
-=7fcw
------END PGP SIGNATURE-----
-
---nextPart2159422.HovnAMPojK--
-
-
+diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+index 434d12fe2d4f..3835ead65094 100644
+--- a/include/linux/rcupdate.h
++++ b/include/linux/rcupdate.h
+@@ -358,7 +358,7 @@ static inline void rcu_preempt_sleep_check(void) { }
+ 
+ #ifdef __CHECKER__
+ #define rcu_check_sparse(p, space) \
+-	((void)(((typeof(*p) space *)p) == p))
++	((void)(((typeof(p) space)p) == p))
+ #else /* #ifdef __CHECKER__ */
+ #define rcu_check_sparse(p, space)
+ #endif /* #else #ifdef __CHECKER__ */
+@@ -372,43 +372,43 @@ static inline void rcu_preempt_sleep_check(void) { }
+  */
+ #define unrcu_pointer(p)						\
+ ({									\
+-	typeof(*p) *_________p1 = (typeof(*p) *__force)(p);		\
++	typeof(p)_________p1 = (typeof(p) __force)(p);			\
+ 	rcu_check_sparse(p, __rcu);					\
+-	((typeof(*p) __force __kernel *)(_________p1)); 		\
++	((typeof(p) __force __kernel)(_________p1));			\
+ })
+ 
+ #define __rcu_access_pointer(p, space) \
+ ({ \
+-	typeof(*p) *_________p1 = (typeof(*p) *__force)READ_ONCE(p); \
++	typeof(p) _________p1 = (typeof(p) __force)READ_ONCE(p); \
+ 	rcu_check_sparse(p, space); \
+-	((typeof(*p) __force __kernel *)(_________p1)); \
++	((typeof(p) __force __kernel)(_________p1)); \
+ })
+ #define __rcu_dereference_check(p, c, space) \
+ ({ \
+ 	/* Dependency order vs. p above. */ \
+-	typeof(*p) *________p1 = (typeof(*p) *__force)READ_ONCE(p); \
++	typeof(p) ________p1 = (typeof(p) __force)READ_ONCE(p); \
+ 	RCU_LOCKDEP_WARN(!(c), "suspicious rcu_dereference_check() usage"); \
+ 	rcu_check_sparse(p, space); \
+-	((typeof(*p) __force __kernel *)(________p1)); \
++	((typeof(p) __force __kernel )(________p1)); \
+ })
+ #define __rcu_dereference_protected(p, c, space) \
+ ({ \
+ 	RCU_LOCKDEP_WARN(!(c), "suspicious rcu_dereference_protected() usage"); \
+ 	rcu_check_sparse(p, space); \
+-	((typeof(*p) __force __kernel *)(p)); \
++	((typeof(p) __force __kernel)(p)); \
+ })
+ #define rcu_dereference_raw(p) \
+ ({ \
+ 	/* Dependency order vs. p above. */ \
+ 	typeof(p) ________p1 = READ_ONCE(p); \
+-	((typeof(*p) __force __kernel *)(________p1)); \
++	((typeof(p) __force __kernel)(________p1)); \
+ })
+ 
+ /**
+  * RCU_INITIALIZER() - statically initialize an RCU-protected global variable
+  * @v: The value to statically initialize with.
+  */
+-#define RCU_INITIALIZER(v) (typeof(*(v)) __force __rcu *)(v)
++#define RCU_INITIALIZER(v) (typeof((v)) __force __rcu)(v)
+ 
+ /**
+  * rcu_assign_pointer() - assign to RCU-protected pointer
+diff --git a/net/ipv4/netfilter/nf_nat_h323.c b/net/ipv4/netfilter/nf_nat_h323.c
+index 3e2685c120c7..88c902141e33 100644
+--- a/net/ipv4/netfilter/nf_nat_h323.c
++++ b/net/ipv4/netfilter/nf_nat_h323.c
+@@ -592,15 +592,15 @@ static int __init init(void)
+ 	BUG_ON(nat_callforwarding_hook != NULL);
+ 	BUG_ON(nat_q931_hook != NULL);
+ 
+-	RCU_INIT_POINTER(set_h245_addr_hook, set_h245_addr);
+-	RCU_INIT_POINTER(set_h225_addr_hook, set_h225_addr);
+-	RCU_INIT_POINTER(set_sig_addr_hook, set_sig_addr);
+-	RCU_INIT_POINTER(set_ras_addr_hook, set_ras_addr);
+-	RCU_INIT_POINTER(nat_rtp_rtcp_hook, nat_rtp_rtcp);
+-	RCU_INIT_POINTER(nat_t120_hook, nat_t120);
+-	RCU_INIT_POINTER(nat_h245_hook, nat_h245);
+-	RCU_INIT_POINTER(nat_callforwarding_hook, nat_callforwarding);
+-	RCU_INIT_POINTER(nat_q931_hook, nat_q931);
++	RCU_INIT_POINTER(set_h245_addr_hook, &set_h245_addr);
++	RCU_INIT_POINTER(set_h225_addr_hook, &set_h225_addr);
++	RCU_INIT_POINTER(set_sig_addr_hook, &set_sig_addr);
++	RCU_INIT_POINTER(set_ras_addr_hook, &set_ras_addr);
++	RCU_INIT_POINTER(nat_rtp_rtcp_hook, &nat_rtp_rtcp);
++	RCU_INIT_POINTER(nat_t120_hook, &nat_t120);
++	RCU_INIT_POINTER(nat_h245_hook, &nat_h245);
++	RCU_INIT_POINTER(nat_callforwarding_hook, &nat_callforwarding);
++	RCU_INIT_POINTER(nat_q931_hook, &nat_q931);
+ 	nf_ct_helper_expectfn_register(&q931_nat);
+ 	nf_ct_helper_expectfn_register(&callforwarding_nat);
+ 	return 0;
+diff --git a/net/ipv4/netfilter/nf_nat_pptp.c b/net/ipv4/netfilter/nf_nat_pptp.c
+index 3f248a19faa3..6a22ffa5e4c7 100644
+--- a/net/ipv4/netfilter/nf_nat_pptp.c
++++ b/net/ipv4/netfilter/nf_nat_pptp.c
+@@ -298,16 +298,16 @@ pptp_inbound_pkt(struct sk_buff *skb,
+ static int __init nf_nat_helper_pptp_init(void)
+ {
+ 	BUG_ON(nf_nat_pptp_hook_outbound != NULL);
+-	RCU_INIT_POINTER(nf_nat_pptp_hook_outbound, pptp_outbound_pkt);
++	RCU_INIT_POINTER(nf_nat_pptp_hook_outbound, &pptp_outbound_pkt);
+ 
+ 	BUG_ON(nf_nat_pptp_hook_inbound != NULL);
+-	RCU_INIT_POINTER(nf_nat_pptp_hook_inbound, pptp_inbound_pkt);
++	RCU_INIT_POINTER(nf_nat_pptp_hook_inbound, &pptp_inbound_pkt);
+ 
+ 	BUG_ON(nf_nat_pptp_hook_exp_gre != NULL);
+-	RCU_INIT_POINTER(nf_nat_pptp_hook_exp_gre, pptp_exp_gre);
++	RCU_INIT_POINTER(nf_nat_pptp_hook_exp_gre, &pptp_exp_gre);
+ 
+ 	BUG_ON(nf_nat_pptp_hook_expectfn != NULL);
+-	RCU_INIT_POINTER(nf_nat_pptp_hook_expectfn, pptp_nat_expected);
++	RCU_INIT_POINTER(nf_nat_pptp_hook_expectfn, &pptp_nat_expected);
+ 	return 0;
+ }
+ 
+diff --git a/net/ipv4/netfilter/nf_nat_snmp_basic_main.c b/net/ipv4/netfilter/nf_nat_snmp_basic_main.c
+index 717b726504fe..2ac36fa86e73 100644
+--- a/net/ipv4/netfilter/nf_nat_snmp_basic_main.c
++++ b/net/ipv4/netfilter/nf_nat_snmp_basic_main.c
+@@ -215,7 +215,7 @@ static struct nf_conntrack_helper snmp_trap_helper __read_mostly = {
+ static int __init nf_nat_snmp_basic_init(void)
+ {
+ 	BUG_ON(nf_nat_snmp_hook != NULL);
+-	RCU_INIT_POINTER(nf_nat_snmp_hook, help);
++	RCU_INIT_POINTER(nf_nat_snmp_hook, &help);
+ 
+ 	return nf_conntrack_helper_register(&snmp_trap_helper);
+ }
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 94e18fb9690d..e243e5695b63 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -2733,7 +2733,7 @@ static struct nf_ct_hook nf_conntrack_hook = {
+ void nf_conntrack_init_end(void)
+ {
+ 	/* For use by REJECT target */
+-	RCU_INIT_POINTER(ip_ct_attach, nf_conntrack_attach);
++	RCU_INIT_POINTER(ip_ct_attach, &nf_conntrack_attach);
+ 	RCU_INIT_POINTER(nf_ct_hook, &nf_conntrack_hook);
+ }
+ 
+diff --git a/net/netfilter/nf_nat_amanda.c b/net/netfilter/nf_nat_amanda.c
+index 3bc7e0854efe..fe077c53e06a 100644
+--- a/net/netfilter/nf_nat_amanda.c
++++ b/net/netfilter/nf_nat_amanda.c
+@@ -84,7 +84,7 @@ static int __init nf_nat_amanda_init(void)
+ {
+ 	BUG_ON(nf_nat_amanda_hook != NULL);
+ 	nf_nat_helper_register(&nat_helper_amanda);
+-	RCU_INIT_POINTER(nf_nat_amanda_hook, help);
++	RCU_INIT_POINTER(nf_nat_amanda_hook, &help);
+ 	return 0;
+ }
+ 
+diff --git a/net/netfilter/nf_nat_ftp.c b/net/netfilter/nf_nat_ftp.c
+index aace6768a64e..d657606b3364 100644
+--- a/net/netfilter/nf_nat_ftp.c
++++ b/net/netfilter/nf_nat_ftp.c
+@@ -135,7 +135,7 @@ static int __init nf_nat_ftp_init(void)
+ {
+ 	BUG_ON(nf_nat_ftp_hook != NULL);
+ 	nf_nat_helper_register(&nat_helper_ftp);
+-	RCU_INIT_POINTER(nf_nat_ftp_hook, nf_nat_ftp);
++	RCU_INIT_POINTER(nf_nat_ftp_hook, &nf_nat_ftp);
+ 	return 0;
+ }
+ 
+diff --git a/net/netfilter/nf_nat_irc.c b/net/netfilter/nf_nat_irc.c
+index c691ab8d234c..4742ed478989 100644
+--- a/net/netfilter/nf_nat_irc.c
++++ b/net/netfilter/nf_nat_irc.c
+@@ -106,7 +106,7 @@ static int __init nf_nat_irc_init(void)
+ {
+ 	BUG_ON(nf_nat_irc_hook != NULL);
+ 	nf_nat_helper_register(&nat_helper_irc);
+-	RCU_INIT_POINTER(nf_nat_irc_hook, help);
++	RCU_INIT_POINTER(nf_nat_irc_hook, &help);
+ 	return 0;
+ }
+ 
+diff --git a/net/netfilter/nf_nat_tftp.c b/net/netfilter/nf_nat_tftp.c
+index 1a591132d6eb..591f4e559c55 100644
+--- a/net/netfilter/nf_nat_tftp.c
++++ b/net/netfilter/nf_nat_tftp.c
+@@ -48,7 +48,7 @@ static int __init nf_nat_tftp_init(void)
+ {
+ 	BUG_ON(nf_nat_tftp_hook != NULL);
+ 	nf_nat_helper_register(&nat_helper_tftp);
+-	RCU_INIT_POINTER(nf_nat_tftp_hook, help);
++	RCU_INIT_POINTER(nf_nat_tftp_hook, &help);
+ 	return 0;
+ }
+ 
+diff --git a/net/netfilter/nfnetlink_cttimeout.c b/net/netfilter/nfnetlink_cttimeout.c
+index c57673d499be..0097e0a65ca2 100644
+--- a/net/netfilter/nfnetlink_cttimeout.c
++++ b/net/netfilter/nfnetlink_cttimeout.c
+@@ -619,8 +619,8 @@ static int __init cttimeout_init(void)
+ 			"nfnetlink.\n");
+ 		goto err_out;
+ 	}
+-	RCU_INIT_POINTER(nf_ct_timeout_find_get_hook, ctnl_timeout_find_get);
+-	RCU_INIT_POINTER(nf_ct_timeout_put_hook, ctnl_timeout_put);
++	RCU_INIT_POINTER(nf_ct_timeout_find_get_hook, &ctnl_timeout_find_get);
++	RCU_INIT_POINTER(nf_ct_timeout_put_hook, &ctnl_timeout_put);
+ 	return 0;
+ 
+ err_out:
+-- 
+2.31.1
 
