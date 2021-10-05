@@ -2,112 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 707A0423077
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 20:59:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8C0442308A
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 21:06:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235015AbhJETBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 15:01:25 -0400
-Received: from mxout02.lancloud.ru ([45.84.86.82]:47558 "EHLO
-        mxout02.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbhJETBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 15:01:24 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru D49AE20747CF
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC 03/12] ravb: Fillup ravb_set_features_gbeth() stub
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        id S235214AbhJETI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 15:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229684AbhJETI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 15:08:28 -0400
+Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3739C061749;
+        Tue,  5 Oct 2021 12:06:37 -0700 (PDT)
+Received: by a3.inai.de (Postfix, from userid 25121)
+        id 21E7D5877C256; Tue,  5 Oct 2021 21:06:36 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by a3.inai.de (Postfix) with ESMTP id 1DD7B60C1CB34;
+        Tue,  5 Oct 2021 21:06:36 +0200 (CEST)
+Date:   Tue, 5 Oct 2021 21:06:36 +0200 (CEST)
+From:   Jan Engelhardt <jengelh@inai.de>
+To:     Steven Rostedt <rostedt@goodmis.org>
+cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Paul <paulmck@linux.vnet.ibm.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        "Joel Fernandes, Google" <joel@joelfernandes.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
- <20211005110642.3744-4-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <17eb621c-05f8-155b-24ed-5445f445c6ce@omp.ru>
-Date:   Tue, 5 Oct 2021 21:59:29 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        coreteam <coreteam@netfilter.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
+In-Reply-To: <20211005144002.34008ea0@gandalf.local.home>
+Message-ID: <srqsppq-p657-43qq-np31-pq5pp03271r6@vanv.qr>
+References: <20211005094728.203ecef2@gandalf.local.home>        <ef5b1654-1f75-da82-cab8-248319efbe3f@rasmusvillemoes.dk>        <639278914.2878.1633457192964.JavaMail.zimbra@efficios.com>        <826o327o-3r46-3oop-r430-8qr0ssp537o3@vanv.qr>
+ <20211005144002.34008ea0@gandalf.local.home>
+User-Agent: Alpine 2.25 (LSU 592 2021-09-18)
 MIME-Version: 1.0
-In-Reply-To: <20211005110642.3744-4-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/5/21 2:06 PM, Biju Das wrote:
 
-> Fillup ravb_set_features_gbeth() function to support RZ/G2L.
-> Also set the net_hw_features bits supported by GbEthernet
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-[...]
+On Tuesday 2021-10-05 20:40, Steven Rostedt wrote:
+>> 
+>> >>>> typeof(*p) *________p1 = (typeof(*p) *__force)READ_ONCE(p);  
+>> 
+>> #define static_cast(type, expr) ((struct { type x; }){(expr)}.x)
+>> typeof(p) p1 = (typeof(p) __force)static_cast(void *, READ_ONCE(p));
+>> 
+>> Let the name not fool you; it's absolutely _not_ the same as C++'s 
+>> static_cast, but still: it does emit a warning when you do pass an 
+>> integer, which is better than no warning at all in that case.
+>> 
+>>  *flies away*
+>
+>Are you suggesting I should continue this exercise ;-)
 
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index ed0328a90200..37f50c041114 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-[...]
-> @@ -2086,7 +2087,37 @@ static void ravb_set_rx_csum(struct net_device *ndev, bool enable)
->  static int ravb_set_features_gbeth(struct net_device *ndev,
->  				   netdev_features_t features)
->  {
-> -	/* Place holder */
-> +	netdev_features_t changed = features ^ ndev->features;
-> +	int error;
-> +	u32 csr0;
-> +
-> +	csr0 = ravb_read(ndev, CSR0);
-> +	ravb_write(ndev, csr0 & ~(CSR0_RPE | CSR0_TPE), CSR0);
-> +	error = ravb_wait(ndev, CSR0, CSR0_RPE | CSR0_TPE, 0);
-> +	if (error) {
-> +		ravb_write(ndev, csr0, CSR0);
-> +		return error;
-> +	}
-> +
-> +	if (changed & NETIF_F_RXCSUM) {
-> +		if (features & NETIF_F_RXCSUM)
-> +			ravb_write(ndev, CSR2_ALL, CSR2);
-> +		else
-> +			ravb_write(ndev, 0, CSR2);
-> +	}
-> +
-> +	if (changed & NETIF_F_HW_CSUM) {
-> +		if (features & NETIF_F_HW_CSUM) {
-> +			ravb_write(ndev, CSR1_ALL, CSR1);
-> +			ndev->features |= NETIF_F_CSUM_MASK;
+“After all, why not?”
 
-   Hm, the >linux/netdev_features.h> says those are contradictory to have both NETIF_F_HW_CSUM and
-NETIF_F_CSUM_MASK set...
-
-> +		} else {
-> +			ravb_write(ndev, 0, CSR1);
-
-   No need to mask off the 'features' field?
-
-> +		}
-> +	}
-> +	ravb_write(ndev, csr0, CSR0);
-> +
-> +	ndev->features = features;
-
-   Mhm, doesn't that clear NETIF_F_CSUM_MASK?
-
-[...]
-
-MBR, Sergey
+typeof(p) p1 = (typeof(p) __force)READ_ONCE(p) +
+               BUILD_BUG_ON_EXPR(__builtin_classify_type(p) != 5);
