@@ -2,118 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45013421B82
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:12:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33127421B8F
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230353AbhJEBNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 21:13:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbhJEBNr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 21:13:47 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2D4C061745;
-        Mon,  4 Oct 2021 18:11:57 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HNfgb633Bz4xbQ;
-        Tue,  5 Oct 2021 12:11:55 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1633396316;
-        bh=QcnoFg9wrYYDMZj3ftLGLzrX3IjtvRl4VMlIHDnSDWQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NYeaX52ycFqmW90xJStCD1DZ2BSYd5cIVs3p4NXGASU6pb28y555gxidQ2FretFau
-         NE70HAsDecek2ECi9A9VJgFNtOTdIkUTpiUxjVX7p1l6sMX+aPoTtgZYZZZreIdWrx
-         3FnIVj+jR0UV4JmjaUUvrIFmbTg5HplSJLz7WfHiDNvlSjNwef3dL5rjlwzzpLJ6nt
-         d1W5P4qIXmALpDYYz0yAIFHYlArhDPOEGxkPGN92h0iEY4UGu44pYVf+6hh+j86VTY
-         hvwWsVex73STrGW39WPuwVitk5PgSDxBvOL56k5+IazYiImnZ4z7Ro3m2adyZ1LAb2
-         BTWxff727APWQ==
-Date:   Tue, 5 Oct 2021 12:11:54 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, edumazet@google.com, weiwan@google.com,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Message-ID: <20211005121154.08641258@canb.auug.org.au>
-In-Reply-To: <20211001.144046.309542880703739165.davem@davemloft.net>
-References: <20211001161849.51b6deca@canb.auug.org.au>
-        <20211001.144046.309542880703739165.davem@davemloft.net>
+        id S230397AbhJEBQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 21:16:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55272 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229744AbhJEBQc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 21:16:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 375AD613AC;
+        Tue,  5 Oct 2021 01:14:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633396482;
+        bh=p5JkSnhi5Ucg88ouHjYa/GnID3KuGBkRL/7Q0U6KlHI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lKhQGVKh0ZiXSjqS8C17fzSWSAK6EI9XuWhnUi/V0SbSYLSP60yYc0Pw9eZieTezp
+         5yBITu8NpnWvwRYXPawJ9/imWrpRHNxh53GIEMDrsm6Exp7WzKvs3NbcinfKwXBIVs
+         DdaJGkPN/JV37F9wu8YXUCqA1MXj+TaRp/ZpgsULhY7p4Dcwq2watHdoedWWpChSBP
+         Jxhha7VfgNTWA8mO3shD4JTu+bJpq33/oePQbk1wlrGxA5FMrtlDyZ5WUBBmbY1AkP
+         afwUwyVD2OkWopbulr4z9lSJmsCOYkZ/t4E8TG9tOe0S+962aZiz6Vzcecl47/0D/r
+         NqYKIYTH1XItQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/15] mlx5 updates 2021-10-04
+Date:   Mon,  4 Oct 2021 18:12:47 -0700
+Message-Id: <20211005011302.41793-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/K5PWtTQ4z25yGFL2XQT1aEi";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/K5PWtTQ4z25yGFL2XQT1aEi
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Hi Dave,
+Hi Dave and Jakub,
 
-On Fri, 01 Oct 2021 14:40:46 +0100 (BST) David Miller <davem@davemloft.net>=
- wrote:
->
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Fri, 1 Oct 2021 16:18:49 +1000
->=20
-> > Hi all,
-> >=20
-> > After merging the net-next tree, today's linux-next build (sparc64
-> > defconfig) failed like this:
-> >=20
-> > net/core/sock.c: In function 'sock_setsockopt':
-> > net/core/sock.c:1417:7: error: 'SO_RESERVE_MEM' undeclared (first use i=
-n this function); did you mean 'IORESOURCE_MEM'?
-> >   case SO_RESERVE_MEM:
-> >        ^~~~~~~~~~~~~~
-> >        IORESOURCE_MEM
-> > net/core/sock.c:1417:7: note: each undeclared identifier is reported on=
-ly once for each function it appears in
-> > net/core/sock.c: In function 'sock_getsockopt':
-> > net/core/sock.c:1817:7: error: 'SO_RESERVE_MEM' undeclared (first use i=
-n this function); did you mean 'IORESOURCE_MEM'?
-> >   case SO_RESERVE_MEM:
-> >        ^~~~~~~~~~~~~~
-> >        IORESOURCE_MEM
-> >=20
-> > Caused by commit
-> >=20
-> >   2bb2f5fb21b0 ("net: add new socket option SO_RESERVE_MEM")
-> >=20
-> > arch/sparc/include/uapi/socket.h does not include uapi/asm/socket.h and
-> > some other architectures do not as well.
-> >=20
-> > I have added the following patch for today (I searched for SO_BUF_LOCK
-> > and, of these architectures, I have only compile tested sparc64 and
-> > sparc): =20
->=20
-> I committed the sparc part into net-next today, thanks.
+This series introduces some misc updates to mlx5.
 
-Unfortunately, there is a typo in what you committed in bfaf03935f74
-("sparc: add SO_RESERVE_MEM definition."), SO_RESEVE_MEM instead of
-SO_RESERVE_MEM ...
+For more information please see tag log below.
 
---=20
-Cheers,
-Stephen Rothwell
+Please pull and let me know if there is any problem.
 
---Sig_/K5PWtTQ4z25yGFL2XQT1aEi
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Thanks,
+Saeed.
 
------BEGIN PGP SIGNATURE-----
+---
+The following changes since commit 1660034361904dfcb82714aa48615a9b66462ee6:
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmFbploACgkQAVBC80lX
-0Gyo1gf/dnSvjxx13Gkwpx84SSOykZFD7FbLiHsgn2ZK4E+dKRkMP+0SRvzrZcFB
-+gPDB0AodxmtwtXX0G/kgoquYFBj/75Y5wNEUGti/C8KOn09ifsz1uP0GB76XRNG
-wbU97JfEU9ndRvHjgKrpZg67b4ML6rJTNcTlh73L2QZca5Do4MpdlpER8bUc+42/
-SWkir51JextoUOdaRyAHhHz9qad2Wec/owm1NZLRZuwUjpw2xntBK2ocokvmHckb
-IZy37ZKT3x0pSVG4hl/MeXhPYEwLKQMNbgw1BzLPbfCPLNzlY7Xvf+sEZBnC7fav
-M+VSB5841hft1hSrPjbsLRKhvLP25A==
-=pHAX
------END PGP SIGNATURE-----
+  Merge branch 'phy-10g-mode-helper' (2021-10-04 13:50:05 +0100)
 
---Sig_/K5PWtTQ4z25yGFL2XQT1aEi--
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-10-04
+
+for you to fetch changes up to f891b7cdbdcda116fd26bbd706f91bd58567aa17:
+
+  net/mlx5: Enable single IRQ for PCI Function (2021-10-04 18:10:57 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2021-10-04
+
+Misc updates for mlx5 driver
+
+1) Add TX max rate support for MQPRIO channel mode
+2) Trivial TC action and modify header refactoring
+3) TC support for accept action in fdb offloads
+4) Allow single IRQ for PCI functions
+
+5) Bridge offload: Pop PVID VLAN header on egress miss
+
+Vlad Buslov says:
+=================
+
+With current architecture of mlx5 bridge offload it is possible for a
+packet to match in ingress table by source MAC (resulting VLAN header push
+in case of port with configured PVID) and then miss in egress table when
+destination MAC is not in FDB. Due to the lack of hardware learning in
+NICs, this, in turn, results packet going to software data path with PVID
+VLAN already added by hardware. This doesn't break software bridge since it
+accepts either untagged packets or packets with any provisioned VLAN on
+ports with PVID, but can break ingress TC, if affected part of Ethernet
+header is matched by classifier.
+
+Improve compatibility with software TC by restoring the packet header on
+egress miss. Effectively, this change implements atomicity of mlx5 bridge
+offload implementation - packet is either modified and redirected to
+destination port or appears unmodified in software.
+
+=================
+
+----------------------------------------------------------------
+Chris Mi (1):
+      net/mlx5e: Specify out ifindex when looking up encap route
+
+Roi Dayan (4):
+      net/mlx5e: TC, Refactor sample offload error flow
+      net/mlx5e: Move mod hdr allocation to a single place
+      net/mlx5e: Split actions_match_supported() into a sub function
+      net/mlx5e: Move parse fdb check into actions_match_supported_fdb()
+
+Shay Drory (2):
+      net/mlx5: Shift control IRQ to the last index
+      net/mlx5: Enable single IRQ for PCI Function
+
+Tariq Toukan (2):
+      net/mlx5e: Specify SQ stats struct for mlx5e_open_txqsq()
+      net/mlx5e: Add TX max rate support for MQPRIO channel mode
+
+Vlad Buslov (6):
+      net/mlx5e: Reserve a value from TC tunnel options mapping
+      net/mlx5e: Support accept action
+      net/mlx5: Bridge, refactor eswitch instance usage
+      net/mlx5: Bridge, extract VLAN pop code to dedicated functions
+      net/mlx5: Bridge, mark reg_c1 when pushing VLAN
+      net/mlx5: Bridge, pop VLAN on egress table miss
+
+ drivers/infiniband/hw/mlx5/odp.c                   |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   7 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/qos.c   | 102 ++++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en/qos.h   |   9 +
+ .../net/ethernet/mellanox/mlx5/core/en/tc/sample.c |  21 +-
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    |   8 +
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.h    |   1 +
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c  |   9 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 106 +++++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 179 +++++++++-------
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c       |   9 +-
+ .../net/ethernet/mellanox/mlx5/core/esw/bridge.c   | 227 ++++++++++++++++++---
+ .../ethernet/mellanox/mlx5/core/esw/bridge_priv.h  |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   8 +
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   6 +-
+ .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h |   2 -
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  |  36 ++--
+ include/linux/mlx5/driver.h                        |   2 +
+ include/linux/mlx5/eq.h                            |   1 -
+ include/linux/mlx5/eswitch.h                       |   9 +
+ 21 files changed, 597 insertions(+), 149 deletions(-)
