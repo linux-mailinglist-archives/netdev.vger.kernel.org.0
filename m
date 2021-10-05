@@ -2,67 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BD504225FE
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 14:10:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76DCA422614
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 14:15:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234672AbhJEML7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 08:11:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37158 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234413AbhJEML5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 08:11:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8BD2861529;
-        Tue,  5 Oct 2021 12:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633435807;
-        bh=FlQ5U1SiwLBxWd+OdFGjO4nljobd2vkKZw7udn78aGA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cV1w8ytl4UFzHj7tSpIeJJLQPxHnq1Y9r8W66tAmIlfS6hjOGJOaxpyV3DnSkPMXN
-         kNImpcf8sOoj/rikYGNgPW8wwQ7ZA+V3Dl9y3clSRHPIkBgNQ6IXLWBCKDbgY4YRiY
-         rs7c2y+HhY1HZNQuE2bN3NEvGiJze40W7YFh44uYWhjwDBuxIN7WLz+jG3w67A5Udc
-         LdBaoUXW94rHOntBft9nf97dJqC5vWBv56bfMqgAtaUfbiCdRWy3XxScu+zCML8GhS
-         5A19zlnfGUmKeLzH2oMSeAWrP3aj5p9G+vLfIsDsDM8lNEIKzJ21ePYeKSe0dkcL25
-         R3SgJd4jTLkiQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8630160971;
-        Tue,  5 Oct 2021 12:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234591AbhJEMQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 08:16:59 -0400
+Received: from mxout03.lancloud.ru ([45.84.86.113]:49446 "EHLO
+        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230500AbhJEMQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 08:16:58 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 339FD20F76E6
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [RFC 01/12] ravb: Use ALIGN macro for max_rx_len
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+References: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
+ <20211005110642.3744-2-biju.das.jz@bp.renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <5c70fb20-000e-1109-422d-b81b66741022@omp.ru>
+Date:   Tue, 5 Oct 2021 15:14:54 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] netlink: remove netlink_broadcast_filtered
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163343580754.21299.10621182011227135752.git-patchwork-notify@kernel.org>
-Date:   Tue, 05 Oct 2021 12:10:07 +0000
-References: <20211005115242.9630-1-fw@strlen.de>
-In-Reply-To: <20211005115242.9630-1-fw@strlen.de>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     netdev@vger.kernel.org, christian.brauner@ubuntu.com
+In-Reply-To: <20211005110642.3744-2-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 10/5/21 2:06 PM, Biju Das wrote:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Tue,  5 Oct 2021 13:52:42 +0200 you wrote:
-> No users in tree since commit a3498436b3a0 ("netns: restrict uevents"),
-> so remove this functionality.
+> Use ALIGN macro for calculating the value for max_rx_len.
 > 
-> Cc: Christian Brauner <christian.brauner@ubuntu.com>
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> ---
->  include/linux/netlink.h  |  4 ----
->  net/netlink/af_netlink.c | 23 ++---------------------
->  2 files changed, 2 insertions(+), 25 deletions(-)
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Suggested-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-Here is the summary with links:
-  - [net-next] netlink: remove netlink_broadcast_filtered
-    https://git.kernel.org/netdev/net-next/c/549017aa1bb7
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+[...]
 
-
+MBR, Sergey
