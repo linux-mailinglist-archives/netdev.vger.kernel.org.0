@@ -2,88 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 859B7422B81
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:51:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28D96422B96
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:56:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235569AbhJEOxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 10:53:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58562 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235090AbhJEOxY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 10:53:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E497961216;
-        Tue,  5 Oct 2021 14:51:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633445494;
-        bh=H4au8cRKsKlT2WzVzVUciC3U/eOkaJQmybq+e0GbWOk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SnE2WI3jxMf2cz6uVcQbgGBPvXjU9qHKP+8K8GW5RPHi2epco2Ye2/6d3CLfCUkZN
-         cAaHPnBU5yEkfCF1xOVevl0+MutHaG7tOIMvxzxDiwQCWHHDEqPa8r5nmBKlB7Oe/i
-         P5GoMkXSagskClxL7bUlIRTugUuNlrWByg92P5O1v7twzlFFD1CA7Vx5sfd0v2x84q
-         eFYbHfcRRF/2a1mlVfg8z4TDra3zYn/7o8wSNPaaqocDWu8xzubBklQw5sNZFnVv0P
-         nAUrC+M4z1Z0yS8XcHdMFP+0kbVcrAXb7eAzhAJK3+lBJEQIvwP/CQzlosVKdc0Mg9
-         lVdwI8p+pnBYg==
-Date:   Tue, 5 Oct 2021 07:51:33 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Subject: Re: pull request: bluetooth 2021-10-04
-Message-ID: <20211005075133.38a31995@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CABBYNZKJaD01+o8Tuh7AX7=3Hct_6YqzQcWWzDvOcRpRdPOizQ@mail.gmail.com>
-References: <20211004222146.251892-1-luiz.dentz@gmail.com>
-        <20211004182158.10df611b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CABBYNZKJaD01+o8Tuh7AX7=3Hct_6YqzQcWWzDvOcRpRdPOizQ@mail.gmail.com>
+        id S234944AbhJEO6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 10:58:38 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:49080 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229488AbhJEO6h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 10:58:37 -0400
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id 50D92200DFAA;
+        Tue,  5 Oct 2021 16:56:45 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 50D92200DFAA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1633445805;
+        bh=C8LjCG5Cj8fCT4SYG/XL1KPTD9y0OZGe/tQPWl7Xl0I=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=LVLMEak+mpaHQZIBqcm++DXNy63CYBTowOa5YCuL6t4pInHbCZRfw9po+ifYv3qyN
+         M/Fqv4mod9q5zp7hTDGuezovB6FNmf62MSWHl8CIi934Cu7MCaIMKJCFcPX8ibDLIR
+         Y9X9WdPAYnFEVCmNr190NHs4s93BJ21IVOGM2MfzEPg3SUpHU1H/lydoF32BYAC8lw
+         SVchtJzPrj+KQIF7OkGcCm69LmPgzGEBOVD9jpl5gOnxE6DpS6/+cUqQ9KqI/1540X
+         z4nmxZBXoOC3tMDIPg7YfU/ahdWUWinSiOukKUKMMWeZN0opxlaKgkbyXUbav8WDWL
+         MT0UNjYLc1Z3w==
+Received: from localhost (localhost [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 48D4360224647;
+        Tue,  5 Oct 2021 16:56:45 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id Y-uAip5s4jWN; Tue,  5 Oct 2021 16:56:45 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 327EE602245CD;
+        Tue,  5 Oct 2021 16:56:45 +0200 (CEST)
+Date:   Tue, 5 Oct 2021 16:56:45 +0200 (CEST)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
+        stephen@networkplumber.org
+Message-ID: <1623524265.114537131.1633445805175.JavaMail.zimbra@uliege.be>
+In-Reply-To: <86e6a547-0d9d-9720-15bc-81fb40e6cd84@gmail.com>
+References: <20211004130651.13571-1-justin.iurman@uliege.be> <20211004130651.13571-2-justin.iurman@uliege.be> <a80c8fba-bf66-93ef-c54e-6648b3522e28@gmail.com> <181201748.114494759.1633445114212.JavaMail.zimbra@uliege.be> <86e6a547-0d9d-9720-15bc-81fb40e6cd84@gmail.com>
+Subject: Re: [PATCH iproute2-next 1/2] Add support for IOAM encap modes
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [81.240.24.148]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF92 (Linux)/8.8.15_GA_4026)
+Thread-Topic: Add support for IOAM encap modes
+Thread-Index: /icz0vjr5OnL8IJxKNWvVMqTHXRq8A==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 Oct 2021 20:47:35 -0700 Luiz Augusto von Dentz wrote:
-> On Mon, Oct 4, 2021 at 6:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Mon,  4 Oct 2021 15:21:46 -0700 Luiz Augusto von Dentz wrote:  
-> > > bluetooth-next pull request for net-next:
-> > >
-> > >  - Add support for MediaTek MT7922 and MT7921
-> > >  - Add support for TP-Link UB500
-> > >  - Enable support for AOSP extention in Qualcomm WCN399x and Realtek
-> > >    8822C/8852A.
-> > >  - Add initial support for link quality and audio/codec offload.
-> > >  - Rework of sockets sendmsg to avoid locking issues.
-> > >  - Add vhci suspend/resume emulation.  
-> >
-> > Now it's flipped, it's complaining about Luiz being the committer
-> > but there's only a sign off from Marcel :(  
+>>>> +static const char *ioam6_mode_types[] = {
+>>>
+>>> I think you want to declare this of size IOAM6_IPTUNNEL_MODE_MAX + 1
+>> 
+>> This is automatically the case, see below explanation.
+>> 
+>>>> +	[IOAM6_IPTUNNEL_MODE_INLINE]	= "inline",
+>>>> +	[IOAM6_IPTUNNEL_MODE_ENCAP]	= "encap",
+>>>> +	[IOAM6_IPTUNNEL_MODE_AUTO]	= "auto",
+>>>> +};
+>>>> +
+>>>> +static const char *format_ioam6mode_type(int mode)
+>>>> +{
+>>>> +	if (mode < IOAM6_IPTUNNEL_MODE_MIN ||
+>>>> +	    mode > IOAM6_IPTUNNEL_MODE_MAX ||
+>>>> +	    !ioam6_mode_types[mode])
+>>>
+>>> otherwise this check is not sufficient.
+>> 
+>> Are you sure? I mean, both IOAM6_IPTUNNEL_MODE_MIN and IOAM6_IPTUNNEL_MODE_MAX
+>> respectively point to IOAM6_IPTUNNEL_MODE_INLINE and IOAM6_IPTUNNEL_MODE_AUTO.
+>> So, either the input mode is out of bound, or not defined in the array above
+>> (this one is not mandatory, but it ensures that the above array is updated
+>> accordingly with the uapi). So, what we have right now is:
+>> 
+>> __IOAM6_IPTUNNEL_MODE_MIN = 0
+>> IOAM6_IPTUNNEL_MODE_INLINE = 1
+>> IOAM6_IPTUNNEL_MODE_ENCAP = 2
+>> IOAM6_IPTUNNEL_MODE_AUTO = 3
+>> __IOAM6_IPTUNNEL_MODE_MAX = 4
+>> 
+>> IOAM6_IPTUNNEL_MODE_MIN = 1
+>> IOAM6_IPTUNNEL_MODE_MAX = 3
+>> 
+>> ioam6_mode_types = {
+>>   [0] (null)
+>>   [1] "inline"
+>>   [2] "encap"
+>>   [3] "auto"
+>> }
+>> 
+>> where its size is automatically/implicitly 4 (IOAM6_IPTUNNEL_MODE_MAX + 1).
+>> 
 > 
-> I did have both sign-off, or are you saying Ive now become the
-> committer of other patches as well? Which means whoever rebases the
-> tree has to sign-off the entire set as well, I guess other trees does
-> better with this because they don't have multiple committer but once
-> you have that it is kind hard to maintain this rule of committer must
-> sign-off, shouldn't we actually just check if there is one sign-off by
-> one of the maintainers that shall be considered acceptable?
+> today yes, but tomorrow no. ie,. a new feature is added to the header
+> file. Header file is updated in iproute2 as part of a header file sync
+> but the ioam6 code is not updated to expand ioam6_mode_types. Command is
+> then run on a system with the new feature so
+> 
+>    mode > IOAM6_IPTUNNEL_MODE_MAX
+> 
+> will pass but then
+> 
+>     !ioam6_mode_types[mode])
+> 
+> accesses an entry beyond the size of ioam6_mode_types.
 
-I think most trees don't do rebases. The issue does indeed seem to be
-that whoever does a rebase becomes the committer, so you need to make
-sure that whenever you rebase you add your sign-off to the commits
-initially done by other maintainers (in the range of commits that are
-being modified).
+Indeed, sorry. I'll send the fix in -v2.
 
-> Or perhaps there is some documentation on the matter?
-
-I don't think there's any docs.
-
-
-Since this looks very painful to fix at this point I'll pull as is
-from the initial PR from Oct 1st (since it had fewer warnings).
-
-About the content of the PR there is a whole bunch of things here
-(fixes, simple device ID additions) which really look like they should
-have been targeting net, not net-next.
-
-Okay, enough complaining ;)  
-
-Pulled v1, thanks!
+Thanks!
