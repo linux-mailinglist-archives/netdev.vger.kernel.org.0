@@ -2,65 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA957422825
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 15:43:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6EA2422827
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 15:43:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235074AbhJENpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 09:45:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49868 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235002AbhJENpC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 09:45:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ovSUEtGPSxl/nybmRBxSi47cRQoVCb66ArRug3qzPRw=; b=o9FkshonziVohapuf/ejhvec8/
-        4qy9q6yDuA2BH/3dV13boXtdKffTyuWuI074YfiFVnRA/pGrAEhzsZ4oUBj2y0TCCUFByPPmORCoI
-        Mw7zGb/HvUtgF5aSCvi6lx8hKFK44Hg+5r8jjkuDBrn04lSEjutqL6ZVBFGycsepePdY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mXkio-009hJZ-83; Tue, 05 Oct 2021 15:43:06 +0200
-Date:   Tue, 5 Oct 2021 15:43:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Sean Anderson <sean.anderson@seco.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC net-next PATCH 06/16] net: phylink: Add function for
- optionally adding a PCS
-Message-ID: <YVxWaif9jE/fCE0O@lunn.ch>
-References: <20211004191527.1610759-1-sean.anderson@seco.com>
- <20211004191527.1610759-7-sean.anderson@seco.com>
- <YVwgKnxuOeZC6IxW@shell.armlinux.org.uk>
+        id S235087AbhJENpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 09:45:13 -0400
+Received: from mx2.uni-regensburg.de ([194.94.157.147]:36876 "EHLO
+        mx2.uni-regensburg.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233942AbhJENpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 09:45:10 -0400
+Received: from mx2.uni-regensburg.de (localhost [127.0.0.1])
+        by localhost (Postfix) with SMTP id 57734600004A;
+        Tue,  5 Oct 2021 15:43:17 +0200 (CEST)
+Received: from smtp1.uni-regensburg.de (smtp1.uni-regensburg.de [194.94.157.129])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "smtp.uni-regensburg.de", Issuer "DFN-Verein Global Issuing CA" (not verified))
+        by mx2.uni-regensburg.de (Postfix) with ESMTPS id 15076600004E;
+        Tue,  5 Oct 2021 15:43:13 +0200 (CEST)
+From:   "Andreas K. Huettel" <andreas.huettel@ur.de>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        Jakub Kicinski <kubakici@wp.pl>
+Subject: Re: [EXT] Re: [Intel-wired-lan] Intel I350 regression 5.10 -> 5.14 ("The NVM Checksum Is Not Valid") [8086:1521]
+Date:   Tue, 05 Oct 2021 15:43:08 +0200
+Message-ID: <2944777.ktpJ11cQ8Q@pinacolada>
+Organization: Universitaet Regensburg
+In-Reply-To: <35dfc9e8-431c-362d-450e-4c6ac1e55434@molgen.mpg.de>
+References: <1823864.tdWV9SEqCh@kailua> <20211004074814.5900791a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <35dfc9e8-431c-362d-450e-4c6ac1e55434@molgen.mpg.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YVwgKnxuOeZC6IxW@shell.armlinux.org.uk>
+Content-Type: multipart/signed; boundary="nextPart2159422.HovnAMPojK"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 05, 2021 at 10:51:38AM +0100, Russell King (Oracle) wrote:
-> On Mon, Oct 04, 2021 at 03:15:17PM -0400, Sean Anderson wrote:
-> > This adds a function to set the PCS only if there is not one currently
-> > set. The intention here is to allow MAC drivers to have a "default" PCS
-> > (such as an internal one) which may be used when one has not been set
-> > via the device tree. This allows for backwards compatibility for cases
-> > where a PCS was automatically attached if necessary.
-> 
-> I'm not sure I entirely like this approach. Why can't the network
-> driver check for the pcs-handle property and avoid using its
-> "default" if present?
+--nextPart2159422.HovnAMPojK
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"; protected-headers="v1"
+From: "Andreas K. Huettel" <andreas.huettel@ur.de>
+To: Paul Menzel <pmenzel@molgen.mpg.de>
+Cc: netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kubakici@wp.pl>
+Subject: Re: [EXT] Re: [Intel-wired-lan] Intel I350 regression 5.10 -> 5.14 ("The NVM Checksum Is Not Valid") [8086:1521]
+Date: Tue, 05 Oct 2021 15:43:08 +0200
+Message-ID: <2944777.ktpJ11cQ8Q@pinacolada>
+Organization: Universitaet Regensburg
+In-Reply-To: <35dfc9e8-431c-362d-450e-4c6ac1e55434@molgen.mpg.de>
+References: <1823864.tdWV9SEqCh@kailua> <20211004074814.5900791a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <35dfc9e8-431c-362d-450e-4c6ac1e55434@molgen.mpg.de>
 
-And that would also be in line with
+>=20
+> What messages are new compared to the working Linux 5.10.59?
+>=20
 
-ethernet/freescale/dpaa2/dpaa2-mac.c:	node = fwnode_find_reference(dpmac_node, "pcs-handle", 0);
+I've uploaded the full boot logs to https://dev.gentoo.org/~dilfridge/igb/
+(both in a version with and without timestamps, for easy diff).
 
-We need a uniform meaning of pcs-handle. And dpaa2-mac.c has set the
-precedent that the MAC uses it, not phylink. That can however be
-changed, if it make sense, but both users should do the same.
+* I can't see anything that immediately points to the igb device (like a PC=
+I id etc.) before the module is loaded.=20
+* The main difference between the logs is many unrelated (?) i915 warnings =
+in 5.10.59 because of the nonfunctional graphics.
 
-	 Andrew
+The messages easily identifiable are:
+
+huettel@pinacolada ~/tmp $ cat kernel-messages-5.10.59.txt |grep igb
+Oct  5 15:11:18 dilfridge kernel: [    2.090675] igb: Intel(R) Gigabit Ethe=
+rnet Network Driver
+Oct  5 15:11:18 dilfridge kernel: [    2.090676] igb: Copyright (c) 2007-20=
+14 Intel Corporation.
+Oct  5 15:11:18 dilfridge kernel: [    2.090728] igb 0000:01:00.0: enabling=
+ device (0000 -> 0002)
+Oct  5 15:11:18 dilfridge kernel: [    2.094438] Modules linked in: igb(+) =
+i915(+) iosf_mbi acpi_pad efivarfs
+Oct  5 15:11:18 dilfridge kernel: [    2.097287] Modules linked in: igb(+) =
+i915(+) iosf_mbi acpi_pad efivarfs
+Oct  5 15:11:18 dilfridge kernel: [    2.098492] Modules linked in: igb(+) =
+i915(+) iosf_mbi acpi_pad efivarfs
+Oct  5 15:11:18 dilfridge kernel: [    2.098787] Modules linked in: igb(+) =
+i915(+) iosf_mbi acpi_pad efivarfs
+Oct  5 15:11:18 dilfridge kernel: [    2.173386] igb 0000:01:00.0: added PH=
+C on eth0
+Oct  5 15:11:18 dilfridge kernel: [    2.173391] igb 0000:01:00.0: Intel(R)=
+ Gigabit Ethernet Network Connection
+Oct  5 15:11:18 dilfridge kernel: [    2.173395] igb 0000:01:00.0: eth0: (P=
+CIe:5.0Gb/s:Width x4) 6c:b3:11:23:d4:4c
+Oct  5 15:11:18 dilfridge kernel: [    2.173991] igb 0000:01:00.0: eth0: PB=
+A No: H47819-001
+Oct  5 15:11:18 dilfridge kernel: [    2.173994] igb 0000:01:00.0: Using MS=
+I-X interrupts. 8 rx queue(s), 8 tx queue(s)
+Oct  5 15:11:18 dilfridge kernel: [    2.174199] igb 0000:01:00.1: enabling=
+ device (0000 -> 0002)
+Oct  5 15:11:18 dilfridge kernel: [    2.261029] igb 0000:01:00.1: added PH=
+C on eth1
+Oct  5 15:11:18 dilfridge kernel: [    2.261034] igb 0000:01:00.1: Intel(R)=
+ Gigabit Ethernet Network Connection
+Oct  5 15:11:18 dilfridge kernel: [    2.261038] igb 0000:01:00.1: eth1: (P=
+CIe:5.0Gb/s:Width x4) 6c:b3:11:23:d4:4d
+Oct  5 15:11:18 dilfridge kernel: [    2.261772] igb 0000:01:00.1: eth1: PB=
+A No: H47819-001
+Oct  5 15:11:18 dilfridge kernel: [    2.261776] igb 0000:01:00.1: Using MS=
+I-X interrupts. 8 rx queue(s), 8 tx queue(s)
+Oct  5 15:11:18 dilfridge kernel: [    2.265376] igb 0000:01:00.1 enp1s0f1:=
+ renamed from eth1
+Oct  5 15:11:18 dilfridge kernel: [    2.282514] igb 0000:01:00.0 enp1s0f0:=
+ renamed from eth0
+Oct  5 15:11:31 dilfridge kernel: [   17.585202] igb 0000:01:00.0 enp1s0f0:=
+ igb: enp1s0f0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+
+huettel@pinacolada ~/tmp $ cat kernel-messages-5.14.9.txt |grep igb
+Oct  5 02:38:31 dilfridge kernel: [    2.108606] igb: Intel(R) Gigabit Ethe=
+rnet Network Driver
+Oct  5 02:38:31 dilfridge kernel: [    2.108608] igb: Copyright (c) 2007-20=
+14 Intel Corporation.
+Oct  5 02:38:31 dilfridge kernel: [    2.108622] igb 0000:01:00.0: can't ch=
+ange power state from D3cold to D0 (config space inaccessible)
+Oct  5 02:38:31 dilfridge kernel: [    2.108918] igb 0000:01:00.0 0000:01:0=
+0.0 (uninitialized): PCIe link lost
+Oct  5 02:38:31 dilfridge kernel: [    2.418724] igb 0000:01:00.0: PHY rese=
+t is blocked due to SOL/IDER session.
+Oct  5 02:38:31 dilfridge kernel: [    4.148163] igb 0000:01:00.0: The NVM =
+Checksum Is Not Valid
+Oct  5 02:38:31 dilfridge kernel: [    4.154891] igb: probe of 0000:01:00.0=
+ failed with error -5
+Oct  5 02:38:31 dilfridge kernel: [    4.154904] igb 0000:01:00.1: can't ch=
+ange power state from D3cold to D0 (config space inaccessible)
+Oct  5 02:38:31 dilfridge kernel: [    4.155146] igb 0000:01:00.1 0000:01:0=
+0.1 (uninitialized): PCIe link lost
+Oct  5 02:38:31 dilfridge kernel: [    4.466904] igb 0000:01:00.1: PHY rese=
+t is blocked due to SOL/IDER session.
+Oct  5 02:38:31 dilfridge kernel: [    6.195528] igb 0000:01:00.1: The NVM =
+Checksum Is Not Valid
+Oct  5 02:38:31 dilfridge kernel: [    6.200863] igb: probe of 0000:01:00.1=
+ failed with error -5
+
+
+> >> Any advice on how to proceed? Willing to test patches and provide addi=
+tional debug info.
+>=20
+> Without any ideas about the issue, please bisect the issue to find the=20
+> commit introducing the regression, so it can be reverted/fixed to not=20
+> violate Linux=E2=80=99 no-regression policy.
+
+I'll start going through kernel versions (and later revisions) end of the w=
+eek.
+
+Thanks a lot,
+Andreas
+
+
+=2D-=20
+PD Dr. Andreas K. Huettel
+Institute for Experimental and Applied Physics
+University of Regensburg
+93040 Regensburg
+Germany
+
+--nextPart2159422.HovnAMPojK
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQKTBAABCgB9FiEE6W4INB9YeKX6Qpi1TEn3nlTQogYFAmFcVmxfFIAAAAAALgAo
+aXNzdWVyLWZwckBub3RhdGlvbnMub3BlbnBncC5maWZ0aGhvcnNlbWFuLm5ldEU5
+NkUwODM0MUY1ODc4QTVGQTQyOThCNTRDNDlGNzlFNTREMEEyMDYACgkQTEn3nlTQ
+ogZcGQ//f8ADOoIyR+L7jh8IOJTOp1WgNbRzwws+OFwC5bzVSV5EDIo6epbNpobs
++pDuiypqp4XjSbpR9QHULKEDxmRSMClF5FmtXtnV8iR+fRoQJYzYN7SxDD4aTE/D
+QtsZZlEH2JyqvpZR+Zg+EeGFW8RzuOd6f9LRg7zM2d5mYn+qu2F5y8FemZm8maaV
+ZHzMgtFMsCLsr8Yb1J0eNkvPBA6TpR7ehcf9LkZxnNV/OPt1F2VjKzjZqyjHZYC+
+Z2sBOkV6GbGciLwcFPrF/eEcQfhcAiXn+b+sKmSZws/YdALdat5gYB5ingJpl00U
+fHCD70+v/jPyZb5thDFRDcMJFUxhycGiWrP53gsVpRKaU6KF2mREU8Q8LGabMcUu
+uifrDmdXc/Daply5YNr1TTJ1HwU3L8n8A6WMlICEStXu4OH/Y6Q9fkcHBi8xEdNI
+gS2/b3RLF8MFj/oqi5hMdDyIRTmixzBKiJMdqWPtvwmm6L74RLkXeSjHP0svVQTL
+oACTlBJwMpmfj9mUAlDo0oV8yy+9+MjdzKiMuDdsyFQXkwPXzLK5zPNF063HLdrd
+KrdmHEkCsUuni5lKEpJ4P0MLAASLsl7mOUsaBPipzXcoQxQA9mjU1sG16htWw/Wg
+4L49s5gPBRoDOGwV83PifUClyRb5eiljm2898dFPXaFNaN66o+c=
+=7fcw
+-----END PGP SIGNATURE-----
+
+--nextPart2159422.HovnAMPojK--
+
+
+
