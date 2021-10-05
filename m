@@ -2,97 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 243C0422364
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 12:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A52E42239C
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 12:33:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233864AbhJEKaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 06:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44546 "EHLO
+        id S234013AbhJEKfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 06:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233077AbhJEKaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 06:30:17 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED7BC06161C;
-        Tue,  5 Oct 2021 03:28:27 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id p13so48563757edw.0;
-        Tue, 05 Oct 2021 03:28:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ShOmW/2RWuxjsq4/QuGLlOjUEiq6tFtOZJVvEHgoGug=;
-        b=LDHrbn7aoB+cQkNUG+FKJzSRxh3FGMaHoTMs12H3MCvRTB/9tIvK7NOHsJLesPDVh4
-         EzlcmQowczdMBNzUenbcFcQCf7ADV1cFmCBI5vmgEOF0B43ZC8iiW3a7Wi6a71kFtIG3
-         l7q+82K77CNL14Yta4fokwaywc0epu/NKmJt7BB/yrd3xv7L30JZzuvU74+xoXfRf43D
-         Y/hdovmns3Js/QDY0BEMhNJby+g+qIsaKSfGcN16HgBzro9oXX0zJGDkPQkSqbUjQFpC
-         QpQSpwi+zMwicFIejFpAEPUK/ENwgb7dsnnmOf5LjGYua16JAQaiiTM0G42dY2DizTpQ
-         lzWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ShOmW/2RWuxjsq4/QuGLlOjUEiq6tFtOZJVvEHgoGug=;
-        b=r0TNIodil6+/5m12oRAeL3oecFd1W7elZpv+9HI75kuMEVJPNDgs81Q0uXGcS1gbDS
-         fNozELWMawT1wNMMMKaq74KedUoKLidzu89WUOoS4k+dvU0tQvzIHECTAN89QX8d1pBX
-         1fT0AiUu3X3vTT3oYjzZ8m3QXcxgPPet1DOg/6e7GbfAc4BpHmiuJzC5QXv28g5f1qso
-         Fm73tkymeQL/CwcBQUtwKGh9jFYTFYRmInzXJ+peNExzQOTDFEyxUYNkptY108J1C/kR
-         UOqI1ls13vyE+zXAHzcWtsMgpx2CPgTsBmvF3KO5Mc5ag5R+viNNlyPDt1949hvWWR8b
-         6Sgg==
-X-Gm-Message-State: AOAM533dqkZF/cJsm1m1mN6LRQl13lLvHDDLUPYvUyjaLL5022MY4IzJ
-        GDzvtsY7RXLEwXLxb9b7cVakkm/PH6w=
-X-Google-Smtp-Source: ABdhPJyYB6zKyhj5+BkQuBUj1gr4St7CvGZHGHlYKNvvV9oT2LcIzG31A4tMcrxU/yt+8LWqppSuqw==
-X-Received: by 2002:a17:906:d107:: with SMTP id b7mr23711400ejz.541.1633429705854;
-        Tue, 05 Oct 2021 03:28:25 -0700 (PDT)
-Received: from [192.168.0.108] ([176.228.98.2])
-        by smtp.gmail.com with ESMTPSA id g9sm7671660ejo.60.2021.10.05.03.28.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Oct 2021 03:28:25 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/4] mlx4: prep for constant dev->dev_addr
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, tariqt@nvidia.com, yishaih@nvidia.com,
-        linux-rdma@vger.kernel.org
-References: <20211004191446.2127522-1-kuba@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Message-ID: <d2c490a9-7f52-bc6d-ad58-48011d1816aa@gmail.com>
-Date:   Tue, 5 Oct 2021 13:28:23 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S233490AbhJEKfT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 06:35:19 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009B4C06161C;
+        Tue,  5 Oct 2021 03:33:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=kT0Hjr/F9NQrOS6/YDbtKD9/7NDOpyJOJCXmfpl4TQY=; b=sAozXbhwy6ljtDTsQq6amThNlY
+        HnVkHvaEeJCEe0cJDtdlEe1tzejoJP4C5YZ8ndryKD7f78Tg/fxa1C34ciWHUZEjHpCVeLfHaTXyT
+        36fnMw6UtlydkRd8fT1FXHgZ9n9NavNLrusL09kYe1OU+bRvvKatFQkGrLCyHpS7a6Gi1aFAyKeLr
+        SI9gaL5EulVjCI+MM2EUbOgL/Ab1K/AihTz+QYIi5b7Q69A7pQ5AFioocV5gRxUXp93Nnh0pPwq1i
+        DQpQksVuweSFVnOmT9U1cqBMgT3/G1hfueSiYDMnchwfpnsx+c1rJr8VhbVnpFWJzr+ZyKAQzDzrD
+        aiC3/jzA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54954)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mXhlG-000095-Lh; Tue, 05 Oct 2021 11:33:26 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mXhlF-0008OZ-L9; Tue, 05 Oct 2021 11:33:25 +0100
+Date:   Tue, 5 Oct 2021 11:33:25 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [RFC net-next PATCH 16/16] net: sfp: Add quirk to ignore PHYs
+Message-ID: <YVwp9R40r0ZWJzTa@shell.armlinux.org.uk>
+References: <20211004191527.1610759-1-sean.anderson@seco.com>
+ <20211004191527.1610759-17-sean.anderson@seco.com>
 MIME-Version: 1.0
-In-Reply-To: <20211004191446.2127522-1-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211004191527.1610759-17-sean.anderson@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/4/2021 10:14 PM, Jakub Kicinski wrote:
-> This patch converts mlx4 for dev->dev_addr being const. It converts
-> to use of common helpers but also removes some seemingly unnecessary
-> idiosyncrasies.
+On Mon, Oct 04, 2021 at 03:15:27PM -0400, Sean Anderson wrote:
+> Some modules have something at SFP_PHY_ADDR which isn't a PHY. If we try to
+> probe it, we might attach genphy anyway if addresses 2 and 3 return
+> something other than all 1s. To avoid this, add a quirk for these modules
+> so that we do not probe their PHY.
 > 
-> Please review.
+> The particular module in this case is a Finisar SFP-GB-GE-T. This module is
+> also worked around in xgbe_phy_finisar_phy_quirks() by setting the support
+> manually. However, I do not believe that it has a PHY in the first place:
+> 
+> $ i2cdump -y -r 0-31 $BUS 0x56 w
+>      0,8  1,9  2,a  3,b  4,c  5,d  6,e  7,f
+> 00: ff01 ff01 ff01 c20c 010c 01c0 0f00 0120
+> 08: fc48 000e ff78 0000 0000 0000 0000 00f0
+> 10: 7800 00bc 0000 401c 680c 0300 0000 0000
+> 18: ff41 0000 0a00 8890 0000 0000 0000 0000
 
-Thanks for your series.
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Actually, I think that is a PHY. It's byteswapped (which is normal using
+i2cdump in this way). The real contents of the registers are:
 
-> 
-> Jakub Kicinski (4):
->    mlx4: replace mlx4_mac_to_u64() with ether_addr_to_u64()
->    mlx4: replace mlx4_u64_to_mac() with u64_to_ether_addr()
->    mlx4: remove custom dev_addr clearing
->    mlx4: constify args for const dev_addr
-> 
->   drivers/infiniband/hw/mlx4/main.c             |  2 +-
->   drivers/infiniband/hw/mlx4/qp.c               |  2 +-
->   drivers/net/ethernet/mellanox/mlx4/cmd.c      |  4 +-
->   .../net/ethernet/mellanox/mlx4/en_netdev.c    | 37 +++++++------------
->   drivers/net/ethernet/mellanox/mlx4/fw.c       |  2 +-
->   drivers/net/ethernet/mellanox/mlx4/mcg.c      |  2 +-
->   include/linux/mlx4/device.h                   |  2 +-
->   include/linux/mlx4/driver.h                   | 22 -----------
->   8 files changed, 21 insertions(+), 52 deletions(-)
-> 
+00: 01ff 01ff 01ff 0cc2 0c01 c001 000f 2001
+08: 48fc 0e00 78ff 0000 0000 0000 0000 f000
+10: 0078 bc00 0000 1c40 0c68 0003 0000 0000
+18: 41ff 0000 000a 9088 0000 0000 0000 0000
+
+It's advertising pause + asym pause, 1000BASE-T FD, link partner is also
+advertising 1000BASE-T FD but no pause abilities.
+
+When comparing this with a Marvell 88e1111:
+
+00: 1140 7949 0141 0cc2 05e1 0000 0004 2001
+08: 0000 0e00 4000 0000 0000 0000 0000 f000
+10: 0078 8100 0000 0040 0568 0000 0000 0000
+18: 4100 0000 0002 8084 0000 0000 0000 0000
+
+It looks remarkably similar. However, The first few reads seem to be
+corrupted with 0x01ff. It may be that the module is slow to allow the
+PHY to start responding - we've had similar with Champion One SFPs.
+
+It looks like it's a Marvell 88e1111. The register at 0x11 is the
+Marvell status register, and 0xbc00 indicates 1000Mbit, FD, AN
+resolved, link up which agrees with what's in the various other
+registers.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
