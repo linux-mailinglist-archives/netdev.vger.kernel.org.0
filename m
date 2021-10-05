@@ -2,91 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3879542258E
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 13:45:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4A164225BD
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 13:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234532AbhJELrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 07:47:04 -0400
-Received: from mga11.intel.com ([192.55.52.93]:61521 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234437AbhJELrD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 07:47:03 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10127"; a="223132356"
-X-IronPort-AV: E=Sophos;i="5.85,348,1624345200"; 
-   d="scan'208";a="223132356"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2021 04:45:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,348,1624345200"; 
-   d="scan'208";a="477646437"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga007.jf.intel.com with ESMTP; 05 Oct 2021 04:44:59 -0700
-Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
-        by linux.intel.com (Postfix) with ESMTP id 8D65A5809EB;
-        Tue,  5 Oct 2021 04:44:56 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Wong Vee Khee <veekhee@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH net 2/2] net: stmmac: trigger PCS EEE to turn off on link down
-Date:   Tue,  5 Oct 2021 19:51:00 +0800
-Message-Id: <20211005115100.1648170-3-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211005115100.1648170-1-vee.khee.wong@linux.intel.com>
-References: <20211005115100.1648170-1-vee.khee.wong@linux.intel.com>
+        id S234133AbhJELyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 07:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232658AbhJELyp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 07:54:45 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3910C061749
+        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 04:52:54 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1mXj08-0003RT-Ih; Tue, 05 Oct 2021 13:52:52 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Christian Brauner <christian.brauner@ubuntu.com>
+Subject: [PATCH net-next] netlink: remove netlink_broadcast_filtered
+Date:   Tue,  5 Oct 2021 13:52:42 +0200
+Message-Id: <20211005115242.9630-1-fw@strlen.de>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current implementation enable PCS EEE feature in the event of link
-up, but PCS EEE feature is not disabled on link down.
+No users in tree since commit a3498436b3a0 ("netns: restrict uevents"),
+so remove this functionality.
 
-This patch makes sure PCE EEE feature is disabled on link down.
-
-Fixes: 656ed8b015f1 ("net: stmmac: fix EEE init issue when paired with EEE capable PHYs")
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ include/linux/netlink.h  |  4 ----
+ net/netlink/af_netlink.c | 23 ++---------------------
+ 2 files changed, 2 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 981ccf47dcea..eb3b7bf771d7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -477,6 +477,10 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
- 			stmmac_lpi_entry_timer_config(priv, 0);
- 			del_timer_sync(&priv->eee_ctrl_timer);
- 			stmmac_set_eee_timer(priv, priv->hw, 0, eee_tw_timer);
-+			if (priv->hw->xpcs)
-+				xpcs_config_eee(priv->hw->xpcs,
-+						priv->plat->mult_fact_100ns,
-+						false);
- 		}
- 		mutex_unlock(&priv->lock);
- 		return false;
-@@ -1038,7 +1042,7 @@ static void stmmac_mac_link_down(struct phylink_config *config,
- 	stmmac_mac_set(priv, priv->ioaddr, false);
- 	priv->eee_active = false;
- 	priv->tx_lpi_enabled = false;
--	stmmac_eee_init(priv);
-+	priv->eee_enabled = stmmac_eee_init(priv);
- 	stmmac_set_eee_pls(priv, priv->hw, false);
+diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+index 61b1c7fcc401..1ec631838af9 100644
+--- a/include/linux/netlink.h
++++ b/include/linux/netlink.h
+@@ -156,10 +156,6 @@ bool netlink_strict_get_check(struct sk_buff *skb);
+ int netlink_unicast(struct sock *ssk, struct sk_buff *skb, __u32 portid, int nonblock);
+ int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, __u32 portid,
+ 		      __u32 group, gfp_t allocation);
+-int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb,
+-			       __u32 portid, __u32 group, gfp_t allocation,
+-			       int (*filter)(struct sock *dsk, struct sk_buff *skb, void *data),
+-			       void *filter_data);
+ int netlink_set_err(struct sock *ssk, __u32 portid, __u32 group, int code);
+ int netlink_register_notifier(struct notifier_block *nb);
+ int netlink_unregister_notifier(struct notifier_block *nb);
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 24b7cf447bc5..4f5f93fd6802 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1407,8 +1407,6 @@ struct netlink_broadcast_data {
+ 	int delivered;
+ 	gfp_t allocation;
+ 	struct sk_buff *skb, *skb2;
+-	int (*tx_filter)(struct sock *dsk, struct sk_buff *skb, void *data);
+-	void *tx_data;
+ };
  
- 	if (priv->dma_cap.fpesel)
+ static void do_one_broadcast(struct sock *sk,
+@@ -1462,11 +1460,6 @@ static void do_one_broadcast(struct sock *sk,
+ 			p->delivery_failure = 1;
+ 		goto out;
+ 	}
+-	if (p->tx_filter && p->tx_filter(sk, p->skb2, p->tx_data)) {
+-		kfree_skb(p->skb2);
+-		p->skb2 = NULL;
+-		goto out;
+-	}
+ 	if (sk_filter(sk, p->skb2)) {
+ 		kfree_skb(p->skb2);
+ 		p->skb2 = NULL;
+@@ -1489,10 +1482,8 @@ static void do_one_broadcast(struct sock *sk,
+ 	sock_put(sk);
+ }
+ 
+-int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid,
+-	u32 group, gfp_t allocation,
+-	int (*filter)(struct sock *dsk, struct sk_buff *skb, void *data),
+-	void *filter_data)
++int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
++		      u32 group, gfp_t allocation)
+ {
+ 	struct net *net = sock_net(ssk);
+ 	struct netlink_broadcast_data info;
+@@ -1511,8 +1502,6 @@ int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid
+ 	info.allocation = allocation;
+ 	info.skb = skb;
+ 	info.skb2 = NULL;
+-	info.tx_filter = filter;
+-	info.tx_data = filter_data;
+ 
+ 	/* While we sleep in clone, do not allow to change socket list */
+ 
+@@ -1538,14 +1527,6 @@ int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid
+ 	}
+ 	return -ESRCH;
+ }
+-EXPORT_SYMBOL(netlink_broadcast_filtered);
+-
+-int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
+-		      u32 group, gfp_t allocation)
+-{
+-	return netlink_broadcast_filtered(ssk, skb, portid, group, allocation,
+-		NULL, NULL);
+-}
+ EXPORT_SYMBOL(netlink_broadcast);
+ 
+ struct netlink_set_err_data {
 -- 
-2.25.1
+2.32.0
 
