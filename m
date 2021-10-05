@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6905422E75
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 18:54:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B830422E7A
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 18:54:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236596AbhJEQ4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 12:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52210 "EHLO
+        id S236656AbhJEQ4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 12:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235045AbhJEQ4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 12:56:14 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5A7C06174E
-        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 09:54:23 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id l7so1347413edq.3
-        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 09:54:23 -0700 (PDT)
+        with ESMTP id S236562AbhJEQ4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 12:56:15 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D618C06174E
+        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 09:54:24 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id dj4so1325267edb.5
+        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 09:54:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=anyfinetworks-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AThnfolXuZ529NtB5LKihF2wmMfRdDNyNSiSwp98fs8=;
-        b=4+X9ouq5HXNPyoHRUqthn6uVP65T9QZB6aYRLDNhJ7n9nv2BR0Drt2gxlPS0X5v1Y1
-         XOENziChQb++J4catuF6JRJObQsmupCfCIIdegfvre1UZDWVq4cBnUclxuj6BtyRtF2E
-         dnIOOZxZwmWgUDnb15Den090RYV43kIB3y9K/pHoXI1DngOQo6KdXRBAZBzcl8fXZjZZ
-         5DHBm1kxGVH9mA7I76qdl8J6u2Lz60v3nNuVO/BhjAoWF1WV9W2gVudsoS57BBLV/2eg
-         tu9EgsCsBcUPDPUkpN73ZqPW7+8fe7WcDJzLE28Bpk2lgqhLg+Zku5jM+s7jBSVfis6V
-         uOXg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=DZ2i9LKOneWZTwGUW8k+ODLGUWaKyeF1iKdmKQkxUcY=;
+        b=uvljRWWYiqcG30l0lni1WZWJwXtPlgAsSxeNlA4riD+lMaOUx3wNFi2M70lVjny81L
+         IgJw2wzRaWLSUJryjQoQ9OS/jIMxTpaU0YFO5eaoYsSHlNeOBEqRQHv0v8LvHutY9nkE
+         YdZh6VCLUAY1bnf0/U8Y2tqLZoIy2//E4Zr9GC/NThdaGg163up6l9LiBmGDQ2QpK0ta
+         AJWn+dniOep1XL6TOJseGcFJw8rZdZW32A6mHniOth9+ZxzbxT4LEMnMYOZ9QSo+8DTS
+         X1BxT0C1//jM2Q0Frg8K9TV99aqBdFl/pC62yOJdCDIWq5zXNMZgIWzL2rafexCU0SIh
+         5NWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AThnfolXuZ529NtB5LKihF2wmMfRdDNyNSiSwp98fs8=;
-        b=xLyRGTDGeOHVtD6EaJCiuR20k1xWI0ZQWddyPkgX1iyk9V06EgeBC1f8Qg9UrHPmO0
-         FUEcuP3uXSsaXqAbtmVXfBKTNBsY7QBwwT/HYCcsk3oTjLOtFIzLXSvEH4jZfROb93yV
-         VpvdoRQXLcqp77nHRav+dZHZLHhZ4OVM9hlbzuB9SDtRKEgUru4sHB58HysuOm98CXTv
-         HfUGnj68adauezUuUaMDQTlc2k9R9xFWNqIxZbwvGk7rCXO8heHtk8kCI0F48KHIyDjq
-         gg2G+zyVvHqMDMbjsnjP9YAmjXsYVDKdaj7b+8H9qCkGWfdmh2uZuAIqBApLbzAaQ50h
-         oVQA==
-X-Gm-Message-State: AOAM533d4g9hL3mDtyh0c550TZnkce2u3lyHD/0v5Azh05Y6CL3f9G7q
-        b7IR//g934sniRekd5BCS+1DzA==
-X-Google-Smtp-Source: ABdhPJwhlkxDR5I30YBtmBfdnuOV5VwESSc5loETkUvMCrFe+b8zm67oRSkkUrt2CJt3y8s1JubAag==
-X-Received: by 2002:a50:bf48:: with SMTP id g8mr27156806edk.10.1633452861628;
-        Tue, 05 Oct 2021 09:54:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DZ2i9LKOneWZTwGUW8k+ODLGUWaKyeF1iKdmKQkxUcY=;
+        b=ag1pJ3d1j5ARnOXv4rAq2EhNhXIdt8bTMbD8j0OsJWrC8sgqbfqq05GjnjTVCW/peX
+         2l9EuG2AFHIZBNMXJG4lOh2t1/A5yNFHe+Hqxgz50AnIwORg6K4G0ph0KE4izAGpF9o5
+         D3Lgwx08uAEZxeOFDevEqzVePmAA/tCUL3iai3ej9BZsjKOOi4SzAETkEy/XBbsOTb/7
+         +43h6DJ5vFDsCs35jJXGXOHtsb4Y8wjlQHln1Cgaud85JVKiPDT4ed+kaV1fwEOS+r6p
+         8QUV+PKoFUCmTnM/8zbIcu0njO3O63O9thc8AXCJGWWgfSAkjqzb85IajlXo/uUEkrfS
+         EiyQ==
+X-Gm-Message-State: AOAM530t0P1HqQ9tQVU72ImZ9aQ9GQU3Qof7bKMMEDnh/CGaYjqxozUa
+        OcwRSRf0v2W2pxA98SdXQKdz7Q==
+X-Google-Smtp-Source: ABdhPJy+P25wq2mMVGo5T1iuNK6dt9Z2gDNRZzR59PnR36Dl5XlRiBGjTHbo5UUJHZotNQQHxV1REA==
+X-Received: by 2002:a50:9d83:: with SMTP id w3mr27455643ede.305.1633452862987;
+        Tue, 05 Oct 2021 09:54:22 -0700 (PDT)
 Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id x16sm3447818ejj.8.2021.10.05.09.54.20
+        by smtp.gmail.com with ESMTPSA id x16sm3447818ejj.8.2021.10.05.09.54.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Oct 2021 09:54:21 -0700 (PDT)
+        Tue, 05 Oct 2021 09:54:22 -0700 (PDT)
 From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         paulburton@kernel.org
@@ -56,205 +56,91 @@ Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         jiaxun.yang@flygoat.com, yangtiezhu@loongson.cn,
         tony.ambardar@gmail.com, bpf@vger.kernel.org,
         linux-mips@vger.kernel.org, netdev@vger.kernel.org,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH 0/7] A new eBPF JIT implementation for MIPS
-Date:   Tue,  5 Oct 2021 18:54:01 +0200
-Message-Id: <20211005165408.2305108-1-johan.almbladh@anyfinetworks.com>
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Tony Ambardar <Tony.Ambardar@gmail.com>
+Subject: [PATCH 1/7] MIPS: uasm: Enable muhu opcode for MIPS R6
+Date:   Tue,  5 Oct 2021 18:54:02 +0200
+Message-Id: <20211005165408.2305108-2-johan.almbladh@anyfinetworks.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211005165408.2305108-1-johan.almbladh@anyfinetworks.com>
+References: <20211005165408.2305108-1-johan.almbladh@anyfinetworks.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an implementation of an eBPF JIT for MIPS I-V and MIPS32/64 r1-r6.
-The new JIT is written from scratch, but uses the same overall structure
-as other eBPF JITs.
+Enable the 'muhu' instruction, complementing the existing 'mulu', needed
+to implement a MIPS32 BPF JIT.
 
-Before, the MIPS JIT situation looked like this.
+Also fix a typo in the existing definition of 'dmulu'.
 
-  - 32-bit: MIPS32, cBPF-only, tests fail
-  - 64-bit: MIPS64r2-r6, eBPF, tests fail, incomplete eBPF ISA support
+Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
 
-The new JIT implementation raises the bar to the following level.
+This patch is a dependency for my 32-bit MIPS eBPF JIT.
 
-  - 32/64-bit: all MIPS ISA, eBPF, all tests pass, full eBPF ISA support
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+---
+ arch/mips/include/asm/uasm.h | 1 +
+ arch/mips/mm/uasm-mips.c     | 4 +++-
+ arch/mips/mm/uasm.c          | 3 ++-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
 
-Overview
-========
-The implementation supports all 32-bit and 64-bit eBPF instructions
-defined as of this writing, including the recently-added atomics. It is
-intended to provide good performance for native word size operations,
-while also being complete so the JIT never has to fall back to the
-interpreter. The new JIT replaces the current cBPF and eBPF JITs for MIPS.
-
-The implementation is divided into separate files as follows. The source
-files contains comments describing internal mechanisms and details on
-things like eBPF-to-CPU register mappings, so I won't repeat that here.
-
-  - jit_comp.[ch]    code shared between 32-bit and 64-bit JITs
-  - jit_comp32.c     32-bit JIT implementation
-  - jit_comp64.c     64-bit JIT implementation
-
-Both the 32-bit and 64-bit versions map all eBPF registers to native MIPS
-CPU registers. There are also enough unmapped CPU registers available to
-allow all eBPF operations implemented natively by the JIT to use only CPU
-registers without having to resort to stack scratch space.
-
-Some operations are deemed too complex to implement natively in the JIT.
-Those are instead implemented as a function call to a helper that performs
-the operation. This is done in the following cases.
-
-  - 64-bit div and mod on a 32-bit CPU
-  - 64-bit atomics on a 32-bit CPU
-  - 32-bit atomics on a 32-bit CPU that lacks ll/sc instructions
-
-CPU errata workarounds
-======================
-The JIT implements workarounds for R10000, Loongson-2F and Loongson-3 CPU
-errata. For the Loongson workarounds, I have used the public information
-available on the matter.
-
-Link: https://sourceware.org/legacy-ml/binutils/2009-11/msg00387.html
-
-Loongson people: could you please check if my understanding is correct,
-                 especially for the Loongson-2F jump errata?
-
-Testing
-=======
-During the development of the JIT, I have added a number of new test cases
-to the test_bpf.ko test suite to be able to verify correctness of JIT
-implementations in a more systematic way. The new additions increase the
-test suite roughly three-fold, with many of the new tests being very
-extensive and even exhaustive when feasible.
-
-Link: https://lore.kernel.org/bpf/20211001130348.3670534-1-johan.almbladh@anyfinetworks.com/
-Link: https://lore.kernel.org/bpf/20210914091842.4186267-1-johan.almbladh@anyfinetworks.com/
-Link: https://lore.kernel.org/bpf/20210809091829.810076-1-johan.almbladh@anyfinetworks.com/
-
-The JIT has been tested by running the test_bpf.ko test suite in QEMU with
-the following MIPS ISAs, in both big and little endian mode, with and
-without JIT hardening enabled.
-
-  MIPS32r2, MIPS32r6, MIPS64r2, MIPS64r6
-
-For the QEMU r2 targets, the correctness of pre-r2 code emitted has been
-tested by manually overriding each of the following macros with 0.
-
-  cpu_has_llsc, cpu_has_mips_2, cpu_has_mips_r1, cpu_has_mips_r2
-
-Similarly, CPU errata workaround code has been tested by enabling the
-each of the following configurations for the MIPS64r2 targets.
-
-  CONFIG_WAR_R10000
-  CONFIG_CPU_LOONGSON3_WORKAROUNDS
-  CONFIG_CPU_NOP_WORKAROUNDS
-  CONFIG_CPU_JUMP_WORKAROUNDS
-
-The JIT passes all tests in all configurations. Below is the summary for
-MIPS32r2 in little endian mode.
-
-  test_bpf: Summary: 1006 PASSED, 0 FAILED, [994/994 JIT'ed]
-  test_bpf: test_tail_calls: Summary: 8 PASSED, 0 FAILED, [8/8 JIT'ed]
-  test_bpf: test_skb_segment: Summary: 2 PASSED, 0 FAILED
-
-According to MIPS ISA reference documentation, the result of a 32-bit ALU
-arithmetic operation on a 64-bit CPU is unpredictable if an operand
-register value is not properly sign-extended to 64 bits. To verify the
-code emitted by the JIT, the code generation engine in QEMU was modifed to
-flip all low 32 bits if the above condition was not met. With this
-trip-wire installed, the kernel booted properly in qemu-system-mips64el
-and all test_bpf.ko tests passed.
-
-Remaining features
-==================
-While the JIT is complete is terms of eBPF ISA support, this series does
-not include support for BPF-to-BPF calls and BPF trampolines. Those
-features are planned to be added in another patch series.
-
-The BPF_ST | BPF_NOSPEC instruction currently emits nothing. This is
-consistent with the behavior if the MIPS interpreter and the existing
-eBPF JIT.
-
-Why not build on the existing eBPF JIT?
-=======================================
-The existing eBPF JIT was originally written for MIPS64. An effort was
-made to add MIPS32 support to it in commit 716850ab104d ("MIPS: eBPF:
-Initial eBPF support for MIPS32 architecture."). That turned out to
-contain a number of flaws, so eBPF support for MIPS32 was disabled in
-commit 36366e367ee9 ("MIPS: BPF: Restore MIPS32 cBPF JIT").
-
-Link: https://lore.kernel.org/bpf/5deaa994.1c69fb81.97561.647e@mx.google.com/
-
-The current eBPF JIT for MIPS64 lacks a lot of functionality regarding
-ALU32, JMP32 and atomic operations. It also lacks 32-bit CPU support on a
-fundamental level, for example 32-bit CPU register mappings and o32 ABI
-calling conventions. For optimization purposes, it tracks register usage
-through the program control flow in order to do zero-extension and sign-
-extension only when necessary, a static analysis of sorts. In my opinion,
-having this kind of complexity in JITs, and for which there is not
-adequate test coverage, is a problem. Such analysis should be done by the
-verifier, if needed at all. Finally, when I run the BPF test suite
-test_bpf.ko on the current JIT, there are errors and warnings.
-
-I believe that an eBPF JIT should strive to be correct, complete and
-optimized, and in that order. The JIT runs after the verifer has audited
-the program and given its approval. If the JIT then emits code that does
-something else, it will undermine the eBPF security model. A simple
-implementation is easier to get correct than a complex one. Furthermore,
-the real performance hit is not an extra CPU instruction here and there,
-but when the JIT bails on an unimplemented eBPF instruction and cause the
-whole program to fall back to the interpreter. My reasoning here boils
-down to the following.
-
-* The JIT should not contain a static analyzer that tracks branches.
-
-* It is acceptable to emit possibly superfluous sign-/zero-extensions for
-  ALU32 and JMP32 operations on a 64-bit MIPS to guarantee correctness.
-
-* The JIT should handle all eBPF instructions on all MIPS CPUs.
-
-I conclude that the current eBPF MIPS JIT is complex, incomplete and
-incorrect. For the reasons stated above, I decided to not use the existing
-JIT implementation.
-
-Johan
-
-Tony Ambardar (1):
-  MIPS: uasm: Enable muhu opcode for MIPS R6
-
-Johan Almbladh (6):
-  mips: uasm: Add workaround for Loongson-2F nop CPU errata
-  mips: bpf: Add eBPF JIT for 32-bit MIPS
-  mips: bpf: Add new eBPF JIT for 64-bit MIPS
-  mips: bpf: Add JIT workarounds for CPU errata
-  mips: bpf: Enable eBPF JITs
-  mips: bpf: Remove old BPF JIT implementations
-
- MAINTAINERS                    |    1 +
- arch/mips/Kconfig              |    6 +-
- arch/mips/include/asm/uasm.h   |    5 +
- arch/mips/mm/uasm-mips.c       |    4 +-
- arch/mips/mm/uasm.c            |    3 +-
- arch/mips/net/Makefile         |    8 +-
- arch/mips/net/bpf_jit.c        | 1299 ---------------------
- arch/mips/net/bpf_jit.h        |   81 --
- arch/mips/net/bpf_jit_asm.S    |  285 -----
- arch/mips/net/bpf_jit_comp.c   | 1034 +++++++++++++++++
- arch/mips/net/bpf_jit_comp.h   |  235 ++++
- arch/mips/net/bpf_jit_comp32.c | 1899 +++++++++++++++++++++++++++++++
- arch/mips/net/bpf_jit_comp64.c | 1054 +++++++++++++++++
- arch/mips/net/ebpf_jit.c       | 1938 --------------------------------
- 14 files changed, 4244 insertions(+), 3608 deletions(-)
- delete mode 100644 arch/mips/net/bpf_jit.c
- delete mode 100644 arch/mips/net/bpf_jit.h
- delete mode 100644 arch/mips/net/bpf_jit_asm.S
- create mode 100644 arch/mips/net/bpf_jit_comp.c
- create mode 100644 arch/mips/net/bpf_jit_comp.h
- create mode 100644 arch/mips/net/bpf_jit_comp32.c
- create mode 100644 arch/mips/net/bpf_jit_comp64.c
- delete mode 100644 arch/mips/net/ebpf_jit.c
-
+diff --git a/arch/mips/include/asm/uasm.h b/arch/mips/include/asm/uasm.h
+index f7effca791a5..5efa4e2dc9ab 100644
+--- a/arch/mips/include/asm/uasm.h
++++ b/arch/mips/include/asm/uasm.h
+@@ -145,6 +145,7 @@ Ip_u1(_mtlo);
+ Ip_u3u1u2(_mul);
+ Ip_u1u2(_multu);
+ Ip_u3u1u2(_mulu);
++Ip_u3u1u2(_muhu);
+ Ip_u3u1u2(_nor);
+ Ip_u3u1u2(_or);
+ Ip_u2u1u3(_ori);
+diff --git a/arch/mips/mm/uasm-mips.c b/arch/mips/mm/uasm-mips.c
+index 7154a1d99aad..e15c6700cd08 100644
+--- a/arch/mips/mm/uasm-mips.c
++++ b/arch/mips/mm/uasm-mips.c
+@@ -90,7 +90,7 @@ static const struct insn insn_table[insn_invalid] = {
+ 				RS | RT | RD},
+ 	[insn_dmtc0]	= {M(cop0_op, dmtc_op, 0, 0, 0, 0), RT | RD | SET},
+ 	[insn_dmultu]	= {M(spec_op, 0, 0, 0, 0, dmultu_op), RS | RT},
+-	[insn_dmulu]	= {M(spec_op, 0, 0, 0, dmult_dmul_op, dmultu_op),
++	[insn_dmulu]	= {M(spec_op, 0, 0, 0, dmultu_dmulu_op, dmultu_op),
+ 				RS | RT | RD},
+ 	[insn_drotr]	= {M(spec_op, 1, 0, 0, 0, dsrl_op), RT | RD | RE},
+ 	[insn_drotr32]	= {M(spec_op, 1, 0, 0, 0, dsrl32_op), RT | RD | RE},
+@@ -150,6 +150,8 @@ static const struct insn insn_table[insn_invalid] = {
+ 	[insn_mtlo]	= {M(spec_op, 0, 0, 0, 0, mtlo_op), RS},
+ 	[insn_mulu]	= {M(spec_op, 0, 0, 0, multu_mulu_op, multu_op),
+ 				RS | RT | RD},
++	[insn_muhu]	= {M(spec_op, 0, 0, 0, multu_muhu_op, multu_op),
++				RS | RT | RD},
+ #ifndef CONFIG_CPU_MIPSR6
+ 	[insn_mul]	= {M(spec2_op, 0, 0, 0, 0, mul_op), RS | RT | RD},
+ #else
+diff --git a/arch/mips/mm/uasm.c b/arch/mips/mm/uasm.c
+index 81dd226d6b6b..125140979d62 100644
+--- a/arch/mips/mm/uasm.c
++++ b/arch/mips/mm/uasm.c
+@@ -59,7 +59,7 @@ enum opcode {
+ 	insn_lddir, insn_ldpte, insn_ldx, insn_lh, insn_lhu, insn_ll, insn_lld,
+ 	insn_lui, insn_lw, insn_lwu, insn_lwx, insn_mfc0, insn_mfhc0, insn_mfhi,
+ 	insn_mflo, insn_modu, insn_movn, insn_movz, insn_mtc0, insn_mthc0,
+-	insn_mthi, insn_mtlo, insn_mul, insn_multu, insn_mulu, insn_nor,
++	insn_mthi, insn_mtlo, insn_mul, insn_multu, insn_mulu, insn_muhu, insn_nor,
+ 	insn_or, insn_ori, insn_pref, insn_rfe, insn_rotr, insn_sb, insn_sc,
+ 	insn_scd, insn_seleqz, insn_selnez, insn_sd, insn_sh, insn_sll,
+ 	insn_sllv, insn_slt, insn_slti, insn_sltiu, insn_sltu, insn_sra,
+@@ -344,6 +344,7 @@ I_u1(_mtlo)
+ I_u3u1u2(_mul)
+ I_u1u2(_multu)
+ I_u3u1u2(_mulu)
++I_u3u1u2(_muhu)
+ I_u3u1u2(_nor)
+ I_u3u1u2(_or)
+ I_u2u1u3(_ori)
 -- 
 2.30.2
 
