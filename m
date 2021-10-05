@@ -2,98 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C191A421B5D
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:01:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8DE7421B67
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:05:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbhJEBD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 21:03:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51504 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229549AbhJEBD0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 21:03:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5677361207;
-        Tue,  5 Oct 2021 01:01:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633395696;
-        bh=r7dTZFXr2HMyNM8EVV6b9Hg3K9jOI5YSw2Ej9MxJBxo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=utri28NrgT5Tqt597H+9BF5ZI9pbsMlek8d8X/HyZUfVMDsnSJtVyBUnwX/ST3nhG
-         SIcdCA2KUWbMcVb42kqIuRzceUS0dQpevBzWrH4+lb/g0MRsL6mTyIkkWwBRA1UhAC
-         fJkl2XHj2LJJtId7rz96hk6U2c4DoCjgIJwFRLfbv77jpzGC1dccuG+WGWgn6mnY3H
-         Ym+5XxuB9bEwTYKSeCciT/JQt24FlsHaXvlYHxWlMAUKpBQrrlvlBfMXuR1foIbwuk
-         Iu5nPS0gDD0JYQqGbZ6hR1vta4aurNHnfm/UdqqY4jybFiwZC8cP7OHK0Yd7itKLm4
-         xk208Pfjjk1zw==
-Date:   Mon, 4 Oct 2021 18:01:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
-        jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 1/6] ethtool: Add ability to control
- transceiver modules' power mode
-Message-ID: <20211004180135.55759be4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211003073219.1631064-2-idosch@idosch.org>
-References: <20211003073219.1631064-1-idosch@idosch.org>
-        <20211003073219.1631064-2-idosch@idosch.org>
+        id S230010AbhJEBHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 21:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229549AbhJEBHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Oct 2021 21:07:03 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C484EC061745
+        for <netdev@vger.kernel.org>; Mon,  4 Oct 2021 18:05:13 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id on6so1952557pjb.5
+        for <netdev@vger.kernel.org>; Mon, 04 Oct 2021 18:05:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zqidSq1+bKbcI5rRo9YGhm6lOT10LF6cVmMBEPHE9VU=;
+        b=g6TLg8WGEICnvxA7kw0jJRU503zWyX9qiurgalhvKsfUvY6qHh3UHoYR0DGJ9vEquZ
+         SVvjxqyUEkYVmVmxiyLkbLCEHoQLYO3XlPXQmDKgtlzjCoFJWUfEIeCTkknqOvFUdu6D
+         ythsSHMZUZBHp7AEK3bNA5jJ7un2MPvXXbWkERlsCIXahFdlebugoQ5fdpTqtJ73Ro9D
+         z6X+a6lbloIGnIeHzrS99vhb6xERVis5q+9Wkk6Eik2V/B5uSZAmp7YmCei1JOFFcJzn
+         ZY3px9kdVIZmwZQlNuHjZ6eNHr+aOn79+KqjFN4HFwzPfdFbzozW0/Oshtis3XDJIGX0
+         7HcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zqidSq1+bKbcI5rRo9YGhm6lOT10LF6cVmMBEPHE9VU=;
+        b=AiU/j4fxGtAVuozZM7fib5PLoWqKXtMmNWuFY6iDfYXblbgcE5O7a/UfTHY8yyj2YG
+         f/ZFT7ZBxrtop8lwOTh4O9Pwc9GIIOggKIJa82c3e9tvsqKfBM+VPaPA+ewqTqFAs+ru
+         LL2i8rzI6suSd6bj25eyxzaSYVnMHyele7AgCKpITFhi+N0KVXckNJHdqwl85IZgydCp
+         UK8dYhAW+OGGV3O0vqacqSl+X6zNPUfAiHNLaw2tnR7B1+OKdTZmb+/fCrcWvSNwNkqJ
+         Bq62n5Uymdjal6C1eDzhqHMJXutHSK+qIIcndGCOHnCN/MGkt98015RG/Mdw/m+moeIS
+         lhPw==
+X-Gm-Message-State: AOAM5320B3d9Nx7MkEz4mp/AMYfeFloKsQ8wucA+E2SAlMvgc6edTGZZ
+        mAZxo0z9EAxbuGzN8xNBCgo=
+X-Google-Smtp-Source: ABdhPJzmYG8z+xIjBRw1HEyRx5jtNMJJlu0o7ZpVRkNy0U92h6IdAsbhOcaD5SlItAHEXJzPLFQvug==
+X-Received: by 2002:a17:90b:3591:: with SMTP id mm17mr325613pjb.140.1633395913284;
+        Mon, 04 Oct 2021 18:05:13 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7236:cc97:8564:4e2a])
+        by smtp.gmail.com with ESMTPSA id d67sm6509348pga.67.2021.10.04.18.05.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Oct 2021 18:05:12 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net 0/2] net: bridge: br_get_linkxstats_size() fixes
+Date:   Mon,  4 Oct 2021 18:05:06 -0700
+Message-Id: <20211005010508.2194560-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.33.0.800.g4c38ced690-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  3 Oct 2021 10:32:14 +0300 Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> Add a pair of new ethtool messages, 'ETHTOOL_MSG_MODULE_SET' and
-> 'ETHTOOL_MSG_MODULE_GET', that can be used to control transceiver
-> modules parameters and retrieve their status.
+From: Eric Dumazet <edumazet@google.com>
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+This patch series attempts to fix the following syzbot report.
 
-Couple of take it or leave it comments again, if you prefer to leave as
-is that's fine.
+WARNING: CPU: 1 PID: 21425 at net/core/rtnetlink.c:5388 rtnl_stats_get+0x80f/0x8c0 net/core/rtnetlink.c:5388
+Modules linked in:
+CPU: 1 PID: 21425 Comm: syz-executor394 Not tainted 5.13.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:rtnl_stats_get+0x80f/0x8c0 net/core/rtnetlink.c:5388
+Code: e9 9c fc ff ff 4c 89 e7 89 0c 24 e8 ab 8b a8 fa 8b 0c 24 e9 bc fc ff ff 4c 89 e7 e8 9b 8b a8 fa e9 df fe ff ff e8 61 85 63 fa <0f> 0b e9 f7 fc ff ff 41 be ea ff ff ff e9 f9 fc ff ff 41 be 97 ff
+RSP: 0018:ffffc9000cf77688 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 000000000000012c RCX: 0000000000000000
+RDX: ffff8880211754c0 RSI: ffffffff8711571f RDI: 0000000000000003
+RBP: ffff8880175aa780 R08: 00000000ffffffa6 R09: ffff88823bd5c04f
+R10: ffffffff87115413 R11: 0000000000000001 R12: ffff8880175aab74
+R13: ffff8880175aab40 R14: 00000000ffffffa6 R15: 0000000000000006
+FS:  0000000001ff9300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000005cfd58 CR3: 000000002cd43000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5562
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+ netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1929
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
+ do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4440d9
 
-> +enum ethtool_module_power_mode_policy {
-> +	ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH,
-> +	ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO,
-> +};
+Eric Dumazet (2):
+  net: bridge: use nla_total_size_64bit() in br_get_linkxstats_size()
+  net: bridge: fix under estimation in br_get_linkxstats_size()
 
-I see you left this starting from 0, and we still need a valid bit,
-granted just internal to the core.
+ net/bridge/br_netlink.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Would we not need a driver-facing valid bit later on when we extend 
-the module API to control more params?  Can't there be drivers which
-implement power but don't support the mode policy?
+-- 
+2.33.0.800.g4c38ced690-goog
 
-> +static int module_set_power_mode(struct net_device *dev, struct nlattr **tb,
-> +				 bool *p_mod, struct netlink_ext_ack *extack)
-> +{
-> +	struct ethtool_module_power_mode_params power = {};
-> +	struct ethtool_module_power_mode_params power_new;
-> +	const struct ethtool_ops *ops = dev->ethtool_ops;
-> +	int ret;
-> +
-> +	if (!tb[ETHTOOL_A_MODULE_POWER_MODE_POLICY])
-> +		return 0;
-
-Feels a little old school to allow set with no attrs, now that we 
-do strict validation on attrs across netlink.  What's the reason?
-
-> +	if (!ops->get_module_power_mode || !ops->set_module_power_mode) {
-> +		NL_SET_ERR_MSG_ATTR(extack,
-> +				    tb[ETHTOOL_A_MODULE_POWER_MODE_POLICY],
-> +				    "Setting power mode policy is not supported by this device");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	power_new.policy = nla_get_u8(tb[ETHTOOL_A_MODULE_POWER_MODE_POLICY]);
-> +	ret = ops->get_module_power_mode(dev, &power, extack);
-> +	if (ret < 0)
-> +		return ret;
-> +	*p_mod = power_new.policy != power.policy;
-> +
-> +	return ops->set_module_power_mode(dev, &power_new, extack);
-
-Why still call set if *p_mod == false?
