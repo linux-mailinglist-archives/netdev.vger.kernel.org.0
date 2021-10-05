@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67A42421B95
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:14:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83BFE421B96
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:14:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231270AbhJEBQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 21:16:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55336 "EHLO mail.kernel.org"
+        id S231295AbhJEBQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 21:16:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55348 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230514AbhJEBQf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230517AbhJEBQf (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 4 Oct 2021 21:16:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 430AD61407;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BDE936140B;
         Tue,  5 Oct 2021 01:14:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633396485;
-        bh=x8bRe48HSzypgld4MKsHqUPidg252UoUznLnCvSRlrE=;
+        s=k20201202; t=1633396486;
+        bh=NtICjx2b5VEnU073vCx0g+kauPrJoIrFTejtsB/iis0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aXoDX0S/sJ1NZJBwk+zhwr0Pmslanu1tiopZY8lB0I9WGWlToxn3j2/Xlmz622O2J
-         SX9PzHd0UyONTZU4KmvRYml4LT1bFM/2Uik2OVGo6EhWYUN5puzPU4LLYpi0l59XQJ
-         b1fGJ9Wv3AVNUT2yoMnwd+MSsPMoOPsnFu0JnukD+eh48jiBI+MLeRp7KyTg6zeC0d
-         /qbqysOOjksDcq1H1Kwa3s6P1dJib95jfgHn0sylWQeKbViBXutPOkwa5ovo6uj1ym
-         Y6tkO7ZG460X066tAqe5WepLnSHWWxIP2EdXzEU8Cl0RdV2OAAv06vEe8cVuMyN907
-         22KwUvNYEnt/w==
+        b=sfkPFGDn4HSPsAjjVwbpw+AtiSZ44Gy18jI9V9+SmKA+7LmYGRVsmpIWSW63VPFco
+         O6+3h+eXiJ6H78qt2jW2QVHiU2jIMa7YvZk8t1pTAmU/tOWV1F0+FpF5NeCX1AzaXI
+         naKvdRE0nBTZtza93mdWUhug5fy3iKRSDomeSqE5u2uBdqe3so7pAf8Mra5FR0mI2W
+         U6p233RqAVqzKBjntLTh9A2cpF9NfRedJesRL1GbcNMzy+YFncQLdQi538qMQ+OTd9
+         tRL+8e2Hkf0vARBu+gfBHX6XbLZjZORKptlpRAw93CkhOvHmEJzA3/R9z5H3ZtNplN
+         zl/LpyoReXyiA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Maor Dickman <maord@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Paul Blakey <paulb@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 06/15] net/mlx5e: Move parse fdb check into actions_match_supported_fdb()
-Date:   Mon,  4 Oct 2021 18:12:53 -0700
-Message-Id: <20211005011302.41793-7-saeed@kernel.org>
+Subject: [net-next 07/15] net/mlx5e: Reserve a value from TC tunnel options mapping
+Date:   Mon,  4 Oct 2021 18:12:54 -0700
+Message-Id: <20211005011302.41793-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211005011302.41793-1-saeed@kernel.org>
 References: <20211005011302.41793-1-saeed@kernel.org>
@@ -41,70 +42,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-The parse fdb/nic actions funcs parse the actions and then call
-actions_match_supported() for final check.
-Move related check in parse_tc_fdb_actions() into
-actions_match_supported_fdb() for more organized code.
+Reserve one more value from TC tunnel options range to be used by bridge
+offload in following patches.
 
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Paul Blakey <paulb@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 20 ++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 24b0c0e3c573..606a7757bb04 100644
+index 606a7757bb04..dc21d28a4333 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3175,13 +3175,14 @@ actions_match_supported_fdb(struct mlx5e_priv *priv,
- 			    struct mlx5e_tc_flow *flow,
- 			    struct netlink_ext_ack *extack)
- {
-+	struct mlx5_esw_flow_attr *esw_attr = flow->attr->esw_attr;
- 	bool ct_flow, ct_clear;
- 
- 	ct_clear = flow->attr->ct_attr.ct_action & TCA_CT_ACT_CLEAR;
- 	ct_flow = flow_flag_test(flow, CT) && !ct_clear;
- 
--	if (flow->attr->esw_attr->split_count && ct_flow &&
--	    !MLX5_CAP_GEN(flow->attr->esw_attr->in_mdev, reg_c_preserve)) {
-+	if (esw_attr->split_count && ct_flow &&
-+	    !MLX5_CAP_GEN(esw_attr->in_mdev, reg_c_preserve)) {
- 		/* All registers used by ct are cleared when using
- 		 * split rules.
- 		 */
-@@ -3189,6 +3190,14 @@ actions_match_supported_fdb(struct mlx5e_priv *priv,
- 		return false;
+@@ -5035,9 +5035,11 @@ int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
  	}
+ 	uplink_priv->tunnel_mapping = mapping;
  
-+	if (esw_attr->split_count > 0 && !mlx5_esw_has_fwd_fdb(priv->mdev)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "current firmware doesn't support split rule for port mirroring");
-+		netdev_warn_once(priv->netdev,
-+				 "current firmware doesn't support split rule for port mirroring\n");
-+		return false;
-+	}
-+
- 	return true;
- }
- 
-@@ -4108,13 +4117,6 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 		return -EOPNOTSUPP;
- 	}
- 
--	if (esw_attr->split_count > 0 && !mlx5_esw_has_fwd_fdb(priv->mdev)) {
--		NL_SET_ERR_MSG_MOD(extack,
--				   "current firmware doesn't support split rule for port mirroring");
--		netdev_warn_once(priv->netdev, "current firmware doesn't support split rule for port mirroring\n");
--		return -EOPNOTSUPP;
--	}
--
- 	/* Allocate sample attribute only when there is a sample action and
- 	 * no errors after parsing.
- 	 */
+-	/* 0xFFF is reserved for stack devices slow path table mark */
++	/* Two last values are reserved for stack devices slow path table mark
++	 * and bridge ingress push mark.
++	 */
+ 	mapping = mapping_create_for_id(mapping_id, MAPPING_TYPE_TUNNEL_ENC_OPTS,
+-					sz_enc_opts, ENC_OPTS_BITS_MASK - 1, true);
++					sz_enc_opts, ENC_OPTS_BITS_MASK - 2, true);
+ 	if (IS_ERR(mapping)) {
+ 		err = PTR_ERR(mapping);
+ 		goto err_enc_opts_mapping;
 -- 
 2.31.1
 
