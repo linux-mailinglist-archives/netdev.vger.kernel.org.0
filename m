@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93A79421B00
+	by mail.lfdr.de (Postfix) with ESMTP id DCB0A421B01
 	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 02:16:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229948AbhJEASE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 20:18:04 -0400
+        id S230072AbhJEASG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 20:18:06 -0400
 Received: from mail-eopbgr140057.outbound.protection.outlook.com ([40.107.14.57]:30119
         "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229850AbhJEASC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229876AbhJEASC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 4 Oct 2021 20:18:02 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d+ypWsl/u9DK9x0G/xgMyyCxQy5o6RavhUz3CqjQ4rl0xEMQHYwwqvIIjQ0g65yybuD2a4XXjOqbaB61xP7+zYRK+g4qHJXJ0D25i8efAdEZQz4FOzSfsldscTKFgR5lu4TqC3q6I2XWjK90fU/j2k5VyvWeVAuPKYKpvmiYT5XnNkOBWfjjZKk8vB4uTYA7w4MNiJEkKgLqhIHB3Y7OIxPMKMdRuyZF9dGjW7gIp0iMQwdpXXZvyyIYJG+hjqNIRbrNLwIQMhzXFIOw/l+J2z9C2Ig9LeTU9HEXaSFG4bp2gvr3eOt0GTnfuzzHRztBwgfRTkcvi88ithLqQnSTsg==
+ b=fVB1bDXCZ9MFMnqYYnO4xmUsPRPUbxwSUehAX99huvlT6LuJMoNdyEISxnczwQ/jCPzVpEBGBGHEyo53ygkbBIGu0VrfagHIeaxFhWSZ790E4PjUwmVFx9PDKtPnGtzANMQbutsy7/IbxqhrOeI67mMOf0MIicPpTnuMQqceO5jTkjltkFVnXpF0r2DclEfQtCx5DQgZ0EDcta56F8IL4h1JCdaUAu5xIxLx9tcXqgSPJ/G4mc+Tw82z4nW3PLvw9SO5fl8RhkkihRpsjjysQO+rL8iiSyhof6lHT3pFRilDH/aGL0R0OECt5eYvO9e9C5zezU7cnyC8D+r/vkAPmg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RDcB3HhAKa/WgBUIfW0nhoICSl0wsf4w0E7/C2iIhgw=;
- b=cBCvAmUsSmniIuWN9Ouxg7jqS9tTC6LYfncc5Sw608WX+VOlqihFr2Vq5GJABfx0wpbxIUQhjodVUzBfgVJqMyrii4/+/U8ongeDGwpVXeGixahu4efU6jC3GbPiyMWIcCP+zMmVDlFRcPQE6eVZDfIyBZtZd2svanTwBZy1XKFLc+QMIimIpukVnYRk7FFR+Ei/qRAGwopKCSVHkTwPJ6pjOHaKYFcGZ+lwVUyA4h4Q69gwpKb7tXUg8qoVwuBHXVjg1bPV89YqQqiXiHdunzaP58awwqzLtrGCTEwf/LYCV/ipLoTzyIjMzlKQPWw/c3IZ4I32ENJcjpjuH7UwTQ==
+ bh=ZlHa4CxsQ5whcSTVpmyew8qsLJseskUQ5lidl1H/YA0=;
+ b=iaKTz94Ntu8ARHQBc8dRPT/N7u3oLLQyzghVTffAIe+6FkFuThSXpV2V6oZhHYLNM6MGOkbFjah/+3Dx6xeN4q6lpuzgiGWMyNHdy4sU9RtGIX71jMYMgK9EQ08UvYfnTf2PC6C4Ap2mjin8UZ7WNlIXzdDe057YTUAE/g3SFusXm8pyfIx3Xq0PfufuW5oE901MMutVg7VzPUR7vnMMK8TTydrIdZrFH0dyK9/qE292ffvmP24L4/CGoS5V86sdLqFplYyDRk+cUigQuWupf6/i1h55z0wFGDDzw7DcxVDpXboraY+3KPClSlIq/E6grF/sdBAvRdqOMpeuWvqReg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RDcB3HhAKa/WgBUIfW0nhoICSl0wsf4w0E7/C2iIhgw=;
- b=rfI3a3Utp7BQMd2LHVy+jKLZ3vn5KZvvQr+tS1WiOAt6JzxVi7wM1L4s07OK3YC6URA1O/w2afpPE1SB6+DujYMgpd86mjaEXgwjxyMfzOMe+V0Au+9cy+KbRiqFtlzvXOlSVmyN9+wQZ8fYr10/9VGoZrt7u2rfVZNZXZ3JAVg=
+ bh=ZlHa4CxsQ5whcSTVpmyew8qsLJseskUQ5lidl1H/YA0=;
+ b=bjHOcznHgEqXjuPJJZAj/CqwcqzJtng8woMZdRJ89JE6427h+eTs5rE4yvd6sESOP9vI/S832eelNVfCfkmbxoiaUNUy5DSmhQ5lO9NNhncNEjmoYq7rDkURUllmp3uNyqEqj668qf4kVKXX3BJfaQhusMngzZZLhrCLngDfmqY=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3615.eurprd04.prod.outlook.com (2603:10a6:803:9::28) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.19; Tue, 5 Oct
- 2021 00:16:10 +0000
+ 2021 00:16:12 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4566.022; Tue, 5 Oct 2021
- 00:16:10 +0000
+ 00:16:12 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -45,9 +45,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         DENG Qingfang <dqfext@gmail.com>
-Subject: [PATCH v2 net 2/4] net: dsa: tag_dsa: send packets with TX fwd offload from VLAN-unaware bridges using VID 0
-Date:   Tue,  5 Oct 2021 03:14:12 +0300
-Message-Id: <20211005001414.1234318-3-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net 3/4] net: dsa: mv88e6xxx: keep the pvid at 0 when VLAN-unaware
+Date:   Tue,  5 Oct 2021 03:14:13 +0300
+Message-Id: <20211005001414.1234318-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211005001414.1234318-1-vladimir.oltean@nxp.com>
 References: <20211005001414.1234318-1-vladimir.oltean@nxp.com>
@@ -57,146 +57,282 @@ X-ClientProxiedBy: AM6P192CA0107.EURP192.PROD.OUTLOOK.COM
  (2603:10a6:209:8d::48) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.26.53.217) by AM6P192CA0107.EURP192.PROD.OUTLOOK.COM (2603:10a6:209:8d::48) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend Transport; Tue, 5 Oct 2021 00:16:10 +0000
+Received: from localhost.localdomain (188.26.53.217) by AM6P192CA0107.EURP192.PROD.OUTLOOK.COM (2603:10a6:209:8d::48) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend Transport; Tue, 5 Oct 2021 00:16:11 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9b1d28da-dae3-492f-e9af-08d9879555a9
+X-MS-Office365-Filtering-Correlation-Id: 0d35a6ca-fa0f-4173-f02d-08d987955643
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3615:
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3615C88A1EB2645E30515037E0AF9@VI1PR0402MB3615.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3615AB478263D0170C5DE4DFE0AF9@VI1PR0402MB3615.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5mObpY3VTZ3CnKNhHKCb5U9Yz3jp2lt921nam5ul7FQxWccGYe/zUX0J2UJ+a02cDswlHzjkZCs3CLPcH4iZbOLB37sS9DeWzNSTARP9FbqTh62yfAhNY/5ld0pUJdOZZ2LN0m0XoNI9qkJfMlM5T4szgtD6e160uenwb13RuK848Z37ZpjwpA9U+PiKYtW5mvaPD9TnuBQXLITFvVpsk2ukVoh18gATkJ4+2vtR2pqWV91oIluNFSiTkwdaHYChjYCxViMLY07hlZ4hJaoTVo0j4Fx8tymYyGiOZB1EfT8+0PiE0sRaHV0alnG3nN2a3xQ854UvM4glbIJ8hRJhgRi+VigJd89lqUlRRBoidYY6gPUDwyqkTL1ixhrMN2Mh7CrMnub9eDvxQxahs+ygLpAXmF43iN1jLkSdB6XDjWbqF1xCpP4nFmSYH9PPG+hqnmJeFBTfGIagMb8ThXFrw9vMl0NbYnyqux6ECDH2WsLbstmjRc81m0yjPSZGLFKWKO7DczemMfhe/MsF04e3P35U9owWEsPTkeYHs3m1nJ9oL7WLES4gc/ZPlFzXwxSIIpfCoUOSR3ue41d0ajnkYqaZ7imzIx8apCugmOP8Az/50VA+G/kdFX9uXhSwmTzMZU6xflu0dla0VIEuLLoB1DO169CJtXtzRiKoauC6wTlQg6ety0e891DMl8yFomVtfTWV99yPXz/EpaKGa3ii7kilqGhe/yUzWyOcWnCCWTiMuV2g8O3Q7JS6gY4J8plZQVvdh20OUUxYhxlvBE7Uw//SR2FilZ2MvoRnc44nWmd5Rt4m1I7SEasIqTPLL0qs9+mf3ha8kPcQNt9q75Z8pg==
+X-Microsoft-Antispam-Message-Info: gdG6P3YKbO3xQ904KDsDgKdzLD6kfCavVq6FZshka8bEIMLXAkuOLuJxlEpr/zt2pCuF8/f5Gbav4Vwszz6W20ai6P/T4VW6+GtxrIuSkQVNEdTLZvkTW3Mqc/o1uo8jptuHKZFpO/J+1WQDTxGkY1KojJJnKrufnIuGrj/DTwZ+Gbe1UDlUR8XCEQsC5aJXaw95yhQEDRaYWuYL2oGNay5mklxid5d7odoRnAQVlsCrF4fknBhPLc8TYL6/7owODo0ZwhK5C7HbBivrKH2Et724rtlrnUftAXnqXwfCHe1jATpBCVMRP7uVBZU5vT6UbOqq1g8VW1h8Co73W+cSMhTiSomOrv3at4ui6mvQ9AAQelIoufkr8TH9Vdeh1gtyFCQi9F2fJBysc6RWfrY23G35Et4Ix55dxOYOrY5HcGDx5MpHeaWCVu8zcj6yoHRd3p0HLKqat3JBq2zaYqxT4/1Ztolp0QkOLxRAZn5c648p+b73H+DI1G+LIWJcOtnkMuk+3vNhq7tlJMe6zMinR0TlDtcBqBYaPfOFfdEXIDvyQsGbJvuvYywuSaQ/vvpYVojz+zU2QS6Mki4jpMAGr7yNjFVnWcNDe9sUhiM7c0Es42VCcoVuv+AYeyqvq82Sat12nwE6QBaj2Rfeu3m73iz8zGW/S/WAuoz91fI+5T6e8GuCek69Gryh8GdQe4ohCJBghp7EK+N7MKlpXH2AQsym0zdIsTYsnW/L/23Nr9vcOBJmdiWiIJ2y+YoO5lDJJrnv6WuCI5a82tvMvVZ9wN3R7n7YFxfoWrQqm8fDtQU=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(36756003)(38350700002)(110136005)(316002)(8936002)(4326008)(54906003)(83380400001)(956004)(2616005)(26005)(5660300002)(6486002)(8676002)(6512007)(66556008)(966005)(52116002)(66476007)(186003)(66946007)(1076003)(508600001)(44832011)(38100700002)(2906002)(6506007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LtwvP6H8ZmHO1cSUK7IvJqoJ6f8eWzdoxRTbS60oRSd0XZrZ9HBsBvyb9cAG?=
- =?us-ascii?Q?0o1uQS6+wD/F6LhpNxG0XYjUT63qGwEt9AFS973OR6QMvNUjL8lO9T8J190N?=
- =?us-ascii?Q?Fdy8flUiQNRE9g6wI2fX9OClnvpo5V2bwpPWDNv/MPbT+cUIi0VfhtW6nsn2?=
- =?us-ascii?Q?oh4tJ0Q9/j6HiIPrpCs+/RHvkqX9ertRAd+sf3LTn2hwzisc2O93RXA1sfvl?=
- =?us-ascii?Q?rA7qVOVFwkC46B7413+6tLuFiJUpfFbjz7TGMA6qW+JiUT5QTv7Yo/rRO4cF?=
- =?us-ascii?Q?viYuTnl178aTJ7lbCpHqYMhShlZCWW4un5EKgnc8AAW0kOlObc0KORVeecAY?=
- =?us-ascii?Q?nEaq0EztAlXSeBbSyctfY9f1zfdEi1YJfSugiKkLi7SdkWVDUOOjurug4Phn?=
- =?us-ascii?Q?OWkaBAZaDb1lsiG63A+6IUGYNaBT3sxEEpwfMkxOCC1J6nhHs22Pk62GVWpz?=
- =?us-ascii?Q?20QB9ATaG/p2vwvKcptnZJX7kGyUYdUHaIj42O36DQHOWW/K7xySREShQNCt?=
- =?us-ascii?Q?HptssDyosysur32bp9WzH4fgQi4Jk7qpG0DlUF3dVJMH0hLPhmV2gRk8r8jw?=
- =?us-ascii?Q?eLJKYa6jUMIMPW8mh3psCA81ZWy0Y0ypFzGnbPUgr+IkLkOxxKgTtnnQhU9S?=
- =?us-ascii?Q?f43LYOX1WzPHKNiR9L4429MUmyxmWedwwt5lu/NtNJdIISyAyAMWM1kS/fS0?=
- =?us-ascii?Q?WMb+4LLEWvDC5xgpaOKf6hLqkaelAcXQcEQIz1B+Y++EJfwJkSB+pz/vyOwP?=
- =?us-ascii?Q?Gs0Nnqwvq6QhvkyvrUjnYILxtefnXJ+860Ky9ilkYiPt9kuR2zOboxfZyXnW?=
- =?us-ascii?Q?yR1ybPpRLbxD2AGEoY/vQJA0MfcbqBJsrpvKouOoiPYbhh45dSgcayXwYt06?=
- =?us-ascii?Q?KNdllsZft9NT9/xhWENBGA2VA4D6XvODsLUQ12PpzuNbJBBa0Sv2Cr6VPc6u?=
- =?us-ascii?Q?9IBnhiF3nZjA5XOlFDQbNUME2Z8ACbtLFkO/qW2z5RaEZBzWKUXeYAj24K87?=
- =?us-ascii?Q?5fUS2dHrVJQkezsGSfyrGUcLwHV+RBrMaffVmpHQ1p4suyrfJbU8956T/xYC?=
- =?us-ascii?Q?5pr2MFyz1T6MQfAMoAGJnstoaRSPXR8JN5PQYY9V0z4VqdOWAznSjGVRvP1H?=
- =?us-ascii?Q?zk9BzRShwQ8nLYk1+zxgLu6p9maK0dkul8jMLb+WimaxLxC50EIULxjAIHhQ?=
- =?us-ascii?Q?OgX8aGANCkmr8MdbAFUyMNK2AqLhbHXb6m0/vKLPuGPYxBkt/sbyOir3SRcH?=
- =?us-ascii?Q?tIWWtofzmHcpNSKzs9aetSUxoqlWaw4dNuSlnekvoDanUye1WU7hPCND9IhO?=
- =?us-ascii?Q?LkB5j8+PrUcOugbOlJwCBjkx?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Tej+BCV4X9OEo2Q6aYvzfcIILNYMKDAwkT7YOk3p+Z3Z+FBPMIRbAegqrQiz?=
+ =?us-ascii?Q?wLczslVRsAEDCOMKFd1Wfr6r4b11SFvv+Emnj57kX4/MPfksA79gtwcbEO5R?=
+ =?us-ascii?Q?QAOae6wnc92QcHNYtafhCIS83SSzlNMuOVYurX/gdCJISg+jbmVcinIOuC14?=
+ =?us-ascii?Q?SQJbUuq1pTUhyNAQxjC1wv5Kyepmg38TzIRG8HWdwNpD3iaZs0iRHPkUyWnm?=
+ =?us-ascii?Q?lzSxKSnRIMrcSUEVJqR+FpS3SHOMEOW4w6ovmkKD+Fc0sYmh4sVVS51lzzIk?=
+ =?us-ascii?Q?0xQcjSpmT+V8GVEkBnoBue5eBBqbaX0YlXuOSPGl5nmZWDR6kS3Z5+cdymKP?=
+ =?us-ascii?Q?zyqbjb2oCZZPMhmW9LseAzdwEEpoot8uGbQ0TYmaxsLSCzNZr81/6tL/XL76?=
+ =?us-ascii?Q?jiOME+8SBqRDnm1mazlqI3LkI8oTdRA9LDrIQ0Ir4xjES6azE0MlWCwoRvwD?=
+ =?us-ascii?Q?oy39c4e/l5euT4EI+K8mAsVwQaqA1ZuiT3TY13TW6C947PuiGGIl/1P0DKSm?=
+ =?us-ascii?Q?TZP9DmYwQYwCSAm4qt749H3hov6Ef0Ei/HKK+VZ/S4d6LtAOhp3d0R9/FZpS?=
+ =?us-ascii?Q?GLEnl62vjOyjgkd0rIC0RVCBStNClWy8vs4i0qv++/8/py2N8HkZJtK4YXOk?=
+ =?us-ascii?Q?ycIYaLTSqUveliHjPWeaBmONYrzEFwL4zJaxi8SiNmRQfbnUFpq57xJEftYy?=
+ =?us-ascii?Q?ySZFgc73kxzAUNolUipw7ZIjJQ5u+KZVospBp5jZXDH1YheU118WrhBbpnFi?=
+ =?us-ascii?Q?5ppASKnY2POd0pkSXp5taIrz6arFM6pAXgnSEHeiod819sYNcQGiOAZXQED/?=
+ =?us-ascii?Q?NYIsTxBolbC/kuRv+m1kMDA+eaYIpRTGpXvf+95xIrHs4E5dOYCaxjyc7v01?=
+ =?us-ascii?Q?py3W47j5yR4XPbYu7i2vfSWq1UqcUzUMRCojSK+IK+aveUo+GezaQF+uGKvw?=
+ =?us-ascii?Q?3R2fLu54jsnU6ZXjN3Q0VXv3OoO7ze1XPlVHpI0s18tT+spm2pyVD/Md8bbb?=
+ =?us-ascii?Q?boQvETBgSumpt0kyiUFVK2YcXOgnOAA2cHPl8p06I+sjXBxOPg9wmtq5n67K?=
+ =?us-ascii?Q?O3a/1EZPC+miN/rMCIIHNq8LNRHPxF1zDcanSL/WBBte9f5Mh5OWPK0bh34Y?=
+ =?us-ascii?Q?neqJjgUHNWBAdojIEENfdA2Wk0eHt/LpIvTHoobz3DuM5lphFAp788rqZT0f?=
+ =?us-ascii?Q?26TNU8ksyyxu6b3wrKoZWMRdfg+1xFa3TtdnMkXEuwspkDLUe/tdT7nX7Dr4?=
+ =?us-ascii?Q?OZ3ls0RGd9GPmdciiZaTuq464ImfnrFXMjkAZoe+TA7GdR/k/jIw22ktC+wm?=
+ =?us-ascii?Q?KWQecFseb2Fsw0LixJDGj4w+?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b1d28da-dae3-492f-e9af-08d9879555a9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d35a6ca-fa0f-4173-f02d-08d987955643
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2021 00:16:10.8680
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2021 00:16:11.9104
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fdJp5CScINBaBtY/4l7BHPgHXB6gghyUh4NMTUgB1ihB2aHT6DG6my+J9Rz0nG2Vvx7fnZmo+d8m/00DkCUgYA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6rYz4KjIEOx8sK0oWFKLhpikSfVvwatZkce1vu2OHivMRE+bx3zHFdjoqZBaO/MdPrcpsfE5zg912PiWIwR2BA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3615
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The present code is structured this way due to an incomplete thought
-process. In Documentation/networking/switchdev.rst we document that if a
-bridge is VLAN-unaware, then the presence or lack of a pvid on a bridge
-port (or on the bridge itself, for that matter) should not affect the
-ability to receive and transmit tagged or untagged packets.
+The VLAN support in mv88e6xxx has a loaded history. Commit 2ea7a679ca2a
+("net: dsa: Don't add vlans when vlan filtering is disabled") noticed
+some issues with VLAN and decided the best way to deal with them was to
+make the DSA core ignore VLANs added by the bridge while VLAN awareness
+is turned off. Those issues were never explained, just presented as
+"at least one corner case".
 
-If the bridge on behalf of which we are sending this packet is
-VLAN-aware, then the TX forwarding offload API ensures that the skb will
-be VLAN-tagged (if the packet was sent by user space as untagged, it
-will get transmitted town to the driver as tagged with the bridge
-device's pvid). But if the bridge is VLAN-unaware, it may or may not be
-VLAN-tagged. In fact the logic to insert the bridge's PVID came from the
-idea that we should emulate what is being done in the VLAN-aware case.
-But we shouldn't.
+That approach had problems of its own, presented by
+commit 54a0ed0df496 ("net: dsa: provide an option for drivers to always
+receive bridge VLANs") for the DSA core, followed by
+commit 1fb74191988f ("net: dsa: mv88e6xxx: fix vlan setup") which
+applied ds->configure_vlan_while_not_filtering = true for mv88e6xxx in
+particular.
 
-It appears that injecting packets using a VLAN ID of 0 serves the
-purpose of forwarding the packets to the egress port with no VLAN tag
-added or stripped by the hardware, and no filtering being performed.
-So we can simply remove the superfluous logic.
+We still don't know what corner case Andrew saw when he wrote
+commit 2ea7a679ca2a ("net: dsa: Don't add vlans when vlan filtering is
+disabled"), but Tobias now reports that when we use TX forwarding
+offload, pinging an external station from the bridge device is broken if
+the front-facing DSA user port has flooding turned off. The full
+description is in the link below, but for short, when a mv88e6xxx port
+is under a VLAN-unaware bridge, it inherits that bridge's pvid.
+So packets ingressing a user port will be classified to e.g. VID 1
+(assuming that value for the bridge_default_pvid), whereas when
+tag_dsa.c xmits towards a user port, it always sends packets using a VID
+of 0 if that port is standalone or under a VLAN-unaware bridge - or at
+least it did so prior to commit d82f8ab0d874 ("net: dsa: tag_dsa:
+offload the bridge forwarding process").
 
-One reason why this logic is broken is that when CONFIG_BRIDGE_VLAN_FILTERING=n,
-we call br_vlan_get_pvid_rcu() but that returns an error and we do error
-out, dropping all packets on xmit. Not really smart. This is also an
-issue when the user deletes the bridge pvid:
+In any case, when there is a conversation between the CPU and a station
+connected to a user port, the station's MAC address is learned in VID 1
+but the CPU tries to transmit through VID 0. The packets reach the
+intended station, but via flooding and not by virtue of matching the
+existing ATU entry.
 
-$ bridge vlan del dev br0 vid 1 self
+DSA has established (and enforced in other drivers: sja1105, felix,
+mt7530) that a VLAN-unaware port should use a private pvid, and not
+inherit the one from the bridge. The bridge's pvid should only be
+inherited when that bridge is VLAN-aware, so all state transitions need
+to be handled. On the other hand, all bridge VLANs should sit in the VTU
+starting with the moment when the bridge offloads them via switchdev,
+they are just not used.
 
-As mentioned, in both cases, packets should still flow freely, and they
-do just that on any net device where the bridge is not offloaded, but on
-mv88e6xxx they don't.
+This solves the problem that Tobias sees because packets ingressing on
+VLAN-unaware user ports now get classified to VID 0, which is also the
+VID used by tag_dsa.c on xmit.
 
 Fixes: d82f8ab0d874 ("net: dsa: tag_dsa: offload the bridge forwarding process")
-Reported-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://patchwork.kernel.org/project/netdevbpf/patch/20211003155141.2241314-1-andrew@lunn.ch/
-Link: https://patchwork.kernel.org/project/netdevbpf/patch/20210928233708.1246774-1-vladimir.oltean@nxp.com/
+Link: https://patchwork.kernel.org/project/netdevbpf/patch/20211003222312.284175-2-vladimir.oltean@nxp.com/#24491503
+Reported-by: Tobias Waldekranz <tobias@waldekranz.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2: fix up commit message
+v1->v2: patch is new
 
- net/dsa/tag_dsa.c | 20 ++------------------
- 1 file changed, 2 insertions(+), 18 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 53 ++++++++++++++++++++++++++++----
+ drivers/net/dsa/mv88e6xxx/chip.h |  6 ++++
+ drivers/net/dsa/mv88e6xxx/port.c | 21 +++++++++++++
+ drivers/net/dsa/mv88e6xxx/port.h |  2 ++
+ 4 files changed, 76 insertions(+), 6 deletions(-)
 
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index e5127b7d1c6a..68d5ddc3ef35 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -129,12 +129,9 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 	u8 tag_dev, tag_port;
- 	enum dsa_cmd cmd;
- 	u8 *dsa_header;
--	u16 pvid = 0;
--	int err;
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 03744d1c43fc..d672112afffd 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1677,6 +1677,26 @@ static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
+ 	return 0;
+ }
  
- 	if (skb->offload_fwd_mark) {
- 		struct dsa_switch_tree *dst = dp->ds->dst;
--		struct net_device *br = dp->bridge_dev;
++static int mv88e6xxx_port_commit_pvid(struct mv88e6xxx_chip *chip, int port)
++{
++	struct dsa_port *dp = dsa_to_port(chip->ds, port);
++	struct mv88e6xxx_port *p = &chip->ports[port];
++	bool drop_untagged = false;
++	u16 pvid = 0;
++	int err;
++
++	if (dp->bridge_dev && br_vlan_enabled(dp->bridge_dev)) {
++		pvid = p->bridge_pvid.vid;
++		drop_untagged = !p->bridge_pvid.valid;
++	}
++
++	err = mv88e6xxx_port_set_pvid(chip, port, pvid);
++	if (err)
++		return err;
++
++	return mv88e6xxx_port_drop_untagged(chip, port, drop_untagged);
++}
++
+ static int mv88e6xxx_port_vlan_filtering(struct dsa_switch *ds, int port,
+ 					 bool vlan_filtering,
+ 					 struct netlink_ext_ack *extack)
+@@ -1690,7 +1710,16 @@ static int mv88e6xxx_port_vlan_filtering(struct dsa_switch *ds, int port,
+ 		return -EOPNOTSUPP;
  
- 		cmd = DSA_CMD_FORWARD;
+ 	mv88e6xxx_reg_lock(chip);
++
+ 	err = mv88e6xxx_port_set_8021q_mode(chip, port, mode);
++	if (err)
++		goto unlock;
++
++	err = mv88e6xxx_port_commit_pvid(chip, port);
++	if (err)
++		goto unlock;
++
++unlock:
+ 	mv88e6xxx_reg_unlock(chip);
  
-@@ -144,19 +141,6 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 		 */
- 		tag_dev = dst->last_switch + 1 + dp->bridge_num;
- 		tag_port = 0;
--
--		/* If we are offloading forwarding for a VLAN-unaware bridge,
--		 * inject packets to hardware using the bridge's pvid, since
--		 * that's where the packets ingressed from.
--		 */
--		if (!br_vlan_enabled(br)) {
--			/* Safe because __dev_queue_xmit() runs under
--			 * rcu_read_lock_bh()
--			 */
--			err = br_vlan_get_pvid_rcu(br, &pvid);
--			if (err)
--				return NULL;
--		}
- 	} else {
- 		cmd = DSA_CMD_FROM_CPU;
- 		tag_dev = dp->ds->index;
-@@ -188,8 +172,8 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 
- 		dsa_header[0] = (cmd << 6) | tag_dev;
- 		dsa_header[1] = tag_port << 3;
--		dsa_header[2] = pvid >> 8;
--		dsa_header[3] = pvid & 0xff;
-+		dsa_header[2] = 0;
-+		dsa_header[3] = 0;
+ 	return err;
+@@ -2123,6 +2152,7 @@ static int mv88e6xxx_port_vlan_add(struct dsa_switch *ds, int port,
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
++	struct mv88e6xxx_port *p = &chip->ports[port];
+ 	bool warn;
+ 	u8 member;
+ 	int err;
+@@ -2156,13 +2186,21 @@ static int mv88e6xxx_port_vlan_add(struct dsa_switch *ds, int port,
  	}
  
- 	return skb;
+ 	if (pvid) {
+-		err = mv88e6xxx_port_set_pvid(chip, port, vlan->vid);
+-		if (err) {
+-			dev_err(ds->dev, "p%d: failed to set PVID %d\n",
+-				port, vlan->vid);
++		p->bridge_pvid.vid = vlan->vid;
++		p->bridge_pvid.valid = true;
++
++		err = mv88e6xxx_port_commit_pvid(chip, port);
++		if (err)
++			goto out;
++	} else if (vlan->vid && p->bridge_pvid.vid == vlan->vid) {
++		/* The old pvid was reinstalled as a non-pvid VLAN */
++		p->bridge_pvid.valid = false;
++
++		err = mv88e6xxx_port_commit_pvid(chip, port);
++		if (err)
+ 			goto out;
+-		}
+ 	}
++
+ out:
+ 	mv88e6xxx_reg_unlock(chip);
+ 
+@@ -2212,6 +2250,7 @@ static int mv88e6xxx_port_vlan_del(struct dsa_switch *ds, int port,
+ 				   const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
++	struct mv88e6xxx_port *p = &chip->ports[port];
+ 	int err = 0;
+ 	u16 pvid;
+ 
+@@ -2229,7 +2268,9 @@ static int mv88e6xxx_port_vlan_del(struct dsa_switch *ds, int port,
+ 		goto unlock;
+ 
+ 	if (vlan->vid == pvid) {
+-		err = mv88e6xxx_port_set_pvid(chip, port, 0);
++		p->bridge_pvid.valid = false;
++
++		err = mv88e6xxx_port_commit_pvid(chip, port);
+ 		if (err)
+ 			goto unlock;
+ 	}
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 59f316cc8583..33d067e8396d 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -246,9 +246,15 @@ struct mv88e6xxx_policy {
+ 	u16 vid;
+ };
+ 
++struct mv88e6xxx_vlan {
++	u16	vid;
++	bool	valid;
++};
++
+ struct mv88e6xxx_port {
+ 	struct mv88e6xxx_chip *chip;
+ 	int port;
++	struct mv88e6xxx_vlan bridge_pvid;
+ 	u64 serdes_stats[2];
+ 	u64 atu_member_violation;
+ 	u64 atu_miss_violation;
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index 451028c57af8..d9817b20ea64 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -1257,6 +1257,27 @@ int mv88e6xxx_port_set_8021q_mode(struct mv88e6xxx_chip *chip, int port,
+ 	return 0;
+ }
+ 
++int mv88e6xxx_port_drop_untagged(struct mv88e6xxx_chip *chip, int port,
++				 bool drop_untagged)
++{
++	u16 old, new;
++	int err;
++
++	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL2, &old);
++	if (err)
++		return err;
++
++	if (drop_untagged)
++		new = old | MV88E6XXX_PORT_CTL2_DISCARD_UNTAGGED;
++	else
++		new = old & ~MV88E6XXX_PORT_CTL2_DISCARD_UNTAGGED;
++
++	if (new == old)
++		return 0;
++
++	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL2, new);
++}
++
+ int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port)
+ {
+ 	u16 reg;
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index b10e5aebacf6..03382b66f800 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -423,6 +423,8 @@ int mv88e6393x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+ 			      phy_interface_t mode);
+ int mv88e6185_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode);
+ int mv88e6352_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode);
++int mv88e6xxx_port_drop_untagged(struct mv88e6xxx_chip *chip, int port,
++				 bool drop_untagged);
+ int mv88e6xxx_port_set_map_da(struct mv88e6xxx_chip *chip, int port);
+ int mv88e6095_port_set_upstream_port(struct mv88e6xxx_chip *chip, int port,
+ 				     int upstream_port);
 -- 
 2.25.1
 
