@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A968C421B9C
+	by mail.lfdr.de (Postfix) with ESMTP id F23E7421B9D
 	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 03:15:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231545AbhJEBRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Oct 2021 21:17:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55410 "EHLO mail.kernel.org"
+        id S231575AbhJEBRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Oct 2021 21:17:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55416 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231166AbhJEBQi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Oct 2021 21:16:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EAC88615A3;
-        Tue,  5 Oct 2021 01:14:48 +0000 (UTC)
+        id S231203AbhJEBQj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Oct 2021 21:16:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6DAEC615A4;
+        Tue,  5 Oct 2021 01:14:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1633396489;
-        bh=r3P8d6axw7ec4FSLieYQn0HYdWAzgfWlYU65/kglq7g=;
+        bh=90mJnXjCArWb+OrDlHGP662GsiATsbTn6mpEXF6Y2tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SvV/nTTR1U39VYIT2tFVEyFiJyBPShsTrQzXWbs9YT+b+zELoU0kjK5xh3ZqJs5hd
-         MEI8x+uGbGPiuMFqjDFtkvLy0hj7BHxDxtmCck97jVpzxFC8fXf3ARlacBqKm8j+NV
-         cO7eld/7zMhVi17n13cTCuDrHjjE2vv1prbJu4yA2OzHzNbi8uXWlM10LA3oQB/yq3
-         SRMeSn/qqSm/cBX8h5JIcfyIvDM/ctJTcJ3DZv2GxcVl4NmaxpD8PCCm++JbRLohJX
-         dRlN4e6pvl5qJYw1xnJgmExWroHxmCGMWFk74sXNEdSmMf5rAdOHr9YLaXm5N0d0XE
-         qZ2bCLZnaFnVQ==
+        b=VvZqGyUkjIQYJB4obg56/VTle5uLClWrwfvnXD8xRquzRuZ4zsJbzOQSZ5h4FxA0c
+         H+LnW0Fskf4LE0eTs493j2syysx6Z3D2Sygi/Mj+nrx/vEwzd0GLXQtyuBBmxwpGwu
+         lntgemhxmWoQ06e/SiobPqpQswQB+if/uivL634gXhTTT2gSSDx6bHfCUosRZvh6fi
+         N14SHlsug2b8GR9LuVqZc21tQYjooQliZQ3I9cw3prgpIoK5lcH87yscfu9bGpePdq
+         +/YRy5kYjpmvChVTc4AKa+B93BQPFxAREKs7/Qv2VU5TS1UtLYjxWDIWad/6bIISOs
+         HtTmH+L5Ih7jw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 13/15] net/mlx5: Bridge, pop VLAN on egress table miss
-Date:   Mon,  4 Oct 2021 18:13:00 -0700
-Message-Id: <20211005011302.41793-14-saeed@kernel.org>
+Subject: [net-next 14/15] net/mlx5: Shift control IRQ to the last index
+Date:   Mon,  4 Oct 2021 18:13:01 -0700
+Message-Id: <20211005011302.41793-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211005011302.41793-1-saeed@kernel.org>
 References: <20211005011302.41793-1-saeed@kernel.org>
@@ -42,209 +41,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+From: Shay Drory <shayd@nvidia.com>
 
-Create lowest priority flow group in egress table with single rule that
-matches on special reg_c1 value that is set on ingress VLAN push with
-single action that pops VLAN. The flow destination is skip table that is
-used to skip any further processing of packet in FDB bridge priority.
+Control IRQ is the first IRQ vector. This complicates handling of
+completion irqs as we need to offset them by one.
+in the next patch, there are scenarios where completion and control EQs
+will share the same irq. for example: functions with single IRQ. To ease
+such scenarios, we shift control IRQ to the end of the irq array.
 
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Paul Blakey <paulb@nvidia.com>
+Signed-off-by: Shay Drory <shayd@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/esw/bridge.c  | 128 +++++++++++++++++-
- 1 file changed, 126 insertions(+), 2 deletions(-)
+ drivers/infiniband/hw/mlx5/odp.c                   |  1 +
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c       |  9 +++++----
+ drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h |  2 --
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  | 10 +++++-----
+ include/linux/mlx5/driver.h                        |  2 ++
+ 5 files changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-index 439b67b4380f..ed72246d1d83 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-@@ -28,7 +28,10 @@
- #define MLX5_ESW_BRIDGE_EGRESS_TABLE_VLAN_GRP_IDX_TO (MLX5_ESW_BRIDGE_EGRESS_TABLE_SIZE / 2 - 1)
- #define MLX5_ESW_BRIDGE_EGRESS_TABLE_MAC_GRP_IDX_FROM \
- 	(MLX5_ESW_BRIDGE_EGRESS_TABLE_VLAN_GRP_IDX_TO + 1)
--#define MLX5_ESW_BRIDGE_EGRESS_TABLE_MAC_GRP_IDX_TO (MLX5_ESW_BRIDGE_EGRESS_TABLE_SIZE - 1)
-+#define MLX5_ESW_BRIDGE_EGRESS_TABLE_MAC_GRP_IDX_TO (MLX5_ESW_BRIDGE_EGRESS_TABLE_SIZE - 2)
-+#define MLX5_ESW_BRIDGE_EGRESS_TABLE_MISS_GRP_IDX_FROM \
-+	(MLX5_ESW_BRIDGE_EGRESS_TABLE_MAC_GRP_IDX_TO + 1)
-+#define MLX5_ESW_BRIDGE_EGRESS_TABLE_MISS_GRP_IDX_TO (MLX5_ESW_BRIDGE_EGRESS_TABLE_SIZE - 1)
+diff --git a/drivers/infiniband/hw/mlx5/odp.c b/drivers/infiniband/hw/mlx5/odp.c
+index d0d98e584ebc..81147d774dd2 100644
+--- a/drivers/infiniband/hw/mlx5/odp.c
++++ b/drivers/infiniband/hw/mlx5/odp.c
+@@ -1559,6 +1559,7 @@ int mlx5r_odp_create_eq(struct mlx5_ib_dev *dev, struct mlx5_ib_pf_eq *eq)
  
- #define MLX5_ESW_BRIDGE_SKIP_TABLE_SIZE 0
+ 	eq->irq_nb.notifier_call = mlx5_ib_eq_pf_int;
+ 	param = (struct mlx5_eq_param) {
++		.irq_index = MLX5_IRQ_EQ_CTRL,
+ 		.nent = MLX5_IB_NUM_PF_EQE,
+ 	};
+ 	param.mask[0] = 1ull << MLX5_EVENT_TYPE_PAGE_FAULT;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 605c8ecc3610..792e0d6aa861 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -632,6 +632,7 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
+ 	mlx5_eq_notifier_register(dev, &table->cq_err_nb);
  
-@@ -61,6 +64,9 @@ struct mlx5_esw_bridge {
- 	struct mlx5_flow_table *egress_ft;
- 	struct mlx5_flow_group *egress_vlan_fg;
- 	struct mlx5_flow_group *egress_mac_fg;
-+	struct mlx5_flow_group *egress_miss_fg;
-+	struct mlx5_pkt_reformat *egress_miss_pkt_reformat;
-+	struct mlx5_flow_handle *egress_miss_handle;
- 	unsigned long ageing_time;
- 	u32 flags;
- };
-@@ -307,6 +313,36 @@ mlx5_esw_bridge_egress_mac_fg_create(struct mlx5_eswitch *esw, struct mlx5_flow_
- 	return fg;
- }
+ 	param = (struct mlx5_eq_param) {
++		.irq_index = MLX5_IRQ_EQ_CTRL,
+ 		.nent = MLX5_NUM_CMD_EQE,
+ 		.mask[0] = 1ull << MLX5_EVENT_TYPE_CMD,
+ 	};
+@@ -644,6 +645,7 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
+ 	mlx5_cmd_allowed_opcode(dev, CMD_ALLOWED_OPCODE_ALL);
  
-+static struct mlx5_flow_group *
-+mlx5_esw_bridge_egress_miss_fg_create(struct mlx5_eswitch *esw, struct mlx5_flow_table *egress_ft)
-+{
-+	int inlen = MLX5_ST_SZ_BYTES(create_flow_group_in);
-+	struct mlx5_flow_group *fg;
-+	u32 *in, *match;
-+
-+	in = kvzalloc(inlen, GFP_KERNEL);
-+	if (!in)
-+		return ERR_PTR(-ENOMEM);
-+
-+	MLX5_SET(create_flow_group_in, in, match_criteria_enable, MLX5_MATCH_MISC_PARAMETERS_2);
-+	match = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
-+
-+	MLX5_SET(fte_match_param, match, misc_parameters_2.metadata_reg_c_1, ESW_TUN_MASK);
-+
-+	MLX5_SET(create_flow_group_in, in, start_flow_index,
-+		 MLX5_ESW_BRIDGE_EGRESS_TABLE_MISS_GRP_IDX_FROM);
-+	MLX5_SET(create_flow_group_in, in, end_flow_index,
-+		 MLX5_ESW_BRIDGE_EGRESS_TABLE_MISS_GRP_IDX_TO);
-+
-+	fg = mlx5_create_flow_group(egress_ft, in);
-+	if (IS_ERR(fg))
-+		esw_warn(esw->dev,
-+			 "Failed to create bridge egress table miss flow group (err=%ld)\n",
-+			 PTR_ERR(fg));
-+	kvfree(in);
-+	return fg;
-+}
-+
- static int
- mlx5_esw_bridge_ingress_table_init(struct mlx5_esw_bridge_offloads *br_offloads)
- {
-@@ -383,12 +419,19 @@ mlx5_esw_bridge_ingress_table_cleanup(struct mlx5_esw_bridge_offloads *br_offloa
- 	br_offloads->ingress_ft = NULL;
- }
+ 	param = (struct mlx5_eq_param) {
++		.irq_index = MLX5_IRQ_EQ_CTRL,
+ 		.nent = MLX5_NUM_ASYNC_EQE,
+ 	};
  
-+static struct mlx5_flow_handle *
-+mlx5_esw_bridge_egress_miss_flow_create(struct mlx5_flow_table *egress_ft,
-+					struct mlx5_flow_table *skip_ft,
-+					struct mlx5_pkt_reformat *pkt_reformat);
-+
- static int
- mlx5_esw_bridge_egress_table_init(struct mlx5_esw_bridge_offloads *br_offloads,
- 				  struct mlx5_esw_bridge *bridge)
- {
-+	struct mlx5_flow_group *miss_fg = NULL, *mac_fg, *vlan_fg;
-+	struct mlx5_pkt_reformat *miss_pkt_reformat = NULL;
-+	struct mlx5_flow_handle *miss_handle = NULL;
- 	struct mlx5_eswitch *esw = br_offloads->esw;
--	struct mlx5_flow_group *mac_fg, *vlan_fg;
- 	struct mlx5_flow_table *egress_ft;
- 	int err;
+@@ -653,6 +655,7 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
+ 		goto err2;
  
-@@ -410,9 +453,48 @@ mlx5_esw_bridge_egress_table_init(struct mlx5_esw_bridge_offloads *br_offloads,
- 		goto err_mac_fg;
+ 	param = (struct mlx5_eq_param) {
++		.irq_index = MLX5_IRQ_EQ_CTRL,
+ 		.nent = /* TODO: sriov max_vf + */ 1,
+ 		.mask[0] = 1ull << MLX5_EVENT_TYPE_PAGE_REQUEST,
+ 	};
+@@ -806,8 +809,8 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
+ 	ncomp_eqs = table->num_comp_eqs;
+ 	nent = MLX5_COMP_EQ_SIZE;
+ 	for (i = 0; i < ncomp_eqs; i++) {
+-		int vecidx = i + MLX5_IRQ_VEC_COMP_BASE;
+ 		struct mlx5_eq_param param = {};
++		int vecidx = i;
+ 
+ 		eq = kzalloc(sizeof(*eq), GFP_KERNEL);
+ 		if (!eq) {
+@@ -953,9 +956,7 @@ static int set_rmap(struct mlx5_core_dev *mdev)
+ 		goto err_out;
  	}
  
-+	if (mlx5_esw_bridge_pkt_reformat_vlan_pop_supported(esw)) {
-+		miss_fg = mlx5_esw_bridge_egress_miss_fg_create(esw, egress_ft);
-+		if (IS_ERR(miss_fg)) {
-+			esw_warn(esw->dev, "Failed to create miss flow group (err=%ld)\n",
-+				 PTR_ERR(miss_fg));
-+			miss_fg = NULL;
-+			goto skip_miss_flow;
-+		}
-+
-+		miss_pkt_reformat = mlx5_esw_bridge_pkt_reformat_vlan_pop_create(esw);
-+		if (IS_ERR(miss_pkt_reformat)) {
-+			esw_warn(esw->dev,
-+				 "Failed to alloc packet reformat REMOVE_HEADER (err=%ld)\n",
-+				 PTR_ERR(miss_pkt_reformat));
-+			miss_pkt_reformat = NULL;
-+			mlx5_destroy_flow_group(miss_fg);
-+			miss_fg = NULL;
-+			goto skip_miss_flow;
-+		}
-+
-+		miss_handle = mlx5_esw_bridge_egress_miss_flow_create(egress_ft,
-+								      br_offloads->skip_ft,
-+								      miss_pkt_reformat);
-+		if (IS_ERR(miss_handle)) {
-+			esw_warn(esw->dev, "Failed to create miss flow (err=%ld)\n",
-+				 PTR_ERR(miss_handle));
-+			miss_handle = NULL;
-+			mlx5_packet_reformat_dealloc(esw->dev, miss_pkt_reformat);
-+			miss_pkt_reformat = NULL;
-+			mlx5_destroy_flow_group(miss_fg);
-+			miss_fg = NULL;
-+			goto skip_miss_flow;
-+		}
-+	}
-+skip_miss_flow:
-+
- 	bridge->egress_ft = egress_ft;
- 	bridge->egress_vlan_fg = vlan_fg;
- 	bridge->egress_mac_fg = mac_fg;
-+	bridge->egress_miss_fg = miss_fg;
-+	bridge->egress_miss_pkt_reformat = miss_pkt_reformat;
-+	bridge->egress_miss_handle = miss_handle;
- 	return 0;
+-	vecidx = MLX5_IRQ_VEC_COMP_BASE;
+-	for (; vecidx < eq_table->num_comp_eqs + MLX5_IRQ_VEC_COMP_BASE;
+-	     vecidx++) {
++	for (vecidx = 0; vecidx < eq_table->num_comp_eqs; vecidx++) {
+ 		err = irq_cpu_rmap_add(eq_table->rmap,
+ 				       pci_irq_vector(mdev->pdev, vecidx));
+ 		if (err) {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
+index abd024173c42..8116815663a7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
+@@ -8,8 +8,6 @@
  
- err_mac_fg:
-@@ -425,6 +507,13 @@ mlx5_esw_bridge_egress_table_init(struct mlx5_esw_bridge_offloads *br_offloads,
- static void
- mlx5_esw_bridge_egress_table_cleanup(struct mlx5_esw_bridge *bridge)
- {
-+	if (bridge->egress_miss_handle)
-+		mlx5_del_flow_rules(bridge->egress_miss_handle);
-+	if (bridge->egress_miss_pkt_reformat)
-+		mlx5_packet_reformat_dealloc(bridge->br_offloads->esw->dev,
-+					     bridge->egress_miss_pkt_reformat);
-+	if (bridge->egress_miss_fg)
-+		mlx5_destroy_flow_group(bridge->egress_miss_fg);
- 	mlx5_destroy_flow_group(bridge->egress_mac_fg);
- 	mlx5_destroy_flow_group(bridge->egress_vlan_fg);
- 	mlx5_destroy_flow_table(bridge->egress_ft);
-@@ -623,6 +712,41 @@ mlx5_esw_bridge_egress_flow_create(u16 vport_num, u16 esw_owner_vhca_id, const u
- 	return handle;
+ #define MLX5_COMP_EQS_PER_SF 8
+ 
+-#define MLX5_IRQ_EQ_CTRL (0)
+-
+ struct mlx5_irq;
+ 
+ int mlx5_irq_table_init(struct mlx5_core_dev *dev);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+index 763c83a02380..a66144b54fc8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+@@ -194,15 +194,14 @@ static void irq_sf_set_name(struct mlx5_irq_pool *pool, char *name, int vecidx)
+ 	snprintf(name, MLX5_MAX_IRQ_NAME, "%s%d", pool->name, vecidx);
  }
  
-+static struct mlx5_flow_handle *
-+mlx5_esw_bridge_egress_miss_flow_create(struct mlx5_flow_table *egress_ft,
-+					struct mlx5_flow_table *skip_ft,
-+					struct mlx5_pkt_reformat *pkt_reformat)
-+{
-+	struct mlx5_flow_destination dest = {
-+		.type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE,
-+		.ft = skip_ft,
-+	};
-+	struct mlx5_flow_act flow_act = {
-+		.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+		MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT,
-+		.flags = FLOW_ACT_NO_APPEND,
-+		.pkt_reformat = pkt_reformat,
-+	};
-+	struct mlx5_flow_spec *rule_spec;
-+	struct mlx5_flow_handle *handle;
-+
-+	rule_spec = kvzalloc(sizeof(*rule_spec), GFP_KERNEL);
-+	if (!rule_spec)
-+		return ERR_PTR(-ENOMEM);
-+
-+	rule_spec->match_criteria_enable = MLX5_MATCH_MISC_PARAMETERS_2;
-+
-+	MLX5_SET(fte_match_param, rule_spec->match_criteria,
-+		 misc_parameters_2.metadata_reg_c_1, ESW_TUN_MASK);
-+	MLX5_SET(fte_match_param, rule_spec->match_value, misc_parameters_2.metadata_reg_c_1,
-+		 ESW_TUN_BRIDGE_INGRESS_PUSH_VLAN_MARK);
-+
-+	handle = mlx5_add_flow_rules(egress_ft, rule_spec, &flow_act, &dest, 1);
-+
-+	kvfree(rule_spec);
-+	return handle;
-+}
-+
- static struct mlx5_esw_bridge *mlx5_esw_bridge_create(int ifindex,
- 						      struct mlx5_esw_bridge_offloads *br_offloads)
+-static void irq_set_name(char *name, int vecidx)
++static void irq_set_name(struct mlx5_irq_pool *pool, char *name, int vecidx)
  {
+-	if (vecidx == 0) {
++	if (vecidx == pool->xa_num_irqs.max) {
+ 		snprintf(name, MLX5_MAX_IRQ_NAME, "mlx5_async%d", vecidx);
+ 		return;
+ 	}
+ 
+-	snprintf(name, MLX5_MAX_IRQ_NAME, "mlx5_comp%d",
+-		 vecidx - MLX5_IRQ_VEC_COMP_BASE);
++	snprintf(name, MLX5_MAX_IRQ_NAME, "mlx5_comp%d", vecidx);
+ }
+ 
+ static struct mlx5_irq *irq_request(struct mlx5_irq_pool *pool, int i)
+@@ -217,7 +216,7 @@ static struct mlx5_irq *irq_request(struct mlx5_irq_pool *pool, int i)
+ 		return ERR_PTR(-ENOMEM);
+ 	irq->irqn = pci_irq_vector(dev->pdev, i);
+ 	if (!pool->name[0])
+-		irq_set_name(name, i);
++		irq_set_name(pool, name, i);
+ 	else
+ 		irq_sf_set_name(pool, name, i);
+ 	ATOMIC_INIT_NOTIFIER_HEAD(&irq->nh);
+@@ -440,6 +439,7 @@ struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, u16 vecidx,
+ 	}
+ pf_irq:
+ 	pool = irq_table->pf_pool;
++	vecidx = (vecidx == MLX5_IRQ_EQ_CTRL) ? pool->xa_num_irqs.max : vecidx;
+ 	irq = irq_pool_request_vector(pool, vecidx, affinity);
+ out:
+ 	if (IS_ERR(irq))
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index e23417424373..0ca719c00824 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -59,6 +59,8 @@
+ 
+ #define MLX5_ADEV_NAME "mlx5_core"
+ 
++#define MLX5_IRQ_EQ_CTRL (U8_MAX)
++
+ enum {
+ 	MLX5_BOARD_ID_LEN = 64,
+ };
 -- 
 2.31.1
 
