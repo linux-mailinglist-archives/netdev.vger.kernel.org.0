@@ -2,167 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B91E5423347
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 00:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87E1A42333D
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 00:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236863AbhJEWME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 18:12:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22499 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236894AbhJEWMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 18:12:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1633471811;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8GkNzl61HcLQvh0Hg2BBx5+s1fCKoWModcB2jt/xuOo=;
-        b=RGUMvn6Hb0VouaF1lDaFQeFj64fkbqDI/VDM0ImDHFtz/tWRLS45hGlGTMWUsx0jXWk3qK
-        40aqet/R8cKyRwYXyagMaSPhr49oDxFVSIT35Nrq+UIZCs6XCWCIvzviZtYdgfdl/L167s
-        ajlYkgH9hA4xokWRocgRNzS8BSNw2zo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-173-kmfdd5ACM9CJCG0ZdU964g-1; Tue, 05 Oct 2021 18:10:01 -0400
-X-MC-Unique: kmfdd5ACM9CJCG0ZdU964g-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E7A81100CD04;
-        Tue,  5 Oct 2021 22:09:46 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (unknown [10.39.192.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A9D5A652AE;
-        Tue,  5 Oct 2021 22:09:45 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org
-Subject: [PATCH iproute2 v3 3/3] configure: add the --libdir option
-Date:   Wed,  6 Oct 2021 00:08:06 +0200
-Message-Id: <59f39788fe40ce93f659540c83a303d12cdbefdc.1633455436.git.aclaudi@redhat.com>
-In-Reply-To: <cover.1633455436.git.aclaudi@redhat.com>
-References: <cover.1633455436.git.aclaudi@redhat.com>
+        id S236706AbhJEWKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 18:10:51 -0400
+Received: from mail-mw2nam10on2058.outbound.protection.outlook.com ([40.107.94.58]:10465
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231304AbhJEWKu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 18:10:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iSvZphwrMdoqAVtwvBsbOkAPMTkYCREBLn4C5MplCOMItmlULd/NAMiqOGG0b1RPt6h+699UIot5AqcaQb6OBHE80E5MCTZgSF+W7qmDE56uVHNbeNl22cLlm/7UOiOG/MEFTauzCs0e3t/L5JtvUhUs2b3FVYDWogF3cFt8EYfvqNudK+fRi5/XeVPi4s0wY41p/KvXET6jOBv52czkzD3dRxloCEH6SycjBmCgYn7qIX0/Yj+Tp/xt33dRmvT1MgRrp90PMGj+dN7W9p+9vJlIWg/G/N3kh1TPXNBImva/3rKTD8qxKLGGJ5ZOeWAI8CYdIxGTzI6GLLk9APHyiA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JnqAwtih5zEFN81Ge+L5SWmkSDGuw0cXGzPCs+xgCTc=;
+ b=Q8w9Jo2uvFTZB+tTmpf8F1jrIMG4R2UNClUZDt2KgTHFpYIqdHhgxPJlIXk/pKS+y0FvsBmUAeGXkgHOAsLjxUPA/PJZzpMchVXjrOyRR6k2WtwR7XqSH0X8/OKB3XXwlrmiPxaJ4OWfh62hBys1aCF+0Jj7RGKemJNKTlBfITLNGhVRhKPn2DKKkslJDedClgPlpdYqrh9nmrswztFqYfrCCgE0pNaQmhwTCNdgygyDpAOCZ5o5ChwI313P9mqS0As6oTfJUWD7YeK3VE1h2sgm3Ikalwth0nlK9HlzNFGuE18UguQ1CGDPN7v4164+TNuSzqoLLNWOUvRGnfFdDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JnqAwtih5zEFN81Ge+L5SWmkSDGuw0cXGzPCs+xgCTc=;
+ b=gd0WFkWa/wc+HBwKZPMHPSlRuWAi/aMYLr7wp1Gq3rptpFp/oAywJ47gBoCmo337EFmB2Rj83hSKsJADrfx8XTYa7dq82tK0kIA3w4i9FqwOanLgYlrRRIqLyZiQUXZ+FzrZOjS4A3AtX6/J32V4iInLN0dYkkYDKbf/+xWGEBFBzrctEhrZDIxTkD9eMEnFgUo9hAi3Kgac6CyoKPhoBHGG9yYvqaT2tmL+fT3pdTX4ky8TeZzqqTPWtUolIv5P9x7xhWhiW/vNkIOIkBR+nosqQVrhT/aU8om4KdRAHmxQK4vBrVK94hvkdZFfHl4vHWA7tOpxLDu0+OYpKhc0Kw==
+Received: from DM5PR15CA0057.namprd15.prod.outlook.com (2603:10b6:3:ae::19) by
+ DM5PR12MB1291.namprd12.prod.outlook.com (2603:10b6:3:75::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4566.16; Tue, 5 Oct 2021 22:08:58 +0000
+Received: from DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:ae:cafe::4f) by DM5PR15CA0057.outlook.office365.com
+ (2603:10b6:3:ae::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18 via Frontend
+ Transport; Tue, 5 Oct 2021 22:08:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT057.mail.protection.outlook.com (10.13.172.252) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4566.14 via Frontend Transport; Tue, 5 Oct 2021 22:08:58 +0000
+Received: from [10.2.60.14] (172.20.187.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 5 Oct
+ 2021 22:08:57 +0000
+Subject: Re: [PATCH net] rtnetlink: fix if_nlmsg_stats_size() under estimation
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     netdev <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>
+References: <20211005210417.2624297-1-eric.dumazet@gmail.com>
+From:   Roopa Prabhu <roopa@nvidia.com>
+Message-ID: <f1fc2b74-4422-18c1-d2a1-431115f6bc8f@nvidia.com>
+Date:   Tue, 5 Oct 2021 15:08:50 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20211005210417.2624297-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [172.20.187.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9903f9fd-a157-4a41-df78-08d9884cbad5
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1291:
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1291B748F9895C0942124406CBAF9@DM5PR12MB1291.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6p9wZKzTjZk/z9AT791F8VoL6RSMDM1xsgaNURxKKquYV9KJyPKlboGQaFIzVVzdbwB+d2NeQMJYQ6xjl4bopPQpztcreZtW1f8bTzC5y84/bEY+Bb1w/kfhkU3k2DTE1hfrWJFAr+TQws0QS/TADZFUwBo75suzv6+gONSspWoi6/P/CDhcr1obqKbby+5AX5veCOy3lyHYKEh5cp7+GdEQecjASBasBa4xQIbCBkYQreSARRfB6jusndeIf3FpMxsnf3thQDFQqx8ucLF3voFkkGsHplUi/rPihalPXu0cVHuDRO4r+c+aV8N3MqsW+/464+YWE3iyJ2xOCeQeDlGSg4gVrMHSZ/UlnL5nyvtN06b1HdFY9OOPmn3uf1VWWIaR05jQKCIRSRSJMqCWIuvor9ZMswfhefGRrOugVWbP46gcoTPSzZ7358gWn05PXXhWzRQdCI1FX/XY/rcxcVlA8J7ms+Jgb64FrfqptWp3y6ClcFuoEAFrWDtfvT+3T41udr2A0Li5kFge2hpsFLH8tlZNO294/YsP3s6hYag0+i7wXsBBncjVPEfqVWT+6eWz/3WisuwwqZdtJR1I22wgpgdRWBo5uSONfKU8tfwYVrsvqeaHaCePqAPkdYl4G+Pvgz/UlY4TjYoPxQV9JY/GOaNAjbeMY3SGHNXElDn5b3Mi/CpOuBvpvS+yapI8072uMq+LgigN0CIrERft5ERPVmViNDWloxgHGluqmfE=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(2906002)(7636003)(36756003)(336012)(6666004)(426003)(36860700001)(70206006)(31696002)(53546011)(508600001)(54906003)(70586007)(8936002)(8676002)(2616005)(47076005)(4326008)(4744005)(186003)(356005)(83380400001)(31686004)(5660300002)(16576012)(82310400003)(26005)(86362001)(110136005)(36906005)(16526019)(316002)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2021 22:08:58.1998
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9903f9fd-a157-4a41-df78-08d9884cbad5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1291
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit allows users/packagers to choose a lib directory to store
-iproute2 lib files.
 
-At the moment iproute2 ship lib files in /usr/lib and offers no way to
-modify this setting. However, according to the FHS, distros may choose
-"one or more variants of the /lib directory on systems which support
-more than one binary format" (e.g. /usr/lib64 on Fedora).
+On 10/5/21 2:04 PM, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+>
+> rtnl_fill_statsinfo() is filling skb with one mandatory if_stats_msg structure.
+>
+> nlmsg_put(skb, pid, seq, type, sizeof(struct if_stats_msg), flags);
+>
+> But if_nlmsg_stats_size() never considered the needed storage.
+>
+> This bug did not show up because alloc_skb(X) allocates skb with
+> extra tailroom, because of added alignments. This could very well
+> be changed in the future to have deterministic behavior.
+>
+> Fixes: 10c9ead9f3c6 ("rtnetlink: add new RTM_GETSTATS message to dump link stats")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Roopa Prabhu <roopa@nvidia.com>
+> ---
 
-As Luca states in commit a3272b93725a ("configure: restore backward
-compatibility"), packaging systems may assume that 'configure' is from
-autotools, and try to pass it some parameters.
+Acked-by: Roopa Prabhu <roopa@nvidia.com>
 
-Allowing the '--libdir=/path/to/libdir' syntax, we can use this to our
-advantage, and let the lib directory to be chosen by the distro
-packaging system.
+don't know how i missed this. Thanks for the patch Eric.
 
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- Makefile  |  7 ++++---
- configure | 22 ++++++++++++++++++++++
- 2 files changed, 26 insertions(+), 3 deletions(-)
-
-diff --git a/Makefile b/Makefile
-index 5bc11477..45655ca4 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1,6 +1,8 @@
- # SPDX-License-Identifier: GPL-2.0
- # Top level Makefile for iproute2
- 
-+-include config.mk
-+
- ifeq ("$(origin V)", "command line")
- VERBOSE = $(V)
- endif
-@@ -13,7 +15,6 @@ MAKEFLAGS += --no-print-directory
- endif
- 
- PREFIX?=/usr
--LIBDIR?=$(PREFIX)/lib
- SBINDIR?=/sbin
- CONFDIR?=/etc/iproute2
- NETNS_RUN_DIR?=/var/run/netns
-@@ -60,7 +61,7 @@ SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma dcb man vdpa
- LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
- LDLIBS += $(LIBNETLINK)
- 
--all: config
-+all: config.mk
- 	@set -e; \
- 	for i in $(SUBDIRS); \
- 	do echo; echo $$i; $(MAKE) -C $$i; done
-@@ -80,7 +81,7 @@ help:
- 	@echo "Make Arguments:"
- 	@echo " V=[0|1]             - set build verbosity level"
- 
--config:
-+config.mk:
- 	@if [ ! -f config.mk -o configure -nt config.mk ]; then \
- 		sh configure $(KERNEL_INCLUDE); \
- 	fi
-diff --git a/configure b/configure
-index 8be7e40b..858d2e41 100755
---- a/configure
-+++ b/configure
-@@ -157,6 +157,19 @@ check_prefix()
- 	fi
- }
- 
-+check_lib_dir()
-+{
-+	echo -n "lib directory: "
-+	if [ -n "$LIBDIR" ]; then
-+		eval echo "$LIBDIR"
-+		eval echo "LIBDIR:=$LIBDIR" >> $CONFIG
-+		return
-+	fi
-+
-+	eval echo "${prefix}/lib"
-+	eval echo "LIBDIR:=${prefix}/lib" >> $CONFIG
-+}
-+
- check_ipt()
- {
- 	if ! grep TC_CONFIG_XT $CONFIG > /dev/null; then
-@@ -495,6 +508,7 @@ usage()
- 	cat <<EOF
- Usage: $0 [OPTIONS]
- 	--include_dir		Path to iproute2 include dir
-+	--libdir		Path to iproute2 lib dir
- 	--libbpf_dir		Path to libbpf DESTDIR
- 	--libbpf_force		Enable/disable libbpf by force. Available options:
- 				  on: require link against libbpf, quit config if no libbpf support
-@@ -518,6 +532,13 @@ else
- 					shift
- 				fi
- 				shift ;;
-+			--libdir | --libdir=*)
-+				LIBDIR="${1#*=}"
-+				if [ "$LIBDIR" == "--libdir" ]; then
-+					LIBDIR="$2"
-+					shift
-+				fi
-+				shift ;;
- 			--libbpf_dir | --libbpf_dir=*)
- 				LIBBPF_DIR="${1#*=}"
- 				if [ "$LIBBPF_DIR" == "--libbpf_dir" ]; then
-@@ -576,6 +597,7 @@ fi
- 
- echo
- check_prefix
-+check_lib_dir
- if ! grep -q TC_CONFIG_NO_XT $CONFIG; then
- 	echo -n "iptables modules directory: "
- 	check_ipt_lib_dir
--- 
-2.31.1
 
