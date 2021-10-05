@@ -2,59 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBC1A421E94
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 08:01:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39897421EAA
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 08:04:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232313AbhJEGDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 02:03:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43058 "EHLO mail.kernel.org"
+        id S232792AbhJEGGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 02:06:04 -0400
+Received: from mout.perfora.net ([74.208.4.197]:47955 "EHLO mout.perfora.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232108AbhJEGDV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 02:03:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 92CD361506;
-        Tue,  5 Oct 2021 06:01:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633413691;
-        bh=8WQC+dzyl2tjTbCuTZwAxt3vQ3mPoLMuElaefonyfAY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=a31KrGQAWEDUESVLtDZcnrbZoaJM95PzWC4EcMS76iGdwpNCsckN0HWHDZe+RSJuX
-         8e5TJ249gyZAGkLjuHWBfIfmxMKOls0pZtojJkJvfW4EKc2i58vVTOJgaYtjGV0vPZ
-         o6/fbQBk6u7hBq3g1P/xn6RaD3PFdDydeqp2Kzv2gFft6hypWZPZqq5Wj+U1tFl/mZ
-         BhR/SZusSUS9RUXEtnYZJ+jYvJqkNsP76G0zIPUXHx6kdwNeiR0i1YiBLib4jOgYoY
-         g+LHT+F6WIXorKg8P0SNgZlWyHCwsYIZ+UJTDAG498NmJ6i8QzeUfK4edpvVSdwCnw
-         fA6cdM2LL3jjQ==
-Date:   Tue, 5 Oct 2021 14:01:27 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, Li Yang <leoyang.li@nxp.com>
-Subject: Re: [PATCH devicetree] arm64: dts: ls1028a: mark internal links
- between Felix and ENETC as capable of flow control
-Message-ID: <20211005060126.GR20743@dragon>
-References: <20210929115226.1383925-1-vladimir.oltean@nxp.com>
+        id S232429AbhJEGFx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 02:05:53 -0400
+Received: from toolbox.soleil.gust ([63.147.84.106]) by mrelay.perfora.net
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0M3i1X-1mokrY1IIb-00rHkS;
+ Tue, 05 Oct 2021 08:03:45 +0200
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Marcel Ziswiler <marcel@ziswiler.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, soc@kernel.org
+Subject: [PATCH v1 0/4] ARM: prepare and add netgear gs110emx support
+Date:   Tue,  5 Oct 2021 08:03:30 +0200
+Message-Id: <20211005060334.203818-1-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210929115226.1383925-1-vladimir.oltean@nxp.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:PHZoUWbg+wewrRDzZRFpkPO+la0hiffCSnS48JQgyvbfQBxdxal
+ p+9TtNNMHp6vTPS36lRHMte5osoJBw7cEr1nEdexu0OX0tNpeD6ibRG9wpuBBgsqeWfPegL
+ MaLNPyzVvZWN62Bkio9WP8W7UC2dkVa2lVjoJb1SGXRCw6EDoZhTmVajRsiqlzUfMx3MIbx
+ Wp4tj2rNCuMDsevU7xfkA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:TCXgmKTrsOg=:HkEzz4khVLTBJfI+EmcSJC
+ F+3Qrah5ofmBt0yP04evSgdAMrpyM8V92TSqYpLAwgZSiDoB1+TcuZIle0Ru2fPvv5CAtP86D
+ lVxEALw7xkq+Krc2Mad6iB77RQq3XWSK9V/VhS81535F1B5NeSZYQzKhDhjRcdfJcFuLhsR2/
+ UwShkj7SFm5NQ40TQQ6m9zMOBgESjwnoCqi0N2LRRMIy7uOh6vkSCenMZAQo3OC9Co7st0Jk4
+ hZk8LSqV8eHciMyZLFEdWGBC+or5SnT5yY0GV6jjFdnWmxetB27Ckvp5FCaI6Ts0PxlXiM/hw
+ +pjxYYS7ii1E2NSrNS8SgkUdI9vteezup2Zymc4X4YU8z7WiYsHtyq1XMMi/HgZ1qjX72xoUh
+ U3lFkmUjZVqqeJf9z+GeE1YptiC+3/RhQsVfQLc3cSgz/ASqmQBnWt5g1P4ROcQ5JbSUn+jMQ
+ KplXkfwF52lfBP1B3QrDIgt28Vs0lofsXVrWn4yHPhPqP1pL7/LOO85p0K+7jqLiCJkzeAUr3
+ PRs1mgcvgjxwEw85o8HkfhnsRKUpz5yuSgIJ2DMn+0Y7kFgetLbiEyFI4xWl1QlIbznjpxoMp
+ t/wJC8HUgKS/9OrSz1q24iJNQ21L5goMV3l30P78pTGmlPoS/DLhJfrHMBRv6OJS8xK2uLCPM
+ 2ows0/TnholAQAGpXRjZudYGBFAulan4TgwHprS1Es2YJqPCdfPEOpyPzpaJVu2D/HqKOgA6q
+ bNsfjuv7yuEeT8AaEK9Ea9SFc9ic3FyvlRAkqg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 02:52:26PM +0300, Vladimir Oltean wrote:
-> The internal Ethernet switch suffers from erratum A-050484 ("Ethernet
-> flow control not functional on L2 switch NPI port when XFH is used").
-> XFH stands for "Extraction Frame Header" - which basically means the
-> default "ocelot" DSA tagging protocol.
-> 
-> However, the switch supports one other tagging protocol - "ocelot-8021q",
-> and this is not subject to the erratum above. So describe the hardware
-> ability to pass PAUSE frames in the device tree, and let the driver
-> figure out whether it should use flow control on the CPU port or not,
-> depending on whether the "ocelot" or "ocelot-8021q" tagging protocol is
-> being used.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Applied, thanks!
+Cleanup mvebu_v7_defconfig and then add support for the Netgear
+GS110EMX which is an 8 port Gigabit switch with two additional
+Multi-Gig ports. An 88E6390X switch sits at its core connecting to two
+88X3310P 10G PHYs while the control plane is handled by an 88F6811
+Armada 381 SoC.
+
+
+Marcel Ziswiler (4):
+  dt-bindings: net: dsa: marvell: fix compatible in example
+  ARM: mvebu_v7_defconfig: enable mtd physmap
+  ARM: mvebu_v7_defconfig: rebuild default configuration
+  ARM: dts: mvebu: add device tree for netgear gs110emx switch
+
+ .../devicetree/bindings/net/dsa/marvell.txt   |   2 +-
+ arch/arm/boot/dts/Makefile                    |   1 +
+ .../boot/dts/armada-381-netgear-gs110emx.dts  | 293 ++++++++++++++++++
+ arch/arm/configs/mvebu_v7_defconfig           |  18 +-
+ 4 files changed, 303 insertions(+), 11 deletions(-)
+ create mode 100644 arch/arm/boot/dts/armada-381-netgear-gs110emx.dts
+
+-- 
+2.26.2
+
