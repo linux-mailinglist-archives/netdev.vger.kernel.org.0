@@ -2,104 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A09422B06
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:29:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23EB5422B1A
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:35:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235312AbhJEObW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 10:31:22 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:54605 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235191AbhJEObV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 10:31:21 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1633444170; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=FxJv+xfRfX0wiXpi4iHFEWoHOtv7gBTnYPqMLSJu+pQ=;
- b=tfdL9FkNU8FsW0QVF6/EtrmCiGeFoWa9oMbH2RkaOosuuIrVbPlQEBHPGSyrEbM6st7st367
- Ov/1iBwbm+eCGKTWYRkl8Z1XyUUdXLm0gvz9fElop2L/JOzqujeU6C5IWHlxk/+nzPMdCAd0
- fNHZqMFP3D7cBs7L/G0uqPGasGY=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 615c614a03355859c8c7a88b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 05 Oct 2021 14:29:30
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6413FC43617; Tue,  5 Oct 2021 14:29:30 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A00F6C4338F;
-        Tue,  5 Oct 2021 14:29:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org A00F6C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S235085AbhJEOhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 10:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46648 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233705AbhJEOhD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 10:37:03 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D62C061749
+        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 07:35:13 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id e66-20020a9d2ac8000000b0054da8bdf2aeso23888645otb.12
+        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 07:35:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=3lJE1vVoBxcOuVpndni9d4PBf8hJwrOfedgdu/OO6Rg=;
+        b=a+tDF/OgcaiKs4DYUAu7wHz9UWTqVA0I3fwl6Y27lTy8bS24n9CjinAmOKb+G79lFL
+         c/qoPfkI3SvvnyqeOJ200ck/BmI/6PH+hOI0SiAvmfJrJE4jof1i2tEyP+ehH1uR4quE
+         SsENxQwUNOp3XdILLuNNYmiqW06MkPMxEwyrKpYovRG25sYsNpX0gnkcbg9qeYPlESR/
+         zx44X2zE00XdUt67zrefDRwDMlUABJIBi/TpLfhdYv2NoyWS3lJY7EUlUa7wu/6txni6
+         yNbh6S5rk7v6+H7a3xtr6NTR6z/yE5zYX/LL/z3fTS3WYajLU/RycOMprVD7tO59GJGF
+         3/BQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=3lJE1vVoBxcOuVpndni9d4PBf8hJwrOfedgdu/OO6Rg=;
+        b=b5rgHNqJQBNCMCc678VARs7oMdSlQE9UyPhq/lfxWpaGrMOpisCMM1rHrMfGRLPcRl
+         RzLXi89bTiON3WLl/rAUgtegeoLnIbYM6eOYOC3oQYPlw4UbXtsER7AvwWdibiCLZXQm
+         BlKCtKmk3w1xu4q25YetHYDKlKhDYMGv6OrDvhRIKMqHKioHcSLh5ovCacGcb2pfv7il
+         FuGdHkujgjphV+7aqu0OpQtA0oSEwN13y1/1SLE042/at5mtbArQvvQgxwXrgi8za8Cb
+         jgX25MKERAp7+peqp7ScDjwMtDAM7rySfEICZjb1rsWAP6HcBLamfpzxr9vlFuIfQ9/W
+         SOkA==
+X-Gm-Message-State: AOAM5335qCQyvID8LFOmCtcuCDEgKE7j/sIQivibTxQjiWprx/abk6Fu
+        UJnjjZ+7dNs7QZmQVtxip7U=
+X-Google-Smtp-Source: ABdhPJzeanh0G0bnG/TwTzd6R6b4RxqluuLsQHQ1ejpZL3ifsn7IhPtwelM1NTqAPx+onjDlkwXYXA==
+X-Received: by 2002:a9d:7093:: with SMTP id l19mr14454516otj.15.1633444512603;
+        Tue, 05 Oct 2021 07:35:12 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id u2sm3590223otg.51.2021.10.05.07.35.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Oct 2021 07:35:08 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] ip: nexthop: keep cache netlink socket open
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, Nikolay Aleksandrov <nikolay@nvidia.com>
+References: <c036dc79-0d78-df8b-343b-fa9a913bd5cf@gmail.com>
+ <20211004090328.2329012-1-razor@blackwall.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <016dbae1-3a80-e731-d056-3a23ad2f7265@gmail.com>
+Date:   Tue, 5 Oct 2021 08:35:04 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20211004090328.2329012-1-razor@blackwall.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath11k: Remove unused variable in
- ath11k_dp_rx_mon_merg_msdus()
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210927150743.19816-1-tim.gardner@canonical.com>
-References: <20210927150743.19816-1-tim.gardner@canonical.com>
-To:     Tim Gardner <tim.gardner@canonical.com>
-Cc:     ath11k@lists.infradead.org, tim.gardner@canonical.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20211005142930.6413FC43617@smtp.codeaurora.org>
-Date:   Tue,  5 Oct 2021 14:29:30 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tim Gardner <tim.gardner@canonical.com> wrote:
-
-> Coverity complains that a constant variable guards dead code. In fact,
-> mpdu_buf is set NULL and never updated.
+On 10/4/21 3:03 AM, Nikolay Aleksandrov wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
 > 
-> 4834err_merge_fail:
->         null: At condition mpdu_buf, the value of mpdu_buf must be NULL.
->         dead_error_condition: The condition mpdu_buf cannot be true.
-> CID 92162 (#1 of 1): 'Constant' variable guards dead code (DEADCODE)
-> dead_error_line: Execution cannot reach the expression decap_format !=
->   DP_RX_DECAP_TYPE_RAW inside this statement: if (mpdu_buf && decap_forma....
-> Local variable mpdu_buf is assigned only once, to a constant value, making it
->   effectively constant throughout its scope. If this is not the intent, examine
->   the logic to see if there is a missing assignment that would make mpdu_buf not
->   remain constant.
-> 4835        if (mpdu_buf && decap_format != DP_RX_DECAP_TYPE_RAW) {
+> Since we use the cache netlink socket for each nexthop we can keep it open
+> instead of opening and closing it on every add call. The socket is opened
+> once, on the first add call and then reused for the rest.
 > 
-> Fix this by removing mpdu_buf and unreachable code.
+> Suggested-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+> ---
+> I actually had this in my initial patchset, but switched it with the
+> open/close on each call. TBH, I don't recall why, perhaps to be the same
+> as the link cache. I don't see a reason not to keep the socket open.
 > 
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: ath11k@lists.infradead.org
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+> I've re-run the stress test and the selftests, all look good.
+> 
+>  ip/ipnexthop.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
 
-Patch applied to ath-next branch of ath.git, thanks.
-
-7210b4b77fe4 ath11k: Remove unused variable in ath11k_dp_rx_mon_merg_msdus()
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210927150743.19816-1-tim.gardner@canonical.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+applied to iproute2-next. Thanks,
 
