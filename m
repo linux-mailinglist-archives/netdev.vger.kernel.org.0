@@ -2,154 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16CF1422AE1
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:20:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEA69422AF9
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:25:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235907AbhJEOWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 10:22:30 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:22175 "EHLO m43-7.mailgun.net"
+        id S233727AbhJEO11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 10:27:27 -0400
+Received: from mga03.intel.com ([134.134.136.65]:64964 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235356AbhJEOW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 10:22:28 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1633443638; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=iXaHQCDcTat4B7XjXBM6ERGc8OaY+eIv7u8gl6/j0qg=; b=gTZFpQbN1GihyrgRYpCzbcJFJ2N3XYD1JYGgBqApliAOOC4zPWcxUZUDkuqQ91W69PLSODUD
- Q1ByXG2XOnkSz7VXgWqeNQVJAnYzqsjIIXS/HwU9D11JilJKZRux5mRD8I5tH11X52G5giBZ
- TlwpuUdjTnlCCT1NSrXLU6WZe8E=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 615c5f2aff0285fb0ab466d9 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 05 Oct 2021 14:20:26
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 087F0C4361B; Tue,  5 Oct 2021 14:20:26 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id EF3B7C4338F;
-        Tue,  5 Oct 2021 14:20:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org EF3B7C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org,
-        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v8 00/24] wfx: get out from the staging area
-References: <20211005135400.788058-1-Jerome.Pouiller@silabs.com>
-Date:   Tue, 05 Oct 2021 17:20:19 +0300
-In-Reply-To: <20211005135400.788058-1-Jerome.Pouiller@silabs.com> (Jerome
-        Pouiller's message of "Tue, 5 Oct 2021 15:53:36 +0200")
-Message-ID: <871r4zft98.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S233705AbhJEO10 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 10:27:26 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10128"; a="225697603"
+X-IronPort-AV: E=Sophos;i="5.85,349,1624345200"; 
+   d="scan'208";a="225697603"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2021 07:23:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,349,1624345200"; 
+   d="scan'208";a="567668957"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga002.fm.intel.com with ESMTP; 05 Oct 2021 07:23:04 -0700
+Received: from alobakin-mobl.ger.corp.intel.com (tmaksymc-MOBL1.ger.corp.intel.com [10.213.3.130])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 195EN2hK013921;
+        Tue, 5 Oct 2021 15:23:02 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jian Shen <shenjian15@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org, hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linuxarm@openeuler.org
+Subject: Re: [RFCv2 net-next 000/167] net: extend the netdev_features_t
+Date:   Tue,  5 Oct 2021 16:22:58 +0200
+Message-Id: <20211005142258.557-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <b335852ecaba3c86d1745b5021bb500798fc843b.camel@kernel.org>
+References: <20210929155334.12454-1-shenjian15@huawei.com> <20211001151710.20451-1-alexandr.lobakin@intel.com> <YVsWyO3Fa5RC0hRh@lunn.ch> <b335852ecaba3c86d1745b5021bb500798fc843b.camel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+From: Saeed Mahameed <saeed@kernel.org>
+Date: Mon, 04 Oct 2021 15:30:21 -0700
 
-> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+> On Mon, 2021-10-04 at 16:59 +0200, Andrew Lunn wrote:
+> > On Fri, Oct 01, 2021 at 05:17:10PM +0200, Alexander Lobakin wrote:
+> > > From: Jian Shen <shenjian15@huawei.com>
+> > > Date: Wed, 29 Sep 2021 23:50:47 +0800
+> > >
+> > > Hi,
+> > >
+> > > > For the prototype of netdev_features_t is u64, and the number
+> > > > of netdevice feature bits is 64 now. So there is no space to
+> > > > introduce new feature bit.
+> > > >
+> > > > This patchset try to solve it by change the prototype of
+> > > > netdev_features_t from u64 to bitmap. With this change,
+> > > > it's necessary to introduce a set of bitmap operation helpers
+> > > > for netdev features. Meanwhile, the functions which use
+> > > > netdev_features_t as return value are also need to be changed,
+> > > > return the result as an output parameter.
+> > > >
+> > > > With above changes, it will affect hundreds of files, and all the
+> > > > nic drivers. To make it easy to be reviewed, split the changes
+> > > > to 167 patches to 5 parts.
+> > >
+> > > If you leave the current feature field set (features, hw_features
+> > > etc.) as is and just add new ones as bitmaps -- I mean, to place
+> > > only newly added features there -- you won't have to change this in
+> > > hundreds of drivers.
+> >
+> > That makes things messy for the future. Two different ways to express
+> > the same thing. And it is a trap waiting for developers to fall
+> > into. Is this a new feature or an old feature bit? Should i add it to
+> > the old or new bitmap? Will the compiler error out if i get it wrong,
+> > or silently accept it?
+> >
+> > > Another option is to introduce new fields as bitmaps and mirror all
+> > > features there, but also keep the current ones. This implies some
+> > > code duplication -- to keep both sets in sync -- but it will also
+> > > allow to avoid such diffstats. Developers could switch their
+> > > drivers
+> > > one-by-one then, and once they finish converting,
+> >
+> > Which will never happen. Most developers will say, why bother, it
+> > works as it is, i'm too lazy. And many drivers don't have an active
+> > developer, and so won't get converted.
+> >
+> > Yes it is a big patchset, but at the end, we get a uniform API which
+> > is future proof, and no traps waiting for developers to fall into.
+> >
 >
-> Hello,
->
-> I think the wfx driver is now mature enough to be accepted in the
-> drivers/net/wireless directory.
->
-> The firmware is now a part of the linux-firmware repository since relase
-> 20210315[1]. It had taken a bit of time because I have worked with the le=
-gal
-> department to simplify the redistribution terms of the firmware.
->
-> [1]: https://lore.kernel.org/linux-firmware/2833354.gXvVfaC4I7@pc-42/
->
->
-> As requested by Kalle[2], I send one file per patch. At the end, all the
-> patches (or at least the patches 3 to 24) will be squashed (therefore, I
-> didn't bother to write real commit messages).
->
-> [2]: https://lore.kernel.org/lkml/87ft6p2n0h.fsf@codeaurora.org/
->
-> Here is a diagram of the global architecture that may help to understand
-> the code:
->
->     ,------------------------------------.
->     |                mac80211            |
->     `------------------------------------'
->     ,------------+-----------+-----------.
->     |    sta     |           |           |
->     |    scan    |           |           |
->     |    main    |           |           |
->     +------------+  data_tx  |           |
->     |    key     |           |  data_rx  |
->     | hif_tx_mib |   queue   |           |
->     |   hif_tx   |           |           |
->     |   hif_rx   |           |           |
->     |  hif_api_* |           |           |
->     +------------+-----------+-----------+--------.
->     |                  bh                |  fwio  |
->     +------------------------------------+--------+
->     |                     hwio                    |
->     +---------------------------------------------+
->     |                   bus_sdio                  |
->     |                   bus_spi                   |
->     `---------------------------------------------'
->     ,---------------------------------------------.
->     |                  spi / sdio                 |
->     `---------------------------------------------'
->
-> Roughly, I have sent the files from the bottom to the top.
->
->
-> v8:
->   - Change the way the DT is handled. The user can now specify the name of
->     the board (=3D chip + antenna) he use. It easier for board designers =
-to
->     add new entries. I plan to send a PR to linux-firmware to include PDS
->     files of the developpement boards belong the firmware (I also plan to
->     relocate these file into wfx/ instead of silabs/). (Kalle, Pali)
->   - Prefix visible functions and structs with "wfx_". I mostly kept the
->     code under 80 columns. (Kalle, Pali, Greg)
->   - Remove support for force_ps_timeout for now. (Kalle)
->   - Fix licenses of Makefile, Kconfig and hif_api*.h. (Kalle)
->   - Do not mix and match endianess in struct hif_ind_startup. (Kalle)
->   - Remove magic values. (Kalle)
->   - Use IS_ALIGNED(). (BTW, PTR_IS_ALIGNED() does not exist?) (Kalle)
->   - I have also noticed that some headers files did not declare all the
->     struct they used.
->
->   These issues remain (I hope they are not blockers):
->   - I have currently no ideas how to improve/simplify the parsing PDS fil=
-e.
->     (Kalle)
->   - We would like to relate the SDIO quirks into mmc/core/quirks.h, but t=
-he
->     API to do that does not yet exist. (Ulf, Pali)
+> I agree, i had to visit this topic a year ago or so, and the only
+> conclusion was is to solve this the hard way, introduce a totally new
+> mechanism, the safest way is to remove old netdev_features_t fields
+> from netdev and add new ones (both names and types), so compiler will
+> catch you if you missed to convert a place.
 
-So is this a direct version from staging-next? If yes, what commit id did
-you use? Or do you have your own set of patches on top of staging-next?
+Makes sense! I'm more a fan of "total conversions" rather than
+keeping both old/new, just wasn't sure about how long it would
+take to collect acks. On the other hand, there is probably no
+need to wait for every single driver team: no real logic changes,
+sole convertion stuff to bitmaps.
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+Anyway, we ran out of bits for both netdev_features_t and
+priv_flags, so such changes need to be done.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+> maybe hide the implementation details and abstract it away from drivers
+> using getters and manipulation APIs, it is not that bad since drivers
+> are already not supposed to modify netdev_features directly.
+
+That can also be actual, the only thing is that we need to wrap only
+basic access to netdev_features_t type itself as we have a set of
+fields (hw, vlan, gso etc.) to work with.
+
+> > Andrew
+
+Thanks,
+Al
