@@ -2,95 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F9A8422C24
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 17:15:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DCAE422C47
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 17:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235852AbhJEPRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 11:17:05 -0400
-Received: from mail.efficios.com ([167.114.26.124]:55550 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231513AbhJEPRE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 11:17:04 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id EE21B38D87B;
-        Tue,  5 Oct 2021 11:15:12 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id kZ6Ruhz5_vwz; Tue,  5 Oct 2021 11:15:12 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 771A738DEA5;
-        Tue,  5 Oct 2021 11:15:12 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 771A738DEA5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1633446912;
-        bh=F2x+Hi5WGEvzSTS/iYSt+2Kq3IbtXMx7Ua5K43Tf+8Q=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=fWZyv80Hc57O72INVh6dzebvppxNTTpSCWD6RX6UcVz0TCIG7KNJFBruatsJlbExw
-         a8m1LH2syppBinNohKsGX7Let/OXR1df6ma27SCVmH/cJOlyEpjOnjXwgezNfnyBtT
-         Ysfzbmm+lo0m6osH+K1EFWYLctbOmd5Blockkwo7Y10QWtKV+RwuP+99Djm81eXW80
-         KKtj5gqs35x3yuV0hBt3DwAHpdU+xi2TuYGECth+9gfop5OvVk2mBE8x9LiSpqNf43
-         YxLhniS72qCXG3Dxuv3pvMVdS43CxGasiiw7HWsLrHsg5K6ejL9ZnYlk9EpHxqrs7h
-         h/K7AP6Vrbjjg==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id tJJJRKMZDi4F; Tue,  5 Oct 2021 11:15:12 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 5A3A838DE3F;
-        Tue,  5 Oct 2021 11:15:12 -0400 (EDT)
-Date:   Tue, 5 Oct 2021 11:15:12 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Paul <paulmck@linux.vnet.ibm.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Joel Fernandes, Google" <joel@joelfernandes.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        coreteam@netfilter.org, netdev <netdev@vger.kernel.org>
-Message-ID: <505004021.2637.1633446912223.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20211005094728.203ecef2@gandalf.local.home>
-References: <20211005094728.203ecef2@gandalf.local.home>
-Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
+        id S235921AbhJEPXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 11:23:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39870 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229936AbhJEPXx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 11:23:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 219E061165;
+        Tue,  5 Oct 2021 15:22:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633447322;
+        bh=dy4Pbx/u37op3cyiFKAO9wWej5io68NapucgdT7CYc8=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=Kr/8i3vCV7AmEplVPGdeBOmvLWQ7fi7qh/yFaqvIbqGAlUNVukVve5rdCJnnbK9/A
+         I1eXyhu0HzohsdObHQfdQlmM/nRRKBB/D1ruF1woiPy9RGQdya01//b0ZQwA4QXMuI
+         ulARi8iIo3WXKvySAsYSzlsCHGfbeLup0XVl3Br94vkod6gR/gSbRMU/AQo1WwYly8
+         Hf4Pksg1d/YLx4APeDRHgAaaXnsrMfDWHeDBYmXC8XCWqjDkalWeRsRyIpfYwOzPpS
+         GWnV7OJjptoM8noKRna2zo4W85k+a4w7b2FsIBgCqGoGJXSFCq3bBCcV1EQyta1ntn
+         q4jblzFNecc3g==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_4156 (ZimbraWebClient - FF92 (Linux)/8.8.15_GA_4156)
-Thread-Topic: Use typeof(p) instead of typeof(*p) *
-Thread-Index: 7dSlbpn4ImaK0wI9+IMWa3C1UuJxjA==
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210929063126.4a702dbd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210928125500.167943-1-atenart@kernel.org> <20210928125500.167943-9-atenart@kernel.org> <20210928170229.4c1431c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <163290399584.3047.8100336131824633098@kwain> <20210929063126.4a702dbd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Subject: Re: [RFC PATCH net-next 8/9] net: delay device_del until run_todo
+From:   Antoine Tenart <atenart@kernel.org>
+Cc:     davem@davemloft.net, pabeni@redhat.com, gregkh@linuxfoundation.org,
+        ebiederm@xmission.com, stephen@networkplumber.org,
+        herbert@gondor.apana.org.au, juri.lelli@redhat.com,
+        netdev@vger.kernel.org
+To:     Jakub Kicinski <kuba@kernel.org>
+Message-ID: <163344731953.4226.7213722603777320810@kwain>
+Date:   Tue, 05 Oct 2021 17:21:59 +0200
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On Oct 5, 2021, at 9:47 AM, rostedt rostedt@goodmis.org wrote:
-[...]
-> #define rcu_dereference_raw(p) \
-> ({ \
-> 	/* Dependency order vs. p above. */ \
-> 	typeof(p) ________p1 = READ_ONCE(p); \
-> -	((typeof(*p) __force __kernel *)(________p1)); \
-> +	((typeof(p) __force __kernel)(________p1)); \
-> })
+Quoting Jakub Kicinski (2021-09-29 15:31:26)
+>=20
+> Well, it's a little wobbly but I think the direction is sane.
 
-AFAIU doing so removes validation that @p is indeed a pointer, so a user might mistakenly
-try to use rcu_dereference() on an integer, and get away with it. I'm not sure we want to
-loosen this check. I wonder if there might be another way to achieve the same check without
-requiring the structure to be declared, e.g. with __builtin_types_compatible_p ?
+> FWIW the other two pieces of feedback I have is try to avoid the
+> synchronize_net() in patch 7 and add a new helper for the name
+> checking, which would return bool. The callers don't have any=20
+> business getting the struct.
 
-Thanks,
+I'll work on an RFC v2 including modifications discussed in this thread
+(especially the ones raised about queues attributes; investigating if it
+can be fixed). I might send the patches about the name checking helper
+separately to reduce the size of the series, as I think they bring value
+outside of it.
 
-Mathieu
+(In the meantime suggestions or reviews from others are still welcomed).
 
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+BTW, what are your thoughts on patch 1? It is not strictly linked to the
+others (or to other solutions that might arise).
+
+Thanks!
+Antoine
