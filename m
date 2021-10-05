@@ -2,222 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB351422EE2
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 19:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF251422F66
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 19:50:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236728AbhJERRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 13:17:45 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:10942 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236711AbhJERRo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 13:17:44 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 195Fub5D026710;
-        Tue, 5 Oct 2021 10:15:53 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=Um9s9/TLHNrNMcB2c9SFF6AaxMvdu82WG4m2JK9f+8k=;
- b=OQp4WDQxAoFHeA/ybo1cMav78PdqH/mjDzJYr44wXKckjqXA+2jcPXPRVgtMEBcNof//
- Pmw5y0f9eK+rUuppmeiANDDEFpkwsaSIujStsny591pqaa92ODWV6OvD+r/pjSWvuTUV
- V6x4ls0H0Zvyua+OuYRGOSwlFpnWUYcKyqxonPGITU7WEpxkcoO9Ut4fgUEhFCVtGAFF
- av9l11TbaIa9Q5dgm3G7UMe49wMr1AxcLS4L/BlswgSdq2VbwDsmSf0zYNj6fghqUYxp
- FAWS8DGSqfwyBteFPQps4kEWRB9j6LrZ/3IykIjAB1RGNFNcDRYWxIT6jY5S0HvNme1C wQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3bgmv5t497-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 05 Oct 2021 10:15:52 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 5 Oct
- 2021 10:15:51 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 5 Oct 2021 10:15:51 -0700
-Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-        by maili.marvell.com (Postfix) with ESMTP id 2D13D3F707C;
-        Tue,  5 Oct 2021 10:15:48 -0700 (PDT)
-From:   Subbaraya Sundeep <sbhatta@marvell.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <sgoutham@marvell.com>, <hkelam@marvell.com>, <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net-next PATCH 3/3] octeontx2-pf: Add devlink param to vary rbuf size
-Date:   Tue, 5 Oct 2021 22:45:36 +0530
-Message-ID: <1633454136-14679-4-git-send-email-sbhatta@marvell.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
-References: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
+        id S234559AbhJERv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 13:51:56 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:41156 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234217AbhJERvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 13:51:54 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1633456203; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
+ To: From: Sender; bh=umNYz8pA01LGfst/ZDKb/BGeTkpsTgzCMazCvgWWhM4=; b=VjtQjJwQyacALVa+HJ4owpHSoS/5KMh/aHpaHvdiNdxhl+jU0qH3E7xovWXv2Z9m/khV//r1
+ QSeZOBkC01lBripgAbe6v9DOmGqmB532zFgGmcLPCugGixT2lB8IK8/EqgJeR7V0xor8Eni9
+ S02aHQlcckY4RLA28AYAoY8l6yk=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 615c903a003e680efbce267c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 05 Oct 2021 17:49:46
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 9EE95C4338F; Tue,  5 Oct 2021 17:49:45 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E2E1DC4338F;
+        Tue,  5 Oct 2021 17:49:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org E2E1DC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org,
+        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v8 00/24] wfx: get out from the staging area
+References: <20211005135400.788058-1-Jerome.Pouiller@silabs.com>
+        <875yubfthh.fsf@codeaurora.org> <2810333.gDgIz5hftg@pc-42>
+Date:   Tue, 05 Oct 2021 20:49:37 +0300
+In-Reply-To: <2810333.gDgIz5hftg@pc-42> (=?utf-8?B?IkrDqXLDtG1l?=
+ Pouiller"'s message of "Tue,
+        05 Oct 2021 18:22:31 +0200")
+Message-ID: <87o883e4zy.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: vwQlzVhR040hVQKN4MCDYFcHbshzwvpI
-X-Proofpoint-ORIG-GUID: vwQlzVhR040hVQKN4MCDYFcHbshzwvpI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-10-05_03,2021-10-04_01,2020-04-07_01
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The size of receive buffers for receiving packets
-is calculated based on the mtu of interface. This
-patch adds devlink parameter to utilize user given
-size for receive buffers instead. By changing CQE
-descriptor size and receive buffer sizes the number
-of buffer pointers used by hardware for a large packet
-can be configured.
+J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com> writes:
 
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  1 +
- .../ethernet/marvell/octeontx2/nic/otx2_devlink.c  | 60 ++++++++++++++++++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  7 +++
- .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  5 ++
- 4 files changed, 73 insertions(+)
+> On Tuesday 5 October 2021 16:15:22 CEST Kalle Valo wrote:
+>> Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+>>=20
+>> > From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+> [...]
+>> > v8:
+>> >   - Change the way the DT is handled. The user can now specify the nam=
+e of
+>> >     the board (=3D chip + antenna) he use. It easier for board designe=
+rs to
+>> >     add new entries. I plan to send a PR to linux-firmware to include =
+PDS
+>> >     files of the developpement boards belong the firmware (I also plan=
+ to
+>> >     relocate these file into wfx/ instead of silabs/). (Kalle, Pali)
+>> >   - Prefix visible functions and structs with "wfx_". I mostly kept the
+>> >     code under 80 columns. (Kalle, Pali, Greg)
+>> >   - Remove support for force_ps_timeout for now. (Kalle)
+>> >   - Fix licenses of Makefile, Kconfig and hif_api*.h. (Kalle)
+>> >   - Do not mix and match endianess in struct hif_ind_startup. (Kalle)
+>> >   - Remove magic values. (Kalle)
+>> >   - Use IS_ALIGNED(). (BTW, PTR_IS_ALIGNED() does not exist?) (Kalle)
+>> >   - I have also noticed that some headers files did not declare all the
+>> >     struct they used.
+>> >
+>> >   These issues remain (I hope they are not blockers):
+>> >   - I have currently no ideas how to improve/simplify the parsing PDS =
+file.
+>> >     (Kalle)
+>>=20
+>> For the PDS file problem it would help if you could actually describe
+>> what the firmware requires/needs and then we can start from that. I had
+>> some questions about this in v7 but apparently you missed those.
+>
+> Did you received this reply[1]?
+>
+> [1]: https://lore.kernel.org/all/2723787.uDASXpoAWK@pc-42/
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 6e0d1ac..f885abe 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -178,6 +178,7 @@ struct otx2_hw {
- 	u16			rqpool_cnt;
- 	u16			sqpool_cnt;
- 	u16			xqe_size;
-+	u16			rbuf_fixed_size;
- 
- 	/* NPA */
- 	u32			stack_pg_ptrs;  /* No of ptrs per stack page */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-index 98450e1..0fc7e32 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.c
-@@ -64,6 +64,60 @@ static int otx2_dl_mcam_count_get(struct devlink *devlink, u32 id,
- 	return 0;
- }
- 
-+static int otx2_dl_rbuf_size_validate(struct devlink *devlink, u32 id,
-+				      union devlink_param_value val,
-+				      struct netlink_ext_ack *extack)
-+{
-+	/* Hardware supports max size of 32k for a receive buffer
-+	 * and 1536 is typical ethernet frame size.
-+	 */
-+	if (val.vu16 < 1536 || val.vu16 > 32768) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Receive buffer range is 1536 - 32768");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int otx2_dl_rbuf_size_set(struct devlink *devlink, u32 id,
-+				 struct devlink_param_gset_ctx *ctx)
-+{
-+	struct otx2_devlink *otx2_dl = devlink_priv(devlink);
-+	struct otx2_nic *pfvf = otx2_dl->pfvf;
-+	struct net_device *netdev;
-+	int err = 0;
-+	bool if_up;
-+
-+	rtnl_lock();
-+
-+	netdev = pfvf->netdev;
-+	if_up = netif_running(netdev);
-+	if (if_up)
-+		netdev->netdev_ops->ndo_stop(netdev);
-+
-+	pfvf->hw.rbuf_fixed_size = ALIGN(ctx->val.vu16, OTX2_ALIGN) +
-+				   OTX2_HEAD_ROOM;
-+
-+	if (if_up)
-+		err = netdev->netdev_ops->ndo_open(netdev);
-+
-+	rtnl_unlock();
-+
-+	return err;
-+}
-+
-+static int otx2_dl_rbuf_size_get(struct devlink *devlink, u32 id,
-+				 struct devlink_param_gset_ctx *ctx)
-+{
-+	struct otx2_devlink *otx2_dl = devlink_priv(devlink);
-+	struct otx2_nic *pfvf = otx2_dl->pfvf;
-+
-+	ctx->val.vu16 = pfvf->hw.rbuf_fixed_size;
-+
-+	return 0;
-+}
-+
- static int otx2_dl_cqe_size_validate(struct devlink *devlink, u32 id,
- 				     union devlink_param_value val,
- 				     struct netlink_ext_ack *extack)
-@@ -118,6 +172,7 @@ enum otx2_dl_param_id {
- 	OTX2_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
- 	OTX2_DEVLINK_PARAM_ID_MCAM_COUNT,
- 	OTX2_DEVLINK_PARAM_ID_CQE_SIZE,
-+	OTX2_DEVLINK_PARAM_ID_RBUF_SIZE,
- };
- 
- static const struct devlink_param otx2_dl_params[] = {
-@@ -131,6 +186,11 @@ static const struct devlink_param otx2_dl_params[] = {
- 			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
- 			     otx2_dl_cqe_size_get, otx2_dl_cqe_size_set,
- 			     otx2_dl_cqe_size_validate),
-+	DEVLINK_PARAM_DRIVER(OTX2_DEVLINK_PARAM_ID_RBUF_SIZE,
-+			     "receive_buffer_size", DEVLINK_PARAM_TYPE_U16,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     otx2_dl_rbuf_size_get, otx2_dl_rbuf_size_set,
-+			     otx2_dl_rbuf_size_validate),
- };
- 
- /* Devlink OPs */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 8618cf7..1be524d3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -65,6 +65,10 @@ static int otx2_change_mtu(struct net_device *netdev, int new_mtu)
- 	netdev_info(netdev, "Changing MTU from %d to %d\n",
- 		    netdev->mtu, new_mtu);
- 	netdev->mtu = new_mtu;
-+	/* Modify receive buffer size based on MTU and do not
-+	 * use the fixed size set.
-+	 */
-+	pf->hw.rbuf_fixed_size = 0;
- 
- 	if (if_up)
- 		err = otx2_open(netdev);
-@@ -1306,6 +1310,9 @@ static int otx2_get_rbuf_size(struct otx2_nic *pf, int mtu)
- 	int total_size;
- 	int rbuf_size;
- 
-+	if (pf->hw.rbuf_fixed_size)
-+		return pf->hw.rbuf_fixed_size;
-+
- 	/* The data transferred by NIX to memory consists of actual packet
- 	 * plus additional data which has timestamp and/or EDSA/HIGIG2
- 	 * headers if interface is configured in corresponding modes.
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index 672be05..229d051 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -439,6 +439,7 @@ static void otx2vf_do_set_rx_mode(struct work_struct *work)
- 
- static int otx2vf_change_mtu(struct net_device *netdev, int new_mtu)
- {
-+	struct otx2_nic *vf = netdev_priv(netdev);
- 	bool if_up = netif_running(netdev);
- 	int err = 0;
- 
-@@ -448,6 +449,10 @@ static int otx2vf_change_mtu(struct net_device *netdev, int new_mtu)
- 	netdev_info(netdev, "Changing MTU from %d to %d\n",
- 		    netdev->mtu, new_mtu);
- 	netdev->mtu = new_mtu;
-+	/* Modify receive buffer size based on MTU and do not
-+	 * use the fixed size set.
-+	 */
-+	vf->hw.rbuf_fixed_size = 0;
- 
- 	if (if_up)
- 		err = otx2vf_open(netdev);
--- 
-2.7.4
+I did and I even made further questions:
 
+https://lore.kernel.org/all/87k0ixj5vn.fsf@codeaurora.org/
+
+Can we please continue the discussion on that thread instead of passing
+out lore links to each other :)
+
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
