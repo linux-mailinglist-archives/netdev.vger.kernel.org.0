@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EA01422B00
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:27:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A09422B06
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:29:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235355AbhJEO3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 10:29:41 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:51421 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234170AbhJEO3k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 10:29:40 -0400
+        id S235312AbhJEObW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 10:31:22 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:54605 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235191AbhJEObV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 10:31:21 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1633444069; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1633444170; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=BdPdR4PiTT5ZNwLsK5hY8CDdVKLrTsD1mG8kU/GlKNk=;
- b=Z0rvafU21LYkrSTeFuEjbWwRLOTcTX/m+rlUcgi8XlWSqiM+qpcLWCIDEICUccdJIW/00GDa
- vH7hXwtt1EzpWiWFchMcYqstD0hMQf5jZEP6k+Nj/zMmncVSRRMw2x1nyY7SIYxzOX6NoS5Q
- tkEfEtcGDKLKGL625PLwfFnBhOc=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ Content-Type: Sender; bh=FxJv+xfRfX0wiXpi4iHFEWoHOtv7gBTnYPqMLSJu+pQ=;
+ b=tfdL9FkNU8FsW0QVF6/EtrmCiGeFoWa9oMbH2RkaOosuuIrVbPlQEBHPGSyrEbM6st7st367
+ Ov/1iBwbm+eCGKTWYRkl8Z1XyUUdXLm0gvz9fElop2L/JOzqujeU6C5IWHlxk/+nzPMdCAd0
+ fNHZqMFP3D7cBs7L/G0uqPGasGY=
+X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 615c60e59ebaf35aaa322f52 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 05 Oct 2021 14:27:49
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 615c614a03355859c8c7a88b (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 05 Oct 2021 14:29:30
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9B4DFC43460; Tue,  5 Oct 2021 14:27:48 +0000 (UTC)
+        id 6413FC43617; Tue,  5 Oct 2021 14:29:30 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -39,64 +39,67 @@ Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2ED39C4338F;
-        Tue,  5 Oct 2021 14:27:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 2ED39C4338F
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A00F6C4338F;
+        Tue,  5 Oct 2021 14:29:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org A00F6C4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/3] ath9k: add option to reset the wifi chip via debugfs
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath11k: Remove unused variable in
+ ath11k_dp_rx_mon_merg_msdus()
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210914192515.9273-2-linus.luessing@c0d3.blue>
-References: <20210914192515.9273-2-linus.luessing@c0d3.blue>
-To:     =?utf-8?q?Linus_L=C3=BCssing?= <linus.luessing@c0d3.blue>
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Sujith Manoharan <c_manoha@qca.qualcomm.com>,
-        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
+In-Reply-To: <20210927150743.19816-1-tim.gardner@canonical.com>
+References: <20210927150743.19816-1-tim.gardner@canonical.com>
+To:     Tim Gardner <tim.gardner@canonical.com>
+Cc:     ath11k@lists.infradead.org, tim.gardner@canonical.com,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        Felix Fietkau <nbd@openwrt.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Sven Eckelmann <sven@narfation.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?utf-8?q?Linus_L=C3=BCssing?= <ll@simonwunderlich.de>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20211005142748.9B4DFC43460@smtp.codeaurora.org>
-Date:   Tue,  5 Oct 2021 14:27:48 +0000 (UTC)
+Message-Id: <20211005142930.6413FC43617@smtp.codeaurora.org>
+Date:   Tue,  5 Oct 2021 14:29:30 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Linus Lüssing <linus.luessing@c0d3.blue> wrote:
+Tim Gardner <tim.gardner@canonical.com> wrote:
 
-> Sometimes, in yet unknown cases the wifi chip stops working. To allow a
-> watchdog in userspace to easily and quickly reset the wifi chip, add the
-> according functionality to userspace. A reset can then be triggered
-> via:
+> Coverity complains that a constant variable guards dead code. In fact,
+> mpdu_buf is set NULL and never updated.
 > 
->   $ echo 1 > /sys/kernel/debug/ieee80211/phy0/ath9k/reset
+> 4834err_merge_fail:
+>         null: At condition mpdu_buf, the value of mpdu_buf must be NULL.
+>         dead_error_condition: The condition mpdu_buf cannot be true.
+> CID 92162 (#1 of 1): 'Constant' variable guards dead code (DEADCODE)
+> dead_error_line: Execution cannot reach the expression decap_format !=
+>   DP_RX_DECAP_TYPE_RAW inside this statement: if (mpdu_buf && decap_forma....
+> Local variable mpdu_buf is assigned only once, to a constant value, making it
+>   effectively constant throughout its scope. If this is not the intent, examine
+>   the logic to see if there is a missing assignment that would make mpdu_buf not
+>   remain constant.
+> 4835        if (mpdu_buf && decap_format != DP_RX_DECAP_TYPE_RAW) {
 > 
-> The number of user resets can further be tracked in the row "User reset"
-> in the same file.
+> Fix this by removing mpdu_buf and unreachable code.
 > 
-> So far people usually used "iw scan" to fix ath9k chip hangs from
-> userspace. Which triggers the ath9k_queue_reset(), too. The reset file
-> however has the advantage of less overhead, which makes debugging bugs
-> within ath9k_queue_reset() easier.
-> 
-> Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: ath11k@lists.infradead.org
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
 > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-2 patches applied to ath-next branch of ath.git, thanks.
+Patch applied to ath-next branch of ath.git, thanks.
 
-053f9852b95e ath9k: add option to reset the wifi chip via debugfs
-4925642d5412 ath9k: Fix potential interrupt storm on queue reset
+7210b4b77fe4 ath11k: Remove unused variable in ath11k_dp_rx_mon_merg_msdus()
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210914192515.9273-2-linus.luessing@c0d3.blue/
+https://patchwork.kernel.org/project/linux-wireless/patch/20210927150743.19816-1-tim.gardner@canonical.com/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
