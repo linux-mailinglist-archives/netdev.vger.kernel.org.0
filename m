@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 557A14220C7
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 10:31:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13A754220CA
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 10:31:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233320AbhJEIcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 04:32:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44586 "EHLO
+        id S233264AbhJEIdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 04:33:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233366AbhJEIcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 04:32:48 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824FBC061745;
-        Tue,  5 Oct 2021 01:30:58 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id oa6-20020a17090b1bc600b0019ffc4b9c51so1364821pjb.2;
-        Tue, 05 Oct 2021 01:30:58 -0700 (PDT)
+        with ESMTP id S233271AbhJEIdG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 04:33:06 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F3CC061745;
+        Tue,  5 Oct 2021 01:31:15 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id l6so1808276plh.9;
+        Tue, 05 Oct 2021 01:31:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DAGNoLYAM13FCAsShiHivQ1p6RlYfr33Xe38II2bD8U=;
-        b=cBDmZU424tuQmQIoC3gjJYq5sHDqh+yCBNy2EH1IMKIbT5rkl9vk+5RTjfb8AQ7MFI
-         dC2ULIApzwL8Wk1GHv9W9SXUogddOGtt1oFvKrVuQQg8ucZcztM1fJYzdfzRsSG6r/GE
-         QDaMLodiHKPyOMm+iFfzxrjhs4A/dHn34XWXbRUPfql3ACKK7JG3LIQFA6ADa1s5/R65
-         bB8d3hTaqQ/cAc6apMOpbiycNiA9pYskY+XC96U9eKL+lnoNRvT9Mioelkkf640EoQhz
-         l+hn8d0lgu3KoJ5yGaUHs/6nEOJ5DDlNsbR757s6pUqSMZhE1Y+g+TvO/xZltr79xca5
-         5dng==
+        bh=AF+nX8jdqSnU6pR8M/rTaNNAOHPmdiA0ekgYVMAQg7U=;
+        b=VuWemK4OU4D/CDs2SLRYR8s2Vou6A3r15u9bTN2BBh4Hdqah6uEWajAXp4Y5wfK4R5
+         1Df6KCYU8g+PxcFOLMaOs/v3H1SdG91JfrE9+3zDqldvS3OleKR2sKYu8J4L9ooyWE8N
+         0Mqmq008yZapjhwfraTFU8bzdRSDTyD3IpIe2ISFYvDh/DR+uUAYdTkF+6rNfNWZnTFu
+         KWWjwZs62SpXdZmI+gEDZRw9WSUn4cyQsuoOTIoZTN+4nwmgkkb6gsHkJ2R+y5fO0duG
+         V9URrQxc7PI2LMkXgVTow9BYHLcIYP0ODBI3kIyqvAwcJRCTjcahOnPHB96pYk1sU/vw
+         BhuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DAGNoLYAM13FCAsShiHivQ1p6RlYfr33Xe38II2bD8U=;
-        b=GpqIbrh+2hAm9jxdl6tykLu1nMyWh+lPCCJkGRvP3or/IHsJqcnQEXD0UbiJjNnd5Y
-         gl1MsLaE4jMH4PXKZ2Oa64imLu7LPBwzJyulXNboi+ufoSTlfWZzIS4TjdY4Kk2ZGfWe
-         NV1NxAGzr+CbSo3Pg39eX9XWCXohIPyMyOknZtl4XfMo4TYPBpFE5dn63vXtfw8+BL9q
-         1LGkhKDNPPNYBF6F+UWnTOwXVJyRmJFHQcx1qfhjJhf49zgrrqyxdZEvgYhAeeg/vXKb
-         lA8DCPfB4VZV8Kuclbp13+XxfGelhvZknpzG0imlTCYQAtgzzvus77To7xxMx87Y2Wzl
-         kB+Q==
-X-Gm-Message-State: AOAM531Pq8u8J25zMhhml3QSpfWLDjNzwUrO4qztSwzWVTh74moz/xXq
-        tR/2vuuQ6M/v0pxLDzu/Icn//Eo9xT/bRw==
-X-Google-Smtp-Source: ABdhPJz/t0tF4B5I4040OsOvyCt2OxNMZtEY5lMth30IA55yWXN5QOuG8MDZSgY1PeOduk0kdTtOiQ==
-X-Received: by 2002:a17:90b:3901:: with SMTP id ob1mr2329767pjb.12.1633422658158;
-        Tue, 05 Oct 2021 01:30:58 -0700 (PDT)
+        bh=AF+nX8jdqSnU6pR8M/rTaNNAOHPmdiA0ekgYVMAQg7U=;
+        b=PsaalxM3FscRvYmavqqeCtMhoYYfTQY7OWMdFlyp6yheMwZVTeRvi5bM0RAr52PAxw
+         c7cilt3hbpHMkqtojFU0aBWLPsG0hLMUtjRyRIlP2vRHB54wAnXBC5TYeUtncsRls+xl
+         Tk/d6+Cd3/XMp1oQ7Z5WJ+RfoYveoFMzKIzdTr7K9QgVSx2ZO0JfqjpUDxQNCf3RxvWJ
+         gbByMCr1toZkvX98mP6+qtcivPdjSPMPRy31nL2Obv3FcTV51ML1vrqUjI+NXNo4zDqN
+         5W/XQhd4RITHbZ9DVdhAsM0X+cNwbXecNKAioyQbDHPdrbz+7AsS5K9vP1XtFgW5vnHN
+         xnGw==
+X-Gm-Message-State: AOAM532E0diGaIzgTRPJQXIicaBMiLlAaM7oLaZdaNQzdbMR1hunrb8C
+        DQT5M3ROOTbuTkk8u3Y07u8=
+X-Google-Smtp-Source: ABdhPJyj+7wBDt83NXZwPR2zsCsc5Ncr8NwQgxrP/zDbR5bWN/UxB9GvDiYMcxeGmYzH1bdCSHBg1w==
+X-Received: by 2002:a17:90a:9f91:: with SMTP id o17mr2268834pjp.225.1633422675254;
+        Tue, 05 Oct 2021 01:31:15 -0700 (PDT)
 Received: from localhost.localdomain ([2001:470:e92d:10:78ba:4bcc:a59a:2284])
-        by smtp.gmail.com with ESMTPSA id a15sm4941257pfg.53.2021.10.05.01.30.56
+        by smtp.gmail.com with ESMTPSA id a15sm4941257pfg.53.2021.10.05.01.31.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Oct 2021 01:30:57 -0700 (PDT)
+        Tue, 05 Oct 2021 01:31:14 -0700 (PDT)
 From:   Tony Ambardar <tony.ambardar@gmail.com>
 X-Google-Original-From: Tony Ambardar <Tony.Ambardar@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -66,9 +66,9 @@ Cc:     Tony Ambardar <Tony.Ambardar@gmail.com>, netdev@vger.kernel.org,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>
-Subject: [RFC PATCH bpf-next v2 07/16] MIPS: eBPF: fix MOD64 insn on R6 ISA
-Date:   Tue,  5 Oct 2021 01:26:51 -0700
-Message-Id: <ee566ff333843f6ff734f4c12a3c6c86793c9101.1633392335.git.Tony.Ambardar@gmail.com>
+Subject: [RFC PATCH bpf-next v2 08/16] MIPS: eBPF: support long jump for BPF_JMP|EXIT
+Date:   Tue,  5 Oct 2021 01:26:52 -0700
+Message-Id: <8f7207410035a7d2b1f5e0d87695880313f5adf6.1633392335.git.Tony.Ambardar@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1633392335.git.Tony.Ambardar@gmail.com>
 References: <cover.1625970383.git.Tony.Ambardar@gmail.com> <cover.1633392335.git.Tony.Ambardar@gmail.com>
@@ -78,42 +78,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The BPF_ALU64 | BPF_MOD implementation is broken on MIPS64R6 due to use of
-a 32-bit "modu" insn, as shown by the test_verifier failures:
+Existing JIT code supports only short (18-bit) branches for BPF EXIT, and
+results in some tests from module test_bpf not being jited. Update code
+to fall back to long (28-bit) jumps if short branches are insufficient.
 
-  455/p MOD64 overflow, check 1 FAIL retval 0 != 1 (run 1/1)
-  456/p MOD64 overflow, check 2 FAIL retval 0 != 1 (run 1/1)
+Before:
+  test_bpf: #296 BPF_MAXINSNS: exec all MSH jited:0 1556004 PASS
+  test_bpf: #297 BPF_MAXINSNS: ld_abs+get_processor_id jited:0 824957 PASS
+  test_bpf: Summary: 378 PASSED, 0 FAILED, [364/366 JIT'ed]
 
-Resolve by using the 64-bit "dmodu" instead.
+After:
+  test_bpf: #296 BPF_MAXINSNS: exec all MSH jited:1 221998 PASS
+  test_bpf: #297 BPF_MAXINSNS: ld_abs+get_processor_id jited:1 490507 PASS
+  test_bpf: Summary: 378 PASSED, 0 FAILED, [366/366 JIT'ed]
 
-Fixes: 6c2c8a188868 ("MIPS: eBPF: Provide eBPF support for MIPS64R6")
+Fixes: b6bd53f9c4e8 ("MIPS: Add missing file for eBPF JIT.")
 Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
 ---
- arch/mips/net/ebpf_jit.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/mips/net/ebpf_jit.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/arch/mips/net/ebpf_jit.c b/arch/mips/net/ebpf_jit.c
-index b8dc6cebefab..00dc20bc0def 100644
+index 00dc20bc0def..7252cd44ff63 100644
 --- a/arch/mips/net/ebpf_jit.c
 +++ b/arch/mips/net/ebpf_jit.c
-@@ -800,7 +800,7 @@ static int build_one_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
- 			if (bpf_op == BPF_DIV)
- 				emit_instr(ctx, ddivu_r6, dst, dst, MIPS_R_AT);
- 			else
--				emit_instr(ctx, modu, dst, dst, MIPS_R_AT);
-+				emit_instr(ctx, dmodu, dst, dst, MIPS_R_AT);
- 			break;
+@@ -994,9 +994,14 @@ static int build_one_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
+ 	case BPF_JMP | BPF_EXIT:
+ 		if (this_idx + 1 < exit_idx) {
+ 			b_off = b_imm(exit_idx, ctx);
+-			if (is_bad_offset(b_off))
+-				return -E2BIG;
+-			emit_instr(ctx, beq, MIPS_R_ZERO, MIPS_R_ZERO, b_off);
++			if (is_bad_offset(b_off)) {
++				target = j_target(ctx, exit_idx);
++				if (target == (unsigned int)-1)
++					return -E2BIG;
++				emit_instr(ctx, j, target);
++			} else {
++				emit_instr(ctx, b, b_off);
++			}
+ 			emit_instr(ctx, nop);
  		}
- 		emit_instr(ctx, ddivu, dst, MIPS_R_AT);
-@@ -882,7 +882,7 @@ static int build_one_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
- 					emit_instr(ctx, ddivu_r6,
- 							dst, dst, src);
- 				else
--					emit_instr(ctx, modu, dst, dst, src);
-+					emit_instr(ctx, dmodu, dst, dst, src);
- 				break;
- 			}
- 			emit_instr(ctx, ddivu, dst, src);
+ 		break;
 -- 
 2.25.1
 
