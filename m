@@ -2,117 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77AC6422AA7
-	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:15:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A27B422ABD
+	for <lists+netdev@lfdr.de>; Tue,  5 Oct 2021 16:16:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236214AbhJEORC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 10:17:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48814 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235781AbhJEOQ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 10:16:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4D1AF6115B;
-        Tue,  5 Oct 2021 14:15:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633443305;
-        bh=I7XCFGAmyXivWz7d1EBNyLvBe+/ID7If4dnsGSTv3fU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CTXz7yEhcw5L8afieI4Lprps7Hj/MyvDyxzeE/k48YLH3jmq4j44t4icOlHt5zYyR
-         ccOW3CzF4bKSDVWl5ovic4FZCkK5cC9TuGBClAKCXS1QSMKBaP2Mg40oT386unWOpS
-         GGRbs0TaOPRhXCXLWqJcYgAUqi1Bb6AMOwt2kCuDHPCwc06hm/z3A67rs3YDG27qGR
-         mvLOnWyvawrs252WNrM72wihsC+2o5Cf2YljKEbIIDnOaziCR+uPGBKuqXM+SHwvPj
-         ec8ArAGbkvZalmO/i3JRlbKt7mLBKjH+cNmEC8F9ENafZDppDl7Dm31SjJyNmFKFD0
-         +H1XQ49SxmB6w==
-Date:   Tue, 5 Oct 2021 07:15:04 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        mkubecek@suse.cz, pali@kernel.org, jacob.e.keller@intel.com,
-        jiri@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 1/6] ethtool: Add ability to control
- transceiver modules' power mode
-Message-ID: <20211005071504.43e08feb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YVv3UARMHU8HZTfz@shredder>
-References: <20211003073219.1631064-1-idosch@idosch.org>
-        <20211003073219.1631064-2-idosch@idosch.org>
-        <20211004180135.55759be4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YVv3UARMHU8HZTfz@shredder>
+        id S235353AbhJEOSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 10:18:39 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:56164 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236641AbhJEOSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 10:18:30 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1633443392; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
+ To: From: Sender; bh=wbRlR3S9un/VrDX7Y3W0hcFvNCAKaY9PkJGHjSDPKeo=; b=E8ST7FayegOZgFuOGNAlKsh+7FbKHdau/4DQmcAQ8SfGTfR/e3iDUB+bVXTy9jg28fs55Vmp
+ dw0zt/RcmYTKOPXWCBAJsP1VTn+UQjDs6t0HkFnqfcjR7FmRXZ1sxfMs4CtO1F6D4bRXLUXa
+ KXDoyKAoQ1qdC2pBwA4JoHKHd3g=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 615c5e038ea00a941f676481 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 05 Oct 2021 14:15:31
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 9913BC43150; Tue,  5 Oct 2021 14:15:31 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0FB13C43164;
+        Tue,  5 Oct 2021 14:15:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 0FB13C43164
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org,
+        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v8 00/24] wfx: get out from the staging area
+References: <20211005135400.788058-1-Jerome.Pouiller@silabs.com>
+Date:   Tue, 05 Oct 2021 17:15:22 +0300
+In-Reply-To: <20211005135400.788058-1-Jerome.Pouiller@silabs.com> (Jerome
+        Pouiller's message of "Tue, 5 Oct 2021 15:53:36 +0200")
+Message-ID: <875yubfthh.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Oct 2021 09:57:20 +0300 Ido Schimmel wrote:
-> > > +static int module_set_power_mode(struct net_device *dev, struct nlat=
-tr **tb,
-> > > +				 bool *p_mod, struct netlink_ext_ack *extack)
-> > > +{
-> > > +	struct ethtool_module_power_mode_params power =3D {};
-> > > +	struct ethtool_module_power_mode_params power_new;
-> > > +	const struct ethtool_ops *ops =3D dev->ethtool_ops;
-> > > +	int ret;
-> > > +
-> > > +	if (!tb[ETHTOOL_A_MODULE_POWER_MODE_POLICY])
-> > > +		return 0; =20
-> >=20
-> > Feels a little old school to allow set with no attrs, now that we=20
-> > do strict validation on attrs across netlink.  What's the reason? =20
->=20
-> The power mode policy is the first parameter that can be set via
-> MODULE_SET, but in the future there can be more and it is valid for user
-> space to only want to change a subset. In which case, we will skip over
-> attributes that were not specified.
+Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
 
-Ack, I guess catching the "no parameter specified" case may be more
-effort than it's worth. Nothing is going to break if we don't do it.
+> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>
+> Hello,
+>
+> I think the wfx driver is now mature enough to be accepted in the
+> drivers/net/wireless directory.
+>
+> The firmware is now a part of the linux-firmware repository since relase
+> 20210315[1]. It had taken a bit of time because I have worked with the le=
+gal
+> department to simplify the redistribution terms of the firmware.
+>
+> [1]: https://lore.kernel.org/linux-firmware/2833354.gXvVfaC4I7@pc-42/
+>
+>
+> As requested by Kalle[2], I send one file per patch. At the end, all the
+> patches (or at least the patches 3 to 24) will be squashed (therefore, I
+> didn't bother to write real commit messages).
+>
+> [2]: https://lore.kernel.org/lkml/87ft6p2n0h.fsf@codeaurora.org/
+>
+> Here is a diagram of the global architecture that may help to understand
+> the code:
+>
+>     ,------------------------------------.
+>     |                mac80211            |
+>     `------------------------------------'
+>     ,------------+-----------+-----------.
+>     |    sta     |           |           |
+>     |    scan    |           |           |
+>     |    main    |           |           |
+>     +------------+  data_tx  |           |
+>     |    key     |           |  data_rx  |
+>     | hif_tx_mib |   queue   |           |
+>     |   hif_tx   |           |           |
+>     |   hif_rx   |           |           |
+>     |  hif_api_* |           |           |
+>     +------------+-----------+-----------+--------.
+>     |                  bh                |  fwio  |
+>     +------------------------------------+--------+
+>     |                     hwio                    |
+>     +---------------------------------------------+
+>     |                   bus_sdio                  |
+>     |                   bus_spi                   |
+>     `---------------------------------------------'
+>     ,---------------------------------------------.
+>     |                  spi / sdio                 |
+>     `---------------------------------------------'
+>
+> Roughly, I have sent the files from the bottom to the top.
+>
+>
+> v8:
+>   - Change the way the DT is handled. The user can now specify the name of
+>     the board (=3D chip + antenna) he use. It easier for board designers =
+to
+>     add new entries. I plan to send a PR to linux-firmware to include PDS
+>     files of the developpement boards belong the firmware (I also plan to
+>     relocate these file into wfx/ instead of silabs/). (Kalle, Pali)
+>   - Prefix visible functions and structs with "wfx_". I mostly kept the
+>     code under 80 columns. (Kalle, Pali, Greg)
+>   - Remove support for force_ps_timeout for now. (Kalle)
+>   - Fix licenses of Makefile, Kconfig and hif_api*.h. (Kalle)
+>   - Do not mix and match endianess in struct hif_ind_startup. (Kalle)
+>   - Remove magic values. (Kalle)
+>   - Use IS_ALIGNED(). (BTW, PTR_IS_ALIGNED() does not exist?) (Kalle)
+>   - I have also noticed that some headers files did not declare all the
+>     struct they used.
+>
+>   These issues remain (I hope they are not blockers):
+>   - I have currently no ideas how to improve/simplify the parsing PDS fil=
+e.
+>     (Kalle)
 
-> > > +	if (!ops->get_module_power_mode || !ops->set_module_power_mode) {
-> > > +		NL_SET_ERR_MSG_ATTR(extack,
-> > > +				    tb[ETHTOOL_A_MODULE_POWER_MODE_POLICY],
-> > > +				    "Setting power mode policy is not supported by this device");
-> > > +		return -EOPNOTSUPP;
-> > > +	}
-> > > +
-> > > +	power_new.policy =3D nla_get_u8(tb[ETHTOOL_A_MODULE_POWER_MODE_POLI=
-CY]);
-> > > +	ret =3D ops->get_module_power_mode(dev, &power, extack);
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +	*p_mod =3D power_new.policy !=3D power.policy;
-> > > +
-> > > +	return ops->set_module_power_mode(dev, &power_new, extack); =20
-> >=20
-> > Why still call set if *p_mod =3D=3D false? =20
->=20
-> Good question...
->=20
-> Thinking about this again, this seems better:
->=20
-> diff --git a/net/ethtool/module.c b/net/ethtool/module.c
-> index 254ac84f9728..a6eefae906eb 100644
-> --- a/net/ethtool/module.c
-> +++ b/net/ethtool/module.c
-> @@ -141,7 +141,10 @@ static int module_set_power_mode(struct net_device *=
-dev, struct nlattr **tb,
->         ret =3D ops->get_module_power_mode(dev, &power, extack);
->         if (ret < 0)
->                 return ret;
-> -       *p_mod =3D power_new.policy !=3D power.policy;
-> +
-> +       if (power_new.policy =3D=3D power.policy)
-> +               return 0;
-> +       *p_mod =3D true;
-> =20
->         return ops->set_module_power_mode(dev, &power_new, extack);
->  }
->=20
-> That way we avoid setting 'mod' to 'false' if it was already 'true'
-> because of other parameters that were changed in ethnl_set_module(). We
-> don't have any other parameters right now, but this can change.
->=20
-> Thanks for looking into this
+For the PDS file problem it would help if you could actually describe
+what the firmware requires/needs and then we can start from that. I had
+some questions about this in v7 but apparently you missed those.
 
-=F0=9F=91=8D
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
