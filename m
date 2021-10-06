@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 079E54245ED
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 20:21:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D3F94245F4
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 20:22:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232165AbhJFSWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 14:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        id S238934AbhJFSYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 14:24:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbhJFSWu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 14:22:50 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AD0C061746;
-        Wed,  6 Oct 2021 11:20:58 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id q189so7558800ybq.1;
-        Wed, 06 Oct 2021 11:20:58 -0700 (PDT)
+        with ESMTP id S232027AbhJFSYD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 14:24:03 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED40BC061746;
+        Wed,  6 Oct 2021 11:22:10 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id n65so7498914ybb.7;
+        Wed, 06 Oct 2021 11:22:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=p0oPqIp7KvFrHTyZh7IK9NyLd4cc/B09chGykvbilI0=;
-        b=VApVL8UGqSIM98iCIn7+Y0Kch8hm98caoGxhv+PX5gRgOYwrID4t9FCcp4ZDjh93Fi
-         PjcMTtnZFWlzCPfyUnVS3IEiWjHLmgwixpz6b1gdrA4/p7xs1uXvcylNMAonv/Hivt8R
-         f3XwTCdfpnOnLSx8FIe5s+ShL+4DT4WbL3s8JWtRjW/N4aiiuPKWMPGdW3RUh/DrlDWU
-         5ZBh/pj+7eLwRKasorSbmiLSQwa9r+X3GoQItsO7Df8fuYveZxKHaNvHEdSB+IKZDdV4
-         oqBzzuf2EADKsPkzpPAt1O5MLlIIpxWiLD1C0a/XsJA/waCHaTaBHwDmC/0tRtC/yPGu
-         Fjjg==
+        bh=GTQGdaAtHW0Uhg8ryNLUS9vvFMs/vzRHHOBWfDgk9D4=;
+        b=WFmdw1yK4OgApNltj37iG9SFl6JsytPm9Yq310j5recLyBaefWGItlkV87MCkelfHt
+         DeYlaGYW7K9v6SFzBt67tBdJujnAEFMDr/CFO0ZlGy1aa9wmnLTCXp3uPUoJjTTQwyeJ
+         AM6MtZgFE6Lc6NgxXHr7DtLZ+pEK51lLx/hBauCtHsQilC7hPiwPVGUWswa4T9rpWcph
+         62ZSeX5U7GemcIUL9iWYQGi4++NbtuHlKzpn0/i867rrweuZUQ4/iwshAUemxas2feOv
+         OgeIgFGdUApTTYnf8IEILUDdw2tDrPTrqfNukrZyVcuVcuYVlKDDQG05AM7mDtupPYvH
+         CGSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=p0oPqIp7KvFrHTyZh7IK9NyLd4cc/B09chGykvbilI0=;
-        b=Sgp5vNgfiibvGMGNsI6EG7eeApES2oqFMy0UvRNuzYS8xNK+XcKUeaHoV5k0x5VpQH
-         OsLg8CERp88bPiDikeSNrcyI1JwIC2nVAGtkECt0OWoBybOf/bW2JvqwiqV7Um6jQ0M6
-         NzT+ur1nI1114LyLO4JYCOPHNPZqBhRVgeabWynwm0H9dErqR7yu4alUnjZDvP8z228A
-         +eQmyAtOQt/MRhW3GWi0z1mHCKWv0m4s+52YaeeVGaYlpfTxvxdi7KnWNZwLEyspadjc
-         wx1RszwWkCEDv6KiBLehqbXJ2eyYvNktTCzq0NU9QzaV7iNvk0uK59pgCDVLIpvXfw3m
-         r6jg==
-X-Gm-Message-State: AOAM531KjWhqKXgPg0i2sGkuM96uD5RxVGTRjyzmiZPatg8C7NE+9EAM
-        g0/p9R2eQsEFkKUgAFcbthbUeqgBpXWVhqcbC0Y=
-X-Google-Smtp-Source: ABdhPJyvV9zirzKsGEaGZ/Tt1p8nAafgTn0aX+zS1vXXzfnEUyN7BIU2TaMuyuP9nnAXgW8Pg8qFtQwtyJBuVQahGOo=
-X-Received: by 2002:a25:7c42:: with SMTP id x63mr32489404ybc.225.1633544457543;
- Wed, 06 Oct 2021 11:20:57 -0700 (PDT)
+        bh=GTQGdaAtHW0Uhg8ryNLUS9vvFMs/vzRHHOBWfDgk9D4=;
+        b=bTWI1oVyl7/QSOGjKDVBKG3ewuV7m/lBd2qMrbnrRZ7iXKPvRIkwwpNO+gGxKDCNdx
+         l5Kf2IBCrp/Ly+WBugM+MtEpKDOLHGfWFOaS3+g3REdbCi9k27+Kr8zKJpbJ7j2D3Yn/
+         Ww6fNTR/dnTsKKMgLOTr8OY7SizEwiWOWxo5R1YrY8Oy4qRiKt1SMRETpqIrbxSby4FA
+         6v8v1yucsUWYrDmZlUsfpeBsMhg/7m2cP/uc2GEKh3bH9hIn8D7BfzXV3H9JgZhafb1O
+         JqToKJz4/qEe28u/2DpGdsvF+ZpGofYRBtooiq4OSnv4tkJ//KZDiiG1gej5HE+5+zfB
+         yz8Q==
+X-Gm-Message-State: AOAM533lt4XGDVgPrYLFJWQ3xNhsP0nl9w5Hm4UGb7NBrnbtO4BZI6yf
+        5P+Cquaa9/CNcZ7T7zn0So8p6abpyE5nL6nWYXA=
+X-Google-Smtp-Source: ABdhPJxpAHTqTua+MJOJ3bHigBqSVgUwe1ZgJeYseCpUP0befEHTQ5JH6Oeoe8dZqczqidT2B9s3buBjhf3wwYD6JSk=
+X-Received: by 2002:a25:7c42:: with SMTP id x63mr32496824ybc.225.1633544530227;
+ Wed, 06 Oct 2021 11:22:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211003192208.6297-1-quentin@isovalent.com> <20211003192208.6297-5-quentin@isovalent.com>
-In-Reply-To: <20211003192208.6297-5-quentin@isovalent.com>
+References: <20211003192208.6297-1-quentin@isovalent.com> <20211003192208.6297-6-quentin@isovalent.com>
+In-Reply-To: <20211003192208.6297-6-quentin@isovalent.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 6 Oct 2021 11:20:46 -0700
-Message-ID: <CAEf4Bza4y5DjJfxQYDJEALQh+3SaukPtNJVLaLdMZK-SgpDpyw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 04/10] tools: runqslower: install libbpf
- headers when building
+Date:   Wed, 6 Oct 2021 11:21:59 -0700
+Message-ID: <CAEf4BzYtX4RBo+5qGXV_3uiq6gv-U-5FNtNbTxAO4HHpyPsQcA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 05/10] bpf: preload: install libbpf headers
+ when building
 To:     Quentin Monnet <quentin@isovalent.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -65,81 +65,71 @@ On Sun, Oct 3, 2021 at 12:22 PM Quentin Monnet <quentin@isovalent.com> wrote:
 >
 > API headers from libbpf should not be accessed directly from the
 > library's source directory. Instead, they should be exported with "make
-> install_headers". Let's make sure that runqslower installs the
+> install_headers". Let's make sure that bpf/preload/Makefile installs the
 > headers properly when building.
 >
-> We use a libbpf_hdrs target to mark the logical dependency on libbpf's
-> headers export for a number of object files, even though the headers
-> should have been exported at this time (since bpftool needs them, and is
-> required to generate the skeleton or the vmlinux.h).
->
-> When descending from a parent Makefile, the specific output directories
-> for building the library and exporting the headers are configurable with
-> BPFOBJ_OUTPUT and BPF_DESTDIR, respectively. This is in addition to
-> OUTPUT, on top of which those variables are constructed by default.
->
-> Also adjust the Makefile for the BPF selftests. We pass a number of
-> variables to the "make" invocation, because we want to point runqslower
-> to the (target) libbpf shared with other tools, instead of building its
-> own version. In addition, runqslower relies on (target) bpftool, and we
-> also want to pass the proper variables to its Makefile so that bpftool
-> itself reuses the same libbpf.
+> Note that we declare an additional dependency for iterators/iterators.o:
+> having $(LIBBPF_A) as a dependency to "$(obj)/bpf_preload_umd" is not
+> sufficient, as it makes it required only at the linking step. But we
+> need libbpf to be compiled, and in particular its headers to be
+> exported, before we attempt to compile iterators.o. The issue would not
+> occur before this commit, because libbpf's headers were not exported and
+> were always available under tools/lib/bpf.
 >
 > Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 > ---
->  tools/bpf/runqslower/Makefile        | 22 +++++++++++++---------
->  tools/testing/selftests/bpf/Makefile | 15 +++++++++------
->  2 files changed, 22 insertions(+), 15 deletions(-)
+>  kernel/bpf/preload/Makefile | 25 ++++++++++++++++++++-----
+>  1 file changed, 20 insertions(+), 5 deletions(-)
 >
-> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefile
-> index 3818ec511fd2..049aef7e9a4c 100644
-> --- a/tools/bpf/runqslower/Makefile
-> +++ b/tools/bpf/runqslower/Makefile
-> @@ -9,9 +9,9 @@ BPFTOOL ?= $(DEFAULT_BPFTOOL)
->  LIBBPF_SRC := $(abspath ../../lib/bpf)
->  BPFOBJ_OUTPUT := $(OUTPUT)libbpf/
->  BPFOBJ := $(BPFOBJ_OUTPUT)libbpf.a
-> -BPF_INCLUDE := $(BPFOBJ_OUTPUT)
-> -INCLUDES := -I$(OUTPUT) -I$(BPF_INCLUDE) -I$(abspath ../../lib)        \
-> -       -I$(abspath ../../include/uapi)
-> +BPF_DESTDIR := $(BPFOBJ_OUTPUT)
-> +BPF_INCLUDE := $(BPF_DESTDIR)/include
-> +INCLUDES := -I$(OUTPUT) -I$(BPF_INCLUDE) -I$(abspath ../../include/uapi)
->  CFLAGS := -g -Wall
+> diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
+> index 1951332dd15f..efccf857f7ed 100644
+> --- a/kernel/bpf/preload/Makefile
+> +++ b/kernel/bpf/preload/Makefile
+> @@ -1,21 +1,36 @@
+>  # SPDX-License-Identifier: GPL-2.0
 >
->  # Try to detect best kernel BTF source
-> @@ -33,7 +33,7 @@ endif
+>  LIBBPF_SRCS = $(srctree)/tools/lib/bpf/
+> -LIBBPF_A = $(obj)/libbpf.a
+> -LIBBPF_OUT = $(abspath $(obj))
+> +LIBBPF_OUT = $(abspath $(obj))/libbpf
+> +LIBBPF_A = $(LIBBPF_OUT)/libbpf.a
+> +LIBBPF_DESTDIR = $(LIBBPF_OUT)
+> +LIBBPF_INCLUDE = $(LIBBPF_DESTDIR)/include
 >
->  .DELETE_ON_ERROR:
->
-> -.PHONY: all clean runqslower
-> +.PHONY: all clean runqslower libbpf_hdrs
->  all: runqslower
->
->  runqslower: $(OUTPUT)/runqslower
-> @@ -46,13 +46,15 @@ clean:
->         $(Q)$(RM) $(OUTPUT)runqslower
->         $(Q)$(RM) -r .output
->
-> +libbpf_hdrs: $(BPFOBJ)
+>  # Although not in use by libbpf's Makefile, set $(O) so that the "dummy" test
+>  # in tools/scripts/Makefile.include always succeeds when building the kernel
+>  # with $(O) pointing to a relative path, as in "make O=build bindeb-pkg".
+> -$(LIBBPF_A):
+> -       $(Q)$(MAKE) -C $(LIBBPF_SRCS) O=$(LIBBPF_OUT)/ OUTPUT=$(LIBBPF_OUT)/ $(LIBBPF_OUT)/libbpf.a
+> +$(LIBBPF_A): | $(LIBBPF_OUT)
+> +       $(Q)$(MAKE) -C $(LIBBPF_SRCS) O=$(LIBBPF_OUT)/ OUTPUT=$(LIBBPF_OUT)/   \
+> +               DESTDIR=$(LIBBPF_DESTDIR) prefix=                              \
+> +               $(LIBBPF_OUT)/libbpf.a install_headers
 > +
->  $(OUTPUT)/runqslower: $(OUTPUT)/runqslower.o $(BPFOBJ)
->         $(QUIET_LINK)$(CC) $(CFLAGS) $^ -lelf -lz -o $@
+> +libbpf_hdrs: $(LIBBPF_A)
+> +
+> +.PHONY: libbpf_hdrs
+> +
+> +$(LIBBPF_OUT):
+> +       $(call msg,MKDIR,$@)
+> +       $(Q)mkdir -p $@
 >
->  $(OUTPUT)/runqslower.o: runqslower.h $(OUTPUT)/runqslower.skel.h             \
-> -                       $(OUTPUT)/runqslower.bpf.o
-> +                       $(OUTPUT)/runqslower.bpf.o libbpf_hdrs
+>  userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi \
+> -       -I $(srctree)/tools/lib/ -Wno-unused-result
+> +       -I $(LIBBPF_INCLUDE) -Wno-unused-result
+>
+>  userprogs := bpf_preload_umd
+>
+>  clean-files := $(userprogs) bpf_helper_defs.h FEATURE-DUMP.libbpf staticobjs/ feature/
+> +clean-files += $(LIBBPF_OUT) $(LIBBPF_DESTDIR)
+> +
+> +$(obj)/iterators/iterators.o: libbpf_hdrs
 
-this phony dependency will cause runqslower.o to be always rebuilt,
-try running make multiple times with no changes inside
-tools/bpf/runqslower. Can this be done just as an order-only
-dependency?
+this should probably be order-only dependency as well
 
 >
-> -$(OUTPUT)/runqslower.bpf.o: $(OUTPUT)/vmlinux.h runqslower.h
-> +$(OUTPUT)/runqslower.bpf.o: $(OUTPUT)/vmlinux.h runqslower.h libbpf_hdrs
+>  bpf_preload_umd-objs := iterators/iterators.o
+>  bpf_preload_umd-userldlibs := $(LIBBPF_A) -lelf -lz
+> --
+> 2.30.2
 >
->  $(OUTPUT)/%.skel.h: $(OUTPUT)/%.bpf.o | $(BPFTOOL)
->         $(QUIET_GEN)$(BPFTOOL) gen skeleton $< > $@
-
-[...]
