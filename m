@@ -2,62 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DB6542395B
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 10:03:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E50D423965
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 10:09:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237584AbhJFIFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 04:05:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60550 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237384AbhJFIFf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 04:05:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3845861040;
-        Wed,  6 Oct 2021 08:03:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633507423;
-        bh=0Vv+csbdkwlttiOflCSI9HLmcF9hI+YyiF8qnC+DLHI=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=s82W9I9NOmXD3d7/83GVz+XYFsSYw94EvTnt7hfm0mhcdChB5rQqfuRNE0KiSlHdI
-         hQu+oJglJQz5Wnlzod2K3oSHcRs626i13u4kMUH3yNL737wTHZJ9jbiJQFNa5DIDn9
-         U/7l2TUEeoGPL6HhDQ145oY4pm3RNjnb8clkovokBsA3178AoJIytF5k/rcxmhYpIo
-         5Bz9xbnHMS3hq74z7Cg4PebxUk91OQkf4pMdzVnuRaY8l50DiVivsQeMkwo+iqsPQB
-         /S0+/6ySE34UUKoBgI/BbE6q15pbFYVJiP2+Zm4UCxrBzuzK7JrdxUaobk3TZahoaw
-         pxsoUUZULsfDg==
-Content-Type: text/plain; charset="utf-8"
+        id S237558AbhJFILm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 04:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237411AbhJFILl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 04:11:41 -0400
+Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38353C061749
+        for <netdev@vger.kernel.org>; Wed,  6 Oct 2021 01:09:49 -0700 (PDT)
+Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94.2)
+        (envelope-from <n0-1@orbyte.nwl.cc>)
+        id 1mY1zk-0008Aa-9F; Wed, 06 Oct 2021 10:09:44 +0200
+Date:   Wed, 6 Oct 2021 10:09:44 +0200
+From:   Phil Sutter <phil@nwl.cc>
+To:     Andrea Claudi <aclaudi@redhat.com>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        dsahern@gmail.com, bluca@debian.org
+Subject: Re: [PATCH iproute2 v3 1/3] configure: support --param=value style
+Message-ID: <20211006080944.GA32194@orbyte.nwl.cc>
+Mail-Followup-To: Phil Sutter <phil@nwl.cc>,
+        Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org,
+        stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org
+References: <cover.1633455436.git.aclaudi@redhat.com>
+ <caa9b65bef41acd51d45e45e1a158edb1eeefe7d.1633455436.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <YV1GJg/aqPARptJp@dhcp22.suse.cz>
-References: <20210928125500.167943-1-atenart@kernel.org> <20210928125500.167943-10-atenart@kernel.org> <YV1GJg/aqPARptJp@dhcp22.suse.cz>
-Subject: Re: [RFC PATCH net-next 9/9] net-sysfs: remove the use of rtnl_trylock/restart_syscall
-From:   Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        gregkh@linuxfoundation.org, ebiederm@xmission.com,
-        stephen@networkplumber.org, herbert@gondor.apana.org.au,
-        juri.lelli@redhat.com, netdev@vger.kernel.org
-To:     Michal Hocko <mhocko@suse.com>
-Message-ID: <163350742102.4226.2656822862076181317@kwain>
-Date:   Wed, 06 Oct 2021 10:03:41 +0200
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <caa9b65bef41acd51d45e45e1a158edb1eeefe7d.1633455436.git.aclaudi@redhat.com>
+Sender:  <n0-1@orbyte.nwl.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Michal Hocko (2021-10-06 08:45:58)
-> On Tue 28-09-21 14:55:00, Antoine Tenart wrote:
-> > The ABBA deadlock avoided by using rtnl_trylock and restart_syscall was
-> > fixed in previous commits, we can now remove the use of this
-> > trylock/restart logic and have net-sysfs operations not spinning when
-> > rtnl is already taken.
->=20
-> Shouldn't those lock be interruptible or killable at least? As mentioned
-> in other reply we are seeing multiple a contention on some sysfs file
-> because mlx driver tends to do some heavy lifting in its speed callback
-> so it would be great to be able to interact with waiters during that
-> time.
+Hi Andrea,
 
-Haven't thought much about this, but it should be possible to use
-rtnl_lock_killable. I think this should be a patch on its own with its
-own justification though (to help bisecting). But that is easy to do
-once the trylock logic is gone.
+A remark regarding coding style:
 
-Thanks,
-Antoine
+On Wed, Oct 06, 2021 at 12:08:04AM +0200, Andrea Claudi wrote:
+[...]
+> diff --git a/configure b/configure
+> index 7f4f3bd9..d57ce0f8 100755
+> --- a/configure
+> +++ b/configure
+> @@ -501,18 +501,30 @@ if [ $# -eq 1 ] && [ "$(echo $1 | cut -c 1)" != '-' ]; then
+>  else
+>  	while true; do
+>  		case "$1" in
+> -			--include_dir)
+> -				INCLUDE=$2
+> -				shift 2 ;;
+> -			--libbpf_dir)
+> -				LIBBPF_DIR="$2"
+> -				shift 2 ;;
+> -			--libbpf_force)
+> -				if [ "$2" != 'on' ] && [ "$2" != 'off' ]; then
+> +			--include_dir | --include_dir=*)
+
+So here the code combines the two cases,
+
+> +				INCLUDE="${1#*=}"
+> +				if [ "$INCLUDE" == "--include_dir" ]; then
+
+just to fiddle it apart again. Did you consider leaving the old cases in
+place and adding separate ones for the --opt=val cases like so:
+
+| 			--include_dir=*)
+| 				INCLUDE="${1#*=}"
+| 				shift
+| 				;;
+
+[...]
+> +			--libbpf_force | --libbpf_force=*)
+> +				LIBBPF_FORCE="${1#*=}"
+> +				if [ "$LIBBPF_FORCE" == "--libbpf_force" ]; then
+> +					LIBBPF_FORCE="$2"
+> +					shift
+> +				fi
+> +				if [ "$LIBBPF_FORCE" != 'on' ] && [ "$LIBBPF_FORCE" != 'off' ]; then
+
+To avoid duplication here, I would move semantic checks into a second
+step. This would allow for things like:
+
+| --libbpf_force=invalid --libbpf_force=on
+
+but separating the syntactic parsing from semantic checks might be
+beneficial by itself, too.
+
+Cheers, Phil
