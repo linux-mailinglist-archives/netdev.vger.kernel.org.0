@@ -2,256 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 936754238F2
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 09:33:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37F214238FE
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 09:34:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237553AbhJFHey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 03:34:54 -0400
-Received: from mail-dm6nam10on2054.outbound.protection.outlook.com ([40.107.93.54]:26081
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237448AbhJFHew (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 03:34:52 -0400
+        id S237546AbhJFHgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 03:36:01 -0400
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:21140 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237384AbhJFHf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 03:35:59 -0400
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1966aq6P029511;
+        Wed, 6 Oct 2021 07:34:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
+ bh=aHenArHQYJGlzudTQtXcBG3Kh4cCqNc21LB6uy6/KDI=;
+ b=GbTrTY9npmbgp6c1qRcpc4RJ50z87QHukMB1wB/aK3S5wjVBJwh00h9nWjkc5FfsYbms
+ AimdNZV5OrDTyrdJHEfnggcYfjcYQ7ZjhEq/07AxFHnI5JI+YQsMhCbd0anXZRTUEw50
+ VWSRM8MbfdkVnsw2Djfrief4SgxYwpSdx6MuqyeMs/J6JQaglT6mwmfzduhl8U3+DrhR
+ QgC4+qcY5fdFgNIozsI1GyMucPnnHLegYNkeS9MPOHScEgpDo2XmfEgvP6Nh5vo7cjSK
+ 4XWQ/z2HvHCwLTXV7gdYiTetzLfYn5Ffr5GhHQcJi6uTyT34MwmRYX6CdR99uw0HPpa0 3w== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3bh1drsnrq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 06 Oct 2021 07:34:04 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 1967QgxN069714;
+        Wed, 6 Oct 2021 07:34:01 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2107.outbound.protection.outlook.com [104.47.70.107])
+        by userp3030.oracle.com with ESMTP id 3bf0s7xpx7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 06 Oct 2021 07:34:01 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mRxRZ0dwyrh8/ZegOB9z3iZ23BsmB921g5fcF6N3Fc/GjyiWGyTyEpgD48GTy8+uJLlbegBvueXLe8ApqfHQmZrUGsDywJF0I3gUZTWtDnjTKh025QIIp9sSp2wN3MKMMZxsUylD0EIpLiHPUwIBR7hPZiCLeOCthWD/XiV1KYBwdZYTC6CUGmuNQ64LKbx9iDMzrwUp5U1C2XRG7xGoiWxsDVhp6O5v4GSrKC7zRuPKDNGaKlCQOdgQSi3W3vT2ST8c+svxW03KmoSKtUWYqDg0BJX7x4CsWOtrJi34umAQkjrOJ6rN9Yoi7Bs7uIPYSA6m70L26T5OwxWg7e4XEQ==
+ b=X1dHUN/mYWo5nzToYlPUXZ+GvzOrXKyKxBteppMhBCYNnaQIrKeEmVFi5uMKCXtfT7yHsQ6OtC1IExFfxu50lKqorWkU+GvoyRB8m89FTjEBGyqaLMNGtSI0gWQ1aioFEg9SARfrME7/grmuk5AIGDkEATII1pRG7h7IXSU6akvKTiT3NkU/lhrKRaU3ZKVGIJb/vAaEQ21LkubsKejdL6276eyUce6jb61/5U5XSViBL4hDuUEUishx3+1CqJQHoFBLTqUca4jZO95Pe+UzlkGbVzjAUPqsL2SifxNrptrZVaxynp3luUiA3yUqxFjiJ1t8qf7IyYZ2gvxvF2pncw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CI3EkQPeflAF0v+8HIzRDHbCAyDTsxANKsxloD1B9tk=;
- b=MUoNhc9GVu35JPYUyZcfKv1+Fb/w86m7RuPr/iYQPSANmS4GUFsgLIpNQsra8AKSDoEsNjXMWO3Oteo1yws0LTvhAqGQbMFVeKBYMoWP9a+DJnL9atk1wbA3Ra0H9n/uxSvbwjfMkyTXnWcKGUMjBnrBA+OXcSGMJNq33GZGFOvSgfpfsCvFcUXnkhEr8Di4slonNyHk6Em2oLBhWObJVarQUI+8iZsqG0qqhdtCSKdEmyziTzKWWEs+nxHwS1qE2QlwlEu8B5lYfpmIBMi4H42m9HWjjzXexwRNi1fstgaeKRXEnG2Dw0emfOj+0DrkgP0heEMl2Rw7pgDv8jfrKg==
+ bh=aHenArHQYJGlzudTQtXcBG3Kh4cCqNc21LB6uy6/KDI=;
+ b=RLFYqfjJI3xt7OtBCVVB49Jk/tqxYRiFZ+V2J5qCkrtsI1OJeGNvSHPf0kfHqwhndx+MVTK8FEkVgROP2KzEFk3iUD/OOxEKgZbsgFkQ112BbeOrVAeTqDKrtoMPkdhB/KLv5zLZf3Qv5mduEyGZvBOlqJRYvbn/vK+wczUfqqV/2+F3Oif6E8lfbL3sIeKZNzxm61rT32Yrax5979qFLhf1sgMjh3uoqehJKukV4JBeef4Ao+mHFgcBCsHPPzPRulUkUYfHVlr1rKOgzuRpnVEthNWq7Md0duD6Uyl57hqFYYGEAdSVBnpruvCBLOy4aSrFl7QnZDVeW+1Ru/JkAA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CI3EkQPeflAF0v+8HIzRDHbCAyDTsxANKsxloD1B9tk=;
- b=C0F96TsLnUUK1mI0MVa/dwWnGA3oyyffJy0CZ8ZG/+dd6RuaeNiI+NwURlDptkKZWSYOBd0PHVVz7g9craUJarx4J4j4qmRUq5bwyCpj7o9bCxYou6J2x5DDxRH/8n7NxiAYBK+OJJDYmxhJePhbbAFJZzyfjvPenOEwzQL7AVw=
-Authentication-Results: codeaurora.org; dkim=none (message not signed)
- header.d=none;codeaurora.org; dmarc=none action=none header.from=silabs.com;
-Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
- by PH0PR11MB5580.namprd11.prod.outlook.com (2603:10b6:510:e5::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.15; Wed, 6 Oct
- 2021 07:32:58 +0000
-Received: from PH0PR11MB5657.namprd11.prod.outlook.com
- ([fe80::31cb:3b13:b0e8:d8f4]) by PH0PR11MB5657.namprd11.prod.outlook.com
- ([fe80::31cb:3b13:b0e8:d8f4%9]) with mapi id 15.20.4566.023; Wed, 6 Oct 2021
- 07:32:58 +0000
-From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org,
-        Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v7 05/24] wfx: add main.c/main.h
-Date:   Wed, 06 Oct 2021 09:32:49 +0200
-Message-ID: <3570035.Z1gqkuQO5x@pc-42>
-Organization: Silicon Labs
-In-Reply-To: <87k0ixj5vn.fsf@codeaurora.org>
-References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com> <2723787.uDASXpoAWK@pc-42> <87k0ixj5vn.fsf@codeaurora.org>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-ClientProxiedBy: PR3P189CA0031.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:102:53::6) To PH0PR11MB5657.namprd11.prod.outlook.com
- (2603:10b6:510:ee::19)
+ bh=aHenArHQYJGlzudTQtXcBG3Kh4cCqNc21LB6uy6/KDI=;
+ b=fDfrhmN0eViEanQIBWKDtmPZIlUH8KfDckJOu4vaF+SFd4xkeHfqy1ig/i/zpMSBhlZgRc6RAKjDZFYiBASMkjCfn29sjFybJ7mivAilJkkMf62DDsfW6fWvm5YUf2f0/LqDvTVAXIAHzvCh9K6Cv2fYuKacNDSXjRVlvD1Ow0w=
+Authentication-Results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=oracle.com;
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by CO1PR10MB4546.namprd10.prod.outlook.com
+ (2603:10b6:303:6e::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.16; Wed, 6 Oct
+ 2021 07:33:59 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::d409:11b5:5eb2:6be9]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::d409:11b5:5eb2:6be9%5]) with mapi id 15.20.4566.022; Wed, 6 Oct 2021
+ 07:33:59 +0000
+Date:   Wed, 6 Oct 2021 10:33:47 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jiri Pirko <jiri@nvidia.com>
+Cc:     Ido Schimmel <idosch@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] mlxsw: spectrum_buffers: silence uninitialized
+ warning
+Message-ID: <20211006073347.GB8404@kili>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: AM5PR1001CA0015.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:206:2::28) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Received: from pc-42.localnet (37.71.187.125) by PR3P189CA0031.EURP189.PROD.OUTLOOK.COM (2603:10a6:102:53::6) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend Transport; Wed, 6 Oct 2021 07:32:55 +0000
+Received: from kili (62.8.83.99) by AM5PR1001CA0015.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:206:2::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.22 via Frontend Transport; Wed, 6 Oct 2021 07:33:56 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 540fd5ac-e407-442f-5ad9-08d9889b84cf
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5580:
-X-Microsoft-Antispam-PRVS: <PH0PR11MB5580E54D8F7D0FBC6D46CBE493B09@PH0PR11MB5580.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Office365-Filtering-Correlation-Id: 23e77300-16f1-4543-7ded-08d9889ba94a
+X-MS-TrafficTypeDiagnostic: CO1PR10MB4546:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <CO1PR10MB454601D369034063A50A5F698EB09@CO1PR10MB4546.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2201;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XHaxFnxC0VYcyNfilhw8osTedQp2tTjPObPrXg2P9kE2TJQdxX/oYaWQzfN7nceJJc/Dqv5HBEx6V0qSDFZNOitPp3Hpo4Gd2WvrWoFfuw8SPCX2y3i76BkvVedNLiEBqG7ez46R7P6HxSvxGxIIh0TEg51XwKERKVU75+nDxGh1gsEmWzz4QrDJQyx1eRMcWJdB6lYiCR+2SyUkSj3a1bzq4JIRin7BTr02Ec5kc0eT+TjcAYnszPyLzaWTA82oQ68QFCl9wYXJ0c950KLLGib2WHl6kWoL/b4GYX00dx4wUvnHfiwy7zK6QZoOo9tWgk8n4GaaZ/7emmSkJlumltEPG52TO2iVWmcoUtGOjXl3wllrpEpF7t+ypZw2pAWfQcYIfU3cWAosRd8EhFMWX24jhSwSE3MyV1tHtPjyqNJ85yk7XhuvaTDEMr6C83jX8GhSbNhy+oUQEWA65EbPAixZAvzIDpVSGPErHBXEY4b4Q7zyLOzvQVXL6aKU2krP27QW3zuJ7Z4eMqdsoog+5vLxu+MRQLOJDfSdiZ1dvReqk65YWNVGw1axP88pLQ75TG5DiK8WPnZEOOFqitXAt6kw+NwU7MyTojNAPcQSxnzf4lrXCqz6FfD8imnGuhifiC9kxUE4lqi9zXkRkEPncMWP4uWPSlEq7JT+EpNOsqb0XZho/EQ8Ak70/VTTsVsrnhe18c9Xoyffsxs27CTMItuA9ejXFW/93Evo0RsF/tM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(6486002)(186003)(36916002)(38100700002)(2906002)(7416002)(316002)(26005)(38350700002)(956004)(66556008)(66476007)(54906003)(8676002)(66946007)(52116002)(33716001)(6512007)(6666004)(6916009)(6506007)(9686003)(86362001)(4326008)(508600001)(83380400001)(66574015)(5660300002)(8936002)(39026012);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 5KzAOkplbd8zb7tFNVj4rnAjuFoiu1itXlACVP/82Psd7xsTTa81lx6j+nn1fHpGko0+qOVF/inRFJjAEPg9E/6H+5gGElm/bR/YmvFeGMUcoEhG41MF+9lpMUGZiWmg/AF3vxQ5Jo2TSKQYRcTYamjaBC7bIcuwxaT0RhEzcUHGKzEXb1OvDqR6Yq2mn94/e93FWfe9/1eEZ7z6lpHVVKEXpnkUSYJCwsSAZj4DIWnrYTBEpSSOT9UA2M7EOKsor6r39dJc9kky0rSLBkZwxLg9TiTOfaviLi0JoSJVUqc74FTMRGkUMM/oMj3eWHPRuq7IIxgF/3xiXpLsprFHjt1ffNTOW/WBfAkFhlu6zuaAPfMVTYfN/Td1sgxQh1yJHGDpAIl6PD1tnyuNmQNaJyXECS4iaSKY0bDqhPwks8vBxQDDW3R0wAi97Zh9Ulz2sYroebKUTMJrmXlW+b6t9BRSBJ5oxnMPBRq2oHpUIw+cs0is46Ped1hnCZ559fvfuf/L+A+PBwgEjkUV6OVquXcUUCKlH8Oy+7C07nTEcZ6l5GklMpuh3aZ3CBNqGGrGDcUbv5kdSi6DHVpx3ut6OPkONoi3iBAkVWr3GhXJ7dVeqqjGGJneqcz7zrjdCm+W+BfERg2Hy6+KW4zcxLKpVnxeAOmj2WjCOKZJhXbud/ZVGrpXa1o4Dk/E08t+1V+eda8iXvS/7PcRk03VuEO0ig==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(83380400001)(86362001)(6916009)(33716001)(1076003)(26005)(508600001)(6666004)(44832011)(956004)(4326008)(186003)(2906002)(38350700002)(52116002)(9686003)(6496006)(66946007)(66476007)(66556008)(8676002)(316002)(8936002)(38100700002)(4744005)(33656002)(55016002)(9576002)(54906003)(5660300002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?y+vgkbNMKFALkqOn2Kv0C1i5dDSlO1i1bCkblVuPTivTzygrvT0FGjbF5/?=
- =?iso-8859-1?Q?lyVn0fGBro2YE9ew4RmFobo0UQib21w8xlXf7EoqaCbsyK5KDlVaN2Bb1l?=
- =?iso-8859-1?Q?qNjPtOk2i921Q+oEU8aiSi7bFL55CgtynTeApsAPzcT0PewkNom5FmZDnV?=
- =?iso-8859-1?Q?oYfny4ltA2jdsnYAS8hYNT1L39bgSOwwevGUwvp/rJhQBimgoz51i8dJOj?=
- =?iso-8859-1?Q?EBJM2WdymCD1gtsPjHO1BrIeNAaW2J1KHWqUqW+oMGv0fSTJF0Vsvh90CT?=
- =?iso-8859-1?Q?/OeprBi5LLaHG9qL3b3px/HXmlMW9C1CGCHioi9m4sSSPm3QBjjEcrOnzs?=
- =?iso-8859-1?Q?udtBg2C62J6d8wwUuLmhRmr5yK5bvrgffnk8ht/ISTPQMI8UxK9RPv2Ut+?=
- =?iso-8859-1?Q?LJbMUKss973/sv3J2kpJPp8hZ/wNrHAlpU+3QOlzsbYTqcKsmUZOu9A7m4?=
- =?iso-8859-1?Q?qWV+JwoicQZ0zk4cEHpkwRKU7dZ8zJ3DVdDgB1CVFcpNYPQDdax5JqH/Lx?=
- =?iso-8859-1?Q?wi1mnOCuQXCpmEejOuRFA5rBN+quE85uX62143HatJ2EG7TmVteQTjmvvq?=
- =?iso-8859-1?Q?c7tAhcwfxi0/5y3sa108V85oWHVUq1SIXq/6PQBNljx8LMoKRlcNxqSAfP?=
- =?iso-8859-1?Q?DSe8bvvuZdHzcvjeta/iBFDLvQptTVh1bi+dgANeK8RrOgn8kOojPJ7suk?=
- =?iso-8859-1?Q?HEYXPvOZnM3svurYJuMRSGhpGMyAJzS6BKia5dA1fK6HDumX4pgqxz3EDe?=
- =?iso-8859-1?Q?PsvoLhGQ6FrUqVt24iyzHNjRwEcOAUElyYUT+MG2x0TGT54zHmgzb+uln8?=
- =?iso-8859-1?Q?tSW4sZEHMFQSJB9tTRlvHniAeFzXnlnyVjNVk8RA8g+gi7cCMHAo6ZWdTP?=
- =?iso-8859-1?Q?ftdKiebePikn46LX9oZQ4IoWqk/sMoZjgXNUxWaAlgcxQqvxyUgZusl1XI?=
- =?iso-8859-1?Q?f1bbNKrZzANXa5UGqnzJN8L6TrqxruqYkyVfEqBq75xntqPhUMVmd6jyLi?=
- =?iso-8859-1?Q?93MRJLwIXddgKUZx/YLl55IJuXggCgY814/NLHiyKMVmGqkMj3avpaFtKu?=
- =?iso-8859-1?Q?G2kYLJQXSCBWncTXPzSz26Nc0rxTH+1G3XNxlfHsrtYdM5hRWRoKTyRHjX?=
- =?iso-8859-1?Q?mk6ONnfUS9EBbVo/u7iMSpbltu5aCjABgQud6hngEV6uEm2skXSvFO52eG?=
- =?iso-8859-1?Q?LFHMupZiyP4WpArg7cOEdXhtz8KBnjLyCRi+O3wB+BMCIT4NttMDT+7sNd?=
- =?iso-8859-1?Q?28eL+xvjehWOgMGGF0Kn+oLJaa9rdZT2Xtots44/71FXdDrTpp9EipZrqD?=
- =?iso-8859-1?Q?yYK/WN1IlmzJ1nxnmsHrI2rvIXkFxcTG2lHbJBvInQuDaIfkivCsrBlgUs?=
- =?iso-8859-1?Q?ypP/TrecU2?=
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 540fd5ac-e407-442f-5ad9-08d9889b84cf
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?d316P4/zJc5ARCxHjTwMgtmtZZiaQaSaoxGjJxFwZe4uNlw7ZZG97ZmDBkFG?=
+ =?us-ascii?Q?VMJQHbgPx2t20UMDN17LsJAmbGXA5geTUw+MrDjV7vt44n19kMUhqCmm2KFC?=
+ =?us-ascii?Q?3dJIGPDFbQkRkAC9xiY7GqXiA35SLpMHr1ukF3DKOnCADJe9Mc6EBwEsq51J?=
+ =?us-ascii?Q?StihTDiZMmwpC1bf3BX6uE1jr0eHsboJ/hAt2r1Nmims5xtRb/cG3ci81GZw?=
+ =?us-ascii?Q?NXZSGPQcPl72D6UUAUjobygOMvh45JgRQsUHQ7nogQpozms1U3oJCH5PuD7X?=
+ =?us-ascii?Q?b7FOgsfEVr5Rwe/KYfy/62Sb4Lr0XEWY7gtMu+A0H5gxgjkX/z9XoFfdayQt?=
+ =?us-ascii?Q?9bl11GYEkuKUQg6Tno8XO7xGooVCgrq36UNOZtKTdrGsYEm8enoS+BT2RJH6?=
+ =?us-ascii?Q?3bn0xWat+iS5QEK+77pi5G9WLJh1OlXutVNAKkpDBS6hpHdJ7oV1ClyTUXns?=
+ =?us-ascii?Q?ai/o/ltnKNlxSS+Z7HQhkwgyIhZMyLgFsRe9mxAEGnrPT+leJUB/ba/T37Oh?=
+ =?us-ascii?Q?1mdbLFAg5XzYs7R/eh1yvixspXsOab+OUTsqtKDJiKOb9fV/Zjh7Qy1UUgXI?=
+ =?us-ascii?Q?3gDPV4pm04iO7bssfX+5FCulms++XQmzgytANKtlSwptR7ZJ0wSxT1mJZPiY?=
+ =?us-ascii?Q?8iDDMqsjjP7zIMrLGMeHSS3fOm788O+fcMgtYGwaqv5SLxNo8h7u856ytn9k?=
+ =?us-ascii?Q?E/xTFQSFjB38yfaU5h3xfyRqopjViehs4s0/+rhZutNSmsuIG+b4xFIU3YZy?=
+ =?us-ascii?Q?v5swb80LBM8yxEsQ2c787pfBfjaS2NZun1YdhiinmjCD+7fiyO0eBZWbAl5P?=
+ =?us-ascii?Q?wpm6vHocksqsFOkcmLG7AmmsZhf4dMjUnvwA/5RMxx3W27PK2L9MUko7bHOb?=
+ =?us-ascii?Q?wZFkF8cFC/Pd7cSLA4tKRYnchIrO1dchA/4syROTue4M62J+PIRxwZQJ2Kq2?=
+ =?us-ascii?Q?0LF7To/nNm0L2AAsJ0otvdI5bq+t97bQxc6pfQOPqe6LgOHyJUs8F/GXbb4K?=
+ =?us-ascii?Q?SpS4ZWZyfpyDMnvxvdIxXqM5SQtHeEKky1OjKkDQYnqbPs5PN3gtvIgc35Gl?=
+ =?us-ascii?Q?qcwjggG/tf1LcCJahBmni+aAPJDn6v3pt5hUgWCJaOHIKsfgLWvM9RRZ9dM9?=
+ =?us-ascii?Q?N9X637XGip9nMRTudzuF50bWnUKZ9DE+R/Opk44kGgHeLk+RQPee1HF0XKCG?=
+ =?us-ascii?Q?Al1G09s4MDBujsXEp4yZulc2ADTFP1RLMLZxkWhpGdxaxA0VD8UMmvVjZF/4?=
+ =?us-ascii?Q?OfYKicsHBP9LWcLLf1ePR5/CR7s15X2y/inmnOgzmUFZaDkjmQTAqGWV/DF1?=
+ =?us-ascii?Q?pAELvZd602dsytXtkYy7vjCT?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23e77300-16f1-4543-7ded-08d9889ba94a
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Oct 2021 07:32:58.2152
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Oct 2021 07:33:59.2145
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KqGG3eY+QNHkMoy98/bny2IcXRYo+hrGCjBemu88iqEY/I3RnJLbGQ4pBPuzcD+05wK9ZV16oHFpWeUqBfAYwQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5580
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZufiYtfJBJ2Uc0+z4PQDgliL0S+putq63AqvG6E2RO5+E6Ac34f+UHChP1hrNgJLURVM6GMHu4w1T0Njm+ZMglo37WR8yO/iq0OMud95jMM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4546
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10128 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=0 adultscore=0
+ mlxscore=0 phishscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2109230001
+ definitions=main-2110060046
+X-Proofpoint-GUID: 8YXwFIA0oj-EL_1BCdyuNhyd3cwVuVTm
+X-Proofpoint-ORIG-GUID: 8YXwFIA0oj-EL_1BCdyuNhyd3cwVuVTm
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kalle,
+Static checkers and runtime checkers such as KMSan will complain that
+we do not initialize the last 6 bytes of "cb_priv".  The caller only
+uses the first two bytes so it doesn't cause a runtime issue.  Still
+worth fixing though.
 
-On Friday 1 October 2021 14:18:04 CEST Kalle Valo wrote:
-> J=E9r=F4me Pouiller <jerome.pouiller@silabs.com> writes:
->=20
-> > On Friday 1 October 2021 11:22:08 CEST Kalle Valo wrote:
-> >> Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
-> >>=20
-> >> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
-> >> >
-> >> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
-> >>=20
-> >> [...]
-> >>=20
-> >> > +/* The device needs data about the antenna configuration. This info=
-rmation in
-> >> > + * provided by PDS (Platform Data Set, this is the wording used in =
-WF200
-> >> > + * documentation) files. For hardware integrators, the full process=
- to create
-> >> > + * PDS files is described here:
-> >> > + *   https:github.com/SiliconLabs/wfx-firmware/blob/master/PDS/READ=
-ME.md
-> >> > + *
-> >> > + * So this function aims to send PDS to the device. However, the PD=
-S file is
-> >> > + * often bigger than Rx buffers of the chip, so it has to be sent i=
-n multiple
-> >> > + * parts.
-> >> > + *
-> >> > + * In add, the PDS data cannot be split anywhere. The PDS files con=
-tains tree
-> >> > + * structures. Braces are used to enter/leave a level of the tree (=
-in a JSON
-> >> > + * fashion). PDS files can only been split between root nodes.
-> >> > + */
-> >> > +int wfx_send_pds(struct wfx_dev *wdev, u8 *buf, size_t len)
-> >> > +{
-> >> > +     int ret;
-> >> > +     int start, brace_level, i;
-> >> > +
-> >> > +     start =3D 0;
-> >> > +     brace_level =3D 0;
-> >> > +     if (buf[0] !=3D '{') {
-> >> > + dev_err(wdev->dev, "valid PDS start with '{'. Did you forget to
-> >> > compress it?\n");
-> >> > +             return -EINVAL;
-> >> > +     }
-> >> > +     for (i =3D 1; i < len - 1; i++) {
-> >> > +             if (buf[i] =3D=3D '{')
-> >> > +                     brace_level++;
-> >> > +             if (buf[i] =3D=3D '}')
-> >> > +                     brace_level--;
-> >> > +             if (buf[i] =3D=3D '}' && !brace_level) {
-> >> > +                     i++;
-> >> > +                     if (i - start + 1 > WFX_PDS_MAX_SIZE)
-> >> > +                             return -EFBIG;
-> >> > +                     buf[start] =3D '{';
-> >> > +                     buf[i] =3D 0;
-> >> > +                     dev_dbg(wdev->dev, "send PDS '%s}'\n", buf + s=
-tart);
-> >> > +                     buf[i] =3D '}';
-> >> > +                     ret =3D hif_configuration(wdev, buf + start,
-> >> > +                                             i - start + 1);
-> >> > +                     if (ret > 0) {
-> >> > + dev_err(wdev->dev, "PDS bytes %d to %d: invalid data (unsupported
-> >> > options?)\n",
-> >> > +                                     start, i);
-> >> > +                             return -EINVAL;
-> >> > +                     }
-> >> > +                     if (ret =3D=3D -ETIMEDOUT) {
-> >> > + dev_err(wdev->dev, "PDS bytes %d to %d: chip didn't reply (corrupt=
-ed
-> >> > file?)\n",
-> >> > +                                     start, i);
-> >> > +                             return ret;
-> >> > +                     }
-> >> > +                     if (ret) {
-> >> > + dev_err(wdev->dev, "PDS bytes %d to %d: chip returned an unknown
-> >> > error\n",
-> >> > +                                     start, i);
-> >> > +                             return -EIO;
-> >> > +                     }
-> >> > +                     buf[i] =3D ',';
-> >> > +                     start =3D i;
-> >> > +             }
-> >> > +     }
-> >> > +     return 0;
-> >> > +}
-> >>=20
-> >> I'm not really fond of having this kind of ASCII based parser in the
-> >> kernel. Do you have an example compressed file somewhere?
-> >
-> > An example of uncompressed configuration file can be found here[1]. Onc=
-e
-> > compressed with [2], you get:
-> >
-> >     {a:{a:4,b:1},b:{a:{a:4,b:0,c:0,d:0,e:A},b:{a:4,b:0,c:0,d:0,e:B},c:{=
-a:4,b:0,c:0,d:0,e:C},d:{a:4,b:0,c:0,d:0,e:D},e:{a:4,b:0,c:0,d:0,e:E},f:{a:4=
-,b:0,c:0,d:0,e:F},g:{a:4,b:0,c:0,d:0,e:G},h:{a:4,b:0,c:0,d:0,e:H},i:{a:4,b:=
-0,c:0,d:0,e:I},j:{a:4,b:0,c:0,d:0,e:J},k:{a:4,b:0,c:0,d:0,e:K},l:{a:4,b:0,c=
-:0,d:1,e:L},m:{a:4,b:0,c:0,d:1,e:M}},c:{a:{a:4},b:{a:6},c:{a:6,c:0},d:{a:6}=
-,e:{a:6},f:{a:6}},e:{b:0,c:1},h:{e:0,a:50,b:0,d:0,c:[{a:1,b:[0,0,0,0,0,0]},=
-{a:2,b:[0,0,0,0,0,0]},{a:[3,9],b:[0,0,0,0,0,0]},{a:A,b:[0,0,0,0,0,0]},{a:B,=
-b:[0,0,0,0,0,0]},{a:[C,D],b:[0,0,0,0,0,0]},{a:E,b:[0,0,0,0,0,0]}]},j:{a:0,b=
-:0}}
->=20
-> So what's the grand idea with this braces format? I'm not getting it.
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-  - It allows to describe a tree structure
-  - It is ascii (easy to dump, easy to copy-paste)
-  - It is small (as I explain below, size matters)
-  - Since it is similar to JSON, the structure is obvious to many people
-
-Anyway, I am not the author of that and I have to deal with it.
-
-> Usually the drivers just consider this kind of firmware configuration
-> data as a binary blob and dump it to the firmware, without knowing what
-> the data contains. Can't you do the same?
-
-[I didn't had received this mail :( ]
-
-The idea was also to send it as a binary blob. However, the firmware use
-a limited buffer (1500 bytes) to parse it. In most of case the PDS exceeds
-this size. So, we have to split the PDS before to send it.
-
-Unfortunately, we can't split it anywhere. The PDS is a tree structure and
-the firmware expects to receive a well formatted tree.
-
-So, the easiest way to send it to the firmware is to split the tree
-between each root nodes and send each subtree separately (see also the
-comment above wfx_send_pds()).
-
-Anyway, someone has to cook this configuration before to send it to the
-firmware. This could be done by a script outside of the kernel. Then we
-could change the input format to simplify a bit the processing in the
-kernel. However, the driver has already some users and I worry that
-changing the input format would lead to a mess.
-
-
---=20
-J=E9r=F4me Pouiller
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
+index 9de160e740b2..d78cf5a7220a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
+@@ -1583,7 +1583,7 @@ int mlxsw_sp_sb_occ_snapshot(struct mlxsw_core *mlxsw_core,
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
+ 	struct mlxsw_sp_sb_sr_occ_query_cb_ctx cb_ctx;
+-	unsigned long cb_priv;
++	unsigned long cb_priv = 0;
+ 	LIST_HEAD(bulk_list);
+ 	char *sbsr_pl;
+ 	u8 masked_count;
+-- 
+2.20.1
 
