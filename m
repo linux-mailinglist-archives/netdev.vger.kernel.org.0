@@ -2,72 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BE4B424397
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 18:59:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1866F42438E
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 18:58:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239484AbhJFRBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 13:01:48 -0400
-Received: from mga12.intel.com ([192.55.52.136]:34614 "EHLO mga12.intel.com"
+        id S239467AbhJFRAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 13:00:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54172 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230077AbhJFRBs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 13:01:48 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10129"; a="206167855"
-X-IronPort-AV: E=Sophos;i="5.85,352,1624345200"; 
-   d="scan'208";a="206167855"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2021 09:59:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,352,1624345200"; 
-   d="scan'208";a="439189034"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga006.jf.intel.com with ESMTP; 06 Oct 2021 09:58:59 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Stefan Assmann <sassmann@kpanic.de>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, sassmann@redhat.com,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH net 3/3] iavf: fix double unlock of crit_lock
-Date:   Wed,  6 Oct 2021 09:56:59 -0700
-Message-Id: <20211006165659.2298400-4-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211006165659.2298400-1-anthony.l.nguyen@intel.com>
-References: <20211006165659.2298400-1-anthony.l.nguyen@intel.com>
+        id S229992AbhJFRAO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 13:00:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B554E61184;
+        Wed,  6 Oct 2021 16:58:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633539501;
+        bh=Pv2GQ9ppIbCDtjJ6FHG8UrZrwL0q5p8yJu6Ox1odcl4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ZxwFTj6h8/4zl+ZbyobZ3gXyH6zFFHuuunpSCeZtGq5yyBh458lN6qgjrPtbzvmEE
+         JOOJRKCS+cBjpsGZsFsu2qC7UT2xexuiAP+pKnneMu16nz3F7IlrhMx37GjF8vnwt0
+         o61sz2wSwPJd3nZ73vK9cDb7mu9kpL6OH34+xqBitWiiJlEeCZMOz2ORHGj5DzBeHV
+         lXnRdLCU5OwkGhGLRRnRM9LBtawkqp+ghPb2wtzyNm0RXi9ToDk7/pzxdw2KZbTxzU
+         X/pQ2PLrdiI+gydju+/rHCKwPD4FYD9yeb7qGaLXANvhp6iC/3OhwOMt93GWz9oHi0
+         /UKKtVyOralpg==
+Received: by mail-ed1-f46.google.com with SMTP id g10so11987533edj.1;
+        Wed, 06 Oct 2021 09:58:21 -0700 (PDT)
+X-Gm-Message-State: AOAM533dM0l6UJiTdMjGpOF3D/M6sL5L1atLIRlpmJO4Xe5MpZ8aOPW8
+        6BSSGDHodG+y8bKM3kL7ZwDbVnkUWkuaBV3Q1A==
+X-Google-Smtp-Source: ABdhPJwMHkUzUgd0cGA2QXNsXv0uRtztN2UbQ2gOCNuLs32mPBDjNqEd6cAB6lIHngB5ur8nwNpG3ntFDOFsttuDTVQ=
+X-Received: by 2002:a50:d903:: with SMTP id t3mr35230363edj.70.1633539499069;
+ Wed, 06 Oct 2021 09:58:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211006154426.3222199-1-kuba@kernel.org> <20211006154426.3222199-2-kuba@kernel.org>
+ <CAL_JsqK6YzaD0wB0BsP5tghnYMbZzDHq2p6Z_ZGr99EFWhWggw@mail.gmail.com> <YV3QAzAWiYdKFB3m@lunn.ch>
+In-Reply-To: <YV3QAzAWiYdKFB3m@lunn.ch>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 6 Oct 2021 11:58:07 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqLRQRmhXZm25WKzUSBUyK6q5d-BspW4zQcztW3Qf56EKg@mail.gmail.com>
+Message-ID: <CAL_JsqLRQRmhXZm25WKzUSBUyK6q5d-BspW4zQcztW3Qf56EKg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/9] of: net: move of_net under net/
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Saravana Kannan <saravanak@google.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Assmann <sassmann@kpanic.de>
+On Wed, Oct 6, 2021 at 11:34 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Wed, Oct 06, 2021 at 11:18:19AM -0500, Rob Herring wrote:
+> > On Wed, Oct 6, 2021 at 10:45 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > >
+> > > Rob suggests to move of_net.c from under drivers/of/ somewhere
+> > > to the networking code.
+> > >
+> > > Suggested-by: Rob Herring <robh@kernel.org>
+> > > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > > ---
+> > > v2: new patch
+> > > ---
+> > >  drivers/of/Makefile               | 1 -
+> > >  net/core/Makefile                 | 1 +
+> > >  {drivers/of => net/core}/of_net.c | 0
+> > >  3 files changed, 1 insertion(+), 1 deletion(-)
+> > >  rename {drivers/of => net/core}/of_net.c (100%)
+> > >
+> > > diff --git a/drivers/of/Makefile b/drivers/of/Makefile
+> > > index c13b982084a3..e0360a44306e 100644
+> > > --- a/drivers/of/Makefile
+> > > +++ b/drivers/of/Makefile
+> > > @@ -7,7 +7,6 @@ obj-$(CONFIG_OF_EARLY_FLATTREE) += fdt_address.o
+> > >  obj-$(CONFIG_OF_PROMTREE) += pdt.o
+> > >  obj-$(CONFIG_OF_ADDRESS)  += address.o
+> > >  obj-$(CONFIG_OF_IRQ)    += irq.o
+> > > -obj-$(CONFIG_OF_NET)   += of_net.o
+> > >  obj-$(CONFIG_OF_UNITTEST) += unittest.o
+> > >  obj-$(CONFIG_OF_RESERVED_MEM) += of_reserved_mem.o
+> > >  obj-$(CONFIG_OF_RESOLVE)  += resolver.o
+> > > diff --git a/net/core/Makefile b/net/core/Makefile
+> > > index 35ced6201814..37b1befc39aa 100644
+> > > --- a/net/core/Makefile
+> > > +++ b/net/core/Makefile
+> > > @@ -36,3 +36,4 @@ obj-$(CONFIG_FAILOVER) += failover.o
+> > >  obj-$(CONFIG_NET_SOCK_MSG) += skmsg.o
+> > >  obj-$(CONFIG_BPF_SYSCALL) += sock_map.o
+> > >  obj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o
+> > > +obj-$(CONFIG_OF_NET)   += of_net.o
+> >
+> > The OF_NET kconfig should move or disappear too. I imagine you can do just:
+>
+> It is used in a few places:
 
-The crit_lock mutex could be unlocked twice as reported here
-https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210823/025525.html
+Okay, then just move it for now.
 
-Remove the superfluous unlock. Technically the problem was already
-present before 5ac49f3c2702 as that commit only replaced the locking
-primitive, but no functional change.
+I suspect though that most of these can either be dropped or replaced
+with just 'OF' dependency.
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: 5ac49f3c2702 ("iavf: use mutexes for locking of critical sections")
-Fixes: bac8486116b0 ("iavf: Refactor the watchdog state machine")
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf_main.c | 1 -
- 1 file changed, 1 deletion(-)
+> net/ethernet/litex/Kconfig:     depends on OF_NET
+> net/ethernet/amd/Kconfig:       depends on ((OF_NET && OF_ADDRESS) || ACPI || PCI) && HAS_IOMEM
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 23762a7ef740..cada4e0e40b4 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -1965,7 +1965,6 @@ static void iavf_watchdog_task(struct work_struct *work)
- 		}
- 		adapter->aq_required = 0;
- 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
--		mutex_unlock(&adapter->crit_lock);
- 		queue_delayed_work(iavf_wq,
- 				   &adapter->watchdog_task,
- 				   msecs_to_jiffies(10));
--- 
-2.31.1
+If the driver depends on OF or ACPI, then the dependency should just
+be removed because one of those is almost always enabled.
 
+> net/ethernet/mscc/Kconfig:      depends on OF_NET
+> net/ethernet/ezchip/Kconfig:    depends on OF_IRQ && OF_NET
+> net/ethernet/arc/Kconfig:       depends on OF_IRQ && OF_NET
+> net/ethernet/arc/Kconfig:       depends on OF_IRQ && OF_NET && REGULATOR
+
+I don't see any OF_IRQ dependency (which would be odd). The OF_NET
+dependency is just of_get_phy_mode() from a quick glance and we have a
+stub for it.
+
+Rob
