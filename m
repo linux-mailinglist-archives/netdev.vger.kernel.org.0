@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B9B74249CE
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 00:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F6334249DB
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 00:37:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239921AbhJFWim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 18:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
+        id S239870AbhJFWi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 18:38:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239794AbhJFWib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 18:38:31 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670A7C061755;
-        Wed,  6 Oct 2021 15:36:38 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id y12so1831252eda.4;
-        Wed, 06 Oct 2021 15:36:38 -0700 (PDT)
+        with ESMTP id S239850AbhJFWie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 18:38:34 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0CB9C061746;
+        Wed,  6 Oct 2021 15:36:39 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id g10so15087217edj.1;
+        Wed, 06 Oct 2021 15:36:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ppZK0xlokOK6wVW0tsp0ryQNeuXsve1XjT4XzytsXi8=;
-        b=f43tkDv01r8DZMqvpRZuopz6vpdYE4eJjgXz1kNvewNjwi5UJp5Hd+wWVMDSFNkrVn
-         bZtfqdN8td22dr0P1A9F23r6rLZ8nQ+BoNPZ8n3VgMgXc95hCheu6FnJgNviDvAblM+y
-         YNz2LucqMBgSLCH9djTbrlamvhrRWUB65/q89dfWmqk762F7rRFcLC7hsGZlbi7jTy7G
-         DDxeTdSSen1qninELUbHoKGQZJpMIClhyZo9miN9feIPvw/yYQyy28Woe3J+xwsBfb+P
-         3iFM6EzUw27KVD2O8VhoC+Qi5nFrzpGDwjCdGzOcQw88ZEkp4JCEd8o/tEVE1Fd37BZZ
-         0nVA==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=NMygWhMGOdBsZewnkOPqt2RNdLzU8nJnCYHfvZ5KPeY=;
+        b=THL14kk0eVmez+8yo4Xrf7qDsp6CoNBg9wIYZ9f0QEq9szSgGasHFNiHujdUO8kVRJ
+         Z53bjct0sSUquxNfjzPujYCQ2AW20E20SzmxLeD4Y2dK+CtQEhwWfiu+dsB869tJ9b0i
+         qwUjDNFi1ervb98jn5Ue1249vwLPutNOgX8lDGVbUqEw/59Xwc0oQGZgVGNRf964FeXQ
+         VcV6rRYEI+bOiPfwQZjbP6+CvXjmGmIWNamMXy5YWGdwMUX805IfgCNjGmHWoZehGM5y
+         Z6NOlpylFuz4KGxqMtwDJt4+4o0Fgq/eTpdzee5hp6TdsZml1tnVLc1ZnQRljZDoLpbD
+         LczQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ppZK0xlokOK6wVW0tsp0ryQNeuXsve1XjT4XzytsXi8=;
-        b=NP4X2R7TMZf8zv+g5CuwpEMyhNoDxRzC+B+0T2lAjweFI9Be+sAN8XD10Xbh++ZAyF
-         rhNcF3LoTZKbHUIRPI+f5qvXdaBmJQtpoJj12OGL/02QSzoI/2rmDsqmZUZTEn4Ymr/f
-         ftrjkF05kBa76qh8RwWq5UixtjzQCG70jWNsRg/FxgNnfLso8qpW/CcD5xDoJfC6Tiie
-         19r8Z0Eg49taFikD03xlaecvXNCGWoiHigVw9RDrwsp5hhbHGT10D5mzmCy2A0zFMt2w
-         4+OquRa9SutpGeCCMtivH7TiGJPfqstDhxsWlgcCJwjfaMauLBbcVQ0L6cP4dD5nm/5P
-         waBA==
-X-Gm-Message-State: AOAM532d8MJvxR2XIXPYJDrSAALcLGjUmoD4Cs14tbnf6Figj5HvScte
-        jvSl+vdCglpJlmEIv9vlxVY=
-X-Google-Smtp-Source: ABdhPJxGnOt49UtjvDpQ6rPF7ERn4+64c4tCpWEsPHNAwZ9bX8OHZc3cnvkrXGvg706660jR1M17Ng==
-X-Received: by 2002:a17:906:a404:: with SMTP id l4mr1066794ejz.175.1633559796867;
-        Wed, 06 Oct 2021 15:36:36 -0700 (PDT)
+        bh=NMygWhMGOdBsZewnkOPqt2RNdLzU8nJnCYHfvZ5KPeY=;
+        b=ouz3NBbwOJty5tt5nKr/viFxuu3nNwEs6nTT4m7eQVynSJq5aFc03+EFlxTvURkXby
+         55rnjMqFI2IAn+bZXb/ffR0/uod8opIVzWS7q3MiGdMByKNhVXwI+4UZAvlXg4+We2EM
+         bcaGS3r3FJiW9T5qu8Olaf1zfaFqf5C8HVktUYf4Y+wx0TWOmOwqAtbn0gPDx8/drswc
+         1MHo953pT5NJuopnNQ1YvbmswW2D6vqeMZ5qBsR6gDUnrfV2h4itjQqM0youlUOolb2+
+         ZC+TQhwiPNtfMkUN49ptuR2BbtqVlS+RuzxsA08MeLvGwqnKLj+6S+VkbZa/n6Cm0cqH
+         7cvg==
+X-Gm-Message-State: AOAM531rnFYSiTtyHrxlb8gaSOivyhuTGg2A/JbWkrirRA+V5YvS3us6
+        BmDeQqFEXhM/aUHQp7I9XZk=
+X-Google-Smtp-Source: ABdhPJyd1PSfFQmV2wnun91d0QauAV+KN2UGncQtHGp3UbJJbMl2aiRW22A2GWjOrcUoQ59f6Ln03Q==
+X-Received: by 2002:a05:6402:1d2b:: with SMTP id dh11mr1227240edb.276.1633559798251;
+        Wed, 06 Oct 2021 15:36:38 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id z8sm9462678ejd.94.2021.10.06.15.36.35
+        by smtp.googlemail.com with ESMTPSA id z8sm9462678ejd.94.2021.10.06.15.36.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Oct 2021 15:36:36 -0700 (PDT)
+        Wed, 06 Oct 2021 15:36:37 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,10 +59,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>,
         Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Matthew Hagan <mnhagan88@gmail.com>
-Subject: [net-next PATCH 08/13] dt-bindings: net: dsa: qca8k: Add MAC swap and clock phase properties
-Date:   Thu,  7 Oct 2021 00:35:58 +0200
-Message-Id: <20211006223603.18858-9-ansuelsmth@gmail.com>
+Subject: [net-next PATCH 09/13] net: dsa: qca8k: check rgmii also on port 6 if exchanged
+Date:   Thu,  7 Oct 2021 00:35:59 +0200
+Message-Id: <20211006223603.18858-10-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211006223603.18858-1-ansuelsmth@gmail.com>
 References: <20211006223603.18858-1-ansuelsmth@gmail.com>
@@ -72,32 +71,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add names and decriptions of additional PORT0_PAD_CTRL properties.
-Document new binding qca,mac6_exchange that exchange the mac0 port
-with mac6.
-qca,sgmii-(rx|tx)clk-falling-edge are for setting the respective clock
-phase to failling edge.
+Port 0 can be exchanged with port6. Handle this special case by also
+checking the port6 if present.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
 ---
- Documentation/devicetree/bindings/net/dsa/qca8k.txt | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/dsa/qca8k.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-index 1f6b7d2f609e..780d1e60c425 100644
---- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-@@ -13,6 +13,9 @@ Required properties:
- Optional properties:
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 3a040a3ed58e..4d4f23f7f948 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -906,7 +906,20 @@ qca8k_setup_of_rgmii_delay(struct qca8k_priv *priv)
+ 	if (mode != PHY_INTERFACE_MODE_RGMII_ID &&
+ 	    mode != PHY_INTERFACE_MODE_RGMII_RXID &&
+ 	    mode != PHY_INTERFACE_MODE_RGMII_TXID) {
+-		return 0;
++		/* Port 0 can be exchanged with port 6 */
++		dp = dsa_to_port(priv->ds, 6);
++		if (!dp)
++			return 0;
++
++		port_dn = dp->dn;
++
++		/* Check if port 6 is set to the correct type */
++		of_get_phy_mode(port_dn, &mode);
++		if (mode != PHY_INTERFACE_MODE_RGMII_ID &&
++		    mode != PHY_INTERFACE_MODE_RGMII_RXID &&
++		    mode != PHY_INTERFACE_MODE_RGMII_TXID) {
++			return 0;
++		}
+ 	}
  
- - reset-gpios: GPIO to be used to reset the whole device
-+- qca,mac6-exchange: Internally swap MAC0 and MAC6.
-+- qca,sgmii-rxclk-falling-edge: Set the receive clock phase to falling edge.
-+- qca,sgmii-txclk-falling-edge: Set the transmit clock phase to falling edge.
- - qca,rgmii0-1-8v: Set the internal regulator to supply 1.8v for MAC0 port
- - qca,rgmii56-1-8v: Set the internal regulator to supply 1.8v for MAC5/6 port
- 
+ 	switch (mode) {
 -- 
 2.32.0
 
