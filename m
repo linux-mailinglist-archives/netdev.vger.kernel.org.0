@@ -2,101 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D24534238B8
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 09:20:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A3444238EC
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 09:32:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237450AbhJFHVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 03:21:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38782 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233968AbhJFHVu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 03:21:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2875C61100;
-        Wed,  6 Oct 2021 07:19:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1633504798;
-        bh=l+AatlQLTB90gzM+ksNISTiUQbVsGoVQUFzWrlXlbUw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lNUHBwRt3rV1slnHxZn4Dh/eGDVOc5Z0WdRybm335Rp7zHZB/m6TbNXOyX9rrDCzx
-         T6Br3ur/vPFVV5wcRTRU5YF25NjExfTL2ZwJR+o8ges8J7SjZoJgFvgAKDrFJou1D0
-         no/31QfWB2ZHnTkXly7hZ0cWO6PmjZVfrBsGRjJY=
-Date:   Wed, 6 Oct 2021 09:19:51 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Thomas Backlund <tmb@iki.fi>, Guenter Roeck <linux@roeck-us.net>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-stable <stable@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jann Horn <jannh@google.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH 5.14 000/173] 5.14.10-rc2 review
-Message-ID: <YV1OF1lZHk1USYRR@kroah.com>
-References: <20211005083311.830861640@linuxfoundation.org>
- <20211005155909.GA1386975@roeck-us.net>
- <4ecdfb07-4957-913a-6bd3-4410bd2cb5c0@iki.fi>
- <CA+G9fYs=K4V4MgApsoEfGm6YUFnRSP6X6r7_H0uJ-ZzHp4EFJQ@mail.gmail.com>
+        id S237518AbhJFHeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 03:34:16 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:48101 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237420AbhJFHeP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 03:34:15 -0400
+Received: by mail-io1-f71.google.com with SMTP id x24-20020a6b6a18000000b005db732f9449so1410657iog.14
+        for <netdev@vger.kernel.org>; Wed, 06 Oct 2021 00:32:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=v2XyC/ESmma/mYoF8fEwUIRl7OIJI4DzGLfKNGadpYs=;
+        b=b0GcoB4mLsmxJT3C1JA6HEvBkTFeuCdR7UrFfN5+m4qDeaDao+5Ral+V6bVO78g959
+         Zw4UbruvOh3OnHEV6acW13gA55KbAAV+v2O14SrfpJMBfWEFBHRHsK57D3PzxiXz3Yr+
+         M2NUM1oxqZZhh/yzdLv7DazZroeiuWkk2HE+bxq/Ys2MvZ3NL96jfePyc9sK+KXaOor6
+         SxQF2JIX8N8O1OIl0gBObjJuzlU7Y+2ITkeefVz39WwukKKX31MYEqN8ssRlZZ4//x36
+         Uh51V3U/nFRN6XkievczlI2vECln4lLVEpBDh+C75FlAxXxkmyftLrD8sog0siLoHbBf
+         5eAA==
+X-Gm-Message-State: AOAM532X5aB7DS2GvR/CE1Tsqz2vzvRdT0nwznf1o77RmTq2h1aelVJj
+        t7fRsnwqqgHf3Ze2aM8lnOb3WM0twOY8Ic/82C2WwEcJ7aur
+X-Google-Smtp-Source: ABdhPJwr14EPPPA4gMQx9OL5gR6Jl1TWMayLz64XQbdP4Zlt9E3r7Fy0pJl87puVxiUHWpNby+ZXgHjWNADgvQMy+ev4qM/t5YVC
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYs=K4V4MgApsoEfGm6YUFnRSP6X6r7_H0uJ-ZzHp4EFJQ@mail.gmail.com>
+X-Received: by 2002:a5e:9314:: with SMTP id k20mr5179316iom.136.1633505543301;
+ Wed, 06 Oct 2021 00:32:23 -0700 (PDT)
+Date:   Wed, 06 Oct 2021 00:32:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a5aee105cdaa2586@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in icmpv6_sk_exit (2)
+From:   syzbot <syzbot+497d3e91eb557f7dc0aa@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 06, 2021 at 01:12:17AM +0530, Naresh Kamboju wrote:
-> On Wed, 6 Oct 2021 at 00:37, Thomas Backlund <tmb@iki.fi> wrote:
-> >
-> > Den 2021-10-05 kl. 18:59, skrev Guenter Roeck:
-> > > On Tue, Oct 05, 2021 at 10:38:40AM +0200, Greg Kroah-Hartman wrote:
-> > >> This is the start of the stable review cycle for the 5.14.10 release.
-> > >> There are 173 patches in this series, all will be posted as a response
-> > >> to this one.  If anyone has any issues with these being applied, please
-> > >> let me know.
-> > >>
-> > >> Responses should be made by Thu, 07 Oct 2021 08:32:44 +0000.
-> > >> Anything received after that time might be too late.
-> > >>
-> > >
-> > > AFAICS the warning problems are still seen. Unfortunately I won't be able
-> > > to bisect since I have limited internet access.
-> > >
-> > > Guenter
-> > >
-> > > =========================
-> > > WARNING: held lock freed!
-> > > 5.14.10-rc2-00174-g355f3195d051 #1 Not tainted
-> > > -------------------------
-> > > ip/202 is freeing memory c000000009918900-c000000009918f7f, with a lock still held there!
-> > > c000000009918a20 (sk_lock-AF_INET){+.+.}-{0:0}, at: .sk_common_release+0x4c/0x1b0
-> > > 2 locks held by ip/202:
-> > >   #0: c00000000ae149d0 (&sb->s_type->i_mutex_key#5){+.+.}-{3:3}, at: .__sock_release+0x4c/0x150
-> > >   #1: c000000009918a20 (sk_lock-AF_INET){+.+.}-{0:0}, at: .sk_common_release+0x4c/0x1b0
-> > >
-> > >
-> >
-> 
-> When I reverted the following two patches the warning got fixed.
-> 
-> 73a03563f123 af_unix: fix races in sk_peer_pid and sk_peer_cred accesses
+Hello,
 
-Odd, this one is in all trees right now, yet no one else is having a
-problem.
+syzbot found the following issue on:
 
-> b226d61807f1 net: introduce and use lock_sock_fast_nested()
+HEAD commit:    84b3e42564ac Merge tag 'media/v5.15-3' of git://git.kernel..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12bd85df300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=bb467ad25fcc6899
+dashboard link: https://syzkaller.appspot.com/bug?extid=497d3e91eb557f7dc0aa
+compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13753e7b300000
 
-This is only in the 5.14.y tree.  Let me go drop this one, and do a new
--rc release here.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+497d3e91eb557f7dc0aa@syzkaller.appspotmail.com
 
-thanks,
+general protection fault, probably for non-canonical address 0xdffffc0000000090: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000480-0x0000000000000487]
+CPU: 0 PID: 8 Comm: kworker/u4:0 Not tainted 5.15.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+RIP: 0010:inet_ctl_sock_destroy include/net/inet_common.h:65 [inline]
+RIP: 0010:icmpv6_sk_exit+0x106/0x1f0 net/ipv6/icmp.c:1038
+Code: 42 80 3c 20 00 74 08 48 89 df e8 e5 7a f3 f8 48 8b 1b 48 85 db 74 2d e8 c8 0d a8 f8 48 81 c3 80 04 00 00 48 89 d8 48 c1 e8 03 <42> 80 3c 20 00 74 08 48 89 df e8 bb 7a f3 f8 48 8b 3b e8 f3 30 25
+RSP: 0018:ffffc90000cd7b40 EFLAGS: 00010206
+RAX: 0000000000000090 RBX: 0000000000000481 RCX: ffff888012375580
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000008
+RBP: ffffffff8c38a7d8 R08: ffffffff88da6485 R09: ffffffff843540e0
+R10: 0000000000000009 R11: ffff888012375580 R12: dffffc0000000000
+R13: 1ffffffff1bb7fbf R14: ffff88801fcf3fe0 R15: 0000000000000001
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005606aea732f8 CR3: 000000005c17f000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ ops_exit_list net/core/net_namespace.c:168 [inline]
+ cleanup_net+0x758/0xc50 net/core/net_namespace.c:591
+ process_one_work+0x853/0x1140 kernel/workqueue.c:2297
+ worker_thread+0xac1/0x1320 kernel/workqueue.c:2444
+ kthread+0x453/0x480 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30
+Modules linked in:
+---[ end trace e9d83564f5107008 ]---
+RIP: 0010:inet_ctl_sock_destroy include/net/inet_common.h:65 [inline]
+RIP: 0010:icmpv6_sk_exit+0x106/0x1f0 net/ipv6/icmp.c:1038
+Code: 42 80 3c 20 00 74 08 48 89 df e8 e5 7a f3 f8 48 8b 1b 48 85 db 74 2d e8 c8 0d a8 f8 48 81 c3 80 04 00 00 48 89 d8 48 c1 e8 03 <42> 80 3c 20 00 74 08 48 89 df e8 bb 7a f3 f8 48 8b 3b e8 f3 30 25
+RSP: 0018:ffffc90000cd7b40 EFLAGS: 00010206
+RAX: 0000000000000090 RBX: 0000000000000481 RCX: ffff888012375580
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000008
+RBP: ffffffff8c38a7d8 R08: ffffffff88da6485 R09: ffffffff843540e0
+R10: 0000000000000009 R11: ffff888012375580 R12: dffffc0000000000
+R13: 1ffffffff1bb7fbf R14: ffff88801fcf3fe0 R15: 0000000000000001
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f93fc5792d8 CR3: 000000005c17f000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	42 80 3c 20 00       	cmpb   $0x0,(%rax,%r12,1)
+   5:	74 08                	je     0xf
+   7:	48 89 df             	mov    %rbx,%rdi
+   a:	e8 e5 7a f3 f8       	callq  0xf8f37af4
+   f:	48 8b 1b             	mov    (%rbx),%rbx
+  12:	48 85 db             	test   %rbx,%rbx
+  15:	74 2d                	je     0x44
+  17:	e8 c8 0d a8 f8       	callq  0xf8a80de4
+  1c:	48 81 c3 80 04 00 00 	add    $0x480,%rbx
+  23:	48 89 d8             	mov    %rbx,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 80 3c 20 00       	cmpb   $0x0,(%rax,%r12,1) <-- trapping instruction
+  2f:	74 08                	je     0x39
+  31:	48 89 df             	mov    %rbx,%rdi
+  34:	e8 bb 7a f3 f8       	callq  0xf8f37af4
+  39:	48 8b 3b             	mov    (%rbx),%rdi
+  3c:	e8                   	.byte 0xe8
+  3d:	f3                   	repz
+  3e:	30                   	.byte 0x30
+  3f:	25                   	.byte 0x25
 
-greg k-h
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
