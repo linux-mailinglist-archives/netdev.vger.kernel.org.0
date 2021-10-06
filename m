@@ -2,99 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CD60423479
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 01:29:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9A744234DF
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 02:17:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237028AbhJEXa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 19:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
+        id S236990AbhJFATi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 20:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236873AbhJEXa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 19:30:57 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF161C061749
-        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 16:29:06 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id j5-20020a170902c3c500b0013ebfb7f87cso434023plj.0
-        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 16:29:06 -0700 (PDT)
+        with ESMTP id S231855AbhJFATh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 20:19:37 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22AD1C061749;
+        Tue,  5 Oct 2021 17:17:46 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id oa6-20020a17090b1bc600b0019ffc4b9c51so3174856pjb.2;
+        Tue, 05 Oct 2021 17:17:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=GwSHAgEnNcPVmt5R4/DzR39GbxNy7TwCC7f2tVXtjOA=;
-        b=kD7PhOy6ETrZpDIPC3z3v9p27XuXHw7uQ/gLLq0o7dotZj3CWEthBZpc4o4aB3mu25
-         URNr0huVCiDg8XgA9RG603hyRhzF7wUoACIiP04ofMtYU8NlW+kWBqtQCHHBZ8/+9xSd
-         nzSH57vayJo+XDyBtaAF0l9EKQ2KR1kMzX9LD+/PretiCEa3glfd8JJV1HGw31tf7ICq
-         sG4BGJ0G/oCXda+rlT6KSgmJl8Vhsui+hWWzFq6i+DGfXny2fySaIihL4uTN2XY7WhYa
-         WIfDDHG6Wlj0MeyYKMPpmozN8QTXvMUkHsxUsr13kkQxUGkrNqn8/UXQy9l3znOI3AxJ
-         XJUg==
+        bh=Dd25iWbMIpu6ehv9NxwDDQMShXAH+pXVH28BvCxz830=;
+        b=iJ94omesvlI98Cx+V9cLIYaTPryOoi007XzCfjFa5qKXd2ewcQEi6FTEYjxviUeyaW
+         djr1jV827peMhn1caA7HfnUnFvfdLz5ag5biEiEc098sEVSfmUEubMw0VWGxe7muAlhg
+         qIuiO1FKgBzWEjyHH3QN9DwVynm5+SFSSB1z8NR6SpGJo6I7eL+lIXvBJkTnjPudKbQz
+         eFXOciDdEzJ2wHQC/+VudyI+h0pze8wY7p4ru8J6O5fkq+ti5URtU1/KdIw4pzBw75XW
+         H94efJzVQcFyc2wYCdDXxVSPa3rlZ/cb0HhsdF6j+kYNjHzjf+cmqo2bJle2pISBjf0c
+         rccA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=GwSHAgEnNcPVmt5R4/DzR39GbxNy7TwCC7f2tVXtjOA=;
-        b=vvq+LiOaNGqKqohgaxjnsIqqTmRmMZCFbguI7ejyn+okJZm4G1oaQhkfZImOA0rRqM
-         4DrJppRUftSUa1oEvKrLpLuUalgXXD4fsRXfmwqssAxFbmFCK+HviQa4JRzzA8bUHsoj
-         BUo6YkXt8dbwDjnZyrqloMmi1DRXdRsagBizoV0/jLvmLqk8W93hdaJvM7jp62kg+Kd0
-         s7ZuxfDJdGnH4ia7y3vOlLSrFY+qEwp4zshUeWzgJaVNMVn9IhNdP4a6xNNV+G3q8Ns/
-         ir+DoMFC+82X68wUK14OV4z1sMHtYGROdAroPg9QFDDRRP6hkcoZHyyyctrziOCSJUVb
-         EouQ==
-X-Gm-Message-State: AOAM533fgyprTQPJb1n3OkGSHyYBsfbIjiyG8+gMDN2axxt6GH8zp/Qx
-        ysEb08CAHTxpCp8ulML6p71n6QVjknddbehdzlX2apP6+10V0s2IpS6hjh0ewIoJapTBfZ/En5U
-        N7N52HvWC6Q+nb2lzWcBPHKI+qfrQ4l9hnZ1pYUocPc1gsOtWLkn2VPTymJuzYHxVQTs=
-X-Google-Smtp-Source: ABdhPJwz8G7rOz3cELxyvpsKX1Pwww5CYH8Ct+RX7l/LvHrL0YijID8IMFQT6GR35wrz482bxCSRB8VafdhbEw==
-X-Received: from jeroendb.sea.corp.google.com ([2620:15c:100:202:6a19:24ee:a05:add5])
- (user=jeroendb job=sendgmr) by 2002:aa7:9047:0:b0:44b:e142:8b0d with SMTP id
- n7-20020aa79047000000b0044be1428b0dmr18664635pfo.45.1633476546101; Tue, 05
- Oct 2021 16:29:06 -0700 (PDT)
-Date:   Tue,  5 Oct 2021 16:28:23 -0700
-In-Reply-To: <20211005232823.1285684-1-jeroendb@google.com>
-Message-Id: <20211005232823.1285684-3-jeroendb@google.com>
-Mime-Version: 1.0
-References: <20211005232823.1285684-1-jeroendb@google.com>
-X-Mailer: git-send-email 2.33.0.800.g4c38ced690-goog
-Subject: [PATCH net 3/3] gve: Properly handle errors in gve_assign_qpl
-From:   Jeroen de Borst <jeroendb@google.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Catherine Sullivan <csully@google.com>,
-        Jeroen de Borst <jeroendb@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dd25iWbMIpu6ehv9NxwDDQMShXAH+pXVH28BvCxz830=;
+        b=xyhFWuWRRNRNxTCD6NmIw6HPF0BZ5SGESMVhmIo+AmefAOyJZDSMR5z6J7a8TIZYKj
+         JL5Mr3EiYCKhK0n7arUFYqFR25sQ2uXGQX3tvs3IKJl+JUi4ZoUUzDKpel0b/9Ea4Yo2
+         6efSCk2em2Cv+NPcBrNOQLESyZAyyT87I3AVifamoXin8lOoN56dcBt+U1mmKMbZMnYd
+         JbtbK1Bw9nlIPvf/hZ/DeJw2HUTZXudxP36lbKkwU4kYdYQTxAXAQ1NwDapYthJbKYue
+         RInNb12PP+VW7p/CeYQ28ibza0QbOZW0OQabSZ3vThFKrmHKGOHSqMtSc5slLu3spP4o
+         +EsA==
+X-Gm-Message-State: AOAM532uQKNna1JvzA9cBH/T4Pn0mhMFsARQdKnQ+ZcsHrPOYw8RTp/l
+        533XvKVjb0M+gKfbQonvRc9v2pqwe4QRQpfI0C8=
+X-Google-Smtp-Source: ABdhPJyNPqE9x4WGWcGy4JdVi8xrMD7qtrBsZkb8MYIVzrVqsaxBFjnCGuemSltpGIbijAN+9w4ZKThBkvt2WbwLi54=
+X-Received: by 2002:a17:902:b7c9:b0:13e:e094:e24c with SMTP id
+ v9-20020a170902b7c900b0013ee094e24cmr6839741plz.3.1633479465540; Tue, 05 Oct
+ 2021 17:17:45 -0700 (PDT)
+MIME-Version: 1.0
+References: <20211002011757.311265-1-memxor@gmail.com>
+In-Reply-To: <20211002011757.311265-1-memxor@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 5 Oct 2021 17:17:34 -0700
+Message-ID: <CAADnVQKDPG+U-NwoAeNSU5Ef9ZYhhGcgL4wBkFoP-E9h8-XZhw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 0/9] Support kernel module function calls from eBPF
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Catherine Sullivan <csully@google.com>
+On Fri, Oct 1, 2021 at 6:18 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+>
+> This set enables kernel module function calls, and also modifies verifier logic
+> to permit invalid kernel function calls as long as they are pruned as part of
+> dead code elimination. This is done to provide better runtime portability for
+> BPF objects, which can conditionally disable parts of code that are pruned later
+> by the verifier (e.g. const volatile vars, kconfig options). libbpf
+> modifications are made along with kernel changes to support module function
+> calls.
+>
+> It also converts TCP congestion control objects to use the module kfunc support
+> instead of relying on IS_BUILTIN ifdef.
+>
+> Changelog:
+> ----------
+> v6 -> v7
+> v6: https://lore.kernel.org/bpf/20210930062948.1843919-1-memxor@gmail.com
+>
+>  * Let __bpf_check_kfunc_call take kfunc_btf_id_list instead of generating
+>    callbacks (Andrii)
+>  * Rename it to bpf_check_mod_kfunc_call to reflect usage
+>  * Remove OOM checks (Alexei)
+>  * Remove resolve_btfids invocation for bpf_testmod (Andrii)
+>  * Move fd_array_cnt initialization near fd_array alloc (Andrii)
+>  * Rename helper to btf_find_by_name_kind and pass start_id (Andrii)
+>  * memset when data is NULL in add_data (Alexei)
+>  * Fix other nits
 
-Ignored errors would result in crash.
-
-Fixes: ede3fcf5ec67f ("gve: Add support for raw addressing to the rx path")
-
-Signed-off-by: Catherine Sullivan <csully@google.com>
-Signed-off-by: Jeroen de Borst <jeroendb@google.com>
----
- drivers/net/ethernet/google/gve/gve_rx.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index bb8261368250..94941d4e4744 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -104,8 +104,14 @@ static int gve_prefill_rx_pages(struct gve_rx_ring *rx)
- 	if (!rx->data.page_info)
- 		return -ENOMEM;
- 
--	if (!rx->data.raw_addressing)
-+	if (!rx->data.raw_addressing) {
- 		rx->data.qpl = gve_assign_rx_qpl(priv);
-+		if (!rx->data.qpl) {
-+			kvfree(rx->data.page_info);
-+			rx->data.page_info = NULL;
-+			return -ENOMEM;
-+		}
-+	}
- 	for (i = 0; i < slots; i++) {
- 		if (!rx->data.raw_addressing) {
- 			struct page *page = rx->data.qpl->pages[i];
--- 
-2.33.0.800.g4c38ced690-goog
-
+Looking good now. Applied. Thanks
