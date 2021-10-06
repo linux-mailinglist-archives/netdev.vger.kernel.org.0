@@ -2,70 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAE944239CE
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 10:32:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 480584239D5
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 10:35:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237754AbhJFIeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 04:34:12 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:51250
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237551AbhJFIeL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 04:34:11 -0400
-Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S237756AbhJFIhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 04:37:18 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:47226 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237593AbhJFIhR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 04:37:17 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 24BF6224C3;
+        Wed,  6 Oct 2021 08:35:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1633509325; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Pez/+piuch8kbWdQV5I4r6fnzwH9k8+e7QdywTt8Oag=;
+        b=jKQBP3ggclxftJkALlr3JxGeKUgiXzlGvtm7zC6npYBTEwjzYQZpOXYigWdYn11L52yHW5
+        3H/MnrWtZCetXS/xQmCFMfhIYARi+NqkZhHVV5BUifADCdahVpxO35uCkrowklYqllpi57
+        7oYuTCkNw9CYe6ho0mqfRDRHIRAfcvo=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 2ACBA3F045;
-        Wed,  6 Oct 2021 08:32:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633509138;
-        bh=i7pqd94h/7qZqSjsnCqUp64WqQ62M3udKtVgH1QlXY0=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=fIGo8D9Wb4Jk7Owrre+K9F6b7d8Zg67da3as0qK6DmFvoeQTgboIWbLvh3a+Owdrq
-         XQ0L2XFdeNcV7jJRshKfACKxnoEV5hlB2PlqTxJcPkOZfsvivT5QV/Bt7szVwaSeb+
-         /6g8cbSOfjLNQCDmRZP7gnjSULaF/SX5Dg+cNcSsX2W+2CYH8HVlWwzFAE3XLhyFsT
-         MGA6siYJP6QJNG+PTD2hNOdfn1kbkx2CfEKaE1xVAcID0EY5jbEuVyTAAzqnwNekSc
-         FbB0qWUYlsdTgzxG/TcVJWfnGHZcQZeazFoJfv4/viEcfeBBBXaaFxQV3N8x4Zz9Fz
-         7bsmBI6NgyIhA==
-From:   Colin King <colin.king@canonical.com>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] ath11k: Fix spelling mistake "incompaitiblity" -> "incompatibility"
-Date:   Wed,  6 Oct 2021 09:32:17 +0100
-Message-Id: <20211006083217.349596-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        by relay2.suse.de (Postfix) with ESMTPS id 9ABB4A3B8D;
+        Wed,  6 Oct 2021 08:35:22 +0000 (UTC)
+Date:   Wed, 6 Oct 2021 10:35:21 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        gregkh@linuxfoundation.org, ebiederm@xmission.com,
+        stephen@networkplumber.org, herbert@gondor.apana.org.au,
+        juri.lelli@redhat.com, netdev@vger.kernel.org,
+        Jiri Bohac <jbohac@suse.cz>
+Subject: Re: [RFC PATCH net-next 0/9] Userspace spinning on net-sysfs access
+Message-ID: <YV1fyechiyvREmt4@dhcp22.suse.cz>
+References: <20210928125500.167943-1-atenart@kernel.org>
+ <YV1EO9dsVSwWW7ua@dhcp22.suse.cz>
+ <163350719413.4226.2526174755566600987@kwain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <163350719413.4226.2526174755566600987@kwain>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Wed 06-10-21 09:59:54, Antoine Tenart wrote:
+[...]
+> Nice to see this can help others.
 
-There is a spelling mistake in an ath11k_warn message. Fix it.
+I find the timing amusing because this behavior was there for years just
+hitting us really hard just recently.
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/ath/ath11k/mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Any help on (extensively) testing is welcomed :-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 31f0cfba5bf5..89ab2fa7557c 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7081,7 +7081,7 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
- 
- 		if (!ath11k_mac_validate_vht_he_fixed_rate_settings(ar, band, mask))
- 			ath11k_warn(ar->ab,
--				    "could not update fixed rate settings to all peers due to mcs/nss incompaitiblity\n");
-+				    "could not update fixed rate settings to all peers due to mcs/nss incompatibility\n");
- 		nss = min_t(u32, ar->num_tx_chains,
- 			    max(max(ath11k_mac_max_ht_nss(ht_mcs_mask),
- 				    ath11k_mac_max_vht_nss(vht_mcs_mask)),
+We can help with that for sure.
 -- 
-2.32.0
-
+Michal Hocko
+SUSE Labs
