@@ -2,60 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C561423B5D
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 12:19:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F4C6423B5F
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 12:20:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237954AbhJFKU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 06:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbhJFKU4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 06:20:56 -0400
-Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35EE1C061749
-        for <netdev@vger.kernel.org>; Wed,  6 Oct 2021 03:19:04 -0700 (PDT)
-Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94.2)
-        (envelope-from <n0-1@orbyte.nwl.cc>)
-        id 1mY40n-0000jN-FU; Wed, 06 Oct 2021 12:18:57 +0200
-Date:   Wed, 6 Oct 2021 12:18:57 +0200
-From:   Phil Sutter <phil@nwl.cc>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        dsahern@gmail.com, bluca@debian.org
-Subject: Re: [PATCH iproute2 v3 1/3] configure: support --param=value style
-Message-ID: <20211006101857.GB29206@orbyte.nwl.cc>
-Mail-Followup-To: Phil Sutter <phil@nwl.cc>,
-        Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org,
-        stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org
-References: <cover.1633455436.git.aclaudi@redhat.com>
- <caa9b65bef41acd51d45e45e1a158edb1eeefe7d.1633455436.git.aclaudi@redhat.com>
- <20211006080944.GA32194@orbyte.nwl.cc>
- <YV1xLsQsADEhrJPz@renaissance-vector>
+        id S238059AbhJFKWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 06:22:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38798 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229824AbhJFKV7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 06:21:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9089C6113E;
+        Wed,  6 Oct 2021 10:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633515607;
+        bh=AJtDo5u1fca9E/QnHXFoW07wSpG3oBRucBL795XEgUE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cd89ySXZr2/oUU04QvLyExtSUkalSqzQ105WFvMKIRA2D7sYqjbCp/ywne5BkDdA2
+         TLFhL6SxUCMwcRz4aXlENK2AUamk+mPBSaZJQtqjqwqTcleqOqaI21s1ZZEFL1Aurd
+         M01TIqGwUz+NNx3w1acOuapjrC1r59Oxg14iFjKZ2yggQnHfhM4jwLdYhOFWV2c/e8
+         PLp97T+xhuuG4dLs6UbSOpnWBaiDPWPN/33fuNsFMMlg7uY1r6o3OgkiL3S5qQll+l
+         39aweWJfv0ssJzmq3s1aTJOcoWyJCxBghvRbVZENyyqPDCwdNEvnrW++6pYwpffIhg
+         OKtSu4W1TYgGQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 82BC560A39;
+        Wed,  6 Oct 2021 10:20:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YV1xLsQsADEhrJPz@renaissance-vector>
-Sender:  <n0-1@orbyte.nwl.cc>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/2] net: stmmac: Turn off EEE on MAC link down
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163351560752.22404.5478730456180115680.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Oct 2021 10:20:07 +0000
+References: <20211005115100.1648170-1-vee.khee.wong@linux.intel.com>
+In-Reply-To: <20211005115100.1648170-1-vee.khee.wong@linux.intel.com>
+To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc:     davem@davemloft.net, Jose.Abreu@synopsys.com, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, kuba@kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        mcoquelin.stm32@gmail.com, michael.wei.hong.sit@intel.com,
+        veekhee@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrea,
+Hello:
 
-On Wed, Oct 06, 2021 at 11:49:34AM +0200, Andrea Claudi wrote:
-[...]
-> That was my first proposal in v1 [1]. I changed it on David's suggestion
-> to consolidate the two cases into a single one.
+This series was applied to netdev/net.git (refs/heads/master):
 
-Oh, sorry. I missed the 'v3' tag and hence didn't check any earlier
-version.
+On Tue,  5 Oct 2021 19:50:58 +0800 you wrote:
+> This patch series ensure PCS EEE is turned off on the event of MAC
+> link down.
+> 
+> Tested on Intel AlderLake-S (STMMAC + MaxLinear GPY211 PHY).
+> 
+> Wong Vee Khee (2):
+>   net: pcs: xpcs: fix incorrect steps on disable EEE
+>   net: stmmac: trigger PCS EEE to turn off on link down
+> 
+> [...]
 
-> Looking at the resulting code, v3 code results in an extra check to
-> discriminate between the two use cases, while v0 uses the "case"
-> structure to the same end.
+Here is the summary with links:
+  - [net,1/2] net: pcs: xpcs: fix incorrect steps on disable EEE
+    https://git.kernel.org/netdev/net/c/590df78bc7d1
+  - [net,2/2] net: stmmac: trigger PCS EEE to turn off on link down
+    https://git.kernel.org/netdev/net/c/d4aeaed80b0e
 
-Given that David explicitly requested the change I'm complaining about
-in his reply to your initial version, I guess any further debate about
-it is irrelevant.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Thanks, Phil
+
