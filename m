@@ -2,164 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F345423E59
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 15:01:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D54A8423E53
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 14:59:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238657AbhJFNCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 09:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238644AbhJFNCt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 09:02:49 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928A4C061749
-        for <netdev@vger.kernel.org>; Wed,  6 Oct 2021 06:00:57 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id v18so9505098edc.11
-        for <netdev@vger.kernel.org>; Wed, 06 Oct 2021 06:00:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xsveLT33mXd68DjALvlgf8dqdcAb75JbYw2goBIVh7E=;
-        b=hgyylsAw/4BsrGUQEQE7jsSJQAs8ug9hebmXn3iZEqckmjOOBnYN2KClSFcPMwbCB5
-         u3BSJ4i40AfVzmmFj9KohvSrsB0ArGYA+W1P+l2QETh5GwA0A8Yjuo1bb3tSQhXfWn7j
-         DRahYmlZa6R6LEHAVgUXmbI0mxJqJqNu8OaaQZfl06CHAEXLWWzy3RQP0YGgsB06S5SH
-         B9gZxf+IV8GNpkzMuR3AOvbWsIcfSzXBI1/fzRAq2BtKgk1bQppK83c8NApGH5J4jVGT
-         U3MmOqw701AP06XEcTbZ4Z+jUsBjHfVj4sJ2MtvH9Ja5mzE2Ul+ezmN1fPbraU24IfKP
-         adiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xsveLT33mXd68DjALvlgf8dqdcAb75JbYw2goBIVh7E=;
-        b=jAfu9BeyYV3xGjU9bk/TXx7EsbFgDDPYsSC40BR5fndsM7ByjPLFL/Y30aaYmscdmF
-         JWyaEUSvRmfeCy5erFoKdPb4MjVI7NdLp8+UDQH1tNzICahEnCMn7azQ5Kt+dJswce5L
-         yvemmvJcKRRTRzfo/bQz7BAiIghEFaqinYxa2kyfWND94UxJDc95WlbtuKhRXZJ2UhIu
-         SN2njldi+DbKNHAB8/0jreksRX1Kojz8AT8l0Pld99fnojjl38sDzjxEXGteSA3LmKx0
-         y8RNQ6PwwHseuCRXNd3rakQyytp5qGIBgH2BVsmBtTRAR037X9dWKdMC6FFZ4TRtIj0j
-         B0dg==
-X-Gm-Message-State: AOAM533/bGKeBVxLdJTi2OVNXeELKjPNvho2F+43ct+4QbJcZXmfSrx+
-        izF2qx/2F5a2Ib7ye4kpcpsmxd0b6I8=
-X-Google-Smtp-Source: ABdhPJzyXqYekC57WIWn1gvZBwkH494WsJQaOiGnZ73S0rJ1hbtbt4QaRvWn3ecscyXyQvAoadI+tA==
-X-Received: by 2002:a17:906:4e4a:: with SMTP id g10mr12554036ejw.524.1633525250086;
-        Wed, 06 Oct 2021 06:00:50 -0700 (PDT)
-Received: from localhost.localdomain (84-104-224-163.cable.dynamic.v4.ziggo.nl. [84.104.224.163])
-        by smtp.gmail.com with ESMTPSA id y16sm194122eds.70.2021.10.06.06.00.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Oct 2021 06:00:49 -0700 (PDT)
-From:   Ruud Bos <kernel.hbk@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     richardcochran@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        Ruud Bos <kernel.hbk@gmail.com>
-Subject: [PATCH net-next 4/4] support EXTTS on 82580/i354/i350
-Date:   Wed,  6 Oct 2021 14:58:25 +0200
-Message-Id: <20211006125825.1383-5-kernel.hbk@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211006125825.1383-1-kernel.hbk@gmail.com>
-References: <20211006125825.1383-1-kernel.hbk@gmail.com>
+        id S238511AbhJFNBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 09:01:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38010 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230008AbhJFNBT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 09:01:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9BA18610A1;
+        Wed,  6 Oct 2021 12:59:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633525167;
+        bh=eyi95azOwLINnhnxMNVngWuAMMcQLrl9/uaXBM/omLM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VsX3KTlazfshIJlT7btg+UOFXMMaw0txqMRHQmCoL9/HCVwMMXWsyXvrOo1N82QNn
+         VgdzTdfjVhMsE3RF+6khe95wfi+ZAARX13Bh1ON6z/xgxKrQ0kNA69gBhqVjeX6OF+
+         6eBUrUQs4uN42WKWuon0nNab6rYqovkS9GNB0Y0sxkb3uG+5vC75Q3ZYmALMlp6NUB
+         wwU2GFfamm5/ysEJWGTDv5lvdW0dsbIQ+ArAAzjLbVLNpIKUIuDXDVzS8R4rD9MVyr
+         L2WfDjNBrywYLMbPKXRWtJofDizsYx5ezrNUXm69HlM3gp8lPrqkMoOetttD1Om8L4
+         i8CN8+dNNxJ5A==
+Date:   Wed, 6 Oct 2021 05:59:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, robh+dt@kernel.org,
+        frowand.list@gmail.com, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 3/4] device property: add a helper for loading
+ netdev->dev_addr
+Message-ID: <20211006055925.293a9816@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YV1TkRtiu/q2vm/S@kuha.fi.intel.com>
+References: <20211005155321.2966828-1-kuba@kernel.org>
+        <20211005155321.2966828-4-kuba@kernel.org>
+        <YV1TkRtiu/q2vm/S@kuha.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support for the EXTTS PTP pin function on 82580/i354/i350 based adapters.
-Because the time registers of these adapters do not have the nice split in
-second rollovers as the i210 has, the implementation is slightly more
-complex compared to the i210 implementation.
+On Wed, 6 Oct 2021 10:43:13 +0300 Heikki Krogerus wrote:
+> On Tue, Oct 05, 2021 at 08:53:20AM -0700, Jakub Kicinski wrote:
+> > Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
+> > of VLANs...") introduced a rbtree for faster Ethernet address look
+> > up. To maintain netdev->dev_addr in this tree we need to make all
+> > the writes to it got through appropriate helpers.
+> > 
+> > There is a handful of drivers which pass netdev->dev_addr as
+> > the destination buffer to device_get_mac_address(). Add a helper
+> > which takes a dev pointer instead, so it can call an appropriate
+> > helper.
+> > 
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > ---
+> >  drivers/base/property.c  | 20 ++++++++++++++++++++
+> >  include/linux/property.h |  2 ++
+> >  2 files changed, 22 insertions(+)
+> > 
+> > diff --git a/drivers/base/property.c b/drivers/base/property.c
+> > index 453918eb7390..1c8d4676addc 100644
+> > --- a/drivers/base/property.c
+> > +++ b/drivers/base/property.c
+> > @@ -997,6 +997,26 @@ void *device_get_mac_address(struct device *dev, char *addr, int alen)
+> >  }
+> >  EXPORT_SYMBOL(device_get_mac_address);
+> >  
+> > +/**
+> > + * device_get_ethdev_addr - Set netdev's MAC address from a given device
+> > + * @dev:	Pointer to the device
+> > + * @netdev:	Pointer to netdev to write the address to
+> > + *
+> > + * Wrapper around device_get_mac_address() which writes the address
+> > + * directly to netdev->dev_addr.
+> > + */
+> > +void *device_get_ethdev_addr(struct device *dev, struct net_device *netdev)
+> > +{
+> > +	u8 addr[ETH_ALEN];
+> > +	void *ret;
+> > +
+> > +	ret = device_get_mac_address(dev, addr, ETH_ALEN);
+> > +	if (ret)
+> > +		eth_hw_addr_set(netdev, addr);
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL(device_get_ethdev_addr);  
+> 
+> Is there some reason why can't this be in net/ethernet/eth.c?
+> 
+> I would really prefer that we don't add any more subsystem specific
+> functions into this file (drivers/base/property.c).
 
-Signed-off-by: Ruud Bos <kernel.hbk@gmail.com>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 20 ++++++++++---
- drivers/net/ethernet/intel/igb/igb_ptp.c  | 36 ++++++++++++++++++++++-
- 2 files changed, 51 insertions(+), 5 deletions(-)
+Sure.
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 5f59c5de7033..30f16cacd972 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -6807,17 +6807,29 @@ static void igb_perout(struct igb_adapter *adapter, int sdp)
- static void igb_extts(struct igb_adapter *adapter, int sdp)
- {
- 	struct e1000_hw *hw = &adapter->hw;
--	u32 sec, nsec;
-+	int auxstmpl = (sdp == 1) ? E1000_AUXSTMPL1 : E1000_AUXSTMPL0;
-+	int auxstmph = (sdp == 1) ? E1000_AUXSTMPH1 : E1000_AUXSTMPH0;
-+	struct timespec64 ts;
- 	struct ptp_clock_event event;
- 
- 	if (sdp < 0 || sdp >= IGB_N_EXTTS)
- 		return;
- 
--	nsec = rd32((sdp == 1) ? E1000_AUXSTMPL1 : E1000_AUXSTMPL0);
--	sec  = rd32((sdp == 1) ? E1000_AUXSTMPH1 : E1000_AUXSTMPH0);
-+	if ((hw->mac.type == e1000_82580) ||
-+	    (hw->mac.type == e1000_i354) ||
-+	    (hw->mac.type == e1000_i350)) {
-+		s64 ns = rd32(auxstmpl);
-+
-+		ns += ((s64)(rd32(auxstmph) & 0xFF)) << 32;
-+		ts = ns_to_timespec64(ns);
-+	} else {
-+		ts.tv_nsec = rd32(auxstmpl);
-+		ts.tv_sec  = rd32(auxstmph);
-+	}
-+
- 	event.type = PTP_CLOCK_EXTTS;
- 	event.index = sdp;
--	event.timestamp = sec * 1000000000ULL + nsec;
-+	event.timestamp = ts.tv_sec * 1000000000ULL + ts.tv_nsec;
- 	ptp_clock_event(adapter->ptp_clock, &event);
- }
- 
-diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/ethernet/intel/igb/igb_ptp.c
-index 64a949bb5d8a..bc24295b6b52 100644
---- a/drivers/net/ethernet/intel/igb/igb_ptp.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
-@@ -524,7 +524,41 @@ static int igb_ptp_feature_enable_82580(struct ptp_clock_info *ptp,
- 
- 	switch (rq->type) {
- 	case PTP_CLK_REQ_EXTTS:
--		return -EOPNOTSUPP;
-+		/* Reject requests with unsupported flags */
-+		if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
-+					PTP_RISING_EDGE |
-+					PTP_FALLING_EDGE |
-+					PTP_STRICT_FLAGS))
-+			return -EOPNOTSUPP;
-+
-+		if (on) {
-+			pin = ptp_find_pin(igb->ptp_clock, PTP_PF_EXTTS,
-+					   rq->extts.index);
-+			if (pin < 0)
-+				return -EBUSY;
-+		}
-+		if (rq->extts.index == 1) {
-+			tsauxc_mask = TSAUXC_EN_TS1;
-+			tsim_mask = TSINTR_AUTT1;
-+		} else {
-+			tsauxc_mask = TSAUXC_EN_TS0;
-+			tsim_mask = TSINTR_AUTT0;
-+		}
-+		spin_lock_irqsave(&igb->tmreg_lock, flags);
-+		tsauxc = rd32(E1000_TSAUXC);
-+		tsim = rd32(E1000_TSIM);
-+		if (on) {
-+			igb_pin_extts(igb, rq->extts.index, pin);
-+			tsauxc |= tsauxc_mask;
-+			tsim |= tsim_mask;
-+		} else {
-+			tsauxc &= ~tsauxc_mask;
-+			tsim &= ~tsim_mask;
-+		}
-+		wr32(E1000_TSAUXC, tsauxc);
-+		wr32(E1000_TSIM, tsim);
-+		spin_unlock_irqrestore(&igb->tmreg_lock, flags);
-+		return 0;
- 
- 	case PTP_CLK_REQ_PEROUT:
- 		/* Reject requests with unsupported flags */
--- 
-2.30.2
+> Shouldn't actually fwnode_get_mac_addr() and fwnode_get_mac_address()
+> be moved to net/ethernet/eth.c as well?
 
+Fine by me, there's already a handful of such helpers there. 
+
+I'll add the refactoring I posted as a RFC to the series as well:
+
+https://lore.kernel.org/all/20211006022444.3155482-1-kuba@kernel.org/
