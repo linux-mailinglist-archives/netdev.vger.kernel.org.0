@@ -2,103 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A715423533
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 02:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A94423550
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 03:01:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237069AbhJFAle (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 20:41:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37762 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230218AbhJFAld (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Oct 2021 20:41:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6E2D4611C6;
-        Wed,  6 Oct 2021 00:39:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633480782;
-        bh=C6gtW2eVxdP/K4+if+e8DTNKwlCQukYovjuQgN4nAcA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nUCd42BbtvAMD41FGwr8FdLKQUNG4WR3oLvN7W6o0wxbfblCSw87bY/0odfnchFS1
-         mIlD6wUzxBDjn5UtdIaakZlD8OW8pwkyANSpeVE9t+K8lH0wXwaYoR2ijHnNyQ+wu9
-         lpdIWvXd16C4X7dPngfq47PWiFf52lJ8dRp1+/ws3Nu508JsHZnYlm1sjEMYWj+dQG
-         MYaMmbRex+aUeOAsUDYvUA3pLiy7cNrN7zpMESikWYnQjYO3wwRTH6qItR88aI60wN
-         vxqJuHgTpbBRHCa3HhjsOhfzCW+HQIEQg8pGvCtlkXzUjCrAZx2Eub9FiOq/Ke98fS
-         zPkg40b0q6Wgg==
-Date:   Tue, 5 Oct 2021 17:39:40 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        mlxsw@nvidia.com, Moshe Shemesh <moshe@nvidia.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: Re: [PATCH net-next v2 3/5] devlink: Allow set specific ops
- callbacks dynamically
-Message-ID: <20211005173940.35bc7bfa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YVykXLY7mX4K1ScW@unreal>
-References: <cover.1633284302.git.leonro@nvidia.com>
-        <92971648bcad41d095d12f5296246fc44ab8f5c7.1633284302.git.leonro@nvidia.com>
-        <20211004164413.60e9ce80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YVv/nUe63nO8o8wz@unreal>
-        <20211005113213.0ee61358@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YVykXLY7mX4K1ScW@unreal>
+        id S236966AbhJFBDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 21:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51412 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230218AbhJFBDf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 21:03:35 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7CDC061753
+        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 18:01:43 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id r201so958020pgr.4
+        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 18:01:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qkBbO3tJ/P9D3c0rJ10YPqyB3yPEBAOVe4lrvryz3b0=;
+        b=CXtk/BZXDFmh5H/WqQT4Xt9hN7I7nQdlKp9rG1Nzn3dACgJ0A5pccLu+ZI0Jw05EbR
+         aJW9YDLQDnrla0dZ2vfiSd9lPHTR2Lk4eRhINK/pKoXm0hDpg/gpjbv3CpsP5I8u+1E1
+         S2OuIap3gg68UUCD6VgOpkxjCn/uzKo/gqx4CXt0NxQUewrBlxGuFa7/BJYoyDCx+Ij2
+         Fxaj03wjORJYK8hHi5Uyu7FTW1Exm4DFWp1tf0Ipwbs3vUPKbvc/JAhGoBcMzttAwjTr
+         tor4rluKEG+u4iE99kxcmhkps+LSsMLVaEUpJl3cXZxeheoCEY8YHAHOimCs7P5/l2E6
+         a3Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qkBbO3tJ/P9D3c0rJ10YPqyB3yPEBAOVe4lrvryz3b0=;
+        b=XPjLTjOW7sBuZzp80Q3P0IPgJ2LjwvCXUMOT1EZr/sdAyxp2SOW41AvsdW0u0LTmLx
+         jW2X2N6p2sTjeDNCCoX9MdGdopnyulJog/3mx3yPyKBg2mYTfJ9xByzaAAsdrg+1LA/k
+         6MaojQDVKOS9KQ8HRHqpE/YgpgqDzDC/VUKRIMzIELD5GzeSoQ7C4+DkQ8JpX7Yx7TmU
+         10Xlo9Fene/YyFPjhXltMQo7j8rPvhKcQ+3Lk7al8q5inHEdWqi/69NQzE99zK8NbmfU
+         HrGu6VaRtq5JSujqntfAXuVbqfyzJKcHCFF2H8JVtTJeaFuo3OZOylA6jOThkjWO7Zlk
+         NO2w==
+X-Gm-Message-State: AOAM532S7UooRerJjxprWzTLftc+c1TDs+tjJ6KVeaOjQL2k7NS50pNe
+        Go7+9phglCrJqrFYRoa1hk3X5DET5O4=
+X-Google-Smtp-Source: ABdhPJwHSrEk5Z3ZB3urmJZNgTTHKO+TEoH/lPSbVMl01+6SgTXTpzfqDB6cMZs3eXp3uOv3rZjAvQ==
+X-Received: by 2002:a62:1ac3:0:b0:44b:85d0:5a98 with SMTP id a186-20020a621ac3000000b0044b85d05a98mr34794552pfa.18.1633482103063;
+        Tue, 05 Oct 2021 18:01:43 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4c77:3139:c57:fc29])
+        by smtp.gmail.com with ESMTPSA id z33sm17902502pga.20.2021.10.05.18.01.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Oct 2021 18:01:42 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Yangchun Fu <yangchun@google.com>,
+        Kuo Zhao <kuozhao@google.com>,
+        David Awogbemila <awogbemila@google.com>
+Subject: [PATCH net] gve: report 64bit tx_bytes counter from gve_handle_report_stats()
+Date:   Tue,  5 Oct 2021 18:01:38 -0700
+Message-Id: <20211006010138.3215494-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.33.0.800.g4c38ced690-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Oct 2021 22:15:40 +0300 Leon Romanovsky wrote:
-> On Tue, Oct 05, 2021 at 11:32:13AM -0700, Jakub Kicinski wrote:
-> > On Tue, 5 Oct 2021 10:32:45 +0300 Leon Romanovsky wrote:  
-> > > It is impossible, devlink_register() is part of .probe() flow and if it
-> > > wasn't called -> probe didn't success -> net_device doesn't exist.  
-> > 
-> > Are you talking about reality or the bright future brought by auxbus?  
-> 
-> I looked on all the drivers which called to devlink_alloc() which is
-> starting point before devlink_register(). All of them used it in the
-> probe. My annotation patch checks that too.
-> 
-> https://lore.kernel.org/linux-rdma/f65772d429d2c259bbc18cf5b1bbe61e39eb7081.1633284302.git.leonro@nvidia.com/T/#u
-> 
-> So IMHO, it is reality.
+From: Eric Dumazet <edumazet@google.com>
 
-You say that yet below you admit flashing is broken :/
+Each tx queue maintains a 64bit counter for bytes, there is
+no reason to truncate this to 32bit (or this has not been
+documented)
 
-> > > We are not having net_device without "connected" device beneath, aren't we?
-> > > 
-> > > At least drivers that I checked are not prepared at all to handle call
-> > > to devlink->ops.flash_update() if they didn't probe successfully.  
-> > 
-> > Last time I checked you moved the devlink_register() at the end of
-> > probe which for all no-auxbus drivers means after register_netdev().  
-> 
-> I need to add a check of if(devlink_register) inside devlink_compat_flash_update().
+Fixes: 24aeb56f2d38 ("gve: Add Gvnic stats AQ command and ethtool show/set-priv-flags.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Yangchun Fu <yangchun@google.com>
+Cc: Kuo Zhao <kuozhao@google.com>
+Cc: David Awogbemila <awogbemila@google.com>
+---
+ drivers/net/ethernet/google/gve/gve_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-... and the workarounds start to pile up.
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 99837c9d2cba698ada900229330cb10bc1606a6b..fc7cdf934ddc6cb336a86ef05b1a4fcdf73cb69a 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -1190,9 +1190,10 @@ static void gve_handle_reset(struct gve_priv *priv)
+ 
+ void gve_handle_report_stats(struct gve_priv *priv)
+ {
+-	int idx, stats_idx = 0, tx_bytes;
+-	unsigned int start = 0;
+ 	struct stats *stats = priv->stats_report->stats;
++	int idx, stats_idx = 0;
++	unsigned int start = 0;
++	u64 tx_bytes;
+ 
+ 	if (!gve_get_report_stats(priv))
+ 		return;
+-- 
+2.33.0.800.g4c38ced690-goog
 
-> > I don't like it. If you're feeling strongly please gather support of
-> > other developers. Right now it's my preference against yours. I don't
-> > even see you making arguments that your approach is better, just that
-> > mine is not perfect and requires some similar changes.  
-> 
-> I have an idea of how to keep static ops and allow devlink_set_ops()
-> like functionality.
-> 
-> What about if I group ops by some sort of commonalities?
-> 
-> In my case, it will be devlink_reload_ops, which will include reload
-> relevant callbacks and provide devlink_set_reload_ops() wrapper to set
-> them?
-> 
-> It will ensure that all pointers are const without need to have feature
-> bits.
-
-I don't understand why you keep pushing the op reassignment.
