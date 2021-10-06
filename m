@@ -2,67 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E3814240FB
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 17:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E28424128
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 17:19:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239203AbhJFPOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 11:14:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53388 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238124AbhJFPOP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 11:14:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BBADF60E94;
-        Wed,  6 Oct 2021 15:12:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633533142;
-        bh=Sn6xAQq4cN/hOpF85QY+PACDZDzO2M6VmNGmM+0OmEI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jWG5kdHEOgYeuqPo2BYKsVo+OpJ4s+JsQkD1phUUbjY134b1/KFtJymIqgSp5NMMU
-         WaUw1Nqo0aSfhYhmxUrebcRi2sbuGOvTqWDoPA0AFJmyaZrb/aQ5DoovV8E2hY+jWF
-         SE7GhR1e7fNIhUtg5RZS+Ive/oOwGYhJS5fvpCgpy/bYEZ9aOFC6U2oocu1BcTP3BZ
-         kHezkOddYqOknCMjA/1Y51f1Zrp1CJBv51s52E5mU0bgIQWBTRh7C05EENfb2PGsu4
-         Zx2+TkcfK05ExJGvO3CFLXp6lnUqK8nkz7Pe9oA9PW+MIRjWwZWscUD4f+Z8YpBSw0
-         sHdjPRv5W6OdA==
-Date:   Wed, 6 Oct 2021 11:12:21 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Yanfei Xu <yanfei.xu@windriver.com>,
-        syzbot+398e7dc692ddbbb4cfec@syzkaller.appspotmail.com,
-        "David S . Miller" <davem@davemloft.net>, hkallweit1@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.14 28/40] net: mdiobus: Fix memory leak in
- __mdiobus_register
-Message-ID: <YV281dk7FLrJKBab@sashalap>
-References: <20211005135020.214291-1-sashal@kernel.org>
- <20211005135020.214291-28-sashal@kernel.org>
- <YVxa7w8JWOMPOQsp@lunn.ch>
+        id S239124AbhJFPVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 11:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49762 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231671AbhJFPVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 11:21:49 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E763C061746
+        for <netdev@vger.kernel.org>; Wed,  6 Oct 2021 08:19:57 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id ls18so2457279pjb.3
+        for <netdev@vger.kernel.org>; Wed, 06 Oct 2021 08:19:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k6dXWdkzytTPMVlamgW3MJfN3gop+oiZYHi4A1Y/EYc=;
+        b=25JxC0jb/VULGO0T4EnOPCHKbVTjB6XHzl/g3QK3sbJH/nquZAlvZuMXBVQvn3i9Sv
+         t7QZAZFEJBRXkqsanw1Jt+ePAx8ml7Y1by3SiFIb4OA7m2VtiqVrSOjEQh9fAt5Y7U80
+         2r0YEHbfGrW8wdPqEVZKakd48KiAfBEdjGqMZ48FrayYG8mpS3D288wxX5i7/t6vcCgY
+         uuLkGSVM+HA0qwtV1GPRA7KgtcBcJB5mqnlQzpjqqftmsaOMOOWsaKz0PjE92fhI0BUh
+         +0LKu1HfwifO6zE86hN+SnWVAKwyrPdgriGh9H8toKDPsq26R5rflBKbgiRL74yzF3Vx
+         t6KQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k6dXWdkzytTPMVlamgW3MJfN3gop+oiZYHi4A1Y/EYc=;
+        b=eFHR3PL96lNHnm+KqDd2AZzhn+RPy2+F3XJ2Bhz9OUIWhJYRCq7yTyCZb8O5WMhs9w
+         VIqa3J4CTgUUswziF7mo/XMccwJmoIBmv0j8UZ4UGZDh8QpjzXf8wjrnPQ7iIUO4A+V3
+         jZ91QYdvqDxFvWRzjVdVgILYSPr/Igtsk7uLZn62Wx1uD34yP4hPgipWhzDoL5bkVldp
+         KQnzzHC58jihIai6iq8Ib+AGkL2UcZKdoTtFkA4Tkxv+P+DjODSQRAHPMYwQPI6w59So
+         ebWdAu4pGZQ9GpMTnOFS/7Qw09KE6abNjJrKQcwRlj0awTg8Cfk/eYMmX2F1Pe12czj2
+         M69A==
+X-Gm-Message-State: AOAM533iIITykVlD/lw9JgbMpn2sej6oN2OnIpS/3ykoKcal4i1ZnK+U
+        jwppfH9Q0u8rTcDDGYJ/sR/AcYcVNzR4/A==
+X-Google-Smtp-Source: ABdhPJyRIuGDzeNSjX6MGLyxl1eZelUItdBteLxUx0FHKFdbd/BwxYHgVKXKtbhW8b44QWVBZ4kyqA==
+X-Received: by 2002:a17:902:e544:b0:13e:e863:6cd2 with SMTP id n4-20020a170902e54400b0013ee8636cd2mr8435132plf.41.1633533596368;
+        Wed, 06 Oct 2021 08:19:56 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id r23sm5520064pjo.3.2021.10.06.08.19.55
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Oct 2021 08:19:56 -0700 (PDT)
+Date:   Wed, 6 Oct 2021 08:19:53 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 214631] New: Creating a macvlan with as bridge as parent
+ -> NO-CARRIER on both
+Message-ID: <20211006081953.539005df@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YVxa7w8JWOMPOQsp@lunn.ch>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 05, 2021 at 04:02:23PM +0200, Andrew Lunn wrote:
->On Tue, Oct 05, 2021 at 09:50:07AM -0400, Sasha Levin wrote:
->> From: Yanfei Xu <yanfei.xu@windriver.com>
->>
->> [ Upstream commit ab609f25d19858513919369ff3d9a63c02cd9e2e ]
->>
->> Once device_register() failed, we should call put_device() to
->> decrement reference count for cleanup. Or it will cause memory
->> leak.
->
->Hi Sasha
->
->https://lkml.org/lkml/2021/10/4/1427
->
->Please don't backport for any stable kernel.
 
-Dropped, thanks!
+
+Begin forwarded message:
+
+Date: Wed, 06 Oct 2021 15:09:30 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 214631] New: Creating a macvlan with as bridge as parent -> NO-CARRIER on both
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=214631
+
+            Bug ID: 214631
+           Summary: Creating a macvlan with as bridge as parent ->
+                    NO-CARRIER on both
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.7+
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: blocking
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: jan@delandtsheer.eu
+        Regression: No
+
+When creating a macvlan with a bridge as parent, interfaces brought up, have
+NO-CARRIER.
+Only when connecting another type of interface to the bridge (like a dummy) and
+bring it up, the bridge and macvlan start forwarding
+
+
+ip netns add tns
+ip link add tbr type bridge
+ip link add tmv link tbr type macvlan mode bridge
+ip link set tmv netns tns
+ip link set tbr up
+ip -n tns link set lo up
+ip -n tns link set tmv up
+
+
+behaviour :
+  kernel 5.4 -> that always works
+  kernel 5.10 -> mostly works, __sometimes__ not
+  kernel 5.14 -> never works
+
+verifyable with `ip link show dev tbr` having NO-CARRIER
+
+When it doesn't work:
+ip link add tdum type dummy
+ip link set tdum master tbr
+ip link set tdum up
+
+and then the bridge and macvlans start forwarding
 
 -- 
-Thanks,
-Sasha
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
