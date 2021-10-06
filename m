@@ -2,131 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B862D4248B6
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 23:17:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 621DC4248D3
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 23:22:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239662AbhJFVSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 17:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
+        id S239690AbhJFVYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 17:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230060AbhJFVSG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 17:18:06 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD76C061746;
-        Wed,  6 Oct 2021 14:16:14 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id y12so1197014eda.4;
-        Wed, 06 Oct 2021 14:16:14 -0700 (PDT)
+        with ESMTP id S239680AbhJFVYd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 17:24:33 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7AC3C061746;
+        Wed,  6 Oct 2021 14:22:40 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id s64so8506896yba.11;
+        Wed, 06 Oct 2021 14:22:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zMN0PJSw/kmUZUYUDBwwSaq1S7W29aD0DpcprY8DFv4=;
-        b=hE2qO9icgWR8ZPz/2jEIQl00Qag1SjF69Ny2CrM4gRr8etxmUy44XIx1agYFaTBYWU
-         fpSn0Nf7qfJh6EdvtqjHtlLF+cm0qJkijWh+y9CNRQG1461benzB/nJxxJzkj5sonXA6
-         ZrlrZmIt8xvpwN+POKgybkmAbvjLBWPc8Lnqbo9lEBrKyYdf0tiJwP94hLNwmakC7Yul
-         Pu368inQjZ+zbSWOJWEEkVgfDbB84nJ1N/3hSWqxKdxvor0jKJyfwOqbOsxgeHg0gt4b
-         p5KCici5eWg0s2XEYHTAZQnCOmVWsuVOl69Tm3b6T5r3Bd3YpsoOW2SqMiZkcFkuc7rW
-         BnkQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ERup2P4X4JlFTklCDnCypaXBLC87khSfCsez0CZaAIY=;
+        b=Wu3VJVh54ROFXtTvqiHW8xjaaxfNIA4uCAZaBbIdcIRnlV2Kj75IHFb7//m/PF+ejV
+         3iJf+Dg/0UMnqxLRIt9e50PcFbNov62lynM7HP52/0f3JUZgcVOwhu4sq5RkfjVfJsga
+         ur63zrMa46Sa4Q5xl45/6K3ugebCQFwGGwhrYjtVo4tDg8WyAja6KL95tfVEgt/73d9k
+         dkAu3dSifrt3co4i5rnujJ1ypDDwltkEpyf5JZsAMl7dxI2wk3WNn3OpDQntOCd7Nn92
+         Mqm0lIv1IvP8Wy8w9iORjOEhpcz4eYGW/0lZKce+Iwvo5eOp0Qz0tgScYzP2TmfJW1Al
+         HBVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zMN0PJSw/kmUZUYUDBwwSaq1S7W29aD0DpcprY8DFv4=;
-        b=sjenEmuqHanWu0m2YNw7DjoJwoNa0m0Rnn2djEjzJuL2yy5XscZcn0U+iQj+iCshro
-         PKpG02O90u97fWniIKbCZmWVQhlghk/onuUOOPjRl3O9xFg6VETG+puRZbX5zyKeKeN6
-         jgHVTr0L8HbuWouh5evXHZJAm+ygqzFck2mW8cj+ea6D5vvK3M8A00/iPbJju/E1MVNF
-         /ozh3XC2+NWWfZv8QKLkunmQdz7uB78MLCwDuTuWubes/uvPuVDCRNz+Pkre1Mkkl0Ex
-         yj/dEWyE7RelNAbWeo6VXVzF85RocOqtXQKsYx8KIUrAWvPzqqF2yHyv+Nc8Gs/O2jIr
-         9PnA==
-X-Gm-Message-State: AOAM5305B/BGtAp+5MPA5D7w8F5ABDRbQ/Hwd8DlLr9JNuAMvNyPdhyK
-        TcfXIMv/7sLY44V5Mo7tDnfbRuyABD7b23tH7Xxyhw==
-X-Google-Smtp-Source: ABdhPJxTruFef8YM7ESfPUDvfsceyasKtSMB9M1AZI1jPWzsoHrUSN7CCnGvWmlaBxXCf1pO94pirw==
-X-Received: by 2002:a17:906:3d22:: with SMTP id l2mr650852ejf.187.1633554972793;
-        Wed, 06 Oct 2021 14:16:12 -0700 (PDT)
-Received: from ?IPv6:2a04:241e:501:3870:473a:8ebc:828b:d6c6? ([2a04:241e:501:3870:473a:8ebc:828b:d6c6])
-        by smtp.gmail.com with ESMTPSA id fx4sm9375832ejb.113.2021.10.06.14.16.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Oct 2021 14:16:12 -0700 (PDT)
-Subject: Re: [PATCH 05/11] selftests: net/fcnal: kill_procs via spin instead
- of sleep
-To:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, David Ahern <dsahern@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Seth David Schoen <schoen@loyalty.org>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1633520807.git.cdleonard@gmail.com>
- <ff71285715d47b8c9b6bedb3b50700a26bc81f41.1633520807.git.cdleonard@gmail.com>
- <b1a213d5-470d-637d-4e78-1b7653d87041@gmail.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-Message-ID: <7ac2b77d-4633-bd3e-c24f-ec87d34b4516@gmail.com>
-Date:   Thu, 7 Oct 2021 00:16:11 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ERup2P4X4JlFTklCDnCypaXBLC87khSfCsez0CZaAIY=;
+        b=FCNuAvNgc/NwhjiTzxg0o3WGucWM0ceoOVhNqiOyLbKQAsUyTZ4oV0gc6W3Be0T8B9
+         L1RldBq+zDQhnoUvBMbBBxyIT1Hkk3hoqK/2wtePOGwjjTNA4moVT+iSbBrGuXgJwH3X
+         4P6qtX3lhKvAvw0mP06Sq8FQTuDBakKKXrZaVd3gOPsbUc453A7mChs31OfddbMSOfqL
+         ZygTejvUu9LR3O0n6img6U5XUV6Bw8OLk61Z1T2XKNLOA519OcLn6GlaJbsgKoDca2/L
+         380mSt0YwlzWh126JuA2+wpruxsOCXqT0xArQmOSZhub/J02/vrOtc5HHGqnmR74loM3
+         n8LQ==
+X-Gm-Message-State: AOAM530TxjiwH7I9zinnRTDAtx5J5EA/O5qFIP7K5FecH/BcxQfUOuOj
+        d7mNfxIXpalNLCeDnBLogQ3ro1a9bD0pFclZaes=
+X-Google-Smtp-Source: ABdhPJxFzFfaWEnyMyQJph4fhg+XpN3eSQvP3xPWJFC+4HZ3wVwNbTJ2EZeknjsx5pCpOrz19JOrR34BMwg8wJBbn94=
+X-Received: by 2002:a25:afcf:: with SMTP id d15mr448250ybj.433.1633555359987;
+ Wed, 06 Oct 2021 14:22:39 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <b1a213d5-470d-637d-4e78-1b7653d87041@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <YV1hRboJopUBLm3H@krava> <CAEf4BzZPH6WQTYaUTpWBw1gW=cNUtPYPnN8OySgXtbQLzZLhEQ@mail.gmail.com>
+ <YV4Bx7705mgWzhTd@krava>
+In-Reply-To: <YV4Bx7705mgWzhTd@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 6 Oct 2021 14:22:28 -0700
+Message-ID: <CAEf4BzbirA4F_kW-sVrS_YmfUxhAjYVDwO1BvtzTYyngqHLkiw@mail.gmail.com>
+Subject: Re: [RFC] store function address in BTF
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Viktor Malik <vmalik@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 6, 2021 at 1:06 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Wed, Oct 06, 2021 at 09:17:39AM -0700, Andrii Nakryiko wrote:
+> > On Wed, Oct 6, 2021 at 1:42 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > >
+> > > hi,
+> > > I'm hitting performance issue and soft lock ups with the new version
+> > > of the patchset and the reason seems to be kallsyms lookup that we
+> > > need to do for each btf id we want to attach
+> > >
+> > > I tried to change kallsyms_lookup_name linear search into rbtree search,
+> > > but it has its own pitfalls like duplicate function names and it still
+> > > seems not to be fast enough when you want to attach like 30k functions
+> >
+> > How not fast enough is it exactly? How long does it take?
+>
+> 30k functions takes 75 seconds for me, it's loop calling bpf_check_attach_target
+>
+> getting soft lock up messages:
+>
+> krava33 login: [  168.896671] watchdog: BUG: soft lockup - CPU#1 stuck for 26s! [bpftrace:1087]
+>
+
+That's without RB tree right? I was curious about the case of you
+converting kallsyms to RB tree and it still being slow. Can't imagine
+30k queries against RB tree with ~160k kallsyms taking 75 seconds.
+
+But as I said, why not map BTF IDs into function names, sort function
+names, and then pass over kallsyms once, doing binary search into a
+sorted array of requested function names and then recording addr for
+each. Then check that you found addresses for all functions (it also
+leaves a question of what to do when we have multiple matching
+functions, but it's a problem with any approach). If everything checks
+out, you have a nice btf id -> func name -> func addr mapping. It's
+O(N log(M)), which sounds like it shouldn't be slow. Definitely not
+multiple seconds slow.
 
 
-On 06.10.2021 17:45, David Ahern wrote:
-> On 10/6/21 5:47 AM, Leonard Crestez wrote:
->> Sleeping for one second after a kill is not necessary and adds up quite
->> quickly. Replace with a fast loop spinning until pidof returns nothing.
->>
->> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
->> ---
->>   tools/testing/selftests/net/fcnal-test.sh | 11 +++++++++--
->>   1 file changed, 9 insertions(+), 2 deletions(-)
->>
->> diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
->> index 0bd60cd3bc06..b7fda51deb3f 100755
->> --- a/tools/testing/selftests/net/fcnal-test.sh
->> +++ b/tools/testing/selftests/net/fcnal-test.sh
->> @@ -176,12 +176,19 @@ show_hint()
->>   	fi
->>   }
->>   
->>   kill_procs()
->>   {
->> -	killall nettest ping ping6 >/dev/null 2>&1
->> -	sleep 1
->> +	local pids
->> +	while true; do
->> +		pids=$(pidof nettest ping ping6)
->> +		if [[ -z $pids ]]; then
->> +			break
->> +		fi
->> +		kill $pids
->> +		sleep 0.01
->> +	done
->>   }
->>   
->>   do_run_cmd()
->>   {
->>   	local cmd="$*"
->>
-> 
-> ideally the script keeps track of processes it launches and only kills
-> those. The original killall was just a stop gap until the process
-> tracking was added.
+>
+> >
+> > >
+> > > so I wonder we could 'fix this' by storing function address in BTF,
+> > > which would cut kallsyms lookup completely, because it'd be done in
+> > > compile time
+> > >
+> > > my first thought was to add extra BTF section for that, after discussion
+> > > with Arnaldo perhaps we could be able to store extra 8 bytes after
+> > > BTF_KIND_FUNC record, using one of the 'unused' bits in btf_type to
+> > > indicate that? or new BTF_KIND_FUNC2 type?
+> > >
+> > > thoughts?
+> >
+> > I'm strongly against this, because (besides the BTF bloat reason) we
+> > need similar mass attachment functionality for kprobe/kretprobe and
+> > that one won't be relying on BTF FUNCs, so I think it's better to
+> > stick to the same mechanism for figuring out the address of the
+> > function.
+>
+> ok
+>
+> >
+> > If RB tree is not feasible, we can do a linear search over unsorted
+> > kallsyms and do binary search over sorted function names (derived from
+> > BTF IDs). That would be O(Nlog(M)), where N is number of ksyms, M is
+> > number of BTF IDs/functions-to-be-attached-to. If we did have an RB
+> > tree for kallsyms (is it hard to support duplicates? why?) it could be
+> > even faster O(Mlog(N)).
+>
+> I had issues with generic kallsyms rbtree in the post some time ago,
+> I'll revisit it to check on details.. but having the tree with just
+> btf id functions might clear that.. I'll check
 
-That's harder to do. This is much faster and not in any way worse than 
-killall + sleep.
+That's not what I'm proposing. See above. Please let me know if
+something is not clear before going all in for RB tree implementation
+:)
 
-Some sort of a wrapper would have to added for each process running the 
-background, for each run_ping_bg.
 
-If nettest forks by itself then $! won't work, maybe some sort of 
---pid-file switch would be required?
+But while we are on topic, do you think (with ftrace changes you are
+doing) it would be hard to support multi-attach for
+kprobes/kretprobes? We now have bpf_link interface for attaching
+kprobes, so API can be pretty aligned with fentry/fexit, except
+instead of btf IDs we'd need to pass array of pointers of C strings, I
+suppose.
 
---
-Regards,
-Leonard
+>
+> thanks,
+> jirka
+>
+> >
+> >
+> > >
+> > > thanks,
+> > > jirka
+> > >
+> >
+>
