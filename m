@@ -2,121 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D6C4247F6
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 22:32:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54231424814
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 22:39:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232274AbhJFUeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 16:34:10 -0400
-Received: from mxout04.lancloud.ru ([45.84.86.114]:53004 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbhJFUeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 16:34:09 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 1F2CA20A7F44
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC 07/12] ravb: Fillup ravb_rx_gbeth() stub
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
- <20211005110642.3744-8-biju.das.jz@bp.renesas.com>
- <63592646-7547-1a81-e6c3-5bac413cb94a@omp.ru>
- <OS0PR01MB592295BD59F39001AC63FD3886B09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <7c31964b-8cde-50c5-d686-939b7c5bd7f0@omp.ru>
-Date:   Wed, 6 Oct 2021 23:32:13 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S239529AbhJFUky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 16:40:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48524 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239406AbhJFUkx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 16:40:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0947261058;
+        Wed,  6 Oct 2021 20:39:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633552741;
+        bh=VTBzooLj3EuJxi9iH98uEr4AABNwYA30SDrRw8VZ+Zg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=KgIiOs8N4KEN5nGFJVJL19I+5qZKXY0JEJeDl0aGz7AKHh+gmI2d3iJzGTVMSnomN
+         vHy/IrZJU5U7VwUvYeD1/q9ujwD4Mkt7hwmn2CWP6pQpZ4I41W4VPIDuIAdaKSaqxG
+         dmnEP0wl6PNATfLysazP7Yci3YezDljydNNIj2XUDw+YbgeI+hJ7VlfAroPC8OD38r
+         QF/mQ89ZKR9UZGv7OjVKaemxkJCuEgeh7MujOcdom2ymoBG0sAxh/DkrLcNQ/ync/D
+         TAa2E1OfsBDzZldCrIXp1i8DvnTV9uQAkVYHyuTBl38sX6Mg8hPzwJ1SL0lY+HiQW3
+         9nEPUF6ZYfx9Q==
+Received: by mail-lf1-f44.google.com with SMTP id u18so15242338lfd.12;
+        Wed, 06 Oct 2021 13:39:00 -0700 (PDT)
+X-Gm-Message-State: AOAM531eDkQeSQwCeVG6/cLF+byx9MVxRypKnfTI9WWECesXCtJUE2Hd
+        2YfeVxDoahHBGNWkZI93E0LAyXixJ0aZje4DASo=
+X-Google-Smtp-Source: ABdhPJwdIyTDzNHCwBrzqvUz/F6xTsbyvZjCw2eq5zjc3OE+0ofddclYIB62k3eb/4VLrRFzir3qn1e+DZxuAfWi2nk=
+X-Received: by 2002:a2e:b545:: with SMTP id a5mr228131ljn.48.1633552739345;
+ Wed, 06 Oct 2021 13:38:59 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <OS0PR01MB592295BD59F39001AC63FD3886B09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+References: <20211006203135.2566248-1-songliubraving@fb.com>
+In-Reply-To: <20211006203135.2566248-1-songliubraving@fb.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 6 Oct 2021 13:38:48 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6QF09R4C5R-y=o-vo_v5h_yCyAaR1LAsLopq_K17tMyg@mail.gmail.com>
+Message-ID: <CAPhsuW6QF09R4C5R-y=o-vo_v5h_yCyAaR1LAsLopq_K17tMyg@mail.gmail.com>
+Subject: Re: [PATCH] selftests/bpf: skip get_branch_snapshot in vm
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/6/21 11:22 PM, Biju Das wrote:
+On Wed, Oct 6, 2021 at 1:32 PM Song Liu <songliubraving@fb.com> wrote:
+>
+> VMs running on latest kernel support LBR. However, bpf_get_branch_snapshot
+> couldn't stop the LBR before too many entries are flushed. Skip the test
+> for VMs before we find a proper fix for VMs.
+>
+> Read the "flags" line from /proc/cpuinfo, if it contains "hypervisor",
+> skip test get_branch_snapshot.
 
-[...]
->>> Fillup ravb_rx_gbeth() function to support RZ/G2L.
->>>
->>> This patch also renames ravb_rcar_rx to ravb_rx_rcar to be consistent
->>> with the naming convention used in sh_eth driver.
->>>
->>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
->>> Reviewed-by: Lad Prabhakar
->>> <prabhakar.mahadev-lad.rj@bp.renesas.com>[...]
->>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c
->>> b/drivers/net/ethernet/renesas/ravb_main.c
->>> index 37164a983156..42573eac82b9 100644
->>> --- a/drivers/net/ethernet/renesas/ravb_main.c
->>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
->>> @@ -720,6 +720,23 @@ static void ravb_get_tx_tstamp(struct net_device
->> *ndev)
->>>  	}
->>>  }
->>>
->>> +static void ravb_rx_csum_gbeth(struct sk_buff *skb) {
->>> +	u8 *hw_csum;
->>> +
->>> +	/* The hardware checksum is contained in sizeof(__sum16) (2) bytes
->>> +	 * appended to packet data
->>> +	 */
->>> +	if (unlikely(skb->len < sizeof(__sum16)))
->>> +		return;
->>> +	hw_csum = skb_tail_pointer(skb) - sizeof(__sum16);
->>
->>    Not 32-bit? The manual says the IP checksum is stored in the first 2
->> bytes.
-> 
-> It is 16 bit. It is on last 2 bytes.
+Forgot to use --subject-prefix. This applies to bpf-next.
 
-   So you're saying the manual is wrong?
+Thanks,
+Song
 
->>
->>> +
->>> +	if (*hw_csum == 0)
->>
->>    You only check the 1st byte, not the full checksum!
-> 
-> As I said earlier, "0" value on last 16 bit, means no checksum error.
-
-   How's that? 'hw_csum' is declaread as 'u8 *'!
-
->>> +		skb->ip_summed = CHECKSUM_UNNECESSARY;
->>> +	else
->>> +		skb->ip_summed = CHECKSUM_NONE;
->>
->>   So the TCP/UDP/ICMP checksums are not dealt with? Why enable them then?
-> 
-> If last 2bytes is zero, means there is no checksum error w.r.to TCP/UDP/ICMP checksums.
-
-   Why checksum them independently then?
-
-> RZ/G2L checksum part is different from R-Car Gen3. There is no TOE block at all for R-Car Gen3.
-> 
-> Regards,
-> Biju
-
-[...]
-
-MBR, Sergey
+>
+> Fixes: 025bd7c753aa (selftests/bpf: Add test for bpf_get_branch_snapshot)
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>  .../bpf/prog_tests/get_branch_snapshot.c      | 32 +++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> index 67e86f8d86775..bf9d47a859449 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> @@ -6,6 +6,30 @@
+>  static int *pfd_array;
+>  static int cpu_cnt;
+>
+> +static bool is_hypervisor(void)
+> +{
+> +       char *line = NULL;
+> +       bool ret = false;
+> +       size_t len;
+> +       FILE *fp;
+> +
+> +       fp = fopen("/proc/cpuinfo", "r");
+> +       if (!fp)
+> +               return false;
+> +
+> +       while (getline(&line, &len, fp) != -1) {
+> +               if (strstr(line, "flags") == line) {
+> +                       if (strstr(line, "hypervisor") != NULL)
+> +                               ret = true;
+> +                       break;
+> +               }
+> +       }
+> +
+> +       free(line);
+> +       fclose(fp);
+> +       return ret;
+> +}
+> +
+>  static int create_perf_events(void)
+>  {
+>         struct perf_event_attr attr = {0};
+> @@ -54,6 +78,14 @@ void test_get_branch_snapshot(void)
+>         struct get_branch_snapshot *skel = NULL;
+>         int err;
+>
+> +       if (is_hypervisor()) {
+> +               /* As of today, LBR in hypervisor cannot be stopped before
+> +                * too many entries are flushed. Skip the test for now in
+> +                * hypervisor until we optimize the LBR in hypervisor.
+> +                */
+> +               test__skip();
+> +               return;
+> +       }
+>         if (create_perf_events()) {
+>                 test__skip();  /* system doesn't support LBR */
+>                 goto cleanup;
+> --
+> 2.30.2
+>
