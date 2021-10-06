@@ -2,66 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CD6742406B
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 16:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08C5D42406E
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 16:49:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239152AbhJFOus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 10:50:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45684 "EHLO mail.kernel.org"
+        id S231776AbhJFOvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 10:51:32 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52356 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239140AbhJFOur (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 10:50:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8403760F4C;
-        Wed,  6 Oct 2021 14:48:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633531735;
-        bh=NzdvoVd7vwsMXLmG484eEW7YZuuVevuhIB8FQKYnEC8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HKDmPSZ3x9VHDxbUuJoJut1zfY7qi8iUqRFlOb2vxcwgdjCuGK+rE6UbW0sJw3B3y
-         h2pvw05Pq781w1rbsiJMtkWvLJad3eub/2pjzFH4dmdrI4/GphYb05tVL0EoCQ/Ad/
-         x1unN83tc6CkHZDOwS5Y+P9529mGYUaClp1I9JTwdMSeLdqmi1623s3Iasx8VUeu6b
-         6hSCBSceQrCNooCVM3YU46SCEgxBuho0M/OCJbNzvDGp2g4WJAw9Mw9MkGsAq1vMRt
-         5VZaZmF/FIkqwAzclFwt6aBIsfXBSfz2CVwwru9dsmC5z0FKpe+WoEvNWK0xpN/b/S
-         txRQMm7X+1HDQ==
-Date:   Wed, 6 Oct 2021 17:48:51 +0300
-From:   Leon Romanovsky <leon@kernel.org>
+        id S239165AbhJFOva (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 10:51:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=GxcApIX4fCkYDec6Jrkf/UxGR+hVz6J82NegHKwILBI=; b=FYPDpKwDg+sYnPxuqX16PIuOVA
+        SwipTKuhTfdk5TorBroEgWlhrPrHKpIGRWX/LeNF90/JGLcjFfLucs/4qZjrwidTZlqhz2mlL1UTe
+        a/ZI7c0IPKDI2a3FJOtMuxHtjL7+ViBGOiTXW68tDk6HkCQAz2hqHxFS1o+rc3GRaR2M=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mY8Ei-009qb5-8d; Wed, 06 Oct 2021 16:49:36 +0200
+Date:   Wed, 6 Oct 2021 16:49:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        mlxsw@nvidia.com, Moshe Shemesh <moshe@nvidia.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: Re: [PATCH net-next v2 3/5] devlink: Allow set specific ops
- callbacks dynamically
-Message-ID: <YV23U2gyRfgrT8EU@unreal>
-References: <cover.1633284302.git.leonro@nvidia.com>
- <92971648bcad41d095d12f5296246fc44ab8f5c7.1633284302.git.leonro@nvidia.com>
- <20211004164413.60e9ce80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YVv/nUe63nO8o8wz@unreal>
- <20211005113213.0ee61358@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YVykXLY7mX4K1ScW@unreal>
- <20211005173940.35bc7bfa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YV0aCADY4WkLySv4@unreal>
- <20211006063558.6f4ee82d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Cc:     netdev@vger.kernel.org, gregkh@linuxfoundation.org,
+        rafael@kernel.org, saravanak@google.com, mw@semihalf.com,
+        jeremy.linton@arm.com
+Subject: Re: [RFC] fwnode: change the return type of mac address helpers
+Message-ID: <YV23gINkk3b9m6tb@lunn.ch>
+References: <20211006022444.3155482-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211006063558.6f4ee82d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211006022444.3155482-1-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 06, 2021 at 06:35:58AM -0700, Jakub Kicinski wrote:
-> On Wed, 6 Oct 2021 06:37:44 +0300 Leon Romanovsky wrote:
+> --- a/drivers/net/ethernet/apm/xgene-v2/main.c
+> +++ b/drivers/net/ethernet/apm/xgene-v2/main.c
+> @@ -36,7 +36,7 @@ static int xge_get_resources(struct xge_pdata *pdata)
+>  		return -ENOMEM;
+>  	}
+>  
+> -	if (!device_get_ethdev_addr(dev, ndev))
+> +	if (device_get_ethdev_addr(dev, ndev))
+>  		eth_hw_addr_random(ndev);
 
-<...>
+That is going to be interesting for out of tree drivers.
 
-> I don't think this discussion is going anywhere, count me out.
+Otherwise, this looks O.K.
 
-At least here, we agree on something.
+	   Andrew
