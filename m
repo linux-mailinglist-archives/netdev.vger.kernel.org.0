@@ -2,153 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C21324245CC
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 20:13:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 079E54245ED
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 20:21:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238485AbhJFSPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 14:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34582 "EHLO
+        id S232165AbhJFSWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 14:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbhJFSPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 14:15:23 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937C2C061746
-        for <netdev@vger.kernel.org>; Wed,  6 Oct 2021 11:13:31 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id a73so3270465pge.0
-        for <netdev@vger.kernel.org>; Wed, 06 Oct 2021 11:13:31 -0700 (PDT)
+        with ESMTP id S229542AbhJFSWu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 14:22:50 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AD0C061746;
+        Wed,  6 Oct 2021 11:20:58 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id q189so7558800ybq.1;
+        Wed, 06 Oct 2021 11:20:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=AHbFLLJBVdMn1EYU1myYShV5KJr7nhKj/LhKLE9VktY=;
-        b=nhrD/4QplDgtRCKbs+d1BsV0aQosiQBT3GjUL0PAfAcdWD6m7PoyOtl6CHbN6yTwvy
-         kwaLQKq5H7ea9Qxf4rb/s+VrpASAlhjwZvvDcWY920q4H/jJ6IwP2Q0cuRF1fWtAm8Bc
-         H6ldHslh6sTSm8Yy0nBHDjTc/Yrk3IR+8Ms+eFHQUzUsgW25OtpDA+ffLYoXnYf+t9De
-         OzNcH2iqd8deytbUm87BfvU/pxTeQ2R2qY+kyb/KZphLzUXdV40J0NpIEnTvMdFOWygX
-         7KC8mYBB8PBMdD4pmLLnik7rOGGSZCN79wMUoo7kbbjYQMzbGpaCxrF0A7F47xe1xjok
-         OWjQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p0oPqIp7KvFrHTyZh7IK9NyLd4cc/B09chGykvbilI0=;
+        b=VApVL8UGqSIM98iCIn7+Y0Kch8hm98caoGxhv+PX5gRgOYwrID4t9FCcp4ZDjh93Fi
+         PjcMTtnZFWlzCPfyUnVS3IEiWjHLmgwixpz6b1gdrA4/p7xs1uXvcylNMAonv/Hivt8R
+         f3XwTCdfpnOnLSx8FIe5s+ShL+4DT4WbL3s8JWtRjW/N4aiiuPKWMPGdW3RUh/DrlDWU
+         5ZBh/pj+7eLwRKasorSbmiLSQwa9r+X3GoQItsO7Df8fuYveZxKHaNvHEdSB+IKZDdV4
+         oqBzzuf2EADKsPkzpPAt1O5MLlIIpxWiLD1C0a/XsJA/waCHaTaBHwDmC/0tRtC/yPGu
+         Fjjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AHbFLLJBVdMn1EYU1myYShV5KJr7nhKj/LhKLE9VktY=;
-        b=ZPDYj1+hN4xUnt/7u6jVgFnCs9sAgGVR54qr+ddDihG7jrNC3EViGksLlgOFVX86xP
-         dsyLvK8LLK1CaaZBxFxOouoG9Dff5XfMmAWX9CBKZrwQkFbai0A6CsxQ30lC3IV9bZlQ
-         QJ5cvLG8d5OO2DpeO4RFFHvkpyoypQhTq4+iMOYxT7FgfNiuiXcTo4rI/jVsK5OtXl4Z
-         VapYkybap5mtu2wtvs+QpNb3Qx4Ua2f3vdoqA2vzP9tJ5kHIYZvtNXU9oPCysomV8sHi
-         CHTZngLa0RQ2MglxYoaxmasyQv70jHXfn0Hf1SMyhYgNk+0lBufSACewvy7dxeAhvNCn
-         3MRw==
-X-Gm-Message-State: AOAM530RZJKzoRIE9z0nzBZRokqkVSg6vKET/PROmUCwtpycIVENCFzM
-        11GC6K2VPTxkNA9nck27XeN8LQ==
-X-Google-Smtp-Source: ABdhPJxmKF3Bdz9OwWKs+AydMtJ6JforNBHoMf1Udb6gHLHIyfOPHHC8iDRSqQZ/o3duyNgdDMWmvQ==
-X-Received: by 2002:a63:1950:: with SMTP id 16mr141725pgz.346.1633544011042;
-        Wed, 06 Oct 2021 11:13:31 -0700 (PDT)
-Received: from [192.168.0.14] ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id u12sm20921209pgi.21.2021.10.06.11.13.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Oct 2021 11:13:30 -0700 (PDT)
-Message-ID: <4ff9c36a-3c66-b244-8b2a-7eb4e2cc2d05@pensando.io>
-Date:   Wed, 6 Oct 2021 11:13:28 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p0oPqIp7KvFrHTyZh7IK9NyLd4cc/B09chGykvbilI0=;
+        b=Sgp5vNgfiibvGMGNsI6EG7eeApES2oqFMy0UvRNuzYS8xNK+XcKUeaHoV5k0x5VpQH
+         OsLg8CERp88bPiDikeSNrcyI1JwIC2nVAGtkECt0OWoBybOf/bW2JvqwiqV7Um6jQ0M6
+         NzT+ur1nI1114LyLO4JYCOPHNPZqBhRVgeabWynwm0H9dErqR7yu4alUnjZDvP8z228A
+         +eQmyAtOQt/MRhW3GWi0z1mHCKWv0m4s+52YaeeVGaYlpfTxvxdi7KnWNZwLEyspadjc
+         wx1RszwWkCEDv6KiBLehqbXJ2eyYvNktTCzq0NU9QzaV7iNvk0uK59pgCDVLIpvXfw3m
+         r6jg==
+X-Gm-Message-State: AOAM531KjWhqKXgPg0i2sGkuM96uD5RxVGTRjyzmiZPatg8C7NE+9EAM
+        g0/p9R2eQsEFkKUgAFcbthbUeqgBpXWVhqcbC0Y=
+X-Google-Smtp-Source: ABdhPJyvV9zirzKsGEaGZ/Tt1p8nAafgTn0aX+zS1vXXzfnEUyN7BIU2TaMuyuP9nnAXgW8Pg8qFtQwtyJBuVQahGOo=
+X-Received: by 2002:a25:7c42:: with SMTP id x63mr32489404ybc.225.1633544457543;
+ Wed, 06 Oct 2021 11:20:57 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.1.2
-Subject: Re: [PATCH net-next v2 7/9] eth: fwnode: add a helper for loading
- netdev->dev_addr
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, gregkh@linuxfoundation.org,
-        rafael@kernel.org, saravanak@google.com, mw@semihalf.com,
-        andrew@lunn.ch, jeremy.linton@arm.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, robh+dt@kernel.org, frowand.list@gmail.com,
-        heikki.krogerus@linux.intel.com, devicetree@vger.kernel.org
-References: <20211006154426.3222199-1-kuba@kernel.org>
- <20211006154426.3222199-8-kuba@kernel.org>
-From:   Shannon Nelson <snelson@pensando.io>
-In-Reply-To: <20211006154426.3222199-8-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20211003192208.6297-1-quentin@isovalent.com> <20211003192208.6297-5-quentin@isovalent.com>
+In-Reply-To: <20211003192208.6297-5-quentin@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 6 Oct 2021 11:20:46 -0700
+Message-ID: <CAEf4Bza4y5DjJfxQYDJEALQh+3SaukPtNJVLaLdMZK-SgpDpyw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 04/10] tools: runqslower: install libbpf
+ headers when building
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/6/21 8:44 AM, Jakub Kicinski wrote:
-> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-> of VLANs...") introduced a rbtree for faster Ethernet address look
-> up. To maintain netdev->dev_addr in this tree we need to make all
-> the writes to it got through appropriate helpers.
+On Sun, Oct 3, 2021 at 12:22 PM Quentin Monnet <quentin@isovalent.com> wrote:
 >
-> There is a handful of drivers which pass netdev->dev_addr as
-> the destination buffer to device_get_mac_address(). Add a helper
-> which takes a dev pointer instead, so it can call an appropriate
-> helper.
+> API headers from libbpf should not be accessed directly from the
+> library's source directory. Instead, they should be exported with "make
+> install_headers". Let's make sure that runqslower installs the
+> headers properly when building.
 >
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> We use a libbpf_hdrs target to mark the logical dependency on libbpf's
+> headers export for a number of object files, even though the headers
+> should have been exported at this time (since bpftool needs them, and is
+> required to generate the skeleton or the vmlinux.h).
+>
+> When descending from a parent Makefile, the specific output directories
+> for building the library and exporting the headers are configurable with
+> BPFOBJ_OUTPUT and BPF_DESTDIR, respectively. This is in addition to
+> OUTPUT, on top of which those variables are constructed by default.
+>
+> Also adjust the Makefile for the BPF selftests. We pass a number of
+> variables to the "make" invocation, because we want to point runqslower
+> to the (target) libbpf shared with other tools, instead of building its
+> own version. In addition, runqslower relies on (target) bpftool, and we
+> also want to pass the proper variables to its Makefile so that bpftool
+> itself reuses the same libbpf.
+>
+> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 > ---
-> v2: spell out address instead of addr in the function name
-> ---
->   include/linux/etherdevice.h |  1 +
->   include/linux/property.h    |  1 +
->   net/ethernet/eth.c          | 20 ++++++++++++++++++++
->   3 files changed, 22 insertions(+)
+>  tools/bpf/runqslower/Makefile        | 22 +++++++++++++---------
+>  tools/testing/selftests/bpf/Makefile | 15 +++++++++------
+>  2 files changed, 22 insertions(+), 15 deletions(-)
 >
-> diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-> index 32c30d0f7a73..e75116f48cd1 100644
-> --- a/include/linux/etherdevice.h
-> +++ b/include/linux/etherdevice.h
-> @@ -32,6 +32,7 @@ int eth_platform_get_mac_address(struct device *dev, u8 *mac_addr);
->   unsigned char *arch_get_platform_mac_address(void);
->   int nvmem_get_mac_address(struct device *dev, void *addrbuf);
->   int device_get_mac_address(struct device *dev, char *addr);
-> +int device_get_ethdev_address(struct device *dev, struct net_device *netdev);
->   int fwnode_get_mac_address(struct fwnode_handle *fwnode, char *addr);
->   
->   u32 eth_get_headlen(const struct net_device *dev, const void *data, u32 len);
-> diff --git a/include/linux/property.h b/include/linux/property.h
-> index 4fb081684255..88fa726a76df 100644
-> --- a/include/linux/property.h
-> +++ b/include/linux/property.h
-> @@ -15,6 +15,7 @@
->   #include <linux/types.h>
->   
->   struct device;
-> +struct net_device;
->   
->   enum dev_prop_type {
->   	DEV_PROP_U8,
-> diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
-> index 29447a61d3ec..5441b232d8a4 100644
-> --- a/net/ethernet/eth.c
-> +++ b/net/ethernet/eth.c
-> @@ -617,3 +617,23 @@ int device_get_mac_address(struct device *dev, char *addr)
->   	return fwnode_get_mac_address(dev_fwnode(dev), addr);
->   }
->   EXPORT_SYMBOL(device_get_mac_address);
+> diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefile
+> index 3818ec511fd2..049aef7e9a4c 100644
+> --- a/tools/bpf/runqslower/Makefile
+> +++ b/tools/bpf/runqslower/Makefile
+> @@ -9,9 +9,9 @@ BPFTOOL ?= $(DEFAULT_BPFTOOL)
+>  LIBBPF_SRC := $(abspath ../../lib/bpf)
+>  BPFOBJ_OUTPUT := $(OUTPUT)libbpf/
+>  BPFOBJ := $(BPFOBJ_OUTPUT)libbpf.a
+> -BPF_INCLUDE := $(BPFOBJ_OUTPUT)
+> -INCLUDES := -I$(OUTPUT) -I$(BPF_INCLUDE) -I$(abspath ../../lib)        \
+> -       -I$(abspath ../../include/uapi)
+> +BPF_DESTDIR := $(BPFOBJ_OUTPUT)
+> +BPF_INCLUDE := $(BPF_DESTDIR)/include
+> +INCLUDES := -I$(OUTPUT) -I$(BPF_INCLUDE) -I$(abspath ../../include/uapi)
+>  CFLAGS := -g -Wall
+>
+>  # Try to detect best kernel BTF source
+> @@ -33,7 +33,7 @@ endif
+>
+>  .DELETE_ON_ERROR:
+>
+> -.PHONY: all clean runqslower
+> +.PHONY: all clean runqslower libbpf_hdrs
+>  all: runqslower
+>
+>  runqslower: $(OUTPUT)/runqslower
+> @@ -46,13 +46,15 @@ clean:
+>         $(Q)$(RM) $(OUTPUT)runqslower
+>         $(Q)$(RM) -r .output
+>
+> +libbpf_hdrs: $(BPFOBJ)
 > +
-> +/**
-> + * device_get_ethdev_addr - Set netdev's MAC address from a given device
+>  $(OUTPUT)/runqslower: $(OUTPUT)/runqslower.o $(BPFOBJ)
+>         $(QUIET_LINK)$(CC) $(CFLAGS) $^ -lelf -lz -o $@
+>
+>  $(OUTPUT)/runqslower.o: runqslower.h $(OUTPUT)/runqslower.skel.h             \
+> -                       $(OUTPUT)/runqslower.bpf.o
+> +                       $(OUTPUT)/runqslower.bpf.o libbpf_hdrs
 
-Nit: s/_addr/_address/
+this phony dependency will cause runqslower.o to be always rebuilt,
+try running make multiple times with no changes inside
+tools/bpf/runqslower. Can this be done just as an order-only
+dependency?
 
-sln
+>
+> -$(OUTPUT)/runqslower.bpf.o: $(OUTPUT)/vmlinux.h runqslower.h
+> +$(OUTPUT)/runqslower.bpf.o: $(OUTPUT)/vmlinux.h runqslower.h libbpf_hdrs
+>
+>  $(OUTPUT)/%.skel.h: $(OUTPUT)/%.bpf.o | $(BPFTOOL)
+>         $(QUIET_GEN)$(BPFTOOL) gen skeleton $< > $@
 
-> + * @dev:	Pointer to the device
-> + * @netdev:	Pointer to netdev to write the address to
-> + *
-> + * Wrapper around device_get_mac_address() which writes the address
-> + * directly to netdev->dev_addr.
-> + */
-> +int device_get_ethdev_address(struct device *dev, struct net_device *netdev)
-> +{
-> +	u8 addr[ETH_ALEN];
-> +	int ret;
-> +
-> +	ret = device_get_mac_address(dev, addr);
-> +	if (!ret)
-> +		eth_hw_addr_set(netdev, addr);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(device_get_ethdev_address);
-
+[...]
