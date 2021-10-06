@@ -2,106 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D534424270
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 18:18:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB444242AE
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 18:30:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239349AbhJFQU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 12:20:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42882 "EHLO mail.kernel.org"
+        id S238510AbhJFQcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 12:32:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45578 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231998AbhJFQUZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 12:20:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0676461166;
-        Wed,  6 Oct 2021 16:18:33 +0000 (UTC)
+        id S231755AbhJFQb7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 12:31:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 842EF60F6C;
+        Wed,  6 Oct 2021 16:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633537113;
-        bh=t5H/xR9Gh8B4ev99gfiUYiuJjRHiXsNBFPENjcrLYII=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Fw6O4L6hKS0YVHDYjLCklEKhDhszJ1ta7gQ6nE06NoSmunAYBkeLeWaZFO1HImTa6
-         c/S3ADi4lqdjolyd9zXEtma0tD1ec0n24U0c4J8AaMG2rNLqMGtjQyUHe+bm7AYX0k
-         YETsPs9Hv6y1CmL9g0JkJ6DlshtVVucaVqPNfNCizXxFJn9N/tWWC26QRDFOs3xi4Q
-         rpoxhUQQ+tZ54Hrk88yoKVAGSaKBhLWU0e5N4YUQYlOv1HOvsH0mc/IuD1Ze6/5Xun
-         /lPyUuNR1dOz8F3BLQvczyN1zekzBZJ1p117bUdyo7OE8jPlg++OVQlGlBShLP1pAd
-         rk5seyW6nFUwA==
-Received: by mail-ed1-f46.google.com with SMTP id v18so11934230edc.11;
-        Wed, 06 Oct 2021 09:18:32 -0700 (PDT)
-X-Gm-Message-State: AOAM533KU0t2QEBnKWytpsNqW6ZRYJQyHdHK6BkcD19eg9pLUS2sjedd
-        25uoM9KRZInvKXhNsr/FaT3AGTLwG350KwtQow==
-X-Google-Smtp-Source: ABdhPJyM7UFe9DzvIe0l+OD9gvTJUhVYGJBVSVSUs7wURjGSrj5hreFCNI00JWgdX2SrcpjFVwcxlo25twwfrn2KyUs=
-X-Received: by 2002:a17:906:71d4:: with SMTP id i20mr33206868ejk.390.1633537111464;
- Wed, 06 Oct 2021 09:18:31 -0700 (PDT)
+        s=k20201202; t=1633537807;
+        bh=eCIyQf2bB20KLODueReaN6pOiB+BRZIoieVRu1Zzrdw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=vQGtuOjiC7fSix+ZmD75UT1SraR3HjP4XUgQK7D17BYnmnooaOpOQMYja6iqteHyC
+         kZo0wnPECN+WeHzorCUBCjjxIULfMP3b8vpTxwDFvOaMkl+KMeRKGNrrRPnDX+eV1o
+         S6WnV4fAH5GaA+gBRScZ8RKIVJBmOjm7VWbwzObDYkfAmeTcM0eSJvE9/W/VtyyBwl
+         oH7BFunNrJWJAbI3NgZY0YEQPBxVQCrT7fpVnZqrYgmrYv0tgKyqjxpUFAOxrMtgRf
+         JLIq2LOncotj+S0AbNEnDEj033BncB5v0hIJtERT5k4OCcMZ6I3NtJK2dggFIFjW/B
+         pgAeDsyAHj0LQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 77F4E60971;
+        Wed,  6 Oct 2021 16:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20211006154426.3222199-1-kuba@kernel.org> <20211006154426.3222199-2-kuba@kernel.org>
-In-Reply-To: <20211006154426.3222199-2-kuba@kernel.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 6 Oct 2021 11:18:19 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqK6YzaD0wB0BsP5tghnYMbZzDHq2p6Z_ZGr99EFWhWggw@mail.gmail.com>
-Message-ID: <CAL_JsqK6YzaD0wB0BsP5tghnYMbZzDHq2p6Z_ZGr99EFWhWggw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/9] of: net: move of_net under net/
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Marcin Wojtas <mw@semihalf.com>, Andrew Lunn <andrew@lunn.ch>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next] bpf: use $(pound) instead of \# in Makefiles
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163353780748.7077.6059227334886059915.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Oct 2021 16:30:07 +0000
+References: <20211006111049.20708-1-quentin@isovalent.com>
+In-Reply-To: <20211006111049.20708-1-quentin@isovalent.com>
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 6, 2021 at 10:45 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Rob suggests to move of_net.c from under drivers/of/ somewhere
-> to the networking code.
->
-> Suggested-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> v2: new patch
-> ---
->  drivers/of/Makefile               | 1 -
->  net/core/Makefile                 | 1 +
->  {drivers/of => net/core}/of_net.c | 0
->  3 files changed, 1 insertion(+), 1 deletion(-)
->  rename {drivers/of => net/core}/of_net.c (100%)
->
-> diff --git a/drivers/of/Makefile b/drivers/of/Makefile
-> index c13b982084a3..e0360a44306e 100644
-> --- a/drivers/of/Makefile
-> +++ b/drivers/of/Makefile
-> @@ -7,7 +7,6 @@ obj-$(CONFIG_OF_EARLY_FLATTREE) += fdt_address.o
->  obj-$(CONFIG_OF_PROMTREE) += pdt.o
->  obj-$(CONFIG_OF_ADDRESS)  += address.o
->  obj-$(CONFIG_OF_IRQ)    += irq.o
-> -obj-$(CONFIG_OF_NET)   += of_net.o
->  obj-$(CONFIG_OF_UNITTEST) += unittest.o
->  obj-$(CONFIG_OF_RESERVED_MEM) += of_reserved_mem.o
->  obj-$(CONFIG_OF_RESOLVE)  += resolver.o
-> diff --git a/net/core/Makefile b/net/core/Makefile
-> index 35ced6201814..37b1befc39aa 100644
-> --- a/net/core/Makefile
-> +++ b/net/core/Makefile
-> @@ -36,3 +36,4 @@ obj-$(CONFIG_FAILOVER) += failover.o
->  obj-$(CONFIG_NET_SOCK_MSG) += skmsg.o
->  obj-$(CONFIG_BPF_SYSCALL) += sock_map.o
->  obj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o
-> +obj-$(CONFIG_OF_NET)   += of_net.o
+Hello:
 
-The OF_NET kconfig should move or disappear too. I imagine you can do just:
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
 
-obj-$(CONFIG_OF) += of_net.o
+On Wed,  6 Oct 2021 12:10:49 +0100 you wrote:
+> Recent-ish versions of make do no longer consider number signs ("#") as
+> comment symbols when they are inserted inside of a macro reference or in
+> a function invocation. In such cases, the symbols should not be escaped.
+> 
+> There are a few occurrences of "\#" in libbpf's and samples' Makefiles.
+> In the former, the backslash is harmless, because grep associates no
+> particular meaning to the escaped symbol and reads it as a regular "#".
+> In samples' Makefile, recent versions of make will pass the backslash
+> down to the compiler, making the probe fail all the time and resulting
+> in the display of a warning about "make headers_install" being required,
+> even after headers have been installed.
+> 
+> [...]
 
-> diff --git a/drivers/of/of_net.c b/net/core/of_net.c
-> similarity index 100%
-> rename from drivers/of/of_net.c
-> rename to net/core/of_net.c
-> --
-> 2.31.1
->
+Here is the summary with links:
+  - [bpf-next] bpf: use $(pound) instead of \# in Makefiles
+    https://git.kernel.org/bpf/bpf-next/c/bf2819e0b10f
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
