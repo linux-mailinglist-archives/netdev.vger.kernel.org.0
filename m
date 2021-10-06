@@ -2,170 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78D904241F0
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 17:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9457F42420E
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 18:01:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239270AbhJFP6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 11:58:33 -0400
-Received: from foss.arm.com ([217.140.110.172]:42956 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235957AbhJFP6c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 11:58:32 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DE0086D;
-        Wed,  6 Oct 2021 08:56:39 -0700 (PDT)
-Received: from monolith.localdoman (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 666F63F70D;
-        Wed,  6 Oct 2021 08:56:37 -0700 (PDT)
-Date:   Wed, 6 Oct 2021 16:58:11 +0100
-From:   Alexandru Elisei <alexandru.elisei@arm.com>
-To:     davem@davemloft.net, michael.riesch@wolfvision.net,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, kuba@kernel.org, mcoquelin.stm32@gmail.com,
-        p.zabel@pengutronix.de, lgirdwood@gmail.com, broonie@kernel.org,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Alexandru Elisei <alexandru.elisei@arm.com>
-Subject: [BUG RESEND] net: stmmac: dwmac-rk: Ethernet broken on rockpro64 by
- commit 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced
- pm_runtime_enable warnings")
-Message-ID: <YV3Hk2R4uDKbTy43@monolith.localdoman>
+        id S239327AbhJFQDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 12:03:07 -0400
+Received: from mout-p-201.mailbox.org ([80.241.56.171]:17782 "EHLO
+        mout-p-201.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239206AbhJFQDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 12:03:06 -0400
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4HPfMB17jYzQlRX;
+        Wed,  6 Oct 2021 18:01:10 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Message-ID: <61b034e3-8d16-0488-d7e0-016e64f33b67@v0yd.nl>
+Date:   Wed, 6 Oct 2021 18:01:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Subject: Re: [PATCH v2 1/2] mwifiex: Use non-posted PCI write when setting TX
+ ring write pointer
+Content-Language: en-US
+From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        =?UTF-8?B?J1BhbGkgUm9ow6FyJw==?= <pali@kernel.org>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Brian Norris <briannorris@chromium.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+References: <20210914114813.15404-1-verdre@v0yd.nl>
+ <20210914114813.15404-2-verdre@v0yd.nl>
+ <8f65f41a807c46d496bf1b45816077e4@AcuMS.aculab.com>
+ <20210922142726.guviqler5k7wnm52@pali>
+ <e0a4e0adc56148039f853ccb083be53a@AcuMS.aculab.com>
+ <ae8ca158-ad86-9c0d-7217-f9db3d2fc42e@v0yd.nl>
+In-Reply-To: <ae8ca158-ad86-9c0d-7217-f9db3d2fc42e@v0yd.nl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 6BD7322F
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Resending this because my previous email client inserted HTML into the email,
-which was then rejected by the linux-kernel@vger.kernel.org spam filter.
+On 9/30/21 16:27, Jonas Dreßler wrote:
+> On 9/22/21 5:54 PM, David Laight wrote:
+>>
+>> From: Pali Rohár
+>>> Sent: 22 September 2021 15:27
+>>>
+>>> On Wednesday 22 September 2021 14:03:25 David Laight wrote:
+>>>> From: Jonas Dreßler
+>>>>> Sent: 14 September 2021 12:48
+>>>>>
+>>>>> On the 88W8897 card it's very important the TX ring write pointer is
+>>>>> updated correctly to its new value before setting the TX ready
+>>>>> interrupt, otherwise the firmware appears to crash (probably because
+>>>>> it's trying to DMA-read from the wrong place). The issue is present in
+>>>>> the latest firmware version 15.68.19.p21 of the pcie+usb card.
+>>>>>
+>>>>> Since PCI uses "posted writes" when writing to a register, it's not
+>>>>> guaranteed that a write will happen immediately. That means the pointer
+>>>>> might be outdated when setting the TX ready interrupt, leading to
+>>>>> firmware crashes especially when ASPM L1 and L1 substates are enabled
+>>>>> (because of the higher link latency, the write will probably take
+>>>>> longer).
+>>>>>
+>>>>> So fix those firmware crashes by always using a non-posted write for
+>>>>> this specific register write. We do that by simply reading back the
+>>>>> register after writing it, just as a few other PCI drivers do.
+>>>>>
+>>>>> This fixes a bug where during rx/tx traffic and with ASPM L1 substates
+>>>>> enabled (the enabled substates are platform dependent), the firmware
+>>>>> crashes and eventually a command timeout appears in the logs.
+>>>>
+>>>> I think you need to change your terminology.
+>>>> PCIe does have some non-posted write transactions - but I can't
+>>>> remember when they are used.
+>>>
+>>> In PCIe are all memory write requests as posted.
+>>>
+>>> Non-posted writes in PCIe are used only for IO and config requests. But
+>>> this is not case for proposed patch change as it access only card's
+>>> memory space.
+>>>
+>>> Technically this patch does not use non-posted memory write (as PCIe
+>>> does not support / provide it), just adds something like a barrier and
+>>> I'm not sure if it is really correct (you already wrote more details
+>>> about it, so I will let it be).
+>>>
+>>> I'm not sure what is the correct terminology, I do not know how this
+>>> kind of write-followed-by-read "trick" is correctly called.
+>>
+>> I think it is probably best to say:
+>>     "flush the posted write when setting the TX ring write pointer".
+>>
+>> The write can get posted in any/all of the following places:
+>> 1) The cpu store buffer.
+>> 2) The PCIe host bridge.
+>> 3) Any other PCIe bridges.
+>> 4) The PCIe slave logic in the target.
+>>     There could be separate buffers for each BAR,
+>> 5) The actual target logic for that address block.
+>>     The target (probably) will look a bit like an old fashioned cpu
+>>     motherboard with the PCIe slave logic as the main bus master.
+>>
+>> The readback forces all the posted write buffers be flushed.
+>>
+>> In this case I suspect it is either flushing (5) or the extra
+>> delay of the read TLP processing that 'fixes' the problem.
+>>
+>> Note that depending on the exact code and host cpu the second
+>> write may not need to wait for the response to the read TLP.
+>> So the write, readback, write TLP may be back to back on the
+>> actual PCIe link.
+>>
+>> Although I don't have access to an actual PCIe monitor we
+>> do have the ability to trace 'data' TLP into fpga memory
+>> on one of our systems.
+>> This is near real-time but they are slightly munged.
+>> Watching the TLP can be illuminating!
+>>
+>>     David
+>>
+>> -
+>> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+>> Registration No: 1397386 (Wales)
+>>
+> 
+> Thanks for the detailed explanations, it looks like indeed the read-back is not the real fix here, a simple udelay(50) before sending the "TX ready" interrupt also does the trick.
+> 
+>                  } else {
+> +                       udelay(50);
+> +
+>                          /* Send the TX ready interrupt */
+>                          if (mwifiex_write_reg(adapter, PCIE_CPU_INT_EVENT,
+>                                                CPU_INTR_DNLD_RDY)) {
+> 
+> I've tested that for a week now and haven't seen any firmware crashes. Interestingly enough it looks like the delay can also be added after setting the "TX ready" interrupt, just not before updating the TX ring write pointer.
+> 
+> I have no idea if 50 usecs is a good duration to wait here, from trying different values I found that 10 to 20 usecs is not enough, but who knows, maybe that's platform dependent?
 
-After commit 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced
-pm_runtime_enable warnings"), the network card on my rockpro64-v2 was left
-unable to get a DHCP lease from the network. The offending commit was found by
-bisecting the kernel; I tried reverting the commit from v5.15-rc4 and the
-network card started working as expected.
+So I spent the last few days going slightly crazy while trying to dig deeper
+into this.
 
-I can help with testing a fix or further diagnosing if needed.
+My theory was that the udelay() delays some subsequent register write or
+other communication with the card that would trigger the crash if executed
+too early after writing the TX ring write pointer. So I tried moving the
+udelay() around, carefully checking when the crash is gone and when it isn't.
 
-his is what I get with a kernel built from v5.15-rc4 (so with the commit *not*
-reverted). Full dmesg at [1].
+In the end my theory turned out completely wrong, what I found was this:
+Pinning down the last place where the udelay() is effective gets us here
+(https://elixir.bootlin.com/linux/latest/source/drivers/net/wireless/marvell/mwifiex/main.c#L340),
+right before we bail out of the main process and idle.
 
-root@rockpro ~ # uname -a
-Linux rockpro 5.15.0-rc4 #83 SMP PREEMPT Wed Oct 6 16:06:31 BST 2021 aarch64 GNU/Linux
-root@rockpro ~ # ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-2: eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
-    link/ether ce:71:c1:ee:97:e8 brd ff:ff:ff:ff:ff:ff
-root@rockpro ~ # ip l set eth0 up
-[   33.398930] rk_gmac-dwmac fe300000.ethernet eth0: PHY [stmmac-0:00] driver [Generic PHY] (irq=POLL)
-[   33.404390] rk_gmac-dwmac fe300000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
-[   33.405795] rk_gmac-dwmac fe300000.ethernet eth0: No Safety Features support found
-[   33.406479] rk_gmac-dwmac fe300000.ethernet eth0: PTP not supported by HW
-[   33.407528] rk_gmac-dwmac fe300000.ethernet eth0: configuring for phy/rgmii link mode
-root@rockpro ~ # [   37.503570] rk_gmac-dwmac fe300000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
+I tried adding the udelay() as the first thing we do on the next run of the
+while-loop after that break, but with that the crash came back.
 
-root@rockpro ~ # ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether ce:71:c1:ee:97:e8 brd ff:ff:ff:ff:ff:ff
-root@rockpro ~ # dhclient --version
-isc-dhclient-4.4.2-P1
-root@rockpro ~ # dhclient -v eth0
-Internet Systems Consortium DHCP Client 4.4.2-P1
-Copyright 2004-2021 Internet Systems Consortium.
-All rights reserved.
-For info, please visit https://www.isc.org/software/dhcp/
+So what does this mean, we fix the crash by sleeping before idling? Sounds
+a bit counterintuitive to me...
 
-Listening on LPF/eth0/ce:71:c1:ee:97:e8
-Sending on   LPF/eth0/ce:71:c1:ee:97:e8
-Sending on   Socket/fallback
-DHCPREQUEST for 192.168.0.43 on eth0 to 255.255.255.255 port 67
-DHCPREQUEST for 192.168.0.43 on eth0 to 255.255.255.255 port 67
-DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 8
-DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 7
-DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 20
-DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 20
-DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 6
-No DHCPOFFERS received.
-Trying recorded lease 192.168.0.43
-ping: socket: Address family not supported by protocol
-PING 192.168.0.1 (192.168.0.1) 56(84) bytes of data.
-
---- 192.168.0.1 ping statistics ---
-1 packets transmitted, 0 received, +1 errors, 100% packet loss, time 0ms
-
-No working leases in persistent database - sleeping.
-
-With the commit reverted, the NIC is working again (dmesg at [2]).
-
-root@rockpro ~ # uname -a
-Linux rockpro 5.15.0-rc4-00001-g6ac1832b7cc5 #84 SMP PREEMPT Wed Oct 6 16:24:54 BST 2021 aarch64 GNU/Linux
-root@rockpro ~ # ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-2: eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
-    link/ether ce:71:c1:ee:97:e8 brd ff:ff:ff:ff:ff:ff
-root@rockpro ~ # ip l set eth0 up
-[   76.094639] rk_gmac-dwmac fe300000.ethernet eth0: PHY [stmmac-0:00] driver [Generic PHY] (irq=POLL)
-[   76.100233] rk_gmac-dwmac fe300000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
-[   76.101646] rk_gmac-dwmac fe300000.ethernet eth0: No Safety Features support found
-[   76.102374] rk_gmac-dwmac fe300000.ethernet eth0: PTP not supported by HW
-[   76.103335] rk_gmac-dwmac fe300000.ethernet eth0: configuring for phy/rgmii link mode
-root@rockpro ~ # [   80.191353] rk_gmac-dwmac fe300000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
-
-root@rockpro ~ # ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether ce:71:c1:ee:97:e8 brd ff:ff:ff:ff:ff:ff
-root@rockpro ~ # dhclient --version
-isc-dhclient-4.4.2-P1
-root@rockpro ~ # dhclient -v eth0
-Internet Systems Consortium DHCP Client 4.4.2-P1
-Copyright 2004-2021 Internet Systems Consortium.
-All rights reserved.
-For info, please visit https://www.isc.org/software/dhcp/
-
-Listening on LPF/eth0/ce:71:c1:ee:97:e8
-Sending on   LPF/eth0/ce:71:c1:ee:97:e8
-Sending on   Socket/fallback
-DHCPREQUEST for 192.168.0.43 on eth0 to 255.255.255.255 port 67
-DHCPACK of 192.168.0.43 from 192.168.0.1
-bound to 192.168.0.43 -- renewal in 36072 seconds.
-root@rockpro ~ # ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether ce:71:c1:ee:97:e8 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.0.43/24 brd 192.168.0.255 scope global eth0
-       valid_lft forever preferred_lft forever
-root@rockpro ~ # ping google.com
-ping: socket: Address family not supported by protocol
-PING google.com (172.217.169.46) 56(84) bytes of data.
-64 bytes from lhr48s08-in-f14.1e100.net (172.217.169.46): icmp_seq=1 ttl=117 time=21.7 ms
-64 bytes from lhr48s08-in-f14.1e100.net (172.217.169.46): icmp_seq=2 ttl=117 time=19.1 ms
-
---- google.com ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 1001ms
-rtt min/avg/max/mdev = 19.058/20.392/21.726/1.334 ms
-
-Pastebins will expire after 6 months.
-
-[1] https://pastebin.com/JrViZTPe
-[2] https://pastebin.com/EwEbWRfY
-
-Thanks,
-Alex
+The only thing I can take away from this is that maybe the udelay() keeps
+the CPU from entering some powersaving state and with that the PCI bus from
+entering ASPM states (considering that the crash can also be fixed by
+disabling ASPM L1.2).
