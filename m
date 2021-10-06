@@ -2,98 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C65EE4249E8
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 00:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCB754249EE
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 00:38:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239934AbhJFWj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 18:39:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38324 "EHLO
+        id S239722AbhJFWk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 18:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239947AbhJFWio (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 18:38:44 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95604C06176C;
-        Wed,  6 Oct 2021 15:36:43 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id l7so15717740edq.3;
-        Wed, 06 Oct 2021 15:36:43 -0700 (PDT)
+        with ESMTP id S239779AbhJFWkX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 18:40:23 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2002DC06136E;
+        Wed,  6 Oct 2021 15:37:28 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id g6so8972491ybb.3;
+        Wed, 06 Oct 2021 15:37:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=aJj/1qPNuaVQFK3OzLpENkQJhnzkYtyy78uh6Vh8QNI=;
-        b=L0TlaMBtITBxzhR1lZHviuIP/bQA5HOgoY9MF28mg2zKUsEhBR0OBg4qyBDW6UYQFK
-         h3WVON6cCNud1Cat7h9vWBUhP2OwOOTj6xm9TWzuu9tZod7rsVDqmrRY0RPRnVU333mk
-         oldpmbXnjLKEsaIdHF1YcdCctASMZd3pvTXT37JGjY5+rdi0NnHi+rJ9f+AeI1gw3JFa
-         qiIcUMnMv+xTOZQ4DNtcjCAi+W8jOcJbWj6sai7XgeGvNd6zCqvmd7/lRSd7ZrzlwqYZ
-         M3Lk762vdJfnD2xMzfpvljpuguIGED4unT/+FAEVPfZ7YAof8/HNMgpWgLp5APmJgovQ
-         Uqtg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=El8xgii0miK9wdp95H0ci9RxSrj37YXXjsNsZAOWyDQ=;
+        b=EiaD2aKNLD/AzSjRN7rXNOwuaqNZA0+/zKRnrw0T45I5GyOCRqy7VGsDTznYkowG5k
+         PFQm0JY3ZTfXqXONoSvnR6DslULir0Sym3RqRST4B9pS+wCvTn1aRypI8WbbbMLp2ubL
+         B/q5EZrusRZO/uJb/FO5eNSHW+I6b0iWVODY2TacV11XlAsUtMOqrmAZQT1ZI8w0BIuK
+         ZRtAB6xfA6vjkN+9/qskjJDby49F+51pwmYcDM03v/T1k0gTAQ/UTni/2qljP/MUDY7u
+         9bYXAj4cKvZKHHVjfqWBcA3kVsLFtiupnnwnEd2kwnZFRkbqMXdgGoZeZ6GOaapDUjFN
+         Tmig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aJj/1qPNuaVQFK3OzLpENkQJhnzkYtyy78uh6Vh8QNI=;
-        b=bplOCCeguD+DvJlfIzKzSUhOSiAxcE/+wdEdAznjmAKoqiVp9pl799bgNHMGGk3Z2u
-         fc/rEqu2IItiOd4lTdeewcHkEAj9A9MOZ0qRtAjTEOBQMleH6WrvH3qRWVeCQjT2JLhu
-         O3AlojWeaf/mb4HOhZHncwvwgiwZCLPJV+91kr3e+7gm+G1Vf9o7jJf2EWPwPMHtlYZM
-         NEGsEO2clCEOPkGRXL/rZgPHxJIBj4qsy30laT5reTVlv0tmmoOt0WobjDEVycZs5wTH
-         hElK8E+c4MUUCT56oZGPYfAERSMTwkZ4uAObN8s4LyBND6BP7cTltGWNgBKx9hMothIu
-         khHg==
-X-Gm-Message-State: AOAM532hApELI7cfOVwMASapc74Pi67ieowbfp82rkb4KMEH72PytiAR
-        qWU+jGIshegQMN9buAxStYA=
-X-Google-Smtp-Source: ABdhPJxkBNOH1aDqAS8750346rUpHDVKyJa1T5CfAuP5cz9uFbjkqTzrTsIXoRI8jkACY8ggS6wWdA==
-X-Received: by 2002:a17:906:7d42:: with SMTP id l2mr1130949ejp.467.1633559802038;
-        Wed, 06 Oct 2021 15:36:42 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id z8sm9462678ejd.94.2021.10.06.15.36.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Oct 2021 15:36:41 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [net-next PATCH 13/13] Documentation: devicetree: net: dsa: qca8k: document open drain binding
-Date:   Thu,  7 Oct 2021 00:36:03 +0200
-Message-Id: <20211006223603.18858-14-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211006223603.18858-1-ansuelsmth@gmail.com>
-References: <20211006223603.18858-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=El8xgii0miK9wdp95H0ci9RxSrj37YXXjsNsZAOWyDQ=;
+        b=oPh87Lz7o+doKlrUUHdh0Cjg+KV4mMGy4sGrWgQMewlfQehamygvJYi/0+WBC94rmQ
+         3kMWxHPFV++Voeuy+lOhKyV1JT4TYlbhYAnVF/spROikLjJQjlRVa7TZR2h3zlUJ7p6t
+         jaPnfuuIZRYmFap3LToYVmgQ/fcsCZm0wW5cYMYkaMKKcA5paevizHibN1wrb1jr003+
+         mhbBrcxTKgeyWOWo2rXtqdgezH8mTbZD+CjfN4gjfEZiRQbcEF1TyY0xgw2OPCSfjOKI
+         9Ax9YiW4SXqHWyfAIymxF/RxCMD8uQ6OcYAaZ1XLiGSztRyaFxY85U6+Sv2tz84pAo0D
+         oDiA==
+X-Gm-Message-State: AOAM531zCZ1kCpRUNeYoy4TtoqvTDTeEs1TVoEbFA7SZ/MMp5mi8bbpO
+        AZkV6IN/vkS9AX97AQ84HBNxp+Qi2hMtO59GVFk=
+X-Google-Smtp-Source: ABdhPJzKMZAt5W3/de7ps/eTKOWcjTBt+gnEkuVijzmw7ZaUJe2oy5ajUPhK9lVevo9Gopcz5O4GR5Zw+6cK1A+dW88=
+X-Received: by 2002:a25:5606:: with SMTP id k6mr862386ybb.51.1633559847302;
+ Wed, 06 Oct 2021 15:37:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <YV1hRboJopUBLm3H@krava> <CAEf4BzZPH6WQTYaUTpWBw1gW=cNUtPYPnN8OySgXtbQLzZLhEQ@mail.gmail.com>
+ <YV4Bx7705mgWzhTd@krava> <CAEf4BzbirA4F_kW-sVrS_YmfUxhAjYVDwO1BvtzTYyngqHLkiw@mail.gmail.com>
+ <YV4dmkXO6nkB2DeV@krava>
+In-Reply-To: <YV4dmkXO6nkB2DeV@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 6 Oct 2021 15:37:16 -0700
+Message-ID: <CAEf4BzYBS8+9XADjJdvKB=_6tf8_t19UVGfm2Lk1+Nb6qWk5cw@mail.gmail.com>
+Subject: Re: [RFC] store function address in BTF
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Viktor Malik <vmalik@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document new binding qca,power_on_sel used to enable Power-on-strapping
-select reg and qca,led_open_drain to set led to open drain mode.
+On Wed, Oct 6, 2021 at 3:05 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Wed, Oct 06, 2021 at 02:22:28PM -0700, Andrii Nakryiko wrote:
+> > On Wed, Oct 6, 2021 at 1:06 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> > >
+> > > On Wed, Oct 06, 2021 at 09:17:39AM -0700, Andrii Nakryiko wrote:
+> > > > On Wed, Oct 6, 2021 at 1:42 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > > >
+> > > > > hi,
+> > > > > I'm hitting performance issue and soft lock ups with the new version
+> > > > > of the patchset and the reason seems to be kallsyms lookup that we
+> > > > > need to do for each btf id we want to attach
+> > > > >
+> > > > > I tried to change kallsyms_lookup_name linear search into rbtree search,
+> > > > > but it has its own pitfalls like duplicate function names and it still
+> > > > > seems not to be fast enough when you want to attach like 30k functions
+> > > >
+> > > > How not fast enough is it exactly? How long does it take?
+> > >
+> > > 30k functions takes 75 seconds for me, it's loop calling bpf_check_attach_target
+> > >
+> > > getting soft lock up messages:
+> > >
+> > > krava33 login: [  168.896671] watchdog: BUG: soft lockup - CPU#1 stuck for 26s! [bpftrace:1087]
+> > >
+> >
+> > That's without RB tree right? I was curious about the case of you
+> > converting kallsyms to RB tree and it still being slow. Can't imagine
+> > 30k queries against RB tree with ~160k kallsyms taking 75 seconds.
+>
+> yep, that's the standard kallsyms lookup api
+>
+> I need to make some adjustment for rbtree kalsyms code, I think I found
+> a bug in there, so the numbers are probably better as you suggest
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- Documentation/devicetree/bindings/net/dsa/qca8k.txt | 4 ++++
- 1 file changed, 4 insertions(+)
+ok, cool, let's see what are the new numbers then
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-index 550f4313c6e0..4f6ef9f9e024 100644
---- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-@@ -13,6 +13,10 @@ Required properties:
- Optional properties:
- 
- - reset-gpios: GPIO to be used to reset the whole device
-+- qca,package48: Set to 48-pin mode required in some QCA8327 switches.
-+- qca,power-on-sel: Enable Power-on-strapping select required in some QCA8327
-+  switches.
-+- qca,led-open-drain: Set leds to open-drain mode.
- - qca,mac6-exchange: Internally swap MAC0 and MAC6.
- - qca,sgmii-rxclk-falling-edge: Set the receive clock phase to falling edge.
- - qca,sgmii-txclk-falling-edge: Set the transmit clock phase to falling edge.
--- 
-2.32.0
+>
+> >
+> > But as I said, why not map BTF IDs into function names, sort function
+> > names, and then pass over kallsyms once, doing binary search into a
+> > sorted array of requested function names and then recording addr for
+> > each. Then check that you found addresses for all functions (it also
+> > leaves a question of what to do when we have multiple matching
+> > functions, but it's a problem with any approach). If everything checks
+> > out, you have a nice btf id -> func name -> func addr mapping. It's
+> > O(N log(M)), which sounds like it shouldn't be slow. Definitely not
+> > multiple seconds slow.
+>
+> ok, now that's clear to me, thanks for these details
 
+great
+
+>
+> >
+> >
+> > >
+> > > >
+> > > > >
+> > > > > so I wonder we could 'fix this' by storing function address in BTF,
+> > > > > which would cut kallsyms lookup completely, because it'd be done in
+> > > > > compile time
+> > > > >
+> > > > > my first thought was to add extra BTF section for that, after discussion
+> > > > > with Arnaldo perhaps we could be able to store extra 8 bytes after
+> > > > > BTF_KIND_FUNC record, using one of the 'unused' bits in btf_type to
+> > > > > indicate that? or new BTF_KIND_FUNC2 type?
+> > > > >
+> > > > > thoughts?
+> > > >
+> > > > I'm strongly against this, because (besides the BTF bloat reason) we
+> > > > need similar mass attachment functionality for kprobe/kretprobe and
+> > > > that one won't be relying on BTF FUNCs, so I think it's better to
+> > > > stick to the same mechanism for figuring out the address of the
+> > > > function.
+> > >
+> > > ok
+> > >
+> > > >
+> > > > If RB tree is not feasible, we can do a linear search over unsorted
+> > > > kallsyms and do binary search over sorted function names (derived from
+> > > > BTF IDs). That would be O(Nlog(M)), where N is number of ksyms, M is
+> > > > number of BTF IDs/functions-to-be-attached-to. If we did have an RB
+> > > > tree for kallsyms (is it hard to support duplicates? why?) it could be
+> > > > even faster O(Mlog(N)).
+> > >
+> > > I had issues with generic kallsyms rbtree in the post some time ago,
+> > > I'll revisit it to check on details.. but having the tree with just
+> > > btf id functions might clear that.. I'll check
+> >
+> > That's not what I'm proposing. See above. Please let me know if
+> > something is not clear before going all in for RB tree implementation
+> > :)
+> >
+> >
+> > But while we are on topic, do you think (with ftrace changes you are
+> > doing) it would be hard to support multi-attach for
+> > kprobes/kretprobes? We now have bpf_link interface for attaching
+> > kprobes, so API can be pretty aligned with fentry/fexit, except
+> > instead of btf IDs we'd need to pass array of pointers of C strings, I
+> > suppose.
+>
+> hum, I think kprobe/kretprobe is made of perf event (kprobe/kretprobe
+> pmus), then you pass event fd and program fd to bpf link syscall,
+> and it attaches bpf program to that perf event
+>
+> so perhaps the user interface would be array of perf events fds and prog fd
+>
+> also I think you can have just one probe for function, so we will not need
+> to share kprobes for multiple users like we need for trampolines, so the
+> attach logic will be simple
+
+creating thousands of perf_event FDs seems expensive (and you'll be
+running into the limit of open files pretty soon in a lot of systems).
+So I think for multi-attach we'll have to have a separate way where
+you'd specify kernel function name (and maybe also offset). I'm just
+saying that having BPF_LINK_CREATE command, it's easier (probably) to
+extend this for kprobe multi-attach, than trying to retrofit this into
+perf_event_open.
+
+>
+> jirka
+>
+> >
+> > >
+> > > thanks,
+> > > jirka
+> > >
+> > > >
+> > > >
+> > > > >
+> > > > > thanks,
+> > > > > jirka
+> > > > >
+> > > >
+> > >
+> >
+>
