@@ -2,118 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52A7C423FC2
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 16:03:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C38DA423FDB
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 16:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238793AbhJFOFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 10:05:11 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:39970
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231403AbhJFOFK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 10:05:10 -0400
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 79C6D3F32D
-        for <netdev@vger.kernel.org>; Wed,  6 Oct 2021 14:03:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633528997;
-        bh=ibn5Z26Pr65te2VbiLuW3pAaYOxdHH6AdO7mMM/2Eiw=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=Gt5S355VXGxsHgOUnw2osBPnM9+Xo6NKNF5waY9aD/YKPmta2UhAztYR7NSaEUc3T
-         utzYPg5EjuooZCP1ejOcPi548kXUs7eFbiziNcrWKeA74jrPAzZ+SzR3fdk2aAp3cS
-         +Dd5c2jbuKYUSKscGKYhN8qZEwAs73ejjLLcoOxVv8IbRNbwSzglcPX3pckwZEkBUJ
-         glSQb/zt9U9EU60hBzkac3X91e7nDet+fdTKi3rKVky6aex9S/RQVSQh3HjN+iu4JJ
-         99e/c5db62R8ZgAzzNWe4urHDqQMbcgMrlSpLZS7E1+FBaoiYtafRGpjQv+36UsiPq
-         c+o8869k2Uk/g==
-Received: by mail-pj1-f69.google.com with SMTP id v19-20020a17090ac91300b0019fb4310e88so1590178pjt.4
-        for <netdev@vger.kernel.org>; Wed, 06 Oct 2021 07:03:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ibn5Z26Pr65te2VbiLuW3pAaYOxdHH6AdO7mMM/2Eiw=;
-        b=4ZsM9dijw1cCXDsd+d+hYSt1SrJvMRbwMl+k9mxViV4C3oAPlPhyhJPjVz84nUpxJo
-         IZqYMtulkvpHb/7q66bZWbMmHQHnWkPxu8AvdWW2gxBaY1LABYh9kBQ/3rBX7kgJ0Cbl
-         zqRzQrRWi7HvSv2DfuoYzkTpyc0/BhY40jdO0irSAoohRRMGROLifjT+zq1jdLCy8fNZ
-         iyuyZsX/wfTDUlF4fDKRvBiBJLWCGTIwzeBH8cXNieI5vRzVU4ytoD6yO5N9pD/Tsv+s
-         RWGNLa4PfsRmnzmLY7MdtV8BkpR8tMVkM4y4ELlsfsCoKLrMiYYB+M3RwKebBKTRzup5
-         hKtg==
-X-Gm-Message-State: AOAM531rOZrT6bd2rPkviint+voEo+8wtaw40lMhKHI+YHjUEG6P+PWr
-        JVdLCMDMofVc96bbsoODO1lm7R+lhLsZxZS6jQoDAPUhkcgFzTMmfmGS7oCuhkNa2c8C7BWm7GD
-        rkUKT2p7ynzXqV7qOqWCkj4R0sTmDV4uq0g==
-X-Received: by 2002:a63:530e:: with SMTP id h14mr20578592pgb.279.1633528994057;
-        Wed, 06 Oct 2021 07:03:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyKBRbnsaBXi8Wo3tc4fwij7fOUyYDsU281VcBiDVS2nS7CeoWGyPlnwDIvWDYDAhlfLpnrRg==
-X-Received: by 2002:a63:530e:: with SMTP id h14mr20578337pgb.279.1633528991535;
-        Wed, 06 Oct 2021 07:03:11 -0700 (PDT)
-Received: from localhost.localdomain ([69.163.84.166])
-        by smtp.gmail.com with ESMTPSA id h74sm13448222pfe.196.2021.10.06.07.03.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Oct 2021 07:03:10 -0700 (PDT)
-From:   Tim Gardner <tim.gardner@canonical.com>
-To:     aelior@marvell.com
-Cc:     tim.gardner@canonical.com, GR-everest-linux-l2@marvell.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shai Malin <smalin@marvell.com>,
-        Omkar Kulkarni <okulkarni@marvell.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next][RFC] qed: Initialize debug string array
-Date:   Wed,  6 Oct 2021 08:02:59 -0600
-Message-Id: <20211006140259.12689-1-tim.gardner@canonical.com>
-X-Mailer: git-send-email 2.33.0
+        id S231501AbhJFOMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 10:12:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60648 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231600AbhJFOMA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 10:12:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id C444B6105A;
+        Wed,  6 Oct 2021 14:10:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633529407;
+        bh=Uc8Q20VnwsduTfwKM/OouKblxdsH43dSctysbxxvHgQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=deRmKfHTsAW50a/XcgivbYDC3eKZK2zTBYTBWI7vj6bYQ1l5r+1D0WQZk9I2ZmzIu
+         68kAL0+DGSy8PNa7q7lwxw++YWLayz7Osqu7LBeNxH83M9R4XOzB1H8gBS207Ek3Lj
+         ANYqC1hRbF2UutzL/G5tyinv2FPEYfHfc7qBDzgbJKFRWdnmAyCk1KL+I+j4Yb6ArL
+         M5skWTtmEjhRGm5il2NzIt62eO//Tay42z+Jsw0cO/BOCgxLpRf7ciFzPaF7kOhq8W
+         HBu2G1ErXbbGxoC9a2juSuMFj66ff9N4aM8RcLNHwzjJlawOk4ARKfuDsK5shA3/7D
+         yLOf5yxiSOJww==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B24C760971;
+        Wed,  6 Oct 2021 14:10:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 0/7] A new eBPF JIT implementation for MIPS
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163352940772.9599.5939069697064558862.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Oct 2021 14:10:07 +0000
+References: <20211005165408.2305108-1-johan.almbladh@anyfinetworks.com>
+In-Reply-To: <20211005165408.2305108-1-johan.almbladh@anyfinetworks.com>
+To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        paulburton@kernel.org, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        tsbogend@alpha.franken.de, chenhuacai@kernel.org,
+        jiaxun.yang@flygoat.com, yangtiezhu@loongson.cn,
+        tony.ambardar@gmail.com, bpf@vger.kernel.org,
+        linux-mips@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Coverity complains of an uninitialized variable.
+Hello:
 
-CID 120847 (#1 of 1): Uninitialized scalar variable (UNINIT)
-3. uninit_use_in_call: Using uninitialized value *sw_platform_str when calling qed_dump_str_param. [show details]
-1344        offset += qed_dump_str_param(dump_buf + offset,
-1345                                     dump, "sw-platform", sw_platform_str);
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-Fix this by initializing the string array with '\0'.
+On Tue,  5 Oct 2021 18:54:01 +0200 you wrote:
+> This is an implementation of an eBPF JIT for MIPS I-V and MIPS32/64 r1-r6.
+> The new JIT is written from scratch, but uses the same overall structure
+> as other eBPF JITs.
+> 
+> Before, the MIPS JIT situation looked like this.
+> 
+>   - 32-bit: MIPS32, cBPF-only, tests fail
+>   - 64-bit: MIPS64r2-r6, eBPF, tests fail, incomplete eBPF ISA support
+> 
+> [...]
 
-Fixes: 6c95dd8f0aa1d ("qed: Update debug related changes")
+Here is the summary with links:
+  - [1/7] MIPS: uasm: Enable muhu opcode for MIPS R6
+    https://git.kernel.org/bpf/bpf-next/c/52738ad51026
+  - [2/7] mips: uasm: Add workaround for Loongson-2F nop CPU errata
+    https://git.kernel.org/bpf/bpf-next/c/be0f00d5a246
+  - [3/7] mips: bpf: Add eBPF JIT for 32-bit MIPS
+    https://git.kernel.org/bpf/bpf-next/c/88dfe3f95766
+  - [4/7] mips: bpf: Add new eBPF JIT for 64-bit MIPS
+    https://git.kernel.org/bpf/bpf-next/c/42fb8eacf86e
+  - [5/7] mips: bpf: Add JIT workarounds for CPU errata
+    https://git.kernel.org/bpf/bpf-next/c/a1db4f358142
+  - [6/7] mips: bpf: Enable eBPF JITs
+    https://git.kernel.org/bpf/bpf-next/c/6675d4a60007
+  - [7/7] mips: bpf: Remove old BPF JIT implementations
+    https://git.kernel.org/bpf/bpf-next/c/06b339fe5450
 
-Cc: Ariel Elior <aelior@marvell.com>
-Cc: GR-everest-linux-l2@marvell.com
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Shai Malin <smalin@marvell.com>
-Cc: Omkar Kulkarni <okulkarni@marvell.com>
-Cc: Prabhakar Kushwaha <pkushwaha@marvell.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org (open list)
-Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
----
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I'm not sure what the value of sw_platform_str should be, but this patch is
-clearly a bandaid and not a proper solution.
-
----
- drivers/net/ethernet/qlogic/qed/qed_debug.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-index 6d693ee380f1..a393b786c5dc 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-@@ -1319,6 +1319,8 @@ static u32 qed_dump_common_global_params(struct qed_hwfn *p_hwfn,
- 	u32 offset = 0;
- 	u8 num_params;
- 
-+	sw_platform_str[0] = '\0';
-+
- 	/* Dump global params section header */
- 	num_params = NUM_COMMON_GLOBAL_PARAMS + num_specific_global_params +
- 		(dev_data->chip_id == CHIP_BB ? 1 : 0);
--- 
-2.33.0
 
