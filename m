@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD4A2423D2A
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 13:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2B25423D2C
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 13:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238293AbhJFLtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 07:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56622 "EHLO
+        id S238389AbhJFLts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 07:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238117AbhJFLto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 07:49:44 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F43CC061749;
-        Wed,  6 Oct 2021 04:47:52 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id dj4so8832650edb.5;
-        Wed, 06 Oct 2021 04:47:52 -0700 (PDT)
+        with ESMTP id S238117AbhJFLtq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 07:49:46 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800FDC061749;
+        Wed,  6 Oct 2021 04:47:54 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id x7so8734827edd.6;
+        Wed, 06 Oct 2021 04:47:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EqSDl/mylFRuVIkcVfrD5wA64zlCr4ZZ5hRZ/Oux4fA=;
-        b=IaqpZTdP79fj7hfFbwaekuNwmeyWRLdv+5VjfKPsre7hO+LLLYPsKw4xHkQPzjclp6
-         04D8rDRw3JTak0DDydnBRbeiCiRt7qW5i1vON3wV9uL556K5eVsZGV107mv9rcLSw6qn
-         YNKQAfborweo/JEedm3pQ2pqSasw/ibOThNSdc3XfbFLH4XuyJdIYb72e3W6AFlQP+w9
-         mxCE6wbYay9aZ7MpkfAlPNcYw+nYsmE54sdpia5yd1bR7wTKUB490g/yxfwJobKNDS/m
-         8JntMyTdsggXExfo65XwL1Cphc9gcn8IiJWCRbF2MLXAONVnLTBfwNiDhH1TNUGCe4Vx
-         vCCw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=vt0NBmFfay7kkrnrDFUj1c9VXYawXVmI+68SUXjE5XQ=;
+        b=jUH3vTk4EL2k5O2twAyUHIl+Oq7b7GjhOjSIJlTZOVqGTb5W3rGbTg+hNnO2rrogJ3
+         B/cm54x9tqi4dE5pjbzo9y1P8a+BDwzLT/jDMQf8PZqlC3esKlOiwQ+9sP8ua6oAFAix
+         sREDOaWy9XnK3c3FuPoq9AOaFXgzyqNpeXIJuW6zJoZ6Rgcn49M8JY1s3EMu3mZRK/Yf
+         zoKsd1tKQ/99I+aHCYKOpVuX62pn4PhWn+7O0ge5xTr8ixQ9CLG3LEsiqBmvLxPc56qW
+         MCkxYNOjZm7WOONJPY7sgJ3/d7wJUW+pfZpNCnZrcrUvaTPXA8aO2URUCY2MGsWDVOXr
+         zM2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EqSDl/mylFRuVIkcVfrD5wA64zlCr4ZZ5hRZ/Oux4fA=;
-        b=tFsk6uLUng0Y0zypFFr1Nuzo1vwIOtW0YnVUIMWrkri5Kvn7I7kfgNjCtzAU9Qc539
-         IV9crMm+RYC6sc8AEvkZwu6/It0EM/I6GTjyUJ5N89dEHn8JsgNSO/kmm8C2axNFR+pM
-         HbQkDwHfyFMfLHmVuxvSBdQN6WtoTPUwatoDociV6hAtyNUehSP4sHF7v09nijJmE0PE
-         wRyrez+xMr1UDacVbYSFeY9mn/Np8EBZigBFzCRrMzUkXT6PXh+23XmgBK0/KGNKgvBT
-         lvdYXxbHKIgdJpU36+yKZektdTsihuEMbndrqpleqYsXfBDIYm5uydrSq1iThEjdYFIU
-         BUQA==
-X-Gm-Message-State: AOAM5326wx/B3YgfJ+OI+lUwcM6h49AnMElOym6ryUymHV+cdIYdBhi8
-        dEDiJl8j+CnHQasgeXW9Ko0LRmOk45fVx0szrx8=
-X-Google-Smtp-Source: ABdhPJwvRb3CrrV1nKJtM0pjbTIOvb5BgON9vKzQ8Fgu24g24KFsXiYiy8FmDAbLMoWdILHxcfPXiA==
-X-Received: by 2002:a17:906:585a:: with SMTP id h26mr31179471ejs.31.1633520871024;
-        Wed, 06 Oct 2021 04:47:51 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=vt0NBmFfay7kkrnrDFUj1c9VXYawXVmI+68SUXjE5XQ=;
+        b=oRU76LhKYEgQKXa76i3Pyk6qDAcLqk/kluk/g8/jT9MJ5qnspQDOjTffAl/cIJ24vf
+         A13AmQm8Qe98r4BC0A7uL0tGnr3q2inw/SjRkcULjnvTB+lDHyB/JToWxLlzUCI0xnow
+         9Mz/UksOB0SzNttW1U6pT5laGHxIonFxH9TXyqJuGKUQj/w26yE0pixCEvqzTf1d3Yi6
+         RcSbcEInj/uwD5Jwaz1E5+pZ8tXyN6x1U+reFvAg7oKWECIPZpmxnLZOlMCNCYH6Wd9a
+         8sO8HgNvts59iexRCPFK9XlVX573o06zpoPmUde3CtBiBztkYtx/eDfXlnHsm3ZppfHu
+         J2zg==
+X-Gm-Message-State: AOAM533tAFX12AHx7Q0JoWdQfCG8qGcngZVS3D0eKfsYhbFrm/NAA1/A
+        QtU5dTRTafzUYQ3ZJEPvW/galkTGeqtCu/NJ9vQ=
+X-Google-Smtp-Source: ABdhPJxCl+vFpnD4+pHC1ZRtCJYoaz/ysBhS61vfXewSVTlzOYkxOqBr/JNTd+Ra+/skrEFl6OaFqQ==
+X-Received: by 2002:a05:6402:376:: with SMTP id s22mr12868841edw.27.1633520872276;
+        Wed, 06 Oct 2021 04:47:52 -0700 (PDT)
 Received: from localhost.localdomain ([95.76.3.69])
-        by smtp.gmail.com with ESMTPSA id y40sm1402187ede.31.2021.10.06.04.47.49
+        by smtp.gmail.com with ESMTPSA id y40sm1402187ede.31.2021.10.06.04.47.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Oct 2021 04:47:50 -0700 (PDT)
+        Wed, 06 Oct 2021 04:47:51 -0700 (PDT)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>, Shuah Khan <shuah@kernel.org>,
         David Ahern <dsahern@kernel.org>
@@ -55,60 +55,51 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Seth David Schoen <schoen@loyalty.org>,
         netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 00/11] selftests: Improve nettest and net/fcnal-test.sh
-Date:   Wed,  6 Oct 2021 14:47:16 +0300
-Message-Id: <cover.1633520807.git.cdleonard@gmail.com>
+Subject: [PATCH 01/11] selftests: net/fcnal: Fix {ipv4,ipv6}_bind not run by default
+Date:   Wed,  6 Oct 2021 14:47:17 +0300
+Message-Id: <44c1cf86c0ff6390f438e307a6a956b554a90055.1633520807.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1633520807.git.cdleonard@gmail.com>
+References: <cover.1633520807.git.cdleonard@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a series of improvements to nettest and fcnal-test.sh from
-tools/testing/selftests/net which make tests run faster. For me this
-reduces the runtime from ~40minutes to ~5minutes and makes the tcp
-tests very fast.
+Inside the TESTS_IPV{4,6} array these are listed as ipv{4,6}_addr_bind
+but test running loop only checks for ipv{4,6}_bind and bind{,6} and
+ignores everything else.
 
-Some of the early commits are outright bugfixes.
+As a consequence these tests were not run by default, only with an
+explicit -t.
 
-The tests DO NOT pass perfectly for me on latest net-next/master but I
-verified that the failures also happen without my changes. Here is the
-list of failures:
+Fix inside TESTS_IPV{4,6}.
 
-TEST: ping local, VRF bind - VRF IP                                           [FAIL]
-TEST: Raw socket bind to local address - VRF IP                               [FAIL]
-TEST: ping out, VRF bind - ns-B IPv6 LLA                                      [FAIL]
-TEST: ping out, VRF bind - multicast IP                                       [FAIL]
-TEST: TCP socket bind to out of scope local address - ns-A loopback IPv6      [FAIL]
-TEST: TCP socket bind to VRF address with device bind - VRF IPv6              [FAIL]
+Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+---
+ tools/testing/selftests/net/fcnal-test.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Three of those were not tested by default before my changes, only with
-explicit -t 'bind bind6'
-
-This is related to my work on TCP-AO but there are no patch
-dependencies
-Link: https://lore.kernel.org/netdev/cover.1632240523.git.cdleonard@gmail.com/
-
-Leonard Crestez (11):
-  selftests: net/fcnal: Fix {ipv4,ipv6}_bind not run by default
-  selftests: net/fcnal: Mark unknown -t or TESTS value as error
-  selftests: net/fcnal: Non-zero exit on failures
-  selftests: net/fcnal: Use accept_dad=0 to avoid setup sleep
-  selftests: net/fcnal: kill_procs via spin instead of sleep
-  selftests: net/fcnal: Do not capture do_run_cmd in verbose mode
-  selftests: nettest: Implement -k to fork after bind or listen
-  selftests: net/fcnal: Replace sleep after server start with -k
-  selftests: nettest: Convert timeout to miliseconds
-  selftests: nettest: Add NETTEST_CLIENT,SERVER}_TIMEOUT envvars
-  selftests: net/fcnal: Reduce client timeout
-
- tools/testing/selftests/net/fcnal-test.sh | 710 ++++++++--------------
- tools/testing/selftests/net/nettest.c     | 134 +++-
- 2 files changed, 378 insertions(+), 466 deletions(-)
-
-
-base-commit: 0693b27644f04852e46f7f034e3143992b658869
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 13350cd5c8ac..2839bed91afa 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -3937,12 +3937,12 @@ EOF
+ }
+ 
+ ################################################################################
+ # main
+ 
+-TESTS_IPV4="ipv4_ping ipv4_tcp ipv4_udp ipv4_addr_bind ipv4_runtime ipv4_netfilter"
+-TESTS_IPV6="ipv6_ping ipv6_tcp ipv6_udp ipv6_addr_bind ipv6_runtime ipv6_netfilter"
++TESTS_IPV4="ipv4_ping ipv4_tcp ipv4_udp ipv4_bind ipv4_runtime ipv4_netfilter"
++TESTS_IPV6="ipv6_ping ipv6_tcp ipv6_udp ipv6_bind ipv6_runtime ipv6_netfilter"
+ TESTS_OTHER="use_cases"
+ 
+ PAUSE_ON_FAIL=no
+ PAUSE=no
+ 
 -- 
 2.25.1
 
