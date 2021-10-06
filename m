@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBF43424085
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 16:53:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 405D642408A
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 16:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238712AbhJFOzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 10:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
+        id S239054AbhJFO4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 10:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238205AbhJFOzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 10:55:35 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537BCC061746;
-        Wed,  6 Oct 2021 07:53:43 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id pf6-20020a17090b1d8600b0019fa884ab85so4628803pjb.5;
-        Wed, 06 Oct 2021 07:53:43 -0700 (PDT)
+        with ESMTP id S238205AbhJFO4o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 10:56:44 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BC0C061746;
+        Wed,  6 Oct 2021 07:54:52 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id r9so3158432ile.5;
+        Wed, 06 Oct 2021 07:54:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jnJZeKgIptkk68YEHX3pQNflodspjjs/YieRerqVbnQ=;
-        b=aL9VjuuHUNJaVNC9iLXknQyxlHAnJhm6LkmZGE53ljjZtVAwn701nzSehD0v8pOoIt
-         PGZCAYHyVNfZuASyoe4sMKGG/Ct2bHF8/JZNlY8JQ3MUlks1IoI+qYTHdCQxoCTvG1Gw
-         Gq8Cj2M94sejSt5WBLWmcd/vvqBfVz+mO+E+8jC9FYear58pQteEMvij+ePaC8V4Lvir
-         dvNhG7JBEaRpkXuX89mfYoTheyFIthHisilLtV4FhVo7UpPCdrTdCWOlvNAKTBVNLRwc
-         C7S0mIV68B9Tr91cXi1ih8UVPi3G7Ay38ZLNN28Ff2pMFReN0vWEC3kjHKqph6qh6UHe
-         bUWg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KwYHYOuqFAsOEN4ljfi4q77Tgl6pY1vJiqgxP79RAEQ=;
+        b=M+tdo9ZG5jUgwwtycOG2oql/AFGQkkXt3HIp07R3MPKzZAo/PgQX9JBjrB5DJ6pQyX
+         ILlSrfPTqvdBaWMZrKUdTzSrFqDYkXs+qpoUa1QWoem3XNlRB6wZjkvvUrREYqAhzQKZ
+         jRCCgy6AiJ+WUyW6TX2BAd2e5JhoL+hauZ6uKlhCr17I+wlipjOJyn+OxvLHv/d00x1Q
+         uJDKXnCYaGT+RDfDUIdsd/B9wrZrcR0ae47ox+PSYXfnebO5la/U8RQP8MjTFPW4+E+I
+         HkKT32+bMnLqusfQGbttAZOic7KpgnHDbB0ZhRb5REemuSTeuMo/K6o8fYPUMwToqcLQ
+         hCgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jnJZeKgIptkk68YEHX3pQNflodspjjs/YieRerqVbnQ=;
-        b=GghviJOYTa90skkdH2zXjkZCks1b4h4DifPzexe3d+XYKhjuM3GNdftzLW1lIAJKBj
-         xe8oYUWTNz27QPVbUqcApoKaWVoJZsTCxbLB9k4zM0yZ92o5VBzd9rbTx3D0eVqMLIPb
-         C9D0mheGjdb5jKd0Wfd0l/RdKJEafz6ZtS210walcaU02ZVHG5XrhoQoTkvqFQ6HWW0a
-         x6PdvwpPbSMzDbO42YWhIpoaJn6FxOnbk1BZbhS6kUqTn23PaIk1WnFNA5jyxXV0nEoW
-         B2lMYBzpO8zIFuO7qbp9fWH3oC9pRHDvKN8m4oErq4e5J3HswxotCKto+I9c3XZRiNF8
-         k3IQ==
-X-Gm-Message-State: AOAM5307ho2iGEfRPhziJ1SU0iFuXUkhOKEhevuoRSbREnBCuwCUnSLw
-        q+x+ELBN0q/wC6h3w5hOk6U/J1xBgTUURt8n+Bw=
-X-Google-Smtp-Source: ABdhPJxnTjLckeUKrsJhPYBYaJTQA9JXAISCBEgPn3wXtpXroaz713aA3dWQUCSHhMP5Cj7Vh0p+5wBLXy/+cF09BCg=
-X-Received: by 2002:a17:90a:19d2:: with SMTP id 18mr11424328pjj.122.1633532022824;
- Wed, 06 Oct 2021 07:53:42 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KwYHYOuqFAsOEN4ljfi4q77Tgl6pY1vJiqgxP79RAEQ=;
+        b=IBPVs3ulkyLRbl8726pg48YWb0L6XPmLq9HBtUbPPcOQ8l6JYi5BDr+3LAiuGktFqL
+         u0L0SI7Hi82KUQkecc7reP8J6uWGQF4Khfwpf+i/Qw+zo8KqA5O3JfzL11iXVSuVHZGH
+         6T86tgGnyCfF4Py5jCc0QeQEbibB3n1brYhYxSOBNevbIc8bOysxfZN+TyALhqIIuSAO
+         3lduinko5s/S9jR9up+Q2tDMfiHNjzIGoHpf+BqCj3W48yLMrrjX5esaRnvefUyx0csA
+         yR4DI9mlkvstH2LYzmu458Ezon0r9DKDToYuqLjaCiTeCEnNAjhTfN05l0aI4HOdaNuE
+         l5Ow==
+X-Gm-Message-State: AOAM532MfdbduoZ+wEymzBZ4f4ygjKWORXboJf0qHf2UcacUzhv0dtnb
+        dRjbIHfqY+hL/7oXIB+cMSo5v/Rlm1vAuQ==
+X-Google-Smtp-Source: ABdhPJw2K+yfK4cXBrDCD12ujVOz41XePSjB//mONzXLbUMRUw9E0PTqfjsD9LnGwSqMYwUp6ItPfQ==
+X-Received: by 2002:a05:6e02:1c47:: with SMTP id d7mr1048302ilg.49.1633532091352;
+        Wed, 06 Oct 2021 07:54:51 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id d8sm1358712ioh.46.2021.10.06.07.54.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Oct 2021 07:54:51 -0700 (PDT)
+Subject: Re: [PATCH 08/11] selftests: net/fcnal: Replace sleep after server
+ start with -k
+To:     Leonard Crestez <cdleonard@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, David Ahern <dsahern@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Seth David Schoen <schoen@loyalty.org>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1633520807.git.cdleonard@gmail.com>
+ <ec40bd7128a30e93b90ba888f3468f394617a010.1633520807.git.cdleonard@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <43210038-b04b-3726-1355-d5f132f6c64e@gmail.com>
+Date:   Wed, 6 Oct 2021 08:54:50 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <YV1hRboJopUBLm3H@krava> <YV1h+cBxmYi2hrTM@krava>
-In-Reply-To: <YV1h+cBxmYi2hrTM@krava>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 6 Oct 2021 07:53:31 -0700
-Message-ID: <CAADnVQLeHHBsG3751Ld3--w6KEM1a+8V4KY8MReexWo+bLgdmg@mail.gmail.com>
-Subject: Re: [RFC] store function address in BTF
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <ec40bd7128a30e93b90ba888f3468f394617a010.1633520807.git.cdleonard@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 6, 2021 at 1:44 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Wed, Oct 06, 2021 at 10:41:41AM +0200, Jiri Olsa wrote:
-> > hi,
-> > I'm hitting performance issue and soft lock ups with the new version
-> > of the patchset and the reason seems to be kallsyms lookup that we
-> > need to do for each btf id we want to attach
->
-> ugh, I meant to sent this as reply to the patchset mentioned above,
-> nevermind, here's the patchset:
->   https://lore.kernel.org/bpf/20210605111034.1810858-1-jolsa@kernel.org/
->
-> jirka
->
-> >
-> > I tried to change kallsyms_lookup_name linear search into rbtree search,
-> > but it has its own pitfalls like duplicate function names and it still
-> > seems not to be fast enough when you want to attach like 30k functions
-> >
-> > so I wonder we could 'fix this' by storing function address in BTF,
-> > which would cut kallsyms lookup completely, because it'd be done in
-> > compile time
-> >
-> > my first thought was to add extra BTF section for that, after discussion
-> > with Arnaldo perhaps we could be able to store extra 8 bytes after
-> > BTF_KIND_FUNC record, using one of the 'unused' bits in btf_type to
-> > indicate that? or new BTF_KIND_FUNC2 type?
-> >
-> > thoughts?
+On 10/6/21 5:47 AM, Leonard Crestez wrote:
+> The -k switch makes the server fork into the background after the listen
+> call is succesful, this can be used to replace most of the `sleep 1`
+> statements in this script.
+> 
+> Change performed with a vim command:
+> 
+> s/nettest \(.*-s.*\) &\n\s*sleep 1\n/nettest \1 -k\r
+> 
+> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+> ---
+>  tools/testing/selftests/net/fcnal-test.sh | 641 ++++++++--------------
+>  1 file changed, 219 insertions(+), 422 deletions(-)
+> 
 
-That would be on top of your next patch set?
-Please post it first.
+I have a change from January [1] that runs the tests with 1 binary -
+takes both client and server side arguments, does the server setup,
+switches namespaces as needed and then runs the client side. I got
+bogged down validating the before and after which takes a long time
+given the number of tests. The output in verbose mode is as important as
+the pass / fail. Many of the tests document existing behavior as well as
+intended behavior.
+
+You used a search and replace to update the tests. Did you then do the
+compare of test results - not pass / fail but output?
+
+
+[1]
+https://github.com/dsahern/linux/commit/8e16fbab1eb224298e3324a9ddf38e27eee439c7
