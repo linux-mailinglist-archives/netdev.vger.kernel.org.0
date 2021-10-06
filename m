@@ -2,122 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E83974248FD
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 23:35:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 750CF424900
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 23:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239683AbhJFVhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 17:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
+        id S239713AbhJFVha (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 17:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbhJFVhK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 17:37:10 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4D3C061753;
-        Wed,  6 Oct 2021 14:35:17 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id r18so15038991edv.12;
-        Wed, 06 Oct 2021 14:35:17 -0700 (PDT)
+        with ESMTP id S232152AbhJFVh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 17:37:29 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF303C061746;
+        Wed,  6 Oct 2021 14:35:36 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id d131so8660768ybd.5;
+        Wed, 06 Oct 2021 14:35:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=k2aWKq81FbwNlwh5R8TQ/Jg8udU/6vv2IjPzFQ2xQYI=;
-        b=MO3EPnYEBmt3cY4QIjuUzEkrBOj4RXjpfwB77pM/xDipuhauDTCEAa0cxkz4+HNQYT
-         X5Q2SiOx7f0uGD/i5MeGXjde3rwJitLh/fVa1rEAezu5HnKriP66VUePWE/rygi6Sbnf
-         bb3zh3Ksmr5MDjCa8yHLVDkl5c1ka1SJSbR78NVLqBkKd01SLJd+rYM5VWg5fyg3Aif1
-         8AU46DcA9DVczx6lpEjNFkVj4YuDPj/v2+R4YZOvu060ahg5n11qhpbDNJB5bZAki/Eg
-         k8NkaANEd6zsct2IALxXqGIO3EO/oyULIpSXd/o/iCbdbmIOW78RuNPXs6L/qZAdBJj9
-         UUnA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rR2cRFE2Mq+8LHjKOluZMaFdRd1OI9HbsQgSz23jqJw=;
+        b=QYQXZjI35chblDogkAkqOqEUMKYFDf2tdJ8OpvIJ9Ezh5CYt63EiIduNWyiX2+6kTP
+         UnEp4tBy3dswll/9zPmZwXzYI+DjCNhloSQcWgGEKpA8WR+DuRb3bYKe+w866eFNLqPV
+         baagOvp75rElKjZcXXmVxaTu1WbUqTo9/2eLRzxmiJHaCLGlsMBmLYYr0qFDpG4YYiiL
+         DyBEtea4eqL8hQMAQJyPIBI5dryKGNcMX0HmIHs0SW8oCwXap/ivS1TxuYP3HHVnr/H3
+         1R+B2Oc5L011sVOY9HYj1mt+a+cNqCVEMwSpLSL+KXWXSkTJgoD0liMuSFqkwSbduRKc
+         XkaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=k2aWKq81FbwNlwh5R8TQ/Jg8udU/6vv2IjPzFQ2xQYI=;
-        b=KmuSj2VX5jkYIiSAFUcOHFT0SZUeACQIR4v9jCZXjPsqmDIY4qkTMKSAZigwIQ37UE
-         tqeCedlHGI0qZNe6nC69W293s0XpM1yXY6K0dn2PPCX7DpBQasXHYmVUHaw77ViV6gWe
-         KgMKC4kgj06ZRP4G1F8U6qGtyIoGhUFiY9PeCrfDOf6NC8432jQ81KFNSSNTRXGN1xTY
-         zEZCW5ylNKWd8Pc7sunt+EHXISnLijtSCpt+NF11sLwL8zKJTxMsV6UAf/RckXqdXhmL
-         cLyX5k4y4ppBwafekiBduXIesxDqS2TkQsjt7876Fto6Nv0GhcGNz0s6/YYSh0GhkYk+
-         w3Dg==
-X-Gm-Message-State: AOAM530qJEKbufcEhdqXX6eSLmZ5KPLM+w5TuUKcC1oxVxFqim18oIlj
-        DCjY1qnPAOk8ZSWZvimgCV5luth7LylH5JAKTMadvA==
-X-Google-Smtp-Source: ABdhPJwjMTd1GVQw9RB1UdIg9jNf4eF/3QHYTlF9HB2C7uy1+9qeoPgzPYQVzkTrMNVt3FJzNYtZEQ==
-X-Received: by 2002:a17:906:5855:: with SMTP id h21mr780128ejs.230.1633556115999;
-        Wed, 06 Oct 2021 14:35:15 -0700 (PDT)
-Received: from ?IPv6:2a04:241e:501:3870:473a:8ebc:828b:d6c6? ([2a04:241e:501:3870:473a:8ebc:828b:d6c6])
-        by smtp.gmail.com with ESMTPSA id d17sm6302991edv.58.2021.10.06.14.35.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Oct 2021 14:35:15 -0700 (PDT)
-Subject: Re: [PATCH 08/11] selftests: net/fcnal: Replace sleep after server
- start with -k
-To:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, David Ahern <dsahern@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Seth David Schoen <schoen@loyalty.org>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1633520807.git.cdleonard@gmail.com>
- <ec40bd7128a30e93b90ba888f3468f394617a010.1633520807.git.cdleonard@gmail.com>
- <43210038-b04b-3726-1355-d5f132f6c64e@gmail.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-Message-ID: <d6882c3f-4ecf-4b4e-c20e-09b88da4fbd6@gmail.com>
-Date:   Thu, 7 Oct 2021 00:35:14 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rR2cRFE2Mq+8LHjKOluZMaFdRd1OI9HbsQgSz23jqJw=;
+        b=n2CqMBTrsbpHL1CKiqtghDq6XuY2m4VWGqkyC8mVCyVKPkRHnF4lZpg4KGxDGeu4/N
+         XSgpfRRgjMcIyR7XeJAeSU//OBnm/9u5YXo9PIeZW0U61knvbkswpHhhea3uJGbqp/+Z
+         LUfyztUjeUSTqJuXIJR6n3M4Hpxj7S/7Hd5A4EvKvuT2BtNkFXQhFe1fzijuvEqqk9IE
+         C7vvYVmtIEFHM1tWjS5StMuQMSz1BFimS51RtMKqGU8dN7EIuy2NgMKVec5qMkK+bP8v
+         er7crZxkkMEp/NMgDmumh63Qf4s/KM/l13r06Px/nA49DojGUaMp/lA/EOoE7CGJAvH6
+         5B1Q==
+X-Gm-Message-State: AOAM532BlvT2LhDMgbXBbbCJRj+rFCiP29p3Q1FRRcSpjtl2DFi3sFb0
+        MPRauxdWEHFjI98QovlirSbY3gVl7U1uT+fQT0k=
+X-Google-Smtp-Source: ABdhPJyy+Lu8paWW/omzRGWP62b0C2F37+ml/Dm6OW49kUUOIwknD36Qf04NJwbUjP0KjusWZPjEWA0fY0n+NZeOP3w=
+X-Received: by 2002:a25:5606:: with SMTP id k6mr571631ybb.51.1633556136110;
+ Wed, 06 Oct 2021 14:35:36 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <43210038-b04b-3726-1355-d5f132f6c64e@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20211006203135.2566248-1-songliubraving@fb.com>
+In-Reply-To: <20211006203135.2566248-1-songliubraving@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 6 Oct 2021 14:35:25 -0700
+Message-ID: <CAEf4BzYs=dumqCAYp-kGFwVnQdt5eT6Yq17XQ83i9vHxE0Rmwg@mail.gmail.com>
+Subject: Re: [PATCH] selftests/bpf: skip get_branch_snapshot in vm
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 6, 2021 at 1:31 PM Song Liu <songliubraving@fb.com> wrote:
+>
+> VMs running on latest kernel support LBR. However, bpf_get_branch_snapshot
+> couldn't stop the LBR before too many entries are flushed. Skip the test
+> for VMs before we find a proper fix for VMs.
+>
+> Read the "flags" line from /proc/cpuinfo, if it contains "hypervisor",
+> skip test get_branch_snapshot.
+>
+> Fixes: 025bd7c753aa (selftests/bpf: Add test for bpf_get_branch_snapshot)
 
+missing quotes?
 
-On 06.10.2021 17:54, David Ahern wrote:
-> On 10/6/21 5:47 AM, Leonard Crestez wrote:
->> The -k switch makes the server fork into the background after the listen
->> call is succesful, this can be used to replace most of the `sleep 1`
->> statements in this script.
->>
->> Change performed with a vim command:
->>
->> s/nettest \(.*-s.*\) &\n\s*sleep 1\n/nettest \1 -k\r
->>
->> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
->> ---
->>   tools/testing/selftests/net/fcnal-test.sh | 641 ++++++++--------------
->>   1 file changed, 219 insertions(+), 422 deletions(-)
->>
-> 
-> I have a change from January [1] that runs the tests with 1 binary -
-> takes both client and server side arguments, does the server setup,
-> switches namespaces as needed and then runs the client side. I got
-> bogged down validating the before and after which takes a long time
-> given the number of tests. The output in verbose mode is as important as
-> the pass / fail. Many of the tests document existing behavior as well as
-> intended behavior.
-> 
-> You used a search and replace to update the tests. Did you then do the
-> compare of test results - not pass / fail but output?
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>  .../bpf/prog_tests/get_branch_snapshot.c      | 32 +++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> index 67e86f8d86775..bf9d47a859449 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+> @@ -6,6 +6,30 @@
+>  static int *pfd_array;
+>  static int cpu_cnt;
+>
+> +static bool is_hypervisor(void)
+> +{
+> +       char *line = NULL;
+> +       bool ret = false;
+> +       size_t len;
+> +       FILE *fp;
+> +
+> +       fp = fopen("/proc/cpuinfo", "r");
+> +       if (!fp)
+> +               return false;
+> +
+> +       while (getline(&line, &len, fp) != -1) {
+> +               if (strstr(line, "flags") == line) {
 
-I counted the [FAIL] or [ OK ] markers but not the output of nettest 
-itself. I don't know what to look for, I guess I could diff the outputs?
+strncmp() would be more explicit. That's what you are trying to do
+(prefix match), right?
 
-Shouldn't it be sufficient to compare the exit codes of the nettest client?
-
-The output is also modified by a previous change to not capture server 
-output separately and instead let it be combined with that of the 
-client. That change is required for this one, doing out=$(nettest -k) 
-does not return on fork unless the pipe is also closed.
-
-I did not look at your change, mine is relatively minimal because it 
-only changes who decide when the server goes into the background: the 
-shell script or the server itself. This makes it work very easily even 
-for tests with multiple server instances.
-
---
-Regards,
-Leonard
+> +                       if (strstr(line, "hypervisor") != NULL)
+> +                               ret = true;
+> +                       break;
+> +               }
+> +       }
+> +
+> +       free(line);
+> +       fclose(fp);
+> +       return ret;
+> +}
+> +
+>  static int create_perf_events(void)
+>  {
+>         struct perf_event_attr attr = {0};
+> @@ -54,6 +78,14 @@ void test_get_branch_snapshot(void)
+>         struct get_branch_snapshot *skel = NULL;
+>         int err;
+>
+> +       if (is_hypervisor()) {
+> +               /* As of today, LBR in hypervisor cannot be stopped before
+> +                * too many entries are flushed. Skip the test for now in
+> +                * hypervisor until we optimize the LBR in hypervisor.
+> +                */
+> +               test__skip();
+> +               return;
+> +       }
+>         if (create_perf_events()) {
+>                 test__skip();  /* system doesn't support LBR */
+>                 goto cleanup;
+> --
+> 2.30.2
+>
