@@ -2,57 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8173C424AB7
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 01:51:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4011A424AB9
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 01:53:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239863AbhJFXxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 19:53:41 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53174 "EHLO vps0.lunn.ch"
+        id S232100AbhJFXzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 19:55:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39936 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230513AbhJFXxk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 19:53:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=p+EUkla6NLtHOgGQnxlHAUMhXKs0Gb4m5BVOENzPYM8=; b=ZyutL5ZSLYro1t0M2v5X6x9t84
-        8EPQkpg74zOuFwlzROZkdNvsmpEgIIVJwVafkGjyUVgarPxhOVx2mIYJGGnsG8+Gj3rWe3vFAhG+6
-        viA9Wyt6yUUUCntou5tQckp4LyMCRfEvBw9BQZPFLUzOWoHxyWvNGsm6Oo1Yb+3aCXLg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mYGhI-009t75-UI; Thu, 07 Oct 2021 01:51:40 +0200
-Date:   Thu, 7 Oct 2021 01:51:40 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH 04/13] drivers: net: phy: at803x: better
- describe debug regs
-Message-ID: <YV42jMfuZo38MSxd@lunn.ch>
-References: <20211006223603.18858-1-ansuelsmth@gmail.com>
- <20211006223603.18858-5-ansuelsmth@gmail.com>
+        id S230513AbhJFXy6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 19:54:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A239260F5A;
+        Wed,  6 Oct 2021 23:53:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633564385;
+        bh=FmnTfErOQoC2jzCTOxRXZYunXlyp3Js7AWi3J8NWV8Q=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=iyF9zOQEuqxADuxJ3mB58tDAk5ZlTSGO6K/dPWA6Bv1eP/1h+OrMfnSM6N5JS6YfG
+         Z6oCMndGHPPfxcTOEv1CMqHgpnCWhpzfG1+wYBcb50W8plIQZbvPAR9mKjli7CKY2Y
+         +XxR/bMhhu0PLUP6g2HRx686R6pOaMUGiVR4pKQ+sdItWkXqxpd97Pzv5fL8cIWoFG
+         L5tDAaHAERA35Yq7NF6OrHuSu9rtFN9/NHAvByHb0rupLcPPcIPnRZ6sp2HIQAR/B3
+         7Xl/qxX5+23kD88Ukkue/2LYZIfRQg9jSVzap6IDf9rfdNYa2SHoEUBgaqsGGJjtPj
+         /y4TMmGjbRgEA==
+Received: by mail-lf1-f52.google.com with SMTP id x27so17196245lfu.5;
+        Wed, 06 Oct 2021 16:53:05 -0700 (PDT)
+X-Gm-Message-State: AOAM532gPIrZsCPW335aYpUswqGHtpFc7fC42MbK1qiVmytcSh++rSSw
+        XJPdtNVBMC9EUcsLDYM0Tl/AGid2bukATWiwvc4=
+X-Google-Smtp-Source: ABdhPJz6zk+uh1wpYY5SSzcex9Lr+N7cSJDVBtO7ZmfhW7T+kyLLcMFWM4y+3hr9/MVXl0OZRoaeR4lTcOz5mQhPQIk=
+X-Received: by 2002:ac2:5582:: with SMTP id v2mr982504lfg.143.1633564384017;
+ Wed, 06 Oct 2021 16:53:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211006223603.18858-5-ansuelsmth@gmail.com>
+References: <20211006230543.3928580-1-joannekoong@fb.com> <20211006230543.3928580-4-joannekoong@fb.com>
+In-Reply-To: <20211006230543.3928580-4-joannekoong@fb.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 6 Oct 2021 16:52:52 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW5neNhDFXaUJOaS=Ju4o_gEyXNLyTc6_av802bc2JRGSQ@mail.gmail.com>
+Message-ID: <CAPhsuW5neNhDFXaUJOaS=Ju4o_gEyXNLyTc6_av802bc2JRGSQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 3/3] bpf/selftests: Add xdp
+ bpf_load_tcp_hdr_options tests
+To:     Joanne Koong <joannekoong@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 12:35:54AM +0200, Ansuel Smith wrote:
-> Give a name to known debug regs from Documentation instead of using
-> unknown hex values.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+On Wed, Oct 6, 2021 at 4:09 PM Joanne Koong <joannekoong@fb.com> wrote:
+>
+> This patch adds tests for bpf_load_tcp_hdr_options used by xdp
+> programs.
+>
+> test_xdp_tcp_hdr_options.c:
+> - Tests ipv4 and ipv6 packets with TCPOPT_EXP and non-TCPOPT_EXP
+> tcp options set. Verify that options can be parsed and loaded
+> successfully.
+> - Tests error paths: TCPOPT_EXP with invalid magic, option with
+> invalid kind_len, non-existent option, invalid flags, option size
+> smaller than kind_len, invalid packet
+>
+> Signed-off-by: Joanne Koong <joannekoong@fb.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Acked-by: Song Liu <songliubraving@fb.com>
