@@ -2,53 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CD7D423F6D
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 15:36:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC58C423F8B
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 15:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238274AbhJFNhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 09:37:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51036 "EHLO mail.kernel.org"
+        id S237884AbhJFNmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 09:42:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52200 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230023AbhJFNhw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 09:37:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A1BDB61076;
-        Wed,  6 Oct 2021 13:35:59 +0000 (UTC)
+        id S230023AbhJFNmU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 09:42:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F36D86112D;
+        Wed,  6 Oct 2021 13:40:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633527360;
-        bh=a0QQ3BdKFzREAG4YgeXQxom6x0nBUGn5ofM28WH6ccg=;
+        s=k20201202; t=1633527628;
+        bh=OvBOGaOailrQNKiicS6cbvIk75k4YdFQP3tmaqToGhk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Wjx6J/vP4Otob/UYgwjFKW/sJsmRTZftLGR07UXTSyuNmnCdrce8IcccWTBb28Mta
-         Q+z5I7t1xm8Jnerq3+kVI7i4H/82JHrGTbJUmsy3JMLnycYPnFlC5YLXn2GEiWCJHc
-         oQZKB+yFKkeve4aidu0yMTtX1B7usMQ2X2ivmik4VtEZ5dEQoFp9Rr8BGxP4BMzrQF
-         4l4o8GjHZjAzC8vFKRuIhlX8UW0BGoOvMxD4dnz+/TqFi14tLYzqrJuJffljPPc/T+
-         wp7esuL1Ftnb5HLwW5bsLjqhhdzD6QSRWFWS9ZN5ZZ9a/X74jc9cdQvbi3zkSLcTi4
-         FSyMuHAfryZQQ==
-Date:   Wed, 6 Oct 2021 06:35:58 -0700
+        b=WFi82ZTkk1IxgHBxBxLbPT0UJ2vSz2TUm6OG0rS73v7exd2P3NjByyspez6zog1mg
+         pB5iOlOp6eu19AOkOuL29mXZDKsqF0xgivZ2mik8kcV3hlo03Nnga3kFX6cUs9MGa0
+         /1fsu9U81bA7Pk+K++oV0tuGP68m/WEj0SmDl5ySiGQ6AhNIyCkIjiG4ZvjQe6jk28
+         Pi7HbJS7/ZReIF8k+3lrr8NjmaHryTL76fz4JrLc6h+Iki4uN9aDhdaZ9ITFxMEidT
+         hVANVZLu98vlIBodNXV4xzjl3BtLlv+k5nHekN+Z2ybArbuniZezJCdRMewBPfAGVo
+         ZDAMzCYPbH04w==
+Date:   Wed, 6 Oct 2021 06:40:27 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        mlxsw@nvidia.com, Moshe Shemesh <moshe@nvidia.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: Re: [PATCH net-next v2 3/5] devlink: Allow set specific ops
- callbacks dynamically
-Message-ID: <20211006063558.6f4ee82d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YV0aCADY4WkLySv4@unreal>
-References: <cover.1633284302.git.leonro@nvidia.com>
-        <92971648bcad41d095d12f5296246fc44ab8f5c7.1633284302.git.leonro@nvidia.com>
-        <20211004164413.60e9ce80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YVv/nUe63nO8o8wz@unreal>
-        <20211005113213.0ee61358@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YVykXLY7mX4K1ScW@unreal>
-        <20211005173940.35bc7bfa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YV0aCADY4WkLySv4@unreal>
+To:     sundeep subbaraya <sundeep.lkml@gmail.com>
+Cc:     Subbaraya Sundeep <sbhatta@marvell.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>
+Subject: Re: [net-next PATCH 2/3] octeontx2-pf: Add devlink param to vary
+ cqe size
+Message-ID: <20211006064027.66a22a5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CALHRZupNJC7EJAir+0iN6p4UGR0oU0by=N2Hf+zWaj2U8RrE4A@mail.gmail.com>
+References: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
+        <1633454136-14679-3-git-send-email-sbhatta@marvell.com>
+        <20211005181157.6af1e3e4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CALHRZupNJC7EJAir+0iN6p4UGR0oU0by=N2Hf+zWaj2U8RrE4A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,23 +46,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 Oct 2021 06:37:44 +0300 Leon Romanovsky wrote:
-> Let's chose random kernel version (v5.11)
-> https://elixir.bootlin.com/linux/v5.11/source/net/core/devlink.c#L10245
-> as you can see, it doesn't hold ANY driver core locks,
+On Wed, 6 Oct 2021 12:29:51 +0530 sundeep subbaraya wrote:
+> We do use ethtool -G for setting the number of receive buffers to
+> allocate from the kernel and give those pointers to hardware memory pool(NPA).
 
-Nope, that is not what I see.
-
-> so it can be called in any time during driver .probe() or .remove(). 
-
-Having a callback invoked after registering to a subsystem (which used
-to be the case for devlink before the changes) is _normal_.
-
-You keep talking about .probe() like it's some magic period of complete
-quiescence.
-
-> Drivers that have implemented ops.flash_update() have no idea about that.
-
-I bet.
-
-I don't think this discussion is going anywhere, count me out.
+You can extend the ethtool API.
