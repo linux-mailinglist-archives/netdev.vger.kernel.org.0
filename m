@@ -2,137 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B77842377B
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 07:25:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB6074237A9
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 07:54:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232721AbhJFF0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 01:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232716AbhJFF0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 01:26:49 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66631C06174E;
-        Tue,  5 Oct 2021 22:24:58 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id j15so928069plh.7;
-        Tue, 05 Oct 2021 22:24:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kE8tUjRehAH/LvwAEmkueguVaxADrwLNnCg94hHiJMg=;
-        b=V1812K/3SleAXnVptIpdu6iNE2S6cJg9vJZASBZT36es7F2PaoMbv60MuwrXyhZZzB
-         aaE9ftlDTX9t1l1gva+i2xnENkTr43/vocAnDsTUWOYAEZNPh6wkKPIiRc5vLG6G/a7H
-         RvyPplZHvwUK1VN9mNXAyps56r+yhVInCUkgJ9soVH6tP/hqWU4IVi0uNVnYvZ2FE9bh
-         iTzCxIz7kZmuKyEQ+wdrqTzdqWo5ATg44M7L2DMClKsCWq0/P+UOxo63L2sMpvwljvPX
-         wT4q2tS+jF0tzrN0T6qEs6tokIomxLk+P6MepXEEHVM6swWKDWsVkaKELXEgLjT82EnU
-         ZT3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kE8tUjRehAH/LvwAEmkueguVaxADrwLNnCg94hHiJMg=;
-        b=JnZChr99ppLZfE4gKjpKq8Niv1MkGBSbkqQ2eapU9AytP4+V18l1VPGtsy/SRa/KfY
-         pFdmJqn4lgrx65pNMiHQcy3j8ozs3vewpFhNlLYkJbjO8p8qAgPgytDWAE/bCVD5bTUg
-         XsB0Z4bPac0sV6+8K7KgGuJn0JEMOKBywf7RQeIQ4AdVDGmcVcEqzz/0pwqLwa5Sbw3b
-         snYYrz9MVOzIgS+vbQk5dEhgDrAYIq9c+/bMU/pDlypvOnwOCLJMjvZLPGly6nz8NHdB
-         hrKkJ8VW0LChlz60bAB+W5JFgrmk4iwakJi3kzCiL7l37FreW2ER7YqtC5yBbxhxGEbp
-         1BKQ==
-X-Gm-Message-State: AOAM530NeAuFn5XV8GWKlA9/yc8PzsF+PMcK9H+AtJDL+lnWjp8ozDYU
-        /BmvorOPhT1UJTvNopkyxDqPYaP24wE=
-X-Google-Smtp-Source: ABdhPJzou3CopLA7zz227KVxoXXKW6zbghyZEb5kwkFo8zyDyPIeOJyZtnyPh0gUr0g5IJZ+VUXMAA==
-X-Received: by 2002:a17:902:9a04:b0:13a:1b2d:8a5c with SMTP id v4-20020a1709029a0400b0013a1b2d8a5cmr9009835plp.47.1633497897737;
-        Tue, 05 Oct 2021 22:24:57 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id o1sm3495760pjs.52.2021.10.05.22.24.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Oct 2021 22:24:57 -0700 (PDT)
-Date:   Wed, 6 Oct 2021 10:54:55 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        id S235868AbhJFF40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 01:56:26 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:58916 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229621AbhJFF4Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 01:56:16 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1965rxxa004725;
+        Wed, 6 Oct 2021 00:53:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1633499639;
+        bh=71iTNYvSXz7PJ6/1p3pzVlud0Eg7uyTxPUQOHqjQ5fk=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=P7iafUpUj7A3v194Kab68htAoynfz6NtqNCJU9PBYEvGRUUWTAzq9ea3P8vJcMTJc
+         wfNZN0i49R7Cg4hsDivtCEHAzU1wJuNczplckgsKoO0trnOO0khjNrO61gx5CWY3oU
+         tHY3RsZLklbAamMpda4oPTXKBswANEaWUR6VfsFE=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1965rwTd083572
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 Oct 2021 00:53:58 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
+ Oct 2021 00:53:58 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 6 Oct 2021 00:53:58 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1965rjkD070213;
+        Wed, 6 Oct 2021 00:53:53 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Faiz Abbas <faiz_abbas@ti.com>, Nishanth Menon <nm@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v1 3/6] libbpf: Ensure that module BTF fd is
- never 0
-Message-ID: <20211006052455.st3f7m3q5fb27bs7@apollo.localdomain>
-References: <20211006002853.308945-1-memxor@gmail.com>
- <20211006002853.308945-4-memxor@gmail.com>
- <CAEf4BzZCK5L-yZHL=yhGir71t=kkhAn5yN07Vxs2+VizvwF3QQ@mail.gmail.com>
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+Subject: [PATCH v4 1/6] arm64: dts: ti: k3-am65-mcu: Add Support for MCAN
+Date:   Wed, 6 Oct 2021 11:23:38 +0530
+Message-ID: <20211006055344.22662-2-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211006055344.22662-1-a-govindraju@ti.com>
+References: <20211006055344.22662-1-a-govindraju@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZCK5L-yZHL=yhGir71t=kkhAn5yN07Vxs2+VizvwF3QQ@mail.gmail.com>
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 06, 2021 at 10:11:29AM IST, Andrii Nakryiko wrote:
-> On Tue, Oct 5, 2021 at 5:29 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
-> >
-> > Since the code assumes in various places that BTF fd for modules is
-> > never 0, if we end up getting fd as 0, obtain a new fd > 0. Even though
-> > fd 0 being free for allocation is usually an application error, it is
-> > still possible that we end up getting fd 0 if the application explicitly
-> > closes its stdin. Deal with this by getting a new fd using dup and
-> > closing fd 0.
-> >
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > ---
-> >  tools/lib/bpf/libbpf.c | 14 ++++++++++++++
-> >  1 file changed, 14 insertions(+)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index d286dec73b5f..3e5e460fe63e 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -4975,6 +4975,20 @@ static int load_module_btfs(struct bpf_object *obj)
-> >                         pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
-> >                         return err;
-> >                 }
-> > +               /* Make sure module BTF fd is never 0, as kernel depends on it
-> > +                * being > 0 to distinguish between vmlinux and module BTFs,
-> > +                * e.g. for BPF_PSEUDO_BTF_ID ld_imm64 insns (ksyms).
-> > +                */
-> > +               if (!fd) {
-> > +                       fd = dup(0);
->
-> This is not the only place where we make assumptions that fd > 0 but
-> technically can get fd == 0. Instead of doing such a check in every
-> such place, would it be possible to open (cheaply) some FD (/dev/null
-> or whatever, don't know what's the best file to open), if we detect
-> that FD == 0 is not allocated? Can we detect that fd 0 is not
-> allocated?
->
+From: Faiz Abbas <faiz_abbas@ti.com>
 
-We can, e.g. using access("/proc/self/fd/0", F_OK), but I think just calling
-open unconditonally and doing if (ret > 0) close(ret) is better. Also, do I
-leave it lingering, or should I close(0) if we created it on destroy?
+Add Support for two MCAN controllers present on the am65x SOC. Both support
+classic CAN messages as well as CAN-FD.
 
-> Doing something like that in bpf_object__open() or bpf_object__load()
-> would make everything much simpler and we'll have a guarantee that fd
-> == 0 is not going to be allocated (unless someone accidentally or not
-> accidentally does close(0), but that's entirely different story).
->
-> > +                       if (fd < 0) {
-> > +                               err = -errno;
-> > +                               pr_warn("failed to dup BTF object #%d FD 0 to FD > 0: %d\n", id, err);
-> > +                               close(0);
-> > +                               return err;
-> > +                       }
-> > +                       close(0);
-> > +               }
-> >
-> >                 len = sizeof(info);
-> >                 memset(&info, 0, sizeof(info));
-> > --
-> > 2.33.0
-> >
+Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+---
+ arch/arm64/boot/dts/ti/k3-am65-mcu.dtsi | 30 +++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
---
-Kartikeya
+diff --git a/arch/arm64/boot/dts/ti/k3-am65-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am65-mcu.dtsi
+index c93ff1520a0e..8d592bf41d6f 100644
+--- a/arch/arm64/boot/dts/ti/k3-am65-mcu.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am65-mcu.dtsi
+@@ -159,6 +159,36 @@
+ 		};
+ 	};
+ 
++	m_can0: mcan@40528000 {
++		compatible = "bosch,m_can";
++		reg = <0x0 0x40528000 0x0 0x400>,
++		      <0x0 0x40500000 0x0 0x4400>;
++		reg-names = "m_can", "message_ram";
++		power-domains = <&k3_pds 102 TI_SCI_PD_EXCLUSIVE>;
++		clocks = <&k3_clks 102 5>, <&k3_clks 102 0>;
++		clock-names = "hclk", "cclk";
++		interrupt-parent = <&gic500>;
++		interrupts = <GIC_SPI 544 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 545 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "int0", "int1";
++		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
++	};
++
++	m_can1: mcan@40568000 {
++		compatible = "bosch,m_can";
++		reg = <0x0 0x40568000 0x0 0x400>,
++		      <0x0 0x40540000 0x0 0x4400>;
++		reg-names = "m_can", "message_ram";
++		power-domains = <&k3_pds 103 TI_SCI_PD_EXCLUSIVE>;
++		clocks = <&k3_clks 103 5>, <&k3_clks 103 0>;
++		clock-names = "hclk", "cclk";
++		interrupt-parent = <&gic500>;
++		interrupts = <GIC_SPI 547 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 548 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "int0", "int1";
++		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
++	};
++
+ 	fss: fss@47000000 {
+ 		compatible = "simple-bus";
+ 		#address-cells = <2>;
+-- 
+2.17.1
+
