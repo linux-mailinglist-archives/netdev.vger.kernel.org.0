@@ -2,75 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A451B424777
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 21:49:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF224247B5
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 22:06:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239285AbhJFTvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 15:51:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38152 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229810AbhJFTvN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 15:51:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A39D610A2;
-        Wed,  6 Oct 2021 19:49:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633549761;
-        bh=fIzE6ERIklxmcWuCrWzrrE3Y+yQgRsjs9i1rdqSmBbo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MfF7kkiyCZsLGtDBR7KVuBVxt65Wek2MDpiA6ZoB7bRJK/GLXUCaTep9/PZlpwan4
-         4QKSxgFK5uO4XeK/ljb6n1+dS9M8tPDh2pAHyA4u5mgDDaSXFOBPT8Plwjr0qO+vut
-         bBYVnCBhnJWmDDRfCxC9NW2anQQX2XCQPv5Ku2X0BgsssqI9/Q1HDL4NTJp4ukSr9W
-         eX+DJjztGH44AT+GU/JkR5+Mah69kFO8+jd1rxnxuIfoxZX73zXYwXC3p5wZ929rWc
-         GVUvZBd6lOnIFhYqb6xspI3utaXnMkvyNOH9ENxCT68cfFtV1MUkO/2kE+FVo/9Ttk
-         hbx9K5s8qCn0A==
-Date:   Wed, 6 Oct 2021 12:49:19 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/9] of: net: move of_net under net/
-Message-ID: <20211006124919.48b46660@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAL_JsqK81knMX5i2DJDsxEALFjwoj3pijjT9ZMJ73aOCjYFhMQ@mail.gmail.com>
-References: <20211006154426.3222199-1-kuba@kernel.org>
-        <20211006154426.3222199-2-kuba@kernel.org>
-        <CAL_JsqK6YzaD0wB0BsP5tghnYMbZzDHq2p6Z_ZGr99EFWhWggw@mail.gmail.com>
-        <YV3QAzAWiYdKFB3m@lunn.ch>
-        <CAL_JsqLRQRmhXZm25WKzUSBUyK6q5d-BspW4zQcztW3Qf56EKg@mail.gmail.com>
-        <20211006101203.4337e9a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAL_JsqK81knMX5i2DJDsxEALFjwoj3pijjT9ZMJ73aOCjYFhMQ@mail.gmail.com>
+        id S239426AbhJFUIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 16:08:46 -0400
+Received: from mailgate.kemenperin.go.id ([202.47.80.81]:57790 "EHLO
+        mailgate.kemenperin.go.id" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239248AbhJFUIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 16:08:45 -0400
+X-Greylist: delayed 1194 seconds by postgrey-1.27 at vger.kernel.org; Wed, 06 Oct 2021 16:08:44 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mailgate.kemenperin.go.id (Postfix) with ESMTP id 6FC6837EA3E3;
+        Thu,  7 Oct 2021 02:28:03 +0700 (WIB)
+Received: from mailgate.kemenperin.go.id ([127.0.0.1])
+        by localhost (mailgate.kemenperin.go.id [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 06Y148tJj3Uq; Thu,  7 Oct 2021 02:28:02 +0700 (WIB)
+Received: from localhost (localhost [127.0.0.1])
+        by mailgate.kemenperin.go.id (Postfix) with ESMTP id 6E4C337EA3DD;
+        Thu,  7 Oct 2021 02:28:00 +0700 (WIB)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mailgate.kemenperin.go.id 6E4C337EA3DD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kemenperin.go.id;
+        s=3298A942-BBC6-11E3-B333-483736368EC2; t=1633548480;
+        bh=+fqslacBrFYD+yZfN/r7KCWl0ti69BjYsXmt7u/JTl4=;
+        h=Date:From:Message-ID:MIME-Version;
+        b=VN9z+U3lWOgJCjGxv92Yv9LZEW4rsagUD2Qcdp+/lrs4d6z4SUeX97zmM46dov6R2
+         Sqmp1MDVpZ35jcZAgSBaWV6gN/nyLnKOQ0wILOofxYBOKrcXnqRiEN2+If5HhJb5PW
+         NsmKx7CPAI7fQtF+UIr1du5DSWo31iba1iqgWvcQ=
+X-Virus-Scanned: amavisd-new at kemenperin.go.id
+Received: from mailgate.kemenperin.go.id ([127.0.0.1])
+        by localhost (mailgate.kemenperin.go.id [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id pTttxliC5725; Thu,  7 Oct 2021 02:28:00 +0700 (WIB)
+Received: from mailgate.kemenperin.go.id (mailgate.kemenperin.go.id [10.1.0.89])
+        by mailgate.kemenperin.go.id (Postfix) with ESMTP id 3046C37EA3DA;
+        Thu,  7 Oct 2021 02:27:58 +0700 (WIB)
+Date:   Thu, 7 Oct 2021 02:27:58 +0700 (WIB)
+From:   KLINELTD <fajarprasetyo@kemenperin.go.id>
+Reply-To: "kreditline_ltd@hotmail.com" <kreditline_ltd@hotmail.com>
+Message-ID: <1949583318.233070.1633548478162.JavaMail.zimbra@kemenperin.go.id>
+Subject: Hi
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [10.1.0.89]
+Thread-Index: FWTi3JaMAJWOhJxg/+uki1W7DBB1aQ==
+Thread-Topic: Hi
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 Oct 2021 14:02:42 -0500 Rob Herring wrote:
-> > > Okay, then just move it for now.
-> > >
-> > > I suspect though that most of these can either be dropped or replaced
-> > > with just 'OF' dependency.  
-> >
-> > I have something that builds with allmodconfig :) see below.  
-> 
-> Sparc is the arch to try. That's generally we we get tripped up with OF options.
+Hi
 
-Thanks for the hint, sparc (non-64) allmodconfig builds fine (well, it
-spits out this:
+Wir vergeben Kredite an Privatpersonen und Unternehmen mit einem Zinssatz v=
+on 3% pro Jahr.
+Wir sind daran interessiert, Gro=C3=9Fprojekte zu finanzieren und Kredite z=
+u vergeben. Die R=C3=BCckzahlungsfrist betr=C3=A4gt 1-30 Jahre und mit kost=
+enlosen 6 Monaten Kulanz.
 
-  <stdin>:1515:2: warning: #warning syscall clone3 not implemented [-Wcpp] 
-  arch/sparc/boot/Makefile:26: FORCE prerequisite is missing
+Wir bieten: -
+* Projektfinanzierung
+* Business-Darlehen
+* Privat Darlehen
 
-but that seems unrelated).
+Bitte kontaktieren Sie uns unter den untenstehenden Kontaktdaten, damit wir=
+ Sie =C3=BCber die Konditionen des Darlehens informieren k=C3=B6nnen.
 
-Is there any other sparc config worth building?
+          Erforderlicher Kreditbetrag:
+          R=C3=BCckzahlungsfrist:
+          Handy Nummer:
+
+Die Bearbeitung und Finanzierung eines Kredits dauert ca. 3 Werktage ab dem=
+ Datum des Versands des Kreditantrags. Antworten Sie f=C3=BCr weitere Infor=
+mationen.
+
+Gr=C3=BC=C3=9Fe
+Online-Werbeagentur.
+E-Mail: kreditline_ltd@hotmail.com
