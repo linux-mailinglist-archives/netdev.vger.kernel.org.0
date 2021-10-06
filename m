@@ -2,106 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B46C94242C6
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 18:34:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 676124242E7
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 18:41:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234705AbhJFQgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 12:36:25 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52602 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235957AbhJFQgX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 12:36:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=M7ourfR7N3IREsZHWkmqZNuXaEfP+RZhu9KUMFheoaQ=; b=olYX4XZNKj5XTuB2L4XSCVljGC
-        eA6Lu3jv+5rZr4Y6hdPVyg6bie9iLsYzdp6XtkJ+4crUwXhmlhEMboo7rQwPaiM+BST6qDXEzlPmg
-        HsfyLloe1knYy8y/deIMNYttKHUrUzAVfZiR7F8ngu2tK8TBo2pCMYBBjaPFR2E5SEy8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mY9rv-009rE7-1T; Wed, 06 Oct 2021 18:34:11 +0200
-Date:   Wed, 6 Oct 2021 18:34:11 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/9] of: net: move of_net under net/
-Message-ID: <YV3QAzAWiYdKFB3m@lunn.ch>
-References: <20211006154426.3222199-1-kuba@kernel.org>
- <20211006154426.3222199-2-kuba@kernel.org>
- <CAL_JsqK6YzaD0wB0BsP5tghnYMbZzDHq2p6Z_ZGr99EFWhWggw@mail.gmail.com>
+        id S232306AbhJFQm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 12:42:58 -0400
+Received: from mxout03.lancloud.ru ([45.84.86.113]:55112 "EHLO
+        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229564AbhJFQm5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 12:42:57 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 07C0620ECFD1
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: Re: [RFC 08/12] ravb: Add carrier_counters to struct ravb_hw_info
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
+ <20211005110642.3744-9-biju.das.jz@bp.renesas.com>
+Organization: Open Mobile Platform
+Message-ID: <5be0aed7-ba46-3b5f-e49f-8edf7cb9c193@omp.ru>
+Date:   Wed, 6 Oct 2021 19:41:00 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqK6YzaD0wB0BsP5tghnYMbZzDHq2p6Z_ZGr99EFWhWggw@mail.gmail.com>
+In-Reply-To: <20211005110642.3744-9-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 06, 2021 at 11:18:19AM -0500, Rob Herring wrote:
-> On Wed, Oct 6, 2021 at 10:45 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > Rob suggests to move of_net.c from under drivers/of/ somewhere
-> > to the networking code.
-> >
-> > Suggested-by: Rob Herring <robh@kernel.org>
-> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> > ---
-> > v2: new patch
-> > ---
-> >  drivers/of/Makefile               | 1 -
-> >  net/core/Makefile                 | 1 +
-> >  {drivers/of => net/core}/of_net.c | 0
-> >  3 files changed, 1 insertion(+), 1 deletion(-)
-> >  rename {drivers/of => net/core}/of_net.c (100%)
-> >
-> > diff --git a/drivers/of/Makefile b/drivers/of/Makefile
-> > index c13b982084a3..e0360a44306e 100644
-> > --- a/drivers/of/Makefile
-> > +++ b/drivers/of/Makefile
-> > @@ -7,7 +7,6 @@ obj-$(CONFIG_OF_EARLY_FLATTREE) += fdt_address.o
-> >  obj-$(CONFIG_OF_PROMTREE) += pdt.o
-> >  obj-$(CONFIG_OF_ADDRESS)  += address.o
-> >  obj-$(CONFIG_OF_IRQ)    += irq.o
-> > -obj-$(CONFIG_OF_NET)   += of_net.o
-> >  obj-$(CONFIG_OF_UNITTEST) += unittest.o
-> >  obj-$(CONFIG_OF_RESERVED_MEM) += of_reserved_mem.o
-> >  obj-$(CONFIG_OF_RESOLVE)  += resolver.o
-> > diff --git a/net/core/Makefile b/net/core/Makefile
-> > index 35ced6201814..37b1befc39aa 100644
-> > --- a/net/core/Makefile
-> > +++ b/net/core/Makefile
-> > @@ -36,3 +36,4 @@ obj-$(CONFIG_FAILOVER) += failover.o
-> >  obj-$(CONFIG_NET_SOCK_MSG) += skmsg.o
-> >  obj-$(CONFIG_BPF_SYSCALL) += sock_map.o
-> >  obj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o
-> > +obj-$(CONFIG_OF_NET)   += of_net.o
+On 10/5/21 2:06 PM, Biju Das wrote:
+
+> RZ/G2L E-MAC supports carrier counters.
+> Add a carrier_counter hw feature bit to struct ravb_hw_info
+> to add this feature only for RZ/G2L.
 > 
-> The OF_NET kconfig should move or disappear too. I imagine you can do just:
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-It is used in a few places:
+[...]
 
-net/ethernet/litex/Kconfig:	depends on OF_NET
-net/ethernet/amd/Kconfig:	depends on ((OF_NET && OF_ADDRESS) || ACPI || PCI) && HAS_IOMEM
-net/ethernet/mscc/Kconfig:	depends on OF_NET
-net/ethernet/ezchip/Kconfig:	depends on OF_IRQ && OF_NET
-net/ethernet/arc/Kconfig:	depends on OF_IRQ && OF_NET
-net/ethernet/arc/Kconfig:	depends on OF_IRQ && OF_NET && REGULATOR
+diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+index 8c7b2569c7dd..899e16c5eb1a 100644
+--- a/drivers/net/ethernet/renesas/ravb.h
++++ b/drivers/net/ethernet/renesas/ravb.h
+[...]
+@@ -1061,6 +1065,7 @@ struct ravb_hw_info {
+ 	unsigned nc_queue:1;		/* AVB-DMAC has NC queue */
+ 	unsigned magic_pkt:1;		/* E-MAC supports magic packet detection */
+ 	unsigned half_duplex:1;		/* E-MAC supports half duplex mode */
++	unsigned carrier_counters:1;	/* E-MAC has carrier counters */
 
-so it cannot just disappear. These will need reviewing and changing as
-well.
 
-	Andrew
+
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index 42573eac82b9..c057de81ec58 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -2075,6 +2075,18 @@ static struct net_device_stats *ravb_get_stats(struct net_device *ndev)
+>  		ravb_write(ndev, 0, TROCR);	/* (write clear) */
+>  	}
+>  
+> +	if (info->carrier_counters) {
+> +		nstats->collisions += ravb_read(ndev, CXR41);
+> +		ravb_write(ndev, 0, CXR41);	/* (write clear) */
+> +		nstats->tx_carrier_errors += ravb_read(ndev, CXR42);
+> +		ravb_write(ndev, 0, CXR42);	/* (write clear) */
+> +
+> +		nstats->tx_carrier_errors += ravb_read(ndev, CXR55);
+
+   According to the manual, CXR55 counts RX events (carrier extension lost.
+
+> +		ravb_write(ndev, 0, CXR55);	/* (write clear) */
+> +		nstats->tx_carrier_errors += ravb_read(ndev, CXR56);
+
+   And CXR56 counts receive events too...
+
+> +		ravb_write(ndev, 0, CXR56);	/* (write clear) */
+> +	}
+> +
+>  	nstats->rx_packets = stats0->rx_packets;
+>  	nstats->tx_packets = stats0->tx_packets;
+>  	nstats->rx_bytes = stats0->rx_bytes;
+> @@ -2486,6 +2498,7 @@ static const struct ravb_hw_info gbeth_hw_info = {
+>  	.aligned_tx = 1,
+>  	.tx_counters = 1,
+>  	.half_duplex = 1,
+> +	.carrier_counters = 1,
+
+   At least init it next to 'tx_counters'. :-)
+
+[...]
+
+MBR, Sergey
