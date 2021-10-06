@@ -2,167 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2B5B423D4C
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 13:48:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7A34423D51
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 13:49:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238678AbhJFLuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 07:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56788 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238666AbhJFLuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 07:50:13 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E58BC0613EC;
-        Wed,  6 Oct 2021 04:48:08 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id v18so8714078edc.11;
-        Wed, 06 Oct 2021 04:48:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MPgQCPkYaOpHja7N0AhXNyX4WW/+9TkQblRPZxpVE+k=;
-        b=JubygY18ja+WTyxK/Qi/6q9linLjbd9murzVIylYEOxlbXvystozejq4NTkBBM2E2v
-         BMwy9oVkPhXVNMaqM1QG/p9CVRjE1t/I5isyLv2CYzxd3c6WE8p5gT9wTd4aEU9QEqap
-         sW2lbQ0L4tzqGaZitdlOYznPtxjbipIX9cZfm40VmkrfxTq+ubvFy458UxreVMg6lW0w
-         K++zoGFb4LexRTiNQPa34XQXtdFgnSwg4rM0N6np5ASb41w6IWdlwvuioaJAePT+Gsis
-         dvd73znCNjxwJcbbkAnH/a8FZjhVrfKsz7VwpPHUNYl4uYGWvz/LsNEnmpIb6fnkWLGo
-         GtiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MPgQCPkYaOpHja7N0AhXNyX4WW/+9TkQblRPZxpVE+k=;
-        b=noVaYCmpXgHPt97ey3iCK71mLkGmnxMRg/zpXisy6UcDtbMB8q1gZ/Z7LiPIFrGHXK
-         D3zJWu3fjaNqxu9Tv39Kz2qFlv8K3fnS/K5KXj0/kAeTJ25JekVvpMUnNr79K0/E4WcO
-         p4t/+HtY2H1+wnQJYmhjEca5kfSkL/DeEFL3Fqz+6J44kXEdeG+30VcfqkHJxr3cCE2o
-         E+jVHbCjtIA3kzYE9f0G3X0m2KciSwiVL39T5cNd9ckYdQzhFxOrDVjw+RHBk0UalMAJ
-         gaGOfL+3EV8UXU06eSPifT6DDPUwHkjV9bLCcKUSCaSaUwu1Df27rWI9khB4ni2EJX0Y
-         HWCg==
-X-Gm-Message-State: AOAM533wkJ6T6MbqeSq9ABinX9TP8seIyWl5n64jJ+Hsnuu/XU37Ex/m
-        fyxfqQ+sRf2xFapWFE/M1qA=
-X-Google-Smtp-Source: ABdhPJzcXNMGEkbglUaY0+ODWsOSt1MyLzG2w26hG7IaQVJQHB3jkf/SXKWp75mDlJ3aDjwfNd20DQ==
-X-Received: by 2002:a17:906:1146:: with SMTP id i6mr32022529eja.12.1633520885218;
-        Wed, 06 Oct 2021 04:48:05 -0700 (PDT)
-Received: from localhost.localdomain ([95.76.3.69])
-        by smtp.gmail.com with ESMTPSA id y40sm1402187ede.31.2021.10.06.04.48.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Oct 2021 04:48:04 -0700 (PDT)
-From:   Leonard Crestez <cdleonard@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        David Ahern <dsahern@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Seth David Schoen <schoen@loyalty.org>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 11/11] selftests: net/fcnal: Reduce client timeout
-Date:   Wed,  6 Oct 2021 14:47:27 +0300
-Message-Id: <516043441bd13bc1e6ba7f507a04362e04c06da5.1633520807.git.cdleonard@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1633520807.git.cdleonard@gmail.com>
-References: <cover.1633520807.git.cdleonard@gmail.com>
+        id S238710AbhJFLvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 07:51:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47676 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238577AbhJFLvD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 07:51:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 81C0661077;
+        Wed,  6 Oct 2021 11:49:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633520951;
+        bh=JfIdY6/V+d3Y36/FGCu5ngWkU42RfdFTU88pnWu1/og=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PuW7r1SJd3a+rDGJYcxrljpFcqxDoen1Q682VLWt64SsnKrz67McXNFtjMSjdUK9n
+         914JDWec9xcxJvwKOfgWniiLaO8ybc/amE8MMOfKl867tRgPzs6PuF/3rHeIoqMiiA
+         G4/pju7423JqIraqsnhLXOMNZaSdBABz+cVZbY8M4n7e48hp+ZJgNmewueE9dPNapb
+         bB7+BGZSW9BqhiXZDzwh2ycdoa01R2KAFh1T3l0uT6McphXcl5Rpvz+CaJWcP71vzI
+         BHs/78NCJsaBBlh+eKXkQk4pJSDMmxROf4R8RWf9kNA5Zr+1oPtL/V4v3xgmFmuI4i
+         c2VxuGTfrlRaQ==
+Date:   Wed, 6 Oct 2021 14:49:07 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Aharon Landau <aharonl@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Gal Pressman <galpress@amazon.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
+        Mark Zhang <markzhang@nvidia.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Mustafa Ismail <mustafa.ismail@intel.com>,
+        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [PATCH rdma-next v3 05/13] RDMA/counter: Add an is_disabled
+ field in struct rdma_hw_stats
+Message-ID: <YV2NMzu0izn2vWrJ@unreal>
+References: <cover.1633513239.git.leonro@nvidia.com>
+ <09596ef74f4c213cb236e057e20e98264b67f16e.1633513239.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <09596ef74f4c213cb236e057e20e98264b67f16e.1633513239.git.leonro@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reduce default client timeout from 5 seconds to 500 miliseconds.
-Can be overridden from environment by exporting NETTEST_CLIENT_TIMEOUT=5
+On Wed, Oct 06, 2021 at 12:52:08PM +0300, Leon Romanovsky wrote:
+> From: Aharon Landau <aharonl@nvidia.com>
+> 
+> Add a bitmap in rdma_hw_stat structure, with each bit indicates whether
+> the corresponding counter is currently disabled or not. By default
+> hwcounters are enabled.
+> 
+> Signed-off-by: Aharon Landau <aharonl@nvidia.com>
+> Reviewed-by: Mark Zhang <markzhang@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  drivers/infiniband/core/nldev.c | 11 ++++++++++-
+>  drivers/infiniband/core/verbs.c | 10 ++++++++++
+>  include/rdma/ib_verbs.h         |  3 +++
+>  3 files changed, 23 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/infiniband/core/nldev.c b/drivers/infiniband/core/nldev.c
+> index 3f6b98a87566..67519730b1ac 100644
+> --- a/drivers/infiniband/core/nldev.c
+> +++ b/drivers/infiniband/core/nldev.c
+> @@ -968,15 +968,21 @@ static int fill_stat_counter_hwcounters(struct sk_buff *msg,
+>  	if (!table_attr)
+>  		return -EMSGSIZE;
+>  
+> -	for (i = 0; i < st->num_counters; i++)
+> +	mutex_lock(&st->lock);
+> +	for (i = 0; i < st->num_counters; i++) {
+> +		if (test_bit(i, st->is_disabled))
+> +			continue;
+>  		if (rdma_nl_stat_hwcounter_entry(msg, st->descs[i].name,
+>  						 st->value[i]))
+>  			goto err;
+> +	}
+> +	mutex_unlock(&st->lock);
+>  
+>  	nla_nest_end(msg, table_attr);
+>  	return 0;
+>  
+>  err:
+> +	mutex_unlock(&st->lock);
+>  	nla_nest_cancel(msg, table_attr);
+>  	return -EMSGSIZE;
+>  }
+> @@ -2104,6 +2110,9 @@ static int stat_get_doit_default_counter(struct sk_buff *skb,
+>  		goto err_stats;
+>  	}
+>  	for (i = 0; i < num_cnts; i++) {
+> +		if (test_bit(i, stats->is_disabled))
+> +			continue;
+> +
+>  		v = stats->value[i] +
+>  			rdma_counter_get_hwstat_value(device, port, i);
+>  		if (rdma_nl_stat_hwcounter_entry(msg,
+> diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
+> index c3319a7584a2..d957b23a0e23 100644
+> --- a/drivers/infiniband/core/verbs.c
+> +++ b/drivers/infiniband/core/verbs.c
+> @@ -2994,11 +2994,20 @@ struct rdma_hw_stats *rdma_alloc_hw_stats_struct(
+>  	if (!stats)
+>  		return NULL;
+>  
+> +	stats->is_disabled = kcalloc(BITS_TO_LONGS(num_counters),
+> +				     sizeof(*stats->is_disabled), GFP_KERNEL);
+> +	if (!stats->is_disabled)
+> +		goto err;
+> +
+>  	stats->descs = descs;
+>  	stats->num_counters = num_counters;
+>  	stats->lifespan = msecs_to_jiffies(lifespan);
+>  
+>  	return stats;
+> +
+> +err:
+> +	kfree(stats);
+> +	return NULL;
+>  }
+>  EXPORT_SYMBOL(rdma_alloc_hw_stats_struct);
+>  
+> @@ -3008,6 +3017,7 @@ EXPORT_SYMBOL(rdma_alloc_hw_stats_struct);
+>   */
+>  void rdma_free_hw_stats_struct(struct rdma_hw_stats *stats)
+>  {
+> +	kfree(stats->is_disabled);
+>  	kfree(stats);
 
-Some tests need ICMP timeouts so pass an explicit -t5 for those.
+Jason,
 
-Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
----
- tools/testing/selftests/net/fcnal-test.sh | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+This hunk needs to be the following for the representors case. Can you
+please fix it locally?
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index e73aeb3884c5..cf5dd96bb9db 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -40,10 +40,15 @@
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
- 
- VERBOSE=0
- 
-+# Use a reduced client timeout by default
-+# Can be overridden by user
-+NETTEST_CLIENT_TIMEOUT=${NETTEST_CLIENT_TIMEOUT:-0.5}
-+export NETTEST_CLIENT_TIMEOUT
+diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
+index d957b23a0e23..e9e042b31386 100644
+--- a/drivers/infiniband/core/verbs.c
++++ b/drivers/infiniband/core/verbs.c
+@@ -3017,6 +3017,9 @@ EXPORT_SYMBOL(rdma_alloc_hw_stats_struct);
+  */
+ void rdma_free_hw_stats_struct(struct rdma_hw_stats *stats)
+ {
++       if (!stats)
++               return;
 +
- NSA_DEV=eth1
- NSA_DEV2=eth2
- NSB_DEV=eth1
- NSC_DEV=eth2
- VRF=red
-@@ -1076,11 +1081,11 @@ ipv4_tcp_novrf()
- 	for a in ${NSA_LO_IP} 127.0.0.1
- 	do
- 		log_start
- 		show_hint "Should fail 'No route to host' since addresses on loopback are out of device scope"
- 		run_cmd nettest -s -k
--		run_cmd nettest -r ${a} -d ${NSA_DEV}
-+		run_cmd nettest -r ${a} -d ${NSA_DEV} -t5
- 		log_test_addr ${a} $? 1 "Global server, device client, local connection"
- 	done
- 
- 	a=${NSA_IP}
- 	log_start
-@@ -1379,23 +1384,23 @@ ipv4_udp_novrf()
- 	for a in ${NSA_LO_IP} 127.0.0.1
- 	do
- 		log_start
- 		show_hint "Should fail since addresses on loopback are out of device scope"
- 		run_cmd nettest -D -s -k
--		run_cmd nettest -D -r ${a} -d ${NSA_DEV}
-+		run_cmd nettest -D -r ${a} -d ${NSA_DEV} -t5
- 		log_test_addr ${a} $? 2 "Global server, device client, local connection"
- 
- 		log_start
- 		show_hint "Should fail since addresses on loopback are out of device scope"
- 		run_cmd nettest -D -s -k
--		run_cmd nettest -D -r ${a} -d ${NSA_DEV} -C
-+		run_cmd nettest -D -r ${a} -d ${NSA_DEV} -C -t5
- 		log_test_addr ${a} $? 1 "Global server, device send via cmsg, local connection"
- 
- 		log_start
- 		show_hint "Should fail since addresses on loopback are out of device scope"
- 		run_cmd nettest -D -s -k
--		run_cmd nettest -D -r ${a} -d ${NSA_DEV} -S
-+		run_cmd nettest -D -r ${a} -d ${NSA_DEV} -S -t5
- 		log_test_addr ${a} $? 1 "Global server, device client via IP_UNICAST_IF, local connection"
- 	done
- 
- 	a=${NSA_IP}
- 	log_start
-@@ -3443,11 +3448,11 @@ netfilter_icmp()
- 
- 	for a in ${NSA_IP} ${VRF_IP}
- 	do
- 		log_start
- 		run_cmd nettest ${arg} -s -k
--		run_cmd_nsb nettest ${arg} -r ${a}
-+		run_cmd_nsb nettest ${arg} -r ${a} -t5
- 		log_test_addr ${a} $? 1 "Global ${stype} server, Rx reject icmp-port-unreach"
- 	done
+        kfree(stats->is_disabled);
+        kfree(stats);
  }
- 
- ipv4_netfilter()
-@@ -3498,11 +3503,11 @@ netfilter_icmp6()
- 
- 	for a in ${NSA_IP6} ${VRF_IP6}
- 	do
- 		log_start
- 		run_cmd nettest -6 -s ${arg} -k
--		run_cmd_nsb nettest -6 ${arg} -r ${a}
-+		run_cmd_nsb nettest -6 ${arg} -r ${a} -t5
- 		log_test_addr ${a} $? 1 "Global ${stype} server, Rx reject icmp-port-unreach"
- 	done
- }
- 
- ipv6_netfilter()
--- 
-2.25.1
 
+Thanks
+
+>  }
+>  EXPORT_SYMBOL(rdma_free_hw_stats_struct);
+> diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
+> index 938c0c0a1c19..ae467365706b 100644
+> --- a/include/rdma/ib_verbs.h
+> +++ b/include/rdma/ib_verbs.h
+> @@ -565,6 +565,8 @@ struct rdma_stat_desc {
+>   *   their own value during their allocation routine.
+>   * @descs - Array of pointers to static descriptors used for the counters
+>   *   in directory.
+> + * @is_disabled - A bitmap to indicate each counter is currently disabled
+> + *   or not.
+>   * @num_counters - How many hardware counters there are.  If name is
+>   *   shorter than this number, a kernel oops will result.  Driver authors
+>   *   are encouraged to leave BUILD_BUG_ON(ARRAY_SIZE(@name) < num_counters)
+> @@ -577,6 +579,7 @@ struct rdma_hw_stats {
+>  	unsigned long	timestamp;
+>  	unsigned long	lifespan;
+>  	const struct rdma_stat_desc *descs;
+> +	unsigned long	*is_disabled;
+>  	int		num_counters;
+>  	u64		value[];
+>  };
+> -- 
+> 2.31.1
+> 
