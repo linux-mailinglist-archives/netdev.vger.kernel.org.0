@@ -2,63 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B78442441C
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 19:27:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A541E424454
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 19:32:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238105AbhJFR3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 13:29:05 -0400
-Received: from mxout03.lancloud.ru ([45.84.86.113]:56934 "EHLO
-        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbhJFR3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 13:29:05 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 4E4C220326DE
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [RFC 09/12] ravb: Add support to retrieve stats for GbEthernet
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
- <20211005110642.3744-10-biju.das.jz@bp.renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <9aa7a668-4576-7493-66cd-a5b26af87609@omp.ru>
-Date:   Wed, 6 Oct 2021 20:27:09 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S239082AbhJFReX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 13:34:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33210 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231617AbhJFReW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 13:34:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CA90060F22;
+        Wed,  6 Oct 2021 17:32:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633541550;
+        bh=xoTeSecthPoIVCFE9eaK5YWgW5FqM8Wx1GaGkk8TILk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iIbYkjKXrup+H9Fn37cRW5UkrXPxi8XPCEh7pJPwELSWYkHM9P2RBvoyr8xSXQYq3
+         OZUYyP8/0tbM5ndWjzDB3EhVUfZd9ZNshZPZEro1JQkGhGdPWogZfXEtpywQY4vGj7
+         eAGd2gNPrs/+bx+28YK/h+h0YKJnxLmOfTKpkmpVR+ZtvwONSiZGMn/zUpzPojvM6S
+         UQmGx3moCXZ7C2g5tPB2eC7jUjwCE+yE6HI0+9xlUQAZqIy3V9ttlHj81WvoeKzDBN
+         4OoToLMnLBBmGUnLnb874Z3JkteR1r4l2WjeSTm/D7S/9j5ATxGC7Ij9qC1zkrTdyg
+         lVn24l3nvK+LA==
+Date:   Wed, 6 Oct 2021 18:32:26 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Alexandru Elisei <alexandru.elisei@arm.com>
+Cc:     davem@davemloft.net, michael.riesch@wolfvision.net,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        p.zabel@pengutronix.de, lgirdwood@gmail.com,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [BUG RESEND] net: stmmac: dwmac-rk: Ethernet broken on rockpro64
+ by commit 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced
+ pm_runtime_enable warnings")
+Message-ID: <YV3dqmLefGVAjH2T@sirena.org.uk>
+References: <YV3Hk2R4uDKbTy43@monolith.localdoman>
 MIME-Version: 1.0
-In-Reply-To: <20211005110642.3744-10-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="6A6VXl3ajkDFtK+b"
+Content-Disposition: inline
+In-Reply-To: <YV3Hk2R4uDKbTy43@monolith.localdoman>
+X-Cookie: A is for Apple.
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/5/21 2:06 PM, Biju Das wrote:
 
-> Add support for retrieving stats information for GbEthernet.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+--6A6VXl3ajkDFtK+b
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+On Wed, Oct 06, 2021 at 04:58:11PM +0100, Alexandru Elisei wrote:
+> Resending this because my previous email client inserted HTML into the em=
+ail,
+> which was then rejected by the linux-kernel@vger.kernel.org spam filter.
+>=20
+> After commit 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced
+> pm_runtime_enable warnings"), the network card on my rockpro64-v2 was left
+> unable to get a DHCP lease from the network. The offending commit was fou=
+nd by
+> bisecting the kernel; I tried reverting the commit from v5.15-rc4 and the
+> network card started working as expected.
 
-[...]
+I did end up glancing briefly at this (though no idea how I ended up
+showing in get_maintainers...) - the revert dropped both the runtime PM
+enables and the get/puts, I suspect the driver may need the get/puts
+either where they are in the commit or at a level up.
 
-MBR, Sergey
+--6A6VXl3ajkDFtK+b
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmFd3akACgkQJNaLcl1U
+h9A+tAf/R80GdTYRa1orKc1W7WXATKEMT82qq11h/wdjVecfx/p0OGtKF6DGKXE5
+fiDA0ZogMuvjFc0keAF/hwoPTvfYbKyxpXFVphdvUZgprmRbY2VXXnbAvVf/nkEz
+an9dEsWf4CQiMa1ZlF0klMbQN/R8+CmnTlK7bJ8tz7sRXRZOPU5Gq+DYSYKs729h
+UMCqB/oD6f+9MSIqCFu0ltirDRL6Gih9ZAGcbvluUKJjkqiTrbjXIpVNw6nqBFOt
+3DZMTrgWyfHOyEFnRFeGD3yEb6zFCPC/IB/PZzHN01DFw7oC0jAFBQko+Jlijzur
+DZF6KX1d84dhjWLO5WeS6ctqCQQKSA==
+=8enb
+-----END PGP SIGNATURE-----
+
+--6A6VXl3ajkDFtK+b--
