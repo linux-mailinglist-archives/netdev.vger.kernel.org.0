@@ -2,107 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B9F0423875
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 09:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 406BB4238B3
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 09:19:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237213AbhJFHB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 03:01:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233968AbhJFHB4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 03:01:56 -0400
-Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5CFC061749
-        for <netdev@vger.kernel.org>; Wed,  6 Oct 2021 00:00:04 -0700 (PDT)
-Received: by mail-vs1-xe2f.google.com with SMTP id v4so1793097vsg.12
-        for <netdev@vger.kernel.org>; Wed, 06 Oct 2021 00:00:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y6Ya0Iom0fxMwaGpSp3HDf6YGcse7Fe25+Nz13nrbWY=;
-        b=VvCV3SZATO5AnJkVVcERvnt+D6JsCzs2J5qtw6kndIJ0vFTrJtvfme2jsq5/dSpMPF
-         8QAolP3ChiLOyJK6eBZiMB2PsiOfuLrqqyjpJEnbDZpk5TGgfGm21FrKKaMdwUFDx2Og
-         kuEVlm6tb/C7o/aIFmbXdrdcJJajhoQ8T/5EJVwZqBYLPkOLACFztOxwBMKeObzV0nW2
-         9TszfX3eiwE7OPmw7nJUWO27L0lOZ48FL2KJ+5qpOUCxtFR4Maqm79GBq7RTGiwPEXxF
-         IfbCmSTYK3iMWCVOdNxGmmvNa39M6jEuq0dUDj/YW3fRUnrDGWvz0vHas2kSJjLKucR5
-         ning==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y6Ya0Iom0fxMwaGpSp3HDf6YGcse7Fe25+Nz13nrbWY=;
-        b=M8QZ/xx18cVHO/33OLLTrp1exGtRsiC5TGXNCcvqoTPFlwKNguq+kiLifQ8EaRIj+H
-         FfqiRa/Rcg+IVCYxXnU/Rtirh6z9WxrRoAYjRBCxvMdbDRmwFoAlt4DOJCT6qQRGGU3x
-         2O473lkK2vldZPlfyXaUGDqHtFfpx3r9OYBBVWmNZCDzlKlyb131azaqSOUAz85upxEz
-         oDuE1lHPfkkrtXX6L/2D4hyJ4ccxz3Jpbwgm/nNs5EGjMB0ucgAQj2YK+Rc0iR9JubwD
-         XLrByHy9uKMXkgsI+guhK723nsXno++EusVfnksaX7lUoKVKURlFZpcPfGnXSdXO/V/n
-         /j2w==
-X-Gm-Message-State: AOAM532mC7ARzHC5NDGuz/oi6XSSCf3AxRrvQ/EWHNokCT8NWRVUwQFR
-        H/7AmgV4JjULnmHi1XmlVNDe7r/QE63NeiPvZsX+Q1ac
-X-Google-Smtp-Source: ABdhPJzLqd+2wKk6BA1bnc5c/IYxtmvj51cBbVz2qIDBvfJ860bXdpDmBc0fRLXVHl938M+dIeIV57o008DOXXGsWwE=
-X-Received: by 2002:a67:e416:: with SMTP id d22mr21845038vsf.41.1633503603581;
- Wed, 06 Oct 2021 00:00:03 -0700 (PDT)
+        id S237292AbhJFHU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 03:20:56 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:40306 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229861AbhJFHUy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 03:20:54 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19623DPL028833;
+        Wed, 6 Oct 2021 00:18:59 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=pfpt0220;
+ bh=SxWksmwfxwt9KRUyWgmbzlC2wYB2rrtBNdYVAhJKnOY=;
+ b=LjV4BK5ksXSbMvr3ybfczv+nvvRJxxpu/R9PN2NPzM9N6UMr9J6n6t4rGbVKsBdYrQUS
+ NlleIcYYaKSK7Phym27TLvOTG13tdide2FmAfHZAjXaUSbNeEpE9/Uj5BM3/W+B6BN/8
+ oMqH19+IxdvoHqw3METkhp56Wl4yoXKRUwLptkcNca7HncoMzvLkbnBrKNw/Ri5i/iSd
+ fawKfAY9YfxvP7R6yCk58/WM16Tu47d0FJcend5bRw62hnW0KnFhePVxC9UWltbeqOmq
+ U019GSMp0Q2OryBbTGzGvrWhgbdCgxyx7bk9rS+rr1NL8XD4pEN7KDDv/q6G3cIEIITq MA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3bgr1qkj7y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 06 Oct 2021 00:18:59 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 6 Oct
+ 2021 00:18:57 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Wed, 6 Oct 2021 00:18:57 -0700
+Received: from hyd1358.marvell.com (unknown [10.29.37.11])
+        by maili.marvell.com (Postfix) with ESMTP id 315453F704C;
+        Wed,  6 Oct 2021 00:18:54 -0700 (PDT)
+From:   Subbaraya Sundeep <sbhatta@marvell.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <hkelam@marvell.com>, <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [net-next PATCH v2 0/3] Add devlink params to vary cqe and rbuf
+Date:   Wed, 6 Oct 2021 12:48:43 +0530
+Message-ID: <1633504726-30751-1-git-send-email-sbhatta@marvell.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
- <1633454136-14679-3-git-send-email-sbhatta@marvell.com> <20211005181157.6af1e3e4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211005181157.6af1e3e4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   sundeep subbaraya <sundeep.lkml@gmail.com>
-Date:   Wed, 6 Oct 2021 12:29:51 +0530
-Message-ID: <CALHRZupNJC7EJAir+0iN6p4UGR0oU0by=N2Hf+zWaj2U8RrE4A@mail.gmail.com>
-Subject: Re: [net-next PATCH 2/3] octeontx2-pf: Add devlink param to vary cqe size
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Subbaraya Sundeep <sbhatta@marvell.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: JcnLNfqbkQp3pWXx64IdEIO8fdQGJ-iG
+X-Proofpoint-GUID: JcnLNfqbkQp3pWXx64IdEIO8fdQGJ-iG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-10-05_06,2021-10-04_01,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Octeontx2 hardware writes a Completion Queue Entry(CQE) in the
+memory provided by software when a packet is received or
+transmitted. CQE has the buffer pointers (IOVAs) where the
+packet data fragments are written by hardware. One 128 byte
+CQE can hold 6 buffer pointers and a 512 byte CQE can hold
+42 buffer pointers. Hence large packets can be received either
+by using 512 byte CQEs or by increasing size of receive buffers.
+Current driver only supports 128 byte CQEs.
+This patchset adds devlink params to change CQE and receive
+buffer sizes which inturn helps to tune whether many small size
+buffers or less big size buffers are needed to receive larger
+packets. Below is the patches description:
 
-On Wed, Oct 6, 2021 at 6:46 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 5 Oct 2021 22:45:35 +0530 Subbaraya Sundeep wrote:
-> > Completion Queue Entry(CQE) is a descriptor written
-> > by hardware to notify software about the send and
-> > receive completion status. The CQE can be of size
-> > 128 or 512 bytes. A 512 bytes CQE can hold more receive
-> > fragments pointers compared to 128 bytes CQE. This
-> > patch adds devlink param to change CQE descriptor
-> > size.
->
-> nak, this belongs in ethtool -g
+Patch 1 - This prepares for 512 byte CQE operation by
+seperating out transmit side and receive side config.
+Also simplifies existing rbuf size calculation.
 
-We do use ethtool -G for setting the number of receive buffers to
-allocate from the kernel and give those pointers to hardware memory pool(NPA).
+Patch 2 - Adds devlink param to change cqe. Basically
+sets new config and toggles interface to cleanup and init properly.
 
-This patch is to specify hardware the completion queue descriptor size
-it needs to use
-while writing to memory. The CQE consists of buffer pointer/packet addresses.
-Say a large packet is received then hardware splits that large packet
-into buffers
-and writes only one CQE consisting of all the buffer pointers which
-makes a packet.
-If hardware is configured to use 128 byte CQE then only 6 pointers can
-be accomodated
-and rest of packet data is truncated. If CQE is configured as 512 byte
-then 42 pointers
-can be accomodated hence large packets can be received.
-ethtool -G can be used to change number of packets a ring can hold but
-not number
-of fragments a single packet can use. Since this is hardware related
-am using devlink.
-CN9XX series hardware max packet length is 9212 and a 128 byte CQE (6
-buffer pointers)
-with 2K receive buffer was sufficient to receive 9212 packet (2k * 6 =
-12K). CN10XX series
-max receive length is 65535 so 128 byte CQE was not enough.
+Patch 3 - Similar to patch 2 and adds devlink param to
+change receive buffer size
+
+
+v2 changes:
+Fixed compilation error in patch 1
+error: ‘struct otx2_nic’ has no member named ‘max_frs’
 
 
 
 Thanks,
 Sundeep
+
+
+Subbaraya Sundeep (3):
+  octeontx2-pf: Simplify the receive buffer size calculation
+  octeontx2-pf: Add devlink param to vary cqe size
+  octeontx2-pf: Add devlink param to vary rbuf size
+
+ drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c |   2 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  20 ++--
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   4 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_devlink.c  | 116 +++++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  24 +++--
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  30 ++++--
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   4 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |   7 ++
+ 8 files changed, 177 insertions(+), 30 deletions(-)
+
+-- 
+2.7.4
+
