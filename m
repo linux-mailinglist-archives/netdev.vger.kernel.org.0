@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DEA14248E9
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 23:27:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E83974248FD
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 23:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239699AbhJFV2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 17:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
+        id S239683AbhJFVhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 17:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232152AbhJFV2x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 17:28:53 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1972C061746;
-        Wed,  6 Oct 2021 14:27:00 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id r18so14970299edv.12;
-        Wed, 06 Oct 2021 14:27:00 -0700 (PDT)
+        with ESMTP id S229926AbhJFVhK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 17:37:10 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4D3C061753;
+        Wed,  6 Oct 2021 14:35:17 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id r18so15038991edv.12;
+        Wed, 06 Oct 2021 14:35:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TEIVevLr+KkOe+yPKE3J8X4wJFJQbdygarJo9OKidbQ=;
-        b=p0GJzPzOWa+cfAfY7747JRX8oWbNXWM97C+z3apyCRClrxPBjlhMCbhDwrP1n5mIBV
-         RgI9GJMetZmD5wfDzGyGcIQ4EGyVVWS0StFQRyS/V0XPGF5xxBxlfbkKcRTeVla+EY3C
-         sSWC++lI0pD0Z+2zRCLmlsVf+tDEfw7NBO9DFupQAZe2XPKEg22DASeETxnztVfVYe4p
-         5rnWbtkj/LTjQ8EaBANyPrukGnYuemEPj5T3nnk8jJCkuH2OqbMWTLwYAl7ZfYhQBAgO
-         21waD25l8+vmUCrtobkSWroSM2MkCUTjDEtSVI66OO5KNMh/RX4SFGDl0a1qnUoOSt+Z
-         QrNw==
+        bh=k2aWKq81FbwNlwh5R8TQ/Jg8udU/6vv2IjPzFQ2xQYI=;
+        b=MO3EPnYEBmt3cY4QIjuUzEkrBOj4RXjpfwB77pM/xDipuhauDTCEAa0cxkz4+HNQYT
+         X5Q2SiOx7f0uGD/i5MeGXjde3rwJitLh/fVa1rEAezu5HnKriP66VUePWE/rygi6Sbnf
+         bb3zh3Ksmr5MDjCa8yHLVDkl5c1ka1SJSbR78NVLqBkKd01SLJd+rYM5VWg5fyg3Aif1
+         8AU46DcA9DVczx6lpEjNFkVj4YuDPj/v2+R4YZOvu060ahg5n11qhpbDNJB5bZAki/Eg
+         k8NkaANEd6zsct2IALxXqGIO3EO/oyULIpSXd/o/iCbdbmIOW78RuNPXs6L/qZAdBJj9
+         UUnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=TEIVevLr+KkOe+yPKE3J8X4wJFJQbdygarJo9OKidbQ=;
-        b=ZaBL33TLosI14z+pOCna39qRVpA6llOL3BIFAU0HducJNYYYMjwd/cKaIM/d2BGWWF
-         FzFmrbk5ZOHU/hH0ZCkUdfPvH2USRl74vThiGU0yt2E2LX5DC40iqBNGcjH5BHgSrXd/
-         dwa5Gygyt3OS4wgsgKBnG04JKeLXDQk+nTgfzbI0U9PCLif9b5n3o1yed0xQ2bdv/bIM
-         48fMF8VrsyGgV3+Www+BvbzsWulSXdUaQscFo2606+odX/G7c2ho2vRRFD5YvIjrHzdA
-         OCGfkkESW0YpegVRqs1u4Db4eC+uIsbxujtOd7KbZBMf+vR7KjODchAuazOGy5VUDgaM
-         4myA==
-X-Gm-Message-State: AOAM5322PQvE9EnYS3EBJVAta+Kb6MpAT4ZXsAdc1KaQRCMJ2aoxuaaL
-        2SE25lSURcjb+QP31+QWINVmnafYO66NwEBFiuhqBA==
-X-Google-Smtp-Source: ABdhPJyCU+oSJN5PiFKY5i0hkVZ1JGnxR2EGlN1fAjiHYGe2Leq7H1zEuBIFtcu4sJpy8XtCJSp02g==
-X-Received: by 2002:a05:6402:3509:: with SMTP id b9mr780972edd.187.1633555619218;
-        Wed, 06 Oct 2021 14:26:59 -0700 (PDT)
+        bh=k2aWKq81FbwNlwh5R8TQ/Jg8udU/6vv2IjPzFQ2xQYI=;
+        b=KmuSj2VX5jkYIiSAFUcOHFT0SZUeACQIR4v9jCZXjPsqmDIY4qkTMKSAZigwIQ37UE
+         tqeCedlHGI0qZNe6nC69W293s0XpM1yXY6K0dn2PPCX7DpBQasXHYmVUHaw77ViV6gWe
+         KgMKC4kgj06ZRP4G1F8U6qGtyIoGhUFiY9PeCrfDOf6NC8432jQ81KFNSSNTRXGN1xTY
+         zEZCW5ylNKWd8Pc7sunt+EHXISnLijtSCpt+NF11sLwL8zKJTxMsV6UAf/RckXqdXhmL
+         cLyX5k4y4ppBwafekiBduXIesxDqS2TkQsjt7876Fto6Nv0GhcGNz0s6/YYSh0GhkYk+
+         w3Dg==
+X-Gm-Message-State: AOAM530qJEKbufcEhdqXX6eSLmZ5KPLM+w5TuUKcC1oxVxFqim18oIlj
+        DCjY1qnPAOk8ZSWZvimgCV5luth7LylH5JAKTMadvA==
+X-Google-Smtp-Source: ABdhPJwjMTd1GVQw9RB1UdIg9jNf4eF/3QHYTlF9HB2C7uy1+9qeoPgzPYQVzkTrMNVt3FJzNYtZEQ==
+X-Received: by 2002:a17:906:5855:: with SMTP id h21mr780128ejs.230.1633556115999;
+        Wed, 06 Oct 2021 14:35:15 -0700 (PDT)
 Received: from ?IPv6:2a04:241e:501:3870:473a:8ebc:828b:d6c6? ([2a04:241e:501:3870:473a:8ebc:828b:d6c6])
-        by smtp.gmail.com with ESMTPSA id x16sm5204655eds.92.2021.10.06.14.26.58
+        by smtp.gmail.com with ESMTPSA id d17sm6302991edv.58.2021.10.06.14.35.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Oct 2021 14:26:58 -0700 (PDT)
-Subject: Re: [PATCH 11/11] selftests: net/fcnal: Reduce client timeout
+        Wed, 06 Oct 2021 14:35:15 -0700 (PDT)
+Subject: Re: [PATCH 08/11] selftests: net/fcnal: Replace sleep after server
+ start with -k
 To:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
         Shuah Khan <shuah@kernel.org>, David Ahern <dsahern@kernel.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -57,15 +58,15 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <cover.1633520807.git.cdleonard@gmail.com>
- <516043441bd13bc1e6ba7f507a04362e04c06da5.1633520807.git.cdleonard@gmail.com>
- <3ed2262e-fce2-c587-5112-e4583cd042ed@gmail.com>
+ <ec40bd7128a30e93b90ba888f3468f394617a010.1633520807.git.cdleonard@gmail.com>
+ <43210038-b04b-3726-1355-d5f132f6c64e@gmail.com>
 From:   Leonard Crestez <cdleonard@gmail.com>
-Message-ID: <c48ea9e2-acdc-eb11-a4b0-35474003fcf3@gmail.com>
-Date:   Thu, 7 Oct 2021 00:26:57 +0300
+Message-ID: <d6882c3f-4ecf-4b4e-c20e-09b88da4fbd6@gmail.com>
+Date:   Thu, 7 Oct 2021 00:35:14 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <3ed2262e-fce2-c587-5112-e4583cd042ed@gmail.com>
+In-Reply-To: <43210038-b04b-3726-1355-d5f132f6c64e@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -75,37 +76,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 06.10.2021 18:01, David Ahern wrote:
+On 06.10.2021 17:54, David Ahern wrote:
 > On 10/6/21 5:47 AM, Leonard Crestez wrote:
->> Reduce default client timeout from 5 seconds to 500 miliseconds.
->> Can be overridden from environment by exporting NETTEST_CLIENT_TIMEOUT=5
+>> The -k switch makes the server fork into the background after the listen
+>> call is succesful, this can be used to replace most of the `sleep 1`
+>> statements in this script.
 >>
->> Some tests need ICMP timeouts so pass an explicit -t5 for those.
+>> Change performed with a vim command:
+>>
+>> s/nettest \(.*-s.*\) &\n\s*sleep 1\n/nettest \1 -k\r
 >>
 >> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 >> ---
->>   tools/testing/selftests/net/fcnal-test.sh | 17 +++++++++++------
->>   1 file changed, 11 insertions(+), 6 deletions(-)
+>>   tools/testing/selftests/net/fcnal-test.sh | 641 ++++++++--------------
+>>   1 file changed, 219 insertions(+), 422 deletions(-)
 >>
 > 
-> The problem with blindly reducing the timeouts is running the script on
-> a loaded server. Some tests are expected to timeout while for tests a
-> timeout is a failure.
+> I have a change from January [1] that runs the tests with 1 binary -
+> takes both client and server side arguments, does the server setup,
+> switches namespaces as needed and then runs the client side. I got
+> bogged down validating the before and after which takes a long time
+> given the number of tests. The output in verbose mode is as important as
+> the pass / fail. Many of the tests document existing behavior as well as
+> intended behavior.
+> 
+> You used a search and replace to update the tests. Did you then do the
+> compare of test results - not pass / fail but output?
 
-Keeping the default value "5" would be fine as long as it is possible to 
-override externally and get fast results on a mostly-idle machine.
+I counted the [FAIL] or [ OK ] markers but not the output of nettest 
+itself. I don't know what to look for, I guess I could diff the outputs?
 
-Placing a default value in the environment which is overriden by certain 
-tests achieves that.
+Shouldn't it be sufficient to compare the exit codes of the nettest client?
 
-In theory it would also be possible for fcnal-test.sh to parse as 
-"--timeout" option and pass it into every single test but that solution 
-would cause much more code churn.
+The output is also modified by a previous change to not capture server 
+output separately and instead let it be combined with that of the 
+client. That change is required for this one, doing out=$(nettest -k) 
+does not return on fork unless the pipe is also closed.
 
-Having default values in environment variables that can still be 
-overridden by command-line arguments is a common pattern in many tools. 
-It also avoids having to pass-through every flag through every 
-intermediate wrapper.
+I did not look at your change, mine is relatively minimal because it 
+only changes who decide when the server goes into the background: the 
+shell script or the server itself. This makes it work very easily even 
+for tests with multiple server instances.
 
 --
 Regards,
