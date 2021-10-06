@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 827A64249E0
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 00:37:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C65EE4249E8
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 00:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239900AbhJFWjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 18:39:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38338 "EHLO
+        id S239934AbhJFWj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 18:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239871AbhJFWif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 18:38:35 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9646EC061766;
-        Wed,  6 Oct 2021 15:36:42 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id r18so15509211edv.12;
-        Wed, 06 Oct 2021 15:36:42 -0700 (PDT)
+        with ESMTP id S239947AbhJFWio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 18:38:44 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95604C06176C;
+        Wed,  6 Oct 2021 15:36:43 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id l7so15717740edq.3;
+        Wed, 06 Oct 2021 15:36:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=FFCx313Z9GQlAP/ahwXmpC+e4yyEdzEZEyW2K6sJHgk=;
-        b=pgfCgl+D8v3YEFhQJfFu8XQNcfjqUQ4lpgNNe8bctg2GCbLgLpSKe1UuSIKOLe/mdt
-         BasASX5sOVgAfmtZL05MF7/NiM/UrPV8vPJ1wNhikpY/NQP3Mn8nHHbXmaIWJRVQ3maO
-         4svU/JWBRj0+XgMJtncjYhTZq0WOYe3S4uO5UwdFt/7mx22onvbkeMczUU8nwmyeAyrk
-         KYj+pfwxL5YmjCEiZMjZGgBL2oiU3xiDJze92w5LhIQD7RetprNLvZtgMdZCa6kgXdkW
-         6AZ3Sr87VaNxSQA7YGg8nuiN7D7mOzWC+49jv2n8AXj08+V+022tHMl160ZHeM3zggsH
-         7ygw==
+        bh=aJj/1qPNuaVQFK3OzLpENkQJhnzkYtyy78uh6Vh8QNI=;
+        b=L0TlaMBtITBxzhR1lZHviuIP/bQA5HOgoY9MF28mg2zKUsEhBR0OBg4qyBDW6UYQFK
+         h3WVON6cCNud1Cat7h9vWBUhP2OwOOTj6xm9TWzuu9tZod7rsVDqmrRY0RPRnVU333mk
+         oldpmbXnjLKEsaIdHF1YcdCctASMZd3pvTXT37JGjY5+rdi0NnHi+rJ9f+AeI1gw3JFa
+         qiIcUMnMv+xTOZQ4DNtcjCAi+W8jOcJbWj6sai7XgeGvNd6zCqvmd7/lRSd7ZrzlwqYZ
+         M3Lk762vdJfnD2xMzfpvljpuguIGED4unT/+FAEVPfZ7YAof8/HNMgpWgLp5APmJgovQ
+         Uqtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FFCx313Z9GQlAP/ahwXmpC+e4yyEdzEZEyW2K6sJHgk=;
-        b=QhV5rWDsnuecLOwLVBVJsSAyU9F5ddpfU1cd2Ni2HdRV5WVRety0BfE+vjI5w7pRQp
-         h4pYF5lCAdiB+Dy5rVt7+ZEU4hGH6fZe6/NYy1wMWPcNzuIQgtk3WbYlxOID4higFIPD
-         PWKhSDOdqVHmp/V+3177+D6L8+RpFXScFpFvXdUNHFRSt1kKt+l1hdOczIfY8noPBfCe
-         AcK+U4/iaZl17ES6MidaKdonkFZPiCPPFaotxjvYS/fyR85bq5GALL/OnsQtMmJmZ5/7
-         OKamCZ6bHAfeDvXmBcCJwzvlPBvmqHIoOHPMtihPVjfgoya+0SjxHFN2gFFsnhPKfN45
-         mCfw==
-X-Gm-Message-State: AOAM530tKsqLtqqnRUE88RYws8VAY/rngK5fORUoxCAZqhSPsxWrBciI
-        0mX4dQQzWh24N8GnqvQc8sQ=
-X-Google-Smtp-Source: ABdhPJxRg5/r7Om3l3xHIc+HYBoftXVTx1yB58E/sRzig1RImYRleVizeX1mngJxOAUSCSMZxrf7lg==
-X-Received: by 2002:a05:6402:34cb:: with SMTP id w11mr1157255edc.263.1633559801090;
-        Wed, 06 Oct 2021 15:36:41 -0700 (PDT)
+        bh=aJj/1qPNuaVQFK3OzLpENkQJhnzkYtyy78uh6Vh8QNI=;
+        b=bplOCCeguD+DvJlfIzKzSUhOSiAxcE/+wdEdAznjmAKoqiVp9pl799bgNHMGGk3Z2u
+         fc/rEqu2IItiOd4lTdeewcHkEAj9A9MOZ0qRtAjTEOBQMleH6WrvH3qRWVeCQjT2JLhu
+         O3AlojWeaf/mb4HOhZHncwvwgiwZCLPJV+91kr3e+7gm+G1Vf9o7jJf2EWPwPMHtlYZM
+         NEGsEO2clCEOPkGRXL/rZgPHxJIBj4qsy30laT5reTVlv0tmmoOt0WobjDEVycZs5wTH
+         hElK8E+c4MUUCT56oZGPYfAERSMTwkZ4uAObN8s4LyBND6BP7cTltGWNgBKx9hMothIu
+         khHg==
+X-Gm-Message-State: AOAM532hApELI7cfOVwMASapc74Pi67ieowbfp82rkb4KMEH72PytiAR
+        qWU+jGIshegQMN9buAxStYA=
+X-Google-Smtp-Source: ABdhPJxkBNOH1aDqAS8750346rUpHDVKyJa1T5CfAuP5cz9uFbjkqTzrTsIXoRI8jkACY8ggS6wWdA==
+X-Received: by 2002:a17:906:7d42:: with SMTP id l2mr1130949ejp.467.1633559802038;
+        Wed, 06 Oct 2021 15:36:42 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id z8sm9462678ejd.94.2021.10.06.15.36.40
+        by smtp.googlemail.com with ESMTPSA id z8sm9462678ejd.94.2021.10.06.15.36.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Oct 2021 15:36:40 -0700 (PDT)
+        Wed, 06 Oct 2021 15:36:41 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,9 +59,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>,
         Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [net-next PATCH 12/13] drivers: net: dsa: qca8k: add support for pws config reg
-Date:   Thu,  7 Oct 2021 00:36:02 +0200
-Message-Id: <20211006223603.18858-13-ansuelsmth@gmail.com>
+Subject: [net-next PATCH 13/13] Documentation: devicetree: net: dsa: qca8k: document open drain binding
+Date:   Thu,  7 Oct 2021 00:36:03 +0200
+Message-Id: <20211006223603.18858-14-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211006223603.18858-1-ansuelsmth@gmail.com>
 References: <20211006223603.18858-1-ansuelsmth@gmail.com>
@@ -71,77 +71,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some qca8327 switch require the power_on_sel enabled for the pws_reg or
-sets the led to open drain.
-Also qca8327 switch have a special mode to declare reduced 48pin layout.
-This special mode is only present in qca8327 as qca8337 have a different
-pws_reg table.
-Introduce a new binding and support these special configuration.
+Document new binding qca,power_on_sel used to enable Power-on-strapping
+select reg and qca,led_open_drain to set led to open drain mode.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 26 ++++++++++++++++++++++++++
- drivers/net/dsa/qca8k.h |  3 +++
- 2 files changed, 29 insertions(+)
+ Documentation/devicetree/bindings/net/dsa/qca8k.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 01b05dfeae2b..209f8d3c9ea8 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1014,6 +1014,28 @@ qca8k_setup_port0_pad_ctrl_reg(struct qca8k_priv *priv)
- 	return ret;
- }
+diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+index 550f4313c6e0..4f6ef9f9e024 100644
+--- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
++++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+@@ -13,6 +13,10 @@ Required properties:
+ Optional properties:
  
-+static int
-+qca8k_setup_of_pws_reg(struct qca8k_priv *priv)
-+{
-+	struct device_node *node = priv->dev->of_node;
-+	u32 val = 0;
-+
-+	if (priv->switch_id == QCA8K_ID_QCA8327)
-+		if (of_property_read_bool(node, "qca,package48"))
-+			val |= QCA8327_PWS_PACKAGE48_EN;
-+
-+	if (of_property_read_bool(node, "qca,power-on-sel"))
-+		val |= QCA8K_PWS_POWER_ON_SEL;
-+
-+	if (of_property_read_bool(node, "qca,led-open-drain"))
-+		/* POWER_ON_SEL needs to be set when configuring led to open drain */
-+		val |= QCA8K_PWS_LED_OPEN_EN_CSR | QCA8K_PWS_POWER_ON_SEL;
-+
-+	return qca8k_rmw(priv, QCA8K_REG_PWS,
-+			QCA8K_PWS_LED_OPEN_EN_CSR | QCA8K_PWS_POWER_ON_SEL,
-+			val);
-+}
-+
- static int
- qca8k_setup(struct dsa_switch *ds)
- {
-@@ -1039,6 +1061,10 @@ qca8k_setup(struct dsa_switch *ds)
- 	if (ret)
- 		return ret;
- 
-+	ret = qca8k_setup_of_pws_reg(priv);
-+	if (ret)
-+		return ret;
-+
- 	ret = qca8k_setup_of_rgmii_delay(priv);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 3fded69a6839..90f4616c33f1 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -48,6 +48,9 @@
- #define   QCA8K_MAX_DELAY				3
- #define   QCA8K_PORT_PAD_SGMII_EN			BIT(7)
- #define QCA8K_REG_PWS					0x010
-+#define   QCA8K_PWS_POWER_ON_SEL			BIT(31)
-+#define   QCA8327_PWS_PACKAGE48_EN			BIT(30)
-+#define   QCA8K_PWS_LED_OPEN_EN_CSR			BIT(24)
- #define   QCA8K_PWS_SERDES_AEN_DIS			BIT(7)
- #define QCA8K_REG_MODULE_EN				0x030
- #define   QCA8K_MODULE_EN_MIB				BIT(0)
+ - reset-gpios: GPIO to be used to reset the whole device
++- qca,package48: Set to 48-pin mode required in some QCA8327 switches.
++- qca,power-on-sel: Enable Power-on-strapping select required in some QCA8327
++  switches.
++- qca,led-open-drain: Set leds to open-drain mode.
+ - qca,mac6-exchange: Internally swap MAC0 and MAC6.
+ - qca,sgmii-rxclk-falling-edge: Set the receive clock phase to falling edge.
+ - qca,sgmii-txclk-falling-edge: Set the transmit clock phase to falling edge.
 -- 
 2.32.0
 
