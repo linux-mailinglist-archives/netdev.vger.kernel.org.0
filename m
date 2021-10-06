@@ -2,74 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46CA4423A12
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 10:55:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42BB8423A35
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 11:09:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237824AbhJFI5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 04:57:36 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:53880 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237744AbhJFI5f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 04:57:35 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 94DC322474;
-        Wed,  6 Oct 2021 08:55:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1633510542; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tOUt98g8+9+P34E45fCGWBd76QCTPaEX9GgUrSeLO4E=;
-        b=ZcDVID/7Ad9hhcOs6Efq4MybzXxsW3thx4q2eNdU7DJLdbmQn0JFheFaLP0ScDRwfnfZpl
-        lcfEkSnhuQZIAauqimaDG3XaI3n8djsFuVYkvDd6qWJIHSQCOqekf9ffcV4zvpJGle6g47
-        Frh+O4o5Mh7d7wmdJhufaK25bD4YTYA=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id D8853A3B8A;
-        Wed,  6 Oct 2021 08:55:40 +0000 (UTC)
-Date:   Wed, 6 Oct 2021 10:55:40 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        gregkh@linuxfoundation.org, ebiederm@xmission.com,
-        stephen@networkplumber.org, herbert@gondor.apana.org.au,
-        juri.lelli@redhat.com, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 9/9] net-sysfs: remove the use of
- rtnl_trylock/restart_syscall
-Message-ID: <YV1kjDfTE2N2XK9J@dhcp22.suse.cz>
-References: <20210928125500.167943-1-atenart@kernel.org>
- <20210928125500.167943-10-atenart@kernel.org>
- <YV1GJg/aqPARptJp@dhcp22.suse.cz>
- <163350742102.4226.2656822862076181317@kwain>
+        id S237594AbhJFJKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 05:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47528 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230120AbhJFJKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 05:10:49 -0400
+Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFF8C061749;
+        Wed,  6 Oct 2021 02:08:57 -0700 (PDT)
+Received: by mail-vs1-xe2a.google.com with SMTP id v4so2104824vsg.12;
+        Wed, 06 Oct 2021 02:08:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N7fZIrwyriq79kuIfyhhuiAPVblLkfDYcYJj6bllaKQ=;
+        b=Imk1yRNpWXhQfss2h3pBFsuVNhn5yHFDIeTF4mj6BwIht3RBbflE4A0rOz8rqhLYt/
+         xtsroLkmpBt/qhKVygY+IR85oHUnB4q6Z4FAro/2DPjYr2C6q/5XO6Q1wA2EaeqpXqI5
+         IxqWGxcafhCjIoVAE0DQcO03CUha5gqyXYE8XIRn9YiWBUmki2pPdroh7G+i8yTyB18b
+         ne8zE2cX00T9UuGroEDnsZ5bjXQ90zcproSTI4qLGTHFvUZmQl6+yTXBL4IgRPbe/d3I
+         RaVkNa4DzfwuUnD6Yztisz1XQx60fFvSZqE4yz8PevZ2dNjtfcvDpJOeGo70JglvacDr
+         3jKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N7fZIrwyriq79kuIfyhhuiAPVblLkfDYcYJj6bllaKQ=;
+        b=MunhkJXvEudfE1v/+V017ie0EivG4ysEbwJ30Krn3JD6T+CJaOD845GOC8MFeGZP0B
+         C5XoDUQkWLVfVUClrIli/v8cxn9ZqkdZczl4xl9nwq7l7PenSBr/DSPEPEGm5MRKgbhi
+         5sVjpTdxh4CTxnLRtF5/7t7x9/z6rl0SB1vLWYOHbjZuTEacKgnqm/Qs9e8A8wnhdN6J
+         Ui8NJ9g9MrBf8dJ6Qw60yZ8kqDfIGpIkBmMEg+iDdb+6odY12kwXdV37svZY32Oh6IyX
+         Ov2U4IW5lpiwwV5Yot20c0aDcJkHzDFmDIE04iBu0htWHBtbnyeP2BJWDR6b7qPMxqje
+         hJLQ==
+X-Gm-Message-State: AOAM531FXBGLlgShoczbdVMIqIwW4osgqZOur8XC0EBOJRVj2hTK2hoG
+        vF/1gGsOiYZDZzEAcSYss7ZhmtnoxcC8NuhjqiE=
+X-Google-Smtp-Source: ABdhPJwwB/oVmv3aQyWxLX4duWG3UPNmJIw6mjRRUVRIyly9S3luSiL/Oztti7UozHmYysnzm6GOdVjxYOzBam/N5Zc=
+X-Received: by 2002:a67:ec8e:: with SMTP id h14mr11600374vsp.44.1633511336624;
+ Wed, 06 Oct 2021 02:08:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <163350742102.4226.2656822862076181317@kwain>
+References: <20211004114601.13870-1-dnlplm@gmail.com>
+In-Reply-To: <20211004114601.13870-1-dnlplm@gmail.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Wed, 6 Oct 2021 12:08:45 +0300
+Message-ID: <CAHNKnsRA5z+qZEUpQ0xeK2Qw4cvSJK8FiL7UF3ec4+13cXTbuQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] drivers: net: mhi: fix error path in mhi_net_newlink
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 06-10-21 10:03:41, Antoine Tenart wrote:
-> Quoting Michal Hocko (2021-10-06 08:45:58)
-> > On Tue 28-09-21 14:55:00, Antoine Tenart wrote:
-> > > The ABBA deadlock avoided by using rtnl_trylock and restart_syscall was
-> > > fixed in previous commits, we can now remove the use of this
-> > > trylock/restart logic and have net-sysfs operations not spinning when
-> > > rtnl is already taken.
-> > 
-> > Shouldn't those lock be interruptible or killable at least? As mentioned
-> > in other reply we are seeing multiple a contention on some sysfs file
-> > because mlx driver tends to do some heavy lifting in its speed callback
-> > so it would be great to be able to interact with waiters during that
-> > time.
-> 
-> Haven't thought much about this, but it should be possible to use
-> rtnl_lock_killable. I think this should be a patch on its own with its
-> own justification though (to help bisecting). But that is easy to do
-> once the trylock logic is gone.
+On Mon, Oct 4, 2021 at 2:45 PM Daniele Palmas <dnlplm@gmail.com> wrote:
+>
+> Fix double free_netdev when mhi_prepare_for_transfer fails.
+>
+> This is a back-port of upstream:
+> commit 4526fe74c3c509 ("drivers: net: mhi: fix error path in mhi_net_newlink")
+>
+> Fixes: 13adac032982 ("net: mhi_net: Register wwan_ops for link creation")
+> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
 
-Agreed
+Looks good for me too, thank you for taking care of this!
 
--- 
-Michal Hocko
-SUSE Labs
+Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
