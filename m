@@ -2,94 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42A76424062
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 16:48:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CD6742406B
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 16:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239086AbhJFOuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 10:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42068 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239075AbhJFOuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 10:50:12 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A850C061753;
-        Wed,  6 Oct 2021 07:48:20 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id y207so1161494oia.11;
-        Wed, 06 Oct 2021 07:48:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XewLXbV0fAQkfACZ0ivzGkAxnAOatRqilHKzFIJtiSs=;
-        b=eaA+LZSl9AW8MmZzbCJUc7FStyD0+qd6gmORfpg4PzeLUMX4p0H15dxUoLESK8nn/q
-         ivUuiJ/bKCAqEfOl/tz/ukTGTPkB5yxqhBegwCBdR9sTPZmS6+KO+HBDlRlpvHTp35H2
-         Gvp2kZUcV7TjHBdGVal3CvR2u1wGSUqY55NTgo6GFZJPRUY4u6bCXOZKOOAl3C5n6pis
-         DG3enOJHeY9e4MjDW2Mq3IxiWgof7X1mD2RarUp2lp7d9GOtfX3t7le5aiyejn4MRr8R
-         QcJw4f01gVWqulnU3YO+i1/4uM9gvAMrpkZT4dgIh9/yu8N+Wm/8QEEqduhUpaAjnA3S
-         OaUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XewLXbV0fAQkfACZ0ivzGkAxnAOatRqilHKzFIJtiSs=;
-        b=EqSs2NlFomA0nRXzEM3NiZDPYbecUH97brQCMUwpS64sF6ZZNEQbV7DwnZsJ5MF7UO
-         dnzj4KaJa5//pUlzbeLwa2z3uJjJlnlkecqgoghK9GABXtJzVuq+cZbEWfHWKMeDpx0Q
-         ZAjo7N/0BRK9k4kKIm0YNEQcCwM/MqOSXIAMeoeIh2qms1ifB114qvkXM4PBiNt1uizk
-         g2JwUySpCrVWnuRwS2vDVwPCZl+JnIcaF/Q9AL3QvMGCJ8nEf2g0cT/JFKuVvtJx4Aul
-         cjWezeA+U5+Ru/ZDmlYfcnckpnzf9zt8e/N6qOL6dayHfC7totFIpQKE7fTc3VGunRTn
-         2tig==
-X-Gm-Message-State: AOAM5310u2EXOwx0jQeePqbiY3qrtmdpVuzqgn411gNAsHpdHgYHXbPS
-        VOe4kfuLbYpge2MGar6mIB2G9fpBJQRQhw==
-X-Google-Smtp-Source: ABdhPJwZR7gD+cfvXEQnaHAtlW7krJO1KYObe5mXqBSnJiDhMeLGUe7m8FbiWNdqZGFqm3O2uSr62Q==
-X-Received: by 2002:a05:6808:1525:: with SMTP id u37mr7402733oiw.12.1633531699254;
-        Wed, 06 Oct 2021 07:48:19 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id h91sm4148196otb.38.2021.10.06.07.48.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Oct 2021 07:48:19 -0700 (PDT)
-Subject: Re: [PATCH 06/11] selftests: net/fcnal: Do not capture do_run_cmd in
- verbose mode
-To:     Leonard Crestez <cdleonard@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, David Ahern <dsahern@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S239152AbhJFOus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 10:50:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45684 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239140AbhJFOur (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 10:50:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8403760F4C;
+        Wed,  6 Oct 2021 14:48:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633531735;
+        bh=NzdvoVd7vwsMXLmG484eEW7YZuuVevuhIB8FQKYnEC8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HKDmPSZ3x9VHDxbUuJoJut1zfY7qi8iUqRFlOb2vxcwgdjCuGK+rE6UbW0sJw3B3y
+         h2pvw05Pq781w1rbsiJMtkWvLJad3eub/2pjzFH4dmdrI4/GphYb05tVL0EoCQ/Ad/
+         x1unN83tc6CkHZDOwS5Y+P9529mGYUaClp1I9JTwdMSeLdqmi1623s3Iasx8VUeu6b
+         6hSCBSceQrCNooCVM3YU46SCEgxBuho0M/OCJbNzvDGp2g4WJAw9Mw9MkGsAq1vMRt
+         5VZaZmF/FIkqwAzclFwt6aBIsfXBSfz2CVwwru9dsmC5z0FKpe+WoEvNWK0xpN/b/S
+         txRQMm7X+1HDQ==
+Date:   Wed, 6 Oct 2021 17:48:51 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Ido Schimmel <idosch@nvidia.com>,
-        Seth David Schoen <schoen@loyalty.org>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1633520807.git.cdleonard@gmail.com>
- <b989bb17303518eb149064a6aaaa1c37d2b703c4.1633520807.git.cdleonard@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <fcb7be3e-f965-438d-2d5a-b9ce433338ce@gmail.com>
-Date:   Wed, 6 Oct 2021 08:48:17 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        Ingo Molnar <mingo@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        mlxsw@nvidia.com, Moshe Shemesh <moshe@nvidia.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Shay Drory <shayd@nvidia.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next v2 3/5] devlink: Allow set specific ops
+ callbacks dynamically
+Message-ID: <YV23U2gyRfgrT8EU@unreal>
+References: <cover.1633284302.git.leonro@nvidia.com>
+ <92971648bcad41d095d12f5296246fc44ab8f5c7.1633284302.git.leonro@nvidia.com>
+ <20211004164413.60e9ce80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YVv/nUe63nO8o8wz@unreal>
+ <20211005113213.0ee61358@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YVykXLY7mX4K1ScW@unreal>
+ <20211005173940.35bc7bfa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YV0aCADY4WkLySv4@unreal>
+ <20211006063558.6f4ee82d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <b989bb17303518eb149064a6aaaa1c37d2b703c4.1633520807.git.cdleonard@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211006063558.6f4ee82d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/6/21 5:47 AM, Leonard Crestez wrote:
-> This way running with -v will show interspersed output from both nettest
-> client and server. This helps to identify the order of events.
-> 
-> It is also required in order to make nettest fork in the background by
-> itself because shell capturing does not stop if the target forks.
-> 
-> This also fixes SC2166 warning:
-> Prefer [ p ] && [ q ] as [ p -a q ] is not well defined.
-> 
-> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
-> ---
->  tools/testing/selftests/net/fcnal-test.sh | 16 +++++++---------
->  1 file changed, 7 insertions(+), 9 deletions(-)
-> 
+On Wed, Oct 06, 2021 at 06:35:58AM -0700, Jakub Kicinski wrote:
+> On Wed, 6 Oct 2021 06:37:44 +0300 Leon Romanovsky wrote:
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+<...>
 
+> I don't think this discussion is going anywhere, count me out.
 
+At least here, we agree on something.
