@@ -2,113 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FFC6423619
-	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 04:50:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CA50423657
+	for <lists+netdev@lfdr.de>; Wed,  6 Oct 2021 05:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230341AbhJFCwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Oct 2021 22:52:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47350 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbhJFCwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Oct 2021 22:52:39 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CE6C061749
-        for <netdev@vger.kernel.org>; Tue,  5 Oct 2021 19:50:47 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id l6so693628plh.9
-        for <netdev@vger.kernel.org>; Tue, 05 Oct 2021 19:50:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=+4/zm+s+YUXMP3Mvx4RRo6JUXkxUDHW6lOEhcuaaLF4=;
-        b=bwVO6cCxWLlDjXBX+BFzwQ+V3gSRiz2rS8Ry9hyVkOiFAMBJPkl+3wVM3obRI4HN1v
-         8OR2TFc+fAikVo5koMXu2XogZoxcC9AdozM169niE6GiOR2FR5uQwQQoVQ/doVBcJy97
-         Yt+cOMvOKFl93k5cjrNh6/CQFIk27iiQ65hByne5L0eLtqWY52pQdB/BIMKRgvzljh7n
-         dK6eHgnRaof8Lxfn1DldJO5RBj6KDQEtuETT1mAo0qyD9XZAxnQT+EwTo+VBUr08OZzt
-         wYFcsmu9KEGTAnbWITCa+E5VEavFYTc5ERhoMNiMlXusLlmH4Ln7MZj7SgxbmC+u3jlH
-         X9cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+4/zm+s+YUXMP3Mvx4RRo6JUXkxUDHW6lOEhcuaaLF4=;
-        b=it/9R5g2Gy6mhZFnJEWl6eS+f4HnnS7tbk80CtIircSZTj2gi+roeXNKSNbnZh+0of
-         LEYvqYSHb4/InpgG0LgDiTjQyOBcGv4qW9gYVa5KEJsScxTJ8SgYFjJjbSXX3NcdmYPk
-         oMk2NIQ9ctaGMKLL1WDPdthC3wnSKIQjuLTPPRCQyqWtVo/TvDcx46zYCk4wDRWvLqDc
-         uVcnHML+65wzu3+jbTLpDmplrT7+XXa1NqFSsssGdn61SgSl2ZtFMf+rushCPg5Txegs
-         6k2SPEX0fX/KBtLT3d3UQoY6AQBj2TcxsjpSsEIz+H0AaxhAornzx5gh6uaDBv7w/06p
-         h33Q==
-X-Gm-Message-State: AOAM531bwxNgZ7y+uQgTvI3LIBCGq+jocSIgcSQ8Fs3b5hB8bvSaOqMb
-        BiC1D9nKWaYo3MD7PJs5k5w0xUTJjEQ=
-X-Google-Smtp-Source: ABdhPJxoQ+RA+hkpOZy4sJhMmxbwrnEm79Kyf6I+lbH2KRHYcdhEyeVfVjcwEUFcQt/7j11DuJnnsQ==
-X-Received: by 2002:a17:902:bf07:b0:138:e32d:9f2e with SMTP id bi7-20020a170902bf0700b00138e32d9f2emr8354148plb.59.1633488646809;
-        Tue, 05 Oct 2021 19:50:46 -0700 (PDT)
-Received: from [10.230.29.7] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a20sm41432pfn.136.2021.10.05.19.50.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Oct 2021 19:50:46 -0700 (PDT)
-Message-ID: <fdd15403-47b5-fcb5-6fec-870347a8480d@gmail.com>
-Date:   Tue, 5 Oct 2021 19:50:40 -0700
+        id S237287AbhJFDjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Oct 2021 23:39:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33336 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230363AbhJFDjj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Oct 2021 23:39:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 69DE761029;
+        Wed,  6 Oct 2021 03:37:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633491468;
+        bh=fTJvpgjSLz51U88Tq9z0xogY4BNYHCRrb0Lb3KcXGeQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Lj7jul45VtWr3mfTLqNNKm6rz/FWRAEo3Fx3+eR95ugvY+PF1yz7omX9BXFYa8WTI
+         cefQaXWSolBdM29Gnr5ezpPI+8goqVhlBLlfqHD2p1dvZulb8TB7/4JUzaNt8w+Mnn
+         D21AF5dQwRQ2WbaZNvfmqlv/hYrl108YbAihlbDMMlg7x+07N7EtWETUrUYBdkDvp4
+         KzEZ9ybmdssNehD229Ey/H3+CS3S2QaXzpGscDjp0IXj1LXDdSIw7NyrIQWMgEyZpm
+         1GJGMisx5HHmhLz79VxP5uc/S0EDhrFz29oRiUvzUY5Q5Jtyu5qrLLtMIf8yHMIlru
+         BsErxxOD+UHtg==
+Date:   Wed, 6 Oct 2021 06:37:44 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        mlxsw@nvidia.com, Moshe Shemesh <moshe@nvidia.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Shay Drory <shayd@nvidia.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: Re: [PATCH net-next v2 3/5] devlink: Allow set specific ops
+ callbacks dynamically
+Message-ID: <YV0aCADY4WkLySv4@unreal>
+References: <cover.1633284302.git.leonro@nvidia.com>
+ <92971648bcad41d095d12f5296246fc44ab8f5c7.1633284302.git.leonro@nvidia.com>
+ <20211004164413.60e9ce80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YVv/nUe63nO8o8wz@unreal>
+ <20211005113213.0ee61358@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YVykXLY7mX4K1ScW@unreal>
+ <20211005173940.35bc7bfa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.2
-Subject: Re: DSA: some questions regarding TX forwarding offload
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <04d700b6-a4f7-b108-e711-d400ef01cc2e@bang-olufsen.dk>
- <20211005101253.sqvsvk53k34atjwt@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20211005101253.sqvsvk53k34atjwt@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211005173940.35bc7bfa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/5/2021 3:12 AM, Vladimir Oltean wrote:
-> I don't want to answer any of these questions until I understand how
-> does your hardware intend the FID and FID_EN bits from the DSA header to
-> be used. The FID only has 2 bits, so it is clear to me that it doesn't
-> have the same understanding of the term as mv88e6xxx, if the Realtek
-> switch has up to 4 FIDs while Marvell up to 4K.
+On Tue, Oct 05, 2021 at 05:39:40PM -0700, Jakub Kicinski wrote:
+> On Tue, 5 Oct 2021 22:15:40 +0300 Leon Romanovsky wrote:
+> > On Tue, Oct 05, 2021 at 11:32:13AM -0700, Jakub Kicinski wrote:
+> > > On Tue, 5 Oct 2021 10:32:45 +0300 Leon Romanovsky wrote:  
+> > > > It is impossible, devlink_register() is part of .probe() flow and if it
+> > > > wasn't called -> probe didn't success -> net_device doesn't exist.  
+> > > 
+> > > Are you talking about reality or the bright future brought by auxbus?  
+> > 
+> > I looked on all the drivers which called to devlink_alloc() which is
+> > starting point before devlink_register(). All of them used it in the
+> > probe. My annotation patch checks that too.
+> > 
+> > https://lore.kernel.org/linux-rdma/f65772d429d2c259bbc18cf5b1bbe61e39eb7081.1633284302.git.leonro@nvidia.com/T/#u
+> > 
+> > So IMHO, it is reality.
 > 
-> You should ask yourself not only how to prevent leakage, but also the
-> flip side, how should I pass the packet to the switch in such a way that
-> it will learn its MAC SA in the right FID, assuming that you go with FDB
-> isolation first and figure that out. Once that question is answered, you
-> can in premise specify an allowance port mask which is larger than
-> needed (the entire mask of user ports) and the switch should only
-> forward it towards the ports belonging to the same FID, which are
-> roughly equivalent with the ports under a specific bridge. You can
-> create a mapping between a FID and dp->bridge_num. Makes sense or am I
-> completely off?
+> You say that yet below you admit flashing is broken :/
+
+I said more than once, lifetime of devlink is broken. It is placed in
+wrong layer, pretend to implement some of driver core functionality
+without proper protections and have wrong locks.
+
+At least, I didn't break flash update, there is no change in logic of
+flash after any of my changes. Exactly like before, user was able to trigger
+flash update through this devlink_compat_flash_update() call without any
+protection.
+
+Let's chose random kernel version (v5.11)
+https://elixir.bootlin.com/linux/v5.11/source/net/core/devlink.c#L10245
+as you can see, it doesn't hold ANY driver core locks, so it can be
+called in any time during driver .probe() or .remove(). Drivers that
+have implemented ops.flash_update() have no idea about that.
+
 > 
+> > > > We are not having net_device without "connected" device beneath, aren't we?
+> > > > 
+> > > > At least drivers that I checked are not prepared at all to handle call
+> > > > to devlink->ops.flash_update() if they didn't probe successfully.  
+> > > 
+> > > Last time I checked you moved the devlink_register() at the end of
+> > > probe which for all no-auxbus drivers means after register_netdev().  
+> > 
+> > I need to add a check of if(devlink_register) inside devlink_compat_flash_update().
+> 
+> ... and the workarounds start to pile up.
 
-Sorry for sort of hijacking this discussion.
+It is not a workaround, but attempt to fix this mess.
 
-Broadcom switches do not have FIDs however using Alvin's topology, and 
-given the existing bridge support in b53, it also does not look like 
-there is leaking from one bridge to other because of the port matrix 
-configuration which is enforced in addition to the VLAN membership. 
-However based on what I see in tag_dsa.c for the transmit case with 
-skb->offload_fwd_mark, I would have to dig into the bridge's members in 
-order to construct a bitmask of ports to provide to tag_brcm.c, so that 
-does not really get me anywhere, does it?
+I separated devlink netlink callers from the kernel flow and just need
+to continue to fix these external to devlink callers.
 
-Those switches also always do double VLAN tag (802.1ad) normalization 
-within their data path whenever VLAN is globally enabled within the 
-switch, so in premise you could achieve the same isolation by reserving 
-one of the outer VLAN tags per bridge, enabling IVL and hope that the 
-FDB is looked including the outer and inner VLAN tags and not just the 
-inner VLAN tag.
+> 
+> > > I don't like it. If you're feeling strongly please gather support of
+> > > other developers. Right now it's my preference against yours. I don't
+> > > even see you making arguments that your approach is better, just that
+> > > mine is not perfect and requires some similar changes.  
+> > 
+> > I have an idea of how to keep static ops and allow devlink_set_ops()
+> > like functionality.
+> > 
+> > What about if I group ops by some sort of commonalities?
+> > 
+> > In my case, it will be devlink_reload_ops, which will include reload
+> > relevant callbacks and provide devlink_set_reload_ops() wrapper to set
+> > them?
+> > 
+> > It will ensure that all pointers are const without need to have feature
+> > bits.
+> 
+> I don't understand why you keep pushing the op reassignment.
 
-If we don't have a FID concept, and not all switches do, how we can 
-still support tx forwarding offload here?
--- 
-Florian
+It is not reassignment, but ability to assign proper callbacks from the
+beginning.
+
+The idea is to make sure that lifetime of devlink is managed by proper
+ops callbacks, based on them we can control everything inside devlink
+by ensuring right locks, order e.t.c.
+
+I want to get rid from random *_enabled flags that always forgotten and
+adds complexity that don't give any advantage only issues.
+
+I'm also changing devlink to allow parallel execution and for that I
+need to have reliable devlink instance with minimal number of locks.
+
+Thanks
