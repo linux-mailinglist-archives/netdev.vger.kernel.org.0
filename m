@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77C29426032
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 01:08:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18DA3426039
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 01:08:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237932AbhJGXKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 19:10:25 -0400
+        id S241225AbhJGXKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 19:10:39 -0400
 Received: from mga17.intel.com ([192.55.52.151]:53016 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232458AbhJGXKT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 19:10:19 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10130"; a="207199657"
+        id S233316AbhJGXKV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 19:10:21 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10130"; a="207199661"
 X-IronPort-AV: E=Sophos;i="5.85,355,1624345200"; 
-   d="scan'208";a="207199657"
+   d="scan'208";a="207199661"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2021 16:08:24 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2021 16:08:25 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.85,355,1624345200"; 
-   d="scan'208";a="590344309"
+   d="scan'208";a="590344313"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga004.jf.intel.com with ESMTP; 07 Oct 2021 16:08:24 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+Cc:     Wojciech Drewek <wojciech.drewek@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        jiri@resnulli.us, ivecera@redhat.com, wojciech.drewek@intel.com,
-        grzegorz.nitka@intel.com,
+        jiri@resnulli.us, ivecera@redhat.com,
+        michal.swiatkowski@linux.intel.com, grzegorz.nitka@intel.com,
         Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [PATCH net-next 01/12] ice: support basic E-Switch mode control
-Date:   Thu,  7 Oct 2021 16:06:09 -0700
-Message-Id: <20211007230620.3413290-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 02/12] ice: Move devlink port to PF/VF struct
+Date:   Thu,  7 Oct 2021 16:06:10 -0700
+Message-Id: <20211007230620.3413290-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211007230620.3413290-1-anthony.l.nguyen@intel.com>
 References: <20211007230620.3413290-1-anthony.l.nguyen@intel.com>
@@ -40,238 +40,301 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+From: Wojciech Drewek <wojciech.drewek@intel.com>
 
-Write set and get eswitch mode functions used by devlink
-ops. Use new pf struct member eswitch_mode to track current
-eswitch mode in driver.
+Keeping devlink port inside VSI data structure causes some issues.
+Since VF VSI is released during reset that means that we have to
+unregister devlink port and register it again every time reset is
+triggered. With the new changes in devlink API it
+might cause deadlock issues. After calling
+devlink_port_register/devlink_port_unregister devlink API is going to
+lock rtnl_mutex. It's an issue when VF reset is triggered in netlink
+operation context (like setting VF MAC address or VLAN),
+because rtnl_lock is already taken by netlink. Another call of
+rtnl_lock from devlink API results in dead-lock.
 
-Changing eswitch mode is only allowed when there are no
-VFs created.
+By moving devlink port to PF/VF we avoid creating/destroying it
+during reset. Since this patch, devlink ports are created during
+ice_probe, destroyed during ice_remove for PF and created during
+ice_repr_add, destroyed during ice_repr_rem for VF.
 
-Create new file for eswitch related code.
-
-Add config flag ICE_SWITCHDEV to allow user to choose if
-switchdev support should be enabled or disabled.
-
-Use case examples:
-- show current eswitch mode ('legacy' is the default one)
-[root@localhost]# devlink dev eswitch show pci/0000:03:00.1
-pci/0000:03:00.1: mode legacy
-
-- move to 'switchdev' mode
-[root@localhost]# devlink dev eswitch set pci/0000:03:00.1 mode
-switchdev
-[root@localhost]# devlink dev eswitch show pci/0000:03:00.1
-pci/0000:03:00.1: mode switchdev
-
-- create 2 VFs
-[root@localhost]# echo 2 > /sys/class/net/ens4f1/device/sriov_numvfs
-
-- unsuccessful attempt to change eswitch mode while VFs are created
-[root@localhost]# devlink dev eswitch set pci/0000:03:00.1 mode legacy
-devlink answers: Operation not supported
-
-- destroy VFs
-[root@localhost]# echo 0 > /sys/class/net/ens4f1/device/sriov_numvfs
-
-- restore 'legacy' mode
-[root@localhost]# devlink dev eswitch set pci/0000:03:00.1 mode legacy
-[root@localhost]# devlink dev eswitch show pci/0000:03:00.1
-pci/0000:03:00.1: mode legacy
-
-Co-developed-by: Grzegorz Nitka <grzegorz.nitka@intel.com>
-Signed-off-by: Grzegorz Nitka <grzegorz.nitka@intel.com>
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/Kconfig           | 14 +++++
- drivers/net/ethernet/intel/ice/Makefile      |  1 +
- drivers/net/ethernet/intel/ice/ice.h         |  1 +
- drivers/net/ethernet/intel/ice/ice_devlink.c |  3 +
- drivers/net/ethernet/intel/ice/ice_eswitch.c | 62 ++++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_eswitch.h | 35 +++++++++++
- 6 files changed, 116 insertions(+)
- create mode 100644 drivers/net/ethernet/intel/ice/ice_eswitch.c
- create mode 100644 drivers/net/ethernet/intel/ice/ice_eswitch.h
+ drivers/net/ethernet/intel/ice/ice.h          |   7 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 109 +++++++++++++-----
+ drivers/net/ethernet/intel/ice/ice_devlink.h  |   6 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   3 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |   4 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   2 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |   9 ++
+ 7 files changed, 103 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
-index ed8ea63bb172..0b274d8fa45b 100644
---- a/drivers/net/ethernet/intel/Kconfig
-+++ b/drivers/net/ethernet/intel/Kconfig
-@@ -313,6 +313,20 @@ config ICE
- 	  To compile this driver as a module, choose M here. The module
- 	  will be called ice.
- 
-+config ICE_SWITCHDEV
-+	bool "Switchdev Support"
-+	default y
-+	depends on ICE && NET_SWITCHDEV
-+	help
-+	  Switchdev support provides internal SRIOV packet steering and switching.
-+
-+	  To enable it on running kernel use devlink tool:
-+	  #devlink dev eswitch set pci/0000:XX:XX.X mode switchdev
-+
-+	  Say Y here if you want to use Switchdev in the driver.
-+
-+	  If unsure, say N.
-+
- config FM10K
- 	tristate "Intel(R) FM10000 Ethernet Switch Host Interface Support"
- 	default n
-diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
-index 4f538cdf42c1..0545594c80ba 100644
---- a/drivers/net/ethernet/intel/ice/Makefile
-+++ b/drivers/net/ethernet/intel/ice/Makefile
-@@ -33,3 +33,4 @@ ice-$(CONFIG_PTP_1588_CLOCK) += ice_ptp.o ice_ptp_hw.o
- ice-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
- ice-$(CONFIG_RFS_ACCEL) += ice_arfs.o
- ice-$(CONFIG_XDP_SOCKETS) += ice_xsk.o
-+ice-$(CONFIG_ICE_SWITCHDEV) += ice_eswitch.o
 diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 83413772b00c..1657f0cf10b1 100644
+index 1657f0cf10b1..9d07bb995f41 100644
 --- a/drivers/net/ethernet/intel/ice/ice.h
 +++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -439,6 +439,7 @@ struct ice_pf {
+@@ -311,10 +311,6 @@ struct ice_vsi {
+ 	spinlock_t arfs_lock;	/* protects aRFS hash table and filter state */
+ 	atomic_t *arfs_last_fltr_id;
  
- 	struct ice_vsi **vsi;		/* VSIs created by the driver */
- 	struct ice_sw *first_sw;	/* first switch created by firmware */
-+	u16 eswitch_mode;		/* current mode of eswitch */
- 	/* Virtchnl/SR-IOV config info */
- 	struct ice_vf *vf;
- 	u16 num_alloc_vfs;		/* actual number of VFs allocated */
+-	/* devlink port data */
+-	struct devlink_port devlink_port;
+-	bool devlink_port_registered;
+-
+ 	u16 max_frame;
+ 	u16 rx_buf_len;
+ 
+@@ -426,6 +422,9 @@ struct ice_pf {
+ 	struct devlink_region *nvm_region;
+ 	struct devlink_region *devcaps_region;
+ 
++	/* devlink port data */
++	struct devlink_port devlink_port;
++
+ 	/* OS reserved IRQ details */
+ 	struct msix_entry *msix_entries;
+ 	struct ice_res_tracker *irq_tracker;
 diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index cae1cd97a1ef..69c9c165f987 100644
+index 69c9c165f987..55353bf4cbef 100644
 --- a/drivers/net/ethernet/intel/ice/ice_devlink.c
 +++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -4,6 +4,7 @@
- #include "ice.h"
- #include "ice_lib.h"
- #include "ice_devlink.h"
-+#include "ice_eswitch.h"
- #include "ice_fw_update.h"
+@@ -487,60 +487,115 @@ void ice_devlink_unregister(struct ice_pf *pf)
+ }
  
- /* context for devlink info version reporting */
-@@ -423,6 +424,8 @@ ice_devlink_flash_update(struct devlink *devlink,
+ /**
+- * ice_devlink_create_port - Create a devlink port for this VSI
+- * @vsi: the VSI to create a port for
++ * ice_devlink_create_pf_port - Create a devlink port for this PF
++ * @pf: the PF to create a devlink port for
+  *
+- * Create and register a devlink_port for this VSI.
++ * Create and register a devlink_port for this PF.
+  *
+  * Return: zero on success or an error code on failure.
+  */
+-int ice_devlink_create_port(struct ice_vsi *vsi)
++int ice_devlink_create_pf_port(struct ice_pf *pf)
+ {
+ 	struct devlink_port_attrs attrs = {};
+-	struct ice_port_info *pi;
++	struct devlink_port *devlink_port;
+ 	struct devlink *devlink;
++	struct ice_vsi *vsi;
+ 	struct device *dev;
+-	struct ice_pf *pf;
+ 	int err;
  
- static const struct devlink_ops ice_devlink_ops = {
- 	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
-+	.eswitch_mode_get = ice_eswitch_mode_get,
-+	.eswitch_mode_set = ice_eswitch_mode_set,
- 	.info_get = ice_devlink_info_get,
- 	.flash_update = ice_devlink_flash_update,
+-	/* Currently we only create devlink_port instances for PF VSIs */
+-	if (vsi->type != ICE_VSI_PF)
+-		return -EINVAL;
+-
+-	pf = vsi->back;
+-	devlink = priv_to_devlink(pf);
+ 	dev = ice_pf_to_dev(pf);
+-	pi = pf->hw.port_info;
++
++	devlink_port = &pf->devlink_port;
++
++	vsi = ice_get_main_vsi(pf);
++	if (!vsi)
++		return -EIO;
+ 
+ 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+-	attrs.phys.port_number = pi->lport;
+-	devlink_port_attrs_set(&vsi->devlink_port, &attrs);
+-	err = devlink_port_register(devlink, &vsi->devlink_port, vsi->idx);
++	attrs.phys.port_number = pf->hw.bus.func;
++	devlink_port_attrs_set(devlink_port, &attrs);
++	devlink = priv_to_devlink(pf);
++
++	err = devlink_port_register(devlink, devlink_port, vsi->idx);
+ 	if (err) {
+-		dev_err(dev, "devlink_port_register failed: %d\n", err);
++		dev_err(dev, "Failed to create devlink port for PF %d, error %d\n",
++			pf->hw.pf_id, err);
+ 		return err;
+ 	}
+ 
+-	vsi->devlink_port_registered = true;
++	return 0;
++}
++
++/**
++ * ice_devlink_destroy_pf_port - Destroy the devlink_port for this PF
++ * @pf: the PF to cleanup
++ *
++ * Unregisters the devlink_port structure associated with this PF.
++ */
++void ice_devlink_destroy_pf_port(struct ice_pf *pf)
++{
++	struct devlink_port *devlink_port;
++
++	devlink_port = &pf->devlink_port;
++
++	devlink_port_type_clear(devlink_port);
++	devlink_port_unregister(devlink_port);
++}
++
++/**
++ * ice_devlink_create_vf_port - Create a devlink port for this VF
++ * @vf: the VF to create a port for
++ *
++ * Create and register a devlink_port for this VF.
++ *
++ * Return: zero on success or an error code on failure.
++ */
++int ice_devlink_create_vf_port(struct ice_vf *vf)
++{
++	struct devlink_port_attrs attrs = {};
++	struct devlink_port *devlink_port;
++	struct devlink *devlink;
++	struct ice_vsi *vsi;
++	struct device *dev;
++	struct ice_pf *pf;
++	int err;
++
++	pf = vf->pf;
++	dev = ice_pf_to_dev(pf);
++	vsi = ice_get_vf_vsi(vf);
++	devlink_port = &vf->devlink_port;
++
++	attrs.flavour = DEVLINK_PORT_FLAVOUR_PCI_VF;
++	attrs.pci_vf.pf = pf->hw.bus.func;
++	attrs.pci_vf.vf = vf->vf_id;
++
++	devlink_port_attrs_set(devlink_port, &attrs);
++	devlink = priv_to_devlink(pf);
++
++	err = devlink_port_register(devlink, devlink_port, vsi->idx);
++	if (err) {
++		dev_err(dev, "Failed to create devlink port for VF %d, error %d\n",
++			vf->vf_id, err);
++		return err;
++	}
+ 
+ 	return 0;
+ }
+ 
+ /**
+- * ice_devlink_destroy_port - Destroy the devlink_port for this VSI
+- * @vsi: the VSI to cleanup
++ * ice_devlink_destroy_vf_port - Destroy the devlink_port for this VF
++ * @vf: the VF to cleanup
+  *
+- * Unregisters the devlink_port structure associated with this VSI.
++ * Unregisters the devlink_port structure associated with this VF.
+  */
+-void ice_devlink_destroy_port(struct ice_vsi *vsi)
++void ice_devlink_destroy_vf_port(struct ice_vf *vf)
+ {
+-	if (!vsi->devlink_port_registered)
+-		return;
++	struct devlink_port *devlink_port;
+ 
+-	devlink_port_type_clear(&vsi->devlink_port);
+-	devlink_port_unregister(&vsi->devlink_port);
++	devlink_port = &vf->devlink_port;
+ 
+-	vsi->devlink_port_registered = false;
++	devlink_port_type_clear(devlink_port);
++	devlink_port_unregister(devlink_port);
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
+index e721d7b0d627..b7f9551e4fc4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.h
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
+@@ -8,8 +8,10 @@ struct ice_pf *ice_allocate_pf(struct device *dev);
+ 
+ void ice_devlink_register(struct ice_pf *pf);
+ void ice_devlink_unregister(struct ice_pf *pf);
+-int ice_devlink_create_port(struct ice_vsi *vsi);
+-void ice_devlink_destroy_port(struct ice_vsi *vsi);
++int ice_devlink_create_pf_port(struct ice_pf *pf);
++void ice_devlink_destroy_pf_port(struct ice_pf *pf);
++int ice_devlink_create_vf_port(struct ice_vf *vf);
++void ice_devlink_destroy_vf_port(struct ice_vf *vf);
+ 
+ void ice_devlink_init_regions(struct ice_pf *pf);
+ void ice_devlink_destroy_regions(struct ice_pf *pf);
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 3adbd9a179a7..deff158dbae1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -2859,7 +2859,8 @@ int ice_vsi_release(struct ice_vsi *vsi)
+ 		clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
+ 	}
+ 
+-	ice_devlink_destroy_port(vsi);
++	if (vsi->type == ICE_VSI_PF)
++		ice_devlink_destroy_pf_port(pf);
+ 
+ 	if (test_bit(ICE_FLAG_RSS_ENA, pf->flags))
+ 		ice_rss_clean(vsi);
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index cabe84bb29fe..1cceaa9f1884 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4174,11 +4174,11 @@ static int ice_register_netdev(struct ice_pf *pf)
+ 	set_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
+ 	netif_carrier_off(vsi->netdev);
+ 	netif_tx_stop_all_queues(vsi->netdev);
+-	err = ice_devlink_create_port(vsi);
++	err = ice_devlink_create_pf_port(pf);
+ 	if (err)
+ 		goto err_devlink_create;
+ 
+-	devlink_port_type_eth_set(&vsi->devlink_port, vsi->netdev);
++	devlink_port_type_eth_set(&pf->devlink_port, vsi->netdev);
+ 
+ 	return 0;
+ err_devlink_create:
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index e93430ab37f1..a827c6b653a3 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -251,7 +251,7 @@ ice_vc_hash_field_match_type ice_vc_hash_field_list_comms[] = {
+  * ice_get_vf_vsi - get VF's VSI based on the stored index
+  * @vf: VF used to get VSI
+  */
+-static struct ice_vsi *ice_get_vf_vsi(struct ice_vf *vf)
++struct ice_vsi *ice_get_vf_vsi(struct ice_vf *vf)
+ {
+ 	return vf->pf->vsi[vf->lan_vsi_idx];
+ }
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
+index 842cb077df86..38b4dc82c5c1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
+@@ -111,9 +111,13 @@ struct ice_vf {
+ 	struct ice_mdd_vf_events mdd_rx_events;
+ 	struct ice_mdd_vf_events mdd_tx_events;
+ 	DECLARE_BITMAP(opcodes_allowlist, VIRTCHNL_OP_MAX);
++
++	/* devlink port data */
++	struct devlink_port devlink_port;
  };
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-new file mode 100644
-index 000000000000..1370c41b77ab
---- /dev/null
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-@@ -0,0 +1,62 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2019-2021, Intel Corporation. */
-+
-+#include "ice.h"
-+#include "ice_eswitch.h"
-+#include "ice_devlink.h"
-+
-+/**
-+ * ice_eswitch_mode_set - set new eswitch mode
-+ * @devlink: pointer to devlink structure
-+ * @mode: eswitch mode to switch to
-+ * @extack: pointer to extack structure
-+ */
-+int
-+ice_eswitch_mode_set(struct devlink *devlink, u16 mode,
-+		     struct netlink_ext_ack *extack)
+ 
+ #ifdef CONFIG_PCI_IOV
++struct ice_vsi *ice_get_vf_vsi(struct ice_vf *vf);
+ void ice_process_vflr_event(struct ice_pf *pf);
+ int ice_sriov_configure(struct pci_dev *pdev, int num_vfs);
+ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac);
+@@ -171,6 +175,11 @@ static inline void ice_print_vfs_mdd_events(struct ice_pf *pf) { }
+ static inline void ice_print_vf_rx_mdd_event(struct ice_vf *vf) { }
+ static inline void ice_restore_all_vfs_msi_state(struct pci_dev *pdev) { }
+ 
++static inline struct ice_vsi *ice_get_vf_vsi(struct ice_vf *vf)
 +{
-+	struct ice_pf *pf = devlink_priv(devlink);
-+
-+	if (pf->eswitch_mode == mode)
-+		return 0;
-+
-+	if (pf->num_alloc_vfs) {
-+		dev_info(ice_pf_to_dev(pf), "Changing eswitch mode is allowed only if there is no VFs created");
-+		NL_SET_ERR_MSG_MOD(extack, "Changing eswitch mode is allowed only if there is no VFs created");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	switch (mode) {
-+	case DEVLINK_ESWITCH_MODE_LEGACY:
-+		dev_info(ice_pf_to_dev(pf), "PF %d changed eswitch mode to legacy",
-+			 pf->hw.pf_id);
-+		NL_SET_ERR_MSG_MOD(extack, "Changed eswitch mode to legacy");
-+		break;
-+	case DEVLINK_ESWITCH_MODE_SWITCHDEV:
-+	{
-+		dev_info(ice_pf_to_dev(pf), "PF %d changed eswitch mode to switchdev",
-+			 pf->hw.pf_id);
-+		NL_SET_ERR_MSG_MOD(extack, "Changed eswitch mode to switchdev");
-+		break;
-+	}
-+	default:
-+		NL_SET_ERR_MSG_MOD(extack, "Unknown eswitch mode");
-+		return -EINVAL;
-+	}
-+
-+	pf->eswitch_mode = mode;
-+	return 0;
++	return NULL;
 +}
 +
-+/**
-+ * ice_eswitch_mode_get - get current eswitch mode
-+ * @devlink: pointer to devlink structure
-+ * @mode: output parameter for current eswitch mode
-+ */
-+int ice_eswitch_mode_get(struct devlink *devlink, u16 *mode)
-+{
-+	struct ice_pf *pf = devlink_priv(devlink);
-+
-+	*mode = pf->eswitch_mode;
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.h b/drivers/net/ethernet/intel/ice/ice_eswitch.h
-new file mode 100644
-index 000000000000..1964b060562a
---- /dev/null
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.h
-@@ -0,0 +1,35 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2019-2021, Intel Corporation. */
-+
-+#ifndef _ICE_ESWITCH_H_
-+#define _ICE_ESWITCH_H_
-+
-+#include <net/devlink.h>
-+
-+#ifdef CONFIG_ICE_SWITCHDEV
-+int ice_eswitch_mode_get(struct devlink *devlink, u16 *mode);
-+int
-+ice_eswitch_mode_set(struct devlink *devlink, u16 mode,
-+		     struct netlink_ext_ack *extack);
-+bool ice_is_eswitch_mode_switchdev(struct ice_pf *pf);
-+#else /* CONFIG_ICE_SWITCHDEV */
-+static inline int
-+ice_eswitch_mode_get(struct devlink *devlink, u16 *mode)
-+{
-+	return DEVLINK_ESWITCH_MODE_LEGACY;
-+}
-+
-+static inline int
-+ice_eswitch_mode_set(struct devlink *devlink, u16 mode,
-+		     struct netlink_ext_ack *extack)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline bool
-+ice_is_eswitch_mode_switchdev(struct ice_pf *pf)
-+{
-+	return false;
-+}
-+#endif /* CONFIG_ICE_SWITCHDEV */
-+#endif /* _ICE_ESWITCH_H_ */
+ static inline bool
+ ice_is_malicious_vf(struct ice_pf __always_unused *pf,
+ 		    struct ice_rq_event_info __always_unused *event,
 -- 
 2.31.1
 
