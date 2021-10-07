@@ -2,96 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6967E42601C
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 00:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21958426031
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 01:08:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234140AbhJGW7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 18:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231825AbhJGW7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 18:59:41 -0400
-Received: from mail1.systemli.org (mail1.systemli.org [IPv6:2a00:c38:11e:ffff::a032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3EDC061570;
-        Thu,  7 Oct 2021 15:57:46 -0700 (PDT)
-From:   Nick Hainke <vincent@systemli.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=systemli.org;
-        s=default; t=1633647464;
-        bh=+hKKdgFuA2J0aeNKNChnhg/KBV16OKZtTZZwb8uPqeY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YwryZknexn60K5FsltKWffap1HeK2F3iZLLPXf0VJ07q5AAPswNzzZZ7iVJrgpSok
-         jb2JZ+7CFrUPnnJCFHm9B/z5Zho+IIu/pcN/Nq6KdmJm6+SDIdo9N+GS233YfR95oE
-         tUTDRaS1U68aqtcPk2DWgDTTl47SkH2CmcR1JwIx+dU2J/yde8+07zslpi6nd+v1sw
-         WBvx8a2UEuNMsW5EAExSDVdDfW0uOrNzHM4MdfMy2HxtHHk+wheJKiPSg/f+nOHfT+
-         7BD0EDfyHLmUFRwtqp1ufJYrQOITkRKZ7iRHhFL1uZg9oo9fEaF90+E+13BE11jedN
-         PCui8UphaEE+A==
-To:     nbd@nbd.name, lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        matthias.bgg@gmail.com, sean.wang@mediatek.com,
-        shayne.chen@mediatek.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Robert Foss <robert.foss@linaro.org>,
-        Nick Hainke <vincent@systemli.org>
-Subject: [RFC v2] mt76: mt7615: mt7622: fix ibss and meshpoint
-Date:   Fri,  8 Oct 2021 00:57:25 +0200
-Message-Id: <20211007225725.2615-1-vincent@systemli.org>
+        id S233627AbhJGXKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 19:10:22 -0400
+Received: from mga17.intel.com ([192.55.52.151]:53016 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229778AbhJGXKT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 19:10:19 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10130"; a="207199655"
+X-IronPort-AV: E=Sophos;i="5.85,355,1624345200"; 
+   d="scan'208";a="207199655"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2021 16:08:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,355,1624345200"; 
+   d="scan'208";a="590344304"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga004.jf.intel.com with ESMTP; 07 Oct 2021 16:08:24 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        jiri@resnulli.us, ivecera@redhat.com,
+        michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
+        grzegorz.nitka@intel.com
+Subject: [PATCH net-next 00/12][pull request] 100GbE Intel Wired LAN Driver Updates 2021-10-07
+Date:   Thu,  7 Oct 2021 16:06:08 -0700
+Message-Id: <20211007230620.3413290-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes: d8d59f66d136 ("mt76: mt7615: support 16 interfaces").
+Michal Swiatkowski says:
 
-commit 7f4b7920318b ("mt76: mt7615: add ibss support") introduced IBSS
-and commit f4ec7fdf7f83 ("mt76: mt7615: enable support for mesh")
-meshpoint support.
+The following patch series introduces basic switchdev model
+support in ice driver. Implement the following blocks of
+switchdev framework:
+- VF port representors creation
+- control plane VSI definition
+- exception path (a. k. a. "slow-path") - to allow a virtual
+switch or linux bridge to receive any packet that doesn't match
+any hw filter
+- link state management of virtual ports
+- query virtual port statistics
 
-Both used in the "get_omac_idx"-function:
+Hardware offload support in switchdev mode is out of scope of
+this patchset. Devlink interface is used to toggle between
+switchdev and legacy (the default) modes of the driver.
 
-	if (~mask & BIT(HW_BSSID_0))
-		return HW_BSSID_0;
-
-With commit d8d59f66d136 ("mt76: mt7615: support 16 interfaces") the
-ibss and meshpoint mode should "prefer hw bssid slot 1-3". However,
-with that change the ibss or meshpoint mode will not send any beacon on
-the mt7622 wifi anymore. Devices were still able to exchange data but
-only if a bssid already existed. Two mt7622 devices will never be able
-to communicate.
-
-This commits reverts the preferation of slot 1-3 for ibss and
-meshpoint. Only NL80211_IFTYPE_STATION will still prefer slot 1-3.
-
-Tested on Banana Pi R64.
-
-Signed-off-by: Nick Hainke <vincent@systemli.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Note: This series includes the use enum ice_status, however, we have
+patches in our queue to remove it from the driver [1]. We are working
+through the patches that precede the removal series.
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/main.c b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-index dada43d6d879..51260a669d16 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-@@ -135,8 +135,6 @@ static int get_omac_idx(enum nl80211_iftype type, u64 mask)
- 	int i;
- 
- 	switch (type) {
--	case NL80211_IFTYPE_MESH_POINT:
--	case NL80211_IFTYPE_ADHOC:
- 	case NL80211_IFTYPE_STATION:
- 		/* prefer hw bssid slot 1-3 */
- 		i = get_free_idx(mask, HW_BSSID_1, HW_BSSID_3);
-@@ -160,6 +158,8 @@ static int get_omac_idx(enum nl80211_iftype type, u64 mask)
- 			return HW_BSSID_0;
- 
- 		break;
-+	case NL80211_IFTYPE_ADHOC:
-+	case NL80211_IFTYPE_MESH_POINT:
- 	case NL80211_IFTYPE_MONITOR:
- 	case NL80211_IFTYPE_AP:
- 		/* ap uses hw bssid 0 and ext bssid */
+[1] https://patchwork.ozlabs.org/project/intel-wired-lan/list/?series=265957
+
+The following are changes since commit c514fbb6231483b05c97eb22587188d4c453b28e:
+  ethernet: ti: cpts: Use devm_kcalloc() instead of devm_kzalloc()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Grzegorz Nitka (5):
+  ice: set and release switchdev environment
+  ice: introduce new type of VSI for switchdev
+  ice: enable/disable switchdev when managing VFs
+  ice: rebuild switchdev when resetting all VFs
+  ice: switchdev slow path
+
+Michal Swiatkowski (5):
+  ice: support basic E-Switch mode control
+  ice: introduce VF port representor
+  ice: allow process VF opcodes in different ways
+  ice: manage VSI antispoof and destination override
+  ice: allow changing lan_en and lb_en on dflt rules
+
+Wojciech Drewek (2):
+  ice: Move devlink port to PF/VF struct
+  ice: add port representor ethtool ops and stats
+
+ drivers/net/ethernet/intel/Kconfig            |  14 +
+ drivers/net/ethernet/intel/ice/Makefile       |   4 +-
+ drivers/net/ethernet/intel/ice/ice.h          |  48 +-
+ drivers/net/ethernet/intel/ice/ice_base.c     |  36 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   5 +
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 112 ++-
+ drivers/net/ethernet/intel/ice/ice_devlink.h  |   6 +-
+ drivers/net/ethernet/intel/ice/ice_eswitch.c  | 657 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_eswitch.h  |  83 +++
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  55 +-
+ drivers/net/ethernet/intel/ice/ice_fltr.c     |  80 +++
+ drivers/net/ethernet/intel/ice/ice_fltr.h     |   7 +
+ .../net/ethernet/intel/ice/ice_lan_tx_rx.h    |  43 ++
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 112 ++-
+ drivers/net/ethernet/intel/ice/ice_lib.h      |  12 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |  47 +-
+ drivers/net/ethernet/intel/ice/ice_repr.c     | 333 +++++++++
+ drivers/net/ethernet/intel/ice/ice_repr.h     |  28 +
+ drivers/net/ethernet/intel/ice/ice_switch.c   |   2 +-
+ drivers/net/ethernet/intel/ice/ice_switch.h   |   6 +
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |   3 +
+ drivers/net/ethernet/intel/ice/ice_txrx_lib.c |   4 +-
+ drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 236 ++++++-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  59 ++
+ 25 files changed, 1899 insertions(+), 94 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_eswitch.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_eswitch.h
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_repr.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_repr.h
+
 -- 
-2.33.0
+2.31.1
 
