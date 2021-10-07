@@ -2,118 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 405DD425B4D
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 21:04:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2849D425B50
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 21:04:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243861AbhJGTGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 15:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233903AbhJGTGX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 15:06:23 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B948C061570;
-        Thu,  7 Oct 2021 12:04:29 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id s75so699238pgs.5;
-        Thu, 07 Oct 2021 12:04:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mOdDUK0yJ3uQFwhSQJDO4d6YpI2NOJDULvWFd8/xqZY=;
-        b=GkoBh4jHzExfAoI2V8vm59ZJ5Z9aLcMgolxvOnW+rm8JECz817t83MuEYgfDe+lAyt
-         C0whHGQ30eX0BFyj3sJl78AdyrJ8TUpzVm0aQ8bUxFiPONoDDuKqAHDGpeLdvrauipRb
-         S3Ex+eKYknMsL8syMwQAmPnaoWsy7e9RYMj+d4j9MNZaB2tr4bou3joYgY8AA6MNiCz9
-         lazUxjvJw2Qu3t8WdglF9pD6U/uQdYSp/uW53VD9AGkV6Ez9BQvGwqWn+2wUcNMY5M/l
-         Paz0/ivEX7NJZ5jwhRY+X5frNsX6Azdz9ohkPk+Uja9RyC0zjJQu7hUBPwf1jnebmZL+
-         Ug3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mOdDUK0yJ3uQFwhSQJDO4d6YpI2NOJDULvWFd8/xqZY=;
-        b=chinJ/0d3tc0qeoDkkoSEnxu0ED263a0TglNL7uo9JdrLm9Qx0jAFjbcujHiqfOCM9
-         qY97f4dl4+YMF3cyNJT/YZj6hfcFcHFFjafb4fBiv4aczm2bjlyL4puKyiBZd9xeHvQg
-         gBpl07NIo4eiznqkYuul8+pb3vDmOEzlKgaZt8eUcvBua49YRuEzpUalAAzQaM7Dtf4L
-         pXUEs8RzZ7ZZioYNRDL3xyCqGQYlOa0YgJkfvylZd9I65lUWb1noP9pPAnZh0/ChBPAo
-         1bx5dK1JSwczMWULQUWdsZKIOb1qPrFBsZW73Fl8Wo328U2ma+wkGwsupCpVvgJLw/kX
-         7gfw==
-X-Gm-Message-State: AOAM533lanLu7r9UehwJOwvLBHXeJ+xkRSHBVj3M3eCnBxnf+7GOBkOG
-        XOAkV09TY4Lvo2k3A7/q8bU=
-X-Google-Smtp-Source: ABdhPJy4Z/2SFAtOCnw2xD5a1CT70zeopUGODXNuEOeu0pDOEGOOfA3IR+mf/iA/Rq6Zd2KlPDwvsg==
-X-Received: by 2002:a63:2b8c:: with SMTP id r134mr1049130pgr.420.1633633469149;
-        Thu, 07 Oct 2021 12:04:29 -0700 (PDT)
-Received: from localhost.localdomain (bb42-60-144-185.singnet.com.sg. [42.60.144.185])
-        by smtp.gmail.com with ESMTPSA id k190sm164396pfd.211.2021.10.07.12.04.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 12:04:28 -0700 (PDT)
-From:   Nguyen Dinh Phi <phind.uet@gmail.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
-Subject: [PATCH] Bluetooth: hci_sock: purge socket queues in the destruct() callback
-Date:   Fri,  8 Oct 2021 03:04:24 +0800
-Message-Id: <20211007190424.196281-1-phind.uet@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S243876AbhJGTGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 15:06:40 -0400
+Received: from mxout01.lancloud.ru ([45.84.86.81]:51760 "EHLO
+        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233903AbhJGTGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 15:06:38 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 9E2942093A02
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: Re: [RFC 07/12] ravb: Fillup ravb_rx_gbeth() stub
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
+ <20211005110642.3744-8-biju.das.jz@bp.renesas.com>
+ <63592646-7547-1a81-e6c3-5bac413cb94a@omp.ru>
+ <OS0PR01MB592295BD59F39001AC63FD3886B09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <7c31964b-8cde-50c5-d686-939b7c5bd7f0@omp.ru>
+ <OS0PR01MB5922239A85405F807AE3C79A86B19@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Organization: Open Mobile Platform
+Message-ID: <04dea1e6-c014-613d-f2f9-9ba018ced2a3@omp.ru>
+Date:   Thu, 7 Oct 2021 22:04:40 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <OS0PR01MB5922239A85405F807AE3C79A86B19@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The receive path may take the socket right before hci_sock_release(),
-but it may enqueue the packets to the socket queues after the call to
-skb_queue_purge(), therefore the socket can be destroyed without clear
-its queues completely.
+On 10/7/21 8:49 AM, Biju Das wrote:
 
-Moving these skb_queue_purge() to the hci_sock_destruct() will fix this
-issue, because nothing is referencing the socket at this point.
+[...]
+>>>>> Fillup ravb_rx_gbeth() function to support RZ/G2L.
+>>>>>
+>>>>> This patch also renames ravb_rcar_rx to ravb_rx_rcar to be
+>>>>> consistent with the naming convention used in sh_eth driver.
+>>>>>
+>>>>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+>>>>> Reviewed-by: Lad Prabhakar
+>>>>> <prabhakar.mahadev-lad.rj@bp.renesas.com>[...]
+>>>>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c
+>>>>> b/drivers/net/ethernet/renesas/ravb_main.c
+>>>>> index 37164a983156..42573eac82b9 100644
+>>>>> --- a/drivers/net/ethernet/renesas/ravb_main.c
+>>>>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+>>>>> @@ -720,6 +720,23 @@ static void ravb_get_tx_tstamp(struct
+>>>>> net_device
+>>>> *ndev)
+>>>>>  	}
+>>>>>  }
+>>>>>
+>>>>> +static void ravb_rx_csum_gbeth(struct sk_buff *skb) {
+>>>>> +	u8 *hw_csum;
+>>>>> +
+>>>>> +	/* The hardware checksum is contained in sizeof(__sum16) (2) bytes
+>>>>> +	 * appended to packet data
+>>>>> +	 */
+>>>>> +	if (unlikely(skb->len < sizeof(__sum16)))
+>>>>> +		return;
+>>>>> +	hw_csum = skb_tail_pointer(skb) - sizeof(__sum16);
+>>>>
+>>>>    Not 32-bit? The manual says the IP checksum is stored in the first
+>>>> 2 bytes.
+>>>
+>>> It is 16 bit. It is on last 2 bytes.
 
-Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
-Reported-by: syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
----
- net/bluetooth/hci_sock.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+   The IP checksum is at the 1st 2 bytes of the overall 4-byte checksum (coming after
+the packet payload), no?
 
-diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-index d0dad1fafe07..446573a12571 100644
---- a/net/bluetooth/hci_sock.c
-+++ b/net/bluetooth/hci_sock.c
-@@ -889,10 +889,6 @@ static int hci_sock_release(struct socket *sock)
- 	}
- 
- 	sock_orphan(sk);
--
--	skb_queue_purge(&sk->sk_receive_queue);
--	skb_queue_purge(&sk->sk_write_queue);
--
- 	release_sock(sk);
- 	sock_put(sk);
- 	return 0;
-@@ -2058,6 +2054,12 @@ static int hci_sock_getsockopt(struct socket *sock, int level, int optname,
- 	return err;
- }
- 
-+static void hci_sock_destruct(struct sock *sk)
-+{
-+	skb_queue_purge(&sk->sk_receive_queue);
-+	skb_queue_purge(&sk->sk_write_queue);
-+}
-+
- static const struct proto_ops hci_sock_ops = {
- 	.family		= PF_BLUETOOTH,
- 	.owner		= THIS_MODULE,
-@@ -2111,6 +2113,7 @@ static int hci_sock_create(struct net *net, struct socket *sock, int protocol,
- 
- 	sock->state = SS_UNCONNECTED;
- 	sk->sk_state = BT_OPEN;
-+	sk->sk_destruct = hci_sock_destruct;
- 
- 	bt_sock_link(&hci_sk_list, sk);
- 	return 0;
--- 
-2.25.1
+>>    So you're saying the manual is wrong?
+> 
+> I am not sure which manual you are referring here.
+> 
+> I am referring to Rev.1.00 Sep, 2021 of RZ/G2L hardware manual and
 
+   Same here.
+
+[...]
+
+> Please check the section 30.5.6.1 checksum calculation handling> And figure 30.25 the field of checksum attaching field
+
+   I have.
+
+> Also see Table 30.17 for checksum values for non-error conditions.
+
+> TCP/UDP/ICPM checksum is at last 2bytes.
+
+   What are you arguing with then? :-)
+   My point was that your code fetched the TCP/UDP/ICMP checksum ISO the IP checksum
+because it subtracts sizeof(__sum16), while should probably subtract sizeof(__wsum).
+
+>>>>> +
+>>>>> +	if (*hw_csum == 0)
+>>>>
+>>>>    You only check the 1st byte, not the full checksum!
+>>>
+>>> As I said earlier, "0" value on last 16 bit, means no checksum error.
+>>
+>>    How's that? 'hw_csum' is declared as 'u8 *'!
+> 
+> It is my mistake, which will be taken care in the next patch by using u16 *.
+
+   Note that this 'u16' halfword can be unaligned, that's why the current code uses get_unaligned_le16().
+
+>>>>> +		skb->ip_summed = CHECKSUM_UNNECESSARY;
+>>>>> +	else
+>>>>> +		skb->ip_summed = CHECKSUM_NONE;
+>>>>
+>>>>   So the TCP/UDP/ICMP checksums are not dealt with? Why enable them
+>> then?
+>>>
+>>> If last 2bytes is zero, means there is no checksum error w.r.to
+>> TCP/UDP/ICMP checksums.
+>>
+>>    Why checksum them independently then?
+> 
+> It is a hardware feature. 
+
+   Switchable, isn't it?
+
+> Regards,
+> Biju
+
+[...]
+
+MBR, Sergey
