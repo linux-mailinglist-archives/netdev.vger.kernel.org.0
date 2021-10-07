@@ -2,91 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D19DE425393
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 15:00:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D69EE425397
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 15:01:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240803AbhJGNCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 09:02:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51516 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240739AbhJGNCI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 09:02:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E7F6861108;
-        Thu,  7 Oct 2021 13:00:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633611614;
-        bh=n/LyOKYsiHITIBU7f/eNjPxBPJF9qwjnJTyWG8q3j9E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Bu3hwGcjunvNC7S3UoZb3OUwyw+7jVcFFRdYukq29C1pE+3ZevWqib5OGWKvMqV0u
-         CBgc2Lw1i9oeqAJte0db6yFRkDDZoZAylg07SOwkm6zhEDiGDAQ/gUMB3Mw/UmPX/z
-         +ZqZr9B+9ERDumH7pCG8oesaGLwoNCFWGrlRXEmUTX8g3myuFdUPbdnn1Lv66sukFo
-         +k3qaj/YJSV9lVJVhLWAGxOiK3Ojpub+xk0d9cqRTB45Pe247AL8eRUhGWSNjh6CTQ
-         YkEP6fpF7HHrl4sCjUcHllQwcDTgw63flOFzZQet+CgHRaYxSbNTwEp1af9XxxzXP8
-         nlpLdBVzFkcMw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D415660A39;
-        Thu,  7 Oct 2021 13:00:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S240852AbhJGND3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 09:03:29 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:35300
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233100AbhJGNDW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 09:03:22 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 958753FFE4
+        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 13:01:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1633611687;
+        bh=CWLF3Mwbuv27wfSQ2ZR3naLE1cJ0EA/H/ZCKfT8DDNk=;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=ltUNq2q728kxrAGG+8SXOMIjL7Nm9WvqfAgtUYnpucWTYJNZ87SI5nA5rxRd2mxIx
+         bzqeKRk6lLcghgo8LhLOVSk9spzAQDeMpN+CJqlVgc1lm/ZPAFk1fNTPbiDxxsSS0K
+         8+i+ofTHgXG5NfSta/CSEX5OF9yqD77wjIMp3lTltLttyId5J3ONF8FfpA+Jd43TFy
+         idHcZ1gA9qaeM6nut9Tdh/4PEfY9suOlbpwx3VOkSKUVqBJ5CNrNiP/pkZb9FgT/QB
+         36Iy1QZOj+kkUU73GIFWsCfnBpquqjPgmUcbVr/SzWEXhCGmM5Jg5y5yvpq0TA+YDs
+         /S5iDwO4DvVuw==
+Received: by mail-ed1-f70.google.com with SMTP id g28-20020a50d0dc000000b003dae69dfe3aso5809939edf.7
+        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 06:01:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=CWLF3Mwbuv27wfSQ2ZR3naLE1cJ0EA/H/ZCKfT8DDNk=;
+        b=1hFBqaWxv+F3tNy3bh40T5ksLolGMvc87FHYRTsbNgRkqLjEz9813oUsviCwZ3zjKe
+         sAjdFh0d6RYhZDdSTNQk4MsMMFOKPDhNVDduHEKRJqDk2KXNJTrQOdYIn/Mrv3R2ipNN
+         HnyJJF9GjznKi8OtPLHfjJ/pMkIv/lZXwXWusNA6BAuaXEPrvUaxeOUIxAfLkVJTmSye
+         ttHRk8a4PjDsl0Xq0nfCQ4ey+eXooXu4Je+7zmNiD8Uq6eFFvD57MS7AKKCYUiUmpO+z
+         XQt3ZYmOfOlCCfz/Z1ivewmfu9qtjChmbfv2l8gaZXHKR7xtz2aIHETXNB22s5iLx7jt
+         HIuw==
+X-Gm-Message-State: AOAM531L3dm8SHdSxMhsJ8NjqZ9RdXGek0GkFt4XKsElOUI7H4jjJftg
+        chZXFkjVOwDuB/2KMrD+Rbwrsm7oXu0MFno18xJe7G37YbWEo2fsYo0ahgCih4qXzeX4uUGhWO5
+        cU0aeOlVO1Z3C/yG0ffM6saG77LsyA0cOsg==
+X-Received: by 2002:a50:d98d:: with SMTP id w13mr6249814edj.51.1633611687324;
+        Thu, 07 Oct 2021 06:01:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxsGkLjq/HVHDfN4bAucyZ/pV1jwbbBY9M9ehNU17nvM5neTPUW/YNaP9/xGkH5n1G9eNdJaw==
+X-Received: by 2002:a50:d98d:: with SMTP id w13mr6249781edj.51.1633611687059;
+        Thu, 07 Oct 2021 06:01:27 -0700 (PDT)
+Received: from [192.168.1.115] (xdsl-188-155-186-13.adslplus.ch. [188.155.186.13])
+        by smtp.gmail.com with ESMTPSA id m23sm2258674eja.6.2021.10.07.06.01.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Oct 2021 06:01:26 -0700 (PDT)
+Subject: Re: [PATCH v2 12/15] nfc: trf7970a: drop unneeded debug prints
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Krzysztof Opasiak <k.opasiak@samsung.com>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Greer <mgreer@animalcreek.com>,
+        linux-wireless@vger.kernel.org
+References: <20210913132035.242870-1-krzysztof.kozlowski@canonical.com>
+ <20210913132035.242870-13-krzysztof.kozlowski@canonical.com>
+ <20210913165757.GA1309751@animalcreek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <47eae95d-d34c-1fa7-fea9-6e77a130aa97@canonical.com>
+Date:   Thu, 7 Oct 2021 15:01:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/9] net: add a helpers for loading
- netdev->dev_addr from FW
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163361161386.30815.7886368181851048182.git-patchwork-notify@kernel.org>
-Date:   Thu, 07 Oct 2021 13:00:13 +0000
-References: <20211007010702.3438216-1-kuba@kernel.org>
-In-Reply-To: <20211007010702.3438216-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, rafael@kernel.org,
-        saravanak@google.com, mw@semihalf.com, andrew@lunn.ch,
-        jeremy.linton@arm.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        robh+dt@kernel.org, frowand.list@gmail.com,
-        heikki.krogerus@linux.intel.com, devicetree@vger.kernel.org,
-        snelson@pensando.io
+In-Reply-To: <20210913165757.GA1309751@animalcreek.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 13/09/2021 18:57, Mark Greer wrote:
+> On Mon, Sep 13, 2021 at 03:20:32PM +0200, Krzysztof Kozlowski wrote:
+>> ftrace is a preferred and standard way to debug entering and exiting
+>> functions so drop useless debug prints.
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>> ---
+>>  drivers/nfc/trf7970a.c | 8 --------
+>>  1 file changed, 8 deletions(-)
+>>
 
-This series was applied to netdev/net-next.git (refs/heads/master)
-by David S. Miller <davem@davemloft.net>:
+Hi Jakub and David,
 
-On Wed,  6 Oct 2021 18:06:53 -0700 you wrote:
-> We're trying to make all writes to netdev->dev_addr go via helpers.
-> A lot of places pass netdev->dev_addr to of_get_ethdev_address() and
-> device_get_ethdev_addr() so this set adds new functions which wrap
-> the functionality.
-> 
-> v2 performs suggested code moves, adds a couple additional clean ups
-> on the device property side, and an extra patch converting drivers
-> which can benefit from device_get_ethdev_address().
-> 
-> [...]
+Some patches from this set were applied, but rest was not. All of them
+are however marked as accepted:
+https://patchwork.kernel.org/project/netdevbpf/list/?series=545829&state=*
 
-Here is the summary with links:
-  - [net-next,v3,1/9] of: net: move of_net under net/
-    https://git.kernel.org/netdev/net-next/c/e330fb14590c
-  - [net-next,v3,2/9] of: net: add a helper for loading netdev->dev_addr
-    https://git.kernel.org/netdev/net-next/c/d466effe282d
-  - [net-next,v3,3/9] ethernet: use of_get_ethdev_address()
-    https://git.kernel.org/netdev/net-next/c/9ca01b25dfff
-  - [net-next,v3,4/9] device property: move mac addr helpers to eth.c
-    https://git.kernel.org/netdev/net-next/c/433baf0719d6
-  - [net-next,v3,5/9] eth: fwnode: change the return type of mac address helpers
-    https://git.kernel.org/netdev/net-next/c/8017c4d8173c
-  - [net-next,v3,6/9] eth: fwnode: remove the addr len from mac helpers
-    https://git.kernel.org/netdev/net-next/c/0a14501ed818
-  - [net-next,v3,7/9] eth: fwnode: add a helper for loading netdev->dev_addr
-    https://git.kernel.org/netdev/net-next/c/d9eb44904e87
-  - [net-next,v3,8/9] ethernet: use device_get_ethdev_address()
-    https://git.kernel.org/netdev/net-next/c/b8eeac565b16
-  - [net-next,v3,9/9] ethernet: make more use of device_get_ethdev_address()
-    https://git.kernel.org/netdev/net-next/c/894b0fb09215
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I think something got lost. Could you apply missing ones or maybe I
+should rebase and resend?
 
 
+Best regards,
+Krzysztof
