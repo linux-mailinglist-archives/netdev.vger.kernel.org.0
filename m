@@ -2,140 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E50142569A
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 17:31:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FFA042569B
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 17:31:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241107AbhJGPd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 11:33:28 -0400
-Received: from mail-eopbgr140045.outbound.protection.outlook.com ([40.107.14.45]:2526
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        id S241141AbhJGPd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 11:33:29 -0400
+Received: from mail-eopbgr10059.outbound.protection.outlook.com ([40.107.1.59]:24805
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232593AbhJGPdY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 11:33:24 -0400
+        id S240882AbhJGPdZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 11:33:25 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y5gK9JfQAWnYzm2WMEEOgW0+8BFDNWxQinQBPuT351Fqi1Hb/4ovPa1PvSBvCm8h0VljtzcrmNzUOfEKs640i04Td4B/u/H+L5KuQxVWRk9pt57vpkcyh/PANpYJTrtZzPI+E/LQLJ4ss8Ohq63vz1zXOaVZ+oWWTW6T0Co2psVyQUEirUPvMTK/jIYkHVsgVFP7nonEWKjQB56qrPTpq9oWdHAFmku8aJCfvzN445KInY+Yag0l5g+HSQbrKXYfPnXIvcs9t22QgP3M/yzK5aqekpwE3a0yaSAi8ZB12Mq2ZwYBTeQlq5ekWac2rpHFzBEFUFC2r8VOhZLbo/1b4w==
+ b=CDtoFfTUUtOp1N5PjkMmSdi1lYv+1YnGWotRV4ahNilxpHwY7smCH2SkWs1mpY9hqqXHdT/sWfS8b9kSsCfGj5xAv/F1hBYQ/9jnt0mMV4hIZ+rIEfI23K+IGKdEYQZJw8zJMH71ZUBxoO9wwS+anHLGFKrCd9TN7yE1P2LBbtba5oWU4gndhlmzVr1Xk116iryr4NNE0tO31cbtEPU4SpaHdNGsd7Tqwp/jNDaaQ/iB/3Rz5fkrUBVdV3jpwy4vIcOqnQya17+MGXb5sGhGQvRjNamP8/q9DLJ7pS2uWC0GWK6epvJ6dYQ7K8YEDKbM8H0zq+WuY4pHkoDg8GHNUA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oVnVbBgdhGtCu5xQTnXQakBskmbB//AKp3m6rI8MJsI=;
- b=WG6LhX4WJaBaj3kCSIJNppwAkf+XdS7xQ+O7s/IbNKW7UlYa79AeJpoyDhXGO9EmKxobXklHKWOHKMLAfKzflXNDJ3q+rL0Clj8RwYl6ObsS0UJ6ADsOIwA/PSWBOi0Y75r6E4j7FYyDdGaSmqGdbPeuGwM93cC2agBP5vITJWXnRLu0vlVM8CYn8E87clmMhng1x675f7b7oiof4Uw/KBv6y5VLynLrl9B09AxF0yOrAmZwfbKaox8MBoGL2zb7mpFy6YeYwwfnf8UgLT3qCTdQ6Jv07dljDFmNxh607UV6ya5Li9OkJh01gDfVaiGI3WhylmgikfDuR/k5kcVOoQ==
+ bh=qJr0CDqM7GHw5tmp+KaXJqRqLtM+apXwjUsSszr6cko=;
+ b=bvRtW9OhjOlR9GeTXCA1Aq0rIxAU5ImMiKyjSgZbOT7tFuBw84/OL0e5eNZdxpfXUYU7kLKL6mOijqG5/mB5AfLpE+mtzhp4OvhWgNC5+3IBirUC1c6PLmud59iXlkKsi08quLAmQeVoFuokf9zXcQAk5vb4Lpq/8PDa2pPkT7sXAqk6NiXBOxNEJmb62FV5H24HGTslCUiGqZNSST8KZWyK5EDQU+4rcvJoqRh2rO8GRjtMktYtn6bEWWdGNPQASa5QwHUTkYenfmi419IvtnoQo5RJNZ1Z/iyC3VHSb43oohLvNVJiRIFMUN3C/f+/wsl0NBEsH1NMQHkmHkXW+A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oVnVbBgdhGtCu5xQTnXQakBskmbB//AKp3m6rI8MJsI=;
- b=q3Z8Y7zxNG/GO4G9raBhB2MIf/mCYSbto1pClnvBARGPUiHYNvxhUZzc3VZ+k1aHv3NYja5BW4YQR/8XygO1u8hLxJVUg55XdWf9SBBFYDAz7b3M9TNY6H0jAiaVlrmVzRSgMad3P851zwuTYZfNR/SVc1+0swJW7hMd4dT/Jto=
+ bh=qJr0CDqM7GHw5tmp+KaXJqRqLtM+apXwjUsSszr6cko=;
+ b=f6k2023JplpB7i6vdMrN87SRa/kaSKuxg5MWKv2yTPcTegGBp04c7aHxgHVYH4cL98Vhu5GKtWgoPvAjP8ODKdZ6887V7D4BRFI2gon8SkxI0ag6uLDbr9BtAm7vG796PoN3Lf5ONFdqQDL85tjlHF45Zp1RWQHcp/2qE+2qEKg=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
- (2603:10a6:200:4f::13) by AM9PR04MB8212.eurprd04.prod.outlook.com
- (2603:10a6:20b:3b7::18) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10a6:200:4f::13) by AM8PR04MB7410.eurprd04.prod.outlook.com
+ (2603:10a6:20b:1d5::22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Thu, 7 Oct
- 2021 15:31:28 +0000
+ 2021 15:31:29 +0000
 Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
  ([fe80::6476:5ddb:7bf2:e726]) by AM4PR0401MB2308.eurprd04.prod.outlook.com
  ([fe80::6476:5ddb:7bf2:e726%8]) with mapi id 15.20.4566.023; Thu, 7 Oct 2021
- 15:31:28 +0000
+ 15:31:29 +0000
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, claudiu.manoil@nxp.com,
         vladimir.oltean@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 0/2] net: enetc: add support for software TSO
-Date:   Thu,  7 Oct 2021 18:30:41 +0300
-Message-Id: <20211007153043.2675008-1-ioana.ciornei@nxp.com>
+Subject: [PATCH net-next v2 1/2] net: enetc: declare NETIF_F_HW_CSUM and do it in software
+Date:   Thu,  7 Oct 2021 18:30:42 +0300
+Message-Id: <20211007153043.2675008-2-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211007153043.2675008-1-ioana.ciornei@nxp.com>
+References: <20211007153043.2675008-1-ioana.ciornei@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AM0PR02CA0017.eurprd02.prod.outlook.com
  (2603:10a6:208:3e::30) To AM4PR0401MB2308.eurprd04.prod.outlook.com
  (2603:10a6:200:4f::13)
 MIME-Version: 1.0
-Received: from yoga-910.localhost (188.26.53.217) by AM0PR02CA0017.eurprd02.prod.outlook.com (2603:10a6:208:3e::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18 via Frontend Transport; Thu, 7 Oct 2021 15:31:27 +0000
+Received: from yoga-910.localhost (188.26.53.217) by AM0PR02CA0017.eurprd02.prod.outlook.com (2603:10a6:208:3e::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18 via Frontend Transport; Thu, 7 Oct 2021 15:31:28 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2323a99c-ba49-41b8-6cc2-08d989a787e0
-X-MS-TrafficTypeDiagnostic: AM9PR04MB8212:
+X-MS-Office365-Filtering-Correlation-Id: 6d9d33a6-7c41-4495-4de3-08d989a78885
+X-MS-TrafficTypeDiagnostic: AM8PR04MB7410:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM9PR04MB821227BAFF2DDEB2820828E5E0B19@AM9PR04MB8212.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <AM8PR04MB74101050E37DEA23E8E280BDE0B19@AM8PR04MB7410.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2ker39wFn+NQR3UtCdfDUizWR+rbhgUX8RcpC1HiC2vK5UmWUFWm+Bxa4QM/0EXA81tBi84ZUmDM2ZZdUgaK64D6+9kd8uVcXpwYAhzJpOUpGswBOZ9L7MXZhBjImglWwzKovLzkIVeUT7qd2F98pk9lhon8tmhk7NJYXGo2tGIhAtC7i9eWqU2B2iZJxf8lnvCLhC6I2YbhzXMFjfdEw3C5x1rR9Z8ZA0SpFKnQ4razZqwsfVSIqjPjEGx9xeBUu5sL30RH1Y9JULjYTTbgpZnWxCh6xn425/TQt0VaF7lLdV2jpi+S2tlX376YojbCoNc00tyr3zhtKok8dAHukdWr4BxeHxAf7DypZOZhaSRnBIa32ACAZqZUP/psaQzrOvA/qBD5AJuLKo3aLVr+C8xwqo8qWpyeSI851jPg96ZaZOn550GA65OllpE2noAWgW/96m6HE/PXtgtLqdPBF0R5Rpy2EG7E8bWCilFgOQkAIhzTypb8r81tk6V1zUinZI1KBwTk0bstlvSTawopkRUAeln2jB5Jdk1HyzuV2r5mfQCIKOa9RcxXlO6zLTawHoAxR1nDSwWxz+Z2NwMuoWUWqysZ4VKfe4iYVewf7x9CZSL/zNaXuj2/3QGLgKt2wXr5DGo/jqrwJb5OQrJTRk+ar0EdVZiO1HAPB6AHdmHtLnnKfJcAFI98YLfE5+G+A76gStGGpiEEewdSBhV3NQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR0401MB2308.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6506007)(8936002)(1076003)(86362001)(316002)(52116002)(66946007)(66556008)(66476007)(6486002)(8676002)(83380400001)(36756003)(38100700002)(26005)(5660300002)(2906002)(44832011)(6512007)(2616005)(186003)(956004)(4326008)(6666004)(38350700002)(508600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: EFP+xvOVxBIYtkwMbbR19bU5zv5SYTIAj2NST16cGSoCgKfeLpeFpZ9d/3WmiaplzEfcNQiPlyzkc3OEZInSDVSTTB41K2mhc9s/8Qb5g63pPZb1W5EuoejwEQBLx06Ycz9MAZusICaoSxfCoXMwiT+VGg+PdX8yPUCE5tCUPkj3xPBWFmQYhrYicdDXvUBJEKmRwtCviLCW3ScGLk40Ztmdfb3DFQt/tnC7tXhHBKaSfcZh4/TKVevIlqQT5IiMV8V2xFNBpuqjKTk+6Hz1nFHnHu8L+9Ec6cZjnd0Ub0db6ih3H+L5nhuPLt2+YNT5oOReFVDe27JRJeAQGqR+gDYV4/DxgzohKf92NbXQNY2I8auvlaFHIM0Oq7+yw0bxs37yqX1UwM/pmIKoqhLtBwMt301mmCgbcmbBbJVUhucnlQW8sGsnb5jhZ0qTfwcjU9BefWaGncbKXDgFN1e8LQkUviI3IFdr0uR2xt/CQDaGKTpNlkux78FlzsA+zwMgNP5ta+TaHOAIRISUPZ9klmQmYaG3Cuo4z1aBRfM1TCKY95IuvW5LY2hJueVmeXQrTGW56S30fuUWrmWroyJH4rZaj4pjeBUr4ZeXV5/iNYlhcJ33pCj5bE0N31iipyUos1CZX3BoYL+oNRhMSs8D/kkdu6bYFgN5xEjjv0vcy0QOFrWypoZPGu9BxrF5p8bM4D6Y5aLMq/gGFrAO8CG5Gw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR0401MB2308.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2616005)(6506007)(6666004)(1076003)(26005)(316002)(66946007)(66476007)(66556008)(36756003)(508600001)(5660300002)(38100700002)(38350700002)(8676002)(4326008)(83380400001)(8936002)(6486002)(956004)(44832011)(186003)(86362001)(2906002)(6512007)(52116002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Snj3JJ89dDz1TnIBWP8HD9WLKvjVlBAP+BFBM2qRHd5FnO7Cg8Y22drzzA/5?=
- =?us-ascii?Q?awL7u2FXTBH1jOFrf7yKqH49l/X9vEruFzIEU3nYdsiHBaUEIpZ91S2ZaHNz?=
- =?us-ascii?Q?hMvevSUeJS/Nhxzsml9Wq8Og+t5vgtcfkQevPwWqToTa//cjZ1jlNP4WShtO?=
- =?us-ascii?Q?UYGBFWaMEzdS9D47Dr6ZEqluuYyr7ODwX0ds4ur5/Hef55m0YY6E1tzZY6H8?=
- =?us-ascii?Q?rjJ7exatWJ+Ly7ZUzjoon79hRZvJ071vP1jHFcPcY+69JIHazu3prfVg7BBU?=
- =?us-ascii?Q?J/FPVv7t43XsJRtwpfOp+6pAv2Ior7AI6crnoA+eQ/rT4s/b6HGqfU5XNVY5?=
- =?us-ascii?Q?w6RKJK7A72Efh2hJDW3uB84xwalJr7mKoAym04mBwGg8RT54n8965adBL0hf?=
- =?us-ascii?Q?xjmqBF3Bjy2mFkKxOeeqPUR+9Df9Yk0Cf46vTel7ZPU7pwyQHfZz4edn1IB+?=
- =?us-ascii?Q?cuam7rLFwqdQmoHNZAAAUDq5gok+lfuX5sfvYPB91x2ExRMlW0K/1VWWRykT?=
- =?us-ascii?Q?mUaKetg9TJ6AUS6PdW0eRLgBjp4ACrZ/HM6eU4iVNr9kVzn0UeWFUTAnYGCL?=
- =?us-ascii?Q?7P4rr/5KWAQmBSrhBmaQfByORhiGPt3OMC6LuCtNuX7ft1qOdOoWNEle5x2k?=
- =?us-ascii?Q?U3sggBDJg/qzNAnxj9TGuhi8w0pEd0XbTOktHTgrsv8Rr0g69jYKGzs5WKNP?=
- =?us-ascii?Q?pCGaWaWLu2tOrPxHjFQVfV7vcMNshE3e5xePVHcpNKzD8Qvdrvm7DLQfOJgX?=
- =?us-ascii?Q?9smkWV38ZeSqUwqqG7c6Gq+O+ocPC6Hid9iYk///e0BW8YqzkvjQEHPhXw5B?=
- =?us-ascii?Q?LGurehT52KAgse85vZOpaqoZQe9xRd/AFanInZBCMWvUYGNDZ4yyTWM3IydK?=
- =?us-ascii?Q?R8jhNwMLBnDUknbEkjQCK735wO6O8TF97wosYRqH4kY/02hvCLpQSPEJ1u8M?=
- =?us-ascii?Q?DlXFUelAkGuDzvkQk10N0bnKwOq6Owg5uU4GirChT4+xIKiWt95q4RGciLq5?=
- =?us-ascii?Q?jyaAB5lm+rUF1hUj7BeSTheMCfikBRXt/dZYoXNSarg3P2/y7xLnpONC1j+d?=
- =?us-ascii?Q?wGoWvEVWCUClaZyMDe9SNY/XD4dBgChrt00HljgfHsNBirhklWuRMJPxvmLb?=
- =?us-ascii?Q?LkRBpuFqd8kxq+aOOL2TGvfb+3A+j+h8nDjZHwZ31wW3dIQpd08ywhNXJKOt?=
- =?us-ascii?Q?hk7PYu4mKSk7KNrBh9gB4LDZa1ieQK9p9lPu6DOdZB537OG6CDT1bXTPqjY5?=
- =?us-ascii?Q?o+8ckvhRBTAdzIRqoTlIWaEFORZtVEb6+VCgkzakOqpjbo6iqEMfg5oZfhou?=
- =?us-ascii?Q?qK9VDLgQtmE9VVh4G/zM+isR?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xBFp0mkQZIZTXB8VeROqfpou9auFSqXwnw7lU5F+rSyH04wPKJsfm2QMXZpD?=
+ =?us-ascii?Q?FIHrSB/O1DZLcv/ayfUot+MT97wddcnycnG1BROwxuVkK6LfqV5253zfnde4?=
+ =?us-ascii?Q?YPDShBxo/GbX9jZKNJxpuhLfvzb24QmngSE0uTH2ti7fv/NbXE0v6Alg9pUj?=
+ =?us-ascii?Q?0rzdVtTrRewmk6JYbL9mnbXocgZupJiyZT7GWW/H1fwIYnMXFhcO7D5qQvYb?=
+ =?us-ascii?Q?GwQ7qWBh22FFZ12kDYeSrMOFIqLfr6SJVHCs9Y7e3uDVsr/g24UTIfdaSd0d?=
+ =?us-ascii?Q?QswhO5So0AcbVcq6d59HVATlWOZWIn8IH8vYxYUtZ7oT1AZRTUUizYyqA3kC?=
+ =?us-ascii?Q?U10SQ32U1tS0DKRLnYhyLTxiVFm0yo2TDTx64hepjEk+DY+cKq/efNaZYUdz?=
+ =?us-ascii?Q?5YkooKSMaxCw6+g6QpuYKrO/4GP/99h2P834e2wor7tano9f3VlfK1u+o96G?=
+ =?us-ascii?Q?B1b96hhpkUCUtghAMs5ugZQnVCzHccOvW5Wut0mA8BceB95nmi5Tv2qpUq4W?=
+ =?us-ascii?Q?t7Rhoigz40eYoljIDnjVS5HaVgQElN8/XU00hV+pV6NwQ4LoxKyQ+U3muAgD?=
+ =?us-ascii?Q?0aS8MFm8BQyQ4fdInEfbi93ZzBfiIUocA+9a4Ti81t83gZvNjNdS3DuMnINj?=
+ =?us-ascii?Q?M66bMXbH31/Ceozg52lpMHlfEY0S0mPTXUCZuW5cPDiFllft1x05AzuKgyY4?=
+ =?us-ascii?Q?lI8Vu9zPZsLIt67Iyt/s63mnamo5xfTYHtJss1nqf3G6JDMqsY9G5XtK4+Od?=
+ =?us-ascii?Q?yKfuAkGnWnlHvEV6GxwRszkITbgVmcvNvHN+f017TBsW1UnXdRJ7pNPJi43e?=
+ =?us-ascii?Q?fjLZkwCGf8osHSSr3rx82Z4CQFHkq9x94PN0/IK2qQt8fpACdlMwfit4B27X?=
+ =?us-ascii?Q?I1mcsPTDMuMUsXmJZ+AJt17ebjV55JhzksdmwrulRMDEivjK/fKKipJBrdwe?=
+ =?us-ascii?Q?nJi8osWgrVWDX3K6CLEdYSAqgQryM0RfKV+VBE5vf8Bq6w7Yg9wZ08jMDCnR?=
+ =?us-ascii?Q?Zk5jbNSjJPuGDBv8YPwHGJZDFEFpvpwt2ETApTnb9Nh7yp+vWWl6Pd6ifuis?=
+ =?us-ascii?Q?LCrCR7Rl3+EODH63HLrmfv3Yb4Z1nyaYV4DREG1wTVlZiv2ETo2WjVvKJDc7?=
+ =?us-ascii?Q?B5vtWY5D+c2wcfZEzDzOtog9L/3IIFEn5AeBEvvS+rs9V7e+A6QyHIi2xUqT?=
+ =?us-ascii?Q?3KMnx3lOQlU6h8OSPR68/gNLVHui/EyVeETC4kc+9cHyiinCriaoo614hXha?=
+ =?us-ascii?Q?aHh1fYeXKC7d9bwIz9gwpJjv6XPY5AiXCdO119okS8Rwmxa8nTzoYiOOeExk?=
+ =?us-ascii?Q?NkOPUm9k96Xs6opW+0NNOYjN?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2323a99c-ba49-41b8-6cc2-08d989a787e0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d9d33a6-7c41-4495-4de3-08d989a78885
 X-MS-Exchange-CrossTenant-AuthSource: AM4PR0401MB2308.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2021 15:31:28.5949
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2021 15:31:29.4766
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s2ntTggisyc+DZ53mRPwlywaxyeHnhJBptvh3etJ82Vk0+xNJlWJrlM5qmmqWjz52/rEbL4yhmMZf2saaelZLQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8212
+X-MS-Exchange-CrossTenant-UserPrincipalName: Px/2P8Bn29qJq5ESi5wzihlZ/ZdLIE2g2O2GPxb8QqQ4feGzLWwChQAsUtONH4obQY7Ud9v/0RM2g83jXdHF2w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7410
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds support for driver level TSO in the enetc driver.
+This is just a preparation patch for software TSO in the enetc driver.
+Unfortunately, ENETC does not support Tx checksum offload which would
+normally render TSO, even software, impossible.
 
-Ever since the ENETC MDIO erratum workaround is in place, the Tx path is
-incurring a penalty (enetc_lock_mdio/enetc_unlock_mdio) for each skb to
-be sent out. On top of this, ENETC does not support Tx checksum
-offloading. This means that software TSO would help performance just by
-the fact that one single mdio lock/unlock sequence would cover multiple
-packets sent. On the other hand, checksum needs to be computed in
-software since the controller cannot handle it.
+Declare NETIF_F_HW_CSUM as part of the feature set and do it at driver
+level using skb_csum_hwoffload_help() so that we can move forward and
+also add support for TSO in the next patch.
 
-This is why, beside using the usual tso_build_hdr()/tso_build_data()
-this specific implementation also has to compute the checksum, both IP
-and L4, for each resulted segment.
-
-Even with that, the performance improvement of a TCP flow running on a
-single A72@1.3GHz of the LS1028A SoC (2.5Gbit/s port) is the following:
-
-before: 1.63 Gbits/sec
-after:  2.34 Gbits/sec
-
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
 Changes in v2:
- - declare NETIF_F_HW_CSUM instead of NETIF_F_IP_CSUM in 1/2
- - add support for TSO over IPv6 (NETIF_F_TSO6 and csum compute) in 2/2
+ - declare NETIF_F_HW_CSUM instead of NETIF_F_IP_CSUM
 
-Ioana Ciornei (2):
-  net: enetc: declare NETIF_F_HW_CSUM and do it in software
-  net: enetc: add support for software TSO
+ drivers/net/ethernet/freescale/enetc/enetc.c    | 8 +++++++-
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c | 6 ++++--
+ drivers/net/ethernet/freescale/enetc/enetc_vf.c | 6 ++++--
+ 3 files changed, 15 insertions(+), 5 deletions(-)
 
- drivers/net/ethernet/freescale/enetc/enetc.c  | 317 +++++++++++++++++-
- drivers/net/ethernet/freescale/enetc/enetc.h  |   4 +
- .../net/ethernet/freescale/enetc/enetc_pf.c   |   8 +-
- .../net/ethernet/freescale/enetc/enetc_vf.c   |   8 +-
- 4 files changed, 317 insertions(+), 20 deletions(-)
-
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 3cbfa8b4e265..17d8e04c10a8 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -319,7 +319,7 @@ static netdev_tx_t enetc_start_xmit(struct sk_buff *skb,
+ {
+ 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+ 	struct enetc_bdr *tx_ring;
+-	int count;
++	int count, err;
+ 
+ 	/* Queue one-step Sync packet if already locked */
+ 	if (skb->cb[0] & ENETC_F_TX_ONESTEP_SYNC_TSTAMP) {
+@@ -342,6 +342,12 @@ static netdev_tx_t enetc_start_xmit(struct sk_buff *skb,
+ 		return NETDEV_TX_BUSY;
+ 	}
+ 
++	if (skb->ip_summed == CHECKSUM_PARTIAL) {
++		err = skb_checksum_help(skb);
++		if (err)
++			goto drop_packet_err;
++	}
++
+ 	enetc_lock_mdio();
+ 	count = enetc_map_tx_buffs(tx_ring, skb);
+ 	enetc_unlock_mdio();
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index 628a74ba630c..1e3b2e191562 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -759,10 +759,12 @@ static void enetc_pf_netdev_setup(struct enetc_si *si, struct net_device *ndev,
+ 
+ 	ndev->hw_features = NETIF_F_SG | NETIF_F_RXCSUM |
+ 			    NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
+-			    NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_LOOPBACK;
++			    NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_LOOPBACK |
++			    NETIF_F_HW_CSUM;
+ 	ndev->features = NETIF_F_HIGHDMA | NETIF_F_SG | NETIF_F_RXCSUM |
+ 			 NETIF_F_HW_VLAN_CTAG_TX |
+-			 NETIF_F_HW_VLAN_CTAG_RX;
++			 NETIF_F_HW_VLAN_CTAG_RX |
++			 NETIF_F_HW_CSUM;
+ 
+ 	if (si->num_rss)
+ 		ndev->hw_features |= NETIF_F_RXHASH;
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_vf.c b/drivers/net/ethernet/freescale/enetc/enetc_vf.c
+index 0704f6bf12fd..f2a0c0f9fe1d 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_vf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_vf.c
+@@ -122,10 +122,12 @@ static void enetc_vf_netdev_setup(struct enetc_si *si, struct net_device *ndev,
+ 
+ 	ndev->hw_features = NETIF_F_SG | NETIF_F_RXCSUM |
+ 			    NETIF_F_HW_VLAN_CTAG_TX |
+-			    NETIF_F_HW_VLAN_CTAG_RX;
++			    NETIF_F_HW_VLAN_CTAG_RX |
++			    NETIF_F_HW_CSUM;
+ 	ndev->features = NETIF_F_HIGHDMA | NETIF_F_SG | NETIF_F_RXCSUM |
+ 			 NETIF_F_HW_VLAN_CTAG_TX |
+-			 NETIF_F_HW_VLAN_CTAG_RX;
++			 NETIF_F_HW_VLAN_CTAG_RX |
++			 NETIF_F_HW_CSUM;
+ 
+ 	if (si->num_rss)
+ 		ndev->hw_features |= NETIF_F_RXHASH;
 -- 
 2.31.1
 
