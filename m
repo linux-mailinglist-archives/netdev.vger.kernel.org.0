@@ -2,370 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87C73425648
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 17:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F98142564F
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 17:12:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242413AbhJGPMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 11:12:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59854 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242275AbhJGPMW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 11:12:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ACD6661245;
-        Thu,  7 Oct 2021 15:10:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633619429;
-        bh=JbP3u6z5HQuqnmWLruM9RdfFpU2qgop0fFjGQDuIZxQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V8/yyfNYLU57EydIpKKA3rXfdUdQpNHPnxs2fvUwtJTTjVngUbX58IFXCRHacsKWk
-         I2ACEGE2JRF6eoklgQ0rk3C1t4UPA8y8qIZ6uk3qYz0wEaKX7TA0noCIAdexMXiM+L
-         Q3S1l+UvfetGR8aHMDp1vNwpKF5rBthi4Y6Vy2HPxm4LfPxbEYWlQA7imWut0fPRgC
-         kpA4fNPu9gbrfrMXYCo6AEZ+CVtpw25f++4axV+M7NuYCnZO6K//cs6FzP8T7MHAKL
-         nswKhq7llI9vu9BM7bPVd3IdVKs/auB/P0z0t60LE7YAF7DZuFe+GFJzTcWq9vg0bE
-         IlLA30E7mJBQA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        iommu@lists.linux-foundation.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-gpio@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Alex Elder <elder@linaro.org>
-Subject: [PATCH v2 2/2] qcom_scm: hide Kconfig symbol
-Date:   Thu,  7 Oct 2021 17:10:10 +0200
-Message-Id: <20211007151010.333516-2-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20211007151010.333516-1-arnd@kernel.org>
-References: <20211007151010.333516-1-arnd@kernel.org>
+        id S233270AbhJGPOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 11:14:12 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:53441 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242271AbhJGPOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 11:14:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1633619537; x=1665155537;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=D70JVxMfSfmVMdTOKpBTDmpFGOLkWX+Th0+hTLH1Meo=;
+  b=W6qfQIpULaAe05p98Z+6jKLk/GeoS4e8gPiGmRXxAZGFAE66wCqEGQ2j
+   wIQFnCL8bTLDGfpnplcqnwvn93pghX4HPiJhc4C2zhlA0j27VshIdSBx7
+   orUTsrp5Epdk6EPKM6ksQV3G1oc+wZtYvI9c7CgCyV5KWqJ3r73Jwxd78
+   QNBp6rKA4y7xSHuWu4KlKm2ZmGd4J4oMFru/xyF41ABV98ZU0R0OitnID
+   zHLde7WDnpFRJDg0fIjo56jfDv7HbeWsNEeCQkqDkthtWmvStiYFM7w4t
+   2PdrpeJ4Wp5IyicmSh+3gfXC/NXTe62KmpXS6ub40f1m/pqEHmbWe7A+a
+   g==;
+IronPort-SDR: mTP/yqyaYfZ9eqHtC9SHbyzQCzK+gLn7k6Ho+GqkN24RYnnplvSKR9kx4QH6S4ysAxTUskxJh3
+ SYcicyUCzEry0WA2DISoc10dv5etfazlYDUvsBMKDFYxny1OzVJBwFGMu1TaIfrKpZZm6otyc7
+ Ak2nFeypUOBb3blCX7UKygHQlSOWwCzIb1oZ/EapH2IC7Z90LDjmRjjUBz/8qbjTOV7+/FzLWX
+ dA30U0X0y3rL3iVxFjR5Wkt/rAK4Kanq3ubukrcyW1UEL3AzdvJlMZtziDJFpjb0ogp2NqASc3
+ 58Bm+X4WfWUqSojKoki3dItu
+X-IronPort-AV: E=Sophos;i="5.85,355,1624345200"; 
+   d="scan'208";a="72033694"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Oct 2021 08:12:12 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 7 Oct 2021 08:12:12 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 7 Oct 2021 08:12:04 -0700
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Subject: [PATCH v4 net-next 00/10] net: dsa: microchip: DSA driver support for LAN937x switch
+Date:   Thu, 7 Oct 2021 20:41:50 +0530
+Message-ID: <20211007151200.748944-1-prasanna.vengateshan@microchip.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+LAN937x is a Multi-Port 100BASE-T1 Ethernet Physical Layer switch  
+compliant with the IEEE 802.3bw-2015 specification. The device  
+provides 100 Mbit/s transmit and receive capability over a single 
+Unshielded Twisted Pair (UTP) cable. LAN937x is successive revision 
+of KSZ series switch. This series of patches provide the DSA driver  
+support for Microchip LAN937X switch and it configures through  
+SPI interface. 
 
-Now that SCM can be a loadable module, we have to add another
-dependency to avoid link failures when ipa or adreno-gpu are
-built-in:
+This driver shares some of the functions from KSZ common 
+layer. 
 
-aarch64-linux-ld: drivers/net/ipa/ipa_main.o: in function `ipa_probe':
-ipa_main.c:(.text+0xfc4): undefined reference to `qcom_scm_is_available'
+The LAN937x switch series family consists of following SKUs: 
 
-ld.lld: error: undefined symbol: qcom_scm_is_available
->>> referenced by adreno_gpu.c
->>>               gpu/drm/msm/adreno/adreno_gpu.o:(adreno_zap_shader_load) in archive drivers/built-in.a
+LAN9370: 
+  - 4 T1 Phys 
+  - 1 RGMII port 
 
-This can happen when CONFIG_ARCH_QCOM is disabled and we don't select
-QCOM_MDT_LOADER, but some other module selects QCOM_SCM. Ideally we'd
-use a similar dependency here to what we have for QCOM_RPROC_COMMON,
-but that causes dependency loops from other things selecting QCOM_SCM.
+LAN9371: 
+  - 3 T1 Phys & 1 TX Phy 
+  - 2 RGMII ports 
 
-This appears to be an endless problem, so try something different this
-time:
+LAN9372: 
+  - 5 T1 Phys & 1 TX Phy 
+  - 2 RGMII ports 
 
- - CONFIG_QCOM_SCM becomes a hidden symbol that nothing 'depends on'
-   but that is simply selected by all of its users
+LAN9373: 
+  - 5 T1 Phys 
+  - 2 RGMII & 1 SGMII port 
 
- - All the stubs in include/linux/qcom_scm.h can go away
+LAN9374: 
+  - 6 T1 Phys 
+  - 2 RGMII ports 
 
- - arm-smccc.h needs to provide a stub for __arm_smccc_smc() to
-   allow compile-testing QCOM_SCM on all architectures.
+More support will be added at a later stage.
 
- - To avoid a circular dependency chain involving RESET_CONTROLLER
-   and PINCTRL_SUNXI, drop the 'select RESET_CONTROLLER' statement.
-   According to my testing this still builds fine, and the QCOM
-   platform selects this symbol already.
+Changes in v4:
+- tag_ksz.c: cpu_to_be16 to  put_unaligned_be16
+- correct spacing in comments
+- tag_ksz.c: NETIF_F_HW_CSUM fix is integrated 
+- lan937x_dev.c: mdio_np is removed from global and handled locally
+- lan937x_dev.c: unused functions removed lan937x_cfg32 & lan937x_port_cfg32
+- lan937x_dev.c: lan937x_is_internal_100BTX_phy_port function name changes
+- lan937x_dev.c: RGMII internal delay handling for MAC. Delay values are
+  retrieved from DTS and updated
+- lan937x_dev.c: corrected mutex operations for few dev variables
+- microchip,lan937x.yaml: introduced rx-internal-delay-ps & 
+  tx-internal-delay-ps for RGMII internal delay
+- lan937x_dev.c: Unnecessary mutex_lock has been removed
+- lan937x_main.c: PHY_INTERFACE_MODE_NA handling for lan937x_phylink_validate
+- lan937x_main.c: PORT_MIRROR_SNIFFER check in right place
+- lan937x_main.c: memset is used instead of writing 0's individually in 
+  lan937x_port_fdb_add function
+- lan937x_main.c: Removed \n from NL_SET_ERR_MSG_MOD calls
 
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
-Acked-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
+Changes in v3: 
+- Removed settings of cnt_ptr to zero and the memset() 
+  added a cleanup patch which moves this into ksz_init_mib_timer().
+- Used ret everywhere instead of rc
+- microchip,lan937x.yaml: Remove mdio compatible
+- microchip_t1.c: Renaming standard phy registers
+- tag_ksz.c: LAN937X_TAIL_TAG_OVERRIDE renaming 
+  LAN937X_TAIL_TAG_BLOCKING_OVERRIDE
+- tag_ksz.c: Changed Ingress and Egress naming convention based on 
+  Host
+- tag_ksz.c: converted to skb_mac_header(skb) from 
+  (is_link_local_ether_addr(hdr->h_dest))
+- lan937x_dev.c: Removed BCAST Storm protection settings since we
+  have Tc commands for them
+- lan937x_dev.c: Flow control setting in lan937x_port_setup function
+- lan937x_dev.c: RGMII internal delay added only for cpu port, 
+- lan937x_dev.c: of_get_compatible_child(node, 
+  "microchip,lan937x-mdio") to of_get_child_by_name(node, "mdio");
+- lan937x_dev.c:lan937x_get_interface API: returned 
+  PHY_INTERFACE_MODE_INTERNAL instead of PHY_INTERFACE_MODE_NA
+- lan937x_main.c: Removed compat interface implementation in 
+  lan937x_config_cpu_port() API & dev_info corrected as well
+- lan937x_main.c: deleted ds->configure_vlan_while_not_filtering 
+  = true
+- lan937x_main.c: Added explanation for lan937x_setup lines
+- lan937x_main.c: FR_MAX_SIZE correction in lan937x_get_max_mtu API 
+- lan937x_main.c: removed lan937x_port_bridge_flags dummy functions
+- lan937x_spi.c - mdiobus_unregister to be added to spi_remove 
+  function
+- lan937x_main.c: phy link layer changes  
+- lan937x_main.c: port mirroring: sniff port selection limiting to
+  one port
+- lan937x_main.c: Changed to global vlan filtering
+- lan937x_main.c: vlan_table array to structure
+- lan937x_main.c -Use extack instead of reporting errors to Console
+- lan937x_main.c - Remove cpu_port addition in vlan_add api
+- lan937x_main.c - removed pvid resetting
+
 Changes in v2:
-- fix the iommu dependencies
+- return check for register read/writes
+- dt compatible compatible check is added against chip id value 
+- lan937x_internal_t1_tx_phy_write() is renamed to 
+  lan937x_internal_phy_write()
+- lan937x_is_internal_tx_phy_port is renamed to 
+  lan937x_is_internal_100BTX_phy_port as it is 100Base-Tx phy
+- Return value for lan937x_internal_phy_write() is -EOPNOTSUPP 
+  in case of failures 
+- Return value for lan937x_internal_phy_read() is 0xffff 
+  for non existent phy 
+- cpu_port checking is removed from lan937x_port_stp_state_set()
+- lan937x_phy_link_validate: 100baseT_Full to 100baseT1_Full
+- T1 Phy driver is moved to drivers/net/phy/microchip_t1.c 
+- Tx phy driver support will be added later 
+- Legacy switch checkings in dts file are removed.
+- tag_ksz.c: Re-used ksz9477_rcv for lan937x_rcv 
+- tag_ksz.c: Xmit() & rcv() Comments are corrected w.r.to host
+- net/dsa/Kconfig: Family skew numbers altered in ascending order
+- microchip,lan937x.yaml: eth is replaced with ethernet
+- microchip,lan937x.yaml: spi1 is replaced with spi 
+- microchip,lan937x.yaml: cpu labelling is removed 
+- microchip,lan937x.yaml: port@x value will match the reg value now
 
-I've queued this version as a bugfix along with patch 1/2
-in my asm-generic tree.
+Prasanna Vengateshan (10):
+  dt-bindings: net: dsa: dt bindings for microchip lan937x
+  net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+  net: phy: Add support for LAN937x T1 phy driver
+  net: dsa: tag_ksz: add tag handling for Microchip LAN937x
+  net: dsa: microchip: add DSA support for microchip lan937x
+  net: dsa: microchip: add support for phylink management
+  net: dsa: microchip: add support for ethtool port counters
+  net: dsa: microchip: add support for port mirror operations
+  net: dsa: microchip: add support for fdb and mdb management
+  net: dsa: microchip: add support for vlan operations
 
- drivers/firmware/Kconfig                   |  5 +-
- drivers/gpu/drm/msm/Kconfig                |  4 +-
- drivers/iommu/Kconfig                      |  3 +-
- drivers/iommu/arm/arm-smmu/Makefile        |  3 +-
- drivers/iommu/arm/arm-smmu/arm-smmu-impl.c |  3 +-
- drivers/media/platform/Kconfig             |  2 +-
- drivers/mmc/host/Kconfig                   |  2 +-
- drivers/net/ipa/Kconfig                    |  1 +
- drivers/net/wireless/ath/ath10k/Kconfig    |  2 +-
- drivers/pinctrl/qcom/Kconfig               |  3 +-
- include/linux/arm-smccc.h                  | 10 +++
- include/linux/qcom_scm.h                   | 71 ----------------------
- 12 files changed, 24 insertions(+), 85 deletions(-)
+ .../bindings/net/dsa/microchip,lan937x.yaml   |  160 ++
+ MAINTAINERS                                   |    1 +
+ drivers/net/dsa/microchip/Kconfig             |   12 +
+ drivers/net/dsa/microchip/Makefile            |    5 +
+ drivers/net/dsa/microchip/ksz8795.c           |    2 -
+ drivers/net/dsa/microchip/ksz9477.c           |    3 -
+ drivers/net/dsa/microchip/ksz_common.c        |    8 +-
+ drivers/net/dsa/microchip/ksz_common.h        |    5 +
+ drivers/net/dsa/microchip/lan937x_dev.c       |  725 +++++++++
+ drivers/net/dsa/microchip/lan937x_dev.h       |   80 +
+ drivers/net/dsa/microchip/lan937x_main.c      | 1310 +++++++++++++++++
+ drivers/net/dsa/microchip/lan937x_reg.h       |  683 +++++++++
+ drivers/net/dsa/microchip/lan937x_spi.c       |  227 +++
+ drivers/net/phy/microchip_t1.c                |  339 ++++-
+ include/net/dsa.h                             |    2 +
+ net/dsa/Kconfig                               |    4 +-
+ net/dsa/tag_ksz.c                             |   59 +
+ 17 files changed, 3554 insertions(+), 71 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_main.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_reg.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
 
-diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
-index 220a58cf0a44..cda7d7162cbb 100644
---- a/drivers/firmware/Kconfig
-+++ b/drivers/firmware/Kconfig
-@@ -203,10 +203,7 @@ config INTEL_STRATIX10_RSU
- 	  Say Y here if you want Intel RSU support.
- 
- config QCOM_SCM
--	tristate "Qcom SCM driver"
--	depends on ARM || ARM64
--	depends on HAVE_ARM_SMCCC
--	select RESET_CONTROLLER
-+	tristate
- 
- config QCOM_SCM_DOWNLOAD_MODE_DEFAULT
- 	bool "Qualcomm download mode enabled by default"
-diff --git a/drivers/gpu/drm/msm/Kconfig b/drivers/gpu/drm/msm/Kconfig
-index e9c6af78b1d7..3ddf739a6f9b 100644
---- a/drivers/gpu/drm/msm/Kconfig
-+++ b/drivers/gpu/drm/msm/Kconfig
-@@ -17,7 +17,7 @@ config DRM_MSM
- 	select DRM_SCHED
- 	select SHMEM
- 	select TMPFS
--	select QCOM_SCM if ARCH_QCOM
-+	select QCOM_SCM
- 	select WANT_DEV_COREDUMP
- 	select SND_SOC_HDMI_CODEC if SND_SOC
- 	select SYNC_FILE
-@@ -55,7 +55,7 @@ config DRM_MSM_GPU_SUDO
- 
- config DRM_MSM_HDMI_HDCP
- 	bool "Enable HDMI HDCP support in MSM DRM driver"
--	depends on DRM_MSM && QCOM_SCM
-+	depends on DRM_MSM
- 	default y
- 	help
- 	  Choose this option to enable HDCP state machine
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 124c41adeca1..c5c71b7ab7e8 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -308,7 +308,6 @@ config APPLE_DART
- config ARM_SMMU
- 	tristate "ARM Ltd. System MMU (SMMU) Support"
- 	depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
--	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU if ARM
-@@ -438,7 +437,7 @@ config QCOM_IOMMU
- 	# Note: iommu drivers cannot (yet?) be built as modules
- 	bool "Qualcomm IOMMU Support"
- 	depends on ARCH_QCOM || (COMPILE_TEST && !GENERIC_ATOMIC64)
--	depends on QCOM_SCM=y
-+	select QCOM_SCM
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU
-diff --git a/drivers/iommu/arm/arm-smmu/Makefile b/drivers/iommu/arm/arm-smmu/Makefile
-index e240a7bcf310..b0cc01aa20c9 100644
---- a/drivers/iommu/arm/arm-smmu/Makefile
-+++ b/drivers/iommu/arm/arm-smmu/Makefile
-@@ -1,4 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
- obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
--arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o arm-smmu-qcom.o
-+arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o
-+arm_smmu-$(CONFIG_ARM_SMMU_QCOM) += arm-smmu-qcom.o
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-index 9f465e146799..2c25cce38060 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-@@ -215,7 +215,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- 	    of_device_is_compatible(np, "nvidia,tegra186-smmu"))
- 		return nvidia_smmu_impl_init(smmu);
- 
--	smmu = qcom_smmu_impl_init(smmu);
-+	if (IS_ENABLED(CONFIG_ARM_SMMU_QCOM))
-+		smmu = qcom_smmu_impl_init(smmu);
- 
- 	if (of_device_is_compatible(np, "marvell,ap806-smmu-500"))
- 		smmu->impl = &mrvl_mmu500_impl;
-diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
-index 157c924686e4..80321e03809a 100644
---- a/drivers/media/platform/Kconfig
-+++ b/drivers/media/platform/Kconfig
-@@ -565,7 +565,7 @@ config VIDEO_QCOM_VENUS
- 	depends on VIDEO_DEV && VIDEO_V4L2 && QCOM_SMEM
- 	depends on (ARCH_QCOM && IOMMU_DMA) || COMPILE_TEST
- 	select QCOM_MDT_LOADER if ARCH_QCOM
--	select QCOM_SCM if ARCH_QCOM
-+	select QCOM_SCM
- 	select VIDEOBUF2_DMA_CONTIG
- 	select V4L2_MEM2MEM_DEV
- 	help
-diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
-index 71313961cc54..95b3511b0560 100644
---- a/drivers/mmc/host/Kconfig
-+++ b/drivers/mmc/host/Kconfig
-@@ -547,7 +547,7 @@ config MMC_SDHCI_MSM
- 	depends on MMC_SDHCI_PLTFM
- 	select MMC_SDHCI_IO_ACCESSORS
- 	select MMC_CQHCI
--	select QCOM_SCM if MMC_CRYPTO && ARCH_QCOM
-+	select QCOM_SCM if MMC_CRYPTO
- 	help
- 	  This selects the Secure Digital Host Controller Interface (SDHCI)
- 	  support present in Qualcomm SOCs. The controller supports
-diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
-index 8f99cfa14680..d037682fb7ad 100644
---- a/drivers/net/ipa/Kconfig
-+++ b/drivers/net/ipa/Kconfig
-@@ -4,6 +4,7 @@ config QCOM_IPA
- 	depends on ARCH_QCOM || COMPILE_TEST
- 	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
- 	select QCOM_MDT_LOADER if ARCH_QCOM
-+	select QCOM_SCM
- 	select QCOM_QMI_HELPERS
- 	help
- 	  Choose Y or M here to include support for the Qualcomm
-diff --git a/drivers/net/wireless/ath/ath10k/Kconfig b/drivers/net/wireless/ath/ath10k/Kconfig
-index 741289e385d5..ca007b800f75 100644
---- a/drivers/net/wireless/ath/ath10k/Kconfig
-+++ b/drivers/net/wireless/ath/ath10k/Kconfig
-@@ -44,7 +44,7 @@ config ATH10K_SNOC
- 	tristate "Qualcomm ath10k SNOC support"
- 	depends on ATH10K
- 	depends on ARCH_QCOM || COMPILE_TEST
--	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
-+	select QCOM_SCM
- 	select QCOM_QMI_HELPERS
- 	help
- 	  This module adds support for integrated WCN3990 chip connected
-diff --git a/drivers/pinctrl/qcom/Kconfig b/drivers/pinctrl/qcom/Kconfig
-index 32ea2a8ec02b..5ff4207df66e 100644
---- a/drivers/pinctrl/qcom/Kconfig
-+++ b/drivers/pinctrl/qcom/Kconfig
-@@ -3,7 +3,8 @@ if (ARCH_QCOM || COMPILE_TEST)
- 
- config PINCTRL_MSM
- 	tristate "Qualcomm core pin controller driver"
--	depends on GPIOLIB && (QCOM_SCM || !QCOM_SCM) #if QCOM_SCM=m this can't be =y
-+	depends on GPIOLIB
-+	select QCOM_SCM
- 	select PINMUX
- 	select PINCONF
- 	select GENERIC_PINCONF
-diff --git a/include/linux/arm-smccc.h b/include/linux/arm-smccc.h
-index 7d1cabe15262..63ccb5252190 100644
---- a/include/linux/arm-smccc.h
-+++ b/include/linux/arm-smccc.h
-@@ -321,10 +321,20 @@ asmlinkage unsigned long __arm_smccc_sve_check(unsigned long x0);
-  * from register 0 to 3 on return from the SMC instruction.  An optional
-  * quirk structure provides vendor specific behavior.
-  */
-+#ifdef CONFIG_HAVE_ARM_SMCCC
- asmlinkage void __arm_smccc_smc(unsigned long a0, unsigned long a1,
- 			unsigned long a2, unsigned long a3, unsigned long a4,
- 			unsigned long a5, unsigned long a6, unsigned long a7,
- 			struct arm_smccc_res *res, struct arm_smccc_quirk *quirk);
-+#else
-+static inline void __arm_smccc_smc(unsigned long a0, unsigned long a1,
-+			unsigned long a2, unsigned long a3, unsigned long a4,
-+			unsigned long a5, unsigned long a6, unsigned long a7,
-+			struct arm_smccc_res *res, struct arm_smccc_quirk *quirk)
-+{
-+	*res = (struct arm_smccc_res){};
-+}
-+#endif
- 
- /**
-  * __arm_smccc_hvc() - make HVC calls
-diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
-index c0475d1c9885..81cad9e1e412 100644
---- a/include/linux/qcom_scm.h
-+++ b/include/linux/qcom_scm.h
-@@ -61,7 +61,6 @@ enum qcom_scm_ice_cipher {
- #define QCOM_SCM_PERM_RW (QCOM_SCM_PERM_READ | QCOM_SCM_PERM_WRITE)
- #define QCOM_SCM_PERM_RWX (QCOM_SCM_PERM_RW | QCOM_SCM_PERM_EXEC)
- 
--#if IS_ENABLED(CONFIG_QCOM_SCM)
- extern bool qcom_scm_is_available(void);
- 
- extern int qcom_scm_set_cold_boot_addr(void *entry, const cpumask_t *cpus);
-@@ -115,74 +114,4 @@ extern int qcom_scm_lmh_dcvsh(u32 payload_fn, u32 payload_reg, u32 payload_val,
- extern int qcom_scm_lmh_profile_change(u32 profile_id);
- extern bool qcom_scm_lmh_dcvsh_available(void);
- 
--#else
--
--#include <linux/errno.h>
--
--static inline bool qcom_scm_is_available(void) { return false; }
--
--static inline int qcom_scm_set_cold_boot_addr(void *entry,
--		const cpumask_t *cpus) { return -ENODEV; }
--static inline int qcom_scm_set_warm_boot_addr(void *entry,
--		const cpumask_t *cpus) { return -ENODEV; }
--static inline void qcom_scm_cpu_power_down(u32 flags) {}
--static inline u32 qcom_scm_set_remote_state(u32 state,u32 id)
--		{ return -ENODEV; }
--
--static inline int qcom_scm_pas_init_image(u32 peripheral, const void *metadata,
--		size_t size) { return -ENODEV; }
--static inline int qcom_scm_pas_mem_setup(u32 peripheral, phys_addr_t addr,
--		phys_addr_t size) { return -ENODEV; }
--static inline int qcom_scm_pas_auth_and_reset(u32 peripheral)
--		{ return -ENODEV; }
--static inline int qcom_scm_pas_shutdown(u32 peripheral) { return -ENODEV; }
--static inline bool qcom_scm_pas_supported(u32 peripheral) { return false; }
--
--static inline int qcom_scm_io_readl(phys_addr_t addr, unsigned int *val)
--		{ return -ENODEV; }
--static inline int qcom_scm_io_writel(phys_addr_t addr, unsigned int val)
--		{ return -ENODEV; }
--
--static inline bool qcom_scm_restore_sec_cfg_available(void) { return false; }
--static inline int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare)
--		{ return -ENODEV; }
--static inline int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size)
--		{ return -ENODEV; }
--static inline int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare)
--		{ return -ENODEV; }
--extern inline int qcom_scm_mem_protect_video_var(u32 cp_start, u32 cp_size,
--						 u32 cp_nonpixel_start,
--						 u32 cp_nonpixel_size)
--		{ return -ENODEV; }
--static inline int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
--		unsigned int *src, const struct qcom_scm_vmperm *newvm,
--		unsigned int dest_cnt) { return -ENODEV; }
--
--static inline bool qcom_scm_ocmem_lock_available(void) { return false; }
--static inline int qcom_scm_ocmem_lock(enum qcom_scm_ocmem_client id, u32 offset,
--		u32 size, u32 mode) { return -ENODEV; }
--static inline int qcom_scm_ocmem_unlock(enum qcom_scm_ocmem_client id,
--		u32 offset, u32 size) { return -ENODEV; }
--
--static inline bool qcom_scm_ice_available(void) { return false; }
--static inline int qcom_scm_ice_invalidate_key(u32 index) { return -ENODEV; }
--static inline int qcom_scm_ice_set_key(u32 index, const u8 *key, u32 key_size,
--				       enum qcom_scm_ice_cipher cipher,
--				       u32 data_unit_size) { return -ENODEV; }
--
--static inline bool qcom_scm_hdcp_available(void) { return false; }
--static inline int qcom_scm_hdcp_req(struct qcom_scm_hdcp_req *req, u32 req_cnt,
--		u32 *resp) { return -ENODEV; }
--
--static inline int qcom_scm_qsmmu500_wait_safe_toggle(bool en)
--		{ return -ENODEV; }
--
--static inline int qcom_scm_lmh_dcvsh(u32 payload_fn, u32 payload_reg, u32 payload_val,
--				     u64 limit_node, u32 node_id, u64 version)
--		{ return -ENODEV; }
--
--static inline int qcom_scm_lmh_profile_change(u32 profile_id) { return -ENODEV; }
--
--static inline bool qcom_scm_lmh_dcvsh_available(void) { return -ENODEV; }
--#endif
- #endif
 -- 
-2.29.2
+2.27.0
 
