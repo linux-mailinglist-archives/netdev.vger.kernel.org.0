@@ -2,127 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8301B425FA9
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 00:07:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7426C425FAC
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 00:10:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241615AbhJGWJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 18:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234117AbhJGWJZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 18:09:25 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F14C061755;
-        Thu,  7 Oct 2021 15:07:30 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id b8so28591544edk.2;
-        Thu, 07 Oct 2021 15:07:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GIFnlR0UIXiylNNwxbCFNahTUAckFo8NiK+ix7l+nDY=;
-        b=bi70k7ySJr0oP4n409NVhcfvhjjhzNlELBKnM57osLf6iwIWEL6O5pW6Rch7QqNp/9
-         vaFx7m8WXj+yf6jQWwKZQihVcJIbH7ixfMdQhG/dkfSXqM95WjqyHHbB0NxyjQa6X5wb
-         7M46KBH2J7xM7sKlrPb0ydvacGFgv7+fonP0Dm4M4hCV8ed/0sOHu3cgq3kRVrn9f3vK
-         +ptW6Egn4qAIfdMNeL3aEN3Dh4yCiMKQNEp/o3fVU8HoLDePnY896zyPizbT3ZVn1Ymh
-         Ry7G6xBP5o//NNxotaYPzImr5iM9FSFRxrowPpLMUOK44QU5CzvePS9htPqqxwcKdBFd
-         FrUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GIFnlR0UIXiylNNwxbCFNahTUAckFo8NiK+ix7l+nDY=;
-        b=GUIyRAkdX0XNGx2XQhgEi5eKktZtFqIUknVRpG2GXrmcwH+bVA3/Z/utGojD2cPU/U
-         3xubUZyXCS1saYrkQwIOtRvQ967q42sJNYh8YexrO3DBYIxXt7SmnTOl03u24ZrTUvDa
-         x3tOlhZMSDY6VBwgGNE0dCM96xN6dUKOt668MhgUV4DqyZioT37owU7YxQYF6A2VPpn4
-         VN+6rlKZsf37PnBHTWAgPiy/sMUDDnn3x24aD3sXxQkJAwDKsaDERYXWJqkbVm9GJMiq
-         Qb6Zl8TixTTWWAkS0jeRKu2fXszu9hqmauh3U//yiiGIADMb80BJlLWf3poY/G+345f0
-         dbIA==
-X-Gm-Message-State: AOAM531F4uefYM/oh6vzLfPMHD1CTzgoN35ku6fJrfBtJH0XnRWwEawP
-        83yDj75j0RgEMNoDoYOLRYY=
-X-Google-Smtp-Source: ABdhPJw9pourmTC5wkkn4jvJ71C3kyOzgk0wvxgWlP4YM67fNQ1VGR//LyCYA12WoGNfEU5fFopRPQ==
-X-Received: by 2002:a17:906:4f19:: with SMTP id t25mr2217629eju.176.1633644448446;
-        Thu, 07 Oct 2021 15:07:28 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id d30sm263682edn.49.2021.10.07.15.07.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 15:07:27 -0700 (PDT)
-Date:   Fri, 8 Oct 2021 00:07:25 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH 02/13] drivers: net: phy: at803x: add DAC
- amplitude fix for 8327 phy
-Message-ID: <YV9vnW+aUdttNkQl@Ansuel-xps.localdomain>
-References: <20211006223603.18858-1-ansuelsmth@gmail.com>
- <20211006223603.18858-3-ansuelsmth@gmail.com>
- <YV44ex0Vh6qtHbOs@lunn.ch>
+        id S233792AbhJGWMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 18:12:46 -0400
+Received: from mail-eopbgr40088.outbound.protection.outlook.com ([40.107.4.88]:10054
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233180AbhJGWMg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 18:12:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZZsAQnJMRq6AJNs/a5sxxzpuiqKY7cN0XML41/8uz8g6oATourZYEwvuaTIsxa8tNkqBFSEHyorwaU4eF9avXGu0xyFnQcMCp9f9N1TKobxo28PTCCMu5f9OTBGvZEQmxl48xDBCB/3DSWmTLv+Yd5M1pIQIMVE2RU1+yBVTz7GTZaiqrXwYd0t2jFlls3N5Lv9Q4C+WQPayrKzD7iMof3Ap1qMfnXIS/CM1tP71GuS4xFvTUn291nmFzyrsmVZv0Bkyvc65kE6iCzqCmtgIeP6sPiwUReOHaiwkD5980r70ZGbWb3hqxzC8jpKb1K0F1Oo8SP+6AMuo9YBkwuNIZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/AkwGiSlndd+9DmgXPbM0PKqdKOQuITEpjebEAXlrg8=;
+ b=MUpNgWt9WBPERmVRqNL3Frkjy3JcoWsf902h02rhBL4Tyu2wNdF/V4esC37TT1c97nmf8lelD0gzwjUtcwnkUOZxi82T/sS0gLinen+lewBcySOZNjgoRI0ehNVUns/2fd0nbyoEVcHvmlF2EB0PBFvna5W1mWKTSA2BW+gkL4beoOOO3nI3VMkKBR5b7iNML+lHlpCQRqcADQ3wEdyGulHSYs6TV/shCx71LEzCgKJ/BZXsGUWZkoZsI8//T6NTKjmo9uqq2VYEXmioxNvOnS4Ur4i4s5eAxJZBXD2+oEDAx5BoEeOz3L2VkJfq8GpdYQbTAXuTYyELsJftkmviKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/AkwGiSlndd+9DmgXPbM0PKqdKOQuITEpjebEAXlrg8=;
+ b=O1Opv8xOwNVNRGoAq/MKbt/HUbbIiCe/72INKNT2mG5D2jjWGn+WPs6vfO53z6fKFegHQ/R6QWPYVlbYQ7NAj39zxljd865Kh5ghz4Vvq9Ygi16JzOtjf+B5sAjplj9vkfwlkx+nKY5cNQoKAq4HlHqbdvNOq539ETwFpbCncAw=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0402MB3549.eurprd04.prod.outlook.com (2603:10a6:803:8::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.22; Thu, 7 Oct
+ 2021 22:10:40 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4566.023; Thu, 7 Oct 2021
+ 22:10:40 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: Re: [PATCH net-next v2 2/2] net: enetc: add support for software TSO
+Thread-Topic: [PATCH net-next v2 2/2] net: enetc: add support for software TSO
+Thread-Index: AQHXu5BnZVWnShh3Q0urNRO7fmaHeqvIGTGA
+Date:   Thu, 7 Oct 2021 22:10:40 +0000
+Message-ID: <20211007221039.x5gyjcjqc7xl72mt@skbuf>
+References: <20211007153043.2675008-1-ioana.ciornei@nxp.com>
+ <20211007153043.2675008-3-ioana.ciornei@nxp.com>
+In-Reply-To: <20211007153043.2675008-3-ioana.ciornei@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5c26516d-d5e6-4008-c9a8-08d989df4caa
+x-ms-traffictypediagnostic: VI1PR0402MB3549:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB3549B61A2F4641F98929CF0CE0B19@VI1PR0402MB3549.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +uyXU20X+DX20UUWebCyVNlwP90ZAZnZi21aT9GXe/zxkwGkzrSX3ApOoXowgMLO+esPgiQzXdHq02UhayeCyWnfMdOaoYbHMS1TJhfUuGS/kwFRXQAcPsNVwLWNRereWREgIno3kDj+JZbWFgnSob5SWyHtY0j5AqRU+jU6QKQkXGwNQMbDK57ozbmBRcewhZt3AROIGK6c5rxb6Z5dyetbHmni6aaapqnJa8BZVfckJPjDtsR8GryCpZx0HV9DPI3gq8XgzNN588/ZeKT2vL0Z0RgnzvvOETOQ1hyFrPF3B/ZKyZxfmi/tAhy0KEWkU+mINftqX8w9XDzr7KJ8Y3WjVuivCHgOAQDKYbrGRHpwApnvHL6Ym0wm9lLpUgv6OsqSPz/vHF2XKgLjEAutxNS39QXcxOiNUuLiDnIAwF1aytddOlwmQ6KW2JZ1VHZ5j7SZNWnLQB5v05jzp5TBM4EN6my16EO7IV9X5/9NxlJlDEQNmlstp2xPas3wqujHMJheMqFSUMnx4m44E2PX7tFsW8I6EDQo9gC+9pVvWlYn3gOoHViBWsx6Awwmg6aveunZI+lGdOPQGyDyIsgS0VF/oHmZTZWBWxzRLRIqDv5Ap//o05jJEyrdNdxkTQUC/cJVPiwfgF5SvTUMQFxcCC/Wrg4yfEpfzDkU1C6krtW67Pp9FcvIi/+LH+YREDJ+d3scUgM2pCl5Im39YUWXuw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(71200400001)(86362001)(83380400001)(122000001)(38100700002)(6862004)(316002)(5660300002)(2906002)(66946007)(1076003)(6512007)(64756008)(66476007)(38070700005)(76116006)(66556008)(9686003)(66446008)(54906003)(6486002)(8676002)(4326008)(6636002)(6506007)(26005)(508600001)(186003)(44832011)(8936002)(4744005)(33716001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1Qyi8IW8t5ZUMjt5/KveWi0v/XuUF00E2nY4sBUyZ/7zKJLUbpmsZmAWanW5?=
+ =?us-ascii?Q?5D/UrBnx6Us3sKaPlsAWsanS6ZBfpqtfHVFp1HOHdnVPD28p4BO8ucEokwtC?=
+ =?us-ascii?Q?t9CTOobtDUNRyFjyXRmJtSZ6eD0ojY4q+rgZ608yHAATgfVCMXOLKDw5bw46?=
+ =?us-ascii?Q?cPBUJ0rI3y/ulwZ9ASiApEI98irC6k2Zm6GDTroelwR/PGK9HxpNGIXW1oJe?=
+ =?us-ascii?Q?TP7pOaQUB2Y4je168lbGumEnBLiKQSZWFEmNfJaxNK3ZtZy6fFUJtiFlpK5j?=
+ =?us-ascii?Q?1YXxxPAWVNmnfDOS3I4gnq2lRGjiwR+aHG9AX24B6qU9C/1H/mivmPfpAw0w?=
+ =?us-ascii?Q?J0KZ9XRQpDa2eAk+OlsHEpq/N+LwemXp8+viorOa+eSExm5cS8AM8iV/sdT9?=
+ =?us-ascii?Q?urWTic6Dforl4JUMSqo97D/l0soENbYy0u2lkYc4DKFa16gvN81LqUsrSIPZ?=
+ =?us-ascii?Q?jUmcVb8btbaiELgBDog9Ep0urLkdZtTYeVmogzsj7iF5Or9KIyZ/HyG5v9zu?=
+ =?us-ascii?Q?1/+KQJ68T6fHw94KtjYPI2t2o9AzoagWSIk/g17KsUbQLH/X1who9J63uZDM?=
+ =?us-ascii?Q?NFnQOXx7jzlgkYa3LB0ZMCeag3aC2E+USxYixEMrv2S2hhmA9wZYaS9bQ624?=
+ =?us-ascii?Q?A3jVOKauJYOGo6pAnjWeNfU8kC+BZh/GsoyFAsEs6OyOUqBKyYBY3AadKOpM?=
+ =?us-ascii?Q?ZwOHIO82Oe44WejfF43sswlsh+8UCPA48seQD/crMUjLzlmWQJ4hLyg53jXO?=
+ =?us-ascii?Q?KsCHyugKdwriCZDTN9V/NVkMUsakrL2+G8fdBRNDVgTlYAaDC2P7hZsZsQdu?=
+ =?us-ascii?Q?Y9irqbJTDCsESnGw4Z/U0WAeIg+YsmBcnQOh8xPbhmE6DvedsgsrnR2iaCHW?=
+ =?us-ascii?Q?ilIs7zCrcjRfdCT1CeDDcIj+OmjarWCUaCo98dCq6VcpawmU9SetyMwsR/gP?=
+ =?us-ascii?Q?woc8Mv0iNV4wVco4C2YV7GWksABh/V/mA7KBqUriLiiRX7FWexNcat1xcyt4?=
+ =?us-ascii?Q?4tZF5PaD1t4iZg+kifQl5J6vh/DlyT1GBjFKfd8qtRjT8pJZkjSdeOxFTO9x?=
+ =?us-ascii?Q?XjXFSwdfCo4Prf8Wpqm7LHsg/Ry5MTjOE3+8DmJYUOFg7GUImfbyAe2nukuq?=
+ =?us-ascii?Q?51g7+IvoCD+IQYv4xVx/BZpJ5o8xIEhpdC9hC0cUNMb2lq3Xi1WSnYxEGxkN?=
+ =?us-ascii?Q?h/TjMOQ1U2Ir5wR8gwqIjdKhX9B/x0zWePNfc/1jg1DZUet5f+Nol59aKua+?=
+ =?us-ascii?Q?WxofsUNobDUQIXPLlBExcbn+CBcI8jSjL8vTx2wrBK4HcxjdqBlmh5rKuhmX?=
+ =?us-ascii?Q?Sznqln1I9j4tOmzZSCRFSdXtOqE0iPZX460VYxtU45YegA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4503FD7B0C11204F92C6CE532304D947@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YV44ex0Vh6qtHbOs@lunn.ch>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c26516d-d5e6-4008-c9a8-08d989df4caa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Oct 2021 22:10:40.5230
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xmq61okhwPShlVd41HIBA0GWhaD51wjMUa55d/8i55EkCGsxY3CpxKFySsZVAR8SaZiRa08N07eVnNY41JCxiw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3549
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 01:59:55AM +0200, Andrew Lunn wrote:
-> On Thu, Oct 07, 2021 at 12:35:52AM +0200, Ansuel Smith wrote:
-> > QCA8327 internal phy require DAC amplitude adjustement set to +6% with
-> > 100m speed. Also add additional define to report a change of the same
-> > reg in QCA8337. (different scope it does set 1000m voltage)
-> > Add link_change_notify function to set the proper amplitude adjustement
-> > on PHY_RUNNING state and disable on any other state.
-> > 
-> > Fixes: c6bcec0d6928 ("net: phy: at803x: add support for qca 8327 A variant internal phy")
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> 
-> Since this is a fix, you might want to send it on its own, based on
-> net.
-> 
-> > +	/* QCA8327 require DAC amplitude adjustment for 100m set to +6%.
-> > +	 * Disable on init and enable only with 100m speed following
-> > +	 * qca original source code.
-> > +	 */
-> > +	if (phydev->drv->phy_id == QCA8327_A_PHY_ID ||
-> > +	    phydev->drv->phy_id == QCA8327_B_PHY_ID)
-> > +		at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0,
-> > +				      QCA8327_DEBUG_MANU_CTRL_EN, 0);
-> > +
-> >  	return 0;
-> >  }
-> >  
-> > +static void qca83xx_link_change_notify(struct phy_device *phydev)
-> > +{
-> > +	/* QCA8337 doesn't require DAC Amplitude adjustement */
-> > +	if (phydev->drv->phy_id == QCA8337_PHY_ID)
-> > +		return;
-> > +
-> > +	/* Set DAC Amplitude adjustment to +6% for 100m on link running */
-> > +	if (phydev->state == PHY_RUNNING) {
-> > +		if (phydev->speed == SPEED_100)
-> > +			at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0,
-> > +					      QCA8327_DEBUG_MANU_CTRL_EN,
-> > +					      QCA8327_DEBUG_MANU_CTRL_EN);
-> > +	} else {
-> > +		/* Reset DAC Amplitude adjustment */
-> > +		at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0,
-> > +				      QCA8327_DEBUG_MANU_CTRL_EN, 0);
-> 
-> Here you don't make it conditional on QCA8327_A_PHY_ID and
-> QCA8327_B_PHY_ID, where as above you do?
->
->  	  Andrew
+On Thu, Oct 07, 2021 at 06:30:43PM +0300, Ioana Ciornei wrote:
+> This patch adds support for driver level TSO in the enetc driver using
+> the TSO API.
+>=20
+> Beside using the usual tso_build_hdr(), tso_build_data() this specific
+> implementation also has to compute the checksum, both IP and L4, for
+> each resulted segment. This is because the ENETC controller does not
+> support Tx checksum offload which is needed in order to take advantage
+> of TSO.
+>=20
+> With the workaround for the ENETC MDIO erratum in place the Tx path of
+> the driver is forced to lock/unlock for each skb sent. This is why, even
+> though we are computing the checksum by hand we see the following
+> improvement in TCP termination on the LS1028A SoC, on a single A72 core
+> running at 1.3GHz:
+>=20
+> before: 1.63 Gbits/sec
+> after:  2.34 Gbits/sec
+>=20
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> ---
 
-We skip the DAC Amplitude for 8337. We support 8327 a/b and 8337.
-Anyway sending this and other patch to v2 with the asked changes.
-
--- 
-	Ansuel
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>=
