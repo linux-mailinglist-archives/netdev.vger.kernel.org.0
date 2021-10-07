@@ -2,83 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EF94425E56
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 623D0425E5E
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 23:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233621AbhJGU7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:59:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35666 "EHLO mail.kernel.org"
+        id S232561AbhJGVCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 17:02:05 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55284 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233984AbhJGU7k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 16:59:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 97F7761260;
-        Thu,  7 Oct 2021 20:57:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633640266;
-        bh=kq9ipP3n9kqk0udZeE9so7NJ5j6P2xpJapjR4CXaRyM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=J0Spw7axv/RHJn3TJ9iuauB0lE+yVrz/uEosOKMrGLroJa5QBpe69YEncu5J4Hjf/
-         HABp+/opqR+pyS/ypSieRV10cNQRsj6ljxEv6p9oRlQFLIz4YJeJVlbAi4Tf12n1ov
-         2bqQWpIhU/W4iLsolyyVbwTkB9e8GOheOnhIaEzwUiUgtE8pnyDXqhQVqGSgbFLJDf
-         p9e0PtP7F/J/2Y0AJ3rwS4b0ZVQSZwjnraNlHu91r/bntZrW5B8AXP1SudVyj0iODf
-         wkPWZrlUBDd8erp1NtQXxFb6/fQhaIVmaJKvL5dKu6ZoUBL+mBiMrS1h7gGluZzJNF
-         G5WufKyQJD1Bw==
-Received: by mail-lf1-f52.google.com with SMTP id i24so28769555lfj.13;
-        Thu, 07 Oct 2021 13:57:46 -0700 (PDT)
-X-Gm-Message-State: AOAM532h+IVnwfdKq0BjdZI9g5VhA/APV/kCWHYQ0JxXoHZ88FQyZXsT
-        si4IZL9D8kj8FDz9GBfMsf01bw5G309f3OLsoL8=
-X-Google-Smtp-Source: ABdhPJyn/YCpkYPG4okYft7JLZaGkH804BXrMpZSu9j5zYfD3VL842eipRpzrovUvtSQ1FGeMQhx79Nm8k58yA1m3Vk=
-X-Received: by 2002:ac2:5582:: with SMTP id v2mr6512651lfg.143.1633640264670;
- Thu, 07 Oct 2021 13:57:44 -0700 (PDT)
+        id S231513AbhJGVCE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 17:02:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=5t9Uq9pDfGhlTNstnpRIElreH30LAAQahsG93S0mqW8=; b=PP+d+28YbI6hZeLEUq8WuW2Tmt
+        VECZkv2+recIqjG7oVmDJRTlqWC/lHSI4UBM5CfxuAaonRa4PNrwH95gy7OkLK9k606LTA40itT1S
+        itflcBJYdlUxgghG0U9v4IfSkz7sKsSJVQpsUUUQZj0ba5klsP0M8Ao0g0NeyBeffWTY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mYaUk-009zgc-Ff; Thu, 07 Oct 2021 23:00:02 +0200
+Date:   Thu, 7 Oct 2021 23:00:02 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marcel Ziswiler <marcel@ziswiler.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        soc@kernel.org
+Subject: Re: [PATCH v3 3/3] ARM: dts: mvebu: add device tree for netgear
+ gs110emx switch
+Message-ID: <YV9f0qhwn770Hf8+@lunn.ch>
+References: <20211007205659.702842-1-marcel@ziswiler.com>
+ <20211007205659.702842-4-marcel@ziswiler.com>
 MIME-Version: 1.0
-References: <20211006002853.308945-1-memxor@gmail.com> <20211006002853.308945-5-memxor@gmail.com>
- <CAPhsuW7y3ycWkXLwSmJ5TKbo7Syd65aLRABtWbZcohET0RF6rA@mail.gmail.com> <20211007204609.ygrqpx4rahfzqzly@apollo.localdomain>
-In-Reply-To: <20211007204609.ygrqpx4rahfzqzly@apollo.localdomain>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 7 Oct 2021 13:57:33 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4X3L7ZZH_RfeP5xYvoMh3STthqZEFDpcqTTjbkfsh3sw@mail.gmail.com>
-Message-ID: <CAPhsuW4X3L7ZZH_RfeP5xYvoMh3STthqZEFDpcqTTjbkfsh3sw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 4/6] bpf: selftests: Move test_ksyms_weak test
- to lskel, add libbpf test
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211007205659.702842-4-marcel@ziswiler.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 7, 2021 at 1:46 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
->
-[...]
-> > >
-> > >  /* typeless symbols, default to zero. */
-> > > @@ -38,7 +37,7 @@ int pass_handler(const void *ctx)
-> > >         /* tests existing symbols. */
-> > >         rq = (struct rq *)bpf_per_cpu_ptr(&runqueues, 0);
-> > >         if (rq)
-> > > -               out__existing_typed = rq->cpu;
-> > > +               out__existing_typed = 0;
-> >
-> > Why do we need this change?
-> >
->
-> Since they share the same BPF object for generating skeleton, it needs to remove
-> dependency on CO-RE which gen_loader does not support.
->
-> If it is kept, we get this:
-> ...
-> libbpf: // TODO core_relo: prog 0 insn[5] rq kind 0
-> libbpf: prog 'pass_handler': relo #0: failed to relocate: -95
-> libbpf: failed to perform CO-RE relocations: -95
-> libbpf: failed to load object 'test_ksyms_weak'
+On Thu, Oct 07, 2021 at 10:56:59PM +0200, Marcel Ziswiler wrote:
+> Add the device tree for a Netgear GS110EMX switch featuring 8 Gigabit
+> ports and 2 Multi-Gig ports (100M/1G/2.5G/5G/10G). An 88E6390X switch
+> sits at its core connecting to two 88X3310P 10G PHYs. The control plane
+> is handled by an 88F6811 Armada 381 SoC.
+> 
+> The following functionality is tested:
+> - 8 gigabit Ethernet ports connecting via 88E6390X to the 88F6811
+> - serial console UART
+> - 128 MB commercial grade DDR3L SDRAM
+> - 16 MB serial SPI NOR flash
+> 
+> The two 88X3310P 10G PHYs while detected during boot seem neither to
+> detect any link nor pass any traffic.
+> 
+> Signed-off-by: Marcel Ziswiler <marcel@ziswiler.com>
 
-I see. Thanks for the explanation.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Song
+    Andrew
