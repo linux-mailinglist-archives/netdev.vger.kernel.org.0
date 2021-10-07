@@ -2,165 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C62A54250CC
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 12:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7E1B4250E8
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 12:21:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235153AbhJGKPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 06:15:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40922 "EHLO mail.kernel.org"
+        id S240817AbhJGKWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 06:22:51 -0400
+Received: from mga03.intel.com ([134.134.136.65]:14341 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230060AbhJGKPi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 06:15:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A6DBD6113E;
-        Thu,  7 Oct 2021 10:13:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633601625;
-        bh=kRlcvcbFuHhJuEirwDQ5X9clFRI3p9ivKRaKD8VGIhg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VYCXUey5hK0BTCSnfeqnySTGL/DG4e1RxpN1FhtP7uDqqbCmZ6D2YUqlzSTUU7kPq
-         Rzd4EvMqUzLXrWeMgxLdaNumFyFv+yTpik7V6r7maZsu6Y64jCHGd9y2/qoNPGiiLa
-         XWxENFVy8w3ToyFnZicsvN2WFbZSEe5u3/qLLAtZt/DmfWo86y8h/0RKU3SskeGdG4
-         R2LapygCf2QDX64xjjlz8Je9CLfWrM0Vmv264NewdoDNlih+60GEnFG0sb/PVQ8qWm
-         K1NwLl8VUUNI6101Y4Dp3CFMTF71hG+LtdQoslOT30Mu9aFHl3XLAc/bSLco369xJI
-         QPmK2NC3FLszg==
-Received: by pali.im (Postfix)
-        id 8AEFD81A; Thu,  7 Oct 2021 12:13:42 +0200 (CEST)
-Date:   Thu, 7 Oct 2021 12:13:42 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-mmc@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v7 10/24] wfx: add fwio.c/fwio.h
-Message-ID: <20211007101342.fxl74ud4xra4u3cp@pali>
-References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com>
- <20210920161136.2398632-11-Jerome.Pouiller@silabs.com>
- <87sfxlj6s1.fsf@codeaurora.org>
- <2174509.SLDT7moDbM@pc-42>
- <20211001160832.ozxc7bhlwlmjeqbo@pali>
- <87pmshckrm.fsf@codeaurora.org>
+        id S240795AbhJGKWm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 06:22:42 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10129"; a="226167762"
+X-IronPort-AV: E=Sophos;i="5.85,354,1624345200"; 
+   d="scan'208";a="226167762"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2021 03:20:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,354,1624345200"; 
+   d="scan'208";a="624193707"
+Received: from kuha.fi.intel.com ([10.237.72.162])
+  by fmsmga001.fm.intel.com with SMTP; 07 Oct 2021 03:20:43 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Thu, 07 Oct 2021 13:20:43 +0300
+Date:   Thu, 7 Oct 2021 13:20:43 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, rafael@kernel.org,
+        saravanak@google.com, mw@semihalf.com, andrew@lunn.ch,
+        jeremy.linton@arm.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        robh+dt@kernel.org, frowand.list@gmail.com,
+        devicetree@vger.kernel.org, snelson@pensando.io,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH net-next v3 4/9] device property: move mac addr helpers
+ to eth.c
+Message-ID: <YV7J+1nEW5iZ7hcx@kuha.fi.intel.com>
+References: <20211007010702.3438216-1-kuba@kernel.org>
+ <20211007010702.3438216-5-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87pmshckrm.fsf@codeaurora.org>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20211007010702.3438216-5-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Rob! Could you look at issue below to represent antenna (pds)
-firmware file requirement for this driver in DTS file?
+On Wed, Oct 06, 2021 at 06:06:57PM -0700, Jakub Kicinski wrote:
+> Move the mac address helpers out, eth.c already contains
+> a bunch of similar helpers.
+> 
+> Suggested-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-On Thursday 07 October 2021 11:16:29 Kalle Valo wrote:
-> Pali Rohár <pali@kernel.org> writes:
+FWIW:
+
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+
+> ---
+> v2: new patch
+> ---
+>  drivers/base/property.c     | 63 -------------------------------------
+>  include/linux/etherdevice.h |  6 ++++
+>  include/linux/property.h    |  4 ---
+>  net/ethernet/eth.c          | 63 +++++++++++++++++++++++++++++++++++++
+>  4 files changed, 69 insertions(+), 67 deletions(-)
 > 
-> > On Friday 01 October 2021 17:09:41 Jérôme Pouiller wrote:
-> >> On Friday 1 October 2021 13:58:38 CEST Kalle Valo wrote:
-> >> > Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
-> >> > 
-> >> > > From: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> >> > >
-> >> > > Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> >> > 
-> >> > [...]
-> >> > 
-> >> > > +static int get_firmware(struct wfx_dev *wdev, u32 keyset_chip,
-> >> > > +                     const struct firmware **fw, int *file_offset)
-> >> > > +{
-> >> > > +     int keyset_file;
-> >> > > +     char filename[256];
-> >> > > +     const char *data;
-> >> > > +     int ret;
-> >> > > +
-> >> > > +     snprintf(filename, sizeof(filename), "%s_%02X.sec",
-> >> > > +              wdev->pdata.file_fw, keyset_chip);
-> >> > > +     ret = firmware_request_nowarn(fw, filename, wdev->dev);
-> >> > > +     if (ret) {
-> >> > > +             dev_info(wdev->dev, "can't load %s, falling back to %s.sec\n",
-> >> > > +                      filename, wdev->pdata.file_fw);
-> >> > > +             snprintf(filename, sizeof(filename), "%s.sec",
-> >> > > +                      wdev->pdata.file_fw);
-> >> > > +             ret = request_firmware(fw, filename, wdev->dev);
-> >> > > +             if (ret) {
-> >> > > +                     dev_err(wdev->dev, "can't load %s\n", filename);
-> >> > > +                     *fw = NULL;
-> >> > > +                     return ret;
-> >> > > +             }
-> >> > > +     }
-> >> > 
-> >> > How is this firmware file loading supposed to work? If I'm reading the
-> >> > code right, the driver tries to load file "wfm_wf200_??.sec" but in
-> >> > linux-firmware the file is silabs/wfm_wf200_C0.sec:
-> >> > 
-> >> > https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/silabs
-> >> > 
-> >> > That can't work automatically, unless I'm missing something of course.
-> >> 
-> >> The firmware are signed. "C0" is the key used to sign this firmware. This
-> >> key must match with the key burned into the chip. Fortunately, the driver
-> >> is able to read the key accepted by the chip and automatically choose the
-> >> right firmware.
-> >> 
-> >> We could imagine to add a attribute in the DT to choose the firmware to
-> >> load. However, it would be a pity to have to specify it manually whereas
-> >> the driver is able to detect it automatically.
-> >> 
-> >> Currently, the only possible key is C0. However, it exists some internal
-> >> parts with other keys. In addition, it is theoretically possible to ask
-> >> to Silabs to burn parts with a specific key in order to improve security
-> >> of a product. 
-> >> 
-> >> Obviously, for now, this feature mainly exists for the Silabs firmware
-> >> developers who have to work with other keys.
-> >>  
-> >> > Also I would prefer to use directory name as the driver name wfx, but I
-> >> > guess silabs is also doable.
-> >> 
-> >> I have no opinion.
-> >> 
-> >> 
-> >> > Also I'm not seeing the PDS files in linux-firmware. The idea is that
-> >> > when user installs an upstream kernel and the linux-firmware everything
-> >> > will work automatically, without any manual file installations.
-> >> 
-> >> WF200 is just a chip. Someone has to design an antenna before to be able
-> >> to use.
-> >> 
-> >> However, we have evaluation boards that have antennas and corresponding
-> >> PDS files[1]. Maybe linux-firmware should include the PDS for these boards
-> >
-> > So chip vendor provides firmware and card vendor provides PDS files. In
-> > my opinion all files should go into linux-firmware repository. If Silabs
-> > has PDS files for its devel boards (which are basically cards) then I
-> > think these files should go also into linux-firmware repository.
-> 
-> I agree, all files required for normal functionality should be in
-> linux-firmware. The upstream philosophy is that a user can just install
-> the latest kernel and latest linux-firmware, and everything should work
-> out of box (without any manual work).
-> 
-> > And based on some parameter, driver should load correct PDS file. Seems
-> > like DT can be a place where to put something which indicates which PDS
-> > file should be used.
-> 
-> Again I agree.
-> 
-> > But should be in DT directly name of PDS file? Or should be in DT just
-> > additional compatible string with card vendor name and then in driver
-> > itself should be mapping table from compatible string to filename? I do
-> > not know what is better.
-> 
-> This is also what I was wondering, to me it sounds wrong to have a
-> filename in DT. I was more thinking about calling it "antenna name" (and
-> not the actually filename), but using compatible strings sounds good to
-> me as well. But of course DT maintainers know this better.
-> 
+> diff --git a/drivers/base/property.c b/drivers/base/property.c
+> index 453918eb7390..f1f35b48ab8b 100644
+> --- a/drivers/base/property.c
+> +++ b/drivers/base/property.c
+> @@ -15,7 +15,6 @@
+>  #include <linux/of_graph.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/property.h>
+> -#include <linux/etherdevice.h>
+>  #include <linux/phy.h>
+>  
+>  struct fwnode_handle *dev_fwnode(struct device *dev)
+> @@ -935,68 +934,6 @@ int device_get_phy_mode(struct device *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(device_get_phy_mode);
+>  
+> -static void *fwnode_get_mac_addr(struct fwnode_handle *fwnode,
+> -				 const char *name, char *addr,
+> -				 int alen)
+> -{
+> -	int ret = fwnode_property_read_u8_array(fwnode, name, addr, alen);
+> -
+> -	if (ret == 0 && alen == ETH_ALEN && is_valid_ether_addr(addr))
+> -		return addr;
+> -	return NULL;
+> -}
+> -
+> -/**
+> - * fwnode_get_mac_address - Get the MAC from the firmware node
+> - * @fwnode:	Pointer to the firmware node
+> - * @addr:	Address of buffer to store the MAC in
+> - * @alen:	Length of the buffer pointed to by addr, should be ETH_ALEN
+> - *
+> - * Search the firmware node for the best MAC address to use.  'mac-address' is
+> - * checked first, because that is supposed to contain to "most recent" MAC
+> - * address. If that isn't set, then 'local-mac-address' is checked next,
+> - * because that is the default address.  If that isn't set, then the obsolete
+> - * 'address' is checked, just in case we're using an old device tree.
+> - *
+> - * Note that the 'address' property is supposed to contain a virtual address of
+> - * the register set, but some DTS files have redefined that property to be the
+> - * MAC address.
+> - *
+> - * All-zero MAC addresses are rejected, because those could be properties that
+> - * exist in the firmware tables, but were not updated by the firmware.  For
+> - * example, the DTS could define 'mac-address' and 'local-mac-address', with
+> - * zero MAC addresses.  Some older U-Boots only initialized 'local-mac-address'.
+> - * In this case, the real MAC is in 'local-mac-address', and 'mac-address'
+> - * exists but is all zeros.
+> -*/
+> -void *fwnode_get_mac_address(struct fwnode_handle *fwnode, char *addr, int alen)
+> -{
+> -	char *res;
+> -
+> -	res = fwnode_get_mac_addr(fwnode, "mac-address", addr, alen);
+> -	if (res)
+> -		return res;
+> -
+> -	res = fwnode_get_mac_addr(fwnode, "local-mac-address", addr, alen);
+> -	if (res)
+> -		return res;
+> -
+> -	return fwnode_get_mac_addr(fwnode, "address", addr, alen);
+> -}
+> -EXPORT_SYMBOL(fwnode_get_mac_address);
+> -
+> -/**
+> - * device_get_mac_address - Get the MAC for a given device
+> - * @dev:	Pointer to the device
+> - * @addr:	Address of buffer to store the MAC in
+> - * @alen:	Length of the buffer pointed to by addr, should be ETH_ALEN
+> - */
+> -void *device_get_mac_address(struct device *dev, char *addr, int alen)
+> -{
+> -	return fwnode_get_mac_address(dev_fwnode(dev), addr, alen);
+> -}
+> -EXPORT_SYMBOL(device_get_mac_address);
+> -
+>  /**
+>   * fwnode_irq_get - Get IRQ directly from a fwnode
+>   * @fwnode:	Pointer to the firmware node
+> diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
+> index c8442d954d19..b3b6591d84c6 100644
+> --- a/include/linux/etherdevice.h
+> +++ b/include/linux/etherdevice.h
+> @@ -26,9 +26,15 @@
+>  
+>  #ifdef __KERNEL__
+>  struct device;
+> +struct fwnode_handle;
+> +
+>  int eth_platform_get_mac_address(struct device *dev, u8 *mac_addr);
+>  unsigned char *arch_get_platform_mac_address(void);
+>  int nvmem_get_mac_address(struct device *dev, void *addrbuf);
+> +void *device_get_mac_address(struct device *dev, char *addr, int alen);
+> +void *fwnode_get_mac_address(struct fwnode_handle *fwnode,
+> +			     char *addr, int alen);
+> +
+>  u32 eth_get_headlen(const struct net_device *dev, const void *data, u32 len);
+>  __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev);
+>  extern const struct header_ops eth_header_ops;
+> diff --git a/include/linux/property.h b/include/linux/property.h
+> index 357513a977e5..4fb081684255 100644
+> --- a/include/linux/property.h
+> +++ b/include/linux/property.h
+> @@ -389,11 +389,7 @@ const void *device_get_match_data(struct device *dev);
+>  
+>  int device_get_phy_mode(struct device *dev);
+>  
+> -void *device_get_mac_address(struct device *dev, char *addr, int alen);
+> -
+>  int fwnode_get_phy_mode(struct fwnode_handle *fwnode);
+> -void *fwnode_get_mac_address(struct fwnode_handle *fwnode,
+> -			     char *addr, int alen);
+>  struct fwnode_handle *fwnode_graph_get_next_endpoint(
+>  	const struct fwnode_handle *fwnode, struct fwnode_handle *prev);
+>  struct fwnode_handle *
+> diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+> index b57530c231a6..9ea45aae04ee 100644
+> --- a/net/ethernet/eth.c
+> +++ b/net/ethernet/eth.c
+> @@ -51,6 +51,7 @@
+>  #include <linux/if_ether.h>
+>  #include <linux/of_net.h>
+>  #include <linux/pci.h>
+> +#include <linux/property.h>
+>  #include <net/dst.h>
+>  #include <net/arp.h>
+>  #include <net/sock.h>
+> @@ -558,3 +559,65 @@ int nvmem_get_mac_address(struct device *dev, void *addrbuf)
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL(nvmem_get_mac_address);
+> +
+> +static void *fwnode_get_mac_addr(struct fwnode_handle *fwnode,
+> +				 const char *name, char *addr,
+> +				 int alen)
+> +{
+> +	int ret = fwnode_property_read_u8_array(fwnode, name, addr, alen);
+> +
+> +	if (ret == 0 && alen == ETH_ALEN && is_valid_ether_addr(addr))
+> +		return addr;
+> +	return NULL;
+> +}
+> +
+> +/**
+> + * fwnode_get_mac_address - Get the MAC from the firmware node
+> + * @fwnode:	Pointer to the firmware node
+> + * @addr:	Address of buffer to store the MAC in
+> + * @alen:	Length of the buffer pointed to by addr, should be ETH_ALEN
+> + *
+> + * Search the firmware node for the best MAC address to use.  'mac-address' is
+> + * checked first, because that is supposed to contain to "most recent" MAC
+> + * address. If that isn't set, then 'local-mac-address' is checked next,
+> + * because that is the default address.  If that isn't set, then the obsolete
+> + * 'address' is checked, just in case we're using an old device tree.
+> + *
+> + * Note that the 'address' property is supposed to contain a virtual address of
+> + * the register set, but some DTS files have redefined that property to be the
+> + * MAC address.
+> + *
+> + * All-zero MAC addresses are rejected, because those could be properties that
+> + * exist in the firmware tables, but were not updated by the firmware.  For
+> + * example, the DTS could define 'mac-address' and 'local-mac-address', with
+> + * zero MAC addresses.  Some older U-Boots only initialized 'local-mac-address'.
+> + * In this case, the real MAC is in 'local-mac-address', and 'mac-address'
+> + * exists but is all zeros.
+> + */
+> +void *fwnode_get_mac_address(struct fwnode_handle *fwnode, char *addr, int alen)
+> +{
+> +	char *res;
+> +
+> +	res = fwnode_get_mac_addr(fwnode, "mac-address", addr, alen);
+> +	if (res)
+> +		return res;
+> +
+> +	res = fwnode_get_mac_addr(fwnode, "local-mac-address", addr, alen);
+> +	if (res)
+> +		return res;
+> +
+> +	return fwnode_get_mac_addr(fwnode, "address", addr, alen);
+> +}
+> +EXPORT_SYMBOL(fwnode_get_mac_address);
+> +
+> +/**
+> + * device_get_mac_address - Get the MAC for a given device
+> + * @dev:	Pointer to the device
+> + * @addr:	Address of buffer to store the MAC in
+> + * @alen:	Length of the buffer pointed to by addr, should be ETH_ALEN
+> + */
+> +void *device_get_mac_address(struct device *dev, char *addr, int alen)
+> +{
+> +	return fwnode_get_mac_address(dev_fwnode(dev), addr, alen);
+> +}
+> +EXPORT_SYMBOL(device_get_mac_address);
 > -- 
-> https://patchwork.kernel.org/project/linux-wireless/list/
-> 
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> 2.31.1
+
+thanks,
+
+-- 
+heikki
