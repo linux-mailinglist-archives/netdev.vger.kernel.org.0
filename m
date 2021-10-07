@@ -2,88 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AED0D425E4C
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:57:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98C94425E53
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234191AbhJGU7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:59:20 -0400
-Received: from mout.perfora.net ([74.208.4.196]:43931 "EHLO mout.perfora.net"
+        id S238013AbhJGU7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 16:59:22 -0400
+Received: from mout.perfora.net ([74.208.4.194]:47211 "EHLO mout.perfora.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231366AbhJGU7Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 16:59:16 -0400
+        id S233854AbhJGU7R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 16:59:17 -0400
 Received: from toolbox.toradex.int ([66.171.181.186]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MguSE-1mCVEJ1KOu-00M8Ep;
- Thu, 07 Oct 2021 22:57:07 +0200
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MXJY3-1mJxL73oFZ-00WGag;
+ Thu, 07 Oct 2021 22:57:09 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Marcel Ziswiler <marcel@ziswiler.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Frank Rowand <frowand.list@gmail.com>,
         Gregory Clement <gregory.clement@bootlin.com>,
-        Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        soc@kernel.org
-Subject: [PATCH v3 0/3] ARM: prepare and add netgear gs110emx support
-Date:   Thu,  7 Oct 2021 22:56:56 +0200
-Message-Id: <20211007205659.702842-1-marcel@ziswiler.com>
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Subject: [PATCH v3 1/3] ARM: mvebu_v7_defconfig: enable mtd physmap
+Date:   Thu,  7 Oct 2021 22:56:57 +0200
+Message-Id: <20211007205659.702842-2-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20211007205659.702842-1-marcel@ziswiler.com>
+References: <20211007205659.702842-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:wC5wm0mPAeNe1wIF4WhaqPOVApseydOu9oOLt6jiKS+6mv8Xcjv
- vmAkDwkW68k7Vbk3gZQgHRnbOeNQL/qjK1p3roYGv9AJr67tWtB+5iKDNxx/JNCdOFOJCNw
- KNicIBXyjzbT2rIjS0rDjmOsozhKl/Gow7Bs4ZdbRUYZk6Cv7iMFYy8lh2eQMFmtDTPPY0j
- 5mkqqW5MGLZsGPLliAaxw==
+X-Provags-ID: V03:K1:7J79CBCm4Ub17mvx8y04o+pdYMQXg8VDelEeSJ91wmemrnHs9+s
+ lX9AMF9cXhHNeyjr7d/L0o5SdDvRgjs+k2pjQJzLzt7OKD1IreyuvxudY5KRrahr7nfSlGC
+ 67xvJih5tg2nfJju4GMF43Ke2gXR884/T8D83t5RdlLX9d98qgKMOeJCjhBdaDALgzqthQj
+ oxl+zfsLbDb257NwAXjbA==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Gf+53WuWJkU=:43aiSZeva3r6WLZ4yE/fIl
- uQxl/QQrKnD2glPjnEfaZcUdoK+rAWbBjtry+tzoh2aTz4JjS22QXm/ep+Ax6Z/tFw8Crj4wE
- QIPXo5rRfuJ3G4fTbzF3RBk1H1/murYFfQ0Qte3lEZAd4V2B/ihERA4lsTgzgc0Akya/AnOQc
- k4XPUtSI3SFR1Ve6CGte/qz1m6h9JjeqDCOBn9TiQ7rwTMmE79MuoQA+7uUqVebM1DvypRo8V
- GsmXe1TSb13W7feDTE3OPjI5rqMz65peGXSlQqFZFA5Ue53lUJjqhuPpKIxw6WFWwprCRVAg1
- HQJuMfDWgPs2xsPetPXVucPSIFRdO6hTc8UuI9bcFg2t6L8T+hYPaA2O9zJ5DAbemQt7NrtyN
- bErCKTgbwiOWlx2363OPXysK9yhNyVnbwy0XjgitLKcUbSKx0NMuMhCG0PURE1UqE6oPHNMia
- uW9bDxdVHnPUYnKDiqTsUrrCBVUMBIFuQWVV95Z0B07hqc/X0FrRfyLPqnmpPIuo+SGoxlVp8
- B1h51hx2qnV66GgkcDHHPoGNIfGpAoFvTE7cSXVC4zZouWsoPBgX5h303Pa8TN4snGu1se6j6
- M5MMx5WyvxqlZHuNwKYF3ampb57RDFR9WdTQlXQ6hQumoOum4gowTqJ+gdl+tPQTKAibbAXs5
- 6ZAa0WvyetXnjrvka8+P8UJtnFppm0uw8ea7awzDcDiTSZjum3KUi73yB9jskZrN1nhxqAvMf
- T1zLUo/sT0+/bB0C8caBl+ZKoUrw9beotwrq3A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:7EHC90Wim3g=:eJqeEI8y6qzbTWsD1g/Ju/
+ ifD9tj5LvDDNGldy3K7E/sZbA3Ie9vVO3VZU0ADxLjkvSauRP6iYR8LE/RigE565Pb7zREim8
+ PI6uob8hJ0O4qDpuNryKYFT23uJrRiyNQ9bZ59MMCo4fYTp7PfnlVcwHzb/3mP/6ZzgwYKpit
+ Xh+uwJblcU36JEkPa8aCe5DSRH1A8xybHp6Qa0A6DNinhc11JD5qn8SPyIO69B4nZEnmJZELg
+ v4Ent8Ch5QxUcbCYLzJwRu7JDKXfVFM0EDYtuvkdq+ievGBpqfRDVGUjsqmMi6iX6KtSJMrsp
+ 79zwS7NDFDrGGyFNPTBEw5u0xxVreqgcKRC/XNTaYl/rXLGv9qdXCrtUE0+4kSfv0LdvcWr8Q
+ G0G/xbokUB8IVeCTbOx737fk4DGmbuFwU118XS+2+dfQHH/hnwj/uTiUnCSGfccmb8a19qLc6
+ 41rWnvKshL1jYTYPf6JxWwZe2L4r45W4bIjEjEFMV3BFJEs7tpUH+ivnRKFIWQS1DbAsI9cU+
+ AFMO3WpcmaJEKNH7WP0Qf/UK9GrFHkLAoUy8s6yd4xh39CGE9ZyBhfuVihwOZuyb7R6+zcrRf
+ AlyEc6UofYhmnMYaOWtOoEhQmn48eUjqkBodSox2IdNG2fU+xXFgrFeqckifpmx0lz5WyRJj4
+ +s6o2ENleKpB6ddSsxOJYKl3B9E4F0+iLvttrzBezm7lvRU3im6gLbDkUNkSup8oHrKT/Ujcf
+ ZHY27MuLXF37ZnNsEda42EgzHns5U9MJF7W6Ww==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Enable CONFIG_MTD_PHYSMAP which is nowadays required for
+CONFIG_MTD_PHYSMAP_OF.
 
-Cleanup mvebu_v7_defconfig and then add support for the Netgear
-GS110EMX which is an 8 port Gigabit switch with two additional
-Multi-Gig ports. An 88E6390X switch sits at its core connecting to two
-88X3310P 10G PHYs while the control plane is handled by an 88F6811
-Armada 381 SoC.
+Signed-off-by: Marcel Ziswiler <marcel@ziswiler.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Changes in v3:
-- Got rid of unused 3.3 volt regulator as suggested by Andrew.
-- Got rid of partitioning comment.
-- Added switch interrupt GPIO configuration.
+---
+
+(no changes since v2)
 
 Changes in v2:
 - Add Andrew's reviewed-by tag.
-- Add Andrew's reviewed-by tag.
-- Send previous first patch separately to netdev mailing list as
-  suggested by Andrew.
-- Fix numbering of the PHY labels as suggested by Andrew.
 
-Marcel Ziswiler (3):
-  ARM: mvebu_v7_defconfig: enable mtd physmap
-  ARM: mvebu_v7_defconfig: rebuild default configuration
-  ARM: dts: mvebu: add device tree for netgear gs110emx switch
+ arch/arm/configs/mvebu_v7_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
- arch/arm/boot/dts/Makefile                    |   1 +
- .../boot/dts/armada-381-netgear-gs110emx.dts  | 295 ++++++++++++++++++
- arch/arm/configs/mvebu_v7_defconfig           |  18 +-
- 3 files changed, 304 insertions(+), 10 deletions(-)
- create mode 100644 arch/arm/boot/dts/armada-381-netgear-gs110emx.dts
-
+diff --git a/arch/arm/configs/mvebu_v7_defconfig b/arch/arm/configs/mvebu_v7_defconfig
+index cddce57fe4b9e..5e9a9474c93fb 100644
+--- a/arch/arm/configs/mvebu_v7_defconfig
++++ b/arch/arm/configs/mvebu_v7_defconfig
+@@ -49,6 +49,7 @@ CONFIG_MTD_CFI=y
+ CONFIG_MTD_CFI_INTELEXT=y
+ CONFIG_MTD_CFI_AMDSTD=y
+ CONFIG_MTD_CFI_STAA=y
++CONFIG_MTD_PHYSMAP=y
+ CONFIG_MTD_PHYSMAP_OF=y
+ CONFIG_MTD_M25P80=y
+ CONFIG_MTD_RAW_NAND=y
 -- 
 2.26.2
 
