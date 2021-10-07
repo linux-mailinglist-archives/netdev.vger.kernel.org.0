@@ -2,82 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7EC3425E3D
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:56:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AED0D425E4C
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:57:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232977AbhJGU6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232797AbhJGU57 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:57:59 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE288C061570
-        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 13:56:05 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id s64so16275541yba.11
-        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 13:56:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OAwhoQ8WnPjiR05kpnMMYY2kjXq1+16g/k5+6wSGx6g=;
-        b=JOOJ48o9O8li5/RVr1K91U3pJsEcml3OhD2uhsKlydGuE9Dnvcj6fqA5qrn0QIzp26
-         jpI04Ob9Vs3glArfc7zc+dJmCn4+0B6pHYoSOYedU9A+uPrRun2+hX4hqzSUanG0tCil
-         p23NiCVSvt4CG+HrfOny84BXBMAEDvBj/uNbB8X1mYhqlvsm5tNeumKC9xCgb/n/E+JI
-         K7yCwS0u08MD1Cxwq8wVQpZliHkOO67LkdTYW4zFcMOcQ6mMsVQo77n8jUld+El/NIkN
-         feBXz3F28ZmLz6aKFSIRqfBFKIdUSU8myLSaOIOqBdrmbm6bC1he5fuVcqXeuZWBit8B
-         qZLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OAwhoQ8WnPjiR05kpnMMYY2kjXq1+16g/k5+6wSGx6g=;
-        b=KWZnsCYn1aZZhJIxUJHRf55sXsGtrvz/Ew5VVkcnk4ZAE+ipgmrgAfQWE7iPsMa5A0
-         RT89g0tSLmQ07J0sRR0tSX1NDgoCp6xVw38lyoE5goclhyqrLHgPJTCctVecLnZloH/G
-         GWvadEz+22JrGEyPfBfi2FcE1zToNP/LP2XchkcLDPTsjABDnUHHeXL96HebxqJOj24T
-         aPQCa2hNJ9lSjlD73pe+UoDX4rCTfuC5EfUZbxAY0gyHiS1Ebe32S7GB/QIDCZpQVXPA
-         CPsjzfwvwBCnCkxTZ/PHu+mW/c/N/41XrzcOaDo6nN7yO7+aW0Ltlk81I7Id3YGflWi8
-         7Jew==
-X-Gm-Message-State: AOAM533VpqdSrdRyeEq6fmTkV7x3wSKD/lMe5F24OikwcbKgjYqLlIrk
-        SbR2HimW5Sf9DDIYgp6iFgxN/CBhtm0IFUQDXLC0d25U
-X-Google-Smtp-Source: ABdhPJzGsVJVt21objpdGhNHBHCI7Jy0qwSEx4beX4m1GCqBTDIC+pOXICVrv7MXHOlyEkD3/h0Hb/R39nshNdumIUI=
-X-Received: by 2002:a25:bb0b:: with SMTP id z11mr7234921ybg.108.1633640165017;
- Thu, 07 Oct 2021 13:56:05 -0700 (PDT)
+        id S234191AbhJGU7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 16:59:20 -0400
+Received: from mout.perfora.net ([74.208.4.196]:43931 "EHLO mout.perfora.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231366AbhJGU7Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 16:59:16 -0400
+Received: from toolbox.toradex.int ([66.171.181.186]) by mrelay.perfora.net
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MguSE-1mCVEJ1KOu-00M8Ep;
+ Thu, 07 Oct 2021 22:57:07 +0200
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Marcel Ziswiler <marcel@ziswiler.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        soc@kernel.org
+Subject: [PATCH v3 0/3] ARM: prepare and add netgear gs110emx support
+Date:   Thu,  7 Oct 2021 22:56:56 +0200
+Message-Id: <20211007205659.702842-1-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210928031938.17902-1-xiyou.wangcong@gmail.com>
- <CAHmME9rbfBHUnoifdQV6pOp8MHwowEp7ooOhV-JSJmanRzksLA@mail.gmail.com> <CAM_iQpV-JKrk8vaHDeD0pXaheN0APUxH5Lp+mGCM=_yZQ1hd4w@mail.gmail.com>
-In-Reply-To: <CAM_iQpV-JKrk8vaHDeD0pXaheN0APUxH5Lp+mGCM=_yZQ1hd4w@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 7 Oct 2021 13:55:54 -0700
-Message-ID: <CAM_iQpVNP2+7F59-6NDhXfE7qxU6APNdBu5UxcWKMaow05kytA@mail.gmail.com>
-Subject: Re: [Patch net] wireguard: preserve skb->mark on ingress side
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:wC5wm0mPAeNe1wIF4WhaqPOVApseydOu9oOLt6jiKS+6mv8Xcjv
+ vmAkDwkW68k7Vbk3gZQgHRnbOeNQL/qjK1p3roYGv9AJr67tWtB+5iKDNxx/JNCdOFOJCNw
+ KNicIBXyjzbT2rIjS0rDjmOsozhKl/Gow7Bs4ZdbRUYZk6Cv7iMFYy8lh2eQMFmtDTPPY0j
+ 5mkqqW5MGLZsGPLliAaxw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Gf+53WuWJkU=:43aiSZeva3r6WLZ4yE/fIl
+ uQxl/QQrKnD2glPjnEfaZcUdoK+rAWbBjtry+tzoh2aTz4JjS22QXm/ep+Ax6Z/tFw8Crj4wE
+ QIPXo5rRfuJ3G4fTbzF3RBk1H1/murYFfQ0Qte3lEZAd4V2B/ihERA4lsTgzgc0Akya/AnOQc
+ k4XPUtSI3SFR1Ve6CGte/qz1m6h9JjeqDCOBn9TiQ7rwTMmE79MuoQA+7uUqVebM1DvypRo8V
+ GsmXe1TSb13W7feDTE3OPjI5rqMz65peGXSlQqFZFA5Ue53lUJjqhuPpKIxw6WFWwprCRVAg1
+ HQJuMfDWgPs2xsPetPXVucPSIFRdO6hTc8UuI9bcFg2t6L8T+hYPaA2O9zJ5DAbemQt7NrtyN
+ bErCKTgbwiOWlx2363OPXysK9yhNyVnbwy0XjgitLKcUbSKx0NMuMhCG0PURE1UqE6oPHNMia
+ uW9bDxdVHnPUYnKDiqTsUrrCBVUMBIFuQWVV95Z0B07hqc/X0FrRfyLPqnmpPIuo+SGoxlVp8
+ B1h51hx2qnV66GgkcDHHPoGNIfGpAoFvTE7cSXVC4zZouWsoPBgX5h303Pa8TN4snGu1se6j6
+ M5MMx5WyvxqlZHuNwKYF3ampb57RDFR9WdTQlXQ6hQumoOum4gowTqJ+gdl+tPQTKAibbAXs5
+ 6ZAa0WvyetXnjrvka8+P8UJtnFppm0uw8ea7awzDcDiTSZjum3KUi73yB9jskZrN1nhxqAvMf
+ T1zLUo/sT0+/bB0C8caBl+ZKoUrw9beotwrq3A==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Jason
 
-On Mon, Sep 27, 2021 at 8:27 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Mon, Sep 27, 2021 at 8:22 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> >
-> > Hi Cong,
-> >
-> > I'm not so sure this makes sense, as the inner packet is in fact
-> > totally different. If you want to distinguish the ingress interface,
->
-> The contents are definitely different, but skb itself is the same.
->
-> Please also take a look at other tunnels, they all preserve this
-> in similar ways, that is, comparing net namespaces. Any reason
-> why wireguard is so different from other tunnels?
+Cleanup mvebu_v7_defconfig and then add support for the Netgear
+GS110EMX which is an 8 port Gigabit switch with two additional
+Multi-Gig ports. An 88E6390X switch sits at its core connecting to two
+88X3310P 10G PHYs while the control plane is handled by an 88F6811
+Armada 381 SoC.
 
-Any response?
+Changes in v3:
+- Got rid of unused 3.3 volt regulator as suggested by Andrew.
+- Got rid of partitioning comment.
+- Added switch interrupt GPIO configuration.
 
-Thanks.
+Changes in v2:
+- Add Andrew's reviewed-by tag.
+- Add Andrew's reviewed-by tag.
+- Send previous first patch separately to netdev mailing list as
+  suggested by Andrew.
+- Fix numbering of the PHY labels as suggested by Andrew.
+
+Marcel Ziswiler (3):
+  ARM: mvebu_v7_defconfig: enable mtd physmap
+  ARM: mvebu_v7_defconfig: rebuild default configuration
+  ARM: dts: mvebu: add device tree for netgear gs110emx switch
+
+ arch/arm/boot/dts/Makefile                    |   1 +
+ .../boot/dts/armada-381-netgear-gs110emx.dts  | 295 ++++++++++++++++++
+ arch/arm/configs/mvebu_v7_defconfig           |  18 +-
+ 3 files changed, 304 insertions(+), 10 deletions(-)
+ create mode 100644 arch/arm/boot/dts/armada-381-netgear-gs110emx.dts
+
+-- 
+2.26.2
+
