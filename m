@@ -2,49 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D97A425505
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:08:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D287C425511
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:10:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241953AbhJGOKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 10:10:03 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54318 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240542AbhJGOKD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 10:10:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=9LV4y1hYeKQDb8QZoMP1V/zgClE/dilQ5gehR54OJUY=; b=1w2l4ZVs8eO2VnlEVxK8jB6nL8
-        u1ShFk7DMnL0TWzTDn/DGuvrQXq7oX4WYqsbVrrserwomaU5O1nddSu5xYv8ijVKHP+IdPTyB96cr
-        1M/Cp7M+shQCvF32fUyfXHB+Z8U6XrFIDsvffdnXm28ZNdn8vNTYELfP5D21N4E9rhW4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mYU43-009xKU-Oa; Thu, 07 Oct 2021 16:08:03 +0200
-Date:   Thu, 7 Oct 2021 16:08:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        vladimir.oltean@nxp.com, michael@walle.cc
-Subject: Re: [PATCH net-next 1/3] ethernet: un-export nvmem_get_mac_address()
-Message-ID: <YV7/QyPuLHHZoKfT@lunn.ch>
-References: <20211007132511.3462291-1-kuba@kernel.org>
- <20211007132511.3462291-2-kuba@kernel.org>
+        id S241992AbhJGOM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 10:12:28 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:57804 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241812AbhJGOM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 10:12:28 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 197E7MJC012419;
+        Thu, 7 Oct 2021 07:10:29 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=pfpt0220;
+ bh=OxiBiwIOUqnU4gg64pI9Pm96DeK+92bZIXZXOoMjTy8=;
+ b=QiCHUzp1FGFBiJaHs+RhMax7/YjrIh4JTpHwynTIp1nS/zM/fHVFCqVzFYnQhqS87fBy
+ h0xrwZCCCovtDtY29xpK5Dibz6PvTDqBeIb9m1z6t4WWNqrGRdlhiUgR367TUuFjhzFR
+ IqgqJkrlg0Jlq8gvzMYmwIrD9aOdqDmvJHJTp79tUZYtdszAgdHgllZ2mn6UvP3b++Fk
+ lCoN+vENZADMkfcXc67BK35fdV5IPc51PxDPfUieLZ8pvQqz9SUqbOfKJ4t02lYUjTSD
+ ynjFGSP8E4kbPgAyg3KIAzzne9JB7VOYLXapZWQJYzxj/wFC7Q5tkdMuTDTvMw1x0Wxp Jg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3bhrg2ah94-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 07 Oct 2021 07:09:03 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 7 Oct
+ 2021 07:09:01 -0700
+Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
+ DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server id
+ 15.0.1497.18 via Frontend Transport; Thu, 7 Oct 2021 07:08:57 -0700
+From:   Prabhakar Kushwaha <pkushwaha@marvell.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <linux-rdma@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <martin.petersen@oracle.com>, <aelior@marvell.com>,
+        <smalin@marvell.com>, <pkushwaha@marvell.com>,
+        <prabhakar.pkin@gmail.com>, <malin1024@gmail.com>,
+        <naresh.kamboju@linaro.org>, <jhasan@marvell.com>,
+        <mrangankar@marvell.com>, Omkar Kulkarni <okulkarni@marvell.com>
+Subject: [PATCH] qed: Fix compilation for CONFIG_QED_SRIOV undefined scenario
+Date:   Thu, 7 Oct 2021 17:08:39 +0300
+Message-ID: <20211007140839.21672-1-pkushwaha@marvell.com>
+X-Mailer: git-send-email 2.16.6
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211007132511.3462291-2-kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: FEdk8M5le2vUBEDg2D7m3f23zv4u0IH3
+X-Proofpoint-ORIG-GUID: FEdk8M5le2vUBEDg2D7m3f23zv4u0IH3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-10-07_01,2021-10-07_02,2020-04-07_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 06:25:09AM -0700, Jakub Kicinski wrote:
-> nvmem_get_mac_address() is only called from of_net.c
-> we don't need the export.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This patch fixes below compliation error in case CONFIG_QED_SRIOV not
+defined.
+drivers/net/ethernet/qlogic/qed/qed_dev.c: In function
+‘qed_fw_err_handler’:
+drivers/net/ethernet/qlogic/qed/qed_dev.c:2390:3: error: implicit
+declaration of function ‘qed_sriov_vfpf_malicious’; did you mean
+‘qed_iov_vf_task’? [-Werror=implicit-function-declaration]
+   qed_sriov_vfpf_malicious(p_hwfn, &data->err_data);
+   ^~~~~~~~~~~~~~~~~~~~~~~~
+   qed_iov_vf_task
+drivers/net/ethernet/qlogic/qed/qed_dev.c: In function
+‘qed_common_eqe_event’:
+drivers/net/ethernet/qlogic/qed/qed_dev.c:2410:10: error: implicit
+declaration of function ‘qed_sriov_eqe_event’; did you mean
+‘qed_common_eqe_event’? [-Werror=implicit-function-declaration]
+   return qed_sriov_eqe_event(p_hwfn, opcode, echo, data,
+          ^~~~~~~~~~~~~~~~~~~
+          qed_common_eqe_event
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Fixes: fe40a830dcde ("qed: Update qed_hsi.h for fw 8.59.1.0")
 
-    Andrew
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Shai Malin <smalin@marvell.com>
+Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+---
+This patch is targeted for the repo
+git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
+
+ drivers/net/ethernet/qlogic/qed/qed_sriov.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.h b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
+index 1edf9c44dc67..f448e3dd6c8b 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_sriov.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
+@@ -478,6 +478,18 @@ static inline int qed_sriov_disable(struct qed_dev *cdev, bool pci_enabled)
+ static inline void qed_inform_vf_link_state(struct qed_hwfn *hwfn)
+ {
+ }
++
++static inline void qed_sriov_vfpf_malicious(struct qed_hwfn *p_hwfn,
++					    struct fw_err_data *p_data)
++{
++}
++
++static inline int qed_sriov_eqe_event(struct qed_hwfn *p_hwfn, u8 opcode,
++				      __le16 echo, union event_ring_data *data,
++				      u8  fw_return_code)
++{
++	return 0;
++}
+ #endif
+ 
+ #define qed_for_each_vf(_p_hwfn, _i)			  \
+-- 
+2.24.1
+
