@@ -2,99 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9455E424CF1
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 07:58:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 415DC424D4A
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 08:31:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240157AbhJGF77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 01:59:59 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:37766 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231661AbhJGF7x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 01:59:53 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 25CCD2056D;
-        Thu,  7 Oct 2021 07:57:55 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Qf5Dxb8xJ5-f; Thu,  7 Oct 2021 07:57:54 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 5DC3720538;
-        Thu,  7 Oct 2021 07:57:54 +0200 (CEST)
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout2.secunet.com (Postfix) with ESMTP id 57BC480004A;
-        Thu,  7 Oct 2021 07:57:54 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 7 Oct 2021 07:57:54 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Thu, 7 Oct
- 2021 07:57:53 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 8B0243183BED; Thu,  7 Oct 2021 07:57:53 +0200 (CEST)
-Date:   Thu, 7 Oct 2021 07:57:53 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     "Dmitry V. Levin" <ldv@altlinux.org>
-CC:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
-        Eugene Syromyatnikov <evgsyr@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: strace build error static assertion failed: "XFRM_MSG_MAPPING !=
- 0x26"
-Message-ID: <20211007055753.GR36125@gauss3.secunet.de>
-References: <1eb25b8f-09c0-8f5e-3227-f0f318785995@alliedtelesis.co.nz>
- <20211006214816.GA11000@altlinux.org>
- <20211006215124.GB11000@altlinux.org>
+        id S240285AbhJGGcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 02:32:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58538 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232418AbhJGGcu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 02:32:50 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57635C061746;
+        Wed,  6 Oct 2021 23:30:57 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id r2so4704565pgl.10;
+        Wed, 06 Oct 2021 23:30:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=XO3lRP3cXCeiA36lTiqks/6MdSscV2guR0tRwbpc/co=;
+        b=TZLOwgtLn0f+U1XNxuBm2KRW16/C3qqQ6jnIXuY45BbooKD95XebnJpVdinf4d7nSl
+         K1Thjte4I7kraCYbZAbuhG5IXLrK8T9G/dZzXqPwPKKKtLkA9vnDUwKwfhOFEtQW6Q7f
+         EEXAdS4U1vSHsv96aDBWcjKQfKfcuDgkh09Nx6QCLsK1y+QenakRKtKIu/lnX/ZQOpYs
+         H3Kr4XnAm0Tig0l8BLj77s0qh8YyD6NfZxoKZZjUdfhkv3OdRX3uGGdR3xiCc+giTJmJ
+         RSglLuaKpvl+QTZ3qpaNFSdQ3cD8Wk4iRQLMybmVroW6y6wt9dWxT5Api2uK/LvoP+GB
+         lzmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=XO3lRP3cXCeiA36lTiqks/6MdSscV2guR0tRwbpc/co=;
+        b=o8cexz4G+UfpD52lK7q3JzMPv9JtGt67+E98ilIUL5zwWimcf2cunil8k6McFTT4UU
+         IvbxGk9xd5emAuSO09mUAIWoQ1xl5JqmikNswqR1XOxqvw90QUKCXZLo3j47yTQ9I+8b
+         uSq0W6mV61xM+aZJUQLmQa2rWJULvpHUTa8DH3h/LoJOLHv2txa+c/1cO9Ok0rKmra8k
+         fm2b2RnHYQ1O15quUlEdLYrmF/W8TS6oLc+A45ie0cMREpBxKvOtm/gwIuXcUDgwGLpp
+         wVd0e50fBFnvhX42WP+5rr5nueD8glu7A+Eib0rWKP9YNgaV7sG9YOxXS0Srl1aDHq+f
+         3YWQ==
+X-Gm-Message-State: AOAM5339AqezSwlbVGSmzXTjxyZLc3zl1wg/+TZyiAVbfP3g3Q+diQIV
+        rmDAU8zvFLZgx7o+Te9hpwjEc5OjUvDyDvxPJA==
+X-Google-Smtp-Source: ABdhPJwzjU7Qu19WUal3/nl1ajSXJc0XwY+mwUT5eBKbS2enAVCCGSEUgs1wyTLEnZ93Fno9LPq7lFgBS4euZ3vpsWk=
+X-Received: by 2002:a63:2c02:: with SMTP id s2mr1992750pgs.205.1633588256780;
+ Wed, 06 Oct 2021 23:30:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211006215124.GB11000@altlinux.org>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+From:   Hao Sun <sunhao.th@gmail.com>
+Date:   Thu, 7 Oct 2021 14:30:45 +0800
+Message-ID: <CACkBjsbBav-b7R0Lc9m1KX39hc3vNs=+zppUgwBwjPLR09LPFQ@mail.gmail.com>
+Subject: INFO: task hung in default_device_exit_batch
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        changbin.du@intel.com, christian.brauner@ubuntu.com,
+        Eric Dumazet <edumazet@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        yajun.deng@linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 12:51:24AM +0300, Dmitry V. Levin wrote:
-> On Thu, Oct 07, 2021 at 12:48:16AM +0300, Dmitry V. Levin wrote:
-> > On Wed, Oct 06, 2021 at 09:43:11PM +0000, Chris Packham wrote:
-> > > Hi,
-> > > 
-> > > When compiling strace-5.14 (although it looks like the same problem 
-> > > would exist with bleeding edge strace) with headers from the tip of 
-> > > Linus's tree (5.15.0-rc4) I get the following error
-> > > 
-> > > strace: In file included from static_assert.h:11,
-> > > strace:                  from print_fields.h:12,
-> > > strace:                  from defs.h:1901,
-> > > strace:                  from netlink.c:10:
-> > > strace: xlat/nl_xfrm_types.h:162:1: error: static assertion failed: 
-> > > "XFRM_MSG_MAPPING != 0x26"
-> > > strace:  static_assert((XFRM_MSG_MAPPING) == (0x26), "XFRM_MSG_MAPPING 
-> > > != 0x26");
-> > > strace:  ^~~~~~~~~~~~~
-> > > 
-> > > It looks like commit 2d151d39073a ("xfrm: Add possibility to set the 
-> > > default to block if we have no policy") added some XFRM messages and the 
-> > > numbers shifted. Is this considered an ABI breakage?
-> > > 
-> > > I'm not sure if this is a strace problem or a linux problem so I'm 
-> > > reporting it in both places.
-> > 
-> > Yes, this is already covered by 
-> > https://lore.kernel.org/lkml/20210912122234.GA22469@asgard.redhat.com/T/#u
-> > 
-> > Thanks,
-> 
-> I wonder, why the fix hasn't been merged yet, though.
+Hello,
 
-That was due to a delay on my side. I've just sent a pull request
-with the fix included.
+When using Healer to fuzz the latest Linux kernel, the following crash
+was triggered.
+
+HEAD commit: 60a9483534ed Merge tag 'warning-fixes-20211005'
+git tree: upstream
+console output:
+https://drive.google.com/file/d/1O9MGWT8Uz9KMQOs-sDxUh60WcV-aXBwc/view?usp=sharing
+kernel config: https://drive.google.com/file/d/1u-ncYGLkq3xqdlNQYJz8-G6Fhf3H-moP/view?usp=sharing
+
+Sorry, I don't have a reproducer for this crash, hope the symbolized
+report can help.
+If you fix this issue, please add the following tag to the commit:
+Reported-by: Hao Sun <sunhao.th@gmail.com>
+
+INFO: task kworker/u8:0:8 blocked for more than 143 seconds.
+      Not tainted 5.15.0-rc4+ #22
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:kworker/u8:0    state:D stack:12328 pid:    8 ppid:     2 flags:0x00004000
+Workqueue: netns cleanup_net
+Call Trace:
+ context_switch kernel/sched/core.c:4940 [inline]
+ __schedule+0x323/0xae0 kernel/sched/core.c:6287
+ schedule+0x36/0xe0 kernel/sched/core.c:6366
+ schedule_timeout+0x189/0x430 kernel/time/timer.c:1857
+ wait_woken+0x38/0x80 kernel/sched/wait.c:453
+ rtnl_lock_unregistering net/core/dev.c:11537 [inline]
+ default_device_exit_batch+0xd3/0x1c0 net/core/dev.c:11564
+ ops_exit_list.isra.8+0x73/0x80 net/core/net_namespace.c:171
+ cleanup_net+0x2e6/0x4e0 net/core/net_namespace.c:591
+ process_one_work+0x359/0x850 kernel/workqueue.c:2297
+ worker_thread+0x41/0x4d0 kernel/workqueue.c:2444
+ kthread+0x178/0x1b0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+INFO: lockdep is turned off.
+NMI backtrace for cpu 1
+CPU: 1 PID: 39 Comm: khungtaskd Not tainted 5.15.0-rc4+ #22
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x8d/0xcf lib/dump_stack.c:106
+ nmi_cpu_backtrace+0x1e9/0x210 lib/nmi_backtrace.c:105
+ nmi_trigger_cpumask_backtrace+0x120/0x180 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:210 [inline]
+ watchdog+0x4e1/0x980 kernel/hung_task.c:295
+ kthread+0x178/0x1b0 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+Sending NMI from CPU 1 to CPUs 0,2-3:
+NMI backtrace for cpu 2 skipped: idling at native_safe_halt
+arch/x86/include/asm/irqflags.h:51 [inline]
+NMI backtrace for cpu 2 skipped: idling at arch_safe_halt
+arch/x86/include/asm/irqflags.h:89 [inline]
+NMI backtrace for cpu 2 skipped: idling at default_idle+0xb/0x10
+arch/x86/kernel/process.c:716
+NMI backtrace for cpu 0
+CPU: 0 PID: 3018 Comm: systemd-journal Not tainted 5.15.0-rc4+ #22
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+RIP: 0033:0x7f614e2500e0
+Code: 8b 83 c8 00 00 00 48 8b 48 70 48 c1 e9 04 48 85 c9 0f 84 f2 01
+00 00 31 d2 48 89 e8 48 f7 f1 48 c1 e2 04 48 03 93 d0 00 00 00 <4c> 8b
+3a 4d 85 ff 74 8a 48 8d 44 24 50 4c 8d 64 24 48 48 89 44 24
+RSP: 002b:00007ffe89863740 EFLAGS: 00010202
+RAX: 0001392b77a9677a RBX: 00005594ff7b3e80 RCX: 000000000000aa9c
+RDX: 00007f614b767320 RSI: 0000000000000000 RDI: 00005594ff7b3e80
+RBP: d0b5b3f369f2992c R08: 00007ffe89863818 R09: 00007ffe89863820
+R10: 00007f614e27aee8 R11: 00007f614d8aa060 R12: 00005594ff7b3e80
+R13: 0000000000000032 R14: 00005594ff7bde00 R15: 00007ffe89863820
+FS:  00007f614e55f8c0 GS:  0000000000000000
+NMI backtrace for cpu 3 skipped: idling at native_safe_halt
+arch/x86/include/asm/irqflags.h:51 [inline]
+NMI backtrace for cpu 3 skipped: idling at arch_safe_halt
+arch/x86/include/asm/irqflags.h:89 [inline]
+NMI backtrace for cpu 3 skipped: idling at default_idle+0xb/0x10
+arch/x86/kernel/process.c:716
