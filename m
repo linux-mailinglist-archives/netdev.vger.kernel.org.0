@@ -2,115 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27546425A8A
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 20:19:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE7D6425AB0
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 20:25:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243569AbhJGSVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 14:21:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51534 "EHLO mail.kernel.org"
+        id S243655AbhJGS1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 14:27:24 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54846 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243558AbhJGSUu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 14:20:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F2D661350;
-        Thu,  7 Oct 2021 18:18:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633630736;
-        bh=Cz0683miZ9sVUu3xP5Yk83dJr3qVPGduYgd9V3ENaio=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bDtbeelR6U70bBtf7V4mb8QH2uhTqH/YtzT1/7KcL1FB0E8BvjGndnX3AAQ8t/gOx
-         8i9jF+u1lwb87HuTgkjxVIF2bZGFvcbOsIMO3J6+9JgA+67GGEtdGx4iMrAr3ghX0A
-         fxv7qcCS+O10RDip1Y/uE3N9H36B+G782Dr/AR5El1D3u9P4ckzUvIr3DnBR2BtxqS
-         oFxd2tbvzKEdYNLcCmxC0FMULH00pOQBlpw4NrBqWLO2q0kJe+h8xhJAa9Ke7tWdO2
-         KcyrhxkTVhYvD+Iz3EBYtL1ppDekab3CUuH7dyDho8e3WGzcEFXVMEYH2Eakxq/KCN
-         +Jk4jl0S8d3+Q==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, vladimir.oltean@nxp.com, michael@walle.cc,
-        andrew@lunn.ch, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 3/3] ethernet: use platform_get_ethdev_address()
-Date:   Thu,  7 Oct 2021 11:18:47 -0700
-Message-Id: <20211007181847.3529859-4-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211007181847.3529859-1-kuba@kernel.org>
-References: <20211007181847.3529859-1-kuba@kernel.org>
+        id S243553AbhJGS1V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 14:27:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=hnexheY+ykPO7EobnebT7tAMqi9ur1xwEWFIksKe5a8=; b=CaIzEbSvc3dLyhep5C9Z/3WKu1
+        D18LjNJ2KU0u/oaME10z6qgQpv1VSB4zxD3RjzliCQQX+ogAQVW5aCzC6Mib13MAiSiiTlT788f8I
+        nbTtgsx266R1bWm4GTA0KE33JkL1MmRbW86NLBmTpgsIwFirlkKu9VxHVTfOj3UEwa4o=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mYY54-009ys9-DE; Thu, 07 Oct 2021 20:25:22 +0200
+Date:   Thu, 7 Oct 2021 20:25:22 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH 12/13] drivers: net: dsa: qca8k: add support for
+ pws config reg
+Message-ID: <YV87kuT2lJ6kV4mb@lunn.ch>
+References: <20211006223603.18858-1-ansuelsmth@gmail.com>
+ <20211006223603.18858-13-ansuelsmth@gmail.com>
+ <YV5CJvb2k1/61IU2@lunn.ch>
+ <YV759SSdKu0w83UB@Ansuel-xps.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YV759SSdKu0w83UB@Ansuel-xps.localdomain>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new platform_get_ethdev_address() helper for the cases
-where dev->dev_addr is passed in directly as the destination.
+> Anyway the difference is that they made 2 different package version of
+> the qca8327. One with 176 pin and one with 148 pin.
 
-  @@
-  expression dev, net;
-  @@
-  - eth_platform_get_mac_address(dev, net->dev_addr)
-  + platform_get_ethdev_address(dev, net)
+I assume they have different product numbers. So you can quote them in
+the DT binding? Are they BGP or QFP? Can somebody easily count the
+pins?
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/ethernet/actions/owl-emac.c       | 2 +-
- drivers/net/ethernet/mediatek/mtk_star_emac.c | 2 +-
- drivers/net/usb/smsc75xx.c                    | 3 +--
- drivers/net/usb/smsc95xx.c                    | 3 +--
- 4 files changed, 4 insertions(+), 6 deletions(-)
+> > > +
+> > > +	if (of_property_read_bool(node, "qca,power-on-sel"))
+> > > +		val |= QCA8K_PWS_POWER_ON_SEL;
+> > 
+> > What happens if you unconditionally do this? Why is a DT property
+> > required?
+> > 
+> 
+> This is needed to bypass the power on strapping and use the regs config.
+> The switch can use hardware pin to set eeprom presence and leds open
+> drain. Setting this bit on bypass the hardware strapping and sets these
+> 2 thing based on the regs.
 
-diff --git a/drivers/net/ethernet/actions/owl-emac.c b/drivers/net/ethernet/actions/owl-emac.c
-index 2c25ff3623cd..dce93acd1644 100644
---- a/drivers/net/ethernet/actions/owl-emac.c
-+++ b/drivers/net/ethernet/actions/owl-emac.c
-@@ -1385,7 +1385,7 @@ static void owl_emac_get_mac_addr(struct net_device *netdev)
- 	struct device *dev = netdev->dev.parent;
- 	int ret;
- 
--	ret = eth_platform_get_mac_address(dev, netdev->dev_addr);
-+	ret = platform_get_ethdev_address(dev, netdev);
- 	if (!ret && is_valid_ether_addr(netdev->dev_addr))
- 		return;
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-index 1d5dd2015453..e2ebfd8115a0 100644
---- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
-+++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-@@ -1544,7 +1544,7 @@ static int mtk_star_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	ret = eth_platform_get_mac_address(dev, ndev->dev_addr);
-+	ret = platform_get_ethdev_address(dev, ndev);
- 	if (ret || !is_valid_ether_addr(ndev->dev_addr))
- 		eth_hw_addr_random(ndev);
- 
-diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-index 76f7af161313..3b6987bb4fbe 100644
---- a/drivers/net/usb/smsc75xx.c
-+++ b/drivers/net/usb/smsc75xx.c
-@@ -758,8 +758,7 @@ static int smsc75xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
- static void smsc75xx_init_mac_address(struct usbnet *dev)
- {
- 	/* maybe the boot loader passed the MAC address in devicetree */
--	if (!eth_platform_get_mac_address(&dev->udev->dev,
--			dev->net->dev_addr)) {
-+	if (!platform_get_ethdev_address(&dev->udev->dev, dev->net)) {
- 		if (is_valid_ether_addr(dev->net->dev_addr)) {
- 			/* device tree values are valid so use them */
- 			netif_dbg(dev, ifup, dev->net, "MAC address read from the device tree\n");
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 26b1bd8e845b..21a42a6527dc 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -756,8 +756,7 @@ static int smsc95xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
- static void smsc95xx_init_mac_address(struct usbnet *dev)
- {
- 	/* maybe the boot loader passed the MAC address in devicetree */
--	if (!eth_platform_get_mac_address(&dev->udev->dev,
--			dev->net->dev_addr)) {
-+	if (!platform_get_ethdev_address(&dev->udev->dev, dev->net)) {
- 		if (is_valid_ether_addr(dev->net->dev_addr)) {
- 			/* device tree values are valid so use them */
- 			netif_dbg(dev, ifup, dev->net, "MAC address read from the device tree\n");
--- 
-2.31.1
+So first off, it sounds like you have the DT property named wrong. It
+should be 'qca,ignore-power-on-sel'.
 
+However, why do you even need this? Generally, strapping gives you the
+defaults. Registers get loaded with a value determined by the
+strapping. But after that, you can change the value, based on
+additional information. Or are you saying the register is read only
+when strapping is used?
+
+> > > +	if (of_property_read_bool(node, "qca,led-open-drain"))
+> > > +		/* POWER_ON_SEL needs to be set when configuring led to open drain */
+> > > +		val |= QCA8K_PWS_LED_OPEN_EN_CSR | QCA8K_PWS_POWER_ON_SEL;
+
+At minimum, you need to clearly document that qca,led-open-drain
+implies 'qca,ignore-power-on-sel'. I would probably go further and
+return -EINVAL if qca,led-open-drain is set and
+'qca,ignore-power-on-sel' is not.
+
+	Andrew
