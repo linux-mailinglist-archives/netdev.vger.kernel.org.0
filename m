@@ -2,76 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC46D424B32
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 02:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C04BF424B72
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 03:07:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239827AbhJGAnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 20:43:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53320 "EHLO vps0.lunn.ch"
+        id S240142AbhJGBJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 21:09:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40524 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230322AbhJGAnH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 20:43:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=5K7qcDlq4RZ6lpfn0SCdrnPNAK/SR3daiPXhg8pdiOU=; b=cR5OIDt+AliyibIBspUJ9hRr3t
-        faWcb7fI7ksPUMtyiiqKnX4UH2AyunFctOPjC72uWJlEN8MXGM3LE3ZPsOmq0+hRPlc4kKn7g09Oh
-        4uvKRI83xw2z9fh9AkE4Rd4GHKOEoIY89g2KDBYGFqpUM7aX18W/Gp57zeY4+NP4w9UA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mYHTC-009tKz-4G; Thu, 07 Oct 2021 02:41:10 +0200
-Date:   Thu, 7 Oct 2021 02:41:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH 12/13] drivers: net: dsa: qca8k: add support for
- pws config reg
-Message-ID: <YV5CJvb2k1/61IU2@lunn.ch>
-References: <20211006223603.18858-1-ansuelsmth@gmail.com>
- <20211006223603.18858-13-ansuelsmth@gmail.com>
+        id S240107AbhJGBJE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 21:09:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6725761002;
+        Thu,  7 Oct 2021 01:07:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633568831;
+        bh=gM27mBqZ5M+/U0dirTjGNiWPRzVCu0IbSF/hNQQ6sr8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=BwZHTR9xTM52Ni+ostn8gbDRy1FeWzT4xPBpUrDgIie/Fz7p1eRZKlOP9aJSPLK3N
+         BuW33ucDqUyxKFUTW6LQM6llNIRVhaZK/Vh2a8DYfwuq1rejm55num0Q5+K3qMu/ZX
+         kj0d2vvuP808CJ4HKDtOTKYDhTQnmuu6e6sVHmU5X0WT5uhiRBgwlZQUyx3CmJAXSm
+         IWOiKhjEwRi1HJ0PimN241orR5Xk1DkytVm+B9ZsjA8yS9ovlSn5EAU7ftNSQMgKdk
+         0MzFjCOFO51WCG1GFBhH0k68lv/2ReWv3e9feL0EPsZuX1amPt1X/ckpMV262t/YSS
+         W3vEcgE/ZEwjg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, rafael@kernel.org, saravanak@google.com,
+        mw@semihalf.com, andrew@lunn.ch, jeremy.linton@arm.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, robh+dt@kernel.org,
+        frowand.list@gmail.com, heikki.krogerus@linux.intel.com,
+        devicetree@vger.kernel.org, snelson@pensando.io,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v3 0/9] net: add a helpers for loading netdev->dev_addr from FW
+Date:   Wed,  6 Oct 2021 18:06:53 -0700
+Message-Id: <20211007010702.3438216-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211006223603.18858-13-ansuelsmth@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int
-> +qca8k_setup_of_pws_reg(struct qca8k_priv *priv)
-> +{
-> +	struct device_node *node = priv->dev->of_node;
-> +	u32 val = 0;
-> +
-> +	if (priv->switch_id == QCA8K_ID_QCA8327)
-> +		if (of_property_read_bool(node, "qca,package48"))
-> +			val |= QCA8327_PWS_PACKAGE48_EN;
+We're trying to make all writes to netdev->dev_addr go via helpers.
+A lot of places pass netdev->dev_addr to of_get_ethdev_address() and
+device_get_ethdev_addr() so this set adds new functions which wrap
+the functionality.
 
-What does this actually do? How is PACKAGE48 different to normal mode?
+v2 performs suggested code moves, adds a couple additional clean ups
+on the device property side, and an extra patch converting drivers
+which can benefit from device_get_ethdev_address().
 
-> +
-> +	if (of_property_read_bool(node, "qca,power-on-sel"))
-> +		val |= QCA8K_PWS_POWER_ON_SEL;
+v3 removes OF_NET and corrects kdoc.
 
-What happens if you unconditionally do this? Why is a DT property
-required?
+Jakub Kicinski (9):
+  of: net: move of_net under net/
+  of: net: add a helper for loading netdev->dev_addr
+  ethernet: use of_get_ethdev_address()
+  device property: move mac addr helpers to eth.c
+  eth: fwnode: change the return type of mac address helpers
+  eth: fwnode: remove the addr len from mac helpers
+  eth: fwnode: add a helper for loading netdev->dev_addr
+  ethernet: use device_get_ethdev_address()
+  ethernet: make more use of device_get_ethdev_address()
 
-> +
-> +	if (of_property_read_bool(node, "qca,led-open-drain"))
-> +		/* POWER_ON_SEL needs to be set when configuring led to open drain */
-> +		val |= QCA8K_PWS_LED_OPEN_EN_CSR | QCA8K_PWS_POWER_ON_SEL;
+ drivers/base/property.c                       | 63 ---------------
+ drivers/net/ethernet/allwinner/sun4i-emac.c   |  2 +-
+ drivers/net/ethernet/altera/altera_tse_main.c |  2 +-
+ drivers/net/ethernet/amd/Kconfig              |  2 +-
+ drivers/net/ethernet/apm/xgene-v2/main.c      |  2 +-
+ .../net/ethernet/apm/xgene/xgene_enet_main.c  |  2 +-
+ drivers/net/ethernet/arc/Kconfig              |  4 +-
+ drivers/net/ethernet/arc/emac_main.c          |  2 +-
+ drivers/net/ethernet/atheros/ag71xx.c         |  2 +-
+ drivers/net/ethernet/broadcom/bcm4908_enet.c  |  2 +-
+ drivers/net/ethernet/broadcom/bcmsysport.c    |  2 +-
+ drivers/net/ethernet/broadcom/bgmac-bcma.c    |  2 +-
+ .../net/ethernet/broadcom/bgmac-platform.c    |  2 +-
+ .../net/ethernet/broadcom/genet/bcmgenet.c    |  2 +-
+ drivers/net/ethernet/cadence/macb_main.c      |  2 +-
+ .../net/ethernet/cavium/octeon/octeon_mgmt.c  |  2 +-
+ .../net/ethernet/cavium/thunder/thunder_bgx.c |  6 +-
+ drivers/net/ethernet/ethoc.c                  |  2 +-
+ drivers/net/ethernet/ezchip/Kconfig           |  2 +-
+ drivers/net/ethernet/ezchip/nps_enet.c        |  2 +-
+ drivers/net/ethernet/faraday/ftgmac100.c      |  7 +-
+ drivers/net/ethernet/freescale/fec_mpc52xx.c  |  2 +-
+ .../ethernet/freescale/fs_enet/fs_enet-main.c |  2 +-
+ drivers/net/ethernet/freescale/gianfar.c      |  2 +-
+ drivers/net/ethernet/freescale/ucc_geth.c     |  2 +-
+ drivers/net/ethernet/hisilicon/hisi_femac.c   |  2 +-
+ drivers/net/ethernet/hisilicon/hix5hd2_gmac.c |  2 +-
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c |  2 +-
+ drivers/net/ethernet/korina.c                 |  2 +-
+ drivers/net/ethernet/lantiq_xrx200.c          |  2 +-
+ drivers/net/ethernet/litex/Kconfig            |  2 +-
+ drivers/net/ethernet/litex/litex_liteeth.c    |  2 +-
+ drivers/net/ethernet/marvell/mvneta.c         |  2 +-
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  2 +-
+ drivers/net/ethernet/marvell/pxa168_eth.c     |  2 +-
+ drivers/net/ethernet/marvell/sky2.c           |  2 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  2 +-
+ drivers/net/ethernet/micrel/ks8851_common.c   |  2 +-
+ drivers/net/ethernet/microchip/enc28j60.c     |  5 +-
+ drivers/net/ethernet/mscc/Kconfig             |  2 +-
+ drivers/net/ethernet/nxp/lpc_eth.c            |  2 +-
+ drivers/net/ethernet/qualcomm/emac/emac.c     |  5 +-
+ drivers/net/ethernet/qualcomm/qca_spi.c       |  2 +-
+ drivers/net/ethernet/qualcomm/qca_uart.c      |  2 +-
+ drivers/net/ethernet/renesas/ravb_main.c      |  2 +-
+ .../ethernet/samsung/sxgbe/sxgbe_platform.c   |  2 +-
+ drivers/net/ethernet/smsc/smsc911x.c          |  2 +-
+ drivers/net/ethernet/socionext/netsec.c       |  9 +--
+ drivers/net/ethernet/socionext/sni_ave.c      |  2 +-
+ drivers/net/ethernet/ti/netcp_core.c          |  2 +-
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c |  2 +-
+ drivers/net/wireless/ath/ath10k/core.c        |  2 +-
+ drivers/of/Kconfig                            |  4 -
+ drivers/of/Makefile                           |  1 -
+ include/linux/etherdevice.h                   |  6 ++
+ include/linux/of_net.h                        |  8 +-
+ include/linux/property.h                      |  5 +-
+ net/core/Makefile                             |  1 +
+ net/core/net-sysfs.c                          |  2 +-
+ {drivers/of => net/core}/of_net.c             | 25 ++++++
+ net/ethernet/eth.c                            | 79 +++++++++++++++++++
+ 61 files changed, 176 insertions(+), 144 deletions(-)
+ rename {drivers/of => net/core}/of_net.c (85%)
 
-This is getting into territory of adding LED support for PHYs, which
-we want to do via the LED subsystem.
+-- 
+2.31.1
 
-   Andrew
