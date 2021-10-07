@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93040426038
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 01:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B66FD42603C
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 01:08:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241164AbhJGXKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 19:10:37 -0400
-Received: from mga03.intel.com ([134.134.136.65]:15520 "EHLO mga03.intel.com"
+        id S240940AbhJGXKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 19:10:43 -0400
+Received: from mga03.intel.com ([134.134.136.65]:15526 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234114AbhJGXKX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 19:10:23 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10130"; a="226340361"
+        id S234360AbhJGXKY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 19:10:24 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10130"; a="226340362"
 X-IronPort-AV: E=Sophos;i="5.85,355,1624345200"; 
-   d="scan'208";a="226340361"
+   d="scan'208";a="226340362"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2021 16:08:25 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2021 16:08:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.85,355,1624345200"; 
-   d="scan'208";a="590344345"
+   d="scan'208";a="590344352"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga004.jf.intel.com with ESMTP; 07 Oct 2021 16:08:25 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -27,9 +27,9 @@ Cc:     Grzegorz Nitka <grzegorz.nitka@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, jiri@resnulli.us, ivecera@redhat.com,
         michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
         Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [PATCH net-next 08/12] ice: introduce new type of VSI for switchdev
-Date:   Thu,  7 Oct 2021 16:06:16 -0700
-Message-Id: <20211007230620.3413290-9-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 09/12] ice: enable/disable switchdev when managing VFs
+Date:   Thu,  7 Oct 2021 16:06:17 -0700
+Message-Id: <20211007230620.3413290-10-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211007230620.3413290-1-anthony.l.nguyen@intel.com>
 References: <20211007230620.3413290-1-anthony.l.nguyen@intel.com>
@@ -41,278 +41,193 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Grzegorz Nitka <grzegorz.nitka@intel.com>
 
-New type of VSI has to be defined for switchdev control plane
-VSI. Number of allocated Tx and Rx queue has to be equal to
-amount of VFs, because each port representor should have one
-Tx and Rx queue.
+Only way to enable switchdev is to create VFs when the eswitch
+mode is set to switchdev. Check if correct mode is set and
+enable switchdev in function which creating VFs.
 
-Also to not increase number of used irqs too much, control plane
-VSI uses only one q_vector and handle all queues in one irq.
-To allow handling all queues in one irq , new function to clean
-msix for eswitch was introduced. This function will schedule napi
-for each representor instead of scheduling it only for one like in
-normal clean irq function.
+Disable switchdev when user change number of VFs to 0. Changing
+eswitch mode back to legacy when VFs are created in switchdev
+mode isn't allowed.
 
-Only one additional msix has to be requested. Always try to request
-it in ice_ena_msix_range function.
+As switchdev takes care of managing filter rules, adding new
+rules on VF is blocked.
 
+In case of resetting VF driver has to update pointer in ice_repr
+struct, because after reset VSI related things can change.
+
+Co-developed-by: Wojciech Drewek <wojciech.drewek@intel.com>
+Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 Signed-off-by: Grzegorz Nitka <grzegorz.nitka@intel.com>
 Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h         |  1 +
- drivers/net/ethernet/intel/ice/ice_base.c    | 36 ++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_eswitch.c |  2 +-
- drivers/net/ethernet/intel/ice/ice_lib.c     | 48 +++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_main.c    |  7 +++
- drivers/net/ethernet/intel/ice/ice_type.h    |  1 +
- 6 files changed, 92 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_eswitch.c  | 38 +++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_eswitch.h  |  4 ++
+ drivers/net/ethernet/intel/ice/ice_main.c     |  6 ++-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 17 +++++++++
+ 4 files changed, 63 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index c4d216140043..3399eb777d68 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -85,6 +85,7 @@
- #define ICE_FDIR_MSIX		2
- #define ICE_RDMA_NUM_AEQ_MSIX	4
- #define ICE_MIN_RDMA_MSIX	2
-+#define ICE_ESWITCH_MSIX	1
- #define ICE_NO_VSI		0xffff
- #define ICE_VSI_MAP_CONTIG	0
- #define ICE_VSI_MAP_SCATTER	1
-diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
-index c36057efc7ae..d7a5ac9346bc 100644
---- a/drivers/net/ethernet/intel/ice/ice_base.c
-+++ b/drivers/net/ethernet/intel/ice/ice_base.c
-@@ -217,6 +217,30 @@ static u16 ice_calc_q_handle(struct ice_vsi *vsi, struct ice_ring *ring, u8 tc)
- 	return ring->q_index - vsi->tc_cfg.tc_info[tc].qoffset;
+diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
+index 8d8f80f45788..e558070d9ae5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
++++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
+@@ -232,6 +232,32 @@ ice_eswitch_release_reprs(struct ice_pf *pf, struct ice_vsi *ctrl_vsi)
+ 	}
  }
  
 +/**
-+ * ice_eswitch_calc_q_handle
-+ * @ring: pointer to ring which unique index is needed
-+ *
-+ * To correctly work with many netdevs ring->q_index of Tx rings on switchdev
-+ * VSI can repeat. Hardware ring setup requires unique q_index. Calculate it
-+ * here by finding index in vsi->tx_rings of this ring.
-+ *
-+ * Return ICE_INVAL_Q_INDEX when index wasn't found. Should never happen,
-+ * because VSI is get from ring->vsi, so it has to be present in this VSI.
++ * ice_eswitch_update_repr - reconfigure VF port representor
++ * @vsi: VF VSI for which port representor is configured
 + */
-+static u16 ice_eswitch_calc_q_handle(struct ice_ring *ring)
++void ice_eswitch_update_repr(struct ice_vsi *vsi)
 +{
-+	struct ice_vsi *vsi = ring->vsi;
-+	int i;
++	struct ice_pf *pf = vsi->back;
++	struct ice_repr *repr;
++	struct ice_vf *vf;
++	int ret;
 +
-+	ice_for_each_txq(vsi, i) {
-+		if (vsi->tx_rings[i] == ring)
-+			return i;
++	if (!ice_is_switchdev_running(pf))
++		return;
++
++	vf = &pf->vf[vsi->vf_id];
++	repr = vf->repr;
++	repr->src_vsi = vsi;
++	repr->dst->u.port_info.port_id = vsi->vsi_num;
++
++	ret = ice_vsi_update_security(vsi, ice_vsi_ctx_clear_antispoof);
++	if (ret) {
++		ice_fltr_add_mac_and_broadcast(vsi, vf->hw_lan_addr.addr, ICE_FWD_TO_VSI);
++		dev_err(ice_pf_to_dev(pf), "Failed to update VF %d port representor", vsi->vf_id);
 +	}
-+
-+	return ICE_INVAL_Q_INDEX;
 +}
 +
  /**
-  * ice_cfg_xps_tx_ring - Configure XPS for a Tx ring
-  * @ring: The Tx ring to configure
-@@ -280,6 +304,9 @@ ice_setup_tx_ctx(struct ice_ring *ring, struct ice_tlan_ctx *tlan_ctx, u16 pf_q)
- 		tlan_ctx->vmvf_num = hw->func_caps.vf_base_id + vsi->vf_id;
- 		tlan_ctx->vmvf_type = ICE_TLAN_CTX_VMVF_TYPE_VF;
- 		break;
-+	case ICE_VSI_SWITCHDEV_CTRL:
-+		tlan_ctx->vmvf_type = ICE_TLAN_CTX_VMVF_TYPE_VMQ;
-+		break;
- 	default:
- 		return;
- 	}
-@@ -746,7 +773,14 @@ ice_vsi_cfg_txq(struct ice_vsi *vsi, struct ice_ring *ring,
- 	/* Add unique software queue handle of the Tx queue per
- 	 * TC into the VSI Tx ring
- 	 */
--	ring->q_handle = ice_calc_q_handle(vsi, ring, tc);
-+	if (vsi->type == ICE_VSI_SWITCHDEV_CTRL) {
-+		ring->q_handle = ice_eswitch_calc_q_handle(ring);
-+
-+		if (ring->q_handle == ICE_INVAL_Q_INDEX)
-+			return -ENODEV;
-+	} else {
-+		ring->q_handle = ice_calc_q_handle(vsi, ring, tc);
-+	}
- 
- 	status = ice_ena_vsi_txq(vsi->port_info, vsi->idx, tc, ring->q_handle,
- 				 1, qg_buf, buf_len, NULL);
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-index 242cdbbce61c..8d8f80f45788 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-@@ -261,7 +261,7 @@ static void ice_eswitch_release_env(struct ice_pf *pf)
- static struct ice_vsi *
- ice_eswitch_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi)
- {
--	return NULL;
-+	return ice_vsi_setup(pf, pi, ICE_VSI_SWITCHDEV_CTRL, ICE_INVAL_VFID);
+  * ice_eswitch_release_env - clear switchdev HW filters
+  * @pf: pointer to PF struct
+@@ -423,6 +449,18 @@ int ice_eswitch_mode_get(struct devlink *devlink, u16 *mode)
+ 	return 0;
  }
  
- /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index a689d9bec32e..93565f597266 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -24,6 +24,8 @@ const char *ice_vsi_type_str(enum ice_vsi_type vsi_type)
- 		return "ICE_VSI_CTRL";
- 	case ICE_VSI_LB:
- 		return "ICE_VSI_LB";
-+	case ICE_VSI_SWITCHDEV_CTRL:
-+		return "ICE_VSI_SWITCHDEV_CTRL";
- 	default:
- 		return "unknown";
- 	}
-@@ -132,6 +134,7 @@ static void ice_vsi_set_num_desc(struct ice_vsi *vsi)
- {
- 	switch (vsi->type) {
- 	case ICE_VSI_PF:
-+	case ICE_VSI_SWITCHDEV_CTRL:
- 	case ICE_VSI_CTRL:
- 	case ICE_VSI_LB:
- 		/* a user could change the values of num_[tr]x_desc using
-@@ -200,6 +203,14 @@ static void ice_vsi_set_num_qs(struct ice_vsi *vsi, u16 vf_id)
- 					   max_t(int, vsi->alloc_rxq,
- 						 vsi->alloc_txq));
- 		break;
-+	case ICE_VSI_SWITCHDEV_CTRL:
-+		/* The number of queues for ctrl VSI is equal to number of VFs.
-+		 * Each ring is associated to the corresponding VF_PR netdev.
-+		 */
-+		vsi->alloc_txq = pf->num_alloc_vfs;
-+		vsi->alloc_rxq = pf->num_alloc_vfs;
-+		vsi->num_q_vectors = 1;
-+		break;
- 	case ICE_VSI_VF:
- 		vf = &pf->vf[vsi->vf_id];
- 		if (vf->num_req_qs)
-@@ -408,6 +419,21 @@ static irqreturn_t ice_msix_clean_rings(int __always_unused irq, void *data)
- 	return IRQ_HANDLED;
- }
- 
-+static irqreturn_t ice_eswitch_msix_clean_rings(int __always_unused irq, void *data)
++/**
++ * ice_is_eswitch_mode_switchdev - check if eswitch mode is set to switchdev
++ * @pf: pointer to PF structure
++ *
++ * Returns true if eswitch mode is set to DEVLINK_ESWITCH_MODE_SWITCHDEV,
++ * false otherwise.
++ */
++bool ice_is_eswitch_mode_switchdev(struct ice_pf *pf)
 +{
-+	struct ice_q_vector *q_vector = (struct ice_q_vector *)data;
-+	struct ice_pf *pf = q_vector->vsi->back;
-+	int i;
-+
-+	if (!q_vector->tx.ring && !q_vector->rx.ring)
-+		return IRQ_HANDLED;
-+
-+	ice_for_each_vf(pf, i)
-+		napi_schedule(&pf->vf[i].repr->q_vector->napi);
-+
-+	return IRQ_HANDLED;
++	return pf->eswitch_mode == DEVLINK_ESWITCH_MODE_SWITCHDEV;
 +}
 +
  /**
-  * ice_vsi_alloc - Allocates the next available struct VSI in the PF
-  * @pf: board private structure
-@@ -448,6 +474,13 @@ ice_vsi_alloc(struct ice_pf *pf, enum ice_vsi_type vsi_type, u16 vf_id)
- 		ice_vsi_set_num_qs(vsi, ICE_INVAL_VFID);
- 
- 	switch (vsi->type) {
-+	case ICE_VSI_SWITCHDEV_CTRL:
-+		if (ice_vsi_alloc_arrays(vsi))
-+			goto err_rings;
+  * ice_eswitch_release - cleanup eswitch
+  * @pf: pointer to PF structure
+diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.h b/drivers/net/ethernet/intel/ice/ice_eswitch.h
+index 2bf10f5b7025..7cf81708dd82 100644
+--- a/drivers/net/ethernet/intel/ice/ice_eswitch.h
++++ b/drivers/net/ethernet/intel/ice/ice_eswitch.h
+@@ -15,9 +15,13 @@ int
+ ice_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 		     struct netlink_ext_ack *extack);
+ bool ice_is_eswitch_mode_switchdev(struct ice_pf *pf);
 +
-+		/* Setup eswitch MSIX irq handler for VSI */
-+		vsi->irq_handler = ice_eswitch_msix_clean_rings;
-+		break;
- 	case ICE_VSI_PF:
- 		if (ice_vsi_alloc_arrays(vsi))
- 			goto err_rings;
-@@ -707,6 +740,12 @@ static void ice_vsi_set_rss_params(struct ice_vsi *vsi)
- 				      BIT(cap->rss_table_entry_width));
- 		vsi->rss_lut_type = ICE_AQC_GSET_RSS_LUT_TABLE_TYPE_PF;
- 		break;
-+	case ICE_VSI_SWITCHDEV_CTRL:
-+		vsi->rss_table_size = ICE_VSIQF_HLUT_ARRAY_SIZE;
-+		vsi->rss_size = min_t(u16, num_online_cpus(),
-+				      BIT(cap->rss_table_entry_width));
-+		vsi->rss_lut_type = ICE_AQC_GSET_RSS_LUT_TABLE_TYPE_VSI;
-+		break;
- 	case ICE_VSI_VF:
- 		/* VF VSI will get a small RSS table.
- 		 * For VSI_LUT, LUT size should be set to 64 bytes.
-@@ -980,6 +1019,9 @@ static int ice_vsi_init(struct ice_vsi *vsi, bool init_vsi)
- 	case ICE_VSI_PF:
- 		ctxt->flags = ICE_AQ_VSI_TYPE_PF;
- 		break;
-+	case ICE_VSI_SWITCHDEV_CTRL:
-+		ctxt->flags = ICE_AQ_VSI_TYPE_VMDQ2;
-+		break;
- 	case ICE_VSI_VF:
- 		ctxt->flags = ICE_AQ_VSI_TYPE_VF;
- 		/* VF number here is the absolute VF number (0-255) */
-@@ -2297,6 +2339,7 @@ static void ice_set_agg_vsi(struct ice_vsi *vsi)
- 	case ICE_VSI_CTRL:
- 	case ICE_VSI_LB:
- 	case ICE_VSI_PF:
-+	case ICE_VSI_SWITCHDEV_CTRL:
- 		max_agg_nodes = ICE_MAX_PF_AGG_NODES;
- 		agg_node_id_start = ICE_PF_AGG_NODE_ID_START;
- 		agg_node_iter = &pf->pf_agg_node[0];
-@@ -2448,6 +2491,7 @@ ice_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi,
++void ice_eswitch_update_repr(struct ice_vsi *vsi);
+ #else /* CONFIG_ICE_SWITCHDEV */
+ static inline void ice_eswitch_release(struct ice_pf *pf) { }
  
- 	switch (vsi->type) {
- 	case ICE_VSI_CTRL:
-+	case ICE_VSI_SWITCHDEV_CTRL:
- 	case ICE_VSI_PF:
- 		ret = ice_vsi_alloc_q_vectors(vsi);
- 		if (ret)
-@@ -2757,7 +2801,8 @@ void ice_dis_vsi(struct ice_vsi *vsi, bool locked)
- 		} else {
- 			ice_vsi_close(vsi);
- 		}
--	} else if (vsi->type == ICE_VSI_CTRL) {
-+	} else if (vsi->type == ICE_VSI_CTRL ||
-+		   vsi->type == ICE_VSI_SWITCHDEV_CTRL) {
- 		ice_vsi_close(vsi);
- 	}
- }
-@@ -3136,6 +3181,7 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, bool init_vsi)
- 
- 	switch (vtype) {
- 	case ICE_VSI_CTRL:
-+	case ICE_VSI_SWITCHDEV_CTRL:
- 	case ICE_VSI_PF:
- 		ret = ice_vsi_alloc_q_vectors(vsi);
- 		if (ret)
++static inline void ice_eswitch_update_repr(struct ice_vsi *vsi) { }
++
+ static inline int ice_eswitch_configure(struct ice_pf *pf)
+ {
+ 	return -EOPNOTSUPP;
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 9277f87bcb02..819d4912d84e 100644
+index 819d4912d84e..4c112111e4d6 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3541,6 +3541,13 @@ static int ice_ena_msix_range(struct ice_pf *pf)
- 		v_left -= needed;
+@@ -6061,7 +6061,8 @@ int ice_vsi_setup_tx_rings(struct ice_vsi *vsi)
+ 		if (!ring)
+ 			return -EINVAL;
+ 
+-		ring->netdev = vsi->netdev;
++		if (vsi->netdev)
++			ring->netdev = vsi->netdev;
+ 		err = ice_setup_tx_ring(ring);
+ 		if (err)
+ 			break;
+@@ -6092,7 +6093,8 @@ int ice_vsi_setup_rx_rings(struct ice_vsi *vsi)
+ 		if (!ring)
+ 			return -EINVAL;
+ 
+-		ring->netdev = vsi->netdev;
++		if (vsi->netdev)
++			ring->netdev = vsi->netdev;
+ 		err = ice_setup_rx_ring(ring);
+ 		if (err)
+ 			break;
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index 0b80b5a52e8a..634ffeb23ee0 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -6,6 +6,7 @@
+ #include "ice_lib.h"
+ #include "ice_fltr.h"
+ #include "ice_flow.h"
++#include "ice_eswitch.h"
+ #include "ice_virtchnl_allowlist.h"
+ 
+ #define FIELD_SELECTOR(proto_hdr_field) \
+@@ -620,6 +621,8 @@ void ice_free_vfs(struct ice_pf *pf)
+ 	if (!pf->vf)
+ 		return;
+ 
++	ice_eswitch_release(pf);
++
+ 	while (test_and_set_bit(ICE_VF_DIS, pf->state))
+ 		usleep_range(1000, 2000);
+ 
+@@ -932,6 +935,9 @@ static int ice_vf_rebuild_host_mac_cfg(struct ice_vf *vf)
+ 	enum ice_status status;
+ 	u8 broadcast[ETH_ALEN];
+ 
++	if (ice_is_eswitch_mode_switchdev(vf->pf))
++		return 0;
++
+ 	eth_broadcast_addr(broadcast);
+ 	status = ice_fltr_add_mac(vsi, broadcast, ICE_FWD_TO_VSI);
+ 	if (status) {
+@@ -1711,6 +1717,8 @@ bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
  	}
  
-+	/* reserve for switchdev */
-+	needed = ICE_ESWITCH_MSIX;
-+	if (v_left < needed)
-+		goto no_hw_vecs_left_err;
-+	v_budget += needed;
-+	v_left -= needed;
+ 	ice_vf_post_vsi_rebuild(vf);
++	vsi = ice_get_vf_vsi(vf);
++	ice_eswitch_update_repr(vsi);
+ 
+ 	/* if the VF has been reset allow it to come up again */
+ 	if (ice_mbx_clear_malvf(&hw->mbx_snapshot, pf->malvfs, ICE_MAX_VF_COUNT, vf->vf_id))
+@@ -1962,6 +1970,10 @@ static int ice_ena_vfs(struct ice_pf *pf, u16 num_vfs)
+ 	}
+ 
+ 	clear_bit(ICE_VF_DIS, pf->state);
 +
- 	/* total used for non-traffic vectors */
- 	v_other = v_budget;
++	if (ice_eswitch_configure(pf))
++		goto err_unroll_sriov;
++
+ 	return 0;
  
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index 6705f56be020..e064439fc1a9 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -139,6 +139,7 @@ enum ice_vsi_type {
- 	ICE_VSI_VF = 1,
- 	ICE_VSI_CTRL = 3,	/* equates to ICE_VSI_PF with 1 queue pair */
- 	ICE_VSI_LB = 6,
-+	ICE_VSI_SWITCHDEV_CTRL = 7,
- };
+ err_unroll_sriov:
+@@ -4783,6 +4795,11 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
+ 	struct ice_vf *vf;
+ 	int ret;
  
- struct ice_link_status {
++	if (ice_is_eswitch_mode_switchdev(pf)) {
++		dev_info(ice_pf_to_dev(pf), "Trusted VF is forbidden in switchdev mode\n");
++		return -EOPNOTSUPP;
++	}
++
+ 	if (ice_validate_vf_id(pf, vf_id))
+ 		return -EINVAL;
+ 
 -- 
 2.31.1
 
