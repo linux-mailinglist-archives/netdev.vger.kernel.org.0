@@ -2,162 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3CB8425C71
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 21:43:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9B9F425C74
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 21:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240851AbhJGTpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 15:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46392 "EHLO
+        id S233559AbhJGTqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 15:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233552AbhJGTpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 15:45:17 -0400
-Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DD8C061755
-        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 12:43:23 -0700 (PDT)
-Received: by mail-vs1-xe2f.google.com with SMTP id p18so7925209vsu.7
-        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 12:43:23 -0700 (PDT)
+        with ESMTP id S232418AbhJGTqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 15:46:42 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50CEC061755
+        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 12:44:47 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id v25so22394022wra.2
+        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 12:44:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=p4NuL35X6Zwa74Ub7hhGNsOOhc7yEa+ucW32Y1XSIEg=;
-        b=gPkLWZQ6LSQSA4R5NImb2Zxe+A4oy9/cCIoiRoyY1fHfYMGP18cVBaVscKKZfft5Qv
-         8xRbF24RXah8LCW0O+FOmCTCI+nQSzL2dH0ZyKuya0rvsCEPdSwXhiTU8XiOzRtDkESt
-         RQYKFPzTdOhbLJRVDm0TdFxBewEJ98b8IKVjalmJwBr4uHxafY8QftGNj5snJHH/icxx
-         jupgHJxwAD6BVMKXUV5ZvROIiqT7A0NfiBnXLCmEI9z54SJkPdfgWInNkr4JGNNpwOjV
-         I0IameGY+xLsoRLmG6+SZiad50mHero3Kho/gkwmSK7mbcahMGevlo2Jb/RZ9X4Olhpw
-         OMfQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r28qX9w0iLLDpADw6g4H4gWjYU6PdqhFTlbNMC9M+qM=;
+        b=f3/Y014jipi5SfoL2Q/zhyi6V5r6cixmDZz14c+LOdgkvjmtdlKwweoaKHLhSfB6fy
+         Pxu03R5Nwi3rQoXtzHfgBc+Khp5gnUqa4SLJltMrBaeMTy8/2bcPemZvx7QuvCgs5qGz
+         CpjuoqlGGk04Fmk3d8LJrY3Gqva5eukk1uBMPghh9HaFLOnTTDAJDwAFam5r+Q8+7X6g
+         tkoxepXf6Hk8aUCYWRrHwk79H8nme971zA43VRnS7v2e4PmSn7teKoTCXVDpt7pceV43
+         Z5hVpw+dKPs8mYYgwI/hF7/TBm1MwxRcs8nIoWjDk7jKGddXl2jmpKEcVj1NerRvlsFb
+         PsvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=p4NuL35X6Zwa74Ub7hhGNsOOhc7yEa+ucW32Y1XSIEg=;
-        b=E6sokts6NhNDFP8HLcV//aiQmKanLW/PwlwxoxoVVa+6ntc1vz0KtD9G1UIipunucb
-         hE+LeGCHgqAqlyW2Hkyop9Li5B32rOmAnB2G3osfe3o6o8GW2ABo1lhrmFhKyM+Br97j
-         74JSBipKNDndbcOjpquf8zlQh8FUQLBGUegALHDe6NyVdkLtMHWAwBC4lxl+sD7N6wkT
-         jzcSw4ZFmoAbpfbf47TPnBkIZ7/RE8Deje9d67wF4THzGq56+N/rYLQuW6QUjcUjLfRS
-         FAAaMVyLnxGD83dR8C9aPqz5hUEWZ7m1HY6p5dOrY8LFfXyfLDLcqDAsVs8BaHYQGH2M
-         t5XA==
-X-Gm-Message-State: AOAM531rmFA2Kz+9zH0VJMH5YQNmiOfrY9fi860a7360X26IBDymtvSU
-        1dNSJI5jP5upO7LkoKq2YziwXUaCy2ghkYlnwJLY4g==
-X-Google-Smtp-Source: ABdhPJxoTWlafsWNP+6Zko1t0bQuEsJ3fgWv0z+6au5Ky9IQD0Iwc+JEMqrgV9B+6pngy98tVMDRBKIzo2s2s199W+c=
-X-Received: by 2002:a67:f2cc:: with SMTP id a12mr6364534vsn.24.1633635802858;
- Thu, 07 Oct 2021 12:43:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211003192208.6297-1-quentin@isovalent.com> <CAEf4Bzb1MftD6KEvBqgs=wR5VVSLrir_tVBPwwvLu2RvW5=tNA@mail.gmail.com>
-In-Reply-To: <CAEf4Bzb1MftD6KEvBqgs=wR5VVSLrir_tVBPwwvLu2RvW5=tNA@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r28qX9w0iLLDpADw6g4H4gWjYU6PdqhFTlbNMC9M+qM=;
+        b=RHiCVfzYO6NnKhnuSFCEUo1S1YS7YWPPQ+art2Ug/dNu7SqWgXH+fFYp0pHOf9ka9Z
+         3tPa+83iwdLOd6wiJqrNKTnOwnd7WH35cDxNfgTU/wdBzzduqpPQ5loOYCjY6T2dhZzC
+         tJ40SR3wuEvu01sJbqxmxF5JZ1EZGKAJ/X1iNWD8i+s5AxFfbV4KsxAOuzel+4YyP+Av
+         kJIw8PaSTzWeAcWykcERYYTcYNvux8iUp99pxObvuGLHonmSwJAeXqzLoihBT2i573F9
+         uXPlqQmxlR6M8N9uKVu1HmlcUr6LqkL1ZbFV16z10BsukZhYoO4EM/BUHRgu9VqpV/fm
+         JygQ==
+X-Gm-Message-State: AOAM531tTcNqC415nHH82yPwbnK28ovIIb5wYOxsTH1j/zhygfBAmuAk
+        2scbahL8xZKmLpxx/QUZvAxZYg==
+X-Google-Smtp-Source: ABdhPJyV4HK/n9JJzbaiH3gvOjfrf3kgZlPSCQL9vLTNaM9nY2zd4AQwSDJZ8Z7ZHFfEW2XAoSuyRA==
+X-Received: by 2002:a05:6000:15c3:: with SMTP id y3mr7820369wry.7.1633635886362;
+        Thu, 07 Oct 2021 12:44:46 -0700 (PDT)
+Received: from localhost.localdomain ([149.86.87.165])
+        by smtp.gmail.com with ESMTPSA id u2sm259747wrr.35.2021.10.07.12.44.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Oct 2021 12:44:46 -0700 (PDT)
 From:   Quentin Monnet <quentin@isovalent.com>
-Date:   Thu, 7 Oct 2021 20:43:11 +0100
-Message-ID: <CACdoK4+4iB-aquCgxXV9BYcXZpPrREZrnm+G8hau-SOt8QPtqQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 00/10] install libbpf headers when using the library
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next v4 00/12] install libbpf headers when using the library
+Date:   Thu,  7 Oct 2021 20:44:26 +0100
+Message-Id: <20211007194438.34443-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 Oct 2021 at 19:28, Andrii Nakryiko <andrii.nakryiko@gmail.com> wr=
-ote:
->
-> On Sun, Oct 3, 2021 at 12:22 PM Quentin Monnet <quentin@isovalent.com> wr=
-ote:
-> >
-> > Libbpf is used at several locations in the repository. Most of the time=
-,
-> > the tools relying on it build the library in its own directory, and inc=
-lude
-> > the headers from there. This works, but this is not the cleanest approa=
-ch.
-> > It generates objects outside of the directory of the tool which is bein=
-g
-> > built, and it also increases the risk that developers include a header =
-file
-> > internal to libbpf, which is not supposed to be exposed to user
-> > applications.
-> >
-> > This set adjusts all involved Makefiles to make sure that libbpf is bui=
-lt
-> > locally (with respect to the tool's directory or provided build directo=
-ry),
-> > and by ensuring that "make install_headers" is run from libbpf's Makefi=
-le
-> > to export user headers properly.
-> >
-> > This comes at a cost: given that the libbpf was so far mostly compiled =
-in
-> > its own directory by the different components using it, compiling it on=
-ce
-> > would be enough for all those components. With the new approach, each
-> > component compiles its own version. To mitigate this cost, efforts were
-> > made to reuse the compiled library when possible:
-> >
-> > - Make the bpftool version in samples/bpf reuse the library previously
-> >   compiled for the selftests.
-> > - Make the bpftool version in BPF selftests reuse the library previousl=
-y
-> >   compiled for the selftests.
-> > - Similarly, make resolve_btfids in BPF selftests reuse the same compil=
-ed
-> >   library.
-> > - Similarly, make runqslower in BPF selftests reuse the same compiled
-> >   library; and make it rely on the bpftool version also compiled from t=
-he
-> >   selftests (instead of compiling its own version).
-> > - runqslower, when compiled independently, needs its own version of
-> >   bpftool: make them share the same compiled libbpf.
-> >
-> > As a result:
-> >
-> > - Compiling the samples/bpf should compile libbpf just once.
-> > - Compiling the BPF selftests should compile libbpf just once.
-> > - Compiling the kernel (with BTF support) should now lead to compiling
-> >   libbpf twice: one for resolve_btfids, one for kernel/bpf/preload.
-> > - Compiling runqslower individually should compile libbpf just once. Sa=
-me
-> >   thing for bpftool, resolve_btfids, and kernel/bpf/preload/iterators.
-> >
-> > (Not accounting for the boostrap version of libbpf required by bpftool,
-> > which was already placed under a dedicated .../boostrap/libbpf/ directo=
-ry,
-> > and for which the count remains unchanged.)
-> >
-> > A few commits in the series also contain drive-by clean-up changes for
-> > bpftool includes, samples/bpf/.gitignore, or test_bpftool_build.sh. Ple=
-ase
-> > refer to individual commit logs for details.
-> >
-> > v3:
->
-> Please see few problems with libbpf_hdrs phony targets. Seems like
-> they all can be order-only dependencies and not causing unnecessary
-> rebuilds.
+Libbpf is used at several locations in the repository. Most of the time,
+the tools relying on it build the library in its own directory, and include
+the headers from there. This works, but this is not the cleanest approach.
+It generates objects outside of the directory of the tool which is being
+built, and it also increases the risk that developers include a header file
+internal to libbpf, which is not supposed to be exposed to user
+applications.
 
-Nice catch, I didn't realise it would force rebuilding :(. I'll
-address it in the next version. I'll also add a few adjustments to
-libbpf's and bpftool's Makefiles to make sure we don't recompile when
-not necessary, because of the header files that are currently
-installed unconditionally.
+This set adjusts all involved Makefiles to make sure that libbpf is built
+locally (with respect to the tool's directory or provided build directory),
+and by ensuring that "make install_headers" is run from libbpf's Makefile
+to export user headers properly.
 
-> Can you please also normalize your patch prefixes for bpftool and
-> other tools? We've been using a short and simple "bpftool: " prefix
-> for bpftool-related changes, and for other tools it would be just
-> "tools/runqslower" or "tools/resolve_btfids". Please update
-> accordingly. Thanks!
+This comes at a cost: given that the libbpf was so far mostly compiled in
+its own directory by the different components using it, compiling it once
+would be enough for all those components. With the new approach, each
+component compiles its own version. To mitigate this cost, efforts were
+made to reuse the compiled library when possible:
 
-$ git log --oneline --pretty=3D'format:%s' -- tools/bpf/bpftool/ | \
-        grep -oE '^(bpftool:|tools: bpftool:)' | sort | uniq -c
-   128 bpftool:
-   194 tools: bpftool:
+- Make the bpftool version in samples/bpf reuse the library previously
+  compiled for the selftests.
+- Make the bpftool version in BPF selftests reuse the library previously
+  compiled for the selftests.
+- Similarly, make resolve_btfids in BPF selftests reuse the same compiled
+  library.
+- Similarly, make runqslower in BPF selftests reuse the same compiled
+  library; and make it rely on the bpftool version also compiled from the
+  selftests (instead of compiling its own version).
+- runqslower, when compiled independently, needs its own version of
+  bpftool: make them share the same compiled libbpf.
 
-... And =E2=80=9Cwe=E2=80=9D've been using =E2=80=9Ctools: bpftool:=E2=80=
-=9D since the early days :).
-But yeah sure, I'll adjust. Shorter looks better. Just wondering, are
-those prefixes documented anywhere?
+As a result:
 
-Thanks,
-Quentin
+- Compiling the samples/bpf should compile libbpf just once.
+- Compiling the BPF selftests should compile libbpf just once.
+- Compiling the kernel (with BTF support) should now lead to compiling
+  libbpf twice: one for resolve_btfids, one for kernel/bpf/preload.
+- Compiling runqslower individually should compile libbpf just once. Same
+  thing for bpftool, resolve_btfids, and kernel/bpf/preload/iterators.
+
+(Not accounting for the boostrap version of libbpf required by bpftool,
+which was already placed under a dedicated .../boostrap/libbpf/ directory,
+and for which the count remains unchanged.)
+
+A few commits in the series also contain drive-by clean-up changes for
+bpftool includes, samples/bpf/.gitignore, or test_bpftool_build.sh. Please
+refer to individual commit logs for details.
+
+v4:
+  - Make the "libbpf_hdrs" dependency an order-only dependency in
+    kernel/bpf/preload/Makefile, samples/bpf/Makefile, and
+    tools/bpf/runqslower/Makefile. This is to avoid to unconditionally
+    recompile the targets.
+  - samples/bpf/.gitignore: prefix objects with a "/" to mark that we
+    ignore them when at the root of the samples/bpf/ directory.
+  - libbpf: add a commit to make "install_headers" depend on the header
+    files, to avoid exporting again if the sources are older than the
+    targets. This ensures that applications relying on those headers are
+    not rebuilt unnecessarily.
+  - bpftool: uncouple the copy of nlattr.h from libbpf target, to have it
+    depend on the source header itself. By avoiding to reinstall this
+    header every time, we avoid unnecessary builds of bpftool.
+  - samples/bpf: Add a new commit to remove the FORCE dependency for
+    libbpf, and replace it with a "$(wildcard ...)" on the .c/.h files in
+    libbpf's directory. This is to avoid always recompiling libbpf/bpftool.
+  - Adjust prefixes in commit subjects.
+
+v3:
+  - Remove order-only dependencies on $(LIBBPF_INCLUDE) (or equivalent)
+    directories, given that they are created by libbpf's Makefile.
+  - Add libbpf as a dependency for bpftool/resolve_btfids/runqslower when
+    they are supposed to reuse a libbpf compiled previously. This is to
+    avoid having several libbpf versions being compiled simultaneously in
+    the same directory with parallel builds. Even if this didn't show up
+    during tests, let's remain on the safe side.
+  - kernel/bpf/preload/Makefile: Rename libbpf-hdrs (dash) dependency as
+    libbpf_hdrs.
+  - samples/bpf/.gitignore: Add bpftool/
+  - samples/bpf/Makefile: Change "/bin/rm -rf" to "$(RM) -r".
+  - samples/bpf/Makefile: Add missing slashes for $(LIBBPF_OUTPUT) and
+    $(LIBBPF_DESTDIR) when buildling bpftool
+  - samples/bpf/Makefile: Add a dependency to libbpf's headers for
+    $(TRACE_HELPERS).
+  - bpftool's Makefile: Use $(LIBBPF) instead of equivalent (but longer)
+    $(LIBBPF_OUTPUT)libbpf.a
+  - BPF iterators' Makefile: build bpftool in .output/bpftool (instead of
+    .output/), add and clean up variables.
+  - runqslower's Makefile: Add an explicit dependency on libbpf's headers
+    to several objects. The dependency is not required (libbpf should have
+    been compiled and so the headers exported through other dependencies
+    for those targets), but they better mark the logical dependency and
+    should help if exporting the headers changed in the future.
+  - New commit to add an "install-bin" target to bpftool, to avoid
+    installing bash completion when buildling BPF iterators and selftests.
+
+v2: Declare an additional dependency on libbpf's headers for
+    iterators/iterators.o in kernel/preload/Makefile to make sure that
+    these headers are exported before we compile the object file (and not
+    just before we link it).
+
+Quentin Monnet (12):
+  libbpf: skip re-installing headers file if source is older than target
+  bpftool: remove unused includes to <bpf/bpf_gen_internal.h>
+  bpftool: install libbpf headers instead of including the dir
+  tools/resolve_btfids: install libbpf headers when building
+  tools/runqslower: install libbpf headers when building
+  bpf: preload: install libbpf headers when building
+  bpf: iterators: install libbpf headers when building
+  samples/bpf: update .gitignore
+  samples/bpf: install libbpf headers when building
+  samples/bpf: do not FORCE-recompile libbpf
+  selftests/bpf: better clean up for runqslower in test_bpftool_build.sh
+  bpftool: add install-bin target to install binary only
+
+ kernel/bpf/preload/Makefile                   | 25 ++++++++---
+ kernel/bpf/preload/iterators/Makefile         | 39 +++++++++++------
+ samples/bpf/.gitignore                        |  4 ++
+ samples/bpf/Makefile                          | 42 ++++++++++++++-----
+ tools/bpf/bpftool/Makefile                    | 39 ++++++++++-------
+ tools/bpf/bpftool/gen.c                       |  1 -
+ tools/bpf/bpftool/prog.c                      |  1 -
+ tools/bpf/resolve_btfids/Makefile             | 17 +++++---
+ tools/bpf/resolve_btfids/main.c               |  4 +-
+ tools/bpf/runqslower/Makefile                 | 22 ++++++----
+ tools/lib/bpf/Makefile                        | 24 +++++++----
+ tools/testing/selftests/bpf/Makefile          | 26 ++++++++----
+ .../selftests/bpf/test_bpftool_build.sh       |  4 ++
+ 13 files changed, 171 insertions(+), 77 deletions(-)
+
+-- 
+2.30.2
+
