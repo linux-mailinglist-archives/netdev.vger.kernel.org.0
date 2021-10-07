@@ -2,80 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D6BE425D96
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:32:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28A7B425D9D
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:34:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242586AbhJGUeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57680 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242592AbhJGUeC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:34:02 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABE3C061760;
-        Thu,  7 Oct 2021 13:32:08 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id i20so11731847edj.10;
-        Thu, 07 Oct 2021 13:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gNfNT4ZVYh2wlx8jH6qTQIgLI6I2KmqQwh/kapU5aQE=;
-        b=fmpK/Uk8y8/zFkvhdtk0qWTP8q5HtULB1goDYfvUd8Dt6XvN5FGtuBGgGOKAbdKCP6
-         P/qSiJZk7Pz+l78Ml9sj1WB5RwavFkWm6ZiCYEdsBgas0NTSriP8yi91z5d2X3O2f+50
-         Ue+Zk733/XE17KimDCnCB3VDcVvmHFR0UGI4f0tJCQ8CEOHDWTfZlaokxBYxCvH5xQrz
-         AdKovsBNQp5EtOyb7VFZGC4FVx9SmzPEqEoOeH0TyA7fZW4iBlPsVfU9/xtkTunW4S9e
-         N8bdM7z4wxt7ihpbPmyzL6lb9RKWkXwnApzJbZuAqsgfuwn7hFRK46O4MDqmtvvWqwDk
-         UIuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gNfNT4ZVYh2wlx8jH6qTQIgLI6I2KmqQwh/kapU5aQE=;
-        b=JwcmGu+b8w6it7kcnP/jy742rqg390hgWvX4a+4EuDynd9I9p4uPnu9I+s5qyOJPfL
-         LwftnIxUQPfpZ1DDkRghSJrF1duBikeYEqXiL8G+6O+a6Mz7dC7h3ucgOjIyWSsKpwfy
-         vR7cIYD5I1PMjPVzYuCwQhhOifaVqTUxVr4pSk5+CyMp9XLPJ7+vD9MH3TlnIDZIRFi1
-         +eRmEdoKItsl/82u4vlHe/rjtuJx8DgADgSSzI6ABz0bnGAoHXmGjX+RAkReEQVbtKxy
-         TzC30paI1FA9KiaSw4hCRHTiTzofePZIXek7LwxiblX1nhkIA5uKn8NN9D/mC0XxqzVM
-         zCoQ==
-X-Gm-Message-State: AOAM533tKUogZQx70M+S6uLfHtuGdCl8AxlcvhCMgO0H5vVnEZ40WW/V
-        64k/zWD3DZR63djfOB1+mrs=
-X-Google-Smtp-Source: ABdhPJzTE3psm33CAdujVJ6nu/517WvMuODmUoGKCj5nAZK1w41/hkQsTjClAwx4cZLaVk/lNwubug==
-X-Received: by 2002:a05:6402:3186:: with SMTP id di6mr9220894edb.225.1633638726885;
-        Thu, 07 Oct 2021 13:32:06 -0700 (PDT)
-Received: from skbuf ([188.26.53.217])
-        by smtp.gmail.com with ESMTPSA id nd36sm162139ejc.17.2021.10.07.13.32.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 13:32:06 -0700 (PDT)
-Date:   Thu, 7 Oct 2021 23:32:05 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Cc:     andrew@lunn.ch, netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 08/10] net: dsa: microchip: add support for
- port mirror operations
-Message-ID: <20211007203205.wpmh4uhg7epvke5i@skbuf>
-References: <20211007151200.748944-1-prasanna.vengateshan@microchip.com>
- <20211007151200.748944-9-prasanna.vengateshan@microchip.com>
+        id S235211AbhJGUf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 16:35:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54486 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233343AbhJGUf4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 16:35:56 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 44DA76103B;
+        Thu,  7 Oct 2021 20:34:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633638842;
+        bh=ojiQz4xt9XvyqRAI7SPg+IotnOkxn/xUE/EnqwfLZlE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=GvcCMCY6wE2RZ7cLLdMrWQabY4BTzAMdhBtJvZEp+CeHUCRXhjMAn2uRxUZs+bjCR
+         4aEFoBOBM5WnkxTYMBvtM9dS77/mppcFfFHFmxQGgBc/VAsuK4OhrHm6OD03tYfBmE
+         pcJ9R5jtrS0OZZeqIclV83nRced4URviTZLoSbzTPcUT+rAe4kFtPR1cS72kOBvpIL
+         /2NsH6p8D47AsgbiUXQ3/IjslR0dgr1R5b/lltSKgFxeGn8hO1udtt+h5A/ogzOkum
+         peVUP6TdlUfFEt3dSZCmNmE5Brjkqay7YtEEeYEcMAn8pI0BgiBsBNxoMD6HY9gfme
+         l1tszehJybQAQ==
+Received: by mail-lf1-f47.google.com with SMTP id y15so30049735lfk.7;
+        Thu, 07 Oct 2021 13:34:02 -0700 (PDT)
+X-Gm-Message-State: AOAM533BKiX+wC1mSeHZONZUQg8zF0ZoxaFgZsOFxeps8/4X2OgG+ay2
+        hCH/U97UyUf/Pnj5S4Bqmk8amDQPeP59deNYGn8=
+X-Google-Smtp-Source: ABdhPJxntQLeFaPde6qOADYmFg9uO4W8d25DWPIPdc5BrZ2Ed8kx9cluZ1AymMKS5zZkbqXFV/g9XYDerVbqpRP9U8I=
+X-Received: by 2002:a2e:3907:: with SMTP id g7mr6899558lja.285.1633638840629;
+ Thu, 07 Oct 2021 13:34:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211007151200.748944-9-prasanna.vengateshan@microchip.com>
+References: <20211006002853.308945-1-memxor@gmail.com> <20211006002853.308945-5-memxor@gmail.com>
+In-Reply-To: <20211006002853.308945-5-memxor@gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 7 Oct 2021 13:33:49 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7y3ycWkXLwSmJ5TKbo7Syd65aLRABtWbZcohET0RF6rA@mail.gmail.com>
+Message-ID: <CAPhsuW7y3ycWkXLwSmJ5TKbo7Syd65aLRABtWbZcohET0RF6rA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 4/6] bpf: selftests: Move test_ksyms_weak test
+ to lskel, add libbpf test
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 08:41:58PM +0530, Prasanna Vengateshan wrote:
-> Added support for port_mirror_add() and port_mirror_del operations
-> 
-> Sniffing is limited to one port & alert the user if any new
-> sniffing port is selected
-> 
-> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-> ---
+On Tue, Oct 5, 2021 at 5:29 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+>
+> Also, avoid using CO-RE features, as lskel doesn't support CO-RE, yet.
+> Create a file for testing libbpf skeleton as well, so that both
+> gen_loader and libbpf get tested.
+>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+[...]
+> diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c
+> new file mode 100644
+> index 000000000000..b75725e28647
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c
+> @@ -0,0 +1,31 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include <test_progs.h>
+> +#include "test_ksyms_weak.skel.h"
+> +
+> +void test_ksyms_weak_libbpf(void)
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+This is (almost?) the same as test_weak_syms(), right? Why do we need both?
+
+> +{
+> +       struct test_ksyms_weak *skel;
+> +       struct test_ksyms_weak__data *data;
+> +       int err;
+> +
+> +       skel = test_ksyms_weak__open_and_load();
+> +       if (!ASSERT_OK_PTR(skel, "test_ksyms_weak__open_and_load"))
+> +               return;
+
+[...]
+
+> diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+> index 5f8379aadb29..521e7b99db08 100644
+> --- a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+> +++ b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+> @@ -21,7 +21,6 @@ __u64 out__non_existent_typed = -1;
+>  extern const struct rq runqueues __ksym __weak; /* typed */
+>  extern const void bpf_prog_active __ksym __weak; /* typeless */
+>
+> -
+>  /* non-existent weak symbols. */
+>
+>  /* typeless symbols, default to zero. */
+> @@ -38,7 +37,7 @@ int pass_handler(const void *ctx)
+>         /* tests existing symbols. */
+>         rq = (struct rq *)bpf_per_cpu_ptr(&runqueues, 0);
+>         if (rq)
+> -               out__existing_typed = rq->cpu;
+> +               out__existing_typed = 0;
+
+Why do we need this change?
+
+>         out__existing_typeless = (__u64)&bpf_prog_active;
+>
+>         /* tests non-existent symbols. */
+> --
+> 2.33.0
+>
