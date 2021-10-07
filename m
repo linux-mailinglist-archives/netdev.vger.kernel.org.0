@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A34484258F7
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 19:09:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6D5B4258FB
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 19:10:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243168AbhJGRL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 13:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38056 "EHLO
+        id S243166AbhJGRL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 13:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242922AbhJGRLY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 13:11:24 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AE8C061570;
-        Thu,  7 Oct 2021 10:09:30 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id v18so25977046edc.11;
-        Thu, 07 Oct 2021 10:09:30 -0700 (PDT)
+        with ESMTP id S241593AbhJGRL6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 13:11:58 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95534C061570;
+        Thu,  7 Oct 2021 10:10:04 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id g10so24950251edj.1;
+        Thu, 07 Oct 2021 10:10:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=Lw3cNIiYL8m9zTvwAVZqBbOLR1nsCKzpoCkmdMBkxt8=;
-        b=ol2T7R9i5EvBZp6YhOk9/MvviHE5+oJBDqhWDksiyg3yBZf2ovx7OkgTjIWQwEoBno
-         CBtLkuHei295ACTzUV76IKRgVVQNtTu1tOnR/Ufgxwoyoe0AXqnOTKa+RI+qcc/jFvCe
-         giIN+qWXwIKyWkG1aH0QdDO5yDP+W7D08VODkKRGnCYqngvJwj3LbyHKlcUGFNOoPJHP
-         il2FdZgqKu/x6AIL8UwhxOxdnZXjYHodb3glnn/48BZuJsC4DLM7+NTVlzQwnuhoyBCy
-         3y+0zybivE4VTQtS/SuDv2EIguoJAYS0CGH+RdNI1S8TqsAEza9Ein+0nAfOs1B37B+4
-         xNog==
+        bh=zvrsWew019O7PHzdE6mBd8qKwyXDHePBaKJlZlxzWEA=;
+        b=e0iL9pgRKG6POXkIdBIKKkuedeDWrZTlO4gQ+kL0mLiD0/Ke8qmKrbKqj0pf+a8upj
+         g0zH810e2uLuAcNZPQ7XzySUmaXQp/tU1NGTujRHF8Jof5jvJLngVZDx4g7JJsVxa1CC
+         y5SfMOL9O/hSOZ7iAzFuxFyapWI9ItUKJrcw8nxEa87BYTpda9IqXPbOF5d4qqF+XaiS
+         wxm9hDH9TEPLjLjNrjLui4LEe8TdZGbg2+PDPznkTfFaIHHfgc3dZPdZ11deW2mk/FDk
+         Y8ldDOukvmcXwtUANyehHQNLGwAHTddXaUd56BeaGFfKH1Tlp1L7eI1R2m9GTcZCtagb
+         EF+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Lw3cNIiYL8m9zTvwAVZqBbOLR1nsCKzpoCkmdMBkxt8=;
-        b=VGgSFAgG8yqlW9Ngk5rCSWH6zqioc77gVn4mpedUOSvnixpM/nkzOxraiFghltBHsy
-         KHRS/PHe5AlaGRKxvLcQ+IunPmnKU4k37dCGeglHBPWNF/90PRCOpgxP/Q92dWdGUmfi
-         fUXfIuETkf9Ln1XgAgzkbXa63/RrnRbLl0H38d5xXfMeIESd4SUt0ISjyTqJcyRE3Yuj
-         ZHWxHRvPNicuvZHrEyRZynkp0G015xLxYGyn7uyVcUBJH0z0urAIi1xXNQKaSXAxLIbp
-         J10KAX6CPnsGKhYjt2QdrI0ZvshutWmvjpuxUCXodgARPJ+WzJaPBCOzNfb5URZuKywM
-         wkKQ==
-X-Gm-Message-State: AOAM531A8mt1kMNne12h3ji4Y2uU7FEVIldQJfc2m4WgxXKiOiqRT/LO
-        r39F2uBmzhwBP6Sq5Df/RhE=
-X-Google-Smtp-Source: ABdhPJxTFcWHWLhjC0TMoJrRtwSoQGs6f9VSzDYWqDaZEnpY21lDYElhSZhp5W98p+FNrd66OyYuOA==
-X-Received: by 2002:a17:906:5808:: with SMTP id m8mr7099192ejq.195.1633626569090;
-        Thu, 07 Oct 2021 10:09:29 -0700 (PDT)
+        bh=zvrsWew019O7PHzdE6mBd8qKwyXDHePBaKJlZlxzWEA=;
+        b=FGikGyd/EmRtpoCyrg2NhbeTihaYAoJrebCxbn+lGPLFAReXYe4LbqnZiAzjH6+Oct
+         fiuxEstrqBa3d1U1wsHN0P7jBu2W91XjJQ1WSc5s1zv4qRsP3Ygxkl+nArzr0KAj4gwI
+         5Wg4TOZ0pEwcKbruBpn4L9V2lDg+ngV5f0rsdRUy3vLKXp0PRNokB22UljuZjtWFd64r
+         FVpOFIh3uJP4iSs8jtEgxAeWEBjlNXycGOe5pTgLMHrpzT/Eu937zEnoX0605T4iRcq1
+         qMQ2gu9z57hflxQXiTA8tt0DsCJVhuWjnJMmXvSRKsSrI1aqrG3f8opghNyVKHr+g/Ja
+         1Efg==
+X-Gm-Message-State: AOAM532BJrhfQB8CNtwsVRXp87Dt3i7J9Xwz6lY8yWZoZptPGMgz8QG+
+        RJ+wA542Mi/bhx0oLWtjTW4=
+X-Google-Smtp-Source: ABdhPJxUdN0NiyBnU9gC5stEJXEFofLGp/Fr+YOOdztG/kqpu3so4UvqTw93ooaE6cO+r5Ss4LMx3A==
+X-Received: by 2002:a17:906:5689:: with SMTP id am9mr7245703ejc.416.1633626597241;
+        Thu, 07 Oct 2021 10:09:57 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id ee13sm11477edb.14.2021.10.07.10.09.28
+        by smtp.gmail.com with ESMTPSA id s3sm70736eja.87.2021.10.07.10.09.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 10:09:28 -0700 (PDT)
-Date:   Thu, 7 Oct 2021 19:09:26 +0200
+        Thu, 07 Oct 2021 10:09:56 -0700 (PDT)
+Date:   Thu, 7 Oct 2021 19:09:55 +0200
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
@@ -58,62 +58,51 @@ Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH 06/13] Documentation: devicetree: net: dsa:
- qca8k: document rgmii_1_8v bindings
-Message-ID: <YV8pxsCeSbN+1utP@Ansuel-xps.localdomain>
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthew Hagan <mnhagan88@gmail.com>
+Subject: Re: [net-next PATCH 07/13] net: dsa: qca8k: add support for
+ mac6_exchange, sgmii falling edge
+Message-ID: <YV8p48rH+H6Ztp3c@Ansuel-xps.localdomain>
 References: <20211006223603.18858-1-ansuelsmth@gmail.com>
- <20211006223603.18858-7-ansuelsmth@gmail.com>
- <YV46wJYlJZHAZLyD@lunn.ch>
- <YV71TCksnbixsYI0@Ansuel-xps.localdomain>
- <YV8kjnX2TKgESC30@lunn.ch>
+ <20211006223603.18858-8-ansuelsmth@gmail.com>
+ <YV472otG4JTeppou@lunn.ch>
+ <YV71nZsSDEeY97yt@Ansuel-xps.localdomain>
+ <YV8lAvzocfvvsA/I@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YV8kjnX2TKgESC30@lunn.ch>
+In-Reply-To: <YV8lAvzocfvvsA/I@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 06:47:10PM +0200, Andrew Lunn wrote:
-> > Only some device require this, with these bit at 0, the internal
-> > regulator provide 1.5v. It's not really a on/off but a toggle of the
-> > different operating voltage. Some device require this and some doesn't.
+On Thu, Oct 07, 2021 at 06:49:06PM +0200, Andrew Lunn wrote:
+> On Thu, Oct 07, 2021 at 03:26:53PM +0200, Ansuel Smith wrote:
+> > On Thu, Oct 07, 2021 at 02:14:18AM +0200, Andrew Lunn wrote:
+> > > On Thu, Oct 07, 2021 at 12:35:57AM +0200, Ansuel Smith wrote:
+> > > > Some device set the switch to exchange the mac0 port with mac6 port. Add
+> > > > support for this in the qca8k driver. Also add support for SGMII rx/tx
+> > > > clock falling edge. This is only present for pad0, pad5 and pad6 have
+> > > > these bit reserved from Documentation.
+> > > > 
+> > > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > > Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
+> > > 
+> > > Who wrote this patch? The person submitting it should be last. If
+> > > Matthew actually wrote it, you want to play with git commit --author=
+> > > to set the correct author.
+> > > 
+> > >    Andrew
+> > 
+> > I wrote it and Matthew did some very minor changes (binding name).
+> > Should I use co-developed by ?
 > 
-> Can you provide a list of devices which require it?
+> In that case, just reverse the order of the two Signed-off-by, and
+> leave the author information as you.
 > 
->     Andrew
+>       Andrew
 
-one bcm device the cisco meraki mx65 doesn't have them set.
-no qca8327 device have them used.
-
-device with qca,rgmii0-1-8v
-netgear r7500v2
-Askey RT4230W REV6
-
-device with qca,rgmii56-1-8v
-NEC Platforms Aterm WG2600HP3
-TP-Link Talon AD7200
-Qualcomm Technologies, Inc. IPQ8064/AP-148
-AP-161
-netgear d7800
-dev board DB149
-Linksys EA8500 WiFi Router
-Linksys EA7500 V1 WiFi Router
-ASRock G10
-Netgear r7500
-TP-Link Archer VR2600v
-NEC Aterm WG2600HP
-Compex WPQ864
-Buffalo WXR-2533DHP
-
-device with both enabled:
-ZyXEL NBG6817
-Netgear r7800
-
-Here is the list I could have missed some user on the ath79 target but I
-hope I made a point on how random this is and that we need dedicated
-binding for this. Thanks for the review anyway.
+Ok will fix in v2.
 
 -- 
 	Ansuel
