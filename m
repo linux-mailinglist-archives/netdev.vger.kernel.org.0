@@ -2,90 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60679425559
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:24:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D69FB425562
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:27:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242067AbhJGO0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 10:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233375AbhJGO0Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 10:26:16 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49454C061570
-        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 07:24:22 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id a25so8114280edx.8
-        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 07:24:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=anyfinetworks-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B6vmYD6+ICi1neadqa+gL/UPoAFar0m9iXwg+MUKPe4=;
-        b=Phjs2REo2zV9+Isw3WdoK0cSTIqwNWMR8nBvmVMu0YtFcChySx2wGQz4nnBuRiphTJ
-         BQHgSu9TXJWSRvBTzYg+fzATpPAAcuCsHbT2jbnMV7y4lb1PgjwiOPP55XCwtvGvKowM
-         tFhrvislNX0u2AQO5v7zNuS5cPKcyM5cgq7jj/quVwOobBnNYAxqKD6zj2YzcNbSSgp2
-         QrwM75WQkVVEY6yO4/j2xG6mfN8SRoaq+vcyFweptAUpgM8wW8Zne7un0IC7Yko7pcWv
-         06RfA/ZLK2Z1sNb//Wqb0HGmgHECRke0f7gXKEFhD75bfzGA6QqYlTHyekEV44nl8jbf
-         MXrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B6vmYD6+ICi1neadqa+gL/UPoAFar0m9iXwg+MUKPe4=;
-        b=bg0Zrmi5xcw82AaCK9XmHEh5WXJMRZGEqI30pET7UCP9G6kK/8vecKYxLblXHH0wtK
-         3mNpjx51ck7cW5R0US9lS/80GqsHOZubWhes5Zx0eAEy+++Xx3ePUJoSXegG6qMbj+qV
-         xFyKYGD5vF5PnhrDeCeta4spLKXSDOcBLeY+EcZeb1eIswWHlGr2WRt6gr0VA2sM6df6
-         ARjfiRTmIRly6psNvZrhgUDILE7x2ciwzWuFDY08SzNguWSO01ARMoXVo3gt6zVIVVml
-         AVuB5xAe4usXRUqq5+TkpMehRn1ixocr32ZWXhqFqCOJiqzeDatncANlpZhp5xCoUmyS
-         qtaw==
-X-Gm-Message-State: AOAM5322Int/DXYsGcX3ZMe0daQ/8g0dJpDZaXvzmQbAmxbVLsyuuIgz
-        ocuLv5d6HSftYqnUkGAMH1dXYw==
-X-Google-Smtp-Source: ABdhPJylKK8xTutG9pv1TVWtqFx5gnnwI2eu2jsgGkaHu/K5+ooHIropO6OIH+FIxYqLMEHJP0/xcA==
-X-Received: by 2002:a50:cf02:: with SMTP id c2mr6744434edk.325.1633616653200;
-        Thu, 07 Oct 2021 07:24:13 -0700 (PDT)
-Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id bx11sm10526987ejb.107.2021.10.07.07.24.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 07:24:12 -0700 (PDT)
-From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        paulburton@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        tony.ambardar@gmail.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH bpf-next] mips, bpf: Fix Makefile that referenced a removed file
-Date:   Thu,  7 Oct 2021 16:23:39 +0200
-Message-Id: <20211007142339.633899-1-johan.almbladh@anyfinetworks.com>
-X-Mailer: git-send-email 2.30.2
+        id S242038AbhJGO3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 10:29:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43224 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233375AbhJGO3r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 10:29:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 16201610E6;
+        Thu,  7 Oct 2021 14:27:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633616873;
+        bh=OUDtHv9D7wI/MWFyw8NMUCU3Td9FtIyM3D79kD2hZAw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lP1JnDIuAbwwTH8gLflWLfd1B3OZ6lKM8evdGfL3Lu1GxUMiPvYNP9VDbLi2k4SOa
+         eZ81Dw63TSyQQyg+0Sx0thQdOAkKKwLwqQn5u+Yoek82U0GIfMxeBhCK5eWH3/MpNo
+         nxLEQtqthW7X2INJpkgUw7SfKBpJKpsvil1Xa+BCqiQ5QMQrcAJqTJAkAAWVCPW6bI
+         8NNKDseC9hKXM+5T/BG5fZWspJlIb0w3ykGtJ5TbzcyszQrqKsY+KPJrMv3AbfImPI
+         HQle0d27DHFwDP1GH0+3ulfPc8s33iG0VhPw6wi14Hr8aOjcBRCjKSAR4+3BaMM7Tn
+         Iv5CflXA0+9eQ==
+Date:   Thu, 7 Oct 2021 07:27:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>,
+        Mike Manning <mvrmanning@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Saikrishna Arcot <sarcot@microsoft.com>
+Subject: Re: [PATCH] net: prefer socket bound to interface when not in VRF
+Message-ID: <20211007072752.257c3bcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <9907e6ff-3904-fa66-6562-c3b885eebd34@gmail.com>
+References: <cf0a8523-b362-1edf-ee78-eef63cbbb428@gmail.com>
+        <20211007070720.31dd17bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <9907e6ff-3904-fa66-6562-c3b885eebd34@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch removes a stale Makefile reference to the cBPF JIT that was
-removed.
+On Thu, 7 Oct 2021 08:10:17 -0600 David Ahern wrote:
+> On 10/7/21 8:07 AM, Jakub Kicinski wrote:
+> > On Tue, 5 Oct 2021 14:03:42 +0100 Mike Manning wrote:  
+> >> The commit 6da5b0f027a8 ("net: ensure unbound datagram socket to be
+> >> chosen when not in a VRF") modified compute_score() so that a device
+> >> match is always made, not just in the case of an l3mdev skb, then
+> >> increments the score also for unbound sockets. This ensures that
+> >> sockets bound to an l3mdev are never selected when not in a VRF.
+> >> But as unbound and bound sockets are now scored equally, this results
+> >> in the last opened socket being selected if there are matches in the
+> >> default VRF for an unbound socket and a socket bound to a dev that is
+> >> not an l3mdev. However, handling prior to this commit was to always
+> >> select the bound socket in this case. Reinstate this handling by
+> >> incrementing the score only for bound sockets. The required isolation
+> >> due to choosing between an unbound socket and a socket bound to an
+> >> l3mdev remains in place due to the device match always being made.
+> >> The same approach is taken for compute_score() for stream sockets.
+> >>
+> >> Fixes: 6da5b0f027a8 ("net: ensure unbound datagram socket to be chosen when not in a VRF")
+> >> Fixes: e78190581aff ("net: ensure unbound stream socket to be chosen when not in a VRF")
+> >> Signed-off-by: Mike Manning <mmanning@vyatta.att-mail.com>  
+>
+> Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Fixes: 06b339fe5450 ("mips, bpf: Remove old BPF JIT implementations")
-Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
----
- arch/mips/net/Makefile | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/arch/mips/net/Makefile b/arch/mips/net/Makefile
-index 602bf242b13f..95e826781dbc 100644
---- a/arch/mips/net/Makefile
-+++ b/arch/mips/net/Makefile
-@@ -1,7 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0-only
- # MIPS networking code
- 
--obj-$(CONFIG_MIPS_CBPF_JIT) += bpf_jit.o bpf_jit_asm.o
- obj-$(CONFIG_MIPS_EBPF_JIT) += bpf_jit_comp.o
- 
- ifeq ($(CONFIG_32BIT),y)
--- 
-2.30.2
-
+Applied, thanks!
