@@ -2,123 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9F28425E32
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:52:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C25B425E36
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:53:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232542AbhJGUyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34214 "EHLO
+        id S233110AbhJGUzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 16:55:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231825AbhJGUyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:54:36 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55F5C061570;
-        Thu,  7 Oct 2021 13:52:42 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id t16so6167945eds.9;
-        Thu, 07 Oct 2021 13:52:42 -0700 (PDT)
+        with ESMTP id S232573AbhJGUzb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:55:31 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9A9C061570;
+        Thu,  7 Oct 2021 13:53:37 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id z5so16356495ybj.2;
+        Thu, 07 Oct 2021 13:53:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vZCxEEwfZlNuSFz3ypr49dINxMEpRI9Ap0TDgahu5dA=;
-        b=GP4nfLs25Lcggx7ongKrjmDyvwqQ8FpJplLIlrT8W5VVwvAencnctBCdswf5Uxmu5N
-         x84FxUrBQoTyUj7PuiBpOAcnTUPF1/ruQl3PTrFyvm7x89epvOhpFMjlRbdlfE9ZutdA
-         7Cayhr9+HuAXvGMnGCvKDMq0v3A3NWcdG/Ov3KS+ofCaW2UJN+q4HfyfT2RvXJp8EdIb
-         cmcmchUUN9RKgoqJlyDbLjr18anrvsxRbJDgOP2rxumxgZpDAS7EMlU+JZSmF72cozb5
-         1fd1plJs9/tRC2e2c1ZEmdEnz0iG/8fT835i5Fx2BSItDPziS++gfKQGKQMgTMQ/WSXM
-         AMZw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pyQNWwdkJWAkLBnPQDQe8VN/G7b/r2IR8mf10D5CLlw=;
+        b=gl0StOvQsQ3O1nPZovu0/Uun5e4fxMajXQIi6Jx1/qnDGMRgd5xMvxkJkF1o+BS4R+
+         8CDp/99piYQV1ZmnBy8YJGwH+l1L48CqZ+z9kga0xQfHIDJ0D9SCECBfOJDIFg3UnuwI
+         S3cLZSKHpNs8pZm2uI/jtOGuUKX5PzeM/emORkmDQjSvj1cMqWdu++HP3ob7xOJwy46E
+         oHqUVyBw+oFtLuC/KCXzbkIRaW9zcP/NjW9wl0Y9ucpi65GQd3xk0Lz1FC/OPinnTz1A
+         RfJmXVy4/Q3li/AhkIbn+kIqDpDPf1KEgjMqxOcZ6pdJ2nfhjK9YW5UyaW7ks4Z7ohJB
+         lqMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vZCxEEwfZlNuSFz3ypr49dINxMEpRI9Ap0TDgahu5dA=;
-        b=GM9UCpNwWOmWr09f8QlqkNGmQSHDCtXNGMRfBVw3Q87qpM3A7TZxJMYe/PCGTu7O1U
-         LTE6XE5kIcAAQfxClZ3ihT7SEL44xMrDfMwejhahpFVWX30wBQJ8jRZz4G4BKegb+L5n
-         IrtGw6IuZnSxbS2uUE+VDgJ/rIdLjggWI6yyN4r/JxuPsVdYxsyuDoSm1qxp4/Ul7H6H
-         jTjZC8jb45xsw9DWUlsY2s3hhniAPQaYXLy0tgoWiAcclR9dmwnSAncXl15UrL7rNFNb
-         pgbggfCYqkKLpWp3VXXPPK040+EG0/kXUAT9Y3kGgLa+J5HWVx0DgMCDcbf7KFV2tJ6Z
-         7RMw==
-X-Gm-Message-State: AOAM530Y7GMeJENv9kW3bkYOJG5Yrmg37MAVrCdrPFFJT93PiGPqQsya
-        Xr5BtgdaLObwM2KWWNsaijXq3lvTNjorp2DZMNBZCg==
-X-Google-Smtp-Source: ABdhPJy7DTDvXZNOAHbVT6qYrd2+tmNBH+CVXkM2Uvpk/nZM6x7aSsZuM3UvnKPi5RecnxRM9PBRYg==
-X-Received: by 2002:a05:6402:2748:: with SMTP id z8mr9639409edd.291.1633639961243;
-        Thu, 07 Oct 2021 13:52:41 -0700 (PDT)
-Received: from ?IPv6:2a04:241e:501:3870:b7fe:dd48:83ff:bcc8? ([2a04:241e:501:3870:b7fe:dd48:83ff:bcc8])
-        by smtp.gmail.com with ESMTPSA id x11sm202349edj.62.2021.10.07.13.52.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Oct 2021 13:52:40 -0700 (PDT)
-Subject: Re: [PATCH 11/11] selftests: net/fcnal: Reduce client timeout
-To:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, David Ahern <dsahern@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Seth David Schoen <schoen@loyalty.org>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1633520807.git.cdleonard@gmail.com>
- <516043441bd13bc1e6ba7f507a04362e04c06da5.1633520807.git.cdleonard@gmail.com>
- <3ed2262e-fce2-c587-5112-e4583cd042ed@gmail.com>
- <c48ea9e2-acdc-eb11-a4b0-35474003fcf3@gmail.com>
- <65ae97e3-73c1-3221-96fe-6096a8aacfa1@gmail.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-Message-ID: <d7ac5d58-1e59-a657-a51b-4d757f7552ca@gmail.com>
-Date:   Thu, 7 Oct 2021 23:52:39 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pyQNWwdkJWAkLBnPQDQe8VN/G7b/r2IR8mf10D5CLlw=;
+        b=SlW1LWwypQEykgajfnj/r+3/mk2wIV+YZmdOGH8SDpTF6G+1zWmRysIesjerpVZDs4
+         o7f7cahNIJcoNxEzBkqnrJt/Ewd3IdQHOUJOR2kQOgY/jPj0OvoEzwgxfigPcTjZPb07
+         WYZJ/UHiQakmg+1sjN6ieg2Wt06DWvqTCN3HohAbDkuksZDRpRWSc2B5ZW93pu0YUq0B
+         BHQJtsGE882efxveOsnQT+DMhDTvYDJDIItA9Ca4tSpjxuUAcojZsjXwJsD4QHEBYIDl
+         x6Lrfybz7Sjo7+UzIlJmCPglW9pdUyMMxzluDvGZD7FDdNI2stQn5qdBt5iYVDo1oSb3
+         8c7w==
+X-Gm-Message-State: AOAM532NSZbZysdlsgmM6hQEUt/1fPu6e49e+sSGwhY/2Zid4s6Qujab
+        +iqvNwOGRRztC3cDixhgzq2QR/y8uRmv2MDXjjl0zxgd
+X-Google-Smtp-Source: ABdhPJw0wUV8PYiDNZhfGIw/WkBRT7ozC+3Sy3N62q4x50v4dDMEjp7LCygJQALD3/3k1USlyuAw4snpc8dk0he80JI=
+X-Received: by 2002:a25:bb0b:: with SMTP id z11mr7223193ybg.108.1633640016419;
+ Thu, 07 Oct 2021 13:53:36 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <65ae97e3-73c1-3221-96fe-6096a8aacfa1@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20211002003706.11237-1-xiyou.wangcong@gmail.com>
+ <20211002003706.11237-4-xiyou.wangcong@gmail.com> <582ff8e9-c7b7-88c1-6cf0-e143da92836f@iogearbox.net>
+In-Reply-To: <582ff8e9-c7b7-88c1-6cf0-e143da92836f@iogearbox.net>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 7 Oct 2021 13:53:25 -0700
+Message-ID: <CAM_iQpXy5HOHOU=T_FVVydBniL=tOW9sYTAMsc_nRWcZsqo8Yg@mail.gmail.com>
+Subject: Re: [Patch bpf v3 3/4] net: implement ->sock_is_readable() for UDP
+ and AF_UNIX
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
+        Yucong Sun <sunyucong@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07.10.2021 04:17, David Ahern wrote:
-> On 10/6/21 3:26 PM, Leonard Crestez wrote:
->> On 06.10.2021 18:01, David Ahern wrote:
->>> On 10/6/21 5:47 AM, Leonard Crestez wrote:
->>>> Reduce default client timeout from 5 seconds to 500 miliseconds.
->>>> Can be overridden from environment by exporting NETTEST_CLIENT_TIMEOUT=5
->>>>
->>>> Some tests need ICMP timeouts so pass an explicit -t5 for those.
->>>>
->>>> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
->>>> ---
->>>>    tools/testing/selftests/net/fcnal-test.sh | 17 +++++++++++------
->>>>    1 file changed, 11 insertions(+), 6 deletions(-)
->>>>
->>>
->>> The problem with blindly reducing the timeouts is running the script on
->>> a loaded server. Some tests are expected to timeout while for tests a
->>> timeout is a failure.
->>
->> Keeping the default value "5" would be fine as long as it is possible to
->> override externally and get fast results on a mostly-idle machine.
-> 
-> 5 is the default for nettest.c; the test script passes in -t1 for all tests.
+On Thu, Oct 7, 2021 at 1:00 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 10/2/21 2:37 AM, Cong Wang wrote:
+> > From: Cong Wang <cong.wang@bytedance.com>
+> >
+> > Yucong noticed we can't poll() sockets in sockmap even
+> > when they are the destination sockets of redirections.
+> > This is because we never poll any psock queues in ->poll(),
+> > except for TCP. With ->sock_is_readable() now we can
+> > overwrite >sock_is_readable(), invoke and implement it for
+> > both UDP and AF_UNIX sockets.
+> >
+> > Reported-by: Yucong Sun <sunyucong@gmail.com>
+> > Cc: John Fastabend <john.fastabend@gmail.com>
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > Cc: Lorenz Bauer <lmb@cloudflare.com>
+> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > ---
+> >   net/ipv4/udp.c      | 2 ++
+> >   net/ipv4/udp_bpf.c  | 1 +
+> >   net/unix/af_unix.c  | 4 ++++
+> >   net/unix/unix_bpf.c | 2 ++
+> >   4 files changed, 9 insertions(+)
+> >
+> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> > index 2a7825a5b842..4a7e15a43a68 100644
+> > --- a/net/ipv4/udp.c
+> > +++ b/net/ipv4/udp.c
+> > @@ -2866,6 +2866,8 @@ __poll_t udp_poll(struct file *file, struct socket *sock, poll_table *wait)
+> >           !(sk->sk_shutdown & RCV_SHUTDOWN) && first_packet_length(sk) == -1)
+> >               mask &= ~(EPOLLIN | EPOLLRDNORM);
+> >
+> > +     if (sk_is_readable(sk))
+> > +             mask |= EPOLLIN | EPOLLRDNORM;
+>
+> udp_poll() has this extra logic around first_packet_length() which drops all bad csum'ed
+> skbs. How does this stand in relation to sk_msg_is_readable()? Is this a concern as well
+> there? Maybe makes sense to elaborate a bit more in the commit message for context / future
+> reference.
 
-An explicit -t is only passed for some of the tests
+We don't validate UDP checksums on sockmap RX path, so
+it is okay to leave it as it is, but it is worth a comment like
+you suggest. I will add a comment in this code.
 
-$ grep -c nettest.*-r tools/testing/selftests/net/fcnal-test.sh
-243
-$ grep -c nettest.*-t tools/testing/selftests/net/fcnal-test.sh
-15
+If we really need to validate the checksum, it should be addressed
+in a separate patch(set), not in this one.
 
->> Placing a default value in the environment which is overriden by certain
->> tests achieves that.
->>
->> In theory it would also be possible for fcnal-test.sh to parse as
->> "--timeout" option and pass it into every single test but that solution
->> would cause much more code churn.
->>
->> Having default values in environment variables that can still be
->> overridden by command-line arguments is a common pattern in many tools.
->> It also avoids having to pass-through every flag through every
->> intermediate wrapper.
-> 
-> I do not agree with env variables here.
-
-Would you agree with adding an option to fcnal-test.sh which decreases 
-timeouts passed to nettest client calls?
+Thanks.
