@@ -2,31 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1A70425A55
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 20:06:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59949425A71
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 20:13:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243466AbhJGSHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 14:07:55 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54798 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233770AbhJGSHy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 14:07:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=uqZhubrZS0AC3XCDxYOs5HijLXlbSUCH28Z8t+sc3d0=; b=loExcZsc/YaIjMqkO/RpnyxTf2
-        Ouop7cKYoMODlVT0BhuhEZ+4sSV5CkVylC0KAeGrR588aM4gpRU9JptqndcNyZ2AYq9YfDm4L/UPp
-        9V8jrzl41TZXWP+Ni96CKAaVtaM3N/LiWppIg+ixvxz6+V67MiXvYZuYqBly1251YJSY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mYXmG-009ykS-Dh; Thu, 07 Oct 2021 20:05:56 +0200
-Date:   Thu, 7 Oct 2021 20:05:56 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
+        id S243524AbhJGSOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 14:14:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53428 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233709AbhJGSOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 14:14:53 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A43C061570;
+        Thu,  7 Oct 2021 11:12:59 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id m5so6015906pfk.7;
+        Thu, 07 Oct 2021 11:12:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zcGBIhKrON+MgfHdKChgd+MR4ouCwcsLhobVnFLjAGE=;
+        b=G1mwsJ/sX9YkeHnQ5UcKRh/HCb+HTgZx08HBbarDJdy+/xzYwLjH/c9Qg6rIkh+wPS
+         gecKknATnLFv5+Ot98ZL3CUyMekhKsLERP8cEfSGcb7aPVELaUzEOvF2zMNblaTX9qQK
+         k0YP0ECL/3hcvTMIdW9SChZpCi/pgEzKW7++TaP6JiUR1xtq6ZcH0gik8QfqEEr20GIJ
+         bMVCz8dr1eeSM9oXjE4uY7h62d0GF4MswqFWfBveV4jvIj7GmL/NiwMxudRXhfoGr+0t
+         0uyHXy2HRLRJvgboIAy1hWXwS0OzznwVx2Vrru5YE8qnObWSq4pB3gGaVPa3qnoNkzs1
+         HNtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zcGBIhKrON+MgfHdKChgd+MR4ouCwcsLhobVnFLjAGE=;
+        b=cfbhA1sLmzux+fn2Q++ff8kat28RxJ7lqX+hLfjCF/oLbfki8kMZQhj8t1gFoNhSAW
+         p/vR/SvnKVPa6uV3Evp992rTfHp7lOtYn614djbRtIXmMJ68CyDyNEHKaBI7QR5B7uM9
+         mG+0POklNKwW/S8EhwOOoElgEOwDC2ZoUWsIiQfa/RaS069j0W1iIy+AH/JV/96hgABL
+         7Ycv5g2ts53x5dNzqjjxow3Fsc7oq47z439Kw6Ty6np0v7hnuMDi3qz/l6Hkhqxn/w5x
+         g4ZgZF9mvQTN1sZGy/7n3SuSsMtyscjwzKjTbXvWUcANXDX6UeweNHA9l7E5ALgk1GhS
+         uxQA==
+X-Gm-Message-State: AOAM533qHUb26lzHLZFcqvnlTLo4+QcZTxRmTcu+NjIt628rySpASssw
+        uz4NpEciL5FnZ9jIXQen27sMtow9gy8=
+X-Google-Smtp-Source: ABdhPJwFmTWHDSMgp2ERks6179u8iTUF9h+CjBN17Qn3U3om1x2znZybadLxqJwjTlFROjrWeh4Grg==
+X-Received: by 2002:a05:6a00:10cc:b0:44c:852:41d8 with SMTP id d12-20020a056a0010cc00b0044c085241d8mr5871737pfu.54.1633630378089;
+        Thu, 07 Oct 2021 11:12:58 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id u12sm8831747pjr.2.2021.10.07.11.12.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Oct 2021 11:12:57 -0700 (PDT)
+Subject: Re: [net-next PATCH 09/13] net: dsa: qca8k: check rgmii also on port
+ 6 if exchanged
+To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -34,70 +59,56 @@ Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH 10/13] net: dsa: qca8k: add explicit SGMII PLL
- enable
-Message-ID: <YV83BAmhHfmDyCjv@lunn.ch>
 References: <20211006223603.18858-1-ansuelsmth@gmail.com>
- <20211006223603.18858-11-ansuelsmth@gmail.com>
- <YV4/ehy9aYJyozvy@lunn.ch>
- <YV73umYovC0wh5hz@Ansuel-xps.localdomain>
+ <20211006223603.18858-10-ansuelsmth@gmail.com> <YV4+KDQWNhDmcaHL@lunn.ch>
+ <YV72oJ/wWiiNthAs@Ansuel-xps.localdomain>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <90ebf1eb-89b9-3059-a6b8-87c197032e4c@gmail.com>
+Date:   Thu, 7 Oct 2021 11:12:48 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YV73umYovC0wh5hz@Ansuel-xps.localdomain>
+In-Reply-To: <YV72oJ/wWiiNthAs@Ansuel-xps.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Thu, Oct 07, 2021 at 03:35:54PM +0200, Ansuel Smith wrote:
-> On Thu, Oct 07, 2021 at 02:29:46AM +0200, Andrew Lunn wrote:
-> > On Thu, Oct 07, 2021 at 12:36:00AM +0200, Ansuel Smith wrote:
-> > > Support enabling PLL on the SGMII CPU port. Some device require this
-> > > special configuration or no traffic is transmitted and the switch
-> > > doesn't work at all. A dedicated binding is added to the CPU node
-> > > port to apply the correct reg on mac config.
-> > 
-> > Why not just enable this all the time when the CPU port is in SGMII
-> > mode?
+On 10/7/21 6:31 AM, Ansuel Smith wrote:
+> On Thu, Oct 07, 2021 at 02:24:08AM +0200, Andrew Lunn wrote:
+>> On Thu, Oct 07, 2021 at 12:35:59AM +0200, Ansuel Smith wrote:
+>>> Port 0 can be exchanged with port6. Handle this special case by also
+>>> checking the port6 if present.
+>>
+>> This is messy.
+>>
+>> The DSA core has no idea the ports have been swapped, so the interface
+>> names are going to be taken from DT unswaped. Now you appear to be
+>> taking phy-mode from the other port in DT. That is inconsistent. All
+>> the configuration for a port should come from the same place, nothing
+>> gets swapped. Or everything needs to swap, which means you need to
+>> change the DSA core.
+>>
+>>     Andrew
 > 
-> I don't know if you missed the cover letter with the reason. Sgmii PLL
-> is a mess. Some device needs it and some doesn't. With a wrong
-> configuration the result is not traffic. As it's all messy we decided to
-> set the PLL to be enabled with a dedicated binding and set it disabled
-> by default. We enouncer more device that require it disabled than device
-> that needs it enabled. (in the order of 70 that doesn't needed it and 2
-> that requires it enabled or port instability/no traffic/leds problem)
+> The swap is internal. So from the dts side we still use port0 as port0,
+> it's just swapped internally in the switch.
+> The change here is required as this scan the rgmii delay and sets the
+> value to be set later in the phylink mac config.
+> We currently assume that only one cpu port is supported and that can be
+> sgmii or rgmii. This specific switch have 2 cpu port and we can have one
+> config with cpu port0 set to sgmii and cpu port6 set to rgmii-id.
+> This patch is to address this and to add the delay function to scan also
+> for the secondary cpu port. (again the real value will be set in the mac
+> config function)
+> Honestly i think we should just rework this and move the delay logic
+> directly in the mac_config function and scan there directly. What do you
+> think? That way we should be able to generalize this and drop the extra
+> if.
 
-What exactly does this PLL do? Clock recovery of the SGMII clock, and
-then using it in the opposite direction? What combinations of PHYs
-need it, and which don't?
-
-> > Is it also needed for 1000BaseX?
-> > 
-> 
-> We assume it really depends on the device.
-
-That i find surprising. 1000BaseX and SGMII are very similar. I would
-expect a device with requires the PLL enabled for SGMII also needs it
-for 1000BaseX.
-
-> > DT properties like this are hard to use. It would be better if the
-> > switch can decide for itself if it needs the PLL enabled.
-> 
-> Again reason in the cover letter sgmii part. Some qca driver have some
-> logic based on switch revision. We tried that and it didn't work since
-> some device had no traffic with pll enabled (and with the revision set
-> to enable pll)
-
-This is my main problem with this patchset. You are adding lots of
-poorly documented properties which are proprietary to this switch. And
-you are saying, please try all 2^N combinations and see what works
-best. That is not very friendly at all.
-
-So it would be good to explain each one in detail. Maybe given the
-explanation, we can figure out a way to detect at runtime, and not
-need the option. If not, you can add it to the DT binding to help
-somebody pick a likely starting point for the 2^N search.
-
-	 Andrew
+Agreed, the whole port swapping business is really hairy and seems like
+it will led to unpleasant surprises down the road.
+-- 
+Florian
