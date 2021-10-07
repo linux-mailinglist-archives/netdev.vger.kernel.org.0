@@ -2,162 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FEB14257D6
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 18:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E39C4257E8
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 18:25:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242405AbhJGQZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 12:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55208 "EHLO
+        id S242678AbhJGQ1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 12:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241221AbhJGQZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 12:25:35 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3941C061570;
-        Thu,  7 Oct 2021 09:23:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jkXCMS5VNoUyXW6vTJCvWdqKbyECDVes7onXU0a4ZLY=; b=w6rtcG4sxE47wlrzkw46Qhg6SQ
-        Ye44R9H+/bpcSiA7vANm1cc4sowUQEHgKtGi8rKoW7MpU8Rxg6/WUt5B2b7zFGzxwFk8dLallzMrV
-        eUN1LuxoWUsMOcNJfHLHHd+teHyph9cXjm8niM9vnG2vwicqhY6z5WM2kUPtOihG0aFueT+4jZXcl
-        77DXQRMrG3+6YD6VPScfdIAJZfrLW/HSxVW9jU1s35YUsKUlRxnP/09GKKKsAPgNuPoyJASjhsCw3
-        iVhXpG+H5yYe6K4gzJ0TuYu/glIAefmyWSSUzKgZ682jCjhIQ1b+u/IpJV5xtC6JZICDPlAEhGW7x
-        LTR5kCYw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55004)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mYWBG-0002eC-IG; Thu, 07 Oct 2021 17:23:38 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mYWBE-00021h-8w; Thu, 07 Oct 2021 17:23:36 +0100
-Date:   Thu, 7 Oct 2021 17:23:36 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: Re: [RFC net-next PATCH 10/16] net: macb: Move PCS settings to PCS
- callbacks
-Message-ID: <YV8fCAkcIGY+yEmQ@shell.armlinux.org.uk>
-References: <20211004191527.1610759-1-sean.anderson@seco.com>
- <20211004191527.1610759-11-sean.anderson@seco.com>
- <YVwjjghGcXaEYgY+@shell.armlinux.org.uk>
- <7c92218c-baec-a991-9d6b-af42dfabbad3@seco.com>
- <YVyfEOu+emsX/ERr@shell.armlinux.org.uk>
- <ddb81bf5-af74-1619-b083-0dba189a5061@seco.com>
- <YVzPgTAS0grKl6CN@shell.armlinux.org.uk>
- <YV7NHZRFZ9U3Xj8v@shell.armlinux.org.uk>
- <YV7Z/MF7geOp+JM2@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YV7Z/MF7geOp+JM2@shell.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+        with ESMTP id S242664AbhJGQ1e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 12:27:34 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F0AC061762
+        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 09:25:40 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id n22-20020a6563d6000000b0029261ffde9bso121249pgv.22
+        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 09:25:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=MLNq0Ecu/DTuLkV9EQCwfPnAyKraiDA8g5gWng3WZe4=;
+        b=LjqHvqT8SH/cHaVN0k7538hp+srgMMgDZqZm6OIzOL0M2hahn+Xbvy3a7Zz/C6Dexi
+         /TH0Jo47yObdm67BPV53GJPBgSerB449VkGnMjGA3A/1nu36moiC8aOoBbpYjSXUp2F3
+         FcXuK1ROhBgzd03Imsja6F9or23X7VZealSi5TaPRwzR8qrASuubQ+G0N1Esr8GrD0z0
+         lKkKL8GcJtloZGQL4jWVMJaQa6vbHQs87j5WXdQEVCRtqz30fJPlZ/1hmUgLsPnW4BxC
+         NnoFpGGSdKNeX03eLpJcitFlQbwa8iY6S6SobpmllbBlbU0Usty3pX1ER5c0+03wKvJT
+         /hMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=MLNq0Ecu/DTuLkV9EQCwfPnAyKraiDA8g5gWng3WZe4=;
+        b=eSYLvmkLk7nV5odhWuFpdGYtQ3jvSeXrMyquHedHzXjmmpW+K+0Mfvf6gsqm0dJp/p
+         x/V5NNy206kINeVThY9GgcqZbiyUP8Ob1kCW7FJZEf49/upJMmArYE1LxH8XERqZANmV
+         BlUf81A3hPlMs9JQPaoQ9vnwUBCGRJTfVPL3iXUf1rCbOTcpbrbucT6X2XEeONgb7kTQ
+         zNwLw+z9sp7SBCD0aLsKuKU0/qisa9sXijkGo9EHQnz+9Ov4eK3ZLGTxe8Ip1S9Usdgr
+         GKknBU47K7UvHK/qirXsmqfzdCK4hl0MCFNVYasS7NIwzvmIFJJDGNz7BCV5jniRBzif
+         +xhw==
+X-Gm-Message-State: AOAM5303gN31YAbXSfFvjHTM847+Jbb32m6B5T9le3FImm+fx3MZyHKF
+        6B5iphgqo5Ukbwztp07Hw1NuF+jE0sSHHpUP4JleWsU9yqudul+nDVlB0OcDagPdKQ/ULR6AbUl
+        L0cpqT3iTccng77FpjOHA1Cge5T524ZKg9ZcHyA5eHjsDghKwp81RyqFiS1VVd2mXjDQ=
+X-Google-Smtp-Source: ABdhPJwbXCC+E3iY/Okreuc4VazyysECZJHcFaNP9JMc6HZzxtGTWHPtkcQ4wJIfiDZOMVinUhkawEOq5LPSmg==
+X-Received: from jeroendb.sea.corp.google.com ([2620:15c:100:202:fe55:7411:11ac:c2a7])
+ (user=jeroendb job=sendgmr) by 2002:aa7:9203:0:b0:44c:aa4f:5496 with SMTP id
+ 3-20020aa79203000000b0044caa4f5496mr5254454pfo.60.1633623938725; Thu, 07 Oct
+ 2021 09:25:38 -0700 (PDT)
+Date:   Thu,  7 Oct 2021 09:25:28 -0700
+Message-Id: <20211007162534.1502578-1-jeroendb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.33.0.800.g4c38ced690-goog
+Subject: [PATCH net-next 1/7] gve: Switch to use napi_complete_done
+From:   Jeroen de Borst <jeroendb@google.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Yangchun Fu <yangchun@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        David Awogbemila <awogbemila@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 12:29:00PM +0100, Russell King (Oracle) wrote:
-> Here's a patch which illustrates roughly what I'm thinking at the
-> moment - only build tested.
-> 
-> mac_select_pcs() should not ever fail in phylink_major_config() - that
-> would be a bug. I've hooked mac_select_pcs() also into the validate
-> function so we can catch problems there, but we will need to involve
-> the PCS in the interface selection for SFPs etc.
-> 
-> Note that mac_select_pcs() must be inconsequential - it's asking the
-> MAC which PCS it wishes to use for the interface mode.
-> 
-> I am still very much undecided whether we wish phylink to parse the
-> pcs-handle property and if present, override the MAC - I feel that
-> logic depends in the MAC driver, since a single PCS can be very
-> restrictive in terms of what interface modes are supportable. If the
-> MAC wishes pcs-handle to override its internal ones, then it can
-> always do:
-> 
-> 	if (port->external_pcs)
-> 		return port->external_pcs;
-> 
-> in its mac_select_pcs() implementation. This gives us a bit of future
-> flexibility.
-> 
-> If we parse pcs-handle in phylink, then if we end up with multiple PCS
-> to choose from, we then need to work out how to either allow the MAC
-> driver to tell phylink not to parse pcs-handle, or we need some way for
-> phylink to ask the MAC "these are the PCS I have, which one should I
-> use" which is yet another interface.
-> 
-> What I don't like about the patch is the need to query the PCS based on
-> interface - when we have a SFP plugged in, it may support multiple
-> interfaces. I think we still need the MAC to restrict what it returns
-> in its validate() method according to the group of PCS that it has
-> available for the SFP interface selection to work properly. Things in
-> this regard should become easier _if_ I can switch phylink over to
-> selecting interface based on phy_interface_t bitmaps rather than the
-> current bodge using ethtool link modes, but that needs changes to phylib
-> and all MAC drivers, otherwise we have to support two entirely separate
-> ways to select the interface mode.
-> 
-> My argument against that is... I'll end up converting the network
-> interfaces that I use to the new implementation, and the old version
-> will start to rot. I've already stopped testing phylink without a PCS
-> attached for this very reason. The more legacy code we keep, the worse
-> this problem becomes.
+From: Yangchun Fu <yangchun@google.com>
 
-Having finished off the SFP side of the phy_interface_t bitmap
-(http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=net-queue)
-and I think the mac_select_pcs() approach will work.
+Use napi_complete_done to allow for the use of gro_flush_timeout.
 
-See commit
-http://git.armlinux.org.uk/cgit/linux-arm.git/commit/?h=net-queue&id=3e0d51c361f5191111af206e3ed024d4367fce78
-where we have a set of phy_interface_t to choose one from, and if
-we add PCS selection into that logic, the loop becomes:
+Fixes: f5cedc84a30d2 ("gve: Add transmit and receive support")
+Signed-off-by: Yangchun Fu <yangchun@google.com>
+Signed-off-by: Catherine Sullivan <csully@google.com>
+Signed-off-by: David Awogbemila <awogbemila@google.com>
+---
+ drivers/net/ethernet/google/gve/gve.h      |  5 ++-
+ drivers/net/ethernet/google/gve/gve_main.c | 38 +++++++++++++---------
+ drivers/net/ethernet/google/gve/gve_rx.c   | 37 +++++++++++----------
+ 3 files changed, 43 insertions(+), 37 deletions(-)
 
-static phy_interface_t phylink_select_interface(struct phylink *pl,
-						const unsigned long *intf
-						const char *intf_name)
-{
-	phy_interface_t interface, intf;
-
-	...
-
-	interface = PHY_INTERFACE_MODE_NA;
-	for (i = 0; i < ARRAY_SIZE(phylink_sfp_interface_preference); i++) {
-		intf = phylink_sfp_interface_preference[i];
-
-		if (!test_bit(intf, u))
-			continue;
-
-		pcs = pl->pcs;
-		if (pl->mac_ops->mac_select_pcs) {
-			pcs = pl->mac_ops->mac_select_pcs(pl->config, intf);
-			if (!pcs)
-				continue;
-		}
-
-		if (pcs && !test_bit(intf, pcs->supported_interfaces))
-			continue;
-
-		interface = intf;
-		break;
-	}
-	...
-}
-
-The alternative would be to move some of that logic into
-phylink_sfp_config_nophy(), and will mean knocking out bits from
-the mask supplied to phylink_select_interface() each time we select
-an interface mode that the PCS doesn't support... which sounds rather
-more yucky to me.
-
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index 85bf825606e8..59c525800e5d 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -825,11 +825,10 @@ __be32 gve_tx_load_event_counter(struct gve_priv *priv,
+ 				 struct gve_tx_ring *tx);
+ /* rx handling */
+ void gve_rx_write_doorbell(struct gve_priv *priv, struct gve_rx_ring *rx);
+-bool gve_rx_poll(struct gve_notify_block *block, int budget);
++int gve_rx_poll(struct gve_notify_block *block, int budget);
++bool gve_rx_work_pending(struct gve_rx_ring *rx);
+ int gve_rx_alloc_rings(struct gve_priv *priv);
+ void gve_rx_free_rings_gqi(struct gve_priv *priv);
+-bool gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
+-		       netdev_features_t feat);
+ /* Reset */
+ void gve_schedule_reset(struct gve_priv *priv);
+ int gve_reset(struct gve_priv *priv, bool attempt_teardown);
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index cd9df68cc01e..388262c61b8d 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -181,34 +181,40 @@ static int gve_napi_poll(struct napi_struct *napi, int budget)
+ 	__be32 __iomem *irq_doorbell;
+ 	bool reschedule = false;
+ 	struct gve_priv *priv;
++	int work_done = 0;
+ 
+ 	block = container_of(napi, struct gve_notify_block, napi);
+ 	priv = block->priv;
+ 
+ 	if (block->tx)
+ 		reschedule |= gve_tx_poll(block, budget);
+-	if (block->rx)
+-		reschedule |= gve_rx_poll(block, budget);
++	if (block->rx) {
++		work_done = gve_rx_poll(block, budget);
++		reschedule |= work_done == budget;
++	}
+ 
+ 	if (reschedule)
+ 		return budget;
+ 
+-	napi_complete(napi);
+-	irq_doorbell = gve_irq_doorbell(priv, block);
+-	iowrite32be(GVE_IRQ_ACK | GVE_IRQ_EVENT, irq_doorbell);
++       /* Complete processing - don't unmask irq if busy polling is enabled */
++	if (likely(napi_complete_done(napi, work_done))) {
++		irq_doorbell = gve_irq_doorbell(priv, block);
++		iowrite32be(GVE_IRQ_ACK | GVE_IRQ_EVENT, irq_doorbell);
+ 
+-	/* Double check we have no extra work.
+-	 * Ensure unmask synchronizes with checking for work.
+-	 */
+-	mb();
+-	if (block->tx)
+-		reschedule |= gve_tx_poll(block, -1);
+-	if (block->rx)
+-		reschedule |= gve_rx_poll(block, -1);
+-	if (reschedule && napi_reschedule(napi))
+-		iowrite32be(GVE_IRQ_MASK, irq_doorbell);
++		/* Double check we have no extra work.
++		 * Ensure unmask synchronizes with checking for work.
++		 */
++		mb();
+ 
+-	return 0;
++		if (block->tx)
++			reschedule |= gve_tx_poll(block, -1);
++		if (block->rx)
++			reschedule |= gve_rx_work_pending(block->rx);
++
++		if (reschedule && napi_reschedule(napi))
++			iowrite32be(GVE_IRQ_MASK, irq_doorbell);
++	}
++	return work_done;
+ }
+ 
+ static int gve_napi_poll_dqo(struct napi_struct *napi, int budget)
+diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+index bb8261368250..bb9fc456416b 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx.c
++++ b/drivers/net/ethernet/google/gve/gve_rx.c
+@@ -450,7 +450,7 @@ static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
+ 	return true;
+ }
+ 
+-static bool gve_rx_work_pending(struct gve_rx_ring *rx)
++bool gve_rx_work_pending(struct gve_rx_ring *rx)
+ {
+ 	struct gve_rx_desc *desc;
+ 	__be16 flags_seq;
+@@ -518,8 +518,8 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
+ 	return true;
+ }
+ 
+-bool gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
+-		       netdev_features_t feat)
++int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
++		      netdev_features_t feat)
+ {
+ 	struct gve_priv *priv = rx->gve;
+ 	u32 work_done = 0, packets = 0;
+@@ -553,13 +553,15 @@ bool gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
+ 	}
+ 
+ 	if (!work_done && rx->fill_cnt - cnt > rx->db_threshold)
+-		return false;
++		return 0;
+ 
+-	u64_stats_update_begin(&rx->statss);
+-	rx->rpackets += packets;
+-	rx->rbytes += bytes;
+-	u64_stats_update_end(&rx->statss);
+-	rx->cnt = cnt;
++	if (work_done) {
++		u64_stats_update_begin(&rx->statss);
++		rx->rpackets += packets;
++		rx->rbytes += bytes;
++		u64_stats_update_end(&rx->statss);
++		rx->cnt = cnt;
++	}
+ 
+ 	/* restock ring slots */
+ 	if (!rx->data.raw_addressing) {
+@@ -570,26 +572,26 @@ bool gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
+ 		 * falls below a threshold.
+ 		 */
+ 		if (!gve_rx_refill_buffers(priv, rx))
+-			return false;
++			return 0;
+ 
+ 		/* If we were not able to completely refill buffers, we'll want
+ 		 * to schedule this queue for work again to refill buffers.
+ 		 */
+ 		if (rx->fill_cnt - cnt <= rx->db_threshold) {
+ 			gve_rx_write_doorbell(priv, rx);
+-			return true;
++			return budget;
+ 		}
+ 	}
+ 
+ 	gve_rx_write_doorbell(priv, rx);
+-	return gve_rx_work_pending(rx);
++	return work_done;
+ }
+ 
+-bool gve_rx_poll(struct gve_notify_block *block, int budget)
++int gve_rx_poll(struct gve_notify_block *block, int budget)
+ {
+ 	struct gve_rx_ring *rx = block->rx;
+ 	netdev_features_t feat;
+-	bool repoll = false;
++	int work_done = 0;
+ 
+ 	feat = block->napi.dev->features;
+ 
+@@ -598,8 +600,7 @@ bool gve_rx_poll(struct gve_notify_block *block, int budget)
+ 		budget = INT_MAX;
+ 
+ 	if (budget > 0)
+-		repoll |= gve_clean_rx_done(rx, budget, feat);
+-	else
+-		repoll |= gve_rx_work_pending(rx);
+-	return repoll;
++		work_done = gve_clean_rx_done(rx, budget, feat);
++
++	return work_done;
+ }
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.33.0.800.g4c38ced690-goog
+
