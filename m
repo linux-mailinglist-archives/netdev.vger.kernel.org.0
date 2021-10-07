@@ -2,114 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C25B425E36
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DD89425E3B
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:55:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233110AbhJGUzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
+        id S232860AbhJGU5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 16:57:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232573AbhJGUzb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:55:31 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9A9C061570;
-        Thu,  7 Oct 2021 13:53:37 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id z5so16356495ybj.2;
-        Thu, 07 Oct 2021 13:53:37 -0700 (PDT)
+        with ESMTP id S231821AbhJGU5r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:57:47 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55CB0C061570;
+        Thu,  7 Oct 2021 13:55:53 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id s16so6411304pfk.0;
+        Thu, 07 Oct 2021 13:55:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pyQNWwdkJWAkLBnPQDQe8VN/G7b/r2IR8mf10D5CLlw=;
-        b=gl0StOvQsQ3O1nPZovu0/Uun5e4fxMajXQIi6Jx1/qnDGMRgd5xMvxkJkF1o+BS4R+
-         8CDp/99piYQV1ZmnBy8YJGwH+l1L48CqZ+z9kga0xQfHIDJ0D9SCECBfOJDIFg3UnuwI
-         S3cLZSKHpNs8pZm2uI/jtOGuUKX5PzeM/emORkmDQjSvj1cMqWdu++HP3ob7xOJwy46E
-         oHqUVyBw+oFtLuC/KCXzbkIRaW9zcP/NjW9wl0Y9ucpi65GQd3xk0Lz1FC/OPinnTz1A
-         RfJmXVy4/Q3li/AhkIbn+kIqDpDPf1KEgjMqxOcZ6pdJ2nfhjK9YW5UyaW7ks4Z7ohJB
-         lqMA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jS2/b+lbzWP06L31MQafqGN4NvFQGhEEw9KPUBF6vTU=;
+        b=ba0Y3T1KjkRH5mo4igmdhPrYnUBo93K2nbl3U48Oq4s06JeAjaWWqqQIUG9XVFXNy3
+         xqFxI63hLYFXDlLtg4kTuLJgEy6jxAuL1nQZrsvGEbBAObJNbV4PamO5sMQE9Qyo19aX
+         fU1zS/9jxJH6IDSmtuqF8mWWEzSeOA/9ZPNGEP5MlpHZZ3exnoZlYdN/Va7sAM9jx4gO
+         zBOKdndiM5sGfhjVF9HyGjCfq3d5scdSf53pAjfqdMlLr2xxIWQrltG4INLe0Dhaz8Is
+         LVQSYkUqIWoIa9EWzvicWSHx79HvGPL2sHS+UZjjHMUb3U4KCGvo952PQlzt6RTmGByD
+         Uuqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pyQNWwdkJWAkLBnPQDQe8VN/G7b/r2IR8mf10D5CLlw=;
-        b=SlW1LWwypQEykgajfnj/r+3/mk2wIV+YZmdOGH8SDpTF6G+1zWmRysIesjerpVZDs4
-         o7f7cahNIJcoNxEzBkqnrJt/Ewd3IdQHOUJOR2kQOgY/jPj0OvoEzwgxfigPcTjZPb07
-         WYZJ/UHiQakmg+1sjN6ieg2Wt06DWvqTCN3HohAbDkuksZDRpRWSc2B5ZW93pu0YUq0B
-         BHQJtsGE882efxveOsnQT+DMhDTvYDJDIItA9Ca4tSpjxuUAcojZsjXwJsD4QHEBYIDl
-         x6Lrfybz7Sjo7+UzIlJmCPglW9pdUyMMxzluDvGZD7FDdNI2stQn5qdBt5iYVDo1oSb3
-         8c7w==
-X-Gm-Message-State: AOAM532NSZbZysdlsgmM6hQEUt/1fPu6e49e+sSGwhY/2Zid4s6Qujab
-        +iqvNwOGRRztC3cDixhgzq2QR/y8uRmv2MDXjjl0zxgd
-X-Google-Smtp-Source: ABdhPJw0wUV8PYiDNZhfGIw/WkBRT7ozC+3Sy3N62q4x50v4dDMEjp7LCygJQALD3/3k1USlyuAw4snpc8dk0he80JI=
-X-Received: by 2002:a25:bb0b:: with SMTP id z11mr7223193ybg.108.1633640016419;
- Thu, 07 Oct 2021 13:53:36 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jS2/b+lbzWP06L31MQafqGN4NvFQGhEEw9KPUBF6vTU=;
+        b=XDkkG9ow7qiGB2Iz2bsW3wnRP5Q3U4eeXKgUzRAj54AV9jF8F3AUiwSp21QECk3u9/
+         FSs5AiAxq6yB3KOUr3YY4rwMwyP0HnsusuYJHADt+H4T39qkXiPTFD5S+sI8bzW9va/K
+         nDwunZik/faz1PH/e7RIC1hAN3o5WWFZFqRG8+oRm1D9UeeFR2x8ZLwa8fGWxxqWvN9y
+         hqESVKJuPmX/3rKPNP6U28O5zjIPPvMHgyb5fXP63VFiyuW9OXiaNnDgqH7KhSc8LWjM
+         EPt2ZKq26XoVXA5eaxiQo5BcljdRo6BR7BWuKRyHUD8K09VrFoPn9ZCR/Z9oJz6Agh/m
+         fKXQ==
+X-Gm-Message-State: AOAM532YmJk+ja/kr0JIFKykicrTgfpuJyxF+h1CYflCqHhNlEiB7xLV
+        VOdRfhkHglmVF4d66hggbFg=
+X-Google-Smtp-Source: ABdhPJzyID+dVU48WKqiH600GMBY5J8ckSNzbjGBYxKGnm4t7S+bTbRBGqbclAH5cUDrarR4LKoAgA==
+X-Received: by 2002:a05:6a00:15c9:b0:44c:a998:b50d with SMTP id o9-20020a056a0015c900b0044ca998b50dmr6401320pfu.49.1633640152661;
+        Thu, 07 Oct 2021 13:55:52 -0700 (PDT)
+Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
+        by smtp.gmail.com with ESMTPSA id j7sm288879pfh.168.2021.10.07.13.55.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Oct 2021 13:55:52 -0700 (PDT)
+Date:   Fri, 8 Oct 2021 02:25:49 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v1 4/6] bpf: selftests: Move test_ksyms_weak
+ test to lskel, add libbpf test
+Message-ID: <20211007205549.xklfits3xkdligat@apollo.localdomain>
+References: <20211006002853.308945-1-memxor@gmail.com>
+ <20211006002853.308945-5-memxor@gmail.com>
+ <CAPhsuW7y3ycWkXLwSmJ5TKbo7Syd65aLRABtWbZcohET0RF6rA@mail.gmail.com>
+ <20211007204609.ygrqpx4rahfzqzly@apollo.localdomain>
 MIME-Version: 1.0
-References: <20211002003706.11237-1-xiyou.wangcong@gmail.com>
- <20211002003706.11237-4-xiyou.wangcong@gmail.com> <582ff8e9-c7b7-88c1-6cf0-e143da92836f@iogearbox.net>
-In-Reply-To: <582ff8e9-c7b7-88c1-6cf0-e143da92836f@iogearbox.net>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 7 Oct 2021 13:53:25 -0700
-Message-ID: <CAM_iQpXy5HOHOU=T_FVVydBniL=tOW9sYTAMsc_nRWcZsqo8Yg@mail.gmail.com>
-Subject: Re: [Patch bpf v3 3/4] net: implement ->sock_is_readable() for UDP
- and AF_UNIX
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Yucong Sun <sunyucong@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211007204609.ygrqpx4rahfzqzly@apollo.localdomain>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 7, 2021 at 1:00 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Fri, Oct 08, 2021 at 02:16:09AM IST, Kumar Kartikeya Dwivedi wrote:
+> On Fri, Oct 08, 2021 at 02:03:49AM IST, Song Liu wrote:
+> > On Tue, Oct 5, 2021 at 5:29 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+> > >
+> > > Also, avoid using CO-RE features, as lskel doesn't support CO-RE, yet.
+> > > Create a file for testing libbpf skeleton as well, so that both
+> > > gen_loader and libbpf get tested.
+> > >
+> > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > [...]
+> > > diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c
+> > > new file mode 100644
+> > > index 000000000000..b75725e28647
+> > > --- /dev/null
+> > > +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c
+> > > @@ -0,0 +1,31 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +
+> > > +#include <test_progs.h>
+> > > +#include "test_ksyms_weak.skel.h"
+> > > +
+> > > +void test_ksyms_weak_libbpf(void)
+> >
+> > This is (almost?) the same as test_weak_syms(), right? Why do we need both?
+> >
 >
-> On 10/2/21 2:37 AM, Cong Wang wrote:
-> > From: Cong Wang <cong.wang@bytedance.com>
-> >
-> > Yucong noticed we can't poll() sockets in sockmap even
-> > when they are the destination sockets of redirections.
-> > This is because we never poll any psock queues in ->poll(),
-> > except for TCP. With ->sock_is_readable() now we can
-> > overwrite >sock_is_readable(), invoke and implement it for
-> > both UDP and AF_UNIX sockets.
-> >
-> > Reported-by: Yucong Sun <sunyucong@gmail.com>
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > Cc: Lorenz Bauer <lmb@cloudflare.com>
-> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > ---
-> >   net/ipv4/udp.c      | 2 ++
-> >   net/ipv4/udp_bpf.c  | 1 +
-> >   net/unix/af_unix.c  | 4 ++++
-> >   net/unix/unix_bpf.c | 2 ++
-> >   4 files changed, 9 insertions(+)
-> >
-> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> > index 2a7825a5b842..4a7e15a43a68 100644
-> > --- a/net/ipv4/udp.c
-> > +++ b/net/ipv4/udp.c
-> > @@ -2866,6 +2866,8 @@ __poll_t udp_poll(struct file *file, struct socket *sock, poll_table *wait)
-> >           !(sk->sk_shutdown & RCV_SHUTDOWN) && first_packet_length(sk) == -1)
-> >               mask &= ~(EPOLLIN | EPOLLRDNORM);
-> >
-> > +     if (sk_is_readable(sk))
-> > +             mask |= EPOLLIN | EPOLLRDNORM;
->
-> udp_poll() has this extra logic around first_packet_length() which drops all bad csum'ed
-> skbs. How does this stand in relation to sk_msg_is_readable()? Is this a concern as well
-> there? Maybe makes sense to elaborate a bit more in the commit message for context / future
-> reference.
+> One includes lskel.h (light skeleton), the other includes skel.h (libbpf
+> skeleton). Trying to include both in the same file, it ends up redefining the
+> same struct. I am not sure whether adding a prefix/suffix to light skeleton
+> struct names is possible now, maybe through another option to bpftool in
+> addition to name?
 
-We don't validate UDP checksums on sockmap RX path, so
-it is okay to leave it as it is, but it is worth a comment like
-you suggest. I will add a comment in this code.
+Sorry, I misremembered. The name option is enough, it is because of how I did it
+in the Makefile (using LSKELS_EXTRA).  I'll fix this in the next spin.
 
-If we really need to validate the checksum, it should be addressed
-in a separate patch(set), not in this one.
+> [...]
 
-Thanks.
+--
+Kartikeya
