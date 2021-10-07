@@ -2,95 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68169424C4D
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 05:52:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73A0B424CAA
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 07:05:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231866AbhJGDx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 23:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231190AbhJGDx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Oct 2021 23:53:56 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D9FC061746
-        for <netdev@vger.kernel.org>; Wed,  6 Oct 2021 20:52:03 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 66so4363064pgc.9
-        for <netdev@vger.kernel.org>; Wed, 06 Oct 2021 20:52:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=jUwSNrbRqeZ2+wz9gNAx3uczGeWWOtNLeT0B6K0atA0=;
-        b=Mb9f4S/meQ2pfM4+bgK4U45+qLwEh81pvCL4c8eonYARO0fTZKkjC7q1K92opeiYIN
-         ZWhkfU+LXYg8QeV4VAYopdPcjYRCDhouYsinO4WAQ1/LKQ4j8PXMZSRvxw+KxZr1Uges
-         JsiNjnjnq1kId9AV8yj0KNpMhdJnnFNjWu6D8lNm4t+KnoVsOPMOrMBTlQQps1x+fqnp
-         2kLut/BphIhylxmmI+1K4vvZPB+bCHEZu5TXM9JvNyKjLeteaWET4g0HKxfMOq2YIb5m
-         QcBfHc/6iQOC11wAW+K9H0SdVjUumvoTYInWKh33XFUV9mUGKXqNFuQLu4SklG4zlGnZ
-         OkJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=jUwSNrbRqeZ2+wz9gNAx3uczGeWWOtNLeT0B6K0atA0=;
-        b=yZcLZFxJmjZPjT+CCysBhJudyoqFJXljl5gMRIxKY697dXT/d50ZMG1quKdWFetn9F
-         swI7hBjOeo1XgSnm4NeTlGMzrhTkvC2C+9bJX3TyNHGAGNmBS7CrJP2mC0nc4xlFdjDA
-         NG2Q7YNUa+FmKoIWu0UMyHWMWTVZ7qohZc6Wr/quQosxT4LaevF1zD/8Gb8I4aKsue8x
-         g9YKOw69mXX86aSY0JtUnZXG4YrTtGuPwVjU0+iTlBUo+Z4hwejRxFxan8of/Pe/h9Hn
-         dRh7N58sod4HvoPSZQj2VbLA78LWCeXlYehJBKjqPS+GacUzIp3pmw+ULU5GunTQvKu+
-         FlKA==
-X-Gm-Message-State: AOAM533BkoZQtOAc0DbBiTE+J6Mynoy+44W6uR4qkahAzjmo+a/Cp7Qp
-        1HC7juVqPdfmKOV66dLPNRuftsHqVT098XXc9YU=
-X-Google-Smtp-Source: ABdhPJzfkS18NoZKEY4Jcn9TkUXKvaD+iTatlhW4VD8pzrt6y3zsmORayiOrFZ2wKkorsEIPNOw1MVm1RPmS4Wf8ZlY=
-X-Received: by 2002:aa7:9a11:0:b0:449:58bc:452e with SMTP id
- w17-20020aa79a11000000b0044958bc452emr2049445pfj.17.1633578722482; Wed, 06
- Oct 2021 20:52:02 -0700 (PDT)
+        id S232856AbhJGFHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 01:07:45 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17154 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229497AbhJGFHo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 01:07:44 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 196MdpMG014769
+        for <netdev@vger.kernel.org>; Wed, 6 Oct 2021 22:05:51 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=7hdLXDicxvEonqM+TahiXJu4T51iJEkOb954yCnSW5k=;
+ b=lu24iiC8wbZt9nfOIVXkKDkLptVCdwloMWLu6o5SptyAieecAvzPSLWL7cMg/FNrb5cJ
+ QcshAJnXxIzunzQ1nF3Osng/5lVrNBAMloKgY7w5tSUMXao4JyVVKh66NItVOkmkFVJM
+ PhsFsjcUCDMBuUup1p1xMOK+kC5bpeYOpH8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3bhmsjsuke-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 06 Oct 2021 22:05:51 -0700
+Received: from intmgw001.05.ash7.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Wed, 6 Oct 2021 22:02:44 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 8622515E2E2F3; Wed,  6 Oct 2021 22:02:40 -0700 (PDT)
+From:   Song Liu <songliubraving@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, Song Liu <songliubraving@fb.com>
+Subject: [PATCH bpf-next v2] selftests/bpf: skip the second half of get_branch_snapshot in vm
+Date:   Wed, 6 Oct 2021 22:02:31 -0700
+Message-ID: <20211007050231.728496-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Received: by 2002:a05:6a20:114:b0:59:f7ca:8188 with HTTP; Wed, 6 Oct 2021
- 20:52:01 -0700 (PDT)
-Reply-To: compaorekone34@gmail.com
-From:   "kone.compaore" <abbttnb001@gmail.com>
-Date:   Wed, 6 Oct 2021 20:52:01 -0700
-Message-ID: <CA+d4EbOKgpqVU7A6iVX3W3TRBzQ8bPJDLP=28OrT3sYbvekNwg@mail.gmail.com>
-Subject: Greetings from kone
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-GUID: 0FYtscTWOH9yb5wcD9g88Ok3-asZZI91
+X-Proofpoint-ORIG-GUID: 0FYtscTWOH9yb5wcD9g88Ok3-asZZI91
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-10-06_04,2021-10-06_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ malwarescore=0 mlxlogscore=933 lowpriorityscore=0 suspectscore=0
+ bulkscore=0 adultscore=0 impostorscore=0 mlxscore=0 spamscore=0
+ priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2109230001 definitions=main-2110070033
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings to you and your family.
+VMs running on latest kernel support LBR. However, bpf_get_branch_snapsho=
+t
+couldn't stop the LBR before too many entries are flushed. Skip the
+hit/waste test for VMs before we find a proper fix for LBR in VM.
 
-My name is Mr. Kone Compaore, the auditing general with the bank,
-Africa Develop bank (ADB) Ouagadougou, Burkina Faso, in West Africa. I
-am contacting you to seek our honesty and sincere cooperation in
-confidential manner to transfer the sum of 10.5 (Ten million five
-hundred thousand Dollars) to your existing or new bank account.
+Fixes: 025bd7c753aa ("selftests/bpf: Add test for bpf_get_branch_snapshot=
+")
+Signed-off-by: Song Liu <songliubraving@fb.com>
 
-This money belongs to one of our bank client, a Libyan oil exporter
-who was working with the former Libyan government; I learn t that he
-was killed by the revolutionary forces since October 2011. Our bank is
-planning to transfer this entire fund into the government public
-treasury as unclaimed fund if nobody comes to claim the money from our
-bank after four years without account activities .
+---
+Changes v1 =3D> v2:
+1. Move the is_hypervisor() check to later in the test, so that we still
+   Run the first half of the test in vm
+2. Use strncmp instead of strstr. (Andrii)
+3. Fix the Fixes tag. (Andrii)
+---
+ .../bpf/prog_tests/get_branch_snapshot.c      | 34 +++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-We did not know each other before, but due to the fact that the
-deceased is a foreigner, the bank will welcome any claim from a
-foreigner without any suspect, that is why I decided to look for
-someone whim I can trust to come and claim the fund from our bank.
+diff --git a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c=
+ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+index 67e86f8d86775..e4f92feb7b32c 100644
+--- a/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
++++ b/tools/testing/selftests/bpf/prog_tests/get_branch_snapshot.c
+@@ -6,6 +6,30 @@
+ static int *pfd_array;
+ static int cpu_cnt;
+=20
++static bool is_hypervisor(void)
++{
++	char *line =3D NULL;
++	bool ret =3D false;
++	size_t len;
++	FILE *fp;
++
++	fp =3D fopen("/proc/cpuinfo", "r");
++	if (!fp)
++		return false;
++
++	while (getline(&line, &len, fp) !=3D -1) {
++		if (!strncmp(line, "flags", 5)) {
++			if (strstr(line, "hypervisor") !=3D NULL)
++				ret =3D true;
++			break;
++		}
++	}
++
++	free(line);
++	fclose(fp);
++	return ret;
++}
++
+ static int create_perf_events(void)
+ {
+ 	struct perf_event_attr attr =3D {0};
+@@ -83,6 +107,16 @@ void test_get_branch_snapshot(void)
+ 		goto cleanup;
+ 	}
+=20
++	if (is_hypervisor()) {
++		/* As of today, LBR in hypervisor cannot be stopped before
++		 * too many entries are flushed. Skip the hit/waste test
++		 * for now in hypervisor until we optimize the LBR in
++		 * hypervisor.
++		 */
++		test__skip();
++		goto cleanup;
++	}
++
+ 	ASSERT_GT(skel->bss->test1_hits, 6, "find_looptest_in_lbr");
+=20
+ 	/* Given we stop LBR in software, we will waste a few entries.
+--=20
+2.30.2
 
-I will endorse your name in the deceased client file here in my office
-which will indicate to that the deceased is your legal joint account
-business partner or family member next of kin to the deceased and
-officially the bank will transfer the fund to your bank account within
-seven working days in accordance to our banking inheritance rules and
-fund claim regulation.
-
-I will share 40% for you and 60% for me after the fund is transferred
-to your bank account, we need to act fast to complete this transaction
-within seven days. I will come to your country to collect my share
-after the fund is transferred to your bank account in your country. I
-hope that you will not disappoint me after the fund is transferred to
-your bank account in your country.
-
-Waiting for your urgent response today
-Yours sincerely
-Kone Compaore
