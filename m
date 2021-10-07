@@ -2,62 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00930425917
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 19:15:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0247D4259B4
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 19:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243207AbhJGRRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 13:17:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48266 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243031AbhJGRRM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 13:17:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0656961139;
-        Thu,  7 Oct 2021 17:15:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633626919;
-        bh=y//8214AVK9KLhfo9dKtPdUieyAPUG44nxKBZcjYeOY=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=mmQ2wFNNSsg7MKy6m3cdOWFCG/Pmjt8zGGhW598Yhcb8zrlRqjGvlcyPMDzxMIe/X
-         wW2PMpmQwM9ohchpaJQOvJqBcUgcsTNi/xbygB7XH+jajlsKBP7+DJ+aYBgoLUrD8S
-         losH61SO2YTgIvL/A7L/vAXqt26jGUKcuvGmpf7hXTWQeIUNCcz4bBpgSWga9gtAR7
-         u54upW+lETdAWSLhDx2FMlztwrrJHmpiYe0f76vk3atQ9HtMdMFcKdGpiYBx9/14Lf
-         KzjCiT/fnfWlVw/GO72TDMEX1Br4h4w9iN+3ozWF4wbsn7YVSzWrVgdhILJ0bv2du9
-         cp2QroGiBquVw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F360B60A23;
-        Thu,  7 Oct 2021 17:15:18 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.15-rc5
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20211007154520.3189432-1-kuba@kernel.org>
-References: <20211007154520.3189432-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20211007154520.3189432-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.15-rc5
-X-PR-Tracked-Commit-Id: 8d6c414cd2fb74aa6812e9bfec6178f8246c4f3a
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 4a16df549d2326344bf4d669c5f70d3da447e207
-Message-Id: <163362691899.23492.14703576253670668434.pr-tracker-bot@kernel.org>
-Date:   Thu, 07 Oct 2021 17:15:18 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, daniel@iogearbox.net,
-        steffen.klassert@secunet.com, kvalo@codeaurora.org,
-        pablo@netfilter.org
+        id S242276AbhJGRq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 13:46:58 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:50346
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229554AbhJGRq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 13:46:57 -0400
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 010463FFE4
+        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 17:45:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1633628703;
+        bh=Coe08tkAG3DLADP+J9knykBNBTwMfZOYcNMbzRGgajM=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=kYC7oH6Pq/+x2J9TxxpklkV86xXqxZqDguDhQJXe+Euo/E+STOQWV/5EJtDt2Z9M0
+         y/A044R9zBivmyN3kthkJ5dcsk3VWrR60hfs3P3DSovkvUZy+sqwdXJmNhGZcOEOug
+         DJM5eyqiot5RGBHXkNPsdpWfPfkgPHeSJpXGKLjtUSdV/082aHg78/7IdYp6Bgs0Qq
+         7izRAjDOj026LDXApZ5MJfWDrb/83fSEtspJnFUL52QWXoRFWVpX9GUd3BZy9tZ0m0
+         6kndb94O5O7OwyUInoPnzS0MnTKbQLspwbNQWjgl1E20LjrlKcH7aUitF+j8hK8qFs
+         G6TXbwiC/WaeA==
+Received: by mail-ed1-f71.google.com with SMTP id u17-20020a50d511000000b003daa3828c13so6618468edi.12
+        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 10:45:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Coe08tkAG3DLADP+J9knykBNBTwMfZOYcNMbzRGgajM=;
+        b=sNUpZKTJDs1QZmEtkPq3XJnckZZH39oasbhimMFzc/Fyh00YC8xvPxkogd5IONy8t3
+         AvDacAOMOVocjh+qwOQ66YJndg8gxX03TVUlkTHr1c5kBniHgbRkaJeHFghQOBHCaBHL
+         1XB9M/NW0Metl5i0wmVevcHF8PQPWoBf4zLr5teOsNUuPq24KSLq7vFuaGv8X1u84/fh
+         Er2zGGPFuDgl67BYlsiWMr7rmOPqtb7xavLKzBfb+8s3w736XYu08ugylZMe3CWDenxM
+         li03XcICcimgL3IixQTD3HaeH7ILhIAV2gCN95vOmLEBGUezw4iu2LaztySE5HJxDoNb
+         C+CQ==
+X-Gm-Message-State: AOAM531tYmki1M+AuoYioiaApLWBJGGJLiKqX98x2Ci3/8wABLefUpD5
+        3b+7d5VVRT03UEN6enzEuQWRmBP+2Ck/u5x9YDSRS8pvZuJYTdHeKXIfM5JIwyQHIFmk8wuXDY9
+        Cwzp6Db+x/9RvxkQiVkbBLE5Mc8d1jDK6jA==
+X-Received: by 2002:a05:6402:40f:: with SMTP id q15mr7790416edv.333.1633628702713;
+        Thu, 07 Oct 2021 10:45:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy/cRrFbBE0AEAY1wTn0RkOd29OzBi3ThqVg6eaCa0cLj3RymI+vrrOi/pDfxhLH7N7JZpaZg==
+X-Received: by 2002:a05:6402:40f:: with SMTP id q15mr7790386edv.333.1633628702498;
+        Thu, 07 Oct 2021 10:45:02 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-186-13.adslplus.ch. [188.155.186.13])
+        by smtp.gmail.com with ESMTPSA id u23sm24243ejx.99.2021.10.07.10.45.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Oct 2021 10:45:02 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Lin Ma <linma@zju.edu.cn>,
+        linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Greg KH <greg@kroah.com>, Will Deacon <will@kernel.org>
+Subject: [PATCH] nfc: nci: fix the UAF of rf_conn_info object
+Date:   Thu,  7 Oct 2021 19:44:30 +0200
+Message-Id: <20211007174430.62558-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu,  7 Oct 2021 08:45:20 -0700:
+From: Lin Ma <linma@zju.edu.cn>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.15-rc5
+The nci_core_conn_close_rsp_packet() function will release the conn_info
+with given conn_id. However, it needs to set the rf_conn_info to NULL to
+prevent other routines like nci_rf_intf_activated_ntf_packet() to trigger
+the UAF.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/4a16df549d2326344bf4d669c5f70d3da447e207
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ net/nfc/nci/rsp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Thank you!
-
+diff --git a/net/nfc/nci/rsp.c b/net/nfc/nci/rsp.c
+index a2e72c003805..b911ab78bed9 100644
+--- a/net/nfc/nci/rsp.c
++++ b/net/nfc/nci/rsp.c
+@@ -334,6 +334,8 @@ static void nci_core_conn_close_rsp_packet(struct nci_dev *ndev,
+ 							 ndev->cur_conn_id);
+ 		if (conn_info) {
+ 			list_del(&conn_info->list);
++			if (conn_info == ndev->rf_conn_info)
++				ndev->rf_conn_info = NULL;
+ 			devm_kfree(&ndev->nfc_dev->dev, conn_info);
+ 		}
+ 	}
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.30.2
+
