@@ -2,124 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0307424D69
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 08:48:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3C66424D76
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 08:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233507AbhJGGuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 02:50:24 -0400
-Received: from mail-eopbgr50080.outbound.protection.outlook.com ([40.107.5.80]:39810
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231279AbhJGGuT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 02:50:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bg1zm1QGCZAyNEtQMIhCyy+1Ase+0DPnzGo6n2bBSZ7ZrYHzunHirvWpTQmIogyB0XsZlwUQFbwpQZpq+foj6b2nnaFCnFFH1T8AGLOp634rUhQLa5wJ6HWvFKoUf6CrbORn676Tlc+7jpTwxthF1Y3+6Gmdj+G9ljCJwRFaxFXUxA7JclF8tx785VWCyoGAjmYDxk1uHqMIq9CsNkhC65gSK9f68OvsYf960uq4Jw7rYnevDMiaNePlJF7foPZM3tWIYjkJ0OuWRy6qyqzq7FBQ2V21Mj4FMDjviMh50bwR1G52TCMs0EynhIHcMqlGQOL9O+4zAQZRqx7l9hft4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KCD4Y4Z5zYEds1kYyNpzZl0xZ13xfR/7+HCKVSU+zkQ=;
- b=bSgPJVb/odN2rpcevc+G+BrPXSGMFG5k0+tvY3cGV5tcrcGzj4E5rSJsqYQa2bKOHH+uaKFKEWV52voCzsAItvNxZy1WMhBTAmyC7h1BzrBbh39hcqf/QjFvxPHlQwqbMBv4yAu9Fm3NrSp6eEbdCZKMkbDBrkylNX7lyo/mT4ioL8k0TIUxfp5JhtyNkFNauRNSQvNdfEIDet9HLq2HLgWIzpZNhiGtziwYTjJY9jKlSYTxtJM/wBIrKFwatllDi/d2N2D+4I6CF/VChUtNATQyhZ97Xf3vbBP+8VUJUt9u01ly44vCqSyYGjeYRyodnpFfcu4tGBNyu/CJ1fXJ1g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KCD4Y4Z5zYEds1kYyNpzZl0xZ13xfR/7+HCKVSU+zkQ=;
- b=eKtAStUPNzA6I89keEdBedsH1IxAQCy08k9KhKBgdnVoryL1JH6Xnz85OmaOLWo3DtJSTau4OPXTJi41CyVaztF4SYjaWy4beOAxvQAVF5EGkMxC/4FXbfxTw+jOg/O2ooy03C+f/tozzhEKRxExKHLytbgMrJID2lzHp0ubHqc=
-Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
- (2603:10a6:200:4f::13) by AM9PR04MB8211.eurprd04.prod.outlook.com
- (2603:10a6:20b:3ea::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Thu, 7 Oct
- 2021 06:48:23 +0000
-Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
- ([fe80::6476:5ddb:7bf2:e726]) by AM4PR0401MB2308.eurprd04.prod.outlook.com
- ([fe80::6476:5ddb:7bf2:e726%8]) with mapi id 15.20.4566.023; Thu, 7 Oct 2021
- 06:48:23 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 2/2] net: enetc: add support for software TSO
-Thread-Topic: [PATCH net-next 2/2] net: enetc: add support for software TSO
-Thread-Index: AQHXuu664Nbids09pUWK+2m6R9okf6vGryiAgABpn4A=
-Date:   Thu, 7 Oct 2021 06:48:23 +0000
-Message-ID: <20211007064822.hjjr62enk24cp6c2@skbuf>
-References: <20211006201308.2492890-1-ioana.ciornei@nxp.com>
- <20211006201308.2492890-3-ioana.ciornei@nxp.com>
- <20211006173021.1a76fee2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211006173021.1a76fee2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 32a08eb1-bf62-4d95-07c4-08d9895e753b
-x-ms-traffictypediagnostic: AM9PR04MB8211:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM9PR04MB8211BC4DCBE49A31DB9C3F48E0B19@AM9PR04MB8211.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3383;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: kWqYIzuweQ3XM+tXjBybNPpgdrlFQmUP+NvVtw0xegvWR6yYBqg25rr4AmNYH/UqjsBD+HPYjC3oFMnIvTth30JAlg5cIqJyB5Ak+lnC2pxjQOxHyV6fWume3YZiahAVD5Xw1Gpk0YwYY3ZpnRSnfA4PoFrI5dbavqrZIXRZobcIzPJthuGQhldbesHuFtg3q5RjB0Eiihaz+c8lgRdx7WvoAWed+N5XYArilRne3nZYfp1Mz7b34L1d9yeduM9JvMHSNiuZHZXRX6wczIGm7Ax9aCykffMbr7PAtvdzji2d3SOLcJrC7c0sFSF4vQdEshjLiP0sqMbBT3bf7Jfb6dvQU83Jtr1Ngz5P4yr+k7pPX11CzaTDcIDsd4GFOF/s1dEVJdjXLgLxK5CRxk6P9QWQuNXF4uwY3lTwgRBS1YtB5zpI7mlAL2JT/WgYIkbROhOOYdNHGrMx6jXJVgi6FBo0XefOqctwRCYWAY/dzzTT5dRX/sVj5PS4u0zxVMwRCrwODCqiasE4PyM+8XXlDYVEqw2WWKLRHQBlsVJsVQHHjVH2IuMtX9eDk2v9d3QDyd2tswuaqFVFO7if8l6XrqRPb6MEE/iJwzILqUmrVh671UHR66bjBPhChJw+sIpkjxdc5QsmNKzTRVVVjvoNoZfbF1IENSORLWK3RsguKpkDe64TPHdBI5Jetj97hiRqoWMZlRMwf/PL1o5w5xkgWQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR0401MB2308.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(5660300002)(26005)(4744005)(38100700002)(71200400001)(2906002)(9686003)(6512007)(6486002)(1076003)(508600001)(91956017)(66556008)(66446008)(66476007)(316002)(38070700005)(64756008)(66946007)(8676002)(8936002)(33716001)(186003)(54906003)(76116006)(6506007)(122000001)(44832011)(4326008)(6916009)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?crsVwQ1W2tKjps/qh8bHx8x5gTgXGuciOgNm+/CUvaRAJk/YDVbkT66uJIaa?=
- =?us-ascii?Q?DbxGK5IddBZxr6OkZZpPmshMA8IZxsK0S3Ay//X32jxL7Y1ksimS6oEyWiZX?=
- =?us-ascii?Q?+YJASxTq5rLTKfydBjJCrbK8zSw7scqIORiLm1VJgs3MkwT320uNZ4kNzDGk?=
- =?us-ascii?Q?yP28/w5W4Qr6dwxpA4B+NCCWBOI6xxYmYTpg1xGUeUib2IvUKlA9et/S65hB?=
- =?us-ascii?Q?vwM12OUg/WxhybxyIwueNWuN37QMiu5BXpg96cCJIVHUBPJ62IL0NAERyPXj?=
- =?us-ascii?Q?rgagG7jToNqhlKNxEckECnCSwP4tFnn6qpVvI1+fUcVJhUr3cPv6xYg/xBVa?=
- =?us-ascii?Q?rtysx8TP2jzD2ccvfBRIPbRCXRsPQiXTYeiTvjno+EDJL637o8FdU8RZiK8h?=
- =?us-ascii?Q?PvgiYGWWjuP3CLE1xMqRmv5/uZf+tuU2bKKyGASn3cuz7aAIMAfQ0L1B8Bv9?=
- =?us-ascii?Q?d/3XdwXD6NJC7cHjiuFecNWKvhniyqylllRK3SKKNISH22J7EA9ZpLM8tMea?=
- =?us-ascii?Q?VmnDRwsQATi/GJyNrp+zlh2jQqwzgSlSQCFWFSjtePDVlTVvv6GV0Z5S5X6u?=
- =?us-ascii?Q?/omJqkfKHbstkAkk6lnNpB3cpN6RrYfiqpXTsfMvl6yJA+IqTk4NLw/FwmJ0?=
- =?us-ascii?Q?bccmhgB2GkHfkAZCosnj7vm5H6PxZjWYtD6dkQlBPcWBmIAAGtSf8tGpY+Vw?=
- =?us-ascii?Q?TmtNcvvTewsEzYh2oQMRBUC6CvXUlXwxHMWODd4b/3YnW6QJO6PDjlPvKyYz?=
- =?us-ascii?Q?QMu2OcBy4yABGOelrIujxN6oysg5SEdGQDFnh9VTeIs6Y5zQXpBl6J7QsekD?=
- =?us-ascii?Q?u3nucveFk2/bJvQeg5G2eqm12+zK2ckkGAwhNZWwtZ6tutBvTbE1mm2PdgGU?=
- =?us-ascii?Q?SpHM7YH5BNANSlbX/0fIfdbM0x4h1CVLQoLk1Br+u9N3q1RslL+xxXhxJMDG?=
- =?us-ascii?Q?uJRkaiIZt0A/JvJO8yDrMCyn1mCpfP7UylJcikIyVgt8fTRJ3IszpeU/c75S?=
- =?us-ascii?Q?AG4JLy4bSvTnxgVFIHPXmYmSGSJAxgni1yRHv/prZPPfNd3hQAS4+21QwJxs?=
- =?us-ascii?Q?FnksPaeay7rSn6CYnCazn2k5xyrLgCDzXKxghfKYNTK8VqpqvLp6eA664fbU?=
- =?us-ascii?Q?7v+loJt1pKehimhTQc35NK8sBUkjbr9BOnTbZRhIEjQdgqF1Ph0UVERtd8Eu?=
- =?us-ascii?Q?WxvvPt5xWYGdlb9I7puDYnzfuXEbGMNpUSH2ilUmVhpZK0Pkr1ieboKmrKwv?=
- =?us-ascii?Q?k0EY1g05ORxcd7oWj8o3E3dsGNkqtBYkWnvaww24sydafOHrAzxJmKDjJQQ9?=
- =?us-ascii?Q?dvah7teu8sU86WquMSTXjPeA?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <10F07B6303E5CD43AA3C7647B8FF8DC7@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S240220AbhJGG5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 02:57:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57006 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240203AbhJGG5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 02:57:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1633589719;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ohI65JdSUSq/+FkxLvHiDlNvOVQLBfq7YkB63w+27PY=;
+        b=S2UdPEanNx2jA2haH5fL3bZefcqakmKXT9dl8P1Y0fChzbjZYFNCxJMt0ZQ/FNKORoROAi
+        CqF7lyFSaZ9BFdx84pLQr224J+BkJVN1q9HVxwypM/R9Ly/xU8/jwurIXxAfUTz4jetg9j
+        kdaRf5a2z1M6PBtJ8RDiSaf53QY+rxU=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-38-QTPjiRMDNzaY-M11tlGr_Q-1; Thu, 07 Oct 2021 02:55:18 -0400
+X-MC-Unique: QTPjiRMDNzaY-M11tlGr_Q-1
+Received: by mail-wr1-f71.google.com with SMTP id 41-20020adf812c000000b00160dfbfe1a2so199089wrm.3
+        for <netdev@vger.kernel.org>; Wed, 06 Oct 2021 23:55:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ohI65JdSUSq/+FkxLvHiDlNvOVQLBfq7YkB63w+27PY=;
+        b=sf/5gBbp+TYeyhOp1ct4eSlPW/qSAh087ZCuOskIoVKZlknCwIQQwOgFXeykugZftC
+         jjy8KjXZh4rU0SO/Vpv/nVsLJj6XLn5+iaol9ShgpSruj5619Yj9xbmU6mwP+DoHlD6k
+         uC4+fi3LbaEnoOdpN87+1D+v+xAz26XhwrWTdtekw/MigEks6pNWojxMTF72EId6Dw5f
+         ZklUUC9vGdZghBs6GZ9urhimaYsd6xOoEYdh/t651JoM+hFsp7gILNKbtI+P4drT46zJ
+         nBMIaQOWJs+cjiR6QAsgjmIFeKRZ0OY25Yy6aQMI0g+PUlma96ih7KiL6Dl+C1pd9wnG
+         FqVA==
+X-Gm-Message-State: AOAM5313QsCKU1/pUxLM+TvtUDk1VhnMPUMtqwew2owC0O+3w2k4sLtg
+        L60T9ktHjchaPfcBLEcYIgy6XpQ423qm9N4gdZwnoaIrQtMB2BMdn4YlAu0A2MNQava1RP9bfEX
+        tGLUV/YVGxlyUQWsp
+X-Received: by 2002:adf:bc42:: with SMTP id a2mr3233664wrh.4.1633589717326;
+        Wed, 06 Oct 2021 23:55:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw5a6w4xr73nat5ZurZs/SiSonJ8Oe7P3NpMb3m2k5K8Pdj8CPKOWZcTp+n/GAecCz+b7YeJg==
+X-Received: by 2002:adf:bc42:: with SMTP id a2mr3233642wrh.4.1633589717134;
+        Wed, 06 Oct 2021 23:55:17 -0700 (PDT)
+Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id b190sm1353711wmd.25.2021.10.06.23.55.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Oct 2021 23:55:16 -0700 (PDT)
+Date:   Thu, 7 Oct 2021 08:55:14 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Viktor Malik <vmalik@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Subject: Re: [RFC] store function address in BTF
+Message-ID: <YV6Z0jcB8jdsG4Ly@krava>
+References: <YV1hRboJopUBLm3H@krava>
+ <CAEf4BzZPH6WQTYaUTpWBw1gW=cNUtPYPnN8OySgXtbQLzZLhEQ@mail.gmail.com>
+ <YV4Bx7705mgWzhTd@krava>
+ <CAEf4BzbirA4F_kW-sVrS_YmfUxhAjYVDwO1BvtzTYyngqHLkiw@mail.gmail.com>
+ <YV4dmkXO6nkB2DeV@krava>
+ <CAEf4BzYBS8+9XADjJdvKB=_6tf8_t19UVGfm2Lk1+Nb6qWk5cw@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM4PR0401MB2308.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32a08eb1-bf62-4d95-07c4-08d9895e753b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Oct 2021 06:48:23.5650
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Cl3zCmnJvJnasIZCavsktgIM20pZ7JLLMxu4H9/QfuFlBhsc6qz4M5AS3qYn16hgKx3lt2X+UTvkNht1KUiyQw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8211
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYBS8+9XADjJdvKB=_6tf8_t19UVGfm2Lk1+Nb6qWk5cw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 06, 2021 at 05:30:21PM -0700, Jakub Kicinski wrote:
-> On Wed,  6 Oct 2021 23:13:08 +0300 Ioana Ciornei wrote:
-> > +__wsum enetc_tso_hdr_csum(struct tso_t *tso, struct sk_buff *skb, char=
- *hdr,
-> > +			  int hdr_len, int *l4_hdr_len)
->=20
-> > +void enetc_tso_complete_csum(struct enetc_bdr *tx_ring, struct tso_t *=
-tso, struct sk_buff *skb,
-> > +			     char *hdr, int len, __wsum sum)
->=20
-> static x2
+On Wed, Oct 06, 2021 at 03:37:16PM -0700, Andrii Nakryiko wrote:
+> On Wed, Oct 6, 2021 at 3:05 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Wed, Oct 06, 2021 at 02:22:28PM -0700, Andrii Nakryiko wrote:
+> > > On Wed, Oct 6, 2021 at 1:06 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > >
+> > > > On Wed, Oct 06, 2021 at 09:17:39AM -0700, Andrii Nakryiko wrote:
+> > > > > On Wed, Oct 6, 2021 at 1:42 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > > > >
+> > > > > > hi,
+> > > > > > I'm hitting performance issue and soft lock ups with the new version
+> > > > > > of the patchset and the reason seems to be kallsyms lookup that we
+> > > > > > need to do for each btf id we want to attach
+> > > > > >
+> > > > > > I tried to change kallsyms_lookup_name linear search into rbtree search,
+> > > > > > but it has its own pitfalls like duplicate function names and it still
+> > > > > > seems not to be fast enough when you want to attach like 30k functions
+> > > > >
+> > > > > How not fast enough is it exactly? How long does it take?
+> > > >
+> > > > 30k functions takes 75 seconds for me, it's loop calling bpf_check_attach_target
+> > > >
+> > > > getting soft lock up messages:
+> > > >
+> > > > krava33 login: [  168.896671] watchdog: BUG: soft lockup - CPU#1 stuck for 26s! [bpftrace:1087]
+> > > >
+> > >
+> > > That's without RB tree right? I was curious about the case of you
+> > > converting kallsyms to RB tree and it still being slow. Can't imagine
+> > > 30k queries against RB tree with ~160k kallsyms taking 75 seconds.
+> >
+> > yep, that's the standard kallsyms lookup api
+> >
+> > I need to make some adjustment for rbtree kalsyms code, I think I found
+> > a bug in there, so the numbers are probably better as you suggest
+> 
+> ok, cool, let's see what are the new numbers then
+> 
+> >
+> > >
+> > > But as I said, why not map BTF IDs into function names, sort function
+> > > names, and then pass over kallsyms once, doing binary search into a
+> > > sorted array of requested function names and then recording addr for
+> > > each. Then check that you found addresses for all functions (it also
+> > > leaves a question of what to do when we have multiple matching
+> > > functions, but it's a problem with any approach). If everything checks
+> > > out, you have a nice btf id -> func name -> func addr mapping. It's
+> > > O(N log(M)), which sounds like it shouldn't be slow. Definitely not
+> > > multiple seconds slow.
+> >
+> > ok, now that's clear to me, thanks for these details
+> 
+> great
+> 
+> >
+> > >
+> > >
+> > > >
+> > > > >
+> > > > > >
+> > > > > > so I wonder we could 'fix this' by storing function address in BTF,
+> > > > > > which would cut kallsyms lookup completely, because it'd be done in
+> > > > > > compile time
+> > > > > >
+> > > > > > my first thought was to add extra BTF section for that, after discussion
+> > > > > > with Arnaldo perhaps we could be able to store extra 8 bytes after
+> > > > > > BTF_KIND_FUNC record, using one of the 'unused' bits in btf_type to
+> > > > > > indicate that? or new BTF_KIND_FUNC2 type?
+> > > > > >
+> > > > > > thoughts?
+> > > > >
+> > > > > I'm strongly against this, because (besides the BTF bloat reason) we
+> > > > > need similar mass attachment functionality for kprobe/kretprobe and
+> > > > > that one won't be relying on BTF FUNCs, so I think it's better to
+> > > > > stick to the same mechanism for figuring out the address of the
+> > > > > function.
+> > > >
+> > > > ok
+> > > >
+> > > > >
+> > > > > If RB tree is not feasible, we can do a linear search over unsorted
+> > > > > kallsyms and do binary search over sorted function names (derived from
+> > > > > BTF IDs). That would be O(Nlog(M)), where N is number of ksyms, M is
+> > > > > number of BTF IDs/functions-to-be-attached-to. If we did have an RB
+> > > > > tree for kallsyms (is it hard to support duplicates? why?) it could be
+> > > > > even faster O(Mlog(N)).
+> > > >
+> > > > I had issues with generic kallsyms rbtree in the post some time ago,
+> > > > I'll revisit it to check on details.. but having the tree with just
+> > > > btf id functions might clear that.. I'll check
+> > >
+> > > That's not what I'm proposing. See above. Please let me know if
+> > > something is not clear before going all in for RB tree implementation
+> > > :)
+> > >
+> > >
+> > > But while we are on topic, do you think (with ftrace changes you are
+> > > doing) it would be hard to support multi-attach for
+> > > kprobes/kretprobes? We now have bpf_link interface for attaching
+> > > kprobes, so API can be pretty aligned with fentry/fexit, except
+> > > instead of btf IDs we'd need to pass array of pointers of C strings, I
+> > > suppose.
+> >
+> > hum, I think kprobe/kretprobe is made of perf event (kprobe/kretprobe
+> > pmus), then you pass event fd and program fd to bpf link syscall,
+> > and it attaches bpf program to that perf event
+> >
+> > so perhaps the user interface would be array of perf events fds and prog fd
+> >
+> > also I think you can have just one probe for function, so we will not need
+> > to share kprobes for multiple users like we need for trampolines, so the
+> > attach logic will be simple
+> 
+> creating thousands of perf_event FDs seems expensive (and you'll be
+> running into the limit of open files pretty soon in a lot of systems).
+> So I think for multi-attach we'll have to have a separate way where
+> you'd specify kernel function name (and maybe also offset). I'm just
+> saying that having BPF_LINK_CREATE command, it's easier (probably) to
+> extend this for kprobe multi-attach, than trying to retrofit this into
+> perf_event_open.
 
-Thanks. Forgot about these.=
+ah true.. I wonder we could bypass perf by using directly kernel
+kprobe interface
+
+jirka
+
