@@ -2,167 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5248C425CA3
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 21:51:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54D00425CB4
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 21:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241409AbhJGTxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 15:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48372 "EHLO
+        id S240938AbhJGT7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 15:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233897AbhJGTxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 15:53:46 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DFAC061570;
-        Thu,  7 Oct 2021 12:51:52 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id 5-20020a9d0685000000b0054706d7b8e5so8901005otx.3;
-        Thu, 07 Oct 2021 12:51:52 -0700 (PDT)
+        with ESMTP id S231993AbhJGT7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 15:59:08 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5981C061570
+        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 12:57:14 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id g184so828103pgc.6
+        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 12:57:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=y0/6HCugUMN0F654upmT8E3BC8E0KlkaMuLVFLmed0w=;
-        b=kpYzDIHQ8hqzKKZj5IVoqIa4/Y0cTKN2yDVeHbls9V9GTXBM5ElVvRNGWPCSGppv7g
-         VkoWvUDN+juoR/xbjMTVd0RWX+TSV3sxG1SgYBb58VL5opkboPn7jx8ltbQGVMkNyXSj
-         gTAgpJ+iQvkdmtN0QrUPODgOhBHf2Sp944DjUZPADvwB73NeMjmWmtpIkZiITmzXti8/
-         5x1UNKUqy4Mn/gHZBIehejTQ3552exuKiXuHfU/10GRQQZW/XXqexvi7cfJ2hZRfPPiz
-         ocHjA4pzb/TnlyUtW0vOMi7rMIFoG1A+h88GFlYCLytI/TH4yI5d0Eghe79S6nCRgPcO
-         TYzw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=juivLWC7mTvK0BO0t6/CHSHKudhoMfxjRvB6yI//Utk=;
+        b=LsJUFzkgmvIzunKFuAVeOuuEgYzysoWS7QH0KaywzH0f5tIUSGHG2pAvZg+noLbqxT
+         vpLb59jur+GSIOkGaTxH6vTz4s3GD2NilsndGITYk2wz66FwwtqXOIcaaXOl3uaLJQt+
+         WG5eO+I5qg3wo56TIyX/SjTvl+VT1F7IloU0tHCyJH4prGmCW9ipwV6OwlKkUyzRYT5S
+         Zuql4m3vaML9djf4lhMT9/SwiT9zkW+BnbtgvhGg+Bz8i7z5lsZCrUzjQPqP7jB79w6H
+         qAC6K4KmHHQC5iYY4C8njrGiUGJ0mKw/MdofnbwmYralXJOj6sarpSrSoKQ0pLsyShQf
+         we+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=y0/6HCugUMN0F654upmT8E3BC8E0KlkaMuLVFLmed0w=;
-        b=Ox8fyWlOfIp4E/GStqr3xYPEmQDwqcxfcMyStSk45HksRVONfbBqSz2FFM9w8kHIGx
-         Wu4l8vIiwta/RNGQVANQdnnVFedFnYjPlRIRN/VrQBVkBM28KaKxBtEcXafOjlKEnLo9
-         Spe0ZW+1WeewKdPWZFI7xJ9VqyferAHXLfd1KySx9QzkhM6Nn6gXKTyisWlWFYira6lU
-         LeahM0YMwunQukjhp6OlJJ3kBQLDuYG4nfu5spsJlD1XCme30w/VvBFJE+KcYbRt4Ncs
-         8f8jcAKcFwyOts2ieXoCBXkJVUpf8OZSWmSLAw9hOncVrsEkrUHN8zusTNOt7b36nof9
-         xiIw==
-X-Gm-Message-State: AOAM533eOpLIZIS+/IyDE2RbCMaVVoYuFl0L1DbN13eHQKu3LnBLTwmI
-        z0v6HaNvZH8k3j6DRTR2NLFRH4wHQiQ=
-X-Google-Smtp-Source: ABdhPJzIvUe3fMiVX/W5xfVi1zORiSe5YE8qxDAuN4+cVJ00zdWrKB74TBmicUWfk03AXXZvfJDPCA==
-X-Received: by 2002:a9d:357:: with SMTP id 81mr5134026otv.381.1633636311857;
-        Thu, 07 Oct 2021 12:51:51 -0700 (PDT)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:85ae:a51:4d98:71a3])
-        by smtp.gmail.com with ESMTPSA id s206sm94774oia.33.2021.10.07.12.51.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 12:51:51 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [Patch bpf v3] skmsg: check sk_rcvbuf limit before queuing to ingress_skb
-Date:   Thu,  7 Oct 2021 12:51:47 -0700
-Message-Id: <20211007195147.28462-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        bh=juivLWC7mTvK0BO0t6/CHSHKudhoMfxjRvB6yI//Utk=;
+        b=ctEBbB6Tt2AkbD6PebU1PmdF7IcI/HaDSc9MjjUsUHvhndnJZbZp4kt2YV07WIhmfI
+         DMT9jgB5T3jisV0v+YTjRchJbr7ugvzJ1WPqFMW2Cf6s+z4lmWSnqJoypWpviJC6p/5/
+         /lGVes5ACVSdkPx5rU4OgpImy++GjtYxzDhiL9Lu0b2HmksMHj6QV/s6hH4HV+nSLJMu
+         CzGz4Kh1C++4PfEm3QtJwePXCpyLmpXZElB2O8aKb/kyyuyahDAhhMZ9ppkFCccKD2Us
+         4AmrQs57wbgrYbdJBSgBrh4KjKm5s1xT+9tjZ4WD6vHYWohUMSMcSEHe4ZRwWAxWMnBb
+         yRAA==
+X-Gm-Message-State: AOAM531BEjRN4/UAPTX4TMcKPqXRRiN1y0jzF4Np+JSNLTRsjvG4/IKf
+        HY+T66HtqKosaOi7Xcwltb4j4brpyYQ=
+X-Google-Smtp-Source: ABdhPJy+kCoTdq8c3xR0+HcgwzU1WpjQ/vNjhvyjo4HS2bJahYrVHaAQMtrj60ztkoB2Hj2vkde3+w==
+X-Received: by 2002:a62:30c7:0:b0:44c:1ec3:bc31 with SMTP id w190-20020a6230c7000000b0044c1ec3bc31mr5935455pfw.21.1633636634308;
+        Thu, 07 Oct 2021 12:57:14 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id m5sm126180pfc.105.2021.10.07.12.57.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Oct 2021 12:57:13 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/7] gve: Do lazy cleanup in TX path
+To:     Jeroen de Borst <jeroendb@google.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Tao Liu <xliutaox@google.com>,
+        Catherine Sullivan <csully@google.com>
+References: <20211007162534.1502578-1-jeroendb@google.com>
+ <20211007162534.1502578-3-jeroendb@google.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e53792f1-3084-aee9-43eb-9d16cb063a3a@gmail.com>
+Date:   Thu, 7 Oct 2021 12:57:11 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211007162534.1502578-3-jeroendb@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
 
-Jiang observed OOM frequently when testing our AF_UNIX/UDP
-proxy. This is due to the fact that we do not actually limit
-the socket memory before queueing skb to ingress_skb. We
-charge the skb memory later when handling the psock backlog,
-and it is not limited either.
 
-This patch adds checks for sk->sk_rcvbuf right before queuing
-to ingress_skb and drops or retries the packets if this limit
-exceeds. This is very similar to UDP receive path. Ideally we
-should set the skb owner before this check too, but it is hard
-to make TCP happy with sk_forward_alloc.
+On 10/7/21 9:25 AM, Jeroen de Borst wrote:
+> From: Tao Liu <xliutaox@google.com>
+> 
+> When TX queue is full, attemt to process enough TX completions
+> to avoid stalling the queue.
+> 
+> Fixes: f5cedc84a30d2 ("gve: Add transmit and receive support")
+> Signed-off-by: Tao Liu <xliutaox@google.com>
+> Signed-off-by: Catherine Sullivan <csully@google.com>
+> ---
+>  drivers/net/ethernet/google/gve/gve.h         |  9 +-
+>  drivers/net/ethernet/google/gve/gve_ethtool.c |  3 +-
+>  drivers/net/ethernet/google/gve/gve_main.c    |  6 +-
+>  drivers/net/ethernet/google/gve/gve_tx.c      | 94 +++++++++++--------
+>  4 files changed, 62 insertions(+), 50 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+> index 59c525800e5d..003b30b91c6d 100644
+> --- a/drivers/net/ethernet/google/gve/gve.h
+> +++ b/drivers/net/ethernet/google/gve/gve.h
+> @@ -341,8 +341,8 @@ struct gve_tx_ring {
+>  	union {
+>  		/* GQI fields */
+>  		struct {
+> -			/* NIC tail pointer */
+> -			__be32 last_nic_done;
+> +			/* Spinlock for when cleanup in progress */
+> +			spinlock_t clean_lock;
+>  		};
+>
 
-For TCP, we can not just drop the packets on errors. TCP ACKs
-are already sent for those packet before reaching
-->sk_data_ready(). Instead, we use best effort to retry, this
-works because TCP does not remove the skb from receive queue
-at that point and exceeding sk_rcvbuf limit is a temporary
-situation.
+This is adding yet another spinlock in tx completion path.
 
-Reported-by: Jiang Wang <jiang.wang@bytedance.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Lorenz Bauer <lmb@cloudflare.com>
-Cc: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
-v3: add retry logic for TCP
-v2: add READ_ONCE()
+Normally, BQL should kick and you should not fill the queue completely.
 
- net/core/skmsg.c | 15 +++++++++------
- net/ipv4/tcp.c   |  2 ++
- 2 files changed, 11 insertions(+), 6 deletions(-)
+Something is not right.
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 2d6249b28928..356c314cd60c 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -877,11 +877,12 @@ static int sk_psock_skb_redirect(struct sk_psock *from, struct sk_buff *skb)
- 		return -EIO;
- 	}
- 	spin_lock_bh(&psock_other->ingress_lock);
--	if (!sk_psock_test_state(psock_other, SK_PSOCK_TX_ENABLED)) {
-+	if (!sk_psock_test_state(psock_other, SK_PSOCK_TX_ENABLED) ||
-+	    atomic_read(&sk_other->sk_rmem_alloc) > READ_ONCE(sk_other->sk_rcvbuf)) {
- 		spin_unlock_bh(&psock_other->ingress_lock);
- 		skb_bpf_redirect_clear(skb);
- 		sock_drop(from->sk, skb);
--		return -EIO;
-+		return -EAGAIN;
- 	}
- 
- 	skb_queue_tail(&psock_other->ingress_skb, skb);
-@@ -941,7 +942,7 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
- 		}
- 
- 		skb_bpf_set_ingress(skb);
--
-+		err = -EAGAIN;
- 		/* If the queue is empty then we can submit directly
- 		 * into the msg queue. If its not empty we have to
- 		 * queue work otherwise we may get OOO data. Otherwise,
-@@ -953,7 +954,8 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
- 		}
- 		if (err < 0) {
- 			spin_lock_bh(&psock->ingress_lock);
--			if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
-+			if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED) &&
-+			    atomic_read(&sk_other->sk_rmem_alloc) <= READ_ONCE(sk_other->sk_rcvbuf)) {
- 				skb_queue_tail(&psock->ingress_skb, skb);
- 				schedule_work(&psock->work);
- 				err = 0;
-@@ -1141,8 +1143,9 @@ static int sk_psock_verdict_recv(read_descriptor_t *desc, struct sk_buff *skb,
- 		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
- 		skb->sk = NULL;
- 	}
--	if (sk_psock_verdict_apply(psock, skb, ret) < 0)
--		len = 0;
-+	ret = sk_psock_verdict_apply(psock, skb, ret);
-+	if (ret < 0)
-+		len = ret;
- out:
- 	rcu_read_unlock();
- 	return len;
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index e8b48df73c85..8b243fcdbb8f 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1665,6 +1665,8 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 			if (used <= 0) {
- 				if (!copied)
- 					copied = used;
-+				if (used == -EAGAIN)
-+					continue;
- 				break;
- 			} else if (used <= len) {
- 				seq += used;
--- 
-2.30.2
+tx completion can take a lot of time, it seems odd to block an
+innocent thread in ndo_start_xmit().
 
+Please provide more details in your changelog ?
