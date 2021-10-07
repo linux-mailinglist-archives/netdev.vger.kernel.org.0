@@ -2,62 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B1F424B12
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 02:24:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25339424B14
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 02:24:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232602AbhJGA0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 20:26:08 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53264 "EHLO vps0.lunn.ch"
+        id S239986AbhJGA0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 20:26:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48070 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232148AbhJGA0F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 20:26:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=+KHrHdefD48iwVdmlm+TEmLgV1AdnuE5tAzPDwQHJ5g=; b=hJFtruz+fJVqhxEtG0V+CPDzlJ
-        /l2LXWWFoB4WdBoq9BtIb2d5+HZfyLvu2WhAhFNqBM9ywMcV5Aqs4DyaWv0jhZnGCZlRr8rNvs6tj
-        jQhnCCm7tMC48/9zmErj0kEM7QDCK4C20qPBSkm+U28eLtpuua19JV0ZdsJ0XIiOrUb4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mYHCi-009tFC-1S; Thu, 07 Oct 2021 02:24:08 +0200
-Date:   Thu, 7 Oct 2021 02:24:08 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH 09/13] net: dsa: qca8k: check rgmii also on port
- 6 if exchanged
-Message-ID: <YV4+KDQWNhDmcaHL@lunn.ch>
-References: <20211006223603.18858-1-ansuelsmth@gmail.com>
- <20211006223603.18858-10-ansuelsmth@gmail.com>
+        id S240000AbhJGA0N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 20:26:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 81F5A61177;
+        Thu,  7 Oct 2021 00:24:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633566259;
+        bh=tgaHTOugDFGxUUqdN69kCfzDlgrMjWwRYHT9cKyf9aE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KK71dAbQz2qNapWoYZuUUes+kImI2qfF2k21cp4JYOySPd+Ac3ZpI4y7YmOjynaMO
+         UuFvtqr6imDJAi33ZZPhKInf2rgwzxaEkEdnlv8kJija52eQwRxjNqEHdeh0MVSaC0
+         CEQZpP79cyJJnnQEypRh+DCoU/7qcRgwTUfvnHb/2aqlkjMwdBnVKr+UrdZPLatRVG
+         7Q5bcZyYqXMMqjwavfrAj/5P+kg6gZLOYdid/29AmeS20mUGWyHdFg/lBE6XMpb2Wi
+         T/bWUxDmezzc0goWeZaTNOobf109F9Ieu1npY+3YOk4Df7+IJlgDpgbkwlz2Me6hJp
+         SCY24ODf3LMLw==
+Date:   Wed, 6 Oct 2021 17:24:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com
+Subject: Re: [PATCH net-next 1/2] net: enetc: declare NETIF_F_IP_CSUM and do
+ it in software
+Message-ID: <20211006172418.0293de02@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211006201308.2492890-2-ioana.ciornei@nxp.com>
+References: <20211006201308.2492890-1-ioana.ciornei@nxp.com>
+        <20211006201308.2492890-2-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211006223603.18858-10-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 12:35:59AM +0200, Ansuel Smith wrote:
-> Port 0 can be exchanged with port6. Handle this special case by also
-> checking the port6 if present.
+On Wed,  6 Oct 2021 23:13:07 +0300 Ioana Ciornei wrote:
+> This is just a preparation patch for software TSO in the enetc driver.
+> Unfortunately, ENETC does not support Tx checksum offload which would
+> normally render TSO, even software, impossible.
+> 
+> Declare NETIF_F_IP_CSUM as part of the feature set and do it at driver
+> level using skb_csum_hwoffload_help() so that we can move forward and
+> also add support for TSO in the next patch.
+> 
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-This is messy.
+Did you choose NETIF_F_IP_CSUM intentionally?
+It'll only support IPv4, and since you always fall back to SW
+I'd think NETIF_F_HW_CSUM makes more sense.
 
-The DSA core has no idea the ports have been swapped, so the interface
-names are going to be taken from DT unswaped. Now you appear to be
-taking phy-mode from the other port in DT. That is inconsistent. All
-the configuration for a port should come from the same place, nothing
-gets swapped. Or everything needs to swap, which means you need to
-change the DSA core.
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+> index 3cbfa8b4e265..a92bfd660f22 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+> @@ -319,7 +319,7 @@ static netdev_tx_t enetc_start_xmit(struct sk_buff *skb,
+>  {
+>  	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+>  	struct enetc_bdr *tx_ring;
+> -	int count;
+> +	int count, err;
+>  
+>  	/* Queue one-step Sync packet if already locked */
+>  	if (skb->cb[0] & ENETC_F_TX_ONESTEP_SYNC_TSTAMP) {
+> @@ -342,6 +342,12 @@ static netdev_tx_t enetc_start_xmit(struct sk_buff *skb,
+>  		return NETDEV_TX_BUSY;
+>  	}
+>  
+> +	if (skb->ip_summed == CHECKSUM_PARTIAL) {
+> +		err = skb_csum_hwoffload_help(skb, 0);
+> +		if (err)
+> +			goto drop_packet_err;
+> +	}
 
-    Andrew
+Any reason no to call skb_checksum_help() directly?
