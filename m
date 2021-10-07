@@ -2,108 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E86425ABD
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 20:27:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D9ED425B16
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 20:44:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243652AbhJGS3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 14:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        id S243767AbhJGSqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 14:46:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231340AbhJGS3i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 14:29:38 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A36C061570;
-        Thu,  7 Oct 2021 11:27:44 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id h10so378191ilq.3;
-        Thu, 07 Oct 2021 11:27:44 -0700 (PDT)
+        with ESMTP id S243709AbhJGSqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 14:46:03 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5A2C061755;
+        Thu,  7 Oct 2021 11:44:09 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id g13-20020a17090a3c8d00b00196286963b9so7588088pjc.3;
+        Thu, 07 Oct 2021 11:44:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hTmSLuC5KvcfBNoN/JulGigdZCXvDXx6oyLyWAeBh50=;
-        b=PKOIFLpOvb1GVCDeXgmng7e5pVjnw17YFBuTLRiMYolahDTeFWOYcDM4su7McU8uvG
-         Dxw0PAelKB2/Pr9eukgQ2CGo3HHToIeU14Pey6vJZ677pfI7b8Bw/Vbh+CJdNfy/1ln9
-         bfgDTICx0/O/tlLnTGAVHjzeZhyCBAih71w4xj6tqZXXxIiUyups9UNOBCkOkVb6c3yF
-         L2Axj647q5ht7FJZ8pZfFrneyiYKl27EAIF9/nwSi7Pm0cC68w1cx+g+IF7V05s1ZhAg
-         Z/ZQdpx2SIp81gQ4c0i6Dnx2P3fOkssIEeP9ZEyegYA9MJvrotfTuslf/QXlXbYrMcb2
-         vnHQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=aSpHByIL7hU9Cj+fTKzYf3SlqooK7cuVf6gDHr2VbfI=;
+        b=aN4WQ6EG5sZSBkbtky7kZsRr8nRNi62cArJYiQeNqWMlYmvA4xDkA2nw175bg5C/X4
+         q47+0VUjaqm+Cpy0bZCRo7IvgxpJbFc7DDzLkjrqY9EKJE8Q3F90xzosOsa4fliybMrx
+         MCRxHqmC3OXP8yRjJadUZlx1BNE4UYjtdH4MxF3qg23VWFSfu062aRGBZjjOUjb7zBMb
+         uDMfANhxQ8Xishid5/WPC45wwtH+TMfxtqEAPGewK5ZpYoxIDjnv/9YM5QCUWTa/8vfU
+         eqr9mDwiyyU/EaLcFKT6vbC9imW1GhfCj7rmupig5OoLaj4QBCsi6x8u4sEjBfsZlW8F
+         7IHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hTmSLuC5KvcfBNoN/JulGigdZCXvDXx6oyLyWAeBh50=;
-        b=Sb4fvjH8AzA9jdVWCextRVBxctIXYsRnfw/VlcMD8qtfh2UcDs0AT8Zcotu74nOhkd
-         xda89nc+oRYE6SB6BFUXgi58KFxY15HWiWezPksDWfWnTrfny7TZDHs3d/zzlmgfQYNp
-         lOiEwMoj0UhNZ/egk4R7Ipxe/WtxgGQYOKm1d8H2NAuzaxUsOYpyh9TDzYicyOhb78wk
-         XfODUBNUKiQpBRrkpZgKqln4uMcZ6IUUDiF/oE/5MyqFz37cuVYQVwXjfdNI2L9wVfOf
-         zcRMT7joRujKiixtoEYCdQZA2wCXzW95nQHm4bpMk3JreShVQxdrFDz88VfEIVNJGXSt
-         zSkw==
-X-Gm-Message-State: AOAM533Wh6GkexBzj9Q0QA9pAGRoonkWcu6oyYVT7IS5aEK5m4z+jolj
-        Py9byMEaGJwJ0gvTsJhxSX4rlgGVP5qu/g==
-X-Google-Smtp-Source: ABdhPJzCgNX8oJGtwmBHcJPqdYu9zPp24PO171StgIofcJwCErVdCfcJ1RNMi+tEa0OAm0RnqYNriw==
-X-Received: by 2002:a05:6e02:16cc:: with SMTP id 12mr4428989ilx.296.1633631263772;
-        Thu, 07 Oct 2021 11:27:43 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id k4sm59522ilc.10.2021.10.07.11.27.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Oct 2021 11:27:43 -0700 (PDT)
-Subject: Re: [PATCH] tcp: md5: Fix overlap between vrf and non-vrf keys
-To:     Leonard Crestez <cdleonard@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=aSpHByIL7hU9Cj+fTKzYf3SlqooK7cuVf6gDHr2VbfI=;
+        b=U295Q8dre6n9vmwdRvpasfeuH4ckDuwD4GRV0NEWx5Zt2+pGf7APlxThZJ38ZJ17wK
+         cmQk2h8tW7j5yLpenzZCi++Y/i70AXNPl7ZxjxHc8PTzKSF4FkzqG5Eda/I6rn/KSPg0
+         hIZDooli3xxdVu+4Hr9X2wbvlxqTr/E/eWLrwhwwEvBivi13U0/fXnogjYBqHSreduRw
+         zgvF7rr/Sl5B6DhYvEWVJ8hu/16cD3HEcU78lb7I70+qCbuuI4AzU1hgZfasDopZ0I92
+         hDrt9tcHp17Zumj+1K5JDYr8zDfeusEtG+TbObRSCKwG1lu/aKedXdwA8f1pT5sI0gD2
+         6XQA==
+X-Gm-Message-State: AOAM533HLCSjyvoEAPOo9rsEvmQsm0UKzHx3/0ap1tGQVoGGacJD4DGq
+        aWyy1zz5EeTDECTx/Er5rlAOy0Qmznk=
+X-Google-Smtp-Source: ABdhPJxBVfBYNZt695zN8an/qT+bdteVrpEf5+mz9LhlK5W7sXdJiKpV0TI3bBIxem12MkMUvGrUBg==
+X-Received: by 2002:a17:902:8a8c:b0:13e:45bc:e9a9 with SMTP id p12-20020a1709028a8c00b0013e45bce9a9mr5347182plo.11.1633632248678;
+        Thu, 07 Oct 2021 11:44:08 -0700 (PDT)
+Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
+        by smtp.gmail.com with ESMTPSA id 17sm72465pgr.10.2021.10.07.11.44.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Oct 2021 11:44:08 -0700 (PDT)
+Date:   Fri, 8 Oct 2021 00:14:05 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Yonghong Song <yhs@fb.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <3d8387d499f053dba5cd9184c0f7b8445c4470c6.1633542093.git.cdleonard@gmail.com>
- <209548b5-27d2-2059-f2e9-2148f5a0291b@gmail.com>
- <912670a5-8ef2-79cc-b74b-ee5c83534f2b@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5c77ac1a-b6af-982f-d72f-e71098df3112@gmail.com>
-Date:   Thu, 7 Oct 2021 12:27:41 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v1 3/6] libbpf: Ensure that module BTF fd is
+ never 0
+Message-ID: <20211007184405.vffu2bd667ra5aec@apollo.localdomain>
+References: <20211006002853.308945-1-memxor@gmail.com>
+ <20211006002853.308945-4-memxor@gmail.com>
+ <CAEf4BzZCK5L-yZHL=yhGir71t=kkhAn5yN07Vxs2+VizvwF3QQ@mail.gmail.com>
+ <20211006052455.st3f7m3q5fb27bs7@apollo.localdomain>
+ <CAEf4Bzai=3GK5L-tkZRTT_h8SYPFjike-LTS8GXK17Z1YFAQtw@mail.gmail.com>
+ <CAADnVQKVKY8o_3aU8Gzke443+uHa-eGoM0h7W4srChMXU1S4Bg@mail.gmail.com>
+ <CAEf4Bza186k8BeRG8XrUGaUb4_6hf0dCB4a1A5czcS69aBMffw@mail.gmail.com>
+ <87zgrlm8t9.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <912670a5-8ef2-79cc-b74b-ee5c83534f2b@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <87zgrlm8t9.fsf@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/7/21 12:41 AM, Leonard Crestez wrote:
-> 
-> 
-> On 07.10.2021 04:14, David Ahern wrote:
->> On 10/6/21 11:48 AM, Leonard Crestez wrote:
->>> @@ -1103,11 +1116,11 @@ static struct tcp_md5sig_key
->>> *tcp_md5_do_lookup_exact(const struct sock *sk,
->>>   #endif
->>>       hlist_for_each_entry_rcu(key, &md5sig->head, node,
->>>                    lockdep_sock_is_held(sk)) {
->>>           if (key->family != family)
->>>               continue;
->>> -        if (key->l3index && key->l3index != l3index)
->>> +        if (key->l3index != l3index)
->>
->> That seems like the bug fix there. The L3 reference needs to match for
->> new key and existing key. I think the same change is needed in
->> __tcp_md5_do_lookup.
-> 
-> Current behavior is that keys added without tcpm_ifindex will match
-> connections both inside and outside VRFs. Changing this might break real
-> applications, is it really OK to claim that this behavior was a bug all
-> along?
+On Thu, Oct 07, 2021 at 03:54:34PM IST, Toke H�iland-J�rgensen wrote:
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>
+> > On Wed, Oct 6, 2021 at 12:09 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> >>
+> >> On Wed, Oct 6, 2021 at 9:43 AM Andrii Nakryiko
+> >> <andrii.nakryiko@gmail.com> wrote:
+> >> >
+> >> > On Tue, Oct 5, 2021 at 10:24 PM Kumar Kartikeya Dwivedi
+> >> > <memxor@gmail.com> wrote:
+> >> > >
+> >> > > On Wed, Oct 06, 2021 at 10:11:29AM IST, Andrii Nakryiko wrote:
+> >> > > > On Tue, Oct 5, 2021 at 5:29 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+> >> > > > >
+> >> > > > > Since the code assumes in various places that BTF fd for modules is
+> >> > > > > never 0, if we end up getting fd as 0, obtain a new fd > 0. Even though
+> >> > > > > fd 0 being free for allocation is usually an application error, it is
+> >> > > > > still possible that we end up getting fd 0 if the application explicitly
+> >> > > > > closes its stdin. Deal with this by getting a new fd using dup and
+> >> > > > > closing fd 0.
+> >> > > > >
+> >> > > > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> >> > > > > ---
+> >> > > > >  tools/lib/bpf/libbpf.c | 14 ++++++++++++++
+> >> > > > >  1 file changed, 14 insertions(+)
+> >> > > > >
+> >> > > > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> >> > > > > index d286dec73b5f..3e5e460fe63e 100644
+> >> > > > > --- a/tools/lib/bpf/libbpf.c
+> >> > > > > +++ b/tools/lib/bpf/libbpf.c
+> >> > > > > @@ -4975,6 +4975,20 @@ static int load_module_btfs(struct bpf_object *obj)
+> >> > > > >                         pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
+> >> > > > >                         return err;
+> >> > > > >                 }
+> >> > > > > +               /* Make sure module BTF fd is never 0, as kernel depends on it
+> >> > > > > +                * being > 0 to distinguish between vmlinux and module BTFs,
+> >> > > > > +                * e.g. for BPF_PSEUDO_BTF_ID ld_imm64 insns (ksyms).
+> >> > > > > +                */
+> >> > > > > +               if (!fd) {
+> >> > > > > +                       fd = dup(0);
+> >> > > >
+> >> > > > This is not the only place where we make assumptions that fd > 0 but
+> >> > > > technically can get fd == 0. Instead of doing such a check in every
+> >> > > > such place, would it be possible to open (cheaply) some FD (/dev/null
+> >> > > > or whatever, don't know what's the best file to open), if we detect
+> >> > > > that FD == 0 is not allocated? Can we detect that fd 0 is not
+> >> > > > allocated?
+> >> > > >
+> >> > >
+> >> > > We can, e.g. using access("/proc/self/fd/0", F_OK), but I think just calling
+> >> > > open unconditonally and doing if (ret > 0) close(ret) is better. Also, do I
+> >> >
+> >> > yeah, I like this idea, let's go with it
+> >>
+> >> FYI some production environments may detect that FDs 0,1,2 are not
+> >> pointing to stdin, stdout, stderr and will force close whatever files are there
+> >> and open 0,1,2 with canonical files.
+> >>
+> >> libbpf doesn't have to resort to such measures, but it would be prudent to
+> >> make libbpf operate on FDs > 2 for all bpf objects to make sure other
+> >> frameworks don't ruin libbpf's view of FDs.
+> >
+> > oh well, even without those production complications this would be a
+> > bit fragile, e.g., if the application temporarily opened FD 0 and then
+> > closed it.
+> >
+> > Ok, Kumar, can you please do it as a simple helper that would
+> > dup()'ing until we have FD>2, and use it in as few places as possible
+> > to make sure that all FDs (not just module BTF) are covered. I'd
+> > suggest doing that only in low-level helpers in btf.c, I think
+> > libbpf's logic always goes through those anyways (but please
+> > double-check that we don't call bpf syscall directly anywhere else).
+>
 
-no.
+Just to make sure I am on the same page:
 
-It's been a few years. I need to refresh on the logic and that is not
-going to happen before this weekend.
+I have to...
+1. Add a small wrapper (currently named fd_gt_2, any other suggestions?)
+   that takes in the fd, and dups it to fd >= 3 if in range [0, 2] (and closes
+   original fd in this case).
+   Use this for all fd returning bpf syscalls in bpf.c (btf.c is a typo?).
+   Audit other places directly calling syscall(__NR_bpf, ...).
+2. Assume that the situation Alexei mentioned only occurs at startup, or
+   sometime later, not in parallel (which would race with us, and not sure
+   we can deal with it). I'm thinking of a case where such an fd gets passed
+   to an exec'd binary which closes invalids fds on startup (so keeping them
+   >= 3 allows proper inheritance).
+3. gen_loader can hit the same case, so short of adding a bpf_sys_fcntl (or the
+   helper only exposing F_DUPFD), next best option is to reserve the three fds from
+   skel_internal.h or gen_trace (in bpftool) and close later after loading is done.
 
+Feedback needed on 3 (and whether a generic bpf_sys_dup providing functionality of
+existing fcntl and dup{,2,3} is better than simply reserving the three fds at
+load time).
+
+> FYI, you can use fcntl() with F_DUPFD{,_CLOEXEC} and tell it the minimum
+> fd number you're interested in for the clone. We do that in libxdp to
+> protect against fd 0:
+>
+
+Thanks, will switch the dup to fcntl in the next version.
+
+> https://github.com/xdp-project/xdp-tools/blob/master/lib/libxdp/libxdp.c#L1184
+>
+> Given Alexei's comments above, maybe we should be '3' for the last arg
+> instead of 1...
+>
+> -Toke
+>
+
+--
+Kartikeya
