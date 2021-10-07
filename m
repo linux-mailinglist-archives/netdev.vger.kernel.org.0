@@ -2,261 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3876425B60
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 21:11:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3CB8425C71
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 21:43:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243908AbhJGTNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 15:13:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45176 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243906AbhJGTNE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 15:13:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 32958610A1;
-        Thu,  7 Oct 2021 19:11:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633633870;
-        bh=Fyn8cZzhrYEEVYuqi3zLvyRHABtdianejk6MIm1y8Yw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Akq8K5MP/KQUsqrWb2jGqh6Il6x2FfkxVS/enEB05f98eMkbpT139iN6U08cLk5RK
-         N2pzVWCA2vSSdh+TTy2aMmjz0kw7mRKziqo8+FoqK9dEcxUeGJ1s8V6cEARDU01AjL
-         KswWW9i1/HQUv9hQgpTzvjxFGk/apG36cM2V3EhLvlqGFQTx2EwsrmKcA/0mtHBme9
-         75JCO8Y63Pmvs4OhC/IOPiW7FZmB+SvlCct4arAMp+OkDF1nGx/MzOCiDXh7wK7iXA
-         Pm6ODKyA8wQ+2EwP9CDuFh1c/ZBmQGMHFUT2qGgIrzmxoFlXbIHyFyzf47Hoxn1inP
-         QTli8sX7ed5pQ==
-Date:   Thu, 7 Oct 2021 14:11:08 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     hkallweit1@gmail.com, nic_swsd@realtek.com, bhelgaas@google.com,
-        davem@davemloft.net, kuba@kernel.org, anthony.wong@canonical.com,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC] [PATCH net-next v6 3/3] r8169: Implement dynamic ASPM
- mechanism
-Message-ID: <20211007191108.GA1250550@bhelgaas>
+        id S240851AbhJGTpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 15:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46392 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233552AbhJGTpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 15:45:17 -0400
+Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DD8C061755
+        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 12:43:23 -0700 (PDT)
+Received: by mail-vs1-xe2f.google.com with SMTP id p18so7925209vsu.7
+        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 12:43:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=p4NuL35X6Zwa74Ub7hhGNsOOhc7yEa+ucW32Y1XSIEg=;
+        b=gPkLWZQ6LSQSA4R5NImb2Zxe+A4oy9/cCIoiRoyY1fHfYMGP18cVBaVscKKZfft5Qv
+         8xRbF24RXah8LCW0O+FOmCTCI+nQSzL2dH0ZyKuya0rvsCEPdSwXhiTU8XiOzRtDkESt
+         RQYKFPzTdOhbLJRVDm0TdFxBewEJ98b8IKVjalmJwBr4uHxafY8QftGNj5snJHH/icxx
+         jupgHJxwAD6BVMKXUV5ZvROIiqT7A0NfiBnXLCmEI9z54SJkPdfgWInNkr4JGNNpwOjV
+         I0IameGY+xLsoRLmG6+SZiad50mHero3Kho/gkwmSK7mbcahMGevlo2Jb/RZ9X4Olhpw
+         OMfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=p4NuL35X6Zwa74Ub7hhGNsOOhc7yEa+ucW32Y1XSIEg=;
+        b=E6sokts6NhNDFP8HLcV//aiQmKanLW/PwlwxoxoVVa+6ntc1vz0KtD9G1UIipunucb
+         hE+LeGCHgqAqlyW2Hkyop9Li5B32rOmAnB2G3osfe3o6o8GW2ABo1lhrmFhKyM+Br97j
+         74JSBipKNDndbcOjpquf8zlQh8FUQLBGUegALHDe6NyVdkLtMHWAwBC4lxl+sD7N6wkT
+         jzcSw4ZFmoAbpfbf47TPnBkIZ7/RE8Deje9d67wF4THzGq56+N/rYLQuW6QUjcUjLfRS
+         FAAaMVyLnxGD83dR8C9aPqz5hUEWZ7m1HY6p5dOrY8LFfXyfLDLcqDAsVs8BaHYQGH2M
+         t5XA==
+X-Gm-Message-State: AOAM531rmFA2Kz+9zH0VJMH5YQNmiOfrY9fi860a7360X26IBDymtvSU
+        1dNSJI5jP5upO7LkoKq2YziwXUaCy2ghkYlnwJLY4g==
+X-Google-Smtp-Source: ABdhPJxoTWlafsWNP+6Zko1t0bQuEsJ3fgWv0z+6au5Ky9IQD0Iwc+JEMqrgV9B+6pngy98tVMDRBKIzo2s2s199W+c=
+X-Received: by 2002:a67:f2cc:: with SMTP id a12mr6364534vsn.24.1633635802858;
+ Thu, 07 Oct 2021 12:43:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211007161552.272771-4-kai.heng.feng@canonical.com>
+References: <20211003192208.6297-1-quentin@isovalent.com> <CAEf4Bzb1MftD6KEvBqgs=wR5VVSLrir_tVBPwwvLu2RvW5=tNA@mail.gmail.com>
+In-Reply-To: <CAEf4Bzb1MftD6KEvBqgs=wR5VVSLrir_tVBPwwvLu2RvW5=tNA@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Date:   Thu, 7 Oct 2021 20:43:11 +0100
+Message-ID: <CACdoK4+4iB-aquCgxXV9BYcXZpPrREZrnm+G8hau-SOt8QPtqQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 00/10] install libbpf headers when using the library
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 08, 2021 at 12:15:52AM +0800, Kai-Heng Feng wrote:
-> r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
-> Same issue can be observed with older vendor drivers.
-> 
-> The issue is however solved by the latest vendor driver. There's a new
-> mechanism, which disables r8169's internal ASPM when the NIC traffic has
-> more than 10 packets per second, and vice versa. The possible reason for
-> this is likely because the buffer on the chip is too small for its ASPM
-> exit latency.
+On Wed, 6 Oct 2021 at 19:28, Andrii Nakryiko <andrii.nakryiko@gmail.com> wr=
+ote:
+>
+> On Sun, Oct 3, 2021 at 12:22 PM Quentin Monnet <quentin@isovalent.com> wr=
+ote:
+> >
+> > Libbpf is used at several locations in the repository. Most of the time=
+,
+> > the tools relying on it build the library in its own directory, and inc=
+lude
+> > the headers from there. This works, but this is not the cleanest approa=
+ch.
+> > It generates objects outside of the directory of the tool which is bein=
+g
+> > built, and it also increases the risk that developers include a header =
+file
+> > internal to libbpf, which is not supposed to be exposed to user
+> > applications.
+> >
+> > This set adjusts all involved Makefiles to make sure that libbpf is bui=
+lt
+> > locally (with respect to the tool's directory or provided build directo=
+ry),
+> > and by ensuring that "make install_headers" is run from libbpf's Makefi=
+le
+> > to export user headers properly.
+> >
+> > This comes at a cost: given that the libbpf was so far mostly compiled =
+in
+> > its own directory by the different components using it, compiling it on=
+ce
+> > would be enough for all those components. With the new approach, each
+> > component compiles its own version. To mitigate this cost, efforts were
+> > made to reuse the compiled library when possible:
+> >
+> > - Make the bpftool version in samples/bpf reuse the library previously
+> >   compiled for the selftests.
+> > - Make the bpftool version in BPF selftests reuse the library previousl=
+y
+> >   compiled for the selftests.
+> > - Similarly, make resolve_btfids in BPF selftests reuse the same compil=
+ed
+> >   library.
+> > - Similarly, make runqslower in BPF selftests reuse the same compiled
+> >   library; and make it rely on the bpftool version also compiled from t=
+he
+> >   selftests (instead of compiling its own version).
+> > - runqslower, when compiled independently, needs its own version of
+> >   bpftool: make them share the same compiled libbpf.
+> >
+> > As a result:
+> >
+> > - Compiling the samples/bpf should compile libbpf just once.
+> > - Compiling the BPF selftests should compile libbpf just once.
+> > - Compiling the kernel (with BTF support) should now lead to compiling
+> >   libbpf twice: one for resolve_btfids, one for kernel/bpf/preload.
+> > - Compiling runqslower individually should compile libbpf just once. Sa=
+me
+> >   thing for bpftool, resolve_btfids, and kernel/bpf/preload/iterators.
+> >
+> > (Not accounting for the boostrap version of libbpf required by bpftool,
+> > which was already placed under a dedicated .../boostrap/libbpf/ directo=
+ry,
+> > and for which the count remains unchanged.)
+> >
+> > A few commits in the series also contain drive-by clean-up changes for
+> > bpftool includes, samples/bpf/.gitignore, or test_bpftool_build.sh. Ple=
+ase
+> > refer to individual commit logs for details.
+> >
+> > v3:
+>
+> Please see few problems with libbpf_hdrs phony targets. Seems like
+> they all can be order-only dependencies and not causing unnecessary
+> rebuilds.
 
-Because the NIC works fine on some platforms with ASPM fully enabled,
-I would describe this as a "workaround" for a bug where we don't know
-the root cause, not a "solution".
+Nice catch, I didn't realise it would force rebuilding :(. I'll
+address it in the next version. I'll also add a few adjustments to
+libbpf's and bpftool's Makefiles to make sure we don't recompile when
+not necessary, because of the header files that are currently
+installed unconditionally.
 
-> Realtek confirmed that all their PCIe LAN NICs, r8106, r8168 and r8125
-> use dynamic ASPM under Windows. So implement the same mechanism here to
-> resolve the issue.
-> 
-> Also introduce a lock to prevent race on accessing config registers.
+> Can you please also normalize your patch prefixes for bpftool and
+> other tools? We've been using a short and simple "bpftool: " prefix
+> for bpftool-related changes, and for other tools it would be just
+> "tools/runqslower" or "tools/resolve_btfids". Please update
+> accordingly. Thanks!
 
-Strictly speaking, the addition of the lock should be a separate patch
-since it's not directly related to the ASPM change.
+$ git log --oneline --pretty=3D'format:%s' -- tools/bpf/bpftool/ | \
+        grep -oE '^(bpftool:|tools: bpftool:)' | sort | uniq -c
+   128 bpftool:
+   194 tools: bpftool:
 
-A little more below...
+... And =E2=80=9Cwe=E2=80=9D've been using =E2=80=9Ctools: bpftool:=E2=80=
+=9D since the early days :).
+But yeah sure, I'll adjust. Shorter looks better. Just wondering, are
+those prefixes documented anywhere?
 
-> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214307
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
-> v6:
->  - Wording change.
->  - Add bugzilla link.
-> 
-> v5:
->  - Split out aspm_manageable replacement as another patch.
->  - Introduce a lock for lock_config_regs() and unlock_config_regs().
-> 
-> v4:
->  - Squash two patches
->  - Remove aspm_manageable and use pcie_aspm_capable()
->    pcie_aspm_enabled() accordingly
-> 
-> v3:
->  - Use msecs_to_jiffies() for delay time
->  - Use atomic_t instead of mutex for bh
->  - Mention the buffer size and ASPM exit latency in commit message
-> 
-> v2: 
->  - Use delayed_work instead of timer_list to avoid interrupt context
->  - Use mutex to serialize packet counter read/write
->  - Wording change
->  drivers/net/ethernet/realtek/r8169_main.c | 58 +++++++++++++++++++++--
->  1 file changed, 53 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 53936ebb3b3a6..9c10a908c08fb 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -622,6 +622,11 @@ struct rtl8169_private {
->  	} wk;
->  
->  	unsigned supports_gmii:1;
-> +	unsigned rtl_aspm_enabled:1;
-> +	struct delayed_work aspm_toggle;
-> +	atomic_t aspm_packet_count;
-> +	struct mutex config_lock;
-> +
->  	dma_addr_t counters_phys_addr;
->  	struct rtl8169_counters *counters;
->  	struct rtl8169_tc_offsets tc_offset;
-> @@ -670,12 +675,14 @@ static inline struct device *tp_to_dev(struct rtl8169_private *tp)
->  
->  static void rtl_lock_config_regs(struct rtl8169_private *tp)
->  {
-> +	mutex_lock(&tp->config_lock);
->  	RTL_W8(tp, Cfg9346, Cfg9346_Lock);
->  }
->  
->  static void rtl_unlock_config_regs(struct rtl8169_private *tp)
->  {
->  	RTL_W8(tp, Cfg9346, Cfg9346_Unlock);
-> +	mutex_unlock(&tp->config_lock);
->  }
->  
->  static void rtl_pci_commit(struct rtl8169_private *tp)
-> @@ -2669,6 +2676,8 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
->  	if (!pcie_aspm_support_enabled() || !pcie_aspm_capable(pdev))
->  		return;
->  
-> +	tp->rtl_aspm_enabled = enable;
-> +
->  	if (enable) {
->  		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
->  		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
-> @@ -4407,6 +4416,7 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
->  
->  	dirty_tx = tp->dirty_tx;
->  
-> +	atomic_add(tp->cur_tx - dirty_tx, &tp->aspm_packet_count);
->  	while (READ_ONCE(tp->cur_tx) != dirty_tx) {
->  		unsigned int entry = dirty_tx % NUM_TX_DESC;
->  		u32 status;
-> @@ -4551,6 +4561,8 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, int budget
->  		rtl8169_mark_to_asic(desc);
->  	}
->  
-> +	atomic_add(count, &tp->aspm_packet_count);
-> +
->  	return count;
->  }
->  
-> @@ -4658,8 +4670,39 @@ static int r8169_phy_connect(struct rtl8169_private *tp)
->  	return 0;
->  }
->  
-> +#define ASPM_PACKET_THRESHOLD 10
-> +#define ASPM_TOGGLE_INTERVAL 1000
-> +
-> +static void rtl8169_aspm_toggle(struct work_struct *work)
-> +{
-> +	struct rtl8169_private *tp = container_of(work, struct rtl8169_private,
-> +						  aspm_toggle.work);
-> +	int packet_count;
-> +	bool enable;
-> +
-> +	packet_count = atomic_xchg(&tp->aspm_packet_count, 0);
-> +
-> +	if (pcie_aspm_enabled(tp->pci_dev)) {
-> +		enable = packet_count <= ASPM_PACKET_THRESHOLD;
-> +
-> +		if (tp->rtl_aspm_enabled != enable) {
-> +			rtl_unlock_config_regs(tp);
-> +			rtl_hw_aspm_clkreq_enable(tp, enable);
-> +			rtl_lock_config_regs(tp);
-> +		}
-> +	} else if (tp->rtl_aspm_enabled) {
-> +		rtl_unlock_config_regs(tp);
-> +		rtl_hw_aspm_clkreq_enable(tp, false);
-> +		rtl_lock_config_regs(tp);
-> +	}
-
-IIUC the way the "dynamic ASPM" works is that rtl8169_aspm_toggle()
-runs every second (1000ms).  If the NIC has sent or received fewer
-than 10 packets in the last second, you make sure ASPM is enabled.  If
-it has sent or received more than 10 packets, you disable ASPM.
-
-Since the disable is done in rtl_hw_aspm_clkreq_enable() with
-chip-specific registers, I suppose lspci and the like still show ASPM
-as being enabled.  Not really a problem, I guess.
-
-It looks like this disables ASPM completely, even though the NIC
-apparently works correctly with L0s and L1.1 enabled, right?
-
-I suppose that on the Intel system, if we enable ASPM, the link goes
-to L1.2, and the NIC immediately receives 1000 packets in that second
-before we can disable ASPM again, we probably drop a few packets?
-
-Whereas on the AMD system, we probably *never* drop any packets even
-with L1.2 enabled all the time?
-
-And if we actually knew the root cause and could set the correct LTR
-values or whatever is wrong on the Intel system, we probably wouldn't
-need this dynamic scheme?
-
-> +	schedule_delayed_work(&tp->aspm_toggle, msecs_to_jiffies(ASPM_TOGGLE_INTERVAL));
-> +}
-> +
->  static void rtl8169_down(struct rtl8169_private *tp)
->  {
-> +	cancel_delayed_work_sync(&tp->aspm_toggle);
-> +
->  	/* Clear all task flags */
->  	bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
->  
-> @@ -4686,6 +4729,10 @@ static void rtl8169_up(struct rtl8169_private *tp)
->  	rtl_reset_work(tp);
->  
->  	phy_start(tp->phydev);
-> +
-> +	/* pcie_aspm_capable may change after system resume */
-> +	if (pcie_aspm_support_enabled() && pcie_aspm_capable(tp->pci_dev))
-> +		schedule_delayed_work(&tp->aspm_toggle, 0);
->  }
->  
->  static int rtl8169_close(struct net_device *dev)
-> @@ -5273,11 +5320,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	if (rc)
->  		return rc;
->  
-> -	/* Disable ASPM L1 as that cause random device stop working
-> -	 * problems as well as full system hangs for some PCIe devices users.
-> -	 */
-> -	pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
-> -
->  	/* enable device (incl. PCI PM wakeup and hotplug setup) */
->  	rc = pcim_enable_device(pdev);
->  	if (rc < 0) {
-> @@ -5307,6 +5349,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  		return rc;
->  	}
->  
-> +	mutex_init(&tp->config_lock);
-> +
->  	tp->mmio_addr = pcim_iomap_table(pdev)[region];
->  
->  	xid = (RTL_R32(tp, TxConfig) >> 20) & 0xfcf;
-> @@ -5344,6 +5388,10 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  
->  	INIT_WORK(&tp->wk.work, rtl_task);
->  
-> +	INIT_DELAYED_WORK(&tp->aspm_toggle, rtl8169_aspm_toggle);
-> +
-> +	atomic_set(&tp->aspm_packet_count, 0);
-> +
->  	rtl_init_mac_address(tp);
->  
->  	dev->ethtool_ops = &rtl8169_ethtool_ops;
-> -- 
-> 2.32.0
-> 
+Thanks,
+Quentin
