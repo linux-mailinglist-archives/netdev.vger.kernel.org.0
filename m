@@ -2,78 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAB1542523A
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 13:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4016F425244
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 13:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241114AbhJGLqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 07:46:47 -0400
-Received: from mga09.intel.com ([134.134.136.24]:65334 "EHLO mga09.intel.com"
+        id S241120AbhJGLwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 07:52:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49790 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230091AbhJGLqo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 07:46:44 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10129"; a="226127319"
-X-IronPort-AV: E=Sophos;i="5.85,354,1624345200"; 
-   d="scan'208";a="226127319"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2021 04:44:50 -0700
-X-IronPort-AV: E=Sophos;i="5.85,354,1624345200"; 
-   d="scan'208";a="522572633"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2021 04:44:45 -0700
-Received: from andy by smile with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mYRpJ-009VuO-7q;
-        Thu, 07 Oct 2021 14:44:41 +0300
-Date:   Thu, 7 Oct 2021 14:44:41 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        kunit-dev@googlegroups.com, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Graf <tgraf@suug.ch>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v2 3/4] lib/rhashtable: Replace kernel.h with the
- necessary inclusions
-Message-ID: <YV7dqcCbxaeBcELY@smile.fi.intel.com>
-References: <20211007095129.22037-1-andriy.shevchenko@linux.intel.com>
- <20211007095129.22037-4-andriy.shevchenko@linux.intel.com>
- <20211007112328.GA19281@gondor.apana.org.au>
+        id S230091AbhJGLwB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 07:52:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 083CB61248;
+        Thu,  7 Oct 2021 11:50:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633607408;
+        bh=a8HbgBguOSpxtduPGdpnOpcONjdtvYCaNBfEWAkhfL4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZFqR30L9zqfNS2RiPGWWAyWHaiat3EohdMs5E3L+3xz28vdkUIixyqUGJ2ovP5aYi
+         YnCfemrPUgE7xOka08DU3/W10SUxhmbxxvnVob7ZxH6GC4dfRV+uP4kwprNZbObTIb
+         N+uGJza/0Qv2i/udlX6Pfaslatcx+izheYD2HnQHY3qU7CU57mxoONCWgvdIhsyLDD
+         gI27Da5WWZbdj1yAxsOOID0LfnMBeWfplKLkQbu13KSVEe0ePv6wHw8VDq5Qk5onpn
+         deDaUOMDkgR6/GubF3YZbzuCqkWRBBB94pELz8AQgJpe2l5HP70XcsottYha0fSTvn
+         C/Vj+dWQGrIYQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EF09E6094F;
+        Thu,  7 Oct 2021 11:50:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211007112328.GA19281@gondor.apana.org.au>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/3][pull request] Intel Wired LAN Driver Updates
+ 2021-10-06
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163360740797.32014.7980172626328683543.git-patchwork-notify@kernel.org>
+Date:   Thu, 07 Oct 2021 11:50:07 +0000
+References: <20211006165659.2298400-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20211006165659.2298400-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sassmann@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 07:23:28PM +0800, Herbert Xu wrote:
-> On Thu, Oct 07, 2021 at 12:51:28PM +0300, Andy Shevchenko wrote:
-> > When kernel.h is used in the headers it adds a lot into dependency hell,
-> > especially when there are circular dependencies are involved.
+Hello:
 
-> > Replace kernel.h inclusion with the list of what is really being used.
+This series was applied to netdev/net.git (refs/heads/master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-> Nack.  I can see the benefits of splitting things out of kernel.h
-> but there is no reason to add crap to end users like rhashtable.c.
+On Wed,  6 Oct 2021 09:56:56 -0700 you wrote:
+> This series contains updates to i40e and iavf drivers.
+> 
+> Jiri Benc expands an error check to prevent infinite loop for i40e.
+> 
+> Sylwester prevents freeing of uninitialized IRQ vector to resolve a
+> kernel oops for i40e.
+> 
+> [...]
 
-Crap is in the kernel.h. Could you elaborate how making a proper list
-of the inclusions is a crap?
+Here is the summary with links:
+  - [net,1/3] i40e: fix endless loop under rtnl
+    https://git.kernel.org/netdev/net/c/857b6c6f665c
+  - [net,2/3] i40e: Fix freeing of uninitialized misc IRQ vector
+    https://git.kernel.org/netdev/net/c/2e5a20573a92
+  - [net,3/3] iavf: fix double unlock of crit_lock
+    https://git.kernel.org/netdev/net/c/54ee39439acd
 
--- 
-With Best Regards,
-Andy Shevchenko
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
