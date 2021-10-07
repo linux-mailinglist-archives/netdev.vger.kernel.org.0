@@ -2,103 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C97D425523
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA842425535
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:19:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241981AbhJGOST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 10:18:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58034 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233362AbhJGOSS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 10:18:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1633616183;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7UDBXhMLG5JFK9qk43R1XDNPh//+qZc1lFbQJXtP7Yo=;
-        b=Is7AwruzISK+oIghdFREDoRQImdpEEjR4EFtN9vLhhDLC/M+PgXp70T3YdDeCN1jrnYNnT
-        XXJ98yn+v64gXZVbDUacfG1oqqRuMvji7dbwMEtHvy0NfQQKrDw9c5ubGmvHfDdZfbgyki
-        up2gCzS2DtsCRN6ximpu3dFemh5OYlk=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-471-gh0_wmEpMpqDdDE8ZCJJbA-1; Thu, 07 Oct 2021 10:16:22 -0400
-X-MC-Unique: gh0_wmEpMpqDdDE8ZCJJbA-1
-Received: by mail-wr1-f69.google.com with SMTP id k2-20020adfc702000000b0016006b2da9bso4807997wrg.1
-        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 07:16:22 -0700 (PDT)
+        id S241774AbhJGOVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 10:21:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233362AbhJGOVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 10:21:20 -0400
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56205C061570
+        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 07:19:26 -0700 (PDT)
+Received: by mail-ua1-x933.google.com with SMTP id u5so4354280uao.13
+        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 07:19:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=yl79lOcWxFMFA8BCGecYiE6dwIHNzfeqenv4Qbz9ZyM=;
+        b=SYJD7g90NANJ90Zj41Bghl1Ft5l802qQy16P7RJefxjx4jXcBtw3vu1dQzZCcEI1fi
+         5u4vXZ4wtCI1O8NFnvRP/VZBW6iNZPXdoWpkpc6wYWqzvnYbyJsTwR6JJaZ9Oy4knmSK
+         ZmpKJIjFO1+3FQe4nrCwWv+kgDxOFuB3V571/b5+bNuO2cQ/ib+Mz8JT6IKbK6gwpgmK
+         p4TN5W762wxZoS9KpIsT6C8kTRre34pZCtasqkh+J1P2BTliJznrFqBqbXhz4PIb8q8p
+         dzdKMPz/dqKW8c/yCPYUNUBNtjj0SywTgDv0CtZPmiPaZJ9DkWRWlTXUAVSJ3x+zp2kP
+         vpUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=7UDBXhMLG5JFK9qk43R1XDNPh//+qZc1lFbQJXtP7Yo=;
-        b=zzg0Edz/G+DaR9jipFPkftBR87ZXA126/BKwKYJiwP1ln7quR9VGxxlFQLqRC2Avq2
-         7hi7MnCbdFVVU6+Ixu+bDYUYxe1ZhmnImmuOvC3E/mTrpn0I0N6wHea0txzqWR28xnyT
-         VjXhWgrMR1bMfG1tgGHpRl+ByZbaggNjCg/ccYrfUEE3/TfsR9/V4qeRNtcXG08VrTk2
-         HAwh+5683az5P6FrecT7thWZ/MhHbxrOo/xWfJo/se39F816P44XePQ9NjG4PayVy9jx
-         VACn0pe8QZrMN7CAPNTm7fxgnBeEfpInbKNFOe0anlJ2r75Mg9v6KcS26SjLg9Dp7xuB
-         JSLQ==
-X-Gm-Message-State: AOAM532LlzrAHkDHoCrIU3kr4DmcA6fr7A8a9hFYkDROW/KAUXVs5UE2
-        T3VO02dBpHWVH83V1Qlu23429nDDYPbr9dsTfDyisNIigQ1GrNHQts71mO4xa32WNHkD87Zwz73
-        1UnQMblh2fLWsjf5V
-X-Received: by 2002:a1c:9a4d:: with SMTP id c74mr4847518wme.139.1633616181726;
-        Thu, 07 Oct 2021 07:16:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwu6FrlrvSx4eWdI61YER5pJxykAO1GosQlESm09LVvjcfG8iJmCv1rEegM+G49zVLB5pp/hw==
-X-Received: by 2002:a1c:9a4d:: with SMTP id c74mr4847484wme.139.1633616181465;
-        Thu, 07 Oct 2021 07:16:21 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-225-183.dyn.eolo.it. [146.241.225.183])
-        by smtp.gmail.com with ESMTPSA id o26sm8927547wmc.17.2021.10.07.07.16.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 07:16:21 -0700 (PDT)
-Message-ID: <17268de9236e6e3c5bb118352984ec8638f0df4f.camel@redhat.com>
-Subject: Re: [PATCH net-next] net-sysfs: try not to restart the syscall if
- it will fail eventually
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Antoine Tenart <atenart@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     juri.lelli@redhat.com, mhocko@suse.com, netdev@vger.kernel.org
-Date:   Thu, 07 Oct 2021 16:16:19 +0200
-In-Reply-To: <20211007140051.297963-1-atenart@kernel.org>
-References: <20211007140051.297963-1-atenart@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=yl79lOcWxFMFA8BCGecYiE6dwIHNzfeqenv4Qbz9ZyM=;
+        b=2Pqd7sFccZHJyzKctD9M9lLVl0RGzFgwkKyQUpsxLJxPrhEu3aU/1LISkGiAvwO/VU
+         1HQon9jNS/CCA2lojQCF+7n33AfXobdWifhUyc8yxkxUzIA85oJFuEqawR7lcG0F6AvF
+         d24DOgJPx7vpf/wHs+O53f0FDdlg9XyE7rJZOl7HcXsGJmJiSkJ9vZGLtduCUxysSXKC
+         t03J6RkwY7J9vVsc6i9JAIduWJESh31GHeJBaafuS4x2zu5MF2AtF9pQZpB5XSRHj9rV
+         1rf5fFsMfJbJ/QwmY8GqEJfD51Uan6Qo2wF1VCJkcLXiXDPtKJBrBmIAqU6AqthcdZHl
+         RGaQ==
+X-Gm-Message-State: AOAM533b27TTfD4iHzbMiaJEOO+4sgGHNRV36vGYlx6fdVUEqZtvJxXE
+        GbAWXmXAXuxizgLAP6C+YP71IC40qrJWsmM5Y0g=
+X-Google-Smtp-Source: ABdhPJwIO2JkmhCj06XBL02+K8wUrNhkbVi5TyKesl/V8bLCzPrUngPXKn72deBheXvuQa5L7rNO0srK/gHvyQNSGYg=
+X-Received: by 2002:ab0:7c2:: with SMTP id d2mr4624478uaf.130.1633616365529;
+ Thu, 07 Oct 2021 07:19:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a67:b247:0:0:0:0:0 with HTTP; Thu, 7 Oct 2021 07:19:25 -0700 (PDT)
+Reply-To: gutierrezerveyg@gmail.com
+From:   gutierre zerve <danimaxaziwor@gmail.com>
+Date:   Thu, 7 Oct 2021 14:19:25 +0000
+Message-ID: <CALyDjvHcg0Kkz2MshF--O=RVxP6QsMvqUbjaJUJnYxu+jmebnw@mail.gmail.com>
+Subject: hi
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-10-07 at 16:00 +0200, Antoine Tenart wrote:
-> Due to deadlocks in the networking subsystem spotted 12 years ago[1],
-> a workaround was put in place[2] to avoid taking the rtnl lock when it
-> was not available and restarting the syscall (back to VFS, letting
-> userspace spin). The following construction is found a lot in the net
-> sysfs and sysctl code:
-> 
->   if (!rtnl_trylock())
->           return restart_syscall();
-> 
-> This can be problematic when multiple userspace threads use such
-> interfaces in a short period, making them to spin a lot. This happens
-> for example when adding and moving virtual interfaces: userspace
-> programs listening on events, such as systemd-udevd and NetworkManager,
-> do trigger actions reading files in sysfs. It gets worse when a lot of
-> virtual interfaces are created concurrently, say when creating
-> containers at boot time.
-> 
-> Returning early without hitting the above pattern when the syscall will
-> fail eventually does make things better. While it is not a fix for the
-> issue, it does ease things.
-> 
-> [1] https://lore.kernel.org/netdev/49A4D5D5.5090602@trash.net/
->     https://lore.kernel.org/netdev/m14oyhis31.fsf@fess.ebiederm.org/
->     and https://lore.kernel.org/netdev/20090226084924.16cb3e08@nehalam/
-> [2] Rightfully, those deadlocks are *hard* to solve.
-> 
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
-
-AFAICS, the current behaviour is preserved and the change is safe. I
-think that preserving the current error-code for duplex_show and
-speed_show is the correct thing to do.
-Reviewed-by: Paolo Abeni <pabeni@redhat.com>
-
+_Can you reply to my previous email, do I need your reply? I am
+Waiting for reading from you.
