@@ -2,96 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05B2042540D
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 15:27:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68524425417
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 15:28:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241558AbhJGN2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 09:28:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232869AbhJGN2v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 09:28:51 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A119CC061570;
-        Thu,  7 Oct 2021 06:26:57 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id y12so9518711eda.4;
-        Thu, 07 Oct 2021 06:26:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Br0I/B1IowEPVL6554FbnYOrVoIa1NtFpgkmRG+q0Xk=;
-        b=jFsVr5hdHH/4GUp7/TRxD/bed2k1JETMXeERdvMoWdFY98fVpxWA0guXd6GzcGz2UM
-         C21k9UUxfIOsYyuvqg5zrNF1QCi8DYAQlVLKPBf8puUMnf2NxIVZsw6/HMHZYqkkDwrH
-         qYFfNp6Syy1W2MBLUKTpdR+RQGJGuFOs6hUscRcOKmecz3AvXSqa/lCPgmNp+2LR+iMN
-         kwZGevAgQjsBL4eEcrfbxHAZa3o2qw91Qx20bybo4NE+8pcQZkw2YYJaRuXO9Gv4NGjL
-         /esLIvQZX9NpPgQRD/DRCDd1tJvKAuI8KrBtuv/NWYqP99I+RDYypqPesMT8jiAUC9ms
-         4Y+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Br0I/B1IowEPVL6554FbnYOrVoIa1NtFpgkmRG+q0Xk=;
-        b=qrjCXO8bWcl9/id0GoG9Kq6YQxn1fIb9Dhbzt3P9rRYPGiZO8ppemTdxHZq4YPYOJ6
-         f1uH2bL9hCgAOFQu7XFlQqhcY/o/9FMEgiGxLVBqA8rX/8MtUr3AUZvXsxpzRBTbE2IY
-         Wof1SHVsEAz7LUBVx+B8I5OGrQwJBp4nHgMy1PJAHtL4Il5peRwOw11e2sbx+lyGqMGK
-         drOIZYn9T+h9Kr0mbKJe37427n74RTuwfKE8YwTwJsG+TApBKlAHFZQUqiHqhoWw0gLj
-         BuBq5C2REaDJK2CmIl9Xzyv/l5+Z3VyJDBPoaUw25USVohIv8am1uMZhA52UbJqvFnFY
-         i4FA==
-X-Gm-Message-State: AOAM533rmmrHMvmZliy+GObnQBP6k+yh8KYEv3kM9qEU8oBqRawz6BUV
-        4RRDVfmLdjEGRySIQhtaHE1iWWGlyC0=
-X-Google-Smtp-Source: ABdhPJzZ4KeimPoiy7EgeV523alAKARD4j6wt/HpDV4LXiuiwZWPSEkRuMJoQwBtv3MARuGkWhQo6g==
-X-Received: by 2002:a17:906:254b:: with SMTP id j11mr5586969ejb.513.1633613216065;
-        Thu, 07 Oct 2021 06:26:56 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id u6sm11339139edt.30.2021.10.07.06.26.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 06:26:55 -0700 (PDT)
-Date:   Thu, 7 Oct 2021 15:26:53 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S232869AbhJGNaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 09:30:21 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:46022 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241287AbhJGNaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 09:30:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1633613307; x=1665149307;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=OtxaPdc9nCj58wqh5NA9JcRznQexEFxjFLqqlEhFp7s=;
+  b=xlM4FZm507dzzb3cT9lL2FMeDtFD0zmySCuMjckfQPr9jiUQcVTbjVGA
+   /IaeOfTaLATFY6VEVDc87iSxe7R8rgDuGt18DHqrsvsWC6OxowzXuRRbW
+   vhLZrXptHl750gjiEJDP1Io7q7RUJi5+yT8oZLA0UbUcRqom+hV8ejf2q
+   zFBjATdttp8RHXwS+caR8shtWT2gA4f5R9tUIxmTn1Ii8Z+lTn84Xize6
+   iO/KIVOoJOY6PeWhXBTk/9fqR32+tbP6i3PDo51bUZvqsDGezRTxFOl+c
+   ThR0UxT+ljYKomRN1IKe4slbQkSsHPas0r0CT14R2YsH3e90cqFuTHTxJ
+   w==;
+IronPort-SDR: MY1/8bnyhRLbIxxiQe7hzBwhAEMc1kE0v0ibPOsaD04QOdYFArX+bXBNz2DACy4mxF3dzegbfo
+ Udklacoj5AQwWFOTtJv3zVimz6gRI7/mbMCmg83n6cSY8R4DRSJv46cc+dcImX4MrULc1DyMqF
+ UZ1WWH1WzBKUdNDjvhghyZTr6zMXCJSvg2/mcRdyjnPG/NBlitwz/z04LAhLTJ443GlfWsdzoY
+ KIy600DHd3rcgvtmAUm3RqvrKssawB9tFI0ebLL0QMycT2vDi7Uqt3VqO0qAsItI6kaQrJ2OTx
+ YLNsKHDqM8ZXEfj3F7POVBzI
+X-IronPort-AV: E=Sophos;i="5.85,354,1624345200"; 
+   d="scan'208";a="147133223"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Oct 2021 06:28:26 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 7 Oct 2021 06:28:26 -0700
+Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
+ Transport; Thu, 7 Oct 2021 06:28:24 -0700
+Subject: Re: [PATCH] can: at91_can: fix passive-state AERR flooding
+To:     Brandon Maier <brandon.maier@rockwellcollins.com>
+CC:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matthew Hagan <mnhagan88@gmail.com>
-Subject: Re: [net-next PATCH 07/13] net: dsa: qca8k: add support for
- mac6_exchange, sgmii falling edge
-Message-ID: <YV71nZsSDEeY97yt@Ansuel-xps.localdomain>
-References: <20211006223603.18858-1-ansuelsmth@gmail.com>
- <20211006223603.18858-8-ansuelsmth@gmail.com>
- <YV472otG4JTeppou@lunn.ch>
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "Ludovic Desroches" <ludovic.desroches@microchip.com>,
+        "open list:CAN NETWORK DRIVERS" <linux-can@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        "moderated list:ARM/Microchip (AT91) SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20211005183023.109328-1-brandon.maier@rockwellcollins.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <ac0aaa78-d258-fb22-300a-43851006b5c5@microchip.com>
+Date:   Thu, 7 Oct 2021 15:28:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YV472otG4JTeppou@lunn.ch>
+In-Reply-To: <20211005183023.109328-1-brandon.maier@rockwellcollins.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 02:14:18AM +0200, Andrew Lunn wrote:
-> On Thu, Oct 07, 2021 at 12:35:57AM +0200, Ansuel Smith wrote:
-> > Some device set the switch to exchange the mac0 port with mac6 port. Add
-> > support for this in the qca8k driver. Also add support for SGMII rx/tx
-> > clock falling edge. This is only present for pad0, pad5 and pad6 have
-> > these bit reserved from Documentation.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
+On 05/10/2021 at 20:30, Brandon Maier wrote:
+> When the at91_can is a single node on the bus and a user attempts to
+> transmit, the can state machine will report ack errors and increment the
+> transmit error count until it reaches the passive-state. Per the
+> specification, it will then transmit with a passive error, but will stop
+> incrementing the transmit error count. This results in the host machine
+> being flooded with the AERR interrupt forever, or until another node
+> rejoins the bus.
 > 
-> Who wrote this patch? The person submitting it should be last. If
-> Matthew actually wrote it, you want to play with git commit --author=
-> to set the correct author.
+> To prevent the AERR flooding, disable the AERR interrupt when we are in
+> passive mode.
 > 
->    Andrew
+> Signed-off-by: Brandon Maier <brandon.maier@rockwellcollins.com>
 
-I wrote it and Matthew did some very minor changes (binding name).
-Should I use co-developed by ?
+Even if I'm not familiar with the matter, the explanation above makes sense:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+
+Thanks Brandon, best regards,
+   Nicolas
+
+> ---
+>   drivers/net/can/at91_can.c | 7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/can/at91_can.c b/drivers/net/can/at91_can.c
+> index b06af90a9964..2a8831127bd0 100644
+> --- a/drivers/net/can/at91_can.c
+> +++ b/drivers/net/can/at91_can.c
+> @@ -804,8 +804,13 @@ static int at91_poll(struct napi_struct *napi, int quota)
+>                  work_done += at91_poll_err(dev, quota - work_done, reg_sr);
+> 
+>          if (work_done < quota) {
+> -               /* enable IRQs for frame errors and all mailboxes >= rx_next */
+> +               /* enable IRQs for frame errors and all mailboxes >= rx_next,
+> +                * disable the ack error in passive mode to avoid flooding
+> +                * ourselves with interrupts
+> +                */
+>                  u32 reg_ier = AT91_IRQ_ERR_FRAME;
+> +               if (priv->can.state == CAN_STATE_ERROR_PASSIVE)
+> +                       reg_ier &= ~AT91_IRQ_AERR;
+> 
+>                  reg_ier |= get_irq_mb_rx(priv) & ~AT91_MB_MASK(priv->rx_next);
+> 
+> --
+> 2.30.2
+> 
+
 
 -- 
-	Ansuel
+Nicolas Ferre
