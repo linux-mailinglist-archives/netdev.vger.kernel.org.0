@@ -2,62 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDCA9425503
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:07:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D97A425505
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241949AbhJGOJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 10:09:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60202 "EHLO mail.kernel.org"
+        id S241953AbhJGOKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 10:10:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54318 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240542AbhJGOJP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 10:09:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 631D661040;
-        Thu,  7 Oct 2021 14:07:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633615641;
-        bh=dnoqmxyqmfIjs/xjwJbYc3OQ/vTLeq0s5NawMiNI3Hw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Le6WfdH4aaiINli/Gl59K/4lVSUFf3DI99mO570dSVbVMrUh6i83x4UbdgGKqrh5W
-         QG+J+Go5xTGUTughIMsKkDzlDHAv1310ixrgAEn/9j9Pl40CHBGVGkbAz3T0OPxEUd
-         gEJ0i1L0Hz/Q2oJueiYM4CI5cKQ87FvacobPSPgLY2OF414IaBaER0CABRehaO0ZwB
-         A7deW0ek/GFtYQGvtbq3zFeiB81JwT47DNC+Q2fjhBvr6QdRr1cr87xlgR9bVyVpDh
-         wSs1sfChumZbJzdn7VNOK557lNVeLF+6arQ5qNPJ8MqLKOgBkU0L8gYa1bhL3uIij/
-         h9So/Y3+Qlr5A==
-Date:   Thu, 7 Oct 2021 07:07:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Mike Manning <mvrmanning@gmail.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Saikrishna Arcot <sarcot@microsoft.com>
-Subject: Re: [PATCH] net: prefer socket bound to interface when not in VRF
-Message-ID: <20211007070720.31dd17bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <cf0a8523-b362-1edf-ee78-eef63cbbb428@gmail.com>
-References: <cf0a8523-b362-1edf-ee78-eef63cbbb428@gmail.com>
+        id S240542AbhJGOKD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 10:10:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=9LV4y1hYeKQDb8QZoMP1V/zgClE/dilQ5gehR54OJUY=; b=1w2l4ZVs8eO2VnlEVxK8jB6nL8
+        u1ShFk7DMnL0TWzTDn/DGuvrQXq7oX4WYqsbVrrserwomaU5O1nddSu5xYv8ijVKHP+IdPTyB96cr
+        1M/Cp7M+shQCvF32fUyfXHB+Z8U6XrFIDsvffdnXm28ZNdn8vNTYELfP5D21N4E9rhW4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mYU43-009xKU-Oa; Thu, 07 Oct 2021 16:08:03 +0200
+Date:   Thu, 7 Oct 2021 16:08:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        vladimir.oltean@nxp.com, michael@walle.cc
+Subject: Re: [PATCH net-next 1/3] ethernet: un-export nvmem_get_mac_address()
+Message-ID: <YV7/QyPuLHHZoKfT@lunn.ch>
+References: <20211007132511.3462291-1-kuba@kernel.org>
+ <20211007132511.3462291-2-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211007132511.3462291-2-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Oct 2021 14:03:42 +0100 Mike Manning wrote:
-> The commit 6da5b0f027a8 ("net: ensure unbound datagram socket to be
-> chosen when not in a VRF") modified compute_score() so that a device
-> match is always made, not just in the case of an l3mdev skb, then
-> increments the score also for unbound sockets. This ensures that
-> sockets bound to an l3mdev are never selected when not in a VRF.
-> But as unbound and bound sockets are now scored equally, this results
-> in the last opened socket being selected if there are matches in the
-> default VRF for an unbound socket and a socket bound to a dev that is
-> not an l3mdev. However, handling prior to this commit was to always
-> select the bound socket in this case. Reinstate this handling by
-> incrementing the score only for bound sockets. The required isolation
-> due to choosing between an unbound socket and a socket bound to an
-> l3mdev remains in place due to the device match always being made.
-> The same approach is taken for compute_score() for stream sockets.
+On Thu, Oct 07, 2021 at 06:25:09AM -0700, Jakub Kicinski wrote:
+> nvmem_get_mac_address() is only called from of_net.c
+> we don't need the export.
 > 
-> Fixes: 6da5b0f027a8 ("net: ensure unbound datagram socket to be chosen when not in a VRF")
-> Fixes: e78190581aff ("net: ensure unbound stream socket to be chosen when not in a VRF")
-> Signed-off-by: Mike Manning <mmanning@vyatta.att-mail.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-David A, Ack?
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
