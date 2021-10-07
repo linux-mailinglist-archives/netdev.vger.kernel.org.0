@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 132E2425433
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 15:36:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C132542543C
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 15:37:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241625AbhJGNiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 09:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
+        id S241647AbhJGNjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 09:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233197AbhJGNiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 09:38:00 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECE1C061570;
-        Thu,  7 Oct 2021 06:36:06 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id i20so7529252edj.10;
-        Thu, 07 Oct 2021 06:36:06 -0700 (PDT)
+        with ESMTP id S241635AbhJGNjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 09:39:01 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ED9C061570;
+        Thu,  7 Oct 2021 06:37:07 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id t16so1355444eds.9;
+        Thu, 07 Oct 2021 06:37:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=LLTO3QrDjh/QVei5qfqmIzYzW1b3e+99yn9tgM5fLrc=;
-        b=bxMowlq2UT1/oR4HsLCw6K5w9CcPlSi/h/WGxGr2gDTAtwspYCoPTdyE0Dv9ErbWBZ
-         FTr/9B9AbfzZjZKy3+PzJ8g//6qFw8hLrFnKjX6brNikeRoc+mMP10nysOpYYb+x7ucB
-         hx0dat2ervqH2ktxrU5oVS/WAJUGOb5FUkWFq6fqFMArAJ8oTPeq228/s/bmmjCIfWaO
-         A23mqzZGI0CRtqH8E5ryE+1x5ktQTN8321EJTT3EtevVwtoqKUIV1hhtlTU/+2mtKS5f
-         fU1yg0FdYbtibIzOhx6NuSpBYfZOsSlzT93ElYy7chivWaUZuGhG1TcyVAT4pk7EBQmg
-         jSAw==
+        bh=OH5qreVaMSmbXoGA81iNDx+LFwebuH6MBwo5rPBptZ8=;
+        b=nDdTpHUd+sRlsHIQLWo+Z0zHf3yza3jgR5dbfcJRC3m1Wx7OVo4MfisnalJCLlXXCe
+         4hzTrrhdABjQkGcZiLuHOEqvww8QKE4kLwCtfPbkN6vGS62ISB269Vxo8jiswAsiwNTw
+         MDrp0Ob7kmFNqm5l21mRIkltNq7z5xMJ0N1PaXH4B+QkXE6nv1w7Z0gR2MqnNF4Ji85r
+         7Z+DB/nUBqxYVwqRz1UpD5RsubqGF6yMIi/Wf6MtbA+J13Cum7vDLSLYHhee+AF81d3F
+         FOQTRKVB6aO1myO1mYSiUqDYXvXoslEwGeLLcUjcIKxe4cYj3zPhwBVOl1Z9XFMKjCKU
+         EjMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=LLTO3QrDjh/QVei5qfqmIzYzW1b3e+99yn9tgM5fLrc=;
-        b=32f6fqAGG6ee3YVzcMdZIqw9it6YmbFQMcOly6eqr2/hlRNAAN+Dp/K8nl2lsPNuxp
-         Re4upqEh81zkE1G7rhPG3x9dn8bXy2wNMiPJLTkFN2bxMQrXpzFOpde9MUaG0wDgbURY
-         1xu/zQLOc60ID00CJAGDvSzo9SsOol98B3vlg8H92UF2s1Kdu5RAgxFVj18dHG71q3r7
-         XjSMIRDlfgpyx2lsNu9p4nx7PmQblGTsg19LP2W0qUQx/Hwb9aM/werF7YI8U4XIdVz1
-         zANQvAdwR7NYIL0cqyzL7TcjuqQi1V5QIRPnXDlRlmZlo1rqJQnh/8zAQ6bi07SMHRkI
-         yVOQ==
-X-Gm-Message-State: AOAM531fVyTdjIitwlYnuNvgpjCxMncja1ujXcqoP26EqV7ZPzLpLLvd
-        elPIMTk3H10U7X0UtQnFUYo=
-X-Google-Smtp-Source: ABdhPJwgWK+sHihJd+oHvmODuqX5mfzQBJnoT5/PLI0rkcYNGtnWDFZ5zHDWQBTrlxttBOwRja9gag==
-X-Received: by 2002:a50:d8c7:: with SMTP id y7mr6346322edj.133.1633613756590;
-        Thu, 07 Oct 2021 06:35:56 -0700 (PDT)
+        bh=OH5qreVaMSmbXoGA81iNDx+LFwebuH6MBwo5rPBptZ8=;
+        b=qLWHrG2zA3VulcJMTsbOmiFDDfqjV1vc+L7cRicqB8Kw2yetP4IuTTjWWFFf1rYOS0
+         MCeq2hP47rbaVyPQQWI2U75qPCc3MdPzf9oBvUhZI0IE6lm2f32aciuBScNwrqKLiZGz
+         vul3W1/yWDE5ZMD3m4z5gqCj0/5mOH2+KhgYJbeYmGCagRT08H74qge53EspwgYAyAEj
+         iomtldHd0+3BPliGWJGJKTnlmhb2UZd7gA4rlYU/RYNk+BMMPG+vT3lRZqzcBmwkTI3b
+         zwu1EN32MMhduymE2GBY85KAL+czxkgj5XBccDqyAAOPuluS/Ucen97T7So39PVe1NAw
+         DvOw==
+X-Gm-Message-State: AOAM532vpzP5AUiw6/WPCqqySM/JWiE8/0OG0h3ypmARCptixSvmKZxo
+        IOYtR6ddeX3tUFzOCi3T+2AgxeNoVps=
+X-Google-Smtp-Source: ABdhPJwpNjQDA7T7sZqWbPubagcGel8b3nacSf5PLzvXtJ6/5cLDcRKtKKm+sYisr9P4RzKlCFNXuQ==
+X-Received: by 2002:a17:906:3402:: with SMTP id c2mr5730179ejb.271.1633613826095;
+        Thu, 07 Oct 2021 06:37:06 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id z16sm1261825edb.16.2021.10.07.06.35.55
+        by smtp.gmail.com with ESMTPSA id 21sm10029013ejv.54.2021.10.07.06.37.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 06:35:56 -0700 (PDT)
-Date:   Thu, 7 Oct 2021 15:35:54 +0200
+        Thu, 07 Oct 2021 06:37:05 -0700 (PDT)
+Date:   Thu, 7 Oct 2021 15:37:03 +0200
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,54 +59,31 @@ Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH 10/13] net: dsa: qca8k: add explicit SGMII PLL
- enable
-Message-ID: <YV73umYovC0wh5hz@Ansuel-xps.localdomain>
+Subject: Re: [net-next PATCH 11/13] devicetree: net: dsa: qca8k: Document
+ qca,sgmii-enable-pll
+Message-ID: <YV73/9WkMNMHpRcR@Ansuel-xps.localdomain>
 References: <20211006223603.18858-1-ansuelsmth@gmail.com>
- <20211006223603.18858-11-ansuelsmth@gmail.com>
- <YV4/ehy9aYJyozvy@lunn.ch>
+ <20211006223603.18858-12-ansuelsmth@gmail.com>
+ <YV4/6TRdd3N1v8Zv@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YV4/ehy9aYJyozvy@lunn.ch>
+In-Reply-To: <YV4/6TRdd3N1v8Zv@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 02:29:46AM +0200, Andrew Lunn wrote:
-> On Thu, Oct 07, 2021 at 12:36:00AM +0200, Ansuel Smith wrote:
-> > Support enabling PLL on the SGMII CPU port. Some device require this
-> > special configuration or no traffic is transmitted and the switch
-> > doesn't work at all. A dedicated binding is added to the CPU node
-> > port to apply the correct reg on mac config.
+On Thu, Oct 07, 2021 at 02:31:37AM +0200, Andrew Lunn wrote:
+> > +- qca,sgmii-enable-pll  : For SGMII CPU port, explicitly enable PLL, TX and RX
+> > +                          chain along with Signal Detection.
 > 
-> Why not just enable this all the time when the CPU port is in SGMII
-> mode?
-
-I don't know if you missed the cover letter with the reason. Sgmii PLL
-is a mess. Some device needs it and some doesn't. With a wrong
-configuration the result is not traffic. As it's all messy we decided to
-set the PLL to be enabled with a dedicated binding and set it disabled
-by default. We enouncer more device that require it disabled than device
-that needs it enabled. (in the order of 70 that doesn't needed it and 2
-that requires it enabled or port instability/no traffic/leds problem)
-
+> Continuing on with the comment in the previous post. You might want to
+> give a hit when this is needed.
 > 
-> Is it also needed for 1000BaseX?
-> 
+>      Andrew
 
-We assume it really depends on the device.
-
-> DT properties like this are hard to use. It would be better if the
-> switch can decide for itself if it needs the PLL enabled.
-> 
-
-Again reason in the cover letter sgmii part. Some qca driver have some
-logic based on switch revision. We tried that and it didn't work since
-some device had no traffic with pll enabled (and with the revision set
-to enable pll)
-
->        Andrew
+Ok I can put here all the finding with the common configuration found
+with qca8327 and qca8337 so someone can try to guess the correct value.
 
 -- 
 	Ansuel
