@@ -2,199 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 538EC424F44
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 10:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20BD4424F4F
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 10:33:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240717AbhJGI3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 04:29:08 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:10004 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240564AbhJGI3H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 04:29:07 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1633595234; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=wI2s0bxPh2CPs/CNjvuA/9UBNxI8aMeMmsFnsc6CPxc=; b=jHwbVdOCtHKoX7jc6/kYpi3Qt6sNP4wgE5IuIemBpUtAAyl443j7TTNnYkNyxEX0DVIzZteL
- t27wwD3yHrPC9LfSVlMoW6iNFb/HKNh56Xn4i0ezfIo+7wzaFbP1bVM/qnwIs4rGYB02eq6c
- NEo6a7CZHpx/aaHiYpd9CtNlemE=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 615eaf4ab8ab9916b3e9179f (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 07 Oct 2021 08:26:50
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 471BEC4360D; Thu,  7 Oct 2021 08:26:49 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DF4CAC4338F;
-        Thu,  7 Oct 2021 08:26:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org DF4CAC4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>
-Subject: Re: [PATCH v7 08/24] wfx: add bus_sdio.c
-References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com>
-        <149139701.nbvtKH4F0p@pc-42>
-        <CAPDyKFr62Kykg3=9WiXAV8UToqjw8gj4t6bbM7pGQ+iGGQRLmg@mail.gmail.com>
-        <4117481.h6P39bWmWk@pc-42>
-Date:   Thu, 07 Oct 2021 11:26:42 +0300
-In-Reply-To: <4117481.h6P39bWmWk@pc-42> (=?utf-8?B?IkrDqXLDtG1l?=
- Pouiller"'s message of "Wed,
-        06 Oct 2021 17:42:23 +0200")
-Message-ID: <87czohckal.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        id S240570AbhJGIfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 04:35:04 -0400
+Received: from mail-am6eur05on2082.outbound.protection.outlook.com ([40.107.22.82]:21665
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233489AbhJGIfE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 04:35:04 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BZ9wjgXJzpnoxnxKF207kQLtwr9JdMGWLi+wPKljW4YoLKBTUCnUa7kxtf61o4k/2BxIhK7vXWpWNzMdRJVY3/BCqoTGrH1TLlrT6zqZrR1639cV6ALAJ8LUmMDx49OgjH45z9J1jFk9QWfuFbXYbgm6TZKwaBWXxxEwILzS1orJSxpHGqpVcqRVGePrQIqTp/37gm0+vN6Duk4Onf9lWlj3dQxITW7fmCWmFnI7OaiQHk5SqGzczb34Y9jNduFTKt/qZDeXzN8RagDMkhOonMNwyARPUs5loI30BMBiMjNEr0k4nYQzOSRC6y0Weifl929RjN2GhMXps8/UyRm0Gg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FwjzmzS1lOGp2ZNr7s6zuodpr6lFHkSVzr8HEfuRxMk=;
+ b=PNqrK0MWXCiqXDfRvLv7dZw40OJIJUc9b1SKmuuWGzFIoYyI48x9sc6w4vByEEnCMufkpu2TMB/Qzhom5NBYwZgVh0R4+u4am/htBHPWdUwlZWCFggM71wWwfJhK6NS+GH0DnSBgbKhqI1X16YSEcq7wrRmFewz79dfibVPll4UsYjuk+oSVIlcfty/fxNc6lcAM/FVNBKbsg0Gzg30Us117bLt0PZwvUr5v256WUfaaHAAl1wIwGz8kLM5gp/mpMQT5PL2HtGzt1EWUUW4BCr1y1xFSADg/13Re/FkWPwGTLF4mgMFeGa12pa6qFJuJjhBHXlnvwXRiz9BOsQ2hTQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FwjzmzS1lOGp2ZNr7s6zuodpr6lFHkSVzr8HEfuRxMk=;
+ b=bjcSFIb+ISyZIeKxjwuoyB1jqjn6Modg5Kt6lqPFQzazZsv37Nj9/rNnhdaP60ywqER/sOBOe4qHGUG7my408gwRRemzAS7chLdZYmssTsDVXEFw+GNhmjlJSrOIdV+e4zUaRz44DBwGDxrp5aDLdLkUx0LpfIlxDySESPZeI9U=
+Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
+ (2603:10a6:200:4f::13) by AM0PR04MB5331.eurprd04.prod.outlook.com
+ (2603:10a6:208:65::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Thu, 7 Oct
+ 2021 08:33:08 +0000
+Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
+ ([fe80::6476:5ddb:7bf2:e726]) by AM4PR0401MB2308.eurprd04.prod.outlook.com
+ ([fe80::6476:5ddb:7bf2:e726%8]) with mapi id 15.20.4566.023; Thu, 7 Oct 2021
+ 08:33:08 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 2/2] net: enetc: add support for software TSO
+Thread-Topic: [PATCH net-next 2/2] net: enetc: add support for software TSO
+Thread-Index: AQHXuu664Nbids09pUWK+2m6R9okf6vHLKCAgAAJaoA=
+Date:   Thu, 7 Oct 2021 08:33:08 +0000
+Message-ID: <20211007083307.6alnxej5qx5ys62k@skbuf>
+References: <20211006201308.2492890-1-ioana.ciornei@nxp.com>
+ <20211006201308.2492890-3-ioana.ciornei@nxp.com>
+ <AM9PR04MB83979C1C47471719E6688B0F96B19@AM9PR04MB8397.eurprd04.prod.outlook.com>
+In-Reply-To: <AM9PR04MB83979C1C47471719E6688B0F96B19@AM9PR04MB8397.eurprd04.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0e2e6819-7abd-4573-0fa4-08d9896d1772
+x-ms-traffictypediagnostic: AM0PR04MB5331:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB533164469760CEF5A9414AE6E0B19@AM0PR04MB5331.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1775;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 17YP20jFB4ByJpGQueAoScCh4sjKlkGTC8io3PmEfwjaGemuy9m448YuhOk5Duckb/AyBxDDcAsWr755C1Bff4IjCvxpkIDi88UGOUcVbtIQ/aAY48zdhvHhMqKHqrIDNOAt58lqIOLLXS5FkSteOUEPZdndZKGd6sx6HzYKPops0jgNSNkjCirGHekZOAE3lvG3+fB3OsEtbQ5pY9mLV29Zh4b0pKjubVq/LbRE/GhRFe8cIP1hiNuLW4nYtdKJswFpXEV0Kj15Fshl70zArk7PVIcM+XxifvhvHBspkvGsOhQ/1xAzGCRfoa2B8gBK4NN036Nru8BppLGfIkMBtVXMfSSfhFTPOsWTmwAPuvY9CV+AtcMjtmpECwTK2radVNUYZrZYyBXrJPyO5Ti5FJpO9TUHUQ+5WwhI/eLAHd2L0qRwlfwUVakO2gHo+zJI32YMlRQP/bkRKYw4TodveVoZni3afJOcwtaLiaH//O3ywbuajAqewwUub740zx1HFqPcQ/y/hB2MqcJGKtKc4+9tCypEPiYEPwc3mdQ24G2VMrVU6apc12BJneDGfFzDkCjnhi4AV3VkZgamGq23oOo32Hj4ivr6I2PGk7dIRspgozllacItMyjvsy7SUATV+AfKzyMs6yFWT+Y8kWV194JpTEEFxxIiQgiJ7BW6ZXKyPaE2RmXrhRfAFqhili6s3E4kilhcaaUa+itiSvpWug==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR0401MB2308.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(2906002)(6506007)(44832011)(66556008)(1076003)(4326008)(38070700005)(83380400001)(26005)(33716001)(508600001)(186003)(71200400001)(6862004)(54906003)(66446008)(8936002)(91956017)(76116006)(8676002)(9686003)(316002)(6512007)(86362001)(122000001)(6486002)(38100700002)(5660300002)(6636002)(64756008)(66476007)(66946007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MloYj6wsAbnlDJgNLK/d7AHGQk7eD9X9a68BlAVXovc8563lvd76KgKqATWK?=
+ =?us-ascii?Q?SHcLGvSQrBbYd90X9mki3qbTvjuWwSPMWzrGVIoWxjhwaOt31fPW9GDAQDDg?=
+ =?us-ascii?Q?E6iw3+GC+V4tAxxVehJakwSndmrj9df5elnA1SMK6GLDIfvgxsWPlcOjR0hG?=
+ =?us-ascii?Q?xyfO65U2yHEAFMgQeevWrHSf9iQpTpGzucB8NRQDCGpHgr05E2Zxj3fmykHU?=
+ =?us-ascii?Q?KfhbL0NBILmJHBGTCrGxoHvr9CYeaWufHCxAcsG/Z4ujtPe1g2K3wLtCDfwa?=
+ =?us-ascii?Q?6yt/S9Dhm+Os5ltrNKIO3/csUf7om8M//TtgWx1D0dRD3PVJS6y8mq7b0VP5?=
+ =?us-ascii?Q?NSEwoJ/DK93L5/F3874yiIQKVCObk2WBhkrRpaJG5oJNWlZEdFBHTDmqGto1?=
+ =?us-ascii?Q?xTumCI+evY6G+2+mPQuF5ihbnFNmTBu5p6LXIzSBvUWskv+vROo1L3pGksj1?=
+ =?us-ascii?Q?tL4uTiko0ILn5AGNnRxbZ1WndcbTIcDe8kSyIHspaGMVOWg2f5h4XJm4Wtn9?=
+ =?us-ascii?Q?fmX5rFZHfx0fc/JgKWtKgnUgxwnvVFTAoEJ7g8WNRn7XE6hZilFtq04Ypz0X?=
+ =?us-ascii?Q?mUe+iCP9+Hlhwr1F7daw1VZt8culdvI3sTOxf12mEhj2po9JZWUztsxTfs4a?=
+ =?us-ascii?Q?1oyu5mEX9oYyDv8kVv0g/GbzN91KqgWJ90rgESYsGFan9/L3Tx6qRx7TWug3?=
+ =?us-ascii?Q?CoedPJkTR0r+QQH5LNQBDWO7bfevf94M8PSCqRreExkDi2FPlqTxYNHoZKxG?=
+ =?us-ascii?Q?7JPe9b4zubG/DrhkjrvEUxhXzG9RKodRQobX+EulIP+SEduWf9gwnYAeQ7Ew?=
+ =?us-ascii?Q?Q7avm7u+hhkV795C6ohgUwVNDTUmLD4LjVb37MhYMJ6BrFronuiIcjsNKf8+?=
+ =?us-ascii?Q?8Zj6vA8gu8LBH10AqpVyOIcQVFGgPS1449gWyAXXkjYXOuUVXhzJImymEDWj?=
+ =?us-ascii?Q?IZZ0FV/SKR3p65obSY/sVh/lPkkbzce+A6QwgWZJBLOrgra9tF05hYCt9EhH?=
+ =?us-ascii?Q?LZPabyrbYm9PLHvE2SyU8TC3RSiaYXJtpYQmmlBz7uSYZauaxOIrMiuvhTQE?=
+ =?us-ascii?Q?VKwq8CNx9aOQM7SM6swFC9a3rR9GRqklkA0msP4Y/eqvR/LNhzp4Ur0yWRDq?=
+ =?us-ascii?Q?5IdTvAqZecNXmwkZ8T8UpkYXe5ULOI3cVyhAJ+Gp3yu18O7NsLFLJwqgdOKS?=
+ =?us-ascii?Q?Z3ssngqpqiF31bghWEU+sxeC9lfKxnQDvYA6pSnLLtaq/LLHHeQbLSX5+r19?=
+ =?us-ascii?Q?VhW8S2h3pvxB7PfOBbJi4nsJ2pKlOuBZRcUGY0+mnSTj5fhRNjm+uLY5aJn2?=
+ =?us-ascii?Q?EwHI+BliVN+tu5DedCTDXN+A?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4734055219BD4342871CDA49E8E39451@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM4PR0401MB2308.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e2e6819-7abd-4573-0fa4-08d9896d1772
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Oct 2021 08:33:08.6377
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KWhxI8KjZmAMUeLuj+J2rkmamBIhsxG3toWcGvOXlatArHcz7VOa4mhbB7Tns1pgdXUli6jl03IbwzbchdsnLg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5331
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com> writes:
+On Thu, Oct 07, 2021 at 07:59:25AM +0000, Claudiu Manoil wrote:
+> > -----Original Message-----
+> > From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > Sent: Wednesday, October 6, 2021 11:13 PM
+> [...]
+> > +static int enetc_map_tx_tso_buffs(struct enetc_bdr *tx_ring, struct
+> > sk_buff *skb)
+> > +{
+> > +	int hdr_len, total_len, data_len;
+> > +	struct enetc_tx_swbd *tx_swbd;
+> > +	union enetc_tx_bd *txbd;
+> > +	struct tso_t tso;
+> > +	__wsum csum, csum2;
+> > +	int count =3D 0, pos;
+> > +	int err, i;
+> > +
+> > +	/* Check that we have enough BDs for this skb */
+> > +	if (enetc_bd_unused(tx_ring) < tso_count_descs(skb)) {
+> > +		if (net_ratelimit())
+> > +			netdev_err(tx_ring->ndev, "Not enough BDs for TSO!\n");
+> > +		return 0;
+> > +	}
+> > +
+>=20
+> On this path, in case the interface is congested, you will drop the packe=
+t in the driver,
+> and the stack will think transmission was successful and will continue to=
+ deliver skbs
+> to the driver. Is this the right thing to do?
+>=20
 
-> On Wednesday 6 October 2021 17:02:07 CEST Ulf Hansson wrote:
->> On Tue, 5 Oct 2021 at 10:14, J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@=
-silabs.com> wrote:
->> > On Friday 1 October 2021 17:23:16 CEST Ulf Hansson wrote:
->> > > On Thu, 30 Sept 2021 at 19:06, Pali Roh=C3=A1r <pali@kernel.org> wro=
-te:
->> > > > On Thursday 30 September 2021 18:51:09 J=C3=A9r=C3=B4me Pouiller w=
-rote:
->> > > > > On Thursday 30 September 2021 12:07:55 CEST Ulf Hansson wrote:
->> > > > > > On Mon, 20 Sept 2021 at 18:12, Jerome Pouiller
->> > > > > > <Jerome.Pouiller@silabs.com> wrote:
->> > > > > > >
->> > > > > > > From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
->> > > > > > >
->> > > > > > > Signed-off-by: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@si=
-labs.com>
->> > > > > > > ---
->> > > > > > >  drivers/net/wireless/silabs/wfx/bus_sdio.c | 261 ++++++++++=
-+++++++++++
->> > > > > > >  1 file changed, 261 insertions(+)
->> > > > > > >  create mode 100644 drivers/net/wireless/silabs/wfx/bus_sdio=
-.c
->> > > > > > >
->> > > > > > > diff --git a/drivers/net/wireless/silabs/wfx/bus_sdio.c
->> > > > > > > b/drivers/net/wireless/silabs/wfx/bus_sdio.c
->> > > > > >
->> > > > > > [...]
->> > > > > >
->> > > > > > > +
->> > > > > > > +static int wfx_sdio_probe(struct sdio_func *func,
->> > > > > > > +                         const struct sdio_device_id *id)
->> > > > > > > +{
->> > > > > > > +       struct device_node *np =3D func->dev.of_node;
->> > > > > > > +       struct wfx_sdio_priv *bus;
->> > > > > > > +       int ret;
->> > > > > > > +
->> > > > > > > +       if (func->num !=3D 1) {
->> > > > > > > + dev_err(&func->dev, "SDIO function number is %d while
->> > > > > > > it should always be 1 (unsupported chip?)\n",
->> > > > > > > +                       func->num);
->> > > > > > > +               return -ENODEV;
->> > > > > > > +       }
->> > > > > > > +
->> > > > > > > +       bus =3D devm_kzalloc(&func->dev, sizeof(*bus), GFP_K=
-ERNEL);
->> > > > > > > +       if (!bus)
->> > > > > > > +               return -ENOMEM;
->> > > > > > > +
->> > > > > > > +       if (!np || !of_match_node(wfx_sdio_of_match, np)) {
->> > > > > > > + dev_warn(&func->dev, "no compatible device found in
->> > > > > > > DT\n");
->> > > > > > > +               return -ENODEV;
->> > > > > > > +       }
->> > > > > > > +
->> > > > > > > +       bus->func =3D func;
->> > > > > > > +       bus->of_irq =3D irq_of_parse_and_map(np, 0);
->> > > > > > > +       sdio_set_drvdata(func, bus);
->> > > > > > > +       func->card->quirks |=3D MMC_QUIRK_LENIENT_FN0 |
->> > > > > > > +                             MMC_QUIRK_BLKSZ_FOR_BYTE_MODE |
->> > > > > > > +                             MMC_QUIRK_BROKEN_BYTE_MODE_512;
->> > > > > >
->> > > > > > I would rather see that you add an SDIO_FIXUP for the SDIO car=
-d, to
->> > > > > > the sdio_fixup_methods[], in drivers/mmc/core/quirks.h, instea=
-d of
->> > > > > > this.
->> > > > >
->> > > > > In the current patch, these quirks are applied only if the devic=
-e appears
->> > > > > in the device tree (see the condition above). If I implement the=
-m in
->> > > > > drivers/mmc/core/quirks.h they will be applied as soon as the de=
-vice is
->> > > > > detected. Is it what we want?
->> > > > >
->> > > > > Note: we already have had a discussion about the strange VID/PID=
- declared
->> > > > > by this device:
->> > > > >   https://www.spinics.net/lists/netdev/msg692577.html
->> > > >
->> > > > Yes, vendor id 0x0000 is invalid per SDIO spec. So based on this v=
-endor
->> > > > id, it is not possible to write any quirk in mmc/sdio generic code.
->> > > >
->> > > > Ulf, but maybe it could be possible to write quirk based on OF
->> > > > compatible string?
->> > >
->> > > Yes, that would be better in my opinion.
->> > >
->> > > We already have DT bindings to describe embedded SDIO cards (a subno=
-de
->> > > to the mmc controller node), so we should be able to extend that I
->> > > think.
->> >
->> > So, this feature does not yet exist? Do you consider it is a blocker f=
-or
->> > the current patch?
->>=20
->> Yes, sorry. I think we should avoid unnecessary hacks in SDIO func
->> drivers, especially those that deserve to be fixed in the mmc core.
->>=20
->> Moreover, we already support the similar thing for eMMC cards, plus
->> that most parts are already done for SDIO too.
->>=20
->> >
->> > To be honest, I don't really want to take over this change in mmc/core.
->>=20
->> I understand. Allow me a couple of days, then I can post a patch to
->> help you out.
->
-> Great! Thank you. I apologize for the extra work due to this invalid
-> vendor id.
+Good point. I should have mimicked the non-GSO code path when congestion
+occurs and stop the subqueue.
 
-BTW please escalate in your company how HORRIBLE it is that you
-manufacture SDIO devices without proper device ids, and make sure that
-all your future devices have officially assigned ids. I cannot stress
-enough how important that is for the Linux community!
+For symmetry I'll also move this check outside of the
+enetc_map_tx_tso_buffs() to get the code looking somewhat like this:
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+	if (skb_is_gso(skb)) {
+		if (enetc_bd_unused(tx_ring) < tso_count_descs(skb)) {
+			netif_stop_subqueue(ndev, tx_ring->index);
+			return NETDEV_TX_BUSY;
+		}
+
+		enetc_lock_mdio();
+		count =3D enetc_map_tx_tso_buffs(tx_ring, skb);
+		enetc_unlock_mdio();
+	} else {
+		if (unlikely(skb_shinfo(skb)->nr_frags > ENETC_MAX_SKB_FRAGS))
+			if (unlikely(skb_linearize(skb)))
+				goto drop_packet_err;
+
+		count =3D skb_shinfo(skb)->nr_frags + 1; /* fragments + head */
+		if (enetc_bd_unused(tx_ring) < ENETC_TXBDS_NEEDED(count)) {
+			netif_stop_subqueue(ndev, tx_ring->index);
+			return NETDEV_TX_BUSY;
+		}
+
+		if (skb->ip_summed =3D=3D CHECKSUM_PARTIAL) {
+			err =3D skb_csum_hwoffload_help(skb, 0);
+			if (err)
+				goto drop_packet_err;
+		}
+		enetc_lock_mdio();
+		count =3D enetc_map_tx_buffs(tx_ring, skb);
+		enetc_unlock_mdio();
+	}
+
+
+Ioana=
