@@ -2,93 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C49F425EF4
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 23:31:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ED40425F58
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 23:41:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241176AbhJGVdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 17:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230120AbhJGVdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 17:33:16 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1289EC061570;
-        Thu,  7 Oct 2021 14:31:22 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HQPdg6RD9z4xb9;
-        Fri,  8 Oct 2021 08:31:19 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1633642280;
-        bh=5/XFPcuf7C72Hw7AsZjDnLmvBgF2glmuCRaS6v7XwFc=;
-        h=Date:From:To:Cc:Subject:From;
-        b=PE3E8BKuskQXJzX7thQ5I8h9kk2IOg0GcvPMPCm1wj55fIuZv1McHhh3PsLdLs1bi
-         3pCk+fn/Bpq4Uji8FlEwzNMlp9nfSQw9fip6HHS/9SFmO9XO8rxKUAyuPP/mS3FFRt
-         s8dqZpD0kGLB75rLUvSFe8d2If5/5t18b/Jmnob4Vrx2YnK8qkdVI3vx+ALNS73K4h
-         5vXZaKSHRbYn8BRnzuOxTjcwualKIPtcK2WoLSeFaFxtpjQanD3FoZ0BqmMFJrDI0x
-         P/Hy6U/gUmiBhaCrGvOgKdwis6vs0zIiTlwodf9Kfwbc/LT8hsT2wM1TIludA8IxM0
-         t7FQ4VSCO0DfA==
-Date:   Fri, 8 Oct 2021 08:31:18 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the bpf-next tree
-Message-ID: <20211008083118.43f6d79f@canb.auug.org.au>
+        id S242568AbhJGVnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 17:43:43 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55340 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241753AbhJGVnm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 17:43:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=zNEViZ4F22HFg4Uu4a+UfpGs0GxPWIjVj+B5UlJ5o94=; b=lbM6QdQvarc7KVhE9pbwhxllcs
+        QcNF7HO3i1pdelW6SYw4kkjs7znaUSm/3ll9/kdFhc+MB8W5VzwCt0h68Vk/6MBhHb8bP9T/DueR+
+        anerbHXzrBy4iZcosJogRDpY7Qs/r80zYmPRkkiiRzcEbueXUO73tu9GAwl+ID6tkBMI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mYb91-009zsW-La; Thu, 07 Oct 2021 23:41:39 +0200
+Date:   Thu, 7 Oct 2021 23:41:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     netdev@vger.kernel.org, olteanv@gmail.com, robh+dt@kernel.org,
+        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 01/10] dt-bindings: net: dsa: dt bindings for
+ microchip lan937x
+Message-ID: <YV9pk13TT9W7X2i1@lunn.ch>
+References: <20211007151200.748944-1-prasanna.vengateshan@microchip.com>
+ <20211007151200.748944-2-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/aTfZNbFXbbcOWTzmiM.ECJy";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211007151200.748944-2-prasanna.vengateshan@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/aTfZNbFXbbcOWTzmiM.ECJy
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+> +    //Ethernet switch connected via spi to the host
+> +    ethernet {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      fixed-link {
+> +        speed = <1000>;
+> +        full-duplex;
+> +      };
+> +    };
+> +
+> +    spi {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      lan9374: switch@0 {
+> +        compatible = "microchip,lan9374";
+> +        reg = <0>;
+> +
+> +        spi-max-frequency = <44000000>;
+> +
+> +        ethernet-ports {
+> +          #address-cells = <1>;
+> +          #size-cells = <0>;
+> +          port@0 {
+> +            reg = <0>;
+> +            label = "lan1";
+> +            phy-mode = "internal";
+> +            phy-handle = <&t1phy0>;
+> +          };
 
-Hi all,
+...
 
-In commit
+> +        mdio {
+> +          #address-cells = <1>;
+> +          #size-cells = <0>;
+> +
+> +          t1phy0: ethernet-phy@0{
+> +            reg = <0x0>;
+> +          };
 
-  065485ac5e86 ("mips, bpf: Fix Makefile that referenced a removed file")
+Does this pass Rob's DT schema proof tools? You don't have any
+description of the mdio properties.
 
-Fixes tag
+Maybe look at nxp,sja1105.yaml
 
-  Fixes: 06b339fe5450 ("mips, bpf: Remove old BPF JIT implementations")
-
-has these problem(s):
-
-  - Target SHA1 does not exist
-
-Maybe you meant
-
-Fixes: ebcbacfa50ec ("mips, bpf: Remove old BPF JIT implementations")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/aTfZNbFXbbcOWTzmiM.ECJy
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmFfZyYACgkQAVBC80lX
-0GxaAgf9GJm36VIGvMepSVbgO/Yv2IfKJZt9Ou/89+kk1PiUddCqfP+ZfDe2l2k6
-BGl/32KQMCrCqKIQ/VMLUMBTStrJnlyXW2tyyQr8kyhD34iVIOnXO+P+7uuBdEd9
-6An8w8P43iWnSQbf0qH/kBbCzBHgViSaa60R0clh9Pm3ShDCjRofh4ofYc/kBJJX
-yzHOMJh642iw/dHH86J6q2nKCW7SEQ9/8yfytvxzOSyOhzNvFflW4/OGKCrT9U0K
-Y3TYx3XANlTCLRh/f6Evo07Jf2rXbpYiznGZpSxAe5dNwy/3FlmTzxKLjTbikg2r
-hwIcLGkClYXJuq0h3zj9xq13Z8a8Ig==
-=/nsQ
------END PGP SIGNATURE-----
-
---Sig_/aTfZNbFXbbcOWTzmiM.ECJy--
+      Andrew
