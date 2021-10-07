@@ -2,58 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA842425535
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4696C425541
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:21:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241774AbhJGOVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 10:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233362AbhJGOVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 10:21:20 -0400
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56205C061570
-        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 07:19:26 -0700 (PDT)
-Received: by mail-ua1-x933.google.com with SMTP id u5so4354280uao.13
-        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 07:19:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=yl79lOcWxFMFA8BCGecYiE6dwIHNzfeqenv4Qbz9ZyM=;
-        b=SYJD7g90NANJ90Zj41Bghl1Ft5l802qQy16P7RJefxjx4jXcBtw3vu1dQzZCcEI1fi
-         5u4vXZ4wtCI1O8NFnvRP/VZBW6iNZPXdoWpkpc6wYWqzvnYbyJsTwR6JJaZ9Oy4knmSK
-         ZmpKJIjFO1+3FQe4nrCwWv+kgDxOFuB3V571/b5+bNuO2cQ/ib+Mz8JT6IKbK6gwpgmK
-         p4TN5W762wxZoS9KpIsT6C8kTRre34pZCtasqkh+J1P2BTliJznrFqBqbXhz4PIb8q8p
-         dzdKMPz/dqKW8c/yCPYUNUBNtjj0SywTgDv0CtZPmiPaZJ9DkWRWlTXUAVSJ3x+zp2kP
-         vpUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=yl79lOcWxFMFA8BCGecYiE6dwIHNzfeqenv4Qbz9ZyM=;
-        b=2Pqd7sFccZHJyzKctD9M9lLVl0RGzFgwkKyQUpsxLJxPrhEu3aU/1LISkGiAvwO/VU
-         1HQon9jNS/CCA2lojQCF+7n33AfXobdWifhUyc8yxkxUzIA85oJFuEqawR7lcG0F6AvF
-         d24DOgJPx7vpf/wHs+O53f0FDdlg9XyE7rJZOl7HcXsGJmJiSkJ9vZGLtduCUxysSXKC
-         t03J6RkwY7J9vVsc6i9JAIduWJESh31GHeJBaafuS4x2zu5MF2AtF9pQZpB5XSRHj9rV
-         1rf5fFsMfJbJ/QwmY8GqEJfD51Uan6Qo2wF1VCJkcLXiXDPtKJBrBmIAqU6AqthcdZHl
-         RGaQ==
-X-Gm-Message-State: AOAM533b27TTfD4iHzbMiaJEOO+4sgGHNRV36vGYlx6fdVUEqZtvJxXE
-        GbAWXmXAXuxizgLAP6C+YP71IC40qrJWsmM5Y0g=
-X-Google-Smtp-Source: ABdhPJwIO2JkmhCj06XBL02+K8wUrNhkbVi5TyKesl/V8bLCzPrUngPXKn72deBheXvuQa5L7rNO0srK/gHvyQNSGYg=
-X-Received: by 2002:ab0:7c2:: with SMTP id d2mr4624478uaf.130.1633616365529;
- Thu, 07 Oct 2021 07:19:25 -0700 (PDT)
+        id S242055AbhJGOXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 10:23:50 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54358 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241042AbhJGOXm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 10:23:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=gytudVVpq8SCrMKAKvcKmqBixUZdzXLUudXgXA2mOUM=; b=lEqh9R2YOfEiz08X/G5FBY7XpQ
+        AF8u8Usb1OL53Lp8NBYpUnkMggwH40x0VXxcoANCmKoJrq6UzNt6dmLyFDZ6cTN0ijPsd5oAzmRfc
+        HZEaM+WPQUGskhL2Q2XHD661O0WEdAT3rAogX4zTYIKj6ah1g1KFx8ZI9gzlUlzq+LLU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mYUHJ-009xPk-Dp; Thu, 07 Oct 2021 16:21:45 +0200
+Date:   Thu, 7 Oct 2021 16:21:45 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        vladimir.oltean@nxp.com, michael@walle.cc
+Subject: Re: [PATCH net-next 3/3] ethernet: use platform_get_ethdev_address()
+Message-ID: <YV8CedxWOaC22Gkt@lunn.ch>
+References: <20211007132511.3462291-1-kuba@kernel.org>
+ <20211007132511.3462291-4-kuba@kernel.org>
 MIME-Version: 1.0
-Received: by 2002:a67:b247:0:0:0:0:0 with HTTP; Thu, 7 Oct 2021 07:19:25 -0700 (PDT)
-Reply-To: gutierrezerveyg@gmail.com
-From:   gutierre zerve <danimaxaziwor@gmail.com>
-Date:   Thu, 7 Oct 2021 14:19:25 +0000
-Message-ID: <CALyDjvHcg0Kkz2MshF--O=RVxP6QsMvqUbjaJUJnYxu+jmebnw@mail.gmail.com>
-Subject: hi
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211007132511.3462291-4-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-_Can you reply to my previous email, do I need your reply? I am
-Waiting for reading from you.
+On Thu, Oct 07, 2021 at 06:25:11AM -0700, Jakub Kicinski wrote:
+> Use the new platform_get_ethdev_address() helper for the cases
+> where dev->dev_addr is passed in directly as the destination.
+> 
+>   @@
+>   expression dev, net;
+>   @@
+>   - eth_platform_get_mac_address(dev, net->dev_addr)
+>   + platform_get_ethdev_address(dev, net)
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
