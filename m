@@ -2,165 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4CA84250F8
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 12:25:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7129A425120
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 12:34:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240866AbhJGK0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 06:26:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44768 "EHLO mail.kernel.org"
+        id S240910AbhJGKf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 06:35:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50494 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231825AbhJGK0r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 06:26:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1F60C60C4C;
-        Thu,  7 Oct 2021 10:24:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633602294;
-        bh=ovURSsNma7DN09CRPZqqCrVNUPMHPnGPJNUWoT0IKso=;
+        id S240901AbhJGKfv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 06:35:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 160096113E;
+        Thu,  7 Oct 2021 10:33:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1633602837;
+        bh=ej3xM+C2sbJT1uDuzwnHgF8+qHlWQvdjlHWGaHrAnnA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kEOtFaILmndWWmHB4pF4w+OtT4NgSPduEzpl5Uh76av0g2xdnWNhz2PXPo0Z/d1pB
-         Y+EwBnWdBi4QRZ53FPpIyLBr8+vBHAu656j1RP9b6itykzJsbZXS+FGh2FKUTBenlA
-         VAmKqYcJWM23OolwNasAs7V52STFtYtMmjIQEv1aDkDIU+iLxy0RcQSixLHY4BQoZw
-         dRtrr6ZV7cMZExuglqI+9CNQOQ9DvCzZ+kEbeiZbvnUilTR41xN+3n1EeF2jDJIkwG
-         gRYnnJHPyUE/GkXG9FHlqIo0A9J0AO/wEJBm2ocBP3hOJ0vLyx7TV2Y5XUSgo24asi
-         6ylGqg+mwdijw==
-Received: by pali.im (Postfix)
-        id 0193A81A; Thu,  7 Oct 2021 12:24:51 +0200 (CEST)
-Date:   Thu, 7 Oct 2021 12:24:51 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>
-Subject: Re: [PATCH v7 08/24] wfx: add bus_sdio.c
-Message-ID: <20211007102451.gfqw7ucvwqxcgw4m@pali>
-References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com>
- <149139701.nbvtKH4F0p@pc-42>
- <CAPDyKFr62Kykg3=9WiXAV8UToqjw8gj4t6bbM7pGQ+iGGQRLmg@mail.gmail.com>
- <4117481.h6P39bWmWk@pc-42>
- <87czohckal.fsf@codeaurora.org>
+        b=nCbG5PriPvm2tvJYzAOOhXZyNohjHetOvyL7xD4IiohKwsf0ImbvKO1sAmeqeLNiM
+         mBoNXPY959zJx34ryOYxwYtrFtovOYu+23tn2S9teTcZgMWYB+a3XGWutX21GAQgyq
+         vYMS2+dgFADc1mJK8ejVZtVGB0VO5zX3PIn84PWk=
+Date:   Thu, 7 Oct 2021 12:33:55 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        kunit-dev@googlegroups.com, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Brendan Higgins <brendanhiggins@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Graf <tgraf@suug.ch>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v2 0/4] kernel.h further split
+Message-ID: <YV7NEze2IvUgHusJ@kroah.com>
+References: <20211007095129.22037-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87czohckal.fsf@codeaurora.org>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20211007095129.22037-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday 07 October 2021 11:26:42 Kalle Valo wrote:
-> Jérôme Pouiller <jerome.pouiller@silabs.com> writes:
-> > On Wednesday 6 October 2021 17:02:07 CEST Ulf Hansson wrote:
-> >> On Tue, 5 Oct 2021 at 10:14, Jérôme Pouiller <jerome.pouiller@silabs.com> wrote:
-> >> > On Friday 1 October 2021 17:23:16 CEST Ulf Hansson wrote:
-> >> > > On Thu, 30 Sept 2021 at 19:06, Pali Rohár <pali@kernel.org> wrote:
-> >> > > > On Thursday 30 September 2021 18:51:09 Jérôme Pouiller wrote:
-> >> > > > > On Thursday 30 September 2021 12:07:55 CEST Ulf Hansson wrote:
-> >> > > > > > On Mon, 20 Sept 2021 at 18:12, Jerome Pouiller
-> >> > > > > > <Jerome.Pouiller@silabs.com> wrote:
-> >> > > > > > >
-> >> > > > > > > From: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> >> > > > > > >
-> >> > > > > > > Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> >> > > > > > > ---
-> >> > > > > > >  drivers/net/wireless/silabs/wfx/bus_sdio.c | 261 +++++++++++++++++++++
-> >> > > > > > >  1 file changed, 261 insertions(+)
-> >> > > > > > >  create mode 100644 drivers/net/wireless/silabs/wfx/bus_sdio.c
-> >> > > > > > >
-> >> > > > > > > diff --git a/drivers/net/wireless/silabs/wfx/bus_sdio.c
-> >> > > > > > > b/drivers/net/wireless/silabs/wfx/bus_sdio.c
-> >> > > > > >
-> >> > > > > > [...]
-> >> > > > > >
-> >> > > > > > > +
-> >> > > > > > > +static int wfx_sdio_probe(struct sdio_func *func,
-> >> > > > > > > +                         const struct sdio_device_id *id)
-> >> > > > > > > +{
-> >> > > > > > > +       struct device_node *np = func->dev.of_node;
-> >> > > > > > > +       struct wfx_sdio_priv *bus;
-> >> > > > > > > +       int ret;
-> >> > > > > > > +
-> >> > > > > > > +       if (func->num != 1) {
-> >> > > > > > > + dev_err(&func->dev, "SDIO function number is %d while
-> >> > > > > > > it should always be 1 (unsupported chip?)\n",
-> >> > > > > > > +                       func->num);
-> >> > > > > > > +               return -ENODEV;
-> >> > > > > > > +       }
-> >> > > > > > > +
-> >> > > > > > > +       bus = devm_kzalloc(&func->dev, sizeof(*bus), GFP_KERNEL);
-> >> > > > > > > +       if (!bus)
-> >> > > > > > > +               return -ENOMEM;
-> >> > > > > > > +
-> >> > > > > > > +       if (!np || !of_match_node(wfx_sdio_of_match, np)) {
-> >> > > > > > > + dev_warn(&func->dev, "no compatible device found in
-> >> > > > > > > DT\n");
-> >> > > > > > > +               return -ENODEV;
-> >> > > > > > > +       }
-> >> > > > > > > +
-> >> > > > > > > +       bus->func = func;
-> >> > > > > > > +       bus->of_irq = irq_of_parse_and_map(np, 0);
-> >> > > > > > > +       sdio_set_drvdata(func, bus);
-> >> > > > > > > +       func->card->quirks |= MMC_QUIRK_LENIENT_FN0 |
-> >> > > > > > > +                             MMC_QUIRK_BLKSZ_FOR_BYTE_MODE |
-> >> > > > > > > +                             MMC_QUIRK_BROKEN_BYTE_MODE_512;
-> >> > > > > >
-> >> > > > > > I would rather see that you add an SDIO_FIXUP for the SDIO card, to
-> >> > > > > > the sdio_fixup_methods[], in drivers/mmc/core/quirks.h, instead of
-> >> > > > > > this.
-> >> > > > >
-> >> > > > > In the current patch, these quirks are applied only if the device appears
-> >> > > > > in the device tree (see the condition above). If I implement them in
-> >> > > > > drivers/mmc/core/quirks.h they will be applied as soon as the device is
-> >> > > > > detected. Is it what we want?
-> >> > > > >
-> >> > > > > Note: we already have had a discussion about the strange VID/PID declared
-> >> > > > > by this device:
-> >> > > > >   https://www.spinics.net/lists/netdev/msg692577.html
-> >> > > >
-> >> > > > Yes, vendor id 0x0000 is invalid per SDIO spec. So based on this vendor
-> >> > > > id, it is not possible to write any quirk in mmc/sdio generic code.
-> >> > > >
-> >> > > > Ulf, but maybe it could be possible to write quirk based on OF
-> >> > > > compatible string?
-> >> > >
-> >> > > Yes, that would be better in my opinion.
-> >> > >
-> >> > > We already have DT bindings to describe embedded SDIO cards (a subnode
-> >> > > to the mmc controller node), so we should be able to extend that I
-> >> > > think.
-> >> >
-> >> > So, this feature does not yet exist? Do you consider it is a blocker for
-> >> > the current patch?
-> >> 
-> >> Yes, sorry. I think we should avoid unnecessary hacks in SDIO func
-> >> drivers, especially those that deserve to be fixed in the mmc core.
-> >> 
-> >> Moreover, we already support the similar thing for eMMC cards, plus
-> >> that most parts are already done for SDIO too.
-> >> 
-> >> >
-> >> > To be honest, I don't really want to take over this change in mmc/core.
-> >> 
-> >> I understand. Allow me a couple of days, then I can post a patch to
-> >> help you out.
-> >
-> > Great! Thank you. I apologize for the extra work due to this invalid
-> > vendor id.
+On Thu, Oct 07, 2021 at 12:51:25PM +0300, Andy Shevchenko wrote:
+> The kernel.h is a set of something which is not related to each other
+> and often used in non-crossed compilation units, especially when drivers
+> need only one or two macro definitions from it.
 > 
-> BTW please escalate in your company how HORRIBLE it is that you
-> manufacture SDIO devices without proper device ids, and make sure that
-> all your future devices have officially assigned ids. I cannot stress
-> enough how important that is for the Linux community!
+> Here is the split of container_of(). The goals are the following:
+> - untwist the dependency hell a bit
+> - drop kernel.h inclusion where it's only used for container_of()
+> - speed up C preprocessing.
+> 
+> People, like Greg KH and Miguel Ojeda, were asking about the latter.
+> Read below the methodology and test setup with outcome numbers.
+> 
+> The methodology
+> ===============
+> The question here is how to measure in the more or less clean way
+> the C preprocessing time when building a project like Linux kernel.
+> To answer it, let's look around and see what tools do we have that
+> may help. Aha, here is ccache tool that seems quite plausible to
+> be used. Its core idea is to preprocess C file, count hash (MD4)
+> and compare to ones that are in the cache. If found, return the
+> object file, avoiding compilation stage.
+> 
+> Taking into account the property of the ccache, configure and use
+> it in the below steps:
+> 
+> 1. Configure kernel with allyesconfig
+> 
+> 2. Make it with `make` to be sure that the cache is filled with
+>    the latest data. I.o.w. warm up the cache.
+> 
+> 3. Run `make -s` (silent mode to reduce the influence of
+>    the unrelated things, like console output) 10 times and
+>    measure 'real' time spent.
+> 
+> 4. Repeat 1-3 for each patch or patch set to get data sets before
+>    and after.
+> 
+> When we get the raw data, calculating median will show us the number.
+> Comparing them before and after we will see the difference.
+> 
+> The setup
+> =========
+> I have used the Intel x86_64 server platform (see partial output of
+>  `lscpu` below):
+> 
+> $ lscpu
+> Architecture:            x86_64
+>   CPU op-mode(s):        32-bit, 64-bit
+>   Address sizes:         46 bits physical, 48 bits virtual
+>   Byte Order:            Little Endian
+> CPU(s):                  88
+>   On-line CPU(s) list:   0-87
+> Vendor ID:               GenuineIntel
+>   Model name:            Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+>     CPU family:          6
+>     Model:               79
+>     Thread(s) per core:  2
+>     Core(s) per socket:  22
+>     Socket(s):           2
+>     Stepping:            1
+>     CPU max MHz:         3600.0000
+>     CPU min MHz:         1200.0000
+> ...
+> Caches (sum of all):
+>   L1d:                   1.4 MiB (44 instances)
+>   L1i:                   1.4 MiB (44 instances)
+>   L2:                    11 MiB (44 instances)
+>   L3:                    110 MiB (2 instances)
+> NUMA:
+>   NUMA node(s):          2
+>   NUMA node0 CPU(s):     0-21,44-65
+>   NUMA node1 CPU(s):     22-43,66-87
+> Vulnerabilities:
+>   Itlb multihit:         KVM: Mitigation: Split huge pages
+>   L1tf:                  Mitigation; PTE Inversion; VMX conditional cache flushes, SMT vulnerable
+>   Mds:                   Mitigation; Clear CPU buffers; SMT vulnerable
+>   Meltdown:              Mitigation; PTI
+>   Spec store bypass:     Mitigation; Speculative Store Bypass disabled via prctl and seccomp
+>   Spectre v1:            Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+>   Spectre v2:            Mitigation; Full generic retpoline, IBPB conditional, IBRS_FW, STIBP conditional, RSB filling
+>   Tsx async abort:       Mitigation; Clear CPU buffers; SMT vulnerable
+> 
+> With the following GCC:
+> 
+> $ gcc --version
+> gcc (Debian 10.3.0-11) 10.3.0
+> 
+> The commands I have run during the measurement were:
+> 
+> 	rm -rf $O
+> 	make O=$O allyesconfig
+> 	time make O=$O -s -j64	# this step has been measured
+> 
+> The raw data and median
+> =======================
+> Before patch 2 (yes, I have measured the only patch 2 effect) in the series
+> (the data is sorted by time):
+> 
+> real    2m8.794s
+> real    2m11.183s
+> real    2m11.235s
+> real    2m11.639s
+> real    2m11.960s
+> real    2m12.014s
+> real    2m12.609s
+> real    2m13.177s
+> real    2m13.462s
+> real    2m19.132s
+> 
+> After patch 2 has been applied:
+> 
+> real    2m8.536s
+> real    2m8.776s
+> real    2m9.071s
+> real    2m9.459s
+> real    2m9.531s
+> real    2m9.610s
+> real    2m10.356s
+> real    2m10.430s
+> real    2m11.117s
+> real    2m11.885s
+> 
+> Median values are:
+> 	131.987s before
+> 	129.571s after
+> 
+> We see the steady speedup as of 1.83%.
 
-Absolutely! Please really escalate this problem in your company and
-properly ask USB-IF for assigning PCMCIA vendor ID as USB-IF maintains
-PCMCIA vendor database and PCMCIA ids are used in SDIO devices:
-https://lore.kernel.org/linux-mmc/20210607140216.64iuprp3siggslrk@pali/
+You do know about kcbench:
+	https://gitlab.com/knurd42/kcbench.git
+
+Try running that to make it such that we know how it was tested :)
+
+thanks,
+
+greg k-h
+
+
+> 
+> Andy Shevchenko (4):
+>   kernel.h: Drop unneeded <linux/kernel.h> inclusion from other headers
+>   kernel.h: Split out container_of() and typeof_member() macros
+>   lib/rhashtable: Replace kernel.h with the necessary inclusions
+>   kunit: Replace kernel.h with the necessary inclusions
+> 
+>  include/kunit/test.h         | 14 ++++++++++++--
+>  include/linux/container_of.h | 37 ++++++++++++++++++++++++++++++++++++
+>  include/linux/kernel.h       | 31 +-----------------------------
+>  include/linux/kobject.h      |  1 +
+>  include/linux/list.h         |  6 ++++--
+>  include/linux/llist.h        |  4 +++-
+>  include/linux/plist.h        |  5 ++++-
+>  include/linux/rwsem.h        |  1 -
+>  include/linux/spinlock.h     |  1 -
+>  include/media/media-entity.h |  3 ++-
+>  lib/radix-tree.c             |  6 +++++-
+>  lib/rhashtable.c             |  7 ++++++-
+>  12 files changed, 75 insertions(+), 41 deletions(-)
+>  create mode 100644 include/linux/container_of.h
+> 
+> -- 
+> 2.33.0
+> 
