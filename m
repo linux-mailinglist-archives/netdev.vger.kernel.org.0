@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18DA3426039
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 01:08:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D84426033
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 01:08:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241225AbhJGXKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 19:10:39 -0400
+        id S235119AbhJGXK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 19:10:28 -0400
 Received: from mga17.intel.com ([192.55.52.151]:53016 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233316AbhJGXKV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 19:10:21 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10130"; a="207199661"
+        id S232867AbhJGXKU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 19:10:20 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10130"; a="207199658"
 X-IronPort-AV: E=Sophos;i="5.85,355,1624345200"; 
-   d="scan'208";a="207199661"
+   d="scan'208";a="207199658"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2021 16:08:25 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.85,355,1624345200"; 
-   d="scan'208";a="590344313"
+   d="scan'208";a="590344317"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga004.jf.intel.com with ESMTP; 07 Oct 2021 16:08:24 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Wojciech Drewek <wojciech.drewek@intel.com>,
+Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        jiri@resnulli.us, ivecera@redhat.com,
-        michal.swiatkowski@linux.intel.com, grzegorz.nitka@intel.com,
+        jiri@resnulli.us, ivecera@redhat.com, wojciech.drewek@intel.com,
+        grzegorz.nitka@intel.com,
         Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [PATCH net-next 02/12] ice: Move devlink port to PF/VF struct
-Date:   Thu,  7 Oct 2021 16:06:10 -0700
-Message-Id: <20211007230620.3413290-3-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 03/12] ice: introduce VF port representor
+Date:   Thu,  7 Oct 2021 16:06:11 -0700
+Message-Id: <20211007230620.3413290-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211007230620.3413290-1-anthony.l.nguyen@intel.com>
 References: <20211007230620.3413290-1-anthony.l.nguyen@intel.com>
@@ -40,301 +40,415 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wojciech Drewek <wojciech.drewek@intel.com>
+From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 
-Keeping devlink port inside VSI data structure causes some issues.
-Since VF VSI is released during reset that means that we have to
-unregister devlink port and register it again every time reset is
-triggered. With the new changes in devlink API it
-might cause deadlock issues. After calling
-devlink_port_register/devlink_port_unregister devlink API is going to
-lock rtnl_mutex. It's an issue when VF reset is triggered in netlink
-operation context (like setting VF MAC address or VLAN),
-because rtnl_lock is already taken by netlink. Another call of
-rtnl_lock from devlink API results in dead-lock.
+Port representor is used to manage VF from host side. To allow
+it each created representor registers netdevice with random hw
+address. Also devlink port is created for all representors.
 
-By moving devlink port to PF/VF we avoid creating/destroying it
-during reset. Since this patch, devlink ports are created during
-ice_probe, destroyed during ice_remove for PF and created during
-ice_repr_add, destroyed during ice_repr_rem for VF.
+Port representor name is created based on switch id or managed
+by devlink core if devlink port was registered with success.
 
-Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+Open and stop ndo ops are implemented to allow managing the VF
+link state. Link state is tracked in VF struct.
+
+Struct ice_netdev_priv is extended by pointer to representor
+field. This is needed to get correct representor from netdev
+struct mostly used in ndo calls.
+
+Implement helper functions to check if given netdev is netdev of
+port representor (ice_is_port_repr_netdev) and to get representor
+from netdev (ice_netdev_to_repr).
+
+As driver mostly will create or destroy port representors on all
+VFs instead of on single one, write functions to add and remove
+representor for each VF.
+
+Representor struct contains pointer to source VSI, which is VSI
+configured on VF, backpointer to VF, backpointer to netdev,
+q_vector pointer and metadata_dst which will be used in data path.
+
+Co-developed-by: Grzegorz Nitka <grzegorz.nitka@intel.com>
+Signed-off-by: Grzegorz Nitka <grzegorz.nitka@intel.com>
+Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h          |   7 +-
- drivers/net/ethernet/intel/ice/ice_devlink.c  | 109 +++++++++++++-----
- drivers/net/ethernet/intel/ice/ice_devlink.h  |   6 +-
- drivers/net/ethernet/intel/ice/ice_lib.c      |   3 +-
- drivers/net/ethernet/intel/ice/ice_main.c     |   4 +-
+ drivers/net/ethernet/intel/ice/Makefile       |   3 +-
+ drivers/net/ethernet/intel/ice/ice.h          |   2 +
+ drivers/net/ethernet/intel/ice/ice_repr.c     | 254 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_repr.h     |  23 ++
  .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   2 +-
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |   9 ++
- 7 files changed, 103 insertions(+), 37 deletions(-)
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |   4 +
+ 6 files changed, 286 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_repr.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_repr.h
 
+diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
+index 0545594c80ba..1866be50095d 100644
+--- a/drivers/net/ethernet/intel/ice/Makefile
++++ b/drivers/net/ethernet/intel/ice/Makefile
+@@ -26,7 +26,8 @@ ice-y := ice_main.o	\
+ 	 ice_devlink.o	\
+ 	 ice_fw_update.o \
+ 	 ice_lag.o	\
+-	 ice_ethtool.o
++	 ice_ethtool.o  \
++	 ice_repr.o
+ ice-$(CONFIG_PCI_IOV) += ice_virtchnl_allowlist.o
+ ice-$(CONFIG_PCI_IOV) += ice_virtchnl_pf.o ice_sriov.o ice_virtchnl_fdir.o
+ ice-$(CONFIG_PTP_1588_CLOCK) += ice_ptp.o ice_ptp_hw.o
 diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 1657f0cf10b1..9d07bb995f41 100644
+index 9d07bb995f41..09ceff762a65 100644
 --- a/drivers/net/ethernet/intel/ice/ice.h
 +++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -311,10 +311,6 @@ struct ice_vsi {
- 	spinlock_t arfs_lock;	/* protects aRFS hash table and filter state */
- 	atomic_t *arfs_last_fltr_id;
+@@ -63,6 +63,7 @@
+ #include "ice_fdir.h"
+ #include "ice_xsk.h"
+ #include "ice_arfs.h"
++#include "ice_repr.h"
+ #include "ice_lag.h"
  
--	/* devlink port data */
--	struct devlink_port devlink_port;
--	bool devlink_port_registered;
--
- 	u16 max_frame;
- 	u16 rx_buf_len;
+ #define ICE_BAR0		0
+@@ -518,6 +519,7 @@ struct ice_pf {
  
-@@ -426,6 +422,9 @@ struct ice_pf {
- 	struct devlink_region *nvm_region;
- 	struct devlink_region *devcaps_region;
- 
-+	/* devlink port data */
-+	struct devlink_port devlink_port;
-+
- 	/* OS reserved IRQ details */
- 	struct msix_entry *msix_entries;
- 	struct ice_res_tracker *irq_tracker;
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index 69c9c165f987..55353bf4cbef 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -487,60 +487,115 @@ void ice_devlink_unregister(struct ice_pf *pf)
- }
+ struct ice_netdev_priv {
+ 	struct ice_vsi *vsi;
++	struct ice_repr *repr;
+ };
  
  /**
-- * ice_devlink_create_port - Create a devlink port for this VSI
-- * @vsi: the VSI to create a port for
-+ * ice_devlink_create_pf_port - Create a devlink port for this PF
-+ * @pf: the PF to create a devlink port for
-  *
-- * Create and register a devlink_port for this VSI.
-+ * Create and register a devlink_port for this PF.
-  *
-  * Return: zero on success or an error code on failure.
-  */
--int ice_devlink_create_port(struct ice_vsi *vsi)
-+int ice_devlink_create_pf_port(struct ice_pf *pf)
- {
- 	struct devlink_port_attrs attrs = {};
--	struct ice_port_info *pi;
-+	struct devlink_port *devlink_port;
- 	struct devlink *devlink;
-+	struct ice_vsi *vsi;
- 	struct device *dev;
--	struct ice_pf *pf;
- 	int err;
- 
--	/* Currently we only create devlink_port instances for PF VSIs */
--	if (vsi->type != ICE_VSI_PF)
--		return -EINVAL;
--
--	pf = vsi->back;
--	devlink = priv_to_devlink(pf);
- 	dev = ice_pf_to_dev(pf);
--	pi = pf->hw.port_info;
+diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
+new file mode 100644
+index 000000000000..479da3d020a7
+--- /dev/null
++++ b/drivers/net/ethernet/intel/ice/ice_repr.c
+@@ -0,0 +1,254 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2019-2021, Intel Corporation. */
 +
-+	devlink_port = &pf->devlink_port;
++#include "ice.h"
++#include "ice_eswitch.h"
++#include "ice_devlink.h"
++#include "ice_virtchnl_pf.h"
 +
-+	vsi = ice_get_main_vsi(pf);
-+	if (!vsi)
-+		return -EIO;
- 
- 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
--	attrs.phys.port_number = pi->lport;
--	devlink_port_attrs_set(&vsi->devlink_port, &attrs);
--	err = devlink_port_register(devlink, &vsi->devlink_port, vsi->idx);
-+	attrs.phys.port_number = pf->hw.bus.func;
-+	devlink_port_attrs_set(devlink_port, &attrs);
-+	devlink = priv_to_devlink(pf);
++/**
++ * ice_repr_get_sw_port_id - get port ID associated with representor
++ * @repr: pointer to port representor
++ */
++static int ice_repr_get_sw_port_id(struct ice_repr *repr)
++{
++	return repr->vf->pf->hw.port_info->lport;
++}
 +
-+	err = devlink_port_register(devlink, devlink_port, vsi->idx);
- 	if (err) {
--		dev_err(dev, "devlink_port_register failed: %d\n", err);
-+		dev_err(dev, "Failed to create devlink port for PF %d, error %d\n",
-+			pf->hw.pf_id, err);
- 		return err;
- 	}
- 
--	vsi->devlink_port_registered = true;
++/**
++ * ice_repr_get_phys_port_name - get phys port name
++ * @netdev: pointer to port representor netdev
++ * @buf: write here port name
++ * @len: max length of buf
++ */
++static int
++ice_repr_get_phys_port_name(struct net_device *netdev, char *buf, size_t len)
++{
++	struct ice_netdev_priv *np = netdev_priv(netdev);
++	struct ice_repr *repr = np->repr;
++	int res;
++
++	/* Devlink port is registered and devlink core is taking care of name formatting. */
++	if (repr->vf->devlink_port.devlink)
++		return -EOPNOTSUPP;
++
++	res = snprintf(buf, len, "pf%dvfr%d", ice_repr_get_sw_port_id(repr),
++		       repr->vf->vf_id);
++	if (res <= 0)
++		return -EOPNOTSUPP;
 +	return 0;
 +}
 +
 +/**
-+ * ice_devlink_destroy_pf_port - Destroy the devlink_port for this PF
-+ * @pf: the PF to cleanup
-+ *
-+ * Unregisters the devlink_port structure associated with this PF.
++ * ice_netdev_to_repr - Get port representor for given netdevice
++ * @netdev: pointer to port representor netdev
 + */
-+void ice_devlink_destroy_pf_port(struct ice_pf *pf)
++struct ice_repr *ice_netdev_to_repr(struct net_device *netdev)
 +{
-+	struct devlink_port *devlink_port;
++	struct ice_netdev_priv *np = netdev_priv(netdev);
 +
-+	devlink_port = &pf->devlink_port;
-+
-+	devlink_port_type_clear(devlink_port);
-+	devlink_port_unregister(devlink_port);
++	return np->repr;
 +}
 +
 +/**
-+ * ice_devlink_create_vf_port - Create a devlink port for this VF
-+ * @vf: the VF to create a port for
++ * ice_repr_open - Enable port representor's network interface
++ * @netdev: network interface device structure
 + *
-+ * Create and register a devlink_port for this VF.
++ * The open entry point is called when a port representor's network
++ * interface is made active by the system (IFF_UP). Corresponding
++ * VF is notified about link status change.
 + *
-+ * Return: zero on success or an error code on failure.
++ * Returns 0 on success
 + */
-+int ice_devlink_create_vf_port(struct ice_vf *vf)
++static int ice_repr_open(struct net_device *netdev)
 +{
-+	struct devlink_port_attrs attrs = {};
-+	struct devlink_port *devlink_port;
-+	struct devlink *devlink;
-+	struct ice_vsi *vsi;
-+	struct device *dev;
-+	struct ice_pf *pf;
-+	int err;
++	struct ice_repr *repr = ice_netdev_to_repr(netdev);
++	struct ice_vf *vf;
 +
-+	pf = vf->pf;
-+	dev = ice_pf_to_dev(pf);
-+	vsi = ice_get_vf_vsi(vf);
-+	devlink_port = &vf->devlink_port;
++	vf = repr->vf;
++	vf->link_forced = true;
++	vf->link_up = true;
++	ice_vc_notify_vf_link_state(vf);
 +
-+	attrs.flavour = DEVLINK_PORT_FLAVOUR_PCI_VF;
-+	attrs.pci_vf.pf = pf->hw.bus.func;
-+	attrs.pci_vf.vf = vf->vf_id;
++	netif_carrier_on(netdev);
++	netif_tx_start_all_queues(netdev);
 +
-+	devlink_port_attrs_set(devlink_port, &attrs);
-+	devlink = priv_to_devlink(pf);
-+
-+	err = devlink_port_register(devlink, devlink_port, vsi->idx);
-+	if (err) {
-+		dev_err(dev, "Failed to create devlink port for VF %d, error %d\n",
-+			vf->vf_id, err);
-+		return err;
-+	}
- 
- 	return 0;
- }
- 
- /**
-- * ice_devlink_destroy_port - Destroy the devlink_port for this VSI
-- * @vsi: the VSI to cleanup
-+ * ice_devlink_destroy_vf_port - Destroy the devlink_port for this VF
-+ * @vf: the VF to cleanup
-  *
-- * Unregisters the devlink_port structure associated with this VSI.
-+ * Unregisters the devlink_port structure associated with this VF.
-  */
--void ice_devlink_destroy_port(struct ice_vsi *vsi)
-+void ice_devlink_destroy_vf_port(struct ice_vf *vf)
- {
--	if (!vsi->devlink_port_registered)
--		return;
-+	struct devlink_port *devlink_port;
- 
--	devlink_port_type_clear(&vsi->devlink_port);
--	devlink_port_unregister(&vsi->devlink_port);
-+	devlink_port = &vf->devlink_port;
- 
--	vsi->devlink_port_registered = false;
-+	devlink_port_type_clear(devlink_port);
-+	devlink_port_unregister(devlink_port);
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
-index e721d7b0d627..b7f9551e4fc4 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.h
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
-@@ -8,8 +8,10 @@ struct ice_pf *ice_allocate_pf(struct device *dev);
- 
- void ice_devlink_register(struct ice_pf *pf);
- void ice_devlink_unregister(struct ice_pf *pf);
--int ice_devlink_create_port(struct ice_vsi *vsi);
--void ice_devlink_destroy_port(struct ice_vsi *vsi);
-+int ice_devlink_create_pf_port(struct ice_pf *pf);
-+void ice_devlink_destroy_pf_port(struct ice_pf *pf);
-+int ice_devlink_create_vf_port(struct ice_vf *vf);
-+void ice_devlink_destroy_vf_port(struct ice_vf *vf);
- 
- void ice_devlink_init_regions(struct ice_pf *pf);
- void ice_devlink_destroy_regions(struct ice_pf *pf);
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 3adbd9a179a7..deff158dbae1 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2859,7 +2859,8 @@ int ice_vsi_release(struct ice_vsi *vsi)
- 		clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
- 	}
- 
--	ice_devlink_destroy_port(vsi);
-+	if (vsi->type == ICE_VSI_PF)
-+		ice_devlink_destroy_pf_port(pf);
- 
- 	if (test_bit(ICE_FLAG_RSS_ENA, pf->flags))
- 		ice_rss_clean(vsi);
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index cabe84bb29fe..1cceaa9f1884 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4174,11 +4174,11 @@ static int ice_register_netdev(struct ice_pf *pf)
- 	set_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
- 	netif_carrier_off(vsi->netdev);
- 	netif_tx_stop_all_queues(vsi->netdev);
--	err = ice_devlink_create_port(vsi);
-+	err = ice_devlink_create_pf_port(pf);
- 	if (err)
- 		goto err_devlink_create;
- 
--	devlink_port_type_eth_set(&vsi->devlink_port, vsi->netdev);
-+	devlink_port_type_eth_set(&pf->devlink_port, vsi->netdev);
- 
- 	return 0;
- err_devlink_create:
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index e93430ab37f1..a827c6b653a3 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -251,7 +251,7 @@ ice_vc_hash_field_match_type ice_vc_hash_field_list_comms[] = {
-  * ice_get_vf_vsi - get VF's VSI based on the stored index
-  * @vf: VF used to get VSI
-  */
--static struct ice_vsi *ice_get_vf_vsi(struct ice_vf *vf)
-+struct ice_vsi *ice_get_vf_vsi(struct ice_vf *vf)
- {
- 	return vf->pf->vsi[vf->lan_vsi_idx];
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 842cb077df86..38b4dc82c5c1 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -111,9 +111,13 @@ struct ice_vf {
- 	struct ice_mdd_vf_events mdd_rx_events;
- 	struct ice_mdd_vf_events mdd_tx_events;
- 	DECLARE_BITMAP(opcodes_allowlist, VIRTCHNL_OP_MAX);
-+
-+	/* devlink port data */
-+	struct devlink_port devlink_port;
- };
- 
- #ifdef CONFIG_PCI_IOV
-+struct ice_vsi *ice_get_vf_vsi(struct ice_vf *vf);
- void ice_process_vflr_event(struct ice_pf *pf);
- int ice_sriov_configure(struct pci_dev *pdev, int num_vfs);
- int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac);
-@@ -171,6 +175,11 @@ static inline void ice_print_vfs_mdd_events(struct ice_pf *pf) { }
- static inline void ice_print_vf_rx_mdd_event(struct ice_vf *vf) { }
- static inline void ice_restore_all_vfs_msi_state(struct pci_dev *pdev) { }
- 
-+static inline struct ice_vsi *ice_get_vf_vsi(struct ice_vf *vf)
-+{
-+	return NULL;
++	return 0;
 +}
 +
- static inline bool
- ice_is_malicious_vf(struct ice_pf __always_unused *pf,
- 		    struct ice_rq_event_info __always_unused *event,
++/**
++ * ice_repr_stop - Disable port representor's network interface
++ * @netdev: network interface device structure
++ *
++ * The stop entry point is called when a port representor's network
++ * interface is de-activated by the system. Corresponding
++ * VF is notified about link status change.
++ *
++ * Returns 0 on success
++ */
++static int ice_repr_stop(struct net_device *netdev)
++{
++	struct ice_repr *repr = ice_netdev_to_repr(netdev);
++	struct ice_vf *vf;
++
++	vf = repr->vf;
++	vf->link_forced = true;
++	vf->link_up = false;
++	ice_vc_notify_vf_link_state(vf);
++
++	netif_carrier_off(netdev);
++	netif_tx_stop_all_queues(netdev);
++
++	return 0;
++}
++
++static struct devlink_port *
++ice_repr_get_devlink_port(struct net_device *netdev)
++{
++	struct ice_repr *repr = ice_netdev_to_repr(netdev);
++
++	return &repr->vf->devlink_port;
++}
++
++static const struct net_device_ops ice_repr_netdev_ops = {
++	.ndo_get_phys_port_name = ice_repr_get_phys_port_name,
++	.ndo_open = ice_repr_open,
++	.ndo_stop = ice_repr_stop,
++	.ndo_get_devlink_port = ice_repr_get_devlink_port,
++};
++
++/**
++ * ice_is_port_repr_netdev - Check if a given netdevice is a port representor netdev
++ * @netdev: pointer to netdev
++ */
++bool ice_is_port_repr_netdev(struct net_device *netdev)
++{
++	return netdev && (netdev->netdev_ops == &ice_repr_netdev_ops);
++}
++
++/**
++ * ice_repr_reg_netdev - register port representor netdev
++ * @netdev: pointer to port representor netdev
++ */
++static int
++ice_repr_reg_netdev(struct net_device *netdev)
++{
++	eth_hw_addr_random(netdev);
++	netdev->netdev_ops = &ice_repr_netdev_ops;
++
++	netif_carrier_off(netdev);
++	netif_tx_stop_all_queues(netdev);
++
++	return register_netdev(netdev);
++}
++
++/**
++ * ice_repr_add - add representor for VF
++ * @vf: pointer to VF structure
++ */
++static int ice_repr_add(struct ice_vf *vf)
++{
++	struct ice_q_vector *q_vector;
++	struct ice_netdev_priv *np;
++	struct ice_repr *repr;
++	int err;
++
++	repr = kzalloc(sizeof(*repr), GFP_KERNEL);
++	if (!repr)
++		return -ENOMEM;
++
++	repr->netdev = alloc_etherdev(sizeof(struct ice_netdev_priv));
++	if (!repr->netdev) {
++		err =  -ENOMEM;
++		goto err_alloc;
++	}
++
++	repr->src_vsi = ice_get_vf_vsi(vf);
++	repr->vf = vf;
++	vf->repr = repr;
++	np = netdev_priv(repr->netdev);
++	np->repr = repr;
++
++	q_vector = kzalloc(sizeof(*q_vector), GFP_KERNEL);
++	if (!q_vector) {
++		err = -ENOMEM;
++		goto err_alloc_q_vector;
++	}
++	repr->q_vector = q_vector;
++
++	err = ice_devlink_create_vf_port(vf);
++	if (err)
++		goto err_devlink;
++
++	err = ice_repr_reg_netdev(repr->netdev);
++	if (err)
++		goto err_netdev;
++
++	devlink_port_type_eth_set(&vf->devlink_port, repr->netdev);
++
++	return 0;
++
++err_netdev:
++	ice_devlink_destroy_vf_port(vf);
++err_devlink:
++	kfree(repr->q_vector);
++	vf->repr->q_vector = NULL;
++err_alloc_q_vector:
++	free_netdev(repr->netdev);
++	repr->netdev = NULL;
++err_alloc:
++	kfree(repr);
++	vf->repr = NULL;
++	return err;
++}
++
++/**
++ * ice_repr_rem - remove representor from VF
++ * @vf: pointer to VF structure
++ */
++static void ice_repr_rem(struct ice_vf *vf)
++{
++	ice_devlink_destroy_vf_port(vf);
++	kfree(vf->repr->q_vector);
++	vf->repr->q_vector = NULL;
++	unregister_netdev(vf->repr->netdev);
++	free_netdev(vf->repr->netdev);
++	vf->repr->netdev = NULL;
++	kfree(vf->repr);
++	vf->repr = NULL;
++}
++
++/**
++ * ice_repr_add_for_all_vfs - add port representor for all VFs
++ * @pf: pointer to PF structure
++ */
++int ice_repr_add_for_all_vfs(struct ice_pf *pf)
++{
++	int err;
++	int i;
++
++	ice_for_each_vf(pf, i) {
++		err = ice_repr_add(&pf->vf[i]);
++		if (err)
++			goto err;
++	}
++	return 0;
++
++err:
++	for (i = i - 1; i >= 0; i--)
++		ice_repr_rem(&pf->vf[i]);
++
++	return err;
++}
++
++/**
++ * ice_repr_rem_from_all_vfs - remove port representor for all VFs
++ * @pf: pointer to PF structure
++ */
++void ice_repr_rem_from_all_vfs(struct ice_pf *pf)
++{
++	int i;
++
++	ice_for_each_vf(pf, i)
++		ice_repr_rem(&pf->vf[i]);
++}
+diff --git a/drivers/net/ethernet/intel/ice/ice_repr.h b/drivers/net/ethernet/intel/ice/ice_repr.h
+new file mode 100644
+index 000000000000..c198c4b054fa
+--- /dev/null
++++ b/drivers/net/ethernet/intel/ice/ice_repr.h
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (C) 2019-2021, Intel Corporation. */
++
++#ifndef _ICE_REPR_H_
++#define _ICE_REPR_H_
++
++#include <net/dst_metadata.h>
++#include "ice.h"
++
++struct ice_repr {
++	struct ice_vsi *src_vsi;
++	struct ice_vf *vf;
++	struct ice_q_vector *q_vector;
++	struct net_device *netdev;
++	struct metadata_dst *dst;
++};
++
++int ice_repr_add_for_all_vfs(struct ice_pf *pf);
++void ice_repr_rem_from_all_vfs(struct ice_pf *pf);
++
++struct ice_repr *ice_netdev_to_repr(struct net_device *netdev);
++bool ice_is_port_repr_netdev(struct net_device *netdev);
++#endif
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index a827c6b653a3..ec0fefa619dc 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -412,7 +412,7 @@ static bool ice_is_vf_link_up(struct ice_vf *vf)
+  *
+  * send a link status message to a single VF
+  */
+-static void ice_vc_notify_vf_link_state(struct ice_vf *vf)
++void ice_vc_notify_vf_link_state(struct ice_vf *vf)
+ {
+ 	struct virtchnl_pf_event pfe = { 0 };
+ 	struct ice_hw *hw = &vf->pf->hw;
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
+index 38b4dc82c5c1..b3fa8dd5539b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
+@@ -112,6 +112,8 @@ struct ice_vf {
+ 	struct ice_mdd_vf_events mdd_tx_events;
+ 	DECLARE_BITMAP(opcodes_allowlist, VIRTCHNL_OP_MAX);
+ 
++	struct ice_repr *repr;
++
+ 	/* devlink port data */
+ 	struct devlink_port devlink_port;
+ };
+@@ -128,6 +130,7 @@ void ice_free_vfs(struct ice_pf *pf);
+ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event);
+ void ice_vc_notify_link_state(struct ice_pf *pf);
+ void ice_vc_notify_reset(struct ice_pf *pf);
++void ice_vc_notify_vf_link_state(struct ice_vf *vf);
+ bool ice_reset_all_vfs(struct ice_pf *pf, bool is_vflr);
+ bool ice_reset_vf(struct ice_vf *vf, bool is_vflr);
+ void ice_restore_all_vfs_msi_state(struct pci_dev *pdev);
+@@ -168,6 +171,7 @@ static inline
+ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event) { }
+ static inline void ice_vc_notify_link_state(struct ice_pf *pf) { }
+ static inline void ice_vc_notify_reset(struct ice_pf *pf) { }
++static inline void ice_vc_notify_vf_link_state(struct ice_vf *vf) { }
+ static inline void ice_set_vf_state_qs_dis(struct ice_vf *vf) { }
+ static inline
+ void ice_vf_lan_overflow_event(struct ice_pf *pf, struct ice_rq_event_info *event) { }
 -- 
 2.31.1
 
