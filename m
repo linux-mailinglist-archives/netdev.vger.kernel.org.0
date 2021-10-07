@@ -2,247 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAED0424FB6
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 11:07:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D6B3424FB4
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 11:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240475AbhJGJI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 05:08:56 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:49046 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240494AbhJGJIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 05:08:48 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1977pEY7022773;
-        Thu, 7 Oct 2021 02:06:42 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=biUao3QymYC2Giv1/UKXS4nni4wWp8rqytK4WCtHA3I=;
- b=nnri0FXntipZmJQMtdAGdbFIKbpqdOeAxdzqeZwB+WP08TL9C5DKSueP2TktcBeoZjYz
- 6lBOIQvxyNcaDOnymY194Tf/pwAiJ4PIEX0wub1dXq9tqKYLIpwgju1mOryxEuInhjUW
- zg+epqtI3/r5tebgpJLmu/8nJRkUGDpa02A= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3bhvv40g2t-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 07 Oct 2021 02:06:42 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Thu, 7 Oct 2021 02:06:41 -0700
+        id S240326AbhJGJIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 05:08:42 -0400
+Received: from mail-db8eur05on2064.outbound.protection.outlook.com ([40.107.20.64]:3201
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232604AbhJGJIl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 05:08:41 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QkI/COefbpS5SJRQXeuWihu0pd/oAD1TgCIsmdsE96WB2c+DfV2O/sSHsp2cxku3DdC/s08BSiKY7RGIP8sfVbj9icJVAQ1uvGrW5ltGZfhA+5yP3Dlf9Dx/t/qFlkwLTgeXIhhF9KKWN9BINpHw5sQWUAV4FUPYF+va3FDGxwXGtnDkA5moBl5cJ78dVjuRm+ESl9dI8Juh9Sw9HGOkC2YP7K0LV2o1QQsPv4WXpDmo47IGnciUawAYjkgM+x3YRNQcucdkcyG0AcVbokTBkh8dOFU611Jy4GmQrbTVbytw/2wTJJzVl22ae0gkSMdsY4871j5ENZKWxNrpIaqtWA==
+ b=NpHK+J+ac3jtRswvKHHkr7K/9Oadz2VWLGuS7o4PaHt4wpM42i10dhhVsOVVdK/h5ihTClmJMfoBLD5vM/a0ULyN6HalTlGTzjG+ALOstrmov4ddwqoarMZ1CmTEAm8qmgKI/JvGIWdjVcHbHJRgWmwvk8IoYjJzElOcsp+/rbozhsVnpRkpruXPCW/4sJwa1oFxt8SrC0VFhVWxSBC0BYHqHT9b5wtGTGr6pbfltL437Bw35cWgTwWfZ0ow9Zkgw6Zs3u5C5984ExQfrmY8Fav2QSrENKu+x+KCsec7csYYJjVCUUnLtpgUT2m3opziw+o8KZ17EbIQpoHMyIZxlQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=biUao3QymYC2Giv1/UKXS4nni4wWp8rqytK4WCtHA3I=;
- b=Ketj4Wx7PU4OddfeeK3KoBEDGqS+hpzGL13LQcXPsEYxPeVCDY49cn2e00muP/SXByn7kmRZT1WG49Shq38pYFKwD570Oz9AX0khYcd8+dkNxxs0axtsWeb2tMd+r/WREMt0b0IiFqblH1P4lfxQ2pBvx8ZNHHzaKW2FXEpnometvoZNYjHzFbEcFU4NLJY7j2KxChC/9a0ShmstKx5gWJu4Foezps+1qnLAne7djyYQSwlNdr2cANEtXBrU723QvM+wbHhexsExFzwPHE6IPwMt462TaI5tEesnRadYsSbsbAaNQbHOvX2CpsjoEqsQiL2IuG3oj3gX4I58D1WIZA==
+ bh=dTJHOhwjvunk4OSvDRi+gSyYdcX0BYGN3d9evs1qQH8=;
+ b=PGga4D7R+eg3uWZsVH+ErW6Jj0ZIkfGsMNo9gH28haB04+6saVCLhpNCfML31B2fcKyKHwY4LljSJOczHOYtkJeF5+benG5AWS+fpSq3/lpnSGL9CGmkrFO2ob8aNm+q+AXq+21FZsM96G9I2+Z0mpgMnbIB1ptibKqghUBkn46N4v4XxBhYd3Q7fDCGQh1kaLhJGWGUo8y+l5lnNeSTO+O0LirrIn4t3Iw9Kk6anaoWeIHZKm+xG5zaxs9nhtBHufsTuTjYWX2P9KNnltiDywAoPYM8lzdqcCK2NMJ0CwOgcjgJozUd7dBlhl3DnqH2vHro9Xs31ZzDKg02HS9SrQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from DM6PR15MB4039.namprd15.prod.outlook.com (2603:10b6:5:2b2::20)
- by DM5PR15MB1596.namprd15.prod.outlook.com (2603:10b6:3:cf::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4587.18; Thu, 7 Oct 2021 09:06:40 +0000
-Received: from DM6PR15MB4039.namprd15.prod.outlook.com
- ([fe80::955c:b423:995c:d239]) by DM6PR15MB4039.namprd15.prod.outlook.com
- ([fe80::955c:b423:995c:d239%4]) with mapi id 15.20.4587.020; Thu, 7 Oct 2021
- 09:06:40 +0000
-Message-ID: <2c483e31-27e9-6b9b-15ec-1a3917ecefb3@fb.com>
-Date:   Thu, 7 Oct 2021 05:06:38 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.1.2
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf: keep track of prog verification
- stats
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dTJHOhwjvunk4OSvDRi+gSyYdcX0BYGN3d9evs1qQH8=;
+ b=beQBQbOZgQQTGD2WfTit8d1pHsbJTERjpR5xf5AwcNCbmMu+30QVCHS93qvaP+ig8gIef1QoS/2C4EpBRS1Ekk0fWRFDfQtiQTReNly1R4Um3ZEr5Tqvpi6EHSsOECQcfPhRBc5cnpuTaKmvMpM2zczLiO1AsxgMjFsfCHLxMJY=
+Received: from AM9PR04MB8397.eurprd04.prod.outlook.com (2603:10a6:20b:3b5::5)
+ by AM0PR04MB4273.eurprd04.prod.outlook.com (2603:10a6:208:67::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.20; Thu, 7 Oct
+ 2021 09:06:45 +0000
+Received: from AM9PR04MB8397.eurprd04.prod.outlook.com
+ ([fe80::78be:5e5b:c0d7:7b9c]) by AM9PR04MB8397.eurprd04.prod.outlook.com
+ ([fe80::78be:5e5b:c0d7:7b9c%6]) with mapi id 15.20.4587.020; Thu, 7 Oct 2021
+ 09:06:45 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: RE: [PATCH net-next 2/2] net: enetc: add support for software TSO
+Thread-Topic: [PATCH net-next 2/2] net: enetc: add support for software TSO
+Thread-Index: AQHXuu66y32LWmROBUCgcDqaC5R/VqvHKlPwgAALuACAAAMi0A==
+Date:   Thu, 7 Oct 2021 09:06:45 +0000
+Message-ID: <AM9PR04MB839713B0831C74BDFE0F1CEB96B19@AM9PR04MB8397.eurprd04.prod.outlook.com>
+References: <20211006201308.2492890-1-ioana.ciornei@nxp.com>
+ <20211006201308.2492890-3-ioana.ciornei@nxp.com>
+ <AM9PR04MB83979C1C47471719E6688B0F96B19@AM9PR04MB8397.eurprd04.prod.outlook.com>
+ <20211007083307.6alnxej5qx5ys62k@skbuf>
+In-Reply-To: <20211007083307.6alnxej5qx5ys62k@skbuf>
+Accept-Language: en-US
 Content-Language: en-US
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Yonghong Song <yhs@fb.com>
-References: <20210920151112.3770991-1-davemarchevsky@fb.com>
- <20210923205105.zufadghli5772uma@ast-mbp>
- <35e837fb-ac22-3ea1-4624-2a890f6d0db0@fb.com>
- <CAEf4Bzb+r5Fpu1YzGX01YY6BQb1xnZiMRW3hUF+uft4BsJCPoA@mail.gmail.com>
- <761a02db-ff47-fc2f-b557-eff2b02ec941@fb.com>
- <61520b6224619_397f208d7@john-XPS-13-9370.notmuch>
- <CAEf4BzbxYxnQND9JJ4SfQb4kxxkRtk4S4rR2iqkcz6bJ2jdFqw@mail.gmail.com>
- <615270f889bf9_e24c2083@john-XPS-13-9370.notmuch>
-From:   Dave Marchevsky <davemarchevsky@fb.com>
-In-Reply-To: <615270f889bf9_e24c2083@john-XPS-13-9370.notmuch>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0142.namprd13.prod.outlook.com
- (2603:10b6:208:2bb::27) To DM6PR15MB4039.namprd15.prod.outlook.com
- (2603:10b6:5:2b2::20)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fc104ed0-cbed-4f4b-50b6-08d98971c985
+x-ms-traffictypediagnostic: AM0PR04MB4273:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB4273EE52DF9634C2EE02ADF896B19@AM0PR04MB4273.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: eOnGaUD6AVvFqtjxVTqf6n5kEQqW7kPe7WctGgkVp6HIgBuVXZEJbk1crgInsjudPZ0qdaH3ghUU/EasXB84EGF3m84xOlG86DZvV/558uDon80tYeqQzLA51tqd1f83aK+J9NOgtG423vLPncAlQjGODAMIGkYMQoKPmAakbUnsVAXqo5IUj2igO7XHNLTtFfYYkDTVUcJy4TF/c984/w7l/RbNhHUuYet8jq3fpeXQyNyyotBH4Q3zXl2wgsZAoM7PVyKRSUN9bhGl2ONhisEALbYkc6sIlWWuwmUj5ZGRzMRPRgZf/BRRBeTqE0KVIYuO/4XJKevN+G/nvXAG9eoUiZSrCI9F+YSKVaC0B0fS97RgXxQovXJ3wOPwF1KcJcvJgdguLJuV/qR168TK7ymr0V8AMdCYoUmWgMhoSeu6giuzA85p8hSy7gHIRedMZiD7EAfesaOEfqeMHvn7ZAvg0J2lmm5DVeiCbe/m7KaWZBqX0iW9ZoQBNRqciOi/Bi6MpF7YQgUseS8sD1HUyKRPBi8Gg+B/Bg6+RivGiTUBDn1Vls8WTlILJ/iU0OwQgK31e1Zr8ovH8oIoYuIxaKQ93QxDOU0aqI1i2HZUbTetldvF1Wno57JcwnMk06ZswHZ1vqlz0pq2SroJ+xv3nVM6o1ofAYKNCSvl0VS11+rk9YluvbGS7wmgHq2B7j5UhXuG+OW8eSrYA1tj+4YsRQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8397.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(7696005)(53546011)(6506007)(54906003)(71200400001)(316002)(8936002)(6862004)(83380400001)(44832011)(186003)(26005)(33656002)(8676002)(38070700005)(6636002)(2906002)(122000001)(4326008)(5660300002)(38100700002)(9686003)(508600001)(55016002)(52536014)(76116006)(66446008)(66946007)(66476007)(66556008)(64756008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?KulEM5KFdFDHKD9vIxbETzsn+6KUX7xiyaL7ITIhgC1/6pynxPOL5NWvB99B?=
+ =?us-ascii?Q?2gR/+dbxb4s0xjCx7KBhqy9wbkBC0htzDmXyZS5c1cuMfTuh9447/upM6Ym1?=
+ =?us-ascii?Q?D3fLkJ1pdyo10VkSBsmEV/ARhgDd69NSUaIHswrjZEyAwSBF47LngfSnyer6?=
+ =?us-ascii?Q?obVDJ9HtmVBRu4gJGmiHBqXxnUu9gPb52GzzGPqKu98Vgr5icIS+LmA3h4DT?=
+ =?us-ascii?Q?ARiCuR/3kkpr2Tiun3txqZlMC5YPQoYgoozN0tQ2JfT8xdGancMlvLD/Cuf/?=
+ =?us-ascii?Q?Yvof86qcKwehV0e5tDlqD3X/4/gmJupJgbe4ynogk7jjM05Ce/8oheRB96hp?=
+ =?us-ascii?Q?jNN/N2SDxx9enaUzlrk8CagaO+Eg1MoYJT98qmzMkBMoB1PYH4w/BKU1rMLy?=
+ =?us-ascii?Q?YAJY0ST8igWCXntScGU0rjiIflPTHfrrl4OvsPGeNAAA+Vxde+/4xbWgrL++?=
+ =?us-ascii?Q?txEd+n6Ggp/jU5tZB5bLp3wxJ0PZx4MuVuXbxbVsYn2jIkmr/wTzSr8I8XRA?=
+ =?us-ascii?Q?ibSdM3nCOH15cI/K0rMj5EBQ/U09DhUXbcCuxY9i9mLUOMgEY04GsC1krz+c?=
+ =?us-ascii?Q?xJZttmdctfkJrJIV/r+LaYNkg63DzIE7mkBkkUyXYkB6FsEjkjlCB4sCYKbW?=
+ =?us-ascii?Q?DFj80/+L7UrY+DFkdb5u0MPC6mi4F4eg4DceRXt4xmyHm60pUCyLopFkcWiF?=
+ =?us-ascii?Q?F1KHhi9ecUlVMBSBywa7gWedBaf91kAQ5vBaY4NyJqrtHdte944tusyalQyd?=
+ =?us-ascii?Q?QkChVkPVa74ugwXgutJKk3jHep6I+UoTP69q+jCUbVSlI7ycEP5JWhcTyder?=
+ =?us-ascii?Q?EYjhYDJC/gA1VH9Yeni0osn2FZNJhGJQGIOtpT3iIdD1nDn8tmKzLF4c+gzN?=
+ =?us-ascii?Q?sc4rLO5OEBEMzFT2Q3mex2aUsJNPU+7YLpu+J69PH/Mia+KCZjj/yMZuU5Fk?=
+ =?us-ascii?Q?+WXwUeBPcFsbERVgaWb5u6zOiVV1z5xPUoAVRSsTfp/xwVL+gvJ+aGtA03dT?=
+ =?us-ascii?Q?NyknhM8akJkwYeLIAwRFfnKhkt61bTPgH4VQ5ggQxOgpKx+0eSQChBDATfDz?=
+ =?us-ascii?Q?n/etWiP3YYiV1Y0clJPKoLsH7hU4Vk+69ONVQPT8JnUCmh0W0MjKoH1HgEJR?=
+ =?us-ascii?Q?0Cj5belTZGGgj3kMWaC/qO2R6AdsEhgZZ8P2P56GpAm3I19wQuYn+bHXWAkO?=
+ =?us-ascii?Q?CMgA5cs1hZWquHJCB9AkrS+6AC43T4OVyxiZiAhppkwTwePx/t4XeaUDx7fW?=
+ =?us-ascii?Q?bhzPg+1C5ZtpXAQbmNdw5Bq2MKir/r6iyzlUyulyMQvhjEbL2vPcGRv75+EL?=
+ =?us-ascii?Q?PT0=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Received: from [IPV6:2620:10d:c0a8:11d9::13b3] (2620:10d:c091:480::1:e073) by BL1PR13CA0142.namprd13.prod.outlook.com (2603:10b6:208:2bb::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.9 via Frontend Transport; Thu, 7 Oct 2021 09:06:40 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 86c70c57-8e94-45e4-5374-08d98971c69d
-X-MS-TrafficTypeDiagnostic: DM5PR15MB1596:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM5PR15MB1596893A230979469585A011A0B19@DM5PR15MB1596.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: l2trucGhU+pZijpMDDOFC2Yz7lnZUAqjzjvYc0kFzQUvCjF1i9cKeUMxb7e+v5I7gtgvg5I1/zD8tz+c+tJRpnnkp5dEoBbUVTVOtze0Xpa+MME+Tb/iw/phI8cvtxAXqcuDEvcb2X5iv2NKLmMhjEUmx44DUnN1/EBemprgS74pj27NmwhFUvVN8/wTk2zcjUJ8Y36jBaNLIvuS6c7ka2qjfALw+lH+EAg7Rp28kV5blC7BRzPqvkjjwLXDdODN6uKkQFBc2UzFdLCkY9ZjpSJiygn3VLRTmdXRlg7wFxu47sd6RWmQhcBbk8PkZVigw47cF47bupF1MoFiYPRuZIzbxkTCJiMv6IDibcGEcB3+0/yy/GInmJTRlvEVDHegY8b5wFEmW9R6EDscjbHok/vrWcnLTZnVoTcFjc4CCVhnF4u20sLkdFB7PEhcH5yzeqAhVpv7S3bD9uQdYMgvPR4qazzHnw2sPC127ZrhsM+tS6DgvDaIFHX6XxMeoph4ujLBGUCSrwh3BlTBMrlGHmUV0CAfa2ZVYzTOue8+iVZphxl1LvkwOx+bB44jrryBGWjUl0TP4ol2NyP5UlY7TQxnVuvEBKf8ChoCnrt+8/8s163P/4/s4/RBN287KMleMjtSfSSdO1rL4EwmY28x3uwIHRrZJVxSy3xRkN3HMwGr+JBvinUH6DsHGlLyFybTyvhmCsiImOAMH4lN/o69E7NPAVm7V7b2K/6YMftRL+o=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR15MB4039.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(508600001)(31686004)(186003)(5660300002)(83380400001)(66476007)(2906002)(66556008)(110136005)(31696002)(6486002)(53546011)(66946007)(316002)(54906003)(86362001)(8676002)(8936002)(15650500001)(36756003)(38100700002)(2616005)(4326008)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RzVlRDl5NTl1Unh3RlBJRkI3ZkMvd1l6MWdXeUNNWXdCY0pOMXZWaU9xbk1a?=
- =?utf-8?B?dEM0RGhSSXV5WXd3cEdzR0l4SUV2azRuTDZRVlpncGdVQzExWktmM0RVMUkr?=
- =?utf-8?B?TkJDLzJaMjk4dVVDL1p5YzRLMDgyZkFWYVIzSXN2bE9WbkFRZEtNbWhlOWpp?=
- =?utf-8?B?aDZoMTZUUGp2SlFtMGxudXRXa1dpNW9jVlZBdWFpYXgwclBRSGo3dWZiWlMv?=
- =?utf-8?B?NURpTW1QdG83dm1mOElsdFhCL1Zicm5hdmtDZUUyamwrZkczaXNzeWpsN3Rt?=
- =?utf-8?B?MUwwVGxxNlBZWkZsU0VCbUZlcTVpSENoNmFvSnRwN3N3SjBSRmlJTXBqbDJk?=
- =?utf-8?B?SGRoNVp0NFpudnF6djcyRmZBZVpJN1V6MUIrTjZIMXpxZmJYN3lFdXpBcVZ1?=
- =?utf-8?B?YnMwT0tqTWtTMXJNbE0yYXRWVFU0UUJITWJWak44Wmwxcy8vY1BQaUQ5KzFS?=
- =?utf-8?B?UkMrVWQ4bXNXcG05VHEyTlRJWjA0bm02TnByUXdDSGY0bkVMVEVHakZLWHNp?=
- =?utf-8?B?QmlYTTl4Ui9MSkZsTjUwN1ZnK3Y4YjRVTENnc0FCSXBlTVpyMVpLaUxtaUhZ?=
- =?utf-8?B?MUwrZU0wSFhqZ2VaUzVZTHdLN1FTM1hKRnBsQk9NRjdGdjFRaGNLV2tJbE9E?=
- =?utf-8?B?T2g3QmFOMlEwbGRCNHdjd0VDMVhtUDZSemVGdjE5ZWd6MU8zOFJXVUxhbHlp?=
- =?utf-8?B?NGdjY1lHTUg2WEFuYnNVQ285N1RRVlgyWE0wSGxpRHFVWTRGV3NGV3VIc0di?=
- =?utf-8?B?WWdMTCtrV3pXYkZZZVFpTllEOERzYU9zc3hzeWY4WlQyZnd5ZThMUkF5c2t3?=
- =?utf-8?B?Mys2d1lCSXQzaktqMmNMSzY0WmUxUEJoa1A5RGYxU1RsQUMzNzhaODFPdVpI?=
- =?utf-8?B?emNYOWV6c25mcGorcTNSdTYvMlVmV0pJdVU4TUhZcHpIL0ZUZkpodHFUTm54?=
- =?utf-8?B?b0tzcDBkYm16UFpWVC85aVF1OGRHUm5wSytybmpQT1dxR0pDTnkzcWNoN2Zk?=
- =?utf-8?B?ZUhjRVFHQVNoT1k4dU1FdWZOekMxWWxyNVhXck9BVGJiNWFTMHJ4SkM2eDd1?=
- =?utf-8?B?aHMzNGRMMzhVWmRZS3BWUG1ma0RndUNFZE9STUQ0b2phTW4vdzhRd2FsNWVL?=
- =?utf-8?B?dmZNWit5bmkzak1wOGIvaE0xNjdJTXVtenBieHJFOXQzL09LN3JyMGpCL0Zq?=
- =?utf-8?B?TzJpOCtBR05RVW1WeWh1ellWU1V1UTdwbTBaeW1WQjIzaEZDSEU2dGNOSkR4?=
- =?utf-8?B?VjYwRnlXalQxeG10Yy9QNzFoa1pDZ0k0R1lvaUU2UitZWGxzMENvSVpWRVQ5?=
- =?utf-8?B?SkJFVFpzNmRrN3JKTU1lTTBsSWVaUWcxaDBXRXcrak5SelVLZzYwVXNjV2cx?=
- =?utf-8?B?Um5lYis4cXlVNHFnZjhXd1JHbFowVndzLzVQSDI1ZHR3bUZFRjJ3Q3E0TGsz?=
- =?utf-8?B?UzNBcHVnbS9OUmFvdElYakJqbUF6OFFjbHdaRGF5ZTBnOVdkWHVDamh2bWFq?=
- =?utf-8?B?RzA3UjFacTE2K0szNXZhZ3B0dkJRdURxcFJHZi9UdktXNCtpNnZlWDVKcFZa?=
- =?utf-8?B?anBRbWx0enVUVkZ2cGVJVXZubE5LUGRWTnRGdjNpSGsvcm5DTkpKOFZjYzRj?=
- =?utf-8?B?ajdlZm1oalpUMkNHOTRKNzNmUDRTSzF6UU4rOWJUZEszZFZMWWl1ZlM4YllZ?=
- =?utf-8?B?S2hlOHNKYm94cWZPRFd1SXlwbUp5VjVNeFlydXJaQ0lIQVFneE11aW05b2Vi?=
- =?utf-8?B?T1VUVUxtSkk3a0RhNzZDdjVnN25CcmJFazF5cVdNVktmczN4TU5ic3BURnE2?=
- =?utf-8?B?OFB4ZU0rd0tIeTVOVytUQT09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86c70c57-8e94-45e4-5374-08d98971c69d
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR15MB4039.namprd15.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2021 09:06:40.7668
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8397.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc104ed0-cbed-4f4b-50b6-08d98971c985
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Oct 2021 09:06:45.3807
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iSSp1XNsOCvmSWJg3B0pVUK6cYZCZGwhHf12TvCyE1MNMB8F8F28oyev2IqJSZcljG+IhqEp+AE9mVGTqFNuBw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1596
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: pSQSKsZAesObi_nnD7tqb_WKaBnEsuo0
-X-Proofpoint-GUID: pSQSKsZAesObi_nnD7tqb_WKaBnEsuo0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-10-06_04,2021-10-07_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- phishscore=0 bulkscore=0 spamscore=0 malwarescore=0 clxscore=1015
- impostorscore=0 mlxscore=0 adultscore=0 lowpriorityscore=0
- priorityscore=1501 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2109230001 definitions=main-2110070063
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eDTimayHtZcvGb0knERAVKoR17UGGSVhaEQoZr/knIuqSYKjRfbSRveBBX0FPt2851cTsw/deD6Ml/REyIynzw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4273
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/27/21 9:33 PM, John Fastabend wrote:   
-> Andrii Nakryiko wrote:
->> On Mon, Sep 27, 2021 at 11:20 AM John Fastabend
->> <john.fastabend@gmail.com> wrote:
->>>
->>> Dave Marchevsky wrote:
->>>> On 9/23/21 10:02 PM, Andrii Nakryiko wrote:
->>>>> On Thu, Sep 23, 2021 at 6:27 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
->>>>>>
->>>>>> On 9/23/21 4:51 PM, Alexei Starovoitov wrote:
->>>>>>> On Mon, Sep 20, 2021 at 08:11:10AM -0700, Dave Marchevsky wrote:
->>>>>>>> The verifier currently logs some useful statistics in
->>>>>>>> print_verification_stats. Although the text log is an effective feedback
->>>>>>>> tool for an engineer iterating on a single application, it would also be
->>>>>>>> useful to enable tracking these stats in a more structured form for
->>>>>>>> fleetwide or historical analysis, which this patchset attempts to do.
->>>>>>>>
-> 
-> [...] 
-> 
->>>>
->>>> Seems reasonable to me - and attaching a BPF program to the tracepoint to
->>>> grab data is delightfully meta :)
->>>>
->>>> I'll do a pass on alternate implementation with _just_ tracepoint, no
->>>> prog_info or fdinfo, can add minimal or full stats to those later if
->>>> necessary.
+> -----Original Message-----
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> Sent: Thursday, October 7, 2021 11:33 AM
+> To: Claudiu Manoil <claudiu.manoil@nxp.com>
+> Cc: davem@davemloft.net; kuba@kernel.org; netdev@vger.kernel.org;
+> Vladimir Oltean <vladimir.oltean@nxp.com>
+> Subject: Re: [PATCH net-next 2/2] net: enetc: add support for software TS=
+O
+>=20
+> On Thu, Oct 07, 2021 at 07:59:25AM +0000, Claudiu Manoil wrote:
+> > > -----Original Message-----
+> > > From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > > Sent: Wednesday, October 6, 2021 11:13 PM
+> > [...]
+> > > +static int enetc_map_tx_tso_buffs(struct enetc_bdr *tx_ring, struct
+> > > sk_buff *skb)
+> > > +{
+> > > +	int hdr_len, total_len, data_len;
+> > > +	struct enetc_tx_swbd *tx_swbd;
+> > > +	union enetc_tx_bd *txbd;
+> > > +	struct tso_t tso;
+> > > +	__wsum csum, csum2;
+> > > +	int count =3D 0, pos;
+> > > +	int err, i;
+> > > +
+> > > +	/* Check that we have enough BDs for this skb */
+> > > +	if (enetc_bd_unused(tx_ring) < tso_count_descs(skb)) {
+> > > +		if (net_ratelimit())
+> > > +			netdev_err(tx_ring->ndev, "Not enough BDs for TSO!\n");
+> > > +		return 0;
+> > > +	}
+> > > +
+> >
+> > On this path, in case the interface is congested, you will drop the pac=
+ket in the driver,
+> > and the stack will think transmission was successful and will continue =
+to deliver skbs
+> > to the driver. Is this the right thing to do?
+> >
+>=20
+> Good point. I should have mimicked the non-GSO code path when
+> congestion occurs and stop the subqueue.
+>=20
+> For symmetry I'll also move this check outside of the
+> enetc_map_tx_tso_buffs() to get the code looking somewhat like this:
+>=20
+>=20
+> 	if (skb_is_gso(skb)) {
+> 		if (enetc_bd_unused(tx_ring) < tso_count_descs(skb)) {
+> 			netif_stop_subqueue(ndev, tx_ring->index);
+> 			return NETDEV_TX_BUSY;
+> 		}
+>=20
+> 		enetc_lock_mdio();
+> 		count =3D enetc_map_tx_tso_buffs(tx_ring, skb);
+> 		enetc_unlock_mdio();
+> 	} else {
+> 		if (unlikely(skb_shinfo(skb)->nr_frags > ENETC_MAX_SKB_FRAGS))
+> 			if (unlikely(skb_linearize(skb)))
+> 				goto drop_packet_err;
+>=20
 
-Actually I ended up pushing a simple add of insn_processed to prog_info, 
-fdinfo instead of bare tracepoint. The more general discussion here is
-interesting - if we can inject some custom logic into various points in
-verification process, can gather arbitrary stats or make policy decisions
-from the same attach points.
+Ok for handling congestion, the idea is good, but now another issue emerges=
+.
+The ENETC_MAX_SKB_FRAGS check is due to a hardware limitation. Enetc cannot
+handle more than 15 chained buffer descriptors for transmission (i.e. 13 fr=
+ags + 1
+for the linear part + 1 optional extension BD). This limitation is specifie=
+d in the
+hardware manual now (after I've hit it during development).
+So you should add this check on the TSO processing path too, but adapted to=
+ that
+case, of course, since skb_linearize() would not work with TSO.
 
->>>
->>> We can also use a hook point here to enforce policy on allowing the
->>> BPF program to load or not using the stats here. For now basic
->>> insn is a good start to allow larger/smaller programs to be loaded,
->>> but we might add other info like call bitmask, features, types, etc.
->>> If one of the arguments is the bpf_attr struct we can just read
->>> lots of useful program info out directly.
->>>
->>> We would need something different from a tracepoint though to let
->>> it return a reject|accept code. How about a new hook type that
->>> has something similar to sockops that lets us just return an
->>> accept or reject code?
->>>
->>> By doing this we can check loader signatures here to be sure the
->>> loader is signed or otherwise has correct permissions to be loading
->>> whatever type of bpf program is here.
->>
->> For signing and generally preventing some BPF programs from loading
->> (e.g., if there is some malicious BPF program that takes tons of
->> memory to be validated), wouldn't you want to check that before BPF
->> verifier spent all those resources on verification? So maybe there
->> will be another hook before BPF prog is validated for that? Basically,
->> if you don't trust any BPF program unless it is signed, I'd expect you
->> check signature before BPF verifier does its heavy job.
-> 
-> Agree, for basic sig check or anything that just wants to look at
-> the task_struct storage for some attributes before we verify is
-> more efficient. The only reason I suggested after is if we wanted
-> to start auditing/enforcing on calls or map read/writes, etc. these
-> we would need the verifier to help tabulate.
-
-This is the "Bob isn't signed, so ensure that Bob can only read from 
-Alice's maps" case from your recent talk, right? 
-
-I'd like to add another illustrative usecase: "progs of type X can 
-use 4k of stack, while type Y can only use 128 bytes of stack". For
-the 4k case, a single attach point after verification is complete 
-wouldn't work as the prog would've been eagerly rejected.
-
-Alexei suggested adding some empty noinline functions with 
-ALLOW_ERROR_INJECTION at potential attach points, then attaching 
-BPF_MODIFY_RETURN progs to inject custom logic. This would allow 
-arbitrarily digging around while optionally affecting return result.
-
-WDYT?
-
-> When I hacked it in for experimenting I put the hook in the sys
-> bpf load path before the verifier runs. That seemed to work for
-> the simpler sig check cases I was running.
-> 
-> OTOH though if we have a system with lots of BPF failed loads this
-> would indicate a more serious problem that an admin should fix
-> so might be nicer code-wise to just have a single hook after verifier
-> vs optimizing to two one in front and one after. 
-> 
->>
->>>
->>> Thanks,
->>> John
-> 
-> 
-
+Thanks.
