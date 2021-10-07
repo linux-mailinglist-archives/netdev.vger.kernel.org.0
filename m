@@ -2,406 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 809A1425E4F
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:57:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 947A8425E58
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:57:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240736AbhJGU7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:59:24 -0400
-Received: from mout.perfora.net ([74.208.4.196]:44889 "EHLO mout.perfora.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233710AbhJGU7R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 16:59:17 -0400
-Received: from toolbox.toradex.int ([66.171.181.186]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0M39aj-1moK5A3U5n-00syLw;
- Thu, 07 Oct 2021 22:57:12 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Marcel Ziswiler <marcel@ziswiler.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        soc@kernel.org
-Subject: [PATCH v3 3/3] ARM: dts: mvebu: add device tree for netgear gs110emx switch
-Date:   Thu,  7 Oct 2021 22:56:59 +0200
-Message-Id: <20211007205659.702842-4-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20211007205659.702842-1-marcel@ziswiler.com>
-References: <20211007205659.702842-1-marcel@ziswiler.com>
-MIME-Version: 1.0
+        id S235724AbhJGU7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 16:59:47 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:21886 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232229AbhJGU7q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:59:46 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 197Ktnhb011503;
+        Thu, 7 Oct 2021 13:57:38 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=xC5+UGF4hpPZLZ6CmLwFWMrS4/128UUwoLQDZY56pIg=;
+ b=THD9n3xkPd2XLccBC5qXWtHU3whOCM6yql/PkbKgFnSvznBsp+ZrkXIw6QiEDLj4bdTt
+ 2TuV/a9oUd2EdFksqHiByoU9/cFB+XwTd8fO60pa8P/T3uTaW6xIsmNHuvc2eM38LyPu
+ 718+A54R0y4epocWW6gfJJUNDNO9Ys24qQI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3bj8c2r098-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 07 Oct 2021 13:57:38 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Thu, 7 Oct 2021 13:57:37 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B72iVH8Z31loeaaSLMyei38e9lBAjx/y4A+nfBbHqwWGkh0/i4Fh/Cd0clXMVoZRoVkGby8tHG2akZZMCcSniXxd+b7jlyBY/67OChPOv5MWxNjz0hNiB9Z41cNGRIA63tnBq2uY5XHugSFXrsI6Yo8UTCPtjVmb1o58g1ULZ5TgL0ZQqwpFFWSuDzqZggxWj9Zvebs/5DMvILC9cnMKpW3djeiwDx3OEJje44jMxXTwpt9xQZ8IVPqc3rCF8jID7+/H72MXen+LpFWofsbnK7BigIhy6JlgwvvvN2gE21O4FTh6ksOTb2CGkENRwJxoU5tacnwHVwcUMxdgYuoPCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xC5+UGF4hpPZLZ6CmLwFWMrS4/128UUwoLQDZY56pIg=;
+ b=hRaUzbYk31A+RA1lbFh/s/rgTpp6uIq8iQ8Tjt90+dm/ZC1N3PxBjoOEfGYCqUBRo2ea1DMS8yKmnlfr9+MqG8NDBw6J0QMR1sRikZw+/cR6vtT5lWBbFpdUAvzz+ORNWhH2K3xlVuOpQbSs1+/4LfHvh6gtEX/Iq6afXpxN+r63ZlSxtsXo0la2um0iT/a4a1bHw8eYBczjX194E6SqydEOGdgTOnVQnlwkxNVDtU8A4prmJlytX9LS2YbyzWw/nFMD+tom5C8eccN2Jj6TrlRN+LZ4qqn4D8Iov6IJNJ88o2xpHvlGkeCN0U0O47pmWFY4Ep2YemWbrra0IfTGUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=fb.com;
+Received: from SA1PR15MB4465.namprd15.prod.outlook.com (2603:10b6:806:194::23)
+ by SA0PR15MB3885.namprd15.prod.outlook.com (2603:10b6:806:89::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.19; Thu, 7 Oct
+ 2021 20:57:36 +0000
+Received: from SA1PR15MB4465.namprd15.prod.outlook.com
+ ([fe80::85c6:f939:61cf:a55c]) by SA1PR15MB4465.namprd15.prod.outlook.com
+ ([fe80::85c6:f939:61cf:a55c%9]) with mapi id 15.20.4587.020; Thu, 7 Oct 2021
+ 20:57:36 +0000
+Message-ID: <9f8c195c-9c03-b398-2803-386c7af99748@fb.com>
+Date:   Thu, 7 Oct 2021 13:57:33 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.1.2
+Subject: Re: [PATCH bpf-next v2 0/3] Add XDP support for bpf_load_hdr_opt
+Content-Language: en-US
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        <bpf@vger.kernel.org>
+CC:     <kafai@fb.com>, <netdev@vger.kernel.org>, <Kernel-team@fb.com>
+References: <20211006230543.3928580-1-joannekoong@fb.com>
+ <87h7dsnbh5.fsf@toke.dk>
+From:   Joanne Koong <joannekoong@fb.com>
+In-Reply-To: <87h7dsnbh5.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+X-ClientProxiedBy: BY5PR04CA0019.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::29) To SA1PR15MB4465.namprd15.prod.outlook.com
+ (2603:10b6:806:194::23)
+Received: from [IPV6:2620:10d:c085:21cf::15eb] (2620:10d:c090:400::5:5b25) by BY5PR04CA0019.namprd04.prod.outlook.com (2603:10b6:a03:1d0::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.19 via Frontend Transport; Thu, 7 Oct 2021 20:57:35 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9f6193d3-7c4e-403f-e0b4-08d989d5173d
+X-MS-TrafficTypeDiagnostic: SA0PR15MB3885:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SA0PR15MB38850CA959914F27435EAACED2B19@SA0PR15MB3885.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: q56s0qNQUmrMPEfWWfWJYYdkEdFxYo0ox7zXd283nHVe9VcThL5u1jFlnYARh9igmdARarIy8uDqN35d4LaFXBpLWpwX89E7Jwq7R9+bYPgIM0RpmN/INUUw82+1sCco2CsHeA33NZDX1EzlR93HMYzX6ZqBHEm+vQW8CBG7AmxjuJfAZ47ukexElGHHcH1orV8QMsGDFJ5a4jv2LQ1ctCpB3vcLDvBZCCf2hgUKk3vfq5iIyatmEDIh6sYAzrs/77iLmf+xRo4k4Uib6pQ/zubvbLBSp+pJ772ZgDLfRhp1OiA/WXxfzoN1hA2e+S3hk4OdmTh9h2XEhHknzk4xd/KE0FocSl8aD2AUDXIPR5hD/LTUf2HaZed29CmSRdYsswNAOoT9JUW6rniaFNt4U9QV2Dz23ELhFN6+Dn0/IDKAyc0/nWOUFewuVk3jPGGLvBzz9R/ekKOBKzjn4AM6ka4ib14ZNz7/AxzbVCvu2ZQwgD++VpN0iMb0QIVCYTH/USOsz3B6azKsBCcbbRkcGtnBD5Fo40ScUlUfENf3TL0exr3xA+If1xX9E4lOSnQPeHLQIXcAhngIV/5VmGhqAFPT0PrDyPYVd/iGO4AYzDIUiuiuRPHcPCL0apVg750Fq7X70bN1exgCWddO3t+9sD44+dUJ5PFgCxuVSPb52Yyj5DbW6FgKciSZjI4BhQlGxmqpU00QIbpIVPjiwfSVEk8pazpgK5TWkBR1e6LsPiCZytfyap2tVApv/5nNHvk9iA3meDn0f0wsCaaKXnT/qw7S8FbWejUFrdiDpfMgfsvENXeXGb3MQ+297CN3q238rUuHXf3DMPfhJw0QxnBS8opCVUOVyB4LMU21yP7FblA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB4465.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66574015)(316002)(36756003)(31696002)(2906002)(66476007)(66556008)(86362001)(186003)(966005)(53546011)(83380400001)(508600001)(66946007)(31686004)(8936002)(4326008)(8676002)(2616005)(5660300002)(38100700002)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R0FNeVpLWkl0eW1hQlY2bkx2YmszQ2lFREV4WklUUFBxOFArK1dYNm5VMzBo?=
+ =?utf-8?B?akRBWkNwT2VXNkVDeW5zNUZrSXVSUTFFQ1duUVVyNEZFT1BTck9xSG44K3Zq?=
+ =?utf-8?B?SHdwWTM1M0hrUlhJejJkUmZLRFUyTlJISktZVFRKOFN6QlJtSjNpcm5TZmFx?=
+ =?utf-8?B?SlJTMFhtT2NnUHAxbSs5by8vS054QmNzbTFkN1dsdGp3ZVR6ZDRiYUJVMCtm?=
+ =?utf-8?B?TW5DWEc0K0JsbkJTQ0hlOEk5ODViNm9scWYyMEVFRHhYeEY0dXNuMWgrWjU2?=
+ =?utf-8?B?RElFdmFpMGtaVXBjL09rNTdwQTNGeFQ1V0s0YWpJVnBHTGN0RzNmcmpkcWdI?=
+ =?utf-8?B?L3k3ZTdYUVd5REVnMU15OWhlaTdNV3dWU2NvdDRWUDJDeVN6VUVkUTlPQkFW?=
+ =?utf-8?B?VVp2cGFlY01GMThEZlY4RXpYMTRMSEJBcDJMZGJDMEc1a0hrc29QbVlPV2VZ?=
+ =?utf-8?B?N3RoVnZGSUJXTDlvdzFONkNQcGl0a3BYdzM1aXdEYTNyeHNoQm5CMnd6aXJK?=
+ =?utf-8?B?OWE5cG5VL2Q2bFRzWFRSWmQ0YzJQSFNJemR0RXIyak52NmRpWERyU3FKQ2Va?=
+ =?utf-8?B?VnU4KytqckZTWmt1R1lFOUs1WTQweVVVMkhrcVU4MlNYU2dHVWFDMXBCMDFI?=
+ =?utf-8?B?cTZtU0phZ0Z6UnVXZTVVWmJaWkhDa3REY3Y4ZFV3UXNvaWRuYXBEQ2YzajdL?=
+ =?utf-8?B?eHcvWFFodHF4UDVUUTkwWWFWRFJ3aDAzVGpQSDdLNGh4dzEzL3I3Yk5MWks5?=
+ =?utf-8?B?dkY4Z2c4VjJHMnV1eUxncUlMRGxQeU5pd2ZYaGlZYTE1dTVUbG1PbjBQZnMr?=
+ =?utf-8?B?dHdjaTVRTFlKS24vdjNDNmRoclJ5emJOekVuZUI1NjcvTk1QT2c1OHVRd2gw?=
+ =?utf-8?B?UU9jbVE0M01KYVRBWU8rbnV0cFdLSklEczFqNW80NWllbU5TTFJyazU5d01Z?=
+ =?utf-8?B?Z0lSUTh5VVNrN0dkMldKTDBkeDcrYll6L1RYUUppcFVBSGJPaWhwR0pFdGIw?=
+ =?utf-8?B?VlM3bTZQZEJwdk9MRThMd2RkNy9QaWlhcEh5TjZFeVJLR2xvL1ZaOHhxM3ZR?=
+ =?utf-8?B?SFhRdnkxdk5QWTlDNHc0N3c2SlErZXQ1Mm9scTBiek1uWkx2WTlBclhoQmdw?=
+ =?utf-8?B?NFJJamRxTk9SVVZuVzc0R1hHZmhNSWM3TWtGLzZTWmlzSmljUlRDT0dhUFJ5?=
+ =?utf-8?B?NWdjRDRKdktkZFNQOVR5a1Vtb2RwRGtONTJYaCtpRzN2blorTlVtNTlDaWRr?=
+ =?utf-8?B?Y3F5TWZiSjk5R3ZRYUxvMVBYU1hWcGdvRjJLQk1IZ1BPdnQ2dUx5cWpDZThn?=
+ =?utf-8?B?b0FqSzhzOHBPODVYOExBQ1VSY0ZWbWdsdGJJUGJDVFlRczJNTWwxZjVNUjVZ?=
+ =?utf-8?B?RVl1Q0pxNmNROGtrTnNvQUp5bkFwcG9HWEJ3TEJvS0g4OUU4blRnZHk0NVVr?=
+ =?utf-8?B?L00zd1JBcDd6amk5WDJKMEZaUVordCtteXgrN0ZzakNkRXRXN1djM0dkZmtE?=
+ =?utf-8?B?Uys1eVJpci90anhpZW5seFhNL3U5SHkvYjZnOEVCU09jSjZYYnU3dnRlT0dS?=
+ =?utf-8?B?TnNwUkVvODV2UXMrcXhPZVorQmhsWTBEcVhzeCtVdHl3ZUlkVVlZeFh3NWZS?=
+ =?utf-8?B?SnhUaytJM3pEMmQ1eFg1aDZwZjJLaS9aaVN6WTlwdTZSWlhEblZCNTZJRjhZ?=
+ =?utf-8?B?dlF3MDRqeWNOMUpmaUZpY1RxZ2gzYjR2d1dJUnZDYmVubEh3SmhtckluZlA5?=
+ =?utf-8?B?QlJFa05oeGFoUnJRZXJuYk4rYWczUHZGK0JPV1BkMWZLRVE0RTFmMU9XUXlK?=
+ =?utf-8?B?enhOa05GL3ZhRkplQTN4QT09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f6193d3-7c4e-403f-e0b4-08d989d5173d
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB4465.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2021 20:57:36.2557
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Qgwfl70zTw/AD4ndlyNVOFZZ4vTMzXXHAKkbp0XsWJa3tGjHjcW7jQZJHiKYB0YjCdrHJz5JhIFDBz8tF5cYKg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR15MB3885
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: SZU2jcm8_tSgDzIg2uh0lUiyKOnn6Hb7
+X-Proofpoint-GUID: SZU2jcm8_tSgDzIg2uh0lUiyKOnn6Hb7
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:tgmhfyb9YQfohJgoUoTc33T0wgfevcvW2MYJd3jThHgrnHJR7vk
- 8Ag8QiTmmpk7wLF7h2tftZYhSzYpKmaUHds0fIyYzk2nZELVMgHm+Rj8FU9mp/JzlVuk8LY
- hE4jRnG8s2A4MiyGcd2CsP4W5A/agsvg2sJXzTgsW6BoHKz1htqX4DxcS1zKwRsnUE2Ivs1
- 5EzHa/2C9xeZ/TRzlgwNw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:PghSg628fok=:Qy8ynGkmnXCFQYa72mFG1F
- ODDFziIsIJ+/iiiVojnS4ctpE6+6bx7LU0FX7sLaBCvxonobMknJETcFNxXBKFqPbLBfrLeea
- Dln5fatfviI2ltHYmQk40O/2HioVgJr+K8RK/il/h6AonSpVK1KIzjRzfv7UckizcHWXxhye+
- PaNuMqIZOFfGjLgSqYWipJuhMICDp3qVz+fPBxRIAu71KrG4zHUu+awic48HScwFP1/XYA+Ks
- EDPIhd9BLHPVY2hrpt4o6bB6g1hXToieU75VAc2NXTfsTerVUam4sihthk/cWCsiUyQoFbm8A
- zez7Az2ReiLKFfBjB3W1Rp1Z10KMbLwpM+cUt/IZyDnJUeLzztMcrC5LsFhdZ7nAdDV9iWfPv
- 6i/guqL41s30Xu57Vt4c3kFaxGffGaBaRZSzPehcdUp2+FTNVu1YyGjEYFKSOI7pWav61WrIJ
- bw9rs3HFCTH4URBbHXygftrnuzT1OBH5iprN4Ktc/cR9agnPzr1yNvWw6JgPkRbnIHqim6YuT
- 8bqulGF4ltZyqlcuoMnqnUqDqu3yN5POwDyiMzw+0MOyZHPzQQYWspjTEa8f0Kc7hvlmIaUSX
- 7FAP5DOKRCAgXe3Gb63Y8sFRWfD0syDbxWxffRw7ls+7k+2wylS2fM4GvbTTVvJdllXRwuU1y
- wmGRCeF6JnaW1ExsXtBBIPBLjyCPOdjdG3dAS+T298/jAcmuu9YzTIY4PvscrD3IOhUFQViyv
- HW5xd6DoIZ9mbcnmwZh7Bkrwg2A9yw0Emg+2Hg==
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-10-07_04,2021-10-07_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ bulkscore=0 clxscore=1011 lowpriorityscore=0 priorityscore=1501
+ phishscore=0 mlxscore=0 impostorscore=0 adultscore=0 spamscore=0
+ mlxlogscore=999 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2109230001 definitions=main-2110070133
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the device tree for a Netgear GS110EMX switch featuring 8 Gigabit
-ports and 2 Multi-Gig ports (100M/1G/2.5G/5G/10G). An 88E6390X switch
-sits at its core connecting to two 88X3310P 10G PHYs. The control plane
-is handled by an 88F6811 Armada 381 SoC.
+On 10/7/21 7:41 AM, Toke Høiland-Jørgensen wrote:
 
-The following functionality is tested:
-- 8 gigabit Ethernet ports connecting via 88E6390X to the 88F6811
-- serial console UART
-- 128 MB commercial grade DDR3L SDRAM
-- 16 MB serial SPI NOR flash
+> Joanne Koong <joannekoong@fb.com> writes:
+>
+>> Currently, bpf_sockops programs have been using bpf_load_hdr_opt() to
+>> parse the tcp header option. It will be useful to allow other bpf prog
+>> types to have a similar way of handling tcp hdr options.
+>>
+>> This series adds XDP support for bpf_load_hdr_opt(). At a high level,
+>> these patches are:
+> Why is this needed? Why not just parse the header directly in XDP?
+Parsing a variable number of TCP options is challenging for the verifier.
+Some programs are using #pragma unroll as a temporary workaround
+(https://github.com/xdp-project/bpf-examples/blob/master/pping/pping_kern.c#L95)
+I believe Christian Deacon also recently posted about this on the xdp 
+mailing list
+with a link to his bpf fail logs in 
+https://github.com/gamemann/XDP-TCP-Header-Options
+which showcases some of the difficulties involved
 
-The two 88X3310P 10G PHYs while detected during boot seem neither to
-detect any link nor pass any traffic.
+> Seems
+> a bit arbitrary to add a helper for this particular type of packet
+> payload parsing to this particular program type. I.e., what about other
+> headers (IP options?)?
+The current use case needs so far have been for parsing tcp headers, but
+in the future, when there are needs for parsing other types, they
+can be supported as well through bpf_load_hdr_opt.
 
-Signed-off-by: Marcel Ziswiler <marcel@ziswiler.com>
+> Are we going to have a whole bunch of
+> special-purpose parsing helpers to pick out protocol data from packets?
 
----
-
-Changes in v3:
-- Got rid of unused 3.3 volt regulator as suggested by Andrew.
-- Got rid of partitioning comment.
-- Added switch interrupt GPIO configuration.
-
-Changes in v2:
-- Send previous first patch separately to netdev mailing list as
-  suggested by Andrew.
-- Fix numbering of the PHY labels as suggested by Andrew.
-
- arch/arm/boot/dts/Makefile                    |   1 +
- .../boot/dts/armada-381-netgear-gs110emx.dts  | 295 ++++++++++++++++++
- 2 files changed, 296 insertions(+)
- create mode 100644 arch/arm/boot/dts/armada-381-netgear-gs110emx.dts
-
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 2deb4b1ecaecd..699e2d2230127 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -1395,6 +1395,7 @@ dtb-$(CONFIG_MACH_ARMADA_370) += \
- dtb-$(CONFIG_MACH_ARMADA_375) += \
- 	armada-375-db.dtb
- dtb-$(CONFIG_MACH_ARMADA_38X) += \
-+	armada-381-netgear-gs110emx.dtb \
- 	armada-382-rd-ac3x-48g4x2xl.dtb \
- 	armada-385-atl-x530.dtb\
- 	armada-385-clearfog-gtr-s4.dtb \
-diff --git a/arch/arm/boot/dts/armada-381-netgear-gs110emx.dts b/arch/arm/boot/dts/armada-381-netgear-gs110emx.dts
-new file mode 100644
-index 0000000000000..0a961116a1f9d
---- /dev/null
-+++ b/arch/arm/boot/dts/armada-381-netgear-gs110emx.dts
-@@ -0,0 +1,295 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/* Copyright (c) 2021, Marcel Ziswiler <marcel@ziswiler.com> */
-+
-+/dts-v1/;
-+#include "armada-385.dtsi"
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
-+
-+/ {
-+	model = "Netgear GS110EMX";
-+	compatible = "netgear,gs110emx", "marvell,armada380";
-+
-+	aliases {
-+		/* So that mvebu u-boot can update the MAC addresses */
-+		ethernet1 = &eth0;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+		pinctrl-0 = <&front_button_pins>;
-+		pinctrl-names = "default";
-+
-+		factory_default {
-+			label = "Factory Default";
-+			gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
-+			linux,code = <KEY_RESTART>;
-+		};
-+	};
-+
-+	memory {
-+		device_type = "memory";
-+		reg = <0x00000000 0x08000000>; /* 128 MB */
-+	};
-+
-+	soc {
-+		ranges = <MBUS_ID(0xf0, 0x01) 0 0xf1000000 0x100000
-+			  MBUS_ID(0x01, 0x1d) 0 0xfff00000 0x100000
-+			  MBUS_ID(0x09, 0x19) 0 0xf1100000 0x10000
-+			  MBUS_ID(0x09, 0x15) 0 0xf1110000 0x10000
-+			  MBUS_ID(0x0c, 0x04) 0 0xf1200000 0x100000>;
-+
-+		internal-regs {
-+			rtc@a3800 {
-+				/*
-+				 * If the rtc doesn't work, run "date reset"
-+				 * twice in u-boot.
-+				 */
-+				status = "okay";
-+			};
-+		};
-+	};
-+};
-+
-+&eth0 {
-+	/* ethernet@70000 */
-+	bm,pool-long = <0>;
-+	bm,pool-short = <1>;
-+	buffer-manager = <&bm>;
-+	phy-mode = "rgmii-id";
-+	pinctrl-0 = <&ge0_rgmii_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+
-+	fixed-link {
-+		full-duplex;
-+		pause;
-+		speed = <1000>;
-+	};
-+};
-+
-+&mdio {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&mdio_pins>;
-+	status = "okay";
-+
-+	switch@0 {
-+		compatible = "marvell,mv88e6190";
-+		#address-cells = <1>;
-+		#interrupt-cells = <2>;
-+		interrupt-controller;
-+		interrupt-parent = <&gpio1>;
-+		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
-+		pinctrl-0 = <&switch_interrupt_pins>;
-+		pinctrl-names = "default";
-+		#size-cells = <0>;
-+		reg = <0>;
-+
-+		mdio {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			switch0phy1: switch0phy1@1 {
-+				reg = <0x1>;
-+			};
-+
-+			switch0phy2: switch0phy2@2 {
-+				reg = <0x2>;
-+			};
-+
-+			switch0phy3: switch0phy3@3 {
-+				reg = <0x3>;
-+			};
-+
-+			switch0phy4: switch0phy4@4 {
-+				reg = <0x4>;
-+			};
-+
-+			switch0phy5: switch0phy5@5 {
-+				reg = <0x5>;
-+			};
-+
-+			switch0phy6: switch0phy6@6 {
-+				reg = <0x6>;
-+			};
-+
-+			switch0phy7: switch0phy7@7 {
-+				reg = <0x7>;
-+			};
-+
-+			switch0phy8: switch0phy8@8 {
-+				reg = <0x8>;
-+			};
-+		};
-+
-+		mdio-external {
-+			compatible = "marvell,mv88e6xxx-mdio-external";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			phy1: ethernet-phy@b {
-+				reg = <0xb>;
-+				compatible = "ethernet-phy-ieee802.3-c45";
-+			};
-+
-+			phy2: ethernet-phy@c {
-+				reg = <0xc>;
-+				compatible = "ethernet-phy-ieee802.3-c45";
-+			};
-+		};
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+				ethernet = <&eth0>;
-+				label = "cpu";
-+				reg = <0>;
-+
-+				fixed-link {
-+					full-duplex;
-+					pause;
-+					speed = <1000>;
-+				};
-+			};
-+
-+			port@1 {
-+				label = "lan1";
-+				phy-handle = <&switch0phy1>;
-+				reg = <1>;
-+			};
-+
-+			port@2 {
-+				label = "lan2";
-+				phy-handle = <&switch0phy2>;
-+				reg = <2>;
-+			};
-+
-+			port@3 {
-+				label = "lan3";
-+				phy-handle = <&switch0phy3>;
-+				reg = <3>;
-+			};
-+
-+			port@4 {
-+				label = "lan4";
-+				phy-handle = <&switch0phy4>;
-+				reg = <4>;
-+			};
-+
-+			port@5 {
-+				label = "lan5";
-+				phy-handle = <&switch0phy5>;
-+				reg = <5>;
-+			};
-+
-+			port@6 {
-+				label = "lan6";
-+				phy-handle = <&switch0phy6>;
-+				reg = <6>;
-+			};
-+
-+			port@7 {
-+				label = "lan7";
-+				phy-handle = <&switch0phy7>;
-+				reg = <7>;
-+			};
-+
-+			port@8 {
-+				label = "lan8";
-+				phy-handle = <&switch0phy8>;
-+				reg = <8>;
-+			};
-+
-+			port@9 {
-+				/* 88X3310P external phy */
-+				label = "lan9";
-+				phy-handle = <&phy1>;
-+				phy-mode = "xaui";
-+				reg = <9>;
-+			};
-+
-+			port@a {
-+				/* 88X3310P external phy */
-+				label = "lan10";
-+				phy-handle = <&phy2>;
-+				phy-mode = "xaui";
-+				reg = <0xa>;
-+			};
-+		};
-+	};
-+};
-+
-+&pinctrl {
-+	front_button_pins: front-button-pins {
-+		marvell,pins = "mpp38";
-+		marvell,function = "gpio";
-+	};
-+
-+	switch_interrupt_pins: switch-interrupt-pins {
-+		marvell,pins = "mpp39";
-+		marvell,function = "gpio";
-+	};
-+};
-+
-+&spi0 {
-+	pinctrl-0 = <&spi0_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+
-+	spi-flash@0 {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		compatible = "jedec,spi-nor";
-+		reg = <0>; /* Chip select 0 */
-+		spi-max-frequency = <3000000>;
-+
-+		partitions {
-+			compatible = "fixed-partitions";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+
-+			partition@0 {
-+				label = "boot";
-+				read-only;
-+				reg = <0x00000000 0x00100000>;
-+			};
-+
-+			partition@100000 {
-+				label = "env";
-+				reg = <0x00100000 0x00010000>;
-+			};
-+
-+			partition@200000 {
-+				label = "rsv";
-+				reg = <0x00110000 0x00010000>;
-+			};
-+
-+			partition@300000 {
-+				label = "image0";
-+				reg = <0x00120000 0x00900000>;
-+			};
-+
-+			partition@400000 {
-+				label = "config";
-+				reg = <0x00a20000 0x00300000>;
-+			};
-+
-+			partition@480000 {
-+				label = "debug";
-+				reg = <0x00d20000 0x002e0000>;
-+			};
-+		};
-+	};
-+};
-+
-+&uart0 {
-+	pinctrl-0 = <&uart0_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
--- 
-2.26.2
-
+I think bpf_load_hdr_opt is generic enough to support parsing
+any kind of protocol data (as specified through flags) in the packets
+> Also, why only enable this for XDP (and not, say the TC hook as well)?
+The plan is to also support this in tc as well (this will be in a separate
+patchset)
+> -Toke
+>
