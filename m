@@ -2,154 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2849D425B50
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 21:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22590425B5B
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 21:11:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243876AbhJGTGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 15:06:40 -0400
-Received: from mxout01.lancloud.ru ([45.84.86.81]:51760 "EHLO
-        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233903AbhJGTGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 15:06:38 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 9E2942093A02
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Subject: Re: [RFC 07/12] ravb: Fillup ravb_rx_gbeth() stub
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
- <20211005110642.3744-8-biju.das.jz@bp.renesas.com>
- <63592646-7547-1a81-e6c3-5bac413cb94a@omp.ru>
- <OS0PR01MB592295BD59F39001AC63FD3886B09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <7c31964b-8cde-50c5-d686-939b7c5bd7f0@omp.ru>
- <OS0PR01MB5922239A85405F807AE3C79A86B19@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Organization: Open Mobile Platform
-Message-ID: <04dea1e6-c014-613d-f2f9-9ba018ced2a3@omp.ru>
-Date:   Thu, 7 Oct 2021 22:04:40 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S243878AbhJGTMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 15:12:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44906 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233876AbhJGTMx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 15:12:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5322460F23;
+        Thu,  7 Oct 2021 19:10:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633633859;
+        bh=5FPgGsdS9CGMt/+v0V8mAY3UCQa9nlPwQ/iINFo9MFY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=VB3rIawLUmFCZHXKhU2KxNoiw0OTAuA0Znwcz4szP2GRoGPFOqjgjxO9YM/n1MSa1
+         VTzNkc2D9u1bddWPnTWoeSQEOZMGbDcS8s+hOEC62Aku49LTg4GhA2k6V+thAqCOzf
+         DkXP4fZ2JOP2QNEPXLuZ4l0BdG3AXVOEMRkBtE4ablqPkh1Y7ZlNhYtcKuUuP07S5b
+         3hshQn1HgbAoP6SrFg3iJeVEFi2AoUvW+H+INv+ITMY32iLjrjDqRNseN7av6xndlj
+         b+9jwFNh9GMJhtJwRVJCvrB3zRVKvPUYBOLWydb2+mMQanT12ZUqleXDJu37d0AWRr
+         VxTrF0aLgnfuQ==
+Date:   Thu, 7 Oct 2021 14:10:57 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        nic_swsd <nic_swsd@realtek.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Anthony Wong <anthony.wong@canonical.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC] [PATCH net-next v5 0/3] r8169: Implement dynamic ASPM
+ mechanism for recent 1.0/2.5Gbps Realtek NICs
+Message-ID: <20211007191057.GA1252539@bhelgaas>
 MIME-Version: 1.0
-In-Reply-To: <OS0PR01MB5922239A85405F807AE3C79A86B19@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAd53p409uhbor1ArZ=kfiMK2JRHVGVyYukDSSyDvFsVSs=ErQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/7/21 8:49 AM, Biju Das wrote:
-
-[...]
->>>>> Fillup ravb_rx_gbeth() function to support RZ/G2L.
->>>>>
->>>>> This patch also renames ravb_rcar_rx to ravb_rx_rcar to be
->>>>> consistent with the naming convention used in sh_eth driver.
->>>>>
->>>>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
->>>>> Reviewed-by: Lad Prabhakar
->>>>> <prabhakar.mahadev-lad.rj@bp.renesas.com>[...]
->>>>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c
->>>>> b/drivers/net/ethernet/renesas/ravb_main.c
->>>>> index 37164a983156..42573eac82b9 100644
->>>>> --- a/drivers/net/ethernet/renesas/ravb_main.c
->>>>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
->>>>> @@ -720,6 +720,23 @@ static void ravb_get_tx_tstamp(struct
->>>>> net_device
->>>> *ndev)
->>>>>  	}
->>>>>  }
->>>>>
->>>>> +static void ravb_rx_csum_gbeth(struct sk_buff *skb) {
->>>>> +	u8 *hw_csum;
->>>>> +
->>>>> +	/* The hardware checksum is contained in sizeof(__sum16) (2) bytes
->>>>> +	 * appended to packet data
->>>>> +	 */
->>>>> +	if (unlikely(skb->len < sizeof(__sum16)))
->>>>> +		return;
->>>>> +	hw_csum = skb_tail_pointer(skb) - sizeof(__sum16);
->>>>
->>>>    Not 32-bit? The manual says the IP checksum is stored in the first
->>>> 2 bytes.
->>>
->>> It is 16 bit. It is on last 2 bytes.
-
-   The IP checksum is at the 1st 2 bytes of the overall 4-byte checksum (coming after
-the packet payload), no?
-
->>    So you're saying the manual is wrong?
+On Fri, Oct 01, 2021 at 12:17:26PM +0800, Kai-Heng Feng wrote:
+> On Sat, Sep 18, 2021 at 6:09 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Thu, Sep 16, 2021 at 11:44:14PM +0800, Kai-Heng Feng wrote:
+> > > The purpose of the series is to get comments and reviews so we can merge
+> > > and test the series in downstream kernel.
+> > >
+> > > The latest Realtek vendor driver and its Windows driver implements a
+> > > feature called "dynamic ASPM" which can improve performance on it's
+> > > ethernet NICs.
+> > >
+> > > Heiner Kallweit pointed out the potential root cause can be that the
+> > > buffer is too small for its ASPM exit latency.
+> >
+> > I looked at the lspci data in your bugzilla
+> > (https://bugzilla.kernel.org/show_bug.cgi?id=214307).
+> >
+> > L1.2 is enabled, which requires the Latency Tolerance Reporting
+> > capability, which helps determine when the Link will be put in L1.2.
+> > IIUC, these are analogous to the DevCap "Acceptable Latency" values.
+> > Zero latency values indicate the device will be impacted by any delay
+> > (PCIe r5.0, sec 6.18).
+> >
+> > Linux does not currently program those values, so the values there
+> > must have been set by the BIOS.  On the working AMD system, they're
+> > set to 1048576ns, while on the broken Intel system, they're set to
+> > 3145728ns.
+> >
+> > I don't really understand how these values should be computed, and I
+> > think they depend on some electrical characteristics of the Link, so
+> > I'm not sure it's *necessarily* a problem that they are different.
+> > But a 3X difference does seem pretty large.
+> >
+> > So I'm curious whether this is related to the problem.  Here are some
+> > things we could try on the broken Intel system:
 > 
-> I am not sure which manual you are referring here.
+> Original network speed, tested via iperf3:
+> TX: ~255 Mbps
+> RX: ~490 Mbps
 > 
-> I am referring to Rev.1.00 Sep, 2021 of RZ/G2L hardware manual and
-
-   Same here.
-
-[...]
-
-> Please check the section 30.5.6.1 checksum calculation handling> And figure 30.25 the field of checksum attaching field
-
-   I have.
-
-> Also see Table 30.17 for checksum values for non-error conditions.
-
-> TCP/UDP/ICPM checksum is at last 2bytes.
-
-   What are you arguing with then? :-)
-   My point was that your code fetched the TCP/UDP/ICMP checksum ISO the IP checksum
-because it subtracts sizeof(__sum16), while should probably subtract sizeof(__wsum).
-
->>>>> +
->>>>> +	if (*hw_csum == 0)
->>>>
->>>>    You only check the 1st byte, not the full checksum!
->>>
->>> As I said earlier, "0" value on last 16 bit, means no checksum error.
->>
->>    How's that? 'hw_csum' is declared as 'u8 *'!
+> >   - What happens if you disable ASPM L1.2 using
+> >     /sys/devices/pci*/.../link/l1_2_aspm?
 > 
-> It is my mistake, which will be taken care in the next patch by using u16 *.
-
-   Note that this 'u16' halfword can be unaligned, that's why the current code uses get_unaligned_le16().
-
->>>>> +		skb->ip_summed = CHECKSUM_UNNECESSARY;
->>>>> +	else
->>>>> +		skb->ip_summed = CHECKSUM_NONE;
->>>>
->>>>   So the TCP/UDP/ICMP checksums are not dealt with? Why enable them
->> then?
->>>
->>> If last 2bytes is zero, means there is no checksum error w.r.to
->> TCP/UDP/ICMP checksums.
->>
->>    Why checksum them independently then?
+> TX: ~670 Mbps
+> RX: ~670 Mbps
 > 
-> It is a hardware feature. 
+> >   - If that doesn't work, what happens if you also disable PCI-PM L1.2
+> >     using /sys/devices/pci*/.../link/l1_2_pcipm?
+> 
+> Same as only disables l1_2_aspm.
+> 
+> >   - If either of the above makes things work, then at least we know
+> >     the problem is sensitive to L1.2.
+> 
+> Right now the downstream kernel disables ASPM L1.2 as workaround.
+> 
+> >   - Then what happens if you use setpci to set the LTR Latency
+> >     registers to 0, then re-enable ASPM L1.2 and PCI-PM L1.2?  This
+> >     should mean the Realtek device wants the best possible service and
+> >     the Link probably won't spend much time in L1.2.
+> 
+> # setpci -s 01:00.0 ECAP_LTR+4.w=0x0
+> # setpci -s 01:00.0 ECAP_LTR+6.w=0x0
+> 
+> Then re-enable ASPM L1.2, the issue persists - the network speed is
+> still very slow.
+> 
+> >   - What happens if you set the LTR Latency registers to 0x1001
+> >     (should be the same as on the AMD system)?
+> 
+> Same slow speed here.
 
-   Switchable, isn't it?
-
-> Regards,
-> Biju
-
-[...]
-
-MBR, Sergey
+Thanks a lot for indulging my curiosity and testing this.  So I guess
+you confirmed that specifically ASPM L1.2 is the issue, which makes
+sense given the current downstream kernel workaround.
