@@ -2,156 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 664D7425DC8
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:46:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9F28425E32
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240943AbhJGUsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60832 "EHLO
+        id S232542AbhJGUyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 16:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232458AbhJGUsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:48:06 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BA7C061570;
-        Thu,  7 Oct 2021 13:46:12 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id pi19-20020a17090b1e5300b0019fdd3557d3so6118705pjb.5;
-        Thu, 07 Oct 2021 13:46:12 -0700 (PDT)
+        with ESMTP id S231825AbhJGUyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:54:36 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55F5C061570;
+        Thu,  7 Oct 2021 13:52:42 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id t16so6167945eds.9;
+        Thu, 07 Oct 2021 13:52:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=n778GDxPUk5bM/6oUWYf94rGxS7Ym+wi8wyNVSUVHJY=;
-        b=lf7NCZlMcXElgNAC66pZrN0XcQRt25y96kBcovC843viIgi1uE0pje7PtVyQPY0NqB
-         qkvbwFwWFvppdKTfbVxiMUpPZAGbsyLd1tdlAohH5YdwJoLw65SEXKFmzMukywSMSrAj
-         6F9tbwacQ7pAAmtkghVCpMWDMXevVnPpwFLp2Pm+8pu33TwU1C5eEshwzETOX4t9ooIm
-         GuMz4GTqlUCtLo1ArIjI2ztuDW9u5ZLWF2R3HeFVSx87cehkcyAtdBAjz4VIRB/58l4Y
-         T2CxWpYAxVJnRSRpyofXjA74izX49gjzCMIwk+6sPOE81Rpep/UcuRP23ujdyhXlJX5u
-         m0zQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vZCxEEwfZlNuSFz3ypr49dINxMEpRI9Ap0TDgahu5dA=;
+        b=GP4nfLs25Lcggx7ongKrjmDyvwqQ8FpJplLIlrT8W5VVwvAencnctBCdswf5Uxmu5N
+         x84FxUrBQoTyUj7PuiBpOAcnTUPF1/ruQl3PTrFyvm7x89epvOhpFMjlRbdlfE9ZutdA
+         7Cayhr9+HuAXvGMnGCvKDMq0v3A3NWcdG/Ov3KS+ofCaW2UJN+q4HfyfT2RvXJp8EdIb
+         cmcmchUUN9RKgoqJlyDbLjr18anrvsxRbJDgOP2rxumxgZpDAS7EMlU+JZSmF72cozb5
+         1fd1plJs9/tRC2e2c1ZEmdEnz0iG/8fT835i5Fx2BSItDPziS++gfKQGKQMgTMQ/WSXM
+         AMZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=n778GDxPUk5bM/6oUWYf94rGxS7Ym+wi8wyNVSUVHJY=;
-        b=bcatoaun4nKhQtV+CwOM8hemhXrECl1UPXC9VthnOHoPU6RwgcUTsXBXmPznIhpcqJ
-         sNx95oN+MXAkHP7uPIvISy2CcCC3zwvJJ9EGVmdBDae14BWcmEPlBDLAf8df2IPbjVIa
-         V2B9QTkxVo7bmgC0TodBs/A7LTFGw+ndHhVOOMXSSOCBkYsyYJpKbJI5Eby6JWUcZIc8
-         1onyzEHWBiqhFBqbjvtODEkFrJ6Dcn6YWr6y4fyKYalDsbqxXevU/7wchqlxqlS/NsUI
-         tZm1mb2/yrJnjfAFiV0g8km7IQ9kgB70yHslOZtTq2dVz/RhX0wm3LW7XoSO1Uoi+giL
-         3lyQ==
-X-Gm-Message-State: AOAM530EK9/YEbEjWRXLfuVTO7LlgBkgxyo5w8kdH0Y4n1lBMHmuOMEd
-        nFSNUH/TDgxGmjG11e8jO08=
-X-Google-Smtp-Source: ABdhPJyWu61PR6GwdZ3nM0x+fSD3FB9bBBhz6apFdeOAQCR7M7gZwqJxWzY/FI8oCZTPI+lMjmY7mw==
-X-Received: by 2002:a17:90a:9b84:: with SMTP id g4mr5459162pjp.123.1633639572322;
-        Thu, 07 Oct 2021 13:46:12 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id 8sm280984pfi.194.2021.10.07.13.46.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 13:46:12 -0700 (PDT)
-Date:   Fri, 8 Oct 2021 02:16:09 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v1 4/6] bpf: selftests: Move test_ksyms_weak
- test to lskel, add libbpf test
-Message-ID: <20211007204609.ygrqpx4rahfzqzly@apollo.localdomain>
-References: <20211006002853.308945-1-memxor@gmail.com>
- <20211006002853.308945-5-memxor@gmail.com>
- <CAPhsuW7y3ycWkXLwSmJ5TKbo7Syd65aLRABtWbZcohET0RF6rA@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vZCxEEwfZlNuSFz3ypr49dINxMEpRI9Ap0TDgahu5dA=;
+        b=GM9UCpNwWOmWr09f8QlqkNGmQSHDCtXNGMRfBVw3Q87qpM3A7TZxJMYe/PCGTu7O1U
+         LTE6XE5kIcAAQfxClZ3ihT7SEL44xMrDfMwejhahpFVWX30wBQJ8jRZz4G4BKegb+L5n
+         IrtGw6IuZnSxbS2uUE+VDgJ/rIdLjggWI6yyN4r/JxuPsVdYxsyuDoSm1qxp4/Ul7H6H
+         jTjZC8jb45xsw9DWUlsY2s3hhniAPQaYXLy0tgoWiAcclR9dmwnSAncXl15UrL7rNFNb
+         pgbggfCYqkKLpWp3VXXPPK040+EG0/kXUAT9Y3kGgLa+J5HWVx0DgMCDcbf7KFV2tJ6Z
+         7RMw==
+X-Gm-Message-State: AOAM530Y7GMeJENv9kW3bkYOJG5Yrmg37MAVrCdrPFFJT93PiGPqQsya
+        Xr5BtgdaLObwM2KWWNsaijXq3lvTNjorp2DZMNBZCg==
+X-Google-Smtp-Source: ABdhPJy7DTDvXZNOAHbVT6qYrd2+tmNBH+CVXkM2Uvpk/nZM6x7aSsZuM3UvnKPi5RecnxRM9PBRYg==
+X-Received: by 2002:a05:6402:2748:: with SMTP id z8mr9639409edd.291.1633639961243;
+        Thu, 07 Oct 2021 13:52:41 -0700 (PDT)
+Received: from ?IPv6:2a04:241e:501:3870:b7fe:dd48:83ff:bcc8? ([2a04:241e:501:3870:b7fe:dd48:83ff:bcc8])
+        by smtp.gmail.com with ESMTPSA id x11sm202349edj.62.2021.10.07.13.52.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Oct 2021 13:52:40 -0700 (PDT)
+Subject: Re: [PATCH 11/11] selftests: net/fcnal: Reduce client timeout
+To:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, David Ahern <dsahern@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Seth David Schoen <schoen@loyalty.org>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1633520807.git.cdleonard@gmail.com>
+ <516043441bd13bc1e6ba7f507a04362e04c06da5.1633520807.git.cdleonard@gmail.com>
+ <3ed2262e-fce2-c587-5112-e4583cd042ed@gmail.com>
+ <c48ea9e2-acdc-eb11-a4b0-35474003fcf3@gmail.com>
+ <65ae97e3-73c1-3221-96fe-6096a8aacfa1@gmail.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+Message-ID: <d7ac5d58-1e59-a657-a51b-4d757f7552ca@gmail.com>
+Date:   Thu, 7 Oct 2021 23:52:39 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPhsuW7y3ycWkXLwSmJ5TKbo7Syd65aLRABtWbZcohET0RF6rA@mail.gmail.com>
+In-Reply-To: <65ae97e3-73c1-3221-96fe-6096a8aacfa1@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 08, 2021 at 02:03:49AM IST, Song Liu wrote:
-> On Tue, Oct 5, 2021 at 5:29 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
-> >
-> > Also, avoid using CO-RE features, as lskel doesn't support CO-RE, yet.
-> > Create a file for testing libbpf skeleton as well, so that both
-> > gen_loader and libbpf get tested.
-> >
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> [...]
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c
-> > new file mode 100644
-> > index 000000000000..b75725e28647
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c
-> > @@ -0,0 +1,31 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +#include <test_progs.h>
-> > +#include "test_ksyms_weak.skel.h"
-> > +
-> > +void test_ksyms_weak_libbpf(void)
->
-> This is (almost?) the same as test_weak_syms(), right? Why do we need both?
->
+On 07.10.2021 04:17, David Ahern wrote:
+> On 10/6/21 3:26 PM, Leonard Crestez wrote:
+>> On 06.10.2021 18:01, David Ahern wrote:
+>>> On 10/6/21 5:47 AM, Leonard Crestez wrote:
+>>>> Reduce default client timeout from 5 seconds to 500 miliseconds.
+>>>> Can be overridden from environment by exporting NETTEST_CLIENT_TIMEOUT=5
+>>>>
+>>>> Some tests need ICMP timeouts so pass an explicit -t5 for those.
+>>>>
+>>>> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+>>>> ---
+>>>>    tools/testing/selftests/net/fcnal-test.sh | 17 +++++++++++------
+>>>>    1 file changed, 11 insertions(+), 6 deletions(-)
+>>>>
+>>>
+>>> The problem with blindly reducing the timeouts is running the script on
+>>> a loaded server. Some tests are expected to timeout while for tests a
+>>> timeout is a failure.
+>>
+>> Keeping the default value "5" would be fine as long as it is possible to
+>> override externally and get fast results on a mostly-idle machine.
+> 
+> 5 is the default for nettest.c; the test script passes in -t1 for all tests.
 
-One includes lskel.h (light skeleton), the other includes skel.h (libbpf
-skeleton). Trying to include both in the same file, it ends up redefining the
-same struct. I am not sure whether adding a prefix/suffix to light skeleton
-struct names is possible now, maybe through another option to bpftool in
-addition to name?
+An explicit -t is only passed for some of the tests
 
-> > +{
-> > +       struct test_ksyms_weak *skel;
-> > +       struct test_ksyms_weak__data *data;
-> > +       int err;
-> > +
-> > +       skel = test_ksyms_weak__open_and_load();
-> > +       if (!ASSERT_OK_PTR(skel, "test_ksyms_weak__open_and_load"))
-> > +               return;
->
-> [...]
->
-> > diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
-> > index 5f8379aadb29..521e7b99db08 100644
-> > --- a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
-> > +++ b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
-> > @@ -21,7 +21,6 @@ __u64 out__non_existent_typed = -1;
-> >  extern const struct rq runqueues __ksym __weak; /* typed */
-> >  extern const void bpf_prog_active __ksym __weak; /* typeless */
-> >
-> > -
-> >  /* non-existent weak symbols. */
-> >
-> >  /* typeless symbols, default to zero. */
-> > @@ -38,7 +37,7 @@ int pass_handler(const void *ctx)
-> >         /* tests existing symbols. */
-> >         rq = (struct rq *)bpf_per_cpu_ptr(&runqueues, 0);
-> >         if (rq)
-> > -               out__existing_typed = rq->cpu;
-> > +               out__existing_typed = 0;
->
-> Why do we need this change?
->
+$ grep -c nettest.*-r tools/testing/selftests/net/fcnal-test.sh
+243
+$ grep -c nettest.*-t tools/testing/selftests/net/fcnal-test.sh
+15
 
-Since they share the same BPF object for generating skeleton, it needs to remove
-dependency on CO-RE which gen_loader does not support.
+>> Placing a default value in the environment which is overriden by certain
+>> tests achieves that.
+>>
+>> In theory it would also be possible for fcnal-test.sh to parse as
+>> "--timeout" option and pass it into every single test but that solution
+>> would cause much more code churn.
+>>
+>> Having default values in environment variables that can still be
+>> overridden by command-line arguments is a common pattern in many tools.
+>> It also avoids having to pass-through every flag through every
+>> intermediate wrapper.
+> 
+> I do not agree with env variables here.
 
-If it is kept, we get this:
-...
-libbpf: // TODO core_relo: prog 0 insn[5] rq kind 0
-libbpf: prog 'pass_handler': relo #0: failed to relocate: -95
-libbpf: failed to perform CO-RE relocations: -95
-libbpf: failed to load object 'test_ksyms_weak'
-...
-> >         out__existing_typeless = (__u64)&bpf_prog_active;
-> >
-> >         /* tests non-existent symbols. */
-> > --
-> > 2.33.0
-> >
-
---
-Kartikeya
+Would you agree with adding an option to fcnal-test.sh which decreases 
+timeouts passed to nettest client calls?
