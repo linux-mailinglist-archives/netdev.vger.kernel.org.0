@@ -2,97 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E87B42550D
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80E2142550E
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:10:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241970AbhJGOMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 10:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51522 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241812AbhJGOMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 10:12:12 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498F6C061570
-        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 07:10:19 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id z184so6928697iof.5
-        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 07:10:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MFikU40VcZQoBz5zOJafhbTBv9rfb96bsh1zzPej8ho=;
-        b=PnJCnOweMfvbGBiDUXG2BMwGLRz+6see+gQWLkjI5lzHavH57BrSlVMZCaivbsRQdv
-         rPsSMjMWFnPhBga0w5I4rg3nTwExIPmoKEZP2ZS0el01rOsqrH0fPAkLjTAO5LDnruh6
-         yJJCJ8EeuRrq9bRLvfCKycbSJu1NTYSNcFTo0RaHAX5UktsSa2gDaFfxHExHD+WEKIDs
-         aX3iucj6mqSGONwByMeURlZ0KTfeFmh2U9skVTTX5/FHZ15yMbZV2IQLGLMJvfPb9CWd
-         uskHajmTpsoh4SRv+GU8K3ZwwE5JXJA3HCBnfsWw3ncYD3Q/gY0gH6aoKOrpCTh+hYh9
-         bAww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MFikU40VcZQoBz5zOJafhbTBv9rfb96bsh1zzPej8ho=;
-        b=H56KoqWI/qvNd95qLRO2qXSopepxLIMQor6Ox8eFpBbK/5ofD0zzGJufh8Lr5pfQBd
-         lr/adnA0gZK85U1UaMh7utahce90VTYgkw5tqtRWSunKe9VMTrRClWG5WWYW1XFDyFkd
-         RI6FkqUs8AH5m5182/8KtTJZOUQTN4FSs8xTs92iSKTCB47Eh8aRa+YGSuTrOopY2B4y
-         88DENsDuTPtqQDVl7bVDPco+TqkNwJFdKyK0XFUza0WH8o5aGnfQhDFNB+uRRtEN8azC
-         SVLwfSJ2+CYH/5zFSh3qxx0Y8TktyXwIhCowLRhM885X50PTf0Xv0gtZm2uYf3AaNM42
-         huXw==
-X-Gm-Message-State: AOAM530nPQzB5wBhaIkWeLYQ/yxL9Fcp1JUC1XXYXR4PWQlQIjUeyuNu
-        DTrQvu5O7aFbB3XTWEPXlKk=
-X-Google-Smtp-Source: ABdhPJzblgKIrPdmV5QCOgWEDg1goMkgo+2LwB34qk4Ck5ETwvPLwiEEqP5obfqR+WP04+6KEbYsxQ==
-X-Received: by 2002:a6b:8fc8:: with SMTP id r191mr3345041iod.130.1633615818717;
-        Thu, 07 Oct 2021 07:10:18 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id a8sm4999796iok.36.2021.10.07.07.10.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Oct 2021 07:10:18 -0700 (PDT)
-Subject: Re: [PATCH] net: prefer socket bound to interface when not in VRF
+        id S241985AbhJGOM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 10:12:26 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54336 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241812AbhJGOMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 10:12:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=LJq/Rd1JQXwM/d/SGUYrLbU3t8Vadn/d/u9LaBROMtE=; b=qMOZZRpo/cGAiOuMobMS+AwpEf
+        wM2MR1XcVjHyeoDHOzRhTMX2PVKckfK7nQVAxN3vGBSHUZ7TcUsi24304SHwRwteLXV0kr2oe2WMx
+        sW72VxIDhPwPMNpK6CsLTuRPMgStbFX+H4ScegEg+ZpXNQCxN+g6XVvEMjAM5rZLYGvo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mYU6N-009xMM-Ai; Thu, 07 Oct 2021 16:10:27 +0200
+Date:   Thu, 7 Oct 2021 16:10:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Mike Manning <mvrmanning@gmail.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Saikrishna Arcot <sarcot@microsoft.com>
-References: <cf0a8523-b362-1edf-ee78-eef63cbbb428@gmail.com>
- <20211007070720.31dd17bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <9907e6ff-3904-fa66-6562-c3b885eebd34@gmail.com>
-Date:   Thu, 7 Oct 2021 08:10:17 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+Cc:     Michael Walle <michael@walle.cc>, davem@davemloft.net,
+        netdev@vger.kernel.org, vladimir.oltean@nxp.com
+Subject: Re: [PATCH net-next 2/3] eth: platform: add a helper for loading
+ netdev->dev_addr
+Message-ID: <YV7/0wqmxuuPB/yJ@lunn.ch>
+References: <20211007132511.3462291-1-kuba@kernel.org>
+ <20211007132511.3462291-3-kuba@kernel.org>
+ <16f34ede9a885a443bb7c46255ee804f@walle.cc>
+ <20211007065701.1ee88762@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <20211007070720.31dd17bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211007065701.1ee88762@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/7/21 8:07 AM, Jakub Kicinski wrote:
-> On Tue, 5 Oct 2021 14:03:42 +0100 Mike Manning wrote:
->> The commit 6da5b0f027a8 ("net: ensure unbound datagram socket to be
->> chosen when not in a VRF") modified compute_score() so that a device
->> match is always made, not just in the case of an l3mdev skb, then
->> increments the score also for unbound sockets. This ensures that
->> sockets bound to an l3mdev are never selected when not in a VRF.
->> But as unbound and bound sockets are now scored equally, this results
->> in the last opened socket being selected if there are matches in the
->> default VRF for an unbound socket and a socket bound to a dev that is
->> not an l3mdev. However, handling prior to this commit was to always
->> select the bound socket in this case. Reinstate this handling by
->> incrementing the score only for bound sockets. The required isolation
->> due to choosing between an unbound socket and a socket bound to an
->> l3mdev remains in place due to the device match always being made.
->> The same approach is taken for compute_score() for stream sockets.
->>
->> Fixes: 6da5b0f027a8 ("net: ensure unbound datagram socket to be chosen when not in a VRF")
->> Fixes: e78190581aff ("net: ensure unbound stream socket to be chosen when not in a VRF")
->> Signed-off-by: Mike Manning <mmanning@vyatta.att-mail.com>
+On Thu, Oct 07, 2021 at 06:57:01AM -0700, Jakub Kicinski wrote:
+> On Thu, 07 Oct 2021 15:42:17 +0200 Michael Walle wrote:
+> > > +int platform_get_ethdev_address(struct device *dev, struct net_device *netdev)
+> > > +{
+> > > +	u8 addr[ETH_ALEN];
+> > > +	int ret;
+> > > +
+> > > +	ret = eth_platform_get_mac_address(dev, addr);  
+> > 
+> > this eventually calls ether_addr_copy(), which has a note:
+> >    Please note: dst & src must both be aligned to u16.
+> > 
+> > Is this true for this addr on the stack?
 > 
-> David A, Ack?
-> 
+> It will but I don't think there's anything in the standard that
+> requires it. Let me slap __aligned(2) on it to be sure.
 
-yep, sorry, forgot about this one.
+Hi Jakub
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+I though you changed ether_addr_copy() to be a memcpy?
+Or was that some other helper?
+
+	Andrew
