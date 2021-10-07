@@ -2,58 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 527824251BD
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 13:09:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4987F4251D9
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 13:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232475AbhJGLLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 07:11:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230087AbhJGLLW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 07:11:22 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15080C061746
-        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 04:09:29 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id s4so12488166ybs.8
-        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 04:09:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=yl79lOcWxFMFA8BCGecYiE6dwIHNzfeqenv4Qbz9ZyM=;
-        b=pVvpFrZXTWX+K/CHdz+Iv3chTzG0Un0b3F4YMWITg7YzEGzXdHoUX/0St2ZRlIx1Kz
-         lAXGVS9/opYSCDLmowxGFh4L9POU9E5p2AU8POznSh2mTONJWNEuJu530br9QP0Odzc/
-         pwkzQam+seOr9/Q5gW8m/J1vxXgZ9/F+v8xzIt6pkU9PW6xDXsxpW5vCP24jP2vqehjw
-         39CgqLvN6/CeS95fS7bmWvtztvYun4zwsfusUIwpMohr8MHDTu+/KP1RNvgAu1xWbPCO
-         6a3XshT7OR/lD1pSsluw6nXZ7Q+gml+lUB3FRCGYUovqfXZuJVb0wzGiuIOglM5/WuBt
-         2YwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=yl79lOcWxFMFA8BCGecYiE6dwIHNzfeqenv4Qbz9ZyM=;
-        b=5zlmHS1F2tIgEX0TPhwJ9eGMimwZNOWfWhv6vrwcaSONcf18EhScRGZrc2YIBrv+dX
-         t76sTL/jhRwWFmtCYqilHtB/MJQyXIzkDiOTxYqCZnPVyJC0r/DTDbCN6v6cddh58KHI
-         8FOupdaI0PTL7cHbKMwBYWNG/ljWwex2XtFCn/PzOAzzvvFI6tlnsEEV98a0K1ZoLuUE
-         oxigqcwY2K3dMiEvzQzwuRobhzdMF6lYG7428Ww/U0JIMiUhdWBfL8oZSt1lORpvdCp+
-         2BTMDRVhaTimwZPjTdbRwfyboSXVf7Bf+TDI6sZGtDRKbGqvIWf6Zg3PRTtEUt3N7iIS
-         YjtA==
-X-Gm-Message-State: AOAM533VDtGgrYpfndbwNaxQRc1U+qjQBYfK/6Gu80KxWE2gNA3eIJW/
-        7H7tlaU9FGbrDF8Fnp4IHIciNA5ciOBRvJo24XE=
-X-Google-Smtp-Source: ABdhPJwpnlfA6BxZ2U0ATjxr3brRsaOUBxBqAq8AKD+ViuQLnht/+Ju5oH3mAmH7A7qmowhO7XT+4+JcZC0vqiuQeJ0=
-X-Received: by 2002:a25:4157:: with SMTP id o84mr3584762yba.77.1633604968298;
- Thu, 07 Oct 2021 04:09:28 -0700 (PDT)
+        id S240604AbhJGLTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 07:19:12 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:33504
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230087AbhJGLTJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 07:19:09 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 303683FFE4;
+        Thu,  7 Oct 2021 11:17:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1633605434;
+        bh=avjKW1lulkmRLzQGJiNan2tRFayMsYMy4bdNSEG99Ds=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=GaMOJdxdCQFYwiz7lh3WZWOecf6ZSKndwxQKMwtsm16R4D4jqcCvmPjGX0jsqseVU
+         kW3R1FwLVxz7JMxgWXB4cY12aoAsATU4D1V3sIEykqtXBOUiWSbiH0Swo1R3VzMbyD
+         4CjoDRACB4g+if3xci9gNPS9K88sbxQzO5zrKiVyYf0OEAtuV8rq508/kzCP6U+ggy
+         bYxVpX16vfOZPPm7dc61cPy07LVKf/PHbmBLyKSweGMkhr7Zw4qQ536wzHG8Eo1zt6
+         ypMYa0tMA+h8F24FiKTkufrXVHLyoZ0nuYBc4ijC5B0RP7kg3PhKxfnlQSL29SfQD4
+         gsxHLeK2/EAkg==
+From:   Colin King <colin.king@canonical.com>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] Bluetooth: use bitmap_empty to check if a bitmap has any bits set
+Date:   Thu,  7 Oct 2021 12:17:13 +0100
+Message-Id: <20211007111713.12207-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Received: by 2002:a81:30ca:0:0:0:0:0 with HTTP; Thu, 7 Oct 2021 04:09:27 -0700 (PDT)
-Reply-To: mrsvaldezannem@gmail.com
-From:   valdez anne <koukourasisi@gmail.com>
-Date:   Thu, 7 Oct 2021 11:09:27 +0000
-Message-ID: <CALg=kHEycOFfgRK1Hvx0FMqz281v853HMBc6cj+W=wWxySRKNg@mail.gmail.com>
-Subject: hi
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-_Can you reply to my previous email, do I need your reply? I am
-Waiting for reading from you.
+From: Colin Ian King <colin.king@canonical.com>
+
+The check to see if any tasks are left checks if bitmap array is zero
+rather than using the appropriate bitmap helper functions to check the
+bits in the array. Fix this by using bitmap_empty on the bitmap.
+
+Addresses-Coverity: (" Array compared against 0")
+Fixes: 912730b52552 ("Bluetooth: Fix wake up suspend_wait_q prematurely")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ net/bluetooth/hci_request.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 209f4fe17237..bad3b9c895ba 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -1108,7 +1108,7 @@ static void suspend_req_complete(struct hci_dev *hdev, u8 status, u16 opcode)
+ 	clear_bit(SUSPEND_SET_ADV_FILTER, hdev->suspend_tasks);
+ 
+ 	/* Wake up only if there are no tasks left */
+-	if (!hdev->suspend_tasks)
++	if (!bitmap_empty(hdev->suspend_tasks, __SUSPEND_NUM_TASKS))
+ 		wake_up(&hdev->suspend_wait_q);
+ }
+ 
+-- 
+2.32.0
+
