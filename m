@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE374425464
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 15:38:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07FF4425462
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 15:38:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241699AbhJGNko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 09:40:44 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:51918
+        id S241811AbhJGNkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 09:40:39 -0400
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:51938
         "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241700AbhJGNkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 09:40:18 -0400
+        by vger.kernel.org with ESMTP id S241710AbhJGNkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 09:40:19 -0400
 Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id CAF5140004
-        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 13:38:23 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E0C5140005
+        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 13:38:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633613903;
-        bh=i5yc8KqEKBR9h1kRXiKNI/2N/o+Yq4m6PQJBbQ1oeXs=;
+        s=20210705; t=1633613904;
+        bh=Puh8mRYPY/DpKQ/I9uyYNXcSBWp/u+3lkb87itcd3n8=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=ZKCdnfjfJXarBeCrT86YsAboUdcpzldopXsDk2aG/rcu7izeL5/wHetBxmm9zkTHK
-         zhjTrinyyKwW4uGgKHo35Wp7goPMhtEbczNV9ITVnk2WOZaEIJVkRjXP3/fSm4bP4B
-         C6aLRVxULoZ2UIZ6zA/CoDa6KWfDiNOQe1Ax+semL1fPZOXvXO3/FYvnbjzOtUvIyS
-         g7x/hUObyqCEEnJkgPkdQg/vnW453cU03xajVQfOEZTroLP39f/F37FkOkbpFKHhZi
-         pOulJfln5LFSxabyLV7eeRcThHaU6ZYCJfXS4zSXyHYtO+10i/mbvTJ6j3M3/GHecy
-         vKpyXXh9eEJHw==
-Received: by mail-ed1-f69.google.com with SMTP id 2-20020a508e02000000b003d871759f5dso5906583edw.10
-        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 06:38:23 -0700 (PDT)
+        b=YMmqJynP/vK/w0b9UD580d8EvmF5Vq6I4K+18JlB2rswk1NUiEKQT8sby584hYdLB
+         c9+k5lc5xvl6bYWPzdRAS84qDa3vf0QGXLGaTql8+BMSi1FKiNm2/lBXEOInPLuOB1
+         wlr0sAJBWxHyY5OSeEjhvLq4y7ZV7sxVDd0z6M9sb3pognPxIkj8pJZU+QZo1tti9z
+         v+6AO2ff9NbfSJvivsSPW9EB9lePpHP0iZQfa3FuBUOuPa/LA0HwxjBs6BhiCpDe5t
+         izV7VHcq4OVON8QoRtBC8tL+060/hIZQ2XnfZqUvXFwFG9RQB8EDxWYCBk4W+3G3dD
+         OYNKe1Gb1aSYA==
+Received: by mail-ed1-f69.google.com with SMTP id c7-20020a05640227c700b003d27f41f1d4so5871106ede.16
+        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 06:38:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=i5yc8KqEKBR9h1kRXiKNI/2N/o+Yq4m6PQJBbQ1oeXs=;
-        b=L4VVQjngJT8OhZ8JaJc2PbhlR81iKIwzJiqDge/QKhYQjMGE6qcqj8eKYlN5knJQqb
-         YGWWUSLFMyOxNsSdiQwSdklHcZEFSSiJdnQ/WCUdq7WR4DxtsBjp3aIuVuMPpvzygiNe
-         KmpF0ZvaOfFusDU2e2Lb8GSjLDK6glsjcaktuM3XNGtDPPfJv2c2CPOJrEhE+4vGWC2f
-         GJlQXuFZzNLLOabTgzzF7j6H2dSTZcvvEDTRT4H2AXEK3Q6E8kc+9vLQ2vJnDH1RHwqE
-         itaC26S+WeVPiOGEFXPwoKSj5Gk6ZiY4GLGFqTzpSw/h0LO95KmYTFLksbbRAWTVW69O
-         YrcQ==
-X-Gm-Message-State: AOAM530C03F+CbUxHf8Mq11RR1tMuFSkb+K06SXr9olknrtiqVWPjqaV
-        V5UyATSSNluVxZAg4SaQwT9XezNS5XD2hvp2JA0NA8ZMi8tuDfewbVoMUS0KeAMXVKdxXKzJ5M2
-        B8NnlLT5x3K64YHoxqJsOX8re2m+IAGKfJg==
-X-Received: by 2002:a17:906:c0d4:: with SMTP id bn20mr5857708ejb.360.1633613903417;
-        Thu, 07 Oct 2021 06:38:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzGs83pPcxwRjT8XZwuGT/4eMaNDYr0PKnMg7lCK+FLOnIuti4ghrKQPTbVDfP50A00g7hgAg==
-X-Received: by 2002:a17:906:c0d4:: with SMTP id bn20mr5857680ejb.360.1633613903222;
-        Thu, 07 Oct 2021 06:38:23 -0700 (PDT)
+        bh=Puh8mRYPY/DpKQ/I9uyYNXcSBWp/u+3lkb87itcd3n8=;
+        b=iVaDzu2JhXP5sOl6MerMMWQfcCQ+VKa0kX3I9V4MMd6SHtc3I17Vo7CQTctkoMiXOF
+         iIIxUg4GqNCxd6IZ0Ng1x5WFx8XVyBp5dhevnTAFq7E+u6GR8MxmUgdB6qdNomi/zqn/
+         tMOaY4yjDWohhK9Hau68kpiLhpymRCN5khDY0A+4/14Oh/tgiqPSjOP7ygtv6mkuxKXl
+         bqnYDy/qN/NRZA8GCLYNDVMIdGfaKcghAzZlo50tsR/XF0XOrNFTmoqereZ45zaQPjDs
+         AVw55NLesY+kIQGNki17AnFjJHs+1Q2PIkO/Utd1Z4sT4cFZm9ODXGVklBZVT5gthvOg
+         n7PQ==
+X-Gm-Message-State: AOAM533tdIxHnnrPIDZGdG/JmfCNvXHzeSN28KvbG2NlD1o49mdppx5Y
+        xnExV8ffQffZkv5RmKBf9PFqemAMxT5KzAHfWlfhqKaoaXfyYzvc4smEC9eRvyrmU7evKCXLXFy
+        4zqmj1k9ivwqXolUqyp33LlnAyMBotzrXNw==
+X-Received: by 2002:a17:906:3a0f:: with SMTP id z15mr5941402eje.42.1633613904638;
+        Thu, 07 Oct 2021 06:38:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzVZsfRsmZOsEhr/fwES6UsllaiU8YmaLl7naS0VLYqarKwWGbgvqdOR+dFnFEt2mVLnmtVKg==
+X-Received: by 2002:a17:906:3a0f:: with SMTP id z15mr5941370eje.42.1633613904460;
+        Thu, 07 Oct 2021 06:38:24 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-186-13.adslplus.ch. [188.155.186.13])
-        by smtp.gmail.com with ESMTPSA id ay19sm8585613edb.20.2021.10.07.06.38.22
+        by smtp.gmail.com with ESMTPSA id ay19sm8585613edb.20.2021.10.07.06.38.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 06:38:22 -0700 (PDT)
+        Thu, 07 Oct 2021 06:38:23 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Krzysztof Opasiak <k.opasiak@samsung.com>,
@@ -61,9 +61,9 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-wireless@vger.kernel.org
-Subject: [RESEND PATCH v2 4/7] nfc: st-nci: drop unneeded debug prints
-Date:   Thu,  7 Oct 2021 15:30:18 +0200
-Message-Id: <20211007133021.32704-5-krzysztof.kozlowski@canonical.com>
+Subject: [RESEND PATCH v2 5/7] nfc: st21nfca: drop unneeded debug prints
+Date:   Thu,  7 Oct 2021 15:30:19 +0200
+Message-Id: <20211007133021.32704-6-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211007133021.32704-1-krzysztof.kozlowski@canonical.com>
 References: <20211007133021.32704-1-krzysztof.kozlowski@canonical.com>
@@ -78,109 +78,54 @@ functions so drop useless debug prints.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- drivers/nfc/st-nci/i2c.c  | 4 ----
- drivers/nfc/st-nci/ndlc.c | 4 ----
- drivers/nfc/st-nci/se.c   | 6 ------
- drivers/nfc/st-nci/spi.c  | 4 ----
- 4 files changed, 18 deletions(-)
+ drivers/nfc/st21nfca/i2c.c | 4 ----
+ drivers/nfc/st21nfca/se.c  | 4 ----
+ 2 files changed, 8 deletions(-)
 
-diff --git a/drivers/nfc/st-nci/i2c.c b/drivers/nfc/st-nci/i2c.c
-index ccf6152ebb9f..cbd968f013c7 100644
---- a/drivers/nfc/st-nci/i2c.c
-+++ b/drivers/nfc/st-nci/i2c.c
-@@ -157,7 +157,6 @@ static int st_nci_i2c_read(struct st_nci_i2c_phy *phy,
- static irqreturn_t st_nci_irq_thread_fn(int irq, void *phy_id)
+diff --git a/drivers/nfc/st21nfca/i2c.c b/drivers/nfc/st21nfca/i2c.c
+index 279d88128b2e..f126ce96a7df 100644
+--- a/drivers/nfc/st21nfca/i2c.c
++++ b/drivers/nfc/st21nfca/i2c.c
+@@ -421,7 +421,6 @@ static int st21nfca_hci_i2c_read(struct st21nfca_i2c_phy *phy,
+ static irqreturn_t st21nfca_hci_irq_thread_fn(int irq, void *phy_id)
  {
- 	struct st_nci_i2c_phy *phy = phy_id;
+ 	struct st21nfca_i2c_phy *phy = phy_id;
 -	struct i2c_client *client;
- 	struct sk_buff *skb = NULL;
+ 
  	int r;
  
-@@ -166,9 +165,6 @@ static irqreturn_t st_nci_irq_thread_fn(int irq, void *phy_id)
+@@ -430,9 +429,6 @@ static irqreturn_t st21nfca_hci_irq_thread_fn(int irq, void *phy_id)
  		return IRQ_NONE;
  	}
  
 -	client = phy->i2c_dev;
 -	dev_dbg(&client->dev, "IRQ\n");
 -
- 	if (phy->ndlc->hard_fault)
+ 	if (phy->hard_fault != 0)
  		return IRQ_HANDLED;
  
-diff --git a/drivers/nfc/st-nci/ndlc.c b/drivers/nfc/st-nci/ndlc.c
-index e9dc313b333e..755460a73c0d 100644
---- a/drivers/nfc/st-nci/ndlc.c
-+++ b/drivers/nfc/st-nci/ndlc.c
-@@ -239,8 +239,6 @@ static void ndlc_t1_timeout(struct timer_list *t)
- {
- 	struct llt_ndlc *ndlc = from_timer(ndlc, t, t1_timer);
- 
--	pr_debug("\n");
--
- 	schedule_work(&ndlc->sm_work);
- }
- 
-@@ -248,8 +246,6 @@ static void ndlc_t2_timeout(struct timer_list *t)
- {
- 	struct llt_ndlc *ndlc = from_timer(ndlc, t, t2_timer);
- 
--	pr_debug("\n");
--
- 	schedule_work(&ndlc->sm_work);
- }
- 
-diff --git a/drivers/nfc/st-nci/se.c b/drivers/nfc/st-nci/se.c
-index 5fd89f72969d..7764b1a4c3cf 100644
---- a/drivers/nfc/st-nci/se.c
-+++ b/drivers/nfc/st-nci/se.c
-@@ -638,8 +638,6 @@ int st_nci_se_io(struct nci_dev *ndev, u32 se_idx,
- {
- 	struct st_nci_info *info = nci_get_drvdata(ndev);
- 
--	pr_debug("\n");
--
- 	switch (se_idx) {
- 	case ST_NCI_ESE_HOST_ID:
- 		info->se_info.cb = cb;
-@@ -671,8 +669,6 @@ static void st_nci_se_wt_timeout(struct timer_list *t)
- 	u8 param = 0x01;
- 	struct st_nci_info *info = from_timer(info, t, se_info.bwi_timer);
+diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
+index c8bdf078d111..a43fc4117fa5 100644
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -257,8 +257,6 @@ static void st21nfca_se_wt_timeout(struct timer_list *t)
+ 	struct st21nfca_hci_info *info = from_timer(info, t,
+ 						    se_info.bwi_timer);
  
 -	pr_debug("\n");
 -
  	info->se_info.bwi_active = false;
  
  	if (!info->se_info.xch_error) {
-@@ -692,8 +688,6 @@ static void st_nci_se_activation_timeout(struct timer_list *t)
- 	struct st_nci_info *info = from_timer(info, t,
- 					      se_info.se_active_timer);
+@@ -278,8 +276,6 @@ static void st21nfca_se_activation_timeout(struct timer_list *t)
+ 	struct st21nfca_hci_info *info = from_timer(info, t,
+ 						    se_info.se_active_timer);
  
 -	pr_debug("\n");
 -
  	info->se_info.se_active = false;
  
  	complete(&info->se_info.req_completion);
-diff --git a/drivers/nfc/st-nci/spi.c b/drivers/nfc/st-nci/spi.c
-index 0875b773fb41..4e723992e74c 100644
---- a/drivers/nfc/st-nci/spi.c
-+++ b/drivers/nfc/st-nci/spi.c
-@@ -169,7 +169,6 @@ static int st_nci_spi_read(struct st_nci_spi_phy *phy,
- static irqreturn_t st_nci_irq_thread_fn(int irq, void *phy_id)
- {
- 	struct st_nci_spi_phy *phy = phy_id;
--	struct spi_device *dev;
- 	struct sk_buff *skb = NULL;
- 	int r;
- 
-@@ -178,9 +177,6 @@ static irqreturn_t st_nci_irq_thread_fn(int irq, void *phy_id)
- 		return IRQ_NONE;
- 	}
- 
--	dev = phy->spi_dev;
--	dev_dbg(&dev->dev, "IRQ\n");
--
- 	if (phy->ndlc->hard_fault)
- 		return IRQ_HANDLED;
- 
 -- 
 2.30.2
 
