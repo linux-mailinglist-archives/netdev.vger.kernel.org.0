@@ -2,306 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00F93425677
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 17:13:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E50142569A
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 17:31:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242561AbhJGPPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 11:15:31 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:8260 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242471AbhJGPPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 11:15:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1633619598; x=1665155598;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=F8AdM2bQCohn5beRmiDST/s0/uszilKdA86p30O7lEw=;
-  b=IzD0mu1g/rT6sufgiS/D53kyoUknwAPwS1UJBVdL66yGbjY+LsMCFhMG
-   IGaLWa+yOEk6SmBRC/i61WHtMDuUc5AHgq+t8WODVN4q/IYqu5h1KVoq4
-   fxx2SW6Ph60LMibXpEVY6xJ4Xa2L82NCq78QXYQLzDCBcFkeJg43zMgDS
-   aMQkXT1qKCJEBv3BGBQEMhjsL9KOcEa7fXKzBV5+NbpZtpqXIRgo5jXJc
-   kxCztEfHz+fdghloiQNYLRXk2IskyG3HJJwfpVmmvWFK9tb+K9EjtMa6a
-   U+vkUaouoJXQhhDXI3VgwkCC4NYDWUma5aPMqtAcrrFzTCTsqwdMJugTD
-   w==;
-IronPort-SDR: MkGKzUC7AxLA0MUaSxHENuNq44veaNwnp2v1i+x6YaH28orBGd+ZC2aXiaL0DLoMob+Piwpmag
- u6DE5NXxqxKvOiW1FjWbj/qH9KbHGAOJIGZz1EEsgcJAaUZ+d0WB42e3S/QYE+O55e9lZX64b4
- LwRZPZgiD8el8HQRUcBpvIuKS5/T/Zit3PE93/66ku0GqucXPSQ7n3mWKeoI/E4YxIewHBnUtL
- WXUVQpyXhbBV74YpRGrpWPsI2SEq3PuNLzBq6xfNgXFeR7s85HWDZFw3eukqoSWU1LjjrBknVT
- VCduOEg1k5liBuy2Dj8Gp/HR
-X-IronPort-AV: E=Sophos;i="5.85,355,1624345200"; 
-   d="scan'208";a="139412269"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Oct 2021 08:13:17 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 7 Oct 2021 08:13:17 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Thu, 7 Oct 2021 08:13:12 -0700
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
-        <robh+dt@kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Subject: [PATCH v4 net-next 10/10] net: dsa: microchip: add support for vlan operations
-Date:   Thu, 7 Oct 2021 20:42:00 +0530
-Message-ID: <20211007151200.748944-11-prasanna.vengateshan@microchip.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20211007151200.748944-1-prasanna.vengateshan@microchip.com>
-References: <20211007151200.748944-1-prasanna.vengateshan@microchip.com>
-MIME-Version: 1.0
+        id S241107AbhJGPd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 11:33:28 -0400
+Received: from mail-eopbgr140045.outbound.protection.outlook.com ([40.107.14.45]:2526
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232593AbhJGPdY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 11:33:24 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y5gK9JfQAWnYzm2WMEEOgW0+8BFDNWxQinQBPuT351Fqi1Hb/4ovPa1PvSBvCm8h0VljtzcrmNzUOfEKs640i04Td4B/u/H+L5KuQxVWRk9pt57vpkcyh/PANpYJTrtZzPI+E/LQLJ4ss8Ohq63vz1zXOaVZ+oWWTW6T0Co2psVyQUEirUPvMTK/jIYkHVsgVFP7nonEWKjQB56qrPTpq9oWdHAFmku8aJCfvzN445KInY+Yag0l5g+HSQbrKXYfPnXIvcs9t22QgP3M/yzK5aqekpwE3a0yaSAi8ZB12Mq2ZwYBTeQlq5ekWac2rpHFzBEFUFC2r8VOhZLbo/1b4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oVnVbBgdhGtCu5xQTnXQakBskmbB//AKp3m6rI8MJsI=;
+ b=WG6LhX4WJaBaj3kCSIJNppwAkf+XdS7xQ+O7s/IbNKW7UlYa79AeJpoyDhXGO9EmKxobXklHKWOHKMLAfKzflXNDJ3q+rL0Clj8RwYl6ObsS0UJ6ADsOIwA/PSWBOi0Y75r6E4j7FYyDdGaSmqGdbPeuGwM93cC2agBP5vITJWXnRLu0vlVM8CYn8E87clmMhng1x675f7b7oiof4Uw/KBv6y5VLynLrl9B09AxF0yOrAmZwfbKaox8MBoGL2zb7mpFy6YeYwwfnf8UgLT3qCTdQ6Jv07dljDFmNxh607UV6ya5Li9OkJh01gDfVaiGI3WhylmgikfDuR/k5kcVOoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oVnVbBgdhGtCu5xQTnXQakBskmbB//AKp3m6rI8MJsI=;
+ b=q3Z8Y7zxNG/GO4G9raBhB2MIf/mCYSbto1pClnvBARGPUiHYNvxhUZzc3VZ+k1aHv3NYja5BW4YQR/8XygO1u8hLxJVUg55XdWf9SBBFYDAz7b3M9TNY6H0jAiaVlrmVzRSgMad3P851zwuTYZfNR/SVc1+0swJW7hMd4dT/Jto=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
+ (2603:10a6:200:4f::13) by AM9PR04MB8212.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3b7::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Thu, 7 Oct
+ 2021 15:31:28 +0000
+Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
+ ([fe80::6476:5ddb:7bf2:e726]) by AM4PR0401MB2308.eurprd04.prod.outlook.com
+ ([fe80::6476:5ddb:7bf2:e726%8]) with mapi id 15.20.4566.023; Thu, 7 Oct 2021
+ 15:31:28 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next v2 0/2] net: enetc: add support for software TSO
+Date:   Thu,  7 Oct 2021 18:30:41 +0300
+Message-Id: <20211007153043.2675008-1-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 2.31.1
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-ClientProxiedBy: AM0PR02CA0017.eurprd02.prod.outlook.com
+ (2603:10a6:208:3e::30) To AM4PR0401MB2308.eurprd04.prod.outlook.com
+ (2603:10a6:200:4f::13)
+MIME-Version: 1.0
+Received: from yoga-910.localhost (188.26.53.217) by AM0PR02CA0017.eurprd02.prod.outlook.com (2603:10a6:208:3e::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18 via Frontend Transport; Thu, 7 Oct 2021 15:31:27 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2323a99c-ba49-41b8-6cc2-08d989a787e0
+X-MS-TrafficTypeDiagnostic: AM9PR04MB8212:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM9PR04MB821227BAFF2DDEB2820828E5E0B19@AM9PR04MB8212.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2ker39wFn+NQR3UtCdfDUizWR+rbhgUX8RcpC1HiC2vK5UmWUFWm+Bxa4QM/0EXA81tBi84ZUmDM2ZZdUgaK64D6+9kd8uVcXpwYAhzJpOUpGswBOZ9L7MXZhBjImglWwzKovLzkIVeUT7qd2F98pk9lhon8tmhk7NJYXGo2tGIhAtC7i9eWqU2B2iZJxf8lnvCLhC6I2YbhzXMFjfdEw3C5x1rR9Z8ZA0SpFKnQ4razZqwsfVSIqjPjEGx9xeBUu5sL30RH1Y9JULjYTTbgpZnWxCh6xn425/TQt0VaF7lLdV2jpi+S2tlX376YojbCoNc00tyr3zhtKok8dAHukdWr4BxeHxAf7DypZOZhaSRnBIa32ACAZqZUP/psaQzrOvA/qBD5AJuLKo3aLVr+C8xwqo8qWpyeSI851jPg96ZaZOn550GA65OllpE2noAWgW/96m6HE/PXtgtLqdPBF0R5Rpy2EG7E8bWCilFgOQkAIhzTypb8r81tk6V1zUinZI1KBwTk0bstlvSTawopkRUAeln2jB5Jdk1HyzuV2r5mfQCIKOa9RcxXlO6zLTawHoAxR1nDSwWxz+Z2NwMuoWUWqysZ4VKfe4iYVewf7x9CZSL/zNaXuj2/3QGLgKt2wXr5DGo/jqrwJb5OQrJTRk+ar0EdVZiO1HAPB6AHdmHtLnnKfJcAFI98YLfE5+G+A76gStGGpiEEewdSBhV3NQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR0401MB2308.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6506007)(8936002)(1076003)(86362001)(316002)(52116002)(66946007)(66556008)(66476007)(6486002)(8676002)(83380400001)(36756003)(38100700002)(26005)(5660300002)(2906002)(44832011)(6512007)(2616005)(186003)(956004)(4326008)(6666004)(38350700002)(508600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Snj3JJ89dDz1TnIBWP8HD9WLKvjVlBAP+BFBM2qRHd5FnO7Cg8Y22drzzA/5?=
+ =?us-ascii?Q?awL7u2FXTBH1jOFrf7yKqH49l/X9vEruFzIEU3nYdsiHBaUEIpZ91S2ZaHNz?=
+ =?us-ascii?Q?hMvevSUeJS/Nhxzsml9Wq8Og+t5vgtcfkQevPwWqToTa//cjZ1jlNP4WShtO?=
+ =?us-ascii?Q?UYGBFWaMEzdS9D47Dr6ZEqluuYyr7ODwX0ds4ur5/Hef55m0YY6E1tzZY6H8?=
+ =?us-ascii?Q?rjJ7exatWJ+Ly7ZUzjoon79hRZvJ071vP1jHFcPcY+69JIHazu3prfVg7BBU?=
+ =?us-ascii?Q?J/FPVv7t43XsJRtwpfOp+6pAv2Ior7AI6crnoA+eQ/rT4s/b6HGqfU5XNVY5?=
+ =?us-ascii?Q?w6RKJK7A72Efh2hJDW3uB84xwalJr7mKoAym04mBwGg8RT54n8965adBL0hf?=
+ =?us-ascii?Q?xjmqBF3Bjy2mFkKxOeeqPUR+9Df9Yk0Cf46vTel7ZPU7pwyQHfZz4edn1IB+?=
+ =?us-ascii?Q?cuam7rLFwqdQmoHNZAAAUDq5gok+lfuX5sfvYPB91x2ExRMlW0K/1VWWRykT?=
+ =?us-ascii?Q?mUaKetg9TJ6AUS6PdW0eRLgBjp4ACrZ/HM6eU4iVNr9kVzn0UeWFUTAnYGCL?=
+ =?us-ascii?Q?7P4rr/5KWAQmBSrhBmaQfByORhiGPt3OMC6LuCtNuX7ft1qOdOoWNEle5x2k?=
+ =?us-ascii?Q?U3sggBDJg/qzNAnxj9TGuhi8w0pEd0XbTOktHTgrsv8Rr0g69jYKGzs5WKNP?=
+ =?us-ascii?Q?pCGaWaWLu2tOrPxHjFQVfV7vcMNshE3e5xePVHcpNKzD8Qvdrvm7DLQfOJgX?=
+ =?us-ascii?Q?9smkWV38ZeSqUwqqG7c6Gq+O+ocPC6Hid9iYk///e0BW8YqzkvjQEHPhXw5B?=
+ =?us-ascii?Q?LGurehT52KAgse85vZOpaqoZQe9xRd/AFanInZBCMWvUYGNDZ4yyTWM3IydK?=
+ =?us-ascii?Q?R8jhNwMLBnDUknbEkjQCK735wO6O8TF97wosYRqH4kY/02hvCLpQSPEJ1u8M?=
+ =?us-ascii?Q?DlXFUelAkGuDzvkQk10N0bnKwOq6Owg5uU4GirChT4+xIKiWt95q4RGciLq5?=
+ =?us-ascii?Q?jyaAB5lm+rUF1hUj7BeSTheMCfikBRXt/dZYoXNSarg3P2/y7xLnpONC1j+d?=
+ =?us-ascii?Q?wGoWvEVWCUClaZyMDe9SNY/XD4dBgChrt00HljgfHsNBirhklWuRMJPxvmLb?=
+ =?us-ascii?Q?LkRBpuFqd8kxq+aOOL2TGvfb+3A+j+h8nDjZHwZ31wW3dIQpd08ywhNXJKOt?=
+ =?us-ascii?Q?hk7PYu4mKSk7KNrBh9gB4LDZa1ieQK9p9lPu6DOdZB537OG6CDT1bXTPqjY5?=
+ =?us-ascii?Q?o+8ckvhRBTAdzIRqoTlIWaEFORZtVEb6+VCgkzakOqpjbo6iqEMfg5oZfhou?=
+ =?us-ascii?Q?qK9VDLgQtmE9VVh4G/zM+isR?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2323a99c-ba49-41b8-6cc2-08d989a787e0
+X-MS-Exchange-CrossTenant-AuthSource: AM4PR0401MB2308.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2021 15:31:28.5949
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: s2ntTggisyc+DZ53mRPwlywaxyeHnhJBptvh3etJ82Vk0+xNJlWJrlM5qmmqWjz52/rEbL4yhmMZf2saaelZLQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8212
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support for VLAN add, del, prepare and filtering operations.
+This series adds support for driver level TSO in the enetc driver.
 
-The VLAN aware is a global setting. Mixed vlan filterings
-are not supported. vlan_filtering_is_global is made as true
-in lan937x_setup function.
+Ever since the ENETC MDIO erratum workaround is in place, the Tx path is
+incurring a penalty (enetc_lock_mdio/enetc_unlock_mdio) for each skb to
+be sent out. On top of this, ENETC does not support Tx checksum
+offloading. This means that software TSO would help performance just by
+the fact that one single mdio lock/unlock sequence would cover multiple
+packets sent. On the other hand, checksum needs to be computed in
+software since the controller cannot handle it.
 
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
----
- drivers/net/dsa/microchip/lan937x_main.c | 198 +++++++++++++++++++++++
- 1 file changed, 198 insertions(+)
+This is why, beside using the usual tso_build_hdr()/tso_build_data()
+this specific implementation also has to compute the checksum, both IP
+and L4, for each resulted segment.
 
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index f55b2a037ad9..25fa352ec857 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -17,6 +17,14 @@
- #include "ksz_common.h"
- #include "lan937x_dev.h"
- 
-+static int lan937x_wait_vlan_ctrl_ready(struct ksz_device *dev)
-+{
-+	unsigned int val;
-+
-+	return regmap_read_poll_timeout(dev->regmap[0], REG_SW_VLAN_CTRL, val,
-+					!(val & VLAN_START), 10, 1000);
-+}
-+
- static u8 lan937x_get_fid(u16 vid)
- {
- 	if (vid > ALU_FID_SIZE)
-@@ -25,6 +33,97 @@ static u8 lan937x_get_fid(u16 vid)
- 		return vid;
- }
- 
-+static int lan937x_get_vlan_table(struct ksz_device *dev, u16 vid,
-+				  struct lan937x_vlan *vlan_entry)
-+{
-+	u32 data;
-+	int ret;
-+
-+	mutex_lock(&dev->vlan_mutex);
-+
-+	ret = ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_READ | VLAN_START);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be cleared */
-+	ret = lan937x_wait_vlan_ctrl_ready(dev);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY__4, &data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	vlan_entry->valid = !!(data & VLAN_VALID);
-+	vlan_entry->fid	= data & VLAN_FID_M;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY_UNTAG__4,
-+			 &vlan_entry->untag_prtmap);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY_PORTS__4,
-+			 &vlan_entry->fwd_map);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, 0);
-+	if (ret < 0)
-+		goto exit;
-+
-+exit:
-+	mutex_unlock(&dev->vlan_mutex);
-+
-+	return ret;
-+}
-+
-+static int lan937x_set_vlan_table(struct ksz_device *dev, u16 vid,
-+				  struct lan937x_vlan *vlan_entry)
-+{
-+	u32 data;
-+	int ret;
-+
-+	mutex_lock(&dev->vlan_mutex);
-+
-+	data = vlan_entry->valid ? VLAN_VALID : 0;
-+	data |= vlan_entry->fid;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY__4, data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY_UNTAG__4,
-+			  vlan_entry->untag_prtmap);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY_PORTS__4, vlan_entry->fwd_map);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_START | VLAN_WRITE);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be cleared */
-+	ret = lan937x_wait_vlan_ctrl_ready(dev);
-+	if (ret < 0)
-+		goto exit;
-+
-+exit:
-+	mutex_unlock(&dev->vlan_mutex);
-+
-+	return ret;
-+}
-+
- static int lan937x_read_table(struct ksz_device *dev, u32 *table)
- {
- 	int ret;
-@@ -193,6 +292,102 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
- 		ksz_update_port_member(dev, port);
- }
- 
-+static int lan937x_port_vlan_filtering(struct dsa_switch *ds, int port,
-+				       bool flag,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	int ret;
-+
-+	ret = lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE,
-+			  flag);
-+
-+	return ret;
-+}
-+
-+static int lan937x_port_vlan_add(struct dsa_switch *ds, int port,
-+				 const struct switchdev_obj_port_vlan *vlan,
-+				 struct netlink_ext_ack *extack)
-+{
-+	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-+	struct ksz_device *dev = ds->priv;
-+	struct lan937x_vlan vlan_entry;
-+	int ret;
-+
-+	ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to get vlan table");
-+		return ret;
-+	}
-+
-+	vlan_entry.fid = lan937x_get_fid(vlan->vid);
-+	vlan_entry.valid = true;
-+
-+	/* set/clear switch port when updating vlan table registers */
-+	if (untagged)
-+		vlan_entry.untag_prtmap |= BIT(port);
-+	else
-+		vlan_entry.untag_prtmap &= ~BIT(port);
-+
-+	vlan_entry.fwd_map |= BIT(port);
-+
-+	ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to set vlan table");
-+		return ret;
-+	}
-+
-+	/* change PVID */
-+	if (vlan->flags & BRIDGE_VLAN_INFO_PVID) {
-+		ret = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID,
-+				       vlan->vid);
-+		if (ret < 0) {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to set pvid");
-+			return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int lan937x_port_vlan_del(struct dsa_switch *ds, int port,
-+				 const struct switchdev_obj_port_vlan *vlan)
-+{
-+	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-+	struct ksz_device *dev = ds->priv;
-+	struct lan937x_vlan vlan_entry;
-+	u16 pvid;
-+	int ret;
-+
-+	lan937x_pread16(dev, port, REG_PORT_DEFAULT_VID, &pvid);
-+	pvid &= 0xFFF;
-+
-+	ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to get vlan table\n");
-+		return ret;
-+	}
-+	/* clear port fwd map */
-+	vlan_entry.fwd_map &= ~BIT(port);
-+
-+	if (untagged)
-+		vlan_entry.untag_prtmap &= ~BIT(port);
-+
-+	ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to set vlan table\n");
-+		return ret;
-+	}
-+
-+	ret = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID, pvid);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to set pvid\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int lan937x_port_fdb_add(struct dsa_switch *ds, int port,
- 				const unsigned char *addr, u16 vid)
- {
-@@ -1086,6 +1281,9 @@ const struct dsa_switch_ops lan937x_switch_ops = {
- 	.port_bridge_leave = ksz_port_bridge_leave,
- 	.port_stp_state_set = lan937x_port_stp_state_set,
- 	.port_fast_age = ksz_port_fast_age,
-+	.port_vlan_filtering = lan937x_port_vlan_filtering,
-+	.port_vlan_add = lan937x_port_vlan_add,
-+	.port_vlan_del = lan937x_port_vlan_del,
- 	.port_fdb_dump = lan937x_port_fdb_dump,
- 	.port_fdb_add = lan937x_port_fdb_add,
- 	.port_fdb_del = lan937x_port_fdb_del,
+Even with that, the performance improvement of a TCP flow running on a
+single A72@1.3GHz of the LS1028A SoC (2.5Gbit/s port) is the following:
+
+before: 1.63 Gbits/sec
+after:  2.34 Gbits/sec
+
+Changes in v2:
+ - declare NETIF_F_HW_CSUM instead of NETIF_F_IP_CSUM in 1/2
+ - add support for TSO over IPv6 (NETIF_F_TSO6 and csum compute) in 2/2
+
+Ioana Ciornei (2):
+  net: enetc: declare NETIF_F_HW_CSUM and do it in software
+  net: enetc: add support for software TSO
+
+ drivers/net/ethernet/freescale/enetc/enetc.c  | 317 +++++++++++++++++-
+ drivers/net/ethernet/freescale/enetc/enetc.h  |   4 +
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |   8 +-
+ .../net/ethernet/freescale/enetc/enetc_vf.c   |   8 +-
+ 4 files changed, 317 insertions(+), 20 deletions(-)
+
 -- 
-2.27.0
+2.31.1
 
