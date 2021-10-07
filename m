@@ -2,74 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B580425F8A
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 23:49:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3446425F91
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 23:56:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242611AbhJGVvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 17:51:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58706 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234061AbhJGVvD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 17:51:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 20E60610E6;
-        Thu,  7 Oct 2021 21:49:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633643349;
-        bh=wpquOHRgARsEE6I4TUhVbpXVvtc1zn9s+ZzmLeT4X1U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=L4v84mEUYeZw28kcHc0rBoloQefp3kMWYGc8OWE7bF47A34iaqyWStmpfNEEFLXV4
-         XTvyTwGfyKKSckIJHzYZSPJsHsUrHfpTpdSz0mSijeRjEET9WtzAjuHPC6DWIES+nt
-         VEkhKbgmPRhXqGLn4EhMno6e0Bwo1p5Mtf33vcWkUgNxBmIWRp6ExuIebI2tPNZSH1
-         xedqIiHJdylvzBnkJk3uKQjURf62UaUOslcEcXia3+Xf/RUsI9uq8BYyJjSJdfV2o6
-         tvkviEJceXNW2mVaOo3ctdFZ9le9GIl9RsCpdMuIjbmh0w+JNfw4nNJfraK0/PWceG
-         4FK3Clt39U1xg==
-Received: by mail-lf1-f48.google.com with SMTP id n8so28890357lfk.6;
-        Thu, 07 Oct 2021 14:49:09 -0700 (PDT)
-X-Gm-Message-State: AOAM532HN+fewnD0+KDvIluHuEcmoIGOrlMU1Wfi+bWmtvGs1Mc0I8Vc
-        pxgM95FyANb+wSEzr9iUyXdoT/ygsEhBi3Yq958=
-X-Google-Smtp-Source: ABdhPJxu3u4xjhQeIcrxHQJqkOPx454nsMj5Cmm95BguRwpdlSdgSNq+Z4MaLsnaAmS4obu0R57nb4ElKioQEkA15as=
-X-Received: by 2002:ac2:41d4:: with SMTP id d20mr6787679lfi.598.1633643347492;
- Thu, 07 Oct 2021 14:49:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211006002853.308945-1-memxor@gmail.com> <20211006002853.308945-7-memxor@gmail.com>
- <CAEf4BzZLMkQA3Sb9=Ojpif1UiZo6ecbXCAz7u_Qi7_GEEYfs1A@mail.gmail.com>
-In-Reply-To: <CAEf4BzZLMkQA3Sb9=Ojpif1UiZo6ecbXCAz7u_Qi7_GEEYfs1A@mail.gmail.com>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 7 Oct 2021 14:48:56 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6+UaaHzMo2PoW6fUBOvts9w2d8VY2UR7h9kVC+Xbh6NQ@mail.gmail.com>
-Message-ID: <CAPhsuW6+UaaHzMo2PoW6fUBOvts9w2d8VY2UR7h9kVC+Xbh6NQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 6/6] bpf: selftests: Fix memory leak in test_ima
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        id S241547AbhJGV63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 17:58:29 -0400
+Received: from www62.your-server.de ([213.133.104.62]:41334 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234055AbhJGV62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 17:58:28 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mYbNN-000GEi-7x; Thu, 07 Oct 2021 23:56:29 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mYbNN-0000uR-1E; Thu, 07 Oct 2021 23:56:29 +0200
+Subject: Re: linux-next: Fixes tag needs some work in the bpf-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Alexei Starovoitov <ast@kernel.org>,
         Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20211008083118.43f6d79f@canb.auug.org.au>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <002d3d66-9081-b117-ec93-4235450d6036@iogearbox.net>
+Date:   Thu, 7 Oct 2021 23:56:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20211008083118.43f6d79f@canb.auug.org.au>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26315/Thu Oct  7 11:09:01 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 5, 2021 at 9:46 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Oct 5, 2021 at 5:29 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
-> >
-> > The allocated ring buffer is never freed, do so in the cleanup path.
-> >
-> > Fixes: f446b570ac7e (bpf/selftests: Update the IMA test to use BPF ring buffer)
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > ---
->
-> Please stick to "selftests/bpf: " prefix which we use consistently for
-> BPF selftests patches.
->
-> Other than that LGTM.
->
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+On 10/7/21 11:31 PM, Stephen Rothwell wrote:
+> Hi all,
+> 
+> In commit
+> 
+>    065485ac5e86 ("mips, bpf: Fix Makefile that referenced a removed file")
+> 
+> Fixes tag
+> 
+>    Fixes: 06b339fe5450 ("mips, bpf: Remove old BPF JIT implementations")
+> 
+> has these problem(s):
+> 
+>    - Target SHA1 does not exist
+> 
+> Maybe you meant
+> 
+> Fixes: ebcbacfa50ec ("mips, bpf: Remove old BPF JIT implementations")
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Yeah, Fixes tag was incorrect. Fixed up now, thanks for the heads up!
