@@ -2,114 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D03344253FB
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 15:25:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79A724253FD
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 15:25:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241364AbhJGN1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 09:27:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35914 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232869AbhJGN1P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 09:27:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2EEC061260;
-        Thu,  7 Oct 2021 13:25:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633613121;
-        bh=Zfh1PMyB1Wj0CvhmHjvy7xzyxhIKVN4ppZXNCBouEBs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T8xo6Pz1W3l/4jM57kUYRqpij6s5/UPfmjtHg9NwsrTYNVuiNlayGzLmNxlBMuky+
-         Ci6Eo+hw4DmFVpfUj6KjnC9O3O0hfYbk9kRCFjwNijpc/WWN/6yp3o2O2TfDP3orFN
-         Z8cWTEX4GXAOzubyUWMXRX6S0ygkBDCHJrpS1utWuN4CfL70PpPTjAnYELUHDox+Iw
-         bwogytAclmIJfBcw5D3+AvdWRzzH46JZxNqTuoIiD+O2HegmMGT0dUh66eZy1lSelE
-         AKm/V/24op2IsMPXLvWC+GegjHM6EBe0qIV/yw9UKPFCkSuhw1uHqmmjM8+7Mz+c5N
-         OTN006RfkYrvQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, vladimir.oltean@nxp.com, michael@walle.cc,
-        andrew@lunn.ch, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/3] ethernet: use platform_get_ethdev_address()
-Date:   Thu,  7 Oct 2021 06:25:11 -0700
-Message-Id: <20211007132511.3462291-4-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211007132511.3462291-1-kuba@kernel.org>
-References: <20211007132511.3462291-1-kuba@kernel.org>
+        id S241444AbhJGN1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 09:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232869AbhJGN1a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 09:27:30 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8268C061570;
+        Thu,  7 Oct 2021 06:25:36 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id v18so23189841edc.11;
+        Thu, 07 Oct 2021 06:25:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZtaAQUcIMAxwmN/4pd2KyUfGo5ZqQSY8rbyvPPScUUo=;
+        b=Xm1SX2ysSVEfGgCINe/ENA/iSoFbIyj1gorUkdZtdfQ6DBiSFEsrtQQcTHU3/UxkQl
+         5jVFR9vi1SkN3Rfs6xYuBjv8Pte1xg/i6rBRyCUICzKH8tFYERvO8704Tn0xBNStoT1l
+         ZQ7iKoTTv3jNdWyVEdLftTo2v1GBHUKWRWStaI6PFov4qT1XMIx0Kgwba+pAjtt8Kfpd
+         KLcnToA794UC2J9tKJ0gr81XRj+iTMkEIp/RRxPcgJ4/Ojyttk24KI24T1/HTqEeybOo
+         oBBTOwNQZ87jrfAlCzDFWFhKlcTb/z+yvrazzlIhY5mZXty4OWNXeCJ5ervILn6emAMC
+         RpIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZtaAQUcIMAxwmN/4pd2KyUfGo5ZqQSY8rbyvPPScUUo=;
+        b=7GH6zm+tZmL3sxHndVmJkWSDqZ7o9mDm9hutZQPyV6qMkKBZUOBvx3WY+RO1e302B7
+         7CdAjLU54xcTTAX7oxkyow3DzTgpQbiXwTNFwZ+itihoFuT7UBiOmVCMWEZsiDmdFB3C
+         UbIb0hYW5ZaCsvFF0Hlq/Df2955lbc+IbQMGB4vdKD8oU5zB8reGScItY+/n4ttP97AD
+         64YduWIEnqTn/QXPoq9X4Ur/A8oTunxRvhqeRwevWW0A185C7Z0/JQjGJUCcJSLvtNJF
+         5Pj2sQECxET1pQ8RMsL8GfydY/zy7CSdcGizf+E97ZglRgZqv88KnxJe1XUeKcTZ4NS0
+         YVYg==
+X-Gm-Message-State: AOAM5334e0uoL6RZPhyPoSzEVC4Qgyca4vgcZtVuw6cc7yd7EV2Fr5U0
+        0KqAnczvOn65BdXQi5Sex2Y=
+X-Google-Smtp-Source: ABdhPJxXUzW/7r/ROuBTG2S2BtbY3zXzRrX1UFoZrW7TMnMowtCxZmU6F5irOgPstO+ySO+UqFBYMg==
+X-Received: by 2002:a17:906:b254:: with SMTP id ce20mr5767002ejb.306.1633613135214;
+        Thu, 07 Oct 2021 06:25:35 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id ay19sm8572792edb.20.2021.10.07.06.25.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Oct 2021 06:25:34 -0700 (PDT)
+Date:   Thu, 7 Oct 2021 15:25:32 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH 06/13] Documentation: devicetree: net: dsa:
+ qca8k: document rgmii_1_8v bindings
+Message-ID: <YV71TCksnbixsYI0@Ansuel-xps.localdomain>
+References: <20211006223603.18858-1-ansuelsmth@gmail.com>
+ <20211006223603.18858-7-ansuelsmth@gmail.com>
+ <YV46wJYlJZHAZLyD@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YV46wJYlJZHAZLyD@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new platform_get_ethdev_address() helper for the cases
-where dev->dev_addr is passed in directly as the destination.
+On Thu, Oct 07, 2021 at 02:09:36AM +0200, Andrew Lunn wrote:
+> On Thu, Oct 07, 2021 at 12:35:56AM +0200, Ansuel Smith wrote:
+> > Document new qca,rgmii0_1_8v and qca,rgmii56_1_8v needed to setup
+> > mac_pwr_sel register for ar8327 switch.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/net/dsa/qca8k.txt | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> > index 8c73f67c43ca..1f6b7d2f609e 100644
+> > --- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> > +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> > @@ -13,6 +13,8 @@ Required properties:
+> >  Optional properties:
+> >  
+> >  - reset-gpios: GPIO to be used to reset the whole device
+> > +- qca,rgmii0-1-8v: Set the internal regulator to supply 1.8v for MAC0 port
+> > +- qca,rgmii56-1-8v: Set the internal regulator to supply 1.8v for MAC5/6 port
+> 
+> What is the consumer of these 1.8v? The MACs are normally internal,
+> the regulators are internal, so why is a DT property needed?
+> 
+>     Andrew
 
-  @@
-  expression dev, net;
-  @@
-  - eth_platform_get_mac_address(dev, net->dev_addr)
-  + platform_get_ethdev_address(dev, net)
+Only some device require this, with these bit at 0, the internal
+regulator provide 1.5v. It's not really a on/off but a toggle of the
+different operating voltage. Some device require this and some doesn't.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/actions/owl-emac.c       | 2 +-
- drivers/net/ethernet/mediatek/mtk_star_emac.c | 2 +-
- drivers/net/usb/smsc75xx.c                    | 3 +--
- drivers/net/usb/smsc95xx.c                    | 3 +--
- 4 files changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/actions/owl-emac.c b/drivers/net/ethernet/actions/owl-emac.c
-index 2c25ff3623cd..dce93acd1644 100644
---- a/drivers/net/ethernet/actions/owl-emac.c
-+++ b/drivers/net/ethernet/actions/owl-emac.c
-@@ -1385,7 +1385,7 @@ static void owl_emac_get_mac_addr(struct net_device *netdev)
- 	struct device *dev = netdev->dev.parent;
- 	int ret;
- 
--	ret = eth_platform_get_mac_address(dev, netdev->dev_addr);
-+	ret = platform_get_ethdev_address(dev, netdev);
- 	if (!ret && is_valid_ether_addr(netdev->dev_addr))
- 		return;
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-index 1d5dd2015453..e2ebfd8115a0 100644
---- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
-+++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-@@ -1544,7 +1544,7 @@ static int mtk_star_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	ret = eth_platform_get_mac_address(dev, ndev->dev_addr);
-+	ret = platform_get_ethdev_address(dev, ndev);
- 	if (ret || !is_valid_ether_addr(ndev->dev_addr))
- 		eth_hw_addr_random(ndev);
- 
-diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-index 76f7af161313..3b6987bb4fbe 100644
---- a/drivers/net/usb/smsc75xx.c
-+++ b/drivers/net/usb/smsc75xx.c
-@@ -758,8 +758,7 @@ static int smsc75xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
- static void smsc75xx_init_mac_address(struct usbnet *dev)
- {
- 	/* maybe the boot loader passed the MAC address in devicetree */
--	if (!eth_platform_get_mac_address(&dev->udev->dev,
--			dev->net->dev_addr)) {
-+	if (!platform_get_ethdev_address(&dev->udev->dev, dev->net)) {
- 		if (is_valid_ether_addr(dev->net->dev_addr)) {
- 			/* device tree values are valid so use them */
- 			netif_dbg(dev, ifup, dev->net, "MAC address read from the device tree\n");
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 26b1bd8e845b..21a42a6527dc 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -756,8 +756,7 @@ static int smsc95xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
- static void smsc95xx_init_mac_address(struct usbnet *dev)
- {
- 	/* maybe the boot loader passed the MAC address in devicetree */
--	if (!eth_platform_get_mac_address(&dev->udev->dev,
--			dev->net->dev_addr)) {
-+	if (!platform_get_ethdev_address(&dev->udev->dev, dev->net)) {
- 		if (is_valid_ether_addr(dev->net->dev_addr)) {
- 			/* device tree values are valid so use them */
- 			netif_dbg(dev, ifup, dev->net, "MAC address read from the device tree\n");
 -- 
-2.31.1
-
+	Ansuel
