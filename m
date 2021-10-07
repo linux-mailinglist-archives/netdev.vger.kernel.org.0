@@ -2,28 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D33E425319
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 14:33:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE7DD42531B
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 14:33:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241395AbhJGMev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 08:34:51 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:47298 "EHLO
+        id S241405AbhJGMey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 08:34:54 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:47332 "EHLO
         smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241222AbhJGMet (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 08:34:49 -0400
+        with ESMTP id S241347AbhJGMeu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 08:34:50 -0400
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 9C6EB200B8;
-        Thu,  7 Oct 2021 12:32:54 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 5D58B200BB;
+        Thu,  7 Oct 2021 12:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1633609974; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=w5hRO0ggi6f6CPWquu4xGEKh4nCUYk0yWV6Bvi7G6II=;
-        b=osjiG0VJRfFpHGqVrLVot0ga2RL8rn1fbLgkYfbxWUndyu0mY22emQt1HKT0ja4IlDQUXz
-        mZyrpqq6jvC7yvHYpB/nmNq2tfV6VV3os1lOJKQrQonqM7XeQR5JWNv5jD60ciS6JNq1x1
-        Bsf5cb5tTblz2OnqqLsHSTT6AclGP8k=
+        t=1633609975; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b1uiE/ufRyPT2jrfeYIG49vgmGCq2/ld6vEFtBEn1VU=;
+        b=MYXKEALmd2OE8YLN3f3zRDW3OLEfj64yCHVU3+5dXiJUfaAW3ueP8JN2knIE2CYj08PVgx
+        21Rvuwek0do64M8vaDj5xpcYbgC8W9yWx3vZ4Zsm3wdxK4nHo8YsoAlpMYPrxX87Dnbol+
+        yN3xis6Aspq+YdO1rxOgjcQ0579ywls=
 Received: from g78.suse.de (unknown [10.163.24.38])
-        by relay2.suse.de (Postfix) with ESMTP id 92C60A3B83;
-        Thu,  7 Oct 2021 12:32:53 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTP id AEA30A3B81;
+        Thu,  7 Oct 2021 12:32:54 +0000 (UTC)
 From:   Richard Palethorpe <rpalethorpe@suse.com>
 To:     Arnd Bergmann <arnd@arndb.de>
 Cc:     Richard Palethorpe <rpalethorpe@suse.com>,
@@ -37,132 +39,205 @@ Cc:     Richard Palethorpe <rpalethorpe@suse.com>,
         Deepa Dinamani <deepa.kernel@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Richard Palethorpe <rpalethorpe@richiejp.com>
-Subject: [PATCH v2 1/2] vsock: Refactor vsock_*_getsockopt to resemble sock_getsockopt
-Date:   Thu,  7 Oct 2021 13:31:46 +0100
-Message-Id: <20211007123147.5780-1-rpalethorpe@suse.com>
+Subject: [PATCH v2 2/2] vsock: Enable y2038 safe timeval for timeout
+Date:   Thu,  7 Oct 2021 13:31:47 +0100
+Message-Id: <20211007123147.5780-2-rpalethorpe@suse.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211007123147.5780-1-rpalethorpe@suse.com>
+References: <20211007123147.5780-1-rpalethorpe@suse.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation for sharing the implementation of sock_get_timeout.
+Reuse the timeval compat code from core/sock to handle 32-bit and
+64-bit timeval structures. Also introduce a new socket option define
+to allow using y2038 safe timeval under 32-bit.
 
+The existing behavior of sock_set_timeout and vsock's timeout setter
+differ when the time value is out of bounds. vsocks current behavior
+is retained at the expense of not being able to share the full
+implementation.
+
+This allows the LTP test vsock01 to pass under 32-bit compat mode.
+
+Fixes: fe0c72f3db11 ("socket: move compat timeout handling into sock.c")
 Signed-off-by: Richard Palethorpe <rpalethorpe@suse.com>
 Cc: Richard Palethorpe <rpalethorpe@richiejp.com>
 ---
+ include/net/sock.h              |  4 ++++
+ include/uapi/linux/vm_sockets.h | 13 +++++++++++-
+ net/core/sock.c                 | 35 ++++++++++++++++++++++-----------
+ net/vmw_vsock/af_vsock.c        | 23 +++++++++++++---------
+ 4 files changed, 54 insertions(+), 21 deletions(-)
 
-V1: https://lore.kernel.org/netdev/20211006074547.14724-1-rpalethorpe@suse.com/
-
-V2:
-* Try to share more code with core/sock.c
-* Handle 64-bit timeout values in 32-bit
-
- net/vmw_vsock/af_vsock.c | 65 +++++++++++++++++-----------------------
- 1 file changed, 28 insertions(+), 37 deletions(-)
-
+diff --git a/include/net/sock.h b/include/net/sock.h
+index f23cb259b0e2..b93d0ac552c1 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2773,4 +2773,8 @@ void sock_set_sndtimeo(struct sock *sk, s64 secs);
+ 
+ int sock_bind_add(struct sock *sk, struct sockaddr *addr, int addr_len);
+ 
++int sock_get_timeout(long timeo, void *optval, bool old_timeval);
++int sock_copy_user_timeval(struct __kernel_sock_timeval *tv,
++			   sockptr_t optval, int optlen, bool old_timeval);
++
+ #endif	/* _SOCK_H */
+diff --git a/include/uapi/linux/vm_sockets.h b/include/uapi/linux/vm_sockets.h
+index 46918a1852d7..c60ca33eac59 100644
+--- a/include/uapi/linux/vm_sockets.h
++++ b/include/uapi/linux/vm_sockets.h
+@@ -64,7 +64,7 @@
+  * timeout for a STREAM socket.
+  */
+ 
+-#define SO_VM_SOCKETS_CONNECT_TIMEOUT 6
++#define SO_VM_SOCKETS_CONNECT_TIMEOUT_OLD 6
+ 
+ /* Option name for using non-blocking send/receive.  Use as the option name
+  * for setsockopt(3) or getsockopt(3) to set or get the non-blocking
+@@ -81,6 +81,17 @@
+ 
+ #define SO_VM_SOCKETS_NONBLOCK_TXRX 7
+ 
++#define SO_VM_SOCKETS_CONNECT_TIMEOUT_NEW 8
++
++#if !defined(__KERNEL__)
++#if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
++#define SO_VM_SOCKETS_CONNECT_TIMEOUT SO_VM_SOCKETS_CONNECT_TIMEOUT_OLD
++#else
++#define SO_VM_SOCKETS_CONNECT_TIMEOUT \
++	(sizeof(time_t) == sizeof(__kernel_long_t) ? SO_VM_SOCKETS_CONNECT_TIMEOUT_OLD : SO_VM_SOCKETS_CONNECT_TIMEOUT_NEW)
++#endif
++#endif
++
+ /* The vSocket equivalent of INADDR_ANY.  This works for the svm_cid field of
+  * sockaddr_vm and indicates the context ID of the current endpoint.
+  */
+diff --git a/net/core/sock.c b/net/core/sock.c
+index a3eea6e0b30a..a648fd3cc2ec 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -349,7 +349,7 @@ void sk_error_report(struct sock *sk)
+ }
+ EXPORT_SYMBOL(sk_error_report);
+ 
+-static int sock_get_timeout(long timeo, void *optval, bool old_timeval)
++int sock_get_timeout(long timeo, void *optval, bool old_timeval)
+ {
+ 	struct __kernel_sock_timeval tv;
+ 
+@@ -378,12 +378,11 @@ static int sock_get_timeout(long timeo, void *optval, bool old_timeval)
+ 	*(struct __kernel_sock_timeval *)optval = tv;
+ 	return sizeof(tv);
+ }
++EXPORT_SYMBOL(sock_get_timeout);
+ 
+-static int sock_set_timeout(long *timeo_p, sockptr_t optval, int optlen,
+-			    bool old_timeval)
++int sock_copy_user_timeval(struct __kernel_sock_timeval *tv,
++			   sockptr_t optval, int optlen, bool old_timeval)
+ {
+-	struct __kernel_sock_timeval tv;
+-
+ 	if (old_timeval && in_compat_syscall() && !COMPAT_USE_64BIT_TIME) {
+ 		struct old_timeval32 tv32;
+ 
+@@ -392,8 +391,8 @@ static int sock_set_timeout(long *timeo_p, sockptr_t optval, int optlen,
+ 
+ 		if (copy_from_sockptr(&tv32, optval, sizeof(tv32)))
+ 			return -EFAULT;
+-		tv.tv_sec = tv32.tv_sec;
+-		tv.tv_usec = tv32.tv_usec;
++		tv->tv_sec = tv32.tv_sec;
++		tv->tv_usec = tv32.tv_usec;
+ 	} else if (old_timeval) {
+ 		struct __kernel_old_timeval old_tv;
+ 
+@@ -401,14 +400,28 @@ static int sock_set_timeout(long *timeo_p, sockptr_t optval, int optlen,
+ 			return -EINVAL;
+ 		if (copy_from_sockptr(&old_tv, optval, sizeof(old_tv)))
+ 			return -EFAULT;
+-		tv.tv_sec = old_tv.tv_sec;
+-		tv.tv_usec = old_tv.tv_usec;
++		tv->tv_sec = old_tv.tv_sec;
++		tv->tv_usec = old_tv.tv_usec;
+ 	} else {
+-		if (optlen < sizeof(tv))
++		if (optlen < sizeof(*tv))
+ 			return -EINVAL;
+-		if (copy_from_sockptr(&tv, optval, sizeof(tv)))
++		if (copy_from_sockptr(tv, optval, sizeof(*tv)))
+ 			return -EFAULT;
+ 	}
++
++	return 0;
++}
++EXPORT_SYMBOL(sock_copy_user_timeval);
++
++static int sock_set_timeout(long *timeo_p, sockptr_t optval, int optlen,
++			    bool old_timeval)
++{
++	struct __kernel_sock_timeval tv;
++	int err = sock_copy_user_timeval(&tv, optval, optlen, old_timeval);
++
++	if (err)
++		return err;
++
+ 	if (tv.tv_usec < 0 || tv.tv_usec >= USEC_PER_SEC)
+ 		return -EDOM;
+ 
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 3e02cc3b24f8..97d56f6a4480 100644
+index 97d56f6a4480..1fa27cea5b2a 100644
 --- a/net/vmw_vsock/af_vsock.c
 +++ b/net/vmw_vsock/af_vsock.c
-@@ -1648,68 +1648,59 @@ static int vsock_connectible_getsockopt(struct socket *sock,
- 					char __user *optval,
- 					int __user *optlen)
- {
--	int err;
-+	struct sock *sk = sock->sk;
-+	struct vsock_sock *vsk = vsock_sk(sk);
-+
-+	union {
-+		u64 val64;
-+		struct __kernel_old_timeval tm;
-+	} v;
-+
-+	int lv = sizeof(v.val64);
- 	int len;
--	struct sock *sk;
--	struct vsock_sock *vsk;
--	u64 val;
- 
- 	if (level != AF_VSOCK)
- 		return -ENOPROTOOPT;
- 
--	err = get_user(len, optlen);
--	if (err != 0)
--		return err;
--
--#define COPY_OUT(_v)                            \
--	do {					\
--		if (len < sizeof(_v))		\
--			return -EINVAL;		\
--						\
--		len = sizeof(_v);		\
--		if (copy_to_user(optval, &_v, len) != 0)	\
--			return -EFAULT;				\
--								\
--	} while (0)
-+	if (get_user(len, optlen))
-+		return -EFAULT;
- 
--	err = 0;
--	sk = sock->sk;
--	vsk = vsock_sk(sk);
-+	memset(&v, 0, sizeof(v));
- 
- 	switch (optname) {
- 	case SO_VM_SOCKETS_BUFFER_SIZE:
--		val = vsk->buffer_size;
--		COPY_OUT(val);
-+		v.val64 = vsk->buffer_size;
- 		break;
- 
- 	case SO_VM_SOCKETS_BUFFER_MAX_SIZE:
--		val = vsk->buffer_max_size;
--		COPY_OUT(val);
-+		v.val64 = vsk->buffer_max_size;
- 		break;
- 
- 	case SO_VM_SOCKETS_BUFFER_MIN_SIZE:
--		val = vsk->buffer_min_size;
--		COPY_OUT(val);
-+		v.val64 = vsk->buffer_min_size;
+@@ -1614,9 +1614,14 @@ static int vsock_connectible_setsockopt(struct socket *sock,
+ 		vsock_update_buffer_size(vsk, transport, vsk->buffer_size);
  		break;
  
 -	case SO_VM_SOCKETS_CONNECT_TIMEOUT: {
 -		struct __kernel_old_timeval tv;
--		tv.tv_sec = vsk->connect_timeout / HZ;
--		tv.tv_usec =
-+	case SO_VM_SOCKETS_CONNECT_TIMEOUT:
-+		lv = sizeof(v.tm);
-+		v.tm.tv_sec = vsk->connect_timeout / HZ;
-+		v.tm.tv_usec =
- 		    (vsk->connect_timeout -
--		     tv.tv_sec * HZ) * (1000000 / HZ);
--		COPY_OUT(tv);
-+		     v.tm.tv_sec * HZ) * (1000000 / HZ);
- 		break;
--	}
+-		COPY_IN(tv);
++	case SO_VM_SOCKETS_CONNECT_TIMEOUT_NEW:
++	case SO_VM_SOCKETS_CONNECT_TIMEOUT_OLD: {
++		struct __kernel_sock_timeval tv;
 +
++		err = sock_copy_user_timeval(&tv, optval, optlen,
++					     optname == SO_VM_SOCKETS_CONNECT_TIMEOUT_OLD);
++		if (err)
++			break;
+ 		if (tv.tv_sec >= 0 && tv.tv_usec < USEC_PER_SEC &&
+ 		    tv.tv_sec < (MAX_SCHEDULE_TIMEOUT / HZ - 1)) {
+ 			vsk->connect_timeout = tv.tv_sec * HZ +
+@@ -1653,7 +1658,9 @@ static int vsock_connectible_getsockopt(struct socket *sock,
+ 
+ 	union {
+ 		u64 val64;
++		struct old_timeval32 tm32;
+ 		struct __kernel_old_timeval tm;
++		struct  __kernel_sock_timeval stm;
+ 	} v;
+ 
+ 	int lv = sizeof(v.val64);
+@@ -1680,12 +1687,10 @@ static int vsock_connectible_getsockopt(struct socket *sock,
+ 		v.val64 = vsk->buffer_min_size;
+ 		break;
+ 
+-	case SO_VM_SOCKETS_CONNECT_TIMEOUT:
+-		lv = sizeof(v.tm);
+-		v.tm.tv_sec = vsk->connect_timeout / HZ;
+-		v.tm.tv_usec =
+-		    (vsk->connect_timeout -
+-		     v.tm.tv_sec * HZ) * (1000000 / HZ);
++	case SO_VM_SOCKETS_CONNECT_TIMEOUT_NEW:
++	case SO_VM_SOCKETS_CONNECT_TIMEOUT_OLD:
++		lv = sock_get_timeout(vsk->connect_timeout, &v,
++				      optname == SO_VM_SOCKETS_CONNECT_TIMEOUT_OLD);
+ 		break;
+ 
  	default:
- 		return -ENOPROTOOPT;
- 	}
- 
--	err = put_user(len, optlen);
--	if (err != 0)
-+	if (len < lv)
-+		return -EINVAL;
-+	if (len > lv)
-+		len = lv;
-+	if (copy_to_user(optval, &v, len))
- 		return -EFAULT;
- 
--#undef COPY_OUT
-+	if (put_user(len, optlen))
-+		return -EFAULT;
- 
- 	return 0;
- }
 -- 
 2.33.0
 
