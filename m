@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21A58425A89
+	by mail.lfdr.de (Postfix) with ESMTP id 27546425A8A
 	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 20:19:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243562AbhJGSVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 14:21:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51520 "EHLO mail.kernel.org"
+        id S243569AbhJGSVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 14:21:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51534 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243536AbhJGSUu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S243558AbhJGSUu (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 7 Oct 2021 14:20:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5894261283;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F2D661350;
         Thu,  7 Oct 2021 18:18:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1633630736;
-        bh=PFX8y1pMbhhY3Eyaj3LrRKN7lf2+C9DSnzWmjRwDoSk=;
+        bh=Cz0683miZ9sVUu3xP5Yk83dJr3qVPGduYgd9V3ENaio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lMKQKmnkoCTs9X8tHHzxus9Mf4TetgYbDtuN/3opmZ/i2m+GJWfPmWMg4SLr5Nm28
-         0XG6mXcN7oDQko3fAg7YW37vIXdhkHwL9c+AS9vnkD2mzCsD9r420RWnz1x6fSL6Rv
-         1qQan9cdy1mHejwmLp31YERBn9zgje3TeoqkRhrXAnX5Mkrj0L3jFup2FqcLvV0x8n
-         uLxgcUfsPTQwSpratqVmQ1Zek9zalnkqtUBHfE4hH6tZnxX+uDEARg+ooYVjNvcR4S
-         QkpE9xedOKptniTp4YMqb4zFD1bqmogrNa+MyIH0XaVoHu3DUJQvFIiSNSsnhpUmz+
-         rNmNAd6HR+EYw==
+        b=bDtbeelR6U70bBtf7V4mb8QH2uhTqH/YtzT1/7KcL1FB0E8BvjGndnX3AAQ8t/gOx
+         8i9jF+u1lwb87HuTgkjxVIF2bZGFvcbOsIMO3J6+9JgA+67GGEtdGx4iMrAr3ghX0A
+         fxv7qcCS+O10RDip1Y/uE3N9H36B+G782Dr/AR5El1D3u9P4ckzUvIr3DnBR2BtxqS
+         oFxd2tbvzKEdYNLcCmxC0FMULH00pOQBlpw4NrBqWLO2q0kJe+h8xhJAa9Ke7tWdO2
+         KcyrhxkTVhYvD+Iz3EBYtL1ppDekab3CUuH7dyDho8e3WGzcEFXVMEYH2Eakxq/KCN
+         +Jk4jl0S8d3+Q==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, vladimir.oltean@nxp.com, michael@walle.cc,
         andrew@lunn.ch, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 2/3] eth: platform: add a helper for loading netdev->dev_addr
-Date:   Thu,  7 Oct 2021 11:18:46 -0700
-Message-Id: <20211007181847.3529859-3-kuba@kernel.org>
+Subject: [PATCH net-next v2 3/3] ethernet: use platform_get_ethdev_address()
+Date:   Thu,  7 Oct 2021 11:18:47 -0700
+Message-Id: <20211007181847.3529859-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211007181847.3529859-1-kuba@kernel.org>
 References: <20211007181847.3529859-1-kuba@kernel.org>
@@ -39,67 +39,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-of VLANs...") introduced a rbtree for faster Ethernet address look
-up. To maintain netdev->dev_addr in this tree we need to make all
-the writes to it got through appropriate helpers.
+Use the new platform_get_ethdev_address() helper for the cases
+where dev->dev_addr is passed in directly as the destination.
 
-There is a handful of drivers which pass netdev->dev_addr as
-the destination buffer to eth_platform_get_mac_address().
-Add a helper which takes a dev pointer instead, so it can call
-an appropriate helper.
+  @@
+  expression dev, net;
+  @@
+  - eth_platform_get_mac_address(dev, net->dev_addr)
+  + platform_get_ethdev_address(dev, net)
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
-v2: align the temp buffer on the stack
----
- include/linux/etherdevice.h |  1 +
- net/ethernet/eth.c          | 20 ++++++++++++++++++++
- 2 files changed, 21 insertions(+)
+ drivers/net/ethernet/actions/owl-emac.c       | 2 +-
+ drivers/net/ethernet/mediatek/mtk_star_emac.c | 2 +-
+ drivers/net/usb/smsc75xx.c                    | 3 +--
+ drivers/net/usb/smsc95xx.c                    | 3 +--
+ 4 files changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-index e75116f48cd1..3cf546d2ffd1 100644
---- a/include/linux/etherdevice.h
-+++ b/include/linux/etherdevice.h
-@@ -29,6 +29,7 @@ struct device;
- struct fwnode_handle;
+diff --git a/drivers/net/ethernet/actions/owl-emac.c b/drivers/net/ethernet/actions/owl-emac.c
+index 2c25ff3623cd..dce93acd1644 100644
+--- a/drivers/net/ethernet/actions/owl-emac.c
++++ b/drivers/net/ethernet/actions/owl-emac.c
+@@ -1385,7 +1385,7 @@ static void owl_emac_get_mac_addr(struct net_device *netdev)
+ 	struct device *dev = netdev->dev.parent;
+ 	int ret;
  
- int eth_platform_get_mac_address(struct device *dev, u8 *mac_addr);
-+int platform_get_ethdev_address(struct device *dev, struct net_device *netdev);
- unsigned char *arch_get_platform_mac_address(void);
- int nvmem_get_mac_address(struct device *dev, void *addrbuf);
- int device_get_mac_address(struct device *dev, char *addr);
-diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
-index 182de70ac258..c7d9e08107cb 100644
---- a/net/ethernet/eth.c
-+++ b/net/ethernet/eth.c
-@@ -523,6 +523,26 @@ int eth_platform_get_mac_address(struct device *dev, u8 *mac_addr)
- }
- EXPORT_SYMBOL(eth_platform_get_mac_address);
+-	ret = eth_platform_get_mac_address(dev, netdev->dev_addr);
++	ret = platform_get_ethdev_address(dev, netdev);
+ 	if (!ret && is_valid_ether_addr(netdev->dev_addr))
+ 		return;
  
-+/**
-+ * platform_get_ethdev_address - Set netdev's MAC address from a given device
-+ * @dev:	Pointer to the device
-+ * @netdev:	Pointer to netdev to write the address to
-+ *
-+ * Wrapper around eth_platform_get_mac_address() which writes the address
-+ * directly to netdev->dev_addr.
-+ */
-+int platform_get_ethdev_address(struct device *dev, struct net_device *netdev)
-+{
-+	u8 addr[ETH_ALEN] __aligned(2);
-+	int ret;
-+
-+	ret = eth_platform_get_mac_address(dev, addr);
-+	if (!ret)
-+		eth_hw_addr_set(netdev, addr);
-+	return ret;
-+}
-+EXPORT_SYMBOL(platform_get_ethdev_address);
-+
- /**
-  * nvmem_get_mac_address - Obtain the MAC address from an nvmem cell named
-  * 'mac-address' associated with given device.
+diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+index 1d5dd2015453..e2ebfd8115a0 100644
+--- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
++++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
+@@ -1544,7 +1544,7 @@ static int mtk_star_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = eth_platform_get_mac_address(dev, ndev->dev_addr);
++	ret = platform_get_ethdev_address(dev, ndev);
+ 	if (ret || !is_valid_ether_addr(ndev->dev_addr))
+ 		eth_hw_addr_random(ndev);
+ 
+diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
+index 76f7af161313..3b6987bb4fbe 100644
+--- a/drivers/net/usb/smsc75xx.c
++++ b/drivers/net/usb/smsc75xx.c
+@@ -758,8 +758,7 @@ static int smsc75xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
+ static void smsc75xx_init_mac_address(struct usbnet *dev)
+ {
+ 	/* maybe the boot loader passed the MAC address in devicetree */
+-	if (!eth_platform_get_mac_address(&dev->udev->dev,
+-			dev->net->dev_addr)) {
++	if (!platform_get_ethdev_address(&dev->udev->dev, dev->net)) {
+ 		if (is_valid_ether_addr(dev->net->dev_addr)) {
+ 			/* device tree values are valid so use them */
+ 			netif_dbg(dev, ifup, dev->net, "MAC address read from the device tree\n");
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 26b1bd8e845b..21a42a6527dc 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -756,8 +756,7 @@ static int smsc95xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
+ static void smsc95xx_init_mac_address(struct usbnet *dev)
+ {
+ 	/* maybe the boot loader passed the MAC address in devicetree */
+-	if (!eth_platform_get_mac_address(&dev->udev->dev,
+-			dev->net->dev_addr)) {
++	if (!platform_get_ethdev_address(&dev->udev->dev, dev->net)) {
+ 		if (is_valid_ether_addr(dev->net->dev_addr)) {
+ 			/* device tree values are valid so use them */
+ 			netif_dbg(dev, ifup, dev->net, "MAC address read from the device tree\n");
 -- 
 2.31.1
 
