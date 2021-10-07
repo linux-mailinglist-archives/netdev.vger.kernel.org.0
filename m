@@ -2,119 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6AB8424EC4
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 10:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF2E4424F04
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 10:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240459AbhJGIMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 04:12:12 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:29638 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240624AbhJGIMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 04:12:06 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1975NAKB020575
-        for <netdev@vger.kernel.org>; Thu, 7 Oct 2021 01:10:13 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=LlkS+INbyTIUOHMsYGBp8TSkzoSh01NS6ugqXi2mfAM=;
- b=QwEv720eG4a1op6vEEcBuQ1KBKkVfXJ5mPPjL7y5LvglhU8oNTJdT3tsaXuq7CaovEWb
- 8HUiLlmA7RGKaYjOvakOBJr+MUAnhHpeIaN+SDE9XdY6oVNoITKWN/q7T0CsGnOw5npS
- 30wW7VHK02GnoreCcQ63zyllAJIWyhEx2d4= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3bhe6qegd3-11
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 01:10:13 -0700
-Received: from intmgw001.37.frc1.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Thu, 7 Oct 2021 01:10:08 -0700
-Received: by devbig030.frc3.facebook.com (Postfix, from userid 158236)
-        id ED0557AA99B0; Thu,  7 Oct 2021 01:10:03 -0700 (PDT)
-From:   Dave Marchevsky <davemarchevsky@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Dave Marchevsky <davemarchevsky@fb.com>
-Subject: [PATCH bpf-next 2/2] selftests/bpf: add verif_stats test
-Date:   Thu, 7 Oct 2021 01:09:52 -0700
-Message-ID: <20211007080952.1255615-3-davemarchevsky@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211007080952.1255615-1-davemarchevsky@fb.com>
-References: <20211007080952.1255615-1-davemarchevsky@fb.com>
+        id S240678AbhJGITC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 04:19:02 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:62142 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240573AbhJGISv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 04:18:51 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1633594618; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
+ To: From: Sender; bh=QtdtID0lZUv7mMN6G3/7I0C2S5hVbgargd1smzYRWEw=; b=QsTN9LIyzFLJfrnlX0VWE89DUUGr+Mjsa7RgtDoqqsJxlXtjNfTEQ7NARsu+HRjHfELIiD9X
+ 3oDM2UJerQGB5oKP+WTcLbw4SQeT8WUlQhu9QP6MXYrN0greZH/NesM/fCiiIKX2Kn97psy1
+ vJrcXBONCbtWJYDR6CrX2XnPR44=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 615eace603355859c81bf4e9 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 07 Oct 2021 08:16:38
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id EEBECC4360C; Thu,  7 Oct 2021 08:16:37 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2B20BC4338F;
+        Thu,  7 Oct 2021 08:16:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 2B20BC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>
+Cc:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v7 10/24] wfx: add fwio.c/fwio.h
+References: <20210920161136.2398632-1-Jerome.Pouiller@silabs.com>
+        <20210920161136.2398632-11-Jerome.Pouiller@silabs.com>
+        <87sfxlj6s1.fsf@codeaurora.org> <2174509.SLDT7moDbM@pc-42>
+        <20211001160832.ozxc7bhlwlmjeqbo@pali>
+Date:   Thu, 07 Oct 2021 11:16:29 +0300
+In-Reply-To: <20211001160832.ozxc7bhlwlmjeqbo@pali> ("Pali \=\?utf-8\?Q\?Roh\?\=
+ \=\?utf-8\?Q\?\=C3\=A1r\=22's\?\= message of
+        "Fri, 1 Oct 2021 18:08:32 +0200")
+Message-ID: <87pmshckrm.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-FB-Source: Intern
-X-Proofpoint-ORIG-GUID: dF6lS-JCdSoQHQwF3NVQtKMPOWSL1yzw
-X-Proofpoint-GUID: dF6lS-JCdSoQHQwF3NVQtKMPOWSL1yzw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-10-06_04,2021-10-07_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 spamscore=0
- malwarescore=0 priorityscore=1501 mlxlogscore=763 adultscore=0
- lowpriorityscore=0 phishscore=0 mlxscore=0 impostorscore=0 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110070055
-X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-verif_insn_processed field was added to response of bpf_obj_get_info_by_f=
-d
-call on a prog. Confirm that it's being populated by loading a simple
-program and asking for its info.
+Pali Roh=C3=A1r <pali@kernel.org> writes:
 
-Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
----
- .../selftests/bpf/prog_tests/verif_stats.c    | 31 +++++++++++++++++++
- 1 file changed, 31 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/verif_stats.c
+> On Friday 01 October 2021 17:09:41 J=C3=A9r=C3=B4me Pouiller wrote:
+>> On Friday 1 October 2021 13:58:38 CEST Kalle Valo wrote:
+>> > Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+>> >=20
+>> > > From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>> > >
+>> > > Signed-off-by: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>> >=20
+>> > [...]
+>> >=20
+>> > > +static int get_firmware(struct wfx_dev *wdev, u32 keyset_chip,
+>> > > +                     const struct firmware **fw, int *file_offset)
+>> > > +{
+>> > > +     int keyset_file;
+>> > > +     char filename[256];
+>> > > +     const char *data;
+>> > > +     int ret;
+>> > > +
+>> > > +     snprintf(filename, sizeof(filename), "%s_%02X.sec",
+>> > > +              wdev->pdata.file_fw, keyset_chip);
+>> > > +     ret =3D firmware_request_nowarn(fw, filename, wdev->dev);
+>> > > +     if (ret) {
+>> > > +             dev_info(wdev->dev, "can't load %s, falling back to %s=
+.sec\n",
+>> > > +                      filename, wdev->pdata.file_fw);
+>> > > +             snprintf(filename, sizeof(filename), "%s.sec",
+>> > > +                      wdev->pdata.file_fw);
+>> > > +             ret =3D request_firmware(fw, filename, wdev->dev);
+>> > > +             if (ret) {
+>> > > +                     dev_err(wdev->dev, "can't load %s\n", filename=
+);
+>> > > +                     *fw =3D NULL;
+>> > > +                     return ret;
+>> > > +             }
+>> > > +     }
+>> >=20
+>> > How is this firmware file loading supposed to work? If I'm reading the
+>> > code right, the driver tries to load file "wfm_wf200_??.sec" but in
+>> > linux-firmware the file is silabs/wfm_wf200_C0.sec:
+>> >=20
+>> > https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmwar=
+e.git/tree/silabs
+>> >=20
+>> > That can't work automatically, unless I'm missing something of course.
+>>=20
+>> The firmware are signed. "C0" is the key used to sign this firmware. This
+>> key must match with the key burned into the chip. Fortunately, the driver
+>> is able to read the key accepted by the chip and automatically choose the
+>> right firmware.
+>>=20
+>> We could imagine to add a attribute in the DT to choose the firmware to
+>> load. However, it would be a pity to have to specify it manually whereas
+>> the driver is able to detect it automatically.
+>>=20
+>> Currently, the only possible key is C0. However, it exists some internal
+>> parts with other keys. In addition, it is theoretically possible to ask
+>> to Silabs to burn parts with a specific key in order to improve security
+>> of a product.=20
+>>=20
+>> Obviously, for now, this feature mainly exists for the Silabs firmware
+>> developers who have to work with other keys.
+>>=20=20
+>> > Also I would prefer to use directory name as the driver name wfx, but I
+>> > guess silabs is also doable.
+>>=20
+>> I have no opinion.
+>>=20
+>>=20
+>> > Also I'm not seeing the PDS files in linux-firmware. The idea is that
+>> > when user installs an upstream kernel and the linux-firmware everything
+>> > will work automatically, without any manual file installations.
+>>=20
+>> WF200 is just a chip. Someone has to design an antenna before to be able
+>> to use.
+>>=20
+>> However, we have evaluation boards that have antennas and corresponding
+>> PDS files[1]. Maybe linux-firmware should include the PDS for these boar=
+ds
+>
+> So chip vendor provides firmware and card vendor provides PDS files. In
+> my opinion all files should go into linux-firmware repository. If Silabs
+> has PDS files for its devel boards (which are basically cards) then I
+> think these files should go also into linux-firmware repository.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/verif_stats.c b/tools=
-/testing/selftests/bpf/prog_tests/verif_stats.c
-new file mode 100644
-index 000000000000..53ed2239ecad
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/verif_stats.c
-@@ -0,0 +1,31 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+
-+#include <test_progs.h>
-+
-+#include "trace_vprintk.lskel.h"
-+
-+void test_verif_stats(void)
-+{
-+	__u32 len =3D sizeof(struct bpf_prog_info);
-+	struct bpf_prog_info info =3D {};
-+	struct trace_vprintk *skel;
-+	int err;
-+
-+	skel =3D trace_vprintk__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "trace_vprintk__open_and_load"))
-+		goto cleanup;
-+
-+	if (!ASSERT_GT(skel->progs.sys_enter.prog_fd, 0, "sys_enter_fd > 0"))
-+		goto cleanup;
-+
-+	err =3D bpf_obj_get_info_by_fd(skel->progs.sys_enter.prog_fd, &info, &l=
-en);
-+	if (!ASSERT_OK(err, "bpf_obj_get_info_by_fd"))
-+		goto cleanup;
-+
-+	if (!ASSERT_GT(info.verif_insn_processed, 0, "verif_stats.insn_processe=
-d"))
-+		goto cleanup;
-+
-+cleanup:
-+	trace_vprintk__destroy(skel);
-+}
+I agree, all files required for normal functionality should be in
+linux-firmware. The upstream philosophy is that a user can just install
+the latest kernel and latest linux-firmware, and everything should work
+out of box (without any manual work).
+
+> And based on some parameter, driver should load correct PDS file. Seems
+> like DT can be a place where to put something which indicates which PDS
+> file should be used.
+
+Again I agree.
+
+> But should be in DT directly name of PDS file? Or should be in DT just
+> additional compatible string with card vendor name and then in driver
+> itself should be mapping table from compatible string to filename? I do
+> not know what is better.
+
+This is also what I was wondering, to me it sounds wrong to have a
+filename in DT. I was more thinking about calling it "antenna name" (and
+not the actually filename), but using compatible strings sounds good to
+me as well. But of course DT maintainers know this better.
+
 --=20
-2.30.2
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
