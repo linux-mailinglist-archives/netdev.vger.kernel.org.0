@@ -2,55 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C63B424B27
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 02:31:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55C6C424B29
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 02:33:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240035AbhJGAde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Oct 2021 20:33:34 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53296 "EHLO vps0.lunn.ch"
+        id S239861AbhJGAf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Oct 2021 20:35:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55584 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230443AbhJGAdd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Oct 2021 20:33:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=TlbyboHcS7ad1wnQ59C4BfD/EqXlIcbqsHTWWn4Otf8=; b=LfE6AA6Y+bELnEbK5N0JdbzHRD
-        RuJcpBJRK29eXgYAYC4WASy9lLix0IbhH9hx7gx9QkMrYe2RrwYcv/TghUJ9xsrJj6zLr7tx3pVuN
-        SyO4fpoOt8IJPuGELXqieB5sn1T7tMbwmazwdzTr8qKHf0CKKOtoYo/BoNZH++6GtE0c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mYHJx-009tHY-DI; Thu, 07 Oct 2021 02:31:37 +0200
-Date:   Thu, 7 Oct 2021 02:31:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH 11/13] devicetree: net: dsa: qca8k: Document
- qca,sgmii-enable-pll
-Message-ID: <YV4/6TRdd3N1v8Zv@lunn.ch>
-References: <20211006223603.18858-1-ansuelsmth@gmail.com>
- <20211006223603.18858-12-ansuelsmth@gmail.com>
+        id S230435AbhJGAf0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Oct 2021 20:35:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 823BF6101A;
+        Thu,  7 Oct 2021 00:33:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633566814;
+        bh=3okcXnxuE+BIfBFhHPL9nH1JgO502cHg6RX5wSZqz0w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KT/s7fKOw/53IUEt2hL1Vdmsl/j4O+98tcLHkBudkcniF/rQHQ4oxrLrx6O1R7tYp
+         nGpE45zWJ02NGxPffiRoYwAHe8l2YLkrwzbY996ojb4SlfeHvQESQYlrSp+JekieB5
+         XNcVGfn5RlWp+dcsQi5k52NV/PrkbSfSp63vG+SKWL621q43O4OW3p9N6DyYyLOJKW
+         yFBpL35KsMLQNmn/uDX+C2PWICr+a/2pq04lqlG/A25bf/cZfWuLBLNuDjJk+DoDqQ
+         ge9QsVT9v4WKPd7KbqHyCGuuKS8pPyMSYULQxG/o8LBqtp5RsvVwIe6OrLLg0huCP1
+         QSluOf7t/07dg==
+Date:   Wed, 6 Oct 2021 17:33:32 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexandru Elisei <alexandru.elisei@arm.com>
+Cc:     davem@davemloft.net, michael.riesch@wolfvision.net,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        p.zabel@pengutronix.de, lgirdwood@gmail.com, broonie@kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [BUG RESEND] net: stmmac: dwmac-rk: Ethernet broken on
+ rockpro64 by commit 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced
+ pm_runtime_enable warnings")
+Message-ID: <20211006173332.7dc69822@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YV3Hk2R4uDKbTy43@monolith.localdoman>
+References: <YV3Hk2R4uDKbTy43@monolith.localdoman>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211006223603.18858-12-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +- qca,sgmii-enable-pll  : For SGMII CPU port, explicitly enable PLL, TX and RX
-> +                          chain along with Signal Detection.
+On Wed, 6 Oct 2021 16:58:11 +0100 Alexandru Elisei wrote:
+> Resending this because my previous email client inserted HTML into the email,
+> which was then rejected by the linux-kernel@vger.kernel.org spam filter.
+> 
+> After commit 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced
+> pm_runtime_enable warnings"), the network card on my rockpro64-v2 was left
+> unable to get a DHCP lease from the network. The offending commit was found by
+> bisecting the kernel; I tried reverting the commit from v5.15-rc4 and the
+> network card started working as expected.
 
-Continuing on with the comment in the previous post. You might want to
-give a hit when this is needed.
+We have this queued up in netdev/net:
 
-     Andrew
+aec3f415f724 ("net: stmmac: dwmac-rk: Fix ethernet on rk3399 based devices")
+
+It should hit stable soon.
