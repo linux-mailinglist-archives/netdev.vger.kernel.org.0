@@ -2,118 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D287C425511
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E87B42550D
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 16:10:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241992AbhJGOM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 10:12:28 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:57804 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241812AbhJGOM2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 10:12:28 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 197E7MJC012419;
-        Thu, 7 Oct 2021 07:10:29 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=pfpt0220;
- bh=OxiBiwIOUqnU4gg64pI9Pm96DeK+92bZIXZXOoMjTy8=;
- b=QiCHUzp1FGFBiJaHs+RhMax7/YjrIh4JTpHwynTIp1nS/zM/fHVFCqVzFYnQhqS87fBy
- h0xrwZCCCovtDtY29xpK5Dibz6PvTDqBeIb9m1z6t4WWNqrGRdlhiUgR367TUuFjhzFR
- IqgqJkrlg0Jlq8gvzMYmwIrD9aOdqDmvJHJTp79tUZYtdszAgdHgllZ2mn6UvP3b++Fk
- lCoN+vENZADMkfcXc67BK35fdV5IPc51PxDPfUieLZ8pvQqz9SUqbOfKJ4t02lYUjTSD
- ynjFGSP8E4kbPgAyg3KIAzzne9JB7VOYLXapZWQJYzxj/wFC7Q5tkdMuTDTvMw1x0Wxp Jg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3bhrg2ah94-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Oct 2021 07:09:03 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 7 Oct
- 2021 07:09:01 -0700
-Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
- DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server id
- 15.0.1497.18 via Frontend Transport; Thu, 7 Oct 2021 07:08:57 -0700
-From:   Prabhakar Kushwaha <pkushwaha@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-rdma@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <martin.petersen@oracle.com>, <aelior@marvell.com>,
-        <smalin@marvell.com>, <pkushwaha@marvell.com>,
-        <prabhakar.pkin@gmail.com>, <malin1024@gmail.com>,
-        <naresh.kamboju@linaro.org>, <jhasan@marvell.com>,
-        <mrangankar@marvell.com>, Omkar Kulkarni <okulkarni@marvell.com>
-Subject: [PATCH] qed: Fix compilation for CONFIG_QED_SRIOV undefined scenario
-Date:   Thu, 7 Oct 2021 17:08:39 +0300
-Message-ID: <20211007140839.21672-1-pkushwaha@marvell.com>
-X-Mailer: git-send-email 2.16.6
+        id S241970AbhJGOMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 10:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51522 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241812AbhJGOMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 10:12:12 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498F6C061570
+        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 07:10:19 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id z184so6928697iof.5
+        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 07:10:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MFikU40VcZQoBz5zOJafhbTBv9rfb96bsh1zzPej8ho=;
+        b=PnJCnOweMfvbGBiDUXG2BMwGLRz+6see+gQWLkjI5lzHavH57BrSlVMZCaivbsRQdv
+         rPsSMjMWFnPhBga0w5I4rg3nTwExIPmoKEZP2ZS0el01rOsqrH0fPAkLjTAO5LDnruh6
+         yJJCJ8EeuRrq9bRLvfCKycbSJu1NTYSNcFTo0RaHAX5UktsSa2gDaFfxHExHD+WEKIDs
+         aX3iucj6mqSGONwByMeURlZ0KTfeFmh2U9skVTTX5/FHZ15yMbZV2IQLGLMJvfPb9CWd
+         uskHajmTpsoh4SRv+GU8K3ZwwE5JXJA3HCBnfsWw3ncYD3Q/gY0gH6aoKOrpCTh+hYh9
+         bAww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MFikU40VcZQoBz5zOJafhbTBv9rfb96bsh1zzPej8ho=;
+        b=H56KoqWI/qvNd95qLRO2qXSopepxLIMQor6Ox8eFpBbK/5ofD0zzGJufh8Lr5pfQBd
+         lr/adnA0gZK85U1UaMh7utahce90VTYgkw5tqtRWSunKe9VMTrRClWG5WWYW1XFDyFkd
+         RI6FkqUs8AH5m5182/8KtTJZOUQTN4FSs8xTs92iSKTCB47Eh8aRa+YGSuTrOopY2B4y
+         88DENsDuTPtqQDVl7bVDPco+TqkNwJFdKyK0XFUza0WH8o5aGnfQhDFNB+uRRtEN8azC
+         SVLwfSJ2+CYH/5zFSh3qxx0Y8TktyXwIhCowLRhM885X50PTf0Xv0gtZm2uYf3AaNM42
+         huXw==
+X-Gm-Message-State: AOAM530nPQzB5wBhaIkWeLYQ/yxL9Fcp1JUC1XXYXR4PWQlQIjUeyuNu
+        DTrQvu5O7aFbB3XTWEPXlKk=
+X-Google-Smtp-Source: ABdhPJzblgKIrPdmV5QCOgWEDg1goMkgo+2LwB34qk4Ck5ETwvPLwiEEqP5obfqR+WP04+6KEbYsxQ==
+X-Received: by 2002:a6b:8fc8:: with SMTP id r191mr3345041iod.130.1633615818717;
+        Thu, 07 Oct 2021 07:10:18 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id a8sm4999796iok.36.2021.10.07.07.10.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Oct 2021 07:10:18 -0700 (PDT)
+Subject: Re: [PATCH] net: prefer socket bound to interface when not in VRF
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Mike Manning <mvrmanning@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Saikrishna Arcot <sarcot@microsoft.com>
+References: <cf0a8523-b362-1edf-ee78-eef63cbbb428@gmail.com>
+ <20211007070720.31dd17bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9907e6ff-3904-fa66-6562-c3b885eebd34@gmail.com>
+Date:   Thu, 7 Oct 2021 08:10:17 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: FEdk8M5le2vUBEDg2D7m3f23zv4u0IH3
-X-Proofpoint-ORIG-GUID: FEdk8M5le2vUBEDg2D7m3f23zv4u0IH3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-10-07_01,2021-10-07_02,2020-04-07_01
+In-Reply-To: <20211007070720.31dd17bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes below compliation error in case CONFIG_QED_SRIOV not
-defined.
-drivers/net/ethernet/qlogic/qed/qed_dev.c: In function
-‘qed_fw_err_handler’:
-drivers/net/ethernet/qlogic/qed/qed_dev.c:2390:3: error: implicit
-declaration of function ‘qed_sriov_vfpf_malicious’; did you mean
-‘qed_iov_vf_task’? [-Werror=implicit-function-declaration]
-   qed_sriov_vfpf_malicious(p_hwfn, &data->err_data);
-   ^~~~~~~~~~~~~~~~~~~~~~~~
-   qed_iov_vf_task
-drivers/net/ethernet/qlogic/qed/qed_dev.c: In function
-‘qed_common_eqe_event’:
-drivers/net/ethernet/qlogic/qed/qed_dev.c:2410:10: error: implicit
-declaration of function ‘qed_sriov_eqe_event’; did you mean
-‘qed_common_eqe_event’? [-Werror=implicit-function-declaration]
-   return qed_sriov_eqe_event(p_hwfn, opcode, echo, data,
-          ^~~~~~~~~~~~~~~~~~~
-          qed_common_eqe_event
+On 10/7/21 8:07 AM, Jakub Kicinski wrote:
+> On Tue, 5 Oct 2021 14:03:42 +0100 Mike Manning wrote:
+>> The commit 6da5b0f027a8 ("net: ensure unbound datagram socket to be
+>> chosen when not in a VRF") modified compute_score() so that a device
+>> match is always made, not just in the case of an l3mdev skb, then
+>> increments the score also for unbound sockets. This ensures that
+>> sockets bound to an l3mdev are never selected when not in a VRF.
+>> But as unbound and bound sockets are now scored equally, this results
+>> in the last opened socket being selected if there are matches in the
+>> default VRF for an unbound socket and a socket bound to a dev that is
+>> not an l3mdev. However, handling prior to this commit was to always
+>> select the bound socket in this case. Reinstate this handling by
+>> incrementing the score only for bound sockets. The required isolation
+>> due to choosing between an unbound socket and a socket bound to an
+>> l3mdev remains in place due to the device match always being made.
+>> The same approach is taken for compute_score() for stream sockets.
+>>
+>> Fixes: 6da5b0f027a8 ("net: ensure unbound datagram socket to be chosen when not in a VRF")
+>> Fixes: e78190581aff ("net: ensure unbound stream socket to be chosen when not in a VRF")
+>> Signed-off-by: Mike Manning <mmanning@vyatta.att-mail.com>
+> 
+> David A, Ack?
+> 
 
-Fixes: fe40a830dcde ("qed: Update qed_hsi.h for fw 8.59.1.0")
+yep, sorry, forgot about this one.
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
-Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
----
-This patch is targeted for the repo
-git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
-
- drivers/net/ethernet/qlogic/qed/qed_sriov.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.h b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-index 1edf9c44dc67..f448e3dd6c8b 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-@@ -478,6 +478,18 @@ static inline int qed_sriov_disable(struct qed_dev *cdev, bool pci_enabled)
- static inline void qed_inform_vf_link_state(struct qed_hwfn *hwfn)
- {
- }
-+
-+static inline void qed_sriov_vfpf_malicious(struct qed_hwfn *p_hwfn,
-+					    struct fw_err_data *p_data)
-+{
-+}
-+
-+static inline int qed_sriov_eqe_event(struct qed_hwfn *p_hwfn, u8 opcode,
-+				      __le16 echo, union event_ring_data *data,
-+				      u8  fw_return_code)
-+{
-+	return 0;
-+}
- #endif
- 
- #define qed_for_each_vf(_p_hwfn, _i)			  \
--- 
-2.24.1
-
+Reviewed-by: David Ahern <dsahern@kernel.org>
