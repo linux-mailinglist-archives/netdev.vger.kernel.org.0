@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACC27424CE8
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 07:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C67E6424CEA
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 07:55:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240149AbhJGF5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 01:57:23 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:37642 "EHLO a.mx.secunet.com"
+        id S240164AbhJGF51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 01:57:27 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:37692 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231485AbhJGF5W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232427AbhJGF5W (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 7 Oct 2021 01:57:22 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id CEFE22057B;
-        Thu,  7 Oct 2021 07:55:27 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 00CB72056D;
+        Thu,  7 Oct 2021 07:55:29 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Jx6mgpJ-eBig; Thu,  7 Oct 2021 07:55:27 +0200 (CEST)
+        with ESMTP id 9JZP_A_P2vyw; Thu,  7 Oct 2021 07:55:28 +0200 (CEST)
 Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 5AC3A200BB;
+        by a.mx.secunet.com (Postfix) with ESMTPS id DDAC720539;
         Thu,  7 Oct 2021 07:55:27 +0200 (CEST)
 Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout1.secunet.com (Postfix) with ESMTP id 52B1780004A;
+        by mailout1.secunet.com (Postfix) with ESMTP id CF3D080004A;
         Thu,  7 Oct 2021 07:55:27 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
@@ -35,73 +35,61 @@ Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Thu, 7 Oct
  2021 07:55:26 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 9C5983183BED; Thu,  7 Oct 2021 07:55:26 +0200 (CEST)
+        id 9F69A318010D; Thu,  7 Oct 2021 07:55:26 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: pull request (net): ipsec 2021-10-07
-Date:   Thu, 7 Oct 2021 07:55:19 +0200
-Message-ID: <20211007055524.319785-1-steffen.klassert@secunet.com>
+Subject: [PATCH 1/5] net: xfrm: fix shift-out-of-bounds in xfrm_get_default
+Date:   Thu, 7 Oct 2021 07:55:20 +0200
+Message-ID: <20211007055524.319785-2-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211007055524.319785-1-steffen.klassert@secunet.com>
+References: <20211007055524.319785-1-steffen.klassert@secunet.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
  mbx-essen-01.secunet.de (10.53.40.197)
 X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1) Fix a sysbot reported shift-out-of-bounds in xfrm_get_default.
-   From Pavel Skripkin.
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-2) Fix XFRM_MSG_MAPPING ABI breakage. The new XFRM_MSG_MAPPING
-   messages were accidentally not paced at the end.
-   Fix by Eugene Syromiatnikov.
+Syzbot hit shift-out-of-bounds in xfrm_get_default. The problem was in
+missing validation check for user data.
 
-3) Fix the uapi for the default policy, use explicit field and macros
-   and make it accessible to userland.
-   From Nicolas Dichtel.
+up->dirmask comes from user-space, so we need to check if this value
+is less than XFRM_USERPOLICY_DIRMASK_MAX to avoid shift-out-of-bounds bugs.
 
-4) Fix a missing rcu lock in xfrm_notify_userpolicy().
-   From Nicolas Dichtel.
+Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
+Reported-and-tested-by: syzbot+b2be9dd8ca6f6c73ee2d@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+---
+ net/xfrm/xfrm_user.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Please pull or let me know if there are problems.
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index 03b66d154b2b..4719a6d54aa6 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -2005,6 +2005,11 @@ static int xfrm_get_default(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return -EMSGSIZE;
+ 	}
+ 
++	if (up->dirmask >= XFRM_USERPOLICY_DIRMASK_MAX) {
++		kfree_skb(r_skb);
++		return -EINVAL;
++	}
++
+ 	r_up = nlmsg_data(r_nlh);
+ 
+ 	r_up->action = ((net->xfrm.policy_default & (1 << up->dirmask)) >> up->dirmask);
+-- 
+2.25.1
 
-Thanks!
-
-The following changes since commit 626bf91a292e2035af5b9d9cce35c5c138dfe06d:
-
-  Merge tag 'net-5.15-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-09-07 14:02:58 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git master
-
-for you to fetch changes up to 93ec1320b0170d7a207eda2d119c669b673401ed:
-
-  xfrm: fix rcu lock in xfrm_notify_userpolicy() (2021-09-23 10:11:12 +0200)
-
-----------------------------------------------------------------
-Eugene Syromiatnikov (1):
-      include/uapi/linux/xfrm.h: Fix XFRM_MSG_MAPPING ABI breakage
-
-Nicolas Dichtel (3):
-      xfrm: make user policy API complete
-      xfrm: notify default policy on update
-      xfrm: fix rcu lock in xfrm_notify_userpolicy()
-
-Pavel Skripkin (1):
-      net: xfrm: fix shift-out-of-bounds in xfrm_get_default
-
-Steffen Klassert (1):
-      Merge branch 'xfrm: fix uapi for the default policy'
-
- include/uapi/linux/xfrm.h   | 15 ++++++----
- net/xfrm/xfrm_user.c        | 67 +++++++++++++++++++++++++++++++++++++--------
- security/selinux/nlmsgtab.c |  4 ++-
- 3 files changed, 67 insertions(+), 19 deletions(-)
