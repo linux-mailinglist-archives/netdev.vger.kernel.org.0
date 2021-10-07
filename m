@@ -2,113 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD89425E3B
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:55:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7EC3425E3D
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:56:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232860AbhJGU5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:57:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34932 "EHLO
+        id S232977AbhJGU6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 16:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231821AbhJGU5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:57:47 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55CB0C061570;
-        Thu,  7 Oct 2021 13:55:53 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id s16so6411304pfk.0;
-        Thu, 07 Oct 2021 13:55:53 -0700 (PDT)
+        with ESMTP id S232797AbhJGU57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:57:59 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE288C061570
+        for <netdev@vger.kernel.org>; Thu,  7 Oct 2021 13:56:05 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id s64so16275541yba.11
+        for <netdev@vger.kernel.org>; Thu, 07 Oct 2021 13:56:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jS2/b+lbzWP06L31MQafqGN4NvFQGhEEw9KPUBF6vTU=;
-        b=ba0Y3T1KjkRH5mo4igmdhPrYnUBo93K2nbl3U48Oq4s06JeAjaWWqqQIUG9XVFXNy3
-         xqFxI63hLYFXDlLtg4kTuLJgEy6jxAuL1nQZrsvGEbBAObJNbV4PamO5sMQE9Qyo19aX
-         fU1zS/9jxJH6IDSmtuqF8mWWEzSeOA/9ZPNGEP5MlpHZZ3exnoZlYdN/Va7sAM9jx4gO
-         zBOKdndiM5sGfhjVF9HyGjCfq3d5scdSf53pAjfqdMlLr2xxIWQrltG4INLe0Dhaz8Is
-         LVQSYkUqIWoIa9EWzvicWSHx79HvGPL2sHS+UZjjHMUb3U4KCGvo952PQlzt6RTmGByD
-         Uuqw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OAwhoQ8WnPjiR05kpnMMYY2kjXq1+16g/k5+6wSGx6g=;
+        b=JOOJ48o9O8li5/RVr1K91U3pJsEcml3OhD2uhsKlydGuE9Dnvcj6fqA5qrn0QIzp26
+         jpI04Ob9Vs3glArfc7zc+dJmCn4+0B6pHYoSOYedU9A+uPrRun2+hX4hqzSUanG0tCil
+         p23NiCVSvt4CG+HrfOny84BXBMAEDvBj/uNbB8X1mYhqlvsm5tNeumKC9xCgb/n/E+JI
+         K7yCwS0u08MD1Cxwq8wVQpZliHkOO67LkdTYW4zFcMOcQ6mMsVQo77n8jUld+El/NIkN
+         feBXz3F28ZmLz6aKFSIRqfBFKIdUSU8myLSaOIOqBdrmbm6bC1he5fuVcqXeuZWBit8B
+         qZLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jS2/b+lbzWP06L31MQafqGN4NvFQGhEEw9KPUBF6vTU=;
-        b=XDkkG9ow7qiGB2Iz2bsW3wnRP5Q3U4eeXKgUzRAj54AV9jF8F3AUiwSp21QECk3u9/
-         FSs5AiAxq6yB3KOUr3YY4rwMwyP0HnsusuYJHADt+H4T39qkXiPTFD5S+sI8bzW9va/K
-         nDwunZik/faz1PH/e7RIC1hAN3o5WWFZFqRG8+oRm1D9UeeFR2x8ZLwa8fGWxxqWvN9y
-         hqESVKJuPmX/3rKPNP6U28O5zjIPPvMHgyb5fXP63VFiyuW9OXiaNnDgqH7KhSc8LWjM
-         EPt2ZKq26XoVXA5eaxiQo5BcljdRo6BR7BWuKRyHUD8K09VrFoPn9ZCR/Z9oJz6Agh/m
-         fKXQ==
-X-Gm-Message-State: AOAM532YmJk+ja/kr0JIFKykicrTgfpuJyxF+h1CYflCqHhNlEiB7xLV
-        VOdRfhkHglmVF4d66hggbFg=
-X-Google-Smtp-Source: ABdhPJzyID+dVU48WKqiH600GMBY5J8ckSNzbjGBYxKGnm4t7S+bTbRBGqbclAH5cUDrarR4LKoAgA==
-X-Received: by 2002:a05:6a00:15c9:b0:44c:a998:b50d with SMTP id o9-20020a056a0015c900b0044ca998b50dmr6401320pfu.49.1633640152661;
-        Thu, 07 Oct 2021 13:55:52 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
-        by smtp.gmail.com with ESMTPSA id j7sm288879pfh.168.2021.10.07.13.55.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 13:55:52 -0700 (PDT)
-Date:   Fri, 8 Oct 2021 02:25:49 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v1 4/6] bpf: selftests: Move test_ksyms_weak
- test to lskel, add libbpf test
-Message-ID: <20211007205549.xklfits3xkdligat@apollo.localdomain>
-References: <20211006002853.308945-1-memxor@gmail.com>
- <20211006002853.308945-5-memxor@gmail.com>
- <CAPhsuW7y3ycWkXLwSmJ5TKbo7Syd65aLRABtWbZcohET0RF6rA@mail.gmail.com>
- <20211007204609.ygrqpx4rahfzqzly@apollo.localdomain>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OAwhoQ8WnPjiR05kpnMMYY2kjXq1+16g/k5+6wSGx6g=;
+        b=KWZnsCYn1aZZhJIxUJHRf55sXsGtrvz/Ew5VVkcnk4ZAE+ipgmrgAfQWE7iPsMa5A0
+         RT89g0tSLmQ07J0sRR0tSX1NDgoCp6xVw38lyoE5goclhyqrLHgPJTCctVecLnZloH/G
+         GWvadEz+22JrGEyPfBfi2FcE1zToNP/LP2XchkcLDPTsjABDnUHHeXL96HebxqJOj24T
+         aPQCa2hNJ9lSjlD73pe+UoDX4rCTfuC5EfUZbxAY0gyHiS1Ebe32S7GB/QIDCZpQVXPA
+         CPsjzfwvwBCnCkxTZ/PHu+mW/c/N/41XrzcOaDo6nN7yO7+aW0Ltlk81I7Id3YGflWi8
+         7Jew==
+X-Gm-Message-State: AOAM533VpqdSrdRyeEq6fmTkV7x3wSKD/lMe5F24OikwcbKgjYqLlIrk
+        SbR2HimW5Sf9DDIYgp6iFgxN/CBhtm0IFUQDXLC0d25U
+X-Google-Smtp-Source: ABdhPJzGsVJVt21objpdGhNHBHCI7Jy0qwSEx4beX4m1GCqBTDIC+pOXICVrv7MXHOlyEkD3/h0Hb/R39nshNdumIUI=
+X-Received: by 2002:a25:bb0b:: with SMTP id z11mr7234921ybg.108.1633640165017;
+ Thu, 07 Oct 2021 13:56:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211007204609.ygrqpx4rahfzqzly@apollo.localdomain>
+References: <20210928031938.17902-1-xiyou.wangcong@gmail.com>
+ <CAHmME9rbfBHUnoifdQV6pOp8MHwowEp7ooOhV-JSJmanRzksLA@mail.gmail.com> <CAM_iQpV-JKrk8vaHDeD0pXaheN0APUxH5Lp+mGCM=_yZQ1hd4w@mail.gmail.com>
+In-Reply-To: <CAM_iQpV-JKrk8vaHDeD0pXaheN0APUxH5Lp+mGCM=_yZQ1hd4w@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 7 Oct 2021 13:55:54 -0700
+Message-ID: <CAM_iQpVNP2+7F59-6NDhXfE7qxU6APNdBu5UxcWKMaow05kytA@mail.gmail.com>
+Subject: Re: [Patch net] wireguard: preserve skb->mark on ingress side
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 08, 2021 at 02:16:09AM IST, Kumar Kartikeya Dwivedi wrote:
-> On Fri, Oct 08, 2021 at 02:03:49AM IST, Song Liu wrote:
-> > On Tue, Oct 5, 2021 at 5:29 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
-> > >
-> > > Also, avoid using CO-RE features, as lskel doesn't support CO-RE, yet.
-> > > Create a file for testing libbpf skeleton as well, so that both
-> > > gen_loader and libbpf get tested.
-> > >
-> > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > [...]
-> > > diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c
-> > > new file mode 100644
-> > > index 000000000000..b75725e28647
-> > > --- /dev/null
-> > > +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c
-> > > @@ -0,0 +1,31 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +
-> > > +#include <test_progs.h>
-> > > +#include "test_ksyms_weak.skel.h"
-> > > +
-> > > +void test_ksyms_weak_libbpf(void)
-> >
-> > This is (almost?) the same as test_weak_syms(), right? Why do we need both?
-> >
+Hi, Jason
+
+On Mon, Sep 27, 2021 at 8:27 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
-> One includes lskel.h (light skeleton), the other includes skel.h (libbpf
-> skeleton). Trying to include both in the same file, it ends up redefining the
-> same struct. I am not sure whether adding a prefix/suffix to light skeleton
-> struct names is possible now, maybe through another option to bpftool in
-> addition to name?
+> On Mon, Sep 27, 2021 at 8:22 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> >
+> > Hi Cong,
+> >
+> > I'm not so sure this makes sense, as the inner packet is in fact
+> > totally different. If you want to distinguish the ingress interface,
+>
+> The contents are definitely different, but skb itself is the same.
+>
+> Please also take a look at other tunnels, they all preserve this
+> in similar ways, that is, comparing net namespaces. Any reason
+> why wireguard is so different from other tunnels?
 
-Sorry, I misremembered. The name option is enough, it is because of how I did it
-in the Makefile (using LSKELS_EXTRA).  I'll fix this in the next spin.
+Any response?
 
-> [...]
-
---
-Kartikeya
+Thanks.
