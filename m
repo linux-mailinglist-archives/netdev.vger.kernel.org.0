@@ -2,130 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80EC7425DBF
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:41:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 664D7425DC8
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:46:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230467AbhJGUnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:43:33 -0400
-Received: from mail-eopbgr80088.outbound.protection.outlook.com ([40.107.8.88]:35200
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240647AbhJGUnb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 16:43:31 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V/z6NuMMLuZ2g/lcI5hfIZ5wf51bEDR4A9ocaXJwbQqOnlCuoUBiTU+FDtLHgl+B0el41YSO4JxcTFte38SdFtVoUoPFWfn1LhF9q7WcrC7NfpnwmyILd0sVQiXTw5xL41vUggF1QH2escyXB8y7YlNWOBXqXqQeqLJaXmCzakm6DPS/INxEDVuTNvbxTruopi3+6yTBdn5t9pUe+9nq5rrVizN2DNiiWa00J0erEKSclGRtXiI2/Tzj9lozLRxlUlL48SgRNO0PFavs4sx6Lpj7UYqmubczr5DvTxyHzsPy/axXlwFNVPpu4DiGHu8EeEQPdNPZQdGFrhOvACYlYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9TfSxHdyuzrOAnJlcYAIZHTuNrUxIQTFDvLO7/Tb+9A=;
- b=V2FMu6mqhoJF3S8VJkFubJxIahwrnlxW+aY+4hDqDaT3ZU4sZgX/RFMVDtHdla4h68RYY9ToyMLgjNUwfSWQyhxKJKerd+IJg3PmG3sFOa3ZCn7DfHgDGWE+sm6kSRZYan25x2YzoJq/nbFTJHD0BjIj9BXRXYrZ9rxq4AGRJbLAC2Datf7MqunkMs3K6Z+3cBoVTK7GN9ts9LDbEQb4AFI6aWqrZ4zb4KdsmNU2MJoOWZVKf1fU634ji3+c4sW3duOUffjDAWzc85z0YyOTSCFqvD4NunUww86XgbtbFRspCuT7eIJqbThpnoWExGK0Jl0a9KOEMgw9q01mc/Dk7Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9TfSxHdyuzrOAnJlcYAIZHTuNrUxIQTFDvLO7/Tb+9A=;
- b=gAr6bZtnYPvYBR0xmlMlsJTt/24Zy90tYGou8OaRjKg8CtCy167l1RJPPwP3WeNXNWj5UIqN4nKtpOXybMpuZGqE5lngXGq+gKXrGI229V4quuqiWWgKD9RI8ucpg2WhlHAnY8LM4V2NzUyqldsZ2Mbq4dYfhjWVxvqqYW7G9nU=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB6702.eurprd04.prod.outlook.com (2603:10a6:803:123::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.17; Thu, 7 Oct
- 2021 20:41:35 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4566.023; Thu, 7 Oct 2021
- 20:41:35 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: Re: [PATCH net-next v2 1/2] net: enetc: declare NETIF_F_HW_CSUM and
- do it in software
-Thread-Topic: [PATCH net-next v2 1/2] net: enetc: declare NETIF_F_HW_CSUM and
- do it in software
-Thread-Index: AQHXu5BmSqPCVvNz+EeJlaHlrBnQpavIAE0A
-Date:   Thu, 7 Oct 2021 20:41:35 +0000
-Message-ID: <20211007204134.y5ppnce64top4nm4@skbuf>
-References: <20211007153043.2675008-1-ioana.ciornei@nxp.com>
- <20211007153043.2675008-2-ioana.ciornei@nxp.com>
-In-Reply-To: <20211007153043.2675008-2-ioana.ciornei@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ed701e66-1efc-4ced-7f18-08d989d2daad
-x-ms-traffictypediagnostic: VE1PR04MB6702:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB67023018926E74CCEB4BA2DCE0B19@VE1PR04MB6702.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1yJl+hz9yh98edReIXtclQxGz4dtxvDIOqtrPG8bwO7V2WzL5NyddDVLNz3DRT7YDhG0WlMXtfWIIwp+MXrqI7cFvS7E6M3Ar5azq8zhMs+e0Bjfbtwb3CEjkMqp1lMw58ZWSl6FSyguz45NKxmpjN9QYevfF4SH7Y1jT8YmehpbigY87vihq3bMnLo7hUtQwltJJQB571O9c7P/tLMrA/afJCmzayLgYTfCYcTY/9bAgioy5JWFi4Xpx0cxf6g8nGn+iP0VLUbLBcGkXUcjMkk7FlIzJFfAG2rV2x8K75l4w65hJdNPbwEKYT+FE3m2W/yd08Vvf0pF1QmH3BdrU9N8srcaRU+soRNZ1S0rlqc38E/CYrxqnoHJcxH0qUJGKjkSsg4BqqApxGdiu7H4SV0KpU/+QwdAT8qqzAjUCyOSzXMl2KNSc3K6jMGVZJ8y4LI2ikS8aAJmjW3pyUqts17Jq1hKSfs5B9oK874NKb5AqxhVxBBYpgmySnjJoFEn6AzMVb8+NJi7TrgHSFe8wJHg3FhKSNCNTmTi7ng6QzeFNbKVHv0QRM3oKtpjjbSR+S6J66ZYuZKUszKJuJjjfkbjL/anZ41LIqlii9JvvaxgSFYyorsI+hz1Jy3uTbXyKVUr+0dmfkDXWo59M3NovkfRZ0UtTcTRFx/6hls7XUHjXfFUNUIrJ8/V6uzRfZdXilVmkxekY6vh/cedeBuHpQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(44832011)(122000001)(38100700002)(9686003)(6512007)(26005)(6486002)(6506007)(66476007)(64756008)(66446008)(66946007)(76116006)(38070700005)(33716001)(66556008)(316002)(5660300002)(6636002)(4744005)(86362001)(54906003)(71200400001)(2906002)(508600001)(186003)(6862004)(4326008)(8936002)(8676002)(1076003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ssyRbOIPRSopr7GrMWpg9CNnzVqB6nX4Q6uhOfjTcMNPD2fJh8B/Z6K9rG6j?=
- =?us-ascii?Q?STNiXVb3yf/P2rBZqDHpxDtQO3grMHrAGQl4IY32hXVsSN0Gl6qsjjAjOD5i?=
- =?us-ascii?Q?jajuOx9LcVl5beIvAn6VpUQ2vM5KLCKIekSDlNDyO1Ql4HsVl/KaXJFTJv01?=
- =?us-ascii?Q?9V5/GuRmPCysbkjQLl/cSL25wlVGJyJNRa9mdfr9lT1WT5T24ECdpmRcClTa?=
- =?us-ascii?Q?uYV+oUSd/NvJkJGJPtLsX7GX75pm2xxGBT0FOGF8rDESvIhYOAAJ4/fVXDGH?=
- =?us-ascii?Q?X7SW14Hvh9F7oekj5M9OSXbEXTOVGkv6SPqXgCjkLeQ6IpLW6XOZDjUmkryG?=
- =?us-ascii?Q?4XfdW07EkbWaEiqXj3MGqmWCA5XIGSNAMJJoVXcBYjPf4ad5oJc4r8FC1uLh?=
- =?us-ascii?Q?XcepxxRYc2xDMNEw6MdaywiqpN1EO96Uy4n72NL+CE715C5bBz3WQQchDMX+?=
- =?us-ascii?Q?3gIT9M2+UQw5VxZPQyLIPAHz6Fvpuwfn69o5UcYiPAHq9BwM3ZmzfAevcFDY?=
- =?us-ascii?Q?E69mAxJrMLsY6eZ1HF57wJzrZZQNG5ODcFBOVKOsxCeiOG2Sz3ItBq7Msl8U?=
- =?us-ascii?Q?i1Cl0pznhbXtTFWwAP9VJqUqVgYkKnVbR0xRubVy29dSeIX5vzf9HU6Es5HA?=
- =?us-ascii?Q?G5mzEp/2oB1MhcBRAz74Du5o1WnEBpOludZZ4VxUAYqnZWYqfu1eyuBpkgUk?=
- =?us-ascii?Q?nNvR41TM3tp4dSro+onI5SUl2AyVztI/OHlfPB5G9ZSm3ClwZ0gn5QhzAwPa?=
- =?us-ascii?Q?rVhc2eqEcz5uk7C0B8LLpQq2Fuq6vO9eu52bTXPTbWh94DDNK5QCuTEQfcYl?=
- =?us-ascii?Q?nCaFn4ctnyCy/Ywqhtqthv8+YqRwELE58LDOcZNowuPUDO4HNuDx2zGjE4sn?=
- =?us-ascii?Q?TVZ5OiuY8q9kxcMOllQeSJbd/Ni4z0aFXRNETkuteGccRTFfRnHIoQ51rHX/?=
- =?us-ascii?Q?b7B0+d6M0kTQDtV2seelqxCCJ5uhFO7ttbtUte3BKgwF+U2XpvJ2bka4c9Pg?=
- =?us-ascii?Q?+z23f3NW83C3gnT/yPqYxVZPRG3yv1yF4wMZoSmGemJwGqPLxbdz9EyGHrjp?=
- =?us-ascii?Q?uQso7j4AeotT4FG7xud7/vKDmhCRJnxFBPrfi7mFXufMAdr3MJVtZwDvppd1?=
- =?us-ascii?Q?DKnaOgtRLlxcKvcMt3AVBVd90y4eOK4W6WZqlAVCBSsBBKj54LGI+l2fjz/y?=
- =?us-ascii?Q?pA98NZIpandBi++dvDv/w6OqwmedjVPB+BMLanjXJdF/3qdD0YqG2Mqz/kJA?=
- =?us-ascii?Q?Ignv7mS4+35OR7Sedxai2lIaif/yjpIoZODQU5mPemPkAKhEKlvaZ7l1cg2F?=
- =?us-ascii?Q?ScrJas7lHr7szjsl+nsgnWOnse27BTZHctxT7/SvjAoC/g=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1CAC90641609154BBB5945DFB18DF9BD@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S240943AbhJGUsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 16:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60832 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232458AbhJGUsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:48:06 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BA7C061570;
+        Thu,  7 Oct 2021 13:46:12 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id pi19-20020a17090b1e5300b0019fdd3557d3so6118705pjb.5;
+        Thu, 07 Oct 2021 13:46:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=n778GDxPUk5bM/6oUWYf94rGxS7Ym+wi8wyNVSUVHJY=;
+        b=lf7NCZlMcXElgNAC66pZrN0XcQRt25y96kBcovC843viIgi1uE0pje7PtVyQPY0NqB
+         qkvbwFwWFvppdKTfbVxiMUpPZAGbsyLd1tdlAohH5YdwJoLw65SEXKFmzMukywSMSrAj
+         6F9tbwacQ7pAAmtkghVCpMWDMXevVnPpwFLp2Pm+8pu33TwU1C5eEshwzETOX4t9ooIm
+         GuMz4GTqlUCtLo1ArIjI2ztuDW9u5ZLWF2R3HeFVSx87cehkcyAtdBAjz4VIRB/58l4Y
+         T2CxWpYAxVJnRSRpyofXjA74izX49gjzCMIwk+6sPOE81Rpep/UcuRP23ujdyhXlJX5u
+         m0zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=n778GDxPUk5bM/6oUWYf94rGxS7Ym+wi8wyNVSUVHJY=;
+        b=bcatoaun4nKhQtV+CwOM8hemhXrECl1UPXC9VthnOHoPU6RwgcUTsXBXmPznIhpcqJ
+         sNx95oN+MXAkHP7uPIvISy2CcCC3zwvJJ9EGVmdBDae14BWcmEPlBDLAf8df2IPbjVIa
+         V2B9QTkxVo7bmgC0TodBs/A7LTFGw+ndHhVOOMXSSOCBkYsyYJpKbJI5Eby6JWUcZIc8
+         1onyzEHWBiqhFBqbjvtODEkFrJ6Dcn6YWr6y4fyKYalDsbqxXevU/7wchqlxqlS/NsUI
+         tZm1mb2/yrJnjfAFiV0g8km7IQ9kgB70yHslOZtTq2dVz/RhX0wm3LW7XoSO1Uoi+giL
+         3lyQ==
+X-Gm-Message-State: AOAM530EK9/YEbEjWRXLfuVTO7LlgBkgxyo5w8kdH0Y4n1lBMHmuOMEd
+        nFSNUH/TDgxGmjG11e8jO08=
+X-Google-Smtp-Source: ABdhPJyWu61PR6GwdZ3nM0x+fSD3FB9bBBhz6apFdeOAQCR7M7gZwqJxWzY/FI8oCZTPI+lMjmY7mw==
+X-Received: by 2002:a17:90a:9b84:: with SMTP id g4mr5459162pjp.123.1633639572322;
+        Thu, 07 Oct 2021 13:46:12 -0700 (PDT)
+Received: from localhost ([2405:201:6014:d058:a28d:3909:6ed5:29e7])
+        by smtp.gmail.com with ESMTPSA id 8sm280984pfi.194.2021.10.07.13.46.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Oct 2021 13:46:12 -0700 (PDT)
+Date:   Fri, 8 Oct 2021 02:16:09 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v1 4/6] bpf: selftests: Move test_ksyms_weak
+ test to lskel, add libbpf test
+Message-ID: <20211007204609.ygrqpx4rahfzqzly@apollo.localdomain>
+References: <20211006002853.308945-1-memxor@gmail.com>
+ <20211006002853.308945-5-memxor@gmail.com>
+ <CAPhsuW7y3ycWkXLwSmJ5TKbo7Syd65aLRABtWbZcohET0RF6rA@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed701e66-1efc-4ced-7f18-08d989d2daad
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Oct 2021 20:41:35.4136
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tu6kDCfYHhy6ZExxJWlWAhbH6CTb29IhnMv9/QmG0kuLpP0dSUiI9IgNbBSP/uWxfMYxw71O4JgAzm1xnYhLcQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6702
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPhsuW7y3ycWkXLwSmJ5TKbo7Syd65aLRABtWbZcohET0RF6rA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 06:30:42PM +0300, Ioana Ciornei wrote:
-> This is just a preparation patch for software TSO in the enetc driver.
-> Unfortunately, ENETC does not support Tx checksum offload which would
-> normally render TSO, even software, impossible.
->=20
-> Declare NETIF_F_HW_CSUM as part of the feature set and do it at driver
-> level using skb_csum_hwoffload_help() so that we can move forward and
+On Fri, Oct 08, 2021 at 02:03:49AM IST, Song Liu wrote:
+> On Tue, Oct 5, 2021 at 5:29 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+> >
+> > Also, avoid using CO-RE features, as lskel doesn't support CO-RE, yet.
+> > Create a file for testing libbpf skeleton as well, so that both
+> > gen_loader and libbpf get tested.
+> >
+> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> [...]
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c
+> > new file mode 100644
+> > index 000000000000..b75725e28647
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_weak_libbpf.c
+> > @@ -0,0 +1,31 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +
+> > +#include <test_progs.h>
+> > +#include "test_ksyms_weak.skel.h"
+> > +
+> > +void test_ksyms_weak_libbpf(void)
+>
+> This is (almost?) the same as test_weak_syms(), right? Why do we need both?
+>
 
-The comment is still referencing the other function you were calling in v1.
-Anyway, not a big deal, in the end everything ends up in skb_checksum_help(=
-).
+One includes lskel.h (light skeleton), the other includes skel.h (libbpf
+skeleton). Trying to include both in the same file, it ends up redefining the
+same struct. I am not sure whether adding a prefix/suffix to light skeleton
+struct names is possible now, maybe through another option to bpftool in
+addition to name?
 
-> also add support for TSO in the next patch.
->=20
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> ---
+> > +{
+> > +       struct test_ksyms_weak *skel;
+> > +       struct test_ksyms_weak__data *data;
+> > +       int err;
+> > +
+> > +       skel = test_ksyms_weak__open_and_load();
+> > +       if (!ASSERT_OK_PTR(skel, "test_ksyms_weak__open_and_load"))
+> > +               return;
+>
+> [...]
+>
+> > diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+> > index 5f8379aadb29..521e7b99db08 100644
+> > --- a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+> > +++ b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+> > @@ -21,7 +21,6 @@ __u64 out__non_existent_typed = -1;
+> >  extern const struct rq runqueues __ksym __weak; /* typed */
+> >  extern const void bpf_prog_active __ksym __weak; /* typeless */
+> >
+> > -
+> >  /* non-existent weak symbols. */
+> >
+> >  /* typeless symbols, default to zero. */
+> > @@ -38,7 +37,7 @@ int pass_handler(const void *ctx)
+> >         /* tests existing symbols. */
+> >         rq = (struct rq *)bpf_per_cpu_ptr(&runqueues, 0);
+> >         if (rq)
+> > -               out__existing_typed = rq->cpu;
+> > +               out__existing_typed = 0;
+>
+> Why do we need this change?
+>
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>=
+Since they share the same BPF object for generating skeleton, it needs to remove
+dependency on CO-RE which gen_loader does not support.
+
+If it is kept, we get this:
+...
+libbpf: // TODO core_relo: prog 0 insn[5] rq kind 0
+libbpf: prog 'pass_handler': relo #0: failed to relocate: -95
+libbpf: failed to perform CO-RE relocations: -95
+libbpf: failed to load object 'test_ksyms_weak'
+...
+> >         out__existing_typeless = (__u64)&bpf_prog_active;
+> >
+> >         /* tests non-existent symbols. */
+> > --
+> > 2.33.0
+> >
+
+--
+Kartikeya
