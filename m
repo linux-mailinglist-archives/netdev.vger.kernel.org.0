@@ -2,72 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB52425CC7
-	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F493425CC9
+	for <lists+netdev@lfdr.de>; Thu,  7 Oct 2021 22:00:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241784AbhJGUCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 16:02:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43176 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236210AbhJGUCB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 16:02:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 50561610C8;
-        Thu,  7 Oct 2021 20:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633636807;
-        bh=RH9bOR8XoFNTkhlmoufx0mIr+7AtFOAnO2k9u1/anN0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ry1xVbO/WFeMCyY24JvHajNSVBWQl8AglidLCWTzPvJhgMZeqkNgtHsQEMnEsrPdG
-         8vNqD8Jcq/TVFoJG4276eFrJhDoWzTZIVnY2tV0ws+g5JA85vaCVZ4r7zxFmcTiWgi
-         BuxC1c8Iexl289Ak1+PQPQscWC1y8B7118u7U7K9HTjbtSr+rbtrPsq6LRA30jCaF8
-         KLV298auCASjrV23Ii1Vl7SvGA0utxSbiJY0oSH6bQOcWKtGHQfgLPv9yUlEtj8aRY
-         6WUlTcdtQXIiFzc6ZJED/2Txl3K7Hiln+hu2t6f4SrkAbbJHFnIC6DjPA7M/f+P9xT
-         VDoyee6bl0efw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4200760A39;
-        Thu,  7 Oct 2021 20:00:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S241898AbhJGUCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 16:02:21 -0400
+Received: from www62.your-server.de ([213.133.104.62]:56756 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241686AbhJGUCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 16:02:20 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mYZZ3-0006K9-1W; Thu, 07 Oct 2021 22:00:25 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mYZZ2-000KBa-R2; Thu, 07 Oct 2021 22:00:24 +0200
+Subject: Re: [Patch bpf v3 3/4] net: implement ->sock_is_readable() for UDP
+ and AF_UNIX
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Yucong Sun <sunyucong@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+References: <20211002003706.11237-1-xiyou.wangcong@gmail.com>
+ <20211002003706.11237-4-xiyou.wangcong@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <582ff8e9-c7b7-88c1-6cf0-e143da92836f@iogearbox.net>
+Date:   Thu, 7 Oct 2021 22:00:24 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] mips,
- bpf: Fix Makefile that referenced a removed file
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163363680726.2891.16519442145591885027.git-patchwork-notify@kernel.org>
-Date:   Thu, 07 Oct 2021 20:00:07 +0000
-References: <20211007142339.633899-1-johan.almbladh@anyfinetworks.com>
-In-Reply-To: <20211007142339.633899-1-johan.almbladh@anyfinetworks.com>
-To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        paulburton@kernel.org, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        tony.ambardar@gmail.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
+In-Reply-To: <20211002003706.11237-4-xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26315/Thu Oct  7 11:09:01 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Thu,  7 Oct 2021 16:23:39 +0200 you wrote:
-> This patch removes a stale Makefile reference to the cBPF JIT that was
-> removed.
+On 10/2/21 2:37 AM, Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
 > 
-> Fixes: 06b339fe5450 ("mips, bpf: Remove old BPF JIT implementations")
-> Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+> Yucong noticed we can't poll() sockets in sockmap even
+> when they are the destination sockets of redirections.
+> This is because we never poll any psock queues in ->poll(),
+> except for TCP. With ->sock_is_readable() now we can
+> overwrite >sock_is_readable(), invoke and implement it for
+> both UDP and AF_UNIX sockets.
+> 
+> Reported-by: Yucong Sun <sunyucong@gmail.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 > ---
->  arch/mips/net/Makefile | 1 -
->  1 file changed, 1 deletion(-)
+>   net/ipv4/udp.c      | 2 ++
+>   net/ipv4/udp_bpf.c  | 1 +
+>   net/unix/af_unix.c  | 4 ++++
+>   net/unix/unix_bpf.c | 2 ++
+>   4 files changed, 9 insertions(+)
+> 
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index 2a7825a5b842..4a7e15a43a68 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -2866,6 +2866,8 @@ __poll_t udp_poll(struct file *file, struct socket *sock, poll_table *wait)
+>   	    !(sk->sk_shutdown & RCV_SHUTDOWN) && first_packet_length(sk) == -1)
+>   		mask &= ~(EPOLLIN | EPOLLRDNORM);
+>   
+> +	if (sk_is_readable(sk))
+> +		mask |= EPOLLIN | EPOLLRDNORM;
 
-Here is the summary with links:
-  - [bpf-next] mips, bpf: Fix Makefile that referenced a removed file
-    https://git.kernel.org/bpf/bpf-next/c/065485ac5e86
+udp_poll() has this extra logic around first_packet_length() which drops all bad csum'ed
+skbs. How does this stand in relation to sk_msg_is_readable()? Is this a concern as well
+there? Maybe makes sense to elaborate a bit more in the commit message for context / future
+reference.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks,
+Daniel
+
+>   	return mask;
+>   
+>   }
 
 
