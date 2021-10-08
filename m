@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B8B427437
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 01:34:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53007427439
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 01:35:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243815AbhJHXgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 19:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
+        id S243855AbhJHXgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 19:36:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243777AbhJHXgk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 19:36:40 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1310C061570;
-        Fri,  8 Oct 2021 16:34:44 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id p13so42573334edw.0;
-        Fri, 08 Oct 2021 16:34:44 -0700 (PDT)
+        with ESMTP id S243802AbhJHXgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 19:36:41 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAE8C061755;
+        Fri,  8 Oct 2021 16:34:45 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id a25so26065460edx.8;
+        Fri, 08 Oct 2021 16:34:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BbqqoyYUIZZYbznL3kKosmLxfC3pf231vxrIrzT+TdU=;
-        b=N6juvDIt1jwZL+1At7QVhifWJofDBtVu9O1zB0NR/EG1MMmZo8EzIcay+pIB/ukUaB
-         4pza5E8/Mygmf7FtRQc6HwvdffkSbUuveoVlzX3Az7YiICU21HZnDKRr9A96xCycVNWn
-         I9gbgNevDDzh+BQxGP57DexSzxIOaCmuoAJdGT0iv5UIgkPS5V5CwwxaUOahFiuva+lZ
-         JaadQpSSNilDuFa3rYe7jzEzko/DK3BDE3ZtbC/RblLt+wXigkqTeJiuk3M4jjb5I3F5
-         5G/xzb/vj9xST9lVogOmPnhzBg7x2Yijf3ZirWi/bPwhEUOQOtUN9U+xHZlDrCDsF1mu
-         C5bA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TIVh7aXnS7WMSRSGvwGkaRzozu+hXv97EwwaZX+jHdM=;
+        b=Ch98HwOMLrYmbzezG949Y4CDsQ2qYld4USSd5PK7JS0pdJvNcC4DO6jXPpmhELEHNB
+         DxuQdNEd8qsHfn9xWkmoe/FxOck6NYlLWInMY2LaTvN/UfG4ohbll7YWM/mSP8snWS53
+         NeL/Fhu0bKxtJbri4IbXTYjK43DDQC0Lq8YFJ7rP/oBW0Pk4K7U9WWSKYxCU3cxesK0o
+         0MusXMy5MB9/btf6I4RWMwhrcn5/9kqvNNGiBX1hSFmdMTmLN/OEakGmHa3SdYdOkfvU
+         E1MDrUhXZX/blE6Q/qov2cd7pmGKCyAJ3mkY5bCG0OKMWqKR3k85wuW9Uh9d+LrYa2AI
+         fQxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BbqqoyYUIZZYbznL3kKosmLxfC3pf231vxrIrzT+TdU=;
-        b=u2HoYZySMddKJJXQVjaI2swVVZ145hZb0un7F9yD9GV6D6VPDk6H8IUt46G+3NaJvc
-         I0l1RGc2Llq4x3gVAd816HIFtpapHZVeAX74RnhxqeIf4fhULmJ7shu0lItERrfpRv/J
-         ccMy2Ui0wFaaDq0b4ZNjQjmLlk2mCVCM5d5v2bx4zoqWom9gVf88YSzcHjOHk+z+VbR5
-         fa45ihNV6L1Cx6URNS+AcK9oK/CCGDwOJzKgI/zLntkiIs0ktuxzdRo15wBWrz+WufTY
-         AoEwqeSCPJ0kEdhWKqG7M5qYWWvQBZ7qlDgSdc66mWfLQ+xONtKyf9sdEZol4l9Dj3Gc
-         l2pQ==
-X-Gm-Message-State: AOAM5325IGg7U6PFTwx0Vsiwz6RuK01w4LaZHKeYfXehKFyuMQYQKvK3
-        ATcVyfCRqObVz2UqGW5GQPw=
-X-Google-Smtp-Source: ABdhPJwBGDFoRBplaNNL0bDGBfrzAAVZdu8hhunyEBJU+r8aI/SZXNp/+tWHHLxcaEFnA6cRVhWNdA==
-X-Received: by 2002:a17:906:1fc1:: with SMTP id e1mr7723208ejt.515.1633736083011;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TIVh7aXnS7WMSRSGvwGkaRzozu+hXv97EwwaZX+jHdM=;
+        b=WLn/kF6lpEGR9xjTNegfDQbYnNPgu7iFwFeezGmex+Vr7pJNaUA7Dgq0fI97zwaCDh
+         aOr/TsdijN9eGxRHR5HOxxS3BCzY6sqSC00M81ljyDrPzxptgIP/QA+Nz6OQ0x3324kA
+         jA+3YbV+A0xrb+qxYhCgPwTiJ2DfY7+AJoZz1Uoz58dlh6d99XNcqOWj5gcB7wHSDvLK
+         odYHS+QzLJ1Id7FtbdVngLfNWPL2ayWDCSK1dQPbH8IG39NBYFO6Dm6dWeQkqvSYflSl
+         VJEaBZBn/fMAKHmK0cH8oomlDSLh4GyHxbYdnBqF+fVjHBT0NxsDiPirlAvRwC23cXgi
+         RdTA==
+X-Gm-Message-State: AOAM531cNw5qnrOkOb7NwRpHeoQHB46nYAWqPLzOMBpobcx5sXLG/qrU
+        PSYZm+pUuO0zLGGX+8Fiqdo=
+X-Google-Smtp-Source: ABdhPJwMjg4na9kQU1XPkwCaOyIRjU+iJznN/bL3dBuNJeL4DntizkcRjtgi9wKmR0NaIzcd4IVqlA==
+X-Received: by 2002:a50:c006:: with SMTP id r6mr19406022edb.289.1633736083798;
         Fri, 08 Oct 2021 16:34:43 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id b2sm300211edv.73.2021.10.08.16.34.42
+        by smtp.googlemail.com with ESMTPSA id b2sm300211edv.73.2021.10.08.16.34.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Oct 2021 16:34:42 -0700 (PDT)
+        Fri, 08 Oct 2021 16:34:43 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -55,143 +55,105 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net PATCH 1/2] drivers: net: phy: at803x: fix resume for QCA8327 phy
-Date:   Sat,  9 Oct 2021 01:34:25 +0200
-Message-Id: <20211008233426.1088-1-ansuelsmth@gmail.com>
+Subject: [net PATCH 2/2] drivers: net: phy: at803x: add DAC amplitude fix for 8327 phy
+Date:   Sat,  9 Oct 2021 01:34:26 +0200
+Message-Id: <20211008233426.1088-2-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20211008233426.1088-1-ansuelsmth@gmail.com>
+References: <20211008233426.1088-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From Documentation phy resume triggers phy reset and restart
-auto-negotiation. Add a dedicated function to wait reset to finish as
-it was notice a regression where port sometime are not reliable after a
-suspend/resume session. The reset wait logic is copied from phy_poll_reset.
-Add dedicated suspend function to use genphy_suspend only with QCA8337
-phy and set only additional debug settings for QCA8327. With more test
-it was reported that QCA8327 doesn't proprely support this mode and
-using this cause the unreliability of the switch ports, especially the
-malfunction of the port0.
+QCA8327 internal phy require DAC amplitude adjustement set to +6% with
+100m speed. Also add additional define to report a change of the same
+reg in QCA8337. (different scope it does set 1000m voltage)
+Add link_change_notify function to set the proper amplitude adjustement
+on PHY_RUNNING state and disable on any other state.
 
-Fixes: 15b9df4ece17 ("net: phy: at803x: add resume/suspend function to qca83xx phy")
+Fixes: b4df02b562f4 ("net: phy: at803x: add support for qca 8327 A variant internal phy")
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/phy/at803x.c | 69 ++++++++++++++++++++++++++++++++++++----
- 1 file changed, 63 insertions(+), 6 deletions(-)
+ drivers/net/phy/at803x.c | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
 diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 3feee4d59030..c6c87b82c95c 100644
+index c6c87b82c95c..5208ea8fdd69 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
-@@ -92,9 +92,14 @@
+@@ -87,6 +87,8 @@
+ #define AT803X_PSSR_MR_AN_COMPLETE		0x0200
+ 
+ #define AT803X_DEBUG_REG_0			0x00
++#define QCA8327_DEBUG_MANU_CTRL_EN		BIT(2)
++#define QCA8337_DEBUG_MANU_CTRL_EN		GENMASK(3, 2)
+ #define AT803X_DEBUG_RX_CLK_DLY_EN		BIT(15)
+ 
  #define AT803X_DEBUG_REG_5			0x05
- #define AT803X_DEBUG_TX_CLK_DLY_EN		BIT(8)
+@@ -1314,9 +1316,37 @@ static int qca83xx_config_init(struct phy_device *phydev)
+ 		break;
+ 	}
  
-+#define AT803X_DEBUG_REG_HIB_CTRL		0x0b
-+#define   AT803X_DEBUG_HIB_CTRL_SEL_RST_80U	BIT(10)
-+#define   AT803X_DEBUG_HIB_CTRL_EN_ANY_CHANGE	BIT(13)
++	/* QCA8327 require DAC amplitude adjustment for 100m set to +6%.
++	 * Disable on init and enable only with 100m speed following
++	 * qca original source code.
++	 */
++	if (phydev->drv->phy_id == QCA8327_A_PHY_ID ||
++	    phydev->drv->phy_id == QCA8327_B_PHY_ID)
++		at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0,
++				      QCA8327_DEBUG_MANU_CTRL_EN, 0);
 +
- #define AT803X_DEBUG_REG_3C			0x3C
- 
- #define AT803X_DEBUG_REG_3D			0x3D
-+#define   AT803X_DEBUG_GATE_CLK_IN1000		BIT(6)
- 
- #define AT803X_DEBUG_REG_1F			0x1F
- #define AT803X_DEBUG_PLL_ON			BIT(2)
-@@ -1312,6 +1317,58 @@ static int qca83xx_config_init(struct phy_device *phydev)
  	return 0;
  }
  
-+static int qca83xx_resume(struct phy_device *phydev)
++static void qca83xx_link_change_notify(struct phy_device *phydev)
 +{
-+	int ret, val;
++	/* QCA8337 doesn't require DAC Amplitude adjustement */
++	if (phydev->drv->phy_id == QCA8337_PHY_ID)
++		return;
 +
-+	/* Skip reset if not suspended */
-+	if (!phydev->suspended)
-+		return 0;
-+
-+	/* Reinit the port, reset values set by suspend */
-+	qca83xx_config_init(phydev);
-+
-+	/* Reset the port on port resume */
-+	phy_set_bits(phydev, MII_BMCR, BMCR_RESET | BMCR_ANENABLE);
-+
-+	/* On resume from suspend the switch execute a reset and
-+	 * restart auto-negotiation. Wait for reset to complete.
-+	 */
-+	ret = phy_read_poll_timeout(phydev, MII_BMCR, val, !(val & BMCR_RESET),
-+				    50000, 600000, true);
-+	if (ret)
-+		return ret;
-+
-+	msleep(1);
-+
-+	return 0;
-+}
-+
-+static int qca83xx_suspend(struct phy_device *phydev)
-+{
-+	u16 mask = 0;
-+
-+	/* Only QCA8337 support actual suspend.
-+	 * QCA8327 cause port unreliability when phy suspend
-+	 * is set.
-+	 */
-+	if (phydev->drv->phy_id == QCA8337_PHY_ID) {
-+		genphy_suspend(phydev);
++	/* Set DAC Amplitude adjustment to +6% for 100m on link running */
++	if (phydev->state == PHY_RUNNING) {
++		if (phydev->speed == SPEED_100)
++			at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0,
++					      QCA8327_DEBUG_MANU_CTRL_EN,
++					      QCA8327_DEBUG_MANU_CTRL_EN);
 +	} else {
-+		mask |= ~(BMCR_SPEED1000 | BMCR_FULLDPLX);
-+		phy_modify(phydev, MII_BMCR, mask, 0);
++		/* Reset DAC Amplitude adjustment */
++		at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0,
++				      QCA8327_DEBUG_MANU_CTRL_EN, 0);
 +	}
-+
-+	at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_3D,
-+			      AT803X_DEBUG_GATE_CLK_IN1000, 0);
-+
-+	at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_HIB_CTRL,
-+			      AT803X_DEBUG_HIB_CTRL_EN_ANY_CHANGE |
-+			      AT803X_DEBUG_HIB_CTRL_SEL_RST_80U, 0);
-+
-+	return 0;
 +}
 +
- static struct phy_driver at803x_driver[] = {
+ static int qca83xx_resume(struct phy_device *phydev)
  {
- 	/* Qualcomm Atheros AR8035 */
-@@ -1421,8 +1478,8 @@ static struct phy_driver at803x_driver[] = {
- 	.get_sset_count		= at803x_get_sset_count,
- 	.get_strings		= at803x_get_strings,
- 	.get_stats		= at803x_get_stats,
--	.suspend		= genphy_suspend,
--	.resume			= genphy_resume,
-+	.suspend		= qca83xx_suspend,
-+	.resume			= qca83xx_resume,
- }, {
- 	/* QCA8327-A from switch QCA8327-AL1A */
- 	.phy_id			= QCA8327_A_PHY_ID,
-@@ -1436,8 +1493,8 @@ static struct phy_driver at803x_driver[] = {
- 	.get_sset_count		= at803x_get_sset_count,
- 	.get_strings		= at803x_get_strings,
- 	.get_stats		= at803x_get_stats,
--	.suspend		= genphy_suspend,
--	.resume			= genphy_resume,
-+	.suspend		= qca83xx_suspend,
-+	.resume			= qca83xx_resume,
- }, {
- 	/* QCA8327-B from switch QCA8327-BL1A */
- 	.phy_id			= QCA8327_B_PHY_ID,
-@@ -1451,8 +1508,8 @@ static struct phy_driver at803x_driver[] = {
- 	.get_sset_count		= at803x_get_sset_count,
- 	.get_strings		= at803x_get_strings,
- 	.get_stats		= at803x_get_stats,
--	.suspend		= genphy_suspend,
--	.resume			= genphy_resume,
-+	.suspend		= qca83xx_suspend,
-+	.resume			= qca83xx_resume,
- }, };
- 
- module_phy_driver(at803x_driver);
+ 	int ret, val;
+@@ -1471,6 +1501,7 @@ static struct phy_driver at803x_driver[] = {
+ 	.phy_id_mask		= QCA8K_PHY_ID_MASK,
+ 	.name			= "Qualcomm Atheros 8337 internal PHY",
+ 	/* PHY_GBIT_FEATURES */
++	.link_change_notify	= qca83xx_link_change_notify,
+ 	.probe			= at803x_probe,
+ 	.flags			= PHY_IS_INTERNAL,
+ 	.config_init		= qca83xx_config_init,
+@@ -1486,6 +1517,7 @@ static struct phy_driver at803x_driver[] = {
+ 	.phy_id_mask		= QCA8K_PHY_ID_MASK,
+ 	.name			= "Qualcomm Atheros 8327-A internal PHY",
+ 	/* PHY_GBIT_FEATURES */
++	.link_change_notify	= qca83xx_link_change_notify,
+ 	.probe			= at803x_probe,
+ 	.flags			= PHY_IS_INTERNAL,
+ 	.config_init		= qca83xx_config_init,
+@@ -1501,6 +1533,7 @@ static struct phy_driver at803x_driver[] = {
+ 	.phy_id_mask		= QCA8K_PHY_ID_MASK,
+ 	.name			= "Qualcomm Atheros 8327-B internal PHY",
+ 	/* PHY_GBIT_FEATURES */
++	.link_change_notify	= qca83xx_link_change_notify,
+ 	.probe			= at803x_probe,
+ 	.flags			= PHY_IS_INTERNAL,
+ 	.config_init		= qca83xx_config_init,
 -- 
 2.32.0
 
