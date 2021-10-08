@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21700427255
+	by mail.lfdr.de (Postfix) with ESMTP id B31AF427257
 	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 22:33:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242730AbhJHUfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 16:35:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46792 "EHLO
+        id S242845AbhJHUfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 16:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242279AbhJHUfQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 16:35:16 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C6DC061570;
-        Fri,  8 Oct 2021 13:33:20 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id p4so10733966qki.3;
-        Fri, 08 Oct 2021 13:33:20 -0700 (PDT)
+        with ESMTP id S242687AbhJHUfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 16:35:17 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218ECC061570;
+        Fri,  8 Oct 2021 13:33:22 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id bk7so1669636qkb.13;
+        Fri, 08 Oct 2021 13:33:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mjh66l7EjiKQtKP9c2a3KtPXE8PrCUDOCdt6/27IAc4=;
-        b=LpPIRW7LFjwatmS0X/2Ogdhky7Za9m+BHxGsmYrGbuORhJcSv/ih3FsGb0UN1+2Grb
-         OoQU/ExLUQGh+5w2tRSLYEu7j2Ohi4y+zOX5vXOpXcvjXxhwybkczKh9wozmAxp0RmM/
-         JrL++z5f0TF/IOSY7dfXP2fcFtHP+rasl4NYTfGva2fZiAWyz03ymnusybEr/R80yn3n
-         J0YoOpG8KPZMwkDz0MarDIyUN4EIGuEHli/HPIJouxFk4nBwHO+2AtHEoBj/G9ky2Wh6
-         WSctMLTpZgfn3I+Fbz2+bx7Hn4h+tWjte4KdS3KwFzrMZpXyklTODkxm0SgLdxrAavJ5
-         5XEQ==
+        bh=CYvMgF3Mg6V2OX7HnsOshqPQnZjQe8a0VLiCDJf1sy8=;
+        b=H3P8aXRB9l5j4qQlBtSvUFf3J+Bfw8CHV3NpqyKZxkK7mYVIKJmcwqzatHQzYYVJOt
+         YLcwwYllLsOVA0rs4DBq60Tr8oWTUxG63FxjRhUQFAsqPsWiBvx199wg/nSgrUR2HJ1L
+         /SH9npr56DrN8r4OHUrTmBcunXA08SCDJNuevi5rWaaOzVLmxXgmm/F6VoPgFwzElKKU
+         j5iTD5v9abh6l3DVSx7LUlhAs3Ds/3ED6VCDs/tsSHXSiWi+b29rXJRydFsRfXN09Vbe
+         3QpIBSvSyK76ixXBqdv5aGbk0igK9G4M76kPCcdpXq375CrNqMkQku0mB2t5JD68ZkDp
+         ndUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mjh66l7EjiKQtKP9c2a3KtPXE8PrCUDOCdt6/27IAc4=;
-        b=zXAAvVKhE5dTSEvptUr6KIFB9JbZriHPs8BttUQCyoydzz58hbuGYxumMlleRmeV5J
-         8bomR/pQ4CBUYSXKhKg2jHKk990tQxJr1Mu+dzaWA+oc0Rr68USAN2U6lY3dIe3mDQSP
-         Y3SvXB6IPA+TR0icYAq40aziBuppa98aBvFl8DKccSOxbeVdYLyY7tEZAvxrG0Yyfiy1
-         bhz1P5lqrVvEFasxrsTZcAPt7w691FDzKSwsfnSaCoPlrxmBGzWz8zgu2f5VXZq+5FtN
-         ZJ5mo0+JaYs2l0br5t+dr3XGdQKOgzCE757RaIFLnke4jxElBKnBVp2J1VkO9vQXIQeu
-         KgZQ==
-X-Gm-Message-State: AOAM532JkNg3WA+VqaNgh9XmGX5SMaTBEDRWeSdsI0iWdGd7YrgQjhLl
-        LDYhkWOUY7XLnaucTwtbKIHKoej2lqE=
-X-Google-Smtp-Source: ABdhPJwtWOAns0TANabseZMUaUr3A+07qUEJ2zIEofPWG2sZrnQqEkWZqrMhxv4ZvvTj5ODTutHnxQ==
-X-Received: by 2002:ae9:eb06:: with SMTP id b6mr4540793qkg.417.1633725199865;
-        Fri, 08 Oct 2021 13:33:19 -0700 (PDT)
+        bh=CYvMgF3Mg6V2OX7HnsOshqPQnZjQe8a0VLiCDJf1sy8=;
+        b=FehE4IItKXQ95zFNgEdeCXGQ1ol/mpCcEkDVVnqQoYSYikz0dtCroEsyyo15pV1VC9
+         gyOmqGlGmAzqdJoXSS296iaOnYagXKHeQ5DfmCPCEsFHXf5R3CX1mCbo/sS2zvyllvXK
+         62CJNou7Kz5fwc0Mh5nL9o+Zv2Z+aKBGx2ySzLK1o+ybs/1hIovibeNVcAAVY3C96Gbf
+         KlTR0k8mjjsNY53HbhBwpe+EN41F85gCPfjbuq6Ra30LMbS28vMB6GdwtAbV1aIcIKBu
+         Av9nfkNQRYpil2xqkQ7WOr3kq18q8OZCj58oqpRYxqN5xrbcXqSRolf/erlV2HclQOwV
+         mvEQ==
+X-Gm-Message-State: AOAM530/8vqY9His86a6Bw+JoLPBuRSFSiemHO9m/WGEYVqkQWEwxqZc
+        GgmR9Q4bwwUyneWl4Ehb8jS8mTJBk2Y=
+X-Google-Smtp-Source: ABdhPJzrWWXH+h7JaIsRQpOWRR4LdVjzGpQrvobGBDFmoigDqibKoBQyvywykHvloAF5R9COgfNLSA==
+X-Received: by 2002:a37:a944:: with SMTP id s65mr4708867qke.263.1633725201025;
+        Fri, 08 Oct 2021 13:33:21 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:795f:367d:1f1e:4801])
-        by smtp.gmail.com with ESMTPSA id c8sm381945qtb.9.2021.10.08.13.33.18
+        by smtp.gmail.com with ESMTPSA id c8sm381945qtb.9.2021.10.08.13.33.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Oct 2021 13:33:19 -0700 (PDT)
+        Fri, 08 Oct 2021 13:33:20 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Yucong Sun <sunyucong@gmail.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf v4 2/4] skmsg: extract and reuse sk_msg_is_readable()
-Date:   Fri,  8 Oct 2021 13:33:04 -0700
-Message-Id: <20211008203306.37525-3-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf v4 3/4] net: implement ->sock_is_readable() for UDP and AF_UNIX
+Date:   Fri,  8 Oct 2021 13:33:05 -0700
+Message-Id: <20211008203306.37525-4-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211008203306.37525-1-xiyou.wangcong@gmail.com>
 References: <20211008203306.37525-1-xiyou.wangcong@gmail.com>
@@ -68,90 +69,94 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-tcp_bpf_sock_is_readable() is pretty much generic,
-we can extract it and reuse it for non-TCP sockets.
+Yucong noticed we can't poll() sockets in sockmap even
+when they are the destination sockets of redirections.
+This is because we never poll any psock queues in ->poll(),
+except for TCP. With ->sock_is_readable() now we can
+overwrite >sock_is_readable(), invoke and implement it for
+both UDP and AF_UNIX sockets.
 
+Reported-by: Yucong Sun <sunyucong@gmail.com>
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
 Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- include/linux/skmsg.h |  1 +
- net/core/skmsg.c      | 14 ++++++++++++++
- net/ipv4/tcp_bpf.c    | 15 +--------------
- 3 files changed, 16 insertions(+), 14 deletions(-)
+ net/ipv4/udp.c      | 3 +++
+ net/ipv4/udp_bpf.c  | 1 +
+ net/unix/af_unix.c  | 4 ++++
+ net/unix/unix_bpf.c | 2 ++
+ 4 files changed, 10 insertions(+)
 
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index 14ab0c0bc924..1ce9a9eb223b 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -128,6 +128,7 @@ int sk_msg_memcopy_from_iter(struct sock *sk, struct iov_iter *from,
- 			     struct sk_msg *msg, u32 bytes);
- int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
- 		   int len, int flags);
-+bool sk_msg_is_readable(struct sock *sk);
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 8536b2a7210b..2fffcf2b54f3 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2867,6 +2867,9 @@ __poll_t udp_poll(struct file *file, struct socket *sock, poll_table *wait)
+ 	    !(sk->sk_shutdown & RCV_SHUTDOWN) && first_packet_length(sk) == -1)
+ 		mask &= ~(EPOLLIN | EPOLLRDNORM);
  
- static inline void sk_msg_check_to_free(struct sk_msg *msg, u32 i, u32 bytes)
- {
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 2d6249b28928..a86ef7e844f8 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -474,6 +474,20 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
++	/* psock ingress_msg queue should not contain any bad checksum frames */
++	if (sk_is_readable(sk))
++		mask |= EPOLLIN | EPOLLRDNORM;
+ 	return mask;
+ 
  }
- EXPORT_SYMBOL_GPL(sk_msg_recvmsg);
+diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
+index 7a1d5f473878..bbe6569c9ad3 100644
+--- a/net/ipv4/udp_bpf.c
++++ b/net/ipv4/udp_bpf.c
+@@ -114,6 +114,7 @@ static void udp_bpf_rebuild_protos(struct proto *prot, const struct proto *base)
+ 	*prot        = *base;
+ 	prot->close  = sock_map_close;
+ 	prot->recvmsg = udp_bpf_recvmsg;
++	prot->sock_is_readable = sk_msg_is_readable;
+ }
  
-+bool sk_msg_is_readable(struct sock *sk)
-+{
-+	struct sk_psock *psock;
-+	bool empty = true;
-+
-+	rcu_read_lock();
-+	psock = sk_psock(sk);
-+	if (likely(psock))
-+		empty = list_empty(&psock->ingress_msg);
-+	rcu_read_unlock();
-+	return !empty;
-+}
-+EXPORT_SYMBOL_GPL(sk_msg_is_readable);
-+
- static struct sk_msg *sk_psock_create_ingress_msg(struct sock *sk,
- 						  struct sk_buff *skb)
- {
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 0175dbcb7722..dabbc93e31b6 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -150,19 +150,6 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
- EXPORT_SYMBOL_GPL(tcp_bpf_sendmsg_redir);
+ static void udp_bpf_check_v6_needs_rebuild(struct proto *ops)
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 0878ab86597b..9e62d83ffd3e 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -3052,6 +3052,8 @@ static __poll_t unix_poll(struct file *file, struct socket *sock, poll_table *wa
+ 	/* readable? */
+ 	if (!skb_queue_empty_lockless(&sk->sk_receive_queue))
+ 		mask |= EPOLLIN | EPOLLRDNORM;
++	if (sk_is_readable(sk))
++		mask |= EPOLLIN | EPOLLRDNORM;
  
- #ifdef CONFIG_BPF_SYSCALL
--static bool tcp_bpf_sock_is_readable(struct sock *sk)
--{
--	struct sk_psock *psock;
--	bool empty = true;
--
--	rcu_read_lock();
--	psock = sk_psock(sk);
--	if (likely(psock))
--		empty = list_empty(&psock->ingress_msg);
--	rcu_read_unlock();
--	return !empty;
--}
--
- static int tcp_msg_wait_data(struct sock *sk, struct sk_psock *psock,
- 			     long timeo)
- {
-@@ -479,7 +466,7 @@ static void tcp_bpf_rebuild_protos(struct proto prot[TCP_BPF_NUM_CFGS],
- 	prot[TCP_BPF_BASE].unhash		= sock_map_unhash;
- 	prot[TCP_BPF_BASE].close		= sock_map_close;
- 	prot[TCP_BPF_BASE].recvmsg		= tcp_bpf_recvmsg;
--	prot[TCP_BPF_BASE].sock_is_readable	= tcp_bpf_sock_is_readable;
-+	prot[TCP_BPF_BASE].sock_is_readable	= sk_msg_is_readable;
+ 	/* Connection-based need to check for termination and startup */
+ 	if ((sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET) &&
+@@ -3091,6 +3093,8 @@ static __poll_t unix_dgram_poll(struct file *file, struct socket *sock,
+ 	/* readable? */
+ 	if (!skb_queue_empty_lockless(&sk->sk_receive_queue))
+ 		mask |= EPOLLIN | EPOLLRDNORM;
++	if (sk_is_readable(sk))
++		mask |= EPOLLIN | EPOLLRDNORM;
  
- 	prot[TCP_BPF_TX]			= prot[TCP_BPF_BASE];
- 	prot[TCP_BPF_TX].sendmsg		= tcp_bpf_sendmsg;
+ 	/* Connection-based need to check for termination and startup */
+ 	if (sk->sk_type == SOCK_SEQPACKET) {
+diff --git a/net/unix/unix_bpf.c b/net/unix/unix_bpf.c
+index b927e2baae50..452376c6f419 100644
+--- a/net/unix/unix_bpf.c
++++ b/net/unix/unix_bpf.c
+@@ -102,6 +102,7 @@ static void unix_dgram_bpf_rebuild_protos(struct proto *prot, const struct proto
+ 	*prot        = *base;
+ 	prot->close  = sock_map_close;
+ 	prot->recvmsg = unix_bpf_recvmsg;
++	prot->sock_is_readable = sk_msg_is_readable;
+ }
+ 
+ static void unix_stream_bpf_rebuild_protos(struct proto *prot,
+@@ -110,6 +111,7 @@ static void unix_stream_bpf_rebuild_protos(struct proto *prot,
+ 	*prot        = *base;
+ 	prot->close  = sock_map_close;
+ 	prot->recvmsg = unix_bpf_recvmsg;
++	prot->sock_is_readable = sk_msg_is_readable;
+ 	prot->unhash  = sock_map_unhash;
+ }
+ 
 -- 
 2.30.2
 
