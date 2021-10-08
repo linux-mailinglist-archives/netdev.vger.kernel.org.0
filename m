@@ -2,133 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74B904265AC
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 10:14:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D4D6426622
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 10:44:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233780AbhJHIQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 04:16:34 -0400
-Received: from mail-ua1-f45.google.com ([209.85.222.45]:34723 "EHLO
-        mail-ua1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233072AbhJHIQc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 04:16:32 -0400
-Received: by mail-ua1-f45.google.com with SMTP id h4so6198069uaw.1;
-        Fri, 08 Oct 2021 01:14:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7wO+xcQh6vNN08iok37rOCPRwho9ClVLbVfs6DvZcoU=;
-        b=1V+mwmje0bbAVYIweZ9k+xoyyotUOqd0jO9GkvoXdg6/lVr/Bvc6/ykGQFLBE/BEm2
-         LdDqqh1LbwB8g5uDQkB8vTOOVvNMBKfqKyWhZkp9mpqIniq/jNlrp1sufYnkyyy7GGS3
-         jBvk+7QCLD2+oEKKAaOql3OEDuRpqrJAKpIKPNXNHlIVnFZva2qpJtKeu/84TVgFoMsq
-         Xq9PehJrJvSWAjnjLKjvLWk17nmu7oMfM3LJWMVaeu2n9Oc78YS8cfiAd6QF8xgwVg90
-         S5jMmhiiFhajs3ZBuHe3c62PV9Y3uPXEmywRwzK8makrR81SV4ENCI6LPgKUyEQ1Sfa1
-         Nvxw==
-X-Gm-Message-State: AOAM530UZyevZG0l6HMETNPC7NcScgs/sMbTv/b//XEycgYjweX09j9W
-        S+mqOcRkkyX1hXlj5g419Pip0EorYDALjJrX/MJHImVBioo=
-X-Google-Smtp-Source: ABdhPJxD3cm5x6NWNfsGlyqVJout9BqXENj3uvqqT6UeA6jfU03wynvPPBTZw2mQph2TScrcb7ByvBjOn/L2fjppPQ4=
-X-Received: by 2002:ab0:16d4:: with SMTP id g20mr1204838uaf.114.1633680876846;
- Fri, 08 Oct 2021 01:14:36 -0700 (PDT)
+        id S234535AbhJHIp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 04:45:57 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:62447 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229877AbhJHIp4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 04:45:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1633682641; x=1665218641;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6Dm9aMViI8ReP+IFTphshx0D0ke/ykpEn4jugDYx6Ts=;
+  b=rzuf7LTIxIgU6cYtTcO5o6r9bSFnOjO08NVYXFz0aaEOPdArU10v3CwI
+   T+w7oco2JN3NRKH6KVUhwFICgl/iNAPapJqyya0dzzXgvqeZvslgXU+f4
+   7yvTc9OUC4FMRaI2ogTyhxyie7OlCsCrRhmttRaKgIhOj5yj4+DtglIeH
+   hRqrVSRtpkCTrikpI2J3yQ6WCt7FOnFCPaz/2UYiaE6ALLCioga+qRMoF
+   FI9b/vAPjf1E+FZdN+ZwFwuFolunHSTzIWHi3kBdJVOkaA+MbeS9iMogR
+   IJQHM2WL60McK4nKvSNLqZyA3Kt5W0ObV7qoMgA1rXbDaCdZjoi1CITb9
+   w==;
+IronPort-SDR: XUAliwqaByR0S4MfZETclano9WkUxU+5vweg8Qu+XMTZhfnS61T9vlMsLgOa3Yyt8G5XsAV8LN
+ YqAIn0qABtQC3uEk1nwhi2EiU0zfpuID7MukO1NRCuZ5w9jauzegpDQDlsBeuIhXJ9PlInaCR5
+ PtT91LFqrOst+Lr8ThhjgDXXL8eMypg5GVCRRdyyEsZ02z0/lMEAOmy71CEsKefjmQBCOhvlFL
+ kgoPinCAs4dXtMii+nglzfAuJ0X2JwrH11eI3Vquf+3UwwaLcxy4elWimWxXyfYZ1iZATR8hru
+ nPXHvMTs1zYQW32vMvOd4Myj
+X-IronPort-AV: E=Sophos;i="5.85,357,1624345200"; 
+   d="scan'208";a="147263658"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Oct 2021 01:44:00 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 8 Oct 2021 01:44:00 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Fri, 8 Oct 2021 01:43:54 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     George McCollister <george.mccollister@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: [PATCH net] net: dsa: microchip: Added the condition for scheduling ksz_mib_read_work
+Date:   Fri, 8 Oct 2021 14:13:48 +0530
+Message-ID: <20211008084348.7306-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20211008162103.1921a7a7@canb.auug.org.au> <87tuhs5ah8.fsf@codeaurora.org>
-In-Reply-To: <87tuhs5ah8.fsf@codeaurora.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 8 Oct 2021 10:14:25 +0200
-Message-ID: <CAMuHMdUZa9o15_fGJ7Si_-bOQVcFOxtWgo_MOiKsV0FjoPeX6Q@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Jouni Malinen <jouni@codeaurora.org>,
-        Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        ath11k@lists.infradead.org,
-        linux-wireless <linux-wireless@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kalle,
+When the ksz module is installed and removed using rmmod, kernel crashes
+with null pointer dereferrence error. During rmmod, ksz_switch_remove
+function tries to cancel the mib_read_workqueue using
+cancel_delayed_work_sync routine.
 
-On Fri, Oct 8, 2021 at 7:55 AM Kalle Valo <kvalo@codeaurora.org> wrote:
-> Stephen Rothwell <sfr@canb.auug.org.au> writes:
->
-> > After merging the net-next tree, today's linux-next build (xtensa,
-> > m68k allmodconfig) failed like this:
-> >
-> > In file included from <command-line>:0:0:
-> > In function 'ath11k_peer_assoc_h_smps',
-> >     inlined from 'ath11k_peer_assoc_prepare' at drivers/net/wireless/ath/ath11k/mac.c:2362:2:
-> > include/linux/compiler_types.h:317:38: error: call to '__compiletime_assert_650' declared with attribute error: FIELD_GET: type of reg too small for mask
-> >   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-> >                                       ^
-> > include/linux/compiler_types.h:298:4: note: in definition of macro '__compiletime_assert'
-> >     prefix ## suffix();    \
-> >     ^
-> > include/linux/compiler_types.h:317:2: note: in expansion of macro '_compiletime_assert'
-> >   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-> >   ^
-> > include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-> >  #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-> >                                      ^
-> > include/linux/bitfield.h:52:3: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-> >    BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ull,  \
-> >    ^
-> > include/linux/bitfield.h:108:3: note: in expansion of macro '__BF_FIELD_CHECK'
-> >    __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: "); \
-> >    ^
-> > drivers/net/wireless/ath/ath11k/mac.c:2079:10: note: in expansion of macro 'FIELD_GET'
-> >    smps = FIELD_GET(IEEE80211_HE_6GHZ_CAP_SM_PS,
-> >           ^
-> >
-> > Caused by commit
-> >
-> >   6f4d70308e5e ("ath11k: support SMPS configuration for 6 GHz")
->
-> Thanks for the report, weird that I don't see it on x86. I can't look at
-> this in detail now, maybe later today, but I wonder if the diff below
-> fixes the issue?
+At the end of  mib_read_workqueue execution, it again reschedule the
+workqueue unconditionally. Due to which queue rescheduled after
+mib_interval, during this execution it tries to access dp->slave. But
+the slave is unregistered in the ksz_switch_remove function. Hence
+kernel crashes.
 
-It seems to be related to passing "le16_to_cpu(sta->he_6ghz_capa.capa)".
-Probably typeof(le16_to_cpu(sta->he_6ghz_capa.capa)) goes berserk.
-le16_to_cpu() is a complex macro on big-endian. I had expected to see
-a similar issue on powerpc, but I don't.
-Using an intermediate "u16 capa = le16_to_cpu(sta->he_6ghz_capa.capa)"
-fixes the problem.
+To avoid this crash, before canceling the workqueue, resetted the
+mib_interval to 0. In the work queue execution, it schedules the
+workqueue next time only if the mib_interval is non zero.
 
-> At least it's cleaner than using FIELD_GET(), actually ath11k should be
-> cleaned up to use xx_get_bits() all over.
->
-> Kalle
->
-> diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-> index d897020dd52d..3e7e569f284b 100644
-> --- a/drivers/net/wireless/ath/ath11k/mac.c
-> +++ b/drivers/net/wireless/ath/ath11k/mac.c
-> @@ -2076,8 +2076,8 @@ static void ath11k_peer_assoc_h_smps(struct ieee80211_sta *sta,
->                 smps = ht_cap->cap & IEEE80211_HT_CAP_SM_PS;
->                 smps >>= IEEE80211_HT_CAP_SM_PS_SHIFT;
->         } else {
-> -               smps = FIELD_GET(IEEE80211_HE_6GHZ_CAP_SM_PS,
-> -                                le16_to_cpu(sta->he_6ghz_capa.capa));
-> +               smps = le16_get_bits(sta->he_6ghz_capa.capa,
-> +                                    IEEE80211_HE_6GHZ_CAP_SM_PS);
->         }
+Fixes: 469b390e1ba3 ("net: dsa: microchip: use delayed_work instead of timer + work")
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
+ drivers/net/dsa/microchip/ksz_common.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Thanks, that works, too, so (compile)
-Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 1542bfb8b5e5..ffc8e6fb300a 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -94,7 +94,8 @@ static void ksz_mib_read_work(struct work_struct *work)
+ 		mutex_unlock(&mib->cnt_mutex);
+ 	}
+ 
+-	schedule_delayed_work(&dev->mib_read, dev->mib_read_interval);
++	if (dev->mib_read_interval)
++		schedule_delayed_work(&dev->mib_read, dev->mib_read_interval);
+ }
+ 
+ void ksz_init_mib_timer(struct ksz_device *dev)
+@@ -449,8 +450,10 @@ EXPORT_SYMBOL(ksz_switch_register);
+ void ksz_switch_remove(struct ksz_device *dev)
+ {
+ 	/* timer started */
+-	if (dev->mib_read_interval)
++	if (dev->mib_read_interval) {
++		dev->mib_read_interval = 0;
+ 		cancel_delayed_work_sync(&dev->mib_read);
++	}
+ 
+ 	dev->dev_ops->exit(dev);
+ 	dsa_unregister_switch(dev->ds);
+-- 
+2.33.0
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
