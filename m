@@ -2,75 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7113A426C30
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 15:58:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A074426C34
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 15:58:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235647AbhJHOAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 10:00:18 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56600 "EHLO vps0.lunn.ch"
+        id S241154AbhJHOAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 10:00:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55974 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229529AbhJHOAO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Oct 2021 10:00:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=M6hWnj+uhcpajBrcSjCeOIuPqgZh5B6D6Y/tykCXlnQ=; b=updv8nC8I8VkyVi9weeHWWNjRX
-        RvHsdtPel08EtfKe3pHrZ8Vztr6SwN2J3Y1hXvanndW6zi+O5uMQUQmpjCp6qUY9pikxzV/7yAh74
-        nhzXVcqgpmJTfP8Rq3vMhKjNj9k8hVruE86uNxTBCsKW6DA7/N4C6IfkubnEhIDxUNcM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mYqO8-00A3tO-Op; Fri, 08 Oct 2021 15:58:16 +0200
-Date:   Fri, 8 Oct 2021 15:58:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        George McCollister <george.mccollister@gmail.com>,
+        id S229529AbhJHOAS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 10:00:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E18B76101E;
+        Fri,  8 Oct 2021 13:58:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633701503;
+        bh=vHQBjzm63eYEwZdk+Hh3ouA4QScDuMrqTscGOr+oy00=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=JZzsgMirRN+GtgUjepdZCmCr5Pj+hNFm1bcNvDRFnM2X38r4UpW2NSx3jn7QCgsgG
+         7PARKd9sZ+lMYPL73IzY1Pailssbox3IFjC73am4XdCvJcOfcV8EbCV032eCzbgmTt
+         NKZJMxF+830e4ZvtpYRWouV2V9IyYa8LRruhLeMZBUDxwbTSp+mMcrjpaxElUSB66P
+         soOYRqG0uxrXqKbmkN13Zxa758gGVVS88Gv8GlASrYNNTahuEu6IAgqTzu0tQFEgW8
+         BAkiKrxe+kMplD55f2qd51CS0nC1NqqiZggitdoIruKkd75vzP/AB2jl+cBDcoqJj3
+         y2YmIH/FeGs7A==
+Date:   Fri, 8 Oct 2021 08:58:21 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        nic_swsd <nic_swsd@realtek.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH net] net: dsa: microchip: Added the condition for
- scheduling ksz_mib_read_work
-Message-ID: <YWBOeP3dHFbEdg8w@lunn.ch>
-References: <20211008084348.7306-1-arun.ramadoss@microchip.com>
+        Anthony Wong <anthony.wong@canonical.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC] [PATCH net-next v6 3/3] r8169: Implement dynamic ASPM
+ mechanism
+Message-ID: <20211008135821.GA1326355@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211008084348.7306-1-arun.ramadoss@microchip.com>
+In-Reply-To: <CAAd53p4v+CmupCu2+3vY5N64WKkxcNvpk1M7+hhNoposx+aYCg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 08, 2021 at 02:13:48PM +0530, Arun Ramadoss wrote:
-> When the ksz module is installed and removed using rmmod, kernel crashes
-> with null pointer dereferrence error. During rmmod, ksz_switch_remove
-> function tries to cancel the mib_read_workqueue using
-> cancel_delayed_work_sync routine.
+On Fri, Oct 08, 2021 at 02:18:55PM +0800, Kai-Heng Feng wrote:
+> On Fri, Oct 8, 2021 at 3:11 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Fri, Oct 08, 2021 at 12:15:52AM +0800, Kai-Heng Feng wrote:
+> > > r8169 NICs on some platforms have abysmal speed when ASPM is enabled.
+> > > Same issue can be observed with older vendor drivers.
+> > >
+> > > The issue is however solved by the latest vendor driver. There's a new
+> > > mechanism, which disables r8169's internal ASPM when the NIC traffic has
+> > > more than 10 packets per second, and vice versa. The possible reason for
+> > > this is likely because the buffer on the chip is too small for its ASPM
+> > > exit latency.
+> > > ...
+
+> > I suppose that on the Intel system, if we enable ASPM, the link goes
+> > to L1.2, and the NIC immediately receives 1000 packets in that second
+> > before we can disable ASPM again, we probably drop a few packets?
+> >
+> > Whereas on the AMD system, we probably *never* drop any packets even
+> > with L1.2 enabled all the time?
 > 
-> At the end of  mib_read_workqueue execution, it again reschedule the
-> workqueue unconditionally. Due to which queue rescheduled after
-> mib_interval, during this execution it tries to access dp->slave. But
-> the slave is unregistered in the ksz_switch_remove function. Hence
-> kernel crashes.
+> Yes and yes.
 
-Something not correct here.
+The fact that we drop some packets with dynamic ASPM on the Intel
+system means we must be giving up some performance.
 
-https://www.kernel.org/doc/html/latest/core-api/workqueue.html?highlight=delayed_work#c.cancel_delayed_work_sync
+And I guess that on the AMD system, we should get full performance but
+we must be using a little more power (probably unmeasurable) because
+ASPM *could* be always enabled but dynamic ASPM disables it some of
+the time.
 
-This is cancel_work_sync() for delayed works.
+> > And if we actually knew the root cause and could set the correct LTR
+> > values or whatever is wrong on the Intel system, we probably wouldn't
+> > need this dynamic scheme?
+> 
+> Because Realtek already implemented the dynamic ASPM workaround in
+> their Windows and Linux driver, they never bother to find the root
+> cause.
+> So we'll never know what really happens here.
 
-and
+Looks like it.  Somebody with a PCIe analyzer could probably make
+progress, but I agree, that doesn't seem likely.
 
-https://www.kernel.org/doc/html/latest/core-api/workqueue.html?highlight=delayed_work#c.cancel_work_sync
+Realtek no doubt has the equipment to do this, but apparently they
+don't think it's worthwhile.  In their defense, the Linux ASPM code is
+pretty impenetrable and there could be a problem there that causes or
+contributes to this.
 
-This function can be used even if the work re-queues itself or
-migrates to another workqueue.
-
-Maybe the real problem is a missing call to destroy_worker()?
-
-      Andrew
+Bjorn
