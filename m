@@ -2,171 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA785426B78
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 15:08:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BABA426B82
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 15:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242165AbhJHNK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 09:10:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33745 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230258AbhJHNK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 09:10:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1633698510;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9frZenqPPaUX2o04u3FU7+8valgnbzmeD9UUL0oqtOc=;
-        b=T3lxiWKa455W5MzGN7SZmjJpZVU0VIMStsV+sr7h/46MetneiNzR64kblbg9lBhE/9vfHG
-        sgOO0FBKYeHHaOSyzcpjG2sSRPNqeVGq91XaW7XGqrnEfebtjwRcx/PZAXwA2ztxgc70AD
-        21FdpXBeLfyrkcLRoicpL5xK2/MYovY=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-49-P4PPCL78OMKdCu1j4tDzhQ-1; Fri, 08 Oct 2021 09:08:29 -0400
-X-MC-Unique: P4PPCL78OMKdCu1j4tDzhQ-1
-Received: by mail-wr1-f72.google.com with SMTP id v15-20020adfa1cf000000b00160940b17a2so7275693wrv.19
-        for <netdev@vger.kernel.org>; Fri, 08 Oct 2021 06:08:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9frZenqPPaUX2o04u3FU7+8valgnbzmeD9UUL0oqtOc=;
-        b=F/yVQdoY28ndGIXRFPwR1CeIzHyph4ueZmJxguNrll7klC/QHAPX4KVHTJ6hxx+5yD
-         jq/O+BK42AKykc8oGt8qVKQKS2lEmzGtiJLKkS0SCnZZ06HKnW84DnziHYA7IOodzCSb
-         C/pRY2IFg1aNV//Qs4RN6KhJn6NR3uvE9ev2CZ/+jumuWDowlzEvoCjiElD8Bp2S6ghh
-         /kRWisY0fLvUe5DIT8zYBtnWVtpILjEpU16hoMr0gqgBi1tbFqNllqoNexM881ngS8y3
-         HTFRQ6r4qH9Or3qoP7wXq6s8/5sqZbtsYDvmmCp59/uwkXh2Ifz9zcQ/ogfPzrVzWMf2
-         57bQ==
-X-Gm-Message-State: AOAM532ssx5m+zj84IlODQUflnLp1NOed0mYcWBO950ysXQyVb9mOSyz
-        HVQmhlcdfmsMhgLUSaVxAloc/YvdJ4nY3Wef+gnsRBGtnnVsOd8aWVEufmBnFynlxsvntNKgm22
-        Fj9s4+y/mv7rKEqG0
-X-Received: by 2002:a05:600c:35d4:: with SMTP id r20mr3406177wmq.24.1633698508699;
-        Fri, 08 Oct 2021 06:08:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxA/sMEj9z1Gmz3B9GWfxD4/rc2GrTDgkJzbiD+HtZjG3jJP3rRmuC4rU1u0yMNQZ5p+pndTQ==
-X-Received: by 2002:a05:600c:35d4:: with SMTP id r20mr3406157wmq.24.1633698508414;
-        Fri, 08 Oct 2021 06:08:28 -0700 (PDT)
-Received: from localhost ([37.163.173.167])
-        by smtp.gmail.com with ESMTPSA id g144sm12776724wmg.5.2021.10.08.06.08.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Oct 2021 06:08:28 -0700 (PDT)
-Date:   Fri, 8 Oct 2021 15:08:23 +0200
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     Phil Sutter <phil@nwl.cc>, netdev@vger.kernel.org,
-        stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org,
-        haliu@redhat.com
-Subject: Re: [PATCH iproute2 v4 0/5] configure: add support for libdir and
- prefix option
-Message-ID: <YWBCx6yvm7gDZNId@renaissance-vector>
-References: <cover.1633612111.git.aclaudi@redhat.com>
- <20211007160202.GG32194@orbyte.nwl.cc>
+        id S242290AbhJHNNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 09:13:45 -0400
+Received: from mail-oln040093003014.outbound.protection.outlook.com ([40.93.3.14]:10547
+        "EHLO na01-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230243AbhJHNNo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 09:13:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nskpuos6bYLrVgy5jUfXfMFMEVmIicvdujoJut7ZQ3rhgXGTUxPPS9ZcvfIGcK6h4pfmj703ls233At4NBXAKkEwLpqGuR6BE9Ik4JLLpJs47N7Fu954z15I1j1fDKzU53F1SmPexGuYow9QbzIZav5FmFvIobz5OUw2g6wnGzOJ7FS5ZtzIBVJRMhVnaOlYtvUNpfqs02DNnzrd93e5RP5L8YNQkH23AX5IdirshFTfWZNGE7DTx5uTKnsHPc4t+wCWFpZClRM+wKtzBYssV3Aa4POd7YdHNzA8h+U6/5K6kDXqPuxjzWMaQ8x3QGb3Yb9O/TEgo+xNFQvextB3wA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3vbb3hbNGjRPvsGWxh81TtgjV9T8CD0DmVeSoy6UVbM=;
+ b=isQMHAgEYvr2t/lGsbN92gqZMH176QWuRWMIXz3UB77LHoYNtPMkGA3ar68QI8Qaa469iGmhJlGE18IQdccDiVhTJ7Fb2XEyVPlLaOr+AY29oogiEYtEP7YFXeFRmp1fi55aAl11Fl63otuev8fEjzzNgFLXlGJ/CSGCNc9ij7hO/iSb2msJRht9uBdw0gP+o1cV7WBAIdEQciCJg23Yfs7hXstZtEZuyyrrA3/Yz27bgo0Gk3Unu2UuMwySZXkdR5nHn6JOxWgJxNBh0MNpXCOGDLXlY9BpKqoBcV2E6tITVK9c4P+kBrR5h9zeKDZRn6N2zw7K0T7j+T9tEbqCaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3vbb3hbNGjRPvsGWxh81TtgjV9T8CD0DmVeSoy6UVbM=;
+ b=Fzz4CxN9DEK3Yx4AWV7Cukn7jD1jd2ogRrb965V+GyeKJd/L18jj9sP7Mcf0oO+TkAfArI3nMpWNOrXz+wDJyiJ+K59QZC5BNX2gaco5SodzgDVCpNQEbUP57ZVDh5l02yK4W31DSV0mIb6hQW3G+KSq0udKkVKMQhobPK6SNeI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from DM6PR21MB1340.namprd21.prod.outlook.com (2603:10b6:5:175::19)
+ by DM6PR21MB1529.namprd21.prod.outlook.com (2603:10b6:5:22f::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.1; Fri, 8 Oct
+ 2021 13:11:46 +0000
+Received: from DM6PR21MB1340.namprd21.prod.outlook.com
+ ([fe80::10b6:1733:cf27:f6aa]) by DM6PR21MB1340.namprd21.prod.outlook.com
+ ([fe80::10b6:1733:cf27:f6aa%6]) with mapi id 15.20.4608.010; Fri, 8 Oct 2021
+ 13:11:46 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
+Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
+        paulros@microsoft.com, shacharr@microsoft.com, olaf@aepfle.de,
+        vkuznets@redhat.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2,net] net: mana: Fix error handling in mana_create_rxq()
+Date:   Fri,  8 Oct 2021 06:11:31 -0700
+Message-Id: <1633698691-31721-1-git-send-email-haiyangz@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: MWHPR02CA0010.namprd02.prod.outlook.com
+ (2603:10b6:300:4b::20) To DM6PR21MB1340.namprd21.prod.outlook.com
+ (2603:10b6:5:175::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211007160202.GG32194@orbyte.nwl.cc>
+Sender: LKML haiyangz <lkmlhyz@microsoft.com>
+X-MS-Exchange-MessageSentRepresentingType: 2
+Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by MWHPR02CA0010.namprd02.prod.outlook.com (2603:10b6:300:4b::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18 via Frontend Transport; Fri, 8 Oct 2021 13:11:45 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b800a1ba-fd87-4b60-1371-08d98a5d2e24
+X-MS-TrafficTypeDiagnostic: DM6PR21MB1529:
+X-MS-Exchange-Transport-Forked: True
+X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+X-Microsoft-Antispam-PRVS: <DM6PR21MB1529FA4AB8886CB68D483B28ACB29@DM6PR21MB1529.namprd21.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1303;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Xp2kafR02fLyRuuqjB6xHWkyCi3KsDxazGQk0QPQoS02yoaFr1J6eXlja2VHe7IJWfOa2FZ8TU27ioi2A+7+QRiff9JCsFL+J1gdx2R6lk3nF0W+ihuap7a5aGO5NgwjiNBRzZv1nn2sFwnS4IQFgH8hvV0yZYfxm6HRSFd8fb/2Ih4qv5T15ZIj4uQqQHyDE/SDepapL7iJX0p7L+xwqo7Tf+ixEdJO5zt7X4VzaA7iWB0suvWCIWhBMBMpwcIrYvnEjPR/uc9OOLwp3DfU7XMwlScB0oaQwANzU0LDTzK5PvHbTgGVnrgL7iLKXNJx3YxsxdP8kZVNRXtDayoOyuKRkPTsaVMOlYigqOe1OsFHrDWuYZP5j0BgLqYzkxf9d+ZVbSoKPLgWKdE+ovWjbLe605O4NlFVAml2o9t+IbH8rHixPgtBQPqP/sba6rqG6E5GIozJmGEXQhxnBM22q7GjmnyYHaysneX6OT/lEi566ImSJFF9LPE8VJ29PiMmTl2YY63bOaVeVXFjkQTDpRJwV3EEK37eFl3KDQ+ZA2hqfFo6t5m23yq4PJW5KteTDxHXiRnnub75C+/dDxJsLjaXjxl+7sOWejPPQB+krPg2tuxwxK1/21LbPi0Su+FWGQcdIE0I+o/f/NN103eF8GiXsU4sXcltxl5THOOcsJCxXX+MzJF2WClAQ0Kf5KIRDJa+8ig3E1TfyOdloXkwmQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1340.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6486002)(2906002)(7846003)(6666004)(36756003)(316002)(38350700002)(38100700002)(4744005)(83380400001)(6512007)(10290500003)(6506007)(66476007)(66556008)(66946007)(508600001)(52116002)(4326008)(82950400001)(8676002)(956004)(26005)(8936002)(5660300002)(82960400001)(2616005)(186003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HUvwTUht0pBIteXjRwjjhLx/TnQKXo1aQTcF1vC8lPB2FmiRUyFp7GVQwSjA?=
+ =?us-ascii?Q?tuI2J0e6nbJRaCiH7dVqr9E+lZWRT2SOVtFV/z4IpN/3zwI/K3wkiENliGBA?=
+ =?us-ascii?Q?yfKr6maG2+TFeDUdoRWZAMQtF7fD5kgrUCS7Oxm139d23lEOLZGxcn2AKHnE?=
+ =?us-ascii?Q?e1jx0FyQoyh7+YctZh6A48iPimaZPg9M+LySQICZcD489PpQsVgkJDV4GE1T?=
+ =?us-ascii?Q?nZ9k2bY4rtTd4NPyb1dsgeCs86vXtChOkuJF0hSqYunNXG9OX6rte72OtYvf?=
+ =?us-ascii?Q?arwP+yCDvoalVAzjllW4QKP8QLhNtHueYuK8Q7eHQ2WpKB26V00NF2Tb4rVS?=
+ =?us-ascii?Q?mKbriy8E1m7yMNjmTa6E6F4Zn6DeQG6apTlxR1Y55kFQY3yyft72bBHhgb9G?=
+ =?us-ascii?Q?8Mgp5Kk+isK1T4VLXkJTgCC5yhH/GCfV9jKteDLJpT/ixDGjXbyctcQmj3NT?=
+ =?us-ascii?Q?pNt/z18p48V6e+Jpnbqjaz9CRcB7rlYvzlqlHpuojgQ2QVOCDFmPeerUpBmN?=
+ =?us-ascii?Q?vksESqzKbsgEThczwl8s9Re79XTvkskekT70XGllVZogYXv93YYBVulJJfgf?=
+ =?us-ascii?Q?JleMLb/3E3iaMn6yN4Vw1Rl7y/8tgqMakhcEpmlMLnYjTzDTHveS6zZLxyNB?=
+ =?us-ascii?Q?yNCh/gfFXk1hJQKmIrTe08UV6CNAXw/CAqpTMvCpsdCHoPugdwxbySp976to?=
+ =?us-ascii?Q?UffLZa1qPr8V4WArgWMliUa+tBIcON4GyMTaKPkWy9FJsB0bP5FVRTj/Itc5?=
+ =?us-ascii?Q?DUGTha1O0qaW63T5kEJKcL1M8dqMCRLiOPSSHLbZvh+xkzzQunEEqrdz6RQG?=
+ =?us-ascii?Q?YOcNTrePy1+0ww71Cl6EmvffyihuHzA8gL3CSB7KPdlGlY/tmpcaCrocgybO?=
+ =?us-ascii?Q?dK7SP9Q9H2I0m0uPBiosRi1GaMk2SG+lYwvmE2kPGfU2R5SQ2BeVLbGDiRgl?=
+ =?us-ascii?Q?JKeJ1rPHIh4o6giE9S//4K2i42axePaweMWSchL9IRW0aDhMUVFWesY18cwy?=
+ =?us-ascii?Q?LlyHXb5SlVEex7fuL/LJnAruNSDX21Agw9spVQ2fZzNyB9ecvrzu6LC2762v?=
+ =?us-ascii?Q?FNk6IW4b7hMPHqAl7WiYXmBJqiWnCzYgjfWNdm4ntTv8YpWXMZ9YFsVhXDNB?=
+ =?us-ascii?Q?1eeGObcnQ0gmBQmo1HbIDuFgfewGb0u2Wlc8Q+oNGKUaSbC+E9uTONbucFyv?=
+ =?us-ascii?Q?mXaJD/TPTR+1mTeZpJLKFyr+C7wgcUAbPImiYwKmXMcf5BTKxYxNXbt1PmPh?=
+ =?us-ascii?Q?XtMtcafMn7DEX6WSs0kE+6heJb2B9lrb3zaCGKf+EHqqFOVJzL5V/Lq/ODOQ?=
+ =?us-ascii?Q?BRIXeRZgmzknVR+jX3W5vhnn?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b800a1ba-fd87-4b60-1371-08d98a5d2e24
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1340.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2021 13:11:46.3967
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6cW5XRM0NkUcg5C2HRME4q1YUxBJ/ExM/fm2MN7Pil/uBpnbGi9MJelBma2WRJJ6CchUFw8cfWItdoD+HcGqSg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1529
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 06:02:02PM +0200, Phil Sutter wrote:
-> Hi Andrea,
-> 
-> On Thu, Oct 07, 2021 at 03:40:00PM +0200, Andrea Claudi wrote:
-> > This series add support for the libdir parameter in iproute2 configure
-> > system. The idea is to make use of the fact that packaging systems may
-> > assume that 'configure' comes from autotools allowing a syntax similar
-> > to the autotools one, and using it to tell iproute2 where the distro
-> > expects to find its lib files.
-> > 
-> > Patches 1-2 fix a parsing issue on current configure options, that may
-> > trigger an endless loop when no value is provided with some options;
-> 
-> Hmm, "shift 2" is nasty. Good to be reminded that it fails if '$# < 2'.
-> I would avoid the loop using single shifts:
-> 
-> | case "$1" in
-> | --include_dir)
-> | 	shift
-> | 	INCLUDE=$1
-> | 	shift
-> | 	;;
-> | [...]
-> 
+Fix error handling in mana_create_rxq() when
+cq->gdma_id >= gc->max_num_cqs.
 
-This avoid the endless loop and allows configure to terminate correctly,
-but results in an error anyway:
+Fixes: ca9c54d2d6a5 ("net: mana: Add a driver for Microsoft Azure Network Adapter (MANA)")
+Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+---
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-$ ./configure --include_dir
-./configure: line 544: shift: shift count out of range
-
-But thanks anyway! Your comment made me think again about this, and I
-think we can use the *) case to actually get rid of the second shift.
-
-Indeed, when an option is specified, the --opt case will shift and get
-its value, then the next while loop will take the *) case, and the
-second shift is triggered this way.
-
-> > Patch 3 introduces support for the --opt=value style on current options,
-> > for uniformity;
-> 
-> My idea to avoid code duplication was to move the semantic checks out of
-> the argument parsing loop, basically:
-> 
-> | [ -d "$INCLUDE" ] || usage 1
-> | case "$LIBBPF_FORCE" in
-> | 	on|off|"") ;;
-> | 	*) usage 1 ;;
-> | esac
-> 
-> after the loop or even before 'echo "# Generated config ...'. This
-> reduces the parsing loop to cases like:
-> 
-> | --include_dir)
-> | 	shift
-> | 	INCLUDE=$1
-> | 	shift
-> | 	;;
-> | --include_dir=*)
-> | 	INCLUDE=${1#*=}
-> | 	shift
-> | 	;;
->
-
-Thanks. I didn't think about '-d', this also cover corner cases like:
-
-$ ./configure --include_dir --libbpf_force off
-
-that results in INCLUDE="--libbpf_force".
-
-> > Patch 4 add the --prefix option, that may be used by some packaging
-> > systems when calling the configure script;
-> 
-> So this parses into $PREFIX and when checking it assigns to $prefix but
-> neither one of the two variables is used afterwards? Oh, there's patch
-> 5 ...
-> 
-> > Patch 5 add the --libdir option, and also drops the static LIBDIR var
-> > from the Makefile
-> 
-> Can't you just:
-> 
-> | [ -n "$PREFIX" ] && echo "PREFIX=\"$PREFIX\"" >>config.mk
-> | [ -n "$LIBDIR" ] && echo "LIBDIR=\"$LIBDIR\"" >>config.mk
-> 
-> and leave the default ("?=") cases in Makefile in place?
-> 
-> Either way, calling 'eval' seems needless. I would avoid it at all
-> costs, "eval is evil". ;)
-
-Unfortunately this is needed because some packaging systems uses
-${prefix} as an argument to --libdir, expecting this to be replaced with
-the value of --prefix. See Luca's review to v1 for an example [1].
-
-I can always avoid the eval trying to parse "${prefix}" and replacing it
-with the PREFIX value, but in this case "eval" seems a bit more
-practical to me... WDYT?
-
-Regards,
-Andrea
-
-[1] https://lore.kernel.org/netdev/6363502d3ce806acdbc7ba194ddc98d3fac064de.camel@debian.org/
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
+index 9a871192ca96..d65697c239c8 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_en.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+@@ -1477,8 +1477,10 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
+ 	if (err)
+ 		goto out;
+ 
+-	if (cq->gdma_id >= gc->max_num_cqs)
++	if (WARN_ON(cq->gdma_id >= gc->max_num_cqs)) {
++		err = -EINVAL;
+ 		goto out;
++	}
+ 
+ 	gc->cq_table[cq->gdma_id] = cq->gdma_cq;
+ 
+-- 
+2.25.1
 
