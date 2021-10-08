@@ -2,148 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A95426F61
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 19:09:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93B4E426FA6
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 19:36:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233767AbhJHRLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 13:11:39 -0400
-Received: from relay-b01.edpnet.be ([212.71.1.221]:56908 "EHLO
-        relay-b01.edpnet.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230440AbhJHRLi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 13:11:38 -0400
-X-ASG-Debug-ID: 1633712978-15c4341a8812a4040001-BZBGGp
-Received: from zotac.vandijck-laurijssen.be (94.105.120.149.dyn.edpnet.net [94.105.120.149]) by relay-b01.edpnet.be with ESMTP id 9YazIlV7jGF6uqr7; Fri, 08 Oct 2021 19:09:38 +0200 (CEST)
-X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
-X-Barracuda-Effective-Source-IP: 94.105.120.149.dyn.edpnet.net[94.105.120.149]
-X-Barracuda-Apparent-Source-IP: 94.105.120.149
-Received: from x1.vandijck-laurijssen.be (x1.vandijck-laurijssen.be [IPv6:fd01::1a1d:eaff:fe02:d339])
-        by zotac.vandijck-laurijssen.be (Postfix) with ESMTPSA id 5ED651697A73;
-        Fri,  8 Oct 2021 19:09:38 +0200 (CEST)
-Date:   Fri, 8 Oct 2021 19:09:37 +0200
-From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        id S231228AbhJHRiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 13:38:01 -0400
+Received: from mail-vi1eur05on2136.outbound.protection.outlook.com ([40.107.21.136]:58709
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231234AbhJHRh7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 13:37:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WelYzfUrwbAKcgKimHwhRbJ88c6piRZn53gX5j+C6MdnQ6H5sAAP+bslEaFnjfpJWhBTDx1UBUzZeF7lDRx5jWu+25tnB0un9MC6T5hWsfDRs1akZHoew0yLcsvA/0FNw+mlymfCnbiyHXxY4k2UYrx05ojuvPHNnMopFW/2Fp0hUm83eMi8oAuQa1x8GbNQCwN/h27sI+6afTGEwF1/C0e9sh9zS1KedtJJv01MYAw5NhKjfpoXCmWc5X7BGiSY9WMn6+B0GTrE3pUFnuLmGK2BdyxVvjyVjoNjmI413knDOOjaQQuIfbbxdnJr2FQ8a0ZNO95eUa/0Q3I+/fKa1w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=galv+I47unVH4pSp8/LAGBkYnGfmUN0jXOmAXO8Z5rU=;
+ b=EigYJZmomc7A5QJ3LP/NS9CwdpXrNgF0fmhCs8O3dDtia0OZYNq/mJKR/l0eSHm8VzTV/KTTjGDEdpcI7QMiYyJZ6B/c1sSNmXPHp+m+LHPpCRaIeSfJGS2WlYfRu9dJwEbAZU+RX9m8XH6JQVta9PNoS5aqYOAspD4aOI51BPEZGbXF2YzAmo94JNH280lwa5wIFikXM8dBfCTLgaCAn7nEXO++LaJ8PNJLuYZ6UlkRpx4J0HlC5OHa0P3Qj5QzEOyjcKV0ieUYxi/Iw1gRVpUMsM4daRJBfINvJr00g4ZP/uRSP6jEgcV52iZY2YYj4y8tjoZilSZ+UL3HjULjeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=galv+I47unVH4pSp8/LAGBkYnGfmUN0jXOmAXO8Z5rU=;
+ b=rKHNhGR8cD1B3/9o1wld61cCd8QEBlUn1B17QvdzDz3IAijvEHaNrE5XurxFNuKmAd3hDGbTrPBAdjTduesMW9pE6Qa0h4n5AudySAbAHQofyFMuHySFDVWzSS5feGvV0JlpxLqA8244is04xZL1CsNNMCd+2zu4umdWdbCeu60=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=plvision.eu;
+Received: from AM0P190MB0721.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:1a0::24)
+ by AM0P190MB0578.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:1a1::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.19; Fri, 8 Oct
+ 2021 17:36:01 +0000
+Received: from AM0P190MB0721.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e0ef:543e:4a22:7639]) by AM0P190MB0721.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e0ef:543e:4a22:7639%9]) with mapi id 15.20.4587.024; Fri, 8 Oct 2021
+ 17:36:01 +0000
+From:   Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+To:     netdev@vger.kernel.org
+Cc:     Volodymyr Mytnyk <vmytnyk@marvell.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session
- if receive TP.DT with error length
-Message-ID: <20211008170937.GA12224@x1.vandijck-laurijssen.be>
-X-ASG-Orig-Subj: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session
- if receive TP.DT with error length
-Mail-Followup-To: Oleksij Rempel <o.rempel@pengutronix.de>,
-        Zhang Changzhong <zhangchangzhong@huawei.com>,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1632972800-45091-1-git-send-email-zhangchangzhong@huawei.com>
- <20210930074206.GB7502@x1.vandijck-laurijssen.be>
- <1cab07f2-593a-1d1c-3a29-43ee9df4b29e@huawei.com>
- <20211008110007.GE29653@pengutronix.de>
+Subject: [PATCH net] netfilter: fix conntrack flows stack issue on cleanup.
+Date:   Fri,  8 Oct 2021 20:35:26 +0300
+Message-Id: <1633714526-31678-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+X-Mailer: git-send-email 2.7.4
+Content-Type: text/plain
+X-ClientProxiedBy: HE1PR05CA0338.eurprd05.prod.outlook.com
+ (2603:10a6:7:92::33) To AM0P190MB0721.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:208:1a0::24)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211008110007.GE29653@pengutronix.de>
-User-Agent: Mutt/1.5.22 (2013-10-16)
-X-Barracuda-Connect: 94.105.120.149.dyn.edpnet.net[94.105.120.149]
-X-Barracuda-Start-Time: 1633712978
-X-Barracuda-URL: https://212.71.1.221:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at edpnet.be
-X-Barracuda-Scan-Msg-Size: 3123
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Spam-Score: 0.50
-X-Barracuda-Spam-Status: No, SCORE=0.50 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=BSF_RULE7568M
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.93131
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------------------------
-        0.50 BSF_RULE7568M          Custom Rule 7568M
+Received: from vmytnykub.x.ow.s (217.20.186.93) by HE1PR05CA0338.eurprd05.prod.outlook.com (2603:10a6:7:92::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.4566.16 via Frontend Transport; Fri, 8 Oct 2021 17:36:00 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 24436cee-304e-4422-ac32-08d98a8218b0
+X-MS-TrafficTypeDiagnostic: AM0P190MB0578:
+X-Microsoft-Antispam-PRVS: <AM0P190MB0578A81F7780C4BF7E19EB5D8FB29@AM0P190MB0578.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MsWdFpTagVr8cWzCR27zPdBOfQFXuRf3rGpdpgzvMfXhe8660w975M5h58MWBwf4okuJPfnfrB0pMFtziZ8R31A4Zy7BQLG/vUuhlFkm4dYJh5uqOpnnYgN5hr45pNGnJyghl4M1D+lAAHaTywdFRR0CoxdApQIc6bcWODdKa8lEifMDUf6ZWNJXTTwtGI7LvenYG6bsl9fBwjBUZGUAEfS/JWx60CYElUegXpPHoFjB6b6jj+ja/oPNKuRmkZdb+YR/zDyfeoc1OAOOEtqNCk1Kmu8t1KrlXDC5YWHQ/jonkT2lDyYiMPHolN9NeSbzM0MMOWBmNbOQfMzDbvz5H3h68dSF/vRVoWhgkAkmyhJ/KXM6ms4iVOna9amTDsAno600AgW3hmzrwU++v2Sk68dMpvg8SMG6UcAK3qVo86yQt1DltTK9JMDU6c7/0evJ1RABwBvG11Zl1Mj3oBpAupBURPjObLZKNOSuzzU7NGqnB+N/pUZsjx6Wyc9c0TipoYHaRwqC4Ivcuqm9bvMZEGda+jGWqZxmaArD4xxvVQWS1n3b6E8pfGXth5a+jokZoa5AG8k0QbZUu1IKL9ZOTijv8s0myDDz3Fs3HvHzcunbR8PKK7lcbhmLT189+hkLdCLkpTsNkEulYGVlcjBiTmCCzICOxt3/dzklyvs8Sp/+FJYCIFEd7bsMXtvN9sLL4/J+n4fOrkvnoCbBT+ci1g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0721.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(366004)(396003)(376002)(39830400003)(136003)(6512007)(38350700002)(38100700002)(7416002)(6666004)(186003)(52116002)(44832011)(956004)(2616005)(6506007)(26005)(2906002)(508600001)(83380400001)(4326008)(6916009)(316002)(36756003)(8936002)(54906003)(86362001)(8676002)(6486002)(5660300002)(66556008)(66476007)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sQlNBgGnBwbkaUIbuGzCs1wh/utOcusON5N2sDPAEEMW6vjFKADkcUiP2tfw?=
+ =?us-ascii?Q?FWeyZwrWHDwhbZXYtMzXygz74+3GUDgbGdxKbnp9sH9YSZi+CVlfMMrLIiRn?=
+ =?us-ascii?Q?J1f8fQnodldyxVNolAqPsov6ZIs732mjwTQJcDJP7N7dnjRdl3n7Wv8uFA3d?=
+ =?us-ascii?Q?/A7G1OVMz3CBY/bTXLPYOSPA7NOmMWTFjUJEr4uG/cBqYjonNfgUG2uWeElA?=
+ =?us-ascii?Q?g8RhSFsHs8fu50tY24IsIR3ilejjwByqrmjDTJ+fIKWiDP//iET2nAmumb5m?=
+ =?us-ascii?Q?WbUCOM7nqzaCpZ38wrE+e2iErYanoqnbSEkk79cX2StXcSBp/sF3m6qWJKMn?=
+ =?us-ascii?Q?S22OhsgcXIxdDoi76hAkxJbohjTgMpp2CBP2/6q68moHwMHAhycyokSFXSrL?=
+ =?us-ascii?Q?IEM/CPmzLZZ25p/GtTnxWNmE1WXo7vfu1NhLJYpWWymI/7iMpv+hKf/0R4GN?=
+ =?us-ascii?Q?hmrmn6privUHI7eK2YUNZ9XhHtLlOVqjH76OuNs0sYAb+jyuogPI62pI0KjE?=
+ =?us-ascii?Q?YrcxEjkaTl1KwcYNoXbGWIvKGKQEiDbu4ue6NH8Bi7R1jFWt9nBHxuOaxt1B?=
+ =?us-ascii?Q?3p2CyPsVevOHpVKC1wyV9OV14UFrjaauzI3XGU5piLzDyUqah/Q/mLD03XBu?=
+ =?us-ascii?Q?bW4TjZRXYAfz/rx+EKa9x1oinqT+c0FGEewjTbvOnrAz8HKTEwEI0vhNTAxH?=
+ =?us-ascii?Q?1iNs7NpDnUQhe6fqabtzkTwKZOym2e3FZYO1wTsMHGHbBGKZZkaVWiHdCuNl?=
+ =?us-ascii?Q?1+1uNiuGr8F05C2MF6x9NW07jBLMwkEJhLcRFLoCGwO37i6RV7wMjpbKpWGC?=
+ =?us-ascii?Q?nfOQGQitvO5IOhGaN/qmrGcwJO6DuuZUMOjjm270Wt6ksu1FpkiCJQo2+eMi?=
+ =?us-ascii?Q?89TMlNHToA+Sk9Zu30uF+BKtJbFC0inbYgns3PX7Kngso+NHBpI8QYlt0eSV?=
+ =?us-ascii?Q?LLE6pOKDKWNW8DOJ9L09jsKx7Ucu2+8IoHFZEe+ZnWhhXmtH7EWFjCQpJIQL?=
+ =?us-ascii?Q?PT4CbBUObJCwX02UuFukl96GJ5IzThVIfiUYCx2NOZNzV2zwvzYEXShYgV9X?=
+ =?us-ascii?Q?4uXu7e2vzzgULnoihPcpev1HpsmlhDfLFz47RofMLLqLs3XdPueIBPKriMOS?=
+ =?us-ascii?Q?3lx2ZDGebzgKaSV/gn6Srb+q1alzHzoRkHjxZlkZu6psEn4uUGTszOPNQT7O?=
+ =?us-ascii?Q?7bEBr0sFpKJ3WHT8KfZomMpPpE/HawpyZN8ck8I5CAnv6t8FQXT60xikplpT?=
+ =?us-ascii?Q?udXCGm4HbBIBrZNg3Em6Kr13/0ONO4yztpa66y0RU/oeMdsOrxJwCjJsJB1M?=
+ =?us-ascii?Q?7LohRiqGjfrlfNbnyS9MwrkJ?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24436cee-304e-4422-ac32-08d98a8218b0
+X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0721.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2021 17:36:01.6290
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xRifkCAogefSyQDr1GT1jz7VZ9tRU4Vvj1w0YOTpWHq+TBuOzAA45/P3vbLb04j99NMWgUh7W1kErDm4lwc/YdMm9SBMtNUPyCT7J9/0l7U=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0P190MB0578
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 08 Oct 2021 13:00:07 +0200, Oleksij Rempel wrote:
-> On Fri, Oct 08, 2021 at 05:22:12PM +0800, Zhang Changzhong wrote:
-> > Hi Kurt,
-> > Sorry for the late reply.
-> > 
-> > On 2021/9/30 15:42, Kurt Van Dijck wrote:
-> > > On Thu, 30 Sep 2021 11:33:20 +0800, Zhang Changzhong wrote:
-> > >> According to SAE-J1939-21, the data length of TP.DT must be 8 bytes, so
-> > >> cancel session when receive unexpected TP.DT message.
-> > > 
-> > > SAE-j1939-21 indeed says that all TP.DT must be 8 bytes.
-> > > However, the last TP.DT may contain up to 6 stuff bytes, which have no meaning.
-> > > If I remember well, they are even not 'reserved'.
-> > 
-> > Agree, these bytes are meaningless for last TP.DT.
-> > 
-> > >
-> > >>
-> > >> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> > >> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> > >> ---
-> > >>  net/can/j1939/transport.c | 7 +++++--
-> > >>  1 file changed, 5 insertions(+), 2 deletions(-)
-> > >>
-> > >> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-> > >> index bb5c4b8..eedaeaf 100644
-> > >> --- a/net/can/j1939/transport.c
-> > >> +++ b/net/can/j1939/transport.c
-> > >> @@ -1789,6 +1789,7 @@ static void j1939_xtp_rx_dpo(struct j1939_priv *priv, struct sk_buff *skb,
-> > >>  static void j1939_xtp_rx_dat_one(struct j1939_session *session,
-> > >>  				 struct sk_buff *skb)
-> > >>  {
-> > >> +	enum j1939_xtp_abort abort = J1939_XTP_ABORT_FAULT;
-> > >>  	struct j1939_priv *priv = session->priv;
-> > >>  	struct j1939_sk_buff_cb *skcb, *se_skcb;
-> > >>  	struct sk_buff *se_skb = NULL;
-> > >> @@ -1803,9 +1804,11 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
-> > >>  
-> > >>  	skcb = j1939_skb_to_cb(skb);
-> > >>  	dat = skb->data;
-> > >> -	if (skb->len <= 1)
-> > >> +	if (skb->len != 8) {
-> > >>  		/* makes no sense */
-> > >> +		abort = J1939_XTP_ABORT_UNEXPECTED_DATA;
-> > >>  		goto out_session_cancel;
-> > > 
-> > > I think this is a situation of
-> > > "be strict on what you send, be tolerant on what you receive".
-> > > 
-> > > Did you find a technical reason to abort a session because the last frame didn't
-> > > bring overhead that you don't use?
-> > 
-> > No technical reason. The only reason is that SAE-J1939-82 requires responder
-> > to abort session if any TP.DT less than 8 bytes (section A.3.4, Row 7).
+From: Volodymyr Mytnyk <vmytnyk@marvell.com>
 
-IMHO, this is some kind of laziness to make the exception for the last TP.DT.
+On busy system with big number (few thousands) of HW offloaded flows, it
+is possible to hit the situation, where some of the conntack flows are
+stuck in conntrack table (as offloaded) and cannot be removed by user.
 
-I attended an ISOBUS certification (back in 2013) where the transmitting
-node effectively stripped the trailing bytes, and this 'deviation' was
-not even noticed.
+This behaviour happens if user has configured conntack using tc sub-system,
+offloaded those flows for HW and then deleted tc configuration from Linux
+system by deleting the tc qdiscs.
 
-This change applies to the receiving side. Would a sender that
-leaves the trailing bytes want you to discard the session bacause of this?
-So the spirit of the SAE-J1939-82 is, in this case, different from
-the strict literal interpretation.
+When qdiscs are removed, the nf_flow_table_free() is called to do the
+cleanup of HW offloaded flows in conntrack table.
 
-> 
-> Do you mean: "BAM Transport: Ensure DUT discards BAM transport when
-> TP.DT data packets are not correct size" ... "Verify DUT discards the
-> BAM transport if any TP.DT data packet has less than 8 bytes"?
+...
+process_one_work
+  tcf_ct_flow_table_cleanup_work()
+    nf_flow_table_free()
 
-Kind regards,
-Kurt
+The nf_flow_table_free() does the following things:
+
+  1. cancels gc workqueue
+  2. marks all flows as teardown
+  3. executes nf_flow_offload_gc_step() once for each flow to
+     trigger correct teardown flow procedure (e.g., allocate
+     work to delete the HW flow and marks the flow as "dying").
+  4. waits for all scheduled flow offload works to be finished.
+  5. executes nf_flow_offload_gc_step() once for each flow to
+     trigger the deleting of flows.
+
+Root cause:
+
+In step 3, nf_flow_offload_gc_step() expects to move flow to "dying"
+state by using nf_flow_offload_del() and deletes the flow in next
+nf_flow_offload_gc_step() iteration. But, if flow is in "pending" state
+for some reason (e.g., reading HW stats), it will not be moved to
+"dying" state as expected by nf_flow_offload_gc_step() and will not
+be marked as "dead" for delition.
+
+In step 5, nf_flow_offload_gc_step() assumes that all flows marked
+as "dead" and will be deleted by this call, but this is not true since
+the state was not set diring previous nf_flow_offload_gc_step()
+call.
+
+It issue causes some of the flows to get stuck in connection tracking
+system or not release properly.
+
+To fix this problem, add nf_flow_table_offload_flush() call between 2 & 3
+step, to make sure no other flow offload works will be in "pending" state
+during step 3.
+
+Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
+---
+ net/netfilter/nf_flow_table_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index 1e50908b1b7e..0de79835f628 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -638,6 +638,8 @@ void nf_flow_table_free(struct nf_flowtable *flow_table)
+ 
+ 	cancel_delayed_work_sync(&flow_table->gc_work);
+ 	nf_flow_table_iterate(flow_table, nf_flow_table_do_cleanup, NULL);
++	/* wait to finish */
++	nf_flow_table_offload_flush(flow_table);
+ 	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, flow_table);
+ 	nf_flow_table_offload_flush(flow_table);
+ 	if (nf_flowtable_hw_offload(flow_table))
+-- 
+2.7.4
+
