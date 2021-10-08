@@ -2,348 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A562426146
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 02:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49428426152
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 02:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242076AbhJHA2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 20:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54088 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236394AbhJHA2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 20:28:19 -0400
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E0CC061570;
-        Thu,  7 Oct 2021 17:26:25 -0700 (PDT)
-Received: by mail-ua1-x935.google.com with SMTP id g13so4906959uaj.3;
-        Thu, 07 Oct 2021 17:26:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r9l3RYk4NM+CE0eSTDknxGfYepgxrBTg48S6nbxh+m8=;
-        b=G79Kjz/8UIt+NNF9NWCSfCi3D1QLA7i5mI7TaiDAoA1MbE3iTDM2beFhwXIw1qKA5U
-         rvxnunjVruHg+AxbIcHbjZqFJGR8mC1x2r7C0MADYCt7TDAdUR0RTzleiHalUhqFUQl0
-         kh2t7cTKBwFrq24j92RzLLr44VuH0xr5tGacj4n+lvqM+/FRm9sfzGAiu/TLLHQ99KEv
-         CaqKysEjdxWC0Kajqjfxnac1YozXPfzM4UxzXxW9I+BVAmPKwfXt27nvJYav3w7hNRKt
-         xf0MW/iOipcY5beWB2zgnV6vEnOyJKUBTnpL95EjRCJoPnKXe/No6cZ+kVZdFx4oN/o2
-         D/bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r9l3RYk4NM+CE0eSTDknxGfYepgxrBTg48S6nbxh+m8=;
-        b=kwYdE/lzwmrLOy6E0qlbcW73s8FSYFtXsrgFeb7aXaf4RKo6SVcHYE1SCeCFpQffSX
-         z3TL46qAyHAJBmO6cIRRqcZHYU+unWQTE8G678MCIdvmKWWeeLgiuSqKYc291xKoZnQ1
-         V1vMWGWhaamjnybUM/vdXSSK6+/3bEWfGCHYe1ykfB/Dnx1oLvU/7MNQ5E/NzOFIhF2N
-         ndeXt8EYr96KOQNFuYzijPNTBujtnimx71+LawBX+9EEyYmXV9ki+JwCER4DMx/win5u
-         Y0xLgot2J87BHBAvxrZLDBSJm9Wy9/Kdofj4v7kfpNf55ey7nB1u8ARJ0cCbrQik/X1J
-         +D6w==
-X-Gm-Message-State: AOAM531tC7SsIJ3qu2yStDPAZIbTH5qsYFhoAuLqU7rHuytn6wAMkPeX
-        PoPp3Ffk20fINANLd6Mt0Lw1h7xSkDN+CWj22OE=
-X-Google-Smtp-Source: ABdhPJz3DbOjRgpaVGJpC5+2yvPoMDIjIifoUl3OulHm2Aoo2wA1ZUdsu0+SFcl06OlTRQVVguOczg9lx6P5Ajv1Tec=
-X-Received: by 2002:ab0:29da:: with SMTP id i26mr111405uaq.129.1633652784213;
- Thu, 07 Oct 2021 17:26:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211004180158.433832-1-desmondcheongzx@gmail.com>
-In-Reply-To: <20211004180158.433832-1-desmondcheongzx@gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Thu, 7 Oct 2021 17:26:13 -0700
-Message-ID: <CABBYNZJjot3_2u61Uo3mT3b-K9i9uQgQ1B0N1=42nOFDf22OFw@mail.gmail.com>
-Subject: Re: [RESEND PATCH] Bluetooth: fix race in sco_sock_connect
-To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
-        Hillf Danton <hdanton@sina.com>
+        id S231855AbhJHAbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 20:31:15 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36474 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230291AbhJHAbL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 20:31:11 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 197Jkt7h019683;
+        Thu, 7 Oct 2021 17:29:04 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=krnybCdMt3CBJsOKkFA2s9VSDf/d8UQ69U1ktaHyl5o=;
+ b=b7QAERfZ9mIa6lgSIaqtoupqoIyyAgX/3xExuygAIlDdxEnKk5grasIkv4gnWL0YTiLf
+ GTJStJYSHMQEC/z0bkD7lJhgznze++lqIxMR3STOdkoVfsoEXUef4BqEoWVzKGaxyeex
+ eWa3xpP4oCv4GJYCfeycBxgmgZWP4kchW3A= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3bj7bm9vjr-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 07 Oct 2021 17:29:03 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Thu, 7 Oct 2021 17:29:02 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VnOGok4azwcJQdraVzIEseCh8L4EvW+7EWG1J/Wt54Mde+TLrW4TQxzUinSoFFfGNtTDVDuv1C5ETsPuW1XgZ0BpimP6i1G+n3UUxKSGbZqAgRbZiTHLVC6gtkpT1h13Qs+cDK4fhe2GLSlIm051agWSo9F5jiSEtQFaqR414JFHLNEnTyN6PSlSKlpZtNxSP8meQCciUzn+4sKKtbyhWd24kiG6zOXpoA2/UhhEVv8B/ae0JvgqEXqjBwE2GBTH3xmNlWbQ+DDZRQDnZx729Go4i29ygzg64dMnmoSzItQa+g7oU3v8ilTwPdszKiwIY56E19T3Sn9QyP3HibZDEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=krnybCdMt3CBJsOKkFA2s9VSDf/d8UQ69U1ktaHyl5o=;
+ b=WQIFaIxL+cLn5LoK4pLAFs49VhyPwzOaiVG/7qvY6TFU3NPFf73qcEGD9Vxut6xJi0Vah6ARPz/XlnCqwJqFqy+kunPYGX6TeYp5bosOXZP5PNjnsDZCBjdnIyum2DefLVBf8LECcmdXN7ladZ2y9++SRfrIISB0PVxMgbVYHjlEujvztM/tpzAaM+Zg+3//hYC3BukHS5yS5EOGwWxbJamqWwrs6ez2abInNqOR3XqZibIss6gP1ITM9eEaani5AnwRXMKuw3rtnpkInaHzrV7PnPovu4rD+vlP+GW20k9C31pjoaZYG36AhaLgdN1dLUavxnYBt8VswxFx1u7vAg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: iogearbox.net; dkim=none (message not signed)
+ header.d=none;iogearbox.net; dmarc=none action=none header.from=fb.com;
+Received: from DM6PR15MB4039.namprd15.prod.outlook.com (2603:10b6:5:2b2::20)
+ by DM6PR15MB3928.namprd15.prod.outlook.com (2603:10b6:5:2bd::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Fri, 8 Oct
+ 2021 00:29:01 +0000
+Received: from DM6PR15MB4039.namprd15.prod.outlook.com
+ ([fe80::955c:b423:995c:d239]) by DM6PR15MB4039.namprd15.prod.outlook.com
+ ([fe80::955c:b423:995c:d239%4]) with mapi id 15.20.4587.022; Fri, 8 Oct 2021
+ 00:29:01 +0000
+Message-ID: <b64e2a70-dd2f-a5f1-a72a-4162cdba4db0@fb.com>
+Date:   Thu, 7 Oct 2021 20:28:58 -0400
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.1.2
+Subject: Re: [PATCH bpf-next 1/2] bpf: add insn_processed to bpf_prog_info and
+ fdinfo
+Content-Language: en-US
+To:     Daniel Borkmann <daniel@iogearbox.net>, <bpf@vger.kernel.org>
+CC:     <netdev@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+References: <20211007080952.1255615-1-davemarchevsky@fb.com>
+ <20211007080952.1255615-2-davemarchevsky@fb.com>
+ <b500e3bf-ade7-5bb5-4bcd-a67c4be8a8bc@iogearbox.net>
+From:   Dave Marchevsky <davemarchevsky@fb.com>
+In-Reply-To: <b500e3bf-ade7-5bb5-4bcd-a67c4be8a8bc@iogearbox.net>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BL1PR13CA0426.namprd13.prod.outlook.com
+ (2603:10b6:208:2c3::11) To DM6PR15MB4039.namprd15.prod.outlook.com
+ (2603:10b6:5:2b2::20)
+MIME-Version: 1.0
+Received: from [IPV6:2620:10d:c0a8:11d9::13b3] (2620:10d:c091:480::1:8489) by BL1PR13CA0426.namprd13.prod.outlook.com (2603:10b6:208:2c3::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.5 via Frontend Transport; Fri, 8 Oct 2021 00:29:00 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4a401239-0ef6-4bd5-0678-08d989f2a00f
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3928:
+X-Microsoft-Antispam-PRVS: <DM6PR15MB392833A5A116B5D9FEDA2F96A0B29@DM6PR15MB3928.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5DHq4fx9BOQfbtqyTFLSp5aiOcLK6W2S1cFGDIryuNh8F8rmSqeB8Xz1yLeMP+AhK+tcrsXzWM6ho6YEvImw93IbDgYiyRD+Fdfh10J/TfPtumJZycuIrzwz8lA7+hva66l8ibWrqXy321sr/EF/l7RFZuM8/2KZ+tvXUjhe70VnHcjWl2vIJkG25o461yGrMAbp1p5+36gNBkvXoFC9oJvYYtAGTytpPm6nAWSfBrcvMvIU+QNEeQcDhLidfL4ouzgl2lECJzJgVm7KnjoTlHVxiKjOhSLFrEfzUKqD6yhQIU3H0DJDT7FT7TYCCRDp0y7mOoTihk5X1Hkle6dN7O3hxMASpwRuNa6CgOeubRu90a2fmaR7tPt1ggYXw0eG4TyOKmE4gL7sjbAWuavGx0zksJrYgJ/9WRrT652AwedPAFYrDv+suQPzck0pvvj7Pi1VOYfSgrulAhoyauJ0ZpwWUNJYZX70ri5pXZSt4MEJK/Rc6Q8gqC63qHReQwtfXC5Ef+Q22S6RzvgSFcXXlfuPzVUwynB1JojiyTlsKemyzrabij6bRqKunSKYH8jpsMapDlIFpENitMiINU0aIChp2jcMV5LGn6iylDL4Plvd1Slxx4V4Ve/P1DkSYzX0Fz8LarrDu6k6qKI8ya/6jP1qpLTf8Qw3b3j1VuEUQnbe0m6xLdvtCkXh3qud1LqGR0KY8pqfOuNqHZ8Daxc7uzWR9lFsq4pli/d0Jwn4ihk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR15MB4039.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(316002)(54906003)(6486002)(31686004)(36756003)(66946007)(66476007)(66556008)(53546011)(186003)(8676002)(5660300002)(2616005)(508600001)(38100700002)(31696002)(2906002)(4326008)(86362001)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eE92OGpBUDFvd2c1TFk4ZlZMdHNObVlKZXQ1MldoL3BaY3RPMmE1MjdwU242?=
+ =?utf-8?B?bjBBT3gxZ2Zmd1Y1S21zd2VnblQwTThGWDFzaGZ0clRMT01rWHliaDhYUlpz?=
+ =?utf-8?B?OW1ndTRqRTdkMUIwcXhMSVBhZGp3Z2ducFNMYWlYRHJLM2s3aEwwTUlIdXdJ?=
+ =?utf-8?B?VXdxZ3dpMHZ2eWJmZU11V2tmTmd1Qi9hb1MraTlTTHptYkFNTkpBdlJ5SkFw?=
+ =?utf-8?B?NDZqeDhHanZTU1BXUjY4R0NXOTN6WmZuL2ZuTmdSSkRqQW1hVWFKVkZNK3VT?=
+ =?utf-8?B?T0ZzblNxUDZWQkxaTkU0cWY1Y21rSzBXSHZlNURKYzhqMWlzQWFTT0taY3JI?=
+ =?utf-8?B?WmJ4Z1VEZXNtbTlPd25tMkFDcmk1RGY4eGFOZDVWd2c4RGxHbE9ZbjZkaGZZ?=
+ =?utf-8?B?dGJNL3VZbUZmMG41WU1ra21xSGxBWXlKTmIrMWo5blNFakY3a1l2aXVGaitL?=
+ =?utf-8?B?NW1VVHVUWDRFY0xEakkzellESHBDemxMQkdPbVdkOFV3dGYvL3Z2dnhLOGlp?=
+ =?utf-8?B?S2dJNUh0RzJtZURpMW53SUVIa3ZFa3B4TXhPeGFuYUlUVVBBN05lNVpwZ1ZT?=
+ =?utf-8?B?R0p2MXhtRGNzK2o1V0xWVkZERStXOWRIZWp6a08rK0tlNUVvdnVjcjM1amRn?=
+ =?utf-8?B?SlRtcWwzeEVrRjFKYVFsTUJJYVVITktMUFV6S0NBTTR0TE1JbFlpdGNyNlpQ?=
+ =?utf-8?B?Skx1VTBKK0IrcFRVbmlXa3BVQ1VLdVhsMmQyWGhTZGFHSmZOUkx5QTZUWXFz?=
+ =?utf-8?B?TTk1ZDBmT1EwQnpiQXY0WFB5SXpNTDlQM1hKM1JPT2o2c000Mm5hOCtkNkJr?=
+ =?utf-8?B?RHQ1Q3VmdlQrc1dYL01qNkVpeDVpeHFXbmlVNzlraXN3b0V0M0xwNVZLSTdS?=
+ =?utf-8?B?UGZFMEZvdXV2cEkvUERQSVVmZTd5MFBnMkxXRmQ2ZWpLaUc4YkNnWlE5Tmp5?=
+ =?utf-8?B?RE5zVy9Ldks3UFhVYU95Uyt5SUxTL3NJVzJkemtDTnZjSjZnV2NEelgvUU8r?=
+ =?utf-8?B?YVU4NWFPZmZqUEpjdEYxeDFKaEhqSUdNcWZFTVZQcVVCV0lHZEw5MlZNNExL?=
+ =?utf-8?B?ZW84QldPemErbWtUaDY3RndqcmJWdlMyeUdOWjNXeE8rK0llVFpGczlNMWx0?=
+ =?utf-8?B?MXhyRGJIMHJ1eXBnRTlzMVNTWE56RFR4WEZ2clpONnRkWjl3S01jT2J1UUR0?=
+ =?utf-8?B?WGhMdGIxQVphVERCUU5MWWQ0OFlkS2VlenRUYzdtZHFLTnU1TVdZcTZrZWMw?=
+ =?utf-8?B?c1hNbFJRR3Y1TFVLbDRIcE1XaVNpS0ttdGgvQXpBSnhoMUFXd2k1eXljcXRG?=
+ =?utf-8?B?NVdIZGxjSkZzVmVMREZ5ZGNGdzlSU1NjZzZ3YnBabkUzWmViaFg4ZUlGbHk0?=
+ =?utf-8?B?RzJRaFBqL0FxTEk3Z3MvZUxMMEp5Vng5c3I2eHF0dmhUc2g1ZzcwRzA5SElv?=
+ =?utf-8?B?VStwOUJoUUpFKzVhWFlBcXgxWnB0NEhDeGkwUjRCY1czQmxZd1AzUktNWHBL?=
+ =?utf-8?B?bFhVMmN3bU8za1FqKzBzUTdJQUdqanhyWWdpV3RPdVpxYlRQMENOL1FDWFdw?=
+ =?utf-8?B?eWtQU2EwNmg4Ulpaa3V4ZTRISVNxdXI0OTRnT3FPNmZPMUF4emVVRFhiN0VK?=
+ =?utf-8?B?L2lrcEFMcWtCcWVXVkZaVnptR0NCQ0tVc2kvTWt1SE1tSURtY29NY2MvTUUz?=
+ =?utf-8?B?eVZ6Y3pIOVAzYkVQSDY3WjhFeU1iUGpYL0tqc1JoZVo3aWxSQTBpVW8yeVR6?=
+ =?utf-8?B?VHVTRG5iK1YzenMvbTk3ejUvNFIzY0tBK1MydGRJeW5WZjA5eEVEQW90SWtO?=
+ =?utf-8?B?UEo5dk5GQXNzMGNKZ3FNUT09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4a401239-0ef6-4bd5-0678-08d989f2a00f
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR15MB4039.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2021 00:29:01.2047
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bUptqf9wwFIGTi3JKAjvKlq/i62rWaRkqL0jlWNCgKKcNzlFLrBrorNjf9WCk7zA49KNKaw+pGMaLutmdJxjxA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3928
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: Mn1P6fgXUHIUOARyNhlQj2k2Xig4WY4G
+X-Proofpoint-GUID: Mn1P6fgXUHIUOARyNhlQj2k2Xig4WY4G
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-10-07_05,2021-10-07_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ clxscore=1015 mlxscore=0 mlxlogscore=999 malwarescore=0 spamscore=0
+ adultscore=0 phishscore=0 suspectscore=0 priorityscore=1501
+ impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2109230001 definitions=main-2110080000
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Desmond.
+On 10/7/21 5:46 PM, Daniel Borkmann wrote:   
+> On 10/7/21 10:09 AM, Dave Marchevsky wrote:
+>> This stat is currently printed in the verifier log and not stored
+>> anywhere. To ease consumption of this data, add a field to bpf_prog_aux
+>> so it can be exposed via BPF_OBJ_GET_INFO_BY_FD and fdinfo.
+>>
+>> Signed-off-by: Dave Marchevsky <davemarchevsky@fb.com>
+>> ---
+>>   include/linux/bpf.h            | 1 +
+>>   include/uapi/linux/bpf.h       | 1 +
+>>   kernel/bpf/syscall.c           | 8 ++++++--
+>>   kernel/bpf/verifier.c          | 1 +
+>>   tools/include/uapi/linux/bpf.h | 1 +
+>>   5 files changed, 10 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+>> index d604c8251d88..921ad62b892c 100644
+>> --- a/include/linux/bpf.h
+>> +++ b/include/linux/bpf.h
+>> @@ -887,6 +887,7 @@ struct bpf_prog_aux {
+>>       struct bpf_prog *prog;
+>>       struct user_struct *user;
+>>       u64 load_time; /* ns since boottime */
+>> +    u64 verif_insn_processed;
+> 
+> nit: why u64 and not u32?
+This was an attempt to future-proof, with this comment from Alexei
+on the RFC patchset in mind: 
 
-On Mon, Oct 4, 2021 at 11:02 AM Desmond Cheong Zhi Xi
-<desmondcheongzx@gmail.com> wrote:
->
-> Syzbot reported a use-after-free Write in sco_sock_timeout [1]:
->
-> ==================================================================
-> BUG: KASAN: use-after-free in instrument_atomic_read_write
-> include/linux/instrumented.h:101 [inline]
-> BUG: KASAN: use-after-free in atomic_fetch_add_relaxed
-> include/asm-generic/atomic-instrumented.h:111 [inline]
-> BUG: KASAN: use-after-free in __refcount_add
-> include/linux/refcount.h:193 [inline]
-> BUG: KASAN: use-after-free in __refcount_inc
-> include/linux/refcount.h:250 [inline]
-> BUG: KASAN: use-after-free in refcount_inc include/linux/refcount.h:267 [inline]
-> BUG: KASAN: use-after-free in sock_hold include/net/sock.h:702 [inline]
-> BUG: KASAN: use-after-free in sco_sock_timeout+0x64/0x290 net/bluetooth/sco.c:88
-> Write of size 4 at addr ffff888034b46080 by task kworker/1:0/20
->
-> CPU: 1 PID: 20 Comm: kworker/1:0 Not tainted 5.14.0-rc6-syzkaller #0
-> Workqueue: events sco_sock_timeout
-> Call Trace:
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
->  print_address_description.constprop.0.cold+0x6c/0x309 mm/kasan/report.c:233
->  __kasan_report mm/kasan/report.c:419 [inline]
->  kasan_report.cold+0x83/0xdf mm/kasan/report.c:436
->  check_region_inline mm/kasan/generic.c:183 [inline]
->  kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
->  instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
->  atomic_fetch_add_relaxed include/asm-generic/atomic-instrumented.h:111 [inline]
->  __refcount_add include/linux/refcount.h:193 [inline]
->  __refcount_inc include/linux/refcount.h:250 [inline]
->  refcount_inc include/linux/refcount.h:267 [inline]
->  sock_hold include/net/sock.h:702 [inline]
->  sco_sock_timeout+0x64/0x290 net/bluetooth/sco.c:88
->  process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
->  worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
->  kthread+0x3e5/0x4d0 kernel/kthread.c:319
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
->
-> Allocated by task 4872:
->  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
->  kasan_set_track mm/kasan/common.c:46 [inline]
->  set_alloc_info mm/kasan/common.c:434 [inline]
->  ____kasan_kmalloc mm/kasan/common.c:513 [inline]
->  ____kasan_kmalloc mm/kasan/common.c:472 [inline]
->  __kasan_kmalloc+0x9b/0xd0 mm/kasan/common.c:522
->  kmalloc include/linux/slab.h:596 [inline]
->  sk_prot_alloc+0x110/0x290 net/core/sock.c:1822
->  sk_alloc+0x32/0xbc0 net/core/sock.c:1875
->  __netlink_create+0x63/0x2f0 net/netlink/af_netlink.c:640
->  netlink_create+0x3ad/0x5e0 net/netlink/af_netlink.c:703
->  __sock_create+0x353/0x790 net/socket.c:1461
->  sock_create net/socket.c:1512 [inline]
->  __sys_socket+0xef/0x200 net/socket.c:1554
->  __do_sys_socket net/socket.c:1563 [inline]
->  __se_sys_socket net/socket.c:1561 [inline]
->  __x64_sys_socket+0x6f/0xb0 net/socket.c:1561
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
->
-> Freed by task 0:
->  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
->  kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
->  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:360
->  ____kasan_slab_free mm/kasan/common.c:366 [inline]
->  ____kasan_slab_free mm/kasan/common.c:328 [inline]
->  __kasan_slab_free+0xfb/0x130 mm/kasan/common.c:374
->  kasan_slab_free include/linux/kasan.h:230 [inline]
->  slab_free_hook mm/slub.c:1628 [inline]
->  slab_free_freelist_hook+0xdf/0x240 mm/slub.c:1653
->  slab_free mm/slub.c:3213 [inline]
->  kfree+0xe4/0x540 mm/slub.c:4267
->  sk_prot_free net/core/sock.c:1858 [inline]
->  __sk_destruct+0x6a8/0x900 net/core/sock.c:1943
->  sk_destruct+0xbd/0xe0 net/core/sock.c:1958
->  __sk_free+0xef/0x3d0 net/core/sock.c:1969
->  sk_free+0x78/0xa0 net/core/sock.c:1980
->  deferred_put_nlk_sk+0x151/0x2f0 net/netlink/af_netlink.c:740
->  rcu_do_batch kernel/rcu/tree.c:2550 [inline]
->  rcu_core+0x7ab/0x1380 kernel/rcu/tree.c:2785
->  __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
->
-> Last potentially related work creation:
->  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
->  kasan_record_aux_stack+0xe5/0x110 mm/kasan/generic.c:348
->  __call_rcu kernel/rcu/tree.c:3029 [inline]
->  call_rcu+0xb1/0x750 kernel/rcu/tree.c:3109
->  netlink_release+0xdd4/0x1dd0 net/netlink/af_netlink.c:812
->  __sock_release+0xcd/0x280 net/socket.c:649
->  sock_close+0x18/0x20 net/socket.c:1311
->  __fput+0x288/0x920 fs/file_table.c:280
->  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
->  exit_task_work include/linux/task_work.h:32 [inline]
->  do_exit+0xbd4/0x2a60 kernel/exit.c:825
->  do_group_exit+0x125/0x310 kernel/exit.c:922
->  __do_sys_exit_group kernel/exit.c:933 [inline]
->  __se_sys_exit_group kernel/exit.c:931 [inline]
->  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
->
-> Second to last potentially related work creation:
->  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
->  kasan_record_aux_stack+0xe5/0x110 mm/kasan/generic.c:348
->  __call_rcu kernel/rcu/tree.c:3029 [inline]
->  call_rcu+0xb1/0x750 kernel/rcu/tree.c:3109
->  netlink_release+0xdd4/0x1dd0 net/netlink/af_netlink.c:812
->  __sock_release+0xcd/0x280 net/socket.c:649
->  sock_close+0x18/0x20 net/socket.c:1311
->  __fput+0x288/0x920 fs/file_table.c:280
->  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
->  exit_task_work include/linux/task_work.h:32 [inline]
->  do_exit+0xbd4/0x2a60 kernel/exit.c:825
->  do_group_exit+0x125/0x310 kernel/exit.c:922
->  __do_sys_exit_group kernel/exit.c:933 [inline]
->  __se_sys_exit_group kernel/exit.c:931 [inline]
->  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
->
-> The buggy address belongs to the object at ffff888034b46000
->  which belongs to the cache kmalloc-2k of size 2048
-> The buggy address is located 128 bytes inside of
->  2048-byte region [ffff888034b46000, ffff888034b46800)
-> The buggy address belongs to the page:
-> page:ffffea0000d2d000 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x34b40
-> head:ffffea0000d2d000 order:3 compound_mapcount:0 compound_pincount:0
-> flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-> raw: 00fff00000010200 ffffea0000c37a00 0000000200000002 ffff888010c42000
-> raw: 0000000000000000 0000000000080008 00000001ffffffff 0000000000000000
-> page dumped because: kasan: bad access detected
-> page_owner tracks the page as allocated
-> page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 8634, ts 417197903424, free_ts 417180376519
->  prep_new_page mm/page_alloc.c:2436 [inline]
->  get_page_from_freelist+0xa72/0x2f80 mm/page_alloc.c:4169
->  __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5391
->  alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2244
->  alloc_slab_page mm/slub.c:1691 [inline]
->  allocate_slab+0x32e/0x4b0 mm/slub.c:1831
->  new_slab mm/slub.c:1894 [inline]
->  new_slab_objects mm/slub.c:2640 [inline]
->  ___slab_alloc+0x473/0x7b0 mm/slub.c:2803
->  __slab_alloc.constprop.0+0xa7/0xf0 mm/slub.c:2843
->  slab_alloc_node mm/slub.c:2925 [inline]
->  __kmalloc_node_track_caller+0x2e3/0x360 mm/slub.c:4653
->  kmalloc_reserve net/core/skbuff.c:355 [inline]
->  __alloc_skb+0xde/0x340 net/core/skbuff.c:426
->  alloc_skb include/linux/skbuff.h:1116 [inline]
->  alloc_skb_with_frags+0x93/0x620 net/core/skbuff.c:6073
->  sock_alloc_send_pskb+0x783/0x910 net/core/sock.c:2475
->  mld_newpack+0x1df/0x770 net/ipv6/mcast.c:1756
->  add_grhead+0x265/0x330 net/ipv6/mcast.c:1859
->  add_grec+0x1053/0x14e0 net/ipv6/mcast.c:1997
->  mld_send_initial_cr.part.0+0xf6/0x230 net/ipv6/mcast.c:2244
->  mld_send_initial_cr net/ipv6/mcast.c:1232 [inline]
->  ipv6_mc_dad_complete+0x1d0/0x690 net/ipv6/mcast.c:2255
->  addrconf_dad_completed+0xa20/0xd60 net/ipv6/addrconf.c:4181
-> page last free stack trace:
->  reset_page_owner include/linux/page_owner.h:24 [inline]
->  free_pages_prepare mm/page_alloc.c:1346 [inline]
->  free_pcp_prepare+0x2c5/0x780 mm/page_alloc.c:1397
->  free_unref_page_prepare mm/page_alloc.c:3332 [inline]
->  free_unref_page+0x19/0x690 mm/page_alloc.c:3411
->  unfreeze_partials+0x16c/0x1b0 mm/slub.c:2421
->  put_cpu_partial+0x13d/0x230 mm/slub.c:2457
->  qlink_free mm/kasan/quarantine.c:146 [inline]
->  qlist_free_all+0x5a/0xc0 mm/kasan/quarantine.c:165
->  kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:272
->  __kasan_slab_alloc+0x8e/0xa0 mm/kasan/common.c:444
->  kasan_slab_alloc include/linux/kasan.h:254 [inline]
->  slab_post_alloc_hook mm/slab.h:519 [inline]
->  slab_alloc_node mm/slub.c:2959 [inline]
->  slab_alloc mm/slub.c:2967 [inline]
->  kmem_cache_alloc+0x285/0x4a0 mm/slub.c:2972
->  getname_flags.part.0+0x50/0x4f0 fs/namei.c:138
->  getname_flags fs/namei.c:2747 [inline]
->  user_path_at_empty+0xa1/0x100 fs/namei.c:2747
->  user_path_at include/linux/namei.h:57 [inline]
->  vfs_statx+0x142/0x390 fs/stat.c:203
->  vfs_fstatat fs/stat.c:225 [inline]
->  vfs_lstat include/linux/fs.h:3386 [inline]
->  __do_sys_newlstat+0x91/0x110 fs/stat.c:380
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
->
-> Memory state around the buggy address:
->  ffff888034b45f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->  ffff888034b46000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> > ffff888034b46080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                    ^
->  ffff888034b46100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff888034b46180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ==================================================================
->
-> sco_sock_connect checks the socket's state before allocating a new SCO
-> connection and creating a channel for it with the given socket.
->
-> However, because this check occurs outside the socket lock, multiple
-> concurrent calls to sco_sock_connect are able to pass the check before
-> serially entering the critical section and making multiple recursive
-> calls to sco_connect.
->
-> The result is that multiple SCO connections are allocated, but each
-> connection overrides the socket's channel with the previous
-> connection. This may cause a UAF because the overwritten connections
-> can't have their channels deleted when the socket is released, so
-> sco_sock_timeout is able to access the freed socket.
->
-> Fix this by checking the socket's state after the socket is locked in
-> sco_sock_connect.
->
-> Link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b [1]
-> Reported-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
-> Tested-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
-> Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-> Cc: Hillf Danton <hdanton@sina.com>
-> ---
->
-> Hi Maintainers,
->
-> Resending this patch because the bug is still being hit regularly by
-> Syzbot. Thoughts would be very appreciated.
->
-> Best wishes,
-> Desmond
->
->  net/bluetooth/sco.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
->
-> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-> index 8eabf41b2993..e6a9e9e6e795 100644
-> --- a/net/bluetooth/sco.c
-> +++ b/net/bluetooth/sco.c
-> @@ -574,9 +574,6 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
->             addr->sa_family != AF_BLUETOOTH)
->                 return -EINVAL;
->
-> -       if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
-> -               return -EBADFD;
-> -
->         if (sk->sk_type != SOCK_SEQPACKET)
->                 return -EINVAL;
->
-> @@ -587,6 +584,13 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
->
->         lock_sock(sk);
->
-> +       if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
-> +               hci_dev_unlock(hdev);
-> +               hci_dev_put(hdev);
-> +               err = -EBADFD;
-> +               goto done;
-> +       }
+"So it feels to me that insn_processed alone will be enough to address the
+monitoring goal.
+It can be exposed to fd_info and printed by bpftool.
+If/when it changes with some future verifier algorithm we should be able
+to approximate it."
 
-So this is getting really messy, first we have the locking dependency
-so we had to do hci_dev_lock before sock_lock and now we have to move
-back the checks since it really needs lock_sock anyway, it really
-sounds like we are back and forth with this. Also from the description
-I assume sco_add_chan is the problem since sco_conn is create during
-the syscall we can't actually use its lock to serialize the requests,
-so I wonder if it wouldn't be better to do something like l2cap_sock.c
-does, have the data created on sock_create so we can use conn->sock in
-sco_conn_add.
+My thinking was that, if the scenario in the last sentence of the comment
+were to happen, a verifier putting an approximation of 'how hard did I have
+to work to verify all the insns' in this field might have use for the extra
+bytes.
 
->         /* Set destination address and psm */
->         bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
->
-> --
-> 2.25.1
->
+That seems pretty tenuous though, as does the current verifier needing the 
+full u64 anytime soon, so happy to change.
 
+>>       struct bpf_map *cgroup_storage[MAX_BPF_CGROUP_STORAGE_TYPE];
+>>       char name[BPF_OBJ_NAME_LEN];
+>>   #ifdef CONFIG_SECURITY
+>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>> index 6fc59d61937a..89be6ecf9204 100644
+>> --- a/include/uapi/linux/bpf.h
+>> +++ b/include/uapi/linux/bpf.h
+>> @@ -5613,6 +5613,7 @@ struct bpf_prog_info {
+>>       __u64 run_time_ns;
+>>       __u64 run_cnt;
+>>       __u64 recursion_misses;
+>> +    __u64 verif_insn_processed;
+> 
+> There's a '__u32 :31; /* alignment pad */' which could be reused. Given this
+> is uapi, I'd probably just name it 'insn_processed' or 'verified_insns' (maybe
+> the latter is more appropriate) to avoid abbreviation on verif_ which may not
+> be obvious.
 
--- 
-Luiz Augusto von Dentz
+Meaning, just use those 31 bits for insn_processed?
+
+re: your naming suggestions, I prefer 'verified_insns'. Main concern for me is
+making it obvious that this field is a property of the verification of the
+prog, not the prog itself like most other fields in bpf_prog_info. 
+
+>>   } __attribute__((aligned(8)));
+>>     struct bpf_map_info {
+>> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>> index 4e50c0bfdb7d..ea452ced2296 100644
+>> --- a/kernel/bpf/syscall.c
+>> +++ b/kernel/bpf/syscall.c
+>> @@ -1848,7 +1848,8 @@ static void bpf_prog_show_fdinfo(struct seq_file *m, struct file *filp)
+>>              "prog_id:\t%u\n"
+>>              "run_time_ns:\t%llu\n"
+>>              "run_cnt:\t%llu\n"
+>> -           "recursion_misses:\t%llu\n",
+>> +           "recursion_misses:\t%llu\n"
+>> +           "verif_insn_processed:\t%llu\n",
+>>              prog->type,
+>>              prog->jited,
+>>              prog_tag,
+>> @@ -1856,7 +1857,8 @@ static void bpf_prog_show_fdinfo(struct seq_file *m, struct file *filp)
+>>              prog->aux->id,
+>>              stats.nsecs,
+>>              stats.cnt,
+>> -           stats.misses);
+>> +           stats.misses,
+>> +           prog->aux->verif_insn_processed);
+>>   }
+>>   #endif
+>>   @@ -3625,6 +3627,8 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+>>       info.run_cnt = stats.cnt;
+>>       info.recursion_misses = stats.misses;
+>>   +    info.verif_insn_processed = prog->aux->verif_insn_processed;
+> 
+> Bit off-topic, but stack depth might be useful as well.
+
+Agreed. Since there's a stack_depth per subprog it would require handling 
+similar to other dynamic-size bpf_prog_info fields, so I didn't add it 
+to the RFC patchset either, thinking it would be better to start with 
+simple stats and see if anyone uses. Feedback there was to avoid adding 
+too many verifier stats fields to bpf_prog_info, instead relying on a 
+post-verification bare tracepoint (Andrii) or other BPF hook (John, Alexei)
+for extraction of other verifier stats.
+
+>> +
+>>       if (!bpf_capable()) {
+>>           info.jited_prog_len = 0;
+>>           info.xlated_prog_len = 0;
+>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+>> index 20900a1bac12..9ca301191d78 100644
+>> --- a/kernel/bpf/verifier.c
+>> +++ b/kernel/bpf/verifier.c
+>> @@ -14038,6 +14038,7 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr, bpfptr_t uattr)
+>>         env->verification_time = ktime_get_ns() - start_time;
+>>       print_verification_stats(env);
+>> +    env->prog->aux->verif_insn_processed = env->insn_processed;
+>>         if (log->level && bpf_verifier_log_full(log))
+>>           ret = -ENOSPC;
+>> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+>> index 6fc59d61937a..89be6ecf9204 100644
+>> --- a/tools/include/uapi/linux/bpf.h
+>> +++ b/tools/include/uapi/linux/bpf.h
+>> @@ -5613,6 +5613,7 @@ struct bpf_prog_info {
+>>       __u64 run_time_ns;
+>>       __u64 run_cnt;
+>>       __u64 recursion_misses;
+>> +    __u64 verif_insn_processed;
+>>   } __attribute__((aligned(8)));
+>>     struct bpf_map_info {
+>>
+> 
+
