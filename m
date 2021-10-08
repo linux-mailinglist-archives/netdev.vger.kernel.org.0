@@ -2,129 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AA9B426D59
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 17:15:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AE60426D66
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 17:20:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242967AbhJHPRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 11:17:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242715AbhJHPRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 11:17:34 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904A7C061570;
-        Fri,  8 Oct 2021 08:15:38 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id r7so30806585wrc.10;
-        Fri, 08 Oct 2021 08:15:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=T7MGxfkmIu6hScMKkOk6yF8OXztAXQpl5GmJESEY5qk=;
-        b=kKlXRck94dKwpDv9Q3VWhmF7nfKwZ5VJYQKpk1hhg8qtPH3aJysWH7T2suuZ8NfXFJ
-         giuanddnj8r+JUDEPs15tPMQ7+iTqkIJoqhBA73KP9NQ32QLjgc4zgKBTyTP1am85O8M
-         VQcxB387+qgcQZJf2A3F1ScHRbiAK/0SkX3Ga4Mh/90rMs3bW43kREYdfr8wdtD0QbxG
-         bit6yPrVafWp/802qWytkWGY0DGYBBnF5VdlIDoRMbMvogHH29jBhHFhY22PcX7cKPYC
-         f4w2LAM7XIQhtvYbv8e5YWG2K3C0fQa8WUnvsv0/be+L5zECZ5GLB/E0IiUJON4wLKCi
-         k+fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=T7MGxfkmIu6hScMKkOk6yF8OXztAXQpl5GmJESEY5qk=;
-        b=iOc3D6yEY/n1fSxhaSAGbhmmETlIV7xlMJajnAIbrmmPfvoziWmB4yB6QLrKDxF8Kw
-         IuYj83LFVSkyIse78LnAi138BetWLx75BIv2YoEMD1PDruD+u26hnPWas92/Gk9CLF8x
-         GYCT2a4IMAgpdXSkuGcQgtcOpNiD6S50hCUkz39/+f1rcjADBdP0MsDUhN5P9oJA4xYP
-         IBsx9lua3VaFr3q+h3AsLkzYYpaUX3n+VPa5aME2WcFZUCUozvPos1qIcqgYkv8bQhn0
-         zRG5SieSSrUgV1CflIa7qKIHt3F9ja9nz1Bv104IQc9SgBEzT3Xoge0n2qNvIeQE2o8v
-         cYqg==
-X-Gm-Message-State: AOAM533fxug1ALvscs7wRxVLfjgpC7/H1xZz+0RRFr7nQqwMKRbkBvXp
-        QD8prMD8EkIDLqVuGSp2aY1kJMzLzd4=
-X-Google-Smtp-Source: ABdhPJw2mPZ7iIGxCYSLIRRzvDjAUDj7yUfLjQg9/i0ys9BPd5HwmME8GyYiizY6YhDzJfgq6K7ZMg==
-X-Received: by 2002:a05:600c:1c01:: with SMTP id j1mr3956324wms.1.1633706137003;
-        Fri, 08 Oct 2021 08:15:37 -0700 (PDT)
-Received: from debian64.daheim (p200300d5ff047000d63d7efffebde96e.dip0.t-ipconnect.de. [2003:d5:ff04:7000:d63d:7eff:febd:e96e])
-        by smtp.gmail.com with ESMTPSA id u5sm210928wmm.39.2021.10.08.08.15.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Oct 2021 08:15:36 -0700 (PDT)
-Received: from localhost.daheim ([127.0.0.1])
-        by debian64.daheim with esmtp (Exim 4.95)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1mYpiO-0009Ks-SC;
-        Fri, 08 Oct 2021 17:15:35 +0200
-Subject: Re: [PATCH] carl9170: Fix error return -EAGAIN if not started
-To:     Colin Ian King <colin.king@canonical.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211008001558.32416-1-colin.king@canonical.com>
- <20211008055854.GE2048@kadam>
- <382b719f-f14e-2963-284d-c0b38dedc4ae@canonical.com>
-From:   Christian Lamparter <chunkeey@gmail.com>
-Message-ID: <4e6efdf8-3c2e-68cd-5c23-b9809eceb331@gmail.com>
-Date:   Fri, 8 Oct 2021 17:15:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S242889AbhJHPWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 11:22:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38966 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242662AbhJHPWC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 11:22:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1C9A460FD8;
+        Fri,  8 Oct 2021 15:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633706407;
+        bh=XaoepD9pnpqvmvlNYkOauTaOInKIGi3EeI10E4+GpuA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=LYVqtEzlITS9He8HreSE7lMmRr3pSD86Inmf9xioAt6/nrWgURw5UrLBxyH1cMqeD
+         Eklo73u6xQSSw1HlCYYOl5Piyfwa4K+/AZx+CYnw8KmxYVK6Y+7mV4mPvQ3gqi2OpE
+         oQZl7vfX1vOmLDM60W+ePxJmdurLPsVVWWQd67cpW3v9ueNgQp8XeeO0Q+neJhlfhr
+         Sva7GoHxZQ0sVraprAdNPd7X77UesX+c4pEFpB2ZowHi+2mEF+nbhmLGwirj4rag/e
+         lYHBeSKakEm+jtO/MrChPh9KseJz/J1C2aIL8NSvQFQXebUPVsOGoF2Xr1195cEVhl
+         3ZTvuzp/C5hhQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0F4F460A44;
+        Fri,  8 Oct 2021 15:20:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <382b719f-f14e-2963-284d-c0b38dedc4ae@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] ath11k: fix m68k and xtensa build failure in
+ ath11k_peer_assoc_h_smps()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163370640705.31693.17970287687909944942.git-patchwork-notify@kernel.org>
+Date:   Fri, 08 Oct 2021 15:20:07 +0000
+References: <20211008143932.23884-1-kvalo@codeaurora.org>
+In-Reply-To: <20211008143932.23884-1-kvalo@codeaurora.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     netdev@vger.kernel.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, sfr@canb.auug.org.au,
+        geert@linux-m68k.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello:
 
-On 08/10/2021 09:31, Colin Ian King wrote:
-> On 08/10/2021 06:58, Dan Carpenter wrote:
->> On Fri, Oct 08, 2021 at 01:15:58AM +0100, Colin King wrote:
->>> From: Colin Ian King <colin.king@canonical.com>
->>>
->>> There is an error return path where the error return is being
->>> assigned to err rather than count and the error exit path does
->>> not return -EAGAIN as expected. Fix this by setting the error
->>> return to variable count as this is the value that is returned
->>> at the end of the function.
->>>
->>> Addresses-Coverity: ("Unused value")
->>> Fixes: 00c4da27a421 ("carl9170: firmware parser and debugfs code")
->>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
->>> ---
->>>   drivers/net/wireless/ath/carl9170/debug.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/wireless/ath/carl9170/debug.c b/drivers/net/wireless/ath/carl9170/debug.c
->>> index bb40889d7c72..f163c6bdac8f 100644
->>> --- a/drivers/net/wireless/ath/carl9170/debug.c
->>> +++ b/drivers/net/wireless/ath/carl9170/debug.c
->>> @@ -628,7 +628,7 @@ static ssize_t carl9170_debugfs_bug_write(struct ar9170 *ar, const char *buf,
->>>       case 'R':
->>>           if (!IS_STARTED(ar)) {
->>> -            err = -EAGAIN;
->>> +            count = -EAGAIN;
->>>               goto out;
->>
->> This is ugly.  The bug wouldn't have happened with a direct return, it's
->> only the goto out which causes it.  Better to replace all the error
->> paths with direct returns.  There are two other direct returns so it's
->> not like a new thing...
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Fri,  8 Oct 2021 17:39:32 +0300 you wrote:
+> Stephen reported that ath11k was failing to build on m68k and xtensa:
 > 
-> Yep, I agree it was ugly, I was trying to keep to the coding style and reduce the patch delta size. I can do a V2 if the maintainers deem it's a cleaner solution.
+> In file included from <command-line>:0:0:
+> In function 'ath11k_peer_assoc_h_smps',
+>     inlined from 'ath11k_peer_assoc_prepare' at drivers/net/wireless/ath/ath11k/mac.c:2362:2:
+> include/linux/compiler_types.h:317:38: error: call to '__compiletime_assert_650' declared with attribute error: FIELD_GET: type of reg too small for mask
+>   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>                                       ^
+> include/linux/compiler_types.h:298:4: note: in definition of macro '__compiletime_assert'
+>     prefix ## suffix();    \
+>     ^
+> include/linux/compiler_types.h:317:2: note: in expansion of macro '_compiletime_assert'
+>   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>   ^
+> include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
+>  #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+>                                      ^
+> include/linux/bitfield.h:52:3: note: in expansion of macro 'BUILD_BUG_ON_MSG'
+>    BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ull,  \
+>    ^
+> include/linux/bitfield.h:108:3: note: in expansion of macro '__BF_FIELD_CHECK'
+>    __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: "); \
+>    ^
+> drivers/net/wireless/ath/ath11k/mac.c:2079:10: note: in expansion of macro 'FIELD_GET'
+>    smps = FIELD_GET(IEEE80211_HE_6GHZ_CAP_SM_PS,
+> 
+> [...]
 
-Hm? I don't think there's any need to stick to a particular
-coding style. This file hasn't been touched a lot since 2010.
-Things moved on and replacing the gotos with straight return
-is totally fine.
+Here is the summary with links:
+  - [net-next] ath11k: fix m68k and xtensa build failure in ath11k_peer_assoc_h_smps()
+    https://git.kernel.org/netdev/net-next/c/16bdce2ada5a
 
-(It has to pass the build checkers of course. However I don't
-think this will be a problem here...)
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Cheers,
-Christian
+
