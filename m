@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41F71426AB8
+	by mail.lfdr.de (Postfix) with ESMTP id B6AAC426ABA
 	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 14:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241442AbhJHM21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 08:28:27 -0400
-Received: from mail-bn8nam12on2047.outbound.protection.outlook.com ([40.107.237.47]:13537
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        id S241545AbhJHM2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 08:28:30 -0400
+Received: from mail-bn7nam10on2081.outbound.protection.outlook.com ([40.107.92.81]:38688
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241534AbhJHM2I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Oct 2021 08:28:08 -0400
+        id S241582AbhJHM2O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 08:28:14 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K7dpu2iQlsoETyHOm5IvpvEirsGKzsMPDQOyjcozEkL8YvwPMDFsVdugvmGnp5mn834l6M1/IMy2MS/JrAfFLBokeMwxFKOy7lO1yeoTij+BCkmcO4XvTO6Lt/Jp/4/2xS6mHXNCRQ34XOHN8ovao8fCrphkHMFRqyNWhSzN9mq9q0KW+Xeo61gz3gZddqtstPsjeAlAj1K8gJaKSjBr+pEJJlfIiKyVNuWQ6ohUFG1IL+DoNGpfACZEp9F+T412K7wLEeqZePzW63RCtA3nZI/0/NXbZu340I8WxtKdOrQBAThAmrAeLbGw0+bPwDMZw9ybR/L+nYobvBgQ9uvDlQ==
+ b=jPBGrkkOJNvCTRZ/Bq/mSm3QWHHQWmxkRFKr7McY7xALHmVze5tKVh4w7e1gDTXGkfwRH2ItX2zIJTpXm8P1dRiO1A64Nh2+AO+tWjN1oGQxAp42tboeqLxv5GPCLtcl2IjLkYar59GYAMQPw1NmlT+KbtPsI9rzumF63RM0z5fjxpDSI9n33sJFD3bsfuI/v5UeXH2Xb/BPsdEaqNLe1D7MJlnAU9IdFkaaV2WLNqg+cR6v6ep4dSyw2KWJo56I0hJS16ZqLq+V5xTzloNzrmdWSJcSu0/OkwNjlB/Hc9YCRm69JAuxwjz/jYHyciMOL0LLMpm35x8FrgWb/7D4MQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BghE2GqHU7Hb7GZa4ODZP82j76YI+rGy+6vXlPLUJjc=;
- b=lzzX7+8GbUT9/fpc53NbZArgOzgEFKgG4uEmdqVvCTBB8IcpOCrssvIN+OVIU14OUcJLgGCtrjne61nUBBBs8JZqpwG9G9Zuz6tYekNxIWFOswZrU6NNudUqzuIydpIIILYJZNAiHIPU+OAAQyl8ZM2NlI4mw8RXOAFT7qARnb+uA4fTp9I5S6m4j7iNGjTSFC0zcIZUrgIaDvn9jbZrsz3ogfoF8umRjqg8SKkk6ya9Zfzo2YXN0aUJV1ExYS0F5XN3cAACebzLz78JvNiLwzUPIwPXQhrq90xp8oRIwnGi6KreH3OIbrQ3MVg+PKPoR8Tyrq0HCE4IrA876KgLBw==
+ bh=4dK3GIoiKN0D5DHbI88X0iH3TPKz45yTldo9SrMkQhs=;
+ b=JTpN7Ybfv2kjhgrrQIjwE9wO7rv8u55NDtzIMUxVw4DC0qpPz4aCP5wWh/2Xg22vhyQpBya0KsYLrVJCgivZlLhPOkeC5HfFB9oM9TwVMSiIhRszS0IOrcb7GyIGgCwKaRk/ysCwKZMeLW+yQp7ivKf+pH/BTWnxuje4sZtTlC1Liu05GUALjrVXQKhitu7YZsAs7gkfLAh2zwOoiiLMkcjGu/rFG4j/f+2F5+BrRPh9NH6t1t5Pkh1aznRES9xY6qLTyxVGzXUluFL+GxIP45khRBASCFd8aVniI1beQXC1Bga5rTEzhyRvhEEsokyOnzXWMQaQ/H7o4bY3EekU3A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.35) smtp.rcpttodomain=chelsio.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BghE2GqHU7Hb7GZa4ODZP82j76YI+rGy+6vXlPLUJjc=;
- b=kRXZBprzHbTrlpaZ2TJjSxQLVexDwDcM2cq8mVIoErQKkXKlAUthWfKSH/NlzRWPFTo6d+KeHOk4Bn0iFvcYff4undUDXxYG12miXzx0tM0WXGx6lMUVgcZRITc3rJ0QwHbU3xgYdbnyQs5xyZa6LbdwEVgfeKqSBsl0rhJ0nRuI/Lutv0VGd29dWrDBdwV/NF7dL07AtKqNo9LDR1xwHw7ebqLHO89W/v9jwlwja9ef9YcaT60AxFGVwtdqPzSbIXOdqKdsOqyBod9Li40HIcruu1nMDHYJmEzRmgiKNX7GSz+7rUfadsMhH73deWBrsdp3DTWNR2Scg+7I1cG11w==
-Received: from BN9PR03CA0801.namprd03.prod.outlook.com (2603:10b6:408:13f::26)
- by MN2PR12MB4344.namprd12.prod.outlook.com (2603:10b6:208:26e::11) with
+ bh=4dK3GIoiKN0D5DHbI88X0iH3TPKz45yTldo9SrMkQhs=;
+ b=TFvvu9yACXwGbC5QeRy6axjcVhXFsJzeEQ5Fawn09fehky+1+xmVdl6+uB5ykEgd40ILAoqkrfsM3X/66DD96DI19kPoyspn/SbmgQmKacEa6TYPkAIbjqzl7Zd8YGQnuBmTPn9VHi9H75Hjnhb+sza5jSTjX95b9C9OxNb1TZQ7VSlbsVNoqNIwAnJ1E1EECo77xaN8UlcrB3LwsmCu79UVCARnoHB2MiJ0P+10z9E94TvxP4KgfknXukcbb4eQnlOfhz6GusWSh1BiNKgGtunRG81nW8aQAywPanWkTlNRLwE6qvrK6TFbFSek3VHDTXM04XgORayB3AGrdjzjbQ==
+Received: from BN6PR19CA0073.namprd19.prod.outlook.com (2603:10b6:404:133::11)
+ by MN2PR12MB3006.namprd12.prod.outlook.com (2603:10b6:208:cd::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Fri, 8 Oct
- 2021 12:26:11 +0000
-Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:13f:cafe::b2) by BN9PR03CA0801.outlook.office365.com
- (2603:10b6:408:13f::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.22 via Frontend
- Transport; Fri, 8 Oct 2021 12:26:11 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.19; Fri, 8 Oct
+ 2021 12:26:15 +0000
+Received: from BN8NAM11FT052.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:133:cafe::b7) by BN6PR19CA0073.outlook.office365.com
+ (2603:10b6:404:133::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.16 via Frontend
+ Transport; Fri, 8 Oct 2021 12:26:15 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
  smtp.mailfrom=nvidia.com; chelsio.com; dkim=none (message not signed)
  header.d=none;chelsio.com; dmarc=pass action=none header.from=nvidia.com;
@@ -45,15 +45,15 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.35 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.35; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.35) by
- BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
+ BN8NAM11FT052.mail.protection.outlook.com (10.13.177.210) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4587.18 via Frontend Transport; Fri, 8 Oct 2021 12:26:10 +0000
+ 15.20.4587.18 via Frontend Transport; Fri, 8 Oct 2021 12:26:14 +0000
 Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL111.nvidia.com
  (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 8 Oct
- 2021 12:26:09 +0000
+ 2021 12:26:13 +0000
 Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
  (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Fri, 8 Oct 2021 05:26:04 -0700
+ Transport; Fri, 8 Oct 2021 05:26:09 -0700
 From:   Mark Zhang <markzhang@nvidia.com>
 To:     <jgg@nvidia.com>, <dledford@redhat.com>, <saeedm@nvidia.com>
 CC:     <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
@@ -65,9 +65,9 @@ CC:     <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
         <selvin.xavier@broadcom.com>, <shiraz.saleem@intel.com>,
         <yishaih@nvidia.com>, <zyjzyj2000@gmail.com>,
         "Mark Zhang" <markzhang@nvidia.com>
-Subject: [PATCH rdma-next v4 04/13] RDMA/core: Add a helper API rdma_free_hw_stats_struct
-Date:   Fri, 8 Oct 2021 15:24:30 +0300
-Message-ID: <20211008122439.166063-5-markzhang@nvidia.com>
+Subject: [PATCH rdma-next v4 05/13] RDMA/counter: Add an is_disabled field in struct rdma_hw_stats
+Date:   Fri, 8 Oct 2021 15:24:31 +0300
+Message-ID: <20211008122439.166063-6-markzhang@nvidia.com>
 X-Mailer: git-send-email 2.8.4
 In-Reply-To: <20211008122439.166063-1-markzhang@nvidia.com>
 References: <20211008122439.166063-1-markzhang@nvidia.com>
@@ -75,206 +75,138 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ba26bd6b-01ad-4080-556e-08d98a56cfc6
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4344:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4344C8E4E087A0B2508B6BEDC7B29@MN2PR12MB4344.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Office365-Filtering-Correlation-Id: 1c08853f-1bbc-4c4f-5825-08d98a56d265
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3006:
+X-Microsoft-Antispam-PRVS: <MN2PR12MB30063B95F72500880A54B7D9C7B29@MN2PR12MB3006.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dx4rhDu2WzF705NGhP2eis0IDlfiLEAL8EpfWYfCKmVhrtau9ZL5dSh2v9RSvQJdz2lBMO6bpMY7zOZuwK5XhcnQ90vSP/7l3LKzjCFLzSUPur/j2zNIpEJN0ngyl/YMfqrZ4bc9zJbmKSpmQwD0mvTI9mXFyRTzacbfmarD1XcdOqQyH8xus62ZEGPI0/hH9Ap+8DA7baNxdk7fJ+tKQGzBGCwf70ANZ1/mBYJvoT8CUSIGgRUYBX8LMnZfkWWLY019umhxeKoMm6uIjcm0mokYQU4WE88tok+Q9n3vWWMj0AV84LJJzR4pSMoRzETVXtchthkfnDLzGUXC1BfYj+P2z17kdhZVo+aX5JVCZlv7Js7d2A9aWqtg3SnHTuZZ0RJYqGf3MrqssHwVF0wgeuDv9nMe7CZ6G2E1KrXBaiIO2xWDMp890Ve7RsWT9CghQ2/0zqfptBjqeTl8Sl7aq5pIikzNeQ5mHPj9euKpjH4FEQeczLbczHI/LdsB2VrBo+HUbnMcigxCcBTxyTEngJ9h9DSwUowCPwe7HP5UQY193M9P+gWGS6qGuuxS2Z1JP4Y0rBhlr9Hc53DLCP6OjG+r4MVQaRyrWIYnaxAHFZTVrErLl24G/svHQjtoJxO3GHXC/1YRJ1JFX7M5Cbb8mZccjK8C5y/uaAX5p05/gwzuqzK/DGwA3uj56xxnqIIjX9Vij81Pt0z34xyGwZnILw==
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(107886003)(82310400003)(8936002)(316002)(54906003)(110136005)(36860700001)(70206006)(6666004)(36756003)(26005)(1076003)(8676002)(186003)(5660300002)(2616005)(426003)(336012)(70586007)(47076005)(508600001)(7416002)(356005)(7636003)(7696005)(2906002)(4326008)(6636002)(83380400001)(86362001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: GeAdQKOudAZxVbphak8ZcxZWnDcW5PULcVA0GHg5YJ1WmUCCh1Th4xrpJl9zwIyjwHZry2EVFGnptMoPxF7ip/9r+48F102jjWtT9QK9P7XHVL2SydbJOClsu3WXK6KLo/ua9UzXg+YBRyr5JMDwLtm/VNGP85cAaSTTI6nHtNT8C2YlB7qs+9UKmfsWb1NVsY2NwbBr0Bc50A1Yyvd5z2QBT8Opnm2XKfMeVqCkWd9u09v2+IqmR6JVPBGC1qHq5sFmuvAEdtS/3Bc/8RM32KYQ1MsXKyjGufloli9dwl5VXM5epY5WXS1jxl11qJTLvPvfGW53lT4vhM++ui2sf00Gqj4eoqBfDrSI8BKaIFcUt1dO0BmsIDtakf9GqE3nOuhSG1PocAufJLZ1K/w7bIGlrHJmxJQJe/fm5WfPNljx4faorKc+e7+2wfd1WKUqSSlt0EqAIopbZlBRoFWjmipxffIpxF6auIdY9aXapfTw0xlPZZxyneg9aqygsVbR4upEynwh8j3LYn5QUG86mXeTFIkpylrdAYPahqqarFPI1v7Q6lNqLJY1JE2bu/6OkNZCCXLXrchEBdhWKCAhjs2KPUUV/lIKEOOUgAcbGLCHxHl7zf++Sg6HATtpIILNtiRlJ4zO2A5maLsyi2fzSEbsJcmgl+4krVGVUzDut9O9+zYdK75+UItAEUN8mUJQpLDgEaHQ++kb9Qzm0atqzQ==
+X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid04.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(8936002)(6636002)(47076005)(8676002)(4326008)(83380400001)(508600001)(36756003)(107886003)(5660300002)(336012)(426003)(86362001)(2616005)(26005)(7636003)(186003)(70206006)(2906002)(7696005)(356005)(36860700001)(110136005)(6666004)(7416002)(70586007)(54906003)(1076003)(316002)(82310400003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2021 12:26:10.5039
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2021 12:26:14.9774
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ba26bd6b-01ad-4080-556e-08d98a56cfc6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c08853f-1bbc-4c4f-5825-08d98a56d265
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT052.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4344
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3006
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new API rdma_free_hw_stats_struct to pair with
-rdma_alloc_hw_stats_struct (which is also de-inlined).
+From: Aharon Landau <aharonl@nvidia.com>
 
-This will be useful when there are more alloc/free works
-in following patches.
+Add a bitmap in rdma_hw_stat structure, with each bit indicates whether
+the corresponding counter is currently disabled or not. By default
+hwcounters are enabled.
 
+Signed-off-by: Aharon Landau <aharonl@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Mark Zhang <markzhang@nvidia.com>
 ---
- drivers/infiniband/core/counters.c |  8 +++----
- drivers/infiniband/core/sysfs.c    |  8 +++----
- drivers/infiniband/core/verbs.c    | 35 ++++++++++++++++++++++++++++++
- include/rdma/ib_verbs.h            | 27 ++++-------------------
- 4 files changed, 47 insertions(+), 31 deletions(-)
+ drivers/infiniband/core/nldev.c | 11 ++++++++++-
+ drivers/infiniband/core/verbs.c | 13 +++++++++++++
+ include/rdma/ib_verbs.h         |  3 +++
+ 3 files changed, 26 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/core/counters.c b/drivers/infiniband/core/counters.c
-index df9e6c5e4ddf..331cd29f0d61 100644
---- a/drivers/infiniband/core/counters.c
-+++ b/drivers/infiniband/core/counters.c
-@@ -165,7 +165,7 @@ static struct rdma_counter *alloc_and_bind(struct ib_device *dev, u32 port,
- 	return counter;
+diff --git a/drivers/infiniband/core/nldev.c b/drivers/infiniband/core/nldev.c
+index 3f6b98a87566..67519730b1ac 100644
+--- a/drivers/infiniband/core/nldev.c
++++ b/drivers/infiniband/core/nldev.c
+@@ -968,15 +968,21 @@ static int fill_stat_counter_hwcounters(struct sk_buff *msg,
+ 	if (!table_attr)
+ 		return -EMSGSIZE;
  
- err_mode:
--	kfree(counter->stats);
-+	rdma_free_hw_stats_struct(counter->stats);
- err_stats:
- 	rdma_restrack_put(&counter->res);
- 	kfree(counter);
-@@ -186,7 +186,7 @@ static void rdma_counter_free(struct rdma_counter *counter)
- 	mutex_unlock(&port_counter->lock);
+-	for (i = 0; i < st->num_counters; i++)
++	mutex_lock(&st->lock);
++	for (i = 0; i < st->num_counters; i++) {
++		if (test_bit(i, st->is_disabled))
++			continue;
+ 		if (rdma_nl_stat_hwcounter_entry(msg, st->descs[i].name,
+ 						 st->value[i]))
+ 			goto err;
++	}
++	mutex_unlock(&st->lock);
  
- 	rdma_restrack_del(&counter->res);
--	kfree(counter->stats);
-+	rdma_free_hw_stats_struct(counter->stats);
- 	kfree(counter);
+ 	nla_nest_end(msg, table_attr);
+ 	return 0;
+ 
+ err:
++	mutex_unlock(&st->lock);
+ 	nla_nest_cancel(msg, table_attr);
+ 	return -EMSGSIZE;
  }
- 
-@@ -618,7 +618,7 @@ void rdma_counter_init(struct ib_device *dev)
- fail:
- 	for (i = port; i >= rdma_start_port(dev); i--) {
- 		port_counter = &dev->port_data[port].port_counter;
--		kfree(port_counter->hstats);
-+		rdma_free_hw_stats_struct(port_counter->hstats);
- 		port_counter->hstats = NULL;
- 		mutex_destroy(&port_counter->lock);
+@@ -2104,6 +2110,9 @@ static int stat_get_doit_default_counter(struct sk_buff *skb,
+ 		goto err_stats;
  	}
-@@ -631,7 +631,7 @@ void rdma_counter_release(struct ib_device *dev)
- 
- 	rdma_for_each_port(dev, port) {
- 		port_counter = &dev->port_data[port].port_counter;
--		kfree(port_counter->hstats);
-+		rdma_free_hw_stats_struct(port_counter->hstats);
- 		mutex_destroy(&port_counter->lock);
- 	}
- }
-diff --git a/drivers/infiniband/core/sysfs.c b/drivers/infiniband/core/sysfs.c
-index c3663cfdcd52..8d831d4fd2ad 100644
---- a/drivers/infiniband/core/sysfs.c
-+++ b/drivers/infiniband/core/sysfs.c
-@@ -755,7 +755,7 @@ static void ib_port_release(struct kobject *kobj)
- 	for (i = 0; i != ARRAY_SIZE(port->groups); i++)
- 		kfree(port->groups[i].attrs);
- 	if (port->hw_stats_data)
--		kfree(port->hw_stats_data->stats);
-+		rdma_free_hw_stats_struct(port->hw_stats_data->stats);
- 	kfree(port->hw_stats_data);
- 	kfree(port);
- }
-@@ -919,14 +919,14 @@ alloc_hw_stats_device(struct ib_device *ibdev)
- err_free_data:
- 	kfree(data);
- err_free_stats:
--	kfree(stats);
-+	rdma_free_hw_stats_struct(stats);
- 	return ERR_PTR(-ENOMEM);
- }
- 
- void ib_device_release_hw_stats(struct hw_stats_device_data *data)
- {
- 	kfree(data->group.attrs);
--	kfree(data->stats);
-+	rdma_free_hw_stats_struct(data->stats);
- 	kfree(data);
- }
- 
-@@ -1018,7 +1018,7 @@ alloc_hw_stats_port(struct ib_port *port, struct attribute_group *group)
- err_free_data:
- 	kfree(data);
- err_free_stats:
--	kfree(stats);
-+	rdma_free_hw_stats_struct(stats);
- 	return ERR_PTR(-ENOMEM);
- }
- 
+ 	for (i = 0; i < num_cnts; i++) {
++		if (test_bit(i, stats->is_disabled))
++			continue;
++
+ 		v = stats->value[i] +
+ 			rdma_counter_get_hwstat_value(device, port, i);
+ 		if (rdma_nl_stat_hwcounter_entry(msg,
 diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index 89a2b21976d6..8e72290d6b38 100644
+index 8e72290d6b38..47cf273d0678 100644
 --- a/drivers/infiniband/core/verbs.c
 +++ b/drivers/infiniband/core/verbs.c
-@@ -2976,3 +2976,38 @@ bool __rdma_block_iter_next(struct ib_block_iter *biter)
- 	return true;
- }
- EXPORT_SYMBOL(__rdma_block_iter_next);
+@@ -2994,11 +2994,20 @@ struct rdma_hw_stats *rdma_alloc_hw_stats_struct(
+ 	if (!stats)
+ 		return NULL;
+ 
++	stats->is_disabled = kcalloc(BITS_TO_LONGS(num_counters),
++				     sizeof(*stats->is_disabled), GFP_KERNEL);
++	if (!stats->is_disabled)
++		goto err;
 +
-+/**
-+ * rdma_alloc_hw_stats_struct - Helper function to allocate dynamic struct
-+ *   for the drivers.
-+ * @descs: array of static descriptors
-+ * @num_counters: number of elements in array
-+ * @lifespan: milliseconds between updates
-+ */
-+struct rdma_hw_stats *rdma_alloc_hw_stats_struct(
-+	const struct rdma_stat_desc *descs, int num_counters,
-+	unsigned long lifespan)
-+{
-+	struct rdma_hw_stats *stats;
+ 	stats->descs = descs;
+ 	stats->num_counters = num_counters;
+ 	stats->lifespan = msecs_to_jiffies(lifespan);
+ 
+ 	return stats;
 +
-+	stats = kzalloc(struct_size(stats, value, num_counters), GFP_KERNEL);
-+	if (!stats)
-+		return NULL;
-+
-+	stats->descs = descs;
-+	stats->num_counters = num_counters;
-+	stats->lifespan = msecs_to_jiffies(lifespan);
-+
-+	return stats;
-+}
-+EXPORT_SYMBOL(rdma_alloc_hw_stats_struct);
-+
-+/**
-+ * rdma_free_hw_stats_struct - Helper function to release rdma_hw_stats
-+ * @stats: statistics to release
-+ */
-+void rdma_free_hw_stats_struct(struct rdma_hw_stats *stats)
-+{
++err:
 +	kfree(stats);
-+}
-+EXPORT_SYMBOL(rdma_free_hw_stats_struct);
++	return NULL;
+ }
+ EXPORT_SYMBOL(rdma_alloc_hw_stats_struct);
+ 
+@@ -3008,6 +3017,10 @@ EXPORT_SYMBOL(rdma_alloc_hw_stats_struct);
+  */
+ void rdma_free_hw_stats_struct(struct rdma_hw_stats *stats)
+ {
++	if (!stats)
++		return;
++
++	kfree(stats->is_disabled);
+ 	kfree(stats);
+ }
+ EXPORT_SYMBOL(rdma_free_hw_stats_struct);
 diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index aa1e1029b736..938c0c0a1c19 100644
+index 938c0c0a1c19..ae467365706b 100644
 --- a/include/rdma/ib_verbs.h
 +++ b/include/rdma/ib_verbs.h
-@@ -582,31 +582,12 @@ struct rdma_hw_stats {
+@@ -565,6 +565,8 @@ struct rdma_stat_desc {
+  *   their own value during their allocation routine.
+  * @descs - Array of pointers to static descriptors used for the counters
+  *   in directory.
++ * @is_disabled - A bitmap to indicate each counter is currently disabled
++ *   or not.
+  * @num_counters - How many hardware counters there are.  If name is
+  *   shorter than this number, a kernel oops will result.  Driver authors
+  *   are encouraged to leave BUILD_BUG_ON(ARRAY_SIZE(@name) < num_counters)
+@@ -577,6 +579,7 @@ struct rdma_hw_stats {
+ 	unsigned long	timestamp;
+ 	unsigned long	lifespan;
+ 	const struct rdma_stat_desc *descs;
++	unsigned long	*is_disabled;
+ 	int		num_counters;
+ 	u64		value[];
  };
- 
- #define RDMA_HW_STATS_DEFAULT_LIFESPAN 10
--/**
-- * rdma_alloc_hw_stats_struct - Helper function to allocate dynamic struct
-- *   for drivers.
-- * @descs - Array of static descriptors
-- * @num_counters - How many elements in array
-- * @lifespan - How many milliseconds between updates
-- */
--static inline struct rdma_hw_stats *rdma_alloc_hw_stats_struct(
--		const struct rdma_stat_desc *descs, int num_counters,
--		unsigned long lifespan)
--{
--	struct rdma_hw_stats *stats;
- 
--	stats = kzalloc(sizeof(*stats) + num_counters * sizeof(u64),
--			GFP_KERNEL);
--	if (!stats)
--		return NULL;
--
--	stats->descs = descs;
--	stats->num_counters = num_counters;
--	stats->lifespan = msecs_to_jiffies(lifespan);
--
--	return stats;
--}
-+struct rdma_hw_stats *rdma_alloc_hw_stats_struct(
-+	const struct rdma_stat_desc *descs, int num_counters,
-+	unsigned long lifespan);
- 
-+void rdma_free_hw_stats_struct(struct rdma_hw_stats *stats);
- 
- /* Define bits for the various functionality this port needs to be supported by
-  * the core.
 -- 
 2.26.2
 
