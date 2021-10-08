@@ -2,157 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66651426BF4
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 15:50:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AC9A426C2A
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 15:57:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230210AbhJHNw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 09:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbhJHNwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 09:52:24 -0400
-Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C144CC061570
-        for <netdev@vger.kernel.org>; Fri,  8 Oct 2021 06:50:28 -0700 (PDT)
-Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94.2)
-        (envelope-from <n0-1@orbyte.nwl.cc>)
-        id 1mYqGX-0007Y6-VA; Fri, 08 Oct 2021 15:50:25 +0200
-Date:   Fri, 8 Oct 2021 15:50:25 +0200
-From:   Phil Sutter <phil@nwl.cc>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        dsahern@gmail.com, bluca@debian.org, haliu@redhat.com
-Subject: Re: [PATCH iproute2 v4 0/5] configure: add support for libdir and
- prefix option
-Message-ID: <20211008135025.GM32194@orbyte.nwl.cc>
-Mail-Followup-To: Phil Sutter <phil@nwl.cc>,
-        Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org,
-        stephen@networkplumber.org, dsahern@gmail.com, bluca@debian.org,
-        haliu@redhat.com
-References: <cover.1633612111.git.aclaudi@redhat.com>
- <20211007160202.GG32194@orbyte.nwl.cc>
- <YWBCx6yvm7gDZNId@renaissance-vector>
+        id S233133AbhJHN6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 09:58:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55622 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229529AbhJHN6w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 09:58:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EE56360F9C;
+        Fri,  8 Oct 2021 13:56:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633701417;
+        bh=E/nSecu6Pc/mRjr9vvflfiRySB+cFKjgQerSAfXXHqg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=n+Ok7ebiSA0k2knuTA0LnN+4f/lxSMOQa+QblG8QkqDJSXIpgy/4MGw8ClVgZfobh
+         y80316XrhB9VY+QxxdZiykEwbrCLdElV2BetoAMvl9VlYlNQtAmzVTZCdJRw2ZRdHo
+         pdmGtX+VeVw+M8/0H5OqQE+XXKOem+UEz2f6XlD+P/PerOZEjRKfVByA7zbfbS0sOR
+         I2NAPTO96+pnWn/gHmntaf640enjg8BORFJe8u21CYECF50SkWox6iCaIHbf8fHuoy
+         CUJjfnS8GVvPtBrxbINHh+FPOeiOO7AgzNsvmLVvw7zp9DNjVm4Ri4ZG1+m+GgLaka
+         DqagQXK4lqfkQ==
+Date:   Fri, 8 Oct 2021 08:56:55 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        nic_swsd <nic_swsd@realtek.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Anthony Wong <anthony.wong@canonical.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC] [PATCH net-next v5 0/3] r8169: Implement dynamic ASPM
+ mechanism for recent 1.0/2.5Gbps Realtek NICs
+Message-ID: <20211008135655.GA1326714@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YWBCx6yvm7gDZNId@renaissance-vector>
-Sender:  <n0-1@orbyte.nwl.cc>
+In-Reply-To: <CAAd53p409uhbor1ArZ=kfiMK2JRHVGVyYukDSSyDvFsVSs=ErQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Fri, Oct 08, 2021 at 03:08:23PM +0200, Andrea Claudi wrote:
-> On Thu, Oct 07, 2021 at 06:02:02PM +0200, Phil Sutter wrote:
-> > On Thu, Oct 07, 2021 at 03:40:00PM +0200, Andrea Claudi wrote:
-> > > This series add support for the libdir parameter in iproute2 configure
-> > > system. The idea is to make use of the fact that packaging systems may
-> > > assume that 'configure' comes from autotools allowing a syntax similar
-> > > to the autotools one, and using it to tell iproute2 where the distro
-> > > expects to find its lib files.
-> > > 
-> > > Patches 1-2 fix a parsing issue on current configure options, that may
-> > > trigger an endless loop when no value is provided with some options;
-> > 
-> > Hmm, "shift 2" is nasty. Good to be reminded that it fails if '$# < 2'.
-> > I would avoid the loop using single shifts:
-> > 
-> > | case "$1" in
-> > | --include_dir)
-> > | 	shift
-> > | 	INCLUDE=$1
-> > | 	shift
-> > | 	;;
-> > | [...]
-> > 
-> 
-> This avoid the endless loop and allows configure to terminate correctly,
-> but results in an error anyway:
-> 
-> $ ./configure --include_dir
-> ./configure: line 544: shift: shift count out of range
-
-Ah, I didn't see it with bash. I don't think it's a problem though:
-Input is invalid, the loop is avoided and (depending on your patches)
-there will be another error message complaining about invalid $INCLUDE
-value.
-
-> But thanks anyway! Your comment made me think again about this, and I
-> think we can use the *) case to actually get rid of the second shift.
-> 
-> Indeed, when an option is specified, the --opt case will shift and get
-> its value, then the next while loop will take the *) case, and the
-> second shift is triggered this way.
-
-Which sounds like you'll start accepting things like
-
-| ./configure --include_dir foo bar
-
-> > > Patch 3 introduces support for the --opt=value style on current options,
-> > > for uniformity;
-> > 
-> > My idea to avoid code duplication was to move the semantic checks out of
-> > the argument parsing loop, basically:
-> > 
-> > | [ -d "$INCLUDE" ] || usage 1
-> > | case "$LIBBPF_FORCE" in
-> > | 	on|off|"") ;;
-> > | 	*) usage 1 ;;
-> > | esac
-> > 
-> > after the loop or even before 'echo "# Generated config ...'. This
-> > reduces the parsing loop to cases like:
-> > 
-> > | --include_dir)
-> > | 	shift
-> > | 	INCLUDE=$1
-> > | 	shift
-> > | 	;;
-> > | --include_dir=*)
-> > | 	INCLUDE=${1#*=}
-> > | 	shift
-> > | 	;;
+On Fri, Oct 01, 2021 at 12:17:26PM +0800, Kai-Heng Feng wrote:
+> On Sat, Sep 18, 2021 at 6:09 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Thu, Sep 16, 2021 at 11:44:14PM +0800, Kai-Heng Feng wrote:
+> > > The purpose of the series is to get comments and reviews so we can merge
+> > > and test the series in downstream kernel.
+> > >
+> > > The latest Realtek vendor driver and its Windows driver implements a
+> > > feature called "dynamic ASPM" which can improve performance on it's
+> > > ethernet NICs.
+> > >
+> > > Heiner Kallweit pointed out the potential root cause can be that the
+> > > buffer is too small for its ASPM exit latency.
 > >
+> > I looked at the lspci data in your bugzilla
+> > (https://bugzilla.kernel.org/show_bug.cgi?id=214307).
+> >
+> > L1.2 is enabled, which requires the Latency Tolerance Reporting
+> > capability, which helps determine when the Link will be put in L1.2.
+> > IIUC, these are analogous to the DevCap "Acceptable Latency" values.
+> > Zero latency values indicate the device will be impacted by any delay
+> > (PCIe r5.0, sec 6.18).
+> >
+> > Linux does not currently program those values, so the values there
+> > must have been set by the BIOS.  On the working AMD system, they're
+> > set to 1048576ns, while on the broken Intel system, they're set to
+> > 3145728ns.
+> >
+> > I don't really understand how these values should be computed, and I
+> > think they depend on some electrical characteristics of the Link, so
+> > I'm not sure it's *necessarily* a problem that they are different.
+> > But a 3X difference does seem pretty large.
+> >
+> > So I'm curious whether this is related to the problem.  Here are some
+> > things we could try on the broken Intel system:
 > 
-> Thanks. I didn't think about '-d', this also cover corner cases like:
+> Original network speed, tested via iperf3:
+> TX: ~255 Mbps
+> RX: ~490 Mbps
 > 
-> $ ./configure --include_dir --libbpf_force off
+> >   - What happens if you disable ASPM L1.2 using
+> >     /sys/devices/pci*/.../link/l1_2_aspm?
 > 
-> that results in INCLUDE="--libbpf_force".
+> TX: ~670 Mbps
+> RX: ~670 Mbps
 
-A common case would be (note the typo):
+Do you remember if there were any dropped packets here?  You mentioned
+at [1] that you have also seen reports of issues with L0s and L1.1.
+If you disable L1.2, L0s and L1.1 *should* still be enabled.
 
-| ./configure --include_dir $MY_INCULDE_DIR --libbpf_force off
-
-> > > Patch 4 add the --prefix option, that may be used by some packaging
-> > > systems when calling the configure script;
-> > 
-> > So this parses into $PREFIX and when checking it assigns to $prefix but
-> > neither one of the two variables is used afterwards? Oh, there's patch
-> > 5 ...
-> > 
-> > > Patch 5 add the --libdir option, and also drops the static LIBDIR var
-> > > from the Makefile
-> > 
-> > Can't you just:
-> > 
-> > | [ -n "$PREFIX" ] && echo "PREFIX=\"$PREFIX\"" >>config.mk
-> > | [ -n "$LIBDIR" ] && echo "LIBDIR=\"$LIBDIR\"" >>config.mk
-> > 
-> > and leave the default ("?=") cases in Makefile in place?
-> > 
-> > Either way, calling 'eval' seems needless. I would avoid it at all
-> > costs, "eval is evil". ;)
-> 
-> Unfortunately this is needed because some packaging systems uses
-> ${prefix} as an argument to --libdir, expecting this to be replaced with
-> the value of --prefix. See Luca's review to v1 for an example [1].
-> 
-> I can always avoid the eval trying to parse "${prefix}" and replacing it
-> with the PREFIX value, but in this case "eval" seems a bit more
-> practical to me... WDYT?
-
-Do autotools support that? If not, I wouldn't bother.
-
-Cheers, Phil
+[1] https://lore.kernel.org/r/CAAd53p4v+CmupCu2+3vY5N64WKkxcNvpk1M7+hhNoposx+aYCg@mail.gmail.com
