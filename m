@@ -2,118 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1F404266F2
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 11:33:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 676E64266FF
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 11:38:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237487AbhJHJfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 05:35:41 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:36629 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229863AbhJHJfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 05:35:40 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1989XRspC006558, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36503.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1989XRspC006558
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 8 Oct 2021 17:33:27 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36503.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Fri, 8 Oct 2021 17:33:27 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 8 Oct 2021 17:33:26 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098]) by
- RTEXMBS04.realtek.com.tw ([fe80::cdd5:82a3:e854:7098%5]) with mapi id
- 15.01.2106.013; Fri, 8 Oct 2021 17:33:26 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Colin King <colin.king@canonical.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] rtlwifi: rtl8192ee: Remove redundant initialization of variable version
-Thread-Topic: [PATCH] rtlwifi: rtl8192ee: Remove redundant initialization of
- variable version
-Thread-Index: AQHXu5mg/+PJRzRY4UCjzqpRjbSbYavI1rEA
-Date:   Fri, 8 Oct 2021 09:33:26 +0000
-Message-ID: <e16b11a8d8f640d9be4ae2be21370d8a@realtek.com>
-References: <20211007163722.20165-1-colin.king@canonical.com>
-In-Reply-To: <20211007163722.20165-1-colin.king@canonical.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzEwLzgg5LiK5Y2IIDA4OjMwOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S237993AbhJHJkB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 8 Oct 2021 05:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229863AbhJHJkA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 05:40:00 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1D4C061570;
+        Fri,  8 Oct 2021 02:38:05 -0700 (PDT)
+Received: from ip4d14bdef.dynamic.kabel-deutschland.de ([77.20.189.239] helo=t14s); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1mYmKF-0005yC-HL; Fri, 08 Oct 2021 11:37:59 +0200
+Date:   Fri, 8 Oct 2021 11:37:58 +0200
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Graf <tgraf@suug.ch>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v2 0/4] kernel.h further split
+Message-ID: <20211008113758.6cbee642@t14s>
+In-Reply-To: <CAHp75VfoQ-rFEEFu2FnaPuPDwyiTHpA_dCwqfA1SYSkFPM2uMA@mail.gmail.com>
+References: <20211007095129.22037-1-andriy.shevchenko@linux.intel.com>
+        <YV7NEze2IvUgHusJ@kroah.com>
+        <CAHp75VfoQ-rFEEFu2FnaPuPDwyiTHpA_dCwqfA1SYSkFPM2uMA@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36503.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 10/08/2021 09:18:19
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 166594 [Oct 08 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 463 463 5854868460de3f0d8e8c0a4df98aeb05fb764a09
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 10/08/2021 09:22:00
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1633685885;3cd5ec8d;
+X-HE-SMSGID: 1mYmKF-0005yC-HL
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQ29saW4gS2luZyA8Y29s
-aW4ua2luZ0BjYW5vbmljYWwuY29tPg0KPiBTZW50OiBGcmlkYXksIE9jdG9iZXIgOCwgMjAyMSAx
-MjozNyBBTQ0KPiBUbzogUGtzaGloIDxwa3NoaWhAcmVhbHRlay5jb20+OyBLYWxsZSBWYWxvIDxr
-dmFsb0Bjb2RlYXVyb3JhLm9yZz47IERhdmlkIFMgLiBNaWxsZXINCj4gPGRhdmVtQGRhdmVtbG9m
-dC5uZXQ+OyBKYWt1YiBLaWNpbnNraSA8a3ViYUBrZXJuZWwub3JnPjsgbGludXgtd2lyZWxlc3NA
-dmdlci5rZXJuZWwub3JnOw0KPiBuZXRkZXZAdmdlci5rZXJuZWwub3JnDQo+IENjOiBrZXJuZWwt
-amFuaXRvcnNAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+
-IFN1YmplY3Q6IFtQQVRDSF0gcnRsd2lmaTogcnRsODE5MmVlOiBSZW1vdmUgcmVkdW5kYW50IGlu
-aXRpYWxpemF0aW9uIG9mIHZhcmlhYmxlIHZlcnNpb24NCj4gDQo+IEZyb206IENvbGluIElhbiBL
-aW5nIDxjb2xpbi5raW5nQGNhbm9uaWNhbC5jb20+DQo+IA0KPiBUaGUgdmFyaWFibGUgdmVyc2lv
-biBpcyBiZWluZyBpbml0aWFsaXplZCB3aXRoIGEgdmFsdWUgdGhhdCBpcw0KPiBuZXZlciByZWFk
-LCBpdCBpcyBiZWluZyB1cGRhdGVkIGFmdGVyd2FyZHMgaW4gYm90aCBicmFuY2hlcyBvZg0KPiBh
-biBpZiBzdGF0ZW1lbnQuIFRoZSBhc3NpZ25tZW50IGlzIHJlZHVuZGFudCBhbmQgY2FuIGJlIHJl
-bW92ZWQuDQo+IA0KPiBBZGRyZXNzZXMtQ292ZXJpdHk6ICgiVW51c2VkIHZhbHVlIikNCj4gU2ln
-bmVkLW9mZi1ieTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmtpbmdAY2Fub25pY2FsLmNvbT4NCj4g
-LS0tDQo+ICBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODE5MmVlL2h3
-LmMgfCAyICstDQo+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24o
-LSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdp
-ZmkvcnRsODE5MmVlL2h3LmMNCj4gYi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdp
-ZmkvcnRsODE5MmVlL2h3LmMNCj4gaW5kZXggODhmYTJlNTkzZmVmLi43NjE4OTI4MzEwNGMgMTAw
-NjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9ydGw4MTky
-ZWUvaHcuYw0KPiArKysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRs
-ODE5MmVlL2h3LmMNCj4gQEAgLTE0MzAsNyArMTQzMCw3IEBAIHN0YXRpYyBlbnVtIHZlcnNpb25f
-ODE5MmUgX3J0bDkyZWVfcmVhZF9jaGlwX3ZlcnNpb24oc3RydWN0IGllZWU4MDIxMV9odw0KPiAq
-aHcpDQo+ICB7DQo+ICAJc3RydWN0IHJ0bF9wcml2ICpydGxwcml2ID0gcnRsX3ByaXYoaHcpOw0K
-PiAgCXN0cnVjdCBydGxfcGh5ICpydGxwaHkgPSAmcnRscHJpdi0+cGh5Ow0KPiAtCWVudW0gdmVy
-c2lvbl84MTkyZSB2ZXJzaW9uID0gVkVSU0lPTl9VTktOT1dOOw0KPiArCWVudW0gdmVyc2lvbl84
-MTkyZSB2ZXJzaW9uOw0KPiAgCXUzMiB2YWx1ZTMyOw0KPiANCj4gIAlydGxwaHktPnJmX3R5cGUg
-PSBSRl8yVDJSOw0KPiAtLQ0KPiAyLjMyLjANCj4gDQo+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0
-aGUgZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0KDQoNCkFja2VkLWJ5
-OiBQaW5nLUtlIFNoaWggPHBrc2hpaEByZWFsdGVrLmNvbT4NCg0KDQo=
+(sorry, sending it a second time with a different mail client, as vger
+rejected my earlier mail with the "Content-Policy reject msg: Wrong
+MIME labeling on 8-bit character texts." – and as of now I'm unable to
+figure out what's wrong :-/ )
+
+On Thu, 7 Oct 2021 14:51:15 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+
+> On Thu, Oct 7, 2021 at 1:34 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> > On Thu, Oct 07, 2021 at 12:51:25PM +0300, Andy Shevchenko wrote:  
+> > > The kernel.h is a set of something which is not related to each
+> > > other and often used in non-crossed compilation units, especially
+> > > when drivers need only one or two macro definitions from it.
+> > >
+> > > Here is the split of container_of(). The goals are the following:
+> > > - untwist the dependency hell a bit
+> > > - drop kernel.h inclusion where it's only used for container_of()
+> > > - speed up C preprocessing.
+> > >
+> > > People, like Greg KH and Miguel Ojeda, were asking about the
+> > > latter. Read below the methodology and test setup with outcome
+> > > numbers.
+> > >
+> > > The methodology
+> > > ===============
+> > > The question here is how to measure in the more or less clean way
+> > > the C preprocessing time when building a project like Linux
+> > > kernel. To answer it, let's look around and see what tools do we
+> > > have that may help. Aha, here is ccache tool that seems quite
+> > > plausible to be used. Its core idea is to preprocess C file,
+> > > count hash (MD4) and compare to ones that are in the cache. If
+> > > found, return the object file, avoiding compilation stage.
+> > >
+> > > Taking into account the property of the ccache, configure and use
+> > > it in the below steps:
+> > >
+> > > 1. Configure kernel with allyesconfig
+> > >
+> > > 2. Make it with `make` to be sure that the cache is filled with
+> > >    the latest data. I.o.w. warm up the cache.
+> > >
+> > > 3. Run `make -s` (silent mode to reduce the influence of
+> > >    the unrelated things, like console output) 10 times and
+> > >    measure 'real' time spent.
+> > >
+> > > 4. Repeat 1-3 for each patch or patch set to get data sets before
+> > >    and after.
+> > >
+> > > When we get the raw data, calculating median will show us the
+> > > number. Comparing them before and after we will see the
+> > > difference.
+> > >
+> > > The setup
+> > > =========
+> > > I have used the Intel x86_64 server platform (see partial output
+> > > of `lscpu` below):
+> > >
+> > > $ lscpu
+> > > Architecture:            x86_64
+> > >   CPU op-mode(s):        32-bit, 64-bit
+> > >   Address sizes:         46 bits physical, 48 bits virtual
+> > >   Byte Order:            Little Endian
+> > > CPU(s):                  88
+> > >   On-line CPU(s) list:   0-87
+> > > Vendor ID:               GenuineIntel
+> > >   Model name:            Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz
+> > >     CPU family:          6
+> > >     Model:               79
+> > >     Thread(s) per core:  2
+> > >     Core(s) per socket:  22
+> > >     Socket(s):           2
+> > >     Stepping:            1
+> > >     CPU max MHz:         3600.0000
+> > >     CPU min MHz:         1200.0000
+> > > ...
+> > > Caches (sum of all):
+> > >   L1d:                   1.4 MiB (44 instances)
+> > >   L1i:                   1.4 MiB (44 instances)
+> > >   L2:                    11 MiB (44 instances)
+> > >   L3:                    110 MiB (2 instances)
+> > > NUMA:
+> > >   NUMA node(s):          2
+> > >   NUMA node0 CPU(s):     0-21,44-65
+> > >   NUMA node1 CPU(s):     22-43,66-87
+> > > Vulnerabilities:
+> > >   Itlb multihit:         KVM: Mitigation: Split huge pages
+> > >   L1tf:                  Mitigation; PTE Inversion; VMX
+> > > conditional cache flushes, SMT vulnerable Mds:
+> > > Mitigation; Clear CPU buffers; SMT vulnerable Meltdown:
+> > >    Mitigation; PTI Spec store bypass:     Mitigation; Speculative
+> > > Store Bypass disabled via prctl and seccomp Spectre v1:
+> > >  Mitigation; usercopy/swapgs barriers and __user pointer
+> > > sanitization Spectre v2:            Mitigation; Full generic
+> > > retpoline, IBPB conditional, IBRS_FW, STIBP conditional, RSB
+> > > filling Tsx async abort:       Mitigation; Clear CPU buffers; SMT
+> > > vulnerable
+> > >
+> > > With the following GCC:
+> > >
+> > > $ gcc --version
+> > > gcc (Debian 10.3.0-11) 10.3.0
+> > >
+> > > The commands I have run during the measurement were:
+> > >
+> > >       rm -rf $O
+> > >       make O=$O allyesconfig
+> > >       time make O=$O -s -j64  # this step has been measured
+
+BTW, what kcbench does in the end is not that different, but it only
+builds the config once and that uses it for all further testing. 
+
+> > > The raw data and median
+> > > =======================
+> > > Before patch 2 (yes, I have measured the only patch 2 effect) in
+> > > the series (the data is sorted by time):
+> > >
+> > > real    2m8.794s
+> > > real    2m11.183s
+> > > real    2m11.235s
+> > > real    2m11.639s
+> > > real    2m11.960s
+> > > real    2m12.014s
+> > > real    2m12.609s
+> > > real    2m13.177s
+> > > real    2m13.462s
+> > > real    2m19.132s
+> > >
+> > > After patch 2 has been applied:
+> > >
+> > > real    2m8.536s
+> > > real    2m8.776s
+> > > real    2m9.071s
+> > > real    2m9.459s
+> > > real    2m9.531s
+> > > real    2m9.610s
+> > > real    2m10.356s
+> > > real    2m10.430s
+> > > real    2m11.117s
+> > > real    2m11.885s
+> > >
+> > > Median values are:
+> > >       131.987s before
+> > >       129.571s after
+> > >
+> > > We see the steady speedup as of 1.83%.  
+> >
+> > You do know about kcbench:
+> >         https://gitlab.com/knurd42/kcbench.git
+> >
+> > Try running that to make it such that we know how it was tested :)  
+> 
+> I'll try it.
+> 
+> Meanwhile, Thorsten, can you have a look at my approach and tell if it
+> makes sense?
+
+I'm not the right person to ask here, I don't know enough about the
+inner working of ccache and C preprocessing. Reminder: I'm not a real
+kernel/C developer, but more kind of a parasite that lives on the
+fringes of kernel development. ;-) Kcbench in fact originated as a
+benchmark magazine for the computer magazine I used to work for – where
+I also did quite a few benchmarks. But that knowledge might be helpful
+here:
+
+The measurements before and after patch 2 was applied get slower over
+time. That is a hint that something is interfering. Is the disk filling
+up and making the fs do more work? Or is the machine getting to hot? It
+IMHO would be worth investigating and ruling out, as the differences
+you are looking out are likely quite small
+
+Also: the last run of the first measurement cycle is off by quite a
+bit, so I wouldn't even include the result, as there like was something
+that disturbed the benchmark.
+
+And I might be missing something, but why were you using "-j 64" on a
+machine with 44 cores/88 threads? I wonder if that might lead do
+interesting effects due to SMT (some core will run two threads, other
+only one). Using either "-j 44" or "-j 88" might be better. But I
+suggest you run kcbench once without specifying "-j", as that will
+check which setting is the fastest on this system – and then use that
+for all further tests.
+
+HTH, Ciao, Thorsten 
+
