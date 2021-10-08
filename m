@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC73A426FD0
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 19:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F573426FD1
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 19:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231348AbhJHSBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 14:01:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46944 "EHLO mail.kernel.org"
+        id S239341AbhJHSBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 14:01:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46954 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231245AbhJHSBN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S238085AbhJHSBN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 8 Oct 2021 14:01:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 74A0861029;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C728C61038;
         Fri,  8 Oct 2021 17:59:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633715957;
-        bh=VfdMjfieNn0zpitRrlRtRYnUUmMq8GaUviTTUhcHXoI=;
+        s=k20201202; t=1633715958;
+        bh=RZJBIXFEFsqHIOHyIXgcmo7WmXnfN0cD+i7fSd7DzXc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mj0JGvK3XVFjhebiduHAEu9ZnA3iFHYOVRf2qlcqZRhrHf9uy9PuOMcRGhUREfqId
-         xMrCOBWbFGKQjVQXMExBmQ7GdTxeW5XZH4lgJ1AYFzfursUvJFykXskk1JoQIyKrYj
-         mzWRPMdodWAwOvzxHqrykHCU7wct/AWPuDph07Y9ZLb8Oteb2MOFECdhDllJZT+ZLb
-         Tw5HOHBPXYhsQBQtoebN6V13EZ3DTf9S35U5FXYts1LGFoQ/h/4LqG2h0RXzkMK00E
-         hGuwCJRlLNcnkG5RNct2OO1lqYrU+qtoLJVu2cn99vUZ9aDp0eUdRitytnDk4kpe/r
-         m33HrOz7DJ/PA==
+        b=QUE6M5jJEVwu0eKX0o54+pla6JW0bzpw44NlE5pnjErMbhYzKf5qPIYquhVqf926o
+         9piT1jAsURSXDLR1/p91Iv9hYOM5F8qYK/9KseDPdkL1KysrdblEjcFdSKTbAq2Jka
+         P3jxcihlEwLC5M1r86fVWSZyVarp+VwO9SGvE4tSu+kEa1FRIePiIf4bfaM4WlX4Tr
+         14xRmOPTOTB1mOJAPvJbcfFnho+KKw397C0SAqPg2KGY8uwcAPotPoOTQ8D0XG6iSc
+         PmXbHMD3uM2mxclKdIpg7XLaJLdYbezJShgRjd1H0b5LWk9PwoNDPPPxpqgcEvbDhp
+         icyUQfD2NG13w==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Rain River <rain.1986.08.12@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: [PATCH net-next 1/5] ethernet: forcedeth: remove direct netdev->dev_addr writes
-Date:   Fri,  8 Oct 2021 10:59:09 -0700
-Message-Id: <20211008175913.3754184-2-kuba@kernel.org>
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>
+Subject: [PATCH net-next 2/5] ethernet: tg3: remove direct netdev->dev_addr writes
+Date:   Fri,  8 Oct 2021 10:59:10 -0700
+Message-Id: <20211008175913.3754184-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211008175913.3754184-1-kuba@kernel.org>
 References: <20211008175913.3754184-1-kuba@kernel.org>
@@ -40,106 +41,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-forcedeth writes to dev_addr byte by byte, make it use
-a local buffer instead. Commit the changes with
-eth_hw_addr_set() at the end.
+tg3 does various forms of direct writes to netdev->dev_addr.
+Use a local buffer. Make sure local buffer is aligned since
+eth_platform_get_mac_address() may call ether_addr_copy().
+
+tg3_get_device_address() returns whenever it finds a method
+that found a valid address. Instead of modifying all the exit
+points pass the buffer from the outside and commit the address
+in the caller.
+
+Constify the argument of the set addr helper.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: Rain River <rain.1986.08.12@gmail.com>
-CC: Zhu Yanjun <zyjzyj2000@gmail.com>
+CC: Siva Reddy Kallam <siva.kallam@broadcom.com>
+CC: Prashant Sreedharan <prashant@broadcom.com>
+CC: Michael Chan <mchan@broadcom.com>
 ---
- drivers/net/ethernet/nvidia/forcedeth.c | 49 +++++++++++++------------
- 1 file changed, 26 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/broadcom/tg3.c | 48 +++++++++++++++--------------
+ 1 file changed, 25 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
-index 3f269f914dac..9b530d7509a4 100644
---- a/drivers/net/ethernet/nvidia/forcedeth.c
-+++ b/drivers/net/ethernet/nvidia/forcedeth.c
-@@ -5711,6 +5711,7 @@ static int nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
- 	u32 phystate_orig = 0, phystate;
- 	int phyinitialized = 0;
- 	static int printed_version;
-+	u8 mac[ETH_ALEN];
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index 5a50ea75094f..b7e7d7cc59b1 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -3942,7 +3942,8 @@ static int tg3_load_tso_firmware(struct tg3 *tp)
+ }
  
- 	if (!printed_version++)
- 		pr_info("Reverse Engineered nForce ethernet driver. Version %s.\n",
-@@ -5884,50 +5885,52 @@ static int nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
- 	txreg = readl(base + NvRegTransmitPoll);
- 	if (id->driver_data & DEV_HAS_CORRECT_MACADDR) {
- 		/* mac address is already in correct order */
--		dev->dev_addr[0] = (np->orig_mac[0] >>  0) & 0xff;
--		dev->dev_addr[1] = (np->orig_mac[0] >>  8) & 0xff;
--		dev->dev_addr[2] = (np->orig_mac[0] >> 16) & 0xff;
--		dev->dev_addr[3] = (np->orig_mac[0] >> 24) & 0xff;
--		dev->dev_addr[4] = (np->orig_mac[1] >>  0) & 0xff;
--		dev->dev_addr[5] = (np->orig_mac[1] >>  8) & 0xff;
-+		mac[0] = (np->orig_mac[0] >>  0) & 0xff;
-+		mac[1] = (np->orig_mac[0] >>  8) & 0xff;
-+		mac[2] = (np->orig_mac[0] >> 16) & 0xff;
-+		mac[3] = (np->orig_mac[0] >> 24) & 0xff;
-+		mac[4] = (np->orig_mac[1] >>  0) & 0xff;
-+		mac[5] = (np->orig_mac[1] >>  8) & 0xff;
- 	} else if (txreg & NVREG_TRANSMITPOLL_MAC_ADDR_REV) {
- 		/* mac address is already in correct order */
--		dev->dev_addr[0] = (np->orig_mac[0] >>  0) & 0xff;
--		dev->dev_addr[1] = (np->orig_mac[0] >>  8) & 0xff;
--		dev->dev_addr[2] = (np->orig_mac[0] >> 16) & 0xff;
--		dev->dev_addr[3] = (np->orig_mac[0] >> 24) & 0xff;
--		dev->dev_addr[4] = (np->orig_mac[1] >>  0) & 0xff;
--		dev->dev_addr[5] = (np->orig_mac[1] >>  8) & 0xff;
-+		mac[0] = (np->orig_mac[0] >>  0) & 0xff;
-+		mac[1] = (np->orig_mac[0] >>  8) & 0xff;
-+		mac[2] = (np->orig_mac[0] >> 16) & 0xff;
-+		mac[3] = (np->orig_mac[0] >> 24) & 0xff;
-+		mac[4] = (np->orig_mac[1] >>  0) & 0xff;
-+		mac[5] = (np->orig_mac[1] >>  8) & 0xff;
- 		/*
- 		 * Set orig mac address back to the reversed version.
- 		 * This flag will be cleared during low power transition.
- 		 * Therefore, we should always put back the reversed address.
- 		 */
--		np->orig_mac[0] = (dev->dev_addr[5] << 0) + (dev->dev_addr[4] << 8) +
--			(dev->dev_addr[3] << 16) + (dev->dev_addr[2] << 24);
--		np->orig_mac[1] = (dev->dev_addr[1] << 0) + (dev->dev_addr[0] << 8);
-+		np->orig_mac[0] = (mac[5] << 0) + (mac[4] << 8) +
-+			(mac[3] << 16) + (mac[2] << 24);
-+		np->orig_mac[1] = (mac[1] << 0) + (mac[0] << 8);
- 	} else {
- 		/* need to reverse mac address to correct order */
--		dev->dev_addr[0] = (np->orig_mac[1] >>  8) & 0xff;
--		dev->dev_addr[1] = (np->orig_mac[1] >>  0) & 0xff;
--		dev->dev_addr[2] = (np->orig_mac[0] >> 24) & 0xff;
--		dev->dev_addr[3] = (np->orig_mac[0] >> 16) & 0xff;
--		dev->dev_addr[4] = (np->orig_mac[0] >>  8) & 0xff;
--		dev->dev_addr[5] = (np->orig_mac[0] >>  0) & 0xff;
-+		mac[0] = (np->orig_mac[1] >>  8) & 0xff;
-+		mac[1] = (np->orig_mac[1] >>  0) & 0xff;
-+		mac[2] = (np->orig_mac[0] >> 24) & 0xff;
-+		mac[3] = (np->orig_mac[0] >> 16) & 0xff;
-+		mac[4] = (np->orig_mac[0] >>  8) & 0xff;
-+		mac[5] = (np->orig_mac[0] >>  0) & 0xff;
- 		writel(txreg|NVREG_TRANSMITPOLL_MAC_ADDR_REV, base + NvRegTransmitPoll);
- 		dev_dbg(&pci_dev->dev,
- 			"%s: set workaround bit for reversed mac addr\n",
- 			__func__);
+ /* tp->lock is held. */
+-static void __tg3_set_one_mac_addr(struct tg3 *tp, u8 *mac_addr, int index)
++static void __tg3_set_one_mac_addr(struct tg3 *tp, const u8 *mac_addr,
++				   int index)
+ {
+ 	u32 addr_high, addr_low;
+ 
+@@ -16911,19 +16912,18 @@ static int tg3_get_invariants(struct tg3 *tp, const struct pci_device_id *ent)
+ 	return err;
+ }
+ 
+-static int tg3_get_device_address(struct tg3 *tp)
++static int tg3_get_device_address(struct tg3 *tp, u8 *addr)
+ {
+-	struct net_device *dev = tp->dev;
+ 	u32 hi, lo, mac_offset;
+ 	int addr_ok = 0;
+ 	int err;
+ 
+-	if (!eth_platform_get_mac_address(&tp->pdev->dev, dev->dev_addr))
++	if (!eth_platform_get_mac_address(&tp->pdev->dev, addr))
+ 		return 0;
+ 
+ 	if (tg3_flag(tp, IS_SSB_CORE)) {
+-		err = ssb_gige_get_macaddr(tp->pdev, &dev->dev_addr[0]);
+-		if (!err && is_valid_ether_addr(&dev->dev_addr[0]))
++		err = ssb_gige_get_macaddr(tp->pdev, addr);
++		if (!err && is_valid_ether_addr(addr))
+ 			return 0;
  	}
  
--	if (!is_valid_ether_addr(dev->dev_addr)) {
-+	if (is_valid_ether_addr(mac)) {
-+		eth_hw_addr_set(dev, mac);
-+	} else {
- 		/*
- 		 * Bad mac address. At least one bios sets the mac address
- 		 * to 01:23:45:67:89:ab
- 		 */
- 		dev_err(&pci_dev->dev,
- 			"Invalid MAC address detected: %pM - Please complain to your hardware vendor.\n",
--			dev->dev_addr);
-+			mac);
- 		eth_hw_addr_random(dev);
- 		dev_err(&pci_dev->dev,
- 			"Using random MAC address: %pM\n", dev->dev_addr);
+@@ -16947,41 +16947,41 @@ static int tg3_get_device_address(struct tg3 *tp)
+ 	/* First try to get it from MAC address mailbox. */
+ 	tg3_read_mem(tp, NIC_SRAM_MAC_ADDR_HIGH_MBOX, &hi);
+ 	if ((hi >> 16) == 0x484b) {
+-		dev->dev_addr[0] = (hi >>  8) & 0xff;
+-		dev->dev_addr[1] = (hi >>  0) & 0xff;
++		addr[0] = (hi >>  8) & 0xff;
++		addr[1] = (hi >>  0) & 0xff;
+ 
+ 		tg3_read_mem(tp, NIC_SRAM_MAC_ADDR_LOW_MBOX, &lo);
+-		dev->dev_addr[2] = (lo >> 24) & 0xff;
+-		dev->dev_addr[3] = (lo >> 16) & 0xff;
+-		dev->dev_addr[4] = (lo >>  8) & 0xff;
+-		dev->dev_addr[5] = (lo >>  0) & 0xff;
++		addr[2] = (lo >> 24) & 0xff;
++		addr[3] = (lo >> 16) & 0xff;
++		addr[4] = (lo >>  8) & 0xff;
++		addr[5] = (lo >>  0) & 0xff;
+ 
+ 		/* Some old bootcode may report a 0 MAC address in SRAM */
+-		addr_ok = is_valid_ether_addr(&dev->dev_addr[0]);
++		addr_ok = is_valid_ether_addr(addr);
+ 	}
+ 	if (!addr_ok) {
+ 		/* Next, try NVRAM. */
+ 		if (!tg3_flag(tp, NO_NVRAM) &&
+ 		    !tg3_nvram_read_be32(tp, mac_offset + 0, &hi) &&
+ 		    !tg3_nvram_read_be32(tp, mac_offset + 4, &lo)) {
+-			memcpy(&dev->dev_addr[0], ((char *)&hi) + 2, 2);
+-			memcpy(&dev->dev_addr[2], (char *)&lo, sizeof(lo));
++			memcpy(&addr[0], ((char *)&hi) + 2, 2);
++			memcpy(&addr[2], (char *)&lo, sizeof(lo));
+ 		}
+ 		/* Finally just fetch it out of the MAC control regs. */
+ 		else {
+ 			hi = tr32(MAC_ADDR_0_HIGH);
+ 			lo = tr32(MAC_ADDR_0_LOW);
+ 
+-			dev->dev_addr[5] = lo & 0xff;
+-			dev->dev_addr[4] = (lo >> 8) & 0xff;
+-			dev->dev_addr[3] = (lo >> 16) & 0xff;
+-			dev->dev_addr[2] = (lo >> 24) & 0xff;
+-			dev->dev_addr[1] = hi & 0xff;
+-			dev->dev_addr[0] = (hi >> 8) & 0xff;
++			addr[5] = lo & 0xff;
++			addr[4] = (lo >> 8) & 0xff;
++			addr[3] = (lo >> 16) & 0xff;
++			addr[2] = (lo >> 24) & 0xff;
++			addr[1] = hi & 0xff;
++			addr[0] = (hi >> 8) & 0xff;
+ 		}
+ 	}
+ 
+-	if (!is_valid_ether_addr(&dev->dev_addr[0]))
++	if (!is_valid_ether_addr(addr))
+ 		return -EINVAL;
+ 	return 0;
+ }
+@@ -17557,6 +17557,7 @@ static int tg3_init_one(struct pci_dev *pdev,
+ 	char str[40];
+ 	u64 dma_mask, persist_dma_mask;
+ 	netdev_features_t features = 0;
++	u8 addr[ETH_ALEN] __aligned(2);
+ 
+ 	err = pci_enable_device(pdev);
+ 	if (err) {
+@@ -17779,12 +17780,13 @@ static int tg3_init_one(struct pci_dev *pdev,
+ 		tp->rx_pending = 63;
+ 	}
+ 
+-	err = tg3_get_device_address(tp);
++	err = tg3_get_device_address(tp, addr);
+ 	if (err) {
+ 		dev_err(&pdev->dev,
+ 			"Could not obtain valid ethernet address, aborting\n");
+ 		goto err_out_apeunmap;
+ 	}
++	eth_hw_addr_set(dev, addr);
+ 
+ 	intmbx = MAILBOX_INTERRUPT_0 + TG3_64BIT_REG_LOW;
+ 	rcvmbx = MAILBOX_RCVRET_CON_IDX_0 + TG3_64BIT_REG_LOW;
 -- 
 2.31.1
 
