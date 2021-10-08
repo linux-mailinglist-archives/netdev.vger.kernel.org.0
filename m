@@ -2,42 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB0DD427442
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 01:38:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FD41427456
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 01:42:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243826AbhJHXks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 19:40:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35598 "EHLO mail.kernel.org"
+        id S243817AbhJHXos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 19:44:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39086 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231964AbhJHXks (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Oct 2021 19:40:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E584960F5E;
-        Fri,  8 Oct 2021 23:38:51 +0000 (UTC)
+        id S231964AbhJHXoq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 19:44:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ADF9260F94;
+        Fri,  8 Oct 2021 23:42:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633736332;
-        bh=WO0pML6xMM371AaMskdNnaJHXhrC/htRsBswc1itHig=;
+        s=k20201202; t=1633736571;
+        bh=JbbAavGnxL8nsqyWmfzkPuh5K4VEGTCwznOeHApKIWM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oQ/8Pd6lQQspDbTbFaU/1vxYkMPLnr6ug7Vzg5KzQI8RNDOjoajE1f81fIT6Tc/Mf
-         W7D95IkfA1gQhpuzg/a5UuYga/mQWkxlGDhpgt7g8k6ZoiFSjTfwjVD40tiyXUX0wC
-         3xlRpHjjUAp+o/5JiAwxyg4Y23Hmlc98sxzwE/viAKlRjK0gHoYLpjJmYqhFi63knZ
-         RYW2hcaOov7QuJBhDI0esqZmoTdHx3E52Bzf8LMTE1Bjb+ZWKWw2s2JLk2gQpz7TRQ
-         o+b/sXqeZz/MD0C2TK9K/9+XULnIkHmR9W/Yz5qr0riK8xgvTWVIOEaCOKyYhunwCt
-         OLdZDYpV5ZMCA==
-Date:   Fri, 8 Oct 2021 16:38:51 -0700
+        b=S+GirTn/HDtsF+sAPzD0xRY4HHInS4CNYWAwvx4FDR18byh5xdPFlJN+11CpMb1p5
+         d33IpvVdhF+x4foem6jkwwrRfQhhjNkKZ3VCk/WdV9hPRm8gSvYrIhI362nbnopwph
+         GaWswd36C7GbM66EU2RQFvnOPwPiZBhNW45joRKDyJLOD9gHFmxyaPyzzX6C9muL2Y
+         x+j8FSXVxfdu5tdKc8c7wOTBplsno65qIC+q0dnVGp9qnSCpvIs6Vf1o2QDMjU25J+
+         fGdKmpeZjXTmI8l9+LosTeOb5EZR+xTnBN9yiu+JZpyfSRKA1nkX0XyZQOdK+v+9qA
+         Fskkww5LS1C9A==
+Date:   Fri, 8 Oct 2021 16:42:49 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>
-Subject: Re: [PATCH net-next 3/4] gen_stats: Add instead Set the value in
- __gnet_stats_copy_queue().
-Message-ID: <20211008163851.3963b94e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211007175000.2334713-4-bigeasy@linutronix.de>
-References: <20211007175000.2334713-1-bigeasy@linutronix.de>
-        <20211007175000.2334713-4-bigeasy@linutronix.de>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Miller <davem@davemloft.net>,
+        Raju Rangoju <rajur@chelsio.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 0/5] PCI/VPD: Add and use pci_read/write_vpd_any()
+Message-ID: <20211008164249.26e04562@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211008225340.GA1388382@bhelgaas>
+References: <ba0b18a3-64d8-d72f-9e9f-ad3e4d7ae3b8@gmail.com>
+        <20211008225340.GA1388382@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -45,26 +44,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Oct 2021 19:49:59 +0200 Sebastian Andrzej Siewior wrote:
-> --- a/net/core/gen_stats.c
-> +++ b/net/core/gen_stats.c
-> @@ -312,14 +312,14 @@ void __gnet_stats_copy_queue(struct gnet_stats_queue *qstats,
->  	if (cpu) {
->  		__gnet_stats_copy_queue_cpu(qstats, cpu);
->  	} else {
-> -		qstats->qlen = q->qlen;
-> -		qstats->backlog = q->backlog;
-> -		qstats->drops = q->drops;
-> -		qstats->requeues = q->requeues;
-> -		qstats->overlimits = q->overlimits;
-> +		qstats->qlen += q->qlen;
-> +		qstats->backlog += q->backlog;
-> +		qstats->drops += q->drops;
-> +		qstats->requeues += q->requeues;
-> +		qstats->overlimits += q->overlimits;
->  	}
->  
-> -	qstats->qlen = qlen;
-> +	qstats->qlen += qlen;
+On Fri, 8 Oct 2021 17:53:40 -0500 Bjorn Helgaas wrote:
+> Ideally would like reviewed-by and ack for the cxgb3 parts from Raju,
+> Jakub, David.
 
-Looks like qlen is going to be added twice for the non-per-cpu case?
+Raju's ack would be best, there isn't much networking there, 
+but certainly no objection for you merging the changes:
+
+Acked-by: Jakub Kicinski <kuba@kernel.org>
