@@ -2,92 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 444FD426853
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 12:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48F71426860
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 13:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240018AbhJHK4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 06:56:52 -0400
-Received: from smtprelay0079.hostedemail.com ([216.40.44.79]:48316 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230076AbhJHK4v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 06:56:51 -0400
-Received: from omf04.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id BB37C181C223F;
-        Fri,  8 Oct 2021 10:54:55 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf04.hostedemail.com (Postfix) with ESMTPA id 769ADD1518;
-        Fri,  8 Oct 2021 10:54:54 +0000 (UTC)
-Message-ID: <21a4fcacc72b6d45576da7c78001a519d275a2ea.camel@perches.com>
-Subject: Re: [RESEND PATCH v2 2/7] nfc: nci: replace GPLv2 boilerplate with
- SPDX
-From:   Joe Perches <joe@perches.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        Mark Greer <mgreer@animalcreek.com>,
+        id S240121AbhJHLCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 07:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55640 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239951AbhJHLCW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 07:02:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73414C061570
+        for <netdev@vger.kernel.org>; Fri,  8 Oct 2021 04:00:27 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mYnbl-0003cn-Hz; Fri, 08 Oct 2021 13:00:09 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mYnbj-0002EF-Ku; Fri, 08 Oct 2021 13:00:07 +0200
+Date:   Fri, 8 Oct 2021 13:00:07 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Date:   Fri, 08 Oct 2021 03:54:53 -0700
-In-Reply-To: <9669a6cd-77de-ca0c-153c-75b531bd2490@canonical.com>
-References: <20211007133021.32704-1-krzysztof.kozlowski@canonical.com>
-         <20211007133021.32704-3-krzysztof.kozlowski@canonical.com>
-         <34cc3eda06fa2e793c46b48ee734fd879e6f8ab1.camel@perches.com>
-         <9669a6cd-77de-ca0c-153c-75b531bd2490@canonical.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session
+ if receive TP.DT with error length
+Message-ID: <20211008110007.GE29653@pengutronix.de>
+References: <1632972800-45091-1-git-send-email-zhangchangzhong@huawei.com>
+ <20210930074206.GB7502@x1.vandijck-laurijssen.be>
+ <1cab07f2-593a-1d1c-3a29-43ee9df4b29e@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 769ADD1518
-X-Spam-Status: No, score=-2.89
-X-Stat-Signature: 9khaeqtsjic1piurpz5k1nttf6hezmgx
-X-Rspamd-Server: rspamout02
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+Fyqv1yNPdUZqhVa2I9gyj1a5PqJfsXHw=
-X-HE-Tag: 1633690494-74783
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1cab07f2-593a-1d1c-3a29-43ee9df4b29e@huawei.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 12:47:01 up 232 days, 14:10, 145 users,  load average: 0.04, 0.14,
+ 0.16
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-10-08 at 12:46 +0200, Krzysztof Kozlowski wrote:
-> On 08/10/2021 12:33, Joe Perches wrote:
-> > On Thu, 2021-10-07 at 15:30 +0200, Krzysztof Kozlowski wrote:
-> > > Replace standard GPLv2 only license text with SPDX tag.
-> > 
-> > Nak
-> > 
-> > This is actually licenced with GPL-2.0-or-later
-> > 
-> > > diff --git a/net/nfc/nci/uart.c b/net/nfc/nci/uart.c
-> > []
-> > > @@ -1,20 +1,8 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > []
-> > You may use, redistribute and/or modify this File in
-> > > - * accordance with the terms and conditions of the License, a copy of which
-> > > - * is available on the worldwide web at
-> > > - * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
-> > 
-> > See the actual text at the old link which includes:
-> > 
-> >     This program is free software; you can redistribute it and/or modify
-> >     it under the terms of the GNU General Public License as published by
-> >     the Free Software Foundation; either version 2 of the License, or
-> >     (at your option) any later version.
+On Fri, Oct 08, 2021 at 05:22:12PM +0800, Zhang Changzhong wrote:
+> Hi Kurt,
+> Sorry for the late reply.
 > 
+> On 2021/9/30 15:42, Kurt Van Dijck wrote:
+> > On Thu, 30 Sep 2021 11:33:20 +0800, Zhang Changzhong wrote:
+> >> According to SAE-J1939-21, the data length of TP.DT must be 8 bytes, so
+> >> cancel session when receive unexpected TP.DT message.
+> > 
+> > SAE-j1939-21 indeed says that all TP.DT must be 8 bytes.
+> > However, the last TP.DT may contain up to 6 stuff bytes, which have no meaning.
+> > If I remember well, they are even not 'reserved'.
 > 
-> Thanks Joe for checking this. Isn't this conflicting with first
-> paragraph in the source file:
+> Agree, these bytes are meaningless for last TP.DT.
 > 
->   This software file (the "File") is distributed by Marvell
-> InternationalLtd. under the terms of the GNU General Public License
-> Version 2, June 1991(the "License").
+> >
+> >>
+> >> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> >> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> >> ---
+> >>  net/can/j1939/transport.c | 7 +++++--
+> >>  1 file changed, 5 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+> >> index bb5c4b8..eedaeaf 100644
+> >> --- a/net/can/j1939/transport.c
+> >> +++ b/net/can/j1939/transport.c
+> >> @@ -1789,6 +1789,7 @@ static void j1939_xtp_rx_dpo(struct j1939_priv *priv, struct sk_buff *skb,
+> >>  static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+> >>  				 struct sk_buff *skb)
+> >>  {
+> >> +	enum j1939_xtp_abort abort = J1939_XTP_ABORT_FAULT;
+> >>  	struct j1939_priv *priv = session->priv;
+> >>  	struct j1939_sk_buff_cb *skcb, *se_skcb;
+> >>  	struct sk_buff *se_skb = NULL;
+> >> @@ -1803,9 +1804,11 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+> >>  
+> >>  	skcb = j1939_skb_to_cb(skb);
+> >>  	dat = skb->data;
+> >> -	if (skb->len <= 1)
+> >> +	if (skb->len != 8) {
+> >>  		/* makes no sense */
+> >> +		abort = J1939_XTP_ABORT_UNEXPECTED_DATA;
+> >>  		goto out_session_cancel;
+> > 
+> > I think this is a situation of
+> > "be strict on what you send, be tolerant on what you receive".
+> > 
+> > Did you find a technical reason to abort a session because the last frame didn't
+> > bring overhead that you don't use?
 > 
-> This part does not specify "or later".
+> No technical reason. The only reason is that SAE-J1939-82 requires responder
+> to abort session if any TP.DT less than 8 bytes (section A.3.4, Row 7).
 
-It doesn't need to as it calls out the exact license which by
-specific reference includes the "or later".
+Do you mean: "BAM Transport: Ensure DUT discards BAM transport when
+TP.DT data packets are not correct size" ... "Verify DUT discards the
+BAM transport if any TP.DT data packet has less than 8 bytes"?
 
-And this is a nominal 'weakness' in the spdx license referencing
-system which relies on contents of files in the LICENSE directory.
-
-
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
