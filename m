@@ -2,72 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD93E42680D
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 12:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 221B0426813
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 12:41:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240102AbhJHKhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 06:37:31 -0400
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:7125 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240014AbhJHKhM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 06:37:12 -0400
-Received: (Authenticated sender: herve.codina@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPA id 34122240003;
-        Fri,  8 Oct 2021 10:35:15 +0000 (UTC)
-From:   Herve Codina <herve.codina@bootlin.com>
-Cc:     Herve Codina <herve.codina@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH 4/4] ARM: dts: spear3xx: Fix gmac node
-Date:   Fri,  8 Oct 2021 12:34:40 +0200
-Message-Id: <20211008103440.3929006-5-herve.codina@bootlin.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211008103440.3929006-1-herve.codina@bootlin.com>
-References: <20211008103440.3929006-1-herve.codina@bootlin.com>
+        id S239823AbhJHKnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 06:43:50 -0400
+Received: from mga02.intel.com ([134.134.136.20]:45104 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230041AbhJHKnt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 06:43:49 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10130"; a="213622801"
+X-IronPort-AV: E=Sophos;i="5.85,357,1624345200"; 
+   d="scan'208";a="213622801"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2021 03:41:54 -0700
+X-IronPort-AV: E=Sophos;i="5.85,357,1624345200"; 
+   d="scan'208";a="478934482"
+Received: from jekeller-desk.amr.corp.intel.com ([10.166.244.138])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2021 03:41:54 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kubakici@wp.pl>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [net-next 0/4] devlink: add dry run support for flash update
+Date:   Fri,  8 Oct 2021 03:41:11 -0700
+Message-Id: <20211008104115.1327240-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.31.1.331.gb0c09ab8796f
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On SPEAr3xx, ethernet driver is not compatible with the SPEAr600
-one.
-Indeed, SPEAr3xx uses an earlier version of this IP (v3.40) and
-needs some driver tuning compare to SPEAr600.
+This is an implementation of a previous idea I had discussed on the list at
+https://lore.kernel.org/netdev/51a6e7a33c7d40889c80bf37159f210e@intel.com/
 
-The v3.40 IP support was added to stmmac driver and this patch
-fixes this issue and use the correct compatible string for
-SPEAr3xx
+The idea is to allow user space to query whether a given destructive devlink
+command would work without actually performing any actions. This is commonly
+referred to as a "dry run", and is intended to give tools and system
+administrators the ability to test things like flash image validity, or
+whether a given option is valid without having to risk performing the update
+when not sufficiently ready.
 
-Signed-off-by: Herve Codina <herve.codina@bootlin.com>
----
- arch/arm/boot/dts/spear3xx.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The intention is that all "destructive" commands can be updated to support
+the new DEVLINK_ATTR_DRY_RUN, although this series only implements it for
+flash update.
 
-diff --git a/arch/arm/boot/dts/spear3xx.dtsi b/arch/arm/boot/dts/spear3xx.dtsi
-index f266b7b03482..cc88ebe7a60c 100644
---- a/arch/arm/boot/dts/spear3xx.dtsi
-+++ b/arch/arm/boot/dts/spear3xx.dtsi
-@@ -47,7 +47,7 @@ dma@fc400000 {
- 		};
- 
- 		gmac: eth@e0800000 {
--			compatible = "st,spear600-gmac";
-+			compatible = "snps,dwmac-3.40a";
- 			reg = <0xe0800000 0x8000>;
- 			interrupts = <23 22>;
- 			interrupt-names = "macirq", "eth_wake_irq";
+I expect we would want to support this for commands such as reload as well
+as other commands which perform some action with no interface to check state
+before hand.
+
+I tried to implement the DRY_RUN checks along with useful extended ACK
+messages so that even if a driver does not support DRY_RUN, some useful
+information can be retrieved. (i.e. the stack indicates that flash update is
+supported and will validate the other attributes first before rejecting the
+command due to inability to fully validate the run within the driver).
+
+Jacob Keller (4):
+  ice: move and rename ice_check_for_pending_update
+  ice: move ice_devlink_flash_update and merge with ice_flash_pldm_image
+  devlink: add dry run attribute to flash update
+  ice: support dry run of a flash update to validate firmware file
+
+ Documentation/driver-api/pldmfw/index.rst     |  10 ++
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |  53 +-----
+ .../net/ethernet/intel/ice/ice_fw_update.c    | 170 ++++++++++--------
+ .../net/ethernet/intel/ice/ice_fw_update.h    |   7 +-
+ include/linux/pldmfw.h                        |   5 +
+ include/net/devlink.h                         |   2 +
+ include/uapi/linux/devlink.h                  |   2 +
+ lib/pldmfw/pldmfw.c                           |  12 ++
+ net/core/devlink.c                            |  19 +-
+ 9 files changed, 145 insertions(+), 135 deletions(-)
+
+
+base-commit: c514fbb6231483b05c97eb22587188d4c453b28e
 -- 
-2.31.1
+2.31.1.331.gb0c09ab8796f
 
