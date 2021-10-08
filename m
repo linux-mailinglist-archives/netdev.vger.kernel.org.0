@@ -2,96 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8C94262CD
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 05:17:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 399204262EE
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 05:25:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbhJHDTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 23:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbhJHDTr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 23:19:47 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6825C061570;
-        Thu,  7 Oct 2021 20:17:52 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id a11so5304925plm.0;
-        Thu, 07 Oct 2021 20:17:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=ApOKKBCMuAZ4Vx/5ob40RCelwZhTvT67bmG3ANEluW8=;
-        b=Qfr5WIt0rkHg4KG3t1iY6J1y1yLDEgcbPf5SHUv1rIzqRBsz/5uzLcJUMZnSn74YL8
-         kRDVeCfxp8GigTyNHwoZ0dXS73QmhUds18a8OLJcmshBKJVJLe6dPwCPtGt1Pm425Lvf
-         Nl38h/rnebJWGEFPAjPhXZI4C6082a0v7n/5at9C7DIMPq1KY7RgPmh+MyINTBQEz9Kf
-         fAdfYxw9vzfPkZCGrmScZLnFVBB/toVTa6tTKyv9z6ZL86/N4zNYHsk9+3+DLh3TPZFp
-         pS/H/KM1lSxf7yVQzufzSNFL0cS7lg0i6H4kVt4nnJT8F1ACV5tpppKEn6vYpgoPTEYk
-         mJVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=ApOKKBCMuAZ4Vx/5ob40RCelwZhTvT67bmG3ANEluW8=;
-        b=PzrhFa3b1p8tBpCaa/665/irUbFhUCnS+iHfUofrVh7taxKYvaiRCWZIotz9uBh3Xb
-         Vb+Dm5D/WPgBFqaYWEGQ2CdZzkw9U/FSSnpbCALBUW27Zk3E1QkYqBB/KvxEtYKkPa9U
-         QxEUWCV6NVRxhl/ozZ+SH+UySM9MEfYFFk6kHjxS1m2Cv9PBrWA5/4ifLblekEcpB2ag
-         9YvDWxTfrgIlXZvPJ8GOCTuEb30TVFYZvxFTCeCpSii8ug80n0tFgdLvZNQIriHUOTtU
-         fD0AvMiPQ9eq8os27NxrGO+cSxHS33wurWhN4W9MFGCFVsEnunka4psahR/7L3ucLcdp
-         N+mQ==
-X-Gm-Message-State: AOAM532D/os97iS1tk4CllEQ7ixCb4B3Kgb7X9ZcJ9E2pNLgTGvP0K4f
-        aOHRBZeynKkG2sj3pAs8D58=
-X-Google-Smtp-Source: ABdhPJyZsmxJ9hP5Kw+9bGwzN9Glcf1vHwpjV6UZVC8OiQmND7+AHtV3qdpWmvagZ5sP1eBuwNI/TQ==
-X-Received: by 2002:a17:902:a710:b029:12b:9b9f:c461 with SMTP id w16-20020a170902a710b029012b9b9fc461mr7406835plq.59.1633663071904;
-        Thu, 07 Oct 2021 20:17:51 -0700 (PDT)
-Received: from localhost (122x211x248x161.ap122.ftth.ucom.ne.jp. [122.211.248.161])
-        by smtp.gmail.com with ESMTPSA id w185sm737585pfd.113.2021.10.07.20.17.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 20:17:51 -0700 (PDT)
-From:   Punit Agrawal <punitagrawal@gmail.com>
-To:     Alexandru Elisei <alexandru.elisei@arm.com>
-Cc:     davem@davemloft.net, michael.riesch@wolfvision.net,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, kuba@kernel.org, mcoquelin.stm32@gmail.com,
-        p.zabel@pengutronix.de, lgirdwood@gmail.com,
-        Mark Brown <broonie@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [BUG] Ethernet broken on rockpro64 by commit 2d26f6e39afb
- ("net: stmmac: dwmac-rk: fix unbalanced pm_runtime_enable warnings")
-References: <8e33c244-b786-18e8-79bc-407e27e4756b@arm.com>
-Date:   Fri, 08 Oct 2021 12:17:48 +0900
-In-Reply-To: <8e33c244-b786-18e8-79bc-407e27e4756b@arm.com> (Alexandru
-        Elisei's message of "Tue, 28 Sep 2021 10:25:59 +0100")
-Message-ID: <87zgrk19yb.fsf@stealth>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S236060AbhJHD0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 23:26:54 -0400
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:47414 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229501AbhJHD0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 23:26:52 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UqteNtB_1633663495;
+Received: from B-455UMD6M-2027.local(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0UqteNtB_1633663495)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 08 Oct 2021 11:24:56 +0800
+Subject: Re: [PATCH] net/tls: support SM4 CCM algorithm
+To:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210928062843.75283-1-tianjia.zhang@linux.alibaba.com>
+ <1761d06d-0958-7872-04de-cde6ddf8a948@novek.ru>
+ <1195374a-a9d4-0431-015b-60d986e29881@linux.alibaba.com>
+ <16a76d3e-910f-4fdf-5b2d-9f3355cce4ca@novek.ru>
+From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Message-ID: <939f33ed-7d43-06a6-1860-26157eeaec7c@linux.alibaba.com>
+Date:   Fri, 8 Oct 2021 11:24:46 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <16a76d3e-910f-4fdf-5b2d-9f3355cce4ca@novek.ru>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexandru Elisei <alexandru.elisei@arm.com> writes:
 
-> (Sorry I'm sending this to the wrong person, this is what I got
-> scripts/get_maintainer.pl for the file touched by the commit)
->
-> After commit 2d26f6e39afb ("net: stmmac: dwmac-rk: fix unbalanced
-> pm_runtime_enable warnings"), the network card on my rockpro64-v2 was left unable
-> to get a DHCP lease from the network. The offending commit was found by bisecting
-> the kernel; I tried reverting the commit from current master (commit 0513e464f900
-> ("Merge tag 'perf-tools-fixes-for-v5.15-2021-09-27' of
-> git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux")) and the network card
-> was working as expected.
->
-> It goes without saying that I can help with testing the fix and
-> further diagnosing.
 
-A fix was recently merged for this (see aec3f415f724 ("net: stmmac:
-dwmac-rk: Fix ethernet on rk3399 based devices") and should show up in
-the next rc. Please shout out if that doesn't fix the broken ethernet
-for you.
+On 10/1/21 6:56 AM, Vadim Fedorenko wrote:
+> On 30.09.2021 04:34, Tianjia Zhang wrote:
+>> Hi Vadim,
+>>
+>> On 9/29/21 5:24 AM, Vadim Fedorenko wrote:
+>>> On 28.09.2021 07:28, Tianjia Zhang wrote:
+>>>> The IV of CCM mode has special requirements, this patch supports CCM
+>>>> mode of SM4 algorithm.
+>>>>
+>>> Have you tried to connect this implementation to application with
+>>> user-space implementation of CCM mode? I wonder just because I have an
+>>> issue with AES-CCM Kernel TLS implementation when it's connected to
+>>> OpenSSL-driven server, but still have no time to fix it correctly.
+>>
+>> I did not encounter any issue when using KTLS with AES-CCM algorithm, 
+>> but the KTLS RX mode on the OpenSSL side does not seem to be supported.
+>>
+>> I encountered some problems when using the SM4-CCM algorithm of KTLS. 
+>> Follow the RFC8998 specification, the handshake has been successful, 
+>> and the first data transmission can be successful. After that, I will 
+>> encounter the problem of MAC verification failure, but this is issue 
+>> on the OpenSSL side. because the problem is still being investigated, 
+>> I have not opened the code for the time being.
+>>
+> Are you sure that this is an issue on the OpenSSL side? Because 
+> absolutely the same problem is reported for AES-CCM algo and only when 
+> it's offloaded to kernel. Looks like encryption of CCM could be broken 
+> somehow.
+> 
+> I will try to investigate it a bit later from the AES-CCM side.
 
-Thanks,
-Punit
+Yes, but I only used openssl s_server/s_client to do the test. In 
+theory, this is not guaranteed to be fully covered. Can you tell us 
+about the scenario where your issue occurred? I will try to see if it 
+can replay.
 
+Best regards,
+Tianjia
