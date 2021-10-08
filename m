@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95BAA426C8F
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 16:11:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97EF6426CAA
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 16:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236469AbhJHONt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 10:13:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34920 "EHLO mail.kernel.org"
+        id S234008AbhJHOWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 10:22:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39130 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229756AbhJHONt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Oct 2021 10:13:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9E4A160F39;
-        Fri,  8 Oct 2021 14:11:53 +0000 (UTC)
+        id S229756AbhJHOWC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 10:22:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1C117610CE;
+        Fri,  8 Oct 2021 14:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633702313;
-        bh=6Uon4oYuBa3M89dsedwcQldb1b6f2oOY4kSANIFPB4Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fx0ejEs7cecsN9IcOKXp2uwbch5t8gSJlG76LtcconNKZiWrgSR0T4RWoQT4wmqNi
-         iiNxBCy6338Xdg0pz3/7gryVsrdBpH0fV7X5ytD5uCjoCORTkeMSQ2Z1ps/IuiSNA2
-         ASYIDTbQEK5QLjo3nLQhNuAq6yG2BkGGaAQp9mhsvZfJ6Ds5Rt3znSZKVU/A8XW5JN
-         Qo/uW8da0sHmyZ2hzz/Wy9XCncpO/26BgS6noYNaaXru9o/kICvvCPP2WI+AUjxEFs
-         zrgB8WcSn2HC7l2ia43bnvnRMVjqWK3e65jkX96Nr15iwGWLMD/CvPSwhMmvPJieWP
-         ++G5rugYcH3Ow==
-Date:   Fri, 8 Oct 2021 07:11:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     sundeep subbaraya <sundeep.lkml@gmail.com>
-Cc:     Subbaraya Sundeep <sbhatta@marvell.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>
-Subject: Re: [net-next PATCH 2/3] octeontx2-pf: Add devlink param to vary
- cqe size
-Message-ID: <20211008071152.2799e0c8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CALHRZupD4Rb3d2hAtzoA5rtgqqFayXiYhAKUbgcpv0myVGpvPw@mail.gmail.com>
-References: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
-        <1633454136-14679-3-git-send-email-sbhatta@marvell.com>
-        <20211005181157.6af1e3e4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CALHRZupNJC7EJAir+0iN6p4UGR0oU0by=N2Hf+zWaj2U8RrE4A@mail.gmail.com>
-        <20211006064027.66a22a5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CALHRZupD4Rb3d2hAtzoA5rtgqqFayXiYhAKUbgcpv0myVGpvPw@mail.gmail.com>
+        s=k20201202; t=1633702807;
+        bh=kgFXOG7BhQb6pvDVPe680hl2VgGm9DgHMMQjQ07DhzI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=K18Qy6lC0uICfspDp8gHMBMTtrHA+tADkfzhyuLq+/YTehBgpQdx2kIrjkYhKJQ7z
+         cTeeBA3gzORCGHibVWiqKTiYblybDH3GB3AUnN04mWBdSfNLvROadmwYmjBhnGs6eh
+         /dDVaXnQg6TSw5sGA/eNBjoTG6f6kWpNBzX76EMUap3lleOweodpyrAN2sVwEHKm9w
+         34GTmPXl53RCsNZ16Du/i6Ci0ryn+FNvGuZ8MSlJr0IMuuTuVLsxZzMF8p+kRnKm29
+         LMx2WlFs3RwWvjQhu42l8YW/bW6a0oN5PKuiaHp3kqC1sV/UAwK7mol25kaOmvNMej
+         uK8zpz7+21Qtg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1290060A44;
+        Fri,  8 Oct 2021 14:20:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2][next] qed: Initialize debug string array
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163370280707.5508.8344854515850968604.git-patchwork-notify@kernel.org>
+Date:   Fri, 08 Oct 2021 14:20:07 +0000
+References: <20211007120413.8642-1-tim.gardner@canonical.com>
+In-Reply-To: <20211007120413.8642-1-tim.gardner@canonical.com>
+To:     Tim Gardner <tim.gardner@canonical.com>
+Cc:     pkushwaha@marvell.com, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, davem@davemloft.net,
+        kuba@kernel.org, smalin@marvell.com, okulkarni@marvell.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 Oct 2021 12:42:34 +0530 sundeep subbaraya wrote:
-> On Wed, Oct 6, 2021 at 7:10 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Wed, 6 Oct 2021 12:29:51 +0530 sundeep subbaraya wrote:  
-> > > We do use ethtool -G for setting the number of receive buffers to
-> > > allocate from the kernel and give those pointers to hardware memory pool(NPA).  
-> >
-> > You can extend the ethtool API.  
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu,  7 Oct 2021 06:04:13 -0600 you wrote:
+> Coverity complains of an uninitialized variable.
 > 
-> I will rework on this patch. Is it okay I drop this patch in this
-> series and send only patches 1 and 3 for v3?
+> CID 120847 (#1 of 1): Uninitialized scalar variable (UNINIT)
+> 3. uninit_use_in_call: Using uninitialized value *sw_platform_str when calling qed_dump_str_param. [show details]
+> 1344        offset += qed_dump_str_param(dump_buf + offset,
+> 1345                                     dump, "sw-platform", sw_platform_str);
+> 
+> [...]
 
-The first patch looks fine. But the last is where I think a common
-interface is most likely to succeed, so no, patch 3 is not fine. 
+Here is the summary with links:
+  - [v2,next] qed: Initialize debug string array
+    https://git.kernel.org/netdev/net-next/c/d5ac07dfbd2b
 
-The documentation (which BTW is required for devlink params) is lacking
-so I can't be sure but patch 3 looks similar to what Huawei has been
-working on, take a look:
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-https://lore.kernel.org/all/20210924142959.7798-4-huangguangbin2@huawei.com/
+
