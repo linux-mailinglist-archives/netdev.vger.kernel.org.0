@@ -2,75 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D6B426DA9
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 17:40:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1209426E16
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 17:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243081AbhJHPmF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 11:42:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46342 "EHLO mail.kernel.org"
+        id S243154AbhJHPwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 11:52:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50294 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243044AbhJHPmD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Oct 2021 11:42:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2AF6F6101A;
-        Fri,  8 Oct 2021 15:40:08 +0000 (UTC)
+        id S243184AbhJHPwD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 11:52:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3032760FD7;
+        Fri,  8 Oct 2021 15:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633707608;
-        bh=oy4preGw7XfApUbZDOMs3U0wYeNgcpFMRUEsZTZESQY=;
+        s=k20201202; t=1633708208;
+        bh=8YljNfK07lu5DFWWAUqu8t6i1onWE6mM/m4+LSMgQVQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fjep3hopdnbdDawObH0E7DLdxDCCpnbnmQlOnOIDCyT1jY3RMih/4vDDgUuM+zbta
-         0iU36+4yCZMf9bzI+dJeXjMilGVsoRJC7Yq7tKBwHKs584WWe23+GOm90qH5pJqhJZ
-         hLQqXOcPpsxDZCar8nikqRDYPfjeVzrXj5q/j/BORH9fL2nVwvCpvWnCi/1QNkrp2g
-         jLXneBM1D1IoKuWFPayA4YK6TdFA559Aal+08Fv4Nb5X/al/y7QEl3ztl7kYH7y7kK
-         VQzpyYNwtwesxq8kO8XpLZ/NUzNq73q+vtAQdDzUmgMNR7XiO6Yl1k8kYMVI4HYOe7
-         fpuOQOcTx9wJQ==
+        b=Sygko7Qp9D8xKU3yIulyMelxYq21lU9o3jd+aib+3Ia86fjd5xHbNCY8rqRX7w0ME
+         OrZN4IpVL/oNiDwS7vXrls7kkA4dXDYSIRmgzfE6HkgO/g2doj0/coeSFBY9tP1ZqT
+         exgZ4WuIJPkbuJ/47xtKKzZ7lPAvCM67dX2dfQGjSBXl5RqkxAS0EStshELrgrt8dc
+         GcghMcHkSSbzF0izO1PgnfCBriQioVoM3itIleiXHOVaE9pNURX+kLX3I0rHx2CkY/
+         g3oOm3pjDfbKDt7OMziDFyd6nKiApghHc6HZTtGfbFuMdRxxOFLCs/gQcao8qjLCT4
+         npCtfnSnp4Fyg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1B3D560A44;
-        Fri,  8 Oct 2021 15:40:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1D05560A44;
+        Fri,  8 Oct 2021 15:50:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/4] net: stmmac: fix regression on SPEAr3xx SOC
+Subject: Re: [PATCH net-next 0/8] selftests: forwarding: Add ip6gre tests
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163370760810.7751.16013434452322511469.git-patchwork-notify@kernel.org>
-Date:   Fri, 08 Oct 2021 15:40:08 +0000
-References: <20211008103440.3929006-1-herve.codina@bootlin.com>
-In-Reply-To: <20211008103440.3929006-1-herve.codina@bootlin.com>
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        vireshk@kernel.org, shiraz.linux.kernel@gmail.com,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
+Message-Id: <163370820811.13259.9982834788649436032.git-patchwork-notify@kernel.org>
+Date:   Fri, 08 Oct 2021 15:50:08 +0000
+References: <20211008131241.85038-1-idosch@idosch.org>
+In-Reply-To: <20211008131241.85038-1-idosch@idosch.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        amcohen@nvidia.com, petrm@nvidia.com, mlxsw@nvidia.com,
+        idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri,  8 Oct 2021 12:34:36 +0200 you wrote:
-> The ethernet driver used on old SPEAr3xx soc was previously supported on old
-> kernel. Some regressions were introduced during the different updates leading
-> to a broken driver for this soc.
+On Fri,  8 Oct 2021 16:12:33 +0300 you wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
 > 
-> This series fixes these regressions and brings back ethernet on SPEAr3xx.
-> Tested on a SPEAr320 board.
+> This patchset adds forwarding selftests for ip6gre. The tests can be run
+> with veth pairs or with physical loopbacks.
+> 
+> Patch #1 adds a new config option to determine if 'skip_sw' / 'skip_hw'
+> flags are used when installing tc filters. By default, it is not set
+> which means the flags are not used. 'skip_sw' is useful to ensure
+> traffic is forwarded by the hardware data path.
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/4] net: stmmac: fix get_hw_feature() on old hardware
-    https://git.kernel.org/netdev/net/c/075da584bae2
-  - [2/4] dt-bindings: net: snps,dwmac: add dwmac 3.40a IP version
-    https://git.kernel.org/netdev/net/c/3781b6ad2ee1
-  - [3/4] net: stmmac: add support for dwmac 3.40a
-    https://git.kernel.org/netdev/net/c/9cb1d19f47fa
-  - [4/4] ARM: dts: spear3xx: Fix gmac node
-    https://git.kernel.org/netdev/net/c/6636fec29cdf
+  - [net-next,1/8] testing: selftests: forwarding.config.sample: Add tc flag
+    https://git.kernel.org/netdev/net-next/c/45d45e5323a9
+  - [net-next,2/8] testing: selftests: tc_common: Add tc_check_at_least_x_packets()
+    https://git.kernel.org/netdev/net-next/c/c08d227290f6
+  - [net-next,3/8] selftests: forwarding: Add IPv6 GRE flat tests
+    https://git.kernel.org/netdev/net-next/c/7df29960fa65
+  - [net-next,4/8] selftests: forwarding: Add IPv6 GRE hierarchical tests
+    https://git.kernel.org/netdev/net-next/c/4b3d967b5cb9
+  - [net-next,5/8] selftests: mlxsw: devlink_trap_tunnel_ipip6: Add test case for IPv6 decap_error
+    https://git.kernel.org/netdev/net-next/c/4bb6cce00a2b
+  - [net-next,6/8] selftests: mlxsw: devlink_trap_tunnel_ipip: Align topology drawing correctly
+    https://git.kernel.org/netdev/net-next/c/c473f723f97a
+  - [net-next,7/8] selftests: mlxsw: devlink_trap_tunnel_ipip: Remove code duplication
+    https://git.kernel.org/netdev/net-next/c/8bb0ebd52238
+  - [net-next,8/8] selftests: mlxsw: devlink_trap_tunnel_ipip: Send a full-length key
+    https://git.kernel.org/netdev/net-next/c/7f63cdde5030
 
 You are awesome, thank you!
 --
