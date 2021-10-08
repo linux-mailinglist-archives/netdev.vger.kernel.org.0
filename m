@@ -2,194 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE7DC426E1A
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 17:50:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 326AD426E1D
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 17:52:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243181AbhJHPwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 11:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37796 "EHLO
+        id S243103AbhJHPyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 11:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243225AbhJHPwi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 11:52:38 -0400
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4564FC061764;
-        Fri,  8 Oct 2021 08:50:42 -0700 (PDT)
-Received: by mail-il1-x133.google.com with SMTP id i11so9423517ila.12;
-        Fri, 08 Oct 2021 08:50:42 -0700 (PDT)
+        with ESMTP id S231147AbhJHPx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 11:53:58 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D21C061570;
+        Fri,  8 Oct 2021 08:52:02 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id i20so21825989edj.10;
+        Fri, 08 Oct 2021 08:52:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=wOmTV3UlOvmZmVtYO7vIZQjLO4KRW2yG1tmxqQB4RRI=;
-        b=DpJe9HsN79B3gsdtD7Aiojr3PrYJNVMaCXdcgeuK5WxIkckFPRjVyuYwRIwRKqgYnp
-         p9Z42KU0u/1vAJTqJugS6N/8vT6iiNepeFCdqvjV5CtoX5s4ok6Ivhi/n0C2bDBKwKL8
-         lzug8dLoqis7JjMXVx+l3ttaj+u/Ja1y3NHJ9xGevMXuoznt5L4bXQnY9yX699j+TOBr
-         tZbEr28HYiIjOfOMymrJU2qN4S6jfoSU4W1y4XcnM+O5woAyGM8A3WRiahPJ9lWngt2X
-         a3l2pZQYQHWyrgZpbZTeQYpAnosqfDhRt6HSvgKHE2Q5LTT34xgDytFVbVS0VWIQ6QsE
-         wbjQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IVEyw9lhSKPQ7nk9zbyzY3MrQrMoG1UtQeH4s0obVK4=;
+        b=BM5xU+bdXxzonaku12ZWanDBg3J5jwMF5mf7bW7HLlYzVf8k0HQqHvPbcVNKlsSPwQ
+         o9gQFaatbEyCzZhB0kNZe5pBZrXldMpFWwrokdwduTGDKwTH6kPL8+EsiICKEi7lNhhR
+         Gzwvb/wJxLO7WShx1Os1Tuj7k1dbMhtBn9JFKJrii8aYBtL5cQ8Qd3IRcENHFRc+bPL2
+         fSWjOtDODq5ob2bOtdN0dHpktB2oxne3oO1EIAlu4EP339BQYswftr6cUvAgA/OoJhhf
+         lClv/s3iNghPEoWOeY0V0uQ2YtoTySzugNh9bgY9G+5M4rrWlZiS4OS0FcFAgtUtsO+r
+         JSVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=wOmTV3UlOvmZmVtYO7vIZQjLO4KRW2yG1tmxqQB4RRI=;
-        b=kFzOg7jw5ZU6AG74alZP5eW/oGR6lKpruHT+yrkamRG+6qgeEdf/FFOa4IvfwgKBRy
-         Q9S2swoXkz6v/Cjn4Tjj8wf7t4dkIP64eHAK15xpFKfGall1rnVM1Gg3XuDwPvJ5cfdX
-         BZtRdXqsZ7AM+wP6JyU/wk4p+JVtvMX+S1JMAe71fRsErqYPVeAXLywMhpJOECCbggT6
-         shhB7V8e2F74hzqmDSkSjcFM/LzZlDoHxd0dUzWIkb/tW620MueXx6gOdpaF3inS5THi
-         SZETO6c3AZGmFjhKb1Hpj7oP8pqzpQlN8s0Q3zB40SXzhTC/eJYYc0++XbSxvGAAD+xx
-         ApCg==
-X-Gm-Message-State: AOAM533biDVmKnDg8jRt5wy9BffzfSxb1ykQ4rbuakznzCai+i+o3wHX
-        Le10h1z95zoJF4TKaIInmmQ=
-X-Google-Smtp-Source: ABdhPJxZtsmAP/l197BYpF8xRrLrsrPzdPZhsDbRyBUpQdxbzzdMpDMMLudDRyHfN38TjwG0kpyXtg==
-X-Received: by 2002:a05:6e02:1c47:: with SMTP id d7mr8255536ilg.49.1633708241649;
-        Fri, 08 Oct 2021 08:50:41 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id l3sm1195715ilg.54.2021.10.08.08.50.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Oct 2021 08:50:40 -0700 (PDT)
-Date:   Fri, 08 Oct 2021 08:50:32 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Dave Marchevsky <davemarchevsky@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Yonghong Song <yhs@fb.com>
-Message-ID: <616068c823efd_1bf120816@john-XPS-13-9370.notmuch>
-In-Reply-To: <2c483e31-27e9-6b9b-15ec-1a3917ecefb3@fb.com>
-References: <20210920151112.3770991-1-davemarchevsky@fb.com>
- <20210923205105.zufadghli5772uma@ast-mbp>
- <35e837fb-ac22-3ea1-4624-2a890f6d0db0@fb.com>
- <CAEf4Bzb+r5Fpu1YzGX01YY6BQb1xnZiMRW3hUF+uft4BsJCPoA@mail.gmail.com>
- <761a02db-ff47-fc2f-b557-eff2b02ec941@fb.com>
- <61520b6224619_397f208d7@john-XPS-13-9370.notmuch>
- <CAEf4BzbxYxnQND9JJ4SfQb4kxxkRtk4S4rR2iqkcz6bJ2jdFqw@mail.gmail.com>
- <615270f889bf9_e24c2083@john-XPS-13-9370.notmuch>
- <2c483e31-27e9-6b9b-15ec-1a3917ecefb3@fb.com>
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf: keep track of prog verification
- stats
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IVEyw9lhSKPQ7nk9zbyzY3MrQrMoG1UtQeH4s0obVK4=;
+        b=gb6WSmjKUGyY62xbZMwEDhwkUz+Y4bpxCnQiMAeRqkGhlNuVz+gPEgDm4Na5sOyiTd
+         bUOKtb02/V0PSBe7LdHWO43iNAVyERPovOOUDIqMGcC0XNBvV4Ax3n7dqe5KSrHSkfB+
+         SPJiIfCKcaq+5j6SqMn5HMSg0AwFWUbBWEhdbVukECdCWJJG5VBG+QVecvTRLTi2/rIN
+         lOs8Zi7bxyibD1vD6YnR2KNdkcijYWXSDN3l7exbe6t4dT7WxjlxXGBQsDaI2hu60Vn4
+         m7IRtsHlIc21190bcndmlWKzkYLp/eRWSuc+mN9jQgt0CYpfVIs65bhiB6/vMl3TVJCP
+         PueA==
+X-Gm-Message-State: AOAM530q7y0CsIt+ol42nvhi6KIXSqH9vGYPHUSVBs4mLaLDwqYaRmQJ
+        iRMqJRaTn8kr5GJFpLUzXLP8SMQ5jWJ/ODXO2Fg=
+X-Google-Smtp-Source: ABdhPJy3TaFBLqNXb8BVZCGZUNm9ZMgFaGVCu+met/21chfsLQ16DtBDc+JGLDhMZrDGWzUIuK2OXw==
+X-Received: by 2002:a17:907:774d:: with SMTP id kx13mr5382310ejc.239.1633708319854;
+        Fri, 08 Oct 2021 08:51:59 -0700 (PDT)
+Received: from ?IPv6:2a04:241e:501:3870::d1c? ([2a04:241e:501:3870::d1c])
+        by smtp.gmail.com with ESMTPSA id g2sm827697edq.81.2021.10.08.08.51.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Oct 2021 08:51:59 -0700 (PDT)
+Subject: Re: [PATCH] tcp: md5: Fix overlap between vrf and non-vrf keys
+To:     David Ahern <dsahern@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Yonghong Song <yhs@fb.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <3d8387d499f053dba5cd9184c0f7b8445c4470c6.1633542093.git.cdleonard@gmail.com>
+ <209548b5-27d2-2059-f2e9-2148f5a0291b@gmail.com>
+ <912670a5-8ef2-79cc-b74b-ee5c83534f2b@gmail.com>
+ <5c77ac1a-b6af-982f-d72f-e71098df3112@gmail.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+Message-ID: <3b52d69d-c39f-c662-7211-4b9130c8b527@gmail.com>
+Date:   Fri, 8 Oct 2021 18:51:56 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+MIME-Version: 1.0
+In-Reply-To: <5c77ac1a-b6af-982f-d72f-e71098df3112@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dave Marchevsky wrote:
-> On 9/27/21 9:33 PM, John Fastabend wrote:   
-> > Andrii Nakryiko wrote:
-> >> On Mon, Sep 27, 2021 at 11:20 AM John Fastabend
-> >> <john.fastabend@gmail.com> wrote:
-> >>>
-> >>> Dave Marchevsky wrote:
-> >>>> On 9/23/21 10:02 PM, Andrii Nakryiko wrote:
-> >>>>> On Thu, Sep 23, 2021 at 6:27 PM Dave Marchevsky <davemarchevsky@fb.com> wrote:
-> >>>>>>
-> >>>>>> On 9/23/21 4:51 PM, Alexei Starovoitov wrote:
-> >>>>>>> On Mon, Sep 20, 2021 at 08:11:10AM -0700, Dave Marchevsky wrote:
-> >>>>>>>> The verifier currently logs some useful statistics in
-> >>>>>>>> print_verification_stats. Although the text log is an effective feedback
-> >>>>>>>> tool for an engineer iterating on a single application, it would also be
-> >>>>>>>> useful to enable tracking these stats in a more structured form for
-> >>>>>>>> fleetwide or historical analysis, which this patchset attempts to do.
-> >>>>>>>>
-> > 
-> > [...] 
-> > 
-> >>>>
-> >>>> Seems reasonable to me - and attaching a BPF program to the tracepoint to
-> >>>> grab data is delightfully meta :)
-> >>>>
-> >>>> I'll do a pass on alternate implementation with _just_ tracepoint, no
-> >>>> prog_info or fdinfo, can add minimal or full stats to those later if
-> >>>> necessary.
+On 07.10.2021 21:27, David Ahern wrote:
+> On 10/7/21 12:41 AM, Leonard Crestez wrote:
+>> On 07.10.2021 04:14, David Ahern wrote:
+>>> On 10/6/21 11:48 AM, Leonard Crestez wrote:
+>>>> @@ -1103,11 +1116,11 @@ static struct tcp_md5sig_key
+>>>> *tcp_md5_do_lookup_exact(const struct sock *sk,
+>>>>    #endif
+>>>>        hlist_for_each_entry_rcu(key, &md5sig->head, node,
+>>>>                     lockdep_sock_is_held(sk)) {
+>>>>            if (key->family != family)
+>>>>                continue;
+>>>> -        if (key->l3index && key->l3index != l3index)
+>>>> +        if (key->l3index != l3index)
+>>>
+>>> That seems like the bug fix there. The L3 reference needs to match for
+>>> new key and existing key. I think the same change is needed in
+>>> __tcp_md5_do_lookup.
+>>
+>> Current behavior is that keys added without tcpm_ifindex will match
+>> connections both inside and outside VRFs. Changing this might break real
+>> applications, is it really OK to claim that this behavior was a bug all
+>> along?
 > 
-> Actually I ended up pushing a simple add of insn_processed to prog_info, 
-> fdinfo instead of bare tracepoint. The more general discussion here is
-> interesting - if we can inject some custom logic into various points in
-> verification process, can gather arbitrary stats or make policy decisions
-> from the same attach points.
+> no.
 > 
-> >>>
-> >>> We can also use a hook point here to enforce policy on allowing the
-> >>> BPF program to load or not using the stats here. For now basic
-> >>> insn is a good start to allow larger/smaller programs to be loaded,
-> >>> but we might add other info like call bitmask, features, types, etc.
-> >>> If one of the arguments is the bpf_attr struct we can just read
-> >>> lots of useful program info out directly.
-> >>>
-> >>> We would need something different from a tracepoint though to let
-> >>> it return a reject|accept code. How about a new hook type that
-> >>> has something similar to sockops that lets us just return an
-> >>> accept or reject code?
-> >>>
-> >>> By doing this we can check loader signatures here to be sure the
-> >>> loader is signed or otherwise has correct permissions to be loading
-> >>> whatever type of bpf program is here.
-> >>
-> >> For signing and generally preventing some BPF programs from loading
-> >> (e.g., if there is some malicious BPF program that takes tons of
-> >> memory to be validated), wouldn't you want to check that before BPF
-> >> verifier spent all those resources on verification? So maybe there
-> >> will be another hook before BPF prog is validated for that? Basically,
-> >> if you don't trust any BPF program unless it is signed, I'd expect you
-> >> check signature before BPF verifier does its heavy job.
-> > 
-> > Agree, for basic sig check or anything that just wants to look at
-> > the task_struct storage for some attributes before we verify is
-> > more efficient. The only reason I suggested after is if we wanted
-> > to start auditing/enforcing on calls or map read/writes, etc. these
-> > we would need the verifier to help tabulate.
-> 
-> This is the "Bob isn't signed, so ensure that Bob can only read from 
-> Alice's maps" case from your recent talk, right? 
+> It's been a few years. I need to refresh on the logic and that is not
+> going to happen before this weekend.
 
-Correct.
+It seems that always doing a strict key->l3index != l3index condition 
+inside of __tcp_md5_do_lookup breaks the usecase of binding one listener 
+to each VRF and not specifying the ifindex for each key.
 
-> 
-> I'd like to add another illustrative usecase: "progs of type X can 
-> use 4k of stack, while type Y can only use 128 bytes of stack". For
-> the 4k case, a single attach point after verification is complete 
-> wouldn't work as the prog would've been eagerly rejected.
+This is a very valid usecase, maybe the most common way to use md5 with vrf.
 
-Makes sense. Another use case would be to allow more tailcalls. 32 has
-become limiting for some of our use cases where we have relatively small
-insn counts, but tail calls >32 may happen. If we bumped this to
-128 for example we might want to only allow specific prog types to
-allow it.
+Ways to fix this:
+* Make this comparison only take effect if TCP_MD5SIG_FLAG_IFINDEX is set.
+* Make this comparison only take effect if tcp_l3mdev_accept=1
+* Add a new flag?
 
-> 
-> Alexei suggested adding some empty noinline functions with 
-> ALLOW_ERROR_INJECTION at potential attach points, then attaching 
-> BPF_MODIFY_RETURN progs to inject custom logic. This would allow 
-> arbitrarily digging around while optionally affecting return result.
-> 
-> WDYT?
+Right now passing TCP_MD5SIG_FLAG_IFINDEX and ifindex == 0 results in an 
+error but maybe it should be accepted to mean "key applies only for 
+default VRF".
 
-That is exactly what I had in mind as well. And what I did to get
-the example to work in the talk.
-
-Also we would want a few other of these non-inline verdict locations
-as well mostly to avoid having to setup a full LSM environment when we
-just want some simple BPF verdict actions at key hooks and/or to
-trigger our CI on some edge cases that are tricky to hit by luck.
-
-> 
-> > When I hacked it in for experimenting I put the hook in the sys
-> > bpf load path before the verifier runs. That seemed to work for
-> > the simpler sig check cases I was running.
-> > 
-> > OTOH though if we have a system with lots of BPF failed loads this
-> > would indicate a more serious problem that an admin should fix
-> > so might be nicer code-wise to just have a single hook after verifier
-> > vs optimizing to two one in front and one after. 
-> > 
-> >>
-> >>>
-> >>> Thanks,
-> >>> John
-> > 
-> > 
+--
+Regards,
+Leonard
