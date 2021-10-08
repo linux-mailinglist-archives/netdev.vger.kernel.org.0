@@ -2,465 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAD2C426A90
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 14:18:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB8F426AAE
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 14:25:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241066AbhJHMUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 08:20:06 -0400
-Received: from mail.loongson.cn ([114.242.206.163]:38242 "EHLO loongson.cn"
+        id S241440AbhJHM1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 08:27:49 -0400
+Received: from mail-bn8nam12on2052.outbound.protection.outlook.com ([40.107.237.52]:63777
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240457AbhJHMUF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Oct 2021 08:20:05 -0400
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9CxJOb6NmBhR5MWAA--.43565S2;
-        Fri, 08 Oct 2021 20:18:03 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH bpf-next v3] test_bpf: Add module parameter test_suite
-Date:   Fri,  8 Oct 2021 20:18:02 +0800
-Message-Id: <1633695482-10528-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9CxJOb6NmBhR5MWAA--.43565S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3Cr47Cw4xZr4kJr4xKr1ftFb_yoWkAr1kpr
-        W7Krn0yF18XF97XF18XF17Aa4rtF4vy3yrtrWfJryqyrs5CryUtF48K34Iqrn3Jr40vw15
-        Z3WIvF45G3W7AaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkv14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Xr1l
-        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
-        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAK
-        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
-        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
-        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU6wZcUUUUU=
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        id S230197AbhJHM1s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 08:27:48 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BDQmd1DdIQiHLC48j3ODheP6YdJDzxepiSnXKx4Ubdey7s8fuk57zMXX03TyuVUwYSM6duafZ6q9H7CtvMEX8sTpLBdl9QF3c0lVT1fUMwSC0tQTY6tJDzo2GzimUiXrXW2Ko5CCvUvmYKiPuZ4rmInEgZ2ab75wlMsDumE6YqTHetNGJDYGiCa1+IhjlsM0HRJst8yWDxwN3hhUb789Nb4ITsBRTalsv3vHTZdeuQvZUJXY3yTtW2FAiCOBDq/wyOzHibAkR+ihW3sMZiGYbhOQm0NMtRARaYwseG+1cFU4xK3FyGNrpG7d+zY7+oCq2VPaovulniI/DvUmovfSsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tnCiPQd997ciMNti3z4Az2SiXBhuupC/BRLmm2bCnq4=;
+ b=j6kEScn6WERkt8T0eO1vvY5CAEf1SsvV8F8We++KENVigul6zYZMYaxY8MEo+PlLHNEprHkwv7d6lJp8hiq90Q29ofGhUJisYPojFa2X1wNOZg5EqRXiTBWnIFGMHK8N5XQ+/1p4zD9XJyh361vaO+2X4V3LqTNgH6AxXv5+q9RtKuzGnzAZNoT5DXV6O5mq6aLwHW2hjfJyKbEz/9REKLXAW4w7KvrNiytzroGNVwPPDdNzEmyAxlyKW0agA4Rs1le5qxwIv4DO5cjEkns945q3ebnzuOgjWCrNbEaZcxucFt3slo76ydXh+bTMPnHpAcpcvuZHtHpRutgWmoTSjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=chelsio.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tnCiPQd997ciMNti3z4Az2SiXBhuupC/BRLmm2bCnq4=;
+ b=CgjeFp33RGAE8+oNlHJgAmUU3aR3dVTbbupfLlgT0iX6RXk5uwOaWDYMqNuw2mnvapNItC7P78uAkR3kb04c+tx6XyzqaOdch9j2N+A6nl4N54vvl7wbma11lG0WbYktO1pUCOyEXKLTLh50Ahb4kpktVrCULpLphbd6Osq6n34jio6j0VUndunf3DwMD+ZwnhKfptxYM5kOrmCBAk/z9qSCcHVE1vqN3dcOJesTSkvaFA6kt1UBsghogR7KNVC2KzKh7g0BiAbEQR0jOuiDPCvJmw+u4vqunam6JuA7KbnDr7OrFx9A7onERxqtTefLGLtDZ4U0txNgu+2Zvo7Wqg==
+Received: from MWHPR1701CA0007.namprd17.prod.outlook.com
+ (2603:10b6:301:14::17) by BN6PR12MB1490.namprd12.prod.outlook.com
+ (2603:10b6:405:f::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.22; Fri, 8 Oct
+ 2021 12:25:51 +0000
+Received: from CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:301:14:cafe::55) by MWHPR1701CA0007.outlook.office365.com
+ (2603:10b6:301:14::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.19 via Frontend
+ Transport; Fri, 8 Oct 2021 12:25:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; chelsio.com; dkim=none (message not signed)
+ header.d=none;chelsio.com; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT018.mail.protection.outlook.com (10.13.175.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4587.18 via Frontend Transport; Fri, 8 Oct 2021 12:25:51 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 8 Oct
+ 2021 12:25:50 +0000
+Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Fri, 8 Oct 2021 05:25:45 -0700
+From:   Mark Zhang <markzhang@nvidia.com>
+To:     <jgg@nvidia.com>, <dledford@redhat.com>, <saeedm@nvidia.com>
+CC:     <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <aharonl@nvidia.com>, <netao@nvidia.com>, <leonro@nvidia.com>,
+        <dennis.dalessandro@cornelisnetworks.com>, <galpress@amazon.com>,
+        <kuba@kernel.org>, <maorg@nvidia.com>,
+        <mike.marciniszyn@cornelisnetworks.com>,
+        <mustafa.ismail@intel.com>, <bharat@chelsio.com>,
+        <selvin.xavier@broadcom.com>, <shiraz.saleem@intel.com>,
+        <yishaih@nvidia.com>, <zyjzyj2000@gmail.com>,
+        "Mark Zhang" <markzhang@nvidia.com>
+Subject: [PATCH rdma-next v4 00/13] Optional counter statistics support
+Date:   Fri, 8 Oct 2021 15:24:26 +0300
+Message-ID: <20211008122439.166063-1-markzhang@nvidia.com>
+X-Mailer: git-send-email 2.8.4
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0e4948ff-9b1f-45b2-f1a2-08d98a56c421
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1490:
+X-Microsoft-Antispam-PRVS: <BN6PR12MB1490DEAF5C9320BFFF449FBDC7B29@BN6PR12MB1490.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Th/T+tTNBQbWmjEbs6yE2+yjfeb+JfIcti7V5fJD9gqz5KqiDNkA7xmo6D3fWSPtOxF5hAds8ZxSSfaxl6zYWCrIaM3kuFis0q4QlLx7kyfhWpJFknnybC2mzIwlqIljwrxkt4iSq2k3ODss+eIwRZiBZRJ6DJsDZsbE5RENgMB8Z21ji1/p2ooqH0vA58HMpbsHnKfdtvYgASsJJ67HRywG2r0iRnA2ndMhYEB885LRe8myi0FaGufV6Knvgt9tWd2vHEIkSpmQDGtdMUb5FbVE3giCO2aoiiB6JaPd2nIJnzlw6mTHU9VHwdUZf6tj0Pj7sTH3V/SbBlgLKVc6iApu8996F1wFrcBj2lXIiFIAz8Hgg0zPiK/6tulKYtLRw1bDnVKlUEV/bz1jzhbwPiHwWmR4BNgQ6DsrbJZrIBXrigWuf4YUMzFmWo1MvhZJuQut9oeO3Qg2ijRv3236nQMWExo63J/yCpmyOa5pXf6HjWaf/Ii+AiuYuzivtaG9m81u6QmhWMcUwpyRl5YLCjw6ZnoC9PVZzbacvixufK+wZP6RyJOO9BRHDzcyrW7CruKnT6/lmahac1exGVgGmYZ1BCeup8+WDPcglYh4rXTSP3fKdf7nHl98eOW/hFy7z9r0VU+yc1jy9849yJ9qq+NHa0FET5IIb/wQVrpWPGZq00hYpCA+1GKK6eVjkITG2NQLUb7e80YPJZsXXBB9TmgF1yJ5osbbCDPc+Wdrm17Le1+nPGbVAkNd5cbn+Is41PKF27CijJTSMzHJwh4fRHg8YAkL1f2Pr7+dVjKaKHgDOFrxFZDG1yy5UXsk0x8Bl4beqNskLyEZPoZ/t8J3hQ==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(6636002)(4326008)(1076003)(508600001)(107886003)(7416002)(8936002)(6666004)(356005)(70206006)(70586007)(83380400001)(186003)(5660300002)(7636003)(7696005)(8676002)(110136005)(82310400003)(54906003)(26005)(316002)(336012)(47076005)(966005)(2906002)(36756003)(426003)(36860700001)(86362001)(2616005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2021 12:25:51.0982
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e4948ff-9b1f-45b2-f1a2-08d98a56c421
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1490
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 9298e63eafea ("bpf/tests: Add exhaustive tests of ALU
-operand magnitudes"), when modprobe test_bpf.ko with jit on mips64,
-there exists segment fault due to the following reason:
+Change Log:
+v4:
+ * Add stats NULL check in rdma_free_hw_stats_struct();
+ * Improve nldev_stat_set_doit() and nldev_stat_set_mode_doit();
+ * Remove RDMA_NLDEV_ATTR_STAT_HWCOUNTER_DYNAMIC attribute dependence when
+   set dynamic counters;
+v3: https://lore.kernel.org/all/cover.1633513239.git.leonro@nvidia.com/
+ * Many cosmetic changes;
+ * Fixed rebase error which caused to have two same patches with
+   different implementation;
+ * New patch that split nldev_stat_set_doit;
+v2: https://lore.kernel.org/all/cover.1632988543.git.leonro@nvidia.com
+ * Add rdma_free_hw_stats_struct() helper API (with a new patch);
+ * In sysfs add a WARN_ON to check if optional stats are always at the end;
+ * Add a new nldev command to get the counter status;
+ * Improve nldev_stat_set_counter_dynamic_doit() by creating a target state
+   bitmap;
+v1: https://lore.kernel.org/all/cover.1631660727.git.leonro@nvidia.com
+ * Add a descriptor structure to replace name in struct rdma_hw_stats;
+ * Add a bitmap in struct rdma_hw_stats to indicate the enable/disable
+   status of all counters;
+ * Add a "flag" field in counter descriptor and define
+   IB_STAT_FLAG_OPTIONAL flag;
+ * add/remove_op_stat() are replaced by modify_op_stat();
+ * Use "set/unset" in command line and send full opcounters list through
+   netlink, and send opcounter indexes instead of names;
+ * Patches are re-ordered.
+v0: https://lore.kernel.org/all/20210818112428.209111-1-markzhang@nvidia.com
 
-ALU64_MOV_X: all register value magnitudes jited:1
-Break instruction in kernel code[#1]
+----------------------------------------------------------------------
+Hi,
 
-It seems that the related jit implementations of some test cases
-in test_bpf() have problems. At this moment, I do not care about
-the segment fault while I just want to verify the test cases of
-tail calls.
+This series from Neta and Aharon provides an extension to the rdma
+statistics tool that allows to set optional counters dynamically, using
+netlink.
 
-Based on the above background and motivation, add the following
-module parameter test_suite to the test_bpf.ko:
-test_suite=<string>: only the specified type will be run, the string
-can be "test_bpf", "test_tail_calls" or "test_skb_segment".
+The idea of having optional counters is to provide to the users the
+ability to get statistics of counters that hurts performance.
 
-If test_suite is not specified, but test_id, test_name or test_range
-is specified, set 'test_bpf' as the default test suite.
+Once an optional counter was added, its statistics will be presented
+along with all the counters, using the show command.
 
-This is useful to only test the corresponding test suite when specify
-the valid test_suite string.
+Binding objects to the optional counters is currently not supported,
+neither in auto mode nor in manual mode.
 
-Any invalid test suite will result in -EINVAL being returned and no
-tests being run. If the test_suite is not specified or specified as
-empty string, it does not change the current logic, all of the test
-cases will be run.
+To get the list of optional counters that are supported on this device,
+use "rdma statistic mode supported". To see which counters are currently
+enabled, use "rdma statistic mode".
 
-Here are some test results:
- # dmesg -c
- # modprobe test_bpf
- # dmesg
- # dmesg | grep Summary
- test_bpf: Summary: 1009 PASSED, 0 FAILED, [0/997 JIT'ed]
- test_bpf: test_tail_calls: Summary: 8 PASSED, 0 FAILED, [0/8 JIT'ed]
- test_bpf: test_skb_segment: Summary: 2 PASSED, 0 FAILED
+Examples:
 
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_bpf
- # dmesg | tail -1
- test_bpf: Summary: 1009 PASSED, 0 FAILED, [0/997 JIT'ed]
+$ rdma statistic mode supported
+link rocep8s0f0/1 supported optional-counters cc_rx_ce_pkts,cc_rx_cnp_pkts,cc_tx_cnp_pkts
+link rocep8s0f1/1 supported optional-counters cc_rx_ce_pkts,cc_rx_cnp_pkts,cc_tx_cnp_pkts
 
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_tail_calls
- # dmesg
- test_bpf: #0 Tail call leaf jited:0 21 PASS
- [...]
- test_bpf: #7 Tail call error path, index out of range jited:0 32 PASS
- test_bpf: test_tail_calls: Summary: 8 PASSED, 0 FAILED, [0/8 JIT'ed]
+$ sudo rdma statistic set link rocep8s0f0/1 optional-counters cc_rx_ce_pkts,cc_rx_cnp_pkts
+$ rdma statistic mode link rocep8s0f0/1
+link rocep8s0f0/1 optional-counters cc_rx_ce_pkts,cc_rx_cnp_pkts
 
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_skb_segment
- # dmesg
- test_bpf: #0 gso_with_rx_frags PASS
- test_bpf: #1 gso_linear_no_head_frag PASS
- test_bpf: test_skb_segment: Summary: 2 PASSED, 0 FAILED
+$ rdma statistic show link rocep8s0f0/1
+link rocep8s0f0/1 rx_write_requests 0 rx_read_requests 0 rx_atomic_requests 0 out_of_buffer 0
+out_of_sequence 0 duplicate_request 0 rnr_nak_retry_err 0 packet_seq_err 0 implied_nak_seq_err 0
+local_ack_timeout_err 0 resp_local_length_error 0 resp_cqe_error 0 req_cqe_error 0
+req_remote_invalid_request 0 req_remote_access_errors 0 resp_remote_access_errors 0
+resp_cqe_flush_error 0 req_cqe_flush_error 0 roce_adp_retrans 0 roce_adp_retrans_to 0
+roce_slow_restart 0 roce_slow_restart_cnps 0 roce_slow_restart_trans 0 rp_cnp_ignored 0
+rp_cnp_handled 0 np_ecn_marked_roce_packets 0 np_cnp_sent 0 rx_icrc_encapsulated 0 cc_rx_ce_pkts 0
+cc_rx_cnp_pkts 0
 
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_id=1
- # dmesg
- test_bpf: test_bpf: set 'test_bpf' as the default test_suite.
- test_bpf: #1 TXA jited:0 54 51 50 PASS
- test_bpf: Summary: 1 PASSED, 0 FAILED, [0/1 JIT'ed]
+$ sudo rdma statistic set link rocep8s0f0/1 optional-counters cc_rx_ce_pkts
+$ rdma statistic mode link rocep8s0f0/1
+link rocep8s0f0/1 optional-counters cc_rx_ce_pkts
 
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_bpf test_name=TXA
- # dmesg
- test_bpf: #1 TXA jited:0 54 50 51 PASS
- test_bpf: Summary: 1 PASSED, 0 FAILED, [0/1 JIT'ed]
+Thanks
 
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_tail_calls test_range=6,7
- # dmesg
- test_bpf: #6 Tail call error path, NULL target jited:0 41 PASS
- test_bpf: #7 Tail call error path, index out of range jited:0 32 PASS
- test_bpf: test_tail_calls: Summary: 2 PASSED, 0 FAILED, [0/2 JIT'ed]
+Aharon Landau (12):
+  net/mlx5: Add ifc bits to support optional counters
+  net/mlx5: Add priorities for counters in RDMA namespaces
+  RDMA/counter: Add a descriptor in struct rdma_hw_stats
+  RDMA/counter: Add an is_disabled field in struct rdma_hw_stats
+  RDMA/counter: Add optional counter support
+  RDMA/nldev: Add support to get status of all counters
+  RDMA/nldev: Split nldev_stat_set_mode_doit out of nldev_stat_set_doit
+  RDMA/nldev: Allow optional-counter status configuration through RDMA
+    netlink
+  RDMA/mlx5: Support optional counters in hw_stats initialization
+  RDMA/mlx5: Add steering support in optional flow counters
+  RDMA/mlx5: Add modify_op_stat() support
+  RDMA/mlx5: Add optional counter support in get_hw_stats callback
 
- # rmmod test_bpf
- # dmesg -c
- # modprobe test_bpf test_suite=test_skb_segment test_id=1
- # dmesg
- test_bpf: #1 gso_linear_no_head_frag PASS
- test_bpf: test_skb_segment: Summary: 1 PASSED, 0 FAILED
+Mark Zhang (1):
+  RDMA/core: Add a helper API rdma_free_hw_stats_struct
 
-By the way, the above segment fault has been fixed in the latest bpf-next
-tree.
+ drivers/infiniband/core/counters.c            |  40 ++-
+ drivers/infiniband/core/device.c              |   1 +
+ drivers/infiniband/core/nldev.c               | 278 ++++++++++++++---
+ drivers/infiniband/core/sysfs.c               |  52 ++--
+ drivers/infiniband/core/verbs.c               |  48 +++
+ drivers/infiniband/hw/bnxt_re/hw_counters.c   | 137 +++++----
+ drivers/infiniband/hw/cxgb4/provider.c        |  22 +-
+ drivers/infiniband/hw/efa/efa_verbs.c         |  19 +-
+ drivers/infiniband/hw/hfi1/verbs.c            |  53 ++--
+ drivers/infiniband/hw/irdma/verbs.c           | 100 +++----
+ drivers/infiniband/hw/mlx4/main.c             |  44 ++-
+ drivers/infiniband/hw/mlx4/mlx4_ib.h          |   2 +-
+ drivers/infiniband/hw/mlx5/counters.c         | 282 +++++++++++++++---
+ drivers/infiniband/hw/mlx5/fs.c               | 187 ++++++++++++
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |  28 +-
+ drivers/infiniband/sw/rxe/rxe_hw_counters.c   |  42 +--
+ .../net/ethernet/mellanox/mlx5/core/fs_core.c |  54 +++-
+ include/linux/mlx5/device.h                   |   2 +
+ include/linux/mlx5/fs.h                       |   2 +
+ include/linux/mlx5/mlx5_ifc.h                 |  22 +-
+ include/rdma/ib_hdrs.h                        |   1 +
+ include/rdma/ib_verbs.h                       |  58 ++--
+ include/rdma/rdma_counter.h                   |   2 +
+ include/uapi/rdma/rdma_netlink.h              |   5 +
+ 24 files changed, 1127 insertions(+), 354 deletions(-)
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
-
-v3:
-  -- Use test_suite instead of test_type as module parameter
-  -- Make test_id, test_name and test_range selection applied to each test suite
-
-v2:
-  -- Fix typo in the commit message
-  -- Use my private email to send
-
- lib/test_bpf.c | 263 ++++++++++++++++++++++++++++++++++++++++-----------------
- 1 file changed, 187 insertions(+), 76 deletions(-)
-
-diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index e5b10fd..dfa9db8 100644
---- a/lib/test_bpf.c
-+++ b/lib/test_bpf.c
-@@ -14316,72 +14316,9 @@ module_param_string(test_name, test_name, sizeof(test_name), 0);
- static int test_id = -1;
- module_param(test_id, int, 0);
- 
--static int test_range[2] = { 0, ARRAY_SIZE(tests) - 1 };
-+static int test_range[2] = { -1, -1 };
- module_param_array(test_range, int, NULL, 0);
- 
--static __init int find_test_index(const char *test_name)
--{
--	int i;
--
--	for (i = 0; i < ARRAY_SIZE(tests); i++) {
--		if (!strcmp(tests[i].descr, test_name))
--			return i;
--	}
--	return -1;
--}
--
--static __init int prepare_bpf_tests(void)
--{
--	if (test_id >= 0) {
--		/*
--		 * if a test_id was specified, use test_range to
--		 * cover only that test.
--		 */
--		if (test_id >= ARRAY_SIZE(tests)) {
--			pr_err("test_bpf: invalid test_id specified.\n");
--			return -EINVAL;
--		}
--
--		test_range[0] = test_id;
--		test_range[1] = test_id;
--	} else if (*test_name) {
--		/*
--		 * if a test_name was specified, find it and setup
--		 * test_range to cover only that test.
--		 */
--		int idx = find_test_index(test_name);
--
--		if (idx < 0) {
--			pr_err("test_bpf: no test named '%s' found.\n",
--			       test_name);
--			return -EINVAL;
--		}
--		test_range[0] = idx;
--		test_range[1] = idx;
--	} else {
--		/*
--		 * check that the supplied test_range is valid.
--		 */
--		if (test_range[0] >= ARRAY_SIZE(tests) ||
--		    test_range[1] >= ARRAY_SIZE(tests) ||
--		    test_range[0] < 0 || test_range[1] < 0) {
--			pr_err("test_bpf: test_range is out of bound.\n");
--			return -EINVAL;
--		}
--
--		if (test_range[1] < test_range[0]) {
--			pr_err("test_bpf: test_range is ending before it starts.\n");
--			return -EINVAL;
--		}
--	}
--
--	return 0;
--}
--
--static __init void destroy_bpf_tests(void)
--{
--}
--
- static bool exclude_test(int test_id)
- {
- 	return test_id < test_range[0] || test_id > test_range[1];
-@@ -14553,6 +14490,10 @@ static __init int test_skb_segment(void)
- 	for (i = 0; i < ARRAY_SIZE(skb_segment_tests); i++) {
- 		const struct skb_segment_test *test = &skb_segment_tests[i];
- 
-+		cond_resched();
-+		if (exclude_test(i))
-+			continue;
-+
- 		pr_info("#%d %s ", i, test->descr);
- 
- 		if (test_skb_segment_single(test)) {
-@@ -14934,6 +14875,8 @@ static __init int test_tail_calls(struct bpf_array *progs)
- 		int ret;
- 
- 		cond_resched();
-+		if (exclude_test(i))
-+			continue;
- 
- 		pr_info("#%d %s ", i, test->descr);
- 		if (!fp) {
-@@ -14966,29 +14909,197 @@ static __init int test_tail_calls(struct bpf_array *progs)
- 	return err_cnt ? -EINVAL : 0;
- }
- 
-+static char test_suite[32];
-+module_param_string(test_suite, test_suite, sizeof(test_suite), 0);
-+
-+static __init int find_test_index(const char *test_name)
-+{
-+	int i;
-+
-+	if (!strcmp(test_suite, "test_bpf")) {
-+		for (i = 0; i < ARRAY_SIZE(tests); i++) {
-+			if (!strcmp(tests[i].descr, test_name))
-+				return i;
-+		}
-+	}
-+
-+	if (!strcmp(test_suite, "test_tail_calls")) {
-+		for (i = 0; i < ARRAY_SIZE(tail_call_tests); i++) {
-+			if (!strcmp(tail_call_tests[i].descr, test_name))
-+				return i;
-+		}
-+	}
-+
-+	if (!strcmp(test_suite, "test_skb_segment")) {
-+		for (i = 0; i < ARRAY_SIZE(skb_segment_tests); i++) {
-+			if (!strcmp(skb_segment_tests[i].descr, test_name))
-+				return i;
-+		}
-+	}
-+
-+	return -1;
-+}
-+
-+static __init int prepare_bpf_tests(void)
-+{
-+	if (test_id >= 0) {
-+		/*
-+		 * if a test_id was specified, use test_range to
-+		 * cover only that test.
-+		 */
-+		if (!strcmp(test_suite, "test_bpf") &&
-+		     test_id >= ARRAY_SIZE(tests)) {
-+			pr_err("test_bpf: invalid test_id specified for '%s' suite.\n",
-+				test_suite);
-+			return -EINVAL;
-+		}
-+
-+		if (!strcmp(test_suite, "test_tail_calls") &&
-+		    test_id >= ARRAY_SIZE(tail_call_tests)) {
-+			pr_err("test_bpf: invalid test_id specified for '%s' suite.\n",
-+				test_suite);
-+			return -EINVAL;
-+		}
-+
-+		if (!strcmp(test_suite, "test_skb_segment") &&
-+		    test_id >= ARRAY_SIZE(skb_segment_tests)) {
-+			pr_err("test_bpf: invalid test_id specified for '%s' suite.\n",
-+				test_suite);
-+			return -EINVAL;
-+		}
-+
-+		test_range[0] = test_id;
-+		test_range[1] = test_id;
-+	} else if (*test_name) {
-+		/*
-+		 * if a test_name was specified, find it and setup
-+		 * test_range to cover only that test.
-+		 */
-+		int idx = find_test_index(test_name);
-+
-+		if (idx < 0) {
-+			pr_err("test_bpf: no test named '%s' found for '%s' suite.\n",
-+			       test_name, test_suite);
-+			return -EINVAL;
-+		}
-+		test_range[0] = idx;
-+		test_range[1] = idx;
-+	} else {
-+		/*
-+		 * check that the supplied test_range is valid.
-+		 */
-+		if (!strcmp(test_suite, "test_bpf")) {
-+			if (test_range[0] >= ARRAY_SIZE(tests) ||
-+			    test_range[1] >= ARRAY_SIZE(tests) ||
-+			    test_range[0] < 0 || test_range[1] < 0) {
-+				pr_err("test_bpf: test_range is out of bound for '%s' suite.\n",
-+					test_suite);
-+				return -EINVAL;
-+			}
-+		}
-+
-+		if (!strcmp(test_suite, "test_tail_calls")) {
-+			if (test_range[0] >= ARRAY_SIZE(tail_call_tests) ||
-+			    test_range[1] >= ARRAY_SIZE(tail_call_tests) ||
-+			    test_range[0] < 0 || test_range[1] < 0) {
-+				pr_err("test_bpf: test_range is out of bound for '%s' suite.\n",
-+					test_suite);
-+				return -EINVAL;
-+			}
-+		}
-+
-+		if (!strcmp(test_suite, "test_skb_segment")) {
-+			if (test_range[0] >= ARRAY_SIZE(skb_segment_tests) ||
-+			    test_range[1] >= ARRAY_SIZE(skb_segment_tests) ||
-+			    test_range[0] < 0 || test_range[1] < 0) {
-+				pr_err("test_bpf: test_range is out of bound for '%s' suite.\n",
-+					test_suite);
-+				return -EINVAL;
-+			}
-+		}
-+
-+		if (test_range[1] < test_range[0]) {
-+			pr_err("test_bpf: test_range is ending before it starts.\n");
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static __init void destroy_bpf_tests(void)
-+{
-+}
-+
- static int __init test_bpf_init(void)
- {
- 	struct bpf_array *progs = NULL;
- 	int ret;
- 
-+	if (strlen(test_suite) &&
-+	    strcmp(test_suite, "test_bpf") &&
-+	    strcmp(test_suite, "test_tail_calls") &&
-+	    strcmp(test_suite, "test_skb_segment")) {
-+		pr_err("test_bpf: invalid test_suite '%s' specified.\n", test_suite);
-+		return -EINVAL;
-+	}
-+
-+	/*
-+	 * if test_suite is not specified, but test_id, test_name or test_range
-+	 * is specified, set 'test_bpf' as the default test suite.
-+	 */
-+	if (!strlen(test_suite) &&
-+	    (test_id != -1 || strlen(test_name) ||
-+	    (test_range[0] != -1 || test_range[1] != -1))) {
-+		pr_info("test_bpf: set 'test_bpf' as the default test_suite.\n");
-+		strcpy(test_suite, "test_bpf");
-+	}
-+
-+
-+	/* if test_range is not specified, set the limit of test_range */
-+	if (test_range[0] == -1 && test_range[1] == -1) {
-+		/* if test_suite is not specified, set the possible max upper limit */
-+		if (!strlen(test_suite)) {
-+			test_range[0] = 0;
-+			test_range[1] = ARRAY_SIZE(tests) - 1;
-+		/* otherwise, set the limit of each test_suite */
-+		} else if (!strcmp(test_suite, "test_bpf")) {
-+			test_range[0] = 0;
-+			test_range[1] = ARRAY_SIZE(tests) - 1;
-+		} else if (!strcmp(test_suite, "test_tail_calls")) {
-+			test_range[0] = 0;
-+			test_range[1] = ARRAY_SIZE(tail_call_tests) - 1;
-+		} else if (!strcmp(test_suite, "test_skb_segment")) {
-+			test_range[0] = 0;
-+			test_range[1] = ARRAY_SIZE(skb_segment_tests) - 1;
-+		}
-+	}
-+
- 	ret = prepare_bpf_tests();
- 	if (ret < 0)
- 		return ret;
- 
--	ret = test_bpf();
--	destroy_bpf_tests();
--	if (ret)
--		return ret;
-+	if (!strlen(test_suite) || !strcmp(test_suite, "test_bpf")) {
-+		ret = test_bpf();
-+		destroy_bpf_tests();
-+		if (ret)
-+			return ret;
-+	}
- 
--	ret = prepare_tail_call_tests(&progs);
--	if (ret)
--		return ret;
--	ret = test_tail_calls(progs);
--	destroy_tail_call_tests(progs);
--	if (ret)
--		return ret;
-+	if (!strlen(test_suite) || !strcmp(test_suite, "test_tail_calls")) {
-+		ret = prepare_tail_call_tests(&progs);
-+		if (ret)
-+			return ret;
-+		ret = test_tail_calls(progs);
-+		destroy_tail_call_tests(progs);
-+		if (ret)
-+			return ret;
-+	}
- 
--	return test_skb_segment();
-+	if (!strlen(test_suite) || !strcmp(test_suite, "test_skb_segment"))
-+		return test_skb_segment();
-+
-+	return 0;
- }
- 
- static void __exit test_bpf_exit(void)
 -- 
-2.1.0
+2.26.2
 
