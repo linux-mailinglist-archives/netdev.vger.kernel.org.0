@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BDA6426120
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 02:23:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 107B0426122
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 02:23:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242779AbhJHAZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 20:25:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53342 "EHLO
+        id S242710AbhJHAZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 20:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242209AbhJHAZC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 20:25:02 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910B5C061570;
-        Thu,  7 Oct 2021 17:23:07 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id v18so29883401edc.11;
-        Thu, 07 Oct 2021 17:23:07 -0700 (PDT)
+        with ESMTP id S242497AbhJHAZD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Oct 2021 20:25:03 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CEEC06176A;
+        Thu,  7 Oct 2021 17:23:08 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id y12so16318831eda.4;
+        Thu, 07 Oct 2021 17:23:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=rqO0yPNBy5TWB1TUeZd4pFzS3JsFbEWZgR5hHP+FSk8=;
-        b=gVKHp9xp2Ka5kd3iYD0qfWQnlMHvLiBDUg71dufHUlLBoVcVKLPNqpxt3jTzFovxWT
-         VS5EdjOnbf4BnewZLAX3MHKemC1iscsK/w4u6QQsJPdkWrfi/av021TxxFFXQhTQIey1
-         35ZI3D1xQerrv4DtcoVfWK/hauZUynO/RWBGM+M+SskjYE21SKHaEeZnYGvr4WiwfmFs
-         0XwJft9Ut0DxY5dZBxsA6JqRGaouMcnmGY1bLwT6/WKyN8WSl522TsHS08uTdagnS7BX
-         jTsFEbY8BHIhI5qskgg6GIqeFgmzm5/Qy9PP3T1ViuIAH3pLi0cvqduzYMtm//86slMB
-         sINg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=USBq3mBDytFzvMpNFzB7I53AgldzT9pGMAwrnP8ri/M=;
+        b=VWZTTbiJNeU8R7qBvRowwRBG44FXdSoEQg0dNuhrDhW9F8JuZskLCKc7l91cOY/a5a
+         /PwG8WErO/sHpB31cPbpT8QU+t7h5KasK++qtAQI9cI6hupXmnybX3z6eTn7dtd68bp+
+         pxPDuOsMupqoNrZ9MC3fwjs9agttzhRfZTwyzSFO6x7B/Uka2XuX3PXk/Cb/6fX39Vkc
+         9Jt8lXkgDKEdH0gbztcNpnMSHQa+U9qm/oZC5tXwoUX0lc5eybjI/VZsBKNQFyKxRvv8
+         UmywySH2IvBSVOR8IHn+6bJDsVTX7BKDU2b1VddeOn6g12cTRyLTP8nHZO6n5U9vxtNu
+         KlmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rqO0yPNBy5TWB1TUeZd4pFzS3JsFbEWZgR5hHP+FSk8=;
-        b=1TkNJT2hZZfQXddNclWKTj4ukNHRGM48JXw11qBJXXAM4XWsNeSk01DMg4aSktNfKA
-         JGX0rLa3qoUia0exKLOmOMO9YPBkG3lV6Tpv2lvNrJYZlMV8sfYR+CunuiSDT7w0WSdL
-         F+I/0BZcNVtsQKMiSR3Gb/I7Fw03FEBfGcxnXZrMA86SjI2WUvbFT/AXWfldmE7acA+X
-         4G9t2jXfMDWmI2QaE1qKoSEFvyvHo5Enlt+VJojkLBPi5MBUoxftqxxN5B7RPdaV2fwZ
-         upWX6Mb+T+gb+VUrmtjYmXXIqWKa1iGHNZAF4yULqNRdH/ixV1B2razp2SiGJPlVL1bO
-         xyew==
-X-Gm-Message-State: AOAM530UcUK5Cn3UtJKW25wWtum25w5CZLbBPipTAVla5mKKLBQq7AG2
-        b7+N1CiV3dtuuzWHU1w7POY=
-X-Google-Smtp-Source: ABdhPJyTx6syZ3ET42u53ZhlzuNJDeJjevq5fFXt46yW0HAbEqozQAeZfE1enBikfidqWcBUQ1delQ==
-X-Received: by 2002:a05:6402:4248:: with SMTP id g8mr10400115edb.91.1633652586094;
-        Thu, 07 Oct 2021 17:23:06 -0700 (PDT)
+        bh=USBq3mBDytFzvMpNFzB7I53AgldzT9pGMAwrnP8ri/M=;
+        b=lk5JKWzizEnI00+YVIA30ujHt2vyTXU+UiWiXmycuT116xX8xz1N3T9xMI7l8FsZc8
+         mZ3AL4p6s2UulUCvMsy/Oqs+rJ9+8G6BmuGYFR+GbhEEoveZ846+GyGk200D/1+6wKlN
+         XuB07yIGdzZqv7iGa5aJnu7CdHXVcmCKQhKmlHZqH1ECGg+ci4sUrnRsyS7/1XNJk2mS
+         qMwTgEBi+U3fM8YSsbXTsdObP2G7lLx2xI11KxVpda9hOH84C6idXKn79/GXYtnomtFx
+         gZHbj6efcZjlODyVIs1fk1caOuA6luob1I4dBl9ubltcTrmJL+B984tEHzLuzPa3UlmS
+         krdQ==
+X-Gm-Message-State: AOAM532pDrhaEal09YLraV+NOhOtZrU5S9JeplWjyyZHZYwhXsaTjnIE
+        ggpdmEJijMwOakcBmLYsmw4=
+X-Google-Smtp-Source: ABdhPJyH2M+r5qpQKz2JGLX1qgvghOiFWJmyfSmwmk9BHy2BARE1cUGhFUXIPIlrXT+WKlsSBNv2lA==
+X-Received: by 2002:a05:6402:2793:: with SMTP id b19mr10462345ede.80.1633652587071;
+        Thu, 07 Oct 2021 17:23:07 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id ke12sm308592ejc.32.2021.10.07.17.23.05
+        by smtp.googlemail.com with ESMTPSA id ke12sm308592ejc.32.2021.10.07.17.23.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Oct 2021 17:23:05 -0700 (PDT)
+        Thu, 07 Oct 2021 17:23:06 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,9 +59,10 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>,
         Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [net-next PATCH v2 06/15] dt-bindings: net: dsa: qca8k: document rgmii_1_8v bindings
-Date:   Fri,  8 Oct 2021 02:22:16 +0200
-Message-Id: <20211008002225.2426-7-ansuelsmth@gmail.com>
+Cc:     Matthew Hagan <mnhagan88@gmail.com>
+Subject: [net-next PATCH v2 07/15] net: dsa: qca8k: add support for mac6_exchange, sgmii falling edge
+Date:   Fri,  8 Oct 2021 02:22:17 +0200
+Message-Id: <20211008002225.2426-8-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211008002225.2426-1-ansuelsmth@gmail.com>
 References: <20211008002225.2426-1-ansuelsmth@gmail.com>
@@ -71,34 +72,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document new qca,rgmii0_1_8v and qca,rgmii56_1_8v needed to setup
-mac_pwr_sel register for qca8337 switch. Specific the use of this binding
-that is used only in qca8337 and not in qca8327.
+Some device set the switch to exchange the mac0 port with mac6 port. Add
+support for this in the qca8k driver. Also add support for SGMII rx/tx
+clock falling edge. This is only present for pad0, pad5 and pad6 have
+these bit reserved from Documentation.
 
+Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- Documentation/devicetree/bindings/net/dsa/qca8k.txt | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/dsa/qca8k.c | 33 +++++++++++++++++++++++++++++++++
+ drivers/net/dsa/qca8k.h |  3 +++
+ 2 files changed, 36 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-index 8c73f67c43ca..9383d6bf2426 100644
---- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-@@ -13,6 +13,14 @@ Required properties:
- Optional properties:
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 5bce7ac4dea7..3a040a3ed58e 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -973,6 +973,34 @@ qca8k_setup_mac_pwr_sel(struct qca8k_priv *priv)
+ 	return ret;
+ }
  
- - reset-gpios: GPIO to be used to reset the whole device
-+- qca,rgmii0-1-8v: Set the internal regulator to supply 1.8v for MAC0 port.
-+                   This is needed for qca8337 and toggles the supply voltage
-+                   from 1.5v to 1.8v. For the specific regs it was observed
-+                   that this is needed only for ipq8064 and ipq8065 target.
-+- qca,rgmii56-1-8v: Set the internal regulator to supply 1.8v for MAC5/6 port.
-+                    This is needed for qca8337 and toggles the supply voltage
-+                    from 1.5v to 1.8v. For the specific regs it was observed
-+                    that this is needed only for ipq8065 target.
++static int
++qca8k_setup_port0_pad_ctrl_reg(struct qca8k_priv *priv)
++{
++	struct device_node *node = priv->dev->of_node;
++	u32 mask = 0;
++	int ret = 0;
++
++	/* Swap MAC0-MAC6 */
++	if (of_property_read_bool(node, "qca,mac6-exchange"))
++		mask |= QCA8K_PORT0_PAD_CTRL_MAC06_EXCHG;
++
++	/* SGMII Clock phase configuration */
++	if (of_property_read_bool(node, "qca,sgmii-rxclk-falling-edge"))
++		mask |= QCA8K_PORT0_PAD_SGMII_RXCLK_FALLING_EDGE;
++
++	if (of_property_read_bool(node, "qca,sgmii-txclk-falling-edge"))
++		mask |= QCA8K_PORT0_PAD_SGMII_TXCLK_FALLING_EDGE;
++
++	if (mask)
++		ret = qca8k_rmw(priv, QCA8K_REG_PORT0_PAD_CTRL,
++				QCA8K_PORT0_PAD_CTRL_MAC06_EXCHG |
++				QCA8K_PORT0_PAD_SGMII_RXCLK_FALLING_EDGE |
++				QCA8K_PORT0_PAD_SGMII_TXCLK_FALLING_EDGE,
++				mask);
++
++	return ret;
++}
++
+ static int
+ qca8k_setup(struct dsa_switch *ds)
+ {
+@@ -1006,6 +1034,11 @@ qca8k_setup(struct dsa_switch *ds)
+ 	if (ret)
+ 		return ret;
  
- Subnodes:
- 
++	/* Configure additional PORT0_PAD_CTRL properties */
++	ret = qca8k_setup_port0_pad_ctrl_reg(priv);
++	if (ret)
++		return ret;
++
+ 	/* Enable CPU Port */
+ 	ret = qca8k_reg_set(priv, QCA8K_REG_GLOBAL_FW_CTRL0,
+ 			    QCA8K_GLOBAL_FW_CTRL0_CPU_PORT_EN);
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index fc7db94cc0c9..3fded69a6839 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -35,6 +35,9 @@
+ #define   QCA8K_MASK_CTRL_DEVICE_ID_MASK		GENMASK(15, 8)
+ #define   QCA8K_MASK_CTRL_DEVICE_ID(x)			((x) >> 8)
+ #define QCA8K_REG_PORT0_PAD_CTRL			0x004
++#define   QCA8K_PORT0_PAD_CTRL_MAC06_EXCHG		BIT(31)
++#define   QCA8K_PORT0_PAD_SGMII_RXCLK_FALLING_EDGE	BIT(19)
++#define   QCA8K_PORT0_PAD_SGMII_TXCLK_FALLING_EDGE	BIT(18)
+ #define QCA8K_REG_PORT5_PAD_CTRL			0x008
+ #define QCA8K_REG_PORT6_PAD_CTRL			0x00c
+ #define   QCA8K_PORT_PAD_RGMII_EN			BIT(26)
 -- 
 2.32.0
 
