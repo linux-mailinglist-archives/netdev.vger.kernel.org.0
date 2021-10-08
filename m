@@ -2,96 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC1BE426501
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 09:02:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6E2D42650F
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 09:12:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbhJHHEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 03:04:31 -0400
-Received: from mout.kundenserver.de ([212.227.126.133]:38899 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbhJHHE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 03:04:27 -0400
-Received: from mail-wr1-f48.google.com ([209.85.221.48]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mv3Ds-1mq8IA3ljs-00r2Py; Fri, 08 Oct 2021 09:02:30 +0200
-Received: by mail-wr1-f48.google.com with SMTP id t2so26509411wrb.8;
-        Fri, 08 Oct 2021 00:02:30 -0700 (PDT)
-X-Gm-Message-State: AOAM5339ETJ42LZs6PD5RXIIla3JjpJDPqYfM20sjsZnsCtTKxPMJhpE
-        k/uqSVhX5QIj+CnoQxMUefkTwkCi2zWPVcio0kI=
-X-Google-Smtp-Source: ABdhPJyM2fHIHpG1ztPQk+gfGEycOmvArSTFBqD5k6RBOlxiuU3e39HwAgUyLiRvXQxzL6kw5BAl+wnnMB4qsoy8z+U=
-X-Received: by 2002:adf:ab46:: with SMTP id r6mr1846830wrc.71.1633676550526;
- Fri, 08 Oct 2021 00:02:30 -0700 (PDT)
+        id S232067AbhJHHOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 03:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59742 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230453AbhJHHOl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 03:14:41 -0400
+Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BBD7C061570
+        for <netdev@vger.kernel.org>; Fri,  8 Oct 2021 00:12:47 -0700 (PDT)
+Received: by mail-vs1-xe29.google.com with SMTP id 188so9572315vsv.0
+        for <netdev@vger.kernel.org>; Fri, 08 Oct 2021 00:12:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hO1svIqys2HkhaxDZ9Wcyx50oob50bi/Hy4Yt7QrAUA=;
+        b=b5LtqnNbtRzAuKCIZNXgXAtAMKAd/ET+gG5Svms4lEc4fuql9fAgNFOr0WZZ0c6CGE
+         a17/FMVxfS6wWtKry/PwWwtATNhlaM7Y+RNWKw18Bedhc7MWFhK9XI3KLWZgLcATrZRy
+         ZnJrY3Ymfg0IBcKMCiQ3HGgvIYZqBzB+iUOUCDqPela8fM4/NGDKCvZp5tmHQndDRDow
+         HmIP+UfX+bWPvGCpcDGvYLL2Fkx6Goy1KKR/+DhH63/rUcImAvgjkMEjamto5Gy0Log8
+         UmC1+LEKgifA33Mcy5UB2mS0kzDQddObtvub6S1nO7+Nwikpg913Ewy614prGljToXTW
+         ZbUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hO1svIqys2HkhaxDZ9Wcyx50oob50bi/Hy4Yt7QrAUA=;
+        b=JST+D+VJY8LNNOJ88vW+pGtcFbgH6rPrOyHNB1hakJSfxOMLyCo4o8XcERrB4mheHa
+         R0XH31ed8a96z6FaLyCx8jaW63IQE7ZrC6Za4fc/M+8BrvU+6orczCuEIJW6w7U/Y4Ik
+         9WnZPU7OllspmR9yubsOwRzftWxMPabaCPVJT+dmiwpTZ6xp5SkTny9SRcCfKfmiyHp1
+         jPxrcYNgNKXNRQd6t2po6vywr6EoPBpKl2bUSzBbz784nIK6HgEctkJg0QfFXWMU3pLp
+         KrUP423Oszuzq457xLXpmL+uZPDcUHP1CnO6cNsm8HW8DfDVjBn0OiB6Wd4iTL0QDiV9
+         cYiw==
+X-Gm-Message-State: AOAM531D3yENwTULMeedYYSAyxnCwxLFYox16gHrD9XyIfxSGZ9PMdk/
+        iSsx9tE+XqKwy71wCE69WnO6ja6lDGhKnlrnb/4=
+X-Google-Smtp-Source: ABdhPJzvfqakRhO3oiIAUtPDLJnZYi29bQnwtN/LBffTDuVAud6ysYxPkqX7YdxQ1a3rIx3WW5hr8WzVmkxlDFe6bJU=
+X-Received: by 2002:a05:6102:664:: with SMTP id z4mr8555644vsf.20.1633677166308;
+ Fri, 08 Oct 2021 00:12:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20211008065830.305057-1-butterflyhuangxx@gmail.com>
-In-Reply-To: <20211008065830.305057-1-butterflyhuangxx@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 8 Oct 2021 09:02:14 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3A+CxJVt79ogxQn3NuRB01TsFchr-zu30E57xBut_=NQ@mail.gmail.com>
-Message-ID: <CAK8P3a3A+CxJVt79ogxQn3NuRB01TsFchr-zu30E57xBut_=NQ@mail.gmail.com>
-Subject: Re: [PATCH] isdn: cpai: check ctr->cnr to avoid array index out of bound
-To:     Xiaolong Huang <butterflyhuangxx@gmail.com>
-Cc:     Karsten Keil <isdn@linux-pingi.de>,
-        David Miller <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <1633454136-14679-1-git-send-email-sbhatta@marvell.com>
+ <1633454136-14679-3-git-send-email-sbhatta@marvell.com> <20211005181157.6af1e3e4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CALHRZupNJC7EJAir+0iN6p4UGR0oU0by=N2Hf+zWaj2U8RrE4A@mail.gmail.com> <20211006064027.66a22a5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211006064027.66a22a5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Fri, 8 Oct 2021 12:42:34 +0530
+Message-ID: <CALHRZupD4Rb3d2hAtzoA5rtgqqFayXiYhAKUbgcpv0myVGpvPw@mail.gmail.com>
+Subject: Re: [net-next PATCH 2/3] octeontx2-pf: Add devlink param to vary cqe size
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Subbaraya Sundeep <sbhatta@marvell.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:O4SpnvId+WiElrx6ZPayE+YW0q/jCN8F+kBopqsnKMYL+KQprke
- hFHSlmSzSlFQIB8O9/ZlracNVjHNLPEH4/spiEJijH8rI3qJ9i0Ae8BHaLDoXb6zFXgliXh
- ajftn9l5bDR/hs/kSGHce8+CKY6FRQh/KdEj9LRt6o5+UfC6B0bWnVn+mITDh+L1+/Thmjn
- ET9Fw92YYBtb9Wpzo8DhQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:JmEQNOjTfA8=:wE19sg8+/3SafTs9404BmO
- WiQQlVnwhblOptOuQHGE/ZewDc9JLa9N4Iwe2zRwMe5m0v4ftfAHclORq2EwCHxV140wO477G
- K54NVk8McY8K11LKN2IEn3dTrRK/8pcPvgdJXK0ZtYaUV0aPGl3OGPRp2/Dc6bPmDzu31K71l
- yyaxn2m1DrxwgVaEr99tdVWBkK0cLegRlcEE5UU+whWdw1OT5wt6VXNBGB/MrHPeftsVDpJTc
- m3FkY6D21bN5VdSX03wjJEgbgJ81ewatSAH7Qmde74oXL7cW4MRObDst/8zrJVwBG+vF8pFG4
- rzd6dUa/P0MfHHVr5WrIlNFXutGA+VXLdgoFUMMK0XPW7iXYcZiy5pjoSQjqRQzpprjD1okK6
- k7DvIwf/CjGSDMmr7deOBLLGgDLOIOfQesRxedVR1ncZWACKpBRchSSf3jc2mrC3bUEwqycjF
- AlSsAcLWmx19lz9HuqAvc6NZqxxQtYBKQvOH/jgN6JcxuJ1iTonKrHKhUEIa00tuXp758UniT
- 3Qxgjiz+2jPzp21NF7l684QHS9CQ5XCw3I5x9N7GtvH2eT2aVdXEj4SrMCUv2i5OMB45AxkaW
- 9onMu/itLoW3+42dmhTcDlsr7IT7rePFAdli3nLhJ+uR2XLjyL3Xaw/FYPm+/f8pW/czV/2i0
- 5TVD3DMHCDomPBMtoL5axB53Xo7egQx0C9hdS6ZHdY9/rOPtEsqrXIxi5ldEDAs7HrLX6BvnF
- gtRvVcag6dMyI3xCmI3K3q7vFlso8b+HQioaRA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 8, 2021 at 8:58 AM Xiaolong Huang
-<butterflyhuangxx@gmail.com> wrote:
->
-> The cmtp_add_connection() would add a cmtp session to a controller
-> and run a kernel thread to process cmtp.
->
->         __module_get(THIS_MODULE);
->         session->task = kthread_run(cmtp_session, session, "kcmtpd_ctr_%d",
->                                                                 session->num);
->
-> During this process, the kernel thread would call detach_capi_ctr()
-> to detach a register controller. if the controller
-> was not attached yet, detach_capi_ctr() would
-> trigger an array-index-out-bounds bug.
->
-> [   46.866069][ T6479] UBSAN: array-index-out-of-bounds in
-> drivers/isdn/capi/kcapi.c:483:21
-> [   46.867196][ T6479] index -1 is out of range for type 'capi_ctr *[32]'
-> [   46.867982][ T6479] CPU: 1 PID: 6479 Comm: kcmtpd_ctr_0 Not tainted
-> 5.15.0-rc2+ #8
-> [   46.869002][ T6479] Hardware name: QEMU Standard PC (i440FX + PIIX,
-> 1996), BIOS 1.14.0-2 04/01/2014
-> [   46.870107][ T6479] Call Trace:
-> [   46.870473][ T6479]  dump_stack_lvl+0x57/0x7d
-> [   46.870974][ T6479]  ubsan_epilogue+0x5/0x40
-> [   46.871458][ T6479]  __ubsan_handle_out_of_bounds.cold+0x43/0x48
-> [   46.872135][ T6479]  detach_capi_ctr+0x64/0xc0
-> [   46.872639][ T6479]  cmtp_session+0x5c8/0x5d0
-> [   46.873131][ T6479]  ? __init_waitqueue_head+0x60/0x60
-> [   46.873712][ T6479]  ? cmtp_add_msgpart+0x120/0x120
-> [   46.874256][ T6479]  kthread+0x147/0x170
-> [   46.874709][ T6479]  ? set_kthread_struct+0x40/0x40
-> [   46.875248][ T6479]  ret_from_fork+0x1f/0x30
-> [   46.875773][ T6479]
->
-> Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Hi Jakub,
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+On Wed, Oct 6, 2021 at 7:10 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 6 Oct 2021 12:29:51 +0530 sundeep subbaraya wrote:
+> > We do use ethtool -G for setting the number of receive buffers to
+> > allocate from the kernel and give those pointers to hardware memory pool(NPA).
+>
+> You can extend the ethtool API.
+
+I will rework on this patch. Is it okay I drop this patch in this
+series and send only patches 1 and 3 for v3?
+
+Thanks,
+Sundeep
