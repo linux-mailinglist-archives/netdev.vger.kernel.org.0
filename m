@@ -2,49 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DDD6426273
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 04:27:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFA2F426276
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 04:31:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236107AbhJHC3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 22:29:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46440 "EHLO mail.kernel.org"
+        id S235560AbhJHCdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 22:33:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39408 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229501AbhJHC3f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 22:29:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B40560F94;
-        Fri,  8 Oct 2021 02:27:40 +0000 (UTC)
+        id S229501AbhJHCdo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 22:33:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4FAA060F4A;
+        Fri,  8 Oct 2021 02:31:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633660060;
-        bh=FgcSH3Si33sVXXIUFvV0ax/Fqii3xw5zeZrGjpX8KKY=;
+        s=k20201202; t=1633660309;
+        bh=+2BunCrA/4RsaGp96DgO+Awt7bULZk3+MSLkObLDDpc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SKK1sBfzl/9uXgZ0PdZzxMfxLBa3WSIhC5QA/C2zKix8igfWNygdm7wNR5VZsFSMb
-         VND3vA9MKcRw8HJG7n2RSZM1/vhhGWAlDLH2OZDoh9W2QlCdMnBdYQ+ne3fC0OhhY4
-         FnJkXNkzhZUBM2go2P3Ib1t8OZV3MbPIBkx4jVoX6/6KlOycwinZPkmxnDWD3/IEfc
-         JzMCXCiBOo4jBeI48AEDhSa3GRGrOwYY9UUp7KTmLDKleqnJEoizqutsLCAPPKHl4c
-         y73K+ENXbJuUYdDJA+v1ZTCxvMMHEtBmCCpj1fF68y+W8/VnvCCRWjNEeB1HkYjP2o
-         e+STnbr/ZfnEQ==
-Date:   Thu, 7 Oct 2021 19:27:39 -0700
+        b=ezGbHqngf01XXE6P7sdpwfwLSZ3pwCoO5FjuYQj7F+OYazBFsdZVwVSIxz+Ly1Hss
+         c1jdigvNRd8PFN3lghXkRzvbqaaWPClxnRsUcwU2NEHoaf3pbq3PemZLZ8UCGpw+xI
+         b4S6rzwLc6plnQtoKdU+SoAJwIxovCLcgzCG6DG4gguuqXzwnMtnvMww324mG0LiGJ
+         wM1ZA/XB0UnaVRnaGdp40dvcseU+DxPdkriYDYsvd9dCIxqh6BQ4yduLoZwRnWc+Qp
+         hwpbVkTsV2ZVxcKTk7zPPG0kvHC1qfvVpgR16OAe6UubpbSVLgZ+iXPnTkBAg0AMAE
+         H0JL36xh6zyFg==
+Date:   Thu, 7 Oct 2021 19:31:48 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Haiyang Zhang <haiyangz@microsoft.com>
-Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        kys@microsoft.com, sthemmin@microsoft.com, paulros@microsoft.com,
-        shacharr@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com,
-        davem@davemloft.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: mana: Fix error handling in mana_create_rxq()
-Message-ID: <20211007192739.59feaf52@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1633646733-32720-1-git-send-email-haiyangz@microsoft.com>
-References: <1633646733-32720-1-git-send-email-haiyangz@microsoft.com>
+To:     Jeroen de Borst <jeroendb@google.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Catherine Sullivan <csully@google.com>,
+        Yanchun Fu <yangchun@google.com>,
+        Nathan Lewis <npl@google.com>,
+        David Awogbemila <awogbemila@google.com>
+Subject: Re: [PATCH net-next 2/7] gve: Add rx buffer pagecnt bias
+Message-ID: <20211007193148.11d0b175@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211007162534.1502578-2-jeroendb@google.com>
+References: <20211007162534.1502578-1-jeroendb@google.com>
+        <20211007162534.1502578-2-jeroendb@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Oct 2021 15:45:33 -0700 Haiyang Zhang wrote:
-> Fix error handling in mana_create_rxq() when
-> cq->gdma_id >= gc->max_num_cqs.
-> 
-> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+On Thu,  7 Oct 2021 09:25:29 -0700 Jeroen de Borst wrote:
+> From: Catherine Sullivan <csully@google.com>
+>=20
+> Add a pagecnt bias field to rx buffer info struct to eliminate
+> needing to increment the atomic page ref count on every pass in the
+> rx hotpath.
+>=20
+> Also prefetch two packet pages ahead.
+>=20
+> Fixes: ede3fcf5ec67f ("gve: Add support for raw addressing to the rx path=
+")
+> Signed-off-by: Yanchun Fu <yangchun@google.com>
+> Signed-off-by: Nathan Lewis <npl@google.com>
+> Signed-off-by: Catherine Sullivan <csully@google.com>
+> Signed-off-by: David Awogbemila <awogbemila@google.com>
 
-Fixes: ca9c54d2d6a5 ("net: mana: Add a driver for Microsoft Azure Network Adapter (MANA)")
+drivers/net/ethernet/google/gve/gve_rx.c:521:5: warning: no previous protot=
+ype for =E2=80=98gve_clean_rx_done=E2=80=99 [-Wmissing-prototypes]
+  521 | int gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
+      |     ^~~~~~~~~~~~~~~~~
+drivers/net/ethernet/google/gve/gve_rx.c:521:5: warning: symbol 'gve_clean_=
+rx_done' was not declared. Should it be static?
