@@ -2,108 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB64B426630
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 10:45:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61CA5426643
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 10:54:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234364AbhJHIrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 04:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52836 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbhJHIru (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 04:47:50 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6499C061570;
-        Fri,  8 Oct 2021 01:45:55 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id r18so33551500edv.12;
-        Fri, 08 Oct 2021 01:45:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qbtc42tdcLddddPk4Nl/b0hjJZcICwZrpNrFhchyl3A=;
-        b=VNU1+gt1YxzOTUPAJ/W0KbL8ooIsnJBlW/2qXPFiMmnbWof7EMgjH+aB4lWTgUP3LR
-         28CoAJIgthXfOMx97mZ2OYc5JJzSTq11EscOcp6JZ0t6DFEBcJjG5jSeL53v0b9iXoFk
-         oEY/5JPpAJPWgbGoWIGurqsNgK7XKjtjtuqfKdmeUxNmnZlXv8K8qhFrRIuSD6b939wX
-         YX5CcgYpLx4B6FFUFdKnfNL5ewB+ciUZxCb10EBqQAmKyVC42YXXwNYY0QCTeoZcwhsl
-         HVa8GxIaNwsRULrLhf1WE6wRGaGU+cZrBfuKsFTKTBT8WHzFbae9wC42xxP5SvaTBdL+
-         J96A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qbtc42tdcLddddPk4Nl/b0hjJZcICwZrpNrFhchyl3A=;
-        b=bwnOm8vt6uqROi5N4jQlKjrL8HphxtcEGvedwVIPm6hpzgiCZ+YtZDv5adudCysJYu
-         /6au92u/UFKbcuzAAYKHrJ6cWN0tCRM8n3ROYV8kVQ20o9bf136zbqnTfj6hhoyO0+rs
-         wuiSesBxKLCB6/MYRn7LfxXEI6ed3WNKQ+hJXo+CbCa5fugYpo5S+VW5CyrwzwajtZS+
-         P5pjZGiccsF5FJifL73Sikx6qXnPlt2nAuwn3onV8phxnf1EeBqblMbWWFN4hzIkkwmX
-         1Sodvps9MZBn7hoVO1BSOIvgdDAXxEM9p8PQ3T4DSsHjvG+19u8+YWuFIPvSOkRJRgV5
-         ALag==
-X-Gm-Message-State: AOAM530rDFo0QjO+Yt5yYbkoLje4Woj/E9SFQOYxXDYP45mi9uYh3WMd
-        I3l9MUq6p5E61mKvwXrDiiI=
-X-Google-Smtp-Source: ABdhPJypgP4ryswRLVF5ukX7LG9Tu9NMaJutQfu1nojnjmTqsHUPd8w9OfgRlsfjD2BN4raRqI5lYQ==
-X-Received: by 2002:a17:906:66d5:: with SMTP id k21mr2435901ejp.487.1633682754052;
-        Fri, 08 Oct 2021 01:45:54 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id z19sm662331ejp.97.2021.10.08.01.45.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Oct 2021 01:45:53 -0700 (PDT)
-Date:   Fri, 8 Oct 2021 10:45:51 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net PATCH v2 01/15] drivers: net: phy: at803x: fix resume for
- QCA8327 phy
-Message-ID: <YWAFP/Uf4LPK2oe6@Ansuel-xps.localdomain>
-References: <20211008002225.2426-1-ansuelsmth@gmail.com>
- <20211008002225.2426-2-ansuelsmth@gmail.com>
- <20211007192304.7a9acabe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S234853AbhJHI4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 04:56:10 -0400
+Received: from out0.migadu.com ([94.23.1.103]:51106 "EHLO out0.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233828AbhJHI4J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 04:56:09 -0400
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1633683250;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=iAYZBQ/3c+vBIDIjf/yASEljqPiYUlkZJ1BTMT57kY8=;
+        b=f0rTDEpUEGRKhcMrCryykcAZ3UQqgdvNcCUFyjGKbcqBojGd87Go4nAS9i7k656H68S7YA
+        OKKUjhGfj386hJIkKmnzxM4f0ynDoKx8fqocXas6lpOBZdgCa6HA0fMatW6kz026+5jm4c
+        c/rgHWZPUDMHFYZnxgAiK6SwanXbpgY=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH net-next] net: dev_addr_list: Introduce __dev_addr_add() and __dev_addr_del()
+Date:   Fri,  8 Oct 2021 16:53:54 +0800
+Message-Id: <20211008085354.9961-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211007192304.7a9acabe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 07, 2021 at 07:23:04PM -0700, Jakub Kicinski wrote:
-> On Fri,  8 Oct 2021 02:22:11 +0200 Ansuel Smith wrote:
-> > From Documentation phy resume triggers phy reset and restart
-> > auto-negotiation. Add a dedicated function to wait reset to finish as
-> > it was notice a regression where port sometime are not reliable after a
-> > suspend/resume session. The reset wait logic is copied from phy_poll_reset.
-> > Add dedicated suspend function to use genphy_suspend only with QCA8337
-> > phy and set only additional debug settings for QCA8327. With more test
-> > it was reported that QCA8327 doesn't proprely support this mode and
-> > using this cause the unreliability of the switch ports, especially the
-> > malfunction of the port0.
-> > 
-> > Fixes: 52a6cdbe43a3 ("net: phy: at803x: add resume/suspend function to qca83xx phy")
-> 
-> Strange, checkpatch catches the wrong hash being used, but the
-> verify_fixes script doesn't. Did you mean:
-> 
-> Fixes: 15b9df4ece17 ("net: phy: at803x: add resume/suspend function to qca83xx phy")
-> 
-> Or is 52a6cdbe43a3 the correct commit hash? Same question for patch 2.
-> 
-> 
-> The fixes have to be a _separate_ series.
+Introduce helper functions __dev_addr_add() and __dev_addr_del() for
+the same code, make the code more concise.
 
-Hi,
-this series contains changes that depends on the fixes. (the 4th patch
-that rename the define is based on this 2 patch) How to handle that?
-I know it was wrong to put net and net-next patch in the same series but
-I don't know how to handle this strange situation. Any hint about that?
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ net/core/dev_addr_lists.c | 117 ++++++++++++++++----------------------
+ 1 file changed, 48 insertions(+), 69 deletions(-)
 
-About the wrong hash, yes I wrongly took the hash from my local branch.
-
+diff --git a/net/core/dev_addr_lists.c b/net/core/dev_addr_lists.c
+index f0cb38344126..f6e33bdc0a30 100644
+--- a/net/core/dev_addr_lists.c
++++ b/net/core/dev_addr_lists.c
+@@ -614,6 +614,38 @@ int dev_addr_del(struct net_device *dev, const unsigned char *addr,
+ }
+ EXPORT_SYMBOL(dev_addr_del);
+ 
++static int __dev_addr_add(struct net_device *dev, const unsigned char *addr,
++			  unsigned char addr_type, bool global, bool sync,
++			  bool exclusive)
++{
++	int err;
++
++	netif_addr_lock_bh(dev);
++	err = __hw_addr_add_ex(&dev->uc, addr, dev->addr_len,
++			       addr_type, global, sync,
++			       0, exclusive);
++	if (!err)
++		__dev_set_rx_mode(dev);
++	netif_addr_unlock_bh(dev);
++
++	return err;
++}
++
++static int __dev_addr_del(struct net_device *dev, const unsigned char *addr,
++			  unsigned char addr_type, bool global, bool sync)
++{
++	int err;
++
++	netif_addr_lock_bh(dev);
++	err = __hw_addr_del_ex(&dev->uc, addr, dev->addr_len,
++			       addr_type, global, sync);
++	if (!err)
++		__dev_set_rx_mode(dev);
++	netif_addr_unlock_bh(dev);
++
++	return err;
++}
++
+ /*
+  * Unicast list handling functions
+  */
+@@ -625,16 +657,9 @@ EXPORT_SYMBOL(dev_addr_del);
+  */
+ int dev_uc_add_excl(struct net_device *dev, const unsigned char *addr)
+ {
+-	int err;
+ 
+-	netif_addr_lock_bh(dev);
+-	err = __hw_addr_add_ex(&dev->uc, addr, dev->addr_len,
+-			       NETDEV_HW_ADDR_T_UNICAST, true, false,
+-			       0, true);
+-	if (!err)
+-		__dev_set_rx_mode(dev);
+-	netif_addr_unlock_bh(dev);
+-	return err;
++	return __dev_addr_add(dev, addr, NETDEV_HW_ADDR_T_UNICAST,
++			      true, false, true);
+ }
+ EXPORT_SYMBOL(dev_uc_add_excl);
+ 
+@@ -648,15 +673,8 @@ EXPORT_SYMBOL(dev_uc_add_excl);
+  */
+ int dev_uc_add(struct net_device *dev, const unsigned char *addr)
+ {
+-	int err;
+-
+-	netif_addr_lock_bh(dev);
+-	err = __hw_addr_add(&dev->uc, addr, dev->addr_len,
+-			    NETDEV_HW_ADDR_T_UNICAST);
+-	if (!err)
+-		__dev_set_rx_mode(dev);
+-	netif_addr_unlock_bh(dev);
+-	return err;
++	return __dev_addr_add(dev, addr, NETDEV_HW_ADDR_T_UNICAST,
++			      false, false, false);
+ }
+ EXPORT_SYMBOL(dev_uc_add);
+ 
+@@ -670,15 +688,8 @@ EXPORT_SYMBOL(dev_uc_add);
+  */
+ int dev_uc_del(struct net_device *dev, const unsigned char *addr)
+ {
+-	int err;
+-
+-	netif_addr_lock_bh(dev);
+-	err = __hw_addr_del(&dev->uc, addr, dev->addr_len,
+-			    NETDEV_HW_ADDR_T_UNICAST);
+-	if (!err)
+-		__dev_set_rx_mode(dev);
+-	netif_addr_unlock_bh(dev);
+-	return err;
++	return __dev_addr_del(dev, addr, NETDEV_HW_ADDR_T_UNICAST,
++			      false, false);
+ }
+ EXPORT_SYMBOL(dev_uc_del);
+ 
+@@ -810,33 +821,11 @@ EXPORT_SYMBOL(dev_uc_init);
+  */
+ int dev_mc_add_excl(struct net_device *dev, const unsigned char *addr)
+ {
+-	int err;
+-
+-	netif_addr_lock_bh(dev);
+-	err = __hw_addr_add_ex(&dev->mc, addr, dev->addr_len,
+-			       NETDEV_HW_ADDR_T_MULTICAST, true, false,
+-			       0, true);
+-	if (!err)
+-		__dev_set_rx_mode(dev);
+-	netif_addr_unlock_bh(dev);
+-	return err;
++	return __dev_addr_add(dev, addr, NETDEV_HW_ADDR_T_MULTICAST,
++			       true, false, true);
+ }
+ EXPORT_SYMBOL(dev_mc_add_excl);
+ 
+-static int __dev_mc_add(struct net_device *dev, const unsigned char *addr,
+-			bool global)
+-{
+-	int err;
+-
+-	netif_addr_lock_bh(dev);
+-	err = __hw_addr_add_ex(&dev->mc, addr, dev->addr_len,
+-			       NETDEV_HW_ADDR_T_MULTICAST, global, false,
+-			       0, false);
+-	if (!err)
+-		__dev_set_rx_mode(dev);
+-	netif_addr_unlock_bh(dev);
+-	return err;
+-}
+ /**
+  *	dev_mc_add - Add a multicast address
+  *	@dev: device
+@@ -847,7 +836,8 @@ static int __dev_mc_add(struct net_device *dev, const unsigned char *addr,
+  */
+ int dev_mc_add(struct net_device *dev, const unsigned char *addr)
+ {
+-	return __dev_mc_add(dev, addr, false);
++	return __dev_addr_add(dev, addr, NETDEV_HW_ADDR_T_MULTICAST,
++			      false, false, false);
+ }
+ EXPORT_SYMBOL(dev_mc_add);
+ 
+@@ -860,24 +850,11 @@ EXPORT_SYMBOL(dev_mc_add);
+  */
+ int dev_mc_add_global(struct net_device *dev, const unsigned char *addr)
+ {
+-	return __dev_mc_add(dev, addr, true);
++	return __dev_addr_add(dev, addr, NETDEV_HW_ADDR_T_MULTICAST,
++			      true, false, false);
+ }
+ EXPORT_SYMBOL(dev_mc_add_global);
+ 
+-static int __dev_mc_del(struct net_device *dev, const unsigned char *addr,
+-			bool global)
+-{
+-	int err;
+-
+-	netif_addr_lock_bh(dev);
+-	err = __hw_addr_del_ex(&dev->mc, addr, dev->addr_len,
+-			       NETDEV_HW_ADDR_T_MULTICAST, global, false);
+-	if (!err)
+-		__dev_set_rx_mode(dev);
+-	netif_addr_unlock_bh(dev);
+-	return err;
+-}
+-
+ /**
+  *	dev_mc_del - Delete a multicast address.
+  *	@dev: device
+@@ -888,7 +865,8 @@ static int __dev_mc_del(struct net_device *dev, const unsigned char *addr,
+  */
+ int dev_mc_del(struct net_device *dev, const unsigned char *addr)
+ {
+-	return __dev_mc_del(dev, addr, false);
++	return __dev_addr_del(dev, addr, NETDEV_HW_ADDR_T_MULTICAST,
++			      false, false);
+ }
+ EXPORT_SYMBOL(dev_mc_del);
+ 
+@@ -902,7 +880,8 @@ EXPORT_SYMBOL(dev_mc_del);
+  */
+ int dev_mc_del_global(struct net_device *dev, const unsigned char *addr)
+ {
+-	return __dev_mc_del(dev, addr, true);
++	return __dev_addr_del(dev, addr, NETDEV_HW_ADDR_T_MULTICAST,
++			      true, false);
+ }
+ EXPORT_SYMBOL(dev_mc_del_global);
+ 
 -- 
-	Ansuel
+2.32.0
+
