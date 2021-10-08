@@ -2,45 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A8C42626E
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 04:23:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DDD6426273
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 04:27:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235939AbhJHCZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Oct 2021 22:25:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44948 "EHLO mail.kernel.org"
+        id S236107AbhJHC3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Oct 2021 22:29:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46440 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229501AbhJHCZA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Oct 2021 22:25:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5EFDD6103C;
-        Fri,  8 Oct 2021 02:23:05 +0000 (UTC)
+        id S229501AbhJHC3f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Oct 2021 22:29:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B40560F94;
+        Fri,  8 Oct 2021 02:27:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633659785;
-        bh=vv1BjdqYFGtWCazSG8NawFHuPDrSlMXWmYEnP/7By6w=;
+        s=k20201202; t=1633660060;
+        bh=FgcSH3Si33sVXXIUFvV0ax/Fqii3xw5zeZrGjpX8KKY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=W2F3NAL2PNL4YfcB+pCHgbHTe0iP1tVFeDtvsB/Qn7kwC5aDjFqzJFXUUg8EiNBqu
-         62h60wb7G6UG05e84hJxcE6x3tcRDAW85PtWo9ELjXf6zSBUkT1toU5CtHx+hRI6j7
-         GgD+oYjYorJK6bLrEErM4o6H2iKOp0u928v5xyyyQXSkjmjJOENuumDOuWQTI7zTuR
-         ZJ+I1MNj7s3Gs4g+PHBFr/0FZcBIxoeZicM/geGgOnaW/D4zhIexJugXYDtSEu6eP+
-         qtQbvd/qFU5SqaMLqVwjBpe0Uyv88JUELURqe9YtMJRb4OEXKhGg/aFITA+Gzb2sKn
-         ZD8kr14Ny9VyQ==
-Date:   Thu, 7 Oct 2021 19:23:04 -0700
+        b=SKK1sBfzl/9uXgZ0PdZzxMfxLBa3WSIhC5QA/C2zKix8igfWNygdm7wNR5VZsFSMb
+         VND3vA9MKcRw8HJG7n2RSZM1/vhhGWAlDLH2OZDoh9W2QlCdMnBdYQ+ne3fC0OhhY4
+         FnJkXNkzhZUBM2go2P3Ib1t8OZV3MbPIBkx4jVoX6/6KlOycwinZPkmxnDWD3/IEfc
+         JzMCXCiBOo4jBeI48AEDhSa3GRGrOwYY9UUp7KTmLDKleqnJEoizqutsLCAPPKHl4c
+         y73K+ENXbJuUYdDJA+v1ZTCxvMMHEtBmCCpj1fF68y+W8/VnvCCRWjNEeB1HkYjP2o
+         e+STnbr/ZfnEQ==
+Date:   Thu, 7 Oct 2021 19:27:39 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net PATCH v2 01/15] drivers: net: phy: at803x: fix resume for
- QCA8327 phy
-Message-ID: <20211007192304.7a9acabe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211008002225.2426-2-ansuelsmth@gmail.com>
-References: <20211008002225.2426-1-ansuelsmth@gmail.com>
-        <20211008002225.2426-2-ansuelsmth@gmail.com>
+To:     Haiyang Zhang <haiyangz@microsoft.com>
+Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        kys@microsoft.com, sthemmin@microsoft.com, paulros@microsoft.com,
+        shacharr@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com,
+        davem@davemloft.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: mana: Fix error handling in mana_create_rxq()
+Message-ID: <20211007192739.59feaf52@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1633646733-32720-1-git-send-email-haiyangz@microsoft.com>
+References: <1633646733-32720-1-git-send-email-haiyangz@microsoft.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -48,25 +41,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  8 Oct 2021 02:22:11 +0200 Ansuel Smith wrote:
-> From Documentation phy resume triggers phy reset and restart
-> auto-negotiation. Add a dedicated function to wait reset to finish as
-> it was notice a regression where port sometime are not reliable after a
-> suspend/resume session. The reset wait logic is copied from phy_poll_reset.
-> Add dedicated suspend function to use genphy_suspend only with QCA8337
-> phy and set only additional debug settings for QCA8327. With more test
-> it was reported that QCA8327 doesn't proprely support this mode and
-> using this cause the unreliability of the switch ports, especially the
-> malfunction of the port0.
+On Thu,  7 Oct 2021 15:45:33 -0700 Haiyang Zhang wrote:
+> Fix error handling in mana_create_rxq() when
+> cq->gdma_id >= gc->max_num_cqs.
 > 
-> Fixes: 52a6cdbe43a3 ("net: phy: at803x: add resume/suspend function to qca83xx phy")
+> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
 
-Strange, checkpatch catches the wrong hash being used, but the
-verify_fixes script doesn't. Did you mean:
-
-Fixes: 15b9df4ece17 ("net: phy: at803x: add resume/suspend function to qca83xx phy")
-
-Or is 52a6cdbe43a3 the correct commit hash? Same question for patch 2.
-
-
-The fixes have to be a _separate_ series.
+Fixes: ca9c54d2d6a5 ("net: mana: Add a driver for Microsoft Azure Network Adapter (MANA)")
