@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6461426FD2
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 19:59:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EEA2426FD3
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 19:59:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239512AbhJHSBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 14:01:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46964 "EHLO mail.kernel.org"
+        id S239609AbhJHSBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 14:01:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46972 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238780AbhJHSBN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Oct 2021 14:01:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2DA3E61039;
+        id S231217AbhJHSBO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 14:01:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7921F61040;
         Fri,  8 Oct 2021 17:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1633715958;
-        bh=36qhFY9yzkCVcN625hLBktsfUut1KvhMP5Dwx60mFR4=;
+        bh=ooMWkSrNWPbgbX8gAdDNJlI/p1MWwcZtEEwPPbOAF4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qWZ+98PLQvFfgM0BxNWjxN4JmftcAdywlTynPtBEsX7NWfFc8B2nK22hOept5nSPu
-         3sqhEEcOglHd5VOzUIh5AtBqHeMUAje72ITGn09cLI8/er6WSSlqsQkk5gSQhM74JD
-         gbIoA+Of3N74PhSOZA3T49wxKeQ3wjRG06U5LrKW85KtDNwMao/b/bVJm5HMpAVr2b
-         8z2e55VzS93AeLimNyJE78oPJJVcxAAU1hngBtb/x2Yu3p1UG9+/w3/39xmNd+lQTA
-         cRpuJHi+YeLzrfQcEhKFo6vWkXtH6LgDfarnhUZP8QHO9Uhpd67Z5BFnuVpV6grafq
-         eOV/rf8t/xTTg==
+        b=WHk+BsHgidciOqFr0WQpGvDOWN3oimEiK8T+RfxYHsUZ9wcnCkDMg2L2jBpJZuYA4
+         iWvG5paTvbFXwKdLiE8L1BMrQ0r00//7AkvqQBu7wqt2hmFpotksTSW3mWr6LlNZqy
+         EZ0I1C3OdEb6RxfB8J4k3AVrVdcj0TN4TArZgcZHyXGZzUftZHafMZKRwpplZ/Fcow
+         J3MusBmZIvftYH7qnT/vByQDl6tPU+GCOx4Yv4P6+Hs3Ywdcvao5mlRa6XMFq8yt9t
+         Iqo/sx92zY5BDe1zZcqkjboX47HQobrJDAHwuyK7A0mNZnklM2SvW9yVY507h+RU0f
+         /XVDT/Wns155Q==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/5] ethernet: tulip: remove direct netdev->dev_addr writes
-Date:   Fri,  8 Oct 2021 10:59:11 -0700
-Message-Id: <20211008175913.3754184-4-kuba@kernel.org>
+Subject: [PATCH net-next 4/5] ethernet: sun: remove direct netdev->dev_addr writes
+Date:   Fri,  8 Oct 2021 10:59:12 -0700
+Message-Id: <20211008175913.3754184-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211008175913.3754184-1-kuba@kernel.org>
 References: <20211008175913.3754184-1-kuba@kernel.org>
@@ -38,417 +38,278 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Consify the casts of netdev->dev_addr.
+Consify temporary variables pointing to netdev->dev_addr.
 
-Convert pointless to eth_hw_addr_set() where possible.
-
-Use local buffers in a number of places.
+A few places need local storage but pretty simple conversion
+over all. Note that macaddr[] is an array of ints, so we need
+to keep the loops.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/dec/tulip/de2104x.c    | 15 +++++----
- drivers/net/ethernet/dec/tulip/de4x5.c      | 35 ++++++++++---------
- drivers/net/ethernet/dec/tulip/dmfe.c       |  9 +++--
- drivers/net/ethernet/dec/tulip/tulip_core.c | 37 ++++++++++++---------
- drivers/net/ethernet/dec/tulip/uli526x.c    | 11 +++---
- drivers/net/ethernet/dec/tulip/xircom_cb.c  |  4 ++-
- 6 files changed, 61 insertions(+), 50 deletions(-)
+ drivers/net/ethernet/sun/cassini.c |  7 ++---
+ drivers/net/ethernet/sun/ldmvsw.c  |  7 ++---
+ drivers/net/ethernet/sun/niu.c     | 42 +++++++++++++++++-------------
+ drivers/net/ethernet/sun/sungem.c  | 11 +++++---
+ drivers/net/ethernet/sun/sunhme.c  | 15 ++++++++---
+ 5 files changed, 48 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/net/ethernet/dec/tulip/de2104x.c b/drivers/net/ethernet/dec/tulip/de2104x.c
-index 117c26fa5909..1e3c90c3c0ed 100644
---- a/drivers/net/ethernet/dec/tulip/de2104x.c
-+++ b/drivers/net/ethernet/dec/tulip/de2104x.c
-@@ -666,8 +666,8 @@ static void build_setup_frame_hash(u16 *setup_frm, struct net_device *dev)
- 	struct de_private *de = netdev_priv(dev);
- 	u16 hash_table[32];
- 	struct netdev_hw_addr *ha;
-+	const u16 *eaddrs;
+diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
+index 287ae4c538aa..d2d4f47c7e28 100644
+--- a/drivers/net/ethernet/sun/cassini.c
++++ b/drivers/net/ethernet/sun/cassini.c
+@@ -3027,7 +3027,7 @@ static void cas_mac_reset(struct cas *cp)
+ /* Must be invoked under cp->lock. */
+ static void cas_init_mac(struct cas *cp)
+ {
+-	unsigned char *e = &cp->dev->dev_addr[0];
++	const unsigned char *e = &cp->dev->dev_addr[0];
  	int i;
--	u16 *eaddrs;
+ 	cas_mac_reset(cp);
  
- 	memset(hash_table, 0, sizeof(hash_table));
- 	__set_bit_le(255, hash_table);			/* Broadcast entry */
-@@ -685,7 +685,7 @@ static void build_setup_frame_hash(u16 *setup_frm, struct net_device *dev)
- 	setup_frm = &de->setup_frame[13*6];
- 
- 	/* Fill the final entry with our physical address. */
--	eaddrs = (u16 *)dev->dev_addr;
-+	eaddrs = (const u16 *)dev->dev_addr;
- 	*setup_frm++ = eaddrs[0]; *setup_frm++ = eaddrs[0];
- 	*setup_frm++ = eaddrs[1]; *setup_frm++ = eaddrs[1];
- 	*setup_frm++ = eaddrs[2]; *setup_frm++ = eaddrs[2];
-@@ -695,7 +695,7 @@ static void build_setup_frame_perfect(u16 *setup_frm, struct net_device *dev)
+@@ -3379,6 +3379,7 @@ static void cas_check_pci_invariants(struct cas *cp)
+ static int cas_check_invariants(struct cas *cp)
  {
- 	struct de_private *de = netdev_priv(dev);
- 	struct netdev_hw_addr *ha;
--	u16 *eaddrs;
-+	const u16 *eaddrs;
- 
- 	/* We have <= 14 addresses so we can use the wonderful
- 	   16 address perfect filtering of the Tulip. */
-@@ -710,7 +710,7 @@ static void build_setup_frame_perfect(u16 *setup_frm, struct net_device *dev)
- 	setup_frm = &de->setup_frame[15*6];
- 
- 	/* Fill the final entry with our physical address. */
--	eaddrs = (u16 *)dev->dev_addr;
-+	eaddrs = (const u16 *)dev->dev_addr;
- 	*setup_frm++ = eaddrs[0]; *setup_frm++ = eaddrs[0];
- 	*setup_frm++ = eaddrs[1]; *setup_frm++ = eaddrs[1];
- 	*setup_frm++ = eaddrs[2]; *setup_frm++ = eaddrs[2];
-@@ -1713,6 +1713,7 @@ static const struct ethtool_ops de_ethtool_ops = {
- 
- static void de21040_get_mac_address(struct de_private *de)
- {
+ 	struct pci_dev *pdev = cp->pdev;
 +	u8 addr[ETH_ALEN];
- 	unsigned i;
+ 	u32 cfg;
+ 	int i;
  
- 	dw32 (ROMCmd, 0);	/* Reset the pointer with a dummy write. */
-@@ -1724,12 +1725,13 @@ static void de21040_get_mac_address(struct de_private *de)
- 			value = dr32(ROMCmd);
- 			rmb();
- 		} while (value < 0 && --boguscnt > 0);
--		de->dev->dev_addr[i] = value;
-+		addr[i] = value;
- 		udelay(1);
- 		if (boguscnt <= 0)
- 			pr_warn("timeout reading 21040 MAC address byte %u\n",
- 				i);
- 	}
-+	eth_hw_addr_set(de->dev, addr);
+@@ -3407,8 +3408,8 @@ static int cas_check_invariants(struct cas *cp)
+ 	/* finish phy determination. MDIO1 takes precedence over MDIO0 if
+ 	 * they're both connected.
+ 	 */
+-	cp->phy_type = cas_get_vpd_info(cp, cp->dev->dev_addr,
+-					PCI_SLOT(pdev->devfn));
++	cp->phy_type = cas_get_vpd_info(cp, addr, PCI_SLOT(pdev->devfn));
++	eth_hw_addr_set(cp->dev, addr);
+ 	if (cp->phy_type & CAS_PHY_SERDES) {
+ 		cp->cas_flags |= CAS_FLAG_1000MB_CAP;
+ 		return 0; /* no more checking needed */
+diff --git a/drivers/net/ethernet/sun/ldmvsw.c b/drivers/net/ethernet/sun/ldmvsw.c
+index 50bd4e3b0af9..074c5407c86b 100644
+--- a/drivers/net/ethernet/sun/ldmvsw.c
++++ b/drivers/net/ethernet/sun/ldmvsw.c
+@@ -230,7 +230,6 @@ static struct net_device *vsw_alloc_netdev(u8 hwaddr[],
+ {
+ 	struct net_device *dev;
+ 	struct vnet_port *port;
+-	int i;
+ 
+ 	dev = alloc_etherdev_mqs(sizeof(*port), VNET_MAX_TXQS, 1);
+ 	if (!dev)
+@@ -238,10 +237,8 @@ static struct net_device *vsw_alloc_netdev(u8 hwaddr[],
+ 	dev->needed_headroom = VNET_PACKET_SKIP + 8;
+ 	dev->needed_tailroom = 8;
+ 
+-	for (i = 0; i < ETH_ALEN; i++) {
+-		dev->dev_addr[i] = hwaddr[i];
+-		dev->perm_addr[i] = dev->dev_addr[i];
+-	}
++	eth_hw_addr_set(dev, hwaddr);
++	ether_addr_copy(dev->perm_addr, dev->dev_addr)
+ 
+ 	sprintf(dev->name, "vif%d.%d", (int)handle, (int)port_id);
+ 
+diff --git a/drivers/net/ethernet/sun/niu.c b/drivers/net/ethernet/sun/niu.c
+index 1a73a9401347..ba8ad76313a9 100644
+--- a/drivers/net/ethernet/sun/niu.c
++++ b/drivers/net/ethernet/sun/niu.c
+@@ -2603,7 +2603,7 @@ static int niu_init_link(struct niu *np)
+ 	return 0;
  }
  
- static void de21040_get_media_info(struct de_private *de)
-@@ -1821,8 +1823,7 @@ static void de21041_get_srom_info(struct de_private *de)
- #endif
- 
- 	/* store MAC address */
--	for (i = 0; i < 6; i ++)
--		de->dev->dev_addr[i] = ee_data[i + sa_offset];
-+	eth_hw_addr_set(de->dev, &ee_data[i + sa_offset]);
- 
- 	/* get offset of controller 0 info leaf.  ignore 2nd byte. */
- 	ofs = ee_data[SROMC0InfoLeaf];
-diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
-index 36ab4cbf2ad0..13121c4dcfe6 100644
---- a/drivers/net/ethernet/dec/tulip/de4x5.c
-+++ b/drivers/net/ethernet/dec/tulip/de4x5.c
-@@ -4031,6 +4031,7 @@ get_hw_addr(struct net_device *dev)
-     int broken, i, k, tmp, status = 0;
-     u_short j,chksum;
-     struct de4x5_private *lp = netdev_priv(dev);
-+    u8 addr[ETH_ALEN];
- 
-     broken = de4x5_bad_srom(lp);
- 
-@@ -4042,28 +4043,30 @@ get_hw_addr(struct net_device *dev)
- 	    if (lp->chipset == DC21040) {
- 		while ((tmp = inl(DE4X5_APROM)) < 0);
- 		k += (u_char) tmp;
--		dev->dev_addr[i++] = (u_char) tmp;
-+		addr[i++] = (u_char) tmp;
- 		while ((tmp = inl(DE4X5_APROM)) < 0);
- 		k += (u_short) (tmp << 8);
--		dev->dev_addr[i++] = (u_char) tmp;
-+		addr[i++] = (u_char) tmp;
- 	    } else if (!broken) {
--		dev->dev_addr[i] = (u_char) lp->srom.ieee_addr[i]; i++;
--		dev->dev_addr[i] = (u_char) lp->srom.ieee_addr[i]; i++;
-+		addr[i] = (u_char) lp->srom.ieee_addr[i]; i++;
-+		addr[i] = (u_char) lp->srom.ieee_addr[i]; i++;
- 	    } else if ((broken == SMC) || (broken == ACCTON)) {
--		dev->dev_addr[i] = *((u_char *)&lp->srom + i); i++;
--		dev->dev_addr[i] = *((u_char *)&lp->srom + i); i++;
-+		addr[i] = *((u_char *)&lp->srom + i); i++;
-+		addr[i] = *((u_char *)&lp->srom + i); i++;
- 	    }
- 	} else {
- 	    k += (u_char) (tmp = inb(EISA_APROM));
--	    dev->dev_addr[i++] = (u_char) tmp;
-+	    addr[i++] = (u_char) tmp;
- 	    k += (u_short) ((tmp = inb(EISA_APROM)) << 8);
--	    dev->dev_addr[i++] = (u_char) tmp;
-+	    addr[i++] = (u_char) tmp;
- 	}
- 
- 	if (k > 0xffff) k-=0xffff;
-     }
-     if (k == 0xffff) k=0;
- 
-+    eth_hw_addr_set(dev, addr);
-+
-     if (lp->bus == PCI) {
- 	if (lp->chipset == DC21040) {
- 	    while ((tmp = inl(DE4X5_APROM)) < 0);
-@@ -4095,8 +4098,9 @@ get_hw_addr(struct net_device *dev)
- 		    int x = dev->dev_addr[i];
- 		    x = ((x & 0xf) << 4) + ((x & 0xf0) >> 4);
- 		    x = ((x & 0x33) << 2) + ((x & 0xcc) >> 2);
--		    dev->dev_addr[i] = ((x & 0x55) << 1) + ((x & 0xaa) >> 1);
-+		    addr[i] = ((x & 0x55) << 1) + ((x & 0xaa) >> 1);
- 	    }
-+	    eth_hw_addr_set(dev, addr);
-     }
- #endif /* CONFIG_PPC_PMAC */
- 
-@@ -4158,12 +4162,9 @@ test_bad_enet(struct net_device *dev, int status)
-     if ((tmp == 0) || (tmp == 0x5fa)) {
- 	if ((lp->chipset == last.chipset) &&
- 	    (lp->bus_num == last.bus) && (lp->bus_num > 0)) {
--	    for (i=0; i<ETH_ALEN; i++) dev->dev_addr[i] = last.addr[i];
--	    for (i=ETH_ALEN-1; i>2; --i) {
--		dev->dev_addr[i] += 1;
--		if (dev->dev_addr[i] != 0) break;
--	    }
--	    for (i=0; i<ETH_ALEN; i++) last.addr[i] = dev->dev_addr[i];
-+	    eth_addr_inc(last.addr);
-+	    eth_hw_addr_set(dev, last.addr);
-+
- 	    if (!an_exception(lp)) {
- 		dev->irq = last.irq;
- 	    }
-@@ -5391,9 +5392,7 @@ de4x5_siocdevprivate(struct net_device *dev, struct ifreq *rq, void __user *data
- 	if (netif_queue_stopped(dev))
- 		return -EBUSY;
- 	netif_stop_queue(dev);
--	for (i=0; i<ETH_ALEN; i++) {
--	    dev->dev_addr[i] = tmp.addr[i];
--	}
-+	eth_hw_addr_set(dev, tmp.addr);
- 	build_setup_frame(dev, PHYS_ADDR_ONLY);
- 	/* Set up the descriptor and give ownership to the card */
- 	load_packet(dev, lp->setup_frame, TD_IC | PERFECT_F | TD_SET |
-diff --git a/drivers/net/ethernet/dec/tulip/dmfe.c b/drivers/net/ethernet/dec/tulip/dmfe.c
-index c763b692e164..6e64ff20a378 100644
---- a/drivers/net/ethernet/dec/tulip/dmfe.c
-+++ b/drivers/net/ethernet/dec/tulip/dmfe.c
-@@ -476,8 +476,7 @@ static int dmfe_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	}
- 
- 	/* Set Node address */
--	for (i = 0; i < 6; i++)
--		dev->dev_addr[i] = db->srom[20 + i];
-+	eth_hw_addr_set(dev, &db->srom[20 + i]);
- 
- 	err = register_netdev (dev);
- 	if (err)
-@@ -1436,9 +1435,9 @@ static void update_cr6(u32 cr6_data, void __iomem *ioaddr)
- 
- static void dm9132_id_table(struct net_device *dev)
+-static void niu_set_primary_mac(struct niu *np, unsigned char *addr)
++static void niu_set_primary_mac(struct niu *np, const unsigned char *addr)
  {
-+	const u16 *addrptr = (const u16 *)dev->dev_addr;
- 	struct dmfe_board_info *db = netdev_priv(dev);
- 	void __iomem *ioaddr = db->ioaddr + 0xc0;
--	u16 *addrptr = (u16 *)dev->dev_addr;
- 	struct netdev_hw_addr *ha;
- 	u16 i, hash_table[4];
- 
-@@ -1477,7 +1476,7 @@ static void send_filter_frame(struct net_device *dev)
- 	struct dmfe_board_info *db = netdev_priv(dev);
- 	struct netdev_hw_addr *ha;
- 	struct tx_desc *txptr;
--	u16 * addrptr;
-+	const u16 * addrptr;
- 	u32 * suptr;
- 	int i;
- 
-@@ -1487,7 +1486,7 @@ static void send_filter_frame(struct net_device *dev)
- 	suptr = (u32 *) txptr->tx_buf_ptr;
- 
- 	/* Node address */
--	addrptr = (u16 *) dev->dev_addr;
-+	addrptr = (const u16 *) dev->dev_addr;
- 	*suptr++ = addrptr[0];
- 	*suptr++ = addrptr[1];
- 	*suptr++ = addrptr[2];
-diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
-index 1ba6452c0683..ec0ce8f1beea 100644
---- a/drivers/net/ethernet/dec/tulip/tulip_core.c
-+++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
-@@ -339,7 +339,7 @@ static void tulip_up(struct net_device *dev)
- 		}
- 	} else {
- 		/* This is set_rx_mode(), but without starting the transmitter. */
--		u16 *eaddrs = (u16 *)dev->dev_addr;
-+		const u16 *eaddrs = (const u16 *)dev->dev_addr;
- 		u16 *setup_frm = &tp->setup_frame[15*6];
- 		dma_addr_t mapping;
- 
-@@ -1001,8 +1001,8 @@ static void build_setup_frame_hash(u16 *setup_frm, struct net_device *dev)
- 	struct tulip_private *tp = netdev_priv(dev);
- 	u16 hash_table[32];
- 	struct netdev_hw_addr *ha;
-+	const u16 *eaddrs;
- 	int i;
--	u16 *eaddrs;
- 
- 	memset(hash_table, 0, sizeof(hash_table));
- 	__set_bit_le(255, hash_table);			/* Broadcast entry */
-@@ -1019,7 +1019,7 @@ static void build_setup_frame_hash(u16 *setup_frm, struct net_device *dev)
- 	setup_frm = &tp->setup_frame[13*6];
- 
- 	/* Fill the final entry with our physical address. */
--	eaddrs = (u16 *)dev->dev_addr;
-+	eaddrs = (const u16 *)dev->dev_addr;
- 	*setup_frm++ = eaddrs[0]; *setup_frm++ = eaddrs[0];
- 	*setup_frm++ = eaddrs[1]; *setup_frm++ = eaddrs[1];
- 	*setup_frm++ = eaddrs[2]; *setup_frm++ = eaddrs[2];
-@@ -1029,7 +1029,7 @@ static void build_setup_frame_perfect(u16 *setup_frm, struct net_device *dev)
+ 	u16 reg0 = addr[4] << 8 | addr[5];
+ 	u16 reg1 = addr[2] << 8 | addr[3];
+@@ -8312,6 +8312,7 @@ static void niu_pci_vpd_validate(struct niu *np)
  {
- 	struct tulip_private *tp = netdev_priv(dev);
- 	struct netdev_hw_addr *ha;
--	u16 *eaddrs;
-+	const u16 *eaddrs;
- 
- 	/* We have <= 14 addresses so we can use the wonderful
- 	   16 address perfect filtering of the Tulip. */
-@@ -1044,7 +1044,7 @@ static void build_setup_frame_perfect(u16 *setup_frm, struct net_device *dev)
- 	setup_frm = &tp->setup_frame[15*6];
- 
- 	/* Fill the final entry with our physical address. */
--	eaddrs = (u16 *)dev->dev_addr;
-+	eaddrs = (const u16 *)dev->dev_addr;
- 	*setup_frm++ = eaddrs[0]; *setup_frm++ = eaddrs[0];
- 	*setup_frm++ = eaddrs[1]; *setup_frm++ = eaddrs[1];
- 	*setup_frm++ = eaddrs[2]; *setup_frm++ = eaddrs[2];
-@@ -1305,6 +1305,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	int chip_idx = ent->driver_data;
- 	const char *chip_name = tulip_tbl[chip_idx].chip_name;
- 	unsigned int eeprom_missing = 0;
-+	u8 addr[ETH_ALEN] __aligned(2);
- 	unsigned int force_csr0 = 0;
- 
- 	board_idx++;
-@@ -1506,13 +1507,15 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 			do {
- 				value = ioread32(ioaddr + CSR9);
- 			} while (value < 0  && --boguscnt > 0);
--			put_unaligned_le16(value, ((__le16 *)dev->dev_addr) + i);
-+			put_unaligned_le16(value, ((__le16 *)addr) + i);
- 			sum += value & 0xffff;
- 		}
-+		eth_hw_addr_set(dev, addr);
- 	} else if (chip_idx == COMET) {
- 		/* No need to read the EEPROM. */
--		put_unaligned_le32(ioread32(ioaddr + 0xA4), dev->dev_addr);
--		put_unaligned_le16(ioread32(ioaddr + 0xA8), dev->dev_addr + 4);
-+		put_unaligned_le32(ioread32(ioaddr + 0xA4), addr);
-+		put_unaligned_le16(ioread32(ioaddr + 0xA8), addr + 4);
-+		eth_hw_addr_set(dev, addr);
- 		for (i = 0; i < 6; i ++)
- 			sum += dev->dev_addr[i];
- 	} else {
-@@ -1575,20 +1578,23 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- #endif
- 
- 		for (i = 0; i < 6; i ++) {
--			dev->dev_addr[i] = ee_data[i + sa_offset];
-+			addr[i] = ee_data[i + sa_offset];
- 			sum += ee_data[i + sa_offset];
- 		}
-+		eth_hw_addr_set(dev, addr);
- 	}
- 	/* Lite-On boards have the address byte-swapped. */
- 	if ((dev->dev_addr[0] == 0xA0 ||
- 	     dev->dev_addr[0] == 0xC0 ||
- 	     dev->dev_addr[0] == 0x02) &&
--	    dev->dev_addr[1] == 0x00)
-+	    dev->dev_addr[1] == 0x00) {
- 		for (i = 0; i < 6; i+=2) {
--			char tmp = dev->dev_addr[i];
--			dev->dev_addr[i] = dev->dev_addr[i+1];
--			dev->dev_addr[i+1] = tmp;
-+			addr[i] = dev->dev_addr[i+1];
-+			addr[i+1] = dev->dev_addr[i];
- 		}
-+		eth_hw_addr_set(dev, addr);
-+	}
-+
- 	/* On the Zynx 315 Etherarray and other multiport boards only the
- 	   first Tulip has an EEPROM.
- 	   On Sparc systems the mac address is held in the OBP property
-@@ -1604,8 +1610,9 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- #endif
- 		eeprom_missing = 1;
- 		for (i = 0; i < 5; i++)
--			dev->dev_addr[i] = last_phys_addr[i];
--		dev->dev_addr[i] = last_phys_addr[i] + 1;
-+			addr[i] = last_phys_addr[i];
-+		addr[i] = last_phys_addr[i] + 1;
-+		eth_hw_addr_set(dev, addr);
- #if defined(CONFIG_SPARC)
- 		addr = of_get_property(dp, "local-mac-address", &len);
- 		if (addr && len == ETH_ALEN)
-diff --git a/drivers/net/ethernet/dec/tulip/uli526x.c b/drivers/net/ethernet/dec/tulip/uli526x.c
-index d67ef7d02d6b..77d9058431e3 100644
---- a/drivers/net/ethernet/dec/tulip/uli526x.c
-+++ b/drivers/net/ethernet/dec/tulip/uli526x.c
-@@ -272,6 +272,7 @@ static int uli526x_init_one(struct pci_dev *pdev,
- 	struct uli526x_board_info *db;	/* board information structure */
- 	struct net_device *dev;
- 	void __iomem *ioaddr;
+ 	struct net_device *dev = np->dev;
+ 	struct niu_vpd *vpd = &np->vpd;
 +	u8 addr[ETH_ALEN];
- 	int i, err;
+ 	u8 val8;
  
- 	ULI526X_DBUG(0, "uli526x_init_one()", 0);
-@@ -379,7 +380,7 @@ static int uli526x_init_one(struct pci_dev *pdev,
- 		uw32(DCR13, 0x1b0);	//Select ID Table access port
- 		//Read MAC address from CR14
- 		for (i = 0; i < 6; i++)
--			dev->dev_addr[i] = ur32(DCR14);
-+			addr[i] = ur32(DCR14);
- 		//Read end
- 		uw32(DCR13, 0);		//Clear CR13
- 		uw32(DCR0, 0);		//Clear CR0
-@@ -388,8 +389,10 @@ static int uli526x_init_one(struct pci_dev *pdev,
- 	else		/*Exist SROM*/
- 	{
- 		for (i = 0; i < 6; i++)
--			dev->dev_addr[i] = db->srom[20 + i];
-+			addr[i] = db->srom[20 + i];
+ 	if (!is_valid_ether_addr(&vpd->local_mac[0])) {
+@@ -8344,17 +8345,20 @@ static void niu_pci_vpd_validate(struct niu *np)
+ 		return;
  	}
-+	eth_hw_addr_set(dev, addr);
+ 
+-	eth_hw_addr_set(dev, vpd->local_mac);
++	ether_addr_copy(addr, vpd->local_mac);
+ 
+-	val8 = dev->dev_addr[5];
+-	dev->dev_addr[5] += np->port;
+-	if (dev->dev_addr[5] < val8)
+-		dev->dev_addr[4]++;
++	val8 = addr[5];
++	addr[5] += np->port;
++	if (addr[5] < val8)
++		addr[4]++;
 +
- 	err = register_netdev (dev);
- 	if (err)
- 		goto err_out_unmap;
-@@ -1343,7 +1346,7 @@ static void send_filter_frame(struct net_device *dev, int mc_cnt)
- 	void __iomem *ioaddr = db->ioaddr;
- 	struct netdev_hw_addr *ha;
- 	struct tx_desc *txptr;
--	u16 * addrptr;
-+	const u16 * addrptr;
- 	u32 * suptr;
- 	int i;
++	eth_hw_addr_set(dev, addr);
+ }
  
-@@ -1353,7 +1356,7 @@ static void send_filter_frame(struct net_device *dev, int mc_cnt)
- 	suptr = (u32 *) txptr->tx_buf_ptr;
+ static int niu_pci_probe_sprom(struct niu *np)
+ {
+ 	struct net_device *dev = np->dev;
++	u8 addr[ETH_ALEN];
+ 	int len, i;
+ 	u64 val, sum;
+ 	u8 val8;
+@@ -8446,27 +8450,29 @@ static int niu_pci_probe_sprom(struct niu *np)
+ 	val = nr64(ESPC_MAC_ADDR0);
+ 	netif_printk(np, probe, KERN_DEBUG, np->dev,
+ 		     "SPROM: MAC_ADDR0[%08llx]\n", (unsigned long long)val);
+-	dev->dev_addr[0] = (val >>  0) & 0xff;
+-	dev->dev_addr[1] = (val >>  8) & 0xff;
+-	dev->dev_addr[2] = (val >> 16) & 0xff;
+-	dev->dev_addr[3] = (val >> 24) & 0xff;
++	addr[0] = (val >>  0) & 0xff;
++	addr[1] = (val >>  8) & 0xff;
++	addr[2] = (val >> 16) & 0xff;
++	addr[3] = (val >> 24) & 0xff;
  
- 	/* Node address */
--	addrptr = (u16 *) dev->dev_addr;
-+	addrptr = (const u16 *) dev->dev_addr;
- 	*suptr++ = addrptr[0] << FLT_SHIFT;
- 	*suptr++ = addrptr[1] << FLT_SHIFT;
- 	*suptr++ = addrptr[2] << FLT_SHIFT;
-diff --git a/drivers/net/ethernet/dec/tulip/xircom_cb.c b/drivers/net/ethernet/dec/tulip/xircom_cb.c
-index a8de79355578..8759f9f76b62 100644
---- a/drivers/net/ethernet/dec/tulip/xircom_cb.c
-+++ b/drivers/net/ethernet/dec/tulip/xircom_cb.c
-@@ -1015,12 +1015,14 @@ static void read_mac_address(struct xircom_private *card)
- 		xw32(CSR10, i + 3);
- 		data_count = xr32(CSR9);
- 		if ((tuple == 0x22) && (data_id == 0x04) && (data_count == 0x06)) {
-+			u8 addr[ETH_ALEN];
- 			int j;
+ 	val = nr64(ESPC_MAC_ADDR1);
+ 	netif_printk(np, probe, KERN_DEBUG, np->dev,
+ 		     "SPROM: MAC_ADDR1[%08llx]\n", (unsigned long long)val);
+-	dev->dev_addr[4] = (val >>  0) & 0xff;
+-	dev->dev_addr[5] = (val >>  8) & 0xff;
++	addr[4] = (val >>  0) & 0xff;
++	addr[5] = (val >>  8) & 0xff;
  
- 			for (j = 0; j < 6; j++) {
- 				xw32(CSR10, i + j + 4);
--				card->dev->dev_addr[j] = xr32(CSR9) & 0xff;
-+				addr[j] = xr32(CSR9) & 0xff;
- 			}
-+			eth_hw_addr_set(card->dev, addr);
- 			break;
- 		} else if (link == 0) {
- 			break;
+-	if (!is_valid_ether_addr(&dev->dev_addr[0])) {
++	if (!is_valid_ether_addr(addr)) {
+ 		dev_err(np->device, "SPROM MAC address invalid [ %pM ]\n",
+-			dev->dev_addr);
++			addr);
+ 		return -EINVAL;
+ 	}
+ 
+-	val8 = dev->dev_addr[5];
+-	dev->dev_addr[5] += np->port;
+-	if (dev->dev_addr[5] < val8)
+-		dev->dev_addr[4]++;
++	val8 = addr[5];
++	addr[5] += np->port;
++	if (addr[5] < val8)
++		addr[4]++;
++
++	eth_hw_addr_set(dev, addr);
+ 
+ 	val = nr64(ESPC_MOD_STR_LEN);
+ 	netif_printk(np, probe, KERN_DEBUG, np->dev,
+diff --git a/drivers/net/ethernet/sun/sungem.c b/drivers/net/ethernet/sun/sungem.c
+index 5f786d6fa150..036856102c50 100644
+--- a/drivers/net/ethernet/sun/sungem.c
++++ b/drivers/net/ethernet/sun/sungem.c
+@@ -1810,7 +1810,7 @@ static u32 gem_setup_multicast(struct gem *gp)
+ 
+ static void gem_init_mac(struct gem *gp)
+ {
+-	unsigned char *e = &gp->dev->dev_addr[0];
++	const unsigned char *e = &gp->dev->dev_addr[0];
+ 
+ 	writel(0x1bf0, gp->regs + MAC_SNDPAUSE);
+ 
+@@ -2087,7 +2087,7 @@ static void gem_stop_phy(struct gem *gp, int wol)
+ 	writel(mifcfg, gp->regs + MIF_CFG);
+ 
+ 	if (wol && gp->has_wol) {
+-		unsigned char *e = &gp->dev->dev_addr[0];
++		const unsigned char *e = &gp->dev->dev_addr[0];
+ 		u32 csr;
+ 
+ 		/* Setup wake-on-lan for MAGIC packet */
+@@ -2431,8 +2431,8 @@ static struct net_device_stats *gem_get_stats(struct net_device *dev)
+ static int gem_set_mac_address(struct net_device *dev, void *addr)
+ {
+ 	struct sockaddr *macaddr = (struct sockaddr *) addr;
++	const unsigned char *e = &dev->dev_addr[0];
+ 	struct gem *gp = netdev_priv(dev);
+-	unsigned char *e = &dev->dev_addr[0];
+ 
+ 	if (!is_valid_ether_addr(macaddr->sa_data))
+ 		return -EADDRNOTAVAIL;
+@@ -2799,7 +2799,10 @@ static int gem_get_device_address(struct gem *gp)
+ 	}
+ 	eth_hw_addr_set(dev, addr);
+ #else
+-	get_gem_mac_nonobp(gp->pdev, gp->dev->dev_addr);
++	u8 addr[ETH_ALEN];
++
++	get_gem_mac_nonobp(gp->pdev, addr);
++	eth_hw_addr_set(gp->dev, addr);
+ #endif
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index fe5482b1872f..ad9029ae6848 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -1395,13 +1395,13 @@ happy_meal_begin_auto_negotiation(struct happy_meal *hp,
+ /* hp->happy_lock must be held */
+ static int happy_meal_init(struct happy_meal *hp)
+ {
++	const unsigned char *e = &hp->dev->dev_addr[0];
+ 	void __iomem *gregs        = hp->gregs;
+ 	void __iomem *etxregs      = hp->etxregs;
+ 	void __iomem *erxregs      = hp->erxregs;
+ 	void __iomem *bregs        = hp->bigmacregs;
+ 	void __iomem *tregs        = hp->tcvregs;
+ 	u32 regtmp, rxcfg;
+-	unsigned char *e = &hp->dev->dev_addr[0];
+ 
+ 	/* If auto-negotiation timer is running, kill it. */
+ 	del_timer(&hp->happy_timer);
+@@ -2661,6 +2661,7 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 	struct happy_meal *hp;
+ 	struct net_device *dev;
+ 	int i, qfe_slot = -1;
++	u8 addr[ETH_ALEN];
+ 	int err = -ENODEV;
+ 
+ 	sbus_dp = op->dev.parent->of_node;
+@@ -2698,7 +2699,8 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 	}
+ 	if (i < 6) { /* a mac address was given */
+ 		for (i = 0; i < 6; i++)
+-			dev->dev_addr[i] = macaddr[i];
++			addr[i] = macaddr[i];
++		eth_hw_addr_set(dev, addr);
+ 		macaddr[5]++;
+ 	} else {
+ 		const unsigned char *addr;
+@@ -2969,6 +2971,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	unsigned long hpreg_res;
+ 	int i, qfe_slot = -1;
+ 	char prom_name[64];
++	u8 addr[ETH_ALEN];
+ 	int err;
+ 
+ 	/* Now make sure pci_dev cookie is there. */
+@@ -3044,7 +3047,8 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	}
+ 	if (i < 6) { /* a mac address was given */
+ 		for (i = 0; i < 6; i++)
+-			dev->dev_addr[i] = macaddr[i];
++			addr[i] = macaddr[i];
++		eth_hw_addr_set(dev, addr);
+ 		macaddr[5]++;
+ 	} else {
+ #ifdef CONFIG_SPARC
+@@ -3060,7 +3064,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 			eth_hw_addr_set(dev, idprom->id_ethaddr);
+ 		}
+ #else
+-		get_hme_mac_nonsparc(pdev, &dev->dev_addr[0]);
++		u8 addr[ETH_ALEN];
++
++		get_hme_mac_nonsparc(pdev, addr);
++		eth_hw_addr_set(dev, addr);
+ #endif
+ 	}
+ 
 -- 
 2.31.1
 
