@@ -2,111 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7284270A0
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 20:17:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C223A4270AB
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 20:22:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239820AbhJHST1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 14:19:27 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:17949 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231305AbhJHST0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 14:19:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1633717051; x=1665253051;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=q9/ahXNq/PgdATbzGy+xoEIbgIaM2veRvp5PDNlmIoY=;
-  b=P9ThCOEAGY/5l8kHq9ikCU1C32OWESpyx7Ba/HnHkmpoGj7WZuYK6Fo9
-   bnS6KrFEDpAn9BPT6IdcTTyKRnuTIOKbJ2uSl7oSJDPMgS7TAoe3nVaSm
-   rQvjrtfxjJHN8ENxUSYh1nVuknsGAbgOh/E4q9XGR/tnO+xN6/xZ/Bhru
-   EIp2BIiEXTt0sYw8gK0v/vRpgLiIWkPTxr0JfRtIY6Zwh2aC2n0S+Eg5X
-   N4M+x+rXe+m/BZqhudjFIVO63Gmd7PMBOraxXkzTmxu1aj/EKvzVJeOeU
-   ZdFhBlhq4RY2qhEheSOSpz/FuPJ+4+qyFz69Bxx4TB8O4Cj3IG+XATG/R
-   g==;
-IronPort-SDR: NddQFQ0MBAWdspcSQkJTNxp/19E1+KDc3U9xW3VC4JvNB03MwbtPhd3mhY/deI3EwWNboEKMS/
- 4R49vL5BH4EiIaoOveMCuTohg9+/raHrliS1y+wFl14LAAfB4P5n91nwYssFnD44hhjFzrOATB
- Xdg/YgqHDNxDXfif1h/4D5fXhC+yUa+CDunvXyFsXA8II2JQa1hF4QwUPb7XjIbzax0Mmx7g6t
- PM9cSsekrHzxJSetEUoxhBq8gPiv51aXnEtwxTIig47H+SNggTZ/cpLO3p/709yy1wpBNAgvCn
- GnDlRE5qGgP0avH1uiQmA2s8
-X-IronPort-AV: E=Sophos;i="5.85,358,1624345200"; 
-   d="scan'208";a="139568962"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Oct 2021 11:17:29 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Fri, 8 Oct 2021 11:17:29 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Fri, 8 Oct 2021 11:17:24 -0700
-Message-ID: <0c4264ca6f859b6ce53e59f1565563f8dc29a2c6.camel@microchip.com>
-Subject: Re: [PATCH v4 net-next 05/10] net: dsa: microchip: add DSA support
- for microchip lan937x
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Fri, 8 Oct 2021 23:47:23 +0530
-In-Reply-To: <20211007200005.3ze43py7ma4omn7r@skbuf>
-References: <20211007151200.748944-1-prasanna.vengateshan@microchip.com>
-         <20211007151200.748944-6-prasanna.vengateshan@microchip.com>
-         <20211007200005.3ze43py7ma4omn7r@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1-1 
+        id S239274AbhJHSX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 14:23:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58460 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231237AbhJHSX4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 14:23:56 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D78360F02;
+        Fri,  8 Oct 2021 18:22:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633717320;
+        bh=TciaTrj54lp6qBJCXrKVosKbY1g/Wgir15vVcrHSNlM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bwfDCuj7UPyIXNiK0As/R+MsJkIBWD1WYPhMzpsSnPCKdQWEA1JT15WwwyPupuRAK
+         xi77g7ulDnaWofMHgwgNppU1pbUamEEYJFSu9qVWO+5lY5MZWYCOHJ4Ixr8Om7rS0U
+         zA/0X3kUzMyf/RGbFbAgPZkFRjV9o428edGBgE4WHOCc3ZPV9TOVLTv4ouHNBfL8Ii
+         ILotANmM1YCVTClwn7ujmBNOtRZdt/PLwxn5ZPUepNFlhqWn5IXPsk+ndr/E3NHco8
+         Xt4GuRuLu2wO04J5Sdh/REH+gvtKuA8mcCnH6jXp/8Qyw+s1HlmZUv0wlJ/qdoL7Tn
+         wxK941tIcJanA==
+Date:   Fri, 8 Oct 2021 11:21:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
+Subject: Re: [net-next 0/4] devlink: add dry run support for flash update
+Message-ID: <20211008112159.4448a6c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YWA7keYHnhlHCkKT@nanopsycho>
+References: <20211008104115.1327240-1-jacob.e.keller@intel.com>
+        <YWA7keYHnhlHCkKT@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-10-07 at 23:00 +0300, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
+On Fri, 8 Oct 2021 14:37:37 +0200 Jiri Pirko wrote:
+> Fri, Oct 08, 2021 at 12:41:11PM CEST, jacob.e.keller@intel.com wrote:
+> >This is an implementation of a previous idea I had discussed on the list at
+> >https://lore.kernel.org/netdev/51a6e7a33c7d40889c80bf37159f210e@intel.com/
+> >
+> >The idea is to allow user space to query whether a given destructive devlink
+> >command would work without actually performing any actions. This is commonly
+> >referred to as a "dry run", and is intended to give tools and system
+> >administrators the ability to test things like flash image validity, or
+> >whether a given option is valid without having to risk performing the update
+> >when not sufficiently ready.
+> >
+> >The intention is that all "destructive" commands can be updated to support
+> >the new DEVLINK_ATTR_DRY_RUN, although this series only implements it for
+> >flash update.
+> >
+> >I expect we would want to support this for commands such as reload as well
+> >as other commands which perform some action with no interface to check state
+> >before hand.
+> >
+> >I tried to implement the DRY_RUN checks along with useful extended ACK
+> >messages so that even if a driver does not support DRY_RUN, some useful
+> >information can be retrieved. (i.e. the stack indicates that flash update is
+> >supported and will validate the other attributes first before rejecting the
+> >command due to inability to fully validate the run within the driver).  
 > 
-> On Thu, Oct 07, 2021 at 08:41:55PM +0530, Prasanna Vengateshan wrote:
-> > +static int lan937x_mdio_register(struct dsa_switch *ds)
-> > 
-> > +
-> > +     ret = of_mdiobus_register(ds->slave_mii_bus, mdio_np);
-> 
-> Please use devm_of_mdiobus_register if you're going to use
-> devm_mdiobus_alloc, or no devres at all.
-> https://patchwork.kernel.org/project/netdevbpf/patch/20210920214209.1733768-3-vladimir.oltean@nxp.com/
+> Hmm, old kernel vs. new-userspace, the requested dry-run, won't be
+> really dry run. I guess that user might be surprised in that case...
 
-Sure, Will change it to devm_of_mdiobus_register.
-
-> > 
-> > +
-> > +                     /* Check if the device tree have specific interface
-> > +                      * setting otherwise read & assign from XMII register
-> > +                      * for host port interface
-> > +                      */
-> > +                     interface = lan937x_get_interface(dev, i);
-> 
-> What does the CPU port have so special that you override it here?
-> Again some compatibility with out-of-tree DT bindings?
-> > 
-> 
-Device strapping method cannot be used since the phy-mode is expected
-to be present in the DT. So above assignment have to be removed along
-with lan937x_get_interface function.
-
-
-> > +
-> > +     /* maximum delay is 4ns */
-> > +     if (val > 4000)
-> > +             val = 4000;
-> 
-> These bindings are new. Given that you also document their min and max
-> values, why don't you just error out on out-of-range values instead of
-> silently doing what you think is going to be fine?
-
-Sure, i think the driver can also notify rx/tx internal delay applied
-message using dev_info.
-
-
+Would it be enough to do a policy dump in user space to check attr is
+recognized and add a warning that this is required next to the attr
+in the uAPI header?
