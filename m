@@ -2,282 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7EC3426FD4
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 19:59:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F7EF426FD7
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 20:00:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239674AbhJHSBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 14:01:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46976 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239006AbhJHSBO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Oct 2021 14:01:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BD4D961058;
-        Fri,  8 Oct 2021 17:59:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633715958;
-        bh=nYimCnQYFgA+YTYef2Y3PDdqcBAMM99sV5iYsXwDMDo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hprVtJIpTegjgdxDP6/xQqZJEBP2HbaRS4Qi9S6bHWu9J9hB4+rAlF/cCkyarnQJU
-         Vx8EOV80uUVXHRbTrzKvvRZstfFymv1xGz58OEuhzkxmBoYzqpg+ko5frWxxQ8KdaO
-         p39TmvuACC4zYQLsBcXIKT3LLpmgHtF3zWVm938SfyqwmIDFQsY9BHu2GCQMh9bh+O
-         PvNBcMHnoiOyxcCkFXi9ZxE7UqvL+7U+hCtnvC/N2f6sei9zfqrWfYT5lM8+gBL+UF
-         w6OoyE1QroHWiqb63mjoHKdlIj3KjqD88RRq7KkotPRnwxRIObLrkX0qj5KijSlloE
-         tOHpd3S8Ci/xQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 5/5] ethernet: 8390: remove direct netdev->dev_addr writes
-Date:   Fri,  8 Oct 2021 10:59:13 -0700
-Message-Id: <20211008175913.3754184-6-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211008175913.3754184-1-kuba@kernel.org>
-References: <20211008175913.3754184-1-kuba@kernel.org>
+        id S239592AbhJHSBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 14:01:50 -0400
+Received: from mxout01.lancloud.ru ([45.84.86.81]:44076 "EHLO
+        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238085AbhJHSBt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 14:01:49 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 4CB102090321
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [RFC 07/12] ravb: Fillup ravb_rx_gbeth() stub
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        "Adam Ford" <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211005110642.3744-1-biju.das.jz@bp.renesas.com>
+ <20211005110642.3744-8-biju.das.jz@bp.renesas.com>
+ <63592646-7547-1a81-e6c3-5bac413cb94a@omp.ru>
+ <OS0PR01MB592295BD59F39001AC63FD3886B09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <7c31964b-8cde-50c5-d686-939b7c5bd7f0@omp.ru>
+ <OS0PR01MB5922239A85405F807AE3C79A86B19@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <04dea1e6-c014-613d-f2f9-9ba018ced2a3@omp.ru>
+ <OS0PR01MB5922BCF31F520F8F975606B286B19@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <OS0PR01MB5922165EFE14E02388B34F4086B29@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <52f0d801-9750-dbd6-7ba0-258a324208cf@omp.ru>
+Date:   Fri, 8 Oct 2021 20:59:50 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <OS0PR01MB5922165EFE14E02388B34F4086B29@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-8390 contains a lot of loops assigning netdev->dev_addr
-byte by byte. Convert what's possible directly to
-eth_hw_addr_set(), use local buf in other places.
+On 10/8/21 9:46 AM, Biju Das wrote:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/8390/apne.c      |  3 +--
- drivers/net/ethernet/8390/ax88796.c   |  6 ++++--
- drivers/net/ethernet/8390/axnet_cs.c  |  7 +++++--
- drivers/net/ethernet/8390/mcf8390.c   |  3 +--
- drivers/net/ethernet/8390/ne.c        |  4 +---
- drivers/net/ethernet/8390/pcnet_cs.c  | 22 ++++++++++++++++------
- drivers/net/ethernet/8390/stnic.c     |  5 ++---
- drivers/net/ethernet/8390/zorro8390.c |  3 +--
- 8 files changed, 31 insertions(+), 22 deletions(-)
+[...]
+>>>>>>>> Fillup ravb_rx_gbeth() function to support RZ/G2L.
+>>>>>>>>
+>>>>>>>> This patch also renames ravb_rcar_rx to ravb_rx_rcar to be
+>>>>>>>> consistent with the naming convention used in sh_eth driver.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+>>>>>>>> Reviewed-by: Lad Prabhakar
+>>>>>>>> <prabhakar.mahadev-lad.rj@bp.renesas.com>[...]
+>>>>>>>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c
+>>>>>>>> b/drivers/net/ethernet/renesas/ravb_main.c
+>>>>>>>> index 37164a983156..42573eac82b9 100644
+>>>>>>>> --- a/drivers/net/ethernet/renesas/ravb_main.c
+>>>>>>>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+>>>>>>>> @@ -720,6 +720,23 @@ static void ravb_get_tx_tstamp(struct
+>>>>>>>> net_device
+>>>>>>> *ndev)
+>>>>>>>>  	}
+>>>>>>>>  }
+>>>>>>>>
+>>>>>>>> +static void ravb_rx_csum_gbeth(struct sk_buff *skb) {
+>>>>>>>> +	u8 *hw_csum;
+>>>>>>>> +
+>>>>>>>> +	/* The hardware checksum is contained in sizeof(__sum16) (2)
+>>> bytes
+>>>>>>>> +	 * appended to packet data
+>>>>>>>> +	 */
+>>>>>>>> +	if (unlikely(skb->len < sizeof(__sum16)))
+>>>>>>>> +		return;
+>>>>>>>> +	hw_csum = skb_tail_pointer(skb) - sizeof(__sum16);
+[...]
+>>>> Please check the section 30.5.6.1 checksum calculation handling> And
+>>>> figure 30.25 the field of checksum attaching field
+>>>
+>>>    I have.
+>>>
+>>>> Also see Table 30.17 for checksum values for non-error conditions.
+>>>
+>>>> TCP/UDP/ICPM checksum is at last 2bytes.
+>>>
+>>>    What are you arguing with then? :-)
+>>>    My point was that your code fetched the TCP/UDP/ICMP checksum ISO
+>>> the IP checksum because it subtracts sizeof(__sum16), while should
+>>> probably subtract sizeof(__wsum)
+>>
+>> Agreed. My code missed IP4 checksum result. May be we need to extract 2
+>> checksum info from last 4 bytes.  First checksum(2bytes) is IP4 header
+>> checksum and next checksum(2 bytes)  for TCP/UDP/ICMP and use this info
+>> finding the non error case mentioned in  Table 30.17.
+>>
+>> For eg:-
+>> IPV6 non error-condition -->  "0xFFFF"-->IPV4HeaderCSum value and "0x0000"
+>> TCP/UDP/ICMP CSUM value
+>>
+>> IPV4 non error-condition -->  "0x0000"-->IPV4HeaderCSum value and "0x0000"
+>> TCP/UDP/ICMP CSUM value
+>>
+>> Do you agree?
 
-diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
-index da1ae37a9d73..991ad953aa79 100644
---- a/drivers/net/ethernet/8390/apne.c
-+++ b/drivers/net/ethernet/8390/apne.c
-@@ -320,8 +320,7 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
-     i = request_irq(dev->irq, apne_interrupt, IRQF_SHARED, DRV_NAME, dev);
-     if (i) return i;
- 
--    for (i = 0; i < ETH_ALEN; i++)
--	dev->dev_addr[i] = SA_prom[i];
-+    eth_hw_addr_set(dev, SA_prom);
- 
-     pr_cont(" %pM\n", dev->dev_addr);
- 
-diff --git a/drivers/net/ethernet/8390/ax88796.c b/drivers/net/ethernet/8390/ax88796.c
-index b3e612b18abd..1f8acbba5b6b 100644
---- a/drivers/net/ethernet/8390/ax88796.c
-+++ b/drivers/net/ethernet/8390/ax88796.c
-@@ -748,11 +748,13 @@ static int ax_init_dev(struct net_device *dev)
- 
- 	/* load the mac-address from the device */
- 	if (ax->plat->flags & AXFLG_MAC_FROMDEV) {
-+		u8 addr[ETH_ALEN];
-+
- 		ei_outb(E8390_NODMA + E8390_PAGE1 + E8390_STOP,
- 			ei_local->mem + E8390_CMD); /* 0x61 */
- 		for (i = 0; i < ETH_ALEN; i++)
--			dev->dev_addr[i] =
--				ei_inb(ioaddr + EN1_PHYS_SHIFT(i));
-+			addr[i] = ei_inb(ioaddr + EN1_PHYS_SHIFT(i));
-+		eth_hw_addr_set(dev, addr);
- 	}
- 
- 	if ((ax->plat->flags & AXFLG_MAC_FROMPLATFORM) &&
-diff --git a/drivers/net/ethernet/8390/axnet_cs.c b/drivers/net/ethernet/8390/axnet_cs.c
-index 3c370e686ec3..3aef959fc25b 100644
---- a/drivers/net/ethernet/8390/axnet_cs.c
-+++ b/drivers/net/ethernet/8390/axnet_cs.c
-@@ -187,6 +187,7 @@ static int get_prom(struct pcmcia_device *link)
- {
-     struct net_device *dev = link->priv;
-     unsigned int ioaddr = dev->base_addr;
-+    u8 addr[ETH_ALEN];
-     int i, j;
- 
-     /* This is based on drivers/net/ethernet/8390/ne.c */
-@@ -220,9 +221,11 @@ static int get_prom(struct pcmcia_device *link)
- 
-     for (i = 0; i < 6; i += 2) {
- 	j = inw(ioaddr + AXNET_DATAPORT);
--	dev->dev_addr[i] = j & 0xff;
--	dev->dev_addr[i+1] = j >> 8;
-+	addr[i] = j & 0xff;
-+	addr[i+1] = j >> 8;
-     }
-+    eth_hw_addr_set(dev, addr);
-+
-     return 1;
- } /* get_prom */
- 
-diff --git a/drivers/net/ethernet/8390/mcf8390.c b/drivers/net/ethernet/8390/mcf8390.c
-index 4ad8031ab669..e320cccba61a 100644
---- a/drivers/net/ethernet/8390/mcf8390.c
-+++ b/drivers/net/ethernet/8390/mcf8390.c
-@@ -374,8 +374,7 @@ static int mcf8390_init(struct net_device *dev)
- 	if (ret)
- 		return ret;
- 
--	for (i = 0; i < ETH_ALEN; i++)
--		dev->dev_addr[i] = SA_prom[i];
-+	eth_hw_addr_set(dev, SA_prom);
- 
- 	netdev_dbg(dev, "Found ethernet address: %pM\n", dev->dev_addr);
- 
-diff --git a/drivers/net/ethernet/8390/ne.c b/drivers/net/ethernet/8390/ne.c
-index 9afc712f5948..0a9118b8be0c 100644
---- a/drivers/net/ethernet/8390/ne.c
-+++ b/drivers/net/ethernet/8390/ne.c
-@@ -500,9 +500,7 @@ static int __init ne_probe1(struct net_device *dev, unsigned long ioaddr)
- 
- 	dev->base_addr = ioaddr;
- 
--	for (i = 0; i < ETH_ALEN; i++) {
--		dev->dev_addr[i] = SA_prom[i];
--	}
-+	eth_hw_addr_set(dev, SA_prom);
- 
- 	pr_cont("%pM\n", dev->dev_addr);
- 
-diff --git a/drivers/net/ethernet/8390/pcnet_cs.c b/drivers/net/ethernet/8390/pcnet_cs.c
-index 96ad72abd373..0f07fe03da98 100644
---- a/drivers/net/ethernet/8390/pcnet_cs.c
-+++ b/drivers/net/ethernet/8390/pcnet_cs.c
-@@ -278,6 +278,7 @@ static struct hw_info *get_hwinfo(struct pcmcia_device *link)
- {
-     struct net_device *dev = link->priv;
-     u_char __iomem *base, *virt;
-+    u8 addr[ETH_ALEN];
-     int i, j;
- 
-     /* Allocate a small memory window */
-@@ -302,7 +303,8 @@ static struct hw_info *get_hwinfo(struct pcmcia_device *link)
- 	    (readb(base+2) == hw_info[i].a1) &&
- 	    (readb(base+4) == hw_info[i].a2)) {
- 		for (j = 0; j < 6; j++)
--		    dev->dev_addr[j] = readb(base + (j<<1));
-+			addr[j] = readb(base + (j<<1));
-+		eth_hw_addr_set(dev, addr);
- 		break;
- 	}
-     }
-@@ -324,6 +326,7 @@ static struct hw_info *get_prom(struct pcmcia_device *link)
- {
-     struct net_device *dev = link->priv;
-     unsigned int ioaddr = dev->base_addr;
-+    u8 addr[ETH_ALEN];
-     u_char prom[32];
-     int i, j;
- 
-@@ -362,7 +365,8 @@ static struct hw_info *get_prom(struct pcmcia_device *link)
-     }
-     if ((i < NR_INFO) || ((prom[28] == 0x57) && (prom[30] == 0x57))) {
- 	for (j = 0; j < 6; j++)
--	    dev->dev_addr[j] = prom[j<<1];
-+	    addr[j] = prom[j<<1];
-+	eth_hw_addr_set(dev, addr);
- 	return (i < NR_INFO) ? hw_info+i : &default_info;
-     }
-     return NULL;
-@@ -377,6 +381,7 @@ static struct hw_info *get_prom(struct pcmcia_device *link)
- static struct hw_info *get_dl10019(struct pcmcia_device *link)
- {
-     struct net_device *dev = link->priv;
-+    u8 addr[ETH_ALEN];
-     int i;
-     u_char sum;
- 
-@@ -385,7 +390,8 @@ static struct hw_info *get_dl10019(struct pcmcia_device *link)
-     if (sum != 0xff)
- 	return NULL;
-     for (i = 0; i < 6; i++)
--	dev->dev_addr[i] = inb_p(dev->base_addr + 0x14 + i);
-+	addr[i] = inb_p(dev->base_addr + 0x14 + i);
-+    eth_hw_addr_set(dev, addr);
-     i = inb(dev->base_addr + 0x1f);
-     return ((i == 0x91)||(i == 0x99)) ? &dl10022_info : &dl10019_info;
- }
-@@ -400,6 +406,7 @@ static struct hw_info *get_ax88190(struct pcmcia_device *link)
- {
-     struct net_device *dev = link->priv;
-     unsigned int ioaddr = dev->base_addr;
-+    u8 addr[ETH_ALEN];
-     int i, j;
- 
-     /* Not much of a test, but the alternatives are messy */
-@@ -413,9 +420,10 @@ static struct hw_info *get_ax88190(struct pcmcia_device *link)
- 
-     for (i = 0; i < 6; i += 2) {
- 	j = inw(ioaddr + PCNET_DATAPORT);
--	dev->dev_addr[i] = j & 0xff;
--	dev->dev_addr[i+1] = j >> 8;
-+	addr[i] = j & 0xff;
-+	addr[i+1] = j >> 8;
-     }
-+    eth_hw_addr_set(dev, addr);
-     return NULL;
- }
- 
-@@ -430,6 +438,7 @@ static struct hw_info *get_ax88190(struct pcmcia_device *link)
- static struct hw_info *get_hwired(struct pcmcia_device *link)
- {
-     struct net_device *dev = link->priv;
-+    u8 addr[ETH_ALEN];
-     int i;
- 
-     for (i = 0; i < 6; i++)
-@@ -438,7 +447,8 @@ static struct hw_info *get_hwired(struct pcmcia_device *link)
- 	return NULL;
- 
-     for (i = 0; i < 6; i++)
--	dev->dev_addr[i] = hw_addr[i];
-+	addr[i] = hw_addr[i];
-+    eth_hw_addr_set(dev, addr);
- 
-     return &default_info;
- } /* get_hwired */
-diff --git a/drivers/net/ethernet/8390/stnic.c b/drivers/net/ethernet/8390/stnic.c
-index fbbd7f22c142..bd89ca8a92df 100644
---- a/drivers/net/ethernet/8390/stnic.c
-+++ b/drivers/net/ethernet/8390/stnic.c
-@@ -104,8 +104,8 @@ STNIC_WRITE (int reg, byte val)
- static int __init stnic_probe(void)
- {
-   struct net_device *dev;
--  int i, err;
-   struct ei_device *ei_local;
-+  int err;
- 
-   /* If we are not running on a SolutionEngine, give up now */
-   if (! MACH_SE)
-@@ -119,8 +119,7 @@ static int __init stnic_probe(void)
- #ifdef CONFIG_SH_STANDARD_BIOS
-   sh_bios_get_node_addr (stnic_eadr);
- #endif
--  for (i = 0; i < ETH_ALEN; i++)
--    dev->dev_addr[i] = stnic_eadr[i];
-+  eth_hw_addr_set(dev, stnic_eadr);
- 
-   /* Set the base address to point to the NIC, not the "real" base! */
-   dev->base_addr = 0x1000;
-diff --git a/drivers/net/ethernet/8390/zorro8390.c b/drivers/net/ethernet/8390/zorro8390.c
-index 35a500a21521..e8b4fe813a08 100644
---- a/drivers/net/ethernet/8390/zorro8390.c
-+++ b/drivers/net/ethernet/8390/zorro8390.c
-@@ -364,8 +364,7 @@ static int zorro8390_init(struct net_device *dev, unsigned long board,
- 	if (i)
- 		return i;
- 
--	for (i = 0; i < ETH_ALEN; i++)
--		dev->dev_addr[i] = SA_prom[i];
-+	eth_hw_addr_set(dev, SA_prom);
- 
- 	pr_debug("Found ethernet address: %pM\n", dev->dev_addr);
- 
--- 
-2.31.1
+> What I meant here is some thing like below, please let me know if you have any issues with
+> this, otherwise I would like to send the patch with below changes.
+> 
+> Further improvements can happen later.
+> 
+> Please let me know.
+> 
+> +/* Hardware checksum status */
+> +#define IPV4_RX_CSUM_OK                0x00000000
+> +#define IPV6_RX_CSUM_OK                0xFFFF0000
 
+   Mhm, this should prolly come from the IP headers...
+
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index bbb42e5328e4..d9201fbbd472 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -722,16 +722,18 @@ static void ravb_get_tx_tstamp(struct net_device *ndev)
+>  
+>  static void ravb_rx_csum_gbeth(struct sk_buff *skb)
+>  {
+> -       u16 *hw_csum;
+> +       u32 csum_result;
+
+   This is not against the patch currently under investigation. :-)
+
+> +       u8 *hw_csum;
+>  
+>         /* The hardware checksum is contained in sizeof(__sum16) (2) bytes
+>          * appended to packet data
+>          */
+> -       if (unlikely(skb->len < sizeof(__sum16)))
+> +       if (unlikely(skb->len < sizeof(__wsum)))
+
+   I think this usage of __wsum is valid (I remember that I suggested it). We have 2 16-bit checksums here
+covered by that, not a 32-bit sum...
+
+>                 return;
+> -       hw_csum = (u16*)(skb_tail_pointer(skb) - sizeof(__sum16));
+> +       hw_csum = skb_tail_pointer(skb) - sizeof(__wsum);
+> +       csum_result = get_unaligned_le32(hw_csum);
+>  
+> -       if (*hw_csum == 0)
+> +       if (csum_result == IPV4_RX_CSUM_OK || csum_result == IPV6_RX_CSUM_OK)
+
+   I don't think there's a hard-and-fast way to differentiate the valid packet just from
+the 2 16-bit checksums...
+
+[...]
+>>>>>>>> +
+>>>>>>>> +	if (*hw_csum == 0)
+>>>>>>>
+>>>>>>>    You only check the 1st byte, not the full checksum!
+>>>>>>
+>>>>>> As I said earlier, "0" value on last 16 bit, means no checksum
+>> error.
+>>>>>
+>>>>>    How's that? 'hw_csum' is declared as 'u8 *'!
+>>>>
+>>>> It is my mistake, which will be taken care in the next patch by
+>>>> using
+>>> u16 *.
+
+   That won't do it, I'm afraid...
+
+   From an IRC discuassion on IRC we concluded that we don't need to check the checksum's
+value, we just need to store it for the upper layers to catch the invalid sums...
+
+[...]
+
+MBR, Sergey
