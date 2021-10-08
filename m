@@ -2,99 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FF544265A1
-	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 10:12:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74B904265AC
+	for <lists+netdev@lfdr.de>; Fri,  8 Oct 2021 10:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233479AbhJHIOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 04:14:14 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:4055 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbhJHIOL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 04:14:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1633680736; x=1665216736;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=J15oMMG9rv1wh4nQYkmbQkjSLViu6qN4eINtjWsGwtQ=;
-  b=ZMia7WYI9w/X0jINNBJNzGEluMOAkqdstXiP0vUykUGTWP9AMQqWhJys
-   hvbnZ43l1O5BhDQcRkPy62++0kJNy8Ng3/uGrWrPV/mO51x++82VS+We0
-   0gPSyRWpwqZO7HuYqwbfaQw+pRGDjHmkZd4E2vqA5e15KEIEuCKu6yH+O
-   SKrjKePsK9jePa0/3r25kvccp7K+qF3gpgNaZBrj+o4xiK8cfjgP2iVrr
-   iCgoyjlzMD+/dD06cfy9Wy7YFGqoh/40DTah2c1wNM5Yv5egrz5jMv8GA
-   0zacujanipi99ousCAYbn0GZfTqFIiH5qvtw51/H8L0x5RKACut4tad+Z
-   A==;
-IronPort-SDR: 9/e9WlaIP/j0OjIptTsxaiGbraRKTAtnBOesXTt4/aGr62zb63lBUhdOsvpfWLVE5tZFlwg38n
- 6Xk74qlZzbx9K9JYgYTmrxkCUCssgBbfRe8YJ+gBig1ahTikqdsGYPmgSL+pCtecejntKSXdC0
- hbMpUuEDAlZllbtFdL4Df23Oy2hyeLGHcOC5Z1iKulRWFXkjcULPhgRcQxj2Uil41MHBDJpRIW
- YmSXxvI2VPLQwKUiAZnRV0LBka5f8GRK805uzhwChWbPqS250WuqCbYRL/U6QmTIYvjS7cfYeH
- i58AGVTfwCB/SBa4GE30UYAM
-X-IronPort-AV: E=Sophos;i="5.85,357,1624345200"; 
-   d="scan'208";a="147259533"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Oct 2021 01:12:15 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Fri, 8 Oct 2021 01:12:14 -0700
-Received: from [10.12.68.175] (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Fri, 8 Oct 2021 01:12:12 -0700
-Subject: Re: [RFC net-next PATCH 08/16] net: macb: Clean up macb_validate
-To:     Sean Anderson <sean.anderson@seco.com>, <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-References: <20211004191527.1610759-1-sean.anderson@seco.com>
- <20211004191527.1610759-9-sean.anderson@seco.com>
- <b1401da6-5bab-2e4c-e667-aca0bbf013dc@microchip.com>
- <b898bd53-baa8-2a25-74d2-de3b75f447e3@seco.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <4ec4c642-6a31-8e33-d7bd-e7f8882d7e3b@microchip.com>
-Date:   Fri, 8 Oct 2021 10:12:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S233780AbhJHIQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 04:16:34 -0400
+Received: from mail-ua1-f45.google.com ([209.85.222.45]:34723 "EHLO
+        mail-ua1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233072AbhJHIQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 04:16:32 -0400
+Received: by mail-ua1-f45.google.com with SMTP id h4so6198069uaw.1;
+        Fri, 08 Oct 2021 01:14:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7wO+xcQh6vNN08iok37rOCPRwho9ClVLbVfs6DvZcoU=;
+        b=1V+mwmje0bbAVYIweZ9k+xoyyotUOqd0jO9GkvoXdg6/lVr/Bvc6/ykGQFLBE/BEm2
+         LdDqqh1LbwB8g5uDQkB8vTOOVvNMBKfqKyWhZkp9mpqIniq/jNlrp1sufYnkyyy7GGS3
+         jBvk+7QCLD2+oEKKAaOql3OEDuRpqrJAKpIKPNXNHlIVnFZva2qpJtKeu/84TVgFoMsq
+         Xq9PehJrJvSWAjnjLKjvLWk17nmu7oMfM3LJWMVaeu2n9Oc78YS8cfiAd6QF8xgwVg90
+         S5jMmhiiFhajs3ZBuHe3c62PV9Y3uPXEmywRwzK8makrR81SV4ENCI6LPgKUyEQ1Sfa1
+         Nvxw==
+X-Gm-Message-State: AOAM530UZyevZG0l6HMETNPC7NcScgs/sMbTv/b//XEycgYjweX09j9W
+        S+mqOcRkkyX1hXlj5g419Pip0EorYDALjJrX/MJHImVBioo=
+X-Google-Smtp-Source: ABdhPJxD3cm5x6NWNfsGlyqVJout9BqXENj3uvqqT6UeA6jfU03wynvPPBTZw2mQph2TScrcb7ByvBjOn/L2fjppPQ4=
+X-Received: by 2002:ab0:16d4:: with SMTP id g20mr1204838uaf.114.1633680876846;
+ Fri, 08 Oct 2021 01:14:36 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <b898bd53-baa8-2a25-74d2-de3b75f447e3@seco.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20211008162103.1921a7a7@canb.auug.org.au> <87tuhs5ah8.fsf@codeaurora.org>
+In-Reply-To: <87tuhs5ah8.fsf@codeaurora.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 8 Oct 2021 10:14:25 +0200
+Message-ID: <CAMuHMdUZa9o15_fGJ7Si_-bOQVcFOxtWgo_MOiKsV0FjoPeX6Q@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jouni Malinen <jouni@codeaurora.org>,
+        Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        ath11k@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sean,
+Hi Kalle,
 
-On 08/10/2021 at 02:20, Sean Anderson wrote:
-> 
-> On 10/7/21 9:22 AM, Nicolas Ferre wrote:
->> On 04/10/2021 at 21:15, Sean Anderson wrote:
->>> While we're on the subject, could someone clarify the relationship
->>> between the various speed capabilities? What's the difference between
->>> MACB_CAPS_GIGABIT_MODE_AVAILABLE, MACB_CAPS_HIGH_SPEED, MACB_CAPS_PCS,
->>> and macb_is_gem()? Would there ever be a GEM without GIGABIT_MODE?
- >>
->> Yes. GEM is a new revision of the IP that is capable of doing Gigabit
->> mode or not. sama7g5_emac_config is typically one of those doing only
->> 10/100.
- >
-> Thanks for pointing that out. But even that config still has
-> MACB_CAPS_GIGABIT_MODE_AVAILABLE. So presumably you can use it for
-> gigabit speed if you don't use MII-on-RGMII. I suppose that
-> sama7g5_emac_config is not a GEM?
+On Fri, Oct 8, 2021 at 7:55 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+> Stephen Rothwell <sfr@canb.auug.org.au> writes:
+>
+> > After merging the net-next tree, today's linux-next build (xtensa,
+> > m68k allmodconfig) failed like this:
+> >
+> > In file included from <command-line>:0:0:
+> > In function 'ath11k_peer_assoc_h_smps',
+> >     inlined from 'ath11k_peer_assoc_prepare' at drivers/net/wireless/ath/ath11k/mac.c:2362:2:
+> > include/linux/compiler_types.h:317:38: error: call to '__compiletime_assert_650' declared with attribute error: FIELD_GET: type of reg too small for mask
+> >   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+> >                                       ^
+> > include/linux/compiler_types.h:298:4: note: in definition of macro '__compiletime_assert'
+> >     prefix ## suffix();    \
+> >     ^
+> > include/linux/compiler_types.h:317:2: note: in expansion of macro '_compiletime_assert'
+> >   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+> >   ^
+> > include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
+> >  #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+> >                                      ^
+> > include/linux/bitfield.h:52:3: note: in expansion of macro 'BUILD_BUG_ON_MSG'
+> >    BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ull,  \
+> >    ^
+> > include/linux/bitfield.h:108:3: note: in expansion of macro '__BF_FIELD_CHECK'
+> >    __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: "); \
+> >    ^
+> > drivers/net/wireless/ath/ath11k/mac.c:2079:10: note: in expansion of macro 'FIELD_GET'
+> >    smps = FIELD_GET(IEEE80211_HE_6GHZ_CAP_SM_PS,
+> >           ^
+> >
+> > Caused by commit
+> >
+> >   6f4d70308e5e ("ath11k: support SMPS configuration for 6 GHz")
+>
+> Thanks for the report, weird that I don't see it on x86. I can't look at
+> this in detail now, maybe later today, but I wonder if the diff below
+> fixes the issue?
 
-There must be a confusion between sama7g5_gem_config and 
-sama7g5_emac_config here. The later one doesn't have this 
-MACB_CAPS_GIGABIT_MODE_AVAILABLE capability.
-Both are flavors of GEM and identified as such in the driver.
+It seems to be related to passing "le16_to_cpu(sta->he_6ghz_capa.capa)".
+Probably typeof(le16_to_cpu(sta->he_6ghz_capa.capa)) goes berserk.
+le16_to_cpu() is a complex macro on big-endian. I had expected to see
+a similar issue on powerpc, but I don't.
+Using an intermediate "u16 capa = le16_to_cpu(sta->he_6ghz_capa.capa)"
+fixes the problem.
 
-Best regards,
-   Nicolas
+> At least it's cleaner than using FIELD_GET(), actually ath11k should be
+> cleaned up to use xx_get_bits() all over.
+>
+> Kalle
+>
+> diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+> index d897020dd52d..3e7e569f284b 100644
+> --- a/drivers/net/wireless/ath/ath11k/mac.c
+> +++ b/drivers/net/wireless/ath/ath11k/mac.c
+> @@ -2076,8 +2076,8 @@ static void ath11k_peer_assoc_h_smps(struct ieee80211_sta *sta,
+>                 smps = ht_cap->cap & IEEE80211_HT_CAP_SM_PS;
+>                 smps >>= IEEE80211_HT_CAP_SM_PS_SHIFT;
+>         } else {
+> -               smps = FIELD_GET(IEEE80211_HE_6GHZ_CAP_SM_PS,
+> -                                le16_to_cpu(sta->he_6ghz_capa.capa));
+> +               smps = le16_get_bits(sta->he_6ghz_capa.capa,
+> +                                    IEEE80211_HE_6GHZ_CAP_SM_PS);
+>         }
 
--- 
-Nicolas Ferre
+Thanks, that works, too, so (compile)
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
