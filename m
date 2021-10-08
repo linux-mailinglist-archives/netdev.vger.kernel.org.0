@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FD41427456
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 01:42:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7849742745B
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 01:47:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243817AbhJHXos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 19:44:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39086 "EHLO mail.kernel.org"
+        id S243843AbhJHXts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 19:49:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41144 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231964AbhJHXoq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Oct 2021 19:44:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ADF9260F94;
-        Fri,  8 Oct 2021 23:42:50 +0000 (UTC)
+        id S243797AbhJHXtr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 19:49:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8085360F94;
+        Fri,  8 Oct 2021 23:47:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633736571;
-        bh=JbbAavGnxL8nsqyWmfzkPuh5K4VEGTCwznOeHApKIWM=;
+        s=k20201202; t=1633736871;
+        bh=UqtllO3PxHSjbiuQa9yuulVNPNzvIsSMdDgdTG8gkGQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S+GirTn/HDtsF+sAPzD0xRY4HHInS4CNYWAwvx4FDR18byh5xdPFlJN+11CpMb1p5
-         d33IpvVdhF+x4foem6jkwwrRfQhhjNkKZ3VCk/WdV9hPRm8gSvYrIhI362nbnopwph
-         GaWswd36C7GbM66EU2RQFvnOPwPiZBhNW45joRKDyJLOD9gHFmxyaPyzzX6C9muL2Y
-         x+j8FSXVxfdu5tdKc8c7wOTBplsno65qIC+q0dnVGp9qnSCpvIs6Vf1o2QDMjU25J+
-         fGdKmpeZjXTmI8l9+LosTeOb5EZR+xTnBN9yiu+JZpyfSRKA1nkX0XyZQOdK+v+9qA
-         Fskkww5LS1C9A==
-Date:   Fri, 8 Oct 2021 16:42:49 -0700
+        b=g1j6luM6R0PQyiO9VJxu4/A1I01RsA7HOnJSFULsfITmDyartYOQMmBM2hW0Yjb1F
+         KFst/cjv/8TQj13vbJr5CkE+eqDcn/H+iNn9NwMMxbpGW6CHDjsrxVvN05nRo9Hw8P
+         WeWxj4fdJi0D6PJSiWpVD2YMpcGQut3i910kOTSRwxpFT3844ENfyZ2fAjL13GdlBb
+         MPRFM0ID2m7LmSJeOi8c7eC4UeC7U9V3K+Q0eVuSBVmarUPRmzw1CqSjrATsv8Ajqt
+         9879MtweL4oR42Ikzllje+Oh3r1G+Pjkkv3XP8cT1Wq/1DcjYlWPWU4AD/Ha4w0EBt
+         EfN9nMg3B9/gQ==
+Date:   Fri, 8 Oct 2021 16:47:50 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        David Miller <davem@davemloft.net>,
-        Raju Rangoju <rajur@chelsio.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 0/5] PCI/VPD: Add and use pci_read/write_vpd_any()
-Message-ID: <20211008164249.26e04562@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211008225340.GA1388382@bhelgaas>
-References: <ba0b18a3-64d8-d72f-9e9f-ad3e4d7ae3b8@gmail.com>
-        <20211008225340.GA1388382@bhelgaas>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net PATCH 1/2] drivers: net: phy: at803x: fix resume for
+ QCA8327 phy
+Message-ID: <20211008164750.4007f2d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211008233426.1088-1-ansuelsmth@gmail.com>
+References: <20211008233426.1088-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,11 +43,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 Oct 2021 17:53:40 -0500 Bjorn Helgaas wrote:
-> Ideally would like reviewed-by and ack for the cxgb3 parts from Raju,
-> Jakub, David.
+On Sat,  9 Oct 2021 01:34:25 +0200 Ansuel Smith wrote:
+> From Documentation phy resume triggers phy reset and restart
+> auto-negotiation. Add a dedicated function to wait reset to finish as
+> it was notice a regression where port sometime are not reliable after a
+> suspend/resume session. The reset wait logic is copied from phy_poll_reset.
+> Add dedicated suspend function to use genphy_suspend only with QCA8337
+> phy and set only additional debug settings for QCA8327. With more test
+> it was reported that QCA8327 doesn't proprely support this mode and
+> using this cause the unreliability of the switch ports, especially the
+> malfunction of the port0.
+> 
+> Fixes: 15b9df4ece17 ("net: phy: at803x: add resume/suspend function to qca83xx phy")
 
-Raju's ack would be best, there isn't much networking there, 
-but certainly no objection for you merging the changes:
+Hm, there's some confusion here. This commit does not exist in net,
+and neither does the one from patch 2.
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+We should be fine with these going into net-next, right Andrew?
