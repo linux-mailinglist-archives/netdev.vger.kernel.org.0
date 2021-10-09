@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FB78427CC3
+	by mail.lfdr.de (Postfix) with ESMTP id 16CEC427CC2
 	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 20:46:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbhJISrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 14:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59544 "EHLO
+        id S230137AbhJISrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 14:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbhJISrf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 14:47:35 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1B30C061762
-        for <netdev@vger.kernel.org>; Sat,  9 Oct 2021 11:45:38 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id t11so8331711plq.11
-        for <netdev@vger.kernel.org>; Sat, 09 Oct 2021 11:45:38 -0700 (PDT)
+        with ESMTP id S229953AbhJISrg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 14:47:36 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A791AC061765
+        for <netdev@vger.kernel.org>; Sat,  9 Oct 2021 11:45:39 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id y1so8327644plk.10
+        for <netdev@vger.kernel.org>; Sat, 09 Oct 2021 11:45:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=zqrdA9hmbN0YxI+DGUZ6MDC55gPnl4GEcET7fUQhqS4=;
-        b=eAoQPoyNMcko6UG3y15Pj4c3DAEETUIwMmsqgk2FpfXbEcjxSoBHy51C4yTj1XaRPO
-         l2W7QaOrXfl6AiuCx9/H8PbQm/WJqQb2nC++6Zwdv93G3KkKvVR6ryeKe7D5ri16Zyee
-         GRy9dD2zsFe/RaP8kLfJ1xJJV+SmAAan2SMBX7lRIdWuB/ZwTohG9e1gf1sN6INIWD9b
-         Za0XAyKeCfIU+vZ3nBJHU/8aIfrcBzqMlZTqxtcFP3crQ7yPLS8Vw07cHLPVrDcnedWq
-         7c+eS1+jds8ieCjzF9j8hWtHuU1mUhGA83X0hjMXKGzV0khokLOSGrGiOElgxbeeBWNn
-         ud9Q==
+        bh=KFVrmI+VwxARD0YXtleUXOZ2XB+QWxCC2EAnTr4D6Sw=;
+        b=lGCCoonBWaj+qv4Spu4e1wFex4JzXSZ8w1abDEb+a522m+9NxJgh8hvLy6AAhpeV9m
+         QMw4LkTGeey1sGnyqR8iVu6sIyb5n2lKjB1ZJx9t5+80BYKYSeErsZiZTH3LoKAaJY4o
+         DL9+9StyNXG1ClSXgjUwIfFq6nS1LTEZ9bIvW28cP4VvF8C+7+hBTjH71n28ofCzX6YE
+         PrRihlMbn5u9pPtwGM3Z+0UrLPUay9RObaFQfu92yFDJpqMPp0or6l6LASlhMYNJQPTH
+         kmIZeIkiwA45p/SpdMszjeD9UhlHSaS2vRYTiZ0smtJqHP3iVLMwOhyIUSRtPtASg0tv
+         NKew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=zqrdA9hmbN0YxI+DGUZ6MDC55gPnl4GEcET7fUQhqS4=;
-        b=M6fiw/E8FrfMo1xpBT3kmP3QWwkdhKTig6mqgIZ1FZs8T9CcqwQF6W/m8+8a58F8h+
-         tVye8PRwQRg1lGLquWuyvUKEGvv5UF5FHg+eGuY2GE29eGdpf70TVEGwtPtydOTqg4zs
-         3ErEh29xTZEz8ixmx2Z0fq3He949ideWqs6w1B3qMmO53vxmWWjSRRCbHQlEiH8Veax0
-         X+4ZpysXArLVx7pwXraXwAPVJ1Y3ccZpTxqQV4WQqpkIY9fX8qvrpUIAhtCxTQP9cli6
-         GrVkpZuYTht6cmKz+XnMS5hBeY/JGP1Sn4NqzUSWudm/wW3UFmMCxVEkJyCasljOLpCp
-         BX0g==
-X-Gm-Message-State: AOAM531yv80wmS09SksBq0ybraj+Ecz0HbgJvg8l3QpVaqQBOzy6qu7C
-        2T/+39eitk6rRx0ccASn89aiYg==
-X-Google-Smtp-Source: ABdhPJy38de5D7bJE0ReUbJEeKd+J0uRdPSVx/sR8mesXezuRR8+etxJK6D2u1fcNGW4DhXJkqsvjA==
-X-Received: by 2002:a17:90a:8c90:: with SMTP id b16mr18489553pjo.71.1633805138200;
-        Sat, 09 Oct 2021 11:45:38 -0700 (PDT)
+        bh=KFVrmI+VwxARD0YXtleUXOZ2XB+QWxCC2EAnTr4D6Sw=;
+        b=AyQZhe70r38vhqqeUHBaRRVsyJEMowgtgJxfmJi0fBy9YgYxDp7y5J3yfBUlJDPHUJ
+         m2kCZ9Sgc9XbfMxa3fpry4IrJBWjzpbbx/csZJYoUGMt/hcJ5H2DWJnhBMStU6q0gPf6
+         2+cE4edMuHp/UGfAtbFoxAMrzowxNtqSneCFjQczXNToCLlLYaeOVpK21zpufYzcKk6R
+         KOUbUjZeVOPId83U9Vvj7Q6jrNBVS1w1lJO09S82iIVABVO3hS8HyrL+Fqtmta2Gd+8n
+         +0oeARBc0YsGwD23n1vX21Ab2iAgRd9xSzhPlNfg8ANR0eEh+28A9HpMsH8uv05C6fVH
+         9HWA==
+X-Gm-Message-State: AOAM532aQQZt9ziPipCqmH0IHp7IlMyTYQIlTyUrA3nSxsJcf1YOpWH8
+        Mq+75J+UXh6sPL6EUw2OSBttJw==
+X-Google-Smtp-Source: ABdhPJy5SJlJk5tf8f9rDlyoP49EOYn/mUmxGeFIGpbci1mcC+DdrZthphh6gRrczfcBG3mp3CSbVg==
+X-Received: by 2002:a17:902:760b:b0:13b:122:5ff0 with SMTP id k11-20020a170902760b00b0013b01225ff0mr15959678pll.22.1633805139182;
+        Sat, 09 Oct 2021 11:45:39 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id s30sm3368433pgo.39.2021.10.09.11.45.37
+        by smtp.gmail.com with ESMTPSA id s30sm3368433pgo.39.2021.10.09.11.45.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Oct 2021 11:45:37 -0700 (PDT)
+        Sat, 09 Oct 2021 11:45:38 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
 Cc:     drivers@pensando.io, jtoppins@redhat.com,
         Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 7/9] ionic: handle vlan id overflow
-Date:   Sat,  9 Oct 2021 11:45:21 -0700
-Message-Id: <20211009184523.73154-8-snelson@pensando.io>
+Subject: [PATCH net-next 8/9] ionic: allow adminq requests to override default error message
+Date:   Sat,  9 Oct 2021 11:45:22 -0700
+Message-Id: <20211009184523.73154-9-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211009184523.73154-1-snelson@pensando.io>
 References: <20211009184523.73154-1-snelson@pensando.io>
@@ -60,241 +60,184 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add vlans to the existing rx_filter_sync mechanics currently
-used for managing mac filters.
+The AdminQ handler has an error handler that automatically prints
+an error message when the request has failed.  However, there are
+situations where the caller can expect that it might fail and has
+an alternative strategy, thus may not want the error message sent
+to the log, such as hitting -ENOSPC when adding a new vlan id.
 
-Older versions of our firmware had no enforced limits on the
-number of vlans that the LIF could request, but requesting large
-numbers of vlans caused issues in FW memory management, so an
-arbitrary limit was added in the FW.  The FW now returns -ENOSPC
-when it hits that limit, which the driver needs to handle.
-
-Unfortunately, the FW doesn't advertise the vlan id limit,
-as it does with mac filters, so the driver won't know the
-limit until it bumps into it.  We'll grab the current vlan id
-count and use that as the limit from there on and thus prevent
-getting any more -ENOSPC errors.
-
-Just as is done for the mac filters, the device puts the device
-into promiscuous mode when -ENOSPC is seen for vlan ids, and
-the driver will track the vlans that aren't synced to the FW.
-When vlans are removed, the driver will retry the un-synced
-vlans.  If all outstanding vlans are synced, the promiscuous
-mode will be disabled.
+We add a new interface to the AdminQ API to allow for override of
+the default behavior, and an interface to the use standard error
+message formatting.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 52 +++++--------------
- .../net/ethernet/pensando/ionic/ionic_lif.h   |  2 +
- .../ethernet/pensando/ionic/ionic_rx_filter.c | 41 ++++++++++++++-
- .../ethernet/pensando/ionic/ionic_rx_filter.h |  2 +
- 4 files changed, 56 insertions(+), 41 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic.h   |  7 ++-
+ .../net/ethernet/pensando/ionic/ionic_main.c  | 47 +++++++++++++------
+ .../net/ethernet/pensando/ionic/ionic_phc.c   |  8 ++--
+ 3 files changed, 42 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 4a080612142a..893a80e36632 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1273,7 +1273,7 @@ void ionic_lif_rx_mode(struct ionic_lif *lif)
- 	rx_mode |= (nd_flags & IFF_PROMISC) ? IONIC_RX_MODE_F_PROMISC : 0;
- 	rx_mode |= (nd_flags & IFF_ALLMULTI) ? IONIC_RX_MODE_F_ALLMULTI : 0;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
+index d570d03b23f6..5e25411ff02f 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic.h
+@@ -70,8 +70,13 @@ struct ionic_admin_ctx {
+ };
  
--	/* sync the mac filters */
-+	/* sync the filters */
- 	ionic_rx_filter_sync(lif);
- 
- 	/* check for overflow state
-@@ -1284,7 +1284,8 @@ void ionic_lif_rx_mode(struct ionic_lif *lif)
- 	 */
- 	nfilters = le32_to_cpu(lif->identity->eth.max_ucast_filters);
- 
--	if ((lif->nucast + lif->nmcast) >= nfilters) {
-+	if (((lif->nucast + lif->nmcast) >= nfilters) ||
-+	    (lif->max_vlans && lif->nvlans >= lif->max_vlans)) {
- 		rx_mode |= IONIC_RX_MODE_F_PROMISC;
- 		rx_mode |= IONIC_RX_MODE_F_ALLMULTI;
- 	} else {
-@@ -1672,59 +1673,30 @@ static int ionic_vlan_rx_add_vid(struct net_device *netdev, __be16 proto,
- 				 u16 vid)
- {
- 	struct ionic_lif *lif = netdev_priv(netdev);
--	struct ionic_admin_ctx ctx = {
--		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
--		.cmd.rx_filter_add = {
--			.opcode = IONIC_CMD_RX_FILTER_ADD,
--			.lif_index = cpu_to_le16(lif->index),
--			.match = cpu_to_le16(IONIC_RX_FILTER_MATCH_VLAN),
--			.vlan.vlan = cpu_to_le16(vid),
--		},
--	};
- 	int err;
- 
--	netdev_dbg(netdev, "rx_filter add VLAN %d\n", vid);
--	err = ionic_adminq_post_wait(lif, &ctx);
-+	err = ionic_lif_vlan_add(lif, vid);
- 	if (err)
- 		return err;
- 
--	spin_lock_bh(&lif->rx_filters.lock);
--	err = ionic_rx_filter_save(lif, 0, IONIC_RXQ_INDEX_ANY, 0, &ctx,
--				   IONIC_FILTER_STATE_SYNCED);
--	spin_unlock_bh(&lif->rx_filters.lock);
-+	ionic_lif_rx_mode(lif);
- 
--	return err;
-+	return 0;
+ int ionic_adminq_post(struct ionic_lif *lif, struct ionic_admin_ctx *ctx);
+-int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx, int err);
++int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx,
++		      const int err, const bool do_msg);
+ int ionic_adminq_post_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx);
++int ionic_adminq_post_wait_nomsg(struct ionic_lif *lif, struct ionic_admin_ctx *ctx);
++void ionic_adminq_netdev_err_print(struct ionic_lif *lif, u8 opcode,
++				   u8 status, int err);
++
+ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_wait);
+ int ionic_set_dma_mask(struct ionic *ionic);
+ int ionic_setup(struct ionic *ionic);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index bb49f1b8ef67..875f4ec42efe 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -212,24 +212,28 @@ static void ionic_adminq_flush(struct ionic_lif *lif)
+ 	spin_unlock_irqrestore(&lif->adminq_lock, irqflags);
  }
  
- static int ionic_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto,
- 				  u16 vid)
++void ionic_adminq_netdev_err_print(struct ionic_lif *lif, u8 opcode,
++				   u8 status, int err)
++{
++	netdev_err(lif->netdev, "%s (%d) failed: %s (%d)\n",
++		   ionic_opcode_to_str(opcode), opcode,
++		   ionic_error_to_str(status), err);
++}
++
+ static int ionic_adminq_check_err(struct ionic_lif *lif,
+ 				  struct ionic_admin_ctx *ctx,
+-				  bool timeout)
++				  const bool timeout,
++				  const bool do_msg)
  {
- 	struct ionic_lif *lif = netdev_priv(netdev);
--	struct ionic_admin_ctx ctx = {
--		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
--		.cmd.rx_filter_del = {
--			.opcode = IONIC_CMD_RX_FILTER_DEL,
--			.lif_index = cpu_to_le16(lif->index),
--		},
--	};
--	struct ionic_rx_filter *f;
--
--	spin_lock_bh(&lif->rx_filters.lock);
--
--	f = ionic_rx_filter_by_vlan(lif, vid);
--	if (!f) {
--		spin_unlock_bh(&lif->rx_filters.lock);
--		return -ENOENT;
--	}
+-	struct net_device *netdev = lif->netdev;
+-	const char *opcode_str;
+-	const char *status_str;
+ 	int err = 0;
+ 
+ 	if (ctx->comp.comp.status || timeout) {
+-		opcode_str = ionic_opcode_to_str(ctx->cmd.cmd.opcode);
+-		status_str = ionic_error_to_str(ctx->comp.comp.status);
+ 		err = timeout ? -ETIMEDOUT :
+ 				ionic_error_to_errno(ctx->comp.comp.status);
+ 
+-		netdev_err(netdev, "%s (%d) failed: %s (%d)\n",
+-			   opcode_str, ctx->cmd.cmd.opcode,
+-			   timeout ? "TIMEOUT" : status_str, err);
++		if (do_msg)
++			ionic_adminq_netdev_err_print(lif, ctx->cmd.cmd.opcode,
++						      ctx->comp.comp.status, err);
+ 
+ 		if (timeout)
+ 			ionic_adminq_flush(lif);
+@@ -298,7 +302,8 @@ int ionic_adminq_post(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
+ 	return err;
+ }
+ 
+-int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx, int err)
++int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx,
++		      const int err, const bool do_msg)
+ {
+ 	struct net_device *netdev = lif->netdev;
+ 	unsigned long time_limit;
+@@ -310,7 +315,7 @@ int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx, int er
+ 	name = ionic_opcode_to_str(ctx->cmd.cmd.opcode);
+ 
+ 	if (err) {
+-		if (!test_bit(IONIC_LIF_F_FW_RESET, lif->state))
++		if (do_msg && !test_bit(IONIC_LIF_F_FW_RESET, lif->state))
+ 			netdev_err(netdev, "Posting of %s (%d) failed: %d\n",
+ 				   name, ctx->cmd.cmd.opcode, err);
+ 		return err;
+@@ -328,8 +333,9 @@ int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx, int er
+ 
+ 		/* interrupt the wait if FW stopped */
+ 		if (test_bit(IONIC_LIF_F_FW_RESET, lif->state)) {
+-			netdev_err(netdev, "%s (%d) interrupted, FW in reset\n",
+-				   name, ctx->cmd.cmd.opcode);
++			if (do_msg)
++				netdev_err(netdev, "%s (%d) interrupted, FW in reset\n",
++					   name, ctx->cmd.cmd.opcode);
+ 			return -ENXIO;
+ 		}
+ 
+@@ -339,7 +345,9 @@ int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx, int er
+ 	dev_dbg(lif->ionic->dev, "%s: elapsed %d msecs\n",
+ 		__func__, jiffies_to_msecs(time_done - time_start));
+ 
+-	return ionic_adminq_check_err(lif, ctx, time_after_eq(time_done, time_limit));
++	return ionic_adminq_check_err(lif, ctx,
++				      time_after_eq(time_done, time_limit),
++				      do_msg);
+ }
+ 
+ int ionic_adminq_post_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
+@@ -348,7 +356,16 @@ int ionic_adminq_post_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
+ 
+ 	err = ionic_adminq_post(lif, ctx);
+ 
+-	return ionic_adminq_wait(lif, ctx, err);
++	return ionic_adminq_wait(lif, ctx, err, true);
++}
++
++int ionic_adminq_post_wait_nomsg(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
++{
 +	int err;
- 
--	netdev_dbg(netdev, "rx_filter del VLAN %d (id %d)\n",
--		   vid, f->filter_id);
-+	err = ionic_lif_vlan_del(lif, vid);
-+	if (err)
-+		return err;
- 
--	ctx.cmd.rx_filter_del.filter_id = cpu_to_le32(f->filter_id);
--	ionic_rx_filter_free(lif, f);
--	spin_unlock_bh(&lif->rx_filters.lock);
-+	ionic_lif_rx_mode(lif);
- 
--	return ionic_adminq_post_wait(lif, &ctx);
-+	return 0;
++
++	err = ionic_adminq_post(lif, ctx);
++
++	return ionic_adminq_wait(lif, ctx, err, false);
  }
  
- int ionic_lif_rss_config(struct ionic_lif *lif, const u16 types,
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index 541aa54e4ffd..9f7ab2f17f93 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -192,6 +192,8 @@ struct ionic_lif {
- 	u16 lif_type;
- 	unsigned int nmcast;
- 	unsigned int nucast;
-+	unsigned int nvlans;
-+	unsigned int max_vlans;
- 	char name[IONIC_LIF_NAME_MAX_SZ];
+ static void ionic_dev_cmd_clean(struct ionic *ionic)
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_phc.c b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+index eed2db69d708..887046838b3b 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_phc.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+@@ -348,7 +348,7 @@ static int ionic_phc_adjfine(struct ptp_clock_info *info, long scaled_ppm)
  
- 	union ionic_lif_identity *identity;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-index 40a12b9df982..366f15794866 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-@@ -337,8 +337,16 @@ static int ionic_lif_filter_add(struct ionic_lif *lif,
+ 	spin_unlock_irqrestore(&phc->lock, irqflags);
  
- 	/* Don't bother with the write to FW if we know there's no room,
- 	 * we can try again on the next sync attempt.
-+	 * Since the FW doesn't have a way to tell us the vlan limit,
-+	 * we start max_vlans at 0 until we hit the ENOSPC error.
- 	 */
- 	switch (le16_to_cpu(ctx.cmd.rx_filter_add.match)) {
-+	case IONIC_RX_FILTER_MATCH_VLAN:
-+		netdev_dbg(lif->netdev, "%s: rx_filter add VLAN %d\n",
-+			   __func__, ctx.cmd.rx_filter_add.vlan.vlan);
-+		if (lif->max_vlans && lif->nvlans >= lif->max_vlans)
-+			err = -ENOSPC;
-+		break;
- 	case IONIC_RX_FILTER_MATCH_MAC:
- 		netdev_dbg(lif->netdev, "%s: rx_filter add ADDR %pM\n",
- 			   __func__, ctx.cmd.rx_filter_add.mac.addr);
-@@ -368,13 +376,19 @@ static int ionic_lif_filter_add(struct ionic_lif *lif,
- 
- 		spin_unlock_bh(&lif->rx_filters.lock);
- 
--		if (err == -ENOSPC)
-+		if (err == -ENOSPC) {
-+			if (le16_to_cpu(ctx.cmd.rx_filter_add.match) == IONIC_RX_FILTER_MATCH_VLAN)
-+				lif->max_vlans = lif->nvlans;
- 			return 0;
-+		}
- 
- 		return err;
- 	}
- 
- 	switch (le16_to_cpu(ctx.cmd.rx_filter_add.match)) {
-+	case IONIC_RX_FILTER_MATCH_VLAN:
-+		lif->nvlans++;
-+		break;
- 	case IONIC_RX_FILTER_MATCH_MAC:
- 		if (is_multicast_ether_addr(ctx.cmd.rx_filter_add.mac.addr))
- 			lif->nmcast++;
-@@ -413,6 +427,16 @@ int ionic_lif_addr_add(struct ionic_lif *lif, const u8 *addr)
- 	return ionic_lif_filter_add(lif, &ac);
+-	return ionic_adminq_wait(phc->lif, &ctx, err);
++	return ionic_adminq_wait(phc->lif, &ctx, err, true);
  }
  
-+int ionic_lif_vlan_add(struct ionic_lif *lif, const u16 vid)
-+{
-+	struct ionic_rx_filter_add_cmd ac = {
-+		.match = cpu_to_le16(IONIC_RX_FILTER_MATCH_VLAN),
-+		.vlan.vlan = cpu_to_le16(vid),
-+	};
-+
-+	return ionic_lif_filter_add(lif, &ac);
-+}
-+
- static int ionic_lif_filter_del(struct ionic_lif *lif,
- 				struct ionic_rx_filter_add_cmd *ac)
- {
-@@ -435,6 +459,11 @@ static int ionic_lif_filter_del(struct ionic_lif *lif,
- 	}
+ static int ionic_phc_adjtime(struct ptp_clock_info *info, s64 delta)
+@@ -373,7 +373,7 @@ static int ionic_phc_adjtime(struct ptp_clock_info *info, s64 delta)
  
- 	switch (le16_to_cpu(ac->match)) {
-+	case IONIC_RX_FILTER_MATCH_VLAN:
-+		netdev_dbg(lif->netdev, "%s: rx_filter del VLAN %d id %d\n",
-+			   __func__, ac->vlan.vlan, f->filter_id);
-+		lif->nvlans--;
-+		break;
- 	case IONIC_RX_FILTER_MATCH_MAC:
- 		netdev_dbg(lif->netdev, "%s: rx_filter del ADDR %pM id %d\n",
- 			   __func__, ac->mac.addr, f->filter_id);
-@@ -471,6 +500,16 @@ int ionic_lif_addr_del(struct ionic_lif *lif, const u8 *addr)
- 	return ionic_lif_filter_del(lif, &ac);
+ 	spin_unlock_irqrestore(&phc->lock, irqflags);
+ 
+-	return ionic_adminq_wait(phc->lif, &ctx, err);
++	return ionic_adminq_wait(phc->lif, &ctx, err, true);
  }
  
-+int ionic_lif_vlan_del(struct ionic_lif *lif, const u16 vid)
-+{
-+	struct ionic_rx_filter_add_cmd ac = {
-+		.match = cpu_to_le16(IONIC_RX_FILTER_MATCH_VLAN),
-+		.vlan.vlan = cpu_to_le16(vid),
-+	};
-+
-+	return ionic_lif_filter_del(lif, &ac);
-+}
-+
- struct sync_item {
- 	struct list_head list;
- 	struct ionic_rx_filter f;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
-index a66e35f0833b..87b2666f248b 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
-@@ -44,5 +44,7 @@ struct ionic_rx_filter *ionic_rx_filter_rxsteer(struct ionic_lif *lif);
- void ionic_rx_filter_sync(struct ionic_lif *lif);
- int ionic_lif_list_addr(struct ionic_lif *lif, const u8 *addr, bool mode);
- int ionic_rx_filters_need_sync(struct ionic_lif *lif);
-+int ionic_lif_vlan_add(struct ionic_lif *lif, const u16 vid);
-+int ionic_lif_vlan_del(struct ionic_lif *lif, const u16 vid);
+ static int ionic_phc_settime64(struct ptp_clock_info *info,
+@@ -402,7 +402,7 @@ static int ionic_phc_settime64(struct ptp_clock_info *info,
  
- #endif /* _IONIC_RX_FILTER_H_ */
+ 	spin_unlock_irqrestore(&phc->lock, irqflags);
+ 
+-	return ionic_adminq_wait(phc->lif, &ctx, err);
++	return ionic_adminq_wait(phc->lif, &ctx, err, true);
+ }
+ 
+ static int ionic_phc_gettimex64(struct ptp_clock_info *info,
+@@ -459,7 +459,7 @@ static long ionic_phc_aux_work(struct ptp_clock_info *info)
+ 
+ 	spin_unlock_irqrestore(&phc->lock, irqflags);
+ 
+-	ionic_adminq_wait(phc->lif, &ctx, err);
++	ionic_adminq_wait(phc->lif, &ctx, err, true);
+ 
+ 	return phc->aux_work_delay;
+ }
 -- 
 2.17.1
 
