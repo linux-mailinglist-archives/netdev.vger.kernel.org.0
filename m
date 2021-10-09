@@ -2,90 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AC674276B0
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 04:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94BC1427785
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 07:20:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244184AbhJIChL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 22:37:11 -0400
-Received: from smtprelay0169.hostedemail.com ([216.40.44.169]:57260 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232289AbhJIChK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 22:37:10 -0400
-Received: from omf01.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id EB69930C9E;
-        Sat,  9 Oct 2021 02:35:13 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf01.hostedemail.com (Postfix) with ESMTPA id 42B2717274;
-        Sat,  9 Oct 2021 02:35:13 +0000 (UTC)
-Message-ID: <ad38b125c5a95d283ce8787c245a4c19f3aa3492.camel@perches.com>
-Subject: Re: [PATCH net-next 3/5] ethernet: tulip: remove direct
- netdev->dev_addr writes
-From:   Joe Perches <joe@perches.com>
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-Date:   Fri, 08 Oct 2021 19:35:11 -0700
-In-Reply-To: <20211008175913.3754184-4-kuba@kernel.org>
-References: <20211008175913.3754184-1-kuba@kernel.org>
-         <20211008175913.3754184-4-kuba@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+        id S244288AbhJIFWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 01:22:42 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:54167 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244290AbhJIFWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 01:22:16 -0400
+Received: by mail-il1-f200.google.com with SMTP id x4-20020a923004000000b00258f6abf8feso7120353ile.20
+        for <netdev@vger.kernel.org>; Fri, 08 Oct 2021 22:20:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=qKSYJ/XBrp/2GqQtjIUo2OP1HXBHWhXQVpcO4ycWl/A=;
+        b=hYfrjaex78UkE0bG0wmrmUpvCaPwvEkXh63aFRmsxM8Z6iqlwZn31aMb/Dxa+BBQdA
+         R/f5LSH9azFSZXHCFehMiaWCWRifZRKc8PjzYZUlp/iBopqNEfpmdI6CpPWya32dBx93
+         GePrdtxT3wBI4zg59oL/ZmdBsL1Mxgr0gnxRuk2sUyohOPqcOC0WgQ1f1ELQeBJg3X9A
+         xkuKv0Enm44i0h+kXpbVE/v8raADhav9eF3r04IoDt07VzGza9u65m4hl4GP/crsD2Aq
+         6V/G8GCZMdG9EH1T1BUqwhYaf7m7vvA0c0VWYGTNlxIpm1lKlQLqCfzr0zy6PLIsS8h2
+         4x2Q==
+X-Gm-Message-State: AOAM531lRKfwsDvxZ1T1ErHG9Wrwn4zXvxti/Cq1pNhPWqWXV3oRo/VG
+        1yzursVEkpXybxd7WOE8PipK7ePL8tMVr7SpmJ+EEcUYyZpA
+X-Google-Smtp-Source: ABdhPJzu4OoJGujlCIRLF4RCXEwDKkpm4BZzZ5NR365YWHMJvHJmr2En5KhAZGtRygW8kXhmUxJpnCHQnUGc8/a2mGvdwXDrYpVb
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.10
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 42B2717274
-X-Stat-Signature: z73mwngeniomo9ua7tn35sn4knasozpm
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19YcPgUMOEaQLBbbhZDzK7eTb+QBOWbZFM=
-X-HE-Tag: 1633746913-642093
+X-Received: by 2002:a05:6638:3052:: with SMTP id u18mr10288726jak.148.1633756820093;
+ Fri, 08 Oct 2021 22:20:20 -0700 (PDT)
+Date:   Fri, 08 Oct 2021 22:20:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e93f4205cde4a661@google.com>
+Subject: [syzbot] KMSAN: uninit-value in hci_loglink_complete_evt
+From:   syzbot <syzbot+5da5c010bb611b9399a8@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-10-08 at 10:59 -0700, Jakub Kicinski wrote:
-> Consify the casts of netdev->dev_addr.
-> 
-> Convert pointless to eth_hw_addr_set() where possible.
-> 
-> Use local buffers in a number of places.
-[]
-> diff --git a/drivers/net/ethernet/dec/tulip/de2104x.c b/drivers/net/ethernet/dec/tulip/de2104x.c
-[]
-> @@ -666,8 +666,8 @@ static void build_setup_frame_hash(u16 *setup_frm, struct net_device *dev)
->  	struct de_private *de = netdev_priv(dev);
->  	u16 hash_table[32];
->  	struct netdev_hw_addr *ha;
-> +	const u16 *eaddrs;
->  	int i;
-> -	u16 *eaddrs;
+Hello,
 
-Seems pointless to move the eaddrs location
+syzbot found the following issue on:
 
-> @@ -1821,8 +1823,7 @@ static void de21041_get_srom_info(struct de_private *de)
->  #endif
-> 
->  	/* store MAC address */
-> -	for (i = 0; i < 6; i ++)
-> -		de->dev->dev_addr[i] = ee_data[i + sa_offset];
-> +	eth_hw_addr_set(de->dev, &ee_data[i + sa_offset]);
+HEAD commit:    90f502f5d016 kmsan: speculatively unpoison curent_thread_i..
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=10a65fcb300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=978f1b2d7a5aad3e
+dashboard link: https://syzkaller.appspot.com/bug?extid=5da5c010bb611b9399a8
+compiler:       clang version 14.0.0 (git@github.com:llvm/llvm-project.git 0996585c8e3b3d409494eb5f1cad714b9e1f7fb5), GNU ld (GNU Binutils for Debian) 2.35.2
 
-what is the content of i here?
+Unfortunately, I don't have any reproducer for this issue yet.
 
-Perhaps you want
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5da5c010bb611b9399a8@syzkaller.appspotmail.com
 
-	eth_hw_addr_set(de->dev, &ee_data[sa_offset]);
+=====================================================
+BUG: KMSAN: uninit-value in hci_conn_hash_lookup_handle include/net/bluetooth/hci_core.h:988 [inline]
+BUG: KMSAN: uninit-value in hci_loglink_complete_evt+0x18c/0x580 net/bluetooth/hci_event.c:5088
+ hci_conn_hash_lookup_handle include/net/bluetooth/hci_core.h:988 [inline]
+ hci_loglink_complete_evt+0x18c/0x580 net/bluetooth/hci_event.c:5088
+ hci_event_packet+0x11fc/0x22e0 net/bluetooth/hci_event.c:6462
+ hci_rx_work+0x6ae/0xd10 net/bluetooth/hci_core.c:5136
+ process_one_work+0xdc7/0x1760 kernel/workqueue.c:2297
+ worker_thread+0x1101/0x22b0 kernel/workqueue.c:2444
+ kthread+0x66b/0x780 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30
+
+Uninit was created at:
+ slab_alloc_node mm/slub.c:3221 [inline]
+ __kmalloc_node_track_caller+0x8d2/0x1340 mm/slub.c:4955
+ kmalloc_reserve net/core/skbuff.c:355 [inline]
+ __alloc_skb+0x4db/0xe40 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1116 [inline]
+ bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
+ vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
+ vhci_write+0x182/0x8f0 drivers/bluetooth/hci_vhci.c:285
+ call_write_iter include/linux/fs.h:2163 [inline]
+ new_sync_write fs/read_write.c:507 [inline]
+ vfs_write+0x1295/0x1f20 fs/read_write.c:594
+ ksys_write+0x28c/0x520 fs/read_write.c:647
+ __do_sys_write fs/read_write.c:659 [inline]
+ __se_sys_write fs/read_write.c:656 [inline]
+ __x64_sys_write+0xdb/0x120 fs/read_write.c:656
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+=====================================================
+Kernel panic - not syncing: panic_on_kmsan set ...
+CPU: 1 PID: 6382 Comm: kworker/u5:2 Tainted: G    B             5.15.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: hci4 hci_rx_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x1ff/0x28e lib/dump_stack.c:106
+ dump_stack+0x25/0x28 lib/dump_stack.c:113
+ panic+0x44f/0xdeb kernel/panic.c:232
+ kmsan_report+0x2ee/0x300 mm/kmsan/report.c:186
+ __msan_warning+0xd7/0x150 mm/kmsan/instrumentation.c:208
+ hci_conn_hash_lookup_handle include/net/bluetooth/hci_core.h:988 [inline]
+ hci_loglink_complete_evt+0x18c/0x580 net/bluetooth/hci_event.c:5088
+ hci_event_packet+0x11fc/0x22e0 net/bluetooth/hci_event.c:6462
+ hci_rx_work+0x6ae/0xd10 net/bluetooth/hci_core.c:5136
+ process_one_work+0xdc7/0x1760 kernel/workqueue.c:2297
+ worker_thread+0x1101/0x22b0 kernel/workqueue.c:2444
+ kthread+0x66b/0x780 kernel/kthread.c:319
+ ret_from_fork+0x1f/0x30
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
 
-> diff --git a/drivers/net/ethernet/dec/tulip/dmfe.c b/drivers/net/ethernet/dec/tulip/dmfe.c
-[]
-> @@ -476,8 +476,7 @@ static int dmfe_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	}
->  
-> 
->  	/* Set Node address */
-> -	for (i = 0; i < 6; i++)
-> -		dev->dev_addr[i] = db->srom[20 + i];
-> +	eth_hw_addr_set(dev, &db->srom[20 + i]);
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-here too
-
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
