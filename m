@@ -2,88 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EFF7427790
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 07:37:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A29384277D4
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 09:06:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244289AbhJIFjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 01:39:15 -0400
-Received: from mail-yb1-f175.google.com ([209.85.219.175]:44782 "EHLO
-        mail-yb1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbhJIFjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 01:39:14 -0400
-Received: by mail-yb1-f175.google.com with SMTP id s64so25518242yba.11;
-        Fri, 08 Oct 2021 22:37:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aIghcbJ60FBCmsTSZcidGZHdsZIgJ4C2Kwndg3+KdLc=;
-        b=GSRQ1Iaf1jcG6jkjDcE0B8hBNwjtTQ4mbDh4TEU1M0ryezASe86tpYTv9qBlFiPagV
-         0mOzC2xtjSIGX/LLi4BHeLJy0yDZkYncrVPdPuUleydzjo0GGcOF1zXVENu9wwUi8mr0
-         QFCfJwknKg16eYQ19JaarW9giEtkdoIJCNn36fsdUT6BKWgRP17/fRIVV4SlgUaKA1iN
-         f6QEw1wJP0XwSwpMn3LNUnUHrE0XkFp0zJlCWyNAgQdRU10qXhL40FqSD0ZyQsIfhHPv
-         DuUS9Dk8SJi5XuhcFayv/JGNevgGZcnQrqeZdjcyIx3jgzOfj1ylaI0wQ6d7cP5FAUaZ
-         Pdeg==
-X-Gm-Message-State: AOAM532jXNoziPEEQG1Xma1tenb3tIzCE3M5Toi64XQfIIcIviqsRT9d
-        HI1KThQXJpoZ2J45OshLZ4NdIbJiw/XNgA0vSsajTDd22nk=
-X-Google-Smtp-Source: ABdhPJwapPhvRWOK7oAubzYHeJAPIsGJxNM1/egYo2N66jARLGywT7RkiLRh5RujnE7WH05gmBL1JvYmHW5mG+9ozEE=
-X-Received: by 2002:a25:4146:: with SMTP id o67mr8514459yba.113.1633757837390;
- Fri, 08 Oct 2021 22:37:17 -0700 (PDT)
+        id S232656AbhJIHHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 03:07:30 -0400
+Received: from albireo.enyo.de ([37.24.231.21]:42072 "EHLO albireo.enyo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229849AbhJIHH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Oct 2021 03:07:27 -0400
+X-Greylist: delayed 310 seconds by postgrey-1.27 at vger.kernel.org; Sat, 09 Oct 2021 03:07:27 EDT
+Received: from [172.17.203.2] (port=33837 helo=deneb.enyo.de)
+        by albireo.enyo.de ([172.17.140.2]) with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1mZ6L9-0008IF-KG; Sat, 09 Oct 2021 07:00:15 +0000
+Received: from fw by deneb.enyo.de with local (Exim 4.94.2)
+        (envelope-from <fw@deneb.enyo.de>)
+        id 1mZ6H5-000KtO-B1; Sat, 09 Oct 2021 08:56:03 +0200
+From:   Florian Weimer <fw@deneb.enyo.de>
+To:     "Cufi, Carles" <Carles.Cufi@nordicsemi.no>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jukka.rissanen@linux.intel.com" <jukka.rissanen@linux.intel.com>,
+        "johan.hedberg@intel.com" <johan.hedberg@intel.com>,
+        "Lubos, Robert" <Robert.Lubos@nordicsemi.no>,
+        "Bursztyka, Tomasz" <tomasz.bursztyka@intel.com>,
+        "linux-toolchains@vger.kernel.org" <linux-toolchains@vger.kernel.org>
+Subject: Re: Non-packed structures in IP headers
+References: <AS8PR05MB78952FE7E8D82245D309DEBCE7AA9@AS8PR05MB7895.eurprd05.prod.outlook.com>
+        <87bl48v74v.fsf@oldenburg.str.redhat.com>
+        <DB9PR05MB7898339C06B9317EBAB13437E7AE9@DB9PR05MB7898.eurprd05.prod.outlook.com>
+Date:   Sat, 09 Oct 2021 08:56:03 +0200
+In-Reply-To: <DB9PR05MB7898339C06B9317EBAB13437E7AE9@DB9PR05MB7898.eurprd05.prod.outlook.com>
+        (Carles Cufi's message of "Mon, 4 Oct 2021 10:30:34 +0000")
+Message-ID: <875yu6bsak.fsf@mid.deneb.enyo.de>
 MIME-Version: 1.0
-References: <20211003044049.568441-1-mailhol.vincent@wanadoo.fr>
-In-Reply-To: <20211003044049.568441-1-mailhol.vincent@wanadoo.fr>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Sat, 9 Oct 2021 14:37:06 +0900
-Message-ID: <CAMZ6RqKm+nLPd2oHgNebeDh2hSOMVnV7cJn12FM6NLpVaOz2iA@mail.gmail.com>
-Subject: Re: [PATCH v1] can: netlink: report the CAN controller mode supported flags
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can <linux-can@vger.kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun. 3 Oct 2021 at 13:40, Vincent Mailhol <mailhol.vincent@wanadoo.fr> wrote:
-> This patch introduces a method for the user to check both the
-> supported and the static capabilities.
->
-> Currently, the CAN netlink interface provides no easy ways to check
-> the capabilities of a given controller. The only method from the
-> command line is to try each CAN_CTRLMODE_ individually to check
-> whether the netlink interface returns an -EOPNOTSUPP error or not
-> (alternatively, one may find it easier to directly check the source
-> code of the driver instead...)
->
-> It appears that, currently, the struct can_ctrlmode::mask field is
-> only used in one direction: from the userland to the kernel. So we can
-> just reuse this field in the other direction (from the kernel to
-> userland). But, because the semantic is different, we use a union to
-> give this field a proper name: supported.
->
-> Below table explains how the two fields can_ctrlmode::supported and
-> can_ctrlmode::flags, when masked with any of the CAN_CTRLMODE_* bit
-> flags, allow us to identify both the supported and the static
-> capabilities:
->
->  supported &    flags &         Controller capabilities
->  CAN_CTRLMODE_* CAN_CTRLMODE_*
->  ------------------------------------------------------------------------
->  false          false           Feature not supported (always disabled)
->  false          true            Static feature (always enabled)
->  true           false           Feature supported but disabled
->  true           true            Feature supported and enabled
->
-> N.B.: This patch relies on the fact that a given CAN_CTRLMODE_*
-> feature can not be set for both can_priv::ctrlmode_supported and
-> can_priv::ctrlmode_static at the same time. c.f. comments in struct
-> can_priv [1]. Else, there would be no way to distinguish which
-> features were statically enabled.
+* Carles Cufi:
 
-Actually, can_priv::ctrlmode_static can be derived from the other
-ctrlmode fields. I will send a v2 in which I will add a patch to
-replace that field with an inline function.
+>> * Carles Cufi:
+>> 
+>> > I was looking through the structures for IPv{4,6} packet headers and
+>> > noticed that several of those that seem to be used to parse a packet
+>> > directly from the wire are not declared as packed. This surprised me
+>> > because, although I did find that provisions are made so that the
+>> > alignment of the structure, it is still technically possible for the
+>> > compiler to inject padding bytes inside those structures, since AFAIK
+>> > the C standard makes no guarantees about padding unless it's
+>> > instructed to pack the structure.
+>> 
+>> The C standards do not make such guarantees, but the platform ABI
+>> standards describe struct layout and ensure that there is no padding.
+>> Linux relies on that not just for networking, but also for the userspace
+>> ABI, support for separately compiled kernel modules, and in other places.
+>
+> That makes sense, but aren't ABI standards different for every
+> architecture? For example, I checked the Arm AAPCS[1] and it states:
+>
+> "The size of an aggregate shall be the smallest multiple of its
+> alignment that is sufficient to hold all of its members."
+>
+> Which, unless I am reading this wrong, means that the compiler would
+> indeed insert padding if the size of the IP headers structs was not
+> a multiple of 4. In this particular case, the struct sizes for the
+> IP headers are 20 and 40 bytes respectively, so there will be no
+> padding inserted. But I only checked a single architecture's ABI (or
+> Procedure Call Standard) documentation, is this true for all archs?
 
-Yours sincerely,
-Vincent Mailhol
+For structure layout in memory, there is a large overlap between ABIs.
+There is divergence around long long (which is easily avoided by
+adding padding manually), and potentially bit fileds (but I haven't
+looked at that).
+
+Things only get weird for pass-by-value structs and unions and return
+types.
