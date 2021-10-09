@@ -2,194 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DA65427DF8
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 00:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 684DB427E05
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 01:16:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231730AbhJIWsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 18:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
+        id S231267AbhJIXSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 19:18:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231235AbhJIWsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 18:48:30 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC35C061762;
-        Sat,  9 Oct 2021 15:46:32 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id g8so50954043edt.7;
-        Sat, 09 Oct 2021 15:46:32 -0700 (PDT)
+        with ESMTP id S231143AbhJIXSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 19:18:11 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2D8C061570;
+        Sat,  9 Oct 2021 16:16:13 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id i20so34765510edj.10;
+        Sat, 09 Oct 2021 16:16:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PU/BRwwO7gA0CJ8tiOcNIpgU+bIB6NLlMgIvw5Lst8o=;
-        b=p/AZeaGwLoeehQlG6y7nficdxyJXYUe/bRQyCGo2vhVd09n3MS0xkOgIoi8Bon7s0V
-         KPf4DqmzltPtuctEYhRtjjIP6m91Fri4u/v+zD9RZWQWzemGMfyumJv+vef6V8Ii8tpi
-         1vt/aFY2jrh7e2hlFZPgSka6ibOlLkf2wqk+pEnNhnfZPAlEp1eQByT9+VpokMpW7UzE
-         kW7/Hr1YzziC4kKAjDcjLnU1yEKCb5SyHIPxrwkRt6Pgd9RqPi0epfarShKMRO7Gveih
-         ZsnjCBypa3bg2pln7mdnpvNqzCOZ7EUwOwXgGeMS54o0Jgj1wLsyco9pYe8FeuT1GS6v
-         K/Yg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hOSRe/Yki+d7ofiMIHxMQp0x1aWjsfq22qP+igPVVo4=;
+        b=KRob+oPfn99rJQUaa23vS6tW9Wf6YlkrHW4Phl8Uy+UPqlxCKb+dgtDFy+4rHpwFxT
+         0GzShpFMAw7vamGlW/jej+YfmFdH6UJnSpJDRckMm67h2KSJd9HMRS/F6ORu8Z6Ni5M3
+         XadWYQtXdzbqPXjLKQ22evhkigjL6IVzM+ledy2j1hhUkWuq6+49HSE38GifQDMqJoTN
+         l7acBijb5i9Fn9qYzRvdU6JvCC85Eq6266VxJeo1pUzF+eQrEOg5OA3rilZG+F7rvcx0
+         UR5i+uMnU2faua+WTkCkaPsfq+JIXAD4ia3HCXEQiZrYUpsMGQa7gXeffirTVu42iXZe
+         Oxsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PU/BRwwO7gA0CJ8tiOcNIpgU+bIB6NLlMgIvw5Lst8o=;
-        b=Bo6KT8OJNTdNBOvW8RWHc1MUCZqBryKnl6HOhra5JXmwkKe38W2HRDc7yKdjYk5E9O
-         msQyeGnBJHBKrCikHPyI+P+UEyRG9LnpBgxJ06U4PyMY5eNmjdTYSrEEvRh2g8DNV1d9
-         p2zPrZfBpuoDeggzZ0xZcIktoWLnwfRKt8hL7mRvM4l7SfaPKl7SdNc5oSmfSXv5xQJV
-         Rr+d/xjNTytiBOmybTn+MhpwSJmWbnN4bW7VHpY9Sl//D+gZVUQmfbozm6mSDhmhkRdI
-         HxhBFO57JVijTodP80jt96xqXClBFxETdIqKI5xXut4kXARrb6LfdR+z6Gz9O7RpH8HQ
-         RJeQ==
-X-Gm-Message-State: AOAM533LTHsr/JD5jQtQ/4nricAL7BgfeoWWkOl/wgsbxRyCkW/t7Mop
-        ATf38SuxFLWZy8bejwpTn88=
-X-Google-Smtp-Source: ABdhPJwph8+m+uUd25VX5KJa4ssD2Tl9fr6zeHWuawo4FcPaj0lsLN2r/sEIEudr9MKf/HgtgLBwIw==
-X-Received: by 2002:a50:fc8e:: with SMTP id f14mr27709508edq.87.1633819591210;
-        Sat, 09 Oct 2021 15:46:31 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hOSRe/Yki+d7ofiMIHxMQp0x1aWjsfq22qP+igPVVo4=;
+        b=X54LRLb74HI9cfNEkH7lBJfssEgYOFzU8cYfLbuHP5YE/NCcuYQaDa8/525TK6CXjO
+         qbDOsgh6sdFQYhmWTxHq/lcjpcpEIVxi5AFYiZAHTnkzOc/sdw3EuNRlgBZFN3dJDcTT
+         LhpIh3i/IeupzJgjpPYN34g2Hv5mjmNwduY/wJGHNpT0lu9SqO3IjB83CySCCw+y/agt
+         1SZTt6qa0O+L+WIIeywwm4yunHGHZYiZX5+O16RkKeaKC7v2TALtRrtdilPS4M4SylrM
+         GHXlP6a/aQ+5Y8t3mnXeVYQlMhNDUIlc/wBvO9p7CAepUavGH027FmJL5D+/EbuXwvpM
+         tnvg==
+X-Gm-Message-State: AOAM533jxozZT1yDy41yOyMfOdBG/clLBSRk1o6uUuQZ2iEg3/4QZfXz
+        agpaS/tdJ1UbSP2nbz4ozU8=
+X-Google-Smtp-Source: ABdhPJwZFDc036TJFPF6Iku8nQFDac4JkNH43ch+62ffBTNkLHjy9R5SfdL/VuB3Z7L+Sy3GRez3kQ==
+X-Received: by 2002:a17:906:3192:: with SMTP id 18mr14830278ejy.246.1633821371899;
+        Sat, 09 Oct 2021 16:16:11 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id l13sm1727115eds.92.2021.10.09.15.46.30
+        by smtp.gmail.com with ESMTPSA id d18sm1469022ejo.80.2021.10.09.16.16.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Oct 2021 15:46:30 -0700 (PDT)
+        Sat, 09 Oct 2021 16:16:11 -0700 (PDT)
+Date:   Sun, 10 Oct 2021 01:16:09 +0200
 From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH 4/4] net: phy: at803x: better describe debug regs
-Date:   Sun, 10 Oct 2021 00:46:18 +0200
-Message-Id: <20211009224618.4988-4-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211009224618.4988-1-ansuelsmth@gmail.com>
-References: <20211009224618.4988-1-ansuelsmth@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH v2 13/15] dt-bindings: net: dsa: qca8k: document
+ open drain binding
+Message-ID: <YWIiuVSeAsvZEEUx@Ansuel-xps.localdomain>
+References: <20211008002225.2426-1-ansuelsmth@gmail.com>
+ <20211008002225.2426-14-ansuelsmth@gmail.com>
+ <YWHPccukYpemv77x@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YWHPccukYpemv77x@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Give a name to known debug regs from Documentation instead of using
-unknown hex values.
+On Sat, Oct 09, 2021 at 07:20:49PM +0200, Andrew Lunn wrote:
+> On Fri, Oct 08, 2021 at 02:22:23AM +0200, Ansuel Smith wrote:
+> > Document new binding qca,power_on_sel used to enable Power-on-strapping
+> > select reg and qca,led_open_drain to set led to open drain mode.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/net/dsa/qca8k.txt | 11 +++++++++++
+> >  1 file changed, 11 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> > index b9cccb657373..9fb4db65907e 100644
+> > --- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> > +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> > @@ -13,6 +13,17 @@ Required properties:
+> >  Optional properties:
+> >  
+> >  - reset-gpios: GPIO to be used to reset the whole device
+> > +- qca,ignore-power-on-sel: Ignore power on pin strapping to configure led open
+> > +                           drain or eeprom presence.
+> 
+> So strapping is only used for LEDs and EEPROM presence? Nothing else?
+> Seems link MAC0/MAC6 swap would be a good candidate for strapping?
+> 
+> I just want to make it clear that if you select this option, you need
+> to take care of X, Y and Z in DT.
+> 
+> 	Andrew
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/phy/at803x.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+Sorry I missed this. Yes strapping is used only for LEDs and EEPROM. No
+reference in Documentation about mac swap. Other strapping are related
+to voltage selection and other hardware stuff. Thing that can't be set
+from sw.
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 402b2096f209..f40f17a632ad 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -86,12 +86,12 @@
- #define AT803X_PSSR				0x11	/*PHY-Specific Status Register*/
- #define AT803X_PSSR_MR_AN_COMPLETE		0x0200
- 
--#define AT803X_DEBUG_REG_0			0x00
-+#define AT803X_DEBUG_ANALOG_TEST_CTRL		0x00
- #define QCA8327_DEBUG_MANU_CTRL_EN		BIT(2)
- #define QCA8337_DEBUG_MANU_CTRL_EN		GENMASK(3, 2)
- #define AT803X_DEBUG_RX_CLK_DLY_EN		BIT(15)
- 
--#define AT803X_DEBUG_REG_5			0x05
-+#define AT803X_DEBUG_SYSTEM_CTRL_MODE		0x05
- #define AT803X_DEBUG_TX_CLK_DLY_EN		BIT(8)
- 
- #define AT803X_DEBUG_REG_HIB_CTRL		0x0b
-@@ -100,7 +100,7 @@
- 
- #define AT803X_DEBUG_REG_3C			0x3C
- 
--#define AT803X_DEBUG_REG_3D			0x3D
-+#define AT803X_DEBUG_REG_GREEN			0x3D
- #define   AT803X_DEBUG_GATE_CLK_IN1000		BIT(6)
- 
- #define AT803X_DEBUG_REG_1F			0x1F
-@@ -284,25 +284,25 @@ static int at803x_read_page(struct phy_device *phydev)
- 
- static int at803x_enable_rx_delay(struct phy_device *phydev)
- {
--	return at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0, 0,
-+	return at803x_debug_reg_mask(phydev, AT803X_DEBUG_ANALOG_TEST_CTRL, 0,
- 				     AT803X_DEBUG_RX_CLK_DLY_EN);
- }
- 
- static int at803x_enable_tx_delay(struct phy_device *phydev)
- {
--	return at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_5, 0,
-+	return at803x_debug_reg_mask(phydev, AT803X_DEBUG_SYSTEM_CTRL_MODE, 0,
- 				     AT803X_DEBUG_TX_CLK_DLY_EN);
- }
- 
- static int at803x_disable_rx_delay(struct phy_device *phydev)
- {
--	return at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0,
-+	return at803x_debug_reg_mask(phydev, AT803X_DEBUG_ANALOG_TEST_CTRL,
- 				     AT803X_DEBUG_RX_CLK_DLY_EN, 0);
- }
- 
- static int at803x_disable_tx_delay(struct phy_device *phydev)
- {
--	return at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_5,
-+	return at803x_debug_reg_mask(phydev, AT803X_DEBUG_SYSTEM_CTRL_MODE,
- 				     AT803X_DEBUG_TX_CLK_DLY_EN, 0);
- }
- 
-@@ -1300,9 +1300,9 @@ static int qca83xx_config_init(struct phy_device *phydev)
- 	switch (switch_revision) {
- 	case 1:
- 		/* For 100M waveform */
--		at803x_debug_reg_write(phydev, AT803X_DEBUG_REG_0, 0x02ea);
-+		at803x_debug_reg_write(phydev, AT803X_DEBUG_ANALOG_TEST_CTRL, 0x02ea);
- 		/* Turn on Gigabit clock */
--		at803x_debug_reg_write(phydev, AT803X_DEBUG_REG_3D, 0x68a0);
-+		at803x_debug_reg_write(phydev, AT803X_DEBUG_REG_GREEN, 0x68a0);
- 		break;
- 
- 	case 2:
-@@ -1310,8 +1310,8 @@ static int qca83xx_config_init(struct phy_device *phydev)
- 		fallthrough;
- 	case 4:
- 		phy_write_mmd(phydev, MDIO_MMD_PCS, MDIO_AZ_DEBUG, 0x803f);
--		at803x_debug_reg_write(phydev, AT803X_DEBUG_REG_3D, 0x6860);
--		at803x_debug_reg_write(phydev, AT803X_DEBUG_REG_5, 0x2c46);
-+		at803x_debug_reg_write(phydev, AT803X_DEBUG_REG_GREEN, 0x6860);
-+		at803x_debug_reg_write(phydev, AT803X_DEBUG_SYSTEM_CTRL_MODE, 0x2c46);
- 		at803x_debug_reg_write(phydev, AT803X_DEBUG_REG_3C, 0x6000);
- 		break;
- 	}
-@@ -1322,7 +1322,7 @@ static int qca83xx_config_init(struct phy_device *phydev)
- 	 */
- 	if (phydev->drv->phy_id == QCA8327_A_PHY_ID ||
- 	    phydev->drv->phy_id == QCA8327_B_PHY_ID)
--		at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0,
-+		at803x_debug_reg_mask(phydev, AT803X_DEBUG_ANALOG_TEST_CTRL,
- 				      QCA8327_DEBUG_MANU_CTRL_EN, 0);
- 
- 	/* Following original QCA sourcecode set port to prefer master */
-@@ -1340,12 +1340,12 @@ static void qca83xx_link_change_notify(struct phy_device *phydev)
- 	/* Set DAC Amplitude adjustment to +6% for 100m on link running */
- 	if (phydev->state == PHY_RUNNING) {
- 		if (phydev->speed == SPEED_100)
--			at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0,
-+			at803x_debug_reg_mask(phydev, AT803X_DEBUG_ANALOG_TEST_CTRL,
- 					      QCA8327_DEBUG_MANU_CTRL_EN,
- 					      QCA8327_DEBUG_MANU_CTRL_EN);
- 	} else {
- 		/* Reset DAC Amplitude adjustment */
--		at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0,
-+		at803x_debug_reg_mask(phydev, AT803X_DEBUG_ANALOG_TEST_CTRL,
- 				      QCA8327_DEBUG_MANU_CTRL_EN, 0);
- 	}
- }
-@@ -1392,7 +1392,7 @@ static int qca83xx_suspend(struct phy_device *phydev)
- 		phy_modify(phydev, MII_BMCR, mask, 0);
- 	}
- 
--	at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_3D,
-+	at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_GREEN,
- 			      AT803X_DEBUG_GATE_CLK_IN1000, 0);
- 
- 	at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_HIB_CTRL,
 -- 
-2.32.0
-
+	Ansuel
