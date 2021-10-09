@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C8B6427A7D
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 15:13:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 128F5427A83
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 15:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233451AbhJINP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 09:15:28 -0400
-Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:51497 "EHLO
+        id S233269AbhJINRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 09:17:11 -0400
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:50282 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233022AbhJINPV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 09:15:21 -0400
+        with ESMTP id S233207AbhJINP1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 09:15:27 -0400
 Received: from tomoyo.flets-east.jp ([114.149.34.46])
         by smtp.orange.fr with ESMTPA
-        id ZC9zmoEn4UGqlZCADm2ie4; Sat, 09 Oct 2021 15:13:24 +0200
+        id ZC9zmoEn4UGqlZCAKm2if7; Sat, 09 Oct 2021 15:13:30 +0200
 X-ME-Helo: tomoyo.flets-east.jp
 X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
-X-ME-Date: Sat, 09 Oct 2021 15:13:24 +0200
+X-ME-Date: Sat, 09 Oct 2021 15:13:30 +0200
 X-ME-IP: 114.149.34.46
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v2 1/3] can: dev: replace can_priv::ctrlmode_static by can_get_static_ctrlmode()
-Date:   Sat,  9 Oct 2021 22:13:02 +0900
-Message-Id: <20211009131304.19729-2-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v2 2/3] can: dev: reorder struct can_priv members for better packing
+Date:   Sat,  9 Oct 2021 22:13:03 +0900
+Message-Id: <20211009131304.19729-3-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211009131304.19729-1-mailhol.vincent@wanadoo.fr>
 References: <20211009131304.19729-1-mailhol.vincent@wanadoo.fr>
@@ -34,108 +34,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The statically enabled features of a CAN controller can be retrieved
-using below formula:
+Save eight bytes of holes on x86-64 architectures by reordering the
+members of struct can_priv.
 
-| u32 ctrlmode_static = priv->ctrlmode & ~priv->ctrlmode_supported;
+Before:
 
-As such, there is no need to store this information. This patch remove
-the field ctrlmode_static of struct can_priv and provides, in
-replacement, the inline function can_get_static_ctrlmode() which
-returns the same value.
+| $ pahole -C can_priv drivers/net/can/dev/dev.o
+| struct can_priv {
+| 	struct net_device *        dev;                  /*     0     8 */
+| 	struct can_device_stats    can_stats;            /*     8    24 */
+| 	const struct can_bittiming_const  * bittiming_const; /*    32     8 */
+| 	const struct can_bittiming_const  * data_bittiming_const; /*    40     8 */
+| 	struct can_bittiming       bittiming;            /*    48    32 */
+| 	/* --- cacheline 1 boundary (64 bytes) was 16 bytes ago --- */
+| 	struct can_bittiming       data_bittiming;       /*    80    32 */
+| 	const struct can_tdc_const  * tdc_const;         /*   112     8 */
+| 	struct can_tdc             tdc;                  /*   120    12 */
+| 	/* --- cacheline 2 boundary (128 bytes) was 4 bytes ago --- */
+| 	unsigned int               bitrate_const_cnt;    /*   132     4 */
+| 	const u32  *               bitrate_const;        /*   136     8 */
+| 	const u32  *               data_bitrate_const;   /*   144     8 */
+| 	unsigned int               data_bitrate_const_cnt; /*   152     4 */
+| 	u32                        bitrate_max;          /*   156     4 */
+| 	struct can_clock           clock;                /*   160     4 */
+| 	unsigned int               termination_const_cnt; /*   164     4 */
+| 	const u16  *               termination_const;    /*   168     8 */
+| 	u16                        termination;          /*   176     2 */
+|
+| 	/* XXX 6 bytes hole, try to pack */
+|
+| 	struct gpio_desc *         termination_gpio;     /*   184     8 */
+| 	/* --- cacheline 3 boundary (192 bytes) --- */
+| 	u16                        termination_gpio_ohms[2]; /*   192     4 */
+| 	enum can_state             state;                /*   196     4 */
+| 	u32                        ctrlmode;             /*   200     4 */
+| 	u32                        ctrlmode_supported;   /*   204     4 */
+| 	int                        restart_ms;           /*   208     4 */
+|
+| 	/* XXX 4 bytes hole, try to pack */
+|
+| 	struct delayed_work        restart_work;         /*   216    88 */
+|
+| 	/* XXX last struct has 4 bytes of padding */
+|
+| 	/* --- cacheline 4 boundary (256 bytes) was 48 bytes ago --- */
+| 	int                        (*do_set_bittiming)(struct net_device *); /*   304     8 */
+| 	int                        (*do_set_data_bittiming)(struct net_device *); /*   312     8 */
+| 	/* --- cacheline 5 boundary (320 bytes) --- */
+| 	int                        (*do_set_mode)(struct net_device *, enum can_mode); /*   320     8 */
+| 	int                        (*do_set_termination)(struct net_device *, u16); /*   328     8 */
+| 	int                        (*do_get_state)(const struct net_device  *, enum can_state *); /*   336     8 */
+| 	int                        (*do_get_berr_counter)(const struct net_device  *, struct can_berr_counter *); /*   344     8 */
+| 	unsigned int               echo_skb_max;         /*   352     4 */
+|
+| 	/* XXX 4 bytes hole, try to pack */
+|
+| 	struct sk_buff * *         echo_skb;             /*   360     8 */
+|
+| 	/* size: 368, cachelines: 6, members: 32 */
+| 	/* sum members: 354, holes: 3, sum holes: 14 */
+| 	/* paddings: 1, sum paddings: 4 */
+| 	/* last cacheline: 48 bytes */
+| };
 
-A condition sine qua non for this to work is that the controller
-static modes should never be set in can_priv::ctrlmode_supported. This
-is already the case for existing drivers, however, we added a warning
-message in can_set_static_ctrlmode() to check that.
+After:
+
+| $ pahole -C can_priv drivers/net/can/dev/dev.o
+| struct can_priv {
+| 	struct net_device *        dev;                  /*     0     8 */
+| 	struct can_device_stats    can_stats;            /*     8    24 */
+| 	const struct can_bittiming_const  * bittiming_const; /*    32     8 */
+| 	const struct can_bittiming_const  * data_bittiming_const; /*    40     8 */
+| 	struct can_bittiming       bittiming;            /*    48    32 */
+| 	/* --- cacheline 1 boundary (64 bytes) was 16 bytes ago --- */
+| 	struct can_bittiming       data_bittiming;       /*    80    32 */
+| 	const struct can_tdc_const  * tdc_const;         /*   112     8 */
+| 	struct can_tdc             tdc;                  /*   120    12 */
+| 	/* --- cacheline 2 boundary (128 bytes) was 4 bytes ago --- */
+| 	unsigned int               bitrate_const_cnt;    /*   132     4 */
+| 	const u32  *               bitrate_const;        /*   136     8 */
+| 	const u32  *               data_bitrate_const;   /*   144     8 */
+| 	unsigned int               data_bitrate_const_cnt; /*   152     4 */
+| 	u32                        bitrate_max;          /*   156     4 */
+| 	struct can_clock           clock;                /*   160     4 */
+| 	unsigned int               termination_const_cnt; /*   164     4 */
+| 	const u16  *               termination_const;    /*   168     8 */
+| 	u16                        termination;          /*   176     2 */
+|
+| 	/* XXX 6 bytes hole, try to pack */
+|
+| 	struct gpio_desc *         termination_gpio;     /*   184     8 */
+| 	/* --- cacheline 3 boundary (192 bytes) --- */
+| 	u16                        termination_gpio_ohms[2]; /*   192     4 */
+| 	unsigned int               echo_skb_max;         /*   196     4 */
+| 	struct sk_buff * *         echo_skb;             /*   200     8 */
+| 	enum can_state             state;                /*   208     4 */
+| 	u32                        ctrlmode;             /*   212     4 */
+| 	u32                        ctrlmode_supported;   /*   216     4 */
+| 	int                        restart_ms;           /*   220     4 */
+| 	struct delayed_work        restart_work;         /*   224    88 */
+|
+| 	/* XXX last struct has 4 bytes of padding */
+|
+| 	/* --- cacheline 4 boundary (256 bytes) was 56 bytes ago --- */
+| 	int                        (*do_set_bittiming)(struct net_device *); /*   312     8 */
+| 	/* --- cacheline 5 boundary (320 bytes) --- */
+| 	int                        (*do_set_data_bittiming)(struct net_device *); /*   320     8 */
+| 	int                        (*do_set_mode)(struct net_device *, enum can_mode); /*   328     8 */
+| 	int                        (*do_set_termination)(struct net_device *, u16); /*   336     8 */
+| 	int                        (*do_get_state)(const struct net_device  *, enum can_state *); /*   344     8 */
+| 	int                        (*do_get_berr_counter)(const struct net_device  *, struct can_berr_counter *); /*   352     8 */
+|
+| 	/* size: 360, cachelines: 6, members: 32 */
+| 	/* sum members: 354, holes: 1, sum holes: 6 */
+| 	/* paddings: 1, sum paddings: 4 */
+| 	/* last cacheline: 40 bytes */
+| };
 
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- drivers/net/can/dev/dev.c     |  5 +++--
- drivers/net/can/dev/netlink.c |  2 +-
- include/linux/can/dev.h       | 12 ++++++++++--
- 3 files changed, 14 insertions(+), 5 deletions(-)
+ include/linux/can/dev.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
-index e3d840b81357..59c79f92fccc 100644
---- a/drivers/net/can/dev/dev.c
-+++ b/drivers/net/can/dev/dev.c
-@@ -300,6 +300,7 @@ EXPORT_SYMBOL_GPL(free_candev);
- int can_change_mtu(struct net_device *dev, int new_mtu)
- {
- 	struct can_priv *priv = netdev_priv(dev);
-+	u32 ctrlmode_static = can_get_static_ctrlmode(priv);
- 
- 	/* Do not allow changing the MTU while running */
- 	if (dev->flags & IFF_UP)
-@@ -309,7 +310,7 @@ int can_change_mtu(struct net_device *dev, int new_mtu)
- 	switch (new_mtu) {
- 	case CAN_MTU:
- 		/* 'CANFD-only' controllers can not switch to CAN_MTU */
--		if (priv->ctrlmode_static & CAN_CTRLMODE_FD)
-+		if (ctrlmode_static & CAN_CTRLMODE_FD)
- 			return -EINVAL;
- 
- 		priv->ctrlmode &= ~CAN_CTRLMODE_FD;
-@@ -318,7 +319,7 @@ int can_change_mtu(struct net_device *dev, int new_mtu)
- 	case CANFD_MTU:
- 		/* check for potential CANFD ability */
- 		if (!(priv->ctrlmode_supported & CAN_CTRLMODE_FD) &&
--		    !(priv->ctrlmode_static & CAN_CTRLMODE_FD))
-+		    !(ctrlmode_static & CAN_CTRLMODE_FD))
- 			return -EINVAL;
- 
- 		priv->ctrlmode |= CAN_CTRLMODE_FD;
-diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
-index 80425636049d..6c9906e8040c 100644
---- a/drivers/net/can/dev/netlink.c
-+++ b/drivers/net/can/dev/netlink.c
-@@ -112,7 +112,7 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		if (dev->flags & IFF_UP)
- 			return -EBUSY;
- 		cm = nla_data(data[IFLA_CAN_CTRLMODE]);
--		ctrlstatic = priv->ctrlmode_static;
-+		ctrlstatic = can_get_static_ctrlmode(priv);
- 		maskedflags = cm->flags & cm->mask;
- 
- 		/* check whether provided bits are allowed to be passed */
 diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
-index 2413253e54c7..2381ad9e0814 100644
+index 2381ad9e0814..78e49b1e001c 100644
 --- a/include/linux/can/dev.h
 +++ b/include/linux/can/dev.h
-@@ -69,7 +69,6 @@ struct can_priv {
- 	/* CAN controller features - see include/uapi/linux/can/netlink.h */
- 	u32 ctrlmode;		/* current options setting */
- 	u32 ctrlmode_supported;	/* options that can be modified by netlink */
--	u32 ctrlmode_static;	/* static enabled options for driver/hardware */
+@@ -64,6 +64,9 @@ struct can_priv {
+ 	struct gpio_desc *termination_gpio;
+ 	u16 termination_gpio_ohms[CAN_TERMINATION_GPIO_MAX];
  
- 	int restart_ms;
- 	struct delayed_work restart_work;
-@@ -104,14 +103,23 @@ static inline void can_set_static_ctrlmode(struct net_device *dev,
- 	struct can_priv *priv = netdev_priv(dev);
- 
- 	/* alloc_candev() succeeded => netdev_priv() is valid at this point */
-+	if (priv->ctrlmode_supported & static_mode) {
-+		netdev_warn(dev,
-+			    "Controller features can not be supported and static at the same time\n");
-+		return;
-+	}
- 	priv->ctrlmode = static_mode;
--	priv->ctrlmode_static = static_mode;
- 
- 	/* override MTU which was set by default in can_setup()? */
- 	if (static_mode & CAN_CTRLMODE_FD)
- 		dev->mtu = CANFD_MTU;
- }
- 
-+static inline u32 can_get_static_ctrlmode(struct can_priv *priv)
-+{
-+	return priv->ctrlmode & ~priv->ctrlmode_supported;
-+}
++	unsigned int echo_skb_max;
++	struct sk_buff **echo_skb;
 +
- void can_setup(struct net_device *dev);
+ 	enum can_state state;
  
- struct net_device *alloc_candev_mqs(int sizeof_priv, unsigned int echo_skb_max,
+ 	/* CAN controller features - see include/uapi/linux/can/netlink.h */
+@@ -82,9 +85,6 @@ struct can_priv {
+ 	int (*do_get_berr_counter)(const struct net_device *dev,
+ 				   struct can_berr_counter *bec);
+ 
+-	unsigned int echo_skb_max;
+-	struct sk_buff **echo_skb;
+-
+ #ifdef CONFIG_CAN_LEDS
+ 	struct led_trigger *tx_led_trig;
+ 	char tx_led_trig_name[CAN_LED_NAME_SZ];
 -- 
 2.32.0
 
