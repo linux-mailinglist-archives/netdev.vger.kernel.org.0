@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF69442793A
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 12:53:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7808742793F
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 12:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244715AbhJIKy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 06:54:58 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:13885 "EHLO
+        id S244781AbhJIKzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 06:55:02 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:23362 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244680AbhJIKyx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 06:54:53 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HRMGc629Nz900W;
-        Sat,  9 Oct 2021 18:48:08 +0800 (CST)
+        with ESMTP id S244685AbhJIKyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 06:54:54 -0400
+Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HRMH25f7kzRdPB;
+        Sat,  9 Oct 2021 18:48:30 +0800 (CST)
 Received: from SZX1000464847.huawei.com (10.21.59.169) by
  dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
@@ -24,9 +24,9 @@ To:     <helgaas@kernel.org>, <hch@infradead.org>, <kw@linux.com>,
         <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
         <hverkuil-cisco@xs4all.nl>
 CC:     <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH V10 5/8] PCI/IOV: Add 10-Bit Tag sysfs files for VF devices
-Date:   Sat, 9 Oct 2021 18:49:35 +0800
-Message-ID: <20211009104938.48225-6-liudongdong3@huawei.com>
+Subject: [PATCH V10 6/8] PCI/P2PDMA: Add a 10-Bit Tag check in P2PDMA
+Date:   Sat, 9 Oct 2021 18:49:36 +0800
+Message-ID: <20211009104938.48225-7-liudongdong3@huawei.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20211009104938.48225-1-liudongdong3@huawei.com>
 References: <20211009104938.48225-1-liudongdong3@huawei.com>
@@ -41,168 +41,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PCIe spec 5.0 r1.0 section 2.2.6.2 says:
+Add a 10-Bit Tag check in the P2PDMA code to ensure that a device with
+10-Bit Tag Requester doesn't interact with a device that does not
+support 10-Bit Tag Completer. Before that happens, the kernel should
+emit a warning.
 
-  If an Endpoint supports sending Requests to other Endpoints (as
-  opposed to host memory), the Endpoint must not send 10-Bit Tag
-  Requests to another given Endpoint unless an implementation-specific
-  mechanism determines that the Endpoint supports 10-Bit Tag Completer
-  capability.
+"echo 0 > /sys/bus/pci/devices/.../10bit_tag" to disable 10-Bit Tag
+Requester for PF device.
 
-Add sriov_vf_10bit_tag file to query the status of VF 10-Bit Tag
-Requester Enable.
-
-Add a sriov_vf_10bit_tag_ctl sysfs file, write 0 to disable the VF
-10-Bit Tag Requester. The typical use case is for p2pdma when the peer
-device does not support 10-Bit Tag Completer. Write 1 to enable 10-Bit
-Tag Requester when RC supports 10-Bit Tag Completer capability. The
-typical use case is for host memory targeted by DMA Requests.
+"echo 0 > /sys/bus/pci/devices/.../sriov_vf_10bit_tag_ctl" to disable
+10-Bit Tag Requester for VF device.
 
 Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
+Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- Documentation/ABI/testing/sysfs-bus-pci | 23 +++++++++++
- drivers/pci/iov.c                       | 55 +++++++++++++++++++++++++
- 2 files changed, 78 insertions(+)
+ drivers/pci/p2pdma.c | 48 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-index 0c26346d1069..28b1f71df620 100644
---- a/Documentation/ABI/testing/sysfs-bus-pci
-+++ b/Documentation/ABI/testing/sysfs-bus-pci
-@@ -440,3 +440,26 @@ Description:
- 		10-Bit Tag Completer. Write 1 to enable 10-Bit Tag Requester
- 		when RC supports 10-Bit Tag Completer capability. The typical
- 		use case is for host memory targeted by DMA Requests.
-+
-+What:		/sys/bus/pci/devices/.../sriov_vf_10bit_tag
-+Date:		September 2021
-+Contact:	Dongdong Liu <liudongdong3@huawei.com>
-+Description:
-+		This file is associated with a SR-IOV physical function (PF).
-+		It is visible when the device supports VF 10-Bit Tag Requester.
-+		It contains the status of VF 10-Bit Tag Requester Enable.
-+		The file is read-only.
-+
-+What:		/sys/bus/pci/devices/.../sriov_vf_10bit_tag_ctl
-+Date:		September 2021
-+Contact:	Dongdong Liu <liudongdong3@huawei.com>
-+Description:
-+		This file is associated with a SR-IOV virtual function (VF).
-+		It is visible when the device supports VF 10-Bit Tag
-+		Requester. The file is only writeable when the VF driver
-+		does not bind to a device. Write 0 to any VF's file disables
-+		10-Bit Tag Requester for all VFs. The typical use case is for
-+		p2pdma when the peer device does not support 10-Bit Tag
-+		Completer. Write 1 to enable 10-Bit Tag Requester for all VFs
-+		when RC supports 10-Bit Tag Completer capability. The typical
-+		use case is for host memory targeted by DMA Requests.
-diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-index dafdc652fcd0..527ef0b745c7 100644
---- a/drivers/pci/iov.c
-+++ b/drivers/pci/iov.c
-@@ -220,10 +220,43 @@ static ssize_t sriov_vf_msix_count_store(struct device *dev,
- static DEVICE_ATTR_WO(sriov_vf_msix_count);
- #endif
+diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+index 50cdde3e9a8b..804e390f4c22 100644
+--- a/drivers/pci/p2pdma.c
++++ b/drivers/pci/p2pdma.c
+@@ -19,6 +19,7 @@
+ #include <linux/random.h>
+ #include <linux/seq_buf.h>
+ #include <linux/xarray.h>
++#include "pci.h"
  
-+static ssize_t sriov_vf_10bit_tag_ctl_store(struct device *dev,
-+					    struct device_attribute *attr,
-+					    const char *buf, size_t count)
-+{
-+	struct pci_dev *vf_dev = to_pci_dev(dev);
-+	struct pci_dev *pdev = pci_physfn(vf_dev);
-+	bool enable;
-+
-+	if (!capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	if (kstrtobool(buf, &enable) < 0)
-+		return -EINVAL;
-+
-+	if (vf_dev->driver)
-+		return -EBUSY;
-+
-+	if (!pcie_rp_10bit_tag_cmp_supported(pdev))
-+		return -EPERM;
-+
-+	if (enable)
-+		pdev->sriov->ctrl |= PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
-+	else
-+		pdev->sriov->ctrl &= ~PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
-+
-+	pci_write_config_word(pdev, pdev->sriov->pos + PCI_SRIOV_CTRL,
-+				      pdev->sriov->ctrl);
-+
-+	return count;
-+}
-+static DEVICE_ATTR_WO(sriov_vf_10bit_tag_ctl);
-+
- static struct attribute *sriov_vf_dev_attrs[] = {
- #ifdef CONFIG_PCI_MSI
- 	&dev_attr_sriov_vf_msix_count.attr,
- #endif
-+	&dev_attr_sriov_vf_10bit_tag_ctl.attr,
- 	NULL,
- };
- 
-@@ -236,6 +269,11 @@ static umode_t sriov_vf_attrs_are_visible(struct kobject *kobj,
- 	if (!pdev->is_virtfn)
- 		return 0;
- 
-+	pdev = pci_physfn(pdev);
-+	if ((a == &dev_attr_sriov_vf_10bit_tag_ctl.attr) &&
-+	     !(pdev->sriov->cap & PCI_SRIOV_CAP_VF_10BIT_TAG_REQ))
-+		return 0;
-+
- 	return a->mode;
+ enum pci_p2pdma_map_type {
+ 	PCI_P2PDMA_MAP_UNKNOWN = 0,
+@@ -410,6 +411,50 @@ static unsigned long map_types_idx(struct pci_dev *client)
+ 		(client->bus->number << 8) | client->devfn;
  }
  
-@@ -487,12 +525,23 @@ static ssize_t sriov_drivers_autoprobe_store(struct device *dev,
- 	return count;
- }
- 
-+static ssize_t sriov_vf_10bit_tag_show(struct device *dev,
-+				       struct device_attribute *attr,
-+				       char *buf)
++static bool pci_10bit_tags_unsupported(struct pci_dev *a,
++				       struct pci_dev *b,
++				       bool verbose)
 +{
-+	struct pci_dev *pdev = to_pci_dev(dev);
++	bool req;
++	bool comp;
++	u16 ctl;
++	const char *str = "10bit_tag";
 +
-+	return sysfs_emit(buf, "%u\n",
-+		!!(pdev->sriov->ctrl & PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN));
++	if (a->is_virtfn) {
++#ifdef CONFIG_PCI_IOV
++		req = !!(a->physfn->sriov->ctrl &
++			 PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN);
++#endif
++	} else {
++		pcie_capability_read_word(a, PCI_EXP_DEVCTL2, &ctl);
++		req = !!(ctl & PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
++	}
++
++	comp = !!(b->devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP);
++
++	/* 10-bit tags not enabled on requester */
++	if (!req)
++		return false;
++
++	 /* Completer can handle anything */
++	if (comp)
++		return false;
++
++	if (!verbose)
++		return true;
++
++	pci_warn(a, "cannot be used for peer-to-peer DMA as 10-Bit Tag Requester enable is set for this device, but peer device (%s) does not support the 10-Bit Tag Completer\n",
++		 pci_name(b));
++
++	if (a->is_virtfn)
++		str = "sriov_vf_10bit_tag_ctl";
++
++	pci_warn(a, "to disable 10-Bit Tag Requester for this device, echo 0 > /sys/bus/pci/devices/%s/%s\n",
++		 pci_name(a), str);
++
++	return true;
 +}
 +
- static DEVICE_ATTR_RO(sriov_totalvfs);
- static DEVICE_ATTR_RW(sriov_numvfs);
- static DEVICE_ATTR_RO(sriov_offset);
- static DEVICE_ATTR_RO(sriov_stride);
- static DEVICE_ATTR_RO(sriov_vf_device);
- static DEVICE_ATTR_RW(sriov_drivers_autoprobe);
-+static DEVICE_ATTR_RO(sriov_vf_10bit_tag);
- 
- static struct attribute *sriov_pf_dev_attrs[] = {
- 	&dev_attr_sriov_totalvfs.attr,
-@@ -501,6 +550,7 @@ static struct attribute *sriov_pf_dev_attrs[] = {
- 	&dev_attr_sriov_stride.attr,
- 	&dev_attr_sriov_vf_device.attr,
- 	&dev_attr_sriov_drivers_autoprobe.attr,
-+	&dev_attr_sriov_vf_10bit_tag.attr,
- #ifdef CONFIG_PCI_MSI
- 	&dev_attr_sriov_vf_total_msix.attr,
- #endif
-@@ -511,10 +561,15 @@ static umode_t sriov_pf_attrs_are_visible(struct kobject *kobj,
- 					  struct attribute *a, int n)
- {
- 	struct device *dev = kobj_to_dev(kobj);
-+	struct pci_dev *pdev = to_pci_dev(dev);
- 
- 	if (!dev_is_pf(dev))
- 		return 0;
- 
-+	if ((a == &dev_attr_sriov_vf_10bit_tag.attr) &&
-+	     !(pdev->sriov->cap & PCI_SRIOV_CAP_VF_10BIT_TAG_REQ))
-+		return 0;
+ /*
+  * Calculate the P2PDMA mapping type and distance between two PCI devices.
+  *
+@@ -532,6 +577,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+ 		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
+ 	}
+ done:
++	if (pci_10bit_tags_unsupported(client, provider, verbose))
++		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
 +
- 	return a->mode;
- }
- 
+ 	rcu_read_lock();
+ 	p2pdma = rcu_dereference(provider->p2pdma);
+ 	if (p2pdma)
 -- 
 2.22.0
 
