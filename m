@@ -2,79 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A29384277D4
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 09:06:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77B294277EB
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 09:41:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232656AbhJIHHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 03:07:30 -0400
-Received: from albireo.enyo.de ([37.24.231.21]:42072 "EHLO albireo.enyo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229849AbhJIHH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Oct 2021 03:07:27 -0400
-X-Greylist: delayed 310 seconds by postgrey-1.27 at vger.kernel.org; Sat, 09 Oct 2021 03:07:27 EDT
-Received: from [172.17.203.2] (port=33837 helo=deneb.enyo.de)
-        by albireo.enyo.de ([172.17.140.2]) with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1mZ6L9-0008IF-KG; Sat, 09 Oct 2021 07:00:15 +0000
-Received: from fw by deneb.enyo.de with local (Exim 4.94.2)
-        (envelope-from <fw@deneb.enyo.de>)
-        id 1mZ6H5-000KtO-B1; Sat, 09 Oct 2021 08:56:03 +0200
-From:   Florian Weimer <fw@deneb.enyo.de>
-To:     "Cufi, Carles" <Carles.Cufi@nordicsemi.no>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jukka.rissanen@linux.intel.com" <jukka.rissanen@linux.intel.com>,
-        "johan.hedberg@intel.com" <johan.hedberg@intel.com>,
-        "Lubos, Robert" <Robert.Lubos@nordicsemi.no>,
-        "Bursztyka, Tomasz" <tomasz.bursztyka@intel.com>,
-        "linux-toolchains@vger.kernel.org" <linux-toolchains@vger.kernel.org>
-Subject: Re: Non-packed structures in IP headers
-References: <AS8PR05MB78952FE7E8D82245D309DEBCE7AA9@AS8PR05MB7895.eurprd05.prod.outlook.com>
-        <87bl48v74v.fsf@oldenburg.str.redhat.com>
-        <DB9PR05MB7898339C06B9317EBAB13437E7AE9@DB9PR05MB7898.eurprd05.prod.outlook.com>
-Date:   Sat, 09 Oct 2021 08:56:03 +0200
-In-Reply-To: <DB9PR05MB7898339C06B9317EBAB13437E7AE9@DB9PR05MB7898.eurprd05.prod.outlook.com>
-        (Carles Cufi's message of "Mon, 4 Oct 2021 10:30:34 +0000")
-Message-ID: <875yu6bsak.fsf@mid.deneb.enyo.de>
+        id S232790AbhJIHnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 03:43:15 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:25112 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229804AbhJIHnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 03:43:14 -0400
+Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HRH5D6gbgz1DGn9;
+        Sat,  9 Oct 2021 15:39:44 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.8; Sat, 9 Oct 2021 15:41:16 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <socketcan@hartkopp.net>, <mkl@pengutronix.de>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net v2 0/2] fix tx buffer concurrent access protection
+Date:   Sat, 9 Oct 2021 15:40:08 +0800
+Message-ID: <cover.1633764159.git.william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggeml757-chm.china.huawei.com (10.1.199.137)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* Carles Cufi:
+Fix tx buffer concurrent access protection in isotp_sendmsg().
 
->> * Carles Cufi:
->> 
->> > I was looking through the structures for IPv{4,6} packet headers and
->> > noticed that several of those that seem to be used to parse a packet
->> > directly from the wire are not declared as packed. This surprised me
->> > because, although I did find that provisions are made so that the
->> > alignment of the structure, it is still technically possible for the
->> > compiler to inject padding bytes inside those structures, since AFAIK
->> > the C standard makes no guarantees about padding unless it's
->> > instructed to pack the structure.
->> 
->> The C standards do not make such guarantees, but the platform ABI
->> standards describe struct layout and ensure that there is no padding.
->> Linux relies on that not just for networking, but also for the userspace
->> ABI, support for separately compiled kernel modules, and in other places.
->
-> That makes sense, but aren't ABI standards different for every
-> architecture? For example, I checked the Arm AAPCS[1] and it states:
->
-> "The size of an aggregate shall be the smallest multiple of its
-> alignment that is sufficient to hold all of its members."
->
-> Which, unless I am reading this wrong, means that the compiler would
-> indeed insert padding if the size of the IP headers structs was not
-> a multiple of 4. In this particular case, the struct sizes for the
-> IP headers are 20 and 40 bytes respectively, so there will be no
-> padding inserted. But I only checked a single architecture's ABI (or
-> Procedure Call Standard) documentation, is this true for all archs?
+v2:
+ - Change state of struct tpcon to u32 for cmpxchg just support 4-byte
+   and 8-byte in some architectures.
 
-For structure layout in memory, there is a large overlap between ABIs.
-There is divergence around long long (which is easily avoided by
-adding padding manually), and potentially bit fileds (but I haven't
-looked at that).
+Ziyang Xuan (2):
+  can: isotp: add result check for wait_event_interruptible()
+  can: isotp: fix tx buffer concurrent access in isotp_sendmsg()
 
-Things only get weird for pass-by-value structs and unions and return
-types.
+ net/can/isotp.c | 48 +++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 33 insertions(+), 15 deletions(-)
+
+-- 
+2.25.1
+
