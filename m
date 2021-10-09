@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F66A427C8F
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 20:14:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C955427C95
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 20:17:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229960AbhJISQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 14:16:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52714 "EHLO
+        id S230009AbhJIST2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 14:19:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbhJISQm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 14:16:42 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9D3C061570;
-        Sat,  9 Oct 2021 11:14:45 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id d9so25279439edh.5;
-        Sat, 09 Oct 2021 11:14:45 -0700 (PDT)
+        with ESMTP id S229518AbhJISTV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 14:19:21 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6DCC061570;
+        Sat,  9 Oct 2021 11:17:24 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id i20so32938890edj.10;
+        Sat, 09 Oct 2021 11:17:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=NB/NbO2pnzp8rCJeSeD4fOtiBWghV++U+S27/Xc8iw0=;
-        b=En3bOU2gWXENrRPQgcBG5LZinOcpsx9+nrwow4EU5VR2dUu+mmmq1TiG+srtQxbnO0
-         VfiK2cs4QmrNLrcSzL7FwotkFcUOttwll1hSleJ/hvB1vampzEvAfAx1+A9G8iLaBGkf
-         U0xCIm7uWS8PBooiRcaWLByRqcEQOvXrv73SCfkT+3SAiBWEyVJb1SIlLQgBQ244J45d
-         UrRrKIQMmps/heRmg+NRS9xSDWqQX9FnxdP2eeSbYIbjAEjvaof1w+AMFSEAAvUxJTiY
-         IFAMENH3OylatZUP481gI9zwo/WkhumCL2gyQu+6hwiAML66HFeEG9mbQNFWDwO5Yrcw
-         ZZtg==
+        bh=fuBuwonIJ/RYFG6qboWBn9V7FEmG4HhkblayeVkZims=;
+        b=ZNED6jBa7yKU3y0a4qmmg0m4NOHYArHGUNDJsaeJXyAv2CTC9NJc7+yM6ML2OTr761
+         2RE+wNLxTOQmG7QAwsyOp71L5v7TdgXeKwIAHYV4zr4FbzzhPEBxW2WZJieydPUWzGFw
+         qUgVr1/x1B1JCXpP4AwB2bLCVqjPEaNhQHgEi0qoQHjmoQuF2fry3h4Sx9jT0nDrZBWU
+         ITVq6gMl96sNOS36X5GomkudDfkwaYTskPOauoOUagcH02z0NOKMnpuFMbRsabWNo69+
+         c86nIMQscoPtM3R3peCO+eJxs7Spk4lYRIi3z6ibc1kPjJaGtHVGfr5bpgXohuh5YgXA
+         YNBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=NB/NbO2pnzp8rCJeSeD4fOtiBWghV++U+S27/Xc8iw0=;
-        b=nwWQneGdO8rHZ0xFzRmhKxVopHpn4d3Q2XF+CYiT8dSVAqM56uEeyZE0RmCv9BbhN2
-         1V021VfiOqMVNW4v1HQu4/hGGbf599vKhbO7GPJFOVbMN/D7pB0RY22Ru8fGhaBx7uLa
-         Jz/S6GpQs4PjkBaAKRHjAHr5Zcp+eeClpqACmZhSDyYjo4+Fg3FLFfwvYHhIzJqjCGXH
-         Jtw0eFM4/WUJ+Gr9BKPfMy+HChnCklfKxUI1BuOM3Q0LqTHIePLAyTohqZj3Imfr3Lze
-         OG++H/r/6UXQ7Tpf9xE1ofgk+2+MVAb2Q71TMJj06tLmL0HE4SOBX2DgqYhZ5mF7dIFl
-         wKBw==
-X-Gm-Message-State: AOAM530hbkHa/D8bfFw5Tz6szxetD5qwiuTfgKhm/ZfrCX3DRo/dawTn
-        GA/p2Sa+JZUIjYbomUBdPxE=
-X-Google-Smtp-Source: ABdhPJyL02etfR/VvFSZ7cwwu5dfOCfx2MwDZ3qjoyr9gCSfVVV8xN1PRO0CxRk+8iJVhy4M9yyZGw==
-X-Received: by 2002:a17:906:b1d5:: with SMTP id bv21mr13128042ejb.346.1633803283771;
-        Sat, 09 Oct 2021 11:14:43 -0700 (PDT)
+        bh=fuBuwonIJ/RYFG6qboWBn9V7FEmG4HhkblayeVkZims=;
+        b=sf0mE8LTBHbkxI0gmLD6xxIHjv411RtbzNH/2XWy8OxWRI4AQapIUJY5dD1NBmxD/q
+         IRJPv+U3/2QmFDdis9CkNUcwJqJ9ydj+iyt2FHtjdHhMZ8a7LIZG/VwU6TXdYZxd06Gx
+         BIn8vi03DhoLz08UqQYnnmdOWeub9+YXcThONLj3KCtZFvJs+UC80O/dVhogXNxhgptA
+         CcOuggkahT9oCqlR51P4QlTd1uonXBSqhxYlCFXlHGiZ1u8/K1IVE64r0pIKHrBrFjGc
+         Y7xsAVTr5AsESXTiedZDCW6wKtaUo9H35HSyrjV3efzJWesNWdxqnYLjGisrnqnYlwJf
+         gKhQ==
+X-Gm-Message-State: AOAM531+y7XS/aiRilbCJ4KZ0LhzlnOoWtCG/bE9ZyoBPTIXEMD9QGRg
+        7gtBdH7vh6ITA07FjxdovsqHdQ11gaM=
+X-Google-Smtp-Source: ABdhPJzPt4YW3wsGvqc7+shQyegZckapPHFmZy1Q0kXu7hZxEshZjuFYPyViQIpSEUad4HtSnoanpw==
+X-Received: by 2002:a05:6402:4389:: with SMTP id o9mr26674669edc.38.1633803442907;
+        Sat, 09 Oct 2021 11:17:22 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id h8sm1256257ejj.22.2021.10.09.11.14.42
+        by smtp.gmail.com with ESMTPSA id t19sm1243182ejb.115.2021.10.09.11.17.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Oct 2021 11:14:43 -0700 (PDT)
-Date:   Sat, 9 Oct 2021 20:14:40 +0200
+        Sat, 09 Oct 2021 11:17:22 -0700 (PDT)
+Date:   Sat, 9 Oct 2021 20:17:19 +0200
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,65 +59,60 @@ Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v2 11/15] dt-bindings: net: dsa: qca8k: Document
- qca,sgmii-enable-pll
-Message-ID: <YWHcEFKzgjE4Ikj2@Ansuel-xps.localdomain>
+Subject: Re: [net-next PATCH v2 15/15] dt-bindings: net: dsa: qca8k: document
+ support for qca8328
+Message-ID: <YWHcr0wkdN0XjBNZ@Ansuel-xps.localdomain>
 References: <20211008002225.2426-1-ansuelsmth@gmail.com>
- <20211008002225.2426-12-ansuelsmth@gmail.com>
- <YWHN1iDSelFQTPUC@lunn.ch>
+ <20211008002225.2426-16-ansuelsmth@gmail.com>
+ <YWHQXYx7kYckTcqT@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YWHN1iDSelFQTPUC@lunn.ch>
+In-Reply-To: <YWHQXYx7kYckTcqT@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 09, 2021 at 07:13:58PM +0200, Andrew Lunn wrote:
-> On Fri, Oct 08, 2021 at 02:22:21AM +0200, Ansuel Smith wrote:
-> > Document qca,sgmii-enable-pll binding used in the CPU nodes to
-> > enable SGMII PLL on MAC config.
+On Sat, Oct 09, 2021 at 07:24:45PM +0200, Andrew Lunn wrote:
+> On Fri, Oct 08, 2021 at 02:22:25AM +0200, Ansuel Smith wrote:
+> > QCA8328 is the birrget brother of 8327. Document the new compatible
+> 
+> birrget?
+> 
+> 
+>
+
+Me sending patch lat at night... it was brother.
+
+> > binding.
 > > 
 > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 > > ---
-> >  Documentation/devicetree/bindings/net/dsa/qca8k.txt | 6 ++++++
-> >  1 file changed, 6 insertions(+)
+> >  Documentation/devicetree/bindings/net/dsa/qca8k.txt | 1 +
+> >  1 file changed, 1 insertion(+)
 > > 
 > > diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> > index 208ee5bc1bbb..b9cccb657373 100644
+> > index 9fb4db65907e..0e84500b8db2 100644
 > > --- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
 > > +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> > @@ -50,6 +50,12 @@ A CPU port node has the following optional node:
-> >                            managed entity. See
-> >                            Documentation/devicetree/bindings/net/fixed-link.txt
-> >                            for details.
-> > +- qca,sgmii-enable-pll  : For SGMII CPU port, explicitly enable PLL, TX and RX
-> > +                          chain along with Signal Detection.
-> > +                          This should NOT be enabled for qca8327.
+> > @@ -3,6 +3,7 @@
+> >  Required properties:
+> >  
+> >  - compatible: should be one of:
+> > +    "qca,qca8328"
+> >      "qca,qca8327"
+> >      "qca,qca8334"
+> >      "qca,qca8337"
 > 
-> So how about -EINVAL for qca8327, and document it is not valid then.
->
-
-I would also add a warning. With all the ported device we found pll
-needed only qca8337. I will add the error but also report the reason as
-we really don't know if it does exist a qca8327 device that needs pll.
-In theory not but who knows.
-
-> > +                          This can be required for qca8337 switch with revision 2.
+> This is much nice than the old DT property. But since the internal IDs
+> are the same, i think it would be good to add a little documentation
+> here about how the 8327 and 8328 differ, since most people are not
+> going to look at the commit message.
 > 
-> Maybe add a warning if enabled with revision < 2? I would not make it
-> an error, because there could be devices manufactured with a mixture
-> or v1 and v2 silicon. Do you have any idea how wide spread v1 is?
-> 
+>       Andrew
 
-No idea about the revision and can't be recovered from the switch data
-print on the chip. Will add a warning and put in the documentation that
-we warn when an uncorrect revision is detected.
-
-> > +                          With CPU port set to sgmii and qca8337 it is advised
-> > +                          to set this unless a communication problem is observed.
-> 
->   Andrew
+Ok will add some description on how to understand the correct compatible
+to use.
 
 -- 
 	Ansuel
