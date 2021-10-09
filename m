@@ -2,117 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C955427C95
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 20:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF16E427C98
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 20:17:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230009AbhJIST2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 14:19:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
+        id S230107AbhJISTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 14:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbhJISTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 14:19:21 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6DCC061570;
-        Sat,  9 Oct 2021 11:17:24 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id i20so32938890edj.10;
-        Sat, 09 Oct 2021 11:17:24 -0700 (PDT)
+        with ESMTP id S229518AbhJISTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 14:19:36 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AABFC061762
+        for <netdev@vger.kernel.org>; Sat,  9 Oct 2021 11:17:39 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id p68so14670871iof.6
+        for <netdev@vger.kernel.org>; Sat, 09 Oct 2021 11:17:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fuBuwonIJ/RYFG6qboWBn9V7FEmG4HhkblayeVkZims=;
-        b=ZNED6jBa7yKU3y0a4qmmg0m4NOHYArHGUNDJsaeJXyAv2CTC9NJc7+yM6ML2OTr761
-         2RE+wNLxTOQmG7QAwsyOp71L5v7TdgXeKwIAHYV4zr4FbzzhPEBxW2WZJieydPUWzGFw
-         qUgVr1/x1B1JCXpP4AwB2bLCVqjPEaNhQHgEi0qoQHjmoQuF2fry3h4Sx9jT0nDrZBWU
-         ITVq6gMl96sNOS36X5GomkudDfkwaYTskPOauoOUagcH02z0NOKMnpuFMbRsabWNo69+
-         c86nIMQscoPtM3R3peCO+eJxs7Spk4lYRIi3z6ibc1kPjJaGtHVGfr5bpgXohuh5YgXA
-         YNBA==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=uBupTRvdbvrPYWfcioDH+Rupm0D6631B5wClCxA7h5s=;
+        b=jUdoqLofGg94sS7h2DNXTpWg08SlJ+0gJQUlLVFNk8oivUT3tu668m5nXw3iJb3sKM
+         6IExSnjH2CM/RKfDNnGmJKYbcQVPUOuLz1a5dgWMItzRvnG3iC6vQOLkxOJRKPHQgGGu
+         +LrEqFJnw/lrVv4/+DL2CtYnkv/zbeA1JHcwbVVP5jBl0um6+IoLoYCGMDuc0xcMTHPD
+         FsHYZxQTap5/F5ube0q4Qk6Y1wTpollrfN4E45TbM0pOX2nxZVbD4/cHvFWmOQUAYSvy
+         p6rWlZQHc9acctugX7OOY8AjK6rjzKBRjvgOcwg31F54OG01WCc+FuORtaEbC36451el
+         9JAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fuBuwonIJ/RYFG6qboWBn9V7FEmG4HhkblayeVkZims=;
-        b=sf0mE8LTBHbkxI0gmLD6xxIHjv411RtbzNH/2XWy8OxWRI4AQapIUJY5dD1NBmxD/q
-         IRJPv+U3/2QmFDdis9CkNUcwJqJ9ydj+iyt2FHtjdHhMZ8a7LIZG/VwU6TXdYZxd06Gx
-         BIn8vi03DhoLz08UqQYnnmdOWeub9+YXcThONLj3KCtZFvJs+UC80O/dVhogXNxhgptA
-         CcOuggkahT9oCqlR51P4QlTd1uonXBSqhxYlCFXlHGiZ1u8/K1IVE64r0pIKHrBrFjGc
-         Y7xsAVTr5AsESXTiedZDCW6wKtaUo9H35HSyrjV3efzJWesNWdxqnYLjGisrnqnYlwJf
-         gKhQ==
-X-Gm-Message-State: AOAM531+y7XS/aiRilbCJ4KZ0LhzlnOoWtCG/bE9ZyoBPTIXEMD9QGRg
-        7gtBdH7vh6ITA07FjxdovsqHdQ11gaM=
-X-Google-Smtp-Source: ABdhPJzPt4YW3wsGvqc7+shQyegZckapPHFmZy1Q0kXu7hZxEshZjuFYPyViQIpSEUad4HtSnoanpw==
-X-Received: by 2002:a05:6402:4389:: with SMTP id o9mr26674669edc.38.1633803442907;
-        Sat, 09 Oct 2021 11:17:22 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id t19sm1243182ejb.115.2021.10.09.11.17.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Oct 2021 11:17:22 -0700 (PDT)
-Date:   Sat, 9 Oct 2021 20:17:19 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v2 15/15] dt-bindings: net: dsa: qca8k: document
- support for qca8328
-Message-ID: <YWHcr0wkdN0XjBNZ@Ansuel-xps.localdomain>
-References: <20211008002225.2426-1-ansuelsmth@gmail.com>
- <20211008002225.2426-16-ansuelsmth@gmail.com>
- <YWHQXYx7kYckTcqT@lunn.ch>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=uBupTRvdbvrPYWfcioDH+Rupm0D6631B5wClCxA7h5s=;
+        b=hzoDrbQpc5vOyKus5W+cP5KtreBvzrxL0PRPImw9MogUDQ17sQkLRNDrv628BS4adA
+         ApxD5/PCeyK6hI63Sk+sVP1XXwHispTAnvLPcN+IcrevecVLXXso7fkQB0Mpjg/0YGGB
+         abyIAbaU4X/sMdUscGYwp1sv+aSl4wamJRLvDuYlpOGWY4ULF86xHBVz2SLOFwq/wV5V
+         BZqF6ewhrvYVll2lGlc84ZBXP/J9fdEy7eABIw67GpGiSjoJ31SfsqABAxBqv7xiapH+
+         GC/6vX+u+wN3Z+kX6+WPfTPRX63EiwvDxfnhU1CQzWkkni85oh/ECX/gmpL7sKBMlp9b
+         Dr2Q==
+X-Gm-Message-State: AOAM532Z51TnE9ieEYcxV0xVe4W87jVYR7ezQsQY8qSrSP3YIMRuPf6P
+        GZ8b5ktoEZOfu+Z3D2ZO5fGW4gSYTghmtSSuSQ==
+X-Google-Smtp-Source: ABdhPJwOF1wB5d3mj8Lta5o45T3TRJf9/IBFCkr1lCt5dRMDIe/9XZ9VG1+kQJm4nD+hBdrtYAv2w7NL0Wa6VolS3/M=
+X-Received: by 2002:a02:5444:: with SMTP id t65mr13053652jaa.42.1633803459040;
+ Sat, 09 Oct 2021 11:17:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YWHQXYx7kYckTcqT@lunn.ch>
+Received: by 2002:ac0:fd2c:0:0:0:0:0 with HTTP; Sat, 9 Oct 2021 11:17:38 -0700 (PDT)
+Reply-To: jennehkandeh@yahoo.com
+From:   Jenneh Kandeh <mmamieshimirah@gmail.com>
+Date:   Sat, 9 Oct 2021 11:17:38 -0700
+Message-ID: <CAEQZFm0h9yUS0VN7dni=PcpxVZnFd9KM39EhGsTLORWHhRKpOA@mail.gmail.com>
+Subject: Re: Regarding Of My Late Father's Fund $10,200,000
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 09, 2021 at 07:24:45PM +0200, Andrew Lunn wrote:
-> On Fri, Oct 08, 2021 at 02:22:25AM +0200, Ansuel Smith wrote:
-> > QCA8328 is the birrget brother of 8327. Document the new compatible
-> 
-> birrget?
-> 
-> 
->
+dear,
 
-Me sending patch lat at night... it was brother.
+I got your contact through the internet due to serious searching for a
+reliable personality.  I am Jenneh Kandeh from FreeTown Capital of
+Sierra Leone. Time of opposed to the government of President Ahmad
+Tejan Kebbah the ex-leader.
 
-> > binding.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> >  Documentation/devicetree/bindings/net/dsa/qca8k.txt | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> > index 9fb4db65907e..0e84500b8db2 100644
-> > --- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> > +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> > @@ -3,6 +3,7 @@
-> >  Required properties:
-> >  
-> >  - compatible: should be one of:
-> > +    "qca,qca8328"
-> >      "qca,qca8327"
-> >      "qca,qca8334"
-> >      "qca,qca8337"
-> 
-> This is much nice than the old DT property. But since the internal IDs
-> are the same, i think it would be good to add a little documentation
-> here about how the 8327 and 8328 differ, since most people are not
-> going to look at the commit message.
-> 
->       Andrew
+Since 21st November, 2005 But I am current residing in Porto-Novo
+Benin due to war of my country, my mother killed on 04/01/2002 for
+Sierra Leone civilian war my father decided to change another
+residence country with me because I am only child for my family bad
+news that my father passed away on 25/11/2018.
 
-Ok will add some description on how to understand the correct compatible
-to use.
+During the war, My father made a lot of money through the illegal
+sales of Diamonds. To the tune of $10,200,000. This money is currently
+and secretly kept in ECOWAS security company here in Benin, but
+because of the political turmoil which still exists here in Africa, I
+can not invest the money by myself, hence am soliciting your help to
+help me take these funds into your custody and also advise me on how
+to invest it.
 
--- 
-	Ansuel
+And I want to add here that if agreed 35% of the total worth of the
+fund will be yours minus your total expenses incurred during the
+clearing of the fund in
+Porto Novo Benin that 35% is a $3,570,000 I would like to invest on
+heavy duty agricultural equipment and earth moving machines to enable
+me go into a full scale mechanized farming.
+
+While l wait to hear from you soon, my warm regards to you and your family
