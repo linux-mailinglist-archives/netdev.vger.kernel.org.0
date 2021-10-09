@@ -2,70 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A239427E0A
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 01:41:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE0CB427E13
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 01:45:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231324AbhJIXmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 19:42:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33190 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231147AbhJIXmF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Oct 2021 19:42:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C468760F6B;
-        Sat,  9 Oct 2021 23:40:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633822807;
-        bh=jv/ckCSV8DDYau4rG0uKqS9LBWg3WcvzazPRh2YvPTs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=f9dfwKO70DLB0x/mG7nsQYz8Hi1FuI2F2wtjI8pHDYi8uD8M/l6a658eucWc8+ZjB
-         tYK8OCQz8/7Tx6V/wtvFACo8Q8nWURqdOSJ2cXkpEffGng4HRwqOc7Ez+3Vn0I3m6p
-         cIRr/oWTOrDba6JuUsvW3YwyktnTSTgqtLlQLmhz9BWM1fd2UaD8aNPTpnlkXoMdae
-         VzI8Evom4jkimdqe8aMPryLeq5WA2mBEdgYuqtXyc25ff2npBbuUDpHv7CZmY7TpBB
-         TBtkFaRqfTYo53twVsmo02nce0wx5JkXv2u47cPyg6DQy0yXiZ7m/HlEHY3PyFLoVk
-         uvgWC/7YdNGzA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B3E0460A3A;
-        Sat,  9 Oct 2021 23:40:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231478AbhJIXrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 19:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231192AbhJIXrU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 19:47:20 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B84C061570
+        for <netdev@vger.kernel.org>; Sat,  9 Oct 2021 16:45:22 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id w11so10811117ilv.6
+        for <netdev@vger.kernel.org>; Sat, 09 Oct 2021 16:45:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=Airj0p7l6oidEFAuIVq5OGBN1M9Rv3bU0/TVNDt3Fkg=;
+        b=G9azjgI7asFyiED1g8v2YasB51a1VsC3Lp/QsMpqE87UIJzR5yKbK41F0OY6Vhw5x9
+         5BrkLhkQz4+g7d3zmuiAXCj96c9FT7GsUoXO3kIq5twNCkJqdxjQchfdl1iTsO/xFf1i
+         85/d0+v07NHpb2GJe9r93d9AVVV7r4XsElAKHPexmZF2wvra/6BBK1PD7F21AQ0cuEOL
+         NZGE9GQGo72TuALcdgNj0fhoEnWpI1yz3yHwxymUkFEMmXY3mRYmOgl/i94e7XeUEqf6
+         4L14ksgVBE50dldooM0RsoDM4W9seoOMT8wy98AHNvX/rCoaEja6EZlkPhMPl46+N+qa
+         YomA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Airj0p7l6oidEFAuIVq5OGBN1M9Rv3bU0/TVNDt3Fkg=;
+        b=1SIfBkYi6mtVap4gdebvDOh5DtzI/NK/rnK+WzevEm/RXA514kioYykhipuzhhfs7z
+         P3mwRjZ80Tf8wEC/brynaYqKKSXIw4qN8qS6hhAdc64btAt3i9lgsfTV1sIguIPFR8jZ
+         PZxIoCz0J5fkBKdsBuwKXruMkGadowkvFJoU9txGYqOlboO2pCzXs5YZiCxw69Uwio5j
+         ZvN6CCxcpNN6OebyAo5wBVmLNjcyB1zhB/tpfQmlVANVF8+Uwo2Gjg+t28Z5QmuRuelj
+         sn9Flf/DEHH3sr58n9Briwv9rhwuPqdnKCEIzG1nmJ+pX3oABEy2EZNPQTrS/gNkXJhc
+         qtrA==
+X-Gm-Message-State: AOAM533bR3IkMG7l6Iwn7S+gN3v3RjQNVDcZs0DFD0Eu/37G0Z/BrGwX
+        OlQCAHbOZgHMMkXBU8iWUs2E1mTsM6YhkA==
+X-Google-Smtp-Source: ABdhPJxUg75Y/JMaL6ctr/QMFCSKH1V8AGA6jw2Em7mhwfkMOy2ufSDg+rtEeOTZHjsDOZQBqDVuSg==
+X-Received: by 2002:a05:6e02:16c5:: with SMTP id 5mr13394366ilx.143.1633823122172;
+        Sat, 09 Oct 2021 16:45:22 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id o3sm1795241iou.11.2021.10.09.16.45.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 Oct 2021 16:45:21 -0700 (PDT)
+Subject: Re: [PATCH iproute2 v4 0/5] configure: add support for libdir and
+ prefix option
+To:     Andrea Claudi <aclaudi@redhat.com>, Phil Sutter <phil@nwl.cc>,
+        netdev@vger.kernel.org, stephen@networkplumber.org,
+        bluca@debian.org, haliu@redhat.com
+References: <cover.1633612111.git.aclaudi@redhat.com>
+ <20211007160202.GG32194@orbyte.nwl.cc> <YWBCx6yvm7gDZNId@renaissance-vector>
+ <20211008135025.GM32194@orbyte.nwl.cc> <YWBvoFW1RDQDYAGx@renaissance-vector>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5256e688-70cb-d7a0-714f-2445b912dc8c@gmail.com>
+Date:   Sat, 9 Oct 2021 17:45:20 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2-next v2 0/2] Support for IOAM encap modes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163382280773.7636.1730208567353717070.git-patchwork-notify@kernel.org>
-Date:   Sat, 09 Oct 2021 23:40:07 +0000
-References: <20211005151020.32533-1-justin.iurman@uliege.be>
-In-Reply-To: <20211005151020.32533-1-justin.iurman@uliege.be>
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
-        stephen@networkplumber.org
+In-Reply-To: <YWBvoFW1RDQDYAGx@renaissance-vector>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to iproute2/iproute2-next.git (main)
-by David Ahern <dsahern@kernel.org>:
-
-On Tue,  5 Oct 2021 17:10:18 +0200 you wrote:
-> v2:
->  - Fix the size of ioam6_mode_types (thanks David Ahern)
->  - Remove uapi diff from patch #1 (already merged inside iproute2-next)
+On 10/8/21 10:19 AM, Andrea Claudi wrote:
 > 
-> Following the series applied to net-next (see [1]), here are the corresponding
-> changes to iproute2.
+>>
+>> Which sounds like you'll start accepting things like
+>>
+>> | ./configure --include_dir foo bar
+>>
 > 
-> [...]
+> We already accept things like this in the current configure, and I would
+> try to not modify current behaviour as much as possible.
 
-Here is the summary with links:
-  - [iproute2-next,v2,1/2] Add support for IOAM encap modes
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=8fb522cde3a8
-  - [iproute2-next,v2,2/2] Update documentation
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=41020eb0fdae
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+that is definitely not intended and I don't see a reason to allow it.
