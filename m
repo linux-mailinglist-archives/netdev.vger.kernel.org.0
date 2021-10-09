@@ -2,154 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C873A427852
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 11:13:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 128CF42785D
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 11:18:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbhJIJO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 05:14:56 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:13882 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231219AbhJIJOz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 05:14:55 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HRK3F44Xyz8skb;
-        Sat,  9 Oct 2021 17:08:09 +0800 (CST)
-Received: from dggpeml500006.china.huawei.com (7.185.36.76) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Sat, 9 Oct 2021 17:12:56 +0800
-Received: from [10.174.178.240] (10.174.178.240) by
- dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Sat, 9 Oct 2021 17:12:50 +0800
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-Subject: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session if
- receive TP.DT with error length
-To:     Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-CC:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        <kernel@pengutronix.de>, Oliver Hartkopp <socketcan@hartkopp.net>,
-        "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        id S231562AbhJIJUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 05:20:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:20983 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230455AbhJIJUD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 05:20:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1633771082;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2UwzU/Hl4oyLBnA1BVpvqm3h7gRDiFiszHCb/NTENEE=;
+        b=iBcETVhgA4p8GbAIwkvff4+QshGlKlQqJVwoph6/Njh/kVKSlTfOSyALNRYNcfJCq8qCTU
+        G+oXx41VOCIT6QpEsaQpmJdonrtmYjn4KnDz4ZUwRHe9OgaIjFVC9/akZtszqOatrypcoZ
+        9y3gHG28jCH9anJmiCrNxYa9OZFb/LA=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-196-TrZxQ74ENd6shhhtAt48eQ-1; Sat, 09 Oct 2021 05:18:01 -0400
+X-MC-Unique: TrZxQ74ENd6shhhtAt48eQ-1
+Received: by mail-ed1-f70.google.com with SMTP id r11-20020aa7cfcb000000b003d4fbd652b9so9332619edy.14
+        for <netdev@vger.kernel.org>; Sat, 09 Oct 2021 02:18:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=2UwzU/Hl4oyLBnA1BVpvqm3h7gRDiFiszHCb/NTENEE=;
+        b=eijzIAwvHPlQqg/AnyXgTxoRZ5zKoQFWP+xm9kw33fllESlLC6H7vSTpF/wqlJxVEq
+         mjQn9dz4Kp/ztgCEzONTQxODju7T+GZUeQm+0P2XA9I8Q6w19OwImcqMIL+D+c3wEu8z
+         2mFklkkb4XvgodCBalik52kBEFsLZli3/GZDclF/tbes2hafxutZbGqLOqfpAzmQf2C6
+         RSfodY7LV5FnsV09jGS2bnfDsix/sMedNOBg7dQ9W+u9KwWxF9E/l8MNQjRvFhB61H0v
+         w68RQxIumAd3jRBE0fXUADEA4c2m/QC05upprFvF7rWLbdLqo0oy24unSCrTRNS4Mi/t
+         ZzvQ==
+X-Gm-Message-State: AOAM532w7mrpIUQQCgGKTJ7JHZJWziT/VO2rqZJeoGBrk+/9xcAt2DBp
+        P+kDoTBUZSxY5ipZRixh+RIWM3VTIFf5FcQYGvSbwAtfjJm1aRolmis0nUKqwjZWrzVVHONBiAs
+        siRU3ZmFfLOCFNN2i
+X-Received: by 2002:a05:6402:5202:: with SMTP id s2mr15544701edd.67.1633771080221;
+        Sat, 09 Oct 2021 02:18:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwGfmIQZR+1/PAQ0xIABJbC6CJzPRKYIoGKikbdWi9pwKm3KdMLPvApqQ8MIxMgBYddw5gdjQ==
+X-Received: by 2002:a05:6402:5202:: with SMTP id s2mr15544541edd.67.1633771078558;
+        Sat, 09 Oct 2021 02:17:58 -0700 (PDT)
+Received: from redhat.com ([2.55.132.170])
+        by smtp.gmail.com with ESMTPSA id ck9sm722624ejb.56.2021.10.09.02.17.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 Oct 2021 02:17:57 -0700 (PDT)
+Date:   Sat, 9 Oct 2021 05:17:53 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Corentin =?utf-8?B?Tm/Dq2w=?= <corentin.noel@collabora.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1632972800-45091-1-git-send-email-zhangchangzhong@huawei.com>
- <20210930074206.GB7502@x1.vandijck-laurijssen.be>
- <1cab07f2-593a-1d1c-3a29-43ee9df4b29e@huawei.com>
- <20211008110007.GE29653@pengutronix.de>
- <20211008170937.GA12224@x1.vandijck-laurijssen.be>
-Message-ID: <4d516eed-e45c-a694-9608-07eebe8a3382@huawei.com>
-Date:   Sat, 9 Oct 2021 17:12:50 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH net] virtio-net: fix for skb_over_panic inside big mode
+Message-ID: <20211009091604.84141-1-mst@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20211008170937.GA12224@x1.vandijck-laurijssen.be>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.240]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500006.china.huawei.com (7.185.36.76)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/10/9 1:09, Kurt Van Dijck wrote:
-> On Fri, 08 Oct 2021 13:00:07 +0200, Oleksij Rempel wrote:
->> On Fri, Oct 08, 2021 at 05:22:12PM +0800, Zhang Changzhong wrote:
->>> Hi Kurt,
->>> Sorry for the late reply.
->>>
->>> On 2021/9/30 15:42, Kurt Van Dijck wrote:
->>>> On Thu, 30 Sep 2021 11:33:20 +0800, Zhang Changzhong wrote:
->>>>> According to SAE-J1939-21, the data length of TP.DT must be 8 bytes, so
->>>>> cancel session when receive unexpected TP.DT message.
->>>>
->>>> SAE-j1939-21 indeed says that all TP.DT must be 8 bytes.
->>>> However, the last TP.DT may contain up to 6 stuff bytes, which have no meaning.
->>>> If I remember well, they are even not 'reserved'.
->>>
->>> Agree, these bytes are meaningless for last TP.DT.
->>>
->>>>
->>>>>
->>>>> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
->>>>> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
->>>>> ---
->>>>>  net/can/j1939/transport.c | 7 +++++--
->>>>>  1 file changed, 5 insertions(+), 2 deletions(-)
->>>>>
->>>>> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
->>>>> index bb5c4b8..eedaeaf 100644
->>>>> --- a/net/can/j1939/transport.c
->>>>> +++ b/net/can/j1939/transport.c
->>>>> @@ -1789,6 +1789,7 @@ static void j1939_xtp_rx_dpo(struct j1939_priv *priv, struct sk_buff *skb,
->>>>>  static void j1939_xtp_rx_dat_one(struct j1939_session *session,
->>>>>  				 struct sk_buff *skb)
->>>>>  {
->>>>> +	enum j1939_xtp_abort abort = J1939_XTP_ABORT_FAULT;
->>>>>  	struct j1939_priv *priv = session->priv;
->>>>>  	struct j1939_sk_buff_cb *skcb, *se_skcb;
->>>>>  	struct sk_buff *se_skb = NULL;
->>>>> @@ -1803,9 +1804,11 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
->>>>>  
->>>>>  	skcb = j1939_skb_to_cb(skb);
->>>>>  	dat = skb->data;
->>>>> -	if (skb->len <= 1)
->>>>> +	if (skb->len != 8) {
->>>>>  		/* makes no sense */
->>>>> +		abort = J1939_XTP_ABORT_UNEXPECTED_DATA;
->>>>>  		goto out_session_cancel;
->>>>
->>>> I think this is a situation of
->>>> "be strict on what you send, be tolerant on what you receive".
->>>>
->>>> Did you find a technical reason to abort a session because the last frame didn't
->>>> bring overhead that you don't use?
->>>
->>> No technical reason. The only reason is that SAE-J1939-82 requires responder
->>> to abort session if any TP.DT less than 8 bytes (section A.3.4, Row 7).
-> 
-> IMHO, this is some kind of laziness to make the exception for the last TP.DT.
-> 
-> I attended an ISOBUS certification (back in 2013) where the transmitting
-> node effectively stripped the trailing bytes, and this 'deviation' was
-> not even noticed.
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-I found that SAE-J1939-82 contains the following test:
-"BAM Transport: Ensure extra (unused) bytes of last Data Transfer data packet
-is/are filled-in correctly. (DUT as Originator)" ... "Verify last TP.DT data
-packet for a BAM transport is sent with an 8 byte data field and the unused
-bytes of this packet are filled with FF" (section A.3.3, Row 8).
+commit 126285651b7f ("Merge ra.kernel.org:/pub/scm/linux/kernel/git/netdev/net")
+accidentally reverted the effect of
+commit 1a8024239da ("virtio-net: fix for skb_over_panic inside big mode")
+on drivers/net/virtio_net.c
 
-So the J1939 compliance test can detect this kind of 'deviation', perhaps
-ISOBUS certification does not do this check?
+As a result, users of crosvm (which is using large packet mode)
+are experiencing crashes with 5.14-rc1 and above that do not
+occur with 5.13.
 
-> 
-> This change applies to the receiving side. Would a sender that
-> leaves the trailing bytes want you to discard the session bacause of this?
-> So the spirit of the SAE-J1939-82 is, in this case, different from
-> the strict literal interpretation.
+Crash trace:
 
-Such packets should not be sent if the sender complies with SAE-J1939-82, but
-if the transmitting node you mentioned above exist on the network, this patch
-will casue their sessions to be aborted. From this point of view, I think it is
-reasonable to drop this patch.
+[   61.346677] skbuff: skb_over_panic: text:ffffffff881ae2c7 len:3762 put:3762 head:ffff8a5ec8c22000 data:ffff8a5ec8c22010 tail:0xec2 end:0xec0 dev:<NULL>
+[   61.369192] kernel BUG at net/core/skbuff.c:111!
+[   61.372840] invalid opcode: 0000 [#1] SMP PTI
+[   61.374892] CPU: 5 PID: 0 Comm: swapper/5 Not tainted 5.14.0-rc1 linux-v5.14-rc1-for-mesa-ci.tar.bz2 #1
+[   61.376450] Hardware name: ChromiumOS crosvm, BIOS 0
 
-Regards,
-Changzhong
+..
 
-> 
->>
->> Do you mean: "BAM Transport: Ensure DUT discards BAM transport when
->> TP.DT data packets are not correct size" ... "Verify DUT discards the
->> BAM transport if any TP.DT data packet has less than 8 bytes"?
-> 
-> Kind regards,
-> Kurt
-> .
-> 
+[   61.393635] Call Trace:
+[   61.394127]  <IRQ>
+[   61.394488]  skb_put.cold+0x10/0x10
+[   61.395095]  page_to_skb+0xf7/0x410
+[   61.395689]  receive_buf+0x81/0x1660
+[   61.396228]  ? netif_receive_skb_list_internal+0x1ad/0x2b0
+[   61.397180]  ? napi_gro_flush+0x97/0xe0
+[   61.397896]  ? detach_buf_split+0x67/0x120
+[   61.398573]  virtnet_poll+0x2cf/0x420
+[   61.399197]  __napi_poll+0x25/0x150
+[   61.399764]  net_rx_action+0x22f/0x280
+[   61.400394]  __do_softirq+0xba/0x257
+[   61.401012]  irq_exit_rcu+0x8e/0xb0
+[   61.401618]  common_interrupt+0x7b/0xa0
+[   61.402270]  </IRQ>
+
+See
+https://lore.kernel.org/r/5edaa2b7c2fe4abd0347b8454b2ac032b6694e2c.camel%40collabora.com
+for the report.
+
+Apply the original 1a8024239da ("virtio-net: fix for skb_over_panic inside big mode")
+again, the original logic still holds:
+
+In virtio-net's large packet mode, there is a hole in the space behind
+buf.
+
+    hdr_padded_len - hdr_len
+
+We must take this into account when calculating tailroom.
+
+Cc: Greg KH <gregkh@linuxfoundation.org>
+Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
+Fixes: 126285651b7f ("Merge ra.kernel.org:/pub/scm/linux/kernel/git/netdev/net")
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Reported-by: Corentin Noël <corentin.noel@collabora.com>
+Tested-by: Corentin Noël <corentin.noel@collabora.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+
+David, I think we need this in stable, too.
+
+ drivers/net/virtio_net.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 096c2ac6b7a6..6b0812f44bbf 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -406,7 +406,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+ 	 * add_recvbuf_mergeable() + get_mergeable_buf_len()
+ 	 */
+ 	truesize = headroom ? PAGE_SIZE : truesize;
+-	tailroom = truesize - len - headroom;
++	tailroom = truesize - len - headroom - (hdr_padded_len - hdr_len);
+ 	buf = p - headroom;
+ 
+ 	len -= hdr_len;
+-- 
+MST
+
