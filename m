@@ -2,123 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78AC6427DDC
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 00:17:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3E88427DE1
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 00:23:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231282AbhJIWTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 18:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49402 "EHLO
+        id S231207AbhJIWZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 18:25:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231143AbhJIWTP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 18:19:15 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13FCC061570;
-        Sat,  9 Oct 2021 15:17:17 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id r18so50759246edv.12;
-        Sat, 09 Oct 2021 15:17:17 -0700 (PDT)
+        with ESMTP id S230342AbhJIWZ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 18:25:29 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4892BC061570;
+        Sat,  9 Oct 2021 15:23:32 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id b8so50698122edk.2;
+        Sat, 09 Oct 2021 15:23:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=K6k8mNyxLA9vdEcmjlVx18gI02oq8G/qXeE9dmeA7d8=;
-        b=lk6cXENKjt9h+3xLSMV3cVn4dD1HVf19+yIH8ZL3nMh6uv0Lt4xAsl2Oe0/GWQnZqG
-         tGzQjit/yvsAsukdsIBfaKy2tj8Sr01Nz11+cO3DLwDCPU5VgaENaOYzsS53tYkKFk0o
-         fSoFdGVsSfBi5nn5l4pOebrNGj1pFwqpyjSf7UV4tOkrERK0QdyO618kY1AkyqWnwlpg
-         aq1QFnpg54EmjAjnVEsdvLoELqpaLCIJQWEoeDHwlvjTWTp5v6PV2d1C26zY5GK0Uy7V
-         JfhlpWD/M1C9RBtRoRRyxFyfhLO04FYkxcmomei8d4LSBtS2wEboqs6wV2pMqqP/c8nC
-         /Txw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sD1Un2BJTboJPBhfWgTVUUWUwkr9E/+N6diTtDohn7Y=;
+        b=QHV4MAOXTLG62fTRHEOvoeCox8BJGTR749pRwn3HsOkdxhb+byTwRWABC3qAPCJ0gt
+         6JhhpFYnzT/UTCdn1jU8GvbK1wLu29yiriJKt9sAmzial4k6ibzc1prcSuXjI2h4yg77
+         gKty7NJj9K92IIql+WoQfNdMLcRffWmnUvwWZykbBqdG/7b+M+QXJdsl/GQZH7VjZIkr
+         mfzeXTAB19PWgVwcx7mFHC2ACIAGyPwH2C2cCs24j31DZS7M6r/HDEXe4Kodbj6xWRQC
+         y0AfsjuJrP1lMT3VvOYgaKxgRPF51L2/F+J1l8cekVP4TNY/nZ65ANa/ip+Kv1ATVQxl
+         2KEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=K6k8mNyxLA9vdEcmjlVx18gI02oq8G/qXeE9dmeA7d8=;
-        b=Nk36w1QM+q8oq9+WAhe5968c7IGCJcfvJThl7njBegI7XHMVorX7ye0UgT14/ITh0d
-         /lqybHtS3TyRTZb8dqMvB9Lg2hGnrQ6LiNaQoTovdhjkjROCiMXy7bVgnQEXMs7K8PQ4
-         mkbsAhQAjxbyp1EPM9Hd0E3ssI01lOKoHfq1HFrBbwf1Mh1Y0lrHyeuGgIXdwaPyX87F
-         BQlPf2T2nxXJGGGtnU5vtsNb0ZZE0w/ykI181Xme0X3adhrIDLJZEvTO33pE0ckQUYPm
-         OMl24RAI+CXCKVxJ8VN9XhIVVMzIFVu9A8lM1f2e1VUM8Xi9BLYCfMiZda9oQTU+n3JR
-         gnHg==
-X-Gm-Message-State: AOAM533MhjVQfqDvRw7HPcN5A+3c+sSKimzpZNlnque9w8dJnSLO+vcR
-        c55aXpJ6sLET7znFrFG4MPg=
-X-Google-Smtp-Source: ABdhPJz4mGtNwyXniyqTQXxvLJESSpe3i+QgNK3ZGA+hZ/7qyJGFX52e/hTaqd40mYeRJEgEE2MU9g==
-X-Received: by 2002:a50:bf48:: with SMTP id g8mr27269492edk.10.1633817836282;
-        Sat, 09 Oct 2021 15:17:16 -0700 (PDT)
-Received: from fedora.. (dh207-99-195.xnet.hr. [88.207.99.195])
-        by smtp.googlemail.com with ESMTPSA id kd8sm1405151ejc.69.2021.10.09.15.17.14
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sD1Un2BJTboJPBhfWgTVUUWUwkr9E/+N6diTtDohn7Y=;
+        b=h8hfDxXGHHqXbc/iAY6etxEexDkj232FUsN3JJ7CgH5a50byDEVmZNrF7cme2AdzsJ
+         TiSGspspV9HlFQ6HNFaCYdS5Df7lZUozq3rDqv4Gm3o7pjfJS5aghJCaOZEfhfYlcMRT
+         5IRMGr31Vw7dimXH1c7xLTYQshrL5B2rFNSYwT/pOFZso4ZvP9zkvFeqOhKKODAGNRso
+         DhMrMOX8cJy/fRWOjZIInspJUaW/EjLWRUGk/15QPdzSkPQQrwLZGHPQ+yyFz03j5ccc
+         2UEsWx1pB6hIzc4/wbRaV9hW20IKrMXV4F+A7ghivjZKWEuQFpnCm3//sRjiU89CpcAw
+         bKrg==
+X-Gm-Message-State: AOAM532v5Na9u8Mcs6ZgikHZ1dsrZvFRWqU3r87YHasFxVWGzfNykOSO
+        99IOujH1rlgHv/BmBqFuPzw=
+X-Google-Smtp-Source: ABdhPJzg9RV8pq3Z5WrITgxASR4THiFVegcEVuv8xqJWP8se4F4Q3JhXsan3YxmoeBn8ZlAqOv2hWQ==
+X-Received: by 2002:a05:6402:4402:: with SMTP id y2mr18799440eda.222.1633818210661;
+        Sat, 09 Oct 2021 15:23:30 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id 6sm1409056ejx.82.2021.10.09.15.23.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Oct 2021 15:17:15 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH] ath10k: support bus and device specific API 1 BDF selection
-Date:   Sun, 10 Oct 2021 00:17:11 +0200
-Message-Id: <20211009221711.2315352-1-robimarko@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        Sat, 09 Oct 2021 15:23:30 -0700 (PDT)
+Date:   Sun, 10 Oct 2021 00:23:27 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthew Hagan <mnhagan88@gmail.com>
+Subject: Re: [net-next PATCH v2 08/15] dt-bindings: net: dsa: qca8k: Add MAC
+ swap and clock phase properties
+Message-ID: <YWIWX9+MHWbH7l8z@Ansuel-xps.localdomain>
+References: <20211008002225.2426-1-ansuelsmth@gmail.com>
+ <20211008002225.2426-9-ansuelsmth@gmail.com>
+ <YWHMRMTSa8xP4SKK@lunn.ch>
+ <YWHamNcXmxuaVgB+@Ansuel-xps.localdomain>
+ <YWHx7Q9jBrws8ioN@lunn.ch>
+ <YWH2P7ogyH3T0CVp@Ansuel-xps.localdomain>
+ <YWILhniu2KFIGut9@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YWILhniu2KFIGut9@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some ath10k IPQ40xx devices like the MikroTik hAP ac2 and ac3 require the
-BDF-s to be extracted from the device storage instead of shipping packaged
-API 2 BDF-s.
+On Sat, Oct 09, 2021 at 11:37:10PM +0200, Andrew Lunn wrote:
+> > Here is 2 configuration one from an Netgear r7800 qca8337:
+> > 
+> > 	switch@10 {
+> > 		compatible = "qca,qca8337";
+> > 		#address-cells = <1>;
+> > 		#size-cells = <0>;
+> > 		reg = <0x10>;
+> > 
+> > 		qca8k,rgmii0_1_8v;
+> > 		qca8k,rgmii56_1_8v;
+> > 
+> > 		ports {
+> > 			#address-cells = <1>;
+> > 			#size-cells = <0>;
+> > 
+> > 			port@0 {
+> > 				reg = <0>;
+> > 				label = "cpu";
+> > 				ethernet = <&gmac1>;
+> > 				phy-mode = "rgmii-id";
+> > 
+> > 				fixed-link {
+> > 					speed = <1000>;
+> > 					full-duplex;
+> > 				};
+> > 			};
+> > 
+> > 			port@1 {
+> > 				reg = <1>;
+> > 				label = "lan1";
+> > 				phy-mode = "internal";
+> > 				phy-handle = <&phy_port1>;
+> > 			};
+> > 
+> > 			port@2 {
+> > 				reg = <2>;
+> > 				label = "lan2";
+> > 				phy-mode = "internal";
+> > 				phy-handle = <&phy_port2>;
+> > 			};
+> > 
+> > 			port@3 {
+> > 				reg = <3>;
+> > 				label = "lan3";
+> > 				phy-mode = "internal";
+> > 				phy-handle = <&phy_port3>;
+> > 			};
+> > 
+> > 			port@4 {
+> > 				reg = <4>;
+> > 				label = "lan4";
+> > 				phy-mode = "internal";
+> > 				phy-handle = <&phy_port4>;
+> > 			};
+> > 
+> > 			port@5 {
+> > 				reg = <5>;
+> > 				label = "wan";
+> > 				phy-mode = "internal";
+> > 				phy-handle = <&phy_port5>;
+> > 			};
+> > 
+> > 			port@6 {
+> > 				reg = <6>;
+> > 				label = "cpu";
+> > 				ethernet = <&gmac2>;
+> > 				phy-mode = "sgmii";
+> > 
+> > 				fixed-link {
+> > 					speed = <1000>;
+> > 					full-duplex;
+> > 				};
+> 
+> So here, it is a second CPU port.  But some other board could connect
+> an SGMII PHY, and call the port lan5. Or it could be connected to an
+> SFP cage, and used that way. Or are you forced to use it as a CPU
+> port, or not use it at all?
+>
 
-This is required as MikroTik has started shipping boards that require BDF-s
-to be updated, as otherwise their WLAN performance really suffers.
-This is however impossible as the devices that require this are release
-under the same revision and its not possible to differentiate them from
-devices using the older BDF-s.
+We have a bit to set the mode. So yes it can be used to different modes.
+(base-x, phy and mac)
 
-In OpenWrt we are extracting the calibration data during runtime and we are
-able to extract the BDF-s in the same manner, however we cannot package the
-BDF-s to API 2 format on the fly and can only use API 1 to provide BDF-s on
-the fly.
-This is an issue as the ath10k driver explicitly looks only for the
-board.bin file and not for something like board-bus-device.bin like it does
-for pre-cal data.
-Due to this we have no way of providing correct BDF-s on the fly, so lets
-extend the ath10k driver to first look for BDF-s in the
-board-bus-device.bin format, for example: board-ahb-a800000.wifi.bin
-If that fails, look for the default board file name as defined previously.
+> > And here is one with mac swap Tp-Link Archer c7 v4 qca8327 
+> > 
+> > 	switch0@10 {
+> > 		compatible = "qca,qca8337";
+> > 		#address-cells = <1>;
+> > 		#size-cells = <0>;
+> > 
+> > 		reg = <0>;
+> > 		qca,sgmii-rxclk-falling-edge;
+> > 		qca,mac6-exchange;
+> > 
+> > 		ports {
+> > 			#address-cells = <1>;
+> > 			#size-cells = <0>;
+> > 
+> > 			port@0 {
+> > 				reg = <0>;
+> > 				label = "cpu";
+> > 				ethernet = <&eth0>;
+> > 				phy-mode = "sgmii";
+> > 
+> > 				fixed-link {
+> > 					speed = <1000>;
+> > 					full-duplex;
+> > 				};
+> 
+> So when looking for SGMI properties, you need to look here. Where as
+> in the previous example, you would look in port 6. And the reverse is
+> true for RGMII delays.
+> 
+> > 			};
+> > 
+> > 			port@1 {
+> > 				reg = <1>;
+> > 				label = "wan";
+> > 				phy-mode = "internal";
+> > 				phy-handle = <&phy_port1>;
+> > 			};
+> > 
+> > 			port@2 {
+> > 				reg = <2>;
+> > 				label = "lan1";
+> > 				phy-mode = "internal";
+> > 				phy-handle = <&phy_port2>;
+> > 			};
+> > 
+> > 			port@3 {
+> > 				reg = <3>;
+> > 				label = "lan2";
+> > 				phy-mode = "internal";
+> > 				phy-handle = <&phy_port3>;
+> > 			};
+> > 
+> > 			port@4 {
+> > 				reg = <4>;
+> > 				label = "lan3";
+> > 				phy-mode = "internal";
+> > 				phy-handle = <&phy_port4>;
+> > 			};
+> > 
+> > 			port@5 {
+> > 				reg = <5>;
+> > 				label = "lan4";
+> > 				phy-mode = "internal";
+> > 				phy-handle = <&phy_port5>;
+> > 			};
+> > 		};
+> 
+> So here, port '6' is not used. But it could be connected to an RGMII
+> PHY and called lan5. Would the naming work out? What does devlink
+> think of it, etc. What about phy-handle? Is there an external MDIO
+> bus? What address would be used if there is no phy-handle?
+> 
+>       Andrew
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
----
- drivers/net/wireless/ath/ath10k/core.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+In this case port6 is not used as it's not connected at all in hardware.
+From the configuration list yes, it can be used as lan5 in phy mode and
+it would have address 5 (internally the address are with an offset of
+-1). Anyway I honestly think that we are putting too much effort in
+something that can and should be handled differently. I agree that all
+this mac exchange is bs and doesn't make much sense. I tried to
+implement this as we currently qca8k is hardcoded to expect
+the cpu port 0 for everything and doesn't actually found a valid cpu
+port (aka it doesn't expect a configuration with cpu6)
+I think the driver was writtent with the concept of mac exchange from
+the start. That's why it's hardoced to port0.
+I actually tied for fun running the switch using only the port6 cpu
+port and it worked just right. So I think I will just drop the mac
+exchange and fix the code to make it dynamic.
 
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index 2f9be182fbfb..20a448e099d8 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -1182,6 +1182,7 @@ static int ath10k_fetch_cal_file(struct ath10k *ar)
- static int ath10k_core_fetch_board_data_api_1(struct ath10k *ar, int bd_ie_type)
- {
- 	const struct firmware *fw;
-+	char boardname[100];
- 
- 	if (bd_ie_type == ATH10K_BD_IE_BOARD) {
- 		if (!ar->hw_params.fw.board) {
-@@ -1189,9 +1190,16 @@ static int ath10k_core_fetch_board_data_api_1(struct ath10k *ar, int bd_ie_type)
- 			return -EINVAL;
- 		}
- 
-+		scnprintf(boardname, sizeof(boardname), "board-%s-%s.bin",
-+			  ath10k_bus_str(ar->hif.bus), dev_name(ar->dev));
-+
- 		ar->normal_mode_fw.board = ath10k_fetch_fw_file(ar,
- 								ar->hw_params.fw.dir,
--								ar->hw_params.fw.board);
-+								boardname);
-+		if (IS_ERR(ar->normal_mode_fw.board))
-+			ar->normal_mode_fw.board = ath10k_fetch_fw_file(ar,
-+									ar->hw_params.fw.dir,
-+									ar->hw_params.fw.board);
- 		if (IS_ERR(ar->normal_mode_fw.board))
- 			return PTR_ERR(ar->normal_mode_fw.board);
- 
 -- 
-2.33.0
-
+	Ansuel
