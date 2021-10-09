@@ -2,173 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F99B4276A2
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 04:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AC674276B0
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 04:35:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244316AbhJICYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 22:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40600 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244153AbhJICYi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 22:24:38 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51C1C061570
-        for <netdev@vger.kernel.org>; Fri,  8 Oct 2021 19:22:42 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id j5so46494624lfg.8
-        for <netdev@vger.kernel.org>; Fri, 08 Oct 2021 19:22:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TZT+N+q8vGs87DnSpEWl5fCzYe66D8bAj5z2pbB185E=;
-        b=X7T+RjuywN78Vi9AfPy889tCFaqFrW0lSrThW354P0UkmR4XUWCjsbKBbhxbr0uxkH
-         SySb3VDnyIP7uHnxMdJ0CU/lTd5tieSG7qMRSuT1s3fHEc0A2XEVYKFBQUxpMGMNcf7I
-         uhKEk8sAbr5c8xl0X8QyA6Khibj6i0S2Gindjb8ynvuRpfj1M8uE4NTk1W6BDETjvBhg
-         Eonj6sUnrqBCLL0i6hhuqSQioon8Uhhf6ciyIlCvB413rjePFIQUYSQuvO4A7GcOwQBu
-         9RfKea7U/1SbUBUetpQIMQ6GZmr8unXqOAwq1GhGyDzX3m+GkWMv73mBCN8Q4kL2zxC1
-         vCrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TZT+N+q8vGs87DnSpEWl5fCzYe66D8bAj5z2pbB185E=;
-        b=u7eQat7cIe2FreeleVfgHSZvIWqp+nC86T60UyIScUilIZ/xOdHgMoGxwCMqvdxvHx
-         wB5JdlM+xrPyIApb2R1q0FjLgPoxXJVGt5knR+asd7K9HXY1dDCfLS50Sihm6yTSy/Jb
-         r7IlAIIS7AXlBtpryQfb13FhCEhmO3rA1iUSny+C7QSsVxFxLJRLbizSuvlqucJfRYqj
-         kV3YllmsQocOqZzu1U1VD5gkUjDk41niFO1CQTAC0ZVmkU+s/MuqGfLtjP1uitP6e/oZ
-         xfvQF3Q6sT72gVd/mFzsOu3FxOh5v53QDKoU74YBm61IAj2k3hJWz/sTP8gcVJS+tX/1
-         kEBQ==
-X-Gm-Message-State: AOAM531GD22Z4hZxYKfhEQPzTtaTdbI1b4YGKYpnR7tuJcZTO0dubOMx
-        D3KPThu/yj6h29Mor352s4luBBlnrigls5zG/cqNkbwr
-X-Google-Smtp-Source: ABdhPJxjEj6skfI87Zcl8b/itP6b2XREriypM39ZofrhaWQaBnDTEdGvQKHuUkbTuaafS07L1XMWeJ4HmXADcDzxkzo=
-X-Received: by 2002:a05:651c:230e:: with SMTP id bi14mr6167883ljb.467.1633746161057;
- Fri, 08 Oct 2021 19:22:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211008175913.3754184-1-kuba@kernel.org> <20211008175913.3754184-2-kuba@kernel.org>
-In-Reply-To: <20211008175913.3754184-2-kuba@kernel.org>
-From:   Zhu Yanjun <zyjzyj2000@gmail.com>
-Date:   Sat, 9 Oct 2021 10:22:29 +0800
-Message-ID: <CAD=hENeJsFhKEcYjUYgwUYDHbaXPMqtifxsXPJXGayW2GJrxfg@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/5] ethernet: forcedeth: remove direct
+        id S244184AbhJIChL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 22:37:11 -0400
+Received: from smtprelay0169.hostedemail.com ([216.40.44.169]:57260 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232289AbhJIChK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 22:37:10 -0400
+Received: from omf01.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id EB69930C9E;
+        Sat,  9 Oct 2021 02:35:13 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf01.hostedemail.com (Postfix) with ESMTPA id 42B2717274;
+        Sat,  9 Oct 2021 02:35:13 +0000 (UTC)
+Message-ID: <ad38b125c5a95d283ce8787c245a4c19f3aa3492.camel@perches.com>
+Subject: Re: [PATCH net-next 3/5] ethernet: tulip: remove direct
  netdev->dev_addr writes
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Rain River <rain.1986.08.12@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+From:   Joe Perches <joe@perches.com>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Date:   Fri, 08 Oct 2021 19:35:11 -0700
+In-Reply-To: <20211008175913.3754184-4-kuba@kernel.org>
+References: <20211008175913.3754184-1-kuba@kernel.org>
+         <20211008175913.3754184-4-kuba@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.0-1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.10
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 42B2717274
+X-Stat-Signature: z73mwngeniomo9ua7tn35sn4knasozpm
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19YcPgUMOEaQLBbbhZDzK7eTb+QBOWbZFM=
+X-HE-Tag: 1633746913-642093
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 9, 2021 at 1:59 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> forcedeth writes to dev_addr byte by byte, make it use
-> a local buffer instead. Commit the changes with
-> eth_hw_addr_set() at the end.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: Rain River <rain.1986.08.12@gmail.com>
-> CC: Zhu Yanjun <zyjzyj2000@gmail.com>
+On Fri, 2021-10-08 at 10:59 -0700, Jakub Kicinski wrote:
+> Consify the casts of netdev->dev_addr.
+> 
+> Convert pointless to eth_hw_addr_set() where possible.
+> 
+> Use local buffers in a number of places.
+[]
+> diff --git a/drivers/net/ethernet/dec/tulip/de2104x.c b/drivers/net/ethernet/dec/tulip/de2104x.c
+[]
+> @@ -666,8 +666,8 @@ static void build_setup_frame_hash(u16 *setup_frm, struct net_device *dev)
+>  	struct de_private *de = netdev_priv(dev);
+>  	u16 hash_table[32];
+>  	struct netdev_hw_addr *ha;
+> +	const u16 *eaddrs;
+>  	int i;
+> -	u16 *eaddrs;
 
-Thanks & Regards.
+Seems pointless to move the eaddrs location
 
-Reviewed-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+> @@ -1821,8 +1823,7 @@ static void de21041_get_srom_info(struct de_private *de)
+>  #endif
+> 
+>  	/* store MAC address */
+> -	for (i = 0; i < 6; i ++)
+> -		de->dev->dev_addr[i] = ee_data[i + sa_offset];
+> +	eth_hw_addr_set(de->dev, &ee_data[i + sa_offset]);
 
-Zhu Yanjun
+what is the content of i here?
 
-> ---
->  drivers/net/ethernet/nvidia/forcedeth.c | 49 +++++++++++++------------
->  1 file changed, 26 insertions(+), 23 deletions(-)
->
-> diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
-> index 3f269f914dac..9b530d7509a4 100644
-> --- a/drivers/net/ethernet/nvidia/forcedeth.c
-> +++ b/drivers/net/ethernet/nvidia/forcedeth.c
-> @@ -5711,6 +5711,7 @@ static int nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
->         u32 phystate_orig = 0, phystate;
->         int phyinitialized = 0;
->         static int printed_version;
-> +       u8 mac[ETH_ALEN];
->
->         if (!printed_version++)
->                 pr_info("Reverse Engineered nForce ethernet driver. Version %s.\n",
-> @@ -5884,50 +5885,52 @@ static int nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
->         txreg = readl(base + NvRegTransmitPoll);
->         if (id->driver_data & DEV_HAS_CORRECT_MACADDR) {
->                 /* mac address is already in correct order */
-> -               dev->dev_addr[0] = (np->orig_mac[0] >>  0) & 0xff;
-> -               dev->dev_addr[1] = (np->orig_mac[0] >>  8) & 0xff;
-> -               dev->dev_addr[2] = (np->orig_mac[0] >> 16) & 0xff;
-> -               dev->dev_addr[3] = (np->orig_mac[0] >> 24) & 0xff;
-> -               dev->dev_addr[4] = (np->orig_mac[1] >>  0) & 0xff;
-> -               dev->dev_addr[5] = (np->orig_mac[1] >>  8) & 0xff;
-> +               mac[0] = (np->orig_mac[0] >>  0) & 0xff;
-> +               mac[1] = (np->orig_mac[0] >>  8) & 0xff;
-> +               mac[2] = (np->orig_mac[0] >> 16) & 0xff;
-> +               mac[3] = (np->orig_mac[0] >> 24) & 0xff;
-> +               mac[4] = (np->orig_mac[1] >>  0) & 0xff;
-> +               mac[5] = (np->orig_mac[1] >>  8) & 0xff;
->         } else if (txreg & NVREG_TRANSMITPOLL_MAC_ADDR_REV) {
->                 /* mac address is already in correct order */
-> -               dev->dev_addr[0] = (np->orig_mac[0] >>  0) & 0xff;
-> -               dev->dev_addr[1] = (np->orig_mac[0] >>  8) & 0xff;
-> -               dev->dev_addr[2] = (np->orig_mac[0] >> 16) & 0xff;
-> -               dev->dev_addr[3] = (np->orig_mac[0] >> 24) & 0xff;
-> -               dev->dev_addr[4] = (np->orig_mac[1] >>  0) & 0xff;
-> -               dev->dev_addr[5] = (np->orig_mac[1] >>  8) & 0xff;
-> +               mac[0] = (np->orig_mac[0] >>  0) & 0xff;
-> +               mac[1] = (np->orig_mac[0] >>  8) & 0xff;
-> +               mac[2] = (np->orig_mac[0] >> 16) & 0xff;
-> +               mac[3] = (np->orig_mac[0] >> 24) & 0xff;
-> +               mac[4] = (np->orig_mac[1] >>  0) & 0xff;
-> +               mac[5] = (np->orig_mac[1] >>  8) & 0xff;
->                 /*
->                  * Set orig mac address back to the reversed version.
->                  * This flag will be cleared during low power transition.
->                  * Therefore, we should always put back the reversed address.
->                  */
-> -               np->orig_mac[0] = (dev->dev_addr[5] << 0) + (dev->dev_addr[4] << 8) +
-> -                       (dev->dev_addr[3] << 16) + (dev->dev_addr[2] << 24);
-> -               np->orig_mac[1] = (dev->dev_addr[1] << 0) + (dev->dev_addr[0] << 8);
-> +               np->orig_mac[0] = (mac[5] << 0) + (mac[4] << 8) +
-> +                       (mac[3] << 16) + (mac[2] << 24);
-> +               np->orig_mac[1] = (mac[1] << 0) + (mac[0] << 8);
->         } else {
->                 /* need to reverse mac address to correct order */
-> -               dev->dev_addr[0] = (np->orig_mac[1] >>  8) & 0xff;
-> -               dev->dev_addr[1] = (np->orig_mac[1] >>  0) & 0xff;
-> -               dev->dev_addr[2] = (np->orig_mac[0] >> 24) & 0xff;
-> -               dev->dev_addr[3] = (np->orig_mac[0] >> 16) & 0xff;
-> -               dev->dev_addr[4] = (np->orig_mac[0] >>  8) & 0xff;
-> -               dev->dev_addr[5] = (np->orig_mac[0] >>  0) & 0xff;
-> +               mac[0] = (np->orig_mac[1] >>  8) & 0xff;
-> +               mac[1] = (np->orig_mac[1] >>  0) & 0xff;
-> +               mac[2] = (np->orig_mac[0] >> 24) & 0xff;
-> +               mac[3] = (np->orig_mac[0] >> 16) & 0xff;
-> +               mac[4] = (np->orig_mac[0] >>  8) & 0xff;
-> +               mac[5] = (np->orig_mac[0] >>  0) & 0xff;
->                 writel(txreg|NVREG_TRANSMITPOLL_MAC_ADDR_REV, base + NvRegTransmitPoll);
->                 dev_dbg(&pci_dev->dev,
->                         "%s: set workaround bit for reversed mac addr\n",
->                         __func__);
->         }
->
-> -       if (!is_valid_ether_addr(dev->dev_addr)) {
-> +       if (is_valid_ether_addr(mac)) {
-> +               eth_hw_addr_set(dev, mac);
-> +       } else {
->                 /*
->                  * Bad mac address. At least one bios sets the mac address
->                  * to 01:23:45:67:89:ab
->                  */
->                 dev_err(&pci_dev->dev,
->                         "Invalid MAC address detected: %pM - Please complain to your hardware vendor.\n",
-> -                       dev->dev_addr);
-> +                       mac);
->                 eth_hw_addr_random(dev);
->                 dev_err(&pci_dev->dev,
->                         "Using random MAC address: %pM\n", dev->dev_addr);
-> --
-> 2.31.1
->
+Perhaps you want
+
+	eth_hw_addr_set(de->dev, &ee_data[sa_offset]);
+
+
+> diff --git a/drivers/net/ethernet/dec/tulip/dmfe.c b/drivers/net/ethernet/dec/tulip/dmfe.c
+[]
+> @@ -476,8 +476,7 @@ static int dmfe_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	}
+>  
+> 
+>  	/* Set Node address */
+> -	for (i = 0; i < 6; i++)
+> -		dev->dev_addr[i] = db->srom[20 + i];
+> +	eth_hw_addr_set(dev, &db->srom[20 + i]);
+
+here too
+
+
