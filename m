@@ -2,116 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 241A8427495
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 02:16:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9B042749A
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 02:18:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243982AbhJIASe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 20:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40930 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243818AbhJIASb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Oct 2021 20:18:31 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EBEC061570;
-        Fri,  8 Oct 2021 17:16:35 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id g8so42277486edt.7;
-        Fri, 08 Oct 2021 17:16:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zsushKItico0ZEJaSnp8Ow4XZrSnt1M0EB9dgx2CPoA=;
-        b=GlLPMSYFstebNrNY8SqWmHQdkBsvBl09+yYHtbgUmHsPOCjPzsAbhNix9q9YauZ8qC
-         NU5OMoS5OwcLiEbtzK08ylq3M3xvmOjO9Ylf1yh7ef/tEg81QNHF69j08+NFvXwuUk4L
-         i9QKBGANVhCPFAYYw0tJlQTyxMhZJ//cNQWYO7WorcWpyeVfL2e/u/FAXZ5oDV+mM0ob
-         WwuPkVDh/jLfyo+VkYDq0wRZ5gd6Sn9c/ynbd6A/zMGC5OXuNxDk7QaH781Q7V9a3b7/
-         f0RZXsVUvn/lDWMoflPaA3AVuYiKuaEm++XufRHzmKCEv+JCEmmLAfZWysJ9s128lumn
-         7VCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zsushKItico0ZEJaSnp8Ow4XZrSnt1M0EB9dgx2CPoA=;
-        b=bhOeEwSU1wLHSQQl9g1rpkL0B5GkC2DPonxv1MB/tQRki9TvPkb9XBIwjucOF15I8g
-         w8QwHV5Ep1qYzU2sv2ZYdxOu4NPY7Eir68E9vVf6PnyK09Bd8TygWVYmY0b4xIXdPSMb
-         Zxr4g3sdxG0slvlXkonvJAAF2yg60C2iEyfz74JIh0kLzLqqsOe566N3saAFjylDE1u7
-         TQh13Ms7vC9PBjMN0QIuHg84zGIhjk3yRerpeFpmh84CXSkVzmdK8rFMuwQYOH3Nz0uC
-         CpozBTzKzB6dzHuGlSnx2TqBssDvl9iBgFWbLVy2hYwf6onB765NbVl56cJxPOSbKxKr
-         WOnw==
-X-Gm-Message-State: AOAM531long2bRKEtfW09NQQr/RdPH/pFwbMmaZ6MTxod05zzKNGPLkU
-        L5IyeDPMkxgboStpgguPkN69X7Z4wuU=
-X-Google-Smtp-Source: ABdhPJz992UIiUyJGpqnaCYF1JKxr7B/MvsrPlVx6R2Th1qUEDUKtdymMhB9UeVsyaIH5stXAaVH3g==
-X-Received: by 2002:a05:6402:40d0:: with SMTP id z16mr19908287edb.220.1633738594226;
-        Fri, 08 Oct 2021 17:16:34 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id v13sm332382edl.69.2021.10.08.17.16.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Oct 2021 17:16:33 -0700 (PDT)
-Date:   Sat, 9 Oct 2021 02:16:31 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net PATCH 1/2] drivers: net: phy: at803x: fix resume for
- QCA8327 phy
-Message-ID: <YWDfXyuvmFYwywJW@Ansuel-xps.localdomain>
-References: <20211008233426.1088-1-ansuelsmth@gmail.com>
- <20211008164750.4007f2d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YWDZPfWOe+C2abWz@Ansuel-xps.localdomain>
- <20211008171355.74ea6295@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S243995AbhJIATy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 20:19:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38784 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243958AbhJIATy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 20:19:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2B5BA60FC2;
+        Sat,  9 Oct 2021 00:17:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633738678;
+        bh=BU1Nl5chIErbEOxs41MmYcV86/XBmu41VIDvCZu3oTs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e5Kjmm/IxU4/PE2771j3JbYc0BnbTHb6oPapm4wdQlAs2PXUBzt/BBUjYDS1lgXk5
+         SruD3Cw48s6WBpR3fyyWIAfZWTscQ8MbE0SDQ0Svkr72ri6eGDHyGMcUuXKP9CF2/V
+         FujWuRdomOSMLqfAIbBnMgvQjfVCI3EbhBD75wWu29LKrH/LOhBPOs0jaG9SC8H9zH
+         3PnC7GIx3Ept13O0WYU8vxpIdu4ewXsKbG6weKg4Qg0klzBE5y+acuNgsqYgMm9h4H
+         vXFFCzN198D5VDXeth0MbYIC76endVuFdNptIwx0yvF8mokSAXHFiByS0B6VpL0uqW
+         ZMv49AxMTK2Vg==
+Date:   Fri, 8 Oct 2021 17:17:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [net-next 0/4] devlink: add dry run support for flash update
+Message-ID: <20211008171757.471966c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CO1PR11MB5089A8DC692F9FCB87530639D6B29@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <20211008104115.1327240-1-jacob.e.keller@intel.com>
+        <YWA7keYHnhlHCkKT@nanopsycho>
+        <20211008112159.4448a6c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CO1PR11MB5089797DA5BA3D7EACE5DE8FD6B29@CO1PR11MB5089.namprd11.prod.outlook.com>
+        <20211008153536.65b04fc9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CO1PR11MB5089A8DC692F9FCB87530639D6B29@CO1PR11MB5089.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211008171355.74ea6295@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 08, 2021 at 05:13:55PM -0700, Jakub Kicinski wrote:
-> On Sat, 9 Oct 2021 01:50:21 +0200 Ansuel Smith wrote:
-> > On Fri, Oct 08, 2021 at 04:47:50PM -0700, Jakub Kicinski wrote:
-> > > On Sat,  9 Oct 2021 01:34:25 +0200 Ansuel Smith wrote:  
-> > > > From Documentation phy resume triggers phy reset and restart
-> > > > auto-negotiation. Add a dedicated function to wait reset to finish as
-> > > > it was notice a regression where port sometime are not reliable after a
-> > > > suspend/resume session. The reset wait logic is copied from phy_poll_reset.
-> > > > Add dedicated suspend function to use genphy_suspend only with QCA8337
-> > > > phy and set only additional debug settings for QCA8327. With more test
-> > > > it was reported that QCA8327 doesn't proprely support this mode and
-> > > > using this cause the unreliability of the switch ports, especially the
-> > > > malfunction of the port0.
-> > > > 
-> > > > Fixes: 15b9df4ece17 ("net: phy: at803x: add resume/suspend function to qca83xx phy")  
-> > > 
-> > > Hm, there's some confusion here. This commit does not exist in net,
-> > > and neither does the one from patch 2.
-> > > 
-> > > We should be fine with these going into net-next, right Andrew?  
+On Fri, 8 Oct 2021 23:58:45 +0000 Keller, Jacob E wrote:
+> > > Doesn't the policy checks prevent any unknown attributes?
+> > > Or are unknown attributes silently ignored?  
 > > 
-> > Took the hash from linux-next. Think this is the reason they are not in
-> > net?
+> > Did you test it?
+> > 
+> > DEVLINK_CMD_FLASH_UPDATE has GENL_DONT_VALIDATE_STRICT set.  
 > 
-> Yup, just to be sure you understand the process please take a look at
+> Hmm. I did run into an issue while initially testing where
+> DEVLINK_ATTR_DRY_RUN wasn't in the devlink_nla_policy table and it
+> rejected the command with an unknown attribute. I had to add the
+> attribute to the policy table to fix this.
 > 
->  - How do the changes posted to netdev make their way into Linux?
->  - How often do changes from these trees make it to the mainline Linus
->    tree?
-> 
-> here:
-> 
-> https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html#how-do-the-changes-posted-to-netdev-make-their-way-into-linux
-> 
-> But yeah, I think we can go back to posting all 15 patches as one
-> series. Let's see if Andrew has any feedback on the v2.
-> 
-> Sorry for the confusion!
+> I'm double checking on a different kernel now with the new userspace
+> to see if I get the same behavior.
 
-It's ok. We got all confused with the Fixes tag. Pushing stuff too
-quickly... I should have notice they were not present in net and
-reporting that. Sorry for the mess.
+Weird.
+ 
+> I'm not super familiar with the validation code or what
+> GENL_DONT_VALIDATE_STRICT means...
+> 
+> Indeed.. I just did a search for GENL_DONT_VALIDATE_STRICT and the
+> only uses I can find are ones which *set* the flag. Nothing ever
+> checks it!!
+> 
+> I suspect it got removed at some point.. still digging into exact
+> history though...
 
--- 
-	Ansuel
+
+ It's passed by genl_family_rcv_msg_doit() to
+genl_family_rcv_msg_attrs_parse() where it chooses the netlink policy.
