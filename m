@@ -2,112 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1726427A84
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 15:15:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E7B5427A89
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 15:22:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233560AbhJINRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 09:17:13 -0400
-Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:57407 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233661AbhJINPf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 09:15:35 -0400
-Received: from tomoyo.flets-east.jp ([114.149.34.46])
-        by smtp.orange.fr with ESMTPA
-        id ZC9zmoEn4UGqlZCARm2ihC; Sat, 09 Oct 2021 15:13:37 +0200
-X-ME-Helo: tomoyo.flets-east.jp
-X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
-X-ME-Date: Sat, 09 Oct 2021 15:13:37 +0200
-X-ME-IP: 114.149.34.46
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v2 3/3] can: netlink: report the CAN controller mode supported flags
-Date:   Sat,  9 Oct 2021 22:13:04 +0900
-Message-Id: <20211009131304.19729-4-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211009131304.19729-1-mailhol.vincent@wanadoo.fr>
-References: <20211009131304.19729-1-mailhol.vincent@wanadoo.fr>
+        id S233401AbhJINYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 09:24:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233191AbhJINYt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 09:24:49 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248E4C061570;
+        Sat,  9 Oct 2021 06:22:52 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.94.2)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1mZCJ8-0002SM-M1; Sat, 09 Oct 2021 15:22:35 +0200
+Date:   Sat, 9 Oct 2021 14:22:16 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     Nick <vincent@systemli.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, nbd@nbd.name,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
+        sean.wang@mediatek.com, shayne.chen@mediatek.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Robert Foss <robert.foss@linaro.org>
+Subject: Re: [RFC v2] mt76: mt7615: mt7622: fix ibss and meshpoint
+Message-ID: <YWGXiExg1uBIFr2c@makrotopia.org>
+References: <20211007225725.2615-1-vincent@systemli.org>
+ <87czoe61kh.fsf@codeaurora.org>
+ <274013cd-29e4-9202-423b-bd2b2222d6b8@systemli.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <274013cd-29e4-9202-423b-bd2b2222d6b8@systemli.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch introduces a method for the user to check both the
-supported and the static capabilities. The proposed method reuses the
-existing struct can_ctrlmode and thus do not need a new IFLA_CAN_*
-entry.
+On Sat, Oct 09, 2021 at 12:37:53PM +0200, Nick wrote:
+> On 10/9/21 10:32, Kalle Valo wrote:
+> 
+> > Nick Hainke <vincent@systemli.org> writes:
+> > 
+> > > Fixes: d8d59f66d136 ("mt76: mt7615: support 16 interfaces").
+> > The fixes tag should be in the end, before Signed-off-by tags. But I can
+> > fix that during commit.
+> Thanks for feedback. Already changed that locally but I did not want to spam
+> you with another RFC v3. :)
+> I was able to organize me a BPI-MT7615 PCIE Express Card. With and without
+> this patch beacons were sent on the mt7615 pcie, so the patch did not make
+> any difference. However, the mt7622 wifi will only work with my patch.
 
-Currently, the CAN netlink interface provides no easy ways to check
-the capabilities of a given controller. The only method from the
-command line is to try each CAN_CTRLMODE_ individually to check
-whether the netlink interface returns an -EOPNOTSUPP error or not
-(alternatively, one may find it easier to directly check the source
-code of the driver instead...)
-
-It appears that, can_ctrlmode::mask is only used in one direction:
-from the userland to the kernel. So we can just reuse this field in
-the other direction (from the kernel to userland). But, because the
-semantic is different, we use a union to give this field a proper
-name: supported.
-
-Below table explains how the two fields can_ctrlmode::supported and
-can_ctrlmode::flags, when masked with any of the CAN_CTRLMODE_* bit
-flags, allow us to identify both the supported and the static
-capabilities:
-
- supported &	flags &		Controller capabilities
- CAN_CTRLMODE_*	CAN_CTRLMODE_*
- -----------------------------------------------------------------------
- false		false		Feature not supported (always disabled)
- false		true		Static feature (always enabled)
- true		false		Feature supported but disabled
- true		true		Feature supported and enabled
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
-Please refer to below link for the iproute2-next counterpart of this
-patch:
-
-https://lore.kernel.org/linux-can/20211003050147.569044-1-mailhol.vincent@wanadoo.fr/T/#t
----
- drivers/net/can/dev/netlink.c    | 5 ++++-
- include/uapi/linux/can/netlink.h | 5 ++++-
- 2 files changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
-index 6c9906e8040c..86521836fd6d 100644
---- a/drivers/net/can/dev/netlink.c
-+++ b/drivers/net/can/dev/netlink.c
-@@ -264,7 +264,10 @@ static size_t can_get_size(const struct net_device *dev)
- static int can_fill_info(struct sk_buff *skb, const struct net_device *dev)
- {
- 	struct can_priv *priv = netdev_priv(dev);
--	struct can_ctrlmode cm = {.flags = priv->ctrlmode};
-+	struct can_ctrlmode cm = {
-+		.supported = priv->ctrlmode_supported,
-+		.flags = priv->ctrlmode
-+	};
- 	struct can_berr_counter bec = { };
- 	enum can_state state = priv->state;
- 
-diff --git a/include/uapi/linux/can/netlink.h b/include/uapi/linux/can/netlink.h
-index f730d443b918..2847ed0dcac3 100644
---- a/include/uapi/linux/can/netlink.h
-+++ b/include/uapi/linux/can/netlink.h
-@@ -88,7 +88,10 @@ struct can_berr_counter {
-  * CAN controller mode
-  */
- struct can_ctrlmode {
--	__u32 mask;
-+	union {
-+		__u32 mask;		/* Userland to kernel */
-+		__u32 supported;	/* Kernel to userland */
-+	};
- 	__u32 flags;
- };
- 
--- 
-2.32.0
-
+Does Mesh+AP or Ad-Hoc+AP also work on MT7622 and does it still work on
+MT7615E card with your patch applied?
