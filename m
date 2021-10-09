@@ -2,66 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9484F427CB0
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 20:29:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0D94427CBB
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 20:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbhJISbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 14:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
+        id S229721AbhJISra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 14:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbhJISbm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 14:31:42 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C90C061570
-        for <netdev@vger.kernel.org>; Sat,  9 Oct 2021 11:29:45 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id i12so27845554wrb.7
-        for <netdev@vger.kernel.org>; Sat, 09 Oct 2021 11:29:44 -0700 (PDT)
+        with ESMTP id S229558AbhJISr3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 14:47:29 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04D1C061570
+        for <netdev@vger.kernel.org>; Sat,  9 Oct 2021 11:45:31 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id v11so6583544pgb.8
+        for <netdev@vger.kernel.org>; Sat, 09 Oct 2021 11:45:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=k6fomv0sdqyhGG3g2MPtJX0afBVvlWccl4oJlzfMn9Y=;
-        b=GFURRN9mIxqB2GRsAfn0ogjIPBF4JW435CSnqajP1FEv1exMpXHASkBTyFMB8h/lwH
-         LGuN9S7NAslbF0sgl364M6h7oJ5sdgnMjB2eGyjKW2BvkD++aune9a/A0IAzLCPU+Aoe
-         N6L8c0lFaa7tTN0t82yidZzyzUmXaDD/82pX3D/L+Gd4WpvgAenkXJDh5I5qh7LDhEqc
-         7Ce0/0MOsQhKt5VX96W2mBxrrt1VMlN8AfBDOdIHAhbu4s8yqP+cELJJZAukEuvSmeaY
-         K4+LYApZwEyMb0SoRKodAvgAxVeDI32/tx7Dlx9d35WHGcHZLeaDpRbLKNiL1hmQluzu
-         2DxQ==
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=tEWWuT+bjtcqCDslFgPzNPcrb3eD/epofFYyIRQlACw=;
+        b=anIjjx0q3ROHOS8VhCMpY6oOFY+nNDenJ5/0SxhF2TIjV5lZr/owMv5IPjMh/5Qpmv
+         aRrpR7E9E/p+iz1uU42pcQE6GqdWOgJ8QA9G90DabyIeOrERM+TG8vz7209h6qas48ye
+         h8VJm71iGhb6WCe0nuzCZgenqsLWMY/qHKymSiliEsPGoRwy9D9KGBA36YgFejdTE3hi
+         df1d7vDY3ZirUyyrJNFvJ5iqgylLvKlWYeAx5bB2SxExjeM1iNT3H0OOL8fGssQnVRMS
+         kBD+2+kO8itMbb136yda4Cq9UGe5JAaUjAa/K/FyQdtLtw89qdHEzjIIMq0BAJ6XEm+G
+         F0fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=k6fomv0sdqyhGG3g2MPtJX0afBVvlWccl4oJlzfMn9Y=;
-        b=Skvi4UIBqTV1mjLMhb/Qi9bE8D34X3wv+d+AnzNA9vVbWfFHFdYx0qLIu2kx311QX1
-         ulBGydwVhTY4IjEGscTdgiLu7w3GjmNFNxVaiGlSaZh/l6MIrrZ4/MnITKkdMkSfJiDA
-         8rEw/0QE5plxxHbtCRWYc9w5BiM0PSgpwIjSYUz7/5ZoWBT4CTxy0+ASYXUY7qePy5tM
-         aPpOGvEghjXrgQLi/VhkHuoAoECCL2YeuQ7GANgGQco0rDs3fumbcpXK2gRdgsWBq6Ce
-         oUMp0Ns0V1lsX+r17m9lSxoXTAl7aZlCTDqouak5bK93WrfGh4vWj95N57PBC7wECgG9
-         s12g==
-X-Gm-Message-State: AOAM533+KQnpvCT2ux6IG6Rv3/V5HWBhQhRYEgQBDftGDFTrRzSj6pOo
-        nUEDzJLZa+uDnJFEoqnq06TOlmgsTSczHhdSHig=
-X-Google-Smtp-Source: ABdhPJyny6+Waj5lY987y1vZApOywqMSdDtNwKyS8+5E6jD6kGbRuUEn6YpYB5LkHa6SYBT6yLVR7qYyRNdJR+mJ1tQ=
-X-Received: by 2002:a5d:64a3:: with SMTP id m3mr1377315wrp.364.1633804183497;
- Sat, 09 Oct 2021 11:29:43 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:adf:b194:0:0:0:0:0 with HTTP; Sat, 9 Oct 2021 11:29:42 -0700 (PDT)
-Reply-To: asameraa950@gmail.com
-From:   Samera Ali <princesesther94@gmail.com>
-Date:   Sat, 9 Oct 2021 11:29:42 -0700
-Message-ID: <CAOWxp5NRDQWi7br+t5_tbj7dysPEjQdht+OF6YM=oLO2eigskA@mail.gmail.com>
-Subject: Hey dear
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=tEWWuT+bjtcqCDslFgPzNPcrb3eD/epofFYyIRQlACw=;
+        b=w4vI54hnhiszlyON4nU2np2Bcm4x1f/gDWi5D1tylptiEKhOhF/zgqFj6+sg3VtE9M
+         VQcff2WhOwmriW2ex92HAdVp4ukMchDpIY5dJaV8zEhaOOIXdwiGQfRmGyWAieVQWTmH
+         Nvwz1vDmNA+b+X0dCh5K4TL56QKXUsGpc99LqN26fz2txBpDKrIZQ5eXWaNQ+ySjN7lH
+         zczejeOgwVWd+O+q0dpEMZn+9ewtLtzUu1u114JUu+zJdcsWjvHfoygYnFV+vYbj9UOl
+         uyIvMZIQNJ4eigmi33iNeeHJRYRhIlCaSSB2I3GbYhp1REQWgxzZ7y2cdFGhCcT5ndcU
+         QDlA==
+X-Gm-Message-State: AOAM530O0XW8+MWn1L0B0uMKcL4tJS2kUyGRgzZiPkp5f3GZcEwaQMb0
+        JC2b8/fMXba0utKsAhFPduRfjD15oTwpyA==
+X-Google-Smtp-Source: ABdhPJziDU8+tkfLo0s/Qc8CP2zZesY48huOQFUN3l/IIIIKCP5z2g/XNlaS0DARUm4FC8+DRtlMJw==
+X-Received: by 2002:a05:6a00:887:b0:44b:dee9:b7b1 with SMTP id q7-20020a056a00088700b0044bdee9b7b1mr17031777pfj.84.1633805131227;
+        Sat, 09 Oct 2021 11:45:31 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id s30sm3368433pgo.39.2021.10.09.11.45.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 Oct 2021 11:45:30 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Cc:     drivers@pensando.io, jtoppins@redhat.com,
+        Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net-next 0/9] ionic: add vlanid overflow management
+Date:   Sat,  9 Oct 2021 11:45:14 -0700
+Message-Id: <20211009184523.73154-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey dear
+Add vlans to the existing rx_filter_sync mechanics currently
+used for managing mac filters.
 
-Nice to meet you, Am Miss samera I found your email here in google
-search and I picked interest to contact you. I've something very
-important which I would like to discuss with you and I would
-appreciate if you respond back to me through my email address as to
-tell you more about me with my photos, my private email as fellows??
-[ asameraa950@gmail.com ]
+Older versions of our firmware had no enforced limits on the
+number of vlans that the driver could request, but requesting
+large numbers of vlans caused issues in FW memory management,
+so an arbitrary limit was added in the FW.  The FW now
+returns -ENOSPC when it hits that limit, which the driver
+needs to handle.
 
-From, samera ali
+Unfortunately, the FW doesn't advertise the vlan id limit,
+as it does with mac filters, so the driver won't know the
+limit until it bumps into it.  We'll grab the current vlan id
+count and use that as the limit from there on and thus prevent
+getting any more -ENOSPC errors.
+
+Just as is done for the mac filters, the device puts the device
+into promiscuous mode when -ENOSPC is seen for vlan ids, and
+the driver will track the vlans that aren't synced to the FW.
+When vlans are removed, the driver will retry the un-synced
+vlans.  If all outstanding vlans are synced, the promiscuous
+mode will be disabled.
+
+The first 6 patches rework the existing filter management to
+make it flexible enough for additional filter types.  Next
+we add the vlan ids into the management.  The last 2 patches
+allow us to catch the max vlan -ENOSPC error without adding
+an unnecessary error message to the kernel log.
+
+Shannon Nelson (9):
+  ionic: add filterlist to debugfs
+  ionic: move lif mac address functions
+  ionic: remove mac overflow flags
+  ionic: add generic filter search
+  ionic: generic filter add
+  ionic: generic filter delete
+  ionic: handle vlan id overflow
+  ionic: allow adminq requests to override default error message
+  ionic: tame the filter no space message
+
+ drivers/net/ethernet/pensando/ionic/ionic.h   |   7 +-
+ .../ethernet/pensando/ionic/ionic_debugfs.c   |  46 ++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 190 +-------------
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |   4 +-
+ .../net/ethernet/pensando/ionic/ionic_main.c  |  47 ++--
+ .../net/ethernet/pensando/ionic/ionic_phc.c   |   8 +-
+ .../ethernet/pensando/ionic/ionic_rx_filter.c | 241 +++++++++++++++++-
+ .../ethernet/pensando/ionic/ionic_rx_filter.h |   2 +
+ 8 files changed, 345 insertions(+), 200 deletions(-)
+
+-- 
+2.17.1
+
