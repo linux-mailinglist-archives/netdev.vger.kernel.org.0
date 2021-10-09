@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5033427D7F
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 23:04:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72CD1427D81
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 23:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231161AbhJIVFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 17:05:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33416 "EHLO
+        id S230469AbhJIVF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 17:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbhJIVFv (ORCPT
+        with ESMTP id S230327AbhJIVFv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 17:05:51 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96687C061762
-        for <netdev@vger.kernel.org>; Sat,  9 Oct 2021 14:03:53 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id e12so41342658wra.4
-        for <netdev@vger.kernel.org>; Sat, 09 Oct 2021 14:03:53 -0700 (PDT)
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E9AC061762
+        for <netdev@vger.kernel.org>; Sat,  9 Oct 2021 14:03:54 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id r7so41304263wrc.10
+        for <netdev@vger.kernel.org>; Sat, 09 Oct 2021 14:03:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tIexbe7G0YKMe1CwdKXK5X9VCycFErTnEJUFWFOr7tk=;
-        b=29JsiVqzyMgyMHqnJIHvomcrEghh6Xp0mZP92qjUUz1tBZNvdHvJ4IvK7ev0T1OdON
-         Rqsl+BUkAok2GsYh6gxtRE3PBsAE6ACvdNZRTTNlCSjiH0NNqZqsmDrwvoSKtdGRxbm6
-         hbSoFC+1SM7POJMkp/CL3sVdQSUUc0c1+9Al4Hn7Xfxg4wx9U839AlQYdgg02CdzXAQy
-         3MCB6QtWWE1MKxPmvi2fVfE6BNuu83B4q5i5p5fUQUUKmJJOIfL4t2wCwIP0MZA7gKXj
-         bd9BxcI+3Y7V6ArNfF8g1OOM8CzOBRwDndEUflHrExcoXLk0lgMZAn1rCjNT3GTAYadT
-         CEVQ==
+        bh=ctY+yofXF/zlJ0MXeGIFlVWxptmFvqmULcdipUPLWuE=;
+        b=VYOkRzyceu8W7fkPjPVmT8TrIJC4m4iBYOlyYd3MHaeF0v2tgZIgtrw89kN63OxtPF
+         vWEp84ENlhmyGJYV5ejgNFtEKTiCG7o2/BENzj8w0YHEsVJD3fKOX6U7iHc7w5DPAH9D
+         y10CfMK2HU/sZLs+6LtTKJeYdwizD9UsfXBvG7pJbJuaLtV2lg2fI8RvzGrXctREimlU
+         458XBVssAVJ04kY3O1KTaT/mCHkPdiVlcMdx8GOK+bAsWtRV5RH1QC020Xmix3R+PwMg
+         nPpfulfQOIlxH9LJnNk64xt7g1Yx7MJdUy9BFZ3PvtINRRLk0LiN1UiNREss42F0H4cn
+         Oixw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tIexbe7G0YKMe1CwdKXK5X9VCycFErTnEJUFWFOr7tk=;
-        b=btshQ2ITzxiAqrqCaio2S/UAOo18HfLuh2eA3i07s0R2AGa+eOON0aEjRyatlMso9Y
-         uIGqBmN0wvqbbCIkiLzTTuQI7114ed7Onl1MUceBroAxD2hokeFVV0C/c1q2k4JsN2Gb
-         HWVsTVBEMaDsM5xcZoIbUWuUblMLZCBApxFhDCTlYBVZDRyrecZYyRi70kzM5VJ5+S/G
-         vD8tKviuj8Md/iufewlVl9DOWIYuAiQiqFgYro1jPbv+s2RFWkWiYydlo+fq56g1lWWR
-         m4I8PAWa/9/YerKGfHdSjJageU4fktGXjYwNZmt0443gFDy7VR4lI2ksZFPXP4wb5NGP
-         s3Qw==
-X-Gm-Message-State: AOAM531W7WrpNY92H7Ja7KoaivB+aGfIkQj80l6kxBqtE/8TDkUl6pAK
-        LD1XG+4HthO7wagZ+6imq1nA3A==
-X-Google-Smtp-Source: ABdhPJzLAeAwCpeyveL4h9rYhm3L3FXh7tJgRLbN63rKGYYBLuslUuzV8reb4oYn8Tv+4sGmY1YZEA==
-X-Received: by 2002:a7b:c441:: with SMTP id l1mr11373264wmi.69.1633813432190;
-        Sat, 09 Oct 2021 14:03:52 -0700 (PDT)
+        bh=ctY+yofXF/zlJ0MXeGIFlVWxptmFvqmULcdipUPLWuE=;
+        b=7lFIOjdVYtX7XXpwV6HRbt9R+k5BfBllVspeQWISqwn4n4AM/7TW5hw1aGj0ZScIlg
+         U9EOWSssq9v+FhNvqvSS/i9ZNSWLrhp/THyV5TKWsGE31ZRmXgbxJIWYgjwR8DFxxXA3
+         6h020OFS8mWi1oAt7qj050nSuN93WZQ9VN6W1Kk6j8ptGa7Nw/ulKuk6KYckxiVFT42t
+         +xZoYD9VfpRum/ZhKOTgNFQHBMOYZ4jqI6f/aVAv0joT3OhrI4fGSTB7b09JMiWGZWJ2
+         Q64KbhxkgjOclGfxKLaAfy+O4in594Bc/t9NwH1VOEUiBfE+71lDFHA8NFC8waxZDDr8
+         C5cA==
+X-Gm-Message-State: AOAM530NA5HmJu1VlHU1UoXZZffdtmkW2C9FfExfLLjn6eExJW8k/afv
+        xv9C6PdAPgfC5jVCXnoCgdROfA==
+X-Google-Smtp-Source: ABdhPJzrF5HgIrfkd8iqvhuZD9Hs0omTZKPedqCb15KPZ2mCLTW74DaZ4j1ZGTil3q7nIXXCMxKhXQ==
+X-Received: by 2002:a1c:7f56:: with SMTP id a83mr12241308wmd.20.1633813433041;
+        Sat, 09 Oct 2021 14:03:53 -0700 (PDT)
 Received: from localhost.localdomain ([149.86.83.130])
-        by smtp.gmail.com with ESMTPSA id k128sm3102516wme.41.2021.10.09.14.03.51
+        by smtp.gmail.com with ESMTPSA id k128sm3102516wme.41.2021.10.09.14.03.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Oct 2021 14:03:51 -0700 (PDT)
+        Sat, 09 Oct 2021 14:03:52 -0700 (PDT)
 From:   Quentin Monnet <quentin@isovalent.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next 2/3] bpftool: do not FORCE-build libbpf
-Date:   Sat,  9 Oct 2021 22:03:40 +0100
-Message-Id: <20211009210341.6291-3-quentin@isovalent.com>
+Subject: [PATCH bpf-next 3/3] bpftool: turn check on zlib from a phony target into a conditional error
+Date:   Sat,  9 Oct 2021 22:03:41 +0100
+Message-Id: <20211009210341.6291-4-quentin@isovalent.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211009210341.6291-1-quentin@isovalent.com>
 References: <20211009210341.6291-1-quentin@isovalent.com>
@@ -65,33 +65,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In bpftool's Makefile, libbpf has a FORCE dependency, to make sure we
-rebuild it in case its source files changed. Let's instead make the
-rebuild depend on the source files directly, through a call to the
-"$(wildcard ...)" function. This avoids descending into libbpf's
-directory if there is nothing to update.
+One of bpftool's object files depends on zlib. To make sure we do not
+attempt to build that object when the library is not available, commit
+d66fa3c70e59 ("tools: bpftool: add feature check for zlib") introduced a
+feature check to detect whether zlib is present.
 
-Do the same for the bootstrap libbpf version.
+This check comes as a rule for which the target ("zdep") is a
+nonexistent file (phony target), which means that the Makefile always
+attempts to rebuild it. It is mostly harmless. However, one side effect
+is that, on running again once bpftool is already built, make considers
+that "something" (the recipe for zdep) was executed, and does not print
+the usual message "make: Nothing to be done for 'all'", which is a
+user-friendly indicator that the build went fine.
 
-This results in a slightly faster operation and less verbose output when
-running make a second time in bpftool's directory.
+Before, with some level of debugging information:
 
-Before:
-
-    Auto-detecting system features:
-    ...                        libbfd: [ on  ]
-    ...        disassembler-four-args: [ on  ]
-    ...                          zlib: [ on  ]
-    ...                        libcap: [ on  ]
-    ...               clang-bpf-co-re: [ on  ]
-
-    make[1]: Entering directory '/root/dev/linux/tools/lib/bpf'
-    make[1]: Entering directory '/root/dev/linux/tools/lib/bpf'
-    make[1]: Nothing to be done for 'install_headers'.
-    make[1]: Leaving directory '/root/dev/linux/tools/lib/bpf'
-    make[1]: Leaving directory '/root/dev/linux/tools/lib/bpf'
-
-After:
+    $ make --debug=m
+    [...]
+    Reading makefiles...
 
     Auto-detecting system features:
     ...                        libbfd: [ on  ]
@@ -100,44 +91,69 @@ After:
     ...                        libcap: [ on  ]
     ...               clang-bpf-co-re: [ on  ]
 
-Other ways to clean up the output could be to pass the "-s" option, or
-to redirect the output to >/dev/null, when calling make recursively to
-descend into libbpf's directory. However, this would suppress some
-useful output if something goes wrong during the build. A better
-alternative would be to pass "--no-print-directory" to the recursive
-make, but that would still leave us with some noise for
-"install_headers". Skipping the descent into libbpf's directory if no
-source file has changed works best, and seems the most logical option
-overall.
+    Updating makefiles....
+    Updating goal targets....
+     File 'all' does not exist.
+           File 'zdep' does not exist.
+          Must remake target 'zdep'.
+     File 'all' does not exist.
+    Must remake target 'all'.
+    Successfully remade target file 'all'.
 
-Reported-by: Andrii Nakryiko <andrii@kernel.org>
+After the patch:
+
+    $ make --debug=m
+    [...]
+
+    Auto-detecting system features:
+    ...                        libbfd: [ on  ]
+    ...        disassembler-four-args: [ on  ]
+    ...                          zlib: [ on  ]
+    ...                        libcap: [ on  ]
+    ...               clang-bpf-co-re: [ on  ]
+
+    Updating makefiles....
+    Updating goal targets....
+     File 'all' does not exist.
+    Must remake target 'all'.
+    Successfully remade target file 'all'.
+    make: Nothing to be done for 'all'.
+
+(Note the last line, which is not part of make's debug information.)
+
 Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 ---
- tools/bpf/bpftool/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/bpf/bpftool/Makefile | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index 2c510293f32b..4acec74f459b 100644
+index 4acec74f459b..2174e21aa57b 100644
 --- a/tools/bpf/bpftool/Makefile
 +++ b/tools/bpf/bpftool/Makefile
-@@ -43,7 +43,7 @@ endif
- $(LIBBPF_OUTPUT) $(BOOTSTRAP_OUTPUT) $(LIBBPF_BOOTSTRAP_OUTPUT):
- 	$(QUIET_MKDIR)mkdir -p $@
+@@ -199,7 +199,10 @@ $(BOOTSTRAP_OUTPUT)disasm.o: $(srctree)/kernel/bpf/disasm.c
+ $(OUTPUT)disasm.o: $(srctree)/kernel/bpf/disasm.c
+ 	$(QUIET_CC)$(CC) $(CFLAGS) -c -MMD -o $@ $<
  
--$(LIBBPF): FORCE | $(LIBBPF_OUTPUT)
-+$(LIBBPF): $(wildcard $(BPF_DIR)/*.[ch] $(BPF_DIR)/Makefile) | $(LIBBPF_OUTPUT)
- 	$(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_OUTPUT) \
- 		DESTDIR=$(LIBBPF_DESTDIR) prefix= $(LIBBPF) install_headers
+-$(OUTPUT)feature.o: | zdep
++$(OUTPUT)feature.o:
++ifneq ($(feature-zlib), 1)
++	$(error "No zlib found")
++endif
  
-@@ -51,7 +51,7 @@ $(LIBBPF_INTERNAL_HDRS): $(LIBBPF_HDRS_DIR)/%.h: $(BPF_DIR)/%.h $(LIBBPF)
- 	$(call QUIET_INSTALL, $@)
- 	$(Q)install -m 644 -t $(LIBBPF_HDRS_DIR) $<
+ $(BPFTOOL_BOOTSTRAP): $(BOOTSTRAP_OBJS) $(LIBBPF_BOOTSTRAP)
+ 	$(QUIET_LINK)$(HOSTCC) $(CFLAGS) $(LDFLAGS) -o $@ $(BOOTSTRAP_OBJS) \
+@@ -255,10 +258,7 @@ doc-uninstall:
  
--$(LIBBPF_BOOTSTRAP): FORCE | $(LIBBPF_BOOTSTRAP_OUTPUT)
-+$(LIBBPF_BOOTSTRAP): $(wildcard $(BPF_DIR)/*.[ch] $(BPF_DIR)/Makefile) | $(LIBBPF_BOOTSTRAP_OUTPUT)
- 	$(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_BOOTSTRAP_OUTPUT) \
- 		ARCH= CC=$(HOSTCC) LD=$(HOSTLD) $@
+ FORCE:
  
+-zdep:
+-	@if [ "$(feature-zlib)" != "1" ]; then echo "No zlib found"; exit 1 ; fi
+-
+ .SECONDARY:
+-.PHONY: all FORCE clean install-bin install uninstall zdep
++.PHONY: all FORCE clean install-bin install uninstall
+ .PHONY: doc doc-clean doc-install doc-uninstall
+ .DEFAULT_GOAL := all
 -- 
 2.30.2
 
