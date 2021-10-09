@@ -2,89 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D95A8427940
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 12:53:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3AF6427947
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 12:58:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244788AbhJIKzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 06:55:04 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:13886 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244697AbhJIKyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 06:54:54 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HRMGd2rMXz900t;
-        Sat,  9 Oct 2021 18:48:09 +0800 (CST)
-Received: from SZX1000464847.huawei.com (10.21.59.169) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.8; Sat, 9 Oct 2021 18:52:56 +0800
-From:   Dongdong Liu <liudongdong3@huawei.com>
-To:     <helgaas@kernel.org>, <hch@infradead.org>, <kw@linux.com>,
-        <logang@deltatee.com>, <leon@kernel.org>,
-        <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
-        <hverkuil-cisco@xs4all.nl>
-CC:     <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH V10 8/8] PCI/IOV: Enable 10-Bit Tag support for PCIe VF devices
-Date:   Sat, 9 Oct 2021 18:49:38 +0800
-Message-ID: <20211009104938.48225-9-liudongdong3@huawei.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20211009104938.48225-1-liudongdong3@huawei.com>
-References: <20211009104938.48225-1-liudongdong3@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.21.59.169]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+        id S244609AbhJILAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 07:00:09 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:36350 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231932AbhJILAI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Oct 2021 07:00:08 -0400
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxv2q0dWFhcgkXAA--.21276S2;
+        Sat, 09 Oct 2021 18:57:57 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Paul Burton <paulburton@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Subject: [PATCH bpf-next 0/2] bpf, mips: Do some small changes
+Date:   Sat,  9 Oct 2021 18:57:54 +0800
+Message-Id: <1633777076-17256-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9Dxv2q0dWFhcgkXAA--.21276S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY67AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
+        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
+        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI8I
+        cVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2js
+        IEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE
+        5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26F4j6r4UJwAm72
+        CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7
+        M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVAFwVW8twCF04k20xvY0x0EwIxGrwCFx2
+        IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v2
+        6r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67
+        AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IY
+        s7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxV
+        W8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU19Xo7UUUUU==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable 10-Bit Tag Requester for the VF devices below the
-Root Port that support 10-Bit Tag Completer.
+This patchset is based on bpf-next tree:
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
 
-Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
----
- drivers/pci/iov.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Tiezhu Yang (2):
+  bpf, mips: Clean up config options about JIT
+  bpf, mips: Modify check condition about tail call count
 
-diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-index bd600c15258f..760ee8b939cd 100644
---- a/drivers/pci/iov.c
-+++ b/drivers/pci/iov.c
-@@ -692,6 +692,15 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
- 
- 	pci_iov_set_numvfs(dev, nr_virtfn);
- 	iov->ctrl |= PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE;
-+
-+	if ((pcie_tag_config == PCIE_TAG_DEFAULT) &&
-+	    (iov->cap & PCI_SRIOV_CAP_VF_10BIT_TAG_REQ) &&
-+	    pcie_rp_10bit_tag_cmp_supported(dev))
-+		iov->ctrl |= PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
-+
-+	if (pcie_tag_config == PCIE_TAG_PEER2PEER)
-+		iov->ctrl &= ~PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
-+
- 	pci_cfg_access_lock(dev);
- 	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
- 	msleep(100);
-@@ -708,6 +717,7 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
- 
- err_pcibios:
- 	iov->ctrl &= ~(PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE);
-+	iov->ctrl &= ~PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
- 	pci_cfg_access_lock(dev);
- 	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
- 	ssleep(1);
-@@ -740,6 +750,7 @@ static void sriov_disable(struct pci_dev *dev)
- 
- 	sriov_del_vfs(dev);
- 	iov->ctrl &= ~(PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE);
-+	iov->ctrl &= ~PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN;
- 	pci_cfg_access_lock(dev);
- 	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
- 	ssleep(1);
+ arch/mips/Kconfig              | 9 ---------
+ arch/mips/net/Makefile         | 6 +++---
+ arch/mips/net/bpf_jit_comp32.c | 4 ++--
+ 3 files changed, 5 insertions(+), 14 deletions(-)
+
 -- 
-2.22.0
+2.1.0
 
