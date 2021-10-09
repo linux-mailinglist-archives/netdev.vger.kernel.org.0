@@ -2,68 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 237DD427484
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 02:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15CF3427491
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 02:14:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243954AbhJIAMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Oct 2021 20:12:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60464 "EHLO mail.kernel.org"
+        id S243961AbhJIAPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Oct 2021 20:15:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36054 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243818AbhJIAMD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Oct 2021 20:12:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0EB2F60FC3;
-        Sat,  9 Oct 2021 00:10:07 +0000 (UTC)
+        id S243818AbhJIAPw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Oct 2021 20:15:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 678AF60FC2;
+        Sat,  9 Oct 2021 00:13:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633738207;
-        bh=98gtCc2rJJsNDXtGpCkdID9cTcNp76kpQ/7acnYzelI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TRsFyhMf8bUdmsDncV2P8EnnSYJIsq3C/Y3Ui/SolyAW6cUfCs6rfg/P9X9jc9Z0i
-         CSf2qopxm0htj3FdRB636vhnqhX3A5tj3arBhyu3g3MDQ0hPeYDn/TdtKI7Xud8zU5
-         qCuUlLjf1hUb3Uh9QfXQG7WhAKLz7xin3SB15ivCUVyMRIK85Ab3XyBlgtx6SE7tSy
-         hswHCwWFFJwmM8Z24v5GrBZF7FSAfq5yKuF6xSWbrJJTytJxejALnv7pPKY7eYEuE1
-         fw1zGf5QDFZSXU/P+PVHDiP7C1GVFjsTi8BsXqIt0lb740cFaAQy4WbbeKWJtcMeil
-         QSTvxOypAX+Zw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 016BC60A38;
-        Sat,  9 Oct 2021 00:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests/tls: add SM4 GCM/CCM to tls selftests
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163373820700.1766.226175234547653621.git-patchwork-notify@kernel.org>
-Date:   Sat, 09 Oct 2021 00:10:07 +0000
-References: <20211008091745.42917-1-tianjia.zhang@linux.alibaba.com>
-In-Reply-To: <20211008091745.42917-1-tianjia.zhang@linux.alibaba.com>
-To:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
-        borisp@nvidia.com, john.fastabend@gmail.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        s=k20201202; t=1633738436;
+        bh=eViGypOI8z4Rs+nCf3qR3T0LRi3rotOz+hzh5xGDRe8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XXeiNhycylzGlcpdUnnGjGWCvoUOJGKgSNM7ROBiAA+ei2jMklX8+YXxoNWf7/j3k
+         0kiOZdWBq5dzMZEy8NIZ+YwecT4MV0iSAIeor/KYHdpGbwqyBu/Rr++1SV0eOn5jgF
+         NIl/YDbhB2DSgr5M+4zVGdW3rBLyPnqZ3gWyMXrnnp0cZXVZsbkMGiwl/34KovfZ0y
+         /9thPDB8nPD+veXipm2tq5MjQCmNwYknZeVhFMNKnRVT4mMbESq+2PetsV7l/MoMZs
+         3fKvBK+4uTpls1R3tbeWGupr7PizBWqDa5nalM043Tbbm+eMRgbT83QgxrPF2KXoqR
+         d2hXYNwWf24bw==
+Date:   Fri, 8 Oct 2021 17:13:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
+Subject: Re: [net PATCH 1/2] drivers: net: phy: at803x: fix resume for
+ QCA8327 phy
+Message-ID: <20211008171355.74ea6295@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YWDZPfWOe+C2abWz@Ansuel-xps.localdomain>
+References: <20211008233426.1088-1-ansuelsmth@gmail.com>
+        <20211008164750.4007f2d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YWDZPfWOe+C2abWz@Ansuel-xps.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri,  8 Oct 2021 17:17:45 +0800 you wrote:
-> Add new cipher as a variant of standard tls selftests.
+On Sat, 9 Oct 2021 01:50:21 +0200 Ansuel Smith wrote:
+> On Fri, Oct 08, 2021 at 04:47:50PM -0700, Jakub Kicinski wrote:
+> > On Sat,  9 Oct 2021 01:34:25 +0200 Ansuel Smith wrote:  
+> > > From Documentation phy resume triggers phy reset and restart
+> > > auto-negotiation. Add a dedicated function to wait reset to finish as
+> > > it was notice a regression where port sometime are not reliable after a
+> > > suspend/resume session. The reset wait logic is copied from phy_poll_reset.
+> > > Add dedicated suspend function to use genphy_suspend only with QCA8337
+> > > phy and set only additional debug settings for QCA8327. With more test
+> > > it was reported that QCA8327 doesn't proprely support this mode and
+> > > using this cause the unreliability of the switch ports, especially the
+> > > malfunction of the port0.
+> > > 
+> > > Fixes: 15b9df4ece17 ("net: phy: at803x: add resume/suspend function to qca83xx phy")  
+> > 
+> > Hm, there's some confusion here. This commit does not exist in net,
+> > and neither does the one from patch 2.
+> > 
+> > We should be fine with these going into net-next, right Andrew?  
 > 
-> Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-> ---
->  tools/testing/selftests/net/tls.c | 28 ++++++++++++++++++++++++++--
->  1 file changed, 26 insertions(+), 2 deletions(-)
+> Took the hash from linux-next. Think this is the reason they are not in
+> net?
 
-Here is the summary with links:
-  - selftests/tls: add SM4 GCM/CCM to tls selftests
-    https://git.kernel.org/netdev/net-next/c/e506342a03c7
+Yup, just to be sure you understand the process please take a look at
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ - How do the changes posted to netdev make their way into Linux?
+ - How often do changes from these trees make it to the mainline Linus
+   tree?
 
+here:
 
+https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html#how-do-the-changes-posted-to-netdev-make-their-way-into-linux
+
+But yeah, I think we can go back to posting all 15 patches as one
+series. Let's see if Andrew has any feedback on the v2.
+
+Sorry for the confusion!
