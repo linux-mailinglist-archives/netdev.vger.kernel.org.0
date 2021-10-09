@@ -2,80 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9489427B42
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 17:19:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1607427B55
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 17:31:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234552AbhJIPU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 11:20:59 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58284 "EHLO vps0.lunn.ch"
+        id S234644AbhJIPdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 11:33:37 -0400
+Received: from ixit.cz ([94.230.151.217]:42236 "EHLO ixit.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233728AbhJIPU5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Oct 2021 11:20:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=4hgYylOgEY4KRqFFClkdULm2cTRWtsYcLsbnTkI6SSw=; b=LeId56INCFhlp6q4mScdRpksat
-        W+cGW4p6jpRmFhEZ/K1nMMCoKPhwRKIOXCC+9//NybfnLu0/N3vBiCJTAW9HNM0bkcwIVZMT27mX7
-        u7+ASI8YyKb9JYjxhM7keFFN9L7k+nvN5KZCSGzsxh3j3CU4LqQc51+GBFf6/BlnFS/k=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mZE7j-00AA0T-JR; Sat, 09 Oct 2021 17:18:55 +0200
-Date:   Sat, 9 Oct 2021 17:18:55 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S233728AbhJIPdg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Oct 2021 11:33:36 -0400
+Received: from localhost.localdomain (ip-89-176-96-70.net.upcbroadband.cz [89.176.96.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ixit.cz (Postfix) with ESMTPSA id D29A220064;
+        Sat,  9 Oct 2021 17:31:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+        t=1633793496;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gA2m99AeBeJjFXTgqLDwmf4You9Xk5afmuVSjLC8hD4=;
+        b=qXLwmx94HtyfV2EOXOU7AM6We77K8jCjbw5sd5H5MtawuTQ6tJ8sBzHS/kQBTRXrjkqPuM
+        lpazvGuH+iCSzS5rQoAcobWcnCoGi7uVNAIru0r2GLsX1PwEteftrrHyHY2WqdtXdwpDSR
+        wHj5eqrftZ8FNdiY2LuuX1d7LVUQEGk=
+From:   David Heidelberg <david@ixit.cz>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v2 06/15] dt-bindings: net: dsa: qca8k: document
- rgmii_1_8v bindings
-Message-ID: <YWGy33inSic1PcC5@lunn.ch>
-References: <20211008002225.2426-1-ansuelsmth@gmail.com>
- <20211008002225.2426-7-ansuelsmth@gmail.com>
+        Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ~okias/devicetree@lists.sr.ht,
+        David Heidelberg <david@ixit.cz>
+Subject: [PATCH v2] dt-bindings: net: nfc: nxp,pn544: Convert txt bindings to yaml
+Date:   Sat,  9 Oct 2021 17:30:03 +0200
+Message-Id: <20211009153003.33529-1-david@ixit.cz>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211008002225.2426-7-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 08, 2021 at 02:22:16AM +0200, Ansuel Smith wrote:
-> Document new qca,rgmii0_1_8v and qca,rgmii56_1_8v needed to setup
-> mac_pwr_sel register for qca8337 switch. Specific the use of this binding
-> that is used only in qca8337 and not in qca8327.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  Documentation/devicetree/bindings/net/dsa/qca8k.txt | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> index 8c73f67c43ca..9383d6bf2426 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-> @@ -13,6 +13,14 @@ Required properties:
->  Optional properties:
->  
->  - reset-gpios: GPIO to be used to reset the whole device
-> +- qca,rgmii0-1-8v: Set the internal regulator to supply 1.8v for MAC0 port.
-> +                   This is needed for qca8337 and toggles the supply voltage
-> +                   from 1.5v to 1.8v. For the specific regs it was observed
-> +                   that this is needed only for ipq8064 and ipq8065 target.
-> +- qca,rgmii56-1-8v: Set the internal regulator to supply 1.8v for MAC5/6 port.
-> +                    This is needed for qca8337 and toggles the supply voltage
-> +                    from 1.5v to 1.8v. For the specific regs it was observed
-> +                    that this is needed only for ipq8065 target.
+Convert bindings for NXP PN544 NFC driver to YAML syntax.
 
-Are ipq8065 & ipq8064 SoCs which the switch is embedded into? So you
-could look for the top level compatible and set these regulators based
-on that. No DT property needed.
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+v2
+ - Krzysztof is a maintainer
+ - pintctrl dropped
+ - 4 space indent for example
+ - nfc node name
 
-   Andrew
+ .../bindings/net/nfc/nxp,pn544.yaml           | 65 +++++++++++++++++++
+ .../devicetree/bindings/net/nfc/pn544.txt     | 33 ----------
+ 2 files changed, 65 insertions(+), 33 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/pn544.txt
+
+diff --git a/Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml b/Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml
+new file mode 100644
+index 000000000000..6a4bc511d962
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/nfc/nxp,pn544.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NXP Semiconductors PN544 NFC Controller
++
++maintainers:
++  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
++
++properties:
++  compatible:
++    const: nxp,pn544-i2c
++
++  clock-frequency: true
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  enable-gpios:
++    description: Output GPIO pin used for enabling/disabling the PN544
++
++  firmware-gpios:
++    description: Output GPIO pin used to enter firmware download mode
++
++  pinctrl-names:
++    items:
++      - const: default
++
++required:
++  - compatible
++  - clock-frequency
++  - reg
++  - interrupts
++  - enable-gpios
++  - firmware-gpios
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        nfc@28 {
++            compatible = "nxp,pn544-i2c";
++
++            reg = <0x28>;
++            clock-frequency = <400000>;
++
++            interrupt-parent = <&gpio1>;
++            interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
++
++            enable-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
++            firmware-gpios = <&gpio3 19 GPIO_ACTIVE_HIGH>;
++        };
++    };
+diff --git a/Documentation/devicetree/bindings/net/nfc/pn544.txt b/Documentation/devicetree/bindings/net/nfc/pn544.txt
+deleted file mode 100644
+index 2bd82562ce8e..000000000000
+--- a/Documentation/devicetree/bindings/net/nfc/pn544.txt
++++ /dev/null
+@@ -1,33 +0,0 @@
+-* NXP Semiconductors PN544 NFC Controller
+-
+-Required properties:
+-- compatible: Should be "nxp,pn544-i2c".
+-- clock-frequency: I²C work frequency.
+-- reg: address on the bus
+-- interrupts: GPIO interrupt to which the chip is connected
+-- enable-gpios: Output GPIO pin used for enabling/disabling the PN544
+-- firmware-gpios: Output GPIO pin used to enter firmware download mode
+-
+-Optional SoC Specific Properties:
+-- pinctrl-names: Contains only one value - "default".
+-- pintctrl-0: Specifies the pin control groups used for this controller.
+-
+-Example (for ARM-based BeagleBone with PN544 on I2C2):
+-
+-&i2c2 {
+-
+-
+-	pn544: pn544@28 {
+-
+-		compatible = "nxp,pn544-i2c";
+-
+-		reg = <0x28>;
+-		clock-frequency = <400000>;
+-
+-		interrupt-parent = <&gpio1>;
+-		interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
+-
+-		enable-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
+-		firmware-gpios = <&gpio3 19 GPIO_ACTIVE_HIGH>;
+-	};
+-};
+-- 
+2.33.0
+
