@@ -2,84 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A93DE427D3F
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 22:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 150EB427D7A
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 23:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230419AbhJIUSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 16:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
+        id S230135AbhJIVFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 17:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbhJIUSk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 16:18:40 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDE1C061570;
-        Sat,  9 Oct 2021 13:16:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=QCahwkB1CqDtILURVeqMuorUmriTCbVy3djEQFfSyiI=; b=FZ/0xfnHz/A7L+ZVNvwuiGfM0y
-        uL6tehn83mI4lK5C5+Z0le/6YHz3DicNN8TsgUkOXKSocLrkU6un1Fakb2/A3JKh5GEm1XudzRFwK
-        rLsCUHfo9ae4C3eiivJOmpwy4xLQ4JTdUqVDDvS3fHvNH/4lVNU5piqyozccRvNdgdhg0hOBWvV/y
-        tFgH1X3fRv3si0Y7RHTlmSBIGece5oa/lw7nl3EDNh3AgGE7rur2H+vFVuciGEr5zo5Ofr/iTVb5b
-        RsAVUPdUfXMdTIsEBQuQvh6lM3Mb06SgUf1VOdFmZcc0mo1XrcQa/l/CJZBY1JNfgSfNxBksV7Mvf
-        QYA7FWww==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mZIkj-004NjC-8Q; Sat, 09 Oct 2021 20:15:44 +0000
-Date:   Sat, 9 Oct 2021 21:15:29 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        akpm@linux-foundation.org, hawk@kernel.org,
-        ilias.apalodimas@linaro.org, peterz@infradead.org,
-        yuzhao@google.com, will@kernel.org, jgg@ziepe.ca,
-        mcroce@microsoft.com, willemb@google.com, cong.wang@bytedance.com,
-        pabeni@redhat.com, haokexin@gmail.com, nogikh@google.com,
-        elver@google.com, memxor@gmail.com, vvs@virtuozzo.com,
-        linux-mm@kvack.org, edumazet@google.com, alexander.duyck@gmail.com,
-        dsahern@gmail.com
-Subject: Re: [PATCH net-next -v5 3/4] mm: introduce __get_page() and
- __put_page()
-Message-ID: <YWH4YbkC+XtpXTux@casper.infradead.org>
-References: <20211009093724.10539-1-linyunsheng@huawei.com>
- <20211009093724.10539-4-linyunsheng@huawei.com>
- <62106771-7d2a-3897-c318-79578360a88a@nvidia.com>
+        with ESMTP id S229998AbhJIVFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 17:05:38 -0400
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E61C061570
+        for <netdev@vger.kernel.org>; Sat,  9 Oct 2021 14:03:40 -0700 (PDT)
+Received: by mail-vs1-xe34.google.com with SMTP id y28so14479460vsd.3
+        for <netdev@vger.kernel.org>; Sat, 09 Oct 2021 14:03:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m7jGqfOw9qo5hC9+eNinvPdCxHHutP8FggIwyWUbnbs=;
+        b=cSewnXxVU19bw9LMJ5Om/uRnP044VSKaudv3l4sRqAZawjGzRr3F+NsHj9I2ipGFB5
+         utNCUyZVdais78Iky/Cd+Plu8L6hHKbx43Jha5GpI7iclMHosB+qfPCV6Zqtbkr22OZk
+         yfPtupWdvC02qfMSAyRbZYI1vSWd0UiMu8dO774/g/3ItNqUeWmWCwAoYxf1LFztmSpi
+         ilahAxWNAEP18U7K65BbL9NbjCUP6OWkWgqQchT4ZBosH5LwpOBTELzwxbMTI/USuUwK
+         0tu5dHpmCnLsg0XS0H1TD8T4CdTkVmevB86VLDk87C2WJT9cclobORznuAGLE/8h2t50
+         dC5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m7jGqfOw9qo5hC9+eNinvPdCxHHutP8FggIwyWUbnbs=;
+        b=BytwFQgK+xTDqyHcXc66yvMSwdoQ72cswKjuWexg24NkpQMs6/1aizXRmI9z9gdS00
+         6bxms7KYvPni1IjOAWA6jjOyHfTIa9W/D8846uwZ79BJUA1HR/wL+g8LN0Zu7xDhBmHk
+         ZaPQtb9sGkFML1/0Ia/ZWYtxonYoDX9RK0hYLh905QrJUBYo4c6kx8aq7OgUpnbaSham
+         cOCXmRoIlqJ1X/bASUBip/i/i2PTKXxI4xAh1D5zLX/tWzlNQKgi+OYjCs/7b0LYV45Q
+         YcW2qJcuFvrgIFdnUDlx1CCfNK90cdIWeWWsLUCzH+srL33SSuTisZ42O7BOC+ES24rH
+         BrJQ==
+X-Gm-Message-State: AOAM5323G6PNXe+3WfPO4CAvIVzfxhIyK9Aq+Lle+U0gKFzhOOajsE04
+        qIYeuQo3pQ2D2wV9IJ3hfE0srrZ3K/dihNQbcs1sVZU4Tc4Pmg==
+X-Google-Smtp-Source: ABdhPJzLxzku9b6SlI+6iti9iD5Vq4vYERfK9b1moadJwfIXkszHczDzNlAY0LontEuq6SCS8npWa00m7xqCyD9XmHM=
+X-Received: by 2002:a67:4307:: with SMTP id q7mr2345785vsa.54.1633813418641;
+ Sat, 09 Oct 2021 14:03:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62106771-7d2a-3897-c318-79578360a88a@nvidia.com>
+References: <20211007194438.34443-1-quentin@isovalent.com> <CAEf4BzZd0FA6yX4WzK6GZFW2VbBgEJ=oJ=f4GzkapCkbAGUNrA@mail.gmail.com>
+In-Reply-To: <CAEf4BzZd0FA6yX4WzK6GZFW2VbBgEJ=oJ=f4GzkapCkbAGUNrA@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Date:   Sat, 9 Oct 2021 22:03:27 +0100
+Message-ID: <CACdoK4KaaV_OZJdUz30VyQYyJNeseV=7LX+akeeXpFhQe6Zh6w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 00/12] install libbpf headers when using the library
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 09, 2021 at 12:49:29PM -0700, John Hubbard wrote:
-> On 10/9/21 02:37, Yunsheng Lin wrote:
-> > Introduce __get_page() and __put_page() to operate on the
-> > base page or head of a compound page for the cases when a
-> > page is known to be a base page or head of a compound page.
-> 
-> Hi,
-> 
-> I wonder if you are aware of a much larger, 137-patch seriesto do that:
-> folio/pageset [1]?
-> 
-> The naming you are proposing here does not really improve clarity. There
-> is nothing about __get_page() that makes it clear that it's meant only
-> for head/base pages, while get_page() tail pages as well. And the
-> well-known and widely used get_page() and put_page() get their meaning
-> shifted.
-> 
-> This area is hard to get right, and that's why there have been 15
-> versions, and a lot of contention associated with [1]. If you have an
-> alternate approach, I think it would be better in its own separate
-> series, with a cover letter that, at a minimum, explains how it compares
-> to folios/pagesets.
+On Fri, 8 Oct 2021 at 20:13, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 
-I wasn't initially sure whether network pagepools should be part of
-struct folio or should be their own separate type.  At this point, I
-think they should be a folio.  But that's all kind of irrelevant until
-Linus decides whether he's going to take the folio patchset or not.
-Feel free to let him know your opinion when the inevitable argument
-blows up again around the next pull request.
+> Tons of ungrateful work, thank you! Applied to bpf-next.
+>
+> I did a few clean ups (from my POV), see comments on relevant patches.
+
+Thanks for that. I don't mind the clean ups. There are several of them
+I considered before sending but wasn't sure about, so it's a good
+thing that you did it :).
+
+> Also in a bunch of Makefiles I've moved `| $(LIBBPF_OUTPUT)` to the
+> same line if the line wasn't overly long. 80 characters is not a law,
+> and I preferred single-line Makefile target definitions, if possible.
+
+No particular preference on my side, so OK.
+
+>
+> There is one problem in bpftool's Makefile, but it works with a
+> limited case of single file today. Please follow up with a proper fix.
+
+Right, good catch. I'm sending the fix.
+
+>
+> Btw, running make in bpftool's directory, I'm getting:
+>
+> make[1]: Entering directory '/data/users/andriin/linux/tools/lib/bpf'
+> make[1]: Entering directory '/data/users/andriin/linux/tools/lib/bpf'
+> make[1]: Nothing to be done for 'install_headers'.
+> make[1]: Leaving directory '/data/users/andriin/linux/tools/lib/bpf'
+> make[1]: Leaving directory '/data/users/andriin/linux/tools/lib/bpf'
+>
+> Not sure how useful those are, might be better to disable that.
+
+I had a look for bpftool, this is because we always descend into
+libbpf's directory (FORCE target). Removing this FORCE target as I did
+in samples/bpf/ avoids the descent and clears the output. I'll send a
+patch.
+
+>
+> When running libbpf's make, we constantly getting this annoying warning:
+>
+> Warning: Kernel ABI header at 'tools/include/uapi/linux/netlink.h'
+> differs from latest version at 'include/uapi/linux/netlink.h'
+> Warning: Kernel ABI header at 'tools/include/uapi/linux/if_link.h'
+> differs from latest version at 'include/uapi/linux/if_link.h'
+>
+> If you will get a chance, maybe you can get rid of that as well? I
+> don't think we need to stay up to date with netlink.h and if_link.h,
+> so this seems like just a noise.
+
+I can look into that. Are you sure you want the warnings removed? Or
+would it be cleaner to simply update the headers?
+
+>
+> There was also
+>
+> make[4]: Nothing to be done for 'install_headers'.
+>
+> when building the kernel. It probably is coming from either
+> bpf_preload or iterators, but maybe also resolve_btfids, I didn't try
+> to narrow this down. Also seems like a noise, tbh. There are similar
+> useless notifications when building selftests/bpf. If it doesn't take
+> too much time to clean all that up, I'd greatly appreciate that!
+
+I haven't looked into it yet, but I can do as a follow-up. I'll post
+the patches for bpftool first because I prefer to submit the fix for
+bpftool's Makefile as soon as possible, and will look at this next.
+
+Thanks,
+Quentin
