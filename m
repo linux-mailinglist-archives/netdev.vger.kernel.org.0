@@ -2,288 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFB5A427D38
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 22:06:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A93DE427D3F
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 22:16:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230229AbhJIUI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 16:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49138 "EHLO
+        id S230419AbhJIUSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 16:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbhJIUIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 16:08:25 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A11C061570;
-        Sat,  9 Oct 2021 13:06:28 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id g10so49140368edj.1;
-        Sat, 09 Oct 2021 13:06:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xpjcErwn54YCLH/tgP6GgXLFqK0xK5He1zZA79+iljY=;
-        b=jKskd7Twa5zMs9paSq05yBkYjDIIVeDTLGVCfr5o8sdQvoeqKrkXMZyuRAl4eGmzOx
-         O+2aKlt5rJepsHMt3jUHVCkuNzlJVl9xuUHyXc0bFjJa0MlpCwL/OCKylXsLH7riUlK3
-         jA3JaoGtJbfjNibh7TwbO3bFyN9QZ0GC5achpPTE4JxdjXrX2xI0mLquNTKvRtermCAA
-         N6y/tqKpdH77iMC3JjuPFYfdXZz12CE0t1/mViw+rvwi3ta6H6Qci6HoRW/5q3/cRUhO
-         1WLu3QgX+jW+UDctuWRloAAYlsje6x1Bpv2sgM2j9bHqVyOm4As5MPqEso/GQNT0Goso
-         tF5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xpjcErwn54YCLH/tgP6GgXLFqK0xK5He1zZA79+iljY=;
-        b=WgAZlqkx5B33XUKMsX9aVb7pCzz8cChDLNX+kSqWavtoyGKAZWOns2Qx+didRZOzKY
-         rYzU/3LBMrlNDx3UoZOsWNxft6MHZ8BCczLH5nXwrsQQzNOBfVaRDlePHRuCZWOKj25b
-         EArzjFIjS8n6/WYIrVNNRznwzugNnYJGO0SNEL0/1kOqeXx7ghLFRGg/hWmUk/kh+FBE
-         64B2M5xEvGn07Ge7Xe3twtN/XxF5m5mPC9rZXCyO4LGNH6+rNEfsJWuvS8sT42Q7oQyj
-         oyP+H11p30vVNTQWI1o09DYG/hRPfHPWYUfSb+ElOxd2ali2Nf2Nwagy+uYGCzU3lbwq
-         Km2g==
-X-Gm-Message-State: AOAM530ITj9KXvXELkHifGn7f4qMVmLH93Hd3KVxh10n509cXJzMSxzK
-        A5ofe1/DM0jq+s0qI5aDIO0=
-X-Google-Smtp-Source: ABdhPJzSa8gZ+bs7axtm6gyKUR2rT0SM4ByLACrAEKHWB+JD/9mW54wujnbAxucAdmX1bchE/1dviQ==
-X-Received: by 2002:a17:906:8cd:: with SMTP id o13mr13481017eje.341.1633809986457;
-        Sat, 09 Oct 2021 13:06:26 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id l5sm1301271ejx.76.2021.10.09.13.06.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Oct 2021 13:06:26 -0700 (PDT)
-Date:   Sat, 9 Oct 2021 22:06:23 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matthew Hagan <mnhagan88@gmail.com>
-Subject: Re: [net-next PATCH v2 08/15] dt-bindings: net: dsa: qca8k: Add MAC
- swap and clock phase properties
-Message-ID: <YWH2P7ogyH3T0CVp@Ansuel-xps.localdomain>
-References: <20211008002225.2426-1-ansuelsmth@gmail.com>
- <20211008002225.2426-9-ansuelsmth@gmail.com>
- <YWHMRMTSa8xP4SKK@lunn.ch>
- <YWHamNcXmxuaVgB+@Ansuel-xps.localdomain>
- <YWHx7Q9jBrws8ioN@lunn.ch>
+        with ESMTP id S230205AbhJIUSk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Oct 2021 16:18:40 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDE1C061570;
+        Sat,  9 Oct 2021 13:16:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=QCahwkB1CqDtILURVeqMuorUmriTCbVy3djEQFfSyiI=; b=FZ/0xfnHz/A7L+ZVNvwuiGfM0y
+        uL6tehn83mI4lK5C5+Z0le/6YHz3DicNN8TsgUkOXKSocLrkU6un1Fakb2/A3JKh5GEm1XudzRFwK
+        rLsCUHfo9ae4C3eiivJOmpwy4xLQ4JTdUqVDDvS3fHvNH/4lVNU5piqyozccRvNdgdhg0hOBWvV/y
+        tFgH1X3fRv3si0Y7RHTlmSBIGece5oa/lw7nl3EDNh3AgGE7rur2H+vFVuciGEr5zo5Ofr/iTVb5b
+        RsAVUPdUfXMdTIsEBQuQvh6lM3Mb06SgUf1VOdFmZcc0mo1XrcQa/l/CJZBY1JNfgSfNxBksV7Mvf
+        QYA7FWww==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mZIkj-004NjC-8Q; Sat, 09 Oct 2021 20:15:44 +0000
+Date:   Sat, 9 Oct 2021 21:15:29 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        akpm@linux-foundation.org, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, peterz@infradead.org,
+        yuzhao@google.com, will@kernel.org, jgg@ziepe.ca,
+        mcroce@microsoft.com, willemb@google.com, cong.wang@bytedance.com,
+        pabeni@redhat.com, haokexin@gmail.com, nogikh@google.com,
+        elver@google.com, memxor@gmail.com, vvs@virtuozzo.com,
+        linux-mm@kvack.org, edumazet@google.com, alexander.duyck@gmail.com,
+        dsahern@gmail.com
+Subject: Re: [PATCH net-next -v5 3/4] mm: introduce __get_page() and
+ __put_page()
+Message-ID: <YWH4YbkC+XtpXTux@casper.infradead.org>
+References: <20211009093724.10539-1-linyunsheng@huawei.com>
+ <20211009093724.10539-4-linyunsheng@huawei.com>
+ <62106771-7d2a-3897-c318-79578360a88a@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YWHx7Q9jBrws8ioN@lunn.ch>
+In-Reply-To: <62106771-7d2a-3897-c318-79578360a88a@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 09, 2021 at 09:47:57PM +0200, Andrew Lunn wrote:
-> > Problem here is that from Documentation falling edge can be set only on
-> > PAD0. PAD5 and PAD6 have the related bit reserved.
+On Sat, Oct 09, 2021 at 12:49:29PM -0700, John Hubbard wrote:
+> On 10/9/21 02:37, Yunsheng Lin wrote:
+> > Introduce __get_page() and __put_page() to operate on the
+> > base page or head of a compound page for the cases when a
+> > page is known to be a base page or head of a compound page.
 > 
-> Meaning in future, they could be used for this, if those ports get
-> support for SGMII.
->
-
-Ok. Then I will move all to DT port. Consider falling is set to PAD0 for
-both cpu port0 and cpu port6, should I make it hardcoded or should I add
-a condition and force the reg to PAD0 only for the current supported
-switch? Hope you understand what I mean.
-(Yes we have some config with cpu port6 set to sgmii and that require
-falling edge)
-
-> > But anyway qca8k support only single sgmii and it's not supported a
-> > config with multiple sgmii.
+> Hi,
 > 
-> Yet, until such hardware appears. We do see more support for SFPs. And
-> more support for multi-gigi ports. Both of which use a SERDES
-> interface which can support SGMII. So i would not be too surprised if
-> future versions of the switch have more ports like this.
+> I wonder if you are aware of a much larger, 137-patch seriesto do that:
+> folio/pageset [1]?
 > 
-> > Do we have standard binding for this?
+> The naming you are proposing here does not really improve clarity. There
+> is nothing about __get_page() that makes it clear that it's meant only
+> for head/base pages, while get_page() tail pages as well. And the
+> well-known and widely used get_page() and put_page() get their meaning
+> shifted.
 > 
-> No, there is no standard binding for this. This seems specific to
-> these devices, maybe a proprietary extension to SGMII?
-> 
+> This area is hard to get right, and that's why there have been 15
+> versions, and a lot of contention associated with [1]. If you have an
+> alternate approach, I think it would be better in its own separate
+> series, with a cover letter that, at a minimum, explains how it compares
+> to folios/pagesets.
 
-Then we are stuck to the special qca,... naming.
-
-> > About the mac swap. Do we really need to implement a complex thing for
-> > something that is really implemented internally to the switch?
-> 
-> If it was truly internal to the switch, no. But i don't think it
-> is. The DSA core has no idea the ports are swapped, and so i think
-> will put the names on the wrong ports. Does devlink understand the
-> ports are swapped? How about .ndo_get_phys_port_name? Will udev mix up
-> the ports?
-> 
-> The way you wanted to look in the other ports DT properties suggests
-> it is not internal to the switch.
-> 
-> I think to help my understanding, we need some examples of DTS files
-> with and without the swap, where the properties are read from, what
-> the interface names are, etc.
-> 
-
-Here is 2 configuration one from an Netgear r7800 qca8337:
-
-	switch@10 {
-		compatible = "qca,qca8337";
-		#address-cells = <1>;
-		#size-cells = <0>;
-		reg = <0x10>;
-
-		qca8k,rgmii0_1_8v;
-		qca8k,rgmii56_1_8v;
-
-		ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@0 {
-				reg = <0>;
-				label = "cpu";
-				ethernet = <&gmac1>;
-				phy-mode = "rgmii-id";
-
-				fixed-link {
-					speed = <1000>;
-					full-duplex;
-				};
-			};
-
-			port@1 {
-				reg = <1>;
-				label = "lan1";
-				phy-mode = "internal";
-				phy-handle = <&phy_port1>;
-			};
-
-			port@2 {
-				reg = <2>;
-				label = "lan2";
-				phy-mode = "internal";
-				phy-handle = <&phy_port2>;
-			};
-
-			port@3 {
-				reg = <3>;
-				label = "lan3";
-				phy-mode = "internal";
-				phy-handle = <&phy_port3>;
-			};
-
-			port@4 {
-				reg = <4>;
-				label = "lan4";
-				phy-mode = "internal";
-				phy-handle = <&phy_port4>;
-			};
-
-			port@5 {
-				reg = <5>;
-				label = "wan";
-				phy-mode = "internal";
-				phy-handle = <&phy_port5>;
-			};
-
-			port@6 {
-				reg = <6>;
-				label = "cpu";
-				ethernet = <&gmac2>;
-				phy-mode = "sgmii";
-
-				fixed-link {
-					speed = <1000>;
-					full-duplex;
-				};
-			};
-		};
-
-And here is one with mac swap Tp-Link Archer c7 v4 qca8327 
-
-	switch0@10 {
-		compatible = "qca,qca8337";
-		#address-cells = <1>;
-		#size-cells = <0>;
-
-		reg = <0>;
-		qca,sgmii-rxclk-falling-edge;
-		qca,mac6-exchange;
-
-		ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@0 {
-				reg = <0>;
-				label = "cpu";
-				ethernet = <&eth0>;
-				phy-mode = "sgmii";
-
-				fixed-link {
-					speed = <1000>;
-					full-duplex;
-				};
-			};
-
-			port@1 {
-				reg = <1>;
-				label = "wan";
-				phy-mode = "internal";
-				phy-handle = <&phy_port1>;
-			};
-
-			port@2 {
-				reg = <2>;
-				label = "lan1";
-				phy-mode = "internal";
-				phy-handle = <&phy_port2>;
-			};
-
-			port@3 {
-				reg = <3>;
-				label = "lan2";
-				phy-mode = "internal";
-				phy-handle = <&phy_port3>;
-			};
-
-			port@4 {
-				reg = <4>;
-				label = "lan3";
-				phy-mode = "internal";
-				phy-handle = <&phy_port4>;
-			};
-
-			port@5 {
-				reg = <5>;
-				label = "lan4";
-				phy-mode = "internal";
-				phy-handle = <&phy_port5>;
-			};
-		};
-
-As you can see we use the mac06_exchange but we declare it as port0. DSA
-see it as port0 (as it should as it's internall swapped). We also don't
-need to apply some special function or stuff to apply the correct port
-in the ACL/regs/VLAN. The switch will treat MAC6 as MAC0 and MAC6 as
-MAC0. That is what we observed.
-Someone would say... Considering this switch is 2 port... and currently
-we use only one port. Why not drop this and use whatever is connected to
-port 0. Problem is that some device have the secondary cpu port NOT
-connected and they use mac6-exchange and that would result in no
-connection since cpu port 0 is not connected and cpu port 6 is never
-swapped.
-
-> > I will move the falling binding to the port DT node and move the
-> > configuration to mac_config. Should I keep the
-> > dedicated function to setup PAD0 swap or I can directly add the check in
-> > the qca8k_setup for only the bit related to enable the swap?
-> 
-> That does not matter too much. DT is an ABI, we should not change it
-> later, so we need to look forward. C code is not ABI, it can be
-> changed if/when more SGMII ports actually arrive.
-> 
-> 	Andrew
-
--- 
-	Ansuel
+I wasn't initially sure whether network pagepools should be part of
+struct folio or should be their own separate type.  At this point, I
+think they should be a folio.  But that's all kind of irrelevant until
+Linus decides whether he's going to take the folio patchset or not.
+Feel free to let him know your opinion when the inevitable argument
+blows up again around the next pull request.
