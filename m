@@ -2,76 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2472742794F
-	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 13:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DFD1427960
+	for <lists+netdev@lfdr.de>; Sat,  9 Oct 2021 13:13:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244574AbhJILCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Oct 2021 07:02:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33658 "EHLO mail.kernel.org"
+        id S232774AbhJILPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Oct 2021 07:15:43 -0400
+Received: from ixit.cz ([94.230.151.217]:41754 "EHLO ixit.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232752AbhJILCF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Oct 2021 07:02:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 848F760F9C;
-        Sat,  9 Oct 2021 11:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633777208;
-        bh=/nDC62uXRzGeibcJ/PTWXinhXvVXEwJkp5rrVLcEQkY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ngFocYpTStbEJPo27xr+UuEvR+J2fll03TwH6rOHdQIV1RBYbJhMYcTf2VP6tV96+
-         Zao7LA4SPFsRrOoT3IMu/0p4S+Qvsd524oEzmBoV07fHXH309e1wSVhhL/9mGuWafQ
-         raq8946ZBoRt6f8GPno/v7jkK9DDvGWNX8BUf7ytWfLHTQ7ss09wbsxuyz4ShqKU5V
-         SE4AHDA7BIuTFsEWEyz4Lo7rR9QsYWIq3hK36zzqhHsk2uT3Kak2Sm6u3cyFRyJiHI
-         ZLzNJiY7IxnMSlWlPbBn+UP/A0juMldT5IUzZo3Bqp0a+AAosbE8PKDVbECyNPcPAv
-         RSxJJn4ghwlXA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7A98060985;
-        Sat,  9 Oct 2021 11:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231932AbhJILPj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Oct 2021 07:15:39 -0400
+Received: from localhost.localdomain (ip-89-176-96-70.net.upcbroadband.cz [89.176.96.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ixit.cz (Postfix) with ESMTPSA id 0669A20064;
+        Sat,  9 Oct 2021 13:13:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+        t=1633778021;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=7CzgujPt9VaXozmAuTSRx2+fkUV5y4FFTGUZ/Wh2Nxc=;
+        b=HjAykaMply+l7azhgLQWDaNf7OtPnd8hfshK7x1D3wUun4WPW2vo+HtIV/8Zk/VlYcLlSE
+        tqpQxBaAbvnZ/ha6djerABcnccU46JqtEVJ67Apu4NTMiBF/0ypr2xmDTDbmHrXtCzqnSH
+        rqE6RnEUtkU4hbwXtg+pbQ1ZZuUk9vk=
+From:   David Heidelberg <david@ixit.cz>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ~okias/devicetree@lists.sr.ht,
+        David Heidelberg <david@ixit.cz>
+Subject: [PATCH] dt-bindings: net: nfc: nxp,pn544: Convert txt bindings to yaml
+Date:   Sat,  9 Oct 2021 13:12:15 +0200
+Message-Id: <20211009111215.51775-1-david@ixit.cz>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] net: remove direct netdev->dev_addr writes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163377720849.21740.224949011888662927.git-patchwork-notify@kernel.org>
-Date:   Sat, 09 Oct 2021 11:00:08 +0000
-References: <20211008175913.3754184-1-kuba@kernel.org>
-In-Reply-To: <20211008175913.3754184-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Convert bindings for NXP PN544 NFC driver to YAML syntax.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+ .../bindings/net/nfc/nxp,pn544.yaml           | 67 +++++++++++++++++++
+ .../devicetree/bindings/net/nfc/pn544.txt     | 33 ---------
+ 2 files changed, 67 insertions(+), 33 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/pn544.txt
 
-On Fri,  8 Oct 2021 10:59:08 -0700 you wrote:
-> Commit 406f42fa0d3c ("net-next: When a bond have a massive amount
-> of VLANs...") introduced a rbtree for faster Ethernet address look
-> up. To maintain netdev->dev_addr in this tree we need to make all
-> the writes to it got through appropriate helpers.
-> 
-> This series contains top 5 conversions in terms of LoC required
-> to bring the driver into compliance.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/5] ethernet: forcedeth: remove direct netdev->dev_addr writes
-    https://git.kernel.org/netdev/net-next/c/2b37367065c7
-  - [net-next,2/5] ethernet: tg3: remove direct netdev->dev_addr writes
-    https://git.kernel.org/netdev/net-next/c/a04436b27a93
-  - [net-next,3/5] ethernet: tulip: remove direct netdev->dev_addr writes
-    https://git.kernel.org/netdev/net-next/c/ca8793175564
-  - [net-next,4/5] ethernet: sun: remove direct netdev->dev_addr writes
-    https://git.kernel.org/netdev/net-next/c/a7639279c93c
-  - [net-next,5/5] ethernet: 8390: remove direct netdev->dev_addr writes
-    https://git.kernel.org/netdev/net-next/c/8ce218b6e58a
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml b/Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml
+new file mode 100644
+index 000000000000..c44f5ee8e2c2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml
+@@ -0,0 +1,67 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/nfc/nxp,pn544.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NXP Semiconductors PN544 NFC Controller
++
++maintainers:
++  - Rob Herring <robh+dt@kernel.org>
++
++properties:
++  compatible:
++    const: nxp,pn544-i2c
++
++  clock-frequency: true
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  enable-gpios:
++    description: Output GPIO pin used for enabling/disabling the PN544
++
++  firmware-gpios:
++    description: Output GPIO pin used to enter firmware download mode
++
++  pinctrl-names:
++    items:
++      - const: default
++
++  pintctrl-0: true
++
++required:
++  - compatible
++  - clock-frequency
++  - reg
++  - interrupts
++  - enable-gpios
++  - firmware-gpios
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      pn544@28 {
++        compatible = "nxp,pn544-i2c";
++
++        reg = <0x28>;
++        clock-frequency = <400000>;
++
++        interrupt-parent = <&gpio1>;
++        interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
++
++        enable-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
++        firmware-gpios = <&gpio3 19 GPIO_ACTIVE_HIGH>;
++      };
++    };
+diff --git a/Documentation/devicetree/bindings/net/nfc/pn544.txt b/Documentation/devicetree/bindings/net/nfc/pn544.txt
+deleted file mode 100644
+index 2bd82562ce8e..000000000000
+--- a/Documentation/devicetree/bindings/net/nfc/pn544.txt
++++ /dev/null
+@@ -1,33 +0,0 @@
+-* NXP Semiconductors PN544 NFC Controller
+-
+-Required properties:
+-- compatible: Should be "nxp,pn544-i2c".
+-- clock-frequency: I²C work frequency.
+-- reg: address on the bus
+-- interrupts: GPIO interrupt to which the chip is connected
+-- enable-gpios: Output GPIO pin used for enabling/disabling the PN544
+-- firmware-gpios: Output GPIO pin used to enter firmware download mode
+-
+-Optional SoC Specific Properties:
+-- pinctrl-names: Contains only one value - "default".
+-- pintctrl-0: Specifies the pin control groups used for this controller.
+-
+-Example (for ARM-based BeagleBone with PN544 on I2C2):
+-
+-&i2c2 {
+-
+-
+-	pn544: pn544@28 {
+-
+-		compatible = "nxp,pn544-i2c";
+-
+-		reg = <0x28>;
+-		clock-frequency = <400000>;
+-
+-		interrupt-parent = <&gpio1>;
+-		interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
+-
+-		enable-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
+-		firmware-gpios = <&gpio3 19 GPIO_ACTIVE_HIGH>;
+-	};
+-};
+-- 
+2.33.0
 
