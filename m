@@ -2,135 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB5894282A0
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 19:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B4204282A7
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 19:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231549AbhJJR0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 13:26:11 -0400
-Received: from mxout04.lancloud.ru ([45.84.86.114]:35058 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbhJJR0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 13:26:10 -0400
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 111BD20981A5
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH net-next v2 13/14] ravb: Update EMAC configuration mode
- comment
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>
-CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20211010072920.20706-1-biju.das.jz@bp.renesas.com>
- <20211010072920.20706-14-biju.das.jz@bp.renesas.com>
- <8c6496db-8b91-8fb8-eb01-d35807694149@gmail.com>
- <OS0PR01MB5922109B263B7FDBB02E33B986B49@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <57dbab90-6f2c-40f5-2b73-43c1ee2c6e06@gmail.com>
- <OS0PR01MB592229224714550A4BFC10B986B49@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <5b1fda6d-5be2-6d3d-a90e-cf1509a35191@omp.ru>
-Date:   Sun, 10 Oct 2021 20:24:04 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S231705AbhJJRcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 13:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45770 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231689AbhJJRck (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 13:32:40 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B099C061570
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 10:30:41 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id a7so33424650yba.6
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 10:30:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=anyfinetworks-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x5ZjKsTtEg68L0kiGkt4LxgOXkimH+/pqF53AqKiKZQ=;
+        b=ipoQjOKZwOE7PQSN4YXQwnoGYQ+z2crmfDLF5WIwFdsg3/6MkCvp/W7Wp6ZqZE7wuo
+         nGSKuaAKG9OW2VEgKfWnY0DSuF4iI52mCBt1gBRWdFthEOl1PdRxO3H2Huo5aCLhzmxu
+         fVkrm35sRErkUmXrOi+JSiFTshKPLob3y1O7ZMiUsQO8p6ahUdSuSEeoM8xipzZjAFKi
+         hommd4/b7ihiMx6RnGbDIPnKmweJZlVlcZw49A6iPSYG+aDkJFvpv12ZKnnIt1YFg7XQ
+         F0HFqjMkZNnBAryZ1Rh8K3ZzI6v6fSyZHnkBwK5v0TbxSBnra/n5CcPMbZ55+JslYFWL
+         ZEmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x5ZjKsTtEg68L0kiGkt4LxgOXkimH+/pqF53AqKiKZQ=;
+        b=vg9Vn19NM2NIu49btoXHQkx7f0hxJNoHddyzJe9KlDzfE5dzYGRg4CIl+Mv4Xd0sAR
+         mv6KfMUcKcV3WA9y8uZvWmuhH7C619s7WLgmLl9DWHZTeN7nqTygEyOmpOtAaoEEu+e8
+         JlL9cJbXxbJhfv35nDLLQdzJ4awXp3apQsyLZEfF/W7eYC+MvJCsK4AkZbfebpA8a4eM
+         nAbzIPyy554Y0Pa60qbUlRp+38HsriKknZk1fDQuckezpSJyMU+Nw/+W5HxtXIzb403v
+         3wPcMzNNNILNo3hzp5dX2Tflc/iDvIJ3A97S1bNzqZsMqJjZ4VWVlKGLo3I1VufHurQ5
+         W8Ig==
+X-Gm-Message-State: AOAM532H7oyn+2UA5G8h2rZcAqJ9ZPw1FA7IMrSZMnNA8UtcAc4pawq8
+        OM0KRYZSJMucyW9f65vyfSuelnhzYzwX7mJQ68tQMw==
+X-Google-Smtp-Source: ABdhPJx8Fk4BpspxBCZ2m/Sp4AXxb8sK180DHkACb9ArP+uC+7grt/9YcUYABlz2722J3dAdk2nBKALi/OP5ZqpUj2U=
+X-Received: by 2002:a25:520b:: with SMTP id g11mr17619445ybb.268.1633887040541;
+ Sun, 10 Oct 2021 10:30:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <OS0PR01MB592229224714550A4BFC10B986B49@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+References: <1633777076-17256-1-git-send-email-yangtiezhu@loongson.cn> <1633777076-17256-3-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <1633777076-17256-3-git-send-email-yangtiezhu@loongson.cn>
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Date:   Sun, 10 Oct 2021 19:30:29 +0200
+Message-ID: <CAM1=_QTwdbYKqjG8hEsSOvJzi5GxmBieKZYtVUz_BvfEQt3RZg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] bpf, mips: Modify check condition about tail
+ call count
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Burton <paulburton@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/10/21 1:56 PM, Biju Das wrote:
+On Sat, Oct 9, 2021 at 12:58 PM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
+>
+> In emit_tail_call() of bpf_jit_comp32.c, "blez t2" (t2 <= 0) is not
+> consistent with the comment "t2 < 0", modify the check condition to
+> keep consistency.
+>
+> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> ---
+>  arch/mips/net/bpf_jit_comp32.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/mips/net/bpf_jit_comp32.c b/arch/mips/net/bpf_jit_comp32.c
+> index 9d7041a..b887c01 100644
+> --- a/arch/mips/net/bpf_jit_comp32.c
+> +++ b/arch/mips/net/bpf_jit_comp32.c
+> @@ -1312,12 +1312,12 @@ static int emit_tail_call(struct jit_context *ctx)
+>         emit(ctx, sltu, t1, ind, t1);            /* t1 = ind < t1            */
+>         emit(ctx, beqz, t1, get_offset(ctx, 1)); /* PC += off(1) if t1 == 0  */
+>                                                  /* (next insn delay slot)   */
+> -       /* if (TCC-- <= 0) goto out */
+> +       /* if (--TCC < 0) goto out */
+>         emit(ctx, lw, t2, ctx->stack_size, MIPS_R_SP);  /* t2 = *(SP + size) */
+>         emit_load_delay(ctx);                     /* Load delay slot         */
+> -       emit(ctx, blez, t2, get_offset(ctx, 1));  /* PC += off(1) if t2 < 0  */
+>         emit(ctx, addiu, t2, t2, -1);             /* t2-- (delay slot)       */
+>         emit(ctx, sw, t2, ctx->stack_size, MIPS_R_SP);  /* *(SP + size) = t2 */
+> +       emit(ctx, bltz, t2, get_offset(ctx, 1));  /* PC += off(1) if t2 < 0  */
 
-[...]
->>>>> Update EMAC configuration mode comment from "PAUSE prohibition"
->>>>> to "EMAC Mode: PAUSE prohibition; Duplex; TX; RX; CRC Pass Through;
->>>>> Promiscuous".
->>>>>
->>>>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
->>>>> Suggested-by: Sergey Shtylyov <s.shtylyov@omp.ru>
->>>>> ---
->>>>> v1->v2:
->>>>>    * No change
->>>>> V1:
->>>>>    * New patch.
->>>>> ---
->>>>>    drivers/net/ethernet/renesas/ravb_main.c | 2 +-
->>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c
->>>>> b/drivers/net/ethernet/renesas/ravb_main.c
->>>>> index 9a770a05c017..b78aca235c37 100644
->>>>> --- a/drivers/net/ethernet/renesas/ravb_main.c
->>>>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
->>>>> @@ -519,7 +519,7 @@ static void ravb_emac_init_gbeth(struct
->>>>> net_device
->>>> *ndev)
->>>>>    	/* Receive frame limit set register */
->>>>>    	ravb_write(ndev, GBETH_RX_BUFF_MAX + ETH_FCS_LEN, RFLR);
->>>>>
->>>>> -	/* PAUSE prohibition */
->>>>> +	/* EMAC Mode: PAUSE prohibition; Duplex; TX; RX; CRC Pass Through;
->>>>> +Promiscuous */
->>>>
->>>>      Promiscuous mode, really? Why?!
->>>
->>> This is TOE related,
-> 
-> I meant the context here is TOE register related. That is what I meant.
-> 
->>
->>     The promiscuous mode is supported by _all_ Ethernet controllers, I
->> think.
->>
->>> and is recommendation from BSP team.
->>
->>     On what grounds?
-> 
-> The reference implementation has this on. Any way it is good catch. 
-> I will turn it off and check.
-> 
-> by looking at the RJ LED's there is not much activity and packet statistics also show not much activity by default.
-> 
-> How can we check, it is overloading the controller? So that I can compare with and without this setting
+If the comment is not consistent with the code, and the code is
+correct, why did you change the code? Have you seen the JIT fail on
+any of the tail call test cases?
 
-   Maybe it doesn't get overloaded that simply, but definitely the promiscuous mode is not the thing
-for the normal driver use...
+The current code works as intended. The t2 register is decremented in
+the branch delay slot of the blez. After your change, the the comment
+still says "delay slot", but it is no longer in the delay slot of a
+branch. Instead the next instruction emitted, not visible in the patch
+context, fills the delay slot of the bltz. In this case it probably is
+ok, but if that instruction is also a branch, the result would be
+unpredictable.
 
->>> If you think it is wrong.
->>> I can take this out. Please let me know. Currently the board is booting
->> and everything works without issues.
->>
->>     Please do take it out. It'll needlessly overload the controller when
->> there's much traffic on the local network.
-> 
-> 
-> I can see much activity only on RJ45 LED's when I call tcpdump or by setting IP link set eth0 promisc on.
-> Otherwise there is no traffic at all.
+I prefer to emit the delay slot instruction immediately after the
+branch is emitted when possible. If a branch and its delay slot is
+separated in the JIT logic, it makes the JIT more brittle IMO.
 
-   Sounds like the kernel initially sets the RX mode with IFF_PROMISC = 0 and thus clear ECMR.PRM but I don't
-see where it does this? Could you instrument ravb_set_tx_mode() plz?
+Please keep the original logic, but update the blez comment so it is
+consistent with the code.
 
-> Regards,
-> Biju
 
-[...]
 
-MBR, Sergey
+>
+>         /* prog = ary->ptrs[ind] */
+>         off = offsetof(struct bpf_array, ptrs);
+> --
+> 2.1.0
+>
