@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FAD94281CD
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 16:23:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EECCB4281D2
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 16:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233103AbhJJOZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 10:25:35 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:45334
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232950AbhJJOZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 10:25:28 -0400
+        id S233151AbhJJOZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 10:25:39 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:60098
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232967AbhJJOZ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 10:25:29 -0400
 Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id BEF6240012
-        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 14:23:28 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 2DD743F044
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 14:23:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633875808;
-        bh=Sqq+rJjHFyF04O1yXJWbxHdRB21zrCNZRwhAK9LaA+4=;
+        s=20210705; t=1633875810;
+        bh=I/dEoNLrdiZf46+osatVihop4LOFN9ipzJ5r/D9Ro0Y=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version:Content-Type;
-        b=NE63b3ZyxlzmMTbbrNq5oTS7XywVrP7xFe7t/wBkvhnAiihd65iux9Rtvc5T3Fguq
-         VLuoInqhpukz2QBpwOZNOhnKat1H9b9x8/usF4tgsC19lr7OqyPSYLwU9idFBKsfwM
-         SJynte9Zvqm/6NvvmpFgjw4pdvWhZmNFboXw5ACQHklyLMgl2f2hKak3AL0jhwUxn4
-         azn8HFNUfxkj5/ThMrGbCaoSPg6T9bRucb511f2vJu3uJfCJhw1CZZoFayfj+XmeGn
-         hrDVpVX3SV6baRLZ+YsrnZDlvunvjSah80GEaLSZogB0ZE0edyG83XxFMKaionypSu
-         02cerbu+10LdA==
-Received: by mail-ed1-f71.google.com with SMTP id d11-20020a50cd4b000000b003da63711a8aso13403846edj.20
-        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 07:23:28 -0700 (PDT)
+         MIME-Version;
+        b=ePY/knq5uXToXXmYRCjnmT3bAry3KTRlbhBFYunGOuyLoh8fqTc4NGOVn2sluw3dJ
+         6vLhh5WYhOSC6nR1jlGDxD2LxqG1TDJkAn3aixriqPl1qg7U8pxyaU+5MIE9WWZ5zv
+         aDdXy3XNl561CoabJfwuc4gLCz93X92NcsHA79g8Afs0Rfrw5nHJq5t9MJ/F4+t3dC
+         qXBXR1LCjuswL+13zN0OE8uKCKJ4HpVVYIl3vRC1OqFU7Fol0lrXF1Ud6dpwXl9ysO
+         eJzlmCfV0cEgXaRGaXofyUwbxeULcKtwqIbPmnxi/Xx/ENlq9CZlTfDZrWxF4YTaVV
+         1ecLVf9X4DJmg==
+Received: by mail-ed1-f71.google.com with SMTP id l10-20020a056402230a00b003db6977b694so5118970eda.23
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 07:23:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Sqq+rJjHFyF04O1yXJWbxHdRB21zrCNZRwhAK9LaA+4=;
-        b=xK1VTcKZJc4mBP7cSS4r5orPD7z0TnKFRMLRoNjxkLu8i1X/X5tlHbc4iWfKaOtBl/
-         YdCuXIvfYCC0iC5cIIQLSiSzs1h2sdhJsw7v2PTodC5q2FRB4vNvcvpNA8PUB4jiupkk
-         wzM9NzQOznrMQ1jeYDN7H09SeU9BrRFPG1Y0dPUHlFUxZ9ZD7AEf2DbIFPr6qFyrpgFJ
-         r+afizEHA/gKs/hq55ppy7R1R6OBZrt5m1C2P9gKDuFq/VcHS2BncC4B8pnZSEuejmur
-         GeIZ4ydbouwSeH/gAf0mdxmckwuDOX4SsVz/Nu/ac/r+N9UU+vD2LRTmFnPFKfl2ckgM
-         aGmg==
-X-Gm-Message-State: AOAM530Ry8lPdNSPEOEnTNUKptnaedl3kHq9v56gkt8df9BSfNSqLWzf
-        wHMDfL4/tSi7NawQFIfW+toPNHa05iAZoXxBN2+XdSTlQuwsIf9UqnUnL7Qy7luR0+Ae7FrpWpF
-        BvlOamHJ/1W68Qpu2zu3mhaNlNP+ESJRaOQ==
-X-Received: by 2002:a17:906:f243:: with SMTP id gy3mr19625853ejb.327.1633875808467;
-        Sun, 10 Oct 2021 07:23:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJygD3KxN2qJU4LDVv1B2y+f6WnK3BXJ1VsrwWfy7ykP5hc4CknX+W8Wk656n8tIDYBu5hp19A==
-X-Received: by 2002:a17:906:f243:: with SMTP id gy3mr19625832ejb.327.1633875808307;
-        Sun, 10 Oct 2021 07:23:28 -0700 (PDT)
+        bh=I/dEoNLrdiZf46+osatVihop4LOFN9ipzJ5r/D9Ro0Y=;
+        b=0olzL7LlqbqXxN57yPfY8ftcp4pfAvj1BKCYnqUeYLQMlot0cF5ZdwSevoZQgQLdyk
+         uVtXJP7leFrOeKK0ehOw0qQM+s3HXntVI7S90JK72bRmgtFyQOkwDMHqsIbwGI4Fy05k
+         tvz+1SqI/ZjpyPisd7HNTE0qRqBSOylLQdVqZKoRjkO5zQViW9NFIaCMB+4T4Qf/8Dyt
+         1j0cze2MUQzDPrDy/ziI1d9boR17rno2YMg/kUqNnkGHKOONays2TJpjXApjg2NBP9UI
+         aRjfhKQOOGPT4xd/TiXnSm7pwBui65kqtr8xj4oshoqmm0ijBXiaCv47atpaZ+ReuK6n
+         9n1w==
+X-Gm-Message-State: AOAM532LyZJySCo3gtGuAF/IBhSmRPGVd4C2XZE2Z9jm9Ebjev3ijzHd
+        TxthhrPxLssH3fMx3kDhaPdfEyzqHGZ4yZbMNYfx8L+2/TZBqrg8+YvsC7BxcSXqYbycCFSQ6YA
+        RcVZdT5HiLy9rukT18WDGjv53w/oUwx38yw==
+X-Received: by 2002:a17:907:208c:: with SMTP id pv12mr20202237ejb.314.1633875809701;
+        Sun, 10 Oct 2021 07:23:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyyT89P5tl7sOf2+DnKi9Ji+GUqcTbFuAXCvF4HN6lPdfAC/ITdILgHuhpJra4VHo3nWhLmEQ==
+X-Received: by 2002:a17:907:208c:: with SMTP id pv12mr20202218ejb.314.1633875809533;
+        Sun, 10 Oct 2021 07:23:29 -0700 (PDT)
 Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id 6sm2129017ejx.82.2021.10.10.07.23.27
+        by smtp.gmail.com with ESMTPSA id 6sm2129017ejx.82.2021.10.10.07.23.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Oct 2021 07:23:27 -0700 (PDT)
+        Sun, 10 Oct 2021 07:23:29 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -62,61 +62,51 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Mark Greer <mgreer@animalcreek.com>, linux-nfc@lists.01.org,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: [PATCH 3/7] dt-bindings: nfc: st,st21nfca: convert to dtschema
-Date:   Sun, 10 Oct 2021 16:23:13 +0200
-Message-Id: <20211010142317.168259-3-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 4/7] dt-bindings: nfc: st,st95hf: convert to dtschema
+Date:   Sun, 10 Oct 2021 16:23:14 +0200
+Message-Id: <20211010142317.168259-4-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211010142317.168259-1-krzysztof.kozlowski@canonical.com>
 References: <20211010142317.168259-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the ST ST21NFCA NFC controller to DT schema format.  The
-conversion also adds a new required property - interrupts - because it
-was missing in the old bindings by mistake.
+Convert the ST ST95HF NFC controller to DT schema format.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- .../bindings/net/nfc/st,st21nfca.yaml         | 68 +++++++++++++++++++
- .../devicetree/bindings/net/nfc/st21nfca.txt  | 37 ----------
- 2 files changed, 68 insertions(+), 37 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/nfc/st,st21nfca.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/nfc/st21nfca.txt
+ .../bindings/net/nfc/st,st95hf.yaml           | 57 +++++++++++++++++++
+ .../devicetree/bindings/net/nfc/st95hf.txt    | 45 ---------------
+ 2 files changed, 57 insertions(+), 45 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/st95hf.txt
 
-diff --git a/Documentation/devicetree/bindings/net/nfc/st,st21nfca.yaml b/Documentation/devicetree/bindings/net/nfc/st,st21nfca.yaml
+diff --git a/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml b/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml
 new file mode 100644
-index 000000000000..2cb65fd517ed
+index 000000000000..d3bca376039e
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/net/nfc/st,st21nfca.yaml
-@@ -0,0 +1,68 @@
++++ b/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml
+@@ -0,0 +1,57 @@
 +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/net/nfc/st,st21nfca.yaml#
++$id: http://devicetree.org/schemas/net/nfc/st,st95hf.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: STMicroelectronics SAS ST21NFCA NFC controller
++title: STMicroelectronics ST95HF NFC controller
 +
 +maintainers:
 +  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 +
 +properties:
 +  compatible:
-+    const: st,st21nfca-i2c
++    const: st,st95hf
 +
-+  clock-frequency: true
-+
-+  enable-gpios:
++  enable-gpio:
 +    description: Output GPIO pin used for enabling/disabling the controller
-+
-+  ese-present:
-+    type: boolean
-+    description: |
-+      Specifies that an ese is physically connected to the controller
 +
 +  interrupts:
 +    maxItems: 1
@@ -124,18 +114,17 @@ index 000000000000..2cb65fd517ed
 +  reg:
 +    maxItems: 1
 +
-+  uicc-present:
-+    type: boolean
-+    description: |
-+      Specifies that the uicc swp signal can be physically connected to the
-+      controller
++  st95hfvin-supply:
++    description: ST95HF transceiver's Vin regulator supply
++
++  spi-max-frequency: true
 +
 +required:
 +  - compatible
-+  - clock-frequency
-+  - enable-gpios
++  - enable-gpio
 +  - interrupts
 +  - reg
++  - spi-max-frequency
 +
 +additionalProperties: false
 +
@@ -144,65 +133,70 @@ index 000000000000..2cb65fd517ed
 +    #include <dt-bindings/gpio/gpio.h>
 +    #include <dt-bindings/interrupt-controller/irq.h>
 +
-+    i2c {
++    spi {
 +        #address-cells = <1>;
 +        #size-cells = <0>;
 +
-+        nfc@1 {
-+            compatible = "st,st21nfca-i2c";
-+            reg = <0x1>;
++        nfc@0{
++            compatible = "st,st95hf";
++            reg = <0>;
 +
-+            clock-frequency = <400000>;
-+            interrupt-parent = <&gpio5>;
-+            interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
-+            enable-gpios = <&gpio5 29 GPIO_ACTIVE_HIGH>;
-+
-+            ese-present;
-+            uicc-present;
++            spi-max-frequency = <1000000>;
++            enable-gpio = <&pio4 GPIO_ACTIVE_HIGH>;
++            interrupt-parent = <&pio0>;
++            interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
 +        };
 +    };
-diff --git a/Documentation/devicetree/bindings/net/nfc/st21nfca.txt b/Documentation/devicetree/bindings/net/nfc/st21nfca.txt
+diff --git a/Documentation/devicetree/bindings/net/nfc/st95hf.txt b/Documentation/devicetree/bindings/net/nfc/st95hf.txt
 deleted file mode 100644
-index b8bd90f80e12..000000000000
---- a/Documentation/devicetree/bindings/net/nfc/st21nfca.txt
+index 3f373a1e20ff..000000000000
+--- a/Documentation/devicetree/bindings/net/nfc/st95hf.txt
 +++ /dev/null
-@@ -1,37 +0,0 @@
--* STMicroelectronics SAS. ST21NFCA NFC Controller
+@@ -1,45 +0,0 @@
+-* STMicroelectronics : NFC Transceiver ST95HF
+-
+-ST NFC Transceiver is required to attach with SPI bus.
+-ST95HF node should be defined in DT as SPI slave device of SPI
+-master with which ST95HF transceiver is physically connected.
+-The properties defined below are required to be the part of DT
+-to include ST95HF transceiver into the platform.
 -
 -Required properties:
--- compatible: Should be "st,st21nfca-i2c".
--- clock-frequency: I²C work frequency.
--- reg: address on the bus
--- enable-gpios: Output GPIO pin used for enabling/disabling the ST21NFCA
+-===================
+-- reg: Address of SPI slave "ST95HF transceiver" on SPI master bus.
 -
--Optional SoC Specific Properties:
--- pinctrl-names: Contains only one value - "default".
--- pintctrl-0: Specifies the pin control groups used for this controller.
--- ese-present: Specifies that an ese is physically connected to the nfc
--controller.
--- uicc-present: Specifies that the uicc swp signal can be physically
--connected to the nfc controller.
+-- compatible: should be "st,st95hf" for ST95HF NFC transceiver
 -
--Example (for ARM-based BeagleBoard xM with ST21NFCA on I2C2):
+-- spi-max-frequency: Max. operating SPI frequency for ST95HF
+-	transceiver.
 -
--&i2c2 {
+-- enable-gpio: GPIO line to enable ST95HF transceiver.
 -
+-- interrupts : Standard way to define ST95HF transceiver's out
+-	interrupt.
 -
--	st21nfca: st21nfca@1 {
+-Optional property:
+-=================
+-- st95hfvin-supply : This is an optional property. It contains a
+-	phandle to ST95HF transceiver's regulator supply node in DT.
 -
--		compatible = "st,st21nfca-i2c";
+-Example:
+-=======
+-spi@9840000 {
+-	reg = <0x9840000 0x110>;
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	cs-gpios = <&pio0 4>;
 -
--		reg = <0x01>;
--		clock-frequency = <400000>;
--
--		interrupt-parent = <&gpio5>;
--		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
--
--		enable-gpios = <&gpio5 29 GPIO_ACTIVE_HIGH>;
--
--		ese-present;
--		uicc-present;
+-	st95hf@0{
+-		reg = <0>;
+-		compatible = "st,st95hf";
+-		spi-max-frequency = <1000000>;
+-		enable-gpio = <&pio4 0>;
+-		interrupt-parent = <&pio0>;
+-		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
 -	};
+-
 -};
 -- 
 2.30.2
