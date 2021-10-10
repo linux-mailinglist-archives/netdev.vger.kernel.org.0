@@ -2,271 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F20D427F9B
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 09:09:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22645427FB4
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 09:27:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231216AbhJJHLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 03:11:30 -0400
-Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:51944 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230517AbhJJHLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 03:11:17 -0400
-Received: from pop-os.home ([90.126.248.220])
-        by mwinf5d27 with ME
-        id 479D260074m3Hzu0379DD9; Sun, 10 Oct 2021 09:09:18 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 10 Oct 2021 09:09:18 +0200
-X-ME-IP: 90.126.248.220
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        stf_xl@wp.pl, luciano.coelho@intel.com, amitkarwar@gmail.com,
-        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
-        huxinming820@gmail.com, ajay.kathat@microchip.com,
-        claudiu.beznea@microchip.com, imitsyanko@quantenna.com,
-        geomatsi@gmail.com, pkshih@realtek.com, jussi.kivilinna@iki.fi,
-        pizza@shaftnet.org
-Cc:     netdev@vger.kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] wireless: Remove redundant 'flush_workqueue()' calls
-Date:   Sun, 10 Oct 2021 09:09:11 +0200
-Message-Id: <0855d51423578ad019c0264dad3fe47a2e8af9c7.1633849511.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
+        id S230369AbhJJH3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 03:29:16 -0400
+Received: from mail-eopbgr1410105.outbound.protection.outlook.com ([40.107.141.105]:35649
+        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229697AbhJJH3O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 Oct 2021 03:29:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H27ABTlIABlMQlkUC+7EgU8Y9XnXMBailOJaPwbOI6kFwLXN+3w3O0ZPY/1cocS4HESm9IZoEuiH2BOzeCPJVWyJ9tVmaSNpiEIw+zTESps440gQEpcVSsWf5liGBqnWRxyTJn5KWMgUDmWUL4sNDsmVTkwCyj2y0mCMpmc1NrDd6UxpBbQe7wclXjvc+lqvZzBC9m+rNsPob3OIL7aAeW38VGW7FIRTnKqcLcZ3jJkCoSkaC/crvcXZir/HiFsIFp45ukXU2Mxx360rxUKHSt2WD12ortpRQZH7u3oxXCZLLm7Ws1RAqH496z8tqpysWPNrnziRYS39EcAooND8+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SJPF5zAGfEMXMo67tvxM0IKo8+ZUFP3MIJYfxO1gyC4=;
+ b=mGY7jSXKZfOaGwMUYwopPSQBquTsxh9FKdI0YAifZAoMEr8ezBOHgNL1x9BUTN1/dm0wMcKOC3giVS26ACSAlbMrUxMq3kZRZlVQObMrEYcmGD6uj/O9sRu4o+DyLrrHDJU/ULlIIDIbNNxe9iBWmnUWgE3eqbIh+XzXPQ/4cAb5Xp+fHEUCS/3Bas/5jGQAVR9X47hME8WZ1xAPZ7tGmwaTh3HSIliIoR7735/OWSdJWh4quz8sYaI+3GAQiUHqaLAaIFhNQBI85Mla9abbmCg4qpFLHymjLqUX+L491OExKDU3RvhBinGcdEhMsf2AwFVWm+icItm7ZSO6kOA/Xw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SJPF5zAGfEMXMo67tvxM0IKo8+ZUFP3MIJYfxO1gyC4=;
+ b=C90MBvxsenzotkRKVlkdxscOehVjgmlYzaPBux80Fsg+kNPeo233FY49ZA/lLCBWRKprQTIyySzLnrHjtNiwU2HRx5tCNWQKb40JmOQj8BBKPTOStAx++AdAKfzFtW2SQwRPB2sqJtghUPpL3TWhNG0oYvjnhGjZPGFQlYP80uA=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by OSBPR01MB1944.jpnprd01.prod.outlook.com (2603:1096:603:22::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.19; Sun, 10 Oct
+ 2021 07:27:11 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::9ca6:1cf:5:9fc1]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::9ca6:1cf:5:9fc1%3]) with mapi id 15.20.4587.025; Sun, 10 Oct 2021
+ 07:27:08 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Adam Ford <aford173@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>
+Subject: RE: [PATCH 00/14] Add functional support for Gigabit Ethernet driver
+Thread-Topic: [PATCH 00/14] Add functional support for Gigabit Ethernet driver
+Thread-Index: AQHXvUEBHULAomfYXUWxvR6NssmBBqvLDP4AgADISoA=
+Date:   Sun, 10 Oct 2021 07:27:08 +0000
+Message-ID: <OS0PR01MB5922B0A86C654401D7B719E086B49@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20211009190802.18585-1-biju.das.jz@bp.renesas.com>
+ <ccdd66e0-5d67-905d-a2ff-65ca95d2680a@omp.ru>
+In-Reply-To: <ccdd66e0-5d67-905d-a2ff-65ca95d2680a@omp.ru>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: omp.ru; dkim=none (message not signed)
+ header.d=none;omp.ru; dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f37353f2-3149-4334-4094-08d98bbf5e58
+x-ms-traffictypediagnostic: OSBPR01MB1944:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <OSBPR01MB19449681A925B9762B89B93986B49@OSBPR01MB1944.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: jX0/oHLlXetFfn9b9j4PS7wDBOp+PwEZcJIBrGH5h2oEVMbjaS/ALhhYVVbqUeH9PC9yfXjTUENB+T5aYy14wX+QOlYMAcEeTzVfhl8+u1HE2GMfAXHCDx9REDROothZewour9cHSiE6O2htwUjuhv1chSu1v18w3VNlYMNN/HWfzbqo8OCH/g5SjtzPlOMYlHT+yze6LsHcazZeZlpSq5IC6SAIeYzZ3uVYgw+/4VX+R89iXEF5VkRuqCP3Xtc0eczSekV47rxlR7X3AsGVgHyF4ls7bMkmbM4wF48VUngKQIYuNn73ZIMD5rjcCTM3UWRCyevM4LXGnmf/KvUBolD/8JsGKZkqLmjpUmb4EtFI7xRC7B0/3c8/3ziAYZpG89mAYpj3zEV3pyBQW460AKzzirjzzXo7u9F1YpCdmKjRivKmkJZdkghfhL8tjtrvs0akPqtr8gsvG1iJ/XYYUep4x5oujHLuEcnQ6N2wSDgSgOT8YTMxGwBRjWN7vHLv2JUx0GmS4TcqghK5q2u4TyeJM0sgu8G3+ElbUuEQ3ANWP8I9DR4ZWaE2DgZgtFlC3DBtkD3i06rkZFnViRYjV6jxuNz/0/1a4bQF1wP/QZ3qkf9K9f1F8pc4spV3uCKiq11XWOkIBWRyeU+QTBbNII8gEWY5nncQZ0jK2ZPRw3bAQS5vKVw2Sh23WvU+IWKWo393LfIRrUvqza8Xr8jI88GybMUbaCIOclLNk8Eqr3x1lZYobHgMl/IBZvml4kcbn2Kb2uQnSx/heyjV7BMNebkDWHUztunrjL/mWtdmO5Q=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2906002)(4326008)(7696005)(8936002)(186003)(55016002)(5660300002)(26005)(71200400001)(8676002)(6506007)(54906003)(316002)(53546011)(52536014)(110136005)(45080400002)(66476007)(38100700002)(508600001)(86362001)(122000001)(66946007)(33656002)(966005)(66556008)(64756008)(66446008)(38070700005)(83380400001)(76116006)(107886003)(9686003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3cqSSuKsyMeQsgc+ixDgm+fbBoO32Gql8VyV324XvmSiS9xEUQNZLSOGbNdx?=
+ =?us-ascii?Q?H6t2ZPcC+Sl59u6W14fewmeEtCRpTOGZs1TD7uF08QXm9ULG0TXIu8SGxzEq?=
+ =?us-ascii?Q?V60njdpaIOCNJd52d2101fK/3kEEPKu2qcNMShXC0fMA6ag9oI9CtHxRFhBt?=
+ =?us-ascii?Q?gnbOhUpa5TisVXXZ/p/v9DDFRo5Mh0ZxJ6iW7MQYhcf32p8qNgKkV368eKjw?=
+ =?us-ascii?Q?amYMO5IysIIknAWuRWC6DQMPPSrnuvVQALPJQZ2n0Oxx6+TPdzAmgA8v1C3E?=
+ =?us-ascii?Q?PxMidGPetLyacjjk/cQFhwtDzJIpA6dIHFhGQYdHg/A7ZJ0FULXU1iMEO8KZ?=
+ =?us-ascii?Q?5iem2L1rp8Rk9DLaz6Zrr9n8a0tZ9bLSofAeyFuLj7vN6cAS6LO2swmMJm+6?=
+ =?us-ascii?Q?4rb3nTwZQi7qSJ/7VXdE7eC63e/YilNVt/UCGXqX4oRb1l1lZaOpez8uwcjg?=
+ =?us-ascii?Q?tRuKPlYdOd8LIGMrk3ahzvOGHMluKMtZEetSb9ahE56vwJrJZtyeGyTrn4jt?=
+ =?us-ascii?Q?YeVI1mkrsucb3xBgU03Uf9Omi0G7lp3O2TQE/gm6liowW6701fbeHw5PUQ/s?=
+ =?us-ascii?Q?HBtlK7Yhw0rQtnOdnyQHKa0oNLhFlIvRjnZtvJ0ZZ6Pa+kbIJ7AdcGN88ZwA?=
+ =?us-ascii?Q?ifui6pLkU+CGqLkqkBsAZUabNIDO5A4l3MPfjGMRiOUURoRVb2N4LTSIN8Wa?=
+ =?us-ascii?Q?EBscOU7hFtFlp1dFvCluzdDX4tfelpT/X6he3i/+wJEC8UdgNIqJgGCncehK?=
+ =?us-ascii?Q?nbNSfBbg34sFdkOFC7RMl3NDki298eqUmx7Wu7dXDXCxXy3NPYrNWreKa+BR?=
+ =?us-ascii?Q?xtMRspQN7TmErmFGbq5Pwz+iaAYdgkvXb83xwK7MTk0o7aLoT0PomcXopdhA?=
+ =?us-ascii?Q?81nFfMf5DJ7stgFZZOiMcAhvU7v8Vv9YSiVKx6j1/nmBsnsNfyYZD3fFNXSE?=
+ =?us-ascii?Q?aA3VXJ9/hRi9n68j3dRPMsfa1OP+OvvpOkNUutSenCzzkpDzrtuRYco7rNAN?=
+ =?us-ascii?Q?IQ+yvWIrOFdPg6E2ib+ANIOkV9GAewzh9pW4RkCSld/oIdjp8tw99NVmz27s?=
+ =?us-ascii?Q?0C0RlA9xF+3L12RDR6ToD3PcPKBsnh/tXajaut8itmRzlCkiGrHXSEaVXZx0?=
+ =?us-ascii?Q?+PymN/ejQGPJIxWgCVllZ2tqkbMBPX7I9XkZTrR3Kla7JU2+fkoDaLuR4TYm?=
+ =?us-ascii?Q?jLqUl2BmiRVnLgOf1hilAQToqv5oZEv7fwTrcSFbYmlMe2X3kIuHR0pEWWS4?=
+ =?us-ascii?Q?EyZXSSZYG7IDmD0uAFb438/1pom0M+7hbZQPI8VXmxGukaD/V8OpPkgGXywk?=
+ =?us-ascii?Q?Ekc=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f37353f2-3149-4334-4094-08d98bbf5e58
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Oct 2021 07:27:08.1837
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dNOda6kvBzR5oOViGGj2zGLaWVOfcFjqED8X0yb9nnysMCTvQLS4VXph1W4qN6Y/zmkEUR9b+P1FAoyHhBo0y3PIytXUaBapcheCW4/1quQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB1944
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'destroy_workqueue()' already drains the queue before destroying it, so
-there is no need to flush it explicitly.
+Hi Sergey,
 
-Remove the redundant 'flush_workqueue()' calls.
+> Subject: Re: [PATCH 00/14] Add functional support for Gigabit Ethernet
+> driver
+>=20
+> On 10/9/21 10:07 PM, Biju Das wrote:
+>=20
+> > The DMAC and EMAC blocks of Gigabit Ethernet IP found on RZ/G2L SoC
+> > are similar to the R-Car Ethernet AVB IP.
+> >
+> > The Gigabit Ethernet IP consists of Ethernet controller (E-MAC),
+> > Internal TCP/IP Offload Engine (TOE)  and Dedicated Direct memory
+> > access controller (DMAC).
+> >
+> > With a few changes in the driver we can support both IPs.
+> >
+> > This patch series is aims to add functional support for Gigabit
+> > Ethernet driver by filling all the stubs except set_features.
+> >
+> > set_feature patch will send as separate RFC patch along with
+> > rx_checksum patch, as it needs detailed discussion related to HW
+> checksum.
+> >
+> > Ref:-
+> >
+> > https://jpn01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fpat=
+c
+> > hwork.kernel.org%2Fproject%2Flinux-renesas-soc%2Flist%2F%3Fseries%3D55
+> > 7655&amp;data=3D04%7C01%7Cbiju.das.jz%40bp.renesas.com%7C25bc7b9155d840=
+2
+> > a191808d98b5ae62f%7C53d82571da1947e49cb4625a166a4a2a%7C0%7C0%7C6376940
+> > 44814904836%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMz
+> > IiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3DVktj5v0GvrNf%2BDNIF=
+s
+> > e6xjCUm6OjtzwHvK3q8aG1E5Y%3D&amp;reserved=3D0
+> >
+> > RFC->V1:
+> >  * Removed patch#3 will send it as RFC
+> >  * Removed rx_csum functionality from patch#7, will send it as RFC
+> >  * Renamed "nc_queue" -> "nc_queues"
+> >  * Separated the comment patch into 2 separate patches.
+> >  * Documented PFRI register bit
+> >  * Added Sergy's Rb tag
+>=20
+>    It's Sergey. :-)
 
-This was generated with coccinelle:
+My Bad. Sorry will taken care this in future. I need to send V2, as acciden=
+tally I have added 2 macros in patch #6
+As part of RFC discussion into v1. I will send V2 to remove this.
 
-@@
-expression E;
-@@
-- 	flush_workqueue(E);
-	destroy_workqueue(E);
+Regards,
+Biju
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/wireless/ath/ath10k/core.c             | 3 ---
- drivers/net/wireless/ath/ath10k/sdio.c             | 1 -
- drivers/net/wireless/intel/iwlegacy/3945-mac.c     | 1 -
- drivers/net/wireless/intel/iwlegacy/4965-mac.c     | 1 -
- drivers/net/wireless/intel/iwlwifi/dvm/main.c      | 1 -
- drivers/net/wireless/marvell/mwifiex/cfg80211.c    | 2 --
- drivers/net/wireless/marvell/mwifiex/main.c        | 2 --
- drivers/net/wireless/microchip/wilc1000/netdev.c   | 1 -
- drivers/net/wireless/quantenna/qtnfmac/core.c      | 2 --
- drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c | 2 --
- drivers/net/wireless/realtek/rtlwifi/pci.c         | 1 -
- drivers/net/wireless/rndis_wlan.c                  | 2 --
- drivers/net/wireless/st/cw1200/bh.c                | 2 --
- 13 files changed, 21 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index c21e05549f61..112e04bb0e57 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -3520,13 +3520,10 @@ EXPORT_SYMBOL(ath10k_core_create);
- 
- void ath10k_core_destroy(struct ath10k *ar)
- {
--	flush_workqueue(ar->workqueue);
- 	destroy_workqueue(ar->workqueue);
- 
--	flush_workqueue(ar->workqueue_aux);
- 	destroy_workqueue(ar->workqueue_aux);
- 
--	flush_workqueue(ar->workqueue_tx_complete);
- 	destroy_workqueue(ar->workqueue_tx_complete);
- 
- 	ath10k_debug_destroy(ar);
-diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
-index eb705214f3f0..63e1c2d783c5 100644
---- a/drivers/net/wireless/ath/ath10k/sdio.c
-+++ b/drivers/net/wireless/ath/ath10k/sdio.c
-@@ -2650,7 +2650,6 @@ static void ath10k_sdio_remove(struct sdio_func *func)
- 
- 	ath10k_core_destroy(ar);
- 
--	flush_workqueue(ar_sdio->workqueue);
- 	destroy_workqueue(ar_sdio->workqueue);
- }
- 
-diff --git a/drivers/net/wireless/intel/iwlegacy/3945-mac.c b/drivers/net/wireless/intel/iwlegacy/3945-mac.c
-index 45abb25b65a9..bd4e7d752958 100644
---- a/drivers/net/wireless/intel/iwlegacy/3945-mac.c
-+++ b/drivers/net/wireless/intel/iwlegacy/3945-mac.c
-@@ -3819,7 +3819,6 @@ il3945_pci_remove(struct pci_dev *pdev)
- 	il3945_unset_hw_params(il);
- 
- 	/*netif_stop_queue(dev); */
--	flush_workqueue(il->workqueue);
- 
- 	/* ieee80211_unregister_hw calls il3945_mac_stop, which flushes
- 	 * il->workqueue... so we can't take down the workqueue
-diff --git a/drivers/net/wireless/intel/iwlegacy/4965-mac.c b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
-index 0223532fd56a..d93900e62e3d 100644
---- a/drivers/net/wireless/intel/iwlegacy/4965-mac.c
-+++ b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
-@@ -6731,7 +6731,6 @@ il4965_pci_remove(struct pci_dev *pdev)
- 	il_eeprom_free(il);
- 
- 	/*netif_stop_queue(dev); */
--	flush_workqueue(il->workqueue);
- 
- 	/* ieee80211_unregister_hw calls il_mac_stop, which flushes
- 	 * il->workqueue... so we can't take down the workqueue
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/main.c b/drivers/net/wireless/intel/iwlwifi/dvm/main.c
-index cc7b69fd14d3..69d1aae96bbb 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/main.c
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/main.c
-@@ -1525,7 +1525,6 @@ static void iwl_op_mode_dvm_stop(struct iwl_op_mode *op_mode)
- 	kfree(priv->nvm_data);
- 
- 	/*netif_stop_queue(dev); */
--	flush_workqueue(priv->workqueue);
- 
- 	/* ieee80211_unregister_hw calls iwlagn_mac_stop, which flushes
- 	 * priv->workqueue... so we can't take down the workqueue
-diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index d62a20de3ada..ef697572a293 100644
---- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-+++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-@@ -3218,13 +3218,11 @@ int mwifiex_del_virtual_intf(struct wiphy *wiphy, struct wireless_dev *wdev)
- 		cfg80211_unregister_netdevice(wdev->netdev);
- 
- 	if (priv->dfs_cac_workqueue) {
--		flush_workqueue(priv->dfs_cac_workqueue);
- 		destroy_workqueue(priv->dfs_cac_workqueue);
- 		priv->dfs_cac_workqueue = NULL;
- 	}
- 
- 	if (priv->dfs_chan_sw_workqueue) {
--		flush_workqueue(priv->dfs_chan_sw_workqueue);
- 		destroy_workqueue(priv->dfs_chan_sw_workqueue);
- 		priv->dfs_chan_sw_workqueue = NULL;
- 	}
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
-index 17399d4aa129..7943fd3b3058 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.c
-+++ b/drivers/net/wireless/marvell/mwifiex/main.c
-@@ -498,13 +498,11 @@ static void mwifiex_free_adapter(struct mwifiex_adapter *adapter)
- static void mwifiex_terminate_workqueue(struct mwifiex_adapter *adapter)
- {
- 	if (adapter->workqueue) {
--		flush_workqueue(adapter->workqueue);
- 		destroy_workqueue(adapter->workqueue);
- 		adapter->workqueue = NULL;
- 	}
- 
- 	if (adapter->rx_workqueue) {
--		flush_workqueue(adapter->rx_workqueue);
- 		destroy_workqueue(adapter->rx_workqueue);
- 		adapter->rx_workqueue = NULL;
- 	}
-diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
-index 7e4d9235251c..d3b33c6ab93a 100644
---- a/drivers/net/wireless/microchip/wilc1000/netdev.c
-+++ b/drivers/net/wireless/microchip/wilc1000/netdev.c
-@@ -880,7 +880,6 @@ void wilc_netdev_cleanup(struct wilc *wilc)
- 	srcu_read_unlock(&wilc->srcu, srcu_idx);
- 
- 	wilc_wfi_deinit_mon_interface(wilc, false);
--	flush_workqueue(wilc->hif_workqueue);
- 	destroy_workqueue(wilc->hif_workqueue);
- 
- 	while (ifc_cnt < WILC_NUM_CONCURRENT_IFC) {
-diff --git a/drivers/net/wireless/quantenna/qtnfmac/core.c b/drivers/net/wireless/quantenna/qtnfmac/core.c
-index b4dd60b2ebc9..01725237836e 100644
---- a/drivers/net/wireless/quantenna/qtnfmac/core.c
-+++ b/drivers/net/wireless/quantenna/qtnfmac/core.c
-@@ -811,13 +811,11 @@ void qtnf_core_detach(struct qtnf_bus *bus)
- 	bus->fw_state = QTNF_FW_STATE_DETACHED;
- 
- 	if (bus->workqueue) {
--		flush_workqueue(bus->workqueue);
- 		destroy_workqueue(bus->workqueue);
- 		bus->workqueue = NULL;
- 	}
- 
- 	if (bus->hprio_workqueue) {
--		flush_workqueue(bus->hprio_workqueue);
- 		destroy_workqueue(bus->hprio_workqueue);
- 		bus->hprio_workqueue = NULL;
- 	}
-diff --git a/drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c b/drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c
-index 5d93c874d666..9ad4c120fa28 100644
---- a/drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c
-+++ b/drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c
-@@ -387,7 +387,6 @@ static int qtnf_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	return 0;
- 
- error:
--	flush_workqueue(pcie_priv->workqueue);
- 	destroy_workqueue(pcie_priv->workqueue);
- 	pci_set_drvdata(pdev, NULL);
- 	return ret;
-@@ -416,7 +415,6 @@ static void qtnf_pcie_remove(struct pci_dev *dev)
- 		qtnf_core_detach(bus);
- 
- 	netif_napi_del(&bus->mux_napi);
--	flush_workqueue(priv->workqueue);
- 	destroy_workqueue(priv->workqueue);
- 	tasklet_kill(&priv->reclaim_tq);
- 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/pci.c b/drivers/net/wireless/realtek/rtlwifi/pci.c
-index 3776495fd9d0..ad327bae754b 100644
---- a/drivers/net/wireless/realtek/rtlwifi/pci.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/pci.c
-@@ -1743,7 +1743,6 @@ static void rtl_pci_deinit(struct ieee80211_hw *hw)
- 	tasklet_kill(&rtlpriv->works.irq_tasklet);
- 	cancel_work_sync(&rtlpriv->works.lps_change_work);
- 
--	flush_workqueue(rtlpriv->works.rtl_wq);
- 	destroy_workqueue(rtlpriv->works.rtl_wq);
- }
- 
-diff --git a/drivers/net/wireless/rndis_wlan.c b/drivers/net/wireless/rndis_wlan.c
-index 63ce2443f136..ff2448394a1e 100644
---- a/drivers/net/wireless/rndis_wlan.c
-+++ b/drivers/net/wireless/rndis_wlan.c
-@@ -3501,7 +3501,6 @@ static int rndis_wlan_bind(struct usbnet *usbdev, struct usb_interface *intf)
- 	cancel_delayed_work_sync(&priv->dev_poller_work);
- 	cancel_delayed_work_sync(&priv->scan_work);
- 	cancel_work_sync(&priv->work);
--	flush_workqueue(priv->workqueue);
- 	destroy_workqueue(priv->workqueue);
- 
- 	wiphy_free(wiphy);
-@@ -3518,7 +3517,6 @@ static void rndis_wlan_unbind(struct usbnet *usbdev, struct usb_interface *intf)
- 	cancel_delayed_work_sync(&priv->dev_poller_work);
- 	cancel_delayed_work_sync(&priv->scan_work);
- 	cancel_work_sync(&priv->work);
--	flush_workqueue(priv->workqueue);
- 	destroy_workqueue(priv->workqueue);
- 
- 	rndis_unbind(usbdev, intf);
-diff --git a/drivers/net/wireless/st/cw1200/bh.c b/drivers/net/wireless/st/cw1200/bh.c
-index 8bade5d89f12..10e019cddcc6 100644
---- a/drivers/net/wireless/st/cw1200/bh.c
-+++ b/drivers/net/wireless/st/cw1200/bh.c
-@@ -85,8 +85,6 @@ void cw1200_unregister_bh(struct cw1200_common *priv)
- 	atomic_inc(&priv->bh_term);
- 	wake_up(&priv->bh_wq);
- 
--	flush_workqueue(priv->bh_workqueue);
--
- 	destroy_workqueue(priv->bh_workqueue);
- 	priv->bh_workqueue = NULL;
- 
--- 
-2.30.2
-
+>=20
+> > RFC changes:
+> >  * used ALIGN macro for calculating the value for max_rx_len.
+> >  * used rx_max_buf_size instead of rx_2k_buffers feature bit.
+> >  * moved struct ravb_rx_desc *gbeth_rx_ring near to
+> ravb_private::rx_ring
+> >    and allocating it for 1 RX queue.
+> >  * Started using gbeth_rx_ring instead of gbeth_rx_ring[q].
+> >  * renamed ravb_alloc_rx_desc to ravb_alloc_rx_desc_rcar
+> >  * renamed ravb_rx_ring_free to ravb_rx_ring_free_rcar
+> >  * renamed ravb_rx_ring_format to ravb_rx_ring_format_rcar
+> >  * renamed ravb_rcar_rx to ravb_rx_rcar
+> >  * renamed "tsrq" variable
+> >  * Updated the comments
+> >
+> > Biju Das (14):
+> >   ravb: Use ALIGN macro for max_rx_len
+> >   ravb: Add rx_max_buf_size to struct ravb_hw_info
+> >   ravb: Fillup ravb_alloc_rx_desc_gbeth() stub
+> >   ravb: Fillup ravb_rx_ring_free_gbeth() stub
+> >   ravb: Fillup ravb_rx_ring_format_gbeth() stub
+> >   ravb: Fillup ravb_rx_gbeth() stub
+> >   ravb: Add carrier_counters to struct ravb_hw_info
+> >   ravb: Add support to retrieve stats for GbEthernet
+> >   ravb: Rename "tsrq" variable
+> >   ravb: Optimize ravb_emac_init_gbeth function
+> >   ravb: Rename "nc_queue" feature bit
+> >   ravb: Document PFRI register bit
+> >   ravb: Update EMAC configuration mode comment
+> >   ravb: Fix typo AVB->DMAC
+> >
+> >  drivers/net/ethernet/renesas/ravb.h      |  17 +-
+> >  drivers/net/ethernet/renesas/ravb_main.c | 325
+> > +++++++++++++++++++----
+> >  2 files changed, 291 insertions(+), 51 deletions(-)
+>=20
+>    DaveM, I'm going to review this patch series (starting on Monday). Is
+> that acceptable forewarning? :-)
+>=20
+> MBR, Sergey
