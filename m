@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B6734280BF
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 13:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FE044280BD
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 13:17:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232367AbhJJLSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 07:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
+        id S232290AbhJJLSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 07:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231842AbhJJLSV (ORCPT
+        with ESMTP id S232105AbhJJLSV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 07:18:21 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA290C061773;
-        Sun, 10 Oct 2021 04:16:17 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id d3so27933806edp.3;
-        Sun, 10 Oct 2021 04:16:17 -0700 (PDT)
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C065BC061777;
+        Sun, 10 Oct 2021 04:16:18 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id z20so55209983edc.13;
+        Sun, 10 Oct 2021 04:16:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uPNQWTQgfdkkXKMJr1+g12wykYFN16QL/UUyG9V1XkY=;
-        b=Mln2J9Ir+tatNX5V+7MAck1jW68vPWFgrMrDKGS7LUZNCJTaH4S5qgsO393zWlPHlr
-         r45k8tCe3AqKnYZnsybM7T0RRFva2JMoF4tX2WbIDwpBgOCfbXpQmKnXtAXGCoha2p/4
-         IzSTkxB/PJSk971mweuzg5NvBMcKD2q9NOvcQ6+U2Hj0c5DQflt+FmT9YbN55o57Mjlg
-         Y/AVFbKS3HL0ZNT0C6I7hDBj9vttkSuUzCmKJ2KERmDG09m/pyU1nvXja0sKJa/mUKV7
-         HeEeaeFPySf+nauyica93LI8M7gsQHDUBmD78Ki1ay733guX6jyMpE+ROZ2gPnVapVsr
-         vSAA==
+        bh=sRH5UhT3GSFn9NHD4n38xeYZUeiG6gIzM5V7zY5J2Q4=;
+        b=OTQP8AVBRvfpvF/XApSAn/kMzGjIcZJIWdJyRVI9dpcEOHcWFEbXjaZiIDJelKqSI0
+         oIGtS7g/S3pHHNppzl6k/dp+6Kv5l51zWqd6UVpY0mpvkglpuN/kxtXKThW39lqN0Dcd
+         yYdcKwm7Cbj0eeKtQajUME9bJ7tkxODCfPEmOa8UCYTJPxK4R47SSlUTyUh+BLoqpI0X
+         E7FuA2qCFufRKjq0C3ScoRJXHcV+Q45OGzqCUPh0yrr6+QWvcDnREGjEs6gcP6ScwYcx
+         eX2RnZ4ZbdfH424v3GKRPrf3vDQoT2RnK3VQk+KSIEHPUG0RZLKHIivQomq9/ZBagHI+
+         9Brw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uPNQWTQgfdkkXKMJr1+g12wykYFN16QL/UUyG9V1XkY=;
-        b=AK4CBLJIfsXrQKLDWi2nWThTzYrA6l8VNJCbikJJIjw1Hn5QN3uEDboKQ1vIfWV/UK
-         0UJ6QIeeVBdF71abgnEeT8SEbWw1aEp4b4sL5T/7ZmDMPtNHWwXCAYsgX4iRoOyfPAv9
-         5yxgwEQLwMXRfTaxLk+Y9IQqjLByAAqEyasRAfAta5mZVABXjVaHrcZ7WzVlJ37CogqX
-         U50+vtOBFyfncjWQSGWmSBvmf+ihTyce2YakfR+2A54z4r0QkW6CbpHrQO8DdkE+v43D
-         sDuvfgVQlogGCE2OXCGTPJKXLuakGTY1m9lOM7P8vMORXHch4cFF4UJxAmujdGYMqIt+
-         a1jQ==
-X-Gm-Message-State: AOAM53361+8xTLkyMyHw9zAF+czMQsnVS1OsrhfGrWW166vo+ro/XC8c
-        lFbE/zLeCXbJixp++5l8LeY=
-X-Google-Smtp-Source: ABdhPJya9nXA8H1mAFMx8f+OoRnPOzWIqfCxdUhkAMu8sahu8TxEWjXacdW953i86sSW6Y/WxjgJWQ==
-X-Received: by 2002:a17:906:b6d0:: with SMTP id ec16mr18741674ejb.229.1633864576279;
-        Sun, 10 Oct 2021 04:16:16 -0700 (PDT)
+        bh=sRH5UhT3GSFn9NHD4n38xeYZUeiG6gIzM5V7zY5J2Q4=;
+        b=viIk0jQT+AO/iVPs2AOn/Op9ud7Yqt5cDjjLtjeI17pjJ8DoMqOgxI7/k7q7WFe4bO
+         Yr4x/Y5DC+baSGzgcXSWAxVn2yKLdj6Gyspsm0ZJz0j0Uusiyuc0vaml875gDQPDPZWs
+         aYHoCPNe17d7uDmsbdxXovkCq/Fxk2LXFpECH47yVo7SQ9oZ86Hta4nKYUu6sAza0yKu
+         tc5fM6mzbIsFhLfCSEq21O2bAWZ6ANOavFPtX6fB73jZFfG8Nq0YYLYZsj2sn+KfFR5+
+         jWpCy1zjG21A+Gv6Y9Ru66AR5hFQ0hkxjNnggtL7iMyX5zoM1tF6NEamxgr86nPCmtUx
+         1ccA==
+X-Gm-Message-State: AOAM532ROaGIXa180Jze76MVVp0lKjL32qDqgwRCagSxoSHfqDWGD5Ql
+        Kvr74TaU0rnkcIEmIRNXbcU=
+X-Google-Smtp-Source: ABdhPJz+AsNpQ5tgvQCwFTdKtr2QhrVHgdlzfKJTsakCjcSRBWBzLUbEcEIaCSiTdqltgKhb+UGREQ==
+X-Received: by 2002:a05:6402:4402:: with SMTP id y2mr23261644eda.222.1633864577269;
+        Sun, 10 Oct 2021 04:16:17 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id z5sm2414438edm.82.2021.10.10.04.16.15
+        by smtp.googlemail.com with ESMTPSA id z5sm2414438edm.82.2021.10.10.04.16.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sun, 10 Oct 2021 04:16:16 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
@@ -58,9 +58,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v4 10/13] dt-bindings: net: dsa: qca8k: document open drain binding
-Date:   Sun, 10 Oct 2021 13:15:53 +0200
-Message-Id: <20211010111556.30447-11-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v4 11/13] drivers: net: dsa: qca8k: add support for QCA8328
+Date:   Sun, 10 Oct 2021 13:15:54 +0200
+Message-Id: <20211010111556.30447-12-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211010111556.30447-1-ansuelsmth@gmail.com>
 References: <20211010111556.30447-1-ansuelsmth@gmail.com>
@@ -70,36 +70,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document new binding qca,power_on_sel used to enable Power-on-strapping
-select reg and qca,led_open_drain to set led to open drain mode.
+QCA8328 switch is the bigger brother of the qca8327. Same regs different
+chip. Change the function to set the correct pin layout and introduce a
+new match_data to differentiate the 2 switch as they have the same ID
+and their internal PHY have the same ID.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- Documentation/devicetree/bindings/net/dsa/qca8k.txt | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/dsa/qca8k.c | 19 ++++++++++++++++---
+ drivers/net/dsa/qca8k.h |  1 +
+ 2 files changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-index 05a8ddfb5483..71cd45818430 100644
---- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
-@@ -13,6 +13,17 @@ Required properties:
- Optional properties:
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 5091837cb969..947346511514 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -935,6 +935,7 @@ static int
+ qca8k_setup_of_pws_reg(struct qca8k_priv *priv)
+ {
+ 	struct device_node *node = priv->dev->of_node;
++	const struct qca8k_match_data *data;
+ 	u32 val = 0;
+ 	int ret;
  
- - reset-gpios: GPIO to be used to reset the whole device
-+- qca,ignore-power-on-sel: Ignore power on pin strapping to configure led open
-+                           drain or eeprom presence. This is needed for broken
-+                           device that have wrong configuration or when the oem
-+                           decided to not use pin strapping and fallback to sw
-+                           regs.
-+- qca,led-open-drain: Set leds to open-drain mode. This require the
-+                      qca,ignore-power-on-sel to be set or the driver will fail
-+                      to probe. This is needed if the oem doesn't use pin
-+                      strapping to set this mode and prefer to set it using sw
-+                      regs. The pin strapping related to led open drain mode is
-+                      the pin B68 for QCA832x and B49 for QCA833x
+@@ -943,8 +944,14 @@ qca8k_setup_of_pws_reg(struct qca8k_priv *priv)
+ 	 * Should be applied by default but we set this just to make sure.
+ 	 */
+ 	if (priv->switch_id == QCA8K_ID_QCA8327) {
++		data = of_device_get_match_data(priv->dev);
++
++		/* Set the correct package of 148 pin for QCA8327 */
++		if (data->reduced_package)
++			val |= QCA8327_PWS_PACKAGE148_EN;
++
+ 		ret = qca8k_rmw(priv, QCA8K_REG_PWS, QCA8327_PWS_PACKAGE148_EN,
+-				QCA8327_PWS_PACKAGE148_EN);
++				val);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -2018,7 +2025,12 @@ static int qca8k_resume(struct device *dev)
+ static SIMPLE_DEV_PM_OPS(qca8k_pm_ops,
+ 			 qca8k_suspend, qca8k_resume);
  
- Subnodes:
+-static const struct qca8k_match_data qca832x = {
++static const struct qca8k_match_data qca8327 = {
++	.id = QCA8K_ID_QCA8327,
++	.reduced_package = true,
++};
++
++static const struct qca8k_match_data qca8328 = {
+ 	.id = QCA8K_ID_QCA8327,
+ };
  
+@@ -2027,7 +2039,8 @@ static const struct qca8k_match_data qca833x = {
+ };
+ 
+ static const struct of_device_id qca8k_of_match[] = {
+-	{ .compatible = "qca,qca8327", .data = &qca832x },
++	{ .compatible = "qca,qca8327", .data = &qca8327 },
++	{ .compatible = "qca,qca8328", .data = &qca8328 },
+ 	{ .compatible = "qca,qca8334", .data = &qca833x },
+ 	{ .compatible = "qca,qca8337", .data = &qca833x },
+ 	{ /* sentinel */ },
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index 535a4515e7b9..c032db5e0d41 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -260,6 +260,7 @@ struct ar8xxx_port_status {
+ 
+ struct qca8k_match_data {
+ 	u8 id;
++	bool reduced_package;
+ };
+ 
+ struct qca8k_priv {
 -- 
 2.32.0
 
