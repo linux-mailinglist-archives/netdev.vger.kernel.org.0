@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81098427FCA
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 09:30:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 471AD427FCD
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 09:30:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbhJJHcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 03:32:12 -0400
-Received: from relmlor2.renesas.com ([210.160.252.172]:20016 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231302AbhJJHb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 03:31:56 -0400
+        id S231395AbhJJHcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 03:32:21 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:55371 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231326AbhJJHcA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 03:32:00 -0400
 X-IronPort-AV: E=Sophos;i="5.85,362,1624287600"; 
-   d="scan'208";a="96694943"
+   d="scan'208";a="96511144"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 10 Oct 2021 16:29:57 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 10 Oct 2021 16:30:01 +0900
 Received: from localhost.localdomain (unknown [10.226.92.12])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 953054001958;
-        Sun, 10 Oct 2021 16:29:54 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 369D74001958;
+        Sun, 10 Oct 2021 16:29:58 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -32,9 +32,9 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH net-next v2 09/14] ravb: Rename "tsrq" variable
-Date:   Sun, 10 Oct 2021 08:29:15 +0100
-Message-Id: <20211010072920.20706-10-biju.das.jz@bp.renesas.com>
+Subject: [PATCH net-next v2 10/14] ravb: Optimize ravb_emac_init_gbeth function
+Date:   Sun, 10 Oct 2021 08:29:16 +0100
+Message-Id: <20211010072920.20706-11-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211010072920.20706-1-biju.das.jz@bp.renesas.com>
 References: <20211010072920.20706-1-biju.das.jz@bp.renesas.com>
@@ -42,79 +42,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename the variable "tsrq" with "tccr_mask" as we are passing
-TCCR mask to the ravb_wait() function.
-
-There is no functional change.
+Optimize CXR31 register initialization on ravb_emac_init_gbeth
+function.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 Suggested-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 ---
-V1->v2:
+v1->v2:
  * No change
-RFC->v1:
+RFC->V1:
  * No Change. Added Sergey's Rb tag.
 RFC changes:
  * New patch.
 ---
- drivers/net/ethernet/renesas/ravb.h      | 2 +-
- drivers/net/ethernet/renesas/ravb_main.c | 8 ++++----
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/renesas/ravb_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-index 527e865dee81..99d666a5fb49 100644
---- a/drivers/net/ethernet/renesas/ravb.h
-+++ b/drivers/net/ethernet/renesas/ravb.h
-@@ -1012,7 +1012,7 @@ struct ravb_hw_info {
- 	netdev_features_t net_features;
- 	int stats_len;
- 	size_t max_rx_len;
--	u32 tsrq;
-+	u32 tccr_mask;
- 	u32 rx_max_buf_size;
- 	unsigned aligned_tx: 1;
- 
 diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 2f194a7bc367..eac3bbefff11 100644
+index eac3bbefff11..081d9b70f038 100644
 --- a/drivers/net/ethernet/renesas/ravb_main.c
 +++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -1021,7 +1021,7 @@ static int ravb_stop_dma(struct net_device *ndev)
- 	int error;
+@@ -538,8 +538,7 @@ static void ravb_emac_init_gbeth(struct net_device *ndev)
+ 	/* E-MAC interrupt enable register */
+ 	ravb_write(ndev, ECSIPR_ICDIP, ECSIPR);
  
- 	/* Wait for stopping the hardware TX process */
--	error = ravb_wait(ndev, TCCR, info->tsrq, 0);
-+	error = ravb_wait(ndev, TCCR, info->tccr_mask, 0);
+-	ravb_modify(ndev, CXR31, CXR31_SEL_LINK1, 0);
+-	ravb_modify(ndev, CXR31, CXR31_SEL_LINK0, CXR31_SEL_LINK0);
++	ravb_modify(ndev, CXR31, CXR31_SEL_LINK0 | CXR31_SEL_LINK1, CXR31_SEL_LINK0);
+ }
  
- 	if (error)
- 		return error;
-@@ -2410,7 +2410,7 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
- 	.net_features = NETIF_F_RXCSUM,
- 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
- 	.max_rx_len = RX_BUF_SZ + RAVB_ALIGN - 1,
--	.tsrq = TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3,
-+	.tccr_mask = TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3,
- 	.rx_max_buf_size = SZ_2K,
- 	.internal_delay = 1,
- 	.tx_counters = 1,
-@@ -2435,7 +2435,7 @@ static const struct ravb_hw_info ravb_gen2_hw_info = {
- 	.net_features = NETIF_F_RXCSUM,
- 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
- 	.max_rx_len = RX_BUF_SZ + RAVB_ALIGN - 1,
--	.tsrq = TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3,
-+	.tccr_mask = TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3,
- 	.rx_max_buf_size = SZ_2K,
- 	.aligned_tx = 1,
- 	.gptp = 1,
-@@ -2456,7 +2456,7 @@ static const struct ravb_hw_info gbeth_hw_info = {
- 	.gstrings_size = sizeof(ravb_gstrings_stats_gbeth),
- 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats_gbeth),
- 	.max_rx_len = ALIGN(GBETH_RX_BUFF_MAX, RAVB_ALIGN),
--	.tsrq = TCCR_TSRQ0,
-+	.tccr_mask = TCCR_TSRQ0,
- 	.rx_max_buf_size = SZ_8K,
- 	.aligned_tx = 1,
- 	.tx_counters = 1,
+ static void ravb_emac_init_rcar(struct net_device *ndev)
 -- 
 2.17.1
 
