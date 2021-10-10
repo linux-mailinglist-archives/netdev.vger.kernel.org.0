@@ -2,95 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 011034280DA
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 13:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0271A4280DC
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 13:40:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231874AbhJJLjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 07:39:17 -0400
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:58542
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231829AbhJJLjL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 07:39:11 -0400
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 56B7F3FFF3
-        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 11:37:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633865832;
-        bh=3aL2g6ASYJjmJXLGE2td/GKebrEEfp5cYtOVSOPNOjE=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=YaQC/MsZUVthOkS9Dee/wD7KNQ4OAhbpdHueKM6x7dpSOzi9Yk6/MXANG1/KMHOA9
-         EXxOBZrfzczIA5+gMgIs26z0UA0AIy2X4bxHbH0s/kTyZcq0t2X4xYQwLbbw8dHI04
-         sj17NjBG+LtOXWmWEDzZrAB3OXKoZqngvMJ+yfD2XmR/vLf84WzCx9QSe4KzNTxaMR
-         if0xMTYwqmCF2tXVgKbNEXKdcT8/cO4r7nhlg1t/76pGgkQr063ILKVU/f7VQDSQ2b
-         su+iXO72WbGTsx6ziOJVsWNC7eIbvHIckyqTOpCdW0/XFsUX/v7Cw06PlhtgfCyfMp
-         KStpVfM3qQbpw==
-Received: by mail-ed1-f71.google.com with SMTP id z23-20020aa7cf97000000b003db7be405e1so2346578edx.13
-        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 04:37:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3aL2g6ASYJjmJXLGE2td/GKebrEEfp5cYtOVSOPNOjE=;
-        b=gdzKbpFqVYwDHfYqRYdr15QwQf1MMvsWKMf72lTtJrVZnQac9IhYAuvaXJLlibx09H
-         /TT9cAejiC6Q98ndW8XXGu0WikgcB7gu6xYxnzmhJkTz4es22SJSPxMhjG5qhNSkhtam
-         LMLzYXOu5+fr3PU2hSp5TPM41T41FpxwkYPLk/XfeocXt1CBGF8lOUI62Mm9xVblEh9n
-         z8t6uaahUj46/yszclN4uFKkpDewvDYz3D+HWppIBenLBG9qfUlRXcXBXBCBd9Y0PM1I
-         zWLDSvYKUbYZ6eK6ciwuTzVdL9KmWinUE0Ut3nXiyeNvW4BuFAhL5Y+8sWDGmOlxz7XZ
-         gMRQ==
-X-Gm-Message-State: AOAM530oSY6bmvsi8wl/yGB9SE7x5dThRXV68CRzVeXSvbrDptBR1I49
-        iGKtZXaq5jJJiP7WPbALrtP3q595gGUDnQqgmWRfLVyub4tyBPcWBTru39CGQvrq7fUxPsfzJJv
-        8nn9tFz+jvTrda4nYPZ81K/y5Aw8C0ODuh5jAlxZTFlt+ZVfI8A==
-X-Received: by 2002:a17:906:919:: with SMTP id i25mr17554112ejd.171.1633865830570;
-        Sun, 10 Oct 2021 04:37:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzmGfXRax8w6ByvvioynebBatQTyi+KnMs4IdARMtMQVkKFfh4370Xu091DRaFkuwupjNT9l7lw+PWQutb8gQQ=
-X-Received: by 2002:a17:906:919:: with SMTP id i25mr17554102ejd.171.1633865830425;
- Sun, 10 Oct 2021 04:37:10 -0700 (PDT)
+        id S231888AbhJJLmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 07:42:37 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:47359 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230059AbhJJLmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 07:42:36 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 039505C00AA;
+        Sun, 10 Oct 2021 07:40:38 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Sun, 10 Oct 2021 07:40:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=p4+oEv4I4CRhYFGdV
+        GZT2eFh4QWNnUzh8ddTRfTdl/o=; b=WAeJpes+EwkxqJAai6ss160oe86Qb+gku
+        ltVfMTIPpXqmsx46O6VYA0FYdfSho2G0XPMVN8GD0PWYZAph5QJznLOlrSQdlG7/
+        YS3/LmOWU49FTLGRa5M4wdBJYbaQdISozCSAdAKpRaR9uK6OMN68ee1hPPhWjjAn
+        1jLnuYh3zWGbKDiZ6VwRmpuTOdHaqIle+VAtPIlqjESqrLEPnpSdxfiIjwVqqcV0
+        m/wxZv0FIZLAk04NOxwDRApa5VJROqe/6BT3FwK4mgQiKJ19IlwNmJ4b3RNcnHpF
+        BtxCf6Y5o5nyg8KkBh8P/h0dWbTujYytSnPNfsLpyZ7QwZQWykgrA==
+X-ME-Sender: <xms:NdFiYUtzZhMjSEfRMVG0XQKXJbr0K4Mt1glZ9xCBO21RQ2yXOjk5aQ>
+    <xme:NdFiYReVTuknS4DLlrJdjjK_i15_vrZUGtGyX11erLtJ4nWwxUGHOSIZUaTOYV6FD
+    Yi3R8Ei2uyPH2M>
+X-ME-Received: <xmr:NdFiYfx8_ErpBCkX9GRtJIhNPqoPN-pRfUFPCzmHzFyGJds1HnCL1ZZxiowWYjRiBwqSn7Az9xq7NDpjlOJaYMyVJvJd0toWoL9oh0mGadbVXw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtgedggeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghr
+    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:NdFiYXML_8rUimtq0uKcddbs9yOv4rZA6uCS_QTkznbxeAKCII7dTg>
+    <xmx:NdFiYU_2KBfmg6nZdKGliFv8e-_egCgPJ2Z2ZX0QXXGNne8mZC6JVg>
+    <xmx:NdFiYfV1dr3HxMhjWObIjB0C7PrHxWDh-IfGwu0zncklPlg8mhlDrA>
+    <xmx:NdFiYYYbA89LWTVQL8Vi0kWqSVTd_eEIN-BRs3a4LZ_aAUk6eUyqiQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 10 Oct 2021 07:40:35 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        petrm@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/6] mlxsw: Add support for ECN mirroring
+Date:   Sun, 10 Oct 2021 14:40:12 +0300
+Message-Id: <20211010114018.190266-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20211007133021.32704-1-krzysztof.kozlowski@canonical.com>
- <20211008.111646.1874039740182175606.davem@davemloft.net> <CA+Eumj5k9K9DUsPifDchNixj0QG5WrTJX+dzADmAgYSFe49+4g@mail.gmail.com>
-In-Reply-To: <CA+Eumj5k9K9DUsPifDchNixj0QG5WrTJX+dzADmAgYSFe49+4g@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Date:   Sun, 10 Oct 2021 13:36:59 +0200
-Message-ID: <CA+Eumj65krM_LhEgbBe2hxAZhYZLmuo3zMoVcq6zp9xKa+n_Jg@mail.gmail.com>
-Subject: Re: [RESEND PATCH v2 0/7] nfc: minor printk cleanup
-To:     David Miller <davem@davemloft.net>
-Cc:     k.opasiak@samsung.com, mgreer@animalcreek.com, kuba@kernel.org,
-        linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 Oct 2021 at 12:18, Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> On Fri, 8 Oct 2021 at 12:17, David Miller <davem@davemloft.net> wrote:
-> >
-> > From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> > Date: Thu,  7 Oct 2021 15:30:14 +0200
-> >
-> > > Hi,
-> > >
-> > > This is a rebase and resend of v2. No other changes.
-> > >
-> > > Changes since v1:
-> > > 1. Remove unused variable in pn533 (reported by kbuild).
-> >
-> > Please CC: netdev for nfc patches otherwise they will not get tracked
-> > and applied.
->
-> netdev@vger.kernel.org is here. Which address I missed?
+From: Ido Schimmel <idosch@nvidia.com>
 
-The patchset reached patchwork:
-https://patchwork.kernel.org/project/netdevbpf/list/?series=559153&state=*
-although for some reason it is marked as "changes requested". Are
-there any other changes needed except Joe's comment for one patch?
+Petr says:
 
-Best regards,
-Krzysztof
+Patches in this set have been floating around for some time now together
+with trap_fwd support. That will however need more work, time for which is
+nowhere to be found, apparently. Instead, this patchset enables offload of
+only packet mirroring on RED mark qevent, enabling mirroring of ECN-marked
+packets.
+
+Formally it enables offload of filters added to blocks bound to the RED
+qevent mark if:
+
+- The switch ASIC is Spectrum-2 or above.
+- Only a single filter is attached at the block, at chain 0 (the default),
+  and its classifier is matchall.
+- The filter has hw_stats set to disabled.
+- The filter has a single action, which is mirror.
+
+This differs from early_drop qevent offload, which supports mirroring and
+trapping. However trapping in context of ECN-marked packets is not
+suitable, because the HW does not drop the packet, as the trap action
+implies. And there is as of now no way to express only the part of trapping
+that transfers the packet to the SW datapath, sans the HW-datapath drop.
+
+The patchset progresses as follows:
+
+Patch #1 is an extack propagation.
+
+Mirroring of ECN-marked packets is configured in the ASIC through an ECN
+trigger, which is considered "egress", unlike the EARLY_DROP trigger.
+In patch #2, add a helper to classify triggers as ingress.
+
+As clarified above, traps cannot be offloaded on mark qevent. Similarly,
+given a trap_fwd action, it would not be offloadable on early_drop qevent.
+In patch #3, introduce support for tracking actions permissible on a given
+block.
+
+Patch #4 actually adds the mark qevent offload.
+
+In patch #5, fix a small style issue in one of the selftests, and in
+patch #6 add mark offload selftests.
+
+Petr Machata (6):
+  mlxsw: spectrum_qdisc: Pass extack to
+    mlxsw_sp_qevent_entry_configure()
+  mlxsw: spectrum_qdisc: Distinguish between ingress and egress triggers
+  mlxsw: spectrum_qdisc: Track permissible actions per binding
+  mlxsw: spectrum_qdisc: Offload RED qevent mark
+  selftests: mlxsw: sch_red_core: Drop two unused variables
+  selftests: mlxsw: RED: Add selftests for the mark qevent
+
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |   2 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |   2 +
+ .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 106 +++++++++++++-----
+ .../ethernet/mellanox/mlxsw/spectrum_span.c   |  16 +++
+ .../ethernet/mellanox/mlxsw/spectrum_span.h   |   1 +
+ .../drivers/net/mlxsw/sch_red_core.sh         |  76 ++++++++++++-
+ .../drivers/net/mlxsw/sch_red_ets.sh          |  53 ++++++++-
+ 7 files changed, 220 insertions(+), 36 deletions(-)
+
+-- 
+2.31.1
+
