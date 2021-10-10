@@ -2,354 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E2F4281D5
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 16:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F6A34281E5
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 16:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233202AbhJJOZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 10:25:42 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:45416
+        id S232406AbhJJO3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 10:29:37 -0400
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:45494
         "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233030AbhJJOZd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 10:25:33 -0400
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        by vger.kernel.org with ESMTP id S232164AbhJJO3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 10:29:36 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 297BA40017
-        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 14:23:34 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8FA9940015
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 14:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633875814;
-        bh=sEh5KUYuxEm3bzH5hsUc+ps6L/VdQWx+zLSKJvPfz9w=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=VyZZtcASe1pO0P0rxz7P52CCOO7yZRO6uVw+boMSt57xIVSaPAfNu+MB1wtm3Gyu4
-         t+5AyxUWrKZB7BfhPtUgm+Elyf2JhUjuQNT0uc0i18BChkG8RJcmMc+37DIUbPu34G
-         jWhm9ctI6QBv9Q83L2EAtgmiZxXOoB5Dr70prdCb4tFDMrGg8brzIQdy12gokrp2ju
-         NmuBNbxfwGGqwuMQzDeBLRBR9FnzwbeujgY8nIZDGcRF7rsYCQ8im8CUP1GAFK4IqX
-         AteorF92Eo1imfVsX4zq+PsP2ryVzb3M0y1tMUXv3dHG0Ve25jiafwbVbSFvzyZrqr
-         6cNtVSKySkPdQ==
-Received: by mail-ed1-f69.google.com with SMTP id u23-20020a50a417000000b003db23c7e5e2so13481398edb.8
-        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 07:23:34 -0700 (PDT)
+        s=20210705; t=1633876057;
+        bh=xW+MKR8E4EzaY0k+syaHUY7byAQSWGtIq6VGpVZrt24=;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=VPLZ0dZrchKy/cmjaavMybZLRyi40NCGV7J/vVPbHidrBKr+Wiiozx0MMlqnC55bd
+         QHR+1iVGRBM8YDQSrIiQC1YpV4Zrfk4oHpuPGsC5QHWSkmczGUpNjFKnYIVuvq3WpJ
+         cMrHxst4jfWeG+HAaCphcKbZYs2pIYg4lw4E7L54n6qzwIelavTHixRgFmdyCDdYUZ
+         ZDNpTUKm0KVX2LD0qo62Ht504RPHzaB6wbxdEWgXeSesNkkt0QuwoxdyglPRjMemTx
+         bRmLWO8Gdw2Ex57tZjLNd+jJIaMQSS4NBBHjopl2OT3rruIceqHI7h2JjojH6oGRfw
+         p3dyzLvoFjVSw==
+Received: by mail-ed1-f70.google.com with SMTP id d11-20020a50cd4b000000b003da63711a8aso13409045edj.20
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 07:27:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sEh5KUYuxEm3bzH5hsUc+ps6L/VdQWx+zLSKJvPfz9w=;
-        b=QhNmMaIRWSMn2RIXJu44R3CnABw45QhFSno43yp68TVN2LydyCNREX6Z/mHVxFZtCm
-         zBWqlIm66+wZKvAOg5wJaLITMBZgYW/kVXh5f/lLXxf5RvJt/Zl0Bw8Vt6FIxTXil9US
-         hJoK6rSa/9eaB63KqDHvJMSzrPj8HmjjNpEZ03iHn03S5tpSLH+zbVO8hEyA0sL6N+CS
-         jVAlRLjVUNsLx7oYGwLJbjwFRV90HGlGU/csW2A8ypdnyboDRjgxf9rRSFM+1np1WOfD
-         nKg5aCKs3o8P3IyxUBwLnkDYutx391gunFlroTyYxNpl47un4Wo5xvb6pHjBXXDg5pIi
-         qVgA==
-X-Gm-Message-State: AOAM531F0Yrsm5xUcSTg/tQPfX44IN2gLCbjd305F+Hrl/lQHQ4ozHHg
-        FJHbwCGG3nUmyBjP8//JgCsrBTNXBIPJYCJJGehYBKGSvpVlOcI2J0oVlb03UjWIJgHBH9HW3DJ
-        TUDcEOrgiJ7dq3EPXmpoF8T7chg4PjYznCQ==
-X-Received: by 2002:a05:6402:4402:: with SMTP id y2mr24480380eda.222.1633875813782;
-        Sun, 10 Oct 2021 07:23:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzSm8Z9KjucD039kn/b+DLN9Na+qvLcx4ZvjArJNxoedCFKyLu8nt+Jwvf6H9WcO3menFHzzw==
-X-Received: by 2002:a05:6402:4402:: with SMTP id y2mr24480345eda.222.1633875813587;
-        Sun, 10 Oct 2021 07:23:33 -0700 (PDT)
-Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id 6sm2129017ejx.82.2021.10.10.07.23.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Oct 2021 07:23:33 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xW+MKR8E4EzaY0k+syaHUY7byAQSWGtIq6VGpVZrt24=;
+        b=i5PWGzZaF1fE08Mh3cuwYTPGi96KlVTKxWpngotibjqSglHpnNKzxwtIhi2OblWNN7
+         k8sZhKWKQsB/cf+Z4PFkbrchxc4QWZ9y+JoYykJXmszS90X1xhAwqasTRCLrWuwZzrup
+         GEW8JLnx1sSDmfMy04h3VvPF1FJP92JW23n26Z4ExHOihdwXFNCgeAHoUDaYPrlgrJ9+
+         G/O6JGZPcUaLRSrghHqPgU0Lsv5yLasJUGh46+wsFLyqLq1vdUgKzsc9qrzoAhHRJLgm
+         fGSRnX3C6tmsmnQazJ9hJU8tB0qgku3ZcH0v3IEOGYu+Snl+HrAy4GlME+y/WAY5fVKM
+         2CFQ==
+X-Gm-Message-State: AOAM531cH83GnRyupbKJZsEucAWk7hpdoQVxHI6gPxl21Q4ZNIqEjv90
+        0+CNP4ws4aQJTuVvQpVuK+VqAcN6TjfG/2OJKoGY7vNVZnRB8cRHayCQDjq3V8Uy1PCescuEGg0
+        L+1/RcGZsWlyLOAKx7jCbFHvQwz/SC8IaYQ==
+X-Received: by 2002:a17:906:2b82:: with SMTP id m2mr17278476ejg.122.1633876057111;
+        Sun, 10 Oct 2021 07:27:37 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyOb5sSykNnVt0L3Cfv4VoKMjjb/lVgRt7i3QyqKVJ2bc9CBmr9I9/nNU70u+GVpQvkkynwBg==
+X-Received: by 2002:a17:906:2b82:: with SMTP id m2mr17278456ejg.122.1633876056898;
+        Sun, 10 Oct 2021 07:27:36 -0700 (PDT)
+Received: from [192.168.0.20] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id v6sm2713007edc.52.2021.10.10.07.27.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Oct 2021 07:27:36 -0700 (PDT)
+Subject: Re: [PATCH v3] dt-bindings: net: nfc: nxp,pn544: Convert txt bindings
+ to yaml
+To:     David Heidelberg <david@ixit.cz>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Charles Gorand <charles.gorand@effinnov.com>,
-        Mark Greer <mgreer@animalcreek.com>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: [PATCH 7/7] dt-bindings: nfc: marvell,nfc: convert to dtschema
-Date:   Sun, 10 Oct 2021 16:23:17 +0200
-Message-Id: <20211010142317.168259-7-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211010142317.168259-1-krzysztof.kozlowski@canonical.com>
-References: <20211010142317.168259-1-krzysztof.kozlowski@canonical.com>
+        Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ~okias/devicetree@lists.sr.ht
+References: <20211009161941.41634-1-david@ixit.cz>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <5fab38bd-33fa-e0bc-5625-e972008f4c97@canonical.com>
+Date:   Sun, 10 Oct 2021 16:27:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211009161941.41634-1-david@ixit.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Marvell NCI NFC controller to DT schema format.
+On 09/10/2021 18:19, David Heidelberg wrote:
+> Convert bindings for NXP PN544 NFC driver to YAML syntax.
+> 
+> Signed-off-by: David Heidelberg <david@ixit.cz>
+> ---
+> v2
+>  - Krzysztof is a maintainer
+>  - pintctrl dropped
+>  - 4 space indent for example
+>  - nfc node name
+> v3
+>  - remove whole pinctrl
+>  .../bindings/net/nfc/nxp,pn544.yaml           | 61 +++++++++++++++++++
+>  .../devicetree/bindings/net/nfc/pn544.txt     | 33 ----------
+>  2 files changed, 61 insertions(+), 33 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/nfc/pn544.txt
+> 
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- .../bindings/net/nfc/marvell,nci.yaml         | 170 ++++++++++++++++++
- .../devicetree/bindings/net/nfc/nfcmrvl.txt   |  84 ---------
- 2 files changed, 170 insertions(+), 84 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/nfc/nfcmrvl.txt
+Rob,
 
-diff --git a/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml b/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml
-new file mode 100644
-index 000000000000..15a45db3899a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml
-@@ -0,0 +1,170 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/nfc/marvell,nci.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Marvell International Ltd. NCI NFC controller
-+
-+maintainers:
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - marvell,nfc-i2c
-+      - marvell,nfc-spi
-+      - marvell,nfc-uart
-+
-+  hci-muxed:
-+    type: boolean
-+    description: |
-+      Specifies that the chip is muxing NCI over HCI frames
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+  reset-n-io:
-+    $ref: "/schemas/types.yaml#/definitions/phandle-array"
-+    maxItems: 1
-+    description: |
-+      Output GPIO pin used to reset the chip (active low)
-+
-+  i2c-int-falling:
-+    type: boolean
-+    description: |
-+      For I2C type of connection. Specifies that the chip read event shall be
-+      trigged on falling edge.
-+
-+  i2c-int-rising:
-+    type: boolean
-+    description: |
-+      For I2C type of connection.  Specifies that the chip read event shall be
-+      trigged on rising edge.
-+
-+  break-control:
-+    type: boolean
-+    description: |
-+      For UART type of connection. Specifies that the chip needs specific break
-+      management.
-+
-+  flow-control:
-+    type: boolean
-+    description: |
-+      For UART type of connection. Specifies that the chip is using RTS/CTS.
-+
-+  spi-cpha: true
-+  spi-cpol: true
-+  spi-max-frequency: true
-+
-+required:
-+  - compatible
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: marvell,nfc-i2c
-+    then:
-+      properties:
-+        break-control: false
-+        flow-control: false
-+        spi-cpha: false
-+        spi-cpol: false
-+        spi-max-frequency: false
-+      required:
-+        - reg
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: marvell,nfc-spi
-+    then:
-+      properties:
-+        break-control: false
-+        flow-control: false
-+        i2c-int-falling: false
-+        i2c-int-rising: false
-+      required:
-+        - reg
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: marvell,nfc-uart
-+    then:
-+      properties:
-+        i2c-int-falling: false
-+        i2c-int-rising: false
-+        interrupts: false
-+        spi-cpha: false
-+        spi-cpol: false
-+        spi-max-frequency: false
-+        reg: false
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        nfc@8 {
-+            compatible = "marvell,nfc-i2c";
-+            reg = <0x8>;
-+
-+            interrupt-parent = <&gpio3>;
-+            interrupts = <21 IRQ_TYPE_EDGE_RISING>;
-+
-+            i2c-int-rising;
-+
-+            reset-n-io = <&gpio3 19 GPIO_ACTIVE_HIGH>;
-+        };
-+    };
-+
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        nfc@0 {
-+            compatible = "marvell,nfc-spi";
-+            reg = <0>;
-+
-+            spi-max-frequency = <3000000>;
-+            spi-cpha;
-+            spi-cpol;
-+
-+            interrupt-parent = <&gpio1>;
-+            interrupts = <17 IRQ_TYPE_EDGE_RISING>;
-+
-+            reset-n-io = <&gpio3 19 GPIO_ACTIVE_HIGH>;
-+        };
-+    };
-+
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    uart {
-+        nfc {
-+            compatible = "marvell,nfc-uart";
-+
-+            reset-n-io = <&gpio3 16 GPIO_ACTIVE_HIGH>;
-+
-+            hci-muxed;
-+            flow-control;
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/net/nfc/nfcmrvl.txt b/Documentation/devicetree/bindings/net/nfc/nfcmrvl.txt
-deleted file mode 100644
-index c9b35251bb20..000000000000
---- a/Documentation/devicetree/bindings/net/nfc/nfcmrvl.txt
-+++ /dev/null
-@@ -1,84 +0,0 @@
--* Marvell International Ltd. NCI NFC Controller
--
--Required properties:
--- compatible: Should be:
--  - "marvell,nfc-uart" or "mrvl,nfc-uart" for UART devices
--  - "marvell,nfc-i2c" for I2C devices
--  - "marvell,nfc-spi" for SPI devices
--
--Optional SoC specific properties:
--- pinctrl-names: Contains only one value - "default".
--- pintctrl-0: Specifies the pin control groups used for this controller.
--- reset-n-io: Output GPIO pin used to reset the chip (active low).
--- hci-muxed: Specifies that the chip is muxing NCI over HCI frames.
--
--Optional UART-based chip specific properties:
--- flow-control: Specifies that the chip is using RTS/CTS.
--- break-control: Specifies that the chip needs specific break management.
--
--Optional I2C-based chip specific properties:
--- i2c-int-falling: Specifies that the chip read event shall be trigged on
--  		   falling edge.
--- i2c-int-rising: Specifies that the chip read event shall be trigged on
--  		  rising edge.
--
--Example (for ARM-based BeagleBoard Black with 88W8887 on UART5):
--
--&uart5 {
--
--	nfcmrvluart: nfcmrvluart@5 {
--		compatible = "marvell,nfc-uart";
--
--		reset-n-io = <&gpio3 16 0>;
--
--		hci-muxed;
--		flow-control;
--        }
--};
--
--
--Example (for ARM-based BeagleBoard Black with 88W8887 on I2C1):
--
--&i2c1 {
--	clock-frequency = <400000>;
--
--	nfcmrvli2c0: i2c@1 {
--		compatible = "marvell,nfc-i2c";
--
--		reg = <0x8>;
--
--		/* I2C INT configuration */
--		interrupt-parent = <&gpio3>;
--		interrupts = <21 0>;
--
--		/* I2C INT trigger configuration */
--		i2c-int-rising;
--
--		/* Reset IO */
--		reset-n-io = <&gpio3 19 0>;
--	};
--};
--
--
--Example (for ARM-based BeagleBoard Black on SPI0):
--
--&spi0 {
--
--	mrvlnfcspi0: spi@0 {
--		compatible = "marvell,nfc-spi";
--
--		reg = <0>;
--
--		/* SPI Bus configuration */
--		spi-max-frequency = <3000000>;
--		spi-cpha;
--		spi-cpol;
--
--		/* SPI INT configuration */
--		interrupt-parent = <&gpio1>;
--		interrupts = <17 0>;
--
--		/* Reset IO */
--       		reset-n-io = <&gpio3 19 0>;
--	};
--};
--- 
-2.30.2
+The netdev folks marked patch as not-applicable, so I guess they expect
+you to pick it up.
 
+Can you take it? Similarly to my NFC bindings conversion sent this weekend:
+https://lore.kernel.org/linux-nfc/20211010142317.168259-1-krzysztof.kozlowski@canonical.com/T/#t
+
+
+Best regards,
+Krzysztof
