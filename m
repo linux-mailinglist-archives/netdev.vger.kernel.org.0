@@ -2,285 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACB7F428187
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 15:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD6764281BE
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 16:23:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232743AbhJJNan (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 09:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232035AbhJJNam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 09:30:42 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F50C061570;
-        Sun, 10 Oct 2021 06:28:43 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id w14so4551225edv.11;
-        Sun, 10 Oct 2021 06:28:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=W8OCuZic8COcAZ5bhj7thwwmwW/bma+Kr4rxUpek1qA=;
-        b=WNx0abofla6QCAgQbfMs6AtUr4DL4SjicFRdiEvlqgEtI8NUQOiDqXQ8BlwiD9grlW
-         NV4W18ls1dwVcDk5G27GhuI4X6W5PykI9MeE/mroSEV7wiG4FKMQrx95g9G5gG9moBPS
-         Dg4uRhFn9kMYIqK6Xqb28T+MHbjSq8pyHmSDRC0/3NT1lT2HcxBF4TfoMLJtrZxQJIEc
-         LJ1gpOpOfqi/IkIv6g8rtns6KCyXm8p2PzGJDwjVkQ19QcRpHHVDfGGQ+osbVc2JJZva
-         0+ewzyG1LO9ixvOEXSW4yXLLRZyBaTYw8u3BwT4H0Yo4N9o1qIsiO9pjkPJ5BnJSF4sN
-         WUuA==
+        id S232917AbhJJOZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 10:25:26 -0400
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:45286
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231846AbhJJOZZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 10:25:25 -0400
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 688E140012
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 14:23:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1633875806;
+        bh=GFOKzNYALQa+608FIQZ/in0rfsEAI0+jCScuqGun71I=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=RKHCHLE4VlJGcf4P3HX9IK1O4Dy62hZqsal5DFYo3/OxKAgwHl6gRF3vWTDUMwClM
+         ZwYhyJTUWtJpDKgtVMNOSmh28qgwqqoWAe0IbYZo4mrlU/ckhVewDqZ5ii0sPr41dc
+         QMLoMnyDGHcn8Xns3I7CDWGTu/+wcAnNWmQTADhOadWW7/wcxpr83rctXRJlm9kIcU
+         fKStQLVt8YCbv+Sx2fQgbSX4f+rrauMXQ4Fy73o/3+EQeDk1l4M9FIc7AQmpRwyYXr
+         6UwFMwaasc/e840vqZg0u28ekDfRtHV2fsO23XZ1CNAHx7Ikz1TCmLkUPhuKT36xbN
+         2uydcxSgIPF5w==
+Received: by mail-ed1-f71.google.com with SMTP id 2-20020a508e02000000b003d871759f5dso13446746edw.10
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 07:23:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=W8OCuZic8COcAZ5bhj7thwwmwW/bma+Kr4rxUpek1qA=;
-        b=kse/PEUueiQrU27Z/TkQXNQ3kZkqEVCUZJG2ddtCmZEb3ykGYKorPdQU1QxfjycAXC
-         Q4cYRmJv8M1mnMnaHhbSWglmyUrYOTBjdUwEctrfxEvmA5M/3ureycJix/JCHhlfl8gn
-         4+NddOuFhFXwQmKv73kIRZriZgTbG6qTUiCOTRjdque/xDreN1zEi/CB4tLi1BUskAtU
-         /P2bqaTOJbg+JpV2tbdaDyt+4ONvd589zc/VZFO0dAF25V8YXCFyevmG84KnrnFiJUPw
-         2B5eQD09BVRDZW0Azzunrho78irHP3wk4ey8RXb/g31sASuznDp7fr7tV87m3cMNiObT
-         5FLQ==
-X-Gm-Message-State: AOAM532LMaVG2EyNH+M/1m6sJcTEOhuy17jWZX41kf64n2AL9Xk8PRpj
-        miQHDGU6txHPlORBcpCf5lw=
-X-Google-Smtp-Source: ABdhPJxLWTND8d3ftTkpGjiQ4QrLW7ElIxAyiaOl4pp2Y8cBYhPD5EVYnSpXBmwIdkJtbWgZxPsncw==
-X-Received: by 2002:aa7:c6d4:: with SMTP id b20mr11055062eds.270.1633872520870;
-        Sun, 10 Oct 2021 06:28:40 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id m9sm2542749edl.66.2021.10.10.06.28.40
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GFOKzNYALQa+608FIQZ/in0rfsEAI0+jCScuqGun71I=;
+        b=f0GQeHtajuhXrNMBjEJxeGcQdejJIRPO/Wz4XtH2S+reswgHwqAqbEGMCzOIi2Vz0r
+         tAu+58tdAd4jMMWerqbX9VTF/VxuljmdhbQAuYQfIRBWK986n0daY3zFWZo//QaFIRd0
+         vaZ+YZxlvKDiC/Rq8x5pyS4P4xM9TQtkdm4m5V4SYEbaHi8w684pwJ+Izy5wg7zIwk0+
+         Gc5G3RQQQoTYfvZfvoc8CKj6NJjNXgGy6CdDfiUSfBbZrGICjpGqgUXWfQbDFeTrY14A
+         LvDM8kkSZUvKw7Xj6gqzYk8rEQ+1/DYtR4AaQhe4HL9PJ8aXq9cIyHqxc3M3f2BJLdJY
+         MHtw==
+X-Gm-Message-State: AOAM530EMMAVXkB9mCUGhvKi5bVP3THrEuk3uDvYAvrOoZeF66JEoFXJ
+        0HakMeXY4yWO0objucRoz3VFGvuyctREd/rbQtzns0RuLX215ciK0u1gpOWOHSNSbKyTP2HkW2V
+        dmpab1omwdFrtR+HfhjKgHm0l4iPuaB0kAQ==
+X-Received: by 2002:a17:906:4452:: with SMTP id i18mr18335289ejp.374.1633875805953;
+        Sun, 10 Oct 2021 07:23:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx94bZ2ipwW70tBjgvzGZ79+303zLFR8lQVDmyzo0Dkcvx/qGXoXfyUNj77BL8MoxAU7lKhuQ==
+X-Received: by 2002:a17:906:4452:: with SMTP id i18mr18335272ejp.374.1633875805770;
+        Sun, 10 Oct 2021 07:23:25 -0700 (PDT)
+Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id 6sm2129017ejx.82.2021.10.10.07.23.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Oct 2021 06:28:40 -0700 (PDT)
-Date:   Sun, 10 Oct 2021 15:28:39 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Sun, 10 Oct 2021 07:23:25 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v4 06/13] net: dsa: qca8k: move rgmii delay
- detection to phylink mac_config
-Message-ID: <YWLqh2X0lVwiDMCn@Ansuel-xps.localdomain>
-References: <20211010111556.30447-1-ansuelsmth@gmail.com>
- <20211010111556.30447-7-ansuelsmth@gmail.com>
- <20211010124732.fageoraoweqqfoew@skbuf>
+        Charles Gorand <charles.gorand@effinnov.com>,
+        Mark Greer <mgreer@animalcreek.com>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: [PATCH 1/7] dt-bindings: nfc: nxp,nci: convert to dtschema
+Date:   Sun, 10 Oct 2021 16:23:11 +0200
+Message-Id: <20211010142317.168259-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211010124732.fageoraoweqqfoew@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 10, 2021 at 03:47:32PM +0300, Vladimir Oltean wrote:
-> On Sun, Oct 10, 2021 at 01:15:49PM +0200, Ansuel Smith wrote:
-> > Future proof commit. This switch have 2 CPU port and one valid
-> > configuration is first CPU port set to sgmii and second CPU port set to
-> > regmii-id. The current implementation detects delay only for CPU port
-> > zero set to rgmii and doesn't count any delay set in a secondary CPU
-> > port. Drop the current delay scan function and move it to the phylink
-> > mac_config to generilize and implicitly add support for secondary CPU
-> > port set to rgmii-id.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> >  drivers/net/dsa/qca8k.c | 121 +++++++++++++++-------------------------
-> >  drivers/net/dsa/qca8k.h |   2 -
-> >  2 files changed, 44 insertions(+), 79 deletions(-)
-> > 
-> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> > index df0a622acdd7..126f20b0b94c 100644
-> > --- a/drivers/net/dsa/qca8k.c
-> > +++ b/drivers/net/dsa/qca8k.c
-> > @@ -888,68 +888,6 @@ qca8k_setup_mdio_bus(struct qca8k_priv *priv)
-> >  	return 0;
-> >  }
-> >  
-> > -static int
-> > -qca8k_setup_of_rgmii_delay(struct qca8k_priv *priv)
-> 
-> I was actually going to say that since RGMII delays are runtime
-> invariants, you should move their entire programming to probe time, now
-> you move device tree parsing to runtime :-/
-> 
+Convert the NXP NCI NFC controller to DT schema format.
 
-The main idea here was to move everything to mac config and scan the DT
-node of the current port that is being configured. 
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ .../devicetree/bindings/net/nfc/nxp,nci.yaml  | 61 +++++++++++++++++++
+ .../devicetree/bindings/net/nfc/nxp-nci.txt   | 33 ----------
+ MAINTAINERS                                   |  1 +
+ 3 files changed, 62 insertions(+), 33 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/nxp,nci.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
 
-> > -{
-> > -	struct device_node *port_dn;
-> > -	phy_interface_t mode;
-> > -	struct dsa_port *dp;
-> > -	u32 val;
-> > -
-> > -	/* CPU port is already checked */
-> > -	dp = dsa_to_port(priv->ds, 0);
-> > -
-> > -	port_dn = dp->dn;
-> > -
-> > -	/* Check if port 0 is set to the correct type */
-> > -	of_get_phy_mode(port_dn, &mode);
-> > -	if (mode != PHY_INTERFACE_MODE_RGMII_ID &&
-> > -	    mode != PHY_INTERFACE_MODE_RGMII_RXID &&
-> > -	    mode != PHY_INTERFACE_MODE_RGMII_TXID) {
-> > -		return 0;
-> > -	}
-> > -
-> > -	switch (mode) {
-> > -	case PHY_INTERFACE_MODE_RGMII_ID:
-> > -	case PHY_INTERFACE_MODE_RGMII_RXID:
-> 
-> Also, since you touch this area.
-> There have been tons of discussions on this topic, but I believe that
-> your interpretation of the RGMII delays is wrong.
-> Basically a MAC should not apply delays based on the phy-mode string (so
-> it should treat "rgmii" same as "rgmii-id"), but based on the value of
-> "rx-internal-delay-ps" and "tx-internal-delay-ps".
-> The phy-mode is for a PHY to use.
->
-
-Ok so we can just drop the case and directly check for the
-internal-delay-ps presence?
-
-> > -		if (of_property_read_u32(port_dn, "rx-internal-delay-ps", &val))
-> > -			val = 2;
-> > -		else
-> > -			/* Switch regs accept value in ns, convert ps to ns */
-> > -			val = val / 1000;
-> > -
-> > -		if (val > QCA8K_MAX_DELAY) {
-> > -			dev_err(priv->dev, "rgmii rx delay is limited to a max value of 3ns, setting to the max value");
-> > -			val = 3;
-> > -		}
-> > -
-> > -		priv->rgmii_rx_delay = val;
-> > -		/* Stop here if we need to check only for rx delay */
-> > -		if (mode != PHY_INTERFACE_MODE_RGMII_ID)
-> > -			break;
-> > -
-> > -		fallthrough;
-> > -	case PHY_INTERFACE_MODE_RGMII_TXID:
-> > -		if (of_property_read_u32(port_dn, "tx-internal-delay-ps", &val))
-> > -			val = 1;
-> > -		else
-> > -			/* Switch regs accept value in ns, convert ps to ns */
-> > -			val = val / 1000;
-> > -
-> > -		if (val > QCA8K_MAX_DELAY) {
-> > -			dev_err(priv->dev, "rgmii tx delay is limited to a max value of 3ns, setting to the max value");
-> > -			val = 3;
-> > -		}
-> > -
-> > -		priv->rgmii_tx_delay = val;
-> > -		break;
-> > -	default:
-> > -		return 0;
-> > -	}
-> > -
-> > -	return 0;
-> > -}
-> > -
-> >  static int
-> >  qca8k_setup_mac_pwr_sel(struct qca8k_priv *priv)
-> >  {
-> > @@ -1019,10 +957,6 @@ qca8k_setup(struct dsa_switch *ds)
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > -	ret = qca8k_setup_of_rgmii_delay(priv);
-> > -	if (ret)
-> > -		return ret;
-> > -
-> >  	ret = qca8k_setup_mac_pwr_sel(priv);
-> >  	if (ret)
-> >  		return ret;
-> > @@ -1190,7 +1124,7 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
-> >  {
-> >  	struct qca8k_priv *priv = ds->priv;
-> >  	struct dsa_port *dp;
-> > -	u32 reg, val;
-> > +	u32 reg, val, delay;
-> >  	int ret;
-> >  
-> >  	switch (port) {
-> > @@ -1241,17 +1175,50 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
-> >  	case PHY_INTERFACE_MODE_RGMII_ID:
-> >  	case PHY_INTERFACE_MODE_RGMII_TXID:
-> >  	case PHY_INTERFACE_MODE_RGMII_RXID:
-> > -		/* RGMII_ID needs internal delay. This is enabled through
-> > -		 * PORT5_PAD_CTRL for all ports, rather than individual port
-> > -		 * registers
-> > +		dp = dsa_to_port(ds, port);
-> > +		val = QCA8K_PORT_PAD_RGMII_EN;
-> > +
-> > +		if (state->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> > +		    state->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
-> > +			if (of_property_read_u32(dp->dn, "tx-internal-delay-ps", &delay))
-> > +				delay = 1;
-> > +			else
-> > +				/* Switch regs accept value in ns, convert ps to ns */
-> > +				delay = delay / 1000;
-> > +
-> > +			if (delay > QCA8K_MAX_DELAY) {
-> > +				dev_err(priv->dev, "rgmii tx delay is limited to a max value of 3ns, setting to the max value");
-> > +				delay = 3;
-> > +			}
-> > +
-> > +			val |= QCA8K_PORT_PAD_RGMII_TX_DELAY(delay) |
-> > +			       QCA8K_PORT_PAD_RGMII_TX_DELAY_EN;
-> > +		}
-> > +
-> > +		if (state->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> > +		    state->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
-> > +			if (of_property_read_u32(dp->dn, "rx-internal-delay-ps", &delay))
-> > +				delay = 2;
-> > +			else
-> > +				/* Switch regs accept value in ns, convert ps to ns */
-> > +				delay = delay / 1000;
-> > +
-> > +			if (delay > QCA8K_MAX_DELAY) {
-> > +				dev_err(priv->dev, "rgmii rx delay is limited to a max value of 3ns, setting to the max value");
-> > +				delay = 3;
-> > +			}
-> > +
-> > +			val |= QCA8K_PORT_PAD_RGMII_RX_DELAY(delay) |
-> > +			       QCA8K_PORT_PAD_RGMII_RX_DELAY_EN;
-> > +		}
-> > +
-> > +		/* Set RGMII delay based on the selected values */
-> > +		qca8k_write(priv, reg, val);
-> > +
-> > +		/* QCA8337 requires to set rgmii rx delay for all ports.
-> > +		 * This is enabled through PORT5_PAD_CTRL for all ports,
-> > +		 * rather than individual port registers.
-> >  		 */
-> > -		qca8k_write(priv, reg,
-> > -			    QCA8K_PORT_PAD_RGMII_EN |
-> > -			    QCA8K_PORT_PAD_RGMII_TX_DELAY(priv->rgmii_tx_delay) |
-> > -			    QCA8K_PORT_PAD_RGMII_RX_DELAY(priv->rgmii_rx_delay) |
-> > -			    QCA8K_PORT_PAD_RGMII_TX_DELAY_EN |
-> > -			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
-> > -		/* QCA8337 requires to set rgmii rx delay */
-> >  		if (priv->switch_id == QCA8K_ID_QCA8337)
-> >  			qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
-> >  				    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
-> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-> > index 5df0f0ef6526..a790b27bc310 100644
-> > --- a/drivers/net/dsa/qca8k.h
-> > +++ b/drivers/net/dsa/qca8k.h
-> > @@ -259,8 +259,6 @@ struct qca8k_match_data {
-> >  struct qca8k_priv {
-> >  	u8 switch_id;
-> >  	u8 switch_revision;
-> > -	u8 rgmii_tx_delay;
-> > -	u8 rgmii_rx_delay;
-> >  	bool legacy_phy_port_mapping;
-> >  	struct regmap *regmap;
-> >  	struct mii_bus *bus;
-> > -- 
-> > 2.32.0
-> > 
-> 
-
+diff --git a/Documentation/devicetree/bindings/net/nfc/nxp,nci.yaml b/Documentation/devicetree/bindings/net/nfc/nxp,nci.yaml
+new file mode 100644
+index 000000000000..f84e69775eb5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/nfc/nxp,nci.yaml
+@@ -0,0 +1,61 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/nfc/nxp,nci.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NXP Semiconductors NCI NFC controller
++
++maintainers:
++  - Charles Gorand <charles.gorand@effinnov.com>
++  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
++
++properties:
++  compatible:
++    const: nxp,nxp-nci-i2c
++
++  clock-frequency: true
++
++  enable-gpios:
++    description: Output GPIO pin used for enabling/disabling the controller
++
++  firmware-gpios:
++    description: Output GPIO pin used to enter firmware download mode
++
++  interrupts:
++    maxItems: 1
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - clock-frequency
++  - enable-gpios
++  - interrupts
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        nfc@29 {
++            compatible = "nxp,nxp-nci-i2c";
++
++            reg = <0x29>;
++            clock-frequency = <100000>;
++
++            interrupt-parent = <&gpio1>;
++            interrupts = <29 IRQ_TYPE_LEVEL_HIGH>;
++
++            enable-gpios = <&gpio0 30 GPIO_ACTIVE_HIGH>;
++            firmware-gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
++        };
++    };
+diff --git a/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt b/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
+deleted file mode 100644
+index 285a37c2f189..000000000000
+--- a/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
++++ /dev/null
+@@ -1,33 +0,0 @@
+-* NXP Semiconductors NXP NCI NFC Controllers
+-
+-Required properties:
+-- compatible: Should be "nxp,nxp-nci-i2c".
+-- clock-frequency: I²C work frequency.
+-- reg: address on the bus
+-- interrupts: GPIO interrupt to which the chip is connected
+-- enable-gpios: Output GPIO pin used for enabling/disabling the chip
+-
+-Optional SoC Specific Properties:
+-- pinctrl-names: Contains only one value - "default".
+-- pintctrl-0: Specifies the pin control groups used for this controller.
+-- firmware-gpios: Output GPIO pin used to enter firmware download mode
+-
+-Example (for ARM-based BeagleBone with NPC100 NFC controller on I2C2):
+-
+-&i2c2 {
+-
+-
+-	npc100: npc100@29 {
+-
+-		compatible = "nxp,nxp-nci-i2c";
+-
+-		reg = <0x29>;
+-		clock-frequency = <100000>;
+-
+-		interrupt-parent = <&gpio1>;
+-		interrupts = <29 IRQ_TYPE_LEVEL_HIGH>;
+-
+-		enable-gpios = <&gpio0 30 GPIO_ACTIVE_HIGH>;
+-		firmware-gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
+-	};
+-};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7cfd63ce7122..3294aaf5e56c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13632,6 +13632,7 @@ NXP-NCI NFC DRIVER
+ R:	Charles Gorand <charles.gorand@effinnov.com>
+ L:	linux-nfc@lists.01.org (subscribers-only)
+ S:	Supported
++F:	Documentation/devicetree/bindings/net/nfc/nxp,nci.yaml
+ F:	drivers/nfc/nxp-nci
+ 
+ NXP i.MX 8QXP/8QM JPEG V4L2 DRIVER
 -- 
-	Ansuel
+2.30.2
+
