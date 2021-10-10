@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BB25428399
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 22:53:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4781C4283A5
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 22:59:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232935AbhJJUy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 16:54:58 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:49132
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231181AbhJJUy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 16:54:58 -0400
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        id S230355AbhJJVBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 17:01:04 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:35684
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233005AbhJJVBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 17:01:01 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 762FD40011
-        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 20:52:58 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 9698F3F338
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 20:59:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633899178;
-        bh=VUoZvUcEz5W61r6JJ0vnYx7Iv2cJ136M8cBt3vNkKRo=;
+        s=20210705; t=1633899541;
+        bh=vbA6KQmT88TPosyqyyvRSbT6u/s6NWq+qTxHMzpWCdA=;
         h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
          In-Reply-To:Content-Type;
-        b=Cg6GwNaIpXwBsjoB2F2R5WeCYlJG/1vXNWTvJjDwvb401T8dudGZIiZ6AJKwmhvcW
-         /WxPq4qGvcFzqPXCSStGIlh/8avTGjkhoCTuTCirk/a02BOKESLkUicK1ssuk+4+8/
-         2LkLhjnrPcajpYOHpOpeg2NmbfN94M8WxGnnfgUXw5JwJRzGTrRXa5he+v0lMT4QNn
-         0M4AHLCp1AW35YVwqgHRH9mE3x17hbCbhpAozLD4k72pop/Y/P8WIfl3r8UAmOwXly
-         jvr624nYId3tlIApY95NN7y7VrLDIi/yigCILsUmfMnHxyA7zzafW+ENwlFbDd0KUX
-         tbF6vwg8Ak6mg==
-Received: by mail-ed1-f72.google.com with SMTP id u24-20020aa7db98000000b003db57b1688aso8546828edt.6
-        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 13:52:58 -0700 (PDT)
+        b=aafMjLiidKOfsoeaHM20W+8ZulnVY8h64S3f2lL0Tno1x5kCfuGvMWH3BUYRAM+t7
+         NXmC7wXvSoh8XdQ33xM4nOD12sSM7Ej1sfMpQ4xNUmOTqVjn3LiFM3xljxa7G1PVle
+         MLacPZYnipHWZY65L+IhVDSegidceVU1uQlBvT9/Xl1E4iS1vXJBlvfyMgAhRVIqi0
+         IChraGyGK0wMiLfMZbzJOI2ioEDP6YqlV6TT+2WedGkk5VEZcuIl6LDU+ICtL4eu9w
+         lafKR3Xto5h0HnWLl6gNrBf6mufPBAlwPraDSdK3NOA008yccTM3/7f+2LePYvh7O3
+         I5rBP990MTXWw==
+Received: by mail-ed1-f70.google.com with SMTP id 2-20020a508e02000000b003d871759f5dso13918999edw.10
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 13:59:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=VUoZvUcEz5W61r6JJ0vnYx7Iv2cJ136M8cBt3vNkKRo=;
-        b=OURMCCfcX2R/Myb3u10eOwg6mL2/V2LqGqExYXU4oVHSUXZzubMovmoVv5UN7gDMkl
-         4FvPJNCv0UYsCf4us3Y6Xcztgl+mxmqLL7xo3/GEdrBOne/Ljps6v63iQLy+LM952K/U
-         rFGhOEIaHaTsDy2V5fD3KoMEJ7eT6yidJ3Dhzm5Bw3JI4oadtcSd/pYGzN7CT4gCU7Rn
-         aPdpYsXMQ4wCno+df+7+3bzx3DuIkbF5ZfxJzoSMWr1P0ac4u8Xfn5Dv9JYrYrbaXkeu
-         ca9qmqkBeBp3fFJTdegJ43TaAgnTVf5+9WAoo24bRMOAGe0oyusbfXmLsHDYSaoTgkpS
-         4y1A==
-X-Gm-Message-State: AOAM53282DadlvCp6VQcsAnaTukOLM7LSxWgSv2Zw/r8G+k0XIzeJyQR
-        7lfhCkbD7T5jOu74Cs47iGiw/1S2Y3bkN6kBxy1B4dYyK4h3Ik9ge5wc8MFpfmDOcEztvxQeGz7
-        LV9zWwi5cHaBIKndRR1Z15N1MUlQz3GHJGg==
-X-Received: by 2002:a17:906:d0c3:: with SMTP id bq3mr21252749ejb.277.1633899178188;
-        Sun, 10 Oct 2021 13:52:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzUsaX5GVNNhedfg3aGctYY89+Bp8z44cavbVqI0d3fIzvOES2m0gz5xMXHfGP+pcKi3YgXYA==
-X-Received: by 2002:a17:906:d0c3:: with SMTP id bq3mr21252732ejb.277.1633899178038;
-        Sun, 10 Oct 2021 13:52:58 -0700 (PDT)
+        bh=vbA6KQmT88TPosyqyyvRSbT6u/s6NWq+qTxHMzpWCdA=;
+        b=KIL3kbcA5feJXCAJp3A3zOlqzswyUwreImm1DlnAlvNR1uML061DA+SyRrT9QfHWPg
+         y03EbTZhHopaWmIPB8J0lfPTQ4Fj3GlXHj3je/6tXrJUectuvqnkjavncIOcZIfqAQPo
+         d+oxs9qpIXjbb08BMxDhHETvcVogXCJulyKe3oDLN/T+3UGJYnTt5V4scWYN+BUKoWek
+         HW1bRrRbjC7rQFOyTMsrnYICH1j9yWmSKKZbsuVKOEEYpnSfIz8r4+lASbfR2/c+4Fv7
+         crfy1PpiHnyDNNEZbLNOOFW/dxPiqPoAGpTovJqnr+tUfM+wa+EYB0ELKjlj4PRX6CLq
+         gPKQ==
+X-Gm-Message-State: AOAM533fX/Mh+oYWutSq/wuEdo8f18O8ZXlLjyBLpccwEfdKX/6dwHWK
+        LVS3ru12P7J/GacfLTxA40hRRv8OBlxPKNOaBsYcv1Gc1dqrn+uG5rGrbTlL53SDCs7hYeyauqW
+        w/uA/Tphsg0YQIsXIAevc/glnqbnaEyURag==
+X-Received: by 2002:a05:6402:1941:: with SMTP id f1mr8554633edz.3.1633899541310;
+        Sun, 10 Oct 2021 13:59:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyFdhFoFHiozNsDRv0hkz318JVGkZTHVd/QS3nQ6sTbPFwP2FFLCChwQCYgJKHsOaeft+JO3g==
+X-Received: by 2002:a05:6402:1941:: with SMTP id f1mr8554606edz.3.1633899541074;
+        Sun, 10 Oct 2021 13:59:01 -0700 (PDT)
 Received: from [192.168.0.20] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id w2sm3061619edj.44.2021.10.10.13.52.56
+        by smtp.gmail.com with ESMTPSA id fx4sm2495638ejb.113.2021.10.10.13.58.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Oct 2021 13:52:57 -0700 (PDT)
+        Sun, 10 Oct 2021 13:59:00 -0700 (PDT)
 Subject: Re: [PATCH 1/7] dt-bindings: nfc: nxp,nci: convert to dtschema
 To:     Rob Herring <robh@kernel.org>
 Cc:     linux-nfc@lists.01.org, devicetree@vger.kernel.org,
@@ -66,8 +66,8 @@ Cc:     linux-nfc@lists.01.org, devicetree@vger.kernel.org,
 References: <20211010142317.168259-1-krzysztof.kozlowski@canonical.com>
  <1633894316.441793.3158669.nullmailer@robh.at.kernel.org>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <0e26d0e6-9468-63b5-a357-af4c4e7ec677@canonical.com>
-Date:   Sun, 10 Oct 2021 22:52:56 +0200
+Message-ID: <f955726a-eb2d-7b3e-9c5f-978358710eb6@canonical.com>
+Date:   Sun, 10 Oct 2021 22:58:59 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
@@ -106,30 +106,14 @@ On 10/10/2021 21:31, Rob Herring wrote:
 > nfc@28: 'clock-frequency' is a required property
 > 	arch/arm64/boot/dts/qcom/msm8916-huawei-g7.dt.yaml
 > 
-> nfc@28: compatible:0: 'nxp,nxp-nci-i2c' was expected
-> 	arch/arm64/boot/dts/qcom/msm8916-huawei-g7.dt.yaml
-> 
-> nfc@28: compatible: Additional items are not allowed ('nxp,nxp-nci-i2c' was unexpected)
-> 	arch/arm64/boot/dts/qcom/msm8916-huawei-g7.dt.yaml
-> 
-> nfc@28: compatible: ['nxp,pn547', 'nxp,nxp-nci-i2c'] is too long
-> 	arch/arm64/boot/dts/qcom/msm8916-huawei-g7.dt.yaml
-> 
-> nfc@30: 'clock-frequency' is a required property
-> 	arch/arm/boot/dts/ste-ux500-samsung-janice.dt.yaml
-> 
-> nfc@30: compatible:0: 'nxp,nxp-nci-i2c' was expected
-> 	arch/arm/boot/dts/ste-ux500-samsung-janice.dt.yaml
-> 
-> nfc@30: compatible: Additional items are not allowed ('nxp,nxp-nci-i2c' was unexpected)
-> 	arch/arm/boot/dts/ste-ux500-samsung-janice.dt.yaml
-> 
-> nfc@30: compatible: ['nxp,pn547', 'nxp,nxp-nci-i2c'] is too long
-> 	arch/arm/boot/dts/ste-ux500-samsung-janice.dt.yaml
-> 
 
-I missed that new compatible. I'll send a patch adding nxp,nxp-nci-i2c
-and try to fix the DTS (missing clock-frequency).
+Hmm, this actually looks as mistake in bindings. First, clock-frequency
+is a property of a I2C bus, not I2C child device. Second, it should not
+be a required property anyway, as I2C will choose a default one matching
+driver (e.g. standard speed of 100 kHz).
+
+Except the trf7970a NFC driver, none of other NFC drivers parse the
+clock-frequency.
 
 Best regards,
 Krzysztof
