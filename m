@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37F7D428087
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 12:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 122B6428095
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 12:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbhJJKmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 06:42:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54398 "EHLO mail.kernel.org"
+        id S231773AbhJJKwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 06:52:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57770 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231609AbhJJKmF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 Oct 2021 06:42:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 035B961054;
-        Sun, 10 Oct 2021 10:40:06 +0000 (UTC)
+        id S231749AbhJJKwd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 Oct 2021 06:52:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3E80560F55;
+        Sun, 10 Oct 2021 10:50:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633862407;
-        bh=NWz8SStrzap85knxX/CeBbT4xNkDVgh9YlBq/EdPtuI=;
+        s=k20201202; t=1633863035;
+        bh=nDdiWpMj1LSCIN1GhRKIlLlwszMtNWYOOLj8t98unQY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HXdZca8eulzXZaXmW1Ne4woej2qKT9TGNgDANxaZ/0QeLjCBt5ylfC4RftL4bEV7T
-         Z9SPzqPFXgMUHyt4FXekqNI9qE57oMAm6j+BPdgWtHrndDC6hL3gF3+QovUq2CC1cO
-         5ucZWNXj4DxzzcgOZPnBJ8j4NKrBbNSx+nzUB5B6k1/Yq536eieLRCLf27BsecwIui
-         ZK8Pl9SONk1hSYyz65Orc24qNLvjb0VDgJmWrliZn6kI08iQVl+yrJCuM6rOmm50KS
-         4dZ35aE7rvmRXvfCESiXbxkZvfYvTmEFMJsvBUGaeTVzFGruBuRYQsTSVsL3bAxLl8
-         WnS+usDx475+w==
+        b=YluI2Xt8A+Ke13X/+iEZRIClc6PnEZjF8i2PpvB5h6hSzn5ppJZVrUe62/QWtrtc3
+         YT9Cgme+JtKualzYULGAmirozDENamAVKl4rrYW76lPt5kMU8LImjHBsdZqJixLNb2
+         0wDtEhhw2HFNwzfQm3GQaLP519uhCod5l4r7ctD4h/toXqh6YrvP4dtLKIa1uIEGcC
+         KarmAgHpx0XOngUBF1Rz41cMAyIxIuMRb/uBeQojRl50uGeUO4rPNOdxtixwmJlj4C
+         eNUa7E083oNjexBY+mF17EQA8a/IbYST8uzLrS+yBGziPN71wZGZhnQBweNx1t9raP
+         zdfiaPjbdX0dg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E5F0A609EF;
-        Sun, 10 Oct 2021 10:40:06 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3289C60A88;
+        Sun, 10 Oct 2021 10:50:35 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH][net-next] virtio_net: skip RCU read lock by checking
- xdp_enabled of vi
+Subject: Re: [net-next PATCH v3] octeontx2-pf: Simplify the receive buffer size
+ calculation
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163386240693.21532.10618861075698217422.git-patchwork-notify@kernel.org>
-Date:   Sun, 10 Oct 2021 10:40:06 +0000
-References: <1633771963-6746-1-git-send-email-lirongqing@baidu.com>
-In-Reply-To: <1633771963-6746-1-git-send-email-lirongqing@baidu.com>
-To:     Li RongQing <lirongqing@baidu.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
+Message-Id: <163386303520.26784.12387913598003600006.git-patchwork-notify@kernel.org>
+Date:   Sun, 10 Oct 2021 10:50:35 +0000
+References: <1633860575-7001-1-git-send-email-sbhatta@marvell.com>
+In-Reply-To: <1633860575-7001-1-git-send-email-sbhatta@marvell.com>
+To:     Subbaraya Sundeep <sbhatta@marvell.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sgoutham@marvell.com, hkelam@marvell.com, gakula@marvell.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +48,23 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sat,  9 Oct 2021 17:32:43 +0800 you wrote:
-> networking benchmark shows that __rcu_read_lock and
-> __rcu_read_unlock takes some cpu cycles, and we can avoid
-> calling them partially in virtio rx path by check xdp_enabled
-> of vi, and xdp is disabled most of time
-> 
-> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+On Sun, 10 Oct 2021 15:39:35 +0530 you wrote:
+> This patch separates the logic of configuring hardware
+> maximum transmit frame size and receive frame size.
+> This simplifies the logic to calculate receive buffer
+> size and using cqe descriptor of different size.
+> Also additional size of skb_shared_info structure is
+> allocated for each receive buffer pointer given to
+> hardware which is not necessary. Hence change the
+> size calculation to remove the size of
+> skb_shared_info. Add a check for array out of
+> bounds while adding fragments to the network stack.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] virtio_net: skip RCU read lock by checking xdp_enabled of vi
-    https://git.kernel.org/netdev/net-next/c/6213f07cb542
+  - [net-next,v3] octeontx2-pf: Simplify the receive buffer size calculation
+    https://git.kernel.org/netdev/net-next/c/0182d0788cd6
 
 You are awesome, thank you!
 --
