@@ -2,124 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CF0942825B
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 17:53:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB5894282A0
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 19:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232747AbhJJPzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 11:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52860 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231842AbhJJPza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 11:55:30 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7347EC061570;
-        Sun, 10 Oct 2021 08:53:31 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id t16so35404409eds.9;
-        Sun, 10 Oct 2021 08:53:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hJMfPYSgtaDByZ//vLPk6A+gvfN7xfuU62fiTIBCntM=;
-        b=A5TeKpIaF6qPWkt1c9FqlOY21mSJazz+N0HVwVyG9XG5tWE2vW15ky9Gh2axmIUPGz
-         TlPDbzbYimmck7BdI5Ui8ZhDsMekLIaSaPYsfveFsARiWPxgh3bjC+PRlV7j4tTDOaTz
-         nuOxR0LPIfgtUqua5bX6mKqheejuhMrZynZ/cKNQrkTs5PRCp3bYTuzIWRws7fIJi6xi
-         vrVJXQynI0hTeHjXNgmzfzyZLRO21+/SthsCiB2htLwl6ecaP1jMkOoVKO+wLw1o562x
-         kornRxfj0YD6QN29Almqf8uHLTjMiDzskjco1CaXkNFZu4T1y33Ze+l6QA0+NdEzwu2N
-         8hvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hJMfPYSgtaDByZ//vLPk6A+gvfN7xfuU62fiTIBCntM=;
-        b=Hu7Cs1s5PN7ndwhR2rvXnpGHg4LfaEHtIIvWquqk7STTeNJub6MIyowKsdk7p4wSv5
-         Nc4LCeJcSkIQbdxpm6FxUdrIM7LKARwZt8V+GAgJJd2DNONq6oWW1c0Pb3NMapAH30zA
-         SX+EXgHAELa+euQZ+nKCSE19bf6hppGcWUktIpZ+MZrHKFbFkobLpP9JWzfGR7zYjczj
-         jk2B89E6etKFtF4m9po0948NV/+dVf0AW73VCYEiD0mu6CcArhnoMKDtQi6AJxvuv7Pv
-         FWj7kGg8pangeAu4F6SmCV8DtGSr2Bp7stex1Bfv7CbfNZagLXN6NrlKuGOY1A4hKSHC
-         ezSg==
-X-Gm-Message-State: AOAM532N+P8ANN9/0CJHhkK/XaHXSThViH/Svf2L0GPpAQSVhpT0so90
-        3r5FlR8Q5swE5AnG0eL4Dwk=
-X-Google-Smtp-Source: ABdhPJy9ygC7KHEDjv1jGue3/D0SbPWbXAmBcTiXwaHr4TzTuB7enRoZ0n49vxIBrvPAm09rsbpqFA==
-X-Received: by 2002:a17:906:1e43:: with SMTP id i3mr19115138ejj.313.1633881209807;
-        Sun, 10 Oct 2021 08:53:29 -0700 (PDT)
-Received: from skbuf ([188.26.53.217])
-        by smtp.gmail.com with ESMTPSA id r1sm2735288edp.56.2021.10.10.08.53.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Oct 2021 08:53:29 -0700 (PDT)
-Date:   Sun, 10 Oct 2021 18:53:28 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S231549AbhJJR0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 13:26:11 -0400
+Received: from mxout04.lancloud.ru ([45.84.86.114]:35058 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229872AbhJJR0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 13:26:10 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 111BD20981A5
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH net-next v2 13/14] ravb: Update EMAC configuration mode
+ comment
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v4 06/13] net: dsa: qca8k: move rgmii delay
- detection to phylink mac_config
-Message-ID: <20211010155328.zwhs2vpdpddazcmq@skbuf>
-References: <20211010111556.30447-1-ansuelsmth@gmail.com>
- <20211010111556.30447-7-ansuelsmth@gmail.com>
- <20211010124732.fageoraoweqqfoew@skbuf>
- <YWMEOLueatMCTS2Z@lunn.ch>
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211010072920.20706-1-biju.das.jz@bp.renesas.com>
+ <20211010072920.20706-14-biju.das.jz@bp.renesas.com>
+ <8c6496db-8b91-8fb8-eb01-d35807694149@gmail.com>
+ <OS0PR01MB5922109B263B7FDBB02E33B986B49@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <57dbab90-6f2c-40f5-2b73-43c1ee2c6e06@gmail.com>
+ <OS0PR01MB592229224714550A4BFC10B986B49@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <5b1fda6d-5be2-6d3d-a90e-cf1509a35191@omp.ru>
+Date:   Sun, 10 Oct 2021 20:24:04 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YWMEOLueatMCTS2Z@lunn.ch>
+In-Reply-To: <OS0PR01MB592229224714550A4BFC10B986B49@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 10, 2021 at 05:18:16PM +0200, Andrew Lunn wrote:
-> > > -{
-> > > -	struct device_node *port_dn;
-> > > -	phy_interface_t mode;
-> > > -	struct dsa_port *dp;
-> > > -	u32 val;
-> > > -
-> > > -	/* CPU port is already checked */
-> > > -	dp = dsa_to_port(priv->ds, 0);
-> > > -
-> > > -	port_dn = dp->dn;
-> > > -
-> > > -	/* Check if port 0 is set to the correct type */
-> > > -	of_get_phy_mode(port_dn, &mode);
-> > > -	if (mode != PHY_INTERFACE_MODE_RGMII_ID &&
-> > > -	    mode != PHY_INTERFACE_MODE_RGMII_RXID &&
-> > > -	    mode != PHY_INTERFACE_MODE_RGMII_TXID) {
-> > > -		return 0;
-> > > -	}
-> > > -
-> > > -	switch (mode) {
-> > > -	case PHY_INTERFACE_MODE_RGMII_ID:
-> > > -	case PHY_INTERFACE_MODE_RGMII_RXID:
-> > 
-> > Also, since you touch this area.
-> > There have been tons of discussions on this topic, but I believe that
-> > your interpretation of the RGMII delays is wrong.
-> > Basically a MAC should not apply delays based on the phy-mode string (so
-> > it should treat "rgmii" same as "rgmii-id"), but based on the value of
-> > "rx-internal-delay-ps" and "tx-internal-delay-ps".
-> > The phy-mode is for a PHY to use.
+On 10/10/21 1:56 PM, Biju Das wrote:
+
+[...]
+>>>>> Update EMAC configuration mode comment from "PAUSE prohibition"
+>>>>> to "EMAC Mode: PAUSE prohibition; Duplex; TX; RX; CRC Pass Through;
+>>>>> Promiscuous".
+>>>>>
+>>>>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+>>>>> Suggested-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+>>>>> ---
+>>>>> v1->v2:
+>>>>>    * No change
+>>>>> V1:
+>>>>>    * New patch.
+>>>>> ---
+>>>>>    drivers/net/ethernet/renesas/ravb_main.c | 2 +-
+>>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c
+>>>>> b/drivers/net/ethernet/renesas/ravb_main.c
+>>>>> index 9a770a05c017..b78aca235c37 100644
+>>>>> --- a/drivers/net/ethernet/renesas/ravb_main.c
+>>>>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+>>>>> @@ -519,7 +519,7 @@ static void ravb_emac_init_gbeth(struct
+>>>>> net_device
+>>>> *ndev)
+>>>>>    	/* Receive frame limit set register */
+>>>>>    	ravb_write(ndev, GBETH_RX_BUFF_MAX + ETH_FCS_LEN, RFLR);
+>>>>>
+>>>>> -	/* PAUSE prohibition */
+>>>>> +	/* EMAC Mode: PAUSE prohibition; Duplex; TX; RX; CRC Pass Through;
+>>>>> +Promiscuous */
+>>>>
+>>>>      Promiscuous mode, really? Why?!
+>>>
+>>> This is TOE related,
 > 
-> There is one exception to this, when the MAC is taking the place of a
-> PHY, i.e. CPU port. You need delays added somewhere, and the mv88e6xxx
-> driver will look at the phy-mode in this case.
+> I meant the context here is TOE register related. That is what I meant.
+> 
+>>
+>>     The promiscuous mode is supported by _all_ Ethernet controllers, I
+>> think.
+>>
+>>> and is recommendation from BSP team.
+>>
+>>     On what grounds?
+> 
+> The reference implementation has this on. Any way it is good catch. 
+> I will turn it off and check.
+> 
+> by looking at the RJ LED's there is not much activity and packet statistics also show not much activity by default.
+> 
+> How can we check, it is overloading the controller? So that I can compare with and without this setting
 
-Yes, and I don't think it's an actual exception, it's still back-to-back MACs.
-It is true on the other hand that some drivers don't seem to behave this way.
-Russell has been suggesting that the phy-mode should be treated the same
-way regardless of whether a PHY is attached or not. It would be nice to
-reach a common agreement so that we know what to suggest people to do.
+   Maybe it doesn't get overloaded that simply, but definitely the promiscuous mode is not the thing
+for the normal driver use...
 
-> And i think in general, a DSA driver needs this for the CPU port.
+>>> If you think it is wrong.
+>>> I can take this out. Please let me know. Currently the board is booting
+>> and everything works without issues.
+>>
+>>     Please do take it out. It'll needlessly overload the controller when
+>> there's much traffic on the local network.
+> 
+> 
+> I can see much activity only on RJ45 LED's when I call tcpdump or by setting IP link set eth0 promisc on.
+> Otherwise there is no traffic at all.
 
-Not saying it doesn't need it, just saying that the need for the
-{rx,tx}-internal-delay-ps MAC property was not recognized at the time
-and that's why the vast majority of drivers don't act upon it.
-The qca8k driver is somewhat special in that it does parse these new
-properties, but at the same time also parse the phy-mode, that is kind
-of strange.
+   Sounds like the kernel initially sets the RX mode with IFF_PROMISC = 0 and thus clear ECMR.PRM but I don't
+see where it does this? Could you instrument ravb_set_tx_mode() plz?
+
+> Regards,
+> Biju
+
+[...]
+
+MBR, Sergey
