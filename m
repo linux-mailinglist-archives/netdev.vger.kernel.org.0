@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E23084280E1
-	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 13:41:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 378794280E2
+	for <lists+netdev@lfdr.de>; Sun, 10 Oct 2021 13:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232084AbhJJLmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 07:42:43 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:37799 "EHLO
+        id S232133AbhJJLmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 07:42:50 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:37489 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231892AbhJJLml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 07:42:41 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id CBA745C00EA;
-        Sun, 10 Oct 2021 07:40:42 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S232080AbhJJLmn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 07:42:43 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 06D185C00AA;
+        Sun, 10 Oct 2021 07:40:45 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Sun, 10 Oct 2021 07:40:42 -0400
+  by compute4.internal (MEProxy); Sun, 10 Oct 2021 07:40:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=o1q+n3fLNwmq8MQY6x4n1k4zLoY9vPkoR7K+Vlentog=; b=eaw5l8/9
-        07fny3XW3GO8X6wUE5XyyUC20R85wfJKUv8OU08zcWrd1vczsjJNvtXAMrDCeaJV
-        Q5843xUNceAuRy1/13SNh+XGXU56c7FPeiDIiYNkA20rWMZzc5B1N6woc+KXVW+U
-        vjzLO2D4x+0bsPdAqupZGCuV79PKQqwjeEtLibAv196t/Y+sdVkXOYn74oGxf3/S
-        gEtLPaFc7WBv7xD94SGbk/qCtiLB0HkdtlQYb8uJH34d6tqEvW98S0eLgV/cjRCO
-        AY57pDArMNo50x7SWEDGG2Ex1Oi0WdHzz4SuQOytdUzt0MugO3QpLzBLiSZDquOv
-        U3ltadKAgkR4sQ==
-X-ME-Sender: <xms:OtFiYWSomYq4jh5ZU-HPvwmjSlj_W0L0KeSMEjTzpBquixKReFzy1Q>
-    <xme:OtFiYbym3EyGgPXgt37sPUqRl7HDXVlfX0oIA2CAriZVbCtmeHrZOibA55UT7NhFr
-    LPsdXofn5QNJJs>
-X-ME-Received: <xmr:OtFiYT0-cKwEKoKR90NAAtBrCGSj--Qg_yU6NxHwRy6YVGiPi1TmcDxq3cDFKvggzGADvHGyKgrQLwnyw6fUXbjw07fcJEZxIQeuFIkxOLgYuA>
+        fm1; bh=63wQXSAukDigAlu66Mqp/EpnygVtJtmRDlKKFCR8npc=; b=Ll9+844f
+        EaTTve/UZ00WASZyrEx/zCFNYP7rBLI6MyyGIylpBE8sHY980RtYE9cqnbhLU1PA
+        yUmlJ6mqlo051ntI4jvCoAuNlSWvfEFyjJJbQiXpWfN+Kl19m3BjUZZhPiNKTSVs
+        Y9w2oTxVBwwXvegV1F84o7+xrIciLbI7lyLexqFRhsrfjEknlsTlnYOZrHWpNwxw
+        yaqrCqpsve56kPTDKm8HSBXDrIy7jD4akbP92HG+Rf10aA0eK6xdeKHoWwyLKyC6
+        o1lhp7EofxHhJ2DZg7HIEL3MmSUzS8YtpsHIwlj5NwGvAofG7qGunWcqI4R/N5F5
+        RgEzb4jsIPZ+JQ==
+X-ME-Sender: <xms:PNFiYU2vrps7DPrKIc7v3y2MIm9z-DnWhXy_odAU1C8Gdg4srMM2Kw>
+    <xme:PNFiYfHt0eMKhnN6wFdBV2ddnGzsLSsZyW0B2GEk3G6SsDwSIMLmygOdE7IrOam3k
+    OXTWdwjTtx5b3I>
+X-ME-Received: <xmr:PNFiYc4ttes-HpEjBhJLtPBceneOjqzJCoqvlnDCYH5e5ev2FTHZfsnXklTwDlZaU-4ZK--5s7soWUXGFi0NhQL6j-ARECsVN3drxmboVz4RRw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtgedggeefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtgedggeefucetufdoteggod
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:OtFiYSC61M5pz2lMvf3VTq0Pnm6Lvjk2NDmqyrUNztbj0sKoLjubPw>
-    <xmx:OtFiYfjDj8FBBi5xtPBDLnRzxjkxCp9tHuv9XlHrnc1JKZYPtNI3mQ>
-    <xmx:OtFiYerczc1g9nReUif-8G4v51MPctMc9pASOSDoo09c4jxZolGxmQ>
-    <xmx:OtFiYffoZwF0vdBrDILJJsTREjH7zhmLti_tudhqr6pcIzMdus3JbQ>
+X-ME-Proxy: <xmx:PNFiYd0AF0bqQC2oUV9O9FUWBXxUgsDeUxjgL8GuTc3aUUn2tcGy5w>
+    <xmx:PNFiYXGwkTCD5cxFbLGDPMK3FcDE6iTEzxFLM3AHfaBa03168Xz8Zg>
+    <xmx:PNFiYW9CoLnOpbgXsREea_6nj9522lrpoPBzPs5qvYdyIbl7g5RRoA>
+    <xmx:PdFiYbiT9z81whKeZ1RZMKuRxrE3cqVJWtalHub-IAHKcXLMzH70Kw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 10 Oct 2021 07:40:40 -0400 (EDT)
+ 10 Oct 2021 07:40:43 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 2/6] mlxsw: spectrum_qdisc: Distinguish between ingress and egress triggers
-Date:   Sun, 10 Oct 2021 14:40:14 +0300
-Message-Id: <20211010114018.190266-3-idosch@idosch.org>
+Subject: [PATCH net-next 3/6] mlxsw: spectrum_qdisc: Track permissible actions per binding
+Date:   Sun, 10 Oct 2021 14:40:15 +0300
+Message-Id: <20211010114018.190266-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211010114018.190266-1-idosch@idosch.org>
 References: <20211010114018.190266-1-idosch@idosch.org>
@@ -63,135 +63,132 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@nvidia.com>
 
-The following patches will configure the MLXSW_SP_SPAN_TRIGGER_ECN
-mirroring trigger. This trigger is considered "egress", unlike the
-previously-offloaded _EARLY_DROP. Add a helper to spectrum_span,
-mlxsw_sp_span_trigger_is_ingress(), to classify triggers to ingress and
-egress. Pass result of this instead of hardcoding true when calling
-mlxsw_sp_span_analyzed_port_get()/_put().
+One block can be bound to several qevents. The qevent type that the block
+is bound to determines which actions make sense in a given context. In the
+particular case of mlxsw, trap cannot be offloaded on a RED mark qevent,
+because the trap contract specifies that the packet is dropped in the HW
+datapath, and the HW trigger that the action is offloaded to is always
+forwarding the packet (in addition to marking in).
+
+Therefore keep track of which actions are permissible at each binding
+block. When an attempt is made to bind a certain action at a binding point
+where it is not supported, bounce the request.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 23 ++++++++++++-------
- .../ethernet/mellanox/mlxsw/spectrum_span.c   | 16 +++++++++++++
- .../ethernet/mellanox/mlxsw/spectrum_span.h   |  1 +
- 3 files changed, 32 insertions(+), 8 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 44 ++++++++++++++-----
+ 1 file changed, 33 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-index 14b87d672a9d..3e3da5b909f5 100644
+index 3e3da5b909f5..2dfc9e38307d 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-@@ -1482,8 +1482,10 @@ static int mlxsw_sp_qevent_span_configure(struct mlxsw_sp *mlxsw_sp,
- 					  const struct mlxsw_sp_span_agent_parms *agent_parms,
- 					  int *p_span_id)
+@@ -1472,6 +1472,7 @@ struct mlxsw_sp_qevent_binding {
+ 	u32 handle;
+ 	int tclass_num;
+ 	enum mlxsw_sp_span_trigger span_trigger;
++	unsigned int action_mask;
+ };
+ 
+ static LIST_HEAD(mlxsw_sp_qevent_block_cb_list);
+@@ -1596,6 +1597,11 @@ mlxsw_sp_qevent_entry_configure(struct mlxsw_sp *mlxsw_sp,
+ 				struct mlxsw_sp_qevent_binding *qevent_binding,
+ 				struct netlink_ext_ack *extack)
  {
-+	enum mlxsw_sp_span_trigger span_trigger = qevent_binding->span_trigger;
- 	struct mlxsw_sp_port *mlxsw_sp_port = qevent_binding->mlxsw_sp_port;
- 	struct mlxsw_sp_span_trigger_parms trigger_parms = {};
-+	bool ingress;
- 	int span_id;
- 	int err;
- 
-@@ -1491,18 +1493,19 @@ static int mlxsw_sp_qevent_span_configure(struct mlxsw_sp *mlxsw_sp,
- 	if (err)
- 		return err;
- 
--	err = mlxsw_sp_span_analyzed_port_get(mlxsw_sp_port, true);
-+	ingress = mlxsw_sp_span_trigger_is_ingress(span_trigger);
-+	err = mlxsw_sp_span_analyzed_port_get(mlxsw_sp_port, ingress);
- 	if (err)
- 		goto err_analyzed_port_get;
- 
- 	trigger_parms.span_id = span_id;
- 	trigger_parms.probability_rate = 1;
--	err = mlxsw_sp_span_agent_bind(mlxsw_sp, qevent_binding->span_trigger, mlxsw_sp_port,
-+	err = mlxsw_sp_span_agent_bind(mlxsw_sp, span_trigger, mlxsw_sp_port,
- 				       &trigger_parms);
- 	if (err)
- 		goto err_agent_bind;
- 
--	err = mlxsw_sp_span_trigger_enable(mlxsw_sp_port, qevent_binding->span_trigger,
-+	err = mlxsw_sp_span_trigger_enable(mlxsw_sp_port, span_trigger,
- 					   qevent_binding->tclass_num);
- 	if (err)
- 		goto err_trigger_enable;
-@@ -1511,10 +1514,10 @@ static int mlxsw_sp_qevent_span_configure(struct mlxsw_sp *mlxsw_sp,
- 	return 0;
- 
- err_trigger_enable:
--	mlxsw_sp_span_agent_unbind(mlxsw_sp, qevent_binding->span_trigger, mlxsw_sp_port,
-+	mlxsw_sp_span_agent_unbind(mlxsw_sp, span_trigger, mlxsw_sp_port,
- 				   &trigger_parms);
- err_agent_bind:
--	mlxsw_sp_span_analyzed_port_put(mlxsw_sp_port, true);
-+	mlxsw_sp_span_analyzed_port_put(mlxsw_sp_port, ingress);
- err_analyzed_port_get:
- 	mlxsw_sp_span_agent_put(mlxsw_sp, span_id);
- 	return err;
-@@ -1524,16 +1527,20 @@ static void mlxsw_sp_qevent_span_deconfigure(struct mlxsw_sp *mlxsw_sp,
- 					     struct mlxsw_sp_qevent_binding *qevent_binding,
- 					     int span_id)
- {
-+	enum mlxsw_sp_span_trigger span_trigger = qevent_binding->span_trigger;
- 	struct mlxsw_sp_port *mlxsw_sp_port = qevent_binding->mlxsw_sp_port;
- 	struct mlxsw_sp_span_trigger_parms trigger_parms = {
- 		.span_id = span_id,
- 	};
-+	bool ingress;
- 
--	mlxsw_sp_span_trigger_disable(mlxsw_sp_port, qevent_binding->span_trigger,
-+	ingress = mlxsw_sp_span_trigger_is_ingress(span_trigger);
-+
-+	mlxsw_sp_span_trigger_disable(mlxsw_sp_port, span_trigger,
- 				      qevent_binding->tclass_num);
--	mlxsw_sp_span_agent_unbind(mlxsw_sp, qevent_binding->span_trigger, mlxsw_sp_port,
-+	mlxsw_sp_span_agent_unbind(mlxsw_sp, span_trigger, mlxsw_sp_port,
- 				   &trigger_parms);
--	mlxsw_sp_span_analyzed_port_put(mlxsw_sp_port, true);
-+	mlxsw_sp_span_analyzed_port_put(mlxsw_sp_port, ingress);
- 	mlxsw_sp_span_agent_put(mlxsw_sp, span_id);
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-index 3398cc01e5ec..f5f819aa9a65 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-@@ -1650,6 +1650,22 @@ void mlxsw_sp_span_trigger_disable(struct mlxsw_sp_port *mlxsw_sp_port,
- 	return trigger_entry->ops->disable(trigger_entry, mlxsw_sp_port, tc);
- }
- 
-+bool mlxsw_sp_span_trigger_is_ingress(enum mlxsw_sp_span_trigger trigger)
-+{
-+	switch (trigger) {
-+	case MLXSW_SP_SPAN_TRIGGER_INGRESS:
-+	case MLXSW_SP_SPAN_TRIGGER_EARLY_DROP:
-+	case MLXSW_SP_SPAN_TRIGGER_TAIL_DROP:
-+		return true;
-+	case MLXSW_SP_SPAN_TRIGGER_EGRESS:
-+	case MLXSW_SP_SPAN_TRIGGER_ECN:
-+		return false;
++	if (!(BIT(mall_entry->type) & qevent_binding->action_mask)) {
++		NL_SET_ERR_MSG(extack, "Action not supported at this qevent");
++		return -EOPNOTSUPP;
 +	}
 +
-+	WARN_ON_ONCE(1);
-+	return false;
-+}
-+
- static int mlxsw_sp1_span_init(struct mlxsw_sp *mlxsw_sp)
- {
- 	size_t arr_size = ARRAY_SIZE(mlxsw_sp1_span_entry_ops_arr);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-index efaefd1ae863..82e711afb02b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.h
-@@ -120,6 +120,7 @@ int mlxsw_sp_span_trigger_enable(struct mlxsw_sp_port *mlxsw_sp_port,
- 				 enum mlxsw_sp_span_trigger trigger, u8 tc);
- void mlxsw_sp_span_trigger_disable(struct mlxsw_sp_port *mlxsw_sp_port,
- 				   enum mlxsw_sp_span_trigger trigger, u8 tc);
-+bool mlxsw_sp_span_trigger_is_ingress(enum mlxsw_sp_span_trigger trigger);
+ 	switch (mall_entry->type) {
+ 	case MLXSW_SP_MALL_ACTION_TYPE_MIRROR:
+ 		return mlxsw_sp_qevent_mirror_configure(mlxsw_sp, mall_entry, qevent_binding);
+@@ -1840,7 +1846,8 @@ static void mlxsw_sp_qevent_block_release(void *cb_priv)
  
- extern const struct mlxsw_sp_span_ops mlxsw_sp1_span_ops;
- extern const struct mlxsw_sp_span_ops mlxsw_sp2_span_ops;
+ static struct mlxsw_sp_qevent_binding *
+ mlxsw_sp_qevent_binding_create(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle, int tclass_num,
+-			       enum mlxsw_sp_span_trigger span_trigger)
++			       enum mlxsw_sp_span_trigger span_trigger,
++			       unsigned int action_mask)
+ {
+ 	struct mlxsw_sp_qevent_binding *binding;
+ 
+@@ -1852,6 +1859,7 @@ mlxsw_sp_qevent_binding_create(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
+ 	binding->handle = handle;
+ 	binding->tclass_num = tclass_num;
+ 	binding->span_trigger = span_trigger;
++	binding->action_mask = action_mask;
+ 	return binding;
+ }
+ 
+@@ -1877,9 +1885,11 @@ mlxsw_sp_qevent_binding_lookup(struct mlxsw_sp_qevent_block *block,
+ 	return NULL;
+ }
+ 
+-static int mlxsw_sp_setup_tc_block_qevent_bind(struct mlxsw_sp_port *mlxsw_sp_port,
+-					       struct flow_block_offload *f,
+-					       enum mlxsw_sp_span_trigger span_trigger)
++static int
++mlxsw_sp_setup_tc_block_qevent_bind(struct mlxsw_sp_port *mlxsw_sp_port,
++				    struct flow_block_offload *f,
++				    enum mlxsw_sp_span_trigger span_trigger,
++				    unsigned int action_mask)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
+ 	struct mlxsw_sp_qevent_binding *qevent_binding;
+@@ -1919,8 +1929,11 @@ static int mlxsw_sp_setup_tc_block_qevent_bind(struct mlxsw_sp_port *mlxsw_sp_po
+ 		goto err_binding_exists;
+ 	}
+ 
+-	qevent_binding = mlxsw_sp_qevent_binding_create(mlxsw_sp_port, f->sch->handle,
+-							qdisc->tclass_num, span_trigger);
++	qevent_binding = mlxsw_sp_qevent_binding_create(mlxsw_sp_port,
++							f->sch->handle,
++							qdisc->tclass_num,
++							span_trigger,
++							action_mask);
+ 	if (IS_ERR(qevent_binding)) {
+ 		err = PTR_ERR(qevent_binding);
+ 		goto err_binding_create;
+@@ -1979,15 +1992,19 @@ static void mlxsw_sp_setup_tc_block_qevent_unbind(struct mlxsw_sp_port *mlxsw_sp
+ 	}
+ }
+ 
+-static int mlxsw_sp_setup_tc_block_qevent(struct mlxsw_sp_port *mlxsw_sp_port,
+-					  struct flow_block_offload *f,
+-					  enum mlxsw_sp_span_trigger span_trigger)
++static int
++mlxsw_sp_setup_tc_block_qevent(struct mlxsw_sp_port *mlxsw_sp_port,
++			       struct flow_block_offload *f,
++			       enum mlxsw_sp_span_trigger span_trigger,
++			       unsigned int action_mask)
+ {
+ 	f->driver_block_list = &mlxsw_sp_qevent_block_cb_list;
+ 
+ 	switch (f->command) {
+ 	case FLOW_BLOCK_BIND:
+-		return mlxsw_sp_setup_tc_block_qevent_bind(mlxsw_sp_port, f, span_trigger);
++		return mlxsw_sp_setup_tc_block_qevent_bind(mlxsw_sp_port, f,
++							   span_trigger,
++							   action_mask);
+ 	case FLOW_BLOCK_UNBIND:
+ 		mlxsw_sp_setup_tc_block_qevent_unbind(mlxsw_sp_port, f, span_trigger);
+ 		return 0;
+@@ -1999,7 +2016,12 @@ static int mlxsw_sp_setup_tc_block_qevent(struct mlxsw_sp_port *mlxsw_sp_port,
+ int mlxsw_sp_setup_tc_block_qevent_early_drop(struct mlxsw_sp_port *mlxsw_sp_port,
+ 					      struct flow_block_offload *f)
+ {
+-	return mlxsw_sp_setup_tc_block_qevent(mlxsw_sp_port, f, MLXSW_SP_SPAN_TRIGGER_EARLY_DROP);
++	unsigned int action_mask = BIT(MLXSW_SP_MALL_ACTION_TYPE_MIRROR) |
++				   BIT(MLXSW_SP_MALL_ACTION_TYPE_TRAP);
++
++	return mlxsw_sp_setup_tc_block_qevent(mlxsw_sp_port, f,
++					      MLXSW_SP_SPAN_TRIGGER_EARLY_DROP,
++					      action_mask);
+ }
+ 
+ int mlxsw_sp_tc_qdisc_init(struct mlxsw_sp_port *mlxsw_sp_port)
 -- 
 2.31.1
 
