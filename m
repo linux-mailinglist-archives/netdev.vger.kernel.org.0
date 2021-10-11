@@ -2,90 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E4354286D2
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 08:26:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C001A4286E0
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 08:34:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234197AbhJKG2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 02:28:42 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:13919 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234080AbhJKG2m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Oct 2021 02:28:42 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1633933602; h=Date: Message-ID: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=ZVQrWonnh9hRM9Qxp6VLOIO41IBcRwVY8KNlil4vdIk=;
- b=D1JAduLgYEmmosf0b5+nUkDKy84PiUe8ew198Im5sYUKH3N+mr8AKOhoVOmzrfu41lB39dQt
- hYxrQk8h6HV3l30iSt87vtrSQWtRxUGkYzKxkTwT68686ICLrtWwFwt1hw0mTZKE3QnsyaRy
- 9hX8E8cIrFxgCnezLEafBVhwYxo=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 6163d90b4ccc4cf2c79b9896 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 11 Oct 2021 06:26:19
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C9180C43616; Mon, 11 Oct 2021 06:26:19 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.5 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S234175AbhJKGg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 02:36:29 -0400
+Received: from gandalf.ozlabs.org ([150.107.74.76]:56923 "EHLO
+        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231425AbhJKGg1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 02:36:27 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B3848C4338F;
-        Mon, 11 Oct 2021 06:26:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org B3848C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HSTXy2nXYz4xbL;
+        Mon, 11 Oct 2021 17:34:25 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1633934066;
+        bh=6GOk3nyhP0azIbPuESw0RXCw6kG6vR7AfVI2n4LS2fs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=aB6bQ7y5FNQfHdhK5MJuK17rY6/BvtM8aZzu7EoV6qjXuandJM4qMbvrNIiSm64CO
+         cK4PcOElis9B2ekbagKOcRjYROEJTEnro80e1ARg7REwnY2wPqClCqXTKZcqod9T2S
+         XKoXKPlKCra+h9clq1o7Uj40d78XSO9SxFR0hLRT/dWS3wVR3xm5nMweShMQmh2Fet
+         sVCdC/6xBYbEyCFb4pOaREPw3JCVdrngQI22zopBI7en5xi2lcHAgFEAq/2OxrGtfZ
+         vW0oF5rehZDbUpn8RJqXndttCYV7fLQQ4ha74JlK5uidzmwKmkBqIUYothDCif57xh
+         rxokJ32y2cjsQ==
+Date:   Mon, 11 Oct 2021 17:34:24 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20211011173424.7743035d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath: dfs_pattern_detector: Fix possible null-pointer
- dereference in channel_detector_create()
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210805153854.154066-1-islituo@gmail.com>
-References: <20210805153854.154066-1-islituo@gmail.com>
-To:     Tuo Li <islituo@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com,
-        Tuo Li <islituo@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <163393357512.20318.16433402434764020686.kvalo@codeaurora.org>
-Date:   Mon, 11 Oct 2021 06:26:19 +0000 (UTC)
+Content-Type: multipart/signed; boundary="Sig_/6=hlm7uJknGQV.an36uVEl.";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tuo Li <islituo@gmail.com> wrote:
+--Sig_/6=hlm7uJknGQV.an36uVEl.
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> kzalloc() is used to allocate memory for cd->detectors, and if it fails,
-> channel_detector_exit() behind the label fail will be called:
->   channel_detector_exit(dpd, cd);
-> 
-> In channel_detector_exit(), cd->detectors is dereferenced through:
->   struct pri_detector *de = cd->detectors[i];
-> 
-> To fix this possible null-pointer dereference, check cd->detectors before
-> the for loop to dereference cd->detectors.
-> 
-> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-> Signed-off-by: Tuo Li <islituo@gmail.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Hi all,
 
-Patch applied to ath-next branch of ath.git, thanks.
+After merging the net-next tree, today's linux-next build (sparc64
+defconfig) failed like this:
 
-4b6012a7830b ath: dfs_pattern_detector: Fix possible null-pointer dereference in channel_detector_create()
+drivers/net/ethernet/sun/ldmvsw.c: In function 'vsw_alloc_netdev':
+drivers/net/ethernet/sun/ldmvsw.c:243:2: error: expected ';' before 'sprint=
+f'
+  sprintf(dev->name, "vif%d.%d", (int)handle, (int)port_id);
+  ^~~~~~~
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210805153854.154066-1-islituo@gmail.com/
+Caused by commit
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+  a7639279c93c ("ethernet: sun: remove direct netdev->dev_addr writes")
 
+I have applied the following fix patch for today.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Mon, 11 Oct 2021 17:24:43 +1100
+Subject: [PATCH] ethernet: sun: fix for "remove direct netdev->dev_addr wri=
+tes"
+
+Fix for this build problem:
+
+drivers/net/ethernet/sun/ldmvsw.c: In function 'vsw_alloc_netdev':
+drivers/net/ethernet/sun/ldmvsw.c:243:2: error: expected ';' before 'sprint=
+f'
+  sprintf(dev->name, "vif%d.%d", (int)handle, (int)port_id);
+  ^~~~~~~
+
+Fixes: a7639279c93c ("ethernet: sun: remove direct netdev->dev_addr writes")
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ drivers/net/ethernet/sun/ldmvsw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/sun/ldmvsw.c b/drivers/net/ethernet/sun/l=
+dmvsw.c
+index 074c5407c86b..6b59b14e74b1 100644
+--- a/drivers/net/ethernet/sun/ldmvsw.c
++++ b/drivers/net/ethernet/sun/ldmvsw.c
+@@ -238,7 +238,7 @@ static struct net_device *vsw_alloc_netdev(u8 hwaddr[],
+ 	dev->needed_tailroom =3D 8;
+=20
+ 	eth_hw_addr_set(dev, hwaddr);
+-	ether_addr_copy(dev->perm_addr, dev->dev_addr)
++	ether_addr_copy(dev->perm_addr, dev->dev_addr);
+=20
+ 	sprintf(dev->name, "vif%d.%d", (int)handle, (int)port_id);
+=20
+--=20
+2.33.0
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/6=hlm7uJknGQV.an36uVEl.
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmFj2vAACgkQAVBC80lX
+0GwnZgf/Xfn9J6jrJmHmTec9x6RHfasJQ+ihUFHqxdfv9H58lNKkqCcNdUwdv/Kg
+GQeuNpY/MyKMsstHTTtw6R/FIeBn06iAkn/A0UrLipzeVc+wNG8o7e5NcdouyzGO
+HlxYR/L/9FX1vUV4xmRi71MfgJ25kdXsXFxuES504UZFpzSr+csbL4kor5HKuv4i
+PYGv0Ix7pLyewI4fDf6KvwTZCkNokCORWR21+bdEdVbjQ5sqx7UkRi18qpDwSLQu
+9QJwIh9ROyCRsJbcE7QJhywKl8/pUgMHaYxAQqNJa2LIPQG5rQaV+s26I+nDB4PJ
+w8DtFO6wqLSH8AZxxcgKpv1SF1ALLw==
+=OeAq
+-----END PGP SIGNATURE-----
+
+--Sig_/6=hlm7uJknGQV.an36uVEl.--
