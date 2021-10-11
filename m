@@ -2,166 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25D9A428500
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 04:05:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3821D42850B
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 04:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233565AbhJKCHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 22:07:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39766 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233549AbhJKCHJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 22:07:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1633917909;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dt3W97nn3nLieRHcwrHXkZHoe+y8SxklSbymQfso1QE=;
-        b=De8W9ydjpOM6FchOpHJRXT+DP043yoGNWdJiCoRRfjW2znQU7SQs2R3CzUYBuNZWvhbcRQ
-        XppcF2+Z+UwII6zWo0k6x8A+dKunhWDEO3gcg6vBn99iIVAQs3dBLNAf7wiOrSyY4Owd1t
-        L6xTJIm0yF9q1Qq7MsuLrZgVxUMzfII=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-525-2dGlr2IdOvGZR9mTK9I1aA-1; Sun, 10 Oct 2021 22:05:08 -0400
-X-MC-Unique: 2dGlr2IdOvGZR9mTK9I1aA-1
-Received: by mail-lf1-f70.google.com with SMTP id s8-20020ac25c48000000b003faf62e104eso11396540lfp.22
-        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 19:05:07 -0700 (PDT)
+        id S233440AbhJKCNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 22:13:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45958 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231872AbhJKCN0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 22:13:26 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00198C061570;
+        Sun, 10 Oct 2021 19:11:26 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id w8so5935904qts.4;
+        Sun, 10 Oct 2021 19:11:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=TjqKF2G+ot9TWefZKW3C9zHAsRlyIodJTLXAqIsvayg=;
+        b=gDWcKZ0UQztjnosn+22+oduSALPggiMtDr3olLnvrtYEutZ786C4flvHc2fHJjmPU0
+         PPwaWBzvwFuZ+326y4SVRvpv2eb8sN216gPGVTv0dT0Qs20IDijIIxPzaiVtgggPqnFE
+         WT5t8aHKxXA3zOKNtalmN/r3756ntnokcVPRFvVED5OtbTC3AJyN8vN8Vo3DPZ2BSGP7
+         lC56keMz8sBpmzihf9FiJtahDFabdcX70lHM4DdH3TD5Z3BMz2tkVYjX6gyA95kqxXAZ
+         KaA7O8KFJFUSApVDM23gK3dkY2pbty16Eakpc31z1Tk3W8naj8Qao6Z01vShxF5iqJfK
+         jiiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Dt3W97nn3nLieRHcwrHXkZHoe+y8SxklSbymQfso1QE=;
-        b=bvAR7G9XTxL8TQY0/AqdcoJXxdRcsDsFc4B13YdOFY5PiTC58PX6cWhBUlZjQxqh+B
-         m1hnGJKCBKPdz9Ve/o52INGTNoABbcNEwwbJXMfOmOQx9R8h3rsDddzxUYGed+cFKWwe
-         jXEgvTA90n+tOoe6AMw0UEYiFH9lk5QcQ1vopr4BxhbkRctMTjmhvGwY16MVDsrip+3P
-         LY1V9/RFzmnx/2vOcfoqxGdJXP6FnEIHjsBys/idUJAG41025wGDAbY/hmYaZl/GtEQY
-         58MvGONjVfSn/Z1INVxI0FhTZiXFWGke0mxf9/aMJLuX/Bwdci8em+lv0Ox/NPyEjnuB
-         ky+A==
-X-Gm-Message-State: AOAM532YFyEFNKBr99cu2vCQyR5kSg9vVc2ZQEhY/i8i1s9wmq6dF3X+
-        UZ8LH9e71cEchpDz6nE2iRqDpWrsJaCcCx2GarO7b4KH7A8iVzlcB5SosEHdLTIKHSELU9Brm0T
-        V6akvi0saREF2elyOdKC67LIkSqmt77wu
-X-Received: by 2002:a2e:8099:: with SMTP id i25mr8180065ljg.277.1633917906331;
-        Sun, 10 Oct 2021 19:05:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzkDiR/BGptgc+pbWgE/RLAuwXL6JyrQ0fkP5KqdZaKCoCdI7ytGhHRzptoWN+ks5B3l30AvuWSt/eeqfwAjQw=
-X-Received: by 2002:a2e:8099:: with SMTP id i25mr8180041ljg.277.1633917906102;
- Sun, 10 Oct 2021 19:05:06 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TjqKF2G+ot9TWefZKW3C9zHAsRlyIodJTLXAqIsvayg=;
+        b=rVeNK2rOJK7O0ggKZ39F0YdaCn9J1p9JY/z6V0NLGZNdtkbVahOeBlyRDk4xI8ji/s
+         OzLPEPOf2/fpv+Al+OWCI4E2Z5qjJXTBcQ6XD2oORiPprrkFJL6D7f9J6qfr2axrW7vi
+         2lWZbunhhQzmdWyigHlrd4KLqBsuHAXP4IkHIdP6Eq0khurstp0gCOUbGkgcPTA3Hzk/
+         QcdpADW8C7AHHsgpaNAqb0R8j8m8ST4dxk0L2G0xq8b4zdWnSN1qpFFlHINOQzYidAfY
+         0LlY6Ev9rUf5Bwi86I1iw48JG+RmJJpphCuzmm63hHBJrarYnT70o0HCUdQG74XxWefh
+         9DMA==
+X-Gm-Message-State: AOAM531cKSr94M5MkzAnfwnTLata80A1/jdtnzWDomYCSysYIbzfyF7k
+        hARHi3e0jDUrwBn8F4rHQSI=
+X-Google-Smtp-Source: ABdhPJwnOFDzduH2yaeDsuWn7nxMdHFMXNlCkIL5KytE07B7ka8nsZDabGpiUT2Vna/P7Qgr0GFaCA==
+X-Received: by 2002:a05:622a:316:: with SMTP id q22mr12131941qtw.225.1633918286096;
+        Sun, 10 Oct 2021 19:11:26 -0700 (PDT)
+Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id q22sm619750qkj.64.2021.10.10.19.11.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Oct 2021 19:11:25 -0700 (PDT)
+Message-ID: <fe8833a4-df21-475b-7ddf-dcda54550652@gmail.com>
+Date:   Sun, 10 Oct 2021 19:11:23 -0700
 MIME-Version: 1.0
-References: <20211009091604.84141-1-mst@redhat.com>
-In-Reply-To: <20211009091604.84141-1-mst@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 11 Oct 2021 10:04:55 +0800
-Message-ID: <CACGkMEsjxm9u8QvQ9c9f34v1WWhGkbwPE-2BgAkRjd+zB6V-AQ@mail.gmail.com>
-Subject: Re: [PATCH net] virtio-net: fix for skb_over_panic inside big mode
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Corentin_No=C3=ABl?= <corentin.noel@collabora.com>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.2
+Subject: Re: [net-next PATCH v5 06/14] net: dsa: qca8k: rework rgmii delay
+ logic and scan for cpu port 6
+Content-Language: en-US
+To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211011013024.569-1-ansuelsmth@gmail.com>
+ <20211011013024.569-7-ansuelsmth@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20211011013024.569-7-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 9, 2021 at 5:18 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->
-> commit 126285651b7f ("Merge ra.kernel.org:/pub/scm/linux/kernel/git/netde=
-v/net")
-> accidentally reverted the effect of
-> commit 1a8024239da ("virtio-net: fix for skb_over_panic inside big mode")
-> on drivers/net/virtio_net.c
->
-> As a result, users of crosvm (which is using large packet mode)
-> are experiencing crashes with 5.14-rc1 and above that do not
-> occur with 5.13.
->
-> Crash trace:
->
-> [   61.346677] skbuff: skb_over_panic: text:ffffffff881ae2c7 len:3762 put=
-:3762 head:ffff8a5ec8c22000 data:ffff8a5ec8c22010 tail:0xec2 end:0xec0 dev:=
-<NULL>
-> [   61.369192] kernel BUG at net/core/skbuff.c:111!
-> [   61.372840] invalid opcode: 0000 [#1] SMP PTI
-> [   61.374892] CPU: 5 PID: 0 Comm: swapper/5 Not tainted 5.14.0-rc1 linux=
--v5.14-rc1-for-mesa-ci.tar.bz2 #1
-> [   61.376450] Hardware name: ChromiumOS crosvm, BIOS 0
->
-> ..
->
-> [   61.393635] Call Trace:
-> [   61.394127]  <IRQ>
-> [   61.394488]  skb_put.cold+0x10/0x10
-> [   61.395095]  page_to_skb+0xf7/0x410
-> [   61.395689]  receive_buf+0x81/0x1660
-> [   61.396228]  ? netif_receive_skb_list_internal+0x1ad/0x2b0
-> [   61.397180]  ? napi_gro_flush+0x97/0xe0
-> [   61.397896]  ? detach_buf_split+0x67/0x120
-> [   61.398573]  virtnet_poll+0x2cf/0x420
-> [   61.399197]  __napi_poll+0x25/0x150
-> [   61.399764]  net_rx_action+0x22f/0x280
-> [   61.400394]  __do_softirq+0xba/0x257
-> [   61.401012]  irq_exit_rcu+0x8e/0xb0
-> [   61.401618]  common_interrupt+0x7b/0xa0
-> [   61.402270]  </IRQ>
->
-> See
-> https://lore.kernel.org/r/5edaa2b7c2fe4abd0347b8454b2ac032b6694e2c.camel%=
-40collabora.com
-> for the report.
->
-> Apply the original 1a8024239da ("virtio-net: fix for skb_over_panic insid=
-e big mode")
-> again, the original logic still holds:
->
-> In virtio-net's large packet mode, there is a hole in the space behind
-> buf.
->
->     hdr_padded_len - hdr_len
->
-> We must take this into account when calculating tailroom.
->
-> Cc: Greg KH <gregkh@linuxfoundation.org>
-> Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there'=
-s sufficient tailroom")
-> Fixes: 126285651b7f ("Merge ra.kernel.org:/pub/scm/linux/kernel/git/netde=
-v/net")
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Reported-by: Corentin No=C3=ABl <corentin.noel@collabora.com>
-> Tested-by: Corentin No=C3=ABl <corentin.noel@collabora.com>
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
 
-Acked-by: Jason Wang <jasowang@redhat.com>
 
->
-> David, I think we need this in stable, too.
->
->  drivers/net/virtio_net.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 096c2ac6b7a6..6b0812f44bbf 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -406,7 +406,7 @@ static struct sk_buff *page_to_skb(struct virtnet_inf=
-o *vi,
->          * add_recvbuf_mergeable() + get_mergeable_buf_len()
->          */
->         truesize =3D headroom ? PAGE_SIZE : truesize;
-> -       tailroom =3D truesize - len - headroom;
-> +       tailroom =3D truesize - len - headroom - (hdr_padded_len - hdr_le=
-n);
->         buf =3D p - headroom;
->
->         len -=3D hdr_len;
-> --
-> MST
->
+On 10/10/2021 6:30 PM, Ansuel Smith wrote:
+> Future proof commit. This switch have 2 CPU port
 
+Plural: ports.
+
+> and one valid
+> configuration is first CPU port set to sgmii and second CPU port set to
+> regmii-id. 
+
+rgmii-id
+
+> The current implementation detects delay only for CPU port
+> zero set to rgmii and doesn't count any delay set in a secondary CPU
+> port. Drop the current delay scan function and move it to the sgmii
+> parser function to generilize
+
+generalize
+
+> and implicitly add support for secondary
+> CPU port set to rgmii-id. Introduce new logic where delay is enabled
+> also with internal delay binding declared and rgmii set as PHY mode.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+
+Otherwise, looking good to me.
+-- 
+Florian
