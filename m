@@ -2,61 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41823428D82
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 15:04:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0208428D86
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 15:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236784AbhJKNFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 09:05:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43850 "EHLO mail.kernel.org"
+        id S236777AbhJKNIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 09:08:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45474 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236762AbhJKNFx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Oct 2021 09:05:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0DE3960F14;
-        Mon, 11 Oct 2021 13:03:53 +0000 (UTC)
+        id S236773AbhJKNH7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Oct 2021 09:07:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 44C8660F14;
+        Mon, 11 Oct 2021 13:05:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633957433;
-        bh=T1ec953CEWbRgaCdJ9R8TYZD4ho48T5YFzq/xN7tTwU=;
+        s=k20201202; t=1633957559;
+        bh=In4E+6cr9Be2j6eAW/yVU6t5z71IM4HG2jmgL8Vx968=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PqThtMfTdLI/pANRGgLmU6QUAkma2Zr/PqZfsbtjY0G96y0khPY1HieWeprC9DydW
-         jI6/olf7MnmucWsvMd1HPsw26LSCj/tw+ygP9hD+umWaMFTDXqGON2LijU7RQjcQPD
-         0RYDh0QXljJ/vjSLsjkHB+NJnHFOGbZdOMqd6s5F6bbVnVxLo4ifZVeS3UwBuoznPd
-         9WBpTajDup8A/vJCvKFOHUpgWc34V6QPtZ+lpmuyAZ7GMuW3XNE2lQFwWlElPZVrNo
-         ZhKQ0ako7LRH+ekOpwNLaaijX5tJdrc/Pt9JA3tIwu8TWnoOwr6yqSc3cxS9u7HzpA
-         AAx1Dx4ODgKGA==
-Date:   Mon, 11 Oct 2021 06:03:52 -0700
+        b=KT/8aS1asO8uz7YoJ8RY7DdJrB3iDczlOc3W2QvlJFSxGk3yxJPfrAloNi2BBeD11
+         zUEd6+GB7aAjvAH9WzeQGhIdEqCwCOqbODEs29U8c9DUIeTif1tNBvPvX7wOU+1Gva
+         UD3x/WtbmOn/lzZGULCO3dE4sewlq/jsLNCK8WA8uY31akdAHYC7kYK/qzhWbQ8wqu
+         7pWIclIEGp/39GLyGLnibrt557Qe6IofKZXUKUF3rmpnHvhDERj7fIQhWdTCB7SCRK
+         pp8fUlWw9p8giQIgkT63xzY47PXBkD25jhIiFgr4e6jR6uLA+ApiTsgVWccIFwu+Xm
+         8V9qRKeO3rziQ==
+Date:   Mon, 11 Oct 2021 06:05:58 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     David Miller <davem@davemloft.net>, k.opasiak@samsung.com,
-        mgreer@animalcreek.com, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org
-Subject: Re: [RESEND PATCH v2 0/7] nfc: minor printk cleanup
-Message-ID: <20211011060352.730763fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CA+Eumj65krM_LhEgbBe2hxAZhYZLmuo3zMoVcq6zp9xKa+n_Jg@mail.gmail.com>
-References: <20211007133021.32704-1-krzysztof.kozlowski@canonical.com>
-        <20211008.111646.1874039740182175606.davem@davemloft.net>
-        <CA+Eumj5k9K9DUsPifDchNixj0QG5WrTJX+dzADmAgYSFe49+4g@mail.gmail.com>
-        <CA+Eumj65krM_LhEgbBe2hxAZhYZLmuo3zMoVcq6zp9xKa+n_Jg@mail.gmail.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 3/5] ethernet: tulip: remove direct
+ netdev->dev_addr writes
+Message-ID: <20211011060558.3af0422f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <ad38b125c5a95d283ce8787c245a4c19f3aa3492.camel@perches.com>
+References: <20211008175913.3754184-1-kuba@kernel.org>
+        <20211008175913.3754184-4-kuba@kernel.org>
+        <ad38b125c5a95d283ce8787c245a4c19f3aa3492.camel@perches.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 Oct 2021 13:36:59 +0200 Krzysztof Kozlowski wrote:
-> On Fri, 8 Oct 2021 at 12:18, Krzysztof Kozlowski wrote:
-> > On Fri, 8 Oct 2021 at 12:17, David Miller <davem@davemloft.net> wrote:  
-> > > Please CC: netdev for nfc patches otherwise they will not get tracked
-> > > and applied.  
-> >
-> > netdev@vger.kernel.org is here. Which address I missed?  
-> 
-> The patchset reached patchwork:
-> https://patchwork.kernel.org/project/netdevbpf/list/?series=559153&state=*
-> although for some reason it is marked as "changes requested". Are
-> there any other changes needed except Joe's comment for one patch?
+On Fri, 08 Oct 2021 19:35:11 -0700 Joe Perches wrote:
+> > @@ -1821,8 +1823,7 @@ static void de21041_get_srom_info(struct de_priva=
+te *de)
+> > =C2=A0#endif
+> >=20
+> > =C2=A0	/* store MAC address */
+> > -	for (i =3D 0; i < 6; i ++)
+> > -		de->dev->dev_addr[i] =3D ee_data[i + sa_offset];
+> > +	eth_hw_addr_set(de->dev, &ee_data[i + sa_offset]); =20
+>=20
+> what is the content of i here?
+>=20
+> Perhaps you want
+>=20
+> 	eth_hw_addr_set(de->dev, &ee_data[sa_offset]);
+>=20
+>=20
+> > diff --git a/drivers/net/ethernet/dec/tulip/dmfe.c b/drivers/net/ethern=
+et/dec/tulip/dmfe.c =20
+> []
+> > @@ -476,8 +476,7 @@ static int dmfe_init_one(struct pci_dev *pdev, cons=
+t struct pci_device_id *ent)
+> > =C2=A0	}
+> > =C2=A0
+> >=20
+> > =C2=A0	/* Set Node address */
+> > -	for (i =3D 0; i < 6; i++)
+> > -		dev->dev_addr[i] =3D db->srom[20 + i];
+> > +	eth_hw_addr_set(dev, &db->srom[20 + i]); =20
+>=20
+> here too
 
-I think it was just Joe's comment, nothing else here looks
-objectionable.
+Good catch, thanks.
