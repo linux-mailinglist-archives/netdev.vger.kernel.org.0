@@ -2,89 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E58B42853D
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 04:42:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B066428540
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 04:44:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233645AbhJKCoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 22:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231560AbhJKCoV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 22:44:21 -0400
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD39C061570;
-        Sun, 10 Oct 2021 19:42:21 -0700 (PDT)
-Received: by mail-qv1-xf2d.google.com with SMTP id k19so4482312qvm.13;
-        Sun, 10 Oct 2021 19:42:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=yAKGdgRdxijlpNEEly6ajSA0nM9YaEScSkQfHadvQQ8=;
-        b=fdQw78PJDdUbQ3YKHND49JSP3mbGJYAOFyiFRbN0GFxryw4xw+vR2zD1VegJ4RVKkQ
-         s0RqWHN/JfmTlNVHwQG46FsDmy/CKB/mdyQFX6A//jRy7HumeotIjyevNuHGmFiIiX/X
-         eOOOWgN5KgN8Q75TqRHnHBbLCWC7wsYUaKBUmClAwh5rwjb2yEyrBgzCkGRHylgEEKDh
-         tPM74lBEZyOS/VLV9NFHQi+bfBI1jmSOHSJ3NR+TJyDihrtKuId4HxzhcaH5fyXOEVd1
-         lfke0xK0LessI928B55Wbsmig/gIxtYyQKKl1xrgzI8ERJA0f/mG5/O+IUv7ZOgPy1xE
-         bOCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=yAKGdgRdxijlpNEEly6ajSA0nM9YaEScSkQfHadvQQ8=;
-        b=r4TIKzPUWBrArika1UXVCYQ/kxFZGLxjfkP0m6aXz7hjS+BXqksg07iNSN5Gv0IY2c
-         5IUdY1KPsuYkULdoIt9uCeGiiygvM8PVs37m7bexiUxsE7FJ9xpFKrcN/+f5ISYMta+m
-         qJd2HqE5AaPWfI5zLoqNwDeQtG4qfvWD+HIqiVktAf/7p8aBZn+rpLdZ5aAh6bIiUhvH
-         mQ5mIKl+rmj0UeQcho/O1QEBn9iDGxT/2mPL27UoJ/G+Rmqllyq61B74VcrvtxKq4HjY
-         8UQYJmzMStve1JuQjVqMG8T0Yya2Q9+7iaJ6NQ0kSNG7iNSrO1Z53UJQa/saShiwwJ+8
-         faUg==
-X-Gm-Message-State: AOAM531kFJk27wr+uOZPPxLg9SiXhVKS2KpxDKGSBaZMDCcQDLCLM113
-        oVnY3kZibCVx2mEcG8aTgYI=
-X-Google-Smtp-Source: ABdhPJxump/1TE0sa4bjF9NLSX89uFm/F+jA+jOxLE/IJxzR6fFrmBD9HZ8PW9XIUVpOgpfgitsRbg==
-X-Received: by 2002:ad4:59d0:: with SMTP id el16mr12916992qvb.60.1633920140298;
-        Sun, 10 Oct 2021 19:42:20 -0700 (PDT)
-Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id t64sm3659612qkd.71.2021.10.10.19.42.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Oct 2021 19:42:19 -0700 (PDT)
-Message-ID: <e902fed0-cde8-ab81-c0d0-64bd296bbcba@gmail.com>
-Date:   Sun, 10 Oct 2021 19:42:17 -0700
+        id S233664AbhJKCqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 22:46:06 -0400
+Received: from out2.migadu.com ([188.165.223.204]:58237 "EHLO out2.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231578AbhJKCqF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 Oct 2021 22:46:05 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.2
-Subject: Re: [net-next PATCH v5 12/14] drivers: net: dsa: qca8k: add support
- for QCA8328
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211011013024.569-1-ansuelsmth@gmail.com>
- <20211011013024.569-13-ansuelsmth@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20211011013024.569-13-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1633920244;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AZ82gyhlQYUiMxzKvLmPbmy3KKD10pObF9BmwWMecNQ=;
+        b=V/HaHYLkX4t7w5VW0Wb4yIvTfpx6ok52nXyIehyQEtihWiUmhU2iSDuGHWfJTGkmjvIg0G
+        G38wdon32f4gdseq4Zph4+p/dED++Zv1lQA07QNwxlg4VFdkaRQfM1EMjblpp8/cb6cuEA
+        /JeVggYTSZXXDDq+/6agvJeAZPamPQQ=
+Date:   Mon, 11 Oct 2021 02:44:04 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   yajun.deng@linux.dev
+Message-ID: <83d864e81ea774b8124948a65c069e82@linux.dev>
+Subject: Re: [PATCH net-next] net: procfs: add seq_puts() statement for
+ dev_mcast
+To:     "Vladimir Oltean" <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20211009164249.euf7dfpccr6kz7a3@skbuf>
+References: <20211009164249.euf7dfpccr6kz7a3@skbuf>
+ <20210816085757.28166-1-yajun.deng@linux.dev>
+ <20211009163511.vayjvtn3rrteglsu@skbuf>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nit: please remove the "drivers: " prefix from your v6 and do that 
-across your entire patch series.
-
-On 10/10/2021 6:30 PM, Ansuel Smith wrote:
-> QCA8328 switch is the bigger brother of the qca8327. Same regs different
-> chip. Change the function to set the correct pin layout and introduce a
-> new match_data to differentiate the 2 switch as they have the same ID
-> and their internal PHY have the same ID.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+There is PCIe NIC with long name, this is the reason why put the 'Interfa=
+ce' a whole.=0A=0Abefore:=0AInter-|   Receive                            =
+                    |  Transmit=0A face |bytes    packets errs drop fifo =
+frame compressed multicast|bytes    packets errs drop fifo colls carrier =
+compressed=0A    lo:  251136    2956    0    0    0     0          0     =
+    0   251136    2956    0    0    0     0       0          0=0Aenp27s0f=
+0:       0       0    0    0    0     0          0         0        0    =
+   0    0    0    0     0       0          0=0Aenp27s0f1: 95099489  62711=
+6    0 328486    0     0          0    187285 18680642   67213    0    0 =
+   0     0       0          0=0Adocker0:       0       0    0    0    0  =
+   0          0         0        0       0    0    0    0     0       0  =
+        0=0A=0A=0Aafter:=0AInterface|                            Receive =
+                                      |                                 T=
+ransmit=0A         |            bytes      packets errs   drop fifo frame=
+ compressed multicast|            bytes      packets errs   drop fifo col=
+ls carrier compressed=0A       lo:           251136         2956    0    =
+  0    0     0          0         0            251136         2956    0  =
+    0    0     0       0          0=0Aenp27s0f0:                0        =
+    0    0      0    0     0          0         0                 0      =
+      0    0      0    0     0       0          0=0Aenp27s0f1:         95=
+099489       627116    0 328486    0     0          0    187285          =
+18680642        67213    0      0    0     0       0          0=0A  docke=
+r0:                0            0    0      0    0     0          0      =
+   0                 0            0    0      0    0     0       0       =
+   0=0A=0A=0A=0AOctober 10, 2021 12:42 AM, "Vladimir Oltean" <olteanv@gma=
+il.com> =E5=86=99=E5=88=B0:=0A=0A> On Sat, Oct 09, 2021 at 07:35:11PM +03=
+00, Vladimir Oltean wrote:=0A> =0A>> On Mon, Aug 16, 2021 at 04:57:57PM +=
+0800, Yajun Deng wrote:=0A>> Add seq_puts() statement for dev_mcast, make=
+ it more readable.=0A>> As also, keep vertical alignment for {dev, ptype,=
+ dev_mcast} that=0A>> under /proc/net.=0A>> =0A>> Signed-off-by: Yajun De=
+ng <yajun.deng@linux.dev>=0A>> ---=0A>> =0A>> FYI, this program got broke=
+n by this commit (reverting it restores=0A>> functionality):=0A>> =0A>> r=
+oot@debian:~# ifstat=0A>> ifstat: /proc/net/dev: unsupported format.=0A>>=
+ =0A>> Confusingly enough, the "ifstat" provided by Debian is not from ip=
+route2:=0A>> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git=
+/tree/misc/ifstat.c=0A>> but rather a similarly named program:=0A>> https=
+://packages.debian.org/source/bullseye/ifstat=0A>> https://github.com/mat=
+ttbe/ifstat=0A>> =0A>> I haven't studied how this program parses /proc/ne=
+t/dev, but here's how=0A>> the kernel's output changed:=0A> =0A> Ah, it s=
+crapes the text for "Inter-|":=0A> https://github.com/matttbe/ifstat/blob=
+/main/drivers.c#L825=0A> =0A>> Doesn't work:=0A>> =0A>> root@debian:~# ca=
+t /proc/net/dev=0A>> Interface| Receive | Transmit=0A>> | bytes packets e=
+rrs drop fifo frame compressed multicast| bytes packets errs drop fifo co=
+lls=0A>> carrier compressed=0A>> lo: 97400 1204 0 0 0 0 0 0 97400 1204 0 =
+0 0 0 0 0=0A>> bond0: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sit0: 0 0 0 0 =
+0 0 0 0 0 0 0 0 0 0 0 0=0A>> eno2: 5002206 6651 0 0 0 0 0 0 105518642 146=
+5023 0 0 0 0 0 0=0A>> swp0: 134531 2448 0 0 0 0 0 0 99599598 1464381 0 0 =
+0 0 0 0=0A>> swp1: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> swp2: 4867675 420=
+3 0 0 0 0 0 0 58134 631 0 0 0 0 0 0=0A>> sw0p0: 0 0 0 0 0 0 0 0 0 0 0 0 0=
+ 0 0 0=0A>> sw0p1: 124739 2448 0 1422 0 0 0 0 93741184 1464369 0 0 0 0 0 =
+0=0A>> sw0p2: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw2p0: 4850863 4203 0 =
+0 0 0 0 0 54722 619 0 0 0 0 0 0=0A>> sw2p1: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=
+ 0=0A>> sw2p2: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw2p3: 0 0 0 0 0 0 0 =
+0 0 0 0 0 0 0 0 0=0A>> br0: 10508 212 0 212 0 0 0 212 61369558 958857 0 0=
+ 0 0 0 0=0A>> =0A>> Works:=0A>> =0A>> root@debian:~# cat /proc/net/dev=0A=
+>> Inter-| Receive | Transmit=0A>> face |bytes packets errs drop fifo fra=
+me compressed multicast|bytes packets errs drop fifo colls=0A>> carrier c=
+ompressed=0A>> lo: 13160 164 0 0 0 0 0 0 13160 164 0 0 0 0 0 0=0A>> bond0=
+: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sit0: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 =
+0 0=0A>> eno2: 30824 268 0 0 0 0 0 0 3332 37 0 0 0 0 0 0=0A>> swp0: 0 0 0=
+ 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> swp1: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>=
+> swp2: 30824 268 0 0 0 0 0 0 2428 27 0 0 0 0 0 0=0A>> sw0p0: 0 0 0 0 0 0=
+ 0 0 0 0 0 0 0 0 0 0=0A>> sw0p1: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw0=
+p2: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw2p0: 29752 268 0 0 0 0 0 0 156=
+4 17 0 0 0 0 0 0=0A>> sw2p1: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw2p2: =
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw2p3: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=
+=200
