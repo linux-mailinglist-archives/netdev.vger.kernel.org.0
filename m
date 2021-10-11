@@ -2,179 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6357429867
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 22:48:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BCD42987B
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 22:54:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235177AbhJKUuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 16:50:39 -0400
-Received: from mga06.intel.com ([134.134.136.31]:37914 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235087AbhJKUuj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Oct 2021 16:50:39 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10134"; a="287843129"
-X-IronPort-AV: E=Sophos;i="5.85,365,1624345200"; 
-   d="scan'208";a="287843129"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2021 13:48:37 -0700
-X-IronPort-AV: E=Sophos;i="5.85,365,1624345200"; 
-   d="scan'208";a="460105429"
-Received: from jekeller-desk.amr.corp.intel.com ([10.166.244.138])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2021 13:48:37 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Anthony Nguyen <anthony.l.nguyen@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: [net PATCH] ice: fix locking for Tx timestamp tracking flush
-Date:   Mon, 11 Oct 2021 13:48:06 -0700
-Message-Id: <20211011204806.1504406-1-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.31.1.331.gb0c09ab8796f
+        id S235099AbhJKU42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 16:56:28 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:16720 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233216AbhJKU42 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 16:56:28 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19BI7NG4011658
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 13:54:27 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=facebook; bh=gKOdMROmTro6c+ERGjXdSCze6aoR0BHv8Ac76sJcNx8=;
+ b=iQImAjxJ8K7h20GOl1H6BffJnIBGE0R6RN5iKutp0LhVw+TzKEc2CA/MtP3ockvs3xWk
+ epUOnDPeXeKHwLoBNfSazSQaOfMwFuG4x5Y9JszO++T6mCk0IOwhWkGQLGpf2nstzveD
+ 1fr73Ac029k0tqMtmSRVYIfdj/A74BbkZCI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3bmhwums9a-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 13:54:27 -0700
+Received: from intmgw001.37.frc1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.14; Mon, 11 Oct 2021 13:54:21 -0700
+Received: by devbig030.frc3.facebook.com (Postfix, from userid 158236)
+        id C52137E37709; Mon, 11 Oct 2021 13:54:16 -0700 (PDT)
+From:   Dave Marchevsky <davemarchevsky@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     <netdev@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Dave Marchevsky <davemarchevsky@fb.com>
+Subject: [PATCH v2 bpf-next 0/2] bpf: keep track of verifier insn_processed
+Date:   Mon, 11 Oct 2021 13:54:13 -0700
+Message-ID: <20211011205415.234479-1-davemarchevsky@fb.com>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-GUID: 93TV1I3IOdayfTmW_bQWtyZabPasye3H
+X-Proofpoint-ORIG-GUID: 93TV1I3IOdayfTmW_bQWtyZabPasye3H
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-11_10,2021-10-11_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ clxscore=1015 priorityscore=1501 adultscore=0 lowpriorityscore=0
+ mlxlogscore=543 suspectscore=0 impostorscore=0 malwarescore=0 mlxscore=0
+ spamscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2110110119
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 4dd0d5c33c3e ("ice: add lock around Tx timestamp tracker flush")
-added a lock around the Tx timestamp tracker flow which is used to
-cleanup any left over SKBs and prepare for device removal.
+This is a followup to discussion around RFC patchset "bpf: keep track of
+prog verification stats" [0]. The RFC elaborates on my usecase, but to
+summarize: keeping track of verifier stats for programs as they - and
+the kernels they run on - change over time can help developers of
+individual programs and BPF kernel folks.
 
-This lock is problematic because it is being held around a call to
-ice_clear_phy_tstamp. The clear function takes a mutex to send a PHY
-write command to firmware. This could lead to a deadlock if the mutex
-actually sleeps, and causes the following warning on a kernel with
-preemption debugging enabled:
+The RFC added a verif_stats to the uapi which contained most of the info
+which verifier prints currently. Feedback here was to avoid polluting
+uapi with stats that might be meaningless after major changes to the
+verifier, but that insn_processed or conceptually similar number would
+exist in the long term and was safe to expose.
 
-[  715.419426] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:573
-[  715.427900] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3100, name: rmmod
-[  715.435652] INFO: lockdep is turned off.
-[  715.439591] Preemption disabled at:
-[  715.439594] [<0000000000000000>] 0x0
-[  715.446678] CPU: 52 PID: 3100 Comm: rmmod Tainted: G        W  OE     5.15.0-rc4+ #42 bdd7ec3018e725f159ca0d372ce8c2c0e784891c
-[  715.458058] Hardware name: Intel Corporation S2600STQ/S2600STQ, BIOS SE5C620.86B.02.01.0010.010620200716 01/06/2020
-[  715.468483] Call Trace:
-[  715.470940]  dump_stack_lvl+0x6a/0x9a
-[  715.474613]  ___might_sleep.cold+0x224/0x26a
-[  715.478895]  __mutex_lock+0xb3/0x1440
-[  715.482569]  ? stack_depot_save+0x378/0x500
-[  715.486763]  ? ice_sq_send_cmd+0x78/0x14c0 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.494979]  ? kfree+0xc1/0x520
-[  715.498128]  ? mutex_lock_io_nested+0x12a0/0x12a0
-[  715.502837]  ? kasan_set_free_info+0x20/0x30
-[  715.507110]  ? __kasan_slab_free+0x10b/0x140
-[  715.511385]  ? slab_free_freelist_hook+0xc7/0x220
-[  715.516092]  ? kfree+0xc1/0x520
-[  715.519235]  ? ice_deinit_lag+0x16c/0x220 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.527359]  ? ice_remove+0x1cf/0x6a0 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.535133]  ? pci_device_remove+0xab/0x1d0
-[  715.539318]  ? __device_release_driver+0x35b/0x690
-[  715.544110]  ? driver_detach+0x214/0x2f0
-[  715.548035]  ? bus_remove_driver+0x11d/0x2f0
-[  715.552309]  ? pci_unregister_driver+0x26/0x250
-[  715.556840]  ? ice_module_exit+0xc/0x2f [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.564799]  ? __do_sys_delete_module.constprop.0+0x2d8/0x4e0
-[  715.570554]  ? do_syscall_64+0x3b/0x90
-[  715.574303]  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  715.579529]  ? start_flush_work+0x542/0x8f0
-[  715.583719]  ? ice_sq_send_cmd+0x78/0x14c0 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.591923]  ice_sq_send_cmd+0x78/0x14c0 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.599960]  ? wait_for_completion_io+0x250/0x250
-[  715.604662]  ? lock_acquire+0x196/0x200
-[  715.608504]  ? do_raw_spin_trylock+0xa5/0x160
-[  715.612864]  ice_sbq_rw_reg+0x1e6/0x2f0 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.620813]  ? ice_reset+0x130/0x130 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.628497]  ? __debug_check_no_obj_freed+0x1e8/0x3c0
-[  715.633550]  ? trace_hardirqs_on+0x1c/0x130
-[  715.637748]  ice_write_phy_reg_e810+0x70/0xf0 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.646220]  ? do_raw_spin_trylock+0xa5/0x160
-[  715.650581]  ? ice_ptp_release+0x910/0x910 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.658797]  ? ice_ptp_release+0x255/0x910 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.667013]  ice_clear_phy_tstamp+0x2c/0x110 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.675403]  ice_ptp_release+0x408/0x910 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.683440]  ice_remove+0x560/0x6a0 [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.691037]  ? _raw_spin_unlock_irqrestore+0x46/0x73
-[  715.696005]  pci_device_remove+0xab/0x1d0
-[  715.700018]  __device_release_driver+0x35b/0x690
-[  715.704637]  driver_detach+0x214/0x2f0
-[  715.708389]  bus_remove_driver+0x11d/0x2f0
-[  715.712489]  pci_unregister_driver+0x26/0x250
-[  715.716857]  ice_module_exit+0xc/0x2f [ice 9a7e1ec00971c89ecd3fe0d4dc7da2b3786a421d]
-[  715.724637]  __do_sys_delete_module.constprop.0+0x2d8/0x4e0
-[  715.730210]  ? free_module+0x6d0/0x6d0
-[  715.733963]  ? task_work_run+0xe1/0x170
-[  715.737803]  ? exit_to_user_mode_loop+0x17f/0x1d0
-[  715.742509]  ? rcu_read_lock_sched_held+0x12/0x80
-[  715.747215]  ? trace_hardirqs_on+0x1c/0x130
-[  715.751401]  do_syscall_64+0x3b/0x90
-[  715.754981]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  715.760033] RIP: 0033:0x7f4dfe59000b
-[  715.763612] Code: 73 01 c3 48 8b 0d 6d 1e 0c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 3d 1e 0c 00 f7 d8 64 89 01 48
-[  715.782357] RSP: 002b:00007ffe8c891708 EFLAGS: 00000206 ORIG_RAX: 00000000000000b0
-[  715.789923] RAX: ffffffffffffffda RBX: 00005558a20468b0 RCX: 00007f4dfe59000b
-[  715.797054] RDX: 000000000000000a RSI: 0000000000000800 RDI: 00005558a2046918
-[  715.804189] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-[  715.811319] R10: 00007f4dfe603ac0 R11: 0000000000000206 R12: 00007ffe8c891940
-[  715.818455] R13: 00007ffe8c8920a3 R14: 00005558a20462a0 R15: 00005558a20468b0
+So let's expose just insn_processed via bpf_prog_info and fdinfo for now
+and explore good ways of getting more complicated stats in the future.
 
-Notice that this is the only case where we use the lock in this way. In
-the cleanup kthread and work kthread the lock is only taken around the
-bit accesses. This was done intentionally to avoid this kind of issue.
-The way the lock is used, we only protect ordering of bit sets vs bit
-clears. The Tx writers in the hot path don't need to be protected
-against the entire kthread loop. The Tx queues threads only need to
-ensure that they do not re-use an index that is currently in use. The
-cleanup loop does not need to block all new set bits, since it will
-re-queue itself if new timestamps are present.
+[0] https://lore.kernel.org/bpf/20210920151112.3770991-1-davemarchevsky@fb.=
+com/
 
-Fix the tracker flow so that it uses the same flow as the standard
-cleanup thread. In addition, ensure the in_use bitmap actually gets
-cleared properly.
+v1->v2:
+  * Rename uapi field from insn_processed to verified_insns [Daniel]
+  * use 31 bits of existing bitfield space in bpf_prog_info [Daniel]
+  * change underlying type from 64-> 32 bits [Daniel]
 
-This fixes the warning and also avoids the potential deadlock that might
-have occurred otherwise.
+Dave Marchevsky (2):
+  bpf: add verified_insns to bpf_prog_info and fdinfo
+  selftests/bpf: add verif_stats test
 
-Fixes: 4dd0d5c33c3e ("ice: add lock around Tx timestamp tracker flush")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_ptp.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ include/linux/bpf.h                           |  1 +
+ include/uapi/linux/bpf.h                      |  2 +-
+ kernel/bpf/syscall.c                          |  8 +++--
+ kernel/bpf/verifier.c                         |  1 +
+ tools/include/uapi/linux/bpf.h                |  2 +-
+ .../selftests/bpf/prog_tests/verif_stats.c    | 31 +++++++++++++++++++
+ 6 files changed, 41 insertions(+), 4 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/verif_stats.c
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index 05cc5870e4ef..80380aed8882 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -1313,22 +1313,21 @@ ice_ptp_flush_tx_tracker(struct ice_pf *pf, struct ice_ptp_tx *tx)
- {
- 	u8 idx;
- 
--	spin_lock(&tx->lock);
--
- 	for (idx = 0; idx < tx->len; idx++) {
- 		u8 phy_idx = idx + tx->quad_offset;
- 
--		/* Clear any potential residual timestamp in the PHY block */
--		if (!pf->hw.reset_ongoing)
--			ice_clear_phy_tstamp(&pf->hw, tx->quad, phy_idx);
--
-+		spin_lock(&tx->lock);
- 		if (tx->tstamps[idx].skb) {
- 			dev_kfree_skb_any(tx->tstamps[idx].skb);
- 			tx->tstamps[idx].skb = NULL;
- 		}
--	}
-+		clear_bit(idx, tx->in_use);
-+		spin_unlock(&tx->lock);
- 
--	spin_unlock(&tx->lock);
-+		/* Clear any potential residual timestamp in the PHY block */
-+		if (!pf->hw.reset_ongoing)
-+			ice_clear_phy_tstamp(&pf->hw, tx->quad, phy_idx);
-+	}
- }
- 
- /**
-
-base-commit: 732b74d647048668f0f8dc0c848f0746c69e2e2f
--- 
-2.31.1.331.gb0c09ab8796f
+--=20
+2.30.2
 
