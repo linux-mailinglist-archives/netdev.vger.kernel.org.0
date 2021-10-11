@@ -2,92 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2602B428552
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 04:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF48428610
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 06:49:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233746AbhJKCuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 22:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54104 "EHLO
+        id S231867AbhJKEvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 00:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233340AbhJKCuK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 22:50:10 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE230C061570;
-        Sun, 10 Oct 2021 19:48:10 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id o204so14550124oih.13;
-        Sun, 10 Oct 2021 19:48:10 -0700 (PDT)
+        with ESMTP id S229504AbhJKEvb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 00:51:31 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22BDC061570;
+        Sun, 10 Oct 2021 21:49:31 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id g5so7410827plg.1;
+        Sun, 10 Oct 2021 21:49:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=rB0jy0vpwiblrk5yT433/gDQBNOVLb3BwFhWsJbyq1I=;
-        b=mhSp5Dc+49JylgRxtvz4asKc2ISrC3yhOrDucsQbPqBGDhPqR/+g6l3OeA7Q+21jMF
-         zij7cdztCwxGWUa4iKncEbj+Zw86x+C8mll2WuiNYV/gpi1RsF+tw6X3xQq+w88+6OHe
-         fPccsCiBzFmrQ39j+xKo/4BZfFESJf+Rt/UE5/PxUfVFdgptEZ7ti1E5Th6jYW7pTN+n
-         ZhZxzrCnp8BTB36RssQFAZQA5+nG/9u1mSTr976YJDx8f6buTxYT5XtvDsk8c+jfKcWJ
-         bl9mdrzsa+yIln1jIuI/7xX93fEULFyXMioCR3+JB4u8FU58kRyUsX4kErWbip3Y5HAv
-         +7vg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=PJRPSmHOQxCp45UEkvrzfKi8Gls65lpBH+lWVNhdSr4=;
+        b=j2+X13U0WS5BXUJdQ5J41WDAVk74/CaEjB57CEadeSHodbjZE5nWxdd9Yej6VyO8MU
+         V08Ofu82n7qcZ43gQ1zpXsts1TpgweBbBJj0UJXDi6RPlwgkxL7XsU8Ea037YNAl4ojU
+         PqbBJhLea1gNvIJRxnoJgrGAkWzUsb1jhUy4LYGbldSug0bPG2W4u/V7mOwGvb4dOQOT
+         h2mIyihmRSjWSVWHDrlx/CLKsG1HlAFnLtJ5A7h5aJns2kNAgEv3JBVtGve3c9n4dVA/
+         bqYcqt7olgFTZhhVEPiHs6Ylvj7JlVwxHwcaAeaXQPPE9RiBZR41darCbQi0AwwJN+oi
+         V5cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
          :content-transfer-encoding;
-        bh=rB0jy0vpwiblrk5yT433/gDQBNOVLb3BwFhWsJbyq1I=;
-        b=El9P0Em04LXIJ+IhAt43Z5TEp/XhfzzK3V/2kC6RTCXghaeoTTOfRTF1nGjgEB9wky
-         GvanAPectsaL3sFFa+oSJq34UKzx/15kZdEu6tNzdDwwLZdiA+RX4KfeJMoO6V5W36zz
-         C6tVimH7HWhgV8eBybjn+b9djsZeeEWiT7NbaHI9+5HKIyJaEpbw4sAk+uMqJYViGXCr
-         oeHHx+b2XvRxbx09Pz4xCTYpuruFjE9nPRXH0GGCqo/auzoAGB1oECNqcwUwAng7+FKe
-         RRK6W6fnkNZ8OJ9+7V9Y6VY4IJ1A+ISPMR6KS5GgmUKhcjLU90ZMGYt4CWpDFLJyiS3O
-         n7RA==
-X-Gm-Message-State: AOAM5314wTQ0StpUY+Rr9Px+ZYizma5KHPXYo4xuLFuFWbZmv+VtPSM5
-        TVOdeJi4r5KLPYw+BkHs5nA=
-X-Google-Smtp-Source: ABdhPJz/mmu0Z91EnDCm2evuxGNVKDWJG4WnfpHMev7fmxaDdvLnLnAqszSzDdIJjgTB9b5Gocb0Ig==
-X-Received: by 2002:a54:4d89:: with SMTP id y9mr16626296oix.22.1633920490258;
-        Sun, 10 Oct 2021 19:48:10 -0700 (PDT)
-Received: from ?IPV6:2600:1700:dfe0:49f0:3cb6:937e:609b:a590? ([2600:1700:dfe0:49f0:3cb6:937e:609b:a590])
-        by smtp.gmail.com with ESMTPSA id c9sm903323otn.77.2021.10.10.19.48.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Oct 2021 19:48:09 -0700 (PDT)
-Message-ID: <484c3594-910d-eacb-6844-88a8ba9b7b3a@gmail.com>
-Date:   Sun, 10 Oct 2021 19:48:07 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.2
-Subject: Re: [net-next PATCH v5 10/14] drivers: net: dsa: qca8k: add support
- for pws config reg
-Content-Language: en-US
-To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        bh=PJRPSmHOQxCp45UEkvrzfKi8Gls65lpBH+lWVNhdSr4=;
+        b=IbAPfD764Y91aguDto2sWdbgslMOBYIGI6PntnVayQ7W0wdMfHSPQOFD/iNZaHLd8w
+         xw84XP00JJUmTCWQkz3gmMqCsnky1wnCHhjEZNmIrM8CchtvdtNchq6IwliK6WWLlvwE
+         BuCM8Ezs5q80Jf786pADccrl4K31fOgwcVLkLLOCH5S+ycA+Inap/9VRxuWKzc250hM7
+         Zs2Z2EGnGpHUMHAKScZOI8BP4r8V/pqlDvnBmM0aIAxnlY91gJ90UEOMwMiqdr+nWynd
+         iJu23fUxCMEWMwMwSxJBAwJLuniujkXGhHYizEB7Xyd2r+3jCfAQqwP9j9JQvu8ZD/B5
+         AdYw==
+X-Gm-Message-State: AOAM532h92JxhYiTD6pG83mrgtnHGWkErd2uQfsgSc0NwqeT5JWi4JTv
+        WOXgpggVvev0N8/VGvue1WY=
+X-Google-Smtp-Source: ABdhPJxx25ZKhM8mTGHSh7wU7+XAshVrV9AI6rxzfGxFi5ufDqLv22+h5uLw8+oMmX/QQ5YB9j9Prg==
+X-Received: by 2002:a17:90b:370f:: with SMTP id mg15mr7215550pjb.209.1633927771474;
+        Sun, 10 Oct 2021 21:49:31 -0700 (PDT)
+Received: from localhost.localdomain ([171.211.26.24])
+        by smtp.gmail.com with ESMTPSA id y13sm6657792pgc.46.2021.10.10.21.49.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 Oct 2021 21:49:30 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20211011013024.569-1-ansuelsmth@gmail.com>
- <20211011013024.569-11-ansuelsmth@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20211011013024.569-11-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [net-next PATCH v5 05/14] drivers: net: dsa: qca8k: add support for cpu port 6
+Date:   Mon, 11 Oct 2021 12:49:23 +0800
+Message-Id: <20211011044923.23063-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211011013024.569-6-ansuelsmth@gmail.com>
+References: <20211011013024.569-1-ansuelsmth@gmail.com> <20211011013024.569-6-ansuelsmth@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 11, 2021 at 03:30:15AM +0200, Ansuel Smith wrote:
+>  static int
+>  qca8k_parse_port_config(struct qca8k_priv *priv)
+>  {
+> @@ -1011,13 +1027,14 @@ static int
+>  qca8k_setup(struct dsa_switch *ds)
+>  {
+>  	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+> +	u8 cpu_port;
 
+cpu_port should be of type int.
 
-On 10/10/2021 6:30 PM, Ansuel Smith wrote:
-> Some qca8327 switch require to force the ignore of power on sel
-> strapping. Some switch require to set the led open drain mode in regs
-> instead of using strapping. While most of the device implements this
-> using the correct way using pin strapping, there are still some broken
-> device that require to be set using sw regs.
-> Introduce a new binding and support these special configuration.
-> As led open drain require to ignore pin strapping to work, the probe
-> fails with EINVAL error with incorrect configuration.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+>  	int ret, i;
+>  	u32 mask;
+>  
+> -	/* Make sure that port 0 is the cpu port */
+> -	if (!dsa_is_cpu_port(ds, 0)) {
+> -		dev_err(priv->dev, "port 0 is not the CPU port");
+> -		return -EINVAL;
+> +	cpu_port = qca8k_find_cpu_port(ds);
+> +	if (cpu_port < 0) {
+> +		dev_err(priv->dev, "No cpu port configured in both cpu port0 and port6");
+> +		return cpu_port;
+>  	}
