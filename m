@@ -2,160 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C82F428E07
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 15:33:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A4D3428E0D
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 15:34:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236998AbhJKNe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 09:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236976AbhJKNez (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 09:34:55 -0400
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABD7C061570;
-        Mon, 11 Oct 2021 06:32:54 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        id S237026AbhJKNf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 09:35:57 -0400
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:42128
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235588AbhJKNf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 09:35:57 -0400
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4HSfqm4ywpzQkm2;
-        Mon, 11 Oct 2021 15:32:52 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-From:   =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Brian Norris <briannorris@chromium.org>,
-        David Laight <David.Laight@ACULAB.COM>, stable@vger.kernel.org
-Subject: [PATCH v3 2/2] mwifiex: Try waking the firmware until we get an interrupt
-Date:   Mon, 11 Oct 2021 15:32:24 +0200
-Message-Id: <20211011133224.15561-3-verdre@v0yd.nl>
-In-Reply-To: <20211011133224.15561-1-verdre@v0yd.nl>
-References: <20211011133224.15561-1-verdre@v0yd.nl>
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 1FA063F31E
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 13:33:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1633959236;
+        bh=TCIb7WK8/iuKN7T7OPw+tlF5ym+d4BoIMWwoVr8feEY=;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=I9lrQ1ogb5QKIiWjO2gLgdLkMoqZJFvwk6E5RCH6C5MTgncjZ4nxTpY5VSjjn691X
+         UseTJKEk/e/m0c0N6iKjMthQrIGMs2tKw/ONq2bUbvBzSLUqEL2UD6UOIPgytlftNY
+         A0peelE760VGjyu4ySWJRWKZGtW1xMNpE6Bmg82H1Co7JAL+1iRttKYY3mUDLKA6gj
+         1A25aCnEXgEchUI67fmb9ZrYXQACV1mwli1yPqWWaLMAY0OHBvfCv5zUUBf0MxEkQY
+         CffJQG1EpaM4fMfW1MWb48hH79rmsfvhLGP5gdsZr/t5g6rUcgd5zEAb+NSV2T3fQ9
+         qwICKuNbH9mRQ==
+Received: by mail-ed1-f69.google.com with SMTP id z23-20020aa7cf97000000b003db7be405e1so5008948edx.13
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 06:33:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TCIb7WK8/iuKN7T7OPw+tlF5ym+d4BoIMWwoVr8feEY=;
+        b=vG8ykN6X+fMXttGFhPA9xfw9vuxmGXhJYMQM/lXQV6yPjcivx8cMjc2VxjvUTiIMLI
+         hZUr7RzBn8thEqUzCno+E1vpztA60qeZWqsCHoxJiO3eBj7VKRjCWABFfYLmRW9SuQzC
+         Hy95nhb4U/eQRlPTdcaPgBL+ZndwyL3+/5tsbgrOs95fmfcCggZO9iYalGgTiq9Lk67h
+         0MlzA/tenHX7RsU3MVTQnNkbV2KQYFHZesBEytsEWTSXJR6hVyURSFh8v0eiTPTvEiJn
+         Z89riZTBCXuL529Ssl8/y4kzqXZLnJLxfbnpIvsQt9aeHBk+PYuJtZxDhH5LUsI6Zjs2
+         LMnw==
+X-Gm-Message-State: AOAM533oD0iCOh96pU3Y2dLl1H7E7AIQbsG6fwUWS7PbAAq5RqXZctQk
+        JqsgFlhSIazTnY68lbMY+1NJQ64shFL/NTaezwyMkDJtGi2DDIZXpnXnuf6RkGtBHCqeRZ7LqKi
+        6NoyYhsOA7WACxsUfI2Tzum3nuZ0/IsCvsA==
+X-Received: by 2002:a05:6402:4387:: with SMTP id o7mr18183364edc.77.1633959235874;
+        Mon, 11 Oct 2021 06:33:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwLeTGK5Vyvc9ZBIZQgzot5W/MsVUfLcPkJ81E15XqTbR6u2CWcacsANyKJM9MNvAiDHxYWfg==
+X-Received: by 2002:a05:6402:4387:: with SMTP id o7mr18183346edc.77.1633959235736;
+        Mon, 11 Oct 2021 06:33:55 -0700 (PDT)
+Received: from [192.168.0.20] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id g17sm4242831edv.72.2021.10.11.06.33.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Oct 2021 06:33:54 -0700 (PDT)
+Subject: Re: [RESEND PATCH v2 0/7] nfc: minor printk cleanup
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, k.opasiak@samsung.com,
+        mgreer@animalcreek.com, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-wireless@vger.kernel.org
+References: <20211007133021.32704-1-krzysztof.kozlowski@canonical.com>
+ <20211008.111646.1874039740182175606.davem@davemloft.net>
+ <CA+Eumj5k9K9DUsPifDchNixj0QG5WrTJX+dzADmAgYSFe49+4g@mail.gmail.com>
+ <CA+Eumj65krM_LhEgbBe2hxAZhYZLmuo3zMoVcq6zp9xKa+n_Jg@mail.gmail.com>
+ <20211011060352.730763fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <ccff3781-60e1-8ff2-043b-80dc6e3ad355@canonical.com>
+Date:   Mon, 11 Oct 2021 15:33:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 73BB91887
+In-Reply-To: <20211011060352.730763fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It seems that the PCIe+USB firmware (latest version 15.68.19.p21) of the
-88W8897 card sometimes ignores or misses when we try to wake it up by
-writing to the firmware status register. This leads to the firmware
-wakeup timeout expiring and the driver resetting the card because we
-assume the firmware has hung up or crashed.
+On 11/10/2021 15:03, Jakub Kicinski wrote:
+> On Sun, 10 Oct 2021 13:36:59 +0200 Krzysztof Kozlowski wrote:
+>> On Fri, 8 Oct 2021 at 12:18, Krzysztof Kozlowski wrote:
+>>> On Fri, 8 Oct 2021 at 12:17, David Miller <davem@davemloft.net> wrote:  
+>>>> Please CC: netdev for nfc patches otherwise they will not get tracked
+>>>> and applied.  
+>>>
+>>> netdev@vger.kernel.org is here. Which address I missed?  
+>>
+>> The patchset reached patchwork:
+>> https://patchwork.kernel.org/project/netdevbpf/list/?series=559153&state=*
+>> although for some reason it is marked as "changes requested". Are
+>> there any other changes needed except Joe's comment for one patch?
+> 
+> I think it was just Joe's comment, nothing else here looks
+> objectionable.
+> 
 
-Turns out that the firmware actually didn't hang up, but simply "missed"
-our wakeup request and didn't send us an interrupt with an AWAKE event.
+OK, I'll send a v3 with fixed SPDX.
 
-Trying again to read the firmware status register after a short timeout
-usually makes the firmware wake up as expected, so add a small retry
-loop to mwifiex_pm_wakeup_card() that looks at the interrupt status to
-check whether the card woke up.
-
-The number of tries and timeout lengths for this were determined
-experimentally: The firmware usually takes about 500 us to wake up
-after we attempt to read the status register. In some cases where the
-firmware is very busy (for example while doing a bluetooth scan) it
-might even miss our requests for multiple milliseconds, which is why
-after 15 tries the waiting time gets increased to 10 ms. The maximum
-number of tries it took to wake the firmware when testing this was
-around 20, so a maximum number of 50 tries should give us plenty of
-safety margin.
-
-Here's a reproducer for those firmware wakeup failures I've found:
-
-1) Make sure wifi powersaving is enabled (iw dev wlp1s0 set power_save on)
-2) Connect to any wifi network (makes firmware go into wifi powersaving
-mode, not deep sleep)
-3) Make sure bluetooth is turned off (to ensure the firmware actually
-enters powersave mode and doesn't keep the radio active doing bluetooth
-stuff)
-4) To confirm that wifi powersaving is entered ping a device on the LAN,
-pings should be a few ms higher than without powersaving
-5) Run "while true; do iwconfig; sleep 0.0001; done", this wakes and
-suspends the firmware extremely often
-6) Wait until things explode, for me it consistently takes <5 minutes
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=109681
-Cc: stable@vger.kernel.org
-Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
----
- drivers/net/wireless/marvell/mwifiex/pcie.c | 28 +++++++++++++++++----
- 1 file changed, 23 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
-index 641fa539de1f..c3f5583ea70d 100644
---- a/drivers/net/wireless/marvell/mwifiex/pcie.c
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
-@@ -17,6 +17,7 @@
-  * this warranty disclaimer.
-  */
- 
-+#include <linux/iopoll.h>
- #include <linux/firmware.h>
- 
- #include "decl.h"
-@@ -647,11 +648,15 @@ static void mwifiex_delay_for_sleep_cookie(struct mwifiex_adapter *adapter,
- 			    "max count reached while accessing sleep cookie\n");
- }
- 
-+#define N_WAKEUP_TRIES_SHORT_INTERVAL 15
-+#define N_WAKEUP_TRIES_LONG_INTERVAL 35
-+
- /* This function wakes up the card by reading fw_status register. */
- static int mwifiex_pm_wakeup_card(struct mwifiex_adapter *adapter)
- {
- 	struct pcie_service_card *card = adapter->card;
- 	const struct mwifiex_pcie_card_reg *reg = card->pcie.reg;
-+	int retval;
- 
- 	mwifiex_dbg(adapter, EVENT,
- 		    "event: Wakeup device...\n");
-@@ -659,11 +664,24 @@ static int mwifiex_pm_wakeup_card(struct mwifiex_adapter *adapter)
- 	if (reg->sleep_cookie)
- 		mwifiex_pcie_dev_wakeup_delay(adapter);
- 
--	/* Accessing fw_status register will wakeup device */
--	if (mwifiex_write_reg(adapter, reg->fw_status, FIRMWARE_READY_PCIE)) {
--		mwifiex_dbg(adapter, ERROR,
--			    "Writing fw_status register failed\n");
--		return -1;
-+	/* The 88W8897 PCIe+USB firmware (latest version 15.68.19.p21) sometimes
-+	 * appears to ignore or miss our wakeup request, so we continue trying
-+	 * until we receive an interrupt from the card.
-+	 */
-+	if (read_poll_timeout(mwifiex_write_reg, retval,
-+			      READ_ONCE(adapter->int_status) != 0,
-+			      500, 500 * N_WAKEUP_TRIES_SHORT_INTERVAL,
-+			      false,
-+			      adapter, reg->fw_status, FIRMWARE_READY_PCIE)) {
-+		if (read_poll_timeout(mwifiex_write_reg, retval,
-+				      READ_ONCE(adapter->int_status) != 0,
-+				      10000, 10000 * N_WAKEUP_TRIES_LONG_INTERVAL,
-+				      false,
-+				      adapter, reg->fw_status, FIRMWARE_READY_PCIE)) {
-+			mwifiex_dbg(adapter, ERROR,
-+				    "Firmware didn't wake up\n");
-+			return -EIO;
-+		}
- 	}
- 
- 	if (reg->sleep_cookie) {
--- 
-2.31.1
-
+Best regards,
+Krzysztof
