@@ -2,93 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8F16429973
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 00:29:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53F27429975
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 00:30:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235511AbhJKWbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 18:31:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32974 "EHLO mail.kernel.org"
+        id S235553AbhJKWcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 18:32:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235492AbhJKWbP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Oct 2021 18:31:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D222D60F3A;
-        Mon, 11 Oct 2021 22:29:14 +0000 (UTC)
+        id S235492AbhJKWcK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Oct 2021 18:32:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 87F0D60F5B;
+        Mon, 11 Oct 2021 22:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633991355;
-        bh=Q2OL1bMvUiwErmJpXIGVh43e2qsqWzRLAo/NYEbUoNA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=W8xdavuZxuWdfGZ0kLbHvnEo3WArU01l7bppnl8rmytBCzZVdGEgJpZg9oDSprb75
-         KXHATV3NV2/wpFeKHwHl0B7Cq9oOL8nj12GLNEe6hKDwzfV8F0JVWIZdmSJVOxjuiL
-         c2H8siSZE+/fiqs6D82v6MP3UnKzbP5lS8nZECu84R1Dia7r9y0yEIc/N0cRwbJ3cn
-         HrQ9cV8Kr7ujJVeWDYg9dUq1SaU0uy/HeSxLqogykWgSLRIN//0jI2WX6KbXL4PyJt
-         CUsBxDs28S+aQkBdh9qzS2l8bqL+3vCbOZTFChRHLr1m02XOPYh7Ti+es5iSEvM5Lo
-         PBHFz7EbuqBeg==
-Date:   Mon, 11 Oct 2021 15:29:13 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        intel-wired-lan@lists.osuosl.org
-Subject: Re: Potential bio_vec networking/igb size dependency?
-Message-ID: <20211011152913.07ec6087@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <2757afa0-1b27-8480-0830-9638b2495a85@kernel.dk>
-References: <2757afa0-1b27-8480-0830-9638b2495a85@kernel.dk>
+        s=k20201202; t=1633991409;
+        bh=HmO9w25JD4+n/0F6SKE3lfNzVom9+QLKHyuHf3cRLV0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=PeK9qb9ltPEZeR4vlUiMV6wY1rse7LK0DonlncvbA0LR4QKrgNsOhj+v59/G7bsJJ
+         m3tncvNshV8DwSydlejk4DQjCZBkeDd8jaBDfNjyJp7V1c5BrrnWpp4LGPzg74EkCV
+         P3iWvoq4IVh770pm3wy8oOZxuKhwZuBVSn9e0holjRtAV9PWMeUW/8gQ540QO+3+SI
+         U3wiqQp694fAJtY0rNM+hIXZheacW2funU2z3WxEttGbW5Hydj/CIsGV9a0/eYjjwm
+         nO5LL7JiDQmTcdQ+pbDXEphel/u16HRLmFgseEntThMR6uswwHfP90GyjMhBM/bPio
+         343km+04WbLDQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7B0FC608FC;
+        Mon, 11 Oct 2021 22:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/9][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2021-10-11
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163399140949.20385.7016384584167614726.git-patchwork-notify@kernel.org>
+Date:   Mon, 11 Oct 2021 22:30:09 +0000
+References: <20211011165742.1144861-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20211011165742.1144861-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        jiri@resnulli.us, ivecera@redhat.com,
+        michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
+        grzegorz.nitka@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Oct 2021 16:09:55 -0600 Jens Axboe wrote:
-> Hi,
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
+
+On Mon, 11 Oct 2021 09:57:33 -0700 you wrote:
+> Wojciech Drewek says:
 > 
-> Been working on a change today that changes struct bio_vec, and it works
-> fine on the storage side. But when I boot the box with the change, I
-> can't ssh in. If I attempt to use networking on the box (eg to update
-> packages), it looks like the data is corrupt. Basic things work - I can
-> dhcp and get an IP and so on, but ssh in yields:
+> This series adds support for adding/removing advanced switch filters
+> in ice driver. Advanced filters are building blocks for HW acceleration
+> of TC orchestration. Add ndo_setup_tc callback implementation for PF and
+> VF port representors (when device is configured in switchdev mode).
 > 
-> ssh -v box
 > [...]
-> debug1: Local version string SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.3
-> debug1: Remote protocol version 2.0, remote software version OpenSSH_8.2p1 Ubuntu-4ubuntu0.3
-> debug1: match: OpenSSH_8.2p1 Ubuntu-4ubuntu0.3 pat OpenSSH* compat 0x04000000
-> debug1: Authenticating to box as 'axboe'
-> debug1: SSH2_MSG_KEXINIT sent
-> debug1: SSH2_MSG_KEXINIT received
-> debug1: kex: algorithm: curve25519-sha256
-> debug1: kex: host key algorithm: ecdsa-sha2-nistp256
-> debug1: kex: server->client cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
-> debug1: kex: client->server cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
-> debug1: expecting SSH2_MSG_KEX_ECDH_REPLY
-> Connection closed by 207.135.234.126 port 22
-> 
-> I've got a vm image that I boot on my laptop, and that seems to
-> work fine. Hence I'm thinking maybe it's an igb issue? But for the
-> life of me, I cannot figure out wtf it is. I've looked at the skb_frag_t
-> uses and nothing pops out at me.
-> 
-> Trivial to reproduce, just add the below patch.
-> 
-> diff --git a/include/linux/bvec.h b/include/linux/bvec.h
-> index 0e9bdd42dafb..e61967fb4643 100644
-> --- a/include/linux/bvec.h
-> +++ b/include/linux/bvec.h
-> @@ -33,6 +33,7 @@ struct bio_vec {
->  	struct page	*bv_page;
->  	unsigned int	bv_len;
->  	unsigned int	bv_offset;
-> +	unsigned long	foo;
->  };
->  
->  struct bvec_iter {
 
-Yeah, changing the size of bvec now that skb uses it may be lots of
-pain. Are you trying to grow it?
+Here is the summary with links:
+  - [net-next,1/9] ice: implement low level recipes functions
+    https://git.kernel.org/netdev/net-next/c/7715ec32472c
+  - [net-next,2/9] ice: manage profiles and field vectors
+    https://git.kernel.org/netdev/net-next/c/450052a4142c
+  - [net-next,3/9] ice: create advanced switch recipe
+    https://git.kernel.org/netdev/net-next/c/fd2a6b71e300
+  - [net-next,4/9] ice: allow adding advanced rules
+    https://git.kernel.org/netdev/net-next/c/0f94570d0cae
+  - [net-next,5/9] ice: allow deleting advanced rules
+    https://git.kernel.org/netdev/net-next/c/8bb98f33dead
+  - [net-next,6/9] ice: cleanup rules info
+    https://git.kernel.org/netdev/net-next/c/8b8ef05b776e
+  - [net-next,7/9] ice: Allow changing lan_en and lb_en on all kinds of filters
+    https://git.kernel.org/netdev/net-next/c/572b820dfa61
+  - [net-next,8/9] ice: ndo_setup_tc implementation for PF
+    https://git.kernel.org/netdev/net-next/c/0d08a441fb1a
+  - [net-next,9/9] ice: ndo_setup_tc implementation for PR
+    https://git.kernel.org/netdev/net-next/c/7fde6d8b445f
 
-We place skb_shared_info (which holds frags) after packet data in 
-a packet buffer, so changing skb_shared_info may trip expectations 
-that a lot of drivers have about layout of the buffers.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Let's see what igb does wrong...
+
