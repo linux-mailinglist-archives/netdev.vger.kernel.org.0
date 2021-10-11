@@ -2,205 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D86B4299D9
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 01:30:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFD724299F9
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 01:47:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235676AbhJKXci (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 19:32:38 -0400
-Received: from mail-eopbgr150081.outbound.protection.outlook.com ([40.107.15.81]:16705
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235583AbhJKXch (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Oct 2021 19:32:37 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mHeHCdjK+44eDCmpmP8xz2zRra9r7cfjB/mOMjiqzicMWXGBZjhSipGrr2lFm5xVaXsf/g7Y80Nm6d2zDkWhw3NPN0qysvyjwP1AIPEbcSmyOt12PH48jZabmQFKhxOwzlHeaqOhaBxsaCq/oM2fHvS4A9jyZlQATYs0O5LcyfaF8VUGegBPynPJcXCNO1OVsDc60+A/XHq+NMNYpTWgEQYG66lodu90EWIg+F+VaC8n5zd/yLaHgrnNeWnjxhyMOvgha/NfCYF6RU+EJIcwXj9bsX218q2HVFN5axHcbUWEmPY8j8kKrVMZ2QIhfM59JLNND5Jq9Rqg6gxWNgiWiw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=q6QO7pUQLlf7bzNlh/MolcGxXNEU7LBgptzp6TZYWt8=;
- b=KRu+Q7AdV6JZQiA7xcfwywLOxyvQKxpJLApnVih0GpPmfynwEwOQoAuocTE47zRqVgTF4bWbYH3wr+EypvNp3G3RtgZja7CDwTUZilPbfsRV3ZpptKYcJEkoX2e4LT/kw/s3t/zplIT6uqUPktsBW0cUheEM+/Rq+2SNsi0wgql2TfLU8E33+f4SHScJfeZt/6GKUkfNBFWRX5wE2W2xXEzic12xykw/+R53LMHTeNAkiiN0wSwjHFjYFkplm1b2LNf+8OI3b1eW5tqlWWRFy6FCFMbDqpQP0ZooDWAGUK/GTY87oFkzF3T3keoT+m36t4uHMWR7uscl6GNVL202sg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q6QO7pUQLlf7bzNlh/MolcGxXNEU7LBgptzp6TZYWt8=;
- b=BLWOQgUyQMpQXD8yRkP0zoJ2a7TCRdEe7sIzhL75OWY9Fm2UIiXqcRC5LpWH1n7/fZb1V2KBFIjvgHXA5+OaTsZHU6P93mxtiMCxlz4FFNELDsICGL7O6QTQNTBtB2zwSMdzx2qSD2EIkJGukFOe+e2Jarn2PBnCIphplHriwR8=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB6125.eurprd04.prod.outlook.com (2603:10a6:803:f9::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.20; Mon, 11 Oct
- 2021 23:30:34 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4587.026; Mon, 11 Oct 2021
- 23:30:33 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, Po Liu <po.liu@nxp.com>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Michael Walle <michael@walle.cc>,
-        Rui Sousa <rui.sousa@nxp.com>, "Y.b. Lu" <yangbo.lu@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net 04/10] net: mscc: ocelot: deny TX timestamping of
- non-PTP packets
-Thread-Topic: [PATCH net 04/10] net: mscc: ocelot: deny TX timestamping of
- non-PTP packets
-Thread-Index: AQHXvuarGrf5JiY3GkiVM9PNSoKKEqvOcioA
-Date:   Mon, 11 Oct 2021 23:30:33 +0000
-Message-ID: <20211011233032.vz2sb5yxmuekgyfd@skbuf>
-References: <20211011212616.2160588-1-vladimir.oltean@nxp.com>
- <20211011212616.2160588-5-vladimir.oltean@nxp.com>
-In-Reply-To: <20211011212616.2160588-5-vladimir.oltean@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b0ffe0a8-0d56-421f-6d7c-08d98d0f1f49
-x-ms-traffictypediagnostic: VI1PR04MB6125:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB6125E955FA215E5CF496F81FE0B59@VI1PR04MB6125.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3J65Ni9Z2xtrwpHgB0KXjh9d9shgAAfCgYRE8XOSOn49r6WWWtgy4laOav6v30qJKv4h/SqKV4tK42vG61Ad+leTGHbGcEQQS8kgADO98CS0J/N0kgoDcJWE1LbLLlCaZPdc8PoycXlVmgMnI9N59V5vRGWsRE+dA20e8dqIHb+J9QkndrWHbUolxli4ITHMJHMq6eOV+675yg92U/bi8fnkTMohMpENnsrOvBV72NhNWupIhlhEILq1oR1DskdB0uVyMuPbLODA9lAc/pvohXPa4HAWFtMqrDBSMX04NkJxVg4BoXU6q36HfmeCkWdhOmBhTyRDTSMKzzj7yYOoqOy4xA9JCO5fqGTQH+j3T4r3sa95ziQscDBCuCp4UlheIg7MIVml8WB/pnEJywTCS44k7LMitccntPofK745b2Q13MJ8xO3LWlC/OMKXo7NPtlw8R+xnv9cwsfAfjdqymvkEBlT3NWfPyRUu35rF2ll7llNbE0awqCR29aOP5QeWSXBtW+uFMv2tKYAe0cwfWj2D7sIGUn587yP1Du/3+donZC8Zafh8eowvmr31Lk0XRY8LyH9MZ+M32sgHu4ibMjdbMhip1xxFPDunilW7tcZ4ZHMpK4fasa9t5xI3ISfE1VEj+rs1q+CjZ8OhpvSdTt0f5TdDY5fRv8Mfhw+5rKq164hjmhBFKWqCnE2pdHqQ/ver7IYSXM4kKSbqX8IeBPgFYaXz5+ePM9rpgZnWh44WEMbChxoA2KhmOR/l/kLgCNXMRHW+3JtTIUNMqqBVLZbJgNB/Fppa0I8uPlUZTZg=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(6506007)(83380400001)(186003)(8676002)(71200400001)(8936002)(26005)(38100700002)(1076003)(122000001)(86362001)(5660300002)(508600001)(66476007)(66446008)(66946007)(76116006)(966005)(7416002)(9686003)(6512007)(316002)(110136005)(6486002)(54906003)(66556008)(64756008)(38070700005)(33716001)(4326008)(6636002)(44832011)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?7BZZEnlgUSazSwNnfTQ+wzfBZYUo665VLTkPq+T7jWQGmgN/i28jvy1nGuBQ?=
- =?us-ascii?Q?AGzNdO0eYKdqv7UmdtvEHTCPvqV2cyRJTkQL/RD+SdJb+0EvSWsBbsGBJaUc?=
- =?us-ascii?Q?GPCTH3cSTc5orTanaM9KDBxKqvzCq/vKnwBZRMhkxKQZgSIlNFaERBmD9d1M?=
- =?us-ascii?Q?RFa6QwfuXDAf0gYgxt+VsV1F1ZZtlXZ9nxlfb2UNCiLTvSSL902CUHK9jACp?=
- =?us-ascii?Q?2NNhsAgKbjHsGZhH8tMimFjXuKjUqhvc3iG46QLkg/uAnrI2YEr8BdHdMQ8l?=
- =?us-ascii?Q?6kvmpFMqxloV5ZM/f1Ledf58RUduWF/y45tAhsrrQqVxsVQaYHCttmryrvMB?=
- =?us-ascii?Q?dOVTokuIz7A5ZrnS4PqmloZbyUAo+7Y3aMJ7RLTpa9QzdbK0ZrQE00Ykm7eg?=
- =?us-ascii?Q?vvGrhnnXdYrlAGb+bHKX9VnztMMYRUoiSw4Msi2KEApphqYTABtIM9zQ9YQo?=
- =?us-ascii?Q?aYLtIAQSX1fCBMZW1qvEH31Ia2kNqSl2xf2reh7ihWd12r1jG+2sFS9JSpfO?=
- =?us-ascii?Q?tuLrniWXfuO9MqghtYyqm1fF6cehuzVquiL3cd88yys/6fu7cD4WH34Q0bjh?=
- =?us-ascii?Q?GZknTPPmTXcuLZMoHXp73AzBHtQFK5ud/0dzku9H3Ob+nvd4mLyxoPfJm/Bm?=
- =?us-ascii?Q?y/9w5EHoUIdXt0hajqr+MkZ77XzgVVkMtTaDIkqJBouUS6dZ6Un+uzC7yveQ?=
- =?us-ascii?Q?r61oqfpLxdegCqbayCz6eKiogkKi55UH+zVPf7FkRqi1vPuuc1k3O+ZEkVR2?=
- =?us-ascii?Q?SfwBqu9DOlm4K1wOAgiAqA7s1KmbqUV4MVH4+yMoypsOLKRoSZvrmjDJkRdu?=
- =?us-ascii?Q?D7bO8o7XRdr8cFSTYN1YbimuUQwhdwaW6isQjlfzp3tNToyUe/PjHwvkcmK1?=
- =?us-ascii?Q?Nnz+87Dg+HOtrHSmSPJAakkpLUubVU2X8tBtUIxQ4oWL53zUU05DYzjsozPj?=
- =?us-ascii?Q?ryjf9FwHHoZQUQLq1RyOxVRxHUuJAgjcqP+1y5zx8kSFMOw902r6ojkfo7By?=
- =?us-ascii?Q?RWRmSL7kQUu5g0RJ60lS/U15ei8f4mzq0BicA7kZaA6lK0m7AdQmBW1jQ9C+?=
- =?us-ascii?Q?akbsaS7CFdc1XV9EMqL9YMmZLDNVTPZdh43371yh4hCxh6dzbCqSuhTg8Sf+?=
- =?us-ascii?Q?AArXRyns30kjlvLdrL+3/tEao8IPfnf/Gw6OLd6h5OPH2qZgBSx9DHjqKnxn?=
- =?us-ascii?Q?NOdN6jRU9oOxyFp+IQBuhJ87YIw2Zki4ESDAs5BJANvLhmi0/MLnLYTb5dLA?=
- =?us-ascii?Q?ewdre7uRR/fOv485iAuGiM4wrBLThhnOr4R7PLRkZzH3pdWrKZH4b4RYS52X?=
- =?us-ascii?Q?Kd+DqOu32nDc0TEEHxnbLe+cgXLVPBhdDoori/KxdhnBYw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E7DA1B959E18954FA114B0FD196648CC@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S234048AbhJKXtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 19:49:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35094 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230213AbhJKXtt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Oct 2021 19:49:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E81BB600EF;
+        Mon, 11 Oct 2021 23:47:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633996068;
+        bh=8/gr/oEwosgEckZEY426I+AnZhmCw4JvuCWhUtiqRLc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lv1p/mRiHACMb+Ia64XcWgaFEzjxjSCTOPsi89z4ICvI6MOi10vbdXnEjdK2Q7eno
+         0Zv5CXxxiIgeFXAwmcy41Q2z3hd9l284Rz1+8h21rehbA2S1vcQCWs8Q+sBqM46Fiw
+         DCc6X+eTw5DSCLI51c4vukKcin/Cg5rHvj8ijDG4jaB2KBIbrGQ9qPy7U+PPK4G13K
+         4kCJMPvApodNkqnV39Xv2m9fc8V3+4QApC36x8YjZDo3ukRUhfj8GER5YWtNjdlOfR
+         Zlyv4JAzAqo2LlufdJV4xPRXWZO4k060gAQnNo9MIia+cPsk1iKh0BbShdjeGq/ts3
+         Rfw06Y0KQlL1g==
+Date:   Mon, 11 Oct 2021 16:47:47 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     syzbot <syzbot+67f89551088ea1a6850e@syzkaller.appspotmail.com>
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in veth_xdp_rcv
+Message-ID: <20211011164747.303ffcd0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <000000000000c1524005cdeacc5f@google.com>
+References: <000000000000c1524005cdeacc5f@google.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0ffe0a8-0d56-421f-6d7c-08d98d0f1f49
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Oct 2021 23:30:33.6768
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: COi2NzFQd/lAAUjruTIrhBJli3gcTFAYDKcDnyZ0qAv9xFRWhAbW4TpY9HiI/zKJ4nbLqt6k2QdCeYkqwncZJg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6125
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 12:26:10AM +0300, Vladimir Oltean wrote:
-> It appears that Ocelot switches cannot timestamp non-PTP frames, I
-> tested this using the isochron program at:
-> https://github.com/vladimiroltean/tsn-scripts
->=20
-> with the result that the driver increments the ocelot_port->ts_id
-> counter as expected, puts it in the REW_OP, but the hardware seems to
-> not timestamp these packets at all, since no IRQ is emitted.
->=20
-> Therefore check whether we are sending PTP frames, and refuse to
-> populate REW_OP otherwise.
->=20
-> Fixes: 4e3b0468e6d7 ("net: mscc: PTP Hardware Clock (PHC) support")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+CC: Paolo, Toke
+
+On Sat, 09 Oct 2021 05:40:24 -0700 syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    af4bb50d4647 bpf, tests: Add more LD_IMM64 tests
+> git tree:       bpf-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=129a1214b00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=9290a409049988d4
+> dashboard link: https://syzkaller.appspot.com/bug?extid=67f89551088ea1a6850e
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+67f89551088ea1a6850e@syzkaller.appspotmail.com
+> 
+> ==================================================================
+> BUG: KASAN: use-after-free in __ptr_ring_peek include/linux/ptr_ring.h:172 [inline]
+> BUG: KASAN: use-after-free in __ptr_ring_consume include/linux/ptr_ring.h:299 [inline]
+> BUG: KASAN: use-after-free in veth_xdp_rcv+0x70b/0x810 drivers/net/veth.c:856
+> Read of size 8 at addr ffff88804c47a1d8 by task ksoftirqd/0/13
+> 
+> CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.15.0-rc3-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>  print_address_description.constprop.0.cold+0x6c/0x309 mm/kasan/report.c:256
+>  __kasan_report mm/kasan/report.c:442 [inline]
+>  kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+>  __ptr_ring_peek include/linux/ptr_ring.h:172 [inline]
+>  __ptr_ring_consume include/linux/ptr_ring.h:299 [inline]
+>  veth_xdp_rcv+0x70b/0x810 drivers/net/veth.c:856
+>  veth_poll+0x134/0x850 drivers/net/veth.c:913
+>  __napi_poll+0xaf/0x440 net/core/dev.c:6993
+>  napi_poll net/core/dev.c:7060 [inline]
+>  net_rx_action+0x801/0xb40 net/core/dev.c:7147
+>  __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+>  run_ksoftirqd kernel/softirq.c:920 [inline]
+>  run_ksoftirqd+0x2d/0x60 kernel/softirq.c:912
+>  smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+>  kthread+0x3e5/0x4d0 kernel/kthread.c:319
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> 
+> Allocated by task 23048:
+>  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+>  kasan_set_track mm/kasan/common.c:46 [inline]
+>  set_alloc_info mm/kasan/common.c:434 [inline]
+>  ____kasan_kmalloc mm/kasan/common.c:513 [inline]
+>  ____kasan_kmalloc mm/kasan/common.c:472 [inline]
+>  __kasan_kmalloc+0xa4/0xd0 mm/kasan/common.c:522
+>  kmalloc_node include/linux/slab.h:614 [inline]
+>  kvmalloc_node+0x61/0x120 mm/util.c:587
+>  kvmalloc include/linux/mm.h:805 [inline]
+>  kvmalloc_array include/linux/mm.h:823 [inline]
+>  __ptr_ring_init_queue_alloc include/linux/ptr_ring.h:471 [inline]
+>  ptr_ring_init include/linux/ptr_ring.h:489 [inline]
+>  __veth_napi_enable_range+0xa2/0x780 drivers/net/veth.c:941
+>  __veth_napi_enable drivers/net/veth.c:964 [inline]
+>  veth_enable_xdp+0x30f/0x620 drivers/net/veth.c:1068
+>  veth_xdp_set drivers/net/veth.c:1483 [inline]
+>  veth_xdp+0x4d4/0x780 drivers/net/veth.c:1523
+>  dev_xdp_install+0xd5/0x270 net/core/dev.c:9365
+>  dev_xdp_attach+0x83d/0x1010 net/core/dev.c:9513
+>  dev_xdp_attach_link net/core/dev.c:9532 [inline]
+>  bpf_xdp_link_attach+0x262/0x410 net/core/dev.c:9695
+>  link_create kernel/bpf/syscall.c:4258 [inline]
+>  __sys_bpf+0x549c/0x5df0 kernel/bpf/syscall.c:4657
+>  __do_sys_bpf kernel/bpf/syscall.c:4691 [inline]
+>  __se_sys_bpf kernel/bpf/syscall.c:4689 [inline]
+>  __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4689
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Freed by task 23044:
+>  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+>  kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
+>  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:360
+>  ____kasan_slab_free mm/kasan/common.c:366 [inline]
+>  ____kasan_slab_free mm/kasan/common.c:328 [inline]
+>  __kasan_slab_free+0xff/0x130 mm/kasan/common.c:374
+>  kasan_slab_free include/linux/kasan.h:230 [inline]
+>  slab_free_hook mm/slub.c:1700 [inline]
+>  slab_free_freelist_hook+0x81/0x190 mm/slub.c:1725
+>  slab_free mm/slub.c:3483 [inline]
+>  kfree+0xe4/0x530 mm/slub.c:4543
+>  kvfree+0x42/0x50 mm/util.c:620
+>  ptr_ring_cleanup include/linux/ptr_ring.h:671 [inline]
+>  veth_napi_del_range+0x3aa/0x560 drivers/net/veth.c:985
+>  veth_napi_del drivers/net/veth.c:991 [inline]
+>  veth_disable_xdp+0x2b3/0x430 drivers/net/veth.c:1101
+>  veth_xdp_set drivers/net/veth.c:1499 [inline]
+>  veth_xdp+0x698/0x780 drivers/net/veth.c:1523
+>  dev_xdp_install+0x1ed/0x270 net/core/dev.c:9365
+>  dev_xdp_detach_link net/core/dev.c:9549 [inline]
+>  bpf_xdp_link_release+0x242/0x4e0 net/core/dev.c:9564
+>  bpf_link_free+0xe6/0x1b0 kernel/bpf/syscall.c:2419
+>  bpf_link_put+0x161/0x1b0 kernel/bpf/syscall.c:2445
+>  bpf_link_release+0x33/0x40 kernel/bpf/syscall.c:2453
+>  __fput+0x288/0x9f0 fs/file_table.c:280
+>  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+>  tracehook_notify_resume include/linux/tracehook.h:189 [inline]
+>  exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
+>  exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:207
+>  __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+>  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+>  do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Last potentially related work creation:
+>  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+>  kasan_record_aux_stack+0xe9/0x110 mm/kasan/generic.c:348
+>  __call_rcu kernel/rcu/tree.c:2987 [inline]
+>  call_rcu+0xb1/0x750 kernel/rcu/tree.c:3067
+>  netlink_release+0xdd4/0x1dd0 net/netlink/af_netlink.c:812
+>  __sock_release+0xcd/0x280 net/socket.c:649
+>  sock_close+0x18/0x20 net/socket.c:1314
+>  __fput+0x288/0x9f0 fs/file_table.c:280
+>  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+>  tracehook_notify_resume include/linux/tracehook.h:189 [inline]
+>  exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
+>  exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:207
+>  __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+>  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+>  do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Second to last potentially related work creation:
+>  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+>  kasan_record_aux_stack+0xe9/0x110 mm/kasan/generic.c:348
+>  __call_rcu kernel/rcu/tree.c:2987 [inline]
+>  call_rcu+0xb1/0x750 kernel/rcu/tree.c:3067
+>  netlink_release+0xdd4/0x1dd0 net/netlink/af_netlink.c:812
+>  __sock_release+0xcd/0x280 net/socket.c:649
+>  sock_close+0x18/0x20 net/socket.c:1314
+>  __fput+0x288/0x9f0 fs/file_table.c:280
+>  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+>  tracehook_notify_resume include/linux/tracehook.h:189 [inline]
+>  exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
+>  exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:207
+>  __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+>  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+>  do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> The buggy address belongs to the object at ffff88804c47a000
+>  which belongs to the cache kmalloc-2k of size 2048
+> The buggy address is located 472 bytes inside of
+>  2048-byte region [ffff88804c47a000, ffff88804c47a800)
+> The buggy address belongs to the page:
+> page:ffffea0001311e00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x4c478
+> head:ffffea0001311e00 order:3 compound_mapcount:0 compound_pincount:0
+> flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+> raw: 00fff00000010200 dead000000000100 dead000000000122 ffff888010c42000
+> raw: 0000000000000000 0000000000080008 00000001ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 19628, ts 447286861857, free_ts 447089779835
+>  prep_new_page mm/page_alloc.c:2424 [inline]
+>  get_page_from_freelist+0xa72/0x2f80 mm/page_alloc.c:4153
+>  __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5375
+>  alloc_pages+0x1a7/0x300 mm/mempolicy.c:2197
+>  alloc_slab_page mm/slub.c:1763 [inline]
+>  allocate_slab mm/slub.c:1900 [inline]
+>  new_slab+0x319/0x490 mm/slub.c:1963
+>  ___slab_alloc+0x921/0xfe0 mm/slub.c:2994
+>  __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3081
+>  slab_alloc_node mm/slub.c:3172 [inline]
+>  __kmalloc_node_track_caller+0x2d2/0x340 mm/slub.c:4936
+>  kmalloc_reserve net/core/skbuff.c:352 [inline]
+>  __alloc_skb+0xda/0x360 net/core/skbuff.c:424
+>  alloc_skb include/linux/skbuff.h:1116 [inline]
+>  nlmsg_new include/net/netlink.h:953 [inline]
+>  rtmsg_ifinfo_build_skb+0x72/0x1a0 net/core/rtnetlink.c:3809
+>  unregister_netdevice_many+0x9e4/0x1790 net/core/dev.c:11054
+>  unregister_netdevice_queue+0x2dd/0x3c0 net/core/dev.c:10984
+>  unregister_netdevice include/linux/netdevice.h:2988 [inline]
+>  __tun_detach+0x10ad/0x13d0 drivers/net/tun.c:670
+>  tun_detach drivers/net/tun.c:687 [inline]
+>  tun_chr_close+0xc4/0x180 drivers/net/tun.c:3397
+>  __fput+0x288/0x9f0 fs/file_table.c:280
+>  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+>  tracehook_notify_resume include/linux/tracehook.h:189 [inline]
+>  exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
+>  exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:207
+> page last free stack trace:
+>  reset_page_owner include/linux/page_owner.h:24 [inline]
+>  free_pages_prepare mm/page_alloc.c:1338 [inline]
+>  free_pcp_prepare+0x2c5/0x780 mm/page_alloc.c:1389
+>  free_unref_page_prepare mm/page_alloc.c:3315 [inline]
+>  free_unref_page+0x19/0x690 mm/page_alloc.c:3394
+>  __unfreeze_partials+0x340/0x360 mm/slub.c:2495
+>  qlink_free mm/kasan/quarantine.c:146 [inline]
+>  qlist_free_all+0x5a/0xc0 mm/kasan/quarantine.c:165
+>  kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:272
+>  __kasan_slab_alloc+0x95/0xb0 mm/kasan/common.c:444
+>  kasan_slab_alloc include/linux/kasan.h:254 [inline]
+>  slab_post_alloc_hook mm/slab.h:519 [inline]
+>  slab_alloc_node mm/slub.c:3206 [inline]
+>  slab_alloc mm/slub.c:3214 [inline]
+>  kmem_cache_alloc+0x209/0x390 mm/slub.c:3219
+>  getname_flags.part.0+0x50/0x4f0 fs/namei.c:138
+>  getname_flags+0x9a/0xe0 include/linux/audit.h:319
+>  user_path_at_empty+0x2b/0x60 fs/namei.c:2800
+>  user_path_at include/linux/namei.h:57 [inline]
+>  vfs_statx+0x142/0x390 fs/stat.c:221
+>  vfs_fstatat fs/stat.c:243 [inline]
+>  vfs_lstat include/linux/fs.h:3356 [inline]
+>  __do_sys_newlstat+0x91/0x110 fs/stat.c:398
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Memory state around the buggy address:
+>  ffff88804c47a080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>  ffff88804c47a100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >ffff88804c47a180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb  
+>                                                     ^
+>  ffff88804c47a200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>  ffff88804c47a280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ==================================================================
+> 
+> 
 > ---
->  drivers/net/ethernet/mscc/ocelot.c | 15 ++++++++-------
->  1 file changed, 8 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/ms=
-cc/ocelot.c
-> index 190a5900615b..4a667df9b447 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.c
-> +++ b/drivers/net/ethernet/mscc/ocelot.c
-> @@ -618,16 +618,12 @@ u32 ocelot_ptp_rew_op(struct sk_buff *skb)
->  }
->  EXPORT_SYMBOL(ocelot_ptp_rew_op);
-> =20
-> -static bool ocelot_ptp_is_onestep_sync(struct sk_buff *skb)
-> +static bool ocelot_ptp_is_onestep_sync(struct sk_buff *skb,
-> +				       unsigned int ptp_class)
->  {
->  	struct ptp_header *hdr;
-> -	unsigned int ptp_class;
->  	u8 msgtype, twostep;
-> =20
-> -	ptp_class =3D ptp_classify_raw(skb);
-> -	if (ptp_class =3D=3D PTP_CLASS_NONE)
-> -		return false;
-> -
->  	hdr =3D ptp_parse_header(skb, ptp_class);
->  	if (!hdr)
->  		return false;
-> @@ -647,11 +643,16 @@ int ocelot_port_txtstamp_request(struct ocelot *oce=
-lot, int port,
->  {
->  	struct ocelot_port *ocelot_port =3D ocelot->ports[port];
->  	u8 ptp_cmd =3D ocelot_port->ptp_cmd;
-> +	unsigned int ptp_class;
->  	int err;
-> =20
-> +	ptp_class =3D ptp_classify_raw(skb);
-> +	if (ptp_class =3D=3D PTP_CLASS_NONE)
-> +		return -EINVAL;
-> +
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
 
-I am actually introducing an issue here, sorry that I caught it just now.
-The ocelot_port_txtstamp_request() function can actually fall through
-without doing anything, for example when PTP timestamping is not enabled
-(felix_hwtstamp_set was not called, and ocelot_port->ptp_cmd is 0).
-We may still carry PTP frames that must be timestamped by somebody else
-(a PHY, a downstream DSA switch etc), and ds->ops->port_txtstamp() will
-still get called, because skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP is
-true, DSA doesn't have the insight on who has PTP timestamping enabled
-and who doesn't.
-
-When attached to a downstream DSA switch who is also the one performing
-TX timestamping, we are processing an skb here which has SKBTX_HW_TSTAMP
-set, yet is DSA-tagged, so the call to ptp_classify_raw() fails to find
-the PTP header. So we print that we are "delivering skb without TX timestam=
-p"
-(yay us), whereas before this change, we silently did nothing anyway
-because ocelot_port->ptp_cmd was zero, so this is slightly annoying.
-
-I will wait for more feedback on the series then repost tomorrow.
-
->  	/* Store ptp_cmd in OCELOT_SKB_CB(skb)->ptp_cmd */
->  	if (ptp_cmd =3D=3D IFH_REW_OP_ORIGIN_PTP) {
-> -		if (ocelot_ptp_is_onestep_sync(skb)) {
-> +		if (ocelot_ptp_is_onestep_sync(skb, ptp_class)) {
->  			OCELOT_SKB_CB(skb)->ptp_cmd =3D ptp_cmd;
->  			return 0;
->  		}
-> --=20
-> 2.25.1
-> =
