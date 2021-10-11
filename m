@@ -2,261 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70D4C4295D7
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 19:37:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB3964295FA
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 19:43:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232183AbhJKRjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 13:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232257AbhJKRjs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 13:39:48 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D58CC061764
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 10:37:47 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id s18-20020a0568301e1200b0054e77a16651so5886000otr.7
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 10:37:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tj0ez8KOIN3iGavit2nL31CdJWBPsMoFo8+gcn8vAXw=;
-        b=k5ipc3mQAiV0dS9BwOOkFinF90cqy17wrCoe1I1PNBdMpcHiQp6gvslxlfGPI70NxJ
-         qUrKcIxLFNEE7qgg7R5jHasMtvpdAbp9sDtZF3pBN3gapqOkOydT0JE+c1F0di39XM2Z
-         VbuNyetuNkmF8i7ee8VH6xYeUAT+tIhNUZQM76g+AD5BsQgirr2Le9dN7W1duKr7XE4T
-         DxRSCgGT/7Hy9cBkMcr1d06r8QMvHBKPiMFigFg1H4QKX4EVCeJa4s5as5RgRtgNIfvA
-         J9C9gPNCT2JaHhvi6dvm+Ykt3111sT6AnuSz5qrY99nMFAzBnc3J8CdaTzuFra230vzp
-         T+lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tj0ez8KOIN3iGavit2nL31CdJWBPsMoFo8+gcn8vAXw=;
-        b=O6wIFULzjX62z2kQh+s0pccntBVWRgGZ8Wmxjim/tbmGBCRrCvVxifO/3P5xRtpsqC
-         YdH6aOhfDw0867GL40owXoqixs5WdhfImKW4mW620iwf519hPZ5aDiT+06ORHhh7hKgb
-         2/8l1mRsvRJmzvtXElaIwrd7pEi9MwiRUpiXETVihILfdido1K32YdZcvkzG+j5g40ah
-         5prIgI9ht9KO8PUchKY6p/YM3R2e4pqBa73/qAAQDnxAmjQ61shH39G+NBTVnqmihBxd
-         YaQxpzmj566eEgMjA3aKvWehAc6jC30OfNLZdBuEuxvTeAQP5m2JxKea91gu7Lwzm8YD
-         XtTw==
-X-Gm-Message-State: AOAM532boP5UMlAUZpweqy1CxNXqGgO2nIR7jWDhJycmCxWVN9XfS4p0
-        4/2E/0szbTiJvqOi3RSJ4euI5p7/L+cShQ==
-X-Google-Smtp-Source: ABdhPJx84ZRrul5YadMUtFSkOfvABSC5HC18sJxJwkxN2sgpQFbW7cFm812AGdbEjSMEwU72VtM8vA==
-X-Received: by 2002:a05:6830:17da:: with SMTP id p26mr22664423ota.116.1633973866343;
-        Mon, 11 Oct 2021 10:37:46 -0700 (PDT)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id s18sm1820955oij.3.2021.10.11.10.37.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Oct 2021 10:37:45 -0700 (PDT)
-Date:   Mon, 11 Oct 2021 10:39:20 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Stephan Gerhold <stephan@gerhold.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Andy Gross <agross@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Subject: Re: [PATCH net-next v2 2/4] dmaengine: qcom: bam_dma: Add "powered
- remotely" mode
-Message-ID: <YWR2yN3x3zroz1GX@ripper>
-References: <20211011141733.3999-1-stephan@gerhold.net>
- <20211011141733.3999-3-stephan@gerhold.net>
+        id S232768AbhJKRpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 13:45:45 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:4157 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230102AbhJKRpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 13:45:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1633974224; x=1665510224;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+F9l5T5x2PMp6M/KDfNyBQ/u3YF2P+eW3/LZuRhLqB0=;
+  b=RH+H42EfcoxmM/kzqPBnHztha3v32H026a34vh/d2W7wo457rDULmDsh
+   zMqma0ne6QA4/Ja0k+SlHeiHJRjS2lzq+KngdFJEEWfM366jhhy4mQCAy
+   m5ASkv3EjluLknsUk19o9/VRApmdgFBQ78bwgBxIdq/hPMtMyqjbmld7N
+   EacFZEJYsXhq6VxuVx/0Y1+rkewEHsCnz7rH7wj5iZcLD2gVv/v+TWa9s
+   FPVai+CIUIyc+078hw6jMq0NgHVLfi04gIDxW3KxJGm17S5TFppdGC1iY
+   kTIDo/avxF8LmSQMIH5A1ybHvdAwfFCWrLHI4QNimjrcvdaROZcwmNXiE
+   A==;
+IronPort-SDR: YJjfVilpcqhcgN6hjFOU8uvyBBQ7GvCHcIhebE8NRgOG1L6Uv96E4TrLrnvook/IBUG7ahoH56
+ k5zlWGCEieevyNqqOnpFgADJyAe7E52G5ttIspqsIoJkJjwsehIYqOFcpkLjJxU3s/6lj4lvkr
+ AOYhCaBgQm1gUVqHdlcuHsyk4+8lzyRx1easPmdA95V9VtXtYbduksnVeUcOS/RoBktmQo+04U
+ nYw5DcJFs+oYNSOQxFJAqAGvn2C38qV8Oj374tICfCRmnd8eMuuzw6ATzbVj8Sh9LH7Qaz7gCZ
+ V/pu7PitMXQaQATPAVw/QfFW
+X-IronPort-AV: E=Sophos;i="5.85,365,1624345200"; 
+   d="scan'208";a="135122494"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Oct 2021 10:43:43 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Mon, 11 Oct 2021 10:43:42 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Mon, 11 Oct 2021 10:43:37 -0700
+Message-ID: <6c97e0771204b492f31b3d003a5fd97d789920ef.camel@microchip.com>
+Subject: Re: [PATCH v4 net-next 10/10] net: dsa: microchip: add support for
+ vlan operations
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Date:   Mon, 11 Oct 2021 23:13:36 +0530
+In-Reply-To: <20211007201705.polwaqgbzff4u3vx@skbuf>
+References: <20211007151200.748944-1-prasanna.vengateshan@microchip.com>
+         <20211007151200.748944-11-prasanna.vengateshan@microchip.com>
+         <20211007201705.polwaqgbzff4u3vx@skbuf>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211011141733.3999-3-stephan@gerhold.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 11 Oct 07:17 PDT 2021, Stephan Gerhold wrote:
-
-> In some configurations, the BAM DMA controller is set up by a remote
-> processor and the local processor can simply start making use of it
-> without setting up the BAM. This is already supported using the
-> "qcom,controlled-remotely" property.
+On Thu, 2021-10-07 at 23:17 +0300, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+> content is safe
 > 
-> However, for some reason another possible configuration is that the
-> remote processor is responsible for powering up the BAM, but we are
-> still responsible for initializing it (e.g. resetting it etc).
+> > +static int lan937x_port_vlan_filtering(struct dsa_switch *ds, int port,
+> > +                                    bool flag,
+> > +                                    struct netlink_ext_ack *extack)
+> > +{
+> > +     struct ksz_device *dev = ds->priv;
+> > +     int ret;
+> > +
+> > +     ret = lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE,
+> > +                       flag);
 > 
-> This configuration is quite challenging to handle properly because
-> the power control is handled through separate channels
-> (e.g. device-specific SMSM interrupts / smem-states). Great care
-> must be taken to ensure the BAM registers are not accessed while
-> the BAM is powered off since this results in a bus stall.
+> If you're going to resend anyway, can you please check the entire
+> submission for this pattern, where you can eliminate the intermediary
+> "ret" variable and just return the function call directly?
 > 
-> Attempt to support this configuration with minimal device-specific
-> code in the bam_dma driver by tracking the number of requested
-> channels. Consumers of DMA channels are responsible to only request
-> DMA channels when the BAM was powered on by the remote processor,
-> and to release them before the BAM is powered off.
+>         return lan937x_cfg(...)
+Sure
+
+> Do you have an explanation for what SW_VLAN_ENABLE does exactly?
+Enabling the VLAN mode and then act as per the VLAN table.
+Do you want me to add this explanation as a comment? or?
+
+
+
+> > 
+> > 
+> > +static int lan937x_port_vlan_del(struct dsa_switch *ds, int port,
+> > +                              const struct switchdev_obj_port_vlan *vlan)
+> > +{
+> > +     bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+> > +     struct ksz_device *dev = ds->priv;
+> > +     struct lan937x_vlan vlan_entry;
+> > +     u16 pvid;
+> > +     int ret;
+> > +
+> > +     lan937x_pread16(dev, port, REG_PORT_DEFAULT_VID, &pvid);
+> > +     pvid &= 0xFFF;
+> > +
+> > +     ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
+> > +     if (ret < 0) {
+> > +             dev_err(dev->dev, "Failed to get vlan table\n");
+> > +             return ret;
+> > +     }
+> > +     /* clear port fwd map */
+> > +     vlan_entry.fwd_map &= ~BIT(port);
+> > +
+> > +     if (untagged)
+> > +             vlan_entry.untag_prtmap &= ~BIT(port);
 > 
-> When the first channel is requested the BAM is initialized (reset)
-> and it is also put into reset when the last channel was released.
+> This is bogus.
+> The user can add a VLAN entry using:
 > 
-> Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
-> ---
-> Changes since RFC:
->   - Drop qcom-specific terminology "power collapse", instead rename
->     "qcom,remote-power-collapse" -> "qcom,powered-remotely"
+> bridge vlan add dev lan0 vid 100 pvid untagged
 > 
-> NOTE: This is *not* a compile-time requirement for the BAM-DMUX driver
->       so this could also go through the dmaengine tree.
+> and remove it using
 > 
-> See original RFC for a discussion of alternative approaches to handle
-> this configuration:
->   https://lore.kernel.org/netdev/20210719145317.79692-3-stephan@gerhold.net/
-> ---
->  drivers/dma/qcom/bam_dma.c | 88 ++++++++++++++++++++++++--------------
->  1 file changed, 56 insertions(+), 32 deletions(-)
+> bridge vlan del dev lan0 vid 100
 > 
-> diff --git a/drivers/dma/qcom/bam_dma.c b/drivers/dma/qcom/bam_dma.c
-> index c8a77b428b52..1b33a3ebbfec 100644
-> --- a/drivers/dma/qcom/bam_dma.c
-> +++ b/drivers/dma/qcom/bam_dma.c
-> @@ -388,6 +388,8 @@ struct bam_device {
->  	/* execution environment ID, from DT */
->  	u32 ee;
->  	bool controlled_remotely;
-> +	bool powered_remotely;
-> +	u32 active_channels;
->  
->  	const struct reg_offset_data *layout;
->  
-> @@ -415,6 +417,44 @@ static inline void __iomem *bam_addr(struct bam_device *bdev, u32 pipe,
->  		r.ee_mult * bdev->ee;
->  }
->  
-> +/**
-> + * bam_reset - reset and initialize BAM registers
+> so BRIDGE_VLAN_INFO_UNTAGGED is not set on removal.
+> 
+> Considering the fact that it doesn't matter whether the port is
+> egress-tagged or not when it isn't in the fwd_map in the first place,
+> I suggest you completely drop this condition.
+Sure, i agree with you.
 
-Please include a set of () after the function name.
+> 
+> > +
+> > +     ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
+> > +     if (ret < 0) {
+> > +             dev_err(dev->dev, "Failed to set vlan table\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID, pvid);
+> 
+> What is the point of reading the pvid and writing it back unmodified?
+> Is the AND-ing with 0xFFF supposed to do anything? Because when you
+> write to REG_PORT_DEFAULT_VID, you write it with nothing in the upper
+> bits, so I expect there to be nothing in the upper bits when you read it
+> back either.
+I had a feedback for not to reset the PVID as per the switchdev documentation
+during vlan del. As part of the fix , i just removed PVID reset code alone but
+missed these. Read/write PVID to be completely removed. I had a test case to
+make sure that the PVID is not reset during vlan del. Since this is
+reading/writing back the same values, could not catch them. I will clean up in
+the next patch.
 
-> + * @bdev: bam device
-> + */
-> +static void bam_reset(struct bam_device *bdev)
-> +{
-> +	u32 val;
-> +
-> +	/* s/w reset bam */
-> +	/* after reset all pipes are disabled and idle */
-> +	val = readl_relaxed(bam_addr(bdev, 0, BAM_CTRL));
-> +	val |= BAM_SW_RST;
-> +	writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
-> +	val &= ~BAM_SW_RST;
-> +	writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
 
-Seems odd to me that we assert and deassert the reset in back-to-back
-writes, without any delay etc. That said, this is unrelated to your
-patch as you just moved this hunk from below.
+> 
+> > +     if (ret < 0) {
+> > +             dev_err(dev->dev, "Failed to set pvid\n");
+> > +             return ret;
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> 
+> Also, consider the following set of commands:
+> 
+Step (0)
+> ip link add br0 type bridge vlan_filtering 1
+> ip link set lan0 master br0
+> bridge vlan add dev lan0 vid 100 pvid untagged
+Step (1)
+> bridge vlan del dev lan0 vid 100
+Step (2)
+> ip link set br0 type bridge vlan_filtering 0
+> 
+> The expectation is that the switch, being VLAN-unaware as it is currently
+> configured, receives and sends any packet regardless of VLAN ID.
+> If you put an IP on br0 in this state, are you able to ping an outside host?
 
-> +
-> +	/* make sure previous stores are visible before enabling BAM */
-> +	wmb();
-> +
-> +	/* enable bam */
-> +	val |= BAM_EN;
-> +	writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
-> +
-> +	/* set descriptor threshhold, start with 4 bytes */
-> +	writel_relaxed(DEFAULT_CNT_THRSHLD,
-> +			bam_addr(bdev, 0, BAM_DESC_CNT_TRSHLD));
-> +
-> +	/* Enable default set of h/w workarounds, ie all except BAM_FULL_PIPE */
-> +	writel_relaxed(BAM_CNFG_BITS_DEFAULT, bam_addr(bdev, 0, BAM_CNFG_BITS));
-> +
-> +	/* enable irqs for errors */
-> +	writel_relaxed(BAM_ERROR_EN | BAM_HRESP_ERR_EN,
-> +			bam_addr(bdev, 0, BAM_IRQ_EN));
-> +
-> +	/* unmask global bam interrupt */
-> +	writel_relaxed(BAM_IRQ_MSK, bam_addr(bdev, 0, BAM_IRQ_SRCS_MSK_EE));
-> +}
-> +
->  /**
->   * bam_reset_channel - Reset individual BAM DMA channel
->   * @bchan: bam channel
-> @@ -512,6 +552,9 @@ static int bam_alloc_chan(struct dma_chan *chan)
->  		return -ENOMEM;
->  	}
->  
-> +	if (bdev->active_channels++ == 0 && bdev->powered_remotely)
-> +		bam_reset(bdev);
-> +
->  	return 0;
->  }
->  
-> @@ -565,6 +608,13 @@ static void bam_free_chan(struct dma_chan *chan)
->  	/* disable irq */
->  	writel_relaxed(0, bam_addr(bdev, bchan->id, BAM_P_IRQ_EN));
->  
-> +	if (--bdev->active_channels == 0 && bdev->powered_remotely) {
-> +		/* s/w reset bam */
-> +		val = readl_relaxed(bam_addr(bdev, 0, BAM_CTRL));
-> +		val |= BAM_SW_RST;
-> +		writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
-> +	}
-> +
->  err:
->  	pm_runtime_mark_last_busy(bdev->dev);
->  	pm_runtime_put_autosuspend(bdev->dev);
-> @@ -1164,38 +1214,10 @@ static int bam_init(struct bam_device *bdev)
->  		bdev->num_channels = val & BAM_NUM_PIPES_MASK;
->  	}
->  
-> -	if (bdev->controlled_remotely)
-> +	if (bdev->controlled_remotely || bdev->powered_remotely)
->  		return 0;
+I have numbered the commands above.
+Results are,
+Before Step (0). Am able to ping outside.
+After Step (0). Am not able to ping outside because the vlan table is set
+After Step (1). Am not able to ping outside
+After Step (2). Am able to ping outside because of vlan unaware mode.
 
-I think the resulting code would be cleaner if you flipped it around as:
-
-	/* Reset BAM now if fully controlled locally */
-	if (!bdev->controlled_remotely && !bdev->powered_remotely)
-		bam_reset(bdev);
-
-	return 0;
-
-Regards,
-Bjorn
-
->  
-> -	/* s/w reset bam */
-> -	/* after reset all pipes are disabled and idle */
-> -	val = readl_relaxed(bam_addr(bdev, 0, BAM_CTRL));
-> -	val |= BAM_SW_RST;
-> -	writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
-> -	val &= ~BAM_SW_RST;
-> -	writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
-> -
-> -	/* make sure previous stores are visible before enabling BAM */
-> -	wmb();
-> -
-> -	/* enable bam */
-> -	val |= BAM_EN;
-> -	writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
-> -
-> -	/* set descriptor threshhold, start with 4 bytes */
-> -	writel_relaxed(DEFAULT_CNT_THRSHLD,
-> -			bam_addr(bdev, 0, BAM_DESC_CNT_TRSHLD));
-> -
-> -	/* Enable default set of h/w workarounds, ie all except BAM_FULL_PIPE */
-> -	writel_relaxed(BAM_CNFG_BITS_DEFAULT, bam_addr(bdev, 0, BAM_CNFG_BITS));
-> -
-> -	/* enable irqs for errors */
-> -	writel_relaxed(BAM_ERROR_EN | BAM_HRESP_ERR_EN,
-> -			bam_addr(bdev, 0, BAM_IRQ_EN));
-> -
-> -	/* unmask global bam interrupt */
-> -	writel_relaxed(BAM_IRQ_MSK, bam_addr(bdev, 0, BAM_IRQ_SRCS_MSK_EE));
-> -
-> +	bam_reset(bdev);
->  	return 0;
->  }
