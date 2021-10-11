@@ -2,122 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39DB7428E48
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 15:39:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38A13428E54
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 15:41:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237180AbhJKNli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 09:41:38 -0400
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:57330
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237111AbhJKNlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 09:41:31 -0400
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com [209.85.167.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 407D23FFF1
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 13:39:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633959570;
-        bh=Caod7f/lk82yPL9l72YPa9/xdZxrVhuurClzVai7YFo=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=CdstOsIuUqQkW+etuNFTUjYwMjQFkxCkWW+9uHrMnBxETVRjWMibImMgNv/x2mBTk
-         rWCYSxc2ZNkiJHDwcDChqALlE48j1dataBMPL+Zhf06/bVmTcFnGd74E2m9Uw0vIoa
-         zFcYjLoewAtziYaOa2DkZ5Wr/qy7yhNvZkU33hkSAOMPEJ99OlyL2FeoY72RscZVV9
-         Kei6lckt5JmwCEGCISD2KYY7+papd0UG1dfTMH9P5gM2sI/49F0CVwi2BQnR27gH+H
-         SsfPMtDEI1PxlHo9In+0f0Ns/+JBchT9B263BvWDrkvbFoKJ0mxwZZNobH8sXwfIa9
-         86ToBtKdRkyug==
-Received: by mail-lf1-f72.google.com with SMTP id bi16-20020a0565120e9000b003fd56ef5a94so11683637lfb.3
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 06:39:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Caod7f/lk82yPL9l72YPa9/xdZxrVhuurClzVai7YFo=;
-        b=lHoxjajjJPLNb4zcCbNocKKPYg81P7v3Sy4Pc5L8gcSkXquWFyO0HXw/NzVJTAxM9s
-         RFG2+aX5dHkWd39YQiOfypXOIlsEZ7Rt1sN+aNJgV09Jrh4FJc3N3CfKcjWhdGEadTBh
-         POUNFiBkaQccGXBjCiob09J4xMzCqtvaX7LrsuUk0XHmBEWCA8dCjBU3DmEnnk52GyeU
-         I682pJMI/sHAw+L+Q8nYYs+Ex1xoQyaIBYHOprsjTASYzy/o7WO7c1jOmS7+MfTUmgaU
-         DB2vrPXIrxplB2jcIHSCyGfYIuYfp6Q5IF7orGOPaKN+DiVbTgTcVm6z83JnJhPO+FH3
-         ajqA==
-X-Gm-Message-State: AOAM533nB9OcEeMKWBjh4HGvesv8hpoLu5Yv33ZViBZhzZCVVqBrC3di
-        liWh9+lITUD5ZFpYKXg223fJwznbOxXNVtCBrjV33IPTber8FHDHbuRzyS4J7t7DDCv+gAp92j7
-        jXI4dkAK8bOFyneRTnJXplHD12w6BnsNDsQ==
-X-Received: by 2002:a05:6512:23a0:: with SMTP id c32mr28315072lfv.166.1633959568233;
-        Mon, 11 Oct 2021 06:39:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxZiDLQW+5zqCPlBUX+HccXn6LAIXSmaJCIzfqIdMJzGyKW6xXiv/0sl+AlXYBAwxKOQrbchw==
-X-Received: by 2002:a05:6512:23a0:: with SMTP id c32mr28315053lfv.166.1633959568082;
-        Mon, 11 Oct 2021 06:39:28 -0700 (PDT)
-Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id a21sm738971lff.37.2021.10.11.06.39.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Oct 2021 06:39:25 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        Mark Greer <mgreer@animalcreek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Cc:     joe@perches.com
-Subject: [PATCH v3 7/7] nfc: microread: drop unneeded debug prints
-Date:   Mon, 11 Oct 2021 15:38:35 +0200
-Message-Id: <20211011133835.236347-8-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211011133835.236347-1-krzysztof.kozlowski@canonical.com>
-References: <20211011133835.236347-1-krzysztof.kozlowski@canonical.com>
+        id S237219AbhJKNmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 09:42:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60994 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237303AbhJKNmH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Oct 2021 09:42:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id F2DD76103C;
+        Mon, 11 Oct 2021 13:40:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633959607;
+        bh=NzINuQsP248cTKyTh/NZgM1gLfIGv0m4/0Rgctye0Eo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=f4BTNO524YTa6Ae9XOyUP2Ks1A0HG73Ie02qBtKNbabftxK1tmIq6x2BGqxiGIu71
+         r5HH0MwBCad3a5w13b5Ppe8UastFLlOcboTWJI+R3Ax3M+XVMNNDqPap2U3+rVPrT0
+         z+otDrCYcQEDMp0Dh9LJIAIbiPrGa50Bq26f+5hXomPbqD+XXP6+EjLHbp/Fn3Fi7J
+         PpNYQ6PScGAq/XeWX8JiJMrngmR1ob7h3x7H6Ni6jtazUHTamJIyqFWcedKM7dRipH
+         Fu1l4IKopI+pkbmN6GncMXOIzqGbuZsSSYk86S0roaBQsrG5eW1IlnOVXXq6OI2SA9
+         FvZMFxxbMn3iQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E348F6095D;
+        Mon, 11 Oct 2021 13:40:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v2 0/2] bpf, mips: Do some small changes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163395960692.3494.2058779549253903670.git-patchwork-notify@kernel.org>
+Date:   Mon, 11 Oct 2021 13:40:06 +0000
+References: <1633915150-13220-1-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <1633915150-13220-1-git-send-email-yangtiezhu@loongson.cn>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        tsbogend@alpha.franken.de, johan.almbladh@anyfinetworks.com,
+        paulburton@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lixuefeng@loongson.cn, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ftrace is a preferred and standard way to debug entering and exiting
-functions so drop useless debug prints.
+Hello:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/nfc/microread/i2c.c | 4 ----
- drivers/nfc/microread/mei.c | 2 --
- 2 files changed, 6 deletions(-)
+This series was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-diff --git a/drivers/nfc/microread/i2c.c b/drivers/nfc/microread/i2c.c
-index 86f593c73ed6..067295124eb9 100644
---- a/drivers/nfc/microread/i2c.c
-+++ b/drivers/nfc/microread/i2c.c
-@@ -237,8 +237,6 @@ static int microread_i2c_probe(struct i2c_client *client,
- 	struct microread_i2c_phy *phy;
- 	int r;
- 
--	dev_dbg(&client->dev, "client %p\n", client);
--
- 	phy = devm_kzalloc(&client->dev, sizeof(struct microread_i2c_phy),
- 			   GFP_KERNEL);
- 	if (!phy)
-@@ -262,8 +260,6 @@ static int microread_i2c_probe(struct i2c_client *client,
- 	if (r < 0)
- 		goto err_irq;
- 
--	nfc_info(&client->dev, "Probed\n");
--
- 	return 0;
- 
- err_irq:
-diff --git a/drivers/nfc/microread/mei.c b/drivers/nfc/microread/mei.c
-index 00689e18dc46..e2a77a5fc887 100644
---- a/drivers/nfc/microread/mei.c
-+++ b/drivers/nfc/microread/mei.c
-@@ -23,8 +23,6 @@ static int microread_mei_probe(struct mei_cl_device *cldev,
- 	struct nfc_mei_phy *phy;
- 	int r;
- 
--	pr_info("Probing NFC microread\n");
--
- 	phy = nfc_mei_phy_alloc(cldev);
- 	if (!phy)
- 		return -ENOMEM;
--- 
-2.30.2
+On Mon, 11 Oct 2021 09:19:08 +0800 you wrote:
+> This patchset is based on bpf-next tree:
+> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+> 
+> v2:
+>   -- Update patch #2 to only fix the comment,
+>      suggested by Johan Almbladh, thank you.
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf-next,v2,1/2] bpf, mips: Clean up config options about JIT
+    https://git.kernel.org/bpf/bpf-next/c/307d149d9435
+  - [bpf-next,v2,2/2] bpf, mips: Fix comment on tail call count limiting
+    https://git.kernel.org/bpf/bpf-next/c/431bfb9ee3e2
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
