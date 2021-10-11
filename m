@@ -2,130 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5BC1428787
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 09:18:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DE864287C9
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 09:39:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234384AbhJKHUq convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 11 Oct 2021 03:20:46 -0400
-Received: from relay-b01.edpnet.be ([212.71.1.221]:32990 "EHLO
-        relay-b01.edpnet.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234366AbhJKHUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 03:20:45 -0400
-X-ASG-Debug-ID: 1633936723-15c4341a8713e36d0001-BZBGGp
-Received: from zotac.vandijck-laurijssen.be (94.105.120.149.dyn.edpnet.net [94.105.120.149]) by relay-b01.edpnet.be with ESMTP id cJ4FK3WM5awVTL4L; Mon, 11 Oct 2021 09:18:43 +0200 (CEST)
-X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
-X-Barracuda-Effective-Source-IP: 94.105.120.149.dyn.edpnet.net[94.105.120.149]
-X-Barracuda-Apparent-Source-IP: 94.105.120.149
-Received: from x1.vandijck-laurijssen.be (x1.vandijck-laurijssen.be [IPv6:fd01::1a1d:eaff:fe02:d339])
-        by zotac.vandijck-laurijssen.be (Postfix) with ESMTPSA id A2409169E195;
-        Mon, 11 Oct 2021 09:18:43 +0200 (CEST)
-Date:   Mon, 11 Oct 2021 09:18:42 +0200
-From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        netdev@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session
- if receive TP.DT with error length
-Message-ID: <20211011071842.GA22069@x1.vandijck-laurijssen.be>
-X-ASG-Orig-Subj: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session
- if receive TP.DT with error length
-Mail-Followup-To: Oleksij Rempel <o.rempel@pengutronix.de>,
-        Zhang Changzhong <zhangchangzhong@huawei.com>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Oleksij Rempel <linux@rempel-privat.de>, netdev@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-References: <1632972800-45091-1-git-send-email-zhangchangzhong@huawei.com>
- <20210930074206.GB7502@x1.vandijck-laurijssen.be>
- <1cab07f2-593a-1d1c-3a29-43ee9df4b29e@huawei.com>
- <20211008110007.GE29653@pengutronix.de>
- <556a04ed-c350-7b2b-5bbe-98c03846630b@huawei.com>
- <20211011063507.GI29653@pengutronix.de>
+        id S231194AbhJKHls (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 03:41:48 -0400
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:57440
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234286AbhJKHlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 03:41:47 -0400
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 68EA340000
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 07:39:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1633937985;
+        bh=dKNe0YR2W1YWBul8nQdZBdCYA7T0luSH8qAs9JTPkS4=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=e/K31SnNiySIWZAqy9czqSHveTRBr+cxtdxfJUWrvlAYIRbrlgduHghJalQOTKZDM
+         MRzT+vDUn2QirgJFvVIC9p5d0Dc8EZkgUzOIm24VVaPSWKH8CIt4P8UJFxrzCwXK7x
+         2EBlJ63fqBeNZoE97wdi53mhQ2s1YPzLaG3PeOJabs/JVHrHSTSDRBV5P8CeQ+5HZn
+         /nIy3SU7pzxi/ivf86sdSb0qiK7reszY6t3dZGLdK3OlnA9k+d/kCsTQstOAuel8RP
+         /sScpnfMBzi6SjOunvyP2Ixf/6p8Iof1wiwow2vvM5ADGVQt/VQU+CSKAP6A33PK/e
+         lks7BbdYRLAZA==
+Received: by mail-ed1-f72.google.com with SMTP id u23-20020a50a417000000b003db23c7e5e2so15094308edb.8
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 00:39:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dKNe0YR2W1YWBul8nQdZBdCYA7T0luSH8qAs9JTPkS4=;
+        b=bfAftoe09BDwx6asfIS5PlSVZdb2Z1siH1XjbW7hUgRocIwlZvAtkSpUOYeNJFhwfq
+         dynKKvzfOkKTDgqhhp0oDHvvqkGJNrdZpx1dxVPAW3goaK33vblf1hqlSvEbnJEkzw+T
+         132/jyvTdXD9Emi6zrt9j//KfqYiZH8Zw4M/HNtdRDycHkawhEtrf/5vceDH/CnSCo/m
+         Uj1q+z9uxYD3IERqtICftO2gfGJiUXLtzm7awUh6BZVK84uzJMWHjNFkv/40Dy4coMPj
+         dbWIoRqzTeXgxjS97Tadm/qAlEUueGNEAhTqlZEW+fvzrBvWtqvEIVERnIfwYsDxWBs0
+         ozLA==
+X-Gm-Message-State: AOAM532DQrWy40NJwYrlsQhtxwwcxNIRt9KMBSg6ZcGqRi2ztmcTLTgK
+        BodqGokxIHbaeu0rLzCLRMJc0ED2w8QJNmOpbh6psJ7riFnxFEGL6BeKcBYj1OSwvFGTZmVrxOO
+        Hl+F0Ktcyxk45UfGdSye/2CEnOkvOVK0d9A==
+X-Received: by 2002:a05:6402:848:: with SMTP id b8mr27593662edz.283.1633937983838;
+        Mon, 11 Oct 2021 00:39:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz4TGueCUqr8nipt9y1eUTDZZZuo1QIc9IRv4KZo7UB7TGDm48xnJ0Nl+i+OLa1EhAIjhllxw==
+X-Received: by 2002:a05:6402:848:: with SMTP id b8mr27593641edz.283.1633937983622;
+        Mon, 11 Oct 2021 00:39:43 -0700 (PDT)
+Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id y8sm3023965ejm.104.2021.10.11.00.39.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Oct 2021 00:39:43 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Charles Gorand <charles.gorand@effinnov.com>,
+        Mark Greer <mgreer@animalcreek.com>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: [PATCH v2 0/8] nfc: dt-bindings: convert to dt-schema
+Date:   Mon, 11 Oct 2021 09:39:26 +0200
+Message-Id: <20211011073934.34340-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20211011063507.GI29653@pengutronix.de>
-User-Agent: Mutt/1.5.22 (2013-10-16)
-X-Barracuda-Connect: 94.105.120.149.dyn.edpnet.net[94.105.120.149]
-X-Barracuda-Start-Time: 1633936723
-X-Barracuda-URL: https://212.71.1.221:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at edpnet.be
-X-Barracuda-Scan-Msg-Size: 2176
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Spam-Score: 0.00
-X-Barracuda-Spam-Status: No, SCORE=0.00 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.93191
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------------------------
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Oct 2021 08:35:07 +0200, Oleksij Rempel wrote:
-> On Sat, Oct 09, 2021 at 04:43:56PM +0800, Zhang Changzhong wrote:
-> > On 2021/10/8 19:00, Oleksij Rempel wrote:
-> > > On Fri, Oct 08, 2021 at 05:22:12PM +0800, Zhang Changzhong wrote:
-> > >> Hi Kurt,
-> > >> Sorry for the late reply.
-> > >>
-> > >> On 2021/9/30 15:42, Kurt Van Dijck wrote:
-> > >>> On Thu, 30 Sep 2021 11:33:20 +0800, Zhang Changzhong wrote:
-> > >>>> According to SAE-J1939-21, the data length of TP.DT must be 8 bytes, so
-> > >>>> cancel session when receive unexpected TP.DT message.
-> > >>>
-> > >>> SAE-j1939-21 indeed says that all TP.DT must be 8 bytes.
-> > >>> However, the last TP.DT may contain up to 6 stuff bytes, which have no meaning.
-> > >>> If I remember well, they are even not 'reserved'.
-> > >>
-> > >> Agree, these bytes are meaningless for last TP.DT.
-> > >>
-> > >>>
-> > >>>>
-[...]
-> > >>>
-> > >>> I think this is a situation of
-> > >>> "be strict on what you send, be tolerant on what you receive".
-> > >>>
-> > >>> Did you find a technical reason to abort a session because the last frame didn't
-> > >>> bring overhead that you don't use?
-> > >>
-> > >> No technical reason. The only reason is that SAE-J1939-82 requires responder
-> > >> to abort session if any TP.DT less than 8 bytes (section A.3.4, Row 7).
-> > > 
-> > > Do you mean: "BAM Transport: Ensure DUT discards BAM transport when
-> > > TP.DT data packets are not correct size" ... "Verify DUT discards the
-> > > BAM transport if any TP.DT data packet has less than 8 bytes"?
-> > 
-> > Yes.
-> 
-> OK, then I have some problems to understand this part:
-> - 5.10.2.4 Connection Closure
->   The “connection abort” message is not allowed to be used by responders in the
->   case of a global destination (i.e. BAM).
-> 
-> My assumption would be: In case of broadcast transfer, multiple MCU are
-> receivers. If one of MCU was not able to get complete TP.DT, it should
-> not abort BAM for all.
+Hi,
 
-There is indeed no action defined to abort at BAM.
+Changes since v1:
+1. Drop clock-frequency from I2C devices.
+2. Update commit msg.
+3. Add patch 2/8: NXP PN547 binding.
 
-> 
-> So, "DUT discards the BAM transport" sounds for me as local action.
-> Complete TP would be dropped locally.
+Best regards,
+Krzysztof
 
-exact.
+Krzysztof Kozlowski (8):
+  dt-bindings: nfc: nxp,nci: convert to dtschema
+  dt-bindings: nfc: nxp,nci: document NXP PN547 binding
+  dt-bindings: nfc: nxp,pn532: convert to dtschema
+  dt-bindings: nfc: st,st21nfca: convert to dtschema
+  dt-bindings: nfc: st,st95hf: convert to dtschema
+  dt-bindings: nfc: st,nci: convert to dtschema
+  dt-bindings: nfc: ti,trf7970a: convert to dtschema
+  dt-bindings: nfc: marvell,nci: convert to dtschema
 
-Kurt
+ .../bindings/net/nfc/marvell,nci.yaml         | 170 ++++++++++++++++++
+ .../devicetree/bindings/net/nfc/nfcmrvl.txt   |  84 ---------
+ .../devicetree/bindings/net/nfc/nxp,nci.yaml  |  61 +++++++
+ .../bindings/net/nfc/nxp,pn532.yaml           |  65 +++++++
+ .../devicetree/bindings/net/nfc/nxp-nci.txt   |  33 ----
+ .../devicetree/bindings/net/nfc/pn532.txt     |  46 -----
+ .../bindings/net/nfc/st,st-nci.yaml           | 106 +++++++++++
+ .../bindings/net/nfc/st,st21nfca.yaml         |  64 +++++++
+ .../bindings/net/nfc/st,st95hf.yaml           |  57 ++++++
+ .../bindings/net/nfc/st-nci-i2c.txt           |  38 ----
+ .../bindings/net/nfc/st-nci-spi.txt           |  36 ----
+ .../devicetree/bindings/net/nfc/st21nfca.txt  |  37 ----
+ .../devicetree/bindings/net/nfc/st95hf.txt    |  45 -----
+ .../bindings/net/nfc/ti,trf7970a.yaml         |  98 ++++++++++
+ .../devicetree/bindings/net/nfc/trf7970a.txt  |  43 -----
+ MAINTAINERS                                   |   3 +-
+ 16 files changed, 623 insertions(+), 363 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/nfcmrvl.txt
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/nxp,nci.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/nxp,pn532.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/pn532.txt
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/st,st21nfca.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/st-nci-i2c.txt
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/st-nci-spi.txt
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/st21nfca.txt
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/st95hf.txt
+ create mode 100644 Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/nfc/trf7970a.txt
+
+-- 
+2.30.2
+
