@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52AEC4296A2
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 20:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DB564296A5
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 20:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234322AbhJKSRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 14:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40840 "EHLO
+        id S234409AbhJKSRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 14:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234207AbhJKSRK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 14:17:10 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40207C061570;
-        Mon, 11 Oct 2021 11:15:10 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id v11so11551440pgb.8;
-        Mon, 11 Oct 2021 11:15:10 -0700 (PDT)
+        with ESMTP id S234207AbhJKSRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 14:17:15 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5823AC061570;
+        Mon, 11 Oct 2021 11:15:15 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id ls18-20020a17090b351200b001a00250584aso52240pjb.4;
+        Mon, 11 Oct 2021 11:15:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=kIyV8cR5GS2rxg2p2WwgQNqm6Dtb0bm+QAw3FrSnNHs=;
-        b=mpifQseRXNKTi9FRbbAFKy+rTYsJrgDaYBasQLtPhOg3EIEBbTof5+DgIJKAoQAjOj
-         rY5jcQKPzhkrgzalaw4snJZMiy3nIMEV2F03PDl2rE/fS/nR9HCtWcRILIxxm7pWS+oi
-         MnZwEU5vPNnzOBl5h0NIH/nW5ZGwrz92cI4DWxlR2ofmKlnhNk3DnOY69op8PU0B0kvJ
-         CBHqnT0TrVelZ5OWEzaQ5YcULxlelzIZqxUGTHoe0PSrHRsiUfySBy7Jyx0zdXtxfmej
-         0RTdQoZuyz4hx9YXFho1BeCACGlIA6qOgbiFiGEKfoIhQEu2F+K0qSy93wvM+22CwhPL
-         AIjA==
+        bh=7EvivvR4AP5hz1U9GTjeYeoyVBJH7aC/GlbhSD01mZE=;
+        b=YOwCN8E20B7futCnjtUYDgnC6p3I2/Z2YNqKwK0SqYKfAHWFN2g6t1HwwS+CjIx+WC
+         FYnzLSVutteTdQ0dfg2WK4xSM4nrBw54ro8BZyzh1NXg6t3YL/8pgfu8HHCvX0UkVuZO
+         goeVr+FAm6Ya/D7fCayTjGyXvjqbL0RfBq0avPzJE1aIQcVc9bDXQXu3UWM1OJZkIUSN
+         ze1aT2z6ZCuMA+gwJN7SZmH6JbGnFuFI0QiLZ/uyMkGJ4ZM8JSXgm0HXK6JKsQhX8d4O
+         p3PHkIMDzIztAXUaFxh/7BcJp0uSorQlk34lWjsZZW7x3kwM3UcbDzfBVsu2YyrvPy9r
+         DakA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=kIyV8cR5GS2rxg2p2WwgQNqm6Dtb0bm+QAw3FrSnNHs=;
-        b=IfimMRhCHFmOo9NvBS6tSZkK0o/u9BuewAsnU4MGuo4YuhIXUH4BFfv+z0mmOaLglc
-         I4lElMSdEoXfIOEHOCMHdat+WDKNlY4hn7mic9oxzyMjeJMaME2bClpSfFr8Mw9A6x3F
-         3scMD6z8Ri054rVz5ba0XPktgmhcMAP9xrQLxVCWJn98ASa5oSL2YMCKU9YT5ybHobpj
-         W3q8omM2D+Gf5bCKUBcPqp/p1/sWbFvArsPVBoe6PbCHZYb+yYEv4vkkFASR2oXSoaN+
-         IAD5s7+oqR9Ynat4rhkibOvRIwL3kaxC048hkwCvnnemQj3MEHzkvLEeNyLsNUlmhp4V
-         I0tA==
-X-Gm-Message-State: AOAM530GNhSRMuLsaQgjAGUElSGcB6CGURb15994QzUbHDmaj+Zr9ytg
-        QuEB6zjDpHhchpH1GGOVrko/LLEQBhM=
-X-Google-Smtp-Source: ABdhPJzdcwt2Cycw2thuAovS8gONxp7BCjEUfnYv8mdL2tyQJJpzLK9xK9nRR3P+WDnCTYO4V1H0/g==
-X-Received: by 2002:a63:5453:: with SMTP id e19mr19394477pgm.178.1633976109236;
-        Mon, 11 Oct 2021 11:15:09 -0700 (PDT)
+        bh=7EvivvR4AP5hz1U9GTjeYeoyVBJH7aC/GlbhSD01mZE=;
+        b=xe9UBPOlR7U/GwwMndGrzEIRD9YarhLFhma/PtQmA6RmGfVAuTOEi8WroafWRHqAhj
+         zPFaka8l4yNU4LA1N69yEGsZYZKOfKNRn75NTBr5wN/uFfkedy/Q9pYl8EmH1GWoMjex
+         L98aINPIEPRmqIDjlISWuFlayjz3ih6izz1Lst0FqNzji/k9cCU6MrIgzc7jfypxBb0N
+         lltTmIIRaFQOYh463nAybBvzj+nFDwCPwPHRQIA0A5RXDw/udCrKY4fyObO4H4H/XOUx
+         StHcqfXWVPR78vG+jHuLZS8NpHhWYnOlP2guMBQGLAZg0CIwtu3z6gM/Q6L4Xx5VcMRH
+         ydSA==
+X-Gm-Message-State: AOAM530NhMb5oZuQkehNk7oWqpw0torbLnFJfetwnCbnaq0Nldycnbs/
+        i/kOY1Q04/gQw+mfDQypHNq8Azvnx24=
+X-Google-Smtp-Source: ABdhPJz5PYlSLANQUdqENyrAifOJWX1tW+S4elEElPSNJDaJ6uc7ZOX1uGxsho5+/qsnr50u/eWvvQ==
+X-Received: by 2002:a17:90b:38d0:: with SMTP id nn16mr583801pjb.96.1633976114555;
+        Mon, 11 Oct 2021 11:15:14 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 14sm8109939pfu.29.2021.10.11.11.15.08
+        by smtp.gmail.com with ESMTPSA id w9sm145849pjk.28.2021.10.11.11.15.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Oct 2021 11:15:08 -0700 (PDT)
+        Mon, 11 Oct 2021 11:15:14 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
         netdev@vger.kernel.org (open list:ETHERNET PHY LIBRARY)
-Subject: [PATCH stable 5.4] net: phy: bcm7xxx: Fixed indirect MMD operations
-Date:   Mon, 11 Oct 2021 11:15:00 -0700
-Message-Id: <20211011181500.103617-1-f.fainelli@gmail.com>
+Subject: [PATCH stable 4.19] net: phy: bcm7xxx: Fixed indirect MMD operations
+Date:   Mon, 11 Oct 2021 11:15:10 -0700
+Message-Id: <20211011181511.103732-1-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -78,17 +77,19 @@ does not grab the MDIO bus lock since the PHY driver's {read,write}_mmd
 functions are always called with that lock held.
 
 Fixes: 83ee102a6998 ("net: phy: bcm7xxx: add support for 28nm EPHY")
+[florian: adjust locking since phy_{read,write}_mmd are called with no
+PHYLIB locks held]
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 ---
- drivers/net/phy/bcm7xxx.c | 114 ++++++++++++++++++++++++++++++++++++--
- 1 file changed, 110 insertions(+), 4 deletions(-)
+ drivers/net/phy/bcm7xxx.c | 94 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 94 insertions(+)
 
 diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/bcm7xxx.c
-index af8eabe7a6d4..d372626c603d 100644
+index acaf072bb4b0..35dc4ca696d3 100644
 --- a/drivers/net/phy/bcm7xxx.c
 +++ b/drivers/net/phy/bcm7xxx.c
-@@ -26,7 +26,12 @@
+@@ -30,7 +30,12 @@
  #define MII_BCM7XXX_SHD_2_ADDR_CTRL	0xe
  #define MII_BCM7XXX_SHD_2_CTRL_STAT	0xf
  #define MII_BCM7XXX_SHD_2_BIAS_TRIM	0x1a
@@ -101,49 +102,7 @@ index af8eabe7a6d4..d372626c603d 100644
  #define MII_BCM7XXX_SHD_3_PCS_CTRL_2	0x6
  #define  MII_BCM7XXX_PCS_CTRL_2_DEF	0x4400
  #define MII_BCM7XXX_SHD_3_AN_STAT	0xb
-@@ -210,25 +215,37 @@ static int bcm7xxx_28nm_resume(struct phy_device *phydev)
- 	return genphy_config_aneg(phydev);
- }
- 
--static int phy_set_clr_bits(struct phy_device *dev, int location,
--					int set_mask, int clr_mask)
-+static int __phy_set_clr_bits(struct phy_device *dev, int location,
-+			      int set_mask, int clr_mask)
- {
- 	int v, ret;
- 
--	v = phy_read(dev, location);
-+	v = __phy_read(dev, location);
- 	if (v < 0)
- 		return v;
- 
- 	v &= ~clr_mask;
- 	v |= set_mask;
- 
--	ret = phy_write(dev, location, v);
-+	ret = __phy_write(dev, location, v);
- 	if (ret < 0)
- 		return ret;
- 
- 	return v;
- }
- 
-+static int phy_set_clr_bits(struct phy_device *dev, int location,
-+			    int set_mask, int clr_mask)
-+{
-+	int ret;
-+
-+	mutex_lock(&dev->mdio.bus->mdio_lock);
-+	ret = __phy_set_clr_bits(dev, location, set_mask, clr_mask);
-+	mutex_unlock(&dev->mdio.bus->mdio_lock);
-+
-+	return ret;
-+}
-+
- static int bcm7xxx_28nm_ephy_01_afe_config_init(struct phy_device *phydev)
- {
- 	int ret;
-@@ -392,6 +409,93 @@ static int bcm7xxx_28nm_ephy_config_init(struct phy_device *phydev)
+@@ -463,6 +468,93 @@ static int bcm7xxx_28nm_ephy_config_init(struct phy_device *phydev)
  	return bcm7xxx_28nm_ephy_apd_enable(phydev);
  }
  
@@ -185,22 +144,22 @@ index af8eabe7a6d4..d372626c603d 100644
 +		return -EOPNOTSUPP;
 +
 +	/* set shadow mode 2 */
-+	ret = __phy_set_clr_bits(phydev, MII_BCM7XXX_TEST,
-+				 MII_BCM7XXX_SHD_MODE_2, 0);
++	ret = phy_set_clr_bits(phydev, MII_BCM7XXX_TEST,
++			       MII_BCM7XXX_SHD_MODE_2, 0);
 +	if (ret < 0)
 +		return ret;
 +
 +	/* Access the desired shadow register address */
-+	ret = __phy_write(phydev, MII_BCM7XXX_SHD_2_ADDR_CTRL, shd);
++	ret = phy_write(phydev, MII_BCM7XXX_SHD_2_ADDR_CTRL, shd);
 +	if (ret < 0)
 +		goto reset_shadow_mode;
 +
-+	ret = __phy_read(phydev, MII_BCM7XXX_SHD_2_CTRL_STAT);
++	ret = phy_read(phydev, MII_BCM7XXX_SHD_2_CTRL_STAT);
 +
 +reset_shadow_mode:
 +	/* reset shadow mode 2 */
-+	__phy_set_clr_bits(phydev, MII_BCM7XXX_TEST, 0,
-+			   MII_BCM7XXX_SHD_MODE_2);
++	phy_set_clr_bits(phydev, MII_BCM7XXX_TEST, 0,
++			 MII_BCM7XXX_SHD_MODE_2);
 +	return ret;
 +}
 +
@@ -215,29 +174,29 @@ index af8eabe7a6d4..d372626c603d 100644
 +		return -EOPNOTSUPP;
 +
 +	/* set shadow mode 2 */
-+	ret = __phy_set_clr_bits(phydev, MII_BCM7XXX_TEST,
-+				 MII_BCM7XXX_SHD_MODE_2, 0);
++	ret = phy_set_clr_bits(phydev, MII_BCM7XXX_TEST,
++			       MII_BCM7XXX_SHD_MODE_2, 0);
 +	if (ret < 0)
 +		return ret;
 +
 +	/* Access the desired shadow register address */
-+	ret = __phy_write(phydev, MII_BCM7XXX_SHD_2_ADDR_CTRL, shd);
++	ret = phy_write(phydev, MII_BCM7XXX_SHD_2_ADDR_CTRL, shd);
 +	if (ret < 0)
 +		goto reset_shadow_mode;
 +
 +	/* Write the desired value in the shadow register */
-+	__phy_write(phydev, MII_BCM7XXX_SHD_2_CTRL_STAT, val);
++	phy_write(phydev, MII_BCM7XXX_SHD_2_CTRL_STAT, val);
 +
 +reset_shadow_mode:
 +	/* reset shadow mode 2 */
-+	return __phy_set_clr_bits(phydev, MII_BCM7XXX_TEST, 0,
-+				  MII_BCM7XXX_SHD_MODE_2);
++	return phy_set_clr_bits(phydev, MII_BCM7XXX_TEST, 0,
++				MII_BCM7XXX_SHD_MODE_2);
 +}
 +
  static int bcm7xxx_28nm_ephy_resume(struct phy_device *phydev)
  {
  	int ret;
-@@ -563,6 +667,8 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
+@@ -634,6 +726,8 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
  	.get_strings	= bcm_phy_get_strings,				\
  	.get_stats	= bcm7xxx_28nm_get_phy_stats,			\
  	.probe		= bcm7xxx_28nm_probe,				\
