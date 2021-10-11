@@ -2,203 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D02C4429269
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 16:43:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8548A42928D
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 16:50:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244287AbhJKOpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 10:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244204AbhJKOp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 10:45:28 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103AAC0617A4;
-        Mon, 11 Oct 2021 07:42:32 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id o133so8755146pfg.7;
-        Mon, 11 Oct 2021 07:42:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EZOY/BC1v6Dt0Z6NPA0+TD7j4V5L5DCZxaSPpWP5wwg=;
-        b=Id7ba24U8hFZSQi2CM2A0JyKZ06Iu5JLB3WXdMApz4nBesMd0FXqcTCKE/eiLE12ui
-         ePe8DyIThlZUXn+gDMawmrpvThOjWYQ1U2m6+5tERvoMrRLL83UkoxqJ36qZ+zJ+WIqT
-         gXSeskAzTaMp1m9XFEKm4kQRwiwcOZrqAkbU1onSU6Y7qVtn7COyj0jXVf9CY8p3IWes
-         aHspCiT6xu5hYTylbxojBYhJ2+UA0/ozef/FD0opCkxZ8+Gg46E0NGyF+n/mnB27ZTMA
-         TKW8/ottV1wRFwRE1cHt/rXrmIUSZs0IwTaCTkC/B1Vf8FLkS7DjeXwnBcHaYC/+PZ5t
-         E/Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EZOY/BC1v6Dt0Z6NPA0+TD7j4V5L5DCZxaSPpWP5wwg=;
-        b=NgCGA9NHbISHpfXKsx0TYO4jx2WtL12WyyfcH48XcQOelUqWQn00B7DC5x2HEvNUUP
-         AJ1IjhAmtlkrYlhlioGmV2p2esOSBFgElY2xQMxgGKEA7ZqsZWDiNvtGVwBw92SbeTTk
-         40vy0wjP0Iqah652dWQIFz0M7F8qISzkdglP7KZa1huqsRtMcXdGtBptZ/ayeNAPb66n
-         jIb+gvMUU5z+9M4OHXgd6JsywlmvYMr2Ty9l1AUsaR33qM8spwEI6bTY8Aau5AdDgJae
-         lW9DNH1kpWor+GoEHxtvNt4gBJbf7t94YisZj75kg/iYUBLcL5nIWLZAzgaTX90StzTr
-         wvEg==
-X-Gm-Message-State: AOAM533IxsVmlWXrgDs9VEhh3jH/z3QS8BWDa4DnYMS7Wo8q9snFqQz+
-        RMegNRMr6RFVJnuUwIHQBm0=
-X-Google-Smtp-Source: ABdhPJxrez/BpFr4T3w6q022Crus2C8dDApA6evVbcqw0YxCa4eWR6mXUuYpV8PQV1+0R//jk0V/Vg==
-X-Received: by 2002:a63:2acc:: with SMTP id q195mr17777585pgq.45.1633963351452;
-        Mon, 11 Oct 2021 07:42:31 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
-        by smtp.gmail.com with ESMTPSA id o72sm7769517pjo.50.2021.10.11.07.42.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Oct 2021 07:42:30 -0700 (PDT)
-Subject: Re: [PATCH V7 5/9] x86/sev-es: Expose __sev_es_ghcb_hv_call() to call
- ghcb hv call out of sev code
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     Tom Lendacky <thomas.lendacky@amd.com>,
-        "bp@alien8.de" <bp@alien8.de>
-Cc:     linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, konrad.wilk@oracle.com, hch@lst.de,
-        robin.murphy@arm.com, joro@8bytes.org, parri.andrea@gmail.com,
-        dave.hansen@intel.com, Hikys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org,
-        hpa@zytor.com, dave.hansen@linux.intel.com, luto@kernel.org,
-        peterz@infradead.org, davem@davemloft.net, kuba@kernel.org,
-        gregkh@linuxfoundation.org, arnd@arndb.de, jroedel@suse.de,
-        brijesh.singh@amd.com, Tianyu.Lan@microsoft.com,
-        thomas.lendacky@amd.com, pgonda@google.com,
-        akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
-        rppt@kernel.org, tj@kernel.org, aneesh.kumar@linux.ibm.com,
-        saravanand@fb.com, hannes@cmpxchg.org, rientjes@google.com,
-        michael.h.kelley@microsoft.com
-References: <20211006063651.1124737-1-ltykernel@gmail.com>
- <20211006063651.1124737-6-ltykernel@gmail.com>
-Message-ID: <9b5fc629-9f88-039c-7d5d-27cbdf6b00fd@gmail.com>
-Date:   Mon, 11 Oct 2021 22:42:18 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S238995AbhJKOwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 10:52:23 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:25121 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237236AbhJKOwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 10:52:23 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HShWK2szKz1DHV7;
+        Mon, 11 Oct 2021 22:48:45 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Mon, 11 Oct 2021 22:50:20 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Mon, 11 Oct 2021 22:50:19 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net-next] net: hns3: debugfs add support dumping page pool info
+Date:   Mon, 11 Oct 2021 22:46:08 +0800
+Message-ID: <20211011144608.24512-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <20211006063651.1124737-6-ltykernel@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi @Tom and Borislav:
-      Please have a look at this patch. If it's ok, could you give your ack.
+From: Hao Chen <chenhao288@hisilicon.com>
 
-Thanks.
+Add a file node "page_pool_info" for debugfs, then cat this
+file node to dump page pool info as below:
 
-On 10/6/2021 2:36 PM, Tianyu Lan wrote:
-> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> 
-> Hyper-V also needs to call ghcb hv call to write/read MSR in Isolation VM.
-> So expose __sev_es_ghcb_hv_call() to call it in the Hyper-V code.
-> 
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
->   arch/x86/include/asm/sev.h   | 10 +++++++++
->   arch/x86/kernel/sev-shared.c | 43 +++++++++++++++++++++++++-----------
->   2 files changed, 40 insertions(+), 13 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-> index fa5cd05d3b5b..2e96869f3e9b 100644
-> --- a/arch/x86/include/asm/sev.h
-> +++ b/arch/x86/include/asm/sev.h
-> @@ -81,12 +81,22 @@ static __always_inline void sev_es_nmi_complete(void)
->   		__sev_es_nmi_complete();
->   }
->   extern int __init sev_es_efi_map_ghcbs(pgd_t *pgd);
-> +extern enum es_result __sev_es_ghcb_hv_call(struct ghcb *ghcb,
-> +					    u64 exit_code, u64 exit_info_1,
-> +					    u64 exit_info_2);
->   #else
->   static inline void sev_es_ist_enter(struct pt_regs *regs) { }
->   static inline void sev_es_ist_exit(void) { }
->   static inline int sev_es_setup_ap_jump_table(struct real_mode_header *rmh) { return 0; }
->   static inline void sev_es_nmi_complete(void) { }
->   static inline int sev_es_efi_map_ghcbs(pgd_t *pgd) { return 0; }
-> +static inline enum es_result
-> +__sev_es_ghcb_hv_call(struct ghcb *ghcb,
-> +		      u64 exit_code, u64 exit_info_1,
-> +		      u64 exit_info_2)
-> +{
-> +	return ES_VMM_ERROR;
-> +}
->   #endif
->   
->   #endif
-> diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
-> index 9f90f460a28c..946c203be08c 100644
-> --- a/arch/x86/kernel/sev-shared.c
-> +++ b/arch/x86/kernel/sev-shared.c
-> @@ -94,10 +94,13 @@ static void vc_finish_insn(struct es_em_ctxt *ctxt)
->   	ctxt->regs->ip += ctxt->insn.length;
->   }
->   
-> -static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
-> -					  struct es_em_ctxt *ctxt,
-> -					  u64 exit_code, u64 exit_info_1,
-> -					  u64 exit_info_2)
-> +/*
-> + * __sev_es_ghcb_hv_call() is also used in the other platform code(e.g
-> + * Hyper-V).
-> + */
-> +enum es_result __sev_es_ghcb_hv_call(struct ghcb *ghcb,
-> +				     u64 exit_code, u64 exit_info_1,
-> +				     u64 exit_info_2)
->   {
->   	enum es_result ret;
->   
-> @@ -109,15 +112,33 @@ static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
->   	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
->   	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
->   
-> -	sev_es_wr_ghcb_msr(__pa(ghcb));
->   	VMGEXIT();
->   
-> +	if (ghcb->save.sw_exit_info_1 & 0xffffffff)
-> +		ret = ES_VMM_ERROR;
-> +	else
-> +		ret = ES_OK;
-> +
-> +	return ret;
-> +}
-> +
-> +static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
-> +					  struct es_em_ctxt *ctxt,
-> +					  u64 exit_code, u64 exit_info_1,
-> +					  u64 exit_info_2)
-> +{
-> +	enum es_result ret;
-> +
-> +	sev_es_wr_ghcb_msr(__pa(ghcb));
-> +
-> +	ret = __sev_es_ghcb_hv_call(ghcb, exit_code, exit_info_1,
-> +					 exit_info_2);
-> +	if (ret == ES_OK)
-> +		return ret;
-> +
->   	if ((ghcb->save.sw_exit_info_1 & 0xffffffff) == 1) {
->   		u64 info = ghcb->save.sw_exit_info_2;
-> -		unsigned long v;
-> -
-> -		info = ghcb->save.sw_exit_info_2;
-> -		v = info & SVM_EVTINJ_VEC_MASK;
-> +		unsigned long v = info & SVM_EVTINJ_VEC_MASK;
->   
->   		/* Check if exception information from hypervisor is sane. */
->   		if ((info & SVM_EVTINJ_VALID) &&
-> @@ -127,11 +148,7 @@ static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
->   			if (info & SVM_EVTINJ_VALID_ERR)
->   				ctxt->fi.error_code = info >> 32;
->   			ret = ES_EXCEPTION;
-> -		} else {
-> -			ret = ES_VMM_ERROR;
->   		}
-> -	} else {
-> -		ret = ES_OK;
->   	}
->   
->   	return ret;
-> 
+QUEUE_ID  ALLOCATE_CNT  FREE_CNT      POOL_SIZE(PAGE_NUM)  ORDER  NUMA_ID  MAX_LEN
+0         512           0             512                  0      2        4K
+1         512           0             512                  0      2        4K
+2         512           0             512                  0      2        4K
+3         512           0             512                  0      2        4K
+4         512           0             512                  0      2        4K
+
+Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  1 +
+ .../ethernet/hisilicon/hns3/hns3_debugfs.c    | 74 +++++++++++++++++++
+ 2 files changed, 75 insertions(+)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 17872c50b63c..5d188573c433 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -298,6 +298,7 @@ enum hnae3_dbg_cmd {
+ 	HNAE3_DBG_CMD_MAC_TNL_STATUS,
+ 	HNAE3_DBG_CMD_SERV_INFO,
+ 	HNAE3_DBG_CMD_UMV_INFO,
++	HNAE3_DBG_CMD_PAGE_POOL_INFO,
+ 	HNAE3_DBG_CMD_UNKNOWN,
+ };
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+index a1555f074e06..e383033f3f76 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+@@ -336,6 +336,13 @@ static struct hns3_dbg_cmd_info hns3_dbg_cmd[] = {
+ 		.buf_len = HNS3_DBG_READ_LEN,
+ 		.init = hns3_dbg_common_file_init,
+ 	},
++	{
++		.name = "page_pool_info",
++		.cmd = HNAE3_DBG_CMD_PAGE_POOL_INFO,
++		.dentry = HNS3_DBG_DENTRY_COMMON,
++		.buf_len = HNS3_DBG_READ_LEN,
++		.init = hns3_dbg_common_file_init,
++	},
+ };
+ 
+ static struct hns3_dbg_cap_info hns3_dbg_cap[] = {
+@@ -941,6 +948,69 @@ static int hns3_dbg_dev_info(struct hnae3_handle *h, char *buf, int len)
+ 	return 0;
+ }
+ 
++static const struct hns3_dbg_item page_pool_info_items[] = {
++	{ "QUEUE_ID", 2 },
++	{ "ALLOCATE_CNT", 2 },
++	{ "FREE_CNT", 6 },
++	{ "POOL_SIZE(PAGE_NUM)", 2 },
++	{ "ORDER", 2 },
++	{ "NUMA_ID", 2 },
++	{ "MAX_LEN", 2 },
++};
++
++static void hns3_dump_page_pool_info(struct hns3_enet_ring *ring,
++				     char **result, u32 index)
++{
++	u32 j = 0;
++
++	sprintf(result[j++], "%u", index);
++	sprintf(result[j++], "%u", ring->page_pool->pages_state_hold_cnt);
++	sprintf(result[j++], "%u",
++		atomic_read(&ring->page_pool->pages_state_release_cnt));
++	sprintf(result[j++], "%u", ring->page_pool->p.pool_size);
++	sprintf(result[j++], "%u", ring->page_pool->p.order);
++	sprintf(result[j++], "%d", ring->page_pool->p.nid);
++	sprintf(result[j++], "%uK", ring->page_pool->p.max_len / 1024);
++}
++
++static int
++hns3_dbg_page_pool_info(struct hnae3_handle *h, char *buf, int len)
++{
++	char data_str[ARRAY_SIZE(page_pool_info_items)][HNS3_DBG_DATA_STR_LEN];
++	char *result[ARRAY_SIZE(page_pool_info_items)];
++	struct hns3_nic_priv *priv = h->priv;
++	char content[HNS3_DBG_INFO_LEN];
++	struct hns3_enet_ring *ring;
++	int pos = 0;
++	u32 i;
++
++	if (!priv->ring) {
++		dev_err(&h->pdev->dev, "priv->ring is NULL\n");
++		return -EFAULT;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(page_pool_info_items); i++)
++		result[i] = &data_str[i][0];
++
++	hns3_dbg_fill_content(content, sizeof(content), page_pool_info_items,
++			      NULL, ARRAY_SIZE(page_pool_info_items));
++	pos += scnprintf(buf + pos, len - pos, "%s", content);
++	for (i = 0; i < h->kinfo.num_tqps; i++) {
++		if (!test_bit(HNS3_NIC_STATE_INITED, &priv->state) ||
++		    test_bit(HNS3_NIC_STATE_RESETTING, &priv->state))
++			return -EPERM;
++		ring = &priv->ring[(u32)(i + h->kinfo.num_tqps)];
++		hns3_dump_page_pool_info(ring, result, i);
++		hns3_dbg_fill_content(content, sizeof(content),
++				      page_pool_info_items,
++				      (const char **)result,
++				      ARRAY_SIZE(page_pool_info_items));
++		pos += scnprintf(buf + pos, len - pos, "%s", content);
++	}
++
++	return 0;
++}
++
+ static int hns3_dbg_get_cmd_index(struct hns3_dbg_data *dbg_data, u32 *index)
+ {
+ 	u32 i;
+@@ -982,6 +1052,10 @@ static const struct hns3_dbg_func hns3_dbg_cmd_func[] = {
+ 		.cmd = HNAE3_DBG_CMD_TX_QUEUE_INFO,
+ 		.dbg_dump = hns3_dbg_tx_queue_info,
+ 	},
++	{
++		.cmd = HNAE3_DBG_CMD_PAGE_POOL_INFO,
++		.dbg_dump = hns3_dbg_page_pool_info,
++	},
+ };
+ 
+ static int hns3_dbg_read_cmd(struct hns3_dbg_data *dbg_data,
+-- 
+2.33.0
+
