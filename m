@@ -2,111 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B066428540
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 04:44:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8532428543
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 04:44:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233664AbhJKCqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 22:46:06 -0400
-Received: from out2.migadu.com ([188.165.223.204]:58237 "EHLO out2.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231578AbhJKCqF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 Oct 2021 22:46:05 -0400
+        id S233703AbhJKCqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 22:46:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233411AbhJKCq2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 22:46:28 -0400
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A04CC061570;
+        Sun, 10 Oct 2021 19:44:29 -0700 (PDT)
+Received: by mail-oi1-x22b.google.com with SMTP id u69so10283714oie.3;
+        Sun, 10 Oct 2021 19:44:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=FEsKQETeRll8zdrD7pbt3rLtoNmhMueb3RF/kjwBxDg=;
+        b=MOG8/CQTeiJKlF4QcodxH9h7UqnCdawe+sWybHuy0aPFF03SZs8SKwDEk0nfmQYns6
+         C5tESG8ZxSAhTNKdX4py1eHjxlrsrIXNLOqS0jdnfkA/hGdT5QA8eocgieubjLtdit1L
+         u6aKsLOfY868R8LzKenGTO+5+HXM7CMFHT2oANRSXCXmcohRJ4GCEzBPQY7C1JtDM/nh
+         eeuPGMlqucBeU3zLyuZJa4lDY8ZDVfA6BvukxQdKlohA0QwLEGUJ3oMvok8wElNTONMr
+         h+cf1QrlkJS6jrSganY/BovGYRgLLmSCzt0CxfyjTFjR2wltPKBRFDZrmR7oGyhrOb97
+         eC5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FEsKQETeRll8zdrD7pbt3rLtoNmhMueb3RF/kjwBxDg=;
+        b=fg+1/8Lr/93PSFpJOdWBW7Vf6oH6NZD9Sq6kdGnCREpQIxRHZ97H5OzpdToHsmBHac
+         VaHXLA+CFBhJaHuLDxb5eZwgHClcEMiY/XZhPMmbko93oJLCMpWmNyEz1QPn78nsWkQz
+         UujyZ7+iv0iW0DwsiTwZlE5Cm2+DELMvD1mK/7Hq51hABM+x9K4T/foovGrO2o3upSGs
+         T5yi+XKE62HQ60gbIUZKMqxDJNhO3iSUwLHpQvxESjLpPERfyHzHcu8PLF/KcXwHs3Rn
+         L/aJVPsCpOGIjHxNNxTmP4HkLNc7Htu7yqsvbKqDmOTYnbXI7p4o3IfPb15x/tqFEQZs
+         F4oQ==
+X-Gm-Message-State: AOAM5324aU2//gXtwgZToy9jrnaMXLZooM5HuUuve1MGNJejaxMxch3I
+        vglzi4rsnT4jB09CGR4wWFs=
+X-Google-Smtp-Source: ABdhPJyPcjZS82mtyLu0RXGz/DQvMO8GdHs0STaTNsxwe+zq9PNIDfts31et3jc4DqwMDp/Reqq7lQ==
+X-Received: by 2002:aca:41d5:: with SMTP id o204mr25440133oia.41.1633920268505;
+        Sun, 10 Oct 2021 19:44:28 -0700 (PDT)
+Received: from ?IPV6:2600:1700:dfe0:49f0:3cb6:937e:609b:a590? ([2600:1700:dfe0:49f0:3cb6:937e:609b:a590])
+        by smtp.gmail.com with ESMTPSA id 3sm1110709oif.12.2021.10.10.19.44.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Oct 2021 19:44:28 -0700 (PDT)
+Message-ID: <13904686-9a74-00d9-d2fa-1ebf7e820d0c@gmail.com>
+Date:   Sun, 10 Oct 2021 19:44:25 -0700
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1633920244;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AZ82gyhlQYUiMxzKvLmPbmy3KKD10pObF9BmwWMecNQ=;
-        b=V/HaHYLkX4t7w5VW0Wb4yIvTfpx6ok52nXyIehyQEtihWiUmhU2iSDuGHWfJTGkmjvIg0G
-        G38wdon32f4gdseq4Zph4+p/dED++Zv1lQA07QNwxlg4VFdkaRQfM1EMjblpp8/cb6cuEA
-        /JeVggYTSZXXDDq+/6agvJeAZPamPQQ=
-Date:   Mon, 11 Oct 2021 02:44:04 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   yajun.deng@linux.dev
-Message-ID: <83d864e81ea774b8124948a65c069e82@linux.dev>
-Subject: Re: [PATCH net-next] net: procfs: add seq_puts() statement for
- dev_mcast
-To:     "Vladimir Oltean" <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20211009164249.euf7dfpccr6kz7a3@skbuf>
-References: <20211009164249.euf7dfpccr6kz7a3@skbuf>
- <20210816085757.28166-1-yajun.deng@linux.dev>
- <20211009163511.vayjvtn3rrteglsu@skbuf>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.2
+Subject: Re: [net-next PATCH v5 13/14] drivers: net: dsa: qca8k: set internal
+ delay also for sgmii
+Content-Language: en-US
+To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211011013024.569-1-ansuelsmth@gmail.com>
+ <20211011013024.569-14-ansuelsmth@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20211011013024.569-14-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is PCIe NIC with long name, this is the reason why put the 'Interfa=
-ce' a whole.=0A=0Abefore:=0AInter-|   Receive                            =
-                    |  Transmit=0A face |bytes    packets errs drop fifo =
-frame compressed multicast|bytes    packets errs drop fifo colls carrier =
-compressed=0A    lo:  251136    2956    0    0    0     0          0     =
-    0   251136    2956    0    0    0     0       0          0=0Aenp27s0f=
-0:       0       0    0    0    0     0          0         0        0    =
-   0    0    0    0     0       0          0=0Aenp27s0f1: 95099489  62711=
-6    0 328486    0     0          0    187285 18680642   67213    0    0 =
-   0     0       0          0=0Adocker0:       0       0    0    0    0  =
-   0          0         0        0       0    0    0    0     0       0  =
-        0=0A=0A=0Aafter:=0AInterface|                            Receive =
-                                      |                                 T=
-ransmit=0A         |            bytes      packets errs   drop fifo frame=
- compressed multicast|            bytes      packets errs   drop fifo col=
-ls carrier compressed=0A       lo:           251136         2956    0    =
-  0    0     0          0         0            251136         2956    0  =
-    0    0     0       0          0=0Aenp27s0f0:                0        =
-    0    0      0    0     0          0         0                 0      =
-      0    0      0    0     0       0          0=0Aenp27s0f1:         95=
-099489       627116    0 328486    0     0          0    187285          =
-18680642        67213    0      0    0     0       0          0=0A  docke=
-r0:                0            0    0      0    0     0          0      =
-   0                 0            0    0      0    0     0       0       =
-   0=0A=0A=0A=0AOctober 10, 2021 12:42 AM, "Vladimir Oltean" <olteanv@gma=
-il.com> =E5=86=99=E5=88=B0:=0A=0A> On Sat, Oct 09, 2021 at 07:35:11PM +03=
-00, Vladimir Oltean wrote:=0A> =0A>> On Mon, Aug 16, 2021 at 04:57:57PM +=
-0800, Yajun Deng wrote:=0A>> Add seq_puts() statement for dev_mcast, make=
- it more readable.=0A>> As also, keep vertical alignment for {dev, ptype,=
- dev_mcast} that=0A>> under /proc/net.=0A>> =0A>> Signed-off-by: Yajun De=
-ng <yajun.deng@linux.dev>=0A>> ---=0A>> =0A>> FYI, this program got broke=
-n by this commit (reverting it restores=0A>> functionality):=0A>> =0A>> r=
-oot@debian:~# ifstat=0A>> ifstat: /proc/net/dev: unsupported format.=0A>>=
- =0A>> Confusingly enough, the "ifstat" provided by Debian is not from ip=
-route2:=0A>> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git=
-/tree/misc/ifstat.c=0A>> but rather a similarly named program:=0A>> https=
-://packages.debian.org/source/bullseye/ifstat=0A>> https://github.com/mat=
-ttbe/ifstat=0A>> =0A>> I haven't studied how this program parses /proc/ne=
-t/dev, but here's how=0A>> the kernel's output changed:=0A> =0A> Ah, it s=
-crapes the text for "Inter-|":=0A> https://github.com/matttbe/ifstat/blob=
-/main/drivers.c#L825=0A> =0A>> Doesn't work:=0A>> =0A>> root@debian:~# ca=
-t /proc/net/dev=0A>> Interface| Receive | Transmit=0A>> | bytes packets e=
-rrs drop fifo frame compressed multicast| bytes packets errs drop fifo co=
-lls=0A>> carrier compressed=0A>> lo: 97400 1204 0 0 0 0 0 0 97400 1204 0 =
-0 0 0 0 0=0A>> bond0: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sit0: 0 0 0 0 =
-0 0 0 0 0 0 0 0 0 0 0 0=0A>> eno2: 5002206 6651 0 0 0 0 0 0 105518642 146=
-5023 0 0 0 0 0 0=0A>> swp0: 134531 2448 0 0 0 0 0 0 99599598 1464381 0 0 =
-0 0 0 0=0A>> swp1: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> swp2: 4867675 420=
-3 0 0 0 0 0 0 58134 631 0 0 0 0 0 0=0A>> sw0p0: 0 0 0 0 0 0 0 0 0 0 0 0 0=
- 0 0 0=0A>> sw0p1: 124739 2448 0 1422 0 0 0 0 93741184 1464369 0 0 0 0 0 =
-0=0A>> sw0p2: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw2p0: 4850863 4203 0 =
-0 0 0 0 0 54722 619 0 0 0 0 0 0=0A>> sw2p1: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=
- 0=0A>> sw2p2: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw2p3: 0 0 0 0 0 0 0 =
-0 0 0 0 0 0 0 0 0=0A>> br0: 10508 212 0 212 0 0 0 212 61369558 958857 0 0=
- 0 0 0 0=0A>> =0A>> Works:=0A>> =0A>> root@debian:~# cat /proc/net/dev=0A=
->> Inter-| Receive | Transmit=0A>> face |bytes packets errs drop fifo fra=
-me compressed multicast|bytes packets errs drop fifo colls=0A>> carrier c=
-ompressed=0A>> lo: 13160 164 0 0 0 0 0 0 13160 164 0 0 0 0 0 0=0A>> bond0=
-: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sit0: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 =
-0 0=0A>> eno2: 30824 268 0 0 0 0 0 0 3332 37 0 0 0 0 0 0=0A>> swp0: 0 0 0=
- 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> swp1: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>=
-> swp2: 30824 268 0 0 0 0 0 0 2428 27 0 0 0 0 0 0=0A>> sw0p0: 0 0 0 0 0 0=
- 0 0 0 0 0 0 0 0 0 0=0A>> sw0p1: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw0=
-p2: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw2p0: 29752 268 0 0 0 0 0 0 156=
-4 17 0 0 0 0 0 0=0A>> sw2p1: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw2p2: =
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=0A>> sw2p3: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0=
-=200
+
+
+On 10/10/2021 6:30 PM, Ansuel Smith wrote:
+> QCA original code report port instability and sa that SGMII also require
+> to set internal delay. Generalize the rgmii delay function and apply the
+> advised value if they are not defined in DT.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>   drivers/net/dsa/qca8k.c | 81 +++++++++++++++++++++++++++--------------
+>   drivers/net/dsa/qca8k.h |  2 +
+>   2 files changed, 55 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index cb66bdccc233..28635f4feaf5 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -998,6 +998,7 @@ qca8k_parse_port_config(struct qca8k_priv *priv)
+>   		case PHY_INTERFACE_MODE_RGMII_ID:
+>   		case PHY_INTERFACE_MODE_RGMII_TXID:
+>   		case PHY_INTERFACE_MODE_RGMII_RXID:
+> +		case PHY_INTERFACE_MODE_SGMII:
+>   			delay = 0;
+>   
+>   			if (!of_property_read_u32(port_dn, "tx-internal-delay-ps", &delay))
+> @@ -1030,8 +1031,6 @@ qca8k_parse_port_config(struct qca8k_priv *priv)
+>   
+>   			priv->rgmii_rx_delay[cpu_port_index] = delay;
+>   
+> -			break;
+> -		case PHY_INTERFACE_MODE_SGMII:
+>   			if (of_property_read_bool(port_dn, "qca,sgmii-txclk-falling-edge"))
+>   				priv->sgmii_tx_clk_falling_edge = true;
+
+This also makes the RGMII* ports parse the couple of sgmii properties 
+introduced earlier, but since these properties are only acted on for 
+PHY_INTERFACE_MODE_SGMII in the .mac_config, I suppose that is fine.
+--
+Florian
