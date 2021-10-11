@@ -2,80 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 291004291D2
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 16:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 679274291FB
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 16:34:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237130AbhJKOcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 10:32:18 -0400
-Received: from www62.your-server.de ([213.133.104.62]:59424 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236716AbhJKOcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 10:32:12 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mZwJY-000Cmb-Vp; Mon, 11 Oct 2021 16:30:05 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mZwJY-000MJx-M5; Mon, 11 Oct 2021 16:30:04 +0200
-Subject: Re: [PATCH] selftests: bpf: Remove dumplicated include in
- cgroup_helpers
-To:     Wan Jiabing <wanjiabing@vivo.com>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S238012AbhJKOgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 10:36:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50292 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237737AbhJKOgp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Oct 2021 10:36:45 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D64276023F;
+        Mon, 11 Oct 2021 14:34:44 +0000 (UTC)
+Date:   Mon, 11 Oct 2021 10:34:42 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Hou Tao <houtao1@huawei.com>
+Cc:     Hou Tao <hotforest@gmail.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kael_w@yeah.net
-References: <20211011111948.19301-1-wanjiabing@vivo.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <0b1f31ec-68e4-92e1-f4a6-b97fcb3ba6a8@iogearbox.net>
-Date:   Mon, 11 Oct 2021 16:30:04 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Ingo Molnar <mingo@redhat.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v5 0/3] add support for writable bare
+ tracepoint
+Message-ID: <20211011103442.2ce9fab7@gandalf.local.home>
+In-Reply-To: <0147c4ea-773a-5fe9-dea5-edd16ad1db12@huawei.com>
+References: <20211004094857.30868-1-hotforest@gmail.com>
+        <20211004104629.668cadeb@gandalf.local.home>
+        <0147c4ea-773a-5fe9-dea5-edd16ad1db12@huawei.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20211011111948.19301-1-wanjiabing@vivo.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26319/Mon Oct 11 10:18:47 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/11/21 1:19 PM, Wan Jiabing wrote:
-> Fix following checkincludes.pl warning:
-> ./tools/testing/selftests/bpf/cgroup_helpers.c
-> 12	#include <unistd.h>
->      14	#include <unistd.h>
+On Sat, 9 Oct 2021 20:07:10 +0800
+Hou Tao <houtao1@huawei.com> wrote:
 
-What does the 12 vs 14 mean here? Please provide a proper commit description, e.g. if
-you used checkincludes.pl, maybe include the full command invocation and the relevant
-output, so that this is more obvious and in a better shape. Thanks!
+> Not tried yet, but considering that VFS maintainer refused to have tracepoint in
+> VFS layer, I'm not sure it is worth trying.
 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> ---
->   tools/testing/selftests/bpf/cgroup_helpers.c | 1 -
->   1 file changed, 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/cgroup_helpers.c b/tools/testing/selftests/bpf/cgroup_helpers.c
-> index 8fcd44841bb2..9d59c3990ca8 100644
-> --- a/tools/testing/selftests/bpf/cgroup_helpers.c
-> +++ b/tools/testing/selftests/bpf/cgroup_helpers.c
-> @@ -11,7 +11,6 @@
->   #include <fcntl.h>
->   #include <unistd.h>
->   #include <ftw.h>
-> -#include <unistd.h>
->   
->   #include "cgroup_helpers.h"
->   
-> 
+The reason they refuse to is because it shows data that can become an API.
+But if that data is just a pointer, then it's not possible to become an API
+no more than a RAW tracepoint that BPF can hook to.
 
+Try asking.
+
+> >
+> > That is, it only gives you a pointer to what is passed in, but does not
+> > give you anything else to form any API against it.
+> > This way, not only does BPF have access to this information, so do the
+> > other tracers, through the new eprobe interface:  
+> Or in a opposite way can eprobe add support for bare tracepoint ?
+
+If there's a way to expose the parameters of a bare tracepoint, then it
+should not be difficult to do so. Heck, we can just have "bare tracepoints"
+be events, that do nothing but repeat their pointer parameters, as that's
+basically all they do anyway. There's nothing fundamentally different
+between a "bare tracepoint" and a trace event that just defines the fields
+as the same as the parameters to a tracepoint, except now you have another
+way to know what the parameters are.
+
+-- Steve
