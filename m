@@ -2,97 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CA4429390
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 17:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F211429398
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 17:39:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243534AbhJKPjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 11:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243328AbhJKPjJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 11:39:09 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316D3C061768
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 08:37:07 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id b9-20020a5b07890000b0290558245b7eabso23644235ybq.10
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 08:37:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=PSjfyu1ChdlgSSxfTzhpeyMZixB5wwmSjmCj88bzjYo=;
-        b=P84YpPAt66Glt/fiB1PM2P1gvmvBMpbG9GWEG7/CMWx7p+OdxHrozecW3i68+emqW2
-         8LuEcHfFOVhdu0EolHQaj0hlosAYG1L41wANMaZTnlHGMb6o/AJGe+aJOkZQdcsZUfIF
-         j7Utyq29wAeQpMYabODdSjLjfRhqRhbJfXkB9MixYfQLMg/ENDLIXA6l7PEKNixEuY5R
-         23c6crpeScfjNW8UpRjiXUQJmtrJ2qAwdxCSd8lWME3u/7HuIYWsfNMyApOCV87AT5zf
-         C3PZ5oMOS+2HSSgwMzvQTobvitZGnCaqvYHlKtTJI71Oko5MTwpACPgrhJ0eV30AzvZn
-         P4DQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=PSjfyu1ChdlgSSxfTzhpeyMZixB5wwmSjmCj88bzjYo=;
-        b=RNWLt2ITkfS7fFY9Lasj9oqqw7I6udIzYfUJzg6mFDb9K5CRI2kMKYLHZLAw653+KK
-         hg6eIs30SqhMgITFpW3YCMGOwNQRS3oGWDhM+2L6hePEd1P/+WGdRyXZzq1Op7r4A8TY
-         oQaDa1cMXh1I2G0KSvOqjxaYD01I2Qa6kbTgxSi0aV96Ovw1vUHd1UThFurR6rvUCbfd
-         qMffcJ65852PgkECxzLJHqxlMdYnE3CSo99tdEKY+tATFuw/Eq0rDXwFpw4fQ5RELV4K
-         Uy7IT4ABQu1xGTPe3r3IBqRyFNEwjHoD+QbxzOQsIm8Or3khHmABWyMT/ZLmLr+JnjlG
-         RSXw==
-X-Gm-Message-State: AOAM530CCPTUutaf5Ept8QA/eNCYxBc5jO9Lb1EjcLnvp3jFCAPWxx4k
-        I4eMjNF4Dhnbrx7zngQrwjU2CCwRIvsL7DOTVT+0Qhn1JBxpN2TGfSqovI95XeX2cxNOfeygeXD
-        xgDQ3/iyh6iEdna651Q/qpfwvEkWTe5f8KM8GtDL/HNErBp9xsPZwlLykcX00wRYkmPk=
-X-Google-Smtp-Source: ABdhPJwjxa4W0W4qsQqeIVP+bkr8eHFYen20xVFL1ELQbhk8T8z8IaWbF0OSpoj4rrWCwWMewtB826hAq2gTag==
-X-Received: from jeroendb.sea.corp.google.com ([2620:15c:100:202:94b6:8af3:6cef:e277])
- (user=jeroendb job=sendgmr) by 2002:a25:6106:: with SMTP id
- v6mr22526347ybb.531.1633966626411; Mon, 11 Oct 2021 08:37:06 -0700 (PDT)
-Date:   Mon, 11 Oct 2021 08:36:50 -0700
-In-Reply-To: <20211011153650.1982904-1-jeroendb@google.com>
-Message-Id: <20211011153650.1982904-8-jeroendb@google.com>
-Mime-Version: 1.0
-References: <20211011153650.1982904-1-jeroendb@google.com>
-X-Mailer: git-send-email 2.33.0.882.g93a45727a2-goog
-Subject: [PATCH net-next v2 7/7] gve: Track RX buffer allocation failures
-From:   Jeroen de Borst <jeroendb@google.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Catherine Sullivan <csully@google.com>,
-        Jeroen de Borst <jeroendb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S243761AbhJKPky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 11:40:54 -0400
+Received: from mxout04.lancloud.ru ([45.84.86.114]:60166 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239044AbhJKPkv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 11:40:51 -0400
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru B22D1209A242
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH net-next v2 11/14] ravb: Rename "nc_queue" feature bit
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "Prabhakar Mahadev Lad" <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211010072920.20706-1-biju.das.jz@bp.renesas.com>
+ <20211010072920.20706-12-biju.das.jz@bp.renesas.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <5fa36586-bb5e-4980-da26-83a2c8866a25@omp.ru>
+Date:   Mon, 11 Oct 2021 18:38:45 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <20211010072920.20706-12-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Catherine Sullivan <csully@google.com>
+On 10/10/21 10:29 AM, Biju Das wrote:
 
-The rx_buf_alloc_fail counter wasn't getting updated.
+> Rename the feature bit "nc_queue" with "nc_queues" as AVB DMAC has
+> RX and TX NC queues.
+> 
+> There is no functional change.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Suggested-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-Fixes: 433e274b8f7b0 ("gve: Add stats for gve.")
-Signed-off-by: Catherine Sullivan <csully@google.com>
-Signed-off-by: Jeroen de Borst <jeroendb@google.com>
----
- drivers/net/ethernet/google/gve/gve_rx.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index 98ba981cd534..95bc4d8a1811 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -532,8 +532,13 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
- 
- 				gve_rx_free_buffer(dev, page_info, data_slot);
- 				page_info->page = NULL;
--				if (gve_rx_alloc_buffer(priv, dev, page_info, data_slot))
-+				if (gve_rx_alloc_buffer(priv, dev, page_info,
-+							data_slot)) {
-+					u64_stats_update_begin(&rx->statss);
-+					rx->rx_buf_alloc_fail++;
-+					u64_stats_update_end(&rx->statss);
- 					break;
-+				}
- 			}
- 		}
- 		fill_cnt++;
--- 
-2.33.0.882.g93a45727a2-goog
+[...]
 
-v2: Unchanged
+MBR, Sergey
