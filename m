@@ -2,88 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 249CB4286F3
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 08:43:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3822E4286F9
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 08:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234262AbhJKGpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 02:45:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43630 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229797AbhJKGpA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Oct 2021 02:45:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E227060C41;
-        Mon, 11 Oct 2021 06:42:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1633934580;
-        bh=8XqgNnSi1DT5I1+mNKRtuFuL+X9shKCQ0IBVFhwHhVE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=TIG0lQkrDuwkqh2Q4f0b+KlJsljdZWuw6S6rkyFCMkfJuLP/X9h08t2PgM8RnwTG/
-         gpwgLRFTRwrqtxT970+UyTDEgH/7incZHRxMS/uaa9QAh89Gdm6NqxuyGcL8YAhS9a
-         6hD4nsO8TmphjrMsmKpmDlhrJx5J3RCDw9ZER0hk=
-Date:   Mon, 11 Oct 2021 08:42:57 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Eiichi Tsukata <eiichi.tsukata@nutanix.com>,
-        gregkh@linuxfoundation.org
-Subject: [PATCH] sctp: account stream padding length for reconf chunk
-Message-ID: <YWPc8Stn3iBBNh80@kroah.com>
+        id S234295AbhJKGrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 02:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229797AbhJKGri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 02:47:38 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFE7C061570;
+        Sun, 10 Oct 2021 23:45:39 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id pf6-20020a17090b1d8600b0019fa884ab85so13989203pjb.5;
+        Sun, 10 Oct 2021 23:45:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Z8Zu9yAyyO2bTaOv8lpg2v+LXFs7I8Nz3uHcl5OufP4=;
+        b=EOXtYcSC45TdU1OvJs49IrRMdt6dgSLYoz1x01tMtXEjHNmckRRy7QBXbZ8lYM0nhV
+         EtLTMEoOS/uIrd3F9YhKW34+7FCdA1rGkz+bSLni22btJd3lTl+mXKL/dH5dxlKRd2yv
+         6IEKHPTzdT+pb0vFDcnKwQd+aBMFQm1neIdNkKWPqDhNNU9PglHEzQwvWz/8FCO4llZ0
+         tM9+dqBwVdqD8qj6eay5nadrhzj0L8lfptloeqbEjdCJ3px2r5Q3xG+5zbJWFoLPoXOw
+         /OIOooTIgyis7ScyxMomecgP+VcD6lTZN/Ctx+SfG3HTOrXrkKVL9fPSVOLk9SecNHGs
+         4jHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Z8Zu9yAyyO2bTaOv8lpg2v+LXFs7I8Nz3uHcl5OufP4=;
+        b=peY9PSZqVrehY/bNGVBfiEGoc/IGDpV0bOMKtgrqgDhyeXbCJ5rSDRvMyJccCVHOFM
+         Xy+LnIr/NB2YsTkTVT7O3SnzJGsW5XI/vYRAY0wtTM8rCAqhUWgPYQuWh8dSBDtzI3dm
+         9vH6lEgPq3SylukMmUdTDCDNepvXWX2mkGF9MrxaJB1IYmQjbixA5S7P8U+ygjiq13kb
+         fRrFGwvdszhjvWZYJRwtuZu+g2tmha/vS7X/Hm8bzpMIoo2rEqjruSAk1v6Biz9GQsvp
+         EcdGAt4OHT4HBVJoTh4NkoSjLYrzdv1NOcTogCNuRZ5BKBq2fRCzhY0FT88CCNDGBrbu
+         6hIw==
+X-Gm-Message-State: AOAM530j5yoG05/CQEiDFDc4The7ZlfFx692ciX/fC4+XkpIObzOm7ri
+        xga3nBXn5mWHlPdyny0YZlp/JdVEjKursA==
+X-Google-Smtp-Source: ABdhPJy/WYf2E+ei4xSNFrSM0hFYlIPFebU3HE7DU4fHc0l1z03kp9TImjp8EXu8rclzv2ONrfGTLg==
+X-Received: by 2002:a17:90b:1646:: with SMTP id il6mr27447129pjb.129.1633934738644;
+        Sun, 10 Oct 2021 23:45:38 -0700 (PDT)
+Received: from localhost ([23.129.64.212])
+        by smtp.gmail.com with ESMTPSA id q10sm7017806pgn.31.2021.10.10.23.45.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 Oct 2021 23:45:38 -0700 (PDT)
+From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
+To:     Ilya Dryomov <idryomov@gmail.com>
+Cc:     jlayton@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ceph-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next] net: ceph: fix ->monmap and err initialization
+Date:   Mon, 11 Oct 2021 00:45:24 -0600
+Message-Id: <20211011064524.20003-1-sakiwit@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1434;
- i=gregkh@linuxfoundation.org; h=from:subject;
- bh=fWL+345goEDajSmeEAJ0ZaRVm0tKbjyM/lwIQgQ+9w0=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDInJt40z8qIN137eW7ul4bupvEihyymTyrWt7jM3njkVdz7n
- hiBDRywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAEzk9imGBRP3sxuyHLa4kFO24uTcte
- Xe2eo77BnmKSf2vzpX8VLQTU3Y4CyXsViBeNAiAA==
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
- fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eiichi Tsukata <eiichi.tsukata@nutanix.com>
+From: Jean Sacren <sakiwit@gmail.com>
 
-"stream_len" is not always multiple of 4. Account padding length
-which can be added in sctp_addto_chunk() for reconf chunk.
+Call to build_initial_monmap() is one stone two birds.  Explicitly it
+initializes err variable. Implicitly it initializes ->monmap via call to
+kzalloc().  We should only declare err and ->monmap is taken care of by
+ceph_monc_init() prototype.
 
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-sctp@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Fixes: cc16f00f6529 ("sctp: add support for generating stream reconf ssn reset request chunk")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Eiichi Tsukata <eiichi.tsukata@nutanix.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jean Sacren <sakiwit@gmail.com>
 ---
- net/sctp/sm_make_chunk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/ceph/mon_client.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index b8fa8f1a7277..f7a1072a2a2a 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -3694,8 +3694,8 @@ struct sctp_chunk *sctp_make_strreset_req(
- 	struct sctp_chunk *retval;
- 	__u16 outlen, inlen;
+diff --git a/net/ceph/mon_client.c b/net/ceph/mon_client.c
+index 013cbdb6cfe2..6a6898ee4049 100644
+--- a/net/ceph/mon_client.c
++++ b/net/ceph/mon_client.c
+@@ -1153,12 +1153,11 @@ static int build_initial_monmap(struct ceph_mon_client *monc)
  
--	outlen = (sizeof(outreq) + stream_len) * out;
--	inlen = (sizeof(inreq) + stream_len) * in;
-+	outlen = (sizeof(outreq) + SCTP_PAD4(stream_len)) * out;
-+	inlen = (sizeof(inreq) + SCTP_PAD4(stream_len)) * in;
+ int ceph_monc_init(struct ceph_mon_client *monc, struct ceph_client *cl)
+ {
+-	int err = 0;
++	int err;
  
- 	retval = sctp_make_reconf(asoc, outlen + inlen);
- 	if (!retval)
--- 
-2.33.0
-
+ 	dout("init\n");
+ 	memset(monc, 0, sizeof(*monc));
+ 	monc->client = cl;
+-	monc->monmap = NULL;
+ 	mutex_init(&monc->mutex);
+ 
+ 	err = build_initial_monmap(monc);
