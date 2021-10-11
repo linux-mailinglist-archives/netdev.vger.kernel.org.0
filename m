@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D10664293E6
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 17:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE894293E9
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 17:56:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235732AbhJKP6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 11:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
+        id S234882AbhJKP6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 11:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234910AbhJKP6k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 11:58:40 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437CDC06161C
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 08:56:40 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id s66-20020a252c45000000b005ba35261459so23198877ybs.7
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 08:56:40 -0700 (PDT)
+        with ESMTP id S236025AbhJKP6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 11:58:43 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C39C061570
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 08:56:42 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id s66-20020a252c45000000b005ba35261459so23199024ybs.7
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 08:56:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=7TXPmPVY27k7pyNLuFw60xr5tLPqyGfPBHdD9J36DsI=;
-        b=e5VGEZDkxA+p6Vsk3Y8CF6kcvLxf20TRniWIZOO96EEJ5Hn/TmXZ4ifDXGXoPTo8KK
-         CA8Ec/iFhK83F1t1n5GlycUqw3B17u+1Vba7PEUMxIWXIyd+4ljsTZGktgbEr61vDEKO
-         cIvAJcJDc73zwECR/6CaQNVnQ/4w1lUS/mKfheJCZjxY+KCGR4MdfmcmsWfKmeK+x6Pt
-         En2wPn+uku4fyrLJWYtLdXEDxf7exFeHcaWUeVCxsdGOHxwuhNolYD/IHRynl6THjDPj
-         NBclCDl5mejDretY/qvPcOIilTi7ZfMQtFzgtCpfAqh++igl+F+TswelIu10WprN4cbT
-         iNzQ==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=jlfiTEUka2/blqQcciOdP3p7gXV+iiMGA7a+lcQ/zbM=;
+        b=cGMeVNAzLFMNSTs8MUxjyGbu+EFvpVJhQVCM3uLH809vai3ficSFhG5lvu1Fe+KZug
+         c1MopTN2Oioi+NEdbb4brDkl3iPWrWNQcCJtIUG2MPCQkN2K1XaNyttm/oHyCi1ZD/XQ
+         8Dy6Zt6/qRYqUGo3Xx0JwHYD305Ne4C5yjkY36nCX5FZOAzQibCdybP++bNQYEDENdUB
+         C9lImtUQmE5rb0sNxtjJxzErQ6GybMO5l2EN8edrtdMF6BcE03NGMupjGsDw5Rkog5fr
+         50kiWKGAKmZvpJJomegAskbv8K20DdOyxDnrnHTCJDnA67pmAKArOwgr1JFHGnTBAqM1
+         e5SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=7TXPmPVY27k7pyNLuFw60xr5tLPqyGfPBHdD9J36DsI=;
-        b=L7YwIVW2P0PttDk1VdvZxMvIVYEECKWteUkyeZunfuIAbuytYXdulZDH6H6zdtS2iF
-         VGpMEXMqIZZdF44qtBAIxXjGLHxxjtRqADYPZGo3sVR7JMV4MqpiZU4uii82Fl9/oQTN
-         ol6Rn8b/alWAvXEjbMZAVWnO73bJN//dK7WLyvD6pPS1rTLIQg1uPGPNy9FYgDEh19kN
-         FYUXndiEy8p6Wh/sQV2fUuV8hqLmFl3vMAwJoqdv0op7j9yHCeiRANw6qcXXMkM+AZ9O
-         XaEHTYlwQy5WsdnnmXkBNh5vQZY8BonVlsImP7vO5J+guVB1fY3iMz4cGsLkHgsZJK8M
-         4bPg==
-X-Gm-Message-State: AOAM533J2cpRzwIb+yB7V8DtXn54qcUmHgNeka2Wo4cfo+ybbsjHQnIt
-        Wj1C5YnRsgwUI5ePmDZghwKmaZDjMPbpLMpeDTTWXWGtvgM3I88NUrX/PjdDHDYKeB/wKnLFYsu
-        BAht1WaUDyVY2asWAExbLt0BIczlX5+frV2wLv0+dT9OolVpJF60o5w==
-X-Google-Smtp-Source: ABdhPJx8nVcIE7gIFaT38NBHovcGBJWLQzEFsOUT5vQ1z/l7ncgX3MhqW7LLOE1Z+Q6TIGZS33z7AwY=
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=jlfiTEUka2/blqQcciOdP3p7gXV+iiMGA7a+lcQ/zbM=;
+        b=Y4jaHBreSEbEWisjfnZoh/ONvXEKLFm29IIpNAlP+0hHdxswNS5zb0i6zE0nQbPfYE
+         Ly2IXZDgaABVsfMHsjh7AOrjr7lW+9M23Xv5kG0uMAz+CLSpCNQ1VpoKfk51JhSeaQvv
+         qaKwxqVE/TTefdLLmTInoHOH60ofV87WpNh9kpcbXCZvyjBfRxOh6sjS5owvf1OFb0wJ
+         mPEs0fomGCaWXR16JfPnDc1Y2dpZ85m31ywMczrwYRrXps5cObCvG8KL9uGvQcrZ7QPx
+         iP9u+NhB9tBHxRVGmW5QoY/AOVIyEv1vOMnju7C3ZRICC2Tpez6LZcphls5yJLLP412P
+         ps+w==
+X-Gm-Message-State: AOAM530VR/EXf046fVwy+zEiX1WzYAtQfP+PF7tOdSvqAo5pKc8/Z3UK
+        K18MHgkLURUyoI4fxhUY04ORyEk9uGDit1fzQo2+hIoXrxA+0wSk9h7JBN+E1dkzRkV6TlVlvAf
+        +Xxco2aFvaO8wGGn64db4tQVd7MneJfplgau6/boaRiGFRQhfXhtmcA==
+X-Google-Smtp-Source: ABdhPJxpNlx1870Q/fwmADu7wk+BQM29Pkn8qvHYznh6+NmQqPCEQjG5xiybeWETbERd6JiHcWWlNg0=
 X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:8bf5:656e:8f83:7b2d])
- (user=sdf job=sendgmr) by 2002:a25:ca8c:: with SMTP id a134mr23058238ybg.542.1633967799376;
- Mon, 11 Oct 2021 08:56:39 -0700 (PDT)
-Date:   Mon, 11 Oct 2021 08:56:34 -0700
-Message-Id: <20211011155636.2666408-1-sdf@google.com>
+ (user=sdf job=sendgmr) by 2002:a25:7309:: with SMTP id o9mr22521213ybc.42.1633967801951;
+ Mon, 11 Oct 2021 08:56:41 -0700 (PDT)
+Date:   Mon, 11 Oct 2021 08:56:35 -0700
+In-Reply-To: <20211011155636.2666408-1-sdf@google.com>
+Message-Id: <20211011155636.2666408-2-sdf@google.com>
 Mime-Version: 1.0
+References: <20211011155636.2666408-1-sdf@google.com>
 X-Mailer: git-send-email 2.33.0.882.g93a45727a2-goog
-Subject: [PATCH bpf-next 1/3] libbpf: use func name when pinning programs with LIBBPF_STRICT_SEC_NAME
+Subject: [PATCH bpf-next 2/3] bpftool: don't append / to the progtype
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -57,41 +61,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can't use section name anymore because it's not unique
-and pinning objects with multiple programs with the same
-progtype/secname will fail.
+Otherwise, attaching with bpftool doesn't work with strict section names.
+
+Also, switch to libbpf strict mode to use the latest conventions
+(note, I don't think we have any cli api guarantees?).
 
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- tools/lib/bpf/libbpf.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ tools/bpf/bpftool/main.c |  4 ++++
+ tools/bpf/bpftool/prog.c | 15 +--------------
+ 2 files changed, 5 insertions(+), 14 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index ae0889bebe32..0373ca86a54c 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -285,7 +285,8 @@ struct bpf_program {
- 	size_t sub_insn_off;
+diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
+index 02eaaf065f65..8223bac1e401 100644
+--- a/tools/bpf/bpftool/main.c
++++ b/tools/bpf/bpftool/main.c
+@@ -409,6 +409,10 @@ int main(int argc, char **argv)
+ 	block_mount = false;
+ 	bin_name = argv[0];
  
- 	char *name;
--	/* sec_name with / replaced by _; makes recursive pinning
-+	/* sec_name (or name when using LIBBPF_STRICT_SEC_NAME)
-+	 * with / replaced by _; makes recursive pinning
- 	 * in bpf_object__pin_programs easier
- 	 */
- 	char *pin_name;
-@@ -614,7 +615,11 @@ static char *__bpf_program__pin_name(struct bpf_program *prog)
- {
- 	char *name, *p;
- 
--	name = p = strdup(prog->sec_name);
-+	if (libbpf_mode & LIBBPF_STRICT_SEC_NAME)
-+		name = p = strdup(prog->name);
-+	else
-+		name = p = strdup(prog->sec_name);
++	ret = libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
++	if (ret)
++		p_err("failed to enable libbpf strict mode: %d", ret);
 +
- 	while ((p = strchr(p, '/')))
- 		*p = '_';
+ 	hash_init(prog_table.table);
+ 	hash_init(map_table.table);
+ 	hash_init(link_table.table);
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index 277d51c4c5d9..17505dc1243e 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -1396,8 +1396,6 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ 
+ 	while (argc) {
+ 		if (is_prefix(*argv, "type")) {
+-			char *type;
+-
+ 			NEXT_ARG();
+ 
+ 			if (common_prog_type != BPF_PROG_TYPE_UNSPEC) {
+@@ -1407,19 +1405,8 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ 			if (!REQ_ARGS(1))
+ 				goto err_free_reuse_maps;
+ 
+-			/* Put a '/' at the end of type to appease libbpf */
+-			type = malloc(strlen(*argv) + 2);
+-			if (!type) {
+-				p_err("mem alloc failed");
+-				goto err_free_reuse_maps;
+-			}
+-			*type = 0;
+-			strcat(type, *argv);
+-			strcat(type, "/");
+-
+-			err = get_prog_type_by_name(type, &common_prog_type,
++			err = get_prog_type_by_name(*argv, &common_prog_type,
+ 						    &expected_attach_type);
+-			free(type);
+ 			if (err < 0)
+ 				goto err_free_reuse_maps;
  
 -- 
 2.33.0.882.g93a45727a2-goog
