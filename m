@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A4FD428E3D
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 15:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39DB7428E48
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 15:39:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231605AbhJKNlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 09:41:31 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:42354
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237133AbhJKNl1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 09:41:27 -0400
+        id S237180AbhJKNli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 09:41:38 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:57330
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237111AbhJKNlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 09:41:31 -0400
 Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com [209.85.167.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E585140010
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 13:39:26 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 407D23FFF1
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 13:39:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1633959566;
-        bh=7wHPc2hCaswmbEOYcj4jBzC9LLYp/Egl2xOhlhUQit0=;
+        s=20210705; t=1633959570;
+        bh=Caod7f/lk82yPL9l72YPa9/xdZxrVhuurClzVai7YFo=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=QL1j25t0TqS/jEbZoltiQrej8KobxpLJbp47XpS7IpWz0W3cCFLyP2Gz9vaDzYQ4A
-         07s8AUz3zEOnUkaODP/E1HR7luDLuPvLheUeeatun9i6/VUM64K0htXxaCGkY2GBQb
-         aNBK0MCjlZQxIE6xVB3z5i1rF/cHIKlmVBrE7gLWxGTpMpATiDX9sKWfu4ycI/a1Rk
-         UNpJCAiqvRSgG6E+pv/0nT6O4s2NKElNn9ZqsfGV/gvlVHL1YOfkLj6tinZ5Cb67Mh
-         W5bFWBiL9gFo8JwjsCzPJdBXQelte/mAMB+yY3XiwQ100xKGy2q5wfjm2bxaPtldTM
-         TzI5Y9M7XEY2Q==
-Received: by mail-lf1-f72.google.com with SMTP id z29-20020a195e5d000000b003fd437f0e07so9882730lfi.20
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 06:39:26 -0700 (PDT)
+        b=CdstOsIuUqQkW+etuNFTUjYwMjQFkxCkWW+9uHrMnBxETVRjWMibImMgNv/x2mBTk
+         rWCYSxc2ZNkiJHDwcDChqALlE48j1dataBMPL+Zhf06/bVmTcFnGd74E2m9Uw0vIoa
+         zFcYjLoewAtziYaOa2DkZ5Wr/qy7yhNvZkU33hkSAOMPEJ99OlyL2FeoY72RscZVV9
+         Kei6lckt5JmwCEGCISD2KYY7+papd0UG1dfTMH9P5gM2sI/49F0CVwi2BQnR27gH+H
+         SsfPMtDEI1PxlHo9In+0f0Ns/+JBchT9B263BvWDrkvbFoKJ0mxwZZNobH8sXwfIa9
+         86ToBtKdRkyug==
+Received: by mail-lf1-f72.google.com with SMTP id bi16-20020a0565120e9000b003fd56ef5a94so11683637lfb.3
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 06:39:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7wHPc2hCaswmbEOYcj4jBzC9LLYp/Egl2xOhlhUQit0=;
-        b=QWR7g7BYHhNtupgFUIfGDY97cx5OMgBN5KqlvjZnTzcLg4aJ9VSVlsikR/A1cZdKlQ
-         hRB7bW7iwF8CQ+oBzBz0p+8o/szWTwnZhTvYVvOAE+330YliTfF5abzkr1HmdzPy78MK
-         cQj7Zneb7WKcde5PcUT8lIOc0b4eqFrAnpU9W9oGuWJy5QOTxugxOnn+qN1cCjP/HlS1
-         NXa9tDEkIh6Eu+SM0bCB8Hxcq0LsmuWRNiajXHfaKEwEbFP57AsFVKzpYP++x0W+A6M2
-         shr68m0EP9cUoDUZDFI1fiwn+C4+TOpyTFTU0DIAW3hVNIn+518i4MIfRlKim81jpV+u
-         +W8w==
-X-Gm-Message-State: AOAM5308LjBaqy/1yRtg5RSkySB3sESZ96c9iRtuXEnIhAb3MbeQjzjf
-        HU4/6zQDc7oYqGOzw9Rbp+V8r17EDmNfgFhHb+7nS/C1wNMPn7ImghA+H5+Zx8ftH7hU13nKLg1
-        VpZHYTfVC1hBFJjCx+yMYNQmMim9fpidbeg==
-X-Received: by 2002:a2e:9a44:: with SMTP id k4mr14874400ljj.149.1633959564905;
-        Mon, 11 Oct 2021 06:39:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzQuusYej153D7T4843hgxhZnMn63CiNaU/WCoXvJeUKhYTRGz/hdmDHUziYWi9pV44z1agbQ==
-X-Received: by 2002:a2e:9a44:: with SMTP id k4mr14874384ljj.149.1633959564729;
-        Mon, 11 Oct 2021 06:39:24 -0700 (PDT)
+        bh=Caod7f/lk82yPL9l72YPa9/xdZxrVhuurClzVai7YFo=;
+        b=lHoxjajjJPLNb4zcCbNocKKPYg81P7v3Sy4Pc5L8gcSkXquWFyO0HXw/NzVJTAxM9s
+         RFG2+aX5dHkWd39YQiOfypXOIlsEZ7Rt1sN+aNJgV09Jrh4FJc3N3CfKcjWhdGEadTBh
+         POUNFiBkaQccGXBjCiob09J4xMzCqtvaX7LrsuUk0XHmBEWCA8dCjBU3DmEnnk52GyeU
+         I682pJMI/sHAw+L+Q8nYYs+Ex1xoQyaIBYHOprsjTASYzy/o7WO7c1jOmS7+MfTUmgaU
+         DB2vrPXIrxplB2jcIHSCyGfYIuYfp6Q5IF7orGOPaKN+DiVbTgTcVm6z83JnJhPO+FH3
+         ajqA==
+X-Gm-Message-State: AOAM533nB9OcEeMKWBjh4HGvesv8hpoLu5Yv33ZViBZhzZCVVqBrC3di
+        liWh9+lITUD5ZFpYKXg223fJwznbOxXNVtCBrjV33IPTber8FHDHbuRzyS4J7t7DDCv+gAp92j7
+        jXI4dkAK8bOFyneRTnJXplHD12w6BnsNDsQ==
+X-Received: by 2002:a05:6512:23a0:: with SMTP id c32mr28315072lfv.166.1633959568233;
+        Mon, 11 Oct 2021 06:39:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxZiDLQW+5zqCPlBUX+HccXn6LAIXSmaJCIzfqIdMJzGyKW6xXiv/0sl+AlXYBAwxKOQrbchw==
+X-Received: by 2002:a05:6512:23a0:: with SMTP id c32mr28315053lfv.166.1633959568082;
+        Mon, 11 Oct 2021 06:39:28 -0700 (PDT)
 Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id a21sm738971lff.37.2021.10.11.06.39.23
+        by smtp.gmail.com with ESMTPSA id a21sm738971lff.37.2021.10.11.06.39.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Oct 2021 06:39:23 -0700 (PDT)
+        Mon, 11 Oct 2021 06:39:25 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Krzysztof Opasiak <k.opasiak@samsung.com>,
@@ -62,9 +62,9 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-wireless@vger.kernel.org
 Cc:     joe@perches.com
-Subject: [PATCH v3 6/7] nfc: trf7970a: drop unneeded debug prints
-Date:   Mon, 11 Oct 2021 15:38:34 +0200
-Message-Id: <20211011133835.236347-7-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v3 7/7] nfc: microread: drop unneeded debug prints
+Date:   Mon, 11 Oct 2021 15:38:35 +0200
+Message-Id: <20211011133835.236347-8-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211011133835.236347-1-krzysztof.kozlowski@canonical.com>
 References: <20211011133835.236347-1-krzysztof.kozlowski@canonical.com>
@@ -78,51 +78,46 @@ ftrace is a preferred and standard way to debug entering and exiting
 functions so drop useless debug prints.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Acked-by: Mark Greer <mgreer@animalcreek.com>
 ---
- drivers/nfc/trf7970a.c | 8 --------
- 1 file changed, 8 deletions(-)
+ drivers/nfc/microread/i2c.c | 4 ----
+ drivers/nfc/microread/mei.c | 2 --
+ 2 files changed, 6 deletions(-)
 
-diff --git a/drivers/nfc/trf7970a.c b/drivers/nfc/trf7970a.c
-index 8890fcd59c39..29ca9c328df2 100644
---- a/drivers/nfc/trf7970a.c
-+++ b/drivers/nfc/trf7970a.c
-@@ -2170,8 +2170,6 @@ static int trf7970a_suspend(struct device *dev)
- 	struct spi_device *spi = to_spi_device(dev);
- 	struct trf7970a *trf = spi_get_drvdata(spi);
+diff --git a/drivers/nfc/microread/i2c.c b/drivers/nfc/microread/i2c.c
+index 86f593c73ed6..067295124eb9 100644
+--- a/drivers/nfc/microread/i2c.c
++++ b/drivers/nfc/microread/i2c.c
+@@ -237,8 +237,6 @@ static int microread_i2c_probe(struct i2c_client *client,
+ 	struct microread_i2c_phy *phy;
+ 	int r;
  
--	dev_dbg(dev, "Suspend\n");
+-	dev_dbg(&client->dev, "client %p\n", client);
 -
- 	mutex_lock(&trf->lock);
+ 	phy = devm_kzalloc(&client->dev, sizeof(struct microread_i2c_phy),
+ 			   GFP_KERNEL);
+ 	if (!phy)
+@@ -262,8 +260,6 @@ static int microread_i2c_probe(struct i2c_client *client,
+ 	if (r < 0)
+ 		goto err_irq;
  
- 	trf7970a_shutdown(trf);
-@@ -2187,8 +2185,6 @@ static int trf7970a_resume(struct device *dev)
- 	struct trf7970a *trf = spi_get_drvdata(spi);
- 	int ret;
- 
--	dev_dbg(dev, "Resume\n");
+-	nfc_info(&client->dev, "Probed\n");
 -
- 	mutex_lock(&trf->lock);
+ 	return 0;
  
- 	ret = trf7970a_startup(trf);
-@@ -2206,8 +2202,6 @@ static int trf7970a_pm_runtime_suspend(struct device *dev)
- 	struct trf7970a *trf = spi_get_drvdata(spi);
- 	int ret;
+ err_irq:
+diff --git a/drivers/nfc/microread/mei.c b/drivers/nfc/microread/mei.c
+index 00689e18dc46..e2a77a5fc887 100644
+--- a/drivers/nfc/microread/mei.c
++++ b/drivers/nfc/microread/mei.c
+@@ -23,8 +23,6 @@ static int microread_mei_probe(struct mei_cl_device *cldev,
+ 	struct nfc_mei_phy *phy;
+ 	int r;
  
--	dev_dbg(dev, "Runtime suspend\n");
+-	pr_info("Probing NFC microread\n");
 -
- 	mutex_lock(&trf->lock);
- 
- 	ret = trf7970a_power_down(trf);
-@@ -2223,8 +2217,6 @@ static int trf7970a_pm_runtime_resume(struct device *dev)
- 	struct trf7970a *trf = spi_get_drvdata(spi);
- 	int ret;
- 
--	dev_dbg(dev, "Runtime resume\n");
--
- 	ret = trf7970a_power_up(trf);
- 	if (!ret)
- 		pm_runtime_mark_last_busy(dev);
+ 	phy = nfc_mei_phy_alloc(cldev);
+ 	if (!phy)
+ 		return -ENOMEM;
 -- 
 2.30.2
 
