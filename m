@@ -2,169 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AA7A4294A1
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 18:30:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B10A64294D4
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 18:53:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232372AbhJKQcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 12:32:00 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:19856 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232033AbhJKQbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 12:31:55 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19B9DxfM022422;
-        Mon, 11 Oct 2021 09:29:30 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=eBxjwOrWVhjFCG1WOcEx4A/Nn7jB5bvKwWh/zC/S87M=;
- b=q2zdpG21FJgM+40H5ySMc8qbKhV2smAlYY8pgvcs0XWTh6QodZSOaumRVH1t4RnNOHO8
- wNHG7mMHLVV01j3zrCwU8DFzuIjFhIFqkSDHktIYUTJ4RF+/H7MzAPSK5z0PXw3GWcNg
- zmFYQx7Qpfzrvkm/A2MhY5zXAOYynLCU+Bc= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3bmghfue7n-14
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 11 Oct 2021 09:29:30 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.14; Mon, 11 Oct 2021 09:29:27 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FZpSS9uRzCOMY8PbIpiP9lFyQizWRycYGNpSuxaI+F39LxAOiJ4J7o0epJDb+IDDXDzbF+oLU2IhkEPDUBX9G39fNU6lcmc0D0O8EE7g6I/rhETgz129SDoXjh6L5N9gW82wLNA464dV/VPz77zQLAoSxAaWQKsTWH+uqEFWdeRA6Fblj1Jg2ARPcBdE3mXgiBUpHbj8gV3z2sZddVNumlDrGoncmBse/aOSFjCTfQvIMdMrmxmG/ZURQ9D+q8JGBZ48GsqNZQtw4BA+onK3QW8RJ8JqyQ24yonzhH8BkHNySZJFOVS7lAfKQfJ4jqaJF06gGpo0qMtiduLzkrEGEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eBxjwOrWVhjFCG1WOcEx4A/Nn7jB5bvKwWh/zC/S87M=;
- b=I+4c7WSTtRETm2wI+EjIn2OjBHatFTQr5Y15vRqzLEHrcFQIvR4Ki1MkkaZraOE1M5OkFYd3+U+fvtb5l5w3J1mFYsl9c6r39nlHhUkmOcURK+Fyv97yVhbGnpAWoav6AtcO7zIFMnk9IVUtZ6ErZQYVlKv5avhJUQ3on43rkUj1czkCZI7Yn9u+W/8NEFuRtfy4a9bQVB6hji9zr3cEuldlZrTv+ucDIKkh84owL3deAg27RGxUsPH3ZFZ7iwjFyf7S/+t06pkJlO6WEm+mSd4wVp6hkUawPdTNYRBWApXMlEhrqfl0bL1buSanTY+r1F8fni7rcxFCYbcU7/GWXA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: suse.com; dkim=none (message not signed)
- header.d=none;suse.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com (2603:10b6:a03:96::24)
- by SJ0PR15MB4648.namprd15.prod.outlook.com (2603:10b6:a03:37d::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.22; Mon, 11 Oct
- 2021 16:29:27 +0000
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::1052:c025:1e48:7f94]) by BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::1052:c025:1e48:7f94%5]) with mapi id 15.20.4587.026; Mon, 11 Oct 2021
- 16:29:27 +0000
-Date:   Mon, 11 Oct 2021 09:29:22 -0700
-From:   Roman Gushchin <guro@fb.com>
-To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-CC:     <quanyang.wang@windriver.com>, Tejun Heo <tj@kernel.org>,
-        Li Zefan <lizefan@huawei.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, Ming Lei <ming.lei@redhat.com>,
-        <cgroups@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-Subject: Re: [PATCH] cgroup: fix memory leak caused by missing
- cgroup_bpf_offline
-Message-ID: <YWRmYk4hHhPf602i@carbon.dhcp.thefacebook.com>
-References: <20211007121603.1484881-1-quanyang.wang@windriver.com>
- <20211011162128.GC61605@blackbody.suse.cz>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20211011162128.GC61605@blackbody.suse.cz>
-X-ClientProxiedBy: MWHPR03CA0012.namprd03.prod.outlook.com
- (2603:10b6:300:117::22) To BYAPR15MB4136.namprd15.prod.outlook.com
- (2603:10b6:a03:96::24)
+        id S232549AbhJKQzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 12:55:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40582 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229816AbhJKQzD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Oct 2021 12:55:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C88AF60E90;
+        Mon, 11 Oct 2021 16:53:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633971183;
+        bh=UhfKGVwptNVcTXaDecknZR62S/vnpiwlxLpJU98Gt0o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=dL8AedcFlZAFeFQ8BWliMp+t59u2GmyOBfK8TlrpOF+jA082CYHsTkqXNh00US3H9
+         SW2IbzhluP7Hv8juSP8AyTPSgZenS4st//h+Pnle8zA+huZ2kldyXIkJCtt9YKpOJ7
+         3BIezXtAKwLqsKwAyiOGSn+nk0bQcSOfRsX7+n8u/g0fxYruz6YE5ZZ7iV1j7ajX5R
+         xgmIjpIazM/Ldql5n8Nj2KxGkLUXS/EM1jrCitETAY8vLM8eo3ModECkEFXpIQYQ7t
+         QslyJTGq8QkDku6a6urHsQp7D8e0EjyCpxO8hrlPbBe3c9DynbfWZvoapNAAtQor+Z
+         kud9y5ggIHw2g==
+Date:   Mon, 11 Oct 2021 11:53:01 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jonas =?iso-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Brian Norris <briannorris@chromium.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH] mwifiex: Add quirk resetting the PCI bridge on MS
+ Surface devices
+Message-ID: <20211011165301.GA1650148@bhelgaas>
 MIME-Version: 1.0
-Received: from carbon.dhcp.thefacebook.com (2620:10d:c090:400::5:b876) by MWHPR03CA0012.namprd03.prod.outlook.com (2603:10b6:300:117::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18 via Frontend Transport; Mon, 11 Oct 2021 16:29:25 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 95830cc2-15c1-4296-df51-08d98cd44ada
-X-MS-TrafficTypeDiagnostic: SJ0PR15MB4648:
-X-Microsoft-Antispam-PRVS: <SJ0PR15MB46483B839997233529F6F843BEB59@SJ0PR15MB4648.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +SRfDzOTF0RULvfFFoTh+X1NSlWknI6Hd+Oo+LXGhNmwdOnH5kr1DAnSR4PrOIWgtNBqiSc0rUt+f5wWtcXog2WssdlYX7uMnClMTkE1+jhm2FPk1lIq3jlFVZ2x99DtZcEeFdJqZNqpHFc7BIw+JyinhULTXTEXziYr4QhmaNLA46MsUeqhHvGPQKc/aCZYZV00o+zBb8zHO0O9eM8VpaqHDlhZ6R0NRbWB54jQAQADiziGWJG5qDM5GdGLhWZNutlq+Zx03NSGTxOSg1nlqG+tzi4EEE1/vyTCj0UtowK+25MOjGrE6+hhxnPKzYXbOZ+UCvBUAbaHjWyRt8LUDbuQs8wtl7UKCUmrcBbhR2JFc0D/z6GYgXrHk4OETyhMo+Mok3IRufcTMXA85vV+Hw4FnWv6zump7uyXH/JvLIVquG0Tb+QsbeL/zpBP8vp8523MGgMg0JaOdefuPR2UkIRw8vlzQ7WauUhY6n4ZfuSKJU5xP5tVBI4/STYJReL50q5QUxUrnQD2fDdUl2jEGZ1qWIOn3KQD1rk0Sb1nCoO2qtzCpO3lRzaS2+Q/VnReLxJDbi6cKDoASKDHVVExbKdiT5sjuBMPMSbSl9tImCr0CJzM/v8xdQvWiWiRHGf83rVLd9n9shu1O74U47DOHQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4136.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6506007)(6666004)(5660300002)(66556008)(66476007)(66946007)(54906003)(6916009)(2906002)(508600001)(8936002)(38100700002)(55016002)(9686003)(186003)(86362001)(7696005)(316002)(8676002)(7416002)(52116002)(4326008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mvd3SZBT185Ai38aYGdApm8aiPTeJ1jDTNi/3Bib97LLN9kwAIDrkrT1um9L?=
- =?us-ascii?Q?GU+o5kogdqq7NHaH7nI7sqnCgQHzGOUAlkRz3Zmx2wgjloKHSWZx06JZ3oXP?=
- =?us-ascii?Q?fznWdGszxG/brKKP9FTuFNoq+ebDt8wZEo1EliL2pe8ZdQ28GXY8vlgZ03/5?=
- =?us-ascii?Q?GtedsNFdcVeZiGM0RrRo5gDQUNVzaoJ2gzPoTtMKfbbPZxvHlPIlnssUGWT7?=
- =?us-ascii?Q?GRSWZGwnU2Ef2y9B+sFhIAre8mQaBUWLkiex6pPmqhi01IcdfYjFs2Pm3q4s?=
- =?us-ascii?Q?K+b0GW2TTgngdoAm4QihaAWPIzxuB+W0djCsQyFJ+oNdbtHGzr7mc5FdTXGl?=
- =?us-ascii?Q?56jz2dRMZdKJINyrXa91AdN1DL+KJKE7CZrQaOhIptXWNAdEYDKIxIxKdoiv?=
- =?us-ascii?Q?b4NaNAzgv4VpjORxhNRfFsuPHLPzQzrUPB7vL9aqkNOmAPh4XEvNcwGV4C22?=
- =?us-ascii?Q?7QpKJf5BUddMz+wSRHfMyPsVBg7JnVzKJHyHV53q9LmZZ5EgpNQQ4cG1qbs8?=
- =?us-ascii?Q?xws0h6n4a1KIa75kpnXs7hy5S26JwMgMk6BgO1k7gzdnjzc1xcTQt8CUwCZo?=
- =?us-ascii?Q?7hwwovkRnSHgNbw9GqntQtg4pU+eFXiOQHd1dMkEqYTMK75V2+W1kT4bHeg4?=
- =?us-ascii?Q?TPh5VL6ychJFYTlh0zVtofc8TWPoTSJneAoS+mpm+fj2OKDhEK2eA7jaNDoR?=
- =?us-ascii?Q?pXvbbGQmdz4CTCirUgiv7tnRwMCYifhXgLLDA/zw03gTiMUPrvxCYXzPgKur?=
- =?us-ascii?Q?UbHu4Z8CK1qq2XhQT6RkFZoOOS8TJSnJUdl3V/TqAQaWDqyBRhnEsWTnv2Nx?=
- =?us-ascii?Q?qKRLzkllcVPeRkxRZp0UfjKpktbs9SwM+JzcODYPYC4JaWpjl98jOoyJo0sZ?=
- =?us-ascii?Q?lBFL7fwwwJrBtBFFeP/pRROINw37B7T3rrGqAXZy8v8LMhIx4yAJVuMcDVOS?=
- =?us-ascii?Q?zU9dTqj9XcPC49axT/7lyKkYgbyaiWjuezVd7ke7xiJZ8vbBN89tIUl6TT8A?=
- =?us-ascii?Q?VOystm9su+H+4n/3U25KYWssIH17LKjOyj4WL65JhfIT/ERCJwDGDEEMhzTT?=
- =?us-ascii?Q?5VydaMmgoVoloUhq94AQpcqQyf+vgFlW7T9S+DEJgwKyP7tY1OhV6gZ+qSrb?=
- =?us-ascii?Q?POyLwlYdsou8pIWt+MBFHC3GBRXrz/pMh7PuaFTTBS+e4OHBJJjDXTgXonxK?=
- =?us-ascii?Q?OXM/5CthR1dcRt9aJYWf0qfBF+w8To/oBSyVKBMTwLeK/qKTD+k7rRp5tjaw?=
- =?us-ascii?Q?RLnO/nTE/7K5mxQt3Z9QwqudHRGHAsTvg82CeOWnzoJ2JwBNYGiqVu0ujm6D?=
- =?us-ascii?Q?vO9YS26G4wCFg3H1KplVQZBirAROTFZupZq48Ii4wnRZWQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95830cc2-15c1-4296-df51-08d98cd44ada
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4136.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Oct 2021 16:29:26.8188
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hPceonMP9ZaS5EAUbKOp6cyafPXedJcOWOVFSs1vuuDpa4fGel9bkgzrpPTOc4LI
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB4648
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: tFoJpr9sMfw-1e2EpNa-X1akoTLX73X2
-X-Proofpoint-ORIG-GUID: tFoJpr9sMfw-1e2EpNa-X1akoTLX73X2
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-11_05,2021-10-11_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- mlxscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0 suspectscore=0
- mlxlogscore=999 bulkscore=0 clxscore=1011 spamscore=0 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110110097
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211011134238.16551-1-verdre@v0yd.nl>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 11, 2021 at 06:21:28PM +0200, Michal Koutny wrote:
-> Hello.
-> 
-> On Thu, Oct 07, 2021 at 08:16:03PM +0800, quanyang.wang@windriver.com wrote:
-> > This is because that root_cgrp->bpf.refcnt.data is allocated by the
-> > function percpu_ref_init in cgroup_bpf_inherit which is called by
-> > cgroup_setup_root when mounting, but not freed along with root_cgrp
-> > when umounting.
-> 
-> Good catch!
+[+cc Alex]
 
-+1
+On Mon, Oct 11, 2021 at 03:42:38PM +0200, Jonas Dreﬂler wrote:
+> The most recent firmware (15.68.19.p21) of the 88W8897 PCIe+USB card
+> reports a hardcoded LTR value to the system during initialization,
+> probably as an (unsuccessful) attempt of the developers to fix firmware
+> crashes. This LTR value prevents most of the Microsoft Surface devices
+> from entering deep powersaving states (either platform C-State 10 or
+> S0ix state), because the exit latency of that state would be higher than
+> what the card can tolerate.
 
+S0ix and C-State 10 are ACPI concepts that don't mean anything in a
+PCIe context.
+
+I think LTR is only involved in deciding whether to enter the ASPM
+L1.2 substate.  Maybe the system will only enter C-State 10 or S0ix
+when the link is in L1.2?
+
+> Turns out the card works just the same (including the firmware crashes)
+> no matter if that hardcoded LTR value is reported or not, so it's kind
+> of useless and only prevents us from saving power.
 > 
-> > Adding cgroup_bpf_offline which calls percpu_ref_kill to
-> > cgroup_kill_sb can free root_cgrp->bpf.refcnt.data in umount path.
+> To get rid of those hardcoded LTR requirements, it's possible to reset
+> the PCI bridge device after initializing the cards firmware. I'm not
+> exactly sure why that works, maybe the power management subsystem of the
+> PCH resets its stored LTR values when doing a function level reset of
+> the bridge device. Doing the reset once after starting the wifi firmware
+> works very well, probably because the firmware only reports that LTR
+> value a single time during firmware startup.
+>
+> Signed-off-by: Jonas Dreﬂler <verdre@v0yd.nl>
+> ---
+>  drivers/net/wireless/marvell/mwifiex/pcie.c   | 12 +++++++++
+>  .../wireless/marvell/mwifiex/pcie_quirks.c    | 26 +++++++++++++------
+>  .../wireless/marvell/mwifiex/pcie_quirks.h    |  1 +
+>  3 files changed, 31 insertions(+), 8 deletions(-)
 > 
-> That is sensible.
+> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+> index c6ccce426b49..2506e7e49f0c 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/pcie.c
+> +++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+> @@ -1748,9 +1748,21 @@ mwifiex_pcie_send_boot_cmd(struct mwifiex_adapter *adapter, struct sk_buff *skb)
+>  static int mwifiex_pcie_init_fw_port(struct mwifiex_adapter *adapter)
+>  {
+>  	struct pcie_service_card *card = adapter->card;
+> +	struct pci_dev *pdev = card->dev;
+> +	struct pci_dev *parent_pdev = pci_upstream_bridge(pdev);
+>  	const struct mwifiex_pcie_card_reg *reg = card->pcie.reg;
+>  	int tx_wrap = card->txbd_wrptr & reg->tx_wrap_mask;
+>  
+> +	/* Trigger a function level reset of the PCI bridge device, this makes
+> +	 * the firmware (latest version 15.68.19.p21) of the 88W8897 PCIe+USB
+> +	 * card stop reporting a fixed LTR value that prevents the system from
+> +	 * entering package C10 and S0ix powersaving states.
+
+I don't believe this.  Why would resetting the root port change what
+the downstream device reports via LTR messages?
+
+From PCIe r5.0, sec 5.5.1:
+
+  The following rules define how the L1.1 and L1.2 substates are entered:
+    ...
+    * When in ASPM L1.0 and the ASPM L1.2 Enable bit is Set, the L1.2
+      substate must be entered when CLKREQ# is deasserted and all of
+      the following conditions are true:
+
+      - The reported snooped LTR value last sent or received by this
+	Port is greater than or equal to the value set by the
+	LTR_L1.2_THRESHOLD Value and Scale fields, or there is no
+	snoop service latency requirement.
+
+      - The reported non-snooped LTR last sent or received by this
+	Port value is greater than or equal to the value set by the
+	LTR_L1.2_THRESHOLD Value and Scale fields, or there is no
+	non-snoop service latency requirement.
+
+From the LTR Message format in sec 6.18:
+
+  No-Snoop Latency and Snoop Latency: As shown in Figure 6-15, these
+  fields include a Requirement bit that indicates if the device has a
+  latency requirement for the given type of Request. If the
+  Requirement bit is Set, the LatencyValue and LatencyScale fields
+  describe the latency requirement. If the Requirement bit is Clear,
+  there is no latency requirement and the LatencyValue and
+  LatencyScale fields are ignored.
+
+Resetting the root port might make it forget the LTR value it last
+received.  If that's equivalent to having no service latency
+requirement, it *might* enable L1.2 entry, although that doesn't seem
+equivalent to the downstream device having sent an LTR message with
+the Requirement bit cleared.
+
+I think the endpoint is required to send a new LTR message before it
+goes to a non-D0 state (sec 6.18), so the bridge will capture the
+latency again, and we'll probably be back in the same state.
+
+This all seems fragile to me.  If we force the link to L1.2 without
+knowing accurate exit latencies and latency tolerance, the device is
+liable to drop packets.
+
+> +	 * We need to do it here because it must happen after firmware
+> +	 * initialization and this function is called right after that is done.
+> +	 */
+> +	if (card->quirks & QUIRK_DO_FLR_ON_BRIDGE)
+> +		pci_reset_function(parent_pdev);
+
+PCIe r5.0, sec 7.5.3.3, says Function Level Reset can only be
+supported by endpoints, so I guess this will actually do some other
+kind of reset.
+
+>  	/* Write the RX ring read pointer in to reg->rx_rdptr */
+>  	if (mwifiex_write_reg(adapter, reg->rx_rdptr, card->rxbd_rdptr |
+>  			      tx_wrap)) {
+> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
+> index 0234cf3c2974..cbf0565353ae 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
+> +++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
+> @@ -27,7 +27,8 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
+>  			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>  			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 4"),
+>  		},
+> -		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+> +		.driver_data = (void *)(QUIRK_FW_RST_D3COLD |
+> +					QUIRK_DO_FLR_ON_BRIDGE),
+>  	},
+>  	{
+>  		.ident = "Surface Pro 5",
+> @@ -36,7 +37,8 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
+>  			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>  			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1796"),
+>  		},
+> -		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+> +		.driver_data = (void *)(QUIRK_FW_RST_D3COLD |
+> +					QUIRK_DO_FLR_ON_BRIDGE),
+>  	},
+>  	{
+>  		.ident = "Surface Pro 5 (LTE)",
+> @@ -45,7 +47,8 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
+>  			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>  			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1807"),
+>  		},
+> -		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+> +		.driver_data = (void *)(QUIRK_FW_RST_D3COLD |
+> +					QUIRK_DO_FLR_ON_BRIDGE),
+>  	},
+>  	{
+>  		.ident = "Surface Pro 6",
+> @@ -53,7 +56,8 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
+>  			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>  			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 6"),
+>  		},
+> -		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+> +		.driver_data = (void *)(QUIRK_FW_RST_D3COLD |
+> +					QUIRK_DO_FLR_ON_BRIDGE),
+>  	},
+>  	{
+>  		.ident = "Surface Book 1",
+> @@ -61,7 +65,8 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
+>  			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>  			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book"),
+>  		},
+> -		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+> +		.driver_data = (void *)(QUIRK_FW_RST_D3COLD |
+> +					QUIRK_DO_FLR_ON_BRIDGE),
+>  	},
+>  	{
+>  		.ident = "Surface Book 2",
+> @@ -69,7 +74,8 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
+>  			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>  			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book 2"),
+>  		},
+> -		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+> +		.driver_data = (void *)(QUIRK_FW_RST_D3COLD |
+> +					QUIRK_DO_FLR_ON_BRIDGE),
+>  	},
+>  	{
+>  		.ident = "Surface Laptop 1",
+> @@ -77,7 +83,8 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
+>  			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>  			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop"),
+>  		},
+> -		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+> +		.driver_data = (void *)(QUIRK_FW_RST_D3COLD |
+> +					QUIRK_DO_FLR_ON_BRIDGE),
+>  	},
+>  	{
+>  		.ident = "Surface Laptop 2",
+> @@ -85,7 +92,8 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
+>  			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>  			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop 2"),
+>  		},
+> -		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+> +		.driver_data = (void *)(QUIRK_FW_RST_D3COLD |
+> +					QUIRK_DO_FLR_ON_BRIDGE),
+>  	},
+>  	{}
+>  };
+> @@ -103,6 +111,8 @@ void mwifiex_initialize_quirks(struct pcie_service_card *card)
+>  		dev_info(&pdev->dev, "no quirks enabled\n");
+>  	if (card->quirks & QUIRK_FW_RST_D3COLD)
+>  		dev_info(&pdev->dev, "quirk reset_d3cold enabled\n");
+> +	if (card->quirks & QUIRK_DO_FLR_ON_BRIDGE)
+> +		dev_info(&pdev->dev, "quirk do_flr_on_bridge enabled\n");
+>  }
+>  
+>  static void mwifiex_pcie_set_power_d3cold(struct pci_dev *pdev)
+> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
+> index 8ec4176d698f..f8d463f4269a 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
+> +++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
+> @@ -18,6 +18,7 @@
+>  #include "pcie.h"
+>  
+>  #define QUIRK_FW_RST_D3COLD	BIT(0)
+> +#define QUIRK_DO_FLR_ON_BRIDGE	BIT(1)
+>  
+>  void mwifiex_initialize_quirks(struct pcie_service_card *card);
+>  int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev);
+> -- 
+> 2.31.1
 > 
-> > Fixes: 2b0d3d3e4fcfb ("percpu_ref: reduce memory footprint of percpu_ref in fast path")
-> 
-> Why this Fixes:? Is the leak absent before the percpu_ref refactoring?
-
-I agree, the "fixes" tag looks dubious to me.
-
-> I guess the embedded data are free'd together with cgroup. Makes me
-> wonder why struct cgroup_bpf has a separate percpu_ref counter from
-> struct cgroup...
-
-This is because a cgroup can stay a long time (sometimes effectively forever)
-in a dying state, so we want to release bpf structures earlier.
-
-Thanks!
