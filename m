@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32DC04284B9
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 03:31:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39CB54284BC
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 03:31:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233516AbhJKBdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 21:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36878 "EHLO
+        id S233810AbhJKBdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 21:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233541AbhJKBc7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 21:32:59 -0400
+        with ESMTP id S233570AbhJKBdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 21:33:04 -0400
 Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C48C06177F;
-        Sun, 10 Oct 2021 18:30:55 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id r18so61204334edv.12;
-        Sun, 10 Oct 2021 18:30:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4D0C0613E9;
+        Sun, 10 Oct 2021 18:30:57 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id a25so45264479edx.8;
+        Sun, 10 Oct 2021 18:30:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pq8QlfWax57EIplXlVdBzRy4C0xbHVH3M+BqWLiLZXc=;
-        b=N7iuZ4PGLdpTHp9eJCJ4IITf4eg+GFZS7RRZgUo75ccipPbBCsUy4/MKAQ3A1xkikg
-         Ruxnx0SKFvX3DEKSIq0Xux7Kg4jDJZ5tuF1hy7AVtYwfQWnx7VKYsYPdokU1lbJnXJ1P
-         GcbB2UdG0jHqo3waKKbwm4lz9BNSVv1aqvhgPz1iVx/GnviY2LAQRg2d4qboF/5TELy3
-         vis7tboGOAEn5iP1Xir6CpRCUea3FrVzPfQVkWENXLyzciCHVo7jBmTDfuIpSNOsGK0a
-         Y36DIHEEmm/vQYtrNRKDMPH8megjwWo7cPi9xYfTDluqfhB0cc4KaBNFfParA2zywcZp
-         6dHg==
+        bh=Q+gt+Asy9EIixi5Pp3kauqDHjtitdqAqEC91C3WQnsw=;
+        b=hayBAxlziJa0Rt1peTo5xq7ogkEKGScKuj4SnJnMPSH33dyxE0Bh1MIp/i1E8S5Edj
+         RZjel0MSFobq4phCvig1Boz3ZLTfbNPAADOYqGFG6YpLtOP8JNz0De26ECs7TaJ0BdIN
+         7cyHM36hCk1H28O21aqhE8q4j8IAvKEeYsGM8w5Rox8s7YPWquOiS/uIENBf89mnv6+p
+         0N0+P553XMutl+ag9JnUWWPx4fCIVlg9Ldu5Jh4sq4xsF2nAaWMcJ2R27thUA2V9PRyO
+         Sg/VFgpd4yUolPO/p3enPH8j4oCiB3a2IRN3xOC+n7m9TMd13PERyVbvlhw0FtfIb2h2
+         fL8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pq8QlfWax57EIplXlVdBzRy4C0xbHVH3M+BqWLiLZXc=;
-        b=wlniGBKSI/z91cdfqnDI4weeedwV8/9VWbpYXG0bXrSzv6Ru8cVrC0DNgdBDWGx5Dq
-         y1+9oYyU5gdvqry3U0HfWfjv/lvHXMaOiC6lNcaVwRFrA7kFsUKeazztQcgiRdOTjGTj
-         3IKEBm7st79ZUyYUecCva0jBBOgp3uqTQJ3xjf/HjFWFzBIfahS0PI+/u6kdo1bDl/YI
-         kZYJVDCYYGT7sFM81LaNVYRJHxtp63Y4b4bL2KSzzM6f/ahoQPs3PZWL3opeqlr3+81c
-         xuNO1qxJ2ReCvpkurYTJ4mp0triGHIyyTeBf4axBOjbcCVTcAhGVVPY+CZTf63XNBe/z
-         Dx8g==
-X-Gm-Message-State: AOAM530Zev7AdjduGOoKCYQ0lrfNo20KlXOtXDqJn/2RFaFn45hHswwV
-        4lHk4HHGCGyDTGFo4CJ/s5hCGMy3f2E=
-X-Google-Smtp-Source: ABdhPJwIeoBXE4r7Rg9U9tCbWT6KDta7Trfa/NJMcU34sUZmnmBldGPIpV+29f17ivbPeZG/4fmUGw==
-X-Received: by 2002:a17:906:1299:: with SMTP id k25mr22138410ejb.139.1633915854445;
-        Sun, 10 Oct 2021 18:30:54 -0700 (PDT)
+        bh=Q+gt+Asy9EIixi5Pp3kauqDHjtitdqAqEC91C3WQnsw=;
+        b=auECjpyWm2H9mCNm2qsTxO6j48RaZDt+S/VGZph03F/nId1fVpAnO93FQxgBu+/Rxa
+         gS/bWkmwGhzbwumWiL/0zU45T4IH2ULZZeOf49mx2Sd0cCJg6Z0ObIjU0iTVlNiJtxO8
+         OujwIJQXUCCVv6uvH9KCgynF+aoegLh/TnWTMM94xKkLdhJuxRf4IiPb1lAPGseeI5dq
+         Cfls+Qg4kyOou78PfrECO4zHS0EAFJ1CKpa9hE8SGKGHNpS9ThSrWJWiApxH76o3BidF
+         CrcA5OozHQYMslc9INLif0hfvccNRwLbLywFcWg6tpdNJwSvVyxdXQ1Mca3xDdpSUzb2
+         eMOg==
+X-Gm-Message-State: AOAM531WZjSOg4ZfaEadKTpIXngLKM4Txv3n3JyYUe/twtTvRb82gHPH
+        vLQbc0yspvzcWPpGPunhAAk=
+X-Google-Smtp-Source: ABdhPJwNSeASrH4SyWRBUE0OpH91C2U4Z/HnLwaDRx+CSRkCq/xGsGCRm4d4zd0DT3GTvgViKXiWDQ==
+X-Received: by 2002:a05:6402:7:: with SMTP id d7mr37925885edu.265.1633915855711;
+        Sun, 10 Oct 2021 18:30:55 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id m15sm21314edd.5.2021.10.10.18.30.53
+        by smtp.googlemail.com with ESMTPSA id m15sm21314edd.5.2021.10.10.18.30.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Oct 2021 18:30:54 -0700 (PDT)
+        Sun, 10 Oct 2021 18:30:55 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -58,9 +58,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v5 10/14] drivers: net: dsa: qca8k: add support for pws config reg
-Date:   Mon, 11 Oct 2021 03:30:20 +0200
-Message-Id: <20211011013024.569-11-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v5 11/14] dt-bindings: net: dsa: qca8k: document support for qca8328
+Date:   Mon, 11 Oct 2021 03:30:21 +0200
+Message-Id: <20211011013024.569-12-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211011013024.569-1-ansuelsmth@gmail.com>
 References: <20211011013024.569-1-ansuelsmth@gmail.com>
@@ -70,95 +70,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some qca8327 switch require to force the ignore of power on sel
-strapping. Some switch require to set the led open drain mode in regs
-instead of using strapping. While most of the device implements this
-using the correct way using pin strapping, there are still some broken
-device that require to be set using sw regs.
-Introduce a new binding and support these special configuration.
-As led open drain require to ignore pin strapping to work, the probe
-fails with EINVAL error with incorrect configuration.
+QCA8328 is the bigger brother of qca8327. Document the new compatible
+binding and add some information to understand the various switch
+compatible.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 39 +++++++++++++++++++++++++++++++++++++++
- drivers/net/dsa/qca8k.h |  6 ++++++
- 2 files changed, 45 insertions(+)
+ Documentation/devicetree/bindings/net/dsa/qca8k.txt | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index c5aee1aee550..e9c16f82a373 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -931,6 +931,41 @@ static int qca8k_find_cpu_port(struct dsa_switch *ds)
- 	return -EINVAL;
- }
+diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+index 9e6748ec13da..f057117764af 100644
+--- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
++++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+@@ -3,9 +3,10 @@
+ Required properties:
  
-+static int
-+qca8k_setup_of_pws_reg(struct qca8k_priv *priv)
-+{
-+	struct device_node *node = priv->dev->of_node;
-+	u32 val = 0;
-+	int ret;
-+
-+	/* QCA8327 require to set to the correct mode.
-+	 * His bigger brother QCA8328 have the 172 pin layout.
-+	 * Should be applied by default but we set this just to make sure.
-+	 */
-+	if (priv->switch_id == QCA8K_ID_QCA8327) {
-+		ret = qca8k_rmw(priv, QCA8K_REG_PWS, QCA8327_PWS_PACKAGE148_EN,
-+				QCA8327_PWS_PACKAGE148_EN);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (of_property_read_bool(node, "qca,ignore-power-on-sel"))
-+		val |= QCA8K_PWS_POWER_ON_SEL;
-+
-+	if (of_property_read_bool(node, "qca,led-open-drain")) {
-+		if (!(val & QCA8K_PWS_POWER_ON_SEL)) {
-+			dev_err(priv->dev, "qca,led-open-drain require qca,ignore-power-on-sel to be set.");
-+			return -EINVAL;
-+		}
-+
-+		val |= QCA8K_PWS_LED_OPEN_EN_CSR;
-+	}
-+
-+	return qca8k_rmw(priv, QCA8K_REG_PWS,
-+			QCA8K_PWS_LED_OPEN_EN_CSR | QCA8K_PWS_POWER_ON_SEL,
-+			val);
-+}
-+
- static int
- qca8k_parse_port_config(struct qca8k_priv *priv)
- {
-@@ -1047,6 +1082,10 @@ qca8k_setup(struct dsa_switch *ds)
- 	if (ret)
- 		return ret;
+ - compatible: should be one of:
+-    "qca,qca8327"
+-    "qca,qca8334"
+-    "qca,qca8337"
++    "qca,qca8328": referenced as AR8328(N)-AK1(A/B) QFN 176 pin package
++    "qca,qca8327": referenced as AR8327(N)-AL1A DR-QFN 148 pin package
++    "qca,qca8334": referenced as QCA8334-AL3C QFN 88 pin package
++    "qca,qca8337": referenced as QCA8337N-AL3(B/C) DR-QFN 148 pin package
  
-+	ret = qca8k_setup_of_pws_reg(priv);
-+	if (ret)
-+		return ret;
-+
- 	ret = qca8k_setup_mac_pwr_sel(priv);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 77b1677edafa..35a471bfd27f 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -46,6 +46,12 @@
- #define   QCA8K_MAX_DELAY				3
- #define   QCA8K_PORT_PAD_SGMII_EN			BIT(7)
- #define QCA8K_REG_PWS					0x010
-+#define   QCA8K_PWS_POWER_ON_SEL			BIT(31)
-+/* This reg is only valid for QCA832x and toggle the package
-+ * type from 176 pin (by default) to 148 pin used on QCA8327
-+ */
-+#define   QCA8327_PWS_PACKAGE148_EN			BIT(30)
-+#define   QCA8K_PWS_LED_OPEN_EN_CSR			BIT(24)
- #define   QCA8K_PWS_SERDES_AEN_DIS			BIT(7)
- #define QCA8K_REG_MODULE_EN				0x030
- #define   QCA8K_MODULE_EN_MIB				BIT(0)
+ - #size-cells: must be 0
+ - #address-cells: must be 1
 -- 
 2.32.0
 
