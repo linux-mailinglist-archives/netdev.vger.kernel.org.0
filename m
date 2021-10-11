@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5DC14284E2
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 03:49:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9545F4284E6
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 03:50:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233461AbhJKBvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Oct 2021 21:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41114 "EHLO
+        id S233480AbhJKBwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Oct 2021 21:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232748AbhJKBvt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 21:51:49 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E97C061570;
-        Sun, 10 Oct 2021 18:49:50 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id bk7so6150422qkb.13;
-        Sun, 10 Oct 2021 18:49:50 -0700 (PDT)
+        with ESMTP id S232748AbhJKBwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Oct 2021 21:52:42 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02995C061570;
+        Sun, 10 Oct 2021 18:50:43 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id bl14so1823085qkb.4;
+        Sun, 10 Oct 2021 18:50:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=EE7Pw1o/NWSzz3GGzDT9jF9OY6seL1Uyk9vnbe/WKtk=;
-        b=kJv6R7D37Ly/JhMeqT2q5sVlKzFpwWxg9mEJZNro9f79KjEXUT4XtqcFE2nIf4r1Vq
-         ZN+4kLtr25uRzk5OgMI875z57BQXn8oM0j2iTkyy1n2Mc3wUNCR66xljLH6721lAnmLL
-         cvESpdDE6BJHcMJ/XkYFdgIsvhDBIKkUy7d0qIIqbbe0YKtFxdfj6iTRKZWygSJiFRJJ
-         U/wGqGdvhXNr+7L/xFXT2RJY9LyMWGAJ8nUIbvd71tek66u0dAj8cLvn1Vp04jkUfbq6
-         10P74reImg/ycp/s3fWiTr+ujiC0Y+4/MLjAyxJH2+rExkKd9KzEvyEtaXWLop99mjLE
-         9iGA==
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=3+OC4xhRP45CHXbnS16n8nN54Hi9RmgBz9jGrzKhd7s=;
+        b=XHg3bh33BNDd2FLoxxrP64EVAuqbnGc4LVvtKknReUZTPJ9YubeviiS0vWEbz2Y3dJ
+         7xc/22OqXKqbmonOT7flrhAs960KsneR7RpUj6tWo9NHZFiyHL3J5SH+yFCH8kwXdpBR
+         JtVva9FFAeKPQCLqdn95szssoel1i0cbdwnUX1f/tqpx2m3RWWUHmNeun5ChdKfMedCt
+         HndTjAcawdO87QIW63rA6RmKuAh01HeSsVB7J9023d0kPvRkxWE5VugNDWhDkxECdoOq
+         J+BATqExUv49+eJuCz/3iTaA9W8SMJrsyjBDTUb6idYQHLUg42bs1rCH/RQEHtMN+6FD
+         1x5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=EE7Pw1o/NWSzz3GGzDT9jF9OY6seL1Uyk9vnbe/WKtk=;
-        b=lsk8peLAuMdfxjWifVedgd0u0TGgrZv25K7BvzwkhpyybpWWY/IB63hrFszj5FFfEM
-         gyvZF0pkJh+8E7bjCqSifxlV5mhqBVq4Ksl3TBgKaH+7YyS1bPnU5NsngEBuIieYD1VL
-         DFwqZKOywCMgzX/GcNQ5izvpzil1ioQXJdWB90hsoQRSim9wF2Dww5vhSWm4zV7yP3tx
-         uM7g068riHPfPtdKlikgpS3PIFT2AnYRUg49Cx3jAF068aOTS/rfdTOUS0jgviLXRjK7
-         /r2dDwDTwFRsU8yzipYz7oEkM88EQiAIf7eqaSpYAlZgFP7/7pC8/QQcU3wq2F8wRKzP
-         mWvw==
-X-Gm-Message-State: AOAM531JoXgViZpO8h/Ub3qh/r+Ft45+sZt3B0yiGk8BFmGohE+06K8D
-        oJw70iHFPgZVO1+1xa/fL8s=
-X-Google-Smtp-Source: ABdhPJzTmV38I4XymcLr1DTQoBsdeNlLGgWhMQj2OTFzhGEeZPp0IVslyJ/308QGGBfiYtVNV8LSsw==
-X-Received: by 2002:a37:6c83:: with SMTP id h125mr12828684qkc.486.1633916989626;
-        Sun, 10 Oct 2021 18:49:49 -0700 (PDT)
+        bh=3+OC4xhRP45CHXbnS16n8nN54Hi9RmgBz9jGrzKhd7s=;
+        b=nR8rpMHgC5Gd8Y6p8tf1o1wu/N72gNC+7EY0AzM/1CPpAskgE2YE2pPoCe7/IOvjxt
+         IFGdGRkMiVge01nnFsC7YzKMBIUx7IQuxLfRmjwoiP5oSIEO3rSDasFANoZgVOfdJlZn
+         sgBlIAKDrfzJ53rjzhazp+X6955Ys8JWAD+jRxUzOaWtTtRAuFomu1tU7q8nHHHlqsA1
+         AyF+gG80GIWdae3YXSm0GDfRxstzYhryDKUTePLXcuWPtuzU/BB+gK3cqC3CvR0jI/4c
+         npxdoxaBVlL5ELMMCOWVoL6dxKfwYKEc0t6Lw11YIou5Z2EgVbL0dF7m6t0MRcRkfj0b
+         eW6A==
+X-Gm-Message-State: AOAM532rDwBAwUKRnBp80+DQvT/KWB8ZKxWw6sh7gOIycaz6V5tUzGRw
+        SQkvc/HhwmaevQqIGVjWNm0=
+X-Google-Smtp-Source: ABdhPJyrl4fbrbeDzij5LXtZ5UKxV34Etygr8uwg7YrGWoeYU4qzp/VJKWzTMizqbEfrCszM1aU2Gg==
+X-Received: by 2002:a37:a9c2:: with SMTP id s185mr12699543qke.508.1633917042140;
+        Sun, 10 Oct 2021 18:50:42 -0700 (PDT)
 Received: from ?IPV6:2600:1700:dfe0:49f0:802c:b332:26e0:e0aa? ([2600:1700:dfe0:49f0:802c:b332:26e0:e0aa])
-        by smtp.gmail.com with ESMTPSA id 139sm3592985qkj.44.2021.10.10.18.49.47
+        by smtp.gmail.com with ESMTPSA id m5sm4054705qtk.88.2021.10.10.18.50.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Oct 2021 18:49:49 -0700 (PDT)
-Message-ID: <d7242e22-9f7c-354a-aabc-3f62fb52533b@gmail.com>
-Date:   Sun, 10 Oct 2021 18:49:46 -0700
+        Sun, 10 Oct 2021 18:50:41 -0700 (PDT)
+Message-ID: <16d2a19b-5092-763b-230c-5b0a6237d852@gmail.com>
+Date:   Sun, 10 Oct 2021 18:50:39 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.1.2
-Subject: Re: [net-next PATCH v5 03/14] net: dsa: qca8k: add support for sgmii
- falling edge
+Subject: Re: [net-next PATCH v5 04/14] dt-bindings: net: dsa: qca8k: Document
+ support for CPU port 6
 Content-Language: en-US
 To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -64,11 +64,10 @@ To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Matthew Hagan <mnhagan88@gmail.com>
 References: <20211011013024.569-1-ansuelsmth@gmail.com>
- <20211011013024.569-4-ansuelsmth@gmail.com>
+ <20211011013024.569-5-ansuelsmth@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20211011013024.569-4-ansuelsmth@gmail.com>
+In-Reply-To: <20211011013024.569-5-ansuelsmth@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -78,137 +77,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 10/10/2021 6:30 PM, Ansuel Smith wrote:
-> Add support for this in the qca8k driver. Also add support for SGMII
-> rx/tx clock falling edge. This is only present for pad0, pad5 and
-> pad6 have these bit reserved from Documentation. Add a comment that this
-> is hardcoded to PAD0 as qca8327/28/34/37 have an unique sgmii line and
-> setting falling in port0 applies to both configuration with sgmii used
-> for port0 or port6.
+> The switch now support CPU port to be set 6 instead of be hardcoded to
+> 0. Document support for it and describe logic selection.
 > 
-> Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
 > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 > ---
->   drivers/net/dsa/qca8k.c | 57 +++++++++++++++++++++++++++++++++++++++++
->   drivers/net/dsa/qca8k.h |  4 +++
->   2 files changed, 61 insertions(+)
+>   Documentation/devicetree/bindings/net/dsa/qca8k.txt | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index a892b897cd0d..e335a4cfcb75 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -977,6 +977,36 @@ qca8k_setup_mac_pwr_sel(struct qca8k_priv *priv)
->   	return ret;
->   }
+> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> index cc214e655442..aeb206556f54 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+> @@ -29,7 +29,11 @@ the mdio MASTER is used as communication.
+>   Don't use mixed external and internal mdio-bus configurations, as this is
+>   not supported by the hardware.
 >   
-> +static int
-> +qca8k_parse_port_config(struct qca8k_priv *priv)
-> +{
-> +	struct device_node *port_dn;
-> +	phy_interface_t mode;
-> +	struct dsa_port *dp;
-> +	int port;
-> +
-> +	/* We have 2 CPU port. Check them */
-> +	for (port = 0; port < QCA8K_NUM_PORTS; port++) {
-> +		/* Skip every other port */
-> +		if (port != 0 && port != 6)
-> +			continue;
-> +
-> +		dp = dsa_to_port(priv->ds, port);
-> +		port_dn = dp->dn;
+> -The CPU port of this switch is always port 0.
+> +This switch support 2 CPU port. 
 
-You should probably have an:
+Plural: ports.
 
-		if (!of_device_is_available(port_dn))
-			continue
+> Normally and advised configuration is with
+> +CPU port set to port 0. It is also possible to set the CPU port to port 6
+> +if the device requires it. The driver will configure the switch to the defined
+> +port. With both CPU port declared the first CPU port is selected as primary
+> +and the secondary CPU ignored.
 
-to skip over ports being disabled, which could presumably happen in a 
-sparsely populated switch for instance.
-
-> +
-> +		of_get_phy_mode(port_dn, &mode);
-
-This function returns an error that you are not checking.
-
-> +		if (mode == PHY_INTERFACE_MODE_SGMII) {
-> +			if (of_property_read_bool(port_dn, "qca,sgmii-txclk-falling-edge"))
-> +				priv->sgmii_tx_clk_falling_edge = true;
-> +
-> +			if (of_property_read_bool(port_dn, "qca,sgmii-rxclk-falling-edge"))
-> +				priv->sgmii_rx_clk_falling_edge = true;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->   static int
->   qca8k_setup(struct dsa_switch *ds)
->   {
-> @@ -990,6 +1020,11 @@ qca8k_setup(struct dsa_switch *ds)
->   		return -EINVAL;
->   	}
->   
-> +	/* Parse CPU port config to be later used in phy_link mac_config */
-> +	ret = qca8k_parse_port_config(priv);
-> +	if (ret)
-> +		return ret;
-> +
->   	mutex_init(&priv->reg_mutex);
->   
->   	/* Start by setting up the register mapping */
-> @@ -1274,6 +1309,28 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
->   		}
->   
->   		qca8k_write(priv, QCA8K_REG_SGMII_CTRL, val);
-> +
-> +		/* For qca8327/qca8328/qca8334/qca8338 sgmii is unique and
-> +		 * falling edge is set writing in the PORT0 PAD reg
-> +		 */
-> +		if (priv->switch_id == QCA8K_ID_QCA8327 ||
-> +		    priv->switch_id == QCA8K_ID_QCA8337)
-> +			reg = QCA8K_REG_PORT0_PAD_CTRL;
-> +
-> +		val = 0;
-> +
-> +		/* SGMII Clock phase configuration */
-> +		if (priv->sgmii_rx_clk_falling_edge)
-> +			val |= QCA8K_PORT0_PAD_SGMII_RXCLK_FALLING_EDGE;
-> +
-> +		if (priv->sgmii_tx_clk_falling_edge)
-> +			val |= QCA8K_PORT0_PAD_SGMII_TXCLK_FALLING_EDGE;
-> +
-> +		if (val)
-> +			ret = qca8k_rmw(priv, reg,
-> +					QCA8K_PORT0_PAD_SGMII_RXCLK_FALLING_EDGE |
-> +					QCA8K_PORT0_PAD_SGMII_TXCLK_FALLING_EDGE,
-> +					val);
->   		break;
->   	default:
->   		dev_err(ds->dev, "xMII mode %s not supported for port %d\n",
-> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-> index fc7db94cc0c9..bc9c89dd7e71 100644
-> --- a/drivers/net/dsa/qca8k.h
-> +++ b/drivers/net/dsa/qca8k.h
-> @@ -35,6 +35,8 @@
->   #define   QCA8K_MASK_CTRL_DEVICE_ID_MASK		GENMASK(15, 8)
->   #define   QCA8K_MASK_CTRL_DEVICE_ID(x)			((x) >> 8)
->   #define QCA8K_REG_PORT0_PAD_CTRL			0x004
-> +#define   QCA8K_PORT0_PAD_SGMII_RXCLK_FALLING_EDGE	BIT(19)
-> +#define   QCA8K_PORT0_PAD_SGMII_TXCLK_FALLING_EDGE	BIT(18)
->   #define QCA8K_REG_PORT5_PAD_CTRL			0x008
->   #define QCA8K_REG_PORT6_PAD_CTRL			0x00c
->   #define   QCA8K_PORT_PAD_RGMII_EN			BIT(26)
-> @@ -260,6 +262,8 @@ struct qca8k_priv {
->   	u8 switch_revision;
->   	u8 rgmii_tx_delay;
->   	u8 rgmii_rx_delay;
-> +	bool sgmii_rx_clk_falling_edge;
-> +	bool sgmii_tx_clk_falling_edge;
->   	bool legacy_phy_port_mapping;
->   	struct regmap *regmap;
->   	struct mii_bus *bus;
-> 
-
+Is this universally supported by all models that this binding covers? If 
+not, you might want to explain that?
 -- 
 Florian
