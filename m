@@ -2,226 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38C91429674
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 20:06:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52AEC4296A2
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 20:15:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233950AbhJKSI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 14:08:27 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:36670 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbhJKSIY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 14:08:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1633975579;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=6LqnHvXTdFYtJDd10vSABCQdR8Ch6Bc2PQELvRrAL7c=;
-    b=FSlO1oIQa83K3kUKOAisqB6w0PxoBb7YrOJZs1ppyRnHA8dAVlAFpbVcHb0qtKHIXI
-    iEb60TZM2/1Ax6OpL1I01KcsYQxFjKCICgRfsXIcgJvfO/Hb8PDKjxomkg8KWPZJH9ZF
-    7V8L0r5HH3lbyv0QxZ0WBe+pmasUNdS9FFOJ26UcvllehCF19bJvQBEhzMq+ushahbNS
-    8RK6Tg2GDbUgmvVk0mIAFrgDsKuE1lI1W0vilU5NJO8xenILNisgdSqSbs5wT5ToMd9s
-    snMy1CTjUZuvV5ZRa29P/obDKb4GtFOzQa0s8ko/GQl2HW9pewIDekJ38FsgmetSeHYV
-    D4HA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u261EJF5OxJD4pSA8p7h"
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.33.8 SBL|AUTH)
-    with ESMTPSA id 301038x9BI6Fw0z
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Mon, 11 Oct 2021 20:06:15 +0200 (CEST)
-Date:   Mon, 11 Oct 2021 20:06:12 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Andy Gross <agross@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Subject: Re: [PATCH net-next v2 2/4] dmaengine: qcom: bam_dma: Add "powered
- remotely" mode
-Message-ID: <YWR9DSp0ry/wprLn@gerhold.net>
-References: <20211011141733.3999-1-stephan@gerhold.net>
- <20211011141733.3999-3-stephan@gerhold.net>
- <YWR2yN3x3zroz1GX@ripper>
+        id S234322AbhJKSRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 14:17:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234207AbhJKSRK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 14:17:10 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40207C061570;
+        Mon, 11 Oct 2021 11:15:10 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id v11so11551440pgb.8;
+        Mon, 11 Oct 2021 11:15:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kIyV8cR5GS2rxg2p2WwgQNqm6Dtb0bm+QAw3FrSnNHs=;
+        b=mpifQseRXNKTi9FRbbAFKy+rTYsJrgDaYBasQLtPhOg3EIEBbTof5+DgIJKAoQAjOj
+         rY5jcQKPzhkrgzalaw4snJZMiy3nIMEV2F03PDl2rE/fS/nR9HCtWcRILIxxm7pWS+oi
+         MnZwEU5vPNnzOBl5h0NIH/nW5ZGwrz92cI4DWxlR2ofmKlnhNk3DnOY69op8PU0B0kvJ
+         CBHqnT0TrVelZ5OWEzaQ5YcULxlelzIZqxUGTHoe0PSrHRsiUfySBy7Jyx0zdXtxfmej
+         0RTdQoZuyz4hx9YXFho1BeCACGlIA6qOgbiFiGEKfoIhQEu2F+K0qSy93wvM+22CwhPL
+         AIjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kIyV8cR5GS2rxg2p2WwgQNqm6Dtb0bm+QAw3FrSnNHs=;
+        b=IfimMRhCHFmOo9NvBS6tSZkK0o/u9BuewAsnU4MGuo4YuhIXUH4BFfv+z0mmOaLglc
+         I4lElMSdEoXfIOEHOCMHdat+WDKNlY4hn7mic9oxzyMjeJMaME2bClpSfFr8Mw9A6x3F
+         3scMD6z8Ri054rVz5ba0XPktgmhcMAP9xrQLxVCWJn98ASa5oSL2YMCKU9YT5ybHobpj
+         W3q8omM2D+Gf5bCKUBcPqp/p1/sWbFvArsPVBoe6PbCHZYb+yYEv4vkkFASR2oXSoaN+
+         IAD5s7+oqR9Ynat4rhkibOvRIwL3kaxC048hkwCvnnemQj3MEHzkvLEeNyLsNUlmhp4V
+         I0tA==
+X-Gm-Message-State: AOAM530GNhSRMuLsaQgjAGUElSGcB6CGURb15994QzUbHDmaj+Zr9ytg
+        QuEB6zjDpHhchpH1GGOVrko/LLEQBhM=
+X-Google-Smtp-Source: ABdhPJzdcwt2Cycw2thuAovS8gONxp7BCjEUfnYv8mdL2tyQJJpzLK9xK9nRR3P+WDnCTYO4V1H0/g==
+X-Received: by 2002:a63:5453:: with SMTP id e19mr19394477pgm.178.1633976109236;
+        Mon, 11 Oct 2021 11:15:09 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 14sm8109939pfu.29.2021.10.11.11.15.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Oct 2021 11:15:08 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev@vger.kernel.org (open list:ETHERNET PHY LIBRARY)
+Subject: [PATCH stable 5.4] net: phy: bcm7xxx: Fixed indirect MMD operations
+Date:   Mon, 11 Oct 2021 11:15:00 -0700
+Message-Id: <20211011181500.103617-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YWR2yN3x3zroz1GX@ripper>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 11, 2021 at 10:39:20AM -0700, Bjorn Andersson wrote:
-> On Mon 11 Oct 07:17 PDT 2021, Stephan Gerhold wrote:
-> 
-> > In some configurations, the BAM DMA controller is set up by a remote
-> > processor and the local processor can simply start making use of it
-> > without setting up the BAM. This is already supported using the
-> > "qcom,controlled-remotely" property.
-> > 
-> > However, for some reason another possible configuration is that the
-> > remote processor is responsible for powering up the BAM, but we are
-> > still responsible for initializing it (e.g. resetting it etc).
-> > 
-> > This configuration is quite challenging to handle properly because
-> > the power control is handled through separate channels
-> > (e.g. device-specific SMSM interrupts / smem-states). Great care
-> > must be taken to ensure the BAM registers are not accessed while
-> > the BAM is powered off since this results in a bus stall.
-> > 
-> > Attempt to support this configuration with minimal device-specific
-> > code in the bam_dma driver by tracking the number of requested
-> > channels. Consumers of DMA channels are responsible to only request
-> > DMA channels when the BAM was powered on by the remote processor,
-> > and to release them before the BAM is powered off.
-> > 
-> > When the first channel is requested the BAM is initialized (reset)
-> > and it is also put into reset when the last channel was released.
-> > 
-> > Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
-> > ---
-> > Changes since RFC:
-> >   - Drop qcom-specific terminology "power collapse", instead rename
-> >     "qcom,remote-power-collapse" -> "qcom,powered-remotely"
-> > 
-> > NOTE: This is *not* a compile-time requirement for the BAM-DMUX driver
-> >       so this could also go through the dmaengine tree.
-> > 
-> > See original RFC for a discussion of alternative approaches to handle
-> > this configuration:
-> >   https://lore.kernel.org/netdev/20210719145317.79692-3-stephan@gerhold.net/
-> > ---
-> >  drivers/dma/qcom/bam_dma.c | 88 ++++++++++++++++++++++++--------------
-> >  1 file changed, 56 insertions(+), 32 deletions(-)
-> > 
-> > diff --git a/drivers/dma/qcom/bam_dma.c b/drivers/dma/qcom/bam_dma.c
-> > index c8a77b428b52..1b33a3ebbfec 100644
-> > --- a/drivers/dma/qcom/bam_dma.c
-> > +++ b/drivers/dma/qcom/bam_dma.c
-> > @@ -388,6 +388,8 @@ struct bam_device {
-> >  	/* execution environment ID, from DT */
-> >  	u32 ee;
-> >  	bool controlled_remotely;
-> > +	bool powered_remotely;
-> > +	u32 active_channels;
-> >  
-> >  	const struct reg_offset_data *layout;
-> >  
-> > @@ -415,6 +417,44 @@ static inline void __iomem *bam_addr(struct bam_device *bdev, u32 pipe,
-> >  		r.ee_mult * bdev->ee;
-> >  }
-> >  
-> > +/**
-> > + * bam_reset - reset and initialize BAM registers
-> 
-> Please include a set of () after the function name.
-> 
+commit d88fd1b546ff19c8040cfaea76bf16aed1c5a0bb upstream
 
-Thanks, will fix this in v3.
+When EEE support was added to the 28nm EPHY it was assumed that it would
+be able to support the standard clause 45 over clause 22 register access
+method. It turns out that the PHY does not support that, which is the
+very reason for using the indirect shadow mode 2 bank 3 access method.
 
-> > + * @bdev: bam device
-> > + */
-> > +static void bam_reset(struct bam_device *bdev)
-> > +{
-> > +	u32 val;
-> > +
-> > +	/* s/w reset bam */
-> > +	/* after reset all pipes are disabled and idle */
-> > +	val = readl_relaxed(bam_addr(bdev, 0, BAM_CTRL));
-> > +	val |= BAM_SW_RST;
-> > +	writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
-> > +	val &= ~BAM_SW_RST;
-> > +	writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
-> 
-> Seems odd to me that we assert and deassert the reset in back-to-back
-> writes, without any delay etc. That said, this is unrelated to your
-> patch as you just moved this hunk from below.
-> 
+Implement {read,write}_mmd to allow the standard PHY library routines
+pertaining to EEE querying and configuration to work correctly on these
+PHYs. This forces us to implement a __phy_set_clr_bits() function that
+does not grab the MDIO bus lock since the PHY driver's {read,write}_mmd
+functions are always called with that lock held.
 
-It seems to work fine though. :)
-I'm pretty sure I checked that this actually resets at some point,
-but perhaps I was lucky there. But yeah, seems better to adjust this in
-some future patch instead of here.
+Fixes: 83ee102a6998 ("net: phy: bcm7xxx: add support for 28nm EPHY")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/phy/bcm7xxx.c | 114 ++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 110 insertions(+), 4 deletions(-)
 
-> > +
-> > +	/* make sure previous stores are visible before enabling BAM */
-> > +	wmb();
-> > +
-> > +	/* enable bam */
-> > +	val |= BAM_EN;
-> > +	writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
-> > +
-> > +	/* set descriptor threshhold, start with 4 bytes */
-> > +	writel_relaxed(DEFAULT_CNT_THRSHLD,
-> > +			bam_addr(bdev, 0, BAM_DESC_CNT_TRSHLD));
-> > +
-> > +	/* Enable default set of h/w workarounds, ie all except BAM_FULL_PIPE */
-> > +	writel_relaxed(BAM_CNFG_BITS_DEFAULT, bam_addr(bdev, 0, BAM_CNFG_BITS));
-> > +
-> > +	/* enable irqs for errors */
-> > +	writel_relaxed(BAM_ERROR_EN | BAM_HRESP_ERR_EN,
-> > +			bam_addr(bdev, 0, BAM_IRQ_EN));
-> > +
-> > +	/* unmask global bam interrupt */
-> > +	writel_relaxed(BAM_IRQ_MSK, bam_addr(bdev, 0, BAM_IRQ_SRCS_MSK_EE));
-> > +}
-> > +
-> >  /**
-> >   * bam_reset_channel - Reset individual BAM DMA channel
-> >   * @bchan: bam channel
-> > @@ -512,6 +552,9 @@ static int bam_alloc_chan(struct dma_chan *chan)
-> >  		return -ENOMEM;
-> >  	}
-> >  
-> > +	if (bdev->active_channels++ == 0 && bdev->powered_remotely)
-> > +		bam_reset(bdev);
-> > +
-> >  	return 0;
-> >  }
-> >  
-> > @@ -565,6 +608,13 @@ static void bam_free_chan(struct dma_chan *chan)
-> >  	/* disable irq */
-> >  	writel_relaxed(0, bam_addr(bdev, bchan->id, BAM_P_IRQ_EN));
-> >  
-> > +	if (--bdev->active_channels == 0 && bdev->powered_remotely) {
-> > +		/* s/w reset bam */
-> > +		val = readl_relaxed(bam_addr(bdev, 0, BAM_CTRL));
-> > +		val |= BAM_SW_RST;
-> > +		writel_relaxed(val, bam_addr(bdev, 0, BAM_CTRL));
-> > +	}
-> > +
-> >  err:
-> >  	pm_runtime_mark_last_busy(bdev->dev);
-> >  	pm_runtime_put_autosuspend(bdev->dev);
-> > @@ -1164,38 +1214,10 @@ static int bam_init(struct bam_device *bdev)
-> >  		bdev->num_channels = val & BAM_NUM_PIPES_MASK;
-> >  	}
-> >  
-> > -	if (bdev->controlled_remotely)
-> > +	if (bdev->controlled_remotely || bdev->powered_remotely)
-> >  		return 0;
-> 
-> I think the resulting code would be cleaner if you flipped it around as:
-> 
-> 	/* Reset BAM now if fully controlled locally */
-> 	if (!bdev->controlled_remotely && !bdev->powered_remotely)
-> 		bam_reset(bdev);
-> 
-> 	return 0;
-> 
+diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/bcm7xxx.c
+index af8eabe7a6d4..d372626c603d 100644
+--- a/drivers/net/phy/bcm7xxx.c
++++ b/drivers/net/phy/bcm7xxx.c
+@@ -26,7 +26,12 @@
+ #define MII_BCM7XXX_SHD_2_ADDR_CTRL	0xe
+ #define MII_BCM7XXX_SHD_2_CTRL_STAT	0xf
+ #define MII_BCM7XXX_SHD_2_BIAS_TRIM	0x1a
++#define MII_BCM7XXX_SHD_3_PCS_CTRL	0x0
++#define MII_BCM7XXX_SHD_3_PCS_STATUS	0x1
++#define MII_BCM7XXX_SHD_3_EEE_CAP	0x2
+ #define MII_BCM7XXX_SHD_3_AN_EEE_ADV	0x3
++#define MII_BCM7XXX_SHD_3_EEE_LP	0x4
++#define MII_BCM7XXX_SHD_3_EEE_WK_ERR	0x5
+ #define MII_BCM7XXX_SHD_3_PCS_CTRL_2	0x6
+ #define  MII_BCM7XXX_PCS_CTRL_2_DEF	0x4400
+ #define MII_BCM7XXX_SHD_3_AN_STAT	0xb
+@@ -210,25 +215,37 @@ static int bcm7xxx_28nm_resume(struct phy_device *phydev)
+ 	return genphy_config_aneg(phydev);
+ }
+ 
+-static int phy_set_clr_bits(struct phy_device *dev, int location,
+-					int set_mask, int clr_mask)
++static int __phy_set_clr_bits(struct phy_device *dev, int location,
++			      int set_mask, int clr_mask)
+ {
+ 	int v, ret;
+ 
+-	v = phy_read(dev, location);
++	v = __phy_read(dev, location);
+ 	if (v < 0)
+ 		return v;
+ 
+ 	v &= ~clr_mask;
+ 	v |= set_mask;
+ 
+-	ret = phy_write(dev, location, v);
++	ret = __phy_write(dev, location, v);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	return v;
+ }
+ 
++static int phy_set_clr_bits(struct phy_device *dev, int location,
++			    int set_mask, int clr_mask)
++{
++	int ret;
++
++	mutex_lock(&dev->mdio.bus->mdio_lock);
++	ret = __phy_set_clr_bits(dev, location, set_mask, clr_mask);
++	mutex_unlock(&dev->mdio.bus->mdio_lock);
++
++	return ret;
++}
++
+ static int bcm7xxx_28nm_ephy_01_afe_config_init(struct phy_device *phydev)
+ {
+ 	int ret;
+@@ -392,6 +409,93 @@ static int bcm7xxx_28nm_ephy_config_init(struct phy_device *phydev)
+ 	return bcm7xxx_28nm_ephy_apd_enable(phydev);
+ }
+ 
++#define MII_BCM7XXX_REG_INVALID	0xff
++
++static u8 bcm7xxx_28nm_ephy_regnum_to_shd(u16 regnum)
++{
++	switch (regnum) {
++	case MDIO_CTRL1:
++		return MII_BCM7XXX_SHD_3_PCS_CTRL;
++	case MDIO_STAT1:
++		return MII_BCM7XXX_SHD_3_PCS_STATUS;
++	case MDIO_PCS_EEE_ABLE:
++		return MII_BCM7XXX_SHD_3_EEE_CAP;
++	case MDIO_AN_EEE_ADV:
++		return MII_BCM7XXX_SHD_3_AN_EEE_ADV;
++	case MDIO_AN_EEE_LPABLE:
++		return MII_BCM7XXX_SHD_3_EEE_LP;
++	case MDIO_PCS_EEE_WK_ERR:
++		return MII_BCM7XXX_SHD_3_EEE_WK_ERR;
++	default:
++		return MII_BCM7XXX_REG_INVALID;
++	}
++}
++
++static bool bcm7xxx_28nm_ephy_dev_valid(int devnum)
++{
++	return devnum == MDIO_MMD_AN || devnum == MDIO_MMD_PCS;
++}
++
++static int bcm7xxx_28nm_ephy_read_mmd(struct phy_device *phydev,
++				      int devnum, u16 regnum)
++{
++	u8 shd = bcm7xxx_28nm_ephy_regnum_to_shd(regnum);
++	int ret;
++
++	if (!bcm7xxx_28nm_ephy_dev_valid(devnum) ||
++	    shd == MII_BCM7XXX_REG_INVALID)
++		return -EOPNOTSUPP;
++
++	/* set shadow mode 2 */
++	ret = __phy_set_clr_bits(phydev, MII_BCM7XXX_TEST,
++				 MII_BCM7XXX_SHD_MODE_2, 0);
++	if (ret < 0)
++		return ret;
++
++	/* Access the desired shadow register address */
++	ret = __phy_write(phydev, MII_BCM7XXX_SHD_2_ADDR_CTRL, shd);
++	if (ret < 0)
++		goto reset_shadow_mode;
++
++	ret = __phy_read(phydev, MII_BCM7XXX_SHD_2_CTRL_STAT);
++
++reset_shadow_mode:
++	/* reset shadow mode 2 */
++	__phy_set_clr_bits(phydev, MII_BCM7XXX_TEST, 0,
++			   MII_BCM7XXX_SHD_MODE_2);
++	return ret;
++}
++
++static int bcm7xxx_28nm_ephy_write_mmd(struct phy_device *phydev,
++				       int devnum, u16 regnum, u16 val)
++{
++	u8 shd = bcm7xxx_28nm_ephy_regnum_to_shd(regnum);
++	int ret;
++
++	if (!bcm7xxx_28nm_ephy_dev_valid(devnum) ||
++	    shd == MII_BCM7XXX_REG_INVALID)
++		return -EOPNOTSUPP;
++
++	/* set shadow mode 2 */
++	ret = __phy_set_clr_bits(phydev, MII_BCM7XXX_TEST,
++				 MII_BCM7XXX_SHD_MODE_2, 0);
++	if (ret < 0)
++		return ret;
++
++	/* Access the desired shadow register address */
++	ret = __phy_write(phydev, MII_BCM7XXX_SHD_2_ADDR_CTRL, shd);
++	if (ret < 0)
++		goto reset_shadow_mode;
++
++	/* Write the desired value in the shadow register */
++	__phy_write(phydev, MII_BCM7XXX_SHD_2_CTRL_STAT, val);
++
++reset_shadow_mode:
++	/* reset shadow mode 2 */
++	return __phy_set_clr_bits(phydev, MII_BCM7XXX_TEST, 0,
++				  MII_BCM7XXX_SHD_MODE_2);
++}
++
+ static int bcm7xxx_28nm_ephy_resume(struct phy_device *phydev)
+ {
+ 	int ret;
+@@ -563,6 +667,8 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
+ 	.get_strings	= bcm_phy_get_strings,				\
+ 	.get_stats	= bcm7xxx_28nm_get_phy_stats,			\
+ 	.probe		= bcm7xxx_28nm_probe,				\
++	.read_mmd	= bcm7xxx_28nm_ephy_read_mmd,			\
++	.write_mmd	= bcm7xxx_28nm_ephy_write_mmd,			\
+ }
+ 
+ #define BCM7XXX_40NM_EPHY(_oui, _name)					\
+-- 
+2.25.1
 
-Hmm, you are probably right, I can flip it in v3.
-
-Thanks!
-Stephan
