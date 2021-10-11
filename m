@@ -2,187 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB3964295FA
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 19:43:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80FC942966C
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 20:04:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232768AbhJKRpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 13:45:45 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:4157 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230102AbhJKRpo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 13:45:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1633974224; x=1665510224;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+F9l5T5x2PMp6M/KDfNyBQ/u3YF2P+eW3/LZuRhLqB0=;
-  b=RH+H42EfcoxmM/kzqPBnHztha3v32H026a34vh/d2W7wo457rDULmDsh
-   zMqma0ne6QA4/Ja0k+SlHeiHJRjS2lzq+KngdFJEEWfM366jhhy4mQCAy
-   m5ASkv3EjluLknsUk19o9/VRApmdgFBQ78bwgBxIdq/hPMtMyqjbmld7N
-   EacFZEJYsXhq6VxuVx/0Y1+rkewEHsCnz7rH7wj5iZcLD2gVv/v+TWa9s
-   FPVai+CIUIyc+078hw6jMq0NgHVLfi04gIDxW3KxJGm17S5TFppdGC1iY
-   kTIDo/avxF8LmSQMIH5A1ybHvdAwfFCWrLHI4QNimjrcvdaROZcwmNXiE
-   A==;
-IronPort-SDR: YJjfVilpcqhcgN6hjFOU8uvyBBQ7GvCHcIhebE8NRgOG1L6Uv96E4TrLrnvook/IBUG7ahoH56
- k5zlWGCEieevyNqqOnpFgADJyAe7E52G5ttIspqsIoJkJjwsehIYqOFcpkLjJxU3s/6lj4lvkr
- AOYhCaBgQm1gUVqHdlcuHsyk4+8lzyRx1easPmdA95V9VtXtYbduksnVeUcOS/RoBktmQo+04U
- nYw5DcJFs+oYNSOQxFJAqAGvn2C38qV8Oj374tICfCRmnd8eMuuzw6ATzbVj8Sh9LH7Qaz7gCZ
- V/pu7PitMXQaQATPAVw/QfFW
-X-IronPort-AV: E=Sophos;i="5.85,365,1624345200"; 
-   d="scan'208";a="135122494"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Oct 2021 10:43:43 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Mon, 11 Oct 2021 10:43:42 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Mon, 11 Oct 2021 10:43:37 -0700
-Message-ID: <6c97e0771204b492f31b3d003a5fd97d789920ef.camel@microchip.com>
-Subject: Re: [PATCH v4 net-next 10/10] net: dsa: microchip: add support for
- vlan operations
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Mon, 11 Oct 2021 23:13:36 +0530
-In-Reply-To: <20211007201705.polwaqgbzff4u3vx@skbuf>
-References: <20211007151200.748944-1-prasanna.vengateshan@microchip.com>
-         <20211007151200.748944-11-prasanna.vengateshan@microchip.com>
-         <20211007201705.polwaqgbzff4u3vx@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1-1 
+        id S234138AbhJKSGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 14:06:48 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:51830 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229565AbhJKSGp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 14:06:45 -0400
+Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 5B7DA200CCF6;
+        Mon, 11 Oct 2021 20:04:42 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 5B7DA200CCF6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1633975482;
+        bh=lJv2kvvePcZguGAstcULyW2UVXh5EG9tzaCBp4mIYcI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HL0cbZKoNqzcPVEjKj0UTqvd0FIdFbRK5p2juy6QvCDD1c5xkFVAwPFI82U4gSthP
+         VWkZ4UrFkVBj71zrMoTPTjGF2gCEcrG0/BRf9xuhS4jn6tEq5osU6GcfU8VmBoJ0jB
+         AmnDjEgtQ6m+VplpHM6QcsnEXEUkH/5GHkDOh8hBA4yjs9AeXDFITRTk4KUeoeBuND
+         fZf+jx06wgrqDgVqIwUQv7FQdGZ0k5jic03lLcDx3a8nEILkzAC/iF3cPykUGHtKjH
+         54c5ETm6HkEE1KjYop2OYdDpXzbBugVL7OfdgMko9yIzIgkZRFr5RUV+y8lOmWYdSO
+         gPpjf9D3sprWA==
+From:   Justin Iurman <justin.iurman@uliege.be>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, justin.iurman@uliege.be
+Subject: [PATCH net 0/2] Correct the IOAM behavior for undefined trace type bits
+Date:   Mon, 11 Oct 2021 20:04:10 +0200
+Message-Id: <20211011180412.22781-1-justin.iurman@uliege.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-10-07 at 23:17 +0300, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
-> 
-> > +static int lan937x_port_vlan_filtering(struct dsa_switch *ds, int port,
-> > +                                    bool flag,
-> > +                                    struct netlink_ext_ack *extack)
-> > +{
-> > +     struct ksz_device *dev = ds->priv;
-> > +     int ret;
-> > +
-> > +     ret = lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE,
-> > +                       flag);
-> 
-> If you're going to resend anyway, can you please check the entire
-> submission for this pattern, where you can eliminate the intermediary
-> "ret" variable and just return the function call directly?
-> 
->         return lan937x_cfg(...)
-Sure
+(@Jakub @David: there will be a conflict for #2 when merging net->net-next, due
+to commit [1]. The conflict is only 5-10 lines for #2 (#1 should be fine) inside
+the file tools/testing/selftests/net/ioam6.sh, so quite short though possibly
+ugly. Sorry for that, I didn't expect to post this one... Had I known, I'd have
+made the opposite.)
 
-> Do you have an explanation for what SW_VLAN_ENABLE does exactly?
-Enabling the VLAN mode and then act as per the VLAN table.
-Do you want me to add this explanation as a comment? or?
+Modify both the input and output behaviors regarding the trace type when one of
+the undefined bits is set. The goal is to keep the interoperability when new
+fields (aka new bits inside the range 12-21) will be defined.
 
+The draft [2] says the following:
+---------------------------------------------------------------
+"Bit 12-21  Undefined.  These values are available for future
+       assignment in the IOAM Trace-Type Registry (Section 8.2).
+       Every future node data field corresponding to one of
+       these bits MUST be 4-octets long.  An IOAM encapsulating
+       node MUST set the value of each undefined bit to 0.  If
+       an IOAM transit node receives a packet with one or more
+       of these bits set to 1, it MUST either:
 
+       1.  Add corresponding node data filled with the reserved
+           value 0xFFFFFFFF, after the node data fields for the
+           IOAM-Trace-Type bits defined above, such that the
+           total node data added by this node in units of
+           4-octets is equal to NodeLen, or
 
-> > 
-> > 
-> > +static int lan937x_port_vlan_del(struct dsa_switch *ds, int port,
-> > +                              const struct switchdev_obj_port_vlan *vlan)
-> > +{
-> > +     bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-> > +     struct ksz_device *dev = ds->priv;
-> > +     struct lan937x_vlan vlan_entry;
-> > +     u16 pvid;
-> > +     int ret;
-> > +
-> > +     lan937x_pread16(dev, port, REG_PORT_DEFAULT_VID, &pvid);
-> > +     pvid &= 0xFFF;
-> > +
-> > +     ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
-> > +     if (ret < 0) {
-> > +             dev_err(dev->dev, "Failed to get vlan table\n");
-> > +             return ret;
-> > +     }
-> > +     /* clear port fwd map */
-> > +     vlan_entry.fwd_map &= ~BIT(port);
-> > +
-> > +     if (untagged)
-> > +             vlan_entry.untag_prtmap &= ~BIT(port);
-> 
-> This is bogus.
-> The user can add a VLAN entry using:
-> 
-> bridge vlan add dev lan0 vid 100 pvid untagged
-> 
-> and remove it using
-> 
-> bridge vlan del dev lan0 vid 100
-> 
-> so BRIDGE_VLAN_INFO_UNTAGGED is not set on removal.
-> 
-> Considering the fact that it doesn't matter whether the port is
-> egress-tagged or not when it isn't in the fwd_map in the first place,
-> I suggest you completely drop this condition.
-Sure, i agree with you.
+       2.  Not add any node data fields to the packet, even for
+           the IOAM-Trace-Type bits defined above."
+---------------------------------------------------------------
 
-> 
-> > +
-> > +     ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
-> > +     if (ret < 0) {
-> > +             dev_err(dev->dev, "Failed to set vlan table\n");
-> > +             return ret;
-> > +     }
-> > +
-> > +     ret = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID, pvid);
-> 
-> What is the point of reading the pvid and writing it back unmodified?
-> Is the AND-ing with 0xFFF supposed to do anything? Because when you
-> write to REG_PORT_DEFAULT_VID, you write it with nothing in the upper
-> bits, so I expect there to be nothing in the upper bits when you read it
-> back either.
-I had a feedback for not to reset the PVID as per the switchdev documentation
-during vlan del. As part of the fix , i just removed PVID reset code alone but
-missed these. Read/write PVID to be completely removed. I had a test case to
-make sure that the PVID is not reset during vlan del. Since this is
-reading/writing back the same values, could not catch them. I will clean up in
-the next patch.
+The output behavior has been modified to respect the fact that "an IOAM encap
+node MUST set the value of each undefined bit to 0" (i.e., undefined bits can't
+be set anymore).
 
+As for the input behavior, current implementation is based on the second choice
+(i.e., "not add any data fields to the packet [...]"). With this solution, any
+interoperability is lost (i.e., if a new bit is defined, then an "old" kernel
+implementation wouldn't fill IOAM data when such new bit is set inside the trace
+type).
 
-> 
-> > +     if (ret < 0) {
-> > +             dev_err(dev->dev, "Failed to set pvid\n");
-> > +             return ret;
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> 
-> Also, consider the following set of commands:
-> 
-Step (0)
-> ip link add br0 type bridge vlan_filtering 1
-> ip link set lan0 master br0
-> bridge vlan add dev lan0 vid 100 pvid untagged
-Step (1)
-> bridge vlan del dev lan0 vid 100
-Step (2)
-> ip link set br0 type bridge vlan_filtering 0
-> 
-> The expectation is that the switch, being VLAN-unaware as it is currently
-> configured, receives and sends any packet regardless of VLAN ID.
-> If you put an IP on br0 in this state, are you able to ping an outside host?
+The input behavior is therefore relaxed and these undefined bits are now allowed
+to be set. It is only possible thanks to the sentence "every future node data
+field corresponding to one of these bits MUST be 4-octets long". Indeed, the
+default empty value (the one for 4-octet fields) is inserted whenever an
+undefined bit is set.
 
-I have numbered the commands above.
-Results are,
-Before Step (0). Am able to ping outside.
-After Step (0). Am not able to ping outside because the vlan table is set
-After Step (1). Am not able to ping outside
-After Step (2). Am able to ping outside because of vlan unaware mode.
+  [1] cfbe9b002109621bf9a282a4a24f9415ef14b57b
+  [2] https://datatracker.ietf.org/doc/html/draft-ietf-ippm-ioam-data#section-5.4.1
+
+Justin Iurman (2):
+  ipv6: ioam: move the check for undefined bits
+  selftests: net: modify IOAM tests for undef bits
+
+ net/ipv6/ioam6.c                           |  70 ++++++++-
+ net/ipv6/ioam6_iptunnel.c                  |   6 +-
+ tools/testing/selftests/net/ioam6.sh       |  26 +++-
+ tools/testing/selftests/net/ioam6_parser.c | 164 ++++++++-------------
+ 4 files changed, 148 insertions(+), 118 deletions(-)
+
+-- 
+2.25.1
 
