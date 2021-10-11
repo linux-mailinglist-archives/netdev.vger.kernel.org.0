@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59BD9429775
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 21:17:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B06429777
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 21:17:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234640AbhJKTTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 15:19:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54734 "EHLO
+        id S234603AbhJKTTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 15:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234633AbhJKTTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 15:19:19 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552F3C061570;
-        Mon, 11 Oct 2021 12:17:18 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id r134so9870639iod.11;
-        Mon, 11 Oct 2021 12:17:18 -0700 (PDT)
+        with ESMTP id S234638AbhJKTT3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 15:19:29 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D617C06161C;
+        Mon, 11 Oct 2021 12:17:26 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id s17so15855692ioa.13;
+        Mon, 11 Oct 2021 12:17:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zWfw5yv/Wr4pji3ke4CQl5k7I1ej4+D5cKcPcTz5sWU=;
-        b=UHsa6AC1ROttToJzWoKJzwREIQskjUaJO3EsvXhJ8oCf0hPSuoigc0UiohFFIre9sn
-         Vq7h3vzgX0/oua759l+u7Bh/1q/iiI06g2MexwqYHQiC2fc9xlcXuGzFhMMBWJKnwjHX
-         mDEIR5uWdWSTSaB1aJjJA3wlwno6EN3uEcazLBcb4xDb5pMi/tMcSE47mR6zX4UtBc22
-         gQHI1aNqqbnr8rUiHAG43M7scWG1Owms3vxta12OBNv3c0awhuEB8pVwF60SisUIGzrc
-         I9ugU0HNAPkyxJvqxAUHWU1iYn1f8qTQvA0K9iJxnVVJ5OqVLa5avV6tlg0QgVP5mDG7
-         uZ6g==
+        bh=8R7J7WwlVkvmd31lTevebFP8KXyHRvQbrT5FjNsptLE=;
+        b=WZi8FMRsTDQeD8t1qv6pcfA/wlligT6nQGSYOUxkfG6rYKCkUVKXdFluVNRmxUHC6m
+         B7M6eJb3+Iey/NniD5vYkgaFuew84fFbcMoFizbs9KxGiMzUotrgmQ1eLYVpPgBOcWcO
+         FYaKvKv0koFthTrcBbqAktwiSaQ5ZqqVaOUq9+OZZw5DgWDqJvhCUkgfslHDQ5CJreaN
+         qUy0vJuOcnLNvcad/+W7bZnK81pXoUY2J/vn3nTRfb6BgeMkU0FqLs26VS/ltN/5IaKW
+         J5W/I9vvxO2tAFRjReP9WkfKGbnZyOEHGHbyzi0lNZh/dDgyks6YdQeNXWMpM9xomyy8
+         XHLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zWfw5yv/Wr4pji3ke4CQl5k7I1ej4+D5cKcPcTz5sWU=;
-        b=G3BSyF6WR+J4NFYMKbH59VpFaCM1BbNraeMW3eeCpZb1P0o3IOtOU6dZ+4PpcfQPB+
-         fTedA+kGcqvF/+PpHCGsIx26bdM4a6CQbS2hQKI5qjKN/qlkB6P56SXAEDFZbHQOJWom
-         Yw5JzaIIWo62AjI8acGBY5iHsTjluvNhiKo6UkvbcsxtGorXhl8nwUy+xWlo8Y/dV6jh
-         W7KxKBaD7kmjcD8LgjrEgY6iA6EFBrSOlcUmEuiMR6DluE0wNrwN2a8gle++fJQwY6V3
-         HZFg6DrEsX1BRgh7wxKeMKVauIi1Kt3LKwfHrQp4rsUrzXmVn4P9M+ocviXyuB5kDVBf
-         hSjw==
-X-Gm-Message-State: AOAM532qs482NE5ONOttS5YZhbOcLkYSHlyVoxh2eSZLUcHB+QnJBkJ3
-        p8WhNFLhiu75VQ3Vg4k/2O4M1SSEKS2YUg==
-X-Google-Smtp-Source: ABdhPJz70L0XmOvLLn5/WfkPb0zPBu/arcMMpYKzdbGbcIY8cKdpNeV5MwvuktvkLKKK264mDuw6hQ==
-X-Received: by 2002:a05:6638:3052:: with SMTP id u18mr20029594jak.148.1633979837482;
-        Mon, 11 Oct 2021 12:17:17 -0700 (PDT)
+        bh=8R7J7WwlVkvmd31lTevebFP8KXyHRvQbrT5FjNsptLE=;
+        b=rjOKWf6FYj6mg0xcBaltkqczi9ZCoFDaHFTn+TtmaU9MSwBxHEhn1OZK7zFBlyxIje
+         kxod1bgEHyf1pwI2D/VSBAYP43/uQDRvn5xF3IC9cOnL5PAs2gviLmlC840d6jhZaJt9
+         mCQea4622md2teF0u3mqCapu609ltagMFwSrj4NwtBC7OM+t/4BIJzrrrA4rawaocGQZ
+         JNpSF+t3HnCwhoHt8OhtuKpv7195dyfk69oA6RqssIn5ME7pUp2PUwmz6mDXgBMXdswz
+         iWg99XthEWF0t8+DCocIW/AGToZfqptrcDXWFXmmvK0wJgy4jx1QMKZzUpLZ4YxsHUf8
+         +F6g==
+X-Gm-Message-State: AOAM533YOv9Tg/FpkdZCktb3W9O2/LcrUwf7ooHKTtd/r2GUsOMwUKKl
+        0cbDaMjTbIc0CfeGY2exDkeIAz78rAAoEQ==
+X-Google-Smtp-Source: ABdhPJx2DuwoZ4gYJYKHc53dJuQKhPZFaLoEf4FEY89dWjcAn8Vs7pfXu/GIBeLPPLyGRYOC3J7g8w==
+X-Received: by 2002:a05:6602:27c5:: with SMTP id l5mr7041541ios.60.1633979845397;
+        Mon, 11 Oct 2021 12:17:25 -0700 (PDT)
 Received: from john.lan ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id n12sm4460077ilj.8.2021.10.11.12.17.10
+        by smtp.gmail.com with ESMTPSA id n12sm4460077ilj.8.2021.10.11.12.17.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Oct 2021 12:17:16 -0700 (PDT)
+        Mon, 11 Oct 2021 12:17:24 -0700 (PDT)
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     john.fastabend@gmail.com, daniel@iogearbox.net, joamaki@gmail.com,
         xiyou.wangcong@gmail.com
-Subject: [PATCH bpf 2/4] bpf, sockmap: Fix race in ingress receive verdict with redirect to self
-Date:   Mon, 11 Oct 2021 12:16:45 -0700
-Message-Id: <20211011191647.418704-3-john.fastabend@gmail.com>
+Subject: [PATCH bpf 3/4] bpf: sockmap, strparser, and tls are reusing qdisc_skb_cb and colliding
+Date:   Mon, 11 Oct 2021 12:16:46 -0700
+Message-Id: <20211011191647.418704-4-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211011191647.418704-1-john.fastabend@gmail.com>
 References: <20211011191647.418704-1-john.fastabend@gmail.com>
@@ -63,185 +63,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A socket in a sockmap may have different combinations of programs
-attached depending on configuration. There can be no programs in which
-case the socket acts as a sink only. There can be a TX program in this
-case a BPF program is attached to sending side, but no RX program is
-attached. There can be an RX program only where sends have no BPF
-program attached, but receives are hooked with BPF. And finally,
-both TX and RX programs may be attached. Giving us the permutations,
+Strparser is reusing the qdisc_skb_cb struct to stash the skb message
+handling progress, e.g. offset and length of the skb. First this is
+poorly named and inherits a struct from qdisc that doesn't reflect the
+actual usage of cb[] at this layer.
 
- None, Tx, Rx, and TxRx
+But, more importantly strparser is using the following to access its
+metadata.
 
-To date most of our use cases have been TX case being used as a fast
-datapath to directly copy between local application and a userspace
-proxy. Or Rx cases and TxRX applications that are operating an in
-kernel based proxy. The traffic in the first case where we hook
-applications into a userspace application looks like this,
+(struct _strp_msg *)((void *)skb->cb + offsetof(struct qdisc_skb_cb, data))
 
-  AppA  redirect   AppB
-   Tx <-----------> Rx
-   |                |
-   +                +
-   TCP <--> lo <--> TCP
+Where _strp_msg is defined as,
 
-In this case all traffic from AppA (after 3whs) is copied into the
-AppB ingress queue and no traffic is ever on the TCP recieive_queue.
+ struct _strp_msg {
+        struct strp_msg            strp;                 /*     0     8 */
+        int                        accum_len;            /*     8     4 */
 
-In the second case the application never receives, except in some
-rare error cases, traffic on the actual user space socket. Instead
-the send happens in the kernel.
+        /* size: 12, cachelines: 1, members: 2 */
+        /* last cacheline: 12 bytes */
+ };
 
-           AppProxy       socket pool
-       sk0 ------------->{sk1,sk2, skn}
-        ^                      |
-        |                      |
-        |                      v
-       ingress              lb egress
-       TCP                  TCP
+So we use 12 bytes of ->data[] in struct. However in BPF code running
+parser and verdict the user has read capabilities into the data[]
+array as well. Its not too problematic, but we should not be
+exposing internal state to BPF program. If its really needed then we can
+use the probe_read() APIs which allow reading kernel memory. And I don't
+believe cb[] layer poses any API breakage by moving this around because
+programs can't depend on cb[] across layers.
 
-Here because traffic is never read off the socket with userspace
-recv() APIs there is only ever one reader on the sk receive_queue.
-Namely the BPF programs.
+In order to fix another issue with a ctx rewrite we need to stash a temp
+variable somewhere. To make this work cleanly this patch builds a cb
+struct for sk_skb types called sk_skb_cb struct. Then we can use this
+consistently in the strparser, sockmap space. Additionally we can
+start allowing ->cb[] write access after this.
 
-However, we've started to introduce a third configuration where the
-BPF program on receive should process the data, but then the normal
-case is to push the data into the receive queue of AppB.
-
-       AppB
-       recv()                (userspace)
-     -----------------------
-       tcp_bpf_recvmsg()     (kernel)
-         |             |
-         |             |
-         |             |
-       ingress_msgQ    |
-         |             |
-       RX_BPF          |
-         |             |
-         v             v
-       sk->receive_queue
-
-
-This is different from the App{A,B} redirect because traffic is
-first received on the sk->receive_queue.
-
-Now for the issue. The tcp_bpf_recvmsg() handler first checks the
-ingress_msg queue for any data handled by the BPF rx program and
-returned with PASS code so that it was enqueued on the ingress msg
-queue. Then if no data exists on that queue it checks the socket
-receive queue. Unfortunately, this is the same receive_queue the
-BPF program is reading data off of. So we get a race. Its possible
-for the recvmsg() hook to pull data off the receive_queue before
-the BPF hook has a chance to read it. It typically happens when
-an application is banging on recv() and getting EAGAINs. Until
-they manage to race with the RX BPF program.
-
-To fix this we note that before this patch at attach time when
-the socket is loaded into the map we check if it needs a TX
-program or just the base set of proto bpf hooks. Then it uses
-the above general RX hook regardless of if we have a BPF program
-attached at rx or not. This patch now extends this check to
-handle all cases enumerated above, TX, RX, TXRX, and none. And
-to fix above race when an RX program is attached we use a new
-hook that is nearly identical to the old one except now we
-do not let the recv() call skip the RX BPF program. Now only
-the BPF program pulls data from sk->receive_queue and recv()
-only pulls data from the ingress msgQ post BPF program handling.
-
-With this resolved our AppB from above has been up and running
-for many hours without detecting any errors. We do this by
-correlating counters in RX BPF events and the AppB to ensure
-data is never skipping the BPF program. Selftests, was not
-able to detect this because we only run them for a short
-period of time on well ordered send/recvs so we don't get any
-of the noise we see in real application environments.
-
-Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface"
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/ipv4/tcp_bpf.c | 47 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+ include/net/strparser.h   | 16 +++++++++++++++-
+ net/core/filter.c         | 22 ++++++++++++++++++++++
+ net/strparser/strparser.c | 10 +---------
+ 3 files changed, 38 insertions(+), 10 deletions(-)
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 35dcfb04f53d..0cc420c0e259 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -185,6 +185,41 @@ static int tcp_msg_wait_data(struct sock *sk, struct sk_psock *psock,
- 	return ret;
- }
- 
-+static int tcp_bpf_recvmsg_parser(struct sock *sk,
-+				  struct msghdr *msg,
-+				  size_t len,
-+				  int nonblock,
-+				  int flags,
-+				  int *addr_len)
-+{
-+	struct sk_psock *psock;
-+	int copied;
-+
-+	if (unlikely(flags & MSG_ERRQUEUE))
-+		return inet_recv_error(sk, msg, len, addr_len);
-+
-+	psock = sk_psock_get(sk);
-+	if (unlikely(!psock))
-+		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
-+
-+	lock_sock(sk);
-+msg_bytes_ready:
-+	copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
-+	if (!copied) {
-+		long timeo;
-+		int data;
-+
-+		timeo = sock_rcvtimeo(sk, nonblock);
-+		data = tcp_msg_wait_data(sk, psock, timeo);
-+		if (data && !sk_psock_queue_empty(psock))
-+			goto msg_bytes_ready;
-+		copied = -EAGAIN;
-+	}
-+	release_sock(sk);
-+	sk_psock_put(sk, psock);
-+	return copied;
-+}
-+
- static int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 		    int nonblock, int flags, int *addr_len)
- {
-@@ -465,6 +500,8 @@ enum {
- enum {
- 	TCP_BPF_BASE,
- 	TCP_BPF_TX,
-+	TCP_BPF_RX,
-+	TCP_BPF_TXRX,
- 	TCP_BPF_NUM_CFGS,
+diff --git a/include/net/strparser.h b/include/net/strparser.h
+index 1d20b98493a1..bec1439bd3be 100644
+--- a/include/net/strparser.h
++++ b/include/net/strparser.h
+@@ -54,10 +54,24 @@ struct strp_msg {
+ 	int offset;
  };
  
-@@ -483,6 +520,12 @@ static void tcp_bpf_rebuild_protos(struct proto prot[TCP_BPF_NUM_CFGS],
- 	prot[TCP_BPF_TX]			= prot[TCP_BPF_BASE];
- 	prot[TCP_BPF_TX].sendmsg		= tcp_bpf_sendmsg;
- 	prot[TCP_BPF_TX].sendpage		= tcp_bpf_sendpage;
++struct _strp_msg {
++	/* Internal cb structure. struct strp_msg must be first for passing
++	 * to upper layer.
++	 */
++	struct strp_msg strp;
++	int accum_len;
++};
 +
-+	prot[TCP_BPF_RX]			= prot[TCP_BPF_BASE];
-+	prot[TCP_BPF_RX].recvmsg		= tcp_bpf_recvmsg_parser;
++struct sk_skb_cb {
++#define SK_SKB_CB_PRIV_LEN 20
++	unsigned char data[SK_SKB_CB_PRIV_LEN];
++	struct _strp_msg strp;
++};
 +
-+	prot[TCP_BPF_TXRX]			= prot[TCP_BPF_TX];
-+	prot[TCP_BPF_TXRX].recvmsg		= tcp_bpf_recvmsg_parser;
+ static inline struct strp_msg *strp_msg(struct sk_buff *skb)
+ {
+ 	return (struct strp_msg *)((void *)skb->cb +
+-		offsetof(struct qdisc_skb_cb, data));
++		offsetof(struct sk_skb_cb, strp));
  }
  
- static void tcp_bpf_check_v6_needs_rebuild(struct proto *ops)
-@@ -520,6 +563,10 @@ int tcp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore)
- 	int family = sk->sk_family == AF_INET6 ? TCP_BPF_IPV6 : TCP_BPF_IPV4;
- 	int config = psock->progs.msg_parser   ? TCP_BPF_TX   : TCP_BPF_BASE;
+ /* Structure for an attached lower socket */
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 2e32cee2c469..23a9bf92b5bb 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -9761,11 +9761,33 @@ static u32 sk_skb_convert_ctx_access(enum bpf_access_type type,
+ 				     struct bpf_prog *prog, u32 *target_size)
+ {
+ 	struct bpf_insn *insn = insn_buf;
++	int off;
  
-+	if (psock->progs.stream_verdict || psock->progs.skb_verdict) {
-+		config = (config == TCP_BPF_TX) ? TCP_BPF_TXRX : TCP_BPF_RX;
-+	}
+ 	switch (si->off) {
+ 	case offsetof(struct __sk_buff, data_end):
+ 		insn = bpf_convert_data_end_access(si, insn);
+ 		break;
++	case offsetof(struct __sk_buff, cb[0]) ...
++	     offsetofend(struct __sk_buff, cb[4]) - 1:
++		BUILD_BUG_ON(sizeof_field(struct sk_skb_cb, data) < 20);
++		BUILD_BUG_ON((offsetof(struct sk_buff, cb) +
++			      offsetof(struct sk_skb_cb, data)) %
++			     sizeof(__u64));
 +
- 	if (restore) {
- 		if (inet_csk_has_ulp(sk)) {
- 			/* TLS does not have an unhash proto in SW cases,
++		prog->cb_access = 1;
++		off  = si->off;
++		off -= offsetof(struct __sk_buff, cb[0]);
++		off += offsetof(struct sk_buff, cb);
++		off += offsetof(struct sk_skb_cb, data);
++		if (type == BPF_WRITE)
++			*insn++ = BPF_STX_MEM(BPF_SIZE(si->code), si->dst_reg,
++					      si->src_reg, off);
++		else
++			*insn++ = BPF_LDX_MEM(BPF_SIZE(si->code), si->dst_reg,
++					      si->src_reg, off);
++		break;
++
++
+ 	default:
+ 		return bpf_convert_ctx_access(type, si, insn_buf, prog,
+ 					      target_size);
+diff --git a/net/strparser/strparser.c b/net/strparser/strparser.c
+index 9c0343568d2a..1a72c67afed5 100644
+--- a/net/strparser/strparser.c
++++ b/net/strparser/strparser.c
+@@ -27,18 +27,10 @@
+ 
+ static struct workqueue_struct *strp_wq;
+ 
+-struct _strp_msg {
+-	/* Internal cb structure. struct strp_msg must be first for passing
+-	 * to upper layer.
+-	 */
+-	struct strp_msg strp;
+-	int accum_len;
+-};
+-
+ static inline struct _strp_msg *_strp_msg(struct sk_buff *skb)
+ {
+ 	return (struct _strp_msg *)((void *)skb->cb +
+-		offsetof(struct qdisc_skb_cb, data));
++		offsetof(struct sk_skb_cb, strp));
+ }
+ 
+ /* Lower lock held */
 -- 
 2.33.0
 
