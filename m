@@ -2,112 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7370442912F
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 16:15:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84EBE4291E1
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 16:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240118AbhJKOQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 10:16:04 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:36464 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244047AbhJKONf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 10:13:35 -0400
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19B75Pn0027354;
-        Mon, 11 Oct 2021 10:11:21 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 3bm8qfuv87-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 Oct 2021 10:11:20 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 19BEBJk8034967
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 11 Oct 2021 10:11:19 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5; Mon, 11 Oct 2021
- 10:11:18 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.858.5 via Frontend
- Transport; Mon, 11 Oct 2021 10:11:18 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 19BEAxnC020418;
-        Mon, 11 Oct 2021 10:11:16 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <andrew@lunn.ch>
-CC:     <o.rempel@pengutronix.de>, <alexandru.tachici@analog.com>,
-        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <netdev@vger.kernel.org>, <robh+dt@kernel.org>
-Subject: [PATCH v3 8/8] dt-bindings: adin1100: Add binding for ADIN1100 Ethernet PHY
-Date:   Mon, 11 Oct 2021 17:22:15 +0300
-Message-ID: <20211011142215.9013-9-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211011142215.9013-1-alexandru.tachici@analog.com>
-References: <20211011142215.9013-1-alexandru.tachici@analog.com>
+        id S242500AbhJKOeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 10:34:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240430AbhJKOeA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 10:34:00 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE9FC0612E2
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 07:27:48 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id t16so46709482eds.9
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 07:27:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mind.be; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IkKF1Ul6s+mIj34dxznpMYVOcEWKCsEw1mlJ7TAdqjE=;
+        b=MoBAqQVF5Ya+tSlDL2xABuAKYw18mCy05no5OzZ5mXNwobaiM3js/UZmGvqv2kezSW
+         u5uoN8qpaW1M6tLYibfPzzjiSaiGDZpeKAwc6oYFULYTXfAJ4BmYVqEVv3B+VdO0y3H0
+         zs68M3A1znS4dYf1CXNo8SisZ3wVNr0u445YQnVpaVR9KRskUQDtRdeS0BM0Nxh81dMq
+         4a5/XBGTag29rX8Wem9SgmSUL+8eGYZ3Ij4NayBhTmV9Km8j79fTVu4NsRnOto0tFM1h
+         77LJ+DkQXYLABEtefD3WuT2K98Ul7Rd7dhhPy4v8pqb9eSfsIG8IMGcnGZyXJxPrx/IS
+         gtkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IkKF1Ul6s+mIj34dxznpMYVOcEWKCsEw1mlJ7TAdqjE=;
+        b=zerEEigAhnHhzKzRs2RNK1Gq44zyeDUiQUcI7DNFe606Cgew/tfaj5cuRoBJ+I/UyP
+         OVIGan14/cOd/mkIUd+6V3AMTSpSrBaiDt+SBpYPUxNpABYBBrDrL3dolAEvF0VbFXne
+         uDso/prxerRycgAVCqqU2BDxHaljFK6nNpvkIsrikjHgsPlAqBecE+oIuOkSXb7iTQwN
+         r9sfO3xB8AbsYpoqaSs63CMHwwuQwCEtRE3xuNTWStcSulBIYhh3UYt4MDPyb7aYDu1N
+         pSm3c47MqXSfJS39vq8ZkIOko9xiYvoW6j9wISYFrAGw1hWm76D8ptG0g6n40DhCB79g
+         Ytlg==
+X-Gm-Message-State: AOAM531pokBO/5P+1bw16BfbQ0JyBThWkuUley7+IP/f+K6hOERo5hrY
+        ENt7zJr1hWFIbqJVJXgW1C2g0A==
+X-Google-Smtp-Source: ABdhPJy2YeXCqTmqM43glitQBCX8JDlFdnBkLMzl10Bo/AMrAUexFshAZdQjhFA/5hH6qxHYyB6n/A==
+X-Received: by 2002:a50:bf0f:: with SMTP id f15mr41310513edk.43.1633962467437;
+        Mon, 11 Oct 2021 07:27:47 -0700 (PDT)
+Received: from dtpc.gsp-berlin.local (78-22-137-109.access.telenet.be. [78.22.137.109])
+        by smtp.gmail.com with ESMTPSA id x16sm3565129ejj.8.2021.10.11.07.27.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Oct 2021 07:27:47 -0700 (PDT)
+From:   Maarten Zanders <maarten.zanders@mind.be>
+Cc:     maarten.zanders@mind.be, Maarten Zanders <m.zanders@televic.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: dsa: mv88e6xxx: don't use PHY_DETECT on internal PHY's
+Date:   Mon, 11 Oct 2021 16:27:20 +0200
+Message-Id: <20211011142720.42642-1-maarten.zanders@mind.be>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: SU4QuCAWzIZoRc1vstOBmVC1ZTeh1Xgr
-X-Proofpoint-GUID: SU4QuCAWzIZoRc1vstOBmVC1ZTeh1Xgr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-10-11_04,2021-10-07_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- adultscore=0 suspectscore=0 impostorscore=0 malwarescore=0 mlxlogscore=837
- lowpriorityscore=0 clxscore=1015 spamscore=0 priorityscore=1501
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110110082
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+mv88e6xxx_port_ppu_updates() interpretes data in the PORT_STS
+register incorrectly for internal ports (ie no PPU). In these
+cases, the PHY_DETECT bit indicates link status. This results
+in forcing the MAC state whenever the PHY link goes down which
+is not intended. As a side effect, LED's configured to show
+link status stay lit even though the physical link is down.
 
-DT bindings for the ADIN1100 10BASE-T1L Ethernet PHY.
+Add a check in mac_link_down and mac_link_up to see if it
+concerns an external port and only then, look at PPU status.
 
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+Fixes: 5d5b231da7ac (net: dsa: mv88e6xxx: use PHY_DETECT in mac_link_up/mac_link_down)
+Reported-by: Maarten Zanders <m.zanders@televic.com>
+Reviewed-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Signed-off-by: Maarten Zanders <maarten.zanders@mind.be>
 ---
- .../devicetree/bindings/net/adi,adin1100.yaml | 30 +++++++++++++++++++
- 1 file changed, 30 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/adi,adin1100.yaml
+ drivers/net/dsa/mv88e6xxx/chip.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/adi,adin1100.yaml b/Documentation/devicetree/bindings/net/adi,adin1100.yaml
-new file mode 100644
-index 000000000000..7f98ea8fdf51
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/adi,adin1100.yaml
-@@ -0,0 +1,30 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/adi,adin1100.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices ADIN1100 PHY
-+
-+maintainers:
-+  - Alexandru Tachici <alexandru.tachici@analog.com>
-+
-+description:
-+  Bindings for Analog Devices Industrial Low Power 10BASE-T1L Ethernet PHY
-+
-+allOf:
-+  - $ref: ethernet-phy.yaml#
-+
-+examples:
-+  - |
-+    ethernet {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        10base-t1l-2.4vpp = <0>;
-+
-+        ethernet-phy@0 {
-+            compatible = "ethernet-phy-id0283.bc81";
-+            reg = <0>;
-+        };
-+    };
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index ee3f32d1cf46..f5ce05d78e11 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -726,9 +726,13 @@ static void mv88e6xxx_mac_link_down(struct dsa_switch *ds, int port,
+ 
+ 	ops = chip->info->ops;
+ 
+ 	mv88e6xxx_reg_lock(chip);
+-	if ((!mv88e6xxx_port_ppu_updates(chip, port) ||
+-	     mode == MLO_AN_FIXED) && ops->port_sync_link)
++	/* Internal PHYs propagate their configuration directly to the MAC.
++	 * External PHYs depend on whether the PPU is enabled for this port.
++	 */
++	if (((!mv88e6xxx_phy_is_internal(ds, port) &&
++	      !mv88e6xxx_port_ppu_updates(chip, port)) ||
++	     mode == MLO_AN_FIXED) && ops->port_sync_link)
+ 		err = ops->port_sync_link(chip, port, mode, false);
+ 	mv88e6xxx_reg_unlock(chip);
+ 
+@@ -750,7 +754,12 @@ static void mv88e6xxx_mac_link_up(struct dsa_switch *ds, int port,
+ 	ops = chip->info->ops;
+ 
+ 	mv88e6xxx_reg_lock(chip);
+-	if (!mv88e6xxx_port_ppu_updates(chip, port) || mode == MLO_AN_FIXED) {
++	/* Internal PHYs propagate their configuration directly to the MAC.
++	 * External PHYs depend on whether the PPU is enabled for this port.
++	 */
++	if ((!mv88e6xxx_phy_is_internal(ds, port) &&
++	     !mv88e6xxx_port_ppu_updates(chip, port)) ||
++	    mode == MLO_AN_FIXED) {
+ 		/* FIXME: for an automedia port, should we force the link
+ 		 * down here - what if the link comes up due to "other" media
+ 		 * while we're bringing the port up, how is the exclusivity
 -- 
 2.25.1
 
