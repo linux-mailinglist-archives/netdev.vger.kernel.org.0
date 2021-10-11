@@ -2,122 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7645D428E29
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 15:37:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1EE9428E41
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 15:39:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237063AbhJKNjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 09:39:55 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:25120 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235762AbhJKNjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 09:39:55 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HSfvk0XtBz1DHTC;
-        Mon, 11 Oct 2021 21:36:18 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Mon, 11 Oct 2021 21:37:52 +0800
-Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
- (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.8; Mon, 11 Oct
- 2021 21:37:52 +0800
-Subject: Re: [PATCH net-next 2/4] io: add function to flush the write combine
- buffer to device immediately
-To:     Will Deacon <will@kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <catalin.marinas@arm.com>, <maz@kernel.org>,
-        <mark.rutland@arm.com>, <dbrazdil@google.com>,
-        <qperret@google.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <lipeng321@huawei.com>,
-        <peterz@infradead.org>, <wangxiongfeng2@huawei.com>
-References: <1627614864-50824-1-git-send-email-huangguangbin2@huawei.com>
- <1627614864-50824-3-git-send-email-huangguangbin2@huawei.com>
- <20210730090056.GA22968@willie-the-truck>
-From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
-Message-ID: <01474da2-0a7d-3e6a-9f8e-401d36c8f12e@huawei.com>
-Date:   Mon, 11 Oct 2021 21:37:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S237078AbhJKNlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 09:41:21 -0400
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:57190
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231690AbhJKNlP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 09:41:15 -0400
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com [209.85.167.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 00FBC3FFEF
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 13:39:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1633959555;
+        bh=tIWsei9VtLBv9/Mx8g5CaNZvn00Tm6hK0YRULa+amvI=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=KwqJl/vUIC1mQM/AKpaSxS6OWhGw2lIMBy5l2BkvFH8wOVYKNAp0QNns0IANJSuIK
+         xPwad4y0pCLWlmG3WpdaW/+pxQChiufzSd+jQlFTbhzuYWhhWwuzAKXpnPxDys6rJA
+         3B2ncn2vZsMiZmM8G3RTPbdD2xMZmQOR/vQzs/E7hBbeVT4tmdlEPqYnSU/zkKjPFw
+         kMnNpvCws5DmzgO093uRDGpg7sRgcUYZrVXY6MjHUCOxv7HjhXl8VmZFYtEgUGQ23+
+         DtArbIycDDxfW4fUB5ziqXLh/8jPdgxxQ7tCatyVlL2tXbT9yJMZRj0rJAP/TppZ0M
+         06dznc/3lIopw==
+Received: by mail-lf1-f71.google.com with SMTP id s8-20020ac25c48000000b003faf62e104eso12747269lfp.22
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 06:39:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tIWsei9VtLBv9/Mx8g5CaNZvn00Tm6hK0YRULa+amvI=;
+        b=HyWWWhND3W40ddORJZrKcgr30RR5CQFGIazMzIut+kiU56XZywdMyg504bA/7OFFd6
+         wMJhCshzlTp0FL9cHcmS0COxWX5h0TwQ1+zFbyuHx7YCH5Br+870tdUA4yt1boi66r+r
+         iHT5A4FXuSgbOtkKIfZEX5Qa7qbP/fXgKUZ3CCuNBsHYg61GNTeFE8pqAQ9yGxUW2XsZ
+         YzwcuyjANUIX/n+jTsiXc6Ls9r6UNGbS2o90sW5gNImgdTxx8KQnR/lupok0L5VhpKSl
+         me5cCJqWf7Km2lWOiPWPRHxDeyHDT2RoVTJjCyLZRYDNVomun0++reV0GWWZsEmxiytn
+         TFFQ==
+X-Gm-Message-State: AOAM531SJDZyabKhXLRHPANn1YBSPGeOUVJLV1PmCbjrIOexE8Voel5S
+        kKaCbxdLlQMoPcoQ4wq3dDOTtkqqXL9x4CO35HOuON/z5+U1GOVJztC8YppyIm3EFKb4SowqRBU
+        fBhuAREzzgftunLP39/pXYjG09c5REOnaMg==
+X-Received: by 2002:a2e:9aca:: with SMTP id p10mr7366378ljj.2.1633959554425;
+        Mon, 11 Oct 2021 06:39:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzijV8Dsmu1SXjyWeKKz8IEYUPu1ARW5pZYtMPBGBW0/V8SedfqGjcmq4Og0JRM9nXpPz4tug==
+X-Received: by 2002:a2e:9aca:: with SMTP id p10mr7366352ljj.2.1633959554204;
+        Mon, 11 Oct 2021 06:39:14 -0700 (PDT)
+Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id a21sm738971lff.37.2021.10.11.06.39.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Oct 2021 06:39:13 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Krzysztof Opasiak <k.opasiak@samsung.com>,
+        Mark Greer <mgreer@animalcreek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Cc:     joe@perches.com
+Subject: [PATCH v3 0/7] nfc: minor printk cleanup
+Date:   Mon, 11 Oct 2021 15:38:28 +0200
+Message-Id: <20211011133835.236347-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <20210730090056.GA22968@willie-the-truck>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.67]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
 
-On 2021/7/30 17:00, Will Deacon wrote:
-> Hi,
-> 
-> On Fri, Jul 30, 2021 at 11:14:22AM +0800, Guangbin Huang wrote:
->> From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
->>
->> Device registers can be mapped as write-combine type. In this case, data
->> are not written into the device immediately. They are temporarily stored
->> in the write combine buffer and written into the device when the buffer
->> is full. But in some situation, we need to flush the write combine
->> buffer to device immediately for better performance. So we add a general
->> function called 'flush_wc_write()'. We use DGH instruction to implement
->> this function for ARM64.
->>
->> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
->> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
->> ---
->>   arch/arm64/include/asm/io.h | 2 ++
->>   include/linux/io.h          | 6 ++++++
->>   2 files changed, 8 insertions(+)
-> 
-> -ENODOCUMENTATION
-> 
-Hi Will, may I consult you which document file is good to add documentation?
+Changes since v2:
+1. Correct SPDX license in patch 2/7 (as Joe pointed out).
 
->> diff --git a/arch/arm64/include/asm/io.h b/arch/arm64/include/asm/io.h
->> index 7fd836bea7eb..5315d023b2dd 100644
->> --- a/arch/arm64/include/asm/io.h
->> +++ b/arch/arm64/include/asm/io.h
->> @@ -112,6 +112,8 @@ static inline u64 __raw_readq(const volatile void __iomem *addr)
->>   #define __iowmb()		dma_wmb()
->>   #define __iomb()		dma_mb()
->>   
->> +#define flush_wc_write()	dgh()
-> 
-> I think it would be worthwhile to look at what architectures other than
-> arm64 offer here. For example, is there anything similar to this on riscv,
-> x86 or power? Doing a quick survery of what's out there might help us define
-> a macro that can be used across multiple architectures.
-> 
-> Thanks,
-> 
-> Will
-> 
->>   /*
->>    * Relaxed I/O memory access primitives. These follow the Device memory
->>    * ordering rules but do not guarantee any ordering relative to Normal memory
->> diff --git a/include/linux/io.h b/include/linux/io.h
->> index 9595151d800d..469d53444218 100644
->> --- a/include/linux/io.h
->> +++ b/include/linux/io.h
->> @@ -166,4 +166,10 @@ static inline void arch_io_free_memtype_wc(resource_size_t base,
->>   }
->>   #endif
->>   
->> +/* IO barriers */
->> +
->> +#ifndef flush_wc_write
->> +#define flush_wc_write()		do { } while (0)
->> +#endif
->> +
->>   #endif /* _LINUX_IO_H */
->> -- 
->> 2.8.1
->>
-> .
-> 
+Changes since v1:
+1. Remove unused variable in pn533 (reported by kbuild).
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (7):
+  nfc: drop unneeded debug prints
+  nfc: nci: replace GPLv2 boilerplate with SPDX
+  nfc: s3fwrn5: simplify dereferencing pointer to struct device
+  nfc: st-nci: drop unneeded debug prints
+  nfc: st21nfca: drop unneeded debug prints
+  nfc: trf7970a: drop unneeded debug prints
+  nfc: microread: drop unneeded debug prints
+
+ drivers/nfc/microread/i2c.c    |  4 ----
+ drivers/nfc/microread/mei.c    |  2 --
+ drivers/nfc/s3fwrn5/firmware.c | 29 +++++++++++------------------
+ drivers/nfc/s3fwrn5/nci.c      | 18 +++++++-----------
+ drivers/nfc/st-nci/i2c.c       |  4 ----
+ drivers/nfc/st-nci/ndlc.c      |  4 ----
+ drivers/nfc/st-nci/se.c        |  6 ------
+ drivers/nfc/st-nci/spi.c       |  4 ----
+ drivers/nfc/st21nfca/i2c.c     |  4 ----
+ drivers/nfc/st21nfca/se.c      |  4 ----
+ drivers/nfc/trf7970a.c         |  8 --------
+ net/nfc/hci/command.c          | 16 ----------------
+ net/nfc/hci/llc_shdlc.c        | 12 ------------
+ net/nfc/llcp_commands.c        |  8 --------
+ net/nfc/llcp_core.c            |  5 +----
+ net/nfc/nci/core.c             |  4 ----
+ net/nfc/nci/hci.c              |  4 ----
+ net/nfc/nci/ntf.c              |  9 ---------
+ net/nfc/nci/uart.c             | 16 ++--------------
+ 19 files changed, 21 insertions(+), 140 deletions(-)
+
+-- 
+2.30.2
+
