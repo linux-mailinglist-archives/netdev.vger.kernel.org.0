@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCF07429506
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 19:00:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B80E429507
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 19:00:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233327AbhJKRBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 13:01:48 -0400
-Received: from mga11.intel.com ([192.55.52.93]:61113 "EHLO mga11.intel.com"
+        id S233282AbhJKRBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 13:01:49 -0400
+Received: from mga11.intel.com ([192.55.52.93]:61105 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233187AbhJKRBm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233215AbhJKRBm (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 11 Oct 2021 13:01:42 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10134"; a="224335714"
+X-IronPort-AV: E=McAfee;i="6200,9189,10134"; a="224335717"
 X-IronPort-AV: E=Sophos;i="5.85,365,1624345200"; 
-   d="scan'208";a="224335714"
+   d="scan'208";a="224335717"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2021 09:59:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.85,365,1624345200"; 
-   d="scan'208";a="591405458"
+   d="scan'208";a="591405462"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga004.jf.intel.com with ESMTP; 11 Oct 2021 09:59:41 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Grishma Kotecha <grishma.kotecha@intel.com>,
+Cc:     Shivanshu Shukla <shivanshu.shukla@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         jiri@resnulli.us, ivecera@redhat.com,
         michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
         grzegorz.nitka@intel.com, Dan Nowlin <dan.nowlin@intel.com>,
         Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [PATCH net-next 4/9] ice: allow adding advanced rules
-Date:   Mon, 11 Oct 2021 09:57:37 -0700
-Message-Id: <20211011165742.1144861-5-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 5/9] ice: allow deleting advanced rules
+Date:   Mon, 11 Oct 2021 09:57:38 -0700
+Message-Id: <20211011165742.1144861-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211011165742.1144861-1-anthony.l.nguyen@intel.com>
 References: <20211011165742.1144861-1-anthony.l.nguyen@intel.com>
@@ -41,973 +41,283 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grishma Kotecha <grishma.kotecha@intel.com>
+From: Shivanshu Shukla <shivanshu.shukla@intel.com>
 
-Define dummy packet headers to allow adding advanced rules in HW. This
-header is used as admin queue command parameter for adding a rule.
-The firmware will extract correct fields and will use them in look ups.
+To remove advanced rule the same protocols list like in adding should be
+send to function. Based on this information list of advanced rules is
+searched to find the correct rule id.
 
-Define each supported packets header and offsets to words used in recipe.
-Supported headers:
-- MAC + IPv4 + UDP
-- MAC + VLAN + IPv4 + UDP
-- MAC + IPv4 + TCP
-- MAC + VLAN + IPv4 + TCP
-- MAC + IPv6 + UDP
-- MAC + VLAN + IPv6 + UDP
-- MAC + IPv6 + TCP
-- MAC + VLAN + IPv6 + TCP
+Remove advanced rule if it forwards to only one VSI. If it forwards
+to list of VSI remove only input VSI from this list.
 
-Add code for creating an advanced rule. Rule needs to match defined
-dummy packet, if not return error, which means that this type of rule
-isn't currently supported.
+Introduce function to remove rule by id. It is used in case rule needs to
+be removed even if it forwards to the list of VSI.
 
-The first step in adding advanced rule is searching for an advanced
-recipe matching this kind of rule. If it doesn't exist new recipe is
-created. Dummy packet has to be filled with the correct header field
-value from the rule definition. It will be used to do look up in HW.
-
-Support searching for existing advance rule entry. It is used in case
-of adding the same rule on different VSI. In this case, instead of
-creating new rule, the existing one should be updated with refreshed VSI
-list.
-
-Add initialization for prof_res_bm_init flag to zero so that
-the possible resource for fv in the files can be initialized.
+Allow removing all advanced rules from a particular VSI. It is useful in
+rebuilding VSI path.
 
 Co-developed-by: Dan Nowlin <dan.nowlin@intel.com>
 Signed-off-by: Dan Nowlin <dan.nowlin@intel.com>
-Signed-off-by: Grishma Kotecha <grishma.kotecha@intel.com>
+Signed-off-by: Shivanshu Shukla <shivanshu.shukla@intel.com>
 Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c |   1 +
- drivers/net/ethernet/intel/ice/ice_switch.c | 832 +++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_switch.h |  14 +
- drivers/net/ethernet/intel/ice/ice_type.h   |   1 +
- 4 files changed, 847 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_switch.c | 223 ++++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_switch.h |   6 +
+ 2 files changed, 229 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 2fb81e359cdf..bff4c09dfa5f 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -568,6 +568,7 @@ static enum ice_status ice_init_fltr_mgmt_struct(struct ice_hw *hw)
- 		return ICE_ERR_NO_MEMORY;
- 
- 	INIT_LIST_HEAD(&sw->vsi_list_map_head);
-+	sw->prof_res_bm_init = 0;
- 
- 	status = ice_init_def_sw_recp(hw);
- 	if (status) {
 diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index eb7cd1a955f1..4042d91de06c 100644
+index 4042d91de06c..81dee4ba2dc3 100644
 --- a/drivers/net/ethernet/intel/ice/ice_switch.c
 +++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -8,6 +8,7 @@
- #define ICE_ETH_ETHTYPE_OFFSET		12
- #define ICE_ETH_VLAN_TCI_OFFSET		14
- #define ICE_MAX_VLAN_ID			0xFFF
-+#define ICE_IPV6_ETHER_ID		0x86DD
- 
- /* Dummy ethernet header needed in the ice_aqc_sw_rules_elem
-  * struct to configure any switch filter rules.
-@@ -29,6 +30,290 @@ static const u8 dummy_eth_header[DUMMY_ETH_HDR_LEN] = { 0x2, 0, 0, 0, 0, 0,
- 							0x2, 0, 0, 0, 0, 0,
- 							0x81, 0, 0, 0};
- 
-+struct ice_dummy_pkt_offsets {
-+	enum ice_protocol_type type;
-+	u16 offset; /* ICE_PROTOCOL_LAST indicates end of list */
-+};
-+
-+/* offset info for MAC + IPv4 + UDP dummy packet */
-+static const struct ice_dummy_pkt_offsets dummy_udp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_ETYPE_OL,		12 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_UDP_ILOS,		34 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+/* Dummy packet for MAC + IPv4 + UDP */
-+static const u8 dummy_udp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_OL 12 */
-+
-+	0x45, 0x00, 0x00, 0x1c, /* ICE_IPV4_OFOS 14 */
-+	0x00, 0x01, 0x00, 0x00,
-+	0x00, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_UDP_ILOS 34 */
-+	0x00, 0x08, 0x00, 0x00,
-+
-+	0x00, 0x00,	/* 2 bytes for 4 byte alignment */
-+};
-+
-+/* offset info for MAC + VLAN + IPv4 + UDP dummy packet */
-+static const struct ice_dummy_pkt_offsets dummy_vlan_udp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_VLAN_OFOS,	12 },
-+	{ ICE_ETYPE_OL,		16 },
-+	{ ICE_IPV4_OFOS,	18 },
-+	{ ICE_UDP_ILOS,		38 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+/* C-tag (801.1Q), IPv4:UDP dummy packet */
-+static const u8 dummy_vlan_udp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x81, 0x00, 0x00, 0x00, /* ICE_VLAN_OFOS 12 */
-+
-+	0x08, 0x00,		/* ICE_ETYPE_OL 16 */
-+
-+	0x45, 0x00, 0x00, 0x1c, /* ICE_IPV4_OFOS 18 */
-+	0x00, 0x01, 0x00, 0x00,
-+	0x00, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_UDP_ILOS 38 */
-+	0x00, 0x08, 0x00, 0x00,
-+
-+	0x00, 0x00,	/* 2 bytes for 4 byte alignment */
-+};
-+
-+/* offset info for MAC + IPv4 + TCP dummy packet */
-+static const struct ice_dummy_pkt_offsets dummy_tcp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_ETYPE_OL,		12 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_TCP_IL,		34 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+/* Dummy packet for MAC + IPv4 + TCP */
-+static const u8 dummy_tcp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_OL 12 */
-+
-+	0x45, 0x00, 0x00, 0x28, /* ICE_IPV4_OFOS 14 */
-+	0x00, 0x01, 0x00, 0x00,
-+	0x00, 0x06, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_TCP_IL 34 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x50, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00,	/* 2 bytes for 4 byte alignment */
-+};
-+
-+/* offset info for MAC + VLAN (C-tag, 802.1Q) + IPv4 + TCP dummy packet */
-+static const struct ice_dummy_pkt_offsets dummy_vlan_tcp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_VLAN_OFOS,	12 },
-+	{ ICE_ETYPE_OL,		16 },
-+	{ ICE_IPV4_OFOS,	18 },
-+	{ ICE_TCP_IL,		38 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+/* C-tag (801.1Q), IPv4:TCP dummy packet */
-+static const u8 dummy_vlan_tcp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x81, 0x00, 0x00, 0x00,	/* ICE_VLAN_OFOS 12 */
-+
-+	0x08, 0x00,		/* ICE_ETYPE_OL 16 */
-+
-+	0x45, 0x00, 0x00, 0x28, /* ICE_IPV4_OFOS 18 */
-+	0x00, 0x01, 0x00, 0x00,
-+	0x00, 0x06, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_TCP_IL 38 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x50, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00,	/* 2 bytes for 4 byte alignment */
-+};
-+
-+static const struct ice_dummy_pkt_offsets dummy_tcp_ipv6_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_ETYPE_OL,		12 },
-+	{ ICE_IPV6_OFOS,	14 },
-+	{ ICE_TCP_IL,		54 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_tcp_ipv6_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x86, 0xDD,		/* ICE_ETYPE_OL 12 */
-+
-+	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_OFOS 40 */
-+	0x00, 0x14, 0x06, 0x00, /* Next header is TCP */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_TCP_IL 54 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x50, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+/* C-tag (802.1Q): IPv6 + TCP */
-+static const struct ice_dummy_pkt_offsets
-+dummy_vlan_tcp_ipv6_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_VLAN_OFOS,	12 },
-+	{ ICE_ETYPE_OL,		16 },
-+	{ ICE_IPV6_OFOS,	18 },
-+	{ ICE_TCP_IL,		58 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+/* C-tag (802.1Q), IPv6 + TCP dummy packet */
-+static const u8 dummy_vlan_tcp_ipv6_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x81, 0x00, 0x00, 0x00,	/* ICE_VLAN_OFOS 12 */
-+
-+	0x86, 0xDD,		/* ICE_ETYPE_OL 16 */
-+
-+	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_OFOS 18 */
-+	0x00, 0x14, 0x06, 0x00, /* Next header is TCP */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_TCP_IL 58 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x50, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+/* IPv6 + UDP */
-+static const struct ice_dummy_pkt_offsets dummy_udp_ipv6_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_ETYPE_OL,		12 },
-+	{ ICE_IPV6_OFOS,	14 },
-+	{ ICE_UDP_ILOS,		54 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+/* IPv6 + UDP dummy packet */
-+static const u8 dummy_udp_ipv6_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x86, 0xDD,		/* ICE_ETYPE_OL 12 */
-+
-+	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_OFOS 40 */
-+	0x00, 0x10, 0x11, 0x00, /* Next header UDP */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_UDP_ILOS 54 */
-+	0x00, 0x10, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* needed for ESP packets */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+/* C-tag (802.1Q): IPv6 + UDP */
-+static const struct ice_dummy_pkt_offsets
-+dummy_vlan_udp_ipv6_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_VLAN_OFOS,	12 },
-+	{ ICE_ETYPE_OL,		16 },
-+	{ ICE_IPV6_OFOS,	18 },
-+	{ ICE_UDP_ILOS,		58 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+/* C-tag (802.1Q), IPv6 + UDP dummy packet */
-+static const u8 dummy_vlan_udp_ipv6_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x81, 0x00, 0x00, 0x00,/* ICE_VLAN_OFOS 12 */
-+
-+	0x86, 0xDD,		/* ICE_ETYPE_OL 16 */
-+
-+	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_OFOS 18 */
-+	0x00, 0x08, 0x11, 0x00, /* Next header UDP */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_UDP_ILOS 58 */
-+	0x00, 0x08, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
- #define ICE_SW_RULE_RX_TX_ETH_HDR_SIZE \
- 	(offsetof(struct ice_aqc_sw_rules_elem, pdata.lkup_tx_rx.hdr) + \
- 	 (DUMMY_ETH_HDR_LEN * \
-@@ -3877,7 +4162,7 @@ ice_get_compat_fv_bitmap(struct ice_hw *hw, struct ice_adv_rule_info *rinfo,
-  * @rinfo: other information regarding the rule e.g. priority and action info
-  * @rid: return the recipe ID of the recipe created
-  */
--static enum ice_status __maybe_unused
-+static enum ice_status
- ice_add_adv_recipe(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 		   u16 lkups_cnt, struct ice_adv_rule_info *rinfo, u16 *rid)
- {
-@@ -4035,6 +4320,551 @@ ice_add_adv_recipe(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
+@@ -4922,6 +4922,229 @@ ice_replay_vsi_fltr(struct ice_hw *hw, u16 vsi_handle, u8 recp_id,
  	return status;
  }
  
 +/**
-+ * ice_find_dummy_packet - find dummy packet
-+ *
-+ * @lkups: lookup elements or match criteria for the advanced recipe, one
-+ *	   structure per protocol header
-+ * @lkups_cnt: number of protocols
-+ * @pkt: dummy packet to fill according to filter match criteria
-+ * @pkt_len: packet length of dummy packet
-+ * @offsets: pointer to receive the pointer to the offsets for the packet
-+ */
-+static void
-+ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
-+		      const u8 **pkt, u16 *pkt_len,
-+		      const struct ice_dummy_pkt_offsets **offsets)
-+{
-+	bool tcp = false, udp = false, ipv6 = false, vlan = false;
-+	u16 i;
-+
-+	for (i = 0; i < lkups_cnt; i++) {
-+		if (lkups[i].type == ICE_UDP_ILOS)
-+			udp = true;
-+		else if (lkups[i].type == ICE_TCP_IL)
-+			tcp = true;
-+		else if (lkups[i].type == ICE_IPV6_OFOS)
-+			ipv6 = true;
-+		else if (lkups[i].type == ICE_VLAN_OFOS)
-+			vlan = true;
-+		else if (lkups[i].type == ICE_ETYPE_OL &&
-+			 lkups[i].h_u.ethertype.ethtype_id ==
-+				cpu_to_be16(ICE_IPV6_ETHER_ID) &&
-+			 lkups[i].m_u.ethertype.ethtype_id ==
-+					cpu_to_be16(0xFFFF))
-+			ipv6 = true;
-+	}
-+
-+	if (udp && !ipv6) {
-+		if (vlan) {
-+			*pkt = dummy_vlan_udp_packet;
-+			*pkt_len = sizeof(dummy_vlan_udp_packet);
-+			*offsets = dummy_vlan_udp_packet_offsets;
-+			return;
-+		}
-+		*pkt = dummy_udp_packet;
-+		*pkt_len = sizeof(dummy_udp_packet);
-+		*offsets = dummy_udp_packet_offsets;
-+		return;
-+	} else if (udp && ipv6) {
-+		if (vlan) {
-+			*pkt = dummy_vlan_udp_ipv6_packet;
-+			*pkt_len = sizeof(dummy_vlan_udp_ipv6_packet);
-+			*offsets = dummy_vlan_udp_ipv6_packet_offsets;
-+			return;
-+		}
-+		*pkt = dummy_udp_ipv6_packet;
-+		*pkt_len = sizeof(dummy_udp_ipv6_packet);
-+		*offsets = dummy_udp_ipv6_packet_offsets;
-+		return;
-+	} else if ((tcp && ipv6) || ipv6) {
-+		if (vlan) {
-+			*pkt = dummy_vlan_tcp_ipv6_packet;
-+			*pkt_len = sizeof(dummy_vlan_tcp_ipv6_packet);
-+			*offsets = dummy_vlan_tcp_ipv6_packet_offsets;
-+			return;
-+		}
-+		*pkt = dummy_tcp_ipv6_packet;
-+		*pkt_len = sizeof(dummy_tcp_ipv6_packet);
-+		*offsets = dummy_tcp_ipv6_packet_offsets;
-+		return;
-+	}
-+
-+	if (vlan) {
-+		*pkt = dummy_vlan_tcp_packet;
-+		*pkt_len = sizeof(dummy_vlan_tcp_packet);
-+		*offsets = dummy_vlan_tcp_packet_offsets;
-+	} else {
-+		*pkt = dummy_tcp_packet;
-+		*pkt_len = sizeof(dummy_tcp_packet);
-+		*offsets = dummy_tcp_packet_offsets;
-+	}
-+}
-+
-+/**
-+ * ice_fill_adv_dummy_packet - fill a dummy packet with given match criteria
-+ *
-+ * @lkups: lookup elements or match criteria for the advanced recipe, one
-+ *	   structure per protocol header
-+ * @lkups_cnt: number of protocols
-+ * @s_rule: stores rule information from the match criteria
-+ * @dummy_pkt: dummy packet to fill according to filter match criteria
-+ * @pkt_len: packet length of dummy packet
-+ * @offsets: offset info for the dummy packet
++ * ice_adv_rem_update_vsi_list
++ * @hw: pointer to the hardware structure
++ * @vsi_handle: VSI handle of the VSI to remove
++ * @fm_list: filter management entry for which the VSI list management needs to
++ *	     be done
 + */
 +static enum ice_status
-+ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
-+			  struct ice_aqc_sw_rules_elem *s_rule,
-+			  const u8 *dummy_pkt, u16 pkt_len,
-+			  const struct ice_dummy_pkt_offsets *offsets)
++ice_adv_rem_update_vsi_list(struct ice_hw *hw, u16 vsi_handle,
++			    struct ice_adv_fltr_mgmt_list_entry *fm_list)
 +{
-+	u8 *pkt;
-+	u16 i;
-+
-+	/* Start with a packet with a pre-defined/dummy content. Then, fill
-+	 * in the header values to be looked up or matched.
-+	 */
-+	pkt = s_rule->pdata.lkup_tx_rx.hdr;
-+
-+	memcpy(pkt, dummy_pkt, pkt_len);
-+
-+	for (i = 0; i < lkups_cnt; i++) {
-+		enum ice_protocol_type type;
-+		u16 offset = 0, len = 0, j;
-+		bool found = false;
-+
-+		/* find the start of this layer; it should be found since this
-+		 * was already checked when search for the dummy packet
-+		 */
-+		type = lkups[i].type;
-+		for (j = 0; offsets[j].type != ICE_PROTOCOL_LAST; j++) {
-+			if (type == offsets[j].type) {
-+				offset = offsets[j].offset;
-+				found = true;
-+				break;
-+			}
-+		}
-+		/* this should never happen in a correct calling sequence */
-+		if (!found)
-+			return ICE_ERR_PARAM;
-+
-+		switch (lkups[i].type) {
-+		case ICE_MAC_OFOS:
-+		case ICE_MAC_IL:
-+			len = sizeof(struct ice_ether_hdr);
-+			break;
-+		case ICE_ETYPE_OL:
-+			len = sizeof(struct ice_ethtype_hdr);
-+			break;
-+		case ICE_VLAN_OFOS:
-+			len = sizeof(struct ice_vlan_hdr);
-+			break;
-+		case ICE_IPV4_OFOS:
-+		case ICE_IPV4_IL:
-+			len = sizeof(struct ice_ipv4_hdr);
-+			break;
-+		case ICE_IPV6_OFOS:
-+		case ICE_IPV6_IL:
-+			len = sizeof(struct ice_ipv6_hdr);
-+			break;
-+		case ICE_TCP_IL:
-+		case ICE_UDP_OF:
-+		case ICE_UDP_ILOS:
-+			len = sizeof(struct ice_l4_hdr);
-+			break;
-+		case ICE_SCTP_IL:
-+			len = sizeof(struct ice_sctp_hdr);
-+			break;
-+		default:
-+			return ICE_ERR_PARAM;
-+		}
-+
-+		/* the length should be a word multiple */
-+		if (len % ICE_BYTES_PER_WORD)
-+			return ICE_ERR_CFG;
-+
-+		/* We have the offset to the header start, the length, the
-+		 * caller's header values and mask. Use this information to
-+		 * copy the data into the dummy packet appropriately based on
-+		 * the mask. Note that we need to only write the bits as
-+		 * indicated by the mask to make sure we don't improperly write
-+		 * over any significant packet data.
-+		 */
-+		for (j = 0; j < len / sizeof(u16); j++)
-+			if (((u16 *)&lkups[i].m_u)[j])
-+				((u16 *)(pkt + offset))[j] =
-+					(((u16 *)(pkt + offset))[j] &
-+					 ~((u16 *)&lkups[i].m_u)[j]) |
-+					(((u16 *)&lkups[i].h_u)[j] &
-+					 ((u16 *)&lkups[i].m_u)[j]);
-+	}
-+
-+	s_rule->pdata.lkup_tx_rx.hdr_len = cpu_to_le16(pkt_len);
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_find_adv_rule_entry - Search a rule entry
-+ * @hw: pointer to the hardware structure
-+ * @lkups: lookup elements or match criteria for the advanced recipe, one
-+ *	   structure per protocol header
-+ * @lkups_cnt: number of protocols
-+ * @recp_id: recipe ID for which we are finding the rule
-+ * @rinfo: other information regarding the rule e.g. priority and action info
-+ *
-+ * Helper function to search for a given advance rule entry
-+ * Returns pointer to entry storing the rule if found
-+ */
-+static struct ice_adv_fltr_mgmt_list_entry *
-+ice_find_adv_rule_entry(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
-+			u16 lkups_cnt, u16 recp_id,
-+			struct ice_adv_rule_info *rinfo)
-+{
-+	struct ice_adv_fltr_mgmt_list_entry *list_itr;
-+	struct ice_switch_info *sw = hw->switch_info;
-+	int i;
-+
-+	list_for_each_entry(list_itr, &sw->recp_list[recp_id].filt_rules,
-+			    list_entry) {
-+		bool lkups_matched = true;
-+
-+		if (lkups_cnt != list_itr->lkups_cnt)
-+			continue;
-+		for (i = 0; i < list_itr->lkups_cnt; i++)
-+			if (memcmp(&list_itr->lkups[i], &lkups[i],
-+				   sizeof(*lkups))) {
-+				lkups_matched = false;
-+				break;
-+			}
-+		if (rinfo->sw_act.flag == list_itr->rule_info.sw_act.flag &&
-+		    lkups_matched)
-+			return list_itr;
-+	}
-+	return NULL;
-+}
-+
-+/**
-+ * ice_adv_add_update_vsi_list
-+ * @hw: pointer to the hardware structure
-+ * @m_entry: pointer to current adv filter management list entry
-+ * @cur_fltr: filter information from the book keeping entry
-+ * @new_fltr: filter information with the new VSI to be added
-+ *
-+ * Call AQ command to add or update previously created VSI list with new VSI.
-+ *
-+ * Helper function to do book keeping associated with adding filter information
-+ * The algorithm to do the booking keeping is described below :
-+ * When a VSI needs to subscribe to a given advanced filter
-+ *	if only one VSI has been added till now
-+ *		Allocate a new VSI list and add two VSIs
-+ *		to this list using switch rule command
-+ *		Update the previously created switch rule with the
-+ *		newly created VSI list ID
-+ *	if a VSI list was previously created
-+ *		Add the new VSI to the previously created VSI list set
-+ *		using the update switch rule command
-+ */
-+static enum ice_status
-+ice_adv_add_update_vsi_list(struct ice_hw *hw,
-+			    struct ice_adv_fltr_mgmt_list_entry *m_entry,
-+			    struct ice_adv_rule_info *cur_fltr,
-+			    struct ice_adv_rule_info *new_fltr)
-+{
++	struct ice_vsi_list_map_info *vsi_list_info;
++	enum ice_sw_lkup_type lkup_type;
 +	enum ice_status status;
-+	u16 vsi_list_id = 0;
++	u16 vsi_list_id;
 +
-+	if (cur_fltr->sw_act.fltr_act == ICE_FWD_TO_Q ||
-+	    cur_fltr->sw_act.fltr_act == ICE_FWD_TO_QGRP ||
-+	    cur_fltr->sw_act.fltr_act == ICE_DROP_PACKET)
-+		return ICE_ERR_NOT_IMPL;
++	if (fm_list->rule_info.sw_act.fltr_act != ICE_FWD_TO_VSI_LIST ||
++	    fm_list->vsi_count == 0)
++		return ICE_ERR_PARAM;
 +
-+	if ((new_fltr->sw_act.fltr_act == ICE_FWD_TO_Q ||
-+	     new_fltr->sw_act.fltr_act == ICE_FWD_TO_QGRP) &&
-+	    (cur_fltr->sw_act.fltr_act == ICE_FWD_TO_VSI ||
-+	     cur_fltr->sw_act.fltr_act == ICE_FWD_TO_VSI_LIST))
-+		return ICE_ERR_NOT_IMPL;
++	/* A rule with the VSI being removed does not exist */
++	if (!test_bit(vsi_handle, fm_list->vsi_list_info->vsi_map))
++		return ICE_ERR_DOES_NOT_EXIST;
 +
-+	if (m_entry->vsi_count < 2 && !m_entry->vsi_list_info) {
-+		 /* Only one entry existed in the mapping and it was not already
-+		  * a part of a VSI list. So, create a VSI list with the old and
-+		  * new VSIs.
-+		  */
++	lkup_type = ICE_SW_LKUP_LAST;
++	vsi_list_id = fm_list->rule_info.sw_act.fwd_id.vsi_list_id;
++	status = ice_update_vsi_list_rule(hw, &vsi_handle, 1, vsi_list_id, true,
++					  ice_aqc_opc_update_sw_rules,
++					  lkup_type);
++	if (status)
++		return status;
++
++	fm_list->vsi_count--;
++	clear_bit(vsi_handle, fm_list->vsi_list_info->vsi_map);
++	vsi_list_info = fm_list->vsi_list_info;
++	if (fm_list->vsi_count == 1) {
 +		struct ice_fltr_info tmp_fltr;
-+		u16 vsi_handle_arr[2];
++		u16 rem_vsi_handle;
 +
-+		/* A rule already exists with the new VSI being added */
-+		if (cur_fltr->sw_act.fwd_id.hw_vsi_id ==
-+		    new_fltr->sw_act.fwd_id.hw_vsi_id)
-+			return ICE_ERR_ALREADY_EXISTS;
++		rem_vsi_handle = find_first_bit(vsi_list_info->vsi_map,
++						ICE_MAX_VSI);
++		if (!ice_is_vsi_valid(hw, rem_vsi_handle))
++			return ICE_ERR_OUT_OF_RANGE;
 +
-+		vsi_handle_arr[0] = cur_fltr->sw_act.vsi_handle;
-+		vsi_handle_arr[1] = new_fltr->sw_act.vsi_handle;
-+		status = ice_create_vsi_list_rule(hw, &vsi_handle_arr[0], 2,
-+						  &vsi_list_id,
-+						  ICE_SW_LKUP_LAST);
++		/* Make sure VSI list is empty before removing it below */
++		status = ice_update_vsi_list_rule(hw, &rem_vsi_handle, 1,
++						  vsi_list_id, true,
++						  ice_aqc_opc_update_sw_rules,
++						  lkup_type);
 +		if (status)
 +			return status;
 +
 +		memset(&tmp_fltr, 0, sizeof(tmp_fltr));
-+		tmp_fltr.flag = m_entry->rule_info.sw_act.flag;
-+		tmp_fltr.fltr_rule_id = cur_fltr->fltr_rule_id;
-+		tmp_fltr.fltr_act = ICE_FWD_TO_VSI_LIST;
-+		tmp_fltr.fwd_id.vsi_list_id = vsi_list_id;
-+		tmp_fltr.lkup_type = ICE_SW_LKUP_LAST;
++		tmp_fltr.flag = fm_list->rule_info.sw_act.flag;
++		tmp_fltr.fltr_rule_id = fm_list->rule_info.fltr_rule_id;
++		fm_list->rule_info.sw_act.fltr_act = ICE_FWD_TO_VSI;
++		tmp_fltr.fltr_act = ICE_FWD_TO_VSI;
++		tmp_fltr.fwd_id.hw_vsi_id =
++			ice_get_hw_vsi_num(hw, rem_vsi_handle);
++		fm_list->rule_info.sw_act.fwd_id.hw_vsi_id =
++			ice_get_hw_vsi_num(hw, rem_vsi_handle);
++		fm_list->rule_info.sw_act.vsi_handle = rem_vsi_handle;
 +
-+		/* Update the previous switch rule of "forward to VSI" to
-+		 * "fwd to VSI list"
++		/* Update the previous switch rule of "MAC forward to VSI" to
++		 * "MAC fwd to VSI list"
 +		 */
 +		status = ice_update_pkt_fwd_rule(hw, &tmp_fltr);
-+		if (status)
++		if (status) {
++			ice_debug(hw, ICE_DBG_SW, "Failed to update pkt fwd rule to FWD_TO_VSI on HW VSI %d, error %d\n",
++				  tmp_fltr.fwd_id.hw_vsi_id, status);
 +			return status;
++		}
++		fm_list->vsi_list_info->ref_cnt--;
 +
-+		cur_fltr->sw_act.fwd_id.vsi_list_id = vsi_list_id;
-+		cur_fltr->sw_act.fltr_act = ICE_FWD_TO_VSI_LIST;
-+		m_entry->vsi_list_info =
-+			ice_create_vsi_list_map(hw, &vsi_handle_arr[0], 2,
-+						vsi_list_id);
-+	} else {
-+		u16 vsi_handle = new_fltr->sw_act.vsi_handle;
++		/* Remove the VSI list since it is no longer used */
++		status = ice_remove_vsi_list_rule(hw, vsi_list_id, lkup_type);
++		if (status) {
++			ice_debug(hw, ICE_DBG_SW, "Failed to remove VSI list %d, error %d\n",
++				  vsi_list_id, status);
++			return status;
++		}
 +
-+		if (!m_entry->vsi_list_info)
-+			return ICE_ERR_CFG;
-+
-+		/* A rule already exists with the new VSI being added */
-+		if (test_bit(vsi_handle, m_entry->vsi_list_info->vsi_map))
-+			return 0;
-+
-+		/* Update the previously created VSI list set with
-+		 * the new VSI ID passed in
-+		 */
-+		vsi_list_id = cur_fltr->sw_act.fwd_id.vsi_list_id;
-+
-+		status = ice_update_vsi_list_rule(hw, &vsi_handle, 1,
-+						  vsi_list_id, false,
-+						  ice_aqc_opc_update_sw_rules,
-+						  ICE_SW_LKUP_LAST);
-+		/* update VSI list mapping info with new VSI ID */
-+		if (!status)
-+			set_bit(vsi_handle, m_entry->vsi_list_info->vsi_map);
++		list_del(&vsi_list_info->list_entry);
++		devm_kfree(ice_hw_to_dev(hw), vsi_list_info);
++		fm_list->vsi_list_info = NULL;
 +	}
-+	if (!status)
-+		m_entry->vsi_count++;
++
 +	return status;
 +}
 +
 +/**
-+ * ice_add_adv_rule - helper function to create an advanced switch rule
++ * ice_rem_adv_rule - removes existing advanced switch rule
 + * @hw: pointer to the hardware structure
 + * @lkups: information on the words that needs to be looked up. All words
-+ * together makes one recipe
++ *         together makes one recipe
 + * @lkups_cnt: num of entries in the lkups array
-+ * @rinfo: other information related to the rule that needs to be programmed
-+ * @added_entry: this will return recipe_id, rule_id and vsi_handle. should be
-+ *               ignored is case of error.
++ * @rinfo: Its the pointer to the rule information for the rule
 + *
-+ * This function can program only 1 rule at a time. The lkups is used to
-+ * describe the all the words that forms the "lookup" portion of the recipe.
-+ * These words can span multiple protocols. Callers to this function need to
-+ * pass in a list of protocol headers with lookup information along and mask
-+ * that determines which words are valid from the given protocol header.
-+ * rinfo describes other information related to this rule such as forwarding
-+ * IDs, priority of this rule, etc.
++ * This function can be used to remove 1 rule at a time. The lkups is
++ * used to describe all the words that forms the "lookup" portion of the
++ * rule. These words can span multiple protocols. Callers to this function
++ * need to pass in a list of protocol headers with lookup information along
++ * and mask that determines which words are valid from the given protocol
++ * header. rinfo describes other information related to this rule such as
++ * forwarding IDs, priority of this rule, etc.
 + */
-+enum ice_status
-+ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
-+		 u16 lkups_cnt, struct ice_adv_rule_info *rinfo,
-+		 struct ice_rule_query_data *added_entry)
++static enum ice_status
++ice_rem_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
++		 u16 lkups_cnt, struct ice_adv_rule_info *rinfo)
 +{
-+	struct ice_adv_fltr_mgmt_list_entry *m_entry, *adv_fltr = NULL;
-+	u16 rid = 0, i, pkt_len, rule_buf_sz, vsi_handle;
-+	const struct ice_dummy_pkt_offsets *pkt_offsets;
-+	struct ice_aqc_sw_rules_elem *s_rule = NULL;
-+	struct list_head *rule_head;
-+	struct ice_switch_info *sw;
-+	enum ice_status status;
-+	const u8 *pkt = NULL;
-+	u16 word_cnt;
-+	u32 act = 0;
-+	u8 q_rgn;
++	struct ice_adv_fltr_mgmt_list_entry *list_elem;
++	struct ice_prot_lkup_ext lkup_exts;
++	enum ice_status status = 0;
++	bool remove_rule = false;
++	struct mutex *rule_lock; /* Lock to protect filter rule list */
++	u16 i, rid, vsi_handle;
 +
-+	/* Initialize profile to result index bitmap */
-+	if (!hw->switch_info->prof_res_bm_init) {
-+		hw->switch_info->prof_res_bm_init = 1;
-+		ice_init_prof_result_bm(hw);
-+	}
-+
-+	if (!lkups_cnt)
-+		return ICE_ERR_PARAM;
-+
-+	/* get # of words we need to match */
-+	word_cnt = 0;
++	memset(&lkup_exts, 0, sizeof(lkup_exts));
 +	for (i = 0; i < lkups_cnt; i++) {
-+		u16 j, *ptr;
++		u16 count;
 +
-+		ptr = (u16 *)&lkups[i].m_u;
-+		for (j = 0; j < sizeof(lkups->m_u) / sizeof(u16); j++)
-+			if (ptr[j] != 0)
-+				word_cnt++;
++		if (lkups[i].type >= ICE_PROTOCOL_LAST)
++			return ICE_ERR_CFG;
++
++		count = ice_fill_valid_words(&lkups[i], &lkup_exts);
++		if (!count)
++			return ICE_ERR_CFG;
 +	}
 +
-+	if (!word_cnt || word_cnt > ICE_MAX_CHAIN_WORDS)
++	rid = ice_find_recp(hw, &lkup_exts);
++	/* If did not find a recipe that match the existing criteria */
++	if (rid == ICE_MAX_NUM_RECIPES)
 +		return ICE_ERR_PARAM;
 +
-+	/* make sure that we can locate a dummy packet */
-+	ice_find_dummy_packet(lkups, lkups_cnt, &pkt, &pkt_len,
-+			      &pkt_offsets);
-+	if (!pkt) {
-+		status = ICE_ERR_PARAM;
-+		goto err_ice_add_adv_rule;
-+	}
-+
-+	if (!(rinfo->sw_act.fltr_act == ICE_FWD_TO_VSI ||
-+	      rinfo->sw_act.fltr_act == ICE_FWD_TO_Q ||
-+	      rinfo->sw_act.fltr_act == ICE_FWD_TO_QGRP ||
-+	      rinfo->sw_act.fltr_act == ICE_DROP_PACKET))
-+		return ICE_ERR_CFG;
-+
-+	vsi_handle = rinfo->sw_act.vsi_handle;
-+	if (!ice_is_vsi_valid(hw, vsi_handle))
-+		return ICE_ERR_PARAM;
-+
-+	if (rinfo->sw_act.fltr_act == ICE_FWD_TO_VSI)
-+		rinfo->sw_act.fwd_id.hw_vsi_id =
-+			ice_get_hw_vsi_num(hw, vsi_handle);
-+	if (rinfo->sw_act.flag & ICE_FLTR_TX)
-+		rinfo->sw_act.src = ice_get_hw_vsi_num(hw, vsi_handle);
-+
-+	status = ice_add_adv_recipe(hw, lkups, lkups_cnt, rinfo, &rid);
-+	if (status)
-+		return status;
-+	m_entry = ice_find_adv_rule_entry(hw, lkups, lkups_cnt, rid, rinfo);
-+	if (m_entry) {
-+		/* we have to add VSI to VSI_LIST and increment vsi_count.
-+		 * Also Update VSI list so that we can change forwarding rule
-+		 * if the rule already exists, we will check if it exists with
-+		 * same vsi_id, if not then add it to the VSI list if it already
-+		 * exists if not then create a VSI list and add the existing VSI
-+		 * ID and the new VSI ID to the list
-+		 * We will add that VSI to the list
-+		 */
-+		status = ice_adv_add_update_vsi_list(hw, m_entry,
-+						     &m_entry->rule_info,
-+						     rinfo);
-+		if (added_entry) {
-+			added_entry->rid = rid;
-+			added_entry->rule_id = m_entry->rule_info.fltr_rule_id;
-+			added_entry->vsi_handle = rinfo->sw_act.vsi_handle;
-+		}
-+		return status;
-+	}
-+	rule_buf_sz = ICE_SW_RULE_RX_TX_NO_HDR_SIZE + pkt_len;
-+	s_rule = kzalloc(rule_buf_sz, GFP_KERNEL);
-+	if (!s_rule)
-+		return ICE_ERR_NO_MEMORY;
-+	act |= ICE_SINGLE_ACT_LB_ENABLE | ICE_SINGLE_ACT_LAN_ENABLE;
-+	switch (rinfo->sw_act.fltr_act) {
-+	case ICE_FWD_TO_VSI:
-+		act |= (rinfo->sw_act.fwd_id.hw_vsi_id <<
-+			ICE_SINGLE_ACT_VSI_ID_S) & ICE_SINGLE_ACT_VSI_ID_M;
-+		act |= ICE_SINGLE_ACT_VSI_FORWARDING | ICE_SINGLE_ACT_VALID_BIT;
-+		break;
-+	case ICE_FWD_TO_Q:
-+		act |= ICE_SINGLE_ACT_TO_Q;
-+		act |= (rinfo->sw_act.fwd_id.q_id << ICE_SINGLE_ACT_Q_INDEX_S) &
-+		       ICE_SINGLE_ACT_Q_INDEX_M;
-+		break;
-+	case ICE_FWD_TO_QGRP:
-+		q_rgn = rinfo->sw_act.qgrp_size > 0 ?
-+			(u8)ilog2(rinfo->sw_act.qgrp_size) : 0;
-+		act |= ICE_SINGLE_ACT_TO_Q;
-+		act |= (rinfo->sw_act.fwd_id.q_id << ICE_SINGLE_ACT_Q_INDEX_S) &
-+		       ICE_SINGLE_ACT_Q_INDEX_M;
-+		act |= (q_rgn << ICE_SINGLE_ACT_Q_REGION_S) &
-+		       ICE_SINGLE_ACT_Q_REGION_M;
-+		break;
-+	case ICE_DROP_PACKET:
-+		act |= ICE_SINGLE_ACT_VSI_FORWARDING | ICE_SINGLE_ACT_DROP |
-+		       ICE_SINGLE_ACT_VALID_BIT;
-+		break;
-+	default:
-+		status = ICE_ERR_CFG;
-+		goto err_ice_add_adv_rule;
-+	}
-+
-+	/* set the rule LOOKUP type based on caller specified 'Rx'
-+	 * instead of hardcoding it to be either LOOKUP_TX/RX
-+	 *
-+	 * for 'Rx' set the source to be the port number
-+	 * for 'Tx' set the source to be the source HW VSI number (determined
-+	 * by caller)
-+	 */
-+	if (rinfo->rx) {
-+		s_rule->type = cpu_to_le16(ICE_AQC_SW_RULES_T_LKUP_RX);
-+		s_rule->pdata.lkup_tx_rx.src =
-+			cpu_to_le16(hw->port_info->lport);
++	rule_lock = &hw->switch_info->recp_list[rid].filt_rule_lock;
++	list_elem = ice_find_adv_rule_entry(hw, lkups, lkups_cnt, rid, rinfo);
++	/* the rule is already removed */
++	if (!list_elem)
++		return 0;
++	mutex_lock(rule_lock);
++	if (list_elem->rule_info.sw_act.fltr_act != ICE_FWD_TO_VSI_LIST) {
++		remove_rule = true;
++	} else if (list_elem->vsi_count > 1) {
++		remove_rule = false;
++		vsi_handle = rinfo->sw_act.vsi_handle;
++		status = ice_adv_rem_update_vsi_list(hw, vsi_handle, list_elem);
 +	} else {
-+		s_rule->type = cpu_to_le16(ICE_AQC_SW_RULES_T_LKUP_TX);
-+		s_rule->pdata.lkup_tx_rx.src = cpu_to_le16(rinfo->sw_act.src);
++		vsi_handle = rinfo->sw_act.vsi_handle;
++		status = ice_adv_rem_update_vsi_list(hw, vsi_handle, list_elem);
++		if (status) {
++			mutex_unlock(rule_lock);
++			return status;
++		}
++		if (list_elem->vsi_count == 0)
++			remove_rule = true;
 +	}
++	mutex_unlock(rule_lock);
++	if (remove_rule) {
++		struct ice_aqc_sw_rules_elem *s_rule;
++		u16 rule_buf_sz;
 +
-+	s_rule->pdata.lkup_tx_rx.recipe_id = cpu_to_le16(rid);
-+	s_rule->pdata.lkup_tx_rx.act = cpu_to_le32(act);
++		rule_buf_sz = ICE_SW_RULE_RX_TX_NO_HDR_SIZE;
++		s_rule = kzalloc(rule_buf_sz, GFP_KERNEL);
++		if (!s_rule)
++			return ICE_ERR_NO_MEMORY;
++		s_rule->pdata.lkup_tx_rx.act = 0;
++		s_rule->pdata.lkup_tx_rx.index =
++			cpu_to_le16(list_elem->rule_info.fltr_rule_id);
++		s_rule->pdata.lkup_tx_rx.hdr_len = 0;
++		status = ice_aq_sw_rules(hw, (struct ice_aqc_sw_rules *)s_rule,
++					 rule_buf_sz, 1,
++					 ice_aqc_opc_remove_sw_rules, NULL);
++		if (!status || status == ICE_ERR_DOES_NOT_EXIST) {
++			struct ice_switch_info *sw = hw->switch_info;
 +
-+	status = ice_fill_adv_dummy_packet(lkups, lkups_cnt, s_rule, pkt,
-+					   pkt_len, pkt_offsets);
-+	if (status)
-+		goto err_ice_add_adv_rule;
-+
-+	status = ice_aq_sw_rules(hw, (struct ice_aqc_sw_rules *)s_rule,
-+				 rule_buf_sz, 1, ice_aqc_opc_add_sw_rules,
-+				 NULL);
-+	if (status)
-+		goto err_ice_add_adv_rule;
-+	adv_fltr = devm_kzalloc(ice_hw_to_dev(hw),
-+				sizeof(struct ice_adv_fltr_mgmt_list_entry),
-+				GFP_KERNEL);
-+	if (!adv_fltr) {
-+		status = ICE_ERR_NO_MEMORY;
-+		goto err_ice_add_adv_rule;
++			mutex_lock(rule_lock);
++			list_del(&list_elem->list_entry);
++			devm_kfree(ice_hw_to_dev(hw), list_elem->lkups);
++			devm_kfree(ice_hw_to_dev(hw), list_elem);
++			mutex_unlock(rule_lock);
++			if (list_empty(&sw->recp_list[rid].filt_rules))
++				sw->recp_list[rid].adv_rule = false;
++		}
++		kfree(s_rule);
 +	}
-+
-+	adv_fltr->lkups = devm_kmemdup(ice_hw_to_dev(hw), lkups,
-+				       lkups_cnt * sizeof(*lkups), GFP_KERNEL);
-+	if (!adv_fltr->lkups) {
-+		status = ICE_ERR_NO_MEMORY;
-+		goto err_ice_add_adv_rule;
-+	}
-+
-+	adv_fltr->lkups_cnt = lkups_cnt;
-+	adv_fltr->rule_info = *rinfo;
-+	adv_fltr->rule_info.fltr_rule_id =
-+		le16_to_cpu(s_rule->pdata.lkup_tx_rx.index);
-+	sw = hw->switch_info;
-+	sw->recp_list[rid].adv_rule = true;
-+	rule_head = &sw->recp_list[rid].filt_rules;
-+
-+	if (rinfo->sw_act.fltr_act == ICE_FWD_TO_VSI)
-+		adv_fltr->vsi_count = 1;
-+
-+	/* Add rule entry to book keeping list */
-+	list_add(&adv_fltr->list_entry, rule_head);
-+	if (added_entry) {
-+		added_entry->rid = rid;
-+		added_entry->rule_id = adv_fltr->rule_info.fltr_rule_id;
-+		added_entry->vsi_handle = rinfo->sw_act.vsi_handle;
-+	}
-+err_ice_add_adv_rule:
-+	if (status && adv_fltr) {
-+		devm_kfree(ice_hw_to_dev(hw), adv_fltr->lkups);
-+		devm_kfree(ice_hw_to_dev(hw), adv_fltr);
-+	}
-+
-+	kfree(s_rule);
-+
 +	return status;
 +}
 +
++/**
++ * ice_rem_adv_rule_by_id - removes existing advanced switch rule by ID
++ * @hw: pointer to the hardware structure
++ * @remove_entry: data struct which holds rule_id, VSI handle and recipe ID
++ *
++ * This function is used to remove 1 rule at a time. The removal is based on
++ * the remove_entry parameter. This function will remove rule for a given
++ * vsi_handle with a given rule_id which is passed as parameter in remove_entry
++ */
++enum ice_status
++ice_rem_adv_rule_by_id(struct ice_hw *hw,
++		       struct ice_rule_query_data *remove_entry)
++{
++	struct ice_adv_fltr_mgmt_list_entry *list_itr;
++	struct list_head *list_head;
++	struct ice_adv_rule_info rinfo;
++	struct ice_switch_info *sw;
++
++	sw = hw->switch_info;
++	if (!sw->recp_list[remove_entry->rid].recp_created)
++		return ICE_ERR_PARAM;
++	list_head = &sw->recp_list[remove_entry->rid].filt_rules;
++	list_for_each_entry(list_itr, list_head, list_entry) {
++		if (list_itr->rule_info.fltr_rule_id ==
++		    remove_entry->rule_id) {
++			rinfo = list_itr->rule_info;
++			rinfo.sw_act.vsi_handle = remove_entry->vsi_handle;
++			return ice_rem_adv_rule(hw, list_itr->lkups,
++						list_itr->lkups_cnt, &rinfo);
++		}
++	}
++	/* either list is empty or unable to find rule */
++	return ICE_ERR_DOES_NOT_EXIST;
++}
++
  /**
-  * ice_replay_vsi_fltr - Replay filters for requested VSI
+  * ice_replay_vsi_all_fltr - replay all filters stored in bookkeeping lists
   * @hw: pointer to the hardware structure
 diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
-index 6fd4537106ed..5175371f7ae9 100644
+index 5175371f7ae9..34b7f74b1ab8 100644
 --- a/drivers/net/ethernet/intel/ice/ice_switch.h
 +++ b/drivers/net/ethernet/intel/ice/ice_switch.h
-@@ -266,6 +266,16 @@ struct ice_fltr_mgmt_list_entry {
- 	u8 counter_index;
- };
+@@ -342,6 +342,12 @@ enum ice_status
+ ice_set_vlan_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
+ 			 bool rm_vlan_promisc);
  
-+struct ice_adv_fltr_mgmt_list_entry {
-+	struct list_head list_entry;
-+
-+	struct ice_adv_lkup_elem *lkups;
-+	struct ice_adv_rule_info rule_info;
-+	u16 lkups_cnt;
-+	struct ice_vsi_list_map_info *vsi_list_info;
-+	u16 vsi_count;
-+};
-+
- enum ice_promisc_flags {
- 	ICE_PROMISC_UCAST_RX = 0x1,
- 	ICE_PROMISC_UCAST_TX = 0x2,
-@@ -301,6 +311,10 @@ ice_free_res_cntr(struct ice_hw *hw, u8 type, u8 alloc_shared, u16 num_items,
- 		  u16 counter_id);
- 
- /* Switch/bridge related commands */
 +enum ice_status
-+ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
-+		 u16 lkups_cnt, struct ice_adv_rule_info *rinfo,
-+		 struct ice_rule_query_data *added_entry);
- enum ice_status ice_update_sw_rule_bridge_mode(struct ice_hw *hw);
- enum ice_status ice_add_mac(struct ice_hw *hw, struct list_head *m_lst);
- enum ice_status ice_remove_mac(struct ice_hw *hw, struct list_head *m_lst);
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index b2786783b80f..d22ac1d430d0 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -677,6 +677,7 @@ struct ice_port_info {
- struct ice_switch_info {
- 	struct list_head vsi_list_map_head;
- 	struct ice_sw_recipe *recp_list;
-+	u16 prof_res_bm_init;
- 	u16 max_used_prof_index;
++ice_rem_adv_rule_for_vsi(struct ice_hw *hw, u16 vsi_handle);
++enum ice_status
++ice_rem_adv_rule_by_id(struct ice_hw *hw,
++		       struct ice_rule_query_data *remove_entry);
++
+ enum ice_status ice_init_def_sw_recp(struct ice_hw *hw);
+ u16 ice_get_hw_vsi_num(struct ice_hw *hw, u16 vsi_handle);
  
- 	DECLARE_BITMAP(prof_res_bm[ICE_MAX_NUM_PROFILES], ICE_MAX_FV_WORDS);
 -- 
 2.31.1
 
