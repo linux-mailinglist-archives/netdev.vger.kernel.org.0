@@ -2,122 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C001A4286E0
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 08:34:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B18B4286E4
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 08:35:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234175AbhJKGg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 02:36:29 -0400
-Received: from gandalf.ozlabs.org ([150.107.74.76]:56923 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231425AbhJKGg1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 02:36:27 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4HSTXy2nXYz4xbL;
-        Mon, 11 Oct 2021 17:34:25 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1633934066;
-        bh=6GOk3nyhP0azIbPuESw0RXCw6kG6vR7AfVI2n4LS2fs=;
-        h=Date:From:To:Cc:Subject:From;
-        b=aB6bQ7y5FNQfHdhK5MJuK17rY6/BvtM8aZzu7EoV6qjXuandJM4qMbvrNIiSm64CO
-         cK4PcOElis9B2ekbagKOcRjYROEJTEnro80e1ARg7REwnY2wPqClCqXTKZcqod9T2S
-         XKoXKPlKCra+h9clq1o7Uj40d78XSO9SxFR0hLRT/dWS3wVR3xm5nMweShMQmh2Fet
-         sVCdC/6xBYbEyCFb4pOaREPw3JCVdrngQI22zopBI7en5xi2lcHAgFEAq/2OxrGtfZ
-         vW0oF5rehZDbUpn8RJqXndttCYV7fLQQ4ha74JlK5uidzmwKmkBqIUYothDCif57xh
-         rxokJ32y2cjsQ==
-Date:   Mon, 11 Oct 2021 17:34:24 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20211011173424.7743035d@canb.auug.org.au>
+        id S234219AbhJKGhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 02:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47542 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234216AbhJKGhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 02:37:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B02CC061570
+        for <netdev@vger.kernel.org>; Sun, 10 Oct 2021 23:35:25 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mZou1-0002vp-0J; Mon, 11 Oct 2021 08:35:13 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1mZotv-0005WI-NG; Mon, 11 Oct 2021 08:35:07 +0200
+Date:   Mon, 11 Oct 2021 08:35:07 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-kernel@vger.kernel.org,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        netdev@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session
+ if receive TP.DT with error length
+Message-ID: <20211011063507.GI29653@pengutronix.de>
+References: <1632972800-45091-1-git-send-email-zhangchangzhong@huawei.com>
+ <20210930074206.GB7502@x1.vandijck-laurijssen.be>
+ <1cab07f2-593a-1d1c-3a29-43ee9df4b29e@huawei.com>
+ <20211008110007.GE29653@pengutronix.de>
+ <556a04ed-c350-7b2b-5bbe-98c03846630b@huawei.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/6=hlm7uJknGQV.an36uVEl.";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <556a04ed-c350-7b2b-5bbe-98c03846630b@huawei.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:19:30 up 235 days,  9:43, 116 users,  load average: 0.08, 0.12,
+ 0.17
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/6=hlm7uJknGQV.an36uVEl.
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Sat, Oct 09, 2021 at 04:43:56PM +0800, Zhang Changzhong wrote:
+> On 2021/10/8 19:00, Oleksij Rempel wrote:
+> > On Fri, Oct 08, 2021 at 05:22:12PM +0800, Zhang Changzhong wrote:
+> >> Hi Kurt,
+> >> Sorry for the late reply.
+> >>
+> >> On 2021/9/30 15:42, Kurt Van Dijck wrote:
+> >>> On Thu, 30 Sep 2021 11:33:20 +0800, Zhang Changzhong wrote:
+> >>>> According to SAE-J1939-21, the data length of TP.DT must be 8 bytes, so
+> >>>> cancel session when receive unexpected TP.DT message.
+> >>>
+> >>> SAE-j1939-21 indeed says that all TP.DT must be 8 bytes.
+> >>> However, the last TP.DT may contain up to 6 stuff bytes, which have no meaning.
+> >>> If I remember well, they are even not 'reserved'.
+> >>
+> >> Agree, these bytes are meaningless for last TP.DT.
+> >>
+> >>>
+> >>>>
+> >>>> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> >>>> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> >>>> ---
+> >>>>  net/can/j1939/transport.c | 7 +++++--
+> >>>>  1 file changed, 5 insertions(+), 2 deletions(-)
+> >>>>
+> >>>> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+> >>>> index bb5c4b8..eedaeaf 100644
+> >>>> --- a/net/can/j1939/transport.c
+> >>>> +++ b/net/can/j1939/transport.c
+> >>>> @@ -1789,6 +1789,7 @@ static void j1939_xtp_rx_dpo(struct j1939_priv *priv, struct sk_buff *skb,
+> >>>>  static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+> >>>>  				 struct sk_buff *skb)
+> >>>>  {
+> >>>> +	enum j1939_xtp_abort abort = J1939_XTP_ABORT_FAULT;
+> >>>>  	struct j1939_priv *priv = session->priv;
+> >>>>  	struct j1939_sk_buff_cb *skcb, *se_skcb;
+> >>>>  	struct sk_buff *se_skb = NULL;
+> >>>> @@ -1803,9 +1804,11 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+> >>>>  
+> >>>>  	skcb = j1939_skb_to_cb(skb);
+> >>>>  	dat = skb->data;
+> >>>> -	if (skb->len <= 1)
+> >>>> +	if (skb->len != 8) {
+> >>>>  		/* makes no sense */
+> >>>> +		abort = J1939_XTP_ABORT_UNEXPECTED_DATA;
+> >>>>  		goto out_session_cancel;
+> >>>
+> >>> I think this is a situation of
+> >>> "be strict on what you send, be tolerant on what you receive".
+> >>>
+> >>> Did you find a technical reason to abort a session because the last frame didn't
+> >>> bring overhead that you don't use?
+> >>
+> >> No technical reason. The only reason is that SAE-J1939-82 requires responder
+> >> to abort session if any TP.DT less than 8 bytes (section A.3.4, Row 7).
+> > 
+> > Do you mean: "BAM Transport: Ensure DUT discards BAM transport when
+> > TP.DT data packets are not correct size" ... "Verify DUT discards the
+> > BAM transport if any TP.DT data packet has less than 8 bytes"?
+> 
+> Yes.
 
-Hi all,
+OK, then I have some problems to understand this part:
+- 5.10.2.4 Connection Closure
+  The “connection abort” message is not allowed to be used by responders in the
+  case of a global destination (i.e. BAM).
 
-After merging the net-next tree, today's linux-next build (sparc64
-defconfig) failed like this:
+My assumption would be: In case of broadcast transfer, multiple MCU are
+receivers. If one of MCU was not able to get complete TP.DT, it should
+not abort BAM for all.
 
-drivers/net/ethernet/sun/ldmvsw.c: In function 'vsw_alloc_netdev':
-drivers/net/ethernet/sun/ldmvsw.c:243:2: error: expected ';' before 'sprint=
-f'
-  sprintf(dev->name, "vif%d.%d", (int)handle, (int)port_id);
-  ^~~~~~~
+So, "DUT discards the BAM transport" sounds for me as local action.
+Complete TP would be dropped locally.
 
-Caused by commit
-
-  a7639279c93c ("ethernet: sun: remove direct netdev->dev_addr writes")
-
-I have applied the following fix patch for today.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Mon, 11 Oct 2021 17:24:43 +1100
-Subject: [PATCH] ethernet: sun: fix for "remove direct netdev->dev_addr wri=
-tes"
-
-Fix for this build problem:
-
-drivers/net/ethernet/sun/ldmvsw.c: In function 'vsw_alloc_netdev':
-drivers/net/ethernet/sun/ldmvsw.c:243:2: error: expected ';' before 'sprint=
-f'
-  sprintf(dev->name, "vif%d.%d", (int)handle, (int)port_id);
-  ^~~~~~~
-
-Fixes: a7639279c93c ("ethernet: sun: remove direct netdev->dev_addr writes")
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/net/ethernet/sun/ldmvsw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/sun/ldmvsw.c b/drivers/net/ethernet/sun/l=
-dmvsw.c
-index 074c5407c86b..6b59b14e74b1 100644
---- a/drivers/net/ethernet/sun/ldmvsw.c
-+++ b/drivers/net/ethernet/sun/ldmvsw.c
-@@ -238,7 +238,7 @@ static struct net_device *vsw_alloc_netdev(u8 hwaddr[],
- 	dev->needed_tailroom =3D 8;
-=20
- 	eth_hw_addr_set(dev, hwaddr);
--	ether_addr_copy(dev->perm_addr, dev->dev_addr)
-+	ether_addr_copy(dev->perm_addr, dev->dev_addr);
-=20
- 	sprintf(dev->name, "vif%d.%d", (int)handle, (int)port_id);
-=20
---=20
-2.33.0
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/6=hlm7uJknGQV.an36uVEl.
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmFj2vAACgkQAVBC80lX
-0GwnZgf/Xfn9J6jrJmHmTec9x6RHfasJQ+ihUFHqxdfv9H58lNKkqCcNdUwdv/Kg
-GQeuNpY/MyKMsstHTTtw6R/FIeBn06iAkn/A0UrLipzeVc+wNG8o7e5NcdouyzGO
-HlxYR/L/9FX1vUV4xmRi71MfgJ25kdXsXFxuES504UZFpzSr+csbL4kor5HKuv4i
-PYGv0Ix7pLyewI4fDf6KvwTZCkNokCORWR21+bdEdVbjQ5sqx7UkRi18qpDwSLQu
-9QJwIh9ROyCRsJbcE7QJhywKl8/pUgMHaYxAQqNJa2LIPQG5rQaV+s26I+nDB4PJ
-w8DtFO6wqLSH8AZxxcgKpv1SF1ALLw==
-=OeAq
------END PGP SIGNATURE-----
-
---Sig_/6=hlm7uJknGQV.an36uVEl.--
+Regards
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
