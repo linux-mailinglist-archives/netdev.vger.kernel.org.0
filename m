@@ -2,104 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80FC942966C
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 20:04:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21A63429669
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 20:04:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234138AbhJKSGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 14:06:48 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:51830 "EHLO
+        id S234218AbhJKSGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 14:06:45 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:51835 "EHLO
         serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbhJKSGp (ORCPT
+        with ESMTP id S234136AbhJKSGp (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 14:06:45 -0400
 Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 5B7DA200CCF6;
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 8830C200CD1D;
         Mon, 11 Oct 2021 20:04:42 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 5B7DA200CCF6
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 8830C200CD1D
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
         s=ulg20190529; t=1633975482;
-        bh=lJv2kvvePcZguGAstcULyW2UVXh5EG9tzaCBp4mIYcI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HL0cbZKoNqzcPVEjKj0UTqvd0FIdFbRK5p2juy6QvCDD1c5xkFVAwPFI82U4gSthP
-         VWkZ4UrFkVBj71zrMoTPTjGF2gCEcrG0/BRf9xuhS4jn6tEq5osU6GcfU8VmBoJ0jB
-         AmnDjEgtQ6m+VplpHM6QcsnEXEUkH/5GHkDOh8hBA4yjs9AeXDFITRTk4KUeoeBuND
-         fZf+jx06wgrqDgVqIwUQv7FQdGZ0k5jic03lLcDx3a8nEILkzAC/iF3cPykUGHtKjH
-         54c5ETm6HkEE1KjYop2OYdDpXzbBugVL7OfdgMko9yIzIgkZRFr5RUV+y8lOmWYdSO
-         gPpjf9D3sprWA==
+        bh=SnCefRQ+xHRzwR9SQUloscsDtfoIIpT4/AAYYZWWaj4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wBpYs8tsErudLl1rwo+2vKRD254HaOSwW9TKO/Xjw0G3di2xcYli9gdywO34dsmmY
+         /3LPmJ6QW3xv3cSFb0hWnR3fOkxaXE3Aiz3rHukkLoxeyQ4eA7JPcq0s9/fOugbB+8
+         qMH9pyV30h9Ca+OYLaV3FZNC7kTPu5RzTm5nlfo/zyzDRYw51PXHz3evkP6zfPITtL
+         NWqbPhEk8exWGN5swEFWt4HyZNZItK7sRpzcVd424iXazHIvy7n40wrsMhQYH79p/v
+         OczKD4CxYEpFDYaE8YaFDMsqfIAhxFrYkovzV2lyF3DnEmZFuiH8ezPXznXSQGMrGI
+         eZAo2rPsgrP0Q==
 From:   Justin Iurman <justin.iurman@uliege.be>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
         dsahern@kernel.org, justin.iurman@uliege.be
-Subject: [PATCH net 0/2] Correct the IOAM behavior for undefined trace type bits
-Date:   Mon, 11 Oct 2021 20:04:10 +0200
-Message-Id: <20211011180412.22781-1-justin.iurman@uliege.be>
+Subject: [PATCH net 1/2] ipv6: ioam: move the check for undefined bits
+Date:   Mon, 11 Oct 2021 20:04:11 +0200
+Message-Id: <20211011180412.22781-2-justin.iurman@uliege.be>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211011180412.22781-1-justin.iurman@uliege.be>
+References: <20211011180412.22781-1-justin.iurman@uliege.be>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(@Jakub @David: there will be a conflict for #2 when merging net->net-next, due
-to commit [1]. The conflict is only 5-10 lines for #2 (#1 should be fine) inside
-the file tools/testing/selftests/net/ioam6.sh, so quite short though possibly
-ugly. Sorry for that, I didn't expect to post this one... Had I known, I'd have
-made the opposite.)
+The check for undefined bits in the trace type is moved from the input side to
+the output side, while the input side is relaxed and now inserts default empty
+values when an undefined bit is set.
 
-Modify both the input and output behaviors regarding the trace type when one of
-the undefined bits is set. The goal is to keep the interoperability when new
-fields (aka new bits inside the range 12-21) will be defined.
+Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
+---
+ net/ipv6/ioam6.c          | 70 ++++++++++++++++++++++++++++++++++-----
+ net/ipv6/ioam6_iptunnel.c |  6 +++-
+ 2 files changed, 67 insertions(+), 9 deletions(-)
 
-The draft [2] says the following:
----------------------------------------------------------------
-"Bit 12-21  Undefined.  These values are available for future
-       assignment in the IOAM Trace-Type Registry (Section 8.2).
-       Every future node data field corresponding to one of
-       these bits MUST be 4-octets long.  An IOAM encapsulating
-       node MUST set the value of each undefined bit to 0.  If
-       an IOAM transit node receives a packet with one or more
-       of these bits set to 1, it MUST either:
-
-       1.  Add corresponding node data filled with the reserved
-           value 0xFFFFFFFF, after the node data fields for the
-           IOAM-Trace-Type bits defined above, such that the
-           total node data added by this node in units of
-           4-octets is equal to NodeLen, or
-
-       2.  Not add any node data fields to the packet, even for
-           the IOAM-Trace-Type bits defined above."
----------------------------------------------------------------
-
-The output behavior has been modified to respect the fact that "an IOAM encap
-node MUST set the value of each undefined bit to 0" (i.e., undefined bits can't
-be set anymore).
-
-As for the input behavior, current implementation is based on the second choice
-(i.e., "not add any data fields to the packet [...]"). With this solution, any
-interoperability is lost (i.e., if a new bit is defined, then an "old" kernel
-implementation wouldn't fill IOAM data when such new bit is set inside the trace
-type).
-
-The input behavior is therefore relaxed and these undefined bits are now allowed
-to be set. It is only possible thanks to the sentence "every future node data
-field corresponding to one of these bits MUST be 4-octets long". Indeed, the
-default empty value (the one for 4-octet fields) is inserted whenever an
-undefined bit is set.
-
-  [1] cfbe9b002109621bf9a282a4a24f9415ef14b57b
-  [2] https://datatracker.ietf.org/doc/html/draft-ietf-ippm-ioam-data#section-5.4.1
-
-Justin Iurman (2):
-  ipv6: ioam: move the check for undefined bits
-  selftests: net: modify IOAM tests for undef bits
-
- net/ipv6/ioam6.c                           |  70 ++++++++-
- net/ipv6/ioam6_iptunnel.c                  |   6 +-
- tools/testing/selftests/net/ioam6.sh       |  26 +++-
- tools/testing/selftests/net/ioam6_parser.c | 164 ++++++++-------------
- 4 files changed, 148 insertions(+), 118 deletions(-)
-
+diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
+index 5e8961004832..d128172bb549 100644
+--- a/net/ipv6/ioam6.c
++++ b/net/ipv6/ioam6.c
+@@ -770,6 +770,66 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+ 		data += sizeof(__be32);
+ 	}
+ 
++	/* bit12 undefined: filled with empty value */
++	if (trace->type.bit12) {
++		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		data += sizeof(__be32);
++	}
++
++	/* bit13 undefined: filled with empty value */
++	if (trace->type.bit13) {
++		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		data += sizeof(__be32);
++	}
++
++	/* bit14 undefined: filled with empty value */
++	if (trace->type.bit14) {
++		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		data += sizeof(__be32);
++	}
++
++	/* bit15 undefined: filled with empty value */
++	if (trace->type.bit15) {
++		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		data += sizeof(__be32);
++	}
++
++	/* bit16 undefined: filled with empty value */
++	if (trace->type.bit16) {
++		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		data += sizeof(__be32);
++	}
++
++	/* bit17 undefined: filled with empty value */
++	if (trace->type.bit17) {
++		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		data += sizeof(__be32);
++	}
++
++	/* bit18 undefined: filled with empty value */
++	if (trace->type.bit18) {
++		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		data += sizeof(__be32);
++	}
++
++	/* bit19 undefined: filled with empty value */
++	if (trace->type.bit19) {
++		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		data += sizeof(__be32);
++	}
++
++	/* bit20 undefined: filled with empty value */
++	if (trace->type.bit20) {
++		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		data += sizeof(__be32);
++	}
++
++	/* bit21 undefined: filled with empty value */
++	if (trace->type.bit21) {
++		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		data += sizeof(__be32);
++	}
++
+ 	/* opaque state snapshot */
+ 	if (trace->type.bit22) {
+ 		if (!sc) {
+@@ -791,16 +851,10 @@ void ioam6_fill_trace_data(struct sk_buff *skb,
+ 	struct ioam6_schema *sc;
+ 	u8 sclen = 0;
+ 
+-	/* Skip if Overflow flag is set OR
+-	 * if an unknown type (bit 12-21) is set
++	/* Skip if Overflow flag is set
+ 	 */
+-	if (trace->overflow ||
+-	    trace->type.bit12 | trace->type.bit13 | trace->type.bit14 |
+-	    trace->type.bit15 | trace->type.bit16 | trace->type.bit17 |
+-	    trace->type.bit18 | trace->type.bit19 | trace->type.bit20 |
+-	    trace->type.bit21) {
++	if (trace->overflow)
+ 		return;
+-	}
+ 
+ 	/* NodeLen does not include Opaque State Snapshot length. We need to
+ 	 * take it into account if the corresponding bit is set (bit 22) and
+diff --git a/net/ipv6/ioam6_iptunnel.c b/net/ipv6/ioam6_iptunnel.c
+index f9ee04541c17..9b7b726f8f45 100644
+--- a/net/ipv6/ioam6_iptunnel.c
++++ b/net/ipv6/ioam6_iptunnel.c
+@@ -75,7 +75,11 @@ static bool ioam6_validate_trace_hdr(struct ioam6_trace_hdr *trace)
+ 	u32 fields;
+ 
+ 	if (!trace->type_be32 || !trace->remlen ||
+-	    trace->remlen > IOAM6_TRACE_DATA_SIZE_MAX / 4)
++	    trace->remlen > IOAM6_TRACE_DATA_SIZE_MAX / 4 ||
++	    trace->type.bit12 | trace->type.bit13 | trace->type.bit14 |
++	    trace->type.bit15 | trace->type.bit16 | trace->type.bit17 |
++	    trace->type.bit18 | trace->type.bit19 | trace->type.bit20 |
++	    trace->type.bit21)
+ 		return false;
+ 
+ 	trace->nodelen = 0;
 -- 
 2.25.1
 
