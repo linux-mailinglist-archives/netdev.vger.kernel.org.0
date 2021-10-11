@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DB564296A5
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 20:15:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 031AE4296A8
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 20:15:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234409AbhJKSRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 14:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40862 "EHLO
+        id S234436AbhJKSRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 14:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234207AbhJKSRP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 14:17:15 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5823AC061570;
-        Mon, 11 Oct 2021 11:15:15 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id ls18-20020a17090b351200b001a00250584aso52240pjb.4;
-        Mon, 11 Oct 2021 11:15:15 -0700 (PDT)
+        with ESMTP id S234412AbhJKSRU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 14:17:20 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AEFC06161C;
+        Mon, 11 Oct 2021 11:15:19 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id f21so3106690plb.3;
+        Mon, 11 Oct 2021 11:15:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=7EvivvR4AP5hz1U9GTjeYeoyVBJH7aC/GlbhSD01mZE=;
-        b=YOwCN8E20B7futCnjtUYDgnC6p3I2/Z2YNqKwK0SqYKfAHWFN2g6t1HwwS+CjIx+WC
-         FYnzLSVutteTdQ0dfg2WK4xSM4nrBw54ro8BZyzh1NXg6t3YL/8pgfu8HHCvX0UkVuZO
-         goeVr+FAm6Ya/D7fCayTjGyXvjqbL0RfBq0avPzJE1aIQcVc9bDXQXu3UWM1OJZkIUSN
-         ze1aT2z6ZCuMA+gwJN7SZmH6JbGnFuFI0QiLZ/uyMkGJ4ZM8JSXgm0HXK6JKsQhX8d4O
-         p3PHkIMDzIztAXUaFxh/7BcJp0uSorQlk34lWjsZZW7x3kwM3UcbDzfBVsu2YyrvPy9r
-         DakA==
+        bh=MH+j5kT0lNOR5onkxg3uKJoFI/+8jsEEUIwv4asTgJw=;
+        b=CbLfJd1SrBEZE8W2u/dJvZpcuk48MFrU/ZoQdD9mswIOZIfHKoPmJESpuo4I/VRkQE
+         yMe9ifS5FOusc2o7fe1E6DidQXYZg0qtOxXiIvodUc1JDlItAssLiq8lFm8EO4vktFKW
+         brPOJ5I5r6PqIpSAcsefNj2dxqUlsqfz2EiqX6nd9hOfss3dU0kuC+gUWT6CydQW4F64
+         +oecVoUwN6KPogH/bXmy9pW8UN2SuTJO1fUc5+MhBTW3hXOfV15njpOkSDHV+tkOX7/2
+         sfHKeOYpsPX/Dd6Jc2Q/9OOl727ej26EhK+iALgNocgqSER3hFgRJBu8e5Qq+Q24LiVC
+         fjDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=7EvivvR4AP5hz1U9GTjeYeoyVBJH7aC/GlbhSD01mZE=;
-        b=xe9UBPOlR7U/GwwMndGrzEIRD9YarhLFhma/PtQmA6RmGfVAuTOEi8WroafWRHqAhj
-         zPFaka8l4yNU4LA1N69yEGsZYZKOfKNRn75NTBr5wN/uFfkedy/Q9pYl8EmH1GWoMjex
-         L98aINPIEPRmqIDjlISWuFlayjz3ih6izz1Lst0FqNzji/k9cCU6MrIgzc7jfypxBb0N
-         lltTmIIRaFQOYh463nAybBvzj+nFDwCPwPHRQIA0A5RXDw/udCrKY4fyObO4H4H/XOUx
-         StHcqfXWVPR78vG+jHuLZS8NpHhWYnOlP2guMBQGLAZg0CIwtu3z6gM/Q6L4Xx5VcMRH
-         ydSA==
-X-Gm-Message-State: AOAM530NhMb5oZuQkehNk7oWqpw0torbLnFJfetwnCbnaq0Nldycnbs/
-        i/kOY1Q04/gQw+mfDQypHNq8Azvnx24=
-X-Google-Smtp-Source: ABdhPJz5PYlSLANQUdqENyrAifOJWX1tW+S4elEElPSNJDaJ6uc7ZOX1uGxsho5+/qsnr50u/eWvvQ==
-X-Received: by 2002:a17:90b:38d0:: with SMTP id nn16mr583801pjb.96.1633976114555;
-        Mon, 11 Oct 2021 11:15:14 -0700 (PDT)
+        bh=MH+j5kT0lNOR5onkxg3uKJoFI/+8jsEEUIwv4asTgJw=;
+        b=UsiKC5wMywd8id/TuSVFthpI8uYX/0ELjyu/CUgxOchA2c7V1qGtwT/0Tz/7r1G5mX
+         ggV3poLJRpuHEEmc1AO7VNv4AYY43h3qXoP0GeknsvYNgOEm7rU5RCfPzhMQ4aTW9G9Q
+         ZqdS8pVqUPUq7KyqjOcHc372wBWXMUrXSy2cocA25ebSIgmkiwXCASPAgCQQkmLYL6fH
+         tY4E0zqB4ebKIpXK/MCi19gKnQzVruyLIcHohDEVLCLIYCZQbb+ZwZO/s4LmezAtRDyu
+         CPcyAEgj5EyOLa5ADkMt9OJcnOma2cA6WaZV/5n4ueXXl7+J8yxvP3ev0C7JxHhaEs21
+         hKmA==
+X-Gm-Message-State: AOAM532avqg9wBK1QyXPPTfT6AsiygL4WepOXp6LTugp2lrLzjdXFkfY
+        A2WLMyIvBoTVWDDzU+AjqqMs/HvT0/0=
+X-Google-Smtp-Source: ABdhPJxJKgMBmdBq0z02DcFmBijrf+J3GtnnfSDolXOJShKLtMss8/jdvGKOsotm3DTBdl9eAV3dEw==
+X-Received: by 2002:a17:902:7ec2:b0:13d:b563:c39 with SMTP id p2-20020a1709027ec200b0013db5630c39mr25829583plb.14.1633976119013;
+        Mon, 11 Oct 2021 11:15:19 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id w9sm145849pjk.28.2021.10.11.11.15.13
+        by smtp.gmail.com with ESMTPSA id e22sm8372324pfn.101.2021.10.11.11.15.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Oct 2021 11:15:14 -0700 (PDT)
+        Mon, 11 Oct 2021 11:15:18 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Andrew Lunn <andrew@lunn.ch>,
         netdev@vger.kernel.org (open list:ETHERNET PHY LIBRARY)
-Subject: [PATCH stable 4.19] net: phy: bcm7xxx: Fixed indirect MMD operations
-Date:   Mon, 11 Oct 2021 11:15:10 -0700
-Message-Id: <20211011181511.103732-1-f.fainelli@gmail.com>
+Subject: [PATCH stable 4.14] net: phy: bcm7xxx: Fixed indirect MMD operations
+Date:   Mon, 11 Oct 2021 11:15:16 -0700
+Message-Id: <20211011181516.103835-1-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -86,7 +86,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  1 file changed, 94 insertions(+)
 
 diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/bcm7xxx.c
-index acaf072bb4b0..35dc4ca696d3 100644
+index 3c5b2a2e2fcc..11f5a7116adb 100644
 --- a/drivers/net/phy/bcm7xxx.c
 +++ b/drivers/net/phy/bcm7xxx.c
 @@ -30,7 +30,12 @@
@@ -102,7 +102,7 @@ index acaf072bb4b0..35dc4ca696d3 100644
  #define MII_BCM7XXX_SHD_3_PCS_CTRL_2	0x6
  #define  MII_BCM7XXX_PCS_CTRL_2_DEF	0x4400
  #define MII_BCM7XXX_SHD_3_AN_STAT	0xb
-@@ -463,6 +468,93 @@ static int bcm7xxx_28nm_ephy_config_init(struct phy_device *phydev)
+@@ -462,6 +467,93 @@ static int bcm7xxx_28nm_ephy_config_init(struct phy_device *phydev)
  	return bcm7xxx_28nm_ephy_apd_enable(phydev);
  }
  
@@ -196,7 +196,7 @@ index acaf072bb4b0..35dc4ca696d3 100644
  static int bcm7xxx_28nm_ephy_resume(struct phy_device *phydev)
  {
  	int ret;
-@@ -634,6 +726,8 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
+@@ -637,6 +729,8 @@ static int bcm7xxx_28nm_probe(struct phy_device *phydev)
  	.get_strings	= bcm_phy_get_strings,				\
  	.get_stats	= bcm7xxx_28nm_get_phy_stats,			\
  	.probe		= bcm7xxx_28nm_probe,				\
