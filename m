@@ -2,151 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7F9A428702
-	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 08:46:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06EB1428712
+	for <lists+netdev@lfdr.de>; Mon, 11 Oct 2021 08:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234349AbhJKGsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 02:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50110 "EHLO
+        id S234357AbhJKG4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 02:56:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234314AbhJKGsg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 02:48:36 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8C7C061570;
-        Sun, 10 Oct 2021 23:46:36 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id s64so36559615yba.11;
-        Sun, 10 Oct 2021 23:46:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u2RXKo8mX6oo10DEsmNP5BEDBLL8MQItPDHRAJ9bFrc=;
-        b=LUSbRSKpYRawF8I5pFm0PgvSWuxTjogU7W+TdUjJ+hYKbWT9/VH8c+w0+ix4w0IPwd
-         IKFnCi8lyzBNgW09ksw+fWqIiMID0eru9kMEGx24yKggMJZ3utvotb54jULx6k9r5dz/
-         xP1mztWtMAmdpwmiRbdOnB/2hAi7NzV4MZn92Iv9q/8xaTNeZGpPNzYYaiCFd/FjJZik
-         7NAVuotnPFCTpyLt0b1nb1vFLV2+AK69CyNVOIesB4J4qdmVNHoUPW7iXESPX3acm3bS
-         OvHuEx6K19iMge4zwtBLVSQy6UBfxI4e1UkW5j+4sdDJbe+xXz+vFoG86g28jBYrGVhF
-         +vuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u2RXKo8mX6oo10DEsmNP5BEDBLL8MQItPDHRAJ9bFrc=;
-        b=2NKk5mmnfCvOUdtREidhNCcvh9XdvrzS5SmtrwtDCy8QGXXaG1iul74plYYJTyUarw
-         2DQbOcosuV5CjKHb56lFoPtYDSjgJwLil2OKgxpl3bhwzVdpC0U+98JykdxdHQ5cFLK4
-         HRpIw7DXBSMnKOvuHbnVqgpyapNT30KOFVEeyj/VIw7A7TZaHpFu5FpEnf6TZWY8N50o
-         obAWycXSbjW6K1/E4mwOZwO4jnIlkP1rR+VqFDWqS46Xld2eIIUcHgU6ZbXuafMWdhhN
-         vJ5xT/K8n2vBy87KKCtbfWScEW7wx45DfGkr0LiHsbdRPL9/w6iNkNOVUj6rTGjbU6xj
-         ujlA==
-X-Gm-Message-State: AOAM532S3TyEkxb3JK4BQ8In6C9T+praqe9K7dhoYL9sLs+Q1kEdtcJ1
-        RyVztAIQgafqnYsEfJhEPwFygAwq9peyiNhcnN8=
-X-Google-Smtp-Source: ABdhPJzs7YJ3fxKdUlO2Jl3N9PPvceWpglLFUCZe5Fzgrs8SVMJ8MUNhQFLoAG0QZx/zRDBjekRcO/cIccyhaNcGQbs=
-X-Received: by 2002:a25:e7d7:: with SMTP id e206mr18920168ybh.267.1633934795901;
- Sun, 10 Oct 2021 23:46:35 -0700 (PDT)
+        with ESMTP id S233148AbhJKG4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 02:56:40 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CEFC061570;
+        Sun, 10 Oct 2021 23:54:40 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 2694AC026; Mon, 11 Oct 2021 08:54:38 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1633935278; bh=Q1XTrDK/BGDzKbFG2dhkm+kOk216JpX5sdw/shtNSHg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p7VOLUjlRkextHPaWBWa/XwOyDowqLLVTFQd+U1fAS6xSwCiFA7+i8s/00UK0Gdgj
+         ubruoKaMj6Tf43FQ7LmxZ91yizpCxOEN4qnzOX2uAfSBiyLqpXES2rgQvNm2O+sbRq
+         1r0vTOHE7JP4ZZEr6a5Li2T2kd9OIBjgPgWIDurpjhMWymDPfRs8Vg/5SIuRv7aIvn
+         g1CItaQQGbrUVOw+FLZDE6i0YlIQ/w5nezaUZZ2Y52gQ62nHIVmi8yAn9J9G/5Im+S
+         HWn8Y50uVc6S/F5JC66mzsuH005eVNdew3TO9wz1TAljMVVJCp2P3vI0fnSJOLbzl+
+         8cn+fx3KOwqnQ==
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=unavailable version=3.3.2
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id E74C1C01F;
+        Mon, 11 Oct 2021 08:54:33 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1633935277; bh=Q1XTrDK/BGDzKbFG2dhkm+kOk216JpX5sdw/shtNSHg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vxZie6Il7PBWA/8/3k5PO8RyJLY/2/wefoagBL2AmYP/VTjV79tFiipXxOpO+2aM6
+         VDyT+Ue4rMk2pZ/5C7sq3Mo5CLqqmFtBw4SyFcZb05SBBUtD/PBEyEwPpDLOjV75vu
+         YYN67GfHLfzLWknJ9QfitbZvapIyq/q3Az5bZbULMG1udrWc4BSKwq+EXHkWaM4IS4
+         njNdyVzzz2iqBUCU7mIBDpX+oMmXAS1cBOLe3gTlCiY/kwwzw2Nmo1VbcB+Z41pPjD
+         /44JElbQ0NyzP+lnYjHdyJqiWYNiAkd7ALuc5cZ32EpllbOSnG1hapv5E6KB2NKAiK
+         5lxWBc+axfzHA==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id f827bec5;
+        Mon, 11 Oct 2021 06:54:30 +0000 (UTC)
+Date:   Mon, 11 Oct 2021 15:54:15 +0900
+From:   asmadeus@codewreck.org
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+06472778c97ed94af66d@syzkaller.appspotmail.com>,
+        davem@davemloft.net, ericvh@gmail.com, glider@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, lucho@ionkov.net,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+Subject: Re: [syzbot] KMSAN: uninit-value in p9pdu_readf
+Message-ID: <YWPfl8FFI5uKX499@codewreck.org>
+References: <000000000000baddc805cdf928c3@google.com>
+ <YWKmBWfBS3oshQ/z@codewreck.org>
+ <CACT4Y+bqD=EkkQB6hm+FVWVraDBChnRgqViLTqvmVrVM=1gH+w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20211007194438.34443-1-quentin@isovalent.com> <CAEf4BzZd0FA6yX4WzK6GZFW2VbBgEJ=oJ=f4GzkapCkbAGUNrA@mail.gmail.com>
- <CACdoK4KaaV_OZJdUz30VyQYyJNeseV=7LX+akeeXpFhQe6Zh6w@mail.gmail.com>
-In-Reply-To: <CACdoK4KaaV_OZJdUz30VyQYyJNeseV=7LX+akeeXpFhQe6Zh6w@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 11 Oct 2021 08:46:24 +0200
-Message-ID: <CAEf4Bzaq1CdyhCJFDBF6+6u59h+=zD7on5h_dEiOCLNwDwBK5Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 00/12] install libbpf headers when using the library
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+bqD=EkkQB6hm+FVWVraDBChnRgqViLTqvmVrVM=1gH+w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 9, 2021 at 11:03 PM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> On Fri, 8 Oct 2021 at 20:13, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
->
-> > Tons of ungrateful work, thank you! Applied to bpf-next.
-> >
-> > I did a few clean ups (from my POV), see comments on relevant patches.
->
-> Thanks for that. I don't mind the clean ups. There are several of them
-> I considered before sending but wasn't sure about, so it's a good
-> thing that you did it :).
->
-> > Also in a bunch of Makefiles I've moved `| $(LIBBPF_OUTPUT)` to the
-> > same line if the line wasn't overly long. 80 characters is not a law,
-> > and I preferred single-line Makefile target definitions, if possible.
->
-> No particular preference on my side, so OK.
->
-> >
-> > There is one problem in bpftool's Makefile, but it works with a
-> > limited case of single file today. Please follow up with a proper fix.
->
-> Right, good catch. I'm sending the fix.
+Thanks for the reply,
 
-thanks
+Dmitry Vyukov wrote on Mon, Oct 11, 2021 at 07:56:05AM +0200:
+> > would be 'len' in p9pdu_vreadf, which has to be set as far as I can understand:
+> > > uint16_t len;
+> > >
+> > > errcode = p9pdu_readf(pdu, proto_version,
+> > >                                 "w", &len);
+> > > if (errcode)
+> > >         break;
+> > >
+> > > *sptr = kmalloc(len + 1, GFP_NOFS);
+> >
+> > with relevant part of p9pdu_readf being:
+> > > case 'w':{
+> > >                int16_t *val = va_arg(ap, int16_t *);
+> > >                __le16 le_val;
+> > >                if (pdu_read(pdu, &le_val, sizeof(le_val))) {
+> > >                        errcode = -EFAULT;
+> > >                        break;
+> > >                }
+> > >                *val = le16_to_cpu(le_val);
+> > >        }
+> > > ...
+> > > return errcode;
+> >
+> > e.g. either len or errcode should be set...
+> >
+> > But:
+> > > Local variable ----ecode@p9_check_errors created at:
+> > >  p9_check_errors+0x68/0xb90 net/9p/client.c:506
+> > >  p9_client_rpc+0xd90/0x1410 net/9p/client.c:801
+> >
+> > is something totally different, p9_client_rpc happens before the
+> > p9pdu_readf call in p9_client_stat, and ecode is local to
+> > p9_check_errors, I don't see how it could get that far.
+> >
+> > Note that inspecting p9_check_errors manually, there is a case where
+> > ecode is returned (indirectly through err = -ecode) without being
+> > initialized,
+> 
+> Does this connect both stacks? So the uinit is ecode, is it used in
+> p9pdu_vreadf? If yes, then that's what KMSAN reported.
 
->
-> >
-> > Btw, running make in bpftool's directory, I'm getting:
-> >
-> > make[1]: Entering directory '/data/users/andriin/linux/tools/lib/bpf'
-> > make[1]: Entering directory '/data/users/andriin/linux/tools/lib/bpf'
-> > make[1]: Nothing to be done for 'install_headers'.
-> > make[1]: Leaving directory '/data/users/andriin/linux/tools/lib/bpf'
-> > make[1]: Leaving directory '/data/users/andriin/linux/tools/lib/bpf'
-> >
-> > Not sure how useful those are, might be better to disable that.
->
-> I had a look for bpftool, this is because we always descend into
-> libbpf's directory (FORCE target). Removing this FORCE target as I did
-> in samples/bpf/ avoids the descent and clears the output. I'll send a
-> patch.
+Hm...
+Assuming that's the uninit, it'd have been propagated as the return
+value as req = p9_client_rpc; passed the IS_ERR(req) check as not an
+error, then passed to p9pdu_readf(&req->rc (later 'pdu')...)
+That would then try to read some undefined address in pdu_read() as
+memcpy(data, &pdu->sdata[pdu->offset], len)
+and returning another undefined value as
+sizeof(__le16) - min(pdu->size - pdu->offset, __le16)
 
-There is a way to prevent make from logging these enter/leave
-messages, which will solve a similar problem discussed below.
+Here magic should happen that makes this neither a success (would set
+*val e.g. len in the kmalloc line that complains) or an error (would set
+errcode e.g. p9pdu_vreadf() would return before reaching that line)
 
->
-> >
-> > When running libbpf's make, we constantly getting this annoying warning:
-> >
-> > Warning: Kernel ABI header at 'tools/include/uapi/linux/netlink.h'
-> > differs from latest version at 'include/uapi/linux/netlink.h'
-> > Warning: Kernel ABI header at 'tools/include/uapi/linux/if_link.h'
-> > differs from latest version at 'include/uapi/linux/if_link.h'
-> >
-> > If you will get a chance, maybe you can get rid of that as well? I
-> > don't think we need to stay up to date with netlink.h and if_link.h,
-> > so this seems like just a noise.
->
-> I can look into that. Are you sure you want the warnings removed? Or
-> would it be cleaner to simply update the headers?
+I guess with undefineds anything can happen and this is a valid link?
 
-Yeah, let's remove checks for those headers. We don't need to keep
-them up to date, if there will be new features we need to use from
-libbpf, we can update, if it's not already up-to-date.
 
->
-> >
-> > There was also
-> >
-> > make[4]: Nothing to be done for 'install_headers'.
-> >
-> > when building the kernel. It probably is coming from either
-> > bpf_preload or iterators, but maybe also resolve_btfids, I didn't try
-> > to narrow this down. Also seems like a noise, tbh. There are similar
-> > useless notifications when building selftests/bpf. If it doesn't take
-> > too much time to clean all that up, I'd greatly appreciate that!
->
-> I haven't looked into it yet, but I can do as a follow-up. I'll post
-> the patches for bpftool first because I prefer to submit the fix for
-> bpftool's Makefile as soon as possible, and will look at this next.
+I would have assumed kmsan checks would fail sooner but I don't see what
+else it could be.
 
-sure. See also above about just silencing these somewhat useless
-messages (it's some make variable or something like that, don't
-remember)
 
->
-> Thanks,
-> Quentin
+> > so I will send a patch for that at least, but I have no
+> > idea if that is what has been reported and it should be trivial to
+> > reproduce so I do not see why syzbot does not have a reproducer -- it
+> > retries running the last program that triggered the error before sending
+> > the report, right?
+> 
+> Yes.
+
+Ok, I guess there are conditions on the undefined value to reach this
+check down the road, even if the undefined return itself should be
+always reproducible.
+
+Either way Pavel Skripkin reached the same conclusion as me at roughly
+the same time so I'll just go with it.
+
+-- 
+Dominique
