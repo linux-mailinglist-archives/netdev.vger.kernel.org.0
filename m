@@ -2,97 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A5A42A0F1
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 11:24:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB4A942A12A
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 11:33:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235386AbhJLJ06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 05:26:58 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:33411 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232657AbhJLJ06 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 05:26:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1634030696; x=1665566696;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=bs0INR+2JmXVTJ0eYNOx0JcEiYZsgHULLhhgulKJJuk=;
-  b=az9AqVnGPRu+yLNechF2XW9RIGya0WG3uSUBrQiQHIAjVIomNjom+/sG
-   qXG6Fj3fdfxf/2F/vxNWU1ArnJ3DUNmt/mFukHN+GXS4DbdtourX8uZSb
-   u+WyuztCYF+LiiVGwl77Z2VP9QtdvORfAENAuQhs+YhN1Z8Og4gH7JrgR
-   QocM/lMQZQzKrBpzoXwI94QRxIB7gQwmg7+zyKrAiZMVvEHwlj9YIvHgk
-   3UIl1bxF/1WcVoU5jU88PUNA2du747q0z134vxtndrqrDLDZgrcb8G+si
-   hPGmCGiUivMN26J8gDHdRbvN6uAG5hIsHtmsVD7xRp0KsWFzBn7CXBZsY
-   A==;
-IronPort-SDR: e1Isv2EWPKycAYKggO5asr82+fS1ujSR1JJfo+UrvPlPggxHzbkfXIJELqDj6d0vTnNEw89Hfm
- 2RDoR1LJch0jeiAIXNK5bQvCNe/JTN5BLF7DwSNnTDW7fVfoZ9IGVHyjB123WeRHCcUyOxcYu2
- eO6sbmEi1l0YzokQUNjt33CtjnugQoG6fWgxPZ/S4hFBIwAdM5Y0ONZwSHoG0m9RKAlWMuh4Rf
- yKqGTy+kV9yzBwpds2KkmOiA/WWi/F00pnVtcFVin06PryHSpZrsNkahaYzIxS7M3IsHjEt6iv
- 8CFCCUjE3cbCQUzaimNLPHjl
-X-IronPort-AV: E=Sophos;i="5.85,367,1624345200"; 
-   d="scan'208";a="132686877"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Oct 2021 02:24:55 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 12 Oct 2021 02:24:55 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Tue, 12 Oct 2021 02:24:53 -0700
-Subject: Re: [PATCH v2 1/2] net: macb: Clean up macb_validate
-To:     Antoine Tenart <atenart@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>,
-        <netdev@vger.kernel.org>
-CC:     Russell King <linux@armlinux.org.uk>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-References: <20211011165517.2857893-1-sean.anderson@seco.com>
- <163402758460.4280.9175185858026827934@kwain>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <af60dfb1-9e7d-e9ce-3ee9-ce3ef8efae9c@microchip.com>
-Date:   Tue, 12 Oct 2021 11:24:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S235755AbhJLJfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 05:35:00 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:59536 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235715AbhJLJfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 05:35:00 -0400
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id B14721FF4D;
+        Tue, 12 Oct 2021 09:32:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1634031177; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uUH2uniB3EQO3dwCrSFaoRzeR2U8u7SDS04Yd4v70+U=;
+        b=YhyfbjO5nAw5bwwzh728WNI5DvAqHjJZFQzjmHA1K2+FdNCUYVxUjqsq9Ae4F6bDEzoqJQ
+        EEwVGKESG8YU55NGTFA+CFcmsIM5Doln5oqhNIvnNKw5GzbJco1gWy+9X50dKiW+sFqa2K
+        BV+UzYXo89KlPkPy75N9K1j65LCFY+I=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 69D8E132D4;
+        Tue, 12 Oct 2021 09:32:57 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 84kbGUlWZWHjaAAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Tue, 12 Oct 2021 09:32:57 +0000
+Date:   Tue, 12 Oct 2021 11:32:55 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Quanyang Wang <quanyang.wang@windriver.com>
+Cc:     Roman Gushchin <guro@fb.com>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>, Ming Lei <ming.lei@redhat.com>,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] cgroup: fix memory leak caused by missing
+ cgroup_bpf_offline
+Message-ID: <20211012093255.GA14510@blackbody.suse.cz>
+References: <20211007121603.1484881-1-quanyang.wang@windriver.com>
+ <20211011162128.GC61605@blackbody.suse.cz>
+ <6d76de0b-9de7-adbe-834b-c49ed991559d@windriver.com>
 MIME-Version: 1.0
-In-Reply-To: <163402758460.4280.9175185858026827934@kwain>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6d76de0b-9de7-adbe-834b-c49ed991559d@windriver.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/10/2021 at 10:33, Antoine Tenart wrote:
-> Hello Sean,
-> 
-> Quoting Sean Anderson (2021-10-11 18:55:16)
->> As the number of interfaces grows, the number of if statements grows
->> ever more unweildy. Clean everything up a bit by using a switch
->> statement. No functional change intended.
-> 
-> I'm not 100% convinced this makes macb_validate more readable: there are
-> lots of conditions, and jumps, in the switch.
+On Tue, Oct 12, 2021 at 02:22:13PM +0800, Quanyang Wang <quanyang.wang@windriver.com> wrote:
+> Before this commit, percpu_ref is embedded in cgroup, it can be freed along
+> with cgroup, so there is no memory leak. Since this commit, it causes the
+> memory leak.
+> Should I change it to "Fixes: 4bfc0bb2c60e ("bpf: decouple the lifetime of
+> cgroup_bpf from cgroup itself")"?
 
-I agree with Antoine that the result is not much more readable.
+I see. The leak is a product so I'd tag both of them and explain it in
+the commit message.
 
-Regards,
-   Nicolas
-
-> Maybe you could try a mixed approach; keeping the invalid modes checks
-> (bitmap_zero) at the beginning and once we know the mode is valid using
-> a switch statement. That might make it easier to read as this should
-> remove lots of conditionals. (We'll still have the one/_NA checks
-> though).
-> 
-> (Also having patch 1 first will improve things).
-> 
-> Thanks,
-> Antoine
-> 
-
-
--- 
-Nicolas Ferre
+Thank you,
+Michal
