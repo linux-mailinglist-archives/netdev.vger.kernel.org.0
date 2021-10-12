@@ -2,201 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 668DB429D1C
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 07:27:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F7EC429D50
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 07:44:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232353AbhJLF3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 01:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231814AbhJLF3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 01:29:11 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D18C061570;
-        Mon, 11 Oct 2021 22:27:10 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id e144so22344364iof.3;
-        Mon, 11 Oct 2021 22:27:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:message-id:in-reply-to:references:subject:mime-version
-         :content-transfer-encoding;
-        bh=M7oS7ey6ejmlM7K3nuYivAp1SkOERckXi+zgz60GagA=;
-        b=N+NTFJqUSbbZ4E8N9vg84NUtOD0UgLKUKdhXXJgTJgK0ntSm7cFoClKO3Oa+glyZ44
-         iU4z7mdfVxO7w5gMJaj9q6Y6VFhzxgGHVy2BSArVGYHiVilVkThmF7Culc4CU7Q6bnug
-         4jkYC8NIgboVo0LbevjR0Z5rL6MoYGyTLp/oCR+Pss4yrvvbz777EyzkWitba7/3cgHE
-         SElGcKjLP0fDnsIumvPNSluJ+Lsj14F1sjiHeuKmAEHgbPn8ieVjQSajtTiIk9zJNVE+
-         yR19FEqqIciFfDg/qv1sv/Tu1G0YEYZYlG6/VvQTzt11yU2O91csoPjf6Fd30MTnJBWY
-         f3YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:message-id:in-reply-to:references
-         :subject:mime-version:content-transfer-encoding;
-        bh=M7oS7ey6ejmlM7K3nuYivAp1SkOERckXi+zgz60GagA=;
-        b=nVqBbGH1pIyD2O6pCkFKBjvxV2BiYDMgbHtxqqVCw6+ePsKYcwZnWpo4ysF6VeEArY
-         mBS1VgXuPJ5OBQIu4EQay52auHglNdOyDWbu4K2amVLH5a+wXOtSsOBOwr7CIK4+HpQT
-         AVoc6U+7VItJyzVAGIXHe+7xusf7W+1Ucn5CvLOpZNAqJWNMFvDe3i+QTutmQo3BNE3y
-         Ck3mte7fxvwIbOsL9qnAaqclPFQWb7pg+GbjkC6bSgFYQrzYv4A7vA77QLAsNtptsh/s
-         4CNHKvXUbx5qgwYiOnTbMNlbfz9Y7Ak+wsRWDuqq5A6SYkcDXtnDw5ZzQeOZCsajvWHI
-         Xi3w==
-X-Gm-Message-State: AOAM533UeBVkKXNxASKRuyk7DV2rU4mTerjAo31LW9hFvEs2WbvJL5uO
-        wticHMgwvTE9DI5m9sFNucI=
-X-Google-Smtp-Source: ABdhPJzxfydZW/gJ28q8YqUVrkTRTCdPZqNUbk2Lxw5F8+9Ct9YOmIA/nHyHkrhxf17cboR7QDP1Ng==
-X-Received: by 2002:a05:6638:2405:: with SMTP id z5mr21857674jat.124.1634016429706;
-        Mon, 11 Oct 2021 22:27:09 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id a4sm5087406ild.52.2021.10.11.22.27.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Oct 2021 22:27:09 -0700 (PDT)
-Date:   Mon, 11 Oct 2021 22:27:01 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     "liujian (CE)" <liujian56@huawei.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "jakub@cloudflare.com" <jakub@cloudflare.com>,
-        "lmb@cloudflare.com" <lmb@cloudflare.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>
-Message-ID: <61651ca5cbf46_2215c2088b@john-XPS-13-9370.notmuch>
-In-Reply-To: <e60cf9bd85924ead98bb5bfd5b7e4919@huawei.com>
-References: <20210929020642.206454-1-liujian56@huawei.com>
- <61563ebaf2fe0_6c4e420813@john-XPS-13-9370.notmuch>
- <e60cf9bd85924ead98bb5bfd5b7e4919@huawei.com>
-Subject: RE: [PATCH v4] skmsg: lose offset info in sk_psock_skb_ingress
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S232591AbhJLFqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 01:46:53 -0400
+Received: from mx0b-0064b401.pphosted.com ([205.220.178.238]:61222 "EHLO
+        mx0b-0064b401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229688AbhJLFqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 01:46:52 -0400
+Received: from pps.filterd (m0250811.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19C5ffVi006188;
+        Tue, 12 Oct 2021 05:44:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=subject : to : cc
+ : references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=PPS06212021;
+ bh=OMs8bo9p0zA1QX7WpyX/I+hgX507vOvSmg9es2nex4M=;
+ b=jLvFeqBBd8i2WYWxe2MkB7jQXRpsyP8rT90DqKXZGOcIVsqv0KeXYPB2MJtnplcXpsdV
+ VSYBXceI0vfhEHh1787xte675/TDHKylB1U9ogS87efpS++Syd0K/mk4H45YB8kQmCwA
+ Q+JQuwWgQWgLy4dAzBLFLMqrVsWgv9+tEc68+cgTzuJ6G/ovozkNX6seoOky/b9zJwRs
+ 66mP3kSQP3FVs9ZqsgJAENVwdZss/YEl8P7FfBPhbU2dKkKhdFdk8YzIhPK2i6W+qaHV
+ mu04IMxkTDE4TS/tWvJtMrFIUMXLmYT/yQMmJshmN/uJhkQda7Q+fGHLLx/RpEKn83XD BQ== 
+Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2048.outbound.protection.outlook.com [104.47.56.48])
+        by mx0a-0064b401.pphosted.com with ESMTP id 3bmpp7rjjq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Oct 2021 05:44:25 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=M3UfxqgKJyAGkTJEDaIor/jwqiqTk+mvp0A6Xa7l5XwiqlapfZGdsN5FMe57j4R0uDnAqDIxue4IOoBu/CWOPZJJ7f6Q6Gg/L8Hy+MnzjMM6i0VqpGIGflg0VzqOhQTn75Q/fYyjZDOQo9FwQgwNnyNW+iVoq7KsoBOtT4RiFiM+aGmF1xOCkJUhMI+XyjL+gNDuaYKt27hPFhCDfhm5BxMLYIY8r9JagdWqD2Q4j4Y3z2EN5KNGDrruN3yzwF3FmNaEBINP5DH17LyoXupf8E/ZoTJjnEmIWqqTxE2WgMPv5hLVpFvdDHjwpnwGHmcHeMEfKsgf3n1yslHmZLrJyA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OMs8bo9p0zA1QX7WpyX/I+hgX507vOvSmg9es2nex4M=;
+ b=cX+ttbi9JKrtpvaNcHLIEHm7wwWgfU/b4rYat226DdEQqBo1iHUpTK1sBB2XOnr3zl4U/T3QtJ8dqBbqDonRCwb0znSShxz1aq8MBfObYn7Y+XCgloGCQr8Anqiquqdzj1ep2I2BUU7Gor9z1/oM5bwXvq2Iu8kEcxffjw5l2/dq8mza0Il/hLC3I+tOcOYW9LVvpweFUaEuVD+fcAL2djQG/+SF87fypucNnqmuLdKRCRZG3zAhe84pbTKjVx/11iocpCQadfoFBKs+I1dF/zIG7xcrl7cru+9WFAUoVs2XoXrrCuMuQWpgHYAtro2DLfscIAR3BgZsrY78wVE3Cw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+Authentication-Results: fb.com; dkim=none (message not signed)
+ header.d=none;fb.com; dmarc=none action=none header.from=windriver.com;
+Received: from PH7PR11MB5819.namprd11.prod.outlook.com (2603:10b6:510:13b::9)
+ by PH0PR11MB5128.namprd11.prod.outlook.com (2603:10b6:510:39::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Tue, 12 Oct
+ 2021 05:44:22 +0000
+Received: from PH7PR11MB5819.namprd11.prod.outlook.com
+ ([fe80::3508:ff4c:362d:579c]) by PH7PR11MB5819.namprd11.prod.outlook.com
+ ([fe80::3508:ff4c:362d:579c%5]) with mapi id 15.20.4587.026; Tue, 12 Oct 2021
+ 05:44:22 +0000
+Subject: Re: [RESEND][PATCH] cgroup: fix memory leak caused by missing
+ cgroup_bpf_offline
+To:     Daniel Borkmann <daniel@iogearbox.net>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
+Cc:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Roman Gushchin <guro@fb.com>
+References: <20211008004600.1717681-1-quanyang.wang@windriver.com>
+ <c4d12954-aa78-625e-3be7-06d4fc906bf7@iogearbox.net>
+From:   Quanyang Wang <quanyang.wang@windriver.com>
+Message-ID: <6c15c2d5-39c2-5c86-b9ab-d64089e8d654@windriver.com>
+Date:   Tue, 12 Oct 2021 13:44:03 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+In-Reply-To: <c4d12954-aa78-625e-3be7-06d4fc906bf7@iogearbox.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: HK0PR01CA0062.apcprd01.prod.exchangelabs.com
+ (2603:1096:203:a6::26) To PH7PR11MB5819.namprd11.prod.outlook.com
+ (2603:10b6:510:13b::9)
+MIME-Version: 1.0
+Received: from [128.224.162.199] (60.247.85.82) by HK0PR01CA0062.apcprd01.prod.exchangelabs.com (2603:1096:203:a6::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18 via Frontend Transport; Tue, 12 Oct 2021 05:44:18 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b2f9af19-586f-4300-a300-08d98d43573b
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5128:
+X-Microsoft-Antispam-PRVS: <PH0PR11MB512893FC0FC186675593D6D0F0B69@PH0PR11MB5128.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 64lQKLGF44F6ICzlPooGEmRuadmq3I2S8k/HmR0r7bmHnVrNqhUO+zRqfC84vVPQtAv4T9cns7oP2cCVhuKJ2iyP+INenpSgUkSlZvPNdFbi+ZodRW93sBFkzxI0NPTCNtF5w1WOtxnheelmC9AjS57JUtSyWLQLKPqiSGYvs19kZM42L+CqvDzcHcnNTTK4NerkQPG0uIc0WE1kAp1vfIewRGMp+BNJM5pRb0NMQs2g5dlJ2DWNm54e5jmXTe8I0t/mwZygnnuI73zm5r/2TjsF9Dp7C0OmgKY25MzlThPkRLmEUPrgPqkuMEhFoDthIzooPLe5FoczJ9QL2qWemLjcP1tKFI+/npTp1Oy5reL9VVxYXcCxhgxb45Ofz58Jqk7kKAouTzu+X2FGn1r0MWnOSGgKHe+P9kdjj5jExHxXIdOs7ur1Gc52Bm5AZaM/15ZhfsSSvL+CESqeB2F3XsUB2g06+e6cGvNh39tznX+lLewCroy2at0o2J/A0PsBfFx4IdNLqqyyYN5r0Rji/IOb29UKpOLDoLlVMGj4yS4CQNQD7LMfm3lraEilwb9X7b0f+9iFGMG3QDuGzz8M6tDuSXi4wauMIXj1ZGRLLdAqIVdGyeOJhHqmw19KiF8tILtiTLSifkTUH1jlltAHSPI7xlC9zfpM81EjdFIBI8xKeEl9rSb/tRojED7PszvOkX/kajQdTS7x0I9TtIK3fhkWzFSB1fUf2mEZ/527mAu/fsTUmcsfEXCT9fE+KsH3
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR11MB5819.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(83380400001)(86362001)(52116002)(44832011)(53546011)(38350700002)(38100700002)(66476007)(6666004)(66946007)(2616005)(66556008)(956004)(6486002)(31696002)(26005)(8936002)(16576012)(8676002)(508600001)(36756003)(2906002)(186003)(316002)(4326008)(5660300002)(7416002)(110136005)(6706004)(31686004)(78286007)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aW56SzlSTk5lZGZFeUpYeUxTMGZmUDdyeUNKdG1rRjNlS09OTGRkQ0pjN3Q3?=
+ =?utf-8?B?d3VQRE9FdTMxbDVmOXZ2a29IZEp6Y0I2SnQrVUFkZEhxY05VbFhIK3RpbkJP?=
+ =?utf-8?B?Sndjc1dtNFJNeTN0ZVdMd3FDTXdyY1RqcnBBM1gvTDFTcDEzajk4eFI4QTBK?=
+ =?utf-8?B?QkY2R0xVSm9MNWh3VitvWld5RXJSWUpZbHZMQU5BOFV4V0lrVCs0TkxYWEZU?=
+ =?utf-8?B?Q3BhazJvcEZlb3c4WndKUzBUQ3c0dHNwQ3ZEN2tNTm1mZXluSEZ3M2x1VGtG?=
+ =?utf-8?B?aVdqUGZXbTJ2QlI3VWRJc1poblBaYmczSXBkSVNsbGpDWHo1UHlXRmFEZGlR?=
+ =?utf-8?B?emZ6SWdEMUUyaDlONXloMjkzVVFoZ1MrN1FyV2hoVk1NQzdrTmo4eDBPV3Vz?=
+ =?utf-8?B?MmFuVUt3cnB0dHF3SHR1QnBtOXNxZGJsOVBmSUFKNXAxUmhjVmpUSlRZekZD?=
+ =?utf-8?B?MGlPRy90Q1hQdlJrSGJGYTVOdlQ5Tkw1TzJCQ1ppWHFHSkN2NTR5OVRDRUtK?=
+ =?utf-8?B?Q0dtRTQ2akZrY3lHSDMxdnBQUmZ0K0lYeWVaQUZ6Y0NkdFZTc0VaVjAyeHdG?=
+ =?utf-8?B?UlZjVHRGSTI5ckNQODNmanNrMnExMU5iR3lWTU9YTGN5dk5zanBBWWhWaG8r?=
+ =?utf-8?B?d21lbmRIaWQwQlF0SzhxNlhIY00xdVVmbGJ3KzdaMGMvVU9GK0NZejAzbkk4?=
+ =?utf-8?B?V1gydS95SW9Ob2tUQU13dnZNRDlYN0ZKRDFKSGtHMnhFSjllbFFjNDlqU3do?=
+ =?utf-8?B?OXEzUGlpSitaa0duOExxR0tPdDV5dS9KcWt1SVZoN3NNN1hmNllEd0lMc1Ey?=
+ =?utf-8?B?OWZqNHV2blN2czVUUVJNRnN3aVZiZmtYMGNwL0QrTi9vM0E4Tm9sRlBDVTFY?=
+ =?utf-8?B?bzR3WCtRM1ExaGM5WDZ6QTFncmREQWFhVlBLSWZRbXVwelh3L0poOGFIZjZ1?=
+ =?utf-8?B?ZVRVbVVORFl3WmpJbFEvN29IUDVwVEJXaVZQZmNIaG04MmpJR3dpOVpTRHZO?=
+ =?utf-8?B?d2lWa0JmWSthcDRiRVVpc2lMTitwTVphakFvRUFyVC84NWRyQmR2bzQ1QWZP?=
+ =?utf-8?B?dWh6d01SYnc2ZUFTNTR4ODFVRy9rMTU0K0V4Q0M2VEtPenlWalJ5VzZCQnhG?=
+ =?utf-8?B?OFBWMTd4bWw3QjUvcUVsNzltdVlwNnRDOUZVZGVuMFVUMFVHakxibnBqbkYy?=
+ =?utf-8?B?NlBFTi9iajlhY0plQnVHV25jKy9yTlVoK1RPQU1TRDB4TDhIVEMyemo0a3NS?=
+ =?utf-8?B?TVFtOTQyZ3hPZS9BckM3YmVOcmxpYzg4WENHL1I3MXZjR1ExK1dlck1zUVI4?=
+ =?utf-8?B?MmcxZlhybGV3L2E3TnVaKzV0YXRQVm5mZmtqdEVLQk5vd3RiKzE2Vjc4Nk1x?=
+ =?utf-8?B?V3o2a1ZlT2xJdklMTVhWMUFXQWNwanpxVkxnSE9iWitWOUNsV3VBalQ3UEZy?=
+ =?utf-8?B?VTFNcWszQlh4SGluVGkzOXQzcThYaDVFZ1NGdzJndTJmVnRJYVJNUlQ0ZEpI?=
+ =?utf-8?B?SXBuWGVIY1IrOXJRbm5nakhTbmg3RFFmV3hPQnpBZmMvZnBzWGhhZkZZSkV3?=
+ =?utf-8?B?c3prMnp6NWNLNElSZUZxemYrZFE5YUp3NVdzZGhnc0NoeXc0TERxb0N2ZndX?=
+ =?utf-8?B?cWRGM2lYa3JQdHFQZElpY24zRjJyMmlQVkFxZnFqUUowai9Dd0FJSzIzNy9s?=
+ =?utf-8?B?OWdVU2JTV0pvVlVqMTdoeFFpNEpCS3N4YkFLb3RKT2tzcWk0NFV4MjhaYnpk?=
+ =?utf-8?Q?qCRlO45Di+upv2qKAk2eU8I1DH9kApZ7K2jHAZG?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b2f9af19-586f-4300-a300-08d98d43573b
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR11MB5819.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2021 05:44:21.7279
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1osrOyrj+au2q6W1lReTWXgAFSid6/7XAVmUPXyWTEFKbPgQC/NP6YNywL9YgYFE5xIUpLkK/nWuyelmI5onBQ7DAZBe5uHjYLnkckkhyMY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5128
+X-Proofpoint-ORIG-GUID: 70GiwvFX0lmEfPHxC3rsoClhdGoOZLbt
+X-Proofpoint-GUID: 70GiwvFX0lmEfPHxC3rsoClhdGoOZLbt
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-12_01,2021-10-11_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
+ clxscore=1011 priorityscore=1501 suspectscore=0 lowpriorityscore=0
+ bulkscore=0 malwarescore=0 adultscore=0 phishscore=0 impostorscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2110120031
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[...]
+Hi Daniel,
+Thank you for your review.
 
-> > > Thanks. Please add Fixes tags so we can track these I've added it here.
-> > >
-> > > This has been broken from the initial patches and after a quick glance
-> > > I suspect this will need manual backports if we need it. Also all the
-> > > I use and all the selftests set parser to a nop by returning skb->len.
-> > >
-> > > Can you also create a test so we can ensure we don't break this again?
-> > Okay, I will do this after the holiday.
+On 10/11/21 9:44 PM, Daniel Borkmann wrote:
+> [ +Roman ]
 > 
+> On 10/8/21 2:46 AM, quanyang.wang@windriver.com wrote:
+>> From: Quanyang Wang <quanyang.wang@windriver.com>
+>>
+>> When enabling CONFIG_CGROUP_BPF, kmemleak can be observed by running
+>> the command as below:
+>>
+>>      $mount -t cgroup -o none,name=foo cgroup cgroup/
+>>      $umount cgroup/
+>>
+>> unreferenced object 0xc3585c40 (size 64):
+>>    comm "mount", pid 425, jiffies 4294959825 (age 31.990s)
+>>    hex dump (first 32 bytes):
+>>      01 00 00 80 84 8c 28 c0 00 00 00 00 00 00 00 00  ......(.........
+>>      00 00 00 00 00 00 00 00 6c 43 a0 c3 00 00 00 00  ........lC......
+>>    backtrace:
+>>      [<e95a2f9e>] cgroup_bpf_inherit+0x44/0x24c
+>>      [<1f03679c>] cgroup_setup_root+0x174/0x37c
+>>      [<ed4b0ac5>] cgroup1_get_tree+0x2c0/0x4a0
+>>      [<f85b12fd>] vfs_get_tree+0x24/0x108
+>>      [<f55aec5c>] path_mount+0x384/0x988
+>>      [<e2d5e9cd>] do_mount+0x64/0x9c
+>>      [<208c9cfe>] sys_mount+0xfc/0x1f4
+>>      [<06dd06e0>] ret_fast_syscall+0x0/0x48
+>>      [<a8308cb3>] 0xbeb4daa8
+>>
+>> This is because that root_cgrp->bpf.refcnt.data is allocated by the
+>> function percpu_ref_init in cgroup_bpf_inherit which is called by
+>> cgroup_setup_root when mounting, but not freed along with root_cgrp
+>> when umounting. Adding cgroup_bpf_offline which calls percpu_ref_kill
+>> to cgroup_kill_sb can free root_cgrp->bpf.refcnt.data in umount path.
+>>
+>> Fixes: 2b0d3d3e4fcfb ("percpu_ref: reduce memory footprint of 
+>> percpu_ref in fast path")
+>> Signed-off-by: Quanyang Wang <quanyang.wang@windriver.com>
+>> ---
+>> One of the recipients' email is wrong, so I resend this patch.
+>> Sorry for any confusion caused.
+>> ---
+>>   kernel/cgroup/cgroup.c | 4 +++-
+>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+>> index 570b0c97392a9..183736ad72f2b 100644
+>> --- a/kernel/cgroup/cgroup.c
+>> +++ b/kernel/cgroup/cgroup.c
+>> @@ -2187,8 +2187,10 @@ static void cgroup_kill_sb(struct super_block *sb)
+>>        * And don't kill the default root.
+>>        */
+>>       if (list_empty(&root->cgrp.self.children) && root != 
+>> &cgrp_dfl_root &&
+>> -        !percpu_ref_is_dying(&root->cgrp.self.refcnt))
+>> +            !percpu_ref_is_dying(&root->cgrp.self.refcnt)) {
+>> +        cgroup_bpf_offline(&root->cgrp);
+>>           percpu_ref_kill(&root->cgrp.self.refcnt);
+>> +    }
+>>       cgroup_put(&root->cgrp);
 > 
-> Hi John, 
-> I checked selftests, there are have one test case named " test_txmsg_ingress_parser".
-> But with this patch and ktls, the test failed, this because ktls parser(tls_read_size) return value is 285 not 256.
-> the case like this: 
-> tls_sk1 --> redir_sk --> tls_sk2
-> tls_sk1 sent out 512 bytes data, after tls related processing redir_sk recved 570 btyes data,
-> and redirect 512 (skb_use_parser) bytes data to tls_sk2; but tls_sk2 needs 285 * 2 bytes data, receive timeout occurred.
-> I fix this as below:
+> Doesn't cgroup_bpf_offline() internally bump the root cgroup's refcount 
+> via cgroup_get()?
+> How does this relate to the single cgroup_put() in the above line?
+There is cgroup_get/put pair inside cgroup_bpf_offline.
+cgroup_get() is at the beginning of cgroup_bpf_offline.
+cgroup_put is called at the routine:
+cgroup_bpf_offline
+->percpu_ref_kill
+-->cgroup_bpf_release_fn
+--->cgroup_bpf_release (there is a cgroup_put() at the end of it).
+So cgroup_bpf_offline can keep the balance of cgroup's refcount.
+  Would
+> have been nice to
+> see the commit msg elaborate more on this.
+ >
+OK, I will add description about this in the commit msg.
 
-Ah good catch.
-
-> --- a/tools/testing/selftests/bpf/test_sockmap.c
-> +++ b/tools/testing/selftests/bpf/test_sockmap.c
-> @@ -1680,6 +1680,8 @@ static void test_txmsg_ingress_parser(int cgrp, struct sockmap_options *opt)
->  {
->         txmsg_pass = 1;
->         skb_use_parser = 512;
-> +       if (ktls == 1)
-> +               skb_use_parser = 570;
->         opt->iov_length = 256;
->         opt->iov_count = 1;
->         opt->rate = 2;
+Thanks,
+Quanyang
 > 
+>>       kernfs_kill_sb(sb);
+>>   }
+>>
 > 
-> And i add one new test as below, is it ok?
-
-
-Yes looks good to me.
-
-> 
-> --- a/tools/testing/selftests/bpf/test_sockmap.c
-> +++ b/tools/testing/selftests/bpf/test_sockmap.c
-> @@ -139,6 +139,7 @@ struct sockmap_options {
->         bool sendpage;
->         bool data_test;
->         bool drop_expected;
-> +       bool check_recved_len;
->         int iov_count;
->         int iov_length;
->         int rate;
-> @@ -556,8 +557,12 @@ static int msg_loop(int fd, int iov_count, int iov_length, int cnt,
->         int err, i, flags = MSG_NOSIGNAL;
->         bool drop = opt->drop_expected;
->         bool data = opt->data_test;
-> +       int iov_alloc_length = iov_length;
->  
-> -       err = msg_alloc_iov(&msg, iov_count, iov_length, data, tx);
-> +       if (!tx && opt->check_recved_len)
-> +               iov_alloc_length *= 2;
-> +
-> +       err = msg_alloc_iov(&msg, iov_count, iov_alloc_length, data, tx);
->         if (err)
->                 goto out_errno;
->         if (peek_flag) {
-> @@ -665,6 +670,13 @@ static int msg_loop(int fd, int iov_count, int iov_length, int cnt,
->  
->                         s->bytes_recvd += recv;
->  
-> +                       if (opt->check_recved_len && s->bytes_recvd > total_bytes) {
-> +                               errno = EMSGSIZE;
-> +                               fprintf(stderr, "recv failed(), bytes_recvd:%zd, total_bytes:%f\n",
-> +                                               s->bytes_recvd, total_bytes);
-> +                               goto out_errno;
-> +                       }
-> +
->                         if (data) {
->                                 int chunk_sz = opt->sendpage ?
->                                                 iov_length * cnt :
-> @@ -744,7 +756,8 @@ static int sendmsg_test(struct sockmap_options *opt)
->  
->         rxpid = fork();
->         if (rxpid == 0) {
-> -               iov_buf -= (txmsg_pop - txmsg_start_pop + 1);
-> +               if (txmsg_pop || txmsg_start_pop)
-> +                       iov_buf -= (txmsg_pop - txmsg_start_pop + 1);
->                 if (opt->drop_expected || txmsg_ktls_skb_drop)
->                         _exit(0);
->  
-> @@ -1688,6 +1701,19 @@ static void test_txmsg_ingress_parser(int cgrp, struct sockmap_options *opt)
->         test_exec(cgrp, opt);
->  }
->  
-> +static void test_txmsg_ingress_parser2(int cgrp, struct sockmap_options *opt)
-> +{
-> +       if (ktls == 1)
-> +               return;
-> +       skb_use_parser = 10;
-> +       opt->iov_length = 20;
-> +       opt->iov_count = 1;
-> +       opt->rate = 1;
-> +       opt->check_recved_len = true;
-> +       test_exec(cgrp, opt);
-> +       opt->check_recved_len = false;
-> +}
-> +
->  char *map_names[] = {
->         "sock_map",
->         "sock_map_txmsg",
-> @@ -1786,7 +1812,8 @@ struct _test test[] = {
->         {"txmsg test pull-data", test_txmsg_pull},
->         {"txmsg test pop-data", test_txmsg_pop},
->         {"txmsg test push/pop data", test_txmsg_push_pop},
-> -       {"txmsg text ingress parser", test_txmsg_ingress_parser},
-> +       {"txmsg test ingress parser", test_txmsg_ingress_parser},
-> +       {"txmsg test ingress parser2", test_txmsg_ingress_parser2},
->  };
-> 
-
-Great, please post as a series.
