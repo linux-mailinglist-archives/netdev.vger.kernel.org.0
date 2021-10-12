@@ -2,107 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3227429C31
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 06:11:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F94D429CEC
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 07:06:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230063AbhJLENo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 00:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60082 "EHLO
+        id S231299AbhJLFIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 01:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbhJLENn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 00:13:43 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C70AC061570;
-        Mon, 11 Oct 2021 21:11:42 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id i84so43608819ybc.12;
-        Mon, 11 Oct 2021 21:11:42 -0700 (PDT)
+        with ESMTP id S229593AbhJLFIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 01:08:10 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98EAC061570;
+        Mon, 11 Oct 2021 22:06:09 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id d125so6365486iof.5;
+        Mon, 11 Oct 2021 22:06:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EzttPnvSBj9TWPQB22etUBHe1lHk1VSkKn9Reb38kBY=;
-        b=pblW8aH9whMxuBdAhzUGYKrFUCy7lCdFE27wZxsId/Gq7S6ykgNaOlWhYLcXXJmQt/
-         uSPH8BIR36xDYQbAMGwWLrnKQK5VQrU0yvcqfxJqTwhAvL+5I8Gi+cHD0jTGiw1ziT5g
-         ZYuSv/TtzpsTVyIXf0t8VpdsArtkn5R/72femKMG2imfP+tznYJJviUzeke5XgD2nnzJ
-         gwj1BtO4+Phb1b2hKKCjmV8eqZ7XoGwrATr5ACVq61vIN/w5d2vDAODO6UgFayHrJeZW
-         PqGU5+gGIM+Z5rvws9j2IXTYcXpNpfqFauT7gnyKk7a6kch0qgZFlt9Q82z0Hc90JE9p
-         USKw==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=D1EXf0UQ7O0n0PRZAuiXxXUhGb2pOwfptpjgbbeKvkg=;
+        b=hFHrkPDvfYRfIfxI7wHlqF/vsgzMd/MlZ7AqY00g/OyByz5PMFmwhCoopKazgIwJ47
+         /3+2P/ZNfz1fSUjmm8XoilqFJfKqVTnA1frmNzlUkK0+2pwS4DOUPGNGLFgFACZgav5O
+         vGd/rVF/QDMxqxHpI+izQOu+oarMxT6eUzvgJvUDsh+1hY16toXxX7tjedEN6Oz8WDI6
+         ULw2I3kYzvQyMjxrLnqscjrtLkzi+7cU2edBvh0KtH1E3DDhqBL1dCbmWfy431B/uGcd
+         c4O305hIXzi5W/+F9+lqYw5a6ZsFm3IcUmxScMExaTVwasKrp83lfjJVYjWH1MbCZ2TH
+         l9ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EzttPnvSBj9TWPQB22etUBHe1lHk1VSkKn9Reb38kBY=;
-        b=D10rqQ8YzfZO0rSrxd53dE8Pny1n/50/f++iFCLGC34F41rYBs0YPgs6PA0fgkH9My
-         QsLC9GzPJEvG3jlyLcrQzTx+e+MMKrL+To4qNCJxRzWqhSVAGETn8iTXp1sn1gSYRlpz
-         M7HyKITVzUoPTPY0klpLrU9/pooyIMInjzjXurE7nf46NuXinRAw78FPKKPfMgGbqsQc
-         TCn+qr1kGjJOj+hcAOXX5wOt1NOtxgx6lcpd89ZY/17D1dPL8Y/34KSd5BYewVPdf2zO
-         17SW/jddZhh0XSH/B8mi0TuOTzNBBj+Y3c+jO6hiuhdceSxC4uiLJQvHli8MUirR1tiq
-         9alA==
-X-Gm-Message-State: AOAM533X7aSzi2bjjSyBVhtvU6aOo+eUqa+jc/4APC/0LXzbTFGNtnDf
-        luQnYclYqK1oqrN69j2D3IVzvnvKGruGVMw8x6E=
-X-Google-Smtp-Source: ABdhPJwgS22Xnjxu0g/1EeTi3csvNvrQvyy0ap3OdxaOWAk110Rbh2ew7LUjWFUudztXD/lyT7aPZmmEA3fjHDvfUVc=
-X-Received: by 2002:a25:e7d7:: with SMTP id e206mr24810219ybh.267.1634011901767;
- Mon, 11 Oct 2021 21:11:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211011155636.2666408-1-sdf@google.com>
-In-Reply-To: <20211011155636.2666408-1-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 12 Oct 2021 06:11:30 +0200
-Message-ID: <CAEf4BzZJg6bcFjkvKR627PMDj6EBy7pSMHYq1T9pyfo5CpjFQA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] libbpf: use func name when pinning programs
- with LIBBPF_STRICT_SEC_NAME
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=D1EXf0UQ7O0n0PRZAuiXxXUhGb2pOwfptpjgbbeKvkg=;
+        b=hDa96DCFtcQcwYkVFdGjThrUommG+HJPhB757Lo8z5GySFRmBEKB9hDPSmISzeRUaD
+         zM22tiZsUVwBMm7h0bStzXx2WNAaMlnHzc94bFGgPBcFJYulmDP6ZbwUVxQYjlXRBMzj
+         9NTgkyYaAUjAIcgnHCjkq1Xxw+BpH0KO55/3f70sjKg8mjn/JMfewxvyiVLT5j6xinhE
+         rsPyzbEvsn6nMHgYmLuMON2FUpBzHdr3VMcum/QGAOjONv7aN8QR5yf575ieX56YrvP8
+         3VyrCG5IlhTgAbgbp4OGhklaGFxMQtMI8IvKMptpNxn+O38ysVfLnBvN+aZlGY5Ygxbr
+         gsKA==
+X-Gm-Message-State: AOAM530jAfA650d6+ZIk00g14keav8nxPRQqryex5BTQPTA+AHfZsqWP
+        pr+aaKYPlgdG5CGU+/njIbc=
+X-Google-Smtp-Source: ABdhPJyQ8vjy1AnDje/oXz3nQUgQ0ke1qvBtNoBLk05P6Nn/QntD/msKDFInI5nflE4YL7ykI5wZDw==
+X-Received: by 2002:a02:858c:: with SMTP id d12mr9537564jai.110.1634015169106;
+        Mon, 11 Oct 2021 22:06:09 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id t1sm4987301ilf.70.2021.10.11.22.06.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Oct 2021 22:06:08 -0700 (PDT)
+Date:   Mon, 11 Oct 2021 22:06:01 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Message-ID: <616517b9b7336_2215c208b2@john-XPS-13-9370.notmuch>
+In-Reply-To: <20211008204604.38014-1-xiyou.wangcong@gmail.com>
+References: <20211008204604.38014-1-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf] udp: validate checksum in udp_read_sock()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 11, 2021 at 5:56 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> We can't use section name anymore because it's not unique
-> and pinning objects with multiple programs with the same
-> progtype/secname will fail.
->
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> It turns out the skb's in sock receive queue could have
+> bad checksums, as both ->poll() and ->recvmsg() validate
+> checksums. We have to do the same for ->read_sock() path
+> too before they are redirected in sockmap.
+> 
+> Fixes: d7f571188ecf ("udp: Implement ->read_sock() for sockmap")
+> Reported-by: Daniel Borkmann <daniel@iogearbox.net>
+> Reported-by: John Fastabend <john.fastabend@gmail.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 > ---
-
-Also, patch sets with more than one related patch should come with the
-cover letter, please send one on the next revision. Thanks!
-
->  tools/lib/bpf/libbpf.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index ae0889bebe32..0373ca86a54c 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -285,7 +285,8 @@ struct bpf_program {
->         size_t sub_insn_off;
->
->         char *name;
-> -       /* sec_name with / replaced by _; makes recursive pinning
-> +       /* sec_name (or name when using LIBBPF_STRICT_SEC_NAME)
-> +        * with / replaced by _; makes recursive pinning
->          * in bpf_object__pin_programs easier
->          */
->         char *pin_name;
-> @@ -614,7 +615,11 @@ static char *__bpf_program__pin_name(struct bpf_program *prog)
->  {
->         char *name, *p;
->
-> -       name = p = strdup(prog->sec_name);
-> +       if (libbpf_mode & LIBBPF_STRICT_SEC_NAME)
-> +               name = p = strdup(prog->name);
-> +       else
-> +               name = p = strdup(prog->sec_name);
+>  net/ipv4/udp.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index 8536b2a7210b..0ae8ab5e05b4 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -1808,6 +1808,17 @@ int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
+>  		skb = skb_recv_udp(sk, 0, 1, &err);
+>  		if (!skb)
+>  			return err;
 > +
->         while ((p = strchr(p, '/')))
->                 *p = '_';
->
-> --
-> 2.33.0.882.g93a45727a2-goog
->
+> +		if (udp_lib_checksum_complete(skb)) {
+> +			__UDP_INC_STATS(sock_net(sk), UDP_MIB_CSUMERRORS,
+> +					IS_UDPLITE(sk));
+> +			__UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS,
+> +					IS_UDPLITE(sk));
+> +			atomic_inc(&sk->sk_drops);
+> +			kfree_skb(skb);
+
+We could use sock_drop() here? Otherwise looks good thanks.
+
+> +			continue;
+> +		}
+> +
+>  		used = recv_actor(desc, skb, 0, skb->len);
+>  		if (used <= 0) {
+>  			if (!copied)
+> -- 
+> 2.30.2
+> 
+
+
