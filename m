@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A949542A657
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:46:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 907AC42A66D
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:50:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236918AbhJLNrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 09:47:53 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:14467 "EHLO
+        id S236773AbhJLNwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 09:52:00 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:14856 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236678AbhJLNrw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:47:52 -0400
+        with ESMTP id S233296AbhJLNv7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:51:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1634046350; x=1665582350;
+  t=1634046597; x=1665582597;
   h=from:to:cc:subject:date:message-id:mime-version;
   bh=aJDGDLPHAoJo34NVDGUNoZT0BwG/DiHT72I8u2frdhQ=;
-  b=IpcY+yLw+pD+Mi9F/s/dwFcii3wfgmdTpHWP0Oef9f4aFKy/G4+tZDA2
-   yu5aaUAwruYEBRBHS5BkqCcHjxdueVvgRwPVrpUrQ+koYtBMLPJSZar23
-   eO6IxwOLpz31cbAiO4rN6y1k8rIQ/5bj78MwnVw+ZuY4c8BSIn7liAo4Z
-   +LYp4ciNb5EJP8X7OznZQkpnxKJSIgwwbf3dhgMwNlbwOseoeZ8PDv8I9
-   m+vXV071tmy7fyBC7laRZ5IlDnMPZptcRoF3Rjb+dMFJw8vzh4pZWNVDj
-   7nXorRlv6vFqOcNGDVzrxPDy0XuigeHAqSk1bTstxEy9kkvFxwdcvoblm
-   g==;
-IronPort-SDR: wWOXe+AxiWvsjxlqf0yL/spBOJhE1NvxLQ3fvOIIZ3s0trRNUzUOUf0htvxCQNNGIf9dL0dixe
- fKmEu2lfuh/U10KIz1l4u9JtaYJduFQ3eOuCaU2qW45ZoGk1VEh3gUsN+UbyHK0f3VDaCjFbz4
- Z9lmClTbzgNtDgoxtlb9tjjXWCIiT+fOHIPCRO0NlSkUpsTyCIjgdMfL7MpQFf0p6AGVnFRCj+
- s/+TguuK69rZYvGclo22BpBfpyO4zytFHnOAIZUhFQkqnRxtn5PE7EFsZkmNZxRsr34wXe5oBA
- c4He9+O4zj6zjoweDauNZCEC
+  b=q+omw07jU+JTyOMivue1dUorODLHWvRkThzxRJu1OBmHEGtpqCJy0oe5
+   4S38+F9Xs8Gw3qtcvZp3qh2fM6dXtj1TNOIP0EKA+eavBuAfxZY8uzvOU
+   VICfj0TgewrMF5MgiTkuad+RXdIH7x6cdUeaEnK9h/Ox5UA50VXxylL3S
+   CoV0YwLQJ8E2ZJlN9G85ER7Peyh1m2J/nHQFZq8DcOc0HlEXllez1Rk56
+   6fb3IGXy6Guk3lpmZJkqMA/Y6g294rp+i2fsFTerx2bkCCunfL+oChMlz
+   bSPeMGMa5TZjTxWXFBHCnRJlP+dtoOPCX2ZAi8m5eeU+2czm8gnB83DLN
+   w==;
+IronPort-SDR: EFHNz31JLOEJCN9YltCIiZEdfsR7tL7Viy3hrSIsOjFXPPobdS3JWrkQ9VJPQRCKdsr8jk/oeb
+ eIPm3s7o8mFiSN4gxkxA/BKkCWctH/0DjHrGCTrxfcC2dHuO8EnmPR9QHji2EtL22y0TxQJ5Pi
+ Q+ZSE1VPSbKrUI0IMXcrrbnWsAiynUbaTYrebUTcysdNEeITMJ/nDTEyHWFtW7OBI2TBntl7sm
+ 6VGS0XHw03Z9ABBDqYse0cXrQgYgLNicAyLD2EX99i6FtJA5X8n4HBTxXiK57LRg8LvcOwVqst
+ CsP6DaZ7FI27FTNzjNvnEdxi
 X-IronPort-AV: E=Sophos;i="5.85,367,1624345200"; 
-   d="scan'208";a="132714156"
+   d="scan'208";a="132714833"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Oct 2021 06:45:50 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Oct 2021 06:49:57 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 12 Oct 2021 06:45:49 -0700
-Received: from ubuntu.localdomain (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Tue, 12 Oct 2021 06:45:49 -0700
+ 15.1.2176.14; Tue, 12 Oct 2021 06:49:57 -0700
+Received: from ubuntu.localdomain (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
+ Transport; Tue, 12 Oct 2021 06:49:57 -0700
 From:   <yuiko.oshino@microchip.com>
-To:     <davem@devemloft.net>
+To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
         Yuiko Oshino <yuiko.oshino@microchip.com>
 Subject: [PATCH net-next] net: microchip: lan743x: add support for PTP pulse width (duty cycle)
-Date:   Tue, 12 Oct 2021 09:44:19 -0400
-Message-ID: <1634046259-64217-1-git-send-email-yuiko.oshino@microchip.com>
+Date:   Tue, 12 Oct 2021 09:49:53 -0400
+Message-ID: <1634046593-64312-1-git-send-email-yuiko.oshino@microchip.com>
 X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
