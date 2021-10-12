@@ -2,162 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67EC442A1EF
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 12:21:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 579B042A1F7
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 12:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235951AbhJLKXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 06:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235903AbhJLKXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 06:23:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AFFC061570
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 03:21:45 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1maEuc-0003e5-Fb; Tue, 12 Oct 2021 12:21:34 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1maEuZ-0004HC-3P; Tue, 12 Oct 2021 12:21:31 +0200
-Date:   Tue, 12 Oct 2021 12:21:31 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        linux-can@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session
- if receive TP.DT with error length
-Message-ID: <20211012102131.GA14971@pengutronix.de>
-References: <1632972800-45091-1-git-send-email-zhangchangzhong@huawei.com>
- <20210930074206.GB7502@x1.vandijck-laurijssen.be>
- <1cab07f2-593a-1d1c-3a29-43ee9df4b29e@huawei.com>
- <20211008110007.GE29653@pengutronix.de>
- <556a04ed-c350-7b2b-5bbe-98c03846630b@huawei.com>
- <20211011063507.GI29653@pengutronix.de>
- <7b1b2e47-46e6-acec-5858-fae77266cec8@huawei.com>
+        id S235878AbhJLK2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 06:28:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41476 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235153AbhJLK2l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 06:28:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B41456101D;
+        Tue, 12 Oct 2021 10:26:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634034400;
+        bh=x150KESnW9y0NudUm0jVtADK6sh5MfPdAVLfbM/aWiY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LiGUI+8YNYfkLbwdBY8u/p79Jm/iQPdqUK5IhZv7LExcrQ6ATXfHT5iAAtYSGWynz
+         kr5ND/0mGrvuK7ubilEw7i7aWoIVqsi7o4xaIrdCU77mwUCR+oVk55gGD5bpoX8l9Y
+         PZqg3hvu0olFH0tKpScGwY9n7t1Fqn79fnOrK4He4wVzv+4ufyKy41khjlRq0SfhkA
+         kv+PDlLFYDBOHqHT3XXL41SpY8S43G6B64yNy9uHy011iqU3YGD847SqJfaLHTbazb
+         GKWW3k/5YOiTrGg3qK9ceGiJ77L0BTkrr2T4xXJnaPz3IsbjHrJANZZbIyzgoOcIqv
+         5wIz1HDYSIOQA==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Aharon Landau <aharonl@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Wang <jasowang@redhat.com>, linux-rdma@vger.kernel.org,
+        Maor Gottlieb <maorg@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH mlx5-next 0/7] Clean MR key use across mlx5_* modules
+Date:   Tue, 12 Oct 2021 13:26:28 +0300
+Message-Id: <cover.1634033956.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <7b1b2e47-46e6-acec-5858-fae77266cec8@huawei.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 12:17:56 up 236 days, 13:41, 138 users,  load average: 0.08, 0.29,
- 0.41
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 11, 2021 at 06:40:15PM +0800, Zhang Changzhong wrote:
-> On 2021/10/11 14:35, Oleksij Rempel wrote:
-> > On Sat, Oct 09, 2021 at 04:43:56PM +0800, Zhang Changzhong wrote:
-> >> On 2021/10/8 19:00, Oleksij Rempel wrote:
-> >>> On Fri, Oct 08, 2021 at 05:22:12PM +0800, Zhang Changzhong wrote:
-> >>>> Hi Kurt,
-> >>>> Sorry for the late reply.
-> >>>>
-> >>>> On 2021/9/30 15:42, Kurt Van Dijck wrote:
-> >>>>> On Thu, 30 Sep 2021 11:33:20 +0800, Zhang Changzhong wrote:
-> >>>>>> According to SAE-J1939-21, the data length of TP.DT must be 8 bytes, so
-> >>>>>> cancel session when receive unexpected TP.DT message.
-> >>>>>
-> >>>>> SAE-j1939-21 indeed says that all TP.DT must be 8 bytes.
-> >>>>> However, the last TP.DT may contain up to 6 stuff bytes, which have no meaning.
-> >>>>> If I remember well, they are even not 'reserved'.
-> >>>>
-> >>>> Agree, these bytes are meaningless for last TP.DT.
-> >>>>
-> >>>>>
-> >>>>>>
-> >>>>>> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> >>>>>> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> >>>>>> ---
-> >>>>>>  net/can/j1939/transport.c | 7 +++++--
-> >>>>>>  1 file changed, 5 insertions(+), 2 deletions(-)
-> >>>>>>
-> >>>>>> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-> >>>>>> index bb5c4b8..eedaeaf 100644
-> >>>>>> --- a/net/can/j1939/transport.c
-> >>>>>> +++ b/net/can/j1939/transport.c
-> >>>>>> @@ -1789,6 +1789,7 @@ static void j1939_xtp_rx_dpo(struct j1939_priv *priv, struct sk_buff *skb,
-> >>>>>>  static void j1939_xtp_rx_dat_one(struct j1939_session *session,
-> >>>>>>  				 struct sk_buff *skb)
-> >>>>>>  {
-> >>>>>> +	enum j1939_xtp_abort abort = J1939_XTP_ABORT_FAULT;
-> >>>>>>  	struct j1939_priv *priv = session->priv;
-> >>>>>>  	struct j1939_sk_buff_cb *skcb, *se_skcb;
-> >>>>>>  	struct sk_buff *se_skb = NULL;
-> >>>>>> @@ -1803,9 +1804,11 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
-> >>>>>>  
-> >>>>>>  	skcb = j1939_skb_to_cb(skb);
-> >>>>>>  	dat = skb->data;
-> >>>>>> -	if (skb->len <= 1)
-> >>>>>> +	if (skb->len != 8) {
-> >>>>>>  		/* makes no sense */
-> >>>>>> +		abort = J1939_XTP_ABORT_UNEXPECTED_DATA;
-> >>>>>>  		goto out_session_cancel;
-> >>>>>
-> >>>>> I think this is a situation of
-> >>>>> "be strict on what you send, be tolerant on what you receive".
-> >>>>>
-> >>>>> Did you find a technical reason to abort a session because the last frame didn't
-> >>>>> bring overhead that you don't use?
-> >>>>
-> >>>> No technical reason. The only reason is that SAE-J1939-82 requires responder
-> >>>> to abort session if any TP.DT less than 8 bytes (section A.3.4, Row 7).
-> >>>
-> >>> Do you mean: "BAM Transport: Ensure DUT discards BAM transport when
-> >>> TP.DT data packets are not correct size" ... "Verify DUT discards the
-> >>> BAM transport if any TP.DT data packet has less than 8 bytes"?
-> >>
-> >> Yes.
-> > 
-> > OK, then I have some problems to understand this part:
-> > - 5.10.2.4 Connection Closure
-> >   The “connection abort” message is not allowed to be used by responders in the
-> >   case of a global destination (i.e. BAM).
-> > 
-> > My assumption would be: In case of broadcast transfer, multiple MCU are
-> > receivers. If one of MCU was not able to get complete TP.DT, it should
-> > not abort BAM for all.
-> > 
-> > So, "DUT discards the BAM transport" sounds for me as local action.
-> > Complete TP would be dropped locally.
-> 
-> Yeah, you are right. With this patch receivers drop BAM transport locally
-> because j1939_session_cancel() only send abort message in RTS/CTS transport.
-> 
-> For RTS/CTS transport, SAE-J1939-82 also has similar requirements:
-> "RTS/CTS Transport: Data field size of Transport Data packets for RTS/CTS
-> (DUT as Responder)"..."Verify DUT behavior, e.g., sends a TP.CM_CTS to have
-> packets resent or sends a TP.Conn_Abort, when it receives TP.DT data packets
-> with less than 8 bytes" (section A.3.6, Row 18)
+From: Leon Romanovsky <leonro@nvidia.com>
 
-You are right. Sounds plausible. If we find some device in the field
-which will need a workaround to support less than 8byte, then we will
-need to add some UAPI to configure it. By default we should follow the
-spec. @Kurt, do you have anything against it?
+Hi,
 
-Regards,
-Oleksij
+This is cleanup series of mlx5_* MR mkey management.
+
+Thanks
+
+Aharon Landau (7):
+  RDMA/mlx5: Don't set esc_size in user mr
+  RDMA/mlx5: Remove iova from struct mlx5_core_mkey
+  RDMA/mlx5: Remove size from struct mlx5_core_mkey
+  RDMA/mlx5: Remove pd from struct mlx5_core_mkey
+  RDMA/mlx5: Replace struct mlx5_core_mkey by u32 key
+  RDMA/mlx5: Move struct mlx5_core_mkey to mlx5_ib
+  RDMA/mlx5: Attach ndescs to mlx5_ib_mkey
+
+ drivers/infiniband/hw/mlx5/devx.c             | 13 +--
+ drivers/infiniband/hw/mlx5/devx.h             |  2 +-
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          | 31 ++++---
+ drivers/infiniband/hw/mlx5/mr.c               | 82 +++++++++----------
+ drivers/infiniband/hw/mlx5/odp.c              | 38 +++------
+ drivers/infiniband/hw/mlx5/wr.c               | 10 +--
+ .../mellanox/mlx5/core/diag/fw_tracer.c       |  6 +-
+ .../mellanox/mlx5/core/diag/fw_tracer.h       |  2 +-
+ .../mellanox/mlx5/core/diag/rsc_dump.c        | 10 +--
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.c  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/trap.c |  2 +-
+ .../ethernet/mellanox/mlx5/core/en_common.c   |  6 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 13 ++-
+ .../ethernet/mellanox/mlx5/core/fpga/conn.c   | 10 +--
+ .../ethernet/mellanox/mlx5/core/fpga/core.h   |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/mr.c  | 27 +++---
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c | 10 +--
+ .../mellanox/mlx5/core/steering/dr_send.c     | 11 ++-
+ .../mellanox/mlx5/core/steering/dr_types.h    |  2 +-
+ drivers/vdpa/mlx5/core/mlx5_vdpa.h            |  8 +-
+ drivers/vdpa/mlx5/core/mr.c                   |  8 +-
+ drivers/vdpa/mlx5/core/resources.c            | 13 +--
+ drivers/vdpa/mlx5/net/mlx5_vnet.c             |  2 +-
+ include/linux/mlx5/driver.h                   | 30 ++-----
+ 25 files changed, 147 insertions(+), 195 deletions(-)
+
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.31.1
+
