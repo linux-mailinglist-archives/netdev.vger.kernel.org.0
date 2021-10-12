@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4444042A983
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 18:35:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 179EC42A97A
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 18:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231190AbhJLQhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 12:37:06 -0400
-Received: from mga09.intel.com ([134.134.136.24]:1914 "EHLO mga09.intel.com"
+        id S229590AbhJLQfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 12:35:52 -0400
+Received: from mga07.intel.com ([134.134.136.100]:55481 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231165AbhJLQhF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 12:37:05 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10135"; a="227102073"
+        id S229495AbhJLQfv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 12:35:51 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10135"; a="290695877"
 X-IronPort-AV: E=Sophos;i="5.85,368,1624345200"; 
-   d="scan'208";a="227102073"
+   d="scan'208";a="290695877"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2021 09:33:49 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2021 09:33:49 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.85,368,1624345200"; 
-   d="scan'208";a="491050687"
+   d="scan'208";a="491050689"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga008.jf.intel.com with ESMTP; 12 Oct 2021 09:33:49 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -27,9 +27,9 @@ Cc:     Maciej Machnikowski <maciej.machnikowski@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         richardcochran@gmail.com,
         Sunitha Mekala <sunithax.d.mekala@intel.com>
-Subject: [PATCH net-next 3/4] ice: Add support for SMA control multiplexer
-Date:   Tue, 12 Oct 2021 09:31:52 -0700
-Message-Id: <20211012163153.2104212-4-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 4/4] ice: Implement support for SMA and U.FL on E810-T
+Date:   Tue, 12 Oct 2021 09:31:53 -0700
+Message-Id: <20211012163153.2104212-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211012163153.2104212-1-anthony.l.nguyen@intel.com>
 References: <20211012163153.2104212-1-anthony.l.nguyen@intel.com>
@@ -41,309 +41,555 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maciej Machnikowski <maciej.machnikowski@intel.com>
 
-E810-T adapters have two external bidirectional SMA connectors and two
-internal unidirectional U.FL connectors. Multiplexing between U.FL and
-SMA and SMA direction is controlled using the PCA9575 expander.
+Expose SMA and U.FL connectors as ptp_pins on E810-T based adapters and
+allow controlling them.
 
-Add support for the PCA9575 detection and control of the respective pins
-of the SMA/U.FL multiplexer using the GPIO AQ API.
+E810-T adapters are equipped with:
+- 2 external bidirectional SMA connectors
+- 1 internal TX U.FL
+- 1 internal RX U.FL
+
+U.FL connectors share signal lines with the SMA connectors. The TX U.FL1
+share the line with the SMA1 and the RX U.FL2 share line with the SMA2.
+This dependence is controlled by the ice_verify_pin_e810t.
+
+Additionally add support for the E810-T-based  devices which don't use the
+SMA/U.FL controller. If the IO expander is not detected don't expose pins
+and use 2 predefined 1PPS input and output pins.
 
 Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
 Tested-by: Sunitha Mekala <sunithax.d.mekala@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   1 +
- drivers/net/ethernet/intel/ice/ice_common.c   |  21 +++
- drivers/net/ethernet/intel/ice/ice_common.h   |   1 +
- drivers/net/ethernet/intel/ice/ice_devids.h   |   2 +
- drivers/net/ethernet/intel/ice/ice_ptp_hw.c   | 156 ++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  22 +++
- drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
- 7 files changed, 204 insertions(+)
+ drivers/net/ethernet/intel/ice/ice.h     |   1 +
+ drivers/net/ethernet/intel/ice/ice_lib.c |  15 +
+ drivers/net/ethernet/intel/ice/ice_lib.h |   1 +
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 370 ++++++++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_ptp.h |  20 +-
+ 5 files changed, 397 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 25708c320f5d..a5425f0dce3f 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1331,6 +1331,7 @@ struct ice_aqc_link_topo_addr {
- struct ice_aqc_get_link_topo {
- 	struct ice_aqc_link_topo_addr addr;
- 	u8 node_part_num;
-+#define ICE_AQC_GET_LINK_TOPO_NODE_NR_PCA9575	0x21
- 	u8 rsvd[9];
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index 6bfbf704eddf..30cc748337dd 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -163,6 +163,7 @@
+ 
+ enum ice_feature {
+ 	ICE_F_DSCP,
++	ICE_F_SMA_CTRL,
+ 	ICE_F_MAX
  };
  
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 7416f802a558..16a25616cdc3 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -69,6 +69,27 @@ bool ice_is_e810(struct ice_hw *hw)
- 	return hw->mac_type == ICE_MAC_E810;
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 93565f597266..c8a50898bbc1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -3649,6 +3649,19 @@ static void ice_set_feature_support(struct ice_pf *pf, enum ice_feature f)
+ 	set_bit(f, pf->features);
  }
  
 +/**
-+ * ice_is_e810t
-+ * @hw: pointer to the hardware structure
-+ *
-+ * returns true if the device is E810T based, false if not.
++ * ice_clear_feature_support
++ * @pf: pointer to the struct ice_pf instance
++ * @f: feature enum to clear
 + */
-+bool ice_is_e810t(struct ice_hw *hw)
++void ice_clear_feature_support(struct ice_pf *pf, enum ice_feature f)
 +{
-+	switch (hw->device_id) {
-+	case ICE_DEV_ID_E810C_SFP:
-+		if (hw->subsystem_device_id == ICE_SUBDEV_ID_E810T ||
-+		    hw->subsystem_device_id == ICE_SUBDEV_ID_E810T2)
-+			return true;
-+		break;
-+	default:
-+		break;
-+	}
++	if (f < 0 || f >= ICE_F_MAX)
++		return;
 +
-+	return false;
++	clear_bit(f, pf->features);
 +}
 +
  /**
-  * ice_clear_pf_cfg - Clear PF configuration
-  * @hw: pointer to the hardware structure
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index 4273f8921e53..65c1b3244264 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -183,6 +183,7 @@ ice_stat_update40(struct ice_hw *hw, u32 reg, bool prev_stat_loaded,
- void
- ice_stat_update32(struct ice_hw *hw, u32 reg, bool prev_stat_loaded,
- 		  u64 *prev_stat, u64 *cur_stat);
-+bool ice_is_e810t(struct ice_hw *hw);
- enum ice_status
- ice_sched_query_elem(struct ice_hw *hw, u32 node_teid,
- 		     struct ice_aqc_txsched_elem_data *buf);
-diff --git a/drivers/net/ethernet/intel/ice/ice_devids.h b/drivers/net/ethernet/intel/ice/ice_devids.h
-index 9d8194671f6a..8d2c39ee775b 100644
---- a/drivers/net/ethernet/intel/ice/ice_devids.h
-+++ b/drivers/net/ethernet/intel/ice/ice_devids.h
-@@ -21,6 +21,8 @@
- #define ICE_DEV_ID_E810C_QSFP		0x1592
- /* Intel(R) Ethernet Controller E810-C for SFP */
- #define ICE_DEV_ID_E810C_SFP		0x1593
-+#define ICE_SUBDEV_ID_E810T		0x000E
-+#define ICE_SUBDEV_ID_E810T2		0x000F
- /* Intel(R) Ethernet Controller E810-XXV for SFP */
- #define ICE_DEV_ID_E810_XXV_SFP		0x159B
- /* Intel(R) Ethernet Connection E823-C for backplane */
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-index 3eca0e4eab0b..3e61b4473f8c 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-@@ -649,3 +649,159 @@ int ice_clear_phy_tstamp(struct ice_hw *hw, u8 block, u8 idx)
- {
- 	return ice_clear_phy_tstamp_e810(hw, block, idx);
- }
-+
-+/* E810T SMA functions
-+ *
-+ * The following functions operate specifically on E810T hardware and are used
-+ * to access the extended GPIOs available.
-+ */
+  * ice_init_feature_support
+  * @pf: pointer to the struct ice_pf instance
+@@ -3662,6 +3675,8 @@ void ice_init_feature_support(struct ice_pf *pf)
+ 	case ICE_DEV_ID_E810C_QSFP:
+ 	case ICE_DEV_ID_E810C_SFP:
+ 		ice_set_feature_support(pf, ICE_F_DSCP);
++		if (ice_is_e810t(&pf->hw))
++			ice_set_feature_support(pf, ICE_F_SMA_CTRL);
+ 		break;
+ 	default:
+ 		break;
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
+index 3f3fef6551c0..193f96305407 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.h
++++ b/drivers/net/ethernet/intel/ice/ice_lib.h
+@@ -129,5 +129,6 @@ void ice_vsi_ctx_set_allow_override(struct ice_vsi_ctx *ctx);
+ void ice_vsi_ctx_clear_allow_override(struct ice_vsi_ctx *ctx);
+ 
+ bool ice_is_feature_supported(struct ice_pf *pf, enum ice_feature f);
++void ice_clear_feature_support(struct ice_pf *pf, enum ice_feature f);
+ void ice_init_feature_support(struct ice_pf *pf);
+ #endif /* !_ICE_LIB_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index 05cc5870e4ef..f5c621d5baa7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -6,6 +6,252 @@
+ 
+ #define E810_OUT_PROP_DELAY_NS 1
+ 
++static const struct ptp_pin_desc ice_pin_desc_e810t[] = {
++	/* name    idx   func         chan */
++	{ "GNSS",  GNSS, PTP_PF_EXTTS, 0, { 0, } },
++	{ "SMA1",  SMA1, PTP_PF_NONE, 1, { 0, } },
++	{ "U.FL1", UFL1, PTP_PF_NONE, 1, { 0, } },
++	{ "SMA2",  SMA2, PTP_PF_NONE, 2, { 0, } },
++	{ "U.FL2", UFL2, PTP_PF_NONE, 2, { 0, } },
++};
 +
 +/**
-+ * ice_get_pca9575_handle
++ * ice_get_sma_config_e810t
 + * @hw: pointer to the hw struct
-+ * @pca9575_handle: GPIO controller's handle
++ * @ptp_pins: pointer to the ptp_pin_desc struture
 + *
-+ * Find and return the GPIO controller's handle in the netlist.
-+ * When found - the value will be cached in the hw structure and following calls
-+ * will return cached value
++ * Read the configuration of the SMA control logic and put it into the
++ * ptp_pin_desc structure
 + */
 +static int
-+ice_get_pca9575_handle(struct ice_hw *hw, u16 *pca9575_handle)
++ice_get_sma_config_e810t(struct ice_hw *hw, struct ptp_pin_desc *ptp_pins)
 +{
-+	struct ice_aqc_get_link_topo *cmd;
-+	struct ice_aq_desc desc;
++	u8 data, i;
 +	int status;
-+	u8 idx;
 +
-+	if (!hw || !pca9575_handle)
-+		return -EINVAL;
++	/* Read initial pin state */
++	status = ice_read_sma_ctrl_e810t(hw, &data);
++	if (status)
++		return status;
 +
-+	/* If handle was read previously return cached value */
-+	if (hw->io_expander_handle) {
-+		*pca9575_handle = hw->io_expander_handle;
-+		return 0;
++	/* initialize with defaults */
++	for (i = 0; i < NUM_PTP_PINS_E810T; i++) {
++		snprintf(ptp_pins[i].name, sizeof(ptp_pins[i].name),
++			 "%s", ice_pin_desc_e810t[i].name);
++		ptp_pins[i].index = ice_pin_desc_e810t[i].index;
++		ptp_pins[i].func = ice_pin_desc_e810t[i].func;
++		ptp_pins[i].chan = ice_pin_desc_e810t[i].chan;
 +	}
 +
-+	/* If handle was not detected read it from the netlist */
-+	cmd = &desc.params.get_link_topo;
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_link_topo);
++	/* Parse SMA1/UFL1 */
++	switch (data & ICE_SMA1_MASK_E810T) {
++	case ICE_SMA1_MASK_E810T:
++	default:
++		ptp_pins[SMA1].func = PTP_PF_NONE;
++		ptp_pins[UFL1].func = PTP_PF_NONE;
++		break;
++	case ICE_SMA1_DIR_EN_E810T:
++		ptp_pins[SMA1].func = PTP_PF_PEROUT;
++		ptp_pins[UFL1].func = PTP_PF_NONE;
++		break;
++	case ICE_SMA1_TX_EN_E810T:
++		ptp_pins[SMA1].func = PTP_PF_EXTTS;
++		ptp_pins[UFL1].func = PTP_PF_NONE;
++		break;
++	case 0:
++		ptp_pins[SMA1].func = PTP_PF_EXTTS;
++		ptp_pins[UFL1].func = PTP_PF_PEROUT;
++		break;
++	}
 +
-+	/* Set node type to GPIO controller */
-+	cmd->addr.topo_params.node_type_ctx =
-+		(ICE_AQC_LINK_TOPO_NODE_TYPE_M &
-+		 ICE_AQC_LINK_TOPO_NODE_TYPE_GPIO_CTRL);
-+
-+#define SW_PCA9575_SFP_TOPO_IDX		2
-+#define SW_PCA9575_QSFP_TOPO_IDX	1
-+
-+	/* Check if the SW IO expander controlling SMA exists in the netlist. */
-+	if (hw->device_id == ICE_DEV_ID_E810C_SFP)
-+		idx = SW_PCA9575_SFP_TOPO_IDX;
-+	else if (hw->device_id == ICE_DEV_ID_E810C_QSFP)
-+		idx = SW_PCA9575_QSFP_TOPO_IDX;
-+	else
-+		return -EOPNOTSUPP;
-+
-+	cmd->addr.topo_params.index = idx;
-+
-+	status = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+	if (status)
-+		return -EOPNOTSUPP;
-+
-+	/* Verify if we found the right IO expander type */
-+	if (desc.params.get_link_topo.node_part_num !=
-+		ICE_AQC_GET_LINK_TOPO_NODE_NR_PCA9575)
-+		return -EOPNOTSUPP;
-+
-+	/* If present save the handle and return it */
-+	hw->io_expander_handle =
-+		le16_to_cpu(desc.params.get_link_topo.addr.handle);
-+	*pca9575_handle = hw->io_expander_handle;
++	/* Parse SMA2/UFL2 */
++	switch (data & ICE_SMA2_MASK_E810T) {
++	case ICE_SMA2_MASK_E810T:
++	default:
++		ptp_pins[SMA2].func = PTP_PF_NONE;
++		ptp_pins[UFL2].func = PTP_PF_NONE;
++		break;
++	case (ICE_SMA2_TX_EN_E810T | ICE_SMA2_UFL2_RX_DIS_E810T):
++		ptp_pins[SMA2].func = PTP_PF_EXTTS;
++		ptp_pins[UFL2].func = PTP_PF_NONE;
++		break;
++	case (ICE_SMA2_DIR_EN_E810T | ICE_SMA2_UFL2_RX_DIS_E810T):
++		ptp_pins[SMA2].func = PTP_PF_PEROUT;
++		ptp_pins[UFL2].func = PTP_PF_NONE;
++		break;
++	case (ICE_SMA2_DIR_EN_E810T | ICE_SMA2_TX_EN_E810T):
++		ptp_pins[SMA2].func = PTP_PF_NONE;
++		ptp_pins[UFL2].func = PTP_PF_EXTTS;
++		break;
++	case ICE_SMA2_DIR_EN_E810T:
++		ptp_pins[SMA2].func = PTP_PF_PEROUT;
++		ptp_pins[UFL2].func = PTP_PF_EXTTS;
++		break;
++	}
 +
 +	return 0;
 +}
 +
 +/**
-+ * ice_read_sma_ctrl_e810t
++ * ice_ptp_set_sma_config_e810t
 + * @hw: pointer to the hw struct
-+ * @data: pointer to data to be read from the GPIO controller
++ * @ptp_pins: pointer to the ptp_pin_desc struture
 + *
-+ * Read the SMA controller state. It is connected to pins 3-7 of Port 1 of the
-+ * PCA9575 expander, so only bits 3-7 in data are valid.
++ * Set the configuration of the SMA control logic based on the configuration in
++ * num_pins parameter
 + */
-+int ice_read_sma_ctrl_e810t(struct ice_hw *hw, u8 *data)
++static int
++ice_ptp_set_sma_config_e810t(struct ice_hw *hw,
++			     const struct ptp_pin_desc *ptp_pins)
 +{
 +	int status;
-+	u16 handle;
-+	u8 i;
++	u8 data;
 +
-+	status = ice_get_pca9575_handle(hw, &handle);
++	/* SMA1 and UFL1 cannot be set to TX at the same time */
++	if (ptp_pins[SMA1].func == PTP_PF_PEROUT &&
++	    ptp_pins[UFL1].func == PTP_PF_PEROUT)
++		return -EINVAL;
++
++	/* SMA2 and UFL2 cannot be set to RX at the same time */
++	if (ptp_pins[SMA2].func == PTP_PF_EXTTS &&
++	    ptp_pins[UFL2].func == PTP_PF_EXTTS)
++		return -EINVAL;
++
++	/* Read initial pin state value */
++	status = ice_read_sma_ctrl_e810t(hw, &data);
 +	if (status)
 +		return status;
 +
-+	*data = 0;
-+
-+	for (i = ICE_SMA_MIN_BIT_E810T; i <= ICE_SMA_MAX_BIT_E810T; i++) {
-+		bool pin;
-+
-+		status = ice_aq_get_gpio(hw, handle, i + ICE_PCA9575_P1_OFFSET,
-+					 &pin, NULL);
-+		if (status)
-+			break;
-+		*data |= (u8)(!pin) << i;
++	/* Set the right sate based on the desired configuration */
++	data &= ~ICE_SMA1_MASK_E810T;
++	if (ptp_pins[SMA1].func == PTP_PF_NONE &&
++	    ptp_pins[UFL1].func == PTP_PF_NONE) {
++		dev_info(ice_hw_to_dev(hw), "SMA1 + U.FL1 disabled");
++		data |= ICE_SMA1_MASK_E810T;
++	} else if (ptp_pins[SMA1].func == PTP_PF_EXTTS &&
++		   ptp_pins[UFL1].func == PTP_PF_NONE) {
++		dev_info(ice_hw_to_dev(hw), "SMA1 RX");
++		data |= ICE_SMA1_TX_EN_E810T;
++	} else if (ptp_pins[SMA1].func == PTP_PF_NONE &&
++		   ptp_pins[UFL1].func == PTP_PF_PEROUT) {
++		/* U.FL 1 TX will always enable SMA 1 RX */
++		dev_info(ice_hw_to_dev(hw), "SMA1 RX + U.FL1 TX");
++	} else if (ptp_pins[SMA1].func == PTP_PF_EXTTS &&
++		   ptp_pins[UFL1].func == PTP_PF_PEROUT) {
++		dev_info(ice_hw_to_dev(hw), "SMA1 RX + U.FL1 TX");
++	} else if (ptp_pins[SMA1].func == PTP_PF_PEROUT &&
++		   ptp_pins[UFL1].func == PTP_PF_NONE) {
++		dev_info(ice_hw_to_dev(hw), "SMA1 TX");
++		data |= ICE_SMA1_DIR_EN_E810T;
 +	}
 +
-+	return status;
++	data &= (~ICE_SMA2_MASK_E810T);
++	if (ptp_pins[SMA2].func == PTP_PF_NONE &&
++	    ptp_pins[UFL2].func == PTP_PF_NONE) {
++		dev_info(ice_hw_to_dev(hw), "SMA2 + U.FL2 disabled");
++		data |= ICE_SMA2_MASK_E810T;
++	} else if (ptp_pins[SMA2].func == PTP_PF_EXTTS &&
++			ptp_pins[UFL2].func == PTP_PF_NONE) {
++		dev_info(ice_hw_to_dev(hw), "SMA2 RX");
++		data |= (ICE_SMA2_TX_EN_E810T |
++			 ICE_SMA2_UFL2_RX_DIS_E810T);
++	} else if (ptp_pins[SMA2].func == PTP_PF_NONE &&
++		   ptp_pins[UFL2].func == PTP_PF_EXTTS) {
++		dev_info(ice_hw_to_dev(hw), "UFL2 RX");
++		data |= (ICE_SMA2_DIR_EN_E810T | ICE_SMA2_TX_EN_E810T);
++	} else if (ptp_pins[SMA2].func == PTP_PF_PEROUT &&
++		   ptp_pins[UFL2].func == PTP_PF_NONE) {
++		dev_info(ice_hw_to_dev(hw), "SMA2 TX");
++		data |= (ICE_SMA2_DIR_EN_E810T |
++			 ICE_SMA2_UFL2_RX_DIS_E810T);
++	} else if (ptp_pins[SMA2].func == PTP_PF_PEROUT &&
++		   ptp_pins[UFL2].func == PTP_PF_EXTTS) {
++		dev_info(ice_hw_to_dev(hw), "SMA2 TX + U.FL2 RX");
++		data |= ICE_SMA2_DIR_EN_E810T;
++	}
++
++	return ice_write_sma_ctrl_e810t(hw, data);
 +}
 +
 +/**
-+ * ice_write_sma_ctrl_e810t
-+ * @hw: pointer to the hw struct
-+ * @data: data to be written to the GPIO controller
++ * ice_ptp_set_sma_e810t
++ * @info: the driver's PTP info structure
++ * @pin: pin index in kernel structure
++ * @func: Pin function to be set (PTP_PF_NONE, PTP_PF_EXTTS or PTP_PF_PEROUT)
 + *
-+ * Write the data to the SMA controller. It is connected to pins 3-7 of Port 1
-+ * of the PCA9575 expander, so only bits 3-7 in data are valid.
++ * Set the configuration of a single SMA pin
 + */
-+int ice_write_sma_ctrl_e810t(struct ice_hw *hw, u8 data)
++static int
++ice_ptp_set_sma_e810t(struct ptp_clock_info *info, unsigned int pin,
++		      enum ptp_pin_function func)
 +{
-+	int status;
-+	u16 handle;
-+	u8 i;
++	struct ptp_pin_desc ptp_pins[NUM_PTP_PINS_E810T];
++	struct ice_pf *pf = ptp_info_to_pf(info);
++	struct ice_hw *hw = &pf->hw;
++	int err;
 +
-+	status = ice_get_pca9575_handle(hw, &handle);
-+	if (status)
-+		return status;
++	if (pin < SMA1 || func > PTP_PF_PEROUT)
++		return -EOPNOTSUPP;
 +
-+	for (i = ICE_SMA_MIN_BIT_E810T; i <= ICE_SMA_MAX_BIT_E810T; i++) {
-+		bool pin;
++	err = ice_get_sma_config_e810t(hw, ptp_pins);
++	if (err)
++		return err;
 +
-+		pin = !(data & (1 << i));
-+		status = ice_aq_set_gpio(hw, handle, i + ICE_PCA9575_P1_OFFSET,
-+					 pin, NULL);
-+		if (status)
-+			break;
-+	}
++	/* Disable the same function on the other pin sharing the channel */
++	if (pin == SMA1 && ptp_pins[UFL1].func == func)
++		ptp_pins[UFL1].func = PTP_PF_NONE;
++	if (pin == UFL1 && ptp_pins[SMA1].func == func)
++		ptp_pins[SMA1].func = PTP_PF_NONE;
 +
-+	return status;
++	if (pin == SMA2 && ptp_pins[UFL2].func == func)
++		ptp_pins[UFL2].func = PTP_PF_NONE;
++	if (pin == UFL2 && ptp_pins[SMA2].func == func)
++		ptp_pins[SMA2].func = PTP_PF_NONE;
++
++	/* Set up new pin function in the temp table */
++	ptp_pins[pin].func = func;
++
++	return ice_ptp_set_sma_config_e810t(hw, ptp_pins);
 +}
 +
 +/**
-+ * ice_is_pca9575_present
-+ * @hw: pointer to the hw struct
++ * ice_verify_pin_e810t
++ * @info: the driver's PTP info structure
++ * @pin: Pin index
++ * @func: Assigned function
++ * @chan: Assigned channel
 + *
-+ * Check if the SW IO expander is present in the netlist
++ * Verify if pin supports requested pin function. If the Check pins consistency.
++ * Reconfigure the SMA logic attached to the given pin to enable its
++ * desired functionality
 + */
-+bool ice_is_pca9575_present(struct ice_hw *hw)
++static int
++ice_verify_pin_e810t(struct ptp_clock_info *info, unsigned int pin,
++		     enum ptp_pin_function func, unsigned int chan)
 +{
-+	u16 handle = 0;
-+	int status;
++	/* Don't allow channel reassignment */
++	if (chan != ice_pin_desc_e810t[pin].chan)
++		return -EOPNOTSUPP;
 +
-+	if (!ice_is_e810t(hw))
-+		return false;
++	/* Check if functions are properly assigned */
++	switch (func) {
++	case PTP_PF_NONE:
++		break;
++	case PTP_PF_EXTTS:
++		if (pin == UFL1)
++			return -EOPNOTSUPP;
++		break;
++	case PTP_PF_PEROUT:
++		if (pin == UFL2 || pin == GNSS)
++			return -EOPNOTSUPP;
++		break;
++	case PTP_PF_PHYSYNC:
++		return -EOPNOTSUPP;
++	}
 +
-+	status = ice_get_pca9575_handle(hw, &handle);
-+	if (!status && handle)
-+		return true;
-+
-+	return false;
++	return ice_ptp_set_sma_e810t(info, pin, func);
 +}
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-index 55a414e87018..b2984b5c22c1 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-@@ -30,6 +30,9 @@ int ice_clear_phy_tstamp(struct ice_hw *hw, u8 block, u8 idx);
- 
- /* E810 family functions */
- int ice_ptp_init_phy_e810(struct ice_hw *hw);
-+int ice_read_sma_ctrl_e810t(struct ice_hw *hw, u8 *data);
-+int ice_write_sma_ctrl_e810t(struct ice_hw *hw, u8 data);
-+bool ice_is_pca9575_present(struct ice_hw *hw);
- 
- #define PFTSYN_SEM_BYTES	4
- 
-@@ -76,4 +79,23 @@ int ice_ptp_init_phy_e810(struct ice_hw *hw);
- #define LOW_TX_MEMORY_BANK_START	0x03090000
- #define HIGH_TX_MEMORY_BANK_START	0x03090004
- 
-+/* E810T SMA controller pin control */
-+#define ICE_SMA1_DIR_EN_E810T		BIT(4)
-+#define ICE_SMA1_TX_EN_E810T		BIT(5)
-+#define ICE_SMA2_UFL2_RX_DIS_E810T	BIT(3)
-+#define ICE_SMA2_DIR_EN_E810T		BIT(6)
-+#define ICE_SMA2_TX_EN_E810T		BIT(7)
 +
-+#define ICE_SMA1_MASK_E810T	(ICE_SMA1_DIR_EN_E810T | \
-+				 ICE_SMA1_TX_EN_E810T)
-+#define ICE_SMA2_MASK_E810T	(ICE_SMA2_UFL2_RX_DIS_E810T | \
-+				 ICE_SMA2_DIR_EN_E810T | \
-+				 ICE_SMA2_TX_EN_E810T)
-+#define ICE_ALL_SMA_MASK_E810T	(ICE_SMA1_MASK_E810T | \
-+				 ICE_SMA2_MASK_E810T)
+ /**
+  * ice_set_tx_tstamp - Enable or disable Tx timestamping
+  * @pf: The PF pointer to search in
+@@ -735,17 +981,34 @@ ice_ptp_gpio_enable_e810(struct ptp_clock_info *info,
+ {
+ 	struct ice_pf *pf = ptp_info_to_pf(info);
+ 	struct ice_perout_channel clk_cfg = {0};
++	bool sma_pres = false;
+ 	unsigned int chan;
+ 	u32 gpio_pin;
+ 	int err;
+ 
++	if (ice_is_feature_supported(pf, ICE_F_SMA_CTRL))
++		sma_pres = true;
 +
-+#define ICE_SMA_MIN_BIT_E810T	3
-+#define ICE_SMA_MAX_BIT_E810T	7
-+#define ICE_PCA9575_P1_OFFSET	8
+ 	switch (rq->type) {
+ 	case PTP_CLK_REQ_PEROUT:
+ 		chan = rq->perout.index;
+-		if (chan == PPS_CLK_GEN_CHAN)
++		if (sma_pres) {
++			if (chan == ice_pin_desc_e810t[SMA1].chan)
++				clk_cfg.gpio_pin = GPIO_20;
++			else if (chan == ice_pin_desc_e810t[SMA2].chan)
++				clk_cfg.gpio_pin = GPIO_22;
++			else
++				return -1;
++		} else if (ice_is_e810t(&pf->hw)) {
++			if (chan == 0)
++				clk_cfg.gpio_pin = GPIO_20;
++			else
++				clk_cfg.gpio_pin = GPIO_22;
++		} else if (chan == PPS_CLK_GEN_CHAN) {
+ 			clk_cfg.gpio_pin = PPS_PIN_INDEX;
+-		else
++		} else {
+ 			clk_cfg.gpio_pin = chan;
++		}
+ 
+ 		clk_cfg.period = ((rq->perout.period.sec * NSEC_PER_SEC) +
+ 				   rq->perout.period.nsec);
+@@ -757,7 +1020,19 @@ ice_ptp_gpio_enable_e810(struct ptp_clock_info *info,
+ 		break;
+ 	case PTP_CLK_REQ_EXTTS:
+ 		chan = rq->extts.index;
+-		gpio_pin = chan;
++		if (sma_pres) {
++			if (chan < ice_pin_desc_e810t[SMA2].chan)
++				gpio_pin = GPIO_21;
++			else
++				gpio_pin = GPIO_23;
++		} else if (ice_is_e810t(&pf->hw)) {
++			if (chan == 0)
++				gpio_pin = GPIO_21;
++			else
++				gpio_pin = GPIO_23;
++		} else {
++			gpio_pin = chan;
++		}
+ 
+ 		err = ice_ptp_cfg_extts(pf, !!on, chan, gpio_pin,
+ 					rq->extts.flags);
+@@ -1037,14 +1312,94 @@ ice_ptp_rx_hwtstamp(struct ice_ring *rx_ring,
+ 	}
+ }
+ 
++/**
++ * ice_ptp_disable_sma_pins_e810t - Disable E810-T SMA pins
++ * @pf: pointer to the PF structure
++ * @info: PTP clock info structure
++ *
++ * Disable the OS access to the SMA pins. Called to clear out the OS
++ * indications of pin support when we fail to setup the E810-T SMA control
++ * register.
++ */
++static void
++ice_ptp_disable_sma_pins_e810t(struct ice_pf *pf, struct ptp_clock_info *info)
++{
++	struct device *dev = ice_pf_to_dev(pf);
 +
- #endif /* _ICE_PTP_HW_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index d22ac1d430d0..d5cb1c5a89c0 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -916,6 +916,7 @@ struct ice_hw {
- 	struct mutex rss_locks;	/* protect RSS configuration */
- 	struct list_head rss_list_head;
- 	struct ice_mbx_snapshot mbx_snapshot;
-+	u16 io_expander_handle;
++	dev_warn(dev, "Failed to configure E810-T SMA pin control\n");
++
++	info->enable = NULL;
++	info->verify = NULL;
++	info->n_pins = 0;
++	info->n_ext_ts = 0;
++	info->n_per_out = 0;
++}
++
++/**
++ * ice_ptp_setup_sma_pins_e810t - Setup the SMA pins
++ * @pf: pointer to the PF structure
++ * @info: PTP clock info structure
++ *
++ * Finish setting up the SMA pins by allocating pin_config, and setting it up
++ * according to the current status of the SMA. On failure, disable all of the
++ * extended SMA pin support.
++ */
++static void
++ice_ptp_setup_sma_pins_e810t(struct ice_pf *pf, struct ptp_clock_info *info)
++{
++	struct device *dev = ice_pf_to_dev(pf);
++	int err;
++
++	/* Allocate memory for kernel pins interface */
++	info->pin_config = devm_kcalloc(dev, info->n_pins,
++					sizeof(*info->pin_config), GFP_KERNEL);
++	if (!info->pin_config) {
++		ice_ptp_disable_sma_pins_e810t(pf, info);
++		return;
++	}
++
++	/* Read current SMA status */
++	err = ice_get_sma_config_e810t(&pf->hw, info->pin_config);
++	if (err)
++		ice_ptp_disable_sma_pins_e810t(pf, info);
++}
++
++/**
++ * ice_ptp_setup_pins_e810t - Setup PTP pins in sysfs
++ * @pf: pointer to the PF instance
++ * @info: PTP clock capabilities
++ */
++static void
++ice_ptp_setup_pins_e810t(struct ice_pf *pf, struct ptp_clock_info *info)
++{
++	/* Check if SMA controller is in the netlist */
++	if (ice_is_feature_supported(pf, ICE_F_SMA_CTRL) &&
++	    !ice_is_pca9575_present(&pf->hw))
++		ice_clear_feature_support(pf, ICE_F_SMA_CTRL);
++
++	if (!ice_is_feature_supported(pf, ICE_F_SMA_CTRL)) {
++		info->n_ext_ts = N_EXT_TS_E810_NO_SMA;
++		info->n_per_out = N_PER_OUT_E810T_NO_SMA;
++		return;
++	}
++
++	info->n_per_out = N_PER_OUT_E810T;
++	info->n_ext_ts = N_EXT_TS_E810;
++	info->n_pins = NUM_PTP_PINS_E810T;
++	info->verify = ice_verify_pin_e810t;
++
++	/* Complete setup of the SMA pins */
++	ice_ptp_setup_sma_pins_e810t(pf, info);
++}
++
+ /**
+  * ice_ptp_setup_pins_e810 - Setup PTP pins in sysfs
+  * @info: PTP clock capabilities
+  */
+ static void ice_ptp_setup_pins_e810(struct ptp_clock_info *info)
+ {
+-	info->n_per_out = E810_N_PER_OUT;
+-	info->n_ext_ts = E810_N_EXT_TS;
++	info->n_per_out = N_PER_OUT_E810;
++	info->n_ext_ts = N_EXT_TS_E810;
+ }
+ 
+ /**
+@@ -1062,7 +1417,10 @@ ice_ptp_set_funcs_e810(struct ice_pf *pf, struct ptp_clock_info *info)
+ {
+ 	info->enable = ice_ptp_gpio_enable_e810;
+ 
+-	ice_ptp_setup_pins_e810(info);
++	if (ice_is_e810t(&pf->hw))
++		ice_ptp_setup_pins_e810t(pf, info);
++	else
++		ice_ptp_setup_pins_e810(info);
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.h b/drivers/net/ethernet/intel/ice/ice_ptp.h
+index e1c787bd5b96..1b9aab7de319 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.h
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.h
+@@ -9,12 +9,21 @@
+ 
+ #include "ice_ptp_hw.h"
+ 
+-enum ice_ptp_pin {
++enum ice_ptp_pin_e810 {
+ 	GPIO_20 = 0,
+ 	GPIO_21,
+ 	GPIO_22,
+ 	GPIO_23,
+-	NUM_ICE_PTP_PIN
++	NUM_PTP_PIN_E810
++};
++
++enum ice_ptp_pin_e810t {
++	GNSS = 0,
++	SMA1,
++	UFL1,
++	SMA2,
++	UFL2,
++	NUM_PTP_PINS_E810T
  };
  
- /* Statistics collected by each port, VSI, VEB, and S-channel */
+ struct ice_perout_channel {
+@@ -155,8 +164,11 @@ struct ice_ptp {
+ #define PPS_CLK_SRC_CHAN		2
+ #define PPS_PIN_INDEX			5
+ #define TIME_SYNC_PIN_INDEX		4
+-#define E810_N_EXT_TS			3
+-#define E810_N_PER_OUT			4
++#define N_EXT_TS_E810			3
++#define N_PER_OUT_E810			4
++#define N_PER_OUT_E810T			3
++#define N_PER_OUT_E810T_NO_SMA		2
++#define N_EXT_TS_E810_NO_SMA		2
+ 
+ #if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
+ struct ice_pf;
 -- 
 2.31.1
 
