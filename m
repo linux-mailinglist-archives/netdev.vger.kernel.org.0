@@ -2,159 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEEC242A491
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 14:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E51142A49C
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 14:37:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236463AbhJLMgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 08:36:37 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:37146 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232900AbhJLMgg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 08:36:36 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19CABsa4031664;
-        Tue, 12 Oct 2021 08:33:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=CH7tXTemRJ6G+z3J8YXB1Cn/2ims7bvwNfXzaWxCfVc=;
- b=VIxCvr3oCuj4W98v/5W9E/+nRNrkAwgcQb2BFttPTRTwxs5MaGhA6UWsHIBMeuyQVCDJ
- 3o37dpi3PjZLhe2OZPJP8+a79dYHUOVPFxH4BOIHmkOJ59akQAjEl7qEeMUWHBR+9K31
- kiCfv99fHiFgwmYAQ6RZBKmw7TjDz3u+uAB1zKt3owsBwyw05FpbFqCj5SujJRqFc1I3
- 0GxqluubyiOpNZmNQ3korrWuYMiWyFigBZZ+4DBCPmvLSIrNUbI+GDCzgbXE4u0IJsBk
- fq94liFgXd7NuO0balZTa3pvmiTKneins8Wkwr7R1bLj3v1UApW6t4BAC//1bQMESewX RQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bn8d133ma-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Oct 2021 08:33:55 -0400
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 19CCHU4T021930;
-        Tue, 12 Oct 2021 08:33:54 -0400
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3bn8d133kk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Oct 2021 08:33:54 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19CCXNHf019550;
-        Tue, 12 Oct 2021 12:33:52 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma04ams.nl.ibm.com with ESMTP id 3bk2qa0d86-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Oct 2021 12:33:51 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19CCS4MU58786276
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Oct 2021 12:28:04 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9F5FEA407E;
-        Tue, 12 Oct 2021 12:33:37 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7C934A405B;
-        Tue, 12 Oct 2021 12:33:23 +0000 (GMT)
-Received: from hbathini-workstation.ibm.com.com (unknown [9.43.27.69])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 12 Oct 2021 12:33:22 +0000 (GMT)
-From:   Hari Bathini <hbathini@linux.ibm.com>
-To:     naveen.n.rao@linux.ibm.com, christophe.leroy@csgroup.eu,
-        mpe@ellerman.id.au, ast@kernel.org, daniel@iogearbox.net
-Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org,
-        Hari Bathini <hbathini@linux.ibm.com>
-Subject: [RESEND PATCH v4 8/8] bpf ppc32: Access only if addr is kernel address
-Date:   Tue, 12 Oct 2021 18:00:56 +0530
-Message-Id: <20211012123056.485795-9-hbathini@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211012123056.485795-1-hbathini@linux.ibm.com>
-References: <20211012123056.485795-1-hbathini@linux.ibm.com>
+        id S236448AbhJLMjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 08:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232900AbhJLMjD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 08:39:03 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8315C061570
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 05:37:00 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id z20so80461045edc.13
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 05:37:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9Oo+boBE+eAlZd6IuqDEtqKvRJtwbHtewLQoxfaOhls=;
+        b=kfT7unhmvoilGV6/AHKo7A+myzo7Y74AbsTelhnnuMoPgx/+7LGeMEqk01wfguHzED
+         HSTDVH6ck0ZHzyEF01fgdd9zMllTnqQobRb2Vmzect38QkOUsX3CYa68z0cvU0/J4HQY
+         zfotXFbZyYWseR0Ts5M2T5jWxO2foaGtGAfLw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9Oo+boBE+eAlZd6IuqDEtqKvRJtwbHtewLQoxfaOhls=;
+        b=1Fcn48Jg3SBwY9GwVWnstvKADqNG8mtW2ikup1kc0HkpVcNfRqPHVPgCrlHm45ei1d
+         ve7l7gPtUZwFA9L49T9Uv8U1Hc+dreGeqhHLM6pT+q06ErYnwvNNoau8b9CpRdewVQVs
+         5V/BtVZFBY/xra4vhQhm+9zkJvd2//VguUoQTMqzsFO6UN9xGD5lXfv6WFd7Pwto32gO
+         bA3Y0zLHQllecD1CS21Guzw2C5Y7mWqvH6T69hVV2g5ukHVaz5DlrB6k1elxTAuQsaEg
+         aPwDAlwKR5eZ+swC9yDlTfb8vMt0KO08OA1l5wisxvRY5zMpGaGJAFpCR5fRUDJ19t5y
+         zN0w==
+X-Gm-Message-State: AOAM533fWDYApQagA0gKPeZWhwJoQX8rjL2lSrN+z8Y6GS6y1ZNlGABG
+        YUHsBY4PgE66gvsB3+TeuK/nzA==
+X-Google-Smtp-Source: ABdhPJwnXMOGGn+nFu0moDIaL9BzwsDFS640vDAAKjNXXWeI35G8Kc1Dwg+JzeKQjhinRg9NuFseQw==
+X-Received: by 2002:a17:907:7388:: with SMTP id er8mr33437254ejc.324.1634042219554;
+        Tue, 12 Oct 2021 05:36:59 -0700 (PDT)
+Received: from capella.. (27-reverse.bang-olufsen.dk. [193.89.194.27])
+        by smtp.gmail.com with ESMTPSA id b5sm5763629edu.13.2021.10.12.05.36.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Oct 2021 05:36:59 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/6] net: dsa: add support for RTL8365MB-VC
+Date:   Tue, 12 Oct 2021 14:35:49 +0200
+Message-Id: <20211012123557.3547280-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: OXijioM1Bj6jGOTkjRyHR8SNHUxaI92p
-X-Proofpoint-GUID: VrfRdIgh71vNqGSSN3W-OQ9BNE7HUiz0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-12_03,2021-10-12_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
- lowpriorityscore=0 mlxscore=0 mlxlogscore=999 priorityscore=1501
- malwarescore=0 phishscore=0 clxscore=1015 adultscore=0 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110120073
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With KUAP enabled, any kernel code which wants to access userspace
-needs to be surrounded by disable-enable KUAP. But that is not
-happening for BPF_PROBE_MEM load instruction. Though PPC32 does not
-support read protection, considering the fact that PTR_TO_BTF_ID
-(which uses BPF_PROBE_MEM mode) could either be a valid kernel pointer
-or NULL but should never be a pointer to userspace address, execute
-BPF_PROBE_MEM load only if addr is kernel address, otherwise set
-dst_reg=0 and move on.
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-This will catch NULL, valid or invalid userspace pointers. Only bad
-kernel pointer will be handled by BPF exception table.
+This series adds support for Realtek's RTL8365MB-VC, a 4+1 port
+10/100/1000M Ethernet switch. The driver - rtl8365mb - was developed by
+Michael Ramussen and myself.
 
-[Alexei suggested for x86]
-Suggested-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
+This version of the driver is relatively slim, implementing only the
+standalone port functionality and no offload capabilities. It is based
+on a previous RFC series [1] from August, and the main difference is the
+removal of some spurious VLAN operations. Otherwise I have simply
+addressed most of the feedback. Please see the respective patches for
+more detail.
 
-Changes in v4:
-* Adjusted the emit code to avoid using temporary reg.
+In parallel I am working on offloading the bridge layer capabilities,
+but I would like to get the basic stuff upstreamed as soon as possible.
 
+[1] https://lore.kernel.org/netdev/20210822193145.1312668-1-alvin@pqrs.dk/
 
- arch/powerpc/net/bpf_jit_comp32.c | 34 +++++++++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+Alvin Šipraga (6):
+  ether: add EtherType for proprietary Realtek protocols
+  net: dsa: move NET_DSA_TAG_RTL4_A to right place in Kconfig/Makefile
+  dt-bindings: net: dsa: realtek-smi: document new compatible rtl8365mb
+  net: dsa: tag_rtl8_4: add realtek 8 byte protocol 4 tag
+  net: dsa: realtek-smi: add rtl8365mb subdriver for RTL8365MB-VC
+  net: phy: realtek: add support for RTL8365MB-VC internal PHYs
 
-diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
-index 5dc45e393d1d..d3a52cd42f53 100644
---- a/arch/powerpc/net/bpf_jit_comp32.c
-+++ b/arch/powerpc/net/bpf_jit_comp32.c
-@@ -820,6 +820,40 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
- 		case BPF_LDX | BPF_PROBE_MEM | BPF_W:
- 		case BPF_LDX | BPF_MEM | BPF_DW: /* dst = *(u64 *)(ul) (src + off) */
- 		case BPF_LDX | BPF_PROBE_MEM | BPF_DW:
-+			/*
-+			 * As PTR_TO_BTF_ID that uses BPF_PROBE_MEM mode could either be a valid
-+			 * kernel pointer or NULL but not a userspace address, execute BPF_PROBE_MEM
-+			 * load only if addr is kernel address (see is_kernel_addr()), otherwise
-+			 * set dst_reg=0 and move on.
-+			 */
-+			if (BPF_MODE(code) == BPF_PROBE_MEM) {
-+				PPC_LI32(_R0, TASK_SIZE - off);
-+				EMIT(PPC_RAW_CMPLW(src_reg, _R0));
-+				PPC_BCC(COND_GT, (ctx->idx + 5) * 4);
-+				EMIT(PPC_RAW_LI(dst_reg, 0));
-+				/*
-+				 * For BPF_DW case, "li reg_h,0" would be needed when
-+				 * !fp->aux->verifier_zext. Emit NOP otherwise.
-+				 *
-+				 * Note that "li reg_h,0" is emitted for BPF_B/H/W case,
-+				 * if necessary. So, jump there insted of emitting an
-+				 * additional "li reg_h,0" instruction.
-+				 */
-+				if (size == BPF_DW && !fp->aux->verifier_zext)
-+					EMIT(PPC_RAW_LI(dst_reg_h, 0));
-+				else
-+					EMIT(PPC_RAW_NOP());
-+				/*
-+				 * Need to jump two instructions instead of one for BPF_DW case
-+				 * as there are two load instructions for dst_reg_h & dst_reg
-+				 * respectively.
-+				 */
-+				if (size == BPF_DW)
-+					PPC_JMP((ctx->idx + 3) * 4);
-+				else
-+					PPC_JMP((ctx->idx + 2) * 4);
-+			}
-+
- 			switch (size) {
- 			case BPF_B:
- 				EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
+ .../bindings/net/dsa/realtek-smi.txt          |    1 +
+ drivers/net/dsa/Kconfig                       |    1 +
+ drivers/net/dsa/Makefile                      |    2 +-
+ drivers/net/dsa/realtek-smi-core.c            |    4 +
+ drivers/net/dsa/realtek-smi-core.h            |    1 +
+ drivers/net/dsa/rtl8365mb.c                   | 1610 +++++++++++++++++
+ drivers/net/phy/realtek.c                     |    8 +
+ include/net/dsa.h                             |    2 +
+ include/uapi/linux/if_ether.h                 |    1 +
+ net/dsa/Kconfig                               |   20 +-
+ net/dsa/Makefile                              |    3 +-
+ net/dsa/tag_rtl8_4.c                          |  166 ++
+ 12 files changed, 1810 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/net/dsa/rtl8365mb.c
+ create mode 100644 net/dsa/tag_rtl8_4.c
+
 -- 
-2.31.1
+2.32.0
 
