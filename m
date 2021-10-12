@@ -2,103 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 867BF42A51E
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:09:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E48A42A52C
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:15:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236591AbhJLNL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 09:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232851AbhJLNL6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:11:58 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517BDC061570;
-        Tue, 12 Oct 2021 06:09:56 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id d3so53270369edp.3;
-        Tue, 12 Oct 2021 06:09:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=YKueiV6JHnO2SWEg4ednq6nX+YbDshzzDq1vLvlG1cw=;
-        b=SVZka6ezsMJnMKeWlb8qWlQJzKHOERJP+vQLsax2MT+mBK82kltqBKzjoo+0K/dfDN
-         HRqMIXA74pQmlHINDCAHsxyHoACRFDl/WnH7r7DfppzY6yA12USg6fR1NR7tbxP6Tkwl
-         Mntb7UF/C3I7cWETSTxQOQbxBnteHoLlkN4SgIRfK0XjS5FzJduAfLiuRvh5kRU1iwe5
-         t8Asb7Djhmirt180RLLyOOkUkVOWGLLG5bj9WXQpJ4ulgmJtcr8+skoFYPfKBnHrDFQH
-         K5XSfV5QGCHPT/Doxd+FRsHXNijBi4FWKBRs58TwXVnqHyvl3/nX8ObYVfte+yz0Iw9v
-         Y4TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=YKueiV6JHnO2SWEg4ednq6nX+YbDshzzDq1vLvlG1cw=;
-        b=al+p5/skozzhggWh5ShDJRGbLUNn1hTgBk5HzayZHRxFUqtjOx+15FMarnwQ/R3RzV
-         1bFT0QG7+bNjJ2loBeZk4NhswSCDVP0ZLuT49hnQTCFeAgsV0ESt9ma9JDCyRM5gsdmm
-         73enaP33mgZrOfi6wCHFYlM2gyYVahM5cvRh7H9IabbCH2pDJdZoTM5Qol46kd3eywSU
-         6bf4zjkI8i4bPOc3MYqo+iuZM+ney4NK3xIS3hqKvaCrVVJvLDDiMAYc/C6EWoPQdCCA
-         jQZVdC13XfV4HmMQXb6GCALabkOys1+0TUN/fGblOdzHguBXyubA+x6gzOZmN8DoMzRC
-         tnaA==
-X-Gm-Message-State: AOAM53292HpMoZnYCnXs7phxgUAFdaEqj1eQZrv/rqNqu0RsHFIP2SuO
-        am0iUIufoAv5LgB7yihwetM=
-X-Google-Smtp-Source: ABdhPJzjqxBA2OJOfJfHdplJCe2+fTtUOt4o9kiCTXs2g+veaaqbTRtkdP0/5j/Ps6X9dpAu/N6GHQ==
-X-Received: by 2002:a05:6402:5113:: with SMTP id m19mr49885819edd.231.1634044192626;
-        Tue, 12 Oct 2021 06:09:52 -0700 (PDT)
-Received: from skbuf ([188.26.53.217])
-        by smtp.gmail.com with ESMTPSA id m23sm4899248eja.6.2021.10.12.06.09.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Oct 2021 06:09:52 -0700 (PDT)
-Date:   Tue, 12 Oct 2021 16:09:50 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/6] ether: add EtherType for proprietary
- Realtek protocols
-Message-ID: <20211012130950.nlrqoa6qjtvzvfdh@skbuf>
-References: <20211012123557.3547280-1-alvin@pqrs.dk>
- <20211012123557.3547280-2-alvin@pqrs.dk>
+        id S236570AbhJLNRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 09:17:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45068 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233100AbhJLNRd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 09:17:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B2E2D61078;
+        Tue, 12 Oct 2021 13:15:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634044532;
+        bh=o7kakXnsPyV9ARidLcUMPXHlRDmLhaJ2814BPZpXuEI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Fj8zavkOFLxOGWqggzXNZbB0N7hARpQFncEPuqe1NZxppnGtHCsbQnqzSdqBSS5IQ
+         ZtQlzwggE3Xk8Oxje+6cTLwL5pBOUiquX5z/VhgbCp31csY3+hz6pA3QQNHVNktZyg
+         2mlJowkvz7vZCKwnNbYVSbVkrkm+6Jxrrnr8BCl8Z1ZJphgB6XBH8y7meEjTKC1PoM
+         lP7+7y5LL25eOZDHmGvwPLXyh80FhRi4mqO8XhRC6KKtmvFesWhwTUGvH48aPF2K6H
+         SX58/nZu22+IKrY8FM4z0Y1/YG7VywteQG8pLV8itHfUrl3A0vwPynF1FHFYZFA+BA
+         GLvLHUmMc44Sw==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        mlxsw@nvidia.com, Moshe Shemesh <moshe@nvidia.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Shay Drory <shayd@nvidia.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: [PATCH net-next v4 0/6] devlink reload simplification
+Date:   Tue, 12 Oct 2021 16:15:20 +0300
+Message-Id: <cover.1634044267.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211012123557.3547280-2-alvin@pqrs.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 02:35:50PM +0200, Alvin Šipraga wrote:
-> From: Alvin Šipraga <alsi@bang-olufsen.dk>
-> 
-> Add a new EtherType ETH_P_REALTEK to the if_ether.h uapi header. The
-> EtherType 0x8899 is used in a number of different protocols from Realtek
-> Semiconductor Corp [1], so no general assumptions should be made when
-> trying to decode such packets. Observed protocols include:
-> 
->   0x1 - Realtek Remote Control protocol [2]
->   0x2 - Echo protocol [2]
->   0x3 - Loop detection protocol [2]
->   0x4 - RTL8365MB 4- and 8-byte switch CPU tag protocols [3]
->   0x9 - RTL8306 switch CPU tag protocol [4]
->   0xA - RTL8366RB switch CPU tag protocol [4]
-> 
-> [1] https://lore.kernel.org/netdev/CACRpkdYQthFgjwVzHyK3DeYUOdcYyWmdjDPG=Rf9B3VrJ12Rzg@mail.gmail.com/
-> [2] https://www.wireshark.org/lists/ethereal-dev/200409/msg00090.html
-> [3] https://lore.kernel.org/netdev/20210822193145.1312668-4-alvin@pqrs.dk/
-> [4] https://lore.kernel.org/netdev/20200708122537.1341307-2-linus.walleij@linaro.org/
-> 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-> ---
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Changelog:
+v4:
+ * Removed legacy BUG_ON() in first patch.
+ * Added new patch that moves netdev_to_devlink functions to devlink.c.
+ * Rewrote devlink ops patch to use feature mask.
+v3: https://lore.kernel.org/all/cover.1633589385.git.leonro@nvidia.com
+ * Rewrote third patch to keep static const nature of ops. This is done
+   by extracting reload ops to separate ops structure.
+ * Changed commit message in last patch as was suggested by Ido.
+v2: https://lore.kernel.org/all/cover.1633284302.git.leonro@nvidia.com
+ * Dropped const removal patch
+ * Added new patch to hide struct devlink
+ * Added new patch to annotate devlink API
+ * Implemented copy of all callback in devlink ops
+v1: https://lore.kernel.org/all/cover.1632916329.git.leonro@nvidia.com
+ * Missed removal of extra WARN_ON
+ * Added "ops parameter to macro as Dan suggested.
+v0: https://lore.kernel.org/all/cover.1632909221.git.leonro@nvidia.com
+
+-------------------------------------------------------------------
+Hi,
+
+Simplify devlink reload APIs.
+
+Thanks
+
+Leon Romanovsky (6):
+  devlink: Reduce struct devlink exposure
+  devlink: Move netdev_to_devlink helpers to devlink.c
+  devlink: Annotate devlink API calls
+  devlink: Allow control devlink ops behavior through feature mask
+  net/mlx5: Set devlink reload feature bit for supported devices only
+  devlink: Delete reload enable/disable interface
+
+ .../hisilicon/hns3/hns3pf/hclge_devlink.c     |   4 +-
+ .../hisilicon/hns3/hns3vf/hclgevf_devlink.c   |   4 +-
+ drivers/net/ethernet/mellanox/mlx4/main.c     |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |   4 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    |   3 -
+ .../mellanox/mlx5/core/sf/dev/driver.c        |   5 +-
+ drivers/net/ethernet/mellanox/mlxfw/mlxfw.h   |   2 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |   8 +-
+ drivers/net/netdevsim/dev.c                   |   4 +-
+ include/net/devlink.h                         |  79 ++-------
+ include/trace/events/devlink.h                |  72 ++++----
+ net/core/devlink.c                            | 164 +++++++++++++-----
+ 12 files changed, 181 insertions(+), 171 deletions(-)
+
+-- 
+2.31.1
+
