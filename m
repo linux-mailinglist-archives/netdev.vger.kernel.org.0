@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E208242A8F6
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:59:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C846342A8F9
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:59:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237540AbhJLQAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 12:00:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47070 "EHLO mail.kernel.org"
+        id S237552AbhJLQAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 12:00:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47102 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234892AbhJLQAv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237477AbhJLQAv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 12 Oct 2021 12:00:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E3F0F610CC;
-        Tue, 12 Oct 2021 15:58:48 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6D240610E8;
+        Tue, 12 Oct 2021 15:58:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1634054329;
-        bh=T6ppLGl0aDoCFsR3Pz4UcvNQUbGl2TOczrkHIqZxPJE=;
+        bh=wfbt6ImL0n5GbHzvl0f7V3CT5bJgwTRiRpj5/Z31AW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oNfe21BdT/D4tbKZxLpnUaNUeEY7oMjDx6G3FpsND6Hh+RaQf59yeYiyDZPcbExt7
-         tt9tZB+Dh51zUxYRONn2Ma3OJaIllqrx2sXvf+eJKlPNDdUNqVUjMhBedhbWGNjdVH
-         0u6aGS9LBJYCGDwQ/VcOKlLiYGpdRMV4UgwN6kpiMBf9QXeAabCDCNz45rXrsg1+2n
-         0pkpnTAA22BLDePAuUdN2FjNeQgl33yVw30xqZigXdmfr5Jm10EVcOE9OfhPHlCYTV
-         pvqnydVJIAeoEMhLtrryKBM/6COjdesD/LiQZLWgJk+NVcVzJhd0ZLPYT5toE/e6LE
-         8Vd9MdBKI5w/g==
+        b=eof9QeepucP39hDQnknvLJGBeoGGBhaz2sL7VQ7u+AM7yTUzDyJkzDs0EwAHIbq1U
+         0KRd28vR6U27oWPndAPqZGYgk0CM5VLROrp4fOhT4hMDk8sENAi3bwoStqYRVv+jAt
+         pJz+/sSuJxm6egF0wfCu6ciLnKaEQhjUAKhhVlbKtRN+C1Ynu2bdBC05A3IU2mZ9bA
+         Jh3+dXhJD/JKBIzJhIcJG2IgkyPrfvPyx5e6h24gxx7+eTQjV5jEh93wogRh47/rsA
+         eHQMSiultK7osDqAIe/FgcUjY5qip2yz5G5PvIEUZsW9wHGf0oOL1wldg95zXB/vcm
+         9LCTyvfQeFxIQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ralf@linux-mips.org, jreuter@yaina.de,
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, ralf@linux-mips.org, jreuter@yaina.de,
         ying.xue@windriver.com, linux-hams@vger.kernel.org,
         tipc-discussion@lists.sourceforge.net,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 2/6] rose: constify dev_addr passing
-Date:   Tue, 12 Oct 2021 08:58:36 -0700
-Message-Id: <20211012155840.4151590-3-kuba@kernel.org>
+Subject: [PATCH net-next 3/6] llc/snap: constify dev_addr passing
+Date:   Tue, 12 Oct 2021 08:58:37 -0700
+Message-Id: <20211012155840.4151590-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211012155840.4151590-1-kuba@kernel.org>
 References: <20211012155840.4151590-1-kuba@kernel.org>
@@ -43,138 +43,139 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 In preparation for netdev->dev_addr being constant
-make all relevant arguments in rose constant.
+make all relevant arguments in LLC and SNAP constant.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/net/rose.h    |  8 ++++----
- net/rose/af_rose.c    |  5 +++--
- net/rose/rose_dev.c   |  6 +++---
- net/rose/rose_route.c | 10 ++++++----
- 4 files changed, 16 insertions(+), 13 deletions(-)
+ include/net/datalink.h | 2 +-
+ include/net/llc.h      | 2 +-
+ include/net/llc_if.h   | 3 ++-
+ net/802/p8022.c        | 2 +-
+ net/802/psnap.c        | 2 +-
+ net/llc/llc_c_ac.c     | 2 +-
+ net/llc/llc_if.c       | 2 +-
+ net/llc/llc_output.c   | 2 +-
+ net/llc/llc_proc.c     | 2 +-
+ 9 files changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/rose.h b/include/net/rose.h
-index cf517d306a28..0f0a4ce0fee7 100644
---- a/include/net/rose.h
-+++ b/include/net/rose.h
-@@ -162,8 +162,8 @@ extern int  sysctl_rose_link_fail_timeout;
- extern int  sysctl_rose_maximum_vcs;
- extern int  sysctl_rose_window_size;
+diff --git a/include/net/datalink.h b/include/net/datalink.h
+index a9663229b913..d9b7faaa539f 100644
+--- a/include/net/datalink.h
++++ b/include/net/datalink.h
+@@ -12,7 +12,7 @@ struct datalink_proto {
+         int     (*rcvfunc)(struct sk_buff *, struct net_device *,
+                                 struct packet_type *, struct net_device *);
+ 	int     (*request)(struct datalink_proto *, struct sk_buff *,
+-                                        unsigned char *);
++			   const unsigned char *);
+ 	struct list_head node;
+ };
  
--int rosecmp(rose_address *, rose_address *);
--int rosecmpm(rose_address *, rose_address *, unsigned short);
-+int rosecmp(const rose_address *, const rose_address *);
-+int rosecmpm(const rose_address *, const rose_address *, unsigned short);
- char *rose2asc(char *buf, const rose_address *);
- struct sock *rose_find_socket(unsigned int, struct rose_neigh *);
- void rose_kill_by_neigh(struct rose_neigh *);
-@@ -205,8 +205,8 @@ extern const struct seq_operations rose_node_seqops;
- extern struct seq_operations rose_route_seqops;
+diff --git a/include/net/llc.h b/include/net/llc.h
+index df282d9b4017..fd1f9a3fd8dd 100644
+--- a/include/net/llc.h
++++ b/include/net/llc.h
+@@ -133,7 +133,7 @@ static inline void llc_sap_put(struct llc_sap *sap)
+ struct llc_sap *llc_sap_find(unsigned char sap_value);
  
- void rose_add_loopback_neigh(void);
--int __must_check rose_add_loopback_node(rose_address *);
--void rose_del_loopback_node(rose_address *);
-+int __must_check rose_add_loopback_node(const rose_address *);
-+void rose_del_loopback_node(const rose_address *);
- void rose_rt_device_down(struct net_device *);
- void rose_link_device_down(struct net_device *);
- struct net_device *rose_dev_first(void);
-diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-index cf7d974e0f61..30a1cf4c16c6 100644
---- a/net/rose/af_rose.c
-+++ b/net/rose/af_rose.c
-@@ -109,7 +109,7 @@ char *rose2asc(char *buf, const rose_address *addr)
- /*
-  *	Compare two ROSE addresses, 0 == equal.
-  */
--int rosecmp(rose_address *addr1, rose_address *addr2)
-+int rosecmp(const rose_address *addr1, const rose_address *addr2)
+ int llc_build_and_send_ui_pkt(struct llc_sap *sap, struct sk_buff *skb,
+-			      unsigned char *dmac, unsigned char dsap);
++			      const unsigned char *dmac, unsigned char dsap);
+ 
+ void llc_sap_handler(struct llc_sap *sap, struct sk_buff *skb);
+ void llc_conn_handler(struct llc_sap *sap, struct sk_buff *skb);
+diff --git a/include/net/llc_if.h b/include/net/llc_if.h
+index 8d5c543cd620..c72570a21a4f 100644
+--- a/include/net/llc_if.h
++++ b/include/net/llc_if.h
+@@ -62,7 +62,8 @@
+ #define LLC_STATUS_CONFLICT	7 /* disconnect conn */
+ #define LLC_STATUS_RESET_DONE	8 /*  */
+ 
+-int llc_establish_connection(struct sock *sk, u8 *lmac, u8 *dmac, u8 dsap);
++int llc_establish_connection(struct sock *sk, const u8 *lmac, u8 *dmac,
++			     u8 dsap);
+ int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb);
+ int llc_send_disc(struct sock *sk);
+ #endif /* LLC_IF_H */
+diff --git a/net/802/p8022.c b/net/802/p8022.c
+index a6585627051d..79c23173116c 100644
+--- a/net/802/p8022.c
++++ b/net/802/p8022.c
+@@ -23,7 +23,7 @@
+ #include <net/p8022.h>
+ 
+ static int p8022_request(struct datalink_proto *dl, struct sk_buff *skb,
+-			 unsigned char *dest)
++			 const unsigned char *dest)
  {
- 	int i;
- 
-@@ -123,7 +123,8 @@ int rosecmp(rose_address *addr1, rose_address *addr2)
- /*
-  *	Compare two ROSE addresses for only mask digits, 0 == equal.
-  */
--int rosecmpm(rose_address *addr1, rose_address *addr2, unsigned short mask)
-+int rosecmpm(const rose_address *addr1, const rose_address *addr2,
-+	     unsigned short mask)
- {
- 	unsigned int i, j;
- 
-diff --git a/net/rose/rose_dev.c b/net/rose/rose_dev.c
-index 2a35e188b389..f1a76a5820f1 100644
---- a/net/rose/rose_dev.c
-+++ b/net/rose/rose_dev.c
-@@ -66,7 +66,7 @@ static int rose_set_mac_address(struct net_device *dev, void *addr)
- 		if (err)
- 			return err;
- 
--		rose_del_loopback_node((rose_address *)dev->dev_addr);
-+		rose_del_loopback_node((const rose_address *)dev->dev_addr);
- 	}
- 
- 	dev_addr_set(dev, sa->sa_data);
-@@ -78,7 +78,7 @@ static int rose_open(struct net_device *dev)
- {
- 	int err;
- 
--	err = rose_add_loopback_node((rose_address *)dev->dev_addr);
-+	err = rose_add_loopback_node((const rose_address *)dev->dev_addr);
- 	if (err)
- 		return err;
- 
-@@ -90,7 +90,7 @@ static int rose_open(struct net_device *dev)
- static int rose_close(struct net_device *dev)
- {
- 	netif_stop_queue(dev);
--	rose_del_loopback_node((rose_address *)dev->dev_addr);
-+	rose_del_loopback_node((const rose_address *)dev->dev_addr);
+ 	llc_build_and_send_ui_pkt(dl->sap, skb, dest, dl->sap->laddr.lsap);
  	return 0;
+diff --git a/net/802/psnap.c b/net/802/psnap.c
+index 4492e8d7ad20..1406bfdbda13 100644
+--- a/net/802/psnap.c
++++ b/net/802/psnap.c
+@@ -79,7 +79,7 @@ static int snap_rcv(struct sk_buff *skb, struct net_device *dev,
+  *	Put a SNAP header on a frame and pass to 802.2
+  */
+ static int snap_request(struct datalink_proto *dl,
+-			struct sk_buff *skb, u8 *dest)
++			struct sk_buff *skb, const u8 *dest)
+ {
+ 	memcpy(skb_push(skb, 5), dl->type, 5);
+ 	llc_build_and_send_ui_pkt(snap_sap, skb, dest, snap_sap->laddr.lsap);
+diff --git a/net/llc/llc_c_ac.c b/net/llc/llc_c_ac.c
+index 647c0554d04c..40ca3c1e42a2 100644
+--- a/net/llc/llc_c_ac.c
++++ b/net/llc/llc_c_ac.c
+@@ -781,7 +781,7 @@ int llc_conn_ac_send_sabme_cmd_p_set_x(struct sock *sk, struct sk_buff *skb)
+ 
+ 	if (nskb) {
+ 		struct llc_sap *sap = llc->sap;
+-		u8 *dmac = llc->daddr.mac;
++		const u8 *dmac = llc->daddr.mac;
+ 
+ 		if (llc->dev->flags & IFF_LOOPBACK)
+ 			dmac = llc->dev->dev_addr;
+diff --git a/net/llc/llc_if.c b/net/llc/llc_if.c
+index ad6547736c21..dde9bf08a593 100644
+--- a/net/llc/llc_if.c
++++ b/net/llc/llc_if.c
+@@ -80,7 +80,7 @@ int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb)
+  *	establishment will inform to upper layer via calling it's confirm
+  *	function and passing proper information.
+  */
+-int llc_establish_connection(struct sock *sk, u8 *lmac, u8 *dmac, u8 dsap)
++int llc_establish_connection(struct sock *sk, const u8 *lmac, u8 *dmac, u8 dsap)
+ {
+ 	int rc = -EISCONN;
+ 	struct llc_addr laddr, daddr;
+diff --git a/net/llc/llc_output.c b/net/llc/llc_output.c
+index b9ad087bcbd7..5a6466fc626a 100644
+--- a/net/llc/llc_output.c
++++ b/net/llc/llc_output.c
+@@ -56,7 +56,7 @@ int llc_mac_hdr_init(struct sk_buff *skb,
+  *	package primitive as an event and send to SAP event handler
+  */
+ int llc_build_and_send_ui_pkt(struct llc_sap *sap, struct sk_buff *skb,
+-			      unsigned char *dmac, unsigned char dsap)
++			      const unsigned char *dmac, unsigned char dsap)
+ {
+ 	int rc;
+ 	llc_pdu_header_init(skb, LLC_PDU_TYPE_U, sap->laddr.lsap,
+diff --git a/net/llc/llc_proc.c b/net/llc/llc_proc.c
+index a4eccb98220a..0ff490a73fae 100644
+--- a/net/llc/llc_proc.c
++++ b/net/llc/llc_proc.c
+@@ -26,7 +26,7 @@
+ #include <net/llc_c_st.h>
+ #include <net/llc_conn.h>
+ 
+-static void llc_ui_format_mac(struct seq_file *seq, u8 *addr)
++static void llc_ui_format_mac(struct seq_file *seq, const u8 *addr)
+ {
+ 	seq_printf(seq, "%pM", addr);
  }
- 
-diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
-index c0e04c261a15..e2e6b6b78578 100644
---- a/net/rose/rose_route.c
-+++ b/net/rose/rose_route.c
-@@ -401,7 +401,7 @@ void rose_add_loopback_neigh(void)
- /*
-  *	Add a loopback node.
-  */
--int rose_add_loopback_node(rose_address *address)
-+int rose_add_loopback_node(const rose_address *address)
- {
- 	struct rose_node *rose_node;
- 	int err = 0;
-@@ -446,7 +446,7 @@ int rose_add_loopback_node(rose_address *address)
- /*
-  *	Delete a loopback node.
-  */
--void rose_del_loopback_node(rose_address *address)
-+void rose_del_loopback_node(const rose_address *address)
- {
- 	struct rose_node *rose_node;
- 
-@@ -629,7 +629,8 @@ struct net_device *rose_dev_get(rose_address *addr)
- 
- 	rcu_read_lock();
- 	for_each_netdev_rcu(&init_net, dev) {
--		if ((dev->flags & IFF_UP) && dev->type == ARPHRD_ROSE && rosecmp(addr, (rose_address *)dev->dev_addr) == 0) {
-+		if ((dev->flags & IFF_UP) && dev->type == ARPHRD_ROSE &&
-+		    rosecmp(addr, (const rose_address *)dev->dev_addr) == 0) {
- 			dev_hold(dev);
- 			goto out;
- 		}
-@@ -646,7 +647,8 @@ static int rose_dev_exists(rose_address *addr)
- 
- 	rcu_read_lock();
- 	for_each_netdev_rcu(&init_net, dev) {
--		if ((dev->flags & IFF_UP) && dev->type == ARPHRD_ROSE && rosecmp(addr, (rose_address *)dev->dev_addr) == 0)
-+		if ((dev->flags & IFF_UP) && dev->type == ARPHRD_ROSE &&
-+		    rosecmp(addr, (const rose_address *)dev->dev_addr) == 0)
- 			goto out;
- 	}
- 	dev = NULL;
 -- 
 2.31.1
 
