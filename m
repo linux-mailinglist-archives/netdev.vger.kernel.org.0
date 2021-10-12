@@ -2,81 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F1A342A980
+	by mail.lfdr.de (Postfix) with ESMTP id C15AD42A982
 	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 18:35:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230505AbhJLQhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 12:37:05 -0400
-Received: from mga09.intel.com ([134.134.136.24]:1914 "EHLO mga09.intel.com"
+        id S229575AbhJLQhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 12:37:06 -0400
+Received: from mga09.intel.com ([134.134.136.24]:1917 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229495AbhJLQhE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 12:37:04 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10135"; a="227102066"
+        id S230463AbhJLQhF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 12:37:05 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10135"; a="227102069"
 X-IronPort-AV: E=Sophos;i="5.85,368,1624345200"; 
-   d="scan'208";a="227102066"
+   d="scan'208";a="227102069"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2021 09:33:49 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.85,368,1624345200"; 
-   d="scan'208";a="491050676"
+   d="scan'208";a="491050679"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga008.jf.intel.com with ESMTP; 12 Oct 2021 09:33:48 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        maciej.machnikowski@intel.com, richardcochran@gmail.com
-Subject: [PATCH net-next 0/4][pull request] 100GbE Intel Wired LAN Driver Updates 2021-10-12
-Date:   Tue, 12 Oct 2021 09:31:49 -0700
-Message-Id: <20211012163153.2104212-1-anthony.l.nguyen@intel.com>
+Cc:     Maciej Machnikowski <maciej.machnikowski@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        richardcochran@gmail.com,
+        Sunitha Mekala <sunithax.d.mekala@intel.com>
+Subject: [PATCH net-next 1/4] ice: Refactor ice_aqc_link_topo_addr
+Date:   Tue, 12 Oct 2021 09:31:50 -0700
+Message-Id: <20211012163153.2104212-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211012163153.2104212-1-anthony.l.nguyen@intel.com>
+References: <20211012163153.2104212-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maciej Machnikowski says:
+From: Maciej Machnikowski <maciej.machnikowski@intel.com>
 
-Extend the driver implementation to support PTP pins on E810-T and
-derivative devices.
+Separate link topo parameters in struct ice_aqc_link_topo_addr into
+new struct ice_aqc_link_topo_params.
+This keeps input parameters for the get_link_topo command in a separate
+structure and is required by future commands that operate only on link
+topo params without the node handle.
 
-E810-T adapters are equipped with:
-- 2 external bidirectional SMA connectors
-- 1 internal TX U.FL shared with SMA1
-- 1 internal RX U.FL shared with SMA2
+Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
+Tested-by: Sunitha Mekala <sunithax.d.mekala@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_adminq_cmd.h | 6 +++++-
+ drivers/net/ethernet/intel/ice/ice_common.c     | 8 +++++---
+ 2 files changed, 10 insertions(+), 4 deletions(-)
 
-The SMA and U.FL configuration is controlled by the external
-multiplexer.
-
-E810-T Derivatives are equipped with:
-- 2 1PPS outputs on SDP20 and SDP22
-- 2 1PPS inputs on SDP21 and SDP23
-
-The following are changes since commit 177c92353be935db555d0d08729e871145ec698c:
-  ethernet: tulip: avoid duplicate variable name on sparc
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
-
-Maciej Machnikowski (4):
-  ice: Refactor ice_aqc_link_topo_addr
-  ice: Implement functions for reading and setting GPIO pins
-  ice: Add support for SMA control multiplexer
-  ice: Implement support for SMA and U.FL on E810-T
-
- drivers/net/ethernet/intel/ice/ice.h          |   1 +
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  20 +-
- drivers/net/ethernet/intel/ice/ice_common.c   |  87 +++-
- drivers/net/ethernet/intel/ice/ice_common.h   |   7 +
- drivers/net/ethernet/intel/ice/ice_devids.h   |   2 +
- drivers/net/ethernet/intel/ice/ice_lib.c      |  15 +
- drivers/net/ethernet/intel/ice/ice_lib.h      |   1 +
- drivers/net/ethernet/intel/ice/ice_ptp.c      | 370 +++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_ptp.h      |  20 +-
- drivers/net/ethernet/intel/ice/ice_ptp_hw.c   | 156 ++++++++
- drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  22 ++
- drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
- 12 files changed, 688 insertions(+), 14 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index 2b4437dc112f..9f6edfa59770 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -1279,7 +1279,7 @@ struct ice_aqc_set_mac_lb {
+ 	u8 reserved[15];
+ };
+ 
+-struct ice_aqc_link_topo_addr {
++struct ice_aqc_link_topo_params {
+ 	u8 lport_num;
+ 	u8 lport_num_valid;
+ #define ICE_AQC_LINK_TOPO_PORT_NUM_VALID	BIT(0)
+@@ -1305,6 +1305,10 @@ struct ice_aqc_link_topo_addr {
+ #define ICE_AQC_LINK_TOPO_NODE_CTX_PROVIDED	4
+ #define ICE_AQC_LINK_TOPO_NODE_CTX_OVERRIDE	5
+ 	u8 index;
++};
++
++struct ice_aqc_link_topo_addr {
++	struct ice_aqc_link_topo_params topo_params;
+ 	__le16 handle;
+ #define ICE_AQC_LINK_TOPO_HANDLE_S	0
+ #define ICE_AQC_LINK_TOPO_HANDLE_M	(0x3FF << ICE_AQC_LINK_TOPO_HANDLE_S)
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 152a1405e353..b0084359a7e1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -240,11 +240,13 @@ ice_aq_get_link_topo_handle(struct ice_port_info *pi, u8 node_type,
+ 
+ 	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_link_topo);
+ 
+-	cmd->addr.node_type_ctx = (ICE_AQC_LINK_TOPO_NODE_CTX_PORT <<
+-				   ICE_AQC_LINK_TOPO_NODE_CTX_S);
++	cmd->addr.topo_params.node_type_ctx =
++		(ICE_AQC_LINK_TOPO_NODE_CTX_PORT <<
++		 ICE_AQC_LINK_TOPO_NODE_CTX_S);
+ 
+ 	/* set node type */
+-	cmd->addr.node_type_ctx |= (ICE_AQC_LINK_TOPO_NODE_TYPE_M & node_type);
++	cmd->addr.topo_params.node_type_ctx |=
++		(ICE_AQC_LINK_TOPO_NODE_TYPE_M & node_type);
+ 
+ 	return ice_aq_send_cmd(pi->hw, &desc, NULL, 0, cd);
+ }
 -- 
 2.31.1
 
