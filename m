@@ -2,79 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FDA842AAFB
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 19:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46D3D42AB25
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 19:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232231AbhJLRoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 13:44:39 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:46965 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232602AbhJLRoh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 13:44:37 -0400
-Received: from [192.168.0.2] (ip5f5aef4c.dynamic.kabel-deutschland.de [95.90.239.76])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id C1DE061E5FE33;
-        Tue, 12 Oct 2021 19:42:30 +0200 (CEST)
-Subject: Re: [EXT] Re: [Intel-wired-lan] Intel I350 regression 5.10 -> 5.14
- ("The NVM Checksum Is Not Valid") [8086:1521]
-To:     "Andreas K. Huettel" <andreas.huettel@ur.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        Jakub Kicinski <kubakici@wp.pl>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-References: <1823864.tdWV9SEqCh@kailua> <2944777.ktpJ11cQ8Q@pinacolada>
- <c75203e9-0ef4-20bd-87a5-ad0846863886@intel.com> <2801801.e9J7NaK4W3@kailua>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <6faf4b92-78d5-47a4-63df-cc2bab7769d0@molgen.mpg.de>
-Date:   Tue, 12 Oct 2021 19:42:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S232106AbhJLRwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 13:52:24 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:38021 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231756AbhJLRwS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 13:52:18 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 9AF1A5C015E;
+        Tue, 12 Oct 2021 13:50:15 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Tue, 12 Oct 2021 13:50:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=+/j/7b8G2Fi1R9KRD
+        VtWFjwpl5Fayq/fjO1KZnQ81NQ=; b=WNNnZEVqf0mBTDIb/+QMXY9+Q0oUWbFsN
+        Bu9gr1SBIbWKkI1pZRFWXGFdWPoDeA3kYanIui4mXXUidl4rwbyLkFZhiOeRSHY8
+        KSsSVoCTV/Rde+gjWnZ5/Sy4HwDWm5XH7cJhacpqVuhbptM3mmMNJBjq1EmvzfU5
+        28mjPIRiFUpLE3wbAMdDK8m38uAbisBD64vCThTbuEYnMOI7NK3EOrerSyzEBjyU
+        nUyP+n6ZwiPnhGuT8xbywrz9J4zWWxlN/L54JZqgbbBUXsnUQ1FvwyWPkipMQGqA
+        fbmc7P4oBY8x6Gma65VEocyXiJMIEFxzU4hcxE8MJYrn3Br8pmlgw==
+X-ME-Sender: <xms:18plYfNOvi4-gDSqzDD3q2U04B_kkRTjFXc-QJbNI_qTdYVR78oD7Q>
+    <xme:18plYZ8L8KsLpcvkOoq_PoSQ3x_zY1ctGqt_sR1d8xWbiHHKjVXSjmO-91Tbbe-My
+    WbANC45Du_MhQE>
+X-ME-Received: <xmr:18plYeQkmm8J6vcTixMJbTznSTlD23DfYAn9Auq_xGsJl_c5rzjum9-1zNroi0rbltlQHNI90OoMCeLIZ1uN3gg-EDKwDfVjWMGa1Ws1kQ_zAA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtkedgudduhecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhepleeuffeukeejteeugfdvgfdtheefgfejudethfdtveeujedvkefguddvudfhjeef
+    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:18plYTv52QCKp7saKVw5PudLL1gosiHx7A9opylYTVXpqNWTDASVYg>
+    <xmx:18plYXfkYVte9g5UHh4vIRvpLFmKdou7XKUS4d9s0MbHKsdfMmtuHw>
+    <xmx:18plYf3MiyxpU9sUDQPushSnD9hmZlVgyM1EeyNwhQhamrzA6xdYNA>
+    <xmx:18plYfRWeezkGLjHgu6gCBwiAWWFYoe4Du5-3XrQq5ZmLxpYfKCWKA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 12 Oct 2021 13:50:13 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        vadimp@nvidia.com, cera@cera.cz, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: [PATCH net] mlxsw: thermal: Fix out-of-bounds memory accesses
+Date:   Tue, 12 Oct 2021 20:49:55 +0300
+Message-Id: <20211012174955.472928-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <2801801.e9J7NaK4W3@kailua>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[Cc: +ACPI maintainers]
+From: Ido Schimmel <idosch@nvidia.com>
 
-Am 12.10.21 um 18:34 schrieb Andreas K. Huettel:
->>> The messages easily identifiable are:
->>>
->>> huettel@pinacolada ~/tmp $ cat kernel-messages-5.10.59.txt |grep igb
->>> Oct  5 15:11:18 dilfridge kernel: [    2.090675] igb: Intel(R) Gigabit Ethernet Network Driver
->>> Oct  5 15:11:18 dilfridge kernel: [    2.090676] igb: Copyright (c) 2007-2014 Intel Corporation.
->>> Oct  5 15:11:18 dilfridge kernel: [    2.090728] igb 0000:01:00.0: enabling device (0000 -> 0002)
->>
->> This line is missing below, it indicates that the kernel couldn't or
->> didn't power up the PCIe for some reason. We're looking for something
->> like ACPI or PCI patches (possibly PCI-Power management) to be the
->> culprit here.
-> 
-> So I did a git bisect from linux-v5.10 (good) to linux-v5.14.11 (bad).
-> 
-> The result was:
-> 
-> dilfridge /usr/src/linux-git # git bisect bad
-> 6381195ad7d06ef979528c7452f3ff93659f86b1 is the first bad commit
-> commit 6381195ad7d06ef979528c7452f3ff93659f86b1
-> Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> Date:   Mon May 24 17:26:16 2021 +0200
-> 
->      ACPI: power: Rework turning off unused power resources
-> [...]
-> 
-> I tried naive reverting of this commit on top of 5.14.11. That applies nearly cleanly,
-> and after a reboot the additional ethernet interfaces show up with their MAC in the
-> boot messages.
-> 
-> (Not knowing how safe that experiment was, I did not go further than single mode and
-> immediately rebooted into 5.10 afterwards.)
+Currently, mlxsw allows cooling states to be set above the maximum
+cooling state supported by the driver:
+
+ # cat /sys/class/thermal/thermal_zone2/cdev0/type
+ mlxsw_fan
+ # cat /sys/class/thermal/thermal_zone2/cdev0/max_state
+ 10
+ # echo 18 > /sys/class/thermal/thermal_zone2/cdev0/cur_state
+ # echo $?
+ 0
+
+This results in out-of-bounds memory accesses when thermal state
+transition statistics are enabled (CONFIG_THERMAL_STATISTICS=y), as the
+transition table is accessed with a too large index (state) [1].
+
+According to the thermal maintainer, it is the responsibility of the
+driver to reject such operations [2].
+
+Therefore, return an error when the state to be set exceeds the maximum
+cooling state supported by the driver.
+
+To avoid dead code, as suggested by the thermal maintainer [3],
+partially revert commit a421ce088ac8 ("mlxsw: core: Extend cooling
+device with cooling levels") that tried to interpret these invalid
+cooling states (above the maximum) in a special way. The cooling levels
+array is not removed in order to prevent the fans going below 20% PWM,
+which would cause them to get stuck at 0% PWM.
+
+[1]
+BUG: KASAN: slab-out-of-bounds in thermal_cooling_device_stats_update+0x271/0x290
+Read of size 4 at addr ffff8881052f7bf8 by task kworker/0:0/5
+
+CPU: 0 PID: 5 Comm: kworker/0:0 Not tainted 5.15.0-rc3-custom-45935-gce1adf704b14 #122
+Hardware name: Mellanox Technologies Ltd. "MSN2410-CB2FO"/"SA000874", BIOS 4.6.5 03/08/2016
+Workqueue: events_freezable_power_ thermal_zone_device_check
+Call Trace:
+ dump_stack_lvl+0x8b/0xb3
+ print_address_description.constprop.0+0x1f/0x140
+ kasan_report.cold+0x7f/0x11b
+ thermal_cooling_device_stats_update+0x271/0x290
+ __thermal_cdev_update+0x15e/0x4e0
+ thermal_cdev_update+0x9f/0xe0
+ step_wise_throttle+0x770/0xee0
+ thermal_zone_device_update+0x3f6/0xdf0
+ process_one_work+0xa42/0x1770
+ worker_thread+0x62f/0x13e0
+ kthread+0x3ee/0x4e0
+ ret_from_fork+0x1f/0x30
+
+Allocated by task 1:
+ kasan_save_stack+0x1b/0x40
+ __kasan_kmalloc+0x7c/0x90
+ thermal_cooling_device_setup_sysfs+0x153/0x2c0
+ __thermal_cooling_device_register.part.0+0x25b/0x9c0
+ thermal_cooling_device_register+0xb3/0x100
+ mlxsw_thermal_init+0x5c5/0x7e0
+ __mlxsw_core_bus_device_register+0xcb3/0x19c0
+ mlxsw_core_bus_device_register+0x56/0xb0
+ mlxsw_pci_probe+0x54f/0x710
+ local_pci_probe+0xc6/0x170
+ pci_device_probe+0x2b2/0x4d0
+ really_probe+0x293/0xd10
+ __driver_probe_device+0x2af/0x440
+ driver_probe_device+0x51/0x1e0
+ __driver_attach+0x21b/0x530
+ bus_for_each_dev+0x14c/0x1d0
+ bus_add_driver+0x3ac/0x650
+ driver_register+0x241/0x3d0
+ mlxsw_sp_module_init+0xa2/0x174
+ do_one_initcall+0xee/0x5f0
+ kernel_init_freeable+0x45a/0x4de
+ kernel_init+0x1f/0x210
+ ret_from_fork+0x1f/0x30
+
+The buggy address belongs to the object at ffff8881052f7800
+ which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 1016 bytes inside of
+ 1024-byte region [ffff8881052f7800, ffff8881052f7c00)
+The buggy address belongs to the page:
+page:0000000052355272 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1052f0
+head:0000000052355272 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0x200000000010200(slab|head|node=0|zone=2)
+raw: 0200000000010200 ffffea0005034800 0000000300000003 ffff888100041dc0
+raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8881052f7a80: 00 00 00 00 00 00 04 fc fc fc fc fc fc fc fc fc
+ ffff8881052f7b00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff8881052f7b80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                                                                ^
+ ffff8881052f7c00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff8881052f7c80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+
+[2] https://lore.kernel.org/linux-pm/9aca37cb-1629-5c67-1895-1fdc45c0244e@linaro.org/
+[3] https://lore.kernel.org/linux-pm/af9857f2-578e-de3a-e62b-6baff7e69fd4@linaro.org/
+
+CC: Daniel Lezcano <daniel.lezcano@linaro.org>
+Fixes: a50c1e35650b ("mlxsw: core: Implement thermal zone")
+Fixes: a421ce088ac8 ("mlxsw: core: Extend cooling device with cooling levels")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Vadim Pasternak <vadimp@nvidia.com>
+---
+ .../ethernet/mellanox/mlxsw/core_thermal.c    | 52 ++-----------------
+ 1 file changed, 5 insertions(+), 47 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+index 0998dcc9cac0..b29824448aa8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+@@ -24,16 +24,8 @@
+ #define MLXSW_THERMAL_ZONE_MAX_NAME	16
+ #define MLXSW_THERMAL_TEMP_SCORE_MAX	GENMASK(31, 0)
+ #define MLXSW_THERMAL_MAX_STATE	10
++#define MLXSW_THERMAL_MIN_STATE	2
+ #define MLXSW_THERMAL_MAX_DUTY	255
+-/* Minimum and maximum fan allowed speed in percent: from 20% to 100%. Values
+- * MLXSW_THERMAL_MAX_STATE + x, where x is between 2 and 10 are used for
+- * setting fan speed dynamic minimum. For example, if value is set to 14 (40%)
+- * cooling levels vector will be set to 4, 4, 4, 4, 4, 5, 6, 7, 8, 9, 10 to
+- * introduce PWM speed in percent: 40, 40, 40, 40, 40, 50, 60. 70, 80, 90, 100.
+- */
+-#define MLXSW_THERMAL_SPEED_MIN		(MLXSW_THERMAL_MAX_STATE + 2)
+-#define MLXSW_THERMAL_SPEED_MAX		(MLXSW_THERMAL_MAX_STATE * 2)
+-#define MLXSW_THERMAL_SPEED_MIN_LEVEL	2		/* 20% */
+ 
+ /* External cooling devices, allowed for binding to mlxsw thermal zones. */
+ static char * const mlxsw_thermal_external_allowed_cdev[] = {
+@@ -646,49 +638,16 @@ static int mlxsw_thermal_set_cur_state(struct thermal_cooling_device *cdev,
+ 	struct mlxsw_thermal *thermal = cdev->devdata;
+ 	struct device *dev = thermal->bus_info->dev;
+ 	char mfsc_pl[MLXSW_REG_MFSC_LEN];
+-	unsigned long cur_state, i;
+ 	int idx;
+-	u8 duty;
+ 	int err;
+ 
++	if (state > MLXSW_THERMAL_MAX_STATE)
++		return -EINVAL;
++
+ 	idx = mlxsw_get_cooling_device_idx(thermal, cdev);
+ 	if (idx < 0)
+ 		return idx;
+ 
+-	/* Verify if this request is for changing allowed fan dynamical
+-	 * minimum. If it is - update cooling levels accordingly and update
+-	 * state, if current state is below the newly requested minimum state.
+-	 * For example, if current state is 5, and minimal state is to be
+-	 * changed from 4 to 6, thermal->cooling_levels[0 to 5] will be changed
+-	 * all from 4 to 6. And state 5 (thermal->cooling_levels[4]) should be
+-	 * overwritten.
+-	 */
+-	if (state >= MLXSW_THERMAL_SPEED_MIN &&
+-	    state <= MLXSW_THERMAL_SPEED_MAX) {
+-		state -= MLXSW_THERMAL_MAX_STATE;
+-		for (i = 0; i <= MLXSW_THERMAL_MAX_STATE; i++)
+-			thermal->cooling_levels[i] = max(state, i);
+-
+-		mlxsw_reg_mfsc_pack(mfsc_pl, idx, 0);
+-		err = mlxsw_reg_query(thermal->core, MLXSW_REG(mfsc), mfsc_pl);
+-		if (err)
+-			return err;
+-
+-		duty = mlxsw_reg_mfsc_pwm_duty_cycle_get(mfsc_pl);
+-		cur_state = mlxsw_duty_to_state(duty);
+-
+-		/* If current fan state is lower than requested dynamical
+-		 * minimum, increase fan speed up to dynamical minimum.
+-		 */
+-		if (state < cur_state)
+-			return 0;
+-
+-		state = cur_state;
+-	}
+-
+-	if (state > MLXSW_THERMAL_MAX_STATE)
+-		return -EINVAL;
+-
+ 	/* Normalize the state to the valid speed range. */
+ 	state = thermal->cooling_levels[state];
+ 	mlxsw_reg_mfsc_pack(mfsc_pl, idx, mlxsw_state_to_duty(state));
+@@ -998,8 +957,7 @@ int mlxsw_thermal_init(struct mlxsw_core *core,
+ 
+ 	/* Initialize cooling levels per PWM state. */
+ 	for (i = 0; i < MLXSW_THERMAL_MAX_STATE; i++)
+-		thermal->cooling_levels[i] = max(MLXSW_THERMAL_SPEED_MIN_LEVEL,
+-						 i);
++		thermal->cooling_levels[i] = max(MLXSW_THERMAL_MIN_STATE, i);
+ 
+ 	thermal->polling_delay = bus_info->low_frequency ?
+ 				 MLXSW_THERMAL_SLOW_POLL_INT :
+-- 
+2.31.1
+
