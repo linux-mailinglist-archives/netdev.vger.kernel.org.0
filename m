@@ -2,125 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58C4E429DD6
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 08:37:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 310A8429E26
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 08:54:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233321AbhJLGjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 02:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232340AbhJLGja (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 02:39:30 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D5EC061570
-        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 23:37:29 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1maBPY-00073T-Kh; Tue, 12 Oct 2021 08:37:16 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1maBPW-0004VF-72; Tue, 12 Oct 2021 08:37:14 +0200
-Date:   Tue, 12 Oct 2021 08:37:14 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     alexandru.tachici@analog.com
-Cc:     andrew@lunn.ch, davem@davemloft.net, devicetree@vger.kernel.org,
-        hkallweit1@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, robh+dt@kernel.org
-Subject: Re: [PATCH v3 2/8] net: phy: Add 10-BaseT1L registers
-Message-ID: <20211012063714.GA938@pengutronix.de>
-References: <20211011142215.9013-1-alexandru.tachici@analog.com>
- <20211011142215.9013-3-alexandru.tachici@analog.com>
+        id S234072AbhJLG4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 02:56:08 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:23366 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234174AbhJLGzw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 02:55:52 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HT5qj0GX2zYkb2;
+        Tue, 12 Oct 2021 14:49:21 +0800 (CST)
+Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2308.8; Tue, 12 Oct 2021 14:53:48 +0800
+Received: from huawei.com (10.175.101.6) by dggema772-chm.china.huawei.com
+ (10.1.198.214) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.8; Tue, 12
+ Oct 2021 14:53:47 +0800
+From:   Liu Jian <liujian56@huawei.com>
+To:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
+        <jakub@cloudflare.com>, <lmb@cloudflare.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <xiyou.wangcong@gmail.com>
+CC:     <liujian56@huawei.com>
+Subject: [PATHC bpf v5 1/3] skmsg: lose offset info in sk_psock_skb_ingress
+Date:   Tue, 12 Oct 2021 14:57:03 +0800
+Message-ID: <20211012065705.224643-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211011142215.9013-3-alexandru.tachici@analog.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:31:32 up 236 days,  9:55, 106 users,  load average: 0.16, 0.15,
- 0.14
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggema772-chm.china.huawei.com (10.1.198.214)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 11, 2021 at 05:22:09PM +0300, alexandru.tachici@analog.com wrote:
-> From: Alexandru Tachici <alexandru.tachici@analog.com>
-> 
-> The 802.3gc specification defines the 10-BaseT1L link
-> mode for ethernet trafic on twisted wire pair.
-> 
-> PMA status register can be used to detect if the phy supports
-> 2.4 V TX level and PCS control register can be used to
-> enable/disable PCS level loopback.
-> 
-> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+If sockmap enable strparser, there are lose offset info in
+sk_psock_skb_ingress. If the length determined by parse_msg function
+is not skb->len, the skb will be converted to sk_msg multiple times,
+and userspace app will get the data multiple times.
 
-Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Thank you!
+Fix this by get the offset and length from strp_msg.
+And as Cong suggestion, add one bit in skb->_sk_redir to distinguish
+enable or disable strparser.
 
-Question on maintainers: IEEE 802.3 spec, documents register bits in the
-little-endian order. In the mdio.h we use big-endian, it makes
-comparison with the spec a bit more challenging. May be we should fix
-it?
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+---
+v1->v2: fix build error when disable CONFIG_BPF_STREAM_PARSER
+v2->v3: Add one bit in skb->_sk_redir to distinguish enable or disable strparser
+v3->v4: Remove "#if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)" code;
+	and let "stm" have a more precise scope.
+v4->v5: Add fix tag.
+ include/linux/skmsg.h | 18 ++++++++++++++++--
+ net/core/skmsg.c      | 40 ++++++++++++++++++++++++++++++----------
+ 2 files changed, 46 insertions(+), 12 deletions(-)
 
-Regards,
-Oleksij
-
-> ---
->  include/uapi/linux/mdio.h | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
-> 
-> diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
-> index bdf77dffa5a4..8ae82fe3aece 100644
-> --- a/include/uapi/linux/mdio.h
-> +++ b/include/uapi/linux/mdio.h
-> @@ -65,6 +65,8 @@
->  #define MDIO_PCS_10GBRT_STAT2	33	/* 10GBASE-R/-T PCS status 2 */
->  #define MDIO_AN_10GBT_CTRL	32	/* 10GBASE-T auto-negotiation control */
->  #define MDIO_AN_10GBT_STAT	33	/* 10GBASE-T auto-negotiation status */
-> +#define MDIO_PMA_10T1L_STAT	2295	/* 10BASE-T1L PMA status */
-> +#define MDIO_PCS_10T1L_CTRL	2278	/* 10BASE-T1L PCS control */
->  
->  /* LASI (Link Alarm Status Interrupt) registers, defined by XENPAK MSA. */
->  #define MDIO_PMA_LASI_RXCTRL	0x9000	/* RX_ALARM control */
-> @@ -262,6 +264,20 @@
->  #define MDIO_AN_10GBT_STAT_MS		0x4000	/* Master/slave config */
->  #define MDIO_AN_10GBT_STAT_MSFLT	0x8000	/* Master/slave config fault */
->  
-> +/* 10BASE-T1L PMA status register. */
-> +#define MDIO_PMA_10T1L_STAT_LINK	0x0001	/* PMA receive link up */
-> +#define MDIO_PMA_10T1L_STAT_FAULT	0x0002	/* Fault condition detected */
-> +#define MDIO_PMA_10T1L_STAT_POLARITY	0x0004	/* Receive polarity is reversed */
-> +#define MDIO_PMA_10T1L_STAT_RECV_FAULT	0x0200	/* Able to detect fault on receive path */
-> +#define MDIO_PMA_10T1L_STAT_EEE		0x0400	/* PHY has EEE ability */
-> +#define MDIO_PMA_10T1L_STAT_LOW_POWER	0x0800	/* PMA has low-power ability */
-> +#define MDIO_PMA_10T1L_STAT_2V4_ABLE	0x1000	/* PHY has 2.4 Vpp operating mode ability */
-> +#define MDIO_PMA_10T1L_STAT_LB_ABLE	0x2000	/* PHY has loopback ability */
-> +
-> +/* 10BASE-T1L PCS control register. */
-> +#define MDIO_PCS_10T1L_CTRL_LB		0x4000	/* Enable PCS level loopback mode */
-> +#define MDIO_PCS_10T1L_CTRL_RESET	0x8000	/* PCS reset */
-> +
->  /* EEE Supported/Advertisement/LP Advertisement registers.
->   *
->   * EEE capability Register (3.20), Advertisement (7.60) and
-> -- 
-> 2.25.1 
-
-
-
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 14ab0c0bc924..94e2a1f6e58d 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -508,8 +508,22 @@ static inline bool sk_psock_strp_enabled(struct sk_psock *psock)
+ 
+ #if IS_ENABLED(CONFIG_NET_SOCK_MSG)
+ 
+-/* We only have one bit so far. */
+-#define BPF_F_PTR_MASK ~(BPF_F_INGRESS)
++#define BPF_F_STRPARSER	(1UL << 1)
++
++/* We only have two bits so far. */
++#define BPF_F_PTR_MASK ~(BPF_F_INGRESS | BPF_F_STRPARSER)
++
++static inline bool skb_bpf_strparser(const struct sk_buff *skb)
++{
++	unsigned long sk_redir = skb->_sk_redir;
++
++	return sk_redir & BPF_F_STRPARSER;
++}
++
++static inline void skb_bpf_set_strparser(struct sk_buff *skb)
++{
++	skb->_sk_redir |= BPF_F_STRPARSER;
++}
+ 
+ static inline bool skb_bpf_ingress(const struct sk_buff *skb)
+ {
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 2d6249b28928..e85b7f8491b9 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -494,6 +494,7 @@ static struct sk_msg *sk_psock_create_ingress_msg(struct sock *sk,
+ }
+ 
+ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
++					u32 off, u32 len,
+ 					struct sk_psock *psock,
+ 					struct sock *sk,
+ 					struct sk_msg *msg)
+@@ -507,11 +508,11 @@ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
+ 	 */
+ 	if (skb_linearize(skb))
+ 		return -EAGAIN;
+-	num_sge = skb_to_sgvec(skb, msg->sg.data, 0, skb->len);
++	num_sge = skb_to_sgvec(skb, msg->sg.data, off, len);
+ 	if (unlikely(num_sge < 0))
+ 		return num_sge;
+ 
+-	copied = skb->len;
++	copied = len;
+ 	msg->sg.start = 0;
+ 	msg->sg.size = copied;
+ 	msg->sg.end = num_sge;
+@@ -522,9 +523,11 @@ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
+ 	return copied;
+ }
+ 
+-static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb);
++static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb,
++				     u32 off, u32 len);
+ 
+-static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
++static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb,
++				u32 off, u32 len)
+ {
+ 	struct sock *sk = psock->sk;
+ 	struct sk_msg *msg;
+@@ -535,7 +538,7 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
+ 	 * correctly.
+ 	 */
+ 	if (unlikely(skb->sk == sk))
+-		return sk_psock_skb_ingress_self(psock, skb);
++		return sk_psock_skb_ingress_self(psock, skb, off, len);
+ 	msg = sk_psock_create_ingress_msg(sk, skb);
+ 	if (!msg)
+ 		return -EAGAIN;
+@@ -547,7 +550,7 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
+ 	 * into user buffers.
+ 	 */
+ 	skb_set_owner_r(skb, sk);
+-	err = sk_psock_skb_ingress_enqueue(skb, psock, sk, msg);
++	err = sk_psock_skb_ingress_enqueue(skb, off, len, psock, sk, msg);
+ 	if (err < 0)
+ 		kfree(msg);
+ 	return err;
+@@ -557,7 +560,8 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
+  * skb. In this case we do not need to check memory limits or skb_set_owner_r
+  * because the skb is already accounted for here.
+  */
+-static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb)
++static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb,
++				     u32 off, u32 len)
+ {
+ 	struct sk_msg *msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_ATOMIC);
+ 	struct sock *sk = psock->sk;
+@@ -567,7 +571,7 @@ static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb
+ 		return -EAGAIN;
+ 	sk_msg_init(msg);
+ 	skb_set_owner_r(skb, sk);
+-	err = sk_psock_skb_ingress_enqueue(skb, psock, sk, msg);
++	err = sk_psock_skb_ingress_enqueue(skb, off, len, psock, sk, msg);
+ 	if (err < 0)
+ 		kfree(msg);
+ 	return err;
+@@ -581,7 +585,7 @@ static int sk_psock_handle_skb(struct sk_psock *psock, struct sk_buff *skb,
+ 			return -EAGAIN;
+ 		return skb_send_sock(psock->sk, skb, off, len);
+ 	}
+-	return sk_psock_skb_ingress(psock, skb);
++	return sk_psock_skb_ingress(psock, skb, off, len);
+ }
+ 
+ static void sk_psock_skb_state(struct sk_psock *psock,
+@@ -624,6 +628,12 @@ static void sk_psock_backlog(struct work_struct *work)
+ 	while ((skb = skb_dequeue(&psock->ingress_skb))) {
+ 		len = skb->len;
+ 		off = 0;
++		if (skb_bpf_strparser(skb)) {
++			struct strp_msg *stm = strp_msg(skb);
++
++			off = stm->offset;
++			len = stm->full_len;
++		}
+ start:
+ 		ingress = skb_bpf_ingress(skb);
+ 		skb_bpf_redirect_clear(skb);
+@@ -930,6 +940,7 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
+ {
+ 	struct sock *sk_other;
+ 	int err = 0;
++	u32 len, off;
+ 
+ 	switch (verdict) {
+ 	case __SK_PASS:
+@@ -949,7 +960,15 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
+ 		 * retrying later from workqueue.
+ 		 */
+ 		if (skb_queue_empty(&psock->ingress_skb)) {
+-			err = sk_psock_skb_ingress_self(psock, skb);
++			len = skb->len;
++			off = 0;
++			if (skb_bpf_strparser(skb)) {
++				struct strp_msg *stm = strp_msg(skb);
++
++				off = stm->offset;
++				len = stm->full_len;
++			}
++			err = sk_psock_skb_ingress_self(psock, skb, off, len);
+ 		}
+ 		if (err < 0) {
+ 			spin_lock_bh(&psock->ingress_lock);
+@@ -1018,6 +1037,7 @@ static void sk_psock_strp_read(struct strparser *strp, struct sk_buff *skb)
+ 		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+ 		skb->sk = NULL;
+ 	}
++	skb_bpf_set_strparser(skb);
+ 	sk_psock_verdict_apply(psock, skb, ret);
+ out:
+ 	rcu_read_unlock();
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.17.1
+
