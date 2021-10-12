@@ -2,87 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1BBB42A315
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 13:21:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B5D42A342
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 13:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236192AbhJLLXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 07:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44232 "EHLO
+        id S236233AbhJLLaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 07:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236184AbhJLLXA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 07:23:00 -0400
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE642C061570;
-        Tue, 12 Oct 2021 04:20:58 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4HTCs36VXgzQkkS;
-        Tue, 12 Oct 2021 13:20:55 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Message-ID: <3c98ea6c-b80f-59d4-ad84-85cf1c9ff440@v0yd.nl>
-Date:   Tue, 12 Oct 2021 13:20:46 +0200
-MIME-Version: 1.0
-Subject: Re: [PATCH] mwifiex: Add quirk resetting the PCI bridge on MS Surface
- devices
-Content-Language: en-US
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        with ESMTP id S236188AbhJLLaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 07:30:21 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27DCC061745
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 04:28:18 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id g10so79053058edj.1
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 04:28:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=US79hu+z+ZmdLEx+n+35ycCt5zvqCoMc3ZuPWPCa08M=;
+        b=bCiELY98sLaojn9ni1TPwcJLqGrrcs3c6I73IRDj87HQ3umlmaTTrk8z8bL6gZFfRJ
+         MiBTF8VnwMkjQ4p8Gw+txhBfpewI8btttI3iG/Err+xH0qOYjQtzK4WWlw84yBlZv1nt
+         eb8OgeiZ0ZssVcGm0Pl8JtdZCUQO10i0se5k0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=US79hu+z+ZmdLEx+n+35ycCt5zvqCoMc3ZuPWPCa08M=;
+        b=7cc85rqPZUUsbgNgLl8hRUVWN7RvQ4/daARFNlK/54LGOJT75MC0GHEFSPKy2MJDYc
+         pXRkX+MemBmmJuppVn97zrpyYmfZR1hYcITNbk/NnvdGylc3Tq1YdGQqz4c3H0Wtyw+D
+         E2oZGfFkK2HTaKw6V3TXTWodShvOaAE6wVaR7nruZT1w5cv23UhRHQXXpEjBdHWA2Rr3
+         q3vp+0gqWA/O6zvV6iywJKp9HUABlpzLvVBdqEMqR/+b3Rky47LHU0A2HKULEh9AaCwH
+         XcEd9gtdI9Ts6Ahd8lU8pjEWF+OPh6Vk5zDg3zD7HMh9VCu5+lF3HSM57xA/5cu7x0Gz
+         czuQ==
+X-Gm-Message-State: AOAM532+L6qF8chrhMtlEdAa1Td40vNL9lzEQpeGN8ldi4NfAZy0L4T1
+        amTaOfjHjBBUkalP0b7sjCR2Cg==
+X-Google-Smtp-Source: ABdhPJxQ45z4bpotHt+faDAEC4K9YSTTreIpriQ2hOLazabT4yd8gpqWYqX2i8l6lMQxyElfvhHdLA==
+X-Received: by 2002:a50:9d8e:: with SMTP id w14mr49589825ede.74.1634038096916;
+        Tue, 12 Oct 2021 04:28:16 -0700 (PDT)
+Received: from capella.. (27-reverse.bang-olufsen.dk. [193.89.194.27])
+        by smtp.gmail.com with ESMTPSA id l5sm4637862ejx.76.2021.10.12.04.28.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Oct 2021 04:28:16 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Brian Norris <briannorris@chromium.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Alex Williamson <alex.williamson@redhat.com>
-References: <20211011165301.GA1650148@bhelgaas>
- <fee8b431-617f-3890-3ad2-67a61d3ffca2@v0yd.nl>
- <20211012090037.v3w4za5hshtm253f@pali>
-From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
-In-Reply-To: <20211012090037.v3w4za5hshtm253f@pali>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: dsa: fix spurious error message when unoffloaded port leaves bridge
+Date:   Tue, 12 Oct 2021 13:27:31 +0200
+Message-Id: <20211012112730.3429157-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: CBF09183C
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/21 11:00, Pali Rohár wrote:
-> On Tuesday 12 October 2021 10:48:49 Jonas Dreßler wrote:
->> 1) Revert the cards firmware in linux-firmware back to the second-latest
->> version. That firmware didn't report a fixed LTR value and also doesn't
->> have any other obvious issues I know of compared to the latest one.
-> 
-> FYI, there are new bugs with new firmware versions for 8997 sent by NXP
-> to linux-firmware repository... and questions what to do with it. Seems
-> that NXP again do not respond to any questions after new version was
-> merged into linux-firmware repo.
-> 
-> https://lore.kernel.org/linux-firmware/edeb34bc-7c85-7f1d-79e4-e3e21df86334@gk2.net/
-> 
-> So firmware revert also for other ex-Marvell / NXP chips is not
-> something which could not happen.
-> 
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Argh, nevermind, it seems like my memory is fooling me once again, sorry.
-I just tried the older firmware and I was completely wrong, there's no
-difference at all between the versions when it comes to LTR messages. So
-there goes alternative 1).
+Flip the sign of a return value check, thereby suppressing the following
+spurious error:
 
-Something interesting and reassuring I noticed though: After resuming from
-suspend the firmware actually doesn't send a new LTR message, which means
-now the LTR is 0 and we enter PC10/S0ix just fine. So basically the change
-this patch does is already in effect, just after one suspend/resume cycle.
-That gives me more confidence that we should maybe apply this patch for
-all 8897 devices, not only Surface devices?
+  port 2 failed to notify DSA_NOTIFIER_BRIDGE_LEAVE: -EOPNOTSUPP
+
+... which is emitted when removing an unoffloaded DSA switch port from a
+bridge.
+
+Fixes: d371b7c92d19 ("net: dsa: Unset vlan_filtering when ports leave the bridge")
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
+ net/dsa/switch.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 1c797ec8e2c2..6466d0539af9 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -168,7 +168,7 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+ 		if (extack._msg)
+ 			dev_err(ds->dev, "port %d: %s\n", info->port,
+ 				extack._msg);
+-		if (err && err != EOPNOTSUPP)
++		if (err && err != -EOPNOTSUPP)
+ 			return err;
+ 	}
+ 
+-- 
+2.32.0
+
