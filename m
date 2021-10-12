@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6941242A4A5
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 14:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2944942A4AB
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 14:37:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236571AbhJLMjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 08:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33364 "EHLO
+        id S236516AbhJLMjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 08:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236508AbhJLMjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 08:39:14 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41E2C061765
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 05:37:11 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id w19so20635330edd.2
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 05:37:11 -0700 (PDT)
+        with ESMTP id S236492AbhJLMjR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 08:39:17 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD8EC061749
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 05:37:15 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id g8so80617997edt.7
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 05:37:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=INDYqtUols/uVG+LIBQeijVm3kwPp6AgjgHg2loetxk=;
-        b=mqfcPMuE9S4mXDkJQXAK+8J0ecbnyDA92UApMbqkVadP7nIOOp5cC2WiW8gXmidpJN
-         mND/2SLjs4IJT77Ca5vAZ+EsSHd7EXidHVvHJHLGMB83o+kjprPH+FDtXqJf0BDyEsdX
-         BzHugoBn1Oe3bXeyKHvAiRGrLy8T/ISAkX9oM=
+        bh=Vdb2KHmhbcimqHQPJsvHGB8GDQ1Vw8OnHNrUgada+gM=;
+        b=Q4Cr2N+WMQTntyDOsb/hy/W5T6UyAnSTONWupVh+UHsQOuzLNyNGdqhn09kEKwExCE
+         LMQ/1ogNGIYA4AIVFzYbW4lkZ2A+lnoP8g3XZ+0K1zWXjgeJJ69jxpZjyY8CUBASVBYe
+         NEM0t8L77jLsh4AgAe8C7/P5LBAvKtXfg2I/M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=INDYqtUols/uVG+LIBQeijVm3kwPp6AgjgHg2loetxk=;
-        b=ULakdDlz0rkjkNJUgnAKtsihAgp42T3FnJIsDIB8z7mhhgcg073Uj+1A868yqLjSHA
-         T0dxWXfO4J/MLgkTENRxOCHh3MHlB9vw4IOPRuiIgaYys3hyjt79BpRfXx385XZBARmm
-         ecEklXQ4icREVRauoLJaD9b1yKE488S69CDj5D0mzYefwerCsmPGZ0uTtT965cU6It5X
-         GTuHTfLO3FpsAcAAUoOswAHtE351uHaZsbHYHYwrwrG0UdeV3zVlS1wyqfTrW5illchn
-         mZccoX/5q2OHepBZJEOEOfj3ua5fa6Wt5qV55dC6c3kl+pmC8JWgbRehPy5Edoe4vHZE
-         maDA==
-X-Gm-Message-State: AOAM530wGTIs3KRlyUNCsXlb/aaBPyElgaDPu+Vt5uMnB9O1veSl8qXk
-        yTL2BDJhPelu+9k1uGrk5f/M2A==
-X-Google-Smtp-Source: ABdhPJxs0V9OZqWxQlU/9Dpl6E9pFhEQkhfEImHdkPNMA3JYcF/sdTfjJSAEJvEjYZXY68/QNI+xJw==
-X-Received: by 2002:a17:906:1f49:: with SMTP id d9mr32664491ejk.150.1634042230410;
-        Tue, 12 Oct 2021 05:37:10 -0700 (PDT)
+        bh=Vdb2KHmhbcimqHQPJsvHGB8GDQ1Vw8OnHNrUgada+gM=;
+        b=eoSkZYTcBTwOLqcQq6dBDWgnWducbfMH5A4v/GPHTypZLa2qQ9gs8qfvScusVjvvbS
+         VsEASEcrsCP8/1H4O79TQ4PN91mw8L6aIbvyU/EgvHgXWYoTDs3D2mtiLfRntQT4EgTL
+         QuzNqTvbcWsygCs/EJ2AkGPf1RO/pmDHG8K4m0PrBjud2hoVfXikbaaViNYQkah+1Icy
+         T+CdbTDakvjUEq6vEYaOt5/6dOdcvKC4NfkDVOUFYMEgljKcAxvQHUX/r3jpxZq3TEUY
+         c0P2K/PZPTKOB958gH+OZbnoYhFFO0IHcdNuH0vzxtP9sbizDOacgOa6v08Nre+uEc94
+         v5/Q==
+X-Gm-Message-State: AOAM533eyHoxcXpyLghunYIn/q3ZHPJGegrMPKDqt6pSF5cnFOnQkUy+
+        lQvKLGikBHf0QlLLceB1BPWSwg==
+X-Google-Smtp-Source: ABdhPJwTiWIyG8EHpMHokrUPbaenWbHeF4+V/4ZxzZ+mHf0pXFnQPj6XS+9tt0am3RDAB1SC9pY+Cw==
+X-Received: by 2002:a50:e005:: with SMTP id e5mr50345100edl.211.1634042234188;
+        Tue, 12 Oct 2021 05:37:14 -0700 (PDT)
 Received: from capella.. (27-reverse.bang-olufsen.dk. [193.89.194.27])
-        by smtp.gmail.com with ESMTPSA id b5sm5763629edu.13.2021.10.12.05.37.09
+        by smtp.gmail.com with ESMTPSA id b5sm5763629edu.13.2021.10.12.05.37.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Oct 2021 05:37:10 -0700 (PDT)
+        Tue, 12 Oct 2021 05:37:13 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -56,11 +56,11 @@ To:     Linus Walleij <linus.walleij@linaro.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>
 Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Rob Herring <robh@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/6] dt-bindings: net: dsa: realtek-smi: document new compatible rtl8365mb
-Date:   Tue, 12 Oct 2021 14:35:52 +0200
-Message-Id: <20211012123557.3547280-4-alvin@pqrs.dk>
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 4/6] net: dsa: tag_rtl8_4: add realtek 8 byte protocol 4 tag
+Date:   Tue, 12 Oct 2021 14:35:53 +0200
+Message-Id: <20211012123557.3547280-5-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211012123557.3547280-1-alvin@pqrs.dk>
 References: <20211012123557.3547280-1-alvin@pqrs.dk>
@@ -73,34 +73,269 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-rtl8365mb is a new realtek-smi subdriver for the RTL8365MB-VC 4+1 port
-10/100/1000M Ethernet switch controller. Its compatible string is
-"realtek,rtl8365mb".
+This commit implements a basic version of the 8 byte tag protocol used
+in the Realtek RTL8365MB-VC unmanaged switch, which carries with it a
+protocol version of 0x04.
+
+The implementation itself only handles the parsing of the EtherType
+value and Realtek protocol version, together with the source or
+destination port fields. The rest is left unimplemented for now.
+
+The tag format is described in a confidential document provided to my
+company by Realtek Semiconductor Corp. Permission has been granted by
+the vendor to publish this driver based on that material, together with
+an extract from the document describing the tag format and its fields.
+It is hoped that this will help future implementors who do not have
+access to the material but who wish to extend the functionality of
+drivers for chips which use this protocol.
+
+In addition, two possible values of the REASON field are specified,
+based on experiments on my end. Realtek does not specify what value this
+field can take.
 
 Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 
-RFC -> v1: no change; collect Reviewed-by and Acked-by
+RFC -> v1:
+  - minor changes to the big comment at the top, including some
+    empirical information about the REASON code
+  - use dev_*_ratelimited() instead of netdev_*() for logging
+  - use warning instead of debug messages
+  - use ETH_P_REALTEK from if_ether.h
+  - set LEARN_DIS on xmit
+  - remove superfluous variables/expressions and use __b16 for tag
+    variable
+  - use new helper functions to insert/remove CPU tag
+  - set offload_fwd_mark properly using helper function
 
- Documentation/devicetree/bindings/net/dsa/realtek-smi.txt | 1 +
- 1 file changed, 1 insertion(+)
+ include/net/dsa.h    |   2 +
+ net/dsa/Kconfig      |   6 ++
+ net/dsa/Makefile     |   1 +
+ net/dsa/tag_rtl8_4.c | 166 +++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 175 insertions(+)
+ create mode 100644 net/dsa/tag_rtl8_4.c
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/realtek-smi.txt b/Documentation/devicetree/bindings/net/dsa/realtek-smi.txt
-index b6ae8541bd55..ee03eb40a488 100644
---- a/Documentation/devicetree/bindings/net/dsa/realtek-smi.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/realtek-smi.txt
-@@ -9,6 +9,7 @@ SMI-based Realtek devices.
- Required properties:
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index d784e76113b8..783060e851a9 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -51,6 +51,7 @@ struct phylink_link_state;
+ #define DSA_TAG_PROTO_SEVILLE_VALUE		21
+ #define DSA_TAG_PROTO_BRCM_LEGACY_VALUE		22
+ #define DSA_TAG_PROTO_SJA1110_VALUE		23
++#define DSA_TAG_PROTO_RTL8_4_VALUE		24
  
- - compatible: must be exactly one of:
-+      "realtek,rtl8365mb" (4+1 ports)
-       "realtek,rtl8366"
-       "realtek,rtl8366rb" (4+1 ports)
-       "realtek,rtl8366s"  (4+1 ports)
+ enum dsa_tag_protocol {
+ 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
+@@ -77,6 +78,7 @@ enum dsa_tag_protocol {
+ 	DSA_TAG_PROTO_OCELOT_8021Q	= DSA_TAG_PROTO_OCELOT_8021Q_VALUE,
+ 	DSA_TAG_PROTO_SEVILLE		= DSA_TAG_PROTO_SEVILLE_VALUE,
+ 	DSA_TAG_PROTO_SJA1110		= DSA_TAG_PROTO_SJA1110_VALUE,
++	DSA_TAG_PROTO_RTL8_4		= DSA_TAG_PROTO_RTL8_4_VALUE,
+ };
+ 
+ struct dsa_switch;
+diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
+index 6c7f79e45886..57fc52b17d55 100644
+--- a/net/dsa/Kconfig
++++ b/net/dsa/Kconfig
+@@ -130,6 +130,12 @@ config NET_DSA_TAG_RTL4_A
+ 	  Realtek switches with 4 byte protocol A tags, sich as found in
+ 	  the Realtek RTL8366RB.
+ 
++config NET_DSA_TAG_RTL8_4
++	tristate "Tag driver for Realtek 8 byte protocol 4 tags"
++	help
++	  Say Y or M if you want to enable support for tagging frames for Realtek
++	  switches with 8 byte protocol 4 tags, such as the Realtek RTL8365MB-VC.
++
+ config NET_DSA_TAG_LAN9303
+ 	tristate "Tag driver for SMSC/Microchip LAN9303 family of switches"
+ 	help
+diff --git a/net/dsa/Makefile b/net/dsa/Makefile
+index f78d537044db..9f75820e7c98 100644
+--- a/net/dsa/Makefile
++++ b/net/dsa/Makefile
+@@ -16,6 +16,7 @@ obj-$(CONFIG_NET_DSA_TAG_OCELOT) += tag_ocelot.o
+ obj-$(CONFIG_NET_DSA_TAG_OCELOT_8021Q) += tag_ocelot_8021q.o
+ obj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o
+ obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
++obj-$(CONFIG_NET_DSA_TAG_RTL8_4) += tag_rtl8_4.o
+ obj-$(CONFIG_NET_DSA_TAG_SJA1105) += tag_sja1105.o
+ obj-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o
+ obj-$(CONFIG_NET_DSA_TAG_XRS700X) += tag_xrs700x.o
+diff --git a/net/dsa/tag_rtl8_4.c b/net/dsa/tag_rtl8_4.c
+new file mode 100644
+index 000000000000..da22fd12b645
+--- /dev/null
++++ b/net/dsa/tag_rtl8_4.c
+@@ -0,0 +1,166 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Handler for Realtek 8 byte switch tags
++ *
++ * Copyright (C) 2021 Alvin Šipraga <alsi@bang-olufsen.dk>
++ *
++ * NOTE: Currently only supports protocol "4" found in the RTL8365MB, hence
++ * named tag_rtl8_4.
++ *
++ * This tag header has the following format:
++ *
++ *  -------------------------------------------
++ *  | MAC DA | MAC SA | 8 byte tag | Type | ...
++ *  -------------------------------------------
++ *     _______________/            \______________________________________
++ *    /                                                                   \
++ *  0                                  7|8                                 15
++ *  |-----------------------------------+-----------------------------------|---
++ *  |                               (16-bit)                                | ^
++ *  |                       Realtek EtherType [0x8899]                      | |
++ *  |-----------------------------------+-----------------------------------| 8
++ *  |              (8-bit)              |              (8-bit)              |
++ *  |          Protocol [0x04]          |              REASON               | b
++ *  |-----------------------------------+-----------------------------------| y
++ *  |   (1)  | (1) | (2) |   (1)  | (3) | (1)  | (1) |    (1)    |   (5)    | t
++ *  | FID_EN |  X  | FID | PRI_EN | PRI | KEEP |  X  | LEARN_DIS |    X     | e
++ *  |-----------------------------------+-----------------------------------| s
++ *  |   (1)  |                       (15-bit)                               | |
++ *  |  ALLOW |                        TX/RX                                 | v
++ *  |-----------------------------------+-----------------------------------|---
++ *
++ * With the following field descriptions:
++ *
++ *    field      | description
++ *   ------------+-------------
++ *    Realtek    | 0x8899: indicates that this is a proprietary Realtek tag;
++ *     EtherType |         note that Realtek uses the same EtherType for
++ *               |         other incompatible tag formats (e.g. tag_rtl4_a.c)
++ *    Protocol   | 0x04: indicates that this tag conforms to this format
++ *    X          | reserved
++ *   ------------+-------------
++ *    REASON     | reason for forwarding packet to CPU
++ *               | 0: packet was forwarded or flooded to CPU
++ *               | 80: packet was trapped to CPU
++ *    FID_EN     | 1: packet has an FID
++ *               | 0: no FID
++ *    FID        | FID of packet (if FID_EN=1)
++ *    PRI_EN     | 1: force priority of packet
++ *               | 0: don't force priority
++ *    PRI        | priority of packet (if PRI_EN=1)
++ *    KEEP       | preserve packet VLAN tag format
++ *    LEARN_DIS  | don't learn the source MAC address of the packet
++ *    ALLOW      | 1: treat TX/RX field as an allowance port mask, meaning the
++ *               |    packet may only be forwarded to ports specified in the
++ *               |    mask
++ *               | 0: no allowance port mask, TX/RX field is the forwarding
++ *               |    port mask
++ *    TX/RX      | TX (switch->CPU): port number the packet was received on
++ *               | RX (CPU->switch): forwarding port mask (if ALLOW=0)
++ *               |                   allowance port mask (if ALLOW=1)
++ */
++
++#include <linux/bits.h>
++#include <linux/etherdevice.h>
++
++#include "dsa_priv.h"
++
++#define RTL8_4_TAG_LEN			8
++/* 0x04 = RTL8365MB DSA protocol
++ */
++#define RTL8_4_PROTOCOL_RTL8365MB	0x04
++
++static struct sk_buff *rtl8_4_tag_xmit(struct sk_buff *skb,
++				       struct net_device *dev)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	__be16 *tag;
++
++	/* Pad out so the (stripped) packet is at least 64 bytes long
++	 * (including FCS), otherwise the switch will drop the packet.
++	 * Then we need an additional 8 bytes for the Realtek tag.
++	 */
++	if (unlikely(__skb_put_padto(skb, ETH_ZLEN + RTL8_4_TAG_LEN, false)))
++		return NULL;
++
++	skb_push(skb, RTL8_4_TAG_LEN);
++
++	dsa_alloc_etype_header(skb, RTL8_4_TAG_LEN);
++	tag = dsa_etype_header_pos_tx(skb);
++
++	/* Set Realtek EtherType */
++	tag[0] = htons(ETH_P_REALTEK);
++
++	/* Set Protocol; zero REASON */
++	tag[1] = htons(RTL8_4_PROTOCOL_RTL8365MB << 8);
++
++	/* Zero FID_EN, FID, PRI_EN, PRI, KEEP; set LEARN_DIS */
++	tag[2] = htons(1 << 5);
++
++	/* Zero ALLOW; set RX (CPU->switch) forwarding port mask */
++	tag[3] = htons(BIT(dp->index));
++
++	return skb;
++}
++
++static struct sk_buff *rtl8_4_tag_rcv(struct sk_buff *skb,
++				      struct net_device *dev)
++{
++	__be16 *tag;
++	u16 etype;
++	u8 proto;
++	u8 port;
++
++	if (unlikely(!pskb_may_pull(skb, RTL8_4_TAG_LEN)))
++		return NULL;
++
++	tag = dsa_etype_header_pos_rx(skb);
++
++	/* Parse Realtek EtherType */
++	etype = ntohs(tag[0]);
++	if (unlikely(etype != ETH_P_REALTEK)) {
++		dev_warn_ratelimited(&dev->dev,
++				     "non-realtek ethertype 0x%04x\n", etype);
++		return NULL;
++	}
++
++	/* Parse Protocol */
++	proto = ntohs(tag[1]) >> 8;
++	if (unlikely(proto != RTL8_4_PROTOCOL_RTL8365MB)) {
++		dev_warn_ratelimited(&dev->dev,
++				     "unknown realtek protocol 0x%02x\n",
++				     proto);
++		return NULL;
++	}
++
++	/* Parse TX (switch->CPU) */
++	port = ntohs(tag[3]) & 0xf; /* Port number is the LSB 4 bits */
++	skb->dev = dsa_master_find_slave(dev, 0, port);
++	if (!skb->dev) {
++		dev_warn_ratelimited(&dev->dev,
++				     "could not find slave for port %d\n",
++				     port);
++		return NULL;
++	}
++
++	/* Remove tag and recalculate checksum */
++	skb_pull_rcsum(skb, RTL8_4_TAG_LEN);
++
++	dsa_strip_etype_header(skb, RTL8_4_TAG_LEN);
++
++	dsa_default_offload_fwd_mark(skb);
++
++	return skb;
++}
++
++static const struct dsa_device_ops rtl8_4_netdev_ops = {
++	.name = "rtl8_4",
++	.proto = DSA_TAG_PROTO_RTL8_4,
++	.xmit = rtl8_4_tag_xmit,
++	.rcv = rtl8_4_tag_rcv,
++	.needed_headroom = RTL8_4_TAG_LEN,
++};
++module_dsa_tag_driver(rtl8_4_netdev_ops);
++
++MODULE_LICENSE("GPL");
++MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_RTL8_4);
 -- 
 2.32.0
 
