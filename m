@@ -2,256 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C1BA42A7E1
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3AB842A82C
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:22:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237405AbhJLPHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 11:07:54 -0400
-Received: from www62.your-server.de ([213.133.104.62]:45826 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237195AbhJLPHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 11:07:54 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1maJLf-000E6O-6P; Tue, 12 Oct 2021 17:05:47 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1maJLe-000EwE-VC; Tue, 12 Oct 2021 17:05:46 +0200
-Subject: Re: [PATCH net-next 4/4] net, neigh: Add NTF_MANAGED flag for managed
- neighbor entries
-To:     David Ahern <dsahern@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, Ido Schimmel <idosch@idosch.org>
-Cc:     roopa@nvidia.com, dsahern@kernel.org, m@lambda.lt,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20211011121238.25542-1-daniel@iogearbox.net>
- <20211011121238.25542-5-daniel@iogearbox.net>
- <05807c5b-59aa-839d-fbb0-b9712857741e@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <bf31a3fe-c12d-fd75-c2eb-9685cc8528f2@iogearbox.net>
-Date:   Tue, 12 Oct 2021 17:05:46 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <05807c5b-59aa-839d-fbb0-b9712857741e@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S237435AbhJLPYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 11:24:11 -0400
+Received: from mail-bn8nam11on2053.outbound.protection.outlook.com ([40.107.236.53]:40160
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237448AbhJLPYJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 11:24:09 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oMptx4GjIXyaintfCmHQmHiEyJcTQY3yUci8TVhsyHbXY73MHSCjP040/NTx5dd6daDWDVrgez3CeOrdaE/TPV2wAse8NlAGjAw6w7c7wHph1Aq+2vfLSWp756JmdrjpBovT2SeRdyLdS0gNgNijN2Tj14zYeHxouvIb9hYjkxwBrkltGUNDD90GOf3oFOLSi0NjjXW/R99PMMMan6Bp2c4bJjOw9OfOM71Q11cRXcWpOAd6Ya0xYF3hfG79pMdoOQqjQpVL25gD4+1FkfcIsRkdQluhrKP6tpx8pRqRP2n1Hur/jc8OnCutel96p7uWpbaKtY5swdWrd4P1HTDQdg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gb8dEKq60p+PZzFZrVhTAINYAch6mLhTWofWF/N+i1k=;
+ b=DiZcg/t5FXYh7H7WY6WiHwbi9S8T/53c7gyUelSWa4hX0n51g7eezyABpMDWtXfT7m2RFQKMQxAKCNYaC82M2g7H0OVnbwFa5g2msDts6T+L6kk8T10b6Miv6ZBFvuV6IiRf+G40PIfK5xCnEG9GEqlmxbp+yGr9PxhmPN/BDLMvJjqZMzxhTKzODqYykPvAJtCJm8X6RcefGWYROy32lkSD562YLw31kNVhLYHEwaPmLi3f4aGVxtL9jjPwJkj3Ydo1SDN4+h8442wwcPFMEOCOJfkUgBcUCdIkuyAKbx+aLPof3sRGjiejnH+Ac3tnk/rJwHmJMNsLfTT+BOTFwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gb8dEKq60p+PZzFZrVhTAINYAch6mLhTWofWF/N+i1k=;
+ b=XM0HnsirQn0ua+13ZBrMtMliH2B3FqrYQcLvjGOlkYfcf/KuOuwFysBlD32PyBFDQuBwLMdBPvKiBpWZcNTHn5vDFgA1FLjW0LjNe5gEcb7KJIWd7+PxrkEXDr4NFs7+GQoxL3w+YS8fSLAXF+tIscpIcP0Qcnw6BKNlYMJFYDTJOQb6ka4/I/FtWltnOkDKwUCpHv+A80Qkd6vo2JPSHTwK07tCEJo3k2h2RuKR/RFKfQno0//PUlDfs7OIJtc5zvYxt9xv7hmvZQXYuKzPueHiYGxxQj3wDmal6O0Ez7mwMOn5KjMhdI80hiCLPJo9Tfe4JZTapmKZdd0OvBaHRg==
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
+ by DM4PR12MB5072.namprd12.prod.outlook.com (2603:10b6:5:38b::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Tue, 12 Oct
+ 2021 15:22:06 +0000
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::513c:d3d8:9c43:2cea]) by DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::513c:d3d8:9c43:2cea%9]) with mapi id 15.20.4587.026; Tue, 12 Oct 2021
+ 15:22:06 +0000
+Message-ID: <0641aafd-650d-2f9e-1645-946c347677cc@nvidia.com>
+Date:   Tue, 12 Oct 2021 18:21:56 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH net-next] net: bridge: make use of helper
+ netif_is_bridge_master()
 Content-Language: en-US
+To:     Kyungrok Chung <acadx0@gmail.com>, Roopa Prabhu <roopa@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+References: <20211012141810.30661-1-acadx0@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+In-Reply-To: <20211012141810.30661-1-acadx0@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26320/Tue Oct 12 10:17:49 2021)
+X-ClientProxiedBy: ZR0P278CA0021.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:1c::8) To DM4PR12MB5278.namprd12.prod.outlook.com
+ (2603:10b6:5:39e::17)
+MIME-Version: 1.0
+Received: from [10.21.241.5] (213.179.129.39) by ZR0P278CA0021.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:1c::8) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend Transport; Tue, 12 Oct 2021 15:22:02 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 82bcac80-aa51-40de-601e-08d98d940ca6
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5072:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM4PR12MB5072E26A4AFB1300BC5429C1DFB69@DM4PR12MB5072.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:644;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: b8y37kavJLALIDzaVKSpqTn1Lz936KOho0CI1PIJyQzOI93gKan3ChLMHj4fiygtKmGSLdA1DJnN5DKK4eYzUN5khne5U4rwbGBd7caGeHNNaZH4x4WyKM4HPH/g1cj4fWdLJN5c4Dawm6QFMhv9J6JetaJ1Dan0WyCeRsM6F9GvirBVpuJryICxQnzXRYzc5BQHh4ho5rPc7lkRaHKba7e59e+ZOBebq7DM6lmej/HZIMkVdAssaXVNXkOfx8Cn/YJIfdCQDiTruGV5I7ZC61pydN9xZyQ65OBP1rJpMZb62UqQlOwEFm0W6qMnq5inCYp5N9JBC6RYT+atQuk+6NVqyHDfSahwH8vwXxll7lfZjaFmVF7DoKA0x7EfWcA3bM/Om5MzU7Nh3u53Nm5C8zyX6mW/fnXUV7xaVcrbrnD2ZNntbYuJ8M5QgbepXUCbU5PyZ2dHSzaEHtTzltraTJmwo+5UcxUfL2Q6tAAzMOq86UYM7xflxFMuzTlF9/pYW19RinPT5FEw4aBFIKPHEq8bqb4PXEXTJ86IW/AC5fdvXQebsq/XFtxp785CjncNJg3S8AnwZ9VKb4hkxNptgBN11L7IAMGskU0xA1tB0Ci+GZQi7z9U8r/q4vfKMZiyf1KJtZpJv/RzlIhHcAGy9lEmmkDZatP5IINIke+6ggZdKeRtra6kFXZWykf5I9Yb47iaPXjZGvyCwNbk6D+OjHODHfFdEpNmpt/B4Z1I8c8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66946007)(53546011)(36756003)(508600001)(66556008)(4326008)(6486002)(66476007)(186003)(7416002)(6666004)(31686004)(8936002)(8676002)(5660300002)(26005)(316002)(110136005)(83380400001)(2906002)(31696002)(4744005)(2616005)(956004)(86362001)(16576012)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dlhTcGlTOENIeGNmSnNwMHFoellKbXYwVlpFQmhrL2hmdE1lNCszWlZOeE9o?=
+ =?utf-8?B?ellhRFU0L0R5dk5TRWhCdWpBeXp5enZpV3Y0alJPMVFrTW1NMHo1dklSMDRQ?=
+ =?utf-8?B?NGQrREtNYTc0K0VCb2FqdXVxMHVDK1NxYkNxS1E2eEErZ2hZV0N5RCs1YjZJ?=
+ =?utf-8?B?RnlDQTJSVGhpV3FFOUltdEd6L01ZR3pxaWE2Wm5BSUhBUEJhQkRpbTdDOFdz?=
+ =?utf-8?B?QnZMUHdndHM2VnZYdGFYc1k4YzlxL1ZNNm9WcTdsUGxrSVovYlc3enduOTB2?=
+ =?utf-8?B?OE1FYVhTblpzcmYvRVcrYXhwNTVvYmp6ZnU3RmFWS0pxbU1VT0ZFbUYzMGY3?=
+ =?utf-8?B?VXRUZlUyUERlM2RzSVoxQTQyRnBncHNFYzVIbnJxcCtmcUszQWs1MVRxTW1Q?=
+ =?utf-8?B?ZEc4eWpmaEZwR3lNUW1VWlh1TU1rQzVrOEpRM2o3dkx1MEhYd3hDdG9jazRE?=
+ =?utf-8?B?Q1RBVGgrdzZCNWh5bmsrVXh6VGhJQWVzcTRJV3g5NWFKcWNlV1lpNFpPREI3?=
+ =?utf-8?B?eC96Y0Q2WVlUTVk0OS9UOHpQckZ4dmU5UVRhTHFIUmRxU2tMK0F5bnhBZXhQ?=
+ =?utf-8?B?dVhFZ05yaGZkRzBIUTkwdGMvWWlvTFYrVDdXd0RxbklyTTRwQVdLdGNLYnRG?=
+ =?utf-8?B?L2hFelhXc0FHQXZwZy9wZWZiL2dsNWZzSWxVaVpvZHFPbDQzUE8xWUVpNmxq?=
+ =?utf-8?B?Rld4N0dJM3o5c1RKanhpY3V3RTZEN3BqMW1HdUhid1pEMFliZ3NnWmJvenFK?=
+ =?utf-8?B?c3hDTVdDeW9leWxnVk9EQ29ER0Y0S1JZOU5MNG9YOFhCRVU0TWNlVUJ1V2pJ?=
+ =?utf-8?B?Ky9vS2UrREpsSGNnQStjSmg3TVRWdVVxZFFxZHNReEZla1hRV3lmUXZyYVNI?=
+ =?utf-8?B?Rlg4dEF0SXdtd1FXZSt5Tnpta04rUDZrMWxpVHR5TDJpK2dmYk9qYkVFRW5a?=
+ =?utf-8?B?b0ZNVWJNZmN2NitaM05abngxcmxxREtRSlMrWnZBdnh0M2RqeldBVTVqUFNm?=
+ =?utf-8?B?aHBwamtHL2dZQVRkcnZud2VyK1oycFRjUUwwS2VVQTlUWmgxbjYydGpZY01D?=
+ =?utf-8?B?aW9wVmI2ZUJrTHBVbE1POHBwdjk5VHl6bVRvTE5lV01nVG1EWCtRbmNvbTdO?=
+ =?utf-8?B?LzlsbzBxYUczbWZoNHcvcVV2eDd6R3hRNkVYQmdRZmpIMUJWKzV4SytjRjM1?=
+ =?utf-8?B?YUtEZGJlczIrVHpjZnVuQndOYXRuVlFmQ1VqcWs3MktXTkJFUTFCZ0pmZFJV?=
+ =?utf-8?B?SkY1UllpT2NrWVIwSGpOR2FwTGNhb3IwZ0h3NktzOHBMSU1zNGc5M3MxNXRs?=
+ =?utf-8?B?dWVEbWE3VjByeExRMVZoUi82WUQ4OEZsUnhuY1hub1ZReXAxUDVvSUxyYzEx?=
+ =?utf-8?B?a1FiWWpSbEd3Sk9RS0x1eWNVclNOVlRHelVxOEtXRzBoWmwwb0gweXE4OGFZ?=
+ =?utf-8?B?WCtOQUpXbERENUxJKzV4LzErTHY5QW5UcHRDS2h2ZzFFSHpPdG1SMFVDTGtl?=
+ =?utf-8?B?K2FaSjUrczBsTVkxU01ET3lJVFdKS0E3MTRJUGtySE9GMHI0aE1adjJVRlFt?=
+ =?utf-8?B?aUtiQ24rY3pieGpocmo2eDNZWXJiSDBRT0t4LzUwVkdaazVPMkIyVktXNG1N?=
+ =?utf-8?B?Z01tb292S0JHaW5IaEgzaEhCY21wYnM5SFBwRDJ5aFRyRmYzQUs5ZnRidkFM?=
+ =?utf-8?B?UmdHQ3dmcVRraGhrWXMxWWE5cU9NL0Q2S2kwNnZEK1M2c1Q1Sm85bEdXRmtZ?=
+ =?utf-8?Q?kw0uXKODHAl9Q1LLITzcSpJfrBUWpswIvKjR5tZ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 82bcac80-aa51-40de-601e-08d98d940ca6
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2021 15:22:05.9200
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SyxcKqEQwMtXDoTg9IiWdvAQUM3LfxsNyoQUgWyp0MRc/LU2Kx79ITWJIl1+GSJFIooBR7Z3q8mSC8kHf+qqgw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5072
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/21 4:51 PM, David Ahern wrote:
-> On 10/11/21 6:12 AM, Daniel Borkmann wrote:
->> @@ -66,12 +68,22 @@ enum {
->>   #define NUD_PERMANENT	0x80
->>   #define NUD_NONE	0x00
->>   
->> -/* NUD_NOARP & NUD_PERMANENT are pseudostates, they never change
->> - * and make no address resolution or NUD.
->> - * NUD_PERMANENT also cannot be deleted by garbage collectors.
->> +/* NUD_NOARP & NUD_PERMANENT are pseudostates, they never change and make no
->> + * address resolution or NUD.
->> + *
->> + * NUD_PERMANENT also cannot be deleted by garbage collectors. This holds true
->> + * for dynamic entries with NTF_EXT_LEARNED flag as well. However, upon carrier
->> + * down event, NUD_PERMANENT entries are not flushed whereas NTF_EXT_LEARNED
->> + * flagged entries explicitly are (which is also consistent with the routing
->> + * subsystem).
->> + *
->>    * When NTF_EXT_LEARNED is set for a bridge fdb entry the different cache entry
->>    * states don't make sense and thus are ignored. Such entries don't age and
->>    * can roam.
->> + *
->> + * NTF_EXT_MANAGED flagged neigbor entries are managed by the kernel on behalf
->> + * of a user space control plane, and automatically refreshed so that (if
->> + * possible) they remain in NUD_REACHABLE state.
+On 12/10/2021 17:18, Kyungrok Chung wrote:
+> Make use of netdev helper functions to improve code readability.
+> Replace 'dev->priv_flags & IFF_EBRIDGE' with netif_is_bridge_master(dev).
 > 
-> switchdev use cases need this capability as well to offload routes.
-> Similar functionality exists in mlxsw to resolve gateways. It would be
-> good for this design to cover both needs - and that may be as simple as
-> mlxsw setting the MANAGED flag on the entry to let the neigh subsystem
-> takeover.
-
-Ack, that would definitely be nice to reuse it there as well.
-
->>    */
->>   
->>   struct nda_cacheinfo {
->> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
->> index 5245e888c981..eae73efa9245 100644
->> --- a/net/core/neighbour.c
->> +++ b/net/core/neighbour.c
->> @@ -122,6 +122,8 @@ static void neigh_mark_dead(struct neighbour *n)
->>   		list_del_init(&n->gc_list);
->>   		atomic_dec(&n->tbl->gc_entries);
->>   	}
->> +	if (!list_empty(&n->managed_list))
->> +		list_del_init(&n->managed_list);
->>   }
->>   
->>   static void neigh_update_gc_list(struct neighbour *n)
->> @@ -130,7 +132,6 @@ static void neigh_update_gc_list(struct neighbour *n)
->>   
->>   	write_lock_bh(&n->tbl->lock);
->>   	write_lock(&n->lock);
->> -
+> Signed-off-by: Kyungrok Chung <acadx0@gmail.com>
+> ---
+>  net/bridge/br.c                 | 4 ++--
+>  net/bridge/br_fdb.c             | 6 +++---
+>  net/bridge/br_if.c              | 2 +-
+>  net/bridge/br_ioctl.c           | 2 +-
+>  net/bridge/br_mdb.c             | 4 ++--
+>  net/bridge/br_netfilter_hooks.c | 2 +-
+>  net/bridge/br_netlink.c         | 4 ++--
+>  7 files changed, 12 insertions(+), 12 deletions(-)
 > 
-> I like the extra newline - it makes locks stand out.
 
-Ok, will drop, and add one to neigh_update_managed_list(), too.
-
->>   	if (n->dead)
->>   		goto out;
->>   
->> @@ -149,32 +150,59 @@ static void neigh_update_gc_list(struct neighbour *n)
->>   		list_add_tail(&n->gc_list, &n->tbl->gc_list);
->>   		atomic_inc(&n->tbl->gc_entries);
->>   	}
->> +out:
->> +	write_unlock(&n->lock);
->> +	write_unlock_bh(&n->tbl->lock);
->> +}
->> +
->> +static void neigh_update_managed_list(struct neighbour *n)
->> +{
->> +	bool on_managed_list, add_to_managed;
->> +
->> +	write_lock_bh(&n->tbl->lock);
->> +	write_lock(&n->lock);
->> +	if (n->dead)
->> +		goto out;
->> +
->> +	add_to_managed = n->flags & NTF_MANAGED;
->> +	on_managed_list = !list_empty(&n->managed_list);
->>   
->> +	if (!add_to_managed && on_managed_list)
->> +		list_del_init(&n->managed_list);
->> +	else if (add_to_managed && !on_managed_list)
->> +		list_add_tail(&n->managed_list, &n->tbl->managed_list);
->>   out:
->>   	write_unlock(&n->lock);
->>   	write_unlock_bh(&n->tbl->lock);
->>   }
->>   
->> -static bool neigh_update_ext_learned(struct neighbour *neigh, u32 flags,
->> -				     int *notify)
->> +static void neigh_update_flags(struct neighbour *neigh, u32 flags, int *notify,
->> +			       bool *gc_update, bool *managed_update)
->>   {
->> -	bool rc = false;
->> -	u32 ndm_flags;
->> +	u32 ndm_flags, old_flags = neigh->flags;
->>   
->>   	if (!(flags & NEIGH_UPDATE_F_ADMIN))
->> -		return rc;
->> +		return;
->> +
->> +	ndm_flags  = (flags & NEIGH_UPDATE_F_EXT_LEARNED) ? NTF_EXT_LEARNED : 0;
->> +	ndm_flags |= (flags & NEIGH_UPDATE_F_MANAGED) ? NTF_MANAGED : 0;
->>   
->> -	ndm_flags = (flags & NEIGH_UPDATE_F_EXT_LEARNED) ? NTF_EXT_LEARNED : 0;
->> -	if ((neigh->flags ^ ndm_flags) & NTF_EXT_LEARNED) {
->> +	if ((old_flags ^ ndm_flags) & NTF_EXT_LEARNED) {
->>   		if (ndm_flags & NTF_EXT_LEARNED)
->>   			neigh->flags |= NTF_EXT_LEARNED;
->>   		else
->>   			neigh->flags &= ~NTF_EXT_LEARNED;
->> -		rc = true;
->>   		*notify = 1;
->> +		*gc_update = true;
->> +	}
->> +	if ((old_flags ^ ndm_flags) & NTF_MANAGED) {
->> +		if (ndm_flags & NTF_MANAGED)
->> +			neigh->flags |= NTF_MANAGED;
->> +		else
->> +			neigh->flags &= ~NTF_MANAGED;
->> +		*notify = 1;
->> +		*managed_update = true;
->>   	}
->> -
->> -	return rc;
->>   }
->>   
->>   static bool neigh_del(struct neighbour *n, struct neighbour __rcu **np,
->> @@ -422,6 +450,7 @@ static struct neighbour *neigh_alloc(struct neigh_table *tbl,
->>   	refcount_set(&n->refcnt, 1);
->>   	n->dead		  = 1;
->>   	INIT_LIST_HEAD(&n->gc_list);
->> +	INIT_LIST_HEAD(&n->managed_list);
->>   
->>   	atomic_inc(&tbl->entries);
->>   out:
->> @@ -650,7 +679,8 @@ ___neigh_create(struct neigh_table *tbl, const void *pkey,
->>   	n->dead = 0;
->>   	if (!exempt_from_gc)
->>   		list_add_tail(&n->gc_list, &n->tbl->gc_list);
->> -
->> +	if (n->flags & NTF_MANAGED)
->> +		list_add_tail(&n->managed_list, &n->tbl->managed_list);
->>   	if (want_ref)
->>   		neigh_hold(n);
->>   	rcu_assign_pointer(n->next,
->> @@ -1205,8 +1235,6 @@ static void neigh_update_hhs(struct neighbour *neigh)
->>   	}
->>   }
->>   
->> -
->> -
->>   /* Generic update routine.
->>      -- lladdr is new lladdr or NULL, if it is not supplied.
->>      -- new    is new state.
->> @@ -1218,6 +1246,7 @@ static void neigh_update_hhs(struct neighbour *neigh)
->>   				if it is different.
->>   	NEIGH_UPDATE_F_ADMIN	means that the change is administrative.
->>   	NEIGH_UPDATE_F_USE	means that the entry is user triggered.
->> +	NEIGH_UPDATE_F_MANAGED	means that the entry will be auto-refreshed.
->>   	NEIGH_UPDATE_F_OVERRIDE_ISROUTER allows to override existing
->>   				NTF_ROUTER flag.
->>   	NEIGH_UPDATE_F_ISROUTER	indicates if the neighbour is known as
->> @@ -1225,17 +1254,15 @@ static void neigh_update_hhs(struct neighbour *neigh)
->>   
->>      Caller MUST hold reference count on the entry.
->>    */
->> -
->>   static int __neigh_update(struct neighbour *neigh, const u8 *lladdr,
->>   			  u8 new, u32 flags, u32 nlmsg_pid,
->>   			  struct netlink_ext_ack *extack)
->>   {
->> -	bool ext_learn_change = false;
->> -	u8 old;
->> -	int err;
->> -	int notify = 0;
->> -	struct net_device *dev;
->> +	bool gc_update = false, managed_update = false;
->>   	int update_isrouter = 0;
->> +	struct net_device *dev;
->> +	int err, notify = 0;
->> +	u8 old;
->>   
->>   	trace_neigh_update(neigh, lladdr, new, flags, nlmsg_pid);
->>   
->> @@ -1254,8 +1281,8 @@ static int __neigh_update(struct neighbour *neigh, const u8 *lladdr,
->>   	    (old & (NUD_NOARP | NUD_PERMANENT)))
->>   		goto out;
->>   
->> -	ext_learn_change = neigh_update_ext_learned(neigh, flags, &notify);
->> -	if (flags & NEIGH_UPDATE_F_USE) {
->> +	neigh_update_flags(neigh, flags, &notify, &gc_update, &managed_update);
->> +	if (flags & (NEIGH_UPDATE_F_USE | NEIGH_UPDATE_F_MANAGED)) {
->>   		new = old & ~NUD_PERMANENT;
-> 
-> so a neighbor entry can not be both managed and permanent, but you don't
-> check for the combination in neigh_add and error out with a message to
-> the user.
-
-Good point, I'll error out if both NUD_PERMANENT and NTF_MANAGED is set in neigh_add().
-
-Thanks for the review!
-Daniel
+Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
