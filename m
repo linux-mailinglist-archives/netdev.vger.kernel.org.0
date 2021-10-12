@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D3942A377
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 13:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2500642A379
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 13:41:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236264AbhJLLnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 07:43:12 -0400
+        id S236271AbhJLLnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 07:43:13 -0400
 Received: from mail-eopbgr60075.outbound.protection.outlook.com ([40.107.6.75]:6350
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236197AbhJLLnH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 07:43:07 -0400
+        id S236245AbhJLLnI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 07:43:08 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Axi4WXRsAg37/OzBZAeR0ti20duALNz0WloJAMzuPNIVpUE7v+8jr2u5yOOb8HQ1DCnNAUviN6oWwZbYYXc/1TfOtMROgI/gJJorC1dl6tlVmnLuZU3PZJykqX09sla8//aVV30ysSdX3FGMamV5zo3DGZlP1bYmUyLFxMDzk6QRW+gkzRPVs76HBMP6ws1IPeWDrOc+nES0lQ6JQL8VsEl3PDdZXEuBxoLYGp6E7dUNcoPjTpzhpGA2n4vQDKWqbibAUhIdsf1vgVYklZUhY2k086agJAyp08mn3AabcXzGDNbCTtas49/tqAZ0Ej58KBQw/b96Vt4zitmL/f4u0Q==
+ b=R1hTalFACtnOz5b4RHH5gS0bCDoOLQ6DeUvttC+XmlisTxtUOCA0VYlPuSqmUYaK8wOEAkxx2d0EIs15jLBa/oSKOu0exggnYsoFxGfvBCSzaeTRVQ4GhAYbW1cZKJyfoz/5aS6qQKkVAcyOuo4jkQ5cQ0jCO0wpNHcwIUDdwRDJBCsWTobxTXEovLaMEj+Ehu+6NxWMY4xsTlyqM5XtWFS6r8mVD5XX/vtvQ0PbaG8zsgNoKiAHGac8aMN6fD2hYoPs9St54jvQEekFin9kbir4ISnc4uX+EH7U70UG4JEBiaXfypStdbqmzixevHqzptzIEvKK69GLvQ713RTmCQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nBIgZhvUjXNiBf3EwMMdgJT/S+gmErKuO6FnDwIVZaQ=;
- b=TjxIorcgjkbiWHLL2603K/m6CH12ZuKtFhwTBkMSWTTmdzy9HKX5jTOWBpRbDdXeoFn254unjpCkieAFVLpHaLZi8Y8DN+c0oAJBA4QDdf9kmasLHfsXARN6o1BOdRzUusxzTC8e0QnX+Sd7yqKcR78Q3HWeO0u/53rtA47G9MuDX5UFiaHJlt8xEz9v1WhEIU6iI9pRSIS0nMCElryADde21ATeZGuoqJx6C1Nz9Fr0mRVsf7CEfM1wjVl6Fh6jIJOgLsi/mL+qnLKd57+bqPM6poDP6/VNGoBRDwa1OwbWWgrviK3CRClXInxLN5V2EPJvKlaydOhdsM+Uui+PQg==
+ bh=guEVZaNKXPGVliR9eouuiU3xjUgWvj12kssshcK5xb8=;
+ b=c6sjAIXKUplZ0qFpT4GMlzjC1nNH2NsCswwo8T9aUrArHKgGgwFcbZMmsf71+ZapIfbm8WTBpeocS+H2D3i66KDyonZpzHKYloNm3IjF90WgcJmNB6ZboWQ+KyFunEYYHS+MKp7Pgt+80N5nMpoL0rCDew3U5uEhvmXRzmAXy+mkRLWJU9wzO6QMHyt4Ap5iMwQgYxpLbBUqYBIjTOV45tu7h54d3LgK15YL2rzIy5n+Yx6SvnoJH+1Ct8gn0uT1dUZ8Y1XISjtLKDuGdHhH/SWmpiUMBHveblRXT9Nyus466hea7I/1Eh52d4bP+WyS5Wi9KB2uX0Ln6V3mxv1Gbg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nBIgZhvUjXNiBf3EwMMdgJT/S+gmErKuO6FnDwIVZaQ=;
- b=IRwAKa/QAwZU0kJA2Flea6KOJRv9ObF2SRiD/UKT+GtVY/1YTTlCfrpkmGxBUmq9R/cxxHp/ox9L9q2FXxnJeRzSTYMM7n3jTmPlTetIgHw429Hqu2v9/roSgtRjkY2liah+8aa8ynXDIskjIDP1b7iFjfULIuzauCWP6kcLfwQ=
+ bh=guEVZaNKXPGVliR9eouuiU3xjUgWvj12kssshcK5xb8=;
+ b=sCc1hP5Td0A2qc40a0bc5WThLe28aPI8PcOuk7+nuVvk1Ub/JQ4gwADySb0Cy8C9HTTjH3Cy24aCVnJtpxM8XRS/jgwt7uvB/2NXzX8wxsyArWkHlbIO+Er7pXJSUJy3NZVn0Y6p/1Kh/33EmpKE0ezexJHktYXyEXDE3dPGJOw=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB6941.eurprd04.prod.outlook.com (2603:10a6:803:12e::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Tue, 12 Oct
- 2021 11:41:02 +0000
+ 2021 11:41:03 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::e157:3280:7bc3:18c4%5]) with mapi id 15.20.4587.026; Tue, 12 Oct 2021
@@ -50,9 +50,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v2 net 07/10] net: dsa: tag_ocelot_8021q: break circular dependency with ocelot switch lib
-Date:   Tue, 12 Oct 2021 14:40:41 +0300
-Message-Id: <20211012114044.2526146-8-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net 08/10] net: dsa: felix: purge skb from TX timestamping queue if it cannot be sent
+Date:   Tue, 12 Oct 2021 14:40:42 +0300
+Message-Id: <20211012114044.2526146-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211012114044.2526146-1-vladimir.oltean@nxp.com>
 References: <20211012114044.2526146-1-vladimir.oltean@nxp.com>
@@ -62,404 +62,139 @@ X-ClientProxiedBy: VI1PR07CA0150.eurprd07.prod.outlook.com
  (2603:10a6:802:16::37) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.26.53.217) by VI1PR07CA0150.eurprd07.prod.outlook.com (2603:10a6:802:16::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend Transport; Tue, 12 Oct 2021 11:41:01 +0000
+Received: from localhost.localdomain (188.26.53.217) by VI1PR07CA0150.eurprd07.prod.outlook.com (2603:10a6:802:16::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.14 via Frontend Transport; Tue, 12 Oct 2021 11:41:02 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7f578994-e4e6-4549-ca1f-08d98d752abc
+X-MS-Office365-Filtering-Correlation-Id: 3f055f69-c56b-4aee-f3c5-08d98d752b4f
 X-MS-TrafficTypeDiagnostic: VI1PR04MB6941:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB694193EBF1DC4AFFCD5F923DE0B69@VI1PR04MB6941.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB6941214D86E6658CCB65FE51E0B69@VI1PR04MB6941.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mGA7sNJxqACN9L62T45zS4UEbOPbn7PE12S/HYQkOp/UkeCWrVUwT3/fc9Jb7ZHy0V/hC6NeBE/qTUrwCH/mKdQiwpmWQaDYR9NuwbisITbqDe84Cm+E4ltuPXKuZYkUraViV2G6kB8MEnK9Y8etpjI2EmeGOLAzFEeI8yr2+0ovN80EPshx74uB2UP6icXDTOX+1P8xvccbvpe6MsQuOFQXsedl6qIh+J0d6Z9HHUIJZb1DiKc3VGSpNxiRPQrfG5ilVHKmwiLYBXJEaoMFRGC0jQHeCo8bewOBfxhJaOkUFOxYjOHl3rh9c9ok+mDffiYlVIHwJFwYS6D6IBO6anmZ308NVyYBHFOqfhJEer/V0yKnqbg1krRWj6DOnFItz+YB9XVNYzJoIRPLmXP5BnpUZfN7SEZAYYuylp7KluRkeca6raAeo7SPJ6z1OkVe5AX9RqlydaaZxwa0ZczDQKayE5e+CZbj/mPNBNt6sRTHSKGGFdL5s9wE4GYddQ+ukaUKG9RxVMyQi0e5S5pSbofdrPEWI4GP11laadyMvb/ygTaPyR8qOiR2ByWxuIUex825bJk+A2GdZpuTNq+sbVdwuF5bCQJQiBYh2KFF/Iwo6GmKUtsjT/0qD+/S5gNHPfPLfbX6hUJFLmC8MIXfvfPWcZL/EBb9dJhFLXj4AlQ8c60VathENSyDRlZf8iMkztEiXS7q/KI6zZhdx8d0LV7iVueeLbg1ZXkyF8J6QCKrb2lgpuqjU/PEeR6mTgk8QMWM+RqSAJTeNGf4uUpeOKOUsPO9r8mPJE3PH5d/oPE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(44832011)(508600001)(110136005)(6636002)(30864003)(2906002)(66556008)(66476007)(54906003)(52116002)(6512007)(4326008)(316002)(2616005)(956004)(966005)(26005)(186003)(38350700002)(6506007)(7416002)(66946007)(8936002)(6666004)(83380400001)(6486002)(86362001)(36756003)(1076003)(8676002)(38100700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: aB+EBnRctucsE/EDFthWoMPVDfoq+a6d6Br/cooUi7+ZBXFT00tu5/y+iaBoQO+I2j71JMfsE4HTP1V2p4kM9phwyghSyu+ipm0MZV/PVmrsjwwntRfgdi5cKMF6YliJG5PQu0HLmkGhCxia2eqrgGTUsJpmYn6XIlrn153us5cuc2mpEB9CFrLwqqv2KVaDblzJvTL/yCOWedmzC2RYoqhXFBj/pG68S+LIFszxAISRc8CL0gjYFk47YMZho+e6OqmNnzctC1+SNvHIiYWC9M4S/mYwK3QKMYlb2UMHTa7hrjBHdATCmL96eGiEZlL8AKVZ3X7T06vKSM2d0Gmtl9yW8UtthV4+ap2OZqCDgl0iUM1faY7Tm8fThgFqHQdgW9p9809nNUlNAACv4nmX6dcPDpaa3X7Zdw4eKT+2MCo6hdokin695TWMHuJavqHyVqCrKK+iZr/wMeP2r/0dum4PLr7h+5QgDtUDoLYOhlsz5N21hyJgRmBsV261AQfJc4ZcUOZeOvjCVr1ADRFDMcd/d313rRCJG+LzHiZaLbPnBoc21OjQwJEHfG0iXyDzK2ZgP0LH/s5NMxz46NLhEUIUTVJc7ygsA81k2SQrTminH93ZO/hoKGBHNwOSIVlnXBLbnHQkg9A1MtzQMCABpFxGb1fCU2JqLqaaeRo+bvt1g8dTfZLU1KDUCy37QLyu6yovHoZZ0WbQ/aUK9MEiqA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(44832011)(508600001)(110136005)(6636002)(2906002)(66556008)(66476007)(54906003)(52116002)(6512007)(4326008)(316002)(2616005)(956004)(26005)(186003)(38350700002)(6506007)(7416002)(66946007)(8936002)(6666004)(83380400001)(6486002)(86362001)(36756003)(1076003)(8676002)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Q3CNpsPVTDf4K07c4W2QobeLTP0SyE83+E7Qr4GMl7+XTPCuQ0Vg794QxhzU?=
- =?us-ascii?Q?LwZXeKES2f+237uQMTl+ig/sw6uSD+oa8B2j4b8WcxCxY2BZRa5HHXqg3pnj?=
- =?us-ascii?Q?eNKMX2YtOa6XliOftGIoQM3qA2JMie6zjTCAHd1tnxUYXCdApLaEsItPfZiE?=
- =?us-ascii?Q?XWn7ISZOkLULEywafSKnBvkl4CyxjMoluy87jAdqNfJJQEyRFg9wbJAhADlf?=
- =?us-ascii?Q?y08yr4283MHaWdm2Zoopf8wI2YfXLXDrfu1Y13PlgqlTwbVQOXWQivL5drIp?=
- =?us-ascii?Q?0Gt87bG1XHjoWuUr2dMez1HWQzL70utcJy4i6Llq3RPsa3su9TPUJEH3Ds8j?=
- =?us-ascii?Q?6sjV5XYj6ZHEh4QSwIOAaSVF9j+V3GfUy9qsfZWnpm21I6gmOtNpH1AoOvqt?=
- =?us-ascii?Q?pDd5JnKNWOwMQm5zehLYt0Uw0Xm7PRYALXCzqgMJ3Ncks1y2FvgwI0wUMMQX?=
- =?us-ascii?Q?39s2sCprqZOiH7/TwZSG6uoFVjdn0zhdDatY39jAoST/RlqR1Qxn1D3Y/MkJ?=
- =?us-ascii?Q?jIaiIOrIwBjgn8HSaWlRxGfMXHBeVGQ0lGVXwArqFv0VO4lQxLhuWF86/qaq?=
- =?us-ascii?Q?xMlOOZWSAD8Th2NLygGDPXlrwm3akM0PWivmdEd1UHqiEJr/qHccqQ58G5D6?=
- =?us-ascii?Q?FJZJBFWxlbb0KxzI0mp2qExibzRgxtFIQfkqcQosSaA+38D/pph6DstWWDyE?=
- =?us-ascii?Q?9vxPBuQluWK8Z2zUC/Jvp9VdGw9sndLKHum40BIcO3Y0BvR9UjZWH155Mruo?=
- =?us-ascii?Q?9zL0qgri4rgfoz+WDXrhwbgP13RfO5XTID7Y32tFLVfQudqEflSHUeqxjEbB?=
- =?us-ascii?Q?YnVYnq9Pt8punmVhJAKGYk1q/Te9iLyyMOnQEZrLZfBNkRWq0XWkhuUpjXGS?=
- =?us-ascii?Q?5a2INumRisAYsCx4LCB76f8vVaFmvtzuj/7aDFJknYUsD/5im3KqwI7wSn/r?=
- =?us-ascii?Q?6fR6qCyPMEk8wnwHhnJJavi+oXpKkFHmF1AB7msEdrUwJYNm5ioP+6L/rizu?=
- =?us-ascii?Q?eXqCh1NTOa0bmg58+Z9SlL4mWUc2X0M1kqmXOK9Bu476WV8VfQUDJh4k4VtB?=
- =?us-ascii?Q?1xtg03m5JoLkyEklsq+lEAZAaq/FBzTjjWr0Em1nkieXRRPwrg3sBl0BodbM?=
- =?us-ascii?Q?E1SIzvZo10tszoyf9nk0b4F34kxV18OEGyyN7P8YeMjAknAXsmHrobIMXGFS?=
- =?us-ascii?Q?uGLi+ZBYjceQeQwrgfwv/bb4ng2VecYKCdjNDof8U0N/mCML0jamhanMsv07?=
- =?us-ascii?Q?zT2yQLRRun2VTgPtMCnvU6Cbs+JYjEruqzGp+7oU38MbYdqD7l6w72VjDazU?=
- =?us-ascii?Q?eOoLqpXUqlcP0eYjxZS9Hh6H?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qA3HH4Y7PxoioyV9rckRZn0oth1JQVT5jiIBMaGNzNnl0Zi3KvHFDpOkmzfw?=
+ =?us-ascii?Q?VIHxVn5Jl3McT8ktAQlP0dY46XuDkCN9R51Tsie10pcKgiVs9V6k7Op7Z4OH?=
+ =?us-ascii?Q?FFSE6lpShko32Xm2cjkzUWwrtRU1i/o2pthgqDhQT9ze4szcGwAfxRZN7iZC?=
+ =?us-ascii?Q?SNqHgNd9UA/rH8b8c2dAvI+i66vSU+33Y5ros5+eLAku4WKLiv+2hIUqIbbS?=
+ =?us-ascii?Q?sc5xZYC7WzB48+AdyQoyaW1HOOY5C9oOLZ2tOpYNEpa77yi9s0b+Ydw/P1ln?=
+ =?us-ascii?Q?SvZCkKSuIpDmK3NMVl637Q9614d/K/n6ei+F/cJki17Ejm0ycrNXoDiN8Mjk?=
+ =?us-ascii?Q?BY7QVpqPLKA+NIANZz0E5bAQr8yplOspQjxXEX7zJJVv35ypfMt+FHv71FCv?=
+ =?us-ascii?Q?LFpCl20IijzKTLP6yxhhDtIrkZntL2A6NOKPb8qyvsYTw0SlpTjNHTcQJa5U?=
+ =?us-ascii?Q?IB7ZTS2OvilgcFdTJiDARN4JVx+LZ8coCrAoBNTHSEu6nMooPgBM1ENBJ9uf?=
+ =?us-ascii?Q?oMPk97bS/0jGLByVZdNSWlLDVzXydnfDAKzlUtGhfWsFP71mutHAscql09d0?=
+ =?us-ascii?Q?dqsO4/N9H4HbIgRploP4oIvYGFZB/2DgDwvtoxWIlWrLCbN5UCMZewA4VMHW?=
+ =?us-ascii?Q?kdPeQovIVWydROKx3HJf9WLm63qOiYoZxQu+BlGtG8ewBoIPk4GHrcNxEf2f?=
+ =?us-ascii?Q?R22eHMZWXyQINlkNR620kGDrljiHIO/n00AuHkkbfDRH1/sOcpn7ZClY5aFO?=
+ =?us-ascii?Q?A7N+B0yKoaId/qLiK/82b188CfQLd0QK3pTh40cikxgEEJcb3KoTatFSkwj4?=
+ =?us-ascii?Q?YoylWnVHwN0T4tcnxSd5z24111CC+U18SgQX3FASurTiOLOiFzLwqActl6Af?=
+ =?us-ascii?Q?KQbkTBG3T5rI6d4LixquplSJ6wHXQWkZNfCe074Y26ZSIss60rVnNlvwbKPL?=
+ =?us-ascii?Q?oKiCVWKZ6Jj4oPuZgIv2w4cy94lt+akO2DyEwUCgo/MQMrjIiLmSu3u5FVP8?=
+ =?us-ascii?Q?VL+XOix8owKXRh6S3np55JLXRN7FnQ0qaEFVmNuUzWosXdG5DyVMiGJnXRv6?=
+ =?us-ascii?Q?d3hkomAPno3GpXPLL1yUizUD+cEYf8gTfip9L5yvGv1OM+t4/Qy/f6HuT158?=
+ =?us-ascii?Q?ctqLIztKLCQ853K5RGJ/FrX8HLJMxFMr44xuksfaUjNrxUQNTKSSZgPAjhh8?=
+ =?us-ascii?Q?NKnVK8tKw3IMwRw0BYnKIyz+PQYk6+Nz+cFjzwwG5zmzvwSg+pZabpRlGr21?=
+ =?us-ascii?Q?BkKoOlYFqUJDsZexEpcMCN6ia8ueNDl32qaazot/xF9fJbh92UA6QGaWDOi/?=
+ =?us-ascii?Q?ljPjbWDA228PY2TMUqAHHKeu?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7f578994-e4e6-4549-ca1f-08d98d752abc
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f055f69-c56b-4aee-f3c5-08d98d752b4f
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2021 11:41:01.8720
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2021 11:41:02.8405
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Pp3keoC1LhOJdPsEl9u/vTX8eUJC6pv2Q5yJnuQLIwgNfREYkMQFlh4/gfzl2/PIaxGpEL1s2Mu8cC2ys0jwJQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: gcfetM62zHGKnpyp6g40tAwH++F38gzpCZgUNDwsivf4rnUIbfbBr9kJ2koBJxvGcTLW88Ysd4AU1NcPsbZHCg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6941
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Michael reported that when using the "ocelot-8021q" tagging protocol,
-the switch driver module must be manually loaded before the tagging
-protocol can be loaded/is available.
+At present, when a PTP packet which requires TX timestamping gets
+dropped under congestion by the switch, things go downhill very fast.
+The driver keeps a clone of that skb in a queue of packets awaiting TX
+timestamp interrupts, but interrupts will never be raised for the
+dropped packets.
 
-This appears to be the same problem described here:
-https://lore.kernel.org/netdev/20210908220834.d7gmtnwrorhharna@skbuf/
-where due to the fact that DSA tagging protocols make use of symbols
-exported by the switch drivers, circular dependencies appear and this
-breaks module autoloading.
+Moreover, matching timestamped packets to timestamps is done by a 2-bit
+timestamp ID, and this can wrap around and we can match on the wrong skb.
 
-The ocelot_8021q driver needs the ocelot_can_inject() and
-ocelot_port_inject_frame() functions from the switch library. Previously
-the wrong approach was taken to solve that dependency: shims were
-provided for the case where the ocelot switch library was compiled out,
-but that turns out to be insufficient, because the dependency when the
-switch lib _is_ compiled is problematic too.
+Since with the default NPI-based tagging protocol, we get no notification
+about packet drops, the best we can do is eventually recover from the
+drop of a PTP frame: its skb will be dead memory until another skb which
+was assigned the same timestamp ID happens to find it.
 
-We cannot declare ocelot_can_inject() and ocelot_port_inject_frame() as
-static inline functions, because these access I/O functions like
-__ocelot_write_ix() which is called by ocelot_write_rix(). Making those
-static inline basically means exposing the whole guts of the ocelot
-switch library, not ideal...
+However, with the ocelot-8021q tagger which injects packets using the
+manual register interface, it appears that we can check for more
+information, such as:
 
-We already have one tagging protocol driver which calls into the switch
-driver during xmit but not using any exported symbol: sja1105_defer_xmit.
-We can do the same thing here: create a kthread worker and one work item
-per skb, and let the switch driver itself do the register accesses to
-send the skb, and then consume it.
+- whether the input queue has reached the high watermark or not
+- whether the injection group's FIFO can accept additional data or not
+
+so we know that a PTP frame is likely to get dropped before actually
+sending it, and drop it ourselves (because DSA uses NETIF_F_LLTX, so it
+can't return NETDEV_TX_BUSY to ask the qdisc to requeue the packet).
+
+But when we do that, we can also remove the skb from the timestamping
+queue, because there surely won't be any timestamp that matches it.
 
 Fixes: 0a6f17c6ae21 ("net: dsa: tag_ocelot_8021q: add support for PTP timestamping")
-Reported-by: Michael Walle <michael@walle.cc>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2: shorten kthread name to fit the 16 character limit
+v1->v2: none
 
- drivers/net/dsa/ocelot/felix.c | 96 ++++++++++++++++++++++++++++++++--
- drivers/net/dsa/ocelot/felix.h |  1 +
- include/linux/dsa/ocelot.h     | 12 +++++
- include/soc/mscc/ocelot.h      | 27 ----------
- net/dsa/Kconfig                |  2 -
- net/dsa/tag_ocelot_8021q.c     | 38 +++++++++-----
- 6 files changed, 130 insertions(+), 46 deletions(-)
+ drivers/net/dsa/ocelot/felix.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 50ef20724958..f8603e068e7c 100644
+index f8603e068e7c..9af8f900aa56 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -1074,6 +1074,73 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+@@ -1074,6 +1074,33 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
  	return 0;
  }
  
-+#define work_to_xmit_work(w) \
-+		container_of((w), struct felix_deferred_xmit_work, work)
-+
-+static void felix_port_deferred_xmit(struct kthread_work *work)
++static void ocelot_port_purge_txtstamp_skb(struct ocelot *ocelot, int port,
++					   struct sk_buff *skb)
 +{
-+	struct felix_deferred_xmit_work *xmit_work = work_to_xmit_work(work);
-+	struct dsa_switch *ds = xmit_work->dp->ds;
-+	struct sk_buff *skb = xmit_work->skb;
-+	u32 rew_op = ocelot_ptp_rew_op(skb);
-+	struct ocelot *ocelot = ds->priv;
-+	int port = xmit_work->dp->index;
-+	int retries = 10;
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	struct sk_buff *clone = OCELOT_SKB_CB(skb)->clone;
++	struct sk_buff *skb_match = NULL, *skb_tmp;
++	unsigned long flags;
 +
-+	do {
-+		if (ocelot_can_inject(ocelot, 0))
-+			break;
-+
-+		cpu_relax();
-+	} while (--retries);
-+
-+	if (!retries) {
-+		dev_err(ocelot->dev, "port %d failed to inject skb\n",
-+			port);
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	ocelot_port_inject_frame(ocelot, port, 0, rew_op, skb);
-+
-+	consume_skb(skb);
-+	kfree(xmit_work);
-+}
-+
-+static int felix_port_setup_tagger_data(struct dsa_switch *ds, int port)
-+{
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	struct felix_port *felix_port;
-+
-+	if (!dsa_port_is_user(dp))
-+		return 0;
-+
-+	felix_port = kzalloc(sizeof(*felix_port), GFP_KERNEL);
-+	if (!felix_port)
-+		return -ENOMEM;
-+
-+	felix_port->xmit_worker = felix->xmit_worker;
-+	felix_port->xmit_work_fn = felix_port_deferred_xmit;
-+
-+	dp->priv = felix_port;
-+
-+	return 0;
-+}
-+
-+static void felix_port_teardown_tagger_data(struct dsa_switch *ds, int port)
-+{
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	struct felix_port *felix_port = dp->priv;
-+
-+	if (!felix_port)
++	if (!clone)
 +		return;
 +
-+	dp->priv = NULL;
-+	kfree(felix_port);
-+}
++	spin_lock_irqsave(&ocelot_port->tx_skbs.lock, flags);
 +
- /* Hardware initialization done here so that we can allocate structures with
-  * devm without fear of dsa_register_switch returning -EPROBE_DEFER and causing
-  * us to allocate structures twice (leak memory) and map PCI memory twice
-@@ -1102,6 +1169,12 @@ static int felix_setup(struct dsa_switch *ds)
- 		}
- 	}
- 
-+	felix->xmit_worker = kthread_create_worker(0, "felix_xmit");
-+	if (IS_ERR(felix->xmit_worker)) {
-+		err = PTR_ERR(felix->xmit_worker);
-+		goto out_deinit_timestamp;
++	skb_queue_walk_safe(&ocelot_port->tx_skbs, skb, skb_tmp) {
++		if (skb != clone)
++			continue;
++		__skb_unlink(skb, &ocelot_port->tx_skbs);
++		skb_match = skb;
++		break;
 +	}
 +
- 	for (port = 0; port < ds->num_ports; port++) {
- 		if (dsa_is_unused_port(ds, port))
- 			continue;
-@@ -1112,6 +1185,14 @@ static int felix_setup(struct dsa_switch *ds)
- 		 * bits of vlan tag.
- 		 */
- 		felix_port_qos_map_init(ocelot, port);
++	spin_unlock_irqrestore(&ocelot_port->tx_skbs.lock, flags);
 +
-+		err = felix_port_setup_tagger_data(ds, port);
-+		if (err) {
-+			dev_err(ds->dev,
-+				"port %d failed to set up tagger data: %pe\n",
-+				port, ERR_PTR(err));
-+			goto out_deinit_ports;
-+		}
- 	}
- 
- 	err = ocelot_devlink_sb_register(ocelot);
-@@ -1138,9 +1219,13 @@ static int felix_setup(struct dsa_switch *ds)
- 		if (dsa_is_unused_port(ds, port))
- 			continue;
- 
-+		felix_port_teardown_tagger_data(ds, port);
- 		ocelot_deinit_port(ocelot, port);
- 	}
- 
-+	kthread_destroy_worker(felix->xmit_worker);
-+
-+out_deinit_timestamp:
- 	ocelot_deinit_timestamp(ocelot);
- 	ocelot_deinit(ocelot);
- 
-@@ -1164,17 +1249,20 @@ static void felix_teardown(struct dsa_switch *ds)
- 		felix_del_tag_protocol(ds, port, felix->tag_proto);
- 	}
- 
--	ocelot_devlink_sb_unregister(ocelot);
--	ocelot_deinit_timestamp(ocelot);
--	ocelot_deinit(ocelot);
--
- 	for (port = 0; port < ocelot->num_phys_ports; port++) {
- 		if (dsa_is_unused_port(ds, port))
- 			continue;
- 
-+		felix_port_teardown_tagger_data(ds, port);
- 		ocelot_deinit_port(ocelot, port);
- 	}
- 
-+	kthread_destroy_worker(felix->xmit_worker);
-+
-+	ocelot_devlink_sb_unregister(ocelot);
-+	ocelot_deinit_timestamp(ocelot);
-+	ocelot_deinit(ocelot);
-+
- 	if (felix->info->mdio_bus_free)
- 		felix->info->mdio_bus_free(ocelot);
- }
-diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index 54024b6f9498..be3e42e135c0 100644
---- a/drivers/net/dsa/ocelot/felix.h
-+++ b/drivers/net/dsa/ocelot/felix.h
-@@ -62,6 +62,7 @@ struct felix {
- 	resource_size_t			switch_base;
- 	resource_size_t			imdio_base;
- 	enum dsa_tag_protocol		tag_proto;
-+	struct kthread_worker		*xmit_worker;
- };
- 
- struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port);
-diff --git a/include/linux/dsa/ocelot.h b/include/linux/dsa/ocelot.h
-index 50641a7529ad..8ae999f587c4 100644
---- a/include/linux/dsa/ocelot.h
-+++ b/include/linux/dsa/ocelot.h
-@@ -5,6 +5,7 @@
- #ifndef _NET_DSA_TAG_OCELOT_H
- #define _NET_DSA_TAG_OCELOT_H
- 
-+#include <linux/kthread.h>
- #include <linux/packing.h>
- #include <linux/skbuff.h>
- 
-@@ -160,6 +161,17 @@ struct ocelot_skb_cb {
-  *         +------+------+------+------+------+------+------+------+
-  */
- 
-+struct felix_deferred_xmit_work {
-+	struct dsa_port *dp;
-+	struct sk_buff *skb;
-+	struct kthread_work work;
-+};
-+
-+struct felix_port {
-+	void (*xmit_work_fn)(struct kthread_work *work);
-+	struct kthread_worker *xmit_worker;
-+};
-+
- static inline void ocelot_xfh_get_rew_val(void *extraction, u64 *rew_val)
- {
- 	packing(extraction, rew_val, 116, 85, OCELOT_TAG_LEN, UNPACK, 0);
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 66b2e65c1179..d7055b41982d 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -737,8 +737,6 @@ u32 __ocelot_target_read_ix(struct ocelot *ocelot, enum ocelot_target target,
- void __ocelot_target_write_ix(struct ocelot *ocelot, enum ocelot_target target,
- 			      u32 val, u32 reg, u32 offset);
- 
--#if IS_ENABLED(CONFIG_MSCC_OCELOT_SWITCH_LIB)
--
- /* Packet I/O */
- bool ocelot_can_inject(struct ocelot *ocelot, int grp);
- void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
-@@ -746,31 +744,6 @@ void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
- int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp, struct sk_buff **skb);
- void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp);
- 
--#else
--
--static inline bool ocelot_can_inject(struct ocelot *ocelot, int grp)
--{
--	return false;
--}
--
--static inline void ocelot_port_inject_frame(struct ocelot *ocelot, int port,
--					    int grp, u32 rew_op,
--					    struct sk_buff *skb)
--{
--}
--
--static inline int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp,
--					struct sk_buff **skb)
--{
--	return -EIO;
--}
--
--static inline void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp)
--{
--}
--
--#endif
--
- /* Hardware initialization */
- int ocelot_regfields_init(struct ocelot *ocelot,
- 			  const struct reg_field *const regfields);
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 208693161e98..31d056d56f87 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -112,8 +112,6 @@ config NET_DSA_TAG_OCELOT
- 
- config NET_DSA_TAG_OCELOT_8021Q
- 	tristate "Tag driver for Ocelot family of switches, using VLAN"
--	depends on MSCC_OCELOT_SWITCH_LIB || \
--	          (MSCC_OCELOT_SWITCH_LIB=n && COMPILE_TEST)
- 	help
- 	  Say Y or M if you want to enable support for tagging frames with a
- 	  custom VLAN-based header. Frames that require timestamping, such as
-diff --git a/net/dsa/tag_ocelot_8021q.c b/net/dsa/tag_ocelot_8021q.c
-index 1e4e66ea6796..d05c352f96e5 100644
---- a/net/dsa/tag_ocelot_8021q.c
-+++ b/net/dsa/tag_ocelot_8021q.c
-@@ -10,10 +10,31 @@
-  */
- #include <linux/dsa/8021q.h>
- #include <linux/dsa/ocelot.h>
--#include <soc/mscc/ocelot.h>
--#include <soc/mscc/ocelot_ptp.h>
- #include "dsa_priv.h"
- 
-+static struct sk_buff *ocelot_defer_xmit(struct dsa_port *dp,
-+					 struct sk_buff *skb)
-+{
-+	struct felix_deferred_xmit_work *xmit_work;
-+	struct felix_port *felix_port = dp->priv;
-+
-+	xmit_work = kzalloc(sizeof(*xmit_work), GFP_ATOMIC);
-+	if (!xmit_work)
-+		return NULL;
-+
-+	/* Calls felix_port_deferred_xmit in felix.c */
-+	kthread_init_work(&xmit_work->work, felix_port->xmit_work_fn);
-+	/* Increase refcount so the kfree_skb in dsa_slave_xmit
-+	 * won't really free the packet.
-+	 */
-+	xmit_work->dp = dp;
-+	xmit_work->skb = skb_get(skb);
-+
-+	kthread_queue_work(felix_port->xmit_worker, &xmit_work->work);
-+
-+	return NULL;
++	WARN_ONCE(!skb_match,
++		  "Could not find skb clone in TX timestamping list\n");
 +}
 +
- static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 				   struct net_device *netdev)
- {
-@@ -21,18 +42,9 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
- 	u16 queue_mapping = skb_get_queue_mapping(skb);
- 	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
--	struct ocelot *ocelot = dp->ds->priv;
--	int port = dp->index;
--	u32 rew_op = 0;
+ #define work_to_xmit_work(w) \
+ 		container_of((w), struct felix_deferred_xmit_work, work)
  
--	rew_op = ocelot_ptp_rew_op(skb);
--	if (rew_op) {
--		if (!ocelot_can_inject(ocelot, 0))
--			return NULL;
--
--		ocelot_port_inject_frame(ocelot, port, 0, rew_op, skb);
--		return NULL;
--	}
-+	if (ocelot_ptp_rew_op(skb))
-+		return ocelot_defer_xmit(dp, skb);
- 
- 	return dsa_8021q_xmit(skb, netdev, ETH_P_8021Q,
- 			      ((pcp << VLAN_PRIO_SHIFT) | tx_vid));
+@@ -1097,6 +1124,7 @@ static void felix_port_deferred_xmit(struct kthread_work *work)
+ 	if (!retries) {
+ 		dev_err(ocelot->dev, "port %d failed to inject skb\n",
+ 			port);
++		ocelot_port_purge_txtstamp_skb(ocelot, port, skb);
+ 		kfree_skb(skb);
+ 		return;
+ 	}
 -- 
 2.25.1
 
