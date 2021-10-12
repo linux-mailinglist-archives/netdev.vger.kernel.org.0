@@ -2,91 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E6D642AF81
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 00:09:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51B4142AF85
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 00:09:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235638AbhJLWLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 18:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232260AbhJLWLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 18:11:17 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B64C061570
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 15:09:15 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id e144so583195iof.3
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 15:09:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=psPAB9NqHofPPQuOtyDnz2jywzmWciM0sLALrIheAbI=;
-        b=URBTfdNwpUSWvtrPTODaB7vJFPkhRo1Rkd9rNodo5Kt6uwiqdXAMbU5viCLd51sE2x
-         ki0UTxvWlL1Z94dU99QQMKtmkRg3s6M4bgKVG++31/w0Q6hmDONC9Ob9PIDPl6t3X/AK
-         IyYWmt1Le8Cd1JXrkupI2CsJ0KmkyX1Us7ZkwjnKtYxBcBuNBSrUBumdmY2EI+HSxtij
-         lYj9F/O2cQmafshbyFI+ayJ7tTBtlYN91XsJix2kaWHZqGimxeKfvSGAzeuGi9Un83L8
-         2127/jAgWPBIT3ArdW4YlNO7w/upI95SOH+HNOW3AEXtZh90CS1F8HJRCoRcIjB/EfwZ
-         lDug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=psPAB9NqHofPPQuOtyDnz2jywzmWciM0sLALrIheAbI=;
-        b=xfE36bJdjcD5+HQ0MFSxm/t4mXQOb5IH4mg31jpaFGZy9XklyJ3eiCJzOEcyoNW0Ya
-         lNcW2t2sNGePiGSLYZPFhVUatFtH46CPs+N1F68IFHkO4D99IGYDVhFOea5pa4G3nt7z
-         48Cj/8guR4668v/hQptoKSkIFGsHOjNWs8dQf51DCXvNMiaCI1QjiAm+niPcOSXMrtZ+
-         gjq6Uv1E8TnfhPP3VCYb34htSQoaP+A8e+IGfmDSKgu+R/tK8i0SepwYjBTayVj+fazC
-         hFvZwYBiI4KTrClEO0VvRrzSBK7Pb4Tx28PuamnCDIW2KDhe2MdSd4QxZIAU0ijxhj9K
-         niwg==
-X-Gm-Message-State: AOAM532t8X5ynhtrZNhAc3COXJd8zw1RNZrUcrm4bwzS+D3fpPMdNt3v
-        JhP/7fisHR8ScSAdxNF3JpgtS7E1vi53sYeOnTI=
-X-Google-Smtp-Source: ABdhPJzyC+CynmQiBj+/GHdgA3gm6fobJNXyo9hJSjKraTUjszhs0FRwTm+Il35h8FqKcpDPupo9Z4JcbsKcgPJO/jM=
-X-Received: by 2002:a05:6602:1542:: with SMTP id h2mr15243521iow.198.1634076554846;
- Tue, 12 Oct 2021 15:09:14 -0700 (PDT)
+        id S234110AbhJLWLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 18:11:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54586 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229588AbhJLWLy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 18:11:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0E79560E09;
+        Tue, 12 Oct 2021 22:09:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634076592;
+        bh=Y1NkK8iLTK6kvXxxpMk61cGn0BzlPJPEU6lzn0wGy0c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=c01yyjCxhckKy80EzKIWk1UVLYemYLT744KNY0rRG9GsPXo/aZ8Uzz7D2libvN21V
+         2HyClMsev9rU31iNQGAPXHRcWRc0q/PVDDFGW1BnjCGFQx6F6RIn/kjXAylLxfM9Cr
+         HJbYcicPvZTaMrMOowuINtd3P3tAne6OPK4cj8nadciJA0W3nYqqsghCYxFCrmGFtY
+         Z2SbRwM9pw/5OD2UpybqQTVkRFsxdSR/XmlbESV4Z7+3uZ1yB82wtMb7D6tHbn9Idq
+         dZ0/qPtlgIERcyAjrSgpZbEPpWOZxBcaylw2wl1RwQsUivl6/7XxJ1fobnrucVbdPI
+         oZfAM2yJeEpeA==
+Date:   Tue, 12 Oct 2021 15:09:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ralf Baechle <ralf@linux-mips.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Christoph Hellwig <hch@lst.de>,
+        Thomas Osterried <thomas@osterried.de>,
+        linux-hams@vger.kernel.org
+Subject: Re: [PATCH 2/2] ax25: Fix deadlock hang during concurrent read and
+ write on socket.
+Message-ID: <20211012150951.24a33ce4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <4a2f53386509164e60531750a02480a4c032d51a.1634069168.git.ralf@linux-mips.org>
+References: <2dea23e9208d008e74faddf92acf4ef557f97a85.1634069168.git.ralf@linux-mips.org>
+        <4a2f53386509164e60531750a02480a4c032d51a.1634069168.git.ralf@linux-mips.org>
 MIME-Version: 1.0
-Received: by 2002:a05:6e04:228a:0:0:0:0 with HTTP; Tue, 12 Oct 2021 15:09:14
- -0700 (PDT)
-Reply-To: patzengu@outlook.com
-From:   Patrice Zengu <rm2568590@gmail.com>
-Date:   Wed, 13 Oct 2021 00:09:14 +0200
-Message-ID: <CADgyfhaUNt8wOZbU=RqdwWbGaP7378NevThfddd7bzsntf=4Hg@mail.gmail.com>
-Subject: i need your co-operation
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear Friend,
+On Tue, 12 Oct 2021 22:05:30 +0200 Ralf Baechle wrote:
+> From: Thomas Habets <thomas@habets.se>
+>=20
+> Before this patch, this hangs, because the read(2) blocks the
+> write(2).
 
-I am Mr.Patrice Zengu ,from Burkina Faso and i am the new bank telex
-manager of our bank here in Africa.
+Still build issues:
 
-I have the opportunity to transfer the sum of US$ 10.5Million to your
-bank account which i personally placed on an Escrow account without a
-name.
-
-I must tell you that after revision of files both old and new as the
-new telex manager ,i discovered that if these funds remains here
-without transferring it offshore,it will be lawfully recovered
-andmoved to the  Government of Burkina Faso treasury as an abandoned
-funds without any name.
-
-I want to let you know that a Burkinabe cannot stand as the depositor
-of these US dollars  since we are not allowed to operate on foreign
-currrency.I do not intend to work  and stay in Africa till the rest of
-my life.
-
-Moreso,i will not want my bank to know about these funds and if they
-happens to know probably,the funds will be moved to the Burkina Faso
-Government public treasury as an abandoned funds.
-
-I will furnish you with more details of this transfer and how it ca
-nbe perfectly and legally executed without any hitch since i am now in
-control.
-
-I am waiting to hear from you urgently to proceed.
-
-
-Yours sincerely,
-Mr.Patrice Zengu.
+net/ax25/af_ax25.c: In function =E2=80=98ax25_recvmsg=E2=80=99:
+net/ax25/af_ax25.c:1685:1: warning: label =E2=80=98out=E2=80=99 defined but=
+ not used [-Wunused-label]
+ 1685 | out:
+      | ^~~
+net/ax25/af_ax25.c:1685:1: warning: unused label 'out'
