@@ -2,84 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 677B142A43B
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 14:19:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC4AB42A4AE
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 14:38:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236322AbhJLMV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 08:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236196AbhJLMVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 08:21:22 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D86EC061570;
-        Tue, 12 Oct 2021 05:19:21 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id r10so66435053wra.12;
-        Tue, 12 Oct 2021 05:19:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=03i5veaw+3wEhcIVcLi8yrVX1/lz5YJgt5bBwuuFTcY=;
-        b=AKIZWvlnCP1Vl+qMMA1/pdRLrjBJT+LymaZz+D0eNAKccfy9KX08xq5M13QUhdhUGN
-         3Uwh1rG1TKQ0FOH9IS2Ai+IZXCiu+UkFf9364rFDTBevSaYpPmRatqTb4IBoHeYI4RJE
-         yXVXnKNbtJc7ppQeFaskD/5HSVjP9dsNq9wJe02g30OQXMOh2N/cDdVPTHXsbLE65OSl
-         lRLX78LAnMA1Vq3W2tQYgdb5qbzlGuKe88eKnXDaRy6lAvuqFmIKo3cwqtvJOBWFZwWX
-         Qir8tDRhXuMTzgXjO2T3KL4YkZTeuhjqtwL1rVhlHh19l7gtbWRTmJLE2TsULecJXLRA
-         niFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=03i5veaw+3wEhcIVcLi8yrVX1/lz5YJgt5bBwuuFTcY=;
-        b=1xgZPSxalwuh2IdECeUfBg6eKL+2+4K1cec6k0lHLjbYxQbal4M9YAsz0eQhxzj+N7
-         E5UTeH5ZNQogsszmZoS1EAwoKgx/iCrTQnE+bZSbOGJh8BsZ/sFVwVNqKrXQYwof6BxH
-         /Io72D+LltYKnkFAZtu+hwz6lN763YGwM6KFfiUfcwH29lJ9wEWjnjurMVtQTzx5uo1V
-         zuEKb1t9dUouWvihAMsSLVCaihoDBYRJrDXFeE58p3Axkf6L9rJjl5vCJUpbqK4Wu/Wk
-         U+HKLHqEZcJv5bPmG2kRnYoZNBD4RNCDn0i9laC2d9D5yuNEVoCKJjvrb4OxEXpRaBiU
-         j6pA==
-X-Gm-Message-State: AOAM532EnhFG4rUw/2Iq0Buk80sgKiwHNZu15ZRB4Kno4BioBLvmTuI1
-        sT0qTytKRolB6evoKO9jxaDXnUKLcIsB2JuCWjE=
-X-Google-Smtp-Source: ABdhPJyVi1rE9sDedLQwt/ftkfJjClojCOo4wMCVbGzQjCiBYHAC+JLedDwCLwSii0ypJ+X6RTpub0kRbFrT8j6lwcI=
-X-Received: by 2002:a1c:4b15:: with SMTP id y21mr5129300wma.4.1634041159681;
- Tue, 12 Oct 2021 05:19:19 -0700 (PDT)
+        id S236595AbhJLMjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 08:39:44 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:38468 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236535AbhJLMjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 08:39:14 -0400
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19CB4EVX025551;
+        Tue, 12 Oct 2021 08:36:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=N/oQw61XSfsHTPLzRuzCMqE363lBiTZg1nWSHVzFm2o=;
+ b=cyGjr5WCW3bIjs6qjBqvt/aNfG5/tHXDimYPreaDNSsGPmMZmocfBNjc866diugqoC4d
+ jL1LkFIqHS6ulXQek+3R/froEUT57vAbF2mVYtewbNuBcp+AkuURxz+6M07GX86hGIg0
+ 2OvtY6yKBr3GZQQLY6GoppjmQhpbyqiggAegWEZfR3yoKcxEOuwcFrnZCH2EvD8Wrixc
+ qY/T21V6IRATCQrAMuGJvS8Xq2whajMliN3bW6nqbFPSf2nnjuO7Czm6x0Vs0RACP7dh
+ CClvY7B5xpacoyivKlWBExgIRJP6cZOAuLQszjM+yRWFRvuajeSe0r52ZTYiKjMLov/i 1A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3bn0x2v2m1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Oct 2021 08:36:42 -0400
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 19CCINrQ002407;
+        Tue, 12 Oct 2021 08:36:40 -0400
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3bn0x2v2j1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Oct 2021 08:36:40 -0400
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 19CCDqpS029292;
+        Tue, 12 Oct 2021 12:31:37 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06ams.nl.ibm.com with ESMTP id 3bk2bj8hkj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Oct 2021 12:31:36 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 19CCVNAW52494830
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Oct 2021 12:31:23 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2C037A405E;
+        Tue, 12 Oct 2021 12:31:23 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E167FA407D;
+        Tue, 12 Oct 2021 12:31:07 +0000 (GMT)
+Received: from hbathini-workstation.ibm.com.com (unknown [9.43.27.69])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 12 Oct 2021 12:31:07 +0000 (GMT)
+From:   Hari Bathini <hbathini@linux.ibm.com>
+To:     naveen.n.rao@linux.ibm.com, christophe.leroy@csgroup.eu,
+        mpe@ellerman.id.au, ast@kernel.org, daniel@iogearbox.net
+Cc:     paulus@samba.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Hari Bathini <hbathini@linux.ibm.com>
+Subject: [RESEND PATCH v4 0/8] bpf powerpc: Add BPF_PROBE_MEM support in powerpc JIT compiler
+Date:   Tue, 12 Oct 2021 18:00:48 +0530
+Message-Id: <20211012123056.485795-1-hbathini@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: J7roR7WtHHmlrd6HhJXQVmO527xKLI8E
+X-Proofpoint-GUID: LuoesbDpX86Vlo3-kzooh5QvXBj9_-HF
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <346934f2ad88d64589fa9a942aed844443cf7110.1634028240.git.lucien.xin@gmail.com>
- <20211012100204.GB2942@breakpoint.cc> <YWVjtzBnhsB83H7R@salvia>
-In-Reply-To: <YWVjtzBnhsB83H7R@salvia>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 12 Oct 2021 20:19:08 +0800
-Message-ID: <CADvbK_fnw0jQNSijB5a4SRxgYPx0jpz83etT__gC8N=cFdQ2cQ@mail.gmail.com>
-Subject: Re: [PATCH nf] netfilter: ip6t_rt: fix rt0_hdr parsing in rt_mt6
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        network dev <netdev@vger.kernel.org>,
-        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-12_03,2021-10-12_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
+ mlxlogscore=866 adultscore=0 malwarescore=0 phishscore=0
+ priorityscore=1501 bulkscore=0 lowpriorityscore=0 suspectscore=0
+ impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2110120073
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 12, 2021 at 6:30 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
->
-> On Tue, Oct 12, 2021 at 12:02:04PM +0200, Florian Westphal wrote:
-> > Xin Long <lucien.xin@gmail.com> wrote:
-> > > In rt_mt6(), when it's a nonlinear skb, the 1st skb_header_pointer()
-> > > only copies sizeof(struct ipv6_rt_hdr) to _route that rh points to.
-> > > The access by ((const struct rt0_hdr *)rh)->reserved will overflow
-> > > the buffer. So this access should be moved below the 2nd call to
-> > > skb_header_pointer().
-> > >
-> > > Besides, after the 2nd skb_header_pointer(), its return value should
-> > > also be checked, othersize, *rp may cause null-pointer-ref.
-> >
-> > Patch looks good but I think you can just axe these pr_debug statements
-> > instead of moving them.
-> >
-> > Before pr_debug conversion these statments were #if-0 out, I don't think
-> > they'll be missed if they are removed.
->
-> Agreed.
-Posted v2. Thanks.
+Patch #1 & #2 are simple cleanup patches. Patch #3 refactors JIT
+compiler code with the aim to simplify adding BPF_PROBE_MEM support.
+Patch #4 introduces PPC_RAW_BRANCH() macro instead of open coding
+branch instruction. Patch #5 & #7 add BPF_PROBE_MEM support for PPC64
+& PPC32 JIT compilers respectively. Patch #6 & #8 handle bad userspace
+pointers for PPC64 & PPC32 cases respectively.
+
+
+Resending v4 after rebasing the series on top of bpf fix patches
+posted by Naveen:
+
+  - https://patchwork.ozlabs.org/project/linuxppc-dev/cover/cover.1633464148.git.naveen.n.rao@linux.vnet.ibm.com/
+    ("[v2,00/10] powerpc/bpf: Various fixes")
+
+Also, added Reviewed-by tag from Christophe for patches #3, #5, #6, #7 & #8.
+
+
+Hari Bathini (4):
+  bpf powerpc: refactor JIT compiler code
+  powerpc/ppc-opcode: introduce PPC_RAW_BRANCH() macro
+  bpf ppc32: Add BPF_PROBE_MEM support for JIT
+  bpf ppc32: Access only if addr is kernel address
+
+Ravi Bangoria (4):
+  bpf powerpc: Remove unused SEEN_STACK
+  bpf powerpc: Remove extra_pass from bpf_jit_build_body()
+  bpf ppc64: Add BPF_PROBE_MEM support for JIT
+  bpf ppc64: Access only if addr is kernel address
+
+ arch/powerpc/include/asm/ppc-opcode.h |   2 +
+ arch/powerpc/net/bpf_jit.h            |  17 ++++-
+ arch/powerpc/net/bpf_jit_comp.c       |  68 +++++++++++++++--
+ arch/powerpc/net/bpf_jit_comp32.c     | 101 ++++++++++++++++++++++----
+ arch/powerpc/net/bpf_jit_comp64.c     |  72 ++++++++++++++----
+ 5 files changed, 219 insertions(+), 41 deletions(-)
+
+-- 
+2.31.1
+
