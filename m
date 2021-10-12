@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4178E42A861
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:37:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4219242A865
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:38:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237167AbhJLPjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 11:39:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57836 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237516AbhJLPio (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 11:38:44 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0A61A60F3A;
-        Tue, 12 Oct 2021 15:36:40 +0000 (UTC)
-Date:   Tue, 12 Oct 2021 11:36:39 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     David Laight <David.Laight@ACULAB.COM>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Paul <paulmck@linux.vnet.ibm.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Joel Fernandes, Google" <joel@joelfernandes.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
+        id S237422AbhJLPkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 11:40:52 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:42155 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237218AbhJLPkt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 11:40:49 -0400
+Received: from smtpclient.apple (p4fefcb73.dip0.t-ipconnect.de [79.239.203.115])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 20798CECE1;
+        Tue, 12 Oct 2021 17:38:46 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Re: [PATCH] Bluetooth: hci_sock: purge socket queues in the
+ destruct() callback
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20211007190424.196281-1-phind.uet@gmail.com>
+Date:   Tue, 12 Oct 2021 17:38:45 +0200
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, rcu <rcu@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        coreteam <coreteam@netfilter.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC][PATCH] rcu: Use typeof(p) instead of typeof(*p) *
-Message-ID: <20211012113639.4c53805e@gandalf.local.home>
-In-Reply-To: <364516086.11428.1634048283470.JavaMail.zimbra@efficios.com>
-References: <20211005094728.203ecef2@gandalf.local.home>
-        <505004021.2637.1633446912223.JavaMail.zimbra@efficios.com>
-        <4dbff8032f874a6f921ba0555c94eeaf@AcuMS.aculab.com>
-        <364516086.11428.1634048283470.JavaMail.zimbra@efficios.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
 Content-Transfer-Encoding: 7bit
+Message-Id: <8C82DF3C-98B1-4C41-B9D8-3415DD64138F@holtmann.org>
+References: <20211007190424.196281-1-phind.uet@gmail.com>
+To:     Nguyen Dinh Phi <phind.uet@gmail.com>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Oct 2021 10:18:03 -0400 (EDT)
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
+Hi Nguyen,
 
-> As Linus pointed out, it might indeed be simpler to just keep declaring the structure in
-> public headers.
+> The receive path may take the socket right before hci_sock_release(),
+> but it may enqueue the packets to the socket queues after the call to
+> skb_queue_purge(), therefore the socket can be destroyed without clear
+> its queues completely.
+> 
+> Moving these skb_queue_purge() to the hci_sock_destruct() will fix this
+> issue, because nothing is referencing the socket at this point.
+> 
+> Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+> Reported-by: syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
+> ---
+> net/bluetooth/hci_sock.c | 11 +++++++----
+> 1 file changed, 7 insertions(+), 4 deletions(-)
 
-I solved this by creating a separate header for the nasty structure, but
-it's still public for all references.
+patch has been applied to bluetooth-next tree.
 
--- Steve
+Regards
+
+Marcel
+
