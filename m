@@ -2,158 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 359D242A024
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 10:43:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE81042A02B
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 10:43:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235236AbhJLIpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 04:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232440AbhJLIpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 04:45:13 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5634DC061570
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 01:43:12 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id m13so11471437qvk.1
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 01:43:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KBeY5W1FSSoiZGx9cIzZiko539gaDiTJrcfwH0Y0wmM=;
-        b=axWxJY9VS7BVvxEdsa1zz2uogoSlGNxZ6lVvHLbvDthiT/5Qi2C5CubTy9nrDK/R6+
-         dtlY9E8Zcee/c/2sIEducORwWrBqv93mJLCCEjKywrNqgq4pytslfS+v6KnlHdDD/9sg
-         Q4dAV5jUz/lGQSkg38PrSLl6gmzjlhCJI1KI5MkNdmdlEK6+IWNjrexovkrU5sBhM1fS
-         opsvEoQaEYtN/zMv3fIWqYqXZwdp/e7/o3xssWedfVHlgn3ASatb4a8+e6cz9E2nDUHx
-         IQ89TSb+ngovCJhTGwR/US0qETyLQlERC290y85YQ4wPw3n8ibMXrCUwXHZguXZtkaw6
-         pIHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KBeY5W1FSSoiZGx9cIzZiko539gaDiTJrcfwH0Y0wmM=;
-        b=u1R64IdYxXVX4ohOJDlXvZ1Ii+mNR05gYuUkjuZHoG3YeMzbtQiIOTF5p5ppd2jp01
-         5S68zsrjShrJIIoYyEFYEDorgzbSuiN1xKcl1iFAyk1qWse3ohiicUN3+yzo9MBojc5D
-         kHqTvf/V2g97HZnLM2QgbIBOxYd4WhcGXxFiKaLhMXpKEXQxjZdTm/MfaKJoO/5OfluF
-         dEvQQEY9KvbcG9JGEnAZ+ki8v0dibfOOB8LoUZXE+2lw5irdY4lps4Ry0BL4KsgGW45w
-         FsGNrU/Q5BUA2letcOWOBOvYM5tzeRw1zgnF2O+lWGerEEwyIuXj4nxjaTfCUj8VbhZ3
-         nrVQ==
-X-Gm-Message-State: AOAM531vlaysVeRveejNHPjTge1iaIAkgZw7bH+PPs/sd07P1dkrcOoC
-        YfuHtmMoOJZze9q/7bmbsIIvt4QsfdscSw==
-X-Google-Smtp-Source: ABdhPJw0dAwxvQ7v+qUdBYYwY9/bVlPu4F5WChTm//FXHeRogG/s/eFBse79L9wz05atdcYZkP9iIQ==
-X-Received: by 2002:ad4:4421:: with SMTP id e1mr15320428qvt.66.1634028191268;
-        Tue, 12 Oct 2021 01:43:11 -0700 (PDT)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id a3sm6396722qta.48.2021.10.12.01.43.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Oct 2021 01:43:10 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Andreas Roeseler <andreas.a.roeseler@gmail.com>
-Subject: [PATCH net] icmp: fix icmp_ext_echo_iio parsing in icmp_build_probe
-Date:   Tue, 12 Oct 2021 04:43:07 -0400
-Message-Id: <61b6693f08f4f96f00cdeb2b8c78568e39f85029.1634028187.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S235257AbhJLIpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 04:45:51 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:27806 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234611AbhJLIpu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 04:45:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1634028224;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=oICanehRZg82dw1asdlmnqvCvX+rTSrsFz+ERtaRocs=;
+    b=rprOtrQPIFnqkl88wQKIIwGK3SFmMXfPbv6xeqppPdZCUJuPmgI4YJAUg7Zv+i8Xv1
+    RjYv8H6vcHm9g6b7t32IuaHr/MGF1RfJp33oXlx9N54DMRJ+3Ureb30gBMLKUYw7d/D/
+    I7QLwUTjFkND2TKilcMuhbhz9wdE/o55D010a3pQMIsKjC21tx/XM6/EVXBl38hEecmm
+    vIZKBsW6u7RN6yXpD0cg0PKWSJ5zpfec+fndNjNgkjoyXrkz5CZ5bOL4Nx8L5UKgBzyW
+    p1r99V2AFCFJpVScUlpoHIRFkk/tKOVv2ytVfBOvs7Yq/4aLArb/+O8MiwH6jwn6Vt4O
+    EhbA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u261EJF5OxJD4pSA8p7h"
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net
+    by smtp.strato.de (RZmta 47.33.8 SBL|AUTH)
+    with ESMTPSA id 301038x9C8hgyWn
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 12 Oct 2021 10:43:42 +0200 (CEST)
+Date:   Tue, 12 Oct 2021 10:43:41 +0200
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        dmaengine@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Subject: Re: [PATCH net-next v2 4/4] net: wwan: Add Qualcomm BAM-DMUX WWAN
+ network driver
+Message-ID: <YWVKvTzohFCaZalj@gerhold.net>
+References: <20211011141733.3999-1-stephan@gerhold.net>
+ <20211011141733.3999-5-stephan@gerhold.net>
+ <YWRPXnzh+NLVqHvo@gerhold.net>
+ <CAMZdPi8G5wtcAxTYfzwdJVMauEx+5wk7eqP9VX9QaVqrzsZkEw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMZdPi8G5wtcAxTYfzwdJVMauEx+5wk7eqP9VX9QaVqrzsZkEw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In icmp_build_probe(), the icmp_ext_echo_iio parsing should be done
-step by step and skb_header_pointer() return value should always be
-checked, this patch fixes 3 places in there:
+On Tue, Oct 12, 2021 at 09:55:48AM +0200, Loic Poulain wrote:
+> Hi Stephan,
+> 
+> On Mon, 11 Oct 2021 at 16:51, Stephan Gerhold <stephan@gerhold.net> wrote:
+> > > Like in the RFC version [1], the driver does not currently use the link
+> > > management of the WWAN subsystem. Instead, it simply exposes one network
+> > > interface for each of the up to 8 channels.
+> > >
+> > > This setup works out of the box with all available open-source userspace
+> > > WWAN implementations, especially ModemManager (no changes needed).
+> > > oFono works too although it requires minor changes to support WWAN control
+> > > ports (/dev/wwan0qmi0) which are independent of BAM-DMUX (already provided
+> > > by the "rpmsg_wwan_ctrl" driver).
+> > > It was easy to support because the setup is very similar to ones already
+> > > supported for USB modems. Some of them provide multiple network interfaces
+> > > and ModemManager can bundle them together to a single modem.
+> > >
+> > > I believe it is best to keep this setup as-is for now and not add even
+> > > more complexity to userspace with another setup that works only in this
+> > > particular configuration. I will reply to this patch separately to explain
+> > > that a bit more clearly. This patch is already long enough as-is. :)
+> > >
+> > > [1]: https://lore.kernel.org/netdev/20210719145317.79692-5-stephan@gerhold.net/
+> > >
+> >
+> > The main goal of the WWAN link management is to make the multiplexing
+> > setup transparent to userspace. Unfortunately it's still unclear to me
+> > how or even if this can be achieved for the many different different
+> > setups that exist for Qualcomm modems. To show that more clearly I'll
+> > "briefly" list the various currently supported setups in ModemManager
+> > (there might be even more that I am not even aware of).
+> 
+> The goal is also to have a common hierarchy, with the network link
+> being a child of the WWAN device, as for the control ports. Making it
+> easier for the user side to find the relation between all these
+> devices. Moreover, it allows having a common set of attributes, like
+> the LINK ID, and possibly new ones in the future. I mean it's probably
+> fine if you create a static set of network devices and do not support
+> dynamic link creation, but I think they should be created in some way
+> via the WWAN subsystem, and get the same attributes (link id), we can
+> have special meaning link ids (-1) for e.g. non context specific
+> netdevs (e.g. for rmnet/qmap transport iface).
+> 
 
-  - On case ICMP_EXT_ECHO_CTYPE_NAME, it should only copy ident.name
-    from skb by skb_header_pointer(), its len is ident_len. Besides,
-    the return value of skb_header_pointer() should always be checked.
+At the moment, my driver makes the link IDs available via "dev_port".
+I think this was also suggested for the WWAN subsystem at some point. [1]
 
-  - On case ICMP_EXT_ECHO_CTYPE_INDEX, move ident_len check ahead of
-    skb_header_pointer(), and also do the return value check for
-    skb_header_pointer().
+If we skip the dynamic link creation as a first step, but want to create
+the network device below the WWAN parent device, the main problem that
+remains is that there is currently no good way to get the driver that
+provides the network interfaces. The common WWAN parent device in my
+case is the device that represents the modem remote processor, but this
+is not enough to identify "bam-dmux".
 
-  - On case ICMP_EXT_ECHO_CTYPE_ADDR, before accessing iio->ident.addr.
-    ctype3_hdr.addrlen, skb_header_pointer() should be called first,
-    then check its return value and ident_len.
-    On subcases ICMP_AFI_IP and ICMP_AFI_IP6, also do check for ident.
-    addr.ctype3_hdr.addrlen and skb_header_pointer()'s return value.
-    On subcase ICMP_AFI_IP, the len for skb_header_pointer() should be
-    "sizeof(iio->extobj_hdr) + sizeof(iio->ident.addr.ctype3_hdr) +
-    sizeof(struct in_addr)" or "ident_len".
+Userspace needs to know which driver it is dealing with to set up the
+multiplexing correctly via QMI. (The QMI message is different for
+BAM-DMUX and e.g. rmnet).
 
-Fixes: d329ea5bd884 ("icmp: add response to RFC 8335 PROBE messages")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/ipv4/icmp.c | 32 +++++++++++++++++++++-----------
- 1 file changed, 21 insertions(+), 11 deletions(-)
+I guess if the goal is only to have a common hierarchy (and not
+necessarily to have multiplexing entirely transparent to userspace),
+it is not too bad to make the driver that provides the ports somehow
+available to userspace. Perhaps via some extra sysfs attribute.
+What do you think?
 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 8b30cadff708..818c79266c48 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -1061,38 +1061,48 @@ bool icmp_build_probe(struct sk_buff *skb, struct icmphdr *icmphdr)
- 	dev = NULL;
- 	switch (iio->extobj_hdr.class_type) {
- 	case ICMP_EXT_ECHO_CTYPE_NAME:
--		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(_iio), &_iio);
- 		if (ident_len >= IFNAMSIZ)
- 			goto send_mal_query;
-+		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr) +
-+					 ident_len, &_iio);
-+		if (!iio)
-+			goto send_mal_query;
- 		memset(buff, 0, sizeof(buff));
- 		memcpy(buff, &iio->ident.name, ident_len);
- 		dev = dev_get_by_name(net, buff);
- 		break;
- 	case ICMP_EXT_ECHO_CTYPE_INDEX:
--		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr) +
--					 sizeof(iio->ident.ifindex), &_iio);
- 		if (ident_len != sizeof(iio->ident.ifindex))
- 			goto send_mal_query;
-+		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr) +
-+					 ident_len, &_iio);
-+		if (!iio)
-+			goto send_mal_query;
- 		dev = dev_get_by_index(net, ntohl(iio->ident.ifindex));
- 		break;
- 	case ICMP_EXT_ECHO_CTYPE_ADDR:
--		if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
--				 iio->ident.addr.ctype3_hdr.addrlen)
-+		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr) +
-+					 sizeof(iio->ident.addr.ctype3_hdr), &_iio);
-+		if (!iio || ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
-+					 iio->ident.addr.ctype3_hdr.addrlen)
- 			goto send_mal_query;
- 		switch (ntohs(iio->ident.addr.ctype3_hdr.afi)) {
- 		case ICMP_AFI_IP:
-+			if (iio->ident.addr.ctype3_hdr.addrlen != sizeof(struct in_addr))
-+				goto send_mal_query;
- 			iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr) +
--						 sizeof(struct in_addr), &_iio);
--			if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
--					 sizeof(struct in_addr))
-+						 ident_len, &_iio);
-+			if (!iio)
- 				goto send_mal_query;
- 			dev = ip_dev_find(net, iio->ident.addr.ip_addr.ipv4_addr);
- 			break;
- #if IS_ENABLED(CONFIG_IPV6)
- 		case ICMP_AFI_IP6:
--			iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(_iio), &_iio);
--			if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
--					 sizeof(struct in6_addr))
-+			if (iio->ident.addr.ctype3_hdr.addrlen != sizeof(struct in6_addr))
-+				goto send_mal_query;
-+			iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr) +
-+						 ident_len, &_iio);
-+			if (!iio)
- 				goto send_mal_query;
- 			dev = ipv6_stub->ipv6_dev_find(net, &iio->ident.addr.ip_addr.ipv6_addr, dev);
- 			dev_hold(dev);
--- 
-2.27.0
+Also note that a common hierarchy for all configurations is not possible
+unless someone finds a solution to integrate the QRTR network sockets
+into the WWAN subsystem. This is primarily relevant for the IPA driver,
+but there are some SoCs with QRTR + BAM-DMUX as well. This will only
+work in my case because I only work on "older" SoCs where QMI can still
+go via the RPMSG_WWAN_CTRL driver.
 
+Thanks,
+Stephan
+
+[1]: https://lore.kernel.org/netdev/CAMZdPi_e+ibRQiytAYkjo1A9GzLm6Np6Tma-6KMHuWfFcaFsCg@mail.gmail.com/
