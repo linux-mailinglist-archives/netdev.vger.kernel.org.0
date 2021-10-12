@@ -2,90 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7488A42A0E0
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 11:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F8342A0E8
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 11:21:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235009AbhJLJUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 05:20:18 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:49976 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232502AbhJLJUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 05:20:18 -0400
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19C9G5oF017601;
-        Tue, 12 Oct 2021 09:18:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2021-07-09; bh=+aJDxyPICxWH3pewjoI7IFtcJBOOKilVtl3Z+efFcuM=;
- b=sQ/pl7XnP8n07NJVzRhZ6VaoB2ftjWWNcZfZ6mRKgj7MgQOr0vjmIFMPOEo34TAQvrXf
- aAjGCKVH9EtUxjtkhlB+f/wUXDoqyjMXl46rXtbxQaulP0OUDRSKtJv/WQqbGRTrqxdq
- 7sJrFSQ1HRTj0Fegtrd+hLuSY5xmbnUDgbCekjLFsThnUWy1zRJWiymefN6ysBPaSwVJ
- lxmVOg9YBYoTYc1nJLo84TJ/rQvgXatiVmOfafpgoOjg+c5O7l4WJO7hTf4xKNqEUPKX
- E3SLnqh+wkg/nxsf2ffWuPSA+XLDoySXK7xB2xtyo4+ADlbl91+5NNiRTb7uh55Sdxfn sA== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3bmtmk4j8k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Oct 2021 09:18:12 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 19C9EhYO059809;
-        Tue, 12 Oct 2021 09:18:11 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 3bmadxpbqr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Oct 2021 09:18:11 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 19C9Gu75067017;
-        Tue, 12 Oct 2021 09:18:10 GMT
-Received: from t460.home (dhcp-10-175-26-251.vpn.oracle.com [10.175.26.251])
-        by aserp3020.oracle.com with ESMTP id 3bmadxpbpd-1;
-        Tue, 12 Oct 2021 09:18:10 +0000
-From:   Vegard Nossum <vegard.nossum@oracle.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Beniamino Galvani <b.galvani@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] net: arc: select CRC32
-Date:   Tue, 12 Oct 2021 11:15:52 +0200
-Message-Id: <20211012091552.32403-1-vegard.nossum@oracle.com>
-X-Mailer: git-send-email 2.23.0.718.g5ad94255a8
+        id S235450AbhJLJXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 05:23:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57091 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235386AbhJLJXA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 05:23:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634030457;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NQvvX7DYevVvifiKrUIFSDiboyiIsSpy6G0Ys71FCOg=;
+        b=c/qUJUm23gubkCjkKaJTg0BJoNmbmO/zqoqec20IGXYP3x5gtxnGqgbdn1WPt1jjsOy3nJ
+        xoxz4yCVncxZ/nJtPA6Z2MFMYlP6PvogEXXR1pSwklIcT1w2d3SBZOGkPxL16tBOggIz4r
+        r9TWaDid2L5PdXKPWrVuQIkrnWu4kIM=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-513--xYDd7-vNtaIAZ_GZ0nwjQ-1; Tue, 12 Oct 2021 05:20:56 -0400
+X-MC-Unique: -xYDd7-vNtaIAZ_GZ0nwjQ-1
+Received: by mail-wr1-f72.google.com with SMTP id a15-20020a056000188f00b00161068d8461so4927997wri.11
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 02:20:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=NQvvX7DYevVvifiKrUIFSDiboyiIsSpy6G0Ys71FCOg=;
+        b=DhNCSGzwhoDFDSO8FIhr+lVg5tGSF+KBIjJeQun6RVvOzzwNWmSWRtI2Z6vBsG57VO
+         bUM5nMvx/FXoB6YSYCsVH1SYggRRFcGdlKFFP1QgdcnxSFA1GtGOaujMN1SBh78dDxda
+         69R/sfr8upVrz2c32M9Zoyo5O/aDBaOsTRkmiFrvq2MUi39RHP+Z5IjhREmnDTqu2y9k
+         xyLfJ0X8av09YHJYLJdF0SGnSG22pJFiXjWMOkf100D1cwU2MM7XmTlh9GTj9ETbPozR
+         qFdQ/RlSEvq/+iFLkvxysrbhRsgzTn2bQIowPzYWfJM2XPGiJHKkHgg5d2i9yi+JhDLN
+         If7A==
+X-Gm-Message-State: AOAM533tQADNts38gQfcBvJ1CTepwQyZB3yYXR10P5ry2vUQg/J9uakj
+        Xwi8dhHFXayaDJO9JrZoc7bykR02Ug3m/kTDY/a2IeFn6pcE5ZGlCPAo7Z+YHce/jZ/2LjwGqMK
+        HYMdGgI5b+mjbW+7x
+X-Received: by 2002:a1c:a9d5:: with SMTP id s204mr4267003wme.193.1634030455616;
+        Tue, 12 Oct 2021 02:20:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJywk9hzf7x2/zkP49ad7b+yMh+89MNX7bHIg+1V/CfDIKZ/l9tK1gZVUSfBDowQDZu+/gW3aA==
+X-Received: by 2002:a1c:a9d5:: with SMTP id s204mr4266983wme.193.1634030455431;
+        Tue, 12 Oct 2021 02:20:55 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-231-16.dyn.eolo.it. [146.241.231.16])
+        by smtp.gmail.com with ESMTPSA id p11sm2137819wmi.0.2021.10.12.02.20.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Oct 2021 02:20:55 -0700 (PDT)
+Message-ID: <b6441514ee17eb12934dad304854939308f5c4c1.camel@redhat.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in veth_xdp_rcv
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        syzbot <syzbot+67f89551088ea1a6850e@syzkaller.appspotmail.com>
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>
+Date:   Tue, 12 Oct 2021 11:20:53 +0200
+In-Reply-To: <20211011164747.303ffcd0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <000000000000c1524005cdeacc5f@google.com>
+         <20211011164747.303ffcd0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: XPkU9uvITsR9rFUeVwQtcM5Xo4aQ3ISk
-X-Proofpoint-ORIG-GUID: XPkU9uvITsR9rFUeVwQtcM5Xo4aQ3ISk
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following build/link error by adding a dependency on the CRC32
-routines:
+On Mon, 2021-10-11 at 16:47 -0700, Jakub Kicinski wrote:
+> CC: Paolo, Toke
 
-  ld: drivers/net/ethernet/arc/emac_main.o: in function `arc_emac_set_rx_mode':
-  emac_main.c:(.text+0xb11): undefined reference to `crc32_le'
+Thanks for the head-up! will look at this soon.
 
-The crc32_le() call comes through the ether_crc_le() call in
-arc_emac_set_rx_mode().
+Cheers,
 
-Fixes: 775dd682e2b0ec ("arc_emac: implement promiscuous mode and multicast filtering")
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
----
- drivers/net/ethernet/arc/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/arc/Kconfig b/drivers/net/ethernet/arc/Kconfig
-index 37a41773dd435..330185b624d03 100644
---- a/drivers/net/ethernet/arc/Kconfig
-+++ b/drivers/net/ethernet/arc/Kconfig
-@@ -6,6 +6,7 @@
- config NET_VENDOR_ARC
- 	bool "ARC devices"
- 	default y
-+	select CRC32
- 	help
- 	  If you have a network (Ethernet) card belonging to this class, say Y.
- 
--- 
-2.23.0.718.g5ad94255a8
+Paolo
 
