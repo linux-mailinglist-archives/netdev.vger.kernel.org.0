@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FFA142A597
+	by mail.lfdr.de (Postfix) with ESMTP id 8AFB342A599
 	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:25:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236601AbhJLN1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 09:27:54 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:46913 "EHLO
+        id S236767AbhJLN1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 09:27:55 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:51283 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233296AbhJLN1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:27:52 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 60B9C5C01A8;
-        Tue, 12 Oct 2021 09:25:50 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S236626AbhJLN1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:27:54 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id AF9EE5C0176;
+        Tue, 12 Oct 2021 09:25:52 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Tue, 12 Oct 2021 09:25:50 -0400
+  by compute4.internal (MEProxy); Tue, 12 Oct 2021 09:25:52 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=vbbra7uJyfw5gdFa8
-        XXxhbxa+49epWQxU0iD2HtFREk=; b=CkveQvlPurneq1ErEd5/1SExY7DT+Mno+
-        Z7/Jf6GCmGid5RaajTeBlo33+6xSMwlbj6Fc+N9cvBCUiFmrA7ph4r8mB2YwOTvO
-        NyTnJNoHL/5rQ7+OaHsBP+HWEBuLQ/QP8fBG8RI49QFWJUAvLFUbN+YlWv2tmU6y
-        BQmeT4XyOjZZp8QTBEcWF9njB1AOcGRKdkPiD9KnrvGxTyclaLgGkv5OjQbXqwgb
-        DTTbnINL09BWn0bBFmbBvuPpqH4XRgToiANa6wh01J70A14xYp8hRXMw2mEU7RvC
-        uB1eB91+In3vVZHAHqo87+En8h7GiQTdI/60hdYd5T8C9DEt8R14w==
-X-ME-Sender: <xms:3YxlYaUqNXP9nxulRNLbZwCbyDRdDaQ0K3RLz8ytvDL0tSyAAADw2w>
-    <xme:3YxlYWmCBYBBJjyTBg_SgOhsc7H-QN3w_poGlwEIppBQvjOQ-q_9naje2_eEnrr3K
-    Euri_4FdyUDPTU>
-X-ME-Received: <xmr:3YxlYeY0r7NG8Y-9NrouEHUpYkoUyG1n6IiT6x0BlmNxsx-4gnkxwNv3Ev8ji1Q5TUZXjnhMNm0bmh7y4iMI4Q3c3weGdhTK7TD5afRv9olXFA>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=Auc3LZ98p3kqT/ly0kMdqYJd0QUoNR9OPLaUEumg1EE=; b=DdKqxxcm
+        d9V2GhUr6xNwcOyTl5sis5xA3EpNoEccS70p7ibHfdn8vlsU1Iqh+qeuWGhRpBO6
+        FrE+kCDgp8rBtl4edksTdz3n2RHROpFSF09E2gJ9dMRq7wtRX250Wn5pKkr48fqq
+        cdJBnuAWGRgSSD3TNVzV6xPxh6ziaNKeUDgfIvlv1YAV4WTjOXB17bis2EXvx2Lb
+        GZFDLJeymQEKy7HhJ2Pp5nnHjwhxCGHp89M2or13uAbOn04RJGV+URXohYo1Adl0
+        JkJudTApV252ny+ilWCuneGR7zZyrDpvn8eMCrmUUbLr6vNoxRhqxAdTnq/DXQLX
+        nOZ8GmKNdvm63Q==
+X-ME-Sender: <xms:4IxlYSdtJcCMc-Zc1guC_DOMFIVdvpP3YgyVzswlYHeT15m2c4H4cA>
+    <xme:4IxlYcOf6ilWdZqgTIMwk45pN2FZvCiIOaFa0iTmr9m6vI1hBUtIUZFDFqgoDn-vC
+    U7j2lFXDpUlqV0>
+X-ME-Received: <xmr:4IxlYTiQk_04c2sctiBBvn_s9VkRB2mq0qSODO7mqK-ddZhkPfRI6zx2XPNUR4Yo3inCI09U8wbIfZJYCI-AEIUjfGCVS1Voniaaq9CTxzZGxA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtkedgiedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghr
-    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:3YxlYRWWC2gfIonaxbVXUVLeHXYei4SY8ttBulN1YWXe0S5XGXc7KA>
-    <xmx:3YxlYUmJZYNp1sJcj8TdTaEl60J98MADnnFKu2tz6grtgjpZIO4bWg>
-    <xmx:3YxlYWemxYlrtGSmPD_HDxDptCjb2BC6WL578PGzpFrbpIa2Xwcysg>
-    <xmx:3oxlYVBv1nkcwv0qxbC_nkGAUOICrv5ln1MY3w0vILsTYpxT0BtocQ>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:4IxlYf8j6lOQB_WztKp0TDvmUpQYA9dMVH3ZwoepjOiyxgs8JDaSdw>
+    <xmx:4IxlYesxYKRm-CJlU2L1RdO2LhUR_zPH6NHrNRn9V0J5dfLgLmyWSw>
+    <xmx:4IxlYWH_WLnARAuq_nKfznFGpdtJsw22XH2z7ya_dv0283HsuTyxzw>
+    <xmx:4IxlYQKKrhKhZL6cMRH5rm231j7TsXYI5tUSYF8AWcIelqipeVIgpw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Oct 2021 09:25:47 -0400 (EDT)
+ 12 Oct 2021 09:25:50 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     mkubecek@suse.cz, popadrian1996@gmail.com, andrew@lunn.ch,
         mlxsw@nvidia.com, moshe@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool-next 00/14] ethtool: Use memory maps for EEPROM parsing
-Date:   Tue, 12 Oct 2021 16:25:11 +0300
-Message-Id: <20211012132525.457323-1-idosch@idosch.org>
+Subject: [PATCH ethtool-next 01/14] cmis: Rename CMIS parsing functions
+Date:   Tue, 12 Oct 2021 16:25:12 +0300
+Message-Id: <20211012132525.457323-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211012132525.457323-1-idosch@idosch.org>
+References: <20211012132525.457323-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -60,146 +63,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-This patchset prepares ethtool(8) for retrieval and parsing of optional
-and banked module EEPROM pages, such as the ones present in CMIS. This
-is done by better integration of the recent 'MODULE_EEPROM_GET' netlink
-interface into ethtool(8).
+Currently, there are two CMIS parsing functions. qsfp_dd_show_all() and
+cmis_show_all(). The former is called from the IOCTL path with a buffer
+containing EEPROM contents and the latter is called from the netlink
+path with pointer to individual EEPROM pages.
 
-Background
-==========
+Rename them with '_ioctl' and '_nl' suffixes to make the distinction
+clear.
 
-ethtool(8) contains parsers for various module EEPROM memory maps such
-as SFF-8079, SFF-8636 and CMIS. Using the legacy IOCTL interface,
-ethtool(8) can ask the kernel to provide a buffer with the EEPROM
-contents. The buffer is then passed to the parsers that parse and print
-the EEPROM contents.
+In subsequent patches, these two functions will only differ in the way
+they initialize the CMIS memory map for parsing, while the parsing code
+itself will be shared between the two.
 
-The major disadvantage of this method is that in addition to ethtool(8),
-the kernel also needs to be familiar with the layout of the various
-memory maps, as it should not report to user space optional pages that
-do not exist.
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ cmis.c                  | 6 +++---
+ cmis.h                  | 6 +++---
+ netlink/module-eeprom.c | 2 +-
+ qsfp.c                  | 2 +-
+ 4 files changed, 8 insertions(+), 8 deletions(-)
 
-In addition, with the emergence of more complex layouts (e.g., CMIS)
-that include both optional and banked pages, the layout of the linear
-buffer provided by the kernel is unclear.
-
-For these reasons, kernel 5.13 was extended with the 'MODULE_EEPROM_GET'
-netlink message that allows user space to request specific EEPROM pages.
-
-Motivation
-==========
-
-Unfortunately, the current integration of 'MODULE_EEPROM_GET' into
-ethtool(8) is not ideal. In the IOCTL path, a single large buffer is
-passed to the parsers, whereas in the netlink path, individual pages are
-passed. This is problematic for several reasons.
-
-First, this approach is not very scalable as standards such as CMIS
-support a lot of optional and banked pages. Passing them as separate
-arguments is not going to work.
-
-Second, the knowledge of which optional and banked pages are available
-should be encapsulated in the individual parsers, not in the common
-netlink code (i.e., netlink/module-eeprom.c). Currently, the common code
-is blindly requesting from the kernel optional pages that might not
-exist.
-
-Third, the difference in the way information is passed to the parsers
-propagates all the way to the individual parsing functions. For example,
-cmis_show_link_len() vs. cmis_show_link_len_from_page().
-
-Implementation
-==============
-
-In order to solve above mentioned problems and make it easier to
-integrate retrieval and parsing of optional and banked pages, this
-patchset reworks the EEPROM parsing code to use memory maps.
-
-For each parser, a structure describing the layout of the memory map is
-initialized with pointers to individual pages.
-
-In the IOCTL path, this structure contains pointers to sections of the
-linear buffer that was retrieved from the kernel.
-
-In the netlink path, this structure contains pointers to individual
-pages requested from the kernel. Care is taken to ensure that pages that
-do not exist are not requested from the kernel.
-
-After the structure is initialized, it is passed to the parsing code
-that parses and prints the information.
-
-This approach can be easily extended to support more optional and banked
-pages and allows us to keep the parsing code common to both the IOCTL
-and netlink paths. The only difference lies in how the memory map is
-initialized when the parser is invoked.
-
-Testing
-=======
-
-Build tested each patch with the following configuration options:
-
-netlink | pretty-dump
---------|------------
-v       | v
-x       | x
-v       | x
-x       | v
-
-No differences in output before and after the patchset (*). Tested with
-QSFP (PC/AOC), QSFP-DD (PC/AOC), SFP (PC) and both IOCTL and netlink.
-
-No reports from AddressSanitizer / valgrind.
-
-(*) The only difference is in a few registers in CMIS that were not
-parsed correctly to begin with.
-
-Patchset overview
-=================
-
-Patches #1-#4 move CMIS to use a memory map and consolidate the code
-paths between the IOCTL and netlink paths.
-
-Patches #5-#8 do the same for SFF-8636.
-
-Patch #9 does the same for SFF-8079.
-
-Patch #10 exports a function to allow parsers to request a specific
-EEPROM page.
-
-Patches #11-#13 change parsers to request only specific and valid EEPROM
-pages instead of getting potentially invalid pages from the common
-netlink code (i.e., netlink/module-eeprom.c).
-
-Patch #14 converts the common netlink code to simply call into
-individual parsers based on their SFF-8024 Identifier Value. The command
-context is passed to these parsers instead of potentially invalid pages.
-
-Ido Schimmel (14):
-  cmis: Rename CMIS parsing functions
-  cmis: Initialize CMIS memory map
-  cmis: Use memory map during parsing
-  cmis: Consolidate code between IOCTL and netlink paths
-  sff-8636: Rename SFF-8636 parsing functions
-  sff-8636: Initialize SFF-8636 memory map
-  sff-8636: Use memory map during parsing
-  sff-8636: Consolidate code between IOCTL and netlink paths
-  sff-8079: Split SFF-8079 parsing function
-  netlink: eeprom: Export a function to request an EEPROM page
-  cmis: Request specific pages for parsing in netlink path
-  sff-8636: Request specific pages for parsing in netlink path
-  sff-8079: Request specific pages for parsing in netlink path
-  netlink: eeprom: Defer page requests to individual parsers
-
- cmis.c                  | 268 ++++++++++++++--------
- cmis.h                  |   8 +-
- ethtool.c               |   8 +-
- internal.h              |   8 +-
- netlink/extapi.h        |  11 +
- netlink/module-eeprom.c | 318 ++++++++------------------
- qsfp.c                  | 484 +++++++++++++++++++++++++---------------
- sfpid.c                 |  28 ++-
- 8 files changed, 635 insertions(+), 498 deletions(-)
-
+diff --git a/cmis.c b/cmis.c
+index 591cc72953b7..68c5b2d3277b 100644
+--- a/cmis.c
++++ b/cmis.c
+@@ -326,7 +326,7 @@ static void cmis_show_vendor_info(const __u8 *id)
+ 			       "CLEI code");
+ }
+ 
+-void qsfp_dd_show_all(const __u8 *id)
++void cmis_show_all_ioctl(const __u8 *id)
+ {
+ 	cmis_show_identifier(id);
+ 	cmis_show_power_info(id);
+@@ -340,8 +340,8 @@ void qsfp_dd_show_all(const __u8 *id)
+ 	cmis_show_rev_compliance(id);
+ }
+ 
+-void cmis_show_all(const struct ethtool_module_eeprom *page_zero,
+-		   const struct ethtool_module_eeprom *page_one)
++void cmis_show_all_nl(const struct ethtool_module_eeprom *page_zero,
++		      const struct ethtool_module_eeprom *page_one)
+ {
+ 	const __u8 *page_zero_data = page_zero->data;
+ 
+diff --git a/cmis.h b/cmis.h
+index e3012ccfdd79..734b90f4ddb4 100644
+--- a/cmis.h
++++ b/cmis.h
+@@ -120,9 +120,9 @@
+ #define YESNO(x) (((x) != 0) ? "Yes" : "No")
+ #define ONOFF(x) (((x) != 0) ? "On" : "Off")
+ 
+-void qsfp_dd_show_all(const __u8 *id);
++void cmis_show_all_ioctl(const __u8 *id);
+ 
+-void cmis_show_all(const struct ethtool_module_eeprom *page_zero,
+-		   const struct ethtool_module_eeprom *page_one);
++void cmis_show_all_nl(const struct ethtool_module_eeprom *page_zero,
++		      const struct ethtool_module_eeprom *page_one);
+ 
+ #endif /* CMIS_H__ */
+diff --git a/netlink/module-eeprom.c b/netlink/module-eeprom.c
+index 48cd2cc55bee..fc4ef1a53aff 100644
+--- a/netlink/module-eeprom.c
++++ b/netlink/module-eeprom.c
+@@ -332,7 +332,7 @@ static void decoder_print(void)
+ 		break;
+ 	case SFF8024_ID_QSFP_DD:
+ 	case SFF8024_ID_DSFP:
+-		cmis_show_all(page_zero, page_one);
++		cmis_show_all_nl(page_zero, page_one);
+ 		break;
+ 	default:
+ 		dump_hex(stdout, page_zero->data, page_zero->length, page_zero->offset);
+diff --git a/qsfp.c b/qsfp.c
+index 3f37f1036e96..27fdd3bd1771 100644
+--- a/qsfp.c
++++ b/qsfp.c
+@@ -856,7 +856,7 @@ static void sff8636_show_page_zero(const __u8 *id)
+ void sff8636_show_all(const __u8 *id, __u32 eeprom_len)
+ {
+ 	if (id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP_DD) {
+-		qsfp_dd_show_all(id);
++		cmis_show_all_ioctl(id);
+ 		return;
+ 	}
+ 
 -- 
 2.31.1
 
