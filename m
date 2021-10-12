@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53B4442AEFA
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 23:31:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72E3942AEFF
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 23:32:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234792AbhJLVdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 17:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
+        id S234486AbhJLVeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 17:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235532AbhJLVdN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 17:33:13 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B2FC061570
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 14:31:11 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id w6so609551pfd.11
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 14:31:11 -0700 (PDT)
+        with ESMTP id S233650AbhJLVeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 17:34:18 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89952C061570
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 14:32:16 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id ls18-20020a17090b351200b001a00250584aso2855922pjb.4
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 14:32:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CUtGP5xXRXTxbja2BrR7716M3DIoJp7Ny781rsQTMQU=;
-        b=GTPcer+UGr9p+BVgVNxdtuSfhigO/nNdPoVvLDJg0c3DKu7fDtZ5eNVBO1MRjXtmnj
-         gDELHVKSLIqq5cgvNxmE6aN1QSZhaQHJzSwmavj1vJCgGPMK2sw1LeUPFSH8/7R0KfxW
-         Kd6JYgf0zgkSuGS7eiwYLFKVuMIL8wZxmQmnQLskr5TKOgQFG/dYkQb50zPY3D+Z0nc/
-         bmzQLrMjUe4g+vBOjXmB5kabZIFR+XDd4rtwCXxTxexllbd4AIWy6dY7lppxamGciSSh
-         jPE1ce1Gk2PxJKNVjdPa0jWR9aZ230GgfNq9WCbbakMtRvGwJBG/1ORYx/L2uzwpzetS
-         j+qQ==
+        bh=UuTzM5CVmArglmE2h+26gQl45Rb2Vv7PxPMd5F22Lts=;
+        b=LHXgCTSIEB9VYaOrQ2wW7ep2nZGh2Moy/TMTMEUKNj8da6b7OEnX1akpRE+g5xmMjq
+         hE7SReqIRadOS7fT6gZQspw92aS1m5kq+HR17zPV1cCM/hBUVKxRZmrN9TaU29qFoZww
+         mAH8MvFhCObhZbPbXrflxTwWRNQrfOOkA7TgdVhhCkFsWHBl9w+AAJqLVdFVVQKKqQN9
+         ael+Noy9c9gOHTpFWcJ/hRgtF7xToJUYsjUmEoyxsqeUHZ64IeiJKNBjDIiknHlRvMcB
+         CzWw206v7pEPRZqfHhorbhiFToNZ6Q8ODahgcrFSP2wZ+LaYkCECvse+wDjk4fppGR6n
+         iWJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=CUtGP5xXRXTxbja2BrR7716M3DIoJp7Ny781rsQTMQU=;
-        b=bEhHBZrm0a+J+YapEeUalLlZm/HAQkg9xzd0GUC8605u3zej/1xf125VefrwCgxYht
-         NRnLzD0qsE0paW8Yl80q3zSiEgPG6uxzhcsIGbSBXOoZhoutkSHPN8AR1BaEeGy9tFof
-         oYh/mEO02K+5rvFYnjh+yRaTAFWtbhNrs/O99Yaj21fQen1RinJcT4THladgxYhVdKq4
-         3s5lf7ISjYRF9NhEl1GNrrcz4w7Sk/r2vNE43GL4DlsoPlgAQzNTjRwRVZFNRa7y4IWH
-         eOdrvC85YM8gXhF+TmktWRAD25NW26V44ZTohCvRUyNprCCoNe8kSwZ7S8t+Ik+K+W4V
-         Hhwg==
-X-Gm-Message-State: AOAM531Jn+q4mqQJcnnUoTzrht60w5brijUzlD+RErt622zeoSAF/tHY
-        evQ6Kh6uHlImSIfu/4YI8a8=
-X-Google-Smtp-Source: ABdhPJwTtIjd0IR51bIezBvafG3QAn2NtCnzXkZ7XqkkvrU4epDfPFgBlXPLfwmWnJkWbllRBiRP1g==
-X-Received: by 2002:a63:7d0f:: with SMTP id y15mr24625697pgc.446.1634074271234;
-        Tue, 12 Oct 2021 14:31:11 -0700 (PDT)
+        bh=UuTzM5CVmArglmE2h+26gQl45Rb2Vv7PxPMd5F22Lts=;
+        b=ZZKufK8Q51lig/Ebpvyr7xQ3s9j7Wul+Zwzzqq/smpF4ARrroJsFYXsJUMFbgQW5YW
+         L2IZW5WNer9EXifxOg34kC9+xwO4WRph9XQXd2GSA3WRwnZYMLEJMzuOHDzpZ1CRn0fd
+         3hnrLJbBZEJVmK/dUOT+QvkyTQ5HCr6q1kFDmwGfjLFOAf+pohRK964SYlaUawk4DA1C
+         At9PGu1Kkv9QbtB0iKZomQFBzWIqtKNeS+Qio0owNNdaa3E37UkgMOQi6OBdG/1MuNr/
+         5wj5KqbJf8G40ZC2b8ABD8DpUTWEECqM3FfDTzM4iMUA+htfbwC0PEXawVJWLGh1p+wA
+         nZGQ==
+X-Gm-Message-State: AOAM533DX6PRlPYky/cds4pWFcyUysTtjo8Ysrzb9qntmvsQLT1bQRVH
+        M53A3R+O4U3ZzbdF0EXTDa8=
+X-Google-Smtp-Source: ABdhPJz8N7F6LsUv6fL1m73uNFFwgM57HAwoW8Xr8xRtm9VDtNXimdZtdUjaeHP0Aw+8HU11MY5Q2Q==
+X-Received: by 2002:a17:903:32c7:b0:13e:ea76:f8cb with SMTP id i7-20020a17090332c700b0013eea76f8cbmr32151752plr.74.1634074335982;
+        Tue, 12 Oct 2021 14:32:15 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id q21sm3655701pjg.55.2021.10.12.14.31.08
+        by smtp.googlemail.com with ESMTPSA id d60sm3604856pjk.49.2021.10.12.14.32.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Oct 2021 14:31:10 -0700 (PDT)
-Subject: Re: [PATCH v2 net 10/10] net: dsa: felix: break at first CPU port
- during init and teardown
+        Tue, 12 Oct 2021 14:32:15 -0700 (PDT)
+Subject: Re: [PATCH v2 net 06/10] net: dsa: tag_ocelot: break circular
+ dependency with ocelot switch lib driver
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, Po Liu <po.liu@nxp.com>
@@ -63,14 +63,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         UNGLinuxDriver@microchip.com
 References: <20211012114044.2526146-1-vladimir.oltean@nxp.com>
- <20211012114044.2526146-11-vladimir.oltean@nxp.com>
+ <20211012114044.2526146-7-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <faca12ef-e367-4a40-04b0-67f37f9c49fd@gmail.com>
-Date:   Tue, 12 Oct 2021 14:31:03 -0700
+Message-ID: <78c1c3cd-f378-ba08-2588-ce982d34479e@gmail.com>
+Date:   Tue, 12 Oct 2021 14:32:11 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20211012114044.2526146-11-vladimir.oltean@nxp.com>
+In-Reply-To: <20211012114044.2526146-7-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -79,26 +79,31 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 10/12/21 4:40 AM, Vladimir Oltean wrote:
-> The NXP LS1028A switch has two Ethernet ports towards the CPU, but only
-> one of them is capable of acting as an NPI port at a time (inject and
-> extract packets using DSA tags).
+> As explained here:
+> https://lore.kernel.org/netdev/20210908220834.d7gmtnwrorhharna@skbuf/
+> DSA tagging protocol drivers cannot depend on symbols exported by switch
+> drivers, because this creates a circular dependency that breaks module
+> autoloading.
 > 
-> However, using the alternative ocelot-8021q tagging protocol, it should
-> be possible to use both CPU ports symmetrically, but for that we need to
-> mark both ports in the device tree as DSA masters.
+> The tag_ocelot.c file depends on the ocelot_ptp_rew_op() function
+> exported by the common ocelot switch lib. This function looks at
+> OCELOT_SKB_CB(skb) and computes how to populate the REW_OP field of the
+> DSA tag, for PTP timestamping (the command: one-step/two-step, and the
+> TX timestamp identifier).
 > 
-> In the process of doing that, it can be seen that traffic to/from the
-> network stack gets broken, and this is because the Felix driver iterates
-> through all DSA CPU ports and configures them as NPI ports. But since
-> there can only be a single NPI port, we effectively end up in a
-> situation where DSA thinks the default CPU port is the first one, but
-> the hardware port configured to be an NPI is the last one.
+> None of that requires deep insight into the driver, it is quite
+> stateless, as it only depends upon the skb->cb. So let's make it a
+> static inline function and put it in include/linux/dsa/ocelot.h, a
+> file that despite its name is used by the ocelot switch driver for
+> populating the injection header too - since commit 40d3f295b5fe ("net:
+> mscc: ocelot: use common tag parsing code with DSA").
 > 
-> I would like to treat this as a bug, because if the updated device trees
-> are going to start circulating, it would be really good for existing
-> kernels to support them, too.
+> With that function declared as static inline, its body is expanded
+> inside each call site, so the dependency is broken and the DSA tagger
+> can be built without the switch library, upon which the felix driver
+> depends.
 > 
-> Fixes: adb3dccf090b ("net: dsa: felix: convert to the new .change_tag_protocol DSA API")
+> Fixes: 39e5308b3250 ("net: mscc: ocelot: support PTP Sync one-step timestamping")
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
