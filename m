@@ -2,63 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4219242A865
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:38:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C029542A86C
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:39:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237422AbhJLPkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 11:40:52 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:42155 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237218AbhJLPkt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 11:40:49 -0400
-Received: from smtpclient.apple (p4fefcb73.dip0.t-ipconnect.de [79.239.203.115])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 20798CECE1;
-        Tue, 12 Oct 2021 17:38:46 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [PATCH] Bluetooth: hci_sock: purge socket queues in the
- destruct() callback
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20211007190424.196281-1-phind.uet@gmail.com>
-Date:   Tue, 12 Oct 2021 17:38:45 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
-Content-Transfer-Encoding: 7bit
-Message-Id: <8C82DF3C-98B1-4C41-B9D8-3415DD64138F@holtmann.org>
-References: <20211007190424.196281-1-phind.uet@gmail.com>
-To:     Nguyen Dinh Phi <phind.uet@gmail.com>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+        id S237478AbhJLPlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 11:41:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:24048 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237480AbhJLPlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 11:41:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634053185;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DADMSDrfSTUjb5Z+Gu5DHjCPzPYN94C6qVp0VW+b7Jg=;
+        b=ASdyunB65kMyxYMf7DQw+NGTfeWUNzG/ddZUE551tE5TDqu34VtyjANn1cJJ51R6kTHA9B
+        3tQFApzlCM1/gISu6iU/eO0ascIs8rXQVb18qof1UcA8aFpOJacoJoC91eCuCYr2F5FAyu
+        F4l6c6FcJ9QAQGjYcbefK+CYabDszCI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-254-yzbCXH5OPAOTgADtH4A3Lg-1; Tue, 12 Oct 2021 11:39:41 -0400
+X-MC-Unique: yzbCXH5OPAOTgADtH4A3Lg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CFB1C801AE3;
+        Tue, 12 Oct 2021 15:39:40 +0000 (UTC)
+Received: from gerbillo.redhat.com (unknown [10.39.194.242])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 98D0060C82;
+        Tue, 12 Oct 2021 15:39:39 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>, mptcp@lists.linux.dev
+Subject: [PATCH iproute2-next] mptcp: cleanup include section.
+Date:   Tue, 12 Oct 2021 17:39:05 +0200
+Message-Id: <30bdb5729425940823e87450c29bfdcff918d62e.1634053020.git.pabeni@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nguyen,
+From: Stephen Hemminger <stephen@networkplumber.org>
 
-> The receive path may take the socket right before hci_sock_release(),
-> but it may enqueue the packets to the socket queues after the call to
-> skb_queue_purge(), therefore the socket can be destroyed without clear
-> its queues completely.
-> 
-> Moving these skb_queue_purge() to the hci_sock_destruct() will fix this
-> issue, because nothing is referencing the socket at this point.
-> 
-> Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
-> Reported-by: syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
-> ---
-> net/bluetooth/hci_sock.c | 11 +++++++----
-> 1 file changed, 7 insertions(+), 4 deletions(-)
+David reported ipmptcp breaks hard the build when updating the
+relevant kernel headers.
 
-patch has been applied to bluetooth-next tree.
+We should be more careful in the header section, explicitly
+including all the required dependencies respecting the usual order
+between systems and local headers.
 
-Regards
+Stephen Hemminger <stephen@networkplumber.org>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+Notes:
+- sorry for the long turn-around time
+- all English errors added by me
+- I [mis]understood Stephen's patch was the preferred one, and I took
+  the liberty to send the patch on his behalf. Please educate me if
+  I somewhat screwed-up this badly
+---
+ ip/ipmptcp.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-Marcel
+diff --git a/ip/ipmptcp.c b/ip/ipmptcp.c
+index fd042da8..0f5b6e2d 100644
+--- a/ip/ipmptcp.c
++++ b/ip/ipmptcp.c
+@@ -1,17 +1,23 @@
+ // SPDX-License-Identifier: GPL-2.0
+ 
++#include <arpa/inet.h>
++#include <netinet/in.h>
++#include <stdbool.h>
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <string.h>
+-#include <rt_names.h>
+-#include <errno.h>
+ 
+ #include <linux/genetlink.h>
++#include <linux/netlink.h>
++#include <linux/rtnetlink.h>
+ #include <linux/mptcp.h>
+ 
+ #include "utils.h"
+ #include "ip_common.h"
+-#include "libgenl.h"
+ #include "json_print.h"
++#include "libgenl.h"
++#include "libnetlink.h"
++#include "ll_map.h"
+ 
+ static void usage(void)
+ {
+-- 
+2.26.3
 
