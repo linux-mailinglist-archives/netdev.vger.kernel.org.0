@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4475A42A5A4
+	by mail.lfdr.de (Postfix) with ESMTP id 8E05742A5A5
 	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:26:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236881AbhJLN2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 09:28:23 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:57329 "EHLO
+        id S236898AbhJLN2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 09:28:24 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:44259 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236926AbhJLN2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:28:13 -0400
+        by vger.kernel.org with ESMTP id S236956AbhJLN2P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:28:15 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 88C325C0198;
-        Tue, 12 Oct 2021 09:26:11 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id D44B65C01A5;
+        Tue, 12 Oct 2021 09:26:13 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 12 Oct 2021 09:26:11 -0400
+  by compute4.internal (MEProxy); Tue, 12 Oct 2021 09:26:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=ePCGWvYhQ87oNl23CB0D2IhNL+R7UsvKJkNQnBYgWas=; b=IFSrTAuy
-        Lc47C/gGpOmmcHnnOE/YIVqd4Xf8c6Xl8M8F9jBvxI+RQDjXCX3n7tWQn93S7KhO
-        du25Ta8c+nkbBblqSVXV1nsPICkq1MZ7HCa48m0QyNalP4CmI7zVfUU6xsjuafmZ
-        SLIXEbidSOG0OWT4Lr6ogF+tMqRq5e8UE9geQd+HbzJqAmwqNSLOZIAfzFY+yOAb
-        wFVUvN1f+GtyAMsEV2ozrZ7Oy07Vuhn8eqPb5ikNI4sdE4p2eHVtsYxet8Y16DWh
-        9HMNysaWmoOEWM0WGMJi1GxPT3QemNaYAlG6ETF33x/mXEIDQMhmvzfBD3+3Y/9I
-        rWKyL3D0oh62cg==
-X-ME-Sender: <xms:84xlYfBiCnRZv6whD9SLUmMgsED9yh8K9506fa5WwUVdlPCGNKZEZw>
-    <xme:84xlYVjchVpc3fuNzVlXW8_1tg-B-XyP1yPcRsEoruFGkGu9C9xfYRjDIset2JVNl
-    4nk33azQ2rLXDw>
-X-ME-Received: <xmr:84xlYak5djdLc75m2AwjQFccrO70cy_Ovo77HWRcnIsDaMS7o_7yd5QQeC5mjcRrSU7_X1fTURJaTyps0DEc2ug1j8QJRPtGAxZCJQCwb7RGsA>
+        fm1; bh=X6Ai1eODWgXQwJSt8txvCNeFPkgXTzl84olHA8sAyGI=; b=O/xm4DC6
+        PC+t/PBjSC7NMZ2WxFsMKQad7lM0E7OC9Ut1hz3nunoZBTmlKB8mBy1Nb0dbcAc+
+        LsyMSBaWK6E4r4j6XfkQlYGsh2sRl2eWD3884M1pTLGycbqAFsBQzPMBynm6677I
+        /WokFV6inCMZ/OIYHvbiaDMfnM9WlvKNk+OfKh+mBtCLVtGl07nEgSJBw5GXKQ8m
+        bzm9L3ys9sWjn8bDnmvx/epT30b/otKWx5kHKvfL00nq5IpfbbwfwtM5kTJcfTjY
+        r4/MXT316b/LqlkCPbeur4w8Az0yotOy0wxSOwilv+HjSCViexy48npXzCVOjh17
+        tEveiijSDQjDxw==
+X-ME-Sender: <xms:9YxlYUC1lLUATgaHd650TLIOkQbhZ6YOVFk4am0hL3_GXJHxtmO2cQ>
+    <xme:9YxlYWjIHsrUoyL3PhtqLO9NSNXbBeHPapYvM4BXvyXNDoxHDYzaKUlrwjIxi6aDB
+    R4zoBefigZLUwQ>
+X-ME-Received: <xmr:9YxlYXkcaZ45e_bxDSZlt1LDE-XCErJBNY6Ai7f1VAUdymA_Yl3ndWuuosIgfz6CQbYzwmjVJrKIedRohP3WOQnEk9J_J3iHPuaju7yhzBE4Eg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtkedgiedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddtkedgiedvucetufdoteggod
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecuvehluhhsthgvrhfuihiivgepheenucfr
     rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:84xlYRzP08_rPvgVHA2B5zQJeua91PiAmtTq6o-BT3l_RJhKCVTFHA>
-    <xmx:84xlYUQbVjvjdRkhQDVHxomRVbvBr6sbg6ux_EpATT870YLdj0AdCQ>
-    <xmx:84xlYUZQvzvywSohSj8zIPHfYhiu_84fh1cuJGP1XVjgbFqXPLd00w>
-    <xmx:84xlYaPIdBnix6k95RTyCiFzGtdujsSDzcqMKkG2z8pUtMMiednJ7Q>
+X-ME-Proxy: <xmx:9YxlYaxBxVSP3m7qCIeV3fKgrtlQvLr5JU2zCyaYjC-jZ1tABpXX5Q>
+    <xmx:9YxlYZRC0T8bzGxHr-8zEZP-tOZP4711kqNjqB168BCjTiqbx_Ro5A>
+    <xmx:9YxlYVbtQGcB8tPbFyM-Aaw1wEL7bteo0zXXBDjgIeiYzPCv1m79Ng>
+    <xmx:9YxlYXMyu0N853-s39GNAH4Anw1yrhbyPMvaOJo1-l08JjomUhvpLg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Oct 2021 09:26:09 -0400 (EDT)
+ 12 Oct 2021 09:26:11 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     mkubecek@suse.cz, popadrian1996@gmail.com, andrew@lunn.ch,
         mlxsw@nvidia.com, moshe@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool-next 09/14] sff-8079: Split SFF-8079 parsing function
-Date:   Tue, 12 Oct 2021 16:25:20 +0300
-Message-Id: <20211012132525.457323-10-idosch@idosch.org>
+Subject: [PATCH ethtool-next 10/14] netlink: eeprom: Export a function to request an EEPROM page
+Date:   Tue, 12 Oct 2021 16:25:21 +0300
+Message-Id: <20211012132525.457323-11-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211012132525.457323-1-idosch@idosch.org>
 References: <20211012132525.457323-1-idosch@idosch.org>
@@ -63,99 +63,171 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-SFF-8079, unlike CMIS and SFF-8636, only has a single page and therefore
-its parsing function (i.e., sff8079_show_all()) is called from both the
-IOCTL and netlink paths with a buffer pointing to that single page.
+The function will be used by the EEPROM parsing code (e.g., cmis.c) to
+request a specific page for parsing.
 
-In future patches, the netlink code (i.e., netlink/module-eeprom.c) will
-no longer call the SFF-8079 code with a buffer pointing to the first 128
-bytes of the EEPROM. Instead, the SFF-8079 code will need to request the
-needed EEPROM data, as will be done in CMIS and SFF-8636.
-
-Therefore, as a preparation for this change, split the main parsing
-function into IOCTL and netlink variants.
-
-No functional changes intended.
+All the data buffers used to store EEPROM page contents are stored on a
+linked list that is flushed on exit. This relieves callers from the need
+to explicitly free the requested pages.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- ethtool.c               |  4 ++--
- internal.h              |  3 ++-
- netlink/module-eeprom.c |  2 +-
- sfpid.c                 | 12 +++++++++++-
- 4 files changed, 16 insertions(+), 5 deletions(-)
+ netlink/extapi.h        |  11 +++++
+ netlink/module-eeprom.c | 105 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 116 insertions(+)
 
-diff --git a/ethtool.c b/ethtool.c
-index e3347db78fc3..064bc697926e 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -4900,10 +4900,10 @@ static int do_getmodule(struct cmd_context *ctx)
- 			switch (modinfo.type) {
- #ifdef ETHTOOL_ENABLE_PRETTY_DUMP
- 			case ETH_MODULE_SFF_8079:
--				sff8079_show_all(eeprom->data);
-+				sff8079_show_all_ioctl(eeprom->data);
- 				break;
- 			case ETH_MODULE_SFF_8472:
--				sff8079_show_all(eeprom->data);
-+				sff8079_show_all_ioctl(eeprom->data);
- 				sff8472_show_all(eeprom->data);
- 				break;
- 			case ETH_MODULE_SFF_8436:
-diff --git a/internal.h b/internal.h
-index 7ca6066d4e12..a77efd385698 100644
---- a/internal.h
-+++ b/internal.h
-@@ -384,7 +384,8 @@ int rxclass_rule_ins(struct cmd_context *ctx,
- int rxclass_rule_del(struct cmd_context *ctx, __u32 loc);
+diff --git a/netlink/extapi.h b/netlink/extapi.h
+index 91bf02b5e3be..129e2931d01d 100644
+--- a/netlink/extapi.h
++++ b/netlink/extapi.h
+@@ -48,6 +48,9 @@ int nl_getmodule(struct cmd_context *ctx);
  
- /* Module EEPROM parsing code */
--void sff8079_show_all(const __u8 *id);
-+void sff8079_show_all_ioctl(const __u8 *id);
-+void sff8079_show_all_nl(const __u8 *id);
+ void nl_monitor_usage(void);
  
- /* Optics diagnostics */
- void sff8472_show_all(const __u8 *id);
++int nl_get_eeprom_page(struct cmd_context *ctx,
++		       struct ethtool_module_eeprom *request);
++
+ #else /* ETHTOOL_ENABLE_NETLINK */
+ 
+ static inline void netlink_run_handler(struct cmd_context *ctx __maybe_unused,
+@@ -73,6 +76,14 @@ static inline void nl_monitor_usage(void)
+ {
+ }
+ 
++static inline int
++nl_get_eeprom_page(struct cmd_context *ctx __maybe_unused,
++		   struct ethtool_module_eeprom *request __maybe_unused)
++{
++	fprintf(stderr, "Netlink not supported by ethtool.\n");
++	return -EOPNOTSUPP;
++}
++
+ #define nl_gset			NULL
+ #define nl_sset			NULL
+ #define nl_permaddr		NULL
 diff --git a/netlink/module-eeprom.c b/netlink/module-eeprom.c
-index 18b1abbe1252..101d5943c2bc 100644
+index 101d5943c2bc..ee5508840157 100644
 --- a/netlink/module-eeprom.c
 +++ b/netlink/module-eeprom.c
-@@ -323,7 +323,7 @@ static void decoder_print(void)
- 
- 	switch (module_id) {
- 	case SFF8024_ID_SFP:
--		sff8079_show_all(page_zero->data);
-+		sff8079_show_all_nl(page_zero->data);
- 		break;
- 	case SFF8024_ID_QSFP:
- 	case SFF8024_ID_QSFP28:
-diff --git a/sfpid.c b/sfpid.c
-index da2b3f4df3d2..c214820226d1 100644
---- a/sfpid.c
-+++ b/sfpid.c
-@@ -396,7 +396,7 @@ static void sff8079_show_options(const __u8 *id)
- 		printf("%s Power level 3 requirement\n", pfx);
+@@ -341,6 +341,110 @@ static void decoder_print(void)
  }
+ #endif
  
--void sff8079_show_all(const __u8 *id)
-+static void sff8079_show_all_common(const __u8 *id)
++static struct list_head eeprom_page_list = LIST_HEAD_INIT(eeprom_page_list);
++
++struct eeprom_page_entry {
++	struct list_head list;	/* Member of eeprom_page_list */
++	void *data;
++};
++
++static int eeprom_page_list_add(void *data)
++{
++	struct eeprom_page_entry *entry;
++
++	entry = malloc(sizeof(*entry));
++	if (!entry)
++		return -ENOMEM;
++
++	entry->data = data;
++	list_add(&entry->list, &eeprom_page_list);
++
++	return 0;
++}
++
++static void eeprom_page_list_flush(void)
++{
++	struct eeprom_page_entry *entry;
++	struct list_head *head, *next;
++
++	list_for_each_safe(head, next, &eeprom_page_list) {
++		entry = (struct eeprom_page_entry *) head;
++		free(entry->data);
++		list_del(head);
++		free(entry);
++	}
++}
++
++static int get_eeprom_page_reply_cb(const struct nlmsghdr *nlhdr, void *data)
++{
++	const struct nlattr *tb[ETHTOOL_A_MODULE_EEPROM_DATA + 1] = {};
++	struct ethtool_module_eeprom *request = data;
++	DECLARE_ATTR_TB_INFO(tb);
++	u8 *eeprom_data;
++	int ret;
++
++	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
++	if (ret < 0)
++		return ret;
++
++	if (!tb[ETHTOOL_A_MODULE_EEPROM_DATA])
++		return MNL_CB_ERROR;
++
++	eeprom_data = mnl_attr_get_payload(tb[ETHTOOL_A_MODULE_EEPROM_DATA]);
++	request->data = malloc(request->length);
++	if (!request->data)
++		return MNL_CB_ERROR;
++	memcpy(request->data, eeprom_data, request->length);
++
++	ret = eeprom_page_list_add(request->data);
++	if (ret < 0)
++		goto err_list_add;
++
++	return MNL_CB_OK;
++
++err_list_add:
++	free(request->data);
++	return MNL_CB_ERROR;
++}
++
++int nl_get_eeprom_page(struct cmd_context *ctx,
++		       struct ethtool_module_eeprom *request)
++{
++	struct nl_context *nlctx = ctx->nlctx;
++	struct nl_socket *nlsock;
++	struct nl_msg_buff *msg;
++	int ret;
++
++	if (!request || request->i2c_address > ETH_I2C_MAX_ADDRESS)
++		return -EINVAL;
++
++	nlsock = nlctx->ethnl_socket;
++	msg = &nlsock->msgbuff;
++
++	ret = nlsock_prep_get_request(nlsock, ETHTOOL_MSG_MODULE_EEPROM_GET,
++				      ETHTOOL_A_MODULE_EEPROM_HEADER, 0);
++	if (ret < 0)
++		return ret;
++
++	if (ethnla_put_u32(msg, ETHTOOL_A_MODULE_EEPROM_LENGTH,
++			   request->length) ||
++	    ethnla_put_u32(msg, ETHTOOL_A_MODULE_EEPROM_OFFSET,
++			   request->offset) ||
++	    ethnla_put_u8(msg, ETHTOOL_A_MODULE_EEPROM_PAGE,
++			  request->page) ||
++	    ethnla_put_u8(msg, ETHTOOL_A_MODULE_EEPROM_BANK,
++			  request->bank) ||
++	    ethnla_put_u8(msg, ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS,
++			  request->i2c_address))
++		return -EMSGSIZE;
++
++	ret = nlsock_sendmsg(nlsock, NULL);
++	if (ret < 0)
++		return ret;
++	return nlsock_process_reply(nlsock, get_eeprom_page_reply_cb,
++				    (void *)request);
++}
++
+ int nl_getmodule(struct cmd_context *ctx)
  {
- 	sff8079_show_identifier(id);
- 	if (((id[0] == 0x02) || (id[0] == 0x03)) && (id[1] == 0x04)) {
-@@ -439,3 +439,13 @@ void sff8079_show_all(const __u8 *id)
- 		sff8079_show_ascii(id, 84, 91, "Date code");
+ 	struct cmd_params getmodule_cmd_params = {};
+@@ -425,6 +529,7 @@ int nl_getmodule(struct cmd_context *ctx)
  	}
+ 
+ cleanup:
++	eeprom_page_list_flush();
+ 	cache_free();
+ 	return ret;
  }
-+
-+void sff8079_show_all_ioctl(const __u8 *id)
-+{
-+	sff8079_show_all_common(id);
-+}
-+
-+void sff8079_show_all_nl(const __u8 *id)
-+{
-+	sff8079_show_all_common(id);
-+}
 -- 
 2.31.1
 
