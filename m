@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C846342A8F9
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:59:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65F1442A8FB
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237552AbhJLQAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S237589AbhJLQAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 12 Oct 2021 12:00:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47102 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:47140 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237477AbhJLQAv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 12:00:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6D240610E8;
+        id S237494AbhJLQAw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 12:00:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ED65461105;
         Tue, 12 Oct 2021 15:58:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634054329;
-        bh=wfbt6ImL0n5GbHzvl0f7V3CT5bJgwTRiRpj5/Z31AW4=;
+        s=k20201202; t=1634054330;
+        bh=ML3+Wt+Gyf2AnH9iMdE3LcG4Csto5f7/O0LmMmz7iRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eof9QeepucP39hDQnknvLJGBeoGGBhaz2sL7VQ7u+AM7yTUzDyJkzDs0EwAHIbq1U
-         0KRd28vR6U27oWPndAPqZGYgk0CM5VLROrp4fOhT4hMDk8sENAi3bwoStqYRVv+jAt
-         pJz+/sSuJxm6egF0wfCu6ciLnKaEQhjUAKhhVlbKtRN+C1Ynu2bdBC05A3IU2mZ9bA
-         Jh3+dXhJD/JKBIzJhIcJG2IgkyPrfvPyx5e6h24gxx7+eTQjV5jEh93wogRh47/rsA
-         eHQMSiultK7osDqAIe/FgcUjY5qip2yz5G5PvIEUZsW9wHGf0oOL1wldg95zXB/vcm
-         9LCTyvfQeFxIQ==
+        b=Vxq4ZOWqZRaDdNoiE+sWuMw4GiSD9N1OvIPb85PwVcDWEX2TcAqImmh99TTfXF1L0
+         Mx2gu3txIJWvuHrHTrpBM/F9z5yjV7Kl2DXbCdyte8y4F6PZ8GCo9Z+JOX199Ln8Nm
+         kf0yyUwzV39e0e8EB8bXHrNDhgjevpC4fnCH9uMJCS+F0yuRFNnXVqVDSv+RvAYXRV
+         AzU4G5M6DhQMduxHSSlfePWlmKYeAZWO/GjE18DMkS08NCU90h/Nb15XlJ5/phJ/Uj
+         LG8L17FaHjMJO0nBUAwRJ8APVxSX3JT7lT2otEi8lnzcROxFZGOqtd/Y+C+4fnCvNH
+         kiVNBdtu4ByPw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ralf@linux-mips.org, jreuter@yaina.de,
@@ -30,9 +30,9 @@ Cc:     netdev@vger.kernel.org, ralf@linux-mips.org, jreuter@yaina.de,
         ying.xue@windriver.com, linux-hams@vger.kernel.org,
         tipc-discussion@lists.sourceforge.net,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/6] llc/snap: constify dev_addr passing
-Date:   Tue, 12 Oct 2021 08:58:37 -0700
-Message-Id: <20211012155840.4151590-4-kuba@kernel.org>
+Subject: [PATCH net-next 4/6] ipv6: constify dev_addr passing
+Date:   Tue, 12 Oct 2021 08:58:38 -0700
+Message-Id: <20211012155840.4151590-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211012155840.4151590-1-kuba@kernel.org>
 References: <20211012155840.4151590-1-kuba@kernel.org>
@@ -43,139 +43,69 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 In preparation for netdev->dev_addr being constant
-make all relevant arguments in LLC and SNAP constant.
+make all relevant arguments in ndisc constant.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/net/datalink.h | 2 +-
- include/net/llc.h      | 2 +-
- include/net/llc_if.h   | 3 ++-
- net/802/p8022.c        | 2 +-
- net/802/psnap.c        | 2 +-
- net/llc/llc_c_ac.c     | 2 +-
- net/llc/llc_if.c       | 2 +-
- net/llc/llc_output.c   | 2 +-
- net/llc/llc_proc.c     | 2 +-
- 9 files changed, 10 insertions(+), 9 deletions(-)
+ include/net/ndisc.h | 2 +-
+ net/ipv6/addrconf.c | 4 ++--
+ net/ipv6/ndisc.c    | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/datalink.h b/include/net/datalink.h
-index a9663229b913..d9b7faaa539f 100644
---- a/include/net/datalink.h
-+++ b/include/net/datalink.h
-@@ -12,7 +12,7 @@ struct datalink_proto {
-         int     (*rcvfunc)(struct sk_buff *, struct net_device *,
-                                 struct packet_type *, struct net_device *);
- 	int     (*request)(struct datalink_proto *, struct sk_buff *,
--                                        unsigned char *);
-+			   const unsigned char *);
- 	struct list_head node;
+diff --git a/include/net/ndisc.h b/include/net/ndisc.h
+index 38e4094960ce..04341d86585d 100644
+--- a/include/net/ndisc.h
++++ b/include/net/ndisc.h
+@@ -137,7 +137,7 @@ struct ndisc_options *ndisc_parse_options(const struct net_device *dev,
+ 					  u8 *opt, int opt_len,
+ 					  struct ndisc_options *ndopts);
+ 
+-void __ndisc_fill_addr_option(struct sk_buff *skb, int type, void *data,
++void __ndisc_fill_addr_option(struct sk_buff *skb, int type, const void *data,
+ 			      int data_len, int pad);
+ 
+ #define NDISC_OPS_REDIRECT_DATA_SPACE	2
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index c6a90b7bbb70..d4fae16deec4 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -2237,12 +2237,12 @@ static int addrconf_ifid_6lowpan(u8 *eui, struct net_device *dev)
+ 
+ static int addrconf_ifid_ieee1394(u8 *eui, struct net_device *dev)
+ {
+-	union fwnet_hwaddr *ha;
++	const union fwnet_hwaddr *ha;
+ 
+ 	if (dev->addr_len != FWNET_ALEN)
+ 		return -1;
+ 
+-	ha = (union fwnet_hwaddr *)dev->dev_addr;
++	ha = (const union fwnet_hwaddr *)dev->dev_addr;
+ 
+ 	memcpy(eui, &ha->uc.uniq_id, sizeof(ha->uc.uniq_id));
+ 	eui[0] ^= 2;
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index 4b098521a44c..184190b9ea25 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -142,7 +142,7 @@ struct neigh_table nd_tbl = {
  };
+ EXPORT_SYMBOL_GPL(nd_tbl);
  
-diff --git a/include/net/llc.h b/include/net/llc.h
-index df282d9b4017..fd1f9a3fd8dd 100644
---- a/include/net/llc.h
-+++ b/include/net/llc.h
-@@ -133,7 +133,7 @@ static inline void llc_sap_put(struct llc_sap *sap)
- struct llc_sap *llc_sap_find(unsigned char sap_value);
- 
- int llc_build_and_send_ui_pkt(struct llc_sap *sap, struct sk_buff *skb,
--			      unsigned char *dmac, unsigned char dsap);
-+			      const unsigned char *dmac, unsigned char dsap);
- 
- void llc_sap_handler(struct llc_sap *sap, struct sk_buff *skb);
- void llc_conn_handler(struct llc_sap *sap, struct sk_buff *skb);
-diff --git a/include/net/llc_if.h b/include/net/llc_if.h
-index 8d5c543cd620..c72570a21a4f 100644
---- a/include/net/llc_if.h
-+++ b/include/net/llc_if.h
-@@ -62,7 +62,8 @@
- #define LLC_STATUS_CONFLICT	7 /* disconnect conn */
- #define LLC_STATUS_RESET_DONE	8 /*  */
- 
--int llc_establish_connection(struct sock *sk, u8 *lmac, u8 *dmac, u8 dsap);
-+int llc_establish_connection(struct sock *sk, const u8 *lmac, u8 *dmac,
-+			     u8 dsap);
- int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb);
- int llc_send_disc(struct sock *sk);
- #endif /* LLC_IF_H */
-diff --git a/net/802/p8022.c b/net/802/p8022.c
-index a6585627051d..79c23173116c 100644
---- a/net/802/p8022.c
-+++ b/net/802/p8022.c
-@@ -23,7 +23,7 @@
- #include <net/p8022.h>
- 
- static int p8022_request(struct datalink_proto *dl, struct sk_buff *skb,
--			 unsigned char *dest)
-+			 const unsigned char *dest)
+-void __ndisc_fill_addr_option(struct sk_buff *skb, int type, void *data,
++void __ndisc_fill_addr_option(struct sk_buff *skb, int type, const void *data,
+ 			      int data_len, int pad)
  {
- 	llc_build_and_send_ui_pkt(dl->sap, skb, dest, dl->sap->laddr.lsap);
- 	return 0;
-diff --git a/net/802/psnap.c b/net/802/psnap.c
-index 4492e8d7ad20..1406bfdbda13 100644
---- a/net/802/psnap.c
-+++ b/net/802/psnap.c
-@@ -79,7 +79,7 @@ static int snap_rcv(struct sk_buff *skb, struct net_device *dev,
-  *	Put a SNAP header on a frame and pass to 802.2
-  */
- static int snap_request(struct datalink_proto *dl,
--			struct sk_buff *skb, u8 *dest)
-+			struct sk_buff *skb, const u8 *dest)
- {
- 	memcpy(skb_push(skb, 5), dl->type, 5);
- 	llc_build_and_send_ui_pkt(snap_sap, skb, dest, snap_sap->laddr.lsap);
-diff --git a/net/llc/llc_c_ac.c b/net/llc/llc_c_ac.c
-index 647c0554d04c..40ca3c1e42a2 100644
---- a/net/llc/llc_c_ac.c
-+++ b/net/llc/llc_c_ac.c
-@@ -781,7 +781,7 @@ int llc_conn_ac_send_sabme_cmd_p_set_x(struct sock *sk, struct sk_buff *skb)
+ 	int space = __ndisc_opt_addr_space(data_len, pad);
+@@ -165,7 +165,7 @@ void __ndisc_fill_addr_option(struct sk_buff *skb, int type, void *data,
+ EXPORT_SYMBOL_GPL(__ndisc_fill_addr_option);
  
- 	if (nskb) {
- 		struct llc_sap *sap = llc->sap;
--		u8 *dmac = llc->daddr.mac;
-+		const u8 *dmac = llc->daddr.mac;
- 
- 		if (llc->dev->flags & IFF_LOOPBACK)
- 			dmac = llc->dev->dev_addr;
-diff --git a/net/llc/llc_if.c b/net/llc/llc_if.c
-index ad6547736c21..dde9bf08a593 100644
---- a/net/llc/llc_if.c
-+++ b/net/llc/llc_if.c
-@@ -80,7 +80,7 @@ int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb)
-  *	establishment will inform to upper layer via calling it's confirm
-  *	function and passing proper information.
-  */
--int llc_establish_connection(struct sock *sk, u8 *lmac, u8 *dmac, u8 dsap)
-+int llc_establish_connection(struct sock *sk, const u8 *lmac, u8 *dmac, u8 dsap)
+ static inline void ndisc_fill_addr_option(struct sk_buff *skb, int type,
+-					  void *data, u8 icmp6_type)
++					  const void *data, u8 icmp6_type)
  {
- 	int rc = -EISCONN;
- 	struct llc_addr laddr, daddr;
-diff --git a/net/llc/llc_output.c b/net/llc/llc_output.c
-index b9ad087bcbd7..5a6466fc626a 100644
---- a/net/llc/llc_output.c
-+++ b/net/llc/llc_output.c
-@@ -56,7 +56,7 @@ int llc_mac_hdr_init(struct sk_buff *skb,
-  *	package primitive as an event and send to SAP event handler
-  */
- int llc_build_and_send_ui_pkt(struct llc_sap *sap, struct sk_buff *skb,
--			      unsigned char *dmac, unsigned char dsap)
-+			      const unsigned char *dmac, unsigned char dsap)
- {
- 	int rc;
- 	llc_pdu_header_init(skb, LLC_PDU_TYPE_U, sap->laddr.lsap,
-diff --git a/net/llc/llc_proc.c b/net/llc/llc_proc.c
-index a4eccb98220a..0ff490a73fae 100644
---- a/net/llc/llc_proc.c
-+++ b/net/llc/llc_proc.c
-@@ -26,7 +26,7 @@
- #include <net/llc_c_st.h>
- #include <net/llc_conn.h>
- 
--static void llc_ui_format_mac(struct seq_file *seq, u8 *addr)
-+static void llc_ui_format_mac(struct seq_file *seq, const u8 *addr)
- {
- 	seq_printf(seq, "%pM", addr);
- }
+ 	__ndisc_fill_addr_option(skb, type, data, skb->dev->addr_len,
+ 				 ndisc_addr_option_pad(skb->dev->type));
 -- 
 2.31.1
 
