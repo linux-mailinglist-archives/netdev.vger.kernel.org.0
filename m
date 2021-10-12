@@ -2,310 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29C2D42A5D6
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:38:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 626DF42A5C7
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:35:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236973AbhJLNkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 09:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236607AbhJLNk2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 09:40:28 -0400
-X-Greylist: delayed 574 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Oct 2021 06:38:25 PDT
-Received: from dehost.average.org (dehost.average.org [IPv6:2a01:4f8:130:53eb::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D3EC061570
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 06:38:25 -0700 (PDT)
-Received: from [IPv6:2a02:8106:1:6800:3c3d:74ed:97e1:5268] (unknown [IPv6:2a02:8106:1:6800:3c3d:74ed:97e1:5268])
-        by dehost.average.org (Postfix) with ESMTPSA id A061B38F1797;
-        Tue, 12 Oct 2021 15:28:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=average.org; s=mail;
-        t=1634045328; bh=KAtKZFGLYisrPiYiXfawBAz9baSB7K+NW/KPhAdMeHw=;
-        h=To:Cc:From:Subject:Date:From;
-        b=FgpSVUPhQaLconHidvc5CwyTa/+bmIXmvwHUr7s2xlXrC9DD8BVkWaUOm/fNegs0o
-         53TF+2paIsuJ8ScJPwwTHohYC36+MArhkxwjK6SOFjxDguLluaxodsThJCWh1a1u1d
-         m4CPPFTV/g47jeJfE3v1RSN8Epq605EdZhM2D9dk=
-To:     netdev@vger.kernel.org
-Cc:     netfilter-devel@vger.kernel.org,
-        Lahav Schlesinger <lschlesinger@drivenets.com>,
-        David Ahern <dsahern@kernel.org>
-From:   Eugene Crosser <crosser@average.org>
-Subject: Commit 09e856d54bda5f288ef8437a90ab2b9b3eab83d1r "vrf: Reset skb
- conntrack connection on VRF rcv" breaks expected netfilter behaviour
-Message-ID: <bca5dcab-ef6b-8711-7f99-8d86e79d76eb@average.org>
-Date:   Tue, 12 Oct 2021 15:28:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S236941AbhJLNgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 09:36:23 -0400
+Received: from mail-eopbgr1400109.outbound.protection.outlook.com ([40.107.140.109]:7479
+        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236856AbhJLNgW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 09:36:22 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dA120DawEEqKlSDYGW5IJHdeilDBqmESxcvf5leWNZHlO3SMQQznimeVBmr91ROmjN+eZE0C4sSSvpxvyi44i89LhstypMN2ocgK1G3/VET7CvYqtfngp63MFRfUEmF8+aU5l+/p4uplFRYiMoYRMxS37Mw2tklqLKOrvg4881nAa8BXLm9YpXMQTzfFOYlY5ryXEgNHniPU8RhwiwHoz73vGecmtyHGiYyDgDufaSHaE/nBFxwkz/7Gnzq6FLxr4IcldaeozhYhx9GX8/CH3ytT7orlJ0GXzpjnE6iCS+VDHYZIVv3O4crIT6D4FY0v6I/Z5z9raxcbHFDZYRpG2w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RdFaUkMEUYiV5Pn8v1rsqUoxYiWuYnZB96kwdgdvC7o=;
+ b=acNm6zJHtj+PLzQQgJ6Snxhhj92ngJ8vGIwQ4AB/nOhtpIyY4lrAKf7LBlMHK94jw/Hz4R8qKh/U7fJpZ5u60vNkeHAEYEL0NctYFWF/xvBNjLy6RmqoN3qJLZE+DY5zCXdLYz2VVVEZdxXQ0tpeZyhgnDhSo06tE+7yK/80Pf2MvZ72/uoLzW7Vy0F4RVi6sLfQVLmh2KfpOGlsp64l2C+VZUokCKTP9WZWMR8USb4WOJVngXjVp8KFx5xEXSkXpWtuG7pnWbHa6k/bJrb1yiYquzBbZBWF9jeDNvULoZAxA8RRgMguOQoN7xQDhss58GCDQF4SCWkdTRvgVr3+TA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RdFaUkMEUYiV5Pn8v1rsqUoxYiWuYnZB96kwdgdvC7o=;
+ b=n2QaQdgg3OfHOke9Kn28vQIOJYXW+066Zz+HK3ykJcALUdZ62HRig5j1wX9RSShO8a8vnSXVibF1kSJdN2mC88ehTYBPAOFcEcAW1n+4XLLYEsj1URNGlNRrFONl+fQAVreM5/QAVga6qbwBS8uTQY+K5bP9vhMj92ehLNLV4zI=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by OS0PR01MB5731.jpnprd01.prod.outlook.com (2603:1096:604:be::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.20; Tue, 12 Oct
+ 2021 13:34:18 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::9ca6:1cf:5:9fc1]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::9ca6:1cf:5:9fc1%3]) with mapi id 15.20.4587.026; Tue, 12 Oct 2021
+ 13:34:18 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: RE: [PATCH net-next v2 13/14] ravb: Update EMAC configuration mode
+ comment
+Thread-Topic: [PATCH net-next v2 13/14] ravb: Update EMAC configuration mode
+ comment
+Thread-Index: AQHXvaixd8lMzh4St0+QfQ9kX6MhhKvL9taAgAABWOCAAAStAIAABr7QgABR+YCAAtShoA==
+Date:   Tue, 12 Oct 2021 13:34:18 +0000
+Message-ID: <OS0PR01MB5922253965DE7FAAE0A679E586B69@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20211010072920.20706-1-biju.das.jz@bp.renesas.com>
+ <20211010072920.20706-14-biju.das.jz@bp.renesas.com>
+ <8c6496db-8b91-8fb8-eb01-d35807694149@gmail.com>
+ <OS0PR01MB5922109B263B7FDBB02E33B986B49@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <57dbab90-6f2c-40f5-2b73-43c1ee2c6e06@gmail.com>
+ <OS0PR01MB592229224714550A4BFC10B986B49@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <YWMBh33gBnAlHI1N@lunn.ch>
+In-Reply-To: <YWMBh33gBnAlHI1N@lunn.ch>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 577aa08c-da5e-4489-f35a-08d98d84fdc9
+x-ms-traffictypediagnostic: OS0PR01MB5731:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <OS0PR01MB573115F1AF77E98E14A7988286B69@OS0PR01MB5731.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wn+k05oj1DxtCPJEulipouumOKTh/+sVFkASvZ8lzHQ7L7FzJ6f4EHH4OYJTlzI19BbTRYqOuHsAqvvVhsyjtxWVDppO7mGD3++CoAb6Pqa/0u7re0HKXCcxmbeBOtrHMCmu0vE79c4v4QKtMb/ufFoeRQKmZcT52iDFmP6diDHxFxfAHC4LdxnRvaGF6l4ELrzpXHoIM5Mgl1P3np21AOV4XjjSZDtuhh4IPCUdjvYiwNYPze6hAcrtHhBCa3Zw3uEPPD50+gGWxP/x4lss/lOVBusVyg6zHwCBjclHFwW/c0evyP80qxBm57/TA/exOKo3jv7Qb8a/n7SHVOwwZyvzOybtaip2u7uC7OWFnZqWp2xGBtpWH8ValUYZdYQYp/bcDu3msfyQjOYe3Yy+I0iL5lLdGzM9SDssbJ0lbFkNt9Yg1jCz3d4Opevsh8/y6f48hhVCILDeBNYa/C2zVxIZH4aAHX+KAYQTXsIvRU+RR0z2mAzkwEUpr5HtfNYDNMzr9GrmBxegVAb0MaXno0dWuJD+1rEcXQpLmQuhnMP4Y+orHE+A5M5y/omg5EZoPRRPaLJ/zpyP+aK1PeuFwe+DYfNiLET+VqpqCcHlBYXjUQ1y8K0toy6IYttH5FXdXoMj2MqGPv05XDz99eeHtFCeOyOVZoqE+zXr3N4wJtzzgztxAXUTOV+8h+yexFKH9oghnJJ8gXvc1KKtQFbefw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(55016002)(316002)(66476007)(71200400001)(83380400001)(76116006)(2906002)(8936002)(66446008)(66556008)(64756008)(9686003)(508600001)(15650500001)(33656002)(54906003)(52536014)(6916009)(66946007)(7416002)(186003)(26005)(4326008)(5660300002)(107886003)(8676002)(38100700002)(6506007)(122000001)(86362001)(7696005)(38070700005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Vfm7r2QHSgPu7ABGmhtnI3XqMeesCIPvcieSqEm5cxZlQlFCvAi6kx8KeszD?=
+ =?us-ascii?Q?1Ooj5ptUWZZSQD+sYKIi/ErSQlmKTR2J245Zp4BXKybnDr6+/mZx32ObLtWB?=
+ =?us-ascii?Q?dX0gFOkbW8cZeJ/+4ejL5ywD+rZAMs89C9ahszT2uA8S+nqVPaIqrhAQbICP?=
+ =?us-ascii?Q?38zdoI+nBCvFvJvB/Rd6DSBdOuxqQkLphT3xqbHS/fG6QxX/mho6eHG0bKrU?=
+ =?us-ascii?Q?Y62jX3KWJdMXAKr5Uo1HHD/NTOgS2ciGtWh+PLqpRbasYnk8s3TLtS0Ek2cZ?=
+ =?us-ascii?Q?X7kE9tewYni3/UbaTus0jQHf9ifBoUugyoTqbixxXoBD8gdpfEZyvFmdRicv?=
+ =?us-ascii?Q?BFECBktfgPmXjFltOCnspgeIkWzS+wTPB/pYbR65PA56n7GRvwkNs7dpQ+rT?=
+ =?us-ascii?Q?YeDZJIhepkhiIu3f0E7SB+eQPtdO2yJpxyzDAJ7u6tvuy8x/t5yUqTfnegpr?=
+ =?us-ascii?Q?U+O2zn5DA2KIJJiG93+B3pHk2H/JhP0CdAGt6zKPd6Sket07gUJRaOwenWwm?=
+ =?us-ascii?Q?4nzKx14tQt3KsAioewJn9mrhYmfv4NEhHp4IQyPqc+MGiRfOinGVbCNgHLFM?=
+ =?us-ascii?Q?tXYUR9jZxHC+5R5AnYQQ4ygAaXXJ30pnHNI+w9uLtnnlOryqHNSh3l2zAjgH?=
+ =?us-ascii?Q?dKu5yMoJ8+In9NFqrQBt+wGhD9McshiL0gIinqMDJ+H3k8hINAkp5IUtgZPD?=
+ =?us-ascii?Q?Gd3tqxOJ9onh7yq178e9zu/5umK8u92nKnx5liBQcm+S6PXgEryPqokVRn7M?=
+ =?us-ascii?Q?38o//+rjeyn7jinHdOx8JW7/mIMWAZ5scY90zOMaxr3fEU0VT3KupnLujf2H?=
+ =?us-ascii?Q?Da61dDJOyHphVHnMO9DF6CKBh3iHYhdSHcz8EgYq3sV2ZqK7Oo1p9SHRbwlg?=
+ =?us-ascii?Q?2bUTWkRWJq4Wxt1FvtWwdlPaKM9s5dqVPc5t+07MQQQTGX5ETR3MlZnhozKU?=
+ =?us-ascii?Q?b9J0UnwlFMJH+ZR8TDHWOBsrIDKXK8OxYKiu6qIoxOJIi2ogM3BM7mnVRdSX?=
+ =?us-ascii?Q?hMucdRnQBWS6MTLbsWU8vVEI5XtdgQmKDaP7H+GxA7LbzCQ23YI/MTQr0+G3?=
+ =?us-ascii?Q?9Fvm/Jlpa7Tg7br8EtVYcyuBPFDNYkAn1EXcEos3rTgkFA85Jcl5WRe4QbSn?=
+ =?us-ascii?Q?HOIGIUaoCmmJcRvpXE7MU77Xz5uMrB+ecZL8eFI9UQRz5Ds9py5jdrsAJDED?=
+ =?us-ascii?Q?dLv553Vo/tTIGDepTTQs5ZnPw1L+XDqc8zlTD1rRxqdQMF2GWvEE3U3B1vWE?=
+ =?us-ascii?Q?SjHKMAFBNb9c45ATAsLiwtMA4pCD6eEhpJNhtUY4wfxyUlhhVHIzhCrBmleS?=
+ =?us-ascii?Q?7tE=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="kRZUnkb0z0ifTaN9ZEdv2mCsL3m9cMvuV"
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 577aa08c-da5e-4489-f35a-08d98d84fdc9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Oct 2021 13:34:18.1461
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vrIr2qH/rYrdo3HDVSENdqntRCCwscwxg/LnE3PkowWGN2wNtDgJiDQqdbjRg2DpgbBLtRRZ6exmkHjeG+8qmRyzWe/1VzqZQvS7BTQ1+2w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS0PR01MB5731
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---kRZUnkb0z0ifTaN9ZEdv2mCsL3m9cMvuV
-Content-Type: multipart/mixed; boundary="ErHPi2e14wjnJp1dEBNYFABWNBEQImb6i";
- protected-headers="v1"
-From: Eugene Crosser <crosser@average.org>
-To: netdev@vger.kernel.org
-Cc: netfilter-devel@vger.kernel.org,
- Lahav Schlesinger <lschlesinger@drivenets.com>,
- David Ahern <dsahern@kernel.org>
-Message-ID: <bca5dcab-ef6b-8711-7f99-8d86e79d76eb@average.org>
-Subject: Commit 09e856d54bda5f288ef8437a90ab2b9b3eab83d1r "vrf: Reset skb
- conntrack connection on VRF rcv" breaks expected netfilter behaviour
+Hi Andrew,
 
---ErHPi2e14wjnJp1dEBNYFABWNBEQImb6i
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
+Thanks for the feedback.
 
-Hello all,
+> Subject: Re: [PATCH net-next v2 13/14] ravb: Update EMAC configuration
+> mode comment
+>=20
+> > by looking at the RJ LED's there is not much activity and packet
+> > statistics also show not much activity by default.
+>=20
+> > How can we check, it is overloading the controller? So that I can
+> > compare with and without this setting
+>=20
+> What is you link peer? A switch? That will be doing some filtering, so yo=
+u
+> probably don't see unicast traffic from other devices. So you need to
+> flood your link with traffic the switch does not filter. Try multicast
+> traffic for a group you are not a member off. You might need to disable
+> IGMP snooping on the switch.
+>=20
 
+I have tested in below environments
+Setup 1:=20
+  Machine1: RZ/G2L platform connected to Ubuntu Guest VM(bridged),Host oS w=
+indows via SWITCH and
+  Machine2: RZ/G2M platform connected to Ubuntu Guest VM(bridged),Host oS w=
+indows via SWITCH
 
-Commit mentioned in the subject was intended to avoid creation of stray
-conntrack entries when input interface is enslaved in a VRF, and thus
-prerouting conntrack hook is called twice: once in the context of the
-original input interface, and once in the context of the VRF interface.
-Solution was to nuke conntrack related data associated with the skb when
-it enters VRF context.
+Then ran multicast_sender app from machine 2 and ran tcpdump on machine 1.
+using devmem, I have controlled on/off PRM bit.
 
+In both cases, on tcpdump from machine 1, I see multicast packets which I a=
+m not a member off.
 
+Setup2:-
 
-However this breaks netfilter operation. Imagine a use case when
-conntrack zone must be assigned based on the (original, "real") input
-interface, rather than VRF interface (that can enslave multiple "real"
-interfaces, that would become indistinguishable). One could create
-netfilter rules similar to these:
+  RZ/G2L platform directly connected to RZ/G2M platform.=20
 
+Ran UDP unicast sockets to send data from RZ/G2M platform
 
+ran tcpdump from from RZ/G2L platform
 
-        chain rawprerouting {
+using devmem, I am controlling on/off PRM bit.
 
-                type filter hook prerouting priority raw;
+But for different addressed packet, I see RZ/G2L platfrom is trying to do A=
+RP request for
+different address. So packets are handled, with and without PRM bit set.
 
-                iif realiface1 ct zone set 1 return
+Regards,
+Biju
 
-                iif realiface2 ct zone set 2 return
+> Or use a traffic generator as a link peer and have it generate streams
+> with mixed sources and destinations.
 
-        }
 
-
-
-This works before the mentioned commit, but not after: zone assignment
-is "forgotten", and any subsequent NAT or filtering that is dependent on
-the conntrack zone does not work.
-
-
-
-There is a reproducer script at the bottom of this message that
-demonstrates the difference in behaviour.
-
-
-
-Maybe a better solution for stray conntrack entries would be to
-introduce finer control in netfilter? One possible idea would be to
-implement both "track" and "notrack" targets; then a working
-configuration would look like this:
-
-
-
-        chain rawprerouting {
-
-                type filter hook prerouting priority raw;
-
-                iif realiface1 ct zone set 1 notrack
-
-                iif realiface2 ct zone set 2 notrack
-
-                iif vrfmaster track
-
-        }
-
-
-
-so in the original input interface context, zone is assigned, but
-conntrack processing itself is shortcircuited. When the packet enters
-VRF context, conntracking is reenabled, so one entry is created, in the
-zone assigned at an earlier stage.
-
-
-
-This is just an idea, I don't have enough knowledge to judge how
-workable is it.
-
-
-
-For reference, this is a thread about the issue in netfilter-devel:
-https://marc.info/?t=3D163310182600001&r=3D1&w=3D2
-
-
-
-Thank you,
-
-
-
-Eugene
-
-
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-
-#!/bin/sh
-
-
-
-# This script demonstrates unexpected change of nftables behaviour
-
-# caused by commit 09e856d54bda5f28 ""vrf: Reset skb conntrack
-
-# connection on VRF rcv"
-
-#
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit=
-/?id=3D09e856d54bda5f288ef8437a90ab2b9b3eab83d1
-
-#
-
-# Before the commit, it was possible to assign conntrack zone to a
-
-# packet (or mark it for `notracking`) in the prerouting chanin, raw
-
-# priority, based on the `iif` (interface from which the packet
-
-# arrived).
-
-# After the change, # if the interface is enslaved in a VRF, such
-
-# assignment is lost. Instead, assignment based on the `iif` matching
-
-# the VRF master interface is honored. Thus it is impossible to
-
-# distinguish packets based on the original interface.
-
-#
-
-# This script demonstrates this change of behaviour: conntrack zone 1
-
-# or 2 is assigned depending on the match with the original interface
-
-# or the vrf master interface. It can be observed that conntrack entry
-
-# appears in different zone in the kernel versions before and after
-
-# the commit. Additionaly, the script produces netfilter trace files
-
-# that can be used for debugging the issue.
-
-
-
-IPIN=3D172.30.30.1
-
-IPOUT=3D172.30.30.2
-
-PFXL=3D30
-
-
-
-ip li sh vein >/dev/null 2>&1 && ip li del vein
-
-ip li sh tvrf >/dev/null 2>&1 && ip li del tvrf
-
-nft list table testct >/dev/null 2>&1 && nft delete table testct
-
-
-
-ip li add vein type veth peer veout
-
-ip li add tvrf type vrf table 9876
-
-ip li set veout master tvrf
-
-ip li set vein up
-
-ip li set veout up
-
-ip li set tvrf up
-
-/sbin/sysctl -w net.ipv4.conf.veout.accept_local=3D1
-
-/sbin/sysctl -w net.ipv4.conf.veout.rp_filter=3D0
-
-ip addr add $IPIN/$PFXL dev vein
-
-ip addr add $IPOUT/$PFXL dev veout
-
-
-
-nft -f - <<__END__
-
-table testct {
-
-	chain rawpre {
-
-		type filter hook prerouting priority raw;
-
-		iif { veout, tvrf } meta nftrace set 1
-
-		iif veout ct zone set 1 return
-
-		iif tvrf ct zone set 2 return
-
-		notrack
-
-	}
-
-	chain rawout {
-
-		type filter hook output priority raw;
-
-		notrack
-
-	}
-
-}
-
-__END__
-
-
-
-uname -rv
-
-conntrack -F
-
-stdbuf -o0 nft monitor trace >nftrace.`uname -r`.txt &
-
-monpid=3D$!
-
-ping -W 1 -c 1 -I vein $IPOUT
-
-conntrack -L
-
-sleep 1
-
-kill -15 $monpid
-
-wait
-
-
---ErHPi2e14wjnJp1dEBNYFABWNBEQImb6i--
-
---kRZUnkb0z0ifTaN9ZEdv2mCsL3m9cMvuV
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEnAziRJw3ydIzIkaHfKQHw5GdRYwFAmFljYcACgkQfKQHw5Gd
-RYy7nAgAhIKG3NuXBFHFSuNtS7vhUmx9Nv0vt7K5HRH2D3OO+aT3rNeXABBBWe8q
-xlzhdI6P6WErghrIWSBeCo8ShGg4oCJX2OLRRvaIVnQon12ppXV9KlKRu+eiiU74
-UoID7Am/2cDk96XE01l+ICFyJKztDo+Mi+aU/slZ7z8t42PCIdjVUcFtol1May+I
-hzw78hOPVNoL0c/KEFQzq9hWAXGRgpwG4yE7/buGxzKSbdscCZm9RTy61x0CZsg6
-nsZBClKQXHGb5RRdsuj3GaVL52L5Q9y8WINcXUiHeHgr21twiSXZuvla0GDJDY4I
-qrPDfFgRXw4aPG9Q+kCTkABOq7Hvaw==
-=JnhI
------END PGP SIGNATURE-----
-
---kRZUnkb0z0ifTaN9ZEdv2mCsL3m9cMvuV--
