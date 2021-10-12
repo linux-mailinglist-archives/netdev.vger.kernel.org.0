@@ -2,84 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE98942B006
-	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 01:15:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 956CF42B011
+	for <lists+netdev@lfdr.de>; Wed, 13 Oct 2021 01:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234783AbhJLXRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 19:17:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39142 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232246AbhJLXRk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 19:17:40 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5856C061570
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 16:15:38 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id oa4so786918pjb.2
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 16:15:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=JcTR72fwEk1Vx6Ss0BL8G1waeMrec73Nd9tDgWpYWow=;
-        b=Z1reI5PWUVzZIOLBQhWRG0L70cCx/ypS1G+0q/RnZeH5t7FPabkxDMV+hI8WlmPFrz
-         KgEGNsgmIm93nrSpLQFegAsUEvwRBQw+e8UYP1VqFLPMOcowmzQtCl8zqGAffSXQXNSE
-         iHfc4MUJR8CZn576EpQbAnsuisPJcx4MlGJUT1RqUcsaXUWcOF4aSqMvkRzpuvooE/28
-         5p6RakRqL4MnyxI4+u6v+GiLQs1XVlebsAkWuTmUnqseuQTABaUZQDvD0GsCCioQ9pSa
-         ShppNm8FwVzowjc1m3ujRKSJRIdXIC0slPUvYLmoFb/NnQcGhz78lMLpET4NfppV7hFA
-         F1cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=JcTR72fwEk1Vx6Ss0BL8G1waeMrec73Nd9tDgWpYWow=;
-        b=1nph6x4Nj0mbfO2IabWNr7+bAkVyYvUznjqDoLG6pukikWhu4kvlDjmTHTBIOOxelF
-         hnWsO8vi8yr7BtY7k4PKiUuTFjQ+zI1qwPwsfbzfRKGAt/QuulfC/1vcP26s8bBKTBfD
-         I7jZkCPtw2AtRFSwu9CcNKkuJSFO170i1V5zHdl0AWrkkVqLatlbyA/j9oObVui+d/3h
-         QIY39FRg3nbFko/EUJnk/gAzzknKU+ncH69ymxWIVUEn4MglzN+g05fCBMwC2PtiTl2l
-         ZfNxcYAnL5GMKLMbxGt+yV/uLr8booIh5ohg4MsAKcns1mgLkWE9QbzS84Eck38jByXW
-         Pi4w==
-X-Gm-Message-State: AOAM533dkYIjXc/n6C1POW9pAzwMiYoREtjZ/Rc0LCR42vJpYPPlCW90
-        k++ukBV7uP08VOpBzKjUMr/JMQ==
-X-Google-Smtp-Source: ABdhPJwOOTy6Lq3tPZzqTBdt/ZCnuLOb5xPhkCBw+/jyuKHHGckAeX+nPzt8SiwKPno3bSpzWrUx9A==
-X-Received: by 2002:a17:90a:11:: with SMTP id 17mr9296542pja.238.1634080538401;
-        Tue, 12 Oct 2021 16:15:38 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id i2sm3165460pjt.21.2021.10.12.16.15.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Oct 2021 16:15:38 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH net-next] ionic: no devlink_unregister if not registered
-Date:   Tue, 12 Oct 2021 16:15:20 -0700
-Message-Id: <20211012231520.72582-1-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
+        id S233603AbhJLXWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 19:22:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44922 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229588AbhJLXWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 19:22:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id F046560EB6;
+        Tue, 12 Oct 2021 23:20:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634080807;
+        bh=YCaYVjkcwjPrsoyCaSeUGdtWpkb0UI6VuvFjqcPNRJk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZEb54yobX/QrX4/YU5btWQPquVTH7a8Vmi6Pon5RBPRMFRnY7UBy4dAzlQHDZCMg2
+         GbS2t2YecvZ/CXQRaDjavXhug6MTohers16RYTNwZmQ1Ge32qT9B948e/GC2XDkS9h
+         V3Q45N4q0xX7Ex5CRIZZUapEAWoZFFcxSHmjt90PVs93jqejDU0UNwjEQyU4K86Asx
+         1kGD7j25EChma7GzabfrqRgsPkbZWOVUzGTonNhCZqDQ56RShuzNZcuIAYeihjTjw8
+         Tn72u15hA+lEJzAndxfte6BhwqHuuKC2cDYcfL3n96tL5k1VzzKAZJuYP0s20BNlt3
+         ByUw+3D0mKJ/g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E360E60989;
+        Tue, 12 Oct 2021 23:20:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] nfp: flow_offload: move flow_indr_dev_register from app
+ init to app start
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163408080692.16326.11276933838018698438.git-patchwork-notify@kernel.org>
+Date:   Tue, 12 Oct 2021 23:20:06 +0000
+References: <20211012124850.13025-1-louis.peens@corigine.com>
+In-Reply-To: <20211012124850.13025-1-louis.peens@corigine.com>
+To:     Louis Peens <louis.peens@corigine.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, simon.horman@corigine.com,
+        baowen.zheng@corigine.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't try to unregister the devlink if it hasn't been registered
-yet.  This bit of error cleanup code got missed in the recent
-devlink registration changes.
+Hello:
 
-Fixes: 7911c8bd546f ("ionic: Move devlink registration to be last devlink command")
-Cc: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic_devlink.c | 1 -
- 1 file changed, 1 deletion(-)
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-index 2267da95640b..4297ed9024c0 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-@@ -87,7 +87,6 @@ int ionic_devlink_register(struct ionic *ionic)
- 	err = devlink_port_register(dl, &ionic->dl_port, 0);
- 	if (err) {
- 		dev_err(ionic->dev, "devlink_port_register failed: %d\n", err);
--		devlink_unregister(dl);
- 		return err;
- 	}
- 
--- 
-2.17.1
+On Tue, 12 Oct 2021 14:48:50 +0200 you wrote:
+> From: Baowen Zheng <baowen.zheng@corigine.com>
+> 
+> In commit 74fc4f828769 ("net: Fix offloading indirect devices dependency
+> on qdisc order creation"), it adds a process to trigger the callback to
+> setup the bo callback when the driver regists a callback.
+> 
+> In our current implement, we are not ready to run the callback when nfp
+> call the function flow_indr_dev_register, then there will be error
+> message as:
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] nfp: flow_offload: move flow_indr_dev_register from app init to app start
+    https://git.kernel.org/netdev/net/c/60d950f443a5
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
