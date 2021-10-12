@@ -2,74 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 422F442A83B
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEB6E42A83D
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 17:27:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237411AbhJLP3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 11:29:01 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49812 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229633AbhJLP3A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 11:29:00 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1maJg5-000GpK-DY; Tue, 12 Oct 2021 17:26:53 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1maJg5-000W8H-5a; Tue, 12 Oct 2021 17:26:53 +0200
-Subject: Re: [PATCH net-next 4/4] net, neigh: Add NTF_MANAGED flag for managed
- neighbor entries
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     David Ahern <dsahern@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, Ido Schimmel <idosch@idosch.org>
-Cc:     roopa@nvidia.com, dsahern@kernel.org, m@lambda.lt,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20211011121238.25542-1-daniel@iogearbox.net>
- <20211011121238.25542-5-daniel@iogearbox.net>
- <05807c5b-59aa-839d-fbb0-b9712857741e@gmail.com>
- <bf31a3fe-c12d-fd75-c2eb-9685cc8528f2@iogearbox.net>
-Message-ID: <680247ef-c5d4-520d-2823-7313d3b539c6@iogearbox.net>
-Date:   Tue, 12 Oct 2021 17:26:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S237418AbhJLP3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 11:29:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54076 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229633AbhJLP3H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 11:29:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E92EE601FF;
+        Tue, 12 Oct 2021 15:27:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634052425;
+        bh=JHsNRkImaZso/PdEhq7lyB1jAuHIPy/YNePO+70974o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tfz5lBCZzH0JKgOGsRgMim4fgUflHSc+NzJKbYotcGljbTf7PO2CDwWHuLqWloEnD
+         +osAhLbdsiFpEh1r/Ee5+G23epykAedEb9oZuKEzTgjDzoghoVjHwXJaGA6qe+39CA
+         VTpVY+qq6hXn1Xh1On+VUZVHkSEVCdVvR869EEhNbjCe+Vrl9VyIalPm17mWpCeE8i
+         LMFUAV/LGi2azLF3wmzkS73ciOLK8H4QY9vCvh81OLjBJZY+CWsUS3X+u8/Ux0blXz
+         Pv++7boIgmVd1DCPKQUz8qDrke+Hp4zsV0pD9WNp/0emfjx42PgS92v0RZMJ3EBgH4
+         w4EkG51zemCbg==
+Date:   Tue, 12 Oct 2021 08:27:03 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alvin@pqrs.dk>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alsi@bang-olufsen.dk>,
+        Michael Rasmussen <mir@bang-olufsen.dk>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 5/6] net: dsa: realtek-smi: add rtl8365mb
+ subdriver for RTL8365MB-VC
+Message-ID: <20211012082703.7b31e73b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211012123557.3547280-6-alvin@pqrs.dk>
+References: <20211012123557.3547280-1-alvin@pqrs.dk>
+        <20211012123557.3547280-6-alvin@pqrs.dk>
 MIME-Version: 1.0
-In-Reply-To: <bf31a3fe-c12d-fd75-c2eb-9685cc8528f2@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26320/Tue Oct 12 10:17:49 2021)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/21 5:05 PM, Daniel Borkmann wrote:
-> On 10/12/21 4:51 PM, David Ahern wrote:
->> On 10/11/21 6:12 AM, Daniel Borkmann wrote:
-[...]
->>> @@ -1254,8 +1281,8 @@ static int __neigh_update(struct neighbour *neigh, const u8 *lladdr,
->>>           (old & (NUD_NOARP | NUD_PERMANENT)))
->>>           goto out;
->>> -    ext_learn_change = neigh_update_ext_learned(neigh, flags, &notify);
->>> -    if (flags & NEIGH_UPDATE_F_USE) {
->>> +    neigh_update_flags(neigh, flags, &notify, &gc_update, &managed_update);
->>> +    if (flags & (NEIGH_UPDATE_F_USE | NEIGH_UPDATE_F_MANAGED)) {
->>>           new = old & ~NUD_PERMANENT;
->>
->> so a neighbor entry can not be both managed and permanent, but you don't
->> check for the combination in neigh_add and error out with a message to
->> the user.
-> 
-> Good point, I'll error out if both NUD_PERMANENT and NTF_MANAGED is set in neigh_add().
-> 
-> Thanks for the review!
+On Tue, 12 Oct 2021 14:35:54 +0200 Alvin =C5=A0ipraga wrote:
+> +	{ 0, 4, 2, "dot3StatsFCSErrors" },
+> +	{ 0, 6, 2, "dot3StatsSymbolErrors" },
+> +	{ 0, 8, 2, "dot3InPauseFrames" },
+> +	{ 0, 10, 2, "dot3ControlInUnknownOpcodes" },
+...
 
-Ah, I missed that this was already applied, will send a relative diff in that case.
+You must expose counters via existing standard APIs.
 
-Thanks,
-Daniel
+You should implement these ethtool ops:
+
+	void	(*get_eth_phy_stats)(struct net_device *dev,
+				     struct ethtool_eth_phy_stats *phy_stats);
+	void	(*get_eth_mac_stats)(struct net_device *dev,
+				     struct ethtool_eth_mac_stats *mac_stats);
+	void	(*get_eth_ctrl_stats)(struct net_device *dev,
+				      struct ethtool_eth_ctrl_stats *ctrl_stats);
+	void	(*get_rmon_stats)(struct net_device *dev,
+				  struct ethtool_rmon_stats *rmon_stats,
+				  const struct ethtool_rmon_hist_range **ranges);
+
+> +static int rtl8365mb_setup(struct dsa_switch *ds)
+> +{
+> +	struct realtek_smi *smi =3D ds->priv;
+> +	struct rtl8365mb *mb;
+> +	int ret;
+> +	int i;
+> +
+> +	mb =3D smi->chip_data;
+
+drivers/net/dsa/rtl8365mb.c:1428:20: warning: variable =E2=80=98mb=E2=80=99=
+ set but not used [-Wunused-but-set-variable]
+ 1428 |  struct rtl8365mb *mb;
+      |                    ^~
