@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E51142A49C
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 14:37:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CD1B42A4A0
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 14:37:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236448AbhJLMjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 08:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
+        id S236472AbhJLMjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 08:39:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232900AbhJLMjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 08:39:03 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8315C061570
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 05:37:00 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id z20so80461045edc.13
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 05:37:00 -0700 (PDT)
+        with ESMTP id S236464AbhJLMjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 08:39:06 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85876C061570
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 05:37:04 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id d3so52937359edp.3
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 05:37:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9Oo+boBE+eAlZd6IuqDEtqKvRJtwbHtewLQoxfaOhls=;
-        b=kfT7unhmvoilGV6/AHKo7A+myzo7Y74AbsTelhnnuMoPgx/+7LGeMEqk01wfguHzED
-         HSTDVH6ck0ZHzyEF01fgdd9zMllTnqQobRb2Vmzect38QkOUsX3CYa68z0cvU0/J4HQY
-         zfotXFbZyYWseR0Ts5M2T5jWxO2foaGtGAfLw=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xeVLhBRyOBspSRG3UIrAmdPV82MS6FstyLV9tssi1Dw=;
+        b=RX7Og1JZuqe3FFBh/d5Y+Fctg5kEWRL1VzcgwNZWjsbGK41slNSiB/iK0+nBzp/7Dn
+         SjE4OZysJh06VxXD/gAV9yARLUs+J/a9+P/TwTWnibvEx1yTxSD+BvU5J7BaLDvIMPSS
+         KoLZA0UJ39DiuXp5uVqI/defqoStJeEkfLGJs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9Oo+boBE+eAlZd6IuqDEtqKvRJtwbHtewLQoxfaOhls=;
-        b=1Fcn48Jg3SBwY9GwVWnstvKADqNG8mtW2ikup1kc0HkpVcNfRqPHVPgCrlHm45ei1d
-         ve7l7gPtUZwFA9L49T9Uv8U1Hc+dreGeqhHLM6pT+q06ErYnwvNNoau8b9CpRdewVQVs
-         5V/BtVZFBY/xra4vhQhm+9zkJvd2//VguUoQTMqzsFO6UN9xGD5lXfv6WFd7Pwto32gO
-         bA3Y0zLHQllecD1CS21Guzw2C5Y7mWqvH6T69hVV2g5ukHVaz5DlrB6k1elxTAuQsaEg
-         aPwDAlwKR5eZ+swC9yDlTfb8vMt0KO08OA1l5wisxvRY5zMpGaGJAFpCR5fRUDJ19t5y
-         zN0w==
-X-Gm-Message-State: AOAM533fWDYApQagA0gKPeZWhwJoQX8rjL2lSrN+z8Y6GS6y1ZNlGABG
-        YUHsBY4PgE66gvsB3+TeuK/nzA==
-X-Google-Smtp-Source: ABdhPJwnXMOGGn+nFu0moDIaL9BzwsDFS640vDAAKjNXXWeI35G8Kc1Dwg+JzeKQjhinRg9NuFseQw==
-X-Received: by 2002:a17:907:7388:: with SMTP id er8mr33437254ejc.324.1634042219554;
-        Tue, 12 Oct 2021 05:36:59 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xeVLhBRyOBspSRG3UIrAmdPV82MS6FstyLV9tssi1Dw=;
+        b=PIsVXQ7nGPQHnOexqaZir6g+lZ/dtmC28AbBS/DkQr6IVPcfoc7vc2rQUV+wgCoXwM
+         YTTcBsrRKAHatwYp7T8mYweLf02O//pc8CZ7Gsoa9bm4segDgW8e/PSFTyBFLek6/l+v
+         UZdpDZ7MSWDYbpjUPrt0dm8Oinfrdp9lqrcfd3C2BiwktE46afoy+tzzMJuaqKMG7Tny
+         yKwJUO3Bln6CxQUDtTZqXLlNqA4HVQucMv3fyj+1uqvfplMxpBfbXoDA5m0M9/ipE/eV
+         AzjY1XEOvkGW+xB0vC/rKxPaA7U//aHXgwdITb1WXQNHJ9eOB9ZpF4QRfSRkakOeOQg8
+         QZ4w==
+X-Gm-Message-State: AOAM533oy9EycX/E/8+uAQMoCuycm5Al3eyNK2jA2Wm1tRKcSVTKg9hS
+        jPNB7TtdW9s7UYTipT2oTou+0w==
+X-Google-Smtp-Source: ABdhPJxDHvfwbq9bRjGMaMvVHxJMNedzxgx3Z+TVxfZuJaisWVL0MOe89Btc65I2i6CkhBEE9yNJXQ==
+X-Received: by 2002:aa7:db85:: with SMTP id u5mr50211385edt.234.1634042223115;
+        Tue, 12 Oct 2021 05:37:03 -0700 (PDT)
 Received: from capella.. (27-reverse.bang-olufsen.dk. [193.89.194.27])
-        by smtp.gmail.com with ESMTPSA id b5sm5763629edu.13.2021.10.12.05.36.58
+        by smtp.gmail.com with ESMTPSA id b5sm5763629edu.13.2021.10.12.05.37.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Oct 2021 05:36:59 -0700 (PDT)
+        Tue, 12 Oct 2021 05:37:02 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -58,10 +58,12 @@ To:     Linus Walleij <linus.walleij@linaro.org>,
 Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 0/6] net: dsa: add support for RTL8365MB-VC
-Date:   Tue, 12 Oct 2021 14:35:49 +0200
-Message-Id: <20211012123557.3547280-1-alvin@pqrs.dk>
+Subject: [PATCH net-next 1/6] ether: add EtherType for proprietary Realtek protocols
+Date:   Tue, 12 Oct 2021 14:35:50 +0200
+Message-Id: <20211012123557.3547280-2-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20211012123557.3547280-1-alvin@pqrs.dk>
+References: <20211012123557.3547280-1-alvin@pqrs.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -71,46 +73,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-This series adds support for Realtek's RTL8365MB-VC, a 4+1 port
-10/100/1000M Ethernet switch. The driver - rtl8365mb - was developed by
-Michael Ramussen and myself.
+Add a new EtherType ETH_P_REALTEK to the if_ether.h uapi header. The
+EtherType 0x8899 is used in a number of different protocols from Realtek
+Semiconductor Corp [1], so no general assumptions should be made when
+trying to decode such packets. Observed protocols include:
 
-This version of the driver is relatively slim, implementing only the
-standalone port functionality and no offload capabilities. It is based
-on a previous RFC series [1] from August, and the main difference is the
-removal of some spurious VLAN operations. Otherwise I have simply
-addressed most of the feedback. Please see the respective patches for
-more detail.
+  0x1 - Realtek Remote Control protocol [2]
+  0x2 - Echo protocol [2]
+  0x3 - Loop detection protocol [2]
+  0x4 - RTL8365MB 4- and 8-byte switch CPU tag protocols [3]
+  0x9 - RTL8306 switch CPU tag protocol [4]
+  0xA - RTL8366RB switch CPU tag protocol [4]
 
-In parallel I am working on offloading the bridge layer capabilities,
-but I would like to get the basic stuff upstreamed as soon as possible.
+[1] https://lore.kernel.org/netdev/CACRpkdYQthFgjwVzHyK3DeYUOdcYyWmdjDPG=Rf9B3VrJ12Rzg@mail.gmail.com/
+[2] https://www.wireshark.org/lists/ethereal-dev/200409/msg00090.html
+[3] https://lore.kernel.org/netdev/20210822193145.1312668-4-alvin@pqrs.dk/
+[4] https://lore.kernel.org/netdev/20200708122537.1341307-2-linus.walleij@linaro.org/
 
-[1] https://lore.kernel.org/netdev/20210822193145.1312668-1-alvin@pqrs.dk/
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
 
-Alvin Šipraga (6):
-  ether: add EtherType for proprietary Realtek protocols
-  net: dsa: move NET_DSA_TAG_RTL4_A to right place in Kconfig/Makefile
-  dt-bindings: net: dsa: realtek-smi: document new compatible rtl8365mb
-  net: dsa: tag_rtl8_4: add realtek 8 byte protocol 4 tag
-  net: dsa: realtek-smi: add rtl8365mb subdriver for RTL8365MB-VC
-  net: phy: realtek: add support for RTL8365MB-VC internal PHYs
+RFC -> v1: this patch is new
 
- .../bindings/net/dsa/realtek-smi.txt          |    1 +
- drivers/net/dsa/Kconfig                       |    1 +
- drivers/net/dsa/Makefile                      |    2 +-
- drivers/net/dsa/realtek-smi-core.c            |    4 +
- drivers/net/dsa/realtek-smi-core.h            |    1 +
- drivers/net/dsa/rtl8365mb.c                   | 1610 +++++++++++++++++
- drivers/net/phy/realtek.c                     |    8 +
- include/net/dsa.h                             |    2 +
- include/uapi/linux/if_ether.h                 |    1 +
- net/dsa/Kconfig                               |   20 +-
- net/dsa/Makefile                              |    3 +-
- net/dsa/tag_rtl8_4.c                          |  166 ++
- 12 files changed, 1810 insertions(+), 9 deletions(-)
- create mode 100644 drivers/net/dsa/rtl8365mb.c
- create mode 100644 net/dsa/tag_rtl8_4.c
+ include/uapi/linux/if_ether.h | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/include/uapi/linux/if_ether.h b/include/uapi/linux/if_ether.h
+index 5f589c7a8382..5da4ee234e0b 100644
+--- a/include/uapi/linux/if_ether.h
++++ b/include/uapi/linux/if_ether.h
+@@ -86,6 +86,7 @@
+ 					 * over Ethernet
+ 					 */
+ #define ETH_P_PAE	0x888E		/* Port Access Entity (IEEE 802.1X) */
++#define ETH_P_REALTEK	0x8899          /* Multiple proprietary protocols */
+ #define ETH_P_AOE	0x88A2		/* ATA over Ethernet		*/
+ #define ETH_P_8021AD	0x88A8          /* 802.1ad Service VLAN		*/
+ #define ETH_P_802_EX1	0x88B5		/* 802.1 Local Experimental 1.  */
 -- 
 2.32.0
 
