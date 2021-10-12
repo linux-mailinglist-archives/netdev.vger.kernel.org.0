@@ -2,116 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F94D429CEC
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 07:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A477429D00
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 07:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231299AbhJLFIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 01:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbhJLFIK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 01:08:10 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98EAC061570;
-        Mon, 11 Oct 2021 22:06:09 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id d125so6365486iof.5;
-        Mon, 11 Oct 2021 22:06:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=D1EXf0UQ7O0n0PRZAuiXxXUhGb2pOwfptpjgbbeKvkg=;
-        b=hFHrkPDvfYRfIfxI7wHlqF/vsgzMd/MlZ7AqY00g/OyByz5PMFmwhCoopKazgIwJ47
-         /3+2P/ZNfz1fSUjmm8XoilqFJfKqVTnA1frmNzlUkK0+2pwS4DOUPGNGLFgFACZgav5O
-         vGd/rVF/QDMxqxHpI+izQOu+oarMxT6eUzvgJvUDsh+1hY16toXxX7tjedEN6Oz8WDI6
-         ULw2I3kYzvQyMjxrLnqscjrtLkzi+7cU2edBvh0KtH1E3DDhqBL1dCbmWfy431B/uGcd
-         c4O305hIXzi5W/+F9+lqYw5a6ZsFm3IcUmxScMExaTVwasKrp83lfjJVYjWH1MbCZ2TH
-         l9ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=D1EXf0UQ7O0n0PRZAuiXxXUhGb2pOwfptpjgbbeKvkg=;
-        b=hDa96DCFtcQcwYkVFdGjThrUommG+HJPhB757Lo8z5GySFRmBEKB9hDPSmISzeRUaD
-         zM22tiZsUVwBMm7h0bStzXx2WNAaMlnHzc94bFGgPBcFJYulmDP6ZbwUVxQYjlXRBMzj
-         9NTgkyYaAUjAIcgnHCjkq1Xxw+BpH0KO55/3f70sjKg8mjn/JMfewxvyiVLT5j6xinhE
-         rsPyzbEvsn6nMHgYmLuMON2FUpBzHdr3VMcum/QGAOjONv7aN8QR5yf575ieX56YrvP8
-         3VyrCG5IlhTgAbgbp4OGhklaGFxMQtMI8IvKMptpNxn+O38ysVfLnBvN+aZlGY5Ygxbr
-         gsKA==
-X-Gm-Message-State: AOAM530jAfA650d6+ZIk00g14keav8nxPRQqryex5BTQPTA+AHfZsqWP
-        pr+aaKYPlgdG5CGU+/njIbc=
-X-Google-Smtp-Source: ABdhPJyQ8vjy1AnDje/oXz3nQUgQ0ke1qvBtNoBLk05P6Nn/QntD/msKDFInI5nflE4YL7ykI5wZDw==
-X-Received: by 2002:a02:858c:: with SMTP id d12mr9537564jai.110.1634015169106;
-        Mon, 11 Oct 2021 22:06:09 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id t1sm4987301ilf.70.2021.10.11.22.06.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Oct 2021 22:06:08 -0700 (PDT)
-Date:   Mon, 11 Oct 2021 22:06:01 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Message-ID: <616517b9b7336_2215c208b2@john-XPS-13-9370.notmuch>
-In-Reply-To: <20211008204604.38014-1-xiyou.wangcong@gmail.com>
-References: <20211008204604.38014-1-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf] udp: validate checksum in udp_read_sock()
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S232396AbhJLFTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 01:19:05 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:13722 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231254AbhJLFTF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 01:19:05 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HT3lK71QFzWdJL;
+        Tue, 12 Oct 2021 13:15:25 +0800 (CST)
+Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2308.8; Tue, 12 Oct 2021 13:17:01 +0800
+Received: from huawei.com (10.175.101.6) by dggema772-chm.china.huawei.com
+ (10.1.198.214) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.8; Tue, 12
+ Oct 2021 13:17:00 +0800
+From:   Liu Jian <liujian56@huawei.com>
+To:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
+        <jakub@cloudflare.com>, <lmb@cloudflare.com>,
+        <edumazet@google.com>, <davem@davemloft.net>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
+        <ast@kernel.org>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <kpsingh@kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <liujian56@huawei.com>
+Subject: [PATHC bpf v2] tcp_bpf: Fix one concurrency problem in the tcp_bpf_send_verdict function
+Date:   Tue, 12 Oct 2021 13:20:19 +0800
+Message-ID: <20211012052019.184398-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggema772-chm.china.huawei.com (10.1.198.214)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> It turns out the skb's in sock receive queue could have
-> bad checksums, as both ->poll() and ->recvmsg() validate
-> checksums. We have to do the same for ->read_sock() path
-> too before they are redirected in sockmap.
-> 
-> Fixes: d7f571188ecf ("udp: Implement ->read_sock() for sockmap")
-> Reported-by: Daniel Borkmann <daniel@iogearbox.net>
-> Reported-by: John Fastabend <john.fastabend@gmail.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  net/ipv4/udp.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 8536b2a7210b..0ae8ab5e05b4 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -1808,6 +1808,17 @@ int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
->  		skb = skb_recv_udp(sk, 0, 1, &err);
->  		if (!skb)
->  			return err;
-> +
-> +		if (udp_lib_checksum_complete(skb)) {
-> +			__UDP_INC_STATS(sock_net(sk), UDP_MIB_CSUMERRORS,
-> +					IS_UDPLITE(sk));
-> +			__UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS,
-> +					IS_UDPLITE(sk));
-> +			atomic_inc(&sk->sk_drops);
-> +			kfree_skb(skb);
+With two Msgs, msgA and msgB and a user doing nonblocking sendmsg calls (or
+multiple cores) on a single socket 'sk' we could get the following flow.
 
-We could use sock_drop() here? Otherwise looks good thanks.
+ msgA, sk                               msgB, sk
+ -----------                            ---------------
+ tcp_bpf_sendmsg()
+ lock(sk)
+ psock = sk->psock
+                                        tcp_bpf_sendmsg()
+                                        lock(sk) ... blocking
+tcp_bpf_send_verdict
+if (psock->eval == NONE)
+   psock->eval = sk_psock_msg_verdict
+ ..
+ < handle SK_REDIRECT case >
+   release_sock(sk)                     < lock dropped so grab here >
+   ret = tcp_bpf_sendmsg_redir
+                                        psock = sk->psock
+                                        tcp_bpf_send_verdict
+ lock_sock(sk) ... blocking on B
+                                        if (psock->eval == NONE) <- boom.
+                                         psock->eval will have msgA state
 
-> +			continue;
-> +		}
-> +
->  		used = recv_actor(desc, skb, 0, skb->len);
->  		if (used <= 0) {
->  			if (!copied)
-> -- 
-> 2.30.2
-> 
+The problem here is we dropped the lock on msgA and grabbed it with msgB.
+Now we have old state in psock and importantly psock->eval has not been
+cleared. So msgB will run whatever action was done on A and the verdict
+program may never see it.
 
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+---
+v2: change commit message, and add the fixes tag
+ net/ipv4/tcp_bpf.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index d3e9386b493e..9d068153c316 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -232,6 +232,7 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+ 	bool cork = false, enospc = sk_msg_full(msg);
+ 	struct sock *sk_redir;
+ 	u32 tosend, delta = 0;
++	u32 eval = __SK_NONE;
+ 	int ret;
+ 
+ more_data:
+@@ -275,13 +276,24 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+ 	case __SK_REDIRECT:
+ 		sk_redir = psock->sk_redir;
+ 		sk_msg_apply_bytes(psock, tosend);
++		if (!psock->apply_bytes) {
++			/* Clean up before releasing the sock lock. */
++			eval = psock->eval;
++			psock->eval = __SK_NONE;
++			psock->sk_redir = NULL;
++		}
+ 		if (psock->cork) {
+ 			cork = true;
+ 			psock->cork = NULL;
+ 		}
+ 		sk_msg_return(sk, msg, tosend);
+ 		release_sock(sk);
++
+ 		ret = tcp_bpf_sendmsg_redir(sk_redir, msg, tosend, flags);
++
++		if (eval == __SK_REDIRECT)
++			sock_put(sk_redir);
++
+ 		lock_sock(sk);
+ 		if (unlikely(ret < 0)) {
+ 			int free = sk_msg_free_nocharge(sk, msg);
+-- 
+2.17.1
 
