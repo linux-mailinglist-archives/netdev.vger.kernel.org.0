@@ -2,101 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B5FE42A6EB
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 16:13:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DAD642A6ED
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 16:14:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237191AbhJLOP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 10:15:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236943AbhJLOP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 10:15:57 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC45FC061570;
-        Tue, 12 Oct 2021 07:13:55 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id y1so13581025plk.10;
-        Tue, 12 Oct 2021 07:13:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NnwqvTRj0woh3E8EshCqUWUgR2UVN04yKDTc5wj96cI=;
-        b=GI9XXj/5uxLbMyp8Z4wuPimGYeSjPoyFsqA33pX229q4NEccEYmPA6gFvQecPx7q+Q
-         0XPLaV2/clb8higyTzATpmmijhDbfDQm4SHSRgETl0tg2MuXImkxL86x3mZ6e2kfbeu/
-         zhSQim6hIpTEv/3i4UzQ7JhMu0N7pBTZ1vG00dymbZxzHAz7oJ3Ph9mTQ0ONYJweoO3V
-         fkwhHPCvL0+xm+XZdrQxTh/9qJt0CW5Q+JyufvRsSG08Ql+IxZAbcU/zgHwgwZGFMq1S
-         GgIjGapdd7tvC81KRCOWnIee3+Y2+vTxe5wt8h+NxgiZAVNaJj+Ees1TDR63qealCEkU
-         ag0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NnwqvTRj0woh3E8EshCqUWUgR2UVN04yKDTc5wj96cI=;
-        b=6pxVpte/XaycQXRL0EYUedG9/enf5kScALIEnF8SaoZnDO5qxuNhxf0gFr1WkyAMmU
-         Xww2Uufwvuy0OxqDr2ZoXGvFJq+SzmsjeBmJevFahGCxOqT4LfXE6BSAIBE1madwtDw3
-         XxwA29SlJXjthybm8cRL3be58bzVsVa8aMGKPK0WSNuE2J7txtR55QvRPB4DRW8MAsvI
-         Em4yk7cxKXqRSFtJhjcaLt3mtTafrhTKaesm+URT1SjuQkFCwz3gp9IfE+ogvyVqc76I
-         QYYHzBcElJ9eM7w18tWqbM7VoGCPfdobvJc7p2JrTJ5BJKoddNG4TWHHyRcLrqVujwg4
-         yUCw==
-X-Gm-Message-State: AOAM531T+jeQsP36xezO6Sc+87ffiUlZGUYjFNUJKbwqtC2Og/u0v29Q
-        M+xEqvpjGlR6x0Yv9MB/b6o=
-X-Google-Smtp-Source: ABdhPJwJvdOQ0jPl3L9eYjYXV/rgGLEfs79cpa7JfWJIAUgeaN6stVSAdOP2EQqyAjt0k+CMZ/SJVg==
-X-Received: by 2002:a17:903:1c6:b0:13f:2b8:afe8 with SMTP id e6-20020a17090301c600b0013f02b8afe8mr30748592plh.81.1634048035338;
-        Tue, 12 Oct 2021 07:13:55 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
-        by smtp.gmail.com with ESMTPSA id n202sm11477588pfd.160.2021.10.12.07.13.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Oct 2021 07:13:54 -0700 (PDT)
-Subject: Re: [PATCH V7 5/9] x86/sev-es: Expose __sev_es_ghcb_hv_call() to call
- ghcb hv call out of sev code
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Tom Lendacky <thomas.lendacky@amd.com>, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com,
-        konrad.wilk@oracle.com, hch@lst.de, robin.murphy@arm.com,
-        joro@8bytes.org, parri.andrea@gmail.com, dave.hansen@intel.com,
-        Hikys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-        tglx@linutronix.de, mingo@redhat.com, x86@kernel.org,
-        hpa@zytor.com, dave.hansen@linux.intel.com, luto@kernel.org,
-        peterz@infradead.org, davem@davemloft.net, kuba@kernel.org,
-        gregkh@linuxfoundation.org, arnd@arndb.de, jroedel@suse.de,
-        brijesh.singh@amd.com, Tianyu.Lan@microsoft.com, pgonda@google.com,
-        akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
-        rppt@kernel.org, tj@kernel.org, aneesh.kumar@linux.ibm.com,
-        saravanand@fb.com, hannes@cmpxchg.org, rientjes@google.com,
-        michael.h.kelley@microsoft.com
-References: <20211006063651.1124737-1-ltykernel@gmail.com>
- <20211006063651.1124737-6-ltykernel@gmail.com>
- <9b5fc629-9f88-039c-7d5d-27cbdf6b00fd@gmail.com> <YWRyvD413h+PwU9B@zn.tnic>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <92cff62b-806d-2762-7a5d-922843cff3f2@gmail.com>
-Date:   Tue, 12 Oct 2021 22:13:43 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S237215AbhJLOQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 10:16:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52392 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237132AbhJLOQ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 10:16:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 419A260EFE;
+        Tue, 12 Oct 2021 14:14:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1634048065;
+        bh=Lne+e+L1HpFcvPT6IkNOvPQQwI5RziJjezB3HEARZts=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uBZ4T55jP7PDLI9I3qVzMGnQg5UxpxwTPO/3oJNo0dBrb64ji4neVN+gTIdQWguWs
+         KbluoLSzWua+3yLYio+vTJdpquLO2hLxXBq8+zl3av2f8qO29pzlahkBYHWDiNUaHy
+         86+ZF8I01nLmgBHvl0iLFJF7Vfhke9N+FGJM5UVjPpySeF4Zx+ODPPRfjzduGYqp37
+         NpIEoQwwVDNwqM6myfxjRLBjdklXj6fKUujRaa1dcqzQjxWyOG/IUQjRI7c80Md3YF
+         mBcfoJ2bJGNdA8AX8ZrLlihU2r4rR3MXqudsOPLvV4L7Fo9W3EVVFGtZk07TABrBdM
+         xTm8HSaxtgvkw==
+Date:   Tue, 12 Oct 2021 17:14:20 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Aharon Landau <aharonl@nvidia.com>,
+        Doug Ledford <dledford@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH mlx5-next 1/7] RDMA/mlx5: Don't set esc_size in user mr
+Message-ID: <YWWYPCHv6moPv5pW@unreal>
+References: <cover.1634033956.git.leonro@nvidia.com>
+ <f60a002566ae19014659afe94d7fcb7a10cfb353.1634033956.git.leonro@nvidia.com>
+ <20211012125234.GU2744544@nvidia.com>
+ <fdae8091-337d-a21d-d31d-5270e5029bb8@nvidia.com>
+ <20211012140433.GV2744544@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <YWRyvD413h+PwU9B@zn.tnic>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211012140433.GV2744544@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sure. Will do that. Thanks.
+On Tue, Oct 12, 2021 at 11:04:33AM -0300, Jason Gunthorpe wrote:
+> On Tue, Oct 12, 2021 at 04:57:16PM +0300, Aharon Landau wrote:
+> > 
+> > On 10/12/2021 3:52 PM, Jason Gunthorpe wrote:
+> > > On Tue, Oct 12, 2021 at 01:26:29PM +0300, Leon Romanovsky wrote:
+> > > > From: Aharon Landau <aharonl@nvidia.com>
+> > > > 
+> > > > reg_create() is used for user MRs only and should not set desc_size at
+> > > > all. Attempt to set it causes to the following trace:
+> > > > 
+> > > > BUG: unable to handle page fault for address: 0000000800000000
+> > > > PGD 0 P4D 0
+> > > > Oops: 0000 [#1] SMP PTI
+> > > > CPU: 5 PID: 890 Comm: ib_write_bw Not tainted 5.15.0-rc4+ #47
+> > > > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+> > > > RIP: 0010:mlx5_ib_dereg_mr+0x14/0x3b0 [mlx5_ib]
+> > > > Code: 48 63 cd 4c 89 f7 48 89 0c 24 e8 37 30 03 e1 48 8b 0c 24 eb a0 90 0f 1f 44 00 00 41 56 41 55 41 54 55 53 48 89 fb 48 83 ec 30 <48> 8b 2f 65 48 8b 04 25 28 00 00 00 48 89 44 24 28 31 c0 8b 87 c8
+> > > > RSP: 0018:ffff88811afa3a60 EFLAGS: 00010286
+> > > > RAX: 000000000000001c RBX: 0000000800000000 RCX: 0000000000000000
+> > > > RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000800000000
+> > > > RBP: 0000000800000000 R08: 0000000000000000 R09: c0000000fffff7ff
+> > > > R10: ffff88811afa38f8 R11: ffff88811afa38f0 R12: ffffffffa02c7ac0
+> > > > R13: 0000000000000000 R14: ffff88811afa3cd8 R15: ffff88810772fa00
+> > > > FS:  00007f47b9080740(0000) GS:ffff88852cd40000(0000) knlGS:0000000000000000
+> > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > > CR2: 0000000800000000 CR3: 000000010761e003 CR4: 0000000000370ea0
+> > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > > Call Trace:
+> > > >   mlx5_ib_free_odp_mr+0x95/0xc0 [mlx5_ib]
+> > > >   mlx5_ib_dereg_mr+0x128/0x3b0 [mlx5_ib]
+> > > >   ib_dereg_mr_user+0x45/0xb0 [ib_core]
+> > > >   ? xas_load+0x8/0x80
+> > > >   destroy_hw_idr_uobject+0x1a/0x50 [ib_uverbs]
+> > > >   uverbs_destroy_uobject+0x2f/0x150 [ib_uverbs]
+> > > >   uobj_destroy+0x3c/0x70 [ib_uverbs]
+> > > >   ib_uverbs_cmd_verbs+0x467/0xb00 [ib_uverbs]
+> > > >   ? uverbs_finalize_object+0x60/0x60 [ib_uverbs]
+> > > >   ? ttwu_queue_wakelist+0xa9/0xe0
+> > > >   ? pty_write+0x85/0x90
+> > > >   ? file_tty_write.isra.33+0x214/0x330
+> > > >   ? process_echoes+0x60/0x60
+> > > >   ib_uverbs_ioctl+0xa7/0x110 [ib_uverbs]
+> > > >   __x64_sys_ioctl+0x10d/0x8e0
+> > > >   ? vfs_write+0x17f/0x260
+> > > >   do_syscall_64+0x3c/0x80
+> > > >   entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > > > 
+> > > > Fixes: a639e66703ee ("RDMA/mlx5: Zero out ODP related items in the mlx5_ib_mr")
+> > > Can you explain why this is crashing?
+> > > 
+> > > reg_create isn't used on the ODP implicit children path.
+> > > 
+> > > Jason
+> > It is not implicit ODP flow, therefore, mr->implicit_children shouldn't be
+> > set.
+> 
+> It should always be initialized. That seems to be the bug here, add the
+> missing xa_init as well as delete the extra desc_size set:
 
-On 10/12/2021 1:22 AM, Borislav Petkov wrote:
-> On Mon, Oct 11, 2021 at 10:42:18PM +0800, Tianyu Lan wrote:
->> Hi @Tom and Borislav:
->>       Please have a look at this patch. If it's ok, could you give your ack.
+I would expect such change in mlx5_ib_init_odp_mr().
+
 > 
-> I needed to do some cleanups in that area first:
+> diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
+> index b4d2322e9ca564..46626e0fe08905 100644
+> --- a/drivers/infiniband/hw/mlx5/mr.c
+> +++ b/drivers/infiniband/hw/mlx5/mr.c
+> @@ -1525,6 +1525,7 @@ static struct ib_mr *create_user_odp_mr(struct ib_pd *pd, u64 start, u64 length,
+>                 ib_umem_release(&odp->umem);
+>                 return ERR_CAST(mr);
+>         }
+> +       xa_init(&mr->implicit_children);
+>  
+>         odp->private = mr;
+>         err = mlx5r_store_odp_mkey(dev, &mr->mmkey);
 > 
-> https://lore.kernel.org/r/YWRwxImd9Qcls/Yy@zn.tnic
-> 
-> Can you redo yours ontop so that you can show what exactly you need
-> exported for HyperV?
-> 
-> Thx.
-> 
+> Jason
