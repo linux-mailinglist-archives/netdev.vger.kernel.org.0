@@ -2,173 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D14BA429B90
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 04:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA14C429BC9
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 05:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231609AbhJLCiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Oct 2021 22:38:23 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:25123 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230362AbhJLCiX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 22:38:23 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4HT09x0t9Qz1DH80;
-        Tue, 12 Oct 2021 10:34:45 +0800 (CST)
-Received: from dggema721-chm.china.huawei.com (10.3.20.85) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2308.8; Tue, 12 Oct 2021 10:36:19 +0800
-Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
- dggema721-chm.china.huawei.com (10.3.20.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.8; Tue, 12 Oct 2021 10:36:19 +0800
-Received: from dggema772-chm.china.huawei.com ([10.9.128.138]) by
- dggema772-chm.china.huawei.com ([10.9.128.138]) with mapi id 15.01.2308.008;
- Tue, 12 Oct 2021 10:36:18 +0800
-From:   "liujian (CE)" <liujian56@huawei.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "jakub@cloudflare.com" <jakub@cloudflare.com>,
-        "lmb@cloudflare.com" <lmb@cloudflare.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>
-Subject: RE: [PATCH v4] skmsg: lose offset info in sk_psock_skb_ingress
-Thread-Topic: [PATCH v4] skmsg: lose offset info in sk_psock_skb_ingress
-Thread-Index: AQHXtNafWXeoX8LX90u02UwkM3/EjKu8qsUAgAWaNgCADHS7AA==
-Date:   Tue, 12 Oct 2021 02:36:18 +0000
-Message-ID: <e60cf9bd85924ead98bb5bfd5b7e4919@huawei.com>
-References: <20210929020642.206454-1-liujian56@huawei.com>
- <61563ebaf2fe0_6c4e420813@john-XPS-13-9370.notmuch> 
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.176.93]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S232137AbhJLDNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Oct 2021 23:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46966 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232064AbhJLDNg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Oct 2021 23:13:36 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC0EC06174E
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 20:11:34 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id x27so81407289lfa.9
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 20:11:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w2FJM5xq0hHLOwYkxQq9HjtkvFRksFK+c9CUBnhMlUA=;
+        b=ECxgpBAgFN57M9Muv6HgPW+2gsbKzFTgbdkbk/wcoXHhkLozGpRLLlOMDYegVvygHN
+         2py0lXASeUR5ykVbr81UL/hPafzHt+NJHhyIvmIYcmytMQ6GdAJ8dUABYBTqcJvXUoDk
+         df377gxkJR4hl2XnoHq6H5fg1PhPosrjlO+vw06vz95++L7FV4HiYbwq2J1WFfNnN/jf
+         Mx2ogkRKfRgA5smJ82Ca1+NvpsHAbDGCT+LpTXs64ymH6okmPAuVxvDsTmmJO9KVLgUG
+         pZxdks765lI2PhK8KGoyJxBi3yRR/GHoeDDoq3qeWcq50tyooD3LpiVGlx8t8P9OlzUu
+         Hbhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w2FJM5xq0hHLOwYkxQq9HjtkvFRksFK+c9CUBnhMlUA=;
+        b=p1ybbyLWWST8RGjJ+s+w3aXfgTirrFsNF4VX2mnbrgK4Nv3vBILXrlzMhwZDkN/lOa
+         jf8Hh7iEeW54arpaw2R5Sf3eC0lOe44V/NAYOElTY4Yrk1H/pgRgFEhKVH9lMQ5/doKP
+         TBzZ7Y73mWoj0FJNKcI5KFC0uv6HeVrrD4+bQ34pFl0dWT4BCHeYkDG1mrn9Mdu/u1aS
+         FDWSttz9sBFvIl2UJAF0EGrDnE2GOmQl2e8LB4kSedRae1UF/ODDwt4HlvXb2YtW9J6n
+         l6tnlYvO6LgjWH5mtqZ9ca4e4DCdvAe0kMFexQZR2E4+wzrRZnG3rI03LzhU7wCsCpXr
+         Hu0g==
+X-Gm-Message-State: AOAM531/OvA8xzogspPYDuWKOQS5onDjHAqrw4BVbvrXyPBrnc7uOJs2
+        wPVXDfzd2ziYqyhxyezmNb0CQsyaLDNONzs9WR69kw==
+X-Google-Smtp-Source: ABdhPJyrNsMKS3+CiKmx5Tie0/Y10h5OgwLQcjWxqMC9cxgYiRdOXIj2B1esdvuIxFjjlUZ3q1gGQg9rDQ/7FbCROq4=
+X-Received: by 2002:a05:651c:b21:: with SMTP id b33mr25766490ljr.515.1634008293091;
+ Mon, 11 Oct 2021 20:11:33 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20211007151010.333516-1-arnd@kernel.org> <20211007151010.333516-2-arnd@kernel.org>
+In-Reply-To: <20211007151010.333516-2-arnd@kernel.org>
+From:   John Stultz <john.stultz@linaro.org>
+Date:   Mon, 11 Oct 2021 20:11:20 -0700
+Message-ID: <CALAqxLVVEi67HQbjCSvfDPmfjeeZ4ROvqa8yfYMnRmeyi34Ddw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] qcom_scm: hide Kconfig symbol
+To:     Arnd Bergmann <arnd@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     lkml <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "open list:DRM DRIVER FOR MSM ADRENO GPU" 
+        <freedreno@lists.freedesktop.org>,
+        "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>,
+        linux-media <linux-media@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        ath10k <ath10k@lists.infradead.org>,
+        linux-wireless@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Alex Elder <elder@linaro.org>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        Caleb Connolly <caleb.connolly@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGl1amlhbiAoQ0UpDQo+
-IFNlbnQ6IE1vbmRheSwgT2N0b2JlciA0LCAyMDIxIDEyOjI4IFBNDQo+IFRvOiAnSm9obiBGYXN0
-YWJlbmQnIDxqb2huLmZhc3RhYmVuZEBnbWFpbC5jb20+OyBkYW5pZWxAaW9nZWFyYm94Lm5ldDsN
-Cj4gamFrdWJAY2xvdWRmbGFyZS5jb207IGxtYkBjbG91ZGZsYXJlLmNvbTsgZGF2ZW1AZGF2ZW1s
-b2Z0Lm5ldDsNCj4ga3ViYUBrZXJuZWwub3JnOyBhc3RAa2VybmVsLm9yZzsgYW5kcmlpQGtlcm5l
-bC5vcmc7IGthZmFpQGZiLmNvbTsNCj4gc29uZ2xpdWJyYXZpbmdAZmIuY29tOyB5aHNAZmIuY29t
-OyBrcHNpbmdoQGtlcm5lbC5vcmc7DQo+IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGJwZkB2Z2Vy
-Lmtlcm5lbC5vcmc7IHhpeW91Lndhbmdjb25nQGdtYWlsLmNvbQ0KPiBTdWJqZWN0OiBSRTogW1BB
-VENIIHY0XSBza21zZzogbG9zZSBvZmZzZXQgaW5mbyBpbiBza19wc29ja19za2JfaW5ncmVzcw0K
-PiANCj4gDQo+IA0KPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gRnJvbTogSm9o
-biBGYXN0YWJlbmQgW21haWx0bzpqb2huLmZhc3RhYmVuZEBnbWFpbC5jb21dDQo+ID4gU2VudDog
-RnJpZGF5LCBPY3RvYmVyIDEsIDIwMjEgNjo0OCBBTQ0KPiA+IFRvOiBsaXVqaWFuIChDRSkgPGxp
-dWppYW41NkBodWF3ZWkuY29tPjsgam9obi5mYXN0YWJlbmRAZ21haWwuY29tOw0KPiA+IGRhbmll
-bEBpb2dlYXJib3gubmV0OyBqYWt1YkBjbG91ZGZsYXJlLmNvbTsgbG1iQGNsb3VkZmxhcmUuY29t
-Ow0KPiA+IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVsLm9yZzsgYXN0QGtlcm5lbC5v
-cmc7DQo+ID4gYW5kcmlpQGtlcm5lbC5vcmc7IGthZmFpQGZiLmNvbTsgc29uZ2xpdWJyYXZpbmdA
-ZmIuY29tOyB5aHNAZmIuY29tOw0KPiA+IGtwc2luZ2hAa2VybmVsLm9yZzsgbmV0ZGV2QHZnZXIu
-a2VybmVsLm9yZzsgYnBmQHZnZXIua2VybmVsLm9yZzsNCj4gPiB4aXlvdS53YW5nY29uZ0BnbWFp
-bC5jb20NCj4gPiBDYzogbGl1amlhbiAoQ0UpIDxsaXVqaWFuNTZAaHVhd2VpLmNvbT4NCj4gPiBT
-dWJqZWN0OiBSRTogW1BBVENIIHY0XSBza21zZzogbG9zZSBvZmZzZXQgaW5mbyBpbg0KPiA+IHNr
-X3Bzb2NrX3NrYl9pbmdyZXNzDQo+ID4NCj4gPiBMaXUgSmlhbiB3cm90ZToNCj4gPiA+IElmIHNv
-Y2ttYXAgZW5hYmxlIHN0cnBhcnNlciwgdGhlcmUgYXJlIGxvc2Ugb2Zmc2V0IGluZm8gaW4NCj4g
-PiA+IHNrX3Bzb2NrX3NrYl9pbmdyZXNzLiBJZiB0aGUgbGVuZ3RoIGRldGVybWluZWQgYnkgcGFy
-c2VfbXNnIGZ1bmN0aW9uDQo+ID4gPiBpcyBub3Qgc2tiLT5sZW4sIHRoZSBza2Igd2lsbCBiZSBj
-b252ZXJ0ZWQgdG8gc2tfbXNnIG11bHRpcGxlIHRpbWVzLA0KPiA+ID4gYW5kIHVzZXJzcGFjZSBh
-cHAgd2lsbCBnZXQgdGhlIGRhdGEgbXVsdGlwbGUgdGltZXMuDQo+ID4gPg0KPiA+ID4gRml4IHRo
-aXMgYnkgZ2V0IHRoZSBvZmZzZXQgYW5kIGxlbmd0aCBmcm9tIHN0cnBfbXNnLg0KPiA+ID4gQW5k
-IGFzIENvbmcgc3VnZ2VzdGlvbiwgYWRkIG9uZSBiaXQgaW4gc2tiLT5fc2tfcmVkaXIgdG8gZGlz
-dGluZ3Vpc2gNCj4gPiA+IGVuYWJsZSBvciBkaXNhYmxlIHN0cnBhcnNlci4NCj4gPiA+DQo+ID4g
-PiBTaWduZWQtb2ZmLWJ5OiBMaXUgSmlhbiA8bGl1amlhbjU2QGh1YXdlaS5jb20+DQo+ID4gPiAt
-LS0NCj4gPg0KPiA+IFRoYW5rcy4gUGxlYXNlIGFkZCBGaXhlcyB0YWdzIHNvIHdlIGNhbiB0cmFj
-ayB0aGVzZSBJJ3ZlIGFkZGVkIGl0IGhlcmUuDQo+ID4NCj4gPiBUaGlzIGhhcyBiZWVuIGJyb2tl
-biBmcm9tIHRoZSBpbml0aWFsIHBhdGNoZXMgYW5kIGFmdGVyIGEgcXVpY2sgZ2xhbmNlDQo+ID4g
-SSBzdXNwZWN0IHRoaXMgd2lsbCBuZWVkIG1hbnVhbCBiYWNrcG9ydHMgaWYgd2UgbmVlZCBpdC4g
-QWxzbyBhbGwgdGhlDQo+ID4gSSB1c2UgYW5kIGFsbCB0aGUgc2VsZnRlc3RzIHNldCBwYXJzZXIg
-dG8gYSBub3AgYnkgcmV0dXJuaW5nIHNrYi0+bGVuLg0KPiA+DQo+ID4gQ2FuIHlvdSBhbHNvIGNy
-ZWF0ZSBhIHRlc3Qgc28gd2UgY2FuIGVuc3VyZSB3ZSBkb24ndCBicmVhayB0aGlzIGFnYWluPw0K
-PiBPa2F5LCBJIHdpbGwgZG8gdGhpcyBhZnRlciB0aGUgaG9saWRheS4NCg0KDQpIaSBKb2huLCAN
-CkkgY2hlY2tlZCBzZWxmdGVzdHMsIHRoZXJlIGFyZSBoYXZlIG9uZSB0ZXN0IGNhc2UgbmFtZWQg
-IiB0ZXN0X3R4bXNnX2luZ3Jlc3NfcGFyc2VyIi4NCkJ1dCB3aXRoIHRoaXMgcGF0Y2ggYW5kIGt0
-bHMsIHRoZSB0ZXN0IGZhaWxlZCwgdGhpcyBiZWNhdXNlIGt0bHMgcGFyc2VyKHRsc19yZWFkX3Np
-emUpIHJldHVybiB2YWx1ZSBpcyAyODUgbm90IDI1Ni4NCnRoZSBjYXNlIGxpa2UgdGhpczogDQp0
-bHNfc2sxIC0tPiByZWRpcl9zayAtLT4gdGxzX3NrMg0KdGxzX3NrMSBzZW50IG91dCA1MTIgYnl0
-ZXMgZGF0YSwgYWZ0ZXIgdGxzIHJlbGF0ZWQgcHJvY2Vzc2luZyByZWRpcl9zayByZWN2ZWQgNTcw
-IGJ0eWVzIGRhdGEsDQphbmQgcmVkaXJlY3QgNTEyIChza2JfdXNlX3BhcnNlcikgYnl0ZXMgZGF0
-YSB0byB0bHNfc2syOyBidXQgdGxzX3NrMiBuZWVkcyAyODUgKiAyIGJ5dGVzIGRhdGEsIHJlY2Vp
-dmUgdGltZW91dCBvY2N1cnJlZC4NCkkgZml4IHRoaXMgYXMgYmVsb3c6DQotLS0gYS90b29scy90
-ZXN0aW5nL3NlbGZ0ZXN0cy9icGYvdGVzdF9zb2NrbWFwLmMNCisrKyBiL3Rvb2xzL3Rlc3Rpbmcv
-c2VsZnRlc3RzL2JwZi90ZXN0X3NvY2ttYXAuYw0KQEAgLTE2ODAsNiArMTY4MCw4IEBAIHN0YXRp
-YyB2b2lkIHRlc3RfdHhtc2dfaW5ncmVzc19wYXJzZXIoaW50IGNncnAsIHN0cnVjdCBzb2NrbWFw
-X29wdGlvbnMgKm9wdCkNCiB7DQogICAgICAgIHR4bXNnX3Bhc3MgPSAxOw0KICAgICAgICBza2Jf
-dXNlX3BhcnNlciA9IDUxMjsNCisgICAgICAgaWYgKGt0bHMgPT0gMSkNCisgICAgICAgICAgICAg
-ICBza2JfdXNlX3BhcnNlciA9IDU3MDsNCiAgICAgICAgb3B0LT5pb3ZfbGVuZ3RoID0gMjU2Ow0K
-ICAgICAgICBvcHQtPmlvdl9jb3VudCA9IDE7DQogICAgICAgIG9wdC0+cmF0ZSA9IDI7DQoNCg0K
-QW5kIGkgYWRkIG9uZSBuZXcgdGVzdCBhcyBiZWxvdywgaXMgaXQgb2s/DQoNCi0tLSBhL3Rvb2xz
-L3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi90ZXN0X3NvY2ttYXAuYw0KKysrIGIvdG9vbHMvdGVzdGlu
-Zy9zZWxmdGVzdHMvYnBmL3Rlc3Rfc29ja21hcC5jDQpAQCAtMTM5LDYgKzEzOSw3IEBAIHN0cnVj
-dCBzb2NrbWFwX29wdGlvbnMgew0KICAgICAgICBib29sIHNlbmRwYWdlOw0KICAgICAgICBib29s
-IGRhdGFfdGVzdDsNCiAgICAgICAgYm9vbCBkcm9wX2V4cGVjdGVkOw0KKyAgICAgICBib29sIGNo
-ZWNrX3JlY3ZlZF9sZW47DQogICAgICAgIGludCBpb3ZfY291bnQ7DQogICAgICAgIGludCBpb3Zf
-bGVuZ3RoOw0KICAgICAgICBpbnQgcmF0ZTsNCkBAIC01NTYsOCArNTU3LDEyIEBAIHN0YXRpYyBp
-bnQgbXNnX2xvb3AoaW50IGZkLCBpbnQgaW92X2NvdW50LCBpbnQgaW92X2xlbmd0aCwgaW50IGNu
-dCwNCiAgICAgICAgaW50IGVyciwgaSwgZmxhZ3MgPSBNU0dfTk9TSUdOQUw7DQogICAgICAgIGJv
-b2wgZHJvcCA9IG9wdC0+ZHJvcF9leHBlY3RlZDsNCiAgICAgICAgYm9vbCBkYXRhID0gb3B0LT5k
-YXRhX3Rlc3Q7DQorICAgICAgIGludCBpb3ZfYWxsb2NfbGVuZ3RoID0gaW92X2xlbmd0aDsNCiAN
-Ci0gICAgICAgZXJyID0gbXNnX2FsbG9jX2lvdigmbXNnLCBpb3ZfY291bnQsIGlvdl9sZW5ndGgs
-IGRhdGEsIHR4KTsNCisgICAgICAgaWYgKCF0eCAmJiBvcHQtPmNoZWNrX3JlY3ZlZF9sZW4pDQor
-ICAgICAgICAgICAgICAgaW92X2FsbG9jX2xlbmd0aCAqPSAyOw0KKw0KKyAgICAgICBlcnIgPSBt
-c2dfYWxsb2NfaW92KCZtc2csIGlvdl9jb3VudCwgaW92X2FsbG9jX2xlbmd0aCwgZGF0YSwgdHgp
-Ow0KICAgICAgICBpZiAoZXJyKQ0KICAgICAgICAgICAgICAgIGdvdG8gb3V0X2Vycm5vOw0KICAg
-ICAgICBpZiAocGVla19mbGFnKSB7DQpAQCAtNjY1LDYgKzY3MCwxMyBAQCBzdGF0aWMgaW50IG1z
-Z19sb29wKGludCBmZCwgaW50IGlvdl9jb3VudCwgaW50IGlvdl9sZW5ndGgsIGludCBjbnQsDQog
-DQogICAgICAgICAgICAgICAgICAgICAgICBzLT5ieXRlc19yZWN2ZCArPSByZWN2Ow0KIA0KKyAg
-ICAgICAgICAgICAgICAgICAgICAgaWYgKG9wdC0+Y2hlY2tfcmVjdmVkX2xlbiAmJiBzLT5ieXRl
-c19yZWN2ZCA+IHRvdGFsX2J5dGVzKSB7DQorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IGVycm5vID0gRU1TR1NJWkU7DQorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZwcmlu
-dGYoc3RkZXJyLCAicmVjdiBmYWlsZWQoKSwgYnl0ZXNfcmVjdmQ6JXpkLCB0b3RhbF9ieXRlczol
-ZlxuIiwNCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHMt
-PmJ5dGVzX3JlY3ZkLCB0b3RhbF9ieXRlcyk7DQorICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIGdvdG8gb3V0X2Vycm5vOw0KKyAgICAgICAgICAgICAgICAgICAgICAgfQ0KKw0KICAgICAg
-ICAgICAgICAgICAgICAgICAgaWYgKGRhdGEpIHsNCiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgaW50IGNodW5rX3N6ID0gb3B0LT5zZW5kcGFnZSA/DQogICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpb3ZfbGVuZ3RoICogY250IDoNCkBAIC03NDQs
-NyArNzU2LDggQEAgc3RhdGljIGludCBzZW5kbXNnX3Rlc3Qoc3RydWN0IHNvY2ttYXBfb3B0aW9u
-cyAqb3B0KQ0KIA0KICAgICAgICByeHBpZCA9IGZvcmsoKTsNCiAgICAgICAgaWYgKHJ4cGlkID09
-IDApIHsNCi0gICAgICAgICAgICAgICBpb3ZfYnVmIC09ICh0eG1zZ19wb3AgLSB0eG1zZ19zdGFy
-dF9wb3AgKyAxKTsNCisgICAgICAgICAgICAgICBpZiAodHhtc2dfcG9wIHx8IHR4bXNnX3N0YXJ0
-X3BvcCkNCisgICAgICAgICAgICAgICAgICAgICAgIGlvdl9idWYgLT0gKHR4bXNnX3BvcCAtIHR4
-bXNnX3N0YXJ0X3BvcCArIDEpOw0KICAgICAgICAgICAgICAgIGlmIChvcHQtPmRyb3BfZXhwZWN0
-ZWQgfHwgdHhtc2dfa3Rsc19za2JfZHJvcCkNCiAgICAgICAgICAgICAgICAgICAgICAgIF9leGl0
-KDApOw0KIA0KQEAgLTE2ODgsNiArMTcwMSwxOSBAQCBzdGF0aWMgdm9pZCB0ZXN0X3R4bXNnX2lu
-Z3Jlc3NfcGFyc2VyKGludCBjZ3JwLCBzdHJ1Y3Qgc29ja21hcF9vcHRpb25zICpvcHQpDQogICAg
-ICAgIHRlc3RfZXhlYyhjZ3JwLCBvcHQpOw0KIH0NCiANCitzdGF0aWMgdm9pZCB0ZXN0X3R4bXNn
-X2luZ3Jlc3NfcGFyc2VyMihpbnQgY2dycCwgc3RydWN0IHNvY2ttYXBfb3B0aW9ucyAqb3B0KQ0K
-K3sNCisgICAgICAgaWYgKGt0bHMgPT0gMSkNCisgICAgICAgICAgICAgICByZXR1cm47DQorICAg
-ICAgIHNrYl91c2VfcGFyc2VyID0gMTA7DQorICAgICAgIG9wdC0+aW92X2xlbmd0aCA9IDIwOw0K
-KyAgICAgICBvcHQtPmlvdl9jb3VudCA9IDE7DQorICAgICAgIG9wdC0+cmF0ZSA9IDE7DQorICAg
-ICAgIG9wdC0+Y2hlY2tfcmVjdmVkX2xlbiA9IHRydWU7DQorICAgICAgIHRlc3RfZXhlYyhjZ3Jw
-LCBvcHQpOw0KKyAgICAgICBvcHQtPmNoZWNrX3JlY3ZlZF9sZW4gPSBmYWxzZTsNCit9DQorDQog
-Y2hhciAqbWFwX25hbWVzW10gPSB7DQogICAgICAgICJzb2NrX21hcCIsDQogICAgICAgICJzb2Nr
-X21hcF90eG1zZyIsDQpAQCAtMTc4Niw3ICsxODEyLDggQEAgc3RydWN0IF90ZXN0IHRlc3RbXSA9
-IHsNCiAgICAgICAgeyJ0eG1zZyB0ZXN0IHB1bGwtZGF0YSIsIHRlc3RfdHhtc2dfcHVsbH0sDQog
-ICAgICAgIHsidHhtc2cgdGVzdCBwb3AtZGF0YSIsIHRlc3RfdHhtc2dfcG9wfSwNCiAgICAgICAg
-eyJ0eG1zZyB0ZXN0IHB1c2gvcG9wIGRhdGEiLCB0ZXN0X3R4bXNnX3B1c2hfcG9wfSwNCi0gICAg
-ICAgeyJ0eG1zZyB0ZXh0IGluZ3Jlc3MgcGFyc2VyIiwgdGVzdF90eG1zZ19pbmdyZXNzX3BhcnNl
-cn0sDQorICAgICAgIHsidHhtc2cgdGVzdCBpbmdyZXNzIHBhcnNlciIsIHRlc3RfdHhtc2dfaW5n
-cmVzc19wYXJzZXJ9LA0KKyAgICAgICB7InR4bXNnIHRlc3QgaW5ncmVzcyBwYXJzZXIyIiwgdGVz
-dF90eG1zZ19pbmdyZXNzX3BhcnNlcjJ9LA0KIH07DQoNCj4gPg0KPiA+IEZpeGVzOiA2MDQzMjZi
-NDFhNmZiICgiYnBmLCBzb2NrbWFwOiBjb252ZXJ0IHRvIGdlbmVyaWMgc2tfbXNnDQo+ID4gaW50
-ZXJmYWNlIikNCj4gPiBBY2tlZC1ieTogSm9obiBGYXN0YWJlbmQgPGpvaG4uZmFzdGFiZW5kQGdt
-YWlsLmNvbT4NCj4gVGhhbmsgeW91IGZvciByZXZpZXdpbmcgdGhpcyBwYXRjaCBhZ2Fpbi4NCg==
+On Thu, Oct 7, 2021 at 8:10 AM Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> Now that SCM can be a loadable module, we have to add another
+> dependency to avoid link failures when ipa or adreno-gpu are
+> built-in:
+>
+> aarch64-linux-ld: drivers/net/ipa/ipa_main.o: in function `ipa_probe':
+> ipa_main.c:(.text+0xfc4): undefined reference to `qcom_scm_is_available'
+>
+> ld.lld: error: undefined symbol: qcom_scm_is_available
+> >>> referenced by adreno_gpu.c
+> >>>               gpu/drm/msm/adreno/adreno_gpu.o:(adreno_zap_shader_load) in archive drivers/built-in.a
+>
+> This can happen when CONFIG_ARCH_QCOM is disabled and we don't select
+> QCOM_MDT_LOADER, but some other module selects QCOM_SCM. Ideally we'd
+> use a similar dependency here to what we have for QCOM_RPROC_COMMON,
+> but that causes dependency loops from other things selecting QCOM_SCM.
+>
+> This appears to be an endless problem, so try something different this
+> time:
+>
+>  - CONFIG_QCOM_SCM becomes a hidden symbol that nothing 'depends on'
+>    but that is simply selected by all of its users
+>
+>  - All the stubs in include/linux/qcom_scm.h can go away
+>
+>  - arm-smccc.h needs to provide a stub for __arm_smccc_smc() to
+>    allow compile-testing QCOM_SCM on all architectures.
+>
+>  - To avoid a circular dependency chain involving RESET_CONTROLLER
+>    and PINCTRL_SUNXI, drop the 'select RESET_CONTROLLER' statement.
+>    According to my testing this still builds fine, and the QCOM
+>    platform selects this symbol already.
+>
+> Acked-by: Kalle Valo <kvalo@codeaurora.org>
+> Acked-by: Alex Elder <elder@linaro.org>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> Changes in v2:
+> - fix the iommu dependencies
+
+Hey Arnd,
+   Thanks again so much for working out these details. Also my
+apologies, as Bjorn asked for me to test this patch, but I wasn't able
+to get to it before it landed.  Unfortunately I've hit an issue that
+is keeping the db845c from booting with this.
+
+> diff --git a/drivers/iommu/arm/arm-smmu/Makefile b/drivers/iommu/arm/arm-smmu/Makefile
+> index e240a7bcf310..b0cc01aa20c9 100644
+> --- a/drivers/iommu/arm/arm-smmu/Makefile
+> +++ b/drivers/iommu/arm/arm-smmu/Makefile
+> @@ -1,4 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
+>  obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
+> -arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o arm-smmu-qcom.o
+> +arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o
+> +arm_smmu-$(CONFIG_ARM_SMMU_QCOM) += arm-smmu-qcom.o
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> index 9f465e146799..2c25cce38060 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> @@ -215,7 +215,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
+>             of_device_is_compatible(np, "nvidia,tegra186-smmu"))
+>                 return nvidia_smmu_impl_init(smmu);
+>
+> -       smmu = qcom_smmu_impl_init(smmu);
+> +       if (IS_ENABLED(CONFIG_ARM_SMMU_QCOM))
+> +               smmu = qcom_smmu_impl_init(smmu);
+>
+>         if (of_device_is_compatible(np, "marvell,ap806-smmu-500"))
+>                 smmu->impl = &mrvl_mmu500_impl;
+
+
+The problem with these two chunks is that there is currently no
+CONFIG_ARM_SMMU_QCOM option. :)
+
+Was that something you intended to add in the patch?
+
+I'm working up a Kconfig patch to do so, so I'll send that out in a
+second here, but let me know if you already have that somewhere (I
+suspect you implemented it and just forgot to add the change to the
+commit), as I'm sure your Kconfig help text will be better than mine.
+:)
+
+Again, I'm so sorry I didn't get over to testing your patch before
+seeing this here!
+
+thanks
+-john
