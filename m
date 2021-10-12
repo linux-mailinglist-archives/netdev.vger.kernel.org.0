@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6AC42A531
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:15:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2532D42A538
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 15:16:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236682AbhJLNRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 09:17:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45252 "EHLO mail.kernel.org"
+        id S236753AbhJLNR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 09:17:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45534 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236681AbhJLNRl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 09:17:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4C21261050;
-        Tue, 12 Oct 2021 13:15:39 +0000 (UTC)
+        id S236732AbhJLNRw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Oct 2021 09:17:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8960F610E7;
+        Tue, 12 Oct 2021 13:15:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634044540;
-        bh=dOmb9Sa558V+AowolLjO/p0iaivIqbdF1pcAJPjI+k4=;
+        s=k20201202; t=1634044551;
+        bh=Qx5MznPq238UMGCL2ja414plE7+8hqf3yMF4dqZ9S1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ya7oalL5RoNVLLPffO1ICFzNhDh/zPj75nQO6Iklw6JQR1tZPxM2/cDsaAn2/yM7l
-         htIU3TrVhccc/dgXlNayacmFQuS5knK9SmL8DBlMZ9uJ1g3JeaU3GAhORcQfDOB/9n
-         joP9bbuz36Qvk5g+KYhVHZBaScHYG+ggaNATQoa72pHquvM901OWNPE7WzMiVxonuo
-         CscIQTLsGK1HDVSwALtMu9YU+5nc2xzlvr4gjin3xJSmxi0OxAev1PhAk0PRmgwzl3
-         1jD235jhT4wLpJ4pbJd+uZBVIiMBLp/ae0J59FBMcJzkN14Ns9j3NaQDtA3x7YJ75k
-         5Q9zIyietfaOA==
+        b=WsTgSd7MeDb06DbjJqPfEITyj4M6nrJE2xXojOpDOCfgegEpbRY7jXGtDzbQ1v4Oz
+         FrLU84pEhS/jLDpfpqxTEAQXO7+ZwOtJzcmnReltTUsOvWQRLZBbBbbkPLtJ6I/S/Q
+         LKxomWedVvIdd1At2XCGaKz+yDr+/F9AMdS2B7EiTvHg06iEKNTCXC8f4ZojI1yM/C
+         J6bE4NFjBaIhGZh7zt44Ma746pOI17KKhKNY9awkhLlO1RUfMqu6PPk9dA4bdd4nxd
+         NAfMpa6OuIFs29e0G/AgRlpH3lz9j96RODrAmUl/VlUz/47PvmmxLHC9iHaWNUn2Jp
+         +cBnHbLqWrrbQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -37,9 +37,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Steven Rostedt <rostedt@goodmis.org>,
         Tariq Toukan <tariqt@nvidia.com>,
         Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: [PATCH net-next v4 2/6] devlink: Move netdev_to_devlink helpers to devlink.c
-Date:   Tue, 12 Oct 2021 16:15:22 +0300
-Message-Id: <b11adcc241126d68c2509e65cddab7f06c23b80e.1634044267.git.leonro@nvidia.com>
+Subject: [PATCH net-next v4 3/6] devlink: Annotate devlink API calls
+Date:   Tue, 12 Oct 2021 16:15:23 +0300
+Message-Id: <039bc02fef0eefc713d3640473dbbd4b7770f103.1634044267.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1634044267.git.leonro@nvidia.com>
 References: <cover.1634044267.git.leonro@nvidia.com>
@@ -51,72 +51,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Both netdev_to_devlink and netdev_to_devlink_port are used in devlink.c
-only, so move them in order to reduce their scope.
+Initial annotation patch to separate calls that needs to be executed
+before or after devlink_register().
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/net/devlink.h | 17 -----------------
- net/core/devlink.c    | 18 ++++++++++++++++++
- 2 files changed, 18 insertions(+), 17 deletions(-)
+ net/core/devlink.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index ae03eb1c6cc9..7f44ad14e5ed 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1486,23 +1486,6 @@ void *devlink_priv(struct devlink *devlink);
- struct devlink *priv_to_devlink(void *priv);
- struct device *devlink_to_dev(const struct devlink *devlink);
- 
--static inline struct devlink_port *
--netdev_to_devlink_port(struct net_device *dev)
--{
--	if (dev->netdev_ops->ndo_get_devlink_port)
--		return dev->netdev_ops->ndo_get_devlink_port(dev);
--	return NULL;
--}
--
--static inline struct devlink *netdev_to_devlink(struct net_device *dev)
--{
--	struct devlink_port *devlink_port = netdev_to_devlink_port(dev);
--
--	if (devlink_port)
--		return devlink_port->devlink;
--	return NULL;
--}
--
- struct ib_device;
- 
- struct net *devlink_net(const struct devlink *devlink);
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 87d1766ebdbf..e9e908c4cfb4 100644
+index e9e908c4cfb4..276e1e421eb4 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -11381,6 +11381,24 @@ static void __devlink_compat_running_version(struct devlink *devlink,
- 	nlmsg_free(msg);
- }
+@@ -152,6 +152,22 @@ static const struct nla_policy devlink_function_nl_policy[DEVLINK_PORT_FUNCTION_
+ static DEFINE_XARRAY_FLAGS(devlinks, XA_FLAGS_ALLOC);
+ #define DEVLINK_REGISTERED XA_MARK_1
  
-+static struct devlink_port *netdev_to_devlink_port(struct net_device *dev)
-+{
-+	if (!dev->netdev_ops->ndo_get_devlink_port)
-+		return NULL;
++/* devlink instances are open to the access from the user space after
++ * devlink_register() call. Such logical barrier allows us to have certain
++ * expectations related to locking.
++ *
++ * Before *_register() - we are in initialization stage and no parallel
++ * access possible to the devlink instance. All drivers perform that phase
++ * by implicitly holding device_lock.
++ *
++ * After *_register() - users and driver can access devlink instance at
++ * the same time.
++ */
++#define ASSERT_DEVLINK_REGISTERED(d)                                           \
++	WARN_ON_ONCE(!xa_get_mark(&devlinks, (d)->index, DEVLINK_REGISTERED))
++#define ASSERT_DEVLINK_NOT_REGISTERED(d)                                       \
++	WARN_ON_ONCE(xa_get_mark(&devlinks, (d)->index, DEVLINK_REGISTERED))
 +
-+	return dev->netdev_ops->ndo_get_devlink_port(dev);
-+}
-+
-+static struct devlink *netdev_to_devlink(struct net_device *dev)
-+{
-+	struct devlink_port *devlink_port = netdev_to_devlink_port(dev);
-+
-+	if (!devlink_port)
-+		return NULL;
-+
-+	return devlink_port->devlink;
-+}
-+
- void devlink_compat_running_version(struct net_device *dev,
- 				    char *buf, size_t len)
+ /* devlink_mutex
+  *
+  * An overall lock guarding every operation coming from userspace.
+@@ -9113,6 +9129,10 @@ static void devlink_notify_unregister(struct devlink *devlink)
+  */
+ void devlink_register(struct devlink *devlink)
  {
++	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
++	/* Make sure that we are in .probe() routine */
++	device_lock_assert(devlink->dev);
++
+ 	mutex_lock(&devlink_mutex);
+ 	xa_set_mark(&devlinks, devlink->index, DEVLINK_REGISTERED);
+ 	devlink_notify_register(devlink);
+@@ -9127,6 +9147,10 @@ EXPORT_SYMBOL_GPL(devlink_register);
+  */
+ void devlink_unregister(struct devlink *devlink)
+ {
++	ASSERT_DEVLINK_REGISTERED(devlink);
++	/* Make sure that we are in .remove() routine */
++	device_lock_assert(devlink->dev);
++
+ 	devlink_put(devlink);
+ 	wait_for_completion(&devlink->comp);
+ 
+@@ -9181,6 +9205,8 @@ EXPORT_SYMBOL_GPL(devlink_reload_disable);
+  */
+ void devlink_free(struct devlink *devlink)
+ {
++	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
++
+ 	mutex_destroy(&devlink->reporters_lock);
+ 	mutex_destroy(&devlink->lock);
+ 	WARN_ON(!list_empty(&devlink->trap_policer_list));
 -- 
 2.31.1
 
