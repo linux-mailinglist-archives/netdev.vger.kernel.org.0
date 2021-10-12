@@ -2,50 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BA05429DA5
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 08:23:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58C4E429DD6
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 08:37:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233082AbhJLGZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 02:25:13 -0400
-Received: from verein.lst.de ([213.95.11.211]:40093 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232431AbhJLGZM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 02:25:12 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 1403768BFE; Tue, 12 Oct 2021 08:23:10 +0200 (CEST)
-Date:   Tue, 12 Oct 2021 08:23:09 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Ralf Baechle <ralf@linux-mips.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Thomas Osterried <thomas@osterried.de>,
-        linux-hams@vger.kernel.org
-Subject: Re: [PATCH] ax25: Fix use of copy_from_sockptr() in
- ax25_setsockopt()
-Message-ID: <20211012062309.GD17407@lst.de>
-References: <YVXkwzKZhPoD0Ods@linux-mips.org>
+        id S233321AbhJLGjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 02:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232340AbhJLGja (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 02:39:30 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D5EC061570
+        for <netdev@vger.kernel.org>; Mon, 11 Oct 2021 23:37:29 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1maBPY-00073T-Kh; Tue, 12 Oct 2021 08:37:16 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1maBPW-0004VF-72; Tue, 12 Oct 2021 08:37:14 +0200
+Date:   Tue, 12 Oct 2021 08:37:14 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     alexandru.tachici@analog.com
+Cc:     andrew@lunn.ch, davem@davemloft.net, devicetree@vger.kernel.org,
+        hkallweit1@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, robh+dt@kernel.org
+Subject: Re: [PATCH v3 2/8] net: phy: Add 10-BaseT1L registers
+Message-ID: <20211012063714.GA938@pengutronix.de>
+References: <20211011142215.9013-1-alexandru.tachici@analog.com>
+ <20211011142215.9013-3-alexandru.tachici@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YVXkwzKZhPoD0Ods@linux-mips.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20211011142215.9013-3-alexandru.tachici@analog.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:31:32 up 236 days,  9:55, 106 users,  load average: 0.16, 0.15,
+ 0.14
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 30, 2021 at 06:24:35PM +0200, Ralf Baechle wrote:
-> The destination pointer passed to copy_from_sockptr() is an unsigned long *
-> but the source in userspace is an unsigned int * resulting in an integer
-> of the wrong size being copied from userspace.
+On Mon, Oct 11, 2021 at 05:22:09PM +0300, alexandru.tachici@analog.com wrote:
+> From: Alexandru Tachici <alexandru.tachici@analog.com>
 > 
-> This happens to work on 32 bit but breaks 64-bit where bytes 4..7 will not
-> be initialized.  By luck it may work on little endian but on big endian
-> where the userspace data is copied to the upper 32 bit of the destination
-> it's most likely going to break.
+> The 802.3gc specification defines the 10-BaseT1L link
+> mode for ethernet trafic on twisted wire pair.
 > 
-> A simple test case to demonstrate this setsockopt() issue is:
+> PMA status register can be used to detect if the phy supports
+> 2.4 V TX level and PCS control register can be used to
+> enable/disable PCS level loopback.
+> 
+> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Looks good,
+Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Thank you!
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Question on maintainers: IEEE 802.3 spec, documents register bits in the
+little-endian order. In the mdio.h we use big-endian, it makes
+comparison with the spec a bit more challenging. May be we should fix
+it?
+
+Regards,
+Oleksij
+
+> ---
+>  include/uapi/linux/mdio.h | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
+> index bdf77dffa5a4..8ae82fe3aece 100644
+> --- a/include/uapi/linux/mdio.h
+> +++ b/include/uapi/linux/mdio.h
+> @@ -65,6 +65,8 @@
+>  #define MDIO_PCS_10GBRT_STAT2	33	/* 10GBASE-R/-T PCS status 2 */
+>  #define MDIO_AN_10GBT_CTRL	32	/* 10GBASE-T auto-negotiation control */
+>  #define MDIO_AN_10GBT_STAT	33	/* 10GBASE-T auto-negotiation status */
+> +#define MDIO_PMA_10T1L_STAT	2295	/* 10BASE-T1L PMA status */
+> +#define MDIO_PCS_10T1L_CTRL	2278	/* 10BASE-T1L PCS control */
+>  
+>  /* LASI (Link Alarm Status Interrupt) registers, defined by XENPAK MSA. */
+>  #define MDIO_PMA_LASI_RXCTRL	0x9000	/* RX_ALARM control */
+> @@ -262,6 +264,20 @@
+>  #define MDIO_AN_10GBT_STAT_MS		0x4000	/* Master/slave config */
+>  #define MDIO_AN_10GBT_STAT_MSFLT	0x8000	/* Master/slave config fault */
+>  
+> +/* 10BASE-T1L PMA status register. */
+> +#define MDIO_PMA_10T1L_STAT_LINK	0x0001	/* PMA receive link up */
+> +#define MDIO_PMA_10T1L_STAT_FAULT	0x0002	/* Fault condition detected */
+> +#define MDIO_PMA_10T1L_STAT_POLARITY	0x0004	/* Receive polarity is reversed */
+> +#define MDIO_PMA_10T1L_STAT_RECV_FAULT	0x0200	/* Able to detect fault on receive path */
+> +#define MDIO_PMA_10T1L_STAT_EEE		0x0400	/* PHY has EEE ability */
+> +#define MDIO_PMA_10T1L_STAT_LOW_POWER	0x0800	/* PMA has low-power ability */
+> +#define MDIO_PMA_10T1L_STAT_2V4_ABLE	0x1000	/* PHY has 2.4 Vpp operating mode ability */
+> +#define MDIO_PMA_10T1L_STAT_LB_ABLE	0x2000	/* PHY has loopback ability */
+> +
+> +/* 10BASE-T1L PCS control register. */
+> +#define MDIO_PCS_10T1L_CTRL_LB		0x4000	/* Enable PCS level loopback mode */
+> +#define MDIO_PCS_10T1L_CTRL_RESET	0x8000	/* PCS reset */
+> +
+>  /* EEE Supported/Advertisement/LP Advertisement registers.
+>   *
+>   * EEE capability Register (3.20), Advertisement (7.60) and
+> -- 
+> 2.25.1 
+
+
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
