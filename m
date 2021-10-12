@@ -2,76 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCA9842A081
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 11:00:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7488A42A0E0
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 11:18:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235368AbhJLJCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 05:02:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40066 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232578AbhJLJCl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Oct 2021 05:02:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D6D7760E54;
-        Tue, 12 Oct 2021 09:00:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634029240;
-        bh=TVj9dloozAyW16amMZxZwPSuRXoQgPT1QTvMuSQGFX4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QC9WQeY+nVU75Hp+bftVBJ68Qsrc7UbaMkO8RAHotlG+QFh1ouPAmwWDHpi4t8m2u
-         hqysN2IEoNEXRtQFevKnS+QaoCYSHsSNdtwM5GHqXIGA/PlrQHny77emzrZ94kCpF4
-         DtHpKnX7DTg57ZQXGtaM2zmYTMfL5qmile3rdSErZkZSW1d+ixUcLWznEuajkkoDbp
-         fU8f5fyRbVmTnez/PTmCb9sBuMv8Es7cea95Is/QVQmhPpLHBINrM1tMpxDvuTmVEm
-         4Gg/F7PzGR/Ey9rK4T7tb4WUDupD2h0FBwzH76LGC5gKhVn6tOKXbNvyGaYkDtC5LH
-         //xj60vru9/1Q==
-Received: by pali.im (Postfix)
-        id 905885BC; Tue, 12 Oct 2021 11:00:37 +0200 (CEST)
-Date:   Tue, 12 Oct 2021 11:00:37 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Jonas =?utf-8?Q?Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S235009AbhJLJUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 05:20:18 -0400
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:49976 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232502AbhJLJUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 05:20:18 -0400
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19C9G5oF017601;
+        Tue, 12 Oct 2021 09:18:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2021-07-09; bh=+aJDxyPICxWH3pewjoI7IFtcJBOOKilVtl3Z+efFcuM=;
+ b=sQ/pl7XnP8n07NJVzRhZ6VaoB2ftjWWNcZfZ6mRKgj7MgQOr0vjmIFMPOEo34TAQvrXf
+ aAjGCKVH9EtUxjtkhlB+f/wUXDoqyjMXl46rXtbxQaulP0OUDRSKtJv/WQqbGRTrqxdq
+ 7sJrFSQ1HRTj0Fegtrd+hLuSY5xmbnUDgbCekjLFsThnUWy1zRJWiymefN6ysBPaSwVJ
+ lxmVOg9YBYoTYc1nJLo84TJ/rQvgXatiVmOfafpgoOjg+c5O7l4WJO7hTf4xKNqEUPKX
+ E3SLnqh+wkg/nxsf2ffWuPSA+XLDoySXK7xB2xtyo4+ADlbl91+5NNiRTb7uh55Sdxfn sA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3bmtmk4j8k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Oct 2021 09:18:12 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 19C9EhYO059809;
+        Tue, 12 Oct 2021 09:18:11 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3020.oracle.com with ESMTP id 3bmadxpbqr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Oct 2021 09:18:11 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 19C9Gu75067017;
+        Tue, 12 Oct 2021 09:18:10 GMT
+Received: from t460.home (dhcp-10-175-26-251.vpn.oracle.com [10.175.26.251])
+        by aserp3020.oracle.com with ESMTP id 3bmadxpbpd-1;
+        Tue, 12 Oct 2021 09:18:10 +0000
+From:   Vegard Nossum <vegard.nossum@oracle.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Brian Norris <briannorris@chromium.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH] mwifiex: Add quirk resetting the PCI bridge on MS
- Surface devices
-Message-ID: <20211012090037.v3w4za5hshtm253f@pali>
-References: <20211011165301.GA1650148@bhelgaas>
- <fee8b431-617f-3890-3ad2-67a61d3ffca2@v0yd.nl>
+        Beniamino Galvani <b.galvani@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] net: arc: select CRC32
+Date:   Tue, 12 Oct 2021 11:15:52 +0200
+Message-Id: <20211012091552.32403-1-vegard.nossum@oracle.com>
+X-Mailer: git-send-email 2.23.0.718.g5ad94255a8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <fee8b431-617f-3890-3ad2-67a61d3ffca2@v0yd.nl>
-User-Agent: NeoMutt/20180716
+X-Proofpoint-GUID: XPkU9uvITsR9rFUeVwQtcM5Xo4aQ3ISk
+X-Proofpoint-ORIG-GUID: XPkU9uvITsR9rFUeVwQtcM5Xo4aQ3ISk
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tuesday 12 October 2021 10:48:49 Jonas Dreßler wrote:
-> 1) Revert the cards firmware in linux-firmware back to the second-latest
-> version. That firmware didn't report a fixed LTR value and also doesn't
-> have any other obvious issues I know of compared to the latest one.
+Fix the following build/link error by adding a dependency on the CRC32
+routines:
 
-FYI, there are new bugs with new firmware versions for 8997 sent by NXP
-to linux-firmware repository... and questions what to do with it. Seems
-that NXP again do not respond to any questions after new version was
-merged into linux-firmware repo.
+  ld: drivers/net/ethernet/arc/emac_main.o: in function `arc_emac_set_rx_mode':
+  emac_main.c:(.text+0xb11): undefined reference to `crc32_le'
 
-https://lore.kernel.org/linux-firmware/edeb34bc-7c85-7f1d-79e4-e3e21df86334@gk2.net/
+The crc32_le() call comes through the ether_crc_le() call in
+arc_emac_set_rx_mode().
 
-So firmware revert also for other ex-Marvell / NXP chips is not
-something which could not happen.
+Fixes: 775dd682e2b0ec ("arc_emac: implement promiscuous mode and multicast filtering")
+Cc: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
+---
+ drivers/net/ethernet/arc/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/arc/Kconfig b/drivers/net/ethernet/arc/Kconfig
+index 37a41773dd435..330185b624d03 100644
+--- a/drivers/net/ethernet/arc/Kconfig
++++ b/drivers/net/ethernet/arc/Kconfig
+@@ -6,6 +6,7 @@
+ config NET_VENDOR_ARC
+ 	bool "ARC devices"
+ 	default y
++	select CRC32
+ 	help
+ 	  If you have a network (Ethernet) card belonging to this class, say Y.
+ 
+-- 
+2.23.0.718.g5ad94255a8
+
