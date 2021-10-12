@@ -2,125 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAAB642A6DE
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 16:11:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B5FE42A6EB
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 16:13:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237027AbhJLON4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 10:13:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26566 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236888AbhJLONz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 10:13:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634047913;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0iK1/pGNnUtvxIpXr8vij/Yx3QTTCdY0pXxA5X8g5Gc=;
-        b=fVmZoqFQothaIjCXdy9asvNYwevrQxqMb6Kji9q+VCjetCGuIZ+go8Oqml+uIo5NmkUEdH
-        oxtXLmJIcJcvWctdDG5ImRtlITGhV1VeDwF1vMC01KGSnWeiuX63H2D2pVJQRnGRZHyIy9
-        u5zim4xV1k/L7vaZilJPKeLcbxgXwUs=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-104-sarYPBWsNXC1XE4tPs09oA-1; Tue, 12 Oct 2021 10:11:52 -0400
-X-MC-Unique: sarYPBWsNXC1XE4tPs09oA-1
-Received: by mail-ed1-f70.google.com with SMTP id c30-20020a50f61e000000b003daf3955d5aso45212edn.4
-        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 07:11:52 -0700 (PDT)
+        id S237191AbhJLOP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 10:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236943AbhJLOP5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 10:15:57 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC45FC061570;
+        Tue, 12 Oct 2021 07:13:55 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id y1so13581025plk.10;
+        Tue, 12 Oct 2021 07:13:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NnwqvTRj0woh3E8EshCqUWUgR2UVN04yKDTc5wj96cI=;
+        b=GI9XXj/5uxLbMyp8Z4wuPimGYeSjPoyFsqA33pX229q4NEccEYmPA6gFvQecPx7q+Q
+         0XPLaV2/clb8higyTzATpmmijhDbfDQm4SHSRgETl0tg2MuXImkxL86x3mZ6e2kfbeu/
+         zhSQim6hIpTEv/3i4UzQ7JhMu0N7pBTZ1vG00dymbZxzHAz7oJ3Ph9mTQ0ONYJweoO3V
+         fkwhHPCvL0+xm+XZdrQxTh/9qJt0CW5Q+JyufvRsSG08Ql+IxZAbcU/zgHwgwZGFMq1S
+         GgIjGapdd7tvC81KRCOWnIee3+Y2+vTxe5wt8h+NxgiZAVNaJj+Ees1TDR63qealCEkU
+         ag0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=0iK1/pGNnUtvxIpXr8vij/Yx3QTTCdY0pXxA5X8g5Gc=;
-        b=cYUFhDJlSUj6XKygXvPoGMdyxLyTzzkAhgxDQ5K5Nv3MjVXBuebfNnzWYZJjUAHj9m
-         DBpFCAuoIb/WEIt0EjlaHXGIh7aLb/+4aJvQIuYp9VNWcl6ys8hwXkf+YhLsCC0fhMXY
-         xtJdvc/J7YK/LItw0GLU8n/DOYuwnj8pus1lkSkK+cQ+cXsgwfprirDkTqK+FWg5bAuA
-         ssVtzdvh9dZJW3bgc2n2tPd8jIjfyT8l2xLFUGo7ReVnemL3LvVaD7mTr1FlXle86IyD
-         GyoAOoXkyz3BUnjSIKO94WC9Lnd2yNu1VZSdsLKdkgPtqzSSV9B3PFCSmcOe8VnhjQby
-         vkyw==
-X-Gm-Message-State: AOAM532bO0uWjnaPhNHLFH4EDQcaYPO/cWWY8axq0q3BxhlDbClAOfW4
-        ai2MqX85VSsRDcmf0JtW2Me06nGkFFvtQPoZabVU9c7hJDUo0NyGLYKMqYrTdo70VqcOc8BLQua
-        aa6dDqt0dGQ7i7Ecy
-X-Received: by 2002:a50:cf86:: with SMTP id h6mr184924edk.104.1634047910256;
-        Tue, 12 Oct 2021 07:11:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy0Cl6+LJW1EksJuzAgqSLF1FNTHg1p7RnOXfBgT0U4JakKnBEfKK33kzhBFIW3GQufFwaz7w==
-X-Received: by 2002:a50:cf86:: with SMTP id h6mr184844edk.104.1634047909506;
-        Tue, 12 Oct 2021 07:11:49 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id f12sm2470365edx.90.2021.10.12.07.11.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Oct 2021 07:11:48 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 041FC180151; Tue, 12 Oct 2021 16:11:48 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Joanne Koong <joannekoong@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Kernel-team@fb.com
-Subject: Re: [PATCH bpf-next v2 0/3] Add XDP support for bpf_load_hdr_opt
-In-Reply-To: <20211011184333.sb7zjdsty7gmtlvl@kafai-mbp>
-References: <20211006230543.3928580-1-joannekoong@fb.com>
- <87h7dsnbh5.fsf@toke.dk> <9f8c195c-9c03-b398-2803-386c7af99748@fb.com>
- <43bfb0fe-5476-c62c-51f2-a83da9fef659@iogearbox.net>
- <20211007235203.uksujks57djohg3p@kafai-mbp> <87lf33jh04.fsf@toke.dk>
- <20211011184333.sb7zjdsty7gmtlvl@kafai-mbp>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 12 Oct 2021 16:11:47 +0200
-Message-ID: <87v922gwnw.fsf@toke.dk>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NnwqvTRj0woh3E8EshCqUWUgR2UVN04yKDTc5wj96cI=;
+        b=6pxVpte/XaycQXRL0EYUedG9/enf5kScALIEnF8SaoZnDO5qxuNhxf0gFr1WkyAMmU
+         Xww2Uufwvuy0OxqDr2ZoXGvFJq+SzmsjeBmJevFahGCxOqT4LfXE6BSAIBE1madwtDw3
+         XxwA29SlJXjthybm8cRL3be58bzVsVa8aMGKPK0WSNuE2J7txtR55QvRPB4DRW8MAsvI
+         Em4yk7cxKXqRSFtJhjcaLt3mtTafrhTKaesm+URT1SjuQkFCwz3gp9IfE+ogvyVqc76I
+         QYYHzBcElJ9eM7w18tWqbM7VoGCPfdobvJc7p2JrTJ5BJKoddNG4TWHHyRcLrqVujwg4
+         yUCw==
+X-Gm-Message-State: AOAM531T+jeQsP36xezO6Sc+87ffiUlZGUYjFNUJKbwqtC2Og/u0v29Q
+        M+xEqvpjGlR6x0Yv9MB/b6o=
+X-Google-Smtp-Source: ABdhPJwJvdOQ0jPl3L9eYjYXV/rgGLEfs79cpa7JfWJIAUgeaN6stVSAdOP2EQqyAjt0k+CMZ/SJVg==
+X-Received: by 2002:a17:903:1c6:b0:13f:2b8:afe8 with SMTP id e6-20020a17090301c600b0013f02b8afe8mr30748592plh.81.1634048035338;
+        Tue, 12 Oct 2021 07:13:55 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
+        by smtp.gmail.com with ESMTPSA id n202sm11477588pfd.160.2021.10.12.07.13.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Oct 2021 07:13:54 -0700 (PDT)
+Subject: Re: [PATCH V7 5/9] x86/sev-es: Expose __sev_es_ghcb_hv_call() to call
+ ghcb hv call out of sev code
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Tom Lendacky <thomas.lendacky@amd.com>, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com,
+        konrad.wilk@oracle.com, hch@lst.de, robin.murphy@arm.com,
+        joro@8bytes.org, parri.andrea@gmail.com, dave.hansen@intel.com,
+        Hikys@microsoft.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
+        tglx@linutronix.de, mingo@redhat.com, x86@kernel.org,
+        hpa@zytor.com, dave.hansen@linux.intel.com, luto@kernel.org,
+        peterz@infradead.org, davem@davemloft.net, kuba@kernel.org,
+        gregkh@linuxfoundation.org, arnd@arndb.de, jroedel@suse.de,
+        brijesh.singh@amd.com, Tianyu.Lan@microsoft.com, pgonda@google.com,
+        akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
+        rppt@kernel.org, tj@kernel.org, aneesh.kumar@linux.ibm.com,
+        saravanand@fb.com, hannes@cmpxchg.org, rientjes@google.com,
+        michael.h.kelley@microsoft.com
+References: <20211006063651.1124737-1-ltykernel@gmail.com>
+ <20211006063651.1124737-6-ltykernel@gmail.com>
+ <9b5fc629-9f88-039c-7d5d-27cbdf6b00fd@gmail.com> <YWRyvD413h+PwU9B@zn.tnic>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <92cff62b-806d-2762-7a5d-922843cff3f2@gmail.com>
+Date:   Tue, 12 Oct 2021 22:13:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YWRyvD413h+PwU9B@zn.tnic>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin KaFai Lau <kafai@fb.com> writes:
+Sure. Will do that. Thanks.
 
-> On Sat, Oct 09, 2021 at 12:20:27AM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> So if we can't fix the verifier, maybe we could come up with a more
->> general helper for packet parsing? Something like:
->>=20
->> bpf_for_each_pkt_chunk(ctx, offset, callback_fn, callback_arg)
->> {
->>   ptr =3D ctx->data + offset;
->>   while (ptr < ctx->data_end) {
->>     offset =3D callback_fn(ptr, ctx->data_end, callback_arg);
->>     if (offset =3D=3D 0)
->>       return 0;
->>     ptr +=3D offset;
->>   }
->>=20=20=20
->>   // out of bounds before callback was done
->>   return -EINVAL;
->> }
->>=20=20=20=20
->> This would work for parsing any kind of packet header or TLV-style data
->> without having to teach the kernel about each header type. It'll have
->> quite a bit of overhead if all the callbacks happen via indirect calls,
->> but maybe the verifier can inline the calls (or at least turn them into
->> direct CALL instructions)?
-> Direct call different callback_fn?  bpf_for_each_pkt_chunk() is a kernel
-> function.  It would be nice if the verifier could do that.
-
-Ohh, right, think-o on my part. It could be done if the helper was
-inlined in its entirety, though? Not sure if that's feasible?
-
-> This for_each helper had been considered also. Other than the need to
-> callback in a loop, the thought was to extend the existing
-> bpf_load_hdr_opt() because our initial feedback is the same header
-> handling logic cannot be used in xdp which is confusing.
-
-TBH, I had not noticed this helper before. Now that I have, it does
-seems like the kind of thing that belongs as a BPF library function
-rather than a helper in the first place :)
-
-> I don't mind to go with the for_each helper.  However, with another
-> thought, if it needs to call a function in the loop anyway, I think
-> it could also be done in bpf by putting a global function in a loop.
-> Need to try and double check.
-
-Hmm, that would be interesting if possible!
-
--Toke
-
+On 10/12/2021 1:22 AM, Borislav Petkov wrote:
+> On Mon, Oct 11, 2021 at 10:42:18PM +0800, Tianyu Lan wrote:
+>> Hi @Tom and Borislav:
+>>       Please have a look at this patch. If it's ok, could you give your ack.
+> 
+> I needed to do some cleanups in that area first:
+> 
+> https://lore.kernel.org/r/YWRwxImd9Qcls/Yy@zn.tnic
+> 
+> Can you redo yours ontop so that you can show what exactly you need
+> exported for HyperV?
+> 
+> Thx.
+> 
