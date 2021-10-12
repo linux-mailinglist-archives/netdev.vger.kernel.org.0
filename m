@@ -2,88 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97AE842A36D
-	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 13:38:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B64942A2DB
+	for <lists+netdev@lfdr.de>; Tue, 12 Oct 2021 13:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236270AbhJLLkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Oct 2021 07:40:03 -0400
-Received: from m15111.mail.126.com ([220.181.15.111]:51703 "EHLO
-        m15111.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236177AbhJLLkA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 07:40:00 -0400
-X-Greylist: delayed 1841 seconds by postgrey-1.27 at vger.kernel.org; Tue, 12 Oct 2021 07:40:00 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=sHHaDOnhNcxuYRU/Gc
-        8plYu8LofSoJnRYwgUX7P/g3w=; b=kAMS/H7LA5Bacjx46zis0G+w9yJpjxL/Or
-        dUGDhZntcZxJ2ox/D5HI+ZYHpKh+aTnzC/2N9jz+m7yAmH1t0BMIHiRlHBYhOjO2
-        PLHpJtxYIozcv9Uk2vU2oXI4kBqQQXBWinu5VOwQDFqOVZ/wedoJLydaq27iBmqd
-        esTJwJbRc=
-Received: from localhost.localdomain (unknown [221.221.165.193])
-        by smtp1 (Coremail) with SMTP id C8mowAB3EKxWbGVhG9KUBA--.10361S4;
-        Tue, 12 Oct 2021 19:07:04 +0800 (CST)
-From:   zhang kai <zhangkaiheb@126.com>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        id S236084AbhJLLML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Oct 2021 07:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236004AbhJLLMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Oct 2021 07:12:10 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D59C061570
+        for <netdev@vger.kernel.org>; Tue, 12 Oct 2021 04:10:09 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1maFfR-0000pY-TU; Tue, 12 Oct 2021 13:09:57 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1maFfP-0006zX-Hb; Tue, 12 Oct 2021 13:09:55 +0200
+Date:   Tue, 12 Oct 2021 13:09:55 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zhang kai <zhangkaiheb@126.com>
-Subject: [PATCH] ipv4: only allow increasing fib_info_hash_size
-Date:   Tue, 12 Oct 2021 19:06:58 +0800
-Message-Id: <20211012110658.10166-1-zhangkaiheb@126.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: C8mowAB3EKxWbGVhG9KUBA--.10361S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7uFyDXw18KFWrZFW8XF1fWFg_yoW8Xrykpr
-        yakw1ktFWDJFyxKr17X3WkGwnxJw18CF18GrZ2vrs5trnxGryUXayqkrWI9FWUAFZ7ZF48
-        KFZ7KryfJFn8W3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j8cTQUUUUU=
-X-Originating-IP: [221.221.165.193]
-X-CM-SenderInfo: x2kd0wxndlxvbe6rjloofrz/1tbi1xgq-l53XQooxgAAsL
+        linux-can@vger.kernel.org
+Subject: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): cancel session
+ if receive TP.DT with error length
+Message-ID: <20211012110955.GB14971@pengutronix.de>
+References: <1632972800-45091-1-git-send-email-zhangchangzhong@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1632972800-45091-1-git-send-email-zhangchangzhong@huawei.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 13:09:29 up 236 days, 14:33, 141 users,  load average: 0.24, 0.26,
+ 0.29
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-and when failed to allocate memory, check fib_info_hash_size.
+On Thu, Sep 30, 2021 at 11:33:20AM +0800, Zhang Changzhong wrote:
+> According to SAE-J1939-21, the data length of TP.DT must be 8 bytes, so
+> cancel session when receive unexpected TP.DT message.
+> 
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 
-Signed-off-by: zhang kai <zhangkaiheb@126.com>
----
- net/ipv4/fib_semantics.c | 25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index a632b66bc..7547708a9 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1403,17 +1403,20 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
- 
- 		if (!new_size)
- 			new_size = 16;
--		bytes = new_size * sizeof(struct hlist_head *);
--		new_info_hash = fib_info_hash_alloc(bytes);
--		new_laddrhash = fib_info_hash_alloc(bytes);
--		if (!new_info_hash || !new_laddrhash) {
--			fib_info_hash_free(new_info_hash, bytes);
--			fib_info_hash_free(new_laddrhash, bytes);
--		} else
--			fib_info_hash_move(new_info_hash, new_laddrhash, new_size);
--
--		if (!fib_info_hash_size)
--			goto failure;
-+
-+		if (new_size > fib_info_hash_size) {
-+			bytes = new_size * sizeof(struct hlist_head *);
-+			new_info_hash = fib_info_hash_alloc(bytes);
-+			new_laddrhash = fib_info_hash_alloc(bytes);
-+			if (!new_info_hash || !new_laddrhash) {
-+				fib_info_hash_free(new_info_hash, bytes);
-+				fib_info_hash_free(new_laddrhash, bytes);
-+
-+				if (!fib_info_hash_size)
-+					goto failure;
-+			} else
-+				fib_info_hash_move(new_info_hash, new_laddrhash, new_size);
-+		}
- 	}
- 
- 	fi = kzalloc(struct_size(fi, fib_nh, nhs), GFP_KERNEL);
+Thank you!
+
+> ---
+>  net/can/j1939/transport.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+> index bb5c4b8..eedaeaf 100644
+> --- a/net/can/j1939/transport.c
+> +++ b/net/can/j1939/transport.c
+> @@ -1789,6 +1789,7 @@ static void j1939_xtp_rx_dpo(struct j1939_priv *priv, struct sk_buff *skb,
+>  static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+>  				 struct sk_buff *skb)
+>  {
+> +	enum j1939_xtp_abort abort = J1939_XTP_ABORT_FAULT;
+>  	struct j1939_priv *priv = session->priv;
+>  	struct j1939_sk_buff_cb *skcb, *se_skcb;
+>  	struct sk_buff *se_skb = NULL;
+> @@ -1803,9 +1804,11 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+>  
+>  	skcb = j1939_skb_to_cb(skb);
+>  	dat = skb->data;
+> -	if (skb->len <= 1)
+> +	if (skb->len != 8) {
+>  		/* makes no sense */
+> +		abort = J1939_XTP_ABORT_UNEXPECTED_DATA;
+>  		goto out_session_cancel;
+> +	}
+>  
+>  	switch (session->last_cmd) {
+>  	case 0xff:
+> @@ -1904,7 +1907,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+>   out_session_cancel:
+>  	kfree_skb(se_skb);
+>  	j1939_session_timers_cancel(session);
+> -	j1939_session_cancel(session, J1939_XTP_ABORT_FAULT);
+> +	j1939_session_cancel(session, abort);
+>  	j1939_session_put(session);
+>  }
+>  
+> -- 
+> 2.9.5
+> 
+> 
+> 
+
 -- 
-2.17.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
